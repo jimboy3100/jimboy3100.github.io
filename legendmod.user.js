@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         Legend mod (Auto Updates)
-// @namespace    ogario
+// @name         Legend mod
+// @namespace    Legend Agario Mod
 // @version      2.0
 // @description  Legend Agario Mod - Communicate, Play All!
 // @homepage     http://www.legendmod.ml
