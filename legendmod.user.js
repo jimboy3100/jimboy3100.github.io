@@ -7,8 +7,8 @@
 // @author       Jimboy3100
 // @icon         https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/banners/smallbannerlegendclan.png
 // @match        http://agar.io/*
-// @downloadURL  https://github.com/jimboy3100/legend.github.io/raw/master/legendmod.user.js
-// @updateURL    https://github.com/jimboy3100/legend.github.io/raw/master/legendmod.user.js
+// @downloadURL  jimboy3100.github.io/legendmod.user.js
+// @updateURL    jimboy3100.github.io/legendmod.user.js
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
 // @connect      agar.io
