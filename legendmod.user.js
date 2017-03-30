@@ -26,7 +26,7 @@ var ogarioCSS = '<link href="http://cdn.ogario.ovh/v3/ogario.v3.css?v=308" rel="
 var ogarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=300"></script>';
 var ogarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=308" charset="utf-8"></script>';
 
-var keyJS = '<script src="https://dkyriak.github.io/key-event.js"></script>';
+var keyJS = '<script src="https://jimboy3100.github.io/key-event.js"></script>';
 
 var cpickerJS = '<script src="http://cdn.ogario.ovh/static/js/bootstrap-colorpicker.min.js"></script>';
 var toastrJS = '<script src="http://cdn.ogario.ovh/static/js/toastr.min.js"></script>';
