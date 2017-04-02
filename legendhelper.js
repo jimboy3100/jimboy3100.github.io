@@ -10,7 +10,7 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 	'<p style="color:blue; font-size:24px"; align="middle">Welcome to Legendmod!</p>'+
 	'<p style="color:white; font-size:18px";" align="middle">Legend mod for agar.io multiplayer action Chrome browser game (combines all). <br> This Mod is BIG!'+
 	'<br>'+
-	'Do you want a quick toor through the mod and selection of your settings?</p>'+
+	'Do you want a quick toor through the mod and selection of your template?</p>'+
 	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconyes.png" alt="Search Servers" id= "iconyes" onclick="starttutorial(); return false" class="img-rounded" alt="Cinque Terre" width=25% height="80">' +
 	'<u style="color:blue; font-size:18px"; onclick="starttutorial(); return false" align="middle">YES</u>'+
 	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconno.png" alt="Vanilla Like Settings" id = "iconno" onclick="stoptutorial(); return false" class="img-rounded"  width=25% height="80" >' +
@@ -21,7 +21,7 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 	'<div id="tutorial2" style="display:none;">'+
 	'<p style="color:blue; font-size:24px"; align="middle">Why Legend? (This is your last mod)</p>'+
 	'<p style="color:white; font-size:18px";" align="middle">1. This mod offers players all ogario feautures that include rendering of the game canvas'+
-													  '<br>2. IS ALIVE! Auto updates (sometimes may need manual updates) '+
+													  '<br>2. is ALIVE! Auto updates (sometimes may need manual updates) '+
 													  '<br>3. FFA/EXP/TEAM/PARTY integrated chat and minimap '+
 													  '<br>4. Unlimited FPS - Unlocked, gameplay is quicker than Vanilla '+
 													  '<br>5. Handlers for SIP (compatible with other mods/vanilla), party tokens, IP'+
@@ -43,7 +43,7 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 	'<p style="color:white; font-size:18px";" align="middle">1. SIP-TOKENS: Under the leaderboard click COPY->TOKEN. This copies the TOKEN if mode is party, or the SIP locked server for other modes'+
 													    '<br>This mod can create SIPs that are compatible with other mods and vanilla but also provide other information. (Use on URL) '+
 													    '<br> '+
-													    '<br>2. IP: COPY->IP, handlers of mod can search the IP/region/mode of the IP URL, or you can search a token from friend, IP, leaderboard or clan tag by using the Search button found onbuttom left of the leaderboard hud'+
+													    '<br>2. IP: COPY->IP, handlers of mod can search the IP/region/mode of the IP URL, or you can search a token from friend, IP, leaderboard or clan tag by using the Search button found on buttom-left of the leaderboard hud'+
 													    '<br> '+
 													    '<br>3. Change Server button'+
 													    '<br> '+
@@ -60,13 +60,13 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 
 	'<div id="tutorial4" style="display:none;">'+
 	'<p style="color:blue; font-size:24px"; align="middle">HelloContainer Tabs</p>'+
-	'<p style="color:white; font-size:18px";" align="middle"><i class="icon-home active"></i> Used for changing name, password, region, mode, login, play, spectace. Might also have manual imgur Weblink for skin, main tools and main banner if enabled'+
+	'<p style="color:white; font-size:18px";" align="middle"><i class="icon-home active"></i> Used for changing name, password, region, mode, login, play, spectace. Might also have manual imgur weblink for skin, main tools and main banner if enabled'+
 													    '<br><i class="icon-user"></i> Agario stuff, quests, skins, logout, etc, plus reference to other scripts being used by mod '+
 													    '<br><i class="icon-cog"></i> Canvas rendering tools, very helpful for game!'+
 													    '<br><i class="icon-droplet"></i> Settings about the interface of the mod, including 6 minitabs'+
-													    '<br><i class="hotkeys-link icon-keyboard"></i> Hotkeys, for keypress uses of commands'+
+													    '<br><i class="hotkeys-link icon-keyboard"></i> Command hotkeys for keypress events'+
 													    '<br><i class="quick-yt icon-youtube2"></i> Youtube with url of your choice, can autostart when game starts if chosen'+
-													    '<br><i class="fa fa-cogs"></i> Tools, the light blue buttons are suggested to be opened, do not open the red, the purple are optional'+
+													    '<br><i class="fa fa-cogs"></i> Tools, the light blue buttons are suggested to be opened, the purple are optional'+
 													   
 													  
 													  '</p>'+
@@ -79,10 +79,10 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 	
 	'<div id="tutorial5" style="display:none;">'+
 	'<p style="color:blue; font-size:24px"; align="middle">More Stuff</p>'+
-	'<p style="color:white; font-size:18px";" align="middle">Hide/Show everything/timer calculator are request by youtubers/quest players'+
-													    '<i class="fa fa-cogs"></i>Also... <br> You can change your minimap/leaderboard/teamboard/main canvas with a picture url and the message icons with imgur pictures e.g http://i.imgur.com/RVBi3T1.gif .Also you can change your chat position'+
+	'<p style="color:white; font-size:18px";" align="middle"><i style="color:blue; font-size:18px"; align="left">Hide/Show everything/timer calculator are requested by youtubers/quest players</i>'+
+													    '<br>You can also change your minimap/leaderboard/teamboard/main canvas with a picture url and the message icons with imgur pictures e.g http://i.imgur.com/RVBi3T1.gif, and you can change your chat position'+
 													    '<br> On <i class="fa fa-cogs"></i>TOOLS tab , the <i class="fa fa-puzzle-piece"></i>Shortcuts must be opened. You can use binoculars on specate mode (or press Q), use copy tools, youtube button or fullscreen '+
-													    '<br> There is Chat button to hide/show to team, 6 message icons that you can send the default imgure icons or yours, and 6 message commands, mod gives direct commands to the script of your team player'+
+													    '<br> Opened with TOKEN: There is also a Chat button to hide/show to team, 6 message icons that you can send the default imgure icons or yours, and 6 message commands, mod gives direct commands to the script of your team player'+
 													    
 													  
 													  '</p>'+
@@ -95,8 +95,8 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 	
 	'<div id="tutorial6" style="display:none;">'+
 	'<p style="color:blue; font-size:24px"; align="middle">More Stuff(2)</p>'+
-	'<p style="color:white; font-size:18px";" align="middle"><br> Also you can find 2 side containers, the left is a small pannel of things and the right is to choose ogario or imgur images. '+
-													    '<br> At last you can use your import/export your own settings by <i class="fa fa-puzzle-piece"></i>Settings->IMPORT/EXPORT SETTINGS-> Paste your code (and import) or export it'+
+	'<p style="color:white; font-size:18px";" align="middle">Also you can find 2 side containers, the left is a small panel of things and the right is to choose ogario or imgur images. '+
+													    '<br> At last you can import/export your own settings by <i class="fa fa-puzzle-piece"></i>Settings->IMPORT/EXPORT SETTINGS-> Paste your code (and import) or export it'+
 													   
 													    '<br>'+
 													  
@@ -110,12 +110,12 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 	
 	'<div id="tutorial7" style="display:none;">'+
 	'<p style="color:blue; font-size:24px"; align="middle">Frequently asked questions</p>'+
-	'<p style="color:white; font-size:18px";" align="middle"><br><i class="fa fa-question-circle"></i> Mod uses party mode and cannot change, or other important Bug <i class="icon-bubbles"></i> Delete cookies chrome://settings/clearBrowserData'+
-													    '<br><i class="fa fa-question-circle"></i> I clicked a button that changed my settings <i class="icon-bubbles"></i> Restore settings on 3rd,4th and 5th tab, or delete cookies chrome://settings/clearBrowserData'+
-													    '<br><i class="fa fa-question-circle"></i> I like agario canvas interface <i class="icon-bubbles"></i> Choose <i class="icon-droplet active"></i> -> <i class="active icon-paint-format"></i> -> Theme preset-> Agario Light'+
-													    '<br><i class="fa fa-question-circle"></i> Does game cheat? Is it accepted by miniclip? <i class="icon-bubbles"></i> Mod is ACCEPTED by miniclip. SIP is a function of agario, mod does not use bots or hacks/cheats'+
-													    '<br><i class="fa fa-question-circle></i> Does mod collect personal innformation <i class="icon-bubbles"></i> Mod does not collect any information of users'+
-														'<br><i class="fa fa-question-circle"></i> In which language it is written? Is it a virus? <i class="icon-bubbles"></i> It is written in javascript, it is not a virus'+
+	'<p style="color:white; font-size:18px";" align="middle"><i class="fa fa-question-circle"></i><i style="color:green"> Mod uses party mode and cannot change, or other important Bug</i> <i class="icon-bubbles"></i> Delete cookies chrome://settings/clearBrowserData'+
+													    '<br><i class="fa fa-question-circle"></i><i style="color:green"> I clicked a button that changed my settings</i> <i class="icon-bubbles"></i> Restore settings on 3rd,4th and 5th tab, or delete cookies chrome://settings/clearBrowserData'+
+													    '<br><i class="fa fa-question-circle"></i><i style="color:green"> I like agario canvas interface</i> <i class="icon-bubbles"></i> Choose <i class="icon-droplet active"></i> -> <i class="active icon-paint-format"></i> -> Theme preset-> Agario Light'+
+													    '<br><i class="fa fa-question-circle"></i><i style="color:green"> Does game cheat? Is it accepted by miniclip?</i> <i class="icon-bubbles"></i> Mod is ACCEPTED by miniclip. SIP is a function of agario, mod does not use bots or hacks/cheats'+
+													    '<br><i class="fa fa-question-circle"></i><i style="color:green"> Does mod collect personal information?</i> <i class="icon-bubbles"></i> Mod does not collect any information of users'+
+														'<br><i class="fa fa-question-circle"></i><i style="color:green"> In which language is it written? Is it a virus?</i> <i class="icon-bubbles"></i> It is written in javascript, it is not a virus'+
 													  '</p>'+
 													  
 	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconyes.png" alt="Search Servers" id= "iconyes" onclick="continue6tutorial(); return false" class="img-rounded" alt="Cinque Terre" width=25% height="80">' +
@@ -132,7 +132,7 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 													    '<br> Uses kittymod.tk by Kind Kitty'+
 													    '<br> Uses many other scripts/codes found on https://greasyfork.org/en/scripts/by-site/agar.io'+
 													    '<br>'+
-														'<br> Special thanks to teodor bob (Guard) ,hanygohary, Hendrik Schönfelder (Destroyer), Interstellar'+
+														'<br> Special thanks to teodor bob (Guard) ,hanygohary, hendrik schönfelder (Destroyer), interstellar'+
 														'<br> and all playerS of ℄ FFA Legend Clan'+
 													    '</p>'+
 													  
@@ -147,17 +147,17 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 
 	
 	'<div id="settingbanners"><img src="https://jimboy3100.github.io/legend.github.io/banners/iconagario.png" alt="Search Servers" id= "searchicon" onclick="agariowhitesettings(); return false" class="img-rounded" alt="Cinque Terre" width=30% height="50">' +
-	'<i style="color:blue; font-size:22px"; align="left">Agario Default(White)</i><br>'+	
+	'<u style="color:blue; font-size:22px"; align="left" onclick="agariowhitesettings(); return false">Agario Default(White)</u><br>'+	
 	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconnosoup.png" alt="NoSoupsSettings" id = "legendclanbanner" class="img-rounded"  width=30% height="50" onclick="nosoups(); return false" > '+
-	'<i style="color:blue; font-size:22px"; align="right">No Soups Settings (Black)</i><br>'+
+	'<u style="color:blue; font-size:22px"; align="right" onclick="nosoups(); return false">No Soups Settings (Black)</u><br>'+
 	'<img src="https://jimboy3100.github.io/legend.github.io/banners/vanillapic.jpg" alt="Vanilla Like Settings" id = "vanillaset" onclick="vanillabetter(); return false" class="img-rounded" width=30% height="50" >' +
-	'<i style="color:blue; font-size:22px"; align="right">Vanilla better (Grey)</i><br>'+	
+	'<u style="color:blue; font-size:22px"; align="right" onclick="vanillabetter(); return false">Vanilla better (Grey)</u><br>'+	
 	'<img src="https://jimboy3100.github.io/legend.github.io/banners/galaxybanner.jpg" alt="Vanilla Like Settings" id = "galaxyset" onclick="galaxysettings(); return false" class="img-rounded"  return false" width=30%" height="50"  >' +
-	'<i style="color:blue; font-size:22px"; align="left">Galaxy (Black)</i><br>'+	
+	'<u style="color:blue; font-size:22px"; align="left" onclick="galaxysettings(); return false">Galaxy (Black)</u><br>'+	
 	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconmod.png" alt="Vanilla Like Settings" id = "legendclanbanner" class="img-rounded" width=30% height="50" onclick="legenddefaultsettings(); return false" > '+
-	'<i style="color:blue; font-size:22px"; align="right">Legend Default (Dark Blue)</i><br>'+
+	'<u style="color:blue; font-size:22px"; align="right" onclick="legenddefaultsettings(); return false">Legend Default (Dark Blue)</u><br>'+
 	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconvanilla.jpg" alt="Vanilla Like Settings" id = "legendclanbanner" class="img-rounded" width=30% height="50" onclick="vanillalike(); return false" > '+
-	'<i style="color:blue; font-size:22px"; align="right">Vanilla like (Grey)</i><br>'+
+	'<u style="color:blue; font-size:22px"; align="right" onclick="vanillalike(); return false">Vanilla like (Grey)</u><br>'+
 	'</div>'+
 													  
 	
