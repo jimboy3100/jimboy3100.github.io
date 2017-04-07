@@ -145,7 +145,7 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 	'</div>'+
 	
 	'<div id="tutorial9" style="display:none;">'+
-	'<p style="color:blue; font-size:24px"; align="middle">Choose your settings</p>'+
+	'<p style="color:blue; font-size:24px"; align="middle">Choose your template</p>'+
 
 	
 	'<div id="settingbanners"><img src="https://jimboy3100.github.io/legend.github.io/banners/iconagario.png" alt="Search Servers" id= "searchicon" onclick="agariowhitesettings(); return false" class="img-rounded" alt="Cinque Terre" width=30% height="50">' +
