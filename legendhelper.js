@@ -133,7 +133,7 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 													    '<br> Uses many other scripts/codes found on https://greasyfork.org/en/scripts/by-site/agar.io'+
 													    '<br>'+
 														'<br> Special thanks to teodor bob (Guard) ,hanygohary, hendrik schönfelder (Destroyer), interstellar'+
-														'<br> All player of ℄ FFA Legend Clan'+
+														'<br> All players of ℄ FFA Legend Clan'+
 														'<br> And every single user of mod'+
 														'<br><i>Please support the development of mod with any donation to author</i>'+
 													    '</p>'+
