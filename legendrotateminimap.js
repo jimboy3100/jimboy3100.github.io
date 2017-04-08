@@ -1,5 +1,6 @@
 var c=document.getElementById("minimap-sectors");var ctx = c.getContext("2d");ctx.clearRect(0, 0, c.width, c.height);
 ctx.font="16px Georgia";
+ctx.fillText(minbtext2,c.width/2,22);
 var xcanvas=$("#minimap-sectors").width();
 var spacewidth=($("#minimap").width() -  xcanvas)/2;
 var spaceheight=$("#minimap").height() -  xcanvas - spacewidth;
