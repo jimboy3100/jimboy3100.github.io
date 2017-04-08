@@ -77,7 +77,7 @@ ctx.fillText("E5",9*(xcanvas/5)/2,spaceheight+9*(xcanvas/5)/2);
 }
 //Rotate 90 degrees
 if (rotateminimap==1){
-toastr["info"]("Minimap is still wrong, only sector's letters rotate").css("width","210px");
+toastr["info"]("Minimap is still unrotated, only sectors rotate").css("width","210px");
 ctx.fillText("E1",(xcanvas/5)/2,spaceheight+(xcanvas/5)/2);
 ctx.fillText("D1",3*(xcanvas/5)/2,spaceheight+(xcanvas/5)/2);
 ctx.fillText("C1",5*(xcanvas/5)/2,spaceheight+(xcanvas/5)/2);
