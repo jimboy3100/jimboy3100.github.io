@@ -1,6 +1,6 @@
 var c=document.getElementById("minimap-sectors");var ctx = c.getContext("2d");ctx.clearRect(0, 0, c.width, c.height);
 ctx.font="16px Georgia";
-ctx.fillText(minbtext2,c.width/2,22);
+//ctx.fillText(minbtext2,c.width/2,22);
 var xcanvas=$("#minimap-sectors").width();
 var spacewidth=($("#minimap").width() -  xcanvas)/2;
 var spaceheight=$("#minimap").height() -  xcanvas - spacewidth;
@@ -45,6 +45,7 @@ ctx.lineTo(xcanvas,spaceheight + 4*xcanvas/5);
 ctx.stroke();
 
 if (rotateminimap==0){
+ctx.fillText("Legend Mod/0°",c.width/2,22);
 ctx.fillText("A1",(xcanvas/5)/2,spaceheight+(xcanvas/5)/2);
 ctx.fillText("A2",3*(xcanvas/5)/2,spaceheight+(xcanvas/5)/2);
 ctx.fillText("A3",5*(xcanvas/5)/2,spaceheight+(xcanvas/5)/2);
@@ -77,6 +78,7 @@ ctx.fillText("E5",9*(xcanvas/5)/2,spaceheight+9*(xcanvas/5)/2);
 }
 //Rotate 90 degrees
 if (rotateminimap==1){
+ctx.fillText("Legend Mod/90°",c.width/2,22);
 ctx.fillText("E1",(xcanvas/5)/2,spaceheight+(xcanvas/5)/2);
 ctx.fillText("D1",3*(xcanvas/5)/2,spaceheight+(xcanvas/5)/2);
 ctx.fillText("C1",5*(xcanvas/5)/2,spaceheight+(xcanvas/5)/2);
@@ -109,6 +111,7 @@ ctx.fillText("A5",9*(xcanvas/5)/2,spaceheight+9*(xcanvas/5)/2);
 }
 //Rotate 180 degrees
 if (rotateminimap==2){
+ctx.fillText("Legend Mod/180°",c.width/2,22);
 ctx.fillText("E5",(xcanvas/5)/2,spaceheight+(xcanvas/5)/2);
 ctx.fillText("E4",3*(xcanvas/5)/2,spaceheight+(xcanvas/5)/2);
 ctx.fillText("E3",5*(xcanvas/5)/2,spaceheight+(xcanvas/5)/2);
@@ -141,6 +144,7 @@ ctx.fillText("A1",9*(xcanvas/5)/2,spaceheight+9*(xcanvas/5)/2);
 }
 //Rotate 270 degrees
 if (rotateminimap==3){
+ctx.fillText("Legend Mod/270°",c.width/2,22);
 ctx.fillText("A5",(xcanvas/5)/2,spaceheight+(xcanvas/5)/2);
 ctx.fillText("B5",3*(xcanvas/5)/2,spaceheight+(xcanvas/5)/2);
 ctx.fillText("C5",5*(xcanvas/5)/2,spaceheight+(xcanvas/5)/2);
