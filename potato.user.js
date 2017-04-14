@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Potato Script for Agario
 // @namespace    Simplest Agario script for finding Agario servers
-// @version      1
+// @version      1.1
 // @description  Play 
 // @homepage     http://www.legendmod.ml
 // @author       Jimboy3100
@@ -66,7 +66,7 @@ $('#gamemode').on('change', function() {
 
 //-----------------------
 })(window, window.jQuery);
-}, 2000);
+}, 6000);
 
 function adres() {
     var adrs = WebSocket.prototype.send;
