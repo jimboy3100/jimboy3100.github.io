@@ -17,17 +17,19 @@
 
 //Script is Compatible with Vanilla, Legendmod, Ogario, KittyMod and most mods
 
+$( document ).ready(function() {
+    
+
+
 setTimeout(function () {
-
-
 (function(a, c) {
     function r(a, d) {
         if (d) {
             var f = new Date;
             f.setTime(f.getTime() + 864E5 * d);
-            f = "; expires=" + f.toGMTString()
+            f = "; expires=" + f.toGMTString();
         } else f = "";
-        document.cookie = "agario_redirect=" + a + f + "; path=/"
+        document.cookie = "agario_redirect=" + a + f + "; path=/";
     }
 
 
@@ -38,12 +40,12 @@ setTimeout(function () {
 			$("#gamemode").after('<input id="server" class="form-control" style="width: 59%;  display: inline-block; margin-right: 5px"><button type="submit" id="connect" class="btn btn-primary" style="width: 25%; display: inline-block; margin-right: 5px">Connect</button><button type="button" id="reconnect" class="btn btn-info" style="display: inline-block"><i class="glyphicon glyphicon-refresh"></i></button>');
 
 			$("#connect").click(function() {
-                a.core.connect($("#server").val())
+                a.core.connect($("#server").val());
             });
 			$("#reconnect").click(function() {
-                MC.reconnect()
+                MC.reconnect();
 		adres();		
-            })
+            });
 //----------------
 $( "#region" ).on('change', function() {
 // var servername=$('#region').val();
@@ -56,7 +58,7 @@ $('#gamemode').on('change', function() {
   adres();
 });      
 //-----------------------
-        })
+        });
 		// _x_end
 //-----------------------
 
@@ -64,6 +66,7 @@ $('#gamemode').on('change', function() {
 
 //-----------------------
 })(window, window.jQuery);
+}, 2000);
 
 function adres() {
     var adrs = WebSocket.prototype.send;
@@ -75,6 +78,7 @@ function adres() {
         } catch (e) {
             window.__WS_send.apply(this, [b]), WebSocket.prototype.send = window.__WS_send
         }
-    }
+    };
 }
-}, 4000);
+
+});
