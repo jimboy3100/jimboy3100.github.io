@@ -20,7 +20,7 @@ Legend mod is best agar.io modpack with plenty features by author. It includes:
 * More features soon...
 
 ### Installation 
-1. Install Tampermonkey browser extension on [Chrome] (https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
+1. Install Tampermonkey browser extension on [Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
 2. Install script [here](https://jimboy3100.github.io/legendmod.user.js)  
 
 ### Screenshots
