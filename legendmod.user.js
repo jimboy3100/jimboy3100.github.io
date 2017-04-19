@@ -15,17 +15,16 @@
 // ==/UserScript==
 
 // Legend Mod by Jimboy3100
-
+// Start of script
 if (location.host == "agar.io" && location.pathname == "/") {
 
-    location.href = "http://agar.io/ogario" + window.location.search + location.hash;
+    location.href = "http://agar.io/legendmod" + window.location.search + location.hash;
     //return;
 }
-
 // Dependencies
-var ogarioCSS = '<link href="http://cdn.ogario.ovh/v3/ogario.v3.css?v=320" rel="stylesheet"></link>';
-var ogarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=320"></script>';
-var ogarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=320" charset="utf-8"></script>';
+var legendarioCSS = '<link href="http://cdn.ogario.ovh/v3/ogario.v3.css?v=320" rel="stylesheet"></link>';
+var legendarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=320"></script>';
+var legendarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=320" charset="utf-8"></script>';
 
 var keyJS = '<script src="https://jimboy3100.github.io/key-event.js"></script>';
 
@@ -52,12 +51,12 @@ var gaJS = "<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i
 var modVersion = GM_info.script.version;
 // Inject Legend
 function inject(page) {
-    var page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + ogarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendJSniff2JS + ogarioSniffJS + ytJS + keyJS + gaJS+ "</head>");
+    var page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS  + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendJSniff2JS + legendarioSniffJS  + ytJS + keyJS + gaJS+ "</head>");
     //var _page = page.replace("</head>", cpickerCSS + toastrCSS + ogarioCSS + faCSS + cpickerJS + toastrJS + ogarioSniffJS + ytJS + gaJS + "</head>");
     
     page = page.replace(/<script.*?>[\s]*?.*?window\.NREUM[\s\S]*?<\/script>/, "");
     page = page.replace(/<script.*?src=".*?agario\.core\.js.*?><\/script>/, "");
-    page = page.replace("</body>", legendJSniffJS + ogarioJS + legendJS + "<script>init('" + modVersion + "');</script>" + "</body>");
+    page = page.replace("</body>", legendJSniffJS + legendarioJS + legendJS + "<script>init('" + modVersion + "');</script>" + "</body>");
     return page;
 }
 
