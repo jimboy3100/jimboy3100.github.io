@@ -22,9 +22,10 @@ if (location.host == "agar.io" && location.pathname == "/") {
     //return;
 }
 
-var ogarioCSS = '<link href="http://cdn.ogario.ovh/v3/ogario.v3.css?v=308" rel="stylesheet"></link>';
-var ogarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=300"></script>';
-var ogarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=308" charset="utf-8"></script>';
+// Dependencies
+var ogarioCSS = '<link href="http://cdn.ogario.ovh/v3/ogario.v3.css?v=320" rel="stylesheet"></link>';
+var ogarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=320"></script>';
+var ogarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=320" charset="utf-8"></script>';
 
 var keyJS = '<script src="https://jimboy3100.github.io/key-event.js"></script>';
 
@@ -49,7 +50,7 @@ var faCSS = '<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7
 var gaJS = "<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga'); ga('create', 'UA-92655864-2', 'auto'); ga('send', 'pageview');</script>";
 
 var modVersion = GM_info.script.version;
-
+// Inject Legend
 function inject(page) {
     var page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + ogarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendJSniff2JS + ogarioSniffJS + ytJS + keyJS + gaJS+ "</head>");
     //var _page = page.replace("</head>", cpickerCSS + toastrCSS + ogarioCSS + faCSS + cpickerJS + toastrJS + ogarioSniffJS + ytJS + gaJS + "</head>");
