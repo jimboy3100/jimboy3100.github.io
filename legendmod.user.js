@@ -2,7 +2,7 @@
 // @name         Legend Mod
 // @namespace    Legend Agario Mod
 // @version      2.0
-// @description  Legend Agario Mod - Communicate, Play All!
+// @description  Agario Mod - Legend, Ogario, Kitty, Efsane and other scripts
 // @homepage     http://www.legendmod.ml
 // @author       Jimboy3100
 // @icon         https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/banners/smallbannerlegendclan.png
