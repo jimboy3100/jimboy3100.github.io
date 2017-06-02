@@ -1,5 +1,5 @@
 var image = new Image;
-image.src = $("#skin").val();
+image.src = $(".agario-profile-picture").attr("src");
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
 canvas.style.position = "absolute";
@@ -50,5 +50,3 @@ function update(){
     requestAnimationFrame(update);
 }
 requestAnimationFrame(update);
-
-//image.src="";
