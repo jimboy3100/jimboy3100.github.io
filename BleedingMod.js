@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         Bleeding Mod
-// @namespace    Legend Mod Easter Egg 1
+// @name         Bleeding Script
+// @namespace    Legend Script Easter Egg 1
 // @version      1.1
 // @description  Add some cancer to Agar and make your eyes bleed
 // @author       Jimboy3100
