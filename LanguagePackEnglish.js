@@ -421,6 +421,7 @@ var Premadeletter49="Hide Everything";		//Hide Everything
 var Premadeletter50="Show Timer Calc.";		//Show Timer Calc.
 var Premadeletter51="Hide Timer Calc."		//Hide Timer Calc.
 var Premadeletter52="Edit Names";		//Edit Names
+var Premadeletter52a="Close Names";		//Close Names
 var Premadeletter53="Auto free coins";		//Auto free coins
 var Premadeletter54="Stop free coins";		//Stop free coins
 var Premadeletter55="Troll on Death";		//Troll on Death
