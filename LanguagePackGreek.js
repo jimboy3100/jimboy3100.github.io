@@ -409,20 +409,21 @@ var Premadeletter39="Για λόγους αποτροπής ανεπιθύμητ
 
 //					These buttons must no be big in length
 var Premadeletter40="Ανηγ. Youtube";		//Auto Youtube On
-var Premadeletter41="Κλείσ. Youtube";		//Auto Youtube Off
-var Premadeletter42="Ανηγ. συντομεύσεων";		//Show Shortcuts
-var Premadeletter43="Κλείσ. συντομεύσ.";		//Hide Shortcuts
+var Premadeletter41="Κλεισ. Youtube";		//Auto Youtube Off
+var Premadeletter42="Ανηγ. συντομευσεων";		//Show Shortcuts
+var Premadeletter43="Κλεισ. συντομεύσ.";		//Hide Shortcuts
 var Premadeletter44="Ανηγ. XP BAR";		//Show XP BAR
-var Premadeletter45="Κλείσ. XP BAR";		//Hide XP BAR
+var Premadeletter45="Κλεισ. XP BAR";		//Hide XP BAR
 var Premadeletter46="Ανηγ. Ωρας";		//Show TIME
-var Premadeletter47="Κλείσ. Ωρας";		//Hide TIME
+var Premadeletter47="Κλεισ. Ωρας";		//Hide TIME
 var Premadeletter48="Ανηγ. Ολων";		//Show Everything
-var Premadeletter49="Κλείσ. Ολων";		//Hide Everything
+var Premadeletter49="Κλεισ. Ολων";		//Hide Everything
 var Premadeletter50="Ανηγ. Χρονομετρ.";		//Show Timer Calc.
-var Premadeletter51="Κλείσ. Χρονομετρ.."		//Hide Timer Calc.
-var Premadeletter52="Επεξεργ. ονομάτων";		//Edit Names
-var Premadeletter53="Aυτόμ. Νομισματα";		//Auto free coins
-var Premadeletter54="Κλείσ. Νομισματα";		//Stop free coins
+var Premadeletter51="Κλεισ. Χρονομετρ.."		//Hide Timer Calc.
+var Premadeletter52="Επεξεργ. Ονοματων";		//Edit Names
+var Premadeletter52a="Κλεισ. Ονοματων";			//Close Names"
+var Premadeletter53="Aυτομ. Νομισματα";		//Auto free coins
+var Premadeletter54="Κλεοσ. Νομισματα";		//Stop free coins
 var Premadeletter55="Troll σε θανατο";		//Troll on Death
 var Premadeletter56="Οχι troll σε θανατο";		//No troll on Death
 
