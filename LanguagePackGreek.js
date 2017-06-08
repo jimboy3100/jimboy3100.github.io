@@ -423,7 +423,7 @@ var Premadeletter51="Κλεισ. Χρονομετρ.."		//Hide Timer Calc.
 var Premadeletter52="Επεξεργ. Ονοματων";		//Edit Names
 var Premadeletter52a="Κλεισ. Ονοματων";			//Close Names"
 var Premadeletter53="Aυτομ. Νομισματα";		//Auto free coins
-var Premadeletter54="Κλεοσ. Νομισματα";		//Stop free coins
+var Premadeletter54="Κλεισ. Νομισματα";		//Stop free coins
 var Premadeletter55="Troll σε θανατο";		//Troll on Death
 var Premadeletter56="Οχι troll σε θανατο";		//No troll on Death
 
