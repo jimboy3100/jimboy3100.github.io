@@ -1,6 +1,3 @@
-// Save to file, or upload your text to web, send to skype id: Jimboy3100 or email:jimboy3100@hotmail.com your translation
-// For more info: https://greasyfork.org/el/scripts/30406-agar-io-legend-mod-translations
-
 /*         var Languageletter =         "hello you" <---  You tranlate this, keep the " "; as they are.       // <-Means notes, no need to change           */
 
 /* Example            var Languageletter0="Home";  //Home      ->    var Languageletter0="Maison";            //Home                                        */
@@ -371,8 +368,8 @@ var Languageletter342c="Message Icon Imgur Url";		//Message Icon Imgur Url
 var Languageletter342d="Youtube Message Url";		//Youtube Message Url
 var Languageletter343="Must be filled for function to work";		//Must be filled for function to work.
 var Languageletter344="Secondary Webhook(optional)";		//Secondary Webhook(optional)
-var Languageletter345="Temporarily Hide/Show Everything. Function for Youtubers";		//Temporarily Hide/Show Everything. Function for Youtubers
-var Languageletter346="Choose Language";		//Choose Language
+var Languageletter345="WARNING! Popups are blocked in the settings.";		//WARNING! Popups are blocked in the settings.
+var Languageletter346="Temporary unblock";		//Temporary unblock
 var Languageletter347="WARNING! Popups are blocked in the settings.";		//WARNING! Popups are blocked in the settings.
 var Languageletter348="Temporary unblock";		//Temporary unblock
 
@@ -440,3 +437,7 @@ var Premadeletter56="No troll on Death";		//No troll on Death
 var Premadeletter57="Communication";		//Communication
 var Premadeletter58="Hidden";		//Hidden
 var Premadeletter59="Visible";		//Visible
+var Premadeletter60="Pause";		//Pause
+
+
+
