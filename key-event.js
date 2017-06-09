@@ -132,7 +132,8 @@
 
 
 
-// 2. Gary Haran => gary@talkerapp.com
+// 2. jquery replace
+// Gary Haran => gary@talkerapp.com
 // This code is released under MIT licence
 (function($){
   var replacer = function(finder, replacement, element, blackList) {
