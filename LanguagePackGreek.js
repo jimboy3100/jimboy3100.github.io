@@ -437,5 +437,6 @@ var Premadeletter56="Οχι troll σε θανατο";		//No troll on Death
 var Premadeletter57="Επικοινωνία";		//Communication
 var Premadeletter58="Κρυμμένος";		//Hidden
 var Premadeletter59="Εμφανής";		//Visible
+var Premadeletter60="Παύση";		//Pause
 
 
