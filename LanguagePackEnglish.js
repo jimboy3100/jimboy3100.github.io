@@ -1,3 +1,6 @@
+// Save to file, or upload your text to web, send to skype id: Jimboy3100 or email:jimboy3100@hotmail.com your translation
+// For more info: https://greasyfork.org/el/scripts/30406-agar-io-legend-mod-translations
+
 /*         var Languageletter =         "hello you" <---  You tranlate this, keep the " "; as they are.       // <-Means notes, no need to change           */
 
 /* Example            var Languageletter0="Home";  //Home      ->    var Languageletter0="Maison";            //Home                                        */
