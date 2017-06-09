@@ -427,4 +427,4 @@ var Premadeletter56="No troll en morir";		//No troll on Death
 var Premadeletter57="Comunicación";		//Communication
 var Premadeletter58="Escondido";		//Hidden
 var Premadeletter59="Visible";		//Visible
-
+var Premadeletter60="Pausa";		//Pause
