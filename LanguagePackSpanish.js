@@ -77,6 +77,7 @@ var Languageletter68="Mi color customizado";		//My custom color
 var Languageletter69="Mi skin transparente";		//My transparent skin 
 var Languageletter70="Skins transparentes";		//Transparent skins 
 var Languageletter71="Virus transparentes";		//Transparent viruses 
+var Languageletter70a="Células transparentes";		//Transparent cells
 var Languageletter72="Cuadrícula / sectores";		//Grid / sectors
 var Languageletter73="Mostrar cuadrícula";		//Show grid 
 var Languageletter74="Mostrar sectores de fondo";		//Show background sectors 
