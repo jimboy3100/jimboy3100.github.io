@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Legend Mod
 // @namespace    Legend Agario Mod
-// @version      2.0
+// @version      2.1
 // @description  Agario Mod - Legend, Ogario, Kitty, Efsane and other scripts
 // @homepage     http://www.legendmod.ml
 // @author       Jimboy3100
