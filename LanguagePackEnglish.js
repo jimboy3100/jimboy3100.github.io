@@ -370,7 +370,8 @@ var Languageletter343="Must be filled for function to work";		//Must be filled f
 var Languageletter344="Secondary Webhook(optional)";		//Secondary Webhook(optional)
 var Languageletter345="Temporarily Hide/Show Everything. Function for Youtubers";		//Temporarily Hide/Show Everything. Function for Youtubers
 var Languageletter346="Choose Language";		//Choose Language
-
+var Languageletter347="WARNING! Popups are blocked in the settings.";		//WARNING! Popups are blocked in the settings.
+var Languageletter348="Temporary unblock";		//Temporary unblock
 
 var Premadeletter0="Communication Activated"; 		//Communication Activated
 var Premadeletter1="Cannot open this youtube URL";		 //Cannot open this youtube URL
