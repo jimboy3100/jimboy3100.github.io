@@ -359,7 +359,8 @@ var Languageletter343="Debe ser rellenado para funcionar.";		//Must be filled fo
 var Languageletter344="Webhook secundario(opcional)";		//Secondary Webhook(optional)
 var Languageletter345="Mostrar/esconder todo temporalmente. Función para Youtubers";		//Temporarily Hide/Show Everything. Function for Youtubers
 var Languageletter346="Escoger lenguages";		//Choose Language
-
+var Languageletter347="¡ADVERTENCIA! Las ventanas emergentes se bloquean en la configuración.";		//WARNING! Popups are blocked in the settings.
+var Languageletter348="Desbloqueo temporal";		//Temporary unblock
 
 var Premadeletter0="Comunicación activada"; 		//Communication Activated
 var Premadeletter1="Error al abrir link de Youtube";		 //Cannot open this youtube URL
