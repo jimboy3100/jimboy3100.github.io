@@ -370,7 +370,8 @@ var Languageletter343="Πρέπει να υπάρχει για την ενεργ
 var Languageletter344="Δεύτερο Webhook(προαιρετικό)";		//Secondary Webhook(optional)
 var Languageletter345="Προσωρινή Απόκρυψη / Εμφάνιση όλων. Λειτουργία για τους Youtubers";		//Temporarily Hide/Show Everything. Function for Youtubers
 var Languageletter346="Επέλεξε γλώσσα";		//Choose Language
-
+var Languageletter347="ΠΡΟΕΙΔΟΠΟΙΗΣΗ! Τα αναδυόμενα παράθυρα αποκλείονται στις ρυθμίσεις.";		//WARNING! Popups are blocked in the settings.
+var Languageletter348="Προσωρινή απεμπλοκή";		//Temporary unblock
 
 var Premadeletter0="Η επικοινωνία ενεργοποιήθηκε"; 		//Communication Activated
 var Premadeletter1="Δεν είναι δυνατό να ανοίξει αυτή η διεύθυνση URL του YouTube";		 //Cannot open this youtube URL
