@@ -37,6 +37,7 @@ var perfectJS = '<script src="http://cdn.ogario.ovh/static/js/perfect-scrollbar.
 var legendJS = '<script src="https://jimboy3100.github.io/legendmod.js"></script>';
 var legendJSniffJS = '<script src="https://jimboy3100.github.io/legend.sniff.js"></script>';
 var legendJSniff2JS = '<script src="https://jimboy3100.github.io/legend.sniff2.js"></script>';
+var legendJSniff3JS = '<script src="https://jimboy3100.github.io/legend.sniff3.js"></script>';
 
 var cpickerCSS = '<link href="http://cdn.ogario.ovh/static/css/bootstrap-colorpicker.min.css" rel="stylesheet"></link>';
 var toastrCSS = '<link href="http://cdn.ogario.ovh/static/css/toastr.min.css" rel="stylesheet"></link>';
@@ -56,7 +57,7 @@ function inject(page) {
     
     page = page.replace(/<script.*?>[\s]*?.*?window\.NREUM[\s\S]*?<\/script>/, "");
     page = page.replace(/<script.*?src=".*?agario\.core\.js.*?><\/script>/, "");
-    page = page.replace("</body>", legendJSniffJS + legendarioJS + legendJS + "<script>init('" + modVersion + "');</script>" + "</body>");
+    page = page.replace("</body>", legendJSniffJS + legendarioJS + legendJS + legendJSniff3JS + "<script>init('" + modVersion + "');</script>" + "</body>");
     return page;
 }
 
