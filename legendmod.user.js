@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Legend Mod
+// @name         Legend Agar.io Extension
 // @namespace    Legend Agario Mod
 // @version      2.1
-// @description  Agario Mod - Legend, Ogario, Kitty, Efsane and other scripts
+// @description  Agario Mod - Legend, Ogario, Kitty, Old Skins, Multi Languages
 // @homepage     http://www.legendmod.ml
 // @author       Jimboy3100
 // @icon         https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/banners/smallbannerlegendclan.png
