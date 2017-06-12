@@ -8,7 +8,7 @@
 
 
 
-var translator="Unknown";		//Put your nickname, in order to be reffered to mod, or use name "Unknown"
+var translator="Error404";		//Put your nickname, in order to be reffered to mod, or use name "Unknown"
 
 
 var Languageletter0="Начало";		//Home
