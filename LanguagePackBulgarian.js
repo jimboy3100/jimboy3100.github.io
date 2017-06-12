@@ -8,7 +8,7 @@
 
 
 
-var translator="Error404";		//Put your nickname, in order to be reffered to mod, or use name "Unknown"
+var translator="Unknown";		//Put your nickname, in order to be reffered to mod, or use name "Unknown"
 
 
 var Languageletter0="Начало";		//Home
@@ -244,7 +244,7 @@ var Languageletter229="Персонализирано фоново изобра�
 var Languageletter230="Персонализирано изображение на курсора";		//Custom cursor image
 var Languageletter231="Изображение"	//Image URL
 var Languageletter232="Изображение на курсора URL";		//Cursor image URL
-var Languageletter233="Нахрани ме";		//Feed
+var Languageletter233="Храна";		//Feed
 var Languageletter234="Макро Хранене";		//Macro feed
 var Languageletter235="Разделяне";		//Split
 var Languageletter236="Двойно Разделяне";		//Double split
