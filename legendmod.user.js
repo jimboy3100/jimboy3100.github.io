@@ -2,7 +2,7 @@
 // @name         Legend Agar.io Extension
 // @namespace    Legend Agario Mod
 // @version      2.1
-// @description  Agario Mod - Legend, Ogario, Kitty, Old Skins, Multi Languages
+// @description  Agario Mod - Legend, Ogario, Kitty, Old Skins, Animated Skins, Language Packs, Manual User Script Handlers, Easter Eggs. This Mod is BIG!
 // @homepage     http://www.legendmod.ml
 // @author       Jimboy3100
 // @icon         https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/banners/smallbannerlegendclan.png
