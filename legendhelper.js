@@ -11,10 +11,8 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 	'<p style="color:white; font-size:18px";" align="middle">Legend mod for agar.io multiplayer action Chrome browser game (combines all). <br> This Mod is BIG!'+
 	'<br>'+
 	'Do you want a quick toor through the mod and selection of your template?</p>'+
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconyes.png" alt="Search Servers" id= "iconyes" onclick="starttutorial(); return false" class="img-rounded" alt="Cinque Terre" width=25% height="80">' +
-	'<u style="color:blue; font-size:18px"; onclick="starttutorial(); return false" align="middle">YES</u>'+
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconno.png" alt="Vanilla Like Settings" id = "iconno" onclick="stoptutorial(); return false" class="img-rounded"  width=25% height="80" >' +
-	'<u style="color:blue; font-size:18px"; onclick="stoptutorial(); return false" align="middle">NO THANKS</u>'+
+    '<button id= "iconno" onclick="stoptutorial(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button>'+
+	'<button id= "iconyes" onclick="starttutorial(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">NEXT</button>'+
 	'</div>'+
 	
 	
@@ -32,10 +30,8 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 													  
 													  '</p>'+
 													  
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconyes.png" alt="Search Servers" id= "iconyes" onclick="continue1tutorial(); return false" class="img-rounded" alt="Cinque Terre" width=25% height="80">' +
-	'<u style="color:blue; font-size:18px"; onclick="continue1tutorial(); return false" align="middle">Continue</u>'+
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconno.png" alt="Vanilla Like Settings" id = "iconno" onclick="stoptutorial(); return false" class="img-rounded"  width=25% height="80" >' +
-	'<u style="color:blue; font-size:18px"; onclick="stoptutorial(); return false" align="middle">Exit</u>'+
+    '<button id= "iconno" onclick="stoptutorial(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button>'+
+	'<button id= "iconyes" onclick="continue1tutorial(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">NEXT</button>'+
 	'</div>'+
 	
 	'<div id="tutorial3" style="display:none;">'+
@@ -52,10 +48,8 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 													  
 													  '</p>'+
 													  
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconyes.png" alt="Search Servers" id= "iconyes" onclick="continue2tutorial(); return false" class="img-rounded" alt="Cinque Terre" width=25% height="80">' +
-	'<u style="color:blue; font-size:18px"; onclick="continue2tutorial(); return false" align="middle">Continue</u>'+
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconno.png" alt="Vanilla Like Settings" id = "iconno" onclick="stoptutorial(); return false" class="img-rounded"  width=25% height="80" >' +
-	'<u style="color:blue; font-size:18px"; onclick="stoptutorial(); return false" align="middle">Exit</u>'+
+    '<button id= "iconno" onclick="stoptutorial(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button>'+
+	'<button id= "iconyes" onclick="continue2tutorial(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">NEXT</button>'+
 	'</div>'+
 
 	'<div id="tutorial4" style="display:none;">'+
@@ -71,10 +65,8 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 													  
 													  '</p>'+
 													  
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconyes.png" alt="Search Servers" id= "iconyes" onclick="continue3tutorial(); return false" class="img-rounded" alt="Cinque Terre" width=25% height="80">' +
-	'<u style="color:blue; font-size:18px"; onclick="continue3tutorial(); return false" align="middle">Continue</u>'+
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconno.png" alt="Vanilla Like Settings" id = "iconno" onclick="stoptutorial(); return false" class="img-rounded"  width=25% height="80" >' +
-	'<u style="color:blue; font-size:18px"; onclick="stoptutorial(); return false" align="middle">Exit</u>'+
+    '<button id= "iconno" onclick="stoptutorial(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button>'+
+	'<button id= "iconyes" onclick="continue3tutorial(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">NEXT</button>'+
 	'</div>'+
 	
 	'<div id="tutorial5" style="display:none;">'+
@@ -87,10 +79,8 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 													  
 													  '</p>'+
 													  
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconyes.png" alt="Search Servers" id= "iconyes" onclick="continue4tutorial(); return false" class="img-rounded" alt="Cinque Terre" width=25% height="80">' +
-	'<u style="color:blue; font-size:18px"; onclick="continue4tutorial(); return false" align="middle">Continue</u>'+
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconno.png" alt="Vanilla Like Settings" id = "iconno" onclick="stoptutorial(); return false" class="img-rounded"  width=25% height="80" >' +
-	'<u style="color:blue; font-size:18px"; onclick="stoptutorial(); return false" align="middle">Exit</u>'+
+    '<button id= "iconno" onclick="stoptutorial(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button>'+
+	'<button id= "iconyes" onclick="continue4tutorial(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">NEXT</button>'+
 	'</div>'+
 	
 	'<div id="tutorial6" style="display:none;">'+
@@ -102,10 +92,8 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 													  
 													  '</p>'+
 													  
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconyes.png" alt="Search Servers" id= "iconyes" onclick="continue5tutorial(); return false" class="img-rounded" alt="Cinque Terre" width=25% height="80">' +
-	'<u style="color:blue; font-size:18px"; onclick="continue5tutorial(); return false" align="middle">Continue</u>'+
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconno.png" alt="Vanilla Like Settings" id = "iconno" onclick="stoptutorial(); return false" class="img-rounded"  width=25% height="80" >' +
-	'<u style="color:blue; font-size:18px"; onclick="stoptutorial(); return false" align="middle">Exit</u>'+
+    '<button id= "iconno" onclick="stoptutorial(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button>'+
+	'<button id= "iconyes" onclick="continue5tutorial(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">NEXT</button>'+
 	'</div>'+
 	
 	'<div id="tutorial7" style="display:none;">'+
@@ -118,10 +106,8 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 														'<br><i class="fa fa-question-circle"></i><i style="color:green"> In which language is it written? Is it a virus?</i> <i class="icon-bubbles"></i> It is written in javascript, it is not a virus'+
 													  '</p>'+
 													  
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconyes.png" alt="Search Servers" id= "iconyes" onclick="continue6tutorial(); return false" class="img-rounded" alt="Cinque Terre" width=25% height="80">' +
-	'<u style="color:blue; font-size:18px"; onclick="continue6tutorial(); return false" align="middle">Continue</u>'+
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconno.png" alt="Vanilla Like Settings" id = "iconno" onclick="stoptutorial(); return false" class="img-rounded"  width=25% height="80" >' +
-	'<u style="color:blue; font-size:18px"; onclick="stoptutorial(); return false" align="middle">Exit</u>'+
+    '<button id= "iconno" onclick="stoptutorial(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button>'+
+	'<button id= "iconyes" onclick="continue6tutorial(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">NEXT</button>'+
 	'</div>'+
 	
 	
@@ -138,10 +124,8 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 														'<br><i>Please support the development of mod with any donation to author</i>'+
 													    '</p>'+
 													  
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconyes.png" alt="Search Servers" id= "iconyes" onclick="continue7tutorial(); return false" class="img-rounded" alt="Cinque Terre" width=25% height="80">' +
-	'<u style="color:blue; font-size:18px"; onclick="continue7tutorial(); return false" align="middle">Continue</u>'+
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconno.png" alt="Vanilla Like Settings" id = "iconno" onclick="stoptutorial(); return false" class="img-rounded"  width=25% height="80" >' +
-	'<u style="color:blue; font-size:18px"; onclick="stoptutorial(); return false" align="middle">Exit</u>'+
+    '<button id= "iconno" onclick="stoptutorial(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button>'+
+	'<button id= "iconyes" onclick="continue7tutorial(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">NEXT</button>'+
 	'</div>'+
 	
 	'<div id="tutorial9" style="display:none;">'+
@@ -163,8 +147,7 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url(https:/
 	'</div>'+
 													  
 	
-	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconno.png" alt="Vanilla Like Settings" id = "iconno" onclick="stoptutorial(); return false" class="img-rounded"  width=25% height="80" >' +
-	'<u style="color:blue; font-size:18px"; onclick="stoptutorial(); return false" align="middle">Exit</u>'+	
+    '<br><button id= "iconno" onclick="stoptutorial(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button>'+
 	'</div></div>');
 
 	
