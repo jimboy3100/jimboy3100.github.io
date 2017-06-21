@@ -38,7 +38,7 @@ var Languageletter19="Παιξε";		//Play
 var Languageletter20="Αγορα";		//Shop
 var Languageletter21="Δωρεάν Νομίσματα";		//Free Coins
 var Languageletter22="Δώρα";		//Gifts
-var Languageletter23="Καθημερινές Αποστολές";			//Daily Quests
+var Languageletter23="Καθημερινες Αποστολες";			//Daily Quests
 var Languageletter24="Εικόνες Skin";		//Skins
 var Languageletter25="Προωθητικό Video Legend";		//Legend Promo Video
 var Languageletter26="Προσθηκη Εικονων";		//Add skins
@@ -438,5 +438,4 @@ var Premadeletter57="Επικοινωνία";		//Communication
 var Premadeletter58="Κρυμμένος";		//Hidden
 var Premadeletter59="Εμφανής";		//Visible
 var Premadeletter60="Παύση";		//Pause
-
 
