@@ -421,14 +421,12 @@ var Premadeletter42="Show Shortcuts";		//Show Shortcuts
 var Premadeletter43="Hide Shortcuts";		//Hide Shortcuts
 var Premadeletter44="Show XP BAR";		//Show XP BAR
 var Premadeletter45="Hide XP BAR";		//Hide XP BAR
-var Premadeletter46="Show TIME";		//Show TIME
-var Premadeletter47="Hide TIME";		//Hide TIME
+
 var Premadeletter48="Show Everything";		//Show Everything
 var Premadeletter49="Hide Everything";		//Hide Everything
 var Premadeletter50="Show Timer Calc.";		//Show Timer Calc.
 var Premadeletter51="Hide Timer Calc."		//Hide Timer Calc.
-var Premadeletter52="Edit Names";		//Edit Names
-var Premadeletter52a="Close Names";		//Close Names
+
 var Premadeletter53="Auto free coins";		//Auto free coins
 var Premadeletter54="Stop free coins";		//Stop free coins
 var Premadeletter55="Troll on Death";		//Troll on Death
@@ -438,6 +436,5 @@ var Premadeletter57="Communication";		//Communication
 var Premadeletter58="Hidden";		//Hidden
 var Premadeletter59="Visible";		//Visible
 var Premadeletter60="Pause";		//Pause
-
 
 
