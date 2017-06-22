@@ -1,6 +1,6 @@
-var dyinglight1load = localStorage.getItem("dyinglight1load");
 
-if(dyinglight1load==null){
+
+if(dyinglight1load==null||dyinglight1load=="null"){
 toastr["warning"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightbanner.jpg); color:#018cf6; font-size:16px; text-align:center">Are you sure you want to load Dying Light Template?<br>Save your Settings on a file, because they will be lost.<br>' + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-DyingLight" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">'+ Premadeletter25 + '</button></div>', "", { timeOut: 20000, extendedTimeOut: 20000 }).css("width", "300px");	
 $(".btn.btn-sm.btn-primary.btn-play.btn-do-DyingLight").click(function () { acceptedDying(); });	
 }
@@ -96,13 +96,34 @@ $("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/d
 aab();
 }, 60000);
 }
+function stopdyinglight(){
+	localStorage.setItem("musicUrl", "https://www.youtube.com/watch?v=lMzF3xAAzGE");	
+	$("#minimapPicture").val("");
+	$("#minimapPicture").blur();
+	$("#minbtext").val("");
+	$("#minbtext").blur();
+	$("#leadbtext").val("");
+	$("#leadbtext").blur();
+	$("#teambtext").val("");
+	$("#teambtext").blur();
+	$("#imgUrl").val("");
+	$("#imgUrl").blur();
+	$("#imgHref").val("");
+	$("#imgHref").blur();	
+	dyinglight1load=null;
+	localStorage.setItem("dyinglight1load", dyinglight1load);
+	setTimeout(function () {
+	legenddefaultsettings();
+	}, 100);
+}
+
 
 MC.onPlayerDeath=function(){ 
 $("#canvas").css('background-image', 'url(https://i.imgur.com/5jIjJVc.gif)');		
 setTimeout(function () {
 $("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightbabyteamboard.png)');		
 
-aab2();
+
 }, 20000);
 }
 
