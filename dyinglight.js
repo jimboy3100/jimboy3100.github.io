@@ -56,7 +56,7 @@ $("#prev-profile").hide();
 $("#skin-preview").css( { marginLeft: "+80px" } );
 $(".quick.quick-skins.icon-images").hide();
 $("#skins-panel").hide();
-$("#fullscreenBtn").click();
+launchIntoFullscreen(document.documentElement);
 $("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback0.jpg)');	
 aab();
 }	
