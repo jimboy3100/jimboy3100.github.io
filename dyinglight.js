@@ -22,7 +22,7 @@ $("#leadbtext").val("The Most Dead");
 $("#leadbtext").blur();
 $("#teambtext").val("The Alive");
 $("#teambtext").blur();
-$("#imgUrl").val("https://jimboy3100.github.io/banners/");
+$("#imgUrl").val("https://jimboy3100.github.io/banners/dyinglightbanner2.jpg");
 $("#imgUrl").blur();
 $("#imgHref").val("http://dyinglightgame.com/buy/?mainsite");
 $("#imgHref").blur();
