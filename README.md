@@ -1,4 +1,4 @@
-# legend.github.io
+# jimboy3100.github.io
 
 ### Legend Mod
 
