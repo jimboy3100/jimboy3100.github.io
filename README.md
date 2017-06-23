@@ -6,18 +6,23 @@ Website: www.legendmod.ml
 ### Features 
 Legend mod is best agar.io modpack with plenty features by author. It includes: 
 * Auto Updated
-* All ogario.ovh features, platform is ogario.ovh.
-* Direct FFA/EXP/TEAM server connect by using tokens (agar.io/#XXXXX)
-* FFA/EXP/TEAM integrated chat+minimap (when using tokens)
-* Youtube music player
-* Auto free coins every hour
-* Find leaderboard by player name or clan tag, or by copy-pasting your friend's leaderboard list (top)
-* Copy leaderboard list/IP/token
-* Change server button
-* Support for 50 chars for legend / ogario users.
+* Unlimited FPS unlocked (quicker than Vanilla)
+* Old Skins
+* Animated Skins
+* UserScripts Manager (URL or pasted)
+* Direct PARTY / FFA / EXP / TEAM server by using tokens/sips or connector
+* Search engine for player name / clan / tag / leaderboard / ip / token
+* Integrated Chat, minimap and teamboard. Chat rooms per server/per team password(or public)
+* New Template / skins / animations / zoom / respawn / helpers / hud controls and many extras
+* Themes for quite all textures and map (Basic / Menu / Hud / chat / minimap / graphics and cursor)
 * Banners for many clans (Email me your symbol and weblink for updates).
-* Vanilla, Galaxy, Ogario Settings pack from the main panel.
-* More features soon...
+* 60++ Macros / Events / Hotkeys (Script does many calculations)
+* Tools for quests / youtubers / timers / coin auto digger/youtube video player
+* Send message pictures, videos and also various message commands directly to teammate's script
+* Change various textures, add photos on huds and clan's pictures and url links
+* Dying Light Expansion
+* Discord webhook handler's for sending IP, and many more...
+
 
 ### Installation 
 1. Install Tampermonkey browser extension on [Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
