@@ -20,7 +20,7 @@ function acceptedDying(){
 
 //setTimeout(function () {
 function dyinglighttemplate(){
-localStorage.setItem("musicUrl", "https://www.youtube.com/watch?v=9iDYnAireiw");	
+localStorage.setItem("musicUrl", "https://www.youtube.com/watch?v=jL6ckpJ7K7E");	
 $("#minbtext").val("The Map");
 $("#minbtext").blur();
 $("#leadbtext").val("The Most Dead");
