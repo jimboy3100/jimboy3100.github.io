@@ -27,20 +27,20 @@ Legend mod is best agar.io modpack with plenty features by author. It includes:
 
 #### Welcome Screen - Copy Token, Leaderboard, IP
 
-![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/pic1.png)
+![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/dyinglightback12.jpg)
 
 #### Searching
 
 ![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/legendmodsearch.jpg)
 
 #### Youtube
-![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/pic3.png)
+![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/legendmod1.jpg)
 
 #### Features
-![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/pic4.png)
+![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/dyinglightad6.jpg)
 
 #### Big Names (visible to legend/ogario users only)
-![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/pic5.png)
+![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/dyinglightback11.jpg)
 
 #### Banners and website anchors for many clans
 ![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/pic6.png)
