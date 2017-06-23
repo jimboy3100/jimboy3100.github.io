@@ -1,6 +1,7 @@
 # legend.github.io
 
-Legend Mod
+### Legend Mod
+
 Mod for Agar.io multiplayer action browser game.  
 Author: Jimboy3100       Email: jimboy3100@hotmail.com
 Website: www.legendmod.ml
