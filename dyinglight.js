@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v0.4
+//v0.5
 
 if(dyinglight1load==null||dyinglight1load=="null"){
 toastr["warning"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightbanner.jpg); color:#018cf6; font-size:16px; text-align:center">Are you sure you want to load Dying Light Template?<br>Save your Settings on a file, because they will be lost.<br>' + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-DyingLight" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">'+ Premadeletter25 + '</button></div>', "", { timeOut: 20000, extendedTimeOut: 20000 }).css("width", "300px");	
@@ -44,7 +44,7 @@ $("#musicUrl").val("https://www.youtube.com/watch?v=9iDYnAireiw");
 
 setTimeout(function () {$("#playerBtn").click();}, 2000);
 setTimeout(function () {$("#playerBtn").focusout();}, 2100);
-setTimeout(function () {if($("#nick").val()==""){$("#nick").val("The Dying Light"); }}, 5000);
+//setTimeout(function () {if($("#nick").val()==""){$("#nick").val("The Dying Light"); }}, 5000);
 
 //$("#leadbPicture").val("https://jimboy3100.github.io/banners/dyinglightbabyleaderboard.png");
 //$("#leadbPicture").blur();
