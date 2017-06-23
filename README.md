@@ -10,6 +10,7 @@ Legend mod is best agar.io modpack with plenty features by author. It includes:
 * Old Skins
 * Animated Skins
 * UserScripts Manager (URL or pasted)
+* Language Packs
 * Direct PARTY / FFA / EXP / TEAM server by using tokens/sips or connector
 * Search engine for player name / clan / tag / leaderboard / ip / token
 * Integrated Chat, minimap and teamboard. Chat rooms per server/per team password(or public)
