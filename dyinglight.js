@@ -156,5 +156,9 @@ if(timeslost==3){timeslost=0;}
 		else{
 			return timesdisconnected=0;}
     };
+	$(".agario-profile-picture").click(function () {
+	playSound("https://jimboy3100.github.io/banners/dyinglighsong8.mp3");	
+	toastr["error"]("Kurnell Tuner and the ministry of defence have lied to you").css("width", "400px");	
+	});
 	
 //toastr["error"](" Well, you not only did the job Karim, must of you, but you made it back in one piece. Bravo! Did you think I would be satisfied so easily? Is still plenty to prove!").css("width", "400px");		
