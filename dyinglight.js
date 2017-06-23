@@ -1,7 +1,9 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v0.6
+//v0.7
 var timeslost=0;
+var usedonce=0;
+var usedonce2=0;
 if(dyinglight1load==null||dyinglight1load=="null"){
 toastr["warning"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightbanner.jpg); color:#018cf6; font-size:16px; text-align:center">Are you sure you want to load Dying Light Template?<br>Save your Settings on a file, because they will be lost.<br>' + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-DyingLight" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">'+ Premadeletter25 + '</button></div>', "", { timeOut: 20000, extendedTimeOut: 20000 }).css("width", "300px");	
 playSound("https://jimboy3100.github.io/banners/dyinglingsong5.mp3");
@@ -162,11 +164,15 @@ if(timeslost==3){timeslost=0;}
 	});
 	
 	$("#copySIPBtn").mouseenter(function () {
-		playSound("https://jimboy3100.github.io/banners/dyinglightsong10.mp3");	
+		if(usedonce==0){
+		playSound("https://jimboy3100.github.io/banners/dyinglightsong10.mp3");			
 		toastr["error"]("The creation of one's own rules, THAT is what makes a man! Do you live by your own rules Krane, or are you merely someone else's puppet").css("width", "400px");		
-		});
+		usedonce=1;
+		}});
 	$("#skinButton").click(function () {
+		if(usedonce2==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglightsong9.mp3");	
 		toastr["error"]("I am researching traces of the prophecy about the god of the sun in the relics of local culture. It seems like a matter of life and death to the mother, and I am in no position to ask why").css("width", "400px");	
-		});
+		usedonce2=1;
+		}});
 //toastr["error"](" Well, you not only did the job Karim, must of you, but you made it back in one piece. Bravo! Did you think I would be satisfied so easily? Is still plenty to prove!").css("width", "400px");		
