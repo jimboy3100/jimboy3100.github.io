@@ -45,4 +45,7 @@ Legend mod is best agar.io modpack with plenty features by author. It includes:
 #### Banners and website anchors for many clans
 ![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/pic6.png)
 
+#### Old Skins
+![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/dyinglightad4.jpg)
+
 ###### * Legend mod is based on many scripts ([ogario](http://ogario.ovh/), [kitty](https://kittymod.github.io/) and others that can be found on [greasyfork](https://greasyfork.org/tr/scripts/by-site/agar.io) website). Please support the authors of those scripts *
