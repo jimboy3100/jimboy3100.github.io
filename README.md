@@ -16,7 +16,7 @@ Legend mod is best agar.io modpack with plenty features by author. It includes:
 * Integrated Chat, minimap and teamboard. Chat rooms per server/per team password(or public)
 * New Template / skins / animations / zoom / respawn / helpers / hud controls and many extras
 * Themes for quite all textures and map (Basic / Menu / Hud / chat / minimap / graphics and cursor)
-* Banners for many clans (Email me your symbol and weblink for updates).
+* Banners for many clans (Email me your symbol and weblink for updates)
 * 60++ Macros / Events / Hotkeys (Script does many calculations)
 * Tools for quests / youtubers / timers / coin auto digger/youtube video player
 * Send message pictures, videos and also various message commands directly to teammate's script
