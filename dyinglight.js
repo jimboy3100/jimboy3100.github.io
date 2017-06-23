@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v0.8
+//v0.5
 var timeslost=0;
 var usedonce=0;
 var usedonce1=0;
@@ -170,7 +170,7 @@ if(timeslost==3){timeslost=0;}
 	$("#copySIPBtn").mouseenter(function () {
 		if(usedonce==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglightsong10.mp3");			
-		toastr["error"]("The creation of one's own rules, THAT is what makes a man! Do you live by your own rules Krane, or are you merely someone else's puppet").css("width", "400px");		
+		toastr["error"]("The creation of one's own rules, THAT is what makes a man! Do you live by your own rules Krane? Or are you merely someone else's puppet").css("width", "400px");		
 		usedonce=1;
 		}});
 	$("#skinButton").click(function () {
