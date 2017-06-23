@@ -31,7 +31,7 @@ Legend mod is best agar.io modpack with plenty features by author. It includes:
 
 #### Searching
 
-![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/pic2.png)
+![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/legendmodsearch.jpg)
 
 #### Youtube
 ![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/pic3.png)
