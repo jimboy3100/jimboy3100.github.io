@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v0.5
+//v0.6
 var timeslost=0;
 var usedonce=0;
 var usedonce1=0;
@@ -20,7 +20,8 @@ function acceptedDying(){
 
 //setTimeout(function () {
 function dyinglighttemplate(){
-localStorage.setItem("musicUrl", "https://www.youtube.com/watch?v=jL6ckpJ7K7E");	
+localStorage.setItem("musicUrl", "https://www.youtube.com/watch?v=jL6ckpJ7K7E");
+	
 $("#minbtext").val("The Map");
 $("#minbtext").blur();
 $("#leadbtext").val("The Most Dead");
@@ -44,7 +45,7 @@ if(dyinglight1load=="yes"){
 
 
 $("#musicUrl").val("https://www.youtube.com/watch?v=9iDYnAireiw");
-
+musicPlayer.setVolume("25");
 setTimeout(function () {$("#playerBtn").click();}, 2000);
 setTimeout(function () {$("#playerBtn").focusout();}, 2100);
 //setTimeout(function () {if($("#nick").val()==""){$("#nick").val("The Dying Light"); }}, 5000);
