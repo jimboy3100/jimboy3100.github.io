@@ -151,6 +151,7 @@ if(timeslost==3){timeslost=0;}
     MC.onDisconnect = function () {		
 		if(timesdisconnected==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglingsong7.mp3");
+		toastr["error"]("Disconnected :(");
 		toastr["error"](" Well, you not only did the job Karim, must of you, but you made it back in one piece. Bravo! Did you think I would be satisfied so easily? Is still plenty to prove!").css("width", "400px");		   
 		}
         appendSysLog("DISCONNECTED :(");
