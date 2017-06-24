@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v0.6
+//v0.7
 var timeslost=0;
 var usedonce=0;
 var usedonce1=0;
@@ -133,8 +133,9 @@ $("#minimap-sectors").css('background-image', 'url(https://jimboy3100.github.io/
 if(timeslost==0){playSound("https://jimboy3100.github.io/banners/dyinglingsong3.mp3");
 toastr["error"](" !!!").css("width", "200px");	
 }
-if(timeslost==1){playSound("https://jimboy3100.github.io/banners/dyinglingsong7.mp3");
-toastr["error"](" Well, you not only did the job Karim, must of you, but you made it back in one piece. Bravo! Did you think I would be satisfied so easily? Is still plenty to prove!").css("width", "400px");	
+if(timeslost==1){
+playSound("https://jimboy3100.github.io/banners/dyinglingsong4.mp3");
+toastr["error"]("This is IO speaking, get to the nearest safe house and wait until dawn. Good night, and good luck!").css("width", "400px");	
 }
 if(timeslost==2){playSound("https://jimboy3100.github.io/banners/dyinglingsong6.mp3");
 toastr["error"](" You get antozine when I say you get it, not one second before!").css("width", "400px");	
@@ -144,13 +145,11 @@ timeslost++;
 if(timeslost==3){timeslost=0;}
 }
 
-
-
     // listen for server disconnect
-    MC.onDisconnect = function () {
-		playSound("https://jimboy3100.github.io/banners/dyinglingsong4.mp3");
+    MC.onDisconnect = function () {		
 		if(timesdisconnected==0){
-		toastr["error"]("This is IO speaking, get to the nearest safe house and wait until dawn. Good night, and good luck!").css("width", "400px");		   
+		playSound("https://jimboy3100.github.io/banners/dyinglingsong7.mp3");
+		toastr["error"](" Well, you not only did the job Karim, must of you, but you made it back in one piece. Bravo! Did you think I would be satisfied so easily? Is still plenty to prove!").css("width", "400px");		   
 		}
         appendSysLog("DISCONNECTED :(");
 		if(timesdisconnected<2){
@@ -161,6 +160,8 @@ if(timeslost==3){timeslost=0;}
 		else{
 			return timesdisconnected=0;}
     };
+	
+	
 	$(".agario-profile-picture").click(function () {
 		if(usedonce1==0){
 	playSound("https://jimboy3100.github.io/banners/dyinglighsong8.mp3");	
