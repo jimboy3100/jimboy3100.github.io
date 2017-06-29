@@ -5,7 +5,8 @@ $("#exp-bar").hide();
 
 $("#menu-footer").after('<div id="tutorial" style="background-image: url('+legbgpic+'); background-color: '+legbgcolor+'; border: 1px solid black; height: 450px; width: 600px;">'+
 	'<div id="tutorial1" style="display:block;">'+
-	'<p style="color:blue; font-size:24px"; align="middle">Welcome to Legendmod!</p>'+
+	'<p style="color:blue; font-size:24px"; align="middle">Welcome to Legendmod!'+
+	'<br><img src="https://jimboy3100.github.io/banners/icon128.png" alt="Legend Mod Logo"></p>'+
 	'<p style="color:white; font-size:18px";" align="middle">Legend mod for agar.io multiplayer action Chrome browser game (combines all). <br> This Mod is BIG!'+
 	'<br>'+
 	'Do you want a quick toor through the mod and selection of your template?</p>'+
