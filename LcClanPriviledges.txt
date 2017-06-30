@@ -1,0 +1,12 @@
+Legend Mod is provided free of charge by Legend Clan.
+Development of Legend Mod is due to:
+1. Donations
+2. Players of Legend Clan - www.legendclan.ml . They supported me very much, thanks a lot!
+
+Thus, people who use ℄ Symbol on their name, enjoy the Priviledges of:
+
+1. * Sending Message Script Commands, without using Password or being in Game (before clicking Play).
+2. ** Can send me message to Skype (My Skype Id: jimboy3100) of the animated skin of their choice (2nd Tab - Profiles), so everyone can see their skin animated.
+
+* These commands have restrictions of (A. being in Game B. Using Password) to avoid game spamming.
+** The function does not permit be to use variables, but only names by using the w.core.registerSkin command (I cannot release the function for other modders not to copy, :-D )
