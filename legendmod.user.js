@@ -56,7 +56,7 @@ var perfectCSS = '<link href="https://jimboy3100.github.io/perfect-scrollbar.min
 var faCSS = '<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"></link>';
 
 var keyJS = '<script src="https://jimboy3100.github.io/key-event.js"></script>';
-var cpickerJS = '<script src="http://cdn.ogario.ovh/static/js/bootstrap-colorpicker.min.js"></script>';
+var cpickerJS = '<script src="https://jimboy3100.github.io/bootstrap-colorpicker.min.js"></script>';
 var toastrJS = '<script src="https://jimboy3100.github.io/toastr.min.js"></script>';
 var switchJS = '<script src="https://jimboy3100.github.io/switchery.min.js"></script>';
 var rangeJS = '<script src="https://jimboy3100.github.io/rangeslider.min.js"></script>';
