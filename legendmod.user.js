@@ -61,7 +61,8 @@ var toastrJS = '<script src="https://jimboy3100.github.io/toastr.min.js"></scrip
 var switchJS = '<script src="https://jimboy3100.github.io/switchery.min.js"></script>';
 var rangeJS = '<script src="https://jimboy3100.github.io/rangeslider.min.js"></script>';
 var perfectJS = '<script src="https://jimboy3100.github.io/perfect-scrollbar.jquery.min.js"></script>';
-var ytJS = '<script src="https://www.youtube.com/iframe_api"></script>';
+var ytJS = '<script src="https://www.youtube.com/Youtubeiframe_api"></script>';
+//var ytJS = '<script src="https://www.youtube.com/iframe_api"></script>';
 var legendJS = '<script src="https://jimboy3100.github.io/legendmod.js"></script>';
 var legendJSniffJS = '<script src="https://jimboy3100.github.io/legend.sniff.js"></script>';
 var legendJSniff2JS = '<script src="https://jimboy3100.github.io/legend.sniff2.js"></script>';
