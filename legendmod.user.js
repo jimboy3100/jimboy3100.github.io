@@ -57,9 +57,9 @@ var faCSS = '<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7
 
 var keyJS = '<script src="https://jimboy3100.github.io/key-event.js"></script>';
 var cpickerJS = '<script src="http://cdn.ogario.ovh/static/js/bootstrap-colorpicker.min.js"></script>';
-var toastrJS = '<script src="http://cdn.ogario.ovh/static/js/toastr.min.js"></script>';
-var switchJS = '<script src="http://cdn.ogario.ovh/static/js/switchery.min.js"></script>';
-var rangeJS = '<script src="http://cdn.ogario.ovh/static/js/rangeslider.min.js"></script>';
+var toastrJS = '<script src="https://jimboy3100.github.io/toastr.min.js"></script>';
+var switchJS = '<script src="https://jimboy3100.github.io/switchery.min.js"></script>';
+var rangeJS = '<script src="https://jimboy3100.github.io/rangeslider.min.js"></script>';
 var perfectJS = '<script src="http://cdn.ogario.ovh/static/js/perfect-scrollbar.jquery.min.js"></script>';
 var ytJS = '<script src="https://www.youtube.com/iframe_api"></script>';
 var legendJS = '<script src="https://jimboy3100.github.io/legendmod.js"></script>';
