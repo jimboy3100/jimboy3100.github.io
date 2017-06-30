@@ -7,7 +7,7 @@ $("#menu-footer").after('<div id="tutorial" style="background-image: url('+legbg
 	'<div id="tutorial1" style="display:block;">'+
 	'<p style="color:blue; font-size:24px"; align="middle">Welcome to Legendmod!'+	
 	'<br><img src="https://jimboy3100.github.io/banners/CropedImage128.gif" alt="Legend Mod Logo"></p>'+
-	'<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 0px 0 0px 0;"><a href="https://jimboy3100.github.io/MITlicence.txt" target="_blank" id= "TermsOfUseLicence" class="title" style=""><u>MIT Licence</u></a></class>'+
+	'<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 0px 0 0px 0;"><a href="https://jimboy3100.github.io/MITlicence.txt" target="_blank" id= "TermsOfUseLicence" class="title" style=""><u>MIT Licence</u></a></div>'+
 	'<p style="color:white; font-size:18px";" align="middle">Legend mod for agar.io multiplayer action Chrome browser game (combines all). <br> This Mod is BIG!'+
 	'<br>'+
 	'Do you want a quick toor through the mod and selection of your template?</p>'+
