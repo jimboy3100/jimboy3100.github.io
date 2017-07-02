@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v0.8
+//v0.9
 var timeslost=0;
 var usedonce=0;
 var usedonce1=0;
@@ -32,6 +32,19 @@ $("#imgUrl").val("https://jimboy3100.github.io/banners/dyinglightbanner2.jpg");
 $("#imgUrl").blur();
 $("#imgHref").val("http://dyinglightgame.com/buy/?mainsite");
 $("#imgHref").blur();
+//load dying light icons
+$("#pic1url").val("http://i.imgur.com/5jIjJVc.gif").blur();$("#pic1data").val("Volatile Attack").blur();
+$("#pic2url").val("http://i.imgur.com/5zLjitu.gif").blur();$("#pic2data").val("Screamer").blur();
+$("#pic3url").val("https://i.imgur.com/zxdXe9o.gif").blur();$("#pic3data").val("Killing Volatile").blur();
+$("#pic4url").val("http://i.imgur.com/LpFoDbK.gif").blur();$("#pic4data").val("Too weak to kill").blur();
+$("#pic5url").val("http://i.imgur.com/l2RhyAf.gif").blur();$("#pic5data").val("Talking zombie").blur();
+//load dying light youtube
+$("#yt1url").val("https://www.youtube.com/watch?v=jL6ckpJ7K7E").blur();$("#yt1data").val("Dying Light Song").blur();
+$("#yt2url").val("https://www.youtube.com/watch?v=0J9-PapbMBI").blur();$("#yt2data").val("Super Aggressive Zombies").blur();
+$("#yt3url").val("https://www.youtube.com/watch?v=Ej8LUO9P7Sw").blur();$("#yt3data").val("Finishing Moves Night Hunter").blur();
+$("#yt4url").val("https://www.youtube.com/watch?v=4_KEV0tBKDc").blur();$("#yt4data").val("Volatile Massacre").blur();
+$("#yt5url").val("https://www.youtube.com/watch?v=gbNiUIz43G0").blur();$("#yt5data").val("End Game 3rd Person").blur();
+
 window.history.pushState(null, null, window.location.pathname);	
 
 	setTimeout(function () {
@@ -107,18 +120,25 @@ aab();
 }
 function stopdyinglight(){
 	localStorage.setItem("musicUrl", "https://www.youtube.com/watch?v=lMzF3xAAzGE");	
-	$("#minimapPicture").val("");
-	$("#minimapPicture").blur();
-	$("#minbtext").val("");
-	$("#minbtext").blur();
-	$("#leadbtext").val("");
-	$("#leadbtext").blur();
-	$("#teambtext").val("");
-	$("#teambtext").blur();
-	$("#imgUrl").val("");
-	$("#imgUrl").blur();
-	$("#imgHref").val("");
-	$("#imgHref").blur();	
+	$("#minimapPicture").val("").blur();
+	$("#minbtext").val("").blur();
+	$("#leadbtext").val("").blur();
+	$("#teambtext").val("").blur();
+	$("#imgUrl").val("").blur();
+	$("#imgHref").val("").blur();	
+//unload dying light icons
+	$("#pic1url").val("").blur();$("#pic1data").val("").blur();
+	$("#pic2url").val("").blur();$("#pic2data").val("").blur();
+	$("#pic3url").val("").blur();$("#pic3data").val("").blur();
+	$("#pic4url").val("").blur();$("#pic4data").val("").blur();
+	$("#pic5url").val("").blur();$("#pic5data").val("").blur();
+//unload dying light youtube
+	$("#yt1url").val("").blur();$("#yt1data").val("").blur();
+	$("#yt2url").val("").blur();$("#yt2data").val("").blur();
+	$("#yt3url").val("").blur();$("#yt3data").val("").blur();
+	$("#yt4url").val("").blur();$("#yt4data").val("").blur();
+	$("#yt5url").val("").blur();$("#yt5data").val("").blur();	
+	
 	dyinglight1load=null;
 	localStorage.setItem("dyinglight1load", dyinglight1load);
 	setTimeout(function () {
