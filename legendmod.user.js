@@ -56,6 +56,7 @@ var perfectCSS = '<link href="https://jimboy3100.github.io/perfect-scrollbar.min
 var faCSS = '<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"></link>';
 var legendarioCSS = '<link href="http://cdn.ogario.ovh/v3/ogario.v3.css?v=320" rel="stylesheet"></link>';
 
+var ytJS = '<script src="https://jimboy3100.github.io/Youtubeiframe_api.js"></script>';
 var keyJS = '<script src="https://jimboy3100.github.io/key-event.js"></script>';
 var cpickerJS = '<script src="https://jimboy3100.github.io/bootstrap-colorpicker.min.js"></script>';
 var toastrJS = '<script src="https://jimboy3100.github.io/toastr.min.js"></script>';
@@ -72,7 +73,7 @@ var modVersion = GM_info.script.version;
 
 // Inject Legend
 function inject(page) {
-    var page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS  + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendJSniff2JS + legendarioSniffJS + keyJS + "</head>");
+    var page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS  + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendJSniff2JS + legendarioSniffJS + ytJS + keyJS + "</head>");
     page = page.replace(/<script.*?>[\s]*?.*?window\.NREUM[\s\S]*?<\/script>/, "");
     page = page.replace(/<script.*?src=".*?agario\.core\.js.*?><\/script>/, "");
     page = page.replace("</body>", legendJSniffJS + legendarioJS + legendJS + legendJSniff3JS + "<script>init('" + modVersion + "');</script>" + "</body>");
