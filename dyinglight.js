@@ -86,38 +86,66 @@ function aab(){
 setTimeout(function () {
 $("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback0.jpg)');	
 aab2();
-}, 30000);
-}
+}, 30000);}
 function aab2(){
 setTimeout(function () {
 $("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback1.jpg)');	
 aab3();
-}, 30000);
-}
+}, 30000);}
 function aab3(){
 setTimeout(function () {
 $("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback2.jpg)');	
 aab4();
-}, 60000);
-}
+}, 60000);}
 function aab4(){
 setTimeout(function () {
 $("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback3.jpg)');	
 aab5();
-}, 60000);
-}
+}, 60000);}
 function aab5(){
 setTimeout(function () {
 $("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback4.jpg)');	
 aab6();
-}, 60000);
-}
+}, 60000);}
 function aab6(){
 setTimeout(function () {
 $("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback5.jpg)');	
+aab7();
+}, 60000);}
+
+function aab7(){
+setTimeout(function () {
+$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback6.jpg)');
+aab8();
+}, 60000);}
+function aab8(){
+setTimeout(function () {
+$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback7.jpg)');	
+aab9();
+}, 60000);}
+function aab9(){
+setTimeout(function () {
+$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback8.jpg)');	
+aab10();
+}, 60000);}
+function aab10(){
+setTimeout(function () {
+$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback9.jpg)');	
+aab11();
+}, 60000);}
+function aab11(){
+setTimeout(function () {
+$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback10.jpg)');	
+aab12();
+}, 60000);}
+function aab12(){
+setTimeout(function () {
+$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback11.jpg)');	
 aab();
-}, 60000);
-}
+}, 60000);}
+
+
+
 function stopdyinglight(){
 	localStorage.setItem("musicUrl", defaultMusicUrl);
 	$("#minimapPicture").val("").blur();
