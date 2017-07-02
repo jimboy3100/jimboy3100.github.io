@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v0.9
+//v0.8
 var timeslost=0;
 var usedonce=0;
 var usedonce1=0;
@@ -119,7 +119,7 @@ aab();
 }, 60000);
 }
 function stopdyinglight(){
-	localStorage.setItem("musicUrl", "https://www.youtube.com/watch?v=lMzF3xAAzGE");	
+	localStorage.setItem("musicUrl", defaultMusicUrl);
 	$("#minimapPicture").val("").blur();
 	$("#minbtext").val("").blur();
 	$("#leadbtext").val("").blur();
