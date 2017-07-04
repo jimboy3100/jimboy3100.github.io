@@ -233,3 +233,10 @@ if(timeslost==3){timeslost=0;}
 		usedonce2=1;
 		}});
 //toastr["error"](" Well, you not only did the job Karim, must of you, but you made it back in one piece. Bravo! Did you think I would be satisfied so easily? Is still plenty to prove!").css("width", "400px");		
+
+
+/*toastr["error"]('<div id="tutorial" style="background-image: url(http://vignette2.wikia.nocookie.net/dyinglight/images/3/3d/Kadir_Slueiman.jpg/revision/latest?cb=20141214090451.jpg); color:#018cf6; font-size:16px; text-align:center"><b>The creation of ones own rules, THAT is what makes a man! Do you live by your own rules Krane? Or are you merely someone elses puppet??? </b> </div>').css("width", "300px");
+$("#openfl-content").css('background-image', 'url("http://static.gosunoob.com/img/1/2015/03/Dying_Light_1_5_National_Outfits.jpg")');
+$("#log").css('background-image', 'url(" https://pbs.twimg.com/media/DDkK94TWAAA-8bt.jpg ")');
+http://www.clker.com/cliparts/T/X/h/3/B/Z/simple-paint-splatter.svg
+*/
