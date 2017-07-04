@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('../fonts/icomoon.eot?l9he5m');
-  src:  url('../fonts/icomoon.eot?l9he5m#iefix') format('embedded-opentype'),
-    url('../fonts/icomoon.ttf?l9he5m') format('truetype'),
-    url('../fonts/icomoon.woff?l9he5m') format('woff'),
-    url('../fonts/icomoon.svg?l9he5m#icomoon') format('svg');
+  src:  url('http://cdn.ogario.ovh/static/fonts/icomoon.eot?l9he5m');
+  src:  url('http://cdn.ogario.ovh/static/fonts/icomoon.eot?l9he5m#iefix') format('embedded-opentype'),
+    url('http://cdn.ogario.ovh/static/fonts/icomoon.ttf?l9he5m') format('truetype'),
+    url('http://cdn.ogario.ovh/static/fonts/icomoon.woff?l9he5m') format('woff'),
+    url('https://jimboy3100.github.io/fonts/icomoon.svg?l9he5m#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
