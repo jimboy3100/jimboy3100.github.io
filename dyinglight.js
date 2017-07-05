@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v1.0
+//v1.1
 var timeslost=0;
 var usedonce=0;
 var usedonce1=0;
@@ -79,6 +79,8 @@ launchIntoFullscreen(document.documentElement);
 toastr["error"]('Hit <b><font color="blue">F11</font></b> for better XP!').css("width", "250px");
 
 $("#minimap-sectors").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightbabyteamboard.png)');	
+$("#log").css('background-image', 'url(" https://jimboy3100.github.io/banners/dyinglightother1.jpg ")');
+$("#openfl-content").css('background-image', 'url("https://jimboy3100.github.io/banners/dyinglightother2.jpg")');
 $("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback0.jpg)');	
 aab();
 }	
