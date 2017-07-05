@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v1.1
+//v1.2
 var timeslost=0;
 var usedonce=0;
 var usedonce1=0;
@@ -225,14 +225,13 @@ if(timeslost==3){timeslost=0;}
 	$("#copySIPBtn").mouseenter(function () {
 		if(usedonce==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglightsong10.mp3");			
-		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother5.jpg); color:#018cf6; font-size:16px; text-align:center"><b>The creation of ones own rules, THAT is what makes a man! Do you live by your own rules Krane? Or are you merely someone elses puppet??? </b> </div>').css("width", "300px");	
+		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>The creation of ones own rules, THAT is what makes a man! Do you live by your own rules Krane? Or are you merely someone elses puppet??? </b> </div>').css("width", "300px");	
 		usedonce=1;
 		}});
 	$("#skinButton").click(function () {
 		if(usedonce2==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglightsong9.mp3");	
-		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother7.jpg); color:#018cf6; font-size:16px; text-align:center"><b>I am researching traces of the prophecy about the god of the sun in the relics of local culture. It seems like a matter of life and death to the mother, and I am in no position to ask why</b> </div>').css("width", "400px");	
-		usedonce2=1;
+toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother7.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>I am researching traces of the prophecy about the god of the sun in the relics of local culture. It seems like a matter of life and death to the mother, and I am in no position to ask why</b> </div>').css("width", "400px");			usedonce2=1;
 		}});
 //toastr["error"](" Well, you not only did the job Karim, must of you, but you made it back in one piece. Bravo! Did you think I would be satisfied so easily? Is still plenty to prove!").css("width", "400px");		
 
