@@ -225,7 +225,7 @@ if(timeslost==3){timeslost=0;}
 	$("#copySIPBtn").mouseenter(function () {
 		if(usedonce==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglightsong10.mp3");			
-		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><b>The creation of ones own rules, <font color="red">THAT</font> is what makes a man!<br> Do you live by your own rules Krane? <br>Or are you merely someone elses puppet??? </b> </div>').css("width", "400px");	
+		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>The creation of ones own rules, <font color="red">THAT</font> is what makes a man!<br> Do you live by your own rules Krane? <br>Or are you merely someone elses puppet??? </b> </div>').css("width", "400px");	
 		usedonce=1;
 		}});
 	$("#skinButton").click(function () {
