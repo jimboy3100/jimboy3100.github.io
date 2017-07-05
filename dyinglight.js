@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v0.9
+//v1.0
 var timeslost=0;
 var usedonce=0;
 var usedonce1=0;
@@ -216,20 +216,20 @@ if(timeslost==3){timeslost=0;}
 	$(".agario-profile-picture").click(function () {
 		if(usedonce1==0){
 	playSound("https://jimboy3100.github.io/banners/dyinglighsong8.mp3");	
-	toastr["error"]("Kurnell Tanner and the ministry of defence have lied to you!").css("width", "400px");	
+	toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother4.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>Kurnell Tanner and the ministry of defence have lied to you!</b> </div>').css("width", "300px");
 		usedonce1=1;
 		}});
 	
 	$("#copySIPBtn").mouseenter(function () {
 		if(usedonce==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglightsong10.mp3");			
-		toastr["error"]("The creation of one's own rules, THAT is what makes a man! Do you live by your own rules Krane? Or are you merely someone else's puppet").css("width", "400px");		
+		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother5.jpg); color:#018cf6; font-size:16px; text-align:center"><b>The creation of ones own rules, THAT is what makes a man! Do you live by your own rules Krane? Or are you merely someone elses puppet??? </b> </div>').css("width", "300px");	
 		usedonce=1;
 		}});
 	$("#skinButton").click(function () {
 		if(usedonce2==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglightsong9.mp3");	
-		toastr["error"]("I am researching traces of the prophecy about the god of the sun in the relics of local culture. It seems like a matter of life and death to the mother, and I am in no position to ask why").css("width", "400px");	
+		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother7.jpg); color:#018cf6; font-size:16px; text-align:center"><b>I am researching traces of the prophecy about the god of the sun in the relics of local culture. It seems like a matter of life and death to the mother, and I am in no position to ask why</b> </div>').css("width", "400px");	
 		usedonce2=1;
 		}});
 //toastr["error"](" Well, you not only did the job Karim, must of you, but you made it back in one piece. Bravo! Did you think I would be satisfied so easily? Is still plenty to prove!").css("width", "400px");		
