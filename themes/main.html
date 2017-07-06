@@ -1,0 +1,1966 @@
+
+
+<!DOCTYPE HTML>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>SniiKz - Themes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="SniiKz"/>
+<link rel="shortcut icon" href="http://i.imgur.com/5YwE9Mn.png" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+ 
+ 
+ 
+ 
+ 
+<link rel="stylesheet" href="http://sniikz.com/download/css/animate.css">
+ 
+<link rel="stylesheet" href="http://sniikz.com/download/css/icomoon.css">
+ 
+<link rel="stylesheet" href="http://sniikz.com/download/css/bootstrap2.css">
+ 
+<link rel="stylesheet" href="http://sniikz.com/download/css/magnific-popup.css">
+ 
+ 
+<link rel="stylesheet" type="text/css" href="http://sniikz.com/download/css/themes.css">
+ 
+<script src="http://sniikz.com/download/js/modernizr-2.6.2.min.js"></script>
+ 
+<script src="http://sniikz.com/download/js/modernizr-2.6.2.min.js"></script>
+ 
+<!--[if lt IE 9]>
+  <script src="js/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body class="body" id="body">
+<div class="fh5co-loader"></div>
+<div id="page" class="white">
+<nav class="fh5co-nav" role="navigation">
+<nav class="navbar navbar-custom navbar-fixed-top">
+<div class="container">
+<div class="row">
+<div class="col-xs-2">
+<div id="fh5co-logo"><a href="http://sniikz.com">Sniikz.</a></div>
+</div>
+<div class="col-xs-10 text-right menu-1">
+<ul>
+<li><a href="http://sniikz.com/home/">Home</a></li>
+<li><a href="http://sniikz.com/skins/">Skins</a></li>
+<li class="active"><a href="http://sniikz.com/themes/">Themes</a></li>
+<li><a href="http://sniikz.com/extensions/">Extensions</a></li>
+ 
+<li class="has-dropdown">
+<a href="#">Youtube</a>
+<ul class="dropdown">
+<li><a target="_blank" href="https://www.youtube.com/user/Snikzy">SniiKz</a></li>
+<li><a target="_blank" href="https://www.youtube.com/channel/UCqawIo5NxlY9Y_oHt-1v9zw">SniiKz Uncut</a></li>
+<li><a target="_blank" href="https://www.twitch.tv/sniikz_">Twitch</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</nav>
+<header id="fh5co-header" class="fh5co-cover fh5co-cover-sm fh5co-small" role="banner" style="background-image:url();">
+<div class="overlay"></div>
+</header>
+<style type="text/css">input[type="checkbox"]{display:none;}*{margin:0;padding:0;-webkit-transition:all 1s ease;-moz-transition:all 1s ease;-o-transition:all 1s ease;-ms-transition:all 1s ease;transition:all 1s ease;}.main{padding:20px;width:100%;height:100%;}label{font-size:15px;position:fixed;top:48%;left:0;width:50px;text-align:center;z-index:9999;cursor:pointer;background:rgba(0,0,0,0.9);border-radius:0 3px 3px 0;padding-right:6px;padding-left:4px;padding-top:2px;padding-bottom:2px;letter-spacing:0px;}label:hover{background:#AE80BB;color:#fff;}input#lightswitch{position:absolute;top:-9999px;left:-9999px;}nav.navbar.navbar-custom.navbar-fixed-top{background-color:#000;border-bottom:1px solid #494949;margin-right:12px;}.col-xs-2,.col-xs-10{margin-top:5px;}.fh5co-nav ul li.active>a{border-bottom:0px!important;}.fh5co-nav #fh5co-logo{margin-top:5px;}</style>
+<label id="lightswitch" for="lightswitch">LIGHT SWITCH</label>
+<script type="text/javascript">
+
+$("#lightswitch").click(function() {
+  if ($("#page").hasClass('white')) {
+    $("#page, .btn-themesub, .btn-theme, .copybtn").removeClass('white')
+    $("#page, .btn-themesub, .btn-theme, .copybtn").addClass('gray');
+    $("hr").removeClass('.hrlight')
+    $("hr").addClass('.hrdark');
+    $(".btn-copy").removeClass('.copylight')
+    $(".btn-copy").addClass('.copydark');
+    localStorage.setItem("S_white","false");
+    }
+else if ($("#page").hasClass('gray')) {
+    $("#page, .btn-themesub, .btn-theme, .copybtn").removeClass('gray')
+    $("#page, .btn-themesub, .btn-theme, .copybtn").addClass('white');
+    $("hr").removeClass('.hrdark')
+    $("hr").addClass('.hrlight');
+    $(".btn-copy").removeClass('.copydark')
+    $(".btn-copy").addClass('.copylight');
+    localStorage.setItem("S_white","true");
+    }
+});
+
+  setTimeout(function()   
+{   
+        if (localStorage.getItem("S_white") == "true") {    
+            $("#page, .btn-themesub, .btn-theme, .copybtn").removeClass('gray')   
+          $("#page, .btn-themesub, .btn-theme, .copybtn").addClass('white');
+          $("hr").removeClass('.hrdark')
+            $("hr").addClass('.hrlight');
+            $(".btn-copy").removeClass('.copydark')
+            $(".btn-copy").addClass('.copylight');
+
+        } else {    
+            $("#page, .btn-themesub, .btn-theme, .copybtn").removeClass('white')    
+            $("#page, .btn-themesub, .btn-theme, .copybtn").addClass('gray');
+            $("hr").removeClass('.hrlight')
+            $("hr").addClass('.hrdark');
+            $(".btn-copy").removeClass('.copylight')
+            $(".btn-copy").addClass('.copydark'); 
+        }
+  
+}, 300);
+</script>
+<script>
+setTimeout(function() {
+var copyBtn   = $(".copybtn"),
+    input     = $(".copytext");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn2"),
+    input     = $(".copytext2");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn3"),
+    input     = $(".copytext3");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn4"),
+    input     = $(".copytext4");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn4"),
+    input     = $(".copytext4");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn5"),
+    input     = $(".copytext5");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn6"),
+    input     = $(".copytext6");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn7"),
+    input     = $(".copytext7");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn8"),
+    input     = $(".copytext8");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn9"),
+    input     = $(".copytext9");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn10"),
+    input     = $(".copytext10");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn11"),
+    input     = $(".copytext11");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn12"),
+    input     = $(".copytext12");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn13"),
+    input     = $(".copytext13");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn14"),
+    input     = $(".copytext14");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn15"),
+    input     = $(".copytext15");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn16"),
+    input     = $(".copytext16");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn17"),
+    input     = $(".copytext17");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn18"),
+    input     = $(".copytext18");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn19"),
+    input     = $(".copytext19");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn20"),
+    input     = $(".copytext20");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn21"),
+    input     = $(".copytext21");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn22"),
+    input     = $(".copytext22");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn23"),
+    input     = $(".copytext23");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn24"),
+    input     = $(".copytext24");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn25"),
+    input     = $(".copytext25");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn26"),
+    input     = $(".copytext26");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn27"),
+    input     = $(".copytext27");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+/* setTimeout(function() {
+var copyBtn   = $(".copybtn3"),
+    input     = $(".copytext3");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300); */
+
+</script>
+<style type="text/css">.white{background-color:#fff}.gray{background-color:#222}.hrlight{border-top:1px solid #eeeeee;}.hrdark{border-top:1px solid #484848;}.btn-theme,.btn-themesub{width:210px;letter-spacing:2px!important;margin-left:25px;margin-bottom:25px!important;border:1px solid #828282;}.btn-copy{width:210px;letter-spacing:2px!important;margin-left:25px;margin-bottom:25px!important;}.btn-copy{background:rgba(130,130,130,0.02);border:1px solid #828282;}.btn-copy:hover{background:rgb(123,35,91);color:white;}.btn-copy:focus{color:#828282}</style>
+<script>
+setTimeout(function(){ 
+$("#ogario-theme").click(function() {
+      $( "#themes" ).show();
+      $( "#themesubmission" ).hide();
+      $("#ogario-theme").css("cssText", "background: rgba(102,79,141,.5); color:white;");
+      $("#themesub").css("cssText", "color:#828282;");
+  });
+  
+  $("#themesub").click(function() {
+      $( "#themes" ).hide();
+      $( "#themesubmission" ).show();
+      $("#themesub").css("cssText", "background: rgba(102,79,141,.5); color:white;");
+      $("#ogario-theme").css("cssText", "color:#828282;");
+  });
+  
+  setTimeout(function(){ 
+  $("#ogario-theme").click();
+  }, 500);
+}, 100);
+</script>
+<div id="fh5co-portfolio"></div>
+<div class="container" style="width:1260px!important;">
+<div class="row">
+<div id="themesPg" style="text-align: center;">
+<div style="padding-bottom:25px;font-size:20px">
+<button id="ogario-theme" class="btn btn-theme white">OGARIO THEMES</button>
+<button id="themesub" class="btn btn-themesub white">THEME SUBMISSION</button>
+</div>
+<div id="themes">
+<div class="col-xs-12 my-img theme-image" style="width:initial">
+<p class="theme-title">Theme by Draco</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/N4pFTX5.png" id="img1" class="img-responsive">
+</a>
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"ogario-v3","darkTheme":true,"mainColor":"#01d9cc","bgColor":"#000000","gridColor":"#003005","bordersColor":"#1d4011","foodColor":"#7eff5e","virusColor":"#145435","virusStrokeColor":"#46db70","cursorTrackingColor":"#56e8b3","splitRangeColor":"#58fc69","namesFont":"ubuntu","namesFontFamily":"Ubuntu","namesFontWeight":400,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":3,"massScaleMargin":1.25,"foodSize":5,"bordersWidth":40,"sectorsWidth":40,"sectorsFontSize":840,"cellsAlpha":0.9,"skinsAlpha":0.7,"virusAlpha":0.6,"virusStrokeSize":14,"menuPreset":"ogario-v3","menuMainColor":"#49f72d","menuBtnTextColor":"#20fa50","menuPanelColor":"#235c1a","menuPanelColor2":"#00300e","menuTextColor":"#ffffff","menuTextColor2":"#ffffff","btn1Color":"#095403","btn1Color2":"#5bce01","btn2Color":"#023d1d","btn2Color2":"#3bb372","btn3Color":"#0b5909","btn3Color2":"#51e34e","btn4Color":"#266608","btn4Color2":"#1b591d","menuBg":"http://www.pichaca.com/wp-content/uploads/2016/07/Green-Background-Pi46-1024x683.jpg","menuOpacity":0.93,"hudMainColor":"#46e360","hudColor":"rgba(21,82,24,0.1)","hudTextColor":"#02e05b","statsHudColor":"#46e360","timeHudColor":"#33c439","top5MassColor":"#02611d","lbMeColor":"#7aff59","lbTeammateColor":"#00c750","hudFont":"ubuntu","hudFontFamily":"Ubuntu","hudFontWeight":400,"hudScale":1.21,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#ffffff","messageTimeColor":"#228500","messageNickColor":"#018a40","commandsColor":"rgba(18,255,42,0.9)","commandsTextColor":"#ffffff","commandsTimeColor":"#427a16","commandsNickColor":"#ffffff","chatBoxColor":"rgba(176,176,176,0.4)","chatScale":1.2,"miniMapSectorColor":"#3cd670","miniMapGuidesColor":"#05ff00","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#000000","miniMapMyCellColor":"#81e38b","miniMapMyCellStrokeColor":"#11400d","miniMapTeammatesColor":"#bdff00","miniMapDeathLocationColor":"#000000","miniMapFont":"ubuntu-bold","miniMapFontFamily":"Ubuntu","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":240,"miniMapTop":24,"miniMapSectorsOpacity":0.1,"miniMapNickSize":11,"miniMapNickStrokeSize":2,"miniMapMyCellSize":7.5,"miniMapMyCellStrokeSize":4,"miniMapTeammatesSize":5.5,"customBackground":"","customCursor":"http://cdn.ogario.ovh/static/img/cursors/cursor_10.cur"}}'></input>
+<button class="btn btn-copy copybtn" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Draco</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/nVvN5xc.png" id="img2" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext2" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"ogario-v3","darkTheme":true,"mainColor":"#01d9cc","bgColor":"#ffdee6","gridColor":"#ed7288","bordersColor":"#e055d2","foodColor":"#e4acf2","virusColor":"#000000","virusStrokeColor":"#ffffff","cursorTrackingColor":"#ff9ee4","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":3,"massScaleMargin":1.25,"foodSize":4,"bordersWidth":46,"sectorsWidth":62,"sectorsFontSize":570,"cellsAlpha":0.99,"skinsAlpha":0.7,"virusAlpha":0.6,"virusStrokeSize":11,"menuPreset":"ogario-v3","menuMainColor":"#faa5ce","menuBtnTextColor":"#ff174f","menuPanelColor":"#f2bbec","menuPanelColor2":"#f5d7f2","menuTextColor":"#ed1111","menuTextColor2":"#ffffff","btn1Color":"#e8ccff","btn1Color2":"#fa4888","btn2Color":"#f1baff","btn2Color2":"#f244c1","btn3Color":"#ffcff7","btn3Color2":"#f030e8","btn4Color":"#f7cbf2","btn4Color2":"#ff3094","menuBg":"https://static.vecteezy.com/system/resources/previews/000/094/603/original/beautiful-pink-bokeh-hearts-background-illustration-vector.jpg","menuOpacity":1,"hudMainColor":"#ff4d82","hudColor":"rgba(252,96,105,0.13)","hudTextColor":"#cc0000","statsHudColor":"#d61818","timeHudColor":"#ff4f79","top5MassColor":"#ad2b9e","lbMeColor":"#bf00aa","lbTeammateColor":"#ff6e91","hudFont":"ubuntu-bold","hudFontFamily":"Ubuntu","hudFontWeight":700,"hudScale":1.17,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#ffffff","messageTimeColor":"#018cf6","messageNickColor":"#ed0249","commandsColor":"rgba(250,85,95,0.29)","commandsTextColor":"#ffffff","commandsTimeColor":"#bf00aa","commandsNickColor":"#ffffff","chatBoxColor":"rgba(0,0,0,0.54)","chatScale":1,"miniMapSectorColor":"#eb009b","miniMapGuidesColor":"#bf00aa","miniMapNickColor":"#f71e5f","miniMapNickStrokeColor":"#000000","miniMapMyCellColor":"#ffffff","miniMapMyCellStrokeColor":"#bf00aa","miniMapTeammatesColor":"#01d9cc","miniMapDeathLocationColor":"#bf00aa","miniMapFont":"ubuntu-bold","miniMapFontFamily":"Ubuntu","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":238,"miniMapTop":24,"miniMapSectorsOpacity":1,"miniMapNickSize":10,"miniMapNickStrokeSize":2,"miniMapMyCellSize":5,"miniMapMyCellStrokeSize":3,"miniMapTeammatesSize":5,"customBackground":"","customCursor":"http://cdn.ogario.ovh/static/img/cursors/cursor_12.cur"}}'></input>
+<button class="btn btn-copy copybtn2" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div></div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by SniiKz</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/NYdKp7X.png" id="img3" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext3" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"ogario-v3","darkTheme":true,"mainColor":"#01d9cc","bgColor":"#000000","gridColor":"#00243e","bordersColor":"#ffffff","foodColor":"#5000ff","virusColor":"#3b3b3b","virusStrokeColor":"#ffffff","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":4,"massScaleMargin":1.125,"foodSize":1,"bordersWidth":40,"sectorsWidth":40,"sectorsFontSize":1200,"cellsAlpha":0.99,"skinsAlpha":0.7,"virusAlpha":0.4,"virusStrokeSize":10,"menuPreset":"ogario-v3","menuMainColor":"#fc0079","menuBtnTextColor":"#ffffff","menuPanelColor":"#050008","menuPanelColor2":"#1d0526","menuTextColor":"#ffffff","menuTextColor2":"#65458f","btn1Color":"#4f0242","btn1Color2":"#3b0431","btn2Color":"#6b0036","btn2Color2":"#4d0227","btn3Color":"#aa084e","btn3Color2":"#80063b","btn4Color":"#aa084e","btn4Color2":"#8a063f","menuBg":"http://cdn.ogario.ovh/static/img/pattern.png","menuOpacity":1,"hudMainColor":"#cc00b8","hudColor":"rgba(36,36,36,0.49)","hudTextColor":"#ffffff","statsHudColor":"#ffffff","timeHudColor":"#8c8c8c","top5MassColor":"#ff005c","lbMeColor":"#ff005c","lbTeammateColor":"#018cf6","hudFont":"oswald-bold","hudFontFamily":"Oswald","hudFontWeight":700,"hudScale":1.15,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#e8e8e8","messageTimeColor":"#545454","messageNickColor":"#ff005c","commandsColor":"rgba(41,41,41,0.94)","commandsTextColor":"#ffffff","commandsTimeColor":"#545454","commandsNickColor":"#ff005c","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1.1,"miniMapSectorColor":"#871b7c","miniMapGuidesColor":"#ff00a8","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#4d4d4d","miniMapMyCellColor":"#000000","miniMapMyCellStrokeColor":"#d1e01d","miniMapTeammatesColor":"#305eff","miniMapDeathLocationColor":"#2b2b2b","miniMapFont":"oswald","miniMapFontFamily":"Oswald","miniMapFontWeight":400,"miniMapNickFont":"oswald-bold","miniMapNickFontFamily":"Oswald","miniMapNickFontWeight":700,"miniMapWidth":250,"miniMapTop":25,"miniMapSectorsOpacity":0.08,"miniMapNickSize":9,"miniMapNickStrokeSize":0,"miniMapMyCellSize":4,"miniMapMyCellStrokeSize":6,"miniMapTeammatesSize":5,"customBackground":"","customCursor":"http://2coolife.com/hslolite2/cur/cur1.cur"}}'></input>
+<button class="btn btn-copy copybtn3" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Kozi</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/xqrWksS.png" id="img4" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext4" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"hkg-style","darkTheme":true,"mainColor":"#651fff","bgColor":"#000000","gridColor":"#111111","bordersColor":"#ffffff","foodColor":"#7c1fff","virusColor":"#666666","virusStrokeColor":"#666666","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":3,"massScaleMargin":1.25,"foodSize":5,"bordersWidth":40,"sectorsWidth":40,"sectorsFontSize":1200,"cellsAlpha":0.9,"skinsAlpha":0.7,"virusAlpha":0.6,"virusStrokeSize":14,"menuPreset":"agario","menuMainColor":"#5bc0de","menuBtnTextColor":"#ffffff","menuPanelColor":"#ffffff","menuPanelColor2":"#cccccc","menuTextColor":"#333333","menuTextColor2":"#999999","btn1Color":"#428bca","btn1Color2":"#3071a9","btn2Color":"#5cb85c","btn2Color2":"#449d44","btn3Color":"#f0ad4e","btn3Color2":"#ec971f","btn4Color":"#d9534f","btn4Color2":"#c9302c","menuBg":"","menuOpacity":0.96,"hudMainColor":"#0085ff","hudColor":"rgba(0,0,0,0.4)","hudTextColor":"#ffffff","statsHudColor":"#0085ff","timeHudColor":"#0085ff","top5MassColor":"#0085ff","lbMeColor":"#0085ff","lbTeammateColor":"#0085ff","hudFont":"ubuntu-bold","hudFontFamily":"Ubuntu","hudFontWeight":700,"hudScale":1,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#ffffff","messageTimeColor":"#858585","messageNickColor":"#00ff29","commandsColor":"rgba(101,31,255,0.9)","commandsTextColor":"#ffffff","commandsTimeColor":"#858585","commandsNickColor":"#00ff29","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1,"miniMapSectorColor":"#651fff","miniMapGuidesColor":"#651fff","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#000000","miniMapMyCellColor":"#ffffff","miniMapMyCellStrokeColor":"#651fff","miniMapTeammatesColor":"#651fff","miniMapDeathLocationColor":"#651fff","miniMapFont":"ubuntu-bold","miniMapFontFamily":"Ubuntu","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":240,"miniMapTop":24,"miniMapSectorsOpacity":0.1,"miniMapNickSize":11,"miniMapNickStrokeSize":2,"miniMapMyCellSize":6,"miniMapMyCellStrokeSize":4,"miniMapTeammatesSize":5.5,"customBackground":"","customCursor":""}}'></input>
+<button class="btn btn-copy copybtn4" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Shine</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/zdLUC6B.png" id="img5" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext5" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"ogario-v3","darkTheme":true,"mainColor":"#01d9cc","bgColor":"#000000","gridColor":"#0f171c","bordersColor":"#ffffff","foodColor":"#00b2ff","virusColor":"#1c0404","virusStrokeColor":"#09c2eb","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":4,"massScaleMargin":1.125,"foodSize":1,"bordersWidth":40,"sectorsWidth":40,"sectorsFontSize":1200,"cellsAlpha":0.99,"skinsAlpha":0.7,"virusAlpha":0.4,"virusStrokeSize":9,"menuPreset":"ogario-v3","menuMainColor":"#020070","menuBtnTextColor":"#ffffff","menuPanelColor":"#273770","menuPanelColor2":"#0a0a0a","menuTextColor":"#ffffff","menuTextColor2":"#65458f","btn1Color":"#020e4f","btn1Color2":"#00446b","btn2Color":"#00446b","btn2Color2":"#0866aa","btn3Color":"#0866aa","btn3Color2":"#08a0aa","btn4Color":"#08a0aa","btn4Color2":"#7a8ffa","menuBg":"https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSI3fqG7r5CBmvhdnHZJiULu-Wk-wqcWRKCtcE3YzDbcm9rLNHS9Q","menuOpacity":0.97,"hudMainColor":"#5974ff","hudColor":"rgba(36,21,21,0.18)","hudTextColor":"#ffffff","statsHudColor":"#ffffff","timeHudColor":"#737373","top5MassColor":"#1fe000","lbMeColor":"#bf00aa","lbTeammateColor":"#018cf6","hudFont":"ubuntu-bold","hudFontFamily":"Ubuntu","hudFontWeight":700,"hudScale":1,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#00634c","messageTimeColor":"#18b8b8","messageNickColor":"#50a7ba","commandsColor":"rgba(36,36,36,0.9)","commandsTextColor":"#ffffff","commandsTimeColor":"#0086bf","commandsNickColor":"#ffffff","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1,"miniMapSectorColor":"#000000","miniMapGuidesColor":"#755a26","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#4d4d4d","miniMapMyCellColor":"#000000","miniMapMyCellStrokeColor":"#ebff00","miniMapTeammatesColor":"#305eff","miniMapDeathLocationColor":"#2b2b2b","miniMapFont":"ubuntu-bold","miniMapFontFamily":"Ubuntu","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":200,"miniMapTop":20,"miniMapSectorsOpacity":0.1,"miniMapNickSize":9,"miniMapNickStrokeSize":0,"miniMapMyCellSize":5,"miniMapMyCellStrokeSize":5,"miniMapTeammatesSize":5,"customBackground":"","customCursor":"http://cdn.ogario.ovh/static/img/cursors/cursor_01.cur"}}'></input>
+<button class="btn btn-copy copybtn5" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Hamzuke</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/Caijcgw.png" id="img6" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext6" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"ogario-v3","darkTheme":true,"mainColor":"#01d9cc","bgColor":"#000000","gridColor":"#5c0000","bordersColor":"#fc0000","foodColor":"#ff004c","virusColor":"#000000","virusStrokeColor":"#ff0000","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":3,"massScaleMargin":1.25,"foodSize":5,"bordersWidth":40,"sectorsWidth":40,"sectorsFontSize":1200,"cellsAlpha":0.9,"skinsAlpha":0.7,"virusAlpha":0.6,"virusStrokeSize":14,"menuPreset":"ogario-v3","menuMainColor":"#ff0000","menuBtnTextColor":"#ffffff","menuPanelColor":"#000000","menuPanelColor2":"#000626","menuTextColor":"#ffffff","menuTextColor2":"#8096a7","btn1Color":"#f60101","btn1Color2":"#ce0101","btn2Color":"#e8002a","btn2Color2":"#c00073","btn3Color":"#ff0000","btn3Color2":"#814ee3","btn4Color":"#bf00aa","btn4Color2":"#a80096","menuBg":"http://cdn.ogario.ovh/static/img/pattern.png","menuOpacity":0.96,"hudMainColor":"#d90101","hudColor":"rgba(0,0,0,0.4)","hudTextColor":"#ffffff","statsHudColor":"#ffffff","timeHudColor":"#d90101","top5MassColor":"#bf0000","lbMeColor":"#bf00aa","lbTeammateColor":"#f60110","hudFont":"ubuntu-bold","hudFontFamily":"Ubuntu","hudFontWeight":700,"hudScale":1,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#ffffff","messageTimeColor":"#f60101","messageNickColor":"#01d9cc","commandsColor":"rgba(191,0,170,0.9)","commandsTextColor":"#ffffff","commandsTimeColor":"#bf00aa","commandsNickColor":"#ffffff","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1,"miniMapSectorColor":"#01d9cc","miniMapGuidesColor":"#bf0000","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#000000","miniMapMyCellColor":"#000000","miniMapMyCellStrokeColor":"#bf0000","miniMapTeammatesColor":"#01d9cc","miniMapDeathLocationColor":"#bf00aa","miniMapFont":"ubuntu-bold","miniMapFontFamily":"Ubuntu","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":238,"miniMapTop":24,"miniMapSectorsOpacity":0.28,"miniMapNickSize":11,"miniMapNickStrokeSize":2,"miniMapMyCellSize":7.5,"miniMapMyCellStrokeSize":4,"miniMapTeammatesSize":5.5,"customBackground":"","customCursor":""}}'></input>
+<button class="btn btn-copy copybtn6" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Snipez</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/nJMo4SN.png" id="img7" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext7" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"ogario-orange","darkTheme":true,"mainColor":"#ff7800","bgColor":"#14022b","gridColor":"#292929","bordersColor":"#6600ff","foodColor":"#ffffff","virusColor":"#6600ff","virusStrokeColor":"#ffffff","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1.7,"massScale":4,"massScaleMargin":1.9124999999999999,"foodSize":1,"bordersWidth":88,"sectorsWidth":2,"sectorsFontSize":200,"cellsAlpha":0.99,"skinsAlpha":0.99,"virusAlpha":0.6,"virusStrokeSize":14,"menuPreset":"ogario-v3","menuMainColor":"#6600ff","menuBtnTextColor":"#ffffff","menuPanelColor":"#22054f","menuPanelColor2":"#4f4f4f","menuTextColor":"#ffffff","menuTextColor2":"#6000ff","btn1Color":"#4f00c9","btn1Color2":"#4f00c9","btn2Color":"#4f00c9","btn2Color2":"#4f00c9","btn3Color":"#4f00c9","btn3Color2":"#4f00c9","btn4Color":"#4f00c9","btn4Color2":"#4f00c9","menuBg":"http://i.imgur.com/w8rGqu5.jpg","menuOpacity":1,"hudMainColor":"#f500ff","hudColor":"rgba(20,82,78,0)","hudTextColor":"#f500ff","statsHudColor":"#f500ff","timeHudColor":"#f500ff","top5MassColor":"#f500ff","lbMeColor":"#ffffff","lbTeammateColor":"#ffffff","hudFont":"roboto-bold","hudFontFamily":"Roboto","hudFontWeight":700,"hudScale":1,"messageColor":"rgba(0,0,0,0)","messageTextColor":"#ffffff","messageTimeColor":"#6600ff","messageNickColor":"#f500ff","commandsColor":"rgba(189,0,255,0.21)","commandsTextColor":"#ffffff","commandsTimeColor":"#6600ff","commandsNickColor":"#ffffff","chatBoxColor":"rgba(255,255,255,0)","chatScale":1,"miniMapSectorColor":"#6600ff","miniMapGuidesColor":"#6600ff","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#6600ff","miniMapMyCellColor":"#ffffff","miniMapMyCellStrokeColor":"#6600ff","miniMapTeammatesColor":"#f500ff","miniMapDeathLocationColor":"#f500ff","miniMapFont":"roboto","miniMapFontFamily":"Roboto","miniMapFontWeight":400,"miniMapNickFont":"roboto","miniMapNickFontFamily":"Roboto","miniMapNickFontWeight":400,"miniMapWidth":228,"miniMapTop":23,"miniMapSectorsOpacity":0.18,"miniMapNickSize":9,"miniMapNickStrokeSize":1,"miniMapMyCellSize":6,"miniMapMyCellStrokeSize":6,"miniMapTeammatesSize":5.5,"customBackground":"","customCursor":""}}'></input>
+<button class="btn btn-copy copybtn7" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Snipez</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/zwqAow0.png" id="img8" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext8" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"ogario-v3","darkTheme":true,"mainColor":"#01d9cc","bgColor":"#000000","gridColor":"#170101","bordersColor":"#ff0000","foodColor":"#ff0000","virusColor":"#ff0000","virusStrokeColor":"#00ffff","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"oswald-bold","namesFontFamily":"Oswald","namesFontWeight":700,"sectorsFont":"oswald-bold","sectorsFontFamily":"Oswald","sectorsFontWeight":700,"sectorsX":5,"sectorsY":5,"nameScale":1.5,"massScale":3,"massScaleMargin":1.875,"foodSize":1,"bordersWidth":82,"sectorsWidth":56,"sectorsFontSize":670,"cellsAlpha":0.99,"skinsAlpha":0.99,"virusAlpha":0.5,"virusStrokeSize":25,"menuPreset":"ogario-v3","menuMainColor":"#00ffff","menuBtnTextColor":"#00ffff","menuPanelColor":"#000000","menuPanelColor2":"#00022e","menuTextColor":"#00ffff","menuTextColor2":"#00ffff","btn1Color":"#520000","btn1Color2":"#520000","btn2Color":"#520000","btn2Color2":"#520000","btn3Color":"#520000","btn3Color2":"#520000","btn4Color":"#520000","btn4Color2":"#520000","menuBg":"http://i.imgur.com/EKdqkJb.png","menuOpacity":1,"hudMainColor":"#00ffff","hudColor":"rgba(255,0,0,0)","hudTextColor":"#ff0000","statsHudColor":"#00ffff","timeHudColor":"#00ffff","top5MassColor":"#00ffff","lbMeColor":"#00ffff","lbTeammateColor":"#00ffff","hudFont":"oswald-bold","hudFontFamily":"Oswald","hudFontWeight":700,"hudScale":1.13,"messageColor":"rgba(255,0,0,0)","messageTextColor":"#00ffff","messageTimeColor":"#ffffff","messageNickColor":"#00ffff","commandsColor":"rgba(255,0,0,0.24)","commandsTextColor":"#ffffff","commandsTimeColor":"#ffffff","commandsNickColor":"#ffffff","chatBoxColor":"rgba(0,0,0,0)","chatScale":1,"miniMapSectorColor":"#00fff0","miniMapGuidesColor":"#00ffff","miniMapNickColor":"#ff0000","miniMapNickStrokeColor":"#f7f7f7","miniMapMyCellColor":"#ff0000","miniMapMyCellStrokeColor":"#00ffff","miniMapTeammatesColor":"#01d9cc","miniMapDeathLocationColor":"#00ffff","miniMapFont":"oswald-bold","miniMapFontFamily":"Oswald","miniMapFontWeight":700,"miniMapNickFont":"oswald-bold","miniMapNickFontFamily":"Oswald","miniMapNickFontWeight":700,"miniMapWidth":218,"miniMapTop":22,"miniMapSectorsOpacity":0.11,"miniMapNickSize":9,"miniMapNickStrokeSize":0,"miniMapMyCellSize":6.5,"miniMapMyCellStrokeSize":3,"miniMapTeammatesSize":5,"customBackground":"","customCursor":"http://cdn.ogario.ovh/static/img/cursors/cursor_02.cur"}}'></input>
+<button class="btn btn-copy copybtn8" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Snipez</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/o6glqR6.png" id="img9" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext9" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"ogario-orange","darkTheme":true,"mainColor":"#ff7800","bgColor":"#000000","gridColor":"#292929","bordersColor":"#ff0000","foodColor":"#ff0000","virusColor":"#000000","virusStrokeColor":"#ff0000","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"roboto-bold","namesFontFamily":"Roboto","namesFontWeight":700,"sectorsFont":"oswald","sectorsFontFamily":"Oswald","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1.4,"massScale":4,"massScaleMargin":1.575,"foodSize":1,"bordersWidth":32,"sectorsWidth":2,"sectorsFontSize":200,"cellsAlpha":0.99,"skinsAlpha":0.99,"virusAlpha":0.24,"virusStrokeSize":25,"menuPreset":"ogario-v3","menuMainColor":"#ff0000","menuBtnTextColor":"#ff0000","menuPanelColor":"#000000","menuPanelColor2":"#000000","menuTextColor":"#ff0000","menuTextColor2":"#ff0000","btn1Color":"#0a0a0a","btn1Color2":"#0a0a0a","btn2Color":"#0a0a0a","btn2Color2":"#0a0a0a","btn3Color":"#0a0a0a","btn3Color2":"#0a0a0a","btn4Color":"#0a0a0a","btn4Color2":"#0a0a0a","menuBg":"http://wallpapercave.com/wp/Np83gl0.jpg","menuOpacity":1,"hudMainColor":"#ff002e","hudColor":"rgba(20,82,78,0)","hudTextColor":"#ff0000","statsHudColor":"#ff0000","timeHudColor":"#ff0000","top5MassColor":"#ff0000","lbMeColor":"#ffffff","lbTeammateColor":"#ffffff","hudFont":"ubuntu","hudFontFamily":"Ubuntu","hudFontWeight":400,"hudScale":1,"messageColor":"rgba(0,0,0,0)","messageTextColor":"#ff0000","messageTimeColor":"#ff0000","messageNickColor":"#ff0000","commandsColor":"rgba(255,0,0,1)","commandsTextColor":"#000000","commandsTimeColor":"#ff0000","commandsNickColor":"#000000","chatBoxColor":"rgba(255,255,255,0)","chatScale":1,"miniMapSectorColor":"#ff0000","miniMapGuidesColor":"#ff0000","miniMapNickColor":"#f00000","miniMapNickStrokeColor":"#cf0404","miniMapMyCellColor":"#ff0000","miniMapMyCellStrokeColor":"#ff0000","miniMapTeammatesColor":"#5e5e5e","miniMapDeathLocationColor":"#ff0000","miniMapFont":"roboto","miniMapFontFamily":"Roboto","miniMapFontWeight":400,"miniMapNickFont":"roboto","miniMapNickFontFamily":"Roboto","miniMapNickFontWeight":400,"miniMapWidth":228,"miniMapTop":23,"miniMapSectorsOpacity":0.18,"miniMapNickSize":9,"miniMapNickStrokeSize":1,"miniMapMyCellSize":6,"miniMapMyCellStrokeSize":6,"miniMapTeammatesSize":5.5,"customBackground":"","customCursor":""}}'></input>
+<button class="btn btn-copy copybtn9" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by KrayZ</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/XFwN6AT.png" id="img10" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext10" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"ogario-v3","darkTheme":true,"mainColor":"#01d9cc","bgColor":"#000000","gridColor":"#13003b","bordersColor":"#ffffff","foodColor":"#ebff00","virusColor":"#4200ff","virusStrokeColor":"#faff00","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"roboto-bold","namesFontFamily":"Roboto","namesFontWeight":700,"sectorsFont":"roboto-bold","sectorsFontFamily":"Roboto","sectorsFontWeight":700,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":4,"massScaleMargin":1.125,"foodSize":1,"bordersWidth":40,"sectorsWidth":40,"sectorsFontSize":1200,"cellsAlpha":0.99,"skinsAlpha":0.7,"virusAlpha":0.4,"virusStrokeSize":10,"menuPreset":"ogario-v3","menuMainColor":"#fcf200","menuBtnTextColor":"#ebff00","menuPanelColor":"#000000","menuPanelColor2":"#15002b","menuTextColor":"#faff00","menuTextColor2":"#faff00","btn1Color":"#5200ff","btn1Color2":"#6100ff","btn2Color":"#4200ff","btn2Color2":"#5200ff","btn3Color":"#4200ff","btn3Color2":"#4200ff","btn4Color":"#4200ff","btn4Color2":"#4200ff","menuBg":"https://www.google.co.uk/url?sa=i&rct=j&q=&esrc=s&source=images&cd=&cad=rja&uact=8&ved=0ahUKEwixtqyczLzQAhWDQBQKHYSPAGYQjRwIBw&url=http%3A%2F%2Fwallpaperstock.net%2Fpurple-pattern-abstract_wallpapers_47330_1280x720_1.html&psig=AFQjCNF3rfDjo-pzBbQORVAQ0ldFLl8whg&ust=1479912052534052","menuOpacity":1,"hudMainColor":"#ebff00","hudColor":"rgba(0,0,0,0.49)","hudTextColor":"#6100ff","statsHudColor":"#dbff00","timeHudColor":"#ebff00","top5MassColor":"#fff500","lbMeColor":"#4200ff","lbTeammateColor":"#faff00","hudFont":"roboto-bold","hudFontFamily":"Roboto","hudFontWeight":700,"hudScale":1.15,"messageColor":"rgba(0,0,0,1)","messageTextColor":"#6100ff","messageTimeColor":"#545454","messageNickColor":"#dbff00","commandsColor":"rgba(0,0,0,1)","commandsTextColor":"#ccff00","commandsTimeColor":"#545454","commandsNickColor":"#5200ff","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1,"miniMapSectorColor":"#000000","miniMapGuidesColor":"#6100ff","miniMapNickColor":"#faff00","miniMapNickStrokeColor":"#6100ff","miniMapMyCellColor":"#fff500","miniMapMyCellStrokeColor":"#5200ff","miniMapTeammatesColor":"#4200ff","miniMapDeathLocationColor":"#ffffff","miniMapFont":"roboto-bold","miniMapFontFamily":"Roboto","miniMapFontWeight":700,"miniMapNickFont":"roboto-bold","miniMapNickFontFamily":"Roboto","miniMapNickFontWeight":700,"miniMapWidth":250,"miniMapTop":25,"miniMapSectorsOpacity":0.1,"miniMapNickSize":9,"miniMapNickStrokeSize":0,"miniMapMyCellSize":5,"miniMapMyCellStrokeSize":0,"miniMapTeammatesSize":5,"customBackground":"","customCursor":"http://cdn.ogario.ovh/static/img/cursors/cursor_14.cur"}}'></input>
+<button class="btn btn-copy copybtn10" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Riroy</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/GTfrF5s.png" id="img11" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext11" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"hkg-style","darkTheme":true,"mainColor":"#651fff","bgColor":"#000000","gridColor":"#111111","bordersColor":"#ffffff","foodColor":"#651fff","virusColor":"#666666","virusStrokeColor":"#666666","cursorTrackingColor":"#651fff","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1.6,"massScale":4,"massScaleMargin":1.8,"foodSize":1,"bordersWidth":46,"sectorsWidth":62,"sectorsFontSize":530,"cellsAlpha":0.99,"skinsAlpha":0.7,"virusAlpha":0.6,"virusStrokeSize":11,"menuPreset":"ogario-v3","menuMainColor":"#651fff","menuBtnTextColor":"#ffffff","menuPanelColor":"#1b1222","menuPanelColor2":"#221d2d","menuTextColor":"#ffffff","menuTextColor2":"#ffffff","btn1Color":"#000228","btn1Color2":"#00011c","btn2Color":"#560d46","btn2Color2":"#36082c","btn3Color":"#b71b50","btn3Color2":"#9e1644","btn4Color":"#052338","btn4Color2":"#031826","menuBg":"","menuOpacity":1,"hudMainColor":"#ffffff","hudColor":"rgba(0,0,0,0)","hudTextColor":"#5a00cc","statsHudColor":"#ffffff","timeHudColor":"#ffffff","top5MassColor":"#ffffff","lbMeColor":"#ff0000","lbTeammateColor":"#24ff00","hudFont":"oswald","hudFontFamily":"Oswald","hudFontWeight":400,"hudScale":1.06,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#ffffff","messageTimeColor":"#666666","messageNickColor":"#76ff03","commandsColor":"rgba(101,31,255,0.9)","commandsTextColor":"#ffffff","commandsTimeColor":"#666666","commandsNickColor":"#76ff03","chatBoxColor":"rgba(0,0,0,0.54)","chatScale":1,"miniMapSectorColor":"#ffffff","miniMapGuidesColor":"#5000ff","miniMapNickColor":"#ffc0cb","miniMapNickStrokeColor":"#000000","miniMapMyCellColor":"#ffff00","miniMapMyCellStrokeColor":"#ffff00","miniMapTeammatesColor":"#448aff","miniMapDeathLocationColor":"#651fff","miniMapFont":"oswald-bold","miniMapFontFamily":"Oswald","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":238,"miniMapTop":24,"miniMapSectorsOpacity":0.1,"miniMapNickSize":10,"miniMapNickStrokeSize":0,"miniMapMyCellSize":5,"miniMapMyCellStrokeSize":0,"miniMapTeammatesSize":5,"customBackground":"","customCursor":"http://cdn.ogario.ovh/static/img/cursors/cursor_01.cur"}}'></input>
+<button class="btn btn-copy copybtn11" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Kranjcar</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/ESEaNxD.png" id="img12" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext12" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"hkg-style","darkTheme":true,"mainColor":"#651fff","bgColor":"#000000","gridColor":"#111111","bordersColor":"#651fff","foodColor":"#651fff","virusColor":"#666666","virusStrokeColor":"#666666","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":2,"massScaleMargin":1.5,"foodSize":5,"bordersWidth":40,"sectorsWidth":40,"sectorsFontSize":1200,"cellsAlpha":0.9,"skinsAlpha":0.7,"virusAlpha":0.6,"virusStrokeSize":14,"menuPreset":"ogario-v3","menuMainColor":"#cd1076","menuBtnTextColor":"#ffffff","menuPanelColor":"#551a8b","menuPanelColor2":"#551a8b","menuTextColor":"#ffffff","menuTextColor2":"#8096a7","btn1Color":"#68228b","btn1Color2":"#9a32cd","btn2Color":"#68228b","btn2Color2":"#9a32cd","btn3Color":"#68228b","btn3Color2":"#9a32cd","btn4Color":"#68228b","btn4Color2":"#9a32cd","menuBg":"http://wallpapercave.com/wp/yANCMtk.jpg","menuOpacity":0.96,"hudMainColor":"#651fff","hudColor":"rgba(0,0,0,0.4)","hudTextColor":"#ffffff","statsHudColor":"#651fff","timeHudColor":"#651fff","top5MassColor":"#651fff","lbMeColor":"#bf00aa","lbTeammateColor":"#018cf6","hudFont":"ubuntu-bold","hudFontFamily":"Ubuntu","hudFontWeight":700,"hudScale":1,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#ffffff","messageTimeColor":"#018cf6","messageNickColor":"#651fff","commandsColor":"rgba(101,31,255,0.9)","commandsTextColor":"#ffffff","commandsTimeColor":"#651fff","commandsNickColor":"#ffffff","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1,"miniMapSectorColor":"#651fff","miniMapGuidesColor":"#651fff","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#000000","miniMapMyCellColor":"#ffffff","miniMapMyCellStrokeColor":"#651fff","miniMapTeammatesColor":"#651fff","miniMapDeathLocationColor":"#651fff","miniMapFont":"ubuntu-bold","miniMapFontFamily":"Ubuntu","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":240,"miniMapTop":24,"miniMapSectorsOpacity":0.1,"miniMapNickSize":11,"miniMapNickStrokeSize":2,"miniMapMyCellSize":7.5,"miniMapMyCellStrokeSize":4,"miniMapTeammatesSize":5.5,"customBackground":"","customCursor":"http://i.imgur.com/rxDrTne.png"}}'></input>
+<button class="btn btn-copy copybtn12" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Balone</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/sBEnRD5.png" id="img13" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext13" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"ogario-orange","darkTheme":true,"mainColor":"#042fa6","bgColor":"#000000","gridColor":"#1e1e1f","bordersColor":"#5000ff","foodColor":"#5000ff","virusColor":"#404040","virusStrokeColor":"#eae6f2","cursorTrackingColor":"#ebe8e8","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":2,"massScaleMargin":1.5,"foodSize":9,"bordersWidth":28,"sectorsWidth":40,"sectorsFontSize":1200,"cellsAlpha":0.9,"skinsAlpha":0.7,"virusAlpha":0.6,"virusStrokeSize":9,"menuPreset":"ogario-v3","menuMainColor":"#622fd4","menuBtnTextColor":"#ffffff","menuPanelColor":"#b394f7","menuPanelColor2":"#493569","menuTextColor":"#ffffff","menuTextColor2":"#fcfeff","btn1Color":"#0a95ff","btn1Color2":"#0176ce","btn2Color":"#5a0070","btn2Color2":"#d98ee6","btn3Color":"#8d5fe6","btn3Color2":"#814ee3","btn4Color":"#aa65f0","btn4Color2":"#8b4da8","menuBg":"https://pp.vk.me/c618023/v618023070/ef7f/BJDtOD79anQ.jpg","menuOpacity":0.96,"hudMainColor":"#8c60c4","hudColor":"rgba(28,0,0,0.4)","hudTextColor":"#ffffff","statsHudColor":"#ffffff","timeHudColor":"#be7ee6","top5MassColor":"#a567d6","lbMeColor":"#e0e0e0","lbTeammateColor":"#018cf6","hudFont":"ubuntu-bold","hudFontFamily":"Ubuntu","hudFontWeight":700,"hudScale":1,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#ffffff","messageTimeColor":"#5c2166","messageNickColor":"#5c2166","commandsColor":"rgba(84,0,191,0.55)","commandsTextColor":"#ffffff","commandsTimeColor":"#5c2166","commandsNickColor":"#ffffff","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1,"miniMapSectorColor":"#9460a6","miniMapGuidesColor":"#9460a6","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#000000","miniMapMyCellColor":"#ffffff","miniMapMyCellStrokeColor":"#7a0896","miniMapTeammatesColor":"#1400ff","miniMapDeathLocationColor":"#d391eb","miniMapFont":"ubuntu-bold","miniMapFontFamily":"Ubuntu","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":224,"miniMapTop":22,"miniMapSectorsOpacity":0.16,"miniMapNickSize":11,"miniMapNickStrokeSize":2,"miniMapMyCellSize":7,"miniMapMyCellStrokeSize":4,"miniMapTeammatesSize":5.5,"customBackground":"","customCursor":"http://cdn.ogario.ovh/static/img/cursors/cursor_04.cur"}}'></input>
+<button class="btn btn-copy copybtn13" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Sika agar</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/HfkKszd.png" id="img14" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext14" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"hkg-style","darkTheme":true,"mainColor":"#651fff","bgColor":"#000000","gridColor":"#111111","bordersColor":"#ffffff","foodColor":"#651fff","virusColor":"#666666","virusStrokeColor":"#666666","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":1,"massScaleMargin":2,"foodSize":1,"bordersWidth":40,"sectorsWidth":40,"sectorsFontSize":1200,"cellsAlpha":0.9,"skinsAlpha":0.7,"virusAlpha":0.6,"virusStrokeSize":14,"menuPreset":"ogario-v3","menuMainColor":"#df0000","menuBtnTextColor":"#ffffff","menuPanelColor":"#151515","menuPanelColor2":"#222222","menuTextColor":"#ffffff","menuTextColor2":"#8096a7","btn1Color":"#383838","btn1Color2":"#5e5e5e","btn2Color":"#df0000","btn2Color2":"#ff2929","btn3Color":"#df0000","btn3Color2":"#ff2929","btn4Color":"#df0000","btn4Color2":"#ff2929","menuBg":"","menuOpacity":1,"hudMainColor":"#651fff","hudColor":"rgba(0,0,0,0.4)","hudTextColor":"#ffffff","statsHudColor":"#651fff","timeHudColor":"#651fff","top5MassColor":"#651fff","lbMeColor":"#bf00aa","lbTeammateColor":"#018cf6","hudFont":"ubuntu-bold","hudFontFamily":"Ubuntu","hudFontWeight":700,"hudScale":1,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#ffffff","messageTimeColor":"#018cf6","messageNickColor":"#651fff","commandsColor":"rgba(101,31,255,0.9)","commandsTextColor":"#ffffff","commandsTimeColor":"#651fff","commandsNickColor":"#ffffff","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1,"miniMapSectorColor":"#651fff","miniMapGuidesColor":"#651fff","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#000000","miniMapMyCellColor":"#ffffff","miniMapMyCellStrokeColor":"#651fff","miniMapTeammatesColor":"#651fff","miniMapDeathLocationColor":"#651fff","miniMapFont":"ubuntu-bold","miniMapFontFamily":"Ubuntu","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":240,"miniMapTop":24,"miniMapSectorsOpacity":0.1,"miniMapNickSize":11,"miniMapNickStrokeSize":2,"miniMapMyCellSize":7.5,"miniMapMyCellStrokeSize":4,"miniMapTeammatesSize":5.5,"customBackground":"","customCursor":""}}'></input>
+<button class="btn btn-copy copybtn14" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Heyy</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/IH0q41l.png" id="img15" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext15" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"ogario-v3","darkTheme":true,"mainColor":"#01d9cc","bgColor":"#000a11","gridColor":"#00243e","bordersColor":"#0091cb","foodColor":"#0091cb","virusColor":"#000000","virusStrokeColor":"#ffffff","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"roboto","namesFontFamily":"Roboto","namesFontWeight":400,"sectorsFont":"roboto","sectorsFontFamily":"Roboto","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":2,"massScaleMargin":1.5,"foodSize":3,"bordersWidth":32,"sectorsWidth":68,"sectorsFontSize":1200,"cellsAlpha":0.89,"skinsAlpha":0.87,"virusAlpha":0.32,"virusStrokeSize":7,"menuPreset":"ogario-v3","menuMainColor":"#01d9cc","menuBtnTextColor":"#ffffff","menuPanelColor":"#00243e","menuPanelColor2":"#002f52","menuTextColor":"#ffffff","menuTextColor2":"#8096a7","btn1Color":"#00a2e8","btn1Color2":"#0176ce","btn2Color":"#00b9e8","btn2Color2":"#0099c0","btn3Color":"#636363","btn3Color2":"#bfbfbf","btn4Color":"#bf00aa","btn4Color2":"#a80096","menuBg":"","menuOpacity":0.9,"hudMainColor":"#0091cb","hudColor":"rgba(0,0,0,0.4)","hudTextColor":"#ffffff","statsHudColor":"#ffffff","timeHudColor":"#0091cb","top5MassColor":"#0091cb","lbMeColor":"#0091cb","lbTeammateColor":"#018cf6","hudFont":"oswald","hudFontFamily":"Oswald","hudFontWeight":400,"hudScale":1.05,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#ffffff","messageTimeColor":"#018cf6","messageNickColor":"#01d9cc","commandsColor":"rgba(0,145,203,1)","commandsTextColor":"#ffffff","commandsTimeColor":"#bf00aa","commandsNickColor":"#ffffff","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1,"miniMapSectorColor":"#0091cb","miniMapGuidesColor":"#0091cb","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#000000","miniMapMyCellColor":"#cad5e4","miniMapMyCellStrokeColor":"#0091cb","miniMapTeammatesColor":"#01d9cc","miniMapDeathLocationColor":"#0091cb","miniMapFont":"ubuntu-bold","miniMapFontFamily":"Ubuntu","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":200,"miniMapTop":20,"miniMapSectorsOpacity":0.28,"miniMapNickSize":10,"miniMapNickStrokeSize":0,"miniMapMyCellSize":5,"miniMapMyCellStrokeSize":4,"miniMapTeammatesSize":4,"customBackground":"","customCursor":"http://2coolife.com/hslolite2/cur/cur2.cur"}}'></input>
+<button class="btn btn-copy copybtn15" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Necro</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/4XHHkz7.png" id="img16" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext16" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"ogario-v3","darkTheme":true,"mainColor":"#01d9cc","bgColor":"#000000","gridColor":"#00243e","bordersColor":"#ffffff","foodColor":"#5000ff","virusColor":"#3b3b3b","virusStrokeColor":"#ffffff","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":4,"massScaleMargin":1.125,"foodSize":1,"bordersWidth":40,"sectorsWidth":40,"sectorsFontSize":1200,"cellsAlpha":0.99,"skinsAlpha":0.7,"virusAlpha":0.4,"virusStrokeSize":10,"menuPreset":"ogario-v3","menuMainColor":"#fc0079","menuBtnTextColor":"#ffffff","menuPanelColor":"#050008","menuPanelColor2":"#1d0526","menuTextColor":"#ffffff","menuTextColor2":"#65458f","btn1Color":"#4f0242","btn1Color2":"#3b0431","btn2Color":"#6b0036","btn2Color2":"#4d0227","btn3Color":"#aa084e","btn3Color2":"#80063b","btn4Color":"#aa084e","btn4Color2":"#8a063f","menuBg":"http://www.hotel-r.net/im/hotel/it/purple-1.jpg","menuOpacity":1,"hudMainColor":"#cc00b8","hudColor":"rgba(36,36,36,0.49)","hudTextColor":"#ffffff","statsHudColor":"#ffffff","timeHudColor":"#8c8c8c","top5MassColor":"#ff005c","lbMeColor":"#ff005c","lbTeammateColor":"#018cf6","hudFont":"oswald-bold","hudFontFamily":"Oswald","hudFontWeight":700,"hudScale":1.15,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#e8e8e8","messageTimeColor":"#545454","messageNickColor":"#ff005c","commandsColor":"rgba(41,41,41,0.94)","commandsTextColor":"#ffffff","commandsTimeColor":"#545454","commandsNickColor":"#ff005c","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1.1,"miniMapSectorColor":"#871b7c","miniMapGuidesColor":"#ff00a8","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#4d4d4d","miniMapMyCellColor":"#000000","miniMapMyCellStrokeColor":"#d1e01d","miniMapTeammatesColor":"#305eff","miniMapDeathLocationColor":"#2b2b2b","miniMapFont":"oswald","miniMapFontFamily":"Oswald","miniMapFontWeight":400,"miniMapNickFont":"oswald-bold","miniMapNickFontFamily":"Oswald","miniMapNickFontWeight":700,"miniMapWidth":250,"miniMapTop":25,"miniMapSectorsOpacity":0.08,"miniMapNickSize":9,"miniMapNickStrokeSize":0,"miniMapMyCellSize":4,"miniMapMyCellStrokeSize":6,"miniMapTeammatesSize":5,"customBackground":"","customCursor":"http://2coolife.com/hslolite2/cur/cur1.cur"}}'></input>
+<button class="btn btn-copy copybtn16" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Ho</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/f3jZfAO.png" id="img17" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext17" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"hkg-style","darkTheme":true,"mainColor":"#651fff","bgColor":"#000000","gridColor":"#08151d","bordersColor":"#999fbd","foodColor":"#47517a","virusColor":"#282a33","virusStrokeColor":"#47517a","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":0.7,"massScale":3,"massScaleMargin":0.875,"foodSize":5,"bordersWidth":30,"sectorsWidth":6,"sectorsFontSize":820,"cellsAlpha":0.9,"skinsAlpha":0.7,"virusAlpha":0.35,"virusStrokeSize":11,"menuPreset":"ogario-v2","menuMainColor":"#505a85","menuBtnTextColor":"#ffffff","menuPanelColor":"#282a33","menuPanelColor2":"#333642","menuTextColor":"#bbbbbb","menuTextColor2":"#bbbbbb","btn1Color":"#505a85","btn1Color2":"#505a85","btn2Color":"#6d728a","btn2Color2":"#505a85","btn3Color":"#474b5c","btn3Color2":"#3a3e4f","btn4Color":"#c9302c","btn4Color2":"#c9302c","menuBg":"http://i.imgur.com/oNKOdq4.png","menuOpacity":1,"hudMainColor":"#626fa6","hudColor":"rgba(0,0,0,0.72)","hudTextColor":"#ffffff","statsHudColor":"#ffffff","timeHudColor":"#626fa6","top5MassColor":"#8a8a8a","lbMeColor":"#3685c5","lbTeammateColor":"#969696","hudFont":"roboto","hudFontFamily":"Roboto","hudFontWeight":400,"hudScale":1.1,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#ffffff","messageTimeColor":"#292929","messageNickColor":"#626fa6","commandsColor":"rgba(80,90,133,1)","commandsTextColor":"#ffffff","commandsTimeColor":"#999999","commandsNickColor":"#ffffff","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1,"miniMapSectorColor":"#626fa6","miniMapGuidesColor":"#ffffff","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#000000","miniMapMyCellColor":"#ffffff","miniMapMyCellStrokeColor":"#000000","miniMapTeammatesColor":"#3c8bff","miniMapDeathLocationColor":"#ffffff","miniMapFont":"roboto","miniMapFontFamily":"Roboto","miniMapFontWeight":400,"miniMapNickFont":"roboto","miniMapNickFontFamily":"Roboto","miniMapNickFontWeight":400,"miniMapWidth":222,"miniMapTop":22,"miniMapSectorsOpacity":0.1,"miniMapNickSize":11,"miniMapNickStrokeSize":0,"miniMapMyCellSize":5.5,"miniMapMyCellStrokeSize":4,"miniMapTeammatesSize":4,"customBackground":"","customCursor":"http://cdn.ogario.ovh/static/img/cursors/cursor_02.cur"}}'></input>
+<button class="btn btn-copy copybtn17" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Shine</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/q4HP6UU.png" id="img18" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext18" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"hkg-style","darkTheme":true,"mainColor":"#651fff","bgColor":"#000d15","gridColor":"#111111","bordersColor":"#6f4747","foodColor":"#4c465a","virusColor":"#666666","virusStrokeColor":"#666666","cursorTrackingColor":"#651fff","splitRangeColor":"#ffffff","namesFont":"oswald-bold","namesFontFamily":"Oswald","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1.1,"massScale":3,"massScaleMargin":1.375,"foodSize":1,"bordersWidth":46,"sectorsWidth":62,"sectorsFontSize":530,"cellsAlpha":0.99,"skinsAlpha":0.7,"virusAlpha":0.6,"virusStrokeSize":11,"menuPreset":"ogario-v3","menuMainColor":"#7d56d4","menuBtnTextColor":"#ffffff","menuPanelColor":"#1b1222","menuPanelColor2":"#352752","menuTextColor":"#0072ff","menuTextColor2":"#1700ff","btn1Color":"#000dff","btn1Color2":"#00011c","btn2Color":"#0d2956","btn2Color2":"#081136","btn3Color":"#162c9e","btn3Color2":"#162c9e","btn4Color":"#150c75","btn4Color2":"#150c75","menuBg":"https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSJfBMBiM_Lsfe0ge68iNB2BoxEQyYw94b29vDxy6Gthx7-PQlmoyLB_Yc","menuOpacity":1,"hudMainColor":"#17abeb","hudColor":"rgba(0,0,0,0)","hudTextColor":"#5a00cc","statsHudColor":"#4200ff","timeHudColor":"#ffffff","top5MassColor":"#0bbee6","lbMeColor":"#ffffff","lbTeammateColor":"#24ff00","hudFont":"roboto-bold","hudFontFamily":"Roboto","hudFontWeight":700,"hudScale":1.06,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#ffffff","messageTimeColor":"#666666","messageNickColor":"#76ff03","commandsColor":"rgba(101,31,255,0.9)","commandsTextColor":"#ffffff","commandsTimeColor":"#666666","commandsNickColor":"#76ff03","chatBoxColor":"rgba(0,0,0,0.54)","chatScale":1,"miniMapSectorColor":"#ffffff","miniMapGuidesColor":"#5000ff","miniMapNickColor":"#ffc0cb","miniMapNickStrokeColor":"#000000","miniMapMyCellColor":"#ffff00","miniMapMyCellStrokeColor":"#ffff00","miniMapTeammatesColor":"#448aff","miniMapDeathLocationColor":"#651fff","miniMapFont":"oswald-bold","miniMapFontFamily":"Oswald","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":238,"miniMapTop":24,"miniMapSectorsOpacity":0.1,"miniMapNickSize":10,"miniMapNickStrokeSize":0,"miniMapMyCellSize":5,"miniMapMyCellStrokeSize":0,"miniMapTeammatesSize":5,"customBackground":"","customCursor":"http://cdn.ogario.ovh/static/img/cursors/cursor_01.cur"}}'></input>
+<button class="btn btn-copy copybtn18" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Roag</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/pkOsW3P.png" id="img19" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext19" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"hkg-style","darkTheme":true,"mainColor":"#651fff","bgColor":"#000000","gridColor":"#111111","bordersColor":"#ffffff","foodColor":"#651fff","virusColor":"#666666","virusStrokeColor":"#666666","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":4,"massScaleMargin":1.125,"foodSize":12,"bordersWidth":42,"sectorsWidth":200,"sectorsFontSize":1420,"cellsAlpha":0.01,"skinsAlpha":0.56,"virusAlpha":0.46,"virusStrokeSize":17,"menuPreset":"ogario-v2","menuMainColor":"#3d3d3d","menuBtnTextColor":"#ffffff","menuPanelColor":"#222222","menuPanelColor2":"#333333","menuTextColor":"#bbbbbb","menuTextColor2":"#bbbbbb","btn1Color":"#783a3a","btn1Color2":"#783a3a","btn2Color":"#783a54","btn2Color2":"#783a54","btn3Color":"#4e3a78","btn3Color2":"#4e3a78","btn4Color":"#3a7478","btn4Color2":"#3a7478","menuBg":"","menuOpacity":1,"hudMainColor":"#651fff","hudColor":"rgba(0,0,0,0.4)","hudTextColor":"#ffffff","statsHudColor":"#651fff","timeHudColor":"#651fff","top5MassColor":"#651fff","lbMeColor":"#bf00aa","lbTeammateColor":"#018cf6","hudFont":"ubuntu-bold","hudFontFamily":"Ubuntu","hudFontWeight":700,"hudScale":1,"messageColor":"rgba(36,36,36,0.4)","messageTextColor":"#ffffff","messageTimeColor":"#018cf6","messageNickColor":"#651fff","commandsColor":"rgba(101,31,255,0.9)","commandsTextColor":"#ffffff","commandsTimeColor":"#651fff","commandsNickColor":"#ffffff","chatBoxColor":"rgba(0,0,0,0.62)","chatScale":1,"miniMapSectorColor":"#651fff","miniMapGuidesColor":"#651fff","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#000000","miniMapMyCellColor":"#ffffff","miniMapMyCellStrokeColor":"#651fff","miniMapTeammatesColor":"#651fff","miniMapDeathLocationColor":"#651fff","miniMapFont":"ubuntu-bold","miniMapFontFamily":"Ubuntu","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":200,"miniMapTop":20,"miniMapSectorsOpacity":0.1,"miniMapNickSize":16,"miniMapNickStrokeSize":0,"miniMapMyCellSize":4,"miniMapMyCellStrokeSize":0,"miniMapTeammatesSize":6,"customBackground":"","customCursor":"http://cdn.ogario.ovh/static/img/cursors/cursor_17.cur"}}'></input>
+<button class="btn btn-copy copybtn19" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by 賤人 ( Alvin )</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/9ph3hZy.png" id="img20" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext20" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"hkg-style","darkTheme":true,"mainColor":"#651fff","bgColor":"#000000","gridColor":"#111111","bordersColor":"#ffffff","foodColor":"#ff69b4","virusColor":"#202020","virusStrokeColor":"#666666","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":3,"massScaleMargin":1.25,"foodSize":5,"bordersWidth":50,"sectorsWidth":6,"sectorsFontSize":1200,"cellsAlpha":0.85,"skinsAlpha":0.7,"virusAlpha":0.6,"virusStrokeSize":14,"menuPreset":"ogario-v3","menuMainColor":"#ff69b4","menuBtnTextColor":"#ffffff","menuPanelColor":"#000000","menuPanelColor2":"#000000","menuTextColor":"#ffffff","menuTextColor2":"#8096a7","btn1Color":"#000000","btn1Color2":"#8096a7","btn2Color":"#000000","btn2Color2":"#8096a7","btn3Color":"#000000","btn3Color2":"#8096a7","btn4Color":"#bf00aa","btn4Color2":"#a80096","menuBg":"http://cdn.ogario.ovh/static/img/pattern.png","menuOpacity":0.96,"hudMainColor":"#ff69b4","hudColor":"rgba(0,0,0,0.4)","hudTextColor":"#ffffff","statsHudColor":"#ffffff","timeHudColor":"#ff69b4","top5MassColor":"#bf00aa","lbMeColor":"#ff69b4","lbTeammateColor":"#ff69b4","hudFont":"ubuntu-bold","hudFontFamily":"Ubuntu","hudFontWeight":700,"hudScale":1,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#ffffff","messageTimeColor":"#ff69b4","messageNickColor":"#ff69b4","commandsColor":"rgba(191,0,170,0.9)","commandsTextColor":"#ffffff","commandsTimeColor":"#bf00aa","commandsNickColor":"#ffffff","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1,"miniMapSectorColor":"#ff69b4","miniMapGuidesColor":"#bf00aa","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#000000","miniMapMyCellColor":"#ffffff","miniMapMyCellStrokeColor":"#ff0000","miniMapTeammatesColor":"#ff69b4","miniMapDeathLocationColor":"#bf00aa","miniMapFont":"ubuntu-bold","miniMapFontFamily":"Ubuntu","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":240,"miniMapTop":24,"miniMapSectorsOpacity":0.1,"miniMapNickSize":11,"miniMapNickStrokeSize":2,"miniMapMyCellSize":7.5,"miniMapMyCellStrokeSize":4,"miniMapTeammatesSize":5.5,"customBackground":"","customCursor":"http://cdn.ogario.ovh/static/img/cursors/cursor_02.cur"}}'></input>
+<button class="btn btn-copy copybtn20" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by avo</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/mCYaBsd.png" id="img21" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext21" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"ogario-v3","darkTheme":true,"mainColor":"#01d9cc","bgColor":"#000000","gridColor":"#170101","bordersColor":"#ff0000","foodColor":"#ff0000","virusColor":"#fcd8d8","virusStrokeColor":"#204794","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"oswald-bold","namesFontFamily":"Oswald","namesFontWeight":700,"sectorsFont":"oswald-bold","sectorsFontFamily":"Oswald","sectorsFontWeight":700,"sectorsX":5,"sectorsY":5,"nameScale":1.5,"massScale":3,"massScaleMargin":1.875,"foodSize":1,"bordersWidth":82,"sectorsWidth":56,"sectorsFontSize":670,"cellsAlpha":0.99,"skinsAlpha":0.99,"virusAlpha":0.5,"virusStrokeSize":25,"menuPreset":"ogario-v3","menuMainColor":"#00ffff","menuBtnTextColor":"#00ffff","menuPanelColor":"#000000","menuPanelColor2":"#00022e","menuTextColor":"#00ffff","menuTextColor2":"#00ffff","btn1Color":"#520000","btn1Color2":"#520000","btn2Color":"#520000","btn2Color2":"#520000","btn3Color":"#520000","btn3Color2":"#520000","btn4Color":"#520000","btn4Color2":"#520000","menuBg":"https://d2gg9evh47fn9z.cloudfront.net/thumb_COLOURBOX3120408.jpg","menuOpacity":1,"hudMainColor":"#00ffff","hudColor":"rgba(255,0,0,0)","hudTextColor":"#ff0000","statsHudColor":"#00ffff","timeHudColor":"#00ffff","top5MassColor":"#00ffff","lbMeColor":"#00ffff","lbTeammateColor":"#00ffff","hudFont":"oswald-bold","hudFontFamily":"Oswald","hudFontWeight":700,"hudScale":1.13,"messageColor":"rgba(255,0,0,0)","messageTextColor":"#00ffff","messageTimeColor":"#ffffff","messageNickColor":"#00ffff","commandsColor":"rgba(255,0,0,0.24)","commandsTextColor":"#ffffff","commandsTimeColor":"#ffffff","commandsNickColor":"#ffffff","chatBoxColor":"rgba(0,0,0,0)","chatScale":1,"miniMapSectorColor":"#00fff0","miniMapGuidesColor":"#00ffff","miniMapNickColor":"#ff0000","miniMapNickStrokeColor":"#f7f7f7","miniMapMyCellColor":"#ff0000","miniMapMyCellStrokeColor":"#00ffff","miniMapTeammatesColor":"#01d9cc","miniMapDeathLocationColor":"#00ffff","miniMapFont":"oswald-bold","miniMapFontFamily":"Oswald","miniMapFontWeight":700,"miniMapNickFont":"oswald-bold","miniMapNickFontFamily":"Oswald","miniMapNickFontWeight":700,"miniMapWidth":218,"miniMapTop":22,"miniMapSectorsOpacity":0.11,"miniMapNickSize":9,"miniMapNickStrokeSize":0,"miniMapMyCellSize":6.5,"miniMapMyCellStrokeSize":3,"miniMapTeammatesSize":5,"customBackground":"","customCursor":"http://cdn.ogario.ovh/static/img/cursors/cursor_02.cur"}}'></input>
+<button class="btn btn-copy copybtn21" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by CDM</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/9DDVxfS.png" id="img22" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext22" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"hkg-style","darkTheme":true,"mainColor":"#731010","bgColor":"#230126","gridColor":"#4f0473","bordersColor":"#ad00ff","foodColor":"#ad00ff","virusColor":"#500c52","virusStrokeColor":"#ad00ff","cursorTrackingColor":"#bd00ff","splitRangeColor":"#ffffff","namesFont":"oswald-bold","namesFontFamily":"Oswald","namesFontWeight":700,"sectorsFont":"oswald-bold","sectorsFontFamily":"Oswald","sectorsFontWeight":700,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":2,"massScaleMargin":1.5,"foodSize":1,"bordersWidth":30,"sectorsWidth":30,"sectorsFontSize":1360,"cellsAlpha":0.8,"skinsAlpha":0.8,"virusAlpha":0.5,"virusStrokeSize":16,"menuPreset":"ogario-v3","menuMainColor":"#ad00ff","menuBtnTextColor":"#ffffff","menuPanelColor":"#360428","menuPanelColor2":"#3b0035","menuTextColor":"#ffffff","menuTextColor2":"#ff00f5","btn1Color":"#4c0070","btn1Color2":"#4c0070","btn2Color":"#eb00ff","btn2Color2":"#eb00ff","btn3Color":"#7900b3","btn3Color2":"#814ee3","btn4Color":"#7d006f","btn4Color2":"#7d006f","menuBg":"http://www.desktopimages.org/pictures/2014/0303/1/dark-pink-vintage-pattern-wallpaper-60016.jpg","menuOpacity":0.9,"hudMainColor":"#000000","hudColor":"rgba(0,0,0,0)","hudTextColor":"#ad00ff","statsHudColor":"#ffffff","timeHudColor":"#01d9cc","top5MassColor":"#bf00aa","lbMeColor":"#bf00aa","lbTeammateColor":"#018cf6","hudFont":"ubuntu-bold","hudFontFamily":"Ubuntu","hudFontWeight":700,"hudScale":1,"messageColor":"rgba(204,0,255,0.15)","messageTextColor":"#ffffff","messageTimeColor":"#ad00ff","messageNickColor":"#ffffff","commandsColor":"rgba(204,0,255,0.15)","commandsTextColor":"#ff00f5","commandsTimeColor":"#ad00ff","commandsNickColor":"#ffffff","chatBoxColor":"rgba(0,0,0,0)","chatScale":1.01,"miniMapSectorColor":"#ad00ff","miniMapGuidesColor":"#ffffff","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#ad00ff","miniMapMyCellColor":"#ff00d6","miniMapMyCellStrokeColor":"#750068","miniMapTeammatesColor":"#ff00b8","miniMapDeathLocationColor":"#ffffff","miniMapFont":"oswald-bold","miniMapFontFamily":"Oswald","miniMapFontWeight":700,"miniMapNickFont":"oswald-bold","miniMapNickFontFamily":"Oswald","miniMapNickFontWeight":700,"miniMapWidth":244,"miniMapTop":24,"miniMapSectorsOpacity":0.28,"miniMapNickSize":9,"miniMapNickStrokeSize":2,"miniMapMyCellSize":8,"miniMapMyCellStrokeSize":3,"miniMapTeammatesSize":6.5,"customBackground":"","customCursor":"http://cdn.ogario.ovh/static/img/cursors/cursor_12.cur"}}'></input>
+<button class="btn btn-copy copybtn22" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Torto</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/jb4302L.png" id="img23" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext23" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"ogario-orange","darkTheme":true,"mainColor":"#ff7800","bgColor":"#111111","gridColor":"#292929","bordersColor":"#e10000","foodColor":"#e10000","virusColor":"#666666","virusStrokeColor":"#666666","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":3,"massScaleMargin":1.25,"foodSize":5,"bordersWidth":40,"sectorsWidth":40,"sectorsFontSize":1200,"cellsAlpha":0.9,"skinsAlpha":0.7,"virusAlpha":0.6,"virusStrokeSize":14,"menuPreset":"ogario-v3","menuMainColor":"#e10000","menuBtnTextColor":"#ffffff","menuPanelColor":"#3e0009","menuPanelColor2":"#494949","menuTextColor":"#ffffff","menuTextColor2":"#8096a7","btn1Color":"#494949","btn1Color2":"#494949","btn2Color":"#002dff","btn2Color2":"#494949","btn3Color":"#494949","btn3Color2":"#494949","btn4Color":"#494949","btn4Color2":"#494949","menuBg":"http://65.media.tumblr.com/bd29e7e9e5d2dc6928ae2fef2a43771d/tumblr_nrejn41RBg1s94q1lo1_500.png","menuOpacity":0.96,"hudMainColor":"#e10000","hudColor":"rgba(0,0,0,0.4)","hudTextColor":"#ffffff","statsHudColor":"#e10000","timeHudColor":"#e10000","top5MassColor":"#e10000","lbMeColor":"#bf00aa","lbTeammateColor":"#018cf6","hudFont":"ubuntu-bold","hudFontFamily":"Ubuntu","hudFontWeight":700,"hudScale":1,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#ffffff","messageTimeColor":"#018cf6","messageNickColor":"#e10000","commandsColor":"rgba(225,0,0,1)","commandsTextColor":"#ffffff","commandsTimeColor":"#e10000","commandsNickColor":"#ffffff","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1,"miniMapSectorColor":"#e10000","miniMapGuidesColor":"#e10000","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#000000","miniMapMyCellColor":"#ffffff","miniMapMyCellStrokeColor":"#e10000","miniMapTeammatesColor":"#e10000","miniMapDeathLocationColor":"#e10000","miniMapFont":"ubuntu-bold","miniMapFontFamily":"Ubuntu","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":240,"miniMapTop":24,"miniMapSectorsOpacity":0.1,"miniMapNickSize":11,"miniMapNickStrokeSize":2,"miniMapMyCellSize":7.5,"miniMapMyCellStrokeSize":4,"miniMapTeammatesSize":5.5,"customBackground":"","customCursor":""}}'></input>
+<button class="btn btn-copy copybtn23" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Faber</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/Inzjffo.png" id="img24" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext24" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"sniikz-style","darkTheme":true,"mainColor":"#01d9cc","bgColor":"#000009","gridColor":"#000018","bordersColor":"#122679","foodColor":"#5000ff","virusColor":"#150c3d","virusStrokeColor":"#0100ff","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"oswald","sectorsFontFamily":"Oswald","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":0.7,"massScale":4,"massScaleMargin":0.7875,"foodSize":1,"bordersWidth":46,"sectorsWidth":68,"sectorsFontSize":1080,"cellsAlpha":0.99,"skinsAlpha":0.7,"virusAlpha":0.29,"virusStrokeSize":24,"menuPreset":"ogario-v3","menuMainColor":"#ffffff","menuBtnTextColor":"#ffffff","menuPanelColor":"#201c3a","menuPanelColor2":"#181b35","menuTextColor":"#beb8f8","menuTextColor2":"#beb8f8","btn1Color":"#010b59","btn1Color2":"#01084a","btn2Color":"#010b59","btn2Color2":"#01084a","btn3Color":"#030f73","btn3Color2":"#000b68","btn4Color":"#242729","btn4Color2":"#8a063f","menuBg":"http://www.fondox.net/wallpapers/textura-de-color-azul-246.jpg","menuOpacity":1,"hudMainColor":"#ffffff","hudColor":"rgba(0,0,0,0.49)","hudTextColor":"#a2a8db","statsHudColor":"#ffffff","timeHudColor":"#000aff","top5MassColor":"#2b00d6","lbMeColor":"#3300ff","lbTeammateColor":"#ffffff","hudFont":"ubuntu-bold","hudFontFamily":"Ubuntu","hudFontWeight":700,"hudScale":1,"messageColor":"rgba(84,76,76,0.9)","messageTextColor":"#0099ff","messageTimeColor":"#545454","messageNickColor":"#0099ff","commandsColor":"rgba(84,76,76,0.9)","commandsTextColor":"#0099ff","commandsTimeColor":"#545454","commandsNickColor":"#85ceff","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1,"miniMapSectorColor":"#000000","miniMapGuidesColor":"#ffffff","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#4d4d4d","miniMapMyCellColor":"#0003ff","miniMapMyCellStrokeColor":"#ffffff","miniMapTeammatesColor":"#2124e7","miniMapDeathLocationColor":"#ff0000","miniMapFont":"ubuntu-bold","miniMapFontFamily":"Ubuntu","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":222,"miniMapTop":22,"miniMapSectorsOpacity":0.15,"miniMapNickSize":9,"miniMapNickStrokeSize":0,"miniMapMyCellSize":4,"miniMapMyCellStrokeSize":4,"miniMapTeammatesSize":4,"customBackground":"","customCursor":"http://cdn.ogario.ovh/static/img/cursors/cursor_07.cur","sniikz-style":"sniikz-style","hkg-style":"hkg-style"}}'></input>
+<button class="btn btn-copy copybtn24" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Donk</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/6pJV8ia.png" id="img25" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext25" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"sniikz-style","darkTheme":true,"mainColor":"#01d9cc","bgColor":"#000000","gridColor":"#3d1e42","bordersColor":"#db4848","foodColor":"#5000ff","virusColor":"#3b3b3b","virusStrokeColor":"#4b2d8a","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"ubuntu","namesFontFamily":"Ubuntu","namesFontWeight":400,"sectorsFont":"oswald-bold","sectorsFontFamily":"Oswald","sectorsFontWeight":700,"sectorsX":5,"sectorsY":5,"nameScale":0.5,"massScale":5,"massScaleMargin":0.5,"foodSize":1,"bordersWidth":40,"sectorsWidth":40,"sectorsFontSize":1200,"cellsAlpha":0.99,"skinsAlpha":0.7,"virusAlpha":0.4,"virusStrokeSize":9,"menuPreset":"ogario-v3","menuMainColor":"#ac59ff","menuBtnTextColor":"#ffffff","menuPanelColor":"#050008","menuPanelColor2":"#1d0526","menuTextColor":"#ffffff","menuTextColor2":"#4b3d9e","btn1Color":"#7136ab","btn1Color2":"#4e2d6e","btn2Color":"#39155c","btn2Color2":"#411b66","btn3Color":"#270647","btn3Color2":"#350169","btn4Color":"#4f047d","btn4Color2":"#2c0073","menuBg":"http://cdn.ogario.ovh/static/img/pattern.png","menuOpacity":1,"hudMainColor":"#4320a8","hudColor":"rgba(36,36,36,0.49)","hudTextColor":"#ffffff","statsHudColor":"#ffffff","timeHudColor":"#690e78","top5MassColor":"#9925c2","lbMeColor":"#8000ff","lbTeammateColor":"#c91ecc","hudFont":"ubuntu","hudFontFamily":"Ubuntu","hudFontWeight":400,"hudScale":1.08,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#e8e8e8","messageTimeColor":"#545454","messageNickColor":"#ad00ff","commandsColor":"rgba(36,36,36,0.9)","commandsTextColor":"#ffffff","commandsTimeColor":"#545454","commandsNickColor":"#ffffff","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1,"miniMapSectorColor":"#000000","miniMapGuidesColor":"#db00ff","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#4d4d4d","miniMapMyCellColor":"#873dff","miniMapMyCellStrokeColor":"#acba07","miniMapTeammatesColor":"#305eff","miniMapDeathLocationColor":"#4200ff","miniMapFont":"roboto","miniMapFontFamily":"Roboto","miniMapFontWeight":400,"miniMapNickFont":"ubuntu","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":400,"miniMapWidth":250,"miniMapTop":25,"miniMapSectorsOpacity":0.1,"miniMapNickSize":9,"miniMapNickStrokeSize":0,"miniMapMyCellSize":5,"miniMapMyCellStrokeSize":0,"miniMapTeammatesSize":5,"customBackground":"","customCursor":"http://cdn.ogario.ovh/static/img/cursors/cursor_01.cur"}}'></input>
+<button class="btn btn-copy copybtn25" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Hex</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/817Dtfq.png" id="img26" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext26" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"ZTx","darkTheme":true,"mainColor":"#0017ff","bgColor":"#000000","gridColor":"#292929","bordersColor":"#ffffff","foodColor":"#0017ff","virusColor":"#000000","virusStrokeColor":"#0017ff","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":4,"massScaleMargin":1.125,"foodSize":3,"bordersWidth":88,"sectorsWidth":150,"sectorsFontSize":1200,"cellsAlpha":0.99,"skinsAlpha":0.7,"virusAlpha":0.6,"virusStrokeSize":14,"menuPreset":"ogario-v3","menuMainColor":"#ffffff","menuBtnTextColor":"#ffffff","menuPanelColor":"#510000","menuPanelColor2":"#b20000","menuTextColor":"#ffffff","menuTextColor2":"#ffffff","btn1Color":"#ff0000","btn1Color2":"#a00909","btn2Color":"#ff6161","btn2Color2":"#d00606","btn3Color":"#ff4747","btn3Color2":"#d50202","btn4Color":"#bf00aa","btn4Color2":"#a80096","menuBg":"http://i.imgur.com/z75gJ5k.jpg","menuOpacity":0.96,"hudMainColor":"#ff0000","hudColor":"rgba(0,0,0,0.4)","hudTextColor":"#ffffff","statsHudColor":"#ffffff","timeHudColor":"#dbff00","top5MassColor":"#ff0000","lbMeColor":"#ff0000","lbTeammateColor":"#01f619","hudFont":"ubuntu-bold","hudFontFamily":"Ubuntu","hudFontWeight":700,"hudScale":1,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#ffffff","messageTimeColor":"#018cf6","messageNickColor":"#ffffff","commandsColor":"rgba(191,0,170,0.9)","commandsTextColor":"#ffffff","commandsTimeColor":"#bf00aa","commandsNickColor":"#ffffff","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1,"miniMapSectorColor":"#01d9cc","miniMapGuidesColor":"#bf0000","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#000000","miniMapMyCellColor":"#ff0000","miniMapMyCellStrokeColor":"#f5ff00","miniMapTeammatesColor":"#e6ff00","miniMapDeathLocationColor":"#ff0000","miniMapFont":"ubuntu-bold","miniMapFontFamily":"Ubuntu","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":240,"miniMapTop":24,"miniMapSectorsOpacity":0.1,"miniMapNickSize":11,"miniMapNickStrokeSize":2,"miniMapMyCellSize":7.5,"miniMapMyCellStrokeSize":4,"miniMapTeammatesSize":5.5,"customBackground":"","customCursor":"http://i.imgur.com/oF67Stc.png"}}'></input>
+<button class="btn btn-copy copybtn26" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Ahzee</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="http://i.imgur.com/0K3lsG3.png" id="img27" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext27" type="text" id="copyTarget" style="display:none!important" value='{"ogarioThemeSettings":{"preset":"sniikz-style","darkTheme":true,"mainColor":"#ff90e8","bgColor":"#000000","gridColor":"#08151d","bordersColor":"#ffffff","foodColor":"#5a00ff","virusColor":"#666666","virusStrokeColor":"#666666","cursorTrackingColor":"#ffffff","splitRangeColor":"#ffffff","namesFont":"ubuntu-bold","namesFontFamily":"Ubuntu","namesFontWeight":700,"sectorsFont":"ubuntu","sectorsFontFamily":"Ubuntu","sectorsFontWeight":400,"sectorsX":5,"sectorsY":5,"nameScale":1,"massScale":3,"massScaleMargin":1.25,"foodSize":6,"bordersWidth":12,"sectorsWidth":2,"sectorsFontSize":510,"cellsAlpha":0.01,"skinsAlpha":0.4,"virusAlpha":0.42,"virusStrokeSize":12,"menuPreset":"ogario-v3","menuMainColor":"#ffffff","menuBtnTextColor":"#ffffff","menuPanelColor":"#000000","menuPanelColor2":"#730fd6","menuTextColor":"#ffffff","menuTextColor2":"#8096a7","btn1Color":"#00f0ff","btn1Color2":"#00f0ff","btn2Color":"#fa00ff","btn2Color2":"#fa00ff","btn3Color":"#5700ff","btn3Color2":"#5700ff","btn4Color":"#000aff","btn4Color2":"#5200ff","menuBg":"http://univer-u.ru/wp-content/uploads/2014/08/0_89f35_4d13a04a_L.png","menuOpacity":1,"hudMainColor":"#ff90e8","hudColor":"rgba(10,10,10,1)","hudTextColor":"#ffffff","statsHudColor":"#ff90e8","timeHudColor":"#ff90e8","top5MassColor":"#ff90e8","lbMeColor":"#ff9e9e","lbTeammateColor":"#ff00e6","hudFont":"ubuntu-bold","hudFontFamily":"Ubuntu","hudFontWeight":700,"hudScale":1,"messageColor":"rgba(0,0,0,0.4)","messageTextColor":"#ffffff","messageTimeColor":"#018cf6","messageNickColor":"#ff90e8","commandsColor":"rgba(255,144,232,0.9)","commandsTextColor":"#ffffff","commandsTimeColor":"#ff90e8","commandsNickColor":"#ff00a8","chatBoxColor":"rgba(0,0,0,0.4)","chatScale":1,"miniMapSectorColor":"#ff90e8","miniMapGuidesColor":"#ff90e8","miniMapNickColor":"#ffffff","miniMapNickStrokeColor":"#000000","miniMapMyCellColor":"#f1f542","miniMapMyCellStrokeColor":"#000000","miniMapTeammatesColor":"#505ccc","miniMapDeathLocationColor":"#ff90e8","miniMapFont":"ubuntu-bold","miniMapFontFamily":"Ubuntu","miniMapFontWeight":700,"miniMapNickFont":"ubuntu-bold","miniMapNickFontFamily":"Ubuntu","miniMapNickFontWeight":700,"miniMapWidth":214,"miniMapTop":21,"miniMapSectorsOpacity":0.1,"miniMapNickSize":11,"miniMapNickStrokeSize":2,"miniMapMyCellSize":5,"miniMapMyCellStrokeSize":2,"miniMapTeammatesSize":5,"customBackground":"","customCursor":""}}'></input>
+<button class="btn btn-copy copybtn27" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+ 
+</div>
+<div id="themesubmission">
+<div class="overlay"></div><div class="container"><div class="row"><div class="col-md-8 col-md-offset-2 text-center"><div class="display-t"><div class="display-tc animate-box fadeIn animated-fast" data-animate-effect="fadeIn"><br><br><br><br><br><br><br><h2><a href="https://docs.google.com/forms/d/e/1FAIpQLSdC0NhtJcEQQy-uZXP3aA_DTrUkppSdFZtTToVzLqUx51urUw/viewform" class="btn btn-default btn-block" target="_blank">SUBMIT YOUR THEMES HERE</a></h2></div></div></div></div></div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="gototop js-top">
+</div>
+<style>.pts{letter-spacing:0px;}.tp{font-family:'Open Sans Condensed',sans-serif;font-weight:400;color:#7F7F7F;letter-spacing:0;text-align:center;}textarea{font-size:15px;border:0px;padding-right:6px;padding-left:6px;resize:none;max-width:600px;min-width:500px;background-color:#E6E6E6;cursor:not-allowed;outline:none;}textarea::-webkit-scrollbar{width:8px;}textarea::-webkit-scrollbar-track{-webkit-box-shadow:inset 0 0 0px rgba(0,0,0,0.3);}textarea::-webkit-scrollbar-thumb{background-color:darkgrey;outline:0px solid slategrey;}*{padding:0;margin:0;}.border-small{border-bottom:1px solid rgba(130,130,130,0.5);}img{border-bottom-right-radius:8px;}img{border-bottom-left-radius:8px;}</style>
+<div id="myModal" class="modal fade" role="dialog" style="display: none;"><div class="modal-dialog" style="top:100px!important"><div class="modal-content" style="background:rgb(187, 54, 139)!important;border-radius:30px;color:white!important;font-size: 18px;height:65px!important"><div class="modal-body" style="text-align:center!important;padding:15px!important;"><p>SKIN URL COPIED TO CLIPBOARD <img src="http://sniikz.com/download/checkmark.png"/></p></div></div></div></div>
+ 
+ 
+<div class="modal fade" id="myModal2" role="dialog">
+<div class="modal-dialog modal-lg">
+ 
+<div class="modal-content">
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal">&times;</button>
+<h4 class="modal-title">THEME PREVIEW</h4>
+</div>
+<div class="modal-body" id="showImg">
+ 
+</div>
+</div>
+</div>
+</div>
+</div>
+ 
+<script src="http://sniikz.com/download/js/jquery.min.js"></script>
+ 
+<script src="http://sniikz.com/download/js/jquery.easing.1.3.js"></script>
+ 
+<script src="http://sniikz.com/download/js/bootstrap.min.js"></script>
+ 
+<script src="http://sniikz.com/download/js/jquery.waypoints.min.js"></script>
+ 
+<script src="http://sniikz.com/download/js/jquery.countTo.js"></script>
+ 
+<script src="http://sniikz.com/download/js/jquery.magnific-popup.min.js"></script>
+<script src="http://sniikz.com/download/js/magnific-popup-options.js"></script>
+ 
+<script src="http://sniikz.com/download/js/main.js"></script>
+ 
+<script src="http://sniikz.com/download/js/preview.js"></script>
+</div>
+</body>
+</html>
