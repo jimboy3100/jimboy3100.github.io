@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v1.2
+//v1.3
 var timeslost=0;
 var usedonce=0;
 var usedonce1=0;
@@ -201,8 +201,8 @@ if(timeslost==3){timeslost=0;}
     MC.onDisconnect = function () {		
 		if(timesdisconnected==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglingsong7.mp3");
-		toastr["error"]("Disconnected :(");
-		toastr["error"](" Well, you not only did the job Karim, must of you, but you made it back in one piece. Bravo! Did you think I would be satisfied so easily? Is still plenty to prove!").css("width", "400px");		   
+//		toastr["error"]("Disconnected :(");
+		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>Well, you not only did the job Karim, must of you, but you made it back in one piece.<br> Bravo!<br> Did you think I would be satisfied so easily? Is still plenty to prove!<br><font color="yellow">Disconnected :(</font></b> </div>').css("width", "400px");		   
 		}
         appendSysLog("DISCONNECTED :(");
 		if(timesdisconnected<2){
