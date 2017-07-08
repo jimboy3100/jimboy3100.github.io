@@ -11,6 +11,9 @@
 // @updateURL    jimboy3100.github.io/legendmod.user.js
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
+// @grant GM_setValue
+// @grant GM_getValue
+// @grant GM_deleteValue
 // @connect      agar.io
 // ==/UserScript==
 
@@ -54,7 +57,7 @@ var switchCSS = '<link href="https://jimboy3100.github.io/switchery.min.css" rel
 var rangeCSS = '<link href="https://jimboy3100.github.io/rangeslider.css" rel="stylesheet"></link>';
 var perfectCSS = '<link href="https://jimboy3100.github.io/perfect-scrollbar.min.css" rel="stylesheet"></link>';
 var faCSS = '<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"></link>';
-var legendarioCSS = '<link href="https://jimboy3100.github.io/legend.css?v=320" rel="stylesheet"></link>';
+var legendarioCSS = '<link href="https://jimboy3100.github.io/legend.css?v=333" rel="stylesheet"></link>';
 
 var ytJS = '<script src="https://jimboy3100.github.io/Youtubeiframe_api.js"></script>';
 var keyJS = '<script src="https://jimboy3100.github.io/key-event.js"></script>';
@@ -67,8 +70,8 @@ var legendJS = '<script src="https://jimboy3100.github.io/legendmod.js"></script
 var legendJSniffJS = '<script src="https://jimboy3100.github.io/legend.sniff.js"></script>';
 var legendJSniff2JS = '<script src="https://jimboy3100.github.io/legend.sniff2.js"></script>';
 var legendJSniff3JS = '<script src="https://jimboy3100.github.io/legend.sniff3.js"></script>';
-var legendarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=320"></script>';
-var legendarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=320" charset="utf-8"></script>';
+var legendarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=333"></script>';
+var legendarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=333" charset="utf-8"></script>';
 var modVersion = GM_info.script.version;
 
 // Inject Legend
@@ -93,4 +96,109 @@ GM_xmlhttpRequest({
         document.close();
     }
 });
-// End of Script
+
+//Some more things that need permissions
+(function() {
+    'use strict';
+    function pre_loop(){
+        if(! document.getElementById("message-box")){
+            setTimeout(pre_loop, 4000);
+            console.log("VoiceDeOChat:wait for Legend load");
+            return;
+        }
+        return initialize();
+    }
+    return pre_loop();
+    function initialize(){
+        var lang_hash = { "default":"default", "ja":"日本語", "en-US":"English", "en-US":"Ελληνικά", "zh-CN":"简体中文", "zh-TW":"繁體中文", "ko":"한국어" };
+        var cfg = {};
+        cfg.prefix = GM_getValue("prefix", "🎤");
+        cfg.lang = GM_getValue("lang", "default");
+        cfg.unpause = GM_getValue("unpause", false);
+        console.log("load prefix="+ cfg.prefix +" lang="+ cfg.lang +" unpause="+ cfg.unpause);
+        $("#message-box").mousedown(function(){return false;});
+        $(".team-top-menu").mousedown(function(){return false;});
+        $("#message-menu").append('<a href="#" class="chatbox-hide icon-close" style="float:right;">X</a>');
+        $(".chatbox-hide").click(function(){
+            $("#message-box").css("display", "none");
+            if(cfg.unpause && $("#pause-hud").css("display") == "block"){
+                var code = 82; // 'R'
+                $(document).trigger(jQuery.Event('keydown',{ keyCode: code, which: code } ));
+            }
+        });
+        $("#message-menu").append('<a href="#" class="chatbox-clear icon-clear" style="float:right;">C</a>');
+        $(".chatbox-clear").click(function(){
+            $("#message").val("");
+        });
+        window.SpeechRecognition = window.SpeechRecognition || webkitSpeechRecognition;
+        var recognition = new window.SpeechRecognition();
+        if(cfg.lang !== "default"){
+            recognition.lang = cfg.lang;
+        }
+        console.log("cfg.lang/recognition.lang="+ cfg.lang +"/"+ recognition.lang);
+        recognition.addEventListener('result', function(event){
+            var text_to = event.results.item(0).item(0).transcript;
+            var text_pre = $("#message").val();
+            if(text_pre === ""){
+                text_to = cfg.prefix + text_to;
+            }else{
+                text_to = text_pre + " " + text_to;
+            }
+            $("#message").val(text_to);
+        }, false);
+        recognition.addEventListener('end', function(event){
+            fn_recognition_end();
+        }, false);
+        $("#message-menu").append('<a href="#" class="voice-start icon-mic" style="float:right;">🎤</a>');
+        $(".voice-start").click(function(){
+            fn_recognition_start();
+        });
+        function fn_recognition_start(){
+            $("#voice-config").css("display", "none");
+            $(".voice-start").css("background-color", "green");
+            recognition.start();
+        }
+        function fn_recognition_end(){
+            $(".voice-start").css("background-color", "");
+        }
+        $("#og-options").append('<div id="voice-config" class="options-box voiceGroup"></div>');
+        $("#voice-config").append('<h5 class="menu-main-color">Voice</h5>');
+        $("#voice-config").append('<label>Voice-Prefix:<input type="text" id="voice-prefix" style="width:4em; float:none;" value="'+ cfg.prefix +'"/></label>');
+
+        function fn_lang_make(){
+            $("#voice-config").append('<label>Voice-lang:<select id="voice-lang"/></select></label>');
+            for(var code in lang_hash){
+                var desc = lang_hash[code];
+                var selected = (code === cfg.lang) ? ' selected' : '';
+                $("#voice-lang").append('<option value="'+ code +'"'+ selected +'>'+ desc +'</option>');
+            }
+        }
+        fn_lang_make();
+        $("#voice-config").append('<label title="Voice UnPause><input type="checkbox" id="voice-unpause"'+ (cfg.unpause ? ' checked' : '') +'/>UnPause</label>');
+
+        var observ_obj = $("#og-settings");
+        var observ_cur = observ_obj.css("display");
+        var observer = new MutationObserver(function(mutations){
+            var observ_pre = observ_cur;
+            var observ_new = observ_obj.css("display");
+            observ_cur = observ_new;
+            if(observ_new == "none" && observ_pre == "block"){
+                fn_config_save();
+            }
+        });
+        observer.observe(observ_obj[0], { attributes: true, attributeFilter:['style'] });
+        function fn_config_save(){
+            cfg.prefix = $("#voice-prefix").val();
+            GM_setValue("prefix", cfg.prefix);
+            cfg.lang = $("#voice-lang").val();
+            GM_setValue("lang", cfg.lang);
+            if(cfg.lang !== "default"){
+                recognition.lang = cfg.lang;
+            }
+            cfg.unpause =  $("#voice-unpause").prop('checked');
+            GM_setValue("unpause", cfg.unpause);
+            console.log("saved prefix="+ cfg.prefix +" lang="+ cfg.lang +" unpause="+ cfg.unpause);
+        }
+     }
+})();
+
