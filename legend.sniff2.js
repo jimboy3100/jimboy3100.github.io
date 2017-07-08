@@ -14,6 +14,6 @@ $("#leaderboard-hud > h4").text("Leaderboard");
 setTimeout(function () {
 $("#movingskins").css( { marginTop : "-15px" } );
 $("#movingskins").css( { marginBottom : "-30px" } );
-}, 12000);
+}, 6000);
 
 
