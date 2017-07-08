@@ -14,7 +14,6 @@
 // @grant GM_setValue
 // @grant GM_getValue
 // @grant GM_deleteValue
-// @connect      agar.io
 // ==/UserScript==
 
 // Legend Mod by Jimboy3100
