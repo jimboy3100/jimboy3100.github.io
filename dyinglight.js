@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v1.4
+//v1.5
 var timeslost=0;
 var usedonce=0;
 var usedonce1=0;
@@ -234,7 +234,7 @@ if(timeslost==3){timeslost=0;}
 		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>The creation of ones own rules, <font color="red">THAT</font> is what makes a man!<br> Do you live by your own rules Krane? <br>Or are you merely someone elses puppet??? </b> </div>').css("width", "400px");	
 		usedonce=1;
 		}});	
-	$("#submit2").click(function () {
+	$("#connect2").click(function () {
 		if(usedonce2==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglightsong9.mp3");	
 toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother7.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>I am researching traces of the prophecy about the god of the sun in the relics of local culture. It seems like a matter of life and death to the mother, and I am in no position to ask why</b> </div>').css("width", "400px");			usedonce2=1;
