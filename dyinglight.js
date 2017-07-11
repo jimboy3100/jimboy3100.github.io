@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v1.3
+//v1.4
 var timeslost=0;
 var usedonce=0;
 var usedonce1=0;
@@ -221,24 +221,21 @@ if(timeslost==3){timeslost=0;}
 	toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother4.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>Kurnell Tanner and the ministry of defence have lied to you!</b> </div>').css("width", "300px");
 		usedonce1=1;
 		}});
-	
-	$("#copySIPBtn").mouseenter(function () {
+	//$("#copySIPBtn").mouseenter(function () {...
+	$("#copySIPBtn").click(function () {
 		if(usedonce==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglightsong10.mp3");			
 		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>The creation of ones own rules, <font color="red">THAT</font> is what makes a man!<br> Do you live by your own rules Krane? <br>Or are you merely someone elses puppet??? </b> </div>').css("width", "400px");	
 		usedonce=1;
 		}});
-	$("#skinButton").click(function () {
+	$("#copySIPBtn").click(function () {
+		if(usedonce==0){
+		playSound("https://jimboy3100.github.io/banners/dyinglightsong10.mp3");			
+		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>The creation of ones own rules, <font color="red">THAT</font> is what makes a man!<br> Do you live by your own rules Krane? <br>Or are you merely someone elses puppet??? </b> </div>').css("width", "400px");	
+		usedonce=1;
+		}});	
+	$("#submit2").click(function () {
 		if(usedonce2==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglightsong9.mp3");	
 toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother7.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>I am researching traces of the prophecy about the god of the sun in the relics of local culture. It seems like a matter of life and death to the mother, and I am in no position to ask why</b> </div>').css("width", "400px");			usedonce2=1;
 		}});
-//toastr["error"](" Well, you not only did the job Karim, must of you, but you made it back in one piece. Bravo! Did you think I would be satisfied so easily? Is still plenty to prove!").css("width", "400px");		
-
-
-/*toastr["error"]('<div id="tutorial" style="background-image: url(http://vignette2.wikia.nocookie.net/dyinglight/images/3/3d/Kadir_Slueiman.jpg/revision/latest?cb=20141214090451.jpg); color:#018cf6; font-size:16px; text-align:center"><b>The creation of ones own rules, THAT is what makes a man! Do you live by your own rules Krane? Or are you merely someone elses puppet??? </b> </div>').css("width", "300px");
-$("#openfl-content").css('background-image', 'url("http://static.gosunoob.com/img/1/2015/03/Dying_Light_1_5_National_Outfits.jpg")');
-$("#log").css('background-image', 'url(" https://pbs.twimg.com/media/DDkK94TWAAA-8bt.jpg ")');
-http://www.clker.com/cliparts/T/X/h/3/B/Z/simple-paint-splatter.svg;
-$("#leaderboard-positions").css('background-image', 'url(" http://rs437.pbsrc.com/albums/qq95/anuksanamoon27/HALLOWEEN/f76e322d.png~c200 ")');
-*/
