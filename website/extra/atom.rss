@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- generator="Joomla! - Open Source Content Management" -->
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Download</title>
+		<description><![CDATA[Legend Mod Agario]]></description>
+		<link>https://legendmod.joomla.com/en/</link>
+		<lastBuildDate>Sat, 22 Jul 2017 10:29:46 +0000</lastBuildDate>
+		<generator>Joomla! - Open Source Content Management</generator>
+		<atom:link rel="self" type="application/rss+xml" href="https://legendmod.joomla.com/en/?format=feed&amp;type=rss"/>
+		<language>en-gb</language>
+		<managingEditor>jimboy3100@hotmail.com (legendmod)</managingEditor>
+		<item>
+			<title>Installation</title>
+			<link>https://legendmod.joomla.com/en/4-content-item-title-3.html</link>
+			<guid isPermaLink="true">https://legendmod.joomla.com/en/4-content-item-title-3.html</guid>
+			<description><![CDATA[<p><img src="https://legendmod.joomla.com/images/dyinglightback10.jpg" /></p><p style="text-align: center;">1a. <strong>Chrome:</strong> Install Script Manager <a href="https://chrome.google.com/webstore/detail/agarioscripts/mdplfilkfjaooppknpadacedpeggland" target="_blank" rel="noopener noreferrer"><button class="btn btn-info" type="button">AgarioScripts</button></a> or <a class="button" href="https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo" target="_blank" rel="noopener noreferrer"><button class="btn btn-info" type="button">Tampermonkey</button></a></p>
+<p style="text-align: center;">1b. <strong>Opera</strong><strong>:</strong> Install Script Manager <a href="https://addons.opera.com/en/extensions/details/tampermonkey-beta" target="_blank" rel="noopener noreferrer"><button class="btn btn-info" type="button">Tampermonkey</button></a> </p>
+<p style="text-align: center;">2. Install  <a class="button" href="https://greasyfork.org/el/scripts/31409-legend-agar-io-extension"><button class="btn btn-info" style="text-align: center;" type="button">Legend Mod</button> </a></p>
+<p style="text-align: center;"><em>Cannot install mod? click: </em><strong><span style="text-decoration: underline;"><a title="Alternative link" href="https://jimboy3100.github.io/legendmod.user.js" target="_blank" rel="noopener noreferrer">HERE</a></span></strong></p>
+<p style="text-align: center;"> </p>
+]]></description>
+			<author>jimboy3100@hotmail.com (Administrator)</author>
+			<category>Index</category>
+			<pubDate>Sun, 12 Oct 2014 12:16:36 +0000</pubDate>
+		</item>
+		<item>
+			<title>Personal Settings</title>
+			<link>https://legendmod.joomla.com/en/3-content-item-title-2.html</link>
+			<guid isPermaLink="true">https://legendmod.joomla.com/en/3-content-item-title-2.html</guid>
+			<description><![CDATA[<p><img src="https://legendmod.joomla.com/images/assets/header_images/Settings.png" /></p><p>You can choose your personal settings for the game.</p>
+<p>There are plenty ways you can do this:</p>
+<ul>
+<li>One Click Settings</li>
+<li>Import Settings</li>
+<li>Or Make your own settings</li>
+</ul>
+]]></description>
+			<author>jimboy3100@hotmail.com (Administrator)</author>
+			<category>Index</category>
+			<pubDate>Sun, 12 Oct 2014 12:16:25 +0000</pubDate>
+		</item>
+		<item>
+			<title>Remove Script Managers</title>
+			<link>https://legendmod.joomla.com/en/2-content-item-title-1.html</link>
+			<guid isPermaLink="true">https://legendmod.joomla.com/en/2-content-item-title-1.html</guid>
+			<description><![CDATA[<p><img src="https://legendmod.joomla.com/images/assets/header_images/inconuniinstalltamper.png" /></p><p>Remove Other UserScript Managers (tampermonkey/greasemonkey).</p>
+]]></description>
+			<author>jimboy3100@hotmail.com (Administrator)</author>
+			<category>Index</category>
+			<pubDate>Sun, 12 Oct 2014 12:16:12 +0000</pubDate>
+		</item>
+	</channel>
+</rss>
