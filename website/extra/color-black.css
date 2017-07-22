@@ -1,0 +1,83 @@
+/*----------- 
+colour - black 
+------------*/
+
+body.site {
+	border-top: 3px solid #000;
+	background-color: #f4f6f7		}
+a {
+	color: #000;
+}
+a.brand.pull-left {
+	color: #000;
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+}
+h1,h2,h3,h4,h5 {
+	color:#000;
+}
+#masthead .brand {
+	font-weight: 400;
+}
+.navbar-inner, .nav-list > .active > a, 
+.nav-list > .active > a:hover, 
+.dropdown-menu li > a:hover, 
+.dropdown-menu .active > a, 
+.dropdown-menu .active > a:hover, 
+.nav-pills > .active > a, 
+.nav-pills > .active > a:hover,
+.btn-primary {
+	background: #000;
+}
+		
+.moduletable.black {
+	background-color: #515151;
+	padding: 10px;
+}
+.moduletable.black h3,
+.moduletable.black ul,
+.moduletable.black a,
+.moduletable.black p {
+	color: #fff !important;
+}
+
+.moduletable.light-black {
+	background-color: #888;
+	padding: 10px;
+}
+.moduletable.light-black h3,
+.moduletable.light-black ul,
+.moduletable.light-black a,
+.moduletable.light-black p {
+	color: #fff !important;
+}
+
+.moduletable.dark-black {
+	background-color: #000;
+	padding: 10px;
+}
+.moduletable.dark-black h3,
+.moduletable.dark-black ul,
+.moduletable.dark-black a,
+.moduletable.dark-black p {
+	color: #fff !important;
+}
+
+.navbar .btn-navbar .icon-bar {
+	background-color:#000;
+}
+
+#sidebar h3,#aside h3 {
+	color:#000;
+}
+#sidebar ul,
+#aside ul {
+	color: #000;
+}
+.boxes p em.fa {
+	color:#000;
+	border:1px solid #000;
+}
+#footer p em.fa {
+	color:#000;
+}
