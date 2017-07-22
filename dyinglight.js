@@ -215,12 +215,12 @@ if(timeslost==3){timeslost=0;}
     };
 	
 	
-	$(".agario-profile-picture").click(function () {
-		if(usedonce1==0){
-	playSound("https://jimboy3100.github.io/banners/dyinglighsong8.mp3");	
-	toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother4.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>Kurnell Tanner and the ministry of defence have lied to you!</b> </div>').css("width", "300px");
-		usedonce1=1;
-		}});
+//	$(".agario-profile-picture").click(function () {
+//		if(usedonce1==0){
+//	playSound("https://jimboy3100.github.io/banners/dyinglighsong8.mp3");	
+//	toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother4.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>Kurnell Tanner and the ministry of defence have lied to you!</b> </div>').css("width", "300px");
+//		usedonce1=1;
+//		}});
 	
 	$("#copySIPBtn").click(function () {
 		if(usedonce==0){
