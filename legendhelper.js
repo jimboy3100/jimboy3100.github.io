@@ -37,7 +37,8 @@ $("#Userscriptshud3").html('<div id="tutorial9" style="display:block;" width="82
 	'<img src="https://jimboy3100.github.io/legend.github.io/banners/iconvanilla.jpg" alt="Vanilla Like Settings" id = "legendclanbanner" class="img-rounded" width=20% height="50" onclick="vanillalike(); return false" > '+
 	'<u style="color:white; font-size:22px"; align="right" onclick="vanillalike(); return false">Vanilla like (Grey)</u><br>'+
 	'<p style="color:white; font-size:24px"; align="middle"><b>Or choose an expansion</b></p>'+
-	'<div id="LEGENDAds2"><a id="legendAdAnchor2" onclick="opendyinglight();"><img id="legendAdImg" height="70px" src="https://jimboy3100.github.io/banners/dyinglightbanner2.jpg" style="width: 40%"></a></div>'+
+	'<div id="LEGENDAds2"><a id="legendAdAnchor2" onclick="opendyinglight(); return false"><img id="legendAdImg" height="70px" src="https://jimboy3100.github.io/banners/dyinglightbanner2.jpg" style="width: 40%"></a></div>'+
+	'<u style="color:white; font-size:22px"; align="right" onclick="opendyinglight(); return false">Dying Light</u><br>'+		   
 	'<br><br></div></div>');
 $('#TemplatesBtn').hide();	
 }
