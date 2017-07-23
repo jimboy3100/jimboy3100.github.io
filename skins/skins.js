@@ -38,4 +38,11 @@ $(document).ready(function() {
         $(window).scrollTop(0).trigger("scroll");
         return false;
     });
+    $("#PosttoNonIframe").on("click", function(e) {
+        $(this).select();
+        try {
+            window.parent.postMessage("CustomSkins&?skin="+$("#skin-url").val(), "*"); 
+        } catch (e) {}
+    });
+	
 });
