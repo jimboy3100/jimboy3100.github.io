@@ -1,4 +1,4 @@
-window.parent.postMessage("Hello From IFrame", "*");   
+
 $("#main-menu").hide();
 $("#skins-panel").hide();
 $("#quick-menu").hide();
