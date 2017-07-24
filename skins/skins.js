@@ -44,5 +44,5 @@ $(document).ready(function() {
 		copy($("#skin-url").val());
         } catch (e) {}
     });
-	
+	$("#PosttoNonIframe").hide();	
 });
