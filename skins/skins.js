@@ -40,7 +40,8 @@ $(document).ready(function() {
     });
     $("#PosttoNonIframe").on("click", function(e) {
         try {
-            window.parent.postMessage("CustomSkins&?skin="+$("#skin-url").val(), "*"); 
+        //    window.parent.postMessage("CustomSkins&?skin="+$("#skin-url").val(), "*"); 
+		copy($("#skin-url").val());
         } catch (e) {}
     });
 	
