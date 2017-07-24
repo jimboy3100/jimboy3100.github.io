@@ -229,6 +229,7 @@ var modVersion = GM_info.script.version;
         }
     })();
 }
+//runs only if play.google.com is a popup, doesnt if directly joined
 if (location.host == "play.google.com") {
 	window.close();
 }
