@@ -107,7 +107,7 @@ var auc = {
                 "count":["input", {"id":"auc-count", "type":"number", "value":o.count, "min":0, "max":100}, {"color":auc.tab.color(o.count, 1, 100)}],
                 "rate":["input", {"id":"auc-rate", "type":"number", "value":o.rate, "min":1, "max":20}, {"color":auc.tab.color(o.rate, 1, 20)}],
             });
-            var e = c.e[n]; html.txt.add(e.act, c.t.act[o.act]); if (o.edit) {html.txt.add(e.rem, "âś–");}
+            var e = c.e[n]; html.txt.add(e.act, c.t.act[o.act]); if (o.edit) {html.txt.add(e.rem, "x");}
             [html.txt.get(o.name), e.act, e.count, e.rate, e.rem].forEach(function(i) {var d = html.tag.get("td"); d.appendChild(i); e.row.appendChild(d);});
             auc.tab.e.optb.appendChild(e.row);
         },
@@ -135,7 +135,7 @@ var auc = {
     },
     ini: function () {
         var t = auc.tab.e, c = auc.control;
-        html.txt.add(t.ush, "Ultimouse control"); html.txt.add(t.add, "âž•"); html.txt.add(t.box, "âś–"); t.ear.appendChild(t.box);
+        html.txt.add(t.ush, "Ultimouse control"); html.txt.add(t.add, "âž•"); html.txt.add(t.box, "x"); t.ear.appendChild(t.box);
         //Options
         c.load(); for (var i in c.o) {auc.control.draw(i);}
         ["Control", "Action", "Count", "Rate"].forEach(function(i) {var d = html.tag.get("th"); html.txt.set(d, i); t.opth.appendChild(d);});
