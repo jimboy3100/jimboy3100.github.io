@@ -1,0 +1,57 @@
+
+/*
+Copyright (C) 2017 Jimboy3100
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#auc {position:absolute; top:0; left:0; z-index:1000; transition:transform 1s;}
+#auc, #auc * {box-sizing:border-box; margin:0; color:white; text-align:center;}
+
+#auc-div {padding:0.5em; background-color:rgba(0, 0, 0, 0.5);}
+#auc-div *, #auc-ear * {padding:0.2em;  color:white}
+
+#auc-ear {display:table; position:absolute; top:0; right:0; z-index:1000;  border-radius: 0 0 0 2em; transform-origin:100% 50%; transition:transform 1s, background-color 1s}
+#auc-box {display:table-cell; width:2em; height:2em; font-size:1.1em; font-weight:bold; vertical-align: middle;}
+
+.auc-close {transform: translate(-100%, 0); }
+.auc-close #auc-ear {background-color:rgba(0, 0, 0, 0.5); transform: rotateY(180deg)}
+.auc-close #auc-box {transform:rotate(45deg)}
+.auc-close #auc-box:hover {transform:scale(1.25) rotate(45deg)}
+.auc-add #auc-add {animation:1.5s heart 0s infinite;}
+
+#auc span {display:block; color:gray;}
+#auc a {display:block; cursor:pointer; text-decoration:none; transition: text-shadow 0.5s, transform 0.5s;}
+#auc input {transition: text-shadow 0.5s, transform 0.3s;}
+.auc-add #auc-add, #auc a:hover, #auc input:hover {text-shadow: 1px 1px 1px black; transform:scale(1.25); transition: text-shadow 0.3s, transform 0.3s;}
+.auc-add #auc-opt {opacity: 0.3}
+
+#auc-ush {font-weight:bold; font-size:1.3em;}
+
+#auc-opt {table-layout:fixed; transition:opacity 0.3s;}
+#auc-opt td {text-align:left; vertical-align: middle;}
+#auc-opt tr {background-color: transparent; transition: background-color 0.5s;}
+#auc-opt tr:hover {background-color: rgba(255, 255, 255, 0.2); transition:backgroud-color 0.3s;}
+
+#auc-act, #auc-rem {width:100%; height:100%;}
+#auc-opt input {width:3em; background-color:transparent; border:none; outline:none;}
+
+/*heartbeat 8-beat-25-8-beat-20-*/
+@keyframes heart {
+    0%{transform:scale(1.25);}
+    8%{transform:scale(2);} 
+    33%{transform:scale(1.25);} 
+    41%{transform:scale(1.9);} 
+    66%{transform:scale(1.25);}
+}
