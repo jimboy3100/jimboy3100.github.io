@@ -135,7 +135,7 @@ var auc = {
     },
     ini: function () {
         var t = auc.tab.e, c = auc.control;
-        html.txt.add(t.ush, "Ultimouse control"); html.txt.add(t.add, "âž•"); html.txt.add(t.box, "x"); t.ear.appendChild(t.box);
+        html.txt.add(t.ush, "Ultimouse control"); html.txt.add(t.add, "x"); html.txt.add(t.box, "+"); t.ear.appendChild(t.box);
         //Options
         c.load(); for (var i in c.o) {auc.control.draw(i);}
         ["Control", "Action", "Count", "Rate"].forEach(function(i) {var d = html.tag.get("th"); html.txt.set(d, i); t.opth.appendChild(d);});
