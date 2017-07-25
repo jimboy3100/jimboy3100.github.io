@@ -1,14 +1,14 @@
 // ==UserScript==
-// @name         Agar.io | FΓΣΠZΨ FΣΠΓΛΓ FΔZΣ FΨΓΣ
-// @namespace    https://greasyfork.org/users/139500
-// @version      ∞
-// @description  Nastavení = kliknutí na ➕ a následně na jakoukoliv klávesu nebo tlačítko na myši a dát si jí na rozdělení nebo krmení a jakou rychlostí (Zelené 0-20) a kolikrát (Červené 0-20)
-// @author       🐺FΓΣΠZΨ�FΣΠΓΛΓ🐺FΔZΣ�FΨΓΣ🐺
+// @name         Ultimouse Control Script
+// @namespace    Ultimouse Control Script
+// @version      1.0
+// @description  Script for controlling the mouse, for Agario
+// @author       Jimboy3100
 // @match        http://agar.io/*
-// @icon         http://i.imgur.com/CX6267k.png
+// @icon         https://jimboy3100.github.io/banners/CropedImage128.gif
 // ==/UserScript==
 
-var i = "http://qrb.cz/stock/agar/auc/";
+var i = "https://jimboy3100.github.io/auc/";
 function tg(tag, atr) {var d = document, x = d.createElement(tag); for (var a in atr) {x[a] = atr[a];}; (d.head || d.documentElement).appendChild(x);}
 
 tg("link", {rel:"stylesheet", type:"text/css", href:i+"auc.css"});
