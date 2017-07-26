@@ -65,7 +65,7 @@ setTimeout(function() {
         document.getElementsByClassName('quick-yt icon-youtube2')[0].setAttribute('data-original-title', 'Legend Promo Video');
         $('#legendid').addClass('fa fa-thumbs-o-up').removeClass('quick-yt icon-youtube2');
 		$("#more-skins").attr('href', 'https://jimboy3100.github.io/skins/skins.html');
-	
+		$("#leaderboard-hud > h4").text("Leaderboard");
 		$("#___ytsubscribe_0").remove();
 
 
