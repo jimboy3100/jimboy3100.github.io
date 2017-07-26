@@ -132,8 +132,8 @@ setTimeout(function() {
 
             '' + //<h5 class="menu-main-color" style="margin-top: 10px;">Other features</h5>        
             '</div></div>');		
-		$(".menu-main-color").remove();
+		$("#___ytsubscribe_0").remove();
 setTimeout(function() {		
 	toastr["warning"]("This Version is temporary and buggy. Install the old one when its ready");		
 	}, 5000);
-}, 2000);
+}, 2000);			
