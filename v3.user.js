@@ -67,10 +67,23 @@ setTimeout(function() {
 		$("#more-skins").attr('href', 'https://jimboy3100.github.io/skins/skins.html');
 	
 		$("#___ytsubscribe_0").remove();
+
+
+
 setTimeout(function() {		
 	toastr["warning"]("This Version is temporary and buggy. Install the old one when its ready");		
 	}, 5000);
-}, 2000);    
+}, 2000);
+setTimeout(function() {		
+	(function() {
+    var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    link.type = 'image/x-icon';
+    link.rel = 'shortcut icon';
+    link.href = 'https://jimboy3100.github.io/banners/icon32croped.ico.gif';
+    document.getElementsByTagName('head')[0].appendChild(link);
+})();
+document.title = "Legend mod";	
+	}, 5000);	
 }
 
 
