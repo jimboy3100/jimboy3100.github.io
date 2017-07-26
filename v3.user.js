@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Legend Agar.io Extension Tempory Edition
+// @name         Legend Agar.io Extension Temporary Edition
 // @namespace    Legend Agar.io
 // @version      2.2
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
