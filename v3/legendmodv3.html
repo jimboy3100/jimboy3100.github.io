@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Legend Mod v3</title>
+  <title>OGARio by szymy v4</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:700">
   <link rel="stylesheet" href="http://agar.io/css/master.css">
   <link rel="stylesheet" href="https://jimboy3100.github.io/bootstrap-colorpicker.min.css"></link>
@@ -16,16 +16,14 @@
   <link rel="stylesheet" href="https://jimboy3100.github.io/legend.css?v=334">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   
-  
-  <script src="http://cdn.ogario.ovh/static/js/jquery.min.js"></script>
-  <script src="http://cdn.ogario.ovh/static/js/bootstrap.min.js"></script>
-  <script src="http://cdn.ogario.ovh/static/js/bootstrap-colorpicker.min.js"></script>
-  <script src="http://cdn.ogario.ovh/static/js/toastr.min.js"></script>
-  <script src="http://cdn.ogario.ovh/static/js/switchery.min.js"></script>
-  <script src="http://cdn.ogario.ovh/static/js/rangeslider.min.js"></script>
-  <script src="http://cdn.ogario.ovh/static/js/perfect-scrollbar.jquery.min.js"></script>
+  <script src="https://jimboy3100.github.io/bootstrap.min.js"></script>
+  <script src="https://jimboy3100.github.io/bootstrap-colorpicker.min.js"></script>
+  <script src="https://jimboy3100.github.io/toastr.min.js"></script>
+  <script src="https://jimboy3100.github.io/switchery.min.js"></script>
+  <script src="https://jimboy3100.github.io/rangeslider.min.js"></script>
+  <script src="https://jimboy3100.github.io/perfect-scrollbar.jquery.min.js"></script>
   <script src="http://agar.io/i18n.js"></script>
-  <script src="http://cdn.ogario.ovh/v4/beta/ogario.v4.master.js?v=400"></script>
+  <script src="http://cdn.ogario.ovh/v4/beta/ogario.v4.master.js?v=17"></script>
  </head>
 
 <body> 
@@ -100,6 +98,12 @@
           <span class="btn-text" data-itr="page_menu_login_facebook"></span>
          </button>
         </div>
+        <div class="row">
+         <button id="gplusLogin" class="btn btn-primary btn-login btn-gplus">
+          <span class="gplus-icon"></span>
+          <span class="btn-text" data-itr="page_menu_login_google"></span>
+         </button>
+        </div>
        </div>
       </div>
       <div id="settings" class="checkbox" style="display:none;">
@@ -129,11 +133,12 @@
   </div>
  </div>
  <canvas id="canvas"></canvas>
- <script src="http://cdn.ogario.ovh/v4/beta/ogario.v4.js?v=400" charset="utf-8"></script>
+ <script src="http://cdn.ogario.ovh/v4/beta/ogario.v4.js?v=17" charset="utf-8"></script>
  <div style="font-family:'Ubuntu'">&nbsp;</div>
  <div id="captchaWindow" style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index:500">
   <div id="verifyUser" style="position:absolute; top:50%; left:50%; margin-left:-152px; margin-top:-40px;"></div>
  </div>
+ <script src="//apis.google.com/js/client:platform.js?onload=gapiAsyncInit" async defer></script>
  <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
