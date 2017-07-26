@@ -14,6 +14,12 @@ $("#leaderboard-hud > h4").text("Leaderboard");
 setTimeout(function () {
 $("#movingskins").css( { marginTop : "-15px" } );
 $("#movingskins").css( { marginBottom : "-30px" } );
+    
+//Remove adds (Step 2) - Needs time
+$("#unrulyMsg").remove();
+//this iframe already removed because of removing parent div
+$( "iframe[id*='rpfl_emily']" ).remove();    
+    
 }, 6000);
 
 
