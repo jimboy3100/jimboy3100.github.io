@@ -60,5 +60,5 @@ if (location.host == "agar.io" && location.pathname == "/") {
 		}
 	});
 }
-}
+
 //End of Legend Mod
