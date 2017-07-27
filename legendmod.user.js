@@ -65,6 +65,7 @@ var legendarioCSS = '<link href="https://jimboy3100.github.io/legend.css?v=333" 
 
 var ytJS = '<script src="https://jimboy3100.github.io/Youtubeiframe_api.js"></script>';
 var keyJS = '<script src="https://jimboy3100.github.io/key-event.js"></script>';
+var bootstrJS = '<script src="https://jimboy3100.github.io/bootstrap.min.js"></script>';
 var cpickerJS = '<script src="https://jimboy3100.github.io/bootstrap-colorpicker.min.js"></script>';
 var toastrJS = '<script src="https://jimboy3100.github.io/toastr.min.js"></script>';
 var switchJS = '<script src="https://jimboy3100.github.io/switchery.min.js"></script>';
@@ -80,7 +81,7 @@ var modVersion = GM_info.script.version;
 
     // Inject Legend
     function inject(page) {
-        //    var page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS  + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendarioSniffJS + legendJSniff2JS + ytJS + keyJS + "</head>");
+        //    var page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + bootstrJS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendarioSniffJS + legendJSniff2JS + ytJS + keyJS + "</head>");
         var page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendJSniff2JS + legendarioSniffJS + ytJS + keyJS + "</head>");
         page = page.replace(/<script.*?>[\s]*?.*?window\.NREUM[\s\S]*?<\/script>/, "");
         page = page.replace(/<script.*?src=".*?agario\.core\.js.*?><\/script>/, "");
