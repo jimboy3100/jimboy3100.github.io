@@ -19,7 +19,7 @@ $("#movingskins").css( { marginBottom : "-30px" } );
 $("#unrulyMsg").remove();
 //this iframe already removed because of removing parent div
 $( "iframe[id*='rpfl_emily']" ).remove();    
-    
+toastr["info"]("Still needs <b>Fixes</b>", "", { timeOut: 6000, extendedTimeOut: 6000 }).css("width", "350px");    
 }, 6000);
 
 
