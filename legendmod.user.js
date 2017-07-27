@@ -54,7 +54,7 @@ if (location.host == "agar.io" && location.pathname == "/") {
 
 
 // Dependencies
-
+var bootstrCSS = '<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"></link>';
 var cpickerCSS = '<link href="https://jimboy3100.github.io/bootstrap-colorpicker.min.css" rel="stylesheet"></link>';
 var toastrCSS = '<link href="https://jimboy3100.github.io/toastr.min.css" rel="stylesheet"></link>';
 var switchCSS = '<link href="https://jimboy3100.github.io/switchery.min.css" rel="stylesheet"></link>';
@@ -81,7 +81,7 @@ var modVersion = GM_info.script.version;
 
     // Inject Legend
     function inject(page) {
-        //    var page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + bootstrJS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendarioSniffJS + legendJSniff2JS + ytJS + keyJS + "</head>");
+        //    var page = page.replace("</head>", bootstrCSS + cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + bootstrJS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendarioSniffJS + legendJSniff2JS + ytJS + keyJS + "</head>");
         var page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendJSniff2JS + legendarioSniffJS + ytJS + keyJS + "</head>");
         page = page.replace(/<script.*?>[\s]*?.*?window\.NREUM[\s\S]*?<\/script>/, "");
         page = page.replace(/<script.*?src=".*?agario\.core\.js.*?><\/script>/, "");
