@@ -11,6 +11,6 @@ setTimeout(function() {
 	
 		$("#___ytsubscribe_0").remove();
 setTimeout(function() {		
-	toastr["warning"]("Legend Mod is back. Visti www.legendmod.ml");		
+	toastr["warning"]("Legend Mod is back. Visit www.legendmod.ml");		
 	}, 5000);
 }, 2000);		
