@@ -54,7 +54,7 @@ if (location.host == "agar.io" && location.pathname == "/") {
 
 
 // Dependencies
-var bootstrCSS = '<link href="http://agar.io/css/master.css" rel="stylesheet"></link>';
+
 var cpickerCSS = '<link href="https://jimboy3100.github.io/bootstrap-colorpicker.min.css" rel="stylesheet"></link>';
 var toastrCSS = '<link href="https://jimboy3100.github.io/toastr.min.css" rel="stylesheet"></link>';
 var switchCSS = '<link href="https://jimboy3100.github.io/switchery.min.css" rel="stylesheet"></link>';
@@ -65,7 +65,6 @@ var legendarioCSS = '<link href="https://jimboy3100.github.io/legend.css?v=333" 
 
 var ytJS = '<script src="https://jimboy3100.github.io/Youtubeiframe_api.js"></script>';
 var keyJS = '<script src="https://jimboy3100.github.io/key-event.js"></script>';
-var bootstrJS = '<script src="https://jimboy3100.github.io/bootstrap.min.js"></script>';
 var cpickerJS = '<script src="https://jimboy3100.github.io/bootstrap-colorpicker.min.js"></script>';
 var toastrJS = '<script src="https://jimboy3100.github.io/toastr.min.js"></script>';
 var switchJS = '<script src="https://jimboy3100.github.io/switchery.min.js"></script>';
@@ -82,7 +81,7 @@ var modVersion = GM_info.script.version;
     // Inject Legend
     function inject(page) {
         //    var page = page.replace("</head>", bootstrCSS + cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + bootstrJS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendarioSniffJS + legendJSniff2JS + ytJS + keyJS + "</head>");
-        var page = page.replace("</head>", bootstrCSS + cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + bootstrJS + toastrJS + switchJS + rangeJS + perfectJS + legendJSniff2JS + legendarioSniffJS + ytJS + keyJS + "</head>");
+        var page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendJSniff2JS + legendarioSniffJS + ytJS + keyJS + "</head>");
     page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?NREUM[\s\S]*?<\/script>/, "");
     page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?MCSDK[\s\S]*?<\/script>/, "");
     page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?Outstream[\s\S]*?<\/script>/, "");
