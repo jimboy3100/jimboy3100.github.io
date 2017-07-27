@@ -11,6 +11,6 @@ setTimeout(function() {
 	
 		$("#___ytsubscribe_0").remove();
 setTimeout(function() {		
-	toastr["warning"]("This Version is temporary and buggy. Install the old one when its ready");		
+	toastr["warning"]("Legend Mod is back. Visti www.legendmod.ml");		
 	}, 5000);
 }, 2000);		
