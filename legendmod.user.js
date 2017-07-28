@@ -61,7 +61,7 @@ var switchCSS = '<link href="https://jimboy3100.github.io/switchery.min.css" rel
 var rangeCSS = '<link href="https://jimboy3100.github.io/rangeslider.css" rel="stylesheet"></link>';
 var perfectCSS = '<link href="https://jimboy3100.github.io/perfect-scrollbar.min.css" rel="stylesheet"></link>';
 var faCSS = '<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"></link>';
-var legendarioCSS = '<link href="https://jimboy3100.github.io/legend.css?v=333" rel="stylesheet"></link>';
+var legendarioCSS = '<link href="http://cdn.ogario.ovh/v3/ogario.v3.css?v=338" rel="stylesheet"></link>';
 
 var ytJS = '<script src="https://jimboy3100.github.io/Youtubeiframe_api.js"></script>';
 var keyJS = '<script src="https://jimboy3100.github.io/key-event.js"></script>';
@@ -82,11 +82,10 @@ var modVersion = GM_info.script.version;
     function inject(page) {
         //    var page = page.replace("</head>", bootstrCSS + cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + bootstrJS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendarioSniffJS + legendJSniff2JS + ytJS + keyJS + "</head>");
         var page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendJSniff2JS + legendarioSniffJS + ytJS + keyJS + "</head>");
-    page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?NREUM[\s\S]*?<\/script>/, "");
-//    page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?MCSDK[\s\S]*?<\/script>/, "");
-    page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?Outstream[\s\S]*?<\/script>/, "");
-    page = page.replace(/<script.*?src=".*?outstream\.js.*?><\/script>/, "");
-    page = page.replace(/<script.*?src=".*?agario\.core\.js.*?><\/script>/, "");
+   	 page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?NREUM[\s\S]*?<\/script>/, "");
+         page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?Outstream[\s\S]*?<\/script>/, "");
+   	 page = page.replace(/<script.*?src=".*?outstream\.js.*?><\/script>/, "");
+   	 page = page.replace(/<script.*?src=".*?agario\.core\.js.*?><\/script>/, "");
         page = page.replace("</body>", legendJSniffJS + legendarioJS + legendJS + legendJSniff3JS + "<script>init('" + modVersion + "');</script>" + "</body>");
         return page;
     }
