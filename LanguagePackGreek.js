@@ -191,7 +191,7 @@ var Languageletter167="Διάφανα skins";		//Skins transparency
 var Languageletter168="Διαφανείς ιοί";		//Virus transparency
 var Languageletter169="Διαφανα όνοματα και μάζα";		//Names & mass transparency
 var Languageletter170="Επαναφορά ρυθμίσεων θεμάτων";		//Restore theme default settings
-var Languageletter171="Αποθήκευση ρυθμίσεων";		//Save settings
+var Languageletter171="Αποθηκευση ρυθμισεων";		//Save settings
 var Languageletter172="Θέμα μενού";		//Menu theme
 var Languageletter173="Φόντο";		//Background
 var Languageletter174="Διαφάνεια";		//Transparency
@@ -438,4 +438,3 @@ var Premadeletter57="Επικοινωνία";		//Communication
 var Premadeletter58="Κρυμμένος";		//Hidden
 var Premadeletter59="Εμφανής";		//Visible
 var Premadeletter60="Παύση";		//Pause
-
