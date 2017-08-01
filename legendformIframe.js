@@ -10,7 +10,7 @@ $("#menu-footer").after('<div id="legendformIframe" style="background-image: url
 	'</iframe>'	+
 											'</div></div>'+
 											    '<button id= "Backtomenu" onclick="closecustomskinsIframe(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button>'+
-												'<button id= "SendAFileform" onclick="SendAFileform(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">SEND CODE TO DEVELOPERS</button></div>');
+												'<button id= "SendAFileform" onclick="SendAFileform(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">SEND CODE TO DEVELOPER</button></div>');
 
 
 									
@@ -22,6 +22,6 @@ $("#exp-bar").show();
 $("#legendformIframe").hide();
 }
 function SendAFileform(){
-$("#SendAFileform").hide();	
-$("#legendformIframe3").html('<iframe id="legendformIframe4" src="https://docs.google.com/forms/d/e/1FAIpQLSckM3CTsmly0Ugw_kLQuiXS5AoSzwTfc5sj1czmo4bbzrDdBA/viewform?embedded=true" width="820" height="490" >');	
+
+window.open('https://docs.google.com/forms/d/e/1FAIpQLSckM3CTsmly0Ugw_kLQuiXS5AoSzwTfc5sj1czmo4bbzrDdBA/viewform');
 }
