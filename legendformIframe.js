@@ -22,5 +22,6 @@ $("#exp-bar").show();
 $("#legendformIframe").hide();
 }
 function SendAFileform(){
+$("#SendAFileform").hide();	
 $("#legendformIframe3").html('<iframe id="legendformIframe4" src="https://docs.google.com/forms/d/e/1FAIpQLSckM3CTsmly0Ugw_kLQuiXS5AoSzwTfc5sj1czmo4bbzrDdBA/viewform?embedded=true" width="820" height="490" >');	
 }
