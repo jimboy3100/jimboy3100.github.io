@@ -421,6 +421,8 @@ var Premadeletter42="Show Shortcuts";		//Show Shortcuts
 var Premadeletter43="Hide Shortcuts";		//Hide Shortcuts
 var Premadeletter44="Show XP BAR";		//Show XP BAR
 var Premadeletter45="Hide XP BAR";		//Hide XP BAR
+var Premadeletter45a = "Rounded Hud"; //Rounded Hud
+var Premadeletter45b = "Square Hud"; //Square Hud
 
 var Premadeletter48="Show Everything";		//Show Everything
 var Premadeletter49="Hide Everything";		//Hide Everything
