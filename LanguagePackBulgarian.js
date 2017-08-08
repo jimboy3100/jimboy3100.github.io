@@ -420,6 +420,9 @@ var Premadeletter42="Показ на преки път";		//Show Shortcuts
 var Premadeletter43="Скри на преки път ";		//Hide Shortcuts
 var Premadeletter44="Покажи XP бар";		//Show XP BAR
 var Premadeletter45="Скрий  XP бар";		//Hide XP BAR
+var Premadeletter45a = "объл Hud"; //Rounded Hud
+var Premadeletter45b = "Квадрат Hud"; //Square Hud
+
 var Premadeletter46="Покажи време";		//Show TIME
 var Premadeletter47="Скрий време";		//Hide TIME
 var Premadeletter48="Покажи всичко";		//Show Everything
