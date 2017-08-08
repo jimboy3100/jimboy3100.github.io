@@ -421,6 +421,9 @@ var Premadeletter42="إظهَار الإِختِصَارات";		//Show Shortcuts
 var Premadeletter43="إخِفاء الإخِتصَارات";		//Hide Shortcuts
 var Premadeletter44="إظهَار شَريِط المُستَوي";		//Show XP BAR
 var Premadeletter45="إخِفاء شِريط المُستَوي";		//Hide XP BAR
+var Premadeletter45a = "دور Hud"; //Rounded Hud
+var Premadeletter45b = "مربع Hud"; //Square Hud
+
 var Premadeletter46="إظهَار الوَقت";		//Show TIME
 var Premadeletter47="إخفَاء الوَقت";		//Hide TIME
 var Premadeletter48="إظهـار الكُل";		//Show Everything
