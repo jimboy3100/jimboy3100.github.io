@@ -421,6 +421,9 @@ var Premadeletter42="Afficher raccour.";		//Show Shortcuts
 var Premadeletter43="Masquer raccour.";		//Hide Shortcuts
 var Premadeletter44="Afficher barre d'XP";		//Show XP BAR
 var Premadeletter45="Masquer barre d'XP";		//Hide XP BAR
+var Premadeletter45a = "Arrondie Hud"; //Rounded Hud
+var Premadeletter45b = "Carré Hud"; //Square Hud
+
 var Premadeletter46="Afficher le temps";		//Show TIME
 var Premadeletter47="Masquer le temps";		//Hide TIME
 var Premadeletter48="Tout afficher";		//Show Everything
