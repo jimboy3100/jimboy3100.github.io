@@ -421,6 +421,9 @@ var Premadeletter42="Ανηγ. συντομευσεων";		//Show Shortcuts
 var Premadeletter43="Κλεισ. συντομευσ.";		//Hide Shortcuts
 var Premadeletter44="Ανηγ. XP BAR";		//Show XP BAR
 var Premadeletter45="Κλεισ. XP BAR";		//Hide XP BAR
+var Premadeletter45a = "Στρογγυλ. Hud"; //Rounded Hud
+var Premadeletter45b = "Τετράγωνο Hud"; //Square Hud
+
 var Premadeletter46="Ανηγ. Ωρας";		//Show TIME
 var Premadeletter47="Κλεισ. Ωρας";		//Hide TIME
 var Premadeletter48="Ανηγ. Ολων";		//Show Everything
