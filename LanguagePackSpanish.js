@@ -411,6 +411,9 @@ var Premadeletter42="Mostrar atajos";		//Show Shortcuts
 var Premadeletter43="Esconder atajos";		//Hide Shortcuts
 var Premadeletter44="Mostrar Barra XP";		//Show XP BAR
 var Premadeletter45="Esconder Barra XP";		//Hide XP BAR
+var Premadeletter45a = "Redondeado Hud"; //Rounded Hud
+var Premadeletter45b = "Cuadrado Hud"; //Square Hud
+
 var Premadeletter46="Mostrar tiempo";		//Show TIME
 var Premadeletter47="Esconder tiempo";		//Hide TIME
 var Premadeletter48="Mostrar todo";		//Show Everything
