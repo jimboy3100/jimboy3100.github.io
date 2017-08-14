@@ -8,7 +8,11 @@ $(document).ready(function() {
         effect : "fadeIn",
         skip_invisible : true
     });
-    
+     $("#vanillaskins img.lazy").lazyload({
+        effect : "fadeIn",
+        skip_invisible : true
+    });
+	
     $("img.lazy").on("click", function(e) {
         e.preventDefault();
         var url = $(this).attr("src");
