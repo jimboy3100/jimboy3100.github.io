@@ -424,8 +424,8 @@ var Premadeletter45="Masquer barre d'XP";		//Hide XP BAR
 var Premadeletter45a = "Arrondie Hud"; //Rounded Hud
 var Premadeletter45b = "Carré Hud"; //Square Hud
 
-var Premadeletter46="Afficher le temps";		//Show TIME
-var Premadeletter47="Masquer le temps";		//Hide TIME
+var Premadeletter46="Afficher Skin animé";		//Show TIME
+var Premadeletter47="Masquer Skin animé";		//Hide TIME
 var Premadeletter48="Tout afficher";		//Show Everything
 var Premadeletter49="Tout masquer";		//Hide Everything
 var Premadeletter50="Affich. chronom.";		//Show Timer Calc.
