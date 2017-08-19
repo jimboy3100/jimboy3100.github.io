@@ -28,9 +28,9 @@ Legend mod is best agar.io modpack with plenty features by author. It includes:
 * Discord webhook handler's for sending IP, and many more...
 
 ### Legend Mod Project Agar.io libraries
-[Github](https://github.com/jimboy3100/jimboy3100.github.io/)
-[Greasyfiork](Greasyfiork Library)
-[Agarioscripts Chrome Extension](http://www.legendmod.ml)
+[Github](https://github.com/jimboy3100/jimboy3100.github.io/),
+[Greasyfiork](https://greasyfork.org/en/users/128990-iamlegend),
+[Agarioscripts Chrome Extension](https://chrome.google.com/webstore/detail/agarioscripts/mdplfilkfjaooppknpadacedpeggland)
 
 ### Installation 
 1. Install Tampermonkey browser extension on [Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) , [Opera](https://addons.opera.com/en/extensions/details/tampermonkey-beta)
