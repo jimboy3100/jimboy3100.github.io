@@ -46,7 +46,8 @@ body {
 }
 
 #nav {
-	width: 1600px;
+	width: 1000px;
+	margin: 0 auto;
 	overflow: hidden;
 }
 
