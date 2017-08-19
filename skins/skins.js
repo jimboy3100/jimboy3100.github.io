@@ -8,6 +8,10 @@ $(document).ready(function() {
         effect : "fadeIn",
         skip_invisible : true
     });
+     $("#lowres img.lazy").lazyload({
+        effect : "fadeIn",
+        skip_invisible : true
+    });	
      $("#vanillaskins img.lazy").lazyload({
         effect : "fadeIn",
         skip_invisible : true
