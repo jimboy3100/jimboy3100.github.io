@@ -27,7 +27,7 @@ Legend mod is best agar.io modpack with plenty features by author. It includes:
 * Dying Light Expansion
 * Discord webhook handler's for sending IP, and many more...
 
-### Legend Mod Project Agar.io libraries
+### Legend Mod libraries
 [Github](https://github.com/jimboy3100/jimboy3100.github.io/),
 [Greasyfiork](https://greasyfork.org/en/users/128990-iamlegend),
 [Agarioscripts Chrome Extension](https://chrome.google.com/webstore/detail/agarioscripts/mdplfilkfjaooppknpadacedpeggland)
