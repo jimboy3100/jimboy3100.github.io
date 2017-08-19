@@ -5,7 +5,7 @@
 
 Mod for Agar.io multiplayer action browser game.  
 Author: Jimboy3100       Email: jimboy3100@hotmail.com
-Website: [www.legendmod.ml](https://www.legendmod.ml)
+Website: [www.legendmod.ml](http://www.legendmod.ml)
 ### Features 
 Legend mod is best agar.io modpack with plenty features by author. It includes: 
 * Auto Updated
