@@ -63,8 +63,17 @@ Legend mod is best agar.io modpack with plenty features by author. It includes:
 
 ###### * Legend mod is based on many scripts ([ogario](http://ogario.ovh/), [kitty](https://kittymod.github.io/), [turtle clan scripts](https://www.youtube.com/channel/UCQ-V2VrQawc8Xi6b_mH8Law) and others that can be found on [greasyfork](https://greasyfork.org/tr/scripts/by-site/agar.io) website). *
 
-{::nomarkdown}
+```html
+<h2>Example of code</h2>
 
-<!-- HTML CODE-->
-
-{:/}
+<pre>
+    <div class="container">
+        <div class="block two first">
+            <h2>Your title</h2>
+            <div class="wrap">
+            //Your content
+            </div>
+        </div>
+    </div>
+</pre>
+```
