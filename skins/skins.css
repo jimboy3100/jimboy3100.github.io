@@ -59,7 +59,7 @@ body {
 
 #nav ul li {
 	list-style-type: none;
-	margin-left: 16px;
+	margin-left: 8px;
 	float: left;
 }
 
@@ -72,7 +72,7 @@ body {
 	border: 2px solid #969696;
 	border-radius: 8px;
     text-decoration: none;
-	padding: 8px 20px;
+	padding: 8px 8px;
     margin-top: 18px;
 }
 
