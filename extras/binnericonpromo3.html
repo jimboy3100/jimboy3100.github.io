@@ -1,0 +1,214 @@
+<html><head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" type="image/x-icon" href="https://production-assets.codepen.io/assets/favicon/favicon-8ea04875e70c4b0bb41da869e81236e54394d63638a1ef12fa558a4a835f1164.ico">
+  <link rel="mask-icon" type="" href="https://production-assets.codepen.io/assets/favicon/logo-pin-f2d2b6d2c61838f7e76325261b7195c27224080bc099486ddd6dccb469b8e8e6.svg" color="#111">
+  <title>CodePen - Panel 3D Tilt</title>
+  <link href="https://fonts.googleapis.com/css?family=Lato|Playfair+Display:900" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+  
+      <style>
+      html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  background-color: #292929;
+  color: white;
+  font-size: 18px;
+  -webkit-font-feature-settings: "kern" 1,"liga" 1,"frac" 1, "lnum" 1;
+          font-feature-settings: "kern" 1,"liga" 1,"frac" 1, "lnum" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 96px;
+}
+
+p {
+  font-family: 'Lato', sans-serif;
+}
+
+.wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 5vh 5%;
+}
+
+.panel {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  max-width: 1200px;
+  height: 466px;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  pointer-events: none;
+}
+
+.panel__content-col {
+  -ms-flex-preferred-size: 25%;
+      flex-basis: 25%;
+}
+
+.panel__content {
+  position: absolute;
+  top: 26%;
+  left: 0;
+  z-index: 2;
+  width: 100%;
+}
+
+.panel__text {
+  display: inline-block;
+  text-align: right;
+}
+
+.panel__img-col {
+  -ms-flex-preferred-size: 70%;
+      flex-basis: 70%;
+  box-shadow: 0px 20px 100.28px 8.72px rgba(0, 0, 0, 0.35);
+}
+
+.panel__title {
+  margin: 0;
+}
+
+.panel__addr {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin: 16px 0 0;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+}
+.panel__addr span {
+  display: block;
+  margin: 9px 14px 0 0;
+  height: 1px;
+  width: 30px;
+  background-color: #fff;
+}
+
+.panel__line {
+  width: 64%;
+  height: 3px;
+  margin: 24px 0 0 36%;
+  background-color: #fff;
+}
+
+.panel__img-col {
+  width: 100%;
+}
+
+.panel__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+    </style>
+
+  <script>
+  window.console = window.console || function(t) {};
+</script>
+
+  
+  
+  <script>
+  if (document.location.search.match(/type=embed/gi)) {
+    window.parent.postMessage("resize", "*");
+  }
+</script>
+
+</head>
+
+<body translate="no">
+
+  <div class="wrapper">
+	
+	<div class="panel">
+		<div class="panel__content-col">
+			<div class="panel__content" style="transform-style: preserve-3d; transform-origin: center center 0px; transform: matrix3d(0.999914, 0, -0.0131332, 2.62665e-05, -0.000250846, 0.999818, -0.0190984, 3.81969e-05, 0.0131308, 0.0191001, 0.999731, -0.00199946, 5.25233, 7.64003, -0.107461, 1.00021);">
+				<div class="panel__text">
+					<h1 class="panel__title">Welcome Screen</h1>
+					<p class="panel__addr"><span></span>60+ macros/hotkeys, 3.3k+ custom skins, tabs and subtabs, 5 private servers, 20k+ lines programming</p>
+				</div>
+				<div class="panel__line"></div>
+			</div>
+		</div>
+		<div class="panel__img-col" style="transform-style: preserve-3d; transform-origin: center center 0px; transform: matrix3d(0.999914, 0, -0.0131332, 2.62665e-05, -0.000250846, 0.999818, -0.0190984, 3.81969e-05, 0.0131308, 0.0191001, 0.999731, -0.00199946, 2.62617, 3.82002, -0.0537304, 1.00011);">
+			<img src="https://legendmod.joomla.com/images/dyinglightback12.jpg" alt="" class="panel__img">
+		</div>
+	</div>
+	
+</div>
+    <script src="//production-assets.codepen.io/assets/common/stopExecutionOnTimeout-b2a7b3fe212eaa732349046d8416e00a9dec26eb7fd347590fbced3ab38af52e.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.2/TweenMax.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script>
+    var $body = $('body'),
+	$panel = $('.panel'),
+	$pContent = $('.panel__content'),
+	$img = $('.panel__img-col');
+
+function initTilt() {
+	TweenMax.set([$pContent, $img], { transformStyle: "preserve-3d" });
+
+	$body.mousemove(function(e) {
+		var sxPos = e.pageX / $panel.width() * 100 - 100;
+		var syPos = e.pageY / $panel.height() * 100 - 100;
+		TweenMax.to($pContent, 2, {
+			rotationY: 0.03 * sxPos,
+			rotationX: -0.03 * syPos,
+			transformPerspective: 500,
+			transformOrigin: "center center -400",
+			ease: Expo.easeOut
+		});
+		TweenMax.to($img, 2, {
+			rotationY: 0.03 * sxPos,
+			rotationX: -0.03 * syPos,
+			transformPerspective: 500,
+			transformOrigin: "center center -200",
+			ease: Expo.easeOut
+		});
+	});
+};
+
+initTilt();
+
+console.clear();
+  //# sourceURL=pen.js
+  </script>
+</body></html>
