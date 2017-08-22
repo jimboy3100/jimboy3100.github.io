@@ -19,7 +19,7 @@ $("#main-menu").show();
 $("#skins-panel").show();
 $("#quick-menu").show();
 $("#exp-bar").show();
-$("#legendformIframe").hide();
+$("#legendformIframe").remove();
 }
 function SendAFileform(){
 
