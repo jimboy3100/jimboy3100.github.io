@@ -1,0 +1,366 @@
+<html><head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" type="image/x-icon" href="https://production-assets.codepen.io/assets/favicon/favicon-8ea04875e70c4b0bb41da869e81236e54394d63638a1ef12fa558a4a835f1164.ico">
+  <link rel="mask-icon" type="" href="https://production-assets.codepen.io/assets/favicon/logo-pin-f2d2b6d2c61838f7e76325261b7195c27224080bc099486ddd6dccb469b8e8e6.svg" color="#111">
+  <title>CodePen - 3D CSS Game Boy Cartridge</title>
+  
+  
+  
+  
+      <style>
+      figure {
+  margin: 0;
+  position: absolute;
+}
+
+.cartridge {
+  display: inline-block;
+  width: 200px;
+  height: 230px;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+.cartridge .case {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  transform-style: preserve-3d;
+}
+.cartridge .front, .cartridge .back {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+.cartridge .front .base, .cartridge .back .base {
+  background-color: #a7a9ac;
+  position: absolute;
+}
+.cartridge .front .tall, .cartridge .back .tall {
+  height: 50%;
+  width: 90%;
+  top: 0;
+  left: 0;
+}
+.cartridge .front .wide, .cartridge .back .wide {
+  height: 95%;
+  width: 100%;
+  bottom: 0;
+  right: 0;
+}
+.cartridge .front .linebase, .cartridge .back .linebase {
+  position: absolute;
+  background-color: #939598;
+  width: 100%;
+  height: 15%;
+  top: 9%;
+  left: 0;
+}
+.cartridge .front .line, .cartridge .back .line {
+  position: absolute;
+  background-color: #a7a9ac;
+  width: 104%;
+  left: -2%;
+  height: calc(15%/9);
+}
+.cartridge .front .leftindent, .cartridge .front .rightindent, .cartridge .back .leftindent, .cartridge .back .rightindent {
+  position: absolute;
+  height: 65%;
+  width: 2%;
+  bottom: 0;
+  background-color: #939598;
+}
+.cartridge .front .rightindent, .cartridge .back .rightindent {
+  right: 0;
+}
+.cartridge .front .oval, .cartridge .back .oval {
+  position: absolute;
+  width: 75%;
+  height: 15%;
+  background-color: #939598;
+  border: #a7a9ac solid 4px;
+  border-radius: 10000000px;
+  left: calc(12.5% - 2%);
+  top: 7%;
+}
+.cartridge .front .label, .cartridge .back .label {
+  background-color: #828487;
+  background-position: center;
+  background-size: cover;
+  height: 140px;
+  width: 70%;
+  bottom: 7%;
+  left: calc(15% - 1%);
+  position: absolute;
+  border: #828487 solid 2px;
+  border-radius: 4px;
+}
+.cartridge .front {
+  transform: translateZ(10px);
+}
+.cartridge .back {
+  transform: translateZ(-10px);
+}
+.cartridge .rightside, .cartridge .leftside {
+  width: 20px;
+  height: 100%;
+  bottom: 0;
+  right: -10px;
+  transform-style: preserve-3d;
+  transform: rotateY(90deg);
+}
+.cartridge .rightside .top, .cartridge .leftside .top {
+  background-color: #828487;
+  width: 100%;
+  height: 5%;
+  transform: translateZ(-20px);
+}
+.cartridge .rightside .bottom, .cartridge .leftside .bottom {
+  bottom: 0;
+  background-color: #939598;
+  width: 100%;
+  height: 95%;
+}
+.cartridge .rightside .line, .cartridge .leftside .line {
+  background-color: #828487;
+  height: calc(15%/9);
+  width: 100%;
+  transform: translateZ(4px);
+}
+.cartridge .rightside .floor, .cartridge .rightside .ceiling, .cartridge .leftside .floor, .cartridge .leftside .ceiling {
+  background-color: #939598;
+  width: 100%;
+  height: 8px;
+  transform: rotateX(90deg);
+}
+.cartridge .rightside .ceiling, .cartridge .leftside .ceiling {
+  transform: translateY(-3.83333px) rotateX(90deg);
+}
+.cartridge .leftside {
+  left: -10px;
+}
+.cartridge .leftside .bottom {
+  height: 100%;
+}
+.cartridge .leftside .line {
+  transform: translateZ(-4px);
+}
+.cartridge .topside {
+  width: 100%;
+  height: 20px;
+  top: -10px;
+  transform: rotateX(90deg);
+  transform-style: preserve-3d;
+}
+.cartridge .topside .left {
+  background-color: #939598;
+  width: 90%;
+  height: 100%;
+}
+.cartridge .topside .right {
+  background-color: #828487;
+  width: 10%;
+  height: 100%;
+  right: 0;
+  transform: translateZ(-11.5px);
+}
+.cartridge .bottomside {
+  background-color: #262626;
+  bottom: -10px;
+  height: 10px;
+  width: 190px;
+  transform: rotateX(90deg);
+  border: #828487 5px solid;
+}
+.cartridge .one {
+  top: 10.66667%;
+}
+.cartridge .two {
+  top: 14%;
+}
+.cartridge .three {
+  top: 17.33333%;
+}
+.cartridge .four {
+  top: 20.66667%;
+}
+
+body, html {
+  margin: 0;
+  height: 100%;
+  text-align: center;
+}
+
+.text {
+  position: absolute;
+  bottom: 15%;
+  width: 100%;
+  text-align: center;
+  font-family: Courier New;
+  text-transform: uppercase;
+  font-size: 8pt;
+  font-weight: 900;
+  letter-spacing: 2pt;
+}
+
+#table {
+  display: table;
+  width: 100%;
+  height: 100%;
+  background: #f0f9ff;
+  /* Old browsers */
+  background: -moz-radial-gradient(center, ellipse cover, #f0f9ff 0%, #a7a9ac 100%);
+  /* FF3.6-15 */
+  background: -webkit-radial-gradient(center, ellipse cover, #f0f9ff 0%, #a7a9ac 100%);
+  /* Chrome10-25,Safari5.1-6 */
+  background: radial-gradient(ellipse at center, #f0f9ff 0%, #a7a9ac 100%);
+  /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f0f9ff', endColorstr='#d3e3ff',GradientType=1 );
+  /* IE6-9 fallback on horizontal gradient */
+}
+
+#centeralign {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.case {
+  -webkit-animation: customrotate 20s infinite linear;
+  /* Safari 4+ */
+  -moz-animation: customrotate 20s infinite linear;
+  /* Fx 5+ */
+  -o-animation: customrotate 20s infinite linear;
+  /* Opera 12+ */
+  animation: customrotate 20s infinite linear;
+  /* IE 10+, Fx 29+ */
+}
+
+@-webkit-keyframes customrotate {
+  0% {
+    transform: none;
+  }
+  100% {
+    transform: rotateZ(360deg) rotateX(360deg);
+  }
+}
+@-moz-keyframes customrotate {
+  0% {
+    transform: none;
+  }
+  100% {
+    transform: rotateZ(360deg) rotateX(360deg);
+  }
+}
+@-o-keyframes customrotate {
+  0% {
+    transform: none;
+  }
+  100% {
+    transform: rotateZ(360deg) rotateX(360deg);
+  }
+}
+@keyframes customrotate {
+  0% {
+    transform: none;
+  }
+  100% {
+    transform: rotateZ(360deg) rotateX(360deg);
+  }
+}
+.label {
+  background-image: url("jimboy3100.github.io/banners/legendpromo1.png");
+}
+
+    </style>
+
+  <script>
+  window.console = window.console || function(t) {};
+</script>
+
+  
+  
+  <script>
+  if (document.location.search.match(/type=embed/gi)) {
+    window.parent.postMessage("resize", "*");
+  }
+</script>
+
+</head>
+
+<body translate="no">
+
+  <div id="table">
+	<div id="centeralign">
+<section class="cartridge">
+ <div class="case">
+  <figure class="front">
+   <figure class="base tall"></figure>
+   <figure class="base wide"></figure>
+   <figure class="linebase"></figure>
+   <figure class="line one"></figure>
+   <figure class="line two"></figure>
+   <figure class="line three"></figure>
+   <figure class="line four"></figure>
+   <figure class="leftindent"></figure>
+   <figure class="rightindent"></figure>
+   <figure class="oval"></figure>
+   <figure class="label"></figure>
+  </figure>
+
+  <figure class="back">
+   <figure class="base tall"></figure>
+   <figure class="base wide"></figure>
+   <figure class="line one"></figure>
+   <figure class="line two"></figure>
+   <figure class="line three"></figure>
+   <figure class="line four"></figure>
+  </figure>
+
+  <figure class="rightside">
+	  <figure class="top"></figure>
+	  <figure class="bottom"></figure>
+	  <figure class="line one"></figure>
+	  <figure class="ceiling one"></figure>
+	  <figure class="floor one"></figure>
+	  <figure class="line two"></figure>
+	  <figure class="ceiling two"></figure>
+	  <figure class="floor two"></figure>
+	  <figure class="line three"></figure>
+	  <figure class="ceiling three"></figure>
+	  <figure class="floor three"></figure>
+	  <figure class="line four"></figure>
+	  <figure class="ceiling four"></figure>
+	  <figure class="floor four"></figure>
+  </figure>
+	 
+	 <figure class="leftside">
+	  <figure class="bottom"></figure>
+	  <figure class="line one"></figure>
+	  <figure class="ceiling one"></figure>
+	  <figure class="floor one"></figure>
+	  <figure class="line two"></figure>
+	  <figure class="ceiling two"></figure>
+	  <figure class="floor two"></figure>
+	  <figure class="line three"></figure>
+	  <figure class="ceiling three"></figure>
+	  <figure class="floor three"></figure>
+	  <figure class="line four"></figure>
+	  <figure class="ceiling four"></figure>
+	  <figure class="floor four"></figure>
+  </figure>
+	 
+	 <figure class="topside">
+		 <figure class="left"></figure>
+		 <figure class="right"></figure>
+	 </figure>
+	 
+	 <figure class="bottomside">
+		 <figure class="side">
+	 </figure>
+	 
+ </figure></div>
+</section>
+	<div class="text">(made entirely with HTML &amp; CSS)</div>
+	</div>
+	</div>
+
+ </body></html>
