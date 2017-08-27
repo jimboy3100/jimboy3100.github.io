@@ -1,0 +1,42 @@
+<html lang="en" style="background: rgb(51, 51, 51);"><head>
+		<meta charset="utf-8">
+
+		<meta name="description" content="Drag images onto Textify.it and it will turn them into text portraits. The characteristics of textified images can be adjusted via settings such as font size and character set.">
+		<meta name="keywords" content="textify, css, file api, hakim, elhattab, hakim el hattab, hakim elhattab, interactive, developer, flash, html5, canvas, web, experiments">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+		<title>Textify.it - Turn Images Into Text</title>
+
+		<meta property="og:image" content="http://textify.it/assets/images/icon-256.png">
+		<meta property="og:title" content="Textify">
+		<meta property="og:description" content="Turn any image into a beautiful text portrait.">
+
+		<link href="http://textify.it/css/main.css" rel="stylesheet" media="screen">
+		<link href="http://textify.it/css/dat.gui.css" rel="stylesheet" media="screen">
+
+		<link href="http://fonts.googleapis.com/css?family=Molengo" rel="stylesheet" type="text/css">
+
+		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+
+
+	<body>
+		
+
+		<div class="controls">
+			<button class="browse-button">1. Browse</button>
+			<button class="save-button">2. Save</button>
+		</div>
+
+		
+
+		
+
+		<script src="/js/libs/DAT.GUI.min.js"></script>
+
+		<script src="/js/hakim.textify.min.js"></script><input type="file" style="visibility: hidden;"><canvas class="textify-output-canvas" width="575" height="835" style="left: 366.5px; top: 85.5px;"></canvas><div class="textify-output-html" style="width: 519px; height: 779px; font-family: AppleGothic; font-weight: bold; left: 394.5px; top: 113.5px;"></div><div class="textify-progress" style="visibility: hidden;"><div style="width: 0px;"></div><p></p></div><div id="guidat"><div class="guidat" style="width: 280px; position: absolute; top: 0px; right: -20px;"><div class="guidat-controllers" style="height: auto; overflow-y: auto;"><div class="guidat-controller string"><span class="guidat-propertyname">Preset</span><select><option value="ABC">ABC</option><option value="Pointillism">Pointillism</option><option value="Mosaic">Mosaic</option><option value="Stitch">Stitch</option><option value="@#%">@#%</option><option value="Bubbles">Bubbles</option><option value="StarStruck">StarStruck</option><option value="Pixelate">Pixelate</option><option value="Binary">Binary</option><option value="Snow">Snow</option><option value="Dash">Dash</option></select></div><div class="guidat-controller string"><span class="guidat-propertyname">Filter</span><select><option value="None">None</option><option value="Black &amp; White">Black &amp; White</option><option value="Sepia">Sepia</option></select></div><div class="guidat-controller string"><span class="guidat-propertyname">Background</span><select><option value="#333">Dark Grey</option><option value="#888">Light Grey</option><option value="#000">Black</option><option value="#fff">White</option><option value="#c21a08">Red</option><option value="#54ad3c">Green</option><option value="#6c94d2">Blue</option><option value="transparent">Transparent</option><option value="image">Source Image</option></select></div><div class="guidat-controller string"><span class="guidat-propertyname">Character Set</span><input value="ABC" spellcheck="false"></div><div class="guidat-controller number"><span class="guidat-propertyname">Character Count</span><input id="characterLimit" type="text" value="15000"><div class="guidat-slider-bg"><div class="guidat-slider-fg" style="width: 14.1414%;"></div></div></div><div class="guidat-controller number"><span class="guidat-propertyname">Font Scale</span><input id="characterScale" type="text" value="1.25"><div class="guidat-slider-bg"><div class="guidat-slider-fg" style="width: 23.4694%;"></div></div></div><div class="guidat-controller string"><span class="guidat-propertyname">Font Family</span><select><option value="Arial">Arial</option><option value="Comic Sans MS">Comic Sans MS</option><option value="Helvetica">Helvetica</option><option value="monospace">monospace</option><option value="Times New Roman">Times New Roman</option></select></div><div class="guidat-controller string"><span class="guidat-propertyname">Font Weight</span><select><option value="normal">normal</option><option value="bold">bold</option><option value="bolder">bolder</option></select></div><div class="guidat-controller function apply-button" style="cursor: pointer;"><span class="guidat-propertyname" style="cursor: pointer;">Apply Settings</span></div></div><a class="guidat-toggle" href="#">Close Controls</a></div></div>
+		<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+	
+</body></html>
