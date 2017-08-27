@@ -17,16 +17,7 @@ canvas {
 	background-image: radial-gradient(#666, #333);
 }
 
-#instructions {
-	position: absolute;
-	color: #fff;
-	bottom: 0;
-	padding-bottom: 6px;
-	font-family: sans-serif;
-	width: 100%;
-	text-align: center;
-	pointer-events: none;
-}
+
     </style>
 
   <script>
@@ -45,11 +36,8 @@ canvas {
 
 <body translate="no" style="cursor: pointer;">
 
-  <div id="three-container"><canvas width="1308" height="905" style="width: 1308px; height: 905px;"></canvas></div>
+  <div id="three-container"></div>
 
-<div id="instructions">
-	click and drag to control the animation
-</div>
     <script src="//production-assets.codepen.io/assets/common/stopExecutionOnTimeout-b2a7b3fe212eaa732349046d8416e00a9dec26eb7fd347590fbced3ab38af52e.js"></script>
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/three.js/r75/three.min.js"></script>
@@ -78,7 +66,7 @@ function init() {
   var slide = new Slide(width, height, 'out');
 	var l1 = new THREE.ImageLoader();
 	l1.setCrossOrigin('Anonymous');
-	l1.load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/175711/winter.jpg', function(img) {
+	l1.load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/175711/spring.jpg', function(img) {
 	  slide.setImage(img);
 	})
   root.scene.add(slide);
@@ -86,7 +74,7 @@ function init() {
   var slide2 = new Slide(width, height, 'in');
   var l2 = new THREE.ImageLoader();
 	l2.setCrossOrigin('Anonymous');
-	l2.load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/175711/spring.jpg', function(img) {
+	l2.load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/175711/winter.jpg', function(img) {
 		slide2.setImage(img);
 	})
 	
