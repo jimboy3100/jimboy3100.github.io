@@ -1,166 +1,882 @@
 
 <!DOCTYPE html>
 <html>
- <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>OGARio by szymy v4</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:700">
-  <link rel="stylesheet" href="http://agar.io/css/master.css">
-  <link rel="stylesheet" href="http://cdn.ogario.ovh/static/css/bootstrap-colorpicker.min.css"></link>
-  <link rel="stylesheet" href="http://cdn.ogario.ovh/static/css/toastr.min.css"></link>
-  <link rel="stylesheet" href="http://cdn.ogario.ovh/static/css/switchery.min.css"></link>
-  <link rel="stylesheet" href="http://cdn.ogario.ovh/static/css/rangeslider.css"></link>
-  <link rel="stylesheet" href="http://cdn.ogario.ovh/static/css/perfect-scrollbar.min.css"></link>
-  <link rel="stylesheet" href="http://cdn.ogario.ovh/v3/ogario.v3.css?v=334">
-  <script src="http://cdn.ogario.ovh/static/js/jquery.min.js"></script>
-  <script src="http://cdn.ogario.ovh/static/js/bootstrap.min.js"></script>
-  <script src="http://cdn.ogario.ovh/static/js/bootstrap-colorpicker.min.js"></script>
-  <script src="http://cdn.ogario.ovh/static/js/toastr.min.js"></script>
-  <script src="http://cdn.ogario.ovh/static/js/switchery.min.js"></script>
-  <script src="http://cdn.ogario.ovh/static/js/rangeslider.min.js"></script>
-  <script src="http://cdn.ogario.ovh/static/js/perfect-scrollbar.jquery.min.js"></script>
-  <script src="http://agar.io/i18n.js"></script>
-  <script src="http://cdn.ogario.ovh/v4/beta/ogario.v4.master.js?v=400"></script>
- </head>
+<head>
+<base href>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="The smash hit game! Control your cell and eat other players to grow larger! Play with millions of players around the world and try to become the biggest cell of all!">
+<meta name="keywords" content="agario, agar, io, cell, cells, virus, bacteria, blob, game, games, web game, html5, fun, flash">
+<meta name="robots" content="index, follow">
+<meta name="viewport" content="minimal-ui, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta property="fb:app_id" content="677505792353827"/>
+<meta property="og:title" content="Agar.io "/>
+<meta property="og:description" content="The smash hit game! Control your cell and eat other players to grow larger! Play with millions of players around the world and try to become the biggest cell of all!"/>
+<meta property="og:url" content="http://agar.io/"/>
+<meta property="og:image" content="http://agar.io/img/1200x630.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:type" content="website"/>
+<meta property="al:ios:url" content="com.miniclip.agar.io://">
+<meta property="al:ios:app_store_id" content="995999703">
+<meta property="al:ios:app_name" content="Agar.io">
+<meta property="al:android:url" content="com.miniclip.agar.io://">
+<meta property="al:android:app_name" content="Agar.io">
+<meta property="al:android:package" content="com.miniclip.agar.io">
+<title>Agar.io </title>
+<link rel="canonical" href="http://agar.io/"/>
+<link id="favicon" rel="icon" type="image/png" href="favicon-32x32.png"/>
+<script src="environment.js?v=923"></script>
+<script type="text/javascript">
+function addScriptToHeader(filename)
+{
+   var head = document.getElementsByTagName('head')[0];
+   var script = document.createElement('script');
+   script.src = filename;
+   script.async =true;
+   script.type = 'text/javascript';
+   head.appendChild(script)
+} 
+var isInFacebook = window.location.search.indexOf('fb') != -1;
+if (isInFacebook)
+	addScriptToHeader("//js-sec.indexww.com/ht/p/185008-118045694095835.js");
+else
+	addScriptToHeader("//js-sec.indexww.com/ht/p/185008-197210696226979.js");
+</script>
+<script type="text/javascript">
+window.NREUM||(NREUM={}),__nr_require=function(t,e,n){function r(n){if(!e[n]){var o=e[n]={exports:{}};t[n][0].call(o.exports,function(e){var o=t[n][1][e];return r(o||e)},o,o.exports)}return e[n].exports}if("function"==typeof __nr_require)return __nr_require;for(var o=0;o<n.length;o++)r(n[o]);return r}({1:[function(t,e,n){function r(t){try{s.console&&console.log(t)}catch(e){}}var o,i=t("ee"),a=t(13),s={};try{o=localStorage.getItem("__nr_flags").split(","),console&&"function"==typeof console.log&&(s.console=!0,-1!==o.indexOf("dev")&&(s.dev=!0),-1!==o.indexOf("nr_dev")&&(s.nrDev=!0))}catch(c){}s.nrDev&&i.on("internal-error",function(t){r(t.stack)}),s.dev&&i.on("fn-err",function(t,e,n){r(n.stack)}),s.dev&&(r("NR AGENT IN DEVELOPMENT MODE"),r("flags: "+a(s,function(t,e){return t}).join(", ")))},{}],2:[function(t,e,n){function r(t,e,n,r,o){try{d?d-=1:i("err",[o||new UncaughtException(t,e,n)])}catch(s){try{i("ierr",[s,(new Date).getTime(),!0])}catch(c){}}return"function"==typeof f?f.apply(this,a(arguments)):!1}function UncaughtException(t,e,n){this.message=t||"Uncaught error with no additional information",this.sourceURL=e,this.line=n}function o(t){i("err",[t,(new Date).getTime()])}var i=t("handle"),a=t(14),s=t("ee"),c=t("loader"),f=window.onerror,u=!1,d=0;c.features.err=!0,t(1),window.onerror=r;try{throw new Error}catch(l){"stack"in l&&(t(7),t(6),"addEventListener"in window&&t(4),c.xhrWrappable&&t(8),u=!0)}s.on("fn-start",function(t,e,n){u&&(d+=1)}),s.on("fn-err",function(t,e,n){u&&(this.thrown=!0,o(n))}),s.on("fn-end",function(){u&&!this.thrown&&d>0&&(d-=1)}),s.on("internal-error",function(t){i("ierr",[t,(new Date).getTime(),!0])})},{}],3:[function(t,e,n){function r(t){}if(window.performance&&window.performance.timing&&window.performance.getEntriesByType){var o=t("ee"),i=t("handle"),a=t(7),s=t(6);t("loader").features.stn=!0,t(5);var c=NREUM.o.EV;o.on("fn-start",function(t,e){var n=t[0];n instanceof c&&(this.bstStart=Date.now())}),o.on("fn-end",function(t,e){var n=t[0];n instanceof c&&i("bst",[n,e,this.bstStart,Date.now()])}),a.on("fn-start",function(t,e,n){this.bstStart=Date.now(),this.bstType=n}),a.on("fn-end",function(t,e){i("bstTimer",[e,this.bstStart,Date.now(),this.bstType])}),s.on("fn-start",function(){this.bstStart=Date.now()}),s.on("fn-end",function(t,e){i("bstTimer",[e,this.bstStart,Date.now(),"requestAnimationFrame"])}),o.on("pushState-start",function(t){this.time=Date.now(),this.startPath=location.pathname+location.hash}),o.on("pushState-end",function(t){i("bstHist",[location.pathname+location.hash,this.startPath,this.time])}),"addEventListener"in window.performance&&(window.performance.clearResourceTimings?window.performance.addEventListener("resourcetimingbufferfull",function(t){i("bstResource",[window.performance.getEntriesByType("resource")]),window.performance.clearResourceTimings()},!1):window.performance.addEventListener("webkitresourcetimingbufferfull",function(t){i("bstResource",[window.performance.getEntriesByType("resource")]),window.performance.webkitClearResourceTimings()},!1)),document.addEventListener("scroll",r,!1),document.addEventListener("keypress",r,!1),document.addEventListener("click",r,!1)}},{}],4:[function(t,e,n){function r(t){for(var e=t;e&&!e.hasOwnProperty(u);)e=Object.getPrototypeOf(e);e&&o(e)}function o(t){s.inPlace(t,[u,d],"-",i)}function i(t,e){return t[1]}var a=t("ee").get("events"),s=t(15)(a),c=t("gos"),f=XMLHttpRequest,u="addEventListener",d="removeEventListener";e.exports=a,"getPrototypeOf"in Object?(r(document),r(window),r(f.prototype)):f.prototype.hasOwnProperty(u)&&(o(window),o(f.prototype)),a.on(u+"-start",function(t,e){if(t[1]){var n=t[1];if("function"==typeof n){var r=c(n,"nr@wrapped",function(){return s(n,"fn-",null,n.name||"anonymous")});this.wrapped=t[1]=r}else"function"==typeof n.handleEvent&&s.inPlace(n,["handleEvent"],"fn-")}}),a.on(d+"-start",function(t){var e=this.wrapped;e&&(t[1]=e)})},{}],5:[function(t,e,n){var r=t("ee").get("history"),o=t(15)(r);e.exports=r,o.inPlace(window.history,["pushState","replaceState"],"-")},{}],6:[function(t,e,n){var r=t("ee").get("raf"),o=t(15)(r);e.exports=r,o.inPlace(window,["requestAnimationFrame","mozRequestAnimationFrame","webkitRequestAnimationFrame","msRequestAnimationFrame"],"raf-"),r.on("raf-start",function(t){t[0]=o(t[0],"fn-")})},{}],7:[function(t,e,n){function r(t,e,n){t[0]=a(t[0],"fn-",null,n)}function o(t,e,n){this.method=n,this.timerDuration="number"==typeof t[1]?t[1]:0,t[0]=a(t[0],"fn-",this,n)}var i=t("ee").get("timer"),a=t(15)(i);e.exports=i,a.inPlace(window,["setTimeout","setImmediate"],"setTimer-"),a.inPlace(window,["setInterval"],"setInterval-"),a.inPlace(window,["clearTimeout","clearImmediate"],"clearTimeout-"),i.on("setInterval-start",r),i.on("setTimer-start",o)},{}],8:[function(t,e,n){function r(t,e){d.inPlace(e,["onreadystatechange"],"fn-",s)}function o(){var t=this,e=u.context(t);t.readyState>3&&!e.resolved&&(e.resolved=!0,u.emit("xhr-resolved",[],t)),d.inPlace(t,v,"fn-",s)}function i(t){w.push(t),h&&(g=-g,b.data=g)}function a(){for(var t=0;t<w.length;t++)r([],w[t]);w.length&&(w=[])}function s(t,e){return e}function c(t,e){for(var n in t)e[n]=t[n];return e}t(4);var f=t("ee"),u=f.get("xhr"),d=t(15)(u),l=NREUM.o,p=l.XHR,h=l.MO,m="readystatechange",v=["onload","onerror","onabort","onloadstart","onloadend","onprogress","ontimeout"],w=[];e.exports=u;var y=window.XMLHttpRequest=function(t){var e=new p(t);try{u.emit("new-xhr",[e],e),e.addEventListener(m,o,!1)}catch(n){try{u.emit("internal-error",[n])}catch(r){}}return e};if(c(p,y),y.prototype=p.prototype,d.inPlace(y.prototype,["open","send"],"-xhr-",s),u.on("send-xhr-start",function(t,e){r(t,e),i(e)}),u.on("open-xhr-start",r),h){var g=1,b=document.createTextNode(g);new h(a).observe(b,{characterData:!0})}else f.on("fn-end",function(t){t[0]&&t[0].type===m||a()})},{}],9:[function(t,e,n){function r(t){var e=this.params,n=this.metrics;if(!this.ended){this.ended=!0;for(var r=0;l>r;r++)t.removeEventListener(d[r],this.listener,!1);if(!e.aborted){if(n.duration=(new Date).getTime()-this.startTime,4===t.readyState){e.status=t.status;var i=o(t,this.lastSize);if(i&&(n.rxSize=i),this.sameOrigin){var a=t.getResponseHeader("X-NewRelic-App-Data");a&&(e.cat=a.split(", ").pop())}}else e.status=0;n.cbTime=this.cbTime,u.emit("xhr-done",[t],t),c("xhr",[e,n,this.startTime])}}}function o(t,e){var n=t.responseType;if("json"===n&&null!==e)return e;var r="arraybuffer"===n||"blob"===n||"json"===n?t.response:t.responseText;return i(r)}function i(t){if("string"==typeof t&&t.length)return t.length;if("object"==typeof t){if("undefined"!=typeof ArrayBuffer&&t instanceof ArrayBuffer&&t.byteLength)return t.byteLength;if("undefined"!=typeof Blob&&t instanceof Blob&&t.size)return t.size;if(!("undefined"!=typeof FormData&&t instanceof FormData))try{return JSON.stringify(t).length}catch(e){return}}}function a(t,e){var n=f(e),r=t.params;r.host=n.hostname+":"+n.port,r.pathname=n.pathname,t.sameOrigin=n.sameOrigin}var s=t("loader");if(s.xhrWrappable){var c=t("handle"),f=t(10),u=t("ee"),d=["load","error","abort","timeout"],l=d.length,p=t("id"),h=t(12),m=window.XMLHttpRequest;s.features.xhr=!0,t(8),u.on("new-xhr",function(t){var e=this;e.totalCbs=0,e.called=0,e.cbTime=0,e.end=r,e.ended=!1,e.xhrGuids={},e.lastSize=null,h&&(h>34||10>h)||window.opera||t.addEventListener("progress",function(t){e.lastSize=t.loaded},!1)}),u.on("open-xhr-start",function(t){this.params={method:t[0]},a(this,t[1]),this.metrics={}}),u.on("open-xhr-end",function(t,e){"loader_config"in NREUM&&"xpid"in NREUM.loader_config&&this.sameOrigin&&e.setRequestHeader("X-NewRelic-ID",NREUM.loader_config.xpid)}),u.on("send-xhr-start",function(t,e){var n=this.metrics,r=t[0],o=this;if(n&&r){var a=i(r);a&&(n.txSize=a)}this.startTime=(new Date).getTime(),this.listener=function(t){try{"abort"===t.type&&(o.params.aborted=!0),("load"!==t.type||o.called===o.totalCbs&&(o.onloadCalled||"function"!=typeof e.onload))&&o.end(e)}catch(n){try{u.emit("internal-error",[n])}catch(r){}}};for(var s=0;l>s;s++)e.addEventListener(d[s],this.listener,!1)}),u.on("xhr-cb-time",function(t,e,n){this.cbTime+=t,e?this.onloadCalled=!0:this.called+=1,this.called!==this.totalCbs||!this.onloadCalled&&"function"==typeof n.onload||this.end(n)}),u.on("xhr-load-added",function(t,e){var n=""+p(t)+!!e;this.xhrGuids&&!this.xhrGuids[n]&&(this.xhrGuids[n]=!0,this.totalCbs+=1)}),u.on("xhr-load-removed",function(t,e){var n=""+p(t)+!!e;this.xhrGuids&&this.xhrGuids[n]&&(delete this.xhrGuids[n],this.totalCbs-=1)}),u.on("addEventListener-end",function(t,e){e instanceof m&&"load"===t[0]&&u.emit("xhr-load-added",[t[1],t[2]],e)}),u.on("removeEventListener-end",function(t,e){e instanceof m&&"load"===t[0]&&u.emit("xhr-load-removed",[t[1],t[2]],e)}),u.on("fn-start",function(t,e,n){e instanceof m&&("onload"===n&&(this.onload=!0),("load"===(t[0]&&t[0].type)||this.onload)&&(this.xhrCbStart=(new Date).getTime()))}),u.on("fn-end",function(t,e){this.xhrCbStart&&u.emit("xhr-cb-time",[(new Date).getTime()-this.xhrCbStart,this.onload,e],e)})}},{}],10:[function(t,e,n){e.exports=function(t){var e=document.createElement("a"),n=window.location,r={};e.href=t,r.port=e.port;var o=e.href.split("://");!r.port&&o[1]&&(r.port=o[1].split("/")[0].split("@").pop().split(":")[1]),r.port&&"0"!==r.port||(r.port="https"===o[0]?"443":"80"),r.hostname=e.hostname||n.hostname,r.pathname=e.pathname,r.protocol=o[0],"/"!==r.pathname.charAt(0)&&(r.pathname="/"+r.pathname);var i=!e.protocol||":"===e.protocol||e.protocol===n.protocol,a=e.hostname===document.domain&&e.port===n.port;return r.sameOrigin=i&&(!e.hostname||a),r}},{}],11:[function(t,e,n){function r(t,e){return function(){o(t,[(new Date).getTime()].concat(a(arguments)),null,e)}}var o=t("handle"),i=t(13),a=t(14);"undefined"==typeof window.newrelic&&(newrelic=NREUM);var s=["setPageViewName","addPageAction","setCustomAttribute","finished","addToTrace","inlineHit"],c=["addPageAction"],f="api-";i(s,function(t,e){newrelic[e]=r(f+e,"api")}),i(c,function(t,e){newrelic[e]=r(f+e)}),e.exports=newrelic,newrelic.noticeError=function(t){"string"==typeof t&&(t=new Error(t)),o("err",[t,(new Date).getTime()])}},{}],12:[function(t,e,n){var r=0,o=navigator.userAgent.match(/Firefox[\/\s](\d+\.\d+)/);o&&(r=+o[1]),e.exports=r},{}],13:[function(t,e,n){function r(t,e){var n=[],r="",i=0;for(r in t)o.call(t,r)&&(n[i]=e(r,t[r]),i+=1);return n}var o=Object.prototype.hasOwnProperty;e.exports=r},{}],14:[function(t,e,n){function r(t,e,n){e||(e=0),"undefined"==typeof n&&(n=t?t.length:0);for(var r=-1,o=n-e||0,i=Array(0>o?0:o);++r<o;)i[r]=t[e+r];return i}e.exports=r},{}],15:[function(t,e,n){function r(t){return!(t&&"function"==typeof t&&t.apply&&!t[a])}var o=t("ee"),i=t(14),a="nr@original",s=Object.prototype.hasOwnProperty,c=!1;e.exports=function(t){function e(t,e,n,o){function nrWrapper(){var r,a,s,c;try{a=this,r=i(arguments),s="function"==typeof n?n(r,a):n||{}}catch(u){d([u,"",[r,a,o],s])}f(e+"start",[r,a,o],s);try{return c=t.apply(a,r)}catch(l){throw f(e+"err",[r,a,l],s),l}finally{f(e+"end",[r,a,c],s)}}return r(t)?t:(e||(e=""),nrWrapper[a]=t,u(t,nrWrapper),nrWrapper)}function n(t,n,o,i){o||(o="");var a,s,c,f="-"===o.charAt(0);for(c=0;c<n.length;c++)s=n[c],a=t[s],r(a)||(t[s]=e(a,f?s+o:o,i,s))}function f(e,n,r){if(!c){c=!0;try{t.emit(e,n,r)}catch(o){d([o,e,n,r])}c=!1}}function u(t,e){if(Object.defineProperty&&Object.keys)try{var n=Object.keys(t);return n.forEach(function(n){Object.defineProperty(e,n,{get:function(){return t[n]},set:function(e){return t[n]=e,e}})}),e}catch(r){d([r])}for(var o in t)s.call(t,o)&&(e[o]=t[o]);return e}function d(e){try{t.emit("internal-error",e)}catch(n){}}return t||(t=o),e.inPlace=n,e.flag=a,e}},{}],ee:[function(t,e,n){function r(){}function o(t){function e(t){return t&&t instanceof r?t:t?s(t,a,i):i()}function n(n,r,o){t&&t(n,r,o);for(var i=e(o),a=l(n),s=a.length,c=0;s>c;c++)a[c].apply(i,r);var u=f[v[n]];return u&&u.push([w,n,r,i]),i}function d(t,e){m[t]=l(t).concat(e)}function l(t){return m[t]||[]}function p(t){return u[t]=u[t]||o(n)}function h(t,e){c(t,function(t,n){e=e||"feature",v[n]=e,e in f||(f[e]=[])})}var m={},v={},w={on:d,emit:n,get:p,listeners:l,context:e,buffer:h};return w}function i(){return new r}var a="nr@context",s=t("gos"),c=t(13),f={},u={},d=e.exports=o();d.backlog=f},{}],gos:[function(t,e,n){function r(t,e,n){if(o.call(t,e))return t[e];var r=n();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(t,e,{value:r,writable:!0,enumerable:!1}),r}catch(i){}return t[e]=r,r}var o=Object.prototype.hasOwnProperty;e.exports=r},{}],handle:[function(t,e,n){function r(t,e,n,r){o.buffer([t],r),o.emit(t,e,n)}var o=t("ee").get("handle");e.exports=r,r.ee=o},{}],id:[function(t,e,n){function r(t){var e=typeof t;return!t||"object"!==e&&"function"!==e?-1:t===window?0:a(t,i,function(){return o++})}var o=1,i="nr@id",a=t("gos");e.exports=r},{}],loader:[function(t,e,n){function r(){if(!m++){var t=h.info=NREUM.info,e=u.getElementsByTagName("script")[0];if(t&&t.licenseKey&&t.applicationID&&e){c(l,function(e,n){t[e]||(t[e]=n)});var n="https"===d.split(":")[0]||t.sslForHttp;h.proto=n?"https://":"http://",s("mark",["onload",a()],null,"api");var r=u.createElement("script");r.src=h.proto+t.agent,e.parentNode.insertBefore(r,e)}}}function o(){"complete"===u.readyState&&i()}function i(){s("mark",["domContent",a()],null,"api")}function a(){return(new Date).getTime()}var s=t("handle"),c=t(13),f=window,u=f.document;NREUM.o={ST:setTimeout,CT:clearTimeout,XHR:f.XMLHttpRequest,REQ:f.Request,EV:f.Event,PR:f.Promise,MO:f.MutationObserver},t(11);var d=""+location,l={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",agent:"js-agent.newrelic.com/nr-918.min.js"},p=window.XMLHttpRequest&&XMLHttpRequest.prototype&&XMLHttpRequest.prototype.addEventListener&&!/CriOS/.test(navigator.userAgent),h=e.exports={offset:a(),origin:d,features:{},xhrWrappable:p};u.addEventListener?(u.addEventListener("DOMContentLoaded",i,!1),f.addEventListener("load",r,!1)):(u.attachEvent("onreadystatechange",o),f.attachEvent("onload",r)),s("mark",["firstbyte",a()],null,"api");var m=0},{}]},{},["loader",2,9,3]);
+;NREUM.info={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",licenseKey:EnvConfig['NR_licenseKey'],applicationID:EnvConfig['NR_applicationID'],sa:1}
+</script>
+<script type="text/javascript"> 
 
-<body> 
- <div id="fb-root"></div>
- <script>
-  (function(d, s, id) {
-   var js, fjs = d.getElementsByTagName(s)[0];
-   if (d.getElementById(id)) return;
-   js = d.createElement(s); js.id = id;
-   js.src = "//connect.facebook.net/en_US/sdk.js";
-   fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
- </script>
- <div id="overlays" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 200;">
-  <div id="helloContainer" data-logged-in="0" data-has-account-data="0" data-party-state="0" data-results-state="0" data-gamemode="">
-   <div id="leftPanel" class="side-container left-container">
-    <div class="agario-panel agario-side-panel agario-profile-panel">
-     <div class="clearfix" style="margin-bottom: 16px;">
-      <img class="agario-profile-picture" src="mc/img/profilepic_guest.png"/>
-      <div class="agario-profile-name-container">
-       <div class="agario-profile-name"></div>
-      </div>
-     </div>
-     <div style="position: relative;" class="clearfix">
-      <div class="agario-exp-bar progress">
-       <span class="progress-bar-text"></span>
-       <div class="progress-bar progress-bar-striped" style="width: 0%;"></div>
-      </div>
-      <div class="progress-bar-border"></div>
-      <div class="progress-bar-star"></div>
-     </div>
-     <br clear="both"/>
-    </div>
-   </div>
-   <div class="center-container">
-    <div id="mainPanel" class="agario-panel">
-     <div role="form" novalidate>
-      <div class="form-group clearfix"></div>
-       <div class="form-group clearfix">
-        <input id="nick" class="form-control" placeholder="Nick" maxlength="15" autofocus />
-        <select id="gamemode" class="form-control" required>
-         <option value="" data-itr="page_gamemode_ffa"></option>
-         <option value=":teams" data-itr="page_gamemode_teams"></option>
-         <option value=":experimental" data-itr="page_gamemode_experimental"></option>
-         <option value=":party" data-itr="page_party"></option>
-        </select>
-       </div>
-       <div id="locationUnknown">
-        <select id="region" class="form-control" onchange="master.setRegion($('#region').val());" required>
-         <option selected value="" data-itr="page_region_select"></option>
-         <option value="US-Atlanta" data-itr="page_region_north_america"></option>
-         <option value="BR-Brazil" data-itr="page_region_south_america"></option>
-         <option value="EU-London" data-itr="page_region_europe"></option>
-         <option value="RU-Russia" data-itr="page_region_russia"></option>
-         <option value="TK-Turkey" data-itr="page_region_turkey"></option>
-         <option value="JP-Tokyo" data-itr="page_region_east_asia"></option>
-         <option value="CN-China" data-itr="page_region_china"></option>
-         <option value="SG-Singapore" data-itr="page_region_oceania"></option>
-        </select>
-       </div>
-       <div class="form-group" id="agario-main-buttons">
-       <div class="row">
-        <button type="button" onclick="toggleSettings(); return false;" class="btn btn-info btn-settings"><i class="glyphicon glyphicon-cog"></i></button>
-        <button type="submit" class="btn btn-play btn-primary btn-needs-server" data-itr="page_play"></button>
-        <button type="submit" class="btn btn-play-guest btn-success btn-needs-server" data-itr="page_play_as_guest"></button>
-        <button type="submit" onclick="toggleSocialLogin(); return false" class="btn btn-warning btn-login-play btn-needs-server" data-itr="page_login_and_play"></button>
-       </div>
-       <div id="socialLoginContainer" style="display:none;">
-        <div class="row">
-         <button onclick="master.facebookLogin(); return false;" class="btn btn-primary btn-login btn-fb">
-          <span class="social social-facebook fb-icon"></span>
-          <span class="btn-text" data-itr="page_menu_login_facebook"></span>
-         </button>
-        </div>
-       </div>
-      </div>
-      <div id="settings" class="checkbox" style="display:none;">
-       <div style="float: left; width: 200px;">
-        <div id="locationKnown"></div>
-       </div>
-       <div style="float: right; width: 120px;">
-        <button class="btn btn-warning btn-spectate btn-needs-server" data-itr="page_spectate"></button>
-        <button onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout"></button>
-       </div>
-       <br clear="both"/>
-      </div>
-     </div>
-    </div>
-   </div>
-   <div id="rightPanel" class="side-container right-container">
-    <div class="agario-panel agario-side-panel agario-party">
-     <div class="agario-party-6">
-      <h4><center data-itr="page_party"></center></h4>
-      <div class="party-text" data-itr="page_party_join_error"></div>
-      <div class="clearfix" style="margin: 10px -10px 0px -10px;">
-       <button class="btn btn-primary btn-block" data-itr="page_back_button"></button>
-      </div>
-     </div>
-    </div>
-   </div>
-  </div>
- </div>
- <canvas id="canvas"></canvas>
- <script src="http://cdn.ogario.ovh/v4/beta/ogario.v4.js?v=400" charset="utf-8"></script>
- <div style="font-family:'Ubuntu'">&nbsp;</div>
- <div id="captchaWindow" style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index:500">
-  <div id="verifyUser" style="position:absolute; top:50%; left:50%; margin-left:-152px; margin-top:-40px;"></div>
- </div>
- <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+function hasEmail(url) {
+	return url.indexOf("@")>-1 || url.indexOf("%40")>-1;
+}
 
-  ga('create', 'UA-67142685-5', 'auto');
-  ga('send', 'pageview');
+function removeUrlEmails() {
+  if (hasEmail(window.location.hash)) { 
+    window.location.hash = ""; 
+  } 
+}
 
- </script>
- <script>
-  function Recaptcha(curtinId, elemId) {
+function overrideHistoryState(history){
+
+	window.onhashchange = removeUrlEmails;
+
+    var pushState = history.pushState;
+    history.pushState = function(state, title, path) {
+
+        pushState.apply(history, arguments);
+
+    	window.onhashchange();
+    }
+
+    var replaceState = history.replaceState;
+    history.replaceState = function(state, title, path) {
+
+        replaceState.apply(history, arguments);
+
+    	window.onhashchange();
+    }
+
+	window.onhashchange();
+}
+
+overrideHistoryState(window.history);
+
+</script>
+<script type="text/javascript">
+!!function(e,t){window.TapResearch=t,t.loadLibrary=function(e){var o=document.createElement("script"),a=document.getElementsByTagName("head")[0];o.src=t.host+"/assets/sdk.js"+(e?"?ver="+e:""),o.async=!0,a.appendChild(o),t.loadTimeout=setTimeout(function(){t.handleTimeout()},t.config.load_timeout||2e3)},t.init=function(e){t.config=e,t.host="https://www.tapresearch.com",t.loadLibrary()}}(document,window.TapResearch||[]);
+</script>
+<script type="text/javascript">
+var googletag = googletag || {};
+googletag.cmd = googletag.cmd || [];
+window['googletag'] = googletag;
+(function() {
+var gads = document.createElement('script');
+gads.async = true;
+gads.type = 'text/javascript';
+var useSSL = 'https:' == document.location.protocol;
+gads.src = (useSSL ? 'https:' : 'http:') + 
+'//www.googletagservices.com/tag/js/gpt.js';
+var node = document.getElementsByTagName('script')[0];
+node.parentNode.insertBefore(gads, node);
+})();
+</script>
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-62402209-1', 'auto');
+ga('send', 'pageview');
+
+window['ga'] = ga;
+</script>
+
+<script> 
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod? 
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n; 
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0; 
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, 
+document,'script','//connect.facebook.net/en_US/fbevents.js'); 
+
+fbq('init', '859937640783233'); 
+fbq('track', "PageView");
+</script>
+<noscript><img height="1" width="1" style="display:none" 
+src="https://www.facebook.com/tr?id=859937640783233&ev=PageView&noscript=1"
+/></noscript>
+
+<script type="text/javascript">
+
+window["isChrome"] = /chrome/.test( navigator.userAgent.toLowerCase() );
+window['ASSETS_ROOT'] = "";
+
+function getUrlVars()
+{
+	var vars = [], hash;
+	var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+	for(var i = 0; i < hashes.length; i++)
+	{
+		hash = hashes[i].split('=');
+		vars.push(hash[0]);
+		vars[hash[0]] = hash[1];
+	}
+	return vars;
+}
+
+var queryVars = getUrlVars();
+if(queryVars['v']!=null)
+{
+	window.location = "/v"+queryVars['v'];
+}
+
+var rpx_params = {
+	kw: '',
+	visitor: {},
+	inventory: {}
+};
+
+var hasBottomAd = false;
+var isInFacebook = window.location.search.indexOf('fb') != -1;
+if(window.innerHeight > 810 && !isInFacebook){
+	hasBottomAd = true;
+}
+
+window.___gcfg = {
+	lang: 'en-US',
+	parsetags: 'explicit'
+  };
+</script>
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:700" rel="stylesheet" type="text/css">
+<link href="css/master.css?v=505" rel="stylesheet" type="text/css">
+<script src="js/master.js"></script>
+<script src="i18n.js?v=923"></script>
+<script src="main_out.js?v=923"></script>
+<script type="text/javascript" src="mc/agario.js?v=923"></script>
+</head>
+<body>
+<main style="display:none">
+<h1>Agar.io</h1>
+<p>The smash hit game! Control your cell and eat other players to grow larger! Play with millions of players around the world and try to become the biggest cell of all!</p>
+<script type="text/javascript">
+var presetGameMode = "";
+</script>
+
+</main>
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<div id="debug-overlay"></div>
+<div id="openfl-overlay-top" class="disabler top"></div>
+<div id="openfl-content"></div>
+<div id="openfl-overlay" class="disabler"></div>
+<a id="modal-payment-link" class="xsolla_container" href="/pay/"></a>
+
+<div id="fbBlocker" style="position:absolute;width:100%;height:100%;display:none;z-index: 310;">
+<div class="disabler"></div>
+</div>
+
+<div id="oferwallContainer" style="position:absolute;width:100%;height:100%;display:none;z-index: 610;">
+<div class="disabler"></div>
+<div class="agario-panel offerwall">
+<div style="position: absolute; right: 10px; top: 4px;">
+<button type="button" class="close" onclick="closeOfferwall(); return false;">×</button>
+</div>
+<div id="offerwallIframeWrapper">
+<iframe id="offerwallIframe" frameborder="0" src></iframe>
+</div>
+</div>
+</div>
+
+<div id="videoContainer" style="position:absolute;width:100%;height:100%;display:none;z-index: 320;">
+<div class="disabler"></div>
+<div class="agario-panel" style="z-index: 301;position: absolute;width: 640px; height: 350px;transform: translate(-50%,-50%);left: 50%;top: 50%;">
+<div style="position: absolute; width:700px;right: 10px; top: 4px;">
+<button type="button" class="close" onclick="closeVideoContainer(); return false;">×</button>
+</div>
+<div id="ssaAd" style="z-index:9999;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);"></div>
+</div>
+</div>
+<div id="overlays" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 200;">
+<div id="controller_alert_connected" class="gamepad_alert" style="display:none">
+<div class="wrapper">
+<span class="controller_icon">&nbsp;</span>
+<span class="alert_text">Controller Connected</span>
+</div>
+</div>
+<div id="controller_alert_disconnected" class="gamepad_alert" style="display:none">
+<div class="wrapper">
+<span class="controller_icon">&nbsp;</span>
+<span class="alert_text">Controller Disconnected</span>
+</div>
+</div>
+<div id="helloContainer" data-logged-in="0" data-has-account-data="0" data-party-state="0" data-results-state="0" data-gamemode>
+<div id="leftPanel" class="side-container left-container disable-mouse">
+<div id="blocker" class="shop-blocker"><span class="connecting-text" style="display: block" data-itr="page_connecting"></span><img src="img/loader.gif" alt="loader"/><span class="connecting-info" style="display: block; margin-top: 100px"></span></div>
+<div class="agario-panel agario-side-panel agario-profile-panel">
+<div class="clearfix" style="margin-bottom: 16px;">
+<img class="agario-profile-picture" src="mc/img/profilepic_guest.png"/>
+<div class="agario-profile-name-container">
+<div class="agario-wallet-container">
+<span class="agario-wallet-label">100</span>
+<img src="mc/img/currency_icon.png" class="agario-wallet-currency"/>
+<div class="agario-wallet-plus">
+<span>+</span>
+</div>
+</div>
+<div class="agario-profile-name">Guest</div>
+</div>
+</div>
+<div style="position: relative;" class="clearfix">
+<div class="agario-exp-bar progress">
+<span class="progress-bar-text">0/50</span>
+<div class="progress-bar progress-bar-striped" style="width: 0%;"></div>
+</div>
+<div class="progress-bar-border"></div>
+<div class="progress-bar-star">1</div>
+</div>
+
+<button id="freeCoins" onclick="MC.showFreeCoins(); return false;" class="btn btn-primary btn-success btn-freecoins" style="line-height: 24px; margin-bottom: 10px; margin-top: -5px" data-itr="page_menu_main_free_coins">
+</button>
+<br clear="both"/>
+
+<div id="giftButton" style="position:relative;">
+<button id="gifting" onclick="MC.showGifting(); return false;" class="btn btn-primary btn-gifting" style="line-height: 24px;" data-itr="page_menu_main_gifts">
+</button>
+<div class="circle small red gifts" style="display:none; "><span class="outlined-text" style="cursor:pointer"></span></div>
+<br clear="both"/>
+</div>
+</div>
+
+<div class="agario-loggedout-panel">
+<img src="img/login-perks.png">
+</div>
+
+<div id="dailyquests-panel" class="agario-panel agario-side-panel agario-panel-dailyquests" style="position:relative">
+<div id="quests-blocker" class="shop-blocker"></div>
+<div id="dailyQuestsButton" style="position:relative;">
+<button id="dailyQuests" onclick="MC.showQuests(); return false;" class="btn btn-primary btn-success btn-dailyquests" style="line-height: 24px;" data-itr="page_menu_main_dailyquests">
+</button>
+<div class="circle small red quests" style="display:none"><span class="outlined-text"></span></div>
+<span class="timer quest-timer" style="display:none"></span>
+</div>
+</div>
+
+<div class="agario-panel agario-side-panel agario-shop-panel" style="position:relative;">
+<div class="form-group" id="agario-second-buttons">
+<button id="openShopBtn" onclick="MC.openShop(); return false;" class="btn btn-primary btn-shop" style="line-height: 24px;" data-itr="page_shop">
+</button>
+<br clear="both"/>
+</div>
+<div class="shop-left-container">
+<div id="skinButton" class="circle bordered" style="cursor:pointer; height:92px">
+<div class="circle big green" style="top:75px;"><span class="outlined-text plus-text" style="cursor:pointer;line-height: 26px;">+</span></div>
+<img class="circle bordered" src width="96" height="96" style="height: 96px; border: 3px solid rgb(131, 131, 131);display:none;" crossorigin="anonymous">
+<span id="skinLabel" class="outlined-text" style="display: block;" data-itr="page_main_menu_skins"></span>
+</div>
+</div>
+<div class="vertical-line" style="min-height:115px;"></div>
+<div class="shop-right-container">
+<div style="position:relative">
+<div id="boostButton" class="shop-power">
+<div class="circle small green"><span class="outlined-text" style="cursor:pointer">+</span></div>
+<img src="mc/img/xpboost_3x_shop.png" style="vertical-align:top; width:60px; display:block;margin:auto;"/>
+<span class="timer"></span>
+</div>
+<div id="massButton" class="shop-power">
+<div class="circle small green"><span class="outlined-text" style="cursor:pointer">+</span></div>
+<img src="mc/img/massboost_3x_shop.png" style="vertical-align:top; width:60px; display:block;margin:auto;"/>
+<span class="timer"></span>
+</div>
+</div>
+</div>
+<span class="text-muted"></span>
+<button id="retryBtn" onclick="MC.retryConnection(); return false;" class="btn btn-primary btn-retry" style="display:none;margin-top:10px;" data-itr="page_Retry"></button>
+<div id="promo-badge-container">
+</div>
+</div>
+</div>
+<div class="center-container">
+<div id="mainPanel" class="agario-panel disable-mouse">
+<div id="blocker" class="play-blocker"><span class="connecting-text" style="display: block" data-itr="page_connecting"></span><img src="img/loader.gif" alt="loader"/><span class="connecting-info" style="display: block"></span></div>
+<div role="form" novalidate>
+<div class="form-group clearfix">
+<div style="float: left; margin-left: 20px;"><h2>Agar.io</h2></div>
+<div style="float: right; margin-top: 10px; height: 40px;">
+<div id="agarYoutube">
+<div class="g-ytsubscribe" data-channelid="UCC6hurPo_LxL7C0YFYgYnIw" data-layout="default" data-count="default"></div>
+</div>
+<div class="clearfix">
+<div class="fb-like pull-right" data-href="https://www.facebook.com/playagar.io" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div>
+</div>
+</div>
+</div>
+<div class="form-group clearfix">
+<input id="nick" class="form-control" placeholder="Nick" maxlength="15" autofocus/>
+<select id="gamemode" class="form-control" required>
+<option value data-itr="page_gamemode_ffa"></option>
+<option value=":teams" data-itr="page_gamemode_teams"></option>
+<option value=":experimental" data-itr="page_gamemode_experimental"></option>
+<option value=":party" data-itr="page_party"></option>
+</select>
+</div>
+<div id="locationUnknown">
+<select id="region" class="form-control" onchange="MC.setRegion($('#region').val());" required>
+<option selected disabled value data-itr="page_region_select"></option>
+<option value="US-Atlanta" data-itr="page_region_north_america"></option>
+<option value="BR-Brazil" data-itr="page_region_south_america"></option>
+<option value="EU-London" data-itr="page_region_europe"></option>
+<option value="RU-Russia" data-itr="page_region_russia"></option>
+<option value="TK-Turkey" data-itr="page_region_turkey"></option>
+<option value="JP-Tokyo" data-itr="page_region_east_asia"></option>
+<option value="CN-China" data-itr="page_region_china"></option>
+<option value="SG-Singapore" data-itr="page_region_oceania"></option>
+</select>
+</div>
+<div class="form-group" id="agario-main-buttons">
+<div class="row">
+<button type="button" onclick="toggleSettings(); return false;" class="btn btn-info btn-settings"><i class="glyphicon glyphicon-cog"></i>
+</button>
+<button type="submit" class="btn btn-play btn-primary" data-itr="page_play"></button>
+<button type="submit" class="btn btn-play-guest btn-success" data-itr="page_play_as_guest"></button>
+<button type="submit" onclick="toggleSocialLogin(); return false" class="btn btn-warning btn-login-play" data-itr="page_login_and_play"></button>
+</div>
+<div id="socialLoginContainer" style="display:none;">
+<div class="row">
+<button onclick="MC.facebookLogin(); return false;" class="btn btn-primary btn-login btn-fb">
+<span class="social social-facebook fb-icon"></span>
+<span class="btn-text" data-itr="page_menu_login_facebook"></span>
+</button>
+</div>
+<div class="row">
+<button id="gplusLogin" class="btn btn-primary btn-login btn-gplus">
+<span class="gplus-icon"></span>
+<span class="btn-text" data-itr="page_menu_login_google"></span>
+</button>
+</div>
+</div>
+</div>
+<div id="settings" class="checkbox" style="display:none;">
+<div style="float: left; width: 200px;">
+<div id="locationKnown"></div>
+<div id="settingsChoice" style="margin-top:6px">
+<select id="quality" class="form-control" onchange="MC.setQuality($('#quality').val());" required>
+<option disabled value data-itr="page_graphics_title"></option>
+<option value="Retina" selected data-itr="page_graphics_retina"></option>
+<option value="High" selected data-itr="page_graphics_high"></option>
+<option value="Medium" data-itr="page_graphics_medium"></option>
+<option value="Low" data-itr="page_graphics_low"></option>
+<option value="VeryLow" data-itr="page_graphics_very_low"></option>
+</select>
+</div>
+</div>
+<div style="float: right; width: 120px;">
+<button disabled class="btn btn-warning btn-spectate btn-needs-server" data-itr="page_spectate"></button>
+<button onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout"></button>
+</div>
+<br clear="both"/>
+<div id="options" style="margin-top: 5px; font-size: 12px; display:flex; flex-wrap: wrap; justify-content: flex-start;">
+<label><input type="checkbox" id="noSkins" style="margin-top: 1px"><span data-itr="page_option_no_skins"></span></label>
+<label><input type="checkbox" id="noNames" style="margin-top: 1px"><span data-itr="page_option_no_names"></span></label>
+<label><input type="checkbox" id="noColors" style="margin-top: 1px"><span data-itr="page_option_no_colors"></span></label>
+<label><input type="checkbox" id="showMass" style="margin-top: 1px"><span data-itr="page_option_show_mass"></span></label>
+<label><input type="checkbox" id="darkTheme" style="margin-top: 1px"><span data-itr="page_option_dark_theme"></span></label>
+<label><input type="checkbox" id="skipStats" style="margin-top: 1px"><span data-itr="page_option_skip_stats"></span></label>
+<label><input type="checkbox" id="showQuest" style="margin-top: 1px"><span data-itr="page_option_show_quest"></span></label>
+<label style="display:none"><input type="checkbox" id="showOnlineStatus" style="margin-top: 1px"><span data-itr="page_option_show_online_status" id="showOnlineStatusText"></span></label>
+</div>
+<div id="tags-container">
+<span id="user-id-tag"></span>
+<span id="version-tag"></span>
+</div>
+</div>
+</div>
+<div id="instructions">
+<hr style="margin-top:10px;margin-bottom:10px;"/>
+<center><span class="text-muted">
+<span data-itr="page_instructions_mouse"></span><br/>
+<span data-itr="page_instructions_space"></span><br/>
+<span data-itr="page_instructions_w"></span><br/>
+</span></center>
+</div>
+</div>
+<div id="updatingPanel" class="agario-panel disable-mouse" style="display:none">
+<h3 style="text-align:center; position: relative; top: 50%; height:26px; margin-top: -13px"> Updating </h3>
+</div>
+<div id="stats" class="agario-panel">
+<h2 style="margin-top: 10px"><center>Match Results</center></h2>
+<canvas id="statsGraph" width="350" height="170"></canvas>
+<div id="statsPelletsContainer">
+<span id="statsText" class="stats-food-eaten"></span>
+<span id="statsSubtext" data-itr="page_stats_food_eaten"></span>
+</div>
+<div id="statsHighestMassContainer">
+<span id="statsText" class="stats-highest-mass"></span>
+<span id="statsSubtext" data-itr="page_stats_highest_mass"></span>
+</div>
+<div id="statsTimeAliveContainer">
+<span id="statsText" class="stats-time-alive"></span>
+<span id="statsSubtext" data-itr="page_stats_time_alive"></span>
+</div>
+<div id="statsTimeLeaderboardContainer">
+<span id="statsText" class="stats-leaderboard-time"></span>
+<span id="statsSubtext" data-itr="page_stats_leaderboard_time"></span>
+</div>
+<div id="statsPlayerCellsEatenContainer">
+<span id="statsText" class="stats-cells-eaten"></span>
+<span id="statsSubtext" data-itr="page_stats_cells_eaten"></span>
+</div>
+<div id="statsTopPositionContainer">
+<span id="statsText" class="stats-top-position">?</span>
+<span id="statsSubtext" data-itr="page_stats_top_position"></span>
+</div>
+<hr style="position:absolute;bottom:100px;width:100%;margin:0px;"/>
+<div id="socialStats" style="position: absolute;bottom: 55px;left: 25px;right:25px;">
+<button id="gPlusShare" style="width:49%;float:left;display:none" class="g-interactivepost btn btn-primary btn-gplus" data-contenturl="http://agar.io" data-clientid data-cookiepolicy="http://agar.io" data-prefilltext data-calltoactionlabel="BEAT" data-calltoactionurl="http://agar.io">
+<span class="gplus-icon"></span>
+<span class="btn-text" data-itr="page_share"></span>
+</button>
+<button id="fbShare" class="btn btn-primary btn-fb" onclick="fbShareStats(); return false" style="position:relative;width:49%;float:left;">
+<span class="social social-facebook fb-icon"></span>
+<span class="btn-text" data-itr="page_share"></span>
+</button>
+<button class="btn btn-primary btn-twitter" onclick="twitterShareStats(); return false" style="position:relative;width:49%;float:right">
+<span class="twitter-icon"></span>
+<span class="btn-text" data-itr="page_share"></span>
+</button>
+</div>
+<button id="statsContinue" class="btn btn-primary" data-itr="page_continue"></button>
+
+</div>
+<div id="advertisement" class="agario-panel">
+<center>
+<small class="text-muted" style="display: block; margin-bottom: 5px;" data-itr="page_advertisement"></small>
+<div id="adbg" style="margin-bottom: 10px; width: 300px; height: 250px;">
+<div id="g300x250" style="display:block;"></div>
+<div id="a300x250" style="display:none;"></div>
+<div id="s300x250" style="display:none;"></div>
+</div>
+</center>
+</div>
+</div>
+<div id="rightPanel" class="side-container right-container disable-mouse">
+<div class="agario-panel agario-side-panel agario-party">
+<div class="agario-party-0">
+<div class="try-now"><img class="try-now-img" src="img/partymode-banner.png"></div>
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_party_description"></div>
+<div class="clearfix">
+<button id="create-party-btn" class="btn btn-primary btn-party party-create" style="float: left;" data-itr="page_create_party"></button>
+<button id="pre-join-party-btn" class="btn btn-primary btn-party party-join" style="float: right;" data-itr="page_join_party"></button>
+</div>
+</div>
+<div class="agario-party-1">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_create_party_instructions"></div>
+<div class="clearfix">
+<input type="text" value readonly class="form-control party-token" style="cursor: text; width: 135px; float: left;"/>
+<button class="btn btn-primary btn-party party-copy copy-party-token" style="float: left; width: 60px;">Copy</button>
+<button class="btn btn-primary btn-party party-play" style="float: right; width: 60px;">Play</button>
+</div>
+<div class="copyWarning" style="font-size:11px"></div>
+</div>
+<div class="agario-party-2">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_join_party_code"></div>
+<div class="clearfix">
+<input id="joinPartyToken" type="text" value="Party Code" placeholder="Party Code" class="form-control party-token" style="width:170px; float:left;"/>
+<button id="join-party-btn" class="btn btn-primary btn-party party-join" style="float:left; width:90px; border-radius:0px 4px 4px 0px" data-itr="page_join_party"></button>
+</div>
+</div>
+<div class="agario-party-3" style="padding: 0px; overflow: hidden; position: relative;">
+<canvas width="220" height="100" class="cell-spinner" data-size="26"></canvas>
+<div class="creating-party-text" data-itr="page_creating_party"></div>
+</div>
+<div class="agario-party-4" style="padding: 0px; overflow: hidden; position: relative;">
+<canvas width="220" height="100" class="cell-spinner" data-size="26"></canvas>
+<div class="creating-party-text" data-itr="page_joining_party"></div>
+</div>
+<div class="agario-party-5">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_joined_party_instructions"></div>
+<div class="clearfix">
+<input type="text" value readonly class="form-control party-token" style="cursor: text; width: 135px; float: left;"/>
+<button class="btn btn-primary btn-party party-copy copy-party-token" style="float: left; width: 60px;">Copy</button>
+<button class="btn btn-primary btn-party party-play" style="float: right; width: 60px;">Play</button>
+</div>
+<div class="copyWarning" style="font-size:11px"></div>
+</div>
+<div class="agario-party-6">
+<h4><center data-itr="page_party"></center></h4>
+<div class="party-text" data-itr="page_party_join_error"></div>
+<div class="clearfix" style="margin: 10px -10px 0px -10px;">
+<button class="btn btn-primary btn-block" data-itr="page_back_button"></button>
+</div>
+</div>
+<div class="agario-party-7">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_create_party_instructions"></div>
+<div class="clearfix">
+<input type="text" value readonly class="form-control party-token" style="cursor: text; width: 135px; float: left;"/>
+<button class="btn btn-primary btn-party party-copy copy-party-token" style="float: left; width: 60px;">Copy</button>
+<button class="btn btn-primary btn-party party-play" style="float: right; width: 60px;">Play</button>
+</div>
+<div class="copyWarning" style="font-size:11px"></div>
+</div>
+<div class="agario-party-8">
+<div class="try-now"><img class="try-now-img" src="img/partymode-banner.png"></div>
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_results_party_share_link"></div>
+<div class="clearfix">
+<input type="text" value readonly class="form-control party-token" style="cursor: text; width: 140px; float: left;"/>
+<button class="btn btn-primary btn-party party-copy copy-party-token" style="float: left; width: 60px;">Copy</button>
+<button class="btn btn-primary btn-party party-play" style="float: right; width: 60px;">Play</button>
+</div>
+<div class="copyWarning" style="font-size:11px"></div>
+</div>
+<div style="position: absolute; right: 10px; top: 4px;">
+<button type="button" class="party-icon-back"><img src="img/partymode-menu-leave.png" alt="exit" style="border-style: none"/></button>
+</div>
+</div>
+<div id="mcbanners-container">
+</div>
+</div>
+</div>
+<script>
+	if(hasBottomAd){
+		document.write('<div id="adsBottom" style="z-index: 200;display:block;"><div id="adsBottomInner"><div id="g728x90"></div><div id="a728x90"></div></div></div>');
+	}
+	</script>
+<footer class="tosBox left">
+<center>
+<a onclick="changeGameMode('')" class="text-muted footer-gamemode" data-itr="page_gamemode_ffa" title="Free-for-all action: eat other players to be the biggest cell on the block!"></a>
+|
+<a onclick="changeGameMode(':teams')" class="text-muted footer-gamemode" data-itr="page_gamemode_teams" title="Join up for team mode group action: co-operate, compete, eat!"></a>
+|
+<a onclick="changeGameMode(':experimental')" class="text-muted footer-gamemode" data-itr="page_gamemode_experimental" title="Experimental game mode with a strange new food-producing virus."></a>
+|
+<a onclick="changeGameMode(':party')" class="text-muted footer-gamemode" data-itr="page_party" title="Play with your friends! Create your own private room and invite friends!"></a>
+</center>
+</footer>
+<footer class="tosBox right">
+<center>
+<a href="/privacy.txt" target="_blank" class="text-muted" data-itr="page_privacy_policy"></a>
+|
+<a href="/terms.txt" target="_blank" class="text-muted" data-itr="page_terms_of_service"></a>
+|
+<a href="/changelog.txt" target="_blank" class="text-muted" data-itr="page_changelog"></a>
+</center>
+</footer>
+</div>
+
+<div class="party-dialog">
+<div id="party-blocker">
+<div class="disabler"></div>
+</div>
+<div class="agario-party-dialog">
+<div class="agario-party-0" style="display: block">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_party_leave_ffa"></div>
+<div class="clearfix">
+<button id="create-party-btn" class="btn btn-primary btn-party party-create" style="float: left;" data-itr="page_create_party"></button>
+<button id="continue-party-btn" class="btn btn-primary btn-party party-join" style="float: right;" data-itr="page_continue"></button>
+</div>
+</div>
+<div class="agario-party-1">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_create_party_instructions"></div>
+<div class="clearfix">
+<input type="text" value readonly class="form-control party-token" style="cursor: text; width: 125px; float: left;"/>
+<button class="btn btn-primary btn-party party-copy copy-party-token" style="float: left; width: 60px;">Copy</button>
+<button class="btn btn-primary btn-party party-play" style="float: right; width: 60px;">Play</button>
+</div>
+<div class="copyWarning" style="font-size:11px"></div>
+</div>
+<div class="agario-party-2">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_join_party_code"></div>
+<div class="clearfix">
+<input id="joinPartyToken2" type="text" value placeholder="Party Code" class="form-control party-token" style="width:140px; float:left;"/>
+<button id="join-party-btn" class="btn btn-primary btn-party party-join" style="float:left; width:90px; border-radius:0px 4px 4px 0px" data-itr="page_join_party"></button>
+</div>
+</div>
+<div class="agario-party-3" style="padding: 0px; overflow: hidden; position: relative;">
+<canvas width="220" height="100" class="cell-spinner" data-size="26"></canvas>
+<div class="creating-party-text" data-itr="page_creating_party"></div>
+</div>
+<div class="agario-party-4" style="padding: 0px; overflow: hidden; position: relative;">
+<canvas width="220" height="100" class="cell-spinner" data-size="26"></canvas>
+<div class="creating-party-text" data-itr="page_joining_party"></div>
+</div>
+<div class="agario-party-5">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_joined_party_instructions"></div>
+<div class="clearfix">
+<input type="text" value readonly class="form-control party-token" style="cursor: text; width: 140px; float: left;"/>
+<button class="btn btn-primary btn-party party-copy copy-party-token" style="float: left; width: 60px;">Copy</button>
+<button class="btn btn-primary btn-party party-play" style="float: right; width: 60px;">Play</button>
+</div>
+<div class="copyWarning" style="font-size:11px"></div>
+</div>
+<div class="agario-party-6">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_party_join_error"></div>
+<div class="clearfix">
+<button class="btn btn-primary btn-block" data-itr="page_back_button"></button>
+</div>
+</div>
+<div class="agario-party-7">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_party_leave_party"></div>
+<div class="clearfix">
+<button id="leave-party-btn" class="btn btn-primary btn-party party-join" style="float: left;" data-itr="page_button_label_leave"></button>
+<button id="leave-continue-party-btn" class="btn btn-primary btn-party party-cancel" style="float: right;" data-itr="page_menu_shop_cancel"></button>
+</div>
+</div>
+<div class="agario-party-8">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_join_party_confirmation"></div>
+<div class="clearfix" style="text-align: center">
+<button id="join-party-btn" class="btn btn-primary btn-party party-join" data-itr="page_join_party"></button>
+</div>
+</div>
+<div style="position: absolute; right: 10px; top: 4px;">
+<button id="cancel-party-btn" type="button" class="close">&times;</button>
+</div>
+</div>
+</div>
+<div id="connecting" style="display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 100;">
+<div class="connecting-panel" style="width: 350px; background-color: #FFFFFF; margin: auto auto auto -175px; border-radius: 15px; padding: 5px 15px 5px 15px;">
+<h2 data-itr="page_connecting"></h2>
+<p data-itr="page_connect_help"></p>
+</div>
+</div>
+<button id="externalGShare" style="display:none" class="g-interactivepost" data-contenturl="http://agar.io" data-clientid data-cookiepolicy="http://agar.io" data-prefilltext data-calltoactionlabel="BEAT" data-calltoactionurl="http://agar.io">
+</button>
+<canvas id="canvas"></canvas>
+<script src="agario.core.js?v=860" async></script>
+<div style="font-family:'Ubuntu'">&nbsp;</div>
+<div class="partymode-info">
+<div id="label" style="height:20px"><b>Share with friends</b></div>
+<div id="code" style="height: 30px; margin-bottom:5px; position: relative"></div>
+<button class="btn btn-primary copy-party-token" style="width: 60px; border-radius: 4px 4px 4px 4px" data-original-title title>Copy</button>
+</div>
+<script type="text/javascript" src="//imasdk.googleapis.com/js/sdkloader/outstream.js"></script>
+<script>
+
+function hasAdblock()
+{
+	return (typeof(google) == 'undefined');
+}
+
+function showAdblockWarning(targetDiv)
+{
+	$('#' + targetDiv).css('background-image', "url('/blocker.png')");
+}
+
+</script>
+<script type="text/javascript">
+if(hasAdblock())
+{
+	showAdblockWarning('adbg');
+}
+
+ga('send', 'event', 'HasAdblock', hasAdblock() ? 'Yes' : 'No', {'nonInteraction': 1});
+</script>
+
+<script type="text/javascript">
+(function(d,t){
+var g = d.createElement(t), s = d.getElementsByTagName(t)[0]; g.async = true;
+g.src = ('https:' != location.protocol ? 'http://jsd.supersonicads.com' :
+'https://a248.e.akamai.net/ssastatic.s3.amazonaws.com') +
+'/inlineDelivery/delivery.min.gz.js';
+s.parentNode.insertBefore(g,s);
+}(document,'script'));
+
+var ssa_json = {
+	'applicationKey':  EnvConfig['supersonic_app_key'],
+	'onCampaignsReady': window['supersonicAds']['BrandConnectReadyEvent'], // for auto popup use the string: 'popup',
+	'onCampaignsDone': window['supersonicAds']['BrandConnectDoneEvent'], // will be fired when user completed all the available offers
+	'onCampaignOpen': window['supersonicAds']['BrandConnectOpenEvent'], // will be fired every time an offer was opened
+	'onCampaignClose': window['supersonicAds']['BrandConnectCloseEvent'], // will be fired every time an offer was closed
+	'onCampaignCompleted': window['supersonicAds']['BrandConnectCompletedEvent'] // will be fired every time an offer was completed
+};
+
+</script>
+<script>
+$(function(){
+
+	var MC = new MiniclipAPI("openfl-content","openfl-overlay");
+	MC.loadEnvironment(EnvConfig);
+	lime.embed ("openfl-content", 880, 1024, "transparent", "mc/");
+
+	window["MC"]=MC;
+	window.MC = window.MC || {};
+})
+</script>
+<div id="adsGameOver" style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; z-index:250">
+<div id="a640x480" style="display:none;"></div>
+</div>
+
+<div id="captchaWindow" style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index:500">
+<div id="verifyUser" style="position:absolute; top:50%; left:50%; margin-left:-152px; margin-top:-40px;"></div>
+</div>
+<script>
+
+// Copyright 2015 Google Inc. All Rights Reserved.
+// You may study, modify, and use this example for any purpose.
+// Note that this example is provided "as is", WITHOUT WARRANTY
+// of any kind either expressed or implied.
+
+var adsController;
+var adTagUrl;
+/**
+ * Initialize the Outstream SDK.
+ */
+window.onload = function () {
+	if (!hasAdblock()) { 
+		initAdsController();
+	}
+};
+
+function initAdsController() {
+    var outstreamContainer = document.getElementById('adsGameOver');
+    if (!outstreamContainer) {
+        outstreamContainer = document.createElement('DIV');
+        outstreamContainer.id = 'adsGameOver';
+    }
+
+    $('#adsGameOver').empty();
+    adsController = new google.outstream.AdsController(
+            outstreamContainer,
+            onAdLoaded,
+            onDone);
+
+    adsController.initialize();
+
+	adTagUrl = 'https://pubads.g.doubleclick.net/gampad/ads?' +
+    				'sz=640x480&iu=/116850162/Agario_Adsense_For_Games' + 
+    				'&impl=s' + 
+    				'&gdfp_req=1' +
+    				'&env=vp' +
+    				'&output=vast' + 
+    				'&unviewed_position_start=1' +
+    				'&url=[referrer_url]' +
+    				'&description_url=http%3A%2F%2Fagar.io' +
+    				'&correlator=[timestamp]'; 
+}
+
+
+
+/**
+ * Request ad:
+ * - For tablet/mobile-web, this must be invoked by a user action, such as
+ *   a click on a link or button.
+ * - For desktop web, this may be invoked based on page-load and does not 
+ *   require a user action.
+ */
+
+function requestAds() 
+{
+    
+    // Request ads
+    if(!hasAdblock()) 
+    {
+    	adsController.requestAds(adTagUrl);
+    }
+    else
+    {
+		MC.notifyFullscreenAdFinished();
+    	showAdblockWarning('adbg');
+    }
+}
+
+/*
+ * Callback for when ad has completed loading.
+ */
+function onAdLoaded() {
+	console.log("outstream:onAdLoaded!");
+
+	$('#adsGameOver').show();
+    adsController.showAd();
+}
+
+/*
+ * Callback for when ad has completed playback.
+ */
+function onDone() {
+	console.log("outstream:onDone!");
+
+	MC.notifyFullscreenAdFinished();
+
+	$('#adsGameOver').hide();
+	adsController = null;
+	initAdsController();
+}
+
+overrideHistoryState(window.history);
+
+</script>
+<script>
+
+  function Recaptcha(curtinId, elemId)
+  {
     var self = this;
+
     this.init = function() {
         this.ready = true;
     }
+
     this.show = function() {
         document.getElementById(this.curtin).style.display = 'block';
     }
+
     this.hide = function() {
         document.getElementById(this.curtin).style.display = 'none';
     }
+
     this.reset = function() {
         grecaptcha.reset();
     }
+
     this.onRender = function(response) {
-        master.notifyToken(response);
+        MC.notifyToken(response);
         self.hide();
         self.reset();
     }
+
     this.render = function() {
        if (this.ready) {
             this.show();
@@ -172,22 +888,190 @@
            	else
            		this.reset();
        }
+
        return this.ready;
     }
+
     this.id = elemId;
     this.curtin = curtinId;
     this.widget = null;
     this.ready = false;
+
     this.hide();
+
   }
+
   function requestCaptcha() {
     return myCaptcha.render();
   }
+
   var myCaptcha = new Recaptcha('captchaWindow','verifyUser');
+
   var onloadCallback = function() {
         myCaptcha.init();
   };
- </script>
- <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
- </body>
+
+</script>
+<script>
+
+//load dynamic banners
+$("#mcbanners-container").load("misc/banners.html");
+
+</script>
+<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer>
+</script>
+<script>
+	var scale = window.localStorage.retina ? window.devicePixelRatio : 1.0;
+
+	function showBanner()
+	{
+		if(window.innerHeight > 900)
+		{
+			$('#adsBottom').css('display', 'block');
+		}
+		else
+		{
+			$('#adsBottom').css('display', 'none');
+		}
+	}
+
+	var addEvent = function(object, type, callback) {
+    if (object == null || typeof(object) == 'undefined') return;
+    if (object.addEventListener) {
+        object.addEventListener(type, callback, false);
+    } else if (object.attachEvent) {
+        object.attachEvent("on" + type, callback);
+    } else {
+        object["on"+type] = callback;
+    }
+};
+
+	addEvent(window, "resize", function(event) 
+	{
+		showBanner();
+	});
+
+	showBanner();
+</script>
+<script>
+	function changeGameMode(gameMode)
+	{
+		$('#gamemode').val(gameMode);
+		MC.handleChangeMode(gameMode);
+	}
+</script>
+<script>
+	function detectOS()
+	{
+		var osName = 'Other';
+
+		var clientStrings = [
+			{s:'Windows 10', r:/(Windows 10.0|Windows NT 10.0)/},
+			{s:'Windows 8.1', r:/(Windows 8.1|Windows NT 6.3)/},
+			{s:'Windows 8', r:/(Windows 8|Windows NT 6.2)/},
+			{s:'Windows 7', r:/(Windows 7|Windows NT 6.1)/},
+			{s:'Windows Vista', r:/Windows NT 6.0/},
+			{s:'Windows Server 2003', r:/Windows NT 5.2/},
+			{s:'Windows XP', r:/(Windows NT 5.1|Windows XP)/},
+			{s:'Windows 2000', r:/(Windows NT 5.0|Windows 2000)/},
+			{s:'Windows ME', r:/(Win 9x 4.90|Windows ME)/},
+			{s:'Windows 98', r:/(Windows 98|Win98)/},
+			{s:'Windows 95', r:/(Windows 95|Win95|Windows_95)/},
+			{s:'Windows NT 4.0', r:/(Windows NT 4.0|WinNT4.0|WinNT|Windows NT)/},
+			{s:'Windows CE', r:/Windows CE/},
+			{s:'Windows 3.11', r:/Win16/},
+			{s:'Android', r:/Android/},
+			{s:'Open BSD', r:/OpenBSD/},
+			{s:'Sun OS', r:/SunOS/},
+			{s:'Linux', r:/(Linux|X11)/},
+			{s:'iOS', r:/(iPhone|iPad|iPod)/},
+			{s:'Mac OS X', r:/Mac OS X/},
+			{s:'Mac OS', r:/(MacPPC|MacIntel|Mac_PowerPC|Macintosh)/},
+			{s:'QNX', r:/QNX/},
+			{s:'UNIX', r:/UNIX/},
+			{s:'BeOS', r:/BeOS/},
+			{s:'OS/2', r:/OS\/2/},
+			{s:'Search Bot', r:/(nuhk|Googlebot|Yammybot|Openbot|Slurp|MSNBot|Ask Jeeves\/Teoma|ia_archiver)/}
+		];
+
+		for (var id in clientStrings) 
+		{
+			var cs = clientStrings[id];
+			if (cs.r.test(navigator.userAgent)) 
+			{
+				osName = cs.s;
+				break;
+			}
+		}
+
+		return osName;
+	}
+
+	function detectBrowser()
+	{
+		// Opera 8.0+
+		var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+
+		// Firefox 1.0+
+		var isFirefox = typeof InstallTrigger !== 'undefined';
+
+		// Safari 3.0+ "[object HTMLElementConstructor]" 
+		var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
+
+		// Internet Explorer 6-11
+		var isIE = !!document.documentMode;
+
+		// Edge 20+
+		var isEdge = !isIE && !!window.StyleMedia;
+
+		// Chrome 1+
+		var isChrome = !!window.chrome && !!window.chrome.webstore;
+
+		if(isOpera) return 'Opera';
+		else if(isFirefox) return 'Firefox';
+		else if(isSafari) return 'Safari';
+		else if(isIE) return 'Internet Explorer';
+		else if(isEdge) return 'Edge';
+		else if(isChrome) return 'Chrome';
+		else return 'Other';
+	}
+</script>
+
+<script>
+	function mcReady(SDK)
+	{
+		console.log("== "+SDK.namespace+" is ready! ==");
+		SDK.init({
+				analytics: 
+				{
+					gameId: 345,
+
+					apiKey: EnvConfig["apiKey"],
+					checksumKey: EnvConfig["checksumKey"],
+					environment: EnvConfig["analyticsEnv"],
+
+					gameName: "agario_web",
+					version: "v1.0",
+				}
+			}, 
+			function(sdk){
+				console.log(sdk);
+				console.log("== "+sdk.namespace+".init complete ==");
+				console.log("version="+SDK.version);
+		});
+	}
+
+	(function(d, s, id, modules, namespace)
+	{
+		var js, fjs = d.getElementsByTagName(s)[0];
+		if (d.getElementById(id)) {return;}
+		js = d.createElement(s); js.id = id;
+		if (modules) js.setAttribute('data-modules', modules.join(','));
+		if (namespace) js.setAttribute('data-namespace', namespace);
+		js.src = "//static.miniclipcdn.com/js/sdk/v1.5/miniclip.js";
+		fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'miniclipsdk', ['analytics'], 'MCSDK'));
+</script>
+<script src="//www.google-analytics.com/cx/api.js?experiment=lRi4QK9vRb2ZHOo-Vyprsw"></script>
+</body>
 </html>
