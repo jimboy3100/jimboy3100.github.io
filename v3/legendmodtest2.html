@@ -363,22 +363,13 @@ overrideHistoryState(window.history);
 <button id="statsContinue" class="btn btn-primary" data-itr="page_continue"></button>
 
 </div>
-<div id="advertisement" class="agario-panel">
-<center>
-<small class="text-muted" style="display: block; margin-bottom: 5px;" data-itr="page_advertisement"></small>
-<div id="adbg" style="margin-bottom: 10px; width: 300px; height: 250px;">
-<div id="g300x250" style="display:block;"></div>
-<div id="a300x250" style="display:none;"></div>
-<div id="s300x250" style="display:none;"></div>
-</div>
-</center>
-</div>
 </div>
 <div id="rightPanel" class="side-container right-container disable-mouse">
 <div class="agario-panel agario-side-panel agario-party">
 <div class="agario-party-0">
-<div class="try-now"><img class="try-now-img" src="img/partymode-banner.png"></div>
+
 <h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+
 <div class="party-text" data-itr="page_party_description"></div>
 <div class="clearfix">
 <button id="create-party-btn" class="btn btn-primary btn-party party-create" style="float: left;" data-itr="page_create_party"></button>
@@ -654,39 +645,7 @@ $("#mcbanners-container").load("misc/banners.html");
 </script>
 <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer>
 </script>
-<script>
-	var scale = window.localStorage.retina ? window.devicePixelRatio : 1.0;
 
-	function showBanner()
-	{
-		if(window.innerHeight > 900)
-		{
-			$('#adsBottom').css('display', 'block');
-		}
-		else
-		{
-			$('#adsBottom').css('display', 'none');
-		}
-	}
-
-	var addEvent = function(object, type, callback) {
-    if (object == null || typeof(object) == 'undefined') return;
-    if (object.addEventListener) {
-        object.addEventListener(type, callback, false);
-    } else if (object.attachEvent) {
-        object.attachEvent("on" + type, callback);
-    } else {
-        object["on"+type] = callback;
-    }
-};
-
-	addEvent(window, "resize", function(event) 
-	{
-		showBanner();
-	});
-
-	showBanner();
-</script>
 <script>
 	function changeGameMode(gameMode)
 	{
