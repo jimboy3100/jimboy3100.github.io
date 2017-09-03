@@ -83,24 +83,7 @@ function overrideHistoryState(history){
 overrideHistoryState(window.history);
 
 </script>
-<script type="text/javascript">
-!!function(e,t){window.TapResearch=t,t.loadLibrary=function(e){var o=document.createElement("script"),a=document.getElementsByTagName("head")[0];o.src=t.host+"/assets/sdk.js"+(e?"?ver="+e:""),o.async=!0,a.appendChild(o),t.loadTimeout=setTimeout(function(){t.handleTimeout()},t.config.load_timeout||2e3)},t.init=function(e){t.config=e,t.host="https://www.tapresearch.com",t.loadLibrary()}}(document,window.TapResearch||[]);
-</script>
-<script type="text/javascript">
-var googletag = googletag || {};
-googletag.cmd = googletag.cmd || [];
-window['googletag'] = googletag;
-(function() {
-var gads = document.createElement('script');
-gads.async = true;
-gads.type = 'text/javascript';
-var useSSL = 'https:' == document.location.protocol;
-gads.src = (useSSL ? 'https:' : 'http:') + 
-'//www.googletagservices.com/tag/js/gpt.js';
-var node = document.getElementsByTagName('script')[0];
-node.parentNode.insertBefore(gads, node);
-})();
-</script>
+
 
 <script>
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -114,61 +97,10 @@ ga('send', 'pageview');
 window['ga'] = ga;
 </script>
 
-<script> 
-!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod? 
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n; 
-n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0; 
-t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, 
-document,'script','//connect.facebook.net/en_US/fbevents.js'); 
 
-fbq('init', '859937640783233'); 
-fbq('track', "PageView");
-</script>
-<noscript><img height="1" width="1" style="display:none" 
-src="https://www.facebook.com/tr?id=859937640783233&ev=PageView&noscript=1"
-/></noscript>
 
-<script type="text/javascript">
 
-window["isChrome"] = /chrome/.test( navigator.userAgent.toLowerCase() );
-window['ASSETS_ROOT'] = "";
 
-function getUrlVars()
-{
-	var vars = [], hash;
-	var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-	for(var i = 0; i < hashes.length; i++)
-	{
-		hash = hashes[i].split('=');
-		vars.push(hash[0]);
-		vars[hash[0]] = hash[1];
-	}
-	return vars;
-}
-
-var queryVars = getUrlVars();
-if(queryVars['v']!=null)
-{
-	window.location = "/v"+queryVars['v'];
-}
-
-var rpx_params = {
-	kw: '',
-	visitor: {},
-	inventory: {}
-};
-
-var hasBottomAd = false;
-var isInFacebook = window.location.search.indexOf('fb') != -1;
-if(window.innerHeight > 810 && !isInFacebook){
-	hasBottomAd = true;
-}
-
-window.___gcfg = {
-	lang: 'en-US',
-	parsetags: 'explicit'
-  };
-</script>
 <link href="https://fonts.googleapis.com/css?family=Ubuntu:700" rel="stylesheet" type="text/css">
 <link href="css/master.css?v=505" rel="stylesheet" type="text/css">
 <script src="js/master.js"></script>
@@ -920,6 +852,6 @@ $("#mcbanners-container").load("misc/banners.html");
 		fjs.parentNode.insertBefore(js, fjs);
 	}(document, 'script', 'miniclipsdk', ['analytics'], 'MCSDK'));
 </script>
-<script src="//www.google-analytics.com/cx/api.js?experiment=lRi4QK9vRb2ZHOo-Vyprsw"></script>
+
 </body>
 </html>
