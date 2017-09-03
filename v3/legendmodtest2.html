@@ -289,6 +289,7 @@ overrideHistoryState(window.history);
 <button disabled class="btn btn-warning btn-spectate btn-needs-server" data-itr="page_spectate"></button>
 <button onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout"></button>
 </div>
+
 <br clear="both"/>
 <div id="options" style="margin-top: 5px; font-size: 12px; display:flex; flex-wrap: wrap; justify-content: flex-start;">
 <label><input type="checkbox" id="noSkins" style="margin-top: 1px"><span data-itr="page_option_no_skins"></span></label>
@@ -306,14 +307,17 @@ overrideHistoryState(window.history);
 </div>
 </div>
 </div>
-<div id="instructions">
-<hr style="margin-top:10px;margin-bottom:10px;"/>
-<center><span class="text-muted">
-<span data-itr="page_instructions_mouse"></span><br/>
-<span data-itr="page_instructions_space"></span><br/>
-<span data-itr="page_instructions_w"></span><br/>
-</span></center>
-</div>
+   <div id="rightPanel" class="side-container right-container">
+    <div class="agario-panel agario-side-panel agario-party">
+     <div class="agario-party-6">
+      <h4><center data-itr="page_party"></center></h4>
+      <div class="party-text" data-itr="page_party_join_error"></div>
+      <div class="clearfix" style="margin: 10px -10px 0px -10px;">
+       <button class="btn btn-primary btn-block" data-itr="page_back_button"></button>
+      </div>
+     </div>
+    </div>
+   </div>
 </div>
 <div id="updatingPanel" class="agario-panel disable-mouse" style="display:none">
 <h3 style="text-align:center; position: relative; top: 50%; height:26px; margin-top: -13px"> Updating </h3>
