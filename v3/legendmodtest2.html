@@ -7,7 +7,7 @@
 <meta name="description" content="The biggest, fastest and smartest mod of Agario">
 <meta name="keywords" content="agario, agar, io, cell, cells, virus, bacteria, blob, game, games, web game, html5, fun, flash">
 <meta name="viewport" content="minimal-ui, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Legend Mod</title>
+<title>Legend Mod<</title>
 
 <script>
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -289,7 +289,6 @@ overrideHistoryState(window.history);
 <button disabled class="btn btn-warning btn-spectate btn-needs-server" data-itr="page_spectate"></button>
 <button onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout"></button>
 </div>
-
 <br clear="both"/>
 <div id="options" style="margin-top: 5px; font-size: 12px; display:flex; flex-wrap: wrap; justify-content: flex-start;">
 <label><input type="checkbox" id="noSkins" style="margin-top: 1px"><span data-itr="page_option_no_skins"></span></label>
@@ -306,6 +305,65 @@ overrideHistoryState(window.history);
 <span id="version-tag"></span>
 </div>
 </div>
+</div>
+<div id="instructions">
+<hr style="margin-top:10px;margin-bottom:10px;"/>
+<center><span class="text-muted">
+<span data-itr="page_instructions_mouse"></span><br/>
+<span data-itr="page_instructions_space"></span><br/>
+<span data-itr="page_instructions_w"></span><br/>
+</span></center>
+</div>
+</div>
+<div id="updatingPanel" class="agario-panel disable-mouse" style="display:none">
+<h3 style="text-align:center; position: relative; top: 50%; height:26px; margin-top: -13px"> Updating </h3>
+</div>
+<div id="stats" class="agario-panel">
+<h2 style="margin-top: 10px"><center>Match Results</center></h2>
+<canvas id="statsGraph" width="350" height="170"></canvas>
+<div id="statsPelletsContainer">
+<span id="statsText" class="stats-food-eaten"></span>
+<span id="statsSubtext" data-itr="page_stats_food_eaten"></span>
+</div>
+<div id="statsHighestMassContainer">
+<span id="statsText" class="stats-highest-mass"></span>
+<span id="statsSubtext" data-itr="page_stats_highest_mass"></span>
+</div>
+<div id="statsTimeAliveContainer">
+<span id="statsText" class="stats-time-alive"></span>
+<span id="statsSubtext" data-itr="page_stats_time_alive"></span>
+</div>
+<div id="statsTimeLeaderboardContainer">
+<span id="statsText" class="stats-leaderboard-time"></span>
+<span id="statsSubtext" data-itr="page_stats_leaderboard_time"></span>
+</div>
+<div id="statsPlayerCellsEatenContainer">
+<span id="statsText" class="stats-cells-eaten"></span>
+<span id="statsSubtext" data-itr="page_stats_cells_eaten"></span>
+</div>
+<div id="statsTopPositionContainer">
+<span id="statsText" class="stats-top-position">?</span>
+<span id="statsSubtext" data-itr="page_stats_top_position"></span>
+</div>
+<hr style="position:absolute;bottom:100px;width:100%;margin:0px;"/>
+<div id="socialStats" style="position: absolute;bottom: 55px;left: 25px;right:25px;">
+<button id="gPlusShare" style="width:49%;float:left;display:none" class="g-interactivepost btn btn-primary btn-gplus" data-contenturl="http://agar.io" data-clientid data-cookiepolicy="http://agar.io" data-prefilltext data-calltoactionlabel="BEAT" data-calltoactionurl="http://agar.io">
+<span class="gplus-icon"></span>
+<span class="btn-text" data-itr="page_share"></span>
+</button>
+<button id="fbShare" class="btn btn-primary btn-fb" onclick="fbShareStats(); return false" style="position:relative;width:49%;float:left;">
+<span class="social social-facebook fb-icon"></span>
+<span class="btn-text" data-itr="page_share"></span>
+</button>
+<button class="btn btn-primary btn-twitter" onclick="twitterShareStats(); return false" style="position:relative;width:49%;float:right">
+<span class="twitter-icon"></span>
+<span class="btn-text" data-itr="page_share"></span>
+</button>
+</div>
+<button id="statsContinue" class="btn btn-primary" data-itr="page_continue"></button>
+
+</div>
+
 </div>
 <div id="rightPanel" class="side-container right-container disable-mouse">
 <div class="agario-panel agario-side-panel agario-party">
@@ -386,58 +444,9 @@ overrideHistoryState(window.history);
 <button type="button" class="party-icon-back"><img src="img/partymode-menu-leave.png" alt="exit" style="border-style: none"/></button>
 </div>
 </div>
+<div id="mcbanners-container">
 </div>
 </div>
-<div id="updatingPanel" class="agario-panel disable-mouse" style="display:none">
-<h3 style="text-align:center; position: relative; top: 50%; height:26px; margin-top: -13px"> Updating </h3>
-</div>
-<div id="stats" class="agario-panel">
-<h2 style="margin-top: 10px"><center>Match Results</center></h2>
-<canvas id="statsGraph" width="350" height="170"></canvas>
-<div id="statsPelletsContainer">
-<span id="statsText" class="stats-food-eaten"></span>
-<span id="statsSubtext" data-itr="page_stats_food_eaten"></span>
-</div>
-<div id="statsHighestMassContainer">
-<span id="statsText" class="stats-highest-mass"></span>
-<span id="statsSubtext" data-itr="page_stats_highest_mass"></span>
-</div>
-<div id="statsTimeAliveContainer">
-<span id="statsText" class="stats-time-alive"></span>
-<span id="statsSubtext" data-itr="page_stats_time_alive"></span>
-</div>
-<div id="statsTimeLeaderboardContainer">
-<span id="statsText" class="stats-leaderboard-time"></span>
-<span id="statsSubtext" data-itr="page_stats_leaderboard_time"></span>
-</div>
-<div id="statsPlayerCellsEatenContainer">
-<span id="statsText" class="stats-cells-eaten"></span>
-<span id="statsSubtext" data-itr="page_stats_cells_eaten"></span>
-</div>
-<div id="statsTopPositionContainer">
-<span id="statsText" class="stats-top-position">?</span>
-<span id="statsSubtext" data-itr="page_stats_top_position"></span>
-</div>
-<hr style="position:absolute;bottom:100px;width:100%;margin:0px;"/>
-<div id="socialStats" style="position: absolute;bottom: 55px;left: 25px;right:25px;">
-<button id="gPlusShare" style="width:49%;float:left;display:none" class="g-interactivepost btn btn-primary btn-gplus" data-contenturl="http://agar.io" data-clientid data-cookiepolicy="http://agar.io" data-prefilltext data-calltoactionlabel="BEAT" data-calltoactionurl="http://agar.io">
-<span class="gplus-icon"></span>
-<span class="btn-text" data-itr="page_share"></span>
-</button>
-<button id="fbShare" class="btn btn-primary btn-fb" onclick="fbShareStats(); return false" style="position:relative;width:49%;float:left;">
-<span class="social social-facebook fb-icon"></span>
-<span class="btn-text" data-itr="page_share"></span>
-</button>
-<button class="btn btn-primary btn-twitter" onclick="twitterShareStats(); return false" style="position:relative;width:49%;float:right">
-<span class="twitter-icon"></span>
-<span class="btn-text" data-itr="page_share"></span>
-</button>
-</div>
-<button id="statsContinue" class="btn btn-primary" data-itr="page_continue"></button>
-
-</div>
-</div>
-
 </div>
 
 <footer class="tosBox left">
@@ -454,7 +463,90 @@ overrideHistoryState(window.history);
 
 </div>
 
-
+<div class="party-dialog">
+<div id="party-blocker">
+<div class="disabler"></div>
+</div>
+<div class="agario-party-dialog">
+<div class="agario-party-0" style="display: block">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_party_leave_ffa"></div>
+<div class="clearfix">
+<button id="create-party-btn" class="btn btn-primary btn-party party-create" style="float: left;" data-itr="page_create_party"></button>
+<button id="continue-party-btn" class="btn btn-primary btn-party party-join" style="float: right;" data-itr="page_continue"></button>
+</div>
+</div>
+<div class="agario-party-1">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_create_party_instructions"></div>
+<div class="clearfix">
+<input type="text" value readonly class="form-control party-token" style="cursor: text; width: 125px; float: left;"/>
+<button class="btn btn-primary btn-party party-copy copy-party-token" style="float: left; width: 60px;">Copy</button>
+<button class="btn btn-primary btn-party party-play" style="float: right; width: 60px;">Play</button>
+</div>
+<div class="copyWarning" style="font-size:11px"></div>
+</div>
+<div class="agario-party-2">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_join_party_code"></div>
+<div class="clearfix">
+<input id="joinPartyToken2" type="text" value placeholder="Party Code" class="form-control party-token" style="width:140px; float:left;"/>
+<button id="join-party-btn" class="btn btn-primary btn-party party-join" style="float:left; width:90px; border-radius:0px 4px 4px 0px" data-itr="page_join_party"></button>
+</div>
+</div>
+<div class="agario-party-3" style="padding: 0px; overflow: hidden; position: relative;">
+<canvas width="220" height="100" class="cell-spinner" data-size="26"></canvas>
+<div class="creating-party-text" data-itr="page_creating_party"></div>
+</div>
+<div class="agario-party-4" style="padding: 0px; overflow: hidden; position: relative;">
+<canvas width="220" height="100" class="cell-spinner" data-size="26"></canvas>
+<div class="creating-party-text" data-itr="page_joining_party"></div>
+</div>
+<div class="agario-party-5">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_joined_party_instructions"></div>
+<div class="clearfix">
+<input type="text" value readonly class="form-control party-token" style="cursor: text; width: 140px; float: left;"/>
+<button class="btn btn-primary btn-party party-copy copy-party-token" style="float: left; width: 60px;">Copy</button>
+<button class="btn btn-primary btn-party party-play" style="float: right; width: 60px;">Play</button>
+</div>
+<div class="copyWarning" style="font-size:11px"></div>
+</div>
+<div class="agario-party-6">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_party_join_error"></div>
+<div class="clearfix">
+<button class="btn btn-primary btn-block" data-itr="page_back_button"></button>
+</div>
+</div>
+<div class="agario-party-7">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_party_leave_party"></div>
+<div class="clearfix">
+<button id="leave-party-btn" class="btn btn-primary btn-party party-join" style="float: left;" data-itr="page_button_label_leave"></button>
+<button id="leave-continue-party-btn" class="btn btn-primary btn-party party-cancel" style="float: right;" data-itr="page_menu_shop_cancel"></button>
+</div>
+</div>
+<div class="agario-party-8">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_join_party_confirmation"></div>
+<div class="clearfix" style="text-align: center">
+<button id="join-party-btn" class="btn btn-primary btn-party party-join" data-itr="page_join_party"></button>
+</div>
+</div>
+<div style="position: absolute; right: 10px; top: 4px;">
+<button id="cancel-party-btn" type="button" class="close">&times;</button>
+</div>
+</div>
+</div>
+<div id="connecting" style="display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 100;">
+<div class="connecting-panel" style="width: 350px; background-color: #FFFFFF; margin: auto auto auto -175px; border-radius: 15px; padding: 5px 15px 5px 15px;">
+<h2 data-itr="page_connecting"></h2>
+<p data-itr="page_connect_help"></p>
+</div>
+</div>
+<button id="externalGShare" style="display:none" class="g-interactivepost" data-contenturl="http://agar.io" data-clientid data-cookiepolicy="http://agar.io" data-prefilltext data-calltoactionlabel="BEAT" data-calltoactionurl="http://agar.io">
+</button>
 <canvas id="canvas"></canvas>
 
 <div style="font-family:'Ubuntu'">&nbsp;</div>
@@ -553,7 +645,39 @@ $("#mcbanners-container").load("misc/banners.html");
 </script>
 <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer>
 </script>
+<script>
+	var scale = window.localStorage.retina ? window.devicePixelRatio : 1.0;
 
+	function showBanner()
+	{
+		if(window.innerHeight > 900)
+		{
+			$('#adsBottom').css('display', 'block');
+		}
+		else
+		{
+			$('#adsBottom').css('display', 'none');
+		}
+	}
+
+	var addEvent = function(object, type, callback) {
+    if (object == null || typeof(object) == 'undefined') return;
+    if (object.addEventListener) {
+        object.addEventListener(type, callback, false);
+    } else if (object.attachEvent) {
+        object.attachEvent("on" + type, callback);
+    } else {
+        object["on"+type] = callback;
+    }
+};
+
+	addEvent(window, "resize", function(event) 
+	{
+		showBanner();
+	});
+
+	showBanner();
+</script>
 <script>
 	function changeGameMode(gameMode)
 	{
