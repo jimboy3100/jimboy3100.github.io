@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Legend Agar.io Extension Tester
+// @name         Legend Agar.io Extension
 // @namespace    Legend Agario Mod
 // @version      2.4
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
@@ -66,7 +66,7 @@ var modVersion = GM_info.script.version;
     document.documentElement.innerHTML = "";
     GM_xmlhttpRequest({
         method: "GET",
-        url: "https://jimboy3000.github.io/legendmod.html",
+        url: "https://jimboy3100.github.io/legendmod.html",
         onload: function(e) {
             var doc = inject(e.responseText);
             document.open();
