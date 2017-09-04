@@ -11,10 +11,5 @@ document.title = "Legend mod";
 setTimeout(function () {
 $("#leaderboard-hud > h4").text("Leaderboard");
 }, 100);
-setTimeout(function () {
-$("#movingskins").css( { marginTop : "-15px" } );
-$("#movingskins").css( { marginBottom : "-30px" } );
-    
-}, 6000);
 
 
