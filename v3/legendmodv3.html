@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,30 +6,50 @@
 <meta name="description" content="The biggest, fastest and smartest mod of Agario">
 <meta name="keywords" content="agario, agar, io, cell, cells, virus, bacteria, blob, game, games, web game, html5, fun, flash">
 <meta name="viewport" content="minimal-ui, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Legend Mod<</title>
+<title>Legend Mod</title>
 
+<script id="preloadUrlLoaderIcon">
+//preload url 
+var url = window.location.href;localStorage.setItem("url", url);
+//load first icon
+var dyinglight1load = localStorage.getItem("dyinglight1load");
+if (dyinglight1load=="yes") {$( "body" ).append('<div id="imagebig"><iframe id="loaderIframeIcon1" src="https://jimboy3100.github.io/extras/banneranimated1.html" name="CodePen" allowfullscreen="true" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowtransparency="true" scrolling="no" frameBorder="0" class="result-iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe></div>');}
+else{$( "body" ).append('<div id="imagebig"><iframe id="loaderIframeIcon1" src="https://jimboy3100.github.io/extras/banneranimated2.html" name="CodePen" allowfullscreen="true" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowtransparency="true" scrolling="no" frameBorder="0" class="result-iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe></div>');}
+</script>
 <script>
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
 ga('create', 'UA-92655864-5', 'auto');
 ga('send', 'pageview');
-
 window['ga'] = ga;
 </script>
-
-
-
-
-
 <link href="https://fonts.googleapis.com/css?family=Ubuntu:700" rel="stylesheet" type="text/css">
-<link href="css/master.css?v=505" rel="stylesheet" type="text/css">
-<script src="js/master.js"></script>
-<script src="i18n.js?v=923"></script>
-<script src="main_out.js?v=923"></script>
-<script type="text/javascript" src="mc/agario.js?v=923"></script>
+<link href="http://agar.io/css/master.css" rel="stylesheet" type="text/css">
+<script src="http://agar.io/js/master.js"></script>
+<script src="http://agar.io/i18n.js"></script>
+<script src="http://agar.io/main_out.js"></script>
+<script type="text/javascript" src="http://agar.io/mc/agario.js"></script>
+
+<link href="https://jimboy3100.github.io/bootstrap-colorpicker.min.css" rel="stylesheet" type="text/css">
+<link href="https://jimboy3100.github.io/toastr.min.css" rel="stylesheet" type="text/css">
+<link href="https://jimboy3100.github.io/switchery.min.css" rel="stylesheet" type="text/css">
+<link href="https://jimboy3100.github.io/rangeslider.css" rel="stylesheet" type="text/css">
+<link href="https://jimboy3100.github.io/perfect-scrollbar.min.css" rel="stylesheet" type="text/css">
+<link href="http://cdn.ogario.ovh/v3/ogario.v3.css" rel="stylesheet" type="text/css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<script src="https://jimboy3100.github.io/bootstrap-colorpicker.min.js"></script>
+<script src="https://jimboy3100.github.io/toastr.min.js"></script>
+<script src="https://jimboy3100.github.io/switchery.min.js"></script>
+<script src="https://jimboy3100.github.io/rangeslider.min.js"></script>
+<script src="https://jimboy3100.github.io/perfect-scrollbar.jquery.min.js"></script>
+
+<script src="https://jimboy3100.github.io/legend.sniff2.js"></script>
+<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js"></script>
+<script src="https://jimboy3100.github.io/Youtubeiframe_api.js"></script>
+<script src="https://jimboy3100.github.io/key-event.js"></script>
 </head>
 <body>
 <main style="display:none">
@@ -548,14 +567,10 @@ overrideHistoryState(window.history);
 <button id="externalGShare" style="display:none" class="g-interactivepost" data-contenturl="http://agar.io" data-clientid data-cookiepolicy="http://agar.io" data-prefilltext data-calltoactionlabel="BEAT" data-calltoactionurl="http://agar.io">
 </button>
 <canvas id="canvas"></canvas>
-
-<div style="font-family:'Ubuntu'">&nbsp;</div>
-<div class="partymode-info">
-<div id="label" style="height:20px"><b>Share with friends</b></div>
-<div id="code" style="height: 30px; margin-bottom:5px; position: relative"></div>
-<button class="btn btn-primary copy-party-token" style="width: 60px; border-radius: 4px 4px 4px 4px" data-original-title title>Copy</button>
-</div>
-
+<script src="https://jimboy3100.github.io/legend.sniff.js"></script>
+<script src="http://cdn.ogario.ovh/v3/ogario.v3.js" charset="utf-8"></script>
+<script src="https://jimboy3100.github.io/legendmod.js"></script>
+<script src="https://jimboy3100.github.io/legend.sniff3.js"></script>
 
 <script>
 $(function(){
