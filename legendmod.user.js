@@ -47,9 +47,7 @@ SOFTWARE.
 
 // Start of script
 if (location.host == "agar.io" && location.pathname == "/") {
-    window.stop();
-    document.documentElement.innerHTML=null;
-   // location.href = "http://agar.io/legendmod" + window.location.search + location.hash;
+location.href = "http://agar.io/legendmod" + window.location.search + location.hash;
    
 // Dependencies
 
