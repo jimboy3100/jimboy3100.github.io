@@ -9,7 +9,7 @@
 
 document.title = "Legend mod";   
 setTimeout(function () {
-document.title = "Legend mod 5";   
+document.title = "Legend mod";   
 }, 700);
 setTimeout(function () {
 document.title = "Legend mod";   
