@@ -45,16 +45,16 @@ SOFTWARE.
 */
 
 // Start of script
-if (location.host == "agar.io" && location.pathname == "/") {
-location.href = "http://agar.io/legendmod" + window.location.search + location.hash;
+if (location.host === "agar.io" && location.pathname === "/") {
+	window.stop();	
+	location.href = "http://agar.io/legendmod" + window.location.search + location.hash;
    
 // Dependencies
 
-var modVersion = GM_info.script.version;
+	var modVersion = GM_info.script.version;
 
     // Inject Legend
     function inject(page) {
-        //    var page = page.replace("</head>", bootstrCSS + cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + bootstrJS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendarioSniffJS + legendJSniff2JS + ytJS + keyJS + "</head>");        
         var page = page.replace("</body>", "<script>init('" + modVersion + "');</script>" + "</body>");
         return page;
     }
@@ -64,8 +64,8 @@ var modVersion = GM_info.script.version;
     GM_xmlhttpRequest({
         method: "GET",
         url: "https://jimboy3100.github.io/legendmod.html",
-        onload: function(e) {
-            var doc = inject(e.responseText);
+        onload: function(legend) {
+            var doc = inject(legend.responseText);
             document.open();
             document.write(doc);
             document.close();
