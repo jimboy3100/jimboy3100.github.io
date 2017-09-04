@@ -248,7 +248,7 @@ if (location.host == "talky.io") {
         document.getElementsByClassName('-ZMXacQm9s80kTx3I-A47')[0].remove();
 
     }, 4000);
-return;     
+     
 }
 
 //example: https://talky.io/dddd?name=&?ip=
