@@ -15,11 +15,6 @@ setTimeout(function () {
 $("#movingskins").css( { marginTop : "-15px" } );
 $("#movingskins").css( { marginBottom : "-30px" } );
     
-//Remove Advertismenets (Step 2) - Needs time
-$("#unrulyMsg").remove();
-//this iframe already removed because of removing parent div
-$( "iframe[id*='rpfl_emily']" ).remove();    
-//toastr["info"]("Legend mod still needs <b>Fixes</b>", "", { timeOut: 6000, extendedTimeOut: 6000 });
 }, 6000);
 
 
