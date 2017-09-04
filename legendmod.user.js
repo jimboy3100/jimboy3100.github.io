@@ -44,7 +44,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-
 // Start of script
 if (location.host == "agar.io" && location.pathname == "/") {
 location.href = "http://agar.io/legendmod" + window.location.search + location.hash;
@@ -70,9 +69,7 @@ var modVersion = GM_info.script.version;
             document.open();
             document.write(doc);
             document.close();
-        }
-       
-
+        }       
     });
 
     // Inject Chat to text userscript
