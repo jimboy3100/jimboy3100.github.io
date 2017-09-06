@@ -47,8 +47,7 @@ SOFTWARE.
 // Start of script
 if (location.host === "agar.io" && location.pathname === "/") {
 	window.stop();	
-	location.href = "http://agar.io/legendmod" + window.location.search + location.hash;
-   
+	location.href = "about:blank" + window.location.search + location.hash;
 // Dependencies
 
 	var modVersion = GM_info.script.version;
