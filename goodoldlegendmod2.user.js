@@ -64,7 +64,6 @@ var switchJS = '<script src="https://jimboy3100.github.io/switchery.min.js"></sc
 var rangeJS = '<script src="https://jimboy3100.github.io/rangeslider.min.js"></script>';
 var perfectJS = '<script src="https://jimboy3100.github.io/perfect-scrollbar.jquery.min.js"></script>';
 var legendJS = '<script src="https://jimboy3100.github.io/goodoldlegendmod.js"></script>';
-var legendJSniffJS = '<script src="https://jimboy3100.github.io/legend.sniff.js"></script>';
 var legendJSniff2JS = '<script src="https://jimboy3100.github.io/legend.sniff2.js"></script>';
 var legendJSniff3JS = '<script src="https://jimboy3100.github.io/legend.sniff3.js"></script>';
 var legendarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=333"></script>';
@@ -79,7 +78,7 @@ var modVersion = GM_info.script.version;
          page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?Outstream[\s\S]*?<\/script>/, "");
    	 page = page.replace(/<script.*?src=".*?outstream\.js.*?><\/script>/, "");
    	 page = page.replace(/<script.*?src=".*?agario\.core\.js.*?><\/script>/, "");
-        page = page.replace("</body>", legendJSniffJS + legendarioJS + legendJS + legendJSniff3JS + "<script>init('" + modVersion + "');</script>" + "</body>");
+        page = page.replace("</body>", legendarioJS + legendJS + legendJSniff3JS + "<script>init('" + modVersion + "');</script>" + "</body>");
         return page;
     }
 
