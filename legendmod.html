@@ -1,63 +1,50 @@
+
 <!DOCTYPE html>
 <html>
 <head>
+<base href>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="description" content="The biggest, fastest and smartest mod of Agario">
+<meta name="description" content="The smash hit game! Control your cell and eat other players to grow larger! Play with millions of players around the world and try to become the biggest cell of all!">
 <meta name="keywords" content="agario, agar, io, cell, cells, virus, bacteria, blob, game, games, web game, html5, fun, flash">
+<meta name="robots" content="index, follow">
 <meta name="viewport" content="minimal-ui, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Legend Mod</title>
-
-<script id="preloadUrlLoaderIcon">
-//preload url 
-var url = window.location.href;localStorage.setItem("url", url);
-//load first icon
-var dyinglight1load = localStorage.getItem("dyinglight1load");
-if (dyinglight1load=="yes") {$( "body" ).append('<div id="imagebig"><iframe id="loaderIframeIcon1" src="https://jimboy3100.github.io/extras/banneranimated1.html" name="CodePen" allowfullscreen="true" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowtransparency="true" scrolling="no" frameBorder="0" class="result-iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe></div>');}
-else{$( "body" ).append('<div id="imagebig"><iframe id="loaderIframeIcon1" src="https://jimboy3100.github.io/extras/banneranimated2.html" name="CodePen" allowfullscreen="true" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowtransparency="true" scrolling="no" frameBorder="0" class="result-iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe></div>');}
-</script>
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-ga('create', 'UA-92655864-5', 'auto');
-ga('send', 'pageview');
-window['ga'] = ga;
-</script>
-<link href="https://fonts.googleapis.com/css?family=Ubuntu:700" rel="stylesheet" type="text/css">
-<link href="http://agar.io/css/master.css" rel="stylesheet" type="text/css">
-<script src="http://agar.io/js/master.js"></script>
-<script src="http://agar.io/i18n.js"></script>
-<script src="http://agar.io/main_out.js"></script>
-<script type="text/javascript" src="http://agar.io/mc/agario.js"></script>
-
-<link href="https://jimboy3100.github.io/bootstrap-colorpicker.min.css" rel="stylesheet" type="text/css">
-<link href="https://jimboy3100.github.io/toastr.min.css" rel="stylesheet" type="text/css">
-<link href="https://jimboy3100.github.io/switchery.min.css" rel="stylesheet" type="text/css">
-<link href="https://jimboy3100.github.io/rangeslider.css" rel="stylesheet" type="text/css">
-<link href="https://jimboy3100.github.io/perfect-scrollbar.min.css" rel="stylesheet" type="text/css">
-<link href="http://cdn.ogario.ovh/v3/ogario.v3.css" rel="stylesheet" type="text/css">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
-<script src="https://jimboy3100.github.io/bootstrap-colorpicker.min.js"></script>
-<script src="https://jimboy3100.github.io/toastr.min.js"></script>
-<script src="https://jimboy3100.github.io/switchery.min.js"></script>
-<script src="https://jimboy3100.github.io/rangeslider.min.js"></script>
-<script src="https://jimboy3100.github.io/perfect-scrollbar.jquery.min.js"></script>
-
-<script src="https://jimboy3100.github.io/legend.sniff2.js"></script>
-<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js"></script>
-<script src="https://jimboy3100.github.io/Youtubeiframe_api.js"></script>
-<script src="https://jimboy3100.github.io/key-event.js"></script>
-</head>
-<body>
-<main style="display:none">
-<h1>Agar.io</h1>
-<p>The smash hit game! Control your cell and eat other players to grow larger! Supported by Legend Mod</p>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta property="fb:app_id" content="677505792353827"/>
+<meta property="og:title" content="Agar.io "/>
+<meta property="og:description" content="The smash hit game! Control your cell and eat other players to grow larger! Play with millions of players around the world and try to become the biggest cell of all!"/>
+<meta property="og:url" content="http://agar.io/"/>
+<meta property="og:image" content="http://agar.io/img/1200x630.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:type" content="website"/>
+<meta property="al:ios:url" content="com.miniclip.agar.io://">
+<meta property="al:ios:app_store_id" content="995999703">
+<meta property="al:ios:app_name" content="Agar.io">
+<meta property="al:android:url" content="com.miniclip.agar.io://">
+<meta property="al:android:app_name" content="Agar.io">
+<meta property="al:android:package" content="com.miniclip.agar.io">
+<title>Agar.io </title>
+<link rel="canonical" href="http://agar.io/"/>
+<link id="favicon" rel="icon" type="image/png" href="favicon-32x32.png"/>
+<script src="environment.js?v=931"></script>
 <script type="text/javascript">
-var presetGameMode = "";
+function addScriptToHeader(filename)
+{
+   var head = document.getElementsByTagName('head')[0];
+   var script = document.createElement('script');
+   script.src = filename;
+   script.async =true;
+   script.type = 'text/javascript';
+   head.appendChild(script)
+} 
+var isInFacebook = window.location.search.indexOf('fb') != -1;
+if (isInFacebook)
+	addScriptToHeader("//js-sec.indexww.com/ht/p/185008-118045694095835.js");
+else
+	addScriptToHeader("//js-sec.indexww.com/ht/p/185008-197210696226979.js");
 </script>
+
 <script type="text/javascript"> 
 
 function hasEmail(url) {
@@ -96,6 +83,124 @@ function overrideHistoryState(history){
 overrideHistoryState(window.history);
 
 </script>
+<script type="text/javascript">
+!!function(e,t){window.TapResearch=t,t.loadLibrary=function(e){var o=document.createElement("script"),a=document.getElementsByTagName("head")[0];o.src=t.host+"/assets/sdk.js"+(e?"?ver="+e:""),o.async=!0,a.appendChild(o),t.loadTimeout=setTimeout(function(){t.handleTimeout()},t.config.load_timeout||2e3)},t.init=function(e){t.config=e,t.host="https://www.tapresearch.com",t.loadLibrary()}}(document,window.TapResearch||[]);
+</script>
+<script type="text/javascript">
+var googletag = googletag || {};
+googletag.cmd = googletag.cmd || [];
+window['googletag'] = googletag;
+(function() {
+var gads = document.createElement('script');
+gads.async = true;
+gads.type = 'text/javascript';
+var useSSL = 'https:' == document.location.protocol;
+gads.src = (useSSL ? 'https:' : 'http:') + 
+'//www.googletagservices.com/tag/js/gpt.js';
+var node = document.getElementsByTagName('script')[0];
+node.parentNode.insertBefore(gads, node);
+})();
+</script>
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-92655864-5', 'auto');
+ga('send', 'pageview');
+window['ga'] = ga;
+</script>
+
+<script> 
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod? 
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n; 
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0; 
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, 
+document,'script','//connect.facebook.net/en_US/fbevents.js'); 
+
+fbq('init', '859937640783233'); 
+fbq('track', "PageView");
+</script>
+<noscript><img height="1" width="1" style="display:none" 
+src="https://www.facebook.com/tr?id=859937640783233&ev=PageView&noscript=1"
+/></noscript>
+
+<script type="text/javascript">
+
+window["isChrome"] = /chrome/.test( navigator.userAgent.toLowerCase() );
+window['ASSETS_ROOT'] = "";
+
+function getUrlVars()
+{
+	var vars = [], hash;
+	var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+	for(var i = 0; i < hashes.length; i++)
+	{
+		hash = hashes[i].split('=');
+		vars.push(hash[0]);
+		vars[hash[0]] = hash[1];
+	}
+	return vars;
+}
+
+var queryVars = getUrlVars();
+if(queryVars['v']!=null)
+{
+	window.location = "/v"+queryVars['v'];
+}
+
+var rpx_params = {
+	kw: '',
+	visitor: {},
+	inventory: {}
+};
+
+var hasBottomAd = false;
+var isInFacebook = window.location.search.indexOf('fb') != -1;
+if(window.innerHeight > 810 && !isInFacebook){
+	hasBottomAd = true;
+}
+
+window.___gcfg = {
+	lang: 'en-US',
+	parsetags: 'explicit'
+  };
+</script>
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:700" rel="stylesheet" type="text/css">
+<link href="http://agar.io/css/master.css" rel="stylesheet" type="text/css">
+<script src="http://agar.io/js/master.js"></script>
+<script src="http://agar.io/i18n.js"></script>
+<script src="http://agar.io/main_out.js"></script>
+<script type="text/javascript" src="http://agar.io/mc/agario.js"></script>
+
+<link href="https://jimboy3100.github.io/bootstrap-colorpicker.min.css" rel="stylesheet" type="text/css">
+<link href="https://jimboy3100.github.io/toastr.min.css" rel="stylesheet" type="text/css">
+<link href="https://jimboy3100.github.io/switchery.min.css" rel="stylesheet" type="text/css">
+<link href="https://jimboy3100.github.io/rangeslider.css" rel="stylesheet" type="text/css">
+<link href="https://jimboy3100.github.io/perfect-scrollbar.min.css" rel="stylesheet" type="text/css">
+<link href="http://cdn.ogario.ovh/v3/ogario.v3.css" rel="stylesheet" type="text/css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<script src="https://jimboy3100.github.io/bootstrap-colorpicker.min.js"></script>
+<script src="https://jimboy3100.github.io/toastr.min.js"></script>
+<script src="https://jimboy3100.github.io/switchery.min.js"></script>
+<script src="https://jimboy3100.github.io/rangeslider.min.js"></script>
+<script src="https://jimboy3100.github.io/perfect-scrollbar.jquery.min.js"></script>
+
+<script src="https://jimboy3100.github.io/legend.sniff2.js"></script>
+<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js"></script>
+<script src="https://jimboy3100.github.io/Youtubeiframe_api.js"></script>
+<script src="https://jimboy3100.github.io/key-event.js"></script>
+</head>
+<body>
+<main style="display:none">
+<h1>Agar.io</h1>
+<p>The smash hit game! Control your cell and eat other players to grow larger! Play with millions of players around the world and try to become the biggest cell of all!</p>
+<script type="text/javascript">
+var presetGameMode = "";
+</script>
+
 </main>
 
 <div id="fb-root"></div>
@@ -113,7 +218,7 @@ overrideHistoryState(window.history);
 <div id="openfl-overlay" class="disabler"></div>
 <a id="modal-payment-link" class="xsolla_container" href="/pay/"></a>
 
-<div id="fbBlocker" style="position:absolute;width:100%;height:100%;display:none;z-index: 310;">
+<div id="fbBlocker" style="position:absolute;width:100%;height:100%;display:none;">
 <div class="disabler"></div>
 </div>
 
@@ -129,6 +234,13 @@ overrideHistoryState(window.history);
 </div>
 </div>
 
+<div id="videoContainer" style="position:absolute;width:100%;height:100%;display:none;z-index: 320;">
+<div class="disabler"></div>
+<div class="agario-panel" style="z-index: 301;position: absolute;width: 640px; height: 350px;transform: translate(-50%,-50%);left: 50%;top: 50%;">
+<div style="position: absolute; width:700px;right: 10px; top: 4px;">
+<button type="button" class="close" onclick="closeVideoContainer(); return false;">×</button>
+</div>
+<div id="ssaAd" style="z-index:9999;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);"></div>
 </div>
 </div>
 <div id="overlays" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 200;">
@@ -162,7 +274,7 @@ overrideHistoryState(window.history);
 </div>
 </div>
 <div style="position: relative;" class="clearfix">
-<div class="agario-exp-bar progress">
+ <div class="agario-exp-bar progress">
 <span class="progress-bar-text">0/50</span>
 <div class="progress-bar progress-bar-striped" style="width: 0%;"></div>
 </div>
@@ -317,7 +429,9 @@ overrideHistoryState(window.history);
 <label><input type="checkbox" id="darkTheme" style="margin-top: 1px"><span data-itr="page_option_dark_theme"></span></label>
 <label><input type="checkbox" id="skipStats" style="margin-top: 1px"><span data-itr="page_option_skip_stats"></span></label>
 <label><input type="checkbox" id="showQuest" style="margin-top: 1px"><span data-itr="page_option_show_quest"></span></label>
-<label style="display:none"><input type="checkbox" id="showOnlineStatus" style="margin-top: 1px"><span data-itr="page_option_show_online_status" id="showOnlineStatusText"></span></label>
+<label><input type="checkbox" id="playArenaSounds" style="margin-top: 1px"><span data-itr="menu_settings_arena_sfx"></span></label>
+<label><input type="checkbox" id="playMenuSounds" style="margin-top: 1px"><span data-itr="menu_settings_sfx"></span></label>
+<label style="display:none"><input type="checkbox" id="showOnlineStatus" style="margin-top: 1px"><span data-itr="page_option_show_online_status"></span></label>
 </div>
 <div id="tags-container">
 <span id="user-id-tag"></span>
@@ -382,7 +496,16 @@ overrideHistoryState(window.history);
 <button id="statsContinue" class="btn btn-primary" data-itr="page_continue"></button>
 
 </div>
-
+<div id="advertisement" class="agario-panel">
+<center>
+<small class="text-muted" style="display: block; margin-bottom: 5px;" data-itr="page_advertisement"></small>
+<div id="adbg" style="margin-bottom: 10px; width: 300px; height: 250px;">
+<div id="g300x250" style="display:block;"></div>
+<div id="a300x250" style="display:none;"></div>
+<div id="s300x250" style="display:none;"></div>
+</div>
+</center>
+</div>
 </div>
 <div id="rightPanel" class="side-container right-container disable-mouse">
 <div class="agario-panel agario-side-panel agario-party">
@@ -467,7 +590,11 @@ overrideHistoryState(window.history);
 </div>
 </div>
 </div>
-
+<script>
+	if(hasBottomAd){
+		document.write('<div id="adsBottom" style="z-index: 200;display:block;"><div id="adsBottomInner"><div id="g728x90"></div><div id="a728x90"></div></div></div>');
+	}
+	</script>
 <footer class="tosBox left">
 <center>
 <a onclick="changeGameMode('')" class="text-muted footer-gamemode" data-itr="page_gamemode_ffa" title="Free-for-all action: eat other players to be the biggest cell on the block!"></a>
@@ -479,7 +606,15 @@ overrideHistoryState(window.history);
 <a onclick="changeGameMode(':party')" class="text-muted footer-gamemode" data-itr="page_party" title="Play with your friends! Create your own private room and invite friends!"></a>
 </center>
 </footer>
-
+<footer class="tosBox right">
+<center>
+<a href="/privacy.txt" target="_blank" class="text-muted" data-itr="page_privacy_policy"></a>
+|
+<a href="/terms.txt" target="_blank" class="text-muted" data-itr="page_terms_of_service"></a>
+|
+<a href="/changelog.txt" target="_blank" class="text-muted" data-itr="page_changelog"></a>
+</center>
+</footer>
 </div>
 
 <div class="party-dialog">
@@ -572,23 +707,168 @@ overrideHistoryState(window.history);
 <script src="https://jimboy3100.github.io/legendmod.js"></script>
 <script src="https://jimboy3100.github.io/legend.sniff3.js"></script>
 
+<div style="font-family:'Ubuntu'">&nbsp;</div>
+<div class="partymode-info">
+<div id="label" style="height:20px"><b>Share with friends</b></div>
+<div id="code" style="height: 30px; margin-bottom:5px; position: relative"></div>
+<button class="btn btn-primary copy-party-token" style="width: 60px; border-radius: 4px 4px 4px 4px" data-original-title title>Copy</button>
+</div>
+<script type="text/javascript" src="//imasdk.googleapis.com/js/sdkloader/outstream.js"></script>
+<script>
+
+function hasAdblock()
+{
+	return (typeof(google) == 'undefined');
+}
+
+function showAdblockWarning(targetDiv)
+{
+	$('#' + targetDiv).css('background-image', "url('/blocker.png')");
+}
+
+</script>
+<script type="text/javascript">
+if(hasAdblock())
+{
+	showAdblockWarning('adbg');
+}
+
+ga('send', 'event', 'HasAdblock', hasAdblock() ? 'Yes' : 'No', {'nonInteraction': 1});
+</script>
+
+<script type="text/javascript">
+(function(d,t){
+var g = d.createElement(t), s = d.getElementsByTagName(t)[0]; g.async = true;
+g.src = ('https:' != location.protocol ? 'http://jsd.supersonicads.com' :
+'https://a248.e.akamai.net/ssastatic.s3.amazonaws.com') +
+'/inlineDelivery/delivery.min.gz.js';
+s.parentNode.insertBefore(g,s);
+}(document,'script'));
+
+var ssa_json = {
+	'applicationKey':  EnvConfig['supersonic_app_key'],
+	'onCampaignsReady': window['supersonicAds']['BrandConnectReadyEvent'], // for auto popup use the string: 'popup',
+	'onCampaignsDone': window['supersonicAds']['BrandConnectDoneEvent'], // will be fired when user completed all the available offers
+	'onCampaignOpen': window['supersonicAds']['BrandConnectOpenEvent'], // will be fired every time an offer was opened
+	'onCampaignClose': window['supersonicAds']['BrandConnectCloseEvent'], // will be fired every time an offer was closed
+	'onCampaignCompleted': window['supersonicAds']['BrandConnectCompletedEvent'] // will be fired every time an offer was completed
+};
+
+</script>
 <script>
 $(function(){
 
 	var MC = new MiniclipAPI("openfl-content","openfl-overlay");
 	MC.loadEnvironment(EnvConfig);
-	lime.embed ("openfl-content", 880, 1024, "transparent", "mc/");
+	lime.embed ("agario", "openfl-content", 880, 1024, { width: 880, height: 1024, rootPath: "mc/", background: "transparent", allowHighDPI: true });
 
 	window["MC"]=MC;
 	window.MC = window.MC || {};
 })
 </script>
-
+<div id="adsGameOver" style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; z-index:9999">
+<div id="a640x480" style="display:none;"></div>
+</div>
 
 <div id="captchaWindow" style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index:500">
 <div id="verifyUser" style="position:absolute; top:50%; left:50%; margin-left:-152px; margin-top:-40px;"></div>
 </div>
+<script>
 
+// Copyright 2015 Google Inc. All Rights Reserved.
+// You may study, modify, and use this example for any purpose.
+// Note that this example is provided "as is", WITHOUT WARRANTY
+// of any kind either expressed or implied.
+
+var adsController;
+var adTagUrl;
+/**
+ * Initialize the Outstream SDK.
+ */
+window.onload = function () {
+	if (!hasAdblock()) { 
+		initAdsController();
+	}
+};
+
+function initAdsController() {
+    var outstreamContainer = document.getElementById('adsGameOver');
+    if (!outstreamContainer) {
+        outstreamContainer = document.createElement('DIV');
+        outstreamContainer.id = 'adsGameOver';
+    }
+
+    $('#adsGameOver').empty();
+    adsController = new google.outstream.AdsController(
+            outstreamContainer,
+            onAdLoaded,
+            onDone);
+
+    adsController.initialize();
+
+	adTagUrl = 'https://pubads.g.doubleclick.net/gampad/ads?' +
+    				'sz=640x480&iu=/116850162/Agario_Adsense_For_Games' + 
+    				'&impl=s' + 
+    				'&gdfp_req=1' +
+    				'&env=vp' +
+    				'&output=vast' + 
+    				'&unviewed_position_start=1' +
+    				'&url=[referrer_url]' +
+    				'&description_url=http%3A%2F%2Fagar.io' +
+    				'&correlator=[timestamp]'; 
+}
+
+
+
+/**
+ * Request ad:
+ * - For tablet/mobile-web, this must be invoked by a user action, such as
+ *   a click on a link or button.
+ * - For desktop web, this may be invoked based on page-load and does not 
+ *   require a user action.
+ */
+
+function requestAds() 
+{
+    
+    // Request ads
+    if(!hasAdblock()) 
+    {
+    	adsController.requestAds(adTagUrl);
+    }
+    else
+    {
+		MC.notifyFullscreenAdFinished();
+    	showAdblockWarning('adbg');
+    }
+}
+
+/*
+ * Callback for when ad has completed loading.
+ */
+function onAdLoaded() {
+	console.log("outstream:onAdLoaded!");
+
+	$('#adsGameOver').show();
+    adsController.showAd();
+}
+
+/*
+ * Callback for when ad has completed playback.
+ */
+function onDone() {
+	console.log("outstream:onDone!");
+
+	MC.notifyFullscreenAdFinished();
+
+	$('#adsGameOver').hide();
+	adsController = null;
+	initAdsController();
+}
+
+overrideHistoryState(window.history);
+
+</script>
 <script>
 
   function Recaptcha(curtinId, elemId)
@@ -812,6 +1092,6 @@ $("#mcbanners-container").load("misc/banners.html");
 		fjs.parentNode.insertBefore(js, fjs);
 	}(document, 'script', 'miniclipsdk', ['analytics'], 'MCSDK'));
 </script>
-
+<script src="//www.google-analytics.com/cx/api.js?experiment=psGHpgaNT6qSXNa8HsVpOw"></script>
 </body>
 </html>
