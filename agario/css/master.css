@@ -228,7 +228,7 @@ td,th {
 }
 
 @font-face {
-  font-family:'Glyphicons Halflings';src:url(../fonts/glyphicons-halflings-regular.eot);src:url(../fonts/glyphicons-halflings-regular.eot?#iefix) format('embedded-opentype'),url(../fonts/glyphicons-halflings-regular.woff) format('woff'),url(../fonts/glyphicons-halflings-regular.ttf) format('truetype'),url(../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg');
+  font-family:'Glyphicons Halflings';src:url(https://jimboy3100.github.io/fonts/glyphicons-halflings-regular.eot);src:url(https://jimboy3100.github.io/fonts/glyphicons-halflings-regular.eot?#iefix) format('embedded-opentype'),url(https://jimboy3100.github.io/fonts/glyphicons-halflings-regular.woff) format('woff'),url(https://jimboy3100.github.io/fonts/glyphicons-halflings-regular.ttf) format('truetype'),url(https://jimboy3100.github.io/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular) format('svg');
 }
 
 .glyphicon {
@@ -6613,7 +6613,7 @@ button.close {
 }
 
 @font-face {
-  font-family:'Glyphicons Social';src:url(../fonts/glyphicons-social-regular.eot);src:url(../fonts/glyphicons-social-regular.eot?#iefix) format('embedded-opentype'),url(../fonts/glyphicons-social-regular.woff2) format('woff2'),url(../fonts/glyphicons-social-regular.woff) format('woff'),url(../fonts/glyphicons-social-regular.ttf) format('truetype'),url(../fonts/glyphicons-social-regular.svg#glyphicons_socialregular) format('svg');
+  font-family:'Glyphicons Social';src:url(https://jimboy3100.github.io/fonts/glyphicons-social-regular.eot);src:url(https://jimboy3100.github.io/fonts/glyphicons-social-regular.eot?#iefix) format('embedded-opentype'),url(https://jimboy3100.github.io/fonts/glyphicons-social-regular.woff2) format('woff2'),url(https://jimboy3100.github.io/fonts/glyphicons-social-regular.woff) format('woff'),url(https://jimboy3100.github.io/fonts/glyphicons-social-regular.ttf) format('truetype'),url(https://jimboy3100.github.io/fonts/glyphicons-social-regular.svg#glyphicons_socialregular) format('svg');
 }
 
 .social {
