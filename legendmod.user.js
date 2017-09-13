@@ -62,7 +62,7 @@ if (location.host === "agar.io" && location.pathname === "/") {
     document.documentElement.innerHTML = "";
     GM_xmlhttpRequest({
         method: "GET",
-        url: "https://jimboy3100.github.io/legendmod.html",
+        url: "https://jimboy3100.github.io/v3/",
         onload: function(legend) {
             var doc = inject(legend.responseText);
             document.open();
