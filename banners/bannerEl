@@ -3,7 +3,7 @@
 </a>
 
 <script>
-  var imgUrl = "https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/banners/iconel.png";
+  var imgUrl = "https://jimboy3100.github.io/banners/iconel.png";
   var $img = $('<img id="legendAdImg" height="70px" src="'+ imgUrl +'" style="width: 100%">');
 
   $img.on('load', function() { ga('send', 'event', 'Ad', 'load', 'euWebsite'); });
