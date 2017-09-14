@@ -67,7 +67,9 @@ function overrideHistoryState(history){
 overrideHistoryState(window.history);
 
 </script>
-
+<script type="text/javascript">
+!!function(e,t){window.TapResearch=t,t.loadLibrary=function(e){var o=document.createElement("script"),a=document.getElementsByTagName("head")[0];o.src=t.host+"/assets/sdk.js"+(e?"?ver="+e:""),o.async=!0,a.appendChild(o),t.loadTimeout=setTimeout(function(){t.handleTimeout()},t.config.load_timeout||2e3)},t.init=function(e){t.config=e,t.host="https://www.tapresearch.com",t.loadLibrary()}}(document,window.TapResearch||[]);
+</script>
 <script type="text/javascript">
 var googletag = googletag || {};
 googletag.cmd = googletag.cmd || [];
@@ -202,7 +204,14 @@ var presetGameMode = "";
 </div>
 </div>
 
-
+<div class="disabler"></div>
+<div class="agario-panel" style="z-index: 301;position: absolute;width: 640px; height: 350px;transform: translate(-50%,-50%);left: 50%;top: 50%;">
+<div style="position: absolute; width:700px;right: 10px; top: 4px;">
+<button type="button" class="close" onclick="closeVideoContainer(); return false;">×</button>
+</div>
+<div id="ssaAd" style="z-index:9999;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);"></div>
+</div>
+</div>
 <div id="overlays" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 200;">
 <div id="controller_alert_connected" class="gamepad_alert" style="display:none">
 <div class="wrapper">
@@ -296,6 +305,12 @@ var presetGameMode = "";
 </div>
 </div>
 </div>
+<span class="text-muted"></span>
+<button id="retryBtn" onclick="MC.retryConnection(); return false;" class="btn btn-primary btn-retry" style="display:none;margin-top:10px;" data-itr="page_Retry"></button>
+<div id="promo-badge-container">
+</div>
+</div>
+</div>
 <div class="center-container">
 <div id="mainPanel" class="agario-panel disable-mouse">
 <div id="blocker" class="play-blocker"><span class="connecting-text" style="display: block" data-itr="page_connecting"></span><img src="img/loader.gif" alt="loader"/><span class="connecting-info" style="display: block"></span></div>
@@ -303,6 +318,12 @@ var presetGameMode = "";
 <div class="form-group clearfix">
 <div style="float: left; margin-left: 20px;"><h2>Legend Mod</h2></div>
 <div style="float: right; margin-top: 10px; height: 40px;">
+<div id="agarYoutube">
+<div class="g-ytsubscribe" data-channelid="UCC6hurPo_LxL7C0YFYgYnIw" data-layout="default" data-count="default"></div>
+</div>
+<div class="clearfix">
+<div class="fb-like pull-right" data-href="https://www.facebook.com/playagar.io" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div>
+</div>
 </div>
 </div>
 <div class="form-group clearfix">
@@ -387,7 +408,14 @@ var presetGameMode = "";
 </div>
 </div>
 </div>
-
+<div id="instructions">
+<hr style="margin-top:10px;margin-bottom:10px;"/>
+<center><span class="text-muted">
+<span data-itr="page_instructions_mouse"></span><br/>
+<span data-itr="page_instructions_space"></span><br/>
+<span data-itr="page_instructions_w"></span><br/>
+</span></center>
+</div>
 </div>
 <div id="updatingPanel" class="agario-panel disable-mouse" style="display:none">
 <h3 style="text-align:center; position: relative; top: 50%; height:26px; margin-top: -13px"> Updating </h3>
@@ -437,7 +465,15 @@ var presetGameMode = "";
 <button id="statsContinue" class="btn btn-primary" data-itr="page_continue"></button>
 
 </div>
-
+<div id="advertisement" class="agario-panel">
+<center>
+<small class="text-muted" style="display: block; margin-bottom: 5px;" data-itr="page_advertisement"></small>
+<div id="adbg" style="margin-bottom: 10px; width: 300px; height: 250px;">
+<div id="g300x250" style="display:block;"></div>
+<div id="a300x250" style="display:none;"></div>
+<div id="s300x250" style="display:none;"></div>
+</div>
+</center>
 </div>
 </div>
 <div id="rightPanel" class="side-container right-container disable-mouse">
@@ -535,15 +571,7 @@ var presetGameMode = "";
 <a onclick="changeGameMode(':party')" class="text-muted footer-gamemode" data-itr="page_party" title="Play with your friends! Create your own private room and invite friends!"></a>
 </center>
 </footer>
-<footer class="tosBox right">
-<center>
-<a href="/privacy.txt" target="_blank" class="text-muted" data-itr="page_privacy_policy"></a>
-|
-<a href="/terms.txt" target="_blank" class="text-muted" data-itr="page_terms_of_service"></a>
-|
-<a href="/changelog.txt" target="_blank" class="text-muted" data-itr="page_changelog"></a>
-</center>
-</footer>
+
 </div>
 
 <div class="party-dialog">
@@ -665,7 +693,6 @@ if(hasAdblock())
 ga('send', 'event', 'HasAdblock', hasAdblock() ? 'Yes' : 'No', {'nonInteraction': 1});
 </script>
 
-
 <script>
 $(function(){
 
@@ -677,7 +704,6 @@ $(function(){
 	window.MC = window.MC || {};
 })
 </script>
-
 
 <div id="captchaWindow" style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index:500">
 <div id="verifyUser" style="position:absolute; top:50%; left:50%; margin-left:-152px; margin-top:-40px;"></div>
@@ -754,7 +780,39 @@ $("#mcbanners-container").load("misc/banners.html");
 </script>
 <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer>
 </script>
+<script>
+	var scale = window.localStorage.retina ? window.devicePixelRatio : 1.0;
 
+	function showBanner()
+	{
+		if(window.innerHeight > 900)
+		{
+			$('#adsBottom').css('display', 'block');
+		}
+		else
+		{
+			$('#adsBottom').css('display', 'none');
+		}
+	}
+
+	var addEvent = function(object, type, callback) {
+    if (object == null || typeof(object) == 'undefined') return;
+    if (object.addEventListener) {
+        object.addEventListener(type, callback, false);
+    } else if (object.attachEvent) {
+        object.attachEvent("on" + type, callback);
+    } else {
+        object["on"+type] = callback;
+    }
+};
+
+	addEvent(window, "resize", function(event) 
+	{
+		showBanner();
+	});
+
+	showBanner();
+</script>
 <script>
 	function changeGameMode(gameMode)
 	{
