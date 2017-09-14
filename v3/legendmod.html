@@ -204,6 +204,7 @@ var presetGameMode = "";
 </div>
 </div>
 
+<div id="videoContainer" style="position:absolute;width:100%;height:100%;display:none;z-index: 320;">
 <div class="disabler"></div>
 <div class="agario-panel" style="z-index: 301;position: absolute;width: 640px; height: 350px;transform: translate(-50%,-50%);left: 50%;top: 50%;">
 <div style="position: absolute; width:700px;right: 10px; top: 4px;">
@@ -316,7 +317,7 @@ var presetGameMode = "";
 <div id="blocker" class="play-blocker"><span class="connecting-text" style="display: block" data-itr="page_connecting"></span><img src="img/loader.gif" alt="loader"/><span class="connecting-info" style="display: block"></span></div>
 <div role="form" novalidate>
 <div class="form-group clearfix">
-<div style="float: left; margin-left: 20px;"><h2>Legend Mod</h2></div>
+<div style="float: left; margin-left: 20px;"><h2>Agar.io</h2></div>
 <div style="float: right; margin-top: 10px; height: 40px;">
 <div id="agarYoutube">
 <div class="g-ytsubscribe" data-channelid="UCC6hurPo_LxL7C0YFYgYnIw" data-layout="default" data-count="default"></div>
@@ -559,7 +560,11 @@ var presetGameMode = "";
 </div>
 </div>
 </div>
-
+<script>
+	if(hasBottomAd){
+		document.write('<div id="adsBottom" style="z-index: 200;display:block;"><div id="adsBottomInner"><div id="g728x90"></div><div id="a728x90"></div></div></div>');
+	}
+	</script>
 <footer class="tosBox left">
 <center>
 <a onclick="changeGameMode('')" class="text-muted footer-gamemode" data-itr="page_gamemode_ffa" title="Free-for-all action: eat other players to be the biggest cell on the block!"></a>
@@ -571,7 +576,15 @@ var presetGameMode = "";
 <a onclick="changeGameMode(':party')" class="text-muted footer-gamemode" data-itr="page_party" title="Play with your friends! Create your own private room and invite friends!"></a>
 </center>
 </footer>
-
+<footer class="tosBox right">
+<center>
+<a href="/privacy.txt" target="_blank" class="text-muted" data-itr="page_privacy_policy"></a>
+|
+<a href="/terms.txt" target="_blank" class="text-muted" data-itr="page_terms_of_service"></a>
+|
+<a href="/changelog.txt" target="_blank" class="text-muted" data-itr="page_changelog"></a>
+</center>
+</footer>
 </div>
 
 <div class="party-dialog">
@@ -704,6 +717,7 @@ $(function(){
 	window.MC = window.MC || {};
 })
 </script>
+
 
 <div id="captchaWindow" style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index:500">
 <div id="verifyUser" style="position:absolute; top:50%; left:50%; margin-left:-152px; margin-top:-40px;"></div>
