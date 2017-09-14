@@ -67,9 +67,7 @@ function overrideHistoryState(history){
 overrideHistoryState(window.history);
 
 </script>
-<script type="text/javascript">
-!!function(e,t){window.TapResearch=t,t.loadLibrary=function(e){var o=document.createElement("script"),a=document.getElementsByTagName("head")[0];o.src=t.host+"/assets/sdk.js"+(e?"?ver="+e:""),o.async=!0,a.appendChild(o),t.loadTimeout=setTimeout(function(){t.handleTimeout()},t.config.load_timeout||2e3)},t.init=function(e){t.config=e,t.host="https://www.tapresearch.com",t.loadLibrary()}}(document,window.TapResearch||[]);
-</script>
+
 <script type="text/javascript">
 var googletag = googletag || {};
 googletag.cmd = googletag.cmd || [];
@@ -204,15 +202,7 @@ var presetGameMode = "";
 </div>
 </div>
 
-<div id="videoContainer" style="position:absolute;width:100%;height:100%;display:none;z-index: 320;">
-<div class="disabler"></div>
-<div class="agario-panel" style="z-index: 301;position: absolute;width: 640px; height: 350px;transform: translate(-50%,-50%);left: 50%;top: 50%;">
-<div style="position: absolute; width:700px;right: 10px; top: 4px;">
-<button type="button" class="close" onclick="closeVideoContainer(); return false;">×</button>
-</div>
-<div id="ssaAd" style="z-index:9999;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);"></div>
-</div>
-</div>
+
 <div id="overlays" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 200;">
 <div id="controller_alert_connected" class="gamepad_alert" style="display:none">
 <div class="wrapper">
@@ -315,18 +305,7 @@ var presetGameMode = "";
 <div class="center-container">
 <div id="mainPanel" class="agario-panel disable-mouse">
 <div id="blocker" class="play-blocker"><span class="connecting-text" style="display: block" data-itr="page_connecting"></span><img src="img/loader.gif" alt="loader"/><span class="connecting-info" style="display: block"></span></div>
-<div role="form" novalidate>
-<div class="form-group clearfix">
-<div style="float: left; margin-left: 20px;"><h2>Agar.io</h2></div>
-<div style="float: right; margin-top: 10px; height: 40px;">
-<div id="agarYoutube">
-<div class="g-ytsubscribe" data-channelid="UCC6hurPo_LxL7C0YFYgYnIw" data-layout="default" data-count="default"></div>
-</div>
-<div class="clearfix">
-<div class="fb-like pull-right" data-href="https://www.facebook.com/playagar.io" data-layout="button" data-action="like" data-show-faces="true" data-share="true"></div>
-</div>
-</div>
-</div>
+
 <div class="form-group clearfix">
 <input id="nick" class="form-control" placeholder="Nick" maxlength="15" autofocus/>
 <select id="gamemode" class="form-control" required>
@@ -409,14 +388,7 @@ var presetGameMode = "";
 </div>
 </div>
 </div>
-<div id="instructions">
-<hr style="margin-top:10px;margin-bottom:10px;"/>
-<center><span class="text-muted">
-<span data-itr="page_instructions_mouse"></span><br/>
-<span data-itr="page_instructions_space"></span><br/>
-<span data-itr="page_instructions_w"></span><br/>
-</span></center>
-</div>
+
 </div>
 <div id="updatingPanel" class="agario-panel disable-mouse" style="display:none">
 <h3 style="text-align:center; position: relative; top: 50%; height:26px; margin-top: -13px"> Updating </h3>
@@ -466,15 +438,7 @@ var presetGameMode = "";
 <button id="statsContinue" class="btn btn-primary" data-itr="page_continue"></button>
 
 </div>
-<div id="advertisement" class="agario-panel">
-<center>
-<small class="text-muted" style="display: block; margin-bottom: 5px;" data-itr="page_advertisement"></small>
-<div id="adbg" style="margin-bottom: 10px; width: 300px; height: 250px;">
-<div id="g300x250" style="display:block;"></div>
-<div id="a300x250" style="display:none;"></div>
-<div id="s300x250" style="display:none;"></div>
-</div>
-</center>
+
 </div>
 </div>
 <div id="rightPanel" class="side-container right-container disable-mouse">
@@ -560,11 +524,7 @@ var presetGameMode = "";
 </div>
 </div>
 </div>
-<script>
-	if(hasBottomAd){
-		document.write('<div id="adsBottom" style="z-index: 200;display:block;"><div id="adsBottomInner"><div id="g728x90"></div><div id="a728x90"></div></div></div>');
-	}
-	</script>
+
 <footer class="tosBox left">
 <center>
 <a onclick="changeGameMode('')" class="text-muted footer-gamemode" data-itr="page_gamemode_ffa" title="Free-for-all action: eat other players to be the biggest cell on the block!"></a>
@@ -706,25 +666,7 @@ if(hasAdblock())
 ga('send', 'event', 'HasAdblock', hasAdblock() ? 'Yes' : 'No', {'nonInteraction': 1});
 </script>
 
-<script type="text/javascript">
-(function(d,t){
-var g = d.createElement(t), s = d.getElementsByTagName(t)[0]; g.async = true;
-g.src = ('https:' != location.protocol ? 'http://jsd.supersonicads.com' :
-'https://a248.e.akamai.net/ssastatic.s3.amazonaws.com') +
-'/inlineDelivery/delivery.min.gz.js';
-s.parentNode.insertBefore(g,s);
-}(document,'script'));
 
-var ssa_json = {
-	'applicationKey':  EnvConfig['supersonic_app_key'],
-	'onCampaignsReady': window['supersonicAds']['BrandConnectReadyEvent'], // for auto popup use the string: 'popup',
-	'onCampaignsDone': window['supersonicAds']['BrandConnectDoneEvent'], // will be fired when user completed all the available offers
-	'onCampaignOpen': window['supersonicAds']['BrandConnectOpenEvent'], // will be fired every time an offer was opened
-	'onCampaignClose': window['supersonicAds']['BrandConnectCloseEvent'], // will be fired every time an offer was closed
-	'onCampaignCompleted': window['supersonicAds']['BrandConnectCompletedEvent'] // will be fired every time an offer was completed
-};
-
-</script>
 <script>
 $(function(){
 
@@ -736,109 +678,12 @@ $(function(){
 	window.MC = window.MC || {};
 })
 </script>
-<div id="adsGameOver" style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; z-index:9999">
-<div id="a640x480" style="display:none;"></div>
-</div>
+
 
 <div id="captchaWindow" style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index:500">
 <div id="verifyUser" style="position:absolute; top:50%; left:50%; margin-left:-152px; margin-top:-40px;"></div>
 </div>
-<script>
 
-// Copyright 2015 Google Inc. All Rights Reserved.
-// You may study, modify, and use this example for any purpose.
-// Note that this example is provided "as is", WITHOUT WARRANTY
-// of any kind either expressed or implied.
-
-var adsController;
-var adTagUrl;
-/**
- * Initialize the Outstream SDK.
- */
-window.onload = function () {
-	if (!hasAdblock()) { 
-		initAdsController();
-	}
-};
-
-function initAdsController() {
-    var outstreamContainer = document.getElementById('adsGameOver');
-    if (!outstreamContainer) {
-        outstreamContainer = document.createElement('DIV');
-        outstreamContainer.id = 'adsGameOver';
-    }
-
-    $('#adsGameOver').empty();
-    adsController = new google.outstream.AdsController(
-            outstreamContainer,
-            onAdLoaded,
-            onDone);
-
-    adsController.initialize();
-
-	adTagUrl = 'https://pubads.g.doubleclick.net/gampad/ads?' +
-    				'sz=640x480&iu=/116850162/Agario_Adsense_For_Games' + 
-    				'&impl=s' + 
-    				'&gdfp_req=1' +
-    				'&env=vp' +
-    				'&output=vast' + 
-    				'&unviewed_position_start=1' +
-    				'&url=[referrer_url]' +
-    				'&description_url=http%3A%2F%2Fagar.io' +
-    				'&correlator=[timestamp]'; 
-}
-
-
-
-/**
- * Request ad:
- * - For tablet/mobile-web, this must be invoked by a user action, such as
- *   a click on a link or button.
- * - For desktop web, this may be invoked based on page-load and does not 
- *   require a user action.
- */
-
-function requestAds() 
-{
-    
-    // Request ads
-    if(!hasAdblock()) 
-    {
-    	adsController.requestAds(adTagUrl);
-    }
-    else
-    {
-		MC.notifyFullscreenAdFinished();
-    	showAdblockWarning('adbg');
-    }
-}
-
-/*
- * Callback for when ad has completed loading.
- */
-function onAdLoaded() {
-	console.log("outstream:onAdLoaded!");
-
-	$('#adsGameOver').show();
-    adsController.showAd();
-}
-
-/*
- * Callback for when ad has completed playback.
- */
-function onDone() {
-	console.log("outstream:onDone!");
-
-	MC.notifyFullscreenAdFinished();
-
-	$('#adsGameOver').hide();
-	adsController = null;
-	initAdsController();
-}
-
-overrideHistoryState(window.history);
-
-</script>
 <script>
 
   function Recaptcha(curtinId, elemId)
@@ -910,39 +755,7 @@ $("#mcbanners-container").load("misc/banners.html");
 </script>
 <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer>
 </script>
-<script>
-	var scale = window.localStorage.retina ? window.devicePixelRatio : 1.0;
 
-	function showBanner()
-	{
-		if(window.innerHeight > 900)
-		{
-			$('#adsBottom').css('display', 'block');
-		}
-		else
-		{
-			$('#adsBottom').css('display', 'none');
-		}
-	}
-
-	var addEvent = function(object, type, callback) {
-    if (object == null || typeof(object) == 'undefined') return;
-    if (object.addEventListener) {
-        object.addEventListener(type, callback, false);
-    } else if (object.attachEvent) {
-        object.attachEvent("on" + type, callback);
-    } else {
-        object["on"+type] = callback;
-    }
-};
-
-	addEvent(window, "resize", function(event) 
-	{
-		showBanner();
-	});
-
-	showBanner();
-</script>
 <script>
 	function changeGameMode(gameMode)
 	{
