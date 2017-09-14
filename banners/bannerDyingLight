@@ -1,0 +1,15 @@
+<a id="legendAdAnchor2" onclick="opendyinglight();">
+
+</a>
+
+
+<script>
+  var imgUrl = "https://jimboy3100.github.io/banners/dyinglightbanner2.jpg";
+  var $img = $('<img id="legendAdImg" height="70px" src="'+ imgUrl +'" style="width: 100%">');
+
+  $img.on('load', function() { ga('send', 'event', 'Ad', 'load', 'euWebsite'); });
+  
+  $img.on('error', function() { ga('send', 'event', 'Ad', 'loadError', 'euWebsite'); });
+
+  $('#legendAdAnchor2').prepend($img);
+</script>
