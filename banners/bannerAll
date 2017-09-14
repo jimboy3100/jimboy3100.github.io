@@ -1,0 +1,23 @@
+<script>
+var imgUrl = localStorage.getItem("imgUrl");
+var imgHref = localStorage.getItem("imgHref");
+if(imgUrl==null||imgUrl==""){imgUrl = "https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/banners/iconmod3.png"}
+if(imgHref==null||imgHref==""){imgHref = "http://www.legendmod.ml"; }
+
+</script>
+
+<a id="legendAdAnchor" onclick="ga('send', 'event', 'Ad', 'click', 'euWebsite');" target="_blank" href=imgHref; ></a>
+
+
+<script>
+  document.getElementById("legendAdAnchor").setAttribute("href",imgHref);
+  var $img = $('<img id="legendAdImg" height="70px" src="'+ imgUrl +'" style="width: 100%">');
+
+  $img.on('load', function() { ga('send', 'event', 'Ad', 'load', 'euWebsite'); });
+  
+  $img.on('error', function() { ga('send', 'event', 'Ad', 'loadError', 'euWebsite'); });
+
+  $('#legendAdAnchor').prepend($img);
+
+  
+</script>
