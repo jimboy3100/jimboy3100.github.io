@@ -40,25 +40,27 @@ Legend mod is best agar.io modpack with plenty features by author. It includes:
 
 #### Welcome Screen - Copy Token, Leaderboard, IP
 
-![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/dyinglightback12.jpg)
+![alt tag](https://jimboy3100.github.io/banners/dyinglightback12.jpg)
 
 #### Searching
 
-![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/legendmodsearch.jpg)
+![alt tag](https://jimboy3100.github.io/banners/legendmodsearch.jpg)
 
 #### Youtube
-![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/legendmod1.jpg)
+![alt tag](https://jimboy3100.github.io/banners/legendmod1.jpg)
 
 #### Features
-![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/dyinglightad6.jpg)
+![alt tag](https://jimboy3100.github.io/banners/dyinglightad6.jpg)
 
 #### Big Names (visible to legend/ogario users only)
-![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/dyinglightback11.jpg)
+![alt tag](https://jimboy3100.github.io/banners/dyinglightback11.jpg)
 
 #### Banners and website anchors for many clans
-![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/pic6.png)
+![alt tag](https://jimboy3100.github.io/banners/pic6.png)
 
 #### Old Skins
-![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/pictures/dyinglightad4.jpg)
+![alt tag](https://jimboy3100.github.io/banners/dyinglightad4.jpg)
 
 ###### * Legend mod is based on many scripts ([ogario](http://ogario.ovh/), [kitty](https://kittymod.github.io/), [turtle clan scripts](https://www.youtube.com/channel/UCQ-V2VrQawc8Xi6b_mH8Law) and others that can be found on [greasyfork](https://greasyfork.org/tr/scripts/by-site/agar.io) website). *
+
+###### * ([Legend mod GitHub Library](https://github.com/jimboy3100/jimboy3100.github.io)*
