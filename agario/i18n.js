@@ -115,7 +115,7 @@ i18n_dict = {
         "page_top_position": "Top Position",
         "page_total_cells_eaten": "Total cells eaten",
         "page_total_mass_eaten": "Total mass eaten",
-        "page_tt_share_stats": "I survived %@m %@s and got a score of %@ in Agar.io! Can you do better? Come and play! http://r.agar.io",
+        "page_tt_share_stats": "I survived %@m %@s and got a score of %@ in Agar.io using Legend Mod! Come and play! http://r.agar.io",
         "page_unnamed_cell": "An unnamed cell",
         "menu_settings_sfx": "Menu Sounds",
         "menu_settings_arena_sfx": "Game Sounds"
