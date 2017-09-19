@@ -27,13 +27,13 @@ $("#Userscriptshud3").html('<div id="tutorial9" style="display:block;" width="82
 	'<p style="color:white; font-size:24px"; align="middle"><b>Choose your template</b></p>'+	
 	'<div id="settingbanners"><img src="https://jimboy3100.github.io/banners/iconagario.png" alt="Search Servers" id= "searchicon" onclick="agariowhitesettings(); return false" class="img-rounded" alt="Cinque Terre" width=20% height="50">' +
 	'<u style="color:white; font-size:22px"; align="left" onclick="agariowhitesettings(); return false">Agario Default(White)</u><br>'+	
-	'<img src="hhttps://jimboy3100.github.io/banners/iconnosoup.png" alt="NoSoupsSettings" id = "legendclanbanner" class="img-rounded"  width=20% height="50" onclick="nosoups(); return false" > '+
+	'<img src="https://jimboy3100.github.io/banners/iconnosoup.png" alt="NoSoupsSettings" id = "legendclanbanner" class="img-rounded"  width=20% height="50" onclick="nosoups(); return false" > '+
 	'<u style="color:white; font-size:22px"; align="right" onclick="nosoups(); return false">No Soups Settings (Black)</u><br>'+
 	'<img src="https://jimboy3100.github.io/banners/vanillapic.jpg" alt="Vanilla Like Settings" id = "vanillaset" onclick="vanillabetter(); return false" class="img-rounded" width=20% height="50" >' +
 	'<u style="color:white; font-size:22px"; align="right" onclick="vanillabetter(); return false">Vanilla better (Grey)</u><br>'+	
 	'<img src="https://jimboy3100.github.io/banners/galaxybanner.jpg" alt=" Vanilla Like Settings" id = "galaxyset" onclick="galaxysettings(); return false" class="img-rounded"  return false" width=20%" height="50"  >' +
 	'<u style="color:white; font-size:22px"; align="left" onclick="galaxysettings(); return false">Galaxy (Black)</u><br>'+	
-	'<img src=https://jimboy3100.github.io/banners/iconmod.png" alt="Vanilla Like Settings" id = "legendclanbanner" class="img-rounded" width=20% height="50" onclick="legenddefaultsettings(); return false" > '+
+	'<img src="https://jimboy3100.github.io/banners/iconmod.png" alt="Vanilla Like Settings" id = "legendclanbanner" class="img-rounded" width=20% height="50" onclick="legenddefaultsettings(); return false" > '+
 	'<u style="color:white; font-size:22px"; align="right" onclick="legenddefaultsettings(); return false">Legend Default (Dark Blue)</u><br>'+
 	'<img src="https://jimboy3100.github.io/banners/iconvanilla.jpg" alt="Vanilla Like Settings" id = "legendclanbanner" class="img-rounded" width=20% height="50" onclick="vanillalike(); return false" > '+
 	'<u style="color:white; font-size:22px"; align="right" onclick="vanillalike(); return false">Vanilla like (Grey)</u><br>'+
