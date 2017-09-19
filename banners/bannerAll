@@ -1,7 +1,7 @@
 <script>
 var imgUrl = localStorage.getItem("imgUrl");
 var imgHref = localStorage.getItem("imgHref");
-if(imgUrl==null||imgUrl==""){imgUrl = "https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/banners/iconmod3.png"}
+if(imgUrl==null||imgUrl==""){imgUrl = "https://jimboy3100.github.io/banners/iconmod3.png"}
 if(imgHref==null||imgHref==""){imgHref = "http://www.legendmod.ml"; }
 
 </script>
