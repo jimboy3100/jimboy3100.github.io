@@ -1,6 +1,6 @@
 # jimboy3100.github.io
 
-![alt tag](https://raw.githubusercontent.com/jimboy3100/legend.github.io/master/banners/iconmod3.png)
+![alt tag](https://jimboy3100.github.io/banners/iconmod3.png)
 ### Legend Mod
 
 Mod for Agar.io multiplayer action browser game.  
