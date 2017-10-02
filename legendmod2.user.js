@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Legend Agar.io Extension
 // @namespace    Legend Agario Mod
-// @version      2.4
+// @version      2.5
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
 // @homepage     http://www.legendmod.ml
 // @author       Jimboy3100
@@ -20,10 +20,6 @@
 // @connect      jimboy3100.github.io
 // ==/UserScript==
 // Legend Mod by Jimboy3100
-/*MIT License
-
-// Legend Mod by Jimboy3100
-
 
 /*MIT License
 
@@ -48,46 +44,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-
 // Start of script
-if (location.host == "agar.io" && location.pathname == "/") {
-    window.stop();
-    document.documentElement.innerHTML=null;
-    //return;
-   // location.href = "http://agar.io/legendmod" + window.location.search + location.hash;
-   
-
-
+if (location.host === "agar.io" && location.pathname === "/") {
+	window.stop();	
+	location.href = "about:blank" + window.location.search + location.hash;
 // Dependencies
 
-var cpickerCSS = '<link href="https://jimboy3100.github.io/bootstrap-colorpicker.min.css" rel="stylesheet"></link>';
-var toastrCSS = '<link href="https://jimboy3100.github.io/toastr.min.css" rel="stylesheet"></link>';
-var switchCSS = '<link href="https://jimboy3100.github.io/switchery.min.css" rel="stylesheet"></link>';
-var rangeCSS = '<link href="https://jimboy3100.github.io/rangeslider.css" rel="stylesheet"></link>';
-var perfectCSS = '<link href="https://jimboy3100.github.io/perfect-scrollbar.min.css" rel="stylesheet"></link>';
-var faCSS = '<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"></link>';
-var legendarioCSS = '<link href="http://cdn.ogario.ovh/v3/ogario.v3.css?v=338" rel="stylesheet"></link>';
-
-var ytJS = '<script src="https://jimboy3100.github.io/Youtubeiframe_api.js"></script>';
-var keyJS = '<script src="https://jimboy3100.github.io/key-event.js"></script>';
-var cpickerJS = '<script src="https://jimboy3100.github.io/bootstrap-colorpicker.min.js"></script>';
-var toastrJS = '<script src="https://jimboy3100.github.io/toastr.min.js"></script>';
-var switchJS = '<script src="https://jimboy3100.github.io/switchery.min.js"></script>';
-var rangeJS = '<script src="https://jimboy3100.github.io/rangeslider.min.js"></script>';
-var perfectJS = '<script src="https://jimboy3100.github.io/perfect-scrollbar.jquery.min.js"></script>';
-var legendJS = '<script src="https://jimboy3100.github.io/legendmod.js"></script>';
-var legendJSniffJS = '<script src="https://jimboy3100.github.io/legend.sniff.js"></script>';
-var legendJSniff2JS = '<script src="https://jimboy3100.github.io/legend.sniff2.js"></script>';
-var legendJSniff3JS = '<script src="https://jimboy3100.github.io/legend.sniff3.js"></script>';
-var legendarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=333"></script>';
-var legendarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=333" charset="utf-8"></script>';
-var modVersion = GM_info.script.version;
+	var modVersion = GM_info.script.version;
 
     // Inject Legend
     function inject(page) {
-        //    var page = page.replace("</head>", bootstrCSS + cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + bootstrJS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendarioSniffJS + legendJSniff2JS + ytJS + keyJS + "</head>");
-        var page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendJSniff2JS + legendarioSniffJS + ytJS + keyJS + "</head>");
-        page = page.replace("</body>", legendJSniffJS + legendarioJS + legendJS + legendJSniff3JS + "<script>init('" + modVersion + "');</script>" + "</body>");
+        var page = page.replace("</body>", "<script>init('" + modVersion + "');</script>" + "</body>");
         return page;
     }
 
@@ -95,15 +62,13 @@ var modVersion = GM_info.script.version;
     document.documentElement.innerHTML = "";
     GM_xmlhttpRequest({
         method: "GET",
-        url: "https://jimboy3100.github.io/v3/legendmodtest2.html",
-        onload: function(e) {
-            var doc = inject(e.responseText);
+        url: "https://jimboy3100.github.io/v3/legendmod.html",
+        onload: function(legend) {
+            var doc = inject(legend.responseText);
             document.open();
             document.write(doc);
             document.close();
-        }
-       
- 
+        }       
     });
 
     // Inject Chat to text userscript
@@ -282,6 +247,7 @@ if (location.host == "talky.io") {
         document.getElementsByClassName('-ZMXacQm9s80kTx3I-A47')[0].remove();
 
     }, 4000);
+     
 }
 
 //example: https://talky.io/dddd?name=&?ip=
