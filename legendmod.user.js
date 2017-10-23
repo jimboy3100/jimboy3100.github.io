@@ -231,7 +231,7 @@ if (location.host == "talky.io") {
     setTimeout(function() {
         document.getElementById('skip').click();
         document.getElementsByClassName('TalkyButton__text')[0].click();
-
+	document.getElementById('join').click();
     }, 3500);
     setTimeout(function() {
         document.getElementsByClassName('_1U4l9qYTHl6ExTsW9IvwnO')[1].value = gamename;
