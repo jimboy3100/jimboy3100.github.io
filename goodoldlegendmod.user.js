@@ -249,6 +249,7 @@ if (location.host == "talky.io") {
 	document.title="Legend Mod - Talky";
 	
     var url2 = window.location.href;
+	url2 = url2.toLowerCase();
     var gamename = getParameterByName("name", url2);
     var IPAgario = getParameterByName("ip", url2);
 
