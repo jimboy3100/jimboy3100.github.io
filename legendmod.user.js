@@ -234,21 +234,30 @@ if (location.host == "talky.io") {
     document.getElementsByClassName('TalkyButton__text')[0].click();
     }, 5500);
     setTimeout(function() {
-        document.getElementsByClassName('_1U4l9qYTHl6ExTsW9IvwnO')[1].value = gamename;
+        document.getElementsByClassName('_1U4l9')[1].value = gamename;
         //<a href="http://legendmod.ml" target="_blank" id="LegendModWebsite" class="title" style=""><u>Legend Mod</u></a> <a href=IPAgario target="_blank" id="IPAgario" class="title" style=""><u>Copy Agar.io Token</u></a> 
         
-		if (IPAgario.length==6){
+		if (IPAgario.length==28){
 		document.getElementsByClassName('message message-info message-full-width')[0].before("[Talky.io]: Legend Mod. Server: " + "http://agar.io/#" + IPAgario + " . [PARTY] (Password rooms are different than Public)");}
 		else{
 		document.getElementsByClassName('message message-info message-full-width')[0].before("[Talky.io]: Legend Mod. Server: " + "http://agar.io/?sip=" + IPAgario + " . (Password rooms are different than Public)");}	
 		
         document.getElementsByClassName('_1U4l9qYTHl6ExTsW9IvwnO')[1].value = gamename;
-        document.getElementsByClassName('message message-info message-full-width')[0].style.visibility = 'hidden';
-        document.getElementsByClassName('Box _3-HLfCQ5QT5fuKgw4tvBkP')[0].remove();
-        document.getElementsByClassName('-ZMXacQm9s80kTx3I-A47')[0].remove();
+
+        document.getElementsByClassName('Box _3-HLf')[0].remove();
+        document.getElementsByClassName('_2kpBd')[0].remove();
+		document.getElementsByClassName('Box _2vX5-')[0].remove();
+		document.getElementsByClassName('message message-info message-full-width')[0].style.visibility = 'hidden';
+		document.getElementsByClassName('message message-info message-full-width')[0].style.visibility = 'hidden';
 
     }, 6000);
-     
+      setTimeout(function() {
+		document.getElementsByClassName('Box _3-HLf')[0].remove();
+        document.getElementsByClassName('_2kpBd')[0].remove();
+		document.getElementsByClassName('Box _2vX5-')[0].remove();
+		document.getElementsByClassName('message message-info message-full-width')[0].style.visibility = 'hidden';
+		document.getElementsByClassName('message message-info message-full-width')[0].style.visibility = 'hidden';  
+		}, 6200);
 }
 
 //example: https://talky.io/dddd?name=&?ip=
