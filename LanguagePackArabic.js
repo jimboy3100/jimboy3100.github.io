@@ -42,6 +42,8 @@ var Languageletter22="هَدايَا";		//Gifts
 var Languageletter23=" المهَام اليَومِيَة ";			//Daily Quests
 var Languageletter24="سكينَاَت";		//Skins
 var Languageletter25="الفيِديُو التَرويِجِي لليجَاند";		//Legend Promo Video
+var Languageletter25a="نموذج الأفكار والإحصاءات الجديدة";		//Legend Promo Video
+var Languageletter25b="وزارة الدفاع معلومات والقوالب";		//Mod Info & Templates
 var Languageletter26="اضَافِة سكينَات";		//Add skins
 var Languageletter27="كِويِن مَجَانِية";		//Free Coins
 var Languageletter31="تَسجِيِل الخُرُوُج";		//Logout
@@ -306,10 +308,14 @@ var Languageletter289="نَسخ عِنوان السِيرفَر SIP ";		//Copy T
 //keep this small
 var Languageletter290="عِنوَان السِيرفَر";		//Token
 var Languageletter290a="قَاَئِمَة الأوَائِل"; //Board
+var Languageletter290b="TK&PW";	//TK&PW (Token and Password)
+var Languageletter290c="TK&ALL"; //TK&ALL (Token and All)
 var Languageletter291="نَسخ";		//Copy
 
 
 var Languageletter291a="نَسخ قَاَئِمَة الأوَائِل (L)";		//Copy Leaderboard (L)
+var Languageletter291b="نسخ رمز / سيب وكلمة المرور"; 	//Copy Token/SIP&Password
+var Languageletter291c="نسخ كل شيء"; //Copy Token/SIP, Password, Leaderboard...
 var Languageletter292="إنِضَم للِسِيرفَر (Backspace)";		//Join server (Backspace)
 var Languageletter293="تَغِيِير السِيرفَر (+)";		//Change server (+)
 var Languageletter294="سِجِل قَائِمَة الأَوَائِل";		//Leaderboard history
