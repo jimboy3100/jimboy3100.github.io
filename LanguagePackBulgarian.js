@@ -41,6 +41,9 @@ var Languageletter22="Подаръци";		//Gifts
 var Languageletter23="Делнични Предизвикателства";			//Daily Quests
 var Languageletter24="Скинове";		//Skins
 var Languageletter25="Промо видеото на Legend";		//Legend Promo Video
+var Languageletter25a="Нова форма на идеи и статистически данни";	//New Ideas & Statistics Form
+var Languageletter25b="Модна информация и шаблони";		//Mod Info & Templates
+
 var Languageletter26="Добави скинове";		//Add skins
 var Languageletter27="Безплатни Пари";		//Free Coins
 var Languageletter31="Излез";		//Logout
@@ -305,10 +308,14 @@ var Languageletter289="Копирай Токен/SIP";		//Copy Token/SIP
 //keep this small
 var Languageletter290="Токен";		//Token
 var Languageletter290a="Табло"; //Board
+var Languageletter290b="TK&PW";	//TK&PW (Token and Password)
+var Languageletter290c="TK&ALL"; //TK&ALL (Token and All)
 var Languageletter291="Копирай";		//Copy
 
 
 var Languageletter291a="Копирай класацията (L)";		//Copy Leaderboard (L)
+var Languageletter291b="Копирайте Token / SIP и парола"; 	//Copy Token/SIP&Password
+var Languageletter291c="Копирай всичко..."; //Copy Token/SIP, Password, Leaderboard...
 var Languageletter292="Влез в сървъра (Backspace)";		//Join server (Backspace)
 var Languageletter293="Смени сървъра (+)";		//Change server (+)
 var Languageletter294="История на класацията";		//Leaderboard history
