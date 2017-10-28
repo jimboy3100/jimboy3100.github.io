@@ -41,6 +41,8 @@ var Languageletter22="Δώρα";		//Gifts
 var Languageletter23="Καθημερινες Αποστολες";			//Daily Quests
 var Languageletter24="Εικόνες Skin";		//Skins
 var Languageletter25="Προωθητικό Video Legend";		//Legend Promo Video
+var Languageletter25a="Φόρμα ιδεών και στατιστικών";		//New Ideas & Statistics Form
+var Languageletter25b="Πληροφορίες & Πρότυπα";		//Mod Info & Templates
 var Languageletter26="Προσθηκη Εικονων";		//Add skins
 var Languageletter27="ΔΩΡΕΑΝ ΝΟΜΙΣΜΑΤΑ";		//Free Coins
 var Languageletter31="Αποσυνδέση";		//Logout
@@ -306,8 +308,11 @@ var Languageletter289="Αντιγραφή διεύθυνσης Πίστας";		/
 //keep this small
 var Languageletter290="Πιστα";		//Token
 var Languageletter290a="Ηγετες"; //Board
+var Languageletter290b="TK&PW";	//TK&PW (Token and Password)
+var Languageletter290c="TK&ALL"; //TK&ALL (Token and All)
 var Languageletter291="Αντιγρ";		//Copy
-
+var Languageletter291b="Αντιγραφή πίστας / IP & Κωδικού"; 	//Copy Token/SIP&Password
+var Languageletter291c="Αντιγραφή όλων"; //Copy Token/SIP, Password, Leaderboard...
 var Languageletter291a="Αντιγραφή Πίνακα ηγετών (L)";		//Copy Leaderboard (L)
 var Languageletter292="Join server (Backspace)";		//Join server (Backspace)
 var Languageletter293="Αλλαγή Πίστας (+)";		//Change server (+)
