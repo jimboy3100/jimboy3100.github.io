@@ -41,6 +41,8 @@ var Languageletter22="Cadeaux";		//Gifts
 var Languageletter23="Quêtes journalières";			//Daily Quests
 var Languageletter24="Skins";		//Skins
 var Languageletter25="Vidéo de promotion du Legend Mod";		//Legend Promo Video
+var Languageletter25a="Nouveau formulaire d'idées et de statistiques";		//New Ideas & Statistics Form
+var Languageletter25b="Mod Info et modèles";		//Mod Info & Templates
 var Languageletter26="Ajouter des skins";		//Add skins
 var Languageletter27="Coins gratuits";		//Free Coins
 var Languageletter31="Se déconnecter";		//Logout
@@ -305,10 +307,14 @@ var Languageletter289="Copier le lien/SIP";		//Copy Token/SIP
 //keep this small
 var Languageletter290="Lien";		//Token
 var Languageletter290a="Classement"; //Board
+var Languageletter290b="TK&PW";	//TK&PW (Token and Password)
+var Languageletter290c="TK&ALL"; //TK&ALL (Token and All)
 var Languageletter291="Copier";		//Copy
 
 
 var Languageletter291a="Copier le classement (L)";		//Copy Leaderboard (L)
+var Languageletter291b="Copier le jeton / SIP et mot de passe"; 	//Copy Token/SIP&Password
+var Languageletter291c="Copier tout..."; //Copy Token/SIP, Password, Leaderboard
 var Languageletter292="Joindre le serveur (Backspace)";		//Join server (Backspace)
 var Languageletter293="Changer de serveur (+)";		//Change server (+)
 var Languageletter294="Historique du classement";		//Leaderboard history
