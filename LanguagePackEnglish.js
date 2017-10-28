@@ -41,6 +41,8 @@ var Languageletter22="Gifts";		//Gifts
 var Languageletter23="Daily Quests";			//Daily Quests
 var Languageletter24="Skins";		//Skins
 var Languageletter25="Legend Promo Video";		//Legend Promo Video
+var Languageletter25a="New Ideas & Statistics Form";		//New Ideas & Statistics Form
+var Languageletter25b="Mod Info & Templates";		//Mod Info & Templates
 var Languageletter26="Add skins";		//Add skins
 var Languageletter27="Free Coins";		//Free Coins
 var Languageletter31="Logout";		//Logout
@@ -305,10 +307,13 @@ var Languageletter289="Copy Token/SIP";		//Copy Token/SIP
 //keep this small
 var Languageletter290="Token";		//Token
 var Languageletter290a="Board"; //Board
+var Languageletter290b="TK&PW";	//TK&PW (Token and Password)
+var Languageletter290c="TK&ALL"; //TK&ALL (Token and All)
 var Languageletter291="Copy";		//Copy
 
-
 var Languageletter291a="Copy Leaderboard (L)";		//Copy Leaderboard (L)
+var Languageletter291b="Copy Token/SIP&Password"; 	//Copy Token/SIP&Password
+var Languageletter291c="Copy Token/SIP, Password, Leaderboard..."; //Copy Token/SIP, Password, Leaderboard...
 var Languageletter292="Join server (Backspace)";		//Join server (Backspace)
 var Languageletter293="Change server (+)";		//Change server (+)
 var Languageletter294="Leaderboard history";		//Leaderboard history
@@ -440,5 +445,4 @@ var Premadeletter57="Communication";		//Communication
 var Premadeletter58="Hidden";		//Hidden
 var Premadeletter59="Visible";		//Visible
 var Premadeletter60="Pause";		//Pause
-
 
