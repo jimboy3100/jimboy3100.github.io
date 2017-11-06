@@ -17,6 +17,7 @@
 // @grant GM_setValue
 // @grant GM_getValue
 // @grant GM_deleteValue
+// @grant GM_registerMenuCommand
 // ==/UserScript==
 // Legend Mod by Jimboy3100
 /*MIT License
