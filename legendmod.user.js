@@ -16,6 +16,7 @@
 // @grant        GM_xmlhttpRequest
 // @grant        GM_setValue
 // @grant        GM_getValue
+// @grant        GM_registerMenuCommand
 // @grant        GM_deleteValue
 // @connect      jimboy3100.github.io
 // ==/UserScript==
