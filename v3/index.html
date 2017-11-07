@@ -693,7 +693,25 @@ if(hasAdblock())
 
 ga('send', 'event', 'HasAdblock', hasAdblock() ? 'Yes' : 'No', {'nonInteraction': 1});
 </script>
+<script type="text/javascript">
+(function(d,t){
+var g = d.createElement(t), s = d.getElementsByTagName(t)[0]; g.async = true;
+g.src = ('https:' != location.protocol ? 'http://jsd.supersonicads.com' :
+'https://a248.e.akamai.net/ssastatic.s3.amazonaws.com') +
+'/inlineDelivery/delivery.min.gz.js';
+s.parentNode.insertBefore(g,s);
+}(document,'script'));
 
+var ssa_json = {
+	'applicationKey':  EnvConfig['supersonic_app_key'],
+	'onCampaignsReady': window['supersonicAds']['BrandConnectReadyEvent'], // for auto popup use the string: 'popup',
+	'onCampaignsDone': window['supersonicAds']['BrandConnectDoneEvent'], // will be fired when user completed all the available offers
+	'onCampaignOpen': window['supersonicAds']['BrandConnectOpenEvent'], // will be fired every time an offer was opened
+	'onCampaignClose': window['supersonicAds']['BrandConnectCloseEvent'], // will be fired every time an offer was closed
+	'onCampaignCompleted': window['supersonicAds']['BrandConnectCompletedEvent'] // will be fired every time an offer was completed
+};
+
+</script>
 <script>
 $(function(){
 
