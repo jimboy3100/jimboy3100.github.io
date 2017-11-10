@@ -120,7 +120,8 @@ function postToDiscord(discordUrl,isGeneralChannel) {
         var r = $('<button/>',
                   {
             text: 'Post Server IP to Discord',
-            class: 'btn btn-play btn-primary btn-needs-server'
+            class: 'btn btn-play btn-primary btn-needs-server',
+	    style: 'margin-top: 6px'
         });
         r[0].onclick = function () {
 
