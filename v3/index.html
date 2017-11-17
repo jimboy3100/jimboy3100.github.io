@@ -10,7 +10,7 @@
 <title>Legend Mod</title>
 <link rel="canonical" href="http://agar.io/"/>
 <link id="favicon" rel="icon" type="image/gif" href="https://jimboy3100.github.io/banners/icon32croped.ico.gif"/>
-<script src="http://agar.io/environment.js?v=937"></script>
+<script src="http://agar.io/environment.js?v=956"></script>
 <script type="text/javascript">
 function addScriptToHeader(filename)
 {
@@ -224,25 +224,32 @@ var presetGameMode = "";
 <span class="alert_text">Controller Disconnected</span>
 </div>
 </div>
-<div id="helloContainer" data-logged-in="0" data-has-account-data="0" data-party-state="0" data-results-state="0" data-gamemode>
+<div id="helloContainer" data-logged-in="0" data-has-account-data="0" data-party-state="0" data-results-state="0" data-gamemode="">
 <div id="leftPanel" class="side-container left-container disable-mouse">
-<div id="blocker" class="shop-blocker"><span class="connecting-text" style="display: block" data-itr="page_connecting"></span><img src="img/loader.gif" alt="loader"/><span class="connecting-info" style="display: block; margin-top: 100px"></span></div>
+<div id="blocker" class="shop-blocker"><span class="connecting-text" style="display: block" data-itr="page_connecting"></span><img src="img/loader.gif" alt="loader" /><span class="connecting-info" style="display: block; margin-top: 100px"></span></div>
 <div class="agario-panel agario-side-panel agario-profile-panel">
 <div class="clearfix" style="margin-bottom: 16px;">
-<img class="agario-profile-picture" src="mc/img/profilepic_guest.png"/>
+<img class="agario-profile-picture" src="mc/img/profilepic_guest.png" />
 <div class="agario-profile-name-container">
 <div class="agario-wallet-container">
-<span class="agario-wallet-label">100</span>
-<img src="mc/img/currency_icon.png" class="agario-wallet-currency"/>
-<div class="agario-wallet-plus">
+<span class="agario-wallet-label dna">0</span>
+<img src="mc/img/dna_small_icon.png" class="agario-wallet-dna" />
+<div class="agario-wallet-plus dna">
 <span>+</span>
 </div>
 </div>
+<div class="agario-wallet-container">
+<span class="agario-wallet-label coins">100</span>
+ <img src="mc/img/currency_icon.png" class="agario-wallet-coins" />
+<div class="agario-wallet-plus coins">
+<span>+</span>
+</div>
+</div>
+</div>
+</div>
 <div class="agario-profile-name">Guest</div>
-</div>
-</div>
 <div style="position: relative;" class="clearfix">
- <div class="agario-exp-bar progress">
+<div class="agario-exp-bar progress">
 <span class="progress-bar-text">0/50</span>
 <div class="progress-bar progress-bar-striped" style="width: 0%;"></div>
 </div>
@@ -252,7 +259,7 @@ var presetGameMode = "";
 
 <button id="freeCoins" onclick="MC.showFreeCoins(); return false;" class="btn btn-primary btn-success btn-freecoins" style="line-height: 24px; margin-bottom: 10px; margin-top: -5px" data-itr="page_menu_main_free_coins">
 </button>
-<br clear="both"/>
+<br clear="both" />
 
 <div id="giftButton" style="position:relative;">
 <button id="gifting" onclick="MC.showGifting(); return false;" class="btn btn-primary btn-gifting" style="line-height: 24px;" data-itr="page_menu_main_gifts">
@@ -269,10 +276,21 @@ var presetGameMode = "";
 <div id="dailyquests-panel" class="agario-panel agario-side-panel agario-panel-dailyquests" style="position:relative">
 <div id="quests-blocker" class="shop-blocker"></div>
 <div id="dailyQuestsButton" style="position:relative;">
-<button id="dailyQuests" onclick="MC.showQuests(); return false;" class="btn btn-primary btn-success btn-dailyquests" style="line-height: 24px;" data-itr="page_menu_main_dailyquests">
+<button id="dailyQuests" onclick="MC.showQuests(); return false;" class="btn btn-primary btn-success btn-dailyquests">
+<img src="img/dailyquest_chest_icon.png" />
+<span style="line-height: 24px;" data-itr="page_menu_main_dailyquests"></span>
 </button>
 <div class="circle small red quests" style="display:none"><span class="outlined-text"></span></div>
 <span class="timer quest-timer" style="display:none"></span>
+</div>
+<div id="potions-blocker" class="shop-blocker"></div>
+<div id="potionsButton">
+<button id="potions" onclick="MC.showPotions(); return false;" class="btn btn-primary btn-success btn-potions">
+<img src="img/mysteryflask_icon.png" />
+<span style="line-height: 24px;" data-itr="page_menu_main_potions"></span>
+<div class="circle small red potions" style="display:none"><span class="outlined-text"></span></div>
+</button>
+<span class="timer potions-timer" style="display:none"></span>
 </div>
 </div>
 
