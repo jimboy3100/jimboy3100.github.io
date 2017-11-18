@@ -19,4 +19,4 @@ document.title = "Legend mod";
 }, 1500);
 setTimeout(function () {
 $(".agario-profile-name").css('vertical-align', '');
-}, 3000);
+}, 6000);
