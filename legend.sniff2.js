@@ -15,7 +15,15 @@ setTimeout(function () {
 document.title = "Legend mod";   
 }, 1300);
 setTimeout(function () {
-document.title = "Legend mod";   
+document.title = "Legend mod"; 
+    
+$(document).on("keydown", function(e) {
+    if(e.keyCode == 65 || e.keyCode == 83) {
+      e.stopImmediatePropagation();
+      return;
+      }
+    });
+	$("#minimap-hud").css('height', '0px');
 }, 1500);
 setTimeout(function () {
 $(".agario-profile-name").css('vertical-align', '');
