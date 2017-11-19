@@ -22,7 +22,7 @@ $(document).on("keydown", function(e) {
       e.stopImmediatePropagation();
       return;
       }
-    });
+  	 });
 	$("#minimap-hud").css('height', '0px');
 }, 1500);
 setTimeout(function () {
