@@ -7,15 +7,15 @@
     document.getElementsByTagName('head')[0].appendChild(link);
 })();
 
-document.title = "Legend mod";   
+document.title = "LM Express";   
 setTimeout(function () {
-document.title = "Legend mod";   
+document.title = "LM Express";   
 }, 700);
 setTimeout(function () {
-document.title = "Legend mod";   
+document.title = "LM Express";   
 }, 1300);
 setTimeout(function () {
-document.title = "Legend mod";   
+document.title = "LM Express";   
 }, 1500);
 setTimeout(function () {
 $(".agario-profile-name").css('vertical-align', '');
