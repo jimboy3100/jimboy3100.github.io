@@ -1,5 +1,5 @@
 /*************
- * LEGEND mod Express v0.003 by Jimboy3100   email:jimboy3100@hotmail.com
+ * LM Express v0.003 by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
  
 var semimodVersion = "01"; // the version 1.1-> 1.11
@@ -209,9 +209,9 @@ urlIpWhenOpened();
 var minbtext2 = minbtext;
 var minbtext3 = minbtext;
 if (minbtext == null || minbtext == "") {
-    minbtext = "Legend Mod"; //Legend Mod/Locked
-    minbtext2 = "Legend Mod";
-	minbtext3 = "Legend Mod/Private";
+    minbtext = "Legend Mod"; //LM Express/Locked
+    minbtext2 = "LM Express";
+	minbtext3 = "LM Express/Private";
 }
 LMminimapTextAct();
 
@@ -231,7 +231,7 @@ function init(modVersion) {
     }
 
     setTimeout(function() {
-        document.title = "Legend mod v" + modVersion;
+        document.title = "LM Express v" + modVersion;
 
         $("button:contains('Spectate')").html('<span class="glyphicon glyphicon-globe"></span>').attr('data-toggle', "tooltip").prop('title', 'Spectate');
         $("button:contains('Logout')").html('<span class="glyphicon glyphicon-off"></span>').attr('data-toggle', "tooltip").prop('title', 'Logout');
@@ -738,12 +738,12 @@ function init(modVersion) {
         $("#massButton").after($("#promo-badge-container"));
 
 	    $(".agario-profile-name-container").after('<div class="TimesUsedPanel" align="right" display:inline-block;><h6><i>Times Used: ' + timesopened +
-        '<br>Legend Mod by jimboy3100</i></h6></div>');
+        '<br>LM Express by jimboy3100</i></h6></div>');
 		$(".agario-profile-name").css('display', 'inline-block');
 		$(".agario-profile-name").css('vertical-align', ' baseline');
 		$(".agario-profile-name").before('<i id=ProfilePhotoCustom class="fa fa-clipboard" onclick="useProfilePhotoCustom();" aria-hidden="true" style="display: inline-block; margin-top: 0px; vertical-align: middle;" data-toggle="tooltip" data-title="Copy Account Image Url" data-placement="top"></i>');
 				
-		        //Legend Mod Cursors
+		        //LM Express Cursors
         if ($("#customCursor").val() == "http://cdn.ogario.ovh/static/img/cursors/cursor_01.cur") {
             $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_01.cur")
         } else if ($("#customCursor").val() == "http://cdn.ogario.ovh/static/img/cursors/cursor_02.cur") {
@@ -883,7 +883,7 @@ function init(modVersion) {
             marginBottom: "-10px"
         });
         $("#menu-footer").text("");
-        $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="http://www.legendmod.ml" style="color: #ffffff;" data-toggle="tooltip" data-title="Legend Mod Website" data-placement="left">Legend Express v' + modVersion + semimodVersion + ' Beta</a></span>' +
+        $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="http://www.legendmod.ml" style="color: #ffffff;" data-toggle="tooltip" data-title="LM Express Website" data-placement="left">Legend Express v' + modVersion + semimodVersion + ' Beta</a></span>' +
             '<a href="https://legendmod.joomla.com/en/more-fps.html" data-toggle="tooltip" data-title="How to improve performance" data-placement="top" style ="font-size: 13px"; target="_blank">More FPS</a>');
 
         $("#menu-footer").after('<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" data-toggle="tooltip" data-title="Please support the development of Legend Mod" data-placement="left" target="_blank"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="CM3GDVCW6PBF6"><input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!"><img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1"></form>');
