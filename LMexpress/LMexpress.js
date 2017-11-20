@@ -1,5 +1,5 @@
 /*************
- * LEGEND mod Express v0.002 by Jimboy3100   email:jimboy3100@hotmail.com
+ * LEGEND mod Express v0.003 by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
  
 var semimodVersion = "01"; // the version 1.1-> 1.11
@@ -883,12 +883,27 @@ function init(modVersion) {
             marginBottom: "-10px"
         });
         $("#menu-footer").text("");
-        $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="http://www.legendmod.ml" style="color: #ffffff;" data-toggle="tooltip" data-title="Legend Mod Website" data-placement="left">Legend Express v' + modVersion + semimodVersion + '</a></span>' +
+        $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="http://www.legendmod.ml" style="color: #ffffff;" data-toggle="tooltip" data-title="Legend Mod Website" data-placement="left">Legend Express v' + modVersion + semimodVersion + ' Beta</a></span>' +
             '<a href="https://legendmod.joomla.com/en/more-fps.html" data-toggle="tooltip" data-title="How to improve performance" data-placement="top" style ="font-size: 13px"; target="_blank">More FPS</a>');
 
         $("#menu-footer").after('<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" data-toggle="tooltip" data-title="Please support the development of Legend Mod" data-placement="left" target="_blank"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="CM3GDVCW6PBF6"><input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!"><img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1"></form>');
 
-
+        $("#YoutubeAutoBtn").click(function() {
+            var checked = !($(this).attr('aria-pressed') == "true");
+            if (checked) {
+                localStorage.setItem("YoutubeAutoBtn", true);
+                setTimeout(function() {
+                    $("#playerBtn").click();
+                }, 2000);
+                setTimeout(function() {
+                    $("#playerBtn").focusout();
+                }, 2100);
+                $(this).html('<i class="fa fa-youtube-play"></i>' + Premadeletter41);
+            } else {
+                localStorage.setItem("YoutubeAutoBtn", false);
+                $(this).html('<i class="fa fa-youtube-play"></i>' + Premadeletter40);
+            }
+        });
 		
         console.log('%c Legend Mod, all rights reserved. %chttp://www.legendmod.ml', 'background: #1E1E1E; color: #FF0000', 'background: #FF0000; color: #FFFFFF');		
     }, 1500);
@@ -1794,4 +1809,23 @@ function foundNames(leaderboard, names, minNamesFound) {
     //if (countFound >= minNamesFound) {alert(countFound);}
     //console.log("found: " + countFound);
     return (countFound >= minNamesFound) ? true : false;
+}
+function openhelper() {
+    var s = document.createElement("script");
+    s.type = "text/javascript";
+    s.src = "https://jimboy3100.github.io/legendhelper.js";
+    $("body").append(s);
+}
+function opennamechars() {
+    var s = document.createElement("script");
+    s.type = "text/javascript";
+    s.src = "https://jimboy3100.github.io/nicks/nicknamechars.js";
+    $("body").append(s);
+}
+
+function legendformIframe() {
+    var s = document.createElement("script");
+    s.type = "text/javascript";
+    s.src = "https://jimboy3100.github.io/legendformIframe.js";
+    $("body").append(s);
 }
