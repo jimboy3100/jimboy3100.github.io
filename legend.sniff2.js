@@ -23,7 +23,7 @@ $(document).on("keydown", function(e) {
       return;
       }
   	 });
-	$("#minimap-hud").css('height', '0px');
+//	$("#minimap-hud").css('height', '0px');
 }, 1500);
 setTimeout(function () {
 $(".agario-profile-name").css('vertical-align', '');
