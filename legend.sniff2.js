@@ -27,4 +27,5 @@ document.title = "Legend mod";
 }, 1500); */
 setTimeout(function () {
 $(".agario-profile-name").css('vertical-align', '');
-}, 6000);
+}, 4500);
+}, 1500); 
