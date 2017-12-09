@@ -10,7 +10,10 @@
 // @run-at       document-start
 // ==/UserScript==
 
+
 //Download a small video e.g http://techslides.com/demos/sample-videos/small.mp4
+//Part of the Legend Mod Project http://www.legendmod.ml
+
 function inject(type, code) {
    switch(type) {
       case 'javascript':
