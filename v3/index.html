@@ -302,9 +302,16 @@ var presetGameMode = "";
 </div>
 <div class="shop-left-container">
 <div id="skinButton" class="circle bordered" style="cursor:pointer; height:92px">
+<div id="skinButton" class="circle" style="cursor:pointer;" data-type="OWNED">
 <div class="circle big green" style="top:75px;"><span class="outlined-text plus-text" style="cursor:pointer;line-height: 26px;">+</span></div>
-<img class="circle bordered" src width="96" height="96" style="height: 96px; border: 3px solid rgb(131, 131, 131);display:none;" crossorigin="anonymous">
-<span id="skinLabel" class="outlined-text" style="display: block;" data-itr="page_main_menu_skins"></span>
+<div class="circle bordered skinWrapper" style="border: 3px solid rgb(67, 73, 132);">
+<img src="" crossorigin="anonymous" style="width: 180px;">
+</div>
+<div id="skinButton" class="circle" style="cursor:pointer;" data-type="OWNED">
+<div class="circle big green" style="top:75px;"><span class="outlined-text plus-text" style="cursor:pointer;line-height: 26px;">+</span></div>
+<div class="circle bordered skinWrapper" style="border: 3px solid rgb(131, 131, 131); overflow: hidden; height: 96px; width: 96px;">
+<img src="" crossorigin="anonymous" style="width: 180px; display: none;"></div>
+<span id="skinLabel" class="outlined-text" style="display: block;" data-itr="page_main_menu_skins">Skins</span></div>
 </div>
 </div>
 <div class="vertical-line" style="min-height:115px;"></div>
