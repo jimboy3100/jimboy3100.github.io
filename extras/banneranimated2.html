@@ -166,7 +166,7 @@ body {
   border-radius: 100px;
   box-sizing: border-box;
   z-index: 20;
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 .e-loadholder .m-loader:after {
   position: absolute;
@@ -277,15 +277,17 @@ body {
 
 
 }
-</style><link href="https://use.fontawesome.com/b5bf1bd49e.css" media="all" rel="stylesheet"></head><body>
+</style><link href="https://use.fontawesome.com/b5bf1bd49e.css" media="all" rel="stylesheet"><link href="https://use.fontawesome.com/b5bf1bd49e.css" media="all" rel="stylesheet"></head><body>
 
-<div class="e-loadholder">
+<div class="e-loadholder" style="
+    text-transform: capitalize;
+">
 	<div class="m-loader">
 		<span class="e-text">Legend Mod<br>Agar.io</span>
 	</div>
 </div>
 <div id="particleCanvas-Blue"><canvas class="particles-js-canvas-el" width="300" height="300" style="width: 100%; height: 100%;"></canvas></div>
-<div id="particleCanvas-White"><canvas class="particles-js-canvas-el" width="1344" height="249" style="width: 100%; height: 100%;"></canvas></div>
+<div id="particleCanvas-White"><canvas class="particles-js-canvas-el" width="1163" height="487" style="width: 100%; height: 100%;"></canvas></div>
 <script src="//production-assets.codepen.io/assets/common/stopExecutionOnTimeout-b2a7b3fe212eaa732349046d8416e00a9dec26eb7fd347590fbced3ab38af52e.js"></script><script src="https://code.jquery.com/jquery-3.2.1.js"></script><script src="https://use.fontawesome.com/b5bf1bd49e.js"></script><script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 <script>particlesJS("particleCanvas-Blue", {
 	particles: {
@@ -510,4 +512,5 @@ particlesJS("particleCanvas-White", {
 });
 //# sourceURL=pen.js
 </script>
+
 </body></html>
