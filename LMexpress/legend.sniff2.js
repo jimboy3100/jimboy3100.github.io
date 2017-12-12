@@ -7,15 +7,15 @@
     document.getElementsByTagName('head')[0].appendChild(link);
 })();
 
-document.title = "LM Express";   
+document.title = "LM express";   
 setTimeout(function () {
-document.title = "LM Express";   
+document.title = "LM express";   
 }, 700);
 setTimeout(function () {
-document.title = "LM Express";   
+document.title = "LM express";   
 }, 1300);
 setTimeout(function () {
-document.title = "LM Express";   
+document.title = "LM express";   
 }, 1500);
 setTimeout(function () {
 $(".agario-profile-name").css('vertical-align', '');
