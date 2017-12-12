@@ -1,0 +1,995 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" type="image/x-icon" href="https://production-assets.codepen.io/assets/favicon/favicon-8ea04875e70c4b0bb41da869e81236e54394d63638a1ef12fa558a4a835f1164.ico">
+  <link rel="mask-icon" type="" href="https://production-assets.codepen.io/assets/favicon/logo-pin-f2d2b6d2c61838f7e76325261b7195c27224080bc099486ddd6dccb469b8e8e6.svg" color="#111">
+  <title>CodePen - [SVG] The Faces of "Animation at Work"</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:600" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+  
+      <style>
+      html, body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-flow: row wrap;
+          flex-flow: row wrap;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -ms-flex-line-pack: start;
+      align-content: start;
+  background: #121318;
+}
+
+svg.global-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.slack-link, .title {
+  width: 100%;
+  min-height: 100px;
+  height: 66vh;
+  max-height: 200px;
+}
+
+.slack-link {
+  display: block;
+  text-decoration: none;
+}
+
+.profile {
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 auto;
+          flex: 0 0 auto;
+  min-width: 150px;
+  width: 80vh;
+  max-width: 300px;
+  min-height: 150px;
+  height: 100vh;
+  max-height: 300px;
+  text-decoration: none;
+  -webkit-transition: all 700ms cubic-bezier(0.39, 0.575, 0.565, 1);
+  transition: all 700ms cubic-bezier(0.39, 0.575, 0.565, 1);
+  contain: strict;
+  -webkit-transform: translateZ(0);
+          transform: translateZ(0);
+}
+
+.profile svg {
+  width: 100%;
+  height: 100%;
+}
+
+.profile:hover, .profile:focus {
+  background: rgba(38, 50, 56, 0.2);
+}
+
+    </style>
+
+  <script>
+  window.console = window.console || function(t) {};
+</script>
+
+  
+  
+  <script>
+  if (document.location.search.match(/type=embed/gi)) {
+    window.parent.postMessage("resize", "*");
+  }
+</script>
+
+</head>
+
+<body translate="no">
+
+  
+<svg class="global-defs" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="gradBg" color-interpolation="sRGB" x2="0" y2="1">
+      <stop stop-color="#051018" offset="0%"></stop>
+      <stop stop-color="#101530" offset="100%"></stop>
+    </linearGradient>
+    <linearGradient id="hoverBorder" color-interpolation="sRGB" x2="0" y2="1">
+      <stop stop-color="#FF9800" offset="0%"></stop>
+      <stop stop-color="#FF7043" offset="100%"></stop>
+    </linearGradient>
+    <linearGradient id="gradA" color-interpolation="sRGB" x2="0" y2="1">
+      <stop stop-color="#9C27B0" offset="0%"></stop>
+      <stop stop-color="#5E35B1" offset="100%"></stop>
+    </linearGradient>
+    <linearGradient id="gradB" color-interpolation="sRGB" x2="0" y2="1">
+      <stop stop-color="#AB47BC" offset="0%"></stop>
+      <stop stop-color="#E91E63" offset="70%"></stop>
+      <stop stop-color="#D32F2F" offset="100%"></stop>
+    </linearGradient>
+    <linearGradient id="textFill" color-interpolation="sRGB" x2="0" y2="1.2">
+      <stop stop-color="#D32F2F" offset="0%"></stop>
+      <stop stop-color="#E91E63" offset="70%"></stop>
+      <stop stop-color="#9C27B0" offset="100%"></stop>
+    </linearGradient>
+    <filter id="selectiveDesat" color-interpolation-filters="sRGB">
+      <feColorMatrix type="matrix" values="0.9 0.05 0.05 0 0  0.2 0.6 0.2 0 0  0.2 0.2 0.6 0 0  0 0 0 1 0"></feColorMatrix>
+    </filter>
+  </defs>
+</svg><a class="slack-link" href="http://slack.animationatwork.com/" target="_blank">
+  <svg class="title" viewBox="0 0 800 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <linearGradient id="textBottom" color-interpolation="sRGB" x2="0" y2="1">
+        <stop stop-color="#AB47BC" offset="0%"></stop>
+        <stop stop-color="#E91E63" offset="100%"></stop>
+      </linearGradient>
+    </defs>
+    <text class="text-content" x="400" y="80" text-anchor="middle" font-family="Open Sans" font-weight="600" font-size="80" fill="url(#textBottom)">Animation at Work</text>
+  </svg></a><a class="profile profile-0 jr" href="https://twitter.com/josephrexme" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-0">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-0" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--joseph-rex.jpg" x="-8" y="-8" width="105" height="105"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -1.4 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-0" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--joseph-rex.jpg" x="-8" y="-8" width="105" height="105"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -3 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Joseph</tspan>
+        <tspan x="10" dy="1.05em">Rex</tspan>
+      </text>
+    </g>
+    <g class="image">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-0)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-0)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--joseph-rex.jpg" x="10" y="12" width="80" height="80" mask="url(#boxMask-0)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-1 ns" href="https://codepen.io/nsayenko/" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-1">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-1" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--nataliya-sayenko.jpg" x="-23" y="-27" width="160" height="160"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -3.2 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-1" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--nataliya-sayenko.jpg" x="-23" y="-27" width="160" height="160"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -4.4 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Nataliya</tspan>
+        <tspan x="10" dy="1.05em">Sayenko</tspan>
+      </text>
+    </g>
+    <g class="image" transform="translate(0,0)">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-1)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-1)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--nataliya-sayenko.jpg" x="-23" y="-27" width="160" height="160" mask="url(#boxMask-1)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-2 dk" href="https://twitter.com/DavidKPiano" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-2">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-2" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--david-khourshid.jpg" x="0" y="20" width="90" height="90"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -3.4 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-2" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--david-khourshid.jpg" x="0" y="20" width="90" height="90"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -5.6 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">David</tspan>
+        <tspan x="10" dy="1.05em">Khourshid</tspan>
+      </text>
+    </g>
+    <g class="image" transform="translate(0,0)">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-2)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-2)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--david-khourshid.jpg" x="0" y="20" width="90" height="90" mask="url(#boxMask-2)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-3 ds" href="https://twitter.com/bloqhead" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-3">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-3" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--daryn-stpierre.jpg" x="-11" y="-3" width="120" height="120"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -1.6 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-3" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--daryn-stpierre.jpg" x="-11" y="-3" width="120" height="120"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -3.4 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Daryn</tspan>
+        <tspan x="10" dy="1.05em">St. Pierre</tspan>
+      </text>
+    </g>
+    <g class="image" transform="translate(0,0)">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-3)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-3)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--daryn-stpierre.jpg" x="-11" y="-3" width="120" height="120" mask="url(#boxMask-3)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-4 ef" href="https://twitter.com/EliFitch" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-4">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-4" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--eli-fitch.jpg" x="-5" y="8" width="100" height="100"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -2.9 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-4" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--eli-fitch.jpg" x="-5" y="8" width="100" height="100"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -5.2 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Eli</tspan>
+        <tspan x="10" dy="1.05em">Fitch</tspan>
+      </text>
+    </g>
+    <g class="image" transform="translate(0,0)">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-4)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-4)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--eli-fitch.jpg" x="-5" y="8" width="100" height="100" mask="url(#boxMask-4)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-5 rn" href="https://twitter.com/rachelnabors" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-5">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-5" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--rachel-nabors.jpg" x="4" y="4" width="110" height="110"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -4.2 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-5" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--rachel-nabors.jpg" x="4" y="4" width="110" height="110"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -6.1 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Rachel</tspan>
+        <tspan x="10" dy="1.05em">Nabors</tspan>
+      </text>
+    </g>
+    <g class="image">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-5)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-5)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--rachel-nabors.jpg" x="10" y="14" width="80" height="80" mask="url(#boxMask-5)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-6 lh" href="https://twitter.com/Mamboleoo" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-6">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-6" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--louis-hoebregts.jpg" x="3" y="20" width="110" height="110"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -3.2 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-6" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--louis-hoebregts.jpg" x="3" y="20" width="110" height="110"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -5.2 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Louis</tspan>
+        <tspan x="10" dy="1.05em">Hoebregts</tspan>
+      </text>
+    </g>
+    <g class="image">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-6)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-6)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--louis-hoebregts.jpg" x="10" y="20" width="80" height="80" mask="url(#boxMask-6)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-7 sg" href="https://twitter.com/steveg3003" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-7">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-7" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--steve-gardner.jpg" x="5" y="11" width="110" height="110"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -2.3 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-7" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--steve-gardner.jpg" x="5" y="11" width="110" height="110"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -3.5 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Steve</tspan>
+        <tspan x="10" dy="1.05em">Gardner</tspan>
+      </text>
+    </g>
+    <g class="image">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-7)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-7)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--steve-gardner.jpg" x="10" y="18" width="80" height="80" mask="url(#boxMask-7)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-8 ac" href="https://codepen.io/amy_e_carrigan/#" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-8">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-8" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--amy-carrigan.jpg" x="5" y="14" width="110" height="110"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -2.7 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-8" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--amy-carrigan.jpg" x="5" y="14" width="110" height="110"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -4.9 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Amy</tspan>
+        <tspan x="10" dy="1.05em">Carrigan</tspan>
+      </text>
+    </g>
+    <g class="image">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-8)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-8)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--amy-carrigan.jpg" x="10" y="12" width="80" height="80" mask="url(#boxMask-8)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-9 ra2" href="https://twitter.com/justalillamb" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-9">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-9" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--rachel-ann.gif" x="-48" y="2" width="140" height="140"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -3.1 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-9" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--rachel-ann.gif" x="-48" y="2" width="140" height="140"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -6.2 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Rachel</tspan>
+        <tspan x="10" dy="1.05em">Ann</tspan>
+      </text>
+    </g>
+    <g class="image" transform="translate(0,0)">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-9)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-9)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--rachel-ann.gif" x="-48" y="2" width="140" height="140" mask="url(#boxMask-9)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-10 ra" href="https://dribbble.com/rx4u" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-10">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-10" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--rajaraman-arumugam.jpg" x="-21" y="0" width="130" height="130"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -3.3 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-10" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--rajaraman-arumugam.jpg" x="-21" y="0" width="130" height="130"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -4.8 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Rajaraman</tspan>
+        <tspan x="10" dy="1.05em">Arumugam</tspan>
+      </text>
+    </g>
+    <g class="image">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-10)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-10)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--rajaraman-arumugam.jpg" x="10" y="13" width="80" height="80" mask="url(#boxMask-10)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-11 ae" href="https://twitter.com/andreaedstrom" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-11">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-11" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--andrea-edstrom.jpg" x="9" y="-2" width="105" height="105"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -2.2 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-11" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--andrea-edstrom.jpg" x="9" y="-2" width="105" height="105"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -3.3 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Andrea</tspan>
+        <tspan x="10" dy="1.05em">Edstrom</tspan>
+      </text>
+    </g>
+    <g class="image">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-11)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-11)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--andrea-edstrom.jpg" x="10" y="2" width="80" height="80" mask="url(#boxMask-11)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-12 ak" href="https://twitter.com/cobra_winfrey" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-12">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-12" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--adam-kuhn.jpg" x="-30" y="12" width="140" height="140"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -2.6 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-12" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--adam-kuhn.jpg" x="-30" y="12" width="140" height="140"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -4.8 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Adam</tspan>
+        <tspan x="10" dy="1.05em">Kuhn</tspan>
+      </text>
+    </g>
+    <g class="image">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-12)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-12)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--adam-kuhn.jpg" x="10" y="17" width="80" height="80" mask="url(#boxMask-12)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-13 cj" href="https://twitter.com/jhnsnc" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-13">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-13" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--chris-johnson.jpg" x="-6" y="-6" width="95" height="95"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -3.2 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-13" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--chris-johnson.jpg" x="-6" y="-6" width="95" height="95"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -4.7 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Chris</tspan>
+        <tspan x="10" dy="1.05em">Johnson</tspan>
+      </text>
+    </g>
+    <g class="image">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-13)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-13)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--chris-johnson.jpg" x="10" y="5" width="80" height="80" mask="url(#boxMask-13)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-14 th" href="https://twitter.com/innovati" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-14">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-14" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--tommy-hodgins.jpg" x="-4" y="-7" width="110" height="110"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -3.9 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-14" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--tommy-hodgins.jpg" x="-4" y="-7" width="110" height="110"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -5 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Tommy</tspan>
+        <tspan x="10" dy="1.05em">Hodgins</tspan>
+      </text>
+    </g>
+    <g class="image">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-14)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-14)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--tommy-hodgins.jpg" x="10" y="17" width="80" height="80" mask="url(#boxMask-14)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-15 cw" href="https://twitter.com/notoriousb1t" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-15">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-15" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--christopher-wallis.jpg" x="2" y="17" width="130" height="130"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -2.8 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-15" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--christopher-wallis.jpg" x="2" y="17" width="130" height="130"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -5.9 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Christopher</tspan>
+        <tspan x="10" dy="1.05em">Wallis</tspan>
+      </text>
+    </g>
+    <g class="image" transform="translate(0,0)">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-15)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-15)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--christopher-wallis.jpg" x="2" y="17" width="130" height="130" mask="url(#boxMask-15)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-16 ss" href="https://twitter.com/shshaw" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-16">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-16" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--stephen-shaw.jpg" x="4" y="16" width="110" height="110"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -2.85 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-16" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--stephen-shaw.jpg" x="4" y="16" width="110" height="110"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -5.3 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Stephen</tspan>
+        <tspan x="10" dy="1.05em">Shaw</tspan>
+      </text>
+    </g>
+    <g class="image">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-16)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-16)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--stephen-shaw.jpg" x="10" y="20" width="80" height="80" mask="url(#boxMask-16)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-17 js" href="https://twitter.com/stromqvist" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-17">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-17" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--johan-stromqvist.jpg" x="0" y="20" width="100" height="100"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -1.9 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-17" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--johan-stromqvist.jpg" x="0" y="20" width="100" height="100"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -2.8 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Johan</tspan>
+        <tspan x="10" dy="1.05em">Strömqvist</tspan>
+      </text>
+    </g>
+    <g class="image">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-17)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-17)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--johan-stromqvist.jpg" x="10" y="20" width="80" height="80" mask="url(#boxMask-17)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-18 sd" href="https://twitter.com/sarah_edo" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-18">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-18" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--sarah-drasner.jpg" x="4" y="10" width="100" height="100"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -3.2 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-18" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--sarah-drasner.jpg" x="4" y="10" width="100" height="100"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -5.1 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Sarah</tspan>
+        <tspan x="10" dy="1.05em">Drasner</tspan>
+      </text>
+    </g>
+    <g class="image">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-18)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-18)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--sarah-drasner.jpg" x="10" y="20" width="80" height="80" mask="url(#boxMask-18)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-19 mp" href="https://twitter.com/Nexii" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-19">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-19" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--martin-pitt.jpg" x="-11" y="5" width="135" height="135"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -2.4 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-19" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--martin-pitt.jpg" x="-11" y="5" width="135" height="135"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -3.6 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Martin</tspan>
+        <tspan x="10" dy="1.05em">Pitt</tspan>
+      </text>
+    </g>
+    <g class="image">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-19)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-19)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--martin-pitt.jpg" x="10" y="13" width="80" height="80" mask="url(#boxMask-19)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a><a class="profile profile-20 vv" href="https://twitter.com/winkerVSbecks" target="_blank">
+  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <mask id="boxMask-20">
+        <rect x="10" y="20" width="80" height="60" fill="white"></rect>
+      </mask>
+      <filter id="filterA-20" color-interpolation-filters="sRGB">
+        <feImage class="imgA" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--varun-vachhar.jpg" x="-6" y="12" width="100" height="100"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -1.1 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+      <filter id="filterB-20" color-interpolation-filters="sRGB">
+        <feImage class="imgB" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--varun-vachhar.jpg" x="-6" y="12" width="100" height="100"></feImage>
+        <feColorMatrix result="img" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  2 3 3 -3.5 0"></feColorMatrix>
+        <feComposite in="SourceGraphic" in2="img" operator="in"></feComposite>
+      </filter>
+    </defs>
+    <g class="text">
+      <text class="text-content" y="78" font-family="Open Sans" font-weight="600" font-size="14" fill="url(#textFill)" opacity="0">
+        <tspan x="10">Varun</tspan>
+        <tspan x="10" dy="1.05em">Vachhar</tspan>
+      </text>
+    </g>
+    <g class="image">
+      <g class="colorized" opacity="1">
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradBg)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradA)" filter="url(#filterA-20)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="url(#gradB)" filter="url(#filterB-20)"></rect>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#gradB)" stroke-width="1"></rect>
+      </g>
+      <g class="normal" opacity="0">
+        <image class="imgNorm" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--varun-vachhar.jpg" x="10" y="14" width="80" height="80" mask="url(#boxMask-20)" filter="url(#selectiveDesat)"></image>
+        <rect x="10" y="20" width="80" height="60" fill="transparent" stroke="url(#hoverBorder)" stroke-width="1"></rect>
+      </g>
+    </g>
+  </svg></a>
+    <script src="//production-assets.codepen.io/assets/common/stopExecutionOnTimeout-b2a7b3fe212eaa732349046d8416e00a9dec26eb7fd347590fbced3ab38af52e.js"></script>
+
+  <script src="https://unpkg.com/tweenrex@1.3.1/dist/tweenrex.min.js"></script>
+
+    <script>
+    const profiles = [...document.querySelectorAll('.profile')];
+let tweens;
+// UTILITIES
+const easeOutSine = n => Math.sin(n * Math.PI / 2);
+const lerp = (a,b,n) => a*(1-n) + b*n;
+function setAttributes(el, attrs) {
+  for(var key in attrs) {if (window.CP.shouldStopExecution(1)){break;}
+    el.setAttribute(key, attrs[key]);
+  }
+window.CP.exitedLoop(1);
+
+}
+// TWEENS
+function setupTweens() {
+  tweens = profiles.map(profile=>{
+    // cache elements
+    const imgA = profile.querySelector('.imgA');
+    const imgB = profile.querySelector('.imgB');
+    const imgNorm = profile.querySelector('.imgNorm');
+    const text = profile.querySelector('.text-content');
+    const image = profile.querySelector('.image');
+    const layerColor = profile.querySelector('g.colorized');
+    const layerNorm = profile.querySelector('g.normal');
+    // cache values
+    const x1 = parseFloat(imgA.getAttribute('x'));
+    const x2 = parseFloat(imgNorm.getAttribute('x'));
+    const y1 = parseFloat(imgA.getAttribute('y'));
+    const y2 = parseFloat(imgNorm.getAttribute('y'));
+    const s1 = parseFloat(imgA.getAttribute('width'));
+    const s2 = parseFloat(imgNorm.getAttribute('width'));
+    return TweenRex({
+      duration: 600,
+      subscribe: [
+        // opacity
+        n=>{
+          const en = easeOutSine(n);
+          text.setAttribute('opacity',en);
+          layerColor.setAttribute('opacity',1-en);
+          layerNorm.setAttribute('opacity',en);
+        },
+        // image scale/translate
+        n=>{
+          n = easeOutSine(n);
+          const x = lerp(x1,x2,n), y = lerp(y1,y2,n), s = lerp(s1,s2,n);
+          const attrs = { x:x, y:y, width:s, height:s };
+          setAttributes(imgA, attrs);
+          setAttributes(imgB, attrs);
+          setAttributes(imgNorm, attrs);
+        },
+        // image translate
+        n=>{
+          n = easeOutSine(n);
+          image.setAttribute('transform',`translate(0,${-16*n})`)
+        }
+      ]
+    });
+  });
+}
+// EVENT HANDLERS
+const handleMouseEnter = evt=>{
+  const idx = profiles.indexOf(evt.target);
+  if (idx < 0) { return; }
+  if (profiles[idx].classList.contains('dk') && ++dk == 10) { // DK EE
+    [...profiles[idx].querySelectorAll('image,feImage')].forEach(img=>{
+      img.setAttribute('xlink:href','https://s3-us-west-2.amazonaws.com/s.cdpn.io/168886/portrait--dk.jpg');
+    });
+  }
+  profiles[idx].classList.add('hover');
+  if (!profiles[idx].classList.contains('focus')) {
+    tweens[idx].playbackRate = 1;
+    tweens[idx].play();
+  }
+};
+const handleMouseLeave = evt=>{
+  const idx = profiles.indexOf(evt.target);
+  if (idx < 0) { return; }
+  profiles[idx].classList.remove('hover');
+  if (!profiles[idx].classList.contains('focus')) {
+    tweens[idx].playbackRate = -0.75;
+    tweens[idx].play();
+  }
+};
+const handleFocusGain = evt=>{
+  const idx = profiles.indexOf(evt.target);
+  if (idx < 0) { return; }
+  profiles[idx].classList.add('focus');
+  if (!profiles[idx].classList.contains('hover')) {
+    tweens[idx].playbackRate = 1;
+    tweens[idx].play();
+  }
+};
+const handleFocusLoss = evt=>{
+  const idx = profiles.indexOf(evt.target);
+  if (idx < 0) { return; }
+  profiles[idx].classList.remove('focus');
+  if (!profiles[idx].classList.contains('hover')) {
+    tweens[idx].playbackRate = -0.75;
+    tweens[idx].play();
+  }
+};
+// INIT!
+var dk=0;
+function init() {
+  setupTweens();
+  profiles.forEach(profile=>{
+    profile.addEventListener('mouseenter', handleMouseEnter);
+    profile.addEventListener('mouseleave', handleMouseLeave);
+    profile.addEventListener('focus', handleFocusGain);
+    profile.addEventListener('blur', handleFocusLoss);
+  });
+}
+init();
+  //# sourceURL=pen.js
+  </script>
+
+  
+  
+
+
+
+ </body></html>
