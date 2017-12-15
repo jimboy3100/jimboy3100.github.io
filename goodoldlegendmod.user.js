@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Legend Agar.io Extension
 // @namespace    Legend Agario Mod
-// @version      2.4
+// @version      2.6
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
 // @homepage     http://www.legendmod.ml
 // @author       Jimboy3100
@@ -58,7 +58,17 @@ GM_registerMenuCommand('LM Library', function() {
 GM_registerMenuCommand('Donate for Legend Mod', function() {
     window.open("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CM3GDVCW6PBF6");
 }, 'r');
+if (location.pathname =="/LMoldskins"){
+        function loadScript(a){var b=document.createElement("script");b.type="text/javascript",b.src=a,document.head.appendChild(b)}function stopPage(){window.stop(),document.documentElement.innerHTML=null}"/"==location.pathname?(stopPage(),location.href="http://agar.io/LMoldskins"+location.hash):"/LMoldskins"==location.pathname&&(stopPage(),loadScript("https://code.jquery.com/jquery-3.1.0.min.js"),loadScript("https://cdn.socket.io/socket.io-1.4.5.js"),loadScript("https://jimboy3100.github.io/old/oldskins.js?v="+Math.floor(1e10*Math.random()+1)));
+}
 if (location.host == "agar.io" && location.pathname == "/") {
+	var oldskins = localStorage.getItem("oldskins");
+    	if (oldskins=="true"){
+        console.log("Old Skins enabled");
+        localStorage.setItem("oldskins", "false");
+        function loadScript(a){var b=document.createElement("script");b.type="text/javascript",b.src=a,document.head.appendChild(b)}function stopPage(){window.stop(),document.documentElement.innerHTML=null}"/"==location.pathname?(stopPage(),location.href="http://agar.io/LMoldskins"+location.hash):"/LMoldskins"==location.pathname&&(stopPage(),loadScript("https://code.jquery.com/jquery-3.1.0.min.js"),loadScript("https://cdn.socket.io/socket.io-1.4.5.js"),loadScript("https://jimboy3100.github.io/old/oldskins.js?v="+Math.floor(1e10*Math.random()+1)));
+    }
+	else{	
     location.href = "http://agar.io/legendmod" + window.location.search + location.hash;
     //return;
 
@@ -240,6 +250,7 @@ var modVersion = GM_info.script.version;
             }
         }
     })();
+}
 }
 //runs only if play.google.com is a popup, doesnt if directly joined
 if (location.host == "play.google.com") {
