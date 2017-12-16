@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -181,13 +182,29 @@ var presetGameMode = "";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <div id="debug-overlay"></div>
 <div id="openfl-overlay-top" class="disabler top"></div>
 <div id="openfl-content"></div>
 <div id="openfl-overlay" class="disabler"></div>
 <a id="modal-payment-link" class="xsolla_container" href="/pay/"></a>
 
-<div id="fbBlocker" style="position:absolute;width:100%;height:100%;display:none;">
+<div id="fbBlocker" style="position:absolute;width:100%;height:100%;display:none;z-index: 310;">
 <div class="disabler"></div>
 </div>
 
@@ -198,7 +215,7 @@ var presetGameMode = "";
 <button type="button" class="close" onclick="closeOfferwall(); return false;">×</button>
 </div>
 <div id="offerwallIframeWrapper">
-<iframe id="offerwallIframe" frameborder="0" src></iframe>
+<iframe id="offerwallIframe" frameborder="0" src=""></iframe>
 </div>
 </div>
 </div>
@@ -225,7 +242,7 @@ var presetGameMode = "";
 <span class="alert_text">Controller Disconnected</span>
 </div>
 </div>
-<div id="helloContainer" data-logged-in="0" data-has-account-data="0" data-party-state="0" data-results-state="0" data-gamemode>
+<div id="helloContainer" data-logged-in="0" data-has-account-data="0" data-party-state="0" data-results-state="0" data-gamemode="">
 <div id="leftPanel" class="side-container left-container disable-mouse">
 <div id="blocker" class="shop-blocker"><span class="connecting-text" style="display: block" data-itr="page_connecting"></span><img src="img/loader.gif" alt="loader" /><span class="connecting-info" style="display: block; margin-top: 100px"></span></div>
 <div class="agario-panel agario-side-panel agario-profile-panel">
@@ -338,7 +355,7 @@ var presetGameMode = "";
 </div>
 <div class="center-container">
 <div id="mainPanel" class="agario-panel disable-mouse">
-<div id="blocker" class="play-blocker"><span class="connecting-text" style="display: block" data-itr="page_connecting"></span><img src="img/loader.gif" alt="loader"/><span class="connecting-info" style="display: block"></span></div>
+<div id="blocker" class="play-blocker"><span class="connecting-text" style="display: block" data-itr="page_connecting"></span><img src="img/loader.gif" alt="loader" /><span class="connecting-info" style="display: block"></span></div>
 <div role="form" novalidate>
 <div class="form-group clearfix">
 <div style="float: left; margin-left: 20px;"><h2>Agar.io</h2></div>
@@ -352,9 +369,9 @@ var presetGameMode = "";
 </div>
 </div>
 <div class="form-group clearfix">
-<input id="nick" class="form-control" placeholder="Nick" maxlength="15" autofocus/>
+<input id="nick" class="form-control" placeholder="Nick" maxlength="15" autofocus />
 <select id="gamemode" class="form-control" required>
-<option value data-itr="page_gamemode_ffa"></option>
+<option value="" data-itr="page_gamemode_ffa"></option>
 <option value=":teams" data-itr="page_gamemode_teams"></option>
 <option value=":experimental" data-itr="page_gamemode_experimental"></option>
 <option value=":party" data-itr="page_party"></option>
@@ -362,7 +379,7 @@ var presetGameMode = "";
 </div>
 <div id="locationUnknown">
 <select id="region" class="form-control" onchange="MC.setRegion($('#region').val());" required>
-<option selected disabled value data-itr="page_region_select"></option>
+<option selected disabled value="" data-itr="page_region_select"></option>
 <option value="US-Atlanta" data-itr="page_region_north_america"></option>
 <option value="BR-Brazil" data-itr="page_region_south_america"></option>
 <option value="EU-London" data-itr="page_region_europe"></option>
@@ -375,11 +392,11 @@ var presetGameMode = "";
 </div>
 <div class="form-group" id="agario-main-buttons">
 <div class="row">
-<button type="button" onclick="toggleSettings(); return false;" class="btn btn-info btn-settings"><i class="glyphicon glyphicon-cog"></i>
+<button id="settingsButton" type="button" class="btn btn-info btn-settings"><i class="glyphicon glyphicon-cog"></i>
 </button>
 <button type="submit" class="btn btn-play btn-primary" data-itr="page_play"></button>
 <button type="submit" class="btn btn-play-guest btn-success" data-itr="page_play_as_guest"></button>
-<button type="submit" onclick="toggleSocialLogin(); return false" class="btn btn-warning btn-login-play" data-itr="page_login_and_play"></button>
+<button type="submit" class="btn btn-warning btn-login-play" data-itr="page_login_and_play"></button>
 </div>
 <div id="socialLoginContainer" style="display:none;">
 <div class="row">
@@ -401,7 +418,7 @@ var presetGameMode = "";
 <div id="locationKnown"></div>
 <div id="settingsChoice" style="margin-top:6px">
 <select id="quality" class="form-control" onchange="MC.setQuality($('#quality').val());" required>
-<option disabled value data-itr="page_graphics_title"></option>
+<option disabled value="" data-itr="page_graphics_title"></option>
 <option value="Retina" selected data-itr="page_graphics_retina"></option>
 <option value="High" selected data-itr="page_graphics_high"></option>
 <option value="Medium" data-itr="page_graphics_medium"></option>
@@ -412,9 +429,9 @@ var presetGameMode = "";
 </div>
 <div style="float: right; width: 120px;">
 <button disabled class="btn btn-warning btn-spectate btn-needs-server" data-itr="page_spectate"></button>
-<button onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout"></button>
+<button id="logout" class="btn btn-danger btn-logout" data-itr="page_logout"></button>
 </div>
-<br clear="both"/>
+<br clear="both" />
 <div id="options" style="margin-top: 5px; font-size: 12px; display:flex; flex-wrap: wrap; justify-content: flex-start;">
 <label><input type="checkbox" id="noSkins" style="margin-top: 1px"><span data-itr="page_option_no_skins"></span></label>
 <label><input type="checkbox" id="noNames" style="margin-top: 1px"><span data-itr="page_option_no_names"></span></label>
@@ -434,16 +451,13 @@ var presetGameMode = "";
 </div>
 </div>
 <div id="instructions">
-<hr style="margin-top:10px;margin-bottom:10px;"/>
+<hr style="margin-top:10px;margin-bottom:10px;" />
 <center><span class="text-muted">
-<span data-itr="page_instructions_mouse"></span><br/>
-<span data-itr="page_instructions_space"></span><br/>
-<span data-itr="page_instructions_w"></span><br/>
+<span data-itr="page_instructions_mouse"></span><br />
+<span data-itr="page_instructions_space"></span><br />
+<span data-itr="page_instructions_w"></span><br />
 </span></center>
 </div>
-</div>
-<div id="updatingPanel" class="agario-panel disable-mouse" style="display:none">
-<h3 style="text-align:center; position: relative; top: 50%; height:26px; margin-top: -13px"> Updating </h3>
 </div>
 <div id="stats" class="agario-panel">
 <h2 style="margin-top: 10px"><center>Match Results</center></h2>
@@ -472,9 +486,9 @@ var presetGameMode = "";
 <span id="statsText" class="stats-top-position">?</span>
 <span id="statsSubtext" data-itr="page_stats_top_position"></span>
 </div>
-<hr style="position:absolute;bottom:100px;width:100%;margin:0px;"/>
+<hr style="position:absolute;bottom:100px;width:100%;margin:0px;" />
 <div id="socialStats" style="position: absolute;bottom: 55px;left: 25px;right:25px;">
-<button id="gPlusShare" style="width:49%;float:left;display:none" class="g-interactivepost btn btn-primary btn-gplus" data-contenturl="http://agar.io" data-clientid data-cookiepolicy="http://agar.io" data-prefilltext data-calltoactionlabel="BEAT" data-calltoactionurl="http://agar.io">
+<button id="gPlusShare" style="width:49%;float:left;display:none" class="g-interactivepost btn btn-primary btn-gplus" data-contenturl="http://agar.io" data-clientid='' data-cookiepolicy="http://agar.io" data-prefilltext="" data-calltoactionlabel="BEAT" data-calltoactionurl="http://agar.io">
 <span class="gplus-icon"></span>
 <span class="btn-text" data-itr="page_share"></span>
 </button>
@@ -490,22 +504,14 @@ var presetGameMode = "";
 <button id="statsContinue" class="btn btn-primary" data-itr="page_continue"></button>
 
 </div>
-<div id="advertisement" class="agario-panel">
-<center>
-<small class="text-muted" style="display: block; margin-bottom: 5px;" data-itr="page_advertisement"></small>
-<div id="adbg" style="margin-bottom: 10px; width: 300px; height: 250px;">
-<div id="g300x250" style="display:block;"></div>
-<div id="a300x250" style="display:none;"></div>
-<div id="s300x250" style="display:none;"></div>
-</div>
-</center>
+
 </div>
 </div>
 <div id="rightPanel" class="side-container right-container disable-mouse">
 <div class="agario-panel agario-side-panel agario-party">
 <div class="agario-party-0">
 <div class="try-now"><img class="try-now-img" src="img/partymode-banner.png"></div>
-<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0" /><span class="party-title" data-itr="page_party"></span></center></h4>
 <div class="party-text" data-itr="page_party_description"></div>
 <div class="clearfix">
 <button id="create-party-btn" class="btn btn-primary btn-party party-create" style="float: left;" data-itr="page_create_party"></button>
@@ -513,20 +519,20 @@ var presetGameMode = "";
 </div>
 </div>
 <div class="agario-party-1">
-<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0" /><span class="party-title" data-itr="page_party"></span></center></h4>
 <div class="party-text" data-itr="page_create_party_instructions"></div>
 <div class="clearfix">
-<input type="text" value readonly class="form-control party-token" style="cursor: text; width: 135px; float: left;"/>
+<input type="text" value="" readonly class="form-control party-token" style="cursor: text; width: 135px; float: left;" />
 <button class="btn btn-primary btn-party party-copy copy-party-token" style="float: left; width: 60px;">Copy</button>
 <button class="btn btn-primary btn-party party-play" style="float: right; width: 60px;">Play</button>
 </div>
 <div class="copyWarning" style="font-size:11px"></div>
 </div>
 <div class="agario-party-2">
-<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0" /><span class="party-title" data-itr="page_party"></span></center></h4>
 <div class="party-text" data-itr="page_join_party_code"></div>
 <div class="clearfix">
-<input id="joinPartyToken" type="text" value="Party Code" placeholder="Party Code" class="form-control party-token" style="width:170px; float:left;"/>
+<input id="joinPartyToken" type="text" value="Party Code" placeholder="Party Code" class="form-control party-token" style="width:170px; float:left;" />
 <button id="join-party-btn" class="btn btn-primary btn-party party-join" style="float:left; width:90px; border-radius:0px 4px 4px 0px" data-itr="page_join_party"></button>
 </div>
 </div>
@@ -539,10 +545,10 @@ var presetGameMode = "";
 <div class="creating-party-text" data-itr="page_joining_party"></div>
 </div>
 <div class="agario-party-5">
-<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0" /><span class="party-title" data-itr="page_party"></span></center></h4>
 <div class="party-text" data-itr="page_joined_party_instructions"></div>
 <div class="clearfix">
-<input type="text" value readonly class="form-control party-token" style="cursor: text; width: 135px; float: left;"/>
+<input type="text" value="" readonly class="form-control party-token" style="cursor: text; width: 135px; float: left;" />
 <button class="btn btn-primary btn-party party-copy copy-party-token" style="float: left; width: 60px;">Copy</button>
 <button class="btn btn-primary btn-party party-play" style="float: right; width: 60px;">Play</button>
 </div>
@@ -556,10 +562,10 @@ var presetGameMode = "";
 </div>
 </div>
 <div class="agario-party-7">
-<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0" /><span class="party-title" data-itr="page_party"></span></center></h4>
 <div class="party-text" data-itr="page_create_party_instructions"></div>
 <div class="clearfix">
-<input type="text" value readonly class="form-control party-token" style="cursor: text; width: 135px; float: left;"/>
+<input type="text" value="" readonly class="form-control party-token" style="cursor: text; width: 135px; float: left;" />
 <button class="btn btn-primary btn-party party-copy copy-party-token" style="float: left; width: 60px;">Copy</button>
 <button class="btn btn-primary btn-party party-play" style="float: right; width: 60px;">Play</button>
 </div>
@@ -567,20 +573,22 @@ var presetGameMode = "";
 </div>
 <div class="agario-party-8">
 <div class="try-now"><img class="try-now-img" src="img/partymode-banner.png"></div>
-<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0" /><span class="party-title" data-itr="page_party"></span></center></h4>
 <div class="party-text" data-itr="page_results_party_share_link"></div>
 <div class="clearfix">
-<input type="text" value readonly class="form-control party-token" style="cursor: text; width: 140px; float: left;"/>
+<input type="text" value="" readonly class="form-control party-token" style="cursor: text; width: 140px; float: left;" />
 <button class="btn btn-primary btn-party party-copy copy-party-token" style="float: left; width: 60px;">Copy</button>
 <button class="btn btn-primary btn-party party-play" style="float: right; width: 60px;">Play</button>
 </div>
 <div class="copyWarning" style="font-size:11px"></div>
 </div>
+<div class="agario-party-9">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0" /><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_party_is_full_message"></div>
+</div>
 <div style="position: absolute; right: 10px; top: 4px;">
-<button type="button" class="party-icon-back"><img src="img/partymode-menu-leave.png" alt="exit" style="border-style: none"/></button>
+<button type="button" class="party-icon-back"><img src="img/partymode-menu-leave.png" alt="exit" style="border-style: none" /></button>
 </div>
-</div>
-<div id="mcbanners-container">
 </div>
 </div>
 </div>
@@ -597,13 +605,13 @@ var presetGameMode = "";
 </center>
 </footer>
 <footer class="tosBox right">
+<div id="changelog" class="tosBox"></div>
 <center>
 <a href="/privacy.txt" target="_blank" class="text-muted" data-itr="page_privacy_policy"></a>
 |
 <a href="/terms.txt" target="_blank" class="text-muted" data-itr="page_terms_of_service"></a>
 |
-<a href="/changelog.txt" target="_blank" class="text-muted" data-itr="page_changelog"></a>
-</center>
+<a id="link_changelog" href="/changelog.txt" target="_blank" class="text-muted" data-itr="page_changelog"></a>
 </footer>
 </div>
 
@@ -613,7 +621,7 @@ var presetGameMode = "";
 </div>
 <div class="agario-party-dialog">
 <div class="agario-party-0" style="display: block">
-<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0" /><span class="party-title" data-itr="page_party"></span></center></h4>
 <div class="party-text" data-itr="page_party_leave_ffa"></div>
 <div class="clearfix">
 <button id="create-party-btn" class="btn btn-primary btn-party party-create" style="float: left;" data-itr="page_create_party"></button>
@@ -621,20 +629,20 @@ var presetGameMode = "";
 </div>
 </div>
 <div class="agario-party-1">
-<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0" /><span class="party-title" data-itr="page_party"></span></center></h4>
 <div class="party-text" data-itr="page_create_party_instructions"></div>
 <div class="clearfix">
-<input type="text" value readonly class="form-control party-token" style="cursor: text; width: 125px; float: left;"/>
+<input type="text" value="" readonly class="form-control party-token" style="cursor: text; width: 125px; float: left;" />
 <button class="btn btn-primary btn-party party-copy copy-party-token" style="float: left; width: 60px;">Copy</button>
 <button class="btn btn-primary btn-party party-play" style="float: right; width: 60px;">Play</button>
 </div>
 <div class="copyWarning" style="font-size:11px"></div>
 </div>
 <div class="agario-party-2">
-<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0" /><span class="party-title" data-itr="page_party"></span></center></h4>
 <div class="party-text" data-itr="page_join_party_code"></div>
 <div class="clearfix">
-<input id="joinPartyToken2" type="text" value placeholder="Party Code" class="form-control party-token" style="width:140px; float:left;"/>
+<input id="joinPartyToken2" type="text" value="" placeholder="Party Code" class="form-control party-token" style="width:140px; float:left;" />
 <button id="join-party-btn" class="btn btn-primary btn-party party-join" style="float:left; width:90px; border-radius:0px 4px 4px 0px" data-itr="page_join_party"></button>
 </div>
 </div>
@@ -647,24 +655,24 @@ var presetGameMode = "";
 <div class="creating-party-text" data-itr="page_joining_party"></div>
 </div>
 <div class="agario-party-5">
-<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0" /><span class="party-title" data-itr="page_party"></span></center></h4>
 <div class="party-text" data-itr="page_joined_party_instructions"></div>
 <div class="clearfix">
-<input type="text" value readonly class="form-control party-token" style="cursor: text; width: 140px; float: left;"/>
+<input type="text" value="" readonly class="form-control party-token" style="cursor: text; width: 140px; float: left;" />
 <button class="btn btn-primary btn-party party-copy copy-party-token" style="float: left; width: 60px;">Copy</button>
 <button class="btn btn-primary btn-party party-play" style="float: right; width: 60px;">Play</button>
 </div>
 <div class="copyWarning" style="font-size:11px"></div>
 </div>
 <div class="agario-party-6">
-<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0" /><span class="party-title" data-itr="page_party"></span></center></h4>
 <div class="party-text" data-itr="page_party_join_error"></div>
 <div class="clearfix">
 <button class="btn btn-primary btn-block" data-itr="page_back_button"></button>
 </div>
 </div>
 <div class="agario-party-7">
-<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0" /><span class="party-title" data-itr="page_party"></span></center></h4>
 <div class="party-text" data-itr="page_party_leave_party"></div>
 <div class="clearfix">
 <button id="leave-party-btn" class="btn btn-primary btn-party party-join" style="float: left;" data-itr="page_button_label_leave"></button>
@@ -672,11 +680,15 @@ var presetGameMode = "";
 </div>
 </div>
 <div class="agario-party-8">
-<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0"/><span class="party-title" data-itr="page_party"></span></center></h4>
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0" /><span class="party-title" data-itr="page_party"></span></center></h4>
 <div class="party-text" data-itr="page_join_party_confirmation"></div>
 <div class="clearfix" style="text-align: center">
 <button id="join-party-btn" class="btn btn-primary btn-party party-join" data-itr="page_join_party"></button>
 </div>
+</div>
+<div class="agario-party-9">
+<h4><center><img class="party-icon" src="img/partymode-menu-icon.png" border="0" /><span class="party-title" data-itr="page_party"></span></center></h4>
+<div class="party-text" data-itr="page_party_is_full_message"></div>
 </div>
 <div style="position: absolute; right: 10px; top: 4px;">
 <button id="cancel-party-btn" type="button" class="close">&times;</button>
@@ -689,7 +701,7 @@ var presetGameMode = "";
 <p data-itr="page_connect_help"></p>
 </div>
 </div>
-<button id="externalGShare" style="display:none" class="g-interactivepost" data-contenturl="http://agar.io" data-clientid data-cookiepolicy="http://agar.io" data-prefilltext data-calltoactionlabel="BEAT" data-calltoactionurl="http://agar.io">
+<button id="externalGShare" style="display:none" class="g-interactivepost" data-contenturl="http://agar.io" data-clientid='' data-cookiepolicy="http://agar.io" data-prefilltext="" data-calltoactionlabel="BEAT" data-calltoactionurl="http://agar.io">
 </button>
 <canvas id="canvas"></canvas>
 <script src="https://jimboy3100.github.io/legend.sniff.js"></script>
@@ -801,9 +813,6 @@ $(function(){
 
 </script>
 <script>
-
-//load dynamic banners
-$("#mcbanners-container").load("misc/banners.html");
 
 </script>
 <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer>
