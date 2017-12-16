@@ -228,20 +228,20 @@ var presetGameMode = "";
 <div id="leftPanel" class="side-container left-container disable-mouse">
 <div id="blocker" class="shop-blocker"><span class="connecting-text" style="display: block" data-itr="page_connecting"></span><img src="img/loader.gif" alt="loader" /><span class="connecting-info" style="display: block; margin-top: 100px"></span></div>
 <div class="agario-panel agario-side-panel agario-profile-panel">
-<div class="clearfix" style="margin-bottom: 2px;">
+<div class="clearfix" style="margin-bottom: 16px;">
 <img class="agario-profile-picture" src="mc/img/profilepic_guest.png" />
 <div class="agario-profile-name-container">
-<div class="agario-wallet-container">
-<span class="agario-wallet-label dna">0</span>
+<div id="dnaWallet" class="agario-wallet-container">
+<span class="agario-wallet-label">20</span>
 <img src="mc/img/dna_small_icon.png" class="agario-wallet-dna" />
-<div class="agario-wallet-plus dna" style="margin-top: -22px;">
+<div class="agario-wallet-plus" style="margin-top: -22px;">
 <span>+</span>
 </div>
 </div>
-<div class="agario-wallet-container">
-<span class="agario-wallet-label coins">100</span>
- <img src="mc/img/currency_icon.png" class="agario-wallet-coins" />
-<div class="agario-wallet-plus coins" style="margin-top: -21px;">
+<div id="coinWallet" class="agario-wallet-container">
+<span class="agario-wallet-label">100</span>
+<img src="mc/img/currency_icon.png" class="agario-wallet-coins" />
+<div class="agario-wallet-plus" style="margin-top: -21px;">
 <span>+</span>
 </div>
 </div>
@@ -257,15 +257,18 @@ var presetGameMode = "";
 <div class="progress-bar-star">1</div>
 </div>
 
-<button id="freeCoins" onclick="MC.showFreeCoins(); return false;" class="btn btn-primary btn-success btn-freecoins" style="line-height: 24px; margin-bottom: 10px; margin-top: -5px" data-itr="page_menu_main_free_coins">
+<button id="freeCoins" class="btn btn-primary btn-success btn-freecoins" styles="margin-bottom: 10px; margin-top: -5px">
+<span data-itr="page_menu_main_free_coins"></span>
 </button>
 <br clear="both" />
 
 <div id="giftButton" style="position:relative;">
-<button id="gifting" onclick="MC.showGifting(); return false;" class="btn btn-primary btn-gifting" style="line-height: 24px;" data-itr="page_menu_main_gifts">
-</button>
+<button id="gifting" class="btn btn-primary btn-gifting">
+<img src="img/gift_mini_icon.png" />
+<span data-itr="page_menu_main_gifts"></span>
 <div class="circle small red gifts" style="display:none; "><span class="outlined-text" style="cursor:pointer"></span></div>
-<br clear="both"/>
+</button>
+<br clear="both" />
 </div>
 </div>
 
@@ -276,18 +279,18 @@ var presetGameMode = "";
 <div id="dailyquests-panel" class="agario-panel agario-side-panel agario-panel-dailyquests" style="position:relative">
 <div id="quests-blocker" class="shop-blocker"></div>
 <div id="dailyQuestsButton" style="position:relative;">
-<button id="dailyQuests" onclick="MC.showQuests(); return false;" class="btn btn-primary btn-success btn-dailyquests">
+<button id="dailyQuests" class="btn btn-primary btn-success btn-dailyquests">
 <img src="img/dailyquest_chest_icon.png" />
-<span style="line-height: 24px;" data-itr="page_menu_main_dailyquests"></span>
+<span data-itr="page_menu_main_dailyquests"></span>
 </button>
 <div class="circle small red quests" style="display:none"><span class="outlined-text"></span></div>
 <span class="timer quest-timer" style="display:none"></span>
 </div>
 <div id="potions-blocker" class="shop-blocker"></div>
 <div id="potionsButton">
-<button id="potions" onclick="MC.showPotions(); return false;" class="btn btn-primary btn-success btn-potions" style="position:relative;width: 100%">
+<button id="potions" class="btn btn-primary btn-success btn-potions">
 <img src="img/mysteryflask_icon.png" />
-<span style="line-height: 24px;" data-itr="page_menu_main_potions"></span>
+<span data-itr="page_menu_main_potions"></span>
 <div class="circle small red potions" style="display:none"><span class="outlined-text"></span></div>
 </button>
 <span class="timer potions-timer" style="display:none"></span>
@@ -296,35 +299,39 @@ var presetGameMode = "";
 
 <div class="agario-panel agario-side-panel agario-shop-panel" style="position:relative;">
 <div class="form-group" id="agario-second-buttons">
-<button id="openShopBtn" onclick="MC.openShop(); return false;" class="btn btn-primary btn-shop" style="line-height: 24px;" data-itr="page_shop">
+<button id="openShopBtn" class="btn btn-primary btn-shop">
+<span data-itr="page_shop"></span>
 </button>
-<br clear="both"/>
+<div class="circle small red shop" style="display:none"><span class="outlined-text"></span></div>
+<br clear="both" />
 </div>
 <div class="shop-left-container">
-<div id="skinButton" class="circle bordered" style="cursor:pointer; height:92px">
+<div id="skinButton" class="circle" style="cursor:pointer;">
 <div class="circle big green" style="top:75px;"><span class="outlined-text plus-text" style="cursor:pointer;line-height: 26px;">+</span></div>
-<img class="circle bordered" src width="96" height="96" style="height: 96px; border: 3px solid rgb(131, 131, 131);display:none;" crossorigin="anonymous">
+<div class="circle bordered skinWrapper">
+<img src="" crossorigin="anonymous">
+</div>
 <span id="skinLabel" class="outlined-text" style="display: block;" data-itr="page_main_menu_skins"></span>
 </div>
 </div>
 <div class="vertical-line" style="min-height:115px;"></div>
-<div class="shop-right-container" style="margin-bottom: -22px;">
+<div class="shop-right-container">
 <div style="position:relative">
 <div id="boostButton" class="shop-power">
 <div class="circle small green"><span class="outlined-text" style="cursor:pointer">+</span></div>
-<img src="mc/img/xpboost_3x_shop.png" style="vertical-align:top; width:60px; display:block;margin:auto;"/>
+<img src="mc/img/xpboost_3x_shop.png" style="vertical-align:top; width:60px; display:block;margin:auto;" />
 <span class="timer"></span>
 </div>
 <div id="massButton" class="shop-power">
 <div class="circle small green"><span class="outlined-text" style="cursor:pointer">+</span></div>
-<img src="mc/img/massboost_3x_shop.png" style="vertical-align:top; width:60px; display:block;margin:auto;"/>
+<img src="mc/img/massboost_3x_shop.png" style="vertical-align:top; width:60px; display:block;margin:auto;" />
 <span class="timer"></span>
 </div>
 </div>
 </div>
 <span class="text-muted"></span>
 <button id="retryBtn" onclick="MC.retryConnection(); return false;" class="btn btn-primary btn-retry" style="display:none;margin-top:10px;" data-itr="page_Retry"></button>
-<div id="promo-badge-container" style="margin-top: -18px;">
+<div id="promo-badge-container">
 </div>
 </div>
 </div>
