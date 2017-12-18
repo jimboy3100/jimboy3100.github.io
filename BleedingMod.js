@@ -1,4 +1,16 @@
 // ==UserScript==
+// @name         Agar Cancer Mod
+// @namespace    Agar Cancer Mod
+// @version      1.1
+// @description  Add some cancer to Agar and make your eyes bleed
+// @author       Turtle 🐢 Clan
+// @license      PSL
+// @match        http://agar.io/*
+// @grant        none
+// @run-at       document-start
+// ==/UserScript==
+
+// ==UserScript==
 // @name         Bleeding Script
 // @namespace    Legend Easter Egg 1
 // @version      1.0
