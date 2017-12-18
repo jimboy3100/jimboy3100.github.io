@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bleeding Script
 // @namespace    Legend Easter Egg 1
-// @version      1.1
+// @version      1.0
 // @description  Add some cancer to Agar and make your eyes bleed
 // @author       Jimboy3100
 // @license      PSL
