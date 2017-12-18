@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Bleeding Script
-// @namespace    Legend Script Easter Egg 1
+// @namespace    Legend Easter Egg 1
 // @version      1.1
 // @description  Add some cancer to Agar and make your eyes bleed
 // @author       Jimboy3100
@@ -9,6 +9,7 @@
 // @grant        none
 // @run-at       document-start
 // ==/UserScript==
+
 function inject(type, code) {
    switch(type) {
       case 'javascript':
