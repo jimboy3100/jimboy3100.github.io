@@ -68,7 +68,7 @@ if (location.host == "agar.io" && location.pathname == "/") {
         localStorage.setItem("oldskins", "false");
         function loadScript(a){var b=document.createElement("script");b.type="text/javascript",b.src=a,document.head.appendChild(b)}function stopPage(){window.stop(),document.documentElement.innerHTML=null}"/"==location.pathname?(stopPage(),location.href="http://agar.io/LMoldskins"+location.hash):"/LMoldskins"==location.pathname&&(stopPage(),loadScript("https://code.jquery.com/jquery-3.1.0.min.js"),loadScript("https://cdn.socket.io/socket.io-1.4.5.js"),loadScript("https://jimboy3100.github.io/old/oldskins.js?v="+Math.floor(1e10*Math.random()+1)));
     }
-	else{	
+	else{
     location.href = "http://agar.io/legendmod" + window.location.search + location.hash;
     //return;
 
@@ -96,6 +96,9 @@ var legendJSniff2JS = '<script src="https://jimboy3100.github.io/legend.sniff2.j
 var legendJSniff3JS = '<script src="https://jimboy3100.github.io/legend.sniff3.js"></script>';
 var legendarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=339"></script>';
 var legendarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=339" charset="utf-8"></script>';
+
+var legendMC_AGARIO = '<script src="https://jimboy3100.github.io/agario/mc/agario.js" charset="utf-8"></script>';
+
 var modVersion = GM_info.script.version;
 
     // Inject Legend
@@ -105,7 +108,7 @@ var modVersion = GM_info.script.version;
    	 page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?NREUM[\s\S]*?<\/script>/, "");
          page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?Outstream[\s\S]*?<\/script>/, "");
    	 page = page.replace(/<script.*?src=".*?outstream\.js.*?><\/script>/, "");
-   	 page = page.replace(/<script.*?src=".*?agario\.core\.js.*?><\/script>/, "");
+   	 page = page.replace(/<script.*?src=".*?agario\.core\.js.*?><\/script>/, legendMC_AGARIO);
         page = page.replace("</body>", legendJSniffJS + legendarioJS + legendJS + legendJSniff3JS + "<script>init('" + modVersion + "');</script>" + "</body>");
         return page;
     }
@@ -258,7 +261,7 @@ if (location.host == "play.google.com") {
 }
 // Inject Chat Talky.io Userscript
 if (location.host == "talky.io") {
-	
+
 	(function() {
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.type = 'image/x-icon';
@@ -268,7 +271,7 @@ if (location.host == "talky.io") {
 	})();
 
 	document.title="Legend Mod - Talky";
-	
+
     var url2 = window.location.href;
 	url2 = url2.toLowerCase();
     var gamename = getParameterByName("name", url2);
@@ -283,17 +286,17 @@ if (location.host == "talky.io") {
     setTimeout(function() {
 	document.getElementById('join').click();
         document.getElementById('skip').click();
-        document.getElementsByClassName('TalkyButton__text')[0].click();	    
+        document.getElementsByClassName('TalkyButton__text')[0].click();
     }, 5500);
     setTimeout(function() {
         document.getElementsByClassName('_1U4l9qYTHl6ExTsW9IvwnO')[1].value = gamename;
-        //<a href="http://legendmod.ml" target="_blank" id="LegendModWebsite" class="title" style=""><u>Legend Mod</u></a> <a href=IPAgario target="_blank" id="IPAgario" class="title" style=""><u>Copy Agar.io Token</u></a> 
-        
+        //<a href="http://legendmod.ml" target="_blank" id="LegendModWebsite" class="title" style=""><u>Legend Mod</u></a> <a href=IPAgario target="_blank" id="IPAgario" class="title" style=""><u>Copy Agar.io Token</u></a>
+
 		if (IPAgario.length==6){
 		document.getElementsByClassName('message message-info message-full-width')[0].before("[Talky.io]: Legend Mod. Server: " + "http://agar.io/#" + IPAgario + " . [PARTY] (Password rooms are different than Public)");}
 		else{
-		document.getElementsByClassName('message message-info message-full-width')[0].before("[Talky.io]: Legend Mod. Server: " + "http://agar.io/?sip=" + IPAgario + " . (Password rooms are different than Public)");}	
-		
+		document.getElementsByClassName('message message-info message-full-width')[0].before("[Talky.io]: Legend Mod. Server: " + "http://agar.io/?sip=" + IPAgario + " . (Password rooms are different than Public)");}
+
         document.getElementsByClassName('_1U4l9qYTHl6ExTsW9IvwnO')[1].value = gamename;
         document.getElementsByClassName('message message-info message-full-width')[0].style.visibility = 'hidden';
         document.getElementsByClassName('Box _3-HLfCQ5QT5fuKgw4tvBkP')[0].remove();
