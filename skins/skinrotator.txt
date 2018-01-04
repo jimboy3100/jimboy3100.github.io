@@ -1,0 +1,24 @@
+https://jimboy3100.github.io/skinrotator.html
+
+Another awesome tool by The Legend Mod Project:
+-Use custom skins by agario AUTO-updateable skin library
+-Design animated skins from the library, choose how whow quick/slow they can must be changed
+-Use generated code as Script on Console
+-Use generated code as your a new Userscript
+
+*This webpages generates code, compatible with all known extensions!
+**Known issues:
+-Name should be used
+-If using Legend Mod, do not use any backgroud because the bold grid will appear. Use Default Template, enable vanilla skins and your name
+-For generated Userscripts compatibility with other mods you may need (for developers):
+...
+ // @grant none
+ // ==/UserScript==
+...
+setInterval(function() { // put this after the above code
+//Put here the rest code
+}, 100); //as 100, it is 0.1 sec, find the exact timing for compatibility
+
+Similar projects (libraries) for all extensions:
+Custom skins: https://jimboy3100.github.io/skins/
+Skin Checker: https://jimboy3100.github.io/skins/skinchecker.html
