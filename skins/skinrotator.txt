@@ -1,6 +1,5 @@
 https://jimboy3100.github.io/skinrotator.html
 
-Another awesome tool by The Legend Mod Project:
 -Use custom skins by agario AUTO-updateable skin library
 -Design animated skins from the library, choose how whow quick/slow they can must be changed
 -Use generated code as Script on Console
