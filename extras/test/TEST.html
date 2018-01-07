@@ -1,0 +1,29 @@
+<html><head></head>
+<body>
+<iframe id="frameID2" src="http://agar.io" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;">
+</iframe>
+<a id="legendmobile" href="executelegendmobile()" class="title">
+<script>
+function executelegendmobile(){
+(function() {var script = document.createElement('script');script.src = 'https://agar-mobile2pc.github.io/agarstick.js?t=MTUxNTMwMDE4MzM5MQ==';document.head.appendChild(script);})();
+}
+var iframe = document.getElementById('frameID'),
+    iframeWin = iframe.contentWindow || iframe,
+    iframeDoc = iframe.contentDocument || iframeWin.document;
+
+window.hello = function () {
+    alert('hello from owner!');
+};
+
+$(iframeDoc).ready(function (event) {
+    iframeDoc.open();
+    iframeDoc.write('iframe here');
+    iframeDoc.write('\<script>alert("hello from iframe!");\<\/script>');
+    iframeDoc.write('\<script>parent.hello();\<\/script>');
+    iframeDoc.close();
+});
+</script>
+<iframe id="frameID" width="200" height="200"></iframe>
+
+
+</body></html>
