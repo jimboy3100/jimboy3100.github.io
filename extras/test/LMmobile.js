@@ -39,7 +39,7 @@
             var variable_8 = "https://i.imgur.com/3efYSTO.png";
             var variable_9 = "https://i.imgur.com/N3q4yKR.png";
 
-            function canvaselement(variable_11, variable_12, variable_13, variable_14, variable_00) {
+            function canvaselement2(variable_11, variable_12, variable_13, variable_14, variable_00) {
                 return Math["pow"](variable_11 - variable_12, 2) + Math["pow"](variable_13 - variable_14, 2) >= variable_00 * variable_00
             }
 
@@ -167,7 +167,7 @@
                 canvaselement["dispatchEvent"](variable_11);
                 variable_0a["style"]["display"] = "inline-block";
                 variable_0b["style"]["display"] = "inline-block";
-                if (canvaselement(variable_0c["x"], variable_7["changedTouches"][0]["clientX"], variable_0c["y"], variable_7["changedTouches"][0]["clientY"], (window["innerHeight"] * 10) / 100) == true) {
+                if (canvaselement2(variable_0c["x"], variable_7["changedTouches"][0]["clientX"], variable_0c["y"], variable_7["changedTouches"][0]["clientY"], (window["innerHeight"] * 10) / 100) == true) {
                     variable_0d = variable_01({
                         "\x78": variable_7["changedTouches"][0]["clientX"] - variable_0c["x"],
                         "\x79": variable_7["changedTouches"][0]["clientY"] - variable_0c["y"]
