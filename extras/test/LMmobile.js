@@ -1,4 +1,3 @@
-(function() {
     var variable_0 = setInterval(function() {
         if (document["getElementsByClassName"]("row")["length"] > 0 && typeof window["core"] !== "undefined") {
             clearInterval(variable_0);
@@ -206,4 +205,3 @@
             document["getElementById"]("adbg")["innerHTML"] = "<br><a id=\"ftbtn\" href=\"http://legendmod.ml/\" target=\"_blank\"><img style=\"margin-top:-20px\" width=\"300\" height=\"250\" src=\"https://jimboy3100.github.io/banners/CropedImage128.gif\"></a><br/><br/>"
         }
     }, 100)
-})()
