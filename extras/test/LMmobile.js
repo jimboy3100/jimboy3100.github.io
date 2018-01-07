@@ -39,7 +39,7 @@
             var variable_8 = "https://i.imgur.com/3efYSTO.png";
             var variable_9 = "https://i.imgur.com/N3q4yKR.png";
 
-            function variable_10(variable_11, variable_12, variable_13, variable_14, variable_00) {
+            function canvaselement(variable_11, variable_12, variable_13, variable_14, variable_00) {
                 return Math["pow"](variable_11 - variable_12, 2) + Math["pow"](variable_13 - variable_14, 2) >= variable_00 * variable_00
             }
 
@@ -126,17 +126,17 @@
                 "\x79": 0
             });
             var variable_0f = window["innerWidth"] / window["innerHeight"];
-            var variable_10 = document["getElementById"]("canvas");
-            variable_10["style"]["width"] = "100vw";
-            variable_10["style"]["height"] = "100vh";
-            variable_10["addEventListener"]("touchstart", function(variable_7) {
+            var canvaselement = document["getElementById"]("canvas");
+            canvaselement["style"]["width"] = "100vw";
+            canvaselement["style"]["height"] = "100vh";
+            canvaselement["addEventListener"]("touchstart", function(variable_7) {
                 var variable_11 = new MouseEvent("mousemove", {
                     "\x63\x6C\x69\x65\x6E\x74\x58": variable_7["changedTouches"][0]["clientX"],
                     "\x63\x6C\x69\x65\x6E\x74\x59": variable_7["changedTouches"][0]["clientY"]
                 });
                 variable_0c["x"] = variable_7["changedTouches"][0]["clientX"];
                 variable_0c["y"] = variable_7["changedTouches"][0]["clientY"];
-                variable_10["dispatchEvent"](variable_11);
+                canvaselement["dispatchEvent"](variable_11);
                 variable_0a["style"]["display"] = "inline-block";
                 variable_0b["style"]["display"] = "inline-block";
                 variable_0a["style"]["left"] = variable_0c["x"] + "px";
@@ -144,7 +144,7 @@
                 variable_0b["style"]["left"] = variable_0c["x"] + "px";
                 variable_0b["style"]["top"] = variable_0c["y"] + "px"
             }, false);
-            variable_10["addEventListener"]("touchend", function(variable_7) {
+            canvaselement["addEventListener"]("touchend", function(variable_7) {
                 var variable_11 = new MouseEvent("mousemove", {
                     "\x63\x6C\x69\x65\x6E\x74\x58": window["innerWidth"] / 2,
                     "\x63\x6C\x69\x65\x6E\x74\x59": window["innerHeight"] / 2
@@ -153,21 +153,21 @@
                     "\x78": 0,
                     "\x79": 0
                 });
-                variable_10["dispatchEvent"](variable_11);
+                canvaselement["dispatchEvent"](variable_11);
                 variable_0a["style"]["display"] = "none";
                 variable_0b["style"]["display"] = "none"
             }, false);
-            variable_10["addEventListener"]("touchmove", function(variable_7) {
+            canvaselement["addEventListener"]("touchmove", function(variable_7) {
                 variable_0e["x"] = -(variable_0c["x"] - variable_7["changedTouches"][0]["clientX"]) * 300;
                 variable_0e["y"] = -(variable_0c["y"] - variable_7["changedTouches"][0]["clientY"]) * 300 * variable_0f;
                 var variable_11 = new MouseEvent("mousemove", {
                     "\x63\x6C\x69\x65\x6E\x74\x58": (window["innerWidth"] / 2) + variable_0e["x"],
                     "\x63\x6C\x69\x65\x6E\x74\x59": (window["innerHeight"] / 2) + variable_0e["y"]
                 });
-                variable_10["dispatchEvent"](variable_11);
+                canvaselement["dispatchEvent"](variable_11);
                 variable_0a["style"]["display"] = "inline-block";
                 variable_0b["style"]["display"] = "inline-block";
-                if (variable_10(variable_0c["x"], variable_7["changedTouches"][0]["clientX"], variable_0c["y"], variable_7["changedTouches"][0]["clientY"], (window["innerHeight"] * 10) / 100) == true) {
+                if (canvaselement(variable_0c["x"], variable_7["changedTouches"][0]["clientX"], variable_0c["y"], variable_7["changedTouches"][0]["clientY"], (window["innerHeight"] * 10) / 100) == true) {
                     variable_0d = variable_01({
                         "\x78": variable_7["changedTouches"][0]["clientX"] - variable_0c["x"],
                         "\x79": variable_7["changedTouches"][0]["clientY"] - variable_0c["y"]
