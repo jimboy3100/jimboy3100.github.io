@@ -1,5 +1,5 @@
 // ==UserScript==
- // @name Join Agario PC party from mobil
+ // @name Join Agario PC party from mobile or Tablet
  // @namespace https://legendmod.ml
  // @version 0.3
  // @description Join PC party from mobile or tablet!
