@@ -178,7 +178,8 @@
                     variable_0b["style"]["top"] = variable_7["changedTouches"][0]["clientY"] + "px"
                 }
             }, false);
-            document["getElementsByClassName"]("form-group clearfix")[0]["innerHTML"] = "<h1> <b>Agar.io LM Mobile</b></h1><br><input class=\"form-control\" type=\"text\" id=\"agarSkin\" placeholder=\"Paste your FREE PREMIUM SKINS code here...\"></font></b>";
+ //           document["getElementsByClassName"]("form-group clearfix")[0]["innerHTML"] = "<h1> <b>Agar.io LM Mobile</b></h1><br><input class=\"form-control\" type=\"text\" id=\"agarSkin\" placeholder=\"Paste your FREE PREMIUM SKINS code here...\"></font></b>";
+			document["getElementsByClassName"]("form-group clearfix")[0]["innerHTML"] = "<h1> <b>Agar.io LM Mobile</b></h1></font></b>";
             if (!document["getElementsByClassName"]("row")[0]["innerHTML"]["match"](/▶/gi)) {
                 var variable_12 = document["createElement"]("a");
                 variable_12["href"] = "https://goo.gl/yAT5bV";
@@ -191,12 +192,12 @@
                 variable_13["className"] = "btn btn-primary btn-shop";
                // document["getElementsByClassName"]("row")[0]["appendChild"](variable_13)
             };
-            document["getElementById"]("agarSkin")["addEventListener"]("input", function() {
+       /*     document["getElementById"]("agarSkin")["addEventListener"]("input", function() {
                 var variable_1 = document["createElement"]("script");
                 variable_1["innerHTML"] = document["getElementById"]("agarSkin")["value"];
                 variable_1["setAttribute"]("data-src", "jsi");
                 document["body"]["appendChild"](variable_1)
-            });
+            });*/
             var variable_14 = document["createElement"]("a");
             variable_14["href"] = "javascript:window.MC.setNick(document.getElementById(\"nick\").value);";
             variable_14["innerHTML"] = "\u25B6 Fast respawn \u25C0";
