@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v1.6
+//v1.7
 var timeslost=0;
 var usedonce=0;
 var usedonce1=0;
@@ -177,7 +177,7 @@ function stopdyinglight(){
 }
 
 
-MC.onPlayerDeath=function(){ 
+olddeath2 = function() {
 $("#minimap-sectors").css('background-image', 'url(https://i.imgur.com/5jIjJVc.gif)');		
 setTimeout(function () {
 $("#minimap-sectors").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightbabyteamboard.png)');		
@@ -196,7 +196,9 @@ toastr["error"](" You get antozine when I say you get it, not one second before!
 timeslost++;
 if(timeslost==3){timeslost=0;}
 }
-
+newDeath=MC.onPlayerDeath; 
+MC.onPlayerDeath= function () {newDeath;olddeath2();}
+	
     // listen for server disconnect
     MC.onDisconnect = function () {		
 		if(timesdisconnected==0){
