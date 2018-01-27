@@ -97,7 +97,7 @@ var legendJSniff3JS = '<script src="https://jimboy3100.github.io/legend.sniff3.j
 var legendarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=339"></script>';
 var legendarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=339" charset="utf-8"></script>';
 
-var legendMC_AGARIO = '<script src="https://jimboy3100.github.io/agario/mc/agario.js" charset="utf-8"></script>';
+// var legendMC_AGARIO = '<script src="https://jimboy3100.github.io/agario/mc/agario.js" charset="utf-8"></script>';
 
 var modVersion = GM_info.script.version;
 
@@ -108,7 +108,7 @@ var modVersion = GM_info.script.version;
    	 page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?NREUM[\s\S]*?<\/script>/, "");
          page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?Outstream[\s\S]*?<\/script>/, "");
    	 page = page.replace(/<script.*?src=".*?outstream\.js.*?><\/script>/, "");
-   	 page = page.replace(/<script.*?src=".*?agario\.core\.js.*?><\/script>/, legendMC_AGARIO);
+ //  	 page = page.replace(/<script.*?src=".*?agario\.core\.js.*?><\/script>/, legendMC_AGARIO);
         page = page.replace("</body>", legendJSniffJS + legendarioJS + legendJS + legendJSniff3JS + "<script>init('" + modVersion + "');</script>" + "</body>");
         return page;
     }
