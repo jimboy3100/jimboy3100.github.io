@@ -8,7 +8,8 @@ $("#menu-footer").after('<div id="legendformIframe" style="background-image: url
     '<p>Your browser does not support iframes.</p>'+
 	'</iframe>'	+
 											'</div></div>'+
-											    '<button id= "Backtomenu" onclick="closecustomskinsIframe(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button></div>');
+											    '<button id= "Backtomenu" onclick="closecustomskinsIframe(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button></div>'+
+												'<button id= "CopyExportedFromAgario" onclick="CopyExportedFromAgario(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">COPY FROM AGARIO</button></div>');
 
 
 									
@@ -19,3 +20,7 @@ $("#quick-menu").show();
 $("#exp-bar").show();
 $("#legendformIframe").remove();
 }
+function closecustomskinsIframe(){
+	copy($("#export-settings").val(););
+	toastr["info"]("Click Update, Paste the Code and click Update", "", { timeOut: 4000, extendedTimeOut: 2000 }).css("width", "200px");
+}	
