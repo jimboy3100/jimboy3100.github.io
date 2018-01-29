@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Legend Agar.io Extension
 // @namespace    Legend Agario Mod
-// @version      2.6
+// @version      2.8
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
 // @homepage     http://www.legendmod.ml
 // @author       Jimboy3100
@@ -219,6 +219,21 @@ if (location.host === "agar.io" && location.pathname === "/") {
         }
     })();
 }
+}
+//runs only for http://ext.fzogar.xyz/ogs settings
+if (location.href == "http://ext.fzogar.xyz/ogs/") {
+    setTimeout(function() {
+    $("#login_form").append('<span style="float: left; font-size: 13px;">Powered by <a target="_blank" href="http://ext.fzogar.xyz/ogs/" style="color: #ffffff;" data-toggle="tooltip" data-title="Legend mod Website" data-placement="left"><u>http://ext.fzogar.xyz/ogs/</u></a></span>');
+    $("#upload-button").after('<input type="submit" id="sendInfo" class="btn btn-default " value="Import in Legend Mod" style="margin-left: 7px;">');
+//    $("#sendInfo").after('<input type="submit" id="sendInfo2" class="btn btn-default " value="Upload from Legend Mod" style="margin-left: 7px;">');
+    $("#sendInfo").click(function() {
+        showpaste();
+//        alert($("#jsonupdate").val());
+        try{window.parent.postMessage("PostedOgarSettings1?datasent="+$("#jsonupdate").val(), "*");
+        } catch (e) {}
+    });
+
+        }, 1100);
 }
 //runs only if play.google.com is a popup, doesnt if directly joined
 if (location.host == "play.google.com") {
