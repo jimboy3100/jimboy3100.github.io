@@ -21,6 +21,6 @@ $("#exp-bar").show();
 $("#legendformIframe").remove();
 }
 function closecustomskinsIframe(){
-	copy($("#export-settings").val(););
+	copy($("#export-settings").val());
 	toastr["info"]("Click Update, Paste the Code and click Update", "", { timeOut: 4000, extendedTimeOut: 2000 }).css("width", "200px");
 }	
