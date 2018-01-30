@@ -28,7 +28,7 @@
 
 /*MIT License
 
-Copyright (c) [2017] [The Legend Mod]
+Copyright (c) [The Legend Mod]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
