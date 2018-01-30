@@ -10,6 +10,7 @@
 // @match        http://agar.io/*
 // @match        https://talky.io/*
 // @match        https://play.google.com/*
+// @match        http://ext.fzogar.xyz/ogs/*
 // @downloadURL  jimboy3100.github.io/legendmod.user.js
 // @updateURL    jimboy3100.github.io/legendmod.user.js
 // @run-at       document-start
