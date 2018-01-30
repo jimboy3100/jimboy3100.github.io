@@ -23,5 +23,5 @@ $("#legendformIframe").remove();
 }
 function CopyExportedFromAgario(){
 	copy($("#export-settings").val());
-	toastr["info"]("JSON Code Copied. Click Paste Button, Paste the Code and click Update Button and Update Orange Button", "", { timeOut: 8000, extendedTimeOut: 8000 }).css("width", "350px");
+	toastr["info"]("JSON Code Copied. Click Paste Button, Paste the Code and click Update Button and Save Settings Button", "", { timeOut: 8000, extendedTimeOut: 8000 }).css("width", "350px");
 }	
