@@ -3,9 +3,9 @@ $("#skins-panel").hide();
 $("#quick-menu").hide();
 $("#exp-bar").hide();
 $("#close-exp-imp").click();
-$("#menu-footer").after('<div id="legendformIframe" style="background-image: url('+legbgpic+'); background-color: '+legbgcolor+'; border: 1px solid black; position:absolute;  height: 700px; width: 640px; margin-top: 0px;margin-left: -240px; ">'+
+$("#menu-footer").after('<div id="legendformIframe" style="background-image: url('+legbgpic+'); background-color: '+legbgcolor+'; border: 1px solid black; position:absolute;  height: 600px; width: 640px; margin-top: 0px;margin-left: -240px; ">'+
 	'<div id="legendformIframe2" style="display:block; margin-left: 10px; margin-right: 10px;">'+ //margin-left: 10px"
-	'<br><div id="legendformIframe3"><iframe id="legendformIframe4" src="http://ext.fzogar.xyz/ogs/" width="620" height="630" scrolling="yes">'+
+	'<br><div id="legendformIframe3"><iframe id="legendformIframe4" src="http://ext.fzogar.xyz/ogs/" width="620" height="530" >'+
     '<p>Your browser does not support iframes.</p>'+
 	'</iframe>'	+
 											'</div></div>'+
