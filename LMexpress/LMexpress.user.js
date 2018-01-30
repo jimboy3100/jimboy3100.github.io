@@ -10,6 +10,7 @@
 // @match        http://agar.io/*
 // @match        https://talky.io/*
 // @match        https://play.google.com/*
+// @match 	 http://ext.fzogar.xyz/ogs/*
 // @downloadURL  jimboy3100.github.io/legendmod.user.js
 // @updateURL    jimboy3100.github.io/legendmod.user.js
 // @run-at       document-start
@@ -209,7 +210,21 @@ if (location.host === "agar.io" && location.pathname === "/") {
         }
     })();
 }
+//runs only for http://ext.fzogar.xyz/ogs settings
+if (location.href == "http://ext.fzogar.xyz/ogs/") {
+    setTimeout(function() {
+    $("#login_form").append('<span style="float: left; font-size: 13px;">Powered by <a target="_blank" href="http://ext.fzogar.xyz/ogs/" style="color: #ffffff;" data-toggle="tooltip" data-title="Legend mod Website" data-placement="left"><u>http://ext.fzogar.xyz/ogs/</u></a></span>');
+    $("#upload-button").after('<input type="submit" id="sendInfo" class="btn btn-default " value="Apply Settings to Mod" style="margin-left: 7px;">');
+//    $("#sendInfo").after('<input type="submit" id="sendInfo2" class="btn btn-default " value="Upload from Legend Mod" style="margin-left: 7px;">');
+    $("#sendInfo").click(function() {
+        showpaste();
+//        alert($("#jsonupdate").val());
+        try{window.parent.postMessage("PostedOgarSettings1?datasent="+$("#jsonupdate").val(), "*");
+        } catch (e) {}
+    });
 
+        }, 1100);
+}
 //runs only if play.google.com is a popup, doesnt if directly joined
 if (location.host == "play.google.com") {
 	window.close();
