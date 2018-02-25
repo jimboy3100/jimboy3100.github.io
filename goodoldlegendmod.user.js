@@ -110,8 +110,11 @@ var modVersion = GM_info.script.version;
         page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?NREUM[\s\S]*?<\/script>/, "");
         page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?Outstream[\s\S]*?<\/script>/, "");
         page = page.replace(/<script[^>]*src="[^"]*outstream\.js[^"]*"[^>]*><\/script>/, "");
-        page = page.replace(/<script[^>]*src="[^"]*agario\.core\.js[^"]*"[^>]*><\/script>/, "");
+
         page = page.replace("</body>", legendJSniffJS + legendarioJS + legendJS + legendJSniff3JS + "<script>init('" + modVersion + "');</script>" + "</body>");
+ //       setTimeout(function() {
+        page = page.replace(/<script[^>]*src="[^"]*agario\.core\.js[^"]*"[^>]*><\/script>/, "");
+ //       }, 2000);
         return page;
     }
 
@@ -123,7 +126,6 @@ var modVersion = GM_info.script.version;
         onload: function(e) {
             var doc = inject(e.responseText);
             document.open();
-//            wait(5000);
             document.write(doc);
             document.close();
         }
