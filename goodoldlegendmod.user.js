@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Legend Agar.io Extension
 // @namespace    Legend Agario Mod
-// @version      3.1
+// @version      3.0
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
 // @homepage     http://www.legendmod.ml
 // @author       Jimboy3100
