@@ -148,7 +148,7 @@ var modVersion = GM_info.script.version;
                 "default": "default",
                 "ja": "日本語",
                 "en-US": "English",
-                "en-US": "Ελληνικά",
+                "el-GR": "Ελληνικά",
                 "zh-CN": "简体中文",
                 "zh-TW": "繁體中文",
                 "ko": "한국어"
