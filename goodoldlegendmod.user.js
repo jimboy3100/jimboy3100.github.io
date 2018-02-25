@@ -105,13 +105,12 @@ var modVersion = GM_info.script.version;
 
     // Inject Legend
     function inject(page) {
-        //    var page = page.replace("</head>", bootstrCSS + cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + bootstrJS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendarioSniffJS + legendJSniff2JS + ytJS + keyJS + "</head>");
-        var page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendJSniff2JS + legendarioSniffJS + ytJS + keyJS + "</head>");
-	    page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?NREUM[\s\S]*?<\/script>/, "");
-	    page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?Outstream[\s\S]*?<\/script>/, "");
-	    page = page.replace(/<script[^>]*src="[^"]*outstream\.js[^"]*"[^>]*><\/script>/, "");
-	    page = page.replace(/<script[^>]*src="[^"]*agario\.core\.js[^"]*"[^>]*><\/script>/, "");
+        var page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendJSniff2JS + legendarioSniffJS + + ytJS + keyJS + "</head>");
  //  	 page = page.replace(/<script.*?src=".*?agario\.core\.js.*?><\/script>/, legendMC_AGARIO);
+        page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?NREUM[\s\S]*?<\/script>/, "");
+        page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?Outstream[\s\S]*?<\/script>/, "");
+        page = page.replace(/<script[^>]*src="[^"]*outstream\.js[^"]*"[^>]*><\/script>/, "");
+        page = page.replace(/<script[^>]*src="[^"]*agario\.core\.js[^"]*"[^>]*><\/script>/, "");
         page = page.replace("</body>", legendJSniffJS + legendarioJS + legendJS + legendJSniff3JS + "<script>init('" + modVersion + "');</script>" + "</body>");
         return page;
     }
@@ -124,6 +123,7 @@ var modVersion = GM_info.script.version;
         onload: function(e) {
             var doc = inject(e.responseText);
             document.open();
+//            wait(5000);
             document.write(doc);
             document.close();
         }
