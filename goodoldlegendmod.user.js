@@ -71,7 +71,9 @@ if (location.host == "agar.io" && location.pathname == "/") {
         function loadScript(a){var b=document.createElement("script");b.type="text/javascript",b.src=a,document.head.appendChild(b)}function stopPage(){window.stop(),document.documentElement.innerHTML=null}"/"==location.pathname?(stopPage(),location.href="http://agar.io/LMoldskins"+location.hash):"/LMoldskins"==location.pathname&&(stopPage(),loadScript("https://code.jquery.com/jquery-3.1.0.min.js"),loadScript("https://cdn.socket.io/socket.io-1.4.5.js"),loadScript("https://jimboy3100.github.io/old/oldskins.js?v="+Math.floor(1e10*Math.random()+1)));
     }
 	else{
-    location.href = "http://agar.io/legendmod" + window.location.search + location.hash;
+        location.href = "http://agar.io/ogario";
+  //  location.href = "http://agar.io/legendmod" + window.location.search + location.hash;
+    document.documentElement.innerHTML = "";
     //return;
 
 
@@ -85,7 +87,7 @@ var perfectCSS = '<link href="https://jimboy3100.github.io/perfect-scrollbar.min
 var faCSS = '<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"></link>';
 var legendarioCSS = '<link href="http://cdn.ogario.ovh/v3/ogario.v3.css?v=339" rel="stylesheet"></link>';
 
-var ytJS = '<script src="https://jimboy3100.github.io/Youtubeiframe_api.js"></script>';
+//var ytJS = '<script src="https://jimboy3100.github.io/Youtubeiframe_api.js"></script>';
 var keyJS = '<script src="https://jimboy3100.github.io/key-event.js"></script>';
 var cpickerJS = '<script src="https://jimboy3100.github.io/bootstrap-colorpicker.min.js"></script>';
 var toastrJS = '<script src="https://jimboy3100.github.io/toastr.min.js"></script>';
@@ -105,15 +107,14 @@ var modVersion = GM_info.script.version;
 
     // Inject Legend
     function inject(page) {
-        var page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendJSniff2JS + legendarioSniffJS + + ytJS + keyJS + "</head>");
+        page = page.replace("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + legendJSniff2JS + legendarioSniffJS + keyJS + "</head>");
  //  	 page = page.replace(/<script.*?src=".*?agario\.core\.js.*?><\/script>/, legendMC_AGARIO);
         page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?NREUM[\s\S]*?<\/script>/, "");
         page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?Outstream[\s\S]*?<\/script>/, "");
         page = page.replace(/<script[^>]*src="[^"]*outstream\.js[^"]*"[^>]*><\/script>/, "");
-
+        var page = page.replace(/<script[^>]*src="[^"]*agario\.core\.js[^"]*"[^>]*><\/script>/, "");
         page = page.replace("</body>", legendJSniffJS + legendarioJS + legendJS + legendJSniff3JS + "<script>init('" + modVersion + "');</script>" + "</body>");
- //       setTimeout(function() {
-        page = page.replace(/<script[^>]*src="[^"]*agario\.core\.js[^"]*"[^>]*><\/script>/, "");
+ //       setTimeout(function() {     
  //       }, 2000);
         return page;
     }
