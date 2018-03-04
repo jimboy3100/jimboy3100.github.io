@@ -213,11 +213,11 @@ if (location.host === "agar.io" && location.pathname === "/") {
 //runs only for http://ext.fzogar.xyz/ogs settings
 if (location.href == "http://ext.fzogar.xyz/ogs/") {
     setTimeout(function() {
-    $("#login_form").append('<span style="float: left; font-size: 13px;">Powered by <a target="_blank" href="http://ext.fzogar.xyz/ogs/" style="color: #ffffff;" data-toggle="tooltip" data-title="Legend mod Website" data-placement="left"><u>http://ext.fzogar.xyz/ogs/</u></a></span>');
-    $("#upload-button").after('<input type="submit" id="sendInfo" class="btn btn-default " value="Apply Settings to Mod" style="margin-left: 7px;">');
+    $("#login_form").append('<span style="float: left; font-size: 13px;">Powered by <a target="_blank" href="http://fzogar.xyz/ogs" style="color: #ffffff;" data-toggle="tooltip" data-title="Legend mod Website" data-placement="left"><u>http://fzogar.xyz/ogs</u></a></span>');
+    $("#Loadbtn").after('<input type="submit" id="sendInfo" class="btn btn-default " value="Apply Settings to Mod" style="margin-left: 7px;">');
 //    $("#sendInfo").after('<input type="submit" id="sendInfo2" class="btn btn-default " value="Upload from Legend Mod" style="margin-left: 7px;">');
     $("#sendInfo").click(function() {
-        showpaste();
+//        showpaste();
 //        alert($("#jsonupdate").val());
         try{window.parent.postMessage("PostedOgarSettings1?datasent="+$("#jsonupdate").val(), "*");
         } catch (e) {}
