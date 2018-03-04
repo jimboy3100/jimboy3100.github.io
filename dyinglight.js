@@ -250,3 +250,13 @@ $("#log").css('background-image', 'url(" https://pbs.twimg.com/media/DDkK94TWAAA
 http://www.clker.com/cliparts/T/X/h/3/B/Z/simple-paint-splatter.svg;
 $("#leaderboard-positions").css('background-image', 'url(" http://rs437.pbsrc.com/albums/qq95/anuksanamoon27/HALLOWEEN/f76e322d.png~c200 ")');
 */
+function playSound(url){
+  var audio = document.createElement('audio');
+  audio.style.display = "none";
+  audio.src = url;
+  audio.autoplay = true;
+  audio.onended = function(){
+    audio.remove() //Remove when played.
+  };
+  document.body.appendChild(audio);
+}
