@@ -136,7 +136,7 @@ var modVersion = GM_info.script.version;
      //   setTimeout(function() {
         page = page.replace(/<script[^>]*src="[^"]*agario\.core\.js[^"]*"[^>]*><\/script>/, "");
 //        page = page.replace("</body>", legendarioJS + legendJS + legendJSniff3JS +  "<script>init('" + modVersion + "');</script>" + "</body>");
- //       setTimeout(function() {     
+ //       setTimeout(function() {
      //   }, 2000);
         return page;
     }
@@ -298,7 +298,7 @@ if (location.href == "http://ext.fzogar.xyz/ogs/") {
     $("#Loadbtn").after('<input type="submit" id="sendInfo" class="btn btn-default " value="Apply Settings to Mod" style="margin-left: 7px;">');
 //    $("#sendInfo").after('<input type="submit" id="sendInfo2" class="btn btn-default " value="Upload from Legend Mod" style="margin-left: 7px;">');
     $("#sendInfo").click(function() {
-        showpaste();
+//        showpaste();
 //        alert($("#jsonupdate").val());
         try{window.parent.postMessage("PostedOgarSettings1?datasent="+$("#jsonupdate").val(), "*");
         } catch (e) {}
