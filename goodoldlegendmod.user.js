@@ -154,7 +154,7 @@ var modVersion = GM_info.script.version;
             document.write("</body>", legendarioJS + legendJS + legendJSniff3JS +  "<script>init('" + modVersion + "');</script>" + "</body>");
 
             document.close();
-                }, 1000);
+                }, 1500);
         }
     });
 
