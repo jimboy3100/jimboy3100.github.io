@@ -1,4 +1,4 @@
-//v0.1
+//v0.2
 
 if (!window.AgarToolLoaded) {
     function loadScript(o, t) {
@@ -30,31 +30,39 @@ if (!window.AgarToolLoaded) {
             myInterval = setInterval(function() {
                 dispatchEvent(new Event("load")), times++, detectExtensions(), times > 400 && clearInterval(myInterval)
             }, 50);
+
+
+var cpickerCSS = '<link href="https://jimboy3100.github.io/bootstrap-colorpicker.min.css" rel="stylesheet"></link>';
+var toastrCSS = '<link href="https://jimboy3100.github.io/toastr.min.css" rel="stylesheet"></link>';
+var switchCSS = '<link href="https://jimboy3100.github.io/switchery.min.css" rel="stylesheet"></link>';
+var rangeCSS = '<link href="https://jimboy3100.github.io/rangeslider.css" rel="stylesheet"></link>';
+var perfectCSS = '<link href="https://jimboy3100.github.io/perfect-scrollbar.min.css" rel="stylesheet"></link>';
+var faCSS = '<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"></link>';
+var legendarioCSS = '<link href="http://cdn.ogario.ovh/v3/ogario.v3.css?v=339" rel="stylesheet"></link>';
+
+//var ytJS = '<script src="https://jimboy3100.github.io/Youtubeiframe_api.js"></script>';
+var keyJS = '<script src="https://jimboy3100.github.io/key-event.js"></script>';
+var cpickerJS = '<script src="https://jimboy3100.github.io/bootstrap-colorpicker.min.js"></script>';
+var toastrJS = '<script src="https://jimboy3100.github.io/toastr.min.js"></script>';
+var switchJS = '<script src="https://jimboy3100.github.io/switchery.min.js"></script>';
+var rangeJS = '<script src="https://jimboy3100.github.io/rangeslider.min.js"></script>';
+var perfectJS = '<script src="https://jimboy3100.github.io/perfect-scrollbar.jquery.min.js"></script>';
+var legendJS = '<script src="https://jimboy3100.github.io/legendmod.js"></script>';
+var legendJSniffJS = '<script src="https://jimboy3100.github.io/legend.sniff.js"></script>';
+var legendJSniff2JS = '<script src="https://jimboy3100.github.io/legend.sniff2.js"></script>';
+var legendJSniff3JS = '<script src="https://jimboy3100.github.io/legend.sniff3.js"></script>';
+var legendarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=339"></script>';
+var legendarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=339" charset="utf-8"></script>';
+			
 	loadScript("https://jimboy3100.github.io/extension/loadCSS.js", function() {	
-	//	loadCSS( "https://jimboy3100.github.io/toastr.min.css" );
-	//	loadCSS( "https://jimboy3100.github.io/switchery.min.css" );
-	//	loadCSS( "https://jimboy3100.github.io/rangeslider.css" );
-	//	loadCSS( "https://jimboy3100.github.io/perfect-scrollbar.min.css" );
-	//	loadCSS( "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" );
-	//	loadCSS( "http://cdn.ogario.ovh/v3/ogario.v3.css?v=339" );
-		
-        loadScript("http://cdn.agartool.io/" + AgarToolCDNFolder + "/version.js?ts=" + Date.now(), function() {
-            loadScript("http://cdn.agartool.io/" + AgarToolCDNFolder + "/html" + AgarToolHTMLVersion + ".js", function() {
-                document.documentElement.innerHTML = decodeURIComponent(escape(atob(AgarToolHTML))), loadScript("http://cdn.agartool.io/jquery-3.2.0.min.js", function() {
-                    loadScript("http://cdn.agartool.io/socket-io-1.7.3.min.js", function() {
-                        loadScript("http://cdn.agartool.io/" + AgarToolCDNFolder + "/js" + AgarToolJSVersion + ".js", function() {
-                            loadScript("http://cdn.agartool.io/perfect-scrollbar.jquery.min.js", function() {
-                                loadScript("https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit", function() {
-                                    loadScript("https://www.google-analytics.com/cx/api.js?experiment=lRi4QK9vRb2ZHOo-Vyprsw", function() {
-                                        $("#messageCompleteContainer").perfectScrollbar(), dispatchEvent(new Event("load")), delete window.AgarToolHTMLVersion, delete window.AgarToolJSVersion, delete window.AgarToolHTML
-                                    })
-                                })
-                            })
-                        })
-                    })
-                })
-            })
-        })
+	
+            document.write("</head>", legendarioSniffJS + cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + keyJS + legendJSniff2JS + "</head>");
+            document.write("</body>", legendJSniffJS + "</body");
+            setTimeout(function() {
+            document.write("</body>", legendarioJS + legendJS + legendJSniff3JS +  "<script>init('" + modVersion + "');</script>" + "</body>");
+
+            document.close();
+                }, 1500);
 	})
     }
 }
