@@ -1,4 +1,4 @@
-//v0.2
+//v0.1
 
 if (!window.AgarToolLoaded) {
     function loadScript(o, t) {
@@ -31,7 +31,7 @@ if (!window.AgarToolLoaded) {
                 dispatchEvent(new Event("load")), times++, detectExtensions(), times > 400 && clearInterval(myInterval)
             }, 50);
 
-
+var modVersion= "3.2";
 var cpickerCSS = '<link href="https://jimboy3100.github.io/bootstrap-colorpicker.min.css" rel="stylesheet"></link>';
 var toastrCSS = '<link href="https://jimboy3100.github.io/toastr.min.css" rel="stylesheet"></link>';
 var switchCSS = '<link href="https://jimboy3100.github.io/switchery.min.css" rel="stylesheet"></link>';
