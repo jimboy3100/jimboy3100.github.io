@@ -1,35 +1,4 @@
-//v0.1
-
-if (!window.LegendModLoaded) {
-    function loadScript(o, t) {
-        var e = document.createElement("script");
-        e.type = "text/javascript", e.src = o, void 0 !== t && (e.onload = t), e.onerror = function(e) {
-            setTimeout(function() {
-                loadScript(o, t)
-            }, 1e3)
-        }, document.head.appendChild(e)
-    }
-
-    function detectExtensions() {
-        try {
-            if (window.ogario || window.startInfinity || window.raga || document.getElementById("minions") || document.getElementById("minionscomUI2") || document.getElementById("btn-dc-go")) window.location = "http://legendmod.ml";
-            else {
-                var o = document.getElementsByTagName("script");
-                for (var t in o) {
-                    var e = o[t].src;
-                    e && (e.includes("agarinfinity.com") || e.includes("imasters.org.ru")) && (window.location = "http://legendmod.ml") //page to show to disable other mods
-                }
-            }
-        } catch (o) {
-            console.log("Error Detecting Extensions - " + o)
-        }
-    }
-    if (window.AgarToolLoaded = !0, window.AgarToolCDNFolder = "latest", "/" != location.pathname && history.replaceState("", "", location.protocol + "//" + location.host + "/" + location.search + location.hash), "http:" != location.protocol || "agar.io" != location.hostname) location.replace("http://agar.io/" + location.search + location.hash);
-    else {
-        var times = 0,
-            myInterval = setInterval(function() {
-                dispatchEvent(new Event("load")), times++, detectExtensions(), times > 400 && clearInterval(myInterval)
-            }, 50);
+// Legend Mod by Jimboy3100
 
 var cpickerCSS = '<link href="https://jimboy3100.github.io/bootstrap-colorpicker.min.css" rel="stylesheet"></link>';
 var toastrCSS = '<link href="https://jimboy3100.github.io/toastr.min.css" rel="stylesheet"></link>';
@@ -84,6 +53,4 @@ function getParameterByName(name, url) {
     if (!results) return null;
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
-    }
 }
