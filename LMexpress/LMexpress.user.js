@@ -231,7 +231,7 @@ if (location.host == "play.google.com") {
 }
 // Inject Chat Talky.io Userscript
 if (location.host == "talky.io") {
-	
+
 	(function() {
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.type = 'image/x-icon';
@@ -241,48 +241,39 @@ if (location.host == "talky.io") {
 	})();
 
 	document.title="Legend Mod - Talky";
-	
+
     var url2 = window.location.href;
-    url2 = url2.toLowerCase();
+	url2 = url2.toLowerCase();
     var gamename = getParameterByName("name", url2);
     var IPAgario = getParameterByName("ip", url2);
+    var IPtoken = getParameterByName("token", url2);
+    setTimeout(function() {
+       // document.getElementsByClassName('text__NUZ8yEiB TalkyButton__text _2jD5C')[0].click();
+        document.getElementById('join').click();
+    }, 4000);
 
     setTimeout(function() {
-        document.getElementsByClassName('_26dP_7FWLFRnvW8hs-AIzR')[0].remove();
-        document.getElementsByClassName('_26dP_7FWLFRnvW8hs-AIzR')[0].remove();
-        document.getElementsByClassName('_26dP_7FWLFRnvW8hs-AIzR')[0].remove();
-    }, 6100);
+        document.getElementsByClassName('create-room-form-input')[0].value = IPtoken;
+	//document.getElementById('join').click();
+        document.getElementsByClassName('create-room-form-button button button-default button-undefined')[0].click();
+        document.getElementById('skip').click();
+        document.getElementsByClassName('TalkyButton__text')[0].click();
+    }, 2000);
+    setTimeout(function() {
+        document.getElementsByClassName('SDuUr')[1].value = gamename;
+        //<a href="http://legendmod.ml" target="_blank" id="LegendModWebsite" class="title" style=""><u>Legend Mod</u></a> <a href=IPAgario target="_blank" id="IPAgario" class="title" style=""><u>Copy Agar.io Token</u></a>
 
-    setTimeout(function() {
-	document.getElementById('join').click();
-    document.getElementById('skip').click();
-    document.getElementsByClassName('TalkyButton__text')[0].click();
-    }, 5500);
-    setTimeout(function() {
-        document.getElementsByClassName('_1U4l9')[1].value = gamename;
-        //<a href="http://legendmod.ml" target="_blank" id="LegendModWebsite" class="title" style=""><u>Legend Mod</u></a> <a href=IPAgario target="_blank" id="IPAgario" class="title" style=""><u>Copy Agar.io Token</u></a> 
-        
-		if (IPAgario.length==28){
-		document.getElementsByClassName('message message-info message-full-width')[0].before("[Talky.io]: Legend Mod. Server: " + "http://agar.io/#" + IPAgario + " . [PARTY] (Password rooms are different than Public)");}
+		if (IPAgario.length==6){
+		document.getElementsByClassName('_24sME message message-info message-full-width')[0].before("[Talky.io]: Legend Mod. Server: " + "http://agar.io/#" + IPAgario + " . [PARTY] (Password rooms are different than Public)");}
 		else{
-		document.getElementsByClassName('message message-info message-full-width')[0].before("[Talky.io]: Legend Mod. Server: " + "http://agar.io/?sip=" + IPAgario + " . (Password rooms are different than Public)");}	
-		
-        document.getElementsByClassName('_1U4l9qYTHl6ExTsW9IvwnO')[1].value = gamename;
+		document.getElementsByClassName('_24sME message message-info message-full-width')[0].before("[Talky.io]: Legend Mod. Server: " + "http://agar.io/?sip=" + IPAgario + " . (Password rooms are different than Public)");}
 
+        document.getElementsByClassName('_1U4l9qYTHl6ExTsW9IvwnO')[1].value = gamename;
+        document.getElementsByClassName('message message-info message-full-width')[0].style.visibility = 'hidden';
+        document.getElementsByClassName('_24sME message message-info message-full-width')[0].remove();
         document.getElementsByClassName('Box _3-HLf')[0].remove();
-        document.getElementsByClassName('_2kpBd')[0].remove();
-		document.getElementsByClassName('Box _2vX5-')[0].remove();
-		document.getElementsByClassName('message message-info message-full-width')[0].style.visibility = 'hidden';
-		document.getElementsByClassName('message message-info message-full-width')[0].style.visibility = 'hidden';
 
     }, 6000);
-      setTimeout(function() {
-		document.getElementsByClassName('Box _3-HLf')[0].remove();
-        document.getElementsByClassName('_2kpBd')[0].remove();
-		document.getElementsByClassName('Box _2vX5-')[0].remove();
-		document.getElementsByClassName('message message-info message-full-width')[0].style.visibility = 'hidden';
-		document.getElementsByClassName('message message-info message-full-width')[0].style.visibility = 'hidden';  
-		}, 6200);
 }
 
 //example: https://talky.io/dddd?name=&?ip=
