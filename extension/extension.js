@@ -1,6 +1,6 @@
 //v0.1
 
-if (!window.AgarToolLoaded) {
+if (!window.LegendModLoaded) {
     function loadScript(o, t) {
         var e = document.createElement("script");
         e.type = "text/javascript", e.src = o, void 0 !== t && (e.onload = t), e.onerror = function(e) {
