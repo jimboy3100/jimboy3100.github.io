@@ -30,7 +30,7 @@ if (!window.AgarToolLoaded) {
             myInterval = setInterval(function() {
                 dispatchEvent(new Event("load")), times++, detectExtensions(), times > 400 && clearInterval(myInterval)
             }, 50);
-		loadScript("https://raw.githubusercontent.com/filamentgroup/loadCSS/master/src/loadCSS.js", function() {	
+	loadScript("https://jimboy3100.github.io/extension/loadCSS.js", function() {	
         loadScript("http://cdn.agartool.io/" + AgarToolCDNFolder + "/version.js?ts=" + Date.now(), function() {
             loadScript("http://cdn.agartool.io/" + AgarToolCDNFolder + "/html" + AgarToolHTMLVersion + ".js", function() {
                 document.documentElement.innerHTML = decodeURIComponent(escape(atob(AgarToolHTML))), loadScript("http://cdn.agartool.io/jquery-3.2.0.min.js", function() {
@@ -48,6 +48,6 @@ if (!window.AgarToolLoaded) {
                 })
             })
         })
-		})
+	})
     }
 }
