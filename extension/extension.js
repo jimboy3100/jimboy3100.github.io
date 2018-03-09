@@ -54,15 +54,15 @@ var legendJSniff3JS = '<script src="https://jimboy3100.github.io/legend.sniff3.j
 var legendarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=339"></script>';
 var legendarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=339" charset="utf-8"></script>';
 			
-	loadScript("https://jimboy3100.github.io/extension/loadCSS.js", function() {	
+	// loadScript("https://jimboy3100.github.io/extension/loadCSS.js", function() {	
 	
-            document.write("</head>", legendarioSniffJS + cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + keyJS + legendJSniff2JS + "</head>");
-            document.write("</body>", legendJSniffJS + "</body");
-            setTimeout(function() {
-            document.write("</body>", legendarioJS + legendJS + legendJSniff3JS +  "<script>init('" + modVersion + "');</script>" + "</body>");
+        //    document.write("</head>", legendarioSniffJS + cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + keyJS + legendJSniff2JS + "</head>");
+       //     document.write("</body>", legendJSniffJS + "</body");
+       //     setTimeout(function() {
+       //     document.write("</body>", legendarioJS + legendJS + legendJSniff3JS +  "<script>init('" + modVersion + "');</script>" + "</body>");
 
-            document.close();
-                }, 1500);
-	})
-    }
+       //     document.close();
+         //       }, 1500);
+	//})
+   // }
 }
