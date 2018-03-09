@@ -64,5 +64,5 @@ var legendarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=339" ch
        //     document.close();
          //       }, 1500);
 	//})
-   // }
+    }
 }
