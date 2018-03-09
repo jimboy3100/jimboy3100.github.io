@@ -1,4 +1,4 @@
-//v0.1
+//v0.11
 
 if (!window.AgarToolLoaded) {
     function loadScript(o, t) {
@@ -12,12 +12,12 @@ if (!window.AgarToolLoaded) {
 
     function detectExtensions() {
         try {
-            if (window.ogario || window.startInfinity || window.raga || document.getElementById("minions") || document.getElementById("minionscomUI2") || document.getElementById("btn-dc-go")) window.location = "https://www.agartool.io/?integrity";
+            if (window.ogario || window.startInfinity || window.raga || document.getElementById("minions") || document.getElementById("minionscomUI2") || document.getElementById("btn-dc-go")) window.location = "http://legendmod.ml";
             else {
                 var o = document.getElementsByTagName("script");
                 for (var t in o) {
                     var e = o[t].src;
-                    e && (e.includes("ogario.ovh") || e.includes("agarinfinity.com") || e.includes("imasters.org.ru")) && (window.location = "https://www.agartool.io/?integrity")
+                    e && (e.includes("agarinfinity.com") || e.includes("imasters.org.ru")) && (window.location = "http://legendmod.ml") //page to show to disable other mods
                 }
             }
         } catch (o) {
@@ -31,6 +31,13 @@ if (!window.AgarToolLoaded) {
                 dispatchEvent(new Event("load")), times++, detectExtensions(), times > 400 && clearInterval(myInterval)
             }, 50);
 	loadScript("https://jimboy3100.github.io/extension/loadCSS.js", function() {	
+		loadCSS( "https://jimboy3100.github.io/toastr.min.css" );
+		loadCSS( "https://jimboy3100.github.io/switchery.min.css" );
+		loadCSS( "https://jimboy3100.github.io/rangeslider.css" );
+		loadCSS( "https://jimboy3100.github.io/perfect-scrollbar.min.css" );
+		loadCSS( "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" );
+		loadCSS( "http://cdn.ogario.ovh/v3/ogario.v3.css?v=339" );
+		
         loadScript("http://cdn.agartool.io/" + AgarToolCDNFolder + "/version.js?ts=" + Date.now(), function() {
             loadScript("http://cdn.agartool.io/" + AgarToolCDNFolder + "/html" + AgarToolHTMLVersion + ".js", function() {
                 document.documentElement.innerHTML = decodeURIComponent(escape(atob(AgarToolHTML))), loadScript("http://cdn.agartool.io/jquery-3.2.0.min.js", function() {
