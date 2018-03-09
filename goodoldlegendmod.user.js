@@ -323,31 +323,32 @@ if (location.host == "talky.io") {
 	url2 = url2.toLowerCase();
     var gamename = getParameterByName("name", url2);
     var IPAgario = getParameterByName("ip", url2);
+    var IPtoken = getParameterByName("token", url2);
+    setTimeout(function() {
+       // document.getElementsByClassName('text__NUZ8yEiB TalkyButton__text _2jD5C')[0].click();
+        document.getElementById('join').click();
+    }, 4000);
 
     setTimeout(function() {
-        document.getElementsByClassName('_26dP_7FWLFRnvW8hs-AIzR')[0].remove();
-        document.getElementsByClassName('_26dP_7FWLFRnvW8hs-AIzR')[0].remove();
-        document.getElementsByClassName('_26dP_7FWLFRnvW8hs-AIzR')[0].remove();
-    }, 6100);
-
-    setTimeout(function() {
-	document.getElementById('join').click();
+        document.getElementsByClassName('create-room-form-input')[0].value = IPtoken;
+	//document.getElementById('join').click();
+        document.getElementsByClassName('create-room-form-button button button-default button-undefined')[0].click();
         document.getElementById('skip').click();
         document.getElementsByClassName('TalkyButton__text')[0].click();
-    }, 5500);
+    }, 2000);
     setTimeout(function() {
-        document.getElementsByClassName('_1U4l9qYTHl6ExTsW9IvwnO')[1].value = gamename;
+        document.getElementsByClassName('SDuUr')[1].value = gamename;
         //<a href="http://legendmod.ml" target="_blank" id="LegendModWebsite" class="title" style=""><u>Legend Mod</u></a> <a href=IPAgario target="_blank" id="IPAgario" class="title" style=""><u>Copy Agar.io Token</u></a>
 
 		if (IPAgario.length==6){
-		document.getElementsByClassName('message message-info message-full-width')[0].before("[Talky.io]: Legend Mod. Server: " + "http://agar.io/#" + IPAgario + " . [PARTY] (Password rooms are different than Public)");}
+		document.getElementsByClassName('_24sME message message-info message-full-width')[0].before("[Talky.io]: Legend Mod. Server: " + "http://agar.io/#" + IPAgario + " . [PARTY] (Password rooms are different than Public)");}
 		else{
-		document.getElementsByClassName('message message-info message-full-width')[0].before("[Talky.io]: Legend Mod. Server: " + "http://agar.io/?sip=" + IPAgario + " . (Password rooms are different than Public)");}
+		document.getElementsByClassName('_24sME message message-info message-full-width')[0].before("[Talky.io]: Legend Mod. Server: " + "http://agar.io/?sip=" + IPAgario + " . (Password rooms are different than Public)");}
 
         document.getElementsByClassName('_1U4l9qYTHl6ExTsW9IvwnO')[1].value = gamename;
         document.getElementsByClassName('message message-info message-full-width')[0].style.visibility = 'hidden';
-        document.getElementsByClassName('Box _3-HLfCQ5QT5fuKgw4tvBkP')[0].remove();
-        document.getElementsByClassName('-ZMXacQm9s80kTx3I-A47')[0].remove();
+        document.getElementsByClassName('_24sME message message-info message-full-width')[0].remove();
+        document.getElementsByClassName('Box _3-HLf')[0].remove();
 
     }, 6000);
 }
