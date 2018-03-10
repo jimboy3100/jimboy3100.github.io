@@ -154,16 +154,14 @@ function reqListenerAgar () {
     window.stop();
     document.documentElement.innerHTML = "";
     document.open();
+    //document.write(doc);
+    document.write("</head>", legendarioSniffJS + cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + keyJS + legendJSniff2JS + "</head>");
     document.write(doc);
-  //console.log(this.responseText);
-            document.write("</head>", legendarioSniffJS + cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + keyJS + legendJSniff2JS + "</head>");
-            
-            setTimeout(function() {
-	    document.write("</body>", legendJSniffJS + "</body");
-            document.write("</body>", legendarioJS + legendJS + legendJSniff3JS +  "<script>init('" + modVersion + "');</script>" + "</body>");
-
+    document.write("</body>", legendJSniffJS + "</body");
+    setTimeout(function() {
+  	 document.write("</body>", legendarioJS + legendJS + legendJSniff3JS +  "<script>init('" + modVersion + "');</script>" + "</body>");
             document.close();
-                }, 2500);
+     }, 1500);
 }    
 
 function reqListener () {
