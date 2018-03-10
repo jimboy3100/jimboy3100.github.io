@@ -162,7 +162,7 @@ function reqListenerAgar () {
             document.write("</body>", legendarioJS + legendJS + legendJSniff3JS +  "<script>init('" + modVersion + "');</script>" + "</body>");
 
             document.close();
-                }, 2500);
+                }, 4500);
 }    
 
 function reqListener () {
