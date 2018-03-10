@@ -81,16 +81,15 @@ if (location.href == "http://ext.fzogar.xyz/ogs/") {
 
         }, 1100);
 }
+
 //runs only if play.google.com is a popup, doesnt if directly joined
 if (location.host == "play.google.com") {
 	window.close();
 }
+
 // Inject Chat Talky.io Userscript
 if (location.host == "talky.io") {
-	var oReq = new XMLHttpRequest();
-	oReq.addEventListener("load", reqListener);
-	oReq.open("GET", "https://talky.io/");
-	oReq.send();
+
 	(function() {
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.type = 'image/x-icon';
@@ -106,6 +105,13 @@ if (location.host == "talky.io") {
     var gamename = getParameterByName("name", url2);
     var IPAgario = getParameterByName("ip", url2);
     var IPtoken = getParameterByName("token", url2);
+	
+	if (window.location.href.indexOf("token") != -1){
+	var oReq = new XMLHttpRequest();
+	oReq.addEventListener("load", reqListener);
+	oReq.open("GET", "https://talky.io/");
+	oReq.send();
+	}	
     setTimeout(function() {
        // document.getElementsByClassName('text__NUZ8yEiB TalkyButton__text _2jD5C')[0].click();
         document.getElementById('join').click();
