@@ -61,7 +61,7 @@ oReq.send();
 	}
 	
 }
-
+/*
 //runs only for http://ext.fzogar.xyz/ogs settings
 if (location.href == "http://ext.fzogar.xyz/ogs/") {
     setTimeout(function() {
@@ -127,7 +127,7 @@ if (location.host == "talky.io") {
 
     }, 6000);
 }
-
+*/
 //example: https://talky.io/dddd?name=&?ip=
 
 function reqListener () {
