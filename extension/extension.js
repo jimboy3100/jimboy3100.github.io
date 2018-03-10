@@ -55,15 +55,19 @@ var legendarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=339" ch
 var modVersion = "3.2";
 
 var oReq = new XMLHttpRequest();
-oReq.addEventListener("load", reqListener);
+oReq.addEventListener("load", reqListenerAgar);
 oReq.open("GET", "http://agar.io");
 oReq.send();
 	}
 	
 }
-/*
+
 //runs only for http://ext.fzogar.xyz/ogs settings
 if (location.href == "http://ext.fzogar.xyz/ogs/") {
+	var oReq = new XMLHttpRequest();
+	oReq.addEventListener("load", reqListener);
+	oReq.open("GET", "http://ext.fzogar.xyz/ogs/");
+	oReq.send();
     setTimeout(function() {
     $("#login_form").append('<span style="float: left; font-size: 13px;">Powered by <a target="_blank" href="http://fzogar.xyz/ogs" style="color: #ffffff;" data-toggle="tooltip" data-title="Legend mod Website" data-placement="left"><u>http://fzogar.xyz/ogs</u></a></span>');
     $("#Loadbtn").after('<input type="submit" id="sendInfo" class="btn btn-default " value="Apply Settings to Mod" style="margin-left: 7px;">');
@@ -83,7 +87,10 @@ if (location.host == "play.google.com") {
 }
 // Inject Chat Talky.io Userscript
 if (location.host == "talky.io") {
-
+	var oReq = new XMLHttpRequest();
+	oReq.addEventListener("load", reqListener);
+	oReq.open("GET", "https://talky.io/");
+	oReq.send();
 	(function() {
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.type = 'image/x-icon';
@@ -127,10 +134,10 @@ if (location.host == "talky.io") {
 
     }, 6000);
 }
-*/
+
 //example: https://talky.io/dddd?name=&?ip=
 
-function reqListener () {
+function reqListenerAgar () {
     var doc=this.responseText;
     window.stop();
     document.documentElement.innerHTML = "";
@@ -145,6 +152,16 @@ function reqListener () {
             document.close();
                 }, 1500);
 }    
+
+function reqListener () {
+    var doc=this.responseText;
+    window.stop();
+    document.documentElement.innerHTML = "";
+    document.open();
+    document.write(doc);
+    document.close();              
+}    
+
 function getParameterByName(name, url) {
     if (!url) url = window.location.href;
     name = name.replace(/[\[\]]/g, "\\$&");
