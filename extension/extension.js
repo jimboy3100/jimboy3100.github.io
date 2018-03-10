@@ -156,12 +156,10 @@ function reqListenerAgar () {
     document.open();
     document.write(doc);
   //console.log(this.responseText);
-	
+	document.write("</head>", legendarioSniffJS + "</head>");
         document.write("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + keyJS + legendJSniff2JS + keyJS + "</head>");          
-	setTimeout(function() {
-	document.write("</head>", legendarioSniffJS + legendJSniff2JS + "</head>");
-	document.write("</body>", legendJSniffJS + "</body");
-	}, 1000);	
+	document.write("</head>", legendJSniff2JS + "</head>");
+	document.write("</body>", legendJSniffJS + "</body");	
             setTimeout(function() {
             document.write("</body>", legendarioJS + legendJS + legendJSniff3JS +  "<script>init('" + modVersion + "');</script>" + "</body>");
             document.close();
