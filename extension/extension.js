@@ -56,7 +56,7 @@ var modVersion = "3.2";
 
 var oReq = new XMLHttpRequest();
 oReq.addEventListener("load", reqListenerAgar);
-oReq.open("GET", "http://agar.io");
+oReq.open("GET", location.href);
 oReq.send();
 	}
 	
@@ -66,7 +66,7 @@ oReq.send();
 if (location.href == "http://ext.fzogar.xyz/ogs/") {
 	var oReq = new XMLHttpRequest();
 	oReq.addEventListener("load", reqListener);
-	oReq.open("GET", "http://ext.fzogar.xyz/ogs/");
+	oReq.open("GET", location.href);
 	oReq.send();
     setTimeout(function() {
     $("#login_form").append('<span style="float: left; font-size: 13px;">Powered by <a target="_blank" href="http://fzogar.xyz/ogs" style="color: #ffffff;" data-toggle="tooltip" data-title="Legend mod Website" data-placement="left"><u>http://fzogar.xyz/ogs</u></a></span>');
