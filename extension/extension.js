@@ -52,7 +52,7 @@ var legendJSniff2JS = '<script src="https://jimboy3100.github.io/legend.sniff2.j
 var legendJSniff3JS = '<script src="https://jimboy3100.github.io/legend.sniff3.js"></script>';
 var legendarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=339"></script>';
 var legendarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=339" charset="utf-8"></script>';
-var modVersion = "3.2";
+var modVersion = "3.1";
 
 var oReq = new XMLHttpRequest();
 oReq.addEventListener("load", reqListenerAgar);
@@ -156,13 +156,16 @@ function reqListenerAgar () {
     document.open();
     document.write(doc);
   //console.log(this.responseText);
-            document.write("</head>", legendarioSniffJS + cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + keyJS + legendJSniff2JS + "</head>");
-            document.write("</body>", legendJSniffJS + "</body");
+	
+        document.write("</head>", cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + keyJS + legendJSniff2JS + keyJS + "</head>");          
+	setTimeout(function() {
+	document.write("</head>", legendarioSniffJS + legendJSniff2JS + "</head>");
+	document.write("</body>", legendJSniffJS + "</body");
+	}, 1000);	
             setTimeout(function() {
             document.write("</body>", legendarioJS + legendJS + legendJSniff3JS +  "<script>init('" + modVersion + "');</script>" + "</body>");
-
             document.close();
-                }, 4500);
+                }, 2500);
 }    
 
 function reqListener () {
