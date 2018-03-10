@@ -75,6 +75,7 @@ $("#skinButton").click();
 $("#imagebig").remove();
 $(".center-container").hide();
 $("#dailyquests-panel").hide();
+$("#v-ex-menu").hide();
 $("#overlays").hide();
 $(".radio-module").hide();
 $("#service-message-area").hide();
