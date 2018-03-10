@@ -17,6 +17,7 @@ $("#imagebig").remove();
 $(".center-container").hide();
 $("#dailyquests-panel").hide();
 $("#overlays").hide();
+$("#v-ex-menu").hide();
 $(".radio-module").hide();
 $("#service-message-area").hide();
 $("#leftPanel>div.agario-panel.agario-side-panel.agario-shop-panel").show();
