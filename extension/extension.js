@@ -56,7 +56,7 @@ var modVersion = "3.2";
 
 var oReq = new XMLHttpRequest();
 oReq.addEventListener("load", reqListenerAgar);
-oReq.open("GET", location.href);
+oReq.open("GET", "http://agar.io/");
 oReq.send();
 	}
 	
