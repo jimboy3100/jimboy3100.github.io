@@ -112,6 +112,12 @@ if (location.host == "talky.io") {
 	oReq.open("GET", "https://talky.io/");
 	oReq.send();
 	}	
+	else{
+	var oReq = new XMLHttpRequest();
+	oReq.addEventListener("load", reqListener);
+	oReq.open("GET", location.href);
+	oReq.send();		
+	}
     setTimeout(function() {
        // document.getElementsByClassName('text__NUZ8yEiB TalkyButton__text _2jD5C')[0].click();
         document.getElementById('join').click();
