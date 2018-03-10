@@ -52,7 +52,7 @@ var legendJSniff2JS = '<script src="https://jimboy3100.github.io/legend.sniff2.j
 var legendJSniff3JS = '<script src="https://jimboy3100.github.io/legend.sniff3.js"></script>';
 var legendarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=339"></script>';
 var legendarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=339" charset="utf-8"></script>';
-var modVersion = "3.2";
+var modVersion = "3.1";
 
 var oReq = new XMLHttpRequest();
 oReq.addEventListener("load", reqListenerAgar);
