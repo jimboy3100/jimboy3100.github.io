@@ -196,11 +196,9 @@ toastr["error"](" You get antozine when I say you get it, not one second before!
 timeslost++;
 if(timeslost==3){timeslost=0;}
 }
-newDeath=MC.onPlayerDeath; 
-MC.onPlayerDeath= function () {newDeath;olddeath2();}
-	
+
     // listen for server disconnect
-    MC.onDisconnect = function () {		
+    olddisconnect = function () {		
 		if(timesdisconnected==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglingsong7.mp3");
 //		toastr["error"]("Disconnected :(");
@@ -215,7 +213,9 @@ MC.onPlayerDeath= function () {newDeath;olddeath2();}
 		else{
 			return timesdisconnected=0;}
     };
-	
+
+MC.onPlayerDeath = joint([ MC.onPlayerDeath, olddeath2 ]);	
+MC.onDisconnect = joint([ MC.onDisconnect, olddisconnect ]);
 	
 //	$(".agario-profile-picture").click(function () {
 //		if(usedonce1==0){
