@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v1.7
+//v1.8
 var timeslost=0;
 var usedonce=0;
 var usedonce1=0;
@@ -177,7 +177,7 @@ function stopdyinglight(){
 }
 
 
-olddeath2 = function() {
+function olddeath2() {
 $("#minimap-sectors").css('background-image', 'url(https://i.imgur.com/5jIjJVc.gif)');		
 setTimeout(function () {
 $("#minimap-sectors").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightbabyteamboard.png)');		
@@ -198,7 +198,7 @@ if(timeslost==3){timeslost=0;}
 }
 
     // listen for server disconnect
-    olddisconnect = function () {		
+function olddisconnect() {		
 		if(timesdisconnected==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglingsong7.mp3");
 //		toastr["error"]("Disconnected :(");
@@ -212,11 +212,15 @@ if(timeslost==3){timeslost=0;}
 				return timesdisconnected;}
 		else{
 			return timesdisconnected=0;}
-    };
-
-MC.onPlayerDeath = joint([ MC.onPlayerDeath, olddeath2 ]);	
-MC.onDisconnect = joint([ MC.onDisconnect, olddisconnect ]);
+};
 	
+MC.__onDisconnect = MC.onDisconnect;
+MC.__onPlayerDeath = MC.onPlayerDeath;
+setTimeout(function () {
+MC.onPlayerDeath = joint([ MC.__onPlayerDeath, olddeath2 ]);	
+MC.onDisconnect = joint([ MC.__onDisconnect, olddisconnect ]);
+}, 3000);	
+
 //	$(".agario-profile-picture").click(function () {
 //		if(usedonce1==0){
 //	playSound("https://jimboy3100.github.io/banners/dyinglighsong8.mp3");	
