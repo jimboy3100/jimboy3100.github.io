@@ -1,0 +1,1920 @@
+<html>
+
+<script src="https://jimboy3100.github.io/jquery.min.js"></script>
+
+<link rel="stylesheet" href="https://jimboy3100.github.io/themes/animate.css">
+
+
+
+<link rel="stylesheet" href="https://jimboy3100.github.io/themes/bootstrap2.css">
+
+<link rel="stylesheet" href="https://jimboy3100.github.io/themes/magnific-popup.css">
+
+
+<link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/themes/themes.css">
+
+
+<script src="https://jimboy3100.github.io/themes/modernizr-2.6.2.min.js"></script>
+
+<!--[if lt IE 9]>
+  <script src="js/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body class="body" id="body">
+<div class="fh5co-loader" style="display: none;"></div>
+<div id="page" class="white"><a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle fh5co-nav-white"><i></i></a><div id="fh5co-offcanvas"><ul>
+<li><a href="https://sniikz.com/home/">Home</a></li>
+<li><a href="https://jimboy3100.github.io/skins/">Skins</a></li>
+<li class="active"><a href="https://sniikz.com/themes/">Themes</a></li>
+<li><a href="https://sniikz.com/extensions/">Extensions</a></li>
+
+<li class="offcanvas-has-dropdown">
+<a href="#">Youtube</a>
+<ul class="dropdown">
+<li><a target="_blank" href="https://www.youtube.com/user/Snikzy">SniiKz</a></li>
+<li><a target="_blank" href="https://www.youtube.com/channel/UCqawIo5NxlY9Y_oHt-1v9zw">SniiKz Uncut</a></li>
+<li><a target="_blank" href="https://www.twitch.tv/sniikz_">Twitch</a></li>
+</ul>
+</li>
+</ul></div><a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle fh5co-nav-white"><i></i></a><div id="fh5co-offcanvas"><ul>
+<li><a href="https://sniikz.com/home/">Home</a></li>
+<li><a href="https://jimboy3100.github.io/skins/">Skins</a></li>
+<li class="active"><a href="https://sniikz.com/themes/">Themes</a></li>
+<li><a href="https://sniikz.com/extensions/">Extensions</a></li>
+
+<li class="offcanvas-has-dropdown">
+<a href="#">Youtube</a>
+<ul class="dropdown">
+<li><a target="_blank" href="https://www.youtube.com/user/Snikzy">SniiKz</a></li>
+<li><a target="_blank" href="https://www.youtube.com/channel/UCqawIo5NxlY9Y_oHt-1v9zw">SniiKz Uncut</a></li>
+<li><a target="_blank" href="https://www.twitch.tv/sniikz_">Twitch</a></li>
+</ul>
+</li>
+</ul></div>
+<nav class="fh5co-nav" role="navigation">
+
+<header id="fh5co-header" class="fh5co-cover fh5co-cover-sm fh5co-small" role="banner" style="background-image:url();">
+<div class="overlay"></div>
+</header>
+<style type="text/css">
+input[type="checkbox"]{
+    display: none;
+}
+* {
+  margin: 0;
+  padding: 0;
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  transition: all 1s ease;
+}
+//.main {
+//  padding: 20px;
+//  width: 100%;
+//  height: 100%;
+//}
+label {
+ font-size: 15px;
+    position: fixed;
+    top: 48%;
+    left: 0;
+    width: 50px;
+    text-align: center;
+    z-index: 9999;
+//    cursor: pointer;
+//    background: rgba(0,0,0,0.9);
+    border-radius: 0 3px 3px 0;
+    padding-right: 6px;
+    padding-left: 4px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    letter-spacing: 0px;
+}
+//label:hover {
+//  background: #AE80BB;
+//  color: #fff;
+//}
+
+
+.col-xs-2, .col-xs-10 {
+	margin-top: 5px;
+}
+.fh5co-nav ul li.active>a {
+    border-bottom: 0px!important;
+}
+.fh5co-nav #fh5co-logo {
+	margin-top: 5px;
+}
+</style>
+
+
+<script>
+setTimeout(function() {
+var copyBtn   = $(".copybtn"),
+    input     = $(".copytext");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn2"),
+    input     = $(".copytext2");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn3"),
+    input     = $(".copytext3");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn4"),
+    input     = $(".copytext4");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn4"),
+    input     = $(".copytext4");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn5"),
+    input     = $(".copytext5");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn6"),
+    input     = $(".copytext6");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn7"),
+    input     = $(".copytext7");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn8"),
+    input     = $(".copytext8");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn9"),
+    input     = $(".copytext9");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn10"),
+    input     = $(".copytext10");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn11"),
+    input     = $(".copytext11");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn12"),
+    input     = $(".copytext12");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn13"),
+    input     = $(".copytext13");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn14"),
+    input     = $(".copytext14");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn15"),
+    input     = $(".copytext15");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn16"),
+    input     = $(".copytext16");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn17"),
+    input     = $(".copytext17");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn18"),
+    input     = $(".copytext18");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn19"),
+    input     = $(".copytext19");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn20"),
+    input     = $(".copytext20");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn21"),
+    input     = $(".copytext21");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn22"),
+    input     = $(".copytext22");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn23"),
+    input     = $(".copytext23");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn24"),
+    input     = $(".copytext24");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn25"),
+    input     = $(".copytext25");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn26"),
+    input     = $(".copytext26");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+setTimeout(function() {
+var copyBtn   = $(".copybtn27"),
+    input     = $(".copytext27");
+
+function copyToClipboardFF(text) {
+  window.prompt ("Copy to clipboard: Ctrl C, Enter", text);
+}
+
+function copyToClipboard() {
+  var success   = true,
+      range     = document.createRange(),
+      selection;
+
+
+  if (window.clipboardData) {
+    window.clipboardData.setData("Text", input.val());        
+  } else {
+
+    var tmpElem = $('<div>');
+    tmpElem.css({
+      position: "absolute",
+      left:     "-1000px",
+      top:      "-1000px",
+    });
+ 
+    tmpElem.text(input.val());
+    $("body").append(tmpElem);
+
+    range.selectNodeContents(tmpElem.get(0));
+    selection = window.getSelection ();
+    selection.removeAllRanges ();
+    selection.addRange (range);
+
+    try { 
+      success = document.execCommand ("copy", false, null);
+    }
+    catch (e) {
+      copyToClipboardFF(input.val());
+    }
+    if (success) {
+      setTimeout(function() {
+  $("#myModal").modal('hide');
+      }, 1000);
+      tmpElem.remove();
+    }
+  }
+}
+
+copyBtn.on('click', copyToClipboard);
+}, 300);
+
+
+</script>
+<style type="text/css">
+.white{background-color:#fff}
+.gray{background-color:#222}
+.hrlight{border-top: 1px solid #eeeeee;}
+.hrdark{border-top: 1px solid #484848;}
+.btn-theme, .btn-themesub{width:210px;letter-spacing: 2px!important;margin-left:25px;margin-bottom:25px!important;border:1px solid #828282;}
+.btn-copy{width:210px;letter-spacing: 2px!important;margin-left:25px;margin-bottom:25px!important;}
+.btn-copy{    background: rgba(130, 130, 130, 0.02);border: 1px solid #828282;}
+.btn-copy:hover{background: rgb(123, 35, 91); color: white;}
+.btn-copy:focus{color:#828282}
+</style>
+<script>
+setTimeout(function(){ 
+$("#ogario-theme").click(function() {
+      $( "#themes" ).show();
+      $( "#themesubmission" ).hide();
+      $("#ogario-theme").css("cssText", "background: rgba(102,79,141,.5); color:white;");
+      $("#themesub").css("cssText", "color:#828282;");
+  });
+  
+  $("#themesub").click(function() {
+      $( "#themes" ).hide();
+      $( "#themesubmission" ).show();
+      $("#themesub").css("cssText", "background: rgba(102,79,141,.5); color:white;");
+      $("#ogario-theme").css("cssText", "color:#828282;");
+  });
+  
+  setTimeout(function(){ 
+  $("#ogario-theme").click();
+  }, 500);
+}, 100);
+</script>
+<div class="container" style="width:1260px!important;">
+<div class="row">
+<div id="themesPg" style="text-align: center;">
+<div style="padding-bottom:25px;font-size:20px">
+<button id="ogario-theme" class="btn btn-theme white" style="background: rgba(102, 79, 141, 0.5); color: white;">LM THEMES</button>
+<button id="themesub" class="btn btn-themesub white" style="color: rgb(130, 130, 130);">YOUR THEME</button>
+</div>
+<div id="themes" style="display: block;">
+<div class="col-xs-12 my-img theme-image" style="width:initial">
+<p class="theme-title">Theme by Draco</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+ <img src="https://i.imgur.com/N4pFTX5.png" id="img1" class="img-responsive">
+</a>
+
+<div id="details" style="margin-top:20px">
+<input class="copytext" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;ogario-v3&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#01d9cc&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#003005&quot;,&quot;bordersColor&quot;:&quot;#1d4011&quot;,&quot;foodColor&quot;:&quot;#7eff5e&quot;,&quot;virusColor&quot;:&quot;#145435&quot;,&quot;virusStrokeColor&quot;:&quot;#46db70&quot;,&quot;cursorTrackingColor&quot;:&quot;#56e8b3&quot;,&quot;splitRangeColor&quot;:&quot;#58fc69&quot;,&quot;namesFont&quot;:&quot;ubuntu&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:400,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:3,&quot;massScaleMargin&quot;:1.25,&quot;foodSize&quot;:5,&quot;bordersWidth&quot;:40,&quot;sectorsWidth&quot;:40,&quot;sectorsFontSize&quot;:840,&quot;cellsAlpha&quot;:0.9,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.6,&quot;virusStrokeSize&quot;:14,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#49f72d&quot;,&quot;menuBtnTextColor&quot;:&quot;#20fa50&quot;,&quot;menuPanelColor&quot;:&quot;#235c1a&quot;,&quot;menuPanelColor2&quot;:&quot;#00300e&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#ffffff&quot;,&quot;btn1Color&quot;:&quot;#095403&quot;,&quot;btn1Color2&quot;:&quot;#5bce01&quot;,&quot;btn2Color&quot;:&quot;#023d1d&quot;,&quot;btn2Color2&quot;:&quot;#3bb372&quot;,&quot;btn3Color&quot;:&quot;#0b5909&quot;,&quot;btn3Color2&quot;:&quot;#51e34e&quot;,&quot;btn4Color&quot;:&quot;#266608&quot;,&quot;btn4Color2&quot;:&quot;#1b591d&quot;,&quot;menuBg&quot;:&quot;https://www.pichaca.com/wp-content/uploads/2016/07/Green-Background-Pi46-1024x683.jpg&quot;,&quot;menuOpacity&quot;:0.93,&quot;hudMainColor&quot;:&quot;#46e360&quot;,&quot;hudColor&quot;:&quot;rgba(21,82,24,0.1)&quot;,&quot;hudTextColor&quot;:&quot;#02e05b&quot;,&quot;statsHudColor&quot;:&quot;#46e360&quot;,&quot;timeHudColor&quot;:&quot;#33c439&quot;,&quot;top5MassColor&quot;:&quot;#02611d&quot;,&quot;lbMeColor&quot;:&quot;#7aff59&quot;,&quot;lbTeammateColor&quot;:&quot;#00c750&quot;,&quot;hudFont&quot;:&quot;ubuntu&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:400,&quot;hudScale&quot;:1.21,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#228500&quot;,&quot;messageNickColor&quot;:&quot;#018a40&quot;,&quot;commandsColor&quot;:&quot;rgba(18,255,42,0.9)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#427a16&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(176,176,176,0.4)&quot;,&quot;chatScale&quot;:1.2,&quot;miniMapSectorColor&quot;:&quot;#3cd670&quot;,&quot;miniMapGuidesColor&quot;:&quot;#05ff00&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellColor&quot;:&quot;#81e38b&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#11400d&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#bdff00&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#000000&quot;,&quot;miniMapFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:240,&quot;miniMapTop&quot;:24,&quot;miniMapSectorsOpacity&quot;:0.1,&quot;miniMapNickSize&quot;:11,&quot;miniMapNickStrokeSize&quot;:2,&quot;miniMapMyCellSize&quot;:7.5,&quot;miniMapMyCellStrokeSize&quot;:4,&quot;miniMapTeammatesSize&quot;:5.5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://cdn.ogario.ovh/static/img/cursors/cursor_10.cur&quot;}}">
+<button class="btn btn-copy copybtn white .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Draco</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/nVvN5xc.png" id="img2" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext2" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;ogario-v3&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#01d9cc&quot;,&quot;bgColor&quot;:&quot;#ffdee6&quot;,&quot;gridColor&quot;:&quot;#ed7288&quot;,&quot;bordersColor&quot;:&quot;#e055d2&quot;,&quot;foodColor&quot;:&quot;#e4acf2&quot;,&quot;virusColor&quot;:&quot;#000000&quot;,&quot;virusStrokeColor&quot;:&quot;#ffffff&quot;,&quot;cursorTrackingColor&quot;:&quot;#ff9ee4&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:3,&quot;massScaleMargin&quot;:1.25,&quot;foodSize&quot;:4,&quot;bordersWidth&quot;:46,&quot;sectorsWidth&quot;:62,&quot;sectorsFontSize&quot;:570,&quot;cellsAlpha&quot;:0.99,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.6,&quot;virusStrokeSize&quot;:11,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#faa5ce&quot;,&quot;menuBtnTextColor&quot;:&quot;#ff174f&quot;,&quot;menuPanelColor&quot;:&quot;#f2bbec&quot;,&quot;menuPanelColor2&quot;:&quot;#f5d7f2&quot;,&quot;menuTextColor&quot;:&quot;#ed1111&quot;,&quot;menuTextColor2&quot;:&quot;#ffffff&quot;,&quot;btn1Color&quot;:&quot;#e8ccff&quot;,&quot;btn1Color2&quot;:&quot;#fa4888&quot;,&quot;btn2Color&quot;:&quot;#f1baff&quot;,&quot;btn2Color2&quot;:&quot;#f244c1&quot;,&quot;btn3Color&quot;:&quot;#ffcff7&quot;,&quot;btn3Color2&quot;:&quot;#f030e8&quot;,&quot;btn4Color&quot;:&quot;#f7cbf2&quot;,&quot;btn4Color2&quot;:&quot;#ff3094&quot;,&quot;menuBg&quot;:&quot;https://static.vecteezy.com/system/resources/previews/000/094/603/original/beautiful-pink-bokeh-hearts-background-illustration-vector.jpg&quot;,&quot;menuOpacity&quot;:1,&quot;hudMainColor&quot;:&quot;#ff4d82&quot;,&quot;hudColor&quot;:&quot;rgba(252,96,105,0.13)&quot;,&quot;hudTextColor&quot;:&quot;#cc0000&quot;,&quot;statsHudColor&quot;:&quot;#d61818&quot;,&quot;timeHudColor&quot;:&quot;#ff4f79&quot;,&quot;top5MassColor&quot;:&quot;#ad2b9e&quot;,&quot;lbMeColor&quot;:&quot;#bf00aa&quot;,&quot;lbTeammateColor&quot;:&quot;#ff6e91&quot;,&quot;hudFont&quot;:&quot;ubuntu-bold&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1.17,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#018cf6&quot;,&quot;messageNickColor&quot;:&quot;#ed0249&quot;,&quot;commandsColor&quot;:&quot;rgba(250,85,95,0.29)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#bf00aa&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.54)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#eb009b&quot;,&quot;miniMapGuidesColor&quot;:&quot;#bf00aa&quot;,&quot;miniMapNickColor&quot;:&quot;#f71e5f&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ffffff&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#bf00aa&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#01d9cc&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#bf00aa&quot;,&quot;miniMapFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:238,&quot;miniMapTop&quot;:24,&quot;miniMapSectorsOpacity&quot;:1,&quot;miniMapNickSize&quot;:10,&quot;miniMapNickStrokeSize&quot;:2,&quot;miniMapMyCellSize&quot;:5,&quot;miniMapMyCellStrokeSize&quot;:3,&quot;miniMapTeammatesSize&quot;:5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://cdn.ogario.ovh/static/img/cursors/cursor_12.cur&quot;}}">
+<button class="btn btn-copy copybtn2 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div></div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by SniiKz</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/NYdKp7X.png" id="img3" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext3" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;ogario-v3&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#01d9cc&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#00243e&quot;,&quot;bordersColor&quot;:&quot;#ffffff&quot;,&quot;foodColor&quot;:&quot;#5000ff&quot;,&quot;virusColor&quot;:&quot;#3b3b3b&quot;,&quot;virusStrokeColor&quot;:&quot;#ffffff&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:4,&quot;massScaleMargin&quot;:1.125,&quot;foodSize&quot;:1,&quot;bordersWidth&quot;:40,&quot;sectorsWidth&quot;:40,&quot;sectorsFontSize&quot;:1200,&quot;cellsAlpha&quot;:0.99,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.4,&quot;virusStrokeSize&quot;:10,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#fc0079&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#050008&quot;,&quot;menuPanelColor2&quot;:&quot;#1d0526&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#65458f&quot;,&quot;btn1Color&quot;:&quot;#4f0242&quot;,&quot;btn1Color2&quot;:&quot;#3b0431&quot;,&quot;btn2Color&quot;:&quot;#6b0036&quot;,&quot;btn2Color2&quot;:&quot;#4d0227&quot;,&quot;btn3Color&quot;:&quot;#aa084e&quot;,&quot;btn3Color2&quot;:&quot;#80063b&quot;,&quot;btn4Color&quot;:&quot;#aa084e&quot;,&quot;btn4Color2&quot;:&quot;#8a063f&quot;,&quot;menuBg&quot;:&quot;https://cdn.ogario.ovh/static/img/pattern.png&quot;,&quot;menuOpacity&quot;:1,&quot;hudMainColor&quot;:&quot;#cc00b8&quot;,&quot;hudColor&quot;:&quot;rgba(36,36,36,0.49)&quot;,&quot;hudTextColor&quot;:&quot;#ffffff&quot;,&quot;statsHudColor&quot;:&quot;#ffffff&quot;,&quot;timeHudColor&quot;:&quot;#8c8c8c&quot;,&quot;top5MassColor&quot;:&quot;#ff005c&quot;,&quot;lbMeColor&quot;:&quot;#ff005c&quot;,&quot;lbTeammateColor&quot;:&quot;#018cf6&quot;,&quot;hudFont&quot;:&quot;oswald-bold&quot;,&quot;hudFontFamily&quot;:&quot;Oswald&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1.15,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#e8e8e8&quot;,&quot;messageTimeColor&quot;:&quot;#545454&quot;,&quot;messageNickColor&quot;:&quot;#ff005c&quot;,&quot;commandsColor&quot;:&quot;rgba(41,41,41,0.94)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#545454&quot;,&quot;commandsNickColor&quot;:&quot;#ff005c&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1.1,&quot;miniMapSectorColor&quot;:&quot;#871b7c&quot;,&quot;miniMapGuidesColor&quot;:&quot;#ff00a8&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#4d4d4d&quot;,&quot;miniMapMyCellColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#d1e01d&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#305eff&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#2b2b2b&quot;,&quot;miniMapFont&quot;:&quot;oswald&quot;,&quot;miniMapFontFamily&quot;:&quot;Oswald&quot;,&quot;miniMapFontWeight&quot;:400,&quot;miniMapNickFont&quot;:&quot;oswald-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Oswald&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:250,&quot;miniMapTop&quot;:25,&quot;miniMapSectorsOpacity&quot;:0.08,&quot;miniMapNickSize&quot;:9,&quot;miniMapNickStrokeSize&quot;:0,&quot;miniMapMyCellSize&quot;:4,&quot;miniMapMyCellStrokeSize&quot;:6,&quot;miniMapTeammatesSize&quot;:5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://2coolife.com/hslolite2/cur/cur1.cur&quot;}}">
+<button class="btn btn-copy copybtn3 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Kozi</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/xqrWksS.png" id="img4" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext4" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;hkg-style&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#651fff&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#111111&quot;,&quot;bordersColor&quot;:&quot;#ffffff&quot;,&quot;foodColor&quot;:&quot;#7c1fff&quot;,&quot;virusColor&quot;:&quot;#666666&quot;,&quot;virusStrokeColor&quot;:&quot;#666666&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:3,&quot;massScaleMargin&quot;:1.25,&quot;foodSize&quot;:5,&quot;bordersWidth&quot;:40,&quot;sectorsWidth&quot;:40,&quot;sectorsFontSize&quot;:1200,&quot;cellsAlpha&quot;:0.9,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.6,&quot;virusStrokeSize&quot;:14,&quot;menuPreset&quot;:&quot;agario&quot;,&quot;menuMainColor&quot;:&quot;#5bc0de&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor2&quot;:&quot;#cccccc&quot;,&quot;menuTextColor&quot;:&quot;#333333&quot;,&quot;menuTextColor2&quot;:&quot;#999999&quot;,&quot;btn1Color&quot;:&quot;#428bca&quot;,&quot;btn1Color2&quot;:&quot;#3071a9&quot;,&quot;btn2Color&quot;:&quot;#5cb85c&quot;,&quot;btn2Color2&quot;:&quot;#449d44&quot;,&quot;btn3Color&quot;:&quot;#f0ad4e&quot;,&quot;btn3Color2&quot;:&quot;#ec971f&quot;,&quot;btn4Color&quot;:&quot;#d9534f&quot;,&quot;btn4Color2&quot;:&quot;#c9302c&quot;,&quot;menuBg&quot;:&quot;&quot;,&quot;menuOpacity&quot;:0.96,&quot;hudMainColor&quot;:&quot;#0085ff&quot;,&quot;hudColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;hudTextColor&quot;:&quot;#ffffff&quot;,&quot;statsHudColor&quot;:&quot;#0085ff&quot;,&quot;timeHudColor&quot;:&quot;#0085ff&quot;,&quot;top5MassColor&quot;:&quot;#0085ff&quot;,&quot;lbMeColor&quot;:&quot;#0085ff&quot;,&quot;lbTeammateColor&quot;:&quot;#0085ff&quot;,&quot;hudFont&quot;:&quot;ubuntu-bold&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#858585&quot;,&quot;messageNickColor&quot;:&quot;#00ff29&quot;,&quot;commandsColor&quot;:&quot;rgba(101,31,255,0.9)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#858585&quot;,&quot;commandsNickColor&quot;:&quot;#00ff29&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#651fff&quot;,&quot;miniMapGuidesColor&quot;:&quot;#651fff&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ffffff&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#651fff&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#651fff&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#651fff&quot;,&quot;miniMapFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:240,&quot;miniMapTop&quot;:24,&quot;miniMapSectorsOpacity&quot;:0.1,&quot;miniMapNickSize&quot;:11,&quot;miniMapNickStrokeSize&quot;:2,&quot;miniMapMyCellSize&quot;:6,&quot;miniMapMyCellStrokeSize&quot;:4,&quot;miniMapTeammatesSize&quot;:5.5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;&quot;}}">
+<button class="btn btn-copy copybtn4 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Shine</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/zdLUC6B.png" id="img5" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext5" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;ogario-v3&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#01d9cc&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#0f171c&quot;,&quot;bordersColor&quot;:&quot;#ffffff&quot;,&quot;foodColor&quot;:&quot;#00b2ff&quot;,&quot;virusColor&quot;:&quot;#1c0404&quot;,&quot;virusStrokeColor&quot;:&quot;#09c2eb&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:4,&quot;massScaleMargin&quot;:1.125,&quot;foodSize&quot;:1,&quot;bordersWidth&quot;:40,&quot;sectorsWidth&quot;:40,&quot;sectorsFontSize&quot;:1200,&quot;cellsAlpha&quot;:0.99,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.4,&quot;virusStrokeSize&quot;:9,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#020070&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#273770&quot;,&quot;menuPanelColor2&quot;:&quot;#0a0a0a&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#65458f&quot;,&quot;btn1Color&quot;:&quot;#020e4f&quot;,&quot;btn1Color2&quot;:&quot;#00446b&quot;,&quot;btn2Color&quot;:&quot;#00446b&quot;,&quot;btn2Color2&quot;:&quot;#0866aa&quot;,&quot;btn3Color&quot;:&quot;#0866aa&quot;,&quot;btn3Color2&quot;:&quot;#08a0aa&quot;,&quot;btn4Color&quot;:&quot;#08a0aa&quot;,&quot;btn4Color2&quot;:&quot;#7a8ffa&quot;,&quot;menuBg&quot;:&quot;https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcSI3fqG7r5CBmvhdnHZJiULu-Wk-wqcWRKCtcE3YzDbcm9rLNHS9Q&quot;,&quot;menuOpacity&quot;:0.97,&quot;hudMainColor&quot;:&quot;#5974ff&quot;,&quot;hudColor&quot;:&quot;rgba(36,21,21,0.18)&quot;,&quot;hudTextColor&quot;:&quot;#ffffff&quot;,&quot;statsHudColor&quot;:&quot;#ffffff&quot;,&quot;timeHudColor&quot;:&quot;#737373&quot;,&quot;top5MassColor&quot;:&quot;#1fe000&quot;,&quot;lbMeColor&quot;:&quot;#bf00aa&quot;,&quot;lbTeammateColor&quot;:&quot;#018cf6&quot;,&quot;hudFont&quot;:&quot;ubuntu-bold&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#00634c&quot;,&quot;messageTimeColor&quot;:&quot;#18b8b8&quot;,&quot;messageNickColor&quot;:&quot;#50a7ba&quot;,&quot;commandsColor&quot;:&quot;rgba(36,36,36,0.9)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#0086bf&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#000000&quot;,&quot;miniMapGuidesColor&quot;:&quot;#755a26&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#4d4d4d&quot;,&quot;miniMapMyCellColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#ebff00&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#305eff&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#2b2b2b&quot;,&quot;miniMapFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:200,&quot;miniMapTop&quot;:20,&quot;miniMapSectorsOpacity&quot;:0.1,&quot;miniMapNickSize&quot;:9,&quot;miniMapNickStrokeSize&quot;:0,&quot;miniMapMyCellSize&quot;:5,&quot;miniMapMyCellStrokeSize&quot;:5,&quot;miniMapTeammatesSize&quot;:5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://cdn.ogario.ovh/static/img/cursors/cursor_01.cur&quot;}}">
+<button class="btn btn-copy copybtn5 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Hamzuke</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/Caijcgw.png" id="img6" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext6" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;ogario-v3&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#01d9cc&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#5c0000&quot;,&quot;bordersColor&quot;:&quot;#fc0000&quot;,&quot;foodColor&quot;:&quot;#ff004c&quot;,&quot;virusColor&quot;:&quot;#000000&quot;,&quot;virusStrokeColor&quot;:&quot;#ff0000&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:3,&quot;massScaleMargin&quot;:1.25,&quot;foodSize&quot;:5,&quot;bordersWidth&quot;:40,&quot;sectorsWidth&quot;:40,&quot;sectorsFontSize&quot;:1200,&quot;cellsAlpha&quot;:0.9,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.6,&quot;virusStrokeSize&quot;:14,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#ff0000&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#000000&quot;,&quot;menuPanelColor2&quot;:&quot;#000626&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#8096a7&quot;,&quot;btn1Color&quot;:&quot;#f60101&quot;,&quot;btn1Color2&quot;:&quot;#ce0101&quot;,&quot;btn2Color&quot;:&quot;#e8002a&quot;,&quot;btn2Color2&quot;:&quot;#c00073&quot;,&quot;btn3Color&quot;:&quot;#ff0000&quot;,&quot;btn3Color2&quot;:&quot;#814ee3&quot;,&quot;btn4Color&quot;:&quot;#bf00aa&quot;,&quot;btn4Color2&quot;:&quot;#a80096&quot;,&quot;menuBg&quot;:&quot;https://cdn.ogario.ovh/static/img/pattern.png&quot;,&quot;menuOpacity&quot;:0.96,&quot;hudMainColor&quot;:&quot;#d90101&quot;,&quot;hudColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;hudTextColor&quot;:&quot;#ffffff&quot;,&quot;statsHudColor&quot;:&quot;#ffffff&quot;,&quot;timeHudColor&quot;:&quot;#d90101&quot;,&quot;top5MassColor&quot;:&quot;#bf0000&quot;,&quot;lbMeColor&quot;:&quot;#bf00aa&quot;,&quot;lbTeammateColor&quot;:&quot;#f60110&quot;,&quot;hudFont&quot;:&quot;ubuntu-bold&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#f60101&quot;,&quot;messageNickColor&quot;:&quot;#01d9cc&quot;,&quot;commandsColor&quot;:&quot;rgba(191,0,170,0.9)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#bf00aa&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#01d9cc&quot;,&quot;miniMapGuidesColor&quot;:&quot;#bf0000&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#bf0000&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#01d9cc&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#bf00aa&quot;,&quot;miniMapFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:238,&quot;miniMapTop&quot;:24,&quot;miniMapSectorsOpacity&quot;:0.28,&quot;miniMapNickSize&quot;:11,&quot;miniMapNickStrokeSize&quot;:2,&quot;miniMapMyCellSize&quot;:7.5,&quot;miniMapMyCellStrokeSize&quot;:4,&quot;miniMapTeammatesSize&quot;:5.5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;&quot;}}">
+<button class="btn btn-copy copybtn6 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Snipez</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/nJMo4SN.png" id="img7" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext7" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;ogario-orange&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#ff7800&quot;,&quot;bgColor&quot;:&quot;#14022b&quot;,&quot;gridColor&quot;:&quot;#292929&quot;,&quot;bordersColor&quot;:&quot;#6600ff&quot;,&quot;foodColor&quot;:&quot;#ffffff&quot;,&quot;virusColor&quot;:&quot;#6600ff&quot;,&quot;virusStrokeColor&quot;:&quot;#ffffff&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1.7,&quot;massScale&quot;:4,&quot;massScaleMargin&quot;:1.9124999999999999,&quot;foodSize&quot;:1,&quot;bordersWidth&quot;:88,&quot;sectorsWidth&quot;:2,&quot;sectorsFontSize&quot;:200,&quot;cellsAlpha&quot;:0.99,&quot;skinsAlpha&quot;:0.99,&quot;virusAlpha&quot;:0.6,&quot;virusStrokeSize&quot;:14,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#6600ff&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#22054f&quot;,&quot;menuPanelColor2&quot;:&quot;#4f4f4f&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#6000ff&quot;,&quot;btn1Color&quot;:&quot;#4f00c9&quot;,&quot;btn1Color2&quot;:&quot;#4f00c9&quot;,&quot;btn2Color&quot;:&quot;#4f00c9&quot;,&quot;btn2Color2&quot;:&quot;#4f00c9&quot;,&quot;btn3Color&quot;:&quot;#4f00c9&quot;,&quot;btn3Color2&quot;:&quot;#4f00c9&quot;,&quot;btn4Color&quot;:&quot;#4f00c9&quot;,&quot;btn4Color2&quot;:&quot;#4f00c9&quot;,&quot;menuBg&quot;:&quot;https://i.imgur.com/w8rGqu5.jpg&quot;,&quot;menuOpacity&quot;:1,&quot;hudMainColor&quot;:&quot;#f500ff&quot;,&quot;hudColor&quot;:&quot;rgba(20,82,78,0)&quot;,&quot;hudTextColor&quot;:&quot;#f500ff&quot;,&quot;statsHudColor&quot;:&quot;#f500ff&quot;,&quot;timeHudColor&quot;:&quot;#f500ff&quot;,&quot;top5MassColor&quot;:&quot;#f500ff&quot;,&quot;lbMeColor&quot;:&quot;#ffffff&quot;,&quot;lbTeammateColor&quot;:&quot;#ffffff&quot;,&quot;hudFont&quot;:&quot;roboto-bold&quot;,&quot;hudFontFamily&quot;:&quot;Roboto&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1,&quot;messageColor&quot;:&quot;rgba(0,0,0,0)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#6600ff&quot;,&quot;messageNickColor&quot;:&quot;#f500ff&quot;,&quot;commandsColor&quot;:&quot;rgba(189,0,255,0.21)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#6600ff&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(255,255,255,0)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#6600ff&quot;,&quot;miniMapGuidesColor&quot;:&quot;#6600ff&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#6600ff&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ffffff&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#6600ff&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#f500ff&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#f500ff&quot;,&quot;miniMapFont&quot;:&quot;roboto&quot;,&quot;miniMapFontFamily&quot;:&quot;Roboto&quot;,&quot;miniMapFontWeight&quot;:400,&quot;miniMapNickFont&quot;:&quot;roboto&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Roboto&quot;,&quot;miniMapNickFontWeight&quot;:400,&quot;miniMapWidth&quot;:228,&quot;miniMapTop&quot;:23,&quot;miniMapSectorsOpacity&quot;:0.18,&quot;miniMapNickSize&quot;:9,&quot;miniMapNickStrokeSize&quot;:1,&quot;miniMapMyCellSize&quot;:6,&quot;miniMapMyCellStrokeSize&quot;:6,&quot;miniMapTeammatesSize&quot;:5.5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;&quot;}}">
+<button class="btn btn-copy copybtn7 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Snipez</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/zwqAow0.png" id="img8" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext8" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;ogario-v3&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#01d9cc&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#170101&quot;,&quot;bordersColor&quot;:&quot;#ff0000&quot;,&quot;foodColor&quot;:&quot;#ff0000&quot;,&quot;virusColor&quot;:&quot;#ff0000&quot;,&quot;virusStrokeColor&quot;:&quot;#00ffff&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;oswald-bold&quot;,&quot;namesFontFamily&quot;:&quot;Oswald&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;oswald-bold&quot;,&quot;sectorsFontFamily&quot;:&quot;Oswald&quot;,&quot;sectorsFontWeight&quot;:700,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1.5,&quot;massScale&quot;:3,&quot;massScaleMargin&quot;:1.875,&quot;foodSize&quot;:1,&quot;bordersWidth&quot;:82,&quot;sectorsWidth&quot;:56,&quot;sectorsFontSize&quot;:670,&quot;cellsAlpha&quot;:0.99,&quot;skinsAlpha&quot;:0.99,&quot;virusAlpha&quot;:0.5,&quot;virusStrokeSize&quot;:25,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#00ffff&quot;,&quot;menuBtnTextColor&quot;:&quot;#00ffff&quot;,&quot;menuPanelColor&quot;:&quot;#000000&quot;,&quot;menuPanelColor2&quot;:&quot;#00022e&quot;,&quot;menuTextColor&quot;:&quot;#00ffff&quot;,&quot;menuTextColor2&quot;:&quot;#00ffff&quot;,&quot;btn1Color&quot;:&quot;#520000&quot;,&quot;btn1Color2&quot;:&quot;#520000&quot;,&quot;btn2Color&quot;:&quot;#520000&quot;,&quot;btn2Color2&quot;:&quot;#520000&quot;,&quot;btn3Color&quot;:&quot;#520000&quot;,&quot;btn3Color2&quot;:&quot;#520000&quot;,&quot;btn4Color&quot;:&quot;#520000&quot;,&quot;btn4Color2&quot;:&quot;#520000&quot;,&quot;menuBg&quot;:&quot;https://i.imgur.com/EKdqkJb.png&quot;,&quot;menuOpacity&quot;:1,&quot;hudMainColor&quot;:&quot;#00ffff&quot;,&quot;hudColor&quot;:&quot;rgba(255,0,0,0)&quot;,&quot;hudTextColor&quot;:&quot;#ff0000&quot;,&quot;statsHudColor&quot;:&quot;#00ffff&quot;,&quot;timeHudColor&quot;:&quot;#00ffff&quot;,&quot;top5MassColor&quot;:&quot;#00ffff&quot;,&quot;lbMeColor&quot;:&quot;#00ffff&quot;,&quot;lbTeammateColor&quot;:&quot;#00ffff&quot;,&quot;hudFont&quot;:&quot;oswald-bold&quot;,&quot;hudFontFamily&quot;:&quot;Oswald&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1.13,&quot;messageColor&quot;:&quot;rgba(255,0,0,0)&quot;,&quot;messageTextColor&quot;:&quot;#00ffff&quot;,&quot;messageTimeColor&quot;:&quot;#ffffff&quot;,&quot;messageNickColor&quot;:&quot;#00ffff&quot;,&quot;commandsColor&quot;:&quot;rgba(255,0,0,0.24)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#ffffff&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#00fff0&quot;,&quot;miniMapGuidesColor&quot;:&quot;#00ffff&quot;,&quot;miniMapNickColor&quot;:&quot;#ff0000&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#f7f7f7&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ff0000&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#00ffff&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#01d9cc&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#00ffff&quot;,&quot;miniMapFont&quot;:&quot;oswald-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Oswald&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;oswald-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Oswald&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:218,&quot;miniMapTop&quot;:22,&quot;miniMapSectorsOpacity&quot;:0.11,&quot;miniMapNickSize&quot;:9,&quot;miniMapNickStrokeSize&quot;:0,&quot;miniMapMyCellSize&quot;:6.5,&quot;miniMapMyCellStrokeSize&quot;:3,&quot;miniMapTeammatesSize&quot;:5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://cdn.ogario.ovh/static/img/cursors/cursor_02.cur&quot;}}">
+<button class="btn btn-copy copybtn8 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Snipez</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/o6glqR6.png" id="img9" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext9" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;ogario-orange&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#ff7800&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#292929&quot;,&quot;bordersColor&quot;:&quot;#ff0000&quot;,&quot;foodColor&quot;:&quot;#ff0000&quot;,&quot;virusColor&quot;:&quot;#000000&quot;,&quot;virusStrokeColor&quot;:&quot;#ff0000&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;roboto-bold&quot;,&quot;namesFontFamily&quot;:&quot;Roboto&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;oswald&quot;,&quot;sectorsFontFamily&quot;:&quot;Oswald&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1.4,&quot;massScale&quot;:4,&quot;massScaleMargin&quot;:1.575,&quot;foodSize&quot;:1,&quot;bordersWidth&quot;:32,&quot;sectorsWidth&quot;:2,&quot;sectorsFontSize&quot;:200,&quot;cellsAlpha&quot;:0.99,&quot;skinsAlpha&quot;:0.99,&quot;virusAlpha&quot;:0.24,&quot;virusStrokeSize&quot;:25,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#ff0000&quot;,&quot;menuBtnTextColor&quot;:&quot;#ff0000&quot;,&quot;menuPanelColor&quot;:&quot;#000000&quot;,&quot;menuPanelColor2&quot;:&quot;#000000&quot;,&quot;menuTextColor&quot;:&quot;#ff0000&quot;,&quot;menuTextColor2&quot;:&quot;#ff0000&quot;,&quot;btn1Color&quot;:&quot;#0a0a0a&quot;,&quot;btn1Color2&quot;:&quot;#0a0a0a&quot;,&quot;btn2Color&quot;:&quot;#0a0a0a&quot;,&quot;btn2Color2&quot;:&quot;#0a0a0a&quot;,&quot;btn3Color&quot;:&quot;#0a0a0a&quot;,&quot;btn3Color2&quot;:&quot;#0a0a0a&quot;,&quot;btn4Color&quot;:&quot;#0a0a0a&quot;,&quot;btn4Color2&quot;:&quot;#0a0a0a&quot;,&quot;menuBg&quot;:&quot;https://wallpapercave.com/wp/Np83gl0.jpg&quot;,&quot;menuOpacity&quot;:1,&quot;hudMainColor&quot;:&quot;#ff002e&quot;,&quot;hudColor&quot;:&quot;rgba(20,82,78,0)&quot;,&quot;hudTextColor&quot;:&quot;#ff0000&quot;,&quot;statsHudColor&quot;:&quot;#ff0000&quot;,&quot;timeHudColor&quot;:&quot;#ff0000&quot;,&quot;top5MassColor&quot;:&quot;#ff0000&quot;,&quot;lbMeColor&quot;:&quot;#ffffff&quot;,&quot;lbTeammateColor&quot;:&quot;#ffffff&quot;,&quot;hudFont&quot;:&quot;ubuntu&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:400,&quot;hudScale&quot;:1,&quot;messageColor&quot;:&quot;rgba(0,0,0,0)&quot;,&quot;messageTextColor&quot;:&quot;#ff0000&quot;,&quot;messageTimeColor&quot;:&quot;#ff0000&quot;,&quot;messageNickColor&quot;:&quot;#ff0000&quot;,&quot;commandsColor&quot;:&quot;rgba(255,0,0,1)&quot;,&quot;commandsTextColor&quot;:&quot;#000000&quot;,&quot;commandsTimeColor&quot;:&quot;#ff0000&quot;,&quot;commandsNickColor&quot;:&quot;#000000&quot;,&quot;chatBoxColor&quot;:&quot;rgba(255,255,255,0)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#ff0000&quot;,&quot;miniMapGuidesColor&quot;:&quot;#ff0000&quot;,&quot;miniMapNickColor&quot;:&quot;#f00000&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#cf0404&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ff0000&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#ff0000&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#5e5e5e&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#ff0000&quot;,&quot;miniMapFont&quot;:&quot;roboto&quot;,&quot;miniMapFontFamily&quot;:&quot;Roboto&quot;,&quot;miniMapFontWeight&quot;:400,&quot;miniMapNickFont&quot;:&quot;roboto&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Roboto&quot;,&quot;miniMapNickFontWeight&quot;:400,&quot;miniMapWidth&quot;:228,&quot;miniMapTop&quot;:23,&quot;miniMapSectorsOpacity&quot;:0.18,&quot;miniMapNickSize&quot;:9,&quot;miniMapNickStrokeSize&quot;:1,&quot;miniMapMyCellSize&quot;:6,&quot;miniMapMyCellStrokeSize&quot;:6,&quot;miniMapTeammatesSize&quot;:5.5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;&quot;}}">
+<button class="btn btn-copy copybtn9 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by KrayZ</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/XFwN6AT.png" id="img10" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext10" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;ogario-v3&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#01d9cc&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#13003b&quot;,&quot;bordersColor&quot;:&quot;#ffffff&quot;,&quot;foodColor&quot;:&quot;#ebff00&quot;,&quot;virusColor&quot;:&quot;#4200ff&quot;,&quot;virusStrokeColor&quot;:&quot;#faff00&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;roboto-bold&quot;,&quot;namesFontFamily&quot;:&quot;Roboto&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;roboto-bold&quot;,&quot;sectorsFontFamily&quot;:&quot;Roboto&quot;,&quot;sectorsFontWeight&quot;:700,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:4,&quot;massScaleMargin&quot;:1.125,&quot;foodSize&quot;:1,&quot;bordersWidth&quot;:40,&quot;sectorsWidth&quot;:40,&quot;sectorsFontSize&quot;:1200,&quot;cellsAlpha&quot;:0.99,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.4,&quot;virusStrokeSize&quot;:10,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#fcf200&quot;,&quot;menuBtnTextColor&quot;:&quot;#ebff00&quot;,&quot;menuPanelColor&quot;:&quot;#000000&quot;,&quot;menuPanelColor2&quot;:&quot;#15002b&quot;,&quot;menuTextColor&quot;:&quot;#faff00&quot;,&quot;menuTextColor2&quot;:&quot;#faff00&quot;,&quot;btn1Color&quot;:&quot;#5200ff&quot;,&quot;btn1Color2&quot;:&quot;#6100ff&quot;,&quot;btn2Color&quot;:&quot;#4200ff&quot;,&quot;btn2Color2&quot;:&quot;#5200ff&quot;,&quot;btn3Color&quot;:&quot;#4200ff&quot;,&quot;btn3Color2&quot;:&quot;#4200ff&quot;,&quot;btn4Color&quot;:&quot;#4200ff&quot;,&quot;btn4Color2&quot;:&quot;#4200ff&quot;,&quot;menuBg&quot;:&quot;https://www.google.co.uk/url?sa=i&amp;rct=j&amp;q=&amp;esrc=s&amp;source=images&amp;cd=&amp;cad=rja&amp;uact=8&amp;ved=0ahUKEwixtqyczLzQAhWDQBQKHYSPAGYQjRwIBw&amp;url=http%3A%2F%2Fwallpaperstock.net%2Fpurple-pattern-abstract_wallpapers_47330_1280x720_1.html&amp;psig=AFQjCNF3rfDjo-pzBbQORVAQ0ldFLl8whg&amp;ust=1479912052534052&quot;,&quot;menuOpacity&quot;:1,&quot;hudMainColor&quot;:&quot;#ebff00&quot;,&quot;hudColor&quot;:&quot;rgba(0,0,0,0.49)&quot;,&quot;hudTextColor&quot;:&quot;#6100ff&quot;,&quot;statsHudColor&quot;:&quot;#dbff00&quot;,&quot;timeHudColor&quot;:&quot;#ebff00&quot;,&quot;top5MassColor&quot;:&quot;#fff500&quot;,&quot;lbMeColor&quot;:&quot;#4200ff&quot;,&quot;lbTeammateColor&quot;:&quot;#faff00&quot;,&quot;hudFont&quot;:&quot;roboto-bold&quot;,&quot;hudFontFamily&quot;:&quot;Roboto&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1.15,&quot;messageColor&quot;:&quot;rgba(0,0,0,1)&quot;,&quot;messageTextColor&quot;:&quot;#6100ff&quot;,&quot;messageTimeColor&quot;:&quot;#545454&quot;,&quot;messageNickColor&quot;:&quot;#dbff00&quot;,&quot;commandsColor&quot;:&quot;rgba(0,0,0,1)&quot;,&quot;commandsTextColor&quot;:&quot;#ccff00&quot;,&quot;commandsTimeColor&quot;:&quot;#545454&quot;,&quot;commandsNickColor&quot;:&quot;#5200ff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#000000&quot;,&quot;miniMapGuidesColor&quot;:&quot;#6100ff&quot;,&quot;miniMapNickColor&quot;:&quot;#faff00&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#6100ff&quot;,&quot;miniMapMyCellColor&quot;:&quot;#fff500&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#5200ff&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#4200ff&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#ffffff&quot;,&quot;miniMapFont&quot;:&quot;roboto-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Roboto&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;roboto-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Roboto&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:250,&quot;miniMapTop&quot;:25,&quot;miniMapSectorsOpacity&quot;:0.1,&quot;miniMapNickSize&quot;:9,&quot;miniMapNickStrokeSize&quot;:0,&quot;miniMapMyCellSize&quot;:5,&quot;miniMapMyCellStrokeSize&quot;:0,&quot;miniMapTeammatesSize&quot;:5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://cdn.ogario.ovh/static/img/cursors/cursor_14.cur&quot;}}">
+<button class="btn btn-copy copybtn10 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Riroy</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/GTfrF5s.png" id="img11" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext11" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;hkg-style&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#651fff&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#111111&quot;,&quot;bordersColor&quot;:&quot;#ffffff&quot;,&quot;foodColor&quot;:&quot;#651fff&quot;,&quot;virusColor&quot;:&quot;#666666&quot;,&quot;virusStrokeColor&quot;:&quot;#666666&quot;,&quot;cursorTrackingColor&quot;:&quot;#651fff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1.6,&quot;massScale&quot;:4,&quot;massScaleMargin&quot;:1.8,&quot;foodSize&quot;:1,&quot;bordersWidth&quot;:46,&quot;sectorsWidth&quot;:62,&quot;sectorsFontSize&quot;:530,&quot;cellsAlpha&quot;:0.99,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.6,&quot;virusStrokeSize&quot;:11,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#651fff&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#1b1222&quot;,&quot;menuPanelColor2&quot;:&quot;#221d2d&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#ffffff&quot;,&quot;btn1Color&quot;:&quot;#000228&quot;,&quot;btn1Color2&quot;:&quot;#00011c&quot;,&quot;btn2Color&quot;:&quot;#560d46&quot;,&quot;btn2Color2&quot;:&quot;#36082c&quot;,&quot;btn3Color&quot;:&quot;#b71b50&quot;,&quot;btn3Color2&quot;:&quot;#9e1644&quot;,&quot;btn4Color&quot;:&quot;#052338&quot;,&quot;btn4Color2&quot;:&quot;#031826&quot;,&quot;menuBg&quot;:&quot;&quot;,&quot;menuOpacity&quot;:1,&quot;hudMainColor&quot;:&quot;#ffffff&quot;,&quot;hudColor&quot;:&quot;rgba(0,0,0,0)&quot;,&quot;hudTextColor&quot;:&quot;#5a00cc&quot;,&quot;statsHudColor&quot;:&quot;#ffffff&quot;,&quot;timeHudColor&quot;:&quot;#ffffff&quot;,&quot;top5MassColor&quot;:&quot;#ffffff&quot;,&quot;lbMeColor&quot;:&quot;#ff0000&quot;,&quot;lbTeammateColor&quot;:&quot;#24ff00&quot;,&quot;hudFont&quot;:&quot;oswald&quot;,&quot;hudFontFamily&quot;:&quot;Oswald&quot;,&quot;hudFontWeight&quot;:400,&quot;hudScale&quot;:1.06,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#666666&quot;,&quot;messageNickColor&quot;:&quot;#76ff03&quot;,&quot;commandsColor&quot;:&quot;rgba(101,31,255,0.9)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#666666&quot;,&quot;commandsNickColor&quot;:&quot;#76ff03&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.54)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#ffffff&quot;,&quot;miniMapGuidesColor&quot;:&quot;#5000ff&quot;,&quot;miniMapNickColor&quot;:&quot;#ffc0cb&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ffff00&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#ffff00&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#448aff&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#651fff&quot;,&quot;miniMapFont&quot;:&quot;oswald-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Oswald&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:238,&quot;miniMapTop&quot;:24,&quot;miniMapSectorsOpacity&quot;:0.1,&quot;miniMapNickSize&quot;:10,&quot;miniMapNickStrokeSize&quot;:0,&quot;miniMapMyCellSize&quot;:5,&quot;miniMapMyCellStrokeSize&quot;:0,&quot;miniMapTeammatesSize&quot;:5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://cdn.ogario.ovh/static/img/cursors/cursor_01.cur&quot;}}">
+<button class="btn btn-copy copybtn11 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Kranjcar</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/ESEaNxD.png" id="img12" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext12" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;hkg-style&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#651fff&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#111111&quot;,&quot;bordersColor&quot;:&quot;#651fff&quot;,&quot;foodColor&quot;:&quot;#651fff&quot;,&quot;virusColor&quot;:&quot;#666666&quot;,&quot;virusStrokeColor&quot;:&quot;#666666&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:2,&quot;massScaleMargin&quot;:1.5,&quot;foodSize&quot;:5,&quot;bordersWidth&quot;:40,&quot;sectorsWidth&quot;:40,&quot;sectorsFontSize&quot;:1200,&quot;cellsAlpha&quot;:0.9,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.6,&quot;virusStrokeSize&quot;:14,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#cd1076&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#551a8b&quot;,&quot;menuPanelColor2&quot;:&quot;#551a8b&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#8096a7&quot;,&quot;btn1Color&quot;:&quot;#68228b&quot;,&quot;btn1Color2&quot;:&quot;#9a32cd&quot;,&quot;btn2Color&quot;:&quot;#68228b&quot;,&quot;btn2Color2&quot;:&quot;#9a32cd&quot;,&quot;btn3Color&quot;:&quot;#68228b&quot;,&quot;btn3Color2&quot;:&quot;#9a32cd&quot;,&quot;btn4Color&quot;:&quot;#68228b&quot;,&quot;btn4Color2&quot;:&quot;#9a32cd&quot;,&quot;menuBg&quot;:&quot;https://wallpapercave.com/wp/yANCMtk.jpg&quot;,&quot;menuOpacity&quot;:0.96,&quot;hudMainColor&quot;:&quot;#651fff&quot;,&quot;hudColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;hudTextColor&quot;:&quot;#ffffff&quot;,&quot;statsHudColor&quot;:&quot;#651fff&quot;,&quot;timeHudColor&quot;:&quot;#651fff&quot;,&quot;top5MassColor&quot;:&quot;#651fff&quot;,&quot;lbMeColor&quot;:&quot;#bf00aa&quot;,&quot;lbTeammateColor&quot;:&quot;#018cf6&quot;,&quot;hudFont&quot;:&quot;ubuntu-bold&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#018cf6&quot;,&quot;messageNickColor&quot;:&quot;#651fff&quot;,&quot;commandsColor&quot;:&quot;rgba(101,31,255,0.9)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#651fff&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#651fff&quot;,&quot;miniMapGuidesColor&quot;:&quot;#651fff&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ffffff&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#651fff&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#651fff&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#651fff&quot;,&quot;miniMapFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:240,&quot;miniMapTop&quot;:24,&quot;miniMapSectorsOpacity&quot;:0.1,&quot;miniMapNickSize&quot;:11,&quot;miniMapNickStrokeSize&quot;:2,&quot;miniMapMyCellSize&quot;:7.5,&quot;miniMapMyCellStrokeSize&quot;:4,&quot;miniMapTeammatesSize&quot;:5.5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://i.imgur.com/rxDrTne.png&quot;}}">
+<button class="btn btn-copy copybtn12 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Balone</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/sBEnRD5.png" id="img13" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext13" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;ogario-orange&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#042fa6&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#1e1e1f&quot;,&quot;bordersColor&quot;:&quot;#5000ff&quot;,&quot;foodColor&quot;:&quot;#5000ff&quot;,&quot;virusColor&quot;:&quot;#404040&quot;,&quot;virusStrokeColor&quot;:&quot;#eae6f2&quot;,&quot;cursorTrackingColor&quot;:&quot;#ebe8e8&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:2,&quot;massScaleMargin&quot;:1.5,&quot;foodSize&quot;:9,&quot;bordersWidth&quot;:28,&quot;sectorsWidth&quot;:40,&quot;sectorsFontSize&quot;:1200,&quot;cellsAlpha&quot;:0.9,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.6,&quot;virusStrokeSize&quot;:9,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#622fd4&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#b394f7&quot;,&quot;menuPanelColor2&quot;:&quot;#493569&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#fcfeff&quot;,&quot;btn1Color&quot;:&quot;#0a95ff&quot;,&quot;btn1Color2&quot;:&quot;#0176ce&quot;,&quot;btn2Color&quot;:&quot;#5a0070&quot;,&quot;btn2Color2&quot;:&quot;#d98ee6&quot;,&quot;btn3Color&quot;:&quot;#8d5fe6&quot;,&quot;btn3Color2&quot;:&quot;#814ee3&quot;,&quot;btn4Color&quot;:&quot;#aa65f0&quot;,&quot;btn4Color2&quot;:&quot;#8b4da8&quot;,&quot;menuBg&quot;:&quot;https://pp.vk.me/c618023/v618023070/ef7f/BJDtOD79anQ.jpg&quot;,&quot;menuOpacity&quot;:0.96,&quot;hudMainColor&quot;:&quot;#8c60c4&quot;,&quot;hudColor&quot;:&quot;rgba(28,0,0,0.4)&quot;,&quot;hudTextColor&quot;:&quot;#ffffff&quot;,&quot;statsHudColor&quot;:&quot;#ffffff&quot;,&quot;timeHudColor&quot;:&quot;#be7ee6&quot;,&quot;top5MassColor&quot;:&quot;#a567d6&quot;,&quot;lbMeColor&quot;:&quot;#e0e0e0&quot;,&quot;lbTeammateColor&quot;:&quot;#018cf6&quot;,&quot;hudFont&quot;:&quot;ubuntu-bold&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#5c2166&quot;,&quot;messageNickColor&quot;:&quot;#5c2166&quot;,&quot;commandsColor&quot;:&quot;rgba(84,0,191,0.55)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#5c2166&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#9460a6&quot;,&quot;miniMapGuidesColor&quot;:&quot;#9460a6&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ffffff&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#7a0896&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#1400ff&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#d391eb&quot;,&quot;miniMapFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:224,&quot;miniMapTop&quot;:22,&quot;miniMapSectorsOpacity&quot;:0.16,&quot;miniMapNickSize&quot;:11,&quot;miniMapNickStrokeSize&quot;:2,&quot;miniMapMyCellSize&quot;:7,&quot;miniMapMyCellStrokeSize&quot;:4,&quot;miniMapTeammatesSize&quot;:5.5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://cdn.ogario.ovh/static/img/cursors/cursor_04.cur&quot;}}">
+<button class="btn btn-copy copybtn13 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Sika agar</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/HfkKszd.png" id="img14" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext14" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;hkg-style&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#651fff&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#111111&quot;,&quot;bordersColor&quot;:&quot;#ffffff&quot;,&quot;foodColor&quot;:&quot;#651fff&quot;,&quot;virusColor&quot;:&quot;#666666&quot;,&quot;virusStrokeColor&quot;:&quot;#666666&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:1,&quot;massScaleMargin&quot;:2,&quot;foodSize&quot;:1,&quot;bordersWidth&quot;:40,&quot;sectorsWidth&quot;:40,&quot;sectorsFontSize&quot;:1200,&quot;cellsAlpha&quot;:0.9,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.6,&quot;virusStrokeSize&quot;:14,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#df0000&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#151515&quot;,&quot;menuPanelColor2&quot;:&quot;#222222&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#8096a7&quot;,&quot;btn1Color&quot;:&quot;#383838&quot;,&quot;btn1Color2&quot;:&quot;#5e5e5e&quot;,&quot;btn2Color&quot;:&quot;#df0000&quot;,&quot;btn2Color2&quot;:&quot;#ff2929&quot;,&quot;btn3Color&quot;:&quot;#df0000&quot;,&quot;btn3Color2&quot;:&quot;#ff2929&quot;,&quot;btn4Color&quot;:&quot;#df0000&quot;,&quot;btn4Color2&quot;:&quot;#ff2929&quot;,&quot;menuBg&quot;:&quot;&quot;,&quot;menuOpacity&quot;:1,&quot;hudMainColor&quot;:&quot;#651fff&quot;,&quot;hudColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;hudTextColor&quot;:&quot;#ffffff&quot;,&quot;statsHudColor&quot;:&quot;#651fff&quot;,&quot;timeHudColor&quot;:&quot;#651fff&quot;,&quot;top5MassColor&quot;:&quot;#651fff&quot;,&quot;lbMeColor&quot;:&quot;#bf00aa&quot;,&quot;lbTeammateColor&quot;:&quot;#018cf6&quot;,&quot;hudFont&quot;:&quot;ubuntu-bold&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#018cf6&quot;,&quot;messageNickColor&quot;:&quot;#651fff&quot;,&quot;commandsColor&quot;:&quot;rgba(101,31,255,0.9)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#651fff&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#651fff&quot;,&quot;miniMapGuidesColor&quot;:&quot;#651fff&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ffffff&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#651fff&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#651fff&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#651fff&quot;,&quot;miniMapFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:240,&quot;miniMapTop&quot;:24,&quot;miniMapSectorsOpacity&quot;:0.1,&quot;miniMapNickSize&quot;:11,&quot;miniMapNickStrokeSize&quot;:2,&quot;miniMapMyCellSize&quot;:7.5,&quot;miniMapMyCellStrokeSize&quot;:4,&quot;miniMapTeammatesSize&quot;:5.5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;&quot;}}">
+<button class="btn btn-copy copybtn14 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Heyy</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/IH0q41l.png" id="img15" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext15" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;ogario-v3&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#01d9cc&quot;,&quot;bgColor&quot;:&quot;#000a11&quot;,&quot;gridColor&quot;:&quot;#00243e&quot;,&quot;bordersColor&quot;:&quot;#0091cb&quot;,&quot;foodColor&quot;:&quot;#0091cb&quot;,&quot;virusColor&quot;:&quot;#000000&quot;,&quot;virusStrokeColor&quot;:&quot;#ffffff&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;roboto&quot;,&quot;namesFontFamily&quot;:&quot;Roboto&quot;,&quot;namesFontWeight&quot;:400,&quot;sectorsFont&quot;:&quot;roboto&quot;,&quot;sectorsFontFamily&quot;:&quot;Roboto&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:2,&quot;massScaleMargin&quot;:1.5,&quot;foodSize&quot;:3,&quot;bordersWidth&quot;:32,&quot;sectorsWidth&quot;:68,&quot;sectorsFontSize&quot;:1200,&quot;cellsAlpha&quot;:0.89,&quot;skinsAlpha&quot;:0.87,&quot;virusAlpha&quot;:0.32,&quot;virusStrokeSize&quot;:7,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#01d9cc&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#00243e&quot;,&quot;menuPanelColor2&quot;:&quot;#002f52&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#8096a7&quot;,&quot;btn1Color&quot;:&quot;#00a2e8&quot;,&quot;btn1Color2&quot;:&quot;#0176ce&quot;,&quot;btn2Color&quot;:&quot;#00b9e8&quot;,&quot;btn2Color2&quot;:&quot;#0099c0&quot;,&quot;btn3Color&quot;:&quot;#636363&quot;,&quot;btn3Color2&quot;:&quot;#bfbfbf&quot;,&quot;btn4Color&quot;:&quot;#bf00aa&quot;,&quot;btn4Color2&quot;:&quot;#a80096&quot;,&quot;menuBg&quot;:&quot;&quot;,&quot;menuOpacity&quot;:0.9,&quot;hudMainColor&quot;:&quot;#0091cb&quot;,&quot;hudColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;hudTextColor&quot;:&quot;#ffffff&quot;,&quot;statsHudColor&quot;:&quot;#ffffff&quot;,&quot;timeHudColor&quot;:&quot;#0091cb&quot;,&quot;top5MassColor&quot;:&quot;#0091cb&quot;,&quot;lbMeColor&quot;:&quot;#0091cb&quot;,&quot;lbTeammateColor&quot;:&quot;#018cf6&quot;,&quot;hudFont&quot;:&quot;oswald&quot;,&quot;hudFontFamily&quot;:&quot;Oswald&quot;,&quot;hudFontWeight&quot;:400,&quot;hudScale&quot;:1.05,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#018cf6&quot;,&quot;messageNickColor&quot;:&quot;#01d9cc&quot;,&quot;commandsColor&quot;:&quot;rgba(0,145,203,1)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#bf00aa&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#0091cb&quot;,&quot;miniMapGuidesColor&quot;:&quot;#0091cb&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellColor&quot;:&quot;#cad5e4&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#0091cb&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#01d9cc&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#0091cb&quot;,&quot;miniMapFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:200,&quot;miniMapTop&quot;:20,&quot;miniMapSectorsOpacity&quot;:0.28,&quot;miniMapNickSize&quot;:10,&quot;miniMapNickStrokeSize&quot;:0,&quot;miniMapMyCellSize&quot;:5,&quot;miniMapMyCellStrokeSize&quot;:4,&quot;miniMapTeammatesSize&quot;:4,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://2coolife.com/hslolite2/cur/cur2.cur&quot;}}">
+<button class="btn btn-copy copybtn15 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Necro</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/4XHHkz7.png" id="img16" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext16" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;ogario-v3&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#01d9cc&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#00243e&quot;,&quot;bordersColor&quot;:&quot;#ffffff&quot;,&quot;foodColor&quot;:&quot;#5000ff&quot;,&quot;virusColor&quot;:&quot;#3b3b3b&quot;,&quot;virusStrokeColor&quot;:&quot;#ffffff&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:4,&quot;massScaleMargin&quot;:1.125,&quot;foodSize&quot;:1,&quot;bordersWidth&quot;:40,&quot;sectorsWidth&quot;:40,&quot;sectorsFontSize&quot;:1200,&quot;cellsAlpha&quot;:0.99,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.4,&quot;virusStrokeSize&quot;:10,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#fc0079&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#050008&quot;,&quot;menuPanelColor2&quot;:&quot;#1d0526&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#65458f&quot;,&quot;btn1Color&quot;:&quot;#4f0242&quot;,&quot;btn1Color2&quot;:&quot;#3b0431&quot;,&quot;btn2Color&quot;:&quot;#6b0036&quot;,&quot;btn2Color2&quot;:&quot;#4d0227&quot;,&quot;btn3Color&quot;:&quot;#aa084e&quot;,&quot;btn3Color2&quot;:&quot;#80063b&quot;,&quot;btn4Color&quot;:&quot;#aa084e&quot;,&quot;btn4Color2&quot;:&quot;#8a063f&quot;,&quot;menuBg&quot;:&quot;https://www.hotel-r.net/im/hotel/it/purple-1.jpg&quot;,&quot;menuOpacity&quot;:1,&quot;hudMainColor&quot;:&quot;#cc00b8&quot;,&quot;hudColor&quot;:&quot;rgba(36,36,36,0.49)&quot;,&quot;hudTextColor&quot;:&quot;#ffffff&quot;,&quot;statsHudColor&quot;:&quot;#ffffff&quot;,&quot;timeHudColor&quot;:&quot;#8c8c8c&quot;,&quot;top5MassColor&quot;:&quot;#ff005c&quot;,&quot;lbMeColor&quot;:&quot;#ff005c&quot;,&quot;lbTeammateColor&quot;:&quot;#018cf6&quot;,&quot;hudFont&quot;:&quot;oswald-bold&quot;,&quot;hudFontFamily&quot;:&quot;Oswald&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1.15,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#e8e8e8&quot;,&quot;messageTimeColor&quot;:&quot;#545454&quot;,&quot;messageNickColor&quot;:&quot;#ff005c&quot;,&quot;commandsColor&quot;:&quot;rgba(41,41,41,0.94)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#545454&quot;,&quot;commandsNickColor&quot;:&quot;#ff005c&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1.1,&quot;miniMapSectorColor&quot;:&quot;#871b7c&quot;,&quot;miniMapGuidesColor&quot;:&quot;#ff00a8&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#4d4d4d&quot;,&quot;miniMapMyCellColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#d1e01d&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#305eff&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#2b2b2b&quot;,&quot;miniMapFont&quot;:&quot;oswald&quot;,&quot;miniMapFontFamily&quot;:&quot;Oswald&quot;,&quot;miniMapFontWeight&quot;:400,&quot;miniMapNickFont&quot;:&quot;oswald-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Oswald&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:250,&quot;miniMapTop&quot;:25,&quot;miniMapSectorsOpacity&quot;:0.08,&quot;miniMapNickSize&quot;:9,&quot;miniMapNickStrokeSize&quot;:0,&quot;miniMapMyCellSize&quot;:4,&quot;miniMapMyCellStrokeSize&quot;:6,&quot;miniMapTeammatesSize&quot;:5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://2coolife.com/hslolite2/cur/cur1.cur&quot;}}">
+<button class="btn btn-copy copybtn16 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Ho</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/f3jZfAO.png" id="img17" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext17" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;hkg-style&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#651fff&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#08151d&quot;,&quot;bordersColor&quot;:&quot;#999fbd&quot;,&quot;foodColor&quot;:&quot;#47517a&quot;,&quot;virusColor&quot;:&quot;#282a33&quot;,&quot;virusStrokeColor&quot;:&quot;#47517a&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:0.7,&quot;massScale&quot;:3,&quot;massScaleMargin&quot;:0.875,&quot;foodSize&quot;:5,&quot;bordersWidth&quot;:30,&quot;sectorsWidth&quot;:6,&quot;sectorsFontSize&quot;:820,&quot;cellsAlpha&quot;:0.9,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.35,&quot;virusStrokeSize&quot;:11,&quot;menuPreset&quot;:&quot;ogario-v2&quot;,&quot;menuMainColor&quot;:&quot;#505a85&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#282a33&quot;,&quot;menuPanelColor2&quot;:&quot;#333642&quot;,&quot;menuTextColor&quot;:&quot;#bbbbbb&quot;,&quot;menuTextColor2&quot;:&quot;#bbbbbb&quot;,&quot;btn1Color&quot;:&quot;#505a85&quot;,&quot;btn1Color2&quot;:&quot;#505a85&quot;,&quot;btn2Color&quot;:&quot;#6d728a&quot;,&quot;btn2Color2&quot;:&quot;#505a85&quot;,&quot;btn3Color&quot;:&quot;#474b5c&quot;,&quot;btn3Color2&quot;:&quot;#3a3e4f&quot;,&quot;btn4Color&quot;:&quot;#c9302c&quot;,&quot;btn4Color2&quot;:&quot;#c9302c&quot;,&quot;menuBg&quot;:&quot;https://i.imgur.com/oNKOdq4.png&quot;,&quot;menuOpacity&quot;:1,&quot;hudMainColor&quot;:&quot;#626fa6&quot;,&quot;hudColor&quot;:&quot;rgba(0,0,0,0.72)&quot;,&quot;hudTextColor&quot;:&quot;#ffffff&quot;,&quot;statsHudColor&quot;:&quot;#ffffff&quot;,&quot;timeHudColor&quot;:&quot;#626fa6&quot;,&quot;top5MassColor&quot;:&quot;#8a8a8a&quot;,&quot;lbMeColor&quot;:&quot;#3685c5&quot;,&quot;lbTeammateColor&quot;:&quot;#969696&quot;,&quot;hudFont&quot;:&quot;roboto&quot;,&quot;hudFontFamily&quot;:&quot;Roboto&quot;,&quot;hudFontWeight&quot;:400,&quot;hudScale&quot;:1.1,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#292929&quot;,&quot;messageNickColor&quot;:&quot;#626fa6&quot;,&quot;commandsColor&quot;:&quot;rgba(80,90,133,1)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#999999&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#626fa6&quot;,&quot;miniMapGuidesColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ffffff&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#3c8bff&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#ffffff&quot;,&quot;miniMapFont&quot;:&quot;roboto&quot;,&quot;miniMapFontFamily&quot;:&quot;Roboto&quot;,&quot;miniMapFontWeight&quot;:400,&quot;miniMapNickFont&quot;:&quot;roboto&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Roboto&quot;,&quot;miniMapNickFontWeight&quot;:400,&quot;miniMapWidth&quot;:222,&quot;miniMapTop&quot;:22,&quot;miniMapSectorsOpacity&quot;:0.1,&quot;miniMapNickSize&quot;:11,&quot;miniMapNickStrokeSize&quot;:0,&quot;miniMapMyCellSize&quot;:5.5,&quot;miniMapMyCellStrokeSize&quot;:4,&quot;miniMapTeammatesSize&quot;:4,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://cdn.ogario.ovh/static/img/cursors/cursor_02.cur&quot;}}">
+<button class="btn btn-copy copybtn17 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Shine</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/q4HP6UU.png" id="img18" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext18" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;hkg-style&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#651fff&quot;,&quot;bgColor&quot;:&quot;#000d15&quot;,&quot;gridColor&quot;:&quot;#111111&quot;,&quot;bordersColor&quot;:&quot;#6f4747&quot;,&quot;foodColor&quot;:&quot;#4c465a&quot;,&quot;virusColor&quot;:&quot;#666666&quot;,&quot;virusStrokeColor&quot;:&quot;#666666&quot;,&quot;cursorTrackingColor&quot;:&quot;#651fff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;oswald-bold&quot;,&quot;namesFontFamily&quot;:&quot;Oswald&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1.1,&quot;massScale&quot;:3,&quot;massScaleMargin&quot;:1.375,&quot;foodSize&quot;:1,&quot;bordersWidth&quot;:46,&quot;sectorsWidth&quot;:62,&quot;sectorsFontSize&quot;:530,&quot;cellsAlpha&quot;:0.99,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.6,&quot;virusStrokeSize&quot;:11,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#7d56d4&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#1b1222&quot;,&quot;menuPanelColor2&quot;:&quot;#352752&quot;,&quot;menuTextColor&quot;:&quot;#0072ff&quot;,&quot;menuTextColor2&quot;:&quot;#1700ff&quot;,&quot;btn1Color&quot;:&quot;#000dff&quot;,&quot;btn1Color2&quot;:&quot;#00011c&quot;,&quot;btn2Color&quot;:&quot;#0d2956&quot;,&quot;btn2Color2&quot;:&quot;#081136&quot;,&quot;btn3Color&quot;:&quot;#162c9e&quot;,&quot;btn3Color2&quot;:&quot;#162c9e&quot;,&quot;btn4Color&quot;:&quot;#150c75&quot;,&quot;btn4Color2&quot;:&quot;#150c75&quot;,&quot;menuBg&quot;:&quot;https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSJfBMBiM_Lsfe0ge68iNB2BoxEQyYw94b29vDxy6Gthx7-PQlmoyLB_Yc&quot;,&quot;menuOpacity&quot;:1,&quot;hudMainColor&quot;:&quot;#17abeb&quot;,&quot;hudColor&quot;:&quot;rgba(0,0,0,0)&quot;,&quot;hudTextColor&quot;:&quot;#5a00cc&quot;,&quot;statsHudColor&quot;:&quot;#4200ff&quot;,&quot;timeHudColor&quot;:&quot;#ffffff&quot;,&quot;top5MassColor&quot;:&quot;#0bbee6&quot;,&quot;lbMeColor&quot;:&quot;#ffffff&quot;,&quot;lbTeammateColor&quot;:&quot;#24ff00&quot;,&quot;hudFont&quot;:&quot;roboto-bold&quot;,&quot;hudFontFamily&quot;:&quot;Roboto&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1.06,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#666666&quot;,&quot;messageNickColor&quot;:&quot;#76ff03&quot;,&quot;commandsColor&quot;:&quot;rgba(101,31,255,0.9)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#666666&quot;,&quot;commandsNickColor&quot;:&quot;#76ff03&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.54)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#ffffff&quot;,&quot;miniMapGuidesColor&quot;:&quot;#5000ff&quot;,&quot;miniMapNickColor&quot;:&quot;#ffc0cb&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ffff00&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#ffff00&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#448aff&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#651fff&quot;,&quot;miniMapFont&quot;:&quot;oswald-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Oswald&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:238,&quot;miniMapTop&quot;:24,&quot;miniMapSectorsOpacity&quot;:0.1,&quot;miniMapNickSize&quot;:10,&quot;miniMapNickStrokeSize&quot;:0,&quot;miniMapMyCellSize&quot;:5,&quot;miniMapMyCellStrokeSize&quot;:0,&quot;miniMapTeammatesSize&quot;:5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://cdn.ogario.ovh/static/img/cursors/cursor_01.cur&quot;}}">
+<button class="btn btn-copy copybtn18 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Roag</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/pkOsW3P.png" id="img19" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext19" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;hkg-style&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#651fff&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#111111&quot;,&quot;bordersColor&quot;:&quot;#ffffff&quot;,&quot;foodColor&quot;:&quot;#651fff&quot;,&quot;virusColor&quot;:&quot;#666666&quot;,&quot;virusStrokeColor&quot;:&quot;#666666&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:4,&quot;massScaleMargin&quot;:1.125,&quot;foodSize&quot;:12,&quot;bordersWidth&quot;:42,&quot;sectorsWidth&quot;:200,&quot;sectorsFontSize&quot;:1420,&quot;cellsAlpha&quot;:0.01,&quot;skinsAlpha&quot;:0.56,&quot;virusAlpha&quot;:0.46,&quot;virusStrokeSize&quot;:17,&quot;menuPreset&quot;:&quot;ogario-v2&quot;,&quot;menuMainColor&quot;:&quot;#3d3d3d&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#222222&quot;,&quot;menuPanelColor2&quot;:&quot;#333333&quot;,&quot;menuTextColor&quot;:&quot;#bbbbbb&quot;,&quot;menuTextColor2&quot;:&quot;#bbbbbb&quot;,&quot;btn1Color&quot;:&quot;#783a3a&quot;,&quot;btn1Color2&quot;:&quot;#783a3a&quot;,&quot;btn2Color&quot;:&quot;#783a54&quot;,&quot;btn2Color2&quot;:&quot;#783a54&quot;,&quot;btn3Color&quot;:&quot;#4e3a78&quot;,&quot;btn3Color2&quot;:&quot;#4e3a78&quot;,&quot;btn4Color&quot;:&quot;#3a7478&quot;,&quot;btn4Color2&quot;:&quot;#3a7478&quot;,&quot;menuBg&quot;:&quot;&quot;,&quot;menuOpacity&quot;:1,&quot;hudMainColor&quot;:&quot;#651fff&quot;,&quot;hudColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;hudTextColor&quot;:&quot;#ffffff&quot;,&quot;statsHudColor&quot;:&quot;#651fff&quot;,&quot;timeHudColor&quot;:&quot;#651fff&quot;,&quot;top5MassColor&quot;:&quot;#651fff&quot;,&quot;lbMeColor&quot;:&quot;#bf00aa&quot;,&quot;lbTeammateColor&quot;:&quot;#018cf6&quot;,&quot;hudFont&quot;:&quot;ubuntu-bold&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1,&quot;messageColor&quot;:&quot;rgba(36,36,36,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#018cf6&quot;,&quot;messageNickColor&quot;:&quot;#651fff&quot;,&quot;commandsColor&quot;:&quot;rgba(101,31,255,0.9)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#651fff&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.62)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#651fff&quot;,&quot;miniMapGuidesColor&quot;:&quot;#651fff&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ffffff&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#651fff&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#651fff&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#651fff&quot;,&quot;miniMapFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:200,&quot;miniMapTop&quot;:20,&quot;miniMapSectorsOpacity&quot;:0.1,&quot;miniMapNickSize&quot;:16,&quot;miniMapNickStrokeSize&quot;:0,&quot;miniMapMyCellSize&quot;:4,&quot;miniMapMyCellStrokeSize&quot;:0,&quot;miniMapTeammatesSize&quot;:6,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://cdn.ogario.ovh/static/img/cursors/cursor_17.cur&quot;}}">
+<button class="btn btn-copy copybtn19 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by 賤人 ( Alvin )</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/9ph3hZy.png" id="img20" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext20" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;hkg-style&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#651fff&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#111111&quot;,&quot;bordersColor&quot;:&quot;#ffffff&quot;,&quot;foodColor&quot;:&quot;#ff69b4&quot;,&quot;virusColor&quot;:&quot;#202020&quot;,&quot;virusStrokeColor&quot;:&quot;#666666&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:3,&quot;massScaleMargin&quot;:1.25,&quot;foodSize&quot;:5,&quot;bordersWidth&quot;:50,&quot;sectorsWidth&quot;:6,&quot;sectorsFontSize&quot;:1200,&quot;cellsAlpha&quot;:0.85,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.6,&quot;virusStrokeSize&quot;:14,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#ff69b4&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#000000&quot;,&quot;menuPanelColor2&quot;:&quot;#000000&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#8096a7&quot;,&quot;btn1Color&quot;:&quot;#000000&quot;,&quot;btn1Color2&quot;:&quot;#8096a7&quot;,&quot;btn2Color&quot;:&quot;#000000&quot;,&quot;btn2Color2&quot;:&quot;#8096a7&quot;,&quot;btn3Color&quot;:&quot;#000000&quot;,&quot;btn3Color2&quot;:&quot;#8096a7&quot;,&quot;btn4Color&quot;:&quot;#bf00aa&quot;,&quot;btn4Color2&quot;:&quot;#a80096&quot;,&quot;menuBg&quot;:&quot;https://cdn.ogario.ovh/static/img/pattern.png&quot;,&quot;menuOpacity&quot;:0.96,&quot;hudMainColor&quot;:&quot;#ff69b4&quot;,&quot;hudColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;hudTextColor&quot;:&quot;#ffffff&quot;,&quot;statsHudColor&quot;:&quot;#ffffff&quot;,&quot;timeHudColor&quot;:&quot;#ff69b4&quot;,&quot;top5MassColor&quot;:&quot;#bf00aa&quot;,&quot;lbMeColor&quot;:&quot;#ff69b4&quot;,&quot;lbTeammateColor&quot;:&quot;#ff69b4&quot;,&quot;hudFont&quot;:&quot;ubuntu-bold&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#ff69b4&quot;,&quot;messageNickColor&quot;:&quot;#ff69b4&quot;,&quot;commandsColor&quot;:&quot;rgba(191,0,170,0.9)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#bf00aa&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#ff69b4&quot;,&quot;miniMapGuidesColor&quot;:&quot;#bf00aa&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ffffff&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#ff0000&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#ff69b4&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#bf00aa&quot;,&quot;miniMapFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:240,&quot;miniMapTop&quot;:24,&quot;miniMapSectorsOpacity&quot;:0.1,&quot;miniMapNickSize&quot;:11,&quot;miniMapNickStrokeSize&quot;:2,&quot;miniMapMyCellSize&quot;:7.5,&quot;miniMapMyCellStrokeSize&quot;:4,&quot;miniMapTeammatesSize&quot;:5.5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://cdn.ogario.ovh/static/img/cursors/cursor_02.cur&quot;}}">
+<button class="btn btn-copy copybtn20 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by avo</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/mCYaBsd.png" id="img21" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext21" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;ogario-v3&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#01d9cc&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#170101&quot;,&quot;bordersColor&quot;:&quot;#ff0000&quot;,&quot;foodColor&quot;:&quot;#ff0000&quot;,&quot;virusColor&quot;:&quot;#fcd8d8&quot;,&quot;virusStrokeColor&quot;:&quot;#204794&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;oswald-bold&quot;,&quot;namesFontFamily&quot;:&quot;Oswald&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;oswald-bold&quot;,&quot;sectorsFontFamily&quot;:&quot;Oswald&quot;,&quot;sectorsFontWeight&quot;:700,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1.5,&quot;massScale&quot;:3,&quot;massScaleMargin&quot;:1.875,&quot;foodSize&quot;:1,&quot;bordersWidth&quot;:82,&quot;sectorsWidth&quot;:56,&quot;sectorsFontSize&quot;:670,&quot;cellsAlpha&quot;:0.99,&quot;skinsAlpha&quot;:0.99,&quot;virusAlpha&quot;:0.5,&quot;virusStrokeSize&quot;:25,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#00ffff&quot;,&quot;menuBtnTextColor&quot;:&quot;#00ffff&quot;,&quot;menuPanelColor&quot;:&quot;#000000&quot;,&quot;menuPanelColor2&quot;:&quot;#00022e&quot;,&quot;menuTextColor&quot;:&quot;#00ffff&quot;,&quot;menuTextColor2&quot;:&quot;#00ffff&quot;,&quot;btn1Color&quot;:&quot;#520000&quot;,&quot;btn1Color2&quot;:&quot;#520000&quot;,&quot;btn2Color&quot;:&quot;#520000&quot;,&quot;btn2Color2&quot;:&quot;#520000&quot;,&quot;btn3Color&quot;:&quot;#520000&quot;,&quot;btn3Color2&quot;:&quot;#520000&quot;,&quot;btn4Color&quot;:&quot;#520000&quot;,&quot;btn4Color2&quot;:&quot;#520000&quot;,&quot;menuBg&quot;:&quot;https://d2gg9evh47fn9z.cloudfront.net/thumb_COLOURBOX3120408.jpg&quot;,&quot;menuOpacity&quot;:1,&quot;hudMainColor&quot;:&quot;#00ffff&quot;,&quot;hudColor&quot;:&quot;rgba(255,0,0,0)&quot;,&quot;hudTextColor&quot;:&quot;#ff0000&quot;,&quot;statsHudColor&quot;:&quot;#00ffff&quot;,&quot;timeHudColor&quot;:&quot;#00ffff&quot;,&quot;top5MassColor&quot;:&quot;#00ffff&quot;,&quot;lbMeColor&quot;:&quot;#00ffff&quot;,&quot;lbTeammateColor&quot;:&quot;#00ffff&quot;,&quot;hudFont&quot;:&quot;oswald-bold&quot;,&quot;hudFontFamily&quot;:&quot;Oswald&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1.13,&quot;messageColor&quot;:&quot;rgba(255,0,0,0)&quot;,&quot;messageTextColor&quot;:&quot;#00ffff&quot;,&quot;messageTimeColor&quot;:&quot;#ffffff&quot;,&quot;messageNickColor&quot;:&quot;#00ffff&quot;,&quot;commandsColor&quot;:&quot;rgba(255,0,0,0.24)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#ffffff&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#00fff0&quot;,&quot;miniMapGuidesColor&quot;:&quot;#00ffff&quot;,&quot;miniMapNickColor&quot;:&quot;#ff0000&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#f7f7f7&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ff0000&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#00ffff&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#01d9cc&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#00ffff&quot;,&quot;miniMapFont&quot;:&quot;oswald-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Oswald&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;oswald-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Oswald&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:218,&quot;miniMapTop&quot;:22,&quot;miniMapSectorsOpacity&quot;:0.11,&quot;miniMapNickSize&quot;:9,&quot;miniMapNickStrokeSize&quot;:0,&quot;miniMapMyCellSize&quot;:6.5,&quot;miniMapMyCellStrokeSize&quot;:3,&quot;miniMapTeammatesSize&quot;:5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://cdn.ogario.ovh/static/img/cursors/cursor_02.cur&quot;}}">
+<button class="btn btn-copy copybtn21 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by CDM</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/9DDVxfS.png" id="img22" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext22" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;hkg-style&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#731010&quot;,&quot;bgColor&quot;:&quot;#230126&quot;,&quot;gridColor&quot;:&quot;#4f0473&quot;,&quot;bordersColor&quot;:&quot;#ad00ff&quot;,&quot;foodColor&quot;:&quot;#ad00ff&quot;,&quot;virusColor&quot;:&quot;#500c52&quot;,&quot;virusStrokeColor&quot;:&quot;#ad00ff&quot;,&quot;cursorTrackingColor&quot;:&quot;#bd00ff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;oswald-bold&quot;,&quot;namesFontFamily&quot;:&quot;Oswald&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;oswald-bold&quot;,&quot;sectorsFontFamily&quot;:&quot;Oswald&quot;,&quot;sectorsFontWeight&quot;:700,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:2,&quot;massScaleMargin&quot;:1.5,&quot;foodSize&quot;:1,&quot;bordersWidth&quot;:30,&quot;sectorsWidth&quot;:30,&quot;sectorsFontSize&quot;:1360,&quot;cellsAlpha&quot;:0.8,&quot;skinsAlpha&quot;:0.8,&quot;virusAlpha&quot;:0.5,&quot;virusStrokeSize&quot;:16,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#ad00ff&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#360428&quot;,&quot;menuPanelColor2&quot;:&quot;#3b0035&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#ff00f5&quot;,&quot;btn1Color&quot;:&quot;#4c0070&quot;,&quot;btn1Color2&quot;:&quot;#4c0070&quot;,&quot;btn2Color&quot;:&quot;#eb00ff&quot;,&quot;btn2Color2&quot;:&quot;#eb00ff&quot;,&quot;btn3Color&quot;:&quot;#7900b3&quot;,&quot;btn3Color2&quot;:&quot;#814ee3&quot;,&quot;btn4Color&quot;:&quot;#7d006f&quot;,&quot;btn4Color2&quot;:&quot;#7d006f&quot;,&quot;menuBg&quot;:&quot;https://www.desktopimages.org/pictures/2014/0303/1/dark-pink-vintage-pattern-wallpaper-60016.jpg&quot;,&quot;menuOpacity&quot;:0.9,&quot;hudMainColor&quot;:&quot;#000000&quot;,&quot;hudColor&quot;:&quot;rgba(0,0,0,0)&quot;,&quot;hudTextColor&quot;:&quot;#ad00ff&quot;,&quot;statsHudColor&quot;:&quot;#ffffff&quot;,&quot;timeHudColor&quot;:&quot;#01d9cc&quot;,&quot;top5MassColor&quot;:&quot;#bf00aa&quot;,&quot;lbMeColor&quot;:&quot;#bf00aa&quot;,&quot;lbTeammateColor&quot;:&quot;#018cf6&quot;,&quot;hudFont&quot;:&quot;ubuntu-bold&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1,&quot;messageColor&quot;:&quot;rgba(204,0,255,0.15)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#ad00ff&quot;,&quot;messageNickColor&quot;:&quot;#ffffff&quot;,&quot;commandsColor&quot;:&quot;rgba(204,0,255,0.15)&quot;,&quot;commandsTextColor&quot;:&quot;#ff00f5&quot;,&quot;commandsTimeColor&quot;:&quot;#ad00ff&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0)&quot;,&quot;chatScale&quot;:1.01,&quot;miniMapSectorColor&quot;:&quot;#ad00ff&quot;,&quot;miniMapGuidesColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#ad00ff&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ff00d6&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#750068&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#ff00b8&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#ffffff&quot;,&quot;miniMapFont&quot;:&quot;oswald-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Oswald&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;oswald-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Oswald&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:244,&quot;miniMapTop&quot;:24,&quot;miniMapSectorsOpacity&quot;:0.28,&quot;miniMapNickSize&quot;:9,&quot;miniMapNickStrokeSize&quot;:2,&quot;miniMapMyCellSize&quot;:8,&quot;miniMapMyCellStrokeSize&quot;:3,&quot;miniMapTeammatesSize&quot;:6.5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://cdn.ogario.ovh/static/img/cursors/cursor_12.cur&quot;}}">
+<button class="btn btn-copy copybtn22 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Torto</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/jb4302L.png" id="img23" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext23" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;ogario-orange&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#ff7800&quot;,&quot;bgColor&quot;:&quot;#111111&quot;,&quot;gridColor&quot;:&quot;#292929&quot;,&quot;bordersColor&quot;:&quot;#e10000&quot;,&quot;foodColor&quot;:&quot;#e10000&quot;,&quot;virusColor&quot;:&quot;#666666&quot;,&quot;virusStrokeColor&quot;:&quot;#666666&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:3,&quot;massScaleMargin&quot;:1.25,&quot;foodSize&quot;:5,&quot;bordersWidth&quot;:40,&quot;sectorsWidth&quot;:40,&quot;sectorsFontSize&quot;:1200,&quot;cellsAlpha&quot;:0.9,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.6,&quot;virusStrokeSize&quot;:14,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#e10000&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#3e0009&quot;,&quot;menuPanelColor2&quot;:&quot;#494949&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#8096a7&quot;,&quot;btn1Color&quot;:&quot;#494949&quot;,&quot;btn1Color2&quot;:&quot;#494949&quot;,&quot;btn2Color&quot;:&quot;#002dff&quot;,&quot;btn2Color2&quot;:&quot;#494949&quot;,&quot;btn3Color&quot;:&quot;#494949&quot;,&quot;btn3Color2&quot;:&quot;#494949&quot;,&quot;btn4Color&quot;:&quot;#494949&quot;,&quot;btn4Color2&quot;:&quot;#494949&quot;,&quot;menuBg&quot;:&quot;https://65.media.tumblr.com/bd29e7e9e5d2dc6928ae2fef2a43771d/tumblr_nrejn41RBg1s94q1lo1_500.png&quot;,&quot;menuOpacity&quot;:0.96,&quot;hudMainColor&quot;:&quot;#e10000&quot;,&quot;hudColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;hudTextColor&quot;:&quot;#ffffff&quot;,&quot;statsHudColor&quot;:&quot;#e10000&quot;,&quot;timeHudColor&quot;:&quot;#e10000&quot;,&quot;top5MassColor&quot;:&quot;#e10000&quot;,&quot;lbMeColor&quot;:&quot;#bf00aa&quot;,&quot;lbTeammateColor&quot;:&quot;#018cf6&quot;,&quot;hudFont&quot;:&quot;ubuntu-bold&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#018cf6&quot;,&quot;messageNickColor&quot;:&quot;#e10000&quot;,&quot;commandsColor&quot;:&quot;rgba(225,0,0,1)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#e10000&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#e10000&quot;,&quot;miniMapGuidesColor&quot;:&quot;#e10000&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ffffff&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#e10000&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#e10000&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#e10000&quot;,&quot;miniMapFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:240,&quot;miniMapTop&quot;:24,&quot;miniMapSectorsOpacity&quot;:0.1,&quot;miniMapNickSize&quot;:11,&quot;miniMapNickStrokeSize&quot;:2,&quot;miniMapMyCellSize&quot;:7.5,&quot;miniMapMyCellStrokeSize&quot;:4,&quot;miniMapTeammatesSize&quot;:5.5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;&quot;}}">
+<button class="btn btn-copy copybtn23 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Faber</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/Inzjffo.png" id="img24" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext24" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;sniikz-style&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#01d9cc&quot;,&quot;bgColor&quot;:&quot;#000009&quot;,&quot;gridColor&quot;:&quot;#000018&quot;,&quot;bordersColor&quot;:&quot;#122679&quot;,&quot;foodColor&quot;:&quot;#5000ff&quot;,&quot;virusColor&quot;:&quot;#150c3d&quot;,&quot;virusStrokeColor&quot;:&quot;#0100ff&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;oswald&quot;,&quot;sectorsFontFamily&quot;:&quot;Oswald&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:0.7,&quot;massScale&quot;:4,&quot;massScaleMargin&quot;:0.7875,&quot;foodSize&quot;:1,&quot;bordersWidth&quot;:46,&quot;sectorsWidth&quot;:68,&quot;sectorsFontSize&quot;:1080,&quot;cellsAlpha&quot;:0.99,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.29,&quot;virusStrokeSize&quot;:24,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#ffffff&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#201c3a&quot;,&quot;menuPanelColor2&quot;:&quot;#181b35&quot;,&quot;menuTextColor&quot;:&quot;#beb8f8&quot;,&quot;menuTextColor2&quot;:&quot;#beb8f8&quot;,&quot;btn1Color&quot;:&quot;#010b59&quot;,&quot;btn1Color2&quot;:&quot;#01084a&quot;,&quot;btn2Color&quot;:&quot;#010b59&quot;,&quot;btn2Color2&quot;:&quot;#01084a&quot;,&quot;btn3Color&quot;:&quot;#030f73&quot;,&quot;btn3Color2&quot;:&quot;#000b68&quot;,&quot;btn4Color&quot;:&quot;#242729&quot;,&quot;btn4Color2&quot;:&quot;#8a063f&quot;,&quot;menuBg&quot;:&quot;https://www.fondox.net/wallpapers/textura-de-color-azul-246.jpg&quot;,&quot;menuOpacity&quot;:1,&quot;hudMainColor&quot;:&quot;#ffffff&quot;,&quot;hudColor&quot;:&quot;rgba(0,0,0,0.49)&quot;,&quot;hudTextColor&quot;:&quot;#a2a8db&quot;,&quot;statsHudColor&quot;:&quot;#ffffff&quot;,&quot;timeHudColor&quot;:&quot;#000aff&quot;,&quot;top5MassColor&quot;:&quot;#2b00d6&quot;,&quot;lbMeColor&quot;:&quot;#3300ff&quot;,&quot;lbTeammateColor&quot;:&quot;#ffffff&quot;,&quot;hudFont&quot;:&quot;ubuntu-bold&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1,&quot;messageColor&quot;:&quot;rgba(84,76,76,0.9)&quot;,&quot;messageTextColor&quot;:&quot;#0099ff&quot;,&quot;messageTimeColor&quot;:&quot;#545454&quot;,&quot;messageNickColor&quot;:&quot;#0099ff&quot;,&quot;commandsColor&quot;:&quot;rgba(84,76,76,0.9)&quot;,&quot;commandsTextColor&quot;:&quot;#0099ff&quot;,&quot;commandsTimeColor&quot;:&quot;#545454&quot;,&quot;commandsNickColor&quot;:&quot;#85ceff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#000000&quot;,&quot;miniMapGuidesColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#4d4d4d&quot;,&quot;miniMapMyCellColor&quot;:&quot;#0003ff&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#ffffff&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#2124e7&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#ff0000&quot;,&quot;miniMapFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:222,&quot;miniMapTop&quot;:22,&quot;miniMapSectorsOpacity&quot;:0.15,&quot;miniMapNickSize&quot;:9,&quot;miniMapNickStrokeSize&quot;:0,&quot;miniMapMyCellSize&quot;:4,&quot;miniMapMyCellStrokeSize&quot;:4,&quot;miniMapTeammatesSize&quot;:4,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://cdn.ogario.ovh/static/img/cursors/cursor_07.cur&quot;,&quot;sniikz-style&quot;:&quot;sniikz-style&quot;,&quot;hkg-style&quot;:&quot;hkg-style&quot;}}">
+<button class="btn btn-copy copybtn24 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Donk</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/6pJV8ia.png" id="img25" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext25" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;sniikz-style&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#01d9cc&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#3d1e42&quot;,&quot;bordersColor&quot;:&quot;#db4848&quot;,&quot;foodColor&quot;:&quot;#5000ff&quot;,&quot;virusColor&quot;:&quot;#3b3b3b&quot;,&quot;virusStrokeColor&quot;:&quot;#4b2d8a&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:400,&quot;sectorsFont&quot;:&quot;oswald-bold&quot;,&quot;sectorsFontFamily&quot;:&quot;Oswald&quot;,&quot;sectorsFontWeight&quot;:700,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:0.5,&quot;massScale&quot;:5,&quot;massScaleMargin&quot;:0.5,&quot;foodSize&quot;:1,&quot;bordersWidth&quot;:40,&quot;sectorsWidth&quot;:40,&quot;sectorsFontSize&quot;:1200,&quot;cellsAlpha&quot;:0.99,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.4,&quot;virusStrokeSize&quot;:9,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#ac59ff&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#050008&quot;,&quot;menuPanelColor2&quot;:&quot;#1d0526&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#4b3d9e&quot;,&quot;btn1Color&quot;:&quot;#7136ab&quot;,&quot;btn1Color2&quot;:&quot;#4e2d6e&quot;,&quot;btn2Color&quot;:&quot;#39155c&quot;,&quot;btn2Color2&quot;:&quot;#411b66&quot;,&quot;btn3Color&quot;:&quot;#270647&quot;,&quot;btn3Color2&quot;:&quot;#350169&quot;,&quot;btn4Color&quot;:&quot;#4f047d&quot;,&quot;btn4Color2&quot;:&quot;#2c0073&quot;,&quot;menuBg&quot;:&quot;https://cdn.ogario.ovh/static/img/pattern.png&quot;,&quot;menuOpacity&quot;:1,&quot;hudMainColor&quot;:&quot;#4320a8&quot;,&quot;hudColor&quot;:&quot;rgba(36,36,36,0.49)&quot;,&quot;hudTextColor&quot;:&quot;#ffffff&quot;,&quot;statsHudColor&quot;:&quot;#ffffff&quot;,&quot;timeHudColor&quot;:&quot;#690e78&quot;,&quot;top5MassColor&quot;:&quot;#9925c2&quot;,&quot;lbMeColor&quot;:&quot;#8000ff&quot;,&quot;lbTeammateColor&quot;:&quot;#c91ecc&quot;,&quot;hudFont&quot;:&quot;ubuntu&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:400,&quot;hudScale&quot;:1.08,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#e8e8e8&quot;,&quot;messageTimeColor&quot;:&quot;#545454&quot;,&quot;messageNickColor&quot;:&quot;#ad00ff&quot;,&quot;commandsColor&quot;:&quot;rgba(36,36,36,0.9)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#545454&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#000000&quot;,&quot;miniMapGuidesColor&quot;:&quot;#db00ff&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#4d4d4d&quot;,&quot;miniMapMyCellColor&quot;:&quot;#873dff&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#acba07&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#305eff&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#4200ff&quot;,&quot;miniMapFont&quot;:&quot;roboto&quot;,&quot;miniMapFontFamily&quot;:&quot;Roboto&quot;,&quot;miniMapFontWeight&quot;:400,&quot;miniMapNickFont&quot;:&quot;ubuntu&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:400,&quot;miniMapWidth&quot;:250,&quot;miniMapTop&quot;:25,&quot;miniMapSectorsOpacity&quot;:0.1,&quot;miniMapNickSize&quot;:9,&quot;miniMapNickStrokeSize&quot;:0,&quot;miniMapMyCellSize&quot;:5,&quot;miniMapMyCellStrokeSize&quot;:0,&quot;miniMapTeammatesSize&quot;:5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://cdn.ogario.ovh/static/img/cursors/cursor_01.cur&quot;}}">
+<button class="btn btn-copy copybtn25 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Hex</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/817Dtfq.png" id="img26" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext26" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;ZTx&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#0017ff&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#292929&quot;,&quot;bordersColor&quot;:&quot;#ffffff&quot;,&quot;foodColor&quot;:&quot;#0017ff&quot;,&quot;virusColor&quot;:&quot;#000000&quot;,&quot;virusStrokeColor&quot;:&quot;#0017ff&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:4,&quot;massScaleMargin&quot;:1.125,&quot;foodSize&quot;:3,&quot;bordersWidth&quot;:88,&quot;sectorsWidth&quot;:150,&quot;sectorsFontSize&quot;:1200,&quot;cellsAlpha&quot;:0.99,&quot;skinsAlpha&quot;:0.7,&quot;virusAlpha&quot;:0.6,&quot;virusStrokeSize&quot;:14,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#ffffff&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#510000&quot;,&quot;menuPanelColor2&quot;:&quot;#b20000&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#ffffff&quot;,&quot;btn1Color&quot;:&quot;#ff0000&quot;,&quot;btn1Color2&quot;:&quot;#a00909&quot;,&quot;btn2Color&quot;:&quot;#ff6161&quot;,&quot;btn2Color2&quot;:&quot;#d00606&quot;,&quot;btn3Color&quot;:&quot;#ff4747&quot;,&quot;btn3Color2&quot;:&quot;#d50202&quot;,&quot;btn4Color&quot;:&quot;#bf00aa&quot;,&quot;btn4Color2&quot;:&quot;#a80096&quot;,&quot;menuBg&quot;:&quot;https://i.imgur.com/z75gJ5k.jpg&quot;,&quot;menuOpacity&quot;:0.96,&quot;hudMainColor&quot;:&quot;#ff0000&quot;,&quot;hudColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;hudTextColor&quot;:&quot;#ffffff&quot;,&quot;statsHudColor&quot;:&quot;#ffffff&quot;,&quot;timeHudColor&quot;:&quot;#dbff00&quot;,&quot;top5MassColor&quot;:&quot;#ff0000&quot;,&quot;lbMeColor&quot;:&quot;#ff0000&quot;,&quot;lbTeammateColor&quot;:&quot;#01f619&quot;,&quot;hudFont&quot;:&quot;ubuntu-bold&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#018cf6&quot;,&quot;messageNickColor&quot;:&quot;#ffffff&quot;,&quot;commandsColor&quot;:&quot;rgba(191,0,170,0.9)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#bf00aa&quot;,&quot;commandsNickColor&quot;:&quot;#ffffff&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#01d9cc&quot;,&quot;miniMapGuidesColor&quot;:&quot;#bf0000&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellColor&quot;:&quot;#ff0000&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#f5ff00&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#e6ff00&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#ff0000&quot;,&quot;miniMapFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:240,&quot;miniMapTop&quot;:24,&quot;miniMapSectorsOpacity&quot;:0.1,&quot;miniMapNickSize&quot;:11,&quot;miniMapNickStrokeSize&quot;:2,&quot;miniMapMyCellSize&quot;:7.5,&quot;miniMapMyCellStrokeSize&quot;:4,&quot;miniMapTeammatesSize&quot;:5.5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;https://i.imgur.com/oF67Stc.png&quot;}}">
+<button class="btn btn-copy copybtn26 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<div class="col-xs-12 my-img" style="width:initial">
+<p class="theme-title">Theme by Ahzee</p>
+<a href="#" id="link1" data-toggle="modal" data-target="#myModal2">
+<img src="https://i.imgur.com/0K3lsG3.png" id="img27" class="img-responsive">
+</a>
+<div id="details" style="margin-top:20px">
+<input class="copytext27" type="text" id="copyTarget" style="display:none!important" value="{&quot;ogarioThemeSettings&quot;:{&quot;preset&quot;:&quot;sniikz-style&quot;,&quot;darkTheme&quot;:true,&quot;mainColor&quot;:&quot;#ff90e8&quot;,&quot;bgColor&quot;:&quot;#000000&quot;,&quot;gridColor&quot;:&quot;#08151d&quot;,&quot;bordersColor&quot;:&quot;#ffffff&quot;,&quot;foodColor&quot;:&quot;#5a00ff&quot;,&quot;virusColor&quot;:&quot;#666666&quot;,&quot;virusStrokeColor&quot;:&quot;#666666&quot;,&quot;cursorTrackingColor&quot;:&quot;#ffffff&quot;,&quot;splitRangeColor&quot;:&quot;#ffffff&quot;,&quot;namesFont&quot;:&quot;ubuntu-bold&quot;,&quot;namesFontFamily&quot;:&quot;Ubuntu&quot;,&quot;namesFontWeight&quot;:700,&quot;sectorsFont&quot;:&quot;ubuntu&quot;,&quot;sectorsFontFamily&quot;:&quot;Ubuntu&quot;,&quot;sectorsFontWeight&quot;:400,&quot;sectorsX&quot;:5,&quot;sectorsY&quot;:5,&quot;nameScale&quot;:1,&quot;massScale&quot;:3,&quot;massScaleMargin&quot;:1.25,&quot;foodSize&quot;:6,&quot;bordersWidth&quot;:12,&quot;sectorsWidth&quot;:2,&quot;sectorsFontSize&quot;:510,&quot;cellsAlpha&quot;:0.01,&quot;skinsAlpha&quot;:0.4,&quot;virusAlpha&quot;:0.42,&quot;virusStrokeSize&quot;:12,&quot;menuPreset&quot;:&quot;ogario-v3&quot;,&quot;menuMainColor&quot;:&quot;#ffffff&quot;,&quot;menuBtnTextColor&quot;:&quot;#ffffff&quot;,&quot;menuPanelColor&quot;:&quot;#000000&quot;,&quot;menuPanelColor2&quot;:&quot;#730fd6&quot;,&quot;menuTextColor&quot;:&quot;#ffffff&quot;,&quot;menuTextColor2&quot;:&quot;#8096a7&quot;,&quot;btn1Color&quot;:&quot;#00f0ff&quot;,&quot;btn1Color2&quot;:&quot;#00f0ff&quot;,&quot;btn2Color&quot;:&quot;#fa00ff&quot;,&quot;btn2Color2&quot;:&quot;#fa00ff&quot;,&quot;btn3Color&quot;:&quot;#5700ff&quot;,&quot;btn3Color2&quot;:&quot;#5700ff&quot;,&quot;btn4Color&quot;:&quot;#000aff&quot;,&quot;btn4Color2&quot;:&quot;#5200ff&quot;,&quot;menuBg&quot;:&quot;https://univer-u.ru/wp-content/uploads/2014/08/0_89f35_4d13a04a_L.png&quot;,&quot;menuOpacity&quot;:1,&quot;hudMainColor&quot;:&quot;#ff90e8&quot;,&quot;hudColor&quot;:&quot;rgba(10,10,10,1)&quot;,&quot;hudTextColor&quot;:&quot;#ffffff&quot;,&quot;statsHudColor&quot;:&quot;#ff90e8&quot;,&quot;timeHudColor&quot;:&quot;#ff90e8&quot;,&quot;top5MassColor&quot;:&quot;#ff90e8&quot;,&quot;lbMeColor&quot;:&quot;#ff9e9e&quot;,&quot;lbTeammateColor&quot;:&quot;#ff00e6&quot;,&quot;hudFont&quot;:&quot;ubuntu-bold&quot;,&quot;hudFontFamily&quot;:&quot;Ubuntu&quot;,&quot;hudFontWeight&quot;:700,&quot;hudScale&quot;:1,&quot;messageColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;messageTextColor&quot;:&quot;#ffffff&quot;,&quot;messageTimeColor&quot;:&quot;#018cf6&quot;,&quot;messageNickColor&quot;:&quot;#ff90e8&quot;,&quot;commandsColor&quot;:&quot;rgba(255,144,232,0.9)&quot;,&quot;commandsTextColor&quot;:&quot;#ffffff&quot;,&quot;commandsTimeColor&quot;:&quot;#ff90e8&quot;,&quot;commandsNickColor&quot;:&quot;#ff00a8&quot;,&quot;chatBoxColor&quot;:&quot;rgba(0,0,0,0.4)&quot;,&quot;chatScale&quot;:1,&quot;miniMapSectorColor&quot;:&quot;#ff90e8&quot;,&quot;miniMapGuidesColor&quot;:&quot;#ff90e8&quot;,&quot;miniMapNickColor&quot;:&quot;#ffffff&quot;,&quot;miniMapNickStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapMyCellColor&quot;:&quot;#f1f542&quot;,&quot;miniMapMyCellStrokeColor&quot;:&quot;#000000&quot;,&quot;miniMapTeammatesColor&quot;:&quot;#505ccc&quot;,&quot;miniMapDeathLocationColor&quot;:&quot;#ff90e8&quot;,&quot;miniMapFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapFontWeight&quot;:700,&quot;miniMapNickFont&quot;:&quot;ubuntu-bold&quot;,&quot;miniMapNickFontFamily&quot;:&quot;Ubuntu&quot;,&quot;miniMapNickFontWeight&quot;:700,&quot;miniMapWidth&quot;:214,&quot;miniMapTop&quot;:21,&quot;miniMapSectorsOpacity&quot;:0.1,&quot;miniMapNickSize&quot;:11,&quot;miniMapNickStrokeSize&quot;:2,&quot;miniMapMyCellSize&quot;:5,&quot;miniMapMyCellStrokeSize&quot;:2,&quot;miniMapTeammatesSize&quot;:5,&quot;customBackground&quot;:&quot;&quot;,&quot;customCursor&quot;:&quot;&quot;}}">
+<button class="btn btn-copy copybtn27 .copylight" data-toggle="modal" data-target="#myModal" id="copyButton">COPY</button>
+</div>
+</div>
+<img style="text-align:center">
+<div class="border-small"></div><br>
+
+</div>
+<div id="themesubmission" style="display: none;">
+<div class="overlay"></div><div class="container"><div class="row"><div class="col-md-8 col-md-offset-2 text-center"><div class="display-t"><div class="display-tc animate-box fadeIn animated-fast" data-animate-effect="fadeIn"><br><br><br><br><br><br><br><h2><a href="http://fzogar.xyz/ogs/" class="btn btn-default btn-block" target="_blank">FZOGAR CLOUD FOR THEMES</a></h2></div></div></div></div></div>
+</div>
+</div></div>
+</div>
+</nav></div>
+
+
+<div class="gototop js-top">
+</div>
+<style>.pts {letter-spacing: 0px;}.tp {font-family: 'Open Sans Condensed', sans-serif;font-weight: 400;color:#7F7F7F;letter-spacing: 0;text-align: center;}
+textarea { font-size:15px;border:0px;padding-right: 6px;padding-left: 6px;resize: none; max-width:600px; min-width:500px;background-color: #E6E6E6;cursor: not-allowed;outline:none;} textarea::-webkit-scrollbar { width: 8px; } textarea::-webkit-scrollbar-track { -webkit-box-shadow: inset 0 0 0px rgba(0,0,0,0.3);} textarea::-webkit-scrollbar-thumb {background-color: darkgrey; outline: 0px solid slategrey;} * { padding: 0; margin: 0; }.border-small{border-bottom: 1px solid rgba(130, 130, 130, 0.5);}img{border-bottom-right-radius:8px;}img{border-bottom-left-radius:8px;}</style>
+<div id="myModal" class="modal fade" role="dialog" style="display: none;"><div class="modal-dialog" style="top:100px!important"><div class="modal-content" style="background:rgb(132, 4, 78);!important;border-radius:30px;color:white!important;font-size: 18px;height:65px!important"><div class="modal-body" style="text-align:center!important;padding:15px!important;"><p>SKIN URL COPIED TO CLIPBOARD <img src="https://jimboy3100.github.io/banners/checkmark.png"></p></div></div></div></div>
+
+
+<div class="modal fade" id="myModal2" role="dialog">
+<div class="modal-dialog modal-lg">
+
+<div class="modal-content">
+<div class="modal-header">
+<button type="button" class="close" data-dismiss="modal">×</button>
+<h4 class="modal-title">THEME PREVIEW</h4>
+</div>
+<div class="modal-body" id="showImg">
+
+</div>
+</div>
+</div>
+</div>
+
+
+<script src="https://jimboy3100.github.io/themes/jquery.easing.1.3.js"></script>
+
+<script src="https://jimboy3100.github.io/bootstrap.min.js"></script>
+
+<script src="https://jimboy3100.github.io/themes/jquery.waypoints.min.js"></script>
+
+<script src="https://jimboy3100.github.io/themes/jquery.countTo.js"></script>
+
+<script src="https://jimboy3100.github.io/themes/jquery.magnific-popup.min.js"></script>
+<script src="https://jimboy3100.github.io/themes/magnific-popup-options.js"></script>
+
+<script src="https://jimboy3100.github.io/themes/main.js"></script>
+
+<script src="https://jimboy3100.github.io/themes/preview.js"></script>
+
+
+</body></html>
