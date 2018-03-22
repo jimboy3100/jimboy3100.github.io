@@ -1459,7 +1459,7 @@ text-align:center!important; }
 .fh5co-nav-toggle {
   width: 25px;
   height: 25px;
-  cursor: pointer;
+  cursor: url(https://jimboy3100.github.io/cursors/cursor_42.cur), url(https://jimboy3100.github.io/cursors/cursor_40.cur), auto;
   text-decoration: none;
 }
 .fh5co-nav-toggle.active i::before, .fh5co-nav-toggle.active i::after {
