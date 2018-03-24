@@ -1,4 +1,4 @@
-//V0.1
+//v0.2
 $("#main-menu").hide();
 $("#skins-panel").hide();
 $("#quick-menu").hide();
@@ -38,7 +38,7 @@ $("#Userscriptshud3").html('<div id="tutorial9" style="display:block;" width="82
 	'<u style="color:white; font-size:22px"; align="right" onclick="legenddefaultsettings(); return false">Legend Default (Dark Blue)</u><br>'+
 	'<img src="https://jimboy3100.github.io/banners/iconvanilla.jpg" alt="Vanilla Like Settings" id = "legendclanbanner" class="img-rounded" width=20% height="50" onclick="vanillalike(); return false" > '+
 	'<u style="color:white; font-size:22px"; align="right" onclick="vanillalike(); return false">Vanilla like (Grey)</u><br>'+
-	'<p style="color:white; font-size:24px"; align="middle"><b>Or choose an expansion</b></p>'+
+	'<p style="color:white; font-size:24px"; align="middle"><b>Or choose an expansion</b></p></div>'+
 	'<div id="LEGENDAds2"><a id="legendAdAnchor2" onclick="opendyinglight(); return false"><img id="legendAdImg" height="70px" src="https://jimboy3100.github.io/banners/dyinglightbanner2.jpg" style="width: 40%"></a><u style="color:white; font-size:22px"; align="right" onclick="opendyinglight(); return false">Dying Light</u></div>'+	   
 	'<br><br></div></div>');
 //$('#TemplatesBtn').hide();	
@@ -46,9 +46,7 @@ $("#Userscriptshud3").html('<div id="tutorial9" style="display:block;" width="82
 
 function Infobtn1(){
 
-$("#Userscriptshud3").html('<iframe id="customskinsIframe2" src="https://jimboy3100.github.io/extras/helper.html" width="920" height="490" >'+
-    '<p>Your browser does not support iframes.</p>'+
-	'</iframe>');
+window.open('https://jimboy3100.github.io/themes/','_blank');
 //$('#TemplatesBtn').hide();	
 }
 function manualytemplatesIframe(){
