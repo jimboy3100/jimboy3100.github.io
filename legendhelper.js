@@ -1,4 +1,4 @@
-
+//V0.1
 $("#main-menu").hide();
 $("#skins-panel").hide();
 $("#quick-menu").hide();
@@ -10,8 +10,8 @@ $("#menu-footer").after('<div id="legendhelper" style="background-image: url('+l
 	'</iframe>'	+
 											'</div></div>'+
 											    '<button id= "Backtomenu" onclick="closecustomskinsIframe(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button>'+
-												'<button id= "Infobtn1" onclick="Infobtn1(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">INFORMATION</button></div>'+
-												'<button id= "TemplatesBtn" onclick="templatesIframe(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">TEMPLATES</button></div>'+
+												'<button id= "Infobtn1" onclick="Infobtn1(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">INFORMATION</button>'+
+												'<button id= "TemplatesBtn" onclick="templatesIframe(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">TEMPLATES</button>'+
 												'<button id= "ManualyTemplatesBtn" onclick="manualytemplatesIframe(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">MANUAL TEMPLATES</button></div>');
 
 									
