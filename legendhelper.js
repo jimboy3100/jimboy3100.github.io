@@ -10,8 +10,9 @@ $("#menu-footer").after('<div id="legendhelper" style="background-image: url('+l
 	'</iframe>'	+
 											'</div></div>'+
 											    '<button id= "Backtomenu" onclick="closecustomskinsIframe(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button>'+
-												'<button id= "TemplatesBtn" onclick="templatesIframe(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">TEMPLATES</button></div>');
-
+												'<button id= "Infobtn1" onclick="Infobtn1(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">INFORMATION</button></div>'+
+												'<button id= "TemplatesBtn" onclick="templatesIframe(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">TEMPLATES</button></div>'+
+												'<button id= "ManualyTemplatesBtn" onclick="manualytemplatesIframe(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">MANUAL TEMPLATES</button></div>');
 
 									
 function closecustomskinsIframe(){
@@ -40,9 +41,23 @@ $("#Userscriptshud3").html('<div id="tutorial9" style="display:block;" width="82
 	'<p style="color:white; font-size:24px"; align="middle"><b>Or choose an expansion</b></p>'+
 	'<div id="LEGENDAds2"><a id="legendAdAnchor2" onclick="opendyinglight(); return false"><img id="legendAdImg" height="70px" src="https://jimboy3100.github.io/banners/dyinglightbanner2.jpg" style="width: 40%"></a><u style="color:white; font-size:22px"; align="right" onclick="opendyinglight(); return false">Dying Light</u></div>'+	   
 	'<br><br></div></div>');
-$('#TemplatesBtn').hide();	
+//$('#TemplatesBtn').hide();	
 }
 
+function Infobtn1(){
+
+$("#Userscriptshud3").html('<iframe id="customskinsIframe2" src="https://jimboy3100.github.io/extras/helper.html" width="920" height="490" >'+
+    '<p>Your browser does not support iframes.</p>'+
+	'</iframe>');
+//$('#TemplatesBtn').hide();	
+}
+function manualytemplatesIframe(){
+
+$("#Userscriptshud3").html('<iframe id="customskinsIframe2" src="https://jimboy3100.github.io/themes/" width="920" height="490" >'+
+    '<p>Your browser does not support iframes.</p>'+
+	'</iframe>');
+//$('#TemplatesBtn').hide();	
+}
 
 function agariowhitesettings(){
 $("#import-settings-btn").attr('class', 'btn btn-success');document.getElementById("import-settings").value = 
