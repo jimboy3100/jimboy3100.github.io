@@ -1,4 +1,4 @@
-//v0.2
+//v0.3
 $("#main-menu").hide();
 $("#skins-panel").hide();
 $("#quick-menu").hide();
@@ -46,15 +46,13 @@ $("#Userscriptshud3").html('<div id="tutorial9" style="display:block;" width="82
 
 function Infobtn1(){
 
-window.open('https://jimboy3100.github.io/themes/','_blank');
-//$('#TemplatesBtn').hide();	
-}
-function manualytemplatesIframe(){
-
-$("#Userscriptshud3").html('<iframe id="customskinsIframe2" src="https://jimboy3100.github.io/themes/" width="920" height="490" >'+
+$("#Userscriptshud3").html('<iframe id="customskinsIframe2" src="https://jimboy3100.github.io/extras/helper.html" width="920" height="490" >'+
     '<p>Your browser does not support iframes.</p>'+
 	'</iframe>');
 //$('#TemplatesBtn').hide();	
+}
+function manualytemplatesIframe(){
+window.open('https://jimboy3100.github.io/themes/','_blank');
 }
 
 function agariowhitesettings(){
