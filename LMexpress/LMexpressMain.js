@@ -1,4 +1,4 @@
-A/*************
+/*************
 * LEGEND mod Express v1,  by Jimboy3100   email:jimboy3100@hotmail.com
 * Main Script
 * Semiversion 16.3a
