@@ -319,7 +319,6 @@ var Languageletter293="Change server (+)";		//Change server (+)
 var Languageletter294="Leaderboard history";		//Leaderboard history
 var Languageletter295="Enter friend\'s token, IP, leaderboard, name or clan tag...";		//Enter friend\'s token, IP, leaderboard, name or clan tag...
 
-
 var Languageletter298="Team top ";		//Team top 
 var Languageletter299="Leaderbodard";		//Leaderbodard
 var Languageletter300="Communication";		//Communication
@@ -458,4 +457,4 @@ var Premadeletter63 = "wants you to open the url";	//wants you to open the url
 var Premadeletter64 = "wants you to embed and play this youtube video";	//wants you to embed and play this youtube video
 var Premadeletter65 = "wants you to join the following Skype room";	//wants you to join the following Skype room
 var Premadeletter66 = "wants you to join the following Discord room";	//wants you to join the following Discord room
-var Premadeletter67 = "wants you to leave this server an join this new one";	//wants you to leave this server an join this new one
+var Premadeletter67 = "wants you to leave this server and join this new one";	//wants you to leave this server and join this new one
