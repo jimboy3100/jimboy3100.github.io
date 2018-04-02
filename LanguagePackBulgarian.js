@@ -45,7 +45,7 @@ var Languageletter25a="Нова форма на идеи и статистиче
 var Languageletter25b="Модна информация и шаблони";		//Mod Info & Templates
 
 var Languageletter26="Добави скинове";		//Add skins
-var Languageletter27="Безплатни Пари";		//Free Coins
+
 var Languageletter31="Излез";		//Logout
 var Languageletter32="Пъти използвано";		//Times Used
 var Languageletter33="Legend Mod от";		//Legend Mod by
@@ -377,7 +377,14 @@ var Languageletter343="Трябва да бъде изпълнено, за да 
 var Languageletter344="Вторичен Webhook (по избор)";		//Secondary Webhook(optional)
 var Languageletter345="Временно скриване / показване на всичко. Функция за Youtubers";		//Temporarily Hide/Show Everything. Function for Youtubers
 var Languageletter346="Изберете език";		//Choose Language
+var Languageletter347="ВНИМАНИЕ! Изскачащите прозорци са блокирани в настройките.";		//WARNING! Popups are blocked in the settings.
+var Languageletter348="Временно деблокиране";		//Temporary unblock
 
+var Languageletter349="еликсири";	//Potions
+var Languageletter350="Стари кожи";	//Old Skins
+var Languageletter351="Специални оферти"; //Special Deals
+var Languageletter352="Класирания"; //Leaderboards
+var Languageletter353="Нова форма на идеи и статистически данни"; //New Ideas & Statistics Form
 
 var Premadeletter0="Активирана комуникация"; 		//Communication Activated
 var Premadeletter1="Не може да се отвори тази UR на YouTubeL";		 //Cannot open this youtube URL
@@ -446,3 +453,12 @@ var Premadeletter56="Няма трол на смъртта";		//No troll on Deat
 var Premadeletter57="Комуникация";		//Communication
 var Premadeletter58="скрит";		//Hidden
 var Premadeletter59="видим";		//Visible
+var Premadeletter60="пауза";		//Pause
+
+var Premadeletter61 = "Активирайте YT като фон";	//Enable YT as background
+var Premadeletter62 = "Деактивирайте YT като фон;	//Disable YT as background";
+var Premadeletter63 = "иска да отворите URL адреса";	//wants you to open the url
+var Premadeletter64 = "иска да вградите и да пуснете този видеоклип на YouTube";	//wants you to embed and play this youtube video
+var Premadeletter65 = "иска да се присъедините към следната Skype стая";	//wants you to join the following Skype room
+var Premadeletter66 = "иска да се присъедините към следната зала Дискор";	//wants you to join the following Discord room
+var Premadeletter67 = "иска да напуснете този сървър и да се присъедините към този нов";	//wants you to leave this server and join this new one
