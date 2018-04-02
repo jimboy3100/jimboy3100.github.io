@@ -34,7 +34,7 @@ var Languageletter25="Video promo de Legend";		//Legend Promo Video
 var Languageletter25a="Nuevo formulario de Ideas y Estadísticas";		//New Ideas & Statistics Form
 var Languageletter25b="Información de la MOD y plantillas";		//Mod Info & Templates
 var Languageletter26="Añadir skins";		//Add skins
-var Languageletter27="Monedas gratis";		//Free Coins
+
 var Languageletter31="Cerrar sesión";		//Logout
 var Languageletter32="Veces usado";		//Times Used
 var Languageletter33="Legend Mod por";		//Legend Mod by
@@ -367,6 +367,12 @@ var Languageletter346="Escoger lenguages";		//Choose Language
 var Languageletter347="¡ADVERTENCIA! Las ventanas emergentes se bloquean en la configuración.";		//WARNING! Popups are blocked in the settings.
 var Languageletter348="Desbloqueo temporal";		//Temporary unblock
 
+var Languageletter349="Pociones";	//Potions
+var Languageletter350="Pieles viejas";	//Old Skins
+var Languageletter351="Ofertas especiales"; //Special Deals
+var Languageletter352="Marcadores"; //Leaderboards
+var Languageletter353="Nuevo formulario de Ideas y Estadísticas"; //New Ideas & Statistics Form
+
 var Premadeletter0="Comunicación activada"; 		//Communication Activated
 var Premadeletter1="Error al abrir link de Youtube";		 //Cannot open this youtube URL
 var Premadeletter2="[SERVIDOR]: No puedes chatear si tu nick contiene más de 15 carácteres"; 		//[SERVER]: You cannot chat if player name > 15 chars
@@ -435,3 +441,11 @@ var Premadeletter57="Comunicación";		//Communication
 var Premadeletter58="Escondido";		//Hidden
 var Premadeletter59="Visible";		//Visible
 var Premadeletter60="Pausa";		//Pause
+
+var Premadeletter61 = "Habilite YT como fondo";	//Enable YT as background
+var Premadeletter62 = "Deshabilitar YT como fondo";	//Disable YT as background";
+var Premadeletter63 = "quiere que abras la url";	//wants you to open the url
+var Premadeletter64 = "quiere que incrustes y juegues este video de Youtube";	//wants you to embed and play this youtube video
+var Premadeletter65 = "quiere que te unas a la siguiente sala de Skype";	//wants you to join the following Skype room
+var Premadeletter66 = "quiere que te unas a la siguiente sala de Discordia";	//wants you to join the following Discord room
+var Premadeletter67 = "quiere que abandones este servidor y te unas a este nuevo";	//wants you to leave this server and join this new one
