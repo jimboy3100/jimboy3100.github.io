@@ -44,7 +44,7 @@ var Languageletter25="Legend Promo Video";		//Legend Promo Video
 var Languageletter25a="New Ideas & Statistics Form";		//New Ideas & Statistics Form
 var Languageletter25b="Mod Info & Templates";		//Mod Info & Templates
 var Languageletter26="Add skins";		//Add skins
-var Languageletter27="Free Coins";		//Free Coins
+
 var Languageletter31="Logout";		//Logout
 var Languageletter32="Times Used";		//Times Used
 var Languageletter33="Legend Mod by";		//Legend Mod by
@@ -378,6 +378,12 @@ var Languageletter346="Temporary unblock";		//Temporary unblock
 var Languageletter347="WARNING! Popups are blocked in the settings.";		//WARNING! Popups are blocked in the settings.
 var Languageletter348="Temporary unblock";		//Temporary unblock
 
+var Languageletter349="Potions";	//Potions
+var Languageletter350="Old Skins";	//Old Skins
+var Languageletter351="Special Deals"; //Special Deals
+var Languageletter352="Leaderboards"; //Leaderboards
+var Languageletter353="New Ideas & Statistics Form"; //New Ideas & Statistics Form
+
 var Premadeletter0="Communication Activated"; 		//Communication Activated
 var Premadeletter1="Cannot open this youtube URL";		 //Cannot open this youtube URL
 var Premadeletter2="You cannot chat if player name > 15 chars"; 		//[SERVER]: You cannot chat if player name > 15 chars
@@ -446,3 +452,10 @@ var Premadeletter58="Hidden";		//Hidden
 var Premadeletter59="Visible";		//Visible
 var Premadeletter60="Pause";		//Pause
 
+var Premadeletter61 = "Enable YT as background";	//Enable YT as background
+var Premadeletter62 = "Disable YT as background";	//Disable YT as background";
+var Premadeletter63 = "wants you to open the url";	//wants you to open the url
+var Premadeletter64 = "wants you to embed and play this youtube video";	//wants you to embed and play this youtube video
+var Premadeletter65 = "wants you to join the following Skype room";	//wants you to join the following Skype room
+var Premadeletter66 = "wants you to join the following Discord room";	//wants you to join the following Discord room
+var Premadeletter67 = "wants you to leave this server an join this new one";	//wants you to leave this server an join this new one
