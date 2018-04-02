@@ -44,7 +44,7 @@ var Languageletter25="Legend 的影片";		//Legend Promo Video
 var Languageletter25a="新思路與統計表";		//New Ideas & Statistics Form
 var Languageletter25b="Mod 信息和模板";		//Mod Info & Templates
 var Languageletter26="增加皮";		//Add skins
-var Languageletter27="免費金幣";		//Free Coins
+
 var Languageletter31="登出";		//Logout
 var Languageletter32="使用時間";		//Times Used
 var Languageletter33="Legend Mod 作者: ";		//Legend Mod by
@@ -379,6 +379,12 @@ var Languageletter346="暫時解禁";		//Temporary unblock
 var Languageletter347="警告! 設定裡已禁用跳出視窗";		//WARNING! Popups are blocked in the settings.
 var Languageletter348="暫時解禁";		//Temporary unblock
 
+var Languageletter349="藥水";	//Potions
+var Languageletter350="老皮膚";	//Old Skins
+var Languageletter351="特惠"; //Special Deals
+var Languageletter352="排行榜"; //Leaderboards
+var Languageletter353="新的想法和統計表格"; //New Ideas & Statistics Form
+
 var Premadeletter0="通訊激活"; 		//Communication Activated
 var Premadeletter1="無法打開這個youtube網址";		 //Cannot open this youtube URL
 var Premadeletter2="名字大於15字無法對話"; 		//[SERVER]: You cannot chat if player name > 15 chars
@@ -447,3 +453,10 @@ var Premadeletter58="隱藏";		//Hidden
 var Premadeletter59="可見";		//Visible
 var Premadeletter60="暫停";		//Pause
 
+var Premadeletter61 = "啟用YouTube作為背景";	//Enable YT as background
+var Premadeletter62 = "禁用YouTube作為背景";	//Disable YT as background";
+var Premadeletter63 = "希望你打開網址";	//wants you to open the url
+var Premadeletter64 = "希望您嵌入並播放此YouTube視頻";	//wants you to embed and play this youtube video
+var Premadeletter65 = "希望您加入以下Skype客房";	//wants you to join the following Skype room
+var Premadeletter66 = "希望你加入以下Discord會議室";	//wants you to join the following Discord room
+var Premadeletter67 = "希望你離開這台服務器並加入這個新服務器";	//wants you to leave this server and join this new one
