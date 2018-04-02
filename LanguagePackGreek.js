@@ -44,7 +44,7 @@ var Languageletter25="Προωθητικό Video Legend";		//Legend Promo Video
 var Languageletter25a="Φόρμα ιδεών και στατιστικών";		//New Ideas & Statistics Form
 var Languageletter25b="Πληροφορίες & Πρότυπα";		//Mod Info & Templates
 var Languageletter26="Προσθηκη Εικονων";		//Add skins
-var Languageletter27="ΔΩΡΕΑΝ ΝΟΜΙΣΜΑΤΑ";		//Free Coins
+
 var Languageletter31="Αποσυνδέση";		//Logout
 var Languageletter32="Χρησιμοποιήθηκε";		//Times Used
 var Languageletter33="Legend επέκταση απο";		//Legend Mod by
@@ -314,7 +314,7 @@ var Languageletter291="Αντιγρ";		//Copy
 var Languageletter291b="Αντιγραφή πίστας / IP & Κωδικού"; 	//Copy Token/SIP&Password
 var Languageletter291c="Αντιγραφή όλων"; //Copy Token/SIP, Password, Leaderboard...
 var Languageletter291a="Αντιγραφή Πίνακα ηγετών (L)";		//Copy Leaderboard (L)
-var Languageletter292="Join server (Backspace)";		//Join server (Backspace)
+var Languageletter292="Συνδεση σε Server (Backspace)";		//Join server (Backspace)
 var Languageletter293="Αλλαγή Πίστας (+)";		//Change server (+)
 var Languageletter294="Ιστορικό ηγετών";		//Leaderboard history
 var Languageletter295="Εισάγετε διακριτικό φίλου, IP, τον πίνακα ηγετών, το όνομα ή ετικέτα ομάδας...";		//Enter friend\'s token, IP, leaderboard, name or clan tag...
@@ -377,6 +377,12 @@ var Languageletter345="Προσωρινή Απόκρυψη / Εμφάνιση ό
 var Languageletter346="Επέλεξε γλώσσα";		//Choose Language
 var Languageletter347="ΠΡΟΕΙΔΟΠΟΙΗΣΗ! Τα αναδυόμενα παράθυρα αποκλείονται στις ρυθμίσεις.";		//WARNING! Popups are blocked in the settings.
 var Languageletter348="Προσωρινή απεμπλοκή";		//Temporary unblock
+
+var Languageletter349="Φίλτρα";	//Potions
+var Languageletter350="Παλιά Skins";	//Old Skins
+var Languageletter351="Ειδικές προσφορές"; //Special Deals
+var Languageletter352="Ηγέτες"; //Leaderboards
+var Languageletter353="Φόρμα νέων ιδεών και στατιστικών"; //New Ideas & Statistics Form
 
 var Premadeletter0="Η επικοινωνία ενεργοποιήθηκε"; 		//Communication Activated
 var Premadeletter1="Δεν είναι δυνατό να ανοίξει αυτή η διεύθυνση URL του YouTube";		 //Cannot open this youtube URL
@@ -446,3 +452,11 @@ var Premadeletter57="Επικοινωνία";		//Communication
 var Premadeletter58="Κρυμμένος";		//Hidden
 var Premadeletter59="Εμφανής";		//Visible
 var Premadeletter60="Παύση";		//Pause
+
+var Premadeletter61 = "Ενεργοπ. το YT ως φόντο";	//Enable YT as background
+var Premadeletter62 = "Απεν. το YT ως φόντο";	//Disable YT as background";
+var Premadeletter63 = "θέλει να ανοίξετε τη διεύθυνση URL";	//wants you to open the url
+var Premadeletter64 = "θέλει να ενσωματώσετε και να παίξετε αυτό το βίντεο στο YouTube";	//wants you to embed and play this youtube video
+var Premadeletter65 = "σας ζητά να συμμετάσχετε στο επόμενο δωμάτιο Skype";	//wants you to join the following Skype room
+var Premadeletter66 = "θέλει να συμμετάσχετε στην ακόλουθη αίθουσα συζήτησης";	//wants you to join the following Discord room
+var Premadeletter67 = "θέλει να εγκαταλείψετε αυτόν τον διακομιστή και να συμμετάσχετε σε αυτόν τον νέο";	//wants you to leave this server and join this new one
