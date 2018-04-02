@@ -44,7 +44,7 @@ var Languageletter25="Vidéo de promotion du Legend Mod";		//Legend Promo Video
 var Languageletter25a="Nouveau formulaire d'idées et de statistiques";		//New Ideas & Statistics Form
 var Languageletter25b="Mod Info et modèles";		//Mod Info & Templates
 var Languageletter26="Ajouter des skins";		//Add skins
-var Languageletter27="Coins gratuits";		//Free Coins
+
 var Languageletter31="Se déconnecter";		//Logout
 var Languageletter32="Nombre de fois utilisé";		//Times Used
 var Languageletter33="Legend Mod fait par";		//Legend Mod by
@@ -379,6 +379,12 @@ var Languageletter346="Débloquer temporairement";		//Temporary unblock
 var Languageletter347="ATTENTION ! Les fenêtres popups sont bloquées dans les paramètres.";		//WARNING! Popups are blocked in the settings.
 var Languageletter348="Débloquer temporairement";		//Temporary unblock
 
+var Languageletter349="Potions";	//Potions
+var Languageletter350="Vieux Skins";	//Old Skins
+var Languageletter351="Offres spéciales"; //Special Deals
+var Languageletter352="Classements"; //Leaderboards
+var Languageletter353="Nouveau formulaire d'idées et de statistiques"; //New Ideas & Statistics Form
+
 var Premadeletter0="Communication Activée"; 		//Communication Activated
 var Premadeletter1="Impossible d'ouvrir cette URL Youtube";		 //Cannot open this youtube URL
 var Premadeletter2="Vous ne pouvez pas discuter si le nom du joueur est supérieur à 15 caractères"; 		//[SERVER]: You cannot chat if player name > 15 chars
@@ -447,3 +453,11 @@ var Premadeletter57="Communication";		//Communication
 var Premadeletter58="Caché";		//Hidden
 var Premadeletter59="Visible";		//Visible
 var Premadeletter60="Pause";		//Pause
+
+var Premadeletter61 = "Activer YT en arrière-plan";	//Enable YT as background
+var Premadeletter62 = "Désactiver YT en arrière-plan";	//Disable YT as background";
+var Premadeletter63 = "veut que vous ouvriez l'URL";	//wants you to open the url
+var Premadeletter64 = "veut que vous embarquiez et jouiez cette vidéo youtube";	//wants you to embed and play this youtube video
+var Premadeletter65 = "veut vous joindre à la salle Skype suivante";	//wants you to join the following Skype room
+var Premadeletter66 = "veut que vous rejoignez la salle Discord suivante";	//wants you to join the following Discord room
+var Premadeletter67 = "veut que tu quittes ce serveur et rejoins ce nouveau";	//wants you to leave this server and join this new one
