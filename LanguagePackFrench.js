@@ -384,6 +384,13 @@ var Languageletter350="Vieux Skins";	//Old Skins
 var Languageletter351="Offres spéciales"; //Special Deals
 var Languageletter352="Classements"; //Leaderboards
 var Languageletter353="Nouveau formulaire d'idées et de statistiques"; //New Ideas & Statistics Form
+var Languageletter354="Peaux vidéo"; //Video Skins
+var Languageletter355="Mini-scripts"; //Mini Scripts
+var Languageletter356="Scripts utilisateur"; //User Scripts
+var Languageletter357="Conversation vocale et caméra";	//Voice & Camera Chat
+var Languageletter358="S'il vous plaît soutenir le développement du mod Légende";	//Please support the development of Legend mod
+var Languageletter359="Design Nickname Police";	//Design Nickname Font
+var Languageletter360="Signaler la peau de la fausse";	//Flag the Fake's Skin
 
 var Premadeletter0="Communication Activée"; 		//Communication Activated
 var Premadeletter1="Impossible d'ouvrir cette URL Youtube";		 //Cannot open this youtube URL
