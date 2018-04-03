@@ -382,6 +382,13 @@ var Languageletter350="Old Skins";	//Old Skins
 var Languageletter351="Special Deals"; //Special Deals
 var Languageletter352="Leaderboards"; //Leaderboards
 var Languageletter353="New Ideas & Statistics Form"; //New Ideas & Statistics Form
+var Languageletter354="Video Skins"; //Video Skins
+var Languageletter355="Mini Scripts"; //Mini Scripts
+var Languageletter356="User Scripts"; //User Scripts
+var Languageletter357="Voice & Camera Chat";	//Voice & Camera Chat
+var Languageletter358="Please support the development of Legend mod";	//Please support the development of Legend mod
+var Languageletter359="Design Nickname Font";	//Design Nickname Font
+var Languageletter360="Flag the Fake's Skin";	//Flag the Fake's Skin
 
 var Premadeletter0="Communication Activated"; 		//Communication Activated
 var Premadeletter1="Cannot open this youtube URL";		 //Cannot open this youtube URL
