@@ -385,6 +385,13 @@ var Languageletter350="Стари кожи";	//Old Skins
 var Languageletter351="Специални оферти"; //Special Deals
 var Languageletter352="Класирания"; //Leaderboards
 var Languageletter353="Нова форма на идеи и статистически данни"; //New Ideas & Statistics Form
+var Languageletter354="Видео кожи"; //Video Skins
+var Languageletter355="Мини скриптове"; //Mini Scripts
+var Languageletter356="Потребителски скриптове"; //User Scripts
+var Languageletter357="Глас и камера Чат";	//Voice & Camera Chat
+var Languageletter358="Моля, подкрепете разработването на Legend mod";	//Please support the development of Legend mod
+var Languageletter359="Дизайн на псевдоним";	//Design Nickname Font
+var Languageletter360="Сигнализирай за фалшивата кожа";	//Flag the Fake's Skin
 
 var Premadeletter0="Активирана комуникация"; 		//Communication Activated
 var Premadeletter1="Не може да се отвори тази UR на YouTubeL";		 //Cannot open this youtube URL
