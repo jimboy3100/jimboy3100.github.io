@@ -384,6 +384,13 @@ var Languageletter350="老皮膚";	//Old Skins
 var Languageletter351="特惠"; //Special Deals
 var Languageletter352="排行榜"; //Leaderboards
 var Languageletter353="新的想法和統計表格"; //New Ideas & Statistics Form
+var Languageletter354="視頻皮膚"; //Video Skins
+var Languageletter355="迷你腳本"; //Mini Scripts
+var Languageletter356="用戶腳本"; //User Scripts
+var Languageletter357="語音和相機聊天";	//Voice & Camera Chat
+var Languageletter358="請支持Legend mod的開發";	//Please support the development of Legend mod
+var Languageletter359="設計暱稱字體";	//Design Nickname Font
+var Languageletter360="標記假皮膚";	//Flag the Fake's Skin
 
 var Premadeletter0="通訊激活"; 		//Communication Activated
 var Premadeletter1="無法打開這個youtube網址";		 //Cannot open this youtube URL
