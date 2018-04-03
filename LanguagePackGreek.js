@@ -383,6 +383,13 @@ var Languageletter350="Παλιά Skins";	//Old Skins
 var Languageletter351="Ειδικές προσφορές"; //Special Deals
 var Languageletter352="Ηγέτες"; //Leaderboards
 var Languageletter353="Φόρμα νέων ιδεών και στατιστικών"; //New Ideas & Statistics Form
+var Languageletter354="Βίντεο Skins"; //Video Skins
+var Languageletter355="Μικροί κώδικες"; //Mini Scripts
+var Languageletter356="Κώδικες χρηστών"; //User Scripts
+var Languageletter357="Συνομιλία φωνής & κάμερας";	//Voice & Camera Chat
+var Languageletter358="Υποστηρίξτε την ανάπτυξη του Mod Legend";	//Please support the development of Legend mod
+var Languageletter359="Σχεδίαση γραμματοσειράς Ονόματος";	//Design Nickname Font
+var Languageletter360="Σηματοδοτήστε το skin των Fake's";	//Flag the Fake's Skin
 
 var Premadeletter0="Η επικοινωνία ενεργοποιήθηκε"; 		//Communication Activated
 var Premadeletter1="Δεν είναι δυνατό να ανοίξει αυτή η διεύθυνση URL του YouTube";		 //Cannot open this youtube URL
