@@ -392,6 +392,7 @@ var Languageletter357="Глас и камера Чат";	//Voice & Camera Chat
 var Languageletter358="Моля, подкрепете разработването на Legend mod";	//Please support the development of Legend mod
 var Languageletter359="Дизайн на псевдоним";	//Design Nickname Font
 var Languageletter360="Сигнализирай за фалшивата кожа";	//Flag the Fake's Skin
+var Languageletter361="Повече FPS";	//More FPS
 
 var Premadeletter0="Активирана комуникация"; 		//Communication Activated
 var Premadeletter1="Не може да се отвори тази UR на YouTubeL";		 //Cannot open this youtube URL
@@ -520,3 +521,27 @@ var Premadeletter115 = "се използва за закупуване на о�
 var Premadeletter116 = "За да правите покупки, трябва да сте влезли в профила си ..."; //To make purchases, you must be logged in to your account…
 var Premadeletter117 = "Библиотека"; //Library
 var Premadeletter118 = "посещение"; //visit
+var Premadeletter119 = "Докладвайте като невярно (промяна на кожата)"; //Report as Fake (change Skin)
+var Premadeletter120 = "Въведете вашето EXACT име на плейъра"; //Enter your EXACT name of the player
+var Premadeletter121 = "Злоупотребата с играчи и неподходящата употреба ще доведат до UID на потребителите"; //Abusing players and inappropriate use will lead UID of user
+var Premadeletter122 = "за постоянна забрана от използването на това разширение"; //to permenant ban from usage of this extension
+
+//These are for file: https://jimboy3100.github.io/legendhelper.js
+var Externalletter1 = "ИНФОРМАЦИЯ"; //INFORMATION
+var Externalletter2 = "ШАБЛОНИ"; //TEMPLATES
+var Externalletter3 = "РЪЧНИ ТАБЕЛИ"; //MANUAL TEMPLATES
+var Externalletter4 = "Изберете шаблона си"; //Choose your template
+var Externalletter5 = "Или изберете разширение"; //Or choose an expansion
+
+//These are for file: https://jimboy3100.github.io/legendformIframe.js
+var Externalletter5a = "Изпратете кода на разработчиците"; //SEND CODE TO DEVELOPERS
+
+//These are for file: https://jimboy3100.github.io/legend.sniff3.js
+var Externalletter6 = "Поставете скрипта си в тази Textarea, можете да заредите няколко скрипта"; //Paste your Script in this Textarea, you can load multiple Scripts
+var Externalletter7 = "Заредете скрипт от Textarea"; //Load Script from Textarea
+var Externalletter8 = "Избирам"; //Choose
+var Externalletter9 = "Изтриване на скрипта"; //Erase Script
+var Externalletter10 = "име"; //Name
+var Externalletter11 = "URL на суровия Github, или друг Raw Script, започвайки с"; //Url of Raw Github, or other Raw Script, starting with
+var Externalletter12 = "Оставете този празен, ако скриптът не е импортиран от URL"; //Leave this empty if script not imported from URL
+var Externalletter13 = "ВАЖНО ЗАБЕЛЕЖКА: Не спазвайте URL адресите, които не работят, защото се използват като събития при зареждане. Ако сценарият поврежда събития при зареждане, ИЗТРИВАЙТЕ КООКИТЕ"; //IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Senario damages onload events, then DELETE COOKIES
