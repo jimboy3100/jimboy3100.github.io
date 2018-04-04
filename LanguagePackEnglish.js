@@ -389,6 +389,7 @@ var Languageletter357="Voice & Camera Chat";	//Voice & Camera Chat
 var Languageletter358="Please support the development of Legend mod";	//Please support the development of Legend mod
 var Languageletter359="Design Nickname Font";	//Design Nickname Font
 var Languageletter360="Flag the Fake Skin";	//Flag the Fake Skin
+var Languageletter361="More FPS";	//More FPS
 
 var Premadeletter0="Communication Activated"; 		//Communication Activated
 var Premadeletter1="Cannot open this youtube URL";		 //Cannot open this youtube URL
@@ -517,6 +518,10 @@ var Premadeletter115 = "is used to buy offers for your friends"; //is used to bu
 var Premadeletter116 = "To make purchases, you must be logged in to your account…"; //To make purchases, you must be logged in to your account…
 var Premadeletter117 = "Library"; //Library
 var Premadeletter118 = "visit"; //visit
+var Premadeletter119 = "Report as Fake (change Skin)"; //Report as Fake (change Skin)
+var Premadeletter120 = "Enter your EXACT name of the player"; //Enter your EXACT name of the player
+var Premadeletter121 = "Abusing players and inappropriate use will lead UID of user"; //Abusing players and inappropriate use will lead UID of user
+var Premadeletter122 = "to permenant ban from usage of this extension"; //to permenant ban from usage of this extension
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter1 = "INFORMATION"; //INFORMATION
