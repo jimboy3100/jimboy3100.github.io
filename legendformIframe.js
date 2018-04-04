@@ -1,3 +1,6 @@
+var Externalletter5a;
+
+if(Externalletter5a==null){Externalletter5a = "SEND CODE TO DEVELOPERS";}
 
 $("#main-menu").hide();
 $("#skins-panel").hide();
@@ -9,8 +12,8 @@ $("#menu-footer").after('<div id="legendformIframe" style="background-image: url
     '<p>Your browser does not support iframes.</p>'+
 	'</iframe>'	+
 											'</div></div>'+
-											    '<button id= "Backtomenu" onclick="closecustomskinsIframe(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button>'+
-												'<button id= "SendAFileform" onclick="SendAFileform(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">SEND CODE TO DEVELOPERS</button></div>');
+											    '<button id= "Backtomenu" onclick="closecustomskinsIframe(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">' + Premadeletter113 + '</button>'+
+												'<button id= "SendAFileform" onclick="SendAFileform(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">' + Externalletter5a + '</button></div>');
 
 
 									
