@@ -390,6 +390,7 @@ var Languageletter357="Συνομιλία φωνής & κάμερας";	//Voice 
 var Languageletter358="Υποστηρίξτε την ανάπτυξη του Mod Legend";	//Please support the development of Legend mod
 var Languageletter359="Σχεδίαση γραμματοσειράς Ονόματος";	//Design Nickname Font
 var Languageletter360="Σηματοδοτήστε το skin των Fake's";	//Flag the Fake's Skin
+var Languageletter361="Περισσότερα FPS";	//More FPS
 
 var Premadeletter0="Η επικοινωνία ενεργοποιήθηκε"; 		//Communication Activated
 var Premadeletter1="Δεν είναι δυνατό να ανοίξει αυτή η διεύθυνση URL του YouTube";		 //Cannot open this youtube URL
@@ -519,3 +520,27 @@ var Premadeletter115 = "χρησιμοποιείται για να αγοράσ�
 var Premadeletter116 = "Για να κάνετε αγορές, πρέπει να είστε συνδεδεμένοι στο λογαριασμό σας ..."; //To make purchases, you must be logged in to your account…
 var Premadeletter117 = "Βιβλιοθήκη"; //Library
 var Premadeletter118 = "επίσκεψη"; //visit
+var Premadeletter119 = "Αναφορά ως ψεύτικη (αλλαγή Skin)"; //Report as Fake (change Skin)
+var Premadeletter120 = "Εισαγάγετε το ακριβές όνομα τυ παίκτη"; //Enter your EXACT name of the player
+var Premadeletter121 = "Η κατάχρηση παικτών και η ακατάλληλη χρήση θα οδηγήσει σε UID χρήστη"; //Abusing players and inappropriate use will lead UID of user
+var Premadeletter122 = "σε μόνιμη απαγόρευση της χρήσης αυτής της επέκτασης"; //to permenant ban from usage of this extension
+
+//These are for file: https://jimboy3100.github.io/legendhelper.js
+var Externalletter1 = "ΠΛΗΡΟΦΟΡΙΕΣ"; //INFORMATION
+var Externalletter2 = "ΥΠΟΔΕΙΓΜΑΤΑ"; //TEMPLATES
+var Externalletter3 = "ΧΕΙΡΟΚΙΝΗΤΑ ΥΠΟΔΕΙΓΜΑΤΑ"; //MANUAL TEMPLATES
+var Externalletter4 = "Επιλέξτε το υπόδειγμα σας"; //Choose your template
+var Externalletter5 = "Ή επιλέξτε επέκταση"; //Or choose an expansion
+
+//These are for file: https://jimboy3100.github.io/legendformIframe.js
+var Externalletter5a = "ΑΠΟΣΤΟΛΤΕ ΚΩΔΙΚΑ ΣΤΟΥΣ ΠΡΟΓΡΑΜΜΑΤΙΣΤΕΣ"; //SEND CODE TO DEVELOPERS
+
+//These are for file: https://jimboy3100.github.io/legend.sniff3.js
+var Externalletter6 = "Επικόλληση του σεναρίου σας σε αυτό το Textarea, μπορείτε να φορτώσετε πολλά Scripts"; //Paste your Script in this Textarea, you can load multiple Scripts
+var Externalletter7 = "Φορτώστε το σενάριο από το Textarea"; //Load Script from Textarea
+var Externalletter8 = "Επιλέγω"; //Choose
+var Externalletter9 = "Διαγράψτε τον κώδικα"; //Erase Script
+var Externalletter10 = "Όνομα"; //Name
+var Externalletter11 = "Url απο Raw Github, ή άλλο Raw Script, που να ξεκινάει με"; //Url of Raw Github, or other Raw Script, starting with
+var Externalletter12 = "Αφήστε αυτό το άδειο αν το σενάριο δεν εισαχθεί από τη διεύθυνση URL"; //Leave this empty if script not imported from URL
+var Externalletter13 = "ΣΗΜΑΝΤΙΚΗ ΕΙΔΟΠΟΙΗΣΗ: Μην κρατάτε τις διευθύνσεις URL που δεν λειτουργούν, επειδή χρησιμοποιούνται ως συμβάντα onload. Εάν το Senario βλάψει τα γεγονότα φόρτωσης, στη συνέχεια ΣΒΉΣΤΕ ΤΑ COOKIES"; //IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Senario damages onload events, then DELETE COOKIES
