@@ -1,4 +1,17 @@
-//v0.3
+//v0.4
+
+var Externalletter1;
+var Externalletter2;
+var Externalletter3;
+var Externalletter4;
+var Externalletter5;
+
+if(Externalletter1==null){Externalletter1 = "INFORMATION";}
+if(Externalletter2==null){Externalletter2 = "TEMPLATES";}
+if(Externalletter3==null){Externalletter3 = "MANUAL TEMPLATES";}
+if(Externalletter4==null){Externalletter4 = "MANUAL TEMPLATES";}
+if(Externalletter5==null){Externalletter5 = "Or choose an expansion";}
+
 $("#main-menu").hide();
 $("#skins-panel").hide();
 $("#quick-menu").hide();
@@ -9,10 +22,10 @@ $("#menu-footer").after('<div id="legendhelper" style="background-image: url('+l
     '<p>Your browser does not support iframes.</p>'+
 	'</iframe>'	+
 											'</div></div>'+
-											    '<button id= "Backtomenu" onclick="closecustomskinsIframe(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button>'+
-												'<button id= "Infobtn1" onclick="Infobtn1(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">INFORMATION</button>'+
-												'<button id= "TemplatesBtn" onclick="templatesIframe(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">TEMPLATES</button>'+
-												'<button id= "ManualyTemplatesBtn" onclick="manualytemplatesIframe(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">MANUAL TEMPLATES</button></div>');
+											    '<button id= "Backtomenu" onclick="closecustomskinsIframe(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">' + Premadeletter113 + '</button>'+
+												'<button id= "Infobtn1" onclick="Infobtn1(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">' + Externalletter1 + '</button>'+
+												'<button id= "TemplatesBtn" onclick="templatesIframe(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">' + Externalletter2 + '</button>'+
+												'<button id= "ManualyTemplatesBtn" onclick="manualytemplatesIframe(); return false" style="margin-left: 10px;" class="btn btn-success"  data-original-title="" title="">' + Externalletter3 + '</button></div>');
 
 									
 function closecustomskinsIframe(){
@@ -25,7 +38,7 @@ $("#legendhelper").remove();
 function templatesIframe(){
 
 $("#Userscriptshud3").html('<div id="tutorial9" style="display:block;" width="820" height="490">'+
-	'<p style="color:white; font-size:24px"; align="middle"><b>Choose your template</b></p>'+	
+	'<p style="color:white; font-size:24px"; align="middle"><b>' + Externalletter4 + '</b></p>'+	
 	'<div id="settingbanners"><img src="https://jimboy3100.github.io/banners/iconagario.png" alt="Search Servers" id= "searchicon" onclick="agariowhitesettings(); return false" class="img-rounded" alt="Cinque Terre" width=20% height="50">' +
 	'<u style="color:white; font-size:22px"; align="left" onclick="agariowhitesettings(); return false">Agario Default(White)</u><br>'+	
 	'<img src="https://jimboy3100.github.io/banners/iconnosoup.png" alt="NoSoupsSettings" id = "legendclanbanner" class="img-rounded"  width=20% height="50" onclick="nosoups(); return false" > '+
@@ -38,7 +51,7 @@ $("#Userscriptshud3").html('<div id="tutorial9" style="display:block;" width="82
 	'<u style="color:white; font-size:22px"; align="right" onclick="legenddefaultsettings(); return false">Legend Default (Dark Blue)</u><br>'+
 	'<img src="https://jimboy3100.github.io/banners/iconvanilla.jpg" alt="Vanilla Like Settings" id = "legendclanbanner" class="img-rounded" width=20% height="50" onclick="vanillalike(); return false" > '+
 	'<u style="color:white; font-size:22px"; align="right" onclick="vanillalike(); return false">Vanilla like (Grey)</u><br>'+
-	'<p style="color:white; font-size:24px"; align="middle"><b>Or choose an expansion</b></p></div>'+
+	'<p style="color:white; font-size:24px"; align="middle"><b>' + Externalletter5 + '</b></p></div>'+
 	'<div id="LEGENDAds2"><a id="legendAdAnchor2" onclick="opendyinglight(); return false"><img id="legendAdImg" height="70px" src="https://jimboy3100.github.io/banners/dyinglightbanner2.jpg" style="width: 40%"></a><u style="color:white; font-size:22px"; align="right" onclick="opendyinglight(); return false">Dying Light</u></div>'+	   
 	'<br><br></div></div>');
 //$('#TemplatesBtn').hide();	
