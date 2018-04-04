@@ -517,3 +517,23 @@ var Premadeletter115 = "is used to buy offers for your friends"; //is used to bu
 var Premadeletter116 = "To make purchases, you must be logged in to your account…"; //To make purchases, you must be logged in to your account…
 var Premadeletter117 = "Library"; //Library
 var Premadeletter118 = "visit"; //visit
+
+//These are for file: https://jimboy3100.github.io/legendhelper.js
+var Externalletter1 = "INFORMATION"; //INFORMATION
+var Externalletter2 = "TEMPLATES"; //TEMPLATES
+var Externalletter3 = "MANUAL TEMPLATES"; //MANUAL TEMPLATES
+var Externalletter4 = "Choose your template"; //Choose your template
+var Externalletter5 = "Or choose an expansion"; //Or choose an expansion
+
+//These are for file: https://jimboy3100.github.io/legendformIframe.js
+var Externalletter5a = "SEND CODE TO DEVELOPERS"; //SEND CODE TO DEVELOPERS
+
+//These are for file: https://jimboy3100.github.io/legend.sniff3.js
+var Externalletter6 = "Paste your Script in this Textarea, you can load multiple Scripts"; //Paste your Script in this Textarea, you can load multiple Scripts
+var Externalletter7 = "Load Script from Textarea"; //Load Script from Textarea
+var Externalletter8 = "Choose"; //Choose
+var Externalletter9 = "Erase Script"; //Erase Script
+var Externalletter10 = "Name"; //Name
+var Externalletter11 = "Url of Raw Github, or other Raw Script, starting with"; //Url of Raw Github, or other Raw Script, starting with
+var Externalletter12 = "Leave this empty if script not imported from URL"; //Leave this empty if script not imported from URL
+var Externalletter13 = "IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Senario damages onload events, then DELETE COOKIES"; //IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Senario damages onload events, then DELETE COOKIES
