@@ -391,6 +391,7 @@ var Languageletter357="Conversation vocale et caméra";	//Voice & Camera Chat
 var Languageletter358="S'il vous plaît soutenir le développement du mod Légende";	//Please support the development of Legend mod
 var Languageletter359="Design Nickname Police";	//Design Nickname Font
 var Languageletter360="Signaler la peau de la fausse";	//Flag the Fake's Skin
+var Languageletter361="Plus FPS";	//More FPS
 
 var Premadeletter0="Communication Activée"; 		//Communication Activated
 var Premadeletter1="Impossible d'ouvrir cette URL Youtube";		 //Cannot open this youtube URL
@@ -493,6 +494,7 @@ var Premadeletter88 = "Vous utilisez une mauvaise version"; //You are using a wr
 var Premadeletter89 = "Le jeu va se terminer maintenant"; //Game will terminate now
 var Premadeletter90 = "Offres spéciales"; //Special Deals
 var Premadeletter91 = "Agario peut ou non vous donner la peau, mais seulement les pièces"; //Agario may or may not give you the Skin, but only the coins
+var Premadeletter91a = "À utiliser à vos risques et périls"; //Use at your own risk
 var Premadeletter92 = "Si l'UID de votre ami est faux, l'achat échouera"; //If friend's UID is wrong, purchase will fail
 var Premadeletter93 = "Paramètres d'usine UID"; //UID Factory Settings
 var Premadeletter94 = "Vous devez vous connecter pour charger Offres spéciales"; //You must login to load Special Deals
@@ -520,3 +522,27 @@ var Premadeletter115 = "est utilisé pour acheter des offres pour vos amis"; //i
 var Premadeletter116 = "Pour effectuer des achats, vous devez être connecté à votre compte ..."; //To make purchases, you must be logged in to your account…
 var Premadeletter117 = "Bibliothèque"; //Library
 var Premadeletter118 = "visite"; //visit
+var Premadeletter119 = "Signaler comme faux (changer la peau)"; //Report as Fake (change Skin)
+var Premadeletter120 = "Entrez votre nom exact du joueur"; //Enter your EXACT name of the player
+var Premadeletter121 = "Abus des joueurs et utilisation inappropriée conduira UID de l'utilisateur"; //Abusing players and inappropriate use will lead UID of user
+var Premadeletter122 = "à l'interdiction permanente de l'utilisation de cette extension"; //to permanent ban from usage of this extension
+
+//These are for file: https://jimboy3100.github.io/legendhelper.js
+var Externalletter1 = "INFORMATION"; //INFORMATION
+var Externalletter2 = "TEMPLATES"; //TEMPLATES
+var Externalletter3 = "MANUAL TEMPLATES"; //MANUAL TEMPLATES
+var Externalletter4 = "Choisissez votre template"; //Choose your template
+var Externalletter5 = "Ou choisissez une extension"; //Or choose an expansion
+
+//These are for file: https://jimboy3100.github.io/legendformIframe.js
+var Externalletter5a = "ENVOYER LE CODE AUX DÉVELOPPEURS"; //SEND CODE TO DEVELOPERS
+
+//These are for file: https://jimboy3100.github.io/legend.sniff3.js
+var Externalletter6 = "Collez votre script dans cette Textarea, vous pouvez charger plusieurs Scripts"; //Paste your Script in this Textarea, you can load multiple Scripts
+var Externalletter7 = "Charger un script depuis Textarea"; //Load Script from Textarea
+var Externalletter8 = "Choisir"; //Choose
+var Externalletter9 = "Effacer le script"; //Erase Script
+var Externalletter10 = "Nom"; //Name
+var Externalletter11 = "Url de Raw Github, ou autre Raw Script, commençant par"; //Url of Raw Github, or other Raw Script, starting with
+var Externalletter12 = "Laissez ce champ vide si le script n'est pas importé depuis l'URL"; //Leave this empty if script not imported from URL
+var Externalletter13 = "AVIS IMPORTANT: Ne conservez pas les URL qui ne fonctionnent pas, car elles sont utilisées en tant qu'événements onload. Si le scénario a endommagé les événements, puis SUPPRIMER LES COOKIES"; //IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Scenario damages onload events, then DELETE COOKIES
