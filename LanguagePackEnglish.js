@@ -491,6 +491,7 @@ var Premadeletter88 = "You are using a wrong version"; //You are using a wrong v
 var Premadeletter89 = "Game will terminate now"; //Game will terminate now
 var Premadeletter90 = "Special Deals"; //Special Deals
 var Premadeletter91 = "Agario may or may not give you the Skin, but only the coins"; //Agario may or may not give you the Skin, but only the coins
+var Premadeletter91a = "Use at your own risk"; //Use at your own risk
 var Premadeletter92 = "If UID of your friend is wrong, purchase will fail"; //If friend UID is wrong, purchase will fail
 var Premadeletter93 = "UID Factory Settings"; //UID Factory Settings
 var Premadeletter94 = "You must login to load Special Deals"; //You must login to load Special Deals
@@ -521,7 +522,7 @@ var Premadeletter118 = "visit"; //visit
 var Premadeletter119 = "Report as Fake (change Skin)"; //Report as Fake (change Skin)
 var Premadeletter120 = "Enter your EXACT name of the player"; //Enter your EXACT name of the player
 var Premadeletter121 = "Abusing players and inappropriate use will lead UID of user"; //Abusing players and inappropriate use will lead UID of user
-var Premadeletter122 = "to permenant ban from usage of this extension"; //to permenant ban from usage of this extension
+var Premadeletter122 = "to permanent ban from usage of this extension"; //to permanent ban from usage of this extension
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter1 = "INFORMATION"; //INFORMATION
@@ -541,4 +542,4 @@ var Externalletter9 = "Erase Script"; //Erase Script
 var Externalletter10 = "Name"; //Name
 var Externalletter11 = "Url of Raw Github, or other Raw Script, starting with"; //Url of Raw Github, or other Raw Script, starting with
 var Externalletter12 = "Leave this empty if script not imported from URL"; //Leave this empty if script not imported from URL
-var Externalletter13 = "IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Senario damages onload events, then DELETE COOKIES"; //IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Senario damages onload events, then DELETE COOKIES
+var Externalletter13 = "IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Scenario damages onload events, then DELETE COOKIES"; //IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Scenario damages onload events, then DELETE COOKIES
