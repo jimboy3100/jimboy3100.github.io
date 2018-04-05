@@ -493,6 +493,7 @@ var Premadeletter88 = "Χρησιμοποιείτε μια λανθασμένη 
 var Premadeletter89 = "Το παιχνίδι θα τερματιστεί τώρα"; //Game will terminate now
 var Premadeletter90 = "Ειδικές προσφορές"; //Special Deals
 var Premadeletter91 = "Το Agario μπορεί ή δεν μπορεί να σας δώσει τα skins, αλλά μόνο τα νομίσματα"; //Agario may or may not give you the Skin, but only the coins
+var Premadeletter91a = "Χρησιμοποιήστε το με δική σας ευθύνη"; //Use at your own risk
 var Premadeletter92 = "Αν το UID του φίλου σας είναι λάθος, η αγορά θα αποτύχει"; //If friend's UID is wrong, purchase will fail
 var Premadeletter93 = "Ρυθμίσεις εργοστασίου για UID"; //UID Factory Settings
 var Premadeletter94 = "Πρέπει να συνδεθείτε για να φορτώσετε ειδικές προσφορές"; //You must login to load Special Deals
@@ -523,7 +524,7 @@ var Premadeletter118 = "επίσκεψη"; //visit
 var Premadeletter119 = "Αναφορά ως ψεύτικη (αλλαγή Skin)"; //Report as Fake (change Skin)
 var Premadeletter120 = "Εισαγάγετε το ακριβές όνομα τυ παίκτη"; //Enter your EXACT name of the player
 var Premadeletter121 = "Η κατάχρηση παικτών και η ακατάλληλη χρήση θα οδηγήσει σε UID χρήστη"; //Abusing players and inappropriate use will lead UID of user
-var Premadeletter122 = "σε μόνιμη απαγόρευση της χρήσης αυτής της επέκτασης"; //to permenant ban from usage of this extension
+var Premadeletter122 = "σε μόνιμη απαγόρευση της χρήσης αυτής της επέκτασης"; //to permanent ban from usage of this extension
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter1 = "ΠΛΗΡΟΦΟΡΙΕΣ"; //INFORMATION
@@ -539,8 +540,8 @@ var Externalletter5a = "ΑΠΟΣΤΟΛΤΕ ΚΩΔΙΚΑ ΣΤΟΥΣ ΠΡΟΓΡΑ�
 var Externalletter6 = "Επικόλληση του σεναρίου σας σε αυτό το Textarea, μπορείτε να φορτώσετε πολλά Scripts"; //Paste your Script in this Textarea, you can load multiple Scripts
 var Externalletter7 = "Φορτώστε το σενάριο από το Textarea"; //Load Script from Textarea
 var Externalletter8 = "Επιλέγω"; //Choose
-var Externalletter9 = "Διαγράψτε τον κώδικα"; //Erase Script
+var Externalletter9 = "Διαγρ. τον κώδικα"; //Erase Script
 var Externalletter10 = "Όνομα"; //Name
 var Externalletter11 = "Url απο Raw Github, ή άλλο Raw Script, που να ξεκινάει με"; //Url of Raw Github, or other Raw Script, starting with
 var Externalletter12 = "Αφήστε αυτό το άδειο αν το σενάριο δεν εισαχθεί από τη διεύθυνση URL"; //Leave this empty if script not imported from URL
-var Externalletter13 = "ΣΗΜΑΝΤΙΚΗ ΕΙΔΟΠΟΙΗΣΗ: Μην κρατάτε τις διευθύνσεις URL που δεν λειτουργούν, επειδή χρησιμοποιούνται ως συμβάντα onload. Εάν το Senario βλάψει τα γεγονότα φόρτωσης, στη συνέχεια ΣΒΉΣΤΕ ΤΑ COOKIES"; //IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Senario damages onload events, then DELETE COOKIES
+var Externalletter13 = "ΣΗΜΑΝΤΙΚΗ ΕΙΔΟΠΟΙΗΣΗ: Μην κρατάτε τις διευθύνσεις URL που δεν λειτουργούν, επειδή χρησιμοποιούνται ως συμβάντα onload. Εάν το Scenario βλάψει τα γεγονότα φόρτωσης, στη συνέχεια ΣΒΉΣΤΕ ΤΑ COOKIES"; //IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Scenario damages onload events, then DELETE COOKIES
