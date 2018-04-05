@@ -391,6 +391,7 @@ var Languageletter357="語音和相機聊天";	//Voice & Camera Chat
 var Languageletter358="請支持Legend mod的開發";	//Please support the development of Legend mod
 var Languageletter359="設計暱稱字體";	//Design Nickname Font
 var Languageletter360="標記假皮膚";	//Flag the Fake's Skin
+var Languageletter361="更多FPS";	//More FPS
 
 var Premadeletter0="通訊激活"; 		//Communication Activated
 var Premadeletter1="無法打開這個youtube網址";		 //Cannot open this youtube URL
@@ -492,6 +493,7 @@ var Premadeletter88 = "您正在使用錯誤的版本"; //You are using a wrong 
 var Premadeletter89 = "遊戲現在將終止"; //Game will terminate now
 var Premadeletter90 = "特惠"; //Special Deals
 var Premadeletter91 = "Agario可能會也可能不會給你皮膚，但只有硬幣"; //Agario may or may not give you the Skin, but only the coins
+var Premadeletter91a = "使用風險自負"; //Use at your own risk
 var Premadeletter92 = "如果你的朋友的UID錯誤，購買將失敗"; //If friend's UID is wrong, purchase will fail
 var Premadeletter93 = "UID出廠設置"; //UID Factory Settings
 var Premadeletter94 = "您必須登錄才能加載特惠"; //You must login to load Special Deals
@@ -519,3 +521,27 @@ var Premadeletter115 = "用於為您的朋友購買優惠"; //is used to buy off
 var Premadeletter116 = "要進行購買，您必須登錄到您的帳戶..."; //To make purchases, you must be logged in to your account…
 var Premadeletter117 = "圖書館"; //Library
 var Premadeletter118 = "訪問"; //visit
+var Premadeletter119 = "報告為假（更換皮膚）"; //Report as Fake (change Skin)
+var Premadeletter120 = "輸入您的玩家的真實姓名"; //Enter your EXACT name of the player
+var Premadeletter121 = "濫用玩家和不恰當的使用會導致用戶的UID"; //Abusing players and inappropriate use will lead UID of user
+var Premadeletter122 = "永久禁止使用此擴展程序"; //to permanent ban from usage of this extension
+
+//These are for file: https://jimboy3100.github.io/legendhelper.js
+var Externalletter1 = "信息"; //INFORMATION
+var Externalletter2 = "模板"; //TEMPLATES
+var Externalletter3 = "手冊模板"; //MANUAL TEMPLATES
+var Externalletter4 = "選擇你的模板"; //Choose your template
+var Externalletter5 = "或者選擇一個擴展"; //Or choose an expansion
+
+//These are for file: https://jimboy3100.github.io/legendformIframe.js
+var Externalletter5a = "向開發者發送代碼"; //SEND CODE TO DEVELOPERS
+
+//These are for file: https://jimboy3100.github.io/legend.sniff3.js
+var Externalletter6 = "將你的腳本粘貼到這個Textarea中，你可以加載多個腳本"; //Paste your Script in this Textarea, you can load multiple Scripts
+var Externalletter7 = "從Textarea加載腳本"; //Load Script from Textarea
+var Externalletter8 = "選擇"; //Choose
+var Externalletter9 = "擦除腳本"; //Erase Script
+var Externalletter10 = "名稱"; //Name
+var Externalletter11 = "Raw Github的Url或其他原始腳本"; //Url of Raw Github, or other Raw Script, starting with
+var Externalletter12 = "如果腳本未從URL導入，請將其保留為空"; //Leave this empty if script not imported from URL
+var Externalletter13 = "重要提示：不要使URL不起作用，因為它們被用作加載事件。 如果Scenario損壞了加載事件，則刪除COOKIES"; //IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Scenario damages onload events, then DELETE COOKIES
