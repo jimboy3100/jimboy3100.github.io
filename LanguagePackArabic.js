@@ -393,6 +393,7 @@ var Languageletter357="دردشة صوت والكاميرا";	//Voice & Camera C
 var Languageletter358="يرجى دعم تطوير مطوري ليجاند مُود";	//Please support the development of Legend mod
 var Languageletter359="تصميم اسم الخط";	//Design Nickname Font
 var Languageletter360="التنويه بوضع اسكن شخص مزور";	//Flag the Fake Skin
+var Languageletter361="المزيد من FPS";	//More FPS
 
 var Premadeletter0="تَم تَفعِيِل الإتِصَالات"; 		//Communication Activated
 var Premadeletter1="لَا يُمكِن فَتح عِنوان اليُوتيُوب";		 //Cannot open this youtube URL
@@ -497,6 +498,7 @@ var Premadeletter88 = "أنت تستخدم إصدارًا خاطئًا"; //You a
 var Premadeletter89 = "اللعبة ستنتهي الآن"; //Game will terminate now
 var Premadeletter90 = "صفقة خاصة"; //Special Deals
 var Premadeletter91 = "قد أو لا تعطيك Agario الجلد ، ولكن فقط العملات"; //Agario may or may not give you the Skin, but only the coins
+var Premadeletter91a = "استخدام على مسؤوليتك الخاصة"; //Use at your own risk
 var Premadeletter92 = "إذا كان UID الخاص بصديقك غير صحيح ، فستفشل عملية الشراء"; //If friend UID is wrong, purchase will fail
 var Premadeletter93 = "إعدادات المصنع UID"; //UID Factory Settings
 var Premadeletter94 = "يجب عليك تسجيل الدخول لتحميل العروض الخاصة"; //You must login to load Special Deals
@@ -524,3 +526,27 @@ var Premadeletter115 = "يستخدم لشراء العروض لأصدقائك"; 
 var Premadeletter116 = "لإجراء عمليات شراء ، يجب تسجيل الدخول إلى حسابك ..."; //To make purchases, you must be logged in to your account…
 var Premadeletter117 = "مكتبة"; //Library
 var Premadeletter118 = "يزور"; //visit
+var Premadeletter119 = "الإبلاغ عن خطأ (تغيير الجلد)"; //Report as Fake (change Skin)
+var Premadeletter120 = "أدخل اسمك الخاص بالمشغل"; //Enter your EXACT name of the player
+var Premadeletter121 = "سيؤدي استغلال اللاعبين والاستخدام غير المناسب إلى UID للمستخدم"; //Abusing players and inappropriate use will lead UID of user
+var Premadeletter122 = "لحظر دائم من استخدام هذا التمديد"; //to permanent ban from usage of this extension
+
+//These are for file: https://jimboy3100.github.io/legendhelper.js
+var Externalletter1 = "معلومات"; //INFORMATION
+var Externalletter2 = "قالب"; //TEMPLATES
+var Externalletter3 = "الدليل اليدوي"; //MANUAL TEMPLATES
+var Externalletter4 = "اختر القالب الخاص بك"; //Choose your template
+var Externalletter5 = "أو اختيار التوسع"; //Or choose an expansion
+
+//These are for file: https://jimboy3100.github.io/legendformIframe.js
+var Externalletter5a = "إرسال الكود إلى المطورين"; //SEND CODE TO DEVELOPERS
+
+//These are for file: https://jimboy3100.github.io/legend.sniff3.js
+var Externalletter6 = "الصق Script الخاص بك في هذا Textarea ، يمكنك تحميل برامج نصية متعددة"; //Paste your Script in this Textarea, you can load multiple Scripts
+var Externalletter7 = "تحميل البرنامج النصي من Textarea"; //Load Script from Textarea
+var Externalletter8 = "أختر"; //Choose
+var Externalletter9 = "مسح السيناريو"; //Erase Script
+var Externalletter10 = "اسم"; //Name
+var Externalletter11 = "Url (raw) Github أو أي سيناريو خام آخر يبدأ بـ"; //Url of Raw Github, or other Raw Script, starting with
+var Externalletter12 = "اترك هذا فارغًا إذا لم يتم استيراد البرنامج النصي من عنوان URL"; //Leave this empty if script not imported from URL
+var Externalletter13 = "إشعار هام: لا تحتفظ بعناوين URL التي لا تعمل ، لأنها تستخدم في أحداث التحميل. إذا كان الأضرار السيناريوهات على أحداث التحميل ، ثم DELETE COOKIES"; //IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Scenario damages onload events, then DELETE COOKIES
