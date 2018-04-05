@@ -527,7 +527,7 @@ var Premadeletter116 = "Για να κάνετε αγορές, πρέπει να
 var Premadeletter117 = "Βιβλιοθήκη"; //Library
 var Premadeletter118 = "επίσκεψη"; //visit
 var Premadeletter119 = "Αναφορά ως ψεύτικη (αλλαγή Skin)"; //Report as Fake (change Skin)
-var Premadeletter120 = "Εισαγάγετε το ακριβές όνομα τυ παίκτη"; //Enter your EXACT name of the player
+var Premadeletter120 = "Εισαγάγετε το ακριβές όνομα τoυ παίκτη"; //Enter your EXACT name of the player
 var Premadeletter121 = "Η κατάχρηση παικτών και η ακατάλληλη χρήση θα οδηγήσει σε UID χρήστη"; //Abusing players and inappropriate use will lead UID of user
 var Premadeletter122 = "σε μόνιμη απαγόρευση της χρήσης αυτής της επέκτασης"; //to permanent ban from usage of this extension
 
