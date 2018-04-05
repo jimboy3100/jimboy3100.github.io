@@ -68,22 +68,9 @@ document.body.style.background = "#f3f3f3 url('https://jimboy3100.github.io/bann
 $( "body" ).append('<div id="imagebig"><iframe id="loaderIframeIcon1" src="https://jimboy3100.github.io/extras/banneranimated1oldskins.html" name="CodePen" allowfullscreen="true" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowtransparency="true" scrolling="no" frameBorder="0" class="result-iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe></div>');
 }, 3000);
 setTimeout(function() {
-$("#canvas").remove();
-$("#adsBottom").remove();
-$("#rightPanel").remove();
-$("#skinButton").click();
-$("#imagebig").remove();
-$(".center-container").hide();
-$("#dailyquests-panel").hide();
-$("#v-ex-menu").hide();
-$("#overlays").hide();
-$(".radio-module").hide();
-$("#service-message-area").hide();
-$("#leftPanel>div.agario-panel.agario-side-panel.agario-shop-panel").show();
-$("#helloContainer").css("margin-left", "-150px");
-$("#imagebig").remove();
+$("#canvas").remove();$("#adsBottom").remove();$("#rightPanel").remove();$(".agario-panel.agario-side-panel.agario-profile-panel").remove();$("#dailyquests-panel").remove();$("#v-ex-menu").remove();$("#service-message-area").remove();$(".radio-module").remove();$(".tosBox.right").remove();$(".tosBox.left").remove();$(".form-group.clearfix").remove();$("#skinCustomButton").remove();$("#settings").remove();$("#vanilla-home-link").remove();$("#settingsButton").remove();$("#instructions").remove();$(".btn.btn-play.btn-primary").remove();$(".btn.btn-play-guest.btn-success").remove();$(".btn.btn-warning.btn-login-play").text("Login");$(".btn.btn-warning.btn-login-play").css("margin-left", "80px");$("#helloContainer").css("margin-left", "-150px");$('.agario-panel.agario-side-panel.agario-shop-panel').append('<button id="logoutbtn" onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout">Logout</button>');$("#imagebig").remove();
 }, 7000);
-    }
+}
 else if (location.host == "agar.io" && location.pathname == "/") {
 	var oldskins = localStorage.getItem("oldskins");
     	if (oldskins=="true"){
@@ -92,14 +79,10 @@ else if (location.host == "agar.io" && location.pathname == "/") {
         location.href = "http://agar.io/LMoldskins";
 }
 	else{
-        location.href = "http://agar.io/ogario";
-  //  location.href = "http://agar.io/legendmod" + window.location.search + location.hash;
+        location.href = "http://agar.io/legend";
     document.documentElement.innerHTML = "";
-    //return;
-
-
+	
 // Dependencies
-
 var cpickerCSS = '<link href="https://jimboy3100.github.io/bootstrap-colorpicker.min.css" rel="stylesheet"></link>';
 var toastrCSS = '<link href="https://jimboy3100.github.io/toastr.min.css" rel="stylesheet"></link>';
 var switchCSS = '<link href="https://jimboy3100.github.io/switchery.min.css" rel="stylesheet"></link>';
@@ -107,8 +90,6 @@ var rangeCSS = '<link href="https://jimboy3100.github.io/rangeslider.css" rel="s
 var perfectCSS = '<link href="https://jimboy3100.github.io/perfect-scrollbar.min.css" rel="stylesheet"></link>';
 var faCSS = '<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"></link>';
 var legendarioCSS = '<link href="http://cdn.ogario.ovh/v3/ogario.v3.css?v=339" rel="stylesheet"></link>';
-
-//var ytJS = '<script src="https://jimboy3100.github.io/Youtubeiframe_api.js"></script>';
 var keyJS = '<script src="https://jimboy3100.github.io/key-event.js"></script>';
 var cpickerJS = '<script src="https://jimboy3100.github.io/bootstrap-colorpicker.min.js"></script>';
 var toastrJS = '<script src="https://jimboy3100.github.io/toastr.min.js"></script>';
@@ -122,8 +103,6 @@ var legendJSniff3JS = '<script src="https://jimboy3100.github.io/legend.sniff3.j
 var legendarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=339"></script>';
 var legendarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=339" charset="utf-8"></script>';
 
-// var legendMC_AGARIO = '<script src="https://jimboy3100.github.io/agario/mc/agario.js" charset="utf-8"></script>';
-
 var modVersion = GM_info.script.version;
 
     // Inject Legend
@@ -133,12 +112,7 @@ var modVersion = GM_info.script.version;
         page = page.replace(/<script[^>]*src="[^"]*outstream\.js[^"]*"[^>]*><\/script>/, "");
         page = page.replace("</head>", legendarioSniffJS + cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + keyJS + legendJSniff2JS + "</head>");
         page = page.replace("</body>", legendJSniffJS + "</body>");
-        //  	 page = page.replace(/<script.*?src=".*?agario\.core\.js.*?><\/script>/, legendMC_AGARIO);
-     //   setTimeout(function() {
         page = page.replace(/<script[^>]*src="[^"]*agario\.core\.js[^"]*"[^>]*><\/script>/, "");
-//        page = page.replace("</body>", legendarioJS + legendJS + legendJSniff3JS +  "<script>init('" + modVersion + "');</script>" + "</body>");
- //       setTimeout(function() {
-     //   }, 2000);
         return page;
     }
 
@@ -297,10 +271,7 @@ if (location.href == "http://ext.fzogar.xyz/ogs/") {
     setTimeout(function() {
     $("#login_form").append('<span style="float: left; font-size: 13px;">Powered by <a target="_blank" href="http://fzogar.xyz/ogs" style="color: #ffffff;" data-toggle="tooltip" data-title="Legend mod Website" data-placement="left"><u>http://fzogar.xyz/ogs</u></a></span>');
     $("#Loadbtn").after('<input type="submit" id="sendInfo" class="btn btn-default " value="Apply Settings to Mod" style="margin-left: 7px;">');
-//    $("#sendInfo").after('<input type="submit" id="sendInfo2" class="btn btn-default " value="Upload from Legend Mod" style="margin-left: 7px;">');
     $("#sendInfo").click(function() {
-//        showpaste();
-//        alert($("#jsonupdate").val());
         try{window.parent.postMessage("PostedOgarSettings1?datasent="+$("#jsonupdate").val(), "*");
         } catch (e) {}
     });
@@ -326,21 +297,17 @@ if (location.host == "talky.io") {
     var IPAgario = getParameterByName("ip", url2);
     var IPtoken = getParameterByName("token", url2);
     setTimeout(function() {
-       // document.getElementsByClassName('text__NUZ8yEiB TalkyButton__text _2jD5C')[0].click();
         document.getElementById('join').click();
     }, 4000);
 
     setTimeout(function() {
         document.getElementsByClassName('create-room-form-input')[0].value = IPtoken;
-	//document.getElementById('join').click();
         document.getElementsByClassName('create-room-form-button button button-default button-undefined')[0].click();
         document.getElementById('skip').click();
         document.getElementsByClassName('TalkyButton__text')[0].click();
     }, 2000);
     setTimeout(function() {
         document.getElementsByClassName('SDuUr')[1].value = gamename;
-        //<a href="http://legendmod.ml" target="_blank" id="LegendModWebsite" class="title" style=""><u>Legend Mod</u></a> <a href=IPAgario target="_blank" id="IPAgario" class="title" style=""><u>Copy Agar.io Token</u></a>
-
 		if (IPAgario.length==6){
 		document.getElementsByClassName('_24sME message message-info message-full-width')[0].before("[Talky.io]: Legend Mod. Server: " + "http://agar.io/#" + IPAgario + " . [PARTY] (Password rooms are different than Public)");}
 		else{
