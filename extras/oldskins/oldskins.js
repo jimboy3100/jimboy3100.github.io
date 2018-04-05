@@ -1,3 +1,4 @@
+setTimeout(function() {
 $("#canvas").remove();
 $("#adsBottom").remove();
 $("#rightPanel").remove();
@@ -20,3 +21,5 @@ $(".btn.btn-warning.btn-login-play").css("margin-left", "80px");
 $("#helloContainer").css("margin-left", "-150px");
 $('.agario-panel.agario-side-panel.agario-shop-panel').append('<button id="logoutbtn" onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout">Logout</button>');
 $("#imagebig").remove();
+
+}, 7000);
