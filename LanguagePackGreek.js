@@ -45,7 +45,7 @@ var Languageletter25a="Φόρμα ιδεών και στατιστικών";		//
 var Languageletter25b="Πληροφορίες & Πρότυπα";		//Mod Info & Templates
 var Languageletter26="Προσθηκη Εικονων";		//Add skins
 
-var Languageletter31="Αποσυνδέση";		//Logout
+var Languageletter31="Αποσύνδεση";		//Logout
 var Languageletter32="Χρησιμοποιήθηκε";		//Times Used
 var Languageletter33="Legend επέκταση απο";		//Legend Mod by
 var Languageletter34="Μετάφραση απο";		//Translation by
