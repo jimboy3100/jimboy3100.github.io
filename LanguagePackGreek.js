@@ -439,8 +439,8 @@ var Premadeletter38="Πρέπει να βρίσκεστε σε λειτουργ�
 var Premadeletter39="Για λόγους αποτροπής ανεπιθύμητης αλληλογραφίας, πρέπει να είστε στο παιχνίδι και να χρησιμοποιείτε κωδικό πρόσβασης";		//Due to spamming issues, you must be in game and use password
 
 //					These buttons must no be big in length
-var Premadeletter40="Ανηγ. Youtube";		//Auto Youtube On
-var Premadeletter41="Κλεισ. Youtube";		//Auto Youtube Off
+var Premadeletter40="Αυτόματο Ανηγ. Youtube";		//Auto Youtube On
+var Premadeletter41="Αυτόματο Κλεισ. Youtube";		//Auto Youtube Off
 var Premadeletter42="Ανηγ. συντομευσεων";		//Show Shortcuts
 var Premadeletter43="Κλεισ. συντομευσ.";		//Hide Shortcuts
 var Premadeletter44="Ανηγ. XP BAR";		//Show XP BAR
