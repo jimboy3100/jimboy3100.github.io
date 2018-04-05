@@ -494,6 +494,7 @@ var Premadeletter88 = "Използвате грешна версия"; //You ar
 var Premadeletter89 = "Играта ще приключи сега"; //Game will terminate now
 var Premadeletter90 = "Специални оферти"; //Special Deals
 var Premadeletter91 = "Агарио може или не може да ви даде кожата, но само монетите"; //Agario may or may not give you the Skin, but only the coins
+var Premadeletter91a = "Използвайте го на свой собствен риск"; //Use at your own risk
 var Premadeletter92 = "Ако UID на приятеля ви не е наред, покупката ще се провали"; //If friend's UID is wrong, purchase will fail
 var Premadeletter93 = "Фабричните настройки на UID"; //UID Factory Settings
 var Premadeletter94 = "Трябва да влезете, за да заредите специални оферти"; //You must login to load Special Deals
@@ -524,7 +525,7 @@ var Premadeletter118 = "посещение"; //visit
 var Premadeletter119 = "Докладвайте като невярно (промяна на кожата)"; //Report as Fake (change Skin)
 var Premadeletter120 = "Въведете вашето EXACT име на плейъра"; //Enter your EXACT name of the player
 var Premadeletter121 = "Злоупотребата с играчи и неподходящата употреба ще доведат до UID на потребителите"; //Abusing players and inappropriate use will lead UID of user
-var Premadeletter122 = "за постоянна забрана от използването на това разширение"; //to permenant ban from usage of this extension
+var Premadeletter122 = "за постоянна забрана от използването на това разширение"; //to permanent ban from usage of this extension
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter1 = "ИНФОРМАЦИЯ"; //INFORMATION
@@ -544,4 +545,4 @@ var Externalletter9 = "Изтриване на скрипта"; //Erase Script
 var Externalletter10 = "име"; //Name
 var Externalletter11 = "URL на суровия Github, или друг Raw Script, започвайки с"; //Url of Raw Github, or other Raw Script, starting with
 var Externalletter12 = "Оставете този празен, ако скриптът не е импортиран от URL"; //Leave this empty if script not imported from URL
-var Externalletter13 = "ВАЖНО ЗАБЕЛЕЖКА: Не спазвайте URL адресите, които не работят, защото се използват като събития при зареждане. Ако сценарият поврежда събития при зареждане, ИЗТРИВАЙТЕ КООКИТЕ"; //IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Senario damages onload events, then DELETE COOKIES
+var Externalletter13 = "ВАЖНО ЗАБЕЛЕЖКА: Не спазвайте URL адресите, които не работят, защото се използват като събития при зареждане. Ако сценарият поврежда събития при зареждане, ИЗТРИВАЙТЕ КООКИТЕ"; //IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Scenario damages onload events, then DELETE COOKIES
