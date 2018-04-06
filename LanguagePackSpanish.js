@@ -34,6 +34,7 @@ var Languageletter25="Video promo de Legend";		//Legend Promo Video
 var Languageletter25a="Nuevo formulario de Ideas y Estadísticas";		//New Ideas & Statistics Form
 var Languageletter25b="Información de la MOD y plantillas";		//Mod Info & Templates
 var Languageletter26="Añadir skins";		//Add skins
+var Languageletter26a="Copiar servidor, contraseña, tablero de equipo y tabla de líderes"; //Copy Server, Password, Teamboard & Leaderboard
 
 var Languageletter31="Cerrar sesión";		//Logout
 var Languageletter32="Veces usado";		//Times Used
