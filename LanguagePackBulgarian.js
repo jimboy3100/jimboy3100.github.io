@@ -533,6 +533,9 @@ var Premadeletter121 = "Злоупотребата с играчи и непод
 var Premadeletter122 = "за постоянна забрана от използването на това разширение"; //to permanent ban from usage of this extension
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
+var Externalletter0a = "ЕЗИЦИ"; //LANGUAGES
+var Externalletter0b = "Изберете език"; //Choose a language
+var Externalletter0c = "Промените ще се извършват напълно след рестартирането"; //Changes will take place completely after the restart
 var Externalletter1 = "ИНФОРМАЦИЯ"; //INFORMATION
 var Externalletter2 = "ШАБЛОНИ"; //TEMPLATES
 var Externalletter3 = "РЪЧНИ ТАБЕЛИ"; //MANUAL TEMPLATES
