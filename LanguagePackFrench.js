@@ -533,6 +533,9 @@ var Premadeletter121 = "Abus des joueurs et utilisation inappropriée conduira U
 var Premadeletter122 = "à l'interdiction permanente de l'utilisation de cette extension"; //to permanent ban from usage of this extension
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
+var Externalletter0a = "LANGUES"; //LANGUAGES
+var Externalletter0b = "Choisissez une langue"; //Choose a language
+var Externalletter0c = "Les changements auront lieu complètement après le redémarrage"; //Changes will take place completely after the restart
 var Externalletter1 = "INFORMATION"; //INFORMATION
 var Externalletter2 = "TEMPLATES"; //TEMPLATES
 var Externalletter3 = "MANUAL TEMPLATES"; //MANUAL TEMPLATES
