@@ -44,6 +44,7 @@ var Languageletter25="Legend 的影片";		//Legend Promo Video
 var Languageletter25a="新思路與統計表";		//New Ideas & Statistics Form
 var Languageletter25b="Mod 信息和模板";		//Mod Info & Templates
 var Languageletter26="增加皮";		//Add skins
+var Languageletter26a="複製服務器，密碼，團隊板和排行榜"; //Copy Server, Password, Teamboard & Leaderboard
 
 var Languageletter31="登出";		//Logout
 var Languageletter32="使用時間";		//Times Used
