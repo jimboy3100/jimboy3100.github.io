@@ -44,6 +44,7 @@ var Languageletter25="Legend Promo Video";		//Legend Promo Video
 var Languageletter25a="New Ideas & Statistics Form";		//New Ideas & Statistics Form
 var Languageletter25b="Mod Info & Templates";		//Mod Info & Templates
 var Languageletter26="Add skins";		//Add skins
+var Languageletter26a="Copy Server, Password, Teamboard & Leaderboard"; //Copy Server, Password, Teamboard & Leaderboard
 
 var Languageletter31="Logout";		//Logout
 var Languageletter32="Times Used";		//Times Used
