@@ -537,6 +537,9 @@ var Premadeletter121 = "سيؤدي استغلال اللاعبين والاست�
 var Premadeletter122 = "لحظر دائم من استخدام هذا التمديد"; //to permanent ban from usage of this extension
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
+var Externalletter0a = "اللغات"; //LANGUAGES
+var Externalletter0b = "اختر لغة"; //Choose a language
+var Externalletter0c = "ستحدث التغييرات تمامًا بعد إعادة التشغيل"; //Changes will take place completely after the restart
 var Externalletter1 = "معلومات"; //INFORMATION
 var Externalletter2 = "قالب"; //TEMPLATES
 var Externalletter3 = "الدليل اليدوي"; //MANUAL TEMPLATES
