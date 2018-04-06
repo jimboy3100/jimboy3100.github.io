@@ -532,6 +532,9 @@ var Premadeletter121 = "Η κατάχρηση παικτών και η ακατ�
 var Premadeletter122 = "σε μόνιμη απαγόρευση της χρήσης αυτής της επέκτασης"; //to permanent ban from usage of this extension
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
+var Externalletter0a = "ΓΛΩΣΣΕΣ"; //LANGUAGES
+var Externalletter0b = "Επιλέξτε μια γλώσσα"; //Choose a language
+var Externalletter0c = "Οι αλλαγές θα πραγματοποιηθούν πλήρως μετά την επανεκκίνηση"; //Changes will take place completely after the restart
 var Externalletter1 = "ΠΛΗΡΟΦΟΡΙΕΣ"; //INFORMATION
 var Externalletter2 = "ΥΠΟΔΕΙΓΜΑΤΑ"; //TEMPLATES
 var Externalletter3 = "ΧΕΙΡΟΚΙΝΗΤΑ ΥΠΟΔΕΙΓΜΑΤΑ"; //MANUAL TEMPLATES
