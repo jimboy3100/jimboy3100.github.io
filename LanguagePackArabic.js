@@ -45,6 +45,8 @@ var Languageletter25="الفيِديُو التَرويِجِي لليجَاند
 var Languageletter25a="نموذج الأفكار والإحصاءات الجديدة";		//Legend Promo Video
 var Languageletter25b=" معلومات المود والقوالب الجاهزة";		//Mod Info & Templates
 var Languageletter26="اضَافِة سكينَات";		//Add skins
+var Languageletter26a="نسخ الخادم ، كلمة المرور ، لوحة الفريق و لوح المتصدرين"; //Copy Server, Password, Teamboard & Leaderboard
+
 var Premadeletter27="يريد منك تمكين ترول عند الموت";		//wants you to hide Enable Troll on death
 var Premadeletter28="يريد منك فتح مشغل Youtube";			//wants you to open Youtube Player
 var Premadeletter29="وجدت قائمة الأوائل";		//Leaderboard found
