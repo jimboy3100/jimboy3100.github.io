@@ -45,7 +45,7 @@ var Languageletter25a="Нова форма на идеи и статистиче
 var Languageletter25b="Модна информация и шаблони";		//Mod Info & Templates
 
 var Languageletter26="Добави скинове";		//Add skins
-
+var Languageletter26a="Сървър за копиране, парола, екип съвет и лидер съвет"; //Copy Server, Password, Teamboard & Leaderboard
 var Languageletter31="Излез";		//Logout
 var Languageletter32="Пъти използвано";		//Times Used
 var Languageletter33="Legend Mod от";		//Legend Mod by
