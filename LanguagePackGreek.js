@@ -44,6 +44,7 @@ var Languageletter25="Προωθητικό Video Legend";		//Legend Promo Video
 var Languageletter25a="Φόρμα ιδεών και στατιστικών";		//New Ideas & Statistics Form
 var Languageletter25b="Πληροφορίες & Πρότυπα";		//Mod Info & Templates
 var Languageletter26="Προσθηκη Εικονων";		//Add skins
+var Languageletter26a="Διακομιστής αντιγραφής, κωδικός πρόσβασης, πίνακας ομάδας και ηγετών"; //Copy Server, Password, Teamboard & Leaderboard
 
 var Languageletter31="Αποσύνδεση";		//Logout
 var Languageletter32="Χρησιμοποιήθηκε";		//Times Used
