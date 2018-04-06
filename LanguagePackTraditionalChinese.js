@@ -532,6 +532,9 @@ var Premadeletter121 = "濫用玩家和不恰當的使用會導致用戶的UID";
 var Premadeletter122 = "永久禁止使用此擴展程序"; //to permanent ban from usage of this extension
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
+var Externalletter0a = "語言"; //LANGUAGES
+var Externalletter0b = "選擇一種語言"; //Choose a language
+var Externalletter0c = "重新啟動後，更改將完全發生"; //Changes will take place completely after the restart
 var Externalletter1 = "信息"; //INFORMATION
 var Externalletter2 = "模板"; //TEMPLATES
 var Externalletter3 = "手冊模板"; //MANUAL TEMPLATES
