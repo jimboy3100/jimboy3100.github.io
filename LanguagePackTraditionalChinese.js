@@ -325,8 +325,8 @@ var Languageletter292="加入伺服器 (Backspace)";		//Join server (Backspace)
 var Languageletter293="切換伺服器 (+)";		//Change server (+)
 var Languageletter294="歷史榜單";		//Leaderboard history
 var Languageletter295="輸入朋友的 token / IP / leaderboard / name / tag...";		//Enter friend token, IP, leaderboard, name or clan tag...
-
-
+var Languageletter295a="清除列表"; //Clear list
+var Languageletter295b="輸入聊天消息..."; //Enter chat message...
 var Languageletter298="隊友";		//Team top 
 var Languageletter299="排行榜";		//Leaderbodard
 var Languageletter300="通訊";		//Communication
