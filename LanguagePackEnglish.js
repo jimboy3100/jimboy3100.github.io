@@ -324,7 +324,8 @@ var Languageletter292="Join server (Backspace)";		//Join server (Backspace)
 var Languageletter293="Change server (+)";		//Change server (+)
 var Languageletter294="Leaderboard history";		//Leaderboard history
 var Languageletter295="Enter friend token, IP, leaderboard, name or clan tag...";		//Enter friend token, IP, leaderboard, name or clan tag...
-
+var Languageletter295a="Clear list"; //Clear list
+var Languageletter295b="Enter chat message..."; //Enter chat message...
 var Languageletter298="Team top ";		//Team top 
 var Languageletter299="Leaderbodard";		//Leaderbodard
 var Languageletter300="Communication";		//Communication
