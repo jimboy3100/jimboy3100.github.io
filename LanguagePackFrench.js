@@ -325,8 +325,8 @@ var Languageletter292="Joindre le serveur (Backspace)";		//Join server (Backspac
 var Languageletter293="Changer de serveur (+)";		//Change server (+)
 var Languageletter294="Historique du classement";		//Leaderboard history
 var Languageletter295="Entrer le lien d'un ami, adresse IP, classement, nom ou tag de clan...";		//Enter friend token, IP, leaderboard, name or clan tag...
-
-
+var Languageletter295a="Effacer la liste"; //Clear list
+var Languageletter295b="Entrez le message de chat..."; //Enter chat message...
 var Languageletter298="Top de l'équipe";		//Team top 
 var Languageletter299="Classement";		//Leaderbodard
 var Languageletter300="Communication";		//Communication
