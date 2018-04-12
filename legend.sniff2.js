@@ -16,6 +16,19 @@ document.title = "Legend mod";
 }, 1300);
 setTimeout(function () {
 document.title = "Legend mod"; 
+ 
+(function(){
+    var _privateLog = console.log;
+    console.log = function (message) {
+		if (CutNameConflictwithMessage==false){
+		if (~message.indexOf("OGARio by szymy")){
+		}
+		else{
+			_privateLog.apply(console, arguments);
+		}
+		}
+    };
+})();
     
 /*$(document).on("keydown", function(e) {
     if(e.keyCode == 65 || e.keyCode == 83) {
@@ -25,6 +38,7 @@ document.title = "Legend mod";
   	 });
 //	$("#minimap-hud").css('height', '0px');
 }, 1500); */
+    
 setTimeout(function () {
 $(".agario-profile-name").css('vertical-align', '');
 }, 4500);
