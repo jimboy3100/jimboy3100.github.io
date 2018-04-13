@@ -44,7 +44,8 @@ var Languageletter34="Перевод";		//Translation by
 var Languageletter35="копировать имена лидеров и имена ячеек. (нажмите x, чтобы показать / скрыть)";		//copy leaderboard names and cell names. (press x to show/hide) 
 var Languageletter36="Анимация";		//Animation 
 var Languageletter37="Задержка анимации";		//Animation delay 
-var Languageletter37a="Автоматическое масштабирование";		// Auto zoom var Languageletter37b="Увеличить";		// Zoom 
+var Languageletter37a="Автоматическое масштабирование";		// Auto zoom 
+var Languageletter37b="Увеличить";		// Zoom 
 var Languageletter38="Скорость масштабирования:";		//Zoom speed:
 var Languageletter39="респаун";			//Respawn 
 var Languageletter40="Автовоспроизведение";		//Auto respawn 
@@ -267,7 +268,8 @@ var Languageletter254="Показать / скрыть чат";		//Show/hide cha
 var Languageletter255="Показать спрятать HUD";		//Show/hide HUD 
 var Languageletter256="Копировать таблицу лидеров";		//Copy leaderboard 
 var Languageletter257="Показать / скрыть таблицу лидеров";		//Show/hide leaderboard 
-var Languageletter258="Переключение автоматического масштабирования";		//Toggle auto zoom var Languageletter259="Reset zoom";		//Reset zoom 
+var Languageletter258="Переключение автоматического масштабирования";		//Toggle auto zoom 
+var Languageletter259="Reset zoom";		//Reset zoom 
 var Languageletter260="Переключить местоположение смерти";		//Toggle death location 
 var Languageletter261="Показать историю чата / Очистить чат";		//Show chat history / Clear chat 
 var Languageletter262="Показать / скрыть фоновые сектора";		//Show/hide background sectors 
