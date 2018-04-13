@@ -17,6 +17,21 @@ document.title = "LM express";
 setTimeout(function () {
 document.title = "LM express";   
 }, 1500);
+
+var CutNameConflictwithMessage=false;	
+(function(){
+    var _privateLog = console.log;
+    console.log = function (message) {
+		if (CutNameConflictwithMessage==false){
+		if (~message.indexOf("OGARio by szymy")){
+		}
+		else{
+			_privateLog.apply(console, arguments);
+		}
+		}
+    };
+})();
+
 setTimeout(function () {
 $(".agario-profile-name").css('vertical-align', '');
 }, 6000);
