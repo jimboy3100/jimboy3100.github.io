@@ -1,4 +1,4 @@
-//v0.5
+//v0.6
 var Languagetimesused;
 var Languagetimesused1=0;
 var Externalletter0a;
@@ -236,5 +236,19 @@ function changeModLanguage2() {
 
         }, 800);
     }
+    if ($("#legendlanguages2").val() == 8) {
+        localStorage.setItem("languagemod", 8);
+        var s = document.createElement("script");
+        s.type = "text/javascript";
+        s.src = "https://jimboy3100.github.io/LanguagePackRussian.js";
+        $("body").append(s);
+        setTimeout(function() {
+            var s1 = document.createElement("script");
+            s1.type = "text/javascript";
+            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
+            $("body").append(s1);
+
+        }, 800);
+    }	
 		return Languagetimesused="1";
 }
