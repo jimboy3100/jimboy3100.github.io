@@ -14,7 +14,39 @@
             ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
         })();
-    </script>
+		
+		// define a new console
+var console = (function(oldCons){
+    return {
+        log: function(text){
+            oldCons.log(text);
+            // Your code
+        },
+        info: function (text) {
+            oldCons.info(text);
+            // Your code
+        },
+        warn: function (text) {
+            oldCons.warn(text);
+            // Your code
+        },
+        error: function (text) {
+		if (console.error(text).includes('Mixed Content')){
+		var el = document.getElementById('Agarioiframe');
+		el.src = "https://jimboy3100.github.io/agar.html"; 
+		}
+		else{
+            oldCons.error(text);
+            // Your code
+			}
+        }
+    };
+}(window.console));
+
+//Then redefine the old console
+window.console = console;
+
+   </script>
   </head>
 
 <body>
