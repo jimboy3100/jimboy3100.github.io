@@ -2,7 +2,7 @@
 // @name        LM Tiny OpenScourse
 // @namespace   LM Tiny OpenScourse Script
 // @description Autospawn + Autoclick Coin + Profiles + Macros + Name Copier + Server Reloader + Arrow Movement Keys + Spectate Mode + More!
-// @version     1
+// @version     1.1
 // @author      Jimboy3100
 // @icon        https://jimboy3100.github.io/banners/CropedImage128.gif
 // @include     http://agar.io/*
@@ -518,3 +518,44 @@
 
 })();
 
+(function() {
+    var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    link.type = 'image/x-icon';
+    link.rel = 'shortcut icon';
+    link.href = 'https://jimboy3100.github.io/banners/icon32croped.ico.gif';
+    document.getElementsByTagName('head')[0].appendChild(link);
+})();
+
+document.title = "Legend mod";   
+setTimeout(function () {
+document.title = "Legend mod";   
+}, 700);
+setTimeout(function () {
+document.title = "Legend mod";   
+}, 1300);
+ 
+var url = localStorage.getItem("url");
+var botsenabled = getParameterByName("bots", url);
+
+if (botsenabled=="YES"){
+setTimeout(function() {	
+if ($("#optnSpawn").is(':checked')==false){
+	$("#optnSpawn").click();
+}
+if ($("#optnMove").is(':checked')==false){
+	$("#optnMove").click();
+}
+
+$(".btn.btn-play-guest.btn-success").click();
+}, 4500);
+}
+
+function getParameterByName(name, url) {	
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
