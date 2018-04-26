@@ -56,7 +56,29 @@ GM_registerMenuCommand('LM Library', function() {
 GM_registerMenuCommand('Donate for Legend Mod', function() {
     window.open("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CM3GDVCW6PBF6");
 }, 'r');
-if (location.host === "agar.io" && location.pathname === "/") {
+
+url = window.location.href;
+if(getParameterByName("mod", url)=="tiny"){
+var tinyJS = '<script src="http://jimboy3100.github.io/ExampleScripts/LMTiny.user.js"></script>';
+	    function inject(page) {
+        page = page.replace("</body>", tinyJS + "</body>");
+        return page;
+    }
+    window.stop();
+    document.documentElement.innerHTML = "";
+    GM_xmlhttpRequest({
+        method: "GET",
+        url: "http://agar.io/",
+        onload: function(e) {
+            var doc = inject(e.responseText);
+            document.open();
+            document.write(doc);
+			document.close();
+        }
+    });
+
+}
+else if (location.host === "agar.io" && location.pathname === "/") {
 	window.stop();	
 	location.href = "about:blank" + window.location.search + location.hash;
 // Dependencies
