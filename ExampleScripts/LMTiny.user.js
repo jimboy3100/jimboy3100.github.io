@@ -534,7 +534,7 @@ setTimeout(function () {
 document.title = "Legend mod";   
 }, 1300);
  
-var url = localStorage.getItem("url");
+var url = window.location.href;
 var botsenabled = getParameterByName("bots", url);
 
 if (botsenabled=="YES"){
