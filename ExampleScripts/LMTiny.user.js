@@ -538,6 +538,9 @@ var url = window.location.href;
 var botsenabled = getParameterByName("bots", url);
 
 if (botsenabled=="YES"){
+setTimeout(function () {
+document.title = "Legend mod Bots";   
+}, 1350);	
 setTimeout(function() {	
 if ($("#optnSpawn").is(':checked')==false){
 	$("#optnSpawn").click();
