@@ -5,22 +5,26 @@
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
 // @author       Jimboy3100
 // @match        http://agar.io/*
-// @grant        none
+// @match        https:/jimboy3100.github.io/agar.html
+// @grant        GM_xmlhttpRequest
 // ==/UserScript==	
 // Legend Mod by Jimboy3100
+// Check location
 
-var used;
-LM();
-function LM(){
-if (used==null){
-			var script = document.createElement("script");
-			script.type = "text/javascript";
-			script.src = location.protocol + "//jimboy3100.github.io/extension/extension.js?ts="+Date.now();
-			script.onerror = function(err)
-			{
-				setTimeout(loadExtension, 100);
-			};
-			document.head.appendChild(script);
-return used=1;			
-}
-}
+var tinyJS = '<script src="//jimboy3100.github.io/extension/extension.js"></script>';
+	    function inject(page) {
+        page = page.replace("</body>", tinyJS + "</body>");
+        return page;
+    }
+    window.stop();
+    document.documentElement.innerHTML = "";
+    GM_xmlhttpRequest({
+        method: "GET",
+        url: "http://agar.io/",
+        onload: function(e) {
+            var doc = inject(e.responseText);
+            document.open();
+            document.write(doc);
+			document.close();
+        }
+    });
