@@ -2,7 +2,7 @@
 // @name        LM Tiny OpenScourse
 // @namespace   LM Tiny OpenScourse Script
 // @description Autospawn + Autoclick Coin + Profiles + Macros + Name Copier + Server Reloader + Arrow Movement Keys + Spectate Mode + More!
-// @version     1
+// @version     1.1
 // @author      Jimboy3100
 // @icon        https://jimboy3100.github.io/banners/CropedImage128.gif
 // @include     http://agar.io/*
