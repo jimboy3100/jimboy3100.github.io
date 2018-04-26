@@ -557,6 +557,13 @@ $(".btn.btn-play-guest.btn-success").click();
 
 })();
 
+
+document.title = "Legend mod";   
+setTimeout(function () {
+document.title = "Legend mod";   
+}, 700);
+setTimeout(function () {
+document.title = "Legend mod";   
 (function() {
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.type = 'image/x-icon';
@@ -565,12 +572,6 @@ $(".btn.btn-play-guest.btn-success").click();
     document.getElementsByTagName('head')[0].appendChild(link);
 })();
 
-document.title = "Legend mod";   
-setTimeout(function () {
-document.title = "Legend mod";   
-}, 700);
-setTimeout(function () {
-document.title = "Legend mod";   
 }, 1300);
  
 setTimeout(function() {	
