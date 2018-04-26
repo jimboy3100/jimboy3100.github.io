@@ -2,7 +2,7 @@
 // @name        LM Tiny OpenScourse
 // @namespace   LM Tiny OpenScourse Script
 // @description Autospawn + Autoclick Coin + Profiles + Macros + Name Copier + Server Reloader + Arrow Movement Keys + Spectate Mode + More!
-// @version     1.1
+// @version     1
 // @author      Jimboy3100
 // @icon        https://jimboy3100.github.io/banners/CropedImage128.gif
 // @include     http://agar.io/*
@@ -40,6 +40,22 @@
 		editOverlays();
 		hookOverlays();
 		hookKeys();
+		$('#yt-subscribe').remove();
+		
+		var url = window.location.href
+		var botsenabled = getParameterByName("bots", url);
+		if (botsenabled=="YES"){	
+			setTimeout(function() {	
+if ($("#optnSpawn").is(':checked')==false){
+	$("#optnSpawn").click();
+}
+if ($("#optnMove").is(':checked')==false){
+	$("#optnMove").click();
+}
+
+$(".btn.btn-play-guest.btn-success").click();
+}, 4000);
+		}		
 	});
 
 	function editOverlays() {
@@ -534,24 +550,7 @@ setTimeout(function () {
 document.title = "Legend mod";   
 }, 1300);
  
-var url = window.location.href;
-var botsenabled = getParameterByName("bots", url);
 
-if (botsenabled=="YES"){
-setTimeout(function () {
-document.title = "Legend mod Bots";   
-}, 1350);	
-setTimeout(function() {	
-if ($("#optnSpawn").is(':checked')==false){
-	$("#optnSpawn").click();
-}
-if ($("#optnMove").is(':checked')==false){
-	$("#optnMove").click();
-}
-
-$(".btn.btn-play-guest.btn-success").click();
-}, 4500);
-}
 
 function getParameterByName(name, url) {	
     if (!url) url = window.location.href;
