@@ -50,7 +50,7 @@ SOFTWARE.
 */
 
 // Start of script
-
+url = window.location.href;
 GM_registerMenuCommand('Legend Mod Website', function() {
     window.open("https://legendmod.joomla.com/en/");
 }, 'r');
@@ -71,6 +71,26 @@ setTimeout(function() {
 $("#canvas").remove();$("#adsBottom").remove();$("#rightPanel").remove();$(".agario-panel.agario-side-panel.agario-profile-panel").remove();$("#dailyquests-panel").remove();$("#v-ex-menu").remove();$("#service-message-area").remove();$(".radio-module").remove();$(".tosBox.right").remove();$(".tosBox.left").remove();$(".form-group.clearfix").remove();$("#skinCustomButton").remove();$("#settings").remove();$("#vanilla-home-link").remove();$("#settingsButton").remove();$("#instructions").remove();$(".btn.btn-play.btn-primary").remove();$(".btn.btn-play-guest.btn-success").remove();$(".btn.btn-warning.btn-login-play").text("Login");$(".btn.btn-warning.btn-login-play").css("margin-left", "80px");$("#helloContainer").css("margin-left", "-150px");$('.agario-panel.agario-side-panel.agario-shop-panel').append('<button id="logoutbtn" onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout">Logout</button>');$("#imagebig").remove();
 }, 7000);
 }
+else if(getParameterByName("mod", url)=="tiny"){
+var tinyJS = '<script src="http://jimboy3100.github.io/ExampleScripts/LMTiny.user.js"></script>';
+	    function inject(page) {
+        page = page.replace("</body>", tinyJS + "</body>");
+        return page;
+    }
+    window.stop();
+    document.documentElement.innerHTML = "";
+    GM_xmlhttpRequest({
+        method: "GET",
+        url: "http://agar.io/",
+        onload: function(e) {
+            var doc = inject(e.responseText);
+            document.open();
+            document.write(doc);
+			document.close();
+        }
+    });
+
+}
 else if (location.host == "agar.io" && location.pathname == "/") {
 	var oldskins = localStorage.getItem("oldskins");
     	if (oldskins=="true"){
@@ -81,7 +101,7 @@ else if (location.host == "agar.io" && location.pathname == "/") {
 	else{
         location.href = "http://agar.io/legend";
     document.documentElement.innerHTML = "";
-	
+
 // Dependencies
 var cpickerCSS = '<link href="https://jimboy3100.github.io/bootstrap-colorpicker.min.css" rel="stylesheet"></link>';
 var toastrCSS = '<link href="https://jimboy3100.github.io/toastr.min.css" rel="stylesheet"></link>';
