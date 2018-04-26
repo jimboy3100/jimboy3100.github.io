@@ -9,7 +9,10 @@
 // ==/UserScript==	
 // Legend Mod by Jimboy3100
 
-
+if (location.host == "agar.io" && location.pathname == "/") {
+    location.href = "http://agar.io/ogario" + location.hash;
+    return;
+}
 			var script = document.createElement("script");
 			script.type = "text/javascript";
 			script.src = location.protocol + "//jimboy3100.github.io/extension/extension.js?ts="+Date.now();
