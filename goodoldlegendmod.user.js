@@ -20,12 +20,8 @@
 // @grant GM_deleteValue
 // @grant GM_registerMenuCommand
 // ==/UserScript==
-// Legend Mod by Jimboy3100
-/*MIT License
 
 // Legend Mod by Jimboy3100
-
-
 /*MIT License
 
 Copyright (c) [The Legend Mod]
