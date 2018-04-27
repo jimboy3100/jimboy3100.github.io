@@ -24,13 +24,12 @@
 	//};
 	my.log("start");
 	global.lib_ogar = my;
-
+	
 	// =====  テストドライバー  =====
-
-//	if(/atmarkit\.co\.jp\/d9KcsYjB/.test(location.href)){
+	if(/atmarkit\.co\.jp\/d9KcsYjB/.test(location.href)){
 		//setTimeout(init_html, 100);
 		loadScript("http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js", init_html);
-//	}
+	}
 	function init_html(){
 		$('body').html(''+
 			'<input type="text" id="tag" placeholder="Tag" style="width:5em;" />'+
@@ -42,7 +41,7 @@
 			'<button id="send" type="submit" onclick="">送信</button>'+
 			'&nbsp;<button id="users" type="submit" onclick="">Users</button>'+
 			'<div id="user_list"></div>'+
-			'<br/><div id="LM"><textarea id="chat" cols="60" rows="10" ></textarea></div>'+
+			'<br/><textarea id="chat" cols="60" rows="10" ></textarea>'+
 			'');
 		let ogar;
 		$('#connect').click(function(){
@@ -59,7 +58,7 @@
 				//chatElem.value += sep + (escapeHtml(ev.nick) +": "+ escapeHtml(ev.message));
 				if (ev.message.includes("Welcome! You are connected to the OGARio")){
 				ev.message="Welcome to Legend Mod";
-				}
+				}				
 				chatElem.value += sep + ev.nick +": "+ ev.message;
 			};
 		});
@@ -82,7 +81,7 @@
 			$('#user_list').html(user_txt);
 		});
 	}
-
+	
 	// =====  外部機能  =====
 	// 画面から接続パラメーターを取得する
 	my.getOptFromWindow = function(opt_){
@@ -94,7 +93,7 @@
 			|| getToken() || "";
 		out.gameMode = opt.gameMode || getValue('#gamemode') || "";
 		out.partyToken = opt.partyToken || getValue('#party-token') || "";
-		// ※ Legend Mod は #nick, #tag, #token, #gamemode
+		// ※ Legend は #nick, #tag, #token, #gamemode
 		//	AgarTool は #nick, #psk, #server, #gamemode
 		//	"vanilla tool" は #nick, #psk, (#btn-dc-input) #gamemode
 		function getValue(...selectors){
@@ -118,8 +117,8 @@
 		}
 		return out;
 	};
-
-	// =====  OGAR クラス定義  =====
+	
+	// =====  Legend Mod クラス定義  =====
 	function Tan1LibOgar(opt_){
 		//this.opt = my.getOptFromWindow(opt_);
 		let dummyCallback = function(){};
@@ -171,14 +170,14 @@
 				return x.alive && x.updateTime > timeLate && x.mass > 0;
 			}).sort(function(x, y){return y.mass - x.mass;});
 	};
-
-	// =====  OGAR 受信ハンドラ  =====
+	
+	// =====  Legend Mod 受信ハンドラ  =====
 	prot.handleMessage = function(event){
 		var ogar = this;
 		//my.log("handleMessage");
 		//console.dir(event);
 		//my.log("event.data type="+ typeof event.data.constructor.name);
-		//   Legend Mod コードだと
+		//   Legend コードだと
 		//          own.readMessage(new DataView(event.data));
 		// だが、実際には Blob で帰る
 		if(ArrayBuffer.prototype.isPrototypeOf(event.data)){
@@ -224,8 +223,8 @@
 			break;
 		}
 	};
-
-	// =====  OGAR 受信処理  =====
+	
+	// =====  Legend Mod 受信処理  =====
 	prot.updateTeamPlayer = function(rcvBuf){
 		var teamPlayerID = rcvBuf.getUint32(1, true);
 		var bufPos = 0x5;
@@ -369,8 +368,8 @@
 			});
 		//}
 	};
-
-	// =====  OGAR 送信処理  =====
+	
+	// =====  Legend	送信処理  =====
 	prot.sendPartyData = function(opt_){
 		let fake = Object.assign({
 			"tag": "",
@@ -433,7 +432,7 @@
 		sndBuf.setUint32(0xd, playerMass, !0x0);
 		this.sendBuffer(sndBuf);
 	};
-
+	
 	// チャットの送信
 	// [注意] playerID と nick が対応していないと、受信側で弾かれる
 	prot.chatSend = function(message, opt_){
@@ -452,13 +451,13 @@
 		}// 文字列終端がない
 		this.sendBuffer(buf);
 	};
-
-	// =====  OGAR 補助処理  =====
+	
+	// =====  Legend Mod 補助処理  =====
 	// カスタムスキンの URL として正当であれば、引数を、そうでなければ空文字列を返す
 	prot.checkSkinURL = function(skinURL) {
 		return /^https?:\/\/i\.(?:imgur|hizliresim)\.com\/\w{6,8}\.(?:jpg|jpeg|png)\??\d*$/i.test(skinURL) ? skinURL : '';
 	};
-
+	
 	// カスタムスキンをキャッシュする
 	prot.cacheCustomSkin = function(nick, playerColor, skinURL){
 		if(! skinURL){
@@ -514,7 +513,7 @@
 		let skinImg = skinsCache[skinURL + "_cached"];
 		return skinImg && skinImg.complete && skinImg.width ? skinImg : null;
 	};
-
+	
 	// =====  汎用通信処理  =====
 	prot.flushData = function(){
 	};
