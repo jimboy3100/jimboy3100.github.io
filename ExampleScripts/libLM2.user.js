@@ -8,6 +8,7 @@
 // @grant        unsafeWindow
 // ==/UserScript==
 
+
 (function() {
 	'use strict';
 	const global = window.unsafeWindow || window;
