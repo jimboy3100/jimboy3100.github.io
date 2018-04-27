@@ -25,7 +25,7 @@
 	my.log("start");
 	global.lib_ogar = my;
 	
-	// =====  テストドライバー  =====
+	// =====  Test driverー  =====
 	if(/atmarkit\.co\.jp\/d9KcsYjB/.test(location.href)){
 		//setTimeout(init_html, 100);
 		loadScript("http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js", init_html);
@@ -38,7 +38,7 @@
 			'<button id="connect" type="submit" onclick="">Connect</button>'+
 			'<button id="close" type="submit" onclick="">Close</button>'+
 			'<br/><input type="text" id="message" placeholder="chat message" style="width:30em;" />'+
-			'<button id="send" type="submit" onclick="">送信</button>'+
+			'<button id="send" type="submit" onclick="">Send</button>'+
 			'&nbsp;<button id="users" type="submit" onclick="">Users</button>'+
 			'<div id="user_list"></div>'+
 			'<br/><textarea id="chat" cols="60" rows="10" ></textarea>'+
@@ -82,8 +82,8 @@
 		});
 	}
 	
-	// =====  外部機能  =====
-	// 画面から接続パラメーターを取得する
+	// =====  External functions  =====
+	// Obtain connection parameters from the screen
 	my.getOptFromWindow = function(opt_){
 		let opt = opt_ || {}, out = opt;
 		out.nick = opt.nick || getValue('#nick') || "";
@@ -118,7 +118,7 @@
 		return out;
 	};
 	
-	// =====  Legend Mod クラス定義  =====
+	// =====  Legend Mod Class Definition  =====
 	function Tan1LibOgar(opt_){
 		//this.opt = my.getOptFromWindow(opt_);
 		let dummyCallback = function(){};
@@ -171,18 +171,18 @@
 			}).sort(function(x, y){return y.mass - x.mass;});
 	};
 	
-	// =====  Legend Mod 受信ハンドラ  =====
+	// =====  Legend Mod Receive Handler  =====
 	prot.handleMessage = function(event){
 		var ogar = this;
 		//my.log("handleMessage");
 		//console.dir(event);
 		//my.log("event.data type="+ typeof event.data.constructor.name);
-		//   Legend コードだと
+		//   With the Legend Mod code
 		//          own.readMessage(new DataView(event.data));
-		// だが、実際には Blob で帰る
+		// But, in fact it will return with a Blob
 		if(ArrayBuffer.prototype.isPrototypeOf(event.data)){
 			return ogar.readMessage(new DataView(event.data));
-		}// Blob とみなす
+		}// I regard it as Blob
 		var fr = new FileReader();
 		fr.onload = function(){
 			return ogar.readMessage(new DataView(fr.result));
@@ -224,11 +224,11 @@
 		}
 	};
 	
-	// =====  Legend Mod 受信処理  =====
+	// =====  Legend Mod reception processing  =====
 	prot.updateTeamPlayer = function(rcvBuf){
 		var teamPlayerID = rcvBuf.getUint32(1, true);
 		var bufPos = 0x5;
-		function strFromBuf(){	// ヌル終端までの文字列を取得する
+		function strFromBuf(){	// Get a character string up to the null end
 			let value = "";
 			for(;;){
 				const code = rcvBuf.getUint16(bufPos, true);
@@ -300,7 +300,7 @@
 		//this.targeting && this.targetID && teamPlayerID == this.targetID && this.updateTarget(teamPlayerObj.nick, teamPlayerObj.skinURL, teamPlayerX, teamPlayerY, teamPlayerMass);
 	};
 	//prot.updateTarget = function(nick, skinURL, teamPlayerX, teamPlayerY, teamPlayerMass){
-	//	// ダミー
+	//	// dummy
 	//};
 	prot.checkPlayerID = function(teamPlayerID){
 		if(teamPlayerID){
@@ -330,7 +330,7 @@
 		}
 	};
 	prot.displayParties = function(){
-		// ダミー
+		// dummy
 	};
 	prot.readChatMessage = function(rcvBuf){
 		var mcode = rcvBuf.getUint8(0x1);
@@ -369,7 +369,7 @@
 		//}
 	};
 	
-	// =====  Legend	送信処理  =====
+	// =====  Legend transmission processing  =====
 	prot.sendPartyData = function(opt_){
 		let fake = Object.assign({
 			"tag": "",
@@ -433,11 +433,11 @@
 		this.sendBuffer(sndBuf);
 	};
 	
-	// チャットの送信
-	// [注意] playerID と nick が対応していないと、受信側で弾かれる
+	// Send chat
+	// [Caution] If playerID and nick do not correspond, it will be played on the receiving side
 	prot.chatSend = function(message, opt_){
 		let fake = Object.assign({
-			"mcode": 0x65,		// 0x65:一般, 0x66:コマンド
+			"mcode": 0x65,		// 0x65: General, 0x66: Command
 			"reciverID": 0,
 		}, this, opt_ || {});
 		let msg = fake.nick +': '+ message;
@@ -448,12 +448,12 @@
 		buf.setUint32(0x6, fake.reciverID, !0x0);
 		for(var idx = 0; idx < msg.length; idx ++){
 			buf.setUint16(0xa + 2 * idx, msg.charCodeAt(idx), !0x0);
-		}// 文字列終端がない
+		}// There is no character string termination
 		this.sendBuffer(buf);
 	};
 	
-	// =====  Legend Mod 補助処理  =====
-	// カスタムスキンの URL として正当であれば、引数を、そうでなければ空文字列を返す
+	// =====  Legend Mod auxiliary processing  =====
+	// Returns the argument if it is valid as the URL of the custom skin, otherwise returns the empty string
 	prot.checkSkinURL = function(skinURL) {
 		return /^https?:\/\/i\.(?:imgur|hizliresim)\.com\/\w{6,8}\.(?:jpg|jpeg|png)\??\d*$/i.test(skinURL) ? skinURL : '';
 	};
@@ -514,7 +514,7 @@
 		return skinImg && skinImg.complete && skinImg.width ? skinImg : null;
 	};
 	
-	// =====  汎用通信処理  =====
+	// =====  General-purpose communication processing  =====
 	prot.flushData = function(){
 	};
 	prot.strToBuff = function (code, value){
@@ -522,7 +522,7 @@
         sndBuf.setUint8(0, code);
         for (var idx = 0; idx < value.length; idx ++){
             sndBuf.setUint16(1 + 2 * idx, value.charCodeAt(idx), !0x0);
-        }// 終端の NULL 文字は出力しないみたい
+        }// I do not want to output the terminating NULL character
         return sndBuf;
 	};
 	prot.sendBuffer = function(buf){
@@ -538,7 +538,7 @@
 	prot.isConnected = function(){
 		return this.socket && this.socket.readyState == WebSocket.OPEN;
 	};
-	// =====  その他汎用処理  =====
+	// =====  Other general-purpose processing  =====
 	function loadScript(url, callback){
 		var script = document.createElement("script");
 		script.type = "text/javascript";
