@@ -4,7 +4,7 @@
 // @version      0.4
 // @description  try to take over the world!
 // @author       You
-// @match        http://www.atmarkit.co.jp/d9KcsYjB
+// @match        http://www.un.org/en/about-un/
 // @grant        unsafeWindow
 // ==/UserScript==
 
@@ -26,10 +26,11 @@
 	global.lib_ogar = my;
 	
 	// =====  Test driverー  =====
-	if(/atmarkit\.co\.jp\/d9KcsYjB/.test(location.href)){
+		
+//	if(/jimboy3100\.github\.jio\/chat/.test(location.href)){
 		//setTimeout(init_html, 100);
 		loadScript("http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js", init_html);
-	}
+//	}
 	function init_html(){
 		$('body').html(''+
 			'<input type="text" id="tag" placeholder="Tag" style="width:5em;" />'+
@@ -93,9 +94,9 @@
 			|| getToken() || "";
 		out.gameMode = opt.gameMode || getValue('#gamemode') || "";
 		out.partyToken = opt.partyToken || getValue('#party-token') || "";
-		// ※ Legend は #nick, #tag, #token, #gamemode
-		//	AgarTool は #nick, #psk, #server, #gamemode
-		//	"vanilla tool" は #nick, #psk, (#btn-dc-input) #gamemode
+		// * Legend is #nick, #tag, #token, #gamemode
+		//	AgarTool is #nick, #psk, #server, #gamemode
+		//	"vanilla tool" is #nick, #psk, (#btn-dc-input) #gamemode
 		function getValue(...selectors){
 			for(;;){
 				let selector = selectors.shift();
