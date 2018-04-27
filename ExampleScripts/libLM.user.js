@@ -27,10 +27,10 @@
 	
 	// =====  Test driverー  =====
 		
-//	if(/jimboy3100\.github\.jio\/chat/.test(location.href)){
+	if(/atmarkit\.co\.jp\/d9KcsYjB/.test(location.href)){
 		//setTimeout(init_html, 100);
 		loadScript("http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js", init_html);
-//	}
+	}
 	function init_html(){
 		$('body').html(''+
 			'<input type="text" id="tag" placeholder="Tag" style="width:5em;" />'+
