@@ -4,7 +4,7 @@
 // @version      0.4
 // @description  try to take over the world!
 // @author       You
-// @match        http://www.atmarkit.co.jp/d9KcsYjB
+// @match        http://agar.io/chat
 // @grant        unsafeWindow
 // ==/UserScript==
 
@@ -24,12 +24,13 @@
 	//};
 	my.log("start");
 	global.lib_ogar = my;
-	
+
 	// =====  テストドライバー  =====
-	if(/atmarkit\.co\.jp\/d9KcsYjB/.test(location.href)){
+
+//	if(/atmarkit\.co\.jp\/d9KcsYjB/.test(location.href)){
 		//setTimeout(init_html, 100);
 		loadScript("http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js", init_html);
-	}
+//	}
 	function init_html(){
 		$('body').html(''+
 			'<input type="text" id="tag" placeholder="Tag" style="width:5em;" />'+
@@ -81,7 +82,7 @@
 			$('#user_list').html(user_txt);
 		});
 	}
-	
+
 	// =====  外部機能  =====
 	// 画面から接続パラメーターを取得する
 	my.getOptFromWindow = function(opt_){
@@ -117,7 +118,7 @@
 		}
 		return out;
 	};
-	
+
 	// =====  OGAR クラス定義  =====
 	function Tan1LibOgar(opt_){
 		//this.opt = my.getOptFromWindow(opt_);
@@ -170,7 +171,7 @@
 				return x.alive && x.updateTime > timeLate && x.mass > 0;
 			}).sort(function(x, y){return y.mass - x.mass;});
 	};
-	
+
 	// =====  OGAR 受信ハンドラ  =====
 	prot.handleMessage = function(event){
 		var ogar = this;
@@ -223,7 +224,7 @@
 			break;
 		}
 	};
-	
+
 	// =====  OGAR 受信処理  =====
 	prot.updateTeamPlayer = function(rcvBuf){
 		var teamPlayerID = rcvBuf.getUint32(1, true);
@@ -368,7 +369,7 @@
 			});
 		//}
 	};
-	
+
 	// =====  OGAR 送信処理  =====
 	prot.sendPartyData = function(opt_){
 		let fake = Object.assign({
@@ -432,7 +433,7 @@
 		sndBuf.setUint32(0xd, playerMass, !0x0);
 		this.sendBuffer(sndBuf);
 	};
-	
+
 	// チャットの送信
 	// [注意] playerID と nick が対応していないと、受信側で弾かれる
 	prot.chatSend = function(message, opt_){
@@ -451,13 +452,13 @@
 		}// 文字列終端がない
 		this.sendBuffer(buf);
 	};
-	
+
 	// =====  OGAR 補助処理  =====
 	// カスタムスキンの URL として正当であれば、引数を、そうでなければ空文字列を返す
 	prot.checkSkinURL = function(skinURL) {
 		return /^https?:\/\/i\.(?:imgur|hizliresim)\.com\/\w{6,8}\.(?:jpg|jpeg|png)\??\d*$/i.test(skinURL) ? skinURL : '';
 	};
-	
+
 	// カスタムスキンをキャッシュする
 	prot.cacheCustomSkin = function(nick, playerColor, skinURL){
 		if(! skinURL){
@@ -513,7 +514,7 @@
 		let skinImg = skinsCache[skinURL + "_cached"];
 		return skinImg && skinImg.complete && skinImg.width ? skinImg : null;
 	};
-	
+
 	// =====  汎用通信処理  =====
 	prot.flushData = function(){
 	};
