@@ -4,7 +4,7 @@
 // @version      0.4
 // @description  try to take over the world!
 // @author       You
-// @match        http://agar.io/chat
+// @match        http://www.bbc.com/
 // @grant        unsafeWindow
 // ==/UserScript==
 
