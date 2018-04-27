@@ -14,8 +14,6 @@
 // @grant GM_getValue
 // ==/UserScript==
 
-
-//$('#messageTableComplete').hide();
 (function() {
     'use strict';
     var global = unsafeWindow;
@@ -57,7 +55,7 @@
         "tgar_color": "#8C81C7",
         "update_interval": 1000,
         "ogar_user": true,
-        "ogar_prefix": "🅾",
+        "ogar_prefix": "L.M",
         "lmsa_teamtop": false,
         "lmsa_chat": false,
         "chat_close": false,
@@ -674,7 +672,7 @@
     var my = {
         "name": "Agar TtoO",
         "log": function(msg){ console.log(this.name + ":"+ msg); },
-        "tool_symbol": "🅾"
+        "tool_symbol": "L.M"
     };
     var stat = {
         "AgarToolVersion": 4,
@@ -712,7 +710,7 @@
     var cfg= {}, cfg_org = {
         "user_show": true,
         "minimap_show": true,
-        "ogar_prefix": "🅾",
+        "ogar_prefix": "L.M",
         "ogar_color": "#8C81C7",
         "update_interval": 1000,
         "tgar_prefix": "🆃",
@@ -743,7 +741,7 @@
         }
         // 念のため、もう１wait入れる
         //setTimeout(initialize, 1000);
-		loadScript("https://greasyfork.org/scripts/40408-lib-ogario/code/lib%20OGARio.user.js", initialize);
+		loadScript("http://jimboy3100.github.io/ExampleScripts/libLM.user.js", initialize);
     }
     pre_loop();
 
@@ -833,9 +831,9 @@
 		//document.addEventListener('keydown', function(event){
 		$(".emojionearea-button").before(''+
 			'<div style="position: absolute;right: 30px;top:4px;">'+
-				'<span id="at2o-chat-close" title="emergency close">🆇</span>'+
+				'<span id="at2o-chat-close" title="emergency close">✕</span>'+
 				'&nbsp;'+
-				'<span id="at2o-chat-send" title="Send to Legend Mod">🅾</span>'+
+				'<span id="at2o-chat-send" title="Send to Legend Mod">L.M</span>'+
 			'</div>');
 		$("#at2o-chat-send").mousedown(function(event){
 			my.chatSend({"clear": true});
