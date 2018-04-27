@@ -1,13 +1,13 @@
 // ==UserScript==
-// @name         連携Legend Mod⇒AgarTool
-// @name:ja      連携Legend Mod⇒AgarTool
+// @name         Legend Mod⇒AgarTool
+// @name:ja      Legend Mod⇒AgarTool
 // @name:en      Agar OtoT
 // @version      0.11
 // @namespace    http://tampermonkey.net/tannichi-ao2t
-// @description   Legend Mod 上から Agar Tool へ情報連携します
+// @description   Link Legend Mod to Agar Tool 
 // @description:ja   Legend Mod 上から Agar Tool へ情報連携します
-// @description:en   link to Agar Tool on Legend Mod
-// @author       tannichi
+// @description:en   Link to Agar Tool on Legend Mod
+// @author       tannichi & Jimboy3100
 // @match        http://agar.io/*
 // @grant        unsafeWindow
 // @grant GM_setValue
@@ -18,7 +18,7 @@
     'use strict';
     var global = unsafeWindow;
     var my = {
-        "name": "Agar OtoT",
+        "name": "Legend Mod -> Agario Tool",
         "log": function(msg){ console.log(this.name + ":"+ msg); },
         "tool_symbol": "A.T"
     };
@@ -51,7 +51,7 @@
     var cfg= {}, cfg_org = {
         "user_show": true,
         "minimap_show": true,
-        "tgar_prefix": "🆃",
+        "tgar_prefix": "☺",
         "tgar_color": "#8C81C7",
         "update_interval": 1000,
         "ogar_user": true,
@@ -68,14 +68,14 @@
         "skin_toggle_interval": 10000
     };
     function pre_loop(){
-        // この時点では jQuery は使えない
+        // At this point jQuery can not be used
         if(! document.getElementById("top5-hud")){
             my.pre_loop_timeout = (my.pre_loop_timeout || 1000) + 1000;
             setTimeout(pre_loop, my.pre_loop_timeout);
             my.log("wait for Legend Mod load");
             return;
         }
-        // 念のため、もう１wait入れる
+        // Just to be sure, another 1 sec wait
         setTimeout(initialize, 1000);
     }
     pre_loop();
@@ -126,7 +126,7 @@
             }
         });
         $("#ao2t-config").click(my.config);
-        // LMB-Mouse split 補正(ボタン上の左クリックで分離しないようにする)
+        // LMB-Mouse split correction (Do not separate by left click on button)
         if(cfg.lmsa_teamtop){
             //$(".team-top-menu").mousedown(function(){return false;});
             $("#top5-hud").mousedown(function(){return false;});
@@ -168,14 +168,14 @@
         my.skinToggle_start();
     }
     my.capture_start = function(){
-        // まだならば、チャット送信ボタンを追加
+        // If not, add chat submit button
         if($("#ao2t-message").length){
             $("#ao2t-message").show(); // .prop('disabled', false);
             $("#ao2t-minimap").show();
         }else{
             my.capture_init();
         }
-        // 接続
+        // Connection
         stat.tag = $('#clantag').val();
         stat.nick = $('#nick').val();
         stat.token = $('#server-token').val();
@@ -206,7 +206,7 @@
     my.chatSend = function(flg_){
         var flg = flg_ || {};
         if(! stat.connected){
-            global.toastr.error("AO2T: not connected");
+            global.toastr.error("L.M:->A.T: not connected");
             return;
         }
         var msg = $("#message").val();
@@ -225,7 +225,7 @@
     };
     my.chatClose = function(){
         $("#message-box").css("display", "none");
-        if(cfg.chat_unpause && $("#pause-hud").css("display") == "block"){ // PAUSE 中なら解除する
+        if(cfg.chat_unpause && $("#pause-hud").css("display") == "block"){ // Release during PAUSE
             $(document).trigger(jQuery.Event('keydown',{ keyCode: stat.keyCodeR, which: stat.keyCodeR } ));
             $(document).trigger(jQuery.Event('keyup',{ keyCode: stat.keyCodeR, which: stat.keyCodeR } ));
         }
@@ -241,7 +241,7 @@
         my.ogarMinimapUpdate();
     };
 
-    // -----  設定  -----
+    // -----  Configuration  -----
     my.config = function(){
         my.log("config_click2");
         if(!($('#ao2t-cfg-dlg').length)){
@@ -260,23 +260,23 @@
                     'position: relative; top:1.5em; left:0.5em; right:0.5em; bottom:1.5em;">'+
                 '<div id="ao2t-cfg-base">'+
                 '</div>'+
-              '</div>'+
+              '</div><br><br>'+
               '&nbsp;<span id="ao2t-cfg-default" class="btn btn-primary">DEFAULT</span>'+
               '&nbsp;<span id="ao2t-cfg-ok" class="btn btn-success">OK</span>'+
               '&nbsp;<span id="ao2t-cfg-cancel" class="btn btn-danger">CANCEL</span>'+
             '</div>');
         $('#ao2t-cfg-base').append(''+
-            '&nbsp;&nbsp;&nbsp;更新頻度[ミリ秒]:<input type="text" data-ao2t-config="update_interval" style="width:6em;"/>'+
-            '<br/>Agar Tool から取得'+
+            '&nbsp;&nbsp;&nbsp;Update frequency [milliseconds]:<input type="text" data-ao2t-config="update_interval" style="width:6em;"/>'+
+            '<br/>Agar Tool Obtained from'+
             '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="user_show"/>user list</label>'+
             '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="minimap_show"/>minimap</label>'+
-              '&nbsp;前置:<input type="text" data-ao2t-config="tgar_prefix" style="width:4em;"/>'+
-              '&nbsp;&nbsp;<input type="text" data-ao2t-config="tgar_color" style="width:6em;"/>'+
+              '&nbsp;Prefix:<input type="text" data-ao2t-config="tgar_prefix" style="width:4em;"/>'+
+              '&nbsp;&nbsp;color:<input type="text" data-ao2t-config="tgar_color" style="width:6em;"/>'+
             //    '<span class="input-group-addon"><i id="tgar_color" style="background-color: rgb(0, 0, 0);"></i></span>'+
-            '<br/>Agar Tool へ送付'+
+            '<br/>Send to Agar Tool'+
             '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="ogar_user"/>user info</label>'+
-              '&nbsp;前置:<input type="text" data-ao2t-config="ogar_prefix" style="width:4em;"/>'+
-            '<br/>LMB-Mouse split 補正'+
+              '&nbsp;Prefix:<input type="text" data-ao2t-config="ogar_prefix" style="width:4em;"/>'+
+            '<br/>LMB-Mouse split correction'+
             '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="lmsa_teamtop"/>Team top</label>'+
               '&nbsp;<label><input type="checkbox" data-ao2t-config="lmsa_chat"/>chat</label>'+
             '<br/>Chat option'+
@@ -288,8 +288,8 @@
                 '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_ctrl"/>Ctrl→Close</label>'+
             '<br/>Other'+
               '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="skin_toggle_auto"/>skin auto toggle</label>'+
-              '&nbsp;&nbsp;&nbsp;頻度[ミリ秒]:<input type="text" data-ao2t-config="skin_toggle_interval" style="width:6em;"/>'+
-            '<br/>&nbsp;&nbsp;※変更は再起動後に反映されます'+
+              '&nbsp;&nbsp;&nbsp;Frequency [milliseconds]:<input type="text" data-ao2t-config="skin_toggle_interval" style="width:6em;"/>'+
+            '<br/>&nbsp;&nbsp;* Changes will be reflected after restart'+
             '');
         $("#ao2t-cfg-default").click(function(){
             my.cfg_load(cfg_org);
@@ -341,7 +341,7 @@
         $(document).trigger(jQuery.Event('keydown',{ keyCode: stat.keyCodeA, which: stat.keyCodeA } ));
         $(document).trigger(jQuery.Event('keyup',{ keyCode: stat.keyCodeA, which: stat.keyCodeA } ));
     };
-    // =====  Agar Tool 通信処理/接続  =====
+    // =====  Agar Tool Communication processing / connection  =====
     my.connect = function(){
         my.disconnect();
         if(! global.io){
@@ -416,7 +416,7 @@
             save_minimap_socket.disconnect();
         }
     };
-    // =====  Agar Tool 通信処理/処理  =====
+    // =====  Agar Tool Communication processing / processing  =====
     my.minimap_command = function(cmd){
         if (void 0 === cmd.name){
             return;
@@ -599,7 +599,7 @@
         return global.ogario ? global.ogario.mapOffset : stat.mapOffset;
     };
 
-    // =====  その他処理  ======
+    // =====  Other processing ======
     my.cfg_save = function(){
         var cfg_new = {};
         $('[data-ao2t-config]').each(function(){
@@ -651,15 +651,15 @@
 
 
 // ==UserScript==
-// @name         AT2O:連携AgarTool⇒Legend Mod
-// @name:ja      AT2O:連携AgarTool⇒Legend Mod
-// @name:en      AT2O:Agar link OtoT
+// @name         AgarTool⇒Legend Mod
+// @name:ja      AT2O:Agar link OtoT
+// @name:en      AgarTool⇒Legend Mod
 // @version      0.7
 // @namespace    http://tampermonkey.net/tannichi-at2o
-// @description      Agar Tool 上から Legend Mod へ情報連携します
+// @description      Link Legend Mod to Agar Tool
 // @description:ja   Agar Tool 上から Legend Mod へ情報連携します
 // @description:en   link to Legend Mod on Agar Tool
-// @author       tannichi
+// @author       tannichi & Jimboy3100
 // @match        http://agar.io/*
 // @grant        unsafeWindow
 // ==/UserScript==
@@ -670,7 +670,7 @@
     'use strict';
     var global = window.unsafeWindow || window;
     var my = {
-        "name": "Agar TtoO",
+        "name": "Agario Tool -> Legend Mod",
         "log": function(msg){ console.log(this.name + ":"+ msg); },
         "tool_symbol": "L.M"
     };
@@ -713,7 +713,7 @@
         "ogar_prefix": "L.M",
         "ogar_color": "#8C81C7",
         "update_interval": 1000,
-        "tgar_prefix": "🆃",
+        "tgar_prefix": "☺",
         "tgar_user": true,
         "ogar_skinURL": "",
         "chat_close": false,
@@ -728,7 +728,7 @@
 		"chat_video": false,
     };
     function pre_loop(){
-        // この時点では jQuery は使えない
+        // At this point jQuery can not be used
         if(! document.getElementById("chatMessagesContainer")
 				|| ! document.getElementById("settingsButton")
 				|| ! global.AgarTool
@@ -739,7 +739,7 @@
             my.log("wait for AgarTool load");
             return;
         }
-        // 念のため、もう１wait入れる
+        // Just to be sure, another 1 sec wait
         //setTimeout(initialize, 1000);
 		loadScript("http://jimboy3100.github.io/ExampleScripts/libLM.user.js", initialize);
     }
@@ -778,7 +778,7 @@
 				'<div id="at2o-top5" style="padding-left: 1em;"></div>'+
 			'</div>');
 		$("#connect").after(''+
-			'<div id="at2o-controller">at2o:'+
+			'<div id="at2o-controller">A.T->L.M:'+
 			  '<span id="at2o-capture">🚫</span>'+
 			  '<span id="at2o-config">⚙</span>'+
 			'</div>');
@@ -789,7 +789,7 @@
 				//$("#at2o-controller").css(stat.darkThemeControllerCss);
 			}
 		}catch(e){}
-		// マウスクリックが伝搬しないようにする
+		// Prevent mouse click from propagating
 		$("#at2o-controller").mousedown(function(event){ return false;});
 		$("#at2o-capture").click(function(event){
 			my.log("capture_click");
@@ -804,7 +804,7 @@
 		});
 		$("#at2o-config").click(my.config);
 		my.config_apply();
-		// --- 再接続 ---
+		// --- Reconnect ---
 		//$("#settingsButton").after(''+	// $("#connect").before
 		$("#server").after(''+
 			'<button id="at2o-reconnect" class="btn btn-primary"'+
@@ -842,21 +842,21 @@
 			my.chatClose();
 			return my.chatCancel(event);
 		});
-		// 試験
+		// test
 		//$(document).mousedown(function(ev){
 		//	my.log("test mousedown");
 		//	keyDownUp(stat.keyCodeS);
 		//});
 	}
 	my.capture_start = function(){
-		// まだならば、チャット送信ボタンを追加
+		// If not, add chat submit button
 		if($("#at2o-minimap").length){
 			//$("#at2o-message").show(); // .prop('disabled', false);
 			$("#at2o-minimap").show();
 		}else{
 			my.capture_init();
 		}
-		// 接続
+		// Connection
 		let tgar_prefix = (cfg.ogar_skinURL ? "" : cfg.tgar_prefix);
 		var opt = {
 			"tag": $('#tag').val(),
@@ -904,7 +904,7 @@
         my.tgarMinimapUpdate();
     };
 
-    // -----  設定  -----
+    // -----  Configuration  -----
     my.config = function(){
         my.log("config_click2");
         if(!($('#at2o-cfg-start').length)){
@@ -919,16 +919,16 @@
         $("#at2o-controller").after(''+
 			'<hr id="at2o-cfg-start" />'+ my.name+ '<br/>'+
 			''+
-            '&nbsp;&nbsp;&nbsp;更新頻度[ミリ秒]:<input type="text" data-at2o-config="update_interval" style="width:6em;"/>'+
-            '<br/>Legend Mod から取得'+
+            '&nbsp;&nbsp;&nbsp;Update frequency [milliseconds]:<input type="text" data-at2o-config="update_interval" style="width:6em;"/>'+
+            '<br/>Legend Mod Obtained from'+
             '<br/>&nbsp;<label><input type="checkbox" data-at2o-config="user_show"/>user list</label>'+
             '<br/>&nbsp;<label><input type="checkbox" data-at2o-config="minimap_show"/>minimap</label>'+
-              '&nbsp;前置:<input type="text" data-at2o-config="ogar_prefix" style="width:4em;"/>'+
-              '&nbsp;&nbsp;色:<input type="text" data-at2o-config="ogar_color" style="width:6em;"/>'+
+              '&nbsp;Prefix:<input type="text" data-at2o-config="ogar_prefix" style="width:4em;"/>'+
+              '&nbsp;&nbsp;color:<input type="text" data-at2o-config="ogar_color" style="width:6em;"/>'+
             //    '<span class="input-group-addon"><i id="tgar_color" style="background-color: rgb(0, 0, 0);"></i></span>'+
-            '<br/>Legend Mod へ送付'+
+            '<br/>Sent to Legend Mod'+
             '<br/>&nbsp;<label><input type="checkbox" data-at2o-config="tgar_user"/>user info</label>'+
-              '&nbsp;前置:<input type="text" data-at2o-config="tgar_prefix" style="width:4em;"/>'+
+              '&nbsp;Prefix:<input type="text" data-at2o-config="tgar_prefix" style="width:4em;"/>'+
               '<br/>&nbsp;skin:<input type="text" data-at2o-config="ogar_skinURL" style="width:20em;"/>'+
             '<br/>Chat option'+
               '<br/>&nbsp;<label><input type="checkbox" data-at2o-config="chat_close"/>close</label>'+
@@ -941,7 +941,7 @@
 			  '<br/>&nbsp;<label><input type="checkbox" data-at2o-config="chat_alt"/>Alt→T</label>'+
                 '&nbsp;<label><input type="checkbox" data-at2o-config="chat_ctrlalt"/>Ctrl+Alt→O+T</label>'+
                 '&nbsp;<label><input type="checkbox" data-at2o-config="chat_ctrl"/>Ctrl→Close</label>'+
-            '<br/>&nbsp;&nbsp;※変更は再起動後に反映されます'+
+            '<br/>&nbsp;&nbsp;* Changes will be reflected after restart'+
 			''+
 			'<br/>'+
               '&nbsp;<span id="at2o-cfg-default" class="btn btn-primary">DEFAULT</span>'+
@@ -1000,7 +1000,7 @@
 		}
 	};
 
-    // -----  チャット  -----
+    // -----  chat  -----
 	my.document_keydown = function(event){
 		if(! stat.initialized){
 			return false;
@@ -1027,13 +1027,13 @@
 				return my.chatCancel(event);
 			}
 		}
-		return; // 他のハンドラに処理を渡す
+		return; // Pass the processing to another handler
 	};
 	document.addEventListener('keydown', my.document_keydown, true);
 	my.chatSend = function(flg_){
 		var flg = flg_ || {};
 		if(! my.isConnected){
-			//global.toastr.error("at2o: not connected");
+			//global.toastr.error("A.T->L.M: not connected");
 			return;
 		}
 		//var msg = $("#enterChatMsg").val();
@@ -1056,7 +1056,7 @@
 	my.chatClose = function(){
 		//$("#enterChatMsg").css("display", "none");
 		$("#chatInputHolder").hide();
-		if(cfg.chat_unpause && global.AgarTool.stopMovement){ // PAUSE 中なら解除する
+		if(cfg.chat_unpause && global.AgarTool.stopMovement){ // Release during PAUSE
 			//keyDownUp(stat.keyCodeS);
 			global.AgarTool.stopMovement = false;
 		}
@@ -1064,7 +1064,7 @@
 	my.chatCancel = function(event){
 		global.emojiHandler[0].emojioneArea.setText("");
 		event.preventDefault();
-		event.stopPropagation(); // 何故これが必要なのか不明
+		event.stopPropagation(); // Unknown why this is necessary
 		return false;
 	};
 	my.chatObserver_start = function(){
@@ -1086,7 +1086,7 @@
 			stat.obs_chat.observe(table, {"childList": true});
 			do_observe();
 			function do_observe(){
-				if(table.tBodies.length == 0){	// 未初期化
+				if(table.tBodies.length == 0){	// Uninitialized
 					setTimeout(do_observe, 5000);
 				}else{
 					let tbody = table.tBodies[0];
@@ -1167,11 +1167,11 @@
 		return msg;
 	};
 
-	// =====  Legend Mod 通信処理/接続  =====
+	// =====  Legend Mod communication processing / connection  =====
 	my.isConnected = function(){
 		return	stat.ogar && stat.ogar.isConnected();
 	};
-	// =====  Agar Tool 通信処理/処理  =====
+	// =====  Agar Tool communication processing / processing  =====
 	my.ogarAlive = function(alive){
 		stat.alive = alive;
 		if(cfg.tgar_user){
@@ -1194,7 +1194,7 @@
 		stat.ogar.sendPlayerPosition(AgarTool.realPlayerX, AgarTool.realPlayerY, 1);
 	};
 
-    // =====  Legend Mod処理  ======
+    // =====  Legend Mod Processing  ======
     my.tgarChatAdd = function(ev){
 		stat.chatIdx = (stat.chatIdx ? stat.chatIdx + 1 : 1);
 		let chatID = "at2o-chat-"+ stat.chatIdx;
@@ -1297,7 +1297,7 @@
 		return global.ogario ? global.ogario.mapOffset : stat.mapOffset;
 	};
 
-	// =====  その他処理  ======
+	// =====  Other processing ======
 	my.cfg_save = function(){
 		var cfg_new = {};
 		$('[data-at2o-config]').each(function(){
