@@ -4,7 +4,7 @@
 // @version      0.4
 // @description  try to take over the world!
 // @author       You
-// @match        http://www.in.gr/
+// @match        http://www.un.org/en/about-un/
 // @grant        unsafeWindow
 // ==/UserScript==
 
