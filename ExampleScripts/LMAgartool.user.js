@@ -2,7 +2,7 @@
 // @name         Legend Mod⇒AgarTool (BETA)
 // @name:ja      Legend Mod⇒AgarTool （ベータ）
 // @name:en      Legend Mod⇒AgarTool (BETA)
-// @version      0.11
+// @version      0.12
 // @namespace    http://tampermonkey.net/tannichi-ao2t
 // @description   Link Legend Mod to Agar Tool
 // @description:ja   Legend Mod 上から Agar Tool へ情報連携します
