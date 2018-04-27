@@ -1203,7 +1203,10 @@
 		if(! cfg.chat_slim){
 			trStyle = 'height:40px;'+ trStyle;
 		}
-		let msg = my.chatParse(ev.message);
+		if (ev.message.includes("Welcome! You are connected to the OGARio")){
+		ev.message="Welcome to Legend Mod";
+		}		
+		let msg = my.chatParse(ev.message);		
 		let htmlTd = '<td style="padding-left:8px;padding-right:8px">'
 			+ '<b><span class="playerNameInMsg">' + escapeHtml(ev.nick)
 			+ '</span></b></td>'
