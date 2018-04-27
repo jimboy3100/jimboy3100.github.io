@@ -1,10 +1,10 @@
 // ==UserScript==
-// @name         Legend Mod⇒AgarTool
-// @name:ja      Legend Mod⇒AgarTool
-// @name:en      Agar OtoT
+// @name         Legend Mod⇒AgarTool (BETA)
+// @name:ja      Legend Mod⇒AgarTool （ベータ）
+// @name:en      Legend Mod⇒AgarTool (BETA)
 // @version      0.11
 // @namespace    http://tampermonkey.net/tannichi-ao2t
-// @description   Link Legend Mod to Agar Tool 
+// @description   Link Legend Mod to Agar Tool
 // @description:ja   Legend Mod 上から Agar Tool へ情報連携します
 // @description:en   Link to Agar Tool on Legend Mod
 // @author       tannichi & Jimboy3100
@@ -13,6 +13,7 @@
 // @grant GM_setValue
 // @grant GM_getValue
 // ==/UserScript==
+
 
 (function() {
     'use strict';
@@ -376,6 +377,7 @@
         }
     };
 	my.minimap_connect = function(){
+		toastr["warning"]('<b>[SERVER]: </b>Legend Mod and Agar Tool successfully connected on <font color="blue">'+$("#server-token").val()+'</font> server. <br>Use A.T button on chat box to send to Agar.io Tool');
         my.log("minimap server="+ stat.minimap_info.minimapServer);
         my.resetMinimap();
         var minimap_opt = {
@@ -523,7 +525,7 @@
         }
     };
 
-    // =====  Legend Mod処理  ======
+    // =====  Process Legend Mod  ======
     my.ogarChatAdd = function(nick, msg){
         var time_txt = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
         var user_icon = my.tool_symbol;
@@ -651,9 +653,9 @@
 
 
 // ==UserScript==
-// @name         AgarTool⇒Legend Mod
-// @name:ja      AT2O:Agar link OtoT
-// @name:en      AgarTool⇒Legend Mod
+// @name         AgarTool⇒Legend Mod （BETA）
+// @name:ja      AgarTool⇒Legend Mod （ベータ）
+// @name:en      AgarTool⇒Legend Mod （BETA）
 // @version      0.7
 // @namespace    http://tampermonkey.net/tannichi-at2o
 // @description      Link Legend Mod to Agar Tool
@@ -1204,9 +1206,10 @@
 			trStyle = 'height:40px;'+ trStyle;
 		}
 		if (ev.message.includes("Welcome! You are connected to the OGARio")){
-		ev.message="Welcome to Legend Mod";
-		}		
-		let msg = my.chatParse(ev.message);		
+		ev.message="[SERVER]: Agar Tool and Legend Mod connected. Use L.M button on chat box to send to Legend Mod";
+
+		}
+		let msg = my.chatParse(ev.message);
 		let htmlTd = '<td style="padding-left:8px;padding-right:8px">'
 			+ '<b><span class="playerNameInMsg">' + escapeHtml(ev.nick)
 			+ '</span></b></td>'
