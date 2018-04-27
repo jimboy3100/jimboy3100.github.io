@@ -21,8 +21,8 @@
 // @grant        GM_deleteValue
 // @connect      jimboy3100.github.io
 // ==/UserScript==
-// Legend Mod by Jimboy3100
 
+// Legend Mod by Jimboy3100
 /*MIT License
 
 Copyright (c) [The Legend Mod]
