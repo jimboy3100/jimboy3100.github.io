@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         Legend Mod⇒AgarTool
-// @name:ja      Legend Mod⇒AgarTool
-// @name:en      Legend Mod⇒AgarTool
+// @name         AgarTool⇒Legend Mod
+// @name:ja      AgarTool⇒Legend Mod
+// @name:en      AgarTool⇒Legend Mod
 // @version      0.12
-// @namespace    Legend Mod⇒AgarTool
+// @namespace    AgarTool⇒Legend Mod
 // @description  Link Agar Tool to Legend Mod 
 // @description:ja   Legend Mod 上から Agar Tool へ情報連携します
 // @description:en   Link to Agar Tool on Legend Mod
