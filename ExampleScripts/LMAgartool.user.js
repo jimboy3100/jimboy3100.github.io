@@ -9,6 +9,8 @@
 // @description:en   Link to Agar Tool on Legend Mod
 // @author       tannichi & Jimboy3100
 // @match        http://agar.io/*
+// @downloadURL  jimboy3100.github.io/ExampleScripts/LMAgartool.user.js
+// @updateURL    jimboy3100.github.io/ExampleScripts/LMAgartool.user.js
 // @grant        none
 // @run-at document-end
 // @grant none
