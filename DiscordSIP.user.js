@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Send Agario SIP To Discord
 // @namespace    http://tampermonkey.net/
-// @version      0.9
+// @version      1.0
 // @description  Gets the agario server IP link and posts it to discord
 // @author       σмg ι ℓσνє уσυ! Published by Jimboy3100
 // @match        http://agar.io/*
@@ -44,13 +44,28 @@ function popAgarURL( fun ) {
     window.__WS_send = WebSocket.prototype.send;
     WebSocket.prototype.send = function(b) {
         //debugger;
+		var vanilla;
+		var ogartest= $('#menu-footer').text();
         try {
             var c = /((?:[0-9]{1,3}(?:\.|\-)){1,3}[0-9]{1,3})(?:.*?)?(\:[0-9]{1,5})/,
                 d = c.exec(this.url);
          //ogario support
 		 if (messageone=="0"||messageone=="1"){  //IF using Legend Mod
 			var serverlinks= window.location.href +" :Agario Token";
-			}
+		}
+		else if ($( "#connect" ).hasClass( "agartoolbtn")){ //IF using Agar Tools
+		var serverlinks="http://agar.io/?sip=" + "live-arena-" + $( "#server" ).val() + ".agar.io"; 
+		}
+		else if (vanilla!=null){ //IF using Vanilla
+		var maketheserver=$( "#btn-dc-input" ).val();
+		maketheserver=maketheserver.split('live', 2).pop();
+		maketheserver='live'+maketheserver;
+		maketheserver.replace(':80','');
+		var serverlinks= maketheserver;
+		}
+		if (~ogartest.indexOf("ogario")) {
+		var serverlinks= "http://agar.io/?sip=" + "live-arena-" + $( "#server-token" ).val() + ".agar.io"; 
+		}
 		else{
 			var serverlinks="http://agar.io/?sip="+d[1].replace(/-/g,'.')+d[2]+" = regular"+"\r\n"+"http://agar.io/a?sip="+d[1].replace(/-/g,'.')+d[2]+" = ogario"+"\r\n";
 		}  
