@@ -2,7 +2,7 @@
 // @name         Legend Mod⇒AgarTool
 // @name:ja      Legend Mod⇒AgarTool
 // @name:en      Legend Mod⇒AgarTool
-// @version      0.13
+// @version      1.1
 // @namespace    Legend Mod⇒AgarTool
 // @description  Link Legend Mod to Agar tool
 // @description:ja   Legend Mod 上から Agar Tool へ情報連携します
@@ -20,7 +20,7 @@
 //It can be installed for LM Express, Kitty mod, Ogario v3&v4,
 //so people can communicate with Agar Tool mod users.
 
-//v0.13
+//v1.1
 
 /*MIT License
 Copyright (c) [The Legend Mod]
