@@ -20,7 +20,7 @@
 //It can be installed for LM Express, Kitty mod, Ogario v3&v4,
 //so people can communicate with Agar Tool mod users.
 
-//v0.12
+//v0.13
 
 /*MIT License
 Copyright (c) [The Legend Mod]
