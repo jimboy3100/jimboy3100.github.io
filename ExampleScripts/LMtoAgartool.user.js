@@ -2,7 +2,7 @@
 // @name         Legend Mod⇒AgarTool
 // @name:ja      Legend Mod⇒AgarTool
 // @name:en      Legend Mod⇒AgarTool
-// @version      0.12
+// @version      1.1
 // @namespace    Legend Mod⇒AgarTool
 // @description  Link Legend Mod to Agar tool
 // @description:ja   Legend Mod 上から Agar Tool へ情報連携します
@@ -13,7 +13,6 @@
 // @updateURL    jimboy3100.github.io/ExampleScripts/LMtoAgartool.user.js
 // @grant        none
 // @run-at document-end
-// @grant none
 // ==/UserScript==
 
 //This  Script is the opposite of the script AgarTool⇒Legend Mod.
