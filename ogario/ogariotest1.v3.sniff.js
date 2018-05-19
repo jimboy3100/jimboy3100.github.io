@@ -1,4 +1,4 @@
-//'use strict';
+'use strict';
 /** @type {!Array} */
 var _0x217b = ["color2Hex", "smallerCellsCache", "push", "STECellsCache", "biggerCellsCache", "biggerSTECellsCache", "prototype", "ogarioCtx", "_fillRect", "fillRect", "_fillText", "fillText", "displayLeaderboard", "leaderboardHTML", ":teams", "gameMode", "leaderboardIndex", "indexOf", "replace", "&lt;", "&gt;", "#ffaaaa", "fillStyle", '<span class="me">', "</span>", "clanTag", '<span class="teammate">', "<span>", "play", "&amp;", "apply", "ogario", "#999999", "mapOffsetX", "mapOffset", "mapOffsetY", 
 "mapOffsetFixed", "cursorX", "clientX", "innerW", "canvasScale", "viewScale", "playerX", "cursorY", "clientY", "innerH", "playerY", "min", "targetY", "targetDistance", "round", "pow", "playerCellsMass", "length", "playerBestMass", "playerMass", "virColors", "splitRange", "oppColors", "oppRings", "showStatsSTE", "playerMinMass", "playerMaxMass", "selectBiggestCell", "STE", "floor"];
