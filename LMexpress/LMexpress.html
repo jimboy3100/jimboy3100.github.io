@@ -43,7 +43,7 @@
   }(document, 'script', 'facebook-jssdk'));
  </script>
  <div id="overlays" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 200;">
-  <div id="helloContainer" data-logged-in="0" data-has-account-data="0" data-party-state="0" data-results-state="0" data-gamemode="">
+  <div id="helloContainer" data-logged-in="0" data-has-account-data="0" data-party-state="0" data-results-state="0" data-gamemode=":ffa">
    <div id="leftPanel" class="side-container left-container">
     <div class="agario-panel agario-side-panel agario-profile-panel">
      <div class="clearfix" style="margin-bottom: 16px;">
@@ -69,12 +69,12 @@
       <div class="form-group clearfix"></div>
        <div class="form-group clearfix">
         <input id="nick" class="form-control" placeholder="Nick" maxlength="15" autofocus />
-		<select id="gamemode" class="form-control" required="">
-		<option value=":ffa" data-itr="page_gamemode_ffa">FFA</option>
-		<option value=":teams" data-itr="page_gamemode_teams">Teams</option>
-		<option value=":experimental" data-itr="page_gamemode_experimental">Experimental</option>
-		<option value=":party" data-itr="page_party">Party Mode</option>
-		</select>
+        <select id="gamemode" class="form-control" required>
+         <option value=":ffa" data-itr="page_gamemode_ffa"></option>
+         <option value=":teams" data-itr="page_gamemode_teams"></option>
+         <option value=":experimental" data-itr="page_gamemode_experimental"></option>
+         <option value=":party" data-itr="page_party"></option>
+        </select>
        </div>
        <div id="locationUnknown">
         <select id="region" class="form-control" onchange="master.setRegion($('#region').val());" required>
