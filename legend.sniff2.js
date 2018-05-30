@@ -17,7 +17,7 @@ document.title = "Legend mod";
 setTimeout(function () {
 document.title = "Legend mod"; 
 
-	
+/*	
 var CutNameConflictwithMessage=false;	
 (function(){
     var _privateLog = console.log;
@@ -31,7 +31,7 @@ var CutNameConflictwithMessage=false;
 		}
     };
 })();
-    
+*/    
 /*$(document).on("keydown", function(e) {
     if(e.keyCode == 65 || e.keyCode == 83) {
       e.stopImmediatePropagation();
