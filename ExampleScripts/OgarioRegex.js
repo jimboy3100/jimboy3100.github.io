@@ -1,5 +1,5 @@
 /* 
-Regexp developer needed fot Legend Mod 3.1 to work
+Regexp developer needed for Legend Mod 3.1 to work
 
 Test it in console while using LMv3.1
 console.log(a); <-enable this command, to copy the new generated agar.core.js file
