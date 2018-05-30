@@ -1,7 +1,7 @@
 /* 
-Regexp developer needed for Legend Mod 3.1 to work
+Regexp developer needed for Legend Mod v3.1 to work
 
-Test it in console while using LMv3.1
+Test it in console while using LM v3.1
 console.log(a); <-enable this command, to copy the new generated agar.core.js file
 The quicker it is fixed, the sooner people will enjoy again v3.1
 Add me on skype, my skype id is jimboy3100
