@@ -1,5 +1,5 @@
 /* 
-Regex developer needed fot Legend Mod 3.1 to work
+Regexp developer needed fot Legend Mod 3.1 to work
 
 Test it in console while using LMv3.1
 
