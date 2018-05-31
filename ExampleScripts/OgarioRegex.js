@@ -16,11 +16,12 @@ These have problem
 35 ->	, 35
 */
 
-  function implemOgar(srcTxt, pattern, replacement, regexpID, logLevel) {
+
+function implemOgar(srcTxt, pattern, replacement, regexpID, logLevel) {
 	logLevel = 2;
     var isMatch = srcTxt.match(pattern);
     return isMatch ? (logLevel && 2 == logLevel && console.log('[RegExp Debug] Match', regexpID + ':', isMatch), null === replacement ? isMatch : srcTxt.replace(pattern, replacement)) : (logLevel && console.log('[RegExp Debug] Missing match:', regexpID), null === replacement ? null : srcTxt);
-  }
+}
 
 jQuery.ajax('http://agar.io/agario.core.js', {
     'success': function(e) {
@@ -70,8 +71,8 @@ jQuery.ajax('http://agar.io/agario.core.js', {
 		ogar = implemOgar(ogar, /ogario.nameMemOffset/g, ogar2[1], 36, 1);
 	}
 
-      //var _0x5b47fe = document.createElement('script');
-      //_0x5b47fe.textContent = ogar, _0x5b47fe.async = !0x0, document.body.appendChild(_0x5b47fe);
+      //var scriptadded = document.createElement('script');
+      //scriptadded.textContent = ogar, scriptadded.async = !0x0, document.body.appendChild(scriptadded);
 	$('#result').val(ogar);
     },
     'dataType': 'text',
