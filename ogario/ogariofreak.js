@@ -1,5 +1,4 @@
 
-
 toastr["warning"]('v0.2b');
 //v0.2b
 var _0x13aa=['setShowTeammatesInd','hk-showOppColors','setShowOppColors','toggleSkins','hk-transparentSkins','setTransparentSkins','hk-showSkins','hk-showStats','setShowStats','hk-toggleCells','toggleCells','hk-showFood','setShowFood','hk-showGrid','setShowGrid','hk-showMiniMapGuides','ALT+G','setShowMiniMapGuides','hk-showHUD','ALT+H','copyLb','hk-showLb','setShowLb','hk-toggleAutoZoom','hk-resetZoom','resetZoom','hk-clearChat','displayChatHistory','hk-showBgSectors','setShowBgSectors','hk-hideBots','ALT+B','setHideSmallBots','hk-showNames','setShowNames','hk-hideTeammatesNames','setHideTeammatesNames','hk-showMass','setShowMass','hk-showMiniMap','ALT+M','setShowMiniMap','hk-chatMessage','ENTER','special','hk-quickResp','hk-autoResp','hk-zoomLevel','ALT+1','ALT+2','setZoom','ALT+4','ALT+5','hk-switchServerMode','switchServerMode','hk-showTargeting','setShowTargeting','hk-setTargeting','hk-cancelTargeting','hk-changeTarget','hk-showQuest','setShowQuest','comm1','command','sendCommand',
