@@ -75,7 +75,7 @@ jQuery.ajax('http://agar.io/agario.core.js', {
 	  
   function implemOgar(a, b, c, d, e) {
     var result = a.match(b);
-	console.log(a);
+//	console.log(a);
 	console.log(b); //b is regular Expression
 	console.log("Number counted: "+d); 
 	
