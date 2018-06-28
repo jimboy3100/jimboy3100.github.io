@@ -36,7 +36,7 @@ Legend mod is best agar.io modpack with plenty features by author. It includes:
 
 ### Installation 
 1. Install Tampermonkey browser extension on [Chrome](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) , [Opera](https://addons.opera.com/en/extensions/details/tampermonkey-beta)
-2. Install script [here](https://jimboy3100.github.io/goodoldlegendmod.user.js)  
+2. Install Legend Express script [here](http://jimboy3100.github.io/LMexpress/LMexpress.user.js)  
 
 ### Screenshots
 
