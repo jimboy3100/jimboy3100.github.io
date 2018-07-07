@@ -48,7 +48,7 @@ SOFTWARE.
 
 // Start of script
 GM_registerMenuCommand('Legend Mod Website', function() {
-    window.open("https://legendmod.joomla.com/en/");
+    window.open("http://legendmod.ml");
 }, 'r');
 GM_registerMenuCommand('LM Library', function() {
     window.open("https://github.com/jimboy3100/jimboy3100.github.io/");
