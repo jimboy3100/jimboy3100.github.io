@@ -47,4 +47,4 @@ $(".btn.btn-warning.btn-login-play").css({
 		});
         
 
-}, 7000);
+}, 5000);
