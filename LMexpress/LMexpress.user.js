@@ -90,7 +90,7 @@ var tinyJS = '<script src="http://jimboy3100.github.io/ExampleScripts/LMTiny.use
 
 }
 else if (location.host === "agar.io" && location.pathname === "/") {
-	window.stop();	
+	window.stop();
 	location.href = "about:blank" + window.location.search + location.hash;
 // Dependencies
 
@@ -112,7 +112,7 @@ else if (location.host === "agar.io" && location.pathname === "/") {
             document.open();
             document.write(doc);
             document.close();
-        }       
+        }
     });
 
     // Inject Chat to text userscript
