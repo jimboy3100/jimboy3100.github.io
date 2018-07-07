@@ -36,7 +36,7 @@ $(".btn.btn-warning.btn-login-play").css({
 		$("#LEGENDAds").hide();
 		$(".ogicon-user").click();
 		$(".menu-tabs").hide();
-		toastr =new function(){};
+		toastr.clear();
 		$("#menu-footer").hide();
 		$("#donationbtn").hide();
 		$("#canvas").remove();
