@@ -1,4 +1,5 @@
 /* 
+Here I make my tests----> https://regex101.com/r/dpZkCh/1
 Regexp developer needed for Legend Mod v3.1 to work
 
 Test it in console while using LM v3.1
