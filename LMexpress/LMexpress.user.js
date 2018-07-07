@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Legend Express Agar.io Extension
 // @namespace    Legend Express Agario Mod
-// @version      1.2
+// @version      1.3
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
 // @homepage     http://www.legendmod.ml
 // @author       Jimboy3100
@@ -10,7 +10,6 @@
 // @match        http://agar.io/*
 // @match        https://talky.io/*
 // @match        https://play.google.com/*
-// @match 	 http://ext.fzogar.xyz/ogs/*
 // @downloadURL  jimboy3100.github.io/legendmod.user.js
 // @updateURL    jimboy3100.github.io/legendmod.user.js
 // @run-at       document-start
@@ -69,6 +68,60 @@ setTimeout(function() {
 $("#canvas").remove();$("#adsBottom").remove();$("#rightPanel").remove();$(".agario-panel.agario-side-panel.agario-profile-panel").remove();$("#dailyquests-panel").remove();$("#v-ex-menu").remove();$("#service-message-area").remove();$(".radio-module").remove();$(".tosBox.right").remove();$(".tosBox.left").remove();$(".form-group.clearfix").remove();$("#skinCustomButton").remove();$("#settings").remove();$("#vanilla-home-link").remove();$("#settingsButton").remove();$("#instructions").remove();$(".btn.btn-play.btn-primary").remove();$(".btn.btn-play-guest.btn-success").remove();$(".btn.btn-warning.btn-login-play").text("Login");$(".btn.btn-warning.btn-login-play").css("margin-left", "80px");$("#helloContainer").css("margin-left", "-150px");$('.agario-panel.agario-side-panel.agario-shop-panel').append('<button id="logoutbtn" onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout">Logout</button>');$("#imagebig").remove();
 }, 7000);
 }
+else if (location.pathname == "/LMImplements"){
+var cpickerCSS = '<link href="https://jimboy3100.github.io/bootstrap-colorpicker.min.css" rel="stylesheet"></link>';
+var toastrCSS = '<link href="https://jimboy3100.github.io/toastr.min.css" rel="stylesheet"></link>';
+var switchCSS = '<link href="https://jimboy3100.github.io/switchery.min.css" rel="stylesheet"></link>';
+var rangeCSS = '<link href="https://jimboy3100.github.io/rangeslider.css" rel="stylesheet"></link>';
+var perfectCSS = '<link href="https://jimboy3100.github.io/perfect-scrollbar.min.css" rel="stylesheet"></link>';
+var faCSS = '<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"></link>';
+var legendarioCSS = '<link href="http://cdn.ogario.ovh/v3/ogario.v3.css?v=339" rel="stylesheet"></link>';
+var keyJS = '<script src="https://jimboy3100.github.io/key-event.js"></script>';
+var cpickerJS = '<script src="https://jimboy3100.github.io/bootstrap-colorpicker.min.js"></script>';
+var toastrJS = '<script src="https://jimboy3100.github.io/toastr.min.js"></script>';
+var switchJS = '<script src="https://jimboy3100.github.io/switchery.min.js"></script>';
+var rangeJS = '<script src="https://jimboy3100.github.io/rangeslider.min.js"></script>';
+var perfectJS = '<script src="https://jimboy3100.github.io/perfect-scrollbar.jquery.min.js"></script>';
+var legendJS = '<script src="https://jimboy3100.github.io/legendmod.js"></script>';
+var legendJSniffJS = '<script src="https://jimboy3100.github.io/LMexpress/LMImplementsStart.js"></script>';
+var legendJSniff2JS = '<script src="https://jimboy3100.github.io/legend.sniff2.js"></script>';
+var legendJSniff3JS = '<script src="https://jimboy3100.github.io/LMexpress/LMImplements.js"></script>';
+var legendarioSniffJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.sniff.js?v=339"></script>';
+var legendarioJS = '<script src="http://cdn.ogario.ovh/v3/ogario.v3.js?v=339" charset="utf-8"></script>';
+
+var modVersion = GM_info.script.version;
+
+    // Inject Legend
+    function inject(page) {
+        page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?NREUM[\s\S]*?<\/script>/, "");
+        page = page.replace(/<script[^>]*>((?!<script)[\s\S])*?Outstream[\s\S]*?<\/script>/, "");
+        page = page.replace(/<script[^>]*src="[^"]*outstream\.js[^"]*"[^>]*><\/script>/, "");
+        page = page.replace("</head>", legendarioSniffJS + cpickerCSS + toastrCSS + switchCSS + rangeCSS + perfectCSS + legendarioCSS + faCSS + cpickerJS + toastrJS + switchJS + rangeJS + perfectJS + keyJS + legendJSniff2JS + "</head>");
+        page = page.replace("</body>", legendJSniffJS + "</body>");
+        page = page.replace(/<script[^>]*src="[^"]*agario\.core\.js[^"]*"[^>]*><\/script>/, "");
+        return page;
+    }
+
+    window.stop();
+    document.documentElement.innerHTML = "";
+    GM_xmlhttpRequest({
+        method: "GET",
+        url: "http://agar.io/",
+        onload: function(e) {
+            var doc = inject(e.responseText);
+            document.open();
+            document.write(doc);
+            setTimeout(function() {
+            document.write("</body>", legendarioJS + legendJS + legendJSniff3JS +  "<script>init('" + modVersion + "');</script>" + "</body>");
+
+            document.close();
+                }, 1500);
+        }
+    });
+
+
+
+}
 else if(getParameterByName("mod", url)=="tiny"){
 var tinyJS = '<script src="http://jimboy3100.github.io/ExampleScripts/LMTiny.user.js"></script>';
 	    function inject(page) {
@@ -89,6 +142,7 @@ var tinyJS = '<script src="http://jimboy3100.github.io/ExampleScripts/LMTiny.use
     });
 
 }
+
 else if (location.host === "agar.io" && location.pathname === "/") {
 	window.stop();
 	location.href = "about:blank" + window.location.search + location.hash;
@@ -243,7 +297,9 @@ else if (location.host === "agar.io" && location.pathname === "/") {
         }
     })();
 }
-//runs only for http://ext.fzogar.xyz/ogs settings
+/*
+
+//runs only for http://ext.fzogar.xyz/ogs settings - Not anymore
 if (location.href == "http://ext.fzogar.xyz/ogs/") {
     setTimeout(function() {
     $("#login_form").append('<span style="float: left; font-size: 13px;">Powered by <a target="_blank" href="http://fzogar.xyz/ogs" style="color: #ffffff;" data-toggle="tooltip" data-title="Legend mod Website" data-placement="left"><u>http://fzogar.xyz/ogs</u></a></span>');
@@ -258,6 +314,8 @@ if (location.href == "http://ext.fzogar.xyz/ogs/") {
 
         }, 1100);
 }
+*/
+
 //runs only if play.google.com is a popup, doesnt if directly joined
 if (location.host == "play.google.com") {
 	window.close();
