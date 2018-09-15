@@ -45,7 +45,7 @@ SOFTWARE.
           clearInterval(tamp);
           var elem = document.body;
           var script = document.createElement('script');
-          script.src = 'https://jimboy3000.github.io/ExampleScripts/LMtoAgartool.js';
+          script.src = 'https://jimboy3100.github.io/ExampleScripts/LMtoAgartool.js';
           document.head.appendChild(script);
           elem.appendChild(script);
   }, 3000);	  
