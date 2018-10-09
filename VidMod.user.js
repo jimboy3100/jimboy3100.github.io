@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         Agar Vid Skin Script
-// @namespace    Agar Vid Skin Script
+// @name         Agar Videi Skin Script
+// @namespace    Agar Video Skin Script
 // @version      1.1
 // @description  Use your videos as your skin in agar.io, mod made by Jimboy3100
 // @author       Jimboy3100
