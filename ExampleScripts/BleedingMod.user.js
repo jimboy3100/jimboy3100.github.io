@@ -58,9 +58,7 @@ inject('javascript', (function init(w) {
          }
       }
    };
-//   var s = new Audio('https://archive.org/download/cancerstorm_20160728/cancer.ogg');
-//was too extreme
-var s = new Audio('https://vignette.wikia.nocookie.net/sims/images/0/0b/Rickroll.ogg/revision/latest?cb=20140331234912'); 	
+var s = new Audio('https://archive.org/download/cancerstorm_20160728/cancer.ogg');
    (s.volume = 1, s.currentTime = 0, s.loop = true, s.play());
    tcm.f.override();
 })(window));
