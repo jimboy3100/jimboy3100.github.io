@@ -58,7 +58,7 @@ inject('javascript', (function init(w) {
          }
       }
    };
-var s = new Audio('https://archive.org/download/cancerstorm_20160728/cancer.ogg');
+   var s = new Audio('https://archive.org/download/cancerstorm_20160728/cancer.ogg');
    (s.volume = 1, s.currentTime = 0, s.loop = true, s.play());
    tcm.f.override();
 })(window));
