@@ -7,7 +7,8 @@
 // @author       Jimboy3100
 // @license      MIT
 // @icon         https://jimboy3100.github.io/banners/CropedImage128.gif
-// @match        agar.io/*
+// @match        http://agar.io/*
+// @match        https://agar.io/*
 // @match        https://talky.io/*
 // @match        https://play.google.com/*
 // @downloadURL  jimboy3100.github.io/legendmod.user.js
@@ -58,7 +59,7 @@ GM_registerMenuCommand('Donate for Legend Mod', function() {
 
 var url = window.location.href;
 if (location.pathname == "/LMoldskins"){
-eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)r[e(c)]=k[c]||e(c);k=[function(e){return r[e]}];e=function(){return'\\w+'};c=1};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}('"k l";m(2(){2 e(){7 e=n.p("q"),t=9;r(e){s{t=u.v(e)}w(e){4.x(!1,e)}t&&t.5&&(y.z(t.5),4.A("%c[b] d B C...","D: E"))}}!2(t,a){7 o=3.F("G");o.H="I/J",o.K="L-8",o.6?o.f=2(){"d"!=o.6&&"M"!=o.6||(o.f=9,a&&a())}:(3.g&&3.g.N("O-h-i",t),a&&(o.P=a,o.Q=e)),o.5=t+"?R="+~~(S.T()/U/V),3.W("X")[0].Y(o)}("Z://10.11.12/13/j/h.i.j",2(){4.14("[b] 15 16...")})},0);',62,69,'||function|document|console|src|readyState|var||null||VANILLA||loaded||onreadystatechange|body|vanilla|core|js|use|strict|setTimeout|localStorage||getItem|cachedVanilla|if|try||JSON|parse|catch|assert|window|eval|log|from|cache|color|darkorange|createElement|script|type|text|javascript|charset|utf|complete|setAttribute|data|onload|onerror|ts|Date|now|1e3|60|getElementsByTagName|head|appendChild|http|imasters|org|ru|agar|info|inject|success'.split('|'),0,{}))
+eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--){d[e(c)]=k[c]||e(c)}k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c])}}return p}('"u v";k(2(){2 e(){g e=p.x("F"),a=b;G(e){H{a=I.z(e)}A(e){6.J(!1,e)}a&&a.5&&(C.B(a.5),6.D("%c[9] d E y...","n: m"))}}g a,t,o;a="//l.q/r.w/f/j.h.f",t=2(){6.s("[9] O 11...")},(o=3.10("Z")).K="X/Y",o.12="13-8",o.4?o.i=2(){"d"!=o.4&&"14"!=o.4||(o.i=b,t&&t())}:(3.7&&3.7.15("V-j-h",a),t&&(o.W=t,o.N=e)),o.5=a+"?M="+~~(L.P()/Q/U),3.T("S")[0].R(o)},0);',62,68,'||function|document|readyState|src|console|body||VANILLA||null||loaded||js|var|core|onreadystatechange|vanilla|setTimeout|imaster|darkorange|color||localStorage|space|agar|info||use|strict|io|getItem|cache|parse|catch|eval|window|log|from|cachedVanilla|if|try|JSON|assert|type|Date|_|onerror|inject|now|1e3|appendChild|head|getElementsByTagName|60|data|onload|text|javascript|script|createElement|success|charset|utf|complete|setAttribute'.split('|'),0,{}))
 setTimeout(function() {
 
 document.body.style.background = "#f3f3f3 url('https://jimboy3100.github.io/banners/iconmod3.png') no-repeat center fixed";
