@@ -5,7 +5,7 @@
 // @description  Add some cancer to Agar and make your eyes bleed
 // @author       Jimboy3100
 // @license      PSL
-// @match        http://agar.io/*
+// @match        https://agar.io/*
 // @grant        none
 // @run-at       document-start
 // ==/UserScript==
