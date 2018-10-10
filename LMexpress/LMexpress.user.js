@@ -7,7 +7,7 @@
 // @author       Jimboy3100
 // @license      MIT
 // @icon         https://jimboy3100.github.io/banners/CropedImage128.gif
-// @match        *agar.io*
+// @match        http://agar.io/*
 // @match        https://talky.io/*
 // @match        https://play.google.com/*
 // @downloadURL  jimboy3100.github.io/legendmod.user.js
