@@ -52,3 +52,6 @@ $(".feature-button.shop.large").click();
 
 }, 18000);
 }
+else{
+location.replace("http://agar.io");
+}
