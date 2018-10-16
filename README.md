@@ -4,10 +4,11 @@ Mod for Agar.io multiplayer action browser game.
 
 ![alt tag](https://jimboy3100.github.io/banners/iconmod3.png)
 
-Author: Jimboy3100       Email: jimboy3100@hotmail.com
+Author: jimboy3100@hotmail.com
+
 Website: [www.legendmod.ml](http://www.legendmod.ml)
 
-<iframe width="980" height="551" src="https://www.youtube.com/embed/CnIfNSpCf70?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+<iframe width="800" height="452" src="https://www.youtube.com/embed/CnIfNSpCf70?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 ###### [Legend mod GitHub Library](https://github.com/jimboy3100/jimboy3100.github.io)
 
@@ -18,7 +19,6 @@ Website: [www.legendmod.ml](http://www.legendmod.ml)
 * Double split shortcut
 * Triple split shortcut (for tricksplits)
 * Minimap (find your team mates, avoid getting cornered etc)
-* Integrated team chat
 * 15 configurable shortcut keys to send messages to your team quickly
 
 ### Other Features
