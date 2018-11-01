@@ -8,8 +8,7 @@
 // @grant        unsafeWindow
 // ==/UserScript==
 
-(function() {
-	'use strict';
+
 	const global = window.unsafeWindow || window;
 	let my = {
 		"name": "lib Legend Mod",
@@ -17,16 +16,16 @@
 	};
 	let stat = my;
 	Object.assign(stat, {
-        'publicIP': "ws://37.187.176.125:3000",
+        'publicIP': "ws://164.132.227.101:3000",
 		"miniMapTeammatesColor": "#01d9cc",
 	});
 	//let cfg = {}, cfg_org = {
 	//};
 	my.log("start");
 	global.lib_ogar = my;
-
+	
 	// =====  Test driverー  =====
-
+		
 	if(/atmarkit\.co\.jp\/d9KcsYjB/.test(location.href)){
 		//setTimeout(init_html, 100);
 		loadScript("http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js", init_html);
@@ -59,7 +58,7 @@
 				//chatElem.value += sep + (escapeHtml(ev.nick) +": "+ escapeHtml(ev.message));
 				if (ev.message.includes("Welcome! You are connected to the OGARio")){
 				ev.message="Welcome to Legend Mod";
-				}
+				}				
 				chatElem.value += sep + ev.nick +": "+ ev.message;
 			};
 		});
@@ -82,7 +81,7 @@
 			$('#user_list').html(user_txt);
 		});
 	}
-
+	
 	// =====  External functions  =====
 	// Obtain connection parameters from the screen
 	my.getOptFromWindow = function(opt_){
@@ -118,7 +117,7 @@
 		}
 		return out;
 	};
-
+	
 	// =====  Legend Mod Class Definition  =====
 	function Tan1LibOgar(opt_){
 		//this.opt = my.getOptFromWindow(opt_);
@@ -171,7 +170,7 @@
 				return x.alive && x.updateTime > timeLate && x.mass > 0;
 			}).sort(function(x, y){return y.mass - x.mass;});
 	};
-
+	
 	// =====  Legend Mod Receive Handler  =====
 	prot.handleMessage = function(event){
 		var ogar = this;
@@ -224,7 +223,7 @@
 			break;
 		}
 	};
-
+	
 	// =====  Legend Mod reception processing  =====
 	prot.updateTeamPlayer = function(rcvBuf){
 		var teamPlayerID = rcvBuf.getUint32(1, true);
@@ -369,7 +368,7 @@
 			});
 		//}
 	};
-
+	
 	// =====  Legend transmission processing  =====
 	prot.sendPartyData = function(opt_){
 		let fake = Object.assign({
@@ -433,7 +432,7 @@
 		sndBuf.setUint32(0xd, playerMass, !0x0);
 		this.sendBuffer(sndBuf);
 	};
-
+	
 	// Send chat
 	// [Caution] If playerID and nick do not correspond, it will be played on the receiving side
 	prot.chatSend = function(message, opt_){
@@ -452,14 +451,14 @@
 		}// There is no character string termination
 		this.sendBuffer(buf);
 	};
-
+	
 	// =====  Legend Mod auxiliary processing  =====
 	// Returns the argument if it is valid as the URL of the custom skin, otherwise returns the empty string
 	prot.checkSkinURL = function(skinURL) {
 		return /^https?:\/\/i\.(?:imgur|hizliresim)\.com\/\w{6,8}\.(?:jpg|jpeg|png)\??\d*$/i.test(skinURL) ? skinURL : '';
 	};
-
-	// カスタムスキンをキャッシュする
+	
+	// Cache custom skins
 	prot.cacheCustomSkin = function(nick, playerColor, skinURL){
 		if(! skinURL){
 			return;
@@ -514,7 +513,7 @@
 		let skinImg = skinsCache[skinURL + "_cached"];
 		return skinImg && skinImg.complete && skinImg.width ? skinImg : null;
 	};
-
+	
 	// =====  General-purpose communication processing  =====
 	prot.flushData = function(){
 	};
@@ -556,4 +555,4 @@
 			.replace(/"/g, "&quot;")
 			.replace(/'/g, "&#039;");
 	}
-})();
+
