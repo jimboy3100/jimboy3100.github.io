@@ -458,7 +458,7 @@
 		return /^https?:\/\/i\.(?:imgur|hizliresim)\.com\/\w{6,8}\.(?:jpg|jpeg|png)\??\d*$/i.test(skinURL) ? skinURL : '';
 	};
 
-	// カスタムスキンをキャッシュする
+	// Cache custom skins
 	prot.cacheCustomSkin = function(nick, playerColor, skinURL){
 		if(! skinURL){
 			return;
