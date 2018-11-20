@@ -17,7 +17,10 @@ loadScript("http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js");
 		//setTimeout(init_html, 100);
 		//loadScript("http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js", init_html);
 		loadScript("http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js");
-    loadScript("https://jimboy3100.github.io/ExampleScripts/libLM.js");
+	setTimeout(function() {
+		loadScript("https://jimboy3100.github.io/ExampleScripts/libLM.js");
+	}, 1500);		
+    		
 }
 	// =====  Other general-purpose processing  =====
 	function loadScript(url, callback){
