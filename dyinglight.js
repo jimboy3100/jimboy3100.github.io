@@ -1,9 +1,9 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v1.83
+//v1.84
 var timeslost=0;
 var usedonce=0;
-var usedonce1=0;
+var usedonce1=1;
 var usedonce2=0;
 
 if(dyinglight1load==null||dyinglight1load=="null"){
@@ -59,7 +59,12 @@ if(dyinglight1load=="yes"){
 
 $("#musicUrl").val("https://www.youtube.com/watch?v=9iDYnAireiw");
 //musicPlayer.setVolume("25");
-setTimeout(function () {$("#playerBtn").click();}, 2000);
+setTimeout(function () {$("#playerBtn").click();
+btnmgs();
+$('*[data-itr="page_play"]').click(function() {
+	return usedonce1=0;
+});
+}, 2000);
 setTimeout(function () {$("#playerBtn").focusout();}, 2100);
 //setTimeout(function () {if($("#nick").val()==""){$("#nick").val("The Dying Light"); }}, 5000);
 
@@ -198,27 +203,29 @@ if(timeslost==3){timeslost=0;}
 }
 
     // listen for server disconnect
-function olddisconnect() {		
-		if(timesdisconnected==0){
+	
+
+function olddisconnect() {	
+		
 		playSound("https://jimboy3100.github.io/banners/dyinglingsong7.mp3");
 //		toastr["error"]("Disconnected :(");
-		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>Well, you not only did the job Karim, must of you, but you made it back in one piece.<br> Bravo!<br> Did you think I would be satisfied so easily? Is still plenty to prove!<br><font color="yellow">Disconnected :(</font></b> </div>').css("width", "400px");		   
-		}
-        appendSysLog("DISCONNECTED :(");
-		if(timesdisconnected<2){
-		MC.reconnect();
-		adres();
-				timesdisconnected++;
-				return timesdisconnected;}
-		else{
-			return timesdisconnected=0;}
+		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>Well, you not only did the job Karim, must of you, but you made it back in one piece.<br> Bravo!<br> Did you think I would be satisfied so easily? Is still plenty to prove!<br><font color="yellow">Server Changed </font></b> </div>').css("width", "400px");		   
 };
 	
-MC.__onDisconnect = MC.onDisconnect;
-MC.__onPlayerDeath = MC.onPlayerDeath;
+//MC.__onDisconnect = MC.onDisconnect;
+//MC.__onPlayerDeath = MC.onPlayerDeath;
 setTimeout(function () {
-MC.onPlayerDeath = joint([ MC.__onPlayerDeath, olddeath2 ]);	
-MC.onDisconnect = joint([ MC.__onDisconnect, olddisconnect ]);
+//MC.onPlayerDeath = joint([ MC.__onPlayerDeath, olddeath2 ]);
+
+core._disconnect= core.disconnect;
+core.disconnect= function () {
+            core._disconnect();
+			if(usedonce1==0){
+			olddisconnect();
+			usedonce1=1;
+			}
+}
+//MC.onDisconnect = joint([ MC.__onDisconnect, olddisconnect ]);
 }, 3000);	
 
 //	$(".agario-profile-picture").click(function () {
@@ -227,7 +234,7 @@ MC.onDisconnect = joint([ MC.__onDisconnect, olddisconnect ]);
 //	toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother4.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>Kurnell Tanner and the ministry of defence have lied to you!</b> </div>').css("width", "300px");
 //		usedonce1=1;
 //		}});
-	
+function btnmgs() {	
 	$("#copySIPBtn").click(function () {
 		if(usedonce==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglightsong10.mp3");			
@@ -240,11 +247,12 @@ MC.onDisconnect = joint([ MC.__onDisconnect, olddisconnect ]);
 		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>The creation of ones own rules, <font color="red">THAT</font> is what makes a man!<br> Do you live by your own rules Krane? <br>Or are you merely someone elses puppet??? </b> </div>').css("width", "400px");	
 		usedonce=1;
 		}});	
-	$("#skinButton").click(function () {
+	$('*[data-itr="page_spectate"]').click(function () {
 		if(usedonce2==0){
 		playSound("https://jimboy3100.github.io/banners/dyinglightsong9.mp3");	
 toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother7.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>I am researching traces of the prophecy about the god of the sun in the relics of local culture. It seems like a matter of life and death to the mother, and I am in no position to ask why</b> </div>').css("width", "400px");			usedonce2=1;
 		}});
+}		
 //toastr["error"](" Well, you not only did the job Karim, must of you, but you made it back in one piece. Bravo! Did you think I would be satisfied so easily? Is still plenty to prove!").css("width", "400px");		
 
 
