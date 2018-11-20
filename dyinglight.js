@@ -155,14 +155,15 @@ aab11();
 function aab11(){
 setTimeout(function () {
 $("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback10.jpg)');	
-aab12();
+aab();
 }, 60000);}
+/*
 function aab12(){
 setTimeout(function () {
 $("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback11.jpg)');	
 aab();
 }, 60000);}
-
+*/
 
 
 function stopdyinglight(){
