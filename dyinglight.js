@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v1.84
+//v1.85
 var timeslost=0;
 var usedonce=0;
 var usedonce1=1;
@@ -59,13 +59,15 @@ if(dyinglight1load=="yes"){
 
 $("#musicUrl").val("https://www.youtube.com/watch?v=9iDYnAireiw");
 //musicPlayer.setVolume("25");
-setTimeout(function () {$("#playerBtn").click();
+setTimeout(function () {
 btnmgs();
 $('*[data-itr="page_play"]').click(function() {
 	return usedonce1=0;
 });
 }, 2000);
 setTimeout(function () {$("#playerBtn").focusout();}, 2100);
+setTimeout(function () {$("#playerBtn").click();}, 6000);
+
 //setTimeout(function () {if($("#nick").val()==""){$("#nick").val("The Dying Light"); }}, 5000);
 
 //$("#leadbPicture").val("https://jimboy3100.github.io/banners/dyinglightbabyleaderboard.png");
