@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v1.88
+//v1.89
 var timeslost=0;
 var usedonce=0;
 var usedonce1=1;
@@ -63,6 +63,7 @@ $("#musicUrl").val("https://www.youtube.com/watch?v=9iDYnAireiw");
 setTimeout(function () {
 btnmgs();
 $('*[data-itr="page_play"]').click(function() {
+	olddeath2();
 	if (usedonce3==1){
 	if (typeof YT !== 'undefined') {
 	musicPlayer.playVideo();
