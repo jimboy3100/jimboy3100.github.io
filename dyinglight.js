@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v1.85
+//v1.86
 var timeslost=0;
 var usedonce=0;
 var usedonce1=1;
@@ -65,8 +65,13 @@ $('*[data-itr="page_play"]').click(function() {
 	return usedonce1=0;
 });
 }, 2000);
+setTimeout(function () {
+	if (typeof YT !== 'undefined') {
+	musicPlayer.playVideo()
+	}
+	;}, 2000);
 setTimeout(function () {$("#playerBtn").focusout();}, 2100);
-setTimeout(function () {$("#playerBtn").click();}, 6000);
+	
 
 //setTimeout(function () {if($("#nick").val()==""){$("#nick").val("The Dying Light"); }}, 5000);
 
