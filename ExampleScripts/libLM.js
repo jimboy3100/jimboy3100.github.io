@@ -1,4 +1,3 @@
-//v0.1
 	var my = {
 		"name": "lib Legend Mod",
 		"log": function(msg){ console.log(this.name + ":"+ msg); }
@@ -77,7 +76,25 @@
 		// * Legend is #nick, #tag, #token, #gamemode
 		//	AgarTool is #nick, #psk, #server, #gamemode
 		//	"vanilla tool" is #nick, #psk, (#btn-dc-input) #gamemode
-
+		function getValue(...selectors){
+			for(;;){
+				var selector = selectors.shift();
+				if(! selector){
+					return null;
+				}
+				var elem = document.querySelector(selector);
+				if(elem){
+					return elem.value;
+				}
+			}
+		}
+		function getToken(){	// for "vanilla tool"
+			var elem = document.querySelector("#btn-dc-input");
+			if(! elem){ return null; }
+			var found = elem.value.match(/live-arena-([\w\d]+)/);
+			if(! found){ return null; }
+			return	found[0];
+		}
 		return out;
 	};
 
@@ -191,7 +208,17 @@
 	prot.updateTeamPlayer = function(rcvBuf){
 		var teamPlayerID = rcvBuf.getUint32(1, true);
 		var bufPos = 0x5;
-
+		function strFromBuf(){	// Get a character string up to the null end
+			var value = "";
+			for(;;){
+				const code = rcvBuf.getUint16(bufPos, true);
+				if (0 == code) break;
+				value += String.fromCharCode(code);
+				bufPos += 0x2;
+			}
+			bufPos += 0x2;
+			return value;
+		}
 		var teamPlayerNick = strFromBuf();
 		var skinURL = this.checkSkinURL(strFromBuf());
 		var setColor = strFromBuf();
@@ -363,7 +390,14 @@
 		addString(fake.color);
 		addString(fake.playerColor);
 		this.sendBuffer(sndBuf);
-
+		function addString(value){
+			for(var idx = 0; idx < value.length; idx ++){
+				sndBuf.setUint16(bufidx, value.charCodeAt(idx), !0x0);
+				bufidx += 2;
+			}
+			sndBuf.setUint16(bufidx, 0x0, !0x0);
+			bufidx += 2;
+		}
 		my.log("sendPlayerUpdate"+
 			" nick='"+ fake.nick +"'"+
 			" skinURL='"+ fake.skinURL +"'"+
@@ -485,44 +519,6 @@
 	prot.isConnected = function(){
 		return this.socket && this.socket.readyState == WebSocket.OPEN;
 	};
-		function addString(value){
-			for(var idx = 0; idx < value.length; idx ++){
-				sndBuf.setUint16(bufidx, value.charCodeAt(idx), !0x0);
-				bufidx += 2;
-			}
-			sndBuf.setUint16(bufidx, 0x0, !0x0);
-			bufidx += 2;
-		}	
-		function getValue(...selectors){
-			for(;;){
-				var selector = selectors.shift();
-				if(! selector){
-					return null;
-				}
-				var elem = document.querySelector(selector);
-				if(elem){
-					return elem.value;
-				}
-			}
-		}
-		function getToken(){	// for "vanilla tool"
-			var elem = document.querySelector("#btn-dc-input");
-			if(! elem){ return null; }
-			var found = elem.value.match(/live-arena-([\w\d]+)/);
-			if(! found){ return null; }
-			return	found[0];
-		}	
-		function strFromBuf(){	// Get a character string up to the null end
-			var value = "";
-			for(;;){
-				const code = rcvBuf.getUint16(bufPos, true);
-				if (0 == code) break;
-				value += String.fromCharCode(code);
-				bufPos += 0x2;
-			}
-			bufPos += 0x2;
-			return value;
-		}		
 	function escapeHtml(e) {
 		return e.replace(/&/g, "&amp;")
 			.replace(/</g, "&lt;")
