@@ -34,3 +34,20 @@ loadScript("http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js");
 		loadScript("http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js");
     loadScript("https://jimboy3100.github.io/ExampleScripts/libLM.js");
 }
+	// =====  Other general-purpose processing  =====
+	function loadScript(url, callback){
+		var script = document.createElement("script");
+		script.type = "text/javascript";
+		script.src = url;
+		if(typeof callback !== 'undefined'){
+			script.onload = callback;
+		}
+		document.head.appendChild(script);
+	}
+	function escapeHtml(e) {
+		return e.replace(/&/g, "&amp;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;")
+			.replace(/"/g, "&quot;")
+			.replace(/'/g, "&#039;");
+	}
