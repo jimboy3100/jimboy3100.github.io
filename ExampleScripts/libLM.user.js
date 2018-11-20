@@ -9,20 +9,20 @@
 // ==/UserScript==
 
 
-	const global = window.unsafeWindow || window;
-	let my = {
+	
+	var my = {
 		"name": "lib Legend Mod",
 		"log": function(msg){ console.log(this.name + ":"+ msg); }
 	};
-	let stat = my;
+	var stat = my;
 	Object.assign(stat, {
         'publicIP': "ws://37.187.176.125:3000",
 		"miniMapTeammatesColor": "#01d9cc",
 	});
-	//let cfg = {}, cfg_org = {
+	//var cfg = {}, cfg_org = {
 	//};
 	my.log("start");
-	global.lib_ogar = my;
+	lib_ogar = my;
 
 	// =====  Test driverー  =====
 
@@ -43,7 +43,7 @@
 			'<div id="user_list"></div>'+
 			'<br/><textarea id="chat" cols="60" rows="10" ></textarea>'+
 			'');
-		let ogar;
+		var ogar;
 		$('#connect').click(function(){
 			var opt = {
 				"tag": $('#tag').val(),
@@ -51,7 +51,7 @@
 				"serverToken": $('#token').val(),
 			};
 			opt.ws = 'ws://live-arena-'+ opt.token +'.agar.io:80';
-			ogar = global.lib_ogar.create(opt);
+			ogar = lib_ogar.create(opt);
 			ogar.onchat = function(ev){
 				var chatElem = $('#chat').get(0);
 				var sep = ((chatElem.value == "") ? "" : "\n");
@@ -85,7 +85,7 @@
 	// =====  External functions  =====
 	// Obtain connection parameters from the screen
 	my.getOptFromWindow = function(opt_){
-		let opt = opt_ || {}, out = opt;
+		var opt = opt_ || {}, out = opt;
 		out.nick = opt.nick || getValue('#nick') || "";
 		out.tag = opt.tag || getValue('#clantag', '#tag', '#psk') || "";
 		out.serverToken = opt.serverToken
@@ -98,20 +98,20 @@
 		//	"vanilla tool" is #nick, #psk, (#btn-dc-input) #gamemode
 		function getValue(...selectors){
 			for(;;){
-				let selector = selectors.shift();
+				var selector = selectors.shift();
 				if(! selector){
 					return null;
 				}
-				let elem = document.querySelector(selector);
+				var elem = document.querySelector(selector);
 				if(elem){
 					return elem.value;
 				}
 			}
 		}
 		function getToken(){	// for "vanilla tool"
-			let elem = document.querySelector("#btn-dc-input");
+			var elem = document.querySelector("#btn-dc-input");
 			if(! elem){ return null; }
-			let found = elem.value.match(/live-arena-([\w\d]+)/);
+			var found = elem.value.match(/live-arena-([\w\d]+)/);
 			if(! found){ return null; }
 			return	found[0];
 		}
@@ -121,7 +121,7 @@
 	// =====  Legend Mod Class Definition  =====
 	function Tan1LibOgar(opt_){
 		//this.opt = my.getOptFromWindow(opt_);
-		let dummyCallback = function(){};
+		var dummyCallback = function(){};
 		Object.assign(this, {
 			"onchat": dummyCallback,
 		}, my.getOptFromWindow(opt_), {
@@ -132,13 +132,13 @@
 			'cacheQueue': [],
 		});
 	}
-	let prot = Tan1LibOgar.prototype;
+	var prot = Tan1LibOgar.prototype;
 	my.create = function(opt_){
-		let ogar = new Tan1LibOgar(opt_);
+		var ogar = new Tan1LibOgar(opt_);
 		ogar.socket = new WebSocket(stat.publicIP);
 		ogar.socket.onopen = function() {
 			my.log("Socket open");
-			let sndBuf = ogar.createView(0x3);
+			var sndBuf = ogar.createView(0x3);
 			sndBuf.setUint8(0x0, 0x0);
 			sndBuf.setUint16(0x1, 0x191, !0x0);
 			ogar.sendBuffer(sndBuf);
@@ -164,7 +164,7 @@
 		}
 	};
 	prot.getPlayerList = function(){
-		let timeLate = Date.now() - 0x7d0;
+		var timeLate = Date.now() - 0x7d0;
 		return	this.teamPlayers
 			.filter(function(x){
 				return x.alive && x.updateTime > timeLate && x.mass > 0;
@@ -229,7 +229,7 @@
 		var teamPlayerID = rcvBuf.getUint32(1, true);
 		var bufPos = 0x5;
 		function strFromBuf(){	// Get a character string up to the null end
-			let value = "";
+			var value = "";
 			for(;;){
 				const code = rcvBuf.getUint16(bufPos, true);
 				if (0 == code) break;
@@ -304,7 +304,7 @@
 	//};
 	prot.checkPlayerID = function(teamPlayerID){
 		if(teamPlayerID){
-			for(let idx = 0x0; idx < this.teamPlayers.length; idx++){
+			for(var idx = 0x0; idx < this.teamPlayers.length; idx++){
 				if(this.teamPlayers[idx].id == teamPlayerID){
 					return idx;
 				}
@@ -314,11 +314,11 @@
 	};
 	prot.updateParties = function(rcvBuf){
 		this.parties = [];
-		for(let partyNum = rcvBuf.getUint8(0x1), bufIdx = 0x2, strIdx = 0x0;
+		for(var partyNum = rcvBuf.getUint8(0x1), bufIdx = 0x2, strIdx = 0x0;
 				strIdx < partyNum; strIdx++){
-			let partyName = '';
+			var partyName = '';
 			for(;;){
-				let charCode = rcvBuf.getUint16(bufIdx, !0x0);
+				var charCode = rcvBuf.getUint16(bufIdx, !0x0);
 				if(0x0 == charCode){
 					break;
 				}
@@ -344,13 +344,13 @@
 			}
 			msg += String.fromCharCode(charCode);
 		}
-		//let senderIdx = this.checkPlayerID(senderID);
-		//let nick = ((null === senderIdx) ? "no name"
+		//var senderIdx = this.checkPlayerID(senderID);
+		//var nick = ((null === senderIdx) ? "no name"
 		//	: this.teamPlayers[senderIdx].nick);
 		//own.displayChatMessage(date, mcode, senderID, msg);
-		let nick = "no name";
-		let msgOrg = msg;
-		let msgRe = /([\s\S]*?): ([\s\S]*)/.exec(msg);
+		var nick = "no name";
+		var msgOrg = msg;
+		var msgRe = /([\s\S]*?): ([\s\S]*)/.exec(msg);
 		if(msgRe){
 			nick = msgRe[1];
 			msg = msgRe[2];
@@ -371,7 +371,7 @@
 
 	// =====  Legend transmission processing  =====
 	prot.sendPartyData = function(opt_){
-		let fake = Object.assign({
+		var fake = Object.assign({
 			"tag": "",
 			"partyToken": "",
 			"serverToken": "",
@@ -394,7 +394,8 @@
 		this[last] = value;
 	};
 	prot.sendPlayerUpdate = function(opt_){
-		let fake = Object.assign({
+		var fake = Object.assign({
+			"nick": "",
 			"skinURL": "",
 			"color": "#01d9cc",
 			"playerColor": "#01d9cc",
@@ -436,11 +437,11 @@
 	// Send chat
 	// [Caution] If playerID and nick do not correspond, it will be played on the receiving side
 	prot.chatSend = function(message, opt_){
-		let fake = Object.assign({
+		var fake = Object.assign({
 			"mcode": 0x65,		// 0x65: General, 0x66: Command
 			"reciverID": 0,
 		}, this, opt_ || {});
-		let msg = fake.nick +': '+ message;
+		var msg = fake.nick +': '+ message;
 		var buf = this.createView(0xa + 2 * msg.length);
 		buf.setUint8(0x0, 0x64);
 		buf.setUint8(0x1, fake.mcode);
@@ -510,7 +511,7 @@
 		this.cacheSkin(this.customSkinsCache);
 	};
 	prot.getCachedSkin = function(skinsCache, skinURL) {
-		let skinImg = skinsCache[skinURL + "_cached"];
+		var skinImg = skinsCache[skinURL + "_cached"];
 		return skinImg && skinImg.complete && skinImg.width ? skinImg : null;
 	};
 
