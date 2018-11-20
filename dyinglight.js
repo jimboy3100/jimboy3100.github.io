@@ -1,10 +1,11 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v1.87
+//v1.88
 var timeslost=0;
 var usedonce=0;
 var usedonce1=1;
 var usedonce2=0;
+var usedonce3=0;
 
 if(dyinglight1load==null||dyinglight1load=="null"){
 toastr["warning"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightbanner.jpg); color:#018cf6; font-size:16px; text-align:center">Are you sure you want to load Dying Light Template?<br>Save your Settings on a file, because they will be lost.<br>' + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-DyingLight" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">'+ Premadeletter25 + '</button></div>', "", { timeOut: 20000, extendedTimeOut: 20000 }).css("width", "300px");	
@@ -62,14 +63,19 @@ $("#musicUrl").val("https://www.youtube.com/watch?v=9iDYnAireiw");
 setTimeout(function () {
 btnmgs();
 $('*[data-itr="page_play"]').click(function() {
-	return usedonce1=0;
+	if (usedonce3==1){
+	if (typeof YT !== 'undefined') {
+	musicPlayer.playVideo();
+	}
+	launchIntoFullscreen(document.documentElement);	
+	}
+	return usedonce3=0;
 });
 }, 2000);
-launchIntoFullscreen(document.documentElement);
-if (typeof YT !== 'undefined') {
-musicPlayer.playVideo();
 
-}
+$("#leaderboard-positions").css('background-image', 'url(" http://rs437.pbsrc.com/albums/qq95/anuksanamoon27/HALLOWEEN/f76e322d.png~c200 ")');
+
+
 setTimeout(function () {$("#playerBtn").focusout();}, 2100);
 	
 
@@ -266,7 +272,16 @@ toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3
 $("#openfl-content").css('background-image', 'url("http://static.gosunoob.com/img/1/2015/03/Dying_Light_1_5_National_Outfits.jpg")');
 $("#log").css('background-image', 'url(" https://pbs.twimg.com/media/DDkK94TWAAA-8bt.jpg ")');
 http://www.clker.com/cliparts/T/X/h/3/B/Z/simple-paint-splatter.svg;
-$("#leaderboard-positions").css('background-image', 'url(" http://rs437.pbsrc.com/albums/qq95/anuksanamoon27/HALLOWEEN/f76e322d.png~c200 ")');
+
+
+function opendyinglight2() {
+//toastr["info"]("Function is not ready yet");	
+    var s = document.createElement("script");
+    s.type = "text/javascript";
+    s.src = "https://jimboy3100.github.io/dyinglight2.js";
+    $("body").append(s);
+	
+}
 */
 function playSound(url){
   var audio = document.createElement('audio');
