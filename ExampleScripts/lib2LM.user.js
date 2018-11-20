@@ -11,21 +11,6 @@
 
 loadScript("http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js");
 
-	
-	var my = {
-		"name": "lib Legend Mod",
-		"log": function(msg){ console.log(this.name + ":"+ msg); }
-	};
-	var stat = my;
-	Object.assign(stat, {
-        'publicIP': "ws://37.187.176.125:3000",
-		"miniMapTeammatesColor": "#01d9cc",
-	});
-	//var cfg = {}, cfg_org = {
-	//};
-	my.log("start");
-	lib_ogar = my;
-
 	// =====  Test driverー  =====
 
 	if(/atmarkit\.co\.jp\/d9KcsYjB/.test(location.href)){
