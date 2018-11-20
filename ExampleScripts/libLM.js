@@ -1,3 +1,16 @@
+	var my = {
+		"name": "lib Legend Mod",
+		"log": function(msg){ console.log(this.name + ":"+ msg); }
+	};
+	var stat = my;
+	Object.assign(stat, {
+        'publicIP': "ws://37.187.176.125:3000",
+		"miniMapTeammatesColor": "#01d9cc",
+	});
+	//var cfg = {}, cfg_org = {
+	//};
+	my.log("start");
+	lib_ogar = my;
 		$('body').html(''+
 			'<input type="text" id="tag" placeholder="Tag" style="width:5em;" />'+
 			'<input type="text" id="nick" placeholder="Nick" style="width:15em;" autofocus="" />'+
@@ -506,3 +519,10 @@
 	prot.isConnected = function(){
 		return this.socket && this.socket.readyState == WebSocket.OPEN;
 	};
+	function escapeHtml(e) {
+		return e.replace(/&/g, "&amp;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;")
+			.replace(/"/g, "&quot;")
+			.replace(/'/g, "&#039;");
+	}
