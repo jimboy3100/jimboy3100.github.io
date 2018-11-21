@@ -41,7 +41,7 @@ $("#menu-footer").after('<div id="ogarioscripts" style="background-image: url('+
 			'<div id="Ogaruser_list"></div>'+
 			'<br/><textarea id="Ogarchat" cols="60" rows="10" ></textarea>'+
 			'</div><p id="ogarioscripter1" style="color:white; font-size:12px"; align="middle">OGARio Library: ' +	
-			'<a id="ogarioscripter2" href="https://jimboy3100.github.io/ExampleScripts/injectlibLM.js" data-toggle="tooltip" data-title="OGARio Library" data-placement="top" style="font-size: 13px" ;="" target="_blank" data-original-title="" title="">libLM.js</a>'+										
+			'<a id="ogarioscripter2" href="https://jimboy3100.github.io/ExampleScripts/injectlibLM.js" data-toggle="tooltip" data-title="OGARio Library" data-placement="top" style="font-size: 13px" ;="" target="_blank" data-original-title="" title="">injectlibLM.js</a>'+										
 			'<p id="ogarioscripter3" style="color:white; font-size:12px"; align="middle">The Legend mod Project - Example Library: ' +	
 			'<a id="ogarioscripter4" href="https://github.com/jimboy3100/jimboy3100.github.io/tree/master/ExampleScripts" data-toggle="tooltip" data-title="The Legend mod Project - Example Library" data-placement="top" style="font-size: 13px" ;="" target="_blank" data-original-title="" title="">ExampleScripts</a>'+
 			'<p id="ogarioscripter5" style="color:white; font-size:12px"; align="middle">Be a Dev/Update OGARio functions: ' +	
