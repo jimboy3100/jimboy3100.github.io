@@ -1,56 +1,456 @@
-
-<html lang="en-us"><head>
+<html lang="en-us"><head>	
         <meta charset="UTF-8">
-        <title>The Legend mod Project - Scripts for agar.io</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/normalize.css" media="screen">
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css">
         <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/stylesheet.css" media="screen">
         <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/github-light.css" media="screen">
-    </head>
-    <body>
-        <section style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 120%;background-position-x: -240px;background-position-y: -100px;color: white;text-align: center;">
-			<ul><h3 class="project-tagline"><li>Step 1, Install Script Manager</li>
-            <div><span style="color: white;">For <img title="Chrome" src="https://jimboy3100.github.io/banners/iconbrowserchrome16.png" alt="Chrome"><a href="https://www.google.com/chrome/" target="_blank">Chrome</a></span>, <img title="Vivaldi" src="https://jimboy3100.github.io/banners/iconbrowservivaldi16.png" alt="Vivaldi"><a href="https://vivaldi.com/" target="_blank">Vivaldi</a>: </span><a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo" target="_blank"><img title="Chrome" src="https://raw.githubusercontent.com/Tampermonkey/tampermonkey/master/images/licon.png" alt="Chrome" style="float: left; ;position: relative"><span style="position: relative;color: white;">Tampermonkey</span></a>
-<br><span style="color: white;"> For <img title="Opera" src="https://jimboy3100.github.io/banners/iconbrowseropera16.png" alt="Opera" ><a href="https://www.opera.com/" target="_blank">Opera</a>: </span><a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="https://addons.opera.com/en/extensions/details/tampermonkey-beta" target="_blank"><span style="left;position: relative;color: white;position: relative"><img title="Chrome" src="https://raw.githubusercontent.com/Tampermonkey/tampermonkey/master/images/licon.png" alt="Chrome" style="float: left; position: relative">Tampermonkey</span></a>
-<br><span style="color: white;"><img title="Chrome" src="https://jimboy3100.github.io/banners/iconbrowserchrome16.png" alt="Chrome">, <img title="Vivaldi" src="https://jimboy3100.github.io/banners/iconbrowservivaldi16.png" alt="Vivaldi">: Recommended to also install </span><a href="https://chrome.google.com/webstore/detail/im-not-robot-captcha-clic/ceipnlhmjohemhfpbjdgeigkababhmjc/related" target="_blank"><b>I'm not robot captcha clicker</b></a></span><span style="color: white;"> :D</span>
-</div>
-<h3 class="project-tagline"><li>Step 2, Install Script</li>
+		<style>
 
-<Disable other "main" Tampermonkey userscripts or Chrome Extensions</h3>
-<span style="color: white;"></span><a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="http://jimboy3100.github.io/LMexpress/LMexpress.user.js" target="_blank"><span style="left;position: relative;color: white;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Legend Express</span></a> <span style="color: white;">(Smooth mod, Html based)</span> 
-<br><span style="color: white;">Cannot install? </span><a href="https://www.youtube.com/watch?v=vuRK1qUnSKY" target="_blank"><b>Watch video</b></a></span>
- </ul>
+* {
+   box-sizing: border-box;
+}
+
+::-webkit-input-placeholder { 
+    color: #d1d1d1 !important; 
+}
+
+::-moz-placeholder { 
+    color: #d1d1d1 !important;
+}
+
+::-moz-selection {
+    color: #fff !important;
+    background-color: #a06ee1 !important;
+}
+
+::selection {
+    color: #fff !important;
+    background-color: #a06ee1 !important;
+}
+
+#navbar {
+    //width: 100%;
+	display: flex; 
+	justify-content: center;
+	height: 76px;
+	background-color: #fff;
+	//position: fixed;
+	//top: 0;
+	/left: 0;
+	//right: 0;
+	//z-index: 1000;
+}
+
+#nav {
+	width: 550px;
+	overflow: hidden;
+}
+
+#nav ul {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	float: left;
+}
+
+#nav ul li {
+	list-style-type: none;
+	margin-left: 8px;
+	float: left;
+}
+
+#nav a {
+	display: block;
+	font-family: "OpenSans-Semibold", sans-serif;
+	font-weight: normal;
+	font-size: 1em;
+	color: #969696;
+	border: 2px solid #969696;
+	border-radius: 8px;
+    text-decoration: none;
+	padding: 8px 8px;
+    margin-top: 18px;
+}
+
+#nav a:hover, #nav .active {
+	color: #a06ee1;
+	border-color: #a06ee1;
+    text-decoration: none;
+}
+
+#nav .active {
+	color: #fff;
+	background-color: #a06ee1;
+}
+
+#nav .active:hover {
+	color: #fff;
+}
+
+#skin-url {
+    width: 500px;
+    height: 42px;
+    color: #d1d1d1;
+    font-family: "OpenSans-Semibold", sans-serif;
+    font-size: 1em;
+    border-radius: 8px;
+    border: 2px solid #d1d1d1;
+    margin-top: 18px;
+    padding: 10px;
+}
+
+#hizliresim {
+    display: none;
+}
+
+.skins-wrapper {
+    overflow: hidden;
+    padding: 10px;
+    //margin-top: 40px;
+}
+
+.skin-box {
+    width: 140px;
+    height: 140px;
+    cursor: pointer;
+    float: left;
+}
+
+.skin-box img {
+    width: 100px;
+    height: 100px;
+    border: none;
+    border-radius: 50%;
+    margin: 20px;
+    transition: all linear 0.2s;
+}
+
+.skin-box:hover img {
+    width: 140px;
+    height: 140px;
+    border: none;
+    border-radius: 50%;
+    margin: 0;
+}
+		</style>		
+<title>legendmod.ml</title><link type="image/x-icon" rel="shortcut icon" href="https://jimboy3100.github.io/banners/icon32croped.ico.gif"></head>
+	
+    <body>
+        <section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
+            <section height="200px" style="padding-top: 0px;padding-bottom: 0px; background-image: url(https://jimboy3100.github.io/banners/iconmod3.png);background-repeat: no-repeat; background-position: center; background-size: 100%;  color: black;text-align: center;">
+
+		<iframe id="animatedpromosIframe4" class="result-iframe" style="border: none;" src="https://jimboy3100.github.io/extras/banneranimated4.html" name="CodePen" width="700" height="80" frameborder="0" scrolling="no" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowfullscreen="allowfullscreen"></iframe>
+			</section>
+			<div id="navbar">
+			<div id="nav">
+			<ul>
+			   <li><a name="Scripts" href="#Scripts" class="active">Scripts</a></li>
+                <li><a name="About" href="#About">About</a></li>
+				<li><a name="Features" href="#Features">Features</a></li>
+				<li><a name="Changelog" href="#Changelog">Changelog</a></li>
+				<li><a name="FPS" href="#FPS">FPS</a></li>
+				<li><a name="Developers" href="#Developers">Developers</a></li>
+			</ul>
+			</div>
+			</div>			
+			<div id="Scripts" class="skins-wrapper" style="display: block;">			
+			<iframe id="animatedpromosIframe4" class="result-iframe" style="border: none;" src="https://jimboy3100.github.io/extras/banneranimated3.html" name="CodePen" width="800" height="400" frameborder="0" scrolling="no" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowfullscreen="allowfullscreen"></iframe>			
+			<h3 class="project-tagline">Step 1, Install Script Manager</h3>
+            <div><span style="color: black;">For <img title="Chrome" src="https://jimboy3100.github.io/banners/iconbrowserchrome16.png" alt="Chrome"><a href="https://www.google.com/chrome/" target="_blank">Chrome</a></span>, <img title="Vivaldi" src="https://jimboy3100.github.io/banners/iconbrowservivaldi16.png" alt="Vivaldi"><a href="https://vivaldi.com/" target="_blank">Vivaldi</a>: <a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo" target="_blank"><img title="Chrome" src="https://raw.githubusercontent.com/Tampermonkey/tampermonkey/master/images/licon.png" alt="Chrome" style="float: left; ;position: relative"><span style="position: relative;color: black;">Tampermonkey</span></a>
+		
+<br><span style="color: black;"> For <img title="Opera" src="https://jimboy3100.github.io/banners/iconbrowseropera16.png" alt="Opera"><a href="https://www.opera.com/" target="_blank">Opera</a>: </span><a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://addons.opera.com/en/extensions/details/tampermonkey-beta" target="_blank"><span style="left;position: relative;color: black; position: relative"><img title="Chrome" src="https://raw.githubusercontent.com/Tampermonkey/tampermonkey/master/images/licon.png" alt="Chrome" style="float: left; position: relative">Tampermonkey</span></a>
+<br><span style="color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/iconbrowserchrome16.png" alt="Chrome">, <img title="Vivaldi" src="https://jimboy3100.github.io/banners/iconbrowservivaldi16.png" alt="Vivaldi">: Highly recommended to also install </span><a href="https://chrome.google.com/webstore/detail/im-not-robot-captcha-clic/ceipnlhmjohemhfpbjdgeigkababhmjc/related" target="_blank"><b>I'm not robot captcha clicker</b></a><span style="color: black;"> :D</span>
+</div>
+<h2 class="project-tagline">Step 2, Install Script
+<font size="3"><br>Disable other "main" Tampermonkey userscripts or Chrome Extensions</font></h2>
+<span style="color: black;"></span><a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="http://jimboy3100.github.io/LMexpress/LMexpress.user.js" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Legend Express v1.4</span></a> <span style="color: black;">(Smooth mod, Html based)</span> 
+
+<br>
+<span style="color: black;"></span><a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="http://jimboy3100.github.io/LMexpress/LMexpressExpansion1.user.js" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Legend Express Expansion 1</span></a> <span style="color: black;">(Install Express Exp 1 for Old Skins)</span> 
+
+<br><span style="color: black;">Cannot install? </span><a href="https://www.youtube.com/watch?v=vuRK1qUnSKY" target="_blank"><b>Watch video</b></a>
+<br><span style="color: black;">Join the </span><a href="https://jimboy3100.github.io/extras/website/devs.html"><b>developer team</b></a> of Legend mod Project
  <hr>
  <h2 class="project-tagline">Other Main Products</h2>
-<a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="https://legendmod.joomla.com/en/2-uncategorised/15-agario-mobile.html" target="_blank"" ><span style="left;position: relative;color: white;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="Agario" style="float: left; position: relative">LM Mobile</span></a> <span style="color: white;">(PC Agario for Mobiles/Tablets, Script based) </span>
-<br><span style="color: white;"></span> <a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="https://jimboy3100.github.io/ExampleScripts/LMTiny.user.js" target="_blank"><span style="left;position: relative;color: white;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="LM" style="float: left; position: relative">LM Tiny OpenSource</span></a> <span style="color: white;">(A tiny Open Source Script)</span>
-<br><span style="color: white;"></span> <a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="http://jimboy3100.github.io/ExampleScripts/LMtoAgartool.user.js" target="_blank"><span style="left;position: relative;color: white;">
+<a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://jimboy3100.github.io/LMmobile/" target="_blank" "=""><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="Agario" style="float: left; position: relative">LM Mobile</span></a> <span style="color: black;">(PC Agario for Mobiles/Tablets, Script based) </span>
+<br><span style="color: black;"></span> <a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://jimboy3100.github.io/ExampleScripts/LMTiny.user.js" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="LM" style="float: left; position: relative">LM Tiny OpenSource</span></a> <span style="color: black;">(A tiny Open Source Script)</span>
+<br><span style="color: black;"></span> <a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="http://jimboy3100.github.io/ExampleScripts/LMtoAgartool.user.js" target="_blank"><span style="left;position: relative;color: black;">
 <img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" height="26" width="26" alt="LM"><img title="Chrome" src="https://jimboy3100.github.io/banners/iconRightcropped.png" height="26" width="26" alt="LM"><img title="Chrome" src="https://jimboy3100.github.io/banners/iconagariotool.png" alt="LM">  
-Connect OGARio to Agar Tool</span></a> <span style="color: white;">(Included on LM and LME)</span>
+Connect OGARio to Agar Tool</span></a> <span style="color: black;">(Included on LM and LME)</span>
  <hr>
  <h2 class="project-tagline"> Manual Skins / Templates</h2>
-<a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="https://jimboy3100.github.io/skins/" target="_blank"><span style="left;position: relative;color: white;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="Agario" style="float: left; position: relative">Skins</span></a> <span style="color: white;"></span>
-<span style="color: white;"></span> <a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="https://jimboy3100.github.io/themes/" target="_blank"><span style="left;position: relative;color: white;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Templates</span></a> <span style="color: white;"></span>
-<a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="https://jimboy3100.github.io/skinrotator.html" target="_blank"><span style="left;position: relative;color: white;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="Agario" style="float: left; position: relative">Skins Rotator</span></a> <span style="color: white;"></span>
-<span style="color: white;"></span> <a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="https://jimboy3100.github.io/skins/skinchecker.html" target="_blank"><span style="left;position: relative;color: white;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Skin Checker</span></a> <span style="color: white;"></span>
+<a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://jimboy3100.github.io/skins/" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="Agario" style="float: left; position: relative">Skins</span></a> <span style="color: black;"></span>
+<span style="color: black;"></span> <a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://jimboy3100.github.io/themes/" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Templates</span></a> <span style="color: black;"></span>
+<a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://jimboy3100.github.io/skinrotator.html" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="Agario" style="float: left; position: relative">Skins Rotator</span></a> <span style="color: black;"></span>
+<span style="color: black;"></span> <a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://jimboy3100.github.io/skins/skinchecker.html" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Skin Checker</span></a> <span style="color: black;"></span>
  <hr>
- <h2 class="project-tagline">Small Open Source Scripts Included on LM 
- <font size="3"><br>Don't install if use LM</font></h2>
-<a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="https://jimboy3100.github.io/VidMod.user.js" target="_blank"><span style="left;position: relative;color: white;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="Agario" style="float: left; position: relative">Video Skins</span></a> <span style="color: white;"><a href="https://www.youtube.com/watch?v=-OHbflAMDiU" target="_blank"><b>Watch video</b></a></span>
-<span style="color: white;"></span> <a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="https://greasyfork.org/el/scripts/31353-agario-voice-chat-rooms" target="_blank">
-<span style="left;position: relative;color: white;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="LM" style="float: left; position: relative">
-Voice and Camera compatibility for other mods with LM</span></a> <span style="color: white;"><a href="https://greasyfork.org/system/screenshots/screenshots/000/007/819/original/vanillachat.jpg " target="_blank">
+ <h2 class="project-tagline">Small Open Source Scripts
+</h2>
+<a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://jimboy3100.github.io/VidMod.user.js" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="Agario" style="float: left; position: relative">Video Skins</span></a> <span style="color: black;"><a href="https://www.youtube.com/watch?v=-OHbflAMDiU" target="_blank"><b>Watch video</b></a></span>
+<span style="color: black;"></span> <a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://greasyfork.org/el/scripts/31353-agario-voice-chat-rooms" target="_blank">
+<span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="LM" style="float: left; position: relative">
+Voice and Camera compatibility for other mods with LM</span></a> <span style="color: black;"><a href="https://greasyfork.org/system/screenshots/screenshots/000/007/819/original/vanillachat.jpg " target="_blank">
 <b>Watch icon</b></a></span>
 <br>
-<a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="https://greasyfork.org/el/scripts/30289-simple-multiplayer-ip-agario-script" target="_blank"><span style="left;position: relative;color: white;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="Agario" style="float: left; position: relative">Simple multiplayer agario Script</span></a> <span style="color: white;"><a href="https://greasyfork.org/system/screenshots/screenshots/000/007/402/original/12.png" target="_blank"><b>Watch icon</b></a></span>
-<span style="color: white;"></span> <a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="https://greasyfork.org/el/scripts/30292-send-agario-sip-to-discord" target="_blank"><span style="left;position: relative;color: white;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="LM" style="float: left; position: relative">Send SIP to Discord</span></a> <span style="color: white;"><a href="https://greasyfork.org/system/screenshots/screenshots/000/007/403/original/13.png" target="_blank"><b>Watch icon</b></a></span>
+<a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://greasyfork.org/el/scripts/30289-simple-multiplayer-ip-agario-script" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="Agario" style="float: left; position: relative">Simple multiplayer agario Script</span></a> <span style="color: black;"><a href="https://greasyfork.org/system/screenshots/screenshots/000/007/402/original/12.png" target="_blank"><b>Watch icon</b></a></span>
+<span style="color: black;"></span> <a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://greasyfork.org/el/scripts/30292-send-agario-sip-to-discord" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="LM" style="float: left; position: relative">Send SIP to Discord</span></a> <span style="color: black;"><a href="https://greasyfork.org/system/screenshots/screenshots/000/007/403/original/13.png" target="_blank"><b>Watch icon</b></a></span>
+<a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://jimboy3100.github.io/ExampleScripts/BleedingMod.user.js" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="Agario" style="float: left; position: relative">Cancer Script</span></a> <span style="color: black;"><a href="https://www.youtube.com/watch?v=cAGjWeDaVX8" target="_blank"><b>Watch video</b></a></span>
+<span style="color: black;"></span> <a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://greasyfork.org/el/scripts/30406-agar-io-legend-mod-translations" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Legend mod Translations</span></a> <span style="color: black;">(Contribute by translating LM)</span>
+
+ <hr> 
+  <h2 class="project-tagline"> Fun / Troll</h2>
+<a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://jimboy3100.github.io/extras/website/gamble.html" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="Agario" style="float: left; position: relative">Agario Gamble</span></a> <span style="color: black;"></span>
+<span style="color: black;"></span> <a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://jimboy3100.github.io/themes/" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Not Ready Yet</span></a> <span style="color: black;"></span>
+<span style="color: black;"></span> <a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://jimboy3100.github.io/themes/" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Not Ready Yet</span></a> <span style="color: black;"></span>
+<span style="color: black;"></span> <a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://jimboy3100.github.io/themes/" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Not Ready Yet</span></a> <span style="color: black;"></span>
 <br>
-<span style="color: white;"></span> <a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="https://greasyfork.org/en/scripts/370501-agario-animated-skins/code" target="_blank"><span style="left;position: relative;color: white;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Animated Skins</span></a> <span style="color: white;">(<span style="color: red;"><b>NEW</b></span>)</span>
-<span style="color: white;"></span> <a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="https://greasyfork.org/el/scripts/30406-agar-io-legend-mod-translations" target="_blank"><span style="left;position: relative;color: white;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Legend mod Translations</span></a> <span style="color: white;">(Contribute by translating LM)</span>
-<hr>
-<h2 class="project-tagline"> Fun / Troll</h2>
-<a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="https://jimboy3100.github.io/ExampleScripts/BleedingMod.user.js" target="_blank"><span style="left;position: relative;color: white;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="Agario" style="float: left; position: relative">Cancer Script</span></a> <span style="color: white;"><a href="https://www.youtube.com/watch?v=cAGjWeDaVX8" target="_blank"><b>Watch video</b></a></span>
-<a style="max-width: 50%;min-width: 15%;border-color: white;" class="btn" href="https://jimboy3100.github.io/extras/website/gamble.html" target="_blank" alt="Agario" style="float: left; position: relative"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="Agario" style="float: left; position: relative">Agario Gamble</span></a> <span style="color: white;">(<span style="color: red;"><b>NEW</b></span> - Non Agario Script)</span>
- </section>
+ <br><a href="https://github.com/jimboy3100/jimboy3100.github.io" target="_blank"><img id="legendAdImg" height="70px" src="https://jimboy3100.github.io/banners/iconLMbannerwhite.png" align="middle"></a>
+ </div></section>
+ 
+<div id="About" class="skins-wrapper" style="display: none;">
+<section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
+<strong>Mod for Agar.io multiplayer action browsergame</strong>
+<br>
+<br>
+<iframe style="margin-top: -5px;" src="https://www.youtube.com/embed/CnIfNSpCf70?ecver=2&amp;loop=1&amp;controls=0&amp;mute=1&amp;autoplay=1&amp;showinfo=0&amp;rel=0" width="560" height="315" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+<h2 class="project-tagline">About Mod</h2>
+Author: Jimboy3100  (Developer on java, vb, c++, asp.net, javascript and sql libraries)
+<br><i>User Account Jimboy3100 for gmail, hotmail, skype, facebook, twitter, discord, youtube, github, joomla, etc</i>
+<br>
+<br>This mod combines many scripts for agario game. It is based on ogario.ovh platform with all features, 
+<br>and uses script codes such as auto-respawn, kitty insist reconnects for ffa/exp tokens and plenty
+<br>of other scripts that can be found on greasefork website. It works only as javascript / jquery
+<br>design palette script that works on the users terminal, using dynamic libraries from cloud,
+<br>but not sending any user information to the web. It also does not use any cheat codes,
+<br>but provides mathematical / programming scripts that help users play with comfort.
+<br>It also provides better ogario.ovh syncing support with the game and some basic game bug fixes to the game itself
+<br>It also:
+<br>Auto Updates
+<br>Provides many features shown on the feature section
+<br>Is encoded
+<br>Has the best scripts and features than any other mod for agar.io (as far as i know)
+<br>Provides vanilla-like framework with one button click, for users who are used to vanilla game
+<h2><img style="display: block; margin-left: auto; margin-right: auto;" src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/icon128croped.gif" alt=""></h2>
+<h2 class="project-tagline">Who we are</h2>
+We are a clan named <a title="Legend Clan Website" href="http://lclan.ml/" target="_blank" rel="noopener noreferrer"><span style="text-decoration: underline;">℄ＬＥＧＥＮＤ</span></a>,
+<br>we use ℄ symbol to be recognised. We love agar.io. We are an active elite clan. 
+<br>Communication is over <span style="text-decoration: underline;"><a href="https://jimboy3100.github.io/extras/banneranimated7bLc.html" target="_blank" rel="noopener noreferrer">skype</a></span>.
+<br>We share&nbsp;ours&nbsp;scripts with everyone
+<h2 class="project-tagline">We need</h2>
+Modders, people who are used to scripting <em>javascript / jquery</em> or programming <em>vb / asp.net</em>
+<br>Translators, we can offer the mod to any language, with one button click
+<br>Player design settings, share your game settings with everyone
+<br>Testers for the new beta versions
+<h2 class="project-tagline">Support</h2>
+If you like, please support the mod with any donation
+<br>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" data-toggle="tooltip" data-title="Please support the development of Legend Mod" data-placement="left"><input name="cmd" type="hidden" value="_s-xclick"><input name="hosted_button_id" type="hidden" value="CM3GDVCW6PBF6"><input alt="PayPal - The safer, easier way to pay online!" name="submit" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" type="image"><img src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" alt="" width="1" height="1" border="0"></form>
+</section>
+</div>
+
+<div id="Features" class="skins-wrapper" style="display: none;">
+<section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
+<strong>LME is the biggest and quickest mod for agario</strong>
+<br>
+<br>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/t1aCrp0vyZc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<br>
+<h2 class="project-tagline">Legend Mod Express Features</h2>
+Auto Updates
+<br><b>Unlimited FPS</b>&nbsp;unlocked (<i>quicker than Vanilla</i>)
+<br>Old Skins (<i>needs LME Expansion Pack</i>)
+<br>Animated Skins (<i>Not ready yet</i>)
+<br>UserScripts Manager (<i>URL or pasted</i>)
+<br>Language Packs
+<br>Direct&nbsp;<b>PARTY / FFA / EXP / TEAM</b>&nbsp;server by using tokens / sips or connector
+<br>Search engine for player name / clan / tag / leaderboard / ip / token
+<br>Integrated Chat, minimap and teamboard. Chat rooms per server/per team password(<i>or public</i>)
+<br>New Template / skins / animations / zoom / respawn / helpers / hud controls and many extras
+<br>Themes for quite all textures and map (<i>Basic / Menu / Hud / chat / minimap / graphics and cursor</i>)
+<br>Banners for many clans (<i>Email me your symbol and weblink for updates</i>)
+<br>60++ Macros / Events / Hotkeys (<i>Script does many calculations</i>)
+<br>Tools for quests / youtubers / timers / coin auto digger / youtube video player
+<br>Send message pictures, videos and also various message commands directly to teammate's script
+<br>Change various textures, add photos on huds and clan's pictures and url links
+<br>Discord webhook handler's for sending IP, and many more...
+<br><i>No profile libraries, no Private Servers support, vanilla skins and other libraries are not loaded</i>
+<h2 class="project-tagline">Legend Mod Mobile Features</h2>
+Pure Agario with 2 buttons to split and W for mobiles / tablets to play PC Agario
+<h2 class="project-tagline">LME Chat&nbsp;Commands</h2>
+1. “Send a new agario server” -&nbsp;send your agario server link to users and suggest them to join<br>Message format: [srv]agario URL[/srv]<br>Example 1: To send this server:&nbsp;http://agar.io/#2DUZJJ<br>put in the message: [srv]http://agar.io/#2DUZJJ[/srv]&nbsp;</p>
+<br>Example 2: To send this server: http://agar.io/?sip=live-arena-1dzn7sm.agar.io&amp;?r=EU-London&amp;?m=<br>put in the message: [srv]http://agar.io/?sip=live-arena-1dzn7sm.agar.io&amp;?r=EU-London&amp;?m=[/srv]&nbsp;</p>
+<br>and to embed password "mypassword": [srv]http://agar.io/?sip=live-arena-1rdujzy.agar.io&amp;?pass=mypassword&amp;?r=EU-London&amp;m=[/srv]</p>
+<br><em>*Due to limit of 60 chars on chat texts, users&nbsp;may experience less chars on the box, command still works</em></p>
+<br>2. “Show a URL on chat” -&nbsp;send your url link that users can visit on a new tab.<br>Message format: [url]URL[/url]<br>Example: To send this hyperlink: http://google.com<br>put in the message: [url]http://google.com[/url]</p>
+<br>3. “Suggest a video on chat” - send a youtube video on chat and suggest users to use it on mod<br>Message format: [yut]URL[/yut]<br>To&nbsp;suggest this video: https://www.youtube.com/watch?v=dQw4w9WgXcQ<br>put in the message: [yut]https://www.youtube.com/watch?v=dQw4w9WgXcQ[/yut]</p>
+<br>4. “Show images on chat” - enables images from imgur.com or hizliresim.com<br>Message format: [img]URL[/img]<br>To send this image: http://i.imgur.com/mO44ZE3.jpg<br>put in the message: [img]http://i.imgur.com/mO44ZE3.jpg[/img]</p>
+<br>5. “Show videos on chat” - enables youtube videos.<br>Message format: [yt]ID[/yt] <br>To send this video: https://www.youtube.com/watch?v=dQw4w9WgXcQ<br>put in the message: [yt]dQw4w9WgXcQ[/yt]</p>
+<br>6.&nbsp;“Suggest a&nbsp;Skype clan / group&nbsp;on chat” -&nbsp;suggest users to join the Skype&nbsp;group that you are in<br>Message format: [skype]URL:Skype Protocol [/skype]<br>To&nbsp;suggest this skype group:&nbsp;https://join.skype.com/qcucP8fXvOP8<br>put in the message: [skype]https://join.skype.com/qcucP8fXvOP8[/skype]</p>
+<br>7.&nbsp;“Suggest a Discord clan / group on chat” -&nbsp;suggest users to join the Discord&nbsp;server that you are in<br>Message format: [discord]URL:Discord Protocol [/discord]<br>To&nbsp;suggest this&nbsp;Discord server:&nbsp;https://discordapp.com/invite/wZuSDx<br>put in the message: [discord]https://discordapp.com/invite/wZuSDx[/discord]&nbsp;or&nbsp;[discord]https://discord.gg/wZuSDx[/discord]</p>
+<br><em>*Abusing players or inappropriate use (spamming) will lead to user's permanent&nbsp;ban from usage of&nbsp;LM extensions</em>
+<br>&nbsp;
+<h2 class="project-tagline">Easter Eggs</h2>
+1. Use name EasterEgg1 or EasterEgg2 and you will see! (not work&nbsp;on Legend Express)
+<br>2. Install&nbsp;<span style="text-decoration: underline;"><a href="https://jimboy3100.github.io/ExampleScripts/libLM.user.js" target="_blank" rel="noopener noreferrer">Lib Legend Mod</a></span>&nbsp;Script and click&nbsp;<span style="text-decoration: underline;"><a href="http://www.atmarkit.co.jp/d9KcsYjB" target="_blank" rel="noopener noreferrer">http://www.atmarkit.co.jp/d9KcsYjB</a></span>&nbsp;website to see&nbsp;users of LM chattiing
+<h2 class="project-tagline">Virtual Bots</h2>
+Steps:
+<br>1. Be sure you use the latest Version of <strong>LM Express</strong> or <strong>LM Tiny OpenSource</strong>
+<br>2. Install&nbsp;<span style="text-decoration: underline;"><a title="I'm not robot captcha clicker" href="https://chrome.google.com/webstore/detail/im-not-robot-captcha-clic/ceipnlhmjohemhfpbjdgeigkababhmjc/related" target="_blank" rel="noopener noreferrer">I'm not robot captcha clicker</a></span>&nbsp;Extension for chrome
+<br>3. Logout (Login on your normal window after you&nbsp;load bots)
+<br>4.&nbsp;Copy the&nbsp;url address you play on a new link e.g&nbsp;<a href="http://agar.io/?sip=live-arena-1mpbb6h.agar.io">http://agar.io/?sip=live-arena-1mpbb6h.agar.io</a>
+<br>5. Add this command at the end ?mod=tiny&amp;?bots=YES e.g:&nbsp;<a href="http://agar.io/?sip=live-arena-1mpbb6h.agar.io">http://agar.io/?sip=live-arena-1mpbb6h.agar.io?mod=tiny&amp;?bots=YES</a>
+<br><em>For Tiny mod to be enabled without autoplay add this command at the end&nbsp;?mod=tiny e,g&nbsp;<a href="http://agar.io/?sip=live-arena-1mpbb6h.agar.io">http://agar.io/?sip=live-arena-1mpbb6h.agar.io?mod=tiny</a></em>
+<br><em>Look at Auto respawn and&nbsp;Randomized movement Settings</em>
+<br>6. If not automatically clicked play, click&nbsp;"PLAY" for the first game
+<br>7. Open more pages - more Bots
+<br><em>If reCaptcha start using icons, there is not much you can do. You may probably find an Extension which clicks icons for reCaptcha</em>
+<br><em>Bots are illegal, use at your own risk</em>
+<h2 class="project-tagline">Other Features</h2>
+1. Changes the&nbsp; <span style="text-decoration: underline;"><a href="http://ext.fzogar.xyz/ogs/" target="_blank" rel="noopener noreferrer">ext.fzogar.xyz/ogs</a></span>&nbsp;cloud settings website to easily upload/download&nbsp;from mod
+<br>2. Automatically closes <span style="text-decoration: underline;"><a href="https://play.google.com/store" target="_blank" rel="noopener noreferrer">play.google.com/store</a></span>&nbsp;if opened from agar.io (or this page)
+<br>3. <span style="text-decoration: underline;"><strong><a href="https://greasyfork.org/el/scripts/31353-agario-voice-chat-rooms">Agario Voice Chat Rooms</a></strong></span>&nbsp;script (other mods and vanilla) for Voice Rooms to be enabled and compatible with Legend Mod. [Don't install if using Legend Mod]&nbsp;
+<br>4. LM Project is combined multiscripts all working together from <span style="text-decoration: underline;"><a href="https://github.com/jimboy3100/jimboy3100.github.io" target="_blank" rel="noopener noreferrer">LM Project Library</a></span>
+<h2 class="project-tagline"><span id="result_box" class="short_text" lang="en"><span class="">User comments</span></span></h2>
+<blockquote>
+<em>Best mod i ever used, simple and great!!!</em>
+<br><small><cite>teodor bob</cite></small></blockquote>
+<blockquote>
+<em>I was playing Agario for months without any mods but eventually decided to give them a try. I used several, including&nbsp; agarinfinity, ogario and several others. By far, your mod excels on every level with its exclusive, wide ranging features. It has made Agario playing undeniably the most satisfying and interesting. Thank you for your time and effort in creating such a distinctive tool</em>
+<br><small><cite>♔௹ЯΣΣΚ ௹IЯL</cite></small></blockquote>
+<br>&nbsp;	</div>
+</section>
+</div>
+
+<div id="Changelog" class="skins-wrapper" style="display: none;">
+<section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
+<strong>Stay up-to-date</strong>
+<br>
+<h2 class="project-tagline">Updates</h2>
+<b>Legend Express</b>
+<br><i>New Functions will be announced...</i>
+<br>
+<br><b>Universal tools</b>
+<br><i>New Functions will be announced...</i>
+<br>
+<br><b>Legend mod Mobile</b>
+<br><i>New Functions will be announced...</i>
+</section>
+</div>
+
+<div id="FPS" class="skins-wrapper" style="display: none;">
+<section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
+<strong>LME on it's best</strong>
+<br>
+<h2 class="project-tagline">Improving Performance</h2>
+Legend Mod has Unlimited FPS unlocked (quicker than Vanilla) 
+<h3 class="project-tagline">The Preliminary:</h3>
+<b>Legend Express</b> does not load skins and profile's libraries, thus the performace is significantly greater than agar.io
+<br><b>LEthernet</b> cable internet has the most important role on connection Ping, prefer Ethernet than WIFI
+<br>Call to provider and refer to enable “fast pack”, mention that you play internet game, it is a free service. Gamers need quick response (<i>PING</i>)
+<br>Update Chrome to latest version: chrome://settings/help
+<br>Update Legend Mod to latest version from <a href="http://www.legendmod.ml">www.legendmod.ml</a>
+<br>Go to chrome://flags/ , ensure that <b>Override software rendering list</b> is "Enabled" (<i>you'll need to relaunch Chrome for any changes to take effect</i>)
+<br>Go to chrome://settings/system , ensure the Use hardware acceleration when available checkbox is checked (<i>you'll need to relaunch Chrome for any changes to take effect</i>)
+<br>Go to chrome://flags, Ensure that Disable WebGL is not activated (<i>you'll need to relaunch Chrome for any changes to take effect</i>). This feature might not be shown, as already been enabled on new Chrome Updates
+<h3 class="project-tagline">Conflicts:</h3>
+Some players experience conflicts that cause great FPS drop, bugs or even crash.Top reasons:
+<br>Ad blockers, (<i>Must be disabled</i>)
+<br>Sometimes Chrome enables its own Ad blocker that disables cookies. You must even disable all blocks to other cookies (<i>youtube, miniclip, xsolla, etc</i>) because they affect agario
+<br>Cookie blockers, (<i>Must be disabled</i>)
+<br>Chrome Extensions, chrome://extensions/ , Other extensions rather than Tampermonkey, AgarioScripts must be disabled. Not both Tampermonkey and AgarioScripts Userscript managers used
+<br>Other Tampermonkey (<i>top right button->dashboard</i>) or AgarioScript Userscripts. Use 1 Userscript at a time
+<h2 class="project-tagline">Improving Performance</h2>
+Legend Mod has Unlimited FPS unlocked (quicker than Vanilla) 
+<h3 class="project-tagline">Performance notes:</h3>
+Top performance killers which should be OFF on a low-end PC:
+<br>Skins
+<br>Background sectors
+<br>Background grid
+<br>Rainbow food
+<br>Names (<i>disable names or use “Auto hide name” option</i>)
+<h3 class="project-tagline">Some tips to get more stable FPS:</h3>
+Prefer joining locked Servers by typing tokens directly to address bar e.g "http://agar.io/?sip=151.80.98.61:1526&?r=EU-London&?m="
+<br>Use “Optimized names” and “Optimized mass” option
+<br>Use “Auto hide mass” option
+<br>Use “Short mass” option
+<br>Disable auto zoom
+<br>Choose agar.io servers that are close to you
+<br>Do not use any kind of helpers if you don’t need them. Less to draw means better performance
+<br><b>Try different browsers (Chrome, Opera, Vivaldi)</b>
+<h3 class="project-tagline">Also prefer using:</h3>
+talky.io/ voice chat tools, from the game itself (“Voice and Camera Chat” button). 
+<br>It makes chat rooms per IP/token, per password tag.
+This way we get rid of the extra information that discord/raidcall/teamspeak/skype voice rooms send
+<br>Users of other mods or Vanilla, can use the utility and be compatible, if they use this script:
+<br><a title="Agario Voice Chat Rooms" href="https://jimboy3100.github.io/Voicechat.user.js" target="_blank" rel="noopener noreferrer">https://jimboy3100.github.io/Voicechat.user.js</a> or <a title="Agario Voice Chat rooms" href="https://greasyfork.org/el/scripts/31353-agario-voice-chat-rooms" target="_blank" rel="noopener noreferrer">Agario Voice Chat rooms - GreaseFork</a>
+<br>
+<br>*Please avoid asking me questions about the mod, there are so many requests
+</section>
+</div>
+ <div id="Developers" class="skins-wrapper" style="display: none;">
+<section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
+<strong>Do more...</strong>
+<br>
+<br>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/B87655tH0Lg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<h3 class="project-tagline">Developering Scripts</h3>
+<a title="Agario Github Library" href="https://github.com/jimboy3100/jimboy3100.github.io" target="_blank" rel="noopener noreferrer">Agario Legend Mod Github Library</a>
+<br><a title="Greasefork Legend Mod Project Library" href="https://greasyfork.org/el/users/128990-iamlegend" target="_blank" rel="noopener noreferrer">Greasefork Legend Mod Project Library</a>
+<br>Support Legend Mod developing by contributing translation for your language:
+<br><a href="https://jimboy3100.github.io/LanguagePackEnglish.js" target="_blank">https://jimboy3100.github.io/LanguagePackEnglish.js</a>
+<br>example: <a href="https://jimboy3100.github.io/LanguagePackGreek.js" target="_blank">https://jimboy3100.github.io/LanguagePackGreek.js</a>
+<br>copy it on a text and translate it, send it to skype id: jimboy3100
+<br>email: <a href="mailto:jimboy3100@hotmail.com">jimboy3100@hotmail.com</a>
+<br>Other Clients for Agario:
+<br><a href="https://github.com/CigarProject/Cigar" target="_blank" rel="noopener noreferrer">Cigar</a>&nbsp;(recommends <a href="https://github.com/Megabyte918/MultiOgar-Edited" target="_blank" rel="noopener noreferrer">MultiOgar-Edited</a>&nbsp;for Private Servers)
+<br><a href="https://codepen.io/JackSalfia/full/WwgqWe" target="_blank" rel="noopener noreferrer">JackSalfia's</a> code
+<h3 class="project-tagline">Websockets</h3>
+Game&nbsp;uses Server-client Application as <a href="https://www.facebook.com/mvaladaress" target="_blank" rel="noopener noreferrer">author</a>&nbsp;(don't disturb asking questions) of Agar.io describes on the <a href="https://news.ycombinator.com/item?id=13267285">article</a>
+<br>The protocol of each server (communication, etc)&nbsp; is passed through&nbsp;ws:// (e.g ws://live-arena-18qspzk.agar.io:80 )&nbsp; websocket masked&nbsp;by&nbsp;<a href="https://www.cloudflare.com/website-optimization/web-sockets/" target="_blank" rel="noopener noreferrer">Cloudfare</a>, and handled by <a href="https://nodejs.org/" target="_blank" rel="noopener noreferrer">node.js</a>
+<br>MultiOgar&nbsp;uses&nbsp;<a href="https://github.com/uNetworking/uWebSockets" target="_blank" rel="noopener noreferrer">uWebSockets</a>&nbsp;(other socket that can be used: <a href="https://socket.io/" target="_blank" rel="noopener noreferrer">socket.io</a>&nbsp;). Barbosik implied UwebSockets on <a href="https://github.com/Barbosik/MultiOgar" target="_blank" rel="noopener noreferrer">Barbosik/MultiOgar</a><
+<br>Protocol of agario is stored on&nbsp; <a href="http://agar.io/mc/agario.js" target="_blank" rel="noopener noreferrer">http://agar.io/mc/agario.js</a>&nbsp;location. Latest decryptions of the protocol by <a href="https://github.com/NuclearC/agar.io-protocol" target="_blank" rel="noopener noreferrer">NuclearC</a>&nbsp;and <a href="https://github.com/issy123/agario-protocol/issues/19" target="_blank" rel="noopener noreferrer">issy123</a>&nbsp;github libraries. <a href="https://github.com/jimboy3100/jimboy3100.github.io/blob/master/extras/test/hooks.js" target="_blank" rel="noopener noreferrer">Example</a> of watching protocol
+<br>To join skype room for OgarServ (and other) developers <a href="https://join.skype.com/L7UftbVQmaNd" target="_blank" rel="noopener noreferrer">click here</a>
+</section>
+</div>
+
+	<script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script>
+	<script>
+	setTimeout(function(){
+	document.title = "legendmod.ml"; 
+	(function() {
+    var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    link.type = 'image/x-icon';
+    link.rel = 'shortcut icon';
+    link.href = 'https://jimboy3100.github.io/banners/icon32croped.ico.gif';
+    document.getElementsByTagName('head')[0].appendChild(link);
+	})();
+	var url = localStorage.getItem("url");
+	var nav = getParameterByName("nav", url);
+	if (nav=="FPS"){
+	document.getElementsByName("FPS")[0].click()
+	}	
+	}, 3000);
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}	
+	</script>
+	
+	<script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-92655864-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-92655864-2');
+</script>
+    <script src="https://jimboy3100.github.io/skins/jquery.min.js"></script>
+    <script src="https://jimboy3100.github.io/skins/jquery.lazyload.min.js"></script>
+    <script src="https://jimboy3100.github.io/skins/skins.js"></script>
 </body></html>
