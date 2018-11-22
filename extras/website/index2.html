@@ -145,12 +145,12 @@
 			<div id="navbar">
 			<div id="nav">
 			<ul>
-			   <li><a href="#Scripts" class="active">Scripts</a></li>
-                <li><a href="#About">About</a></li>
-				<li><a href="#Features">Features</a></li>
-				<li><a href="#Changelog">Changelog</a></li>
-				<li><a href="#FPS">FPS</a></li>
-				<li><a href="#Developers">Developers</a></li>
+			   <li><a name="Scripts" href="#Scripts" class="active">Scripts</a></li>
+                <li><a name="About" href="#About">About</a></li>
+				<li><a name="Features" href="#Features">Features</a></li>
+				<li><a name="Changelog" href="#Changelog">Changelog</a></li>
+				<li><a name="FPS" href="#FPS">FPS</a></li>
+				<li><a name="Developers" href="#Developers">Developers</a></li>
 			</ul>
 			</div>
 			</div>			
@@ -415,7 +415,8 @@ Game&nbsp;uses Server-client Application as <a href="https://www.facebook.com/mv
 </section>
 </div>
 
-	<script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script>
+	<script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script>
+	<script>
 	setTimeout(function(){
 	document.title = "legendmod.ml"; 
 	(function() {
@@ -425,7 +426,21 @@ Game&nbsp;uses Server-client Application as <a href="https://www.facebook.com/mv
     link.href = 'https://jimboy3100.github.io/banners/icon32croped.ico.gif';
     document.getElementsByTagName('head')[0].appendChild(link);
 	})();
+	var url = localStorage.getItem("url");
+	var nav = getParameterByName("nav", url);
+	if (nav=="FPS"){
+	document.getElementsByName("FPS")[0].click()
+	}	
 	}, 3000);
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}	
 	</script>
 	
 	<script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-92655864-2"></script>
