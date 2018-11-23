@@ -5,31 +5,591 @@
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css">
         <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/stylesheet.css" media="screen">
         <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/github-light.css" media="screen">
-    </head>
+		<link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/github-light.css" media="screen">
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" media="screen">
+
+
+
+		
+
+		<style>
+
+* {
+   box-sizing: border-box;
+}
+
+::-webkit-input-placeholder { 
+    color: #d1d1d1 !important; 
+}
+
+::-moz-placeholder { 
+    color: #d1d1d1 !important;
+}
+
+::-moz-selection {
+    color: #fff !important;
+    background-color: #1e6bb8 !important;
+}
+
+::selection {
+    color: #fff !important;
+    background-color: #1e6bb8 !important;
+}
+
+#navbar {
+    //width: 100%;
+	display: flex; 
+	justify-content: center;
+	height: 76px;
+	background-color: #fff;
+	//position: fixed;
+	//top: 0;
+	/left: 0;
+	//right: 0;
+	//z-index: 1000;
+}
+
+#nav {
+	width: 550px;
+	overflow: hidden;
+}
+
+#nav ul {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	float: left;
+}
+
+#nav ul li {
+	list-style-type: none;
+	margin-left: 8px;
+	float: left;
+}
+
+#nav a {
+	display: block;
+	font-family: "OpenSans-Semibold", sans-serif;
+	font-weight: normal;
+	font-size: 1em;
+	color: #969696;
+	border: 2px solid #969696;
+	border-radius: 8px;
+    text-decoration: none;
+	padding: 8px 8px;
+    margin-top: 18px;
+}
+
+#nav a:hover, #nav .active {
+	color: #1e6bb8;
+	border-color: #1e6bb8;
+    text-decoration: none;
+}
+
+#nav .active {
+	color: #fff;
+	background-color: #1e6bb8;
+}
+
+#nav .active:hover {
+	color: #fff;
+}
+
+#skin-url {
+    width: 500px;
+    height: 42px;
+    color: #d1d1d1;
+    font-family: "OpenSans-Semibold", sans-serif;
+    font-size: 1em;
+    border-radius: 8px;
+    border: 2px solid #d1d1d1;
+    margin-top: 18px;
+    padding: 10px;
+}
+
+#hizliresim {
+    display: none;
+}
+
+.skins-wrapper {
+    overflow: hidden;
+    padding: 10px;
+    //margin-top: 40px;
+}
+
+.skin-box {
+    width: 140px;
+    height: 140px;
+    cursor: pointer;
+    float: left;
+}
+
+.skin-box img {
+    width: 100px;
+    height: 100px;
+    border: none;
+    border-radius: 50%;
+    margin: 20px;
+    transition: all linear 0.2s;
+}
+
+.skin-box:hover img {
+    width: 140px;
+    height: 140px;
+    border: none;
+    border-radius: 50%;
+    margin: 0;
+}
+		</style>		
+<title>www.lclan.ml</title><link type="image/x-icon" rel="shortcut icon" href="https://jimboy3100.github.io/banners/icon32croped.ico.gif"></head>
+	
     <body>
         <section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
-            <section height="200px" style="padding-top: 0px;padding-bottom: 0px; background-image: url(https://jimboy3100.github.io/banners/iconmod3.png);background-repeat: no-repeat; background-position: center; background-size: 100%;  color: black;text-align: center;">
-			<iframe id="animatedpromosIframe4" class="result-iframe" style="border: none;" src="https://jimboy3100.github.io/extras/banneranimated4.html" name="CodePen" width="700" height="80" frameborder="0" scrolling="no" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowfullscreen="allowfullscreen"></iframe>
-			</section>
-			<br>	
-           <h2>The Legend Mod Project - Devs </h2>
-<br>Be a Dev of the Legend mod Project, or of your own
-<br>1. <a href="https://jimboy3100.github.io/skins/">Skins</a> or <a href="https://jimboy3100.github.io/themes/">Themes</a>
-<br>2. Tester
-<br>3. Modify any <a href="https://github.com/jimboy3100/jimboy3100.github.io">LM Project</a> or <a href="https://greasyfork.org/en/scripts?q=agar&sort=updated">Greasyfork</a> Script
-<br>4. Update / modify <a href="https://jimboy3100.github.io/ExampleScripts/injectlibLM.js">OGARio functions</a> <b>HIGHLY NEEDED RIGHT NOW</b>
-<br>Join "The Legend mod Project " - <a href="https://join.skype.com/k2qlttq7zs3Y">Skype</a> room
-<br>
-<br>
-<br>
-<br>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/B87655tH0Lg" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-<br><a href="https://github.com/jimboy3100/jimboy3100.github.io" target="_blank"><img id="legendAdImg" height="70px" src="https://jimboy3100.github.io/banners/iconLMbannerwhite.png" align="middle"></a>
+            <section height="200px" style="padding-top: 0px;padding-bottom: 0px; background-image: url(https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc.png);background-repeat: no-repeat; background-position: center; background-size: 50%;  color: black;text-align: center;">
 
- </section>
+		<iframe id="animatedpromosIframe4" class="result-iframe" style="border: none;" src="https://jimboy3100.github.io/extras/banneranimated2c.html" name="CodePen" width="700" height="80" frameborder="0" scrolling="no" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowfullscreen="allowfullscreen"></iframe>
+			</section>
+			<div id="navbar">
+			<div id="nav">
+			<ul>
+			   <li><a name="Clan" href="#Clan" class="active">Clan</a></li>
+                <li><a name="Members" href="#Members">Members</a></li>
+				<li><a name="Policies" href="#Policies">Policies</a></li>
+				<li><a name="Videos" href="#Videos">Videos</a></li>
+				<li><a name="Gallery" href="#Gallery">Gallery</a></li>
+				<li><a name="Developers" href="#Developers">Developers</a></li>
+				<li><a name="LMmobile" href="#LMmobile" style="display: none;">LMmobile</a></li>
+				
+			</ul>
+			</div>
+			</div>			
+			<div id="Clan" class="skins-wrapper" style="display: block;">	
+			<section>			
+			<iframe id="animatedpromosIframe4" class="result-iframe" style="border: none;" src="https://jimboy3100.github.io/extras/LcHistory/LcSlideshow.html" name="CodePen" width="800" height="400" frameborder="0" scrolling="no" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowfullscreen="allowfullscreen"></iframe>			
+			<p style="text-align: center;"><iframe id="customskinsIframe1" class="result-iframe" style="margin-top: -20px;" src="https://jimboy3100.github.io/extras/banneranimated9.html" name="CodePen" width="880" height="35" frameborder="0" scrolling="no" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowfullscreen="allowfullscreen"></iframe></p>
+			<p style="text-align: center;"><span style="text-decoration: underline; font-size: 18pt;"><a title="click here to join SKYPE section of clan" href="https://jimboy3100.github.io/Lc" target="_blank" rel="noopener noreferrer">Click here to join SKYPE section of clan</a></span><span style="font-size: 18pt;"> (main clan)</span></p>
+<section class="boxes">
+        <div class="container-fluid">
+          <div class="row-fluid">
+						
+
+<div class="custom">
+	<div class="section-header">&nbsp;
+<h3 class="project-tagline"><b style="color:#1e6bb8">About</b> <b style="background-color:#1e6bb8;color:White;">Us</b></h3>
+</div></div>
+
+
+<div class="custom first span3" style="width: 200px;display: inline-block;">
+	<p class="fa fa-credit-card fa-3x">&nbsp;</p>
+<h3 class="text-center">Member's Friendship</h3>
+<p>Friendship between our&nbsp;members</p>
+<p><a href="/2-uncategorised/13-friendship"><strong>Read</strong> More</a></p></div>
+
+
+<div class="custom span3" style="width: 200px;display: inline-block;">
+	<p class="fa fa-cube fa-3x">&nbsp;</p>
+<h3 class="text-center">Basic Strategy</h3>
+<p>FFA/PARTY/EXPERIMENTAL</p>
+<p><a href="/2-uncategorised/14-basicstrategy"><strong>Read</strong> More</a></p></div>
+
+
+<div class="custom span3" style="width: 200px;display: inline-block;">
+	<p class="fa fa-exchange fa-3x">&nbsp;</p>
+<h3 class="text-center">Diplomacy</h3>
+<p>Ally and Enemy Clans</p>
+<p><a href="/2-uncategorised/15-diplomacy"><strong>Read</strong> More</a></p></div>
+
+
+<div class="custom span3" style="width: 200px;display: inline-block;">
+	<p class="fa fa-ravelry fa-3x">&nbsp;</p>
+<h3 class="text-center">The LM Project</h3>
+<p>Tools, mods and scripts, provided by&nbsp;our clan</p>
+<p><a href="/2-uncategorised/16-tools"><strong>Read</strong> More</a></p></div>
+
+           </div>
+        </div>
+      </section>
+			<h3 class="project-tagline"><b style="color:#1e6bb8;">Clan</b> <b style="background-color:#1e6bb8;color:White;">Latest</b></h3>
+
+			<div style="width: 600px; float:left;">
+			<div class="custom first span6">
+			<p><img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc1.jpg" alt="" width="576" height="384"></p>
+			<p><img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc2.jpg" alt="Legend TakeOver" width="577" height="404"></p></div>
+</div>
+
+<div style="width: 600px; float:left;">
+<div class="custom span6" style="text-align: left;">
+	<ul class="icons"">
+<li>
+<h4 class="fa fa-coffee"><a href="/2-uncategorised/14-basicstrategy" style="font-size: 18px;">℄? New Pro Room for Lc, the&nbsp;℄? Exclusive Members room</a>&nbsp;17/4/2018</h4>
+<p>Been tested for loyalty and skill ℄? Member room is our new Pro Room</p>
+</li>
+<li>
+<h4 class="fa fa-coffee"><a href="http://www.senpaiagarioclan.ml/" target="_blank" rel="noopener noreferrer" style="font-size: 18px;">℄?&nbsp;Senpai is another clan, not Lc</a>&nbsp;1/4/2018</h4>
+<p>℄? Senpai is another clan, good luck&nbsp;ֆSenpai</p>
+</li>
+<li>
+<h4 class="fa fa-coffee"><a href="/2-uncategorised/47-lc-abandons-discord" style="font-size: 18px;">Lc abandons Discord</a> 8/3/2018</h4>
+<p>Lc closes its Discord Server</p>
+</li>
+<li>
+<h4 class="fa fa-coffee"><a href="/2-uncategorised/44-eatensions" style="font-size: 18px;">Tensions with ✵ΕΛ✵</a>&nbsp;7/2/2018</h4>
+<p>✵ΕΛ✵ is considered "neutral" clan to us</p>
+</li>
+<li>
+<h4 class="fa fa-coffee"><a href="/2-uncategorised/43-lc-senpai" style="font-size: 18px;">℄?&nbsp;Senpai is born</a>&nbsp;18/12/2017</h4>
+<p>℄? Senpai, the elite of the elite</p>
+</li>
+<li>
+<h4 class="fa fa-coffee"><a href="/2-uncategorised/37-aboutrandomsquote" style="font-size: 18px;">Quote -&nbsp;About Randoms</a>&nbsp;16/11/2017</h4>
+<p>Simple quote by Sakis leader of EA that also applies to Lc</p>
+</li>
+<li>
+<h4 class="fa fa-coffee"><a title="1 YEAR OF ℄Legend Clan" href="https://jimboy3100.github.io/extras/LcHistory/LcHistoryWebsite.html" target="_blank" rel="noopener noreferrer" style="font-size: 18px;">1 YEAR OF ℄Legend Clan</a> 12/11/2017</h4>
+<p>℄Legend clan origins celebration</p>
+</li>
+<li>
+<h4 class="fa fa-coffee"><a href="/2-uncategorised/30-enemyallies" style="font-size: 18px;">WAR vs ƖƦ &nbsp;FFA CLAN</a>&nbsp;26/9/2017</h4>
+<p>Lc and Ir are official enemies</p>
+</li>
+<li>
+<h4 class="fa fa-coffee"><a href="/2-uncategorised/33-whylc" style="font-size: 18px;">THE ETHICAL VALUES OF OUR CLAN</a>&nbsp;24/9/2017</h4>
+<p>What ℄ means to us, why&nbsp;℄...</p>
+</li>
+<li>
+<h4 class="fa fa-coffee"><a href="/2-uncategorised/28-articleeuenemies" style="font-size: 18px;">DECLARED PL, BOB, ATA, PAK AS ENEMIES</a>&nbsp;24/9/2017</h4>
+<p>Not a war we sought, but ATA are now official enemies</p>
+</li>
+<li>
+<h4 class="fa fa-coffee"><a href="/2-uncategorised/26-articlemod" style="font-size: 18px;">TENSIONS OCCURED BETWEEN IR AND Lc</a>&nbsp;24/9/2017</h4>
+<p>Previous attacks from Pl, Pak, Bob and some players of Ir, united against EA corrupted relations between Ir and Lc</p>
+</li>
+<li>
+<h4 class="fa fa-coffee"><a href="/2-uncategorised/27-article69legend" style="font-size: 18px;">℄ AND ✵ΕΛ✵ ARE OFFICIAL BROTHERS</a>&nbsp;24/9/2017</h4>
+<p>Established alliance with&nbsp;✵ΕΛ✵ Greek Clan proved to be a real brotherhood between members.</p>
+</li>
+<li>
+<h4 class="fa fa-coffee"><a href="/2-uncategorised/29-article69closed" style="font-size: 18px;">℄ ♋ TEACHING &amp; FRIENDS ROOM CLOSED</a>&nbsp;OLD</h4>
+<p>There is no more friends room. Education continues&nbsp;in candidates room by admin Hakem on private servers.&nbsp;</p>
+</li>
+</ul></div>
+</div>
+<img class="irc_mi" src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/elegant-divider.png" width="709" height="355"  style="margin-top:-170px;margin-bottom:-170px;" >
+<div style="width: 100%; display: block;">
+<h3 class="project-tagline"><b style="color:#1e6bb8;">Clan </b> <b style="background-color:#1e6bb8;color:White;">Details</b></h3>
+
+<div style="width: 600px; float:left;">
+<div class="custom first span4">
+	<p><img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc3.png" alt=""></p>
+<h3>Who we are</h3>
+<p><a href="/2-uncategorised/17-ourroots">Our Roots &amp; Our Goals</a>&nbsp;</p>
+<p><a href="/2-uncategorised/36-welcometolc">Welcome&nbsp;to Lc Message</a></p>
+<p><a title="12/11/2017 - 1 YEAR OF ℄ Legend clan" href="https://jimboy3100.github.io/extras/LcHistory/LcHistoryWebsite.html" target="_blank" rel="noopener noreferrer">12/11/2017 - 1 YEAR OF ℄ Legend clan</a></p>
+<h3>&nbsp;</h3>
+<h3>Latest&nbsp;Announcements</h3>
+<p><a href="/2-uncategorised/46-announcement-24-2-2018">Announcement 24.2.2018</a></p>
+<p><a href="/2-uncategorised/45-announcement-1-2-2018">Announcement 1.2.2018 </a></p>
+<p><a href="/2-uncategorised/42-announcement-4-12-2017">Announcement 4.12.2017</a></p>
+<p><a href="/2-uncategorised/38-announcement4-11-2017">Announcement 4.11.2017</a></p>
+<p><a href="/2-uncategorised/39-announcement-26-10-2017">Announcement 26.10.2017</a></p>
+<p><a href="/2-uncategorised/40-announcement-18-10-2017">Announcement 18.10.2017</a></p>
+<p><a href="/2-uncategorised/41-announcement-5-10-2017">Announcement 5.10.2017</a></p></div>
+</div>
+<div style="width: 600px; float:left; display: inline-block;">
+<div class="custom span4">
+	<p><img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc4.png" alt=""></p>
+<h3>We Need</h3>
+<p><a href="/2-uncategorised/12-elite-players">Elite Players</a></p>
+<p><a href="/2-uncategorised/20-assistants">Assistants, youtubers, diplomats, recruiters</a><br><a href="/2-uncategorised/21-modders">Modders</a></p>
+<p>&nbsp;</p></div>
+</div>
+<div style="width: 600px; float:left; display: inline-block;">
+<div class="custom span4">
+	<h3><img src="https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc5.jpg" alt=""></h3>
+<h3>More info</h3>
+<p><a href="/2-uncategorised/32-admins">Admins</a></p>
+<p><a title="Facebook FanPage" href="https://www.facebook.com/1Legend-Clan-600925666766744/" target="_blank" rel="noopener noreferrer">Facebook Fan Page</a></p>
+<p><a title="Lc Youtube Channel" href="https://www.youtube.com/channel/UCKjUERmDlnA536-kk47ph3A" target="_blank" rel="noopener noreferrer">Lc Youtube Channel</a></p>
+<div class="item-title upload-cursor-pointer">&nbsp;</div></div>
+</div>
+</div>
+
+</section>
+</div>
+
+
+
+
+ 
+<div id="Members" class="skins-wrapper" style="display: none;">
+<section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
+<strong>Mod for Agar.io multiplayer action browsergame</strong>
+<br>
+<br>
+<iframe style="margin-top: -5px;" src="https://www.youtube.com/embed/CnIfNSpCf70?ecver=2&amp;loop=1&amp;controls=0&amp;mute=1&amp;autoplay=1&amp;showinfo=0&amp;rel=0" width="560" height="315" frameborder="0" allowfullscreen="allowfullscreen"></iframe>
+<h2 class="project-tagline">About Mod</h2>
+<div style="width: 300px; float:left; display: inline-block;">        
+<b>MEMBERS:</b>                                     
+<br>℄?Jimboy3100 
+<br>℄?Adnane 
+<br>℄?༺ƁĀŘĀ༻تونس ⚔️ 
+<br>℄?ℱ₳?∀? 
+<br>℄?ḒάβѲύŞ 
+<br>℄?Eყρƚ⚑Hαɳσ 
+<br>℄?Heяø Ali  
+<br>℄?LolaAgar夢 
+<br>℄? ùήķήόώή☠ 
+<br>℄? ☠ ?EΛ 
+<br>℄?A:RCHITECT ℄?A:RCH  
+<br>℄?ღ?ǞѶⱢǺღ 
+<br>℄?♛╦ย∩ιŜĬΛ  ♛ 
+<br>℄? мᾄʛἷƈ  
+<br>℄?ÐЄVĪĿṩ 
+<br>℄?SOK๘ۣۜЯ?℄™ 
+<br>℄?Greg 
+<br>℄?☪ Leͥgeͣnͫd 
+<br>℄?The☭COBAYE 
+<br>℄? Krosh 
+<br>℄?kͥINͣGͫ♛?????❶ 
+<br>℄?R??_ΕΛ 
+<br>℄??༺ᶜˡᵃʷ༻? 
+<br>℄? яɐᑭɥ ?? 
+<br>℄? Return . 
+<br>℄? ᒎᑌᑎᛕƳ 
+<br>℄?Jesse 
+<br>℄?Virus 
+<br>℄?Flo [rrr]² 
+<br>℄?ӇЄԼƔЄƬЄ? 
+<br>℄?Ⓞ~?~? 
+</div>
+<div style="width: 300px; float:left; display: inline-block;">     
+<b>RECRUITS</b>
+<br>℄?
+<br>60 recruits
+</div>
+<div style="width: 600px; float:left; display: inline-block;">
+<b>ADMINS</b>
+<br>"Jimboy3100" - Founder, Legend Mod author. Peripheral support
+<br>"Hany ElGohary" - Counselor of clan, problems between players, top admin of diplomacy. Admin of ℄? Candidates
+<br>"Harry" - Admin of Investigation (internal and external)
+<br>"Lola" -  Admin of friendship and unity support
+<br>"Dabous" -  Admin of ℄? Members
+</div>
+</section>
+</div>
+
+<div id="Policies" class="skins-wrapper" style="display: none;">
+<section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
+<strong>LME is the biggest and quickest mod for agario</strong>
+<br>
+<br>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/t1aCrp0vyZc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<h2 class="project-tagline">Genegal rules of Legend clan</h2>
+Recruits of Clan use ℄? before their name. Elite players (those chosen as members) use ℄?.
+<br>Mod we ALL use for agar.io is Legend mod, http://www.legendmod.ml, on google chrome browser. It is essential for in-game communication. Use our clan’s Tag in the mod.
+<br>Clan website is https://legendclan.joomla.com/. Take a good look at it, you MUST know basic strategy, our admins and their tasks, ally and enemy clans and members!
+<br>Communication is on skype.
+<br>English is the language we all use.
+<br>Friends outside the clan can be eaten by clan players. Clan members come first.
+<br>Clan has hierocracy that all recruits and members shall respect.
+<br>To become a member you must be a good player and be part of the group. It takes a while to get there, just enjoy the clan as a recruit.
+<br>Recruits and members can only play with other party/experimental clans after permission of an admin and never with another FFA clan. They are allowed to be on any discord/skype groups and play with them.
+<br>Recruits and members must be active (as possible), and must read all announcements. Be kind to all in our clan. Respect all members, recruits and allies we have. Clan members come first, next come recruits, and at last are our allies.
+<br>No random friends policy. Players using ℄? are killing everyone, including clan random friends.
+</section>
+</div>
+
+<div id="Changelog" class="skins-wrapper" style="display: none;">
+<section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
+<strong>Stay up-to-date</strong>
+<br>
+<h2 class="project-tagline">Updates</h2>
+<b>Legend Express</b>
+<br><i>New Functions will be announced...</i>
+<br>
+<br><b>Universal tools</b>
+<br><i>New Functions will be announced...</i>
+<br>
+<br><b>Legend mod Mobile</b>
+<br><i>New Functions will be announced...</i>
+</section>
+</div>
+
+<div id="Videos" class="skins-wrapper" style="display: none;">
+<section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
+<strong>LME on it's best</strong>
+<br>
+<h2 class="project-tagline">Hackem's Videos</h2>
+<div itemprop="articleBody">
+		
+<p>&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Hackem 1</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/t1aCrp0vyZc" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Hackem 2</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/A65PDWZeRmw" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Hackem 3</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/QiXp-yaQMJY" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Hackem 4</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/xszzIbiInNw" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h2 class="project-tagline">Senpai Videos</h2>
+<p>&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Senpai 1</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/TZUZzlNuaWU" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Senpai 2</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/kbV90ZthT-w" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Senpai 3</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/EiQrPkgtDnM" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Senpai 4</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/PsF_0B4SlPA" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Senpai 5</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/SeNMGagfRSQ" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Senpai 6</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/xu79WtNs7j4" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Senpai 7</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/gzEObW4cSco" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Senpai 8</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/bloeBz4OsTw" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h2 class="project-tagline">Schramm's Videos</h2>
+<p>&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Schramm 1</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/Y5rTLGBFZPw" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;How to install Legend Mod</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/vuRK1qUnSKY" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h2 class="project-tagline">βurNouT's Videos</h2>
+<p>&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ βurNouT 1</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/de2Py76yIkM" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ βurNouT 2</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/d5MGzoamZK4" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ βurNouT 3</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/ZKw1DGRhOv8" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ βurNouT 4</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/Y6HPEa_AOfM" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ βurNouT 5</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/X4Xyk8ufW7s" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ βurNouT 6</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/hernda0kU0c" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h2 class="project-tagline">Polska's Videos</h2>
+<p>&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Polska 1 Year Lc</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/32wK9tc7Ng4" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Polska's Birthday</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/9KWfb_oK73w" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Polska's Birthday 2</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/sIW1Ry6j3TY" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ Polska's Birthday 3</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/UPk7vDz2aDU" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;You are not Alone :)</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/vtZdVtjoLXU" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;Machouil with Aladdin</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/Lhrg0SsIdiE" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h2 class="project-tagline">Sakib's Videos</h2>
+<p>&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;Legend mod Promo</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/CnIfNSpCf70" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h2 class="project-tagline">Jimboy's Videos</h2>
+<p>&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;Response to Jumbo</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/VBXu-nLjMXo" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;℄ trolling ℄</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/aBgkvPczn-A" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;Video Skin Script</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/-OHbflAMDiU" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;Cancer Script</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/cAGjWeDaVX8" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;LM troll video</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/xrVRDYwdhGM" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;LM cool stuff</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/B87655tH0Lg" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p>
+<h3 style="text-align: center;">&nbsp;LM Agario Mobile</h3>
+<p style="text-align: center;"><iframe src="https://www.youtube.com/embed/JOAPoEXXRYw" width="800" height="450" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p style="text-align: left;">&nbsp;</p> 	</div>
+</section>
+</div>
+<div id="Developers" class="skins-wrapper" style="display: none;">
+<section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
+<strong>Do more...</strong>
+<br>
+<br>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/B87655tH0Lg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<h3 class="project-tagline">Legend mod Devs</h3>
+<b>We need:</b>
+<br>1. <a href="https://jimboy3100.github.io/skins/">Skins</a> or <a href="https://jimboy3100.github.io/themes/">Themes</a>
+<br>2. Testers
+<br>3. Modifications any <a href="https://github.com/jimboy3100/jimboy3100.github.io">LM Project</a> or <a href="https://greasyfork.org/en/scripts?q=agar&sort=updated">Greasyfork</a> Script
+<br>4. Updates / modifications on <a href="https://jimboy3100.github.io/Example`/injectlibLM.js">OGARio functions</a> <b>HIGHLY NEEDED RIGHT NOW</b>
+<br>5. Support Legend Mod developing by contributing translation for your language:
+<br><a href="https://jimboy3100.github.io/LanguagePackEnglish.js" target="_blank">https://jimboy3100.github.io/LanguagePackEnglish.js</a>
+<br>example: <a href="https://jimboy3100.github.io/LanguagePackGreek.js" target="_blank">https://jimboy3100.github.io/LanguagePackGreek.js</a>
+<br><br>Join "The Legend mod Project " - <a href="https://join.skype.com/k2qlttq7zs3Y">Skype</a> room
+<h3 class="project-tagline">Developering Scripts</h3>
+<a title="Agario Github Library" href="https://github.com/jimboy3100/jimboy3100.github.io" target="_blank" rel="noopener noreferrer">Agario Legend Mod Github Library</a>
+<br><a title="Greasefork Legend Mod Project Library" href="https://greasyfork.org/el/users/128990-iamlegend" target="_blank" rel="noopener noreferrer">Greasefork Legend Mod Project Library</a>
+<br>Other Clients for Agario:
+<br><a href="https://github.com/CigarProject/Cigar" target="_blank" rel="noopener noreferrer">Cigar</a>&nbsp;(recommends <a href="https://github.com/Megabyte918/MultiOgar-Edited" target="_blank" rel="noopener noreferrer">MultiOgar-Edited</a>&nbsp;for Private Servers)
+<br><a href="https://codepen.io/JackSalfia/full/WwgqWe" target="_blank" rel="noopener noreferrer">JackSalfia's</a> code
+<h3 class="project-tagline">Websockets</h3>
+Game&nbsp;uses Server-client Application as <a href="https://www.facebook.com/mvaladaress" target="_blank" rel="noopener noreferrer">author</a>&nbsp;(don't disturb asking questions) of Agar.io describes on the <a href="https://news.ycombinator.com/item?id=13267285">article</a>
+<br>The protocol of each server (communication, etc)&nbsp; is passed through&nbsp;ws:// (e.g ws://live-arena-18qspzk.agar.io:80 )&nbsp; websocket masked&nbsp;by&nbsp;<a href="https://www.cloudflare.com/website-optimization/web-sockets/" target="_blank" rel="noopener noreferrer">Cloudfare</a>, and handled by <a href="https://nodejs.org/" target="_blank" rel="noopener noreferrer">node.js</a>
+<br>MultiOgar&nbsp;uses&nbsp;<a href="https://github.com/uNetworking/uWebSockets" target="_blank" rel="noopener noreferrer">uWebSockets</a>&nbsp;(other socket that can be used: <a href="https://socket.io/" target="_blank" rel="noopener noreferrer">socket.io</a>&nbsp;). Barbosik implied UwebSockets on <a href="https://github.com/Barbosik/MultiOgar" target="_blank" rel="noopener noreferrer">Barbosik/MultiOgar</a><
+<br>Protocol of agario is stored on&nbsp; <a href="http://agar.io/mc/agario.js" target="_blank" rel="noopener noreferrer">http://agar.io/mc/agario.js</a>&nbsp;location. Latest decryptions of the protocol by <a href="https://github.com/NuclearC/agar.io-protocol" target="_blank" rel="noopener noreferrer">NuclearC</a>&nbsp;and <a href="https://github.com/issy123/agario-protocol/issues/19" target="_blank" rel="noopener noreferrer">issy123</a>&nbsp;github libraries. <a href="https://github.com/jimboy3100/jimboy3100.github.io/blob/master/extras/test/hooks.js" target="_blank" rel="noopener noreferrer">Example</a> of watching protocol
+<br>To join skype room for OgarServ (and other) developers <a href="https://join.skype.com/L7UftbVQmaNd" target="_blank" rel="noopener noreferrer">click here</a>
+</section>
+</div>
+<div id="LMmobile" class="skins-wrapper" style="display: none;">
+<section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
+<strong>Play Agario on tablet / mobile</strong>
+<br>
+<br>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/JOAPoEXXRYw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<h3 class="project-tagline">Agario Mobile</h3>
+On chrome mobile choose setting 'for PC'
+<br>Go to www.agar.io
+<br>Erase URL, write <b>javascript:</b> then paste the below code:
+<br><textarea rows="4" cols="50">
+var d=document,s=d.createElement('script'); s.src='https://jimboy3100.github.io/lm.js';d.head.appendChild(s);</textarea> 
+<br>It should look like this (on the URL link):
+<br><i>javascript:var d=document,s=d.createElement('script'); s.src='https://jimboy3100.github.io/lm.js';d.head.appendChild(s);</i>
+<br><b>*Do not copy the above code, because the "javascript:" will not be copied</b>
+</section>
+</div>
+	<script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script>
 	<script>
 	setTimeout(function(){
-	document.title = "legendmod.ml"; 
+	document.title = "www.lclan.ml"; 
 	(function() {
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.type = 'image/x-icon';
@@ -37,6 +597,32 @@
     link.href = 'https://jimboy3100.github.io/banners/icon32croped.ico.gif';
     document.getElementsByTagName('head')[0].appendChild(link);
 	})();
-	}, 3000);
+	var url = localStorage.getItem("url");
+	var nav = getParameterByName("nav", url);
+	if (nav=="FPS"){
+	document.getElementsByName("FPS")[0].click();
+	}	
+	}, 2000);
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}	
 	</script>
+	
+	<script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-92655864-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-92655864-2');
+</script>
+    <script src="https://jimboy3100.github.io/skins/jquery.min.js"></script>
+    <script src="https://jimboy3100.github.io/skins/jquery.lazyload.min.js"></script>
+    <script src="https://jimboy3100.github.io/skins/skins.js"></script>
 </body></html>
