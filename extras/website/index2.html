@@ -170,7 +170,7 @@
 <span style="color: black;"></span><a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="http://jimboy3100.github.io/LMexpress/LMexpressExpansion1.user.js" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Legend Express Expansion 1</span></a> <span style="color: black;">(Install Express Exp 1 for Old Skins)</span> 
 
 <br><span style="color: black;">Cannot install? </span><a href="https://www.youtube.com/watch?v=vuRK1qUnSKY" target="_blank"><b>Watch video</b></a>
-<br><span style="color: black;">Join the </span><a href="https://jimboy3100.github.io/extras/website/devs.html"><b>developer team</b></a> of Legend mod Project
+<br><span style="color: black;">Join the </span><a name="LmDevelopers" onclick="document.getElementsByName('Developers')[0].click();"><b>developer team</b></a> of Legend mod Project
  <hr>
  <h2 class="project-tagline">Other Main Products</h2>
 <a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://jimboy3100.github.io/LMmobile/" target="_blank" "=""><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="Agario" style="float: left; position: relative">LM Mobile</span></a> <span style="color: black;">(PC Agario for Mobiles/Tablets, Script based) </span>
@@ -388,20 +388,25 @@ This way we get rid of the extra information that discord/raidcall/teamspeak/sky
 <br>*Please avoid asking me questions about the mod, there are so many requests
 </section>
 </div>
- <div id="Developers" class="skins-wrapper" style="display: none;">
+<div id="Developers" class="skins-wrapper" style="display: none;">
 <section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
 <strong>Do more...</strong>
 <br>
 <br>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/B87655tH0Lg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<h3 class="project-tagline">Legend mod Devs</h3>
+<b>We need:</b>
+<br>1. <a href="https://jimboy3100.github.io/skins/">Skins</a> or <a href="https://jimboy3100.github.io/themes/">Themes</a>
+<br>2. Testers
+<br>3. Modifications any <a href="https://github.com/jimboy3100/jimboy3100.github.io">LM Project</a> or <a href="https://greasyfork.org/en/scripts?q=agar&sort=updated">Greasyfork</a> Script
+<br>4. Updates / modifications on <a href="https://jimboy3100.github.io/ExampleScripts/injectlibLM.js">OGARio functions</a> <b>HIGHLY NEEDED RIGHT NOW</b>
+<br>5. Support Legend Mod developing by contributing translation for your language:
+<br><a href="https://jimboy3100.github.io/LanguagePackEnglish.js" target="_blank">https://jimboy3100.github.io/LanguagePackEnglish.js</a>
+<br>example: <a href="https://jimboy3100.github.io/LanguagePackGreek.js" target="_blank">https://jimboy3100.github.io/LanguagePackGreek.js</a>
+<br><br>Join "The Legend mod Project " - <a href="https://join.skype.com/k2qlttq7zs3Y">Skype</a> room
 <h3 class="project-tagline">Developering Scripts</h3>
 <a title="Agario Github Library" href="https://github.com/jimboy3100/jimboy3100.github.io" target="_blank" rel="noopener noreferrer">Agario Legend Mod Github Library</a>
 <br><a title="Greasefork Legend Mod Project Library" href="https://greasyfork.org/el/users/128990-iamlegend" target="_blank" rel="noopener noreferrer">Greasefork Legend Mod Project Library</a>
-<br>Support Legend Mod developing by contributing translation for your language:
-<br><a href="https://jimboy3100.github.io/LanguagePackEnglish.js" target="_blank">https://jimboy3100.github.io/LanguagePackEnglish.js</a>
-<br>example: <a href="https://jimboy3100.github.io/LanguagePackGreek.js" target="_blank">https://jimboy3100.github.io/LanguagePackGreek.js</a>
-<br>copy it on a text and translate it, send it to skype id: jimboy3100
-<br>email: <a href="mailto:jimboy3100@hotmail.com">jimboy3100@hotmail.com</a>
 <br>Other Clients for Agario:
 <br><a href="https://github.com/CigarProject/Cigar" target="_blank" rel="noopener noreferrer">Cigar</a>&nbsp;(recommends <a href="https://github.com/Megabyte918/MultiOgar-Edited" target="_blank" rel="noopener noreferrer">MultiOgar-Edited</a>&nbsp;for Private Servers)
 <br><a href="https://codepen.io/JackSalfia/full/WwgqWe" target="_blank" rel="noopener noreferrer">JackSalfia's</a> code
@@ -428,9 +433,9 @@ Game&nbsp;uses Server-client Application as <a href="https://www.facebook.com/mv
 	var url = localStorage.getItem("url");
 	var nav = getParameterByName("nav", url);
 	if (nav=="FPS"){
-	document.getElementsByName("FPS")[0].click()
+	document.getElementsByName("FPS")[0].click();
 	}	
-	}, 3000);
+	}, 2000);
 function getParameterByName(name, url) {
     if (!url) url = window.location.href;
     name = name.replace(/[\[\]]/g, "\\$&");
