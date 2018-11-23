@@ -1,0 +1,87 @@
+/*----------- 
+colour - red 
+------------*/
+
+body.site {
+	border-top: 3px solid #DB3E1F;
+	background-color: #f4f6f7		}
+a {
+	color: #DB3E1F;
+}
+a.brand.pull-left {
+	color: #DB3E1F;
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+}
+h1,h2,h3,h4,h5 {
+	color:#DB3E1F;
+}
+#masthead .brand {
+	font-weight: 400;
+}
+.navbar-inner, .nav-list > .active > a, 
+.nav-list > .active > a:hover, 
+.dropdown-menu li > a:hover, 
+.dropdown-menu .active > a, 
+.dropdown-menu .active > a:hover, 
+.nav-pills > .active > a, 
+.nav-pills > .active > a:hover,
+.btn-primary {
+	background: #DB3E1F;
+}
+		
+.moduletable.red {
+	background-color: #DB3E1F;
+	padding: 10px;
+}
+.moduletable.red h3,
+.moduletable.red ul,
+.moduletable.red a,
+.moduletable.red p {
+	color: #fff !important;
+}
+
+.moduletable.light-red {
+	background-color: #ED765F;
+	padding: 10px;
+}
+.moduletable.light-red h3,
+.moduletable.light-red ul,
+.moduletable.light-red a,
+.moduletable.light-red p {
+	color: #fff !important;
+}
+
+.moduletable.dark-red {
+	background-color: #B23016;
+	padding: 10px;
+}
+.moduletable.dark-red h3,
+.moduletable.dark-red ul,
+.moduletable.dark-red a,
+.moduletable.dark-red p {
+	color: #fff !important;
+}
+
+.navbar .btn-navbar .icon-bar {
+	background-color:#DB3E1F;
+}
+
+#sidebar h3,#aside h3 {
+	color:#DB3E1F;
+}
+#sidebar ul,
+#aside ul {
+	color: #DB3E1F;
+}
+.boxes p em.fa {
+	color:#DB3E1F;
+	border:1px solid #DB3E1F;
+}
+#footer p em.fa {
+	color:#DB3E1F;
+}
+p.fa {
+	color: #DB3E1F;
+	border: 1px solid #DB3E1F;
+}
