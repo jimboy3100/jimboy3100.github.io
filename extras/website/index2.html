@@ -151,6 +151,8 @@
 				<li><a name="Changelog" href="#Changelog">Changelog</a></li>
 				<li><a name="FPS" href="#FPS">FPS</a></li>
 				<li><a name="Developers" href="#Developers">Developers</a></li>
+				<li><a name="LMmobile" href="#Developers" style="display: none;">LMmobile</a></li>
+				
 			</ul>
 			</div>
 			</div>			
@@ -173,7 +175,7 @@
 <br><span style="color: black;">Join the </span><a name="LmDevelopers" onclick="document.getElementsByName('Developers')[0].click();"><b>developer team</b></a> of Legend mod Project
  <hr>
  <h2 class="project-tagline">Other Main Products</h2>
-<a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://jimboy3100.github.io/LMmobile/" target="_blank" "=""><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="Agario" style="float: left; position: relative">LM Mobile</span></a> <span style="color: black;">(PC Agario for Mobiles/Tablets, Script based) </span>
+<a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" onclick="document.getElementsByName('LMmobile')[0].click();"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="Agario" style="float: left; position: relative">LM Mobile</span></a> <span style="color: black;">(PC Agario for Mobiles/Tablets, Script based) </span>
 <br><span style="color: black;"></span> <a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="https://jimboy3100.github.io/ExampleScripts/LMTiny.user.js" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/favicon-32x32.png" alt="LM" style="float: left; position: relative">LM Tiny OpenSource</span></a> <span style="color: black;">(A tiny Open Source Script)</span>
 <br><span style="color: black;"></span> <a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="http://jimboy3100.github.io/ExampleScripts/LMtoAgartool.user.js" target="_blank"><span style="left;position: relative;color: black;">
 <img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" height="26" width="26" alt="LM"><img title="Chrome" src="https://jimboy3100.github.io/banners/iconRightcropped.png" height="26" width="26" alt="LM"><img title="Chrome" src="https://jimboy3100.github.io/banners/iconagariotool.png" alt="LM">  
@@ -418,7 +420,23 @@ Game&nbsp;uses Server-client Application as <a href="https://www.facebook.com/mv
 <br>To join skype room for OgarServ (and other) developers <a href="https://join.skype.com/L7UftbVQmaNd" target="_blank" rel="noopener noreferrer">click here</a>
 </section>
 </div>
-
+<div id="LMmobile" class="skins-wrapper" style="display: none;">
+<section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
+<strong>Play Agario on tablet / mobile</strong>
+<br>
+<br>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/JOAPoEXXRYw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<h3 class="project-tagline">Agario Mobile</h3>
+On chrome mobile choose setting 'for PC'
+<br>Go to www.agar.io
+<br>Erase URL, write <b>javascript:</b> then paste the below code:
+<br><textarea rows="4" cols="50">
+var d=document,s=d.createElement('script'); s.src='https://jimboy3100.github.io/lm.js';d.head.appendChild(s);</textarea> 
+<br>It should look like this (on the URL link):
+<br><i>javascript:var d=document,s=d.createElement('script'); s.src='https://jimboy3100.github.io/lm.js';d.head.appendChild(s);</i>
+<br><b>*Do not copy the above code, because the "javascript:" will not be copied</b>
+</section>
+</div>
 	<script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script>
 	<script>
 	setTimeout(function(){
