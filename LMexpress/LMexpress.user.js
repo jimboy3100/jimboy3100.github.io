@@ -74,7 +74,7 @@ $("#canvas").remove();$("#adsBottom").remove();$("#rightPanel").remove();$(".aga
 }, 10000);
 }
 else if(getParameterByName("mod", url)=="tiny"){
-var tinyJS = '<script src="http://jimboy3100.github.io/ExampleScripts/LMTiny.user.js"></script>';
+var tinyJS = '<script src="https://jimboy3100.github.io/ExampleScripts/LMTiny.user.js"></script>';
 	    function inject(page) {
         page = page.replace("</body>", tinyJS + "</body>");
         return page;
