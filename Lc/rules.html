@@ -1,0 +1,160 @@
+<html lang="en" class=" -webkit-"><head>
+
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" type="image/x-icon" href="https://static.codepen.io/assets/favicon/favicon-8ea04875e70c4b0bb41da869e81236e54394d63638a1ef12fa558a4a835f1164.ico">
+  <link rel="mask-icon" type="" href="https://static.codepen.io/assets/favicon/logo-pin-f2d2b6d2c61838f7e76325261b7195c27224080bc099486ddd6dccb469b8e8e6.svg" color="#111">
+  <title>CodePen - Accordion Effect with Horizontal Rules</title>
+  
+  
+  
+  
+      <style>
+      @import url(https://fonts.googleapis.com/css?family=Alegreya+Sans);
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: radial-gradient(#825a63, #4f373c);
+  background-attachment: fixed;
+}
+
+body {
+  max-width: 900px;
+  margin: 0 auto 40px;
+  padding: 20px;
+  color: rgba(255, 255, 255, .8);
+  font: 1.5em/1.3 'Alegreya Sans', sans-serif;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, .5);
+  counter-reset: part;
+}
+
+h1 {
+  margin: 0;
+  color: #b7d8df;
+  line-height: 1.2;
+  text-align: center;
+}
+
+hr {
+  height: 100%;
+  margin: 20px 0 0;
+  padding-bottom: 4px;
+  border: none;
+  border-bottom: solid 1px rgba(255, 255, 255, .2);
+  text-align: center;
+  counter-increment: part;
+  transition: border-bottom-color .2s ease-out;
+}
+
+hr::before {
+  content: 'Part ' counter(part, upper-roman);
+  display: block;
+  color: #b7d8df;
+  font-size: 1.1em;
+  font-variant: small-caps;
+  letter-spacing: .05em;
+}
+
+hr:hover, hr:focus {
+  border-bottom-color: rgba(255, 255, 255, .8);
+  outline: none;
+}
+
+hr:not(:focus) {
+  cursor: pointer;
+}
+
+p {
+  text-align: justify;
+  overflow: hidden;
+  transition: transform .5s ease-out, opacity 1s ease-out;
+}
+
+hr:focus ~ p {
+  height: auto;
+  margin: 0;
+  padding: 10px 20px;
+  background-color: rgba(0, 0, 0, .2);
+  opacity: 1;
+  transform: translateY(0);
+}
+
+hr ~ p, hr:focus ~ hr ~ p {
+  height: 0;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+    </style>
+
+  <script>
+  window.console = window.console || function(t) {};
+</script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+
+  
+  <script>
+  if (document.location.search.match(/type=embed/gi)) {
+    window.parent.postMessage("resize", "*");
+  }
+</script>
+
+
+</head>
+
+<body translate="no">
+
+  <h1>Accordion Effect with Horizontal Rules</h1>
+
+<p>
+  My submission for rodeo-010. Creates an animated accordion effect with just &lt;hr&gt; and &lt;p&gt; tags and some creative CSS selectors. No JavaScript. Parts are automatically numbered using CSS counters. Try it out while enjoying some facts about bears from Wikipedia.
+</p>
+
+<hr tabindex="1">
+<p>
+  Bears are mammals of the family Ursidae. They are caniforms, or doglike carnivorans, with the pinnipeds being their closest living relatives.
+</p>
+<p>
+  Common characteristics of modern bears include large bodies with stocky legs, long snouts, shaggy hair, plantigrade paws with five nonretractile claws, and short tails.
+</p>
+
+<hr tabindex="2">
+<p>
+  Except courting individuals and mothers with their young, bears are typically solitary animals. Bears possess an excellent sense of smell and, despite their heavy build and awkward gait, are adept runners, climbers, and swimmers.
+</p>
+<p>
+  In autumn, some bear species forage much fermented fruit, which affects their behaviour. Bears den in caves and burrows; most species occupy their dens during the winter for a long period (up to 100 days) of sleep that resembles hibernation.
+</p>
+
+<hr tabindex="3">
+<p>
+  Unlike most other members of the Carnivora, bears have relatively undeveloped carnassial teeth, and their teeth are adapted for a diet that includes a significant amount of vegetable matter. The canine teeth are large, and the molar teeth flat and crushing. Considerable variation occurs in dental formula even within a given species.
+</p>
+
+<hr tabindex="4">
+<p>
+  While many people think bears are nocturnal, they are, in fact, generally diurnal, active for the most part during the day.
+</p>
+<p>
+  The belief they are nocturnal apparently comes from the habits of bears that live near humans, which engage in some nocturnal activities, such as raiding trash cans or crops while avoiding humans.
+</p>
+<p>
+  But really, bears are awesome pretty much any time of day or night.
+</p>
+  
+  
+  
+  
+  
+
+  <script src="https://static.codepen.io/assets/editor/live/css_reload-2a5c7ad0fe826f66e054c6020c99c1e1c63210256b6ba07eb41d7a4cb0d0adab.js"></script>
+
+
+
+ 
+</body></html>
