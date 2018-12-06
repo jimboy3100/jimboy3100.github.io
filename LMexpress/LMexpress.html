@@ -33,6 +33,21 @@
 
 <body> 
  <div id="fb-root"></div>
+<script>
+var CutNameConflictwithMessage=false;
+(function(){
+    var _privateLog = console.log;
+    console.log = function (message) {
+		if (CutNameConflictwithMessage==false){
+		if (~message.indexOf("OGARio by szymy")){
+		}
+		else{
+			_privateLog.apply(console, arguments);
+		}
+		}
+    };
+})();
+ </script>
  <script>
   (function(d, s, id) {
    var js, fjs = d.getElementsByTagName(s)[0];
