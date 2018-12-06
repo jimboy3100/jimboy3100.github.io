@@ -130,18 +130,3 @@ function getParameterByName2(name) {
 
 }
 
-
-//Changes Message
-var CutNameConflictwithMessage=false;
-(function(){
-    var _privateLog = console.log;
-    console.log = function (message) {
-		if (CutNameConflictwithMessage==false){
-		if (~message.indexOf("OGARio by szymy")){
-		}
-		else{
-			_privateLog.apply(console, arguments);
-		}
-		}
-    };
-})();
