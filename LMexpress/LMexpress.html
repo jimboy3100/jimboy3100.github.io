@@ -40,7 +40,7 @@ var CutNameConflictwithMessage=false;
     console.log = function (message) {
 		if (CutNameConflictwithMessage==false){
 		if (~message.indexOf("OGARio by szymy")){
-		console.log = _privateLog;
+		//console.log = _privateLog;
 		}
 		else{
 			_privateLog.apply(console, arguments);
