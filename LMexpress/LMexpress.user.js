@@ -7,7 +7,7 @@
 // @author       Jimboy3100
 // @license      MIT
 // @icon         https://jimboy3100.github.io/banners/CropedImage128.gif
-// @match        *://agar.io/*
+// @match        https://agar.io/*
 // @match        https://play.google.com/*
 // @downloadURL  jimboy3100.github.io/legendmod.user.js
 // @updateURL    jimboy3100.github.io/legendmod.user.js
@@ -20,7 +20,29 @@
 // @connect      jimboy3100.github.io
 // ==/UserScript==
 
-// Copyright (c) [The Legend Mod]
+// Legend Mod by Jimboy3100
+/*MIT License
+
+Copyright (c) [The Legend Mod]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
 
 // Start of script
 GM_registerMenuCommand('Legend Mod Website', function() {
@@ -33,6 +55,10 @@ GM_registerMenuCommand('Donate for Legend Mod', function() {
     window.open("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CM3GDVCW6PBF6");
 }, 'r');
 
+//if (location.protocol != 'http:')
+//{
+// location.href = 'http:' + window.location.href.substring(window.location.protocol.length);
+//}
 
 var url = window.location.href;
 if (location.pathname == "/LMoldskins"){
@@ -68,14 +94,10 @@ var tinyJS = '<script src="https://jimboy3100.github.io/ExampleScripts/LMTiny.us
 
 }
 
-
-
-
-// Check location
-if (location.host === "agar.io" && location.pathname === "/") {
-   location.href = "https://agar.io/TheLegendModProject" + location.hash;
-    return;
-}
+else if (location.host === "agar.io" && location.pathname === "/") {
+	window.stop();
+	location.href = "about:blank" + window.location.search + location.hash;
+// Dependencies
 
 	var modVersion = GM_info.script.version;
 
@@ -98,6 +120,139 @@ if (location.host === "agar.io" && location.pathname === "/") {
         }
     });
 
+    // Inject Chat to text userscript
+    (function() {
+        'use strict';
+
+        function pre_loop() {
+            if (!document.getElementById("message-box")) {
+                setTimeout(pre_loop, 4000);
+                console.log("VoiceDeOChat:wait for Legend load");
+                return;
+            }
+            return initialize();
+        }
+        return pre_loop();
+
+        function initialize() {
+            var lang_hash = {
+                "default": "default",
+                "ja": "日本語",
+                "en-US": "English",
+                "el-GR": "Ελληνικά",
+                "zh-CN": "简体中文",
+                "zh-TW": "繁體中文",
+                "ko": "한국어"
+            };
+            var cfg = {};
+            cfg.prefix = GM_getValue("prefix", "🎤");
+            cfg.lang = GM_getValue("lang", "default");
+            cfg.unpause = GM_getValue("unpause", false);
+            console.log("load prefix=" + cfg.prefix + " lang=" + cfg.lang + " unpause=" + cfg.unpause);
+            $("#message-box").mousedown(function() {
+                return false;
+            });
+            $(".team-top-menu").mousedown(function() {
+                return false;
+            });
+            $("#message-menu").append('<a href="#" class="chatbox-hide icon-close" style="float:right;">X</a>');
+            $(".chatbox-hide").click(function() {
+                $("#message-box").css("display", "none");
+                if (cfg.unpause && $("#pause-hud").css("display") == "block") {
+                    var code = 82; // 'R'
+                    $(document).trigger(jQuery.Event('keydown', {
+                        keyCode: code,
+                        which: code
+                    }));
+                }
+            });
+            $("#message-menu").append('<a href="#" class="chatbox-clear icon-clear" style="float:right;">C</a>');
+            $(".chatbox-clear").click(function() {
+                $("#message").val("");
+            });
+            window.SpeechRecognition = window.SpeechRecognition || webkitSpeechRecognition;
+            var recognition = new window.SpeechRecognition();
+            if (cfg.lang !== "default") {
+                recognition.lang = cfg.lang;
+            }
+            console.log("cfg.lang/recognition.lang=" + cfg.lang + "/" + recognition.lang);
+            recognition.addEventListener('result', function(event) {
+                var text_to = event.results.item(0).item(0).transcript;
+                var text_pre = $("#message").val();
+                if (text_pre === "") {
+                    text_to = cfg.prefix + text_to;
+                } else {
+                    text_to = text_pre + " " + text_to;
+                }
+                $("#message").val(text_to);
+            }, false);
+            recognition.addEventListener('end', function(event) {
+                fn_recognition_end();
+            }, false);
+            $("#message-menu").append('<a href="#" class="voice-start icon-mic" style="float:right;">🎤</a>');
+            $(".voice-start").click(function() {
+                fn_recognition_start();
+            });
+
+            function fn_recognition_start() {
+                $("#voice-config").css("display", "none");
+                $(".voice-start").css("background-color", "green");
+                recognition.start();
+            }
+
+            function fn_recognition_end() {
+                $(".voice-start").css("background-color", "");
+            }
+            $("#og-options").append('<div id="voice-config" class="options-box voiceGroup"></div>');
+            $("#voice-config").append('<h5 class="menu-main-color">Voice</h5>');
+            $("#voice-config").append('<label>Voice-Prefix:<input type="text" id="voice-prefix" style="width:4em; float:none;" value="' + cfg.prefix + '"/></label>');
+
+            function fn_lang_make() {
+                $("#voice-config").append('<label>Voice-lang:<select id="voice-lang"/></select></label>');
+                for (var code in lang_hash) {
+                    var desc = lang_hash[code];
+                    var selected = (code === cfg.lang) ? ' selected' : '';
+                    $("#voice-lang").append('<option value="' + code + '"' + selected + '>' + desc + '</option>');
+                }
+            }
+            fn_lang_make();
+            $("#voice-config").append('<label title="Voice UnPause><input type="checkbox" id="voice-unpause"' + (cfg.unpause ? ' checked' : '') + '/>UnPause</label>');
+
+            var observ_obj = $("#og-settings");
+            var observ_cur = observ_obj.css("display");
+            var observer = new MutationObserver(function(mutations) {
+                var observ_pre = observ_cur;
+                var observ_new = observ_obj.css("display");
+                observ_cur = observ_new;
+                if (observ_new == "none" && observ_pre == "block") {
+                    fn_config_save();
+                }
+            });
+            observer.observe(observ_obj[0], {
+                attributes: true,
+                attributeFilter: ['style']
+            });
+
+            function fn_config_save() {
+                cfg.prefix = $("#voice-prefix").val();
+                GM_setValue("prefix", cfg.prefix);
+                cfg.lang = $("#voice-lang").val();
+                GM_setValue("lang", cfg.lang);
+                if (cfg.lang !== "default") {
+                    recognition.lang = cfg.lang;
+                }
+                cfg.unpause = $("#voice-unpause").prop('checked');
+                GM_setValue("unpause", cfg.unpause);
+                console.log("saved prefix=" + cfg.prefix + " lang=" + cfg.lang + " unpause=" + cfg.unpause);
+            }
+        }
+    })();
+}
+
+//runs only if play.google.com is a popup, doesnt if directly joined
+if (location.host == "play.google.com") {
+	window.close();
+}
 
 function getParameterByName(name, url) {
     if (!url) url = window.location.href;
@@ -108,3 +263,4 @@ function getParameterByName(name, url) {
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
+//End of Legend Mod
