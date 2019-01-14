@@ -96,7 +96,8 @@ var tinyJS = '<script src="https://jimboy3100.github.io/ExampleScripts/LMTiny.us
 
 else if (location.host === "agar.io" && location.pathname === "/") {
 	window.stop();
-	location.href = "about:blank" + window.location.search + location.hash;
+	//location.href = "about:blank" + window.location.search + location.hash;
+	location.href = "https://agar.io/ogario" + location.hash;
 // Dependencies
 
 	var modVersion = GM_info.script.version;
