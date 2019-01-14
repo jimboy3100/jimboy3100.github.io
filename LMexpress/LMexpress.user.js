@@ -55,10 +55,10 @@ GM_registerMenuCommand('Donate for Legend Mod', function() {
     window.open("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CM3GDVCW6PBF6");
 }, 'r');
 
-//if (location.protocol != 'http:')
-//{
-// location.href = 'http:' + window.location.href.substring(window.location.protocol.length);
-//}
+if (location.protocol != 'https:')
+{
+ location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+}
 
 var url = window.location.href;
 if (location.pathname == "/LMoldskins"){
