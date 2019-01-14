@@ -1,0 +1,58 @@
+
+<html lang="en-us"><head>	
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/normalize.css" media="screen">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/stylesheet.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/github-light.css" media="screen">
+    </head>
+    <body>
+        <section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
+            <section height="200px" style="padding-top: 0px;padding-bottom: 0px; background-image: url(https://jimboy3100.github.io/banners/iconmod3.png);background-repeat: no-repeat; background-position: center; background-size: 100%;  color: black;text-align: center;">
+			<iframe id="animatedpromosIframe4" class="result-iframe" style="border: none;" src="https://jimboy3100.github.io/extras/banneranimated4.html" name="CodePen" width="700" height="80" frameborder="0" scrolling="no" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowfullscreen="allowfullscreen"></iframe>
+			</section>
+			<br>
+			
+           <h2>Boost Mass (x3) for 1 hour</h2>
+		  <br><img class="irc_mi" src="https://jimboy3100.github.io/banners/iconmassboostX3agario.png" width="410" height="230">
+		  <br>
+<b>Steps:</b>
+<br>1. Disable Legend Mod
+<br>2. Join Agario and Login on your account
+<br>3. Right click, and click Inpect (Ctrl+Shift+I)
+<br>4. Choose the Console Tab on the right side of screen
+<br>5. Paste the code and hit ENTER
+<br>*  If not working login again and rejoin agario, swap google/fb account if not working for one
+<br>** Lower the "for" commands from 1000 to 100 or such
+<br>
+		   <br><textarea rows="5" cols="80">
+core.sendNick("LegendMod"); for(let i = 0; i < 1000; i++) {
+	let bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16];
+	let massBoostName = "mass_boost_3x_1h";
+	for(let i = 0; i < massBoostName.length; i++) {
+		bytes.push(massBoostName.charCodeAt(i));
+	}
+core.proxyMobileData(bytes);
+}
+</textarea> 		   
+<br>*  This code is part of the Legend Mod project for developers, testing and improving the game. Does not work on LM on purpose
+<br>** Agar.io is a free game, please use the official paying methods for purchases, like we all do.
+<br>*** The Legend mod project bans illegal activities, that will ruin the game or not use official methods of payments.
+<br>**** Be notified that you may be banned from agario if insisting on using developers stuff as "cracks"
+<br><br><a href="https://github.com/jimboy3100/jimboy3100.github.io" target="_blank"><img id="legendAdImg" height="70px" src="https://jimboy3100.github.io/banners/iconLMbannerwhite.png" align="middle"></a>
+
+ </section>
+	<script>
+	setTimeout(function(){
+	document.title = "legendmod.ml"; 
+	(function() {
+    var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    link.type = 'image/x-icon';
+    link.rel = 'shortcut icon';
+    link.href = 'https://jimboy3100.github.io/banners/icon32croped.ico.gif';
+    document.getElementsByTagName('head')[0].appendChild(link);
+	})();
+	}, 3000);
+	</script>
+</body></html>
