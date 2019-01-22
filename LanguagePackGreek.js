@@ -449,8 +449,8 @@ var Premadeletter45="Κλεισ. XP BAR";		//Hide XP BAR
 var Premadeletter45a = "Στρογγυλ. Hud"; //Rounded Hud
 var Premadeletter45b = "Τετράγωνο Hud"; //Square Hud
 
-var Premadeletter46="Ενεργ. Κινουμ. Skin";		//Show TIME
-var Premadeletter47="Απεν. Κινουμ. Skin";		//Hide TIME
+var Premadeletter46 = "Γραμμικό χρώμα"; //Linear color Hud
+var Premadeletter47 = "Εντονο χρώμα"; //Bold color Hud
 var Premadeletter48="Ανηγ. Ολων";		//Show Everything
 var Premadeletter49="Κλεισ. Ολων";		//Hide Everything
 var Premadeletter50="Ανηγ. Χρονομετρ.";		//Show Timer Calc.
