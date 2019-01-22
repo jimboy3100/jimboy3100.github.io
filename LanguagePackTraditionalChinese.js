@@ -449,8 +449,8 @@ var Premadeletter44="顯示 XP BAR";		//Show XP BAR
 var Premadeletter45="隱藏 XP BAR";		//Hide XP BAR
 var Premadeletter45a = "圓角 Hud"; //Rounded Hud
 var Premadeletter45b = "廣場 Hud"; //Square Hud
-var Premadeletter46 = "顯示動畫皮"; //Show Anim. Skins
-var Premadeletter47 = "隱藏動畫皮"; //Hide Anim. Skins
+var Premadeletter46 = "大膽的顏色"; //Linear color Hud
+var Premadeletter47 = "線性色調"; //Bold color Hud
 
 var Premadeletter48="顯示全部";		//Show Everything
 var Premadeletter49="隱藏全部g";		//Hide Everything
