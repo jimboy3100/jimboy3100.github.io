@@ -456,7 +456,7 @@ if(this.className="tab"){sc="";ec="";this.className="tabActive";document.getElem
 });
 document.getElementById("tm").addEventListener("click", function(){
 if(this.className="tab"){this.className="tabActive";document.getElementById("wc").className="tab";
-sc="// ==UserScript==\n // @name AgarSkin by Jimboy3100\n // @namespace http://legendmod.ml // @version 0.1\n // @description Get all skins for free!\n // @author Jimboy3100\n // @match http://agar.io/*\n // @run-at document-end\n // @grant none\n // ==/UserScript==\n var tamp=setInterval(function(){ if(document.getElementsByClassName('circle bordered skinWrapper').length>0){ clearInterval(tamp); var elem = document.body; var script = document.createElement('script'); script.innerHTML ='";
+sc="// ==UserScript==\n // @name AgarSkin by Jimboy3100\n // @namespace http://legendmod.ml // @version 0.1\n // @description Get all skins for free!\n // @author Jimboy3100\n // @match https://agar.io/*\n // @run-at document-end\n // @grant none\n // ==/UserScript==\n var tamp=setInterval(function(){ if(document.getElementsByClassName('circle bordered skinWrapper').length>0){ clearInterval(tamp); var elem = document.body; var script = document.createElement('script'); script.innerHTML ='";
 ec="'; elem.appendChild(script); } }, 100);";showCode();
 }
 });
