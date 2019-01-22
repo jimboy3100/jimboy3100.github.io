@@ -449,8 +449,8 @@ var Premadeletter44="Zeigt XP BALKEN";		//Show XP BAR
 var Premadeletter45="Verbirgt XP BALKEN";		//Hide XP BAR
 var Premadeletter45a ="Abgerundetes Hud"; //Rounded Hud
 var Premadeletter45b ="Eckiges Hud"; //Square Hud
-var Premadeletter46 ="Zeigt Anim. Skins"; //Show Anim. Skins
-var Premadeletter47 = "Verbirgt Anim. Skins"; //Hide Anim. Skins
+var Premadeletter46 = "Lineare Farbe"; //Linear color Hud
+var Premadeletter47 = "Mutige Farbe"; //Bold color Hud
 
 var Premadeletter48="Zeigt Alles";		//Show Everything
 var Premadeletter49="Verbirgt Alles";		//Hide Everything
