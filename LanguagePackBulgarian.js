@@ -449,9 +449,8 @@ var Premadeletter44="Покажи XP бар";		//Show XP BAR
 var Premadeletter45="Скрий  XP бар";		//Hide XP BAR
 var Premadeletter45a = "объл Hud"; //Rounded Hud
 var Premadeletter45b = "Квадрат Hud"; //Square Hud
-
-var Premadeletter46="Покаж. аним. кожи";		//Show Animated Skins
-var Premadeletter47="Скрий. аним. кожи";		//Hide Animated Skins
+var Premadeletter46 = "линейно оцветяване"; //Linear color Hud
+var Premadeletter47 = "смел цвят на худ"; //Bold color Hud
 var Premadeletter48="Покажи всичко";		//Show Everything
 var Premadeletter49="Скрий всичко";		//Hide Everything
 var Premadeletter50="Покажи таймер кал.";		//Show Timer Calc.
