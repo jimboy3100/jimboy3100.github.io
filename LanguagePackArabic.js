@@ -453,8 +453,8 @@ var Premadeletter45="إخِفاء شِريط المُستَوي";		//Hide XP BAR
 var Premadeletter45a = "دور Hud"; //Rounded Hud
 var Premadeletter45b = "مربع Hud"; //Square Hud
 
-var Premadeletter46="إظهَار الوَقت";		//Show TIME
-var Premadeletter47="إخفَاء الوَقت";		//Hide TIME
+var Premadeletter46 = "هود اللون الخطي"; //Linear color Hud
+var Premadeletter47 = "هود اللون الغامق"; //Bold color Hud
 var Premadeletter48="إظهـار الكُل";		//Show Everything
 var Premadeletter49="إخفَاء الكُل";		//Hide Everything
 var Premadeletter50=" إظهار الموقت";		//Show Timer Calc.
