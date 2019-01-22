@@ -438,8 +438,8 @@ var Premadeletter45="Esconder Barra XP";		//Hide XP BAR
 var Premadeletter45a = "Redondeado Hud"; //Rounded Hud
 var Premadeletter45b = "Cuadrado Hud"; //Square Hud
 
-var Premadeletter46="Mostrar piel. anim.";		//Show Animated Skins
-var Premadeletter47="Ocultar piel. anim.";		//Hide Animated Skins
+var Premadeletter46 = "Color lineal"; //Linear color Hud
+var Premadeletter47 = "Color audaz"; //Bold color Hud
 var Premadeletter48="Mostrar todo";		//Show Everything
 var Premadeletter49="Esconder todo";		//Hide Everything
 var Premadeletter50="Mostrar cálc. tiempo";		//Show Timer Calc.
