@@ -69,7 +69,7 @@ $('#Ogartoken').val($("#server-token").val());
 	};
 	var stat = my;
 	Object.assign(stat, {
-        'publicIP': "ws://37.187.176.125:3000",
+        'publicIP': "wss://srv.ogario.eu/",
 		"miniMapTeammatesColor": "#01d9cc",
 	});
 	//var cfg = {}, cfg_org = {
@@ -84,7 +84,7 @@ $('#Ogartoken').val($("#server-token").val());
 				"nick": $('#Ogarnick').val(),
 				"serverToken": $('#Ogartoken').val(),
 			};
-			opt.ws = 'ws://live-arena-'+ opt.token +'.agar.io:80';
+			opt.ws = 'wss://live-arena-'+ opt.token +'.agar.io:80';
 			ogar = lib_ogar.create(opt);
 			ogar.onchat = function(ev){
 				var chatElem = $('#Ogarchat').get(0);
@@ -588,4 +588,3 @@ $("#quick-menu").show();
 $("#exp-bar").show();
 $("#ogarioscripts").hide();
 }
-
