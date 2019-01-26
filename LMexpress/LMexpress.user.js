@@ -70,13 +70,13 @@ document.body.style.background = "#f3f3f3 url('https://jimboy3100.github.io/bann
 $( "body" ).append('<div id="imagebig"><iframe id="loaderIframeIcon1" src="https://jimboy3100.github.io/extras/banneranimated1oldskins.html" name="CodePen" allowfullscreen="true" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowtransparency="true" scrolling="no" frameBorder="0" class="result-iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe></div>');
 }, 4000);
 setTimeout(function() {
-$(".tab-content").after('<button id="Mass3x" class="btn potion-slot-button blue bigger" style="margin-top: 20px;" data-itr="page_login_and_play" data-original-title="" title="">Mass x3 24h</button>');
+$(".tab-content").after('<button id="Mass3x" class="btn potion-slot-button blue bigger" style="margin-top: 20px;" data-itr="page_login_and_play" data-original-title="" title="">Mass x3 1h</button>');
 
         $("#Mass3x").click(function() {
 			if (MC.isUserLoggedIn()){
 		core.sendNick("LegendMod"); for(let i = 0; i < 1000; i++) {
 		let bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16];
-		let massBoostName = "mass_boost_3x_24h";
+		let massBoostName = "mass_boost_3x_1h";
 	for(let i = 0; i < massBoostName.length; i++) {
 		bytes.push(massBoostName.charCodeAt(i));
 		}
