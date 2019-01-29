@@ -17,9 +17,9 @@ var _0x506e = ['shiftMessage', '[Legend mod Express] Game server socket error', 
  */
 _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a(_0x4bffa7)||function(_0x4bffa7){return'\x66\x75\x6e\x63\x74\x69\x6f\x6e'==typeof _0x4bffa7['\x72\x65\x61\x64\x46\x6c\x6f\x61\x74\x4c\x45']&&_0x6c71('0x0')==typeof _0x4bffa7[_0x6c71('0x1b')]&&_0x31bf3a(_0x4bffa7[_0x6c71('0x1b')](0x0,0x0));}(_0x4bffa7)||!!_0x4bffa7[_0x6c71('0x40')]);};},{}],12:[function(_0x491661,_0x259f5e,_0x4a7985){var _0x27ed46={}['\x74\x6f\x53\x74\x72\x69\x6e\x67'];_0x259f5e['\x65\x78\x70\x6f\x72\x74\x73']=Array[_0x6c71('0x89')]||function(_0x491661){return _0x6c71('0x8a')==_0x27ed46['\x63\x61\x6c\x6c'](_0x491661);};},{}],13:[function(_0x3508fb,_0xcb46e9,_0x4a0a9b){_0x3508fb(_0x6c71('0xd8'))['\x55\x49\x4e\x54\x33\x32'];Math['\x69\x6d\x75\x6c']||(Math['\x69\x6d\x75\x6c']=function(_0x3508fb,_0xcb46e9){var _0x4a0a9b=0xffff&_0x3508fb,_0x286f9d=0xffff&_0xcb46e9;return _0x4a0a9b*_0x286f9d+((_0x3508fb>>>0x10)*_0x286f9d+_0x4a0a9b*(_0xcb46e9>>>0x10)<<0x10)|0x0;}),_0x4a0a9b[_0x6c71('0xd9')]=function(_0x3508fb,_0xcb46e9,_0x4a0a9b,_0x4842e0){for(var _0x4300e7=_0x4a0a9b=_0x4a0a9b||0x0,_0x4ec04f=_0x4842e0=_0x4842e0||_0x3508fb[_0x6c71('0x8')]-_0x4a0a9b,_0x2a627b=0x0;_0x4300e7<_0x4ec04f;){var _0x1839c6=_0x3508fb[_0x4300e7++],_0x20a9b3=_0x1839c6>>0x4;if(_0x20a9b3>0x0){for(var _0x4a60da=_0x20a9b3+0xf0;0xff===_0x4a60da;)_0x20a9b3+=_0x4a60da=_0x3508fb[_0x4300e7++];for(var _0x4ff3a9=_0x4300e7+_0x20a9b3;_0x4300e7<_0x4ff3a9;)_0xcb46e9[_0x2a627b++]=_0x3508fb[_0x4300e7++];if(_0x4300e7===_0x4ec04f)return _0x2a627b;}var _0xe89614=_0x3508fb[_0x4300e7++]|_0x3508fb[_0x4300e7++]<<0x8;if(0x0===_0xe89614||_0xe89614>_0x2a627b)return-(_0x4300e7-0x2);var _0x1c40c3=0xf&_0x1839c6;for(_0x4a60da=_0x1c40c3+0xf0;0xff===_0x4a60da;)_0x1c40c3+=_0x4a60da=_0x3508fb[_0x4300e7++];var _0x3aea51=_0x2a627b-_0xe89614;for(_0x4ff3a9=_0x2a627b+_0x1c40c3+0x4;_0x2a627b<_0x4ff3a9;)_0xcb46e9[_0x2a627b++]=_0xcb46e9[_0x3aea51++];}return _0x2a627b;};var _0xa93530=0x7e000000,_0x15f454=0x4,_0x5d62f4=0x8*_0x15f454-0x10,_0x4cd30c=0x8+_0x15f454,_0x4fe62c=0x6,_0x4865a0=0x4,_0x4b9a05=(0x1<<_0x4865a0)-0x1,_0x594b99=(0x1<<0x8-_0x4865a0)-0x1,_0x4f8032=0x9e3779b1;function _0x1d2f6d(_0x3508fb,_0xcb46e9,_0x1d2f6d,_0x4dbb93,_0x3be1ed,_0x47986){var _0x5a6660=_0x3be1ed,_0x5df8fd=_0x47986-_0x3be1ed,_0x1c3a7e=0x0;if(_0x3508fb[_0x6c71('0x8')]>=_0xa93530)throw new Error(_0x6c71('0xda'));if(_0x3508fb[_0x6c71('0x8')]>_0x4cd30c){var _0x578a53=_0x4a0a9b[_0x6c71('0xdb')](_0x3508fb[_0x6c71('0x8')]);if(_0x5df8fd<_0x578a53)throw Error('\x6f\x75\x74\x70\x75\x74\x20\x74\x6f\x6f\x20\x73\x6d\x61\x6c\x6c\x3a\x20'+_0x5df8fd+_0x6c71('0xdc')+_0x578a53);for(var _0x2de430=0x3+(0x1<<_0x4fe62c),_0x345183=_0x3508fb['\x6c\x65\x6e\x67\x74\x68']-_0x4cd30c;_0x1d2f6d+_0x15f454<_0x345183;){var _0x2d8be4=_0x3508fb[_0x1d2f6d+0x1]<<0x8|_0x3508fb[_0x1d2f6d],_0x42677b=_0x3508fb[_0x1d2f6d+0x3]<<0x8|_0x3508fb[_0x1d2f6d+0x2],_0x4dfece=Math[_0x6c71('0xdd')](_0x2d8be4|_0x42677b<<0x10,_0x4f8032)>>>_0x5d62f4,_0x419ca9=_0x4dbb93[_0x4dfece]-0x1;if(_0x4dbb93[_0x4dfece]=_0x1d2f6d+0x1,_0x419ca9<0x0||_0x1d2f6d-_0x419ca9>>>0x10>0x0||(_0x3508fb[_0x419ca9+0x3]<<0x8|_0x3508fb[_0x419ca9+0x2])!=_0x42677b||(_0x3508fb[_0x419ca9+0x1]<<0x8|_0x3508fb[_0x419ca9])!=_0x2d8be4)_0x1d2f6d+=_0x2de430++>>_0x4fe62c;else{_0x2de430=0x3+(0x1<<_0x4fe62c);var _0x4c2261=_0x1d2f6d-_0x1c3a7e,_0xcb50c7=_0x1d2f6d-_0x419ca9;_0x419ca9+=_0x15f454;for(var _0x4a7a66=_0x1d2f6d+=_0x15f454;_0x1d2f6d<_0x345183&&_0x3508fb[_0x1d2f6d]==_0x3508fb[_0x419ca9];)_0x1d2f6d++,_0x419ca9++;var _0xb249a1=(_0x4a7a66=_0x1d2f6d-_0x4a7a66)<_0x4b9a05?_0x4a7a66:_0x4b9a05;if(_0x4c2261>=_0x594b99){_0xcb46e9[_0x5a6660++]=(_0x594b99<<_0x4865a0)+_0xb249a1;for(var _0x47a753=_0x4c2261-_0x594b99;_0x47a753>0xfe;_0x47a753-=0xff)_0xcb46e9[_0x5a6660++]=0xff;_0xcb46e9[_0x5a6660++]=_0x47a753;}else _0xcb46e9[_0x5a6660++]=(_0x4c2261<<_0x4865a0)+_0xb249a1;for(var _0x592473=0x0;_0x592473<_0x4c2261;_0x592473++)_0xcb46e9[_0x5a6660++]=_0x3508fb[_0x1c3a7e+_0x592473];if(_0xcb46e9[_0x5a6660++]=_0xcb50c7,_0xcb46e9[_0x5a6660++]=_0xcb50c7>>0x8,_0x4a7a66>=_0x4b9a05){for(_0x4a7a66-=_0x4b9a05;_0x4a7a66>=0xff;)_0x4a7a66-=0xff,_0xcb46e9[_0x5a6660++]=0xff;_0xcb46e9[_0x5a6660++]=_0x4a7a66;}_0x1c3a7e=_0x1d2f6d;}}}if(0x0==_0x1c3a7e)return 0x0;if((_0x4c2261=_0x3508fb[_0x6c71('0x8')]-_0x1c3a7e)>=_0x594b99){_0xcb46e9[_0x5a6660++]=_0x594b99<<_0x4865a0;for(var _0x59203=_0x4c2261-_0x594b99;_0x59203>0xfe;_0x59203-=0xff)_0xcb46e9[_0x5a6660++]=0xff;_0xcb46e9[_0x5a6660++]=_0x59203;}else _0xcb46e9[_0x5a6660++]=_0x4c2261<<_0x4865a0;for(_0x1d2f6d=_0x1c3a7e;_0x1d2f6d<_0x3508fb[_0x6c71('0x8')];)_0xcb46e9[_0x5a6660++]=_0x3508fb[_0x1d2f6d++];return _0x5a6660;}_0x4a0a9b[_0x6c71('0xdb')]=function(_0x3508fb){return _0x3508fb>_0xa93530?0x0:_0x3508fb+_0x3508fb/0xff+0x10|0x0;},_0x4a0a9b[_0x6c71('0xde')]=function(_0x3508fb,_0xcb46e9,_0x4a0a9b,_0xa93530){for(var _0x15f454=new Array(0x10000),_0x5d62f4=0x0;_0x5d62f4<0x10000;_0x5d62f4++)_0x15f454[_0x5d62f4]=0x0;return _0x1d2f6d(_0x3508fb,_0xcb46e9,0x0,_0x15f454,_0x4a0a9b||0x0,_0xa93530||_0xcb46e9[_0x6c71('0x8')]);},_0x4a0a9b[_0x6c71('0xdf')]=_0x4a0a9b[_0x6c71('0xde')],_0x4a0a9b[_0x6c71('0xe0')]=_0x1d2f6d;},{'\x63\x75\x69\x6e\x74':0x5}],14:[function(_0x336357,_0x236b42,_0x14f76d){(function(_0x236b42){var _0x5025e5=_0x336357(_0x6c71('0xe1'));_0x14f76d['\x4c\x5a\x34\x5f\x75\x6e\x63\x6f\x6d\x70\x72\x65\x73\x73']=function(_0x336357,_0x14f76d){var _0xe7607b=[],_0x168c9d=new _0x5025e5(_0x14f76d);return _0x168c9d['\x6f\x6e'](_0x6c71('0x1f'),function(_0x336357){_0xe7607b['\x70\x75\x73\x68'](_0x336357);}),_0x168c9d[_0x6c71('0xe2')](_0x336357),_0x236b42[_0x6c71('0xe3')](_0xe7607b);};}[_0x6c71('0x4')](this,_0x336357(_0x6c71('0xe4'))[_0x6c71('0xf')]));},{'./decoder_stream':0xf,'\x62\x75\x66\x66\x65\x72':0x3}],15:[function(_0x48c44f,_0x1407e0,_0x4a59fa){(function(_0x4a59fa){var _0x13a7d6=_0x48c44f(_0x6c71('0xe5'))[_0x6c71('0xe6')],_0x3152a8=_0x48c44f(_0x6c71('0xe7'))[_0x6c71('0xe8')],_0x208842=_0x48c44f(_0x6c71('0xe9')),_0x12a6b2=_0x208842[_0x6c71('0xea')],_0x4e5f9c=_0x12a6b2['\x62\x69\x6e\x64\x69\x6e\x67\x73'],_0x33b2c8=_0x48c44f(_0x6c71('0xeb')),_0x27d458=_0x208842['\x53\x54\x41\x54\x45\x53'],_0x5c18a7=_0x208842[_0x6c71('0xec')];function _0x52caf9(_0x48c44f){if(!(this instanceof _0x52caf9))return new _0x52caf9(_0x48c44f);_0x13a7d6[_0x6c71('0x4')](this,_0x48c44f),this[_0x6c71('0xed')]=_0x48c44f||{},this[_0x6c71('0xee')]=this['\x6f\x70\x74\x69\x6f\x6e\x73'][_0x6c71('0xef')]?_0x33b2c8:_0x4e5f9c,this['\x62\x75\x66\x66\x65\x72']=null,this[_0x6c71('0xf0')]=0x0,this[_0x6c71('0xf1')]=null,this[_0x6c71('0xf2')]=_0x27d458[_0x6c71('0xf3')],this['\x6e\x6f\x74\x45\x6e\x6f\x75\x67\x68\x44\x61\x74\x61']=!0x1,this['\x64\x65\x73\x63\x72\x69\x70\x74\x6f\x72\x53\x74\x61\x72\x74']=0x0,this[_0x6c71('0xf4')]=null,this[_0x6c71('0xf5')]=null,this[_0x6c71('0xf6')]=null,this['\x64\x61\x74\x61\x42\x6c\x6f\x63\x6b\x53\x69\x7a\x65']=0x0,this[_0x6c71('0xf7')]=0x0;}_0x3152a8(_0x52caf9,_0x13a7d6),_0x52caf9[_0x6c71('0x12')][_0x6c71('0xf8')]=function(_0x48c44f,_0x1407e0,_0x13a7d6){if(this[_0x6c71('0xf7')]>0x0){if(this[_0x6c71('0xf7')]-=_0x48c44f[_0x6c71('0x8')],this[_0x6c71('0xf7')]>0x0)return void _0x13a7d6();_0x48c44f=_0x48c44f[_0x6c71('0x1b')](-this[_0x6c71('0xf7')]),this[_0x6c71('0xf7')]=0x0,this[_0x6c71('0xf2')]=_0x27d458['\x4d\x41\x47\x49\x43'];}this['\x62\x75\x66\x66\x65\x72']=this[_0x6c71('0xe4')]?_0x4a59fa[_0x6c71('0xe3')]([this[_0x6c71('0xe4')],_0x48c44f],this[_0x6c71('0xe4')][_0x6c71('0x8')]+_0x48c44f[_0x6c71('0x8')]):_0x48c44f,this[_0x6c71('0xf9')](_0x13a7d6);},_0x52caf9[_0x6c71('0x12')][_0x6c71('0xfa')]=function(_0x48c44f){this[_0x6c71('0xc1')]('\x65\x72\x72\x6f\x72',new Error(_0x48c44f+'\x20\x40'+this[_0x6c71('0xf0')]));},_0x52caf9[_0x6c71('0x12')][_0x6c71('0xfb')]=function(_0x48c44f){var _0x1407e0=this[_0x6c71('0xe4')]['\x6c\x65\x6e\x67\x74\x68']-this['\x70\x6f\x73'];return _0x1407e0<=0x0||_0x1407e0<_0x48c44f?(this[_0x6c71('0xfc')]&&this[_0x6c71('0xfa')](_0x6c71('0xfd')),!0x0):(this[_0x6c71('0xf0')]+=_0x48c44f,!0x1);},_0x52caf9[_0x6c71('0x12')][_0x6c71('0xfe')]=function(){var _0x48c44f=this[_0x6c71('0xf0')];if(this[_0x6c71('0xfb')](_0x5c18a7[_0x6c71('0xf3')]))return!0x0;var _0x1407e0=_0x12a6b2[_0x6c71('0x6b')](this[_0x6c71('0xe4')],_0x48c44f);if((0xfffffff0&_0x1407e0)!==_0x208842[_0x6c71('0xff')])return _0x1407e0!==_0x208842[_0x6c71('0x100')]?(this[_0x6c71('0xf0')]=_0x48c44f,this[_0x6c71('0xfa')](_0x6c71('0x101')+_0x1407e0['\x74\x6f\x53\x74\x72\x69\x6e\x67'](0x10)[_0x6c71('0x102')]()),!0x0):void(this[_0x6c71('0xf2')]=_0x27d458[_0x6c71('0x103')]);this[_0x6c71('0xf2')]=_0x27d458[_0x6c71('0x104')];},_0x52caf9[_0x6c71('0x12')][_0x6c71('0x105')]=function(){var _0x48c44f=this[_0x6c71('0xf0')];if(this['\x63\x68\x65\x63\x6b\x5f\x53\x69\x7a\x65'](_0x5c18a7['\x53\x4b\x49\x50\x5f\x53\x49\x5a\x45']))return!0x0;this[_0x6c71('0xf2')]=_0x27d458[_0x6c71('0x106')],this[_0x6c71('0xf7')]=_0x12a6b2[_0x6c71('0x6b')](this['\x62\x75\x66\x66\x65\x72'],_0x48c44f);},_0x52caf9['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['\x72\x65\x61\x64\x5f\x44\x65\x73\x63\x72\x69\x70\x74\x6f\x72']=function(){var _0x48c44f=this['\x70\x6f\x73'];if(this['\x63\x68\x65\x63\x6b\x5f\x53\x69\x7a\x65'](_0x5c18a7[_0x6c71('0x103')]))return!0x0;this[_0x6c71('0x107')]=_0x48c44f;var _0x1407e0=this[_0x6c71('0xe4')][_0x48c44f],_0x4a59fa=_0x1407e0>>0x6;if(_0x4a59fa!==_0x208842['\x56\x45\x52\x53\x49\x4f\x4e'])return this[_0x6c71('0xf0')]=_0x48c44f,this[_0x6c71('0xfa')](_0x6c71('0x108')+_0x4a59fa+'\x20\x21\x3d\x20'+_0x208842['\x56\x45\x52\x53\x49\x4f\x4e']),!0x0;if(_0x1407e0>>0x1&0x1)return this['\x70\x6f\x73']=_0x48c44f,this[_0x6c71('0xfa')](_0x6c71('0x109')),!0x0;var _0x13a7d6=this['\x62\x75\x66\x66\x65\x72'][_0x48c44f+0x1]>>0x4&0x7,_0x3152a8=_0x208842[_0x6c71('0x10a')][_0x13a7d6];if(null===_0x3152a8)return this[_0x6c71('0xf0')]=_0x48c44f,this[_0x6c71('0xfa')](_0x6c71('0x10b')+_0x13a7d6),!0x0;this[_0x6c71('0xf1')]={'\x62\x6c\x6f\x63\x6b\x49\x6e\x64\x65\x70\x65\x6e\x64\x65\x6e\x63\x65':Boolean(_0x1407e0>>0x5&0x1),'\x62\x6c\x6f\x63\x6b\x43\x68\x65\x63\x6b\x73\x75\x6d':Boolean(_0x1407e0>>0x4&0x1),'\x62\x6c\x6f\x63\x6b\x4d\x61\x78\x53\x69\x7a\x65':_0x3152a8,'\x73\x74\x72\x65\x61\x6d\x53\x69\x7a\x65':Boolean(_0x1407e0>>0x3&0x1),'\x73\x74\x72\x65\x61\x6d\x43\x68\x65\x63\x6b\x73\x75\x6d':Boolean(_0x1407e0>>0x2&0x1),'\x64\x69\x63\x74':Boolean(0x1&_0x1407e0),'\x64\x69\x63\x74\x49\x64':0x0},this[_0x6c71('0xf2')]=_0x27d458[_0x6c71('0x10c')];},_0x52caf9[_0x6c71('0x12')][_0x6c71('0x10d')]=function(){if(this[_0x6c71('0xf1')][_0x6c71('0xf4')]){var _0x48c44f=this[_0x6c71('0xf0')];if(this[_0x6c71('0xfb')](_0x5c18a7[_0x6c71('0x10c')]))return!0x0;this[_0x6c71('0xf4')]=this[_0x6c71('0xe4')][_0x6c71('0x1b')](_0x48c44f,_0x48c44f+0x8);}this[_0x6c71('0xf2')]=_0x27d458[_0x6c71('0x10e')];},_0x52caf9[_0x6c71('0x12')][_0x6c71('0x10f')]=function(){if(this[_0x6c71('0xf1')][_0x6c71('0xf5')]){var _0x48c44f=this[_0x6c71('0xf0')];if(this[_0x6c71('0xfb')](_0x5c18a7[_0x6c71('0x10e')]))return!0x0;this['\x64\x69\x63\x74\x49\x64']=_0x12a6b2['\x72\x65\x61\x64\x49\x6e\x74\x33\x32\x4c\x45'](this['\x62\x75\x66\x66\x65\x72'],_0x48c44f);}this[_0x6c71('0xf2')]=_0x27d458[_0x6c71('0x110')];},_0x52caf9[_0x6c71('0x12')][_0x6c71('0x111')]=function(){var _0x48c44f=this['\x70\x6f\x73'];if(this[_0x6c71('0xfb')](_0x5c18a7[_0x6c71('0x110')]))return!0x0;var _0x1407e0=this['\x62\x75\x66\x66\x65\x72'][_0x48c44f];if(_0x12a6b2['\x64\x65\x73\x63\x72\x69\x70\x74\x6f\x72\x43\x68\x65\x63\x6b\x73\x75\x6d'](this['\x62\x75\x66\x66\x65\x72'][_0x6c71('0x1b')](this['\x64\x65\x73\x63\x72\x69\x70\x74\x6f\x72\x53\x74\x61\x72\x74'],_0x48c44f))!==_0x1407e0)return this[_0x6c71('0xf0')]=_0x48c44f,this[_0x6c71('0xfa')]('\x49\x6e\x76\x61\x6c\x69\x64\x20\x73\x74\x72\x65\x61\x6d\x20\x64\x65\x73\x63\x72\x69\x70\x74\x6f\x72\x20\x63\x68\x65\x63\x6b\x73\x75\x6d'),!0x0;this['\x73\x74\x61\x74\x65']=_0x27d458[_0x6c71('0x112')];},_0x52caf9[_0x6c71('0x12')][_0x6c71('0x113')]=function(){var _0x48c44f=this[_0x6c71('0xf0')];if(this[_0x6c71('0xfb')](_0x5c18a7[_0x6c71('0x112')]))return!0x0;var _0x1407e0=_0x12a6b2[_0x6c71('0x6b')](this[_0x6c71('0xe4')],_0x48c44f);_0x1407e0!==_0x208842['\x45\x4f\x53']?(this['\x64\x61\x74\x61\x42\x6c\x6f\x63\x6b\x53\x69\x7a\x65']=_0x1407e0,this[_0x6c71('0xf2')]=_0x27d458[_0x6c71('0x114')]):this['\x73\x74\x61\x74\x65']=_0x27d458['\x45\x4f\x53'];},_0x52caf9[_0x6c71('0x12')][_0x6c71('0x115')]=function(){var _0x48c44f=this[_0x6c71('0xf0')],_0x1407e0=this['\x64\x61\x74\x61\x42\x6c\x6f\x63\x6b\x53\x69\x7a\x65'];if(0x80000000&_0x1407e0&&(_0x1407e0&=0x7fffffff),this[_0x6c71('0xfb')](_0x1407e0))return!0x0;this[_0x6c71('0x116')]=this[_0x6c71('0xe4')][_0x6c71('0x1b')](_0x48c44f,_0x48c44f+_0x1407e0),this[_0x6c71('0xf2')]=_0x27d458[_0x6c71('0x117')];},_0x52caf9[_0x6c71('0x12')][_0x6c71('0x118')]=function(){var _0x48c44f=this[_0x6c71('0xf0')];if(this[_0x6c71('0xf1')]['\x62\x6c\x6f\x63\x6b\x43\x68\x65\x63\x6b\x73\x75\x6d']){if(this[_0x6c71('0xfb')](_0x5c18a7[_0x6c71('0x117')]))return!0x0;var _0x1407e0=_0x12a6b2['\x72\x65\x61\x64\x49\x6e\x74\x33\x32\x4c\x45'](this['\x62\x75\x66\x66\x65\x72'],this[_0x6c71('0xf0')]-0x4);if(_0x12a6b2[_0x6c71('0x119')](this[_0x6c71('0x116')])!==_0x1407e0)return this[_0x6c71('0xf0')]=_0x48c44f,this[_0x6c71('0xfa')]('\x49\x6e\x76\x61\x6c\x69\x64\x20\x62\x6c\x6f\x63\x6b\x20\x63\x68\x65\x63\x6b\x73\x75\x6d'),!0x0;}this[_0x6c71('0xf2')]=_0x27d458[_0x6c71('0x11a')];},_0x52caf9[_0x6c71('0x12')][_0x6c71('0x11b')]=function(){var _0x48c44f;if(0x80000000&this['\x64\x61\x74\x61\x42\x6c\x6f\x63\x6b\x53\x69\x7a\x65'])_0x48c44f=this[_0x6c71('0x116')];else{_0x48c44f=new _0x4a59fa(this[_0x6c71('0xf1')][_0x6c71('0x11c')]);var _0x1407e0=this[_0x6c71('0xee')]['\x75\x6e\x63\x6f\x6d\x70\x72\x65\x73\x73'](this[_0x6c71('0x116')],_0x48c44f);if(_0x1407e0<0x0)return this[_0x6c71('0xfa')]('\x49\x6e\x76\x61\x6c\x69\x64\x20\x64\x61\x74\x61\x20\x62\x6c\x6f\x63\x6b\x3a\x20'+-_0x1407e0),!0x0;_0x1407e0<this[_0x6c71('0xf1')][_0x6c71('0x11c')]&&(_0x48c44f=_0x48c44f[_0x6c71('0x1b')](0x0,_0x1407e0));}this['\x64\x61\x74\x61\x42\x6c\x6f\x63\x6b']=null,this[_0x6c71('0xb')](_0x48c44f),this[_0x6c71('0xf1')]['\x73\x74\x72\x65\x61\x6d\x43\x68\x65\x63\x6b\x73\x75\x6d']&&(this[_0x6c71('0xf6')]=_0x12a6b2[_0x6c71('0x11d')](_0x48c44f,this['\x63\x75\x72\x72\x65\x6e\x74\x53\x74\x72\x65\x61\x6d\x43\x68\x65\x63\x6b\x73\x75\x6d'])),this[_0x6c71('0xf2')]=_0x27d458[_0x6c71('0x112')];},_0x52caf9[_0x6c71('0x12')][_0x6c71('0x11e')]=function(){if(this[_0x6c71('0xf1')][_0x6c71('0x11d')]){var _0x48c44f=this[_0x6c71('0xf0')];if(this[_0x6c71('0xfb')](_0x5c18a7[_0x6c71('0x11f')]))return!0x0;var _0x1407e0=_0x12a6b2['\x72\x65\x61\x64\x49\x6e\x74\x33\x32\x4c\x45'](this[_0x6c71('0xe4')],_0x48c44f);if(_0x1407e0!==_0x12a6b2['\x73\x74\x72\x65\x61\x6d\x43\x68\x65\x63\x6b\x73\x75\x6d'](null,this['\x63\x75\x72\x72\x65\x6e\x74\x53\x74\x72\x65\x61\x6d\x43\x68\x65\x63\x6b\x73\x75\x6d']))return this[_0x6c71('0xf0')]=_0x48c44f,this['\x65\x6d\x69\x74\x5f\x45\x72\x72\x6f\x72'](_0x6c71('0x120')+_0x1407e0['\x74\x6f\x53\x74\x72\x69\x6e\x67'](0x10)[_0x6c71('0x102')]()),!0x0;}this[_0x6c71('0xf2')]=_0x27d458['\x4d\x41\x47\x49\x43'];},_0x52caf9['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65'][_0x6c71('0x121')]=function(_0x48c44f){this['\x6e\x6f\x74\x45\x6e\x6f\x75\x67\x68\x44\x61\x74\x61']=!0x0,this[_0x6c71('0xf9')](_0x48c44f);},_0x52caf9['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['\x5f\x6d\x61\x69\x6e']=function(_0x48c44f){for(var _0x1407e0,_0x4a59fa=this['\x70\x6f\x73'];!_0x1407e0&&this[_0x6c71('0xf0')]<this['\x62\x75\x66\x66\x65\x72'][_0x6c71('0x8')];)this[_0x6c71('0xf2')]===_0x27d458[_0x6c71('0xf3')]&&(_0x1407e0=this[_0x6c71('0xfe')]()),this[_0x6c71('0xf2')]===_0x27d458[_0x6c71('0x104')]&&(_0x1407e0=this[_0x6c71('0x105')]()),this[_0x6c71('0xf2')]===_0x27d458[_0x6c71('0x103')]&&(_0x1407e0=this['\x72\x65\x61\x64\x5f\x44\x65\x73\x63\x72\x69\x70\x74\x6f\x72']()),this[_0x6c71('0xf2')]===_0x27d458[_0x6c71('0x10c')]&&(_0x1407e0=this['\x72\x65\x61\x64\x5f\x53\x69\x7a\x65']()),this[_0x6c71('0xf2')]===_0x27d458[_0x6c71('0x10e')]&&(_0x1407e0=this[_0x6c71('0x10f')]()),this[_0x6c71('0xf2')]===_0x27d458[_0x6c71('0x110')]&&(_0x1407e0=this[_0x6c71('0x111')]()),this[_0x6c71('0xf2')]===_0x27d458[_0x6c71('0x112')]&&(_0x1407e0=this[_0x6c71('0x113')]()),this[_0x6c71('0xf2')]===_0x27d458['\x44\x41\x54\x41\x42\x4c\x4f\x43\x4b\x5f\x44\x41\x54\x41']&&(_0x1407e0=this[_0x6c71('0x115')]()),this['\x73\x74\x61\x74\x65']===_0x27d458['\x44\x41\x54\x41\x42\x4c\x4f\x43\x4b\x5f\x43\x48\x45\x43\x4b\x53\x55\x4d']&&(_0x1407e0=this[_0x6c71('0x118')]()),this[_0x6c71('0xf2')]===_0x27d458['\x44\x41\x54\x41\x42\x4c\x4f\x43\x4b\x5f\x55\x4e\x43\x4f\x4d\x50\x52\x45\x53\x53']&&(_0x1407e0=this[_0x6c71('0x11b')]()),this['\x73\x74\x61\x74\x65']===_0x27d458[_0x6c71('0x11f')]&&(_0x1407e0=this[_0x6c71('0x11e')]());this[_0x6c71('0xf0')]>_0x4a59fa&&(this[_0x6c71('0xe4')]=this[_0x6c71('0xe4')]['\x73\x6c\x69\x63\x65'](this['\x70\x6f\x73']),this[_0x6c71('0xf0')]=0x0),_0x48c44f();},_0x1407e0[_0x6c71('0x5')]=_0x52caf9;}['\x63\x61\x6c\x6c'](this,_0x48c44f('\x62\x75\x66\x66\x65\x72')[_0x6c71('0xf')]));},{'./binding':0xd,'./static':0x13,'\x62\x75\x66\x66\x65\x72':0x3,'\x73\x74\x72\x65\x61\x6d':0x25,'\x75\x74\x69\x6c':0x2a}],16:[function(_0x3e69e5,_0x5700db,_0x2ee45c){(function(_0x5700db){var _0x23716c=_0x3e69e5(_0x6c71('0x122'));_0x2ee45c[_0x6c71('0x123')]=function(_0x3e69e5,_0x2ee45c){var _0x142dc9=[],_0x351fec=new _0x23716c(_0x2ee45c);return _0x351fec['\x6f\x6e'](_0x6c71('0x1f'),function(_0x3e69e5){_0x142dc9[_0x6c71('0xb')](_0x3e69e5);}),_0x351fec[_0x6c71('0xe2')](_0x3e69e5),_0x5700db[_0x6c71('0xe3')](_0x142dc9);};}[_0x6c71('0x4')](this,_0x3e69e5(_0x6c71('0xe4'))[_0x6c71('0xf')]));},{'./encoder_stream':0x11,'\x62\x75\x66\x66\x65\x72':0x3}],17:[function(_0x4c4000,_0x32d1d5,_0x1799f6){(function(_0x1799f6){var _0x440290=_0x4c4000(_0x6c71('0xe5'))[_0x6c71('0xe6')],_0x23718f=_0x4c4000(_0x6c71('0xe7'))[_0x6c71('0xe8')],_0x4379b2=_0x4c4000(_0x6c71('0xe9')),_0x1ff790=_0x4379b2[_0x6c71('0xea')],_0x56e57d=_0x1ff790[_0x6c71('0x124')],_0x4ad5e7=_0x4c4000(_0x6c71('0xeb')),_0x3d28d2=_0x4379b2[_0x6c71('0x125')],_0x3b945a=_0x4379b2[_0x6c71('0xec')],_0x380af8={'\x62\x6c\x6f\x63\x6b\x49\x6e\x64\x65\x70\x65\x6e\x64\x65\x6e\x63\x65':!0x0,'\x62\x6c\x6f\x63\x6b\x43\x68\x65\x63\x6b\x73\x75\x6d':!0x1,'\x62\x6c\x6f\x63\x6b\x4d\x61\x78\x53\x69\x7a\x65':0x4<<0x14,'\x73\x74\x72\x65\x61\x6d\x53\x69\x7a\x65':!0x1,'\x73\x74\x72\x65\x61\x6d\x43\x68\x65\x63\x6b\x73\x75\x6d':!0x0,'\x64\x69\x63\x74':!0x1,'\x64\x69\x63\x74\x49\x64':0x0,'\x68\x69\x67\x68\x43\x6f\x6d\x70\x72\x65\x73\x73\x69\x6f\x6e':!0x1};function _0x12c699(_0x4c4000){if(!(this instanceof _0x12c699))return new _0x12c699(_0x4c4000);_0x440290[_0x6c71('0x4')](this,_0x4c4000);var _0x32d1d5=_0x4c4000||_0x380af8;_0x32d1d5!==_0x380af8&&Object['\x6b\x65\x79\x73'](_0x380af8)[_0x6c71('0x126')](function(_0x4c4000){_0x32d1d5['\x68\x61\x73\x4f\x77\x6e\x50\x72\x6f\x70\x65\x72\x74\x79'](_0x4c4000)||(_0x32d1d5[_0x4c4000]=_0x380af8[_0x4c4000]);}),this[_0x6c71('0xed')]=_0x32d1d5,this['\x62\x69\x6e\x64\x69\x6e\x67']=this[_0x6c71('0xed')]['\x75\x73\x65\x4a\x53']?_0x4ad5e7:_0x56e57d,this[_0x6c71('0xde')]=_0x32d1d5[_0x6c71('0x127')]?this[_0x6c71('0xee')][_0x6c71('0xdf')]:this[_0x6c71('0xee')][_0x6c71('0xde')];var _0x1799f6=0x0;_0x1799f6|=_0x4379b2[_0x6c71('0x128')]<<0x6,_0x1799f6|=(0x1&_0x32d1d5['\x62\x6c\x6f\x63\x6b\x49\x6e\x64\x65\x70\x65\x6e\x64\x65\x6e\x63\x65'])<<0x5,_0x1799f6|=(0x1&_0x32d1d5[_0x6c71('0x119')])<<0x4,_0x1799f6|=(0x1&_0x32d1d5[_0x6c71('0xf4')])<<0x3,_0x1799f6|=(0x1&_0x32d1d5[_0x6c71('0x11d')])<<0x2,_0x1799f6|=0x1&_0x32d1d5[_0x6c71('0x129')];var _0x23718f=_0x4379b2['\x62\x6c\x6f\x63\x6b\x4d\x61\x78\x53\x69\x7a\x65\x73'][_0x6c71('0x2d')](_0x32d1d5['\x62\x6c\x6f\x63\x6b\x4d\x61\x78\x53\x69\x7a\x65']);if(_0x23718f<0x0)throw new Error('\x49\x6e\x76\x61\x6c\x69\x64\x20\x62\x6c\x6f\x63\x6b\x4d\x61\x78\x53\x69\x7a\x65\x3a\x20'+_0x32d1d5[_0x6c71('0x11c')]);this[_0x6c71('0xf1')]={'\x66\x6c\x67':_0x1799f6,'\x62\x64':(0x7&_0x23718f)<<0x4},this[_0x6c71('0xe4')]=[],this[_0x6c71('0x8')]=0x0,this[_0x6c71('0x12a')]=!0x0,this[_0x6c71('0x12b')]=null;}_0x23718f(_0x12c699,_0x440290),_0x12c699[_0x6c71('0x12')][_0x6c71('0x12c')]=function(){var _0x4c4000=this[_0x6c71('0xed')][_0x6c71('0xf4')]?_0x3b945a[_0x6c71('0x103')]:0x0,_0x32d1d5=this[_0x6c71('0xed')][_0x6c71('0x129')]?_0x3b945a[_0x6c71('0x10e')]:0x0;return _0x3b945a[_0x6c71('0xf3')]+0x1+0x1+_0x4c4000+_0x32d1d5+0x1;},_0x12c699[_0x6c71('0x12')][_0x6c71('0x12d')]=function(){var _0x4c4000=this[_0x6c71('0x12c')](),_0x32d1d5=new _0x1799f6(_0x4c4000);this['\x73\x74\x61\x74\x65']=_0x3d28d2[_0x6c71('0xf3')],_0x32d1d5[_0x6c71('0x7b')](_0x4379b2[_0x6c71('0x100')],0x0,!0x0),this[_0x6c71('0xf2')]=_0x3d28d2['\x44\x45\x53\x43\x52\x49\x50\x54\x4f\x52'];var _0x440290=_0x32d1d5['\x73\x6c\x69\x63\x65'](_0x3b945a['\x4d\x41\x47\x49\x43'],_0x32d1d5[_0x6c71('0x8')]-0x1);_0x440290[_0x6c71('0x71')](this[_0x6c71('0xf1')][_0x6c71('0x12e')],0x0,!0x0),_0x440290[_0x6c71('0x71')](this[_0x6c71('0xf1')]['\x62\x64'],0x1,!0x0);var _0x23718f=0x2;return this[_0x6c71('0xf2')]=_0x3d28d2[_0x6c71('0x10c')],this[_0x6c71('0xed')][_0x6c71('0xf4')]&&(_0x440290['\x77\x72\x69\x74\x65\x49\x6e\x74\x33\x32\x4c\x45'](0x0,_0x23718f,!0x0),_0x440290[_0x6c71('0x7b')](this['\x73\x69\x7a\x65'],_0x23718f+0x4,!0x0),_0x23718f+=_0x3b945a['\x53\x49\x5a\x45']),this[_0x6c71('0xf2')]=_0x3d28d2[_0x6c71('0x10e')],this['\x6f\x70\x74\x69\x6f\x6e\x73']['\x64\x69\x63\x74']&&(_0x440290[_0x6c71('0x7b')](this[_0x6c71('0xf5')],_0x23718f,!0x0),_0x23718f+=_0x3b945a[_0x6c71('0x10e')]),this[_0x6c71('0xf2')]=_0x3d28d2[_0x6c71('0x110')],_0x32d1d5['\x77\x72\x69\x74\x65\x55\x49\x6e\x74\x38'](_0x1ff790['\x64\x65\x73\x63\x72\x69\x70\x74\x6f\x72\x43\x68\x65\x63\x6b\x73\x75\x6d'](_0x440290),_0x3b945a[_0x6c71('0xf3')]+_0x23718f,!0x1),_0x32d1d5;},_0x12c699[_0x6c71('0x12')][_0x6c71('0x12f')]=function(_0x4c4000){this['\x73\x74\x61\x74\x65']=_0x3d28d2[_0x6c71('0x130')],this['\x6f\x70\x74\x69\x6f\x6e\x73']['\x73\x74\x72\x65\x61\x6d\x43\x68\x65\x63\x6b\x73\x75\x6d']&&(this[_0x6c71('0x12b')]=_0x1ff790[_0x6c71('0x11d')](_0x4c4000,this['\x63\x68\x65\x63\x6b\x73\x75\x6d']));},_0x12c699['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65'][_0x6c71('0x131')]=function(_0x4c4000){this[_0x6c71('0xf2')]=_0x3d28d2[_0x6c71('0x132')];var _0x32d1d5=this[_0x6c71('0xed')]['\x62\x6c\x6f\x63\x6b\x43\x68\x65\x63\x6b\x73\x75\x6d']?_0x3b945a[_0x6c71('0x117')]:0x0,_0x440290=this[_0x6c71('0xee')][_0x6c71('0xdb')](_0x4c4000[_0x6c71('0x8')]),_0x23718f=new _0x1799f6(_0x3b945a[_0x6c71('0x112')]+_0x440290+_0x32d1d5),_0x4379b2=_0x23718f[_0x6c71('0x1b')](_0x3b945a['\x44\x41\x54\x41\x42\x4c\x4f\x43\x4b\x5f\x53\x49\x5a\x45'],_0x3b945a[_0x6c71('0x112')]+_0x440290),_0x56e57d=this[_0x6c71('0xde')](_0x4c4000,_0x4379b2);(this[_0x6c71('0xf2')]=_0x3d28d2['\x44\x41\x54\x41\x42\x4c\x4f\x43\x4b\x5f\x53\x49\x5a\x45'],_0x56e57d>0x0&&_0x56e57d<=this[_0x6c71('0xed')][_0x6c71('0x11c')]?(_0x23718f[_0x6c71('0x74')](_0x56e57d,0x0,!0x0),_0x23718f=_0x23718f['\x73\x6c\x69\x63\x65'](0x0,_0x3b945a[_0x6c71('0x112')]+_0x56e57d+_0x32d1d5)):(_0x23718f['\x77\x72\x69\x74\x65\x49\x6e\x74\x33\x32\x4c\x45'](0x80000000|_0x4c4000['\x6c\x65\x6e\x67\x74\x68'],0x0,!0x0),_0x23718f=_0x23718f[_0x6c71('0x1b')](0x0,_0x3b945a[_0x6c71('0x112')]+_0x4c4000[_0x6c71('0x8')]+_0x32d1d5),_0x4c4000[_0x6c71('0x1d')](_0x23718f,_0x3b945a[_0x6c71('0x112')])),this[_0x6c71('0xf2')]=_0x3d28d2[_0x6c71('0x117')],this[_0x6c71('0xed')][_0x6c71('0x119')])&&_0x23718f[_0x6c71('0x1b')](-_0x32d1d5)[_0x6c71('0x7b')](_0x1ff790[_0x6c71('0x119')](_0x4379b2),0x0,!0x0);return this[_0x6c71('0x12f')](_0x4c4000),this[_0x6c71('0x133')]+=_0x4c4000[_0x6c71('0x8')],_0x23718f;},_0x12c699[_0x6c71('0x12')][_0x6c71('0xf8')]=function(_0x4c4000,_0x32d1d5,_0x440290){_0x4c4000&&(this[_0x6c71('0xe4')][_0x6c71('0xb')](_0x4c4000),this[_0x6c71('0x8')]+=_0x4c4000[_0x6c71('0x8')]),this[_0x6c71('0x12a')]&&(this[_0x6c71('0xb')](this[_0x6c71('0x12d')]()),this[_0x6c71('0x12a')]=!0x1);var _0x23718f=this[_0x6c71('0xed')]['\x62\x6c\x6f\x63\x6b\x4d\x61\x78\x53\x69\x7a\x65'];if(this[_0x6c71('0x8')]<_0x23718f)return _0x440290();for(var _0x4379b2=_0x1799f6['\x63\x6f\x6e\x63\x61\x74'](this[_0x6c71('0xe4')],this[_0x6c71('0x8')]),_0x1ff790=0x0,_0x56e57d=_0x4379b2['\x6c\x65\x6e\x67\x74\x68'];_0x56e57d>=_0x23718f;_0x56e57d-=_0x23718f,_0x1ff790+=_0x23718f)this['\x70\x75\x73\x68'](this[_0x6c71('0x131')](_0x4379b2[_0x6c71('0x1b')](_0x1ff790,_0x1ff790+_0x23718f)));_0x56e57d>0x0?(this[_0x6c71('0xe4')]=[_0x4379b2[_0x6c71('0x1b')](_0x1ff790)],this[_0x6c71('0x8')]=this[_0x6c71('0xe4')][0x0][_0x6c71('0x8')]):(this[_0x6c71('0xe4')]=[],this[_0x6c71('0x8')]=0x0),_0x440290();},_0x12c699['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65'][_0x6c71('0x121')]=function(_0x4c4000){if(this[_0x6c71('0x12a')]&&(this[_0x6c71('0xb')](this[_0x6c71('0x12d')]()),this[_0x6c71('0x12a')]=!0x1),this[_0x6c71('0x8')]>0x0){var _0x32d1d5=_0x1799f6[_0x6c71('0xe3')](this[_0x6c71('0xe4')],this[_0x6c71('0x8')]);this[_0x6c71('0xe4')]=[],this['\x6c\x65\x6e\x67\x74\x68']=0x0;var _0x440290=this[_0x6c71('0x131')](_0x32d1d5);this[_0x6c71('0xb')](_0x440290);}if(this['\x6f\x70\x74\x69\x6f\x6e\x73'][_0x6c71('0x11d')])this['\x73\x74\x61\x74\x65']=_0x3d28d2['\x43\x48\x45\x43\x4b\x53\x55\x4d'],(_0x23718f=new _0x1799f6(_0x3b945a[_0x6c71('0x11f')]+_0x3b945a[_0x6c71('0x134')]))[_0x6c71('0x7b')](_0x1ff790['\x73\x74\x72\x65\x61\x6d\x43\x68\x65\x63\x6b\x73\x75\x6d'](null,this[_0x6c71('0x12b')]),_0x3b945a[_0x6c71('0x11f')],!0x0);else var _0x23718f=new _0x1799f6(_0x3b945a[_0x6c71('0x11f')]);this[_0x6c71('0xf2')]=_0x3d28d2[_0x6c71('0x11f')],_0x23718f[_0x6c71('0x7b')](_0x4379b2['\x45\x4f\x53'],0x0,!0x0),this[_0x6c71('0xb')](_0x23718f),_0x4c4000();},_0x32d1d5[_0x6c71('0x5')]=_0x12c699;}['\x63\x61\x6c\x6c'](this,_0x4c4000(_0x6c71('0xe4'))[_0x6c71('0xf')]));},{'./binding':0xd,'./static':0x13,'\x62\x75\x66\x66\x65\x72':0x3,'\x73\x74\x72\x65\x61\x6d':0x25,'\x75\x74\x69\x6c':0x2a}],18:[function(_0x4b8a31,_0x26f1f5,_0x29632d){_0x26f1f5[_0x6c71('0x5')]=_0x4b8a31(_0x6c71('0xe9')),_0x26f1f5[_0x6c71('0x5')][_0x6c71('0x135')]='\x30\x2e\x35\x2e\x31',_0x26f1f5[_0x6c71('0x5')][_0x6c71('0x136')]=_0x4b8a31(_0x6c71('0xe1')),_0x26f1f5[_0x6c71('0x5')][_0x6c71('0x137')]=_0x4b8a31(_0x6c71('0x138'))[_0x6c71('0x139')],_0x26f1f5[_0x6c71('0x5')]['\x63\x72\x65\x61\x74\x65\x45\x6e\x63\x6f\x64\x65\x72\x53\x74\x72\x65\x61\x6d']=_0x4b8a31(_0x6c71('0x122')),_0x26f1f5[_0x6c71('0x5')][_0x6c71('0x13a')]=_0x4b8a31(_0x6c71('0x13b'))[_0x6c71('0x123')];var _0x4d8265=_0x26f1f5[_0x6c71('0x5')][_0x6c71('0xea')][_0x6c71('0x124')];_0x26f1f5[_0x6c71('0x5')][_0x6c71('0x13c')]=_0x4d8265['\x75\x6e\x63\x6f\x6d\x70\x72\x65\x73\x73'],_0x26f1f5['\x65\x78\x70\x6f\x72\x74\x73'][_0x6c71('0x13d')]=_0x4d8265[_0x6c71('0xdb')],_0x26f1f5['\x65\x78\x70\x6f\x72\x74\x73'][_0x6c71('0x13e')]=_0x4d8265[_0x6c71('0xde')],_0x26f1f5['\x65\x78\x70\x6f\x72\x74\x73'][_0x6c71('0x13f')]=_0x4d8265[_0x6c71('0xdf')];},{'./decoder':0xe,'./decoder_stream':0xf,'./encoder':0x10,'./encoder_stream':0x11,'./static':0x13}],19:[function(_0x311157,_0x7d7d47,_0x89afb7){(function(_0x7d7d47){_0x89afb7[_0x6c71('0x100')]=0x184d2204,_0x89afb7[_0x6c71('0x140')]=new _0x7d7d47(0x4),_0x89afb7[_0x6c71('0x140')][_0x6c71('0x74')](_0x89afb7[_0x6c71('0x100')],0x0,!0x1),_0x89afb7['\x45\x4f\x53']=0x0,_0x89afb7[_0x6c71('0x141')]=new _0x7d7d47(0x4),_0x89afb7['\x45\x4f\x53\x5f\x42\x55\x46\x46\x45\x52'][_0x6c71('0x74')](_0x89afb7[_0x6c71('0x11f')],0x0,!0x1),_0x89afb7['\x56\x45\x52\x53\x49\x4f\x4e']=0x1,_0x89afb7[_0x6c71('0xff')]=0x184d2a50,_0x89afb7[_0x6c71('0x10a')]=[null,null,null,null,0x10000,0x40000,0x1<<0x14,0x4<<0x14],_0x89afb7[_0x6c71('0x142')]=_0x6c71('0x143'),_0x89afb7[_0x6c71('0x125')]={'\x4d\x41\x47\x49\x43':0x0,'\x44\x45\x53\x43\x52\x49\x50\x54\x4f\x52':0x1,'\x53\x49\x5a\x45':0x2,'\x44\x49\x43\x54\x49\x44':0x3,'\x44\x45\x53\x43\x52\x49\x50\x54\x4f\x52\x5f\x43\x48\x45\x43\x4b\x53\x55\x4d':0x4,'\x44\x41\x54\x41\x42\x4c\x4f\x43\x4b\x5f\x53\x49\x5a\x45':0x5,'\x44\x41\x54\x41\x42\x4c\x4f\x43\x4b\x5f\x44\x41\x54\x41':0x6,'\x44\x41\x54\x41\x42\x4c\x4f\x43\x4b\x5f\x43\x48\x45\x43\x4b\x53\x55\x4d':0x7,'\x44\x41\x54\x41\x42\x4c\x4f\x43\x4b\x5f\x55\x4e\x43\x4f\x4d\x50\x52\x45\x53\x53':0x8,'\x44\x41\x54\x41\x42\x4c\x4f\x43\x4b\x5f\x43\x4f\x4d\x50\x52\x45\x53\x53':0x9,'\x43\x48\x45\x43\x4b\x53\x55\x4d':0xa,'\x43\x48\x45\x43\x4b\x53\x55\x4d\x5f\x55\x50\x44\x41\x54\x45':0xb,'\x45\x4f\x53':0x5a,'\x53\x4b\x49\x50\x5f\x53\x49\x5a\x45':0x65,'\x53\x4b\x49\x50\x5f\x44\x41\x54\x41':0x66},_0x89afb7['\x53\x49\x5a\x45\x53']={'\x4d\x41\x47\x49\x43':0x4,'\x44\x45\x53\x43\x52\x49\x50\x54\x4f\x52':0x2,'\x53\x49\x5a\x45':0x8,'\x44\x49\x43\x54\x49\x44':0x4,'\x44\x45\x53\x43\x52\x49\x50\x54\x4f\x52\x5f\x43\x48\x45\x43\x4b\x53\x55\x4d':0x1,'\x44\x41\x54\x41\x42\x4c\x4f\x43\x4b\x5f\x53\x49\x5a\x45':0x4,'\x44\x41\x54\x41\x42\x4c\x4f\x43\x4b\x5f\x43\x48\x45\x43\x4b\x53\x55\x4d':0x4,'\x43\x48\x45\x43\x4b\x53\x55\x4d':0x4,'\x45\x4f\x53':0x4,'\x53\x4b\x49\x50\x5f\x53\x49\x5a\x45':0x4},_0x89afb7[_0x6c71('0xea')]=_0x311157(_0x6c71('0x144'));}['\x63\x61\x6c\x6c'](this,_0x311157(_0x6c71('0xe4'))[_0x6c71('0xf')]));},{'./utils':0x14,'\x62\x75\x66\x66\x65\x72':0x3}],20:[function(_0x5a4b4d,_0xa60fdb,_0x4b6a32){var _0x55ea7e=_0x5a4b4d(_0x6c71('0x145'));_0x4b6a32['\x64\x65\x73\x63\x72\x69\x70\x74\x6f\x72\x43\x68\x65\x63\x6b\x73\x75\x6d']=function(_0x5a4b4d){return _0x55ea7e(_0x5a4b4d,0x0)[_0x6c71('0xa2')]()>>0x8&0xff;},_0x4b6a32[_0x6c71('0x119')]=function(_0x5a4b4d){return _0x55ea7e(_0x5a4b4d,0x0)[_0x6c71('0xa2')]();},_0x4b6a32['\x73\x74\x72\x65\x61\x6d\x43\x68\x65\x63\x6b\x73\x75\x6d']=function(_0x5a4b4d,_0xa60fdb){return null===_0x5a4b4d?_0xa60fdb['\x64\x69\x67\x65\x73\x74']()[_0x6c71('0xa2')]():(null===_0xa60fdb&&(_0xa60fdb=_0x55ea7e(0x0)),_0xa60fdb[_0x6c71('0x146')](_0x5a4b4d));},_0x4b6a32[_0x6c71('0x6b')]=function(_0x5a4b4d,_0xa60fdb){return _0x5a4b4d[_0xa60fdb]|_0x5a4b4d[_0xa60fdb+0x1]<<0x8|_0x5a4b4d[_0xa60fdb+0x2]<<0x10|_0x5a4b4d[_0xa60fdb+0x3]<<0x18;},_0x4b6a32['\x62\x69\x6e\x64\x69\x6e\x67\x73']=_0x5a4b4d(_0x6c71('0xeb'));},{'./binding':0xd,'\x78\x78\x68\x61\x73\x68\x6a\x73':0x2e}],21:[function(_0x40db92,_0x2478ac,_0x4a1819){(function(_0x40db92){'use strict';!_0x40db92[_0x6c71('0x135')]||0x0===_0x40db92[_0x6c71('0x135')][_0x6c71('0x2d')]('\x76\x30\x2e')||0x0===_0x40db92['\x76\x65\x72\x73\x69\x6f\x6e'][_0x6c71('0x2d')](_0x6c71('0x147'))&&0x0!==_0x40db92[_0x6c71('0x135')][_0x6c71('0x2d')]('\x76\x31\x2e\x38\x2e')?_0x2478ac[_0x6c71('0x5')]=function(_0x2478ac,_0x4a1819,_0x391e09,_0x568527){if(_0x6c71('0x0')!=typeof _0x2478ac)throw new TypeError(_0x6c71('0x148'));var _0x55b6c0,_0x5c60f3,_0x471d4e=arguments[_0x6c71('0x8')];switch(_0x471d4e){case 0x0:case 0x1:return _0x40db92[_0x6c71('0x149')](_0x2478ac);case 0x2:return _0x40db92[_0x6c71('0x149')](function(){_0x2478ac['\x63\x61\x6c\x6c'](null,_0x4a1819);});case 0x3:return _0x40db92['\x6e\x65\x78\x74\x54\x69\x63\x6b'](function(){_0x2478ac[_0x6c71('0x4')](null,_0x4a1819,_0x391e09);});case 0x4:return _0x40db92['\x6e\x65\x78\x74\x54\x69\x63\x6b'](function(){_0x2478ac[_0x6c71('0x4')](null,_0x4a1819,_0x391e09,_0x568527);});default:for(_0x55b6c0=new Array(_0x471d4e-0x1),_0x5c60f3=0x0;_0x5c60f3<_0x55b6c0[_0x6c71('0x8')];)_0x55b6c0[_0x5c60f3++]=arguments[_0x5c60f3];return _0x40db92[_0x6c71('0x149')](function(){_0x2478ac['\x61\x70\x70\x6c\x79'](null,_0x55b6c0);});}}:_0x2478ac[_0x6c71('0x5')]=_0x40db92[_0x6c71('0x149')];}[_0x6c71('0x4')](this,_0x40db92(_0x6c71('0x14a'))));},{'\x5f\x70\x72\x6f\x63\x65\x73\x73':0x16}],22:[function(_0x38e06b,_0x783f53,_0x463505){var _0x2b11e3,_0x1cdaae,_0x1e2219=_0x783f53[_0x6c71('0x5')]={};function _0x11d875(){throw new Error(_0x6c71('0x14b'));}function _0x563fdd(){throw new Error('\x63\x6c\x65\x61\x72\x54\x69\x6d\x65\x6f\x75\x74\x20\x68\x61\x73\x20\x6e\x6f\x74\x20\x62\x65\x65\x6e\x20\x64\x65\x66\x69\x6e\x65\x64');}function _0x57452a(_0x38e06b){if(_0x2b11e3===setTimeout)return setTimeout(_0x38e06b,0x0);if((_0x2b11e3===_0x11d875||!_0x2b11e3)&&setTimeout)return _0x2b11e3=setTimeout,setTimeout(_0x38e06b,0x0);try{return _0x2b11e3(_0x38e06b,0x0);}catch(_0x9992ae){try{return _0x2b11e3[_0x6c71('0x4')](null,_0x38e06b,0x0);}catch(_0x573111){return _0x2b11e3[_0x6c71('0x4')](this,_0x38e06b,0x0);}}}!function(){try{_0x2b11e3=_0x6c71('0x0')==typeof setTimeout?setTimeout:_0x11d875;}catch(_0x39e570){_0x2b11e3=_0x11d875;}try{_0x1cdaae=_0x6c71('0x0')==typeof clearTimeout?clearTimeout:_0x563fdd;}catch(_0x347767){_0x1cdaae=_0x563fdd;}}();var _0x41751b,_0x3ca85b=[],_0x408aa8=!0x1,_0x1056e4=-0x1;function _0x4b1736(){_0x408aa8&&_0x41751b&&(_0x408aa8=!0x1,_0x41751b[_0x6c71('0x8')]?_0x3ca85b=_0x41751b['\x63\x6f\x6e\x63\x61\x74'](_0x3ca85b):_0x1056e4=-0x1,_0x3ca85b[_0x6c71('0x8')]&&_0x4dd113());}function _0x4dd113(){if(!_0x408aa8){var _0x38e06b=_0x57452a(_0x4b1736);_0x408aa8=!0x0;for(var _0x783f53=_0x3ca85b['\x6c\x65\x6e\x67\x74\x68'];_0x783f53;){for(_0x41751b=_0x3ca85b,_0x3ca85b=[];++_0x1056e4<_0x783f53;)_0x41751b&&_0x41751b[_0x1056e4][_0x6c71('0x14c')]();_0x1056e4=-0x1,_0x783f53=_0x3ca85b[_0x6c71('0x8')];}_0x41751b=null,_0x408aa8=!0x1,function(_0x38e06b){if(_0x1cdaae===clearTimeout)return clearTimeout(_0x38e06b);if((_0x1cdaae===_0x563fdd||!_0x1cdaae)&&clearTimeout)return _0x1cdaae=clearTimeout,clearTimeout(_0x38e06b);try{_0x1cdaae(_0x38e06b);}catch(_0x3613c3){try{return _0x1cdaae[_0x6c71('0x4')](null,_0x38e06b);}catch(_0x304541){return _0x1cdaae[_0x6c71('0x4')](this,_0x38e06b);}}}(_0x38e06b);}}function _0x3f1201(_0x38e06b,_0x783f53){this[_0x6c71('0x14d')]=_0x38e06b,this[_0x6c71('0x14e')]=_0x783f53;}function _0x48be7b(){}_0x1e2219[_0x6c71('0x149')]=function(_0x38e06b){var _0x783f53=new Array(arguments[_0x6c71('0x8')]-0x1);if(arguments[_0x6c71('0x8')]>0x1)for(var _0x463505=0x1;_0x463505<arguments[_0x6c71('0x8')];_0x463505++)_0x783f53[_0x463505-0x1]=arguments[_0x463505];_0x3ca85b['\x70\x75\x73\x68'](new _0x3f1201(_0x38e06b,_0x783f53)),0x1!==_0x3ca85b['\x6c\x65\x6e\x67\x74\x68']||_0x408aa8||_0x57452a(_0x4dd113);},_0x3f1201[_0x6c71('0x12')][_0x6c71('0x14c')]=function(){this[_0x6c71('0x14d')][_0x6c71('0x34')](null,this['\x61\x72\x72\x61\x79']);},_0x1e2219[_0x6c71('0x14f')]='\x62\x72\x6f\x77\x73\x65\x72',_0x1e2219['\x62\x72\x6f\x77\x73\x65\x72']=!0x0,_0x1e2219['\x65\x6e\x76']={},_0x1e2219['\x61\x72\x67\x76']=[],_0x1e2219[_0x6c71('0x135')]='',_0x1e2219[_0x6c71('0x150')]={},_0x1e2219['\x6f\x6e']=_0x48be7b,_0x1e2219[_0x6c71('0xc4')]=_0x48be7b,_0x1e2219[_0x6c71('0xcc')]=_0x48be7b,_0x1e2219['\x6f\x66\x66']=_0x48be7b,_0x1e2219[_0x6c71('0xcd')]=_0x48be7b,_0x1e2219[_0x6c71('0xce')]=_0x48be7b,_0x1e2219['\x65\x6d\x69\x74']=_0x48be7b,_0x1e2219[_0x6c71('0x151')]=_0x48be7b,_0x1e2219[_0x6c71('0x152')]=_0x48be7b,_0x1e2219[_0x6c71('0xcf')]=function(_0x38e06b){return[];},_0x1e2219[_0x6c71('0xee')]=function(_0x38e06b){throw new Error(_0x6c71('0x153'));},_0x1e2219[_0x6c71('0x154')]=function(){return'\x2f';},_0x1e2219[_0x6c71('0x155')]=function(_0x38e06b){throw new Error(_0x6c71('0x156'));},_0x1e2219[_0x6c71('0x157')]=function(){return 0x0;};},{}],23:[function(_0x4522ba,_0x109a09,_0x30a620){_0x109a09[_0x6c71('0x5')]=_0x4522ba(_0x6c71('0x158'));},{'./lib/_stream_duplex.js':0x18}],24:[function(_0x1a084b,_0x2d5887,_0x46e6d1){'use strict';var _0xd0774d=_0x1a084b(_0x6c71('0x159')),_0xeda892=Object['\x6b\x65\x79\x73']||function(_0x1a084b){var _0x2d5887=[];for(var _0x46e6d1 in _0x1a084b)_0x2d5887[_0x6c71('0xb')](_0x46e6d1);return _0x2d5887;};_0x2d5887[_0x6c71('0x5')]=_0x27309f;var _0x4883d3=_0x1a084b(_0x6c71('0x15a'));_0x4883d3[_0x6c71('0xe8')]=_0x1a084b(_0x6c71('0xe8'));var _0x53660f=_0x1a084b(_0x6c71('0x15b')),_0x3c1854=_0x1a084b(_0x6c71('0x15c'));_0x4883d3[_0x6c71('0xe8')](_0x27309f,_0x53660f);for(var _0x3f9a11=_0xeda892(_0x3c1854[_0x6c71('0x12')]),_0x594fff=0x0;_0x594fff<_0x3f9a11[_0x6c71('0x8')];_0x594fff++){var _0x46f68b=_0x3f9a11[_0x594fff];_0x27309f[_0x6c71('0x12')][_0x46f68b]||(_0x27309f[_0x6c71('0x12')][_0x46f68b]=_0x3c1854['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65'][_0x46f68b]);}function _0x27309f(_0x1a084b){if(!(this instanceof _0x27309f))return new _0x27309f(_0x1a084b);_0x53660f[_0x6c71('0x4')](this,_0x1a084b),_0x3c1854[_0x6c71('0x4')](this,_0x1a084b),_0x1a084b&&!0x1===_0x1a084b[_0x6c71('0x15d')]&&(this[_0x6c71('0x15d')]=!0x1),_0x1a084b&&!0x1===_0x1a084b[_0x6c71('0x15e')]&&(this[_0x6c71('0x15e')]=!0x1),this[_0x6c71('0x15f')]=!0x0,_0x1a084b&&!0x1===_0x1a084b[_0x6c71('0x15f')]&&(this[_0x6c71('0x15f')]=!0x1),this[_0x6c71('0xcc')](_0x6c71('0xe2'),_0x3e8d44);}function _0x3e8d44(){this['\x61\x6c\x6c\x6f\x77\x48\x61\x6c\x66\x4f\x70\x65\x6e']||this['\x5f\x77\x72\x69\x74\x61\x62\x6c\x65\x53\x74\x61\x74\x65'][_0x6c71('0x160')]||_0xd0774d(_0xaab08a,this);}function _0xaab08a(_0x1a084b){_0x1a084b[_0x6c71('0xe2')]();}Object['\x64\x65\x66\x69\x6e\x65\x50\x72\x6f\x70\x65\x72\x74\x79'](_0x27309f[_0x6c71('0x12')],_0x6c71('0x161'),{'\x67\x65\x74':function(){return void 0x0!==this[_0x6c71('0x162')]&&void 0x0!==this[_0x6c71('0x163')]&&(this[_0x6c71('0x162')][_0x6c71('0x161')]&&this['\x5f\x77\x72\x69\x74\x61\x62\x6c\x65\x53\x74\x61\x74\x65'][_0x6c71('0x161')]);},'\x73\x65\x74':function(_0x1a084b){void 0x0!==this[_0x6c71('0x162')]&&void 0x0!==this[_0x6c71('0x163')]&&(this[_0x6c71('0x162')][_0x6c71('0x161')]=_0x1a084b,this[_0x6c71('0x163')][_0x6c71('0x161')]=_0x1a084b);}}),_0x27309f[_0x6c71('0x12')][_0x6c71('0x164')]=function(_0x1a084b,_0x2d5887){this[_0x6c71('0xb')](null),this[_0x6c71('0xe2')](),_0xd0774d(_0x2d5887,_0x1a084b);};},{'./_stream_readable':0x1a,'./_stream_writable':0x1c,'core-util-is':0x4,'\x69\x6e\x68\x65\x72\x69\x74\x73':0xa,'process-nextick-args':0x15}],25:[function(_0x225bf9,_0x4f674e,_0x525aad){'use strict';_0x4f674e[_0x6c71('0x5')]=_0x37a1bc;var _0x3c06e9=_0x225bf9(_0x6c71('0x165')),_0x33d1ed=_0x225bf9('\x63\x6f\x72\x65\x2d\x75\x74\x69\x6c\x2d\x69\x73');function _0x37a1bc(_0x225bf9){if(!(this instanceof _0x37a1bc))return new _0x37a1bc(_0x225bf9);_0x3c06e9[_0x6c71('0x4')](this,_0x225bf9);}_0x33d1ed[_0x6c71('0xe8')]=_0x225bf9('\x69\x6e\x68\x65\x72\x69\x74\x73'),_0x33d1ed[_0x6c71('0xe8')](_0x37a1bc,_0x3c06e9),_0x37a1bc[_0x6c71('0x12')][_0x6c71('0xf8')]=function(_0x225bf9,_0x4f674e,_0x525aad){_0x525aad(null,_0x225bf9);};},{'./_stream_transform':0x1b,'core-util-is':0x4,'\x69\x6e\x68\x65\x72\x69\x74\x73':0xa}],26:[function(_0xcb8d3a,_0x1c739b,_0xdc6991){(function(_0xdc6991,_0x32227a){'use strict';var _0x12b13d=_0xcb8d3a('\x70\x72\x6f\x63\x65\x73\x73\x2d\x6e\x65\x78\x74\x69\x63\x6b\x2d\x61\x72\x67\x73');_0x1c739b[_0x6c71('0x5')]=_0x5a21ea;var _0x2de9f5,_0x5d8fdd=_0xcb8d3a(_0x6c71('0x166'));_0x5a21ea[_0x6c71('0x167')]=_0x4b9a4f;_0xcb8d3a('\x65\x76\x65\x6e\x74\x73')[_0x6c71('0xbe')];var _0x3b2fc0=function(_0xcb8d3a,_0x1c739b){return _0xcb8d3a[_0x6c71('0xcf')](_0x1c739b)[_0x6c71('0x8')];},_0x516406=_0xcb8d3a(_0x6c71('0x168')),_0x87417e=_0xcb8d3a(_0x6c71('0x169'))[_0x6c71('0xf')],_0x55a112=_0x32227a[_0x6c71('0x16a')]||function(){};var _0x44e97a=_0xcb8d3a(_0x6c71('0x15a'));_0x44e97a[_0x6c71('0xe8')]=_0xcb8d3a('\x69\x6e\x68\x65\x72\x69\x74\x73');var _0x49aad3=_0xcb8d3a(_0x6c71('0xe7')),_0x4079c6=void 0x0;_0x4079c6=_0x49aad3&&_0x49aad3[_0x6c71('0x16b')]?_0x49aad3[_0x6c71('0x16b')](_0x6c71('0xe5')):function(){};var _0x1ad8db,_0x1f9476=_0xcb8d3a(_0x6c71('0x16c')),_0x1bb8d2=_0xcb8d3a(_0x6c71('0x16d'));_0x44e97a[_0x6c71('0xe8')](_0x5a21ea,_0x516406);var _0xc37827=[_0x6c71('0x39'),_0x6c71('0x16e'),_0x6c71('0x16f'),'\x70\x61\x75\x73\x65',_0x6c71('0x170')];function _0x4b9a4f(_0x1c739b,_0xdc6991){_0x2de9f5=_0x2de9f5||_0xcb8d3a(_0x6c71('0x171')),_0x1c739b=_0x1c739b||{},this[_0x6c71('0x172')]=!!_0x1c739b[_0x6c71('0x172')],_0xdc6991 instanceof _0x2de9f5&&(this[_0x6c71('0x172')]=this[_0x6c71('0x172')]||!!_0x1c739b[_0x6c71('0x173')]);var _0x32227a=_0x1c739b[_0x6c71('0x174')],_0x12b13d=this['\x6f\x62\x6a\x65\x63\x74\x4d\x6f\x64\x65']?0x10:0x4000;this[_0x6c71('0x174')]=_0x32227a||0x0===_0x32227a?_0x32227a:_0x12b13d,this[_0x6c71('0x174')]=Math[_0x6c71('0xd2')](this[_0x6c71('0x174')]),this[_0x6c71('0xe4')]=new _0x1f9476(),this[_0x6c71('0x8')]=0x0,this[_0x6c71('0x175')]=null,this[_0x6c71('0x176')]=0x0,this[_0x6c71('0x177')]=null,this[_0x6c71('0x160')]=!0x1,this[_0x6c71('0x178')]=!0x1,this[_0x6c71('0x179')]=!0x1,this[_0x6c71('0x17a')]=!0x0,this[_0x6c71('0x17b')]=!0x1,this[_0x6c71('0x17c')]=!0x1,this[_0x6c71('0x17d')]=!0x1,this[_0x6c71('0x17e')]=!0x1,this['\x64\x65\x73\x74\x72\x6f\x79\x65\x64']=!0x1,this[_0x6c71('0x17f')]=_0x1c739b[_0x6c71('0x17f')]||'\x75\x74\x66\x38',this[_0x6c71('0x180')]=0x0,this[_0x6c71('0x181')]=!0x1,this[_0x6c71('0x182')]=null,this[_0x6c71('0x183')]=null,_0x1c739b[_0x6c71('0x183')]&&(_0x1ad8db||(_0x1ad8db=_0xcb8d3a(_0x6c71('0x184'))[_0x6c71('0x185')]),this[_0x6c71('0x182')]=new _0x1ad8db(_0x1c739b[_0x6c71('0x183')]),this[_0x6c71('0x183')]=_0x1c739b[_0x6c71('0x183')]);}function _0x5a21ea(_0x1c739b){if(_0x2de9f5=_0x2de9f5||_0xcb8d3a(_0x6c71('0x171')),!(this instanceof _0x5a21ea))return new _0x5a21ea(_0x1c739b);this['\x5f\x72\x65\x61\x64\x61\x62\x6c\x65\x53\x74\x61\x74\x65']=new _0x4b9a4f(_0x1c739b,this),this[_0x6c71('0x15d')]=!0x0,_0x1c739b&&('\x66\x75\x6e\x63\x74\x69\x6f\x6e'==typeof _0x1c739b[_0x6c71('0x6e')]&&(this[_0x6c71('0x186')]=_0x1c739b[_0x6c71('0x6e')]),_0x6c71('0x0')==typeof _0x1c739b[_0x6c71('0x16f')]&&(this['\x5f\x64\x65\x73\x74\x72\x6f\x79']=_0x1c739b[_0x6c71('0x16f')])),_0x516406['\x63\x61\x6c\x6c'](this);}function _0x5ab6ca(_0xcb8d3a,_0x1c739b,_0xdc6991,_0x32227a,_0x12b13d){var _0x2de9f5,_0x5d8fdd=_0xcb8d3a['\x5f\x72\x65\x61\x64\x61\x62\x6c\x65\x53\x74\x61\x74\x65'];null===_0x1c739b?(_0x5d8fdd[_0x6c71('0x179')]=!0x1,function(_0xcb8d3a,_0x1c739b){if(_0x1c739b[_0x6c71('0x160')])return;if(_0x1c739b['\x64\x65\x63\x6f\x64\x65\x72']){var _0xdc6991=_0x1c739b[_0x6c71('0x182')]['\x65\x6e\x64']();_0xdc6991&&_0xdc6991['\x6c\x65\x6e\x67\x74\x68']&&(_0x1c739b['\x62\x75\x66\x66\x65\x72'][_0x6c71('0xb')](_0xdc6991),_0x1c739b[_0x6c71('0x8')]+=_0x1c739b[_0x6c71('0x172')]?0x1:_0xdc6991[_0x6c71('0x8')]);}_0x1c739b[_0x6c71('0x160')]=!0x0,_0x1b5b35(_0xcb8d3a);}(_0xcb8d3a,_0x5d8fdd)):(_0x12b13d||(_0x2de9f5=function(_0xcb8d3a,_0x1c739b){var _0xdc6991;_0x32227a=_0x1c739b,_0x87417e[_0x6c71('0x1c')](_0x32227a)||_0x32227a instanceof _0x55a112||_0x6c71('0x14')==typeof _0x1c739b||void 0x0===_0x1c739b||_0xcb8d3a[_0x6c71('0x172')]||(_0xdc6991=new TypeError(_0x6c71('0x187')));var _0x32227a;return _0xdc6991;}(_0x5d8fdd,_0x1c739b)),_0x2de9f5?_0xcb8d3a[_0x6c71('0xc1')](_0x6c71('0x39'),_0x2de9f5):_0x5d8fdd[_0x6c71('0x172')]||_0x1c739b&&_0x1c739b['\x6c\x65\x6e\x67\x74\x68']>0x0?(_0x6c71('0x14')==typeof _0x1c739b||_0x5d8fdd['\x6f\x62\x6a\x65\x63\x74\x4d\x6f\x64\x65']||Object[_0x6c71('0x188')](_0x1c739b)===_0x87417e[_0x6c71('0x12')]||(_0x1c739b=function(_0xcb8d3a){return _0x87417e[_0x6c71('0x2c')](_0xcb8d3a);}(_0x1c739b)),_0x32227a?_0x5d8fdd[_0x6c71('0x178')]?_0xcb8d3a[_0x6c71('0xc1')]('\x65\x72\x72\x6f\x72',new Error(_0x6c71('0x189'))):_0x3e750a(_0xcb8d3a,_0x5d8fdd,_0x1c739b,!0x0):_0x5d8fdd[_0x6c71('0x160')]?_0xcb8d3a[_0x6c71('0xc1')](_0x6c71('0x39'),new Error(_0x6c71('0x18a'))):(_0x5d8fdd[_0x6c71('0x179')]=!0x1,_0x5d8fdd[_0x6c71('0x182')]&&!_0xdc6991?(_0x1c739b=_0x5d8fdd['\x64\x65\x63\x6f\x64\x65\x72'][_0x6c71('0x1a')](_0x1c739b),_0x5d8fdd[_0x6c71('0x172')]||0x0!==_0x1c739b[_0x6c71('0x8')]?_0x3e750a(_0xcb8d3a,_0x5d8fdd,_0x1c739b,!0x1):_0x3f761b(_0xcb8d3a,_0x5d8fdd)):_0x3e750a(_0xcb8d3a,_0x5d8fdd,_0x1c739b,!0x1))):_0x32227a||(_0x5d8fdd[_0x6c71('0x179')]=!0x1));return function(_0xcb8d3a){return!_0xcb8d3a[_0x6c71('0x160')]&&(_0xcb8d3a[_0x6c71('0x17b')]||_0xcb8d3a[_0x6c71('0x8')]<_0xcb8d3a[_0x6c71('0x174')]||0x0===_0xcb8d3a['\x6c\x65\x6e\x67\x74\x68']);}(_0x5d8fdd);}function _0x3e750a(_0xcb8d3a,_0x1c739b,_0xdc6991,_0x32227a){_0x1c739b[_0x6c71('0x177')]&&0x0===_0x1c739b[_0x6c71('0x8')]&&!_0x1c739b[_0x6c71('0x17a')]?(_0xcb8d3a[_0x6c71('0xc1')](_0x6c71('0x1f'),_0xdc6991),_0xcb8d3a[_0x6c71('0x6e')](0x0)):(_0x1c739b[_0x6c71('0x8')]+=_0x1c739b[_0x6c71('0x172')]?0x1:_0xdc6991[_0x6c71('0x8')],_0x32227a?_0x1c739b[_0x6c71('0xe4')]['\x75\x6e\x73\x68\x69\x66\x74'](_0xdc6991):_0x1c739b[_0x6c71('0xe4')][_0x6c71('0xb')](_0xdc6991),_0x1c739b[_0x6c71('0x17b')]&&_0x1b5b35(_0xcb8d3a)),_0x3f761b(_0xcb8d3a,_0x1c739b);}Object[_0x6c71('0x3c')](_0x5a21ea['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65'],'\x64\x65\x73\x74\x72\x6f\x79\x65\x64',{'\x67\x65\x74':function(){return void 0x0!==this[_0x6c71('0x162')]&&this['\x5f\x72\x65\x61\x64\x61\x62\x6c\x65\x53\x74\x61\x74\x65'][_0x6c71('0x161')];},'\x73\x65\x74':function(_0xcb8d3a){this['\x5f\x72\x65\x61\x64\x61\x62\x6c\x65\x53\x74\x61\x74\x65']&&(this[_0x6c71('0x162')][_0x6c71('0x161')]=_0xcb8d3a);}}),_0x5a21ea[_0x6c71('0x12')][_0x6c71('0x16f')]=_0x1bb8d2[_0x6c71('0x16f')],_0x5a21ea[_0x6c71('0x12')][_0x6c71('0x18b')]=_0x1bb8d2['\x75\x6e\x64\x65\x73\x74\x72\x6f\x79'],_0x5a21ea['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65'][_0x6c71('0x164')]=function(_0xcb8d3a,_0x1c739b){this[_0x6c71('0xb')](null),_0x1c739b(_0xcb8d3a);},_0x5a21ea[_0x6c71('0x12')][_0x6c71('0xb')]=function(_0xcb8d3a,_0x1c739b){var _0xdc6991,_0x32227a=this[_0x6c71('0x162')];return _0x32227a['\x6f\x62\x6a\x65\x63\x74\x4d\x6f\x64\x65']?_0xdc6991=!0x0:_0x6c71('0x14')==typeof _0xcb8d3a&&((_0x1c739b=_0x1c739b||_0x32227a[_0x6c71('0x17f')])!==_0x32227a[_0x6c71('0x183')]&&(_0xcb8d3a=_0x87417e[_0x6c71('0x2c')](_0xcb8d3a,_0x1c739b),_0x1c739b=''),_0xdc6991=!0x0),_0x5ab6ca(this,_0xcb8d3a,_0x1c739b,!0x1,_0xdc6991);},_0x5a21ea[_0x6c71('0x12')][_0x6c71('0x18c')]=function(_0xcb8d3a){return _0x5ab6ca(this,_0xcb8d3a,null,!0x0,!0x1);},_0x5a21ea[_0x6c71('0x12')][_0x6c71('0x18d')]=function(){return!0x1===this[_0x6c71('0x162')][_0x6c71('0x177')];},_0x5a21ea[_0x6c71('0x12')][_0x6c71('0x18e')]=function(_0x1c739b){return _0x1ad8db||(_0x1ad8db=_0xcb8d3a(_0x6c71('0x184'))[_0x6c71('0x185')]),this['\x5f\x72\x65\x61\x64\x61\x62\x6c\x65\x53\x74\x61\x74\x65'][_0x6c71('0x182')]=new _0x1ad8db(_0x1c739b),this['\x5f\x72\x65\x61\x64\x61\x62\x6c\x65\x53\x74\x61\x74\x65']['\x65\x6e\x63\x6f\x64\x69\x6e\x67']=_0x1c739b,this;};var _0x15171a=0x800000;function _0x80c7ae(_0xcb8d3a,_0x1c739b){return _0xcb8d3a<=0x0||0x0===_0x1c739b[_0x6c71('0x8')]&&_0x1c739b[_0x6c71('0x160')]?0x0:_0x1c739b[_0x6c71('0x172')]?0x1:_0xcb8d3a!=_0xcb8d3a?_0x1c739b['\x66\x6c\x6f\x77\x69\x6e\x67']&&_0x1c739b[_0x6c71('0x8')]?_0x1c739b[_0x6c71('0xe4')][_0x6c71('0x18f')][_0x6c71('0x1f')][_0x6c71('0x8')]:_0x1c739b[_0x6c71('0x8')]:(_0xcb8d3a>_0x1c739b[_0x6c71('0x174')]&&(_0x1c739b[_0x6c71('0x174')]=function(_0xcb8d3a){return _0xcb8d3a>=_0x15171a?_0xcb8d3a=_0x15171a:(_0xcb8d3a--,_0xcb8d3a|=_0xcb8d3a>>>0x1,_0xcb8d3a|=_0xcb8d3a>>>0x2,_0xcb8d3a|=_0xcb8d3a>>>0x4,_0xcb8d3a|=_0xcb8d3a>>>0x8,_0xcb8d3a|=_0xcb8d3a>>>0x10,_0xcb8d3a++),_0xcb8d3a;}(_0xcb8d3a)),_0xcb8d3a<=_0x1c739b['\x6c\x65\x6e\x67\x74\x68']?_0xcb8d3a:_0x1c739b[_0x6c71('0x160')]?_0x1c739b[_0x6c71('0x8')]:(_0x1c739b[_0x6c71('0x17b')]=!0x0,0x0));}function _0x1b5b35(_0xcb8d3a){var _0x1c739b=_0xcb8d3a[_0x6c71('0x162')];_0x1c739b[_0x6c71('0x17b')]=!0x1,_0x1c739b[_0x6c71('0x17c')]||(_0x4079c6(_0x6c71('0x190'),_0x1c739b[_0x6c71('0x177')]),_0x1c739b[_0x6c71('0x17c')]=!0x0,_0x1c739b[_0x6c71('0x17a')]?_0x12b13d(_0x4f48f0,_0xcb8d3a):_0x4f48f0(_0xcb8d3a));}function _0x4f48f0(_0xcb8d3a){_0x4079c6(_0x6c71('0x191')),_0xcb8d3a[_0x6c71('0xc1')](_0x6c71('0x15d')),_0x167c14(_0xcb8d3a);}function _0x3f761b(_0xcb8d3a,_0x1c739b){_0x1c739b['\x72\x65\x61\x64\x69\x6e\x67\x4d\x6f\x72\x65']||(_0x1c739b[_0x6c71('0x181')]=!0x0,_0x12b13d(_0x452845,_0xcb8d3a,_0x1c739b));}function _0x452845(_0xcb8d3a,_0x1c739b){for(var _0xdc6991=_0x1c739b[_0x6c71('0x8')];!_0x1c739b[_0x6c71('0x179')]&&!_0x1c739b[_0x6c71('0x177')]&&!_0x1c739b[_0x6c71('0x160')]&&_0x1c739b[_0x6c71('0x8')]<_0x1c739b[_0x6c71('0x174')]&&(_0x4079c6(_0x6c71('0x192')),_0xcb8d3a[_0x6c71('0x6e')](0x0),_0xdc6991!==_0x1c739b[_0x6c71('0x8')]);)_0xdc6991=_0x1c739b[_0x6c71('0x8')];_0x1c739b['\x72\x65\x61\x64\x69\x6e\x67\x4d\x6f\x72\x65']=!0x1;}function _0x59d2c0(_0xcb8d3a){_0x4079c6(_0x6c71('0x193')),_0xcb8d3a[_0x6c71('0x6e')](0x0);}function _0x470aea(_0xcb8d3a,_0x1c739b){_0x1c739b[_0x6c71('0x179')]||(_0x4079c6(_0x6c71('0x194')),_0xcb8d3a[_0x6c71('0x6e')](0x0)),_0x1c739b[_0x6c71('0x17e')]=!0x1,_0x1c739b[_0x6c71('0x180')]=0x0,_0xcb8d3a[_0x6c71('0xc1')]('\x72\x65\x73\x75\x6d\x65'),_0x167c14(_0xcb8d3a),_0x1c739b['\x66\x6c\x6f\x77\x69\x6e\x67']&&!_0x1c739b[_0x6c71('0x179')]&&_0xcb8d3a[_0x6c71('0x6e')](0x0);}function _0x167c14(_0xcb8d3a){var _0x1c739b=_0xcb8d3a['\x5f\x72\x65\x61\x64\x61\x62\x6c\x65\x53\x74\x61\x74\x65'];for(_0x4079c6(_0x6c71('0x195'),_0x1c739b[_0x6c71('0x177')]);_0x1c739b[_0x6c71('0x177')]&&null!==_0xcb8d3a[_0x6c71('0x6e')](););}function _0x2c6a7c(_0xcb8d3a,_0x1c739b){return 0x0===_0x1c739b[_0x6c71('0x8')]?null:(_0x1c739b[_0x6c71('0x172')]?_0xdc6991=_0x1c739b[_0x6c71('0xe4')]['\x73\x68\x69\x66\x74']():!_0xcb8d3a||_0xcb8d3a>=_0x1c739b[_0x6c71('0x8')]?(_0xdc6991=_0x1c739b[_0x6c71('0x182')]?_0x1c739b[_0x6c71('0xe4')][_0x6c71('0xc')](''):0x1===_0x1c739b[_0x6c71('0xe4')][_0x6c71('0x8')]?_0x1c739b[_0x6c71('0xe4')][_0x6c71('0x18f')]['\x64\x61\x74\x61']:_0x1c739b['\x62\x75\x66\x66\x65\x72'][_0x6c71('0xe3')](_0x1c739b['\x6c\x65\x6e\x67\x74\x68']),_0x1c739b[_0x6c71('0xe4')][_0x6c71('0x196')]()):_0xdc6991=function(_0xcb8d3a,_0x1c739b,_0xdc6991){var _0x32227a;_0xcb8d3a<_0x1c739b[_0x6c71('0x18f')]['\x64\x61\x74\x61'][_0x6c71('0x8')]?(_0x32227a=_0x1c739b[_0x6c71('0x18f')][_0x6c71('0x1f')][_0x6c71('0x1b')](0x0,_0xcb8d3a),_0x1c739b[_0x6c71('0x18f')][_0x6c71('0x1f')]=_0x1c739b[_0x6c71('0x18f')][_0x6c71('0x1f')][_0x6c71('0x1b')](_0xcb8d3a)):_0x32227a=_0xcb8d3a===_0x1c739b[_0x6c71('0x18f')][_0x6c71('0x1f')][_0x6c71('0x8')]?_0x1c739b[_0x6c71('0x197')]():_0xdc6991?function(_0xcb8d3a,_0x1c739b){var _0xdc6991=_0x1c739b[_0x6c71('0x18f')],_0x32227a=0x1,_0x12b13d=_0xdc6991[_0x6c71('0x1f')];_0xcb8d3a-=_0x12b13d[_0x6c71('0x8')];for(;_0xdc6991=_0xdc6991[_0x6c71('0x198')];){var _0x2de9f5=_0xdc6991['\x64\x61\x74\x61'],_0x5d8fdd=_0xcb8d3a>_0x2de9f5[_0x6c71('0x8')]?_0x2de9f5['\x6c\x65\x6e\x67\x74\x68']:_0xcb8d3a;if(_0x5d8fdd===_0x2de9f5[_0x6c71('0x8')]?_0x12b13d+=_0x2de9f5:_0x12b13d+=_0x2de9f5[_0x6c71('0x1b')](0x0,_0xcb8d3a),0x0===(_0xcb8d3a-=_0x5d8fdd)){_0x5d8fdd===_0x2de9f5[_0x6c71('0x8')]?(++_0x32227a,_0xdc6991[_0x6c71('0x198')]?_0x1c739b[_0x6c71('0x18f')]=_0xdc6991[_0x6c71('0x198')]:_0x1c739b['\x68\x65\x61\x64']=_0x1c739b[_0x6c71('0x199')]=null):(_0x1c739b[_0x6c71('0x18f')]=_0xdc6991,_0xdc6991[_0x6c71('0x1f')]=_0x2de9f5[_0x6c71('0x1b')](_0x5d8fdd));break;}++_0x32227a;}return _0x1c739b['\x6c\x65\x6e\x67\x74\x68']-=_0x32227a,_0x12b13d;}(_0xcb8d3a,_0x1c739b):function(_0xcb8d3a,_0x1c739b){var _0xdc6991=_0x87417e[_0x6c71('0x3e')](_0xcb8d3a),_0x32227a=_0x1c739b[_0x6c71('0x18f')],_0x12b13d=0x1;_0x32227a[_0x6c71('0x1f')][_0x6c71('0x1d')](_0xdc6991),_0xcb8d3a-=_0x32227a[_0x6c71('0x1f')][_0x6c71('0x8')];for(;_0x32227a=_0x32227a[_0x6c71('0x198')];){var _0x2de9f5=_0x32227a[_0x6c71('0x1f')],_0x5d8fdd=_0xcb8d3a>_0x2de9f5['\x6c\x65\x6e\x67\x74\x68']?_0x2de9f5[_0x6c71('0x8')]:_0xcb8d3a;if(_0x2de9f5[_0x6c71('0x1d')](_0xdc6991,_0xdc6991[_0x6c71('0x8')]-_0xcb8d3a,0x0,_0x5d8fdd),0x0===(_0xcb8d3a-=_0x5d8fdd)){_0x5d8fdd===_0x2de9f5['\x6c\x65\x6e\x67\x74\x68']?(++_0x12b13d,_0x32227a[_0x6c71('0x198')]?_0x1c739b[_0x6c71('0x18f')]=_0x32227a['\x6e\x65\x78\x74']:_0x1c739b[_0x6c71('0x18f')]=_0x1c739b[_0x6c71('0x199')]=null):(_0x1c739b[_0x6c71('0x18f')]=_0x32227a,_0x32227a['\x64\x61\x74\x61']=_0x2de9f5[_0x6c71('0x1b')](_0x5d8fdd));break;}++_0x12b13d;}return _0x1c739b['\x6c\x65\x6e\x67\x74\x68']-=_0x12b13d,_0xdc6991;}(_0xcb8d3a,_0x1c739b);return _0x32227a;}(_0xcb8d3a,_0x1c739b[_0x6c71('0xe4')],_0x1c739b[_0x6c71('0x182')]),_0xdc6991);var _0xdc6991;}function _0x489003(_0xcb8d3a){var _0x1c739b=_0xcb8d3a[_0x6c71('0x162')];if(_0x1c739b['\x6c\x65\x6e\x67\x74\x68']>0x0)throw new Error(_0x6c71('0x19a'));_0x1c739b['\x65\x6e\x64\x45\x6d\x69\x74\x74\x65\x64']||(_0x1c739b['\x65\x6e\x64\x65\x64']=!0x0,_0x12b13d(_0x1434da,_0x1c739b,_0xcb8d3a));}function _0x1434da(_0xcb8d3a,_0x1c739b){_0xcb8d3a[_0x6c71('0x178')]||0x0!==_0xcb8d3a[_0x6c71('0x8')]||(_0xcb8d3a[_0x6c71('0x178')]=!0x0,_0x1c739b['\x72\x65\x61\x64\x61\x62\x6c\x65']=!0x1,_0x1c739b[_0x6c71('0xc1')]('\x65\x6e\x64'));}function _0x13ac89(_0xcb8d3a,_0x1c739b){for(var _0xdc6991=0x0,_0x32227a=_0xcb8d3a[_0x6c71('0x8')];_0xdc6991<_0x32227a;_0xdc6991++)if(_0xcb8d3a[_0xdc6991]===_0x1c739b)return _0xdc6991;return-0x1;}_0x5a21ea[_0x6c71('0x12')][_0x6c71('0x6e')]=function(_0xcb8d3a){_0x4079c6(_0x6c71('0x6e'),_0xcb8d3a),_0xcb8d3a=parseInt(_0xcb8d3a,0xa);var _0x1c739b=this[_0x6c71('0x162')],_0xdc6991=_0xcb8d3a;if(0x0!==_0xcb8d3a&&(_0x1c739b['\x65\x6d\x69\x74\x74\x65\x64\x52\x65\x61\x64\x61\x62\x6c\x65']=!0x1),0x0===_0xcb8d3a&&_0x1c739b[_0x6c71('0x17b')]&&(_0x1c739b['\x6c\x65\x6e\x67\x74\x68']>=_0x1c739b[_0x6c71('0x174')]||_0x1c739b[_0x6c71('0x160')]))return _0x4079c6(_0x6c71('0x19b'),_0x1c739b['\x6c\x65\x6e\x67\x74\x68'],_0x1c739b[_0x6c71('0x160')]),0x0===_0x1c739b['\x6c\x65\x6e\x67\x74\x68']&&_0x1c739b[_0x6c71('0x160')]?_0x489003(this):_0x1b5b35(this),null;if(0x0===(_0xcb8d3a=_0x80c7ae(_0xcb8d3a,_0x1c739b))&&_0x1c739b[_0x6c71('0x160')])return 0x0===_0x1c739b[_0x6c71('0x8')]&&_0x489003(this),null;var _0x32227a,_0x12b13d=_0x1c739b[_0x6c71('0x17b')];return _0x4079c6(_0x6c71('0x19c'),_0x12b13d),(0x0===_0x1c739b[_0x6c71('0x8')]||_0x1c739b[_0x6c71('0x8')]-_0xcb8d3a<_0x1c739b[_0x6c71('0x174')])&&_0x4079c6(_0x6c71('0x19d'),_0x12b13d=!0x0),_0x1c739b[_0x6c71('0x160')]||_0x1c739b[_0x6c71('0x179')]?_0x4079c6(_0x6c71('0x19e'),_0x12b13d=!0x1):_0x12b13d&&(_0x4079c6(_0x6c71('0x19f')),_0x1c739b[_0x6c71('0x179')]=!0x0,_0x1c739b['\x73\x79\x6e\x63']=!0x0,0x0===_0x1c739b[_0x6c71('0x8')]&&(_0x1c739b['\x6e\x65\x65\x64\x52\x65\x61\x64\x61\x62\x6c\x65']=!0x0),this['\x5f\x72\x65\x61\x64'](_0x1c739b['\x68\x69\x67\x68\x57\x61\x74\x65\x72\x4d\x61\x72\x6b']),_0x1c739b[_0x6c71('0x17a')]=!0x1,_0x1c739b[_0x6c71('0x179')]||(_0xcb8d3a=_0x80c7ae(_0xdc6991,_0x1c739b))),null===(_0x32227a=_0xcb8d3a>0x0?_0x2c6a7c(_0xcb8d3a,_0x1c739b):null)?(_0x1c739b[_0x6c71('0x17b')]=!0x0,_0xcb8d3a=0x0):_0x1c739b[_0x6c71('0x8')]-=_0xcb8d3a,0x0===_0x1c739b[_0x6c71('0x8')]&&(_0x1c739b[_0x6c71('0x160')]||(_0x1c739b[_0x6c71('0x17b')]=!0x0),_0xdc6991!==_0xcb8d3a&&_0x1c739b[_0x6c71('0x160')]&&_0x489003(this)),null!==_0x32227a&&this[_0x6c71('0xc1')](_0x6c71('0x1f'),_0x32227a),_0x32227a;},_0x5a21ea[_0x6c71('0x12')][_0x6c71('0x186')]=function(_0xcb8d3a){this[_0x6c71('0xc1')](_0x6c71('0x39'),new Error(_0x6c71('0x1a0')));},_0x5a21ea[_0x6c71('0x12')][_0x6c71('0x1a1')]=function(_0xcb8d3a,_0x1c739b){var _0x32227a=this,_0x2de9f5=this[_0x6c71('0x162')];switch(_0x2de9f5[_0x6c71('0x176')]){case 0x0:_0x2de9f5[_0x6c71('0x175')]=_0xcb8d3a;break;case 0x1:_0x2de9f5[_0x6c71('0x175')]=[_0x2de9f5['\x70\x69\x70\x65\x73'],_0xcb8d3a];break;default:_0x2de9f5[_0x6c71('0x175')]['\x70\x75\x73\x68'](_0xcb8d3a);}_0x2de9f5[_0x6c71('0x176')]+=0x1,_0x4079c6('\x70\x69\x70\x65\x20\x63\x6f\x75\x6e\x74\x3d\x25\x64\x20\x6f\x70\x74\x73\x3d\x25\x6a',_0x2de9f5[_0x6c71('0x176')],_0x1c739b);var _0x516406=(!_0x1c739b||!0x1!==_0x1c739b[_0x6c71('0xe2')])&&_0xcb8d3a!==_0xdc6991[_0x6c71('0x1a2')]&&_0xcb8d3a!==_0xdc6991[_0x6c71('0x1a3')]?_0x55a112:_0x5a21ea;function _0x87417e(_0x1c739b,_0xdc6991){_0x4079c6('\x6f\x6e\x75\x6e\x70\x69\x70\x65'),_0x1c739b===_0x32227a&&_0xdc6991&&!0x1===_0xdc6991[_0x6c71('0x1a4')]&&(_0xdc6991['\x68\x61\x73\x55\x6e\x70\x69\x70\x65\x64']=!0x0,_0x4079c6(_0x6c71('0x1a5')),_0xcb8d3a[_0x6c71('0xcd')](_0x6c71('0x16e'),_0xc37827),_0xcb8d3a['\x72\x65\x6d\x6f\x76\x65\x4c\x69\x73\x74\x65\x6e\x65\x72'](_0x6c71('0x1a6'),_0x4b9a4f),_0xcb8d3a[_0x6c71('0xcd')](_0x6c71('0x1a7'),_0x44e97a),_0xcb8d3a[_0x6c71('0xcd')]('\x65\x72\x72\x6f\x72',_0x1bb8d2),_0xcb8d3a[_0x6c71('0xcd')](_0x6c71('0x1a8'),_0x87417e),_0x32227a['\x72\x65\x6d\x6f\x76\x65\x4c\x69\x73\x74\x65\x6e\x65\x72'](_0x6c71('0xe2'),_0x55a112),_0x32227a[_0x6c71('0xcd')](_0x6c71('0xe2'),_0x5a21ea),_0x32227a[_0x6c71('0xcd')](_0x6c71('0x1f'),_0x1f9476),_0x49aad3=!0x0,!_0x2de9f5['\x61\x77\x61\x69\x74\x44\x72\x61\x69\x6e']||_0xcb8d3a[_0x6c71('0x163')]&&!_0xcb8d3a[_0x6c71('0x163')][_0x6c71('0x1a9')]||_0x44e97a());}function _0x55a112(){_0x4079c6(_0x6c71('0x1aa')),_0xcb8d3a[_0x6c71('0xe2')]();}_0x2de9f5[_0x6c71('0x178')]?_0x12b13d(_0x516406):_0x32227a['\x6f\x6e\x63\x65'](_0x6c71('0xe2'),_0x516406),_0xcb8d3a['\x6f\x6e'](_0x6c71('0x1a8'),_0x87417e);var _0x44e97a=function(_0xcb8d3a){return function(){var _0x1c739b=_0xcb8d3a[_0x6c71('0x162')];_0x4079c6('\x70\x69\x70\x65\x4f\x6e\x44\x72\x61\x69\x6e',_0x1c739b[_0x6c71('0x180')]),_0x1c739b[_0x6c71('0x180')]&&_0x1c739b[_0x6c71('0x180')]--,0x0===_0x1c739b[_0x6c71('0x180')]&&_0x3b2fc0(_0xcb8d3a,'\x64\x61\x74\x61')&&(_0x1c739b['\x66\x6c\x6f\x77\x69\x6e\x67']=!0x0,_0x167c14(_0xcb8d3a));};}(_0x32227a);_0xcb8d3a['\x6f\x6e'](_0x6c71('0x1a7'),_0x44e97a);var _0x49aad3=!0x1;var _0x1ad8db=!0x1;function _0x1f9476(_0x1c739b){_0x4079c6(_0x6c71('0x1ab')),_0x1ad8db=!0x1,!0x1!==_0xcb8d3a[_0x6c71('0x1a')](_0x1c739b)||_0x1ad8db||((0x1===_0x2de9f5[_0x6c71('0x176')]&&_0x2de9f5[_0x6c71('0x175')]===_0xcb8d3a||_0x2de9f5['\x70\x69\x70\x65\x73\x43\x6f\x75\x6e\x74']>0x1&&-0x1!==_0x13ac89(_0x2de9f5['\x70\x69\x70\x65\x73'],_0xcb8d3a))&&!_0x49aad3&&(_0x4079c6(_0x6c71('0x1ac'),_0x32227a[_0x6c71('0x162')][_0x6c71('0x180')]),_0x32227a['\x5f\x72\x65\x61\x64\x61\x62\x6c\x65\x53\x74\x61\x74\x65'][_0x6c71('0x180')]++,_0x1ad8db=!0x0),_0x32227a[_0x6c71('0x1ad')]());}function _0x1bb8d2(_0x1c739b){_0x4079c6('\x6f\x6e\x65\x72\x72\x6f\x72',_0x1c739b),_0x5a21ea(),_0xcb8d3a[_0x6c71('0xcd')](_0x6c71('0x39'),_0x1bb8d2),0x0===_0x3b2fc0(_0xcb8d3a,_0x6c71('0x39'))&&_0xcb8d3a[_0x6c71('0xc1')](_0x6c71('0x39'),_0x1c739b);}function _0xc37827(){_0xcb8d3a[_0x6c71('0xcd')]('\x66\x69\x6e\x69\x73\x68',_0x4b9a4f),_0x5a21ea();}function _0x4b9a4f(){_0x4079c6(_0x6c71('0x1ae')),_0xcb8d3a[_0x6c71('0xcd')]('\x63\x6c\x6f\x73\x65',_0xc37827),_0x5a21ea();}function _0x5a21ea(){_0x4079c6('\x75\x6e\x70\x69\x70\x65'),_0x32227a[_0x6c71('0x1a8')](_0xcb8d3a);}return _0x32227a['\x6f\x6e'](_0x6c71('0x1f'),_0x1f9476),function(_0xcb8d3a,_0x1c739b,_0xdc6991){if('\x66\x75\x6e\x63\x74\x69\x6f\x6e'==typeof _0xcb8d3a[_0x6c71('0x151')])return _0xcb8d3a[_0x6c71('0x151')](_0x1c739b,_0xdc6991);_0xcb8d3a[_0x6c71('0xbc')]&&_0xcb8d3a['\x5f\x65\x76\x65\x6e\x74\x73'][_0x1c739b]?_0x5d8fdd(_0xcb8d3a['\x5f\x65\x76\x65\x6e\x74\x73'][_0x1c739b])?_0xcb8d3a[_0x6c71('0xbc')][_0x1c739b][_0x6c71('0x18c')](_0xdc6991):_0xcb8d3a[_0x6c71('0xbc')][_0x1c739b]=[_0xdc6991,_0xcb8d3a[_0x6c71('0xbc')][_0x1c739b]]:_0xcb8d3a['\x6f\x6e'](_0x1c739b,_0xdc6991);}(_0xcb8d3a,_0x6c71('0x39'),_0x1bb8d2),_0xcb8d3a['\x6f\x6e\x63\x65'](_0x6c71('0x16e'),_0xc37827),_0xcb8d3a[_0x6c71('0xcc')]('\x66\x69\x6e\x69\x73\x68',_0x4b9a4f),_0xcb8d3a[_0x6c71('0xc1')](_0x6c71('0x1a1'),_0x32227a),_0x2de9f5[_0x6c71('0x177')]||(_0x4079c6(_0x6c71('0x1af')),_0x32227a[_0x6c71('0x170')]()),_0xcb8d3a;},_0x5a21ea[_0x6c71('0x12')][_0x6c71('0x1a8')]=function(_0xcb8d3a){var _0x1c739b=this['\x5f\x72\x65\x61\x64\x61\x62\x6c\x65\x53\x74\x61\x74\x65'],_0xdc6991={'\x68\x61\x73\x55\x6e\x70\x69\x70\x65\x64':!0x1};if(0x0===_0x1c739b[_0x6c71('0x176')])return this;if(0x1===_0x1c739b[_0x6c71('0x176')])return _0xcb8d3a&&_0xcb8d3a!==_0x1c739b[_0x6c71('0x175')]?this:(_0xcb8d3a||(_0xcb8d3a=_0x1c739b[_0x6c71('0x175')]),_0x1c739b[_0x6c71('0x175')]=null,_0x1c739b[_0x6c71('0x176')]=0x0,_0x1c739b[_0x6c71('0x177')]=!0x1,_0xcb8d3a&&_0xcb8d3a[_0x6c71('0xc1')](_0x6c71('0x1a8'),this,_0xdc6991),this);if(!_0xcb8d3a){var _0x32227a=_0x1c739b['\x70\x69\x70\x65\x73'],_0x12b13d=_0x1c739b[_0x6c71('0x176')];_0x1c739b[_0x6c71('0x175')]=null,_0x1c739b[_0x6c71('0x176')]=0x0,_0x1c739b[_0x6c71('0x177')]=!0x1;for(var _0x2de9f5=0x0;_0x2de9f5<_0x12b13d;_0x2de9f5++)_0x32227a[_0x2de9f5]['\x65\x6d\x69\x74'](_0x6c71('0x1a8'),this,_0xdc6991);return this;}var _0x5d8fdd=_0x13ac89(_0x1c739b['\x70\x69\x70\x65\x73'],_0xcb8d3a);return-0x1===_0x5d8fdd?this:(_0x1c739b['\x70\x69\x70\x65\x73']['\x73\x70\x6c\x69\x63\x65'](_0x5d8fdd,0x1),_0x1c739b[_0x6c71('0x176')]-=0x1,0x1===_0x1c739b[_0x6c71('0x176')]&&(_0x1c739b['\x70\x69\x70\x65\x73']=_0x1c739b[_0x6c71('0x175')][0x0]),_0xcb8d3a[_0x6c71('0xc1')]('\x75\x6e\x70\x69\x70\x65',this,_0xdc6991),this);},_0x5a21ea['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['\x6f\x6e']=function(_0xcb8d3a,_0x1c739b){var _0xdc6991=_0x516406[_0x6c71('0x12')]['\x6f\x6e'][_0x6c71('0x4')](this,_0xcb8d3a,_0x1c739b);if('\x64\x61\x74\x61'===_0xcb8d3a)!0x1!==this[_0x6c71('0x162')][_0x6c71('0x177')]&&this['\x72\x65\x73\x75\x6d\x65']();else if(_0x6c71('0x15d')===_0xcb8d3a){var _0x32227a=this[_0x6c71('0x162')];_0x32227a[_0x6c71('0x178')]||_0x32227a[_0x6c71('0x17d')]||(_0x32227a[_0x6c71('0x17d')]=_0x32227a[_0x6c71('0x17b')]=!0x0,_0x32227a[_0x6c71('0x17c')]=!0x1,_0x32227a[_0x6c71('0x179')]?_0x32227a[_0x6c71('0x8')]&&_0x1b5b35(this):_0x12b13d(_0x59d2c0,this));}return _0xdc6991;},_0x5a21ea[_0x6c71('0x12')][_0x6c71('0xc4')]=_0x5a21ea[_0x6c71('0x12')]['\x6f\x6e'],_0x5a21ea[_0x6c71('0x12')]['\x72\x65\x73\x75\x6d\x65']=function(){var _0xcb8d3a=this['\x5f\x72\x65\x61\x64\x61\x62\x6c\x65\x53\x74\x61\x74\x65'];return _0xcb8d3a[_0x6c71('0x177')]||(_0x4079c6(_0x6c71('0x170')),_0xcb8d3a[_0x6c71('0x177')]=!0x0,function(_0xcb8d3a,_0x1c739b){_0x1c739b[_0x6c71('0x17e')]||(_0x1c739b[_0x6c71('0x17e')]=!0x0,_0x12b13d(_0x470aea,_0xcb8d3a,_0x1c739b));}(this,_0xcb8d3a)),this;},_0x5a21ea[_0x6c71('0x12')][_0x6c71('0x1ad')]=function(){return _0x4079c6('\x63\x61\x6c\x6c\x20\x70\x61\x75\x73\x65\x20\x66\x6c\x6f\x77\x69\x6e\x67\x3d\x25\x6a',this[_0x6c71('0x162')][_0x6c71('0x177')]),!0x1!==this[_0x6c71('0x162')]['\x66\x6c\x6f\x77\x69\x6e\x67']&&(_0x4079c6(_0x6c71('0x1ad')),this[_0x6c71('0x162')]['\x66\x6c\x6f\x77\x69\x6e\x67']=!0x1,this[_0x6c71('0xc1')](_0x6c71('0x1ad'))),this;},_0x5a21ea[_0x6c71('0x12')]['\x77\x72\x61\x70']=function(_0xcb8d3a){var _0x1c739b=this[_0x6c71('0x162')],_0xdc6991=!0x1,_0x32227a=this;for(var _0x12b13d in _0xcb8d3a['\x6f\x6e'](_0x6c71('0xe2'),function(){if(_0x4079c6(_0x6c71('0x1b0')),_0x1c739b[_0x6c71('0x182')]&&!_0x1c739b[_0x6c71('0x160')]){var _0xcb8d3a=_0x1c739b[_0x6c71('0x182')][_0x6c71('0xe2')]();_0xcb8d3a&&_0xcb8d3a['\x6c\x65\x6e\x67\x74\x68']&&_0x32227a[_0x6c71('0xb')](_0xcb8d3a);}_0x32227a[_0x6c71('0xb')](null);}),_0xcb8d3a['\x6f\x6e']('\x64\x61\x74\x61',function(_0x12b13d){(_0x4079c6(_0x6c71('0x1b1')),_0x1c739b[_0x6c71('0x182')]&&(_0x12b13d=_0x1c739b['\x64\x65\x63\x6f\x64\x65\x72'][_0x6c71('0x1a')](_0x12b13d)),_0x1c739b[_0x6c71('0x172')]&&null==_0x12b13d)||(_0x1c739b[_0x6c71('0x172')]||_0x12b13d&&_0x12b13d[_0x6c71('0x8')])&&(_0x32227a[_0x6c71('0xb')](_0x12b13d)||(_0xdc6991=!0x0,_0xcb8d3a[_0x6c71('0x1ad')]()));}),_0xcb8d3a)void 0x0===this[_0x12b13d]&&_0x6c71('0x0')==typeof _0xcb8d3a[_0x12b13d]&&(this[_0x12b13d]=function(_0x1c739b){return function(){return _0xcb8d3a[_0x1c739b][_0x6c71('0x34')](_0xcb8d3a,arguments);};}(_0x12b13d));for(var _0x2de9f5=0x0;_0x2de9f5<_0xc37827[_0x6c71('0x8')];_0x2de9f5++)_0xcb8d3a['\x6f\x6e'](_0xc37827[_0x2de9f5],_0x32227a[_0x6c71('0xc1')][_0x6c71('0x1b2')](_0x32227a,_0xc37827[_0x2de9f5]));return _0x32227a[_0x6c71('0x186')]=function(_0x1c739b){_0x4079c6(_0x6c71('0x1b3'),_0x1c739b),_0xdc6991&&(_0xdc6991=!0x1,_0xcb8d3a['\x72\x65\x73\x75\x6d\x65']());},_0x32227a;},_0x5a21ea[_0x6c71('0x1b4')]=_0x2c6a7c;}['\x63\x61\x6c\x6c'](this,_0xcb8d3a(_0x6c71('0x14a')),_0x6c71('0x38')!=typeof global?global:_0x6c71('0x38')!=typeof self?self:_0x6c71('0x38')!=typeof window?window:{}));},{'./_stream_duplex':0x18,'./internal/streams/BufferList':0x1d,'./internal/streams/destroy':0x1e,'./internal/streams/stream':0x1f,'\x5f\x70\x72\x6f\x63\x65\x73\x73':0x16,'core-util-is':0x4,'\x65\x76\x65\x6e\x74\x73':0x8,'\x69\x6e\x68\x65\x72\x69\x74\x73':0xa,'\x69\x73\x61\x72\x72\x61\x79':0xc,'process-nextick-args':0x15,'safe-buffer':0x24,'string_decoder/':0x26,'\x75\x74\x69\x6c':0x2}],27:[function(_0x31c7ef,_0x1eaa05,_0x13ad5d){'use strict';_0x1eaa05['\x65\x78\x70\x6f\x72\x74\x73']=_0xdb8b38;var _0x18fc2a=_0x31c7ef('\x2e\x2f\x5f\x73\x74\x72\x65\x61\x6d\x5f\x64\x75\x70\x6c\x65\x78'),_0xdb5bbb=_0x31c7ef(_0x6c71('0x15a'));function _0x550e4c(_0x31c7ef){this[_0x6c71('0x1b5')]=function(_0x1eaa05,_0x13ad5d){return function(_0x31c7ef,_0x1eaa05,_0x13ad5d){var _0x18fc2a=_0x31c7ef[_0x6c71('0x1b6')];_0x18fc2a[_0x6c71('0x1b7')]=!0x1;var _0xdb5bbb=_0x18fc2a[_0x6c71('0x1b8')];if(!_0xdb5bbb)return _0x31c7ef[_0x6c71('0xc1')]('\x65\x72\x72\x6f\x72',new Error(_0x6c71('0x1b9')));_0x18fc2a[_0x6c71('0x1ba')]=null,_0x18fc2a[_0x6c71('0x1b8')]=null,null!=_0x13ad5d&&_0x31c7ef[_0x6c71('0xb')](_0x13ad5d);_0xdb5bbb(_0x1eaa05);var _0x550e4c=_0x31c7ef['\x5f\x72\x65\x61\x64\x61\x62\x6c\x65\x53\x74\x61\x74\x65'];_0x550e4c[_0x6c71('0x179')]=!0x1,(_0x550e4c[_0x6c71('0x17b')]||_0x550e4c[_0x6c71('0x8')]<_0x550e4c[_0x6c71('0x174')])&&_0x31c7ef[_0x6c71('0x186')](_0x550e4c[_0x6c71('0x174')]);}(_0x31c7ef,_0x1eaa05,_0x13ad5d);},this[_0x6c71('0x1bb')]=!0x1,this[_0x6c71('0x1b7')]=!0x1,this[_0x6c71('0x1b8')]=null,this['\x77\x72\x69\x74\x65\x63\x68\x75\x6e\x6b']=null,this[_0x6c71('0x1bc')]=null;}function _0xdb8b38(_0x31c7ef){if(!(this instanceof _0xdb8b38))return new _0xdb8b38(_0x31c7ef);_0x18fc2a[_0x6c71('0x4')](this,_0x31c7ef),this['\x5f\x74\x72\x61\x6e\x73\x66\x6f\x72\x6d\x53\x74\x61\x74\x65']=new _0x550e4c(this);var _0x1eaa05=this;this[_0x6c71('0x162')]['\x6e\x65\x65\x64\x52\x65\x61\x64\x61\x62\x6c\x65']=!0x0,this[_0x6c71('0x162')]['\x73\x79\x6e\x63']=!0x1,_0x31c7ef&&('\x66\x75\x6e\x63\x74\x69\x6f\x6e'==typeof _0x31c7ef[_0x6c71('0x1bd')]&&(this['\x5f\x74\x72\x61\x6e\x73\x66\x6f\x72\x6d']=_0x31c7ef[_0x6c71('0x1bd')]),_0x6c71('0x0')==typeof _0x31c7ef[_0x6c71('0x1be')]&&(this[_0x6c71('0x121')]=_0x31c7ef[_0x6c71('0x1be')])),this[_0x6c71('0xcc')](_0x6c71('0x1bf'),function(){_0x6c71('0x0')==typeof this[_0x6c71('0x121')]?this[_0x6c71('0x121')](function(_0x31c7ef,_0x13ad5d){_0x560b73(_0x1eaa05,_0x31c7ef,_0x13ad5d);}):_0x560b73(_0x1eaa05);});}function _0x560b73(_0x31c7ef,_0x1eaa05,_0x13ad5d){if(_0x1eaa05)return _0x31c7ef['\x65\x6d\x69\x74'](_0x6c71('0x39'),_0x1eaa05);null!=_0x13ad5d&&_0x31c7ef[_0x6c71('0xb')](_0x13ad5d);var _0x18fc2a=_0x31c7ef[_0x6c71('0x163')],_0xdb5bbb=_0x31c7ef[_0x6c71('0x1b6')];if(_0x18fc2a[_0x6c71('0x8')])throw new Error(_0x6c71('0x1c0'));if(_0xdb5bbb['\x74\x72\x61\x6e\x73\x66\x6f\x72\x6d\x69\x6e\x67'])throw new Error(_0x6c71('0x1c1'));return _0x31c7ef[_0x6c71('0xb')](null);}_0xdb5bbb[_0x6c71('0xe8')]=_0x31c7ef(_0x6c71('0xe8')),_0xdb5bbb[_0x6c71('0xe8')](_0xdb8b38,_0x18fc2a),_0xdb8b38[_0x6c71('0x12')]['\x70\x75\x73\x68']=function(_0x31c7ef,_0x1eaa05){return this[_0x6c71('0x1b6')][_0x6c71('0x1bb')]=!0x1,_0x18fc2a[_0x6c71('0x12')][_0x6c71('0xb')][_0x6c71('0x4')](this,_0x31c7ef,_0x1eaa05);},_0xdb8b38[_0x6c71('0x12')][_0x6c71('0xf8')]=function(_0x31c7ef,_0x1eaa05,_0x13ad5d){throw new Error(_0x6c71('0x1c2'));},_0xdb8b38[_0x6c71('0x12')][_0x6c71('0x1c3')]=function(_0x31c7ef,_0x1eaa05,_0x13ad5d){var _0x18fc2a=this[_0x6c71('0x1b6')];if(_0x18fc2a[_0x6c71('0x1b8')]=_0x13ad5d,_0x18fc2a[_0x6c71('0x1ba')]=_0x31c7ef,_0x18fc2a[_0x6c71('0x1bc')]=_0x1eaa05,!_0x18fc2a[_0x6c71('0x1b7')]){var _0xdb5bbb=this[_0x6c71('0x162')];(_0x18fc2a['\x6e\x65\x65\x64\x54\x72\x61\x6e\x73\x66\x6f\x72\x6d']||_0xdb5bbb[_0x6c71('0x17b')]||_0xdb5bbb[_0x6c71('0x8')]<_0xdb5bbb[_0x6c71('0x174')])&&this[_0x6c71('0x186')](_0xdb5bbb['\x68\x69\x67\x68\x57\x61\x74\x65\x72\x4d\x61\x72\x6b']);}},_0xdb8b38[_0x6c71('0x12')][_0x6c71('0x186')]=function(_0x31c7ef){var _0x1eaa05=this[_0x6c71('0x1b6')];null!==_0x1eaa05[_0x6c71('0x1ba')]&&_0x1eaa05[_0x6c71('0x1b8')]&&!_0x1eaa05[_0x6c71('0x1b7')]?(_0x1eaa05[_0x6c71('0x1b7')]=!0x0,this[_0x6c71('0xf8')](_0x1eaa05['\x77\x72\x69\x74\x65\x63\x68\x75\x6e\x6b'],_0x1eaa05[_0x6c71('0x1bc')],_0x1eaa05[_0x6c71('0x1b5')])):_0x1eaa05['\x6e\x65\x65\x64\x54\x72\x61\x6e\x73\x66\x6f\x72\x6d']=!0x0;},_0xdb8b38[_0x6c71('0x12')]['\x5f\x64\x65\x73\x74\x72\x6f\x79']=function(_0x31c7ef,_0x1eaa05){var _0x13ad5d=this;_0x18fc2a['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['\x5f\x64\x65\x73\x74\x72\x6f\x79'][_0x6c71('0x4')](this,_0x31c7ef,function(_0x31c7ef){_0x1eaa05(_0x31c7ef),_0x13ad5d[_0x6c71('0xc1')](_0x6c71('0x16e'));});};},{'./_stream_duplex':0x18,'core-util-is':0x4,'\x69\x6e\x68\x65\x72\x69\x74\x73':0xa}],28:[function(_0x2e9849,_0x728c3d,_0x36d015){(function(_0x36d015,_0x2581d5){'use strict';var _0x459a9d=_0x2e9849(_0x6c71('0x159'));function _0x35c689(_0x2e9849){var _0x728c3d=this;this[_0x6c71('0x198')]=null,this[_0x6c71('0x1c4')]=null,this['\x66\x69\x6e\x69\x73\x68']=function(){!function(_0x2e9849,_0x728c3d,_0x36d015){var _0x2581d5=_0x2e9849['\x65\x6e\x74\x72\x79'];_0x2e9849[_0x6c71('0x1c4')]=null;for(;_0x2581d5;){var _0x459a9d=_0x2581d5[_0x6c71('0x1c5')];_0x728c3d[_0x6c71('0x1c6')]--,_0x459a9d(_0x36d015),_0x2581d5=_0x2581d5['\x6e\x65\x78\x74'];}_0x728c3d['\x63\x6f\x72\x6b\x65\x64\x52\x65\x71\x75\x65\x73\x74\x73\x46\x72\x65\x65']?_0x728c3d['\x63\x6f\x72\x6b\x65\x64\x52\x65\x71\x75\x65\x73\x74\x73\x46\x72\x65\x65'][_0x6c71('0x198')]=_0x2e9849:_0x728c3d[_0x6c71('0x1c7')]=_0x2e9849;}(_0x728c3d,_0x2e9849);};}_0x728c3d['\x65\x78\x70\x6f\x72\x74\x73']=_0x26633c;var _0x5537a4,_0x237b07=!_0x36d015[_0x6c71('0x1c8')]&&['\x76\x30\x2e\x31\x30',_0x6c71('0x1c9')][_0x6c71('0x2d')](_0x36d015[_0x6c71('0x135')][_0x6c71('0x1b')](0x0,0x5))>-0x1?setImmediate:_0x459a9d;_0x26633c[_0x6c71('0x1ca')]=_0x21d521;var _0x18f779=_0x2e9849(_0x6c71('0x15a'));_0x18f779[_0x6c71('0xe8')]=_0x2e9849('\x69\x6e\x68\x65\x72\x69\x74\x73');var _0x42bf80={'\x64\x65\x70\x72\x65\x63\x61\x74\x65':_0x2e9849('\x75\x74\x69\x6c\x2d\x64\x65\x70\x72\x65\x63\x61\x74\x65')},_0x11173b=_0x2e9849('\x2e\x2f\x69\x6e\x74\x65\x72\x6e\x61\x6c\x2f\x73\x74\x72\x65\x61\x6d\x73\x2f\x73\x74\x72\x65\x61\x6d'),_0x1282c5=_0x2e9849('\x73\x61\x66\x65\x2d\x62\x75\x66\x66\x65\x72')['\x42\x75\x66\x66\x65\x72'],_0x456412=_0x2581d5[_0x6c71('0x16a')]||function(){};var _0x209eb7,_0x169b48=_0x2e9849('\x2e\x2f\x69\x6e\x74\x65\x72\x6e\x61\x6c\x2f\x73\x74\x72\x65\x61\x6d\x73\x2f\x64\x65\x73\x74\x72\x6f\x79');function _0x1324d3(){}function _0x21d521(_0x728c3d,_0x36d015){_0x5537a4=_0x5537a4||_0x2e9849('\x2e\x2f\x5f\x73\x74\x72\x65\x61\x6d\x5f\x64\x75\x70\x6c\x65\x78'),_0x728c3d=_0x728c3d||{},this[_0x6c71('0x172')]=!!_0x728c3d[_0x6c71('0x172')],_0x36d015 instanceof _0x5537a4&&(this[_0x6c71('0x172')]=this[_0x6c71('0x172')]||!!_0x728c3d[_0x6c71('0x1cb')]);var _0x2581d5=_0x728c3d[_0x6c71('0x174')],_0x18f779=this[_0x6c71('0x172')]?0x10:0x4000;this['\x68\x69\x67\x68\x57\x61\x74\x65\x72\x4d\x61\x72\x6b']=_0x2581d5||0x0===_0x2581d5?_0x2581d5:_0x18f779,this[_0x6c71('0x174')]=Math['\x66\x6c\x6f\x6f\x72'](this[_0x6c71('0x174')]),this[_0x6c71('0x1cc')]=!0x1,this['\x6e\x65\x65\x64\x44\x72\x61\x69\x6e']=!0x1,this[_0x6c71('0x1cd')]=!0x1,this[_0x6c71('0x160')]=!0x1,this['\x66\x69\x6e\x69\x73\x68\x65\x64']=!0x1,this[_0x6c71('0x161')]=!0x1;var _0x42bf80=!0x1===_0x728c3d[_0x6c71('0x1ce')];this[_0x6c71('0x1ce')]=!_0x42bf80,this[_0x6c71('0x17f')]=_0x728c3d[_0x6c71('0x17f')]||_0x6c71('0x43'),this[_0x6c71('0x8')]=0x0,this[_0x6c71('0x1cf')]=!0x1,this[_0x6c71('0x1d0')]=0x0,this[_0x6c71('0x17a')]=!0x0,this[_0x6c71('0x1d1')]=!0x1,this[_0x6c71('0x1d2')]=function(_0x2e9849){!function(_0x2e9849,_0x728c3d){var _0x36d015=_0x2e9849[_0x6c71('0x163')],_0x2581d5=_0x36d015[_0x6c71('0x17a')],_0x35c689=_0x36d015[_0x6c71('0x1b8')];if(function(_0x2e9849){_0x2e9849['\x77\x72\x69\x74\x69\x6e\x67']=!0x1,_0x2e9849['\x77\x72\x69\x74\x65\x63\x62']=null,_0x2e9849[_0x6c71('0x8')]-=_0x2e9849[_0x6c71('0x1d3')],_0x2e9849[_0x6c71('0x1d3')]=0x0;}(_0x36d015),_0x728c3d)!function(_0x2e9849,_0x728c3d,_0x36d015,_0x2581d5,_0x35c689){--_0x728c3d[_0x6c71('0x1c6')],_0x36d015?(_0x459a9d(_0x35c689,_0x2581d5),_0x459a9d(_0x3996d5,_0x2e9849,_0x728c3d),_0x2e9849[_0x6c71('0x163')]['\x65\x72\x72\x6f\x72\x45\x6d\x69\x74\x74\x65\x64']=!0x0,_0x2e9849['\x65\x6d\x69\x74'](_0x6c71('0x39'),_0x2581d5)):(_0x35c689(_0x2581d5),_0x2e9849[_0x6c71('0x163')][_0x6c71('0x1d4')]=!0x0,_0x2e9849[_0x6c71('0xc1')](_0x6c71('0x39'),_0x2581d5),_0x3996d5(_0x2e9849,_0x728c3d));}(_0x2e9849,_0x36d015,_0x2581d5,_0x728c3d,_0x35c689);else{var _0x5537a4=_0x46a46f(_0x36d015);_0x5537a4||_0x36d015[_0x6c71('0x1d0')]||_0x36d015[_0x6c71('0x1d1')]||!_0x36d015[_0x6c71('0x1d5')]||_0x9e9c60(_0x2e9849,_0x36d015),_0x2581d5?_0x237b07(_0x5b7d0b,_0x2e9849,_0x36d015,_0x5537a4,_0x35c689):_0x5b7d0b(_0x2e9849,_0x36d015,_0x5537a4,_0x35c689);}}(_0x36d015,_0x2e9849);},this['\x77\x72\x69\x74\x65\x63\x62']=null,this[_0x6c71('0x1d3')]=0x0,this[_0x6c71('0x1d5')]=null,this[_0x6c71('0x1d6')]=null,this[_0x6c71('0x1c6')]=0x0,this[_0x6c71('0x1d7')]=!0x1,this[_0x6c71('0x1d4')]=!0x1,this[_0x6c71('0x1d8')]=0x0,this[_0x6c71('0x1c7')]=new _0x35c689(this);}function _0x26633c(_0x728c3d){if(_0x5537a4=_0x5537a4||_0x2e9849('\x2e\x2f\x5f\x73\x74\x72\x65\x61\x6d\x5f\x64\x75\x70\x6c\x65\x78'),!(_0x209eb7[_0x6c71('0x4')](_0x26633c,this)||this instanceof _0x5537a4))return new _0x26633c(_0x728c3d);this['\x5f\x77\x72\x69\x74\x61\x62\x6c\x65\x53\x74\x61\x74\x65']=new _0x21d521(_0x728c3d,this),this[_0x6c71('0x15e')]=!0x0,_0x728c3d&&(_0x6c71('0x0')==typeof _0x728c3d[_0x6c71('0x1a')]&&(this['\x5f\x77\x72\x69\x74\x65']=_0x728c3d[_0x6c71('0x1a')]),_0x6c71('0x0')==typeof _0x728c3d['\x77\x72\x69\x74\x65\x76']&&(this[_0x6c71('0x1d9')]=_0x728c3d[_0x6c71('0x1da')]),_0x6c71('0x0')==typeof _0x728c3d[_0x6c71('0x16f')]&&(this[_0x6c71('0x164')]=_0x728c3d[_0x6c71('0x16f')]),_0x6c71('0x0')==typeof _0x728c3d[_0x6c71('0x1db')]&&(this[_0x6c71('0x1dc')]=_0x728c3d[_0x6c71('0x1db')])),_0x11173b['\x63\x61\x6c\x6c'](this);}function _0x3e08f4(_0x2e9849,_0x728c3d,_0x36d015,_0x2581d5,_0x459a9d,_0x35c689,_0x5537a4){_0x728c3d[_0x6c71('0x1d3')]=_0x2581d5,_0x728c3d[_0x6c71('0x1b8')]=_0x5537a4,_0x728c3d[_0x6c71('0x1cf')]=!0x0,_0x728c3d[_0x6c71('0x17a')]=!0x0,_0x36d015?_0x2e9849[_0x6c71('0x1d9')](_0x459a9d,_0x728c3d['\x6f\x6e\x77\x72\x69\x74\x65']):_0x2e9849['\x5f\x77\x72\x69\x74\x65'](_0x459a9d,_0x35c689,_0x728c3d[_0x6c71('0x1d2')]),_0x728c3d[_0x6c71('0x17a')]=!0x1;}function _0x5b7d0b(_0x2e9849,_0x728c3d,_0x36d015,_0x2581d5){_0x36d015||function(_0x2e9849,_0x728c3d){0x0===_0x728c3d[_0x6c71('0x8')]&&_0x728c3d[_0x6c71('0x1a9')]&&(_0x728c3d[_0x6c71('0x1a9')]=!0x1,_0x2e9849[_0x6c71('0xc1')]('\x64\x72\x61\x69\x6e'));}(_0x2e9849,_0x728c3d),_0x728c3d[_0x6c71('0x1c6')]--,_0x2581d5(),_0x3996d5(_0x2e9849,_0x728c3d);}function _0x9e9c60(_0x2e9849,_0x728c3d){_0x728c3d[_0x6c71('0x1d1')]=!0x0;var _0x36d015=_0x728c3d['\x62\x75\x66\x66\x65\x72\x65\x64\x52\x65\x71\x75\x65\x73\x74'];if(_0x2e9849[_0x6c71('0x1d9')]&&_0x36d015&&_0x36d015[_0x6c71('0x198')]){var _0x2581d5=_0x728c3d['\x62\x75\x66\x66\x65\x72\x65\x64\x52\x65\x71\x75\x65\x73\x74\x43\x6f\x75\x6e\x74'],_0x459a9d=new Array(_0x2581d5),_0x5537a4=_0x728c3d['\x63\x6f\x72\x6b\x65\x64\x52\x65\x71\x75\x65\x73\x74\x73\x46\x72\x65\x65'];_0x5537a4['\x65\x6e\x74\x72\x79']=_0x36d015;for(var _0x237b07=0x0,_0x18f779=!0x0;_0x36d015;)_0x459a9d[_0x237b07]=_0x36d015,_0x36d015[_0x6c71('0x1dd')]||(_0x18f779=!0x1),_0x36d015=_0x36d015['\x6e\x65\x78\x74'],_0x237b07+=0x1;_0x459a9d[_0x6c71('0x1de')]=_0x18f779,_0x3e08f4(_0x2e9849,_0x728c3d,!0x0,_0x728c3d['\x6c\x65\x6e\x67\x74\x68'],_0x459a9d,'',_0x5537a4[_0x6c71('0x1a6')]),_0x728c3d[_0x6c71('0x1c6')]++,_0x728c3d[_0x6c71('0x1d6')]=null,_0x5537a4[_0x6c71('0x198')]?(_0x728c3d[_0x6c71('0x1c7')]=_0x5537a4[_0x6c71('0x198')],_0x5537a4['\x6e\x65\x78\x74']=null):_0x728c3d[_0x6c71('0x1c7')]=new _0x35c689(_0x728c3d);}else{for(;_0x36d015;){var _0x42bf80=_0x36d015[_0x6c71('0x1df')],_0x11173b=_0x36d015[_0x6c71('0x183')],_0x1282c5=_0x36d015[_0x6c71('0x1c5')];if(_0x3e08f4(_0x2e9849,_0x728c3d,!0x1,_0x728c3d['\x6f\x62\x6a\x65\x63\x74\x4d\x6f\x64\x65']?0x1:_0x42bf80[_0x6c71('0x8')],_0x42bf80,_0x11173b,_0x1282c5),_0x36d015=_0x36d015[_0x6c71('0x198')],_0x728c3d[_0x6c71('0x1cf')])break;}null===_0x36d015&&(_0x728c3d[_0x6c71('0x1d6')]=null);}_0x728c3d['\x62\x75\x66\x66\x65\x72\x65\x64\x52\x65\x71\x75\x65\x73\x74\x43\x6f\x75\x6e\x74']=0x0,_0x728c3d[_0x6c71('0x1d5')]=_0x36d015,_0x728c3d[_0x6c71('0x1d1')]=!0x1;}function _0x46a46f(_0x2e9849){return _0x2e9849[_0x6c71('0x1cd')]&&0x0===_0x2e9849[_0x6c71('0x8')]&&null===_0x2e9849[_0x6c71('0x1d5')]&&!_0x2e9849[_0x6c71('0x1e0')]&&!_0x2e9849[_0x6c71('0x1cf')];}function _0x8ac0ba(_0x2e9849,_0x728c3d){_0x2e9849[_0x6c71('0x1dc')](function(_0x36d015){_0x728c3d[_0x6c71('0x1c6')]--,_0x36d015&&_0x2e9849['\x65\x6d\x69\x74'](_0x6c71('0x39'),_0x36d015),_0x728c3d[_0x6c71('0x1d7')]=!0x0,_0x2e9849['\x65\x6d\x69\x74']('\x70\x72\x65\x66\x69\x6e\x69\x73\x68'),_0x3996d5(_0x2e9849,_0x728c3d);});}function _0x3996d5(_0x2e9849,_0x728c3d){var _0x36d015=_0x46a46f(_0x728c3d);return _0x36d015&&(!function(_0x2e9849,_0x728c3d){_0x728c3d[_0x6c71('0x1d7')]||_0x728c3d[_0x6c71('0x1cc')]||(_0x6c71('0x0')==typeof _0x2e9849[_0x6c71('0x1dc')]?(_0x728c3d[_0x6c71('0x1c6')]++,_0x728c3d[_0x6c71('0x1cc')]=!0x0,_0x459a9d(_0x8ac0ba,_0x2e9849,_0x728c3d)):(_0x728c3d['\x70\x72\x65\x66\x69\x6e\x69\x73\x68\x65\x64']=!0x0,_0x2e9849[_0x6c71('0xc1')](_0x6c71('0x1bf'))));}(_0x2e9849,_0x728c3d),0x0===_0x728c3d[_0x6c71('0x1c6')]&&(_0x728c3d[_0x6c71('0x1e0')]=!0x0,_0x2e9849[_0x6c71('0xc1')](_0x6c71('0x1a6')))),_0x36d015;}_0x18f779[_0x6c71('0xe8')](_0x26633c,_0x11173b),_0x21d521[_0x6c71('0x12')][_0x6c71('0x1e1')]=function(){for(var _0x2e9849=this[_0x6c71('0x1d5')],_0x728c3d=[];_0x2e9849;)_0x728c3d[_0x6c71('0xb')](_0x2e9849),_0x2e9849=_0x2e9849[_0x6c71('0x198')];return _0x728c3d;},function(){try{Object[_0x6c71('0x3c')](_0x21d521[_0x6c71('0x12')],_0x6c71('0xe4'),{'\x67\x65\x74':_0x42bf80[_0x6c71('0x1e2')](function(){return this['\x67\x65\x74\x42\x75\x66\x66\x65\x72']();},_0x6c71('0x1e3'),'\x44\x45\x50\x30\x30\x30\x33')});}catch(_0x25e961){}}(),_0x6c71('0x0')==typeof Symbol&&Symbol[_0x6c71('0x1e4')]&&_0x6c71('0x0')==typeof Function[_0x6c71('0x12')][Symbol[_0x6c71('0x1e4')]]?(_0x209eb7=Function[_0x6c71('0x12')][Symbol[_0x6c71('0x1e4')]],Object[_0x6c71('0x3c')](_0x26633c,Symbol[_0x6c71('0x1e4')],{'\x76\x61\x6c\x75\x65':function(_0x2e9849){return!!_0x209eb7['\x63\x61\x6c\x6c'](this,_0x2e9849)||_0x2e9849&&_0x2e9849[_0x6c71('0x163')]instanceof _0x21d521;}})):_0x209eb7=function(_0x2e9849){return _0x2e9849 instanceof this;},_0x26633c[_0x6c71('0x12')]['\x70\x69\x70\x65']=function(){this[_0x6c71('0xc1')](_0x6c71('0x39'),new Error(_0x6c71('0x1e5')));},_0x26633c['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65'][_0x6c71('0x1a')]=function(_0x2e9849,_0x728c3d,_0x36d015){var _0x2581d5,_0x35c689=this[_0x6c71('0x163')],_0x5537a4=!0x1,_0x237b07=(_0x2581d5=_0x2e9849,(_0x1282c5[_0x6c71('0x1c')](_0x2581d5)||_0x2581d5 instanceof _0x456412)&&!_0x35c689['\x6f\x62\x6a\x65\x63\x74\x4d\x6f\x64\x65']);return _0x237b07&&!_0x1282c5[_0x6c71('0x1c')](_0x2e9849)&&(_0x2e9849=function(_0x2e9849){return _0x1282c5[_0x6c71('0x2c')](_0x2e9849);}(_0x2e9849)),'\x66\x75\x6e\x63\x74\x69\x6f\x6e'==typeof _0x728c3d&&(_0x36d015=_0x728c3d,_0x728c3d=null),_0x237b07?_0x728c3d='\x62\x75\x66\x66\x65\x72':_0x728c3d||(_0x728c3d=_0x35c689[_0x6c71('0x17f')]),'\x66\x75\x6e\x63\x74\x69\x6f\x6e'!=typeof _0x36d015&&(_0x36d015=_0x1324d3),_0x35c689[_0x6c71('0x160')]?function(_0x2e9849,_0x728c3d){var _0x36d015=new Error(_0x6c71('0x1e6'));_0x2e9849['\x65\x6d\x69\x74'](_0x6c71('0x39'),_0x36d015),_0x459a9d(_0x728c3d,_0x36d015);}(this,_0x36d015):(_0x237b07||function(_0x2e9849,_0x728c3d,_0x36d015,_0x2581d5){var _0x35c689=!0x0,_0x5537a4=!0x1;return null===_0x36d015?_0x5537a4=new TypeError(_0x6c71('0x1e7')):_0x6c71('0x14')==typeof _0x36d015||void 0x0===_0x36d015||_0x728c3d[_0x6c71('0x172')]||(_0x5537a4=new TypeError(_0x6c71('0x187'))),_0x5537a4&&(_0x2e9849['\x65\x6d\x69\x74'](_0x6c71('0x39'),_0x5537a4),_0x459a9d(_0x2581d5,_0x5537a4),_0x35c689=!0x1),_0x35c689;}(this,_0x35c689,_0x2e9849,_0x36d015))&&(_0x35c689['\x70\x65\x6e\x64\x69\x6e\x67\x63\x62']++,_0x5537a4=function(_0x2e9849,_0x728c3d,_0x36d015,_0x2581d5,_0x459a9d,_0x35c689){if(!_0x36d015){var _0x5537a4=function(_0x2e9849,_0x728c3d,_0x36d015){_0x2e9849[_0x6c71('0x172')]||!0x1===_0x2e9849[_0x6c71('0x1ce')]||_0x6c71('0x14')!=typeof _0x728c3d||(_0x728c3d=_0x1282c5[_0x6c71('0x2c')](_0x728c3d,_0x36d015));return _0x728c3d;}(_0x728c3d,_0x2581d5,_0x459a9d);_0x2581d5!==_0x5537a4&&(_0x36d015=!0x0,_0x459a9d=_0x6c71('0xe4'),_0x2581d5=_0x5537a4);}var _0x237b07=_0x728c3d[_0x6c71('0x172')]?0x1:_0x2581d5[_0x6c71('0x8')];_0x728c3d[_0x6c71('0x8')]+=_0x237b07;var _0x18f779=_0x728c3d[_0x6c71('0x8')]<_0x728c3d[_0x6c71('0x174')];_0x18f779||(_0x728c3d['\x6e\x65\x65\x64\x44\x72\x61\x69\x6e']=!0x0);if(_0x728c3d['\x77\x72\x69\x74\x69\x6e\x67']||_0x728c3d[_0x6c71('0x1d0')]){var _0x42bf80=_0x728c3d['\x6c\x61\x73\x74\x42\x75\x66\x66\x65\x72\x65\x64\x52\x65\x71\x75\x65\x73\x74'];_0x728c3d[_0x6c71('0x1d6')]={'\x63\x68\x75\x6e\x6b':_0x2581d5,'\x65\x6e\x63\x6f\x64\x69\x6e\x67':_0x459a9d,'\x69\x73\x42\x75\x66':_0x36d015,'\x63\x61\x6c\x6c\x62\x61\x63\x6b':_0x35c689,'\x6e\x65\x78\x74':null},_0x42bf80?_0x42bf80[_0x6c71('0x198')]=_0x728c3d[_0x6c71('0x1d6')]:_0x728c3d['\x62\x75\x66\x66\x65\x72\x65\x64\x52\x65\x71\x75\x65\x73\x74']=_0x728c3d[_0x6c71('0x1d6')],_0x728c3d[_0x6c71('0x1d8')]+=0x1;}else _0x3e08f4(_0x2e9849,_0x728c3d,!0x1,_0x237b07,_0x2581d5,_0x459a9d,_0x35c689);return _0x18f779;}(this,_0x35c689,_0x237b07,_0x2e9849,_0x728c3d,_0x36d015)),_0x5537a4;},_0x26633c[_0x6c71('0x12')][_0x6c71('0x1e8')]=function(){this[_0x6c71('0x163')][_0x6c71('0x1d0')]++;},_0x26633c[_0x6c71('0x12')][_0x6c71('0x1e9')]=function(){var _0x2e9849=this[_0x6c71('0x163')];_0x2e9849[_0x6c71('0x1d0')]&&(_0x2e9849[_0x6c71('0x1d0')]--,_0x2e9849[_0x6c71('0x1cf')]||_0x2e9849[_0x6c71('0x1d0')]||_0x2e9849[_0x6c71('0x1e0')]||_0x2e9849[_0x6c71('0x1d1')]||!_0x2e9849[_0x6c71('0x1d5')]||_0x9e9c60(this,_0x2e9849));},_0x26633c[_0x6c71('0x12')][_0x6c71('0x1ea')]=function(_0x2e9849){if(_0x6c71('0x14')==typeof _0x2e9849&&(_0x2e9849=_0x2e9849[_0x6c71('0x2b')]()),!(['\x68\x65\x78',_0x6c71('0x43'),_0x6c71('0x26'),_0x6c71('0x4b'),_0x6c71('0x44'),_0x6c71('0x4c'),_0x6c71('0x27'),_0x6c71('0x1eb'),_0x6c71('0x28'),_0x6c71('0x29'),_0x6c71('0x1ec')][_0x6c71('0x2d')]((_0x2e9849+'')[_0x6c71('0x2b')]())>-0x1))throw new TypeError(_0x6c71('0x4d')+_0x2e9849);return this['\x5f\x77\x72\x69\x74\x61\x62\x6c\x65\x53\x74\x61\x74\x65'][_0x6c71('0x17f')]=_0x2e9849,this;},_0x26633c[_0x6c71('0x12')][_0x6c71('0x1c3')]=function(_0x2e9849,_0x728c3d,_0x36d015){_0x36d015(new Error(_0x6c71('0x1ed')));},_0x26633c['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['\x5f\x77\x72\x69\x74\x65\x76']=null,_0x26633c[_0x6c71('0x12')][_0x6c71('0xe2')]=function(_0x2e9849,_0x728c3d,_0x36d015){var _0x2581d5=this[_0x6c71('0x163')];_0x6c71('0x0')==typeof _0x2e9849?(_0x36d015=_0x2e9849,_0x2e9849=null,_0x728c3d=null):_0x6c71('0x0')==typeof _0x728c3d&&(_0x36d015=_0x728c3d,_0x728c3d=null),null!=_0x2e9849&&this[_0x6c71('0x1a')](_0x2e9849,_0x728c3d),_0x2581d5[_0x6c71('0x1d0')]&&(_0x2581d5[_0x6c71('0x1d0')]=0x1,this[_0x6c71('0x1e9')]()),_0x2581d5[_0x6c71('0x1cd')]||_0x2581d5[_0x6c71('0x1e0')]||function(_0x2e9849,_0x728c3d,_0x36d015){_0x728c3d[_0x6c71('0x1cd')]=!0x0,_0x3996d5(_0x2e9849,_0x728c3d),_0x36d015&&(_0x728c3d[_0x6c71('0x1e0')]?_0x459a9d(_0x36d015):_0x2e9849[_0x6c71('0xcc')](_0x6c71('0x1a6'),_0x36d015));_0x728c3d[_0x6c71('0x160')]=!0x0,_0x2e9849[_0x6c71('0x15e')]=!0x1;}(this,_0x2581d5,_0x36d015);},Object[_0x6c71('0x3c')](_0x26633c[_0x6c71('0x12')],'\x64\x65\x73\x74\x72\x6f\x79\x65\x64',{'\x67\x65\x74':function(){return void 0x0!==this[_0x6c71('0x163')]&&this[_0x6c71('0x163')][_0x6c71('0x161')];},'\x73\x65\x74':function(_0x2e9849){this[_0x6c71('0x163')]&&(this['\x5f\x77\x72\x69\x74\x61\x62\x6c\x65\x53\x74\x61\x74\x65'][_0x6c71('0x161')]=_0x2e9849);}}),_0x26633c[_0x6c71('0x12')]['\x64\x65\x73\x74\x72\x6f\x79']=_0x169b48[_0x6c71('0x16f')],_0x26633c[_0x6c71('0x12')]['\x5f\x75\x6e\x64\x65\x73\x74\x72\x6f\x79']=_0x169b48[_0x6c71('0x1ee')],_0x26633c[_0x6c71('0x12')][_0x6c71('0x164')]=function(_0x2e9849,_0x728c3d){this[_0x6c71('0xe2')](),_0x728c3d(_0x2e9849);};}['\x63\x61\x6c\x6c'](this,_0x2e9849(_0x6c71('0x14a')),_0x6c71('0x38')!=typeof global?global:_0x6c71('0x38')!=typeof self?self:_0x6c71('0x38')!=typeof window?window:{}));},{'./_stream_duplex':0x18,'./internal/streams/destroy':0x1e,'./internal/streams/stream':0x1f,'\x5f\x70\x72\x6f\x63\x65\x73\x73':0x16,'core-util-is':0x4,'\x69\x6e\x68\x65\x72\x69\x74\x73':0xa,'process-nextick-args':0x15,'safe-buffer':0x24,'util-deprecate':0x27}],29:[function(_0x52c1eb,_0xe14423,_0x17b5b0){'use strict';var _0x2b91c1=_0x52c1eb('\x73\x61\x66\x65\x2d\x62\x75\x66\x66\x65\x72')[_0x6c71('0xf')];_0xe14423[_0x6c71('0x5')]=function(){function _0x52c1eb(){!function(_0x52c1eb,_0xe14423){if(!(_0x52c1eb instanceof _0xe14423))throw new TypeError(_0x6c71('0x1ef'));}(this,_0x52c1eb),this[_0x6c71('0x18f')]=null,this['\x74\x61\x69\x6c']=null,this[_0x6c71('0x8')]=0x0;}return _0x52c1eb[_0x6c71('0x12')]['\x70\x75\x73\x68']=function(_0x52c1eb){var _0xe14423={'\x64\x61\x74\x61':_0x52c1eb,'\x6e\x65\x78\x74':null};this['\x6c\x65\x6e\x67\x74\x68']>0x0?this['\x74\x61\x69\x6c'][_0x6c71('0x198')]=_0xe14423:this[_0x6c71('0x18f')]=_0xe14423,this['\x74\x61\x69\x6c']=_0xe14423,++this[_0x6c71('0x8')];},_0x52c1eb[_0x6c71('0x12')][_0x6c71('0x18c')]=function(_0x52c1eb){var _0xe14423={'\x64\x61\x74\x61':_0x52c1eb,'\x6e\x65\x78\x74':this[_0x6c71('0x18f')]};0x0===this[_0x6c71('0x8')]&&(this[_0x6c71('0x199')]=_0xe14423),this[_0x6c71('0x18f')]=_0xe14423,++this['\x6c\x65\x6e\x67\x74\x68'];},_0x52c1eb[_0x6c71('0x12')][_0x6c71('0x197')]=function(){if(0x0!==this['\x6c\x65\x6e\x67\x74\x68']){var _0x52c1eb=this[_0x6c71('0x18f')][_0x6c71('0x1f')];return 0x1===this[_0x6c71('0x8')]?this[_0x6c71('0x18f')]=this[_0x6c71('0x199')]=null:this['\x68\x65\x61\x64']=this[_0x6c71('0x18f')][_0x6c71('0x198')],--this[_0x6c71('0x8')],_0x52c1eb;}},_0x52c1eb[_0x6c71('0x12')][_0x6c71('0x196')]=function(){this[_0x6c71('0x18f')]=this[_0x6c71('0x199')]=null,this[_0x6c71('0x8')]=0x0;},_0x52c1eb[_0x6c71('0x12')]['\x6a\x6f\x69\x6e']=function(_0x52c1eb){if(0x0===this[_0x6c71('0x8')])return'';for(var _0xe14423=this[_0x6c71('0x18f')],_0x17b5b0=''+_0xe14423['\x64\x61\x74\x61'];_0xe14423=_0xe14423['\x6e\x65\x78\x74'];)_0x17b5b0+=_0x52c1eb+_0xe14423[_0x6c71('0x1f')];return _0x17b5b0;},_0x52c1eb[_0x6c71('0x12')]['\x63\x6f\x6e\x63\x61\x74']=function(_0x52c1eb){if(0x0===this[_0x6c71('0x8')])return _0x2b91c1['\x61\x6c\x6c\x6f\x63'](0x0);if(0x1===this[_0x6c71('0x8')])return this[_0x6c71('0x18f')][_0x6c71('0x1f')];for(var _0xe14423,_0x17b5b0,_0x2f366f,_0x5b0a60=_0x2b91c1[_0x6c71('0x3e')](_0x52c1eb>>>0x0),_0x3e2548=this[_0x6c71('0x18f')],_0x5c0448=0x0;_0x3e2548;)_0xe14423=_0x3e2548[_0x6c71('0x1f')],_0x17b5b0=_0x5b0a60,_0x2f366f=_0x5c0448,_0xe14423[_0x6c71('0x1d')](_0x17b5b0,_0x2f366f),_0x5c0448+=_0x3e2548[_0x6c71('0x1f')]['\x6c\x65\x6e\x67\x74\x68'],_0x3e2548=_0x3e2548[_0x6c71('0x198')];return _0x5b0a60;},_0x52c1eb;}();},{'safe-buffer':0x24}],30:[function(_0x355a6c,_0x392a0a,_0x5f668){'use strict';var _0x394975=_0x355a6c(_0x6c71('0x159'));function _0x56b54f(_0x355a6c,_0x392a0a){_0x355a6c[_0x6c71('0xc1')](_0x6c71('0x39'),_0x392a0a);}_0x392a0a['\x65\x78\x70\x6f\x72\x74\x73']={'\x64\x65\x73\x74\x72\x6f\x79':function(_0x355a6c,_0x392a0a){var _0x5f668=this,_0x1f59ef=this[_0x6c71('0x162')]&&this[_0x6c71('0x162')][_0x6c71('0x161')],_0x3f4755=this[_0x6c71('0x163')]&&this[_0x6c71('0x163')][_0x6c71('0x161')];_0x1f59ef||_0x3f4755?_0x392a0a?_0x392a0a(_0x355a6c):!_0x355a6c||this[_0x6c71('0x163')]&&this[_0x6c71('0x163')][_0x6c71('0x1d4')]||_0x394975(_0x56b54f,this,_0x355a6c):(this['\x5f\x72\x65\x61\x64\x61\x62\x6c\x65\x53\x74\x61\x74\x65']&&(this[_0x6c71('0x162')][_0x6c71('0x161')]=!0x0),this[_0x6c71('0x163')]&&(this['\x5f\x77\x72\x69\x74\x61\x62\x6c\x65\x53\x74\x61\x74\x65'][_0x6c71('0x161')]=!0x0),this[_0x6c71('0x164')](_0x355a6c||null,function(_0x355a6c){!_0x392a0a&&_0x355a6c?(_0x394975(_0x56b54f,_0x5f668,_0x355a6c),_0x5f668[_0x6c71('0x163')]&&(_0x5f668['\x5f\x77\x72\x69\x74\x61\x62\x6c\x65\x53\x74\x61\x74\x65'][_0x6c71('0x1d4')]=!0x0)):_0x392a0a&&_0x392a0a(_0x355a6c);}));},'\x75\x6e\x64\x65\x73\x74\x72\x6f\x79':function(){this[_0x6c71('0x162')]&&(this[_0x6c71('0x162')][_0x6c71('0x161')]=!0x1,this[_0x6c71('0x162')][_0x6c71('0x179')]=!0x1,this[_0x6c71('0x162')][_0x6c71('0x160')]=!0x1,this['\x5f\x72\x65\x61\x64\x61\x62\x6c\x65\x53\x74\x61\x74\x65'][_0x6c71('0x178')]=!0x1),this['\x5f\x77\x72\x69\x74\x61\x62\x6c\x65\x53\x74\x61\x74\x65']&&(this[_0x6c71('0x163')][_0x6c71('0x161')]=!0x1,this[_0x6c71('0x163')][_0x6c71('0x160')]=!0x1,this['\x5f\x77\x72\x69\x74\x61\x62\x6c\x65\x53\x74\x61\x74\x65']['\x65\x6e\x64\x69\x6e\x67']=!0x1,this[_0x6c71('0x163')][_0x6c71('0x1e0')]=!0x1,this['\x5f\x77\x72\x69\x74\x61\x62\x6c\x65\x53\x74\x61\x74\x65'][_0x6c71('0x1d4')]=!0x1);}};},{'process-nextick-args':0x15}],31:[function(_0x396b9d,_0x589a85,_0x30ab5d){_0x589a85['\x65\x78\x70\x6f\x72\x74\x73']=_0x396b9d(_0x6c71('0x1f0'))[_0x6c71('0xbe')];},{'\x65\x76\x65\x6e\x74\x73':0x8}],32:[function(_0xbb24cf,_0x4b5dc8,_0x57c68d){_0x4b5dc8[_0x6c71('0x5')]=_0xbb24cf(_0x6c71('0x1f1'))['\x50\x61\x73\x73\x54\x68\x72\x6f\x75\x67\x68'];},{'./readable':0x21}],33:[function(_0x488437,_0x368019,_0x4637df){(_0x4637df=_0x368019[_0x6c71('0x5')]=_0x488437(_0x6c71('0x1f2')))[_0x6c71('0x1f3')]=_0x4637df,_0x4637df['\x52\x65\x61\x64\x61\x62\x6c\x65']=_0x4637df,_0x4637df[_0x6c71('0x1f4')]=_0x488437(_0x6c71('0x1f5')),_0x4637df[_0x6c71('0x1f6')]=_0x488437('\x2e\x2f\x6c\x69\x62\x2f\x5f\x73\x74\x72\x65\x61\x6d\x5f\x64\x75\x70\x6c\x65\x78\x2e\x6a\x73'),_0x4637df[_0x6c71('0xe6')]=_0x488437(_0x6c71('0x1f7')),_0x4637df[_0x6c71('0x1f8')]=_0x488437(_0x6c71('0x1f9'));},{'./lib/_stream_duplex.js':0x18,'./lib/_stream_passthrough.js':0x19,'./lib/_stream_readable.js':0x1a,'./lib/_stream_transform.js':0x1b,'./lib/_stream_writable.js':0x1c}],34:[function(_0x1f9cf9,_0x26c0c1,_0xe6b6dd){_0x26c0c1[_0x6c71('0x5')]=_0x1f9cf9(_0x6c71('0x1f1'))[_0x6c71('0xe6')];},{'./readable':0x21}],35:[function(_0x2c64a0,_0x5807f7,_0x11329e){_0x5807f7[_0x6c71('0x5')]=_0x2c64a0(_0x6c71('0x1f5'));},{'./lib/_stream_writable.js':0x1c}],36:[function(_0x17591b,_0x432bd8,_0x5293ce){var _0x19600f=_0x17591b('\x62\x75\x66\x66\x65\x72'),_0x1b1e21=_0x19600f[_0x6c71('0xf')];function _0x3da64a(_0x17591b,_0x432bd8){for(var _0x5293ce in _0x17591b)_0x432bd8[_0x5293ce]=_0x17591b[_0x5293ce];}function _0x41b31e(_0x17591b,_0x432bd8,_0x5293ce){return _0x1b1e21(_0x17591b,_0x432bd8,_0x5293ce);}_0x1b1e21[_0x6c71('0x2c')]&&_0x1b1e21['\x61\x6c\x6c\x6f\x63']&&_0x1b1e21[_0x6c71('0x3e')]&&_0x1b1e21[_0x6c71('0x3f')]?_0x432bd8[_0x6c71('0x5')]=_0x19600f:(_0x3da64a(_0x19600f,_0x5293ce),_0x5293ce['\x42\x75\x66\x66\x65\x72']=_0x41b31e),_0x3da64a(_0x1b1e21,_0x41b31e),_0x41b31e[_0x6c71('0x2c')]=function(_0x17591b,_0x432bd8,_0x5293ce){if('\x6e\x75\x6d\x62\x65\x72'==typeof _0x17591b)throw new TypeError(_0x6c71('0x1fa'));return _0x1b1e21(_0x17591b,_0x432bd8,_0x5293ce);},_0x41b31e[_0x6c71('0x10')]=function(_0x17591b,_0x432bd8,_0x5293ce){if(_0x6c71('0x13')!=typeof _0x17591b)throw new TypeError(_0x6c71('0x1fb'));var _0x19600f=_0x1b1e21(_0x17591b);return void 0x0!==_0x432bd8?_0x6c71('0x14')==typeof _0x5293ce?_0x19600f[_0x6c71('0x3d')](_0x432bd8,_0x5293ce):_0x19600f[_0x6c71('0x3d')](_0x432bd8):_0x19600f[_0x6c71('0x3d')](0x0),_0x19600f;},_0x41b31e[_0x6c71('0x3e')]=function(_0x17591b){if(_0x6c71('0x13')!=typeof _0x17591b)throw new TypeError(_0x6c71('0x1fb'));return _0x1b1e21(_0x17591b);},_0x41b31e[_0x6c71('0x3f')]=function(_0x17591b){if(_0x6c71('0x13')!=typeof _0x17591b)throw new TypeError(_0x6c71('0x1fb'));return _0x19600f[_0x6c71('0x1fc')](_0x17591b);};},{'\x62\x75\x66\x66\x65\x72':0x3}],37:[function(_0xcffb96,_0x36a8b6,_0xde6953){_0x36a8b6[_0x6c71('0x5')]=_0x45a7dc;var _0x3114a0=_0xcffb96(_0x6c71('0x1f0'))['\x45\x76\x65\x6e\x74\x45\x6d\x69\x74\x74\x65\x72'];function _0x45a7dc(){_0x3114a0[_0x6c71('0x4')](this);}_0xcffb96('\x69\x6e\x68\x65\x72\x69\x74\x73')(_0x45a7dc,_0x3114a0),_0x45a7dc[_0x6c71('0x1fd')]=_0xcffb96(_0x6c71('0x1fe')),_0x45a7dc['\x57\x72\x69\x74\x61\x62\x6c\x65']=_0xcffb96(_0x6c71('0x1ff')),_0x45a7dc[_0x6c71('0x1f6')]=_0xcffb96(_0x6c71('0x200')),_0x45a7dc[_0x6c71('0xe6')]=_0xcffb96(_0x6c71('0x201')),_0x45a7dc['\x50\x61\x73\x73\x54\x68\x72\x6f\x75\x67\x68']=_0xcffb96(_0x6c71('0x202')),_0x45a7dc[_0x6c71('0x1f3')]=_0x45a7dc,_0x45a7dc[_0x6c71('0x12')][_0x6c71('0x1a1')]=function(_0xcffb96,_0x36a8b6){var _0xde6953=this;function _0x45a7dc(_0x36a8b6){_0xcffb96['\x77\x72\x69\x74\x61\x62\x6c\x65']&&!0x1===_0xcffb96[_0x6c71('0x1a')](_0x36a8b6)&&_0xde6953[_0x6c71('0x1ad')]&&_0xde6953[_0x6c71('0x1ad')]();}function _0x33d153(){_0xde6953[_0x6c71('0x15d')]&&_0xde6953[_0x6c71('0x170')]&&_0xde6953[_0x6c71('0x170')]();}_0xde6953['\x6f\x6e'](_0x6c71('0x1f'),_0x45a7dc),_0xcffb96['\x6f\x6e']('\x64\x72\x61\x69\x6e',_0x33d153),_0xcffb96[_0x6c71('0x203')]||_0x36a8b6&&!0x1===_0x36a8b6[_0x6c71('0xe2')]||(_0xde6953['\x6f\x6e'](_0x6c71('0xe2'),_0xb8057e),_0xde6953['\x6f\x6e'](_0x6c71('0x16e'),_0x48944c));var _0xc89370=!0x1;function _0xb8057e(){_0xc89370||(_0xc89370=!0x0,_0xcffb96[_0x6c71('0xe2')]());}function _0x48944c(){_0xc89370||(_0xc89370=!0x0,_0x6c71('0x0')==typeof _0xcffb96[_0x6c71('0x16f')]&&_0xcffb96[_0x6c71('0x16f')]());}function _0x467e52(_0xcffb96){if(_0x4e4a7e(),0x0===_0x3114a0[_0x6c71('0xd0')](this,_0x6c71('0x39')))throw _0xcffb96;}function _0x4e4a7e(){_0xde6953[_0x6c71('0xcd')](_0x6c71('0x1f'),_0x45a7dc),_0xcffb96[_0x6c71('0xcd')](_0x6c71('0x1a7'),_0x33d153),_0xde6953[_0x6c71('0xcd')](_0x6c71('0xe2'),_0xb8057e),_0xde6953['\x72\x65\x6d\x6f\x76\x65\x4c\x69\x73\x74\x65\x6e\x65\x72'](_0x6c71('0x16e'),_0x48944c),_0xde6953[_0x6c71('0xcd')](_0x6c71('0x39'),_0x467e52),_0xcffb96[_0x6c71('0xcd')](_0x6c71('0x39'),_0x467e52),_0xde6953[_0x6c71('0xcd')](_0x6c71('0xe2'),_0x4e4a7e),_0xde6953[_0x6c71('0xcd')](_0x6c71('0x16e'),_0x4e4a7e),_0xcffb96[_0x6c71('0xcd')](_0x6c71('0x16e'),_0x4e4a7e);}return _0xde6953['\x6f\x6e'](_0x6c71('0x39'),_0x467e52),_0xcffb96['\x6f\x6e'](_0x6c71('0x39'),_0x467e52),_0xde6953['\x6f\x6e']('\x65\x6e\x64',_0x4e4a7e),_0xde6953['\x6f\x6e'](_0x6c71('0x16e'),_0x4e4a7e),_0xcffb96['\x6f\x6e'](_0x6c71('0x16e'),_0x4e4a7e),_0xcffb96['\x65\x6d\x69\x74']('\x70\x69\x70\x65',_0xde6953),_0xcffb96;};},{'\x65\x76\x65\x6e\x74\x73':0x8,'\x69\x6e\x68\x65\x72\x69\x74\x73':0xa,'readable-stream/duplex.js':0x17,'readable-stream/passthrough.js':0x20,'readable-stream/readable.js':0x21,'readable-stream/transform.js':0x22,'readable-stream/writable.js':0x23}],38:[function(_0x1ed2b6,_0x52c2de,_0x16d988){'use strict';var _0x21ec1c=_0x1ed2b6(_0x6c71('0x169'))[_0x6c71('0xf')],_0x1075dc=_0x21ec1c[_0x6c71('0x18')]||function(_0x1ed2b6){switch((_0x1ed2b6=''+_0x1ed2b6)&&_0x1ed2b6[_0x6c71('0x2b')]()){case _0x6c71('0x2a'):case'\x75\x74\x66\x38':case _0x6c71('0x26'):case _0x6c71('0x4b'):case'\x62\x69\x6e\x61\x72\x79':case _0x6c71('0x4c'):case _0x6c71('0x27'):case _0x6c71('0x1eb'):case _0x6c71('0x28'):case _0x6c71('0x29'):case _0x6c71('0x1ec'):return!0x0;default:return!0x1;}};function _0xaa3944(_0x1ed2b6){var _0x52c2de;switch(this[_0x6c71('0x183')]=function(_0x1ed2b6){var _0x52c2de=function(_0x1ed2b6){if(!_0x1ed2b6)return _0x6c71('0x43');for(var _0x52c2de;;)switch(_0x1ed2b6){case'\x75\x74\x66\x38':case _0x6c71('0x26'):return _0x6c71('0x43');case _0x6c71('0x27'):case _0x6c71('0x1eb'):case _0x6c71('0x28'):case _0x6c71('0x29'):return _0x6c71('0x28');case _0x6c71('0x25'):case _0x6c71('0x44'):return _0x6c71('0x25');case _0x6c71('0x4c'):case'\x61\x73\x63\x69\x69':case _0x6c71('0x2a'):return _0x1ed2b6;default:if(_0x52c2de)return;_0x1ed2b6=(''+_0x1ed2b6)[_0x6c71('0x2b')](),_0x52c2de=!0x0;}}(_0x1ed2b6);if(_0x6c71('0x14')!=typeof _0x52c2de&&(_0x21ec1c['\x69\x73\x45\x6e\x63\x6f\x64\x69\x6e\x67']===_0x1075dc||!_0x1075dc(_0x1ed2b6)))throw new Error(_0x6c71('0x4d')+_0x1ed2b6);return _0x52c2de||_0x1ed2b6;}(_0x1ed2b6),this[_0x6c71('0x183')]){case'\x75\x74\x66\x31\x36\x6c\x65':this[_0x6c71('0x204')]=_0x1d1285,this[_0x6c71('0xe2')]=_0x327198,_0x52c2de=0x4;break;case'\x75\x74\x66\x38':this[_0x6c71('0x205')]=_0x2f9dfe,_0x52c2de=0x4;break;case _0x6c71('0x4c'):this[_0x6c71('0x204')]=_0x24a28d,this[_0x6c71('0xe2')]=_0x2275b4,_0x52c2de=0x3;break;default:return this[_0x6c71('0x1a')]=_0x2fb684,void(this[_0x6c71('0xe2')]=_0x17b1a7);}this[_0x6c71('0x206')]=0x0,this[_0x6c71('0x207')]=0x0,this[_0x6c71('0x208')]=_0x21ec1c[_0x6c71('0x3e')](_0x52c2de);}function _0x443834(_0x1ed2b6){return _0x1ed2b6<=0x7f?0x0:_0x1ed2b6>>0x5==0x6?0x2:_0x1ed2b6>>0x4==0xe?0x3:_0x1ed2b6>>0x3==0x1e?0x4:-0x1;}function _0x2f9dfe(_0x1ed2b6){var _0x52c2de=this[_0x6c71('0x207')]-this[_0x6c71('0x206')],_0x16d988=function(_0x1ed2b6,_0x52c2de,_0x16d988){if(0x80!=(0xc0&_0x52c2de[0x0]))return _0x1ed2b6[_0x6c71('0x206')]=0x0,'\ufffd'[_0x6c71('0x209')](_0x16d988);if(_0x1ed2b6['\x6c\x61\x73\x74\x4e\x65\x65\x64']>0x1&&_0x52c2de['\x6c\x65\x6e\x67\x74\x68']>0x1){if(0x80!=(0xc0&_0x52c2de[0x1]))return _0x1ed2b6[_0x6c71('0x206')]=0x1,'\ufffd'['\x72\x65\x70\x65\x61\x74'](_0x16d988+0x1);if(_0x1ed2b6[_0x6c71('0x206')]>0x2&&_0x52c2de[_0x6c71('0x8')]>0x2&&0x80!=(0xc0&_0x52c2de[0x2]))return _0x1ed2b6[_0x6c71('0x206')]=0x2,'\ufffd'[_0x6c71('0x209')](_0x16d988+0x2);}}(this,_0x1ed2b6,_0x52c2de);return void 0x0!==_0x16d988?_0x16d988:this[_0x6c71('0x206')]<=_0x1ed2b6[_0x6c71('0x8')]?(_0x1ed2b6[_0x6c71('0x1d')](this[_0x6c71('0x208')],_0x52c2de,0x0,this['\x6c\x61\x73\x74\x4e\x65\x65\x64']),this[_0x6c71('0x208')]['\x74\x6f\x53\x74\x72\x69\x6e\x67'](this[_0x6c71('0x183')],0x0,this[_0x6c71('0x207')])):(_0x1ed2b6[_0x6c71('0x1d')](this[_0x6c71('0x208')],_0x52c2de,0x0,_0x1ed2b6[_0x6c71('0x8')]),void(this[_0x6c71('0x206')]-=_0x1ed2b6[_0x6c71('0x8')]));}function _0x1d1285(_0x1ed2b6,_0x52c2de){if((_0x1ed2b6[_0x6c71('0x8')]-_0x52c2de)%0x2==0x0){var _0x16d988=_0x1ed2b6[_0x6c71('0x23')](_0x6c71('0x28'),_0x52c2de);if(_0x16d988){var _0x21ec1c=_0x16d988[_0x6c71('0x9')](_0x16d988['\x6c\x65\x6e\x67\x74\x68']-0x1);if(_0x21ec1c>=0xd800&&_0x21ec1c<=0xdbff)return this[_0x6c71('0x206')]=0x2,this[_0x6c71('0x207')]=0x4,this[_0x6c71('0x208')][0x0]=_0x1ed2b6[_0x1ed2b6[_0x6c71('0x8')]-0x2],this[_0x6c71('0x208')][0x1]=_0x1ed2b6[_0x1ed2b6[_0x6c71('0x8')]-0x1],_0x16d988['\x73\x6c\x69\x63\x65'](0x0,-0x1);}return _0x16d988;}return this[_0x6c71('0x206')]=0x1,this[_0x6c71('0x207')]=0x2,this[_0x6c71('0x208')][0x0]=_0x1ed2b6[_0x1ed2b6[_0x6c71('0x8')]-0x1],_0x1ed2b6[_0x6c71('0x23')](_0x6c71('0x28'),_0x52c2de,_0x1ed2b6[_0x6c71('0x8')]-0x1);}function _0x327198(_0x1ed2b6){var _0x52c2de=_0x1ed2b6&&_0x1ed2b6[_0x6c71('0x8')]?this[_0x6c71('0x1a')](_0x1ed2b6):'';if(this[_0x6c71('0x206')]){var _0x16d988=this[_0x6c71('0x207')]-this[_0x6c71('0x206')];return _0x52c2de+this['\x6c\x61\x73\x74\x43\x68\x61\x72']['\x74\x6f\x53\x74\x72\x69\x6e\x67'](_0x6c71('0x28'),0x0,_0x16d988);}return _0x52c2de;}function _0x24a28d(_0x1ed2b6,_0x52c2de){var _0x16d988=(_0x1ed2b6[_0x6c71('0x8')]-_0x52c2de)%0x3;return 0x0===_0x16d988?_0x1ed2b6[_0x6c71('0x23')](_0x6c71('0x4c'),_0x52c2de):(this[_0x6c71('0x206')]=0x3-_0x16d988,this[_0x6c71('0x207')]=0x3,0x1===_0x16d988?this[_0x6c71('0x208')][0x0]=_0x1ed2b6[_0x1ed2b6[_0x6c71('0x8')]-0x1]:(this['\x6c\x61\x73\x74\x43\x68\x61\x72'][0x0]=_0x1ed2b6[_0x1ed2b6['\x6c\x65\x6e\x67\x74\x68']-0x2],this['\x6c\x61\x73\x74\x43\x68\x61\x72'][0x1]=_0x1ed2b6[_0x1ed2b6[_0x6c71('0x8')]-0x1]),_0x1ed2b6[_0x6c71('0x23')]('\x62\x61\x73\x65\x36\x34',_0x52c2de,_0x1ed2b6[_0x6c71('0x8')]-_0x16d988));}function _0x2275b4(_0x1ed2b6){var _0x52c2de=_0x1ed2b6&&_0x1ed2b6[_0x6c71('0x8')]?this[_0x6c71('0x1a')](_0x1ed2b6):'';return this[_0x6c71('0x206')]?_0x52c2de+this[_0x6c71('0x208')][_0x6c71('0x23')]('\x62\x61\x73\x65\x36\x34',0x0,0x3-this[_0x6c71('0x206')]):_0x52c2de;}function _0x2fb684(_0x1ed2b6){return _0x1ed2b6[_0x6c71('0x23')](this[_0x6c71('0x183')]);}function _0x17b1a7(_0x1ed2b6){return _0x1ed2b6&&_0x1ed2b6[_0x6c71('0x8')]?this[_0x6c71('0x1a')](_0x1ed2b6):'';}_0x16d988['\x53\x74\x72\x69\x6e\x67\x44\x65\x63\x6f\x64\x65\x72']=_0xaa3944,_0xaa3944[_0x6c71('0x12')][_0x6c71('0x1a')]=function(_0x1ed2b6){if(0x0===_0x1ed2b6[_0x6c71('0x8')])return'';var _0x52c2de,_0x16d988;if(this[_0x6c71('0x206')]){if(void 0x0===(_0x52c2de=this[_0x6c71('0x205')](_0x1ed2b6)))return'';_0x16d988=this[_0x6c71('0x206')],this['\x6c\x61\x73\x74\x4e\x65\x65\x64']=0x0;}else _0x16d988=0x0;return _0x16d988<_0x1ed2b6[_0x6c71('0x8')]?_0x52c2de?_0x52c2de+this[_0x6c71('0x204')](_0x1ed2b6,_0x16d988):this[_0x6c71('0x204')](_0x1ed2b6,_0x16d988):_0x52c2de||'';},_0xaa3944[_0x6c71('0x12')]['\x65\x6e\x64']=function(_0x1ed2b6){var _0x52c2de=_0x1ed2b6&&_0x1ed2b6[_0x6c71('0x8')]?this[_0x6c71('0x1a')](_0x1ed2b6):'';return this[_0x6c71('0x206')]?_0x52c2de+'\ufffd'[_0x6c71('0x209')](this[_0x6c71('0x207')]-this['\x6c\x61\x73\x74\x4e\x65\x65\x64']):_0x52c2de;},_0xaa3944[_0x6c71('0x12')][_0x6c71('0x204')]=function(_0x1ed2b6,_0x52c2de){var _0x16d988=function(_0x1ed2b6,_0x52c2de,_0x16d988){var _0x21ec1c=_0x52c2de[_0x6c71('0x8')]-0x1;if(_0x21ec1c<_0x16d988)return 0x0;var _0x1075dc=_0x443834(_0x52c2de[_0x21ec1c]);if(_0x1075dc>=0x0)return _0x1075dc>0x0&&(_0x1ed2b6[_0x6c71('0x206')]=_0x1075dc-0x1),_0x1075dc;if(--_0x21ec1c<_0x16d988)return 0x0;if((_0x1075dc=_0x443834(_0x52c2de[_0x21ec1c]))>=0x0)return _0x1075dc>0x0&&(_0x1ed2b6[_0x6c71('0x206')]=_0x1075dc-0x2),_0x1075dc;if(--_0x21ec1c<_0x16d988)return 0x0;if((_0x1075dc=_0x443834(_0x52c2de[_0x21ec1c]))>=0x0)return _0x1075dc>0x0&&(0x2===_0x1075dc?_0x1075dc=0x0:_0x1ed2b6[_0x6c71('0x206')]=_0x1075dc-0x3),_0x1075dc;return 0x0;}(this,_0x1ed2b6,_0x52c2de);if(!this['\x6c\x61\x73\x74\x4e\x65\x65\x64'])return _0x1ed2b6[_0x6c71('0x23')](_0x6c71('0x43'),_0x52c2de);this[_0x6c71('0x207')]=_0x16d988;var _0x21ec1c=_0x1ed2b6['\x6c\x65\x6e\x67\x74\x68']-(_0x16d988-this[_0x6c71('0x206')]);return _0x1ed2b6[_0x6c71('0x1d')](this['\x6c\x61\x73\x74\x43\x68\x61\x72'],0x0,_0x21ec1c),_0x1ed2b6[_0x6c71('0x23')](_0x6c71('0x43'),_0x52c2de,_0x21ec1c);},_0xaa3944[_0x6c71('0x12')]['\x66\x69\x6c\x6c\x4c\x61\x73\x74']=function(_0x1ed2b6){if(this['\x6c\x61\x73\x74\x4e\x65\x65\x64']<=_0x1ed2b6[_0x6c71('0x8')])return _0x1ed2b6[_0x6c71('0x1d')](this['\x6c\x61\x73\x74\x43\x68\x61\x72'],this[_0x6c71('0x207')]-this[_0x6c71('0x206')],0x0,this[_0x6c71('0x206')]),this[_0x6c71('0x208')][_0x6c71('0x23')](this[_0x6c71('0x183')],0x0,this[_0x6c71('0x207')]);_0x1ed2b6[_0x6c71('0x1d')](this['\x6c\x61\x73\x74\x43\x68\x61\x72'],this[_0x6c71('0x207')]-this[_0x6c71('0x206')],0x0,_0x1ed2b6[_0x6c71('0x8')]),this[_0x6c71('0x206')]-=_0x1ed2b6[_0x6c71('0x8')];};},{'safe-buffer':0x24}],39:[function(_0x529a4f,_0xe7a945,_0x369cda){(function(_0x529a4f){function _0x369cda(_0xe7a945){try{if(!_0x529a4f[_0x6c71('0x20a')])return!0x1;}catch(_0x2fc4f8){return!0x1;}var _0x369cda=_0x529a4f[_0x6c71('0x20a')][_0xe7a945];return null!=_0x369cda&&_0x6c71('0x20b')===String(_0x369cda)['\x74\x6f\x4c\x6f\x77\x65\x72\x43\x61\x73\x65']();}_0xe7a945[_0x6c71('0x5')]=function(_0x529a4f,_0xe7a945){if(_0x369cda(_0x6c71('0x20c')))return _0x529a4f;var _0x5e098f=!0x1;return function(){if(!_0x5e098f){if(_0x369cda(_0x6c71('0x20d')))throw new Error(_0xe7a945);_0x369cda(_0x6c71('0x20e'))?console['\x74\x72\x61\x63\x65'](_0xe7a945):console[_0x6c71('0x20f')](_0xe7a945),_0x5e098f=!0x0;}return _0x529a4f[_0x6c71('0x34')](this,arguments);};};}[_0x6c71('0x4')](this,_0x6c71('0x38')!=typeof global?global:_0x6c71('0x38')!=typeof self?self:'\x75\x6e\x64\x65\x66\x69\x6e\x65\x64'!=typeof window?window:{}));},{}],40:[function(_0x1a8be3,_0x291ed8,_0x1b72bb){arguments[0x4][0xa][0x0][_0x6c71('0x34')](_0x1b72bb,arguments);},{'\x64\x75\x70':0xa}],41:[function(_0x3fc8f8,_0x1eecd4,_0x53db62){_0x1eecd4[_0x6c71('0x5')]=function(_0x3fc8f8){return _0x3fc8f8&&_0x6c71('0x210')==typeof _0x3fc8f8&&_0x6c71('0x0')==typeof _0x3fc8f8[_0x6c71('0x1d')]&&_0x6c71('0x0')==typeof _0x3fc8f8[_0x6c71('0x3d')]&&'\x66\x75\x6e\x63\x74\x69\x6f\x6e'==typeof _0x3fc8f8[_0x6c71('0x61')];};},{}],42:[function(_0x45d4cb,_0x54d94b,_0x158635){(function(_0x54d94b,_0x5ebf30){var _0x44131d=/%[sdj%]/g;_0x158635[_0x6c71('0x211')]=function(_0x45d4cb){if(!_0x4e6d40(_0x45d4cb)){for(var _0x54d94b=[],_0x158635=0x0;_0x158635<arguments[_0x6c71('0x8')];_0x158635++)_0x54d94b['\x70\x75\x73\x68'](_0x508b63(arguments[_0x158635]));return _0x54d94b[_0x6c71('0xc')]('\x20');}_0x158635=0x1;for(var _0x5ebf30=arguments,_0x9d7cc9=_0x5ebf30[_0x6c71('0x8')],_0x5f1590=String(_0x45d4cb)[_0x6c71('0x87')](_0x44131d,function(_0x45d4cb){if('\x25\x25'===_0x45d4cb)return'\x25';if(_0x158635>=_0x9d7cc9)return _0x45d4cb;switch(_0x45d4cb){case'\x25\x73':return String(_0x5ebf30[_0x158635++]);case'\x25\x64':return Number(_0x5ebf30[_0x158635++]);case'\x25\x6a':try{return JSON['\x73\x74\x72\x69\x6e\x67\x69\x66\x79'](_0x5ebf30[_0x158635++]);}catch(_0x7aad27){return _0x6c71('0x212');}default:return _0x45d4cb;}}),_0x29618c=_0x5ebf30[_0x158635];_0x158635<_0x9d7cc9;_0x29618c=_0x5ebf30[++_0x158635])_0x3bc6a4(_0x29618c)||!_0x4fbbf5(_0x29618c)?_0x5f1590+='\x20'+_0x29618c:_0x5f1590+='\x20'+_0x508b63(_0x29618c);return _0x5f1590;},_0x158635[_0x6c71('0x1e2')]=function(_0x45d4cb,_0x44131d){if(_0x3f0b5e(_0x5ebf30['\x70\x72\x6f\x63\x65\x73\x73']))return function(){return _0x158635[_0x6c71('0x1e2')](_0x45d4cb,_0x44131d)[_0x6c71('0x34')](this,arguments);};if(!0x0===_0x54d94b[_0x6c71('0x20c')])return _0x45d4cb;var _0x1e7d72=!0x1;return function(){if(!_0x1e7d72){if(_0x54d94b[_0x6c71('0x20d')])throw new Error(_0x44131d);_0x54d94b[_0x6c71('0x20e')]?console[_0x6c71('0xcb')](_0x44131d):console[_0x6c71('0x39')](_0x44131d),_0x1e7d72=!0x0;}return _0x45d4cb[_0x6c71('0x34')](this,arguments);};};var _0x51b32d,_0x35c378={};function _0x508b63(_0x45d4cb,_0x54d94b){var _0x5ebf30={'\x73\x65\x65\x6e':[],'\x73\x74\x79\x6c\x69\x7a\x65':_0x315c4a};return arguments[_0x6c71('0x8')]>=0x3&&(_0x5ebf30[_0x6c71('0x213')]=arguments[0x2]),arguments[_0x6c71('0x8')]>=0x4&&(_0x5ebf30['\x63\x6f\x6c\x6f\x72\x73']=arguments[0x3]),_0x5985f(_0x54d94b)?_0x5ebf30[_0x6c71('0x214')]=_0x54d94b:_0x54d94b&&_0x158635['\x5f\x65\x78\x74\x65\x6e\x64'](_0x5ebf30,_0x54d94b),_0x3f0b5e(_0x5ebf30[_0x6c71('0x214')])&&(_0x5ebf30[_0x6c71('0x214')]=!0x1),_0x3f0b5e(_0x5ebf30['\x64\x65\x70\x74\x68'])&&(_0x5ebf30[_0x6c71('0x213')]=0x2),_0x3f0b5e(_0x5ebf30[_0x6c71('0x215')])&&(_0x5ebf30[_0x6c71('0x215')]=!0x1),_0x3f0b5e(_0x5ebf30['\x63\x75\x73\x74\x6f\x6d\x49\x6e\x73\x70\x65\x63\x74'])&&(_0x5ebf30[_0x6c71('0x216')]=!0x0),_0x5ebf30['\x63\x6f\x6c\x6f\x72\x73']&&(_0x5ebf30[_0x6c71('0x217')]=_0x8c2cb2),_0xa0661d(_0x5ebf30,_0x45d4cb,_0x5ebf30['\x64\x65\x70\x74\x68']);}function _0x8c2cb2(_0x45d4cb,_0x54d94b){var _0x158635=_0x508b63[_0x6c71('0x218')][_0x54d94b];return _0x158635?'\x1b\x5b'+_0x508b63[_0x6c71('0x215')][_0x158635][0x0]+'\x6d'+_0x45d4cb+'\x1b\x5b'+_0x508b63[_0x6c71('0x215')][_0x158635][0x1]+'\x6d':_0x45d4cb;}function _0x315c4a(_0x45d4cb,_0x54d94b){return _0x45d4cb;}function _0xa0661d(_0x45d4cb,_0x54d94b,_0x5ebf30){if(_0x45d4cb[_0x6c71('0x216')]&&_0x54d94b&&_0xebd83b(_0x54d94b[_0x6c71('0x50')])&&_0x54d94b[_0x6c71('0x50')]!==_0x158635[_0x6c71('0x50')]&&(!_0x54d94b[_0x6c71('0xd7')]||_0x54d94b[_0x6c71('0xd7')][_0x6c71('0x12')]!==_0x54d94b)){var _0x44131d=_0x54d94b[_0x6c71('0x50')](_0x5ebf30,_0x45d4cb);return _0x4e6d40(_0x44131d)||(_0x44131d=_0xa0661d(_0x45d4cb,_0x44131d,_0x5ebf30)),_0x44131d;}var _0x51b32d=function(_0x45d4cb,_0x54d94b){if(_0x3f0b5e(_0x54d94b))return _0x45d4cb[_0x6c71('0x217')]('\x75\x6e\x64\x65\x66\x69\x6e\x65\x64',_0x6c71('0x38'));if(_0x4e6d40(_0x54d94b)){var _0x158635='\x27'+JSON['\x73\x74\x72\x69\x6e\x67\x69\x66\x79'](_0x54d94b)[_0x6c71('0x87')](/^"|"$/g,'')[_0x6c71('0x87')](/'/g,'\x5c\x27')[_0x6c71('0x87')](/\\"/g,'\x22')+'\x27';return _0x45d4cb[_0x6c71('0x217')](_0x158635,_0x6c71('0x14'));}if(_0x5216a0(_0x54d94b))return _0x45d4cb[_0x6c71('0x217')](''+_0x54d94b,_0x6c71('0x13'));if(_0x5985f(_0x54d94b))return _0x45d4cb[_0x6c71('0x217')](''+_0x54d94b,_0x6c71('0x8c'));if(_0x3bc6a4(_0x54d94b))return _0x45d4cb[_0x6c71('0x217')](_0x6c71('0x219'),_0x6c71('0x219'));}(_0x45d4cb,_0x54d94b);if(_0x51b32d)return _0x51b32d;var _0x35c378=Object[_0x6c71('0x21a')](_0x54d94b),_0x508b63=function(_0x45d4cb){var _0x54d94b={};return _0x45d4cb[_0x6c71('0x126')](function(_0x45d4cb,_0x158635){_0x54d94b[_0x45d4cb]=!0x0;}),_0x54d94b;}(_0x35c378);if(_0x45d4cb[_0x6c71('0x214')]&&(_0x35c378=Object[_0x6c71('0x21b')](_0x54d94b)),_0x20592a(_0x54d94b)&&(_0x35c378[_0x6c71('0x2d')](_0x6c71('0x21c'))>=0x0||_0x35c378['\x69\x6e\x64\x65\x78\x4f\x66'](_0x6c71('0x21d'))>=0x0))return _0x51390f(_0x54d94b);if(0x0===_0x35c378[_0x6c71('0x8')]){if(_0xebd83b(_0x54d94b)){var _0x8c2cb2=_0x54d94b['\x6e\x61\x6d\x65']?'\x3a\x20'+_0x54d94b[_0x6c71('0x21e')]:'';return _0x45d4cb['\x73\x74\x79\x6c\x69\x7a\x65'](_0x6c71('0x21f')+_0x8c2cb2+'\x5d',_0x6c71('0x220'));}if(_0x3a7152(_0x54d94b))return _0x45d4cb[_0x6c71('0x217')](RegExp[_0x6c71('0x12')]['\x74\x6f\x53\x74\x72\x69\x6e\x67'][_0x6c71('0x4')](_0x54d94b),_0x6c71('0x221'));if(_0x299f89(_0x54d94b))return _0x45d4cb[_0x6c71('0x217')](Date[_0x6c71('0x12')][_0x6c71('0x23')]['\x63\x61\x6c\x6c'](_0x54d94b),'\x64\x61\x74\x65');if(_0x20592a(_0x54d94b))return _0x51390f(_0x54d94b);}var _0x315c4a,_0x474b8d='',_0x893b52=!0x1,_0x97335c=['\x7b','\x7d'];(_0x23839a(_0x54d94b)&&(_0x893b52=!0x0,_0x97335c=['\x5b','\x5d']),_0xebd83b(_0x54d94b))&&(_0x474b8d=_0x6c71('0x222')+(_0x54d94b['\x6e\x61\x6d\x65']?'\x3a\x20'+_0x54d94b['\x6e\x61\x6d\x65']:'')+'\x5d');return _0x3a7152(_0x54d94b)&&(_0x474b8d='\x20'+RegExp['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65'][_0x6c71('0x23')][_0x6c71('0x4')](_0x54d94b)),_0x299f89(_0x54d94b)&&(_0x474b8d='\x20'+Date['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['\x74\x6f\x55\x54\x43\x53\x74\x72\x69\x6e\x67']['\x63\x61\x6c\x6c'](_0x54d94b)),_0x20592a(_0x54d94b)&&(_0x474b8d='\x20'+_0x51390f(_0x54d94b)),0x0!==_0x35c378['\x6c\x65\x6e\x67\x74\x68']||_0x893b52&&0x0!=_0x54d94b['\x6c\x65\x6e\x67\x74\x68']?_0x5ebf30<0x0?_0x3a7152(_0x54d94b)?_0x45d4cb['\x73\x74\x79\x6c\x69\x7a\x65'](RegExp[_0x6c71('0x12')][_0x6c71('0x23')][_0x6c71('0x4')](_0x54d94b),_0x6c71('0x221')):_0x45d4cb['\x73\x74\x79\x6c\x69\x7a\x65'](_0x6c71('0x223'),_0x6c71('0x220')):(_0x45d4cb[_0x6c71('0x224')][_0x6c71('0xb')](_0x54d94b),_0x315c4a=_0x893b52?function(_0x45d4cb,_0x54d94b,_0x158635,_0x5ebf30,_0x44131d){for(var _0x51b32d=[],_0x35c378=0x0,_0x508b63=_0x54d94b[_0x6c71('0x8')];_0x35c378<_0x508b63;++_0x35c378)_0x1ac546(_0x54d94b,String(_0x35c378))?_0x51b32d[_0x6c71('0xb')](_0x5928b3(_0x45d4cb,_0x54d94b,_0x158635,_0x5ebf30,String(_0x35c378),!0x0)):_0x51b32d[_0x6c71('0xb')]('');return _0x44131d['\x66\x6f\x72\x45\x61\x63\x68'](function(_0x44131d){_0x44131d[_0x6c71('0x52')](/^\d+$/)||_0x51b32d[_0x6c71('0xb')](_0x5928b3(_0x45d4cb,_0x54d94b,_0x158635,_0x5ebf30,_0x44131d,!0x0));}),_0x51b32d;}(_0x45d4cb,_0x54d94b,_0x5ebf30,_0x508b63,_0x35c378):_0x35c378['\x6d\x61\x70'](function(_0x158635){return _0x5928b3(_0x45d4cb,_0x54d94b,_0x5ebf30,_0x508b63,_0x158635,_0x893b52);}),_0x45d4cb[_0x6c71('0x224')][_0x6c71('0x225')](),function(_0x45d4cb,_0x54d94b,_0x158635){if(_0x45d4cb[_0x6c71('0x226')](function(_0x45d4cb,_0x54d94b){return 0x0,_0x54d94b['\x69\x6e\x64\x65\x78\x4f\x66']('\x0a')>=0x0&&0x0,_0x45d4cb+_0x54d94b[_0x6c71('0x87')](/\u001b\[\d\d?m/g,'')['\x6c\x65\x6e\x67\x74\x68']+0x1;},0x0)>0x3c)return _0x158635[0x0]+(''===_0x54d94b?'':_0x54d94b+'\x0a\x20')+'\x20'+_0x45d4cb[_0x6c71('0xc')](_0x6c71('0x227'))+'\x20'+_0x158635[0x1];return _0x158635[0x0]+_0x54d94b+'\x20'+_0x45d4cb['\x6a\x6f\x69\x6e']('\x2c\x20')+'\x20'+_0x158635[0x1];}(_0x315c4a,_0x474b8d,_0x97335c)):_0x97335c[0x0]+_0x474b8d+_0x97335c[0x1];}function _0x51390f(_0x45d4cb){return'\x5b'+Error[_0x6c71('0x12')][_0x6c71('0x23')][_0x6c71('0x4')](_0x45d4cb)+'\x5d';}function _0x5928b3(_0x45d4cb,_0x54d94b,_0x158635,_0x5ebf30,_0x44131d,_0x51b32d){var _0x35c378,_0x508b63,_0x8c2cb2;if((_0x8c2cb2=Object['\x67\x65\x74\x4f\x77\x6e\x50\x72\x6f\x70\x65\x72\x74\x79\x44\x65\x73\x63\x72\x69\x70\x74\x6f\x72'](_0x54d94b,_0x44131d)||{'\x76\x61\x6c\x75\x65':_0x54d94b[_0x44131d]})[_0x6c71('0x228')]?_0x508b63=_0x8c2cb2[_0x6c71('0x83')]?_0x45d4cb[_0x6c71('0x217')]('\x5b\x47\x65\x74\x74\x65\x72\x2f\x53\x65\x74\x74\x65\x72\x5d','\x73\x70\x65\x63\x69\x61\x6c'):_0x45d4cb[_0x6c71('0x217')](_0x6c71('0x229'),_0x6c71('0x220')):_0x8c2cb2[_0x6c71('0x83')]&&(_0x508b63=_0x45d4cb[_0x6c71('0x217')](_0x6c71('0x22a'),_0x6c71('0x220'))),_0x1ac546(_0x5ebf30,_0x44131d)||(_0x35c378='\x5b'+_0x44131d+'\x5d'),_0x508b63||(_0x45d4cb[_0x6c71('0x224')]['\x69\x6e\x64\x65\x78\x4f\x66'](_0x8c2cb2[_0x6c71('0x22b')])<0x0?(_0x508b63=_0x3bc6a4(_0x158635)?_0xa0661d(_0x45d4cb,_0x8c2cb2[_0x6c71('0x22b')],null):_0xa0661d(_0x45d4cb,_0x8c2cb2[_0x6c71('0x22b')],_0x158635-0x1))[_0x6c71('0x2d')]('\x0a')>-0x1&&(_0x508b63=_0x51b32d?_0x508b63[_0x6c71('0x22c')]('\x0a')[_0x6c71('0x22d')](function(_0x45d4cb){return'\x20\x20'+_0x45d4cb;})[_0x6c71('0xc')]('\x0a')[_0x6c71('0x31')](0x2):'\x0a'+_0x508b63[_0x6c71('0x22c')]('\x0a')[_0x6c71('0x22d')](function(_0x45d4cb){return _0x6c71('0x22e')+_0x45d4cb;})[_0x6c71('0xc')]('\x0a')):_0x508b63=_0x45d4cb[_0x6c71('0x217')](_0x6c71('0x212'),'\x73\x70\x65\x63\x69\x61\x6c')),_0x3f0b5e(_0x35c378)){if(_0x51b32d&&_0x44131d[_0x6c71('0x52')](/^\d+$/))return _0x508b63;(_0x35c378=JSON['\x73\x74\x72\x69\x6e\x67\x69\x66\x79'](''+_0x44131d))['\x6d\x61\x74\x63\x68'](/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)?(_0x35c378=_0x35c378['\x73\x75\x62\x73\x74\x72'](0x1,_0x35c378[_0x6c71('0x8')]-0x2),_0x35c378=_0x45d4cb[_0x6c71('0x217')](_0x35c378,_0x6c71('0x21e'))):(_0x35c378=_0x35c378['\x72\x65\x70\x6c\x61\x63\x65'](/'/g,'\x5c\x27')[_0x6c71('0x87')](/\\"/g,'\x22')[_0x6c71('0x87')](/(^"|"$)/g,'\x27'),_0x35c378=_0x45d4cb[_0x6c71('0x217')](_0x35c378,_0x6c71('0x14')));}return _0x35c378+'\x3a\x20'+_0x508b63;}function _0x23839a(_0x45d4cb){return Array[_0x6c71('0x89')](_0x45d4cb);}function _0x5985f(_0x45d4cb){return _0x6c71('0x8c')==typeof _0x45d4cb;}function _0x3bc6a4(_0x45d4cb){return null===_0x45d4cb;}function _0x5216a0(_0x45d4cb){return _0x6c71('0x13')==typeof _0x45d4cb;}function _0x4e6d40(_0x45d4cb){return _0x6c71('0x14')==typeof _0x45d4cb;}function _0x3f0b5e(_0x45d4cb){return void 0x0===_0x45d4cb;}function _0x3a7152(_0x45d4cb){return _0x4fbbf5(_0x45d4cb)&&_0x6c71('0x93')===_0x2a8970(_0x45d4cb);}function _0x4fbbf5(_0x45d4cb){return'\x6f\x62\x6a\x65\x63\x74'==typeof _0x45d4cb&&null!==_0x45d4cb;}function _0x299f89(_0x45d4cb){return _0x4fbbf5(_0x45d4cb)&&_0x6c71('0x94')===_0x2a8970(_0x45d4cb);}function _0x20592a(_0x45d4cb){return _0x4fbbf5(_0x45d4cb)&&(_0x6c71('0x22f')===_0x2a8970(_0x45d4cb)||_0x45d4cb instanceof Error);}function _0xebd83b(_0x45d4cb){return _0x6c71('0x0')==typeof _0x45d4cb;}function _0x2a8970(_0x45d4cb){return Object[_0x6c71('0x12')][_0x6c71('0x23')]['\x63\x61\x6c\x6c'](_0x45d4cb);}function _0x4b21d1(_0x45d4cb){return _0x45d4cb<0xa?'\x30'+_0x45d4cb[_0x6c71('0x23')](0xa):_0x45d4cb[_0x6c71('0x23')](0xa);}_0x158635[_0x6c71('0x16b')]=function(_0x45d4cb){if(_0x3f0b5e(_0x51b32d)&&(_0x51b32d=_0x54d94b['\x65\x6e\x76'][_0x6c71('0x230')]||''),_0x45d4cb=_0x45d4cb[_0x6c71('0x102')](),!_0x35c378[_0x45d4cb])if(new RegExp('\x5c\x62'+_0x45d4cb+'\x5c\x62','\x69')[_0x6c71('0x231')](_0x51b32d)){var _0x5ebf30=_0x54d94b[_0x6c71('0x232')];_0x35c378[_0x45d4cb]=function(){var _0x54d94b=_0x158635[_0x6c71('0x211')]['\x61\x70\x70\x6c\x79'](_0x158635,arguments);console[_0x6c71('0x39')](_0x6c71('0x233'),_0x45d4cb,_0x5ebf30,_0x54d94b);};}else _0x35c378[_0x45d4cb]=function(){};return _0x35c378[_0x45d4cb];},_0x158635[_0x6c71('0x50')]=_0x508b63,_0x508b63[_0x6c71('0x215')]={'\x62\x6f\x6c\x64':[0x1,0x16],'\x69\x74\x61\x6c\x69\x63':[0x3,0x17],'\x75\x6e\x64\x65\x72\x6c\x69\x6e\x65':[0x4,0x18],'\x69\x6e\x76\x65\x72\x73\x65':[0x7,0x1b],'\x77\x68\x69\x74\x65':[0x25,0x27],'\x67\x72\x65\x79':[0x5a,0x27],'\x62\x6c\x61\x63\x6b':[0x1e,0x27],'\x62\x6c\x75\x65':[0x22,0x27],'\x63\x79\x61\x6e':[0x24,0x27],'\x67\x72\x65\x65\x6e':[0x20,0x27],'\x6d\x61\x67\x65\x6e\x74\x61':[0x23,0x27],'\x72\x65\x64':[0x1f,0x27],'\x79\x65\x6c\x6c\x6f\x77':[0x21,0x27]},_0x508b63[_0x6c71('0x218')]={'\x73\x70\x65\x63\x69\x61\x6c':_0x6c71('0x234'),'\x6e\x75\x6d\x62\x65\x72':_0x6c71('0x235'),'\x62\x6f\x6f\x6c\x65\x61\x6e':_0x6c71('0x235'),'\x75\x6e\x64\x65\x66\x69\x6e\x65\x64':_0x6c71('0x236'),'\x6e\x75\x6c\x6c':_0x6c71('0x237'),'\x73\x74\x72\x69\x6e\x67':_0x6c71('0x238'),'\x64\x61\x74\x65':_0x6c71('0x239'),'\x72\x65\x67\x65\x78\x70':'\x72\x65\x64'},_0x158635[_0x6c71('0x89')]=_0x23839a,_0x158635[_0x6c71('0x8b')]=_0x5985f,_0x158635[_0x6c71('0x8d')]=_0x3bc6a4,_0x158635[_0x6c71('0x8e')]=function(_0x45d4cb){return null==_0x45d4cb;},_0x158635[_0x6c71('0x8f')]=_0x5216a0,_0x158635[_0x6c71('0x90')]=_0x4e6d40,_0x158635[_0x6c71('0x91')]=function(_0x45d4cb){return _0x6c71('0x23a')==typeof _0x45d4cb;},_0x158635['\x69\x73\x55\x6e\x64\x65\x66\x69\x6e\x65\x64']=_0x3f0b5e,_0x158635[_0x6c71('0x92')]=_0x3a7152,_0x158635[_0x6c71('0x23b')]=_0x4fbbf5,_0x158635[_0x6c71('0x23c')]=_0x299f89,_0x158635['\x69\x73\x45\x72\x72\x6f\x72']=_0x20592a,_0x158635[_0x6c71('0x23d')]=_0xebd83b,_0x158635[_0x6c71('0x96')]=function(_0x45d4cb){return null===_0x45d4cb||'\x62\x6f\x6f\x6c\x65\x61\x6e'==typeof _0x45d4cb||_0x6c71('0x13')==typeof _0x45d4cb||_0x6c71('0x14')==typeof _0x45d4cb||'\x73\x79\x6d\x62\x6f\x6c'==typeof _0x45d4cb||void 0x0===_0x45d4cb;},_0x158635[_0x6c71('0x1c')]=_0x45d4cb('\x2e\x2f\x73\x75\x70\x70\x6f\x72\x74\x2f\x69\x73\x42\x75\x66\x66\x65\x72');var _0x2b6b27=[_0x6c71('0x23e'),_0x6c71('0x23f'),'\x4d\x61\x72',_0x6c71('0x240'),'\x4d\x61\x79',_0x6c71('0x241'),'\x4a\x75\x6c',_0x6c71('0x242'),_0x6c71('0x243'),'\x4f\x63\x74',_0x6c71('0x244'),_0x6c71('0x245')];function _0x1ac546(_0x45d4cb,_0x54d94b){return Object['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['\x68\x61\x73\x4f\x77\x6e\x50\x72\x6f\x70\x65\x72\x74\x79'][_0x6c71('0x4')](_0x45d4cb,_0x54d94b);}_0x158635[_0x6c71('0xd3')]=function(){var _0x45d4cb,_0x54d94b;console['\x6c\x6f\x67'](_0x6c71('0x246'),(_0x45d4cb=new Date(),_0x54d94b=[_0x4b21d1(_0x45d4cb['\x67\x65\x74\x48\x6f\x75\x72\x73']()),_0x4b21d1(_0x45d4cb[_0x6c71('0x247')]()),_0x4b21d1(_0x45d4cb[_0x6c71('0x248')]())][_0x6c71('0xc')]('\x3a'),[_0x45d4cb['\x67\x65\x74\x44\x61\x74\x65'](),_0x2b6b27[_0x45d4cb[_0x6c71('0x249')]()],_0x54d94b][_0x6c71('0xc')]('\x20')),_0x158635[_0x6c71('0x211')]['\x61\x70\x70\x6c\x79'](_0x158635,arguments));},_0x158635['\x69\x6e\x68\x65\x72\x69\x74\x73']=_0x45d4cb(_0x6c71('0xe8')),_0x158635['\x5f\x65\x78\x74\x65\x6e\x64']=function(_0x45d4cb,_0x54d94b){if(!_0x54d94b||!_0x4fbbf5(_0x54d94b))return _0x45d4cb;for(var _0x158635=Object[_0x6c71('0x21a')](_0x54d94b),_0x5ebf30=_0x158635['\x6c\x65\x6e\x67\x74\x68'];_0x5ebf30--;)_0x45d4cb[_0x158635[_0x5ebf30]]=_0x54d94b[_0x158635[_0x5ebf30]];return _0x45d4cb;};}['\x63\x61\x6c\x6c'](this,_0x45d4cb('\x5f\x70\x72\x6f\x63\x65\x73\x73'),'\x75\x6e\x64\x65\x66\x69\x6e\x65\x64'!=typeof global?global:_0x6c71('0x38')!=typeof self?self:_0x6c71('0x38')!=typeof window?window:{}));},{'./support/isBuffer':0x29,'\x5f\x70\x72\x6f\x63\x65\x73\x73':0x16,'\x69\x6e\x68\x65\x72\x69\x74\x73':0x28}],43:[function(_0x1d68ca,_0x2e8c01,_0x202b13){arguments[0x4][0x5][0x0][_0x6c71('0x34')](_0x202b13,arguments);},{'./lib/uint32':0x2c,'./lib/uint64':0x2d,'\x64\x75\x70':0x5}],44:[function(_0x51c573,_0x905a38,_0x4aecc0){arguments[0x4][0x6][0x0][_0x6c71('0x34')](_0x4aecc0,arguments);},{'\x64\x75\x70':0x6}],45:[function(_0x1eaebe,_0x478164,_0x3d0b7d){arguments[0x4][0x7][0x0][_0x6c71('0x34')](_0x3d0b7d,arguments);},{'\x64\x75\x70':0x7}],46:[function(_0x218f4b,_0x155e66,_0x6f52f1){(function(_0x6f52f1){!function(_0x25009f){var _0x3b56a4=_0x218f4b(_0x6c71('0xd8'))[_0x6c71('0x98')];_0x3b56a4[_0x6c71('0x12')][_0x6c71('0x24a')]=function(_0x218f4b,_0x155e66){var _0x6f52f1,_0x25009f,_0x3b56a4=_0x37f04c[_0x6c71('0x9e')],_0x50205e=_0x37f04c['\x5f\x68\x69\x67\x68'];_0x6f52f1=(_0x25009f=_0x218f4b*_0x3b56a4)>>>0x10,_0x6f52f1+=_0x155e66*_0x3b56a4,_0x6f52f1&=0xffff,_0x6f52f1+=_0x218f4b*_0x50205e;var _0x30e608=this[_0x6c71('0x9e')]+(0xffff&_0x25009f),_0x2b1487=_0x30e608>>>0x10,_0x2dacde=(_0x2b1487+=this['\x5f\x68\x69\x67\x68']+(0xffff&_0x6f52f1))<<0x10|0xffff&_0x30e608;_0x2b1487=(_0x2dacde=_0x2dacde<<0xd|_0x2dacde>>>0x13)>>>0x10,_0x6f52f1=(_0x25009f=(_0x30e608=0xffff&_0x2dacde)*(_0x3b56a4=_0x4abcfd[_0x6c71('0x9e')]))>>>0x10,_0x6f52f1+=_0x2b1487*_0x3b56a4,_0x6f52f1&=0xffff,_0x6f52f1+=_0x30e608*(_0x50205e=_0x4abcfd[_0x6c71('0x9c')]),this[_0x6c71('0x9e')]=0xffff&_0x25009f,this[_0x6c71('0x9c')]=0xffff&_0x6f52f1;};var _0x4abcfd=_0x3b56a4(_0x6c71('0x24b')),_0x37f04c=_0x3b56a4('\x32\x32\x34\x36\x38\x32\x32\x35\x31\x39'),_0x1aa69c=_0x3b56a4(_0x6c71('0x24c')),_0x1c279d=_0x3b56a4(_0x6c71('0x24d')),_0x33ebdb=_0x3b56a4(_0x6c71('0x24e')),_0x1fd407=_0x4abcfd[_0x6c71('0xa8')]()[_0x6c71('0xa3')](_0x37f04c);function _0x5cb375(){return 0x2==arguments[_0x6c71('0x8')]?new _0x5cb375(arguments[0x1])['\x75\x70\x64\x61\x74\x65'](arguments[0x0])[_0x6c71('0x24f')]():this instanceof _0x5cb375?void _0x2c344f[_0x6c71('0x4')](this,arguments[0x0]):new _0x5cb375(arguments[0x0]);}function _0x2c344f(_0x218f4b){return this[_0x6c71('0x250')]=_0x218f4b instanceof _0x3b56a4?_0x218f4b[_0x6c71('0xa8')]():_0x3b56a4(_0x218f4b),this['\x76\x31']=this[_0x6c71('0x250')]['\x63\x6c\x6f\x6e\x65']()[_0x6c71('0xa3')](_0x1fd407),this['\x76\x32']=this['\x73\x65\x65\x64']['\x63\x6c\x6f\x6e\x65']()[_0x6c71('0xa3')](_0x37f04c),this['\x76\x33']=this[_0x6c71('0x250')][_0x6c71('0xa8')](),this['\x76\x34']=this[_0x6c71('0x250')]['\x63\x6c\x6f\x6e\x65']()[_0x6c71('0xa4')](_0x4abcfd),this[_0x6c71('0x251')]=0x0,this[_0x6c71('0x252')]=0x0,this[_0x6c71('0x253')]=null,this;}_0x5cb375[_0x6c71('0x12')][_0x6c71('0x254')]=_0x2c344f,_0x5cb375[_0x6c71('0x12')][_0x6c71('0x146')]=function(_0x218f4b){var _0x155e66,_0x25009f=_0x6c71('0x14')==typeof _0x218f4b;_0x25009f&&(_0x218f4b=function(_0x218f4b){for(var _0x155e66=[],_0x6f52f1=0x0,_0x25009f=_0x218f4b['\x6c\x65\x6e\x67\x74\x68'];_0x6f52f1<_0x25009f;_0x6f52f1++){var _0x3b56a4=_0x218f4b['\x63\x68\x61\x72\x43\x6f\x64\x65\x41\x74'](_0x6f52f1);_0x3b56a4<0x80?_0x155e66[_0x6c71('0xb')](_0x3b56a4):_0x3b56a4<0x800?_0x155e66[_0x6c71('0xb')](0xc0|_0x3b56a4>>0x6,0x80|0x3f&_0x3b56a4):_0x3b56a4<0xd800||_0x3b56a4>=0xe000?_0x155e66[_0x6c71('0xb')](0xe0|_0x3b56a4>>0xc,0x80|_0x3b56a4>>0x6&0x3f,0x80|0x3f&_0x3b56a4):(_0x6f52f1++,_0x3b56a4=0x10000+((0x3ff&_0x3b56a4)<<0xa|0x3ff&_0x218f4b['\x63\x68\x61\x72\x43\x6f\x64\x65\x41\x74'](_0x6f52f1)),_0x155e66[_0x6c71('0xb')](0xf0|_0x3b56a4>>0x12,0x80|_0x3b56a4>>0xc&0x3f,0x80|_0x3b56a4>>0x6&0x3f,0x80|0x3f&_0x3b56a4));}return new Uint8Array(_0x155e66);}(_0x218f4b),_0x25009f=!0x1,_0x155e66=!0x0),_0x6c71('0x38')!=typeof ArrayBuffer&&_0x218f4b instanceof ArrayBuffer&&(_0x155e66=!0x0,_0x218f4b=new Uint8Array(_0x218f4b));var _0x3b56a4=0x0,_0x4abcfd=_0x218f4b[_0x6c71('0x8')],_0x37f04c=_0x3b56a4+_0x4abcfd;if(0x0==_0x4abcfd)return this;if(this[_0x6c71('0x251')]+=_0x4abcfd,0x0==this[_0x6c71('0x252')]&&(this[_0x6c71('0x253')]=_0x25009f?'':_0x155e66?new Uint8Array(0x10):new _0x6f52f1(0x10)),this[_0x6c71('0x252')]+_0x4abcfd<0x10)return _0x25009f?this[_0x6c71('0x253')]+=_0x218f4b:_0x155e66?this['\x6d\x65\x6d\x6f\x72\x79'][_0x6c71('0x83')](_0x218f4b['\x73\x75\x62\x61\x72\x72\x61\x79'](0x0,_0x4abcfd),this[_0x6c71('0x252')]):_0x218f4b[_0x6c71('0x1d')](this[_0x6c71('0x253')],this[_0x6c71('0x252')],0x0,_0x4abcfd),this[_0x6c71('0x252')]+=_0x4abcfd,this;if(this[_0x6c71('0x252')]>0x0){_0x25009f?this['\x6d\x65\x6d\x6f\x72\x79']+=_0x218f4b[_0x6c71('0x1b')](0x0,0x10-this[_0x6c71('0x252')]):_0x155e66?this['\x6d\x65\x6d\x6f\x72\x79']['\x73\x65\x74'](_0x218f4b['\x73\x75\x62\x61\x72\x72\x61\x79'](0x0,0x10-this[_0x6c71('0x252')]),this[_0x6c71('0x252')]):_0x218f4b[_0x6c71('0x1d')](this['\x6d\x65\x6d\x6f\x72\x79'],this[_0x6c71('0x252')],0x0,0x10-this['\x6d\x65\x6d\x73\x69\x7a\x65']);var _0x1aa69c=0x0;_0x25009f?(this['\x76\x31'][_0x6c71('0x24a')](this[_0x6c71('0x253')][_0x6c71('0x9')](_0x1aa69c+0x1)<<0x8|this['\x6d\x65\x6d\x6f\x72\x79'][_0x6c71('0x9')](_0x1aa69c),this['\x6d\x65\x6d\x6f\x72\x79'][_0x6c71('0x9')](_0x1aa69c+0x3)<<0x8|this[_0x6c71('0x253')]['\x63\x68\x61\x72\x43\x6f\x64\x65\x41\x74'](_0x1aa69c+0x2)),_0x1aa69c+=0x4,this['\x76\x32']['\x78\x78\x68\x5f\x75\x70\x64\x61\x74\x65'](this[_0x6c71('0x253')][_0x6c71('0x9')](_0x1aa69c+0x1)<<0x8|this[_0x6c71('0x253')][_0x6c71('0x9')](_0x1aa69c),this['\x6d\x65\x6d\x6f\x72\x79'][_0x6c71('0x9')](_0x1aa69c+0x3)<<0x8|this[_0x6c71('0x253')][_0x6c71('0x9')](_0x1aa69c+0x2)),_0x1aa69c+=0x4,this['\x76\x33'][_0x6c71('0x24a')](this[_0x6c71('0x253')][_0x6c71('0x9')](_0x1aa69c+0x1)<<0x8|this[_0x6c71('0x253')]['\x63\x68\x61\x72\x43\x6f\x64\x65\x41\x74'](_0x1aa69c),this[_0x6c71('0x253')][_0x6c71('0x9')](_0x1aa69c+0x3)<<0x8|this[_0x6c71('0x253')][_0x6c71('0x9')](_0x1aa69c+0x2)),_0x1aa69c+=0x4,this['\x76\x34']['\x78\x78\x68\x5f\x75\x70\x64\x61\x74\x65'](this[_0x6c71('0x253')][_0x6c71('0x9')](_0x1aa69c+0x1)<<0x8|this[_0x6c71('0x253')][_0x6c71('0x9')](_0x1aa69c),this[_0x6c71('0x253')][_0x6c71('0x9')](_0x1aa69c+0x3)<<0x8|this[_0x6c71('0x253')][_0x6c71('0x9')](_0x1aa69c+0x2))):(this['\x76\x31'][_0x6c71('0x24a')](this[_0x6c71('0x253')][_0x1aa69c+0x1]<<0x8|this[_0x6c71('0x253')][_0x1aa69c],this[_0x6c71('0x253')][_0x1aa69c+0x3]<<0x8|this[_0x6c71('0x253')][_0x1aa69c+0x2]),_0x1aa69c+=0x4,this['\x76\x32'][_0x6c71('0x24a')](this[_0x6c71('0x253')][_0x1aa69c+0x1]<<0x8|this[_0x6c71('0x253')][_0x1aa69c],this[_0x6c71('0x253')][_0x1aa69c+0x3]<<0x8|this[_0x6c71('0x253')][_0x1aa69c+0x2]),_0x1aa69c+=0x4,this['\x76\x33'][_0x6c71('0x24a')](this[_0x6c71('0x253')][_0x1aa69c+0x1]<<0x8|this[_0x6c71('0x253')][_0x1aa69c],this['\x6d\x65\x6d\x6f\x72\x79'][_0x1aa69c+0x3]<<0x8|this['\x6d\x65\x6d\x6f\x72\x79'][_0x1aa69c+0x2]),_0x1aa69c+=0x4,this['\x76\x34'][_0x6c71('0x24a')](this[_0x6c71('0x253')][_0x1aa69c+0x1]<<0x8|this['\x6d\x65\x6d\x6f\x72\x79'][_0x1aa69c],this['\x6d\x65\x6d\x6f\x72\x79'][_0x1aa69c+0x3]<<0x8|this[_0x6c71('0x253')][_0x1aa69c+0x2])),_0x3b56a4+=0x10-this['\x6d\x65\x6d\x73\x69\x7a\x65'],this[_0x6c71('0x252')]=0x0,_0x25009f&&(this[_0x6c71('0x253')]='');}if(_0x3b56a4<=_0x37f04c-0x10){var _0x1c279d=_0x37f04c-0x10;do{_0x25009f?(this['\x76\x31']['\x78\x78\x68\x5f\x75\x70\x64\x61\x74\x65'](_0x218f4b[_0x6c71('0x9')](_0x3b56a4+0x1)<<0x8|_0x218f4b[_0x6c71('0x9')](_0x3b56a4),_0x218f4b['\x63\x68\x61\x72\x43\x6f\x64\x65\x41\x74'](_0x3b56a4+0x3)<<0x8|_0x218f4b[_0x6c71('0x9')](_0x3b56a4+0x2)),_0x3b56a4+=0x4,this['\x76\x32'][_0x6c71('0x24a')](_0x218f4b['\x63\x68\x61\x72\x43\x6f\x64\x65\x41\x74'](_0x3b56a4+0x1)<<0x8|_0x218f4b['\x63\x68\x61\x72\x43\x6f\x64\x65\x41\x74'](_0x3b56a4),_0x218f4b[_0x6c71('0x9')](_0x3b56a4+0x3)<<0x8|_0x218f4b[_0x6c71('0x9')](_0x3b56a4+0x2)),_0x3b56a4+=0x4,this['\x76\x33']['\x78\x78\x68\x5f\x75\x70\x64\x61\x74\x65'](_0x218f4b['\x63\x68\x61\x72\x43\x6f\x64\x65\x41\x74'](_0x3b56a4+0x1)<<0x8|_0x218f4b[_0x6c71('0x9')](_0x3b56a4),_0x218f4b[_0x6c71('0x9')](_0x3b56a4+0x3)<<0x8|_0x218f4b[_0x6c71('0x9')](_0x3b56a4+0x2)),_0x3b56a4+=0x4,this['\x76\x34'][_0x6c71('0x24a')](_0x218f4b['\x63\x68\x61\x72\x43\x6f\x64\x65\x41\x74'](_0x3b56a4+0x1)<<0x8|_0x218f4b[_0x6c71('0x9')](_0x3b56a4),_0x218f4b['\x63\x68\x61\x72\x43\x6f\x64\x65\x41\x74'](_0x3b56a4+0x3)<<0x8|_0x218f4b[_0x6c71('0x9')](_0x3b56a4+0x2))):(this['\x76\x31'][_0x6c71('0x24a')](_0x218f4b[_0x3b56a4+0x1]<<0x8|_0x218f4b[_0x3b56a4],_0x218f4b[_0x3b56a4+0x3]<<0x8|_0x218f4b[_0x3b56a4+0x2]),_0x3b56a4+=0x4,this['\x76\x32'][_0x6c71('0x24a')](_0x218f4b[_0x3b56a4+0x1]<<0x8|_0x218f4b[_0x3b56a4],_0x218f4b[_0x3b56a4+0x3]<<0x8|_0x218f4b[_0x3b56a4+0x2]),_0x3b56a4+=0x4,this['\x76\x33'][_0x6c71('0x24a')](_0x218f4b[_0x3b56a4+0x1]<<0x8|_0x218f4b[_0x3b56a4],_0x218f4b[_0x3b56a4+0x3]<<0x8|_0x218f4b[_0x3b56a4+0x2]),_0x3b56a4+=0x4,this['\x76\x34'][_0x6c71('0x24a')](_0x218f4b[_0x3b56a4+0x1]<<0x8|_0x218f4b[_0x3b56a4],_0x218f4b[_0x3b56a4+0x3]<<0x8|_0x218f4b[_0x3b56a4+0x2])),_0x3b56a4+=0x4;}while(_0x3b56a4<=_0x1c279d);}return _0x3b56a4<_0x37f04c&&(_0x25009f?this[_0x6c71('0x253')]+=_0x218f4b[_0x6c71('0x1b')](_0x3b56a4):_0x155e66?this[_0x6c71('0x253')][_0x6c71('0x83')](_0x218f4b['\x73\x75\x62\x61\x72\x72\x61\x79'](_0x3b56a4,_0x37f04c),this[_0x6c71('0x252')]):_0x218f4b[_0x6c71('0x1d')](this[_0x6c71('0x253')],this[_0x6c71('0x252')],_0x3b56a4,_0x37f04c),this[_0x6c71('0x252')]=_0x37f04c-_0x3b56a4),this;},_0x5cb375[_0x6c71('0x12')][_0x6c71('0x24f')]=function(){var _0x218f4b,_0x155e66,_0x6f52f1=this[_0x6c71('0x253')],_0x25009f=_0x6c71('0x14')==typeof _0x6f52f1,_0x1fd407=0x0,_0x5cb375=this[_0x6c71('0x252')],_0x2c344f=new _0x3b56a4();for((_0x218f4b=this[_0x6c71('0x251')]>=0x10?this['\x76\x31'][_0x6c71('0xb2')](0x1)[_0x6c71('0xa3')](this['\x76\x32'][_0x6c71('0xb2')](0x7)[_0x6c71('0xa3')](this['\x76\x33']['\x72\x6f\x74\x6c'](0xc)[_0x6c71('0xa3')](this['\x76\x34'][_0x6c71('0xb2')](0x12)))):this[_0x6c71('0x250')][_0x6c71('0xa3')](_0x33ebdb))[_0x6c71('0xa3')](_0x2c344f[_0x6c71('0xa0')](this[_0x6c71('0x251')]));_0x1fd407<=_0x5cb375-0x4;)_0x25009f?_0x2c344f[_0x6c71('0x9f')](_0x6f52f1['\x63\x68\x61\x72\x43\x6f\x64\x65\x41\x74'](_0x1fd407+0x1)<<0x8|_0x6f52f1[_0x6c71('0x9')](_0x1fd407),_0x6f52f1[_0x6c71('0x9')](_0x1fd407+0x3)<<0x8|_0x6f52f1[_0x6c71('0x9')](_0x1fd407+0x2)):_0x2c344f[_0x6c71('0x9f')](_0x6f52f1[_0x1fd407+0x1]<<0x8|_0x6f52f1[_0x1fd407],_0x6f52f1[_0x1fd407+0x3]<<0x8|_0x6f52f1[_0x1fd407+0x2]),_0x218f4b[_0x6c71('0xa3')](_0x2c344f['\x6d\x75\x6c\x74\x69\x70\x6c\x79'](_0x1aa69c))[_0x6c71('0xb2')](0x11)[_0x6c71('0xa5')](_0x1c279d),_0x1fd407+=0x4;for(;_0x1fd407<_0x5cb375;)_0x2c344f[_0x6c71('0x9f')](_0x25009f?_0x6f52f1[_0x6c71('0x9')](_0x1fd407++):_0x6f52f1[_0x1fd407++],0x0),_0x218f4b[_0x6c71('0xa3')](_0x2c344f[_0x6c71('0xa5')](_0x33ebdb))[_0x6c71('0xb2')](0xb)[_0x6c71('0xa5')](_0x4abcfd);return _0x155e66=_0x218f4b[_0x6c71('0xa8')]()[_0x6c71('0xa9')](0xf),_0x218f4b[_0x6c71('0xad')](_0x155e66)['\x6d\x75\x6c\x74\x69\x70\x6c\x79'](_0x37f04c),_0x155e66=_0x218f4b[_0x6c71('0xa8')]()[_0x6c71('0xa9')](0xd),_0x218f4b['\x78\x6f\x72'](_0x155e66)[_0x6c71('0xa5')](_0x1aa69c),_0x155e66=_0x218f4b[_0x6c71('0xa8')]()[_0x6c71('0xa9')](0x10),_0x218f4b['\x78\x6f\x72'](_0x155e66),this['\x69\x6e\x69\x74'](this[_0x6c71('0x250')]),_0x218f4b;},_0x6c71('0x38')!=typeof define&&define[_0x6c71('0xb5')]?define([],function(){return _0x5cb375;}):void 0x0!==_0x155e66&&_0x155e66[_0x6c71('0x5')]?_0x155e66['\x65\x78\x70\x6f\x72\x74\x73']=_0x5cb375:_0x25009f[_0x6c71('0x255')]=_0x5cb375;}(this);}[_0x6c71('0x4')](this,_0x218f4b(_0x6c71('0xe4'))[_0x6c71('0xf')]));},{'\x62\x75\x66\x66\x65\x72':0x3,'\x63\x75\x69\x6e\x74':0x2b}],47:[function (ogarsettings, more2ogarset, more1ogarset) {
 	! function (more2ogarset, more1ogarset, moreogarset) {
-		var _0x167e37 = null,
-			_0x12efde = null,
-			_0x4ee245 = {
+		var more3ogarset = null,
+			more4ogarset = null,
+			ogarbuffed = {
 				'pl': {
 					'start': 'Start',
 					'settings': `Ustawienia`,
@@ -689,26 +689,26 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'page_shop': `Shop`
 				}
 			},
-			_0x24c7a0 = 'en',
-			_0x2f0ea0 = more2ogarset[`navigator`][`language`] || more2ogarset['navigator'][`userLanguage`];
-		_0x2f0ea0 && _0x4ee245[`hasOwnProperty`](_0x2f0ea0) && (_0x24c7a0 = _0x2f0ea0);
-		var _0xa193a8 = _0x4ee245[_0x24c7a0],
-			_0xbfbffb = {
-				'comm1': _0xa193a8[`comm1`],
-				'comm2': _0xa193a8[`comm2`],
-				'comm3': _0xa193a8[`comm3`],
-				'comm4': _0xa193a8[`comm4`],
-				'comm5': _0xa193a8[`comm5`],
-				'comm6': _0xa193a8[`comm6`],
-				'comm7': _0xa193a8['comm7'],
-				'comm8': _0xa193a8[`comm8`],
-				'comm9': _0xa193a8[`comm9`],
-				'comm0': _0xa193a8['comm0'],
-				'comm10': _0xa193a8[`comm10`],
-				'comm11': _0xa193a8[`comm11`],
-				'comm12': _0xa193a8[`comm12`],
-				'comm13': _0xa193a8['comm13'],
-				'comm14': _0xa193a8[`comm14`]
+			ogarlanguage = 'en',
+			ogaractuallanguage = more2ogarset[`navigator`][`language`] || more2ogarset['navigator'][`userLanguage`];
+		ogaractuallanguage && ogarbuffed[`hasOwnProperty`](ogaractuallanguage) && (ogarlanguage = ogaractuallanguage);
+		var more5ogarset = ogarbuffed[ogarlanguage],
+			ogario1Commands = {
+				'comm1': more5ogarset[`comm1`],
+				'comm2': more5ogarset[`comm2`],
+				'comm3': more5ogarset[`comm3`],
+				'comm4': more5ogarset[`comm4`],
+				'comm5': more5ogarset[`comm5`],
+				'comm6': more5ogarset[`comm6`],
+				'comm7': more5ogarset['comm7'],
+				'comm8': more5ogarset[`comm8`],
+				'comm9': more5ogarset[`comm9`],
+				'comm0': more5ogarset['comm0'],
+				'comm10': more5ogarset[`comm10`],
+				'comm11': more5ogarset[`comm11`],
+				'comm12': more5ogarset[`comm12`],
+				'comm13': more5ogarset['comm13'],
+				'comm14': more5ogarset[`comm14`]
 			},
 			_0x3cdcf7 = {
 				'&': `&amp;`,
@@ -1160,7 +1160,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'menuBg': ''
 				}
 			},
-			ogarioJSONsettings = {
+			ogario1ThemeSettings = {
 				'preset': `ogario-v3`,
 				'darkTheme': !0x0,
 				'mainColor': `#01d9cc`,
@@ -1286,10 +1286,10 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				'cursorCSS': null,
 				'loadThemeSettings': function () {
 					var ogarsettings = null;
-					for (var moreogarset in null !== more2ogarset[`localStorage`][`getItem`](`ogarioThemeSettings`) && (ogarsettings = JSON[`parse`](more2ogarset[`localStorage`][`getItem`](`ogarioThemeSettings`))), ogarioJSONsettings) ogarioJSONsettings[`hasOwnProperty`](moreogarset) && (ogarsettings && ogarsettings[`hasOwnProperty`](moreogarset) && (ogarioJSONsettings[moreogarset] = ogarsettings[moreogarset]), more1ogarset[`hasOwnProperty`](moreogarset) && (more1ogarset[moreogarset] = ogarioJSONsettings[moreogarset]));
+					for (var moreogarset in null !== more2ogarset[`localStorage`][`getItem`](`ogarioThemeSettings`) && (ogarsettings = JSON[`parse`](more2ogarset[`localStorage`][`getItem`](`ogarioThemeSettings`))), ogario1ThemeSettings) ogario1ThemeSettings[`hasOwnProperty`](moreogarset) && (ogarsettings && ogarsettings[`hasOwnProperty`](moreogarset) && (ogario1ThemeSettings[moreogarset] = ogarsettings[moreogarset]), more1ogarset[`hasOwnProperty`](moreogarset) && (more1ogarset[moreogarset] = ogario1ThemeSettings[moreogarset]));
 				},
 				'saveThemeSettings': function () {
-					more2ogarset[`localStorage`][`setItem`](`ogarioThemeSettings`, JSON[`stringify`](ogarioJSONsettings));
+					more2ogarset[`localStorage`][`setItem`](`ogarioThemeSettings`, JSON[`stringify`](ogario1ThemeSettings));
 				},
 				'restoreThemeSettings': function () {
 					null !== more2ogarset['localStorage'][`getItem`](`ogarioThemeSettings`) && (more2ogarset[`localStorage`][`removeItem`](`ogarioThemeSettings`), more2ogarset[`location`][`reload`]());
@@ -1297,79 +1297,79 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				'addCustomCSS': function (ogarsettings, more2ogarset) {
 					this[ogarsettings] || (this[ogarsettings] = moreogarset(`<style type=\'text/css\'>`)[`appendTo`](`head`)), this[ogarsettings]['html'](more2ogarset);
 				},
-				'addPresetBox': function (ogarsettings, more2ogarset, more1ogarset, _0x167e37, _0x12efde) {
-					for (var _0x4ee245 in moreogarset(ogarsettings)['append'](`<div class=\"preset-box\"><span class=\"title-box\">` + _0xa193a8[more2ogarset] + '</span><div class=\"select-wrapper\"><select id=\"' + more2ogarset + `\" class=\"form-control\"></select></div></div>`), more1ogarset) more1ogarset[`hasOwnProperty`](_0x4ee245) && moreogarset('#' + more2ogarset)[`append`](`<option value=\"` + _0x4ee245 + '\">' + more1ogarset[_0x4ee245][`name`] + `</option>`);
-					moreogarset('#' + more2ogarset)[`val`](ogarioJSONsettings[_0x167e37]);
-					var _0x24c7a0 = this;
+				'addPresetBox': function (ogarsettings, more2ogarset, more1ogarset, more3ogarset, more4ogarset) {
+					for (var ogarbuffed in moreogarset(ogarsettings)['append'](`<div class=\"preset-box\"><span class=\"title-box\">` + more5ogarset[more2ogarset] + '</span><div class=\"select-wrapper\"><select id=\"' + more2ogarset + `\" class=\"form-control\"></select></div></div>`), more1ogarset) more1ogarset[`hasOwnProperty`](ogarbuffed) && moreogarset('#' + more2ogarset)[`append`](`<option value=\"` + ogarbuffed + '\">' + more1ogarset[ogarbuffed][`name`] + `</option>`);
+					moreogarset('#' + more2ogarset)[`val`](ogario1ThemeSettings[more3ogarset]);
+					var ogarlanguage = this;
 					moreogarset('#' + more2ogarset)['on'](`change`, function () {
 						var ogarsettings = this[`value`];
-						ogarioJSONsettings[_0x167e37] = ogarsettings, _0x24c7a0[_0x12efde](ogarsettings);
+						ogario1ThemeSettings[more3ogarset] = ogarsettings, ogarlanguage[more4ogarset](ogarsettings);
 					});
 				},
-				'addColorBox': function (ogarsettings, more2ogarset, _0x167e37) {
-					if (moreogarset(ogarsettings)[`append`](`<div class=\"color-box\"><span class=\"title-box\">` + _0xa193a8[more2ogarset] + '</span><div class=\"input-group ' + more2ogarset + `-picker\"><input type=\"text\" value=\"` + ogarioJSONsettings[more2ogarset] + `\" id=\"` + more2ogarset + `\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>`), _0x167e37) {
-						var _0x12efde = this;
+				'addColorBox': function (ogarsettings, more2ogarset, more3ogarset) {
+					if (moreogarset(ogarsettings)[`append`](`<div class=\"color-box\"><span class=\"title-box\">` + more5ogarset[more2ogarset] + '</span><div class=\"input-group ' + more2ogarset + `-picker\"><input type=\"text\" value=\"` + ogario1ThemeSettings[more2ogarset] + `\" id=\"` + more2ogarset + `\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>`), more3ogarset) {
+						var more4ogarset = this;
 						moreogarset(ogarsettings + ' .' + more2ogarset + `-picker`)['colorpicker']({
 							'format': `hex`
 						})['on'](`changeColor.colorpicker`, function (ogarsettings) {
-							ogarioJSONsettings[more2ogarset] = ogarsettings[`color`][`toHex`](), more1ogarset[`hasOwnProperty`](more2ogarset) && (more1ogarset[more2ogarset] = ogarioJSONsettings[more2ogarset]), _0x12efde[_0x167e37]();
+							ogario1ThemeSettings[more2ogarset] = ogarsettings[`color`][`toHex`](), more1ogarset[`hasOwnProperty`](more2ogarset) && (more1ogarset[more2ogarset] = ogario1ThemeSettings[more2ogarset]), more4ogarset[more3ogarset]();
 						});
 					} else moreogarset(ogarsettings + ' .' + more2ogarset + '-picker')[`colorpicker`]({
 						'format': `hex`
 					})['on'](`changeColor.colorpicker`, function (ogarsettings) {
-						ogarioJSONsettings[more2ogarset] = ogarsettings[`color`]['toHex'](), more1ogarset[`hasOwnProperty`](more2ogarset) && (more1ogarset[more2ogarset] = ogarioJSONsettings[more2ogarset]);
+						ogario1ThemeSettings[more2ogarset] = ogarsettings[`color`]['toHex'](), more1ogarset[`hasOwnProperty`](more2ogarset) && (more1ogarset[more2ogarset] = ogario1ThemeSettings[more2ogarset]);
 					});
 				},
-				'addRgbaColorBox': function (ogarsettings, more2ogarset, _0x167e37) {
-					if (moreogarset(ogarsettings)['append'](`<div class=\"color-box\"><span class=\"title-box\">` + _0xa193a8[more2ogarset] + `</span><div class=\"input-group ` + more2ogarset + `-picker\"><input type=\"text\" value=\"` + ogarioJSONsettings[more2ogarset] + `\" id=\"` + more2ogarset + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>'), _0x167e37) {
-						var _0x12efde = this;
+				'addRgbaColorBox': function (ogarsettings, more2ogarset, more3ogarset) {
+					if (moreogarset(ogarsettings)['append'](`<div class=\"color-box\"><span class=\"title-box\">` + more5ogarset[more2ogarset] + `</span><div class=\"input-group ` + more2ogarset + `-picker\"><input type=\"text\" value=\"` + ogario1ThemeSettings[more2ogarset] + `\" id=\"` + more2ogarset + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>'), more3ogarset) {
+						var more4ogarset = this;
 						moreogarset(ogarsettings + ' .' + more2ogarset + `-picker`)[`colorpicker`]({
 							'format': `rgba`
 						})['on'](`changeColor.colorpicker`, function (ogarsettings) {
 							var moreogarset = ogarsettings[`color`][`toRGB`]();
-							ogarioJSONsettings[more2ogarset] = 'rgba(' + moreogarset['r'] + ',' + moreogarset['g'] + ',' + moreogarset['b'] + ',' + moreogarset['a'] + ')', more1ogarset[`hasOwnProperty`](more2ogarset) && (more1ogarset[more2ogarset] = ogarioJSONsettings[more2ogarset]), _0x12efde[_0x167e37]();
+							ogario1ThemeSettings[more2ogarset] = 'rgba(' + moreogarset['r'] + ',' + moreogarset['g'] + ',' + moreogarset['b'] + ',' + moreogarset['a'] + ')', more1ogarset[`hasOwnProperty`](more2ogarset) && (more1ogarset[more2ogarset] = ogario1ThemeSettings[more2ogarset]), more4ogarset[more3ogarset]();
 						});
 					} else moreogarset(ogarsettings + ' .' + more2ogarset + `-picker`)[`colorpicker`]({
 						'format': 'rgba'
 					})['on'](`changeColor.colorpicker`, function (ogarsettings) {
 						var moreogarset = ogarsettings[`color`][`toRGB`]();
-						ogarioJSONsettings[more2ogarset] = `rgba(` + moreogarset['r'] + ',' + moreogarset['g'] + ',' + moreogarset['b'] + ',' + moreogarset['a'] + ')', more1ogarset[`hasOwnProperty`](more2ogarset) && (more1ogarset[more2ogarset] = ogarioJSONsettings[more2ogarset]);
+						ogario1ThemeSettings[more2ogarset] = `rgba(` + moreogarset['r'] + ',' + moreogarset['g'] + ',' + moreogarset['b'] + ',' + moreogarset['a'] + ')', more1ogarset[`hasOwnProperty`](more2ogarset) && (more1ogarset[more2ogarset] = ogario1ThemeSettings[more2ogarset]);
 					});
 				},
-				'addSliderBox': function (ogarsettings, more2ogarset, _0x167e37, _0x12efde, _0x4ee245, _0x24c7a0) {
-					if (moreogarset(ogarsettings)[`append`](`<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">` + _0xa193a8[more2ogarset] + `: </span><span id=\"` + more2ogarset + '-value\" class=\"value\">' + ogarioJSONsettings[more2ogarset] + `</span></div><input id=\"` + more2ogarset + '-slider\" type=\"range\" min=\"' + _0x167e37 + `\" max=\"` + _0x12efde + `\" step=\"` + _0x4ee245 + `\" value=\"` + ogarioJSONsettings[more2ogarset] + `\"></div>`), _0x24c7a0) {
-						var _0x2f0ea0 = this;
+				'addSliderBox': function (ogarsettings, more2ogarset, more3ogarset, more4ogarset, ogarbuffed, ogarlanguage) {
+					if (moreogarset(ogarsettings)[`append`](`<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">` + more5ogarset[more2ogarset] + `: </span><span id=\"` + more2ogarset + '-value\" class=\"value\">' + ogario1ThemeSettings[more2ogarset] + `</span></div><input id=\"` + more2ogarset + '-slider\" type=\"range\" min=\"' + more3ogarset + `\" max=\"` + more4ogarset + `\" step=\"` + ogarbuffed + `\" value=\"` + ogario1ThemeSettings[more2ogarset] + `\"></div>`), ogarlanguage) {
+						var ogaractuallanguage = this;
 						moreogarset('#' + more2ogarset + `-slider`)['on'](`input`, function () {
 							var ogarsettings = parseFloat(moreogarset(this)[`val`]());
-							moreogarset('#' + more2ogarset + '-value')[`text`](ogarsettings), ogarioJSONsettings[more2ogarset] = ogarsettings, more1ogarset[`hasOwnProperty`](more2ogarset) && (more1ogarset[more2ogarset] = ogarsettings), _0x2f0ea0[_0x24c7a0]();
+							moreogarset('#' + more2ogarset + '-value')[`text`](ogarsettings), ogario1ThemeSettings[more2ogarset] = ogarsettings, more1ogarset[`hasOwnProperty`](more2ogarset) && (more1ogarset[more2ogarset] = ogarsettings), ogaractuallanguage[ogarlanguage]();
 						});
 					} else moreogarset('#' + more2ogarset + `-slider`)['on'](`input`, function () {
 						var ogarsettings = parseFloat(moreogarset(this)['val']());
-						moreogarset('#' + more2ogarset + '-value')[`text`](ogarsettings), ogarioJSONsettings[more2ogarset] = ogarsettings, more1ogarset[`hasOwnProperty`](more2ogarset) && (more1ogarset[more2ogarset] = ogarsettings);
+						moreogarset('#' + more2ogarset + '-value')[`text`](ogarsettings), ogario1ThemeSettings[more2ogarset] = ogarsettings, more1ogarset[`hasOwnProperty`](more2ogarset) && (more1ogarset[more2ogarset] = ogarsettings);
 					});
 				},
-				'addInputBox': function (ogarsettings, more2ogarset, more1ogarset, _0x167e37) {
-					moreogarset(ogarsettings)[`append`](`<div class=\"input-box\"><span class=\"title-box\">` + _0xa193a8[more2ogarset] + '</span><input id=\"' + more2ogarset + `\" class=\"form-control\" placeholder=\"` + more1ogarset + '\" value=\"' + ogarioJSONsettings[more2ogarset] + '\" /></div>');
-					var _0x12efde = this;
+				'addInputBox': function (ogarsettings, more2ogarset, more1ogarset, more3ogarset) {
+					moreogarset(ogarsettings)[`append`](`<div class=\"input-box\"><span class=\"title-box\">` + more5ogarset[more2ogarset] + '</span><input id=\"' + more2ogarset + `\" class=\"form-control\" placeholder=\"` + more1ogarset + '\" value=\"' + ogario1ThemeSettings[more2ogarset] + '\" /></div>');
+					var more4ogarset = this;
 					moreogarset('#' + more2ogarset)['on'](`input`, function () {
-						ogarioJSONsettings[more2ogarset] = this[`value`], _0x12efde[_0x167e37]();
+						ogario1ThemeSettings[more2ogarset] = this[`value`], more4ogarset[more3ogarset]();
 					});
 				},
 				'addCursorBox': function (ogarsettings, more2ogarset) {
-					more2ogarset === ogarioJSONsettings[`customCursor`] ? moreogarset(ogarsettings)['append'](`<div class=\"cursor-box\"><a href=\"#\" class=\"active\"><img src=\"` + more2ogarset + `\"></a></div>`) : moreogarset(ogarsettings)[`append`](`<div class=\"cursor-box\"><a href=\"#\"><img src=\"` + more2ogarset + '\"></a></div>');
+					more2ogarset === ogario1ThemeSettings[`customCursor`] ? moreogarset(ogarsettings)['append'](`<div class=\"cursor-box\"><a href=\"#\" class=\"active\"><img src=\"` + more2ogarset + `\"></a></div>`) : moreogarset(ogarsettings)[`append`](`<div class=\"cursor-box\"><a href=\"#\"><img src=\"` + more2ogarset + '\"></a></div>');
 				},
 				'setFont': function (ogarsettings, more2ogarset) {
-					ogarioJSONsettings[ogarsettings] = more2ogarset, ogarioJSONsettings[ogarsettings + `Family`] = this[`setFontFamily`](more2ogarset), ogarioJSONsettings[ogarsettings + 'Weight'] = this[`setFontWeight`](more2ogarset), more1ogarset['hasOwnProperty'](ogarsettings + `Family`) && (more1ogarset[ogarsettings + `Family`] = ogarioJSONsettings[ogarsettings + `Family`]), more1ogarset[`hasOwnProperty`](ogarsettings + `Weight`) && (more1ogarset[ogarsettings + 'Weight'] = ogarioJSONsettings[ogarsettings + `Weight`]);
+					ogario1ThemeSettings[ogarsettings] = more2ogarset, ogario1ThemeSettings[ogarsettings + `Family`] = this[`setFontFamily`](more2ogarset), ogario1ThemeSettings[ogarsettings + 'Weight'] = this[`setFontWeight`](more2ogarset), more1ogarset['hasOwnProperty'](ogarsettings + `Family`) && (more1ogarset[ogarsettings + `Family`] = ogario1ThemeSettings[ogarsettings + `Family`]), more1ogarset[`hasOwnProperty`](ogarsettings + `Weight`) && (more1ogarset[ogarsettings + 'Weight'] = ogario1ThemeSettings[ogarsettings + `Weight`]);
 				},
 				'addFontBox': function (ogarsettings, more2ogarset, more1ogarset) {
-					moreogarset(ogarsettings)[`append`]('<div class=\"font-box\"><span class=\"title-box\">' + _0xa193a8[more2ogarset] + `</span><div class=\"select-wrapper\"><select id=\"` + more2ogarset + `\" class=\"form-control\"></select></div></div>`), moreogarset('#' + more2ogarset)[`append`](`<option value=\"ubuntu\">Ubuntu</option><option value=\"ubuntu-bold\">Ubuntu Bold</option>`), moreogarset('#' + more2ogarset)[`append`](`<option value=\"roboto\">Roboto</option><option value=\"roboto-bold\">Roboto Bold</option>`), moreogarset('#' + more2ogarset)[`append`](`<option value=\"oswald\">Oswald</option><option value=\"oswald-bold\">Oswald Bold</option>`), moreogarset('#' + more2ogarset)[`val`](ogarioJSONsettings[more2ogarset]);
-					var _0x167e37 = this;
+					moreogarset(ogarsettings)[`append`]('<div class=\"font-box\"><span class=\"title-box\">' + more5ogarset[more2ogarset] + `</span><div class=\"select-wrapper\"><select id=\"` + more2ogarset + `\" class=\"form-control\"></select></div></div>`), moreogarset('#' + more2ogarset)[`append`](`<option value=\"ubuntu\">Ubuntu</option><option value=\"ubuntu-bold\">Ubuntu Bold</option>`), moreogarset('#' + more2ogarset)[`append`](`<option value=\"roboto\">Roboto</option><option value=\"roboto-bold\">Roboto Bold</option>`), moreogarset('#' + more2ogarset)[`append`](`<option value=\"oswald\">Oswald</option><option value=\"oswald-bold\">Oswald Bold</option>`), moreogarset('#' + more2ogarset)[`val`](ogario1ThemeSettings[more2ogarset]);
+					var more3ogarset = this;
 					more1ogarset ? moreogarset('#' + more2ogarset)['on'](`change`, function () {
 						var ogarsettings = this[`value`];
-						_0x167e37[`setFont`](more2ogarset, ogarsettings), _0x167e37[more1ogarset]();
+						more3ogarset[`setFont`](more2ogarset, ogarsettings), more3ogarset[more1ogarset]();
 					}) : moreogarset('#' + more2ogarset)['on'](`change`, function () {
 						var ogarsettings = this['value'];
-						_0x167e37[`setFont`](more2ogarset, ogarsettings);
+						more3ogarset[`setFont`](more2ogarset, ogarsettings);
 					});
 				},
 				'setFontFamily': function (ogarsettings) {
@@ -1380,19 +1380,19 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				},
 				'setThemeMenu': function () {
 					var ogarsettings = this;
-					moreogarset(`#theme`)[`append`](`<ul class=\"submenu-tabs\"><li class=\"theme-main-tab active\"><a href=\"#theme-main\" class=\"active ogicon-paint-format\" data-toggle=\"tab-tooltip\" title=\"` + _0xa193a8[`basicTheming`] + `\"></a></li><li class=\"theme-menu-tab\"><a href=\"#theme-menu\" class=\"ogicon-menu\" data-toggle=\"tab-tooltip\" title=\"` + _0xa193a8[`menuTheming`] + `\"></a></li><li class=\"theme-hud-tab\"><a href=\"#theme-hud\" class=\"ogicon-display\" data-toggle=\"tab-tooltip\" title=\"` + _0xa193a8[`hudTheming`] + `\"></a></li><li class=\"theme-chat-tab\"><a href=\"#theme-chat\" class=\"ogicon-bubbles\" data-toggle=\"tab-tooltip\" title=\"` + _0xa193a8[`chatTheming`] + '\"></a></li><li class=\"theme-minimap-tab\"><a href=\"#theme-minimap\" class=\"ogicon-location2\" data-toggle=\"tab-tooltip\" title=\"' + _0xa193a8[`miniMapTheming`] + `\"></a></li><li class=\"theme-images-tab\"><a href=\"#theme-images\" class=\"ogicon-compass\" data-toggle=\"tab-tooltip\" title=\"` + _0xa193a8[`imagesTheming`] + '\"></a></li></ul><div id=\"theme-main\" class=\"submenu-panel\"></div><div id=\"theme-menu\" class=\"submenu-panel\"></div><div id=\"theme-hud\" class=\"submenu-panel\"></div><div id=\"theme-chat\" class=\"submenu-panel\"></div><div id=\"theme-minimap\" class=\"submenu-panel\"></div><div id=\"theme-images\" class=\"submenu-panel\"></div>'), this[`addPresetBox`](`#theme-main`, `themePreset`, _0x21cdbf, `preset`, `changeThemePreset`), this[`addColorBox`](`#theme-main`, `bgColor`, `setBgColor`), this[`addColorBox`](`#theme-main`, `bordersColor`), this[`addColorBox`](`#theme-main`, `gridColor`), this[`addColorBox`]('#theme-main', `sectorsColor`), this[`addColorBox`](`#theme-main`, `namesColor`), this[`addColorBox`](`#theme-main`, `namesStrokeColor`), this[`addColorBox`]('#theme-main', `massColor`), this[`addColorBox`](`#theme-main`, `massStrokeColor`), this[`addColorBox`](`#theme-main`, `virusColor`), this[`addColorBox`](`#theme-main`, `virusStrokeColor`), this.addColorBox('#theme-main', 'mVirusColor'), this.addColorBox('#theme-main', 'mVirusStrokeColor'), this[`addColorBox`](`#theme-main`, `foodColor`, `setFoodColor`), this['addColorBox'](`#theme-main`, 'teammatesIndColor', `setIndicatorColor`), this[`addColorBox`]('#theme-main', `cursorTrackingColor`), this['addColorBox']('#theme-main', `splitRangeColor`), this[`addColorBox`](`#theme-main`, `safeAreaColor`), this[`addColorBox`](`#theme-main`, `dangerAreaColor`), this['addColorBox'](`#theme-main`, `ghostCellsColor`), this[`addFontBox`](`#theme-main`, `namesFont`), this[`addFontBox`](`#theme-main`, 'massFont'), this[`addFontBox`]('#theme-main', `sectorsFont`), this['addSliderBox'](`#theme-main`, `sectorsFontSize`, 0xc8, 0x7d0, 0xa), this[`addSliderBox`](`#theme-main`, `namesScale`, 0.5, 0x2, 0.1), this[`addSliderBox`]('#theme-main', `massScale`, 0x1, 0x5, 0x1), this[`addSliderBox`](`#theme-main`, `virMassScale`, 0x1, 0x5, 0x1), this[`addSliderBox`](`#theme-main`, `strokeScale`, 0x1, 0x4, 0.1), this[`addSliderBox`](`#theme-main`, `foodSize`, 0x1, 0x32, 0x1, 'setFoodColor'), this[`addSliderBox`](`#theme-main`, `virusStrokeSize`, 0x2, 0x28, 0x1), this['addSliderBox'](`#theme-main`, `bordersWidth`, 0x2, 0xc8, 0x2), this[`addSliderBox`](`#theme-main`, `sectorsWidth`, 0x2, 0xc8, 0x2), this[`addSliderBox`](`#theme-main`, 'cellsAlpha', 0.01, 0.99, 0.01), this[`addSliderBox`](`#theme-main`, `skinsAlpha`, 0.01, 0.99, 0.01), this[`addSliderBox`](`#theme-main`, 'virusAlpha', 0x0, 0x1, 0.01), this[`addSliderBox`](`#theme-main`, `textAlpha`, 0.1, 0x1, 0.01), this[`addSliderBox`](`#theme-main`, `ghostCellsAlpha`, 0.01, 0.99, 0.01), this[`addPresetBox`](`#theme-menu`, `menuPreset`, _0x5d2d90, `menuPreset`, 'changeMenuPreset'), this[`addSliderBox`](`#theme-menu`, `menuOpacity`, 0.1, 0x1, 0.01, 'setMenuOpacity'), this[`addColorBox`](`#theme-menu`, `menuMainColor`, 'setMenuMainColor'), this[`addColorBox`]('#theme-menu', 'menuBtnTextColor', 'setMenuButtons'), this[`addColorBox`](`#theme-menu`, `menuPanelColor`, `setMenuPanelColor`), this[`addColorBox`](`#theme-menu`, 'menuPanelColor2', `setMenuPanelColor`), this['addColorBox']('#theme-menu', `menuTextColor`, `setMenuTextColor`), this[`addColorBox`](`#theme-menu`, `menuTextColor2`, `setMenuTextColor`), this[`addColorBox`](`#theme-menu`, 'btn1Color', `setMenuButtons`), this[`addColorBox`](`#theme-menu`, `btn1Color2`, `setMenuButtons`), this[`addColorBox`](`#theme-menu`, `btn2Color`, `setMenuButtons`), this[`addColorBox`](`#theme-menu`, 'btn2Color2', `setMenuButtons`), this[`addColorBox`](`#theme-menu`, `btn3Color`, `setMenuButtons`), this[`addColorBox`]('#theme-menu', `btn3Color2`, `setMenuButtons`), this[`addColorBox`](`#theme-menu`, 'btn4Color', `setMenuButtons`), this[`addColorBox`](`#theme-menu`, `btn4Color2`, `setMenuButtons`), this[`addInputBox`](`#theme-menu`, `menuBg`, `Image URL`, `setMenuBg`), this[`addColorBox`]('#theme-hud', `hudMainColor`, `setHudColors`), this[`addRgbaColorBox`](`#theme-hud`, `hudColor`, 'setHudColors'), this['addColorBox'](`#theme-hud`, `hudTextColor`, `setHudColors`), this[`addColorBox`](`#theme-hud`, `statsHudColor`, 'setHudColors'), this['addColorBox'](`#theme-hud`, `timeHudColor`, `setHudColors`), this[`addColorBox`](`#theme-hud`, `top5MassColor`, `setHudColors`), this[`addColorBox`](`#theme-hud`, 'lbMeColor', `setHudColors`), this[`addColorBox`](`#theme-hud`, `lbTeammateColor`, 'setHudColors'), this[`addFontBox`](`#theme-hud`, `hudFont`, 'setHudFont'), this['addSliderBox']('#theme-hud', `hudScale`, 0x1, 0x2, 0.01, `setHudScale`), this[`addRgbaColorBox`](`#theme-chat`, `messageColor`, 'setChatColors'), this[`addColorBox`](`#theme-chat`, `messageTextColor`, `setChatColors`), this[`addColorBox`](`#theme-chat`, `messageTimeColor`, `setChatColors`), this[`addColorBox`](`#theme-chat`, `messageNickColor`, `setChatColors`), this[`addRgbaColorBox`](`#theme-chat`, `commandsColor`, `setChatColors`), this['addColorBox']('#theme-chat', `commandsTextColor`, `setChatColors`), this[`addColorBox`]('#theme-chat', 'commandsTimeColor', `setChatColors`), this[`addColorBox`](`#theme-chat`, `commandsNickColor`, `setChatColors`), this[`addRgbaColorBox`](`#theme-chat`, 'chatBoxColor', 'setChatColors'), this[`addSliderBox`]('#theme-chat', `chatScale`, 0x1, 0x2, 0.01, `setChatScale`), this[`addColorBox`](`#theme-minimap`, `miniMapSectorsColor`, 'setMiniMapSectorsColor'), this[`addColorBox`](`#theme-minimap`, `miniMapSectorColor`), this[`addColorBox`](`#theme-minimap`, `miniMapNickColor`), this['addColorBox'](`#theme-minimap`, `miniMapNickStrokeColor`), this[`addColorBox`](`#theme-minimap`, `miniMapMyCellColor`), this['addColorBox']('#theme-minimap', `miniMapMyCellStrokeColor`), this[`addColorBox`]('#theme-minimap', 'miniMapTeammatesColor'), this[`addColorBox`](`#theme-minimap`, `miniMapDeathLocationColor`), this[`addColorBox`](`#theme-minimap`, `miniMapGuidesColor`), this[`addColorBox`](`#theme-minimap`, `miniMapGhostCellsColor`), this[`addFontBox`](`#theme-minimap`, `miniMapFont`, `setMiniMapFont`), this['addFontBox']('#theme-minimap', `miniMapNickFont`), this[`addSliderBox`](`#theme-minimap`, `miniMapWidth`, 0xc8, 0x190, 0x2, `setMiniMapWidth`), this['addSliderBox']('#theme-minimap', 'miniMapSectorsOpacity', 0x0, 0x1, 0.01, `setMiniMapSectorsOpacity`), this['addSliderBox']('#theme-minimap', `miniMapNickSize`, 0x8, 0x10, 0x1), this[`addSliderBox`](`#theme-minimap`, `miniMapNickStrokeSize`, 0x0, 0x6, 0x1), this[`addSliderBox`](`#theme-minimap`, `miniMapMyCellSize`, 0x4, 0xa, 0.5), this[`addSliderBox`](`#theme-minimap`, `miniMapMyCellStrokeSize`, 0x0, 0xa, 0x1), this[`addSliderBox`](`#theme-minimap`, `miniMapTeammatesSize`, 0x4, 0xa, 0.5), this['addSliderBox'](`#theme-minimap`, `miniMapGhostCellsAlpha`, 0.01, 0.99, 0.01), this[`addInputBox`](`#theme-images`, `customBackground`, `Image URL`, `setCustomBackground`), this[`addInputBox`]('#theme-images', `customCursor`, 'Cursor image URL', 'setCustomCursor');
+					moreogarset(`#theme`)[`append`](`<ul class=\"submenu-tabs\"><li class=\"theme-main-tab active\"><a href=\"#theme-main\" class=\"active ogicon-paint-format\" data-toggle=\"tab-tooltip\" title=\"` + more5ogarset[`basicTheming`] + `\"></a></li><li class=\"theme-menu-tab\"><a href=\"#theme-menu\" class=\"ogicon-menu\" data-toggle=\"tab-tooltip\" title=\"` + more5ogarset[`menuTheming`] + `\"></a></li><li class=\"theme-hud-tab\"><a href=\"#theme-hud\" class=\"ogicon-display\" data-toggle=\"tab-tooltip\" title=\"` + more5ogarset[`hudTheming`] + `\"></a></li><li class=\"theme-chat-tab\"><a href=\"#theme-chat\" class=\"ogicon-bubbles\" data-toggle=\"tab-tooltip\" title=\"` + more5ogarset[`chatTheming`] + '\"></a></li><li class=\"theme-minimap-tab\"><a href=\"#theme-minimap\" class=\"ogicon-location2\" data-toggle=\"tab-tooltip\" title=\"' + more5ogarset[`miniMapTheming`] + `\"></a></li><li class=\"theme-images-tab\"><a href=\"#theme-images\" class=\"ogicon-compass\" data-toggle=\"tab-tooltip\" title=\"` + more5ogarset[`imagesTheming`] + '\"></a></li></ul><div id=\"theme-main\" class=\"submenu-panel\"></div><div id=\"theme-menu\" class=\"submenu-panel\"></div><div id=\"theme-hud\" class=\"submenu-panel\"></div><div id=\"theme-chat\" class=\"submenu-panel\"></div><div id=\"theme-minimap\" class=\"submenu-panel\"></div><div id=\"theme-images\" class=\"submenu-panel\"></div>'), this[`addPresetBox`](`#theme-main`, `themePreset`, _0x21cdbf, `preset`, `changeThemePreset`), this[`addColorBox`](`#theme-main`, `bgColor`, `setBgColor`), this[`addColorBox`](`#theme-main`, `bordersColor`), this[`addColorBox`](`#theme-main`, `gridColor`), this[`addColorBox`]('#theme-main', `sectorsColor`), this[`addColorBox`](`#theme-main`, `namesColor`), this[`addColorBox`](`#theme-main`, `namesStrokeColor`), this[`addColorBox`]('#theme-main', `massColor`), this[`addColorBox`](`#theme-main`, `massStrokeColor`), this[`addColorBox`](`#theme-main`, `virusColor`), this[`addColorBox`](`#theme-main`, `virusStrokeColor`), this.addColorBox('#theme-main', 'mVirusColor'), this.addColorBox('#theme-main', 'mVirusStrokeColor'), this[`addColorBox`](`#theme-main`, `foodColor`, `setFoodColor`), this['addColorBox'](`#theme-main`, 'teammatesIndColor', `setIndicatorColor`), this[`addColorBox`]('#theme-main', `cursorTrackingColor`), this['addColorBox']('#theme-main', `splitRangeColor`), this[`addColorBox`](`#theme-main`, `safeAreaColor`), this[`addColorBox`](`#theme-main`, `dangerAreaColor`), this['addColorBox'](`#theme-main`, `ghostCellsColor`), this[`addFontBox`](`#theme-main`, `namesFont`), this[`addFontBox`](`#theme-main`, 'massFont'), this[`addFontBox`]('#theme-main', `sectorsFont`), this['addSliderBox'](`#theme-main`, `sectorsFontSize`, 0xc8, 0x7d0, 0xa), this[`addSliderBox`](`#theme-main`, `namesScale`, 0.5, 0x2, 0.1), this[`addSliderBox`]('#theme-main', `massScale`, 0x1, 0x5, 0x1), this[`addSliderBox`](`#theme-main`, `virMassScale`, 0x1, 0x5, 0x1), this[`addSliderBox`](`#theme-main`, `strokeScale`, 0x1, 0x4, 0.1), this[`addSliderBox`](`#theme-main`, `foodSize`, 0x1, 0x32, 0x1, 'setFoodColor'), this[`addSliderBox`](`#theme-main`, `virusStrokeSize`, 0x2, 0x28, 0x1), this['addSliderBox'](`#theme-main`, `bordersWidth`, 0x2, 0xc8, 0x2), this[`addSliderBox`](`#theme-main`, `sectorsWidth`, 0x2, 0xc8, 0x2), this[`addSliderBox`](`#theme-main`, 'cellsAlpha', 0.01, 0.99, 0.01), this[`addSliderBox`](`#theme-main`, `skinsAlpha`, 0.01, 0.99, 0.01), this[`addSliderBox`](`#theme-main`, 'virusAlpha', 0x0, 0x1, 0.01), this[`addSliderBox`](`#theme-main`, `textAlpha`, 0.1, 0x1, 0.01), this[`addSliderBox`](`#theme-main`, `ghostCellsAlpha`, 0.01, 0.99, 0.01), this[`addPresetBox`](`#theme-menu`, `menuPreset`, _0x5d2d90, `menuPreset`, 'changeMenuPreset'), this[`addSliderBox`](`#theme-menu`, `menuOpacity`, 0.1, 0x1, 0.01, 'setMenuOpacity'), this[`addColorBox`](`#theme-menu`, `menuMainColor`, 'setMenuMainColor'), this[`addColorBox`]('#theme-menu', 'menuBtnTextColor', 'setMenuButtons'), this[`addColorBox`](`#theme-menu`, `menuPanelColor`, `setMenuPanelColor`), this[`addColorBox`](`#theme-menu`, 'menuPanelColor2', `setMenuPanelColor`), this['addColorBox']('#theme-menu', `menuTextColor`, `setMenuTextColor`), this[`addColorBox`](`#theme-menu`, `menuTextColor2`, `setMenuTextColor`), this[`addColorBox`](`#theme-menu`, 'btn1Color', `setMenuButtons`), this[`addColorBox`](`#theme-menu`, `btn1Color2`, `setMenuButtons`), this[`addColorBox`](`#theme-menu`, `btn2Color`, `setMenuButtons`), this[`addColorBox`](`#theme-menu`, 'btn2Color2', `setMenuButtons`), this[`addColorBox`](`#theme-menu`, `btn3Color`, `setMenuButtons`), this[`addColorBox`]('#theme-menu', `btn3Color2`, `setMenuButtons`), this[`addColorBox`](`#theme-menu`, 'btn4Color', `setMenuButtons`), this[`addColorBox`](`#theme-menu`, `btn4Color2`, `setMenuButtons`), this[`addInputBox`](`#theme-menu`, `menuBg`, `Image URL`, `setMenuBg`), this[`addColorBox`]('#theme-hud', `hudMainColor`, `setHudColors`), this[`addRgbaColorBox`](`#theme-hud`, `hudColor`, 'setHudColors'), this['addColorBox'](`#theme-hud`, `hudTextColor`, `setHudColors`), this[`addColorBox`](`#theme-hud`, `statsHudColor`, 'setHudColors'), this['addColorBox'](`#theme-hud`, `timeHudColor`, `setHudColors`), this[`addColorBox`](`#theme-hud`, `top5MassColor`, `setHudColors`), this[`addColorBox`](`#theme-hud`, 'lbMeColor', `setHudColors`), this[`addColorBox`](`#theme-hud`, `lbTeammateColor`, 'setHudColors'), this[`addFontBox`](`#theme-hud`, `hudFont`, 'setHudFont'), this['addSliderBox']('#theme-hud', `hudScale`, 0x1, 0x2, 0.01, `setHudScale`), this[`addRgbaColorBox`](`#theme-chat`, `messageColor`, 'setChatColors'), this[`addColorBox`](`#theme-chat`, `messageTextColor`, `setChatColors`), this[`addColorBox`](`#theme-chat`, `messageTimeColor`, `setChatColors`), this[`addColorBox`](`#theme-chat`, `messageNickColor`, `setChatColors`), this[`addRgbaColorBox`](`#theme-chat`, `commandsColor`, `setChatColors`), this['addColorBox']('#theme-chat', `commandsTextColor`, `setChatColors`), this[`addColorBox`]('#theme-chat', 'commandsTimeColor', `setChatColors`), this[`addColorBox`](`#theme-chat`, `commandsNickColor`, `setChatColors`), this[`addRgbaColorBox`](`#theme-chat`, 'chatBoxColor', 'setChatColors'), this[`addSliderBox`]('#theme-chat', `chatScale`, 0x1, 0x2, 0.01, `setChatScale`), this[`addColorBox`](`#theme-minimap`, `miniMapSectorsColor`, 'setMiniMapSectorsColor'), this[`addColorBox`](`#theme-minimap`, `miniMapSectorColor`), this[`addColorBox`](`#theme-minimap`, `miniMapNickColor`), this['addColorBox'](`#theme-minimap`, `miniMapNickStrokeColor`), this[`addColorBox`](`#theme-minimap`, `miniMapMyCellColor`), this['addColorBox']('#theme-minimap', `miniMapMyCellStrokeColor`), this[`addColorBox`]('#theme-minimap', 'miniMapTeammatesColor'), this[`addColorBox`](`#theme-minimap`, `miniMapDeathLocationColor`), this[`addColorBox`](`#theme-minimap`, `miniMapGuidesColor`), this[`addColorBox`](`#theme-minimap`, `miniMapGhostCellsColor`), this[`addFontBox`](`#theme-minimap`, `miniMapFont`, `setMiniMapFont`), this['addFontBox']('#theme-minimap', `miniMapNickFont`), this[`addSliderBox`](`#theme-minimap`, `miniMapWidth`, 0xc8, 0x190, 0x2, `setMiniMapWidth`), this['addSliderBox']('#theme-minimap', 'miniMapSectorsOpacity', 0x0, 0x1, 0.01, `setMiniMapSectorsOpacity`), this['addSliderBox']('#theme-minimap', `miniMapNickSize`, 0x8, 0x10, 0x1), this[`addSliderBox`](`#theme-minimap`, `miniMapNickStrokeSize`, 0x0, 0x6, 0x1), this[`addSliderBox`](`#theme-minimap`, `miniMapMyCellSize`, 0x4, 0xa, 0.5), this[`addSliderBox`](`#theme-minimap`, `miniMapMyCellStrokeSize`, 0x0, 0xa, 0x1), this[`addSliderBox`](`#theme-minimap`, `miniMapTeammatesSize`, 0x4, 0xa, 0.5), this['addSliderBox'](`#theme-minimap`, `miniMapGhostCellsAlpha`, 0.01, 0.99, 0.01), this[`addInputBox`](`#theme-images`, `customBackground`, `Image URL`, `setCustomBackground`), this[`addInputBox`]('#theme-images', `customCursor`, 'Cursor image URL', 'setCustomCursor');
 					for (var more2ogarset = `https://cdn.ogario.ovh/static/img/cursors/cursor_`, more1ogarset = 0x0; more1ogarset < 0x23; more1ogarset++) more1ogarset < 0x9 ? this[`addCursorBox`](`#theme-images`, more2ogarset + '0' + (more1ogarset + 0x1) + `.cur`) : this['addCursorBox'](`#theme-images`, more2ogarset + '' + (more1ogarset + 0x1) + `.cur`);
 					moreogarset(document)['on'](`click`, `#theme-images .cursor-box a`, function (more2ogarset) {
 						more2ogarset[`preventDefault`]();
 						var more1ogarset = moreogarset(`img`, this)['attr'](`src`);
-						ogarioJSONsettings[`customCursor`] = more1ogarset, ogarsettings[`setCustomCursor`](), moreogarset(`#customCursor`)[`val`](more1ogarset), moreogarset(`#theme-images .cursor-box a`)['removeClass']('active'), moreogarset(this)[`addClass`](`active`);
-					}), moreogarset(`#theme`)[`append`]('<button class=\"btn btn-block btn-success btn-save\"\">' + _0xa193a8[`saveSett`] + `</button>`), moreogarset(document)['on'](`click`, `#theme .btn-save`, function (more2ogarset) {
+						ogario1ThemeSettings[`customCursor`] = more1ogarset, ogarsettings[`setCustomCursor`](), moreogarset(`#customCursor`)[`val`](more1ogarset), moreogarset(`#theme-images .cursor-box a`)['removeClass']('active'), moreogarset(this)[`addClass`](`active`);
+					}), moreogarset(`#theme`)[`append`]('<button class=\"btn btn-block btn-success btn-save\"\">' + more5ogarset[`saveSett`] + `</button>`), moreogarset(document)['on'](`click`, `#theme .btn-save`, function (more2ogarset) {
 						more2ogarset[`preventDefault`]();
 						var more1ogarset = moreogarset(this);
-						more1ogarset[`text`](_0xa193a8[`saved`]), ogarsettings['saveThemeSettings'](), setTimeout(function () {
-							more1ogarset[`text`](_0xa193a8['saveSett']);
+						more1ogarset[`text`](more5ogarset[`saved`]), ogarsettings['saveThemeSettings'](), setTimeout(function () {
+							more1ogarset[`text`](more5ogarset['saveSett']);
 						}, 0x1f4);
-					}), moreogarset(`#theme`)['append'](`<div class=\"restore-settings\"><a href=\"#\">` + _0xa193a8[`restoreThemeSettings`] + '</a></div>'), moreogarset(document)['on']('click', `#theme .restore-settings a`, function (more2ogarset) {
+					}), moreogarset(`#theme`)['append'](`<div class=\"restore-settings\"><a href=\"#\">` + more5ogarset[`restoreThemeSettings`] + '</a></div>'), moreogarset(document)['on']('click', `#theme .restore-settings a`, function (more2ogarset) {
 						more2ogarset[`preventDefault`](), ogarsettings[`restoreThemeSettings`]();
 					}), moreogarset(`.skin`)[`colorpicker`]({
 						'format': `hex`,
@@ -1401,31 +1401,31 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				},
 				'changePreset': function (ogarsettings, more2ogarset) {
 					if (more2ogarset[ogarsettings]) {
-						ogarioJSONsettings[ogarsettings] = ogarsettings;
+						ogario1ThemeSettings[ogarsettings] = ogarsettings;
 						ogarsettings = more2ogarset[ogarsettings];
-						for (var _0x167e37 in ogarsettings) ogarsettings[`hasOwnProperty`](_0x167e37) && ogarioJSONsettings[`hasOwnProperty`](_0x167e37) && (ogarioJSONsettings[_0x167e37] = ogarsettings[_0x167e37], more1ogarset[`hasOwnProperty`](_0x167e37) && (more1ogarset[_0x167e37] = ogarioJSONsettings[_0x167e37]), moreogarset(`#theme .` + _0x167e37 + `-picker`) && moreogarset('#theme .' + _0x167e37 + `-picker`)[`colorpicker`]('setValue', ogarioJSONsettings[_0x167e37]), moreogarset('#' + _0x167e37 + '-slider') && moreogarset('#' + _0x167e37 + `-slider`)[`val`](ogarioJSONsettings[_0x167e37])[`change`](), (moreogarset(`input[type=text]#` + _0x167e37) || moreogarset(`select#` + _0x167e37)) && moreogarset('#' + _0x167e37)[`val`](ogarioJSONsettings[_0x167e37]));
+						for (var more3ogarset in ogarsettings) ogarsettings[`hasOwnProperty`](more3ogarset) && ogario1ThemeSettings[`hasOwnProperty`](more3ogarset) && (ogario1ThemeSettings[more3ogarset] = ogarsettings[more3ogarset], more1ogarset[`hasOwnProperty`](more3ogarset) && (more1ogarset[more3ogarset] = ogario1ThemeSettings[more3ogarset]), moreogarset(`#theme .` + more3ogarset + `-picker`) && moreogarset('#theme .' + more3ogarset + `-picker`)[`colorpicker`]('setValue', ogario1ThemeSettings[more3ogarset]), moreogarset('#' + more3ogarset + '-slider') && moreogarset('#' + more3ogarset + `-slider`)[`val`](ogario1ThemeSettings[more3ogarset])[`change`](), (moreogarset(`input[type=text]#` + more3ogarset) || moreogarset(`select#` + more3ogarset)) && moreogarset('#' + more3ogarset)[`val`](ogario1ThemeSettings[more3ogarset]));
 					}
 				},
 				'changeThemePreset': function (ogarsettings) {
 					this[`changePreset`](ogarsettings, _0x21cdbf), this[`setTheme`]();
 				},
 				'setFonts': function () {
-					this[`setFont`]('namesFont', ogarioJSONsettings[`namesFont`]), this[`setFont`](`massFont`, ogarioJSONsettings[`namesFont`]), this[`setFont`](`sectorsFont`, ogarioJSONsettings[`sectorsFont`]);
+					this[`setFont`]('namesFont', ogario1ThemeSettings[`namesFont`]), this[`setFont`](`massFont`, ogario1ThemeSettings[`namesFont`]), this[`setFont`](`sectorsFont`, ogario1ThemeSettings[`sectorsFont`]);
 				},
 				'setBgColor': function () {
-					moreogarset(`body`)[`css`](`background-color`, ogarioJSONsettings[`bgColor`]);
+					moreogarset(`body`)[`css`](`background-color`, ogario1ThemeSettings[`bgColor`]);
 				},
 				'setFoodColor': function () {
-					more3ogarset['optimizedFood'] && _0x53e5f0 && _0x53e5f0[`preDrawPellet`]();
+					ogario1Settings['optimizedFood'] && _0x53e5f0 && _0x53e5f0[`preDrawPellet`]();
 				},
 				'setIndicatorColor': function () {
 					_0x53e5f0 && _0x53e5f0[`preDrawIndicator`]();
 				},
 				'setCustomBackground': function () {
-					ogarioJSONsettings['customBackground'] ? moreogarset(`body`)[`css`](`background-image`, `url(` + ogarioJSONsettings[`customBackground`] + ')') : moreogarset(`body`)['css'](`background-image`, `none`);
+					ogario1ThemeSettings['customBackground'] ? moreogarset(`body`)[`css`](`background-image`, `url(` + ogario1ThemeSettings[`customBackground`] + ')') : moreogarset(`body`)['css'](`background-image`, `none`);
 				},
 				'setCustomCursor': function () {
-					if (ogarioJSONsettings[`customCursor`]) var ogarsettings = `*{cursor:url(` + ogarioJSONsettings[`customCursor`] + `), auto !important}`;
+					if (ogario1ThemeSettings[`customCursor`]) var ogarsettings = `*{cursor:url(` + ogario1ThemeSettings[`customCursor`] + `), auto !important}`;
 					else ogarsettings = `*{cursor: auto}`;
 					this[`addCustomCSS`](`cursorCSS`, ogarsettings);
 				},
@@ -1436,85 +1436,85 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					this[`changePreset`](ogarsettings, _0x5d2d90), this['setMenu']();
 				},
 				'setMenuOpacity': function () {
-					moreogarset('#helloContainer, #hotkeys, #exp-imp')['css'](`opacity`, ogarioJSONsettings[`menuOpacity`]);
+					moreogarset('#helloContainer, #hotkeys, #exp-imp')['css'](`opacity`, ogario1ThemeSettings[`menuOpacity`]);
 				},
 				'setMenuMainColor': function () {
-					var ogarsettings = '::-moz-selection{background-color:' + ogarioJSONsettings['menuMainColor'] + `!important}::selection{background-color:` + ogarioJSONsettings[`menuMainColor`] + `!important}.menu-main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:` + ogarioJSONsettings[`menuMainColor`] + `}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:` + ogarioJSONsettings['menuMainColor'] + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + ogarioJSONsettings['menuMainColor'] + `}.ps-scrollbar-y{background-color:` + ogarioJSONsettings[`menuMainColor`] + `!important}`;
+					var ogarsettings = '::-moz-selection{background-color:' + ogario1ThemeSettings['menuMainColor'] + `!important}::selection{background-color:` + ogario1ThemeSettings[`menuMainColor`] + `!important}.menu-main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:` + ogario1ThemeSettings[`menuMainColor`] + `}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:` + ogario1ThemeSettings['menuMainColor'] + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + ogario1ThemeSettings['menuMainColor'] + `}.ps-scrollbar-y{background-color:` + ogario1ThemeSettings[`menuMainColor`] + `!important}`;
 					this[`addCustomCSS`]('menuMainColorCSS', ogarsettings);
 				},
 				'setMenuPanelColor': function () {
-					var ogarsettings = `#main-menu,.agario-side-panel,#hotkeys,#exp-imp{background-color: ` + ogarioJSONsettings['menuPanelColor'] + '}label:hover,.agario-panel input,.agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.nick .input-group-btn,.skin .input-group-btn,#stream-mode,#hide-url,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs,#exp-bar .progress,#quick-menu a:hover,.quick,.select-wrapper,#hotkeys-cfg div.row:hover,#hotkeys-cfg .command-in,#exp-imp-settings textarea,.restore-settings{background-color: ' + ogarioJSONsettings[`menuPanelColor2`] + `}.agario-panel h5,.agario-side-panel h5,#stats h2,.menu-tabs,.submenu-tabs,#skins a.default,#stats hr,#hotkeys-cfg div.row, #exp-imp h1{border-color: ` + ogarioJSONsettings[`menuPanelColor2`] + `}.quick:hover,#skins a,#profiles{color:` + ogarioJSONsettings['menuPanelColor2'] + '}input.stream-mode,input.hide-url{color:' + ogarioJSONsettings['menuPanelColor2'] + `!important}`;
+					var ogarsettings = `#main-menu,.agario-side-panel,#hotkeys,#exp-imp{background-color: ` + ogario1ThemeSettings['menuPanelColor'] + '}label:hover,.agario-panel input,.agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.nick .input-group-btn,.skin .input-group-btn,#stream-mode,#hide-url,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs,#exp-bar .progress,#quick-menu a:hover,.quick,.select-wrapper,#hotkeys-cfg div.row:hover,#hotkeys-cfg .command-in,#exp-imp-settings textarea,.restore-settings{background-color: ' + ogario1ThemeSettings[`menuPanelColor2`] + `}.agario-panel h5,.agario-side-panel h5,#stats h2,.menu-tabs,.submenu-tabs,#skins a.default,#stats hr,#hotkeys-cfg div.row, #exp-imp h1{border-color: ` + ogario1ThemeSettings[`menuPanelColor2`] + `}.quick:hover,#skins a,#profiles{color:` + ogario1ThemeSettings['menuPanelColor2'] + '}input.stream-mode,input.hide-url{color:' + ogario1ThemeSettings['menuPanelColor2'] + `!important}`;
 					this[`addCustomCSS`](`menuPanelColorCSS`, ogarsettings);
 				},
 				'setMenuTextColor': function () {
-					var ogarsettings = `.agario-panel,.agario-side-panel,.agario-panel input,.agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.dark .yt-username,#stream-mode,#hide-url,.menu-tabs a,.submenu-tabs a,#skins a.default:hover,#quick-menu a,#prev-profile.default:hover,#next-profile.default:hover,#statsText,#hotkeys,#hotkeys-cfg .command-in,#exp-imp{color:` + ogarioJSONsettings[`menuTextColor`] + `}#skins a.default:hover{border-color:` + ogarioJSONsettings[`menuTextColor`] + `}::-webkit-input-placeholder{color:` + ogarioJSONsettings[`menuTextColor2`] + `!important}::-moz-placeholder{color:` + ogarioJSONsettings[`menuTextColor2`] + '!important}#user-id-tag, #version-tag,#statsSubtext,#hotkeys-inst,#exp-imp textarea,.restore-settings a,.restore-settings a:hover{color:' + ogarioJSONsettings[`menuTextColor2`] + `}#hotkeys-cfg .command-in,#theme .color-box{border-color:` + ogarioJSONsettings[`menuTextColor2`] + '}';
+					var ogarsettings = `.agario-panel,.agario-side-panel,.agario-panel input,.agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.dark .yt-username,#stream-mode,#hide-url,.menu-tabs a,.submenu-tabs a,#skins a.default:hover,#quick-menu a,#prev-profile.default:hover,#next-profile.default:hover,#statsText,#hotkeys,#hotkeys-cfg .command-in,#exp-imp{color:` + ogario1ThemeSettings[`menuTextColor`] + `}#skins a.default:hover{border-color:` + ogario1ThemeSettings[`menuTextColor`] + `}::-webkit-input-placeholder{color:` + ogario1ThemeSettings[`menuTextColor2`] + `!important}::-moz-placeholder{color:` + ogario1ThemeSettings[`menuTextColor2`] + '!important}#user-id-tag, #version-tag,#statsSubtext,#hotkeys-inst,#exp-imp textarea,.restore-settings a,.restore-settings a:hover{color:' + ogario1ThemeSettings[`menuTextColor2`] + `}#hotkeys-cfg .command-in,#theme .color-box{border-color:` + ogario1ThemeSettings[`menuTextColor2`] + '}';
 					this[`addCustomCSS`]('menuTextColorCSS', ogarsettings);
 				},
 				'setMenuButtons': function () {
-					var ogarsettings = `a,a:hover{color:` + ogarioJSONsettings[`btn1Color`] + `}.btn,#hotkeys-cfg .custom-key-in{color:` + ogarioJSONsettings[`menuBtnTextColor`] + `}.btn-primary{background-color:` + ogarioJSONsettings[`btn1Color`] + `!important}.btn-primary:active,.btn-primary:disabled,.btn-primary:focus,.btn-primary:hover{background-color:` + ogarioJSONsettings['btn1Color2'] + `!important}.btn-success{background-color:` + ogarioJSONsettings[`btn2Color`] + `!important}.btn-success:active,.btn-success:disabled,.btn-success:focus,.btn-success:hover{background-color:` + ogarioJSONsettings[`btn2Color2`] + '!important}.btn-warning{background-color:' + ogarioJSONsettings[`btn3Color`] + `!important}.btn-warning:active,.btn-warning:disabled,.btn-warning:focus,.btn-warning:hover{background-color:` + ogarioJSONsettings[`btn3Color2`] + `!important}.btn-danger{background-color:` + ogarioJSONsettings[`btn4Color`] + `!important}.btn-danger:active,.btn-danger:disabled,.btn-danger:focus,.btn-danger:hover{background-color:` + ogarioJSONsettings[`btn4Color2`] + `!important}#hotkeys-cfg .custom-key-in{background-color:` + ogarioJSONsettings['btn4Color2'] + `;border-color:` + ogarioJSONsettings[`btn4Color2`] + '}';
+					var ogarsettings = `a,a:hover{color:` + ogario1ThemeSettings[`btn1Color`] + `}.btn,#hotkeys-cfg .custom-key-in{color:` + ogario1ThemeSettings[`menuBtnTextColor`] + `}.btn-primary{background-color:` + ogario1ThemeSettings[`btn1Color`] + `!important}.btn-primary:active,.btn-primary:disabled,.btn-primary:focus,.btn-primary:hover{background-color:` + ogario1ThemeSettings['btn1Color2'] + `!important}.btn-success{background-color:` + ogario1ThemeSettings[`btn2Color`] + `!important}.btn-success:active,.btn-success:disabled,.btn-success:focus,.btn-success:hover{background-color:` + ogario1ThemeSettings[`btn2Color2`] + '!important}.btn-warning{background-color:' + ogario1ThemeSettings[`btn3Color`] + `!important}.btn-warning:active,.btn-warning:disabled,.btn-warning:focus,.btn-warning:hover{background-color:` + ogario1ThemeSettings[`btn3Color2`] + `!important}.btn-danger{background-color:` + ogario1ThemeSettings[`btn4Color`] + `!important}.btn-danger:active,.btn-danger:disabled,.btn-danger:focus,.btn-danger:hover{background-color:` + ogario1ThemeSettings[`btn4Color2`] + `!important}#hotkeys-cfg .custom-key-in{background-color:` + ogario1ThemeSettings['btn4Color2'] + `;border-color:` + ogario1ThemeSettings[`btn4Color2`] + '}';
 					this[`addCustomCSS`](`menuButtonsCSS`, ogarsettings);
 				},
 				'setMenuBg': function () {
-					moreogarset(`#menuBg`)[`val`](ogarioJSONsettings[`menuBg`]), ogarioJSONsettings['menuBg'] ? moreogarset(`.menu-panel, .agario-side-panel, #hotkeys, #exp-imp`)[`css`](`background-image`, 'url(' + ogarioJSONsettings[`menuBg`] + ')') : moreogarset(`.menu-panel, .agario-side-panel, #hotkeys, #exp-imp`)[`css`](`background-image`, `none`);
+					moreogarset(`#menuBg`)[`val`](ogario1ThemeSettings[`menuBg`]), ogario1ThemeSettings['menuBg'] ? moreogarset(`.menu-panel, .agario-side-panel, #hotkeys, #exp-imp`)[`css`](`background-image`, 'url(' + ogario1ThemeSettings[`menuBg`] + ')') : moreogarset(`.menu-panel, .agario-side-panel, #hotkeys, #exp-imp`)[`css`](`background-image`, `none`);
 				},
 				'setHud': function () {
 					this[`setHudColors`](), this[`setHudFont`](), this[`setHudScale`]();
 				},
 				'setHudColors': function () {
-					var ogarsettings = `.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:` + ogarioJSONsettings[`hudMainColor`] + '}.hud,.hud-b,#chat-emoticons{background-color:' + ogarioJSONsettings[`hudColor`] + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + ogarioJSONsettings[`hudTextColor`] + `}.stats-hud-color{color:` + ogarioJSONsettings[`statsHudColor`] + `}.time-hud-color{color:` + ogarioJSONsettings[`timeHudColor`] + `}.top5-mass-color{color:` + ogarioJSONsettings[`top5MassColor`] + `}#leaderboard-positions .me{color:` + ogarioJSONsettings[`lbMeColor`] + `}#leaderboard-positions .teammate{color:` + ogarioJSONsettings[`lbTeammateColor`] + '}';
+					var ogarsettings = `.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:` + ogario1ThemeSettings[`hudMainColor`] + '}.hud,.hud-b,#chat-emoticons{background-color:' + ogario1ThemeSettings[`hudColor`] + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + ogario1ThemeSettings[`hudTextColor`] + `}.stats-hud-color{color:` + ogario1ThemeSettings[`statsHudColor`] + `}.time-hud-color{color:` + ogario1ThemeSettings[`timeHudColor`] + `}.top5-mass-color{color:` + ogario1ThemeSettings[`top5MassColor`] + `}#leaderboard-positions .me{color:` + ogario1ThemeSettings[`lbMeColor`] + `}#leaderboard-positions .teammate{color:` + ogario1ThemeSettings[`lbTeammateColor`] + '}';
 					this[`addCustomCSS`](`hudCSS`, ogarsettings);
 				},
 				'setHudFont': function () {
-					this[`setFont`](`hudFont`, ogarioJSONsettings[`hudFont`]), moreogarset(`#overlays-hud`)[`css`]({
-						'font-family': ogarioJSONsettings[`hudFontFamily`],
-						'font-weight': ogarioJSONsettings[`hudFontWeight`]
+					this[`setFont`](`hudFont`, ogario1ThemeSettings[`hudFont`]), moreogarset(`#overlays-hud`)[`css`]({
+						'font-family': ogario1ThemeSettings[`hudFontFamily`],
+						'font-weight': ogario1ThemeSettings[`hudFontWeight`]
 					});
 				},
 				'setHudScale': function () {
-					var ogarsettings = Math['round'](0x14 * ogarioJSONsettings[`hudScale`]),
-						more2ogarset = Math[`round`](0xc8 * ogarioJSONsettings['hudScale']),
-						more1ogarset = Math[`floor`](0x37 * ogarioJSONsettings[`hudScale`]),
-						_0x167e37 = Math['floor'](0x6 * ogarioJSONsettings[`hudScale`]),
-						_0x12efde = Math[`floor`](0x118 * ogarioJSONsettings[`hudScale`]),
-						_0x4ee245 = Math['floor'](0x55 * ogarioJSONsettings[`hudScale`]),
-						_0x24c7a0 = Math['floor'](0x14 * ogarioJSONsettings[`hudScale`]);
-					moreogarset(`#overlays-hud`)['css'](`font-size`, ogarsettings + 'px'), moreogarset('#leaderboard-hud, #time-hud')['width'](more2ogarset), moreogarset(`#top5-hud`)[`width`](more2ogarset + 0x1e)[`css`](`top`, more1ogarset + 'px'), moreogarset(`#top5-pos`)[`css`](`padding-left`, _0x167e37 + 'px'), moreogarset(`#time-hud`)[`css`](`top`, _0x12efde + 'px'), moreogarset(`#pause-hud`)['css']('top', _0x4ee245 + 'px'), moreogarset(`#target-hud`)[`css`](`padding-top`, _0x24c7a0 + 'px');
+					var ogarsettings = Math['round'](0x14 * ogario1ThemeSettings[`hudScale`]),
+						more2ogarset = Math[`round`](0xc8 * ogario1ThemeSettings['hudScale']),
+						more1ogarset = Math[`floor`](0x37 * ogario1ThemeSettings[`hudScale`]),
+						more3ogarset = Math['floor'](0x6 * ogario1ThemeSettings[`hudScale`]),
+						more4ogarset = Math[`floor`](0x118 * ogario1ThemeSettings[`hudScale`]),
+						ogarbuffed = Math['floor'](0x55 * ogario1ThemeSettings[`hudScale`]),
+						ogarlanguage = Math['floor'](0x14 * ogario1ThemeSettings[`hudScale`]);
+					moreogarset(`#overlays-hud`)['css'](`font-size`, ogarsettings + 'px'), moreogarset('#leaderboard-hud, #time-hud')['width'](more2ogarset), moreogarset(`#top5-hud`)[`width`](more2ogarset + 0x1e)[`css`](`top`, more1ogarset + 'px'), moreogarset(`#top5-pos`)[`css`](`padding-left`, more3ogarset + 'px'), moreogarset(`#time-hud`)[`css`](`top`, more4ogarset + 'px'), moreogarset(`#pause-hud`)['css']('top', ogarbuffed + 'px'), moreogarset(`#target-hud`)[`css`](`padding-top`, ogarlanguage + 'px');
 				},
 				'setChat': function () {
 					this[`setChatColors`](), this[`setChatScale`]();
 				},
 				'setChatColors': function () {
-					var ogarsettings = `#message,#messages li,.toast-success{background-color:` + ogarioJSONsettings[`messageColor`] + `}#message,.message-text,.toast-success .message-text{color:` + ogarioJSONsettings[`messageTextColor`] + `}.message-nick,.mute-user,.mute-user:hover,.toast-success .message-nick,.toast .mute-user,.toast .mute-user:hover{color:` + ogarioJSONsettings[`messageNickColor`] + `}.message-time{color:` + ogarioJSONsettings[`messageTimeColor`] + '}.toast-warning{background-color:' + ogarioJSONsettings[`commandsColor`] + `}.command-text,.toast-warning .command-text{color:` + ogarioJSONsettings[`commandsTextColor`] + '}.command-nick,.toast-warning .command-nick,.toast-warning .mute-user,.toast-warning .mute-user:hover{color:' + ogarioJSONsettings[`commandsNickColor`] + `}.command-time{color:` + ogarioJSONsettings[`commandsTimeColor`] + `}#chat-box{background-color:` + ogarioJSONsettings[`chatBoxColor`] + '}';
+					var ogarsettings = `#message,#messages li,.toast-success{background-color:` + ogario1ThemeSettings[`messageColor`] + `}#message,.message-text,.toast-success .message-text{color:` + ogario1ThemeSettings[`messageTextColor`] + `}.message-nick,.mute-user,.mute-user:hover,.toast-success .message-nick,.toast .mute-user,.toast .mute-user:hover{color:` + ogario1ThemeSettings[`messageNickColor`] + `}.message-time{color:` + ogario1ThemeSettings[`messageTimeColor`] + '}.toast-warning{background-color:' + ogario1ThemeSettings[`commandsColor`] + `}.command-text,.toast-warning .command-text{color:` + ogario1ThemeSettings[`commandsTextColor`] + '}.command-nick,.toast-warning .command-nick,.toast-warning .mute-user,.toast-warning .mute-user:hover{color:' + ogario1ThemeSettings[`commandsNickColor`] + `}.command-time{color:` + ogario1ThemeSettings[`commandsTimeColor`] + `}#chat-box{background-color:` + ogario1ThemeSettings[`chatBoxColor`] + '}';
 					this[`addCustomCSS`](`chatCSS`, ogarsettings);
 				},
 				'setChatScale': function () {
-					var ogarsettings = Math['round'](0xe * ogarioJSONsettings[`chatScale`]),
-						more2ogarset = Math[`round`](0x118 * ogarioJSONsettings['chatScale']),
-						more1ogarset = Math[`round`](0x15e * ogarioJSONsettings['chatScale']),
-						_0x167e37 = Math['round'](0x12c * ogarioJSONsettings[`chatScale`]),
-						_0x12efde = Math[`floor`](0xe * ogarioJSONsettings[`chatScale`]);
-					moreogarset(`#message-box, #messages, #toast-container, #chat-box`)['css'](`font-size`, ogarsettings + 'px'), moreogarset(`#messages, #toast-container, #chat-box`)[`width`](more2ogarset), moreogarset(`#message-box`)['width'](more1ogarset), moreogarset('#chat-box')[`height`](_0x167e37), moreogarset('.user-list')[`css`](`padding-left`, _0x12efde + 'px');
-					var _0x4ee245 = `#toast-container{width:` + more2ogarset + `px;font-size:` + ogarsettings + `px}`;
-					this[`addCustomCSS`](`chatScaleCSS`, _0x4ee245);
+					var ogarsettings = Math['round'](0xe * ogario1ThemeSettings[`chatScale`]),
+						more2ogarset = Math[`round`](0x118 * ogario1ThemeSettings['chatScale']),
+						more1ogarset = Math[`round`](0x15e * ogario1ThemeSettings['chatScale']),
+						more3ogarset = Math['round'](0x12c * ogario1ThemeSettings[`chatScale`]),
+						more4ogarset = Math[`floor`](0xe * ogario1ThemeSettings[`chatScale`]);
+					moreogarset(`#message-box, #messages, #toast-container, #chat-box`)['css'](`font-size`, ogarsettings + 'px'), moreogarset(`#messages, #toast-container, #chat-box`)[`width`](more2ogarset), moreogarset(`#message-box`)['width'](more1ogarset), moreogarset('#chat-box')[`height`](more3ogarset), moreogarset('.user-list')[`css`](`padding-left`, more4ogarset + 'px');
+					var ogarbuffed = `#toast-container{width:` + more2ogarset + `px;font-size:` + ogarsettings + `px}`;
+					this[`addCustomCSS`](`chatScaleCSS`, ogarbuffed);
 				},
 				'setMiniMap': function () {
 					this[`setMiniMapFont`](), this[`setMiniMapWidth`](), this[`setMiniMapSectorsOpacity`]();
 				},
 				'setMiniMapFont': function () {
-					this[`setFont`]('miniMapFont', ogarioJSONsettings['miniMapFont']), _0x1e0996 && _0x1e0996['resetMiniMapSectors']();
+					this[`setFont`]('miniMapFont', ogario1ThemeSettings['miniMapFont']), _0x1e0996 && _0x1e0996['resetMiniMapSectors']();
 				},
 				'setMiniMapWidth': function () {
-					var ogarsettings = ogarioJSONsettings[`miniMapWidth`] / 0xc8;
-					ogarioJSONsettings[`miniMapTop`] = Math[`round`](0x14 * ogarsettings), moreogarset(`#minimap-hud`)[`css`]({
-						'width': ogarioJSONsettings[`miniMapWidth`],
-						'height': ogarioJSONsettings[`miniMapWidth`] + ogarioJSONsettings[`miniMapTop`]
+					var ogarsettings = ogario1ThemeSettings[`miniMapWidth`] / 0xc8;
+					ogario1ThemeSettings[`miniMapTop`] = Math[`round`](0x14 * ogarsettings), moreogarset(`#minimap-hud`)[`css`]({
+						'width': ogario1ThemeSettings[`miniMapWidth`],
+						'height': ogario1ThemeSettings[`miniMapWidth`] + ogario1ThemeSettings[`miniMapTop`]
 					}), _0x1e0996 && _0x1e0996[`resetMiniMapSectors`]();
 				},
 				'setMiniMapSectorsColor': function () {
 					_0x1e0996 && _0x1e0996['resetMiniMapSectors']();
 				},
 				'setMiniMapSectorsOpacity': function () {
-					moreogarset(`#minimap-sectors`)[`css`](`opacity`, ogarioJSONsettings[`miniMapSectorsOpacity`]);
+					moreogarset(`#minimap-sectors`)[`css`](`opacity`, ogario1ThemeSettings[`miniMapSectorsOpacity`]);
 				},
 				'setTheme': function () {
 					this[`setFonts`](), this['setBgColor'](), this[`setCustomBackground`](), this[`setCustomCursor`](), this[`setMenu`](), this[`setHud`](), this[`setChat`](), this[`setMiniMap`]();
@@ -1523,14 +1523,14 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					this[`loadThemeSettings`]();
 				}
 			},
-			_0x2e5667 = [],
+			ogario1PlayerProfiles = [],
 			_0x37dab4 = {
 				'nick': `I<3Legendmod`,
 				'clanTag': 'Ⓜ',
 				'skinURL': '',
-				'color': ogarioJSONsettings[`mainColor`]
+				'color': ogario1ThemeSettings[`mainColor`]
 			},
-			more3ogarset = {
+			ogario1Settings = {
 				'quickResp': !0x0,
 				'autoResp': !0x1,
 				'autoZoom': !0x1,
@@ -1735,37 +1735,37 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				this[`selectBiggestCell`] = !this[`selectBiggestCell`], more1ogarset[`selectBiggestCell`] = this[`selectBiggestCell`];
 			},
 			'setShowTop5': function () {
-				more3ogarset[`showTop5`] = !more3ogarset[`showTop5`], this[`setTop5`]();
+				ogario1Settings[`showTop5`] = !ogario1Settings[`showTop5`], this[`setTop5`]();
 			},
 			'setTop5': function () {
-				more3ogarset[`showTop5`] ? moreogarset(`#top5-hud`)[`show`]() : moreogarset(`#top5-hud`)[`hide`]();
+				ogario1Settings[`showTop5`] ? moreogarset(`#top5-hud`)[`show`]() : moreogarset(`#top5-hud`)[`hide`]();
 			},
 			'setShowTargeting': function () {
-				more3ogarset[`showTargeting`] = !more3ogarset[`showTargeting`], this[`setTargetingHUD`]();
+				ogario1Settings[`showTargeting`] = !ogario1Settings[`showTargeting`], this[`setTargetingHUD`]();
 			},
 			'setTargetingHUD': function () {
-				more3ogarset[`showTargeting`] ? moreogarset(`#target-hud, #target-panel-hud`)[`show`]() : moreogarset('#target-hud, #target-panel-hud')[`hide`]();
+				ogario1Settings[`showTargeting`] ? moreogarset(`#target-hud, #target-panel-hud`)[`show`]() : moreogarset('#target-hud, #target-panel-hud')[`hide`]();
 			},
 			'setShowTime': function () {
-				more3ogarset[`showTime`] = !more3ogarset[`showTime`], more3ogarset[`showTime`] ? (moreogarset(`#time-hud`)[`show`](), this[`displayTime`]()) : moreogarset(`#time-hud`)[`hide`]();
+				ogario1Settings[`showTime`] = !ogario1Settings[`showTime`], ogario1Settings[`showTime`] ? (moreogarset(`#time-hud`)[`show`](), this[`displayTime`]()) : moreogarset(`#time-hud`)[`hide`]();
 			},
 			'setShowSplitRange': function () {
-				more3ogarset[`splitRange`] = !more3ogarset['splitRange'], more1ogarset[`splitRange`] = more3ogarset[`splitRange`];
+				ogario1Settings[`splitRange`] = !ogario1Settings['splitRange'], more1ogarset[`splitRange`] = ogario1Settings[`splitRange`];
 			},
 			'setShowSplitInd': function () {
-				this[`showSplitInd`] = !this['showSplitInd'], more3ogarset['splitRange'] = this[`showSplitInd`], more3ogarset[`oppRings`] = this['showSplitInd'], more1ogarset[`splitRange`] = more3ogarset['splitRange'], more1ogarset[`oppRings`] = more3ogarset[`oppRings`];
+				this[`showSplitInd`] = !this['showSplitInd'], ogario1Settings['splitRange'] = this[`showSplitInd`], ogario1Settings[`oppRings`] = this['showSplitInd'], more1ogarset[`splitRange`] = ogario1Settings['splitRange'], more1ogarset[`oppRings`] = ogario1Settings[`oppRings`];
 			},
 			'setShowTeammatesInd': function () {
-				more3ogarset[`teammatesInd`] = !more3ogarset[`teammatesInd`];
+				ogario1Settings[`teammatesInd`] = !ogario1Settings[`teammatesInd`];
 			},
 			'setShowOppColors': function () {
-				more3ogarset[`oppColors`] = !more3ogarset[`oppColors`], more1ogarset[`oppColors`] = more3ogarset[`oppColors`];
+				ogario1Settings[`oppColors`] = !ogario1Settings[`oppColors`], more1ogarset[`oppColors`] = ogario1Settings[`oppColors`];
 			},
 			'setShowSkins': function () {
 				this[`noSkins`] = !this[`noSkins`], more2ogarset[`core`] && more2ogarset[`core`][`setSkins`] && more2ogarset[`core`][`setSkins`](!this[`noSkins`]), more1ogarset[`showCustomSkins`] = !this[`noSkins`], this[`displayChatInfo`](!this[`noSkins`], `showSkinsMsg`);
 			},
 			'setTransparentSkins': function () {
-				more3ogarset[`transparentSkins`] = !more3ogarset[`transparentSkins`], more1ogarset['transparentSkins'] = more3ogarset[`transparentSkins`];
+				ogario1Settings[`transparentSkins`] = !ogario1Settings[`transparentSkins`], more1ogarset['transparentSkins'] = ogario1Settings[`transparentSkins`];
 			},
 			'setShowStats': function () {
 				moreogarset('#stats-hud')[`toggle`]();
@@ -1777,34 +1777,34 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				moreogarset(`#overlays-hud`)['toggle']();
 			},
 			'setShowGrid': function () {
-				more3ogarset[`showGrid`] = !more3ogarset[`showGrid`];
+				ogario1Settings[`showGrid`] = !ogario1Settings[`showGrid`];
 			},
 			'setShowMiniMapGuides': function () {
-				more3ogarset['showMiniMapGuides'] = !more3ogarset[`showMiniMapGuides`];
+				ogario1Settings['showMiniMapGuides'] = !ogario1Settings[`showMiniMapGuides`];
 			},
 			'setShowLb': function () {
 				`:teams` !== this[`gameMode`] && moreogarset(`#leaderboard-hud`)[`toggle`]();
 			},
 			'setShowBgSectors': function () {
-				more3ogarset[`showBgSectors`] = !more3ogarset[`showBgSectors`];
+				ogario1Settings[`showBgSectors`] = !ogario1Settings[`showBgSectors`];
 			},
 			'setHideSmallBots': function () {
 				more1ogarset[`hideSmallBots`] = !more1ogarset[`hideSmallBots`], this[`displayChatInfo`](!more1ogarset['hideSmallBots'], `hideSmallBotsMsg`);
 			},
 			'setShowNames': function () {
-				more3ogarset[`noNames`] = !more3ogarset[`noNames`];
+				ogario1Settings[`noNames`] = !ogario1Settings[`noNames`];
 			},
 			'setHideTeammatesNames': function () {
-				more3ogarset[`hideTeammatesNames`] = !more3ogarset[`hideTeammatesNames`];
+				ogario1Settings[`hideTeammatesNames`] = !ogario1Settings[`hideTeammatesNames`];
 			},
 			'setShowMass': function () {
-				more3ogarset[`showMass`] = !more3ogarset[`showMass`];
+				ogario1Settings[`showMass`] = !ogario1Settings[`showMass`];
 			},
 			'setShowMiniMap': function () {
-				more3ogarset[`showMiniMap`] = !more3ogarset['showMiniMap'], this['setMiniMap']();
+				ogario1Settings[`showMiniMap`] = !ogario1Settings['showMiniMap'], this['setMiniMap']();
 			},
 			'setMiniMap': function () {
-				more3ogarset['showMiniMap'] ? moreogarset(`#minimap-hud`)[`show`]() : moreogarset(`#minimap-hud`)['hide']();
+				ogario1Settings['showMiniMap'] ? moreogarset(`#minimap-hud`)[`show`]() : moreogarset(`#minimap-hud`)['hide']();
 			},
 			'setShowQuest': function () {
 				`:ffa` === this[`gameMode`] && (this[`showQuest`] = !this[`showQuest`], this[`setQuest`]());
@@ -1835,16 +1835,16 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				}
 			},
 			'quickResp': function () {
-				more3ogarset[`quickResp`] && (this[`hideMenu`](), this[`gameServerConnect`](this['ws']), more1ogarset[`play`] = !0x1, this['tryResp']());
+				ogario1Settings[`quickResp`] && (this[`hideMenu`](), this[`gameServerConnect`](this['ws']), more1ogarset[`play`] = !0x1, this['tryResp']());
 			},
 			'autoResp': function () {
-				more3ogarset[`autoResp`] && (this[`setAutoResp`](), moreogarset('#overlays')[`stop`]()[`hide`](), moreogarset(`.btn-play-guest`)['is'](`:visible`) ? moreogarset('.btn-play-guest')[`click`]() : moreogarset(`.btn-play`)[`click`]());
+				ogario1Settings[`autoResp`] && (this[`setAutoResp`](), moreogarset('#overlays')[`stop`]()[`hide`](), moreogarset(`.btn-play-guest`)['is'](`:visible`) ? moreogarset('.btn-play-guest')[`click`]() : moreogarset(`.btn-play`)[`click`]());
 			},
 			'setAutoResp': function () {
-				more3ogarset[`autoResp`] && (moreogarset(`#skipStats`)[`prop`](`checked`) || (moreogarset(`#skipStats`)[`click`](), this[`skipStats`] = !0x0));
+				ogario1Settings[`autoResp`] && (moreogarset(`#skipStats`)[`prop`](`checked`) || (moreogarset(`#skipStats`)[`click`](), this[`skipStats`] = !0x0));
 			},
 			'toggleAutoResp': function () {
-				more3ogarset[`autoResp`] = !more3ogarset[`autoResp`], this[`setAutoResp`](), this[`displayChatInfo`](more3ogarset[`autoResp`], `autoRespMsg`);
+				ogario1Settings[`autoResp`] = !ogario1Settings[`autoResp`], this[`setAutoResp`](), this[`displayChatInfo`](ogario1Settings[`autoResp`], `autoRespMsg`);
 			},
 			'copyLb': function () {
 				var ogarsettings = moreogarset(`<input>`);
@@ -1858,16 +1858,16 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				this[`pause`] = !this[`pause`], more1ogarset[`pause`] = this[`pause`], this['pause'] ? (more1ogarset['resetTargetPosition'](), moreogarset(`#pause-hud`)[`show`]()) : moreogarset(`#pause-hud`)[`hide`]();
 			},
 			'setCenteredLb': function () {
-				more3ogarset[`centeredLb`] ? moreogarset(`#leaderboard-hud`)[`addClass`](`hud-text-center`) : moreogarset(`#leaderboard-hud`)['removeClass'](`hud-text-center`);
+				ogario1Settings[`centeredLb`] ? moreogarset(`#leaderboard-hud`)[`addClass`](`hud-text-center`) : moreogarset(`#leaderboard-hud`)['removeClass'](`hud-text-center`);
 			},
 			'setNormalLb': function () {
-				more3ogarset[`normalLb`] ? moreogarset(`#leaderboard-hud h4`)[`html`](_0xa193a8[`leaderboard`]) : moreogarset(`#leaderboard-hud h4`)[`html`](`ogario.ovh`);
+				ogario1Settings[`normalLb`] ? moreogarset(`#leaderboard-hud h4`)[`html`](more5ogarset[`leaderboard`]) : moreogarset(`#leaderboard-hud h4`)[`html`](`ogario.ovh`);
 			},
 			'setFpsAtTop': function () {
-				more3ogarset[`fpsAtTop`] ? moreogarset(`#stats-hud`)[`removeClass`](`hud-bottom`)[`addClass`](`hud-top`) : moreogarset(`#stats-hud`)[`removeClass`](`hud-top`)['addClass'](`hud-bottom`);
+				ogario1Settings[`fpsAtTop`] ? moreogarset(`#stats-hud`)[`removeClass`](`hud-bottom`)[`addClass`](`hud-top`) : moreogarset(`#stats-hud`)[`removeClass`](`hud-top`)['addClass'](`hud-bottom`);
 			},
 			'setBlockPopups': function () {
-				this[`protocolMode`] ? moreogarset(`#block-warn`)[`hide`]() : more3ogarset[`blockPopups`] ? this[`blockPopups`]() : this[`unblockPopups`]();
+				this[`protocolMode`] ? moreogarset(`#block-warn`)[`hide`]() : ogario1Settings[`blockPopups`] ? this[`blockPopups`]() : this[`unblockPopups`]();
 			},
 			'blockPopups': function () {
 				moreogarset(`#openfl-content, #openfl-overlay`)[`hide`](), moreogarset(`#openfl-content, #openfl-overlay`)[`addClass`](`block-popups`), moreogarset('#freeCoins, #gifting, #openShopBtn, #dailyQuests')[`prop`](`disabled`, !0x0), moreogarset(`#block-warn`)[`show`]();
@@ -1876,15 +1876,15 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				moreogarset(`#openfl-overlay.disabler`)['click'](), moreogarset('#openfl-content, #openfl-overlay')[`hide`](), moreogarset(`#openfl-content, #openfl-overlay`)['removeClass']('block-popups'), moreogarset(`#freeCoins, #gifting, #openShopBtn, #dailyQuests`)[`prop`](`disabled`, !0x1), moreogarset(`#block-warn`)[`hide`]();
 			},
 			'tempUnblockPopups': function () {
-				more3ogarset[`blockPopups`] && this[`unblockPopups`]();
+				ogario1Settings[`blockPopups`] && this[`unblockPopups`]();
 			},
 			'displayLeaderboard': function (ogarsettings, more2ogarset = '') {
 				this[`leaderboardPositionsHUD`] && (this[`leaderboardPositionsHUD`][`innerHTML`] = ogarsettings, this[`leaderboardDataHUD`][`innerHTML`] = more2ogarset);
 			},
 			'displayStats': function () {
-				if (more3ogarset[`showStats`]) {
+				if (ogario1Settings[`showStats`]) {
 					var ogarsettings = '';
-					more1ogarset[`play`] && (more3ogarset[`showStatsMass`] && more1ogarset[`playerMass`] && (ogarsettings += _0xa193a8[`mass`] + ': ' + more1ogarset[`playerMass`] + ` | `), more1ogarset[`playerScore`] && (ogarsettings += _0xa193a8[`score`] + ': ' + more1ogarset['playerScore']), more3ogarset['showStatsSTE'] && more1ogarset[`STE`] && (ogarsettings += ` | STE: ` + more1ogarset['STE']), more3ogarset[`showStatsN16`] && more1ogarset[`playerSplitCells`] && (ogarsettings += ` | ` + more1ogarset[`playerSplitCells`] + '/16'), more3ogarset[`showStatsFPS`] && (ogarsettings += ' | ')), more3ogarset[`showStatsFPS`] && (ogarsettings += `FPS: ` + _0x53e5f0[`fps`]), this[`statsHUD`][`textContent`] = ogarsettings;
+					more1ogarset[`play`] && (ogario1Settings[`showStatsMass`] && more1ogarset[`playerMass`] && (ogarsettings += more5ogarset[`mass`] + ': ' + more1ogarset[`playerMass`] + ` | `), more1ogarset[`playerScore`] && (ogarsettings += more5ogarset[`score`] + ': ' + more1ogarset['playerScore']), ogario1Settings['showStatsSTE'] && more1ogarset[`STE`] && (ogarsettings += ` | STE: ` + more1ogarset['STE']), ogario1Settings[`showStatsN16`] && more1ogarset[`playerSplitCells`] && (ogarsettings += ` | ` + more1ogarset[`playerSplitCells`] + '/16'), ogario1Settings[`showStatsFPS`] && (ogarsettings += ' | ')), ogario1Settings[`showStatsFPS`] && (ogarsettings += `FPS: ` + _0x53e5f0[`fps`]), this[`statsHUD`][`textContent`] = ogarsettings;
 					var more2ogarset = this;
 					setTimeout(function () {
 						more2ogarset[`displayStats`]();
@@ -1892,7 +1892,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				} else moreogarset('#stats-hud')[`hide`]();
 			},
 			'displayTime': function () {
-				if (more3ogarset[`showTime`]) {
+				if (ogario1Settings[`showTime`]) {
 					var ogarsettings = new Date()[`toLocaleString`]();
 					this['timeHUD'][`textContent`] = ogarsettings;
 					var more2ogarset = this;
@@ -1906,8 +1906,8 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				this[`activeParties`][`className`] = '' === ogarsettings ? `no-parties` : '', this[`activeParties`]['innerHTML'] = ogarsettings;
 			},
 			'displayTop5': function () {
-				if (more3ogarset['showTop5']) {
-					for (var ogarsettings = '', more2ogarset = 0x0, moreogarset = this[`top5`][`length`], _0x167e37 = 0x0; _0x167e37 < moreogarset; _0x167e37++) more2ogarset += this[`top5`][_0x167e37][`mass`], _0x167e37 >= this['top5limit'] || (ogarsettings += `<li><span class=\"cell-counter\" style=\"background-color: ` + this[`top5`][_0x167e37][`color`] + '\">' + (_0x167e37 + 0x1) + `</span>`, more3ogarset[`showTargeting`] && (ogarsettings += `<a href=\"#\" data-user-id=\"` + this[`top5`][_0x167e37]['id'] + `\" class=\"set-target ogicon-target\"></a> `), ogarsettings += `<span class=\"hud-main-color\">[` + this[`calculateMapSector`](this[`top5`][_0x167e37]['x'], this[`top5`][_0x167e37]['y']) + `]</span>`, ogarsettings += `<span class=\"top5-mass-color\">[` + this[`shortMassFormat`](this[`top5`][_0x167e37][`mass`]) + `]</span> ` + this[`escapeHTML`](this[`top5`][_0x167e37][`nick`]) + `</li>`);
+				if (ogario1Settings['showTop5']) {
+					for (var ogarsettings = '', more2ogarset = 0x0, moreogarset = this[`top5`][`length`], more3ogarset = 0x0; more3ogarset < moreogarset; more3ogarset++) more2ogarset += this[`top5`][more3ogarset][`mass`], more3ogarset >= this['top5limit'] || (ogarsettings += `<li><span class=\"cell-counter\" style=\"background-color: ` + this[`top5`][more3ogarset][`color`] + '\">' + (more3ogarset + 0x1) + `</span>`, ogario1Settings[`showTargeting`] && (ogarsettings += `<a href=\"#\" data-user-id=\"` + this[`top5`][more3ogarset]['id'] + `\" class=\"set-target ogicon-target\"></a> `), ogarsettings += `<span class=\"hud-main-color\">[` + this[`calculateMapSector`](this[`top5`][more3ogarset]['x'], this[`top5`][more3ogarset]['y']) + `]</span>`, ogarsettings += `<span class=\"top5-mass-color\">[` + this[`shortMassFormat`](this[`top5`][more3ogarset][`mass`]) + `]</span> ` + this[`escapeHTML`](this[`top5`][more3ogarset][`nick`]) + `</li>`);
 					this[`top5pos`]['innerHTML'] = ogarsettings, more1ogarset['play'] && more1ogarset[`playerMass`] && (more2ogarset += more1ogarset[`playerMass`], moreogarset++), this[`top5totalMass`][`textContent`] = this[`shortMassFormat`](more2ogarset), this[`top5totalPlayers`][`textContent`] = moreogarset;
 				}
 			},
@@ -1921,29 +1921,29 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				} else this[`clearChatHistory`](!0x1);
 			},
 			'clearChatHistory': function (ogarsettings) {
-				moreogarset(`#messages`)[`empty`](), ogarsettings && (toastr[`clear`](), more3ogarset[`showChatBox`] && (moreogarset(`#chat-box .message`)[`remove`](), this[`chatHistory`]['length'] = 0x0));
+				moreogarset(`#messages`)[`empty`](), ogarsettings && (toastr[`clear`](), ogario1Settings[`showChatBox`] && (moreogarset(`#chat-box .message`)[`remove`](), this[`chatHistory`]['length'] = 0x0));
 			},
 			'displayChatInfo': function (ogarsettings, more2ogarset) {
-				ogarsettings ? toastr['info'](_0xa193a8[more2ogarset + 'A']) : toastr['error'](_0xa193a8[more2ogarset + 'B']);
+				ogarsettings ? toastr['info'](more5ogarset[more2ogarset + 'A']) : toastr['error'](more5ogarset[more2ogarset + 'B']);
 			},
 			'setDisableChat': function () {
-				more3ogarset[`hideChat`] = more3ogarset[`disableChat`], this[`setHideChat`]();
+				ogario1Settings[`hideChat`] = ogario1Settings[`disableChat`], this[`setHideChat`]();
 			},
 			'hideChat': function () {
-				more3ogarset['hideChat'] = !more3ogarset[`hideChat`], this[`setHideChat`](), this[`displayChatInfo`](!more3ogarset[`hideChat`], 'hideChatMsg');
+				ogario1Settings['hideChat'] = !ogario1Settings[`hideChat`], this[`setHideChat`](), this[`displayChatInfo`](!ogario1Settings[`hideChat`], 'hideChatMsg');
 			},
 			'setHideChat': function () {
-				more3ogarset['hideChat'] && moreogarset('#message-box')[`hide`](), this[`setShowChatBox`]();
+				ogario1Settings['hideChat'] && moreogarset('#message-box')[`hide`](), this[`setShowChatBox`]();
 			},
 			'setShowChatBox': function () {
-				!more3ogarset[`hideChat`] && more3ogarset[`showChatBox`] ? moreogarset(`#chat-box`)['show']() : moreogarset(`#chat-box`)[`hide`]();
+				!ogario1Settings[`hideChat`] && ogario1Settings[`showChatBox`] ? moreogarset(`#chat-box`)['show']() : moreogarset(`#chat-box`)[`hide`]();
 			},
 			'enterChatMessage': function () {
 				var ogarsettings = moreogarset(`#message-box`),
 					more2ogarset = moreogarset('#message');
 				if (ogarsettings['is'](`:visible`)) {
-					var _0x167e37 = more2ogarset[`val`]();
-					_0x167e37['length'] ? (this[`sendChatMessage`](0x65, _0x167e37), more1ogarset[`play`] && (more2ogarset[`blur`](), ogarsettings[`hide`]())) : (more2ogarset[`blur`](), ogarsettings[`hide`]()), more2ogarset[`val`]('');
+					var more3ogarset = more2ogarset[`val`]();
+					more3ogarset['length'] ? (this[`sendChatMessage`](0x65, more3ogarset), more1ogarset[`play`] && (more2ogarset[`blur`](), ogarsettings[`hide`]())) : (more2ogarset[`blur`](), ogarsettings[`hide`]()), more2ogarset[`val`]('');
 				} else ogarsettings[`show`](), more2ogarset['focus'](), more2ogarset[`val`]('');
 			},
 			'showMenu': function (ogarsettings) {
@@ -1963,18 +1963,18 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 			},
 			'loadSettings': function () {
 				var ogarsettings = null;
-				for (var moreogarset in null !== more2ogarset[`localStorage`][`getItem`](`ogarioSettings`) && (ogarsettings = JSON[`parse`](more2ogarset[`localStorage`][`getItem`]('ogarioSettings'))), more3ogarset) more3ogarset[`hasOwnProperty`](moreogarset) && (ogarsettings && ogarsettings['hasOwnProperty'](moreogarset) && (more3ogarset[moreogarset] = ogarsettings[moreogarset]), more1ogarset[`hasOwnProperty`](moreogarset) && (more1ogarset[moreogarset] = more3ogarset[moreogarset]));
+				for (var moreogarset in null !== more2ogarset[`localStorage`][`getItem`](`ogarioSettings`) && (ogarsettings = JSON[`parse`](more2ogarset[`localStorage`][`getItem`]('ogarioSettings'))), ogario1Settings) ogario1Settings[`hasOwnProperty`](moreogarset) && (ogarsettings && ogarsettings['hasOwnProperty'](moreogarset) && (ogario1Settings[moreogarset] = ogarsettings[moreogarset]), more1ogarset[`hasOwnProperty`](moreogarset) && (more1ogarset[moreogarset] = ogario1Settings[moreogarset]));
 			},
 			'saveSettings': function (ogarsettings, more1ogarset) {
 				more2ogarset['localStorage'][`setItem`](more1ogarset, JSON['stringify'](ogarsettings));
 			},
 			'exportSettings': function () {
 				var ogarsettings = {
-					'ogarioCommands': _0xbfbffb,
-					'ogarioHotkeys': _0x597e73,
-					'ogarioPlayerProfiles': _0x2e5667,
-					'ogarioSettings': more3ogarset,
-					'ogarioThemeSettings': ogarioJSONsettings
+					'ogarioCommands': ogario1Commands,
+					'ogarioHotkeys': ogario1Hotkeys,
+					'ogarioPlayerProfiles': ogario1PlayerProfiles,
+					'ogarioSettings': ogario1Settings,
+					'ogarioThemeSettings': ogario1ThemeSettings
 				};
 				for (var more2ogarset in ogarsettings) {
 					if (ogarsettings[`hasOwnProperty`](more2ogarset)) moreogarset(`#export-` + more2ogarset)['prop'](`checked`) || delete ogarsettings[more2ogarset];
@@ -1996,8 +1996,8 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				null !== more2ogarset[`localStorage`]['getItem'](`ogarioSettings`) && (more2ogarset[`localStorage`][`removeItem`](`ogarioSettings`), more2ogarset['location'][`reload`]());
 			},
 			'setSettings': function (ogarsettings, more2ogarset) {
-				if (more3ogarset[`hasOwnProperty`](ogarsettings) && null !== more2ogarset) {
-					switch (more3ogarset[ogarsettings] = more2ogarset, more1ogarset[`hasOwnProperty`](ogarsettings) && (more1ogarset[ogarsettings] = more2ogarset), ogarsettings) {
+				if (ogario1Settings[`hasOwnProperty`](ogarsettings) && null !== more2ogarset) {
+					switch (ogario1Settings[ogarsettings] = more2ogarset, more1ogarset[`hasOwnProperty`](ogarsettings) && (more1ogarset[ogarsettings] = more2ogarset), ogarsettings) {
 						case `autoResp`:
 							this[`setAutoResp`]();
 							break;
@@ -2040,19 +2040,19 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 						case `blockPopups`:
 							this['setBlockPopups']();
 					}
-					this[`saveSettings`](more3ogarset, `ogarioSettings`);
+					this[`saveSettings`](ogario1Settings, `ogarioSettings`);
 				}
 			},
 			'loadProfiles': function () {
-				if (null !== more2ogarset[`localStorage`][`getItem`](`ogarioPlayerProfiles`)) _0x2e5667 = JSON[`parse`](more2ogarset[`localStorage`]['getItem'](`ogarioPlayerProfiles`));
+				if (null !== more2ogarset[`localStorage`][`getItem`](`ogarioPlayerProfiles`)) ogario1PlayerProfiles = JSON[`parse`](more2ogarset[`localStorage`]['getItem'](`ogarioPlayerProfiles`));
 				else
-					for (var ogarsettings = 0x0; ogarsettings < 0xa; ogarsettings++) _0x2e5667[`push`]({
+					for (var ogarsettings = 0x0; ogarsettings < 0xa; ogarsettings++) ogario1PlayerProfiles[`push`]({
 						'nick': `Profile #` + (ogarsettings + 0x1),
 						'clanTag': '',
 						'skinURL': '',
-						'color': ogarioJSONsettings['mainColor']
+						'color': ogario1ThemeSettings['mainColor']
 					});
-				null !== more2ogarset[`localStorage`][`getItem`](`ogarioSelectedProfile`) && (this[`selectedProfile`] = JSON['parse'](more2ogarset[`localStorage`][`getItem`]('ogarioSelectedProfile'))), _0x37dab4[`nick`] = _0x2e5667[this[`selectedProfile`]][`nick`], _0x37dab4[`clanTag`] = _0x2e5667[this['selectedProfile']][`clanTag`], _0x37dab4[`skinURL`] = _0x2e5667[this['selectedProfile']]['skinURL'], _0x37dab4[`color`] = _0x2e5667[this[`selectedProfile`]][`color`];
+				null !== more2ogarset[`localStorage`][`getItem`](`ogarioSelectedProfile`) && (this[`selectedProfile`] = JSON['parse'](more2ogarset[`localStorage`][`getItem`]('ogarioSelectedProfile'))), _0x37dab4[`nick`] = ogario1PlayerProfiles[this[`selectedProfile`]][`nick`], _0x37dab4[`clanTag`] = ogario1PlayerProfiles[this['selectedProfile']][`clanTag`], _0x37dab4[`skinURL`] = ogario1PlayerProfiles[this['selectedProfile']]['skinURL'], _0x37dab4[`color`] = ogario1PlayerProfiles[this[`selectedProfile`]][`color`];
 			},
 			'changeSkinPreview': function (ogarsettings, more2ogarset) {
 				ogarsettings && more2ogarset && ('skin-preview' === more2ogarset ? (moreogarset('#skin-preview')[`removeClass`](`default`)[`append`](`<a href=\"#\" id=\"skin-popover\" data-toggle=\"popover\" title=\"\" data-html=\"true\" data-content=\"<img src=\'` + ogarsettings['src'] + `\' width=\'500\'>\"></a>`), moreogarset('#skin-popover')[`append`](moreogarset(ogarsettings)[`fadeIn`](0x3e8)), moreogarset(`#skin-popover`)[`popover`]()) : moreogarset('#' + more2ogarset)[`removeClass`](`default`)[`append`](moreogarset(ogarsettings)[`fadeIn`](0x3e8)));
@@ -2060,68 +2060,68 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 			'setSkinPreview': function (ogarsettings, more2ogarset) {
 				if (moreogarset('#' + more2ogarset)[`empty`]()[`addClass`](`default`), ogarsettings && 0x0 != ogarsettings[`length`]) {
 					var more1ogarset = this,
-						_0x167e37 = new Image();
-					_0x167e37[`crossOrigin`] = 'Anonymous', _0x167e37[`onload`] = function () {
-						more1ogarset[`changeSkinPreview`](_0x167e37, more2ogarset);
-					}, _0x167e37[`src`] = ogarsettings;
+						more3ogarset = new Image();
+					more3ogarset[`crossOrigin`] = 'Anonymous', more3ogarset[`onload`] = function () {
+						more1ogarset[`changeSkinPreview`](more3ogarset, more2ogarset);
+					}, more3ogarset[`src`] = ogarsettings;
 				}
 			},
 			'setProfile': function () {
-				var ogarsettings = (_0x2e5667[`length`] + this['selectedProfile'] - 0x1) % _0x2e5667[`length`],
-					more2ogarset = (this[`selectedProfile`] + 0x1) % _0x2e5667[`length`];
-				this[`setSkinPreview`](_0x2e5667[ogarsettings][`skinURL`], 'prev-profile'), this['setSkinPreview'](_0x2e5667[this['selectedProfile']][`skinURL`], `skin-preview`), this[`setSkinPreview`](_0x2e5667[more2ogarset][`skinURL`], `next-profile`), this[`saveSettings`](this[`selectedProfile`], `ogarioSelectedProfile`), moreogarset(`#nick`)[`val`](_0x2e5667[this[`selectedProfile`]][`nick`]), moreogarset(`#clantag`)['val'](_0x2e5667[this[`selectedProfile`]]['clanTag']), moreogarset(`#skin`)[`val`](_0x2e5667[this['selectedProfile']]['skinURL']), moreogarset('#color')[`val`](_0x2e5667[this['selectedProfile']][`color`]), moreogarset(`.skin`)['colorpicker'](`setValue`, _0x2e5667[this[`selectedProfile`]][`color`]), moreogarset(`#skins a`)[`removeClass`](`selected`), moreogarset(`#skins a[data-profile=\'` + this['selectedProfile'] + '\']')[`addClass`]('selected');
+				var ogarsettings = (ogario1PlayerProfiles[`length`] + this['selectedProfile'] - 0x1) % ogario1PlayerProfiles[`length`],
+					more2ogarset = (this[`selectedProfile`] + 0x1) % ogario1PlayerProfiles[`length`];
+				this[`setSkinPreview`](ogario1PlayerProfiles[ogarsettings][`skinURL`], 'prev-profile'), this['setSkinPreview'](ogario1PlayerProfiles[this['selectedProfile']][`skinURL`], `skin-preview`), this[`setSkinPreview`](ogario1PlayerProfiles[more2ogarset][`skinURL`], `next-profile`), this[`saveSettings`](this[`selectedProfile`], `ogarioSelectedProfile`), moreogarset(`#nick`)[`val`](ogario1PlayerProfiles[this[`selectedProfile`]][`nick`]), moreogarset(`#clantag`)['val'](ogario1PlayerProfiles[this[`selectedProfile`]]['clanTag']), moreogarset(`#skin`)[`val`](ogario1PlayerProfiles[this['selectedProfile']]['skinURL']), moreogarset('#color')[`val`](ogario1PlayerProfiles[this['selectedProfile']][`color`]), moreogarset(`.skin`)['colorpicker'](`setValue`, ogario1PlayerProfiles[this[`selectedProfile`]][`color`]), moreogarset(`#skins a`)[`removeClass`](`selected`), moreogarset(`#skins a[data-profile=\'` + this['selectedProfile'] + '\']')[`addClass`]('selected');
 			},
 			'prevProfile': function () {
-				this[`setPlayerSettings`](), this[`selectedProfile`] = (_0x2e5667[`length`] + this[`selectedProfile`] - 0x1) % _0x2e5667[`length`], this[`setProfile`]();
+				this[`setPlayerSettings`](), this[`selectedProfile`] = (ogario1PlayerProfiles[`length`] + this[`selectedProfile`] - 0x1) % ogario1PlayerProfiles[`length`], this[`setProfile`]();
 			},
 			'nextProfile': function () {
-				this[`setPlayerSettings`](), this['selectedProfile'] = (this['selectedProfile'] + 0x1) % _0x2e5667[`length`], this['setProfile']();
+				this[`setPlayerSettings`](), this['selectedProfile'] = (this['selectedProfile'] + 0x1) % ogario1PlayerProfiles[`length`], this['setProfile']();
 			},
 			'selectProfile': function (ogarsettings) {
 				this[`setPlayerSettings`](), this['selectedProfile'] = parseInt(ogarsettings), this[`setProfile`]();
 			},
-			'addOption': function (ogarsettings, more2ogarset, more1ogarset, _0x167e37) {
-				moreogarset(ogarsettings)[`append`](`<label><input type=\"checkbox\" id=\"` + more2ogarset + `\" class=\"js-switch\"> ` + more1ogarset + `</label>`), moreogarset('#' + more2ogarset)[`prop`](`checked`, _0x167e37);
+			'addOption': function (ogarsettings, more2ogarset, more1ogarset, more3ogarset) {
+				moreogarset(ogarsettings)[`append`](`<label><input type=\"checkbox\" id=\"` + more2ogarset + `\" class=\"js-switch\"> ` + more1ogarset + `</label>`), moreogarset('#' + more2ogarset)[`prop`](`checked`, more3ogarset);
 			},
 			'addOptions': function (ogarsettings, more2ogarset) {
 				if (ogarsettings) {
-					moreogarset(`#og-options`)[`append`](`<div class=\"options-box ` + more2ogarset + '\"><h5 class=\"menu-main-color\">' + _0xa193a8[more2ogarset] + '</h5></div>');
+					moreogarset(`#og-options`)[`append`](`<div class=\"options-box ` + more2ogarset + '\"><h5 class=\"menu-main-color\">' + more5ogarset[more2ogarset] + '</h5></div>');
 					for (var more1ogarset = 0x0; more1ogarset < ogarsettings['length']; more1ogarset++) {
-						var _0x167e37 = ogarsettings[more1ogarset];
-						more3ogarset[`hasOwnProperty`](_0x167e37) && (moreogarset('.' + more2ogarset)[`append`](`<label>` + _0xa193a8[_0x167e37] + ` <input type=\"checkbox\" class=\"js-switch\" id=\"` + _0x167e37 + `\"></label>`), moreogarset('#' + _0x167e37)[`prop`]('checked', more3ogarset[_0x167e37]));
+						var more3ogarset = ogarsettings[more1ogarset];
+						ogario1Settings[`hasOwnProperty`](more3ogarset) && (moreogarset('.' + more2ogarset)[`append`](`<label>` + more5ogarset[more3ogarset] + ` <input type=\"checkbox\" class=\"js-switch\" id=\"` + more3ogarset + `\"></label>`), moreogarset('#' + more3ogarset)[`prop`]('checked', ogario1Settings[more3ogarset]));
 					}
 				}
 			},
-			'addInputBox': function (ogarsettings, more2ogarset, more1ogarset, _0x167e37) {
-				moreogarset(ogarsettings)['append']('<div class=\"input-box\"><span class=\"title-box\">' + _0xa193a8[more2ogarset] + `</span><input id=\"` + more2ogarset + '\" class=\"form-control\" placeholder=\"' + more1ogarset + `\" value=\"` + more3ogarset[more2ogarset] + `\" /></div>`);
-				var _0x12efde = this;
+			'addInputBox': function (ogarsettings, more2ogarset, more1ogarset, more3ogarset) {
+				moreogarset(ogarsettings)['append']('<div class=\"input-box\"><span class=\"title-box\">' + more5ogarset[more2ogarset] + `</span><input id=\"` + more2ogarset + '\" class=\"form-control\" placeholder=\"' + more1ogarset + `\" value=\"` + ogario1Settings[more2ogarset] + `\" /></div>`);
+				var more4ogarset = this;
 				moreogarset('#' + more2ogarset)['on'](`input`, function () {
-					more3ogarset[more2ogarset] = this[`value`], _0x12efde[_0x167e37](), _0x12efde[`saveSettings`](more3ogarset, `ogarioSettings`);
+					ogario1Settings[more2ogarset] = this[`value`], more4ogarset[more3ogarset](), more4ogarset[`saveSettings`](ogario1Settings, `ogarioSettings`);
 				});
 			},
-			'addSliderBox': function (ogarsettings, more2ogarset, _0x167e37, _0x12efde, _0x4ee245, _0x24c7a0) {
-				moreogarset(ogarsettings)['append'](`<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">` + _0xa193a8[more2ogarset] + ': </span><span id=\"' + more2ogarset + `-value\" class=\"value\">` + more3ogarset[more2ogarset] + '</span></div><input id=\"' + more2ogarset + `-slider\" type=\"range\" min=\"` + _0x167e37 + `\" max=\"` + _0x12efde + '\" step=\"' + _0x4ee245 + `\" value=\"` + more3ogarset[more2ogarset] + `\"></div>`);
-				var _0x2f0ea0 = this;
-				_0x24c7a0 ? moreogarset('#' + more2ogarset + `-slider`)['on'](`input`, function () {
+			'addSliderBox': function (ogarsettings, more2ogarset, more3ogarset, more4ogarset, ogarbuffed, ogarlanguage) {
+				moreogarset(ogarsettings)['append'](`<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">` + more5ogarset[more2ogarset] + ': </span><span id=\"' + more2ogarset + `-value\" class=\"value\">` + ogario1Settings[more2ogarset] + '</span></div><input id=\"' + more2ogarset + `-slider\" type=\"range\" min=\"` + more3ogarset + `\" max=\"` + more4ogarset + '\" step=\"' + ogarbuffed + `\" value=\"` + ogario1Settings[more2ogarset] + `\"></div>`);
+				var ogaractuallanguage = this;
+				ogarlanguage ? moreogarset('#' + more2ogarset + `-slider`)['on'](`input`, function () {
 					var ogarsettings = parseFloat(moreogarset(this)['val']());
-					moreogarset('#' + more2ogarset + '-value')[`text`](ogarsettings), more3ogarset[more2ogarset] = ogarsettings, more1ogarset[`hasOwnProperty`](more2ogarset) && (more1ogarset[more2ogarset] = ogarsettings), _0x2f0ea0[_0x24c7a0](), _0x2f0ea0[`saveSettings`](more3ogarset, 'ogarioSettings');
+					moreogarset('#' + more2ogarset + '-value')[`text`](ogarsettings), ogario1Settings[more2ogarset] = ogarsettings, more1ogarset[`hasOwnProperty`](more2ogarset) && (more1ogarset[more2ogarset] = ogarsettings), ogaractuallanguage[ogarlanguage](), ogaractuallanguage[`saveSettings`](ogario1Settings, 'ogarioSettings');
 				}) : moreogarset('#' + more2ogarset + `-slider`)['on'](`input`, function () {
 					var ogarsettings = parseFloat(moreogarset(this)[`val`]());
-					moreogarset('#' + more2ogarset + `-value`)[`text`](ogarsettings), more3ogarset[more2ogarset] = ogarsettings, more1ogarset[`hasOwnProperty`](more2ogarset) && (more1ogarset[more2ogarset] = ogarsettings), _0x2f0ea0['saveSettings'](more3ogarset, 'ogarioSettings');
+					moreogarset('#' + more2ogarset + `-value`)[`text`](ogarsettings), ogario1Settings[more2ogarset] = ogarsettings, more1ogarset[`hasOwnProperty`](more2ogarset) && (more1ogarset[more2ogarset] = ogarsettings), ogaractuallanguage['saveSettings'](ogario1Settings, 'ogarioSettings');
 				});
 			},
 			'setLang': function () {
-				if ('pl' === _0x24c7a0 && more2ogarset[`i18n_dict`] && more2ogarset['i18n_dict']['en'])
-					for (var ogarsettings in more2ogarset[`i18n_dict`]['en']) more2ogarset[`i18n_dict`]['en']['hasOwnProperty'](ogarsettings) && _0xa193a8['hasOwnProperty'](ogarsettings) && (more2ogarset[`i18n_dict`]['en'][ogarsettings] = _0xa193a8[ogarsettings]);
+				if ('pl' === ogarlanguage && more2ogarset[`i18n_dict`] && more2ogarset['i18n_dict']['en'])
+					for (var ogarsettings in more2ogarset[`i18n_dict`]['en']) more2ogarset[`i18n_dict`]['en']['hasOwnProperty'](ogarsettings) && more5ogarset['hasOwnProperty'](ogarsettings) && (more2ogarset[`i18n_dict`]['en'][ogarsettings] = more5ogarset[ogarsettings]);
 			},
 			'setMenu': function () {
-				for (var ogarsettings in document[`title`] = this[`name`], moreogarset(`#mainPanel`)[`before`](`<div id=\"exp-bar\" class=\"agario-panel\"><span class=\"ogicon-user\"></span><div class=\"agario-exp-bar progress\"><span class=\"progress-bar-text\"></span><div class=\"progress-bar progress-bar-striped\" style=\"width: 0%;\"></div></div><div class=\"progress-bar-star\"></div></div><div id=\"main-menu\" class=\"agario-panel\"><ul class=\"menu-tabs\"><li class=\"start-tab active\"><a href=\"#main-panel\" class=\"active ogicon-home\" data-toggle=\"tab-tooltip\" title=\"` + _0xa193a8[`start`] + `\"></a></li><li class=\"profile-tab\"><a href=\"#profile\" class=\"ogicon-user\" data-toggle=\"tab-tooltip\" title=\"` + _0xa193a8[`profile`] + `\"></a></li><li class=\"settings-tab\"><a href=\"#og-settings\" class=\"ogicon-cog\" data-toggle=\"tab-tooltip\" title=\"` + _0xa193a8[`settings`] + `\"></a></li><li class=\"theme-tab\"><a href=\"#theme\" class=\"ogicon-droplet\" data-toggle=\"tab-tooltip\" title=\"` + _0xa193a8[`theme`] + '\"></a></li><li class=\"hotkeys-tab\"><a href=\"#\" class=\"hotkeys-link ogicon-keyboard\" data-toggle=\"tab-tooltip\" title=\"' + _0xa193a8[`hotkeys`] + '\"></a></li><li class=\"music-tab\"><a href=\"#music\" class=\"ogicon-music\" data-toggle=\"tab-tooltip\" title=\"Radio / ' + _0xa193a8[`sounds`] + `\"></a></li></ul><div id=\"main-panel\" class=\"menu-panel\"></div><div id=\"profile\" class=\"menu-panel\"></div><div id=\"og-settings\" class=\"menu-panel\"><div class=\"submenu-panel\"></div></div><div id=\"theme\" class=\"menu-panel\"></div><div id=\"music\" class=\"menu-panel\"></div></div>`), moreogarset(`#main-panel`)[`append`](`<a href=\"#\" class=\"quick quick-menu ogicon-menu\"></a><a href=\"#\" class=\"quick quick-skins ogicon-images\"></a><div id=\"profiles\"><div id=\"prev-profile\"></div><div id=\"skin-preview\"></div><div id=\"next-profile\"></div></div>`), moreogarset(`#mainPanel div[role=form]`)['appendTo'](moreogarset(`#main-panel`)), moreogarset(`#main-panel div[role=form] .form-group:first`)['remove'](), moreogarset(`#nick`)[`before`](`<input id=\"clantag\" class=\"form-control\" placeholder=\"Tag, e.g. Ⓜ\" maxlength=\"10\"><div class=\"input-group nick\"></div>`), moreogarset(`#nick`)[`appendTo`](moreogarset('.nick')), moreogarset(`.nick`)['append'](`<span class=\"input-group-btn\"><button id=\"stream-mode\" class=\"btn active ogicon-eye\"></button></span>`), moreogarset('.nick')[`after`](`<div class=\"input-group skin\"><input id=\"skin\" class=\"form-control\" placeholder=\"Skin URL (imgur.com direct link)\" maxlength=\"40\"><input type=\"hidden\" id=\"color\" value=\"` + _0x37dab4[`color`] + '\" maxlength=\"7\" /><span class=\"input-group-addon\"><i></i></span><span class=\"input-group-btn\"><button id=\"hide-url\" class=\"btn active ogicon-eye\"></button></span></div>'), moreogarset(`#locationKnown, #locationUnknown`)[`insertAfter`](moreogarset('.skin')), moreogarset(`#region`)['before'](`<button class=\"btn btn-warning btn-server-info ogicon-cogs\"></button>`), moreogarset(`.btn-spectate, .btn-logout`)[`appendTo`]('#agario-main-buttons'), moreogarset(`#agario-main-buttons`)[`addClass`](`clearfix`)[`before`](`<div id=\"server-info\" class=\"form-group clearfix\"><input id=\"server-ws\" class=\"form-control\" placeholder=\"Server WS\"><button id=\"server-connect\" class=\"btn btn-success ogicon-power\"></button><button id=\"server-reconnect\" class=\"btn btn-primary ogicon-redo2\"></button><input id=\"server-token\" class=\"form-control\" placeholder=\"Server token\"><button id=\"server-join\" class=\"btn btn-success\" data-itr=\"page_join_party\">Join</button></div>`), moreogarset(`#helloContainer div[role=form]`)[`after`](`<div id=\"ogario-party\" class=\"clearfix\"><input id=\"party-token\" class=\"form-control\" placeholder=\"Party token\"></div>`), moreogarset(`#ogario-party`)[`append`]('<button id=\"join-party-btn-2\" class=\"btn btn-success\" data-itr=\"page_join_party\">Join</button><button id=\"create-party-btn-2\" class=\"btn btn-primary\" data-itr=\"page_create_party\">Create</button>'), moreogarset('#pre-join-party-btn:first, #join-party-btn:first, #create-party-btn:first, #leave-party-btn:first, #joinPartyToken:first, .party-icon-back:first')[`appendTo`](moreogarset('#ogario-party')), moreogarset('#settingsChoice, #options')[`appendTo`](moreogarset(`#og-settings .submenu-panel`)), moreogarset('#stats')[`appendTo`](moreogarset(`#main-menu`))[`addClass`](`menu-panel`), moreogarset('#statsContinue')[`attr`]('id', 'statsContinue2'), moreogarset('#mainPanel')[`empty`]()[`remove`](), moreogarset(`.center-container`)[`addClass`](`ogario-menu`), moreogarset(`.center-container`)['append'](`<div id=\"menu-footer\" class=\"menu-main-color\">` + _0xa193a8[`visit`] + ` <a href=\"http://legendmod.ml\" target=\"_blank\">legendmod.ml</a> | ` + this[`version`] + ' <a href=\"https://goo.gl/nRREoR\" class=\"release ogicon-info\" target=\"_blank\"></a></div>'), moreogarset(`#leftPanel, #rightPanel`)[`addClass`](`ogario-menu`)[`removeAttr`]('id'), moreogarset(`.agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel`)[`appendTo`](moreogarset(`#profile`))['removeClass'](`agario-side-panel`), moreogarset(`.agario-profile-panel`)[`after`](`<div id=\"block-warn\">` + _0xa193a8[`blockWarn`] + '<br><a href=\"#\" id=\"unblock-popups\">' + _0xa193a8[`unblockPopups`] + `</a></div>`), moreogarset(`#exp-bar`)[`addClass`](`agario-profile-panel`), moreogarset(`.left-container`)[`empty`](), moreogarset(`.agario-shop-panel`)[`after`]('<div class=\"agario-panel ogario-yt-panel\"><h5 class=\"menu-main-color\">Team OGARio (tag: Ⓜ)</h5><div class=\"g-ytsubscribe\" data-channelid=\"UCaWiPNJWnhzYDrBQoXokn6w\" data-layout=\"full\" data-theme=\"dark\" data-count=\"default\"></div></div>'), moreogarset(`#tags-container`)[`appendTo`](moreogarset('#profile')), moreogarset('.btn-logout')[`appendTo`](moreogarset(`#profile`)), moreogarset('.left-container')[`append`](`<div id=\"quick-menu\" class=\"agario-panel agario-side-panel\"><a href=\"https://ogario.ovh/skins/\" class=\"quick-more-skins ogicon-grin\" target=\"_blank\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + _0xa193a8[`skins`] + `\"></a><a href=\"https://youtube.com/channel/UCaWiPNJWnhzYDrBQoXokn6w\" class=\"quick-yt ogicon-youtube2\" target=\"_blank\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"Team OGARio\"></a></div>`), this['protocolMode'] || moreogarset(`#quick-menu`)[`prepend`](`<a href=\"#\" class=\"quick-shop ogicon-cart\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + _0xa193a8[`page_shop`] + `\"></a><a href=\"#\" class=\"quick-free-coins ogicon-coin-dollar\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + _0xa193a8[`page_menu_main_free_coins`] + `\"></a><a href=\"#\" class=\"quick-free-gifts ogicon-gift\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + _0xa193a8[`page_menu_main_gifts`] + `\"></a><a href=\"#\" class=\"quick-quests ogicon-trophy\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + _0xa193a8[`page_menu_main_dailyquests`] + `\"></a>`), moreogarset(`.party-dialog, .partymode-info`)[`remove`](), moreogarset(`.agario-party-6`)['appendTo'](moreogarset(`.center-container`)), moreogarset(`.right-container`)[`empty`](), moreogarset(`.right-container`)[`append`](`<div class=\"agario-party\"></div>`), moreogarset(`.agario-party-6`)[`appendTo`](moreogarset(`.agario-party`))[`addClass`](`agario-panel agario-side-panel`), moreogarset(`.agario-party h4, #cancel-party-btn`)[`remove`](), moreogarset(`.agario-party .btn`)[`addClass`](`btn-sm`), moreogarset(`.right-container`)['append'](`<div id=\"skins-panel\" class=\"agario-panel agario-side-panel\"><div id=\"skins\"></div><a href=\"https://ogario.ovh/skins/\" id=\"more-skins\" class=\"btn btn-block btn-success\" target=\"_blank\">` + _0xa193a8[`moreSkins`] + `</a></div>`), moreogarset(`.btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr=\'page_option_dark_theme\'], #options #darkTheme`)['remove'](), moreogarset(`#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom`)[`css`]('display', `none`), moreogarset(`#advertisement`)[`removeClass`](`agario-panel`), moreogarset(`#adsBottom`)['css']({
+				for (var ogarsettings in document[`title`] = this[`name`], moreogarset(`#mainPanel`)[`before`](`<div id=\"exp-bar\" class=\"agario-panel\"><span class=\"ogicon-user\"></span><div class=\"agario-exp-bar progress\"><span class=\"progress-bar-text\"></span><div class=\"progress-bar progress-bar-striped\" style=\"width: 0%;\"></div></div><div class=\"progress-bar-star\"></div></div><div id=\"main-menu\" class=\"agario-panel\"><ul class=\"menu-tabs\"><li class=\"start-tab active\"><a href=\"#main-panel\" class=\"active ogicon-home\" data-toggle=\"tab-tooltip\" title=\"` + more5ogarset[`start`] + `\"></a></li><li class=\"profile-tab\"><a href=\"#profile\" class=\"ogicon-user\" data-toggle=\"tab-tooltip\" title=\"` + more5ogarset[`profile`] + `\"></a></li><li class=\"settings-tab\"><a href=\"#og-settings\" class=\"ogicon-cog\" data-toggle=\"tab-tooltip\" title=\"` + more5ogarset[`settings`] + `\"></a></li><li class=\"theme-tab\"><a href=\"#theme\" class=\"ogicon-droplet\" data-toggle=\"tab-tooltip\" title=\"` + more5ogarset[`theme`] + '\"></a></li><li class=\"hotkeys-tab\"><a href=\"#\" class=\"hotkeys-link ogicon-keyboard\" data-toggle=\"tab-tooltip\" title=\"' + more5ogarset[`hotkeys`] + '\"></a></li><li class=\"music-tab\"><a href=\"#music\" class=\"ogicon-music\" data-toggle=\"tab-tooltip\" title=\"Radio / ' + more5ogarset[`sounds`] + `\"></a></li></ul><div id=\"main-panel\" class=\"menu-panel\"></div><div id=\"profile\" class=\"menu-panel\"></div><div id=\"og-settings\" class=\"menu-panel\"><div class=\"submenu-panel\"></div></div><div id=\"theme\" class=\"menu-panel\"></div><div id=\"music\" class=\"menu-panel\"></div></div>`), moreogarset(`#main-panel`)[`append`](`<a href=\"#\" class=\"quick quick-menu ogicon-menu\"></a><a href=\"#\" class=\"quick quick-skins ogicon-images\"></a><div id=\"profiles\"><div id=\"prev-profile\"></div><div id=\"skin-preview\"></div><div id=\"next-profile\"></div></div>`), moreogarset(`#mainPanel div[role=form]`)['appendTo'](moreogarset(`#main-panel`)), moreogarset(`#main-panel div[role=form] .form-group:first`)['remove'](), moreogarset(`#nick`)[`before`](`<input id=\"clantag\" class=\"form-control\" placeholder=\"Tag, e.g. Ⓜ\" maxlength=\"10\"><div class=\"input-group nick\"></div>`), moreogarset(`#nick`)[`appendTo`](moreogarset('.nick')), moreogarset(`.nick`)['append'](`<span class=\"input-group-btn\"><button id=\"stream-mode\" class=\"btn active ogicon-eye\"></button></span>`), moreogarset('.nick')[`after`](`<div class=\"input-group skin\"><input id=\"skin\" class=\"form-control\" placeholder=\"Skin URL (imgur.com direct link)\" maxlength=\"40\"><input type=\"hidden\" id=\"color\" value=\"` + _0x37dab4[`color`] + '\" maxlength=\"7\" /><span class=\"input-group-addon\"><i></i></span><span class=\"input-group-btn\"><button id=\"hide-url\" class=\"btn active ogicon-eye\"></button></span></div>'), moreogarset(`#locationKnown, #locationUnknown`)[`insertAfter`](moreogarset('.skin')), moreogarset(`#region`)['before'](`<button class=\"btn btn-warning btn-server-info ogicon-cogs\"></button>`), moreogarset(`.btn-spectate, .btn-logout`)[`appendTo`]('#agario-main-buttons'), moreogarset(`#agario-main-buttons`)[`addClass`](`clearfix`)[`before`](`<div id=\"server-info\" class=\"form-group clearfix\"><input id=\"server-ws\" class=\"form-control\" placeholder=\"Server WS\"><button id=\"server-connect\" class=\"btn btn-success ogicon-power\"></button><button id=\"server-reconnect\" class=\"btn btn-primary ogicon-redo2\"></button><input id=\"server-token\" class=\"form-control\" placeholder=\"Server token\"><button id=\"server-join\" class=\"btn btn-success\" data-itr=\"page_join_party\">Join</button></div>`), moreogarset(`#helloContainer div[role=form]`)[`after`](`<div id=\"ogario-party\" class=\"clearfix\"><input id=\"party-token\" class=\"form-control\" placeholder=\"Party token\"></div>`), moreogarset(`#ogario-party`)[`append`]('<button id=\"join-party-btn-2\" class=\"btn btn-success\" data-itr=\"page_join_party\">Join</button><button id=\"create-party-btn-2\" class=\"btn btn-primary\" data-itr=\"page_create_party\">Create</button>'), moreogarset('#pre-join-party-btn:first, #join-party-btn:first, #create-party-btn:first, #leave-party-btn:first, #joinPartyToken:first, .party-icon-back:first')[`appendTo`](moreogarset('#ogario-party')), moreogarset('#settingsChoice, #options')[`appendTo`](moreogarset(`#og-settings .submenu-panel`)), moreogarset('#stats')[`appendTo`](moreogarset(`#main-menu`))[`addClass`](`menu-panel`), moreogarset('#statsContinue')[`attr`]('id', 'statsContinue2'), moreogarset('#mainPanel')[`empty`]()[`remove`](), moreogarset(`.center-container`)[`addClass`](`ogario-menu`), moreogarset(`.center-container`)['append'](`<div id=\"menu-footer\" class=\"menu-main-color\">` + more5ogarset[`visit`] + ` <a href=\"http://legendmod.ml\" target=\"_blank\">legendmod.ml</a> | ` + this[`version`] + ' <a href=\"https://goo.gl/nRREoR\" class=\"release ogicon-info\" target=\"_blank\"></a></div>'), moreogarset(`#leftPanel, #rightPanel`)[`addClass`](`ogario-menu`)[`removeAttr`]('id'), moreogarset(`.agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel`)[`appendTo`](moreogarset(`#profile`))['removeClass'](`agario-side-panel`), moreogarset(`.agario-profile-panel`)[`after`](`<div id=\"block-warn\">` + more5ogarset[`blockWarn`] + '<br><a href=\"#\" id=\"unblock-popups\">' + more5ogarset[`unblockPopups`] + `</a></div>`), moreogarset(`#exp-bar`)[`addClass`](`agario-profile-panel`), moreogarset(`.left-container`)[`empty`](), moreogarset(`.agario-shop-panel`)[`after`]('<div class=\"agario-panel ogario-yt-panel\"><h5 class=\"menu-main-color\">Team OGARio (tag: Ⓜ)</h5><div class=\"g-ytsubscribe\" data-channelid=\"UCaWiPNJWnhzYDrBQoXokn6w\" data-layout=\"full\" data-theme=\"dark\" data-count=\"default\"></div></div>'), moreogarset(`#tags-container`)[`appendTo`](moreogarset('#profile')), moreogarset('.btn-logout')[`appendTo`](moreogarset(`#profile`)), moreogarset('.left-container')[`append`](`<div id=\"quick-menu\" class=\"agario-panel agario-side-panel\"><a href=\"https://ogario.ovh/skins/\" class=\"quick-more-skins ogicon-grin\" target=\"_blank\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + more5ogarset[`skins`] + `\"></a><a href=\"https://youtube.com/channel/UCaWiPNJWnhzYDrBQoXokn6w\" class=\"quick-yt ogicon-youtube2\" target=\"_blank\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"Team OGARio\"></a></div>`), this['protocolMode'] || moreogarset(`#quick-menu`)[`prepend`](`<a href=\"#\" class=\"quick-shop ogicon-cart\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + more5ogarset[`page_shop`] + `\"></a><a href=\"#\" class=\"quick-free-coins ogicon-coin-dollar\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + more5ogarset[`page_menu_main_free_coins`] + `\"></a><a href=\"#\" class=\"quick-free-gifts ogicon-gift\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + more5ogarset[`page_menu_main_gifts`] + `\"></a><a href=\"#\" class=\"quick-quests ogicon-trophy\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + more5ogarset[`page_menu_main_dailyquests`] + `\"></a>`), moreogarset(`.party-dialog, .partymode-info`)[`remove`](), moreogarset(`.agario-party-6`)['appendTo'](moreogarset(`.center-container`)), moreogarset(`.right-container`)[`empty`](), moreogarset(`.right-container`)[`append`](`<div class=\"agario-party\"></div>`), moreogarset(`.agario-party-6`)[`appendTo`](moreogarset(`.agario-party`))[`addClass`](`agario-panel agario-side-panel`), moreogarset(`.agario-party h4, #cancel-party-btn`)[`remove`](), moreogarset(`.agario-party .btn`)[`addClass`](`btn-sm`), moreogarset(`.right-container`)['append'](`<div id=\"skins-panel\" class=\"agario-panel agario-side-panel\"><div id=\"skins\"></div><a href=\"https://ogario.ovh/skins/\" id=\"more-skins\" class=\"btn btn-block btn-success\" target=\"_blank\">` + more5ogarset[`moreSkins`] + `</a></div>`), moreogarset(`.btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr=\'page_option_dark_theme\'], #options #darkTheme`)['remove'](), moreogarset(`#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom`)[`css`]('display', `none`), moreogarset(`#advertisement`)[`removeClass`](`agario-panel`), moreogarset(`#adsBottom`)['css']({
 						'z-index': '1',
 						'opacity': '0',
 						'bottom': `-100px`
-					}), moreogarset(`#noNames, #showMass`)[`remove`](), moreogarset(`#og-settings .submenu-panel`)[`append`](`<div id=\"og-options\"></div>`), this['addOptions']([], `animationGroup`), this[`addOptions`]([`autoZoom`], `zoomGroup`), this[`addOptions`]([`quickResp`, `autoResp`], `respGroup`), this[`addOptions`]([`noNames`, `optimizedNames`, `autoHideNames`, `hideMyName`, `hideTeammatesNames`, `namesStroke`], 'namesGroup'), this[`addOptions`]([`showMass`, `optimizedMass`, `autoHideMass`, 'hideMyMass', 'hideEnemiesMass', `shortMass`, `virMassShots`, `massStroke`], 'massGroup'), this['protocolMode'] ? this['addOptions']([`customSkins`], `skinsGroup`) : this[`addOptions`]([`customSkins`, 'vanillaSkins'], 'skinsGroup'), this[`addOptions`](['optimizedFood', `autoHideFood`, 'autoHideFoodOnZoom', `rainbowFood`], `foodGroup`), this[`addOptions`]([`myCustomColor`, `myTransparentSkin`, `transparentSkins`, `transparentCells`, `transparentViruses`], `transparencyGroup`), this[`addOptions`]([`showGrid`, 'showBgSectors', `showMapBorders`], 'gridGroup'), this[`addOptions`]([`disableChat`, `chatSounds`, `chatEmoticons`, 'showChatImages', `showChatVideos`, `showChatBox`], `chatGroup`), this['addOptions'](['showMiniMap', `showMiniMapGrid`, `showMiniMapGuides`, `showMiniMapGhostCells`, 'oneColoredTeammates'], `miniMapGroup`), this[`addOptions`]([`oppColors`, `oppRings`, `virColors`, `splitRange`, 'virusesRange', `cursorTracking`, 'teammatesInd', `showGhostCells`], 'helpersGroup'), this[`addOptions`]([`mouseSplit`, `mouseFeed`, 'mouseInvert'], `mouseGroup`), this[`addOptions`]([`showTop5`, 'showTargeting', `showLbData`, 'centeredLb', `normalLb`, `fpsAtTop`], `hudGroup`), this[`addOptions`](['showStats', `showStatsMass`, `showStatsSTE`, 'showStatsN16', `showStatsFPS`, `showTime`], `statsGroup`), this['protocolMode'] || (this[`addOptions`]([`blockPopups`], `extrasGroup`), moreogarset(`#noSkins, #noColors, #skipStats, #showQuest`)[`addClass`](`js-switch-vanilla`), moreogarset(`.skinsGroup h5`)['after'](`<label class=\"noSkins\">` + _0xa193a8[`noSkins`] + ' </label>'), moreogarset(`#noSkins`)[`appendTo`](moreogarset(`.noSkins`)), moreogarset(`.transparencyGroup h5`)[`after`](`<label class=\"noColors\">` + _0xa193a8[`noColors`] + ` </label>`), moreogarset(`#noColors`)[`appendTo`](moreogarset(`.noColors`)), moreogarset(`.extrasGroup h5`)[`after`](`<label class=\"skipStats\">` + _0xa193a8[`skipStats`] + ' </label>'), moreogarset(`#skipStats`)[`appendTo`](moreogarset(`.skipStats`)), moreogarset(`.skipStats`)[`after`](`<label class=\"showQuest\">` + _0xa193a8[`showQuest`] + ' </label>'), moreogarset(`#showQuest`)['appendTo'](moreogarset(`.showQuest`)), moreogarset(`#options`)['remove'](), moreogarset(`#settingsChoice`)[`appendTo`](moreogarset(`.extrasGroup`))[`addClass`](`select-wrapper`)), this[`addSliderBox`](`.animationGroup`, 'animation', 0x64, 0xc8, 0x1), this[`addSliderBox`]('.zoomGroup', `zoomSpeedValue`, 0.75, 0.99, 0.01), moreogarset(`#og-settings`)[`append`](`<button class=\"btn btn-block btn-success btn-export\">` + _0xa193a8[`exportImport`] + `</button>`), moreogarset(`#og-settings`)[`append`](`<div class=\"restore-settings\"><a href=\"#\">` + _0xa193a8[`restoreSettings`] + '</a></div>'), moreogarset(`#music`)[`append`](`<div class=\"agario-panel radio-panel\"><h5 class=\"menu-main-color\">Radio (` + _0xa193a8[`thanks`] + `)</h5><audio src=\"http://frshoutcast.comunicazion.eu:8815/;\" controls></audio><span class=\"playlist\"><span class=\"ogicon-file-music\"></span> <a href=\"http://frshoutcast.comunicazion.eu:8815/played.html?sid=1\" target=\"_blank\">` + _0xa193a8[`playlist`] + `</a></span></div>`), moreogarset(`#music`)[`append`](`<div class=\"agario-panel sounds-panel\"><h5 class=\"menu-main-color\">` + _0xa193a8[`sounds`] + `</h5></div>`), moreogarset(`#music`)[`append`](`<div class=\"agario-panel ogario-yt-panel\"><h5 class=\"menu-main-color\">Team OGARio (tag: Ⓜ)</h5><div class=\"g-ytsubscribe\" data-channelid=\"UCaWiPNJWnhzYDrBQoXokn6w\" data-layout=\"full\" data-theme=\"dark\" data-count=\"default\"></div></div>`), this[`addInputBox`](`.sounds-panel`, `messageSound`, `Sound URL`, `setMessageSound`), this[`addInputBox`]('.sounds-panel', `commandSound`, 'Sound URL', 'setCommandSound'), moreogarset(`body`)[`append`]('<div id=\"overlays-hud\" data-gamemode=\":ffa\"><div id=\"stats-hud\" class=\"hud stats-hud-color\"></div> <div id=\"top5-hud\" class=\"hud\"><h5 class=\"hud-main-color\">Team top <span class=\"team-top\">5</span></h5><div class=\"hud-main-color team-top-menu\"><a href=\"#\" data-limit=\"5\" class=\"team-top-limit active\">5</a> | <a href=\"#\" data-limit=\"10\" class=\"team-top-limit\">10</a> | <a href=\"#\" data-limit=\"100\" class=\"team-top-limit\">100</a></div><ol id=\"top5-pos\"></ol><div id=\"top5-total\"><span class=\"hud-main-color ogicon-users\"></span> ' + _0xa193a8[`totalPartyPlayers`] + `: <span id=\"top5-total-players\" class=\"top5-mass-color\">0</span><br><span class=\"hud-main-color ogicon-pacman\"></span> ` + _0xa193a8[`totalPartyMass`] + ': <span id=\"top5-total-mass\" class=\"top5-mass-color\">0</span></div></div> <div id=\"time-hud\" class=\"hud time-hud-color\"></div> <div id=\"pause-hud\" class=\"hud\">' + _0xa193a8[`pause`] + `</div> <div id=\"leaderboard-hud\" class=\"hud-b\"><h4 class=\"hud-main-color\">legendmod.ml</h4><div id=\"leaderboard-data\"></div><div id=\"leaderboard-positions\"></div></div> <div id=\"btl-leaderboard-hud\"><div class=\"hud hud-c\"><span id=\"btl-players-status\">Players ready</span>: <span id=\"btl-players-count\">0</span></div></div> <div id=\"minimap-hud\" class=\"hud-b\"><canvas id=\"minimap-sectors\"></canvas><canvas id=\"minimap\"></canvas></div><div id=\"target-hud\" class=\"hud\"><div id=\"target-player\"><span id=\"target-skin\"><img src=\"https://cdn.ogario.ovh/static/img/blank.png\" alt=\"\"> </span><span id=\"target-nick\"></span> <span id=\"target-status\" class=\"hud-main-color\">[` + _0xa193a8[`targetNotSet`] + `]</span></div><div id=\"target-summary\"></div></div><div id=\"target-panel-hud\" class=\"hud\"><a href=\"#\" id=\"set-targeting\" class=\"ogicon-target\"></a><a href=\"#\" id=\"set-private-minimap\" class=\"ogicon-location2\"></a><a href=\"#\" id=\"cancel-targeting\" class=\"ogicon-cancel-circle\"></a><a href=\"#\" id=\"change-target\" class=\"ogicon-arrow-right\"></a></div> <div id=\"quest-hud\" class=\"hud\"></div> <div id=\"btl-hud\" class=\"hud\"></div></div>`), moreogarset(`body`)[`append`](`<ul id=\"messages\"></ul>`), moreogarset(`body`)['append'](`<div id=\"message-box\"><div id=\"chat-emoticons\"></div><div id=\"message-menu\"><a href=\"#\" class=\"chat-sound-notifications ogicon-volume-high\"></a><a href=\"#\" class=\"chat-active-users ogicon-user-check\"></a><a href=\"#\" class=\"chat-muted-users ogicon-user-minus\"></a><a href=\"#\" class=\"show-chat-emoticons ogicon-smile\"></a></div><input type=\"text\" id=\"message\" class=\"form-control\" placeholder=\"` + _0xa193a8[`enterChatMsg`] + '...\" maxlength=\"80\"></div>'), moreogarset(`body`)[`append`](`<div id=\"chat-box\"></div>`), _0x1c2110) _0x1c2110[`hasOwnProperty`](ogarsettings) && moreogarset(`#chat-emoticons`)[`append`](`<img src=\"https://cdn.ogario.ovh/static/emoticons/` + _0x1c2110[ogarsettings] + `\" alt=\"` + ogarsettings + `\" class=\"emoticon\">`);
-				moreogarset(`body`)[`append`](`<div id=\"exp-imp\"><div id=\"exp-imp-menu\"><button id=\"close-exp-imp\" class=\"btn btn-danger\">` + _0xa193a8[`close`] + `</button></div><div id=\"exp-imp-settings\"></div></div>`), moreogarset('#exp-imp-settings')[`append`](`<h1>` + _0xa193a8[`exportSettings`] + `</h1><h2>` + _0xa193a8[`exportInfo`] + `</h2>`), this[`addOption`](`#exp-imp-settings`, `export-ogarioCommands`, _0xa193a8[`commands`], !0x0), this['addOption'](`#exp-imp-settings`, `export-ogarioHotkeys`, _0xa193a8[`hotkeys`], !0x0), this['addOption'](`#exp-imp-settings`, `export-ogarioPlayerProfiles`, _0xa193a8['profiles'], !0x0), this[`addOption`](`#exp-imp-settings`, `export-ogarioSettings`, _0xa193a8['settings'], !0x0), this[`addOption`](`#exp-imp-settings`, `export-ogarioThemeSettings`, _0xa193a8['theme'], !0x0), moreogarset(`#exp-imp-settings`)[`append`]('<textarea id=\"export-settings\" class=\"form-control\" rows=\"14\" cols=\"100\" spellcheck=\"false\" readonly /><button id=\"export-settings-btn\" class=\"btn btn-block btn-success\">' + _0xa193a8[`exportSettings`] + '</button>'), moreogarset(`#exp-imp-settings`)['append']('<h1>' + _0xa193a8[`importSettings`] + `</h1><h2>` + _0xa193a8[`importInfo`] + `</h2>`), this[`addOption`](`#exp-imp-settings`, `import-ogarioCommands`, _0xa193a8[`commands`], !0x0), this[`addOption`](`#exp-imp-settings`, `import-ogarioHotkeys`, _0xa193a8[`hotkeys`], !0x0), this[`addOption`](`#exp-imp-settings`, 'import-ogarioPlayerProfiles', _0xa193a8[`profiles`], !0x0), this[`addOption`](`#exp-imp-settings`, `import-ogarioSettings`, _0xa193a8[`settings`], !0x0), this[`addOption`](`#exp-imp-settings`, 'import-ogarioThemeSettings', _0xa193a8['theme'], !0x0), moreogarset('#exp-imp-settings')['append']('<textarea id=\"import-settings\" class=\"form-control\" rows=\"14\" cols=\"100\" spellcheck=\"false\" /><button id=\"import-settings-btn\" class=\"btn btn-block btn-success\">' + _0xa193a8[`importSettings`] + `</button>`), csssettings && csssettings[`setThemeMenu`]();
-				for (var more2ogarset = 0x0; more2ogarset < _0x2e5667[`length`]; more2ogarset++) moreogarset(`#skins`)[`append`](`<div class=\"skin-box\"><a href=\"#profile-` + more2ogarset + `\" id=\"profile-` + more2ogarset + `\" data-profile=\"` + more2ogarset + `\"></a></div>`), this['setSkinPreview'](_0x2e5667[more2ogarset]['skinURL'], `profile-` + more2ogarset), more2ogarset == this[`selectedProfile`] && moreogarset(`#profile-` + more2ogarset)[`addClass`]('selected');
+					}), moreogarset(`#noNames, #showMass`)[`remove`](), moreogarset(`#og-settings .submenu-panel`)[`append`](`<div id=\"og-options\"></div>`), this['addOptions']([], `animationGroup`), this[`addOptions`]([`autoZoom`], `zoomGroup`), this[`addOptions`]([`quickResp`, `autoResp`], `respGroup`), this[`addOptions`]([`noNames`, `optimizedNames`, `autoHideNames`, `hideMyName`, `hideTeammatesNames`, `namesStroke`], 'namesGroup'), this[`addOptions`]([`showMass`, `optimizedMass`, `autoHideMass`, 'hideMyMass', 'hideEnemiesMass', `shortMass`, `virMassShots`, `massStroke`], 'massGroup'), this['protocolMode'] ? this['addOptions']([`customSkins`], `skinsGroup`) : this[`addOptions`]([`customSkins`, 'vanillaSkins'], 'skinsGroup'), this[`addOptions`](['optimizedFood', `autoHideFood`, 'autoHideFoodOnZoom', `rainbowFood`], `foodGroup`), this[`addOptions`]([`myCustomColor`, `myTransparentSkin`, `transparentSkins`, `transparentCells`, `transparentViruses`], `transparencyGroup`), this[`addOptions`]([`showGrid`, 'showBgSectors', `showMapBorders`], 'gridGroup'), this[`addOptions`]([`disableChat`, `chatSounds`, `chatEmoticons`, 'showChatImages', `showChatVideos`, `showChatBox`], `chatGroup`), this['addOptions'](['showMiniMap', `showMiniMapGrid`, `showMiniMapGuides`, `showMiniMapGhostCells`, 'oneColoredTeammates'], `miniMapGroup`), this[`addOptions`]([`oppColors`, `oppRings`, `virColors`, `splitRange`, 'virusesRange', `cursorTracking`, 'teammatesInd', `showGhostCells`], 'helpersGroup'), this[`addOptions`]([`mouseSplit`, `mouseFeed`, 'mouseInvert'], `mouseGroup`), this[`addOptions`]([`showTop5`, 'showTargeting', `showLbData`, 'centeredLb', `normalLb`, `fpsAtTop`], `hudGroup`), this[`addOptions`](['showStats', `showStatsMass`, `showStatsSTE`, 'showStatsN16', `showStatsFPS`, `showTime`], `statsGroup`), this['protocolMode'] || (this[`addOptions`]([`blockPopups`], `extrasGroup`), moreogarset(`#noSkins, #noColors, #skipStats, #showQuest`)[`addClass`](`js-switch-vanilla`), moreogarset(`.skinsGroup h5`)['after'](`<label class=\"noSkins\">` + more5ogarset[`noSkins`] + ' </label>'), moreogarset(`#noSkins`)[`appendTo`](moreogarset(`.noSkins`)), moreogarset(`.transparencyGroup h5`)[`after`](`<label class=\"noColors\">` + more5ogarset[`noColors`] + ` </label>`), moreogarset(`#noColors`)[`appendTo`](moreogarset(`.noColors`)), moreogarset(`.extrasGroup h5`)[`after`](`<label class=\"skipStats\">` + more5ogarset[`skipStats`] + ' </label>'), moreogarset(`#skipStats`)[`appendTo`](moreogarset(`.skipStats`)), moreogarset(`.skipStats`)[`after`](`<label class=\"showQuest\">` + more5ogarset[`showQuest`] + ' </label>'), moreogarset(`#showQuest`)['appendTo'](moreogarset(`.showQuest`)), moreogarset(`#options`)['remove'](), moreogarset(`#settingsChoice`)[`appendTo`](moreogarset(`.extrasGroup`))[`addClass`](`select-wrapper`)), this[`addSliderBox`](`.animationGroup`, 'animation', 0x64, 0xc8, 0x1), this[`addSliderBox`]('.zoomGroup', `zoomSpeedValue`, 0.75, 0.99, 0.01), moreogarset(`#og-settings`)[`append`](`<button class=\"btn btn-block btn-success btn-export\">` + more5ogarset[`exportImport`] + `</button>`), moreogarset(`#og-settings`)[`append`](`<div class=\"restore-settings\"><a href=\"#\">` + more5ogarset[`restoreSettings`] + '</a></div>'), moreogarset(`#music`)[`append`](`<div class=\"agario-panel radio-panel\"><h5 class=\"menu-main-color\">Radio (` + more5ogarset[`thanks`] + `)</h5><audio src=\"http://frshoutcast.comunicazion.eu:8815/;\" controls></audio><span class=\"playlist\"><span class=\"ogicon-file-music\"></span> <a href=\"http://frshoutcast.comunicazion.eu:8815/played.html?sid=1\" target=\"_blank\">` + more5ogarset[`playlist`] + `</a></span></div>`), moreogarset(`#music`)[`append`](`<div class=\"agario-panel sounds-panel\"><h5 class=\"menu-main-color\">` + more5ogarset[`sounds`] + `</h5></div>`), moreogarset(`#music`)[`append`](`<div class=\"agario-panel ogario-yt-panel\"><h5 class=\"menu-main-color\">Team OGARio (tag: Ⓜ)</h5><div class=\"g-ytsubscribe\" data-channelid=\"UCaWiPNJWnhzYDrBQoXokn6w\" data-layout=\"full\" data-theme=\"dark\" data-count=\"default\"></div></div>`), this[`addInputBox`](`.sounds-panel`, `messageSound`, `Sound URL`, `setMessageSound`), this[`addInputBox`]('.sounds-panel', `commandSound`, 'Sound URL', 'setCommandSound'), moreogarset(`body`)[`append`]('<div id=\"overlays-hud\" data-gamemode=\":ffa\"><div id=\"stats-hud\" class=\"hud stats-hud-color\"></div> <div id=\"top5-hud\" class=\"hud\"><h5 class=\"hud-main-color\">Team top <span class=\"team-top\">5</span></h5><div class=\"hud-main-color team-top-menu\"><a href=\"#\" data-limit=\"5\" class=\"team-top-limit active\">5</a> | <a href=\"#\" data-limit=\"10\" class=\"team-top-limit\">10</a> | <a href=\"#\" data-limit=\"100\" class=\"team-top-limit\">100</a></div><ol id=\"top5-pos\"></ol><div id=\"top5-total\"><span class=\"hud-main-color ogicon-users\"></span> ' + more5ogarset[`totalPartyPlayers`] + `: <span id=\"top5-total-players\" class=\"top5-mass-color\">0</span><br><span class=\"hud-main-color ogicon-pacman\"></span> ` + more5ogarset[`totalPartyMass`] + ': <span id=\"top5-total-mass\" class=\"top5-mass-color\">0</span></div></div> <div id=\"time-hud\" class=\"hud time-hud-color\"></div> <div id=\"pause-hud\" class=\"hud\">' + more5ogarset[`pause`] + `</div> <div id=\"leaderboard-hud\" class=\"hud-b\"><h4 class=\"hud-main-color\">legendmod.ml</h4><div id=\"leaderboard-data\"></div><div id=\"leaderboard-positions\"></div></div> <div id=\"btl-leaderboard-hud\"><div class=\"hud hud-c\"><span id=\"btl-players-status\">Players ready</span>: <span id=\"btl-players-count\">0</span></div></div> <div id=\"minimap-hud\" class=\"hud-b\"><canvas id=\"minimap-sectors\"></canvas><canvas id=\"minimap\"></canvas></div><div id=\"target-hud\" class=\"hud\"><div id=\"target-player\"><span id=\"target-skin\"><img src=\"https://cdn.ogario.ovh/static/img/blank.png\" alt=\"\"> </span><span id=\"target-nick\"></span> <span id=\"target-status\" class=\"hud-main-color\">[` + more5ogarset[`targetNotSet`] + `]</span></div><div id=\"target-summary\"></div></div><div id=\"target-panel-hud\" class=\"hud\"><a href=\"#\" id=\"set-targeting\" class=\"ogicon-target\"></a><a href=\"#\" id=\"set-private-minimap\" class=\"ogicon-location2\"></a><a href=\"#\" id=\"cancel-targeting\" class=\"ogicon-cancel-circle\"></a><a href=\"#\" id=\"change-target\" class=\"ogicon-arrow-right\"></a></div> <div id=\"quest-hud\" class=\"hud\"></div> <div id=\"btl-hud\" class=\"hud\"></div></div>`), moreogarset(`body`)[`append`](`<ul id=\"messages\"></ul>`), moreogarset(`body`)['append'](`<div id=\"message-box\"><div id=\"chat-emoticons\"></div><div id=\"message-menu\"><a href=\"#\" class=\"chat-sound-notifications ogicon-volume-high\"></a><a href=\"#\" class=\"chat-active-users ogicon-user-check\"></a><a href=\"#\" class=\"chat-muted-users ogicon-user-minus\"></a><a href=\"#\" class=\"show-chat-emoticons ogicon-smile\"></a></div><input type=\"text\" id=\"message\" class=\"form-control\" placeholder=\"` + more5ogarset[`enterChatMsg`] + '...\" maxlength=\"80\"></div>'), moreogarset(`body`)[`append`](`<div id=\"chat-box\"></div>`), _0x1c2110) _0x1c2110[`hasOwnProperty`](ogarsettings) && moreogarset(`#chat-emoticons`)[`append`](`<img src=\"https://cdn.ogario.ovh/static/emoticons/` + _0x1c2110[ogarsettings] + `\" alt=\"` + ogarsettings + `\" class=\"emoticon\">`);
+				moreogarset(`body`)[`append`](`<div id=\"exp-imp\"><div id=\"exp-imp-menu\"><button id=\"close-exp-imp\" class=\"btn btn-danger\">` + more5ogarset[`close`] + `</button></div><div id=\"exp-imp-settings\"></div></div>`), moreogarset('#exp-imp-settings')[`append`](`<h1>` + more5ogarset[`exportSettings`] + `</h1><h2>` + more5ogarset[`exportInfo`] + `</h2>`), this[`addOption`](`#exp-imp-settings`, `export-ogarioCommands`, more5ogarset[`commands`], !0x0), this['addOption'](`#exp-imp-settings`, `export-ogarioHotkeys`, more5ogarset[`hotkeys`], !0x0), this['addOption'](`#exp-imp-settings`, `export-ogarioPlayerProfiles`, more5ogarset['profiles'], !0x0), this[`addOption`](`#exp-imp-settings`, `export-ogarioSettings`, more5ogarset['settings'], !0x0), this[`addOption`](`#exp-imp-settings`, `export-ogarioThemeSettings`, more5ogarset['theme'], !0x0), moreogarset(`#exp-imp-settings`)[`append`]('<textarea id=\"export-settings\" class=\"form-control\" rows=\"14\" cols=\"100\" spellcheck=\"false\" readonly /><button id=\"export-settings-btn\" class=\"btn btn-block btn-success\">' + more5ogarset[`exportSettings`] + '</button>'), moreogarset(`#exp-imp-settings`)['append']('<h1>' + more5ogarset[`importSettings`] + `</h1><h2>` + more5ogarset[`importInfo`] + `</h2>`), this[`addOption`](`#exp-imp-settings`, `import-ogarioCommands`, more5ogarset[`commands`], !0x0), this[`addOption`](`#exp-imp-settings`, `import-ogarioHotkeys`, more5ogarset[`hotkeys`], !0x0), this[`addOption`](`#exp-imp-settings`, 'import-ogarioPlayerProfiles', more5ogarset[`profiles`], !0x0), this[`addOption`](`#exp-imp-settings`, `import-ogarioSettings`, more5ogarset[`settings`], !0x0), this[`addOption`](`#exp-imp-settings`, 'import-ogarioThemeSettings', more5ogarset['theme'], !0x0), moreogarset('#exp-imp-settings')['append']('<textarea id=\"import-settings\" class=\"form-control\" rows=\"14\" cols=\"100\" spellcheck=\"false\" /><button id=\"import-settings-btn\" class=\"btn btn-block btn-success\">' + more5ogarset[`importSettings`] + `</button>`), csssettings && csssettings[`setThemeMenu`]();
+				for (var more2ogarset = 0x0; more2ogarset < ogario1PlayerProfiles[`length`]; more2ogarset++) moreogarset(`#skins`)[`append`](`<div class=\"skin-box\"><a href=\"#profile-` + more2ogarset + `\" id=\"profile-` + more2ogarset + `\" data-profile=\"` + more2ogarset + `\"></a></div>`), this['setSkinPreview'](ogario1PlayerProfiles[more2ogarset]['skinURL'], `profile-` + more2ogarset), more2ogarset == this[`selectedProfile`] && moreogarset(`#profile-` + more2ogarset)[`addClass`]('selected');
 			},
 			'setUI': function () {
 				var ogarsettings = this;
@@ -2130,9 +2130,9 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				}), moreogarset(document)['on']('click', `.submenu-tabs a`, function (more2ogarset) {
 					more2ogarset[`preventDefault`](), ogarsettings['switchMenuTabs'](moreogarset(this), `submenu-panel`);
 				}), moreogarset(document)['on'](`click`, `.quick-menu`, function (more2ogarset) {
-					more2ogarset[`preventDefault`](), more3ogarset[`showQuickMenu`] = !more3ogarset[`showQuickMenu`], ogarsettings[`saveSettings`](more3ogarset, `ogarioSettings`), ogarsettings[`setShowQuickMenu`]();
+					more2ogarset[`preventDefault`](), ogario1Settings[`showQuickMenu`] = !ogario1Settings[`showQuickMenu`], ogarsettings[`saveSettings`](ogario1Settings, `ogarioSettings`), ogarsettings[`setShowQuickMenu`]();
 				}), moreogarset(document)['on'](`click`, `.quick-skins`, function (more2ogarset) {
-					more2ogarset[`preventDefault`](), more3ogarset['showSkinsPanel'] = !more3ogarset[`showSkinsPanel`], ogarsettings[`saveSettings`](more3ogarset, 'ogarioSettings'), ogarsettings[`setShowSkinsPanel`]();
+					more2ogarset[`preventDefault`](), ogario1Settings['showSkinsPanel'] = !ogario1Settings[`showSkinsPanel`], ogarsettings[`saveSettings`](ogario1Settings, 'ogarioSettings'), ogarsettings[`setShowSkinsPanel`]();
 				}), moreogarset(document)['on'](`change`, '#region', function () {
 					ogarsettings[`region`] = this['value'];
 				}), moreogarset(document)['on'](`change`, `#gamemode`, function () {
@@ -2150,9 +2150,9 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				}), moreogarset(document)['on'](`click`, `#next-profile`, function () {
 					ogarsettings[`nextProfile`]();
 				}), moreogarset(document)['on'](`click`, `#stream-mode`, function () {
-					more3ogarset[`streamMode`] = !more3ogarset[`streamMode`], ogarsettings[`saveSettings`](more3ogarset, `ogarioSettings`), ogarsettings[`setStreamMode`]();
+					ogario1Settings[`streamMode`] = !ogario1Settings[`streamMode`], ogarsettings[`saveSettings`](ogario1Settings, `ogarioSettings`), ogarsettings[`setStreamMode`]();
 				}), moreogarset(document)['on'](`click`, `#hide-url`, function () {
-					more3ogarset[`hideSkinUrl`] = !more3ogarset[`hideSkinUrl`], ogarsettings[`saveSettings`](more3ogarset, `ogarioSettings`), ogarsettings[`setHideSkinUrl`]();
+					ogario1Settings[`hideSkinUrl`] = !ogario1Settings[`hideSkinUrl`], ogarsettings[`saveSettings`](ogario1Settings, `ogarioSettings`), ogarsettings[`setHideSkinUrl`]();
 				}), moreogarset(document)['on']('click', `.btn-server-info`, function () {
 					moreogarset(`#server-info`)[`toggle`]();
 				}), moreogarset(document)['on']('click', `#server-connect`, function () {
@@ -2166,8 +2166,8 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					ogarsettings[`setSettings`](more2ogarset['attr']('id'), more2ogarset[`prop`](`checked`));
 				}), moreogarset(document)['on'](`change`, '.js-switch-vanilla', function () {
 					var more2ogarset = moreogarset(this),
-						_0x167e37 = more2ogarset[`attr`]('id');
-					void 0x0 !== ogarsettings[_0x167e37] && (ogarsettings[_0x167e37] = more2ogarset['prop'](`checked`), `noSkins` === _0x167e37 && (more1ogarset['showCustomSkins'] = !ogarsettings[`noSkins`]), `showQuest` === _0x167e37 && ogarsettings[`setQuest`]());
+						more3ogarset = more2ogarset[`attr`]('id');
+					void 0x0 !== ogarsettings[more3ogarset] && (ogarsettings[more3ogarset] = more2ogarset['prop'](`checked`), `noSkins` === more3ogarset && (more1ogarset['showCustomSkins'] = !ogarsettings[`noSkins`]), `showQuest` === more3ogarset && ogarsettings[`setQuest`]());
 				}), moreogarset(document)['on'](`click`, `#og-settings .restore-settings a`, function (more2ogarset) {
 					more2ogarset['preventDefault'](), ogarsettings[`restoreSettings`]();
 				}), moreogarset(document)['on'](`click`, `#og-settings .btn-export`, function (more2ogarset) {
@@ -2183,9 +2183,9 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				}), moreogarset(document)['on'](`click`, '#unblock-popups', function (more2ogarset) {
 					more2ogarset['preventDefault'](), ogarsettings['unblockPopups']();
 				}), moreogarset(document)['on'](`click`, '#openfl-overlay.disabler', function () {
-					more3ogarset['blockPopups'] && ogarsettings[`blockPopups`]();
+					ogario1Settings['blockPopups'] && ogarsettings[`blockPopups`]();
 				}), moreogarset(document)['on'](`click`, `#openfl-content`, function () {
-					if (more3ogarset['blockPopups']) {
+					if (ogario1Settings['blockPopups']) {
 						var more2ogarset = moreogarset(this);
 						setTimeout(function () {
 							more2ogarset['is'](`:visible`) || ogarsettings[`blockPopups`]();
@@ -2210,20 +2210,20 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				}), moreogarset(document)['on'](`click`, `.team-top-limit`, function (more2ogarset) {
 					more2ogarset[`preventDefault`]();
 					var more1ogarset = moreogarset(this),
-						_0x167e37 = parseInt(more1ogarset[`attr`](`data-limit`));
-					_0x167e37 && (ogarsettings[`setTop5limit`](_0x167e37), ogarsettings[`displayTop5`](), moreogarset(`.team-top`)['text'](_0x167e37), moreogarset(`.team-top-limit`)[`removeClass`]('active'), more1ogarset['addClass'](`active`));
+						more3ogarset = parseInt(more1ogarset[`attr`](`data-limit`));
+					more3ogarset && (ogarsettings[`setTop5limit`](more3ogarset), ogarsettings[`displayTop5`](), moreogarset(`.team-top`)['text'](more3ogarset), moreogarset(`.team-top-limit`)[`removeClass`]('active'), more1ogarset['addClass'](`active`));
 				}), moreogarset(document)['on'](`click`, '#top5-pos .set-target', function (more2ogarset) {
 					more2ogarset[`preventDefault`](), ogarsettings[`setTarget`](parseInt(moreogarset(this)[`attr`](`data-user-id`)));
 				}), moreogarset(document)['on'](`click`, `.mute-user`, function (more2ogarset) {
 					more2ogarset[`preventDefault`](), ogarsettings[`muteChatUser`](parseInt(moreogarset(this)[`attr`](`data-user-id`)));
 				}), moreogarset(document)['on']('click', `.btn-mute-user`, function () {
 					var more2ogarset = moreogarset(this);
-					ogarsettings[`muteChatUser`](parseInt(more2ogarset['attr'](`data-user-id`))), more2ogarset[`removeClass`](`btn-red btn-mute-user`)[`addClass`](`btn-green btn-unmute-user`)[`text`](_0xa193a8[`unmute`]);
+					ogarsettings[`muteChatUser`](parseInt(more2ogarset['attr'](`data-user-id`))), more2ogarset[`removeClass`](`btn-red btn-mute-user`)[`addClass`](`btn-green btn-unmute-user`)[`text`](more5ogarset[`unmute`]);
 				}), moreogarset(document)['on'](`click`, `.btn-unmute-user`, function () {
 					var more2ogarset = moreogarset(this);
-					ogarsettings[`unmuteChatUser`](parseInt(more2ogarset[`attr`](`data-user-id`))), more2ogarset[`removeClass`](`btn-green btn-unmute-user`)['addClass']('btn-red btn-mute-user')['text'](_0xa193a8[`mute`]);
+					ogarsettings[`unmuteChatUser`](parseInt(more2ogarset[`attr`](`data-user-id`))), more2ogarset[`removeClass`](`btn-green btn-unmute-user`)['addClass']('btn-red btn-mute-user')['text'](more5ogarset[`mute`]);
 				}), moreogarset(document)['on'](`click`, '.chat-sound-notifications', function (more2ogarset) {
-					more2ogarset['preventDefault'](), more3ogarset[`chatSounds`] = !more3ogarset[`chatSounds`], ogarsettings['saveSettings'](more3ogarset, `ogarioSettings`), ogarsettings[`setChatSoundsBtn`]();
+					more2ogarset['preventDefault'](), ogario1Settings[`chatSounds`] = !ogario1Settings[`chatSounds`], ogarsettings['saveSettings'](ogario1Settings, `ogarioSettings`), ogarsettings[`setChatSoundsBtn`]();
 				}), moreogarset(document)['on'](`click`, `.chat-active-users`, function (more2ogarset) {
 					more2ogarset[`preventDefault`](), ogarsettings[`displayChatActiveUsers`]();
 				}), moreogarset(document)['on']('click', `.chat-muted-users`, function (more2ogarset) {
@@ -2248,7 +2248,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'suppressScrollX': !0x0
 				}), Array[`prototype`]['slice'][`call`](document[`querySelectorAll`](`.js-switch`))[`forEach`](function (ogarsettings) {
 					new Switchery(ogarsettings, {
-						'color': ogarioJSONsettings[`menuMainColor`],
+						'color': ogario1ThemeSettings[`menuMainColor`],
 						'size': `small`
 					});
 				}), moreogarset('input[type=\'range\']')[`rangeslider`]({
@@ -2266,27 +2266,27 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					more1ogarset['hasClass'](`profile-tab`) && this[`setBlockPopups`]();
 				}
 				ogarsettings[`addClass`](`active`), more1ogarset[`addClass`](`active`), more1ogarset[`siblings`]()[`removeClass`](`active`), more1ogarset[`siblings`]()[`find`]('a')[`removeClass`](`active`);
-				var _0x167e37 = ogarsettings[`attr`](`href`);
+				var more3ogarset = ogarsettings[`attr`](`href`);
 				if (`submenu-panel` === more2ogarset) {
-					var _0x12efde = moreogarset(_0x167e37)[`parent`]()[`attr`]('id');
-					moreogarset('#' + _0x12efde + ` .submenu-panel`)[`not`](_0x167e37)[`css`](`display`, `none`);
-				} else moreogarset(`.menu-panel`)[`not`](_0x167e37)[`css`]('display', `none`);
-				moreogarset(_0x167e37)[`fadeIn`](0x3e8), _0x3eddc8(), moreogarset('.submenu-panel')[`perfectScrollbar`](`update`);
+					var more4ogarset = moreogarset(more3ogarset)[`parent`]()[`attr`]('id');
+					moreogarset('#' + more4ogarset + ` .submenu-panel`)[`not`](more3ogarset)[`css`](`display`, `none`);
+				} else moreogarset(`.menu-panel`)[`not`](more3ogarset)[`css`]('display', `none`);
+				moreogarset(more3ogarset)[`fadeIn`](0x3e8), _0x3eddc8(), moreogarset('.submenu-panel')[`perfectScrollbar`](`update`);
 			},
 			'getDefaultSettings': function () {
 				if (this['noSkins'] = moreogarset(`#noSkins`)['prop'](`checked`), this['noColors'] = moreogarset(`#noColors`)[`prop`](`checked`), this[`skipStats`] = moreogarset(`#skipStats`)[`prop`](`checked`), this[`showQuest`] = moreogarset(`#showQuest`)[`prop`](`checked`), more1ogarset[`showCustomSkins`] = !this[`noSkins`], null !== more2ogarset['localStorage']['getItem'](`scale_setting`)) {
 					var ogarsettings = JSON['parse'](more2ogarset[`localStorage`][`getItem`](`scale_setting`));
 					this[`setCanvasScale`](ogarsettings);
 				} else {
-					var _0x167e37 = moreogarset('#quality')[`val`]();
-					this[`getQuality`](_0x167e37);
+					var more3ogarset = moreogarset('#quality')[`val`]();
+					this[`getQuality`](more3ogarset);
 				}
 				null !== more2ogarset[`localStorage`][`getItem`](`location`) ? (this[`region`] = more2ogarset[`localStorage`]['getItem'](`location`), moreogarset(`#region`)[`val`](this[`region`]), more2ogarset['MC'] && more2ogarset['MC'][`setRegion`] && more2ogarset['MC'][`setRegion`](this[`region`])) : this[`region`] = moreogarset(`#region`)[`val`](), this[`setParty`](), `:party` === this['gameMode'] && more2ogarset[`location`][`hash`] && moreogarset(`#join-party-btn-2`)['click'](), Array['prototype']['slice'][`call`](document[`querySelectorAll`](`.js-switch-vanilla`))['forEach'](function (ogarsettings) {
 					new Switchery(ogarsettings, {
-						'color': ogarioJSONsettings[`menuMainColor`],
+						'color': ogario1ThemeSettings[`menuMainColor`],
 						'size': `small`
 					});
-				}), moreogarset(`#nick`)[`val`](_0x37dab4[`nick`])[`blur`](), moreogarset(`#noNames`)[`prop`](`checked`, !more3ogarset[`noNames`]), moreogarset(`#showMass`)['prop'](`checked`, more3ogarset[`showMass`]), this[`unlockButtons`](), this['setAutoResp'](), this[`setQuest`]();
+				}), moreogarset(`#nick`)[`val`](_0x37dab4[`nick`])[`blur`](), moreogarset(`#noNames`)[`prop`](`checked`, !ogario1Settings[`noNames`]), moreogarset(`#showMass`)['prop'](`checked`, ogario1Settings[`showMass`]), this[`unlockButtons`](), this['setAutoResp'](), this[`setQuest`]();
 			},
 			'getQuality': function (ogarsettings) {
 				var more1ogarset = 0x1;
@@ -2311,16 +2311,16 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				this['canvasScale'] = ogarsettings, more1ogarset[`canvasScale`] = ogarsettings;
 			},
 			'setStreamMode': function () {
-				more3ogarset[`streamMode`] ? (moreogarset(`#stream-mode`)[`addClass`](`ogicon-eye-blocked`), moreogarset('#clantag, #nick, #party-token')[`addClass`](`stream-mode`)) : (moreogarset('#stream-mode')[`removeClass`](`ogicon-eye-blocked`), moreogarset(`#clantag, #nick, #party-token`)[`removeClass`]('stream-mode'));
+				ogario1Settings[`streamMode`] ? (moreogarset(`#stream-mode`)[`addClass`](`ogicon-eye-blocked`), moreogarset('#clantag, #nick, #party-token')[`addClass`](`stream-mode`)) : (moreogarset('#stream-mode')[`removeClass`](`ogicon-eye-blocked`), moreogarset(`#clantag, #nick, #party-token`)[`removeClass`]('stream-mode'));
 			},
 			'setHideSkinUrl': function () {
-				more3ogarset[`hideSkinUrl`] ? (moreogarset('#hide-url')[`addClass`]('ogicon-eye-blocked'), moreogarset(`#skin`)[`addClass`](`hide-url`)) : (moreogarset(`#hide-url`)[`removeClass`](`ogicon-eye-blocked`), moreogarset(`#skin`)['removeClass'](`hide-url`));
+				ogario1Settings[`hideSkinUrl`] ? (moreogarset('#hide-url')[`addClass`]('ogicon-eye-blocked'), moreogarset(`#skin`)[`addClass`](`hide-url`)) : (moreogarset(`#hide-url`)[`removeClass`](`ogicon-eye-blocked`), moreogarset(`#skin`)['removeClass'](`hide-url`));
 			},
 			'setShowQuickMenu': function () {
-				more3ogarset[`showQuickMenu`] ? moreogarset(`#quick-menu`)[`fadeIn`](0x1f4) : moreogarset(`#quick-menu`)[`fadeOut`](0x1f4);
+				ogario1Settings[`showQuickMenu`] ? moreogarset(`#quick-menu`)[`fadeIn`](0x1f4) : moreogarset(`#quick-menu`)[`fadeOut`](0x1f4);
 			},
 			'setShowSkinsPanel': function () {
-				more3ogarset[`showSkinsPanel`] ? moreogarset(`#skins-panel`)[`fadeIn`](0x1f4) : moreogarset(`#skins-panel`)[`fadeOut`](0x1f4);
+				ogario1Settings[`showSkinsPanel`] ? moreogarset(`#skins-panel`)[`fadeIn`](0x1f4) : moreogarset(`#skins-panel`)[`fadeOut`](0x1f4);
 			},
 			'unlockButtons': function () {
 				moreogarset(`.btn-play, .btn-play-guest, .btn-login-play, .btn-spectate`)[`prop`](`disabled`, !0x1);
@@ -2350,10 +2350,10 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				}
 			},
 			'onPlay': function () {
-				this[`play`](), this['hideMenu'](), more2ogarset[`addKeyListeners`] && more2ogarset[`addKeyListeners`](), more3ogarset[`autoHideFood`] && (more1ogarset[`showFood`] = !0x0), more2ogarset['ga'] && more2ogarset['ga'](`create`, `UA-67142685-2`, `auto`, `ogarioTracker`), more2ogarset['ga'] && more2ogarset['ga'](`ogarioTracker.send`, `pageview`);
+				this[`play`](), this['hideMenu'](), more2ogarset[`addKeyListeners`] && more2ogarset[`addKeyListeners`](), ogario1Settings[`autoHideFood`] && (more1ogarset[`showFood`] = !0x0), more2ogarset['ga'] && more2ogarset['ga'](`create`, `UA-67142685-2`, `auto`, `ogarioTracker`), more2ogarset['ga'] && more2ogarset['ga'](`ogarioTracker.send`, `pageview`);
 			},
 			'onSpectate': function () {
-				this[`onJoin`](), this[`sendPlayerJoin`](), this[`hideMenu`](), more2ogarset[`addKeyListeners`] && more2ogarset['addKeyListeners'](), more3ogarset[`autoHideFood`] && (more1ogarset[`showFood`] = !0x1);
+				this[`onJoin`](), this[`sendPlayerJoin`](), this[`hideMenu`](), more2ogarset[`addKeyListeners`] && more2ogarset['addKeyListeners'](), ogario1Settings[`autoHideFood`] && (more1ogarset[`showFood`] = !0x1);
 			},
 			'join': function () {
 				this[`setParty`](), this[`setPlayerSettings`](), this[`sendPartyData`](), this['sendPlayerDeath']();
@@ -2393,9 +2393,9 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 			'setPlayerSettings': function () {
 				var ogarsettings = moreogarset(`#nick`)[`val`](),
 					more2ogarset = moreogarset(`#clantag`)[`val`](),
-					_0x167e37 = moreogarset(`#skin`)['val'](),
-					_0x12efde = moreogarset(`#color`)[`val`]();
-				_0x37dab4[`nick`] = ogarsettings, _0x37dab4[`clanTag`] = more2ogarset[`trim`](), _0x37dab4[`skinURL`] = this[`checkSkinURL`](_0x167e37['trim']()), 0x7 == _0x12efde[`length`] && (_0x37dab4[`color`] = _0x12efde), _0x37dab4[`clanTag`][`length`] > 0x0 && (more1ogarset[`clanTag`] = _0x37dab4[`clanTag`]), _0x2e5667[this[`selectedProfile`]][`nick`] = _0x37dab4[`nick`], _0x2e5667[this[`selectedProfile`]][`clanTag`] = _0x37dab4[`clanTag`], _0x2e5667[this[`selectedProfile`]][`skinURL`] = _0x37dab4[`skinURL`], _0x2e5667[this[`selectedProfile`]][`color`] = _0x37dab4[`color`], this[`saveSettings`](_0x2e5667, `ogarioPlayerProfiles`);
+					more3ogarset = moreogarset(`#skin`)['val'](),
+					more4ogarset = moreogarset(`#color`)[`val`]();
+				_0x37dab4[`nick`] = ogarsettings, _0x37dab4[`clanTag`] = more2ogarset[`trim`](), _0x37dab4[`skinURL`] = this[`checkSkinURL`](more3ogarset['trim']()), 0x7 == more4ogarset[`length`] && (_0x37dab4[`color`] = more4ogarset), _0x37dab4[`clanTag`][`length`] > 0x0 && (more1ogarset[`clanTag`] = _0x37dab4[`clanTag`]), ogario1PlayerProfiles[this[`selectedProfile`]][`nick`] = _0x37dab4[`nick`], ogario1PlayerProfiles[this[`selectedProfile`]][`clanTag`] = _0x37dab4[`clanTag`], ogario1PlayerProfiles[this[`selectedProfile`]][`skinURL`] = _0x37dab4[`skinURL`], ogario1PlayerProfiles[this[`selectedProfile`]][`color`] = _0x37dab4[`color`], this[`saveSettings`](ogario1PlayerProfiles, `ogarioPlayerProfiles`);
 			},
 			'loadSkin': function (ogarsettings, more2ogarset) {
 				var more1ogarset = this;
@@ -2435,11 +2435,11 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 			},
 			'calculateMapSector': function (ogarsettings, more2ogarset, moreogarset = !0x1) {
 				if (!more1ogarset['mapOffsetFixed']) return '';
-				var _0x167e37 = moreogarset ? more1ogarset[`mapOffsetX`] + more1ogarset['mapOffset'] : more1ogarset['mapOffset'],
-					_0x12efde = moreogarset ? more1ogarset['mapOffsetY'] + more1ogarset['mapOffset'] : more1ogarset[`mapOffset`],
-					_0x4ee245 = Math[`floor`]((more2ogarset + _0x12efde) / (more1ogarset[`mapSize`] / ogarioJSONsettings[`sectorsY`])),
-					_0x24c7a0 = Math[`floor`]((ogarsettings + _0x167e37) / (more1ogarset[`mapSize`] / ogarioJSONsettings[`sectorsX`]));
-				return _0x4ee245 = _0x4ee245 < 0x0 ? 0x0 : _0x4ee245 >= ogarioJSONsettings[`sectorsY`] ? ogarioJSONsettings[`sectorsY`] - 0x1 : _0x4ee245, _0x24c7a0 = _0x24c7a0 < 0x0 ? 0x0 : _0x24c7a0 >= ogarioJSONsettings[`sectorsX`] ? ogarioJSONsettings[`sectorsX`] - 0x1 : _0x24c7a0, String[`fromCharCode`](_0x4ee245 + 0x41) + (_0x24c7a0 + 0x1);
+				var more3ogarset = moreogarset ? more1ogarset[`mapOffsetX`] + more1ogarset['mapOffset'] : more1ogarset['mapOffset'],
+					more4ogarset = moreogarset ? more1ogarset['mapOffsetY'] + more1ogarset['mapOffset'] : more1ogarset[`mapOffset`],
+					ogarbuffed = Math[`floor`]((more2ogarset + more4ogarset) / (more1ogarset[`mapSize`] / ogario1ThemeSettings[`sectorsY`])),
+					ogarlanguage = Math[`floor`]((ogarsettings + more3ogarset) / (more1ogarset[`mapSize`] / ogario1ThemeSettings[`sectorsX`]));
+				return ogarbuffed = ogarbuffed < 0x0 ? 0x0 : ogarbuffed >= ogario1ThemeSettings[`sectorsY`] ? ogario1ThemeSettings[`sectorsY`] - 0x1 : ogarbuffed, ogarlanguage = ogarlanguage < 0x0 ? 0x0 : ogarlanguage >= ogario1ThemeSettings[`sectorsX`] ? ogario1ThemeSettings[`sectorsX`] - 0x1 : ogarlanguage, String[`fromCharCode`](ogarbuffed + 0x41) + (ogarlanguage + 0x1);
 			},
 			'shortMassFormat': function (ogarsettings) {
 				return ogarsettings < 0x3e8 ? ogarsettings : Math['round'](ogarsettings / 0x64) / 0xa + 'k';
@@ -2452,71 +2452,71 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 			},
 			'drawMiniMap': function () {
 				if (more1ogarset[`mapOffsetFixed`]) {
-					var ogarsettings = ogarioJSONsettings[`miniMapWidth`],
-						more2ogarset = ogarioJSONsettings['miniMapTop'],
+					var ogarsettings = ogario1ThemeSettings[`miniMapWidth`],
+						more2ogarset = ogario1ThemeSettings['miniMapTop'],
 						moreogarset = ogarsettings + more2ogarset,
-						_0x167e37 = ogarsettings - 0x12,
-						_0x12efde = more2ogarset + 9.5;
+						more3ogarset = ogarsettings - 0x12,
+						more4ogarset = more2ogarset + 9.5;
 					this[`miniMap`] ? this[`miniMapCtx`][`clearRect`](0x0, 0x0, ogarsettings, moreogarset) : (this[`miniMap`] = document[`getElementById`](`minimap`), this[`miniMapCtx`] = this['miniMap'][`getContext`]('2d'), this['miniMapCtx'][`ogarioCtx`] = !0x0, this[`miniMap`][`width`] = ogarsettings, this[`miniMap`][`height`] = moreogarset), this[`miniMap`][`width`] != ogarsettings && (this[`miniMap`][`width`] = ogarsettings, this[`miniMap`][`height`] = moreogarset);
-					var _0x4ee245 = _0x167e37 / more1ogarset[`mapSize`],
-						_0x24c7a0 = more1ogarset[`mapOffsetX`] + more1ogarset[`mapOffset`],
-						_0x2f0ea0 = more1ogarset[`mapOffsetY`] + more1ogarset[`mapOffset`];
-					if (this['drawSelectedCell'](this[`miniMapCtx`]), this[`currentSector`] = this[`calculateMapSector`](more1ogarset[`playerX`], more1ogarset[`playerY`], !0x0), this[`miniMapCtx`]['globalAlpha'] = 0x1, this['miniMapCtx'][`font`] = ogarioJSONsettings[`miniMapFontWeight`] + ' ' + (more2ogarset - 0x4) + `px ` + ogarioJSONsettings['miniMapFontFamily'], this[`miniMapCtx`][`fillStyle`] = ogarioJSONsettings[`miniMapSectorColor`], this[`miniMapCtx`][`fillText`](this['currentSector'], 0xa, more2ogarset), this['miniMapSectors'] || this[`drawMiniMapSectors`](ogarioJSONsettings[`sectorsX`], ogarioJSONsettings[`sectorsY`], _0x167e37, moreogarset, _0x12efde), this['miniMapCtx'][`save`](), this['miniMapCtx']['translate'](9.5, _0x12efde), ':battleroyale' === this[`gameMode`] && _0x53e5f0 && _0x53e5f0[`drawBattleAreaOnMinimap`](this['miniMapCtx'], _0x167e37, _0x167e37, _0x4ee245, _0x24c7a0, _0x2f0ea0), more3ogarset[`showMiniMapGhostCells`]) {
-						var _0xa193a8 = more1ogarset['ghostCells'];
+					var ogarbuffed = more3ogarset / more1ogarset[`mapSize`],
+						ogarlanguage = more1ogarset[`mapOffsetX`] + more1ogarset[`mapOffset`],
+						ogaractuallanguage = more1ogarset[`mapOffsetY`] + more1ogarset[`mapOffset`];
+					if (this['drawSelectedCell'](this[`miniMapCtx`]), this[`currentSector`] = this[`calculateMapSector`](more1ogarset[`playerX`], more1ogarset[`playerY`], !0x0), this[`miniMapCtx`]['globalAlpha'] = 0x1, this['miniMapCtx'][`font`] = ogario1ThemeSettings[`miniMapFontWeight`] + ' ' + (more2ogarset - 0x4) + `px ` + ogario1ThemeSettings['miniMapFontFamily'], this[`miniMapCtx`][`fillStyle`] = ogario1ThemeSettings[`miniMapSectorColor`], this[`miniMapCtx`][`fillText`](this['currentSector'], 0xa, more2ogarset), this['miniMapSectors'] || this[`drawMiniMapSectors`](ogario1ThemeSettings[`sectorsX`], ogario1ThemeSettings[`sectorsY`], more3ogarset, moreogarset, more4ogarset), this['miniMapCtx'][`save`](), this['miniMapCtx']['translate'](9.5, more4ogarset), ':battleroyale' === this[`gameMode`] && _0x53e5f0 && _0x53e5f0[`drawBattleAreaOnMinimap`](this['miniMapCtx'], more3ogarset, more3ogarset, ogarbuffed, ogarlanguage, ogaractuallanguage), ogario1Settings[`showMiniMapGhostCells`]) {
+						var more5ogarset = more1ogarset['ghostCells'];
 						this[`miniMapCtx`][`beginPath`]();
-						for (var _0xbfbffb = 0x0; _0xbfbffb < _0xa193a8[`length`]; _0xbfbffb++)
-							if (!_0xa193a8[_0xbfbffb][`inView`]) {
-								var _0x3cdcf7 = ~~((_0xa193a8[_0xbfbffb]['x'] + _0x24c7a0) * _0x4ee245),
-									_0x1c2110 = ~~((_0xa193a8[_0xbfbffb]['y'] + _0x2f0ea0) * _0x4ee245);
-								this[`miniMapCtx`]['moveTo'](_0x3cdcf7, _0x1c2110), this[`miniMapCtx`][`arc`](_0x3cdcf7, _0x1c2110, ~~(_0xa193a8[_0xbfbffb][`size`] * _0x4ee245), 0x0, this[`pi2`], !0x1);
-							} this[`miniMapCtx`]['fillStyle'] = ogarioJSONsettings[`miniMapGhostCellsColor`], this[`miniMapCtx`][`globalAlpha`] = ogarioJSONsettings[`miniMapGhostCellsAlpha`], this[`miniMapCtx`][`shadowColor`] = ogarioJSONsettings[`miniMapGhostCellsColor`], this['miniMapCtx'][`shadowBlur`] = 0xa, this[`miniMapCtx`][`shadowOffsetX`] = 0x0, this['miniMapCtx'][`shadowOffsetY`] = 0x0, this[`miniMapCtx`]['fill'](), this[`miniMapCtx`][`globalAlpha`] = 0x1, this[`miniMapCtx`][`shadowBlur`] = 0x0;
+						for (var ogario1Commands = 0x0; ogario1Commands < more5ogarset[`length`]; ogario1Commands++)
+							if (!more5ogarset[ogario1Commands][`inView`]) {
+								var _0x3cdcf7 = ~~((more5ogarset[ogario1Commands]['x'] + ogarlanguage) * ogarbuffed),
+									_0x1c2110 = ~~((more5ogarset[ogario1Commands]['y'] + ogaractuallanguage) * ogarbuffed);
+								this[`miniMapCtx`]['moveTo'](_0x3cdcf7, _0x1c2110), this[`miniMapCtx`][`arc`](_0x3cdcf7, _0x1c2110, ~~(more5ogarset[ogario1Commands][`size`] * ogarbuffed), 0x0, this[`pi2`], !0x1);
+							} this[`miniMapCtx`]['fillStyle'] = ogario1ThemeSettings[`miniMapGhostCellsColor`], this[`miniMapCtx`][`globalAlpha`] = ogario1ThemeSettings[`miniMapGhostCellsAlpha`], this[`miniMapCtx`][`shadowColor`] = ogario1ThemeSettings[`miniMapGhostCellsColor`], this['miniMapCtx'][`shadowBlur`] = 0xa, this[`miniMapCtx`][`shadowOffsetX`] = 0x0, this['miniMapCtx'][`shadowOffsetY`] = 0x0, this[`miniMapCtx`]['fill'](), this[`miniMapCtx`][`globalAlpha`] = 0x1, this[`miniMapCtx`][`shadowBlur`] = 0x0;
 					}
-					if (more3ogarset[`showMiniMapGuides`]) {
-						_0x3cdcf7 = Math[`round`]((more1ogarset[`playerX`] + _0x24c7a0) * _0x4ee245), _0x1c2110 = Math[`round`]((more1ogarset[`playerY`] + _0x2f0ea0) * _0x4ee245);
-						this['miniMapCtx']['lineWidth'] = 0x1, this[`miniMapCtx`][`strokeStyle`] = ogarioJSONsettings[`miniMapGuidesColor`], this[`miniMapCtx`][`beginPath`](), this[`miniMapCtx`][`moveTo`](_0x3cdcf7, 0x0), this['miniMapCtx'][`lineTo`](_0x3cdcf7, _0x167e37 - 0x1), this[`miniMapCtx`][`moveTo`](0x0, _0x1c2110), this[`miniMapCtx`][`lineTo`](_0x167e37 - 0x1, _0x1c2110), this[`miniMapCtx`][`stroke`]();
+					if (ogario1Settings[`showMiniMapGuides`]) {
+						_0x3cdcf7 = Math[`round`]((more1ogarset[`playerX`] + ogarlanguage) * ogarbuffed), _0x1c2110 = Math[`round`]((more1ogarset[`playerY`] + ogaractuallanguage) * ogarbuffed);
+						this['miniMapCtx']['lineWidth'] = 0x1, this[`miniMapCtx`][`strokeStyle`] = ogario1ThemeSettings[`miniMapGuidesColor`], this[`miniMapCtx`][`beginPath`](), this[`miniMapCtx`][`moveTo`](_0x3cdcf7, 0x0), this['miniMapCtx'][`lineTo`](_0x3cdcf7, more3ogarset - 0x1), this[`miniMapCtx`][`moveTo`](0x0, _0x1c2110), this[`miniMapCtx`][`lineTo`](more3ogarset - 0x1, _0x1c2110), this[`miniMapCtx`][`stroke`]();
 					}
-					if (this[`miniMapCtx`][`beginPath`](), this[`miniMapCtx`][`arc`]((more1ogarset[`playerX`] + _0x24c7a0) * _0x4ee245, (more1ogarset['playerY'] + _0x2f0ea0) * _0x4ee245, ogarioJSONsettings[`miniMapMyCellSize`], 0x0, this[`pi2`], !0x1), this[`miniMapCtx`][`closePath`](), ogarioJSONsettings[`miniMapMyCellStrokeSize`] > 0x0 && (this[`miniMapCtx`][`lineWidth`] = ogarioJSONsettings[`miniMapMyCellStrokeSize`], this[`miniMapCtx`][`strokeStyle`] = ogarioJSONsettings['miniMapMyCellStrokeColor'], this[`miniMapCtx`][`stroke`]()), this[`miniMapCtx`][`fillStyle`] = ogarioJSONsettings['miniMapMyCellColor'], this['miniMapCtx'][`fill`](), this[`teamPlayers`][`length`])
-						for (_0xbfbffb = 0x0; _0xbfbffb < this[`teamPlayers`][`length`]; _0xbfbffb++) this[`teamPlayers`][_0xbfbffb][`drawPosition`](this[`miniMapCtx`], more1ogarset['mapOffset'], _0x4ee245, this[`privateMiniMap`], this['targetID']);
+					if (this[`miniMapCtx`][`beginPath`](), this[`miniMapCtx`][`arc`]((more1ogarset[`playerX`] + ogarlanguage) * ogarbuffed, (more1ogarset['playerY'] + ogaractuallanguage) * ogarbuffed, ogario1ThemeSettings[`miniMapMyCellSize`], 0x0, this[`pi2`], !0x1), this[`miniMapCtx`][`closePath`](), ogario1ThemeSettings[`miniMapMyCellStrokeSize`] > 0x0 && (this[`miniMapCtx`][`lineWidth`] = ogario1ThemeSettings[`miniMapMyCellStrokeSize`], this[`miniMapCtx`][`strokeStyle`] = ogario1ThemeSettings['miniMapMyCellStrokeColor'], this[`miniMapCtx`][`stroke`]()), this[`miniMapCtx`][`fillStyle`] = ogario1ThemeSettings['miniMapMyCellColor'], this['miniMapCtx'][`fill`](), this[`teamPlayers`][`length`])
+						for (ogario1Commands = 0x0; ogario1Commands < this[`teamPlayers`][`length`]; ogario1Commands++) this[`teamPlayers`][ogario1Commands][`drawPosition`](this[`miniMapCtx`], more1ogarset['mapOffset'], ogarbuffed, this[`privateMiniMap`], this['targetID']);
 					if (this[`deathLocations`][`length`] > 0x0) {
-						_0x3cdcf7 = Math[`round`]((this['deathLocations'][this['lastDeath']]['x'] + more1ogarset[`mapOffset`]) * _0x4ee245), _0x1c2110 = Math[`round`]((this[`deathLocations`][this[`lastDeath`]]['y'] + more1ogarset['mapOffset']) * _0x4ee245);
-						var _0x21cdbf = Math[`max`](ogarioJSONsettings[`miniMapMyCellSize`] - 0x2, 0x4);
-						this[`miniMapCtx`][`lineWidth`] = 0x1, this[`miniMapCtx`][`strokeStyle`] = this[`deathLocations`][`length`] - 0x1 == this[`lastDeath`] ? ogarioJSONsettings['miniMapDeathLocationColor'] : `#FFFFFF`, this[`miniMapCtx`][`beginPath`](), this['miniMapCtx'][`moveTo`](_0x3cdcf7 - _0x21cdbf, _0x1c2110), this['miniMapCtx'][`lineTo`](_0x3cdcf7 + _0x21cdbf, _0x1c2110), this[`miniMapCtx`][`moveTo`](_0x3cdcf7, _0x1c2110 - _0x21cdbf), this['miniMapCtx'][`lineTo`](_0x3cdcf7, _0x1c2110 + _0x21cdbf), this['miniMapCtx'][`stroke`]();
+						_0x3cdcf7 = Math[`round`]((this['deathLocations'][this['lastDeath']]['x'] + more1ogarset[`mapOffset`]) * ogarbuffed), _0x1c2110 = Math[`round`]((this[`deathLocations`][this[`lastDeath`]]['y'] + more1ogarset['mapOffset']) * ogarbuffed);
+						var _0x21cdbf = Math[`max`](ogario1ThemeSettings[`miniMapMyCellSize`] - 0x2, 0x4);
+						this[`miniMapCtx`][`lineWidth`] = 0x1, this[`miniMapCtx`][`strokeStyle`] = this[`deathLocations`][`length`] - 0x1 == this[`lastDeath`] ? ogario1ThemeSettings['miniMapDeathLocationColor'] : `#FFFFFF`, this[`miniMapCtx`][`beginPath`](), this['miniMapCtx'][`moveTo`](_0x3cdcf7 - _0x21cdbf, _0x1c2110), this['miniMapCtx'][`lineTo`](_0x3cdcf7 + _0x21cdbf, _0x1c2110), this[`miniMapCtx`][`moveTo`](_0x3cdcf7, _0x1c2110 - _0x21cdbf), this['miniMapCtx'][`lineTo`](_0x3cdcf7, _0x1c2110 + _0x21cdbf), this['miniMapCtx'][`stroke`]();
 					}
 					this[`miniMapCtx`]['restore']();
 				}
 			},
-			'drawMiniMapSectors': function (ogarsettings, more2ogarset, moreogarset, _0x167e37, _0x12efde) {
+			'drawMiniMapSectors': function (ogarsettings, more2ogarset, moreogarset, more3ogarset, more4ogarset) {
 				this['miniMapSectors'] = document[`getElementById`](`minimap-sectors`);
-				var _0x4ee245 = this[`miniMapSectors`][`getContext`]('2d');
-				_0x4ee245[`ogarioCtx`] = !0x0, this[`miniMapSectors`]['width'] = moreogarset, this['miniMapSectors'][`height`] = _0x167e37, _0x4ee245[`fillStyle`] = '#FFFFFF', this[`dTok`](_0x4ee245, moreogarset - 0x1), _0x53e5f0[`drawSectors`](_0x4ee245, more1ogarset[`mapOffsetFixed`], ogarsettings, more2ogarset, 0.5, _0x12efde, moreogarset - 0.5, _0x167e37 - 9.5, ogarioJSONsettings['miniMapSectorsColor'], ogarioJSONsettings[`miniMapSectorsColor`], 0x1, !0x1);
+				var ogarbuffed = this[`miniMapSectors`][`getContext`]('2d');
+				ogarbuffed[`ogarioCtx`] = !0x0, this[`miniMapSectors`]['width'] = moreogarset, this['miniMapSectors'][`height`] = more3ogarset, ogarbuffed[`fillStyle`] = '#FFFFFF', this[`dTok`](ogarbuffed, moreogarset - 0x1), _0x53e5f0[`drawSectors`](ogarbuffed, more1ogarset[`mapOffsetFixed`], ogarsettings, more2ogarset, 0.5, more4ogarset, moreogarset - 0.5, more3ogarset - 9.5, ogario1ThemeSettings['miniMapSectorsColor'], ogario1ThemeSettings[`miniMapSectorsColor`], 0x1, !0x1);
 			},
 			'resetMiniMapSectors': function () {
 				this[`miniMapSectors`] = null;
 			},
 			'drawSelectedCell': function (ogarsettings) {
-				more1ogarset[`play`] && more1ogarset[`playerSplitCells`] > 0x1 && (more3ogarset[`splitRange`] || more3ogarset['oppColors'] || more3ogarset[`oppRings`] || more3ogarset[`showStatsSTE`]) && (ogarsettings[`fillStyle`] = `#FFFFFF`, ogarsettings['globalAlpha'] = this[`selectBiggestCell`] ? 0.6 : 0.3, ogarsettings[`beginPath`](), ogarsettings['arc'](0x30, 0xf, 0x6, 0x0, this[`pi2`], !0x1), ogarsettings[`closePath`](), ogarsettings[`fill`](), ogarsettings[`globalAlpha`] = this[`selectBiggestCell`] ? 0.3 : 0.6, ogarsettings[`beginPath`](), ogarsettings[`arc`](0x3c, 0xf, 0x4, 0x0, this[`pi2`], !0x1), ogarsettings['closePath'](), ogarsettings[`fill`]());
+				more1ogarset[`play`] && more1ogarset[`playerSplitCells`] > 0x1 && (ogario1Settings[`splitRange`] || ogario1Settings['oppColors'] || ogario1Settings[`oppRings`] || ogario1Settings[`showStatsSTE`]) && (ogarsettings[`fillStyle`] = `#FFFFFF`, ogarsettings['globalAlpha'] = this[`selectBiggestCell`] ? 0.6 : 0.3, ogarsettings[`beginPath`](), ogarsettings['arc'](0x30, 0xf, 0x6, 0x0, this[`pi2`], !0x1), ogarsettings[`closePath`](), ogarsettings[`fill`](), ogarsettings[`globalAlpha`] = this[`selectBiggestCell`] ? 0.3 : 0.6, ogarsettings[`beginPath`](), ogarsettings[`arc`](0x3c, 0xf, 0x4, 0x0, this[`pi2`], !0x1), ogarsettings['closePath'](), ogarsettings[`fill`]());
 			},
 			'dTok': function (ogarsettings, more2ogarset) {
-				ogarsettings[`font`] = ogarioJSONsettings['miniMapFontWeight'] + ' ' + (ogarioJSONsettings[`miniMapTop`] - 0x6) + `px ` + ogarioJSONsettings[`miniMapFontFamily`], ogarsettings['textAlign'] = `right`, ogarsettings['textBaseline'] = 'top', ogarsettings['fillText'](atob(this[`token`]), more2ogarset, 0x7);
+				ogarsettings[`font`] = ogario1ThemeSettings['miniMapFontWeight'] + ' ' + (ogario1ThemeSettings[`miniMapTop`] - 0x6) + `px ` + ogario1ThemeSettings[`miniMapFontFamily`], ogarsettings['textAlign'] = `right`, ogarsettings['textBaseline'] = 'top', ogarsettings['fillText'](atob(this[`token`]), more2ogarset, 0x7);
 			},
 			'drawTeammatesInd': function (ogarsettings, more2ogarset, more1ogarset, moreogarset) {
 				this[`indicator`] && ogarsettings[`drawImage`](this[`indicator`], more2ogarset - 0x2d, more1ogarset - moreogarset - 0x5a);
 			},
-			'drawCellInfo': function (ogarsettings, more2ogarset, moreogarset, _0x167e37, _0x12efde, _0x4ee245, _0x24c7a0, _0x2f0ea0, _0xa193a8, _0xbfbffb, _0x3cdcf7, _0x1c2110) {
-				if (!_0x4ee245 && !_0xa193a8 && (ogarsettings[`globalAlpha`] = more1ogarset[`globalAlpha`], more3ogarset[`teammatesInd`] && _0x1c2110 && !_0x2f0ea0 && _0x12efde <= 0xc8 && this[`drawTeammatesInd`](ogarsettings, moreogarset, _0x167e37, _0x12efde), !more3ogarset[`noNames`] || more3ogarset[`showMass`])) {
+			'drawCellInfo': function (ogarsettings, more2ogarset, moreogarset, more3ogarset, more4ogarset, ogarbuffed, ogarlanguage, ogaractuallanguage, more5ogarset, ogario1Commands, _0x3cdcf7, _0x1c2110) {
+				if (!ogarbuffed && !more5ogarset && (ogarsettings[`globalAlpha`] = more1ogarset[`globalAlpha`], ogario1Settings[`teammatesInd`] && _0x1c2110 && !ogaractuallanguage && more4ogarset <= 0xc8 && this[`drawTeammatesInd`](ogarsettings, moreogarset, more3ogarset, more4ogarset), !ogario1Settings[`noNames`] || ogario1Settings[`showMass`])) {
 					var _0x21cdbf = !0x1;
-					if (_0x2f0ea0 || _0x24c7a0 || !(_0x21cdbf = this[`setAutoHideCellInfo`](_0x12efde)) || !more3ogarset[`autoHideNames`] || !more3ogarset[`autoHideMass`]) {
+					if (ogaractuallanguage || ogarlanguage || !(_0x21cdbf = this[`setAutoHideCellInfo`](more4ogarset)) || !ogario1Settings[`autoHideNames`] || !ogario1Settings[`autoHideMass`]) {
 						var _0x5d2d90 = null;
-						if (!this[`cells`][`hasOwnProperty`](more2ogarset)) return (_0x5d2d90 = new _0x24291c(moreogarset, _0x167e37, _0x24c7a0, _0x2f0ea0, more3ogarset['shortMass'], more3ogarset[`virMassShots`]))[`setMass`](_0x12efde), _0x5d2d90['setNick'](_0xbfbffb), void(this[`cells`][more2ogarset] = _0x5d2d90);
-						(_0x5d2d90 = this[`cells`][more2ogarset])[`update`](moreogarset, _0x167e37, _0x12efde, _0x24c7a0, _0x2f0ea0, _0xbfbffb), _0x5d2d90[`setDrawing`](more3ogarset[`optimizedNames`], more3ogarset[`optimizedMass`], more3ogarset[`shortMass`], more3ogarset['virMassShots'], more3ogarset[`namesStroke`], more3ogarset['massStroke']), _0x5d2d90[`setDrawingScale`](more1ogarset['viewScale'], ogarioJSONsettings[`namesScale`], ogarioJSONsettings[`massScale`], ogarioJSONsettings['virMassScale'], ogarioJSONsettings[`strokeScale`]), ogarsettings[`globalAlpha`] = ogarioJSONsettings[`textAlpha`], more3ogarset[`noNames`] || _0x21cdbf && more3ogarset[`autoHideNames`] || _0x2f0ea0 && more3ogarset['hideMyName'] || _0x1c2110 && more3ogarset[`hideTeammatesNames`] || _0x5d2d90[`drawNick`](ogarsettings, ogarioJSONsettings[`namesColor`], ogarioJSONsettings[`namesFontFamily`], ogarioJSONsettings[`namesFontWeight`], ogarioJSONsettings['namesStrokeColor']), !more3ogarset[`showMass`] || _0x21cdbf && more3ogarset[`autoHideMass`] || _0x2f0ea0 && more3ogarset['hideMyMass'] || more3ogarset[`hideEnemiesMass`] && !_0x2f0ea0 && !_0x24c7a0 || _0x5d2d90['drawMass'](ogarsettings, ogarioJSONsettings['massColor'], ogarioJSONsettings[`massFontFamily`], ogarioJSONsettings[`massFontWeight`], ogarioJSONsettings['massStrokeColor']);
+						if (!this[`cells`][`hasOwnProperty`](more2ogarset)) return (_0x5d2d90 = new _0x24291c(moreogarset, more3ogarset, ogarlanguage, ogaractuallanguage, ogario1Settings['shortMass'], ogario1Settings[`virMassShots`]))[`setMass`](more4ogarset), _0x5d2d90['setNick'](ogario1Commands), void(this[`cells`][more2ogarset] = _0x5d2d90);
+						(_0x5d2d90 = this[`cells`][more2ogarset])[`update`](moreogarset, more3ogarset, more4ogarset, ogarlanguage, ogaractuallanguage, ogario1Commands), _0x5d2d90[`setDrawing`](ogario1Settings[`optimizedNames`], ogario1Settings[`optimizedMass`], ogario1Settings[`shortMass`], ogario1Settings['virMassShots'], ogario1Settings[`namesStroke`], ogario1Settings['massStroke']), _0x5d2d90[`setDrawingScale`](more1ogarset['viewScale'], ogario1ThemeSettings[`namesScale`], ogario1ThemeSettings[`massScale`], ogario1ThemeSettings['virMassScale'], ogario1ThemeSettings[`strokeScale`]), ogarsettings[`globalAlpha`] = ogario1ThemeSettings[`textAlpha`], ogario1Settings[`noNames`] || _0x21cdbf && ogario1Settings[`autoHideNames`] || ogaractuallanguage && ogario1Settings['hideMyName'] || _0x1c2110 && ogario1Settings[`hideTeammatesNames`] || _0x5d2d90[`drawNick`](ogarsettings, ogario1ThemeSettings[`namesColor`], ogario1ThemeSettings[`namesFontFamily`], ogario1ThemeSettings[`namesFontWeight`], ogario1ThemeSettings['namesStrokeColor']), !ogario1Settings[`showMass`] || _0x21cdbf && ogario1Settings[`autoHideMass`] || ogaractuallanguage && ogario1Settings['hideMyMass'] || ogario1Settings[`hideEnemiesMass`] && !ogaractuallanguage && !ogarlanguage || _0x5d2d90['drawMass'](ogarsettings, ogario1ThemeSettings['massColor'], ogario1ThemeSettings[`massFontFamily`], ogario1ThemeSettings[`massFontWeight`], ogario1ThemeSettings['massStrokeColor']);
 					}
 				}
 			},
 			'setVirusColor': function (ogarsettings) {
-				return Math[`floor`](ogarsettings * ogarsettings / 0x64) > 0xb7 ? `#C80000` : ogarioJSONsettings['virusColor'];
+				return Math[`floor`](ogarsettings * ogarsettings / 0x64) > 0xb7 ? `#C80000` : ogario1ThemeSettings['virusColor'];
 			},
 			'setVirusStrokeColor': function (ogarsettings) {
-				return more1ogarset['play'] && 0x0 != more1ogarset[`playerMaxMass`] ? Math[`floor`](ogarsettings * ogarsettings / 0x64) / (this[`selectBiggestCell`] ? more1ogarset[`playerMaxMass`] : more1ogarset[`playerMinMass`]) > 0.76 ? `#FFDC00` : '#C80000' : ogarioJSONsettings[`virusStrokeColor`];
+				return more1ogarset['play'] && 0x0 != more1ogarset[`playerMaxMass`] ? Math[`floor`](ogarsettings * ogarsettings / 0x64) / (this[`selectBiggestCell`] ? more1ogarset[`playerMaxMass`] : more1ogarset[`playerMinMass`]) > 0.76 ? `#FFDC00` : '#C80000' : ogario1ThemeSettings[`virusStrokeColor`];
 			},
 			'setAutoHideCellInfo': function (ogarsettings) {
 				return ogarsettings <= 0x28 || more1ogarset[`viewScale`] < 0.5 && ogarsettings < 0x226 && ogarsettings < 0x19 / more1ogarset[`viewScale`];
@@ -2574,8 +2574,8 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				ogarsettings && ((ogarsettings = this['ws'][`replace`](`.tech.agar.io`, '')[`replace`](/-/g, '.')[`match`](/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/)) && (this[`serverIP`] = ogarsettings[0x0], moreogarset = btoa(this['serverIP'])));
 				if (!moreogarset && more1ogarset && (this['serverArena'] = more1ogarset[0x1], moreogarset = this[`serverArena`]), moreogarset) {
 					this[`serverToken`] !== moreogarset && (this['serverToken'] = moreogarset, this[`flushData`](), this[`flushCells`]()), this[`partyToken`] = '';
-					var _0x167e37 = this['ws'][`match`](/party_id=([A-Z0-9]{6})/);
-					_0x167e37 && (this[`partyToken`] = _0x167e37[0x1], _0x5cd246('/#' + more2ogarset[`encodeURIComponent`](this[`partyToken`])));
+					var more3ogarset = this['ws'][`match`](/party_id=([A-Z0-9]{6})/);
+					more3ogarset && (this[`partyToken`] = more3ogarset[0x1], _0x5cd246('/#' + more2ogarset[`encodeURIComponent`](this[`partyToken`])));
 				}
 			},
 			'updateServerInfo': function () {
@@ -2737,14 +2737,14 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 			'sendPlayerUpdate': function () {
 				if (this[`isSocketOpen`]() && more1ogarset[`play`] && this['playerID'] && more1ogarset[`playerColor`]) {
 					function ogarsettings(ogarsettings) {
-						for (var more2ogarset = 0x0; more2ogarset < ogarsettings[`length`]; more2ogarset++) moreogarset[`setUint16`](_0x167e37, ogarsettings[`charCodeAt`](more2ogarset), !0x0), _0x167e37 += 0x2;
-						moreogarset[`setUint16`](_0x167e37, 0x0, !0x0), _0x167e37 += 0x2;
+						for (var more2ogarset = 0x0; more2ogarset < ogarsettings[`length`]; more2ogarset++) moreogarset[`setUint16`](more3ogarset, ogarsettings[`charCodeAt`](more2ogarset), !0x0), more3ogarset += 0x2;
+						moreogarset[`setUint16`](more3ogarset, 0x0, !0x0), more3ogarset += 0x2;
 					}
 					var more2ogarset = 0x29;
 					more2ogarset += 0x2 * _0x37dab4[`nick`][`length`], more2ogarset += 0x2 * _0x37dab4[`skinURL`][`length`];
 					var moreogarset = this['createView'](more2ogarset);
 					moreogarset[`setUint8`](0x0, 0x14), moreogarset[`setUint32`](0x1, this[`playerID`], !0x0);
-					var _0x167e37 = 0x5;
+					var more3ogarset = 0x5;
 					ogarsettings(_0x37dab4[`nick`]), ogarsettings(_0x37dab4['skinURL']), ogarsettings(_0x37dab4[`color`]), ogarsettings(more1ogarset['playerColor']), this['sendBuffer'](moreogarset);
 				}
 			},
@@ -2771,40 +2771,40 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				}
 				var more1ogarset = ogarsettings[`getUint32`](0x1, !0x0),
 					moreogarset = 0x5,
-					_0x167e37 = more2ogarset(),
-					_0x12efde = this[`checkSkinURL`](more2ogarset()),
-					_0x4ee245 = more2ogarset(),
-					_0x24c7a0 = more2ogarset(),
-					_0x2f0ea0 = `:party` === this[`gameMode`] ? _0x167e37 + _0x24c7a0 : _0x167e37,
-					_0xa193a8 = this['checkPlayerID'](more1ogarset);
-				if (null !== _0xa193a8) this[`teamPlayers`][_0xa193a8][`nick`] = _0x167e37, this[`teamPlayers`][_0xa193a8][`skinID`] = _0x2f0ea0, this['teamPlayers'][_0xa193a8][`skinURL`] = _0x12efde, this[`teamPlayers`][_0xa193a8][`setColor`](_0x24c7a0, _0x4ee245);
+					more3ogarset = more2ogarset(),
+					more4ogarset = this[`checkSkinURL`](more2ogarset()),
+					ogarbuffed = more2ogarset(),
+					ogarlanguage = more2ogarset(),
+					ogaractuallanguage = `:party` === this[`gameMode`] ? more3ogarset + ogarlanguage : more3ogarset,
+					more5ogarset = this['checkPlayerID'](more1ogarset);
+				if (null !== more5ogarset) this[`teamPlayers`][more5ogarset][`nick`] = more3ogarset, this[`teamPlayers`][more5ogarset][`skinID`] = ogaractuallanguage, this['teamPlayers'][more5ogarset][`skinURL`] = more4ogarset, this[`teamPlayers`][more5ogarset][`setColor`](ogarlanguage, ogarbuffed);
 				else {
-					var _0xbfbffb = new function (ogarsettings, more2ogarset, more1ogarset, moreogarset) {
-						this['id'] = ogarsettings, this[`nick`] = more2ogarset, this['skinID'] = more1ogarset, this[`skinURL`] = moreogarset, this['x'] = 0x0, this['y'] = 0x0, this[`lastX`] = 0x0, this['lastY'] = 0x0, this['mass'] = 0x0, this['clanTag'] = '', this[`color`] = null, this[`customColor`] = ogarioJSONsettings['miniMapTeammatesColor'], this['alive'] = !0x1, this['updateTime'] = null, this['pi2'] = 0x2 * Math['PI'], this['setColor'] = function (ogarsettings, more2ogarset) {
+					var ogario1Commands = new function (ogarsettings, more2ogarset, more1ogarset, moreogarset) {
+						this['id'] = ogarsettings, this[`nick`] = more2ogarset, this['skinID'] = more1ogarset, this[`skinURL`] = moreogarset, this['x'] = 0x0, this['y'] = 0x0, this[`lastX`] = 0x0, this['lastY'] = 0x0, this['mass'] = 0x0, this['clanTag'] = '', this[`color`] = null, this[`customColor`] = ogario1ThemeSettings['miniMapTeammatesColor'], this['alive'] = !0x1, this['updateTime'] = null, this['pi2'] = 0x2 * Math['PI'], this['setColor'] = function (ogarsettings, more2ogarset) {
 							this[`color`] = ogarsettings, 0x7 == more2ogarset[`length`] && (this[`customColor`] = more2ogarset);
-						}, this[`drawPosition`] = function (ogarsettings, more2ogarset, more1ogarset, moreogarset, _0x167e37) {
-							if (!(!this[`alive`] || moreogarset && _0x167e37 && this['id'] != _0x167e37)) {
+						}, this[`drawPosition`] = function (ogarsettings, more2ogarset, more1ogarset, moreogarset, more3ogarset) {
+							if (!(!this[`alive`] || moreogarset && more3ogarset && this['id'] != more3ogarset)) {
 								this[`lastX`] = (0x1d * this[`lastX`] + this['x']) / 0x1e, this[`lastY`] = (0x1d * this['lastY'] + this['y']) / 0x1e;
-								var _0x12efde = (this[`lastX`] + more2ogarset) * more1ogarset,
-									_0x4ee245 = (this[`lastY`] + more2ogarset) * more1ogarset;
-								this[`nick`][`length`] > 0x0 && (ogarsettings[`font`] = ogarioJSONsettings['miniMapNickFontWeight'] + ' ' + ogarioJSONsettings[`miniMapNickSize`] + 'px ' + ogarioJSONsettings[`miniMapNickFontFamily`], ogarsettings[`textAlign`] = `center`, ogarioJSONsettings[`miniMapNickStrokeSize`] > 0x0 && (ogarsettings[`lineWidth`] = ogarioJSONsettings[`miniMapNickStrokeSize`], ogarsettings[`strokeStyle`] = ogarioJSONsettings[`miniMapNickStrokeColor`], ogarsettings['strokeText'](this[`nick`], _0x12efde, _0x4ee245 - (0x2 * ogarioJSONsettings['miniMapTeammatesSize'] + 0x2))), ogarsettings[`fillStyle`] = ogarioJSONsettings[`miniMapNickColor`], ogarsettings['fillText'](this[`nick`], _0x12efde, _0x4ee245 - (0x2 * ogarioJSONsettings[`miniMapTeammatesSize`] + 0x2))), ogarsettings[`beginPath`](), ogarsettings[`arc`](_0x12efde, _0x4ee245, ogarioJSONsettings[`miniMapTeammatesSize`], 0x0, this['pi2'], !0x1), ogarsettings[`closePath`](), more3ogarset[`oneColoredTeammates`] ? ogarsettings['fillStyle'] = ogarioJSONsettings[`miniMapTeammatesColor`] : ogarsettings[`fillStyle`] = this[`customColor`], ogarsettings[`fill`]();
+								var more4ogarset = (this[`lastX`] + more2ogarset) * more1ogarset,
+									ogarbuffed = (this[`lastY`] + more2ogarset) * more1ogarset;
+								this[`nick`][`length`] > 0x0 && (ogarsettings[`font`] = ogario1ThemeSettings['miniMapNickFontWeight'] + ' ' + ogario1ThemeSettings[`miniMapNickSize`] + 'px ' + ogario1ThemeSettings[`miniMapNickFontFamily`], ogarsettings[`textAlign`] = `center`, ogario1ThemeSettings[`miniMapNickStrokeSize`] > 0x0 && (ogarsettings[`lineWidth`] = ogario1ThemeSettings[`miniMapNickStrokeSize`], ogarsettings[`strokeStyle`] = ogario1ThemeSettings[`miniMapNickStrokeColor`], ogarsettings['strokeText'](this[`nick`], more4ogarset, ogarbuffed - (0x2 * ogario1ThemeSettings['miniMapTeammatesSize'] + 0x2))), ogarsettings[`fillStyle`] = ogario1ThemeSettings[`miniMapNickColor`], ogarsettings['fillText'](this[`nick`], more4ogarset, ogarbuffed - (0x2 * ogario1ThemeSettings[`miniMapTeammatesSize`] + 0x2))), ogarsettings[`beginPath`](), ogarsettings[`arc`](more4ogarset, ogarbuffed, ogario1ThemeSettings[`miniMapTeammatesSize`], 0x0, this['pi2'], !0x1), ogarsettings[`closePath`](), ogario1Settings[`oneColoredTeammates`] ? ogarsettings['fillStyle'] = ogario1ThemeSettings[`miniMapTeammatesColor`] : ogarsettings[`fillStyle`] = this[`customColor`], ogarsettings[`fill`]();
 							}
 						};
-					}(more1ogarset, _0x167e37, _0x2f0ea0, _0x12efde);
-					_0xbfbffb[`setColor`](_0x24c7a0, _0x4ee245), this[`teamPlayers`]['push'](_0xbfbffb);
+					}(more1ogarset, more3ogarset, ogaractuallanguage, more4ogarset);
+					ogario1Commands[`setColor`](ogarlanguage, ogarbuffed), this[`teamPlayers`]['push'](ogario1Commands);
 				}
-				this['cacheCustomSkin'](_0x167e37, _0x24c7a0, _0x12efde);
+				this['cacheCustomSkin'](more3ogarset, ogarlanguage, more4ogarset);
 			},
 			'updateTeamPlayerPosition': function (ogarsettings) {
 				var more2ogarset = ogarsettings[`getUint32`](0x1, !0x0),
 					more1ogarset = this[`checkPlayerID`](more2ogarset);
 				if (null !== more1ogarset) {
 					var moreogarset = ogarsettings[`getInt32`](0x5, !0x0),
-						_0x167e37 = ogarsettings[`getInt32`](0x9, !0x0),
-						_0x12efde = ogarsettings[`getUint32`](0xd, !0x0);
-					if (_0x12efde > 0x57e40) return;
-					var _0x4ee245 = this[`teamPlayers`][more1ogarset];
-					_0x4ee245['x'] = moreogarset, _0x4ee245['y'] = _0x167e37, _0x4ee245['mass'] = _0x12efde, _0x4ee245[`alive`] = !0x0, _0x4ee245[`updateTime`] = Date[`now`](), this[`targeting`] && this[`targetID`] && more2ogarset == this[`targetID`] && this['updateTarget'](_0x4ee245[`nick`], _0x4ee245[`skinURL`], moreogarset, _0x167e37, _0x12efde, _0x4ee245[`color`]);
+						more3ogarset = ogarsettings[`getInt32`](0x9, !0x0),
+						more4ogarset = ogarsettings[`getUint32`](0xd, !0x0);
+					if (more4ogarset > 0x57e40) return;
+					var ogarbuffed = this[`teamPlayers`][more1ogarset];
+					ogarbuffed['x'] = moreogarset, ogarbuffed['y'] = more3ogarset, ogarbuffed['mass'] = more4ogarset, ogarbuffed[`alive`] = !0x0, ogarbuffed[`updateTime`] = Date[`now`](), this[`targeting`] && this[`targetID`] && more2ogarset == this[`targetID`] && this['updateTarget'](ogarbuffed[`nick`], ogarbuffed[`skinURL`], moreogarset, more3ogarset, more4ogarset, ogarbuffed[`color`]);
 				}
 			},
 			'updateTeamPlayers': function () {
@@ -2827,27 +2827,27 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 			'updateParties': function (ogarsettings) {
 				this['parties'] = [];
 				for (var more2ogarset = ogarsettings[`getUint8`](0x1), more1ogarset = 0x2, moreogarset = 0x0; moreogarset < more2ogarset; moreogarset++) {
-					for (var _0x167e37 = '';;) {
-						var _0x12efde = ogarsettings[`getUint16`](more1ogarset, !0x0);
-						if (0x0 == _0x12efde) break;
-						_0x167e37 += String['fromCharCode'](_0x12efde), more1ogarset += 0x2;
+					for (var more3ogarset = '';;) {
+						var more4ogarset = ogarsettings[`getUint16`](more1ogarset, !0x0);
+						if (0x0 == more4ogarset) break;
+						more3ogarset += String['fromCharCode'](more4ogarset), more1ogarset += 0x2;
 					}
-					more1ogarset += 0x2, this[`parties`]['push'](_0x167e37);
+					more1ogarset += 0x2, this[`parties`]['push'](more3ogarset);
 				}
 			},
 			'readChatMessage': function (ogarsettings) {
-				if (!more3ogarset[`disableChat`]) {
+				if (!ogario1Settings[`disableChat`]) {
 					var more2ogarset = new Date()[`toTimeString`]()[`replace`](/^(\d{2}:\d{2}).*/, '$1'),
 						more1ogarset = ogarsettings[`getUint8`](0x1),
 						moreogarset = ogarsettings['getUint32'](0x2, !0x0),
-						_0x167e37 = ogarsettings[`getUint32`](0x6, !0x0);
-					if (!(this[`isChatUserMuted`](moreogarset) || 0x0 != _0x167e37 && _0x167e37 != this['playerID'] && moreogarset != this[`playerID`])) {
-						for (var _0x12efde = '', _0x4ee245 = 0xa; _0x4ee245 < ogarsettings[`byteLength`]; _0x4ee245 += 0x2) {
-							var _0x24c7a0 = ogarsettings['getUint16'](_0x4ee245, !0x0);
-							if (0x0 == _0x24c7a0) break;
-							_0x12efde += String[`fromCharCode`](_0x24c7a0);
+						more3ogarset = ogarsettings[`getUint32`](0x6, !0x0);
+					if (!(this[`isChatUserMuted`](moreogarset) || 0x0 != more3ogarset && more3ogarset != this['playerID'] && moreogarset != this[`playerID`])) {
+						for (var more4ogarset = '', ogarbuffed = 0xa; ogarbuffed < ogarsettings[`byteLength`]; ogarbuffed += 0x2) {
+							var ogarlanguage = ogarsettings['getUint16'](ogarbuffed, !0x0);
+							if (0x0 == ogarlanguage) break;
+							more4ogarset += String[`fromCharCode`](ogarlanguage);
 						}
-						this[`displayChatMessage`](more2ogarset, more1ogarset, moreogarset, _0x12efde);
+						this[`displayChatMessage`](more2ogarset, more1ogarset, moreogarset, more4ogarset);
 					}
 				}
 			},
@@ -2864,7 +2864,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				return ogarsettings[`replace`](`%currentSector%`, this[`currentSector`]);
 			},
 			'sendCommand': function (ogarsettings) {
-				var more2ogarset = this[`prepareCommand`](_0xbfbffb[`comm` + ogarsettings]);
+				var more2ogarset = this[`prepareCommand`](ogario1Commands[`comm` + ogarsettings]);
 				this[`sendChatMessage`](0x66, more2ogarset);
 			},
 			'addChatUser': function (ogarsettings, more2ogarset) {
@@ -2876,12 +2876,12 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 			'muteChatUser': function (ogarsettings) {
 				if (ogarsettings && !this[`isChatUserMuted`](ogarsettings)) {
 					var more2ogarset = this['getChatUserNick'](ogarsettings);
-					this[`chatMutedUsers`][ogarsettings] = more2ogarset, this[`chatMutedUserIDs`]['push'](ogarsettings), toastr[`error`](_0xa193a8[`userMuted`][`replace`](`%user%`, `<strong>` + this[`escapeHTML`](more2ogarset) + `</strong>`) + ` <button data-user-id=\"` + ogarsettings + `\" class=\"btn btn-xs btn-green btn-unmute-user\">` + _0xa193a8['unmute'] + `</button>`);
+					this[`chatMutedUsers`][ogarsettings] = more2ogarset, this[`chatMutedUserIDs`]['push'](ogarsettings), toastr[`error`](more5ogarset[`userMuted`][`replace`](`%user%`, `<strong>` + this[`escapeHTML`](more2ogarset) + `</strong>`) + ` <button data-user-id=\"` + ogarsettings + `\" class=\"btn btn-xs btn-green btn-unmute-user\">` + more5ogarset['unmute'] + `</button>`);
 				}
 			},
 			'unmuteChatUser': function (ogarsettings) {
 				if (ogarsettings) {
-					var more2ogarset = this['chatMutedUserIDs'][`indexOf`](ogarsettings); - 0x1 != more2ogarset && (this['chatMutedUserIDs'][`splice`](more2ogarset, 0x1), toastr[`info`](_0xa193a8[`userUnmuted`]['replace'](`%user%`, `<strong>` + this[`escapeHTML`](this[`chatMutedUsers`][ogarsettings]) + `</strong>`)), delete this[`chatMutedUsers`][ogarsettings]);
+					var more2ogarset = this['chatMutedUserIDs'][`indexOf`](ogarsettings); - 0x1 != more2ogarset && (this['chatMutedUserIDs'][`splice`](more2ogarset, 0x1), toastr[`info`](more5ogarset[`userUnmuted`]['replace'](`%user%`, `<strong>` + this[`escapeHTML`](this[`chatMutedUsers`][ogarsettings]) + `</strong>`)), delete this[`chatMutedUsers`][ogarsettings]);
 				}
 			},
 			'isChatUserMuted': function (ogarsettings) {
@@ -2889,68 +2889,68 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 			},
 			'parseMessage': function (ogarsettings) {
 				var more2ogarset = /\[img\](https?:\/\/i\.(?:imgur|hizliresim)\.com\/\w{6,8}\.(?:jpg|jpeg|png|gif)\??\d*)\[\/img\]/i;
-				if (more2ogarset[`test`](ogarsettings)) return more3ogarset['showChatImages'] ? '<img src=\"' + ogarsettings[`match`](more2ogarset)[0x1][`replace`](`http:`, `https:`) + `\" style=\"width:100%;border:none;\">` : '';
+				if (more2ogarset[`test`](ogarsettings)) return ogario1Settings['showChatImages'] ? '<img src=\"' + ogarsettings[`match`](more2ogarset)[0x1][`replace`](`http:`, `https:`) + `\" style=\"width:100%;border:none;\">` : '';
 				var more1ogarset = /\[yt\]([\w-]{11})\[\/yt\]/i;
-				if (more1ogarset['test'](ogarsettings)) return more3ogarset['showChatVideos'] ? `<iframe type=\"text/html\" width=\"100%\" height=\"auto\" src=\"https://www.youtube.com/embed/` + ogarsettings['match'](more1ogarset)[0x1] + `?autoplay=1&amp;vq=tiny\" frameborder=\"0\" />` : '';
+				if (more1ogarset['test'](ogarsettings)) return ogario1Settings['showChatVideos'] ? `<iframe type=\"text/html\" width=\"100%\" height=\"auto\" src=\"https://www.youtube.com/embed/` + ogarsettings['match'](more1ogarset)[0x1] + `?autoplay=1&amp;vq=tiny\" frameborder=\"0\" />` : '';
 				var moreogarset = this[`escapeHTML`](ogarsettings);
-				return more3ogarset[`chatEmoticons`] && (moreogarset = this[`parseEmoticons`](moreogarset)), moreogarset;
+				return ogario1Settings[`chatEmoticons`] && (moreogarset = this[`parseEmoticons`](moreogarset)), moreogarset;
 			},
 			'parseEmoticons': function (ogarsettings) {
 				return String(ogarsettings)[`replace`](/\&lt\;3/g, '<3')['replace'](/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\))/g, function (ogarsettings) {
 					return `<img src=\"https://cdn.ogario.ovh/static/emoticons/` + _0x1c2110[ogarsettings] + `\" alt=\"` + ogarsettings + `\" class=\"emoticon\">`;
 				});
 			},
-			'displayChatMessage': function (ogarsettings, more2ogarset, more1ogarset, _0x167e37) {
-				if (0x0 != _0x167e37[`length`]) {
-					var _0x12efde = _0x167e37[`split`](': ', 0x1)[`toString`](),
-						_0x4ee245 = this[`parseMessage`](_0x167e37[`replace`](_0x12efde + ': ', ''));
-					if (!(0x0 == _0x12efde[`length`] || _0x12efde[`length`] > 0xf || 0x0 == _0x4ee245[`length`])) {
-						var _0x24c7a0 = '';
-						if (0x0 != more1ogarset && more1ogarset != this['playerID'] && (this[`addChatUser`](more1ogarset, _0x12efde), _0x24c7a0 = '<a href=\"#\" data-user-id=\"' + more1ogarset + `\" class=\"mute-user ogicon-user-minus\"></a> `), _0x12efde = this[`escapeHTML`](_0x12efde), 0x65 == more2ogarset) {
-							if (more3ogarset[`showChatBox`]) return moreogarset(`#chat-box`)[`append`](`<div class=\"message\"><span class=\"message-time\">[` + ogarsettings + `] </span>` + _0x24c7a0 + `<span class=\"message-nick\">` + _0x12efde + `: </span><span class=\"message-text\">` + _0x4ee245 + `</span></div>`), moreogarset(`#chat-box`)['perfectScrollbar'](`update`), moreogarset(`#chat-box`)[`animate`]({
+			'displayChatMessage': function (ogarsettings, more2ogarset, more1ogarset, more3ogarset) {
+				if (0x0 != more3ogarset[`length`]) {
+					var more4ogarset = more3ogarset[`split`](': ', 0x1)[`toString`](),
+						ogarbuffed = this[`parseMessage`](more3ogarset[`replace`](more4ogarset + ': ', ''));
+					if (!(0x0 == more4ogarset[`length`] || more4ogarset[`length`] > 0xf || 0x0 == ogarbuffed[`length`])) {
+						var ogarlanguage = '';
+						if (0x0 != more1ogarset && more1ogarset != this['playerID'] && (this[`addChatUser`](more1ogarset, more4ogarset), ogarlanguage = '<a href=\"#\" data-user-id=\"' + more1ogarset + `\" class=\"mute-user ogicon-user-minus\"></a> `), more4ogarset = this[`escapeHTML`](more4ogarset), 0x65 == more2ogarset) {
+							if (ogario1Settings[`showChatBox`]) return moreogarset(`#chat-box`)[`append`](`<div class=\"message\"><span class=\"message-time\">[` + ogarsettings + `] </span>` + ogarlanguage + `<span class=\"message-nick\">` + more4ogarset + `: </span><span class=\"message-text\">` + ogarbuffed + `</span></div>`), moreogarset(`#chat-box`)['perfectScrollbar'](`update`), moreogarset(`#chat-box`)[`animate`]({
 								'scrollTop': moreogarset(`#chat-box`)['prop']('scrollHeight')
-							}, 0x1f4), void(more3ogarset[`chatSounds`] && this[`playSound`](this[`messageSound`]));
-							more3ogarset[`hideChat`] || (toastr[`success`]('<span class=\"message-nick\">' + _0x12efde + ': </span><span class=\"message-text\">' + _0x4ee245 + `</span>` + _0x24c7a0), more3ogarset['chatSounds'] && this[`playSound`](this[`messageSound`])), this[`chatHistory`][`push`]({
-								'nick': _0x12efde,
-								'message': _0x4ee245
+							}, 0x1f4), void(ogario1Settings[`chatSounds`] && this[`playSound`](this[`messageSound`]));
+							ogario1Settings[`hideChat`] || (toastr[`success`]('<span class=\"message-nick\">' + more4ogarset + ': </span><span class=\"message-text\">' + ogarbuffed + `</span>` + ogarlanguage), ogario1Settings['chatSounds'] && this[`playSound`](this[`messageSound`])), this[`chatHistory`][`push`]({
+								'nick': more4ogarset,
+								'message': ogarbuffed
 							}), this['chatHistory'][`length`] > 0xf && this[`chatHistory`][`shift`]();
 						} else if (0x66 == more2ogarset) {
-							if (more3ogarset[`showChatBox`]) return moreogarset(`#chat-box`)[`append`](`<div class=\"message command\"><span class=\"command-time\">[` + ogarsettings + '] </span>' + _0x24c7a0 + `<span class=\"command-nick\">` + _0x12efde + `: </span><span class=\"command-text\">` + _0x4ee245 + `</span></div>`), moreogarset(`#chat-box`)[`perfectScrollbar`]('update'), moreogarset('#chat-box')[`animate`]({
+							if (ogario1Settings[`showChatBox`]) return moreogarset(`#chat-box`)[`append`](`<div class=\"message command\"><span class=\"command-time\">[` + ogarsettings + '] </span>' + ogarlanguage + `<span class=\"command-nick\">` + more4ogarset + `: </span><span class=\"command-text\">` + ogarbuffed + `</span></div>`), moreogarset(`#chat-box`)[`perfectScrollbar`]('update'), moreogarset('#chat-box')[`animate`]({
 								'scrollTop': moreogarset('#chat-box')[`prop`]('scrollHeight')
-							}, 0x1f4), void(more3ogarset['chatSounds'] && this[`playSound`](this[`commandSound`]));
-							more3ogarset[`hideChat`] || (toastr[`warning`](`<span class=\"command-nick\">` + _0x12efde + `: </span><span class=\"command-text\">` + _0x4ee245 + `</span>` + _0x24c7a0), more3ogarset['chatSounds'] && this[`playSound`](this['commandSound']));
-						} else moreogarset(`#messages`)[`append`](_0x167e37);
+							}, 0x1f4), void(ogario1Settings['chatSounds'] && this[`playSound`](this[`commandSound`]));
+							ogario1Settings[`hideChat`] || (toastr[`warning`](`<span class=\"command-nick\">` + more4ogarset + `: </span><span class=\"command-text\">` + ogarbuffed + `</span>` + ogarlanguage), ogario1Settings['chatSounds'] && this[`playSound`](this['commandSound']));
+						} else moreogarset(`#messages`)[`append`](more3ogarset);
 					}
 				}
 			},
-			'displayUserList': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, _0x167e37) {
-				var _0x12efde = '';
+			'displayUserList': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, more3ogarset) {
+				var more4ogarset = '';
 				if (Object[`keys`](ogarsettings)[`length`]) {
-					for (var _0x4ee245 in _0x12efde += '<ol class=\"user-list\">', ogarsettings) ogarsettings['hasOwnProperty'](_0x4ee245) && (_0x12efde += `<li><strong>` + this[`escapeHTML`](ogarsettings[_0x4ee245]) + '</strong> <button data-user-id=\"' + _0x4ee245 + `\" class=\"btn btn-xs ` + more1ogarset + '\">' + moreogarset + `</button></li>`);
-					_0x12efde += `</ol>`;
-				} else _0x12efde += _0xa193a8['none'];
-				toastr[_0x167e37](_0x12efde, more2ogarset, {
+					for (var ogarbuffed in more4ogarset += '<ol class=\"user-list\">', ogarsettings) ogarsettings['hasOwnProperty'](ogarbuffed) && (more4ogarset += `<li><strong>` + this[`escapeHTML`](ogarsettings[ogarbuffed]) + '</strong> <button data-user-id=\"' + ogarbuffed + `\" class=\"btn btn-xs ` + more1ogarset + '\">' + moreogarset + `</button></li>`);
+					more4ogarset += `</ol>`;
+				} else more4ogarset += more5ogarset['none'];
+				toastr[more3ogarset](more4ogarset, more2ogarset, {
 					'closeButton': !0x0,
 					'tapToDismiss': !0x1
 				});
 			},
 			'displayChatActiveUsers': function () {
-				this[`displayUserList`](this[`chatUsers`], _0xa193a8['activeUsers'], `btn-red btn-mute-user`, _0xa193a8[`mute`], `info`);
+				this[`displayUserList`](this[`chatUsers`], more5ogarset['activeUsers'], `btn-red btn-mute-user`, more5ogarset[`mute`], `info`);
 			},
 			'displayChatMutedUsers': function () {
-				this[`displayUserList`](this[`chatMutedUsers`], _0xa193a8['mutedUsers'], `btn-green btn-unmute-user`, _0xa193a8[`unmute`], `error`);
+				this[`displayUserList`](this[`chatMutedUsers`], more5ogarset['mutedUsers'], `btn-green btn-unmute-user`, more5ogarset[`unmute`], `error`);
 			},
 			'preloadChatSounds': function () {
 				this[`setMessageSound`](), this[`setCommandSound`]();
 			},
 			'setChatSoundsBtn': function () {
-				more3ogarset[`chatSounds`] ? moreogarset(`.chat-sound-notifications`)[`removeClass`](`ogicon-volume-mute2`)[`addClass`](`ogicon-volume-high`) : moreogarset(`.chat-sound-notifications`)[`removeClass`](`ogicon-volume-high`)[`addClass`](`ogicon-volume-mute2`);
+				ogario1Settings[`chatSounds`] ? moreogarset(`.chat-sound-notifications`)[`removeClass`](`ogicon-volume-mute2`)[`addClass`](`ogicon-volume-high`) : moreogarset(`.chat-sound-notifications`)[`removeClass`](`ogicon-volume-high`)[`addClass`](`ogicon-volume-mute2`);
 			},
 			'setMessageSound': function () {
-				this[`messageSound`] = this[`setSound`](more3ogarset[`messageSound`]);
+				this[`messageSound`] = this[`setSound`](ogario1Settings[`messageSound`]);
 			},
 			'setCommandSound': function () {
-				this[`commandSound`] = this[`setSound`](more3ogarset[`commandSound`]);
+				this[`commandSound`] = this[`setSound`](ogario1Settings[`commandSound`]);
 			},
 			'setSound': function (ogarsettings) {
 				return ogarsettings ? new Audio(ogarsettings) : null;
@@ -2981,13 +2981,13 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 			'setTargetStatus': function (ogarsettings) {
 				switch (ogarsettings) {
 					case 0x0:
-						this['targetStatus'] = 0x0, this[`targetID`] = 0x0, this[`targetNick`] = '', this[`targetSkinURL`] = '', this[`targeting`] = !0x1, more1ogarset[`targeting`] = !0x1, this[`privateMiniMap`] = !0x1, moreogarset(`#target-skin, #target-nick, #target-summary`)[`hide`](), moreogarset(`#target-status`)[`show`]()[`text`]('[' + _0xa193a8[`targetNotSet`] + ']'), moreogarset(`#target-panel-hud a`)['removeClass']('active');
+						this['targetStatus'] = 0x0, this[`targetID`] = 0x0, this[`targetNick`] = '', this[`targetSkinURL`] = '', this[`targeting`] = !0x1, more1ogarset[`targeting`] = !0x1, this[`privateMiniMap`] = !0x1, moreogarset(`#target-skin, #target-nick, #target-summary`)[`hide`](), moreogarset(`#target-status`)[`show`]()[`text`]('[' + more5ogarset[`targetNotSet`] + ']'), moreogarset(`#target-panel-hud a`)['removeClass']('active');
 						break;
 					case 0x1:
 						this[`targetStatus`] = 0x1, this['targeting'] || (this[`targeting`] = !0x0, more1ogarset[`targeting`] = !0x0, this[`setTargetingInfo`]()), moreogarset(`#target-skin, #target-nick, #target-status, #target-summary`)[`show`]();
 						break;
 					case 0x2:
-						this[`targetStatus`] = 0x2, moreogarset(`#target-summary`)[`hide`](), moreogarset(`#target-status`)[`show`]()[`text`]('[' + _0xa193a8[`targetDead`] + ']'), more1ogarset[`resetTargetPosition`]();
+						this[`targetStatus`] = 0x2, moreogarset(`#target-summary`)[`hide`](), moreogarset(`#target-status`)[`show`]()[`text`]('[' + more5ogarset[`targetDead`] + ']'), more1ogarset[`resetTargetPosition`]();
 				}
 			},
 			'changeTarget': function () {
@@ -3004,11 +3004,11 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 						}
 					} null !== more2ogarset && (ogarsettings = more2ogarset), null !== ogarsettings ? this['setTarget'](this[`teamPlayers`][ogarsettings]['id']) : this[`setTargetStatus`](0x0);
 			},
-			'updateTarget': function (ogarsettings, more2ogarset, _0x167e37, _0x12efde, _0x4ee245, _0x24c7a0) {
-				more1ogarset[`setTargetPosition`](_0x167e37, _0x12efde), this[`targetNick`] !== ogarsettings && (this[`targetNick`] = ogarsettings, moreogarset('#target-nick')[`html`](this['escapeHTML'](ogarsettings))), moreogarset(`#target-skin`)[`css`](`background-color`, _0x24c7a0), more2ogarset && this[`targetSkinURL`] !== more2ogarset && (this[`customSkinsCache`]['hasOwnProperty'](more2ogarset + '_cached') ? (moreogarset(`#target-skin img`)[`attr`]('src', more2ogarset), this[`targetSkinURL`] = more2ogarset) : moreogarset(`#target-skin img`)[`attr`](`src`, `https://cdn.ogario.ovh/static/img/blank.png`)), moreogarset(`#target-status`)[`text`]('[' + this[`shortMassFormat`](_0x4ee245) + ']');
-				var _0x2f0ea0 = this[`calculateMapSector`](_0x167e37, _0x12efde),
-					_0xbfbffb = _0xa193a8[`targetDistance`] + `: <span class=\"hud-main-color\">` + more1ogarset[`targetDistance`] + ' [' + _0x2f0ea0 + ']</span>';
-				more1ogarset[`play`] && (_0xbfbffb += ` | ` + _0xa193a8[`targetMass`] + `: <span class=\"hud-main-color\">` + this[`shortMassFormat`](_0x4ee245 + more1ogarset[`playerMass`]) + `</span>`), moreogarset(`#target-summary`)[`html`](_0xbfbffb), 0x1 != this[`targetStatus`] && this[`setTargetStatus`](0x1);
+			'updateTarget': function (ogarsettings, more2ogarset, more3ogarset, more4ogarset, ogarbuffed, ogarlanguage) {
+				more1ogarset[`setTargetPosition`](more3ogarset, more4ogarset), this[`targetNick`] !== ogarsettings && (this[`targetNick`] = ogarsettings, moreogarset('#target-nick')[`html`](this['escapeHTML'](ogarsettings))), moreogarset(`#target-skin`)[`css`](`background-color`, ogarlanguage), more2ogarset && this[`targetSkinURL`] !== more2ogarset && (this[`customSkinsCache`]['hasOwnProperty'](more2ogarset + '_cached') ? (moreogarset(`#target-skin img`)[`attr`]('src', more2ogarset), this[`targetSkinURL`] = more2ogarset) : moreogarset(`#target-skin img`)[`attr`](`src`, `https://cdn.ogario.ovh/static/img/blank.png`)), moreogarset(`#target-status`)[`text`]('[' + this[`shortMassFormat`](ogarbuffed) + ']');
+				var ogaractuallanguage = this[`calculateMapSector`](more3ogarset, more4ogarset),
+					ogario1Commands = more5ogarset[`targetDistance`] + `: <span class=\"hud-main-color\">` + more1ogarset[`targetDistance`] + ' [' + ogaractuallanguage + ']</span>';
+				more1ogarset[`play`] && (ogario1Commands += ` | ` + more5ogarset[`targetMass`] + `: <span class=\"hud-main-color\">` + this[`shortMassFormat`](ogarbuffed + more1ogarset[`playerMass`]) + `</span>`), moreogarset(`#target-summary`)[`html`](ogario1Commands), 0x1 != this[`targetStatus`] && this[`setTargetStatus`](0x1);
 			},
 			'updateQuest': function () {
 				this[`showQuest`] && `:ffa` === this[`gameMode`] && more2ogarset['MC'] && more2ogarset['MC'][`getQuestProgressLabel`] && (this['questHUD'][`textContent`] = more2ogarset['MC'][`getQuestProgressLabel`]());
@@ -3124,18 +3124,18 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				};
 		}
 
-		function _0x24291c(ogarsettings, more2ogarset, moreogarset, _0x167e37, _0x12efde, _0x4ee245, _0x24c7a0, _0x2f0ea0, _0xa193a8, _0xbfbffb) {
-			this['id'] = ogarsettings, this['x'] = more2ogarset, this['y'] = moreogarset, this[`targetX`] = more2ogarset, this[`targetY`] = moreogarset, this[`color`] = _0x12efde, this[`oppColor`] = null, this['size'] = _0x167e37, this[`targetSize`] = _0x167e37, this[`alpha`] = 0x1, this['nick'] = '', this['targetNick'] = '', this[`nickCanvas`] = null, this[`mass`] = 0x0, this[`lastMass`] = 0x0, this[`kMass`] = 0x0, this['massCanvas'] = null, this['massTxt'] = '', this[`margin`] = 0x0, this['scale'] = 0x1, this['nickScale'] = 0x1, this[`massScale`] = 0x1, this[`virMassScale`] = 0x3, this[`strokeScale`] = 0x1, this[`fontSize`] = 0x1a, this['nickSize'] = 0x1a, this[`lastNickSize`] = 0x0, this[`massSize`] = 0x1a, this[`virMassSize`] = 0x1a, this[`nickStrokeSize`] = 0x3, this[`massStrokeSize`] = 0x3, this[`isFood`] = _0x4ee245, this[`isVirus`] = _0x24c7a0, this['isPlayerCell'] = _0x2f0ea0, this[`shortMass`] = _0xa193a8, this[`virMassShots`] = _0xbfbffb, this[`rescale`] = !0x1, this[`redrawNick`] = !0x0, this[`redrawMass`] = !0x0, this[`optimizedNames`] = !0x1, this[`optimizedMass`] = !0x1, this[`strokeNick`] = !0x1, this[`strokeMass`] = !0x1, this[`removed`] = !0x1, this[`redrawed`] = 0x0, this[`time`] = 0x0, this[`skin`] = null, this[`pi2`] = 0x2 * Math['PI'],
+		function _0x24291c(ogarsettings, more2ogarset, moreogarset, more3ogarset, more4ogarset, ogarbuffed, ogarlanguage, ogaractuallanguage, more5ogarset, ogario1Commands) {
+			this['id'] = ogarsettings, this['x'] = more2ogarset, this['y'] = moreogarset, this[`targetX`] = more2ogarset, this[`targetY`] = moreogarset, this[`color`] = more4ogarset, this[`oppColor`] = null, this['size'] = more3ogarset, this[`targetSize`] = more3ogarset, this[`alpha`] = 0x1, this['nick'] = '', this['targetNick'] = '', this[`nickCanvas`] = null, this[`mass`] = 0x0, this[`lastMass`] = 0x0, this[`kMass`] = 0x0, this['massCanvas'] = null, this['massTxt'] = '', this[`margin`] = 0x0, this['scale'] = 0x1, this['nickScale'] = 0x1, this[`massScale`] = 0x1, this[`virMassScale`] = 0x3, this[`strokeScale`] = 0x1, this[`fontSize`] = 0x1a, this['nickSize'] = 0x1a, this[`lastNickSize`] = 0x0, this[`massSize`] = 0x1a, this[`virMassSize`] = 0x1a, this[`nickStrokeSize`] = 0x3, this[`massStrokeSize`] = 0x3, this[`isFood`] = ogarbuffed, this[`isVirus`] = ogarlanguage, this['isPlayerCell'] = ogaractuallanguage, this[`shortMass`] = more5ogarset, this[`virMassShots`] = ogario1Commands, this[`rescale`] = !0x1, this[`redrawNick`] = !0x0, this[`redrawMass`] = !0x0, this[`optimizedNames`] = !0x1, this[`optimizedMass`] = !0x1, this[`strokeNick`] = !0x1, this[`strokeMass`] = !0x1, this[`removed`] = !0x1, this[`redrawed`] = 0x0, this[`time`] = 0x0, this[`skin`] = null, this[`pi2`] = 0x2 * Math['PI'],
 				this.virusColor = null,
 				this.virusStroke = null,
 				this.nHeight = 6,
-				this['update'] = function (ogarsettings, more2ogarset, more1ogarset, moreogarset, _0x167e37, _0x12efde) {
-					this['x'] = ogarsettings, this['y'] = more2ogarset, this[`isVirus`] = moreogarset, this[`isPlayerCell`] = _0x167e37, this['setMass'](more1ogarset), this[`setNick`](_0x12efde);
+				this['update'] = function (ogarsettings, more2ogarset, more1ogarset, moreogarset, more3ogarset, more4ogarset) {
+					this['x'] = ogarsettings, this['y'] = more2ogarset, this[`isVirus`] = moreogarset, this[`isPlayerCell`] = more3ogarset, this['setMass'](more1ogarset), this[`setNick`](more4ogarset);
 				}, this[`removeCell`] = function () {
 					this[`removed`] = !0x0;
-					var ogarsettings = doagarcommand[`cells`]['indexOf'](this); - 0x1 != ogarsettings ? (doagarcommand[`cells`][`splice`](ogarsettings, 0x1), more3ogarset[`virusesRange`] && -0x1 != (ogarsettings = doagarcommand[`viruses`][`indexOf`](this)) && doagarcommand[`viruses`][`splice`](ogarsettings, 0x1)) : -0x1 != (ogarsettings = doagarcommand[`food`][`indexOf`](this)) && doagarcommand[`food`]['splice'](ogarsettings, 0x1), -0x1 != (ogarsettings = doagarcommand[`playerCells`][`indexOf`](this)) && (doagarcommand['removePlayerCell'] = !0x0, doagarcommand[`playerCells`][`splice`](ogarsettings, 0x1), -0x1 != (ogarsettings = doagarcommand[`playerCellIDs`][`indexOf`](this['id'])) && doagarcommand[`playerCellIDs`]['splice'](ogarsettings, 0x1)), this[`redrawed`] && doagarcommand[`removedCells`][`push`](this), delete doagarcommand[`indexedCells`][this['id']];
+					var ogarsettings = doagarcommand[`cells`]['indexOf'](this); - 0x1 != ogarsettings ? (doagarcommand[`cells`][`splice`](ogarsettings, 0x1), ogario1Settings[`virusesRange`] && -0x1 != (ogarsettings = doagarcommand[`viruses`][`indexOf`](this)) && doagarcommand[`viruses`][`splice`](ogarsettings, 0x1)) : -0x1 != (ogarsettings = doagarcommand[`food`][`indexOf`](this)) && doagarcommand[`food`]['splice'](ogarsettings, 0x1), -0x1 != (ogarsettings = doagarcommand[`playerCells`][`indexOf`](this)) && (doagarcommand['removePlayerCell'] = !0x0, doagarcommand[`playerCells`][`splice`](ogarsettings, 0x1), -0x1 != (ogarsettings = doagarcommand[`playerCellIDs`][`indexOf`](this['id'])) && doagarcommand[`playerCellIDs`]['splice'](ogarsettings, 0x1)), this[`redrawed`] && doagarcommand[`removedCells`][`push`](this), delete doagarcommand[`indexedCells`][this['id']];
 				}, this[`moveCell`] = function () {
-					var ogarsettings = (doagarcommand[`time`] - this[`time`]) / more3ogarset[`animation`];
+					var ogarsettings = (doagarcommand[`time`] - this[`time`]) / ogario1Settings[`animation`];
 					if (ogarsettings = ogarsettings < 0x0 ? 0x0 : ogarsettings > 0x1 ? 0x1 : ogarsettings, this['x'] += (this[`targetX`] - this['x']) * ogarsettings, this['y'] += (this[`targetY`] - this['y']) * ogarsettings, this[`size`] += (this['targetSize'] - this[`size`]) * ogarsettings, this[`alpha`] = ogarsettings, this[`removed`]) {
 						if (0x1 == ogarsettings) {
 							var more2ogarset = doagarcommand[`removedCells`][`indexOf`](this); - 0x1 != more2ogarset && doagarcommand[`removedCells`][`splice`](more2ogarset, 0x1);
@@ -3144,24 +3144,24 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				}, this[`isInView`] = function () {
 					return !(this['id'] <= 0x0) && !(this['x'] + this[`size`] + 0x28 < doagarcommand[`viewX`] - doagarcommand[`canvasWidth`] / 0x2 / doagarcommand[`scale`] || this['y'] + this[`size`] + 0x28 < doagarcommand[`viewY`] - doagarcommand['canvasHeight'] / 0x2 / doagarcommand['scale'] || this['x'] - this[`size`] - 0x28 > doagarcommand[`viewX`] + doagarcommand[`canvasWidth`] / 0x2 / doagarcommand[`scale`] || this['y'] - this['size'] - 0x28 > doagarcommand['viewY'] + doagarcommand[`canvasHeight`] / 0x2 / doagarcommand[`scale`]);
 				}, this[`setMass`] = function (ogarsettings) {
-					return this[`size`] = ogarsettings, !(ogarsettings <= 0x28) && (this['massCanvas'] ? (this[`mass`] = ~~(ogarsettings * ogarsettings / 0x64), this[`redrawMass`] = !0x0, this[`isVirus`] ? (this[`virMassShots`] && this[`mass`] < 0xc8 && (this[`mass`] = ~~((0xc8 - this[`mass`]) / 0xe)), this[`massTxt`] = this[`mass`][`toString`](), this.mass > 220 ? (this.virusColor = ogarioJSONsettings.mVirusColor, this.virusStroke = ogarioJSONsettings.mVirusStrokeColor) : (this.virusColor = ogarioJSONsettings.virusColor, this.virusStroke = ogarioJSONsettings.virusStrokeColor), !0x0) : (this[`massTxt`] = this[`mass`][`toString`](), this['mass'] <= 0xc8 || (this[`shortMass`] && this['mass'] >= 0x3e8 ? (this[`kMass`] = Math[`round`](this[`mass`] / 0x64) / 0xa, this['massTxt'] = this[`kMass`] + 'k', !0x0) : (this[`optimizedMass`] && (this['redrawMass'] = Math[`abs`]((this[`mass`] - this[`lastMass`]) / this[`mass`]) >= 0.02 || this[`rescale`]), !0x0)))) : (this[`massCanvas`] = new _0x38b54b(), !0x1));
+					return this[`size`] = ogarsettings, !(ogarsettings <= 0x28) && (this['massCanvas'] ? (this[`mass`] = ~~(ogarsettings * ogarsettings / 0x64), this[`redrawMass`] = !0x0, this[`isVirus`] ? (this[`virMassShots`] && this[`mass`] < 0xc8 && (this[`mass`] = ~~((0xc8 - this[`mass`]) / 0xe)), this[`massTxt`] = this[`mass`][`toString`](), this.mass > 220 ? (this.virusColor = ogario1ThemeSettings.mVirusColor, this.virusStroke = ogario1ThemeSettings.mVirusStrokeColor) : (this.virusColor = ogario1ThemeSettings.virusColor, this.virusStroke = ogario1ThemeSettings.virusStrokeColor), !0x0) : (this[`massTxt`] = this[`mass`][`toString`](), this['mass'] <= 0xc8 || (this[`shortMass`] && this['mass'] >= 0x3e8 ? (this[`kMass`] = Math[`round`](this[`mass`] / 0x64) / 0xa, this['massTxt'] = this[`kMass`] + 'k', !0x0) : (this[`optimizedMass`] && (this['redrawMass'] = Math[`abs`]((this[`mass`] - this[`lastMass`]) / this[`mass`]) >= 0.02 || this[`rescale`]), !0x0)))) : (this[`massCanvas`] = new _0x38b54b(), !0x1));
 				}, this[`setNick`] = function (ogarsettings) {
 					return this[`nick`] = ogarsettings, !(!ogarsettings || this[`isVirus`]) && (!!this[`nickCanvas`] || (this[`nickCanvas`] = new _0x38b54b(), !0x1));
-				}, this['setScale'] = function (ogarsettings, more2ogarset, more1ogarset, moreogarset, _0x167e37) {
-					var _0x12efde = Math[`ceil`](0xa * ogarsettings) / 0xa;
-					this[`rescale`] = !0x1, this['scale'] != _0x12efde && (this[`scale`] = _0x12efde, this['rescale'] = !0x0), this[`nickScale`] = more2ogarset, this['massScale'] = more1ogarset, this[`virMassScale`] = moreogarset, this[`strokeScale`] = _0x167e37;
+				}, this['setScale'] = function (ogarsettings, more2ogarset, more1ogarset, moreogarset, more3ogarset) {
+					var more4ogarset = Math[`ceil`](0xa * ogarsettings) / 0xa;
+					this[`rescale`] = !0x1, this['scale'] != more4ogarset && (this[`scale`] = more4ogarset, this['rescale'] = !0x0), this[`nickScale`] = more2ogarset, this['massScale'] = more1ogarset, this[`virMassScale`] = moreogarset, this[`strokeScale`] = more3ogarset;
 				}, this[`setFontSize`] = function () {
 					this[`isVirus`] ? this[`massSize`] = Math[`ceil`](this[`virMassSize`] * this[`scale`] * this[`virMassScale`]) : (this[`fontSize`] = Math[`max`](0.3 * this['size'], 0x1a) * this[`scale`], this[`nickSize`] = ~~(this[`fontSize`] * this[`nickScale`]), this[`massSize`] = ~~(0.5 * this[`fontSize`] * this[`massScale`]), this[`optimizedNames`] ? this[`redrawNick`] = Math[`abs`]((this[`nickSize`] - this['lastNickSize']) / this['nickSize']) >= 0.3 || this['rescale'] : this[`redrawNick`] = !0x0);
 				}, this['setStrokeSize'] = function () {
 					this[`strokeNick`] && !this[`isVirus`] && (this[`nickStrokeSize`] = ~~(0.1 * this[`nickSize`] * this[`strokeScale`])), this[`strokeMass`] && (this[`massStrokeSize`] = ~~(0.1 * this[`massSize`] * this[`strokeScale`]));
 				}, this['setDrawing'] = function () {
-					this[`optimizedNames`] = more3ogarset[`optimizedNames`], this['optimizedMass'] = more3ogarset['optimizedMass'], this[`shortMass`] = more3ogarset['shortMass'], this[`virMassShots`] = more3ogarset[`virMassShots`], this['strokeNick'] = more3ogarset['namesStroke'], this[`strokeMass`] = more3ogarset[`massStroke`];
+					this[`optimizedNames`] = ogario1Settings[`optimizedNames`], this['optimizedMass'] = ogario1Settings['optimizedMass'], this[`shortMass`] = ogario1Settings['shortMass'], this[`virMassShots`] = ogario1Settings[`virMassShots`], this['strokeNick'] = ogario1Settings['namesStroke'], this[`strokeMass`] = ogario1Settings[`massStroke`];
 				}, this[`setDrawingScale`] = function () {
-					this[`setScale`](more1ogarset[`viewScale`], ogarioJSONsettings[`namesScale`], ogarioJSONsettings[`massScale`], ogarioJSONsettings[`virMassScale`], ogarioJSONsettings[`strokeScale`]), this[`setFontSize`](), this[`setStrokeSize`](), this[`margin`] = 0x0;
+					this[`setScale`](more1ogarset[`viewScale`], ogario1ThemeSettings[`namesScale`], ogario1ThemeSettings[`massScale`], ogario1ThemeSettings[`virMassScale`], ogario1ThemeSettings[`strokeScale`]), this[`setFontSize`](), this[`setStrokeSize`](), this[`margin`] = 0x0;
 				}, this['drawNick'] = function (mainCanvas) {
 					if (this['nick'] && this['nickCanvas'] && !this[`isVirus`]) {
 						var nickCanvas = this[`nickCanvas`];
-						nickCanvas[`setDrawing`](ogarioJSONsettings[`namesColor`], ogarioJSONsettings[`namesFontFamily`], ogarioJSONsettings[`namesFontWeight`], this[`strokeNick`], this[`nickStrokeSize`], ogarioJSONsettings[`namesStrokeColor`]), nickCanvas[`setTxt`](this['nick']), this[`redrawNick`] && (nickCanvas[`setFontSize`](this[`nickSize`]), this[`lastNickSize`] = this['nickSize']), nickCanvas[`setScale`](this[`scale`]);
+						nickCanvas[`setDrawing`](ogario1ThemeSettings[`namesColor`], ogario1ThemeSettings[`namesFontFamily`], ogario1ThemeSettings[`namesFontWeight`], this[`strokeNick`], this[`nickStrokeSize`], ogario1ThemeSettings[`namesStrokeColor`]), nickCanvas[`setTxt`](this['nick']), this[`redrawNick`] && (nickCanvas[`setFontSize`](this[`nickSize`]), this[`lastNickSize`] = this['nickSize']), nickCanvas[`setScale`](this[`scale`]);
 						const nickImg = nickCanvas.drawTxt(),
 							w = ~~(nickImg.width / this.scale),
 							h = ~~(nickImg.height / this.scale);
@@ -3173,7 +3173,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				}, this[`drawMass`] = function (mainCanvas) {
 					if (this[`massCanvas`] && !(this[`size`] <= 0x28)) {
 						var massCanvas = this[`massCanvas`];
-						massCanvas['setDrawing'](ogarioJSONsettings[`massColor`], ogarioJSONsettings['massFontFamily'], ogarioJSONsettings['massFontWeight'], this[`strokeMass`], this['massStrokeSize'], ogarioJSONsettings[`massStrokeColor`]), this['redrawMass'] && (massCanvas[`setTxt`](this[`massTxt`]), this[`lastMass`] = this[`mass`]), massCanvas[`setFontSize`](this[`massSize`]), massCanvas[`setScale`](this['scale']);
+						massCanvas['setDrawing'](ogario1ThemeSettings[`massColor`], ogario1ThemeSettings['massFontFamily'], ogario1ThemeSettings['massFontWeight'], this[`strokeMass`], this['massStrokeSize'], ogario1ThemeSettings[`massStrokeColor`]), this['redrawMass'] && (massCanvas[`setTxt`](this[`massTxt`]), this[`lastMass`] = this[`mass`]), massCanvas[`setFontSize`](this[`massSize`]), massCanvas[`setScale`](this['scale']);
 						let massImg = massCanvas.drawTxt(),
 							w = ~~(massImg.width / this.scale),
 							h = ~~(massImg.height / this.scale),
@@ -3202,19 +3202,19 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 						ogarsettings[`save`](), this['redrawed']++, more2ogarset && this[`moveCell`](), this['removed'] && (ogarsettings['globalAlpha'] *= 0x1 - this[`alpha`]);
 						var more1ogarset = ogarsettings[`globalAlpha`],
 							moreogarset = !0x1,
-							_0x167e37 = this[`isFood`] ? this[`size`] + ogarioJSONsettings[`foodSize`] : this[`size`];
-						if (ogarsettings[`beginPath`](), ogarsettings[`arc`](this['x'], this['y'], _0x167e37, 0x0, this[`pi2`], !0x1), ogarsettings[`closePath`](), this[`isFood`]) return ogarsettings[`fillStyle`] = this[`color`], ogarsettings[`fill`](), void ogarsettings[`restore`]();
+							more3ogarset = this[`isFood`] ? this[`size`] + ogario1ThemeSettings[`foodSize`] : this[`size`];
+						if (ogarsettings[`beginPath`](), ogarsettings[`arc`](this['x'], this['y'], more3ogarset, 0x0, this[`pi2`], !0x1), ogarsettings[`closePath`](), this[`isFood`]) return ogarsettings[`fillStyle`] = this[`color`], ogarsettings[`fill`](), void ogarsettings[`restore`]();
 						if (this[`isVirus`]) {
-							return more3ogarset[`transparentViruses`] && (ogarsettings[`globalAlpha`] *= ogarioJSONsettings[`virusAlpha`], moreogarset = !0x0), more3ogarset['virColors'] && doagarcommand[`play`] ? (ogarsettings['fillStyle'] = _0x1e0996[`setVirusColor`](_0x167e37), ogarsettings['strokeStyle'] = _0x1e0996[`setVirusStrokeColor`](_0x167e37)) : (ogarsettings['fillStyle'] = this.virusColor, ogarsettings[`strokeStyle`] = this.virusStroke), ogarsettings[`fill`](), moreogarset && (ogarsettings['globalAlpha'] = more1ogarset, moreogarset = !0x1), ogarsettings['lineWidth'] = ogarioJSONsettings[`virusStrokeSize`], ogarsettings[`stroke`](this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), more3ogarset['showMass'] && (this[`setDrawing`](), this[`setDrawingScale`](), this['setMass'](this['size']), this['drawMass'](ogarsettings)), void ogarsettings[`restore`]();
+							return ogario1Settings[`transparentViruses`] && (ogarsettings[`globalAlpha`] *= ogario1ThemeSettings[`virusAlpha`], moreogarset = !0x0), ogario1Settings['virColors'] && doagarcommand[`play`] ? (ogarsettings['fillStyle'] = _0x1e0996[`setVirusColor`](more3ogarset), ogarsettings['strokeStyle'] = _0x1e0996[`setVirusStrokeColor`](more3ogarset)) : (ogarsettings['fillStyle'] = this.virusColor, ogarsettings[`strokeStyle`] = this.virusStroke), ogarsettings[`fill`](), moreogarset && (ogarsettings['globalAlpha'] = more1ogarset, moreogarset = !0x1), ogarsettings['lineWidth'] = ogario1ThemeSettings[`virusStrokeSize`], ogarsettings[`stroke`](this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), ogario1Settings['showMass'] && (this[`setDrawing`](), this[`setDrawingScale`](), this['setMass'](this['size']), this['drawMass'](ogarsettings)), void ogarsettings[`restore`]();
 						}
-						more3ogarset[`transparentCells`] && (ogarsettings[`globalAlpha`] *= ogarioJSONsettings[`cellsAlpha`], moreogarset = !0x0);
-						var _0x12efde = this[`color`];
-						doagarcommand[`play`] && (this[`isPlayerCell`] ? more3ogarset[`myCustomColor`] && (_0x12efde = _0x37dab4[`color`]) : more3ogarset[`oppColors`] && !more3ogarset[`oppRings`] && (_0x12efde = this['oppColor'])), ogarsettings[`fillStyle`] = _0x12efde, ogarsettings[`fill`](), moreogarset && (ogarsettings['globalAlpha'] = more1ogarset, moreogarset = !0x1);
-						var _0x4ee245 = null;
-						if (more3ogarset['customSkins'] && doagarcommand['showCustomSkins'] && (_0x4ee245 = _0x1e0996['getCustomSkin'](this['targetNick'], this['color'])) && (((more3ogarset[`transparentSkins`] || doagarcommand[`play`] && more3ogarset[`oppColors`]) && (!this[`isPlayerCell`] || more3ogarset['myTransparentSkin']) || this['isPlayerCell'] && more3ogarset['myTransparentSkin']) && (ogarsettings[`globalAlpha`] *= ogarioJSONsettings[`skinsAlpha`], moreogarset = !0x0), ogarsettings[`drawImage`](_0x4ee245, this['x'] - _0x167e37, this['y'] - _0x167e37, 0x2 * _0x167e37, 0x2 * _0x167e37), moreogarset && (ogarsettings[`globalAlpha`] = more1ogarset, moreogarset = !0x1)), more3ogarset[`teammatesInd`] && !this[`isPlayerCell`] && _0x167e37 <= 0xc8 && (_0x4ee245 || _0x1e0996[`checkSkinsMap`](this[`targetNick`], this[`color`])) && _0x53e5f0[`drawTeammatesInd`](ogarsettings, this['x'], this['y'], _0x167e37), more3ogarset[`noNames`] && !more3ogarset[`showMass`] || more2ogarset) ogarsettings['restore']();
+						ogario1Settings[`transparentCells`] && (ogarsettings[`globalAlpha`] *= ogario1ThemeSettings[`cellsAlpha`], moreogarset = !0x0);
+						var more4ogarset = this[`color`];
+						doagarcommand[`play`] && (this[`isPlayerCell`] ? ogario1Settings[`myCustomColor`] && (more4ogarset = _0x37dab4[`color`]) : ogario1Settings[`oppColors`] && !ogario1Settings[`oppRings`] && (more4ogarset = this['oppColor'])), ogarsettings[`fillStyle`] = more4ogarset, ogarsettings[`fill`](), moreogarset && (ogarsettings['globalAlpha'] = more1ogarset, moreogarset = !0x1);
+						var ogarbuffed = null;
+						if (ogario1Settings['customSkins'] && doagarcommand['showCustomSkins'] && (ogarbuffed = _0x1e0996['getCustomSkin'](this['targetNick'], this['color'])) && (((ogario1Settings[`transparentSkins`] || doagarcommand[`play`] && ogario1Settings[`oppColors`]) && (!this[`isPlayerCell`] || ogario1Settings['myTransparentSkin']) || this['isPlayerCell'] && ogario1Settings['myTransparentSkin']) && (ogarsettings[`globalAlpha`] *= ogario1ThemeSettings[`skinsAlpha`], moreogarset = !0x0), ogarsettings[`drawImage`](ogarbuffed, this['x'] - more3ogarset, this['y'] - more3ogarset, 0x2 * more3ogarset, 0x2 * more3ogarset), moreogarset && (ogarsettings[`globalAlpha`] = more1ogarset, moreogarset = !0x1)), ogario1Settings[`teammatesInd`] && !this[`isPlayerCell`] && more3ogarset <= 0xc8 && (ogarbuffed || _0x1e0996[`checkSkinsMap`](this[`targetNick`], this[`color`])) && _0x53e5f0[`drawTeammatesInd`](ogarsettings, this['x'], this['y'], more3ogarset), ogario1Settings[`noNames`] && !ogario1Settings[`showMass`] || more2ogarset) ogarsettings['restore']();
 						else {
-							var _0x24c7a0 = !0x1;
-							!this[`isPlayerCell`] && (_0x24c7a0 = _0x1e0996[`setAutoHideCellInfo`](_0x167e37)) && more3ogarset[`autoHideNames`] && more3ogarset[`autoHideMass`] ? ogarsettings[`restore`]() : (this[`setDrawing`](), this['setDrawingScale'](), ogarsettings[`globalAlpha`] *= ogarioJSONsettings[`textAlpha`], more3ogarset['noNames'] || _0x24c7a0 && more3ogarset[`autoHideNames`] || this[`isPlayerCell`] && more3ogarset[`hideMyName`] || _0x4ee245 && more3ogarset[`hideTeammatesNames`] || this[`setNick`](this[`targetNick`]) && this[`drawNick`](ogarsettings), !more3ogarset[`showMass`] || _0x24c7a0 && more3ogarset[`autoHideMass`] || this[`isPlayerCell`] && more3ogarset[`hideMyMass`] || more3ogarset[`hideEnemiesMass`] && !this[`isPlayerCell`] && !this[`isVirus`] || this[`setMass`](this[`size`]) && this[`drawMass`](ogarsettings), ogarsettings[`restore`]());
+							var ogarlanguage = !0x1;
+							!this[`isPlayerCell`] && (ogarlanguage = _0x1e0996[`setAutoHideCellInfo`](more3ogarset)) && ogario1Settings[`autoHideNames`] && ogario1Settings[`autoHideMass`] ? ogarsettings[`restore`]() : (this[`setDrawing`](), this['setDrawingScale'](), ogarsettings[`globalAlpha`] *= ogario1ThemeSettings[`textAlpha`], ogario1Settings['noNames'] || ogarlanguage && ogario1Settings[`autoHideNames`] || this[`isPlayerCell`] && ogario1Settings[`hideMyName`] || ogarbuffed && ogario1Settings[`hideTeammatesNames`] || this[`setNick`](this[`targetNick`]) && this[`drawNick`](ogarsettings), !ogario1Settings[`showMass`] || ogarlanguage && ogario1Settings[`autoHideMass`] || this[`isPlayerCell`] && ogario1Settings[`hideMyMass`] || ogario1Settings[`hideEnemiesMass`] && !this[`isPlayerCell`] && !this[`isVirus`] || this[`setMass`](this[`size`]) && this[`drawMass`](ogarsettings), ogarsettings[`restore`]());
 						}
 					}
 				};
@@ -3402,11 +3402,11 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 			'sendAccessToken': function (ogarsettings, more2ogarset, more1ogarset) {
 				if (!this[`accessTokenSent`]) {
 					more1ogarset || (more1ogarset = 0x66);
-					for (var moreogarset = ogarsettings[`length`], _0x167e37 = this[`clientVersionString`]['length'], _0x12efde = [more1ogarset, 0x8, 0x1, 0x12, moreogarset + _0x167e37 + 0x17, 0x1, 0x8, 0xa, 0x52, moreogarset + _0x167e37 + 0x12, 0x1, 0x8, more2ogarset, 0x12, _0x167e37 + 0x8, 0x8, 0x5, 0x12, _0x167e37], _0x4ee245 = 0x0; _0x4ee245 < _0x167e37; _0x4ee245++) _0x12efde[`push`](this[`clientVersionString`]['charCodeAt'](_0x4ee245));
-					for (_0x12efde[`push`](0x18, 0x0, 0x20, 0x0, 0x1a, moreogarset + 0x3, 0x1, 0xa, moreogarset, 0x1), _0x4ee245 = 0x0; _0x4ee245 < moreogarset; _0x4ee245++) _0x12efde['push'](ogarsettings['charCodeAt'](_0x4ee245));
-					_0x12efde = new Uint8Array(_0x12efde);
-					var _0x24c7a0 = new DataView(_0x12efde[`buffer`]);
-					this[`sendMessage`](_0x24c7a0);
+					for (var moreogarset = ogarsettings[`length`], more3ogarset = this[`clientVersionString`]['length'], more4ogarset = [more1ogarset, 0x8, 0x1, 0x12, moreogarset + more3ogarset + 0x17, 0x1, 0x8, 0xa, 0x52, moreogarset + more3ogarset + 0x12, 0x1, 0x8, more2ogarset, 0x12, more3ogarset + 0x8, 0x8, 0x5, 0x12, more3ogarset], ogarbuffed = 0x0; ogarbuffed < more3ogarset; ogarbuffed++) more4ogarset[`push`](this[`clientVersionString`]['charCodeAt'](ogarbuffed));
+					for (more4ogarset[`push`](0x18, 0x0, 0x20, 0x0, 0x1a, moreogarset + 0x3, 0x1, 0xa, moreogarset, 0x1), ogarbuffed = 0x0; ogarbuffed < moreogarset; ogarbuffed++) more4ogarset['push'](ogarsettings['charCodeAt'](ogarbuffed));
+					more4ogarset = new Uint8Array(more4ogarset);
+					var ogarlanguage = new DataView(more4ogarset[`buffer`]);
+					this[`sendMessage`](ogarlanguage);
 				}
 			},
 			'sendFbToken': function (ogarsettings) {
@@ -3426,22 +3426,22 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 			},
 			'generateClientKey': function (ogarsettings, more2ogarset) {
 				if (!ogarsettings['length'] || !more2ogarset[`byteLength`]) return null;
-				for (var more1ogarset = null, moreogarset = 0x5bd1e995, _0x167e37 = ogarsettings[`match`](/(ws+:\/\/)([^:]*)(:\d+)/)[0x2], _0x12efde = _0x167e37[`length`] + more2ogarset['byteLength'], _0x4ee245 = new Uint8Array(_0x12efde), _0x24c7a0 = 0x0; _0x24c7a0 < _0x167e37[`length`]; _0x24c7a0++) _0x4ee245[_0x24c7a0] = _0x167e37[`charCodeAt`](_0x24c7a0);
-				_0x4ee245[`set`](more2ogarset, _0x167e37[`length`]);
-				for (var _0x2f0ea0 = new DataView(_0x4ee245[`buffer`]), _0xa193a8 = _0x12efde - 0x1, _0xbfbffb = 0x4 + (_0xa193a8 - 0x4 & -0x4) | 0x0, _0x3cdcf7 = 0xff ^ _0xa193a8, _0x1c2110 = 0x0; _0xa193a8 > 0x3;) more1ogarset = 0x0 | Math['imul'](_0x2f0ea0[`getInt32`](_0x1c2110, !0x0), moreogarset), _0x3cdcf7 = (0x0 | Math[`imul`](more1ogarset >>> 0x18 ^ more1ogarset, moreogarset)) ^ (0x0 | Math[`imul`](_0x3cdcf7, moreogarset)), _0xa193a8 -= 0x4, _0x1c2110 += 0x4;
-				switch (_0xa193a8) {
+				for (var more1ogarset = null, moreogarset = 0x5bd1e995, more3ogarset = ogarsettings[`match`](/(ws+:\/\/)([^:]*)(:\d+)/)[0x2], more4ogarset = more3ogarset[`length`] + more2ogarset['byteLength'], ogarbuffed = new Uint8Array(more4ogarset), ogarlanguage = 0x0; ogarlanguage < more3ogarset[`length`]; ogarlanguage++) ogarbuffed[ogarlanguage] = more3ogarset[`charCodeAt`](ogarlanguage);
+				ogarbuffed[`set`](more2ogarset, more3ogarset[`length`]);
+				for (var ogaractuallanguage = new DataView(ogarbuffed[`buffer`]), more5ogarset = more4ogarset - 0x1, ogario1Commands = 0x4 + (more5ogarset - 0x4 & -0x4) | 0x0, _0x3cdcf7 = 0xff ^ more5ogarset, _0x1c2110 = 0x0; more5ogarset > 0x3;) more1ogarset = 0x0 | Math['imul'](ogaractuallanguage[`getInt32`](_0x1c2110, !0x0), moreogarset), _0x3cdcf7 = (0x0 | Math[`imul`](more1ogarset >>> 0x18 ^ more1ogarset, moreogarset)) ^ (0x0 | Math[`imul`](_0x3cdcf7, moreogarset)), more5ogarset -= 0x4, _0x1c2110 += 0x4;
+				switch (more5ogarset) {
 					case 0x3:
-						_0x3cdcf7 = _0x4ee245[_0xbfbffb + 0x2] << 0x10 ^ _0x3cdcf7, _0x3cdcf7 = _0x4ee245[_0xbfbffb + 0x1] << 0x8 ^ _0x3cdcf7;
+						_0x3cdcf7 = ogarbuffed[ogario1Commands + 0x2] << 0x10 ^ _0x3cdcf7, _0x3cdcf7 = ogarbuffed[ogario1Commands + 0x1] << 0x8 ^ _0x3cdcf7;
 						break;
 					case 0x2:
-						_0x3cdcf7 = _0x4ee245[_0xbfbffb + 0x1] << 0x8 ^ _0x3cdcf7;
+						_0x3cdcf7 = ogarbuffed[ogario1Commands + 0x1] << 0x8 ^ _0x3cdcf7;
 						break;
 					case 0x1:
 						break;
 					default:
 						more1ogarset = _0x3cdcf7;
 				}
-				return more1ogarset != _0x3cdcf7 && (more1ogarset = 0x0 | Math[`imul`](_0x4ee245[_0xbfbffb] ^ _0x3cdcf7, moreogarset)), more1ogarset ^= _0x3cdcf7 = more1ogarset >>> 0xd, more1ogarset = 0x0 | Math[`imul`](more1ogarset, moreogarset), more1ogarset ^= _0x3cdcf7 = more1ogarset >>> 0xf, console[`log`]('[Legend mod Express] Generated client key:', more1ogarset), more1ogarset;
+				return more1ogarset != _0x3cdcf7 && (more1ogarset = 0x0 | Math[`imul`](ogarbuffed[ogario1Commands] ^ _0x3cdcf7, moreogarset)), more1ogarset ^= _0x3cdcf7 = more1ogarset >>> 0xd, more1ogarset = 0x0 | Math[`imul`](more1ogarset, moreogarset), more1ogarset ^= _0x3cdcf7 = more1ogarset >>> 0xf, console[`log`]('[Legend mod Express] Generated client key:', more1ogarset), more1ogarset;
 			},
 			'shiftKey': function (ogarsettings) {
 				return ogarsettings = 0x0 | Math['imul'](ogarsettings, 0x5bd1e995), ogarsettings = 0x6d00517 ^ (0x0 | Math[`imul`](ogarsettings >>> 0x18 ^ ogarsettings, 0x5bd1e995)), (ogarsettings = 0x0 | Math[`imul`](ogarsettings >>> 0xd ^ ogarsettings, 0x5bd1e995)) >>> 0xf ^ ogarsettings;
@@ -3454,9 +3454,9 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				return ogarsettings;
 			},
 			'decompressMessage': function (ogarsettings) {
-				var more2ogarset = new _0x167e37(ogarsettings['buffer']),
-					more1ogarset = new _0x167e37(more2ogarset[`readUInt32LE`](0x1));
-				return _0x12efde[`decodeBlock`](more2ogarset[`slice`](0x5), more1ogarset), more1ogarset;
+				var more2ogarset = new more3ogarset(ogarsettings['buffer']),
+					more1ogarset = new more3ogarset(more2ogarset[`readUInt32LE`](0x1));
+				return more4ogarset[`decodeBlock`](more2ogarset[`slice`](0x5), more1ogarset), more1ogarset;
 			},
 			'handleMessage': function (ogarsettings) {
 				var more1ogarset = function () {
@@ -3468,8 +3468,8 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 						return more2ogarset;
 					},
 					moreogarset = 0x0,
-					_0x167e37 = ogarsettings['getUint8'](moreogarset++);
-				switch (0x36 == _0x167e37 && (_0x167e37 = 0x35), _0x167e37) {
+					more3ogarset = ogarsettings['getUint8'](moreogarset++);
+				switch (0x36 == more3ogarset && (more3ogarset = 0x35), more3ogarset) {
 					case 0x5:
 						break;
 					case 0x11:
@@ -3483,9 +3483,9 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 						break;
 					case 0x32:
 						this[`pieChart`] = [];
-						var _0x12efde = ogarsettings[`getUint32`](moreogarset, !0x0);
+						var more4ogarset = ogarsettings[`getUint32`](moreogarset, !0x0);
 						moreogarset += 0x4;
-						for (var _0x4ee245 = 0x0; _0x4ee245 < _0x12efde; _0x4ee245++) this[`pieChart`][`push`](ogarsettings[`getFloat32`](moreogarset, !0x0)), moreogarset += 0x4;
+						for (var ogarbuffed = 0x0; ogarbuffed < more4ogarset; ogarbuffed++) this[`pieChart`][`push`](ogarsettings[`getFloat32`](moreogarset, !0x0)), moreogarset += 0x4;
 						_0x53e5f0[`drawPieChart`]();
 						break;
 					case 0x35:
@@ -3493,14 +3493,14 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 							ogarsettings[`getUint16`](moreogarset, !0x0);
 							moreogarset += 0x2;
 						}
-						for (var _0x24c7a0 = 0x0; moreogarset < ogarsettings[`byteLength`];) {
-							var _0x2f0ea0 = '',
-								_0xa193a8 = 0x0,
-								_0xbfbffb = !0x1;
-							_0x24c7a0++, 0x2 & (csssettings = ogarsettings['getUint8'](moreogarset++)) && (_0x2f0ea0 = more2ogarset[`decodeURIComponent`](escape(more1ogarset()))), 0x4 & csssettings && (_0xa193a8 = ogarsettings[`getUint32`](moreogarset, !0x0), moreogarset += 0x4), 0x8 & csssettings && (_0x2f0ea0 = this['playerNick'], _0xa193a8 = `isPlayer`, this[`playerPosition`] = _0x24c7a0), 0x10 & csssettings && (_0xbfbffb = !0x0), this[`leaderboard`][`push`]({
-								'nick': _0x2f0ea0,
-								'id': _0xa193a8,
-								'isFriend': _0xbfbffb
+						for (var ogarlanguage = 0x0; moreogarset < ogarsettings[`byteLength`];) {
+							var ogaractuallanguage = '',
+								more5ogarset = 0x0,
+								ogario1Commands = !0x1;
+							ogarlanguage++, 0x2 & (csssettings = ogarsettings['getUint8'](moreogarset++)) && (ogaractuallanguage = more2ogarset[`decodeURIComponent`](escape(more1ogarset()))), 0x4 & csssettings && (more5ogarset = ogarsettings[`getUint32`](moreogarset, !0x0), moreogarset += 0x4), 0x8 & csssettings && (ogaractuallanguage = this['playerNick'], more5ogarset = `isPlayer`, this[`playerPosition`] = ogarlanguage), 0x10 & csssettings && (ogario1Commands = !0x0), this[`leaderboard`][`push`]({
+								'nick': ogaractuallanguage,
+								'id': more5ogarset,
+								'isFriend': ogario1Commands
 							});
 						}
 						this[`handleLeaderboard`]();
@@ -3510,20 +3510,20 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					case 0x45:
 						var _0x3cdcf7 = ogarsettings[`getUint16`](moreogarset, !0x0);
 						moreogarset += 0x2, this['ghostCells'] = [];
-						for (_0x4ee245 = 0x0; _0x4ee245 < _0x3cdcf7; _0x4ee245++) {
+						for (ogarbuffed = 0x0; ogarbuffed < _0x3cdcf7; ogarbuffed++) {
 							var _0x1c2110 = ogarsettings[`getInt32`](moreogarset, !0x0);
 							moreogarset += 0x4;
 							var _0x21cdbf = ogarsettings[`getInt32`](moreogarset, !0x0);
 							moreogarset += 0x4;
 							var _0x5d2d90 = ogarsettings[`getUint32`](moreogarset, !0x0);
 							moreogarset += 0x5;
-							var ogarioJSONsettings = ~~Math['sqrt'](0x64 * _0x5d2d90);
+							var ogario1ThemeSettings = ~~Math['sqrt'](0x64 * _0x5d2d90);
 							this[`ghostCells`][`push`]({
 								'x': _0x1c2110,
 								'y': _0x21cdbf,
-								'size': ogarioJSONsettings,
+								'size': ogario1ThemeSettings,
 								'mass': _0x5d2d90,
-								'inView': this[`isInView`](_0x1c2110, _0x21cdbf, ogarioJSONsettings)
+								'inView': this[`isInView`](_0x1c2110, _0x21cdbf, ogario1ThemeSettings)
 							});
 						}
 						break;
@@ -3556,13 +3556,13 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 						break;
 					case 0xb4:
 						this[`battleRoyale`]['joined'] = !0x1, this[`battleRoyale`][`rank`] = [], this[`battleRoyale`]['playerRank'] = ogarsettings[`getUint32`](moreogarset, !0x0), moreogarset += 0x8;
-						var _0x2e5667 = ogarsettings[`getUint16`](moreogarset, !0x0);
+						var ogario1PlayerProfiles = ogarsettings[`getUint16`](moreogarset, !0x0);
 						moreogarset += 0x2;
-						for (_0x4ee245 = 0x0; _0x4ee245 < _0x2e5667; _0x4ee245++) {
+						for (ogarbuffed = 0x0; ogarbuffed < ogario1PlayerProfiles; ogarbuffed++) {
 							var _0x37dab4 = more2ogarset[`decodeURIComponent`](escape(more1ogarset())),
-								more3ogarset = ogarsettings[`getUint32`](moreogarset, !0x0);
+								ogario1Settings = ogarsettings[`getUint32`](moreogarset, !0x0);
 							moreogarset += 0x4, this[`battleRoyale`][`rank`]['push']({
-								'place': more3ogarset,
+								'place': ogario1Settings,
 								'name': _0x37dab4
 							});
 						}
@@ -3602,8 +3602,8 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					var moreogarset = '<span>';
 					'isPlayer' === this[`leaderboard`][more1ogarset]['id'] ? moreogarset = '<span class=\"me\">' : _0x37dab4['clanTag'][`length`] && 0x0 == this[`leaderboard`][more1ogarset][`nick`][`indexOf`](_0x37dab4[`clanTag`]) && (moreogarset = `<span class=\"teammate\">`), ogarsettings += moreogarset + (more1ogarset + 0x1) + '. ' + _0x1e0996[`escapeHTML`](this['leaderboard'][more1ogarset]['nick']) + `</span>`;
 				}
-				if (this[`playerPosition`] > 0xa && (ogarsettings += '<span class=\"me\">' + this[`playerPosition`] + '. ' + _0x1e0996[`escapeHTML`](this['playerNick']) + `</span>`), more3ogarset[`showLbData`])
-					for (var _0x167e37 = 0x0; _0x167e37 < this[`ghostCells`][`length`] && _0x167e37 != more1ogarset; _0x167e37++) more2ogarset += '<span class=\"lb-data\">', more2ogarset += `<span class=\"top5-mass-color\">[` + _0x1e0996[`shortMassFormat`](this['ghostCells'][_0x167e37][`mass`]) + `]</span>`, more2ogarset += `<span class=\"hud-main-color\">[` + _0x1e0996[`calculateMapSector`](this[`ghostCells`][_0x167e37]['x'], this[`ghostCells`][_0x167e37]['y']) + `]</span>`, more2ogarset += `</span>`;
+				if (this[`playerPosition`] > 0xa && (ogarsettings += '<span class=\"me\">' + this[`playerPosition`] + '. ' + _0x1e0996[`escapeHTML`](this['playerNick']) + `</span>`), ogario1Settings[`showLbData`])
+					for (var more3ogarset = 0x0; more3ogarset < this[`ghostCells`][`length`] && more3ogarset != more1ogarset; more3ogarset++) more2ogarset += '<span class=\"lb-data\">', more2ogarset += `<span class=\"top5-mass-color\">[` + _0x1e0996[`shortMassFormat`](this['ghostCells'][more3ogarset][`mass`]) + `]</span>`, more2ogarset += `<span class=\"hud-main-color\">[` + _0x1e0996[`calculateMapSector`](this[`ghostCells`][more3ogarset]['x'], this[`ghostCells`][more3ogarset]['y']) + `]</span>`, more2ogarset += `</span>`;
 				_0x1e0996[`displayLeaderboard`](ogarsettings, more2ogarset);
 			},
 			'flushCellsData': function () {
@@ -3614,8 +3614,8 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 			},
 			'isInView': function (ogarsettings, more2ogarset, more1ogarset) {
 				var moreogarset = this['canvasWidth'] / 0x2 / this[`scale`],
-					_0x167e37 = this[`canvasHeight`] / 0x2 / this[`scale`];
-				return !(ogarsettings + more1ogarset < this['viewX'] - moreogarset || more2ogarset + more1ogarset < this[`viewY`] - _0x167e37 || ogarsettings - more1ogarset > this[`viewX`] + moreogarset || more2ogarset - more1ogarset > this[`viewY`] + _0x167e37);
+					more3ogarset = this[`canvasHeight`] / 0x2 / this[`scale`];
+				return !(ogarsettings + more1ogarset < this['viewX'] - moreogarset || more2ogarset + more1ogarset < this[`viewY`] - more3ogarset || ogarsettings - more1ogarset > this[`viewX`] + moreogarset || more2ogarset - more1ogarset > this[`viewY`] + more3ogarset);
 			},
 			'updateCells': function (ogarsettings, more1ogarset) {
 				var moreogarset = function () {
@@ -3627,19 +3627,19 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					return more2ogarset;
 				};
 				this[`time`] = Date[`now`](), this[`removePlayerCell`] = !0x1;
-				var _0x167e37 = ogarsettings[`readUInt16LE`](more1ogarset);
+				var more3ogarset = ogarsettings[`readUInt16LE`](more1ogarset);
 				more1ogarset += 0x2;
-				for (var _0x12efde = 0x0; _0x12efde < _0x167e37; _0x12efde++) {
-					var _0x4ee245 = this[`indexedCells`][ogarsettings[`readUInt32LE`](more1ogarset)],
-						_0x24c7a0 = this['indexedCells'][ogarsettings['readUInt32LE'](more1ogarset + 0x4)];
-					more1ogarset += 0x8, _0x4ee245 && _0x24c7a0 && (_0x24c7a0[`targetX`] = _0x4ee245['x'], _0x24c7a0[`targetY`] = _0x4ee245['y'], _0x24c7a0[`targetSize`] = _0x24c7a0[`size`], _0x24c7a0[`time`] = this[`time`], _0x24c7a0[`removeCell`]());
+				for (var more4ogarset = 0x0; more4ogarset < more3ogarset; more4ogarset++) {
+					var ogarbuffed = this[`indexedCells`][ogarsettings[`readUInt32LE`](more1ogarset)],
+						ogarlanguage = this['indexedCells'][ogarsettings['readUInt32LE'](more1ogarset + 0x4)];
+					more1ogarset += 0x8, ogarbuffed && ogarlanguage && (ogarlanguage[`targetX`] = ogarbuffed['x'], ogarlanguage[`targetY`] = ogarbuffed['y'], ogarlanguage[`targetSize`] = ogarlanguage[`size`], ogarlanguage[`time`] = this[`time`], ogarlanguage[`removeCell`]());
 				}
-				for (_0x12efde = 0x0;;) {
-					var _0x2f0ea0 = ogarsettings[`readUInt32LE`](more1ogarset);
-					if (more1ogarset += 0x4, 0x0 == _0x2f0ea0) break;
-					var _0xa193a8 = ogarsettings[`readInt32LE`](more1ogarset);
+				for (more4ogarset = 0x0;;) {
+					var ogaractuallanguage = ogarsettings[`readUInt32LE`](more1ogarset);
+					if (more1ogarset += 0x4, 0x0 == ogaractuallanguage) break;
+					var more5ogarset = ogarsettings[`readInt32LE`](more1ogarset);
 					more1ogarset += 0x4;
-					var _0xbfbffb = ogarsettings[`readInt32LE`](more1ogarset);
+					var ogario1Commands = ogarsettings[`readInt32LE`](more1ogarset);
 					more1ogarset += 0x4;
 					var _0x3cdcf7 = ogarsettings[`readUInt16LE`](more1ogarset);
 					more1ogarset += 0x2;
@@ -3647,23 +3647,23 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 						_0x21cdbf = 0x0;
 					0x80 & _0x1c2110 && (_0x21cdbf = ogarsettings[`readUInt8`](more1ogarset++));
 					var _0x5d2d90 = null,
-						ogarioJSONsettings = null,
+						ogario1ThemeSettings = null,
 						csssettings = '';
 					if (0x2 & _0x1c2110) {
-						var _0x2e5667 = ogarsettings[`readUInt8`](more1ogarset++),
+						var ogario1PlayerProfiles = ogarsettings[`readUInt8`](more1ogarset++),
 							_0x37dab4 = ogarsettings[`readUInt8`](more1ogarset++),
 							_0x38b54b = ogarsettings[`readUInt8`](more1ogarset++);
-						_0x5d2d90 = this['rgb2Hex'](~~(0.9 * _0x2e5667), ~~(0.9 * _0x37dab4), ~~(0.9 * _0x38b54b));
+						_0x5d2d90 = this['rgb2Hex'](~~(0.9 * ogario1PlayerProfiles), ~~(0.9 * _0x37dab4), ~~(0.9 * _0x38b54b));
 					}
-					0x4 & _0x1c2110 && (ogarioJSONsettings = moreogarset()), 0x8 & _0x1c2110 && (csssettings = more2ogarset['decodeURIComponent'](escape(moreogarset())));
+					0x4 & _0x1c2110 && (ogario1ThemeSettings = moreogarset()), 0x8 & _0x1c2110 && (csssettings = more2ogarset['decodeURIComponent'](escape(moreogarset())));
 					var doagarcommand = 0x1 & _0x1c2110,
 						_0x509e5f = 0x1 & _0x21cdbf,
 						_0x9f8327 = null;
-					this['indexedCells'][`hasOwnProperty`](_0x2f0ea0) ? (_0x9f8327 = this[`indexedCells`][_0x2f0ea0], _0x5d2d90 && (_0x9f8327[`color`] = _0x5d2d90)) : ((_0x9f8327 = new _0x24291c(_0x2f0ea0, _0xa193a8, _0xbfbffb, _0x3cdcf7, _0x5d2d90, _0x509e5f, doagarcommand, !0x1, more3ogarset[`shortMass`], more3ogarset[`virMassShots`]))[`time`] = this[`time`], _0x509e5f ? this['food'][`push`](_0x9f8327) : (doagarcommand && more3ogarset[`virusesRange`] && this[`viruses`][`push`](_0x9f8327), this[`cells`][`push`](_0x9f8327), -0x1 != this['playerCellIDs']['indexOf'](_0x2f0ea0) && -0x1 == this[`playerCells`][`indexOf`](_0x9f8327) && (_0x9f8327[`isPlayerCell`] = !0x0, this[`playerColor`] = _0x5d2d90, this[`playerCells`]['push'](_0x9f8327))), this['indexedCells'][_0x2f0ea0] = _0x9f8327), _0x9f8327[`isPlayerCell`] && (csssettings = this['playerNick']), csssettings && (_0x9f8327[`targetNick`] = csssettings), _0x9f8327[`targetX`] = _0xa193a8, _0x9f8327[`targetY`] = _0xbfbffb, _0x9f8327[`targetSize`] = _0x3cdcf7, _0x9f8327[`isFood`] = _0x509e5f, _0x9f8327[`isVirus`] = doagarcommand, ogarioJSONsettings && (_0x9f8327[`skin`] = ogarioJSONsettings), 0x4 & _0x21cdbf && (ogarsettings[`readUInt32LE`](more1ogarset), more1ogarset += 0x4);
+					this['indexedCells'][`hasOwnProperty`](ogaractuallanguage) ? (_0x9f8327 = this[`indexedCells`][ogaractuallanguage], _0x5d2d90 && (_0x9f8327[`color`] = _0x5d2d90)) : ((_0x9f8327 = new _0x24291c(ogaractuallanguage, more5ogarset, ogario1Commands, _0x3cdcf7, _0x5d2d90, _0x509e5f, doagarcommand, !0x1, ogario1Settings[`shortMass`], ogario1Settings[`virMassShots`]))[`time`] = this[`time`], _0x509e5f ? this['food'][`push`](_0x9f8327) : (doagarcommand && ogario1Settings[`virusesRange`] && this[`viruses`][`push`](_0x9f8327), this[`cells`][`push`](_0x9f8327), -0x1 != this['playerCellIDs']['indexOf'](ogaractuallanguage) && -0x1 == this[`playerCells`][`indexOf`](_0x9f8327) && (_0x9f8327[`isPlayerCell`] = !0x0, this[`playerColor`] = _0x5d2d90, this[`playerCells`]['push'](_0x9f8327))), this['indexedCells'][ogaractuallanguage] = _0x9f8327), _0x9f8327[`isPlayerCell`] && (csssettings = this['playerNick']), csssettings && (_0x9f8327[`targetNick`] = csssettings), _0x9f8327[`targetX`] = more5ogarset, _0x9f8327[`targetY`] = ogario1Commands, _0x9f8327[`targetSize`] = _0x3cdcf7, _0x9f8327[`isFood`] = _0x509e5f, _0x9f8327[`isVirus`] = doagarcommand, ogario1ThemeSettings && (_0x9f8327[`skin`] = ogario1ThemeSettings), 0x4 & _0x21cdbf && (ogarsettings[`readUInt32LE`](more1ogarset), more1ogarset += 0x4);
 				}
-				for (_0x167e37 = ogarsettings[`readUInt16LE`](more1ogarset), more1ogarset += 0x2, _0x12efde = 0x0; _0x12efde < _0x167e37; _0x12efde++) {
-					_0x2f0ea0 = ogarsettings[`readUInt32LE`](more1ogarset);
-					more1ogarset += 0x4, (_0x9f8327 = this[`indexedCells`][_0x2f0ea0]) && _0x9f8327[`removeCell`]();
+				for (more3ogarset = ogarsettings[`readUInt16LE`](more1ogarset), more1ogarset += 0x2, more4ogarset = 0x0; more4ogarset < more3ogarset; more4ogarset++) {
+					ogaractuallanguage = ogarsettings[`readUInt32LE`](more1ogarset);
+					more1ogarset += 0x4, (_0x9f8327 = this[`indexedCells`][ogaractuallanguage]) && _0x9f8327[`removeCell`]();
 				}
 				this['removePlayerCell'] && !this[`playerCells`][`length`] && (this[`play`] = !0x1, _0x1e0996[`onPlayerDeath`](), _0x1e0996[`showMenu`](0x12c));
 			},
@@ -3680,41 +3680,41 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				});
 			},
 			'calculatePlayerMassAndPosition': function () {
-				for (var ogarsettings = 0x0, more2ogarset = 0x0, more1ogarset = 0x0, moreogarset = 0x0, _0x167e37 = this[`playerCells`][`length`], _0x12efde = 0x0; _0x12efde < _0x167e37; _0x12efde++) {
-					var _0x4ee245 = this[`playerCells`][_0x12efde];
-					ogarsettings += _0x4ee245[`size`], more2ogarset += _0x4ee245[`targetSize`] * _0x4ee245[`targetSize`], more1ogarset += _0x4ee245['x'] / _0x167e37, moreogarset += _0x4ee245['y'] / _0x167e37;
+				for (var ogarsettings = 0x0, more2ogarset = 0x0, more1ogarset = 0x0, moreogarset = 0x0, more3ogarset = this[`playerCells`][`length`], more4ogarset = 0x0; more4ogarset < more3ogarset; more4ogarset++) {
+					var ogarbuffed = this[`playerCells`][more4ogarset];
+					ogarsettings += ogarbuffed[`size`], more2ogarset += ogarbuffed[`targetSize`] * ogarbuffed[`targetSize`], more1ogarset += ogarbuffed['x'] / more3ogarset, moreogarset += ogarbuffed['y'] / more3ogarset;
 				}
 				this['viewX'] = more1ogarset, this[`viewY`] = moreogarset, this[`playerSize`] = ogarsettings, this[`playerMass`] = ~~(more2ogarset / 0x64), this[`recalculatePlayerMass`]();
 			},
 			'recalculatePlayerMass': function () {
-				if (this[`playerScore`] = Math['max'](this[`playerScore`], this['playerMass']), more3ogarset[`virColors`] || more3ogarset[`splitRange`] || more3ogarset[`oppColors`] || more3ogarset['oppRings'] || more3ogarset[`showStatsSTE`]) {
+				if (this[`playerScore`] = Math['max'](this[`playerScore`], this['playerMass']), ogario1Settings[`virColors`] || ogario1Settings[`splitRange`] || ogario1Settings[`oppColors`] || ogario1Settings['oppRings'] || ogario1Settings[`showStatsSTE`]) {
 					var ogarsettings = this['playerCells'],
 						more2ogarset = ogarsettings[`length`];
 					ogarsettings[`sort`](function (ogarsettings, more2ogarset) {
 						return ogarsettings['size'] == more2ogarset[`size`] ? ogarsettings['id'] - more2ogarset['id'] : ogarsettings[`size`] - more2ogarset[`size`];
 					}), this['playerMinMass'] = ~~(ogarsettings[0x0][`size`] * ogarsettings[0x0][`size`] / 0x64), this['playerMaxMass'] = ~~(ogarsettings[more2ogarset - 0x1][`size`] * ogarsettings[more2ogarset - 0x1][`size`] / 0x64), this[`playerSplitCells`] = more2ogarset;
 				}
-				if (more3ogarset[`showStatsSTE`]) {
+				if (ogario1Settings[`showStatsSTE`]) {
 					var more1ogarset = this[`selectBiggestCell`] ? this[`playerMaxMass`] : this[`playerMinMass`];
 					this['STE'] = more1ogarset > 0x23 ? ~~(more1ogarset * (more1ogarset < 0x3e8 ? 0.35 : 0.38)) : null;
 				}
 			},
 			'compareCells': function () {
-				if (this[`play`] && (more3ogarset[`oppColors`] || more3ogarset[`oppRings`] || more3ogarset[`splitRange`])) {
-					(more3ogarset[`oppRings`] || more3ogarset[`splitRange`]) && (this[`biggerSTECellsCache`] = [], this[`biggerCellsCache`] = [], this['smallerCellsCache'] = [], this[`STECellsCache`] = []);
+				if (this[`play`] && (ogario1Settings[`oppColors`] || ogario1Settings[`oppRings`] || ogario1Settings[`splitRange`])) {
+					(ogario1Settings[`oppRings`] || ogario1Settings[`splitRange`]) && (this[`biggerSTECellsCache`] = [], this[`biggerCellsCache`] = [], this['smallerCellsCache'] = [], this[`STECellsCache`] = []);
 					for (var ogarsettings = 0x0; ogarsettings < this['cells'][`length`]; ogarsettings++) {
 						var more2ogarset = this[`cells`][ogarsettings];
 						if (!more2ogarset[`isVirus`]) {
 							var more1ogarset = ~~(more2ogarset[`size`] * more2ogarset[`size`] / 0x64),
 								moreogarset = this[`selectBiggestCell`] ? this[`playerMaxMass`] : this[`playerMinMass`],
-								_0x167e37 = more1ogarset / moreogarset,
-								_0x12efde = moreogarset < 0x3e8 ? 0.35 : 0.38;
-							more3ogarset[`oppColors`] && !more3ogarset[`oppRings`] && (more2ogarset['oppColor'] = this['setCellOppColor'](more2ogarset[`isPlayerCell`], _0x167e37, _0x12efde)), more2ogarset[`isPlayerCell`] || !more3ogarset[`splitRange`] && !more3ogarset[`oppRings`] || this[`cacheCells`](more2ogarset['x'], more2ogarset['y'], more2ogarset[`size`], _0x167e37, _0x12efde);
+								more3ogarset = more1ogarset / moreogarset,
+								more4ogarset = moreogarset < 0x3e8 ? 0.35 : 0.38;
+							ogario1Settings[`oppColors`] && !ogario1Settings[`oppRings`] && (more2ogarset['oppColor'] = this['setCellOppColor'](more2ogarset[`isPlayerCell`], more3ogarset, more4ogarset)), more2ogarset[`isPlayerCell`] || !ogario1Settings[`splitRange`] && !ogario1Settings[`oppRings`] || this[`cacheCells`](more2ogarset['x'], more2ogarset['y'], more2ogarset[`size`], more3ogarset, more4ogarset);
 						}
 					}
 				}
 			},
-			'cacheCells': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, _0x167e37) {
+			'cacheCells': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, more3ogarset) {
 				return moreogarset >= 2.5 ? void this[`biggerSTECellsCache`][`push`]({
 					'x': ogarsettings,
 					'y': more2ogarset,
@@ -3723,7 +3723,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'x': ogarsettings,
 					'y': more2ogarset,
 					'size': more1ogarset
-				}) : moreogarset < 1.25 && moreogarset > 0.75 ? void 0x0 : moreogarset > _0x167e37 ? void this[`smallerCellsCache`][`push`]({
+				}) : moreogarset < 1.25 && moreogarset > 0.75 ? void 0x0 : moreogarset > more3ogarset ? void this[`smallerCellsCache`][`push`]({
 					'x': ogarsettings,
 					'y': more2ogarset,
 					'size': more1ogarset
@@ -3740,7 +3740,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				this[`cursorX`] = (this[`clientX`] - this[`canvasWidth`] / 0x2) / this[`viewScale`] + this[`viewX`], this[`cursorY`] = (this[`clientY`] - this['canvasHeight'] / 0x2) / this[`viewScale`] + this[`viewY`];
 			},
 			'setZoom': function (ogarsettings) {
-				ogarsettings[`preventDefault`](), this[`zoomValue`] *= Math[`pow`](more3ogarset[`zoomSpeedValue`], ogarsettings['wheelDelta'] / -0x78 || ogarsettings[`detail`] || 0x0), this[`zoomValue`] > 0x4 / this[`viewScale`] && (this[`zoomValue`] = 0x4 / this[`viewScale`]);
+				ogarsettings[`preventDefault`](), this[`zoomValue`] *= Math[`pow`](ogario1Settings[`zoomSpeedValue`], ogarsettings['wheelDelta'] / -0x78 || ogarsettings[`detail`] || 0x0), this[`zoomValue`] > 0x4 / this[`viewScale`] && (this[`zoomValue`] = 0x4 / this[`viewScale`]);
 			},
 			'setTargetPosition': function (ogarsettings, more2ogarset) {
 				this[`targetX`] = ogarsettings - this[`mapOffsetX`], this[`targetY`] = more2ogarset - this[`mapOffsetY`], this[`targetDistance`] = Math[`round`](Math['sqrt'](Math[`pow`](this[`playerX`] - this[`targetX`], 0x2) + Math[`pow`](this[`playerY`] - this['targetY'], 0x2)));
@@ -3823,113 +3823,113 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				},
 				'renderFrame': function () {
 					for (doagarcommand[`time`] = Date[`now`](), more2ogarset = 0x0; more2ogarset < doagarcommand['cells'][`length`]; more2ogarset++) doagarcommand[`cells`][more2ogarset][`moveCell`]();
-					if (this[`setView`](), doagarcommand[`getCursorPosition`](), doagarcommand[`sortCells`](), doagarcommand[`compareCells`](), this[`ctx`][`clearRect`](0x0, 0x0, this[`canvasWidth`], this[`canvasHeight`]), more3ogarset[`showGrid`] && this[`drawGrid`](this[`ctx`], this[`canvasWidth`], this[`canvasHeight`], this[`scale`], this[`camX`], this[`camY`]), this['ctx'][`save`](), this[`ctx`][`translate`](this[`canvasWidth`] / 0x2, this[`canvasHeight`] / 0x2), this[`ctx`][`scale`](this[`scale`], this[`scale`]), this['ctx']['translate'](-this[`camX`], -this[`camY`]), more3ogarset[`showBgSectors`] && this[`drawSectors`](this['ctx'], doagarcommand[`mapOffsetFixed`], ogarioJSONsettings[`sectorsX`], ogarioJSONsettings[`sectorsY`], doagarcommand[`mapMinX`], doagarcommand[`mapMinY`], doagarcommand[`mapMaxX`], doagarcommand['mapMaxY'], ogarioJSONsettings[`gridColor`], ogarioJSONsettings[`sectorsColor`], ogarioJSONsettings[`sectorsWidth`], !0x0), `:battleroyale` === doagarcommand[`gameMode`] && this[`drawBattleArea`](this[`ctx`]), more3ogarset['showMapBorders']) {
-						var ogarsettings = ogarioJSONsettings['bordersWidth'] / 0x2;
-						this[`drawMapBorders`](this[`ctx`], doagarcommand[`mapOffsetFixed`], doagarcommand[`mapMinX`] - ogarsettings, doagarcommand[`mapMinY`] - ogarsettings, doagarcommand[`mapMaxX`] + ogarsettings, doagarcommand[`mapMaxY`] + ogarsettings, ogarioJSONsettings[`bordersColor`], ogarioJSONsettings['bordersWidth']);
+					if (this[`setView`](), doagarcommand[`getCursorPosition`](), doagarcommand[`sortCells`](), doagarcommand[`compareCells`](), this[`ctx`][`clearRect`](0x0, 0x0, this[`canvasWidth`], this[`canvasHeight`]), ogario1Settings[`showGrid`] && this[`drawGrid`](this[`ctx`], this[`canvasWidth`], this[`canvasHeight`], this[`scale`], this[`camX`], this[`camY`]), this['ctx'][`save`](), this[`ctx`][`translate`](this[`canvasWidth`] / 0x2, this[`canvasHeight`] / 0x2), this[`ctx`][`scale`](this[`scale`], this[`scale`]), this['ctx']['translate'](-this[`camX`], -this[`camY`]), ogario1Settings[`showBgSectors`] && this[`drawSectors`](this['ctx'], doagarcommand[`mapOffsetFixed`], ogario1ThemeSettings[`sectorsX`], ogario1ThemeSettings[`sectorsY`], doagarcommand[`mapMinX`], doagarcommand[`mapMinY`], doagarcommand[`mapMaxX`], doagarcommand['mapMaxY'], ogario1ThemeSettings[`gridColor`], ogario1ThemeSettings[`sectorsColor`], ogario1ThemeSettings[`sectorsWidth`], !0x0), `:battleroyale` === doagarcommand[`gameMode`] && this[`drawBattleArea`](this[`ctx`]), ogario1Settings['showMapBorders']) {
+						var ogarsettings = ogario1ThemeSettings['bordersWidth'] / 0x2;
+						this[`drawMapBorders`](this[`ctx`], doagarcommand[`mapOffsetFixed`], doagarcommand[`mapMinX`] - ogarsettings, doagarcommand[`mapMinY`] - ogarsettings, doagarcommand[`mapMaxX`] + ogarsettings, doagarcommand[`mapMaxY`] + ogarsettings, ogario1ThemeSettings[`bordersColor`], ogario1ThemeSettings['bordersWidth']);
 					}
-					more3ogarset['virusesRange'] && this[`drawVirusesRange`](this[`ctx`], doagarcommand[`viruses`]), this[`drawFood`](), doagarcommand[`play`] && (more3ogarset[`splitRange`] && this[`drawSplitRange`](this[`ctx`], doagarcommand[`biggerSTECellsCache`], doagarcommand[`playerCells`], doagarcommand['selectBiggestCell']), more3ogarset[`oppRings`] && this['drawOppRings'](this[`ctx`], this[`scale`], doagarcommand[`biggerSTECellsCache`], doagarcommand[`biggerCellsCache`], doagarcommand[`smallerCellsCache`], doagarcommand[`STECellsCache`]), more3ogarset['cursorTracking'] && this[`drawCursorTracking`](this[`ctx`], doagarcommand['playerCells'], doagarcommand[`cursorX`], doagarcommand['cursorY'])), this[`drawGhostCells`]();
+					ogario1Settings['virusesRange'] && this[`drawVirusesRange`](this[`ctx`], doagarcommand[`viruses`]), this[`drawFood`](), doagarcommand[`play`] && (ogario1Settings[`splitRange`] && this[`drawSplitRange`](this[`ctx`], doagarcommand[`biggerSTECellsCache`], doagarcommand[`playerCells`], doagarcommand['selectBiggestCell']), ogario1Settings[`oppRings`] && this['drawOppRings'](this[`ctx`], this[`scale`], doagarcommand[`biggerSTECellsCache`], doagarcommand[`biggerCellsCache`], doagarcommand[`smallerCellsCache`], doagarcommand[`STECellsCache`]), ogario1Settings['cursorTracking'] && this[`drawCursorTracking`](this[`ctx`], doagarcommand['playerCells'], doagarcommand[`cursorX`], doagarcommand['cursorY'])), this[`drawGhostCells`]();
 					for (var more2ogarset = 0x0; more2ogarset < doagarcommand[`removedCells`][`length`]; more2ogarset++) doagarcommand[`removedCells`][more2ogarset]['draw'](this['ctx'], !0x0);
 					for (more2ogarset = 0x0; more2ogarset < doagarcommand[`cells`][`length`]; more2ogarset++) doagarcommand[`cells`][more2ogarset][`draw`](this['ctx']);
 					this[`ctx`][`restore`](), ':teams' === doagarcommand[`gameMode`] && this['pieChart'] && this[`pieChart`][`width`] && this['ctx'][`drawImage`](this[`pieChart`], this[`canvasWidth`] - this[`pieChart`][`width`] - 0xa, 0xa);
 				},
-				'drawGrid': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, _0x167e37, _0x12efde) {
-					var _0x4ee245 = more2ogarset / moreogarset,
-						_0x24c7a0 = more1ogarset / moreogarset,
-						_0x2f0ea0 = (_0x4ee245 / 0x2 - _0x167e37) % 0x32,
-						_0xa193a8 = (_0x24c7a0 / 0x2 - _0x12efde) % 0x32;
-					for (ogarsettings[`strokeStyle`] = ogarioJSONsettings[`gridColor`], ogarsettings[`globalAlpha`] = 0x1 * moreogarset, ogarsettings[`beginPath`](); _0x2f0ea0 < _0x4ee245; _0x2f0ea0 += 0x32) ogarsettings[`moveTo`](_0x2f0ea0 * moreogarset - 0.5, 0x0), ogarsettings[`lineTo`](_0x2f0ea0 * moreogarset - 0.5, _0x24c7a0 * moreogarset);
-					for (; _0xa193a8 < _0x24c7a0; _0xa193a8 += 0x32) ogarsettings[`moveTo`](0x0, _0xa193a8 * moreogarset - 0.5), ogarsettings[`lineTo`](_0x4ee245 * moreogarset, _0xa193a8 * moreogarset - 0.5);
+				'drawGrid': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, more3ogarset, more4ogarset) {
+					var ogarbuffed = more2ogarset / moreogarset,
+						ogarlanguage = more1ogarset / moreogarset,
+						ogaractuallanguage = (ogarbuffed / 0x2 - more3ogarset) % 0x32,
+						more5ogarset = (ogarlanguage / 0x2 - more4ogarset) % 0x32;
+					for (ogarsettings[`strokeStyle`] = ogario1ThemeSettings[`gridColor`], ogarsettings[`globalAlpha`] = 0x1 * moreogarset, ogarsettings[`beginPath`](); ogaractuallanguage < ogarbuffed; ogaractuallanguage += 0x32) ogarsettings[`moveTo`](ogaractuallanguage * moreogarset - 0.5, 0x0), ogarsettings[`lineTo`](ogaractuallanguage * moreogarset - 0.5, ogarlanguage * moreogarset);
+					for (; more5ogarset < ogarlanguage; more5ogarset += 0x32) ogarsettings[`moveTo`](0x0, more5ogarset * moreogarset - 0.5), ogarsettings[`lineTo`](ogarbuffed * moreogarset, more5ogarset * moreogarset - 0.5);
 					ogarsettings['stroke'](), ogarsettings['globalAlpha'] = 0x1;
 				},
-				'drawSectors': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, _0x167e37, _0x12efde, _0x4ee245, _0x24c7a0, _0x2f0ea0, _0xa193a8, _0xbfbffb, _0x3cdcf7) {
+				'drawSectors': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, more3ogarset, more4ogarset, ogarbuffed, ogarlanguage, ogaractuallanguage, more5ogarset, ogario1Commands, _0x3cdcf7) {
 					if (more2ogarset || !_0x3cdcf7) {
-						var _0x1c2110 = ~~((_0x4ee245 - _0x167e37) / more1ogarset),
-							_0x21cdbf = ~~((_0x24c7a0 - _0x12efde) / moreogarset),
+						var _0x1c2110 = ~~((ogarbuffed - more3ogarset) / more1ogarset),
+							_0x21cdbf = ~~((ogarlanguage - more4ogarset) / moreogarset),
 							_0x5d2d90 = 0x0,
 							csssettings = 0x0;
-						if (ogarsettings[`strokeStyle`] = _0x2f0ea0, ogarsettings[`fillStyle`] = _0xa193a8, ogarsettings[`lineWidth`] = _0xbfbffb, _0x3cdcf7 || !_0x3cdcf7 && more3ogarset[`showMiniMapGrid`]) {
+						if (ogarsettings[`strokeStyle`] = ogaractuallanguage, ogarsettings[`fillStyle`] = more5ogarset, ogarsettings[`lineWidth`] = ogario1Commands, _0x3cdcf7 || !_0x3cdcf7 && ogario1Settings[`showMiniMapGrid`]) {
 							ogarsettings[`beginPath`]();
-							for (var _0x2e5667 = 0x0; _0x2e5667 < more1ogarset + 0x1; _0x2e5667++) _0x5d2d90 = _0x167e37 + _0x1c2110 * _0x2e5667, ogarsettings[`moveTo`](_0x2e5667 == more1ogarset ? _0x4ee245 : _0x5d2d90, _0x12efde), ogarsettings['lineTo'](_0x2e5667 == more1ogarset ? _0x4ee245 : _0x5d2d90, _0x24c7a0);
-							for (_0x2e5667 = 0x0; _0x2e5667 < moreogarset + 0x1; _0x2e5667++) csssettings = _0x12efde + _0x21cdbf * _0x2e5667, ogarsettings[`moveTo`](_0x167e37 - _0xbfbffb / 0x2, _0x2e5667 == moreogarset ? _0x24c7a0 : csssettings), ogarsettings[`lineTo`](_0x4ee245 + _0xbfbffb / 0x2, _0x2e5667 == moreogarset ? _0x24c7a0 : csssettings);
+							for (var ogario1PlayerProfiles = 0x0; ogario1PlayerProfiles < more1ogarset + 0x1; ogario1PlayerProfiles++) _0x5d2d90 = more3ogarset + _0x1c2110 * ogario1PlayerProfiles, ogarsettings[`moveTo`](ogario1PlayerProfiles == more1ogarset ? ogarbuffed : _0x5d2d90, more4ogarset), ogarsettings['lineTo'](ogario1PlayerProfiles == more1ogarset ? ogarbuffed : _0x5d2d90, ogarlanguage);
+							for (ogario1PlayerProfiles = 0x0; ogario1PlayerProfiles < moreogarset + 0x1; ogario1PlayerProfiles++) csssettings = more4ogarset + _0x21cdbf * ogario1PlayerProfiles, ogarsettings[`moveTo`](more3ogarset - ogario1Commands / 0x2, ogario1PlayerProfiles == moreogarset ? ogarlanguage : csssettings), ogarsettings[`lineTo`](ogarbuffed + ogario1Commands / 0x2, ogario1PlayerProfiles == moreogarset ? ogarlanguage : csssettings);
 							ogarsettings[`stroke`]();
-						} else this[`drawMapBorders`](ogarsettings, more2ogarset, _0x167e37, _0x12efde, _0x4ee245, _0x24c7a0, _0x2f0ea0, _0xbfbffb);
-						ogarsettings['font'] = _0x3cdcf7 ? ogarioJSONsettings['sectorsFontWeight'] + ' ' + ogarioJSONsettings[`sectorsFontSize`] + `px ` + ogarioJSONsettings['sectorsFontFamily'] : ogarioJSONsettings[`miniMapFontWeight`] + ' ' + ~~(0.4 * _0x21cdbf) + `px ` + ogarioJSONsettings['miniMapFontFamily'], ogarsettings[`textAlign`] = `center`, ogarsettings['textBaseline'] = 'middle';
-						for (_0x2e5667 = 0x0; _0x2e5667 < moreogarset; _0x2e5667++)
+						} else this[`drawMapBorders`](ogarsettings, more2ogarset, more3ogarset, more4ogarset, ogarbuffed, ogarlanguage, ogaractuallanguage, ogario1Commands);
+						ogarsettings['font'] = _0x3cdcf7 ? ogario1ThemeSettings['sectorsFontWeight'] + ' ' + ogario1ThemeSettings[`sectorsFontSize`] + `px ` + ogario1ThemeSettings['sectorsFontFamily'] : ogario1ThemeSettings[`miniMapFontWeight`] + ' ' + ~~(0.4 * _0x21cdbf) + `px ` + ogario1ThemeSettings['miniMapFontFamily'], ogarsettings[`textAlign`] = `center`, ogarsettings['textBaseline'] = 'middle';
+						for (ogario1PlayerProfiles = 0x0; ogario1PlayerProfiles < moreogarset; ogario1PlayerProfiles++)
 							for (var _0x37dab4 = 0x0; _0x37dab4 < more1ogarset; _0x37dab4++) {
-								var _0x1e0996 = String[`fromCharCode`](0x41 + _0x2e5667) + (_0x37dab4 + 0x1);
-								_0x5d2d90 = ~~(_0x167e37 + _0x1c2110 / 0x2 + _0x37dab4 * _0x1c2110), csssettings = ~~(_0x12efde + _0x21cdbf / 0x2 + _0x2e5667 * _0x21cdbf), ogarsettings[`fillText`](_0x1e0996, _0x5d2d90, csssettings);
+								var _0x1e0996 = String[`fromCharCode`](0x41 + ogario1PlayerProfiles) + (_0x37dab4 + 0x1);
+								_0x5d2d90 = ~~(more3ogarset + _0x1c2110 / 0x2 + _0x37dab4 * _0x1c2110), csssettings = ~~(more4ogarset + _0x21cdbf / 0x2 + ogario1PlayerProfiles * _0x21cdbf), ogarsettings[`fillText`](_0x1e0996, _0x5d2d90, csssettings);
 							}
 					}
 				},
-				'drawMapBorders': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, _0x167e37, _0x12efde, _0x4ee245, _0x24c7a0) {
-					more2ogarset && (ogarsettings[`strokeStyle`] = _0x4ee245, ogarsettings[`lineWidth`] = _0x24c7a0, ogarsettings[`beginPath`](), ogarsettings[`moveTo`](more1ogarset, moreogarset), ogarsettings[`lineTo`](_0x167e37, moreogarset), ogarsettings[`lineTo`](_0x167e37, _0x12efde), ogarsettings[`lineTo`](more1ogarset, _0x12efde), ogarsettings[`closePath`](), ogarsettings['stroke']());
+				'drawMapBorders': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, more3ogarset, more4ogarset, ogarbuffed, ogarlanguage) {
+					more2ogarset && (ogarsettings[`strokeStyle`] = ogarbuffed, ogarsettings[`lineWidth`] = ogarlanguage, ogarsettings[`beginPath`](), ogarsettings[`moveTo`](more1ogarset, moreogarset), ogarsettings[`lineTo`](more3ogarset, moreogarset), ogarsettings[`lineTo`](more3ogarset, more4ogarset), ogarsettings[`lineTo`](more1ogarset, more4ogarset), ogarsettings[`closePath`](), ogarsettings['stroke']());
 				},
 				'drawVirusesRange': function (ogarsettings, more2ogarset, more1ogarset) {
 					if (more2ogarset[`length`]) {
 						ogarsettings[`beginPath`]();
 						for (var moreogarset = 0x0; moreogarset < more2ogarset[`length`]; moreogarset++) {
-							var _0x167e37 = more2ogarset[moreogarset]['x'],
-								_0x12efde = more2ogarset[moreogarset]['y'];
-							ogarsettings[`moveTo`](_0x167e37, _0x12efde), ogarsettings[`arc`](_0x167e37, _0x12efde, more2ogarset[moreogarset][`size`] + 0x334, 0x0, this[`pi2`], !0x1);
+							var more3ogarset = more2ogarset[moreogarset]['x'],
+								more4ogarset = more2ogarset[moreogarset]['y'];
+							ogarsettings[`moveTo`](more3ogarset, more4ogarset), ogarsettings[`arc`](more3ogarset, more4ogarset, more2ogarset[moreogarset][`size`] + 0x334, 0x0, this[`pi2`], !0x1);
 						}
-						ogarsettings[`fillStyle`] = ogarioJSONsettings['virusColor'], ogarsettings[`globalAlpha`] = 0.1, ogarsettings[`fill`](), ogarsettings[`globalAlpha`] = 0x1, more1ogarset && (more2ogarset = []);
+						ogarsettings[`fillStyle`] = ogario1ThemeSettings['virusColor'], ogarsettings[`globalAlpha`] = 0.1, ogarsettings[`fill`](), ogarsettings[`globalAlpha`] = 0x1, more1ogarset && (more2ogarset = []);
 					}
 				},
 				'drawFood': function () {
-					if (doagarcommand[`showFood`] && !(more3ogarset[`autoHideFoodOnZoom`] && this['scale'] < 0.2)) {
-						if (more3ogarset['autoHideFood'] && !doagarcommand['foodIsHidden'] && doagarcommand[`playerMass`] > 0x3e8) return doagarcommand[`showFood`] = !0x1, void(doagarcommand['foodIsHidden'] = !0x0);
-						if (more3ogarset[`rainbowFood`])
+					if (doagarcommand[`showFood`] && !(ogario1Settings[`autoHideFoodOnZoom`] && this['scale'] < 0.2)) {
+						if (ogario1Settings['autoHideFood'] && !doagarcommand['foodIsHidden'] && doagarcommand[`playerMass`] > 0x3e8) return doagarcommand[`showFood`] = !0x1, void(doagarcommand['foodIsHidden'] = !0x0);
+						if (ogario1Settings[`rainbowFood`])
 							for (var ogarsettings = 0x0; ogarsettings < doagarcommand['food'][`length`]; ogarsettings++) doagarcommand['food'][ogarsettings][`moveCell`](), doagarcommand[`food`][ogarsettings][`draw`](this['ctx']);
 						else this[`drawCachedFood`](this[`ctx`], doagarcommand[`food`], this['scale']);
 					}
 				},
 				'drawCachedFood': function (ogarsettings, more2ogarset, more1ogarset, moreogarset) {
 					if (more2ogarset[`length`]) {
-						if (more3ogarset[`optimizedFood`] && this[`pellet`])
-							for (var _0x167e37 = 0x0; _0x167e37 < more2ogarset[`length`]; _0x167e37++) {
-								var _0x12efde = more2ogarset[_0x167e37]['x'] - 0xa - ogarioJSONsettings[`foodSize`],
-									_0x4ee245 = more2ogarset[_0x167e37]['y'] - 0xa - ogarioJSONsettings[`foodSize`];
-								ogarsettings['drawImage'](this['pellet'], _0x12efde, _0x4ee245);
+						if (ogario1Settings[`optimizedFood`] && this[`pellet`])
+							for (var more3ogarset = 0x0; more3ogarset < more2ogarset[`length`]; more3ogarset++) {
+								var more4ogarset = more2ogarset[more3ogarset]['x'] - 0xa - ogario1ThemeSettings[`foodSize`],
+									ogarbuffed = more2ogarset[more3ogarset]['y'] - 0xa - ogario1ThemeSettings[`foodSize`];
+								ogarsettings['drawImage'](this['pellet'], more4ogarset, ogarbuffed);
 							} else {
 								ogarsettings['beginPath']();
-								for (_0x167e37 = 0x0; _0x167e37 < more2ogarset[`length`]; _0x167e37++) {
-									_0x12efde = more2ogarset[_0x167e37]['x'], _0x4ee245 = more2ogarset[_0x167e37]['y'];
-									if (ogarsettings['moveTo'](_0x12efde, _0x4ee245), more1ogarset < 0.16) {
-										var _0x24c7a0 = more2ogarset[_0x167e37][`size`] + ogarioJSONsettings[`foodSize`];
-										ogarsettings[`rect`](_0x12efde - _0x24c7a0, _0x4ee245 - _0x24c7a0, 0x2 * _0x24c7a0, 0x2 * _0x24c7a0);
-									} else ogarsettings[`arc`](_0x12efde, _0x4ee245, more2ogarset[_0x167e37][`size`] + ogarioJSONsettings[`foodSize`], 0x0, this['pi2'], !0x1);
+								for (more3ogarset = 0x0; more3ogarset < more2ogarset[`length`]; more3ogarset++) {
+									more4ogarset = more2ogarset[more3ogarset]['x'], ogarbuffed = more2ogarset[more3ogarset]['y'];
+									if (ogarsettings['moveTo'](more4ogarset, ogarbuffed), more1ogarset < 0.16) {
+										var ogarlanguage = more2ogarset[more3ogarset][`size`] + ogario1ThemeSettings[`foodSize`];
+										ogarsettings[`rect`](more4ogarset - ogarlanguage, ogarbuffed - ogarlanguage, 0x2 * ogarlanguage, 0x2 * ogarlanguage);
+									} else ogarsettings[`arc`](more4ogarset, ogarbuffed, more2ogarset[more3ogarset][`size`] + ogario1ThemeSettings[`foodSize`], 0x0, this['pi2'], !0x1);
 								}
-								ogarsettings[`fillStyle`] = ogarioJSONsettings[`foodColor`], ogarsettings[`globalAlpha`] = 0x1, ogarsettings[`fill`]();
+								ogarsettings[`fillStyle`] = ogario1ThemeSettings[`foodColor`], ogarsettings[`globalAlpha`] = 0x1, ogarsettings[`fill`]();
 							}
 						moreogarset && (more2ogarset = []);
 					}
 				},
-				'drawSplitRange': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, _0x167e37) {
+				'drawSplitRange': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, more3ogarset) {
 					if (this['drawCircles'](ogarsettings, more2ogarset, 0x2f8, 0x4, 0.4, `#BE00FF`), more1ogarset[`length`]) {
-						var _0x12efde = moreogarset ? more1ogarset[`length`] - 0x1 : 0x0;
-						ogarsettings[`lineWidth`] = 0x6, ogarsettings['globalAlpha'] = ogarioJSONsettings[`darkTheme`] ? 0.7 : 0.35, ogarsettings['strokeStyle'] = ogarioJSONsettings[`splitRangeColor`], ogarsettings[`beginPath`](), ogarsettings['arc'](more1ogarset[_0x12efde]['x'], more1ogarset[_0x12efde]['y'], more1ogarset[_0x12efde][`size`] + 0x2f8, 0x0, this[`pi2`], !0x1), ogarsettings[`closePath`](), ogarsettings[`stroke`]();
+						var more4ogarset = moreogarset ? more1ogarset[`length`] - 0x1 : 0x0;
+						ogarsettings[`lineWidth`] = 0x6, ogarsettings['globalAlpha'] = ogario1ThemeSettings[`darkTheme`] ? 0.7 : 0.35, ogarsettings['strokeStyle'] = ogario1ThemeSettings[`splitRangeColor`], ogarsettings[`beginPath`](), ogarsettings['arc'](more1ogarset[more4ogarset]['x'], more1ogarset[more4ogarset]['y'], more1ogarset[more4ogarset][`size`] + 0x2f8, 0x0, this[`pi2`], !0x1), ogarsettings[`closePath`](), ogarsettings[`stroke`]();
 					}
-					ogarsettings['globalAlpha'] = 0x1, _0x167e37 && (more2ogarset = []);
+					ogarsettings['globalAlpha'] = 0x1, more3ogarset && (more2ogarset = []);
 				},
-				'drawOppRings': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, _0x167e37, _0x12efde, _0x4ee245) {
-					var _0x24c7a0 = 0xe + 0x2 / more2ogarset,
-						_0x2f0ea0 = 0xc + 0x1 / more2ogarset;
-					this[`drawCircles`](ogarsettings, more1ogarset, _0x24c7a0, _0x2f0ea0, 0.75, `#BE00FF`), this[`drawCircles`](ogarsettings, moreogarset, _0x24c7a0, _0x2f0ea0, 0.75, `#FF0A00`), this[`drawCircles`](ogarsettings, _0x167e37, _0x24c7a0, _0x2f0ea0, 0.75, `#00C8FF`), this[`drawCircles`](ogarsettings, _0x12efde, _0x24c7a0, _0x2f0ea0, 0.75, `#64FF00`), _0x4ee245 && (more1ogarset = [], moreogarset = [], _0x167e37 = [], _0x12efde = []);
+				'drawOppRings': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, more3ogarset, more4ogarset, ogarbuffed) {
+					var ogarlanguage = 0xe + 0x2 / more2ogarset,
+						ogaractuallanguage = 0xc + 0x1 / more2ogarset;
+					this[`drawCircles`](ogarsettings, more1ogarset, ogarlanguage, ogaractuallanguage, 0.75, `#BE00FF`), this[`drawCircles`](ogarsettings, moreogarset, ogarlanguage, ogaractuallanguage, 0.75, `#FF0A00`), this[`drawCircles`](ogarsettings, more3ogarset, ogarlanguage, ogaractuallanguage, 0.75, `#00C8FF`), this[`drawCircles`](ogarsettings, more4ogarset, ogarlanguage, ogaractuallanguage, 0.75, `#64FF00`), ogarbuffed && (more1ogarset = [], moreogarset = [], more3ogarset = [], more4ogarset = []);
 				},
 				'drawCursorTracking': function (ogarsettings, more2ogarset, more1ogarset, moreogarset) {
-					ogarsettings[`lineWidth`] = 0x4, ogarsettings['globalAlpha'] = ogarioJSONsettings[`darkTheme`] ? 0.75 : 0.35, ogarsettings[`strokeStyle`] = ogarioJSONsettings[`cursorTrackingColor`], ogarsettings[`beginPath`]();
-					for (var _0x167e37 = 0x0; _0x167e37 < more2ogarset[`length`]; _0x167e37++) ogarsettings[`moveTo`](more2ogarset[_0x167e37]['x'], more2ogarset[_0x167e37]['y']), ogarsettings[`lineTo`](more1ogarset, moreogarset);
+					ogarsettings[`lineWidth`] = 0x4, ogarsettings['globalAlpha'] = ogario1ThemeSettings[`darkTheme`] ? 0.75 : 0.35, ogarsettings[`strokeStyle`] = ogario1ThemeSettings[`cursorTrackingColor`], ogarsettings[`beginPath`]();
+					for (var more3ogarset = 0x0; more3ogarset < more2ogarset[`length`]; more3ogarset++) ogarsettings[`moveTo`](more2ogarset[more3ogarset]['x'], more2ogarset[more3ogarset]['y']), ogarsettings[`lineTo`](more1ogarset, moreogarset);
 					ogarsettings[`stroke`](), ogarsettings[`globalAlpha`] = 0x1;
 				},
-				'drawCircles': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, _0x167e37, _0x12efde) {
-					ogarsettings[`lineWidth`] = moreogarset, ogarsettings['globalAlpha'] = _0x167e37, ogarsettings[`strokeStyle`] = _0x12efde;
-					for (var _0x4ee245 = 0x0; _0x4ee245 < more2ogarset['length']; _0x4ee245++) ogarsettings['beginPath'](), ogarsettings[`arc`](more2ogarset[_0x4ee245]['x'], more2ogarset[_0x4ee245]['y'], more2ogarset[_0x4ee245][`size`] + more1ogarset, 0x0, this[`pi2`], !0x1), ogarsettings[`closePath`](), ogarsettings[`stroke`]();
+				'drawCircles': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, more3ogarset, more4ogarset) {
+					ogarsettings[`lineWidth`] = moreogarset, ogarsettings['globalAlpha'] = more3ogarset, ogarsettings[`strokeStyle`] = more4ogarset;
+					for (var ogarbuffed = 0x0; ogarbuffed < more2ogarset['length']; ogarbuffed++) ogarsettings['beginPath'](), ogarsettings[`arc`](more2ogarset[ogarbuffed]['x'], more2ogarset[ogarbuffed]['y'], more2ogarset[ogarbuffed][`size`] + more1ogarset, 0x0, this[`pi2`], !0x1), ogarsettings[`closePath`](), ogarsettings[`stroke`]();
 					ogarsettings['globalAlpha'] = 0x1;
 				},
-				'drawDashedCircle': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, _0x167e37, _0x12efde, _0x4ee245) {
-					var _0x24c7a0 = this[`pi2`] / _0x167e37;
-					ogarsettings[`lineWidth`] = _0x12efde, ogarsettings[`strokeStyle`] = _0x4ee245;
-					for (var _0x2f0ea0 = 0x0; _0x2f0ea0 < _0x167e37; _0x2f0ea0 += 0x2) ogarsettings[`beginPath`](), ogarsettings[`arc`](more2ogarset, more1ogarset, moreogarset - _0x12efde / 0x2, _0x2f0ea0 * _0x24c7a0, (_0x2f0ea0 + 0x1) * _0x24c7a0, !0x1), ogarsettings[`stroke`]();
+				'drawDashedCircle': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, more3ogarset, more4ogarset, ogarbuffed) {
+					var ogarlanguage = this[`pi2`] / more3ogarset;
+					ogarsettings[`lineWidth`] = more4ogarset, ogarsettings[`strokeStyle`] = ogarbuffed;
+					for (var ogaractuallanguage = 0x0; ogaractuallanguage < more3ogarset; ogaractuallanguage += 0x2) ogarsettings[`beginPath`](), ogarsettings[`arc`](more2ogarset, more1ogarset, moreogarset - more4ogarset / 0x2, ogaractuallanguage * ogarlanguage, (ogaractuallanguage + 0x1) * ogarlanguage, !0x1), ogarsettings[`stroke`]();
 				},
 				'drawTeammatesInd': function (ogarsettings, more2ogarset, more1ogarset, moreogarset) {
 					this[`indicator`] && ogarsettings[`drawImage`](this[`indicator`], more2ogarset - 0x2d, more1ogarset - moreogarset - 0x5a);
@@ -3939,31 +3939,31 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					var ogarsettings = this[`pieChart`][`getContext`]('2d'),
 						more2ogarset = Math['min'](0xc8, 0.3 * this[`canvasWidth`]) / 0xc8;
 					this['pieChart'][`width`] = 0xc8 * more2ogarset, this[`pieChart`][`height`] = 0xf0 * more2ogarset, ogarsettings['scale'](more2ogarset, more2ogarset);
-					for (var more1ogarset = [`#333333`, `#FF3333`, '#33FF33', `#3333FF`], moreogarset = 0x0, _0x167e37 = 0x0; _0x167e37 < doagarcommand[`pieChart`][`length`]; _0x167e37++) {
-						var _0x12efde = moreogarset + doagarcommand['pieChart'][_0x167e37] * this[`pi2`];
-						ogarsettings[`fillStyle`] = more1ogarset[_0x167e37 + 0x1], ogarsettings['beginPath'](), ogarsettings[`moveTo`](0x64, 0x8c), ogarsettings[`arc`](0x64, 0x8c, 0x50, moreogarset, _0x12efde, !0x1), ogarsettings['fill'](), moreogarset = _0x12efde;
+					for (var more1ogarset = [`#333333`, `#FF3333`, '#33FF33', `#3333FF`], moreogarset = 0x0, more3ogarset = 0x0; more3ogarset < doagarcommand[`pieChart`][`length`]; more3ogarset++) {
+						var more4ogarset = moreogarset + doagarcommand['pieChart'][more3ogarset] * this[`pi2`];
+						ogarsettings[`fillStyle`] = more1ogarset[more3ogarset + 0x1], ogarsettings['beginPath'](), ogarsettings[`moveTo`](0x64, 0x8c), ogarsettings[`arc`](0x64, 0x8c, 0x50, moreogarset, more4ogarset, !0x1), ogarsettings['fill'](), moreogarset = more4ogarset;
 					}
 				},
 				'drawBattleArea': function (ogarsettings) {
-					doagarcommand[`battleRoyale`][`state`] && (this[`drawDangerArea`](ogarsettings, doagarcommand[`battleRoyale`]['x'], doagarcommand[`battleRoyale`]['y'], doagarcommand['battleRoyale']['radius'], doagarcommand[`mapMinX`], doagarcommand[`mapMinY`], doagarcommand[`mapMaxX`] - doagarcommand[`mapMinX`], doagarcommand[`mapMaxY`] - doagarcommand['mapMinY'], ogarioJSONsettings[`dangerAreaColor`], 0.25), this['drawSafeArea'](ogarsettings, doagarcommand[`battleRoyale`][`targetX`], doagarcommand[`battleRoyale`][`targetY`], doagarcommand[`battleRoyale`][`targetRadius`], 0x28, ogarioJSONsettings[`safeAreaColor`]));
+					doagarcommand[`battleRoyale`][`state`] && (this[`drawDangerArea`](ogarsettings, doagarcommand[`battleRoyale`]['x'], doagarcommand[`battleRoyale`]['y'], doagarcommand['battleRoyale']['radius'], doagarcommand[`mapMinX`], doagarcommand[`mapMinY`], doagarcommand[`mapMaxX`] - doagarcommand[`mapMinX`], doagarcommand[`mapMaxY`] - doagarcommand['mapMinY'], ogario1ThemeSettings[`dangerAreaColor`], 0.25), this['drawSafeArea'](ogarsettings, doagarcommand[`battleRoyale`][`targetX`], doagarcommand[`battleRoyale`][`targetY`], doagarcommand[`battleRoyale`][`targetRadius`], 0x28, ogario1ThemeSettings[`safeAreaColor`]));
 				},
-				'drawBattleAreaOnMinimap': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, _0x167e37, _0x12efde) {
+				'drawBattleAreaOnMinimap': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, more3ogarset, more4ogarset) {
 					if (doagarcommand[`battleRoyale`][`state`]) {
 						this['battleAreaMap'] || (this[`battleAreaMap`] = document['createElement']('canvas'), this[`battleAreaMapCtx`] = this[`battleAreaMap`]['getContext']('2d')), this['battleAreaMap'][`width`] != more2ogarset ? (this[`battleAreaMap`][`width`] = more2ogarset, this[`battleAreaMap`]['height'] = more1ogarset) : this[`battleAreaMapCtx`][`clearRect`](0x0, 0x0, more2ogarset, more1ogarset);
-						var _0x4ee245 = (doagarcommand[`battleRoyale`]['x'] + _0x167e37) * moreogarset,
-							_0x24c7a0 = (doagarcommand[`battleRoyale`]['y'] + _0x12efde) * moreogarset,
-							_0x2f0ea0 = doagarcommand[`battleRoyale`][`radius`] * moreogarset;
-						this[`drawDangerArea`](this[`battleAreaMapCtx`], _0x4ee245, _0x24c7a0, _0x2f0ea0, 0x0, 0x0, more2ogarset, more1ogarset, ogarioJSONsettings[`dangerAreaColor`], 0.25), _0x4ee245 = ~~((doagarcommand[`battleRoyale`]['targetX'] + _0x167e37) * moreogarset), _0x24c7a0 = ~~((doagarcommand['battleRoyale'][`targetY`] + _0x12efde) * moreogarset), _0x2f0ea0 = ~~(doagarcommand[`battleRoyale`][`targetRadius`] * moreogarset), this[`drawSafeArea`](this['battleAreaMapCtx'], _0x4ee245, _0x24c7a0, _0x2f0ea0, 0x2, ogarioJSONsettings[`safeAreaColor`]), ogarsettings[`drawImage`](this[`battleAreaMap`], 0x0, 0x0);
+						var ogarbuffed = (doagarcommand[`battleRoyale`]['x'] + more3ogarset) * moreogarset,
+							ogarlanguage = (doagarcommand[`battleRoyale`]['y'] + more4ogarset) * moreogarset,
+							ogaractuallanguage = doagarcommand[`battleRoyale`][`radius`] * moreogarset;
+						this[`drawDangerArea`](this[`battleAreaMapCtx`], ogarbuffed, ogarlanguage, ogaractuallanguage, 0x0, 0x0, more2ogarset, more1ogarset, ogario1ThemeSettings[`dangerAreaColor`], 0.25), ogarbuffed = ~~((doagarcommand[`battleRoyale`]['targetX'] + more3ogarset) * moreogarset), ogarlanguage = ~~((doagarcommand['battleRoyale'][`targetY`] + more4ogarset) * moreogarset), ogaractuallanguage = ~~(doagarcommand[`battleRoyale`][`targetRadius`] * moreogarset), this[`drawSafeArea`](this['battleAreaMapCtx'], ogarbuffed, ogarlanguage, ogaractuallanguage, 0x2, ogario1ThemeSettings[`safeAreaColor`]), ogarsettings[`drawImage`](this[`battleAreaMap`], 0x0, 0x0);
 					}
 				},
-				'drawDangerArea': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, _0x167e37, _0x12efde, _0x4ee245, _0x24c7a0, _0x2f0ea0, _0xa193a8) {
-					doagarcommand['battleRoyale'][`radius`] == doagarcommand[`battleRoyale`][`maxRadius`] || moreogarset <= 0x0 || (ogarsettings[`save`](), ogarsettings[`globalAlpha`] = _0xa193a8, ogarsettings[`fillStyle`] = _0x2f0ea0, ogarsettings['fillRect'](_0x167e37, _0x12efde, _0x4ee245, _0x24c7a0), ogarsettings[`globalCompositeOperation`] = 'destination-out', ogarsettings[`globalAlpha`] = 0x1, ogarsettings[`beginPath`](), ogarsettings['arc'](more2ogarset, more1ogarset, moreogarset, 0x0, this['pi2'], !0x1), ogarsettings[`fill`](), ogarsettings[`restore`]());
+				'drawDangerArea': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, more3ogarset, more4ogarset, ogarbuffed, ogarlanguage, ogaractuallanguage, more5ogarset) {
+					doagarcommand['battleRoyale'][`radius`] == doagarcommand[`battleRoyale`][`maxRadius`] || moreogarset <= 0x0 || (ogarsettings[`save`](), ogarsettings[`globalAlpha`] = more5ogarset, ogarsettings[`fillStyle`] = ogaractuallanguage, ogarsettings['fillRect'](more3ogarset, more4ogarset, ogarbuffed, ogarlanguage), ogarsettings[`globalCompositeOperation`] = 'destination-out', ogarsettings[`globalAlpha`] = 0x1, ogarsettings[`beginPath`](), ogarsettings['arc'](more2ogarset, more1ogarset, moreogarset, 0x0, this['pi2'], !0x1), ogarsettings[`fill`](), ogarsettings[`restore`]());
 				},
-				'drawSafeArea': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, _0x167e37, _0x12efde) {
-					doagarcommand[`battleRoyale`][`state`] > 0x2 || moreogarset <= 0x0 || this[`drawDashedCircle`](ogarsettings, more2ogarset, more1ogarset, moreogarset, 0x3c, _0x167e37, _0x12efde);
+				'drawSafeArea': function (ogarsettings, more2ogarset, more1ogarset, moreogarset, more3ogarset, more4ogarset) {
+					doagarcommand[`battleRoyale`][`state`] > 0x2 || moreogarset <= 0x0 || this[`drawDashedCircle`](ogarsettings, more2ogarset, more1ogarset, moreogarset, 0x3c, more3ogarset, more4ogarset);
 				},
 				'drawGhostCells': function () {
-					if (more3ogarset[`showGhostCells`]) {
+					if (ogario1Settings[`showGhostCells`]) {
 						var ogarsettings = doagarcommand[`ghostCells`];
 						this['ctx']['beginPath']();
 						for (var more2ogarset = 0x0; more2ogarset < ogarsettings['length']; more2ogarset++)
@@ -3971,26 +3971,26 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 								var more1ogarset = ogarsettings[more2ogarset]['x'],
 									moreogarset = ogarsettings[more2ogarset]['y'];
 								this[`ctx`][`moveTo`](more1ogarset, moreogarset), this[`ctx`][`arc`](more1ogarset, moreogarset, ogarsettings[more2ogarset][`size`], 0x0, this[`pi2`], !0x1);
-							} this[`ctx`][`fillStyle`] = ogarioJSONsettings[`ghostCellsColor`], this[`ctx`][`globalAlpha`] = ogarioJSONsettings[`ghostCellsAlpha`], this[`ctx`][`shadowColor`] = ogarioJSONsettings[`ghostCellsColor`], this[`ctx`][`shadowBlur`] = 0x28, this[`ctx`][`shadowOffsetX`] = 0x0, this[`ctx`][`shadowOffsetY`] = 0x0, this[`ctx`][`fill`](), this['ctx']['globalAlpha'] = 0x1, this[`ctx`][`shadowBlur`] = 0x0;
+							} this[`ctx`][`fillStyle`] = ogario1ThemeSettings[`ghostCellsColor`], this[`ctx`][`globalAlpha`] = ogario1ThemeSettings[`ghostCellsAlpha`], this[`ctx`][`shadowColor`] = ogario1ThemeSettings[`ghostCellsColor`], this[`ctx`][`shadowBlur`] = 0x28, this[`ctx`][`shadowOffsetX`] = 0x0, this[`ctx`][`shadowOffsetY`] = 0x0, this[`ctx`][`fill`](), this['ctx']['globalAlpha'] = 0x1, this[`ctx`][`shadowBlur`] = 0x0;
 					}
 				},
 				'preDrawPellet': function () {
 					this[`pellet`] = null;
-					var ogarsettings = 0xa + ogarioJSONsettings[`foodSize`],
+					var ogarsettings = 0xa + ogario1ThemeSettings[`foodSize`],
 						more2ogarset = document[`createElement`](`canvas`);
 					more2ogarset['width'] = 0x2 * ogarsettings, more2ogarset['height'] = 0x2 * ogarsettings;
 					var more1ogarset = more2ogarset[`getContext`]('2d');
-					more1ogarset[`arc`](ogarsettings, ogarsettings, ogarsettings, 0x0, this[`pi2`], !0x1), more1ogarset[`fillStyle`] = ogarioJSONsettings[`foodColor`], more1ogarset[`fill`](), this['pellet'] = new Image(), this[`pellet`][`src`] = more2ogarset[`toDataURL`](), more2ogarset = null;
+					more1ogarset[`arc`](ogarsettings, ogarsettings, ogarsettings, 0x0, this[`pi2`], !0x1), more1ogarset[`fillStyle`] = ogario1ThemeSettings[`foodColor`], more1ogarset[`fill`](), this['pellet'] = new Image(), this[`pellet`][`src`] = more2ogarset[`toDataURL`](), more2ogarset = null;
 				},
 				'preDrawIndicator': function () {
 					this[`indicator`] = null;
 					var ogarsettings = document['createElement'](`canvas`);
 					ogarsettings['width'] = 0x5a, ogarsettings[`height`] = 0x32;
 					var more2ogarset = ogarsettings[`getContext`]('2d');
-					more2ogarset[`lineWidth`] = 0x2, more2ogarset[`fillStyle`] = ogarioJSONsettings['teammatesIndColor'], more2ogarset['strokeStyle'] = `#000000`, more2ogarset[`beginPath`](), more2ogarset[`moveTo`](0x0, 0x0), more2ogarset[`lineTo`](0x5a, 0x0), more2ogarset[`lineTo`](0x2d, 0x32), more2ogarset[`closePath`](), more2ogarset[`fill`](), more2ogarset[`stroke`](), this[`indicator`] = new Image(), this['indicator'][`src`] = ogarsettings[`toDataURL`](), ogarsettings = null;
+					more2ogarset[`lineWidth`] = 0x2, more2ogarset[`fillStyle`] = ogario1ThemeSettings['teammatesIndColor'], more2ogarset['strokeStyle'] = `#000000`, more2ogarset[`beginPath`](), more2ogarset[`moveTo`](0x0, 0x0), more2ogarset[`lineTo`](0x5a, 0x0), more2ogarset[`lineTo`](0x2d, 0x32), more2ogarset[`closePath`](), more2ogarset[`fill`](), more2ogarset[`stroke`](), this[`indicator`] = new Image(), this['indicator'][`src`] = ogarsettings[`toDataURL`](), ogarsettings = null;
 				},
 				'countFps': function () {
-					if (more3ogarset['showStatsFPS']) {
+					if (ogario1Settings['showStatsFPS']) {
 						var ogarsettings = Date[`now`]();
 						this[`fpsLastRequest`] || (this[`fpsLastRequest`] = ogarsettings), ogarsettings - this['fpsLastRequest'] >= 0x3e8 && (this[`fps`] = this[`renderedFrames`], this['renderedFrames'] = 0x0, this[`fpsLastRequest`] = ogarsettings), this[`renderedFrames`]++;
 					}
@@ -4003,10 +4003,10 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				}
 			},
 			_0x124c14 = {},
-			_0x597e73 = {},
+			ogario1Hotkeys = {},
 			_0x104c66 = {
 				'hk-feed': {
-					'label': _0xa193a8[`hk-feed`],
+					'label': more5ogarset[`hk-feed`],
 					'defaultKey': 'W',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`feed`]();
@@ -4015,7 +4015,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-macroFeed': {
-					'label': _0xa193a8[`hk-macroFeed`],
+					'label': more5ogarset[`hk-macroFeed`],
 					'defaultKey': 'E',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`macroFeed`](!0x0);
@@ -4026,7 +4026,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': 'normal'
 				},
 				'hk-split': {
-					'label': _0xa193a8[`hk-split`],
+					'label': more5ogarset[`hk-split`],
 					'defaultKey': `SPACE`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996['split']();
@@ -4035,7 +4035,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-doubleSplit': {
-					'label': _0xa193a8[`hk-doubleSplit`],
+					'label': more5ogarset[`hk-doubleSplit`],
 					'defaultKey': 'Q',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`doubleSplit`]();
@@ -4053,7 +4053,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': 'normal'
 				},
 				'hk-split16': {
-					'label': _0xa193a8[`hk-split16`],
+					'label': more5ogarset[`hk-split16`],
 					'defaultKey': 'SHIFT',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`split16`]();
@@ -4062,7 +4062,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-pause': {
-					'label': _0xa193a8[`hk-pause`],
+					'label': more5ogarset[`hk-pause`],
 					'defaultKey': 'R',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996['setPause']();
@@ -4071,7 +4071,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-showTop5': {
-					'label': _0xa193a8[`hk-showTop5`],
+					'label': more5ogarset[`hk-showTop5`],
 					'defaultKey': 'T',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowTop5`]();
@@ -4080,7 +4080,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-showTime': {
-					'label': _0xa193a8['hk-showTime'],
+					'label': more5ogarset['hk-showTime'],
 					'defaultKey': `ALT+T`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowTime`]();
@@ -4089,7 +4089,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': 'normal'
 				},
 				'hk-showSplitRange': {
-					'label': _0xa193a8[`hk-showSplitRange`],
+					'label': more5ogarset[`hk-showSplitRange`],
 					'defaultKey': 'U',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996['setShowSplitRange']();
@@ -4098,7 +4098,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-showSplitInd': {
-					'label': _0xa193a8['hk-showSplitInd'],
+					'label': more5ogarset['hk-showSplitInd'],
 					'defaultKey': 'I',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowSplitInd`]();
@@ -4107,7 +4107,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-showTeammatesInd': {
-					'label': _0xa193a8['hk-showTeammatesInd'],
+					'label': more5ogarset['hk-showTeammatesInd'],
 					'defaultKey': `ALT+I`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowTeammatesInd`]();
@@ -4116,7 +4116,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': 'normal'
 				},
 				'hk-showOppColors': {
-					'label': _0xa193a8[`hk-showOppColors`],
+					'label': more5ogarset[`hk-showOppColors`],
 					'defaultKey': 'O',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowOppColors`]();
@@ -4125,7 +4125,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-toggleSkins': {
-					'label': _0xa193a8['hk-toggleSkins'],
+					'label': more5ogarset['hk-toggleSkins'],
 					'defaultKey': 'A',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996['toggleSkins']();
@@ -4134,7 +4134,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': 'normal'
 				},
 				'hk-transparentSkins': {
-					'label': _0xa193a8[`hk-transparentSkins`],
+					'label': more5ogarset[`hk-transparentSkins`],
 					'defaultKey': '',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996['setTransparentSkins']();
@@ -4143,7 +4143,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-showSkins': {
-					'label': _0xa193a8[`hk-showSkins`],
+					'label': more5ogarset[`hk-showSkins`],
 					'defaultKey': 'S',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowSkins`]();
@@ -4152,7 +4152,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': 'normal'
 				},
 				'hk-showStats': {
-					'label': _0xa193a8[`hk-showStats`],
+					'label': more5ogarset[`hk-showStats`],
 					'defaultKey': `ALT+S`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowStats`]();
@@ -4161,7 +4161,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-toggleCells': {
-					'label': _0xa193a8[`hk-toggleCells`],
+					'label': more5ogarset[`hk-toggleCells`],
 					'defaultKey': 'D',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`toggleCells`]();
@@ -4170,7 +4170,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-showFood': {
-					'label': _0xa193a8[`hk-showFood`],
+					'label': more5ogarset[`hk-showFood`],
 					'defaultKey': 'F',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowFood`]();
@@ -4179,7 +4179,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': 'normal'
 				},
 				'hk-showGrid': {
-					'label': _0xa193a8[`hk-showGrid`],
+					'label': more5ogarset[`hk-showGrid`],
 					'defaultKey': 'G',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowGrid`]();
@@ -4188,7 +4188,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-showMiniMapGuides': {
-					'label': _0xa193a8[`hk-showMiniMapGuides`],
+					'label': more5ogarset[`hk-showMiniMapGuides`],
 					'defaultKey': `ALT+G`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowMiniMapGuides`]();
@@ -4197,7 +4197,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-hideChat': {
-					'label': _0xa193a8['hk-hideChat'],
+					'label': more5ogarset['hk-hideChat'],
 					'defaultKey': 'H',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996['hideChat']();
@@ -4206,7 +4206,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-showHUD': {
-					'label': _0xa193a8[`hk-showHUD`],
+					'label': more5ogarset[`hk-showHUD`],
 					'defaultKey': `ALT+H`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996['setShowHUD']();
@@ -4215,7 +4215,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': 'normal'
 				},
 				'hk-copyLb': {
-					'label': _0xa193a8[`hk-copyLb`],
+					'label': more5ogarset[`hk-copyLb`],
 					'defaultKey': 'L',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`copyLb`]();
@@ -4224,7 +4224,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-showLb': {
-					'label': _0xa193a8[`hk-showLb`],
+					'label': more5ogarset[`hk-showLb`],
 					'defaultKey': 'ALT+L',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowLb`]();
@@ -4233,7 +4233,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-toggleAutoZoom': {
-					'label': _0xa193a8[`hk-toggleAutoZoom`],
+					'label': more5ogarset[`hk-toggleAutoZoom`],
 					'defaultKey': '',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`toggleAutoZoom`]();
@@ -4242,7 +4242,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': 'normal'
 				},
 				'hk-resetZoom': {
-					'label': _0xa193a8[`hk-resetZoom`],
+					'label': more5ogarset[`hk-resetZoom`],
 					'defaultKey': 'Z',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`resetZoom`](!0x0);
@@ -4253,7 +4253,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-toggleDeath': {
-					'label': _0xa193a8[`hk-toggleDeath`],
+					'label': more5ogarset[`hk-toggleDeath`],
 					'defaultKey': 'X',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`toggleDeath`]();
@@ -4262,7 +4262,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-clearChat': {
-					'label': _0xa193a8[`hk-clearChat`],
+					'label': more5ogarset[`hk-clearChat`],
 					'defaultKey': 'C',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`displayChatHistory`](!0x0);
@@ -4273,7 +4273,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-showBgSectors': {
-					'label': _0xa193a8[`hk-showBgSectors`],
+					'label': more5ogarset[`hk-showBgSectors`],
 					'defaultKey': 'B',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowBgSectors`]();
@@ -4282,7 +4282,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-hideBots': {
-					'label': _0xa193a8[`hk-hideBots`],
+					'label': more5ogarset[`hk-hideBots`],
 					'defaultKey': `ALT+B`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996['setHideSmallBots']();
@@ -4291,7 +4291,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-showNames': {
-					'label': _0xa193a8[`hk-showNames`],
+					'label': more5ogarset[`hk-showNames`],
 					'defaultKey': 'N',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowNames`]();
@@ -4300,7 +4300,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-hideTeammatesNames': {
-					'label': _0xa193a8[`hk-hideTeammatesNames`],
+					'label': more5ogarset[`hk-hideTeammatesNames`],
 					'defaultKey': '',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setHideTeammatesNames`]();
@@ -4309,7 +4309,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-showMass': {
-					'label': _0xa193a8[`hk-showMass`],
+					'label': more5ogarset[`hk-showMass`],
 					'defaultKey': 'M',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowMass`]();
@@ -4318,7 +4318,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-showMiniMap': {
-					'label': _0xa193a8[`hk-showMiniMap`],
+					'label': more5ogarset[`hk-showMiniMap`],
 					'defaultKey': `ALT+M`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowMiniMap`]();
@@ -4327,7 +4327,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-chatMessage': {
-					'label': _0xa193a8['hk-chatMessage'],
+					'label': more5ogarset['hk-chatMessage'],
 					'defaultKey': `ENTER`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`enterChatMessage`]();
@@ -4336,7 +4336,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `special`
 				},
 				'hk-quickResp': {
-					'label': _0xa193a8['hk-quickResp'],
+					'label': more5ogarset['hk-quickResp'],
 					'defaultKey': `TILDE`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`quickResp`]();
@@ -4345,7 +4345,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-autoResp': {
-					'label': _0xa193a8[`hk-autoResp`],
+					'label': more5ogarset[`hk-autoResp`],
 					'defaultKey': '',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`toggleAutoResp`]();
@@ -4354,7 +4354,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': 'normal'
 				},
 				'hk-zoom1': {
-					'label': _0xa193a8['hk-zoomLevel'] + ' 1',
+					'label': more5ogarset['hk-zoomLevel'] + ' 1',
 					'defaultKey': `ALT+1`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996['setZoom'](0.5);
@@ -4363,7 +4363,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-zoom2': {
-					'label': _0xa193a8[`hk-zoomLevel`] + ' 2',
+					'label': more5ogarset[`hk-zoomLevel`] + ' 2',
 					'defaultKey': `ALT+2`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setZoom`](0.25);
@@ -4372,7 +4372,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-zoom3': {
-					'label': _0xa193a8[`hk-zoomLevel`] + ' 3',
+					'label': more5ogarset[`hk-zoomLevel`] + ' 3',
 					'defaultKey': `ALT+3`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setZoom`](0.125);
@@ -4381,7 +4381,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-zoom4': {
-					'label': _0xa193a8['hk-zoomLevel'] + ' 4',
+					'label': more5ogarset['hk-zoomLevel'] + ' 4',
 					'defaultKey': `ALT+4`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996['setZoom'](0.075);
@@ -4390,7 +4390,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': 'normal'
 				},
 				'hk-zoom5': {
-					'label': _0xa193a8[`hk-zoomLevel`] + ' 5',
+					'label': more5ogarset[`hk-zoomLevel`] + ' 5',
 					'defaultKey': `ALT+5`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setZoom`](0.05);
@@ -4399,7 +4399,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-switchServerMode': {
-					'label': _0xa193a8[`hk-switchServerMode`],
+					'label': more5ogarset[`hk-switchServerMode`],
 					'defaultKey': '=',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`switchServerMode`]();
@@ -4408,7 +4408,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-showTargeting': {
-					'label': _0xa193a8[`hk-showTargeting`],
+					'label': more5ogarset[`hk-showTargeting`],
 					'defaultKey': '',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowTargeting`]();
@@ -4417,7 +4417,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': 'normal'
 				},
 				'hk-setTargeting': {
-					'label': _0xa193a8[`hk-setTargeting`],
+					'label': more5ogarset[`hk-setTargeting`],
 					'defaultKey': '',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setTargeting`]();
@@ -4426,7 +4426,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-cancelTargeting': {
-					'label': _0xa193a8[`hk-cancelTargeting`],
+					'label': more5ogarset[`hk-cancelTargeting`],
 					'defaultKey': '',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996['cancelTargeting']();
@@ -4435,7 +4435,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-changeTarget': {
-					'label': _0xa193a8[`hk-changeTarget`],
+					'label': more5ogarset[`hk-changeTarget`],
 					'defaultKey': '',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`changeTarget`]();
@@ -4444,7 +4444,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': 'normal'
 				},
 				'hk-privateMiniMap': {
-					'label': _0xa193a8[`hk-privateMiniMap`],
+					'label': more5ogarset[`hk-privateMiniMap`],
 					'defaultKey': '',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setPrivateMiniMap`]();
@@ -4453,7 +4453,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-showQuest': {
-					'label': _0xa193a8[`hk-showQuest`],
+					'label': more5ogarset[`hk-showQuest`],
 					'defaultKey': '',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`setShowQuest`]();
@@ -4462,7 +4462,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `normal`
 				},
 				'hk-comm1': {
-					'label': _0xbfbffb['comm1'],
+					'label': ogario1Commands['comm1'],
 					'defaultKey': '1',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`sendCommand`](0x1);
@@ -4471,7 +4471,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `command`
 				},
 				'hk-comm2': {
-					'label': _0xbfbffb['comm2'],
+					'label': ogario1Commands['comm2'],
 					'defaultKey': '2',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`sendCommand`](0x2);
@@ -4480,7 +4480,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `command`
 				},
 				'hk-comm3': {
-					'label': _0xbfbffb[`comm3`],
+					'label': ogario1Commands[`comm3`],
 					'defaultKey': '3',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`sendCommand`](0x3);
@@ -4489,7 +4489,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `command`
 				},
 				'hk-comm4': {
-					'label': _0xbfbffb[`comm4`],
+					'label': ogario1Commands[`comm4`],
 					'defaultKey': '4',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`sendCommand`](0x4);
@@ -4498,7 +4498,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `command`
 				},
 				'hk-comm5': {
-					'label': _0xbfbffb[`comm5`],
+					'label': ogario1Commands[`comm5`],
 					'defaultKey': '5',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`sendCommand`](0x5);
@@ -4507,7 +4507,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `command`
 				},
 				'hk-comm6': {
-					'label': _0xbfbffb[`comm6`],
+					'label': ogario1Commands[`comm6`],
 					'defaultKey': '6',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`sendCommand`](0x6);
@@ -4516,7 +4516,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `command`
 				},
 				'hk-comm7': {
-					'label': _0xbfbffb[`comm7`],
+					'label': ogario1Commands[`comm7`],
 					'defaultKey': '7',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`sendCommand`](0x7);
@@ -4525,7 +4525,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `command`
 				},
 				'hk-comm8': {
-					'label': _0xbfbffb['comm8'],
+					'label': ogario1Commands['comm8'],
 					'defaultKey': '8',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`sendCommand`](0x8);
@@ -4534,7 +4534,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `command`
 				},
 				'hk-comm9': {
-					'label': _0xbfbffb[`comm9`],
+					'label': ogario1Commands[`comm9`],
 					'defaultKey': '9',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996['sendCommand'](0x9);
@@ -4543,7 +4543,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': 'command'
 				},
 				'hk-comm0': {
-					'label': _0xbfbffb[`comm0`],
+					'label': ogario1Commands[`comm0`],
 					'defaultKey': '0',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996['sendCommand'](0x0);
@@ -4552,7 +4552,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `command`
 				},
 				'hk-comm10': {
-					'label': _0xbfbffb[`comm10`],
+					'label': ogario1Commands[`comm10`],
 					'defaultKey': `MOUSE WHEEL`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`sendCommand`](0xa);
@@ -4561,7 +4561,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `command`
 				},
 				'hk-comm11': {
-					'label': _0xbfbffb[`comm11`],
+					'label': ogario1Commands[`comm11`],
 					'defaultKey': `LEFT`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`sendCommand`](0xb);
@@ -4570,7 +4570,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `command`
 				},
 				'hk-comm12': {
-					'label': _0xbfbffb['comm12'],
+					'label': ogario1Commands['comm12'],
 					'defaultKey': 'UP',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`sendCommand`](0xc);
@@ -4579,7 +4579,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `command`
 				},
 				'hk-comm13': {
-					'label': _0xbfbffb[`comm13`],
+					'label': ogario1Commands[`comm13`],
 					'defaultKey': 'RIGHT',
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`sendCommand`](0xd);
@@ -4588,7 +4588,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `command`
 				},
 				'hk-comm14': {
-					'label': _0xbfbffb[`comm14`],
+					'label': ogario1Commands[`comm14`],
 					'defaultKey': `DOWN`,
 					'keyDown': function () {
 						_0x1e0996 && _0x1e0996[`sendCommand`](0xe);
@@ -4597,27 +4597,27 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					'type': `command`
 				}
 			},
-			_0xf796ea = {
+			lastkeys = {
 				'lastPressedKey': '',
 				'lastKeyId': '',
 				'defaultMessageKey': `ENTER`,
 				'inputClassName': `custom-key-in form-control input-sm`,
 				'loadDefaultHotkeys': function () {
-					for (var ogarsettings in _0x597e73 = {}, _0x104c66) _0x104c66[`hasOwnProperty`](ogarsettings) && (_0x597e73[_0x104c66[ogarsettings][`defaultKey`]] = ogarsettings);
-					_0x597e73[`spec-messageKey`] = this[`defaultMessageKey`];
+					for (var ogarsettings in ogario1Hotkeys = {}, _0x104c66) _0x104c66[`hasOwnProperty`](ogarsettings) && (ogario1Hotkeys[_0x104c66[ogarsettings][`defaultKey`]] = ogarsettings);
+					ogario1Hotkeys[`spec-messageKey`] = this[`defaultMessageKey`];
 				},
 				'loadHotkeys': function () {
-					null !== more2ogarset['localStorage'][`getItem`](`ogarioHotkeys`) ? _0x597e73 = JSON[`parse`](more2ogarset[`localStorage`]['getItem'](`ogarioHotkeys`)) : this[`loadDefaultHotkeys`](), null !== more2ogarset[`localStorage`][`getItem`](`ogarioCommands`) && (_0xbfbffb = JSON[`parse`](more2ogarset[`localStorage`][`getItem`](`ogarioCommands`)));
+					null !== more2ogarset['localStorage'][`getItem`](`ogarioHotkeys`) ? ogario1Hotkeys = JSON[`parse`](more2ogarset[`localStorage`]['getItem'](`ogarioHotkeys`)) : this[`loadDefaultHotkeys`](), null !== more2ogarset[`localStorage`][`getItem`](`ogarioCommands`) && (ogario1Commands = JSON[`parse`](more2ogarset[`localStorage`][`getItem`](`ogarioCommands`)));
 				},
 				'saveHotkeys': function () {
-					more2ogarset[`localStorage`][`setItem`](`ogarioHotkeys`, JSON[`stringify`](_0x597e73)), this[`saveCommands`]();
+					more2ogarset[`localStorage`][`setItem`](`ogarioHotkeys`, JSON[`stringify`](ogario1Hotkeys)), this[`saveCommands`]();
 				},
 				'saveCommands': function () {
 					moreogarset(`#hotkeys .command-in`)[`each`](function () {
 						var ogarsettings = moreogarset(this),
 							more2ogarset = ogarsettings[`attr`]('id');
-						_0xbfbffb[`hasOwnProperty`](more2ogarset) && (_0xbfbffb[more2ogarset] = ogarsettings[`val`]());
-					}), more2ogarset[`localStorage`]['setItem'](`ogarioCommands`, JSON['stringify'](_0xbfbffb));
+						ogario1Commands[`hasOwnProperty`](more2ogarset) && (ogario1Commands[more2ogarset] = ogarsettings[`val`]());
+					}), more2ogarset[`localStorage`]['setItem'](`ogarioCommands`, JSON['stringify'](ogario1Commands));
 				},
 				'resetHotkeys': function () {
 					this[`loadDefaultHotkeys`](), moreogarset(`#hotkeys-cfg .custom-key-in`)['each'](function () {
@@ -4627,19 +4627,19 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 				},
 				'setHotkeysMenu': function () {
 					var ogarsettings = this;
-					for (var more2ogarset in moreogarset(`body`)[`append`]('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + _0xa193a8[`restoreSettings`] + `</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">` + _0xa193a8[`saveSett`] + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + _0xa193a8['close'] + `</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>` + _0xa193a8[`hk-inst-assign`] + `</li><li>` + _0xa193a8[`hk-inst-delete`] + `</li><li>` + _0xa193a8[`hk-inst-keys`] + `</li></ul></div></div>`), _0x104c66)
+					for (var more2ogarset in moreogarset(`body`)[`append`]('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + more5ogarset[`restoreSettings`] + `</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">` + more5ogarset[`saveSett`] + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + more5ogarset['close'] + `</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>` + more5ogarset[`hk-inst-assign`] + `</li><li>` + more5ogarset[`hk-inst-delete`] + `</li><li>` + more5ogarset[`hk-inst-keys`] + `</li></ul></div></div>`), _0x104c66)
 						if (_0x104c66[`hasOwnProperty`](more2ogarset)) {
 							var more1ogarset = _0x104c66[more2ogarset],
-								_0x167e37 = '';
-							for (var _0x12efde in _0x597e73)
-								if (_0x597e73[`hasOwnProperty`](_0x12efde) && _0x597e73[_0x12efde] === more2ogarset) {
-									_0x167e37 = _0x12efde;
+								more3ogarset = '';
+							for (var more4ogarset in ogario1Hotkeys)
+								if (ogario1Hotkeys[`hasOwnProperty`](more4ogarset) && ogario1Hotkeys[more4ogarset] === more2ogarset) {
+									more3ogarset = more4ogarset;
 									break;
 								} if ('hk-switchServerMode' === more2ogarset && _0x1e0996 && !_0x1e0996[`privateIP`]) continue;
 							if (`command` === more1ogarset[`type`]) {
-								var _0x4ee245 = more2ogarset[`replace`](`hk-`, '');
-								moreogarset('#hotkeys-cfg')['append'](`<div class=\"row\"><div class=\"key-label\"><input id=\"` + _0x4ee245 + `\" class=\"command-in form-control input-sm\" value=\"` + _0xbfbffb[_0x4ee245] + `\" maxlength=\"80\" /></div><div class=\"default-key\">` + more1ogarset['defaultKey'] + `</div><div class=\"custom-key\"><input id=\"` + more2ogarset + `\" class=\"custom-key-in form-control input-sm\" value=\"` + _0x167e37 + `\" /></div></div>`);
-							} else moreogarset(`#hotkeys-cfg`)[`append`](`<div class=\"row\"><div class=\"key-label\">` + more1ogarset[`label`] + `</div><div class=\"default-key\">` + more1ogarset[`defaultKey`] + `</div><div class=\"custom-key\"><input id=\"` + more2ogarset + `\" class=\"custom-key-in form-control input-sm\" value=\"` + _0x167e37 + `\" /></div></div>`);
+								var ogarbuffed = more2ogarset[`replace`](`hk-`, '');
+								moreogarset('#hotkeys-cfg')['append'](`<div class=\"row\"><div class=\"key-label\"><input id=\"` + ogarbuffed + `\" class=\"command-in form-control input-sm\" value=\"` + ogario1Commands[ogarbuffed] + `\" maxlength=\"80\" /></div><div class=\"default-key\">` + more1ogarset['defaultKey'] + `</div><div class=\"custom-key\"><input id=\"` + more2ogarset + `\" class=\"custom-key-in form-control input-sm\" value=\"` + more3ogarset + `\" /></div></div>`);
+							} else moreogarset(`#hotkeys-cfg`)[`append`](`<div class=\"row\"><div class=\"key-label\">` + more1ogarset[`label`] + `</div><div class=\"default-key\">` + more1ogarset[`defaultKey`] + `</div><div class=\"custom-key\"><input id=\"` + more2ogarset + `\" class=\"custom-key-in form-control input-sm\" value=\"` + more3ogarset + `\" /></div></div>`);
 						} moreogarset(document)['on'](`click`, `#reset-hotkeys`, function (more2ogarset) {
 						more2ogarset[`preventDefault`](), ogarsettings[`resetHotkeys`]();
 					}), moreogarset(document)['on'](`click`, `#save-hotkeys`, function (more2ogarset) {
@@ -4700,22 +4700,22 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					return '' !== more2ogarset ? '' !== more1ogarset ? more2ogarset + '+' + more1ogarset : more2ogarset : more1ogarset;
 				},
 				'deleteHotkey': function (ogarsettings, more2ogarset) {
-					delete _0x597e73[ogarsettings], moreogarset('#' + more2ogarset)[`val`]('');
+					delete ogario1Hotkeys[ogarsettings], moreogarset('#' + more2ogarset)[`val`]('');
 				},
 				'setDefaultHotkey': function (ogarsettings) {
 					var more2ogarset = !0x1;
-					return _0x104c66[ogarsettings] && !_0x597e73[`hasOwnProperty`](_0x104c66[ogarsettings][`defaultKey`]) ? (more2ogarset = _0x104c66[ogarsettings][`defaultKey`], _0x597e73[more2ogarset] = ogarsettings, more2ogarset) : more2ogarset;
+					return _0x104c66[ogarsettings] && !ogario1Hotkeys[`hasOwnProperty`](_0x104c66[ogarsettings][`defaultKey`]) ? (more2ogarset = _0x104c66[ogarsettings][`defaultKey`], ogario1Hotkeys[more2ogarset] = ogarsettings, more2ogarset) : more2ogarset;
 				},
 				'setHotkey': function (ogarsettings, more2ogarset) {
 					if (more2ogarset && (this[`lastPressedKey`] !== ogarsettings || this[`lastKeyId`] !== more2ogarset)) {
 						var more1ogarset = moreogarset('#' + more2ogarset)[`val`]();
 						if (this['deleteHotkey'](more1ogarset, more2ogarset), `DEL` !== ogarsettings) {
-							if (_0x597e73[ogarsettings] && _0x597e73[ogarsettings] !== more2ogarset) {
-								var _0x167e37 = _0x597e73[ogarsettings],
-									_0x12efde = this[`setDefaultHotkey`](_0x167e37);
-								_0x12efde ? (_0x597e73[_0x12efde] = _0x167e37, moreogarset('#' + _0x167e37)[`val`](_0x12efde)) : this[`deleteHotkey`](ogarsettings, _0x167e37);
+							if (ogario1Hotkeys[ogarsettings] && ogario1Hotkeys[ogarsettings] !== more2ogarset) {
+								var more3ogarset = ogario1Hotkeys[ogarsettings],
+									more4ogarset = this[`setDefaultHotkey`](more3ogarset);
+								more4ogarset ? (ogario1Hotkeys[more4ogarset] = more3ogarset, moreogarset('#' + more3ogarset)[`val`](more4ogarset)) : this[`deleteHotkey`](ogarsettings, more3ogarset);
 							}
-							_0x597e73[ogarsettings] = more2ogarset, moreogarset('#' + more2ogarset)[`val`](ogarsettings), `hk-chatMessage` === more2ogarset && (_0x597e73[`spec-messageKey`] = ogarsettings), this[`lastPressedKey`] = ogarsettings, this[`lastKeyId`] = more2ogarset;
+							ogario1Hotkeys[ogarsettings] = more2ogarset, moreogarset('#' + more2ogarset)[`val`](ogarsettings), `hk-chatMessage` === more2ogarset && (ogario1Hotkeys[`spec-messageKey`] = ogarsettings), this[`lastPressedKey`] = ogarsettings, this[`lastKeyId`] = more2ogarset;
 						}
 					}
 				},
@@ -4736,47 +4736,47 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 
 		function _0x3eddc8() {
 			var ogarsettings = more2ogarset['innerWidth'],
-				_0x167e37 = more2ogarset[`innerHeight`],
-				_0x12efde = moreogarset(`#helloContainer`),
-				_0x4ee245 = _0x12efde['innerHeight']();
-			_0x4ee245 > 0x0 ? more1ogarset['menuHeight'] = _0x4ee245 : _0x4ee245 = more1ogarset['menuHeight'] || 0x26a;
-			var _0x24c7a0 = Math['min'](0x1, _0x167e37 / _0x4ee245),
-				_0x2f0ea0 = _0x4ee245 * _0x24c7a0,
-				_0xa193a8 = Math['round'](_0x167e37 / 0x2 - 0.5 * _0x2f0ea0),
-				_0xbfbffb = 'translate(-50%, 0%) scale(' + _0x24c7a0 + ')';
-			_0x12efde[`css`](`transform`, _0xbfbffb), _0x12efde[`css`](`-ms-transform`, _0xbfbffb), _0x12efde[`css`](`-webkit-transform`, _0xbfbffb), _0x12efde[`css`]('top', _0xa193a8 + 'px'), more1ogarset[`innerW`] = ogarsettings, more1ogarset[`innerH`] = _0x167e37;
+				more3ogarset = more2ogarset[`innerHeight`],
+				more4ogarset = moreogarset(`#helloContainer`),
+				ogarbuffed = more4ogarset['innerHeight']();
+			ogarbuffed > 0x0 ? more1ogarset['menuHeight'] = ogarbuffed : ogarbuffed = more1ogarset['menuHeight'] || 0x26a;
+			var ogarlanguage = Math['min'](0x1, more3ogarset / ogarbuffed),
+				ogaractuallanguage = ogarbuffed * ogarlanguage,
+				more5ogarset = Math['round'](more3ogarset / 0x2 - 0.5 * ogaractuallanguage),
+				ogario1Commands = 'translate(-50%, 0%) scale(' + ogarlanguage + ')';
+			more4ogarset[`css`](`transform`, ogario1Commands), more4ogarset[`css`](`-ms-transform`, ogario1Commands), more4ogarset[`css`](`-webkit-transform`, ogario1Commands), more4ogarset[`css`]('top', more5ogarset + 'px'), more1ogarset[`innerW`] = ogarsettings, more1ogarset[`innerH`] = more3ogarset;
 		}
 
 		function _0x2e41ee() {
 			_0x1e0996[`protocolMode`] || (more2ogarset[`onkeydown`] = function (ogarsettings) {});
 		}
 		document[`onkeydown`] = function (ogarsettings) {
-			var more2ogarset = _0xf796ea['getPressedKey'](ogarsettings);
-			if (('INPUT' !== ogarsettings[`target`]['tagName'] || ogarsettings[`target`][`className`] === _0xf796ea[`inputClassName`] || more2ogarset === _0x597e73[`spec-messageKey`]) && '' !== more2ogarset && !_0x124c14[more2ogarset]) {
+			var more2ogarset = lastkeys['getPressedKey'](ogarsettings);
+			if (('INPUT' !== ogarsettings[`target`]['tagName'] || ogarsettings[`target`][`className`] === lastkeys[`inputClassName`] || more2ogarset === ogario1Hotkeys[`spec-messageKey`]) && '' !== more2ogarset && !_0x124c14[more2ogarset]) {
 				if (_0x124c14[more2ogarset] = !0x0, `ESC` === more2ogarset) return ogarsettings[`preventDefault`](), void(_0x1e0996 && _0x1e0996[`showMenu`]());
-				if (ogarsettings[`target`][`className`] === _0xf796ea[`inputClassName`]) return ogarsettings[`preventDefault`](), void _0xf796ea[`setHotkey`](more2ogarset, ogarsettings[`target`]['id']);
-				if (_0x597e73[more2ogarset]) {
+				if (ogarsettings[`target`][`className`] === lastkeys[`inputClassName`]) return ogarsettings[`preventDefault`](), void lastkeys[`setHotkey`](more2ogarset, ogarsettings[`target`]['id']);
+				if (ogario1Hotkeys[more2ogarset]) {
 					ogarsettings[`preventDefault`]();
-					var more1ogarset = _0x597e73[more2ogarset];
+					var more1ogarset = ogario1Hotkeys[more2ogarset];
 					'' !== more1ogarset && _0x104c66[more1ogarset] && _0x104c66[more1ogarset][`keyDown`] && _0x104c66[more1ogarset][`keyDown`]();
 				}
 			}
 		}, document['onkeyup'] = function (ogarsettings) {
-			var more2ogarset = _0xf796ea[`getPressedKey`](ogarsettings);
+			var more2ogarset = lastkeys[`getPressedKey`](ogarsettings);
 			if ('' !== more2ogarset) {
-				if (_0x597e73[more2ogarset]) {
-					var more1ogarset = _0x597e73[more2ogarset];
+				if (ogario1Hotkeys[more2ogarset]) {
+					var more1ogarset = ogario1Hotkeys[more2ogarset];
 					'' !== more1ogarset && _0x104c66[more1ogarset] && _0x104c66[more1ogarset][`keyUp`] && _0x104c66[more1ogarset][`keyUp`]();
 				}
 				_0x124c14[more2ogarset] = !0x1;
 			}
 		}, more2ogarset[`onmousedown`] = function (ogarsettings) {
-			moreogarset(`#overlays`)['is'](`:visible`) || (0x2 == ogarsettings['which'] ? (ogarsettings['preventDefault'](), _0x1e0996 && _0x1e0996[`sendCommand`](0xa)) : (more3ogarset['mouseSplit'] && (0x1 == ogarsettings[`which`] && !more3ogarset[`mouseInvert`] || 0x3 == ogarsettings[`which`] && more3ogarset[`mouseInvert`]) && (ogarsettings[`preventDefault`](), _0x1e0996 && _0x1e0996[`split`]()), more3ogarset['mouseFeed'] && (0x3 == ogarsettings[`which`] && !more3ogarset[`mouseInvert`] || 0x1 == ogarsettings[`which`] && more3ogarset[`mouseInvert`]) && (ogarsettings[`preventDefault`](), _0x1e0996 && _0x1e0996[`macroFeed`](!0x0))));
+			moreogarset(`#overlays`)['is'](`:visible`) || (0x2 == ogarsettings['which'] ? (ogarsettings['preventDefault'](), _0x1e0996 && _0x1e0996[`sendCommand`](0xa)) : (ogario1Settings['mouseSplit'] && (0x1 == ogarsettings[`which`] && !ogario1Settings[`mouseInvert`] || 0x3 == ogarsettings[`which`] && ogario1Settings[`mouseInvert`]) && (ogarsettings[`preventDefault`](), _0x1e0996 && _0x1e0996[`split`]()), ogario1Settings['mouseFeed'] && (0x3 == ogarsettings[`which`] && !ogario1Settings[`mouseInvert`] || 0x1 == ogarsettings[`which`] && ogario1Settings[`mouseInvert`]) && (ogarsettings[`preventDefault`](), _0x1e0996 && _0x1e0996[`macroFeed`](!0x0))));
 		}, more2ogarset[`onmouseup`] = function (ogarsettings) {
-			more3ogarset[`mouseFeed`] && (0x3 == ogarsettings[`which`] && !more3ogarset[`mouseInvert`] || 0x1 == ogarsettings[`which`] && more3ogarset[`mouseInvert`]) && _0x1e0996 && _0x1e0996['macroFeed'](!0x1);
+			ogario1Settings[`mouseFeed`] && (0x3 == ogarsettings[`which`] && !ogario1Settings[`mouseInvert`] || 0x1 == ogarsettings[`which`] && ogario1Settings[`mouseInvert`]) && _0x1e0996 && _0x1e0996['macroFeed'](!0x1);
 		}, more2ogarset[`onbeforeunload`] = function (ogarsettings) {
-			return more1ogarset[`play`] ? _0xa193a8[`exit`] : void 0x0;
-		}, more1ogarset = doagarcommand, _0x167e37 = ogarsettings('buffer')[`Buffer`], _0x12efde = ogarsettings(`lz4`), `/ogario` === more2ogarset[`location`]['pathname'] && _0x5cd246('/' + more2ogarset['location']['hash']), more2ogarset[`onresize`] = function () {
+			return more1ogarset[`play`] ? more5ogarset[`exit`] : void 0x0;
+		}, more1ogarset = doagarcommand, more3ogarset = ogarsettings('buffer')[`Buffer`], more4ogarset = ogarsettings(`lz4`), `/ogario` === more2ogarset[`location`]['pathname'] && _0x5cd246('/' + more2ogarset['location']['hash']), more2ogarset[`onresize`] = function () {
 			_0x53e5f0[`resizeCanvas`](), _0x3eddc8();
 		}, _0xa75b95(), more2ogarset[`core`] = {
 			'connect': function (ogarsettings) {
@@ -4820,7 +4820,7 @@ _0x40f031[_0x6c71('0x5')]=function(_0x4bffa7){return null!=_0x4bffa7&&(_0x31bf3a
 					doagarcommand[`sendMessage`](more2ogarset);
 				} else console[`log`](`ProxyMobileData ERROR: Array data required.`);
 			}
-		}, more2ogarset['master'][`getClientVersion`](), csssettings[`init`](), _0x1e0996[`init`](), _0x1e0996[`getDefaultSettings`](), _0x1e0996[`connect`](), _0xf796ea[`init`](), doagarcommand['init'](), _0x53e5f0[`init`](), more2ogarset[`master`][`init`](), _0x3eddc8();
+		}, more2ogarset['master'][`getClientVersion`](), csssettings[`init`](), _0x1e0996[`init`](), _0x1e0996[`getDefaultSettings`](), _0x1e0996[`connect`](), lastkeys[`init`](), doagarcommand['init'](), _0x53e5f0[`init`](), more2ogarset[`master`][`init`](), _0x3eddc8();
 	}(window, window[`ogario`], window[`jQuery`]);
 }, {
 	'buffer': 0x3,
