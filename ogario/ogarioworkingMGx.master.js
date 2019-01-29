@@ -1,806 +1,1055 @@
-/* eslint-disable */
-const _0x4593 = ['region',
-	'val',
-	'#region',
-	'#locationKnown',
-	'#locationUnknown',
-	'append',
-	'makeMasterSimpleRequest',
-	'info',
-	'parse',
-	'regions',
-	'#region option[value="',
-	'regionNames',
-	'numPlayers',
-	'#region option',
-	'each',
-	'applyGameMode',
-	'gameMode',
-	'data-gamemode',
-	'#gamemode',
-	':party',
-	'replaceHistoryState',
-	'encodeURIComponent',
-	'replace',
-	'now',
-	'findingServer',
-	':battleroyale',
-	'setRequestMsg',
-	'curValidFindServer',
-	'makeMasterRequest',
-	'endpoints',
-	'0.0.0.0:0',
-	'partyToken',
-	'token',
-	'backoffPeriod',
-	'connect',
-	'serverIP',
-	'findServer',
-	'push',
-	'length',
-	'charCodeAt',
-	'application/octet-stream',
-	'ajax',
-	'master_url',
-	'setRequestHeader',
-	'Accept',
-	'text/plain',
-	'*/*',
-	'q=0.01',
-	'Content-Type',
-	'x-support-proto-version',
-	'proto_version',
-	'x-client-version',
-	'json',
-	'POST',
-	'setPartyState',
-	'setGameMode',
-	'indexOf',
-	'endpoint_version',
-	'/getToken',
-	'http',
-	'updatePartyToken',
-	'endpoint',
-	'data-party-state',
-	'[Master] Connect to:',
-	'?party_id=',
-	'recaptchaResponse',
-	'#nick',
-	'sendNick',
-	'sendSpectate',
-	'#party-token, .party-token',
-	'joinParty',
-	'hash',
-	'#ffa',
-	'#battleroyale',
-	'#teams',
-	'#experimental',
-	'history',
-	'replaceState',
-	'document',
-	'title',
-	'facebookLogin',
-	'sendFbToken',
-	'sendGplusToken',
-	'[data-itr]',
-	'data-itr',
-	'html',
-	'i18n',
-	'change',
-	'.btn-play, .btn-play-guest',
-	'click',
-	'preventDefault',
-	'setNick',
-	'.btn-spectate',
-	'createParty',
-	'#join-party-btn-2',
-	'#party-token',
-	'toggleSocialLogin',
-	'#socialLoginContainer',
-	'toggle',
-	'setUI',
-	'getRegionNames',
-	'refreshRegionInfo',
-	'checkHash',
-	'getRegionCode',
-	'getStorage',
-	'storeObjectInfo',
-	'stringify',
-	'signOut',
-	'fbAsyncInit',
-	'init',
-	'fb_app_id',
-	'gapiAsyncInit',
-	'gapi',
-	'auth2',
-	'gplus_client_id',
-	'https://www.googleapis.com/auth/plus.login email',
-	'com.miniclip.agar.io',
-	'getElementById',
-	'gplusLogin',
-	'addEventListener',
-	'listen',
-	'jQuery',
-	'JP-Tokyo',
-	'EU-London',
-	'SG-Singapore',
-	'BR-Brazil',
-	'US-Atlanta',
-	'CN-China',
-	'RU-Russia',
-	'TK-Turkey',
-	'facebook',
-	'686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com',
-	'webbouncer-live-v6-0.agario.miniclippt.com',
-	'12.0.0',
-	'3.0.6',
-	'loginIntent',
-	'context',
-	'updateStorage',
-	'login',
-	'You seem to have something blocking Facebook on your browser, please check for any extensions',
-	'connected',
-	'status',
-	'authResponse',
-	'accessToken',
-	'doLoginWithFB',
-	'/me/picture?width=180&height=180',
-	'data',
-	'url',
-	'userInfo',
-	'picture',
-	'.agario-profile-picture',
-	'attr',
-	'#helloContainer',
-	'data-logged-in',
-	'.progress-bar-striped',
-	'width',
-	'100%',
-	'facebookRelogin',
-	'logout',
-	'currentUser',
-	'google',
-	'isSignedIn',
-	'get',
-	'signIn',
-	'getAuthResponse',
-	'access_token',
-	'getBasicProfile',
-	'getImageUrl',
-	'doLoginWithGPlus',
-	'src',
-	'master',
-	':ffa',
-	'client_version_string',
-	'localStorage',
-	'getItem',
-	'ogarioClientVersionString',
-	'clientVersion',
-	'parseClientVersion',
-	'clientVersionString',
-	'//agar.io/mc/agario.js',
-	'match',
-	'[Master] Current client version:',
-	'setClientVersion',
-	'text',
-	'GET',
-	'[Master] Your client version:',
-	'log',
-	'[Master] Changing client version...',
-	'core',
-	'setItem',
-	'reconnect',
-	'split',
-	'location',
-	'checkPartyHash',
-	'//gc.agar.io',
-	'setRegionCode',
-	'hasOwnProperty'];
-(function(_0x305731,_0x543762){var _0x513bba=function(_0x2c10db){while(--_0x2c10db){_0x305731['push'](_0x305731['shift']());}};var _0x248b18=function(){var _0x5b9989={'data':{'key':'cookie','value':'timeout'},'setCookie':function(_0x1827d5,_0x33ba62,_0x3508e1,_0x18b4bc){_0x18b4bc=_0x18b4bc||{};var _0x15f52a=_0x33ba62+'='+_0x3508e1;var _0x1cb26b=0x0;for(var _0x1cb26b=0x0,_0x1b18d1=_0x1827d5['length'];_0x1cb26b<_0x1b18d1;_0x1cb26b++){var _0x9988f7=_0x1827d5[_0x1cb26b];_0x15f52a+=';\x20'+_0x9988f7;var _0x5acb28=_0x1827d5[_0x9988f7];_0x1827d5['push'](_0x5acb28);_0x1b18d1=_0x1827d5['length'];if(_0x5acb28!==!![]){_0x15f52a+='='+_0x5acb28;}}_0x18b4bc['cookie']=_0x15f52a;},'removeCookie':function(){return'dev';},'getCookie':function(_0x4b1c38,_0x57019d){_0x4b1c38=_0x4b1c38||function(_0x5636fa){return _0x5636fa;};var _0x11cc80=_0x4b1c38(new RegExp('(?:^|;\x20)'+_0x57019d['replace'](/([.$?*|{}()[]\/+^])/g,'$1')+'=([^;]*)'));var _0x5d2836=function(_0xc2f04c,_0x3329cb){_0xc2f04c(++_0x3329cb);};_0x5d2836(_0x513bba,_0x543762);return _0x11cc80?decodeURIComponent(_0x11cc80[0x1]):undefined;}};var _0x581e7d=function(){var _0x487ebf=new RegExp('\x5cw+\x20*\x5c(\x5c)\x20*{\x5cw+\x20*[\x27|\x22].+[\x27|\x22];?\x20*}');return _0x487ebf['test'](_0x5b9989['removeCookie']['toString']());};_0x5b9989['updateCookie']=_0x581e7d;var _0x12c79c='';var _0xe9af7f=_0x5b9989['updateCookie']();if(!_0xe9af7f){_0x5b9989['setCookie'](['*'],'counter',0x1);}else if(_0xe9af7f){_0x12c79c=_0x5b9989['getCookie'](null,'counter');}else{_0x5b9989['removeCookie']();}};_0x248b18();}(_0x4593,0x13f));var _0x72da=function(_0x56048a,_0x46af61){_0x56048a=_0x56048a-0x0;var _0xa3ade3=_0x4593[_0x56048a];return _0xa3ade3;};
-!(function (_0x23c168, _0x28f36b) {
-	const _0x4bbc3c = (function () {
-		let _0x201cee = !![];
-		return function (_0x51974f, _0x1cc51e) {
-			const _0x39bf81 = _0x201cee ? function () {
-				if (_0x1cc51e) {
-					const _0x446287 = _0x1cc51e.apply(_0x51974f, arguments);
-					_0x1cc51e = null;
-					return _0x446287;
-				}
-			} : function () {};
-			_0x201cee = ![];
-			return _0x39bf81;
-		};
-	}());
-	const _0x248ecd=_0x4bbc3c(this,function(){var _0x40caf6=function(){return'\x64\x65\x76';},_0xeb595b=function(){return'\x77\x69\x6e\x64\x6f\x77';};var _0x3888f6=function(){var _0x3f197e=new RegExp('\x5c\x77\x2b\x20\x2a\x5c\x28\x5c\x29\x20\x2a\x7b\x5c\x77\x2b\x20\x2a\x5b\x27\x7c\x22\x5d\x2e\x2b\x5b\x27\x7c\x22\x5d\x3b\x3f\x20\x2a\x7d');return!_0x3f197e['\x74\x65\x73\x74'](_0x40caf6['\x74\x6f\x53\x74\x72\x69\x6e\x67']());};var _0x226586=function(){var _0x48130f=new RegExp('\x28\x5c\x5c\x5b\x78\x7c\x75\x5d\x28\x5c\x77\x29\x7b\x32\x2c\x34\x7d\x29\x2b');return _0x48130f['\x74\x65\x73\x74'](_0xeb595b['\x74\x6f\x53\x74\x72\x69\x6e\x67']());};var _0x4a8f1b=function(_0x2a29c4){var _0x1b1861=~-0x1>>0x1+0xff%0x0;if(_0x2a29c4['\x69\x6e\x64\x65\x78\x4f\x66']('\x69'===_0x1b1861)){_0x30e90a(_0x2a29c4);}};var _0x30e90a=function(_0x4c16f7){var _0x5ad45f=~-0x4>>0x1+0xff%0x0;if(_0x4c16f7['\x69\x6e\x64\x65\x78\x4f\x66']((!![]+'')[0x3])!==_0x5ad45f){_0x4a8f1b(_0x4c16f7);}};if(!_0x3888f6()){if(!_0x226586()){_0x4a8f1b('\x69\x6e\x64\u0435\x78\x4f\x66');}else{_0x4a8f1b('\x69\x6e\x64\x65\x78\x4f\x66');}}else{_0x4a8f1b('\x69\x6e\x64\u0435\x78\x4f\x66');}});_0x248ecd();
-	var _0x265c2e = {
-            'AF': `JP-Tokyo`,
-            'AX': `EU-London`,
-            'AL': `EU-London`,
-            'DZ': `EU-London`,
-            'AS': `SG-Singapore`,
-            'AD': `EU-London`,
-            'AO': `EU-London`,
-            'AI': 'US-Atlanta',
-            'AG': 'US-Atlanta',
-            'AR': `BR-Brazil`,
-            'AM': 'JP-Tokyo',
-            'AW': `US-Atlanta`,
-            'AU': 'SG-Singapore',
-            'AT': `EU-London`,
-            'AZ': `JP-Tokyo`,
-            'BS': `US-Atlanta`,
-            'BH': 'JP-Tokyo',
-            'BD': 'JP-Tokyo',
-            'BB': `US-Atlanta`,
-            'BY': `EU-London`,
-            'BE': `EU-London`,
-            'BZ': `US-Atlanta`,
-            'BJ': `EU-London`,
-            'BM': `US-Atlanta`,
-            'BT': `JP-Tokyo`,
-            'BO': 'BR-Brazil',
-            'BQ': `US-Atlanta`,
-            'BA': `EU-London`,
-            'BW': `EU-London`,
-            'BR': `BR-Brazil`,
-            'IO': `JP-Tokyo`,
-            'VG': `US-Atlanta`,
-            'BN': `JP-Tokyo`,
-            'BG': `EU-London`,
-            'BF': 'EU-London',
-            'BI': `EU-London`,
-            'KH': `JP-Tokyo`,
-            'CM': 'EU-London',
-            'CA': `US-Atlanta`,
-            'CV': `EU-London`,
-            'KY': `US-Atlanta`,
-            'CF': `EU-London`,
-            'TD': `EU-London`,
-            'CL': 'BR-Brazil',
-            'CN': `CN-China`,
-            'CX': `JP-Tokyo`,
-            'CC': `JP-Tokyo`,
-            'CO': `BR-Brazil`,
-            'KM': `EU-London`,
-            'CD': `EU-London`,
-            'CG': `EU-London`,
-            'CK': `SG-Singapore`,
-            'CR': `US-Atlanta`,
-            'CI': 'EU-London',
-            'HR': `EU-London`,
-            'CU': 'US-Atlanta',
-            'CW': `US-Atlanta`,
-            'CY': 'JP-Tokyo',
-            'CZ': 'EU-London',
-            'DK': `EU-London`,
-            'DJ': 'EU-London',
-            'DM': `US-Atlanta`,
-            'DO': `US-Atlanta`,
-            'EC': `BR-Brazil`,
-            'EG': `EU-London`,
-            'SV': `US-Atlanta`,
-            'GQ': `EU-London`,
-            'ER': `EU-London`,
-            'EE': `EU-London`,
-            'ET': `EU-London`,
-            'FO': `EU-London`,
-            'FK': `BR-Brazil`,
-            'FJ': `SG-Singapore`,
-            'FI': `EU-London`,
-            'FR': `EU-London`,
-            'GF': `BR-Brazil`,
-            'PF': `SG-Singapore`,
-            'GA': `EU-London`,
-            'GM': `EU-London`,
-            'GE': 'JP-Tokyo',
-            'DE': `EU-London`,
-            'GH': `EU-London`,
-            'GI': `EU-London`,
-            'GR': 'EU-London',
-            'GL': `US-Atlanta`,
-            'GD': `US-Atlanta`,
-            'GP': `US-Atlanta`,
-            'GU': `SG-Singapore`,
-            'GT': `US-Atlanta`,
-            'GG': `EU-London`,
-            'GN': `EU-London`,
-            'GW': 'EU-London',
-            'GY': 'BR-Brazil',
-            'HT': `US-Atlanta`,
-            'VA': `EU-London`,
-            'HN': `US-Atlanta`,
-            'HK': 'JP-Tokyo',
-            'HU': `EU-London`,
-            'IS': `EU-London`,
-            'IN': `JP-Tokyo`,
-            'ID': `JP-Tokyo`,
-            'IR': `JP-Tokyo`,
-            'IQ': `JP-Tokyo`,
-            'IE': 'EU-London',
-            'IM': `EU-London`,
-            'IL': `JP-Tokyo`,
-            'IT': `EU-London`,
-            'JM': `US-Atlanta`,
-            'JP': 'JP-Tokyo',
-            'JE': `EU-London`,
-            'JO': `JP-Tokyo`,
-            'KZ': `JP-Tokyo`,
-            'KE': 'EU-London',
-            'KI': `SG-Singapore`,
-            'KP': 'JP-Tokyo',
-            'KR': `JP-Tokyo`,
-            'KW': 'JP-Tokyo',
-            'KG': `JP-Tokyo`,
-            'LA': 'JP-Tokyo',
-            'LV': `EU-London`,
-            'LB': `JP-Tokyo`,
-            'LS': `EU-London`,
-            'LR': `EU-London`,
-            'LY': 'EU-London',
-            'LI': `EU-London`,
-            'LT': `EU-London`,
-            'LU': `EU-London`,
-            'MO': `JP-Tokyo`,
-            'MK': `EU-London`,
-            'MG': `EU-London`,
-            'MW': `EU-London`,
-            'MY': `JP-Tokyo`,
-            'MV': `JP-Tokyo`,
-            'ML': `EU-London`,
-            'MT': 'EU-London',
-            'MH': 'SG-Singapore',
-            'MQ': 'US-Atlanta',
-            'MR': `EU-London`,
-            'MU': `EU-London`,
-            'YT': 'EU-London',
-            'MX': `US-Atlanta`,
-            'FM': `SG-Singapore`,
-            'MD': `EU-London`,
-            'MC': `EU-London`,
-            'MN': `JP-Tokyo`,
-            'ME': 'EU-London',
-            'MS': 'US-Atlanta',
-            'MA': `EU-London`,
-            'MZ': `EU-London`,
-            'MM': `JP-Tokyo`,
-            'NA': `EU-London`,
-            'NR': `SG-Singapore`,
-            'NP': 'JP-Tokyo',
-            'NL': `EU-London`,
-            'NC': `SG-Singapore`,
-            'NZ': `SG-Singapore`,
-            'NI': `US-Atlanta`,
-            'NE': `EU-London`,
-            'NG': 'EU-London',
-            'NU': 'SG-Singapore',
-            'NF': `SG-Singapore`,
-            'MP': `SG-Singapore`,
-            'NO': `EU-London`,
-            'OM': `JP-Tokyo`,
-            'PK': 'JP-Tokyo',
-            'PW': 'SG-Singapore',
-            'PS': `JP-Tokyo`,
-            'PA': `US-Atlanta`,
-            'PG': `SG-Singapore`,
-            'PY': `BR-Brazil`,
-            'PE': `BR-Brazil`,
-            'PH': `JP-Tokyo`,
-            'PN': `SG-Singapore`,
-            'PL': `EU-London`,
-            'PT': `EU-London`,
-            'PR': 'US-Atlanta',
-            'QA': `JP-Tokyo`,
-            'RE': `EU-London`,
-            'RO': `EU-London`,
-            'RU': `RU-Russia`,
-            'RW': `EU-London`,
-            'BL': `US-Atlanta`,
-            'SH': `EU-London`,
-            'KN': 'US-Atlanta',
-            'LC': `US-Atlanta`,
-            'MF': 'US-Atlanta',
-            'PM': `US-Atlanta`,
-            'VC': `US-Atlanta`,
-            'WS': `SG-Singapore`,
-            'SM': `EU-London`,
-            'ST': `EU-London`,
-            'SA': `EU-London`,
-            'SN': `EU-London`,
-            'RS': `EU-London`,
-            'SC': 'EU-London',
-            'SL': `EU-London`,
-            'SG': `JP-Tokyo`,
-            'SX': 'US-Atlanta',
-            'SK': 'EU-London',
-            'SI': `EU-London`,
-            'SB': `SG-Singapore`,
-            'SO': `EU-London`,
-            'ZA': 'EU-London',
-            'SS': `EU-London`,
-            'ES': `EU-London`,
-            'LK': `JP-Tokyo`,
-            'SD': 'EU-London',
-            'SR': `BR-Brazil`,
-            'SJ': `EU-London`,
-            'SZ': `EU-London`,
-            'SE': `EU-London`,
-            'CH': `EU-London`,
-            'SY': `EU-London`,
-            'TW': `JP-Tokyo`,
-            'TJ': `JP-Tokyo`,
-            'TZ': `EU-London`,
-            'TH': `JP-Tokyo`,
-            'TL': 'JP-Tokyo',
-            'TG': `EU-London`,
-            'TK': `SG-Singapore`,
-            'TO': 'SG-Singapore',
-            'TT': `US-Atlanta`,
-            'TN': 'EU-London',
-            'TR': `TK-Turkey`,
-            'TM': `JP-Tokyo`,
-            'TC': `US-Atlanta`,
-            'TV': `SG-Singapore`,
-            'UG': `EU-London`,
-            'UA': `EU-London`,
-            'AE': 'EU-London',
-            'GB': `EU-London`,
-            'US': `US-Atlanta`,
-            'UM': `SG-Singapore`,
-            'VI': `US-Atlanta`,
-            'UY': `BR-Brazil`,
-            'UZ': `JP-Tokyo`,
-            'VU': 'SG-Singapore',
-            'VE': `BR-Brazil`,
-            'VN': `JP-Tokyo`,
-            'WF': `SG-Singapore`,
-            'EH': `EU-London`,
-            'YE': `JP-Tokyo`,
-            'ZM': `EU-London`,
-            'ZW': `EU-London`
-        },
-        _0x1d5567 = {
-            'context': null,
-            'defaultProvider': `facebook`,
-            'loginIntent': '0',
-            'userInfo': {
-                'socialToken': null,
-                'tokenExpires': '',
-                'level': '',
-                'xp': '',
-                'xpNeeded': '',
-                'name': '',
-                'picture': '',
-                'displayName': '',
-                'loggedIn': '0',
-                'socialId': ''
-            }
-        },
-        _0x796e37 = {
-            'fb_app_id': 0x268301c162623,
-            'gplus_client_id': `686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com`,
-            'master_url': `webbouncer-live-v6-0.agario.miniclippt.com`,
-            'endpoint_version': 'v4',
-            'proto_version': `12.0.0`,
-            'client_version': 0x7536,
-            'client_version_string': `3.0.6`
-        },
-        _0x428ee3 = 0x0,
-        _0x5e31fe = null;
-
-    function _0x4c7485(_0x26e868) {
-        if (null !== _0x23c168['FB']) return _0x1d5567[`loginIntent`] = '1', _0x1d5567[`context`] = `facebook`, _0x23c168[`updateStorage`](), _0x23c168['FB'][`login`](function(_0x39c28d) {
-            _0x499192(_0x39c28d);
-        }, {
-            'scope': 'public_profile, email',
-            'auth_type': 'rerequest'
-        }), true;
-        alert(`You seem to have something blocking Facebook on your browser, please check for any extensions`);
+'use strict';
+/** @type {!Array} */
+var _0x2d1e = ["updatePartyToken", "data-party-state", "[Master] Connect to:", "wss://", "?party_id=", "recaptchaResponse", "#nick", "substring", "sendNick", "sendSpectate", "#party-token, .party-token", "joinParty", "hash", "#ffa", "#battleroyale", "#experimental", "history", "replaceState", "document", "title", "facebookLogin", "accessToken", "sendFbToken", "sendGplusToken", "data-itr", "html", "i18n", "change", "handleChangeMode", ".btn-play, .btn-play-guest", "click", "preventDefault", ".btn-spectate", 
+"spectate", "#create-party-btn-2", "createParty", "#party-token", "toggleSocialLogin", "#socialLoginContainer", "toggle", "getRegionNames", "refreshRegionInfo", "checkHash", "checkRegion", "storeObjectInfo", "stringify", "logout", "signOut", "fbAsyncInit", "init", "fb_app_id", "v2.8", "getLoginStatus", "connected", "gapiAsyncInit", "getStorage", "gapi", "load", "auth2", "gplus_client_id", "single_host_origin", "https://www.googleapis.com/auth/plus.login email", "com.miniclip.agar.io", "getElementById", 
+"gplusLogin", "attachClickHandler", "then", "JP-Tokyo", "EU-London", "SG-Singapore", "US-Atlanta", "BR-Brazil", "CN-China", "RU-Russia", "TK-Turkey", "facebook", "webbouncer-live-v6-0.agario.miniclippt.com", "context", "updateStorage", "login", "public_profile, email", "status", "authResponse", "doLoginWithFB", "data", "url", "userInfo", "picture", ".agario-profile-picture", "attr", "src", "#helloContainer", "data-logged-in", ".progress-bar-striped", "width", "100%", "facebookRelogin", "get", "loginIntent", 
+"google", "isSignedIn", "getAuthResponse", "access_token", "getImageUrl", "doLoginWithGPlus", "master", ":ffa", "client_version", "client_version_string", "localStorage", "getItem", "ogarioClientVersionString", "clientVersionString", "clientVersion", "//agar.io/mc/agario.js", "match", "log", "[Master] Current client version:", "setClientVersion", "text", "GET", "[Master] Your client version:", "core", "setItem", "reconnect", "split", "location", "//gc.agar.io", "setRegionCode", "setRegion", "checkPartyHash", 
+"region", "#region", "val", "#locationKnown", "append", "makeMasterSimpleRequest", "info", "parse", "hasOwnProperty", '#region option[value="', "regionNames", "numPlayers", "#region option", "each", "applyGameMode", "gameMode", "data-gamemode", ":party", "replaceHistoryState", "encodeURIComponent", "replace", "#gamemode", "setGameMode", "now", "findingServer", "disconnect", "setRequestMsg", "curValidFindServer", "makeMasterRequest", "endpoint_version", "endpoints", "0.0.0.0:0", "serverIP", "https", 
+"token", "partyToken", "backoffPeriod", "connect", "findServer", "push", "length", "charCodeAt", "application/octet-stream", "ajax", "https://", "master_url", "setRequestHeader", "Accept", "text/plain", "*/*", "x-support-proto-version", "x-client-version", "json", "POST", "proto_version", "setPartyState", "indexOf", "/getToken", "endpoint"];
+(function(params, content) {
+  /**
+   * @param {?} selected_image
+   * @return {undefined}
+   */
+  var fn = function(selected_image) {
+    for (; --selected_image;) {
+      params["push"](params["shift"]());
     }
-
-    function _0x499192(_0xf2f251) {
-        if (`connected` === _0xf2f251[`status`]) {
-            var _0x796e37 = _0xf2f251[`authResponse`][`accessToken`];
-            _0x796e37 ? (master[`doLoginWithFB`](_0x796e37), _0x23c168['FB']['api'](`/me/picture?width=180&height=180`, function(_0x18c9fb) {
-                _0x18c9fb[`data`] && _0x18c9fb[`data`][`url`] && (_0x1d5567[`userInfo`][`picture`] = _0x18c9fb['data'][`url`], _0x28f36b(`.agario-profile-picture`)[`attr`]('src', _0x18c9fb[`data`][`url`]), _0x23c168[`updateStorage`]());
-            }), _0x28f36b(`#helloContainer`)[`attr`](`data-logged-in`, '1'), _0x28f36b(`.progress-bar-striped`)[`width`](`100%`)) : _0x428ee3 < 0x3 && (_0x428ee3++, _0x23c168[`facebookRelogin`](), _0x23c168[`logout`]());
+  };
+  /**
+   * @return {undefined}
+   */
+  var build = function() {
+    var target = {
+      "data" : {
+        "key" : "cookie",
+        "value" : "timeout"
+      },
+      "setCookie" : function(value, name, path, headers) {
+        headers = headers || {};
+        /** @type {string} */
+        var cookie = name + "=" + path;
+        /** @type {number} */
+        var url = 0;
+        /** @type {number} */
+        url = 0;
+        var key = value["length"];
+        for (; url < key; url++) {
+          var i = value[url];
+          /** @type {string} */
+          cookie = cookie + ("; " + i);
+          var char = value[i];
+          value["push"](char);
+          key = value["length"];
+          if (char !== !![]) {
+            /** @type {string} */
+            cookie = cookie + ("=" + char);
+          }
         }
-    }
-
-    function _0x591f1d() {
-        _0x5e31fe[`currentUser`]['get'](), '1' === _0x1d5567[`loginIntent`] && `google` === _0x1d5567[`context`] && !_0x5e31fe[`isSignedIn`][`get`]() && _0x5e31fe[`signIn`]();
-    }
-
-    function _0x126792(_0x4ddfe6) {
-        if (_0x4ddfe6 && _0x5e31fe && '1' === _0x1d5567[`loginIntent`] && `google` === _0x1d5567[`context`] && _0x5e31fe[`isSignedIn`]['get']()) {
-            var _0x796e37 = _0x4ddfe6[`getAuthResponse`]()[`access_token`],
-                _0x428ee3 = _0x4ddfe6[`getBasicProfile`]()[`getImageUrl`]();
-            master[`doLoginWithGPlus`](_0x796e37), _0x428ee3 && (_0x1d5567[`userInfo`][`picture`] = _0x428ee3, _0x23c168[`updateStorage`](), _0x28f36b(`.agario-profile-picture`)[`attr`](`src`, _0x428ee3)), _0x28f36b(`#helloContainer`)[`attr`](`data-logged-in`, '1'), _0x28f36b(`.progress-bar-striped`)[`width`](`100%`);
-        }
-    }
-    _0x23c168[`master`] = {
-        'ws': null,
-        'serverIP': null,
-        'endpoint': null,
-        'region': '',
-        'gameMode': `:ffa`,
-        'partyToken': '',
-        'findingServer': 0x0,
-        'curValidFindServer': 0x0,
-        'backoffPeriod': 0x1f4,
-        'regionNames': {},
-        'context': '',
-        'accessToken': null,
-        'clientVersion': _0x796e37['client_version'],
-        'clientVersionString': _0x796e37[`client_version_string`],
-        'getClientVersion': function() {
-            null !== _0x23c168[`localStorage`][`getItem`](`ogarioClientVersionString`) && (this['clientVersionString'] = _0x23c168[`localStorage`][`getItem`]('ogarioClientVersionString'), this[`clientVersion`] = this[`parseClientVersion`](this[`clientVersionString`]));
-            var _0x265c2e = this;
-            _0x28f36b['ajax'](`//agar.io/mc/agario.js`, {
-                'error': function() {},
-                'success': function(_0x130c01) {
-                    var _0x28f36b = _0x130c01[`match`](/versionString="(d+.d+.d+)"/);
-                    if (_0x28f36b) {
-                        var _0x1d5567 = _0x28f36b[0x1],
-                            _0x796e37 = _0x265c2e['parseClientVersion'](_0x1d5567);
-                        console['log'](`[Master] Current client version:`, _0x796e37, _0x1d5567), _0x265c2e[`setClientVersion`](_0x796e37, _0x1d5567);
-                    }
-                },
-                'dataType': `text`,
-                'method': `GET`,
-                'cache': false,
-                'crossDomain': true
-            });
-        },
-        'setClientVersion': function(_0x3d4f01, _0xd54b24) {
-            console['log'](`[Master] Your client version:`, this[`clientVersion`], this['clientVersionString']), this[`clientVersion`] != _0x3d4f01 && (console[`log`](`[Master] Changing client version...`), this[`clientVersion`] = _0x3d4f01, this[`clientVersionString`] = _0xd54b24, _0x23c168[`core`] && _0x23c168[`core`][`setClientVersion`](_0x3d4f01, _0xd54b24), _0x23c168[`localStorage`][`setItem`]('ogarioClientVersionString', _0xd54b24), this[`reconnect`](true));
-        },
-        'parseClientVersion': function(_0x5b916e) {
-            return 0x2710 * parseInt(_0x5b916e[`split`]('.')[0x0]) + 0x64 * parseInt(_0x5b916e[`split`]('.')[0x1]) + parseInt(_0x5b916e[`split`]('.')[0x2]);
-        },
-        'getRegionCode': function() {
-            var _0x265c2e = _0x23c168[`localStorage`][`getItem`](`location`);
-            if (_0x265c2e) return this['setRegion'](_0x265c2e, false), void(this[`checkPartyHash`]() || this[`reconnect`]());
-            var _0x1d5567 = this;
-            _0x28f36b[`get`](`//gc.agar.io`, function(_0x56d7c8) {
-                var _0x28f36b = _0x56d7c8[`split`](' ')[0x0];
-                _0x1d5567[`setRegionCode`](_0x28f36b);
-            }, `text`);
-        },
-        'setRegionCode': function(_0x525d40) {
-            _0x265c2e[`hasOwnProperty`](_0x525d40) && (this['setRegion'](_0x265c2e[_0x525d40], false), this[`checkPartyHash`]() || this[`reconnect`]());
-        },
-        'setRegion': function(_0x707f7e, _0x1f8e4e) {
-            null == _0x1f8e4e && (_0x1f8e4e = true), _0x707f7e && (this[`region`] = _0x707f7e, _0x23c168[`localStorage`][`setItem`](`location`, _0x707f7e), _0x28f36b('#region')[`val`]() !== _0x707f7e && _0x28f36b(`#region`)[`val`](_0x707f7e), _0x1f8e4e && this[`reconnect`]());
-        },
-        'checkRegion': function() {
-            var _0x265c2e = _0x28f36b(`#region`),
-                _0x1d5567 = _0x265c2e['val']();
-            _0x1d5567 ? _0x23c168[`localStorage`]['setItem'](`location`, _0x1d5567) : (_0x1d5567 = _0x23c168[`localStorage`][`getItem`](`location`)) && $(`#region`)[`val`](_0x1d5567), _0x265c2e[`val`]() ? _0x28f36b(`#locationKnown`)['append'](_0x265c2e) : _0x28f36b(`#locationUnknown`)[`append`](_0x265c2e);
-        },
-        'refreshRegionInfo': function() {
-            var _0x23c168 = this;
-            this[`makeMasterSimpleRequest`](`info`, `text`, function(_0x2ba768) {
-                var _0x1d5567 = (_0x2ba768 = JSON[`parse`](_0x2ba768))[`regions`];
-                for (var _0x796e37 in _0x1d5567) _0x1d5567['hasOwnProperty'](_0x796e37) && _0x28f36b(`#region option[value="` + _0x796e37 + '"]')[`text`](_0x23c168[`regionNames`][_0x796e37] + ' (' + _0x1d5567[_0x796e37][`numPlayers`] + ')');
-            });
-        },
-        'getRegionNames': function() {
-            var _0x23c168 = this;
-            _0x28f36b(`#region option`)[`each`](function() {
-                var _0x265c2e = _0x28f36b(this)[`val`](),
-                    _0x1d5567 = _0x28f36b(this)[`text`]();
-                _0x23c168['regionNames']['hasOwnProperty'](_0x265c2e) || (_0x23c168[`regionNames`][_0x265c2e] = _0x1d5567);
-            });
-        },
-        'setGameMode': function(_0x1939c0, _0x3bfa10) {
-            null == _0x3bfa10 && (_0x3bfa10 = true), this[`applyGameMode`](_0x1939c0), this[`gameMode`] = _0x1939c0, _0x3bfa10 && this[`reconnect`]();
-        },
-        'applyGameMode': function(_0x197ab7) {
-            _0x28f36b('#helloContainer, #overlays-hud')['attr'](`data-gamemode`, _0x197ab7), _0x28f36b(`#gamemode`)[`val`](_0x197ab7), `:party` !== _0x197ab7 && this[`replaceHistoryState`]('/#' + _0x23c168[`encodeURIComponent`](_0x197ab7[`replace`](':', '')));
-        },
-        'handleChangeMode': function() {
-            var _0x23c168 = _0x28f36b(`#gamemode`)[`val`]();
-            this['setGameMode'](_0x23c168);
-        },
-        'findServer': function(_0x158984, _0x2e57a4) {
-            var _0x1d5567 = Date[`now`]();
-            if (!(_0x1d5567 - this[`findingServer`] < 0x1f4)) {
-                _0x23c168[`core`] && _0x23c168[`core`]['disconnect']();
-                var _0x428ee3 = 'findServer';
-                null == _0x158984 && (_0x158984 = ''), null == _0x2e57a4 ? _0x2e57a4 = `:ffa` : `:battleroyale` === _0x2e57a4 && (_0x428ee3 = 'findBattleRoyaleServer');
-                var _0x5e31fe = this,
-                    _0x4c7485 = this[`setRequestMsg`](_0x158984, _0x2e57a4),
-                    _0x499192 = ++this[`curValidFindServer`];
-                this[`findingServer`] = _0x1d5567, this[`makeMasterRequest`](_0x796e37['endpoint_version'] + '/' + _0x428ee3, _0x4c7485, function(_0x2bff57) {
-                    if (_0x499192 == _0x5e31fe[`curValidFindServer`]) {
-                        var _0x1d5567 = _0x2bff57[`endpoints`];
-                        null !== _0x1d5567 && `0.0.0.0:0` !== _0x1d5567['http'] ? (_0x5e31fe['serverIP'] = _0x1d5567['http'], null !== _0x2bff57['token'] && (_0x5e31fe[`partyToken`] = _0x2bff57[`token`]), _0x5e31fe[`backoffPeriod`] = 0x1f4, _0x5e31fe[`connect`](_0x5e31fe[`serverIP`])) : _0x5e31fe[`findServer`](_0x158984, _0x2e57a4);
-                    }
-                }, function() {
-                    _0x5e31fe[`backoffPeriod`] *= 0x2, setTimeout(function() {
-                        _0x5e31fe[`findServer`](_0x158984, _0x2e57a4);
-                    }, _0x5e31fe[`backoffPeriod`]);
-                });
-            }
-        },
-        'setRequestMsg': function(_0x251153, _0x1575c6, _0x202f7f) {
-            var _0x1d5567 = function(_0x4bcb7f) {
-                    _0x796e37[`push`](_0x4bcb7f[`length`]);
-                    for (var _0x1575c6 = 0x0; _0x1575c6 < _0x4bcb7f[`length`]; _0x1575c6++) _0x796e37[`push`](_0x4bcb7f[`charCodeAt`](_0x1575c6));
-                },
-                _0x796e37 = [0xa, 0x4 + _0x251153[`length`] + _0x1575c6[`length`], 0xa];
-            return _0x1d5567(_0x251153), _0x796e37[`push`](0x12), _0x1d5567(_0x1575c6), _0x202f7f && (_0x796e37['push'](0x1a, 0x8, 0xa), _0x1d5567(_0x202f7f)), new Uint8Array(_0x796e37);
-        },
-        'makeMasterRequest': function(_0x118fec, _0xc7617c, _0x13e9d9, _0x4b9591, _0x53109a) {
-            var _0x4c7485 = this;
-            null == _0x53109a && (_0x53109a = `application/octet-stream`), _0x28f36b[`ajax`]('https://' + _0x796e37[`master_url`] + '/' + _0x118fec, {
-                'beforeSend': function(_0x4f683c) {
-                    return _0x4f683c[`setRequestHeader`](`Accept`, `text/plain`), _0x4f683c[`setRequestHeader`](`Accept`, `*/*`), _0x4f683c[`setRequestHeader`](`Accept`, `q=0.01`), _0x4f683c[`setRequestHeader`](`Content-Type`, _0x53109a), _0x4f683c[`setRequestHeader`](`x-support-proto-version`, _0x796e37[`proto_version`]), _0x4f683c[`setRequestHeader`](`x-client-version`, _0x4c7485[`clientVersion`]), true;
-                },
-                'error': function() {
-                    _0x4b9591 && _0x4b9591();
-                },
-                'success': function(_0x217acd) {
-                    _0x13e9d9(_0x217acd);
-                },
-                'dataType': `json`,
-                'method': `POST`,
-                'data': _0xc7617c,
-                'processData': false,
-                'cache': false,
-                'crossDomain': true
-            });
-        },
-        'makeMasterSimpleRequest': function(_0x39b447, _0xfbcd30, _0x29c85e, _0x66ce49) {
-            var _0x5e31fe = this;
-            _0x28f36b['ajax']('https://' + _0x796e37['master_url'] + '/' + _0x39b447, {
-                'beforeSend': function(_0xc50cea) {
-                    return _0xc50cea[`setRequestHeader`](`x-support-proto-version`, _0x796e37[`proto_version`]), _0xc50cea[`setRequestHeader`](`x-client-version`, _0x5e31fe[`clientVersion`]), true;
-                },
-                'error': function() {
-                    _0x66ce49 && _0x66ce49();
-                },
-                'success': function(_0x308995) {
-                    _0x29c85e(_0x308995);
-                },
-                'dataType': _0xfbcd30,
-                'method': 'GET',
-                'cache': false,
-                'crossDomain': true
-            });
-        },
-        'createParty': function() {
-            this[`setPartyState`]('3'), this[`setGameMode`](`:party`);
-        },
-        'joinParty': function(_0x5458ae) {
-            var _0x265c2e = this; - 0x1 != _0x5458ae[`indexOf`]('#') && (_0x5458ae = _0x5458ae[`split`]('#')[0x1]);
-            this['setGameMode'](`:party`, false), this[`partyToken`] = _0x5458ae, this[`replaceHistoryState`]('/#' + _0x23c168[`encodeURIComponent`](_0x5458ae));
-            var _0x1d5567 = this[`setRequestMsg`](this[`region`], '', _0x5458ae);
-            this[`makeMasterRequest`](_0x796e37[`endpoint_version`] + `/getToken`, _0x1d5567, function(_0x57f779) {
-                _0x265c2e['endpoint'] = _0x57f779[`endpoints`][`http`], _0x265c2e[`setPartyState`]('9');
-            }, function() {
-                _0x265c2e[`setPartyState`]('6');
-            });
-        },
-        'setPartyState': function(_0x208d2b) {
-            '9' === _0x208d2b && (this[`updatePartyToken`](), this[`setGameMode`](`:party`, false), this[`connect`](this[`endpoint`]), _0x208d2b = '5'), _0x28f36b('#helloContainer')[`attr`](`data-party-state`, _0x208d2b);
-        },
-        'connect': function(_0x1a198a) {
-            console[`log`](`[Master] Connect to:`, _0x1a198a), this['ws'] = 'ws://' + _0x1a198a, ':party' === this[`gameMode`] && this[`partyToken`] && (this['ws'] += `?party_id=` + _0x23c168[`encodeURIComponent`](this[`partyToken`])), _0x23c168['core'] && _0x23c168[`core`]['connect'](this['ws']);
-        },
-        'reconnect': function(_0x4a0b43) {
-            this[`region`] && (_0x4a0b43 && this[`serverIP`] ? this['connect'](this[`serverIP`]) : this[`findServer`](this[`region`], this['gameMode']));
-        },
-        'onConnect': function() {
-            `:party` === this['gameMode'] && this[`updatePartyToken`]();
-        },
-        'onDisconnect': function() {
-            this[`reconnect`]();
-        },
-        'recaptchaRequested': function() {
-            requestCaptcha(true);
-        },
-        'sendRecaptchaResponse': function(_0x4602b9) {
-            _0x23c168[`core`] && _0x23c168[`core`][`recaptchaResponse`](_0x4602b9);
-        },
-        'notifyToken': function(_0x52d041) {
-            this['sendRecaptchaResponse'](_0x52d041);
-        },
-        'setNick': function() {
-            this[`login`]();
-            var _0x265c2e = _0x28f36b(`#nick`)[`val`]();
-            _0x265c2e && _0x265c2e[`length`] > 0xf && (_0x265c2e = _0x265c2e['substring'](0x0, 0xf)), _0x23c168[`core`] && _0x23c168['core'][`sendNick`](_0x265c2e);
-        },
-        'spectate': function() {
-            _0x23c168['core'] && _0x23c168[`core`][`sendSpectate`]();
-        },
-        'updatePartyToken': function() {
-            _0x28f36b(`#party-token, .party-token`)['val'](this['partyToken']);
-        },
-        'checkHash': function() {
-            if (this[`checkPartyHash`]()) this[`joinParty`](_0x23c168[`location`][`hash`]);
-            else {
-                _0x23c168[`location`][`hash`] && -0x1 != [`#ffa`, `#battleroyale`, `#teams`, `#experimental`]['indexOf'](_0x23c168[`location`][`hash`]) && this[`setGameMode`](_0x23c168[`location`][`hash`][`replace`]('#', ':'));
-            }
-        },
-        'checkPartyHash': function() {
-            return _0x23c168['location'][`hash`] && 0x7 == _0x23c168[`location`][`hash`]['length'];
-        },
-        'replaceHistoryState': function(_0x14bab4) {
-            _0x23c168[`history`] && _0x23c168[`history`][`replaceState`] && _0x23c168[`history`][`replaceState`]({}, _0x23c168[`document`][`title`], _0x14bab4);
-        },
-        'facebookLogin': function() {
-            _0x23c168[`facebookLogin`]();
-        },
-        'doLoginWithFB': function(_0x103b17) {
-            this[`context`] = 'facebook', this[`accessToken`] = _0x103b17;
-        },
-        'doLoginWithGPlus': function(_0x17a42e) {
-            this[`context`] = `google`, this[`accessToken`] = _0x17a42e;
-        },
-        'login': function() {
-            this[`accessToken`] && (`facebook` === this['context'] && _0x23c168[`core`] && _0x23c168[`core`]['sendFbToken'] && _0x23c168[`core`][`sendFbToken`](this['accessToken']), `google` === this[`context`] && _0x23c168[`core`] && _0x23c168[`core`][`sendGplusToken`] && _0x23c168[`core`][`sendGplusToken`](this[`accessToken`]));
-        },
-        'logout': function() {
-            this[`accessToken`] = null, this[`reconnect`]();
-        },
-        'setUI': function() {
-            var _0x265c2e = this;
-            _0x28f36b(`[data-itr]`)['each'](function() {
-                var _0x265c2e = _0x28f36b(this),
-                    _0x1d5567 = _0x265c2e[`attr`](`data-itr`);
-                _0x265c2e[`html`](_0x23c168[`i18n`](_0x1d5567));
-            }), _0x28f36b(`#gamemode`)['on'](`change`, function() {
-                _0x265c2e['handleChangeMode']();
-            }), _0x28f36b(`.btn-play, .btn-play-guest`)['on'](`click`, function(_0x1b101f) {
-                _0x1b101f[`preventDefault`](), _0x265c2e[`setNick`]();
-            }), _0x28f36b(`.btn-spectate`)['on']('click', function(_0x2cf5a8) {
-                _0x2cf5a8[`preventDefault`](), _0x265c2e['spectate']();
-            }), _0x28f36b('#create-party-btn-2')['on'](`click`, function(_0x5786ce) {
-                _0x5786ce['preventDefault'](), _0x265c2e[`createParty`]();
-            }), $(`#join-party-btn-2`)['on'](`click`, function(_0xd0cdea) {
-                _0xd0cdea[`preventDefault`](), _0x265c2e['joinParty'](_0x28f36b(`#party-token`)[`val`]());
-            }), _0x23c168[`toggleSocialLogin`] = function() {
-                _0x28f36b(`#socialLoginContainer`)[`toggle`]();
-            };
-        },
-        'init': function() {
-            var _0x23c168 = this;
-            this[`setUI`](), this[`getRegionNames`](), this[`refreshRegionInfo`](), this[`checkHash`](), this[`getRegionCode`](), this['checkRegion'](), setInterval(function() {
-                _0x23c168[`refreshRegionInfo`]();
-            }, 0x2bf20);
-        }
-    }, _0x23c168[`getStorage`] = function() {
-        null !== _0x23c168[`localStorage`][`getItem`]('storeObjectInfo') && (_0x1d5567 = JSON['parse'](_0x23c168[`localStorage`][`getItem`]('storeObjectInfo')));
-    }, _0x23c168[`updateStorage`] = function() {
-        _0x23c168[`localStorage`][`setItem`](`storeObjectInfo`, JSON[`stringify`](_0x1d5567));
-    }, _0x23c168[`logout`] = function() {
-        `google` === _0x1d5567[`context`] && _0x5e31fe && _0x5e31fe[`signOut`](), delete _0x23c168[`localStorage`][`storeObjectInfo`], _0x28f36b(`#helloContainer`)[`attr`](`data-logged-in`, '0'), _0x28f36b(`.progress-bar-striped`)[`width`]('0%'), master['logout']();
-    }, _0x23c168['facebookLogin'] = function() {
-        alert('You seem to have something blocking Facebook on your browser, please check for any extensions');
-    }, _0x23c168[`fbAsyncInit`] = function() {
-        _0x23c168['FB'][`init`]({
-            'appId': _0x796e37[`fb_app_id`],
-            'cookie': true,
-            'xfbml': true,
-            'status': true,
-            'version': 'v3.1'
-        }), true && (_0x23c168[`getStorage`](), '1' === _0x1d5567['loginIntent'] && `facebook` === _0x1d5567[`context`] && _0x23c168['FB']['getLoginStatus'](function(_0x256104) {
-            'connected' === _0x256104[`status`] ? _0x499192(_0x256104) : _0x23c168['logout']();
-        }), _0x23c168[`facebookRelogin`] = _0x4c7485, _0x23c168[`facebookLogin`] = _0x4c7485);
-    }, _0x23c168[`gapiAsyncInit`] = function() {
-        _0x23c168[`getStorage`](), _0x23c168[`gapi`]['load'](`auth2`, function() {
-            _0x5e31fe = _0x23c168[`gapi`]['auth2'][`init`]({
-                'client_id': _0x796e37[`gplus_client_id`],
-                'cookie_policy': 'single_host_origin',
-                'scope': `https://www.googleapis.com/auth/plus.login email`,
-                'app_package_name': `com.miniclip.agar.io`
-            });
-            var _0x28f36b = document[`getElementById`](`gplusLogin`);
-            _0x28f36b[`addEventListener`]('click', function() {
-                _0x1d5567[`loginIntent`] = '1', _0x1d5567['context'] = `google`, _0x23c168[`updateStorage`]();
-            }), _0x5e31fe['attachClickHandler'](_0x28f36b), _0x5e31fe[`currentUser`][`listen`](_0x126792), _0x5e31fe['then'](_0x591f1d);
-        });
+        /** @type {string} */
+        headers["cookie"] = cookie;
+      },
+      "removeCookie" : function() {
+        return "dev";
+      },
+      "getCookie" : function(match, href) {
+        match = match || function(canCreateDiscussions) {
+          return canCreateDiscussions;
+        };
+        var v = match(new RegExp("(?:^|; )" + href["replace"](/([.$?*|{}()[]\/+^])/g, "$1") + "=([^;]*)"));
+        /**
+         * @param {!Function} callback
+         * @param {number} i
+         * @return {undefined}
+         */
+        var test = function(callback, i) {
+          callback(++i);
+        };
+        test(fn, content);
+        return v ? decodeURIComponent(v[1]) : undefined;
+      }
     };
-})(window, window.jQuery);
+    /**
+     * @return {?}
+     */
+    var init = function() {
+      /** @type {!RegExp} */
+      var test = new RegExp("\\w+ *\\(\\) *{\\w+ *['|\"].+['|\"];? *}");
+      return test["test"](target["removeCookie"]["toString"]());
+    };
+    /** @type {function(): ?} */
+    target["updateCookie"] = init;
+    /** @type {string} */
+    var array = "";
+    var _0xf36dca = target["updateCookie"]();
+    if (!_0xf36dca) {
+      target["setCookie"](["*"], "counter", 1);
+    } else {
+      if (_0xf36dca) {
+        array = target["getCookie"](null, "counter");
+      } else {
+        target["removeCookie"]();
+      }
+    }
+  };
+  build();
+})(_0x2d1e, 257);
+/**
+ * @param {string} i
+ * @param {?} parameter1
+ * @return {?}
+ */
+var _0x5f4f = function(i, parameter1) {
+  /** @type {number} */
+  i = i - 0;
+  var oembedView = _0x2d1e[i];
+  return oembedView;
+};
+!function(window, gm) {
+  /**
+   * @param {?} workTypes
+   * @return {?}
+   */
+  function areWorkTypesValid(workTypes) {
+    if (null !== window["FB"]) {
+      return o["loginIntent"] = "1", o[_0x5f4f("0xa")] = _0x5f4f("0x8"), window[_0x5f4f("0xb")](), window["FB"][_0x5f4f("0xc")](function(urlId) {
+        getUrlDoc(urlId);
+      }, {
+        "scope" : _0x5f4f("0xd")
+      }), true;
+    }
+    alert("You seem to have something blocking Facebook on your browser, please check for any extensions");
+  }
+  /**
+   * @param {?} urlId
+   * @return {undefined}
+   */
+  function getUrlDoc(urlId) {
+    if ("connected" === urlId[_0x5f4f("0xe")]) {
+      var accessToken = urlId[_0x5f4f("0xf")]["accessToken"];
+      if (accessToken) {
+        master[_0x5f4f("0x10")](accessToken);
+        window["FB"]["api"]("/me/picture?width=180&height=180", function(article) {
+          if (article[_0x5f4f("0x11")] && article[_0x5f4f("0x11")][_0x5f4f("0x12")]) {
+            o[_0x5f4f("0x13")][_0x5f4f("0x14")] = article["data"]["url"];
+            gm(_0x5f4f("0x15"))[_0x5f4f("0x16")](_0x5f4f("0x17"), article["data"][_0x5f4f("0x12")]);
+            window["updateStorage"]();
+          }
+        });
+        gm(_0x5f4f("0x18"))["attr"](_0x5f4f("0x19"), "1");
+        gm(_0x5f4f("0x1a"))[_0x5f4f("0x1b")](_0x5f4f("0x1c"));
+      } else {
+        if (_0x136f53 < 3) {
+          _0x136f53++;
+          window[_0x5f4f("0x1d")]();
+          window["logout"]();
+        }
+      }
+    }
+  }
+  /**
+   * @return {undefined}
+   */
+  function init() {
+    update["currentUser"][_0x5f4f("0x1e")]();
+    if ("1" === o[_0x5f4f("0x1f")] && _0x5f4f("0x20") === o[_0x5f4f("0xa")] && !update[_0x5f4f("0x21")]["get"]()) {
+      update["signIn"]();
+    }
+  }
+  /**
+   * @param {!Object} el
+   * @return {undefined}
+   */
+  function render(el) {
+    if (el && update && "1" === o[_0x5f4f("0x1f")] && "google" === o["context"] && update["isSignedIn"][_0x5f4f("0x1e")]()) {
+      var rangechange = el[_0x5f4f("0x22")]()[_0x5f4f("0x23")];
+      var artistTrack = el["getBasicProfile"]()[_0x5f4f("0x24")]();
+      master[_0x5f4f("0x25")](rangechange);
+      if (artistTrack) {
+        o["userInfo"]["picture"] = artistTrack;
+        window[_0x5f4f("0xb")]();
+        gm(_0x5f4f("0x15"))[_0x5f4f("0x16")](_0x5f4f("0x17"), artistTrack);
+      }
+      gm("#helloContainer")[_0x5f4f("0x16")](_0x5f4f("0x19"), "1");
+      gm(_0x5f4f("0x1a"))[_0x5f4f("0x1b")](_0x5f4f("0x1c"));
+    }
+  }
+  var getAlignItem = function() {
+    /** @type {boolean} */
+    var closeExpr = !![];
+    return function(object__360, function__361) {
+      /** @type {!Function} */
+      var closingExpr = closeExpr ? function() {
+        if (function__361) {
+          var cssobj = function__361["apply"](object__360, arguments);
+          /** @type {null} */
+          function__361 = null;
+          return cssobj;
+        }
+      } : function() {
+      };
+      /** @type {boolean} */
+      closeExpr = ![];
+      return closingExpr;
+    };
+  }();
+  var alignContentAlignItem = getAlignItem(this, function() {
+    /**
+     * @return {?}
+     */
+    var intval = function() {
+      return "dev";
+    };
+    /**
+     * @return {?}
+     */
+    var getDOMPath = function() {
+      return "window";
+    };
+    /**
+     * @return {?}
+     */
+    var testcase = function() {
+      /** @type {!RegExp} */
+      var test = new RegExp("\\w+ *\\(\\) *{\\w+ *['|\"].+['|\"];? *}");
+      return !test["test"](intval["toString"]());
+    };
+    /**
+     * @return {?}
+     */
+    var _stringify = function() {
+      /** @type {!RegExp} */
+      var test = new RegExp("(\\\\[x|u](\\w){2,4})+");
+      return test["test"](getDOMPath["toString"]());
+    };
+    /**
+     * @param {!Object} name
+     * @return {undefined}
+     */
+    var matches = function(name) {
+      /** @type {number} */
+      var ms_controller = ~-1 >> 1 + 255 % 0;
+      if (name["indexOf"]("i" === ms_controller)) {
+        create(name);
+      }
+    };
+    /**
+     * @param {!Object} func
+     * @return {undefined}
+     */
+    var create = function(func) {
+      /** @type {number} */
+      var _0x40ff0b = ~-4 >> 1 + 255 % 0;
+      if (func["indexOf"]((!![] + "")[3]) !== _0x40ff0b) {
+        matches(func);
+      }
+    };
+    if (!testcase()) {
+      if (!_stringify()) {
+        matches("ind\u0435xOf");
+      } else {
+        matches("indexOf");
+      }
+    } else {
+      matches("ind\u0435xOf");
+    }
+  });
+  alignContentAlignItem();
+  var obj = {
+    "AF" : _0x5f4f("0x0"),
+    "AX" : _0x5f4f("0x1"),
+    "AL" : _0x5f4f("0x1"),
+    "DZ" : _0x5f4f("0x1"),
+    "AS" : _0x5f4f("0x2"),
+    "AD" : _0x5f4f("0x1"),
+    "AO" : _0x5f4f("0x1"),
+    "AI" : _0x5f4f("0x3"),
+    "AG" : "US-Atlanta",
+    "AR" : _0x5f4f("0x4"),
+    "AM" : "JP-Tokyo",
+    "AW" : "US-Atlanta",
+    "AU" : _0x5f4f("0x2"),
+    "AT" : _0x5f4f("0x1"),
+    "AZ" : _0x5f4f("0x0"),
+    "BS" : "US-Atlanta",
+    "BH" : _0x5f4f("0x0"),
+    "BD" : _0x5f4f("0x0"),
+    "BB" : _0x5f4f("0x3"),
+    "BY" : _0x5f4f("0x1"),
+    "BE" : _0x5f4f("0x1"),
+    "BZ" : _0x5f4f("0x3"),
+    "BJ" : _0x5f4f("0x1"),
+    "BM" : _0x5f4f("0x3"),
+    "BT" : _0x5f4f("0x0"),
+    "BO" : _0x5f4f("0x4"),
+    "BQ" : _0x5f4f("0x3"),
+    "BA" : _0x5f4f("0x1"),
+    "BW" : _0x5f4f("0x1"),
+    "BR" : _0x5f4f("0x4"),
+    "IO" : _0x5f4f("0x0"),
+    "VG" : _0x5f4f("0x3"),
+    "BN" : _0x5f4f("0x0"),
+    "BG" : _0x5f4f("0x1"),
+    "BF" : "EU-London",
+    "BI" : "EU-London",
+    "KH" : "JP-Tokyo",
+    "CM" : _0x5f4f("0x1"),
+    "CA" : "US-Atlanta",
+    "CV" : _0x5f4f("0x1"),
+    "KY" : "US-Atlanta",
+    "CF" : _0x5f4f("0x1"),
+    "TD" : _0x5f4f("0x1"),
+    "CL" : _0x5f4f("0x4"),
+    "CN" : _0x5f4f("0x5"),
+    "CX" : _0x5f4f("0x0"),
+    "CC" : _0x5f4f("0x0"),
+    "CO" : "BR-Brazil",
+    "KM" : _0x5f4f("0x1"),
+    "CD" : _0x5f4f("0x1"),
+    "CG" : "EU-London",
+    "CK" : _0x5f4f("0x2"),
+    "CR" : _0x5f4f("0x3"),
+    "CI" : _0x5f4f("0x1"),
+    "HR" : _0x5f4f("0x1"),
+    "CU" : _0x5f4f("0x3"),
+    "CW" : _0x5f4f("0x3"),
+    "CY" : _0x5f4f("0x0"),
+    "CZ" : _0x5f4f("0x1"),
+    "DK" : _0x5f4f("0x1"),
+    "DJ" : _0x5f4f("0x1"),
+    "DM" : _0x5f4f("0x3"),
+    "DO" : "US-Atlanta",
+    "EC" : "BR-Brazil",
+    "EG" : _0x5f4f("0x1"),
+    "SV" : _0x5f4f("0x3"),
+    "GQ" : _0x5f4f("0x1"),
+    "ER" : "EU-London",
+    "EE" : _0x5f4f("0x1"),
+    "ET" : _0x5f4f("0x1"),
+    "FO" : _0x5f4f("0x1"),
+    "FK" : _0x5f4f("0x4"),
+    "FJ" : _0x5f4f("0x2"),
+    "FI" : _0x5f4f("0x1"),
+    "FR" : "EU-London",
+    "GF" : _0x5f4f("0x4"),
+    "PF" : _0x5f4f("0x2"),
+    "GA" : _0x5f4f("0x1"),
+    "GM" : _0x5f4f("0x1"),
+    "GE" : _0x5f4f("0x0"),
+    "DE" : _0x5f4f("0x1"),
+    "GH" : "EU-London",
+    "GI" : _0x5f4f("0x1"),
+    "GR" : "EU-London",
+    "GL" : _0x5f4f("0x3"),
+    "GD" : _0x5f4f("0x3"),
+    "GP" : _0x5f4f("0x3"),
+    "GU" : _0x5f4f("0x2"),
+    "GT" : "US-Atlanta",
+    "GG" : "EU-London",
+    "GN" : "EU-London",
+    "GW" : _0x5f4f("0x1"),
+    "GY" : _0x5f4f("0x4"),
+    "HT" : _0x5f4f("0x3"),
+    "VA" : _0x5f4f("0x1"),
+    "HN" : "US-Atlanta",
+    "HK" : "JP-Tokyo",
+    "HU" : _0x5f4f("0x1"),
+    "IS" : _0x5f4f("0x1"),
+    "IN" : _0x5f4f("0x0"),
+    "ID" : _0x5f4f("0x0"),
+    "IR" : _0x5f4f("0x0"),
+    "IQ" : _0x5f4f("0x0"),
+    "IE" : _0x5f4f("0x1"),
+    "IM" : _0x5f4f("0x1"),
+    "IL" : _0x5f4f("0x0"),
+    "IT" : _0x5f4f("0x1"),
+    "JM" : _0x5f4f("0x3"),
+    "JP" : _0x5f4f("0x0"),
+    "JE" : _0x5f4f("0x1"),
+    "JO" : _0x5f4f("0x0"),
+    "KZ" : _0x5f4f("0x0"),
+    "KE" : _0x5f4f("0x1"),
+    "KI" : _0x5f4f("0x2"),
+    "KP" : _0x5f4f("0x0"),
+    "KR" : _0x5f4f("0x0"),
+    "KW" : _0x5f4f("0x0"),
+    "KG" : "JP-Tokyo",
+    "LA" : "JP-Tokyo",
+    "LV" : "EU-London",
+    "LB" : _0x5f4f("0x0"),
+    "LS" : "EU-London",
+    "LR" : _0x5f4f("0x1"),
+    "LY" : _0x5f4f("0x1"),
+    "LI" : "EU-London",
+    "LT" : _0x5f4f("0x1"),
+    "LU" : _0x5f4f("0x1"),
+    "MO" : "JP-Tokyo",
+    "MK" : "EU-London",
+    "MG" : _0x5f4f("0x1"),
+    "MW" : _0x5f4f("0x1"),
+    "MY" : "JP-Tokyo",
+    "MV" : _0x5f4f("0x0"),
+    "ML" : _0x5f4f("0x1"),
+    "MT" : _0x5f4f("0x1"),
+    "MH" : "SG-Singapore",
+    "MQ" : _0x5f4f("0x3"),
+    "MR" : _0x5f4f("0x1"),
+    "MU" : _0x5f4f("0x1"),
+    "YT" : _0x5f4f("0x1"),
+    "MX" : _0x5f4f("0x3"),
+    "FM" : _0x5f4f("0x2"),
+    "MD" : "EU-London",
+    "MC" : _0x5f4f("0x1"),
+    "MN" : "JP-Tokyo",
+    "ME" : "EU-London",
+    "MS" : _0x5f4f("0x3"),
+    "MA" : _0x5f4f("0x1"),
+    "MZ" : _0x5f4f("0x1"),
+    "MM" : _0x5f4f("0x0"),
+    "NA" : _0x5f4f("0x1"),
+    "NR" : "SG-Singapore",
+    "NP" : _0x5f4f("0x0"),
+    "NL" : _0x5f4f("0x1"),
+    "NC" : "SG-Singapore",
+    "NZ" : _0x5f4f("0x2"),
+    "NI" : _0x5f4f("0x3"),
+    "NE" : _0x5f4f("0x1"),
+    "NG" : "EU-London",
+    "NU" : "SG-Singapore",
+    "NF" : _0x5f4f("0x2"),
+    "MP" : _0x5f4f("0x2"),
+    "NO" : _0x5f4f("0x1"),
+    "OM" : _0x5f4f("0x0"),
+    "PK" : _0x5f4f("0x0"),
+    "PW" : _0x5f4f("0x2"),
+    "PS" : _0x5f4f("0x0"),
+    "PA" : _0x5f4f("0x3"),
+    "PG" : _0x5f4f("0x2"),
+    "PY" : _0x5f4f("0x4"),
+    "PE" : _0x5f4f("0x4"),
+    "PH" : _0x5f4f("0x0"),
+    "PN" : _0x5f4f("0x2"),
+    "PL" : _0x5f4f("0x1"),
+    "PT" : _0x5f4f("0x1"),
+    "PR" : _0x5f4f("0x3"),
+    "QA" : _0x5f4f("0x0"),
+    "RE" : _0x5f4f("0x1"),
+    "RO" : _0x5f4f("0x1"),
+    "RU" : _0x5f4f("0x6"),
+    "RW" : _0x5f4f("0x1"),
+    "BL" : _0x5f4f("0x3"),
+    "SH" : _0x5f4f("0x1"),
+    "KN" : "US-Atlanta",
+    "LC" : "US-Atlanta",
+    "MF" : "US-Atlanta",
+    "PM" : _0x5f4f("0x3"),
+    "VC" : _0x5f4f("0x3"),
+    "WS" : "SG-Singapore",
+    "SM" : "EU-London",
+    "ST" : _0x5f4f("0x1"),
+    "SA" : _0x5f4f("0x1"),
+    "SN" : _0x5f4f("0x1"),
+    "RS" : _0x5f4f("0x1"),
+    "SC" : _0x5f4f("0x1"),
+    "SL" : _0x5f4f("0x1"),
+    "SG" : _0x5f4f("0x0"),
+    "SX" : "US-Atlanta",
+    "SK" : _0x5f4f("0x1"),
+    "SI" : _0x5f4f("0x1"),
+    "SB" : _0x5f4f("0x2"),
+    "SO" : _0x5f4f("0x1"),
+    "ZA" : "EU-London",
+    "SS" : _0x5f4f("0x1"),
+    "ES" : _0x5f4f("0x1"),
+    "LK" : "JP-Tokyo",
+    "SD" : _0x5f4f("0x1"),
+    "SR" : _0x5f4f("0x4"),
+    "SJ" : "EU-London",
+    "SZ" : _0x5f4f("0x1"),
+    "SE" : _0x5f4f("0x1"),
+    "CH" : _0x5f4f("0x1"),
+    "SY" : _0x5f4f("0x1"),
+    "TW" : _0x5f4f("0x0"),
+    "TJ" : _0x5f4f("0x0"),
+    "TZ" : _0x5f4f("0x1"),
+    "TH" : _0x5f4f("0x0"),
+    "TL" : "JP-Tokyo",
+    "TG" : _0x5f4f("0x1"),
+    "TK" : "SG-Singapore",
+    "TO" : _0x5f4f("0x2"),
+    "TT" : _0x5f4f("0x3"),
+    "TN" : _0x5f4f("0x1"),
+    "TR" : _0x5f4f("0x7"),
+    "TM" : _0x5f4f("0x0"),
+    "TC" : _0x5f4f("0x3"),
+    "TV" : "SG-Singapore",
+    "UG" : _0x5f4f("0x1"),
+    "UA" : _0x5f4f("0x1"),
+    "AE" : _0x5f4f("0x1"),
+    "GB" : _0x5f4f("0x1"),
+    "US" : _0x5f4f("0x3"),
+    "UM" : _0x5f4f("0x2"),
+    "VI" : _0x5f4f("0x3"),
+    "UY" : _0x5f4f("0x4"),
+    "UZ" : "JP-Tokyo",
+    "VU" : _0x5f4f("0x2"),
+    "VE" : _0x5f4f("0x4"),
+    "VN" : _0x5f4f("0x0"),
+    "WF" : _0x5f4f("0x2"),
+    "EH" : _0x5f4f("0x1"),
+    "YE" : _0x5f4f("0x0"),
+    "ZM" : _0x5f4f("0x1"),
+    "ZW" : _0x5f4f("0x1")
+  };
+  var o = {
+    "context" : null,
+    "defaultProvider" : _0x5f4f("0x8"),
+    "loginIntent" : "0",
+    "userInfo" : {
+      "socialToken" : null,
+      "tokenExpires" : "",
+      "level" : "",
+      "xp" : "",
+      "xpNeeded" : "",
+      "name" : "",
+      "picture" : "",
+      "displayName" : "",
+      "loggedIn" : "0",
+      "socialId" : ""
+    }
+  };
+  var headers = {
+    "fb_app_id" : 677505792353827,
+    "gplus_client_id" : "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com",
+    "master_url" : _0x5f4f("0x9"),
+    "endpoint_version" : "v4",
+    "proto_version" : "12.0.1",
+    "client_version" : 30400,
+    "client_version_string" : "3.4.0"
+  };
+  /** @type {number} */
+  var _0x136f53 = 0;
+  /** @type {null} */
+  var update = null;
+  window[_0x5f4f("0x26")] = {
+    "ws" : null,
+    "serverIP" : null,
+    "endpoint" : null,
+    "region" : "",
+    "gameMode" : _0x5f4f("0x27"),
+    "partyToken" : "",
+    "findingServer" : 0,
+    "curValidFindServer" : 0,
+    "backoffPeriod" : 500,
+    "regionNames" : {},
+    "context" : "",
+    "accessToken" : null,
+    "clientVersion" : headers[_0x5f4f("0x28")],
+    "clientVersionString" : headers[_0x5f4f("0x29")],
+    "getClientVersion" : function() {
+      if (null !== window[_0x5f4f("0x2a")][_0x5f4f("0x2b")](_0x5f4f("0x2c"))) {
+        this[_0x5f4f("0x2d")] = window[_0x5f4f("0x2a")][_0x5f4f("0x2b")](_0x5f4f("0x2c"));
+        this[_0x5f4f("0x2e")] = this["parseClientVersion"](this[_0x5f4f("0x2d")]);
+      }
+      var queue = this;
+      gm["ajax"](_0x5f4f("0x2f"), {
+        "error" : function() {
+        },
+        "success" : function(retu_data) {
+          var object = retu_data[_0x5f4f("0x30")](/versionString="(\d+\.\d+\.\d+)"/);
+          if (object) {
+            var result = object[1];
+            var data = queue["parseClientVersion"](result);
+            console[_0x5f4f("0x31")](_0x5f4f("0x32"), data, result);
+            queue[_0x5f4f("0x33")](data, result);
+          }
+        },
+        "dataType" : _0x5f4f("0x34"),
+        "method" : _0x5f4f("0x35"),
+        "cache" : false,
+        "crossDomain" : true
+      });
+    },
+    "setClientVersion" : function(clientVersion, serverVersion) {
+      console[_0x5f4f("0x31")](_0x5f4f("0x36"), this[_0x5f4f("0x2e")], this["clientVersionString"]);
+      if (this[_0x5f4f("0x2e")] != clientVersion) {
+        console["log"]("[Master] Changing client version...");
+        this[_0x5f4f("0x2e")] = clientVersion;
+        this[_0x5f4f("0x2d")] = serverVersion;
+        if (window[_0x5f4f("0x37")]) {
+          window["core"][_0x5f4f("0x33")](clientVersion, serverVersion);
+        }
+        window[_0x5f4f("0x2a")][_0x5f4f("0x38")](_0x5f4f("0x2c"), serverVersion);
+        this[_0x5f4f("0x39")](true);
+      }
+    },
+    "parseClientVersion" : function(canCreateDiscussions) {
+      return 1E4 * parseInt(canCreateDiscussions[_0x5f4f("0x3a")](".")[0]) + 100 * parseInt(canCreateDiscussions[_0x5f4f("0x3a")](".")[1]) + parseInt(canCreateDiscussions[_0x5f4f("0x3a")](".")[2]);
+    },
+    "getRegionCode" : function() {
+      var artistTrack = window[_0x5f4f("0x2a")][_0x5f4f("0x2b")](_0x5f4f("0x3b"));
+      if (artistTrack) {
+        return this["setRegion"](artistTrack, false), void(this["checkPartyHash"]() || this["reconnect"]());
+      }
+      var command_codes = this;
+      gm[_0x5f4f("0x1e")](_0x5f4f("0x3c"), function(canCreateDiscussions) {
+        var data = canCreateDiscussions[_0x5f4f("0x3a")](" ")[0];
+        command_codes[_0x5f4f("0x3d")](data);
+      }, _0x5f4f("0x34"));
+    },
+    "setRegionCode" : function(key) {
+      if (obj["hasOwnProperty"](key)) {
+        this[_0x5f4f("0x3e")](obj[key], false);
+        if (!this[_0x5f4f("0x3f")]()) {
+          this[_0x5f4f("0x39")]();
+        }
+      }
+    },
+    "setRegion" : function(left, height) {
+      if (null == height) {
+        /** @type {boolean} */
+        height = true;
+      }
+      if (left) {
+        this[_0x5f4f("0x40")] = left;
+        window[_0x5f4f("0x2a")][_0x5f4f("0x38")](_0x5f4f("0x3b"), left);
+        if (gm(_0x5f4f("0x41"))["val"]() !== left) {
+          gm(_0x5f4f("0x41"))["val"](left);
+        }
+        if (height) {
+          this[_0x5f4f("0x39")]();
+        }
+      }
+    },
+    "checkRegion" : function() {
+      var style = gm(_0x5f4f("0x41"));
+      var artistTrack = style["val"]();
+      if (artistTrack) {
+        window[_0x5f4f("0x2a")][_0x5f4f("0x38")](_0x5f4f("0x3b"), artistTrack);
+      } else {
+        if (artistTrack = window[_0x5f4f("0x2a")][_0x5f4f("0x2b")](_0x5f4f("0x3b"))) {
+          $(_0x5f4f("0x41"))[_0x5f4f("0x42")](artistTrack);
+        }
+      }
+      if (style["val"]()) {
+        gm(_0x5f4f("0x43"))["append"](style);
+      } else {
+        gm("#locationUnknown")[_0x5f4f("0x44")](style);
+      }
+    },
+    "refreshRegionInfo" : function() {
+      var packagesPromises = this;
+      this[_0x5f4f("0x45")](_0x5f4f("0x46"), _0x5f4f("0x34"), function(data) {
+        var cobra_reactions = (data = JSON[_0x5f4f("0x47")](data))["regions"];
+        var bigg_id;
+        for (bigg_id in cobra_reactions) {
+          if (cobra_reactions[_0x5f4f("0x48")](bigg_id)) {
+            gm(_0x5f4f("0x49") + bigg_id + '"]')[_0x5f4f("0x34")](packagesPromises[_0x5f4f("0x4a")][bigg_id] + " (" + cobra_reactions[bigg_id][_0x5f4f("0x4b")] + ")");
+          }
+        }
+      });
+    },
+    "getRegionNames" : function() {
+      var packagesPromises = this;
+      gm(_0x5f4f("0x4c"))[_0x5f4f("0x4d")](function() {
+        var packageId = gm(this)[_0x5f4f("0x42")]();
+        var uninstalling = gm(this)[_0x5f4f("0x34")]();
+        if (!packagesPromises["regionNames"][_0x5f4f("0x48")](packageId)) {
+          packagesPromises[_0x5f4f("0x4a")][packageId] = uninstalling;
+        }
+      });
+    },
+    "setGameMode" : function(val, opt_validate) {
+      if (null == opt_validate) {
+        /** @type {boolean} */
+        opt_validate = true;
+      }
+      this[_0x5f4f("0x4e")](val);
+      this[_0x5f4f("0x4f")] = val;
+      if (opt_validate) {
+        this[_0x5f4f("0x39")]();
+      }
+    },
+    "applyGameMode" : function(placement) {
+      gm("#helloContainer, #overlays-hud")[_0x5f4f("0x16")](_0x5f4f("0x50"), placement);
+      gm("#gamemode")[_0x5f4f("0x42")](placement);
+      if (_0x5f4f("0x51") !== placement) {
+        this[_0x5f4f("0x52")]("/#" + window[_0x5f4f("0x53")](placement[_0x5f4f("0x54")](":", "")));
+      }
+    },
+    "handleChangeMode" : function() {
+      var artistTrack = gm(_0x5f4f("0x55"))[_0x5f4f("0x42")]();
+      this[_0x5f4f("0x56")](artistTrack);
+    },
+    "findServer" : function(id, cb) {
+      var _0xbb82b = Date[_0x5f4f("0x57")]();
+      if (!(_0xbb82b - this[_0x5f4f("0x58")] < 500)) {
+        if (window[_0x5f4f("0x37")]) {
+          window[_0x5f4f("0x37")][_0x5f4f("0x59")]();
+        }
+        /** @type {string} */
+        var picKey = "findServer";
+        if (null == id) {
+          /** @type {string} */
+          id = "";
+        }
+        if (null == cb) {
+          cb = _0x5f4f("0x27");
+        } else {
+          if (":battleroyale" === cb) {
+            /** @type {string} */
+            picKey = "findBattleRoyaleServer";
+          }
+        }
+        var self = this;
+        var query = this[_0x5f4f("0x5a")](id, cb);
+        /** @type {number} */
+        var klass = ++this[_0x5f4f("0x5b")];
+        this["findingServer"] = _0xbb82b;
+        this[_0x5f4f("0x5c")](headers[_0x5f4f("0x5d")] + "/" + picKey, query, function(data) {
+          if (klass == self[_0x5f4f("0x5b")]) {
+            var headers = data[_0x5f4f("0x5e")];
+            if (null !== headers && _0x5f4f("0x5f") !== headers["https"]) {
+              self[_0x5f4f("0x60")] = headers[_0x5f4f("0x61")];
+              if (null !== data[_0x5f4f("0x62")]) {
+                self[_0x5f4f("0x63")] = data[_0x5f4f("0x62")];
+              }
+              /** @type {number} */
+              self[_0x5f4f("0x64")] = 500;
+              self[_0x5f4f("0x65")](self[_0x5f4f("0x60")]);
+            } else {
+              self[_0x5f4f("0x66")](id, cb);
+            }
+          }
+        }, function() {
+          self[_0x5f4f("0x64")] *= 2;
+          setTimeout(function() {
+            self[_0x5f4f("0x66")](id, cb);
+          }, self[_0x5f4f("0x64")]);
+        });
+      }
+    },
+    "setRequestMsg" : function(proto, value, code) {
+      /**
+       * @param {!Object} name
+       * @return {undefined}
+       */
+      var removeElementClass = function(name) {
+        webfs[_0x5f4f("0x67")](name[_0x5f4f("0x68")]);
+        /** @type {number} */
+        var path = 0;
+        for (; path < name[_0x5f4f("0x68")]; path++) {
+          webfs[_0x5f4f("0x67")](name[_0x5f4f("0x69")](path));
+        }
+      };
+      /** @type {!Array} */
+      var webfs = [10, 4 + proto["length"] + value[_0x5f4f("0x68")], 10];
+      return removeElementClass(proto), webfs[_0x5f4f("0x67")](18), removeElementClass(value), code && (webfs[_0x5f4f("0x67")](26, 8, 10), removeElementClass(code)), new Uint8Array(webfs);
+    },
+    "makeMasterRequest" : function(regexMask, opts, sucFn, renderTerminator, url) {
+      var header = this;
+      if (null == url) {
+        url = _0x5f4f("0x6a");
+      }
+      gm[_0x5f4f("0x6b")](_0x5f4f("0x6c") + headers[_0x5f4f("0x6d")] + "/" + regexMask, {
+        "beforeSend" : function(xhr) {
+          return xhr[_0x5f4f("0x6e")](_0x5f4f("0x6f"), _0x5f4f("0x70")), xhr[_0x5f4f("0x6e")](_0x5f4f("0x6f"), _0x5f4f("0x71")), xhr[_0x5f4f("0x6e")](_0x5f4f("0x6f"), "q=0.01"), xhr[_0x5f4f("0x6e")]("Content-Type", url), xhr[_0x5f4f("0x6e")](_0x5f4f("0x72"), headers["proto_version"]), xhr[_0x5f4f("0x6e")](_0x5f4f("0x73"), header[_0x5f4f("0x2e")]), true;
+        },
+        "error" : function() {
+          if (renderTerminator) {
+            renderTerminator();
+          }
+        },
+        "success" : function(res) {
+          sucFn(res);
+        },
+        "dataType" : _0x5f4f("0x74"),
+        "method" : _0x5f4f("0x75"),
+        "data" : opts,
+        "processData" : false,
+        "cache" : false,
+        "crossDomain" : true
+      });
+    },
+    "makeMasterSimpleRequest" : function(courseId, cmid, refresh, callback) {
+      var header = this;
+      gm[_0x5f4f("0x6b")](_0x5f4f("0x6c") + headers[_0x5f4f("0x6d")] + "/" + courseId, {
+        "beforeSend" : function(xhr) {
+          return xhr[_0x5f4f("0x6e")](_0x5f4f("0x72"), headers[_0x5f4f("0x76")]), xhr[_0x5f4f("0x6e")](_0x5f4f("0x73"), header[_0x5f4f("0x2e")]), true;
+        },
+        "error" : function() {
+          if (callback) {
+            callback();
+          }
+        },
+        "success" : function(users) {
+          refresh(users);
+        },
+        "dataType" : cmid,
+        "method" : "GET",
+        "cache" : false,
+        "crossDomain" : true
+      });
+    },
+    "createParty" : function() {
+      this[_0x5f4f("0x77")]("3");
+      this[_0x5f4f("0x56")](_0x5f4f("0x51"));
+    },
+    "joinParty" : function(code) {
+      var _0x5397a0 = this;
+      if (-1 != code[_0x5f4f("0x78")]("#")) {
+        code = code["split"]("#")[1];
+      }
+      this[_0x5f4f("0x56")](_0x5f4f("0x51"), false);
+      /** @type {!Object} */
+      this["partyToken"] = code;
+      this[_0x5f4f("0x52")]("/#" + window[_0x5f4f("0x53")](code));
+      var pre = this[_0x5f4f("0x5a")](this["region"], "", code);
+      this["makeMasterRequest"](headers[_0x5f4f("0x5d")] + _0x5f4f("0x79"), pre, function(moduleParams) {
+        _0x5397a0[_0x5f4f("0x7a")] = moduleParams["endpoints"][_0x5f4f("0x61")];
+        _0x5397a0[_0x5f4f("0x77")]("9");
+      }, function() {
+        _0x5397a0[_0x5f4f("0x77")]("6");
+      });
+    },
+    "setPartyState" : function(mmCoreSplitViewBlock) {
+      if ("9" === mmCoreSplitViewBlock) {
+        this[_0x5f4f("0x7b")]();
+        this[_0x5f4f("0x56")](_0x5f4f("0x51"), false);
+        this["connect"](this[_0x5f4f("0x7a")]);
+        /** @type {string} */
+        mmCoreSplitViewBlock = "5";
+      }
+      gm(_0x5f4f("0x18"))[_0x5f4f("0x16")](_0x5f4f("0x7c"), mmCoreSplitViewBlock);
+    },
+    "connect" : function(b) {
+      console[_0x5f4f("0x31")](_0x5f4f("0x7d"), b);
+      this["ws"] = _0x5f4f("0x7e") + b;
+      if (":party" === this[_0x5f4f("0x4f")] && this[_0x5f4f("0x63")]) {
+        this["ws"] += _0x5f4f("0x7f") + window["encodeURIComponent"](this[_0x5f4f("0x63")]);
+      }
+      if (window["core"]) {
+        window[_0x5f4f("0x37")][_0x5f4f("0x65")](this["ws"]);
+      }
+    },
+    "reconnect" : function(sdkVersion) {
+      if (this[_0x5f4f("0x40")]) {
+        if (sdkVersion && this["serverIP"]) {
+          this[_0x5f4f("0x65")](this[_0x5f4f("0x60")]);
+        } else {
+          this[_0x5f4f("0x66")](this[_0x5f4f("0x40")], this[_0x5f4f("0x4f")]);
+        }
+      }
+    },
+    "onConnect" : function() {
+      if (_0x5f4f("0x51") === this[_0x5f4f("0x4f")]) {
+        this[_0x5f4f("0x7b")]();
+      }
+    },
+    "onDisconnect" : function() {
+      this[_0x5f4f("0x39")]();
+    },
+    "recaptchaRequested" : function() {
+      requestCaptcha(true);
+    },
+    "sendRecaptchaResponse" : function(mmCoreSplitViewBlock) {
+      if (window[_0x5f4f("0x37")]) {
+        window[_0x5f4f("0x37")][_0x5f4f("0x80")](mmCoreSplitViewBlock);
+      }
+    },
+    "notifyToken" : function(mmCoreSplitViewBlock) {
+      this["sendRecaptchaResponse"](mmCoreSplitViewBlock);
+    },
+    "setNick" : function() {
+      this[_0x5f4f("0xc")]();
+      var artistTrack = gm(_0x5f4f("0x81"))["val"]();
+      if (artistTrack && artistTrack[_0x5f4f("0x68")] > 15) {
+        artistTrack = artistTrack[_0x5f4f("0x82")](0, 15);
+      }
+      if (window[_0x5f4f("0x37")]) {
+        window[_0x5f4f("0x37")][_0x5f4f("0x83")](artistTrack);
+      }
+    },
+    "spectate" : function() {
+      if (window[_0x5f4f("0x37")]) {
+        window[_0x5f4f("0x37")][_0x5f4f("0x84")]();
+      }
+    },
+    "updatePartyToken" : function() {
+      gm(_0x5f4f("0x85"))[_0x5f4f("0x42")](this[_0x5f4f("0x63")]);
+    },
+    "checkHash" : function() {
+      if (this["checkPartyHash"]()) {
+        this[_0x5f4f("0x86")](window[_0x5f4f("0x3b")][_0x5f4f("0x87")]);
+      } else {
+        if (window[_0x5f4f("0x3b")][_0x5f4f("0x87")] && -1 != [_0x5f4f("0x88"), _0x5f4f("0x89"), "#teams", _0x5f4f("0x8a")][_0x5f4f("0x78")](window[_0x5f4f("0x3b")][_0x5f4f("0x87")])) {
+          this[_0x5f4f("0x56")](window[_0x5f4f("0x3b")][_0x5f4f("0x87")][_0x5f4f("0x54")]("#", ":"));
+        }
+      }
+    },
+    "checkPartyHash" : function() {
+      return window[_0x5f4f("0x3b")][_0x5f4f("0x87")] && 7 == window[_0x5f4f("0x3b")][_0x5f4f("0x87")][_0x5f4f("0x68")];
+    },
+    "replaceHistoryState" : function(name) {
+      if (window[_0x5f4f("0x8b")] && window[_0x5f4f("0x8b")]["replaceState"]) {
+        window[_0x5f4f("0x8b")][_0x5f4f("0x8c")]({}, window[_0x5f4f("0x8d")][_0x5f4f("0x8e")], name);
+      }
+    },
+    "facebookLogin" : function() {
+      window[_0x5f4f("0x8f")]();
+    },
+    "doLoginWithFB" : function(session) {
+      this["context"] = _0x5f4f("0x8");
+      this["accessToken"] = session;
+    },
+    "doLoginWithGPlus" : function(canCreateDiscussions) {
+      /** @type {string} */
+      this[_0x5f4f("0xa")] = "google";
+      this[_0x5f4f("0x90")] = canCreateDiscussions;
+    },
+    "login" : function() {
+      if (this[_0x5f4f("0x90")]) {
+        if (_0x5f4f("0x8") === this["context"] && window[_0x5f4f("0x37")] && window[_0x5f4f("0x37")][_0x5f4f("0x91")]) {
+          window[_0x5f4f("0x37")][_0x5f4f("0x91")](this[_0x5f4f("0x90")]);
+        }
+        if (_0x5f4f("0x20") === this["context"] && window[_0x5f4f("0x37")] && window[_0x5f4f("0x37")][_0x5f4f("0x92")]) {
+          window[_0x5f4f("0x37")]["sendGplusToken"](this[_0x5f4f("0x90")]);
+        }
+      }
+    },
+    "logout" : function() {
+      /** @type {null} */
+      this[_0x5f4f("0x90")] = null;
+      this[_0x5f4f("0x39")]();
+    },
+    "setUI" : function() {
+      var object = this;
+      gm("[data-itr]")[_0x5f4f("0x4d")](function() {
+        var requireCompilers = gm(this);
+        var code = requireCompilers[_0x5f4f("0x16")](_0x5f4f("0x93"));
+        requireCompilers[_0x5f4f("0x94")](window[_0x5f4f("0x95")](code));
+      });
+      gm(_0x5f4f("0x55"))["on"](_0x5f4f("0x96"), function() {
+        object[_0x5f4f("0x97")]();
+      });
+      gm(_0x5f4f("0x98"))["on"](_0x5f4f("0x99"), function(canCreateDiscussions) {
+        canCreateDiscussions[_0x5f4f("0x9a")]();
+        object["setNick"]();
+      });
+      gm(_0x5f4f("0x9b"))["on"](_0x5f4f("0x99"), function(canCreateDiscussions) {
+        canCreateDiscussions[_0x5f4f("0x9a")]();
+        object[_0x5f4f("0x9c")]();
+      });
+      gm(_0x5f4f("0x9d"))["on"](_0x5f4f("0x99"), function(result) {
+        result["preventDefault"]();
+        object[_0x5f4f("0x9e")]();
+      });
+      $("#join-party-btn-2")["on"](_0x5f4f("0x99"), function(canCreateDiscussions) {
+        canCreateDiscussions[_0x5f4f("0x9a")]();
+        object[_0x5f4f("0x86")](gm(_0x5f4f("0x9f"))[_0x5f4f("0x42")]());
+      });
+      /**
+       * @return {undefined}
+       */
+      window[_0x5f4f("0xa0")] = function() {
+        gm(_0x5f4f("0xa1"))[_0x5f4f("0xa2")]();
+      };
+    },
+    "init" : function() {
+      var _0x4939d9 = this;
+      this["setUI"]();
+      this[_0x5f4f("0xa3")]();
+      this[_0x5f4f("0xa4")]();
+      this[_0x5f4f("0xa5")]();
+      this["getRegionCode"]();
+      this[_0x5f4f("0xa6")]();
+      setInterval(function() {
+        _0x4939d9[_0x5f4f("0xa4")]();
+      }, 18E4);
+    }
+  };
+  /**
+   * @return {undefined}
+   */
+  window["getStorage"] = function() {
+    if (null !== window["localStorage"]["getItem"](_0x5f4f("0xa7"))) {
+      o = JSON[_0x5f4f("0x47")](window[_0x5f4f("0x2a")]["getItem"]("storeObjectInfo"));
+    }
+  };
+  /**
+   * @return {undefined}
+   */
+  window[_0x5f4f("0xb")] = function() {
+    window[_0x5f4f("0x2a")][_0x5f4f("0x38")](_0x5f4f("0xa7"), JSON[_0x5f4f("0xa8")](o));
+  };
+  /**
+   * @return {undefined}
+   */
+  window[_0x5f4f("0xa9")] = function() {
+    if (_0x5f4f("0x20") === o["context"] && update) {
+      update[_0x5f4f("0xaa")]();
+    }
+    delete window["localStorage"][_0x5f4f("0xa7")];
+    gm(_0x5f4f("0x18"))[_0x5f4f("0x16")](_0x5f4f("0x19"), "0");
+    gm(_0x5f4f("0x1a"))[_0x5f4f("0x1b")]("0%");
+    master[_0x5f4f("0xa9")]();
+  };
+  /**
+   * @return {undefined}
+   */
+  window["facebookLogin"] = function() {
+    alert("You seem to have something blocking Facebook on your browser, please check for any extensions");
+  };
+  /**
+   * @return {undefined}
+   */
+  window[_0x5f4f("0xab")] = function() {
+    window["FB"][_0x5f4f("0xac")]({
+      "appId" : headers[_0x5f4f("0xad")],
+      "cookie" : true,
+      "xfbml" : true,
+      "status" : true,
+      "version" : _0x5f4f("0xae")
+    });
+    if (true) {
+      window["getStorage"]();
+      if ("1" === o[_0x5f4f("0x1f")] && _0x5f4f("0x8") === o[_0x5f4f("0xa")]) {
+        window["FB"][_0x5f4f("0xaf")](function(urlId) {
+          if (_0x5f4f("0xb0") === urlId[_0x5f4f("0xe")]) {
+            getUrlDoc(urlId);
+          } else {
+            window["logout"]();
+          }
+        });
+      }
+      /** @type {function(?): ?} */
+      window[_0x5f4f("0x1d")] = areWorkTypesValid;
+      /** @type {function(?): ?} */
+      window[_0x5f4f("0x8f")] = areWorkTypesValid;
+    }
+  };
+  /**
+   * @return {undefined}
+   */
+  window[_0x5f4f("0xb1")] = function() {
+    window[_0x5f4f("0xb2")]();
+    window[_0x5f4f("0xb3")][_0x5f4f("0xb4")](_0x5f4f("0xb5"), function() {
+      update = window["gapi"][_0x5f4f("0xb5")][_0x5f4f("0xac")]({
+        "client_id" : headers[_0x5f4f("0xb6")],
+        "cookie_policy" : _0x5f4f("0xb7"),
+        "scope" : _0x5f4f("0xb8"),
+        "app_package_name" : _0x5f4f("0xb9")
+      });
+      var data = document[_0x5f4f("0xba")](_0x5f4f("0xbb"));
+      data["addEventListener"](_0x5f4f("0x99"), function() {
+        /** @type {string} */
+        o[_0x5f4f("0x1f")] = "1";
+        o[_0x5f4f("0xa")] = _0x5f4f("0x20");
+        window[_0x5f4f("0xb")]();
+      });
+      update[_0x5f4f("0xbc")](data);
+      update["currentUser"]["listen"](render);
+      update[_0x5f4f("0xbd")](init);
+    });
+  };
+}(window, window["jQuery"]);
