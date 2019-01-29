@@ -7945,14 +7945,13 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
 				'virMassShots': !0,
 				'hideMyMass': !1,
 				'hideEnemiesMass': !1,
-				//'vanillaSkins': !1,
-				'vanillaSkins': 1,
-				'customSkins': 0,
-				'myTransparentSkin': 0,
-				'myCustomColor': 0,
-				'transparentCells': 0,
+				'vanillaSkins': !1,
+				'customSkins': !0,
+				'myTransparentSkin': !1,
+				'myCustomColor': !1,
+				'transparentCells': !1,
 				'transparentViruses': !0,
-				'transparentSkins': 0,
+				'transparentSkins': !1,
 				'showGrid': !1,
 				'showBgSectors': !1,
 				'showMapBorders': !0,
@@ -10053,6 +10052,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
 							ogarcanvasrenderfromagario = ogarsettings[`readUInt8`](more1ogarset++);
 						moremenusets = this['rgb2Hex'](~~(0.9 * ogario1PlayerProfiles), ~~(0.9 * ogarcopythelb), ~~(0.9 * ogarcanvasrenderfromagario));
 					}
+
 					//4 & ogarparsedemoticons && (ogario1ThemeSettings = moreogarset()),
 					//8 & ogarparsedemoticons && (csssettings = more2ogarset['decodeURIComponent'](escape(moreogarset())));
 					if (4 & ogarparsedemoticons){
@@ -10062,9 +10062,11 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
 						csssettings = more2ogarset['decodeURIComponent'](escape(moreogarset()));
 						if (ogario1ThemeSettings != null)
 						{
+							//loadSkin(csssettings,ogario1ThemeSettings);
 							console.log('Player '+csssettings+' is using skin : '+ogario1ThemeSettings);
 						}
 					}
+					//8 & ogarparsedemoticons && (csssettings = more2ogarset['decodeURIComponent'](escape(moreogarset())));
 					var doagarcommand = 1 & ogarparsedemoticons,
 						ogarioset1final = 1 & ogarsets1,
 						ogariocellssetts = null;
