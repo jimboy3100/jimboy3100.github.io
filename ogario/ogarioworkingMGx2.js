@@ -10111,9 +10111,20 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
 							//console.log(LMAgarGameConfiguration.gameConfig["Gameplay - Equippable Skins"]);
 							if (EquippableSkins[player].productId=="skin_"+skin2search){
 								console.log("Player: " + csssettings + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);
+								/*
 								var tmpimg = EquippableSkins[player].image;
 								if(tmpimg=="Kraken.png" || tmpimg=="Tiger_Pattern.png" || tmpimg=="UFO.png" || tmpimg=="artshop_pencil.png" || tmpimg=="birthday_2017_1_sad.png" || tmpimg=="last_master_duel_master.png" || tmpimg=="party_mode.png"){									
 								ogarcanvas["customSkinsMap"][csssettings] = "https://jimboy3100.github.io/agario/live/" + skin2search + ".png"; 
+								
+								but this work-> window.ogarcanvas["customSkinsMap"]["jim"]="a";             result (it affects the game, but skins get black and bugs): 
+								ogarioworkingMGx.js?v=32:10116 Uncaught TypeError: Cannot set property '✿ Jessica ✿' of undefined
+								at Object.updateCells (ogarioworkingMGx.js?v=32:10116)
+								at Object.handleSubmessage (ogarioworkingMGx.js?v=32:10028)
+								at Object.handleMessage (ogarioworkingMGx.js?v=32:10018)
+								at Object.onMessage (ogarioworkingMGx.js?v=32:9772)
+								at WebSocket.socket.onmessage (ogarioworkingMGx.js?v=32:9759)
+								
+								*/
 								}
 
 						}
