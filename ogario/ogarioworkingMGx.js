@@ -10087,6 +10087,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
 							//console.log(LMAgarGameConfiguration.gameConfig["Gameplay - Equippable Skins"]);
 							if (EquippableSkins[player].productId=="skin_"+skin2search){
 								console.log("Player: " + csssettings + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);
+								if (ogarcanvas[`play`] = !0, ogarcanvas[`playerColor`]) return this['sendPlayerSpawn'](), void this['cacheCustomSkin'](ogarcopythelb[`nick`], ogarcanvas['playerColor'], ogarcopythelb[`skinURL`]);
 								//loadSkin(csssettings,"https://jimboy3100.github.io/agario/live/"+ogario1ThemeSettings);	//test
 								//console.log(EquippableSkins[player].skinType);
 								//console.log(EquippableSkins[player].gameplayId);
