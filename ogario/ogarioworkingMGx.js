@@ -1,4 +1,3 @@
-
 // I want to thank MGx, he is my saviour
 // Simplified more by jimboy3100
 // Thank you Snez for all help
@@ -8781,6 +8780,9 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
 			},
 			'onPlayerSpawn': function () {
 				if (ogarcanvas[`play`] = !0, ogarcanvas[`playerColor`]) return this['sendPlayerSpawn'](), void this['cacheCustomSkin'](ogarcopythelb[`nick`], ogarcanvas['playerColor'], ogarcopythelb[`skinURL`]);
+								//console.log(ogarcanvas[`playerColor`]);
+								//console.log(ogarcopythelb[`nick`]);
+								//console.log(ogarcopythelb[`skinURL`]); reveals my settings
 				var ogarsettings = this;
 				setTimeout(function () {
 					ogarsettings[`onPlayerSpawn`]();
@@ -8798,16 +8800,25 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
 			},
 			'loadSkin': function (ogarsettings, more2ogarset) {
 				var ogarcanvas = this;
+				console.log(ogarcanvas);
+				console.log(ogarsettings);
+				console.log(more2ogarset);
 				ogarsettings[more2ogarset] = new Image(), ogarsettings[more2ogarset][`crossOrigin`] = `Anonymous`, ogarsettings[more2ogarset]['onload'] = function () {
 					this[`complete`] && this[`width`] && this[`height`] && this[`width`] <= 2000 && this['height'] <= 2000 && (ogarcanvas['cacheQueue'][`push`](more2ogarset), 1 == ogarcanvas[`cacheQueue`][`length`] && ogarcanvas[`cacheSkin`](ogarcanvas['customSkinsCache']));
 				}, ogarsettings[more2ogarset]['src'] = more2ogarset;
 			},
+			'loadVanillaSkin': function (ogarsettings, more2ogarset) { //Legend mod function
+				var ogarcanvas = this;
+				ogarsettings[more2ogarset] = new Image(), ogarsettings[more2ogarset][`crossOrigin`] = `Anonymous`, ogarsettings[more2ogarset]['onload'] = function () {
+					this[`complete`] && this[`width`] && this[`height`] && this[`width`] <= 2000 && this['height'] <= 2000 && (ogarcanvas['cacheQueue'][`push`](more2ogarset), 1 == ogarcanvas[`cacheQueue`][`length`] && ogarcanvas[`cacheSkin`](ogarcanvas['customSkinsCache']));
+				}, ogarsettings[more2ogarset]['src'] = more2ogarset;
+			},			
 			'cacheSkin': function (ogarsettings) {
 				//console.log(ogarsettings);  //////// return the image src
 				if (0 != this['cacheQueue'][`length`]) {
 					var more2ogarset = this[`cacheQueue`]['shift']();
 					if (more2ogarset) {
-						console.log(more2ogarset); 
+						//console.log(more2ogarset);  shows the skin url
 						var ogarcanvas = document[`createElement`](`canvas`);
 						ogarcanvas[`width`] = 512, ogarcanvas[`height`] = 512;
 						var moreogarset = ogarcanvas[`getContext`]('2d');
@@ -8815,7 +8826,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
 					}
 				}
 			},
-			'cacheVanillaSkin': function (vanSkin) {
+			'cacheVanillaSkin': function (vanSkin) { //Legend mod function
 				//console.log(ogarsettings);  //////// returns img scr of server/tag
 				//if (0 != this['cacheQueue'][`length`]) {
 					var more2ogarset = vanSkin;
@@ -8830,6 +8841,13 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
 			},			
 			'getCachedSkin': function (ogarsettings, more2ogarset) {
 				return ogarsettings[more2ogarset + `_cached`] && ogarsettings[more2ogarset + `_cached`][`complete`] && ogarsettings[more2ogarset + '_cached'][`width`] ? ogarsettings[more2ogarset + `_cached`] : null;
+			},
+			'cacheVanillaCustomSkin': function (ogarsettings, more2ogarset, ogarcanvas) { //Legend mod function
+				if (ogarcanvas) {
+					var moreogarset = ':party' === this['gameMode'] ? ogarsettings + more2ogarset : ogarsettings;
+					if (moreogarset && (this[`customSkinsMap`][moreogarset] = ogarcanvas), this[`customSkinsCache`][`hasOwnProperty`](ogarcanvas)) return;
+					this['loadVanillaSkin'](this[`customSkinsCache`], ogarcanvas);
+				}
 			},
 			'cacheCustomSkin': function (ogarsettings, more2ogarset, ogarcanvas) {
 				if (ogarcanvas) {
@@ -10089,11 +10107,11 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
 							if (EquippableSkins[player].productId=="skin_"+skin2search){
 								console.log("Player: " + csssettings + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);
 								//if (ogarcanvas[`play`] = !0, ogarcanvas[`playerColor`]) return this['sendPlayerSpawn'](), void this['cacheCustomSkin'](ogarcopythelb[`nick`], ogarcanvas['playerColor'], ogarcopythelb[`skinURL`]);
-								if (ogarcanvas[`play`] = !0, ogarcanvas[`playerColor`]) return this['sendPlayerSpawn'](), void this['cacheCustomSkin'](ogarcopythelb[`nick`], ogarcanvas['playerColor'], ogarcopythelb[`skinURL`]);
-								console.log(ogarcanvas[`playerColor`]);
-								console.log(ogarcopythelb[`nick`]);
-								console.log(ogarcopythelb[`nick`]);
-								console.log(ogarcopythelb[`skinURL`]);
+								//if (ogarcanvas[`play`] = !0, ogarcanvas[`playerColor`]) return this['sendPlayerSpawn'](), void this['cacheCustomSkin'](ogarcopythelb[`nick`], ogarcanvas['playerColor'], ogarcopythelb[`skinURL`]);
+								//console.log(ogarcanvas[`playerColor`]);
+								//console.log(ogarcopythelb[`nick`]);
+								//console.log(ogarcopythelb[`nick`]);
+								//console.log(ogarcopythelb[`skinURL`]);
 								//loadSkin(csssettings,"https://jimboy3100.github.io/agario/live/"+ogario1ThemeSettings);	//test
 								//console.log(EquippableSkins[player].skinType);
 								//console.log(EquippableSkins[player].gameplayId);
