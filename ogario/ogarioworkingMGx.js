@@ -8800,9 +8800,9 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
 			},
 			'loadSkin': function (ogarsettings, more2ogarset) {
 				var ogarcanvas = this;
-				console.log(ogarcanvas);
-				console.log(ogarsettings);
-				console.log(more2ogarset);
+				//console.log(ogarcanvas); -> return JSON with all ogario info
+				//console.log(ogarsettings); -> return the ogario image src
+				//console.log(more2ogarset);  -> return the specific image src
 				ogarsettings[more2ogarset] = new Image(), ogarsettings[more2ogarset][`crossOrigin`] = `Anonymous`, ogarsettings[more2ogarset]['onload'] = function () {
 					this[`complete`] && this[`width`] && this[`height`] && this[`width`] <= 2000 && this['height'] <= 2000 && (ogarcanvas['cacheQueue'][`push`](more2ogarset), 1 == ogarcanvas[`cacheQueue`][`length`] && ogarcanvas[`cacheSkin`](ogarcanvas['customSkinsCache']));
 				}, ogarsettings[more2ogarset]['src'] = more2ogarset;
@@ -8810,7 +8810,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
 			'loadVanillaSkin': function (ogarsettings, more2ogarset) { //Legend mod function
 				var ogarcanvas = this;
 				ogarsettings[more2ogarset] = new Image(), ogarsettings[more2ogarset][`crossOrigin`] = `Anonymous`, ogarsettings[more2ogarset]['onload'] = function () {
-					this[`complete`] && this[`width`] && this[`height`] && this[`width`] <= 2000 && this['height'] <= 2000 && (ogarcanvas['cacheQueue'][`push`](more2ogarset), 1 == ogarcanvas[`cacheQueue`][`length`] && ogarcanvas[`cacheSkin`](ogarcanvas['customSkinsCache']));
+					this[`complete`] && this[`width`] && this[`height`] && this[`width`] <= 2000 && this['height'] <= 2000 && (ogarcanvas['cacheQueue'][`push`](more2ogarset), 1 == ogarcanvas[`cacheQueue`][`length`] && ogarcanvas[`cacheSkin`](ogarcanvas['cacheVanillaCustomSkin']));
 				}, ogarsettings[more2ogarset]['src'] = more2ogarset;
 			},			
 			'cacheSkin': function (ogarsettings) {
@@ -8835,7 +8835,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
 						var ogarcanvas = document[`createElement`](`canvas`);
 						ogarcanvas[`width`] = 512, ogarcanvas[`height`] = 512;
 						var moreogarset = ogarcanvas[`getContext`]('2d');
-						moreogarset[`beginPath`](), moreogarset[`arc`](256, 256, 256, 0, 2 * Math['PI'], !1), moreogarset[`clip`](), moreogarset[`drawImage`](this[`customSkinsCache`][more2ogarset], 0, 0, 512, 512), this[`customSkinsCache`][more2ogarset + `_cached`] = new Image(), this[`customSkinsCache`][more2ogarset + `_cached`][`src`] = ogarcanvas[`toDataURL`](), ogarcanvas = null, this[`cacheSkin`](this[`customSkinsCache`]);
+						moreogarset[`beginPath`](), moreogarset[`arc`](256, 256, 256, 0, 2 * Math['PI'], !1), moreogarset[`clip`](), moreogarset[`drawImage`](this[`cacheVanillaCustomSkin`][more2ogarset], 0, 0, 512, 512), this[`cacheVanillaCustomSkin`][more2ogarset + `_cached`] = new Image(), this[`cacheVanillaCustomSkin`][more2ogarset + `_cached`][`src`] = ogarcanvas[`toDataURL`](), ogarcanvas = null, this[`cacheSkin`](this[`cacheVanillaCustomSkin`]);
 					//}
 				}
 			},			
