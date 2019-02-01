@@ -1,6 +1,7 @@
-// I want to thank MGx, he is my saviour
+// Encoded by Szymy
+// Decoded by Adam and MGx
 // Simplified more by jimboy3100
-// Thank you Snez for all help
+// Thank you Snez for decoding Feross
 // Thank you volum for the case 16: instance
 
 //v1.24
@@ -44,7 +45,14 @@ if (!_0x4bd010) {
 }
 };
 _0x1b2dd9();}(obfuscatedbigarraywithnopurpose1,299));
-var _0x6c71=function(_0x15f147,_0x49a19d){_0x15f147=_0x15f147-0;var _0x351584=obfuscatedbigarraywithnopurpose1[_0x15f147];return _0x351584;};!function t(_0x3a3fd2,_0x49f225,_0xd60ad4){var _0x802380=function(){var _0x407f48=!![];return function(_0x2543ae,_0x11ea3c){var _0x2f9868=_0x407f48?function(){if(_0x11ea3c){var _0x1fd443=_0x11ea3c['apply'](_0x2543ae,arguments);_0x11ea3c=null;return _0x1fd443;}}:function(){};_0x407f48=![];
+var _0x6c71=function(strIndex,_0x49a19d){
+	window.deobfuscated=window.deobfuscated || {}; //
+	window.deobfuscated[strIndex] = obfuscatedbigarraywithnopurpose1[strIndex-0]; // call with window.deobfuscated
+	strIndex=strIndex-0;
+	var value=obfuscatedbigarraywithnopurpose1[strIndex];
+	return value;};
+	
+	!function t(_0x3a3fd2,_0x49f225,_0xd60ad4){var _0x802380=function(){var _0x407f48=!![];return function(_0x2543ae,_0x11ea3c){var _0x2f9868=_0x407f48?function(){if(_0x11ea3c){var _0x1fd443=_0x11ea3c['apply'](_0x2543ae,arguments);_0x11ea3c=null;return _0x1fd443;}}:function(){};_0x407f48=![];
 return _0x2f9868;};}();
 function _0x1963e3(_0x465eda,_0x26d1ef){
 	var _0x529da2=_0x802380(this,function(){
