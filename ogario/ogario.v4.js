@@ -5,7 +5,7 @@
 // Thank you volum for the case 16: instance
 
 //v1.28
-var obfuscatedbigarraywithnopurpose1 = ['shiftMessage', '[Legend mod Express] Game server socket error', 'onDisconnect', '[Legend mod Express] Game server socket close', 'shiftKey', 'sendAction', 'sendPosition', 'playerNick', 'unescape', 'cursorX', 'clientVersionString', 'getFloat32', 'pieChart', 'drawPieChart', 'playerPosition', 'decodeURIComponent', 'isPlayer', 'handleLeaderboard', 'ghostCells', '[Legend mod Express] Captcha requested', 'recaptchaRequested', 'logout', 'battleRoyale', 'startTime', 'joined', 'radius', 'shrinkTime', 'timeLeft', 'serverTimeDiff', 'targetRadius', 'rank', '[Legend mod Express] Received protocol key:', 'generateClientKey', 'login', 'serverTime', 'handleSubmessage', 'updateCells', 'viewMinX', 'readDoubleLE', 'viewMinY', 'setMapOffset', 'viewMaxX', 'viewMaxY', '<span class=\"teammate\">', 'mapMinX', 'mapMinY', 'mapMaxX', 'mapMaxY', 'removePlayerCell', 'onPlayerDeath', 'color2Hex', 'playerSize', 'recalculatePlayerMass', 'biggerSTECellsCache', 'biggerCellsCache', 'STECellsCache', 'cacheCells', 'smallerCellsCache', '#FF008C', '#BE00FF', '#FF0A00', 'clientX', 'cursorY', 'clientY', 'detail', 'keyCode', 'sendSplit', 'sendFreeSpectate', 'sendEject', 'onkeyup', 'pressedKeys', 'userAgent', 'addEventListener', 'DOMMouseScroll', 'setZoom', 'onmousewheel', 'setClientVersion', 'ctx', 'onmousemove', 'getCursorPosition', 'innerWidth', 'innerHeight', 'calculatePlayerMassAndPosition', 'camX', 'camY', 'getZoom', 'setView', 'sortCells', 'compareCells', 'drawGrid', 'translate', 'drawBattleArea', 'drawMapBorders', 'drawVirusesRange', 'drawFood', 'drawSplitRange', 'drawCursorTracking', 'drawGhostCells', 'autoHideFoodOnZoom', 'drawCachedFood', 'optimizedFood', 'pellet', 'rect', 'darkTheme', 'drawCircles', '#00C8FF', '#64FF00', '#FF3333', '#3333FF', 'drawDangerArea', 'battleAreaMap', 'battleAreaMapCtx', 'drawSafeArea', 'maxRadius', 'globalCompositeOperation', 'drawDashedCircle', 'fpsLastRequest', 'renderedFrames', 'renderFrame', 'requestAnimationFrame', 'setCanvas', 'resizeCanvas', 'render', 'hk-feed', 'normal', 'hk-macroFeed', 'macroFeed', 'hk-split', 'SPACE', 'hk-doubleSplit', 'doubleSplit', 'Popsplit', 'hk-split16', 'split16', 'hk-pause', 'hk-showTop5', 'setShowTop5', 'ALT+T', 'setShowTime', 'hk-showSplitRange', 'setShowSplitInd', 'ALT+I', 'setShowTeammatesInd', 'hk-showOppColors', 'setShowOppColors', 'hk-transparentSkins', 'hk-showSkins', 'setShowSkins', 'hk-showStats', 'ALT+S', 'setShowStats', 'hk-toggleCells', 'toggleCells', 'hk-showFood', 'setShowFood', 'hk-showGrid', 'setShowGrid', 'hk-showMiniMapGuides', 'ALT+G', 'setShowMiniMapGuides', 'hk-showHUD', 'ALT+H', 'hk-copyLb', 'copyLb', 'hk-showLb', 'setShowLb', 'hk-toggleAutoZoom', 'toggleAutoZoom', 'hk-resetZoom', 'resetZoom', 'hk-toggleDeath', 'toggleDeath', 'hk-clearChat', 'displayChatHistory', 'hk-showBgSectors', 'setShowBgSectors', 'hk-hideBots', 'ALT+B', 'hk-showNames', 'setShowNames', 'hk-hideTeammatesNames', 'setHideTeammatesNames', 'hk-showMass', 'setShowMass', 'hk-showMiniMap', 'ALT+M', 'setShowMiniMap', 'ENTER', 'enterChatMessage', 'TILDE', 'hk-autoResp', 'toggleAutoResp', 'ALT+1', 'hk-zoomLevel', 'ALT+2', 'ALT+3', 'ALT+4', 'ALT+5', 'hk-switchServerMode', 'switchServerMode', 'hk-showTargeting', 'setShowTargeting', 'hk-setTargeting', 'setTargeting', 'hk-cancelTargeting', 'hk-changeTarget', 'hk-privateMiniMap', 'hk-showQuest', 'setShowQuest', 'sendCommand', 'command', 'comm7', 'comm0', 'MOUSE WHEEL', 'LEFT', 'comm13', 'DOWN', 'custom-key-in form-control input-sm', 'defaultKey', 'spec-messageKey', 'defaultMessageKey', 'ogarioHotkeys', 'loadDefaultHotkeys', 'ogarioCommands', 'saveCommands', '#hotkeys .command-in', 'each', '#hotkeys-cfg .custom-key-in', '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">', '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>', 'hk-inst-assign', '</li><li>', 'hk-inst-delete', 'hk-inst-keys', '</li></ul></div></div>', 'hk-', '<div class=\"row\"><div class=\"key-label\"><input id=\"', '\" class=\"command-in form-control input-sm\" value=\"', '\" maxlength=\"80\" /></div><div class=\"default-key\">', '</div><div class=\"custom-key\"><input id=\"', '\" class=\"custom-key-in form-control input-sm\" value=\"', '\" /></div></div>', '#hotkeys-cfg', '<div class=\"row\"><div class=\"key-label\">', 'label', '</div><div class=\"default-key\">', '#reset-hotkeys', 'resetHotkeys', '#save-hotkeys', 'saveHotkeys', '#hotkeys', '#close-hotkeys', '.hotkeys-link', 'ctrlKey', 'CTRL', 'altKey', 'ALT', 'TAB', 'ESC', 'RIGHT', 'DEL', 'lastPressedKey', 'lastKeyId', 'setDefaultHotkey', 'deleteHotkey', 'hk-chatMessage', 'loadHotkeys', 'setHotkeysMenu', 'history', 'replaceState', 'specialOn', '#helloContainer', '-ms-transform', '-webkit-transform', 'innerW', 'innerH', 'onkeydown', 'target', 'inputClassName', 'setHotkey', 'keyDown', 'getPressedKey', 'keyUp', 'onmousedown', 'which', 'mouseInvert', 'onmouseup', 'onbeforeunload', 'exit', 'lz4', '/ogario', 'onresize', 'sendNick', 'sendSpectate', 'ProxyMobileData ERROR: Array data required.', 'getClientVersion', 'getDefaultSettings', 'ogario', 'jQuery', 'function', 'Cannot find module \'', 'code', 'MODULE_NOT_FOUND', 'call', 'exports', 'byteLength', 'toByteArray', 'length', 'charCodeAt', 'fromByteArray', 'push', 'join', 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/', 'ieee754', 'Buffer', 'alloc', '__proto__', 'prototype', 'number', 'string', 'If encoding is specified then the first argument must be a string', '\"value\" argument must not be a number', '\'length\' is out of bounds', 'isEncoding', '\"encoding\" must be a valid string encoding', 'write', 'slice', 'isBuffer', 'copy', 'type', 'data', 'First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.', '\"size\" argument must be a number', 'Attempt to allocate Buffer larger than maximum size: 0x', 'toString', ' bytes', 'latin1', 'utf-8', 'ucs2', 'utf16le', 'utf-16le', 'hex', 'toLowerCase', 'from', 'indexOf', 'val must be string, number or Buffer', 'readUInt16BE', 'Invalid hex string', 'substr', 'min', 'fromCharCode', 'apply', 'kMaxLength', 'TYPED_ARRAY_SUPPORT', 'foo', 'undefined', 'error', 'This browser lacks typed array (Uint8Array) support which is required by \`buffer\` v5.x. Use \`buffer\` v4.x if you require old browser support.', 'species', 'defineProperty', 'fill', 'allocUnsafe', 'allocUnsafeSlow', '_isBuffer', 'compare', 'Arguments must be Buffers', 'utf8', 'binary', '\"list\" argument must be an Array of Buffers', 'swap16', 'Buffer size must be a multiple of 16-bits', 'swap32', 'swap64', 'Buffer size must be a multiple of 64-bits', 'ascii', 'base64', 'Unknown encoding: ', 'equals', 'Argument must be a Buffer', 'inspect', 'INSPECT_MAX_BYTES', 'match', ' ... ', '<Buffer ', 'out of range index', 'includes', 'Buffer.write(string, encoding, offset[, length]) is no longer supported', 'Attempt to write outside buffer bounds', 'toJSON', '_arr', 'offset is not uint', 'Trying to access beyond buffer length', '\"value\" argument is out of bounds', 'Index out of range', 'readUIntLE', 'readUIntBE', 'readUInt8', 'readUInt16LE', 'readUInt32LE', 'readUInt32BE', 'readIntLE', 'pow', 'readIntBE', 'readInt8', 'readInt16LE', 'readInt16BE', 'readInt32LE', 'readInt32BE', 'readFloatLE', 'read', 'writeUIntLE', 'writeUIntBE', 'writeUInt8', 'writeUInt16LE', 'writeUInt16BE', 'writeUInt32LE', 'writeUInt32BE', 'writeIntLE', 'writeIntBE', 'writeInt8', 'writeInt16LE', 'writeInt16BE', 'writeInt32LE', 'writeInt32BE', 'writeFloatLE', 'writeDoubleLE', 'writeDoubleBE', 'targetStart out of bounds', 'sourceStart out of bounds', 'sourceEnd out of bounds', 'set', 'encoding must be a string', 'Out of range index', 'Invalid code point', 'replace', 'isView', 'isArray', '[object Array]', 'isBoolean', 'boolean', 'isNull', 'isNullOrUndefined', 'isNumber', 'isString', 'isSymbol', 'isRegExp', '[object RegExp]', '[object Date]', 'isError', 'isPrimitive', '../../is-buffer/index.js', 'UINT32', './lib/uint32', 'UINT64', './lib/uint64', '_high', 'remainder', '_low', 'fromBits', 'fromNumber', 'fromString', 'toNumber', 'add', 'subtract', 'multiply', 'div', 'division by zero', 'clone', 'shiftRight', 'greaterThan', 'lessThan', 'not', 'xor', 'shiftr', 'shiftLeft', 'shiftl', 'rotateLeft', 'rotl', 'rotateRight', 'rotr', 'amd', '_a00', '_a16', '_a32', '_a48', 'negate', 'and', '_events', '_maxListeners', 'EventEmitter', 'setMaxListeners', 'n must be a positive number', 'emit', 'Uncaught, unspecified \"error\" event. (', 'context', 'addListener', 'listener must be a function', 'newListener', 'listener', 'defaultMaxListeners', 'warned', '(node) warning: possible EventEmitter memory leak detected. %d listeners added. Use emitter.setMaxListeners() to increase limit.', 'trace', 'once', 'removeListener', 'removeAllListeners', 'listeners', 'listenerCount', 'abs', 'floor', 'log', 'LN2', 'create', 'super_', 'constructor', 'cuint', 'uncompress', 'input too large', 'compressBound', ' < ', 'imul', 'compress', 'compressHC', 'compressDependent', './decoder_stream', 'end', 'concat', 'buffer', 'stream', 'Transform', 'util', 'inherits', './static', 'utils', './binding', 'SIZES', 'options', 'binding', 'useJS', 'pos', 'descriptor', 'state', 'MAGIC', 'streamSize', 'dictId', 'currentStreamChecksum', 'skippableSize', '_transform', '_main', 'emit_Error', 'check_Size', 'notEnoughData', 'Unexpected end of LZ4 stream', 'read_MagicNumber', 'MAGICNUMBER_SKIPPABLE', 'MAGICNUMBER', 'Invalid magic number: ', 'toUpperCase', 'DESCRIPTOR', 'SKIP_SIZE', 'read_SkippableSize', 'SKIP_DATA', 'descriptorStart', 'Invalid version: ', 'Reserved bit set', 'blockMaxSizes', 'Invalid block max size: ', 'SIZE', 'read_Size', 'DICTID', 'read_DictId', 'DESCRIPTOR_CHECKSUM', 'read_DescriptorChecksum', 'DATABLOCK_SIZE', 'read_DataBlockSize', 'DATABLOCK_DATA', 'read_DataBlockData', 'dataBlock', 'DATABLOCK_CHECKSUM', 'read_DataBlockChecksum', 'blockChecksum', 'DATABLOCK_UNCOMPRESS', 'uncompress_DataBlock', 'blockMaxSize', 'streamChecksum', 'read_EOS', 'EOS', 'Invalid stream checksum: ', '_flush', './encoder_stream', 'LZ4_compress', 'bindings', 'STATES', 'forEach', 'highCompression', 'VERSION', 'dict', 'first', 'checksum', 'headerSize', 'header', 'flg', 'update_Checksum', 'CHECKSUM_UPDATE', 'compress_DataBlock', 'DATABLOCK_COMPRESS', 'size', 'CHECKSUM', 'version', 'createDecoderStream', 'decode', './decoder', 'LZ4_uncompress', 'encode', './encoder', 'decodeBlock', 'encodeBound', 'encodeBlock', 'encodeBlockHC', 'MAGICNUMBER_BUFFER', 'EOS_BUFFER', 'extension', '.lz4', './utils', 'xxhashjs', 'update', 'v1.', '\"callback\" argument must be a function', 'nextTick', '_process', 'setTimeout has not been defined', 'run', 'fun', 'array', 'title', 'versions', 'prependListener', 'prependOnceListener', 'process.binding is not supported', 'cwd', 'chdir', 'process.chdir is not supported', 'umask', './lib/_stream_duplex.js', 'process-nextick-args', 'core-util-is', './_stream_readable', './_stream_writable', 'readable', 'writable', 'allowHalfOpen', 'ended', 'destroyed', '_readableState', '_writableState', '_destroy', './_stream_transform', 'isarray', 'ReadableState', './internal/streams/stream', 'safe-buffer', 'Uint8Array', 'debuglog', './internal/streams/BufferList', './internal/streams/destroy', 'close', 'destroy', 'resume', './_stream_duplex', 'objectMode', 'readableObjectMode', 'highWaterMark', 'pipes', 'pipesCount', 'flowing', 'endEmitted', 'reading', 'sync', 'needReadable', 'emittedReadable', 'readableListening', 'resumeScheduled', 'defaultEncoding', 'awaitDrain', 'readingMore', 'decoder', 'encoding', 'string_decoder/', 'StringDecoder', '_read', 'Invalid non-string/buffer chunk', 'getPrototypeOf', 'stream.unshift() after end event', 'stream.push() after EOF', '_undestroy', 'unshift', 'isPaused', 'setEncoding', 'head', 'emitReadable', 'emit readable', 'maybeReadMore read 0', 'readable nexttick read 0', 'resume read 0', 'flow', 'clear', 'shift', 'next', 'tail', '\"endReadable()\" called on non-empty stream', 'read: emitReadable', 'need readable', 'length less than watermark', 'reading or ended', 'do read', '_read() is not implemented', 'pipe', 'stdout', 'stderr', 'hasUnpiped', 'cleanup', 'finish', 'drain', 'unpipe', 'needDrain', 'onend', 'ondata', 'false write response, pause', 'pause', 'onfinish', 'pipe resume', 'wrapped end', 'wrapped data', 'bind', 'wrapped _read', '_fromList', 'afterTransform', '_transformState', 'transforming', 'writecb', 'write callback called multiple times', 'writechunk', 'needTransform', 'writeencoding', 'transform', 'flush', 'prefinish', 'Calling transform done when ws.length != 0', 'Calling transform done when still transforming', '_transform() is not implemented', '_write', 'entry', 'callback', 'pendingcb', 'corkedRequestsFree', 'browser', 'v0.9.', 'WritableState', 'writableObjectMode', 'finalCalled', 'ending', 'decodeStrings', 'writing', 'corked', 'bufferProcessing', 'onwrite', 'writelen', 'errorEmitted', 'bufferedRequest', 'lastBufferedRequest', 'prefinished', 'bufferedRequestCount', '_writev', 'writev', 'final', '_final', 'isBuf', 'allBuffers', 'chunk', 'finished', 'getBuffer', 'deprecate', '_writableState.buffer is deprecated. Use _writableState.getBuffer instead.', 'hasInstance', 'Cannot pipe, not readable', 'write after end', 'May not write null values to stream', 'cork', 'uncork', 'setDefaultEncoding', 'ucs-2', 'raw', '_write() is not implemented', 'undestroy', 'Cannot call a class as a function', 'events', './readable', './lib/_stream_readable.js', 'Stream', 'Writable', './lib/_stream_writable.js', 'Duplex', './lib/_stream_transform.js', 'PassThrough', './lib/_stream_passthrough.js', 'Argument must not be a number', 'Argument must be a number', 'SlowBuffer', 'Readable', 'readable-stream/readable.js', 'readable-stream/writable.js', 'readable-stream/duplex.js', 'readable-stream/transform.js', 'readable-stream/passthrough.js', '_isStdio', 'text', 'fillLast', 'lastNeed', 'lastTotal', 'lastChar', 'repeat', 'localStorage', 'true', 'noDeprecation', 'throwDeprecation', 'traceDeprecation', 'warn', 'object', 'format', '[Circular]', 'depth', 'showHidden', 'colors', 'customInspect', 'stylize', 'styles', 'null', 'keys', 'getOwnPropertyNames', 'message', 'description', 'name', '[Function', 'special', 'regexp', ' [Function', '[Object]', 'seen', 'pop', 'reduce', ',\n  ', 'get', '[Getter]', '[Setter]', 'value', 'split', 'map', '   ', '[object Error]', 'NODE_DEBUG', 'test', 'pid', '%s %d: %s', 'cyan', 'yellow', 'grey', 'bold', 'green', 'magenta', 'symbol', 'isObject', 'isDate', 'isFunction', 'Jan', 'Feb', 'Apr', 'Jun', 'Aug', 'Sep', 'Nov', 'Dec', '%s - %s', 'getMinutes', 'getSeconds', 'getMonth', 'xxh_update', '2654435761', '3266489917', '668265263', '374761393', 'digest', 'seed', 'total_len', 'memsize', 'memory', 'init', 'XXH', 'Ustawienia', 'Przywróc ustawienia domyślne', 'Nazwy', 'Masa', 'Skiny', 'Pokarm', 'Przezroczystość / kolory', 'Siatka / sektory', 'Minimapa', 'Wspomagacze', 'Sterowanie myszką', 'HUD', 'Czat', 'Statystyki', 'Dodatkowe', 'Wyłącz skiny', 'Pokaż masę', 'Pokaż zadanie (quest)', 'Auto zoom', 'Opóźnienie animacji', 'Szybkość zoomu', 'Szybkie odrodzenie (klawisz)', 'Auto odrodzenie', 'Autoukrywanie nazw i masy', 'Autoukrywanie masy', 'Autoukrywanie pokarmu (masa)', 'Autoukrywanie pokarmu (zoom)', 'Zoptymalizowane nazwy', 'Skrócona masa (k)', 'Licznik strzałów (wirusy)', 'Ukryj własną masę', 'Podstawowe skiny', 'Własne skiny', 'Mój przezroczysty skin', 'Przezroczyste kulki', 'Przezroczyste wirusy', 'Przezroczyste skiny', 'Siatka', 'Sektory w tle', 'Granice mapy', 'Duchy kulek', 'Pokaż minimapę', 'Pokaż siatkę minimapy', 'Pokaż prowadnice na minimapie', 'Pokaż duchy kulek na minimapie', 'Jednokolorowi gracze', 'Kolorowy pokarm', 'Kolory przeciwników', 'Zasięg podziału', 'Obwódki nazw', 'Obwódki masy', 'Śledzenie kursora', 'Wskaźniki graczy teamu', 'LPM - Split myszką', 'PPM - Feed myszką', 'Odwróć klawisze myszki', 'Wyłącz czat', 'Ukryj czat', 'Emotikony', 'Pokaż obrazki na czacie', 'Pokaż filmiki na czacie', 'Czatbox zamiast wyskakujących wiadomości', 'Pokaż top 5 teamu', 'Pokaż namierzanie', 'Pokaż aktualny czas', 'Pokaż masę w topce', 'Nagłówek \"Topka\"', 'Wyśrodkowana topka', 'Pokaż statystyki', 'Statystyki: Masa', 'Statystyki: STE', 'Statystyki: n/16', 'Statystyki: FPS', 'Blokuj popupy (reklamy/sklep/zadanie)', 'Skróty klawiszowe', 'Aby ustawić skrót klawiszowy kliknij na polu skrótu i naciśnij wybrany klawisz.', 'Aby usunąć skrót klawiszowy kliknij na polu skrótu i naciśnij klawisz DELETE.', 'Możliwe kombinacje skrótów klawiszowych z użyciem klawiszy CTRL oraz ALT.', 'Szybki feed', 'Podział', 'Podział na 16', 'Pauza kulki', 'Pokaż/ukryj top 5 teamu', 'Pokaż/ukryj aktualny czas', 'Pokaż/ukryj zasięg podziału', 'Pokaż/ukryj zasięg podziału z ringami', 'Pokaż/ukryj wskaźniki graczy teamu', 'Pokaż/ukryj kolory przeciwników', 'Przełącz skiny (własne/standardowe)', 'Przełącz kulkę (najmniejsza/największa)', 'Pokaż/ukryj pokarm', 'Pokaż/ukryj siatkę', 'Pokaż/ukryj prowadnice na minimapie', 'Pokaż/ukryj czat', 'Pokaż/ukryj HUD', 'Pokaż/ukryj topkę', 'Włącz/wyłącz auto zoom', 'Reset zoomu', 'Zoom - poziom', 'Przełącz miejsce śmierci', 'Pokaż historię czatu / Czyść czat', 'Pokaż/ukryj małe boty', 'Pokaż/ukryj nazwy', 'Pokaż/ukryj nazwy graczy teamu', 'Pokaż/ukryj masę', 'Pokaż/ukryj minimapę', 'Napisz wiadomość na czacie', 'Szybkie odrodzenie (respawn)', 'Włącz/wyłacz auto odrodzenie', 'Przełącz serwer [publiczny/prywatny]', 'Pokaż/ukryj panel namierzania', 'Włącz/wyłącz namierzanie (śledzenie)', 'Zmień cel', 'Pokaż cel na minimapie', 'Pokaż/ukryj zadanie', 'Feeduj!', 'Pomocy na %currentSector%!', 'Wróg na %currentSector%!', 'Zabij pomocnika!', 'Zjedz wirusa!', 'Zjebałem, wybacz.', 'Ja pierdolę...', 'Kurwa mać!', 'Lewo!', 'Góra!', 'Prawo!', 'Dół!', 'Zapisz komendy', 'Przywróc ustawienia domyślne wyglądu', 'Motyw', 'Ciemny motyw', 'Jasny motyw', 'Tło', 'Obwódki wirusów', 'Czcionka nazw', 'Czcionka masy', 'Skala nazw', 'Skala masy', 'Skala masy wirusów', 'Skala obwódek tekstu', 'Wielkość pokarmu', 'Grubość granic mapy', 'Grubość siatki sektorów', 'Przezroczystość skinów', 'Przezroczystość wirusów', 'Przezroczystość nazw i masy', 'Grubość obwódki wirusów', 'Bezpieczna strefa', 'Strefa zagrożenia', 'Przezroczystość duchów kulek', 'Motyw menu', 'Kolor główny', 'Tekst przycisku', 'Panel', 'Tekst panelu', 'Tekst panelu (2)', 'Przycisk #1 (2)', 'Przycisk #2', 'Przycisk #2 (2)', 'Przycisk #3', 'Przycisk #3 (2)', 'Przycisk #4', 'Przycisk #4 (2)', 'Grafika tła panelu', 'Czas', 'Topka - ja', 'Tło wiadomości', 'Tekst wiadomości', 'Czas wiadomości', 'Nick wiadomości', 'Tekst komendy', 'Nick komendy', 'Tło czatboxu', 'Skala czatu', 'Sektory', 'Aktualny sektor', 'Prowadnice', 'Nick', 'Obwódka nicku', 'Moja kulka', 'Obwódka mojej kulki', 'Gracze', 'Czcionka minimapy', 'Czcionka nicku', 'Szerokość minimapy', 'Przezroczystość sektorów', 'Rozmiar nicku', 'Wielkość mojej kulki', 'Grubość obwódki mojej kulki', 'Wielkość graczy', 'Grafika / kursory', 'Czat został włączony!', 'Czat został ukryty!', 'Skiny zostały włączone!', 'Skiny zostały ukryte!', 'Małe boty stały się widoczne!', 'Małe boty zostały ukryte!', 'Auto odrodzenie zostało włączone!', 'Auto odrodzenie zostało wyłączone!', 'Auto zoom został wyłączony!', 'Brak celu', 'Nie żyje', 'Dystans', 'Masa razem', 'Aktywnych graczy', 'Łącznie masy', 'Eksport / import ustawień', 'Eksportuj ustawienia', 'Aby wyeksportować wybrane ustawienia skopiuj poniższy kod i zapisz go w pliku tekstowym z kodowaniem Unicode.', 'Aby zaimportować wybrane ustawienia wklej poniżej wyeksportowany wcześniej kod i naciśnij przycisk \"Importuj ustawienia\".', 'Profil', 'Profile', 'Dzięki Awesome!', 'Zapisz ustawienia', 'Zapisano!', 'Resetuj ustawienia', 'Zamknij', 'Napisz wiadomość', 'Aktywne party', 'Brak aktywnych party ;(', 'Playlista', 'Odwiedź', 'UWAGA! Popupy zostały zablokowane w ustawieniach.', 'Odblokuj tymczasowo', 'Topka', 'Użytkownik', 'Użytkownik %user% został wyciszony.', 'Wyłączono wyciszenie użytkownika %user%.', 'Wycisz', 'Wyłącz wyciszenie', 'Pokaż aktywnych użytkowników', 'Brak', 'Dźwięki', 'Wróć', 'Stwórz party', 'Zaloguj', 'Wyloguj', 'Zaloguj z Facebook', 'Zaloguj z Google', 'Darmowe Monety', 'Graj', 'Graj jako gość', 'Sklep', 'Obserwuj', 'Home', 'Settings', 'Zoom', 'Respawn', 'Names', 'Mass', 'Food', 'Transparency / colors', 'Minimap', 'Helpers', 'Mouse control', 'Chat', 'Stats', 'Extras', 'No names', 'No colors', 'Skip stats after death', 'Show quest', 'Quick respawn (hotkey)', 'Auto hide names and mass', 'Auto hide names', 'Auto hide mass', 'Auto hide food (mass)', 'Optimized names', 'Hide my name', 'Hide teammates names', 'Optimized mass (+/-2%)', 'Short mass (k)', 'Hide my mass', 'Vanilla skins', 'Custom skins', 'My transparent skin', 'My custom color', 'Transparent cells', 'Transparent viruses', 'Transparent skins', 'Show grid', 'Show background sectors', 'Show map borders', 'Show minimap', 'Show minimap grid', 'Show minimap guides', 'Show ghost cells', 'Optimized food', 'Opponents colors', 'Viruses colors', 'Viruses range', 'Names and mass stroke', 'Names stroke', 'Mass stroke', 'Cursor tracking', 'Teammates indicators', 'LMB - Mouse split', 'RMB - Mouse feed', 'Invert mouse buttons', 'Hide chat', 'Sound notifications', 'Emoticons', 'Show images on chat', 'Show videos on chat', 'Chatbox instead of popups', 'Message notification sound', 'Command notification sound', 'Show team top 5', 'Show targeting', 'Show current time', 'Show leaderboard mass', '\"Leaderboard\" header', 'Centered leaderboard', 'Game stats at the top', 'Show game stats', 'Game stats: Mass', 'Game stats: STE', 'Game stats: n/16', 'Game stats: FPS', 'Block popups (ads/shop/quest)', 'Hotkeys', 'Feed', 'Split 16', 'Cell pause', 'Show/hide team top 5', 'Show/hide split range', 'Show/hide split indicators', 'Show/hide teammates indicators', 'Show/hide opponents colors', 'Toggle skins (custom/default)', 'Show/hide skins', 'Toggle transparent skins', 'Show/hide game stats', 'Toggle own cells (smallest/biggest)', 'Show/hide food', 'Show/hide minimap guides', 'Show/hide chat', 'Show/hide HUD', 'Copy leaderboard', 'Toggle auto zoom', 'Reset zoom', 'Zoom level', 'Toggle death location', 'Show/hide background sectors', 'Show/hide small bots', 'Show/hide names', 'Show/hide teammates names', 'Show/hide mass', 'Show/hide minimap', 'Enter chat message', 'Quick respawn', 'Toggle auto respawn', 'Switch server [public/private]', 'Change target', 'Show target on the minimap', 'Show/hide quest', 'Commands', 'Split into me!', 'Need backup at %currentSector%!', 'Enemy spotted at %currentSector%!', 'Need a teammate!', 'Tank the virus!', 'Eat the virus!', 'Let\'s bait!', 'Fuck!', 'Tricksplit!', 'Left!', 'Up!', 'Right!', 'Bottom!', 'Save commands', 'Theme', 'Basic theming', 'Theme preset', 'Theme type', 'Dark theme', 'Light theme', 'Main color', 'Grid', 'Sectors font', 'Virus', 'Virus stroke', 'Mass font', 'Names scale', 'Virus mass scale', 'Text stroke scale', 'Food size', 'Map borders width', 'Sectors grid width', 'Sectors font size', 'Cells transparency', 'Skins transparency', 'Virus transparency', 'Names & mass transparency', 'Virus stroke size', 'Teammate indicator', 'Split range', 'Safe area', 'Danger area', 'Ghost cells', 'Ghost cells transparency', 'Menu theme', 'Panel (2)', 'Panel text', 'Panel text (2)', 'Button #1', 'Button #1 (2)', 'Button #2', 'Button #2 (2)', 'Button #3 (2)', 'Button #4', 'Button #4 (2)', 'Panel background image', 'Background', 'Text', 'Time', 'Leaderboard - me', 'Leaderboard - teammate', 'HUD font', 'HUD scale', 'Message background', 'Message text', 'Message time', 'Message nick', 'Command background', 'Command time', 'Command nick', 'Chat scale', 'Sectors', 'Guides', 'Nick stroke', 'My cell', 'My cell stroke', 'Teammates', 'Minimap font', 'Nick font', 'Minimap width', 'Sectors transparency', 'Nick size', 'Nick stroke size', 'My cell size', 'My cell stroke size', 'Graphics / cursors', 'Custom background image', 'Custom cursor image', 'Chat is visible!', 'Chat is hidden!', 'Skins are hidden!', 'Small bots are visible!', 'Small bots are hidden!', 'Auto respawn is on!', 'Auto respawn is off!', 'Auto zoom is on!', 'Target not set', 'Dead', 'Distance', 'Mass altogether', 'Active players', 'Total mass', 'Export / import settings', 'Export settings', 'Profiles', 'Skins', 'Add skins', 'Save settings', 'Saved!', 'Close', 'Active parties', 'No active parties ;(', 'Playlist', 'Visit', 'Legend mod Express: Are you sure you want to quit the game?', 'WARNING! Popups are blocked in the settings.', 'Score', 'Leaderboard', 'User', 'User %user% has been muted.', 'User %user% has been unmuted.', 'Mute', 'Unmute', 'Muted users', 'Active users', 'None', 'Sounds', 'Gifts', 'Daily Quest', 'Shop', 'navigator', 'language', 'userLanguage', 'hasOwnProperty', 'comm1', 'comm2', 'comm3', 'comm4', 'comm5', 'comm6', 'comm8', 'comm9', 'comm10', 'comm11', 'comm12', 'comm14', '&amp;', '&lt;', '&gt;', '&quot;', 'wink.svg', 'smirk.svg', 'joy.svg', 'sad.svg', 'cry.svg', 'tongue.svg', 'tonguew.svg', 'kiss.svg', 'smileh.svg', 'cool.svg', 'astonished.svg', 'sweat.svg', 'neutral.svg', 'unamused.svg', 'sleep.svg', 'relaxed.svg', 'expressionless.svg', 'money.svg', 'devil.svg', 'finger.svg', 'clap.svg', 'ok.svg', 'victory.svg', 'thumb.svg', 'thumbd.svg', 'OGARio v3', '#01d9cc', '#000a11', '#00243e', '#000000', '#00b9e8', '#5000ff', '#ffffff', 'ubuntu-bold', 'ogario-v3', '#002f52', '#8096a7', '#018cf6', '#0176ce', '#0099c0', '#8d5fe6', '#814ee3', '#bf00aa', '#a80096', 'rgba(0,0,0,0.4)', 'https://cdn.ogario.ovh/static/img/cursors/cursor_02.cur', 'OGARio v2', '#ff7800', '#292929', '#666666', '#e16400', 'rgba(255,120,0,0.9)', 'OGARio LE', '#b5a642', '#111111', '#998c36', 'rgba(181,166,66,0.9)', 'SniiKz\'s Style', '#fc0079', '#050008', '#1d0526', '#4f0242', '#4d0227', '#aa084e', '#8a063f', 'https://cdn.ogario.ovh/static/img/pattern.png', 'rgba(36,36,36,0.49)', '#737373', '#1fe000', '#e8e8e8', '#545454', '#05ff00', 'rgba(36,36,36,0.9)', '#4d4d4d', '#f0ff3d', '#acba07', '#305eff', '#2b2b2b', '#651fff', '#f2fbff', '#858a8c', '#ced6d9', '#33ff33', '#2de52d', 'rgba(255,255,255,0.9)', 'Agar.io Dark', '#999999', '#333333', '#f300d8', '#df00c6', '#222222', '#bbbbbb', '#428bca', '#5cb85c', '#449d44', '#f0ad4e', '#ec971f', '#d9534f', '#c9302c', 'Agar.io', '#5bc0de', '#cccccc', '#3071a9', 'Ubuntu', 'ubuntu', 'rgba(191,0,170,0.9)', 'getItem', 'ogarioThemeSettings', 'parse', 'setItem', 'stringify', 'removeItem', 'location', 'reload', '<style type=\'text/css\'>', 'appendTo', '<div class=\"preset-box\"><span class=\"title-box\">', '\" class=\"form-control\"></select></div></div>', 'append', '<option value=\"', '</option>', 'val', 'change', '<div class=\"color-box\"><span class=\"title-box\">', '-picker\"><input type=\"text\" value=\"', '\" id=\"', '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>', '-picker', 'changeColor.colorpicker', 'color', 'toHex', 'colorpicker', '</span><div class=\"input-group ', 'rgba', 'toRGB', 'rgba(', '<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">', ': </span><span id=\"', '</span></div><input id=\"', '\" max=\"', '\" step=\"', '\" value=\"', '\"></div>', '-slider', 'input', '<div class=\"input-box\"><span class=\"title-box\">', '\" class=\"form-control\" placeholder=\"', 'customCursor', '<div class=\"cursor-box\"><a href=\"#\" class=\"active\"><img src=\"', '\"></a></div>', '<div class=\"cursor-box\"><a href=\"#\"><img src=\"', 'Family', 'setFontFamily', 'setFontWeight', 'Weight', '</span><div class=\"select-wrapper\"><select id=\"', '<option value=\"ubuntu\">Ubuntu</option><option value=\"ubuntu-bold\">Ubuntu Bold</option>', '<option value=\"roboto\">Roboto</option><option value=\"roboto-bold\">Roboto Bold</option>', '<option value=\"oswald\">Oswald</option><option value=\"oswald-bold\">Oswald Bold</option>', 'setFont', 'roboto', 'Roboto', 'oswald', 'Oswald', '#theme', '<ul class=\"submenu-tabs\"><li class=\"theme-main-tab active\"><a href=\"#theme-main\" class=\"active ogicon-paint-format\" data-toggle=\"tab-tooltip\" title=\"', 'basicTheming', '\"></a></li><li class=\"theme-menu-tab\"><a href=\"#theme-menu\" class=\"ogicon-menu\" data-toggle=\"tab-tooltip\" title=\"', 'menuTheming', '\"></a></li><li class=\"theme-hud-tab\"><a href=\"#theme-hud\" class=\"ogicon-display\" data-toggle=\"tab-tooltip\" title=\"', 'hudTheming', '\"></a></li><li class=\"theme-chat-tab\"><a href=\"#theme-chat\" class=\"ogicon-bubbles\" data-toggle=\"tab-tooltip\" title=\"', 'chatTheming', 'miniMapTheming', '\"></a></li><li class=\"theme-images-tab\"><a href=\"#theme-images\" class=\"ogicon-compass\" data-toggle=\"tab-tooltip\" title=\"', 'imagesTheming', 'addPresetBox', '#theme-main', 'themePreset', 'preset', 'changeThemePreset', 'addColorBox', 'bgColor', 'setBgColor', 'bordersColor', 'gridColor', 'sectorsColor', 'namesColor', 'namesStrokeColor', 'massColor', 'massStrokeColor', 'virusColor', 'virusStrokeColor', 'foodColor', 'setFoodColor', 'setIndicatorColor', 'cursorTrackingColor', 'splitRangeColor', 'safeAreaColor', 'dangerAreaColor', 'ghostCellsColor', 'addFontBox', 'namesFont', 'sectorsFont', 'sectorsFontSize', 'addSliderBox', 'namesScale', 'massScale', 'virMassScale', 'strokeScale', 'foodSize', 'virusStrokeSize', 'bordersWidth', 'sectorsWidth', 'skinsAlpha', 'textAlpha', 'ghostCellsAlpha', '#theme-menu', 'menuPreset', 'menuOpacity', 'menuMainColor', 'menuPanelColor', 'setMenuPanelColor', 'menuTextColor', 'setMenuTextColor', 'menuTextColor2', 'setMenuButtons', 'btn1Color2', 'btn2Color', 'btn3Color', 'btn3Color2', 'btn4Color2', 'addInputBox', 'menuBg', 'Image URL', 'setMenuBg', 'hudMainColor', 'setHudColors', 'addRgbaColorBox', '#theme-hud', 'hudColor', 'hudTextColor', 'statsHudColor', 'timeHudColor', 'top5MassColor', 'lbTeammateColor', 'hudFont', 'hudScale', 'setHudScale', '#theme-chat', 'messageColor', 'messageTextColor', 'setChatColors', 'messageTimeColor', 'messageNickColor', 'commandsColor', 'commandsTextColor', 'commandsNickColor', 'chatScale', 'setChatScale', '#theme-minimap', 'miniMapSectorsColor', 'miniMapSectorColor', 'miniMapNickColor', 'miniMapNickStrokeColor', 'miniMapMyCellColor', 'miniMapMyCellStrokeColor', 'miniMapDeathLocationColor', 'miniMapGuidesColor', 'miniMapGhostCellsColor', 'miniMapFont', 'setMiniMapFont', 'miniMapNickFont', 'miniMapWidth', 'setMiniMapWidth', 'setMiniMapSectorsOpacity', 'miniMapNickSize', 'miniMapNickStrokeSize', 'miniMapMyCellSize', 'miniMapMyCellStrokeSize', 'miniMapTeammatesSize', 'miniMapGhostCellsAlpha', '#theme-images', 'customBackground', 'setCustomBackground', 'https://cdn.ogario.ovh/static/img/cursors/cursor_', 'addCursorBox', '.cur', 'click', '#theme-images .cursor-box a', 'preventDefault', 'img', 'src', 'setCustomCursor', '#customCursor', 'addClass', 'active', 'saveSett', '</button>', '#theme .btn-save', 'saved', '<div class=\"restore-settings\"><a href=\"#\">', 'restoreThemeSettings', '#theme .restore-settings a', '.skin', '#color', '#theme .', 'input[type=text]#', 'select#', 'changePreset', 'setTheme', 'massFont', 'body', 'css', 'background-color', 'preDrawPellet', 'preDrawIndicator', 'background-image', 'url(', 'none', '*{cursor:url(', '), auto !important}', '*{cursor: auto}', 'addCustomCSS', 'cursorCSS', 'setMenuOpacity', 'setMenuMainColor', 'opacity', '!important}::selection{background-color:', '!important}.menu-main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:', '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:', '}.ps-scrollbar-y{background-color:', '!important}', '#main-menu,.agario-side-panel,#hotkeys,#exp-imp{background-color: ', 'menuPanelColor2', '}.agario-panel h5,.agario-side-panel h5,#stats h2,.menu-tabs,.submenu-tabs,#skins a.default,#stats hr,#hotkeys-cfg div.row, #exp-imp h1{border-color: ', '}.quick:hover,#skins a,#profiles{color:', 'menuPanelColorCSS', '.agario-panel,.agario-side-panel,.agario-panel input,.agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.dark .yt-username,#stream-mode,#hide-url,.menu-tabs a,.submenu-tabs a,#skins a.default:hover,#quick-menu a,#prev-profile.default:hover,#next-profile.default:hover,#statsText,#hotkeys,#hotkeys-cfg .command-in,#exp-imp{color:', '}#skins a.default:hover{border-color:', '}::-webkit-input-placeholder{color:', '!important}::-moz-placeholder{color:', '}#hotkeys-cfg .command-in,#theme .color-box{border-color:', 'a,a:hover{color:', 'btn1Color', '}.btn,#hotkeys-cfg .custom-key-in{color:', 'menuBtnTextColor', '}.btn-primary{background-color:', '!important}.btn-primary:active,.btn-primary:disabled,.btn-primary:focus,.btn-primary:hover{background-color:', '!important}.btn-success{background-color:', '!important}.btn-success:active,.btn-success:disabled,.btn-success:focus,.btn-success:hover{background-color:', 'btn2Color2', '!important}.btn-warning:active,.btn-warning:disabled,.btn-warning:focus,.btn-warning:hover{background-color:', '!important}.btn-danger{background-color:', 'btn4Color', '!important}.btn-danger:active,.btn-danger:disabled,.btn-danger:focus,.btn-danger:hover{background-color:', '!important}#hotkeys-cfg .custom-key-in{background-color:', ';border-color:', 'menuButtonsCSS', '#menuBg', '.menu-panel, .agario-side-panel, #hotkeys, #exp-imp', 'setHudFont', '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:', '}.stats-hud-color{color:', '}.time-hud-color{color:', '}.top5-mass-color{color:', '}#leaderboard-positions .me{color:', 'lbMeColor', '}#leaderboard-positions .teammate{color:', 'hudCSS', '#overlays-hud', 'hudFontFamily', 'hudFontWeight', 'round', 'font-size', '#top5-hud', 'width', 'top', '#top5-pos', 'padding-left', '#time-hud', '#pause-hud', '#target-hud', 'padding-top', '#message,#messages li,.toast-success{background-color:', '}#message,.message-text,.toast-success .message-text{color:', '}.message-nick,.mute-user,.mute-user:hover,.toast-success .message-nick,.toast .mute-user,.toast .mute-user:hover{color:', '}.message-time{color:', '}.command-text,.toast-warning .command-text{color:', '}.command-time{color:', 'commandsTimeColor', '}#chat-box{background-color:', 'chatBoxColor', 'chatCSS', '#message-box, #messages, #toast-container, #chat-box', '#messages, #toast-container, #chat-box', '#message-box', 'height', '#toast-container{width:', 'px;font-size:', 'px}', 'chatScaleCSS', 'miniMapTop', '#minimap-hud', 'resetMiniMapSectors', '#minimap-sectors', 'miniMapSectorsOpacity', 'setFonts', 'setMenu', 'setHud', 'setChat', 'setMiniMap', 'loadThemeSettings', 'I <3 OGARio', 'mainColor', 'https://cdn.ogario.ovh/static/sounds/notification_01.mp3', 'Legend mod Express v4', 'v4 (4.0.0 b35)', ':ffa', 'now', 'b2dhcmlvLm92aA==', 'playerX', 'mapOffsetX', 'playerY', 'mapOffsetY', 'core', 'feedInterval', 'feed', 'vanillaSkins', 'vannillaSkins', 'customSkins', 'selectBiggestCell', 'showTop5', 'setTop5', 'show', 'hide', 'showTargeting', 'setTargetingHUD', '#target-hud, #target-panel-hud', 'showTime', 'displayTime', 'splitRange', 'showSplitInd', 'oppRings', 'teammatesInd', 'oppColors', 'noSkins', 'setSkins', 'showCustomSkins', 'displayChatInfo', 'showSkinsMsg', 'transparentSkins', 'toggle', 'showFood', 'showGrid', 'showMiniMapGuides', ':teams', 'gameMode', '#leaderboard-hud', 'showBgSectors', 'hideSmallBots', 'hideSmallBotsMsg', 'noNames', 'hideTeammatesNames', 'showMass', 'showMiniMap', 'showQuest', 'setQuest', '#quest-hud', 'autoZoom', 'zoomResetValue', 'zoomValue', 'lastDeath', 'deathLocations', ':visible', '.btn-play-guest', 'play', 'tryResp', 'quickResp', 'hideMenu', 'gameServerConnect', 'autoResp', 'setAutoResp', 'stop', '.btn-play', '#skipStats', 'prop', 'checked', 'skipStats', 'autoRespMsg', '<input>', '#leaderboard-positions', 'select', 'execCommand', 'remove', 'centeredLb', 'hud-text-center', 'normalLb', '#leaderboard-hud h4', 'html', 'leaderboard', 'ogario.ovh', 'fpsAtTop', '#stats-hud', 'removeClass', 'hud-bottom', 'hud-top', 'protocolMode', '#block-warn', 'blockPopups', 'unblockPopups', '#openfl-content, #openfl-overlay', 'block-popups', 'disabled', '#openfl-overlay.disabler', '#freeCoins, #gifting, #openShopBtn, #dailyQuests', 'leaderboardPositionsHUD', 'innerHTML', 'leaderboardDataHUD', 'showStats', 'showStatsMass', 'playerMass', 'mass', ' | ', 'playerScore', 'score', 'STE', ' | STE: ', 'showStatsN16', 'playerSplitCells', 'showStatsFPS', 'FPS: ', 'fps', 'statsHUD', 'textContent', 'displayStats', 'toLocaleString', 'parties', '<li><a href=\"https://agar.io/#', '\" onclick=\"$(\'#party-token\').val(\'', '</a></li>', 'activeParties', 'className', 'no-parties', 'top5', '<li><span class=\"cell-counter\" style=\"background-color: ', '</span>', '<a href=\"#\" data-user-id=\"', '\" class=\"set-target ogicon-target\"></a> ', '<span class=\"hud-main-color\">[', 'calculateMapSector', ']</span>', '<span class=\"top5-mass-color\">[', 'shortMassFormat', ']</span> ', 'escapeHTML', 'nick', '</li>', 'top5pos', 'top5totalMass', 'top5totalPlayers', 'top5limit', 'clearChatHistory', 'chatHistory', '#messages', '<li><span class=\"message-nick\">', ': </span><span class=\"message-text\">', '</span></li>', 'empty', 'showChatBox', '#chat-box .message', 'hideChat', 'disableChat', 'setHideChat', 'setShowChatBox', '#chat-box', 'sendChatMessage', 'blur', 'showNickDialog', '.menu-panel', '#stats', '#oferwallContainer', 'closeOfferwall', '#videoContainer', 'closeVideoContainer', '#overlays', 'fadeIn', '.ogario-menu', 'fadeOut', 'http:', 'https:', 'ogarioSettings', '#export-', '#import-settings', '#import-', 'showMiniMapGrid', 'chatSounds', 'setChatSoundsBtn', 'setCenteredLb', 'setNormalLb', 'setFpsAtTop', 'saveSettings', 'ogarioPlayerProfiles', 'Profile #', 'ogarioSelectedProfile', 'selectedProfile', 'clanTag', 'skinURL', 'default', '<a href=\"#\" id=\"skin-popover\" data-toggle=\"popover\" title=\"\" data-html=\"true\" data-content=\"<img src=\'', '\' width=\'500\'>\"></a>', '#skin-popover', 'popover', 'crossOrigin', 'onload', 'changeSkinPreview', 'setSkinPreview', 'skin-preview', 'next-profile', '#nick', '#clantag', '#skin', 'setValue', '#skins a', 'selected', '#skins a[data-profile=\'', 'setPlayerSettings', 'setProfile', '<label><input type=\"checkbox\" id=\"', '\" class=\"js-switch\"> ', '</label>', '#og-options', '<div class=\"options-box ', '<label>', ' <input type=\"checkbox\" class=\"js-switch\" id=\"', '\"></label>', '</span><input id=\"', '\" /></div>', '-value\" class=\"value\">', '-slider\" type=\"range\" min=\"', '-value', 'i18n_dict', '#mainPanel', 'before', '<div id=\"exp-bar\" class=\"agario-panel\"><span class=\"ogicon-user\"></span><div class=\"agario-exp-bar progress\"><span class=\"progress-bar-text\"></span><div class=\"progress-bar progress-bar-striped\" style=\"width: 0%;\"></div></div><div class=\"progress-bar-star\"></div></div><div id=\"main-menu\" class=\"agario-panel\"><ul class=\"menu-tabs\"><li class=\"start-tab active\"><a href=\"#main-panel\" class=\"active ogicon-home\" data-toggle=\"tab-tooltip\" title=\"', 'start', '\"></a></li><li class=\"profile-tab\"><a href=\"#profile\" class=\"ogicon-user\" data-toggle=\"tab-tooltip\" title=\"', 'profile', '\"></a></li><li class=\"settings-tab\"><a href=\"#og-settings\" class=\"ogicon-cog\" data-toggle=\"tab-tooltip\" title=\"', 'settings', '\"></a></li><li class=\"theme-tab\"><a href=\"#theme\" class=\"ogicon-droplet\" data-toggle=\"tab-tooltip\" title=\"', 'theme', 'hotkeys', 'sounds', '\"></a></li></ul><div id=\"main-panel\" class=\"menu-panel\"></div><div id=\"profile\" class=\"menu-panel\"></div><div id=\"og-settings\" class=\"menu-panel\"><div class=\"submenu-panel\"></div></div><div id=\"theme\" class=\"menu-panel\"></div><div id=\"music\" class=\"menu-panel\"></div></div>', '#main-panel', '<a href=\"#\" class=\"quick quick-menu ogicon-menu\"></a><a href=\"#\" class=\"quick quick-skins ogicon-images\"></a><div id=\"profiles\"><div id=\"prev-profile\"></div><div id=\"skin-preview\"></div><div id=\"next-profile\"></div></div>', '#mainPanel div[role=form]', '#main-panel div[role=form] .form-group:first', '<input id=\"clantag\" class=\"form-control\" placeholder=\"Tag, e.g. Ⓜ\" maxlength=\"10\"><div class=\"input-group nick\"></div>', '.nick', '<span class=\"input-group-btn\"><button id=\"stream-mode\" class=\"btn active ogicon-eye\"></button></span>', 'after', '<div class=\"input-group skin\"><input id=\"skin\" class=\"form-control\" placeholder=\"Skin URL (imgur.com direct link)\" maxlength=\"40\"><input type=\"hidden\" id=\"color\" value=\"', '#locationKnown, #locationUnknown', 'insertAfter', '#region', '<button class=\"btn btn-warning btn-server-info ogicon-cogs\"></button>', '.btn-spectate, .btn-logout', '#agario-main-buttons', 'clearfix', '<div id=\"server-info\" class=\"form-group clearfix\"><input id=\"server-ws\" class=\"form-control\" placeholder=\"Server WS\"><button id=\"server-connect\" class=\"btn btn-success ogicon-power\"></button><button id=\"server-reconnect\" class=\"btn btn-primary ogicon-redo2\"></button><input id=\"server-token\" class=\"form-control\" placeholder=\"Server token\"><button id=\"server-join\" class=\"btn btn-success\" data-itr=\"page_join_party\">Join</button></div>', '#helloContainer div[role=form]', '<div id=\"ogario-party\" class=\"clearfix\"><input id=\"party-token\" class=\"form-control\" placeholder=\"Party token\"></div>', '#ogario-party', '#og-settings .submenu-panel', '#main-menu', 'menu-panel', 'attr', '.center-container', 'ogario-menu', '<div id=\"menu-footer\" class=\"menu-main-color\">', 'visit', ' <a href=\"http://legendmod.ml\" target=\"_blank\">legendmod.ml</a> | ', '#leftPanel, #rightPanel', 'removeAttr', '.agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel', '#profile', 'agario-side-panel', '.agario-profile-panel', '<div id=\"block-warn\">', 'blockWarn', '</a></div>', '#exp-bar', 'agario-profile-panel', '.left-container', '.agario-shop-panel', '#tags-container', '<div id=\"quick-menu\" class=\"agario-panel agario-side-panel\"><a href=\"https://ogario.ovh/skins/\" class=\"quick-more-skins ogicon-grin\" target=\"_blank\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"', 'skins', '\"></a><a href=\"https://youtube.com/channel/UCaWiPNJWnhzYDrBQoXokn6w\" class=\"quick-yt ogicon-youtube2\" target=\"_blank\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"Team OGARio\"></a></div>', '#quick-menu', 'prepend', '<a href=\"#\" class=\"quick-shop ogicon-cart\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"', 'page_shop', '\"></a><a href=\"#\" class=\"quick-free-coins ogicon-coin-dollar\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"', 'page_menu_main_free_coins', '\"></a><a href=\"#\" class=\"quick-free-gifts ogicon-gift\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"', 'page_menu_main_gifts', '\"></a><a href=\"#\" class=\"quick-quests ogicon-trophy\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"', 'page_menu_main_dailyquests', '\"></a>', '.party-dialog, .partymode-info', '.agario-party-6', '.right-container', '<div class=\"agario-party\"></div>', '.agario-party', 'agario-panel agario-side-panel', '.agario-party h4, #cancel-party-btn', '.agario-party .btn', 'btn-sm', '<div id=\"skins-panel\" class=\"agario-panel agario-side-panel\"><div id=\"skins\"></div><a href=\"https://ogario.ovh/skins/\" id=\"more-skins\" class=\"btn btn-block btn-success\" target=\"_blank\">', 'moreSkins', '.btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr=\'page_option_dark_theme\'], #options #darkTheme', '#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom', '#advertisement', 'agario-panel', '#adsBottom', '-100px', '#noNames, #showMass', '<div id=\"og-options\"></div>', 'animationGroup', 'addOptions', 'zoomGroup', 'respGroup', 'optimizedNames', 'autoHideNames', 'hideMyName', 'namesStroke', 'optimizedMass', 'autoHideMass', 'shortMass', 'virMassShots', 'massStroke', 'skinsGroup', 'autoHideFood', 'rainbowFood', 'foodGroup', 'myCustomColor', 'myTransparentSkin', 'transparentCells', 'transparentViruses', 'transparencyGroup', 'showMapBorders', 'chatEmoticons', 'showChatVideos', 'chatGroup', 'showMiniMapGhostCells', 'miniMapGroup', 'virColors', 'cursorTracking', 'showGhostCells', 'mouseSplit', 'mouseFeed', 'mouseGroup', 'showLbData', 'hudGroup', 'showStatsSTE', 'statsGroup', 'extrasGroup', '#noSkins, #noColors, #skipStats, #showQuest', 'js-switch-vanilla', '.skinsGroup h5', '<label class=\"noSkins\">', '#noSkins', '.noSkins', '.transparencyGroup h5', '<label class=\"noColors\">', 'noColors', ' </label>', '#noColors', '.noColors', '.extrasGroup h5', '<label class=\"skipStats\">', '.skipStats', '<label class=\"showQuest\">', '#showQuest', '.showQuest', '#options', '#settingsChoice', '.extrasGroup', 'select-wrapper', '.animationGroup', 'zoomSpeedValue', '#og-settings', '<button class=\"btn btn-block btn-success btn-export\">', 'exportImport', 'restoreSettings', '#music', '<div class=\"agario-panel radio-panel\"><h5 class=\"menu-main-color\">Radio (', 'thanks', ')</h5><audio src=\"http://frshoutcast.comunicazion.eu:8815/;\" controls></audio><span class=\"playlist\"><span class=\"ogicon-file-music\"></span> <a href=\"http://frshoutcast.comunicazion.eu:8815/played.html?sid=1\" target=\"_blank\">', 'playlist', '</a></span></div>', '<div class=\"agario-panel sounds-panel\"><h5 class=\"menu-main-color\">', '</h5></div>', '<div class=\"agario-panel ogario-yt-panel\"><h5 class=\"menu-main-color\">Team OGARio (tag: Ⓜ)</h5><div class=\"g-ytsubscribe\" data-channelid=\"UCaWiPNJWnhzYDrBQoXokn6w\" data-layout=\"full\" data-theme=\"dark\" data-count=\"default\"></div></div>', '.sounds-panel', 'messageSound', 'Sound URL', 'setMessageSound', 'commandSound', 'totalPartyPlayers', ': <span id=\"top5-total-players\" class=\"top5-mass-color\">0</span><br><span class=\"hud-main-color ogicon-pacman\"></span> ', 'totalPartyMass', '</div> <div id=\"leaderboard-hud\" class=\"hud-b\"><h4 class=\"hud-main-color\">legendmod.ml</h4><div id=\"leaderboard-data\"></div><div id=\"leaderboard-positions\"></div></div> <div id=\"btl-leaderboard-hud\"><div class=\"hud hud-c\"><span id=\"btl-players-status\">Players ready</span>: <span id=\"btl-players-count\">0</span></div></div> <div id=\"minimap-hud\" class=\"hud-b\"><canvas id=\"minimap-sectors\"></canvas><canvas id=\"minimap\"></canvas></div><div id=\"target-hud\" class=\"hud\"><div id=\"target-player\"><span id=\"target-skin\"><img src=\"https://cdn.ogario.ovh/static/img/blank.png\" alt=\"\"> </span><span id=\"target-nick\"></span> <span id=\"target-status\" class=\"hud-main-color\">[', 'targetNotSet', ']</span></div><div id=\"target-summary\"></div></div><div id=\"target-panel-hud\" class=\"hud\"><a href=\"#\" id=\"set-targeting\" class=\"ogicon-target\"></a><a href=\"#\" id=\"set-private-minimap\" class=\"ogicon-location2\"></a><a href=\"#\" id=\"cancel-targeting\" class=\"ogicon-cancel-circle\"></a><a href=\"#\" id=\"change-target\" class=\"ogicon-arrow-right\"></a></div> <div id=\"quest-hud\" class=\"hud\"></div> <div id=\"btl-hud\" class=\"hud\"></div></div>', '<ul id=\"messages\"></ul>', '<div id=\"message-box\"><div id=\"chat-emoticons\"></div><div id=\"message-menu\"><a href=\"#\" class=\"chat-sound-notifications ogicon-volume-high\"></a><a href=\"#\" class=\"chat-active-users ogicon-user-check\"></a><a href=\"#\" class=\"chat-muted-users ogicon-user-minus\"></a><a href=\"#\" class=\"show-chat-emoticons ogicon-smile\"></a></div><input type=\"text\" id=\"message\" class=\"form-control\" placeholder=\"', 'enterChatMsg', '<div id=\"chat-box\"></div>', '#chat-emoticons', '<img src=\"https://cdn.ogario.ovh/static/emoticons/', '\" alt=\"', '\" class=\"emoticon\">', '<div id=\"exp-imp\"><div id=\"exp-imp-menu\"><button id=\"close-exp-imp\" class=\"btn btn-danger\">', '</button></div><div id=\"exp-imp-settings\"></div></div>', '<h1>', 'exportSettings', '</h1><h2>', 'exportInfo', '</h2>', 'addOption', '#exp-imp-settings', 'export-ogarioCommands', 'commands', 'export-ogarioHotkeys', 'export-ogarioPlayerProfiles', 'export-ogarioSettings', 'export-ogarioThemeSettings', 'importSettings', 'importInfo', 'import-ogarioCommands', 'import-ogarioHotkeys', 'profiles', 'import-ogarioSettings', 'setThemeMenu', '#skins', '<div class=\"skin-box\"><a href=\"#profile-', '\" id=\"profile-', '\" data-profile=\"', 'profile-', '#profile-', 'switchMenuTabs', '.submenu-tabs a', 'submenu-panel', '.quick-menu', 'showQuickMenu', 'setShowQuickMenu', '.quick-skins', 'showSkinsPanel', 'setShowSkinsPanel', 'region', '#gamemode', 'leaveParty', '#quality', 'getQuality', 'selectProfile', 'data-profile', '#prev-profile', 'prevProfile', '#next-profile', 'nextProfile', '#stream-mode', 'streamMode', 'setStreamMode', '#hide-url', 'hideSkinUrl', 'setHideSkinUrl', '.btn-server-info', '#server-info', '#server-connect', '#server-reconnect', 'gameServerReconnect', '#server-join', 'gameServerJoin', '#server-token', '#og-options input[type=\'checkbox\']', 'setSettings', '#og-settings .restore-settings a', '#og-settings .btn-export', '#exp-imp-settings, #export-settings', 'perfectScrollbar', '#exp-imp', 'focus', '#export-settings', '#export-settings-btn', '#openfl-content', '.quick-shop', 'openShop', '.quick-free-coins', 'showFreeCoins', '.quick-free-gifts', 'showGifting', '.quick-quests', 'showQuests', '#set-targeting', '#cancel-targeting', 'cancelTargeting', '#set-private-minimap', 'setPrivateMiniMap', '#change-target', 'changeTarget', '.team-top-limit', 'data-limit', 'setTop5limit', 'displayTop5', '.team-top', 'setTarget', 'data-user-id', '.mute-user', 'muteChatUser', '.btn-mute-user', 'btn-red btn-mute-user', 'btn-green btn-unmute-user', 'unmute', '.btn-unmute-user', 'unmuteChatUser', 'mute', '.chat-active-users', 'displayChatActiveUsers', '.chat-muted-users', 'displayChatMutedUsers', '.show-chat-emoticons', '#message', '#chat-emoticons .emoticon', 'alt', 'getElementById', 'stats-hud', 'active-parties', 'top5-pos', 'top5-total-mass', 'leaderboard-positions', 'leaderboard-data', 'timeHUD', 'time-hud', 'questHUD', 'quest-hud', '#canvas', 'contextmenu', '.btn', '[data-toggle=\'tab-tooltip\']', 'tooltip', 'hover', 'querySelectorAll', '.js-switch', 'small', 'rangeslider', 'toast-bottom-left', 'parent', 'hasClass', 'hotkeys-link', 'profile-tab', 'setBlockPopups', 'siblings', 'find', 'href', ' .submenu-panel', 'display', 'scale_setting', 'setCanvasScale', 'setRegion', 'setParty', ':party', 'hash', '#join-party-btn-2', '.js-switch-vanilla', '#noNames', '#showMass', 'unlockButtons', 'devicePixelRatio', 'High', 'Medium', 'Low', 'VeryLow', 'canvasScale', 'ogicon-eye-blocked', 'stream-mode', '#clantag, #nick, #party-token', 'hide-url', '#skins-panel', '.btn-play, .btn-play-guest, .btn-login-play, .btn-spectate', 'onSpectate', '#create-party-btn-2', 'onCreate', 'skipServerData', 'joinParty', '#statsContinue2', 'isSocketOpen', 'sendPartyData', 'connect', 'addKeyListeners', 'UA-67142685-2', 'auto', 'ogarioTracker', 'ogarioTracker.send', 'pageview', 'onJoin', 'sendPlayerJoin', 'partyToken', 'playerColor', 'onPlayerSpawn', 'foodIsHidden', 'showMenu', 'sendPlayerDeath', 'updateDeathLocations', 'trim', 'checkSkinURL', 'Anonymous', 'complete', 'cacheQueue', 'cacheSkin', 'createElement', 'canvas', 'getContext', 'beginPath', 'arc', 'clip', 'drawImage', 'customSkinsCache', '_cached', 'toDataURL', 'customSkinsMap', 'checkSkinsMap', 'getCachedSkin', 'mapOffset', 'mapSize', 'sectorsY', 'sectorsX', 'mapOffsetFixed', 'miniMap', 'miniMapCtx', 'clearRect', 'minimap', 'ogarioCtx', 'currentSector', 'font', 'miniMapFontWeight', 'px ', 'fillStyle', 'fillText', 'drawMiniMapSectors', 'save', 'drawBattleAreaOnMinimap', 'inView', 'pi2', 'globalAlpha', 'shadowColor', 'shadowBlur', 'shadowOffsetX', 'shadowOffsetY', 'strokeStyle', 'moveTo', 'lineTo', 'stroke', 'closePath', 'lineWidth', 'teamPlayers', 'drawPosition', 'privateMiniMap', 'max', '#FFFFFF', 'minimap-sectors', 'miniMapSectors', 'dTok', 'drawSectors', 'miniMapFontFamily', 'right', 'token', 'indicator', 'drawTeammatesInd', 'setAutoHideCellInfo', 'cells', 'setMass', 'setDrawing', 'setDrawingScale', 'drawNick', 'namesFontFamily', 'namesFontWeight', 'hideEnemiesMass', 'massFontFamily', 'massFontWeight', '#C80000', 'playerMaxMass', 'playerMinMass', '#FFDC00', 'viewScale', '#party-token', 'flushSkinsMap', 'flushChatData', '#pre-join-party-btn', '.party-token', '#join-party-btn', '#party-token, .party-token', '#leave-party-btn', '.party-icon-back', 'flushPartyData', 'lastSentNick', 'lastSentClanTag', 'lastSentSkinURL', 'lastSentCustomColor', 'lastSentPartyToken', 'lastSentServerToken', 'chatUsers', 'createServerToken', 'updateServerInfo', 'agar.io', 'closeConnection', 'wss://ip-', '.tech.agar.io:', 'wss://live-arena-', '.agar.io:443', '.tech.agar.io', 'serverIP', 'serverArena', 'serverToken', 'flushData', 'flushCells', 'encodeURIComponent', '#server-ws', 'reconnect', 'master', 'recreateWS', '[Legend mod Express] Connecting to server', 'privateIP', 'socket', 'publicIP', 'ogarioWS', 'binaryType', 'arraybuffer', 'onopen', 'setUint8', 'setUint16', 'onmessage', 'handleMessage', 'onclose', '[Legend mod Express] Socket close', 'onerror', '[Legend mod Express] Socket error', 'privateMode', 'Zamknięto połączenie z serwerem!', 'info', '.party-panel', 'Przełączono na serwer publiczny!', '#active-parties', 'readyState', 'OPEN', 'createView', 'send', 'getUint8', 'playerID', 'sendPlayerUpdate', 'updateTeamPlayerPosition', 'sendBuffer', 'sendPlayerState', 'strToBuff', 'sendPlayerData', 'FFA', ':battleroyale', 'BTR', 'TMS', 'EXP', 'PTY', 'sendServerGameMode', 'sendPlayerClanTag', 'sendPlayerNick', 'setUint32', 'getPlayerX', 'setInt32', 'getUint16', 'getUint32', 'skinID', 'setColor', 'lastX', 'customColor', 'alive', 'lastY', 'miniMapNickFontFamily', 'textAlign', 'center', 'oneColoredTeammates', 'miniMapTeammatesColor', 'checkPlayerID', 'getInt32', 'updateTime', 'targeting', 'targetID', 'sendPlayerPosition', 'setTargetStatus', 'isChatUserMuted', 'addChatUser', 'sort', 'toTimeString', 'displayChatMessage', 'lastMessageSentTime', '%currentSector%', 'prepareCommand', 'comm', 'chatMutedUsers', 'chatMutedUserIDs', 'userMuted', '%user%', '<strong>', '</strong>', ' <button data-user-id=\"', '\" class=\"btn btn-xs btn-green btn-unmute-user\">', 'splice', 'userUnmuted', '\" style=\"width:100%;border:none;\">', '<iframe type=\"text/html\" width=\"100%\" height=\"auto\" src=\"https://www.youtube.com/embed/', '?autoplay=1&amp;vq=tiny\" frameborder=\"0\" />', 'parseEmoticons', 'parseMessage', '\" class=\"mute-user ogicon-user-minus\"></a> ', '<div class=\"message\"><span class=\"message-time\">[', '] </span>', '<span class=\"message-nick\">', '</span></div>', 'animate', 'playSound', 'success', '<div class=\"message command\"><span class=\"command-time\">[', '<span class=\"command-nick\">', ': </span><span class=\"command-text\">', 'warning', '<li><strong>', '\" class=\"btn btn-xs ', '</button></li>', '</ol>', 'displayUserList', 'setCommandSound', '.chat-sound-notifications', 'ogicon-volume-mute2', 'ogicon-volume-high', 'setSound', '#target-status', 'targetStatus', '#target-summary, #target-status', 'updateTarget', 'targetNick', 'targetSkinURL', '#target-skin, #target-nick, #target-summary', '#target-panel-hud a', 'setTargetingInfo', '#target-skin, #target-nick, #target-status, #target-summary', '#target-summary', 'targetDead', 'resetTargetPosition', 'setTargetPosition', '#target-skin', '#target-skin img', 'https://cdn.ogario.ovh/static/img/blank.png', 'targetDistance', ': <span class=\"hud-main-color\">', 'targetMass', 'getQuestProgressLabel', 'setLang', 'setMainButtons', 'setDisableChat', 'updateTeamPlayers', 'updateInterval', 'txt', 'txtCanvas', 'txtCtx', 'strokeWidth', 'strokeColor', '700 16px Ubuntu', 'fontFamily', 'fontWeight', 'scale', 'quality', 'measuredWidth', 'redraw', 'remeasure', 'setStroke', 'setStrokeColor', 'fontSize', 'setFontSize', 'margin', 'createCanvas', 'setStrokeWidth', 'measureWidth', 'measureText', 'drawTxt', 'strokeText', 'targetX', 'targetY', 'oppColor', 'targetSize', 'alpha', 'nickCanvas', 'lastMass', 'kMass', 'lastNickSize', 'massSize', 'virMassSize', 'nickStrokeSize', 'massStrokeSize', 'isFood', 'isVirus', 'rescale', 'redrawNick', 'redrawMass', 'strokeNick', 'strokeMass', 'removed', 'redrawed', 'time', 'skin', 'isPlayerCell', 'setNick', 'removeCell', 'virusesRange', 'viruses', 'food', 'playerCells', 'playerCellIDs', 'removedCells', 'indexedCells', 'moveCell', 'animation', 'isInView', 'viewX', 'canvasWidth', 'viewY', 'canvasHeight', 'massTxt', 'massCanvas', 'ceil', 'nickScale', 'nickSize', 'setScale', 'setStrokeSize', 'setTxt', 'drawMass', 'draw', 'restore', 'virusAlpha', 'setVirusColor', 'setVirusStrokeColor', 'cellsAlpha', 'hideMyMass', '[Legend mod Express] Connecting to game server:', 'flushCellsData', 'protocolKey', 'clientKey', 'accessTokenSent', 'connectionOpened', 'onOpen', 'onError', 'onClose', 'getWS', 'sendServerData', 'displayLeaderboard', 'onConnect', '[Legend mod Express] Game server socket open', 'sendMessage', 'clientVersion'];
+var obfuscatedbigarraywithnopurpose1 = ['shiftMessage', '[Legend mod Express] Game server socket error', 'onDisconnect', '[Legend mod Express] Game server socket close', 'shiftKey', 'sendAction', 'sendPosition', 'playerNick', 'unescape', 'cursorX', 'clientVersionString', 'getFloat32', 'pieChart', 'drawPieChart', 'playerPosition', 'decodeURIComponent', 'isPlayer', 'handleLeaderboard', 'ghostCells', '[Legend mod Express] Captcha requested', 'recaptchaRequested', 'logout', 'battleRoyale', 'startTime', 'joined', 'radius', 'shrinkTime', 'timeLeft', 'serverTimeDiff', 'targetRadius', 'rank', '[Legend mod Express] Received protocol key:', 'generateClientKey', 'login', 'serverTime', 'handleSubmessage', 'updateCells', 'viewMinX', 'readDoubleLE', 'viewMinY', 'setMapOffset', 'viewMaxX', 'viewMaxY', '<span class=\"teammate\">', 'mapMinX', 'mapMinY', 'mapMaxX', 'mapMaxY', 'removePlayerCell', 'onPlayerDeath', 'color2Hex', 'playerSize', 'recalculatePlayerMass', 'biggerSTECellsCache', 'biggerCellsCache', 'STECellsCache', 'cacheCells', 'smallerCellsCache', '#FF008C', '#BE00FF', '#FF0A00', 'clientX', 'cursorY', 'clientY', 'detail', 'keyCode', 'sendSplit', 'sendFreeSpectate', 'sendEject', 'onkeyup', 'pressedKeys', 'userAgent', 'addEventListener', 'DOMMouseScroll', 'setZoom', 'onmousewheel', 'setClientVersion', 'ctx', 'onmousemove', 'getCursorPosition', 'innerWidth', 'innerHeight', 'calculatePlayerMassAndPosition', 'camX', 'camY', 'getZoom', 'setView', 'sortCells', 'compareCells', 'drawGrid', 'translate', 'drawBattleArea', 'drawMapBorders', 'drawVirusesRange', 'drawFood', 'drawSplitRange', 'drawCursorTracking', 'drawGhostCells', 'autoHideFoodOnZoom', 'drawCachedFood', 'optimizedFood', 'pellet', 'rect', 'darkTheme', 'drawCircles', '#00C8FF', '#64FF00', '#FF3333', '#3333FF', 'drawDangerArea', 'battleAreaMap', 'battleAreaMapCtx', 'drawSafeArea', 'maxRadius', 'globalCompositeOperation', 'drawDashedCircle', 'fpsLastRequest', 'renderedFrames', 'renderFrame', 'requestAnimationFrame', 'setCanvas', 'resizeCanvas', 'render', 'hk-feed', 'normal', 'hk-macroFeed', 'macroFeed', 'hk-split', 'SPACE', 'hk-doubleSplit', 'doubleSplit', 'Popsplit', 'hk-split16', 'split16', 'hk-pause', 'hk-showTop5', 'setShowTop5', 'ALT+T', 'setShowTime', 'hk-showSplitRange', 'setShowSplitInd', 'ALT+I', 'setShowTeammatesInd', 'hk-showOppColors', 'setShowOppColors', 'hk-transparentSkins', 'hk-showSkins', 'setShowSkins', 'hk-showStats', 'ALT+S', 'setShowStats', 'hk-toggleCells', 'toggleCells', 'hk-showFood', 'setShowFood', 'hk-showGrid', 'setShowGrid', 'hk-showMiniMapGuides', 'ALT+G', 'setShowMiniMapGuides', 'hk-showHUD', 'ALT+H', 'hk-copyLb', 'copyLb', 'hk-showLb', 'setShowLb', 'hk-toggleAutoZoom', 'toggleAutoZoom', 'hk-resetZoom', 'resetZoom', 'hk-toggleDeath', 'toggleDeath', 'hk-clearChat', 'displayChatHistory', 'hk-showBgSectors', 'setShowBgSectors', 'hk-hideBots', 'ALT+B', 'hk-showNames', 'setShowNames', 'hk-hideTeammatesNames', 'setHideTeammatesNames', 'hk-showMass', 'setShowMass', 'hk-showMiniMap', 'ALT+M', 'setShowMiniMap', 'ENTER', 'enterChatMessage', 'TILDE', 'hk-autoResp', 'toggleAutoResp', 'ALT+1', 'hk-zoomLevel', 'ALT+2', 'ALT+3', 'ALT+4', 'ALT+5', 'hk-switchServerMode', 'switchServerMode', 'hk-showTargeting', 'setShowTargeting', 'hk-setTargeting', 'setTargeting', 'hk-cancelTargeting', 'hk-changeTarget', 'hk-privateMiniMap', 'hk-showQuest', 'setShowQuest', 'sendCommand', 'command', 'comm7', 'comm0', 'MOUSE WHEEL', 'LEFT', 'comm13', 'DOWN', 'custom-key-in form-control input-sm', 'defaultKey', 'spec-messageKey', 'defaultMessageKey', 'ogarioHotkeys', 'loadDefaultHotkeys', 'ogarioCommands', 'saveCommands', '#hotkeys .command-in', 'each', '#hotkeys-cfg .custom-key-in', '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">', '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>', 'hk-inst-assign', '</li><li>', 'hk-inst-delete', 'hk-inst-keys', '</li></ul></div></div>', 'hk-', '<div class=\"row\"><div class=\"key-label\"><input id=\"', '\" class=\"command-in form-control input-sm\" value=\"', '\" maxlength=\"80\" /></div><div class=\"default-key\">', '</div><div class=\"custom-key\"><input id=\"', '\" class=\"custom-key-in form-control input-sm\" value=\"', '\" /></div></div>', '#hotkeys-cfg', '<div class=\"row\"><div class=\"key-label\">', 'label', '</div><div class=\"default-key\">', '#reset-hotkeys', 'resetHotkeys', '#save-hotkeys', 'saveHotkeys', '#hotkeys', '#close-hotkeys', '.hotkeys-link', 'ctrlKey', 'CTRL', 'altKey', 'ALT', 'TAB', 'ESC', 'RIGHT', 'DEL', 'lastPressedKey', 'lastKeyId', 'setDefaultHotkey', 'deleteHotkey', 'hk-chatMessage', 'loadHotkeys', 'setHotkeysMenu', 'history', 'replaceState', 'specialOn', '#helloContainer', '-ms-transform', '-webkit-transform', 'innerW', 'innerH', 'onkeydown', 'target', 'inputClassName', 'setHotkey', 'keyDown', 'getPressedKey', 'keyUp', 'onmousedown', 'which', 'mouseInvert', 'onmouseup', 'onbeforeunload', 'exit', 'lz4', '/ogario', 'onresize', 'sendNick', 'sendSpectate', 'ProxyMobileData ERROR: Array data required.', 'getClientVersion', 'getDefaultSettings', 'ogario', 'jQuery', 'function', 'Cannot find module \'', 'code', 'MODULE_NOT_FOUND', 'call', 'exports', 'byteLength', 'toByteArray', 'length', 'charCodeAt', 'fromByteArray', 'push', 'join', 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/', 'ieee754', 'Buffer', 'alloc', '__proto__', 'prototype', 'number', 'string', 'If encoding is specified then the first argument must be a string', '\"value\" argument must not be a number', '\'length\' is out of bounds', 'isEncoding', '\"encoding\" must be a valid string encoding', 'write', 'slice', 'isBuffer', 'copy', 'type', 'data', 'First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.', '\"size\" argument must be a number', 'Attempt to allocate Buffer larger than maximum size: 0x', 'toString', ' bytes', 'latin1', 'utf-8', 'ucs2', 'utf16le', 'utf-16le', 'hex', 'toLowerCase', 'from', 'indexOf', 'val must be string, number or Buffer', 'readUInt16BE', 'Invalid hex string', 'substr', 'min', 'fromCharCode', 'apply', 'kMaxLength', 'TYPED_ARRAY_SUPPORT', 'foo', 'undefined', 'error', 'This browser lacks typed array (Uint8Array) support which is required by \`buffer\` v5.x. Use \`buffer\` v4.x if you require old browser support.', 'species', 'defineProperty', 'fill', 'allocUnsafe', 'allocUnsafeSlow', '_isBuffer', 'compare', 'Arguments must be Buffers', 'utf8', 'binary', '\"list\" argument must be an Array of Buffers', 'swap16', 'Buffer size must be a multiple of 16-bits', 'swap32', 'swap64', 'Buffer size must be a multiple of 64-bits', 'ascii', 'base64', 'Unknown encoding: ', 'equals', 'Argument must be a Buffer', 'inspect', 'INSPECT_MAX_BYTES', 'match', ' ... ', '<Buffer ', 'Out of range index', 'includes', 'Buffer.write(string, encoding, offset[, length]) is no longer supported', 'Attempt to write outside buffer bounds', 'toJSON', '_arr', 'offset is not uint', 'Trying to access beyond buffer length', '\"value\" argument is out of bounds', 'Index out of range', 'readUIntLE', 'readUIntBE', 'readUInt8', 'readUInt16LE', 'readUInt32LE', 'readUInt32BE', 'readIntLE', 'pow', 'readIntBE', 'readInt8', 'readInt16LE', 'readInt16BE', 'readInt32LE', 'readInt32BE', 'readFloatLE', 'read', 'writeUIntLE', 'writeUIntBE', 'writeUInt8', 'writeUInt16LE', 'writeUInt16BE', 'writeUInt32LE', 'writeUInt32BE', 'writeIntLE', 'writeIntBE', 'writeInt8', 'writeInt16LE', 'writeInt16BE', 'writeInt32LE', 'writeInt32BE', 'writeFloatLE', 'writeDoubleLE', 'writeDoubleBE', 'targetStart out of bounds', 'sourceStart out of bounds', 'sourceEnd out of bounds', 'set', 'encoding must be a string', 'Out of range index', 'Invalid code point', 'replace', 'isView', 'isArray', '[object Array]', 'isBoolean', 'boolean', 'isNull', 'isNullOrUndefined', 'isNumber', 'isString', 'isSymbol', 'isRegExp', '[object RegExp]', '[object Date]', 'isError', 'isPrimitive', '../../is-buffer/index.js', 'UINT32', './lib/uint32', 'UINT64', './lib/uint64', '_high', 'remainder', '_low', 'fromBits', 'fromNumber', 'fromString', 'toNumber', 'add', 'subtract', 'multiply', 'div', 'division by zero', 'clone', 'shiftRight', 'greaterThan', 'lessThan', 'not', 'xor', 'shiftr', 'shiftLeft', 'shiftl', 'rotateLeft', 'rotl', 'rotateRight', 'rotr', 'amd', '_a00', '_a16', '_a32', '_a48', 'negate', 'and', '_events', '_maxListeners', 'EventEmitter', 'setMaxListeners', 'n must be a positive number', 'emit', 'Uncaught, unspecified \"error\" event. (', 'context', 'addListener', 'listener must be a function', 'newListener', 'listener', 'defaultMaxListeners', 'warned', '(node) warning: possible EventEmitter memory leak detected. %d listeners added. Use emitter.setMaxListeners() to increase limit.', 'trace', 'once', 'removeListener', 'removeAllListeners', 'listeners', 'listenerCount', 'abs', 'floor', 'log', 'LN2', 'create', 'super_', 'constructor', 'cuint', 'uncompress', 'input too large', 'compressBound', ' < ', 'imul', 'compress', 'compressHC', 'compressDependent', './decoder_stream', 'end', 'concat', 'buffer', 'stream', 'Transform', 'util', 'inherits', './static', 'utils', './binding', 'SIZES', 'options', 'binding', 'useJS', 'pos', 'descriptor', 'state', 'MAGIC', 'streamSize', 'dictId', 'currentStreamChecksum', 'skippableSize', '_transform', '_main', 'emit_Error', 'check_Size', 'notEnoughData', 'Unexpected end of LZ4 stream', 'read_MagicNumber', 'MAGICNUMBER_SKIPPABLE', 'MAGICNUMBER', 'Invalid magic number: ', 'toUpperCase', 'DESCRIPTOR', 'SKIP_SIZE', 'read_SkippableSize', 'SKIP_DATA', 'descriptorStart', 'Invalid version: ', 'Reserved bit set', 'blockMaxSizes', 'Invalid block max size: ', 'SIZE', 'read_Size', 'DICTID', 'read_DictId', 'DESCRIPTOR_CHECKSUM', 'read_DescriptorChecksum', 'DATABLOCK_SIZE', 'read_DataBlockSize', 'DATABLOCK_DATA', 'read_DataBlockData', 'dataBlock', 'DATABLOCK_CHECKSUM', 'read_DataBlockChecksum', 'blockChecksum', 'DATABLOCK_UNCOMPRESS', 'uncompress_DataBlock', 'blockMaxSize', 'streamChecksum', 'read_EOS', 'EOS', 'Invalid stream checksum: ', '_flush', './encoder_stream', 'LZ4_compress', 'bindings', 'STATES', 'forEach', 'highCompression', 'VERSION', 'dict', 'first', 'checksum', 'headerSize', 'header', 'flg', 'update_Checksum', 'CHECKSUM_UPDATE', 'compress_DataBlock', 'DATABLOCK_COMPRESS', 'size', 'CHECKSUM', 'version', 'createDecoderStream', 'decode', './decoder', 'LZ4_uncompress', 'encode', './encoder', 'decodeBlock', 'encodeBound', 'encodeBlock', 'encodeBlockHC', 'MAGICNUMBER_BUFFER', 'EOS_BUFFER', 'extension', '.lz4', './utils', 'xxhashjs', 'update', 'v1.', '\"callback\" argument must be a function', 'nextTick', '_process', 'setTimeout has not been defined', 'run', 'fun', 'array', 'title', 'versions', 'prependListener', 'prependOnceListener', 'process.binding is not supported', 'cwd', 'chdir', 'process.chdir is not supported', 'umask', './lib/_stream_duplex.js', 'process-nextick-args', 'core-util-is', './_stream_readable', './_stream_writable', 'readable', 'writable', 'allowHalfOpen', 'ended', 'destroyed', '_readableState', '_writableState', '_destroy', './_stream_transform', 'isarray', 'ReadableState', './internal/streams/stream', 'safe-buffer', 'Uint8Array', 'debuglog', './internal/streams/BufferList', './internal/streams/destroy', 'close', 'destroy', 'resume', './_stream_duplex', 'objectMode', 'readableObjectMode', 'highWaterMark', 'pipes', 'pipesCount', 'flowing', 'endEmitted', 'reading', 'sync', 'needReadable', 'emittedReadable', 'readableListening', 'resumeScheduled', 'defaultEncoding', 'awaitDrain', 'readingMore', 'decoder', 'encoding', 'string_decoder/', 'StringDecoder', '_read', 'Invalid non-string/buffer chunk', 'getPrototypeOf', 'stream.unshift() after end event', 'stream.push() after EOF', '_undestroy', 'unshift', 'isPaused', 'setEncoding', 'head', 'emitReadable', 'emit readable', 'maybeReadMore read 0', 'readable nexttick read 0', 'resume read 0', 'flow', 'clear', 'shift', 'next', 'tail', '\"endReadable()\" called on non-empty stream', 'read: emitReadable', 'need readable', 'length less than watermark', 'reading or ended', 'do read', '_read() is not implemented', 'pipe', 'stdout', 'stderr', 'hasUnpiped', 'cleanup', 'finish', 'drain', 'unpipe', 'needDrain', 'onend', 'ondata', 'false write response, pause', 'pause', 'onfinish', 'pipe resume', 'wrapped end', 'wrapped data', 'bind', 'wrapped _read', '_fromList', 'afterTransform', '_transformState', 'transforming', 'writecb', 'write callback called multiple times', 'writechunk', 'needTransform', 'writeencoding', 'transform', 'flush', 'prefinish', 'Calling transform done when ws.length != 0', 'Calling transform done when still transforming', '_transform() is not implemented', '_write', 'entry', 'callback', 'pendingcb', 'corkedRequestsFree', 'browser', 'v0.9.', 'WritableState', 'writableObjectMode', 'finalCalled', 'ending', 'decodeStrings', 'writing', 'corked', 'bufferProcessing', 'onwrite', 'writelen', 'errorEmitted', 'bufferedRequest', 'lastBufferedRequest', 'prefinished', 'bufferedRequestCount', '_writev', 'writev', 'final', '_final', 'isBuf', 'allBuffers', 'chunk', 'finished', 'getBuffer', 'deprecate', '_writableState.buffer is deprecated. Use _writableState.getBuffer instead.', 'hasInstance', 'Cannot pipe, not readable', 'write after end', 'May not write null values to stream', 'cork', 'uncork', 'setDefaultEncoding', 'ucs-2', 'raw', '_write() is not implemented', 'undestroy', 'Cannot call a class as a function', 'events', './readable', './lib/_stream_readable.js', 'Stream', 'Writable', './lib/_stream_writable.js', 'Duplex', './lib/_stream_transform.js', 'PassThrough', './lib/_stream_passthrough.js', 'Argument must not be a number', 'Argument must be a number', 'SlowBuffer', 'Readable', 'readable-stream/readable.js', 'readable-stream/writable.js', 'readable-stream/duplex.js', 'readable-stream/transform.js', 'readable-stream/passthrough.js', '_isStdio', 'text', 'fillLast', 'lastNeed', 'lastTotal', 'lastChar', 'repeat', 'localStorage', 'true', 'noDeprecation', 'throwDeprecation', 'traceDeprecation', 'warn', 'object', 'format', '[Circular]', 'depth', 'showHidden', 'colors', 'customInspect', 'stylize', 'styles', 'null', 'keys', 'getOwnPropertyNames', 'message', 'description', 'name', '[Function', 'special', 'regexp', ' [Function', '[Object]', 'seen', 'pop', 'reduce', ',\n  ', 'get', '[Getter]', '[Setter]', 'value', 'split', 'map', '   ', '[object Error]', 'NODE_DEBUG', 'test', 'pid', '%s %d: %s', 'cyan', 'yellow', 'grey', 'bold', 'green', 'magenta', 'symbol', 'isObject', 'isDate', 'isFunction', 'Jan', 'Feb', 'Apr', 'Jun', 'Aug', 'Sep', 'Nov', 'Dec', '%s - %s', 'getMinutes', 'getSeconds', 'getMonth', 'xxh_update', '2654435761', '3266489917', '668265263', '374761393', 'digest', 'seed', 'total_len', 'memsize', 'memory', 'init', 'XXH', 'Ustawienia', 'Przywróc ustawienia domyślne', 'Nazwy', 'Masa', 'Skiny', 'Pokarm', 'Przezroczystość / kolory', 'Siatka / sektory', 'Minimapa', 'Wspomagacze', 'Sterowanie myszką', 'HUD', 'Czat', 'Statystyki', 'Dodatkowe', 'Wyłącz skiny', 'Pokaż masę', 'Pokaż zadanie (quest)', 'Auto zoom', 'Opóźnienie animacji', 'Szybkość zoomu', 'Szybkie odrodzenie (klawisz)', 'Auto odrodzenie', 'Autoukrywanie nazw i masy', 'Autoukrywanie masy', 'Autoukrywanie pokarmu (masa)', 'Autoukrywanie pokarmu (zoom)', 'Zoptymalizowane nazwy', 'Skrócona masa (k)', 'Licznik strzałów (wirusy)', 'Ukryj własną masę', 'Podstawowe skiny', 'Własne skiny', 'Mój przezroczysty skin', 'Przezroczyste kulki', 'Przezroczyste wirusy', 'Przezroczyste skiny', 'Siatka', 'Sektory w tle', 'Granice mapy', 'Duchy kulek', 'Pokaż minimapę', 'Pokaż siatkę minimapy', 'Pokaż prowadnice na minimapie', 'Pokaż duchy kulek na minimapie', 'Jednokolorowi gracze', 'Kolorowy pokarm', 'Kolory przeciwników', 'Zasięg podziału', 'Obwódki nazw', 'Obwódki masy', 'Śledzenie kursora', 'Wskaźniki graczy teamu', 'LPM - Split myszką', 'PPM - Feed myszką', 'Odwróć klawisze myszki', 'Wyłącz czat', 'Ukryj czat', 'Emotikony', 'Pokaż obrazki na czacie', 'Pokaż filmiki na czacie', 'Czatbox zamiast wyskakujących wiadomości', 'Pokaż top 5 teamu', 'Pokaż namierzanie', 'Pokaż aktualny czas', 'Pokaż masę w topce', 'Nagłówek \"Topka\"', 'Wyśrodkowana topka', 'Pokaż statystyki', 'Statystyki: Masa', 'Statystyki: STE', 'Statystyki: n/16', 'Statystyki: FPS', 'Blokuj popupy (reklamy/sklep/zadanie)', 'Skróty klawiszowe', 'Aby ustawić skrót klawiszowy kliknij na polu skrótu i naciśnij wybrany klawisz.', 'Aby usunąć skrót klawiszowy kliknij na polu skrótu i naciśnij klawisz DELETE.', 'Możliwe kombinacje skrótów klawiszowych z użyciem klawiszy CTRL oraz ALT.', 'Szybki feed', 'Podział', 'Podział na 16', 'Pauza kulki', 'Pokaż/ukryj top 5 teamu', 'Pokaż/ukryj aktualny czas', 'Pokaż/ukryj zasięg podziału', 'Pokaż/ukryj zasięg podziału z ringami', 'Pokaż/ukryj wskaźniki graczy teamu', 'Pokaż/ukryj kolory przeciwników', 'Przełącz skiny (własne/standardowe)', 'Przełącz kulkę (najmniejsza/największa)', 'Pokaż/ukryj pokarm', 'Pokaż/ukryj siatkę', 'Pokaż/ukryj prowadnice na minimapie', 'Pokaż/ukryj czat', 'Pokaż/ukryj HUD', 'Pokaż/ukryj topkę', 'Włącz/wyłącz auto zoom', 'Reset zoomu', 'Zoom - poziom', 'Przełącz miejsce śmierci', 'Pokaż historię czatu / Czyść czat', 'Pokaż/ukryj małe boty', 'Pokaż/ukryj nazwy', 'Pokaż/ukryj nazwy graczy teamu', 'Pokaż/ukryj masę', 'Pokaż/ukryj minimapę', 'Napisz wiadomość na czacie', 'Szybkie odrodzenie (respawn)', 'Włącz/wyłacz auto odrodzenie', 'Przełącz serwer [publiczny/prywatny]', 'Pokaż/ukryj panel namierzania', 'Włącz/wyłącz namierzanie (śledzenie)', 'Zmień cel', 'Pokaż cel na minimapie', 'Pokaż/ukryj zadanie', 'Feeduj!', 'Pomocy na %currentSector%!', 'Wróg na %currentSector%!', 'Zabij pomocnika!', 'Zjedz wirusa!', 'Zjebałem, wybacz.', 'Ja pierdolę...', 'Kurwa mać!', 'Lewo!', 'Góra!', 'Prawo!', 'Dół!', 'Zapisz komendy', 'Przywróc ustawienia domyślne wyglądu', 'Motyw', 'Ciemny motyw', 'Jasny motyw', 'Tło', 'Obwódki wirusów', 'Czcionka nazw', 'Czcionka masy', 'Skala nazw', 'Skala masy', 'Skala masy wirusów', 'Skala obwódek tekstu', 'Wielkość pokarmu', 'Grubość granic mapy', 'Grubość siatki sektorów', 'Przezroczystość skinów', 'Przezroczystość wirusów', 'Przezroczystość nazw i masy', 'Grubość obwódki wirusów', 'Bezpieczna strefa', 'Strefa zagrożenia', 'Przezroczystość duchów kulek', 'Motyw menu', 'Kolor główny', 'Tekst przycisku', 'Panel', 'Tekst panelu', 'Tekst panelu (2)', 'Przycisk #1 (2)', 'Przycisk #2', 'Przycisk #2 (2)', 'Przycisk #3', 'Przycisk #3 (2)', 'Przycisk #4', 'Przycisk #4 (2)', 'Grafika tła panelu', 'Czas', 'Topka - ja', 'Tło wiadomości', 'Tekst wiadomości', 'Czas wiadomości', 'Nick wiadomości', 'Tekst komendy', 'Nick komendy', 'Tło czatboxu', 'Skala czatu', 'Sektory', 'Aktualny sektor', 'Prowadnice', 'Nick', 'Obwódka nicku', 'Moja kulka', 'Obwódka mojej kulki', 'Gracze', 'Czcionka minimapy', 'Czcionka nicku', 'Szerokość minimapy', 'Przezroczystość sektorów', 'Rozmiar nicku', 'Wielkość mojej kulki', 'Grubość obwódki mojej kulki', 'Wielkość graczy', 'Grafika / kursory', 'Czat został włączony!', 'Czat został ukryty!', 'Skiny zostały włączone!', 'Skiny zostały ukryte!', 'Małe boty stały się widoczne!', 'Małe boty zostały ukryte!', 'Auto odrodzenie zostało włączone!', 'Auto odrodzenie zostało wyłączone!', 'Auto zoom został wyłączony!', 'Brak celu', 'Nie żyje', 'Dystans', 'Masa razem', 'Aktywnych graczy', 'Łącznie masy', 'Eksport / import ustawień', 'Eksportuj ustawienia', 'Aby wyeksportować wybrane ustawienia skopiuj poniższy kod i zapisz go w pliku tekstowym z kodowaniem Unicode.', 'Aby zaimportować wybrane ustawienia wklej poniżej wyeksportowany wcześniej kod i naciśnij przycisk \"Importuj ustawienia\".', 'Profil', 'Profile', 'Dzięki Awesome!', 'Zapisz ustawienia', 'Zapisano!', 'Resetuj ustawienia', 'Zamknij', 'Napisz wiadomość', 'Aktywne party', 'Brak aktywnych party ;(', 'Playlista', 'Odwiedź', 'UWAGA! Popupy zostały zablokowane w ustawieniach.', 'Odblokuj tymczasowo', 'Topka', 'Użytkownik', 'Użytkownik %user% został wyciszony.', 'Wyłączono wyciszenie użytkownika %user%.', 'Wycisz', 'Wyłącz wyciszenie', 'Pokaż aktywnych użytkowników', 'Brak', 'Dźwięki', 'Wróć', 'Stwórz party', 'Zaloguj', 'Wyloguj', 'Zaloguj z Facebook', 'Zaloguj z Google', 'Darmowe Monety', 'Graj', 'Graj jako gość', 'Sklep', 'Obserwuj', 'Home', 'Settings', 'Zoom', 'Respawn', 'Names', 'Mass', 'Food', 'Transparency / colors', 'Minimap', 'Helpers', 'Mouse control', 'Chat', 'Stats', 'Extras', 'No names', 'No colors', 'Skip stats after death', 'Show quest', 'Quick respawn (hotkey)', 'Auto hide names and mass', 'Auto hide names', 'Auto hide mass', 'Auto hide food (mass)', 'Optimized names', 'Hide my name', 'Hide teammates names', 'Optimized mass (+/-2%)', 'Short mass (k)', 'Hide my mass', 'Vanilla skins', 'Custom skins', 'My transparent skin', 'My custom color', 'Transparent cells', 'Transparent viruses', 'Transparent skins', 'Show grid', 'Show background sectors', 'Show map borders', 'Show minimap', 'Show minimap grid', 'Show minimap guides', 'Show ghost cells', 'Optimized food', 'Opponents colors', 'Viruses colors', 'Viruses range', 'Names and mass stroke', 'Names stroke', 'Mass stroke', 'Cursor tracking', 'Teammates indicators', 'LMB - Mouse split', 'RMB - Mouse feed', 'Invert mouse buttons', 'Hide chat', 'Sound notifications', 'Emoticons', 'Show images on chat', 'Show videos on chat', 'Chatbox instead of popups', 'Message notification sound', 'Command notification sound', 'Show team top 5', 'Show targeting', 'Show current time', 'Show leaderboard mass', '\"Leaderboard\" header', 'Centered leaderboard', 'Game stats at the top', 'Show game stats', 'Game stats: Mass', 'Game stats: STE', 'Game stats: n/16', 'Game stats: FPS', 'Block popups (ads/shop/quest)', 'Hotkeys', 'Feed', 'Split 16', 'Cell pause', 'Show/hide team top 5', 'Show/hide split range', 'Show/hide split indicators', 'Show/hide teammates indicators', 'Show/hide opponents colors', 'Toggle skins (custom/default)', 'Show/hide skins', 'Toggle transparent skins', 'Show/hide game stats', 'Toggle own cells (smallest/biggest)', 'Show/hide food', 'Show/hide minimap guides', 'Show/hide chat', 'Show/hide HUD', 'Copy leaderboard', 'Toggle auto zoom', 'Reset zoom', 'Zoom level', 'Toggle death location', 'Show/hide background sectors', 'Show/hide small bots', 'Show/hide names', 'Show/hide teammates names', 'Show/hide mass', 'Show/hide minimap', 'Enter chat message', 'Quick respawn', 'Toggle auto respawn', 'Switch server [public/private]', 'Change target', 'Show target on the minimap', 'Show/hide quest', 'Commands', 'Split into me!', 'Need backup at %currentSector%!', 'Enemy spotted at %currentSector%!', 'Need a teammate!', 'Tank the virus!', 'Eat the virus!', 'Let\'s bait!', 'Fuck!', 'Tricksplit!', 'Left!', 'Up!', 'Right!', 'Bottom!', 'Save commands', 'Theme', 'Basic theming', 'Theme preset', 'Theme type', 'Dark theme', 'Light theme', 'Main color', 'Grid', 'Sectors font', 'Virus', 'Virus stroke', 'Mass font', 'Names scale', 'Virus mass scale', 'Text stroke scale', 'Food size', 'Map borders width', 'Sectors grid width', 'Sectors font size', 'Cells transparency', 'Skins transparency', 'Virus transparency', 'Names & mass transparency', 'Virus stroke size', 'Teammate indicator', 'Split range', 'Safe area', 'Danger area', 'Ghost cells', 'Ghost cells transparency', 'Menu theme', 'Panel (2)', 'Panel text', 'Panel text (2)', 'Button #1', 'Button #1 (2)', 'Button #2', 'Button #2 (2)', 'Button #3 (2)', 'Button #4', 'Button #4 (2)', 'Panel background image', 'Background', 'Text', 'Time', 'Leaderboard - me', 'Leaderboard - teammate', 'HUD font', 'HUD scale', 'Message background', 'Message text', 'Message time', 'Message nick', 'Command background', 'Command time', 'Command nick', 'Chat scale', 'Sectors', 'Guides', 'Nick stroke', 'My cell', 'My cell stroke', 'Teammates', 'Minimap font', 'Nick font', 'Minimap width', 'Sectors transparency', 'Nick size', 'Nick stroke size', 'My cell size', 'My cell stroke size', 'Graphics / cursors', 'Custom background image', 'Custom cursor image', 'Chat is visible!', 'Chat is hidden!', 'Skins are hidden!', 'Small bots are visible!', 'Small bots are hidden!', 'Auto respawn is on!', 'Auto respawn is off!', 'Auto zoom is on!', 'Target not set', 'Dead', 'Distance', 'Mass altogether', 'Active players', 'Total mass', 'Export / import settings', 'Export settings', 'Profiles', 'Skins', 'Add skins', 'Save settings', 'Saved!', 'Close', 'Active parties', 'No active parties ;(', 'Playlist', 'Visit', 'Legend mod Express: Are you sure you want to quit the game?', 'WARNING! Popups are blocked in the settings.', 'Score', 'Leaderboard', 'User', 'User %user% has been muted.', 'User %user% has been unmuted.', 'Mute', 'Unmute', 'Muted users', 'Active users', 'None', 'Sounds', 'Gifts', 'Daily Quest', 'Shop', 'navigator', 'language', 'userLanguage', 'hasOwnProperty', 'comm1', 'comm2', 'comm3', 'comm4', 'comm5', 'comm6', 'comm8', 'comm9', 'comm10', 'comm11', 'comm12', 'comm14', '&amp;', '&lt;', '&gt;', '&quot;', 'wink.svg', 'smirk.svg', 'joy.svg', 'sad.svg', 'cry.svg', 'tongue.svg', 'tonguew.svg', 'kiss.svg', 'smileh.svg', 'cool.svg', 'astonished.svg', 'sweat.svg', 'neutral.svg', 'unamused.svg', 'sleep.svg', 'relaxed.svg', 'expressionless.svg', 'money.svg', 'devil.svg', 'finger.svg', 'clap.svg', 'ok.svg', 'victory.svg', 'thumb.svg', 'thumbd.svg', 'OGARio v3', '#01d9cc', '#000a11', '#00243e', '#000000', '#00b9e8', '#5000ff', '#ffffff', 'ubuntu-bold', 'ogario-v3', '#002f52', '#8096a7', '#018cf6', '#0176ce', '#0099c0', '#8d5fe6', '#814ee3', '#bf00aa', '#a80096', 'rgba(0,0,0,0.4)', 'https://cdn.ogario.ovh/static/img/cursors/cursor_02.cur', 'OGARio v2', '#ff7800', '#292929', '#666666', '#e16400', 'rgba(255,120,0,0.9)', 'OGARio LE', '#b5a642', '#111111', '#998c36', 'rgba(181,166,66,0.9)', 'SniiKz\'s Style', '#fc0079', '#050008', '#1d0526', '#4f0242', '#4d0227', '#aa084e', '#8a063f', 'https://cdn.ogario.ovh/static/img/pattern.png', 'rgba(36,36,36,0.49)', '#737373', '#1fe000', '#e8e8e8', '#545454', '#05ff00', 'rgba(36,36,36,0.9)', '#4d4d4d', '#f0ff3d', '#acba07', '#305eff', '#2b2b2b', '#651fff', '#f2fbff', '#858a8c', '#ced6d9', '#33ff33', '#2de52d', 'rgba(255,255,255,0.9)', 'Agar.io Dark', '#999999', '#333333', '#f300d8', '#df00c6', '#222222', '#bbbbbb', '#428bca', '#5cb85c', '#449d44', '#f0ad4e', '#ec971f', '#d9534f', '#c9302c', 'Agar.io', '#5bc0de', '#cccccc', '#3071a9', 'Ubuntu', 'ubuntu', 'rgba(191,0,170,0.9)', 'getItem', 'ogarioThemeSettings', 'parse', 'setItem', 'stringify', 'removeItem', 'location', 'reload', '<style type=\'text/css\'>', 'appendTo', '<div class=\"preset-box\"><span class=\"title-box\">', '\" class=\"form-control\"></select></div></div>', 'append', '<option value=\"', '</option>', 'val', 'change', '<div class=\"color-box\"><span class=\"title-box\">', '-picker\"><input type=\"text\" value=\"', '\" id=\"', '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>', '-picker', 'changeColor.colorpicker', 'color', 'toHex', 'colorpicker', '</span><div class=\"input-group ', 'rgba', 'toRGB', 'rgba(', '<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">', ': </span><span id=\"', '</span></div><input id=\"', '\" max=\"', '\" step=\"', '\" value=\"', '\"></div>', '-slider', 'input', '<div class=\"input-box\"><span class=\"title-box\">', '\" class=\"form-control\" placeholder=\"', 'customCursor', '<div class=\"cursor-box\"><a href=\"#\" class=\"active\"><img src=\"', '\"></a></div>', '<div class=\"cursor-box\"><a href=\"#\"><img src=\"', 'Family', 'setFontFamily', 'setFontWeight', 'Weight', '</span><div class=\"select-wrapper\"><select id=\"', '<option value=\"ubuntu\">Ubuntu</option><option value=\"ubuntu-bold\">Ubuntu Bold</option>', '<option value=\"roboto\">Roboto</option><option value=\"roboto-bold\">Roboto Bold</option>', '<option value=\"oswald\">Oswald</option><option value=\"oswald-bold\">Oswald Bold</option>', 'setFont', 'roboto', 'Roboto', 'oswald', 'Oswald', '#theme', '<ul class=\"submenu-tabs\"><li class=\"theme-main-tab active\"><a href=\"#theme-main\" class=\"active ogicon-paint-format\" data-toggle=\"tab-tooltip\" title=\"', 'basicTheming', '\"></a></li><li class=\"theme-menu-tab\"><a href=\"#theme-menu\" class=\"ogicon-menu\" data-toggle=\"tab-tooltip\" title=\"', 'menuTheming', '\"></a></li><li class=\"theme-hud-tab\"><a href=\"#theme-hud\" class=\"ogicon-display\" data-toggle=\"tab-tooltip\" title=\"', 'hudTheming', '\"></a></li><li class=\"theme-chat-tab\"><a href=\"#theme-chat\" class=\"ogicon-bubbles\" data-toggle=\"tab-tooltip\" title=\"', 'chatTheming', 'miniMapTheming', '\"></a></li><li class=\"theme-images-tab\"><a href=\"#theme-images\" class=\"ogicon-compass\" data-toggle=\"tab-tooltip\" title=\"', 'imagesTheming', 'addPresetBox', '#theme-main', 'themePreset', 'preset', 'changeThemePreset', 'addColorBox', 'bgColor', 'setBgColor', 'bordersColor', 'gridColor', 'sectorsColor', 'namesColor', 'namesStrokeColor', 'massColor', 'massStrokeColor', 'virusColor', 'virusStrokeColor', 'foodColor', 'setFoodColor', 'setIndicatorColor', 'cursorTrackingColor', 'splitRangeColor', 'safeAreaColor', 'dangerAreaColor', 'ghostCellsColor', 'addFontBox', 'namesFont', 'sectorsFont', 'sectorsFontSize', 'addSliderBox', 'namesScale', 'massScale', 'virMassScale', 'strokeScale', 'foodSize', 'virusStrokeSize', 'bordersWidth', 'sectorsWidth', 'skinsAlpha', 'textAlpha', 'ghostCellsAlpha', '#theme-menu', 'menuPreset', 'menuOpacity', 'menuMainColor', 'menuPanelColor', 'setMenuPanelColor', 'menuTextColor', 'setMenuTextColor', 'menuTextColor2', 'setMenuButtons', 'btn1Color2', 'btn2Color', 'btn3Color', 'btn3Color2', 'btn4Color2', 'addInputBox', 'menuBg', 'Image URL', 'setMenuBg', 'hudMainColor', 'setHudColors', 'addRgbaColorBox', '#theme-hud', 'hudColor', 'hudTextColor', 'statsHudColor', 'timeHudColor', 'top5MassColor', 'lbTeammateColor', 'hudFont', 'hudScale', 'setHudScale', '#theme-chat', 'messageColor', 'messageTextColor', 'setChatColors', 'messageTimeColor', 'messageNickColor', 'commandsColor', 'commandsTextColor', 'commandsNickColor', 'chatScale', 'setChatScale', '#theme-minimap', 'miniMapSectorsColor', 'miniMapSectorColor', 'miniMapNickColor', 'miniMapNickStrokeColor', 'miniMapMyCellColor', 'miniMapMyCellStrokeColor', 'miniMapDeathLocationColor', 'miniMapGuidesColor', 'miniMapGhostCellsColor', 'miniMapFont', 'setMiniMapFont', 'miniMapNickFont', 'miniMapWidth', 'setMiniMapWidth', 'setMiniMapSectorsOpacity', 'miniMapNickSize', 'miniMapNickStrokeSize', 'miniMapMyCellSize', 'miniMapMyCellStrokeSize', 'miniMapTeammatesSize', 'miniMapGhostCellsAlpha', '#theme-images', 'customBackground', 'setCustomBackground', 'https://cdn.ogario.ovh/static/img/cursors/cursor_', 'addCursorBox', '.cur', 'click', '#theme-images .cursor-box a', 'preventDefault', 'img', 'src', 'setCustomCursor', '#customCursor', 'addClass', 'active', 'saveSett', '</button>', '#theme .btn-save', 'saved', '<div class=\"restore-settings\"><a href=\"#\">', 'restoreThemeSettings', '#theme .restore-settings a', '.skin', '#color', '#theme .', 'input[type=text]#', 'select#', 'changePreset', 'setTheme', 'massFont', 'body', 'css', 'background-color', 'preDrawPellet', 'preDrawIndicator', 'background-image', 'url(', 'none', '*{cursor:url(', '), auto !important}', '*{cursor: auto}', 'addCustomCSS', 'cursorCSS', 'setMenuOpacity', 'setMenuMainColor', 'opacity', '!important}::selection{background-color:', '!important}.menu-main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:', '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:', '}.ps-scrollbar-y{background-color:', '!important}', '#main-menu,.agario-side-panel,#hotkeys,#exp-imp{background-color: ', 'menuPanelColor2', '}.agario-panel h5,.agario-side-panel h5,#stats h2,.menu-tabs,.submenu-tabs,#skins a.default,#stats hr,#hotkeys-cfg div.row, #exp-imp h1{border-color: ', '}.quick:hover,#skins a,#profiles{color:', 'menuPanelColorCSS', '.agario-panel,.agario-side-panel,.agario-panel input,.agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.dark .yt-username,#stream-mode,#hide-url,.menu-tabs a,.submenu-tabs a,#skins a.default:hover,#quick-menu a,#prev-profile.default:hover,#next-profile.default:hover,#statsText,#hotkeys,#hotkeys-cfg .command-in,#exp-imp{color:', '}#skins a.default:hover{border-color:', '}::-webkit-input-placeholder{color:', '!important}::-moz-placeholder{color:', '}#hotkeys-cfg .command-in,#theme .color-box{border-color:', 'a,a:hover{color:', 'btn1Color', '}.btn,#hotkeys-cfg .custom-key-in{color:', 'menuBtnTextColor', '}.btn-primary{background-color:', '!important}.btn-primary:active,.btn-primary:disabled,.btn-primary:focus,.btn-primary:hover{background-color:', '!important}.btn-success{background-color:', '!important}.btn-success:active,.btn-success:disabled,.btn-success:focus,.btn-success:hover{background-color:', 'btn2Color2', '!important}.btn-warning:active,.btn-warning:disabled,.btn-warning:focus,.btn-warning:hover{background-color:', '!important}.btn-danger{background-color:', 'btn4Color', '!important}.btn-danger:active,.btn-danger:disabled,.btn-danger:focus,.btn-danger:hover{background-color:', '!important}#hotkeys-cfg .custom-key-in{background-color:', ';border-color:', 'menuButtonsCSS', '#menuBg', '.menu-panel, .agario-side-panel, #hotkeys, #exp-imp', 'setHudFont', '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:', '}.stats-hud-color{color:', '}.time-hud-color{color:', '}.top5-mass-color{color:', '}#leaderboard-positions .me{color:', 'lbMeColor', '}#leaderboard-positions .teammate{color:', 'hudCSS', '#overlays-hud', 'hudFontFamily', 'hudFontWeight', 'round', 'font-size', '#top5-hud', 'width', 'top', '#top5-pos', 'padding-left', '#time-hud', '#pause-hud', '#target-hud', 'padding-top', '#message,#messages li,.toast-success{background-color:', '}#message,.message-text,.toast-success .message-text{color:', '}.message-nick,.mute-user,.mute-user:hover,.toast-success .message-nick,.toast .mute-user,.toast .mute-user:hover{color:', '}.message-time{color:', '}.command-text,.toast-warning .command-text{color:', '}.command-time{color:', 'commandsTimeColor', '}#chat-box{background-color:', 'chatBoxColor', 'chatCSS', '#message-box, #messages, #toast-container, #chat-box', '#messages, #toast-container, #chat-box', '#message-box', 'height', '#toast-container{width:', 'px;font-size:', 'px}', 'chatScaleCSS', 'miniMapTop', '#minimap-hud', 'resetMiniMapSectors', '#minimap-sectors', 'miniMapSectorsOpacity', 'setFonts', 'setMenu', 'setHud', 'setChat', 'setMiniMap', 'loadThemeSettings', 'I <3 OGARio', 'mainColor', 'https://cdn.ogario.ovh/static/sounds/notification_01.mp3', 'Legend mod Express v4', 'v4 (4.0.0 b35)', ':ffa', 'now', 'b2dhcmlvLm92aA==', 'playerX', 'mapOffsetX', 'playerY', 'mapOffsetY', 'core', 'feedInterval', 'feed', 'vanillaSkins', 'vannillaSkins', 'customSkins', 'selectBiggestCell', 'showTop5', 'setTop5', 'show', 'hide', 'showTargeting', 'setTargetingHUD', '#target-hud, #target-panel-hud', 'showTime', 'displayTime', 'splitRange', 'showSplitInd', 'oppRings', 'teammatesInd', 'oppColors', 'noSkins', 'setSkins', 'showCustomSkins', 'displayChatInfo', 'showSkinsMsg', 'transparentSkins', 'toggle', 'showFood', 'showGrid', 'showMiniMapGuides', ':teams', 'gameMode', '#leaderboard-hud', 'showBgSectors', 'hideSmallBots', 'hideSmallBotsMsg', 'noNames', 'hideTeammatesNames', 'showMass', 'showMiniMap', 'showQuest', 'setQuest', '#quest-hud', 'autoZoom', 'zoomResetValue', 'zoomValue', 'lastDeath', 'deathLocations', ':visible', '.btn-play-guest', 'play', 'tryResp', 'quickResp', 'hideMenu', 'gameServerConnect', 'autoResp', 'setAutoResp', 'stop', '.btn-play', '#skipStats', 'prop', 'checked', 'skipStats', 'autoRespMsg', '<input>', '#leaderboard-positions', 'select', 'execCommand', 'remove', 'centeredLb', 'hud-text-center', 'normalLb', '#leaderboard-hud h4', 'html', 'leaderboard', 'ogario.ovh', 'fpsAtTop', '#stats-hud', 'removeClass', 'hud-bottom', 'hud-top', 'protocolMode', '#block-warn', 'blockPopups', 'unblockPopups', '#openfl-content, #openfl-overlay', 'block-popups', 'disabled', '#openfl-overlay.disabler', '#freeCoins, #gifting, #openShopBtn, #dailyQuests', 'leaderboardPositionsHUD', 'innerHTML', 'leaderboardDataHUD', 'showStats', 'showStatsMass', 'playerMass', 'mass', ' | ', 'playerScore', 'score', 'STE', ' | STE: ', 'showStatsN16', 'playerSplitCells', 'showStatsFPS', 'FPS: ', 'fps', 'statsHUD', 'textContent', 'displayStats', 'toLocaleString', 'parties', '<li><a href=\"https://agar.io/#', '\" onclick=\"$(\'#party-token\').val(\'', '</a></li>', 'activeParties', 'className', 'no-parties', 'top5', '<li><span class=\"cell-counter\" style=\"background-color: ', '</span>', '<a href=\"#\" data-user-id=\"', '\" class=\"set-target ogicon-target\"></a> ', '<span class=\"hud-main-color\">[', 'calculateMapSector', ']</span>', '<span class=\"top5-mass-color\">[', 'shortMassFormat', ']</span> ', 'escapeHTML', 'nick', '</li>', 'top5pos', 'top5totalMass', 'top5totalPlayers', 'top5limit', 'clearChatHistory', 'chatHistory', '#messages', '<li><span class=\"message-nick\">', ': </span><span class=\"message-text\">', '</span></li>', 'empty', 'showChatBox', '#chat-box .message', 'hideChat', 'disableChat', 'setHideChat', 'setShowChatBox', '#chat-box', 'sendChatMessage', 'blur', 'showNickDialog', '.menu-panel', '#stats', '#oferwallContainer', 'closeOfferwall', '#videoContainer', 'closeVideoContainer', '#overlays', 'fadeIn', '.ogario-menu', 'fadeOut', 'http:', 'https:', 'ogarioSettings', '#export-', '#import-settings', '#import-', 'showMiniMapGrid', 'chatSounds', 'setChatSoundsBtn', 'setCenteredLb', 'setNormalLb', 'setFpsAtTop', 'saveSettings', 'ogarioPlayerProfiles', 'Profile #', 'ogarioSelectedProfile', 'selectedProfile', 'clanTag', 'skinURL', 'default', '<a href=\"#\" id=\"skin-popover\" data-toggle=\"popover\" title=\"\" data-html=\"true\" data-content=\"<img src=\'', '\' width=\'500\'>\"></a>', '#skin-popover', 'popover', 'crossOrigin', 'onload', 'changeSkinPreview', 'setSkinPreview', 'skin-preview', 'next-profile', '#nick', '#clantag', '#skin', 'setValue', '#skins a', 'selected', '#skins a[data-profile=\'', 'setPlayerSettings', 'setProfile', '<label><input type=\"checkbox\" id=\"', '\" class=\"js-switch\"> ', '</label>', '#og-options', '<div class=\"options-box ', '<label>', ' <input type=\"checkbox\" class=\"js-switch\" id=\"', '\"></label>', '</span><input id=\"', '\" /></div>', '-value\" class=\"value\">', '-slider\" type=\"range\" min=\"', '-value', 'i18n_dict', '#mainPanel', 'before', '<div id=\"exp-bar\" class=\"agario-panel\"><span class=\"ogicon-user\"></span><div class=\"agario-exp-bar progress\"><span class=\"progress-bar-text\"></span><div class=\"progress-bar progress-bar-striped\" style=\"width: 0%;\"></div></div><div class=\"progress-bar-star\"></div></div><div id=\"main-menu\" class=\"agario-panel\"><ul class=\"menu-tabs\"><li class=\"start-tab active\"><a href=\"#main-panel\" class=\"active ogicon-home\" data-toggle=\"tab-tooltip\" title=\"', 'start', '\"></a></li><li class=\"profile-tab\"><a href=\"#profile\" class=\"ogicon-user\" data-toggle=\"tab-tooltip\" title=\"', 'profile', '\"></a></li><li class=\"settings-tab\"><a href=\"#og-settings\" class=\"ogicon-cog\" data-toggle=\"tab-tooltip\" title=\"', 'settings', '\"></a></li><li class=\"theme-tab\"><a href=\"#theme\" class=\"ogicon-droplet\" data-toggle=\"tab-tooltip\" title=\"', 'theme', 'hotkeys', 'sounds', '\"></a></li></ul><div id=\"main-panel\" class=\"menu-panel\"></div><div id=\"profile\" class=\"menu-panel\"></div><div id=\"og-settings\" class=\"menu-panel\"><div class=\"submenu-panel\"></div></div><div id=\"theme\" class=\"menu-panel\"></div><div id=\"music\" class=\"menu-panel\"></div></div>', '#main-panel', '<a href=\"#\" class=\"quick quick-menu ogicon-menu\"></a><a href=\"#\" class=\"quick quick-skins ogicon-images\"></a><div id=\"profiles\"><div id=\"prev-profile\"></div><div id=\"skin-preview\"></div><div id=\"next-profile\"></div></div>', '#mainPanel div[role=form]', '#main-panel div[role=form] .form-group:first', '<input id=\"clantag\" class=\"form-control\" placeholder=\"Tag, e.g. Ⓜ\" maxlength=\"10\"><div class=\"input-group nick\"></div>', '.nick', '<span class=\"input-group-btn\"><button id=\"stream-mode\" class=\"btn active ogicon-eye\"></button></span>', 'after', '<div class=\"input-group skin\"><input id=\"skin\" class=\"form-control\" placeholder=\"Skin URL (imgur.com direct link)\" maxlength=\"40\"><input type=\"hidden\" id=\"color\" value=\"', '#locationKnown, #locationUnknown', 'insertAfter', '#region', '<button class=\"btn btn-warning btn-server-info ogicon-cogs\"></button>', '.btn-spectate, .btn-logout', '#agario-main-buttons', 'clearfix', '<div id=\"server-info\" class=\"form-group clearfix\"><input id=\"server-ws\" class=\"form-control\" placeholder=\"Server WS\"><button id=\"server-connect\" class=\"btn btn-success ogicon-power\"></button><button id=\"server-reconnect\" class=\"btn btn-primary ogicon-redo2\"></button><input id=\"server-token\" class=\"form-control\" placeholder=\"Server token\"><button id=\"server-join\" class=\"btn btn-success\" data-itr=\"page_join_party\">Join</button></div>', '#helloContainer div[role=form]', '<div id=\"ogario-party\" class=\"clearfix\"><input id=\"party-token\" class=\"form-control\" placeholder=\"Party token\"></div>', '#ogario-party', '#og-settings .submenu-panel', '#main-menu', 'menu-panel', 'attr', '.center-container', 'ogario-menu', '<div id=\"menu-footer\" class=\"menu-main-color\">', 'visit', ' <a href=\"http://legendmod.ml\" target=\"_blank\">legendmod.ml</a> | ', '#leftPanel, #rightPanel', 'removeAttr', '.agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel', '#profile', 'agario-side-panel', '.agario-profile-panel', '<div id=\"block-warn\">', 'blockWarn', '</a></div>', '#exp-bar', 'agario-profile-panel', '.left-container', '.agario-shop-panel', '#tags-container', '<div id=\"quick-menu\" class=\"agario-panel agario-side-panel\"><a href=\"https://ogario.ovh/skins/\" class=\"quick-more-skins ogicon-grin\" target=\"_blank\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"', 'skins', '\"></a><a href=\"https://youtube.com/channel/UCaWiPNJWnhzYDrBQoXokn6w\" class=\"quick-yt ogicon-youtube2\" target=\"_blank\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"Team OGARio\"></a></div>', '#quick-menu', 'prepend', '<a href=\"#\" class=\"quick-shop ogicon-cart\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"', 'page_shop', '\"></a><a href=\"#\" class=\"quick-free-coins ogicon-coin-dollar\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"', 'page_menu_main_free_coins', '\"></a><a href=\"#\" class=\"quick-free-gifts ogicon-gift\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"', 'page_menu_main_gifts', '\"></a><a href=\"#\" class=\"quick-quests ogicon-trophy\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"', 'page_menu_main_dailyquests', '\"></a>', '.party-dialog, .partymode-info', '.agario-party-6', '.right-container', '<div class=\"agario-party\"></div>', '.agario-party', 'agario-panel agario-side-panel', '.agario-party h4, #cancel-party-btn', '.agario-party .btn', 'btn-sm', '<div id=\"skins-panel\" class=\"agario-panel agario-side-panel\"><div id=\"skins\"></div><a href=\"https://ogario.ovh/skins/\" id=\"more-skins\" class=\"btn btn-block btn-success\" target=\"_blank\">', 'moreSkins', '.btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr=\'page_option_dark_theme\'], #options #darkTheme', '#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom', '#advertisement', 'agario-panel', '#adsBottom', '-100px', '#noNames, #showMass', '<div id=\"og-options\"></div>', 'animationGroup', 'addOptions', 'zoomGroup', 'respGroup', 'optimizedNames', 'autoHideNames', 'hideMyName', 'namesStroke', 'optimizedMass', 'autoHideMass', 'shortMass', 'virMassShots', 'massStroke', 'skinsGroup', 'autoHideFood', 'rainbowFood', 'foodGroup', 'myCustomColor', 'myTransparentSkin', 'transparentCells', 'transparentViruses', 'transparencyGroup', 'showMapBorders', 'chatEmoticons', 'showChatVideos', 'chatGroup', 'showMiniMapGhostCells', 'miniMapGroup', 'virColors', 'cursorTracking', 'showGhostCells', 'mouseSplit', 'mouseFeed', 'mouseGroup', 'showLbData', 'hudGroup', 'showStatsSTE', 'statsGroup', 'extrasGroup', '#noSkins, #noColors, #skipStats, #showQuest', 'js-switch-vanilla', '.skinsGroup h5', '<label class=\"noSkins\">', '#noSkins', '.noSkins', '.transparencyGroup h5', '<label class=\"noColors\">', 'noColors', ' </label>', '#noColors', '.noColors', '.extrasGroup h5', '<label class=\"skipStats\">', '.skipStats', '<label class=\"showQuest\">', '#showQuest', '.showQuest', '#options', '#settingsChoice', '.extrasGroup', 'select-wrapper', '.animationGroup', 'zoomSpeedValue', '#og-settings', '<button class=\"btn btn-block btn-success btn-export\">', 'exportImport', 'restoreSettings', '#music', '<div class=\"agario-panel radio-panel\"><h5 class=\"menu-main-color\">Radio (', 'thanks', ')</h5><audio src=\"http://frshoutcast.comunicazion.eu:8815/;\" controls></audio><span class=\"playlist\"><span class=\"ogicon-file-music\"></span> <a href=\"http://frshoutcast.comunicazion.eu:8815/played.html?sid=1\" target=\"_blank\">', 'playlist', '</a></span></div>', '<div class=\"agario-panel sounds-panel\"><h5 class=\"menu-main-color\">', '</h5></div>', '<div class=\"agario-panel ogario-yt-panel\"><h5 class=\"menu-main-color\">Team OGARio (tag: Ⓜ)</h5><div class=\"g-ytsubscribe\" data-channelid=\"UCaWiPNJWnhzYDrBQoXokn6w\" data-layout=\"full\" data-theme=\"dark\" data-count=\"default\"></div></div>', '.sounds-panel', 'messageSound', 'Sound URL', 'setMessageSound', 'commandSound', 'totalPartyPlayers', ': <span id=\"top5-total-players\" class=\"top5-mass-color\">0</span><br><span class=\"hud-main-color ogicon-pacman\"></span> ', 'totalPartyMass', '</div> <div id=\"leaderboard-hud\" class=\"hud-b\"><h4 class=\"hud-main-color\">legendmod.ml</h4><div id=\"leaderboard-data\"></div><div id=\"leaderboard-positions\"></div></div> <div id=\"btl-leaderboard-hud\"><div class=\"hud hud-c\"><span id=\"btl-players-status\">Players ready</span>: <span id=\"btl-players-count\">0</span></div></div> <div id=\"minimap-hud\" class=\"hud-b\"><canvas id=\"minimap-sectors\"></canvas><canvas id=\"minimap\"></canvas></div><div id=\"target-hud\" class=\"hud\"><div id=\"target-player\"><span id=\"target-skin\"><img src=\"https://cdn.ogario.ovh/static/img/blank.png\" alt=\"\"> </span><span id=\"target-nick\"></span> <span id=\"target-status\" class=\"hud-main-color\">[', 'targetNotSet', ']</span></div><div id=\"target-summary\"></div></div><div id=\"target-panel-hud\" class=\"hud\"><a href=\"#\" id=\"set-targeting\" class=\"ogicon-target\"></a><a href=\"#\" id=\"set-private-minimap\" class=\"ogicon-location2\"></a><a href=\"#\" id=\"cancel-targeting\" class=\"ogicon-cancel-circle\"></a><a href=\"#\" id=\"change-target\" class=\"ogicon-arrow-right\"></a></div> <div id=\"quest-hud\" class=\"hud\"></div> <div id=\"btl-hud\" class=\"hud\"></div></div>', '<ul id=\"messages\"></ul>', '<div id=\"message-box\"><div id=\"chat-emoticons\"></div><div id=\"message-menu\"><a href=\"#\" class=\"chat-sound-notifications ogicon-volume-high\"></a><a href=\"#\" class=\"chat-active-users ogicon-user-check\"></a><a href=\"#\" class=\"chat-muted-users ogicon-user-minus\"></a><a href=\"#\" class=\"show-chat-emoticons ogicon-smile\"></a></div><input type=\"text\" id=\"message\" class=\"form-control\" placeholder=\"', 'enterChatMsg', '<div id=\"chat-box\"></div>', '#chat-emoticons', '<img src=\"https://cdn.ogario.ovh/static/emoticons/', '\" alt=\"', '\" class=\"emoticon\">', '<div id=\"exp-imp\"><div id=\"exp-imp-menu\"><button id=\"close-exp-imp\" class=\"btn btn-danger\">', '</button></div><div id=\"exp-imp-settings\"></div></div>', '<h1>', 'exportSettings', '</h1><h2>', 'exportInfo', '</h2>', 'addOption', '#exp-imp-settings', 'export-ogarioCommands', 'commands', 'export-ogarioHotkeys', 'export-ogarioPlayerProfiles', 'export-ogarioSettings', 'export-ogarioThemeSettings', 'importSettings', 'importInfo', 'import-ogarioCommands', 'import-ogarioHotkeys', 'profiles', 'import-ogarioSettings', 'setThemeMenu', '#skins', '<div class=\"skin-box\"><a href=\"#profile-', '\" id=\"profile-', '\" data-profile=\"', 'profile-', '#profile-', 'switchMenuTabs', '.submenu-tabs a', 'submenu-panel', '.quick-menu', 'showQuickMenu', 'setShowQuickMenu', '.quick-skins', 'showSkinsPanel', 'setShowSkinsPanel', 'region', '#gamemode', 'leaveParty', '#quality', 'getQuality', 'selectProfile', 'data-profile', '#prev-profile', 'prevProfile', '#next-profile', 'nextProfile', '#stream-mode', 'streamMode', 'setStreamMode', '#hide-url', 'hideSkinUrl', 'setHideSkinUrl', '.btn-server-info', '#server-info', '#server-connect', '#server-reconnect', 'gameServerReconnect', '#server-join', 'gameServerJoin', '#server-token', '#og-options input[type=\'checkbox\']', 'setSettings', '#og-settings .restore-settings a', '#og-settings .btn-export', '#exp-imp-settings, #export-settings', 'perfectScrollbar', '#exp-imp', 'focus', '#export-settings', '#export-settings-btn', '#openfl-content', '.quick-shop', 'openShop', '.quick-free-coins', 'showFreeCoins', '.quick-free-gifts', 'showGifting', '.quick-quests', 'showQuests', '#set-targeting', '#cancel-targeting', 'cancelTargeting', '#set-private-minimap', 'setPrivateMiniMap', '#change-target', 'changeTarget', '.team-top-limit', 'data-limit', 'setTop5limit', 'displayTop5', '.team-top', 'setTarget', 'data-user-id', '.mute-user', 'muteChatUser', '.btn-mute-user', 'btn-red btn-mute-user', 'btn-green btn-unmute-user', 'unmute', '.btn-unmute-user', 'unmuteChatUser', 'mute', '.chat-active-users', 'displayChatActiveUsers', '.chat-muted-users', 'displayChatMutedUsers', '.show-chat-emoticons', '#message', '#chat-emoticons .emoticon', 'alt', 'getElementById', 'stats-hud', 'active-parties', 'top5-pos', 'top5-total-mass', 'leaderboard-positions', 'leaderboard-data', 'timeHUD', 'time-hud', 'questHUD', 'quest-hud', '#canvas', 'contextmenu', '.btn', '[data-toggle=\'tab-tooltip\']', 'tooltip', 'hover', 'querySelectorAll', '.js-switch', 'small', 'rangeslider', 'toast-bottom-left', 'parent', 'hasClass', 'hotkeys-link', 'profile-tab', 'setBlockPopups', 'siblings', 'find', 'href', ' .submenu-panel', 'display', 'scale_setting', 'setCanvasScale', 'setRegion', 'setParty', ':party', 'hash', '#join-party-btn-2', '.js-switch-vanilla', '#noNames', '#showMass', 'unlockButtons', 'devicePixelRatio', 'High', 'Medium', 'Low', 'VeryLow', 'canvasScale', 'ogicon-eye-blocked', 'stream-mode', '#clantag, #nick, #party-token', 'hide-url', '#skins-panel', '.btn-play, .btn-play-guest, .btn-login-play, .btn-spectate', 'onSpectate', '#create-party-btn-2', 'onCreate', 'skipServerData', 'joinParty', '#statsContinue2', 'isSocketOpen', 'sendPartyData', 'connect', 'addKeyListeners', 'UA-67142685-2', 'auto', 'ogarioTracker', 'ogarioTracker.send', 'pageview', 'onJoin', 'sendPlayerJoin', 'partyToken', 'playerColor', 'onPlayerSpawn', 'foodIsHidden', 'showMenu', 'sendPlayerDeath', 'updateDeathLocations', 'trim', 'checkSkinURL', 'Anonymous', 'complete', 'cacheQueue', 'cacheSkin', 'createElement', 'canvas', 'getContext', 'beginPath', 'arc', 'clip', 'drawImage', 'customSkinsCache', '_cached', 'toDataURL', 'customSkinsMap', 'checkSkinsMap', 'getCachedSkin', 'mapOffset', 'mapSize', 'sectorsY', 'sectorsX', 'mapOffsetFixed', 'miniMap', 'miniMapCtx', 'clearRect', 'minimap', 'ogarioCtx', 'currentSector', 'font', 'miniMapFontWeight', 'px ', 'fillStyle', 'fillText', 'drawMiniMapSectors', 'save', 'drawBattleAreaOnMinimap', 'inView', 'pi2', 'globalAlpha', 'shadowColor', 'shadowBlur', 'shadowOffsetX', 'shadowOffsetY', 'strokeStyle', 'moveTo', 'lineTo', 'stroke', 'closePath', 'lineWidth', 'teamPlayers', 'drawPosition', 'privateMiniMap', 'max', '#FFFFFF', 'minimap-sectors', 'miniMapSectors', 'dTok', 'drawSectors', 'miniMapFontFamily', 'right', 'token', 'indicator', 'drawTeammatesInd', 'setAutoHideCellInfo', 'cells', 'setMass', 'setDrawing', 'setDrawingScale', 'drawNick', 'namesFontFamily', 'namesFontWeight', 'hideEnemiesMass', 'massFontFamily', 'massFontWeight', '#C80000', 'playerMaxMass', 'playerMinMass', '#FFDC00', 'viewScale', '#party-token', 'flushSkinsMap', 'flushChatData', '#pre-join-party-btn', '.party-token', '#join-party-btn', '#party-token, .party-token', '#leave-party-btn', '.party-icon-back', 'flushPartyData', 'lastSentNick', 'lastSentClanTag', 'lastSentSkinURL', 'lastSentCustomColor', 'lastSentPartyToken', 'lastSentServerToken', 'chatUsers', 'createServerToken', 'updateServerInfo', 'agar.io', 'closeConnection', 'wss://ip-', '.tech.agar.io:', 'wss://live-arena-', '.agar.io:443', '.tech.agar.io', 'serverIP', 'serverArena', 'serverToken', 'flushData', 'flushCells', 'encodeURIComponent', '#server-ws', 'reconnect', 'master', 'recreateWS', '[Legend mod Express] Connecting to server', 'privateIP', 'socket', 'publicIP', 'ogarioWS', 'binaryType', 'arraybuffer', 'onopen', 'setUint8', 'setUint16', 'onmessage', 'handleMessage', 'onclose', '[Legend mod Express] Socket close', 'onerror', '[Legend mod Express] Socket error', 'privateMode', 'Zamknięto połączenie z serwerem!', 'info', '.party-panel', 'Przełączono na serwer publiczny!', '#active-parties', 'readyState', 'OPEN', 'createView', 'send', 'getUint8', 'playerID', 'sendPlayerUpdate', 'updateTeamPlayerPosition', 'sendBuffer', 'sendPlayerState', 'strToBuff', 'sendPlayerData', 'FFA', ':battleroyale', 'BTR', 'TMS', 'EXP', 'PTY', 'sendServerGameMode', 'sendPlayerClanTag', 'sendPlayerNick', 'setUint32', 'getPlayerX', 'setInt32', 'getUint16', 'getUint32', 'skinID', 'setColor', 'lastX', 'customColor', 'alive', 'lastY', 'miniMapNickFontFamily', 'textAlign', 'center', 'oneColoredTeammates', 'miniMapTeammatesColor', 'checkPlayerID', 'getInt32', 'updateTime', 'targeting', 'targetID', 'sendPlayerPosition', 'setTargetStatus', 'isChatUserMuted', 'addChatUser', 'sort', 'toTimeString', 'displayChatMessage', 'lastMessageSentTime', '%currentSector%', 'prepareCommand', 'comm', 'chatMutedUsers', 'chatMutedUserIDs', 'userMuted', '%user%', '<strong>', '</strong>', ' <button data-user-id=\"', '\" class=\"btn btn-xs btn-green btn-unmute-user\">', 'splice', 'userUnmuted', '\" style=\"width:100%;border:none;\">', '<iframe type=\"text/html\" width=\"100%\" height=\"auto\" src=\"https://www.youtube.com/embed/', '?autoplay=1&amp;vq=tiny\" frameborder=\"0\" />', 'parseEmoticons', 'parseMessage', '\" class=\"mute-user ogicon-user-minus\"></a> ', '<div class=\"message\"><span class=\"message-time\">[', '] </span>', '<span class=\"message-nick\">', '</span></div>', 'animate', 'playSound', 'success', '<div class=\"message command\"><span class=\"command-time\">[', '<span class=\"command-nick\">', ': </span><span class=\"command-text\">', 'warning', '<li><strong>', '\" class=\"btn btn-xs ', '</button></li>', '</ol>', 'displayUserList', 'setCommandSound', '.chat-sound-notifications', 'ogicon-volume-mute2', 'ogicon-volume-high', 'setSound', '#target-status', 'targetStatus', '#target-summary, #target-status', 'updateTarget', 'targetNick', 'targetSkinURL', '#target-skin, #target-nick, #target-summary', '#target-panel-hud a', 'setTargetingInfo', '#target-skin, #target-nick, #target-status, #target-summary', '#target-summary', 'targetDead', 'resetTargetPosition', 'setTargetPosition', '#target-skin', '#target-skin img', 'https://cdn.ogario.ovh/static/img/blank.png', 'targetDistance', ': <span class=\"hud-main-color\">', 'targetMass', 'getQuestProgressLabel', 'setLang', 'setMainButtons', 'setDisableChat', 'updateTeamPlayers', 'updateInterval', 'txt', 'txtCanvas', 'txtCtx', 'strokeWidth', 'strokeColor', '700 16px Ubuntu', 'fontFamily', 'fontWeight', 'scale', 'quality', 'measuredWidth', 'redraw', 'remeasure', 'setStroke', 'setStrokeColor', 'fontSize', 'setFontSize', 'margin', 'createCanvas', 'setStrokeWidth', 'measureWidth', 'measureText', 'drawTxt', 'strokeText', 'targetX', 'targetY', 'oppColor', 'targetSize', 'alpha', 'nickCanvas', 'lastMass', 'kMass', 'lastNickSize', 'massSize', 'virMassSize', 'nickStrokeSize', 'massStrokeSize', 'isFood', 'isVirus', 'rescale', 'redrawNick', 'redrawMass', 'strokeNick', 'strokeMass', 'removed', 'redrawed', 'time', 'skin', 'isPlayerCell', 'setNick', 'removeCell', 'virusesRange', 'viruses', 'food', 'playerCells', 'playerCellIDs', 'removedCells', 'indexedCells', 'moveCell', 'animation', 'isInView', 'viewX', 'canvasWidth', 'viewY', 'canvasHeight', 'massTxt', 'massCanvas', 'ceil', 'nickScale', 'nickSize', 'setScale', 'setStrokeSize', 'setTxt', 'drawMass', 'draw', 'restore', 'virusAlpha', 'setVirusColor', 'setVirusStrokeColor', 'cellsAlpha', 'hideMyMass', '[Legend mod Express] Connecting to game server:', 'flushCellsData', 'protocolKey', 'clientKey', 'accessTokenSent', 'connectionOpened', 'onOpen', 'onError', 'onClose', 'getWS', 'sendServerData', 'displayLeaderboard', 'onConnect', '[Legend mod Express] Game server socket open', 'sendMessage', 'clientVersion'];
 (function(_0xfb08ce,_0x3dcf62){
 var _0x371bf1=function(_0x3cceb3){while(--_0x3cceb3){_0xfb08ce['push'](_0xfb08ce['shift']());}};var _0x1b2dd9=function(){
 	var _0x3c99bb={
@@ -16,7 +16,7 @@ var _0x371bf1=function(_0x3cceb3){while(--_0x3cceb3){_0xfb08ce['push'](_0xfb08ce
 		var _0x419a4e=0;
 		for(var _0x419a4e=0,_0x1427de=_0x210ff1['length'];_0x419a4e<_0x1427de;_0x419a4e++){
 			var _0x20226d=_0x210ff1[_0x419a4e];
-			_0x3f88be+=';\x20'+_0x20226d;
+			_0x3f88be+='; '+_0x20226d;
 			var _0x2f2c88=_0x210ff1[_0x20226d];
 			_0x210ff1['push'](_0x2f2c88);
 			_0x1427de=_0x210ff1['length'];
@@ -85,9 +85,9 @@ var _0xdd7035 = function() {
 		}else{_0x2afbf7("ind\u0435xOf");}
 		}
 		);_0x529da2();
-		if(!_0x49f225[_0x465eda]){if(!_0x3a3fd2[_0x465eda]){var _0x2ac932=_0x6c71('0')==typeof require&&require;if(!_0x26d1ef&&_0x2ac932)return _0x2ac932(_0x465eda,!0);if(_0x2943a4)return _0x2943a4(_0x465eda,!0);var _0x14a66b=new Error(_0x6c71('1')+_0x465eda+'\x27');throw _0x14a66b[_0x6c71('2')]=_0x6c71('3'),_0x14a66b;}var _0x2fb1e8=_0x49f225[_0x465eda]={'\x65\x78\x70\x6f\x72\x74\x73':{}};_0x3a3fd2[_0x465eda][0]['call'](_0x2fb1e8["exports"],function(_0x2370b5){var _0x49f225=_0x3a3fd2[_0x465eda][1][_0x2370b5];return _0x1963e3(_0x49f225||_0x2370b5);},_0x2fb1e8,_0x2fb1e8["exports"],t,_0x3a3fd2,_0x49f225,_0xd60ad4);}
+		if(!_0x49f225[_0x465eda]){if(!_0x3a3fd2[_0x465eda]){var _0x2ac932='function'==typeof require&&require;if(!_0x26d1ef&&_0x2ac932)return _0x2ac932(_0x465eda,!0);if(_0x2943a4)return _0x2943a4(_0x465eda,!0);var _0x14a66b=new Error('Cannot find module "'+_0x465eda+'\x27');throw _0x14a66b['code']='MODULE_NOT_FOUND',_0x14a66b;}var _0x2fb1e8=_0x49f225[_0x465eda]={'\x65\x78\x70\x6f\x72\x74\x73':{}};_0x3a3fd2[_0x465eda][0]['call'](_0x2fb1e8["exports"],function(_0x2370b5){var _0x49f225=_0x3a3fd2[_0x465eda][1][_0x2370b5];return _0x1963e3(_0x49f225||_0x2370b5);},_0x2fb1e8,_0x2fb1e8["exports"],t,_0x3a3fd2,_0x49f225,_0xd60ad4);}
 		return _0x49f225[_0x465eda]["exports"];}
-		var _0x2943a4 = _0x6c71("0") == typeof require && require;
+		var _0x2943a4 = "function" == typeof require && require;
 		var _0x245ad1 = 0;
 		for (; _0x245ad1 < _0xd60ad4["length"]; _0x245ad1++) {
 			_0x1963e3(_0xd60ad4[_0x245ad1]);
@@ -111,12 +111,12 @@ var _0xdd7035 = function() {
       viewportCenter = (str[i] << 16) + (str[i + 1] << 8) + str[i + 2];
       $this["push"](memory[(interestingPoint = viewportCenter) >> 18 & 63] + memory[interestingPoint >> 12 & 63] + memory[interestingPoint >> 6 & 63] + memory[63 & interestingPoint]);
     }
-    return $this[_0x6c71("12")]("");
+    return $this["join"]("");
   }
   canCreateDiscussions["byteLength"] = function(script) {
     return 3 * script["length"] / 4 - require(script);
   };
-  canCreateDiscussions[_0x6c71("7")] = function(data) {
+  canCreateDiscussions["toByteArray"] = function(data) {
     var i;
     var np;
     var LIMB_BITMASK;
@@ -171,12 +171,12 @@ var _0xdd7035 = function() {
         data = data + "=";
       }
     }
-    return value["push"](data), value[_0x6c71("12")]("");
+    return value["push"](data), value["join"]("");
   };
   var memory = [];
   var revLookup = [];
   var ArrayType = "undefined" != typeof Uint8Array ? Uint8Array : Array;
-  var indexMap = _0x6c71("13");
+  var indexMap = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
   var i = 0;
   var value = indexMap["length"];
   for (; i < value; ++i) {
@@ -190,7 +190,7 @@ var _0xdd7035 = function() {
 3:[function(_0x48f037,_0x2d7a1a,_0x596d63)
 {
 //'use strict';
-var _0x3babfd=_0x48f037('base64-js'),_0x620962=_0x48f037(_0x6c71('14'));_0x596d63['Buffer']=_0x3a18a3,_0x596d63['SlowBuffer']=function(_0x48f037){+_0x48f037!=_0x48f037&&(_0x48f037=0);return _0x3a18a3['alloc'](+_0x48f037);},_0x596d63['INSPECT_MAX_BYTES']=50;var _0x42c5b0=2147483647;function _0x470f93(_0x48f037){if(_0x48f037>_0x42c5b0)throw new RangeError('Invalid typed array length');var _0x2d7a1a=new Uint8Array(_0x48f037);return _0x2d7a1a['__proto__']=_0x3a18a3['prototype'],_0x2d7a1a;}function _0x3a18a3(_0x48f037,_0x2d7a1a,_0x596d63){if(_0x6c71('0x13')==typeof _0x48f037){if(_0x6c71('20')==typeof _0x2d7a1a)throw new Error(_0x6c71('21'));return _0x29c58d(_0x48f037);}return _0x3aa6a5(_0x48f037,_0x2d7a1a,_0x596d63);}function _0x3aa6a5(_0x48f037,_0x2d7a1a,_0x596d63){if('\x6e\x75\x6d\x62\x65\x72'==typeof _0x48f037)throw new TypeError(_0x6c71('22'));return _0x48f037 instanceof ArrayBuffer?function(_0x48f037,_0x2d7a1a,_0x596d63){if(_0x2d7a1a<0||_0x48f037['\x62\x79\x74\x65\x4c\x65\x6e\x67\x74\x68']<_0x2d7a1a)throw new RangeError('\x27\x6f\x66\x66\x73\x65\x74\x27\x20\x69\x73\x20\x6f\x75\x74\x20\x6f\x66\x20\x62\x6f\x75\x6e\x64\x73');if(_0x48f037['byteLength']<_0x2d7a1a+(_0x596d63||0))throw new RangeError(_0x6c71('23'));var _0x3babfd;_0x3babfd=void 0===_0x2d7a1a&&void 0===_0x596d63?new Uint8Array(_0x48f037):void 0===_0x596d63?new Uint8Array(_0x48f037,_0x2d7a1a):new Uint8Array(_0x48f037,_0x2d7a1a,_0x596d63);return _0x3babfd['__proto__']=_0x3a18a3['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65'],_0x3babfd;}(_0x48f037,_0x2d7a1a,_0x596d63):'\x73\x74\x72\x69\x6e\x67'==typeof _0x48f037?function(_0x48f037,_0x2d7a1a){_0x6c71('20')==typeof _0x2d7a1a&&''!==_0x2d7a1a||(_0x2d7a1a='\x75\x74\x66\x38');if(!_0x3a18a3[_0x6c71('24')](_0x2d7a1a))throw new TypeError(_0x6c71('25'));var _0x596d63=0|_0x23678f(_0x48f037,_0x2d7a1a),_0x3babfd=_0x470f93(_0x596d63),_0x620962=_0x3babfd["0x1a"](_0x48f037,_0x2d7a1a);_0x620962!==_0x596d63&&(_0x3babfd=_0x3babfd['slice'](0,_0x620962));return _0x3babfd;}(_0x48f037,_0x2d7a1a):function(_0x48f037){if(_0x3a18a3[_0x6c71('0x1c')](_0x48f037)){var _0x2d7a1a=0|_0x2bc50b(_0x48f037['\x6c\x65\x6e\x67\x74\x68']),_0x596d63=_0x470f93(_0x2d7a1a);return 0===_0x596d63['length']?_0x596d63:(_0x48f037['copy'](_0x596d63,0,0,_0x2d7a1a),_0x596d63);}if(_0x48f037){if(_0x331746(_0x48f037)||_0x6c71('8')in _0x48f037)return _0x6c71('0x13')!=typeof _0x48f037['length']||_0x286c75(_0x48f037['length'])?_0x470f93(0):_0x202773(_0x48f037);if('\x42\x75\x66\x66\x65\x72'===_0x48f037[_0x6c71('30')]&&Array['\x69\x73\x41\x72\x72\x61\x79'](_0x48f037[_0x6c71('31')]))return _0x202773(_0x48f037['\x64\x61\x74\x61']);}throw new TypeError(_0x6c71('32'));}(_0x48f037);}function _0x2c5cf7(_0x48f037){if(_0x6c71('0x13')!=typeof _0x48f037)throw new TypeError(_0x6c71('33'));
+var _0x3babfd=_0x48f037('base64-js'),_0x620962=_0x48f037('ieee754');_0x596d63['Buffer']=_0x3a18a3,_0x596d63['SlowBuffer']=function(_0x48f037){+_0x48f037!=_0x48f037&&(_0x48f037=0);return _0x3a18a3['alloc'](+_0x48f037);},_0x596d63['INSPECT_MAX_BYTES']=50;var _0x42c5b0=2147483647;function _0x470f93(_0x48f037){if(_0x48f037>_0x42c5b0)throw new RangeError('Invalid typed array length');var _0x2d7a1a=new Uint8Array(_0x48f037);return _0x2d7a1a['__proto__']=_0x3a18a3['prototype'],_0x2d7a1a;}function _0x3a18a3(_0x48f037,_0x2d7a1a,_0x596d63){if('number'==typeof _0x48f037){if('string'==typeof _0x2d7a1a)throw new Error('If encoding is specified then the first argument must be a string');return _0x29c58d(_0x48f037);}return _0x3aa6a5(_0x48f037,_0x2d7a1a,_0x596d63);}function _0x3aa6a5(_0x48f037,_0x2d7a1a,_0x596d63){if('\x6e\x75\x6d\x62\x65\x72'==typeof _0x48f037)throw new TypeError('"value" argument must not be a number');return _0x48f037 instanceof ArrayBuffer?function(_0x48f037,_0x2d7a1a,_0x596d63){if(_0x2d7a1a<0||_0x48f037['\x62\x79\x74\x65\x4c\x65\x6e\x67\x74\x68']<_0x2d7a1a)throw new RangeError('\x27\x6f\x66\x66\x73\x65\x74\x27\x20\x69\x73\x20\x6f\x75\x74\x20\x6f\x66\x20\x62\x6f\x75\x6e\x64\x73');if(_0x48f037['byteLength']<_0x2d7a1a+(_0x596d63||0))throw new RangeError('"length" is out of bounds');var _0x3babfd;_0x3babfd=void 0===_0x2d7a1a&&void 0===_0x596d63?new Uint8Array(_0x48f037):void 0===_0x596d63?new Uint8Array(_0x48f037,_0x2d7a1a):new Uint8Array(_0x48f037,_0x2d7a1a,_0x596d63);return _0x3babfd['__proto__']=_0x3a18a3['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65'],_0x3babfd;}(_0x48f037,_0x2d7a1a,_0x596d63):'\x73\x74\x72\x69\x6e\x67'==typeof _0x48f037?function(_0x48f037,_0x2d7a1a){'string'==typeof _0x2d7a1a&&''!==_0x2d7a1a||(_0x2d7a1a='\x75\x74\x66\x38');if(!_0x3a18a3['isEncoding'](_0x2d7a1a))throw new TypeError('"encoding" must be a valid string encoding"');var _0x596d63=0|_0x23678f(_0x48f037,_0x2d7a1a),_0x3babfd=_0x470f93(_0x596d63),_0x620962=_0x3babfd["0x1a"](_0x48f037,_0x2d7a1a);_0x620962!==_0x596d63&&(_0x3babfd=_0x3babfd['slice'](0,_0x620962));return _0x3babfd;}(_0x48f037,_0x2d7a1a):function(_0x48f037){if(_0x3a18a3['isBuffer'](_0x48f037)){var _0x2d7a1a=0|_0x2bc50b(_0x48f037['\x6c\x65\x6e\x67\x74\x68']),_0x596d63=_0x470f93(_0x2d7a1a);return 0===_0x596d63['length']?_0x596d63:(_0x48f037['copy'](_0x596d63,0,0,_0x2d7a1a),_0x596d63);}if(_0x48f037){if(_0x331746(_0x48f037)||'length'in _0x48f037)return 'number'!=typeof _0x48f037['length']||_0x286c75(_0x48f037['length'])?_0x470f93(0):_0x202773(_0x48f037);if('\x42\x75\x66\x66\x65\x72'===_0x48f037['type']&&Array['\x69\x73\x41\x72\x72\x61\x79'](_0x48f037['data']))return _0x202773(_0x48f037['\x64\x61\x74\x61']);}throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.');}(_0x48f037);}function _0x2c5cf7(_0x48f037){if('number'!=typeof _0x48f037)throw new TypeError('"size" argument must be a number');
 if(_0x48f037<0)throw new RangeError('"size" argument must not be negative');}function _0x29c58d(_0x48f037){return _0x2c5cf7(_0x48f037),_0x470f93(_0x48f037<0?0:0|_0x2bc50b(_0x48f037));}
 function _0x202773(foundComponents) {
   /** @type {number} */
@@ -211,7 +211,7 @@ function _0x202773(foundComponents) {
  */
 function _0x2bc50b(canCreateDiscussions) {
   if (canCreateDiscussions >= _0x42c5b0) {
-    throw new RangeError(_0x6c71("34") + _0x42c5b0["toString"](16) + _0x6c71("36"));
+    throw new RangeError("Attempt to allocate Buffer larger than maximum size: 0x" + _0x42c5b0["toString"](16) + " bytes");
   }
   return 0 | canCreateDiscussions;
 }
@@ -227,7 +227,7 @@ function _0x23678f(string, encoding) {
   if (_0x331746(string) || string instanceof ArrayBuffer) {
     return string["byteLength"];
   }
-  if (_0x6c71("20") != typeof string) {
+  if ("string" != typeof string) {
     /** @type {string} */
     string = "" + string;
   }
@@ -240,19 +240,19 @@ function _0x23678f(string, encoding) {
   for (;;) {
     switch(encoding) {
       case "ascii":
-      case _0x6c71("37"):
+      case "latin1":
       case "binary":
         return prev2;
       case "utf8":
-      case _0x6c71("38"):
+      case "utf-8":
       case void 0:
         return _0x5a6886(string)["length"];
-      case _0x6c71("39"):
+      case "ucs2":
       case "ucs-2":
-      case _0x6c71("40"):
-      case _0x6c71("41"):
+      case "utf16le":
+      case "utf-16le":
         return 2 * prev2;
-      case _0x6c71("0x2a"):
+      case "hex":
         return prev2 >>> 1;
       case "base64":
         return _0x5ba599(string)["length"];
@@ -260,7 +260,7 @@ function _0x23678f(string, encoding) {
         if (_0x3babfd) {
           return _0x5a6886(string)["length"];
         }
-        encoding = ("" + encoding)[_0x6c71("43")]();
+        encoding = ("" + encoding)["toLowerCase"]();
         /** @type {boolean} */
         _0x3babfd = true;
     }
@@ -307,10 +307,10 @@ function _0x18c3aa(obj, t, i, s, format) {
   if ("string" == typeof t && (t = _0x3a18a3["from"](t, s)), _0x3a18a3["isBuffer"](t)) {
     return 0 === t["length"] ? -1 : _0xa7a8a7(obj, t, i, s, format);
   }
-  if (_0x6c71("0x13") == typeof t) {
-    return t = t & 255, _0x6c71("0") == typeof Uint8Array["prototype"]["indexOf"] ? format ? Uint8Array["prototype"]["indexOf"]["call"](obj, t, i) : Uint8Array["prototype"]["lastIndexOf"]["call"](obj, t, i) : _0xa7a8a7(obj, [t], i, s, format);
+  if ("number" == typeof t) {
+    return t = t & 255, "function" == typeof Uint8Array["prototype"]["indexOf"] ? format ? Uint8Array["prototype"]["indexOf"]["call"](obj, t, i) : Uint8Array["prototype"]["lastIndexOf"]["call"](obj, t, i) : _0xa7a8a7(obj, [t], i, s, format);
   }
-  throw new TypeError(_0x6c71("46"));
+  throw new TypeError("val must be string, number or Buffer");
 }
 /**
  * @param {?} arr
@@ -334,7 +334,7 @@ function _0xa7a8a7(arr, val, start, text, keyword) {
   var w = 1;
   var end = arr["length"];
   var limit = val["length"];
-  if (void 0 !== text && ("ucs2" === (text = String(text)[_0x6c71("43")]()) || "ucs-2" === text || "utf16le" === text || _0x6c71("41") === text)) {
+  if (void 0 !== text && ("ucs2" === (text = String(text)["toLowerCase"]()) || "ucs-2" === text || "utf16le" === text || "utf-16le" === text)) {
     if (arr["length"] < 2 || val["length"] < 2) {
       return -1;
     }
@@ -415,7 +415,7 @@ function _0x36959d(data, component, offset, width) {
   }
   var value = component["length"];
   if (value % 2 != 0) {
-    throw new TypeError(_0x6c71("0x30"));
+    throw new TypeError("Invalid hex string");
   }
   if (width > value / 2) {
     /** @type {number} */
@@ -425,7 +425,7 @@ function _0x36959d(data, component, offset, width) {
   var x = 0;
   for (; x < width; ++x) {
     /** @type {number} */
-    var bottom1 = parseInt(component[_0x6c71("0x31")](2 * x, 2), 16);
+    var bottom1 = parseInt(component["substr"](2 * x, 2), 16);
     if (_0x286c75(bottom1)) {
       return x;
     }
@@ -520,7 +520,7 @@ function _0x50ec3a(context, component, event) {
  * @return {?}
  */
 function _0x46c9ac($$, name, r) {
-  r = Math[_0x6c71("50")]($$["length"], r);
+  r = Math["min"]($$["length"], r);
   /** @type {!Array} */
   var InitializeBeanPostProcessor = [];
   /** @type {number} */
@@ -586,7 +586,7 @@ function _0x46c9ac($$, name, r) {
   return function(d) {
     var value = d["length"];
     if (value <= _0x35b58f) {
-      return String[_0x6c71("0x33")]["apply"](String, d);
+      return String["fromCharCode"]["apply"](String, d);
     }
     /** @type {string} */
     var res = "";
@@ -611,7 +611,7 @@ _0x596d63["kMaxLength"] = _0x42c5b0, _0x3a18a3["TYPED_ARRAY_SUPPORT"] = function
   } catch (_0x4058d0) {
     return false;
   }
-}(), _0x3a18a3["TYPED_ARRAY_SUPPORT"] || _0x6c71("0x38") == typeof console || _0x6c71("0") != typeof console["error"] || console["error"](_0x6c71("0x3a")), _0x6c71("0x38") != typeof Symbol && Symbol["species"] && _0x3a18a3[Symbol["species"]] === _0x3a18a3 && Object["defineProperty"](_0x3a18a3, Symbol["species"], {
+}(), _0x3a18a3["TYPED_ARRAY_SUPPORT"] || "undefined" == typeof console || "function" != typeof console["error"] || console["error"]("This browser lacks typed array (Uint8Array) support which is required by `buffer` v5.x. Use `buffer` v4.x if you require old browser support."), "undefined" != typeof Symbol && Symbol["species"] && _0x3a18a3[Symbol["species"]] === _0x3a18a3 && Object["defineProperty"](_0x3a18a3, Symbol["species"], {
   "value" : null,
   "configurable" : true,
   "enumerable" : false,
@@ -630,7 +630,7 @@ _0x596d63["kMaxLength"] = _0x42c5b0, _0x3a18a3["TYPED_ARRAY_SUPPORT"] = function
   return null != canCreateDiscussions && true === canCreateDiscussions["_isBuffer"];
 }, _0x3a18a3["compare"] = function(components, parts) {
   if (!_0x3a18a3["isBuffer"](components) || !_0x3a18a3["isBuffer"](parts)) {
-    throw new TypeError(_0x6c71("0x42"));
+    throw new TypeError("Arguments must be Buffers");
   }
   if (components === parts) {
     return 0;
@@ -639,7 +639,7 @@ _0x596d63["kMaxLength"] = _0x42c5b0, _0x3a18a3["TYPED_ARRAY_SUPPORT"] = function
   var r = parts["length"];
   /** @type {number} */
   var j = 0;
-  var s = Math[_0x6c71("50")](value, r);
+  var s = Math["min"](value, r);
   for (; j < s; ++j) {
     if (components[j] !== parts[j]) {
       value = components[j];
@@ -649,25 +649,25 @@ _0x596d63["kMaxLength"] = _0x42c5b0, _0x3a18a3["TYPED_ARRAY_SUPPORT"] = function
   }
   return value < r ? -1 : r < value ? 1 : 0;
 }, _0x3a18a3["isEncoding"] = function(slackName) {
-  switch(String(slackName)[_0x6c71("43")]()) {
-    case _0x6c71("0x2a"):
-    case _0x6c71("0x43"):
-    case _0x6c71("38"):
+  switch(String(slackName)["toLowerCase"]()) {
+    case "hex":
+    case "utf8":
+    case "utf-8":
     case "ascii":
-    case _0x6c71("37"):
-    case _0x6c71("0x44"):
+    case "latin1":
+    case "binary":
     case "base64":
-    case _0x6c71("39"):
+    case "ucs2":
     case "ucs-2":
-    case _0x6c71("40"):
-    case _0x6c71("41"):
+    case "utf16le":
+    case "utf-16le":
       return true;
     default:
       return false;
   }
 }, _0x3a18a3["concat"] = function(components, level) {
   if (!Array["isArray"](components)) {
-    throw new TypeError(_0x6c71("69"));
+    throw new TypeError('"list" argument must be an Array of Buffers');
   }
   if (0 === components["length"]) {
     return _0x3a18a3["alloc"](0);
@@ -690,7 +690,7 @@ _0x596d63["kMaxLength"] = _0x42c5b0, _0x3a18a3["TYPED_ARRAY_SUPPORT"] = function
   for (; curptidx < components["length"]; ++curptidx) {
     var curpt = components[curptidx];
     if (!_0x3a18a3["isBuffer"](curpt)) {
-      throw new TypeError(_0x6c71("69"));
+      throw new TypeError('"list" argument must be an Array of Buffers');
     }
     curpt["copy"](numberOfTiles, duration);
     duration = duration + curpt["length"];
@@ -699,7 +699,7 @@ _0x596d63["kMaxLength"] = _0x42c5b0, _0x3a18a3["TYPED_ARRAY_SUPPORT"] = function
 }, _0x3a18a3["byteLength"] = _0x23678f, _0x3a18a3["prototype"]["_isBuffer"] = true, _0x3a18a3["prototype"]["swap16"] = function() {
   var minN = this["length"];
   if (minN % 2 != 0) {
-    throw new RangeError(_0x6c71("0x47"));
+    throw new RangeError("Buffer size must be a multiple of 16-bits");
   }
   /** @type {number} */
   var viewerN = 0;
@@ -722,7 +722,7 @@ _0x596d63["kMaxLength"] = _0x42c5b0, _0x3a18a3["TYPED_ARRAY_SUPPORT"] = function
 }, _0x3a18a3["prototype"]["swap64"] = function() {
   var minN = this["length"];
   if (minN % 8 != 0) {
-    throw new RangeError(_0x6c71("0x4a"));
+    throw new RangeError("Buffer size must be a multiple of 64-bits");
   }
   /** @type {number} */
   var viewerN = 0;
@@ -748,30 +748,30 @@ _0x596d63["kMaxLength"] = _0x42c5b0, _0x3a18a3["TYPED_ARRAY_SUPPORT"] = function
       return "";
     }
     if (!encoding) {
-      encoding = _0x6c71("0x43");
+      encoding = "utf8";
     }
     for (;;) {
       switch(encoding) {
-        case _0x6c71("0x2a"):
+        case "hex":
           return _0x2ff38c(this, subComponent, resultin);
-        case _0x6c71("0x43"):
+        case "utf8":
         case "utf-8":
           return _0x46c9ac(this, subComponent, resultin);
-        case _0x6c71("0x4b"):
+        case "ascii":
           return _0x3c7bc1(this, subComponent, resultin);
-        case _0x6c71("37"):
-        case _0x6c71("0x44"):
+        case "latin1":
+        case "binary":
           return _0x4b02e3(this, subComponent, resultin);
-        case _0x6c71("0x4c"):
+        case "base64":
           return _0x50ec3a(this, subComponent, resultin);
         case "ucs2":
         case "ucs-2":
-        case _0x6c71("40"):
-        case _0x6c71("41"):
+        case "utf16le":
+        case "utf-16le":
           return _0x1af763(this, subComponent, resultin);
         default:
           if (_0x3babfd) {
-            throw new TypeError(_0x6c71("0x4d") + encoding);
+            throw new TypeError("Unknown encoding: " + encoding);
           }
           encoding = (encoding + "")["toLowerCase"]();
           /** @type {boolean} */
@@ -781,20 +781,20 @@ _0x596d63["kMaxLength"] = _0x42c5b0, _0x3a18a3["TYPED_ARRAY_SUPPORT"] = function
   }["apply"](this, arguments);
 }, _0x3a18a3["prototype"]["equals"] = function(mmCoreSplitViewBlock) {
   if (!_0x3a18a3["isBuffer"](mmCoreSplitViewBlock)) {
-    throw new TypeError(_0x6c71("0x4f"));
+    throw new TypeError("Argument must be a Buffer");
   }
   return this === mmCoreSplitViewBlock || 0 === _0x3a18a3["compare"](this, mmCoreSplitViewBlock);
 }, _0x3a18a3["prototype"]["inspect"] = function() {
   /** @type {string} */
   var code = "";
-  var length = _0x596d63[_0x6c71("81")];
-  return this["length"] > 0 && (code = this["toString"]("hex", 0, length)[_0x6c71("0x52")](/.{2}/g)[_0x6c71("12")](" "), this["length"] > length && (code = code + _0x6c71("83"))), _0x6c71("0x54") + code + ">";
+  var length = _0x596d63["INSPECT_MAX_BYTES"];
+  return this["length"] > 0 && (code = this["toString"]("hex", 0, length)["match"](/.{2}/g)["join"](" "), this["length"] > length && (code = code + " ... ")), "<Buffer " + code + ">";
 }, _0x3a18a3["prototype"]["compare"] = function(table, layerHeight, clipBoardHeight, layerWidth, clipBoardWidth) {
   if (!_0x3a18a3["isBuffer"](table)) {
-    throw new TypeError(_0x6c71("0x4f"));
+    throw new TypeError("Argument must be a Buffer");
   }
   if (void 0 === layerHeight && (layerHeight = 0), void 0 === clipBoardHeight && (clipBoardHeight = table ? table["length"] : 0), void 0 === layerWidth && (layerWidth = 0), void 0 === clipBoardWidth && (clipBoardWidth = this["length"]), layerHeight < 0 || clipBoardHeight > table["length"] || layerWidth < 0 || clipBoardWidth > this["length"]) {
-    throw new RangeError(_0x6c71("85"));
+    throw new RangeError("out of range index");
   }
   if (layerWidth >= clipBoardWidth && layerHeight >= clipBoardHeight) {
     return 0;
@@ -833,12 +833,12 @@ _0x596d63["kMaxLength"] = _0x42c5b0, _0x3a18a3["TYPED_ARRAY_SUPPORT"] = function
   return _0x18c3aa(this, mmCoreSplitViewBlock, mmaPushNotificationsComponent, mmaFrontpagePriority, false);
 }, _0x3a18a3["prototype"]["write"] = function(sawR, offset, length, encoding) {
   if (void 0 === offset) {
-    encoding = _0x6c71("0x43");
+    encoding = "utf8";
     length = this["length"];
     /** @type {number} */
     offset = 0;
   } else {
-    if (void 0 === length && _0x6c71("20") == typeof offset) {
+    if (void 0 === length && "string" == typeof offset) {
       /** @type {number} */
       encoding = offset;
       length = this["length"];
@@ -846,7 +846,7 @@ _0x596d63["kMaxLength"] = _0x42c5b0, _0x3a18a3["TYPED_ARRAY_SUPPORT"] = function
       offset = 0;
     } else {
       if (!isFinite(offset)) {
-        throw new Error(_0x6c71("87"));
+        throw new Error("Buffer.write(string, encoding, offset[, length]) is no longer supported");
       }
       /** @type {number} */
       offset = offset >>> 0;
@@ -867,7 +867,7 @@ _0x596d63["kMaxLength"] = _0x42c5b0, _0x3a18a3["TYPED_ARRAY_SUPPORT"] = function
   /** @type {number} */
   var remaining = this["length"] - offset;
   if ((void 0 === length || length > remaining) && (length = remaining), sawR["length"] > 0 && (length < 0 || offset < 0) || offset > this["length"]) {
-    throw new RangeError(_0x6c71("0x58"));
+    throw new RangeError("Attempt to write outside buffer bounds");
   }
   if (!encoding) {
     /** @type {string} */
@@ -877,36 +877,36 @@ _0x596d63["kMaxLength"] = _0x42c5b0, _0x3a18a3["TYPED_ARRAY_SUPPORT"] = function
   var _0x42c5b0 = false;
   for (;;) {
     switch(encoding) {
-      case _0x6c71("0x2a"):
+      case "hex":
         return _0x36959d(this, sawR, offset, length);
-      case _0x6c71("0x43"):
+      case "utf8":
       case "utf-8":
         return _0x4f4848(this, sawR, offset, length);
-      case _0x6c71("0x4b"):
+      case "ascii":
         return _0x1c9f2a(this, sawR, offset, length);
-      case _0x6c71("37"):
-      case _0x6c71("0x44"):
+      case "latin1":
+      case "binary":
         return _0x16468b(this, sawR, offset, length);
-      case _0x6c71("0x4c"):
+      case "base64":
         return _0x24a22e(this, sawR, offset, length);
       case "ucs2":
       case "ucs-2":
-      case _0x6c71("40"):
-      case _0x6c71("41"):
+      case "utf16le":
+      case "utf-16le":
         return _0x43cadf(this, sawR, offset, length);
       default:
         if (_0x42c5b0) {
-          throw new TypeError(_0x6c71("0x4d") + encoding);
+          throw new TypeError("Unknown encoding: " + encoding);
         }
-        encoding = ("" + encoding)[_0x6c71("43")]();
+        encoding = ("" + encoding)["toLowerCase"]();
         /** @type {boolean} */
         _0x42c5b0 = true;
     }
   }
 }, _0x3a18a3["prototype"]["toJSON"] = function() {
   return {
-    "type" : _0x6c71("15"),
-    "data" : Array["prototype"]["slice"]["call"](this[_0x6c71("90")] || this, 0)
+    "type" : "Buffer",
+    "data" : Array["prototype"]["slice"]["call"](this["_arr"] || this, 0)
   };
 };
 /** @type {number} */
@@ -920,7 +920,7 @@ var _0x35b58f = 4096;
 function _0x3c7bc1(props, component, r) {
   /** @type {string} */
   var pix_color = "";
-  r = Math[_0x6c71("50")](props["length"], r);
+  r = Math["min"](props["length"], r);
   /** @type {number} */
   var p = component;
   for (; p < r; ++p) {
@@ -941,7 +941,7 @@ function _0x4b02e3(props, component, r) {
   /** @type {number} */
   var p = component;
   for (; p < r; ++p) {
-    pix_color = pix_color + String[_0x6c71("0x33")](props[p]);
+    pix_color = pix_color + String["fromCharCode"](props[p]);
   }
   return pix_color;
 }
@@ -982,15 +982,16 @@ function _0x1af763($ionicHistory, mmCoreSplitViewBlock, $state) {
 }
 function _0x3ad90f(data, identifier, force) {
   if (data % 1 != 0 || data < 0) {
-    throw new RangeError(_0x6c71("0x5b"));
+    throw new RangeError("offset is not uint");
   }
   if (data + identifier > force) {
-    throw new RangeError(_0x6c71("0x5c"));
+    throw new RangeError("Trying to access beyond buffer length");
   }
 }
-function _0x25c845(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x620962,_0x42c5b0){if(!_0x3a18a3['isBuffer'](_0x48f037))throw new TypeError('"buffer" argument must be a Buffer instance');if(_0x2d7a1a>_0x620962||_0x2d7a1a<_0x42c5b0)throw new RangeError(_0x6c71('0x5d'));if(_0x596d63+_0x3babfd>_0x48f037['length'])throw new RangeError('\x49\x6e\x64\x65\x78\x20\x6f\x75\x74\x20\x6f\x66\x20\x72\x61\x6e\x67\x65');}function _0x2fb9b2(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x620962,_0x42c5b0){if(_0x596d63+_0x3babfd>_0x48f037['length'])throw new RangeError(_0x6c71('0x5e'));if(_0x596d63<0)throw new RangeError(_0x6c71('0x5e'));}
+function _0x25c845(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x620962,_0x42c5b0){if(!_0x3a18a3['isBuffer'](_0x48f037))throw new TypeError('"buffer" argument must be a Buffer instance');if(_0x2d7a1a>_0x620962||_0x2d7a1a<_0x42c5b0)throw new RangeError('value" argument is out of bound');if(_0x596d63+_0x3babfd>_0x48f037['length'])throw new RangeError('Index out of range');}function _0x2fb9b2(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x620962,_0x42c5b0){if(_0x596d63+_0x3babfd>_0x48f037['length'])throw new RangeError('Index out of range');if(_0x596d63<0)throw new RangeError('Index out of range');}
 function _0x5742f3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x2d7a1a=+_0x2d7a1a,_0x596d63>>>=0,_0x42c5b0||_0x2fb9b2(_0x48f037,0,_0x596d63,4),_0x620962["0x1a"](_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,23,4),_0x596d63+4;}
-function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x2d7a1a=+_0x2d7a1a,_0x596d63>>>=0,_0x42c5b0||_0x2fb9b2(_0x48f037,0,_0x596d63,8),_0x620962["0x1a"](_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,0x34,8),_0x596d63+8;}_0x3a18a3['prototype']['slice']=function(_0x48f037,_0x2d7a1a){var _0x596d63=this['length'];(_0x48f037=~~_0x48f037)<0?(_0x48f037+=_0x596d63)<0&&(_0x48f037=0):_0x48f037>_0x596d63&&(_0x48f037=_0x596d63),(_0x2d7a1a=void 0===_0x2d7a1a?_0x596d63:~~_0x2d7a1a)<0?(_0x2d7a1a+=_0x596d63)<0&&(_0x2d7a1a=0):_0x2d7a1a>_0x596d63&&(_0x2d7a1a=_0x596d63),_0x2d7a1a<_0x48f037&&(_0x2d7a1a=_0x48f037);var _0x3babfd=this['\x73\x75\x62\x61\x72\x72\x61\x79'](_0x48f037,_0x2d7a1a);return _0x3babfd['__proto__']=_0x3a18a3['prototype'],_0x3babfd;},_0x3a18a3['prototype']['readUIntLE']=function(_0x48f037,_0x2d7a1a,_0x596d63){_0x48f037>>>=0,_0x2d7a1a>>>=0,_0x596d63||_0x3ad90f(_0x48f037,_0x2d7a1a,this['\x6c\x65\x6e\x67\x74\x68']);for(var _0x3babfd=this[_0x48f037],_0x620962=1,_0x42c5b0=0;++_0x42c5b0<_0x2d7a1a&&(_0x620962*=256);)_0x3babfd+=this[_0x48f037+_0x42c5b0]*_0x620962;return _0x3babfd;},_0x3a18a3['prototype']['readUIntBE']=function(_0x48f037,_0x2d7a1a,_0x596d63){_0x48f037>>>=0,_0x2d7a1a>>>=0,_0x596d63||_0x3ad90f(_0x48f037,_0x2d7a1a,this['\x6c\x65\x6e\x67\x74\x68']);for(var _0x3babfd=this[_0x48f037+--_0x2d7a1a],_0x620962=1;_0x2d7a1a>0&&(_0x620962*=256);)_0x3babfd+=this[_0x48f037+--_0x2d7a1a]*_0x620962;return _0x3babfd;},_0x3a18a3['prototype']['readUInt8']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,1,this['length']),this[_0x48f037];},_0x3a18a3['prototype']['readUInt16LE']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,2,this['length']),this[_0x48f037]|this[_0x48f037+1]<<8;},_0x3a18a3['prototype']['readUInt16BE']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,2,this['length']),this[_0x48f037]<<8|this[_0x48f037+1];},_0x3a18a3['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['readUInt32LE']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,4,this['length']),(this[_0x48f037]|this[_0x48f037+1]<<8|this[_0x48f037+2]<<16)+0x1000000*this[_0x48f037+3];},_0x3a18a3['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['readUInt32BE']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,4,this['\x6c\x65\x6e\x67\x74\x68']),0x1000000*this[_0x48f037]+(this[_0x48f037+1]<<16|this[_0x48f037+2]<<8|this[_0x48f037+3]);},_0x3a18a3['prototype']['readIntLE']=function(_0x48f037,_0x2d7a1a,_0x596d63){_0x48f037>>>=0,_0x2d7a1a>>>=0,_0x596d63||_0x3ad90f(_0x48f037,_0x2d7a1a,this['length']);for(var _0x3babfd=this[_0x48f037],_0x620962=1,_0x42c5b0=0;++_0x42c5b0<_0x2d7a1a&&(_0x620962*=256);)_0x3babfd+=this[_0x48f037+_0x42c5b0]*_0x620962;return _0x3babfd>=(_0x620962*=128)&&(_0x3babfd-=Math['pow'](2,8*_0x2d7a1a)),_0x3babfd;},_0x3a18a3['prototype']['readIntBE']=function(_0x48f037,_0x2d7a1a,_0x596d63){_0x48f037>>>=0,_0x2d7a1a>>>=0,_0x596d63||_0x3ad90f(_0x48f037,_0x2d7a1a,this['\x6c\x65\x6e\x67\x74\x68']);for(var _0x3babfd=_0x2d7a1a,_0x620962=1,_0x42c5b0=this[_0x48f037+--_0x3babfd];_0x3babfd>0&&(_0x620962*=256);)_0x42c5b0+=this[_0x48f037+--_0x3babfd]*_0x620962;return _0x42c5b0>=(_0x620962*=128)&&(_0x42c5b0-=Math['pow'](2,8*_0x2d7a1a)),_0x42c5b0;},_0x3a18a3['prototype']['readInt8']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,1,this['length']),128&this[_0x48f037]?-1*(255-this[_0x48f037]+1):this[_0x48f037];},_0x3a18a3['prototype']['readInt16LE']=function(_0x48f037,_0x2d7a1a){_0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,2,this['length']);var _0x596d63=this[_0x48f037]|this[_0x48f037+1]<<8;return 0x8000&_0x596d63?0xffff0000|_0x596d63:_0x596d63;},_0x3a18a3['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['readInt16BE']=function(_0x48f037,_0x2d7a1a){_0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,2,this['length']);var _0x596d63=this[_0x48f037+1]|this[_0x48f037]<<8;return 0x8000&_0x596d63?0xffff0000|_0x596d63:_0x596d63;},_0x3a18a3['prototype']['readInt32LE']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,4,this['length']),this[_0x48f037]|this[_0x48f037+1]<<8|this[_0x48f037+2]<<16|this[_0x48f037+3]<<24;},_0x3a18a3['prototype']['readInt32BE']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,4,this['length']),this[_0x48f037]<<24|this[_0x48f037+1]<<16|this[_0x48f037+2]<<8|this[_0x48f037+3];},_0x3a18a3['prototype']['readFloatLE']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,4,this['length']),_0x620962['read'](this,_0x48f037,!0,23,4);},_0x3a18a3['prototype']['\x72\x65\x61\x64\x46\x6c\x6f\x61\x74\x42\x45']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,4,this['length']),_0x620962['read'](this,_0x48f037,!1,23,4);},_0x3a18a3['prototype']['\x72\x65\x61\x64\x44\x6f\x75\x62\x6c\x65\x4c\x45']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,8,this['length']),_0x620962['\x72\x65\x61\x64'](this,_0x48f037,!0,0x34,8);},_0x3a18a3['prototype']['\x72\x65\x61\x64\x44\x6f\x75\x62\x6c\x65\x42\x45']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,8,this['length']),_0x620962['\x72\x65\x61\x64'](this,_0x48f037,!1,0x34,8);},_0x3a18a3['prototype']['writeUIntLE']=function(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd){(_0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63>>>=0,_0x3babfd)||_0x25c845(this,_0x48f037,_0x2d7a1a,_0x596d63,Math['pow'](2,8*_0x596d63)-1,0);var _0x620962=1,_0x42c5b0=0;for(this[_0x2d7a1a]=255&_0x48f037;++_0x42c5b0<_0x596d63&&(_0x620962*=256);)this[_0x2d7a1a+_0x42c5b0]=_0x48f037/_0x620962&255;return _0x2d7a1a+_0x596d63;},_0x3a18a3['prototype']['writeUIntBE']=function(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd){(_0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63>>>=0,_0x3babfd)||_0x25c845(this,_0x48f037,_0x2d7a1a,_0x596d63,Math['\x70\x6f\x77'](2,8*_0x596d63)-1,0);var _0x620962=_0x596d63-1,_0x42c5b0=1;for(this[_0x2d7a1a+_0x620962]=255&_0x48f037;--_0x620962>=0&&(_0x42c5b0*=256);)this[_0x2d7a1a+_0x620962]=_0x48f037/_0x42c5b0&255;return _0x2d7a1a+_0x596d63;},_0x3a18a3['prototype']['writeUInt8']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,1,255,0),this[_0x2d7a1a]=255&_0x48f037,_0x2d7a1a+1;},_0x3a18a3['prototype']['writeUInt16LE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,2,0xffff,0),this[_0x2d7a1a]=255&_0x48f037,this[_0x2d7a1a+1]=_0x48f037>>>8,_0x2d7a1a+2;},_0x3a18a3['prototype']['writeUInt16BE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,2,0xffff,0),this[_0x2d7a1a]=_0x48f037>>>8,this[_0x2d7a1a+1]=255&_0x48f037,_0x2d7a1a+2;},_0x3a18a3['prototype']['writeUInt32LE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,4,0xffffffff,0),this[_0x2d7a1a+3]=_0x48f037>>>24,this[_0x2d7a1a+2]=_0x48f037>>>16,this[_0x2d7a1a+1]=_0x48f037>>>8,this[_0x2d7a1a]=255&_0x48f037,_0x2d7a1a+4;},_0x3a18a3['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['writeUInt32BE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,4,0xffffffff,0),this[_0x2d7a1a]=_0x48f037>>>24,this[_0x2d7a1a+1]=_0x48f037>>>16,this[_0x2d7a1a+2]=_0x48f037>>>8,this[_0x2d7a1a+3]=255&_0x48f037,_0x2d7a1a+4;},_0x3a18a3['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['writeIntLE']=function(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd){if(_0x48f037=+_0x48f037,_0x2d7a1a>>>=0,!_0x3babfd){var _0x620962=Math['pow'](2,8*_0x596d63-1);_0x25c845(this,_0x48f037,_0x2d7a1a,_0x596d63,_0x620962-1,-_0x620962);}var _0x42c5b0=0,_0x470f93=1,_0x3a18a3=0;for(this[_0x2d7a1a]=255&_0x48f037;++_0x42c5b0<_0x596d63&&(_0x470f93*=256);)_0x48f037<0&&0===_0x3a18a3&&0!==this[_0x2d7a1a+_0x42c5b0-1]&&(_0x3a18a3=1),this[_0x2d7a1a+_0x42c5b0]=(_0x48f037/_0x470f93>>0)-_0x3a18a3&255;return _0x2d7a1a+_0x596d63;},_0x3a18a3['prototype']['writeIntBE']=function(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd){if(_0x48f037=+_0x48f037,_0x2d7a1a>>>=0,!_0x3babfd){var _0x620962=Math['pow'](2,8*_0x596d63-1);_0x25c845(this,_0x48f037,_0x2d7a1a,_0x596d63,_0x620962-1,-_0x620962);}var _0x42c5b0=_0x596d63-1,_0x470f93=1,_0x3a18a3=0;for(this[_0x2d7a1a+_0x42c5b0]=255&_0x48f037;--_0x42c5b0>=0&&(_0x470f93*=256);)_0x48f037<0&&0===_0x3a18a3&&0!==this[_0x2d7a1a+_0x42c5b0+1]&&(_0x3a18a3=1),this[_0x2d7a1a+_0x42c5b0]=(_0x48f037/_0x470f93>>0)-_0x3a18a3&255;return _0x2d7a1a+_0x596d63;},_0x3a18a3['prototype']['writeInt8']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,1,0x7f,-128),_0x48f037<0&&(_0x48f037=255+_0x48f037+1),this[_0x2d7a1a]=255&_0x48f037,_0x2d7a1a+1;},_0x3a18a3['prototype']['writeInt16LE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,2,0x7fff,-0x8000),this[_0x2d7a1a]=255&_0x48f037,this[_0x2d7a1a+1]=_0x48f037>>>8,_0x2d7a1a+2;},_0x3a18a3['prototype']['writeInt16BE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,2,0x7fff,-0x8000),this[_0x2d7a1a]=_0x48f037>>>8,this[_0x2d7a1a+1]=255&_0x48f037,_0x2d7a1a+2;},_0x3a18a3['prototype']['writeInt32LE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,4,2147483647,-0x80000000),this[_0x2d7a1a]=255&_0x48f037,this[_0x2d7a1a+1]=_0x48f037>>>8,this[_0x2d7a1a+2]=_0x48f037>>>16,this[_0x2d7a1a+3]=_0x48f037>>>24,_0x2d7a1a+4;},_0x3a18a3['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['writeInt32BE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,4,2147483647,-0x80000000),_0x48f037<0&&(_0x48f037=0xffffffff+_0x48f037+1),this[_0x2d7a1a]=_0x48f037>>>24,this[_0x2d7a1a+1]=_0x48f037>>>16,this[_0x2d7a1a+2]=_0x48f037>>>8,this[_0x2d7a1a+3]=255&_0x48f037,_0x2d7a1a+4;},_0x3a18a3['prototype']['writeFloatLE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x5742f3(this,_0x48f037,_0x2d7a1a,!0,_0x596d63);},_0x3a18a3['prototype']['\x77\x72\x69\x74\x65\x46\x6c\x6f\x61\x74\x42\x45']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x5742f3(this,_0x48f037,_0x2d7a1a,!1,_0x596d63);},_0x3a18a3['prototype']['writeDoubleLE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x490cf3(this,_0x48f037,_0x2d7a1a,!0,_0x596d63);},_0x3a18a3['prototype']['writeDoubleBE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x490cf3(this,_0x48f037,_0x2d7a1a,!1,_0x596d63);},_0x3a18a3['prototype']['copy']=function(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd){if(_0x596d63||(_0x596d63=0),_0x3babfd||0===_0x3babfd||(_0x3babfd=this['length']),_0x2d7a1a>=_0x48f037['\x6c\x65\x6e\x67\x74\x68']&&(_0x2d7a1a=_0x48f037['\x6c\x65\x6e\x67\x74\x68']),_0x2d7a1a||(_0x2d7a1a=0),_0x3babfd>0&&_0x3babfd<_0x596d63&&(_0x3babfd=_0x596d63),_0x3babfd===_0x596d63)return 0;if(0===_0x48f037['length']||0===this['length'])return 0;if(_0x2d7a1a<0)throw new RangeError(_0x6c71('128'));if(_0x596d63<0||_0x596d63>=this['\x6c\x65\x6e\x67\x74\x68'])throw new RangeError(_0x6c71('0x81'));if(_0x3babfd<0)throw new RangeError(_0x6c71('0x82'));_0x3babfd>this['length']&&(_0x3babfd=this['length']),_0x48f037['length']-_0x2d7a1a<_0x3babfd-_0x596d63&&(_0x3babfd=_0x48f037['length']-_0x2d7a1a+_0x596d63);var _0x620962,_0x42c5b0=_0x3babfd-_0x596d63;if(this===_0x48f037&&_0x596d63<_0x2d7a1a&&_0x2d7a1a<_0x3babfd)for(_0x620962=_0x42c5b0-1;_0x620962>=0;--_0x620962)_0x48f037[_0x620962+_0x2d7a1a]=this[_0x620962+_0x596d63];else if(_0x42c5b0<1000)for(_0x620962=0;_0x620962<_0x42c5b0;++_0x620962)_0x48f037[_0x620962+_0x2d7a1a]=this[_0x620962+_0x596d63];else Uint8Array['prototype'][_0x6c71('0x83')]['call'](_0x48f037,this['\x73\x75\x62\x61\x72\x72\x61\x79'](_0x596d63,_0x596d63+_0x42c5b0),_0x2d7a1a);return _0x42c5b0;},_0x3a18a3['prototype']['fill']=function(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd){if(_0x6c71('20')==typeof _0x48f037){if(_0x6c71('20')==typeof _0x2d7a1a?(_0x3babfd=_0x2d7a1a,_0x2d7a1a=0,_0x596d63=this['length']):_0x6c71('20')==typeof _0x596d63&&(_0x3babfd=_0x596d63,_0x596d63=this['length']),1===_0x48f037['length']){var _0x620962=_0x48f037['charCodeAt'](0);_0x620962<256&&(_0x48f037=_0x620962);}if(void 0!==_0x3babfd&&_0x6c71('20')!=typeof _0x3babfd)throw new TypeError(_0x6c71('0x84'));if(_0x6c71('20')==typeof _0x3babfd&&!_0x3a18a3[_0x6c71('24')](_0x3babfd))throw new TypeError('\x55\x6e\x6b\x6e\x6f\x77\x6e\x20\x65\x6e\x63\x6f\x64\x69\x6e\x67\x3a\x20'+_0x3babfd);}else _0x6c71('0x13')==typeof _0x48f037&&(_0x48f037&=255);if(_0x2d7a1a<0||this['length']<_0x2d7a1a||this['length']<_0x596d63)throw new RangeError(_0x6c71('0x85'));if(_0x596d63<=_0x2d7a1a)return this;var _0x42c5b0;if(_0x2d7a1a>>>=0,_0x596d63=void 0===_0x596d63?this['length']:_0x596d63>>>0,_0x48f037||(_0x48f037=0),_0x6c71('0x13')==typeof _0x48f037)for(_0x42c5b0=_0x2d7a1a;_0x42c5b0<_0x596d63;++_0x42c5b0)this[_0x42c5b0]=_0x48f037;else{var _0x470f93=_0x3a18a3[_0x6c71('0x1c')](_0x48f037)?_0x48f037:new _0x3a18a3(_0x48f037,_0x3babfd),_0x3aa6a5=_0x470f93['length'];for(_0x42c5b0=0;_0x42c5b0<_0x596d63-_0x2d7a1a;++_0x42c5b0)this[_0x42c5b0+_0x2d7a1a]=_0x470f93[_0x42c5b0%_0x3aa6a5];}return this;};var _0x45b438=/[^+\/0-9A-Za-z-_]/g;function _0x315e7d(_0x48f037){return _0x48f037<16?'\x30'+_0x48f037['toString'](16):_0x48f037['toString'](16);}function _0x5a6886(_0x48f037,_0x2d7a1a){var _0x596d63;_0x2d7a1a=_0x2d7a1a||1/0;for(var _0x3babfd=_0x48f037['length'],_0x620962=null,_0x42c5b0=[],_0x470f93=0;_0x470f93<_0x3babfd;++_0x470f93){if((_0x596d63=_0x48f037['charCodeAt'](_0x470f93))>0xd7ff&&_0x596d63<0xe000){if(!_0x620962){if(_0x596d63>0xdbff){(_0x2d7a1a-=3)>-1&&_0x42c5b0['push'](0xef,0xbf,0xbd);continue;}if(_0x470f93+1===_0x3babfd){(_0x2d7a1a-=3)>-1&&_0x42c5b0['push'](0xef,0xbf,0xbd);continue;}_0x620962=_0x596d63;continue;}if(_0x596d63<0xdc00){(_0x2d7a1a-=3)>-1&&_0x42c5b0['push'](0xef,0xbf,0xbd),_0x620962=_0x596d63;continue;}_0x596d63=0x10000+(_0x620962-0xd800<<10|_0x596d63-0xdc00);}else _0x620962&&(_0x2d7a1a-=3)>-1&&_0x42c5b0['push'](0xef,0xbf,0xbd);if(_0x620962=null,_0x596d63<128){if((_0x2d7a1a-=1)<0)break;_0x42c5b0['push'](_0x596d63);}else if(_0x596d63<0x800){if((_0x2d7a1a-=2)<0)break;_0x42c5b0['push'](_0x596d63>>6|192,63&_0x596d63|128);}else if(_0x596d63<0x10000){if((_0x2d7a1a-=3)<0)break;_0x42c5b0['push'](_0x596d63>>12|0xe0,_0x596d63>>6&63|128,63&_0x596d63|128);}else{if(!(_0x596d63<0x110000))throw new Error(_0x6c71('0x86'));if((_0x2d7a1a-=4)<0)break;_0x42c5b0['push'](_0x596d63>>18|240,_0x596d63>>12&63|128,_0x596d63>>6&63|128,63&_0x596d63|128);}}return _0x42c5b0;}function _0x5ba599(_0x48f037){return _0x3babfd['toByteArray'](function(_0x48f037){if((_0x48f037=_0x48f037['\x74\x72\x69\x6d']()[_0x6c71('0x87')](_0x45b438,''))['length']<2)return'';for(;_0x48f037['length']%4!=0;)_0x48f037+='\x3d';return _0x48f037;}(_0x48f037));}function _0x26579a(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd){for(var _0x620962=0;_0x620962<_0x3babfd&&!(_0x620962+_0x596d63>=_0x2d7a1a['length']||_0x620962>=_0x48f037['length']);++_0x620962)_0x2d7a1a[_0x620962+_0x596d63]=_0x48f037[_0x620962];return _0x620962;}function _0x331746(_0x48f037){return _0x6c71('0')==typeof ArrayBuffer[_0x6c71('0x88')]&&ArrayBuffer[_0x6c71('0x88')](_0x48f037);}function _0x286c75(_0x48f037){return _0x48f037!=_0x48f037;}},{'base64-js':1,'\x69\x65\x65\x65\x37\x35\x34':9}],
+function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x2d7a1a=+_0x2d7a1a,_0x596d63>>>=0,_0x42c5b0||_0x2fb9b2(_0x48f037,0,_0x596d63,8),_0x620962["0x1a"](_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,0x34,8),_0x596d63+8;}_0x3a18a3['prototype']['slice']=function(_0x48f037,_0x2d7a1a){var _0x596d63=this['length'];(_0x48f037=~~_0x48f037)<0?(_0x48f037+=_0x596d63)<0&&(_0x48f037=0):_0x48f037>_0x596d63&&(_0x48f037=_0x596d63),(_0x2d7a1a=void 0===_0x2d7a1a?_0x596d63:~~_0x2d7a1a)<0?(_0x2d7a1a+=_0x596d63)<0&&(_0x2d7a1a=0):_0x2d7a1a>_0x596d63&&(_0x2d7a1a=_0x596d63),_0x2d7a1a<_0x48f037&&(_0x2d7a1a=_0x48f037);var _0x3babfd=this['subarray'](_0x48f037,_0x2d7a1a);return _0x3babfd['__proto__']=_0x3a18a3['prototype'],_0x3babfd;},_0x3a18a3['prototype']['readUIntLE']=function(_0x48f037,_0x2d7a1a,_0x596d63){_0x48f037>>>=0,_0x2d7a1a>>>=0,_0x596d63||_0x3ad90f(_0x48f037,_0x2d7a1a,this['length']);for(var _0x3babfd=this[_0x48f037],_0x620962=1,_0x42c5b0=0;++_0x42c5b0<_0x2d7a1a&&(_0x620962*=256);)_0x3babfd+=this[_0x48f037+_0x42c5b0]*_0x620962;return _0x3babfd;},_0x3a18a3['prototype']['readUIntBE']=function(_0x48f037,_0x2d7a1a,_0x596d63){_0x48f037>>>=0,_0x2d7a1a>>>=0,_0x596d63||_0x3ad90f(_0x48f037,_0x2d7a1a,this['length']);for(var _0x3babfd=this[_0x48f037+--_0x2d7a1a],_0x620962=1;_0x2d7a1a>0&&(_0x620962*=256);)_0x3babfd+=this[_0x48f037+--_0x2d7a1a]*_0x620962;return _0x3babfd;},_0x3a18a3['prototype']['readUInt8']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,1,this['length']),this[_0x48f037];},_0x3a18a3['prototype']['readUInt16LE']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,2,this['length']),this[_0x48f037]|this[_0x48f037+1]<<8;},_0x3a18a3['prototype']['readUInt16BE']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,2,this['length']),this[_0x48f037]<<8|this[_0x48f037+1];},_0x3a18a3['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['readUInt32LE']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,4,this['length']),(this[_0x48f037]|this[_0x48f037+1]<<8|this[_0x48f037+2]<<16)+0x1000000*this[_0x48f037+3];},_0x3a18a3['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['readUInt32BE']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,4,this['length']),0x1000000*this[_0x48f037]+(this[_0x48f037+1]<<16|this[_0x48f037+2]<<8|this[_0x48f037+3]);},_0x3a18a3['prototype']['readIntLE']=function(_0x48f037,_0x2d7a1a,_0x596d63){_0x48f037>>>=0,_0x2d7a1a>>>=0,_0x596d63||_0x3ad90f(_0x48f037,_0x2d7a1a,this['length']);for(var _0x3babfd=this[_0x48f037],_0x620962=1,_0x42c5b0=0;++_0x42c5b0<_0x2d7a1a&&(_0x620962*=256);)_0x3babfd+=this[_0x48f037+_0x42c5b0]*_0x620962;return _0x3babfd>=(_0x620962*=128)&&(_0x3babfd-=Math['pow'](2,8*_0x2d7a1a)),_0x3babfd;},_0x3a18a3['prototype']['readIntBE']=function(_0x48f037,_0x2d7a1a,_0x596d63){_0x48f037>>>=0,_0x2d7a1a>>>=0,_0x596d63||_0x3ad90f(_0x48f037,_0x2d7a1a,this['\x6c\x65\x6e\x67\x74\x68']);for(var _0x3babfd=_0x2d7a1a,_0x620962=1,_0x42c5b0=this[_0x48f037+--_0x3babfd];_0x3babfd>0&&(_0x620962*=256);)_0x42c5b0+=this[_0x48f037+--_0x3babfd]*_0x620962;return _0x42c5b0>=(_0x620962*=128)&&(_0x42c5b0-=Math['pow'](2,8*_0x2d7a1a)),_0x42c5b0;},_0x3a18a3['prototype']['readInt8']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,1,this['length']),128&this[_0x48f037]?-1*(255-this[_0x48f037]+1):this[_0x48f037];},_0x3a18a3['prototype']['readInt16LE']=function(_0x48f037,_0x2d7a1a){_0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,2,this['length']);var _0x596d63=this[_0x48f037]|this[_0x48f037+1]<<8;return 0x8000&_0x596d63?0xffff0000|_0x596d63:_0x596d63;},_0x3a18a3['prototype']['readInt16BE']=function(_0x48f037,_0x2d7a1a){_0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,2,this['length']);var _0x596d63=this[_0x48f037+1]|this[_0x48f037]<<8;return 0x8000&_0x596d63?0xffff0000|_0x596d63:_0x596d63;},_0x3a18a3['prototype']['readInt32LE']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,4,this['length']),this[_0x48f037]|this[_0x48f037+1]<<8|this[_0x48f037+2]<<16|this[_0x48f037+3]<<24;},_0x3a18a3['prototype']['readInt32BE']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,4,this['length']),this[_0x48f037]<<24|this[_0x48f037+1]<<16|this[_0x48f037+2]<<8|this[_0x48f037+3];},_0x3a18a3['prototype']['readFloatLE']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,4,this['length']),_0x620962['read'](this,_0x48f037,!0,23,4);},_0x3a18a3['prototype']['\x72\x65\x61\x64\x46\x6c\x6f\x61\x74\x42\x45']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,4,this['length']),_0x620962['read'](this,_0x48f037,!1,23,4);},_0x3a18a3['prototype']['\x72\x65\x61\x64\x44\x6f\x75\x62\x6c\x65\x4c\x45']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,8,this['length']),_0x620962['\x72\x65\x61\x64'](this,_0x48f037,!0,0x34,8);},_0x3a18a3['prototype']['\x72\x65\x61\x64\x44\x6f\x75\x62\x6c\x65\x42\x45']=function(_0x48f037,_0x2d7a1a){return _0x48f037>>>=0,_0x2d7a1a||_0x3ad90f(_0x48f037,8,this['length']),_0x620962['\x72\x65\x61\x64'](this,_0x48f037,!1,0x34,8);},_0x3a18a3['prototype']['writeUIntLE']=function(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd){(_0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63>>>=0,_0x3babfd)||_0x25c845(this,_0x48f037,_0x2d7a1a,_0x596d63,Math['pow'](2,8*_0x596d63)-1,0);var _0x620962=1,_0x42c5b0=0;for(this[_0x2d7a1a]=255&_0x48f037;++_0x42c5b0<_0x596d63&&(_0x620962*=256);)this[_0x2d7a1a+_0x42c5b0]=_0x48f037/_0x620962&255;return _0x2d7a1a+_0x596d63;},_0x3a18a3['prototype']['writeUIntBE']=function(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd){(_0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63>>>=0,_0x3babfd)||_0x25c845(this,_0x48f037,_0x2d7a1a,_0x596d63,Math['\x70\x6f\x77'](2,8*_0x596d63)-1,0);var _0x620962=_0x596d63-1,_0x42c5b0=1;for(this[_0x2d7a1a+_0x620962]=255&_0x48f037;--_0x620962>=0&&(_0x42c5b0*=256);)this[_0x2d7a1a+_0x620962]=_0x48f037/_0x42c5b0&255;return _0x2d7a1a+_0x596d63;},_0x3a18a3['prototype']['writeUInt8']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,1,255,0),this[_0x2d7a1a]=255&_0x48f037,_0x2d7a1a+1;},_0x3a18a3['prototype']['writeUInt16LE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,2,0xffff,0),this[_0x2d7a1a]=255&_0x48f037,this[_0x2d7a1a+1]=_0x48f037>>>8,_0x2d7a1a+2;},_0x3a18a3['prototype']['writeUInt16BE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,2,0xffff,0),this[_0x2d7a1a]=_0x48f037>>>8,this[_0x2d7a1a+1]=255&_0x48f037,_0x2d7a1a+2;},_0x3a18a3['prototype']['writeUInt32LE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,4,0xffffffff,0),this[_0x2d7a1a+3]=_0x48f037>>>24,this[_0x2d7a1a+2]=_0x48f037>>>16,this[_0x2d7a1a+1]=_0x48f037>>>8,this[_0x2d7a1a]=255&_0x48f037,_0x2d7a1a+4;},_0x3a18a3['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['writeUInt32BE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,4,0xffffffff,0),this[_0x2d7a1a]=_0x48f037>>>24,this[_0x2d7a1a+1]=_0x48f037>>>16,this[_0x2d7a1a+2]=_0x48f037>>>8,this[_0x2d7a1a+3]=255&_0x48f037,_0x2d7a1a+4;},_0x3a18a3['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['writeIntLE']=function(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd){if(_0x48f037=+_0x48f037,_0x2d7a1a>>>=0,!_0x3babfd){var _0x620962=Math['pow'](2,8*_0x596d63-1);_0x25c845(this,_0x48f037,_0x2d7a1a,_0x596d63,_0x620962-1,-_0x620962);}var _0x42c5b0=0,_0x470f93=1,_0x3a18a3=0;for(this[_0x2d7a1a]=255&_0x48f037;++_0x42c5b0<_0x596d63&&(_0x470f93*=256);)_0x48f037<0&&0===_0x3a18a3&&0!==this[_0x2d7a1a+_0x42c5b0-1]&&(_0x3a18a3=1),this[_0x2d7a1a+_0x42c5b0]=(_0x48f037/_0x470f93>>0)-_0x3a18a3&255;return _0x2d7a1a+_0x596d63;},_0x3a18a3['prototype']['writeIntBE']=function(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd){if(_0x48f037=+_0x48f037,_0x2d7a1a>>>=0,!_0x3babfd){var _0x620962=Math['pow'](2,8*_0x596d63-1);_0x25c845(this,_0x48f037,_0x2d7a1a,_0x596d63,_0x620962-1,-_0x620962);}var _0x42c5b0=_0x596d63-1,_0x470f93=1,_0x3a18a3=0;for(this[_0x2d7a1a+_0x42c5b0]=255&_0x48f037;--_0x42c5b0>=0&&(_0x470f93*=256);)_0x48f037<0&&0===_0x3a18a3&&0!==this[_0x2d7a1a+_0x42c5b0+1]&&(_0x3a18a3=1),this[_0x2d7a1a+_0x42c5b0]=(_0x48f037/_0x470f93>>0)-_0x3a18a3&255;return _0x2d7a1a+_0x596d63;},_0x3a18a3['prototype']['writeInt8']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,1,0x7f,-128),_0x48f037<0&&(_0x48f037=255+_0x48f037+1),this[_0x2d7a1a]=255&_0x48f037,_0x2d7a1a+1;},_0x3a18a3['prototype']['writeInt16LE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,2,0x7fff,-0x8000),this[_0x2d7a1a]=255&_0x48f037,this[_0x2d7a1a+1]=_0x48f037>>>8,_0x2d7a1a+2;},_0x3a18a3['prototype']['writeInt16BE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,2,0x7fff,-0x8000),this[_0x2d7a1a]=_0x48f037>>>8,this[_0x2d7a1a+1]=255&_0x48f037,_0x2d7a1a+2;},_0x3a18a3['prototype']['writeInt32LE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,4,2147483647,-0x80000000),this[_0x2d7a1a]=255&_0x48f037,this[_0x2d7a1a+1]=_0x48f037>>>8,this[_0x2d7a1a+2]=_0x48f037>>>16,this[_0x2d7a1a+3]=_0x48f037>>>24,_0x2d7a1a+4;},_0x3a18a3['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65']['writeInt32BE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x48f037=+_0x48f037,_0x2d7a1a>>>=0,_0x596d63||_0x25c845(this,_0x48f037,_0x2d7a1a,4,2147483647,-0x80000000),_0x48f037<0&&(_0x48f037=0xffffffff+_0x48f037+1),this[_0x2d7a1a]=_0x48f037>>>24,this[_0x2d7a1a+1]=_0x48f037>>>16,this[_0x2d7a1a+2]=_0x48f037>>>8,this[_0x2d7a1a+3]=255&_0x48f037,_0x2d7a1a+4;},_0x3a18a3['prototype']['writeFloatLE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x5742f3(this,_0x48f037,_0x2d7a1a,!0,_0x596d63);},_0x3a18a3['prototype']['writeFloatBE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x5742f3(this,_0x48f037,_0x2d7a1a,!1,_0x596d63);},_0x3a18a3['prototype']['writeDoubleLE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x490cf3(this,_0x48f037,_0x2d7a1a,!0,_0x596d63);},_0x3a18a3['prototype']['writeDoubleBE']=function(_0x48f037,_0x2d7a1a,_0x596d63){return _0x490cf3(this,_0x48f037,_0x2d7a1a,!1,_0x596d63);},_0x3a18a3['prototype']['copy']=function(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd){if(_0x596d63||(_0x596d63=0),_0x3babfd||0===_0x3babfd||(_0x3babfd=this['length']),_0x2d7a1a>=_0x48f037['\x6c\x65\x6e\x67\x74\x68']&&(_0x2d7a1a=_0x48f037['\x6c\x65\x6e\x67\x74\x68']),_0x2d7a1a||(_0x2d7a1a=0),_0x3babfd>0&&_0x3babfd<_0x596d63&&(_0x3babfd=_0x596d63),_0x3babfd===_0x596d63)return 0;if(0===_0x48f037['length']||0===this['length'])return 0;if(_0x2d7a1a<0)throw new RangeError('targetStart out of bounds');if(_0x596d63<0||_0x596d63>=this['\x6c\x65\x6e\x67\x74\x68'])throw new RangeError('sourceStart out of bounds');if(_0x3babfd<0)throw new RangeError('sourceEnd out of bounds');_0x3babfd>this['length']&&(_0x3babfd=this['length']),_0x48f037['length']-_0x2d7a1a<_0x3babfd-_0x596d63&&(_0x3babfd=_0x48f037['length']-_0x2d7a1a+_0x596d63);var _0x620962,_0x42c5b0=_0x3babfd-_0x596d63;if(this===_0x48f037&&_0x596d63<_0x2d7a1a&&_0x2d7a1a<_0x3babfd)for(_0x620962=_0x42c5b0-1;_0x620962>=0;--_0x620962)_0x48f037[_0x620962+_0x2d7a1a]=this[_0x620962+_0x596d63];else if(_0x42c5b0<1000)for(_0x620962=0;_0x620962<_0x42c5b0;++_0x620962)_0x48f037[_0x620962+_0x2d7a1a]=this[_0x620962+_0x596d63];else Uint8Array['prototype']['set']['call'](_0x48f037,this['\x73\x75\x62\x61\x72\x72\x61\x79'](_0x596d63,_0x596d63+_0x42c5b0),_0x2d7a1a);return _0x42c5b0;},_0x3a18a3['prototype']['fill']=function(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd){if('string'==typeof _0x48f037){if('string'==typeof _0x2d7a1a?(_0x3babfd=_0x2d7a1a,_0x2d7a1a=0,_0x596d63=this['length']):'string'==typeof _0x596d63&&(_0x3babfd=_0x596d63,_0x596d63=this['length']),1===_0x48f037['length']){var _0x620962=_0x48f037['charCodeAt'](0);_0x620962<256&&(_0x48f037=_0x620962);}if(void 0!==_0x3babfd&&'string'!=typeof _0x3babfd)throw new TypeError('encoding must be a string');
+if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new TypeError('Unknown encoding: '+_0x3babfd);}else 'number'==typeof _0x48f037&&(_0x48f037&=255);if(_0x2d7a1a<0||this['length']<_0x2d7a1a||this['length']<_0x596d63)throw new RangeError('Out of range index');if(_0x596d63<=_0x2d7a1a)return this;var _0x42c5b0;if(_0x2d7a1a>>>=0,_0x596d63=void 0===_0x596d63?this['length']:_0x596d63>>>0,_0x48f037||(_0x48f037=0),'number'==typeof _0x48f037)for(_0x42c5b0=_0x2d7a1a;_0x42c5b0<_0x596d63;++_0x42c5b0)this[_0x42c5b0]=_0x48f037;else{var _0x470f93=_0x3a18a3['isBuffer'](_0x48f037)?_0x48f037:new _0x3a18a3(_0x48f037,_0x3babfd),_0x3aa6a5=_0x470f93['length'];for(_0x42c5b0=0;_0x42c5b0<_0x596d63-_0x2d7a1a;++_0x42c5b0)this[_0x42c5b0+_0x2d7a1a]=_0x470f93[_0x42c5b0%_0x3aa6a5];}return this;};var _0x45b438=/[^+\/0-9A-Za-z-_]/g;function _0x315e7d(_0x48f037){return _0x48f037<16?'\x30'+_0x48f037['toString'](16):_0x48f037['toString'](16);}function _0x5a6886(_0x48f037,_0x2d7a1a){var _0x596d63;_0x2d7a1a=_0x2d7a1a||1/0;for(var _0x3babfd=_0x48f037['length'],_0x620962=null,_0x42c5b0=[],_0x470f93=0;_0x470f93<_0x3babfd;++_0x470f93){if((_0x596d63=_0x48f037['charCodeAt'](_0x470f93))>0xd7ff&&_0x596d63<0xe000){if(!_0x620962){if(_0x596d63>0xdbff){(_0x2d7a1a-=3)>-1&&_0x42c5b0['push'](0xef,0xbf,0xbd);continue;}if(_0x470f93+1===_0x3babfd){(_0x2d7a1a-=3)>-1&&_0x42c5b0['push'](0xef,0xbf,0xbd);continue;}_0x620962=_0x596d63;continue;}if(_0x596d63<0xdc00){(_0x2d7a1a-=3)>-1&&_0x42c5b0['push'](0xef,0xbf,0xbd),_0x620962=_0x596d63;continue;}_0x596d63=0x10000+(_0x620962-0xd800<<10|_0x596d63-0xdc00);}else _0x620962&&(_0x2d7a1a-=3)>-1&&_0x42c5b0['push'](0xef,0xbf,0xbd);if(_0x620962=null,_0x596d63<128){if((_0x2d7a1a-=1)<0)break;_0x42c5b0['push'](_0x596d63);}else if(_0x596d63<0x800){if((_0x2d7a1a-=2)<0)break;_0x42c5b0['push'](_0x596d63>>6|192,63&_0x596d63|128);}else if(_0x596d63<0x10000){if((_0x2d7a1a-=3)<0)break;_0x42c5b0['push'](_0x596d63>>12|0xe0,_0x596d63>>6&63|128,63&_0x596d63|128);}else{if(!(_0x596d63<0x110000))throw new Error('Invalid code point');if((_0x2d7a1a-=4)<0)break;_0x42c5b0['push'](_0x596d63>>18|240,_0x596d63>>12&63|128,_0x596d63>>6&63|128,63&_0x596d63|128);}}return _0x42c5b0;}function _0x5ba599(_0x48f037){return _0x3babfd['toByteArray'](function(_0x48f037){if((_0x48f037=_0x48f037['\x74\x72\x69\x6d']()['replace'](_0x45b438,''))['length']<2)return'';for(;_0x48f037['length']%4!=0;)_0x48f037+='\x3d';return _0x48f037;}(_0x48f037));}function _0x26579a(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd){for(var _0x620962=0;_0x620962<_0x3babfd&&!(_0x620962+_0x596d63>=_0x2d7a1a['length']||_0x620962>=_0x48f037['length']);++_0x620962)_0x2d7a1a[_0x620962+_0x596d63]=_0x48f037[_0x620962];return _0x620962;}function _0x331746(_0x48f037){return 'function'==typeof ArrayBuffer[isView]&&ArrayBuffer[isView](_0x48f037);}function _0x286c75(_0x48f037){return _0x48f037!=_0x48f037;}},{'base64-js':1,'\x69\x65\x65\x65\x37\x35\x34':9}],
 4:[function(saveNotifs, canCreateDiscussions, ATT_expected) {
   (function(ATT_actual) {
     /**
@@ -1005,14 +1006,14 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     ATT_expected["isArray"] = function(data) {
-      return Array["isArray"] ? Array["isArray"](data) : _0x6c71("0x8a") === isConfigurable(data);
+      return Array["isArray"] ? Array["isArray"](data) : "[object Array]" === isConfigurable(data);
     };
     /**
      * @param {?} canCreateDiscussions
      * @return {?}
      */
     ATT_expected["isBoolean"] = function(canCreateDiscussions) {
-      return _0x6c71("140") == typeof canCreateDiscussions;
+      return "boolean" == typeof canCreateDiscussions;
     };
     /**
      * @param {!Object} canCreateDiscussions
@@ -1033,14 +1034,14 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     ATT_expected["isNumber"] = function(canCreateDiscussions) {
-      return _0x6c71("0x13") == typeof canCreateDiscussions;
+      return "number" == typeof canCreateDiscussions;
     };
     /**
      * @param {?} canCreateDiscussions
      * @return {?}
      */
     ATT_expected["isString"] = function(canCreateDiscussions) {
-      return _0x6c71("20") == typeof canCreateDiscussions;
+      return "string" == typeof canCreateDiscussions;
     };
     /**
      * @param {?} x
@@ -1061,7 +1062,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     ATT_expected["isRegExp"] = function(key) {
-      return _0x6c71("0x93") === isConfigurable(key);
+      return "[object RegExp]" === isConfigurable(key);
     };
     /**
      * @param {number} a
@@ -1075,7 +1076,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     ATT_expected["isDate"] = function(key) {
-      return _0x6c71("0x94") === isConfigurable(key);
+      return "[object Date]" === isConfigurable(key);
     };
     /**
      * @param {!AudioNode} obj
@@ -1096,18 +1097,18 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     ATT_expected["isPrimitive"] = function(x) {
-      return null === x || _0x6c71("140") == typeof x || _0x6c71("0x13") == typeof x || _0x6c71("20") == typeof x || "symbol" == typeof x || void 0 === x;
+      return null === x || "boolean" == typeof x || "number" == typeof x || "string" == typeof x || "symbol" == typeof x || void 0 === x;
     };
     ATT_expected["isBuffer"] = ATT_actual["isBuffer"];
   })["call"](this, {
-    "isBuffer" : saveNotifs(_0x6c71("0x97"))
+    "isBuffer" : saveNotifs("../../is-buffer/index.js")
   });
 }, {
   "../../is-buffer/index.js" : 11
 }],
 5:[function(require, isSlidingUp, tasks) {
-  tasks["UINT32"] = require(_0x6c71("0x99"));
-  tasks["UINT64"] = require(_0x6c71("0x9b"));
+  tasks["UINT32"] = require("./lib/uint32");
+  tasks["UINT64"] = require("./lib/uint64");
 }, {
   "./lib/uint32" : 6,
   "./lib/uint64" : 7
@@ -1120,7 +1121,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     function Test(path, fn) {
-      return this instanceof Test ? (this["_low"] = 0, this["_high"] = 0, this["remainder"] = null, void 0 === fn ? def["call"](this, path) : _0x6c71("20") == typeof path ? createNamedToNumberedLookup["call"](this, path, fn) : void authenticate["call"](this, path, fn)) : new Test(path, fn);
+      return this instanceof Test ? (this["_low"] = 0, this["_high"] = 0, this["remainder"] = null, void 0 === fn ? def["call"](this, path) : "string" == typeof path ? createNamedToNumberedLookup["call"](this, path, fn) : void authenticate["call"](this, path, fn)) : new Test(path, fn);
     }
     /**
      * @param {number} contentType
@@ -1210,7 +1211,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      */
     Test["prototype"]["div"] = function(other) {
       if (0 == other["_low"] && 0 == other["_high"]) {
-        throw Error(_0x6c71("0xa7"));
+        throw Error("division by zero");
       }
       if (0 == other["_high"] && 1 == other["_low"]) {
         return this["remainder"] = new Test(0), this;
@@ -1320,7 +1321,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     Test["prototype"]["clone"] = function() {
       return new Test(this["_low"], this["_high"]);
     };
-    if ("undefined" != typeof define && define[_0x6c71("0xb5")]) {
+    if ("undefined" != typeof define && define["amd"]) {
       define([], function() {
         return Test;
       });
@@ -1330,7 +1331,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         module["exports"] = Test;
       } else {
         /** @type {function(number, number): ?} */
-        global[_0x6c71("0x98")] = Test;
+        global["UINT32"] = Test;
       }
     }
   }(this);
@@ -1355,7 +1356,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     function deferred(timeout, callback, cancel, isValid) {
-      return void 0 === cancel ? (this["_a00"] = 65535 & timeout, this["_a16"] = timeout >>> 16, this["_a32"] = 65535 & callback, this["_a48"] = callback >>> 16, this) : (this["_a00"] = 0 | timeout, this["_a16"] = 0 | callback, this["_a32"] = 0 | cancel, this[_0x6c71("0xb9")] = 0 | isValid, this);
+      return void 0 === cancel ? (this["_a00"] = 65535 & timeout, this["_a16"] = timeout >>> 16, this["_a32"] = 65535 & callback, this["_a48"] = callback >>> 16, this) : (this["_a00"] = 0 | timeout, this["_a16"] = 0 | callback, this["_a32"] = 0 | cancel, this["_a48"] = 0 | isValid, this);
     }
     /**
      * @param {number} size
@@ -1378,13 +1379,13 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       /** @type {number} */
       this["_a32"] = 0;
       /** @type {number} */
-      this[_0x6c71("0xb9")] = 0;
+      this["_a48"] = 0;
       var nHeaders = widgetMetadata[base] || new data(Math["pow"](base, 5));
       /** @type {number} */
       var currentCount = 0;
       var configCount = url["length"];
       for (; currentCount < configCount; currentCount = currentCount + 5) {
-        var i = Math[_0x6c71("50")](5, configCount - currentCount);
+        var i = Math["min"](5, configCount - currentCount);
         /** @type {number} */
         var digits = parseInt(url["slice"](currentCount, currentCount + i), base);
         this["multiply"](i < 5 ? new data(Math["pow"](base, i)) : nHeaders)["add"](new data(digits));
@@ -1404,7 +1405,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     /** @type {function(number, number, number, number): ?} */
     data["prototype"]["fromBits"] = deferred;
     /** @type {function(number): ?} */
-    data["prototype"][_0x6c71("0xa0")] = db;
+    data["prototype"]["fromNumber"] = db;
     /** @type {function(?, number): ?} */
     data["prototype"]["fromString"] = build;
     /**
@@ -1443,7 +1444,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       var _0x2c8338 = (ncarry = ncarry + (this["_a16"] + canCreateDiscussions["_a16"])) >>> 16;
       /** @type {number} */
       var _0x4f8e03 = (_0x2c8338 = _0x2c8338 + (this["_a32"] + canCreateDiscussions["_a32"])) >>> 16;
-      return _0x4f8e03 = _0x4f8e03 + (this[_0x6c71("0xb9")] + canCreateDiscussions[_0x6c71("0xb9")]), this["_a00"] = 65535 & carry, this["_a16"] = 65535 & ncarry, this["_a32"] = 65535 & _0x2c8338, this[_0x6c71("0xb9")] = 65535 & _0x4f8e03, this;
+      return _0x4f8e03 = _0x4f8e03 + (this["_a48"] + canCreateDiscussions["_a48"]), this["_a00"] = 65535 & carry, this["_a16"] = 65535 & ncarry, this["_a32"] = 65535 & _0x2c8338, this["_a48"] = 65535 & _0x4f8e03, this;
     };
     /**
      * @param {!Object} p
@@ -1460,7 +1461,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       var t = this["_a00"];
       var r = this["_a16"];
       var size = this["_a32"];
-      var dir = this[_0x6c71("0xb9")];
+      var dir = this["_a48"];
       var j = b["_a00"];
       var i = b["_a16"];
       var f = b["_a32"];
@@ -1476,16 +1477,16 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       x = x + ((start = start + r * j) >>> 16);
       /** @type {number} */
       var y = (x = x + t * f) >>> 16;
-      return x = x & 65535, y = y + ((x = x + r * i) >>> 16), x = x & 65535, y = y + ((x = x + size * j) >>> 16), y = y + t * b[_0x6c71("0xb9")], y = y & 65535, y = y + r * f, y = y & 65535, y = y + size * i, y = y & 65535, y = y + dir * j, this["_a00"] = 65535 & angle, this["_a16"] = 65535 & start, this["_a32"] = 65535 & x, this[_0x6c71("0xb9")] = 65535 & y, this;
+      return x = x & 65535, y = y + ((x = x + r * i) >>> 16), x = x & 65535, y = y + ((x = x + size * j) >>> 16), y = y + t * b["_a48"], y = y & 65535, y = y + r * f, y = y & 65535, y = y + size * i, y = y & 65535, y = y + dir * j, this["_a00"] = 65535 & angle, this["_a16"] = 65535 & start, this["_a32"] = 65535 & x, this["_a48"] = 65535 & y, this;
     };
     /**
      * @param {!Object} other
      * @return {?}
      */
     data["prototype"]["div"] = function(other) {
-      if (0 == other["_a16"] && 0 == other["_a32"] && 0 == other[_0x6c71("0xb9")]) {
+      if (0 == other["_a16"] && 0 == other["_a32"] && 0 == other["_a48"]) {
         if (0 == other["_a00"]) {
-          throw Error(_0x6c71("0xa7"));
+          throw Error("division by zero");
         }
         if (1 == other["_a00"]) {
           return this["remainder"] = new data(0), this;
@@ -1495,7 +1496,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         return this["remainder"] = this["clone"](), this["_a00"] = 0, this["_a16"] = 0, this["_a32"] = 0, this["_a48"] = 0, this;
       }
       if (this["eq"](other)) {
-        return this["remainder"] = new data(0), this["_a00"] = 1, this["_a16"] = 0, this["_a32"] = 0, this[_0x6c71("0xb9")] = 0, this;
+        return this["remainder"] = new data(0), this["_a00"] = 1, this["_a16"] = 0, this["_a32"] = 0, this["_a48"] = 0, this;
       }
       var TWO_PWR_24 = other["clone"]();
       /** @type {number} */
@@ -1512,7 +1513,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       /** @type {number} */
       this["_a32"] = 0;
       /** @type {number} */
-      this[_0x6c71("0xb9")] = 0;
+      this["_a48"] = 0;
       for (; _0xb75f90 >= 0; _0xb75f90--) {
         TWO_PWR_24["shiftRight"](1);
         if (!this["remainder"]["lt"](TWO_PWR_24)) {
@@ -1540,7 +1541,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     data["prototype"]["negate"] = function() {
       /** @type {number} */
       var _0x3fa438 = 1 + (65535 & ~this["_a00"]);
-      return this["_a00"] = 65535 & _0x3fa438, _0x3fa438 = (65535 & ~this["_a16"]) + (_0x3fa438 >>> 16), this["_a16"] = 65535 & _0x3fa438, _0x3fa438 = (65535 & ~this["_a32"]) + (_0x3fa438 >>> 16), this["_a32"] = 65535 & _0x3fa438, this[_0x6c71("0xb9")] = ~this[_0x6c71("0xb9")] + (_0x3fa438 >>> 16) & 65535, this;
+      return this["_a00"] = 65535 & _0x3fa438, _0x3fa438 = (65535 & ~this["_a16"]) + (_0x3fa438 >>> 16), this["_a16"] = 65535 & _0x3fa438, _0x3fa438 = (65535 & ~this["_a32"]) + (_0x3fa438 >>> 16), this["_a32"] = 65535 & _0x3fa438, this["_a48"] = ~this["_a48"] + (_0x3fa438 >>> 16) & 65535, this;
     };
     /** @type {function(!Object): ?} */
     data["prototype"]["equals"] = data["prototype"]["eq"] = function(canCreateDiscussions) {
@@ -1548,50 +1549,50 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     };
     /** @type {function(!Object): ?} */
     data["prototype"]["greaterThan"] = data["prototype"]["gt"] = function(canCreateDiscussions) {
-      return this["_a48"] > canCreateDiscussions[_0x6c71("0xb9")] || !(this[_0x6c71("0xb9")] < canCreateDiscussions[_0x6c71("0xb9")]) && (this["_a32"] > canCreateDiscussions["_a32"] || !(this["_a32"] < canCreateDiscussions["_a32"]) && (this["_a16"] > canCreateDiscussions["_a16"] || !(this["_a16"] < canCreateDiscussions["_a16"]) && this["_a00"] > canCreateDiscussions["_a00"]));
+      return this["_a48"] > canCreateDiscussions["_a48"] || !(this["_a48"] < canCreateDiscussions["_a48"]) && (this["_a32"] > canCreateDiscussions["_a32"] || !(this["_a32"] < canCreateDiscussions["_a32"]) && (this["_a16"] > canCreateDiscussions["_a16"] || !(this["_a16"] < canCreateDiscussions["_a16"]) && this["_a00"] > canCreateDiscussions["_a00"]));
     };
     /** @type {function(!Object): ?} */
     data["prototype"]["lessThan"] = data["prototype"]["lt"] = function(canCreateDiscussions) {
-      return this["_a48"] < canCreateDiscussions[_0x6c71("0xb9")] || !(this[_0x6c71("0xb9")] > canCreateDiscussions["_a48"]) && (this["_a32"] < canCreateDiscussions["_a32"] || !(this["_a32"] > canCreateDiscussions["_a32"]) && (this["_a16"] < canCreateDiscussions["_a16"] || !(this["_a16"] > canCreateDiscussions["_a16"]) && this["_a00"] < canCreateDiscussions["_a00"]));
+      return this["_a48"] < canCreateDiscussions["_a48"] || !(this["_a48"] > canCreateDiscussions["_a48"]) && (this["_a32"] < canCreateDiscussions["_a32"] || !(this["_a32"] > canCreateDiscussions["_a32"]) && (this["_a16"] < canCreateDiscussions["_a16"] || !(this["_a16"] > canCreateDiscussions["_a16"]) && this["_a00"] < canCreateDiscussions["_a00"]));
     };
     /**
      * @param {!Object} canCreateDiscussions
      * @return {?}
      */
     data["prototype"]["or"] = function(canCreateDiscussions) {
-      return this["_a00"] |= canCreateDiscussions["_a00"], this["_a16"] |= canCreateDiscussions["_a16"], this["_a32"] |= canCreateDiscussions["_a32"], this[_0x6c71("0xb9")] |= canCreateDiscussions[_0x6c71("0xb9")], this;
+      return this["_a00"] |= canCreateDiscussions["_a00"], this["_a16"] |= canCreateDiscussions["_a16"], this["_a32"] |= canCreateDiscussions["_a32"], this["_a48"] |= canCreateDiscussions["_a48"], this;
     };
     /**
      * @param {?} canCreateDiscussions
      * @return {?}
      */
     data["prototype"]["and"] = function(canCreateDiscussions) {
-      return this["_a00"] &= canCreateDiscussions["_a00"], this["_a16"] &= canCreateDiscussions["_a16"], this["_a32"] &= canCreateDiscussions["_a32"], this[_0x6c71("0xb9")] &= canCreateDiscussions[_0x6c71("0xb9")], this;
+      return this["_a00"] &= canCreateDiscussions["_a00"], this["_a16"] &= canCreateDiscussions["_a16"], this["_a32"] &= canCreateDiscussions["_a32"], this["_a48"] &= canCreateDiscussions["_a48"], this;
     };
     /**
      * @param {!Object} canCreateDiscussions
      * @return {?}
      */
     data["prototype"]["xor"]= function(canCreateDiscussions) {
-      return this["_a00"] ^= canCreateDiscussions["_a00"], this["_a16"] ^= canCreateDiscussions["_a16"], this["_a32"] ^= canCreateDiscussions["_a32"], this[_0x6c71("0xb9")] ^= canCreateDiscussions["_a48"], this;
+      return this["_a00"] ^= canCreateDiscussions["_a00"], this["_a16"] ^= canCreateDiscussions["_a16"], this["_a32"] ^= canCreateDiscussions["_a32"], this["_a48"] ^= canCreateDiscussions["_a48"], this;
     };
     /**
      * @return {?}
      */
     data["prototype"]["not"] = function() {
-      return this["_a00"] = 65535 & ~this["_a00"], this["_a16"] = 65535 & ~this["_a16"], this["_a32"] = 65535 & ~this["_a32"], this[_0x6c71("0xb9")] = 65535 & ~this["_a48"], this;
+      return this["_a00"] = 65535 & ~this["_a00"], this["_a16"] = 65535 & ~this["_a16"], this["_a32"] = 65535 & ~this["_a32"], this["_a48"] = 65535 & ~this["_a48"], this;
     };
     /** @type {function(number): ?} */
     data["prototype"]["shiftRight"] = data["prototype"]["shiftr"] = function(canCreateDiscussions) {
-      return (canCreateDiscussions = canCreateDiscussions % 64) >= 48 ? (this["_a00"] = this[_0x6c71("0xb9")] >> canCreateDiscussions - 48, this["_a16"] = 0, this["_a32"] = 0, this[_0x6c71("0xb9")] = 0) : canCreateDiscussions >= 32 ? (canCreateDiscussions = canCreateDiscussions - 32, this["_a00"] = 65535 & (this["_a32"] >> canCreateDiscussions | this["_a48"] << 16 - canCreateDiscussions), this["_a16"] = this[_0x6c71("0xb9")] >> canCreateDiscussions & 65535, this["_a32"] = 
-      0, this["_a48"] = 0) : canCreateDiscussions >= 16 ? (canCreateDiscussions = canCreateDiscussions - 16, this["_a00"] = 65535 & (this["_a16"] >> canCreateDiscussions | this["_a32"] << 16 - canCreateDiscussions), this["_a16"] = 65535 & (this["_a32"] >> canCreateDiscussions | this["_a48"] << 16 - canCreateDiscussions), this["_a32"] = this[_0x6c71("0xb9")] >> canCreateDiscussions & 65535, this[_0x6c71("0xb9")] = 0) : (this["_a00"] = 65535 & (this["_a00"] >> canCreateDiscussions | 
-      this["_a16"] << 16 - canCreateDiscussions), this["_a16"] = 65535 & (this["_a16"] >> canCreateDiscussions | this["_a32"] << 16 - canCreateDiscussions), this["_a32"] = 65535 & (this["_a32"] >> canCreateDiscussions | this[_0x6c71("0xb9")] << 16 - canCreateDiscussions), this[_0x6c71("0xb9")] = this[_0x6c71("0xb9")] >> canCreateDiscussions & 65535), this;
+      return (canCreateDiscussions = canCreateDiscussions % 64) >= 48 ? (this["_a00"] = this["_a48"] >> canCreateDiscussions - 48, this["_a16"] = 0, this["_a32"] = 0, this["_a48"] = 0) : canCreateDiscussions >= 32 ? (canCreateDiscussions = canCreateDiscussions - 32, this["_a00"] = 65535 & (this["_a32"] >> canCreateDiscussions | this["_a48"] << 16 - canCreateDiscussions), this["_a16"] = this["_a48"] >> canCreateDiscussions & 65535, this["_a32"] = 
+      0, this["_a48"] = 0) : canCreateDiscussions >= 16 ? (canCreateDiscussions = canCreateDiscussions - 16, this["_a00"] = 65535 & (this["_a16"] >> canCreateDiscussions | this["_a32"] << 16 - canCreateDiscussions), this["_a16"] = 65535 & (this["_a32"] >> canCreateDiscussions | this["_a48"] << 16 - canCreateDiscussions), this["_a32"] = this["_a48"] >> canCreateDiscussions & 65535, this["_a48"] = 0) : (this["_a00"] = 65535 & (this["_a00"] >> canCreateDiscussions | 
+      this["_a16"] << 16 - canCreateDiscussions), this["_a16"] = 65535 & (this["_a16"] >> canCreateDiscussions | this["_a32"] << 16 - canCreateDiscussions), this["_a32"] = 65535 & (this["_a32"] >> canCreateDiscussions | this["_a48"] << 16 - canCreateDiscussions), this["_a48"] = this["_a48"] >> canCreateDiscussions & 65535), this;
     };
     /** @type {function(number, number): ?} */
     data["prototype"]["shiftLeft"] = data["prototype"]["shiftl"] = function(canCreateDiscussions, isSlidingUp) {
-      return (canCreateDiscussions = canCreateDiscussions % 64) >= 48 ? (this[_0x6c71("0xb9")] = this["_a00"] << canCreateDiscussions - 48, this["_a32"] = 0, this["_a16"] = 0, this["_a00"] = 0) : canCreateDiscussions >= 32 ? (canCreateDiscussions = canCreateDiscussions - 32, this["_a48"] = this["_a16"] << canCreateDiscussions | this["_a00"] >> 16 - canCreateDiscussions, this["_a32"] = this["_a00"] << canCreateDiscussions & 65535, this["_a16"] = 
-      0, this["_a00"] = 0) : canCreateDiscussions >= 16 ? (canCreateDiscussions = canCreateDiscussions - 16, this[_0x6c71("0xb9")] = this["_a32"] << canCreateDiscussions | this["_a16"] >> 16 - canCreateDiscussions, this["_a32"] = 65535 & (this["_a16"] << canCreateDiscussions | this["_a00"] >> 16 - canCreateDiscussions), this["_a16"] = this["_a00"] << canCreateDiscussions & 65535, this["_a00"] = 0) : (this[_0x6c71("0xb9")] = this[_0x6c71("0xb9")] << 
-      canCreateDiscussions | this["_a32"] >> 16 - canCreateDiscussions, this["_a32"] = 65535 & (this["_a32"] << canCreateDiscussions | this["_a16"] >> 16 - canCreateDiscussions), this["_a16"] = 65535 & (this["_a16"] << canCreateDiscussions | this["_a00"] >> 16 - canCreateDiscussions), this["_a00"] = this["_a00"] << canCreateDiscussions & 65535), isSlidingUp || (this[_0x6c71("0xb9")] &= 65535), this;
+      return (canCreateDiscussions = canCreateDiscussions % 64) >= 48 ? (this["_a48"] = this["_a00"] << canCreateDiscussions - 48, this["_a32"] = 0, this["_a16"] = 0, this["_a00"] = 0) : canCreateDiscussions >= 32 ? (canCreateDiscussions = canCreateDiscussions - 32, this["_a48"] = this["_a16"] << canCreateDiscussions | this["_a00"] >> 16 - canCreateDiscussions, this["_a32"] = this["_a00"] << canCreateDiscussions & 65535, this["_a16"] = 
+      0, this["_a00"] = 0) : canCreateDiscussions >= 16 ? (canCreateDiscussions = canCreateDiscussions - 16, this["_a48"] = this["_a32"] << canCreateDiscussions | this["_a16"] >> 16 - canCreateDiscussions, this["_a32"] = 65535 & (this["_a16"] << canCreateDiscussions | this["_a00"] >> 16 - canCreateDiscussions), this["_a16"] = this["_a00"] << canCreateDiscussions & 65535, this["_a00"] = 0) : (this["_a48"] = this["_a48"] << 
+      canCreateDiscussions | this["_a32"] >> 16 - canCreateDiscussions, this["_a32"] = 65535 & (this["_a32"] << canCreateDiscussions | this["_a16"] >> 16 - canCreateDiscussions), this["_a16"] = 65535 & (this["_a16"] << canCreateDiscussions | this["_a00"] >> 16 - canCreateDiscussions), this["_a00"] = this["_a00"] << canCreateDiscussions & 65535), isSlidingUp || (this["_a48"] &= 65535), this;
     };
     /** @type {function(number): ?} */
     data["prototype"]["rotateLeft"] = data["prototype"]["rotl"] = function(n) {
@@ -1600,21 +1601,21 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       }
       if (n >= 32) {
         var _0x175f25 = this["_a00"];
-        if (this["_a00"] = this["_a32"], this["_a32"] = _0x175f25, _0x175f25 = this["_a48"], this[_0x6c71("0xb9")] = this["_a16"], this["_a16"] = _0x175f25, 32 == n) {
+        if (this["_a00"] = this["_a32"], this["_a32"] = _0x175f25, _0x175f25 = this["_a48"], this["_a48"] = this["_a16"], this["_a16"] = _0x175f25, 32 == n) {
           return this;
         }
         /** @type {number} */
         n = n - 32;
       }
       /** @type {number} */
-      var x = this[_0x6c71("0xb9")] << 16 | this["_a32"];
+      var x = this["_a48"] << 16 | this["_a32"];
       /** @type {number} */
       var r = this["_a16"] << 16 | this["_a00"];
       /** @type {number} */
       var _0x4f8e03 = x << n | r >>> 32 - n;
       /** @type {number} */
       var _0x5a22bd = r << n | x >>> 32 - n;
-      return this["_a00"] = 65535 & _0x5a22bd, this["_a16"] = _0x5a22bd >>> 16, this["_a32"] = 65535 & _0x4f8e03, this[_0x6c71("0xb9")] = _0x4f8e03 >>> 16, this;
+      return this["_a00"] = 65535 & _0x5a22bd, this["_a16"] = _0x5a22bd >>> 16, this["_a32"] = 65535 & _0x4f8e03, this["_a48"] = _0x4f8e03 >>> 16, this;
     };
     /** @type {function(number): ?} */
     data["prototype"]["rotateRight"] = data["prototype"]["rotr"] = function(n) {
@@ -1623,27 +1624,27 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       }
       if (n >= 32) {
         var _0x175f25 = this["_a00"];
-        if (this["_a00"] = this["_a32"], this["_a32"] = _0x175f25, _0x175f25 = this[_0x6c71("0xb9")], this[_0x6c71("0xb9")] = this["_a16"], this["_a16"] = _0x175f25, 32 == n) {
+        if (this["_a00"] = this["_a32"], this["_a32"] = _0x175f25, _0x175f25 = this["_a48"], this["_a48"] = this["_a16"], this["_a16"] = _0x175f25, 32 == n) {
           return this;
         }
         /** @type {number} */
         n = n - 32;
       }
       /** @type {number} */
-      var X = this[_0x6c71("0xb9")] << 16 | this["_a32"];
+      var X = this["_a48"] << 16 | this["_a32"];
       /** @type {number} */
       var Xl = this["_a16"] << 16 | this["_a00"];
       /** @type {number} */
       var _0x4f8e03 = X >>> n | Xl << 32 - n;
       /** @type {number} */
       var _0x5a22bd = Xl >>> n | X << 32 - n;
-      return this["_a00"] = 65535 & _0x5a22bd, this["_a16"] = _0x5a22bd >>> 16, this["_a32"] = 65535 & _0x4f8e03, this[_0x6c71("0xb9")] = _0x4f8e03 >>> 16, this;
+      return this["_a00"] = 65535 & _0x5a22bd, this["_a16"] = _0x5a22bd >>> 16, this["_a32"] = 65535 & _0x4f8e03, this["_a48"] = _0x4f8e03 >>> 16, this;
     };
     /**
      * @return {?}
      */
     data["prototype"]["clone"] = function() {
-      return new data(this["_a00"], this["_a16"], this["_a32"], this[_0x6c71("0xb9")]);
+      return new data(this["_a00"], this["_a16"], this["_a32"], this["_a48"]);
     };
     if ("undefined" != typeof define && define["amd"]) {
       define([], function() {
@@ -1673,7 +1674,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
    * @return {?}
    */
   function expect(obj) {
-    return _0x6c71("0") == typeof obj;
+    return "function" == typeof obj;
   }
   /**
    * @param {number} arg
@@ -1702,8 +1703,8 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
    * @return {?}
    */
   a["prototype"]["setMaxListeners"] = function(yscore) {
-    if (_0x6c71("0x13") != typeof yscore || yscore < 0 || isNaN(yscore)) {
-      throw TypeError(_0x6c71("192"));
+    if ("number" != typeof yscore || yscore < 0 || isNaN(yscore)) {
+      throw TypeError("n must be a positive number");
     }
     return this["_maxListeners"] = yscore, this;
   };
@@ -1718,13 +1719,13 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     var X;
     var indexLookupKey;
     var nextIdLookup;
-    if (this["_events"] || (this["_events"] = {}), _0x6c71("0x39") === name && (!this["_events"]["error"] || isObject(this["_events"]["error"]) && !this["_events"]["error"]["length"])) {
+    if (this["_events"] || (this["_events"] = {}), "error" === name && (!this["_events"]["error"] || isObject(this["_events"]["error"]) && !this["_events"]["error"]["length"])) {
       if ((d = arguments[1]) instanceof Error) {
         throw d;
       }
       /** @type {!Error} */
-      var f = new Error(_0x6c71("0xc2") + d + ")");
-      throw f[_0x6c71("0xc3")] = d, f;
+      var f = new Error("Uncaught, unspecified 'error' event. (" + d + ")");
+      throw f["context"] = d, f;
     }
     if (is_array(callback = this["_events"][name])) {
       return false;
@@ -1765,10 +1766,10 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
   a["prototype"]["addListener"]= function(type, listener) {
     var _0x3925ed;
     if (!expect(listener)) {
-      throw TypeError(_0x6c71("0xc5"));
+      throw TypeError("listener must be a function");
     }
-    return this["_events"] || (this["_events"] = {}), this["_events"][_0x6c71("0xc6")] && this["emit"](_0x6c71("0xc6"), type, expect(listener[_0x6c71("0xc7")]) ? listener[_0x6c71("0xc7")] : listener), this["_events"][type] ? isObject(this["_events"][type]) ? this["_events"][type]["push"](listener) : this["_events"][type] = [this["_events"][type], listener] : this["_events"][type] = listener, isObject(this["_events"][type]) && !this["_events"][type]["warned"] && 
-    (_0x3925ed = is_array(this["_maxListeners"]) ? a[_0x6c71("200")] : this["_maxListeners"]) && _0x3925ed > 0 && this["_events"][type]["length"] > _0x3925ed && (this["_events"][type][_0x6c71("0xc9")] = true, console["error"](_0x6c71("0xca"), this["_events"][type]["length"]), _0x6c71("0") == typeof console[_0x6c71("0xcb")] && console[_0x6c71("0xcb")]()), this;
+    return this["_events"] || (this["_events"] = {}), this["_events"]["newListener"] && this["emit"]("newListener", type, expect(listener["listener"]) ? listener["listener"] : listener), this["_events"][type] ? isObject(this["_events"][type]) ? this["_events"][type]["push"](listener) : this["_events"][type] = [this["_events"][type], listener] : this["_events"][type] = listener, isObject(this["_events"][type]) && !this["_events"][type]["warned"] && 
+    (_0x3925ed = is_array(this["_maxListeners"]) ? a["defaultMaxListeners"] : this["_maxListeners"]) && _0x3925ed > 0 && this["_events"][type]["length"] > _0x3925ed && (this["_events"][type]["warned"] = true, console["error"]("(node) warning: possible EventEmitter memory leak detected. %d listeners added. Use emitter.setMaxListeners() to increase limit.", this["_events"][type]["length"]), "function" == typeof console["trace"] && console["trace"]()), this;
   };
   a["prototype"]["on"] = a["prototype"]["addListener"];
   /**
@@ -1776,7 +1777,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
    * @param {!Object} e
    * @return {?}
    */
-  a["prototype"][_0x6c71("204")] = function(event, e) {
+  a["prototype"]["once"] = function(event, e) {
     /**
      * @return {undefined}
      */
@@ -1789,11 +1790,11 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       }
     }
     if (!expect(e)) {
-      throw TypeError(_0x6c71("0xc5"));
+      throw TypeError("listener must be a function");
     }
     /** @type {boolean} */
     var _0x3925ed = false;
-    return n[_0x6c71("0xc7")] = e, this["on"](event, n), this;
+    return n["listener"] = e, this["on"](event, n), this;
   };
   /**
    * @param {?} _keyCode
@@ -1806,12 +1807,12 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     var c;
     var p;
     if (!expect(a)) {
-      throw TypeError(_0x6c71("0xc5"));
+      throw TypeError("listener must be a function");
     }
     if (!this["_events"] || !this["_events"][_keyCode]) {
       return this;
     }
-    if (c = (value = this["_events"][_keyCode])["length"], i = -1, value === a || expect(value[_0x6c71("0xc7")]) && value[_0x6c71("0xc7")] === a) {
+    if (c = (value = this["_events"][_keyCode])["length"], i = -1, value === a || expect(value["listener"]) && value["listener"] === a) {
       delete this["_events"][_keyCode];
       if (this["_events"]["removeListener"]) {
         this["emit"]("removeListener", _keyCode, a);
@@ -1820,7 +1821,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       if (isObject(value)) {
         p = c;
         for (; p-- > 0;) {
-          if (value[p] === a || value[p][_0x6c71("0xc7")] && value[p][_0x6c71("0xc7")] === a) {
+          if (value[p] === a || value[p]["listener"] && value[p]["listener"] === a) {
             i = p;
             break;
           }
@@ -1836,7 +1837,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
           value["splice"](i, 1);
         }
         if (this["_events"]["removeListener"]) {
-          this["emit"](_0x6c71("0xcd"), _keyCode, a);
+          this["emit"]("removeListener", _keyCode, a);
         }
       }
     }
@@ -1857,11 +1858,11 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     }
     if (0 === arguments["length"]) {
       for (GET_AUTH_URL_TIMEOUT in this["_events"]) {
-        if (_0x6c71("0xcd") !== GET_AUTH_URL_TIMEOUT) {
+        if ("removeListener" !== GET_AUTH_URL_TIMEOUT) {
           this["removeAllListeners"](GET_AUTH_URL_TIMEOUT);
         }
       }
-      return this["removeAllListeners"](_0x6c71("0xcd")), this["_events"] = {}, this;
+      return this["removeAllListeners"]("removeListener"), this["_events"] = {}, this;
     }
     if (expect(maximum = this["_events"][statisticName])) {
       this["removeListener"](statisticName, maximum);
@@ -1988,14 +1989,14 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     var delta = vertical ? 1 : -1;
     /** @type {number} */
     var _0x25e974 = value < 0 || 0 === value && 1 / value < 0 ? 1 : 0;
-    value = Math[_0x6c71("0xd1")](value);
+    value = Math["abs"](value);
     if (isNaN(value) || value === 1 / 0) {
       /** @type {number} */
       m = isNaN(value) ? 1 : 0;
       /** @type {number} */
       e = eMax;
     } else {
-      e = Math[_0x6c71("0xd2")](Math["log"](value) / Math[_0x6c71("0xd4")]);
+      e = Math["floor"](Math["log"](value) / Math["LN2"]);
       if (value * (c = Math["pow"](2, -e)) < 1) {
         e--;
         /** @type {number} */
@@ -2077,7 +2078,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
    * @return {?}
    */
   function makeLostContextSimulatingContext(ctx) {
-    return !!ctx[_0x6c71("0xd7")] && _0x6c71("0") == typeof ctx[_0x6c71("0xd7")]["isBuffer"] && ctx[_0x6c71("0xd7")]["isBuffer"](ctx);
+    return !!ctx["constructor"] && "function" == typeof ctx["constructor"]["isBuffer"] && ctx["constructor"]["isBuffer"](ctx);
   }
   /**
    * @param {?} unwrappedContext_
@@ -2085,14 +2086,14 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
    */
   canCreateDiscussions["exports"] = function(unwrappedContext_) {
     return null != unwrappedContext_ && (makeLostContextSimulatingContext(unwrappedContext_) || function(ctx) {
-      return "function" == typeof ctx["readFloatLE"] && _0x6c71("0") == typeof ctx["slice"] && makeLostContextSimulatingContext(ctx["slice"](0, 0));
+      return "function" == typeof ctx["readFloatLE"] && "function" == typeof ctx["slice"] && makeLostContextSimulatingContext(ctx["slice"](0, 0));
     }(unwrappedContext_) || !!unwrappedContext_["_isBuffer"]);
   };
 }, {}],
 12:[function(canCreateDiscussions, module, isSlidingUp) {
   var PL$2 = {}["toString"];
   module["exports"] = Array["isArray"] || function(PL$16) {
-    return _0x6c71("0x8a") == PL$2["call"](PL$16);
+    return "[object Array]" == PL$2["call"](PL$16);
   };
 }, {}],
 13:[function(saveNotifs, isSlidingUp, window) {
@@ -2113,12 +2114,12 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     /** @type {number} */
     var offset = 0;
     if (data["length"] >= _num2) {
-      throw new Error(_0x6c71("0xda"));
+      throw new Error("input too large");
     }
     if (data["length"] > threshold) {
       var len = window["compressBound"](data["length"]);
       if (start < len) {
-        throw Error("output too small: " + start + _0x6c71("0xdc") + len);
+        throw Error("output too small: " + start + " < " + len);
       }
       /** @type {number} */
       var _0x2de430 = 3 + (1 << _0x4fe62c);
@@ -2130,7 +2131,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         /** @type {number} */
         var devtype = data[i + 3] << 8 | data[i + 2];
         /** @type {number} */
-        var id = Math[_0x6c71("0xdd")](cmosValue | devtype << 16, suggestedValue) >>> amount;
+        var id = Math["imul"](cmosValue | devtype << 16, suggestedValue) >>> amount;
         /** @type {number} */
         var j = ret[id] - 1;
         if (ret[id] = i + 1, j < 0 || i - j >>> 16 > 0 || (data[j + 3] << 8 | data[j + 2]) != devtype || (data[j + 1] << 8 | data[j]) != cmosValue) {
@@ -2212,7 +2213,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     }
     return x;
   }
-  saveNotifs(_0x6c71("0xd8"))["UINT32"];
+  saveNotifs("cuint")["UINT32"];
   if (!Math["imul"]) {
     /**
      * @param {number} _segmentMask
@@ -2329,7 +2330,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
 }],
 14:[function(require, isSlidingUp, canCreateDiscussions) {
   (function(PL$22) {
-    var Parser = require(_0x6c71("0xe1"));
+    var Parser = require("./decoder_stream");
     /**
      * @param {?} val
      * @param {?} raw_verwen_zweck
@@ -2339,11 +2340,11 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       /** @type {!Array} */
       var PL$24 = [];
       var p = new Parser(raw_verwen_zweck);
-      return p["on"](_0x6c71("31"), function(PL$60) {
+      return p["on"]("data", function(PL$60) {
         PL$24["push"](PL$60);
-      }), p["end"](val), PL$22[_0x6c71("0xe3")](PL$24);
+      }), p["end"](val), PL$22["concat"](PL$24);
     };
-  })["call"](this, require(_0x6c71("0xe4"))["Buffer"]);
+  })["call"](this, require("buffer")["Buffer"]);
 }, {
   "./decoder_stream" : 15,
   "buffer" : 3
@@ -2359,36 +2360,36 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         return new WMCacheControl(allow);
       }
       end["call"](this, allow);
-      this[_0x6c71("237")] = allow || {};
-      this["binding"] = this["options"][_0x6c71("0xef")] ? UrdfMaterial : data;
+      this["options"] = allow || {};
+      this["binding"] = this["options"]["useJS"] ? UrdfMaterial : data;
       /** @type {null} */
       this["buffer"] = null;
       /** @type {number} */
-      this[_0x6c71("240")] = 0;
+      this["pos"] = 0;
       /** @type {null} */
-      this[_0x6c71("241")] = null;
-      this[_0x6c71("242")] = TokenType[_0x6c71("0xf3")];
+      this["descriptor"] = null;
+      this["state"] = TokenType["MAGIC"];
       /** @type {boolean} */
       this["notEnoughData"] = false;
       /** @type {number} */
       this["descriptorStart"] = 0;
       /** @type {null} */
-      this[_0x6c71("0xf4")] = null;
+      this["streamSize"] = null;
       /** @type {null} */
-      this[_0x6c71("0xf5")] = null;
+      this["dictId"] = null;
       /** @type {null} */
-      this[_0x6c71("0xf6")] = null;
+      this["currentStreamChecksum"] = null;
       /** @type {number} */
       this["dataBlockSize"] = 0;
       /** @type {number} */
-      this[_0x6c71("0xf7")] = 0;
+      this["skippableSize"] = 0;
     }
-    var end = require(_0x6c71("0xe5"))["Transform"];
-    var coveredByRange = require(_0x6c71("0xe7"))["inherits"];
-    var window = require(_0x6c71("0xe9"));
+    var end = require("stream")["Transform"];
+    var coveredByRange = require("util")["inherits"];
+    var window = require("./static");
     var lib = window["utils"];
     var data = lib["bindings"];
-    var UrdfMaterial = require(_0x6c71("0xeb"));
+    var UrdfMaterial = require("./binding");
     var TokenType = window["STATES"];
     var helloComponent = window["SIZES"];
     coveredByRange(WMCacheControl, end);
@@ -2399,16 +2400,16 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     WMCacheControl["prototype"]["_transform"] = function(separator__686, isSlidingUp, wrongCredsCallback) {
-      if (this[_0x6c71("0xf7")] > 0) {
-        if (this[_0x6c71("0xf7")] -= separator__686["length"], this[_0x6c71("0xf7")] > 0) {
+      if (this["skippableSize"] > 0) {
+        if (this["skippableSize"] -= separator__686["length"], this["skippableSize"] > 0) {
           return void wrongCredsCallback();
         }
-        separator__686 = separator__686["slice"](-this[_0x6c71("0xf7")]);
+        separator__686 = separator__686["slice"](-this["skippableSize"]);
         /** @type {number} */
-        this[_0x6c71("0xf7")] = 0;
-        this[_0x6c71("242")] = TokenType["MAGIC"];
+        this["skippableSize"] = 0;
+        this["state"] = TokenType["MAGIC"];
       }
-      this["buffer"] = this["buffer"] ? $module[_0x6c71("0xe3")]([this["buffer"], separator__686], this["buffer"]["length"] + separator__686["length"]) : separator__686;
+      this["buffer"] = this["buffer"] ? $module["concat"]([this["buffer"], separator__686], this["buffer"]["length"] + separator__686["length"]) : separator__686;
       this[_0x6c71("0xf9")](wrongCredsCallback);
     };
     /**
@@ -2416,7 +2417,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {undefined}
      */
     WMCacheControl["prototype"]["emit_Error"] = function(canCreateDiscussions) {
-      this["emit"]("error", new Error(canCreateDiscussions + " @" + this[_0x6c71("240")]));
+      this["emit"]("error", new Error(canCreateDiscussions + " @" + this["pos"]));
     };
     /**
      * @param {number} time
@@ -2425,32 +2426,32 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     WMCacheControl["prototype"]["check_Size"] = function(time) {
       /** @type {number} */
       var atime = this["buffer"]["length"] - this["pos"];
-      return atime <= 0 || atime < time ? (this[_0x6c71("0xfc")] && this["emit_Error"](_0x6c71("0xfd")), true) : (this[_0x6c71("240")] += time, false);
+      return atime <= 0 || atime < time ? (this[_0x6c71("0xfc")] && this["emit_Error"](_0x6c71("0xfd")), true) : (this["pos"] += time, false);
     };
     /**
      * @return {?}
      */
     WMCacheControl["prototype"]["read_MagicNumber"] = function() {
-      var statsDb = this[_0x6c71("240")];
-      if (this["check_Size"](helloComponent[_0x6c71("0xf3")])) {
+      var statsDb = this["pos"];
+      if (this["check_Size"](helloComponent["MAGIC"])) {
         return true;
       }
       var statsDbPath = lib["readInt32LE"](this["buffer"], statsDb);
       if ((4294967280 & statsDbPath) !== window["MAGICNUMBER_SKIPPABLE"]) {
-        return statsDbPath !== window["MAGICNUMBER"] ? (this[_0x6c71("240")] = statsDb, this["emit_Error"](_0x6c71("0x101") + statsDbPath["toString"](16)[_0x6c71("0x102")]()), true) : void(this[_0x6c71("242")] = TokenType[_0x6c71("0x103")]);
+        return statsDbPath !== window["MAGICNUMBER"] ? (this["pos"] = statsDb, this["emit_Error"](_0x6c71("0x101") + statsDbPath["toString"](16)[_0x6c71("0x102")]()), true) : void(this["state"] = TokenType[_0x6c71("0x103")]);
       }
-      this[_0x6c71("242")] = TokenType[_0x6c71("0x104")];
+      this["state"] = TokenType[_0x6c71("0x104")];
     };
     /**
      * @return {?}
      */
     WMCacheControl["prototype"]["read_SkippableSize"] = function() {
-      var classes = this[_0x6c71("240")];
+      var classes = this["pos"];
       if (this["check_Size"](helloComponent["SKIP_SIZE"])) {
         return true;
       }
-      this[_0x6c71("242")] = TokenType[_0x6c71("0x106")];
-      this[_0x6c71("0xf7")] = lib["readInt32LE"](this["buffer"], classes);
+      this["state"] = TokenType[_0x6c71("0x106")];
+      this["skippableSize"] = lib["readInt32LE"](this["buffer"], classes);
     };
     /**
      * @return {?}
@@ -2465,7 +2466,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       /** @type {number} */
       var fsr = scale >> 6;
       if (fsr !== window["VERSION"]) {
-        return this[_0x6c71("240")] = id, this["emit_Error"](_0x6c71("0x108") + fsr + " != " + window["VERSION"]), true;
+        return this["pos"] = id, this["emit_Error"](_0x6c71("0x108") + fsr + " != " + window["VERSION"]), true;
       }
       if (scale >> 1 & 1) {
         return this["pos"] = id, this["emit_Error"](_0x6c71("0x109")), true;
@@ -2474,9 +2475,9 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       var i = this["buffer"][id + 1] >> 4 & 7;
       var wspec = window["blockMaxSizes"][i];
       if (null === wspec) {
-        return this[_0x6c71("240")] = id, this["emit_Error"](_0x6c71("0x10b") + i), true;
+        return this["pos"] = id, this["emit_Error"](_0x6c71("0x10b") + i), true;
       }
-      this[_0x6c71("241")] = {
+      this["descriptor"] = {
         "blockIndependence" : Boolean(scale >> 5 & 1),
         "blockChecksum" : Boolean(scale >> 4 & 1),
         "blockMaxSize" : wspec,
@@ -2485,33 +2486,33 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         "dict" : Boolean(1 & scale),
         "dictId" : 0
       };
-      this[_0x6c71("242")] = TokenType[_0x6c71("0x10c")];
+      this["state"] = TokenType[_0x6c71("0x10c")];
     };
     /**
      * @return {?}
      */
     WMCacheControl["prototype"]["read_Size"] = function() {
-      if (this[_0x6c71("241")][_0x6c71("0xf4")]) {
-        var artistTrack = this[_0x6c71("240")];
+      if (this["descriptor"]["streamSize"]) {
+        var artistTrack = this["pos"];
         if (this["check_Size"](helloComponent[_0x6c71("0x10c")])) {
           return true;
         }
-        this[_0x6c71("0xf4")] = this["buffer"]["slice"](artistTrack, artistTrack + 8);
+        this["streamSize"] = this["buffer"]["slice"](artistTrack, artistTrack + 8);
       }
-      this[_0x6c71("242")] = TokenType[_0x6c71("0x10e")];
+      this["state"] = TokenType[_0x6c71("0x10e")];
     };
     /**
      * @return {?}
      */
     WMCacheControl["prototype"]["read_DictId"] = function() {
-      if (this[_0x6c71("241")][_0x6c71("0xf5")]) {
-        var classes = this[_0x6c71("240")];
+      if (this["descriptor"]["dictId"]) {
+        var classes = this["pos"];
         if (this["check_Size"](helloComponent[_0x6c71("0x10e")])) {
           return true;
         }
         this["dictId"] = lib["readInt32LE"](this["buffer"], classes);
       }
-      this[_0x6c71("242")] = TokenType[_0x6c71("0x110")];
+      this["state"] = TokenType[_0x6c71("0x110")];
     };
     /**
      * @return {?}
@@ -2523,7 +2524,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       }
       var beforeTab = this["buffer"][i];
       if (lib["descriptorChecksum"](this["buffer"]["slice"](this["descriptorStart"], i)) !== beforeTab) {
-        return this[_0x6c71("240")] = i, this["emit_Error"]("Invalid stream descriptor checksum"), true;
+        return this["pos"] = i, this["emit_Error"]("Invalid stream descriptor checksum"), true;
       }
       this["state"] = TokenType[_0x6c71("0x112")];
     };
@@ -2531,14 +2532,14 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     WMCacheControl["prototype"]["read_DataBlockSize"] = function() {
-      var statsDb = this[_0x6c71("240")];
+      var statsDb = this["pos"];
       if (this["check_Size"](helloComponent[_0x6c71("0x112")])) {
         return true;
       }
       var statsDbPath = lib["readInt32LE"](this["buffer"], statsDb);
       if (statsDbPath !== window["EOS"]) {
         this["dataBlockSize"] = statsDbPath;
-        this[_0x6c71("242")] = TokenType[_0x6c71("0x114")];
+        this["state"] = TokenType[_0x6c71("0x114")];
       } else {
         this["state"] = TokenType["EOS"];
       }
@@ -2547,29 +2548,29 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     WMCacheControl["prototype"]["read_DataBlockData"] = function() {
-      var feyenoord = this[_0x6c71("240")];
+      var feyenoord = this["pos"];
       var type = this["dataBlockSize"];
       if (2147483648 & type && (type = type & 2147483647), this["check_Size"](type)) {
         return true;
       }
       this[_0x6c71("0x116")] = this["buffer"]["slice"](feyenoord, feyenoord + type);
-      this[_0x6c71("242")] = TokenType[_0x6c71("0x117")];
+      this["state"] = TokenType[_0x6c71("0x117")];
     };
     /**
      * @return {?}
      */
     WMCacheControl["prototype"]["read_DataBlockChecksum"] = function() {
-      var _0x48c44f = this[_0x6c71("240")];
-      if (this[_0x6c71("241")]["blockChecksum"]) {
+      var _0x48c44f = this["pos"];
+      if (this["descriptor"]["blockChecksum"]) {
         if (this["check_Size"](helloComponent[_0x6c71("0x117")])) {
           return true;
         }
-        var _0x1407e0 = lib["readInt32LE"](this["buffer"], this[_0x6c71("240")] - 4);
+        var _0x1407e0 = lib["readInt32LE"](this["buffer"], this["pos"] - 4);
         if (lib["blockChecksum"](this[_0x6c71("0x116")]) !== _0x1407e0) {
-          return this[_0x6c71("240")] = _0x48c44f, this["emit_Error"]("Invalid block checksum"), true;
+          return this["pos"] = _0x48c44f, this["emit_Error"]("Invalid block checksum"), true;
         }
       }
-      this[_0x6c71("242")] = TokenType[_0x6c71("0x11a")];
+      this["state"] = TokenType[_0x6c71("0x11a")];
     };
     /**
      * @return {?}
@@ -2579,38 +2580,38 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       if (2147483648 & this["dataBlockSize"]) {
         validityLabel = this[_0x6c71("0x116")];
       } else {
-        validityLabel = new $module(this[_0x6c71("241")][_0x6c71("0x11c")]);
+        validityLabel = new $module(this["descriptor"][_0x6c71("0x11c")]);
         var lastviewmatrix = this["binding"]["uncompress"](this[_0x6c71("0x116")], validityLabel);
         if (lastviewmatrix < 0) {
           return this["emit_Error"]("Invalid data block: " + -lastviewmatrix), true;
         }
-        if (lastviewmatrix < this[_0x6c71("241")][_0x6c71("0x11c")]) {
+        if (lastviewmatrix < this["descriptor"][_0x6c71("0x11c")]) {
           validityLabel = validityLabel["slice"](0, lastviewmatrix);
         }
       }
       /** @type {null} */
       this["dataBlock"] = null;
       this["push"](validityLabel);
-      if (this[_0x6c71("241")]["streamChecksum"]) {
-        this[_0x6c71("0xf6")] = lib[_0x6c71("0x11d")](validityLabel, this["currentStreamChecksum"]);
+      if (this["descriptor"]["streamChecksum"]) {
+        this["currentStreamChecksum"] = lib[_0x6c71("0x11d")](validityLabel, this["currentStreamChecksum"]);
       }
-      this[_0x6c71("242")] = TokenType[_0x6c71("0x112")];
+      this["state"] = TokenType[_0x6c71("0x112")];
     };
     /**
      * @return {?}
      */
     WMCacheControl["prototype"]["read_EOS"] = function() {
-      if (this[_0x6c71("241")][_0x6c71("0x11d")]) {
-        var classes = this[_0x6c71("240")];
+      if (this["descriptor"][_0x6c71("0x11d")]) {
+        var classes = this["pos"];
         if (this["check_Size"](helloComponent["EOS"])) {
           return true;
         }
         var div = lib["readInt32LE"](this["buffer"], classes);
         if (div !== lib["streamChecksum"](null, this["currentStreamChecksum"])) {
-          return this[_0x6c71("240")] = classes, this["emit_Error"](_0x6c71("0x120") + div["toString"](16)[_0x6c71("0x102")]()), true;
+          return this["pos"] = classes, this["emit_Error"](_0x6c71("0x120") + div["toString"](16)[_0x6c71("0x102")]()), true;
         }
       }
-      this[_0x6c71("242")] = TokenType["MAGIC"];
+      this["state"] = TokenType["MAGIC"];
     };
     /**
      * @param {?} mmCoreSplitViewBlock
@@ -2628,45 +2629,45 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     WMCacheControl["prototype"]["_main"] = function(saveNotifs) {
       var _0x1407e0;
       var instanceFunc = this["pos"];
-      for (; !_0x1407e0 && this[_0x6c71("240")] < this["buffer"]["length"];) {
-        if (this[_0x6c71("242")] === TokenType[_0x6c71("0xf3")]) {
+      for (; !_0x1407e0 && this["pos"] < this["buffer"]["length"];) {
+        if (this["state"] === TokenType["MAGIC"]) {
           _0x1407e0 = this["read_MagicNumber"]();
         }
-        if (this[_0x6c71("242")] === TokenType[_0x6c71("0x104")]) {
+        if (this["state"] === TokenType[_0x6c71("0x104")]) {
           _0x1407e0 = this["read_SkippableSize"]();
         }
-        if (this[_0x6c71("242")] === TokenType[_0x6c71("0x103")]) {
+        if (this["state"] === TokenType[_0x6c71("0x103")]) {
           _0x1407e0 = this["read_Descriptor"]();
         }
-        if (this[_0x6c71("242")] === TokenType[_0x6c71("0x10c")]) {
+        if (this["state"] === TokenType[_0x6c71("0x10c")]) {
           _0x1407e0 = this["read_Size"]();
         }
-        if (this[_0x6c71("242")] === TokenType[_0x6c71("0x10e")]) {
+        if (this["state"] === TokenType[_0x6c71("0x10e")]) {
           _0x1407e0 = this["read_DictId"]();
         }
-        if (this[_0x6c71("242")] === TokenType[_0x6c71("0x110")]) {
+        if (this["state"] === TokenType[_0x6c71("0x110")]) {
           _0x1407e0 = this["read_DescriptorChecksum"]();
         }
-        if (this[_0x6c71("242")] === TokenType[_0x6c71("0x112")]) {
+        if (this["state"] === TokenType[_0x6c71("0x112")]) {
           _0x1407e0 = this["read_DataBlockSize"]();
         }
-        if (this[_0x6c71("242")] === TokenType["DATABLOCK_DATA"]) {
+        if (this["state"] === TokenType["DATABLOCK_DATA"]) {
           _0x1407e0 = this["read_DataBlockData"]();
         }
         if (this["state"] === TokenType["DATABLOCK_CHECKSUM"]) {
           _0x1407e0 = this["read_DataBlockChecksum"]();
         }
-        if (this[_0x6c71("242")] === TokenType["DATABLOCK_UNCOMPRESS"]) {
+        if (this["state"] === TokenType["DATABLOCK_UNCOMPRESS"]) {
           _0x1407e0 = this["uncompress_DataBlock"]();
         }
         if (this["state"] === TokenType["EOS"]) {
           _0x1407e0 = this["read_EOS"]();
         }
       }
-      if (this[_0x6c71("240")] > instanceFunc) {
+      if (this["pos"] > instanceFunc) {
         this["buffer"] = this["buffer"]["slice"](this["pos"]);
         /** @type {number} */
-        this[_0x6c71("240")] = 0;
+        this["pos"] = 0;
       }
       saveNotifs();
     };
@@ -2692,11 +2693,11 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       /** @type {!Array} */
       var $node = [];
       var p = new Parser(raw_verwen_zweck);
-      return p["on"](_0x6c71("31"), function(scrollWrapper) {
+      return p["on"]("data", function(scrollWrapper) {
         $node["push"](scrollWrapper);
-      }), p["end"](val), helper[_0x6c71("0xe3")]($node);
+      }), p["end"](val), helper["concat"]($node);
     };
-  })["call"](this, require(_0x6c71("0xe4"))["Buffer"]);
+  })["call"](this, require("buffer")["Buffer"]);
 }, {
   "./encoder_stream" : 17,
   "buffer" : 3
@@ -2719,8 +2720,8 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
           }
         });
       }
-      this[_0x6c71("237")] = obj;
-      this["binding"] = this[_0x6c71("237")]["useJS"] ? valuesObj : helloComponent;
+      this["options"] = obj;
+      this["binding"] = this["options"]["useJS"] ? valuesObj : helloComponent;
       this["compress"] = obj[_0x6c71("0x127")] ? this["binding"]["compressHC"] : this["binding"]["compress"];
       /** @type {number} */
       var _0x1799f6 = 0;
@@ -2731,7 +2732,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       /** @type {number} */
       _0x1799f6 = _0x1799f6 | (1 & obj["blockChecksum"]) << 4;
       /** @type {number} */
-      _0x1799f6 = _0x1799f6 | (1 & obj[_0x6c71("0xf4")]) << 3;
+      _0x1799f6 = _0x1799f6 | (1 & obj["streamSize"]) << 3;
       /** @type {number} */
       _0x1799f6 = _0x1799f6 | (1 & obj[_0x6c71("0x11d")]) << 2;
       /** @type {number} */
@@ -2740,7 +2741,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       if (_0x23718f < 0) {
         throw new Error("Invalid blockMaxSize: " + obj[_0x6c71("0x11c")]);
       }
-      this[_0x6c71("241")] = {
+      this["descriptor"] = {
         "flg" : _0x1799f6,
         "bd" : (7 & _0x23718f) << 4
       };
@@ -2753,12 +2754,12 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       /** @type {null} */
       this[_0x6c71("299")] = null;
     }
-    var methods = getValues(_0x6c71("0xe5"))["Transform"];
-    var extend = getValues(_0x6c71("0xe7"))["inherits"];
-    var values = getValues(_0x6c71("0xe9"));
+    var methods = getValues("stream")["Transform"];
+    var extend = getValues("util")["inherits"];
+    var values = getValues("./static");
     var window = values["utils"];
     var helloComponent = window["bindings"];
-    var valuesObj = getValues(_0x6c71("0xeb"));
+    var valuesObj = getValues("./binding");
     var status = values["STATES"];
     var data = values["SIZES"];
     var body = {
@@ -2776,9 +2777,9 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     Map["prototype"]["headerSize"] = function() {
-      var sitesowners = this[_0x6c71("237")][_0x6c71("0xf4")] ? data[_0x6c71("0x103")] : 0;
-      var siteName = this[_0x6c71("237")][_0x6c71("0x129")] ? data[_0x6c71("0x10e")] : 0;
-      return data[_0x6c71("0xf3")] + 1 + 1 + sitesowners + siteName + 1;
+      var sitesowners = this["options"]["streamSize"] ? data[_0x6c71("0x103")] : 0;
+      var siteName = this["options"][_0x6c71("0x129")] ? data[_0x6c71("0x10e")] : 0;
+      return data["MAGIC"] + 1 + 1 + sitesowners + siteName + 1;
     };
     /**
      * @return {?}
@@ -2786,15 +2787,15 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     Map["prototype"]["header"] = function() {
       var _readSize = this["headerSize"]();
       var buffer = new Buffer(_readSize);
-      this["state"] = status[_0x6c71("0xf3")];
+      this["state"] = status["MAGIC"];
       buffer["writeInt32LE"](values["MAGICNUMBER"], 0, true);
-      this[_0x6c71("242")] = status["DESCRIPTOR"];
+      this["state"] = status["DESCRIPTOR"];
       var ctx = buffer["slice"](data["MAGIC"], buffer["length"] - 1);
-      ctx["writeUInt8"](this[_0x6c71("241")][_0x6c71("0x12e")], 0, true);
-      ctx["writeUInt8"](this[_0x6c71("241")]["bd"], 1, true);
+      ctx["writeUInt8"](this["descriptor"][_0x6c71("0x12e")], 0, true);
+      ctx["writeUInt8"](this["descriptor"]["bd"], 1, true);
       /** @type {number} */
       var y = 2;
-      return this[_0x6c71("242")] = status[_0x6c71("0x10c")], this[_0x6c71("237")][_0x6c71("0xf4")] && (ctx["writeInt32LE"](0, y, true), ctx["writeInt32LE"](this["size"], y + 4, true), y = y + data["SIZE"]), this[_0x6c71("242")] = status[_0x6c71("0x10e")], this["options"]["dict"] && (ctx["writeInt32LE"](this[_0x6c71("0xf5")], y, true), y = y + data[_0x6c71("0x10e")]), this[_0x6c71("242")] = status[_0x6c71("0x110")], buffer["writeUInt8"](window["descriptorChecksum"](ctx), data[_0x6c71("0xf3")] + 
+      return this["state"] = status[_0x6c71("0x10c")], this["options"]["streamSize"] && (ctx["writeInt32LE"](0, y, true), ctx["writeInt32LE"](this["size"], y + 4, true), y = y + data["SIZE"]), this["state"] = status[_0x6c71("0x10e")], this["options"]["dict"] && (ctx["writeInt32LE"](this["dictId"], y, true), y = y + data[_0x6c71("0x10e")]), this["state"] = status[_0x6c71("0x110")], buffer["writeUInt8"](window["descriptorChecksum"](ctx), data["MAGIC"] + 
       y, false), buffer;
     };
     /**
@@ -2812,13 +2813,13 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     Map["prototype"]["compress_DataBlock"] = function(handlers) {
-      this[_0x6c71("242")] = status[_0x6c71("0x132")];
-      var suffix = this[_0x6c71("237")]["blockChecksum"] ? data[_0x6c71("0x117")] : 0;
+      this["state"] = status[_0x6c71("0x132")];
+      var suffix = this["options"]["blockChecksum"] ? data[_0x6c71("0x117")] : 0;
       var left = this["binding"]["compressBound"](handlers["length"]);
       var buffer = new Buffer(data[_0x6c71("0x112")] + left + suffix);
       var handler = buffer["slice"](data["DATABLOCK_SIZE"], data[_0x6c71("0x112")] + left);
       var i = this["compress"](handlers, handler);
-      if (this[_0x6c71("242")] = status["DATABLOCK_SIZE"], i > 0 && i <= this[_0x6c71("237")][_0x6c71("0x11c")] ? (buffer["writeUInt32LE"](i, 0, true), buffer = buffer["slice"](0, data[_0x6c71("0x112")] + i + suffix)) : (buffer["writeInt32LE"](2147483648 | handlers["length"], 0, true), buffer = buffer["slice"](0, data[_0x6c71("0x112")] + handlers["length"] + suffix), handlers["copy"](buffer, data[_0x6c71("0x112")])), this[_0x6c71("242")] = status[_0x6c71("0x117")], this[_0x6c71("237")]["blockChecksum"]) {
+      if (this["state"] = status["DATABLOCK_SIZE"], i > 0 && i <= this["options"][_0x6c71("0x11c")] ? (buffer["writeUInt32LE"](i, 0, true), buffer = buffer["slice"](0, data[_0x6c71("0x112")] + i + suffix)) : (buffer["writeInt32LE"](2147483648 | handlers["length"], 0, true), buffer = buffer["slice"](0, data[_0x6c71("0x112")] + handlers["length"] + suffix), handlers["copy"](buffer, data[_0x6c71("0x112")])), this["state"] = status[_0x6c71("0x117")], this["options"]["blockChecksum"]) {
         buffer["slice"](-suffix)["writeInt32LE"](window["blockChecksum"](handler), 0, true);
       }
       return this["update_Checksum"](handlers), this[_0x6c71("0x133")] += handlers["length"], buffer;
@@ -2839,7 +2840,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         /** @type {boolean} */
         this[_0x6c71("0x12a")] = false;
       }
-      var den_rate = this[_0x6c71("237")]["blockMaxSize"];
+      var den_rate = this["options"]["blockMaxSize"];
       if (this["length"] < den_rate) {
         return saveNotifs();
       }
@@ -2868,7 +2869,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      */
     Map["prototype"]["_flush"] = function(saveNotifs) {
       if (this[_0x6c71("0x12a")] && (this["push"](this["header"]()), this[_0x6c71("0x12a")] = false), this["length"] > 0) {
-        var button2 = Buffer[_0x6c71("0xe3")](this["buffer"], this["length"]);
+        var button2 = Buffer["concat"](this["buffer"], this["length"]);
         /** @type {!Array} */
         this["buffer"] = [];
         /** @type {number} */
@@ -2882,14 +2883,14 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       } else {
         var buffer = new Buffer(data["EOS"]);
       }
-      this[_0x6c71("242")] = status["EOS"];
+      this["state"] = status["EOS"];
       buffer["writeInt32LE"](values["EOS"], 0, true);
       this["push"](buffer);
       saveNotifs();
     };
     /** @type {function(!Object): ?} */
     boardManager["exports"] = Map;
-  })["call"](this, getValues(_0x6c71("0xe4"))["Buffer"]);
+  })["call"](this, getValues("buffer")["Buffer"]);
 }, {
   "./binding" : 13,
   "./static" : 19,
@@ -2898,10 +2899,10 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
   "util" : 42
 }],
 18:[function(make, module, canCreateDiscussions) {
-  module["exports"] = make(_0x6c71("0xe9"));
+  module["exports"] = make("./static");
   /** @type {string} */
   module["exports"]["version"] = "0.5.1";
-  module["exports"]["createDecoderStream"] = make(_0x6c71("0xe1"));
+  module["exports"]["createDecoderStream"] = make("./decoder_stream");
   module["exports"]["decode"] = make(_0x6c71("0x138"))["LZ4_uncompress"];
   module["exports"]["createEncoderStream"] = make(_0x6c71("0x122"));
   module["exports"]["encode"] = make(_0x6c71("0x13b"))["LZ4_compress"];
@@ -2964,7 +2965,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       "SKIP_SIZE" : 4
     };
     p["utils"] = funcToGraph(_0x6c71("0x144"));
-  })["call"](this, funcToGraph(_0x6c71("0xe4"))["Buffer"]);
+  })["call"](this, funcToGraph("buffer")["Buffer"]);
 }, {
   "./utils" : 20,
   "buffer" : 3
@@ -3001,7 +3002,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
   result["readInt32LE"] = function(input_8_bit_int_buffer, index) {
     return input_8_bit_int_buffer[index] | input_8_bit_int_buffer[index + 1] << 8 | input_8_bit_int_buffer[index + 2] << 16 | input_8_bit_int_buffer[index + 3] << 24;
   };
-  result["bindings"] = conflictFunc(_0x6c71("0xeb"));
+  result["bindings"] = conflictFunc("./binding");
 }, {
   "./binding" : 13,
   "xxhashjs" : 46
@@ -3017,7 +3018,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
        * @return {?}
        */
       h["exports"] = function(val, PL$3, c, d) {
-        if (_0x6c71("0") != typeof val) {
+        if ("function" != typeof val) {
           throw new TypeError(_0x6c71("0x148"));
         }
         var b;
@@ -3176,14 +3177,14 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
   !function() {
     try {
       /** @type {!Function} */
-      cachedSetTimeout = _0x6c71("0") == typeof setTimeout ? setTimeout : defaultSetTimout;
+      cachedSetTimeout = "function" == typeof setTimeout ? setTimeout : defaultSetTimout;
     } catch (_0x39e570) {
       /** @type {function(): ?} */
       cachedSetTimeout = defaultSetTimout;
     }
     try {
       /** @type {!Function} */
-      cachedClearTimeout = _0x6c71("0") == typeof clearTimeout ? clearTimeout : defaultClearTimeout;
+      cachedClearTimeout = "function" == typeof clearTimeout ? clearTimeout : defaultClearTimeout;
     } catch (_0x347767) {
       /** @type {function(): ?} */
       cachedClearTimeout = defaultClearTimeout;
@@ -3236,7 +3237,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
   /** @type {function(): undefined} */
   config["addListener"]= value;
   /** @type {function(): undefined} */
-  config[_0x6c71("204")] = value;
+  config["once"] = value;
   /** @type {function(): undefined} */
   config["off"] = value;
   /** @type {function(): undefined} */
@@ -3290,7 +3291,8 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
 }],	
 24:[function(_0x1a084b,_0x2d5887,_0x46e6d1){
 		//'use strict';
-		var _0xd0774d=_0x1a084b(_0x6c71('0x159')),_0xeda892=Object['\x6b\x65\x79\x73']||function(_0x1a084b){var _0x2d5887=[];for(var _0x46e6d1 in _0x1a084b)_0x2d5887['push'](_0x46e6d1);return _0x2d5887;};_0x2d5887["exports"]=_0x27309f;var _0x4883d3=_0x1a084b(_0x6c71('346'));_0x4883d3['inherits']=_0x1a084b(_0x6c71('0xe8'));var _0x53660f=_0x1a084b(_0x6c71('0x15b')),_0x3c1854=_0x1a084b(_0x6c71('0x15c'));_0x4883d3['inherits'](_0x27309f,_0x53660f);for(var _0x3f9a11=_0xeda892(_0x3c1854['prototype']),_0x594fff=0;_0x594fff<_0x3f9a11['length'];_0x594fff++){var _0x46f68b=_0x3f9a11[_0x594fff];_0x27309f['prototype'][_0x46f68b]||(_0x27309f['prototype'][_0x46f68b]=_0x3c1854['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65'][_0x46f68b]);}function _0x27309f(_0x1a084b){if(!(this instanceof _0x27309f))return new _0x27309f(_0x1a084b);_0x53660f['call'](this,_0x1a084b),_0x3c1854['call'](this,_0x1a084b),_0x1a084b&&!1===_0x1a084b[_0x6c71('0x15d')]&&(this[_0x6c71('0x15d')]=!1),_0x1a084b&&!1===_0x1a084b[_0x6c71('350')]&&(this[_0x6c71('350')]=!1),this[_0x6c71('0x15f')]=!0,_0x1a084b&&!1===_0x1a084b[_0x6c71('0x15f')]&&(this[_0x6c71('0x15f')]=!1),this[_0x6c71('204')](_0x6c71('0xe2'),_0x3e8d44);}function _0x3e8d44(){this['\x61\x6c\x6c\x6f\x77\x48\x61\x6c\x66\x4f\x70\x65\x6e']||this['\x5f\x77\x72\x69\x74\x61\x62\x6c\x65\x53\x74\x61\x74\x65'][_0x6c71('0x160')]||_0xd0774d(_0xaab08a,this);}function _0xaab08a(_0x1a084b){_0x1a084b[_0x6c71('0xe2')]();}Object['\x64\x65\x66\x69\x6e\x65\x50\x72\x6f\x70\x65\x72\x74\x79'](_0x27309f['prototype'],_0x6c71('0x161'),{'\x67\x65\x74':function(){return void 0!==this[_0x6c71('354')]&&void 0!==this[_0x6c71('0x163')]&&(this[_0x6c71('354')][_0x6c71('0x161')]&&this['\x5f\x77\x72\x69\x74\x61\x62\x6c\x65\x53\x74\x61\x74\x65'][_0x6c71('0x161')]);},'\x73\x65\x74':function(_0x1a084b){void 0!==this[_0x6c71('354')]&&void 0!==this[_0x6c71('0x163')]&&(this[_0x6c71('354')][_0x6c71('0x161')]=_0x1a084b,this[_0x6c71('0x163')][_0x6c71('0x161')]=_0x1a084b);}}),_0x27309f['prototype'][_0x6c71('0x164')]=function(_0x1a084b,_0x2d5887){this['push'](null),this[_0x6c71('0xe2')](),_0xd0774d(_0x2d5887,_0x1a084b);};},{'./_stream_readable':0x1a,'./_stream_writable':0x1c,'core-util-is':4,'\x69\x6e\x68\x65\x72\x69\x74\x73':10,'process-nextick-args':21}],
+		var _0xd0774d=_0x1a084b("process-nextick-args"),_0xeda892=Object['\x6b\x65\x79\x73']||function(_0x1a084b){var _0x2d5887=[];for(var _0x46e6d1 in _0x1a084b)_0x2d5887['push'](_0x46e6d1);return _0x2d5887;};_0x2d5887["exports"]=_0x27309f;var _0x4883d3=_0x1a084b("core-util-is");_0x4883d3['inherits']=_0x1a084b("inherits");var _0x53660f=_0x1a084b("./_stream_readable"),_0x3c1854=_0x1a084b("./_stream_writable");_0x4883d3['inherits'](_0x27309f,_0x53660f);for(var _0x3f9a11=_0xeda892(_0x3c1854['prototype']),_0x594fff=0;_0x594fff<_0x3f9a11['length'];_0x594fff++){var _0x46f68b=_0x3f9a11[_0x594fff];_0x27309f['prototype'][_0x46f68b]||(_0x27309f['prototype'][_0x46f68b]=_0x3c1854['\x70\x72\x6f\x74\x6f\x74\x79\x70\x65'][_0x46f68b]);}function _0x27309f(_0x1a084b){if(!(this instanceof _0x27309f))return new _0x27309f(_0x1a084b);_0x53660f['call'](this,_0x1a084b),_0x3c1854['call'](this,_0x1a084b),_0x1a084b&&!1===_0x1a084b["readable"]&&(this["readable"]=!1),_0x1a084b&&!1===_0x1a084b["writable"]&&(this["writable"]=!1),this["allowHalfOpen"]=!0,_0x1a084b&&!1===_0x1a084b["allowHalfOpen"]&&(this["allowHalfOpen"]=!1),this["once"]("end",_0x3e8d44);}
+		function _0x3e8d44(){this['allowHalfOpen']||this['_writableState']["ended"]||_0xd0774d(_0xaab08a,this);}function _0xaab08a(_0x1a084b){_0x1a084b["end"]();}Object['defineProperty'](_0x27309f['prototype'],"destroyed",{'\x67\x65\x74':function(){return void 0!==this["_readableState"]&&void 0!==this["_writableState"]&&(this["_readableState"]["destroyed"]&&this['_writableState']["destroyed"]);},'\x73\x65\x74':function(_0x1a084b){void 0!==this["_readableState"]&&void 0!==this["_writableState"]&&(this["_readableState"]["destroyed"]=_0x1a084b,this["_writableState"]["destroyed"]=_0x1a084b);}}),_0x27309f['prototype']["_destroy"]=function(_0x1a084b,_0x2d5887){this['push'](null),this["end"](),_0xd0774d(_0x2d5887,_0x1a084b);};},{'./_stream_readable':0x1a,'./_stream_writable':0x1c,'core-util-is':4,'inherits':10,'process-nextick-args':21}],
 25:[function(require, ruleTo, isSlidingUp) {
   /**
    * @param {?} b
@@ -3341,7 +3343,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       /** @type {number} */
       var character = this["objectMode"] ? 16 : 16384;
       this[_0x6c71("372")] = latinCharacter || 0 === latinCharacter ? latinCharacter : character;
-      this[_0x6c71("372")] = Math[_0x6c71("0xd2")](this[_0x6c71("372")]);
+      this[_0x6c71("372")] = Math["floor"](this[_0x6c71("372")]);
       this["buffer"] = new ASTY;
       /** @type {number} */
       this["length"] = 0;
@@ -3401,7 +3403,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         if ("function" == typeof options["read"]) {
           this["_read"] = options["read"];
         }
-        if (_0x6c71("0") == typeof options["destroy"]) {
+        if ("function" == typeof options["destroy"]) {
           this["_destroy"] = options["destroy"];
         }
       }
@@ -3442,7 +3444,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
             var obj;
             /** @type {!Array} */
             data = tableData;
-            if (!(args["isBuffer"](data) || data instanceof Stream || _0x6c71("20") == typeof tableData || void 0 === tableData || selector[_0x6c71("0x172")])) {
+            if (!(args["isBuffer"](data) || data instanceof Stream || "string" == typeof tableData || void 0 === tableData || selector[_0x6c71("0x172")])) {
               /** @type {!TypeError} */
               obj = new TypeError(_0x6c71("0x187"));
             }
@@ -3454,7 +3456,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
           filter["emit"](_0x6c71("0x39"), msg);
         } else {
           if (context[_0x6c71("0x172")] || obj && obj["length"] > 0) {
-            if (!(_0x6c71("20") == typeof obj || context["objectMode"] || Object[_0x6c71("0x188")](obj) === args["prototype"])) {
+            if (!("string" == typeof obj || context["objectMode"] || Object[_0x6c71("0x188")](obj) === args["prototype"])) {
               obj = function(url) {
                 return args["from"](url);
               }(obj);
@@ -3504,7 +3506,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      */
     function fn(value, options, obj, indicate) {
       if (options[_0x6c71("0x177")] && 0 === options["length"] && !options[_0x6c71("0x17a")]) {
-        value["emit"](_0x6c71("31"), obj);
+        value["emit"]("data", obj);
         value["read"](0);
       } else {
         options["length"] += options[_0x6c71("0x172")] ? 1 : obj["length"];
@@ -3525,7 +3527,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     function convertToPropTypes(n, arr) {
-      return n <= 0 || 0 === arr["length"] && arr[_0x6c71("0x160")] ? 0 : arr[_0x6c71("0x172")] ? 1 : n != n ? arr["flowing"] && arr["length"] ? arr["buffer"][_0x6c71("0x18f")][_0x6c71("31")]["length"] : arr["length"] : (n > arr[_0x6c71("372")] && (arr[_0x6c71("372")] = function(n) {
+      return n <= 0 || 0 === arr["length"] && arr[_0x6c71("0x160")] ? 0 : arr[_0x6c71("0x172")] ? 1 : n != n ? arr["flowing"] && arr["length"] ? arr["buffer"][_0x6c71("0x18f")]["data"]["length"] : arr["length"] : (n > arr[_0x6c71("372")] && (arr[_0x6c71("372")] = function(n) {
         return n >= nMax ? n = nMax : (n--, n = n | n >>> 1, n = n | n >>> 2, n = n | n >>> 4, n = n | n >>> 8, n = n | n >>> 16, n++), n;
       }(n)), n <= arr["length"] ? n : arr[_0x6c71("0x160")] ? arr["length"] : (arr[_0x6c71("379")] = true, 0));
     }
@@ -3626,17 +3628,17 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     function type(value, args) {
-      return 0 === args["length"] ? null : (args[_0x6c71("0x172")] ? innerStuff = args["buffer"]["shift"]() : !value || value >= args["length"] ? (innerStuff = args[_0x6c71("0x182")] ? args["buffer"][_0x6c71("12")]("") : 1 === args["buffer"]["length"] ? args["buffer"][_0x6c71("0x18f")]["data"] : args["buffer"][_0x6c71("0xe3")](args["length"]), args["buffer"][_0x6c71("0x196")]()) : innerStuff = function(module, event, response) {
+      return 0 === args["length"] ? null : (args[_0x6c71("0x172")] ? innerStuff = args["buffer"]["shift"]() : !value || value >= args["length"] ? (innerStuff = args[_0x6c71("0x182")] ? args["buffer"]["join"]("") : 1 === args["buffer"]["length"] ? args["buffer"][_0x6c71("0x18f")]["data"] : args["buffer"]["concat"](args["length"]), args["buffer"][_0x6c71("0x196")]()) : innerStuff = function(module, event, response) {
         var result;
         if (module < event[_0x6c71("0x18f")]["data"]["length"]) {
-          result = event[_0x6c71("0x18f")][_0x6c71("31")]["slice"](0, module);
-          event[_0x6c71("0x18f")][_0x6c71("31")] = event[_0x6c71("0x18f")][_0x6c71("31")]["slice"](module);
+          result = event[_0x6c71("0x18f")]["data"]["slice"](0, module);
+          event[_0x6c71("0x18f")]["data"] = event[_0x6c71("0x18f")]["data"]["slice"](module);
         } else {
-          result = module === event[_0x6c71("0x18f")][_0x6c71("31")]["length"] ? event[_0x6c71("0x197")]() : response ? function(i, object) {
+          result = module === event[_0x6c71("0x18f")]["data"]["length"] ? event[_0x6c71("0x197")]() : response ? function(i, object) {
             var value = object[_0x6c71("0x18f")];
             /** @type {number} */
             var amount = 1;
-            var result = value[_0x6c71("31")];
+            var result = value["data"];
             /** @type {number} */
             i = i - result["length"];
             for (; value = value[_0x6c71("0x198")];) {
@@ -3653,7 +3655,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
                   }
                 } else {
                   object[_0x6c71("0x18f")] = value;
-                  value[_0x6c71("31")] = data["slice"](index);
+                  value["data"] = data["slice"](index);
                 }
                 break;
               }
@@ -3665,11 +3667,11 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
             var result = data[_0x6c71("0x18f")];
             /** @type {number} */
             var dDarkness = 1;
-            result[_0x6c71("31")]["copy"](u);
+            result["data"]["copy"](u);
             /** @type {number} */
-            m = m - result[_0x6c71("31")]["length"];
+            m = m - result["data"]["length"];
             for (; result = result[_0x6c71("0x198")];) {
-              var props = result[_0x6c71("31")];
+              var props = result["data"];
               var val = m > props["length"] ? props["length"] : m;
               if (props["copy"](u, u["length"] - m, 0, val), 0 === (m = m - val)) {
                 if (val === props["length"]) {
@@ -3762,9 +3764,9 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     };
     var handlers = require(_0x6c71("346"));
     handlers["inherits"] = require("inherits");
-    var TagHourlyStat = require(_0x6c71("0xe7"));
+    var TagHourlyStat = require("util");
     var debug = void 0;
-    debug = TagHourlyStat && TagHourlyStat["debuglog"] ? TagHourlyStat["debuglog"](_0x6c71("0xe5")) : function() {
+    debug = TagHourlyStat && TagHourlyStat["debuglog"] ? TagHourlyStat["debuglog"]("stream") : function() {
     };
     var Logger;
     var ASTY = require(_0x6c71("0x16c"));
@@ -3801,7 +3803,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     module["prototype"]["push"] = function(data, key) {
       var endDate;
       var match = this[_0x6c71("354")];
-      return match["objectMode"] ? endDate = true : _0x6c71("20") == typeof data && ((key = key || match[_0x6c71("0x17f")]) !== match[_0x6c71("0x183")] && (data = args["from"](data, key), key = ""), endDate = true), install(this, data, key, false, endDate);
+      return match["objectMode"] ? endDate = true : "string" == typeof data && ((key = key || match[_0x6c71("0x17f")]) !== match[_0x6c71("0x183")] && (data = args["from"](data, key), key = ""), endDate = true), install(this, data, key, false, endDate);
     };
     /**
      * @param {!Object} data
@@ -3845,7 +3847,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       var artistTrack;
       var app_name = values[_0x6c71("379")];
       return debug(_0x6c71("0x19c"), app_name), (0 === values["length"] || values["length"] - value < values[_0x6c71("372")]) && debug(_0x6c71("0x19d"), app_name = true), values[_0x6c71("0x160")] || values[_0x6c71("377")] ? debug(_0x6c71("0x19e"), app_name = false) : app_name && (debug(_0x6c71("0x19f")), values[_0x6c71("377")] = true, values["sync"] = true, 0 === values["length"] && (values["needReadable"] = true), this["_read"](values["highWaterMark"]), values[_0x6c71("0x17a")] = false, 
-      values[_0x6c71("377")] || (value = convertToPropTypes(prev, values))), null === (artistTrack = value > 0 ? type(value, values) : null) ? (values[_0x6c71("379")] = true, value = 0) : values["length"] -= value, 0 === values["length"] && (values[_0x6c71("0x160")] || (values[_0x6c71("379")] = true), prev !== value && values[_0x6c71("0x160")] && init(this)), null !== artistTrack && this["emit"](_0x6c71("31"), artistTrack), artistTrack;
+      values[_0x6c71("377")] || (value = convertToPropTypes(prev, values))), null === (artistTrack = value > 0 ? type(value, values) : null) ? (values[_0x6c71("379")] = true, value = 0) : values["length"] -= value, 0 === values["length"] && (values[_0x6c71("0x160")] || (values[_0x6c71("379")] = true), prev !== value && values[_0x6c71("0x160")] && init(this)), null !== artistTrack && this["emit"]("data", artistTrack), artistTrack;
     };
     /**
      * @param {?} canCreateDiscussions
@@ -3878,7 +3880,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
           PL$12["removeListener"](_0x6c71("0x1a8"), type);
           p["removeListener"](_0x6c71("0xe2"), callback);
           p["removeListener"](_0x6c71("0xe2"), unpipe);
-          p["removeListener"](_0x6c71("31"), save);
+          p["removeListener"]("data", save);
           /** @type {boolean} */
           _0x49aad3 = true;
           if (!(!delay["awaitDrain"] || PL$12[_0x6c71("0x163")] && !PL$12[_0x6c71("0x163")][_0x6c71("0x1a9")])) {
@@ -3988,7 +3990,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       var _0x49aad3 = false;
       /** @type {boolean} */
       var _0x1ad8db = false;
-      return p["on"](_0x6c71("31"), save), function(PL$12, inc, PL$16) {
+      return p["on"]("data", save), function(PL$12, inc, PL$16) {
         if ("function" == typeof PL$12["prependListener"]) {
           return PL$12["prependListener"](inc, PL$16);
         }
@@ -4002,7 +4004,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         } else {
           PL$12["on"](inc, PL$16);
         }
-      }(PL$12, _0x6c71("0x39"), onerror), PL$12["once"](_0x6c71("0x16e"), onResponse), PL$12[_0x6c71("204")]("finish", onfinish), PL$12["emit"](_0x6c71("0x1a1"), p), delay[_0x6c71("0x177")] || (debug(_0x6c71("0x1af")), p["resume"]()), PL$12;
+      }(PL$12, _0x6c71("0x39"), onerror), PL$12["once"](_0x6c71("0x16e"), onResponse), PL$12["once"]("finish", onfinish), PL$12["emit"](_0x6c71("0x1a1"), p), delay[_0x6c71("0x177")] || (debug(_0x6c71("0x1af")), p["resume"]()), PL$12;
     };
     /**
      * @param {string} hash
@@ -4118,7 +4120,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
           }
         }
       }), obj) {
-        if (void 0 === this[key] && _0x6c71("0") == typeof obj[key]) {
+        if (void 0 === this[key] && "function" == typeof obj[key]) {
           this[key] = function(keyProp) {
             return function() {
               return obj[keyProp]["apply"](obj, arguments);
@@ -4142,7 +4144,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     };
     /** @type {function(number, !Object): ?} */
     module["_fromList"] = type;
-  })["call"](this, require(_0x6c71("0x14a")), _0x6c71("0x38") != typeof global ? global : _0x6c71("0x38") != typeof self ? self : _0x6c71("0x38") != typeof window ? window : {});
+  })["call"](this, require(_0x6c71("0x14a")), "undefined" != typeof global ? global : "undefined" != typeof self ? self : "undefined" != typeof window ? window : {});
 }, {
   "./_stream_duplex" : 24,
   "./internal/streams/BufferList" : 29,
@@ -4224,12 +4226,12 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       if ("function" == typeof mRotation[_0x6c71("445")]) {
         this["_transform"] = mRotation[_0x6c71("445")];
       }
-      if (_0x6c71("0") == typeof mRotation[_0x6c71("446")]) {
+      if ("function" == typeof mRotation[_0x6c71("446")]) {
         this["_flush"] = mRotation[_0x6c71("446")];
       }
     }
-    this[_0x6c71("204")](_0x6c71("445"), function() {
-      if (_0x6c71("0") == typeof this["_flush"]) {
+    this["once"](_0x6c71("445"), function() {
+      if ("function" == typeof this["_flush"]) {
         this["_flush"](function(data, value) {
           build(form, data, value);
         });
@@ -4406,7 +4408,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       var _0x42bf80 = false === cb[_0x6c71("0x1ce")];
       /** @type {boolean} */
       this[_0x6c71("0x1ce")] = !_0x42bf80;
-      this[_0x6c71("0x17f")] = cb[_0x6c71("0x17f")] || _0x6c71("0x43");
+      this[_0x6c71("0x17f")] = cb[_0x6c71("0x17f")] || "utf8";
       /** @type {number} */
       this["length"] = 0;
       /** @type {boolean} */
@@ -4494,16 +4496,16 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       /** @type {boolean} */
       this[_0x6c71("350")] = true;
       if (allow) {
-        if (_0x6c71("0") == typeof allow["write"]) {
+        if ("function" == typeof allow["write"]) {
           this["_write"] = allow["write"];
         }
-        if (_0x6c71("0") == typeof allow["writev"]) {
+        if ("function" == typeof allow["writev"]) {
           this[_0x6c71("0x1d9")] = allow[_0x6c71("0x1da")];
         }
-        if (_0x6c71("0") == typeof allow["destroy"]) {
+        if ("function" == typeof allow["destroy"]) {
           this["_destroy"] = allow["destroy"];
         }
-        if (_0x6c71("0") == typeof allow[_0x6c71("0x1db")]) {
+        if ("function" == typeof allow[_0x6c71("0x1db")]) {
           this[_0x6c71("0x1dc")] = allow[_0x6c71("0x1db")];
         }
       }
@@ -4651,7 +4653,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       var fontSize = map(context);
       return fontSize && (!function(srv, properties) {
         if (!(properties[_0x6c71("0x1d7")] || properties[_0x6c71("0x1cc")])) {
-          if (_0x6c71("0") == typeof srv[_0x6c71("0x1dc")]) {
+          if ("function" == typeof srv[_0x6c71("0x1dc")]) {
             properties[_0x6c71("0x1c6")]++;
             /** @type {boolean} */
             properties[_0x6c71("0x1cc")] = true;
@@ -4698,7 +4700,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     };
     (function() {
       try {
-        Object["defineProperty"](handler["prototype"], _0x6c71("0xe4"), {
+        Object["defineProperty"](handler["prototype"], "buffer", {
           "get" : _0x42bf80["deprecate"](function() {
             return this["getBuffer"]();
           }, _0x6c71("0x1e3"), "DEP0003")
@@ -4706,7 +4708,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       } catch (_0x25e961) {
       }
     })();
-    if (_0x6c71("0") == typeof Symbol && Symbol["hasInstance"] && _0x6c71("0") == typeof Function["prototype"][Symbol["hasInstance"]]) {
+    if ("function" == typeof Symbol && Symbol["hasInstance"] && "function" == typeof Function["prototype"][Symbol["hasInstance"]]) {
       then = Function["prototype"][Symbol["hasInstance"]];
       Object["defineProperty"](WMCacheControl, Symbol["hasInstance"], {
         "value" : function(source) {
@@ -4752,11 +4754,11 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         var _0x35c689 = true;
         /** @type {boolean} */
         var i = false;
-        return null === diff ? i = new TypeError(_0x6c71("0x1e7")) : _0x6c71("20") == typeof diff || void 0 === diff || withHashes[_0x6c71("0x172")] || (i = new TypeError(_0x6c71("0x187"))), i && (tests["emit"](_0x6c71("0x39"), i), debug(d, i), _0x35c689 = false), _0x35c689;
+        return null === diff ? i = new TypeError(_0x6c71("0x1e7")) : "string" == typeof diff || void 0 === diff || withHashes[_0x6c71("0x172")] || (i = new TypeError(_0x6c71("0x187"))), i && (tests["emit"](_0x6c71("0x39"), i), debug(d, i), _0x35c689 = false), _0x35c689;
       }(this, options, el, name)) && (options["pendingcb"]++, observable = function(elem, commands, isSlidingUp, data, options, obj) {
         if (!isSlidingUp) {
           var result = function(diff, obj, predicate) {
-            if (!(diff[_0x6c71("0x172")] || false === diff[_0x6c71("0x1ce")] || _0x6c71("20") != typeof obj)) {
+            if (!(diff[_0x6c71("0x172")] || false === diff[_0x6c71("0x1ce")] || "string" != typeof obj)) {
               obj = _["from"](obj, predicate);
             }
             return obj;
@@ -4764,7 +4766,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
           if (data !== result) {
             /** @type {boolean} */
             isSlidingUp = true;
-            options = _0x6c71("0xe4");
+            options = "buffer";
             data = result;
           }
         }
@@ -4820,8 +4822,8 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     WMCacheControl["prototype"]["setDefaultEncoding"] = function(format) {
-      if (_0x6c71("20") == typeof format && (format = format[_0x6c71("43")]()), !(["hex", _0x6c71("0x43"), _0x6c71("38"), _0x6c71("0x4b"), _0x6c71("0x44"), _0x6c71("0x4c"), _0x6c71("39"), _0x6c71("0x1eb"), _0x6c71("40"), _0x6c71("41"), _0x6c71("0x1ec")]["indexOf"]((format + "")[_0x6c71("43")]()) > -1)) {
-        throw new TypeError(_0x6c71("0x4d") + format);
+      if ("string" == typeof format && (format = format["toLowerCase"]()), !(["hex", "utf8", "utf-8", "ascii", "binary", "base64", "ucs2", _0x6c71("0x1eb"), "utf16le", "utf-16le", _0x6c71("0x1ec")]["indexOf"]((format + "")["toLowerCase"]()) > -1)) {
+        throw new TypeError("Unknown encoding: " + format);
       }
       return this["_writableState"][_0x6c71("0x17f")] = format, this;
     };
@@ -4844,7 +4846,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      */
     WMCacheControl["prototype"]["end"] = function(data, somePerson, person) {
       var box = this[_0x6c71("0x163")];
-      if (_0x6c71("0") == typeof data) {
+      if ("function" == typeof data) {
         /** @type {string} */
         person = data;
         /** @type {null} */
@@ -4852,7 +4854,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         /** @type {null} */
         somePerson = null;
       } else {
-        if (_0x6c71("0") == typeof somePerson) {
+        if ("function" == typeof somePerson) {
           /** @type {!Object} */
           person = somePerson;
           /** @type {null} */
@@ -4876,7 +4878,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
             if (elem[_0x6c71("0x1e0")]) {
               debug(context);
             } else {
-              self[_0x6c71("204")](_0x6c71("0x1a6"), context);
+              self["once"](_0x6c71("0x1a6"), context);
             }
           }
           /** @type {boolean} */
@@ -4907,7 +4909,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       this["end"]();
       saveNotifs(notifications);
     };
-  })["call"](this, require(_0x6c71("0x14a")), _0x6c71("0x38") != typeof global ? global : _0x6c71("0x38") != typeof self ? self : _0x6c71("0x38") != typeof window ? window : {});
+  })["call"](this, require(_0x6c71("0x14a")), "undefined" != typeof global ? global : "undefined" != typeof self ? self : "undefined" != typeof window ? window : {});
 }, {
   "./_stream_duplex" : 24,
   "./internal/streams/destroy" : 30,
@@ -4976,7 +4978,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      */
     TailNode["prototype"][_0x6c71("0x197")] = function() {
       if (0 !== this["length"]) {
-        var _0x52c1eb = this[_0x6c71("0x18f")][_0x6c71("31")];
+        var _0x52c1eb = this[_0x6c71("0x18f")]["data"];
         return 1 === this["length"] ? this[_0x6c71("0x18f")] = this[_0x6c71("0x199")] = null : this["head"] = this[_0x6c71("0x18f")][_0x6c71("0x198")], --this["length"], _0x52c1eb;
       }
     };
@@ -5000,7 +5002,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       var object = this[_0x6c71("0x18f")];
       var msg = "" + object["data"];
       for (; object = object["next"];) {
-        msg = msg + (result + object[_0x6c71("31")]);
+        msg = msg + (result + object["data"]);
       }
       return msg;
     };
@@ -5013,7 +5015,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         return Long["alloc"](0);
       }
       if (1 === this["length"]) {
-        return this[_0x6c71("0x18f")][_0x6c71("31")];
+        return this[_0x6c71("0x18f")]["data"];
       }
       var filter_error;
       var wsFunction;
@@ -5023,11 +5025,11 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       /** @type {number} */
       var offset = 0;
       for (; data;) {
-        filter_error = data[_0x6c71("31")];
+        filter_error = data["data"];
         wsFunction = local_mobile_core_user_remove_user_device;
         tradeOffset = offset;
         filter_error["copy"](wsFunction, tradeOffset);
-        offset = offset + data[_0x6c71("31")]["length"];
+        offset = offset + data["data"]["length"];
         data = data[_0x6c71("0x198")];
       }
       return local_mobile_core_user_remove_user_device;
@@ -5198,18 +5200,18 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
    * @return {?}
    */
   callback["alloc"] = function(responce, model, relations) {
-    if (_0x6c71("0x13") != typeof responce) {
+    if ("number" != typeof responce) {
       throw new TypeError(_0x6c71("0x1fb"));
     }
     var _destructure2 = fn(responce);
-    return void 0 !== model ? _0x6c71("20") == typeof relations ? _destructure2["fill"](model, relations) : _destructure2["fill"](model) : _destructure2["fill"](0), _destructure2;
+    return void 0 !== model ? "string" == typeof relations ? _destructure2["fill"](model, relations) : _destructure2["fill"](model) : _destructure2["fill"](0), _destructure2;
   };
   /**
    * @param {?} responce
    * @return {?}
    */
   callback["allocUnsafe"] = function(responce) {
-    if (_0x6c71("0x13") != typeof responce) {
+    if ("number" != typeof responce) {
       throw new TypeError(_0x6c71("0x1fb"));
     }
     return fn(responce);
@@ -5219,7 +5221,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
    * @return {?}
    */
   callback["allocUnsafeSlow"] = function(got_res) {
-    if (_0x6c71("0x13") != typeof got_res) {
+    if ("number" != typeof got_res) {
       throw new TypeError(_0x6c71("0x1fb"));
     }
     return out[_0x6c71("0x1fc")](got_res);
@@ -5285,7 +5287,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       if (!_0xc89370) {
         /** @type {boolean} */
         _0xc89370 = true;
-        if (_0x6c71("0") == typeof PL$5["destroy"]) {
+        if ("function" == typeof PL$5["destroy"]) {
           PL$5["destroy"]();
         }
       }
@@ -5303,7 +5305,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {undefined}
      */
     function forwarder() {
-      p["removeListener"](_0x6c71("31"), extendUndefined);
+      p["removeListener"]("data", extendUndefined);
       PL$5["removeListener"](_0x6c71("0x1a7"), PL$25);
       p["removeListener"](_0x6c71("0xe2"), cb);
       p["removeListener"](_0x6c71("0x16e"), B107);
@@ -5314,7 +5316,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       PL$5["removeListener"](_0x6c71("0x16e"), forwarder);
     }
     var p = this;
-    p["on"](_0x6c71("31"), extendUndefined);
+    p["on"]("data", extendUndefined);
     PL$5["on"]("drain", PL$25);
     if (!(PL$5[_0x6c71("0x203")] || canCreateDiscussions && false === canCreateDiscussions["end"])) {
       p["on"](_0x6c71("0xe2"), cb);
@@ -5343,38 +5345,38 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     switch(this[_0x6c71("0x183")] = function(e) {
       var error = function(encoding) {
         if (!encoding) {
-          return _0x6c71("0x43");
+          return "utf8";
         }
         var _0x52c2de;
         for (;;) {
           switch(encoding) {
             case "utf8":
-            case _0x6c71("38"):
-              return _0x6c71("0x43");
-            case _0x6c71("39"):
+            case "utf-8":
+              return "utf8";
+            case "ucs2":
             case _0x6c71("0x1eb"):
-            case _0x6c71("40"):
-            case _0x6c71("41"):
-              return _0x6c71("40");
-            case _0x6c71("37"):
-            case _0x6c71("0x44"):
-              return _0x6c71("37");
-            case _0x6c71("0x4c"):
+            case "utf16le":
+            case "utf-16le":
+              return "utf16le";
+            case "latin1":
+            case "binary":
+              return "latin1";
+            case "base64":
             case "ascii":
-            case _0x6c71("0x2a"):
+            case "hex":
               return encoding;
             default:
               if (_0x52c2de) {
                 return;
               }
-              encoding = ("" + encoding)[_0x6c71("43")]();
+              encoding = ("" + encoding)["toLowerCase"]();
               /** @type {boolean} */
               _0x52c2de = true;
           }
         }
       }(e);
-      if (_0x6c71("20") != typeof error && (MEPermPrun["isEncoding"] === check || !check(e))) {
-        throw new Error(_0x6c71("0x4d") + e);
+      if ("string" != typeof error && (MEPermPrun["isEncoding"] === check || !check(e))) {
+        throw new Error("Unknown encoding: " + e);
       }
       return error || e;
     }(cb_), this[_0x6c71("0x183")]) {
@@ -5392,7 +5394,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         /** @type {number} */
         data = 4;
         break;
-      case _0x6c71("0x4c"):
+      case "base64":
         /** @type {function(!Object, ?): ?} */
         this[_0x6c71("0x204")] = forEach;
         /** @type {function(string): ?} */
@@ -5445,7 +5447,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
    */
   function read(async, callback) {
     if ((async["length"] - callback) % 2 == 0) {
-      var p = async["toString"](_0x6c71("40"), callback);
+      var p = async["toString"]("utf16le", callback);
       if (p) {
         var _0x21ec1c = p["charCodeAt"](p["length"] - 1);
         if (_0x21ec1c >= 55296 && _0x21ec1c <= 56319) {
@@ -5454,7 +5456,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       }
       return p;
     }
-    return this[_0x6c71("0x206")] = 1, this[_0x6c71("0x207")] = 2, this[_0x6c71("0x208")][0] = async[async["length"] - 1], async["toString"](_0x6c71("40"), callback, async["length"] - 1);
+    return this[_0x6c71("0x206")] = 1, this[_0x6c71("0x207")] = 2, this[_0x6c71("0x208")][0] = async[async["length"] - 1], async["toString"]("utf16le", callback, async["length"] - 1);
   }
   /**
    * @param {string} x
@@ -5465,7 +5467,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     if (this[_0x6c71("0x206")]) {
       /** @type {number} */
       var year = this[_0x6c71("0x207")] - this[_0x6c71("0x206")];
-      return comic_number_and_created_date_string + this["lastChar"]["toString"](_0x6c71("40"), 0, year);
+      return comic_number_and_created_date_string + this["lastChar"]["toString"]("utf16le", 0, year);
     }
     return comic_number_and_created_date_string;
   }
@@ -5477,7 +5479,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
   function forEach(collection, options) {
     /** @type {number} */
     var functionType = (collection["length"] - options) % 3;
-    return 0 === functionType ? collection["toString"](_0x6c71("0x4c"), options) : (this[_0x6c71("0x206")] = 3 - functionType, this[_0x6c71("0x207")] = 3, 1 === functionType ? this[_0x6c71("0x208")][0] = collection[collection["length"] - 1] : (this["lastChar"][0] = collection[collection["length"] - 2], this["lastChar"][1] = collection[collection["length"] - 1]), collection["toString"]("base64", options, collection["length"] - functionType));
+    return 0 === functionType ? collection["toString"]("base64", options) : (this[_0x6c71("0x206")] = 3 - functionType, this[_0x6c71("0x207")] = 3, 1 === functionType ? this[_0x6c71("0x208")][0] = collection[collection["length"] - 1] : (this["lastChar"][0] = collection[collection["length"] - 2], this["lastChar"][1] = collection[collection["length"] - 1]), collection["toString"]("base64", options, collection["length"] - functionType));
   }
   /**
    * @param {string} file
@@ -5503,17 +5505,17 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
   }
   var MEPermPrun = saveNotifs(_0x6c71("0x169"))["Buffer"];
   var check = MEPermPrun[_0x6c71("24")] || function(fn) {
-    switch((fn = "" + fn) && fn[_0x6c71("43")]()) {
-      case _0x6c71("0x2a"):
+    switch((fn = "" + fn) && fn["toLowerCase"]()) {
+      case "hex":
       case "utf8":
-      case _0x6c71("38"):
-      case _0x6c71("0x4b"):
+      case "utf-8":
+      case "ascii":
       case "binary":
-      case _0x6c71("0x4c"):
-      case _0x6c71("39"):
+      case "base64":
+      case "ucs2":
       case _0x6c71("0x1eb"):
-      case _0x6c71("40"):
-      case _0x6c71("41"):
+      case "utf16le":
+      case "utf-16le":
       case _0x6c71("0x1ec"):
         return true;
       default:
@@ -5584,12 +5586,12 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       return 0;
     }(this, arr, i);
     if (!this["lastNeed"]) {
-      return arr["toString"](_0x6c71("0x43"), i);
+      return arr["toString"]("utf8", i);
     }
     this[_0x6c71("0x207")] = value;
     /** @type {number} */
     var series = arr["length"] - (value - this[_0x6c71("0x206")]);
-    return arr["copy"](this["lastChar"], 0, series), arr["toString"](_0x6c71("0x43"), i, series);
+    return arr["copy"](this["lastChar"], 0, series), arr["toString"]("utf8", i, series);
   };
   /**
    * @param {?} canCreateDiscussions
@@ -5649,7 +5651,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         return _getModal["apply"](this, arguments);
       };
     };
-  })["call"](this, _0x6c71("0x38") != typeof global ? global : _0x6c71("0x38") != typeof self ? self : "undefined" != typeof window ? window : {});
+  })["call"](this, "undefined" != typeof global ? global : "undefined" != typeof self ? self : "undefined" != typeof window ? window : {});
 }, {}],
 40:[function(canCreateDiscussions, isSlidingUp, mmCoreSplitViewBlock) {
   arguments[4][10][0]["apply"](mmCoreSplitViewBlock, arguments);
@@ -5662,7 +5664,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
    * @return {?}
    */
   canCreateDiscussions["exports"] = function(canCreateDiscussions) {
-    return canCreateDiscussions && _0x6c71("0x210") == typeof canCreateDiscussions && _0x6c71("0") == typeof canCreateDiscussions["copy"] && _0x6c71("0") == typeof canCreateDiscussions["fill"] && "function" == typeof canCreateDiscussions["readUInt8"];
+    return canCreateDiscussions && _0x6c71("0x210") == typeof canCreateDiscussions && "function" == typeof canCreateDiscussions["copy"] && "function" == typeof canCreateDiscussions["fill"] && "function" == typeof canCreateDiscussions["readUInt8"];
   };
 }, {}],
 42:[function(require, canCreateDiscussions, obj) {
@@ -5704,24 +5706,24 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     function next(i, target, data) {
-      if (i[_0x6c71("0x216")] && target && proxy(target["inspect"]) && target["inspect"] !== obj["inspect"] && (!target[_0x6c71("0xd7")] || target[_0x6c71("0xd7")]["prototype"] !== target)) {
+      if (i[_0x6c71("0x216")] && target && proxy(target["inspect"]) && target["inspect"] !== obj["inspect"] && (!target["constructor"] || target["constructor"]["prototype"] !== target)) {
         var buffer = target["inspect"](data, i);
         return fn(buffer) || (buffer = next(i, buffer, data)), buffer;
       }
       var image = function(element, input) {
         if ($(input)) {
-          return element[_0x6c71("0x217")]("undefined", _0x6c71("0x38"));
+          return element[_0x6c71("0x217")]("undefined", "undefined");
         }
         if (fn(input)) {
           /** @type {string} */
           var selector = "'" + JSON["stringify"](input)[_0x6c71("0x87")](/^"|"$/g, "")[_0x6c71("0x87")](/'/g, "\\'")[_0x6c71("0x87")](/\\"/g, '"') + "'";
-          return element[_0x6c71("0x217")](selector, _0x6c71("20"));
+          return element[_0x6c71("0x217")](selector, "string");
         }
         if (setGeometry(input)) {
-          return element[_0x6c71("0x217")]("" + input, _0x6c71("0x13"));
+          return element[_0x6c71("0x217")]("" + input, "number");
         }
         if (isNaN(input)) {
-          return element[_0x6c71("0x217")]("" + input, _0x6c71("140"));
+          return element[_0x6c71("0x217")]("" + input, "boolean");
         }
         if (isArray(input)) {
           return element[_0x6c71("0x217")](_0x6c71("0x219"), _0x6c71("0x219"));
@@ -5782,7 +5784,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
           }
         }
         return result["forEach"](function(value) {
-          if (!value[_0x6c71("0x52")](/^\d+$/)) {
+          if (!value["match"](/^\d+$/)) {
             d["push"](set(x, item, key, cb, value, true));
           }
         }), d;
@@ -5792,7 +5794,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         if (a[_0x6c71("550")](function(sum, href) {
           return 0, href["indexOf"]("\n") >= 0 && 0, sum + href[_0x6c71("0x87")](/\u001b\[\d\d?m/g, "")["length"] + 1;
         }, 0) > 60) {
-          return output[0] + ("" === b ? "" : b + "\n ") + " " + a[_0x6c71("12")](_0x6c71("0x227")) + " " + output[1];
+          return output[0] + ("" === b ? "" : b + "\n ") + " " + a["join"](_0x6c71("0x227")) + " " + output[1];
         }
         return output[0] + b + " " + a["join"](", ") + " " + output[1];
       }(els, px, bbox)) : bbox[0] + px + bbox[1];
@@ -5822,10 +5824,10 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       })[_0x6c71("0x228")] ? value = queue[_0x6c71("0x83")] ? fn[_0x6c71("0x217")]("[Getter/Setter]", "special") : fn[_0x6c71("0x217")](_0x6c71("0x229"), _0x6c71("0x220")) : queue[_0x6c71("0x83")] && (value = fn[_0x6c71("0x217")](_0x6c71("0x22a"), _0x6c71("0x220"))), test(func, prop) || (filter = "[" + prop + "]"), value || (fn[_0x6c71("0x224")]["indexOf"](queue[_0x6c71("0x22b")]) < 0 ? (value = isArray(args) ? next(fn, queue[_0x6c71("0x22b")], null) : next(fn, queue[_0x6c71("0x22b")], args - 1))["indexOf"]("\n") > 
       -1 && (value = match ? value[_0x6c71("0x22c")]("\n")[_0x6c71("0x22d")](function(canCreateDiscussions) {
         return "  " + canCreateDiscussions;
-      })[_0x6c71("12")]("\n")[_0x6c71("0x31")](2) : "\n" + value[_0x6c71("0x22c")]("\n")[_0x6c71("0x22d")](function(canCreateDiscussions) {
+      })["join"]("\n")[_0x6c71("0x31")](2) : "\n" + value[_0x6c71("0x22c")]("\n")[_0x6c71("0x22d")](function(canCreateDiscussions) {
         return _0x6c71("0x22e") + canCreateDiscussions;
-      })[_0x6c71("12")]("\n")) : value = fn[_0x6c71("0x217")](_0x6c71("0x212"), "special")), $(filter)) {
-        if (match && prop[_0x6c71("0x52")](/^\d+$/)) {
+      })["join"]("\n")) : value = fn[_0x6c71("0x217")](_0x6c71("0x212"), "special")), $(filter)) {
+        if (match && prop["match"](/^\d+$/)) {
           return value;
         }
         if ((filter = JSON["stringify"]("" + prop))["match"](/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
@@ -5833,7 +5835,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
           filter = fn[_0x6c71("0x217")](filter, _0x6c71("0x21e"));
         } else {
           filter = filter["replace"](/'/g, "\\'")[_0x6c71("0x87")](/\\"/g, '"')[_0x6c71("0x87")](/(^"|"$)/g, "'");
-          filter = fn[_0x6c71("0x217")](filter, _0x6c71("20"));
+          filter = fn[_0x6c71("0x217")](filter, "string");
         }
       }
       return filter + ": " + value;
@@ -5850,7 +5852,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     function isNaN(value) {
-      return _0x6c71("140") == typeof value;
+      return "boolean" == typeof value;
     }
     /**
      * @param {!Object} arr
@@ -5864,14 +5866,14 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     function setGeometry(width) {
-      return _0x6c71("0x13") == typeof width;
+      return "number" == typeof width;
     }
     /**
      * @param {?} arr
      * @return {?}
      */
     function fn(arr) {
-      return _0x6c71("20") == typeof arr;
+      return "string" == typeof arr;
     }
     /**
      * @param {!Array} name
@@ -5885,7 +5887,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     function d(e) {
-      return log(e) && _0x6c71("0x93") === find(e);
+      return log(e) && "[object RegExp]" === find(e);
     }
     /**
      * @param {string} arg
@@ -5899,7 +5901,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     function contains(path) {
-      return log(path) && _0x6c71("0x94") === find(path);
+      return log(path) && "[object Date]" === find(path);
     }
     /**
      * @param {string} e
@@ -5913,7 +5915,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     function proxy(after) {
-      return _0x6c71("0") == typeof after;
+      return "function" == typeof after;
     }
     /**
      * @param {string} x
@@ -5952,7 +5954,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         for (; x < arguments["length"]; x++) {
           output["push"](f(arguments[x]));
         }
-        return output[_0x6c71("12")](" ");
+        return output["join"](" ");
       }
       /** @type {number} */
       x = 1;
@@ -6015,7 +6017,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
             throw new Error(msg);
           }
           if (dictionary[_0x6c71("0x20e")]) {
-            console[_0x6c71("0xcb")](msg);
+            console["trace"](msg);
           } else {
             console["error"](msg);
           }
@@ -6120,7 +6122,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
      * @return {?}
      */
     obj["isPrimitive"] = function(x) {
-      return null === x || "boolean" == typeof x || _0x6c71("0x13") == typeof x || _0x6c71("20") == typeof x || "symbol" == typeof x || void 0 === x;
+      return null === x || "boolean" == typeof x || "number" == typeof x || "string" == typeof x || "symbol" == typeof x || void 0 === x;
     };
     obj["isBuffer"] = require("./support/isBuffer");
     /** @type {!Array} */
@@ -6131,7 +6133,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
     obj["log"] = function() {
       var okval;
       var func;
-      console["log"](_0x6c71("0x246"), (okval = new Date, func = [change_btn(okval["getHours"]()), change_btn(okval[_0x6c71("0x247")]()), change_btn(okval[_0x6c71("0x248")]())][_0x6c71("12")](":"), [okval["getDate"](), months[okval[_0x6c71("0x249")]()], func][_0x6c71("12")](" ")), obj["format"]["apply"](obj, arguments));
+      console["log"](_0x6c71("0x246"), (okval = new Date, func = [change_btn(okval["getHours"]()), change_btn(okval[_0x6c71("0x247")]()), change_btn(okval[_0x6c71("0x248")]())]["join"](":"), [okval["getDate"](), months[okval[_0x6c71("0x249")]()], func]["join"](" ")), obj["format"]["apply"](obj, arguments));
     };
     obj["inherits"] = require(_0x6c71("0xe8"));
     /**
@@ -6150,7 +6152,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       }
       return acc;
     };
-  })["call"](this, require("_process"), "undefined" != typeof global ? global : _0x6c71("0x38") != typeof self ? self : _0x6c71("0x38") != typeof window ? window : {});
+  })["call"](this, require("_process"), "undefined" != typeof global ? global : "undefined" != typeof self ? self : "undefined" != typeof window ? window : {});
 }, {
   "./support/isBuffer" : 41,
   "_process" : 22,
@@ -6189,7 +6191,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       function module(value) {
         return this[_0x6c71("0x250")] = value instanceof Number ? value["clone"]() : Number(value), this["v1"] = this[_0x6c71("0x250")]["clone"]()["add"](numberOfTiles), this["v2"] = this["seed"]["clone"]()["add"](level), this["v3"] = this[_0x6c71("0x250")]["clone"](), this["v4"] = this[_0x6c71("0x250")]["clone"]()["subtract"](heightInches), this[_0x6c71("0x251")] = 0, this[_0x6c71("0x252")] = 0, this[_0x6c71("0x253")] = null, this;
       }
-      var Number = saveNotifs(_0x6c71("0xd8"))[_0x6c71("0x98")];
+      var Number = saveNotifs("cuint")["UINT32"];
       /**
        * @param {?} i
        * @param {?} mmCoreSecondsDay
@@ -6243,7 +6245,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
       URI["prototype"]["update"] = function(data) {
         var buffer;
         /** @type {boolean} */
-        var HAS_BROKEN_LINEHEIGHT = _0x6c71("20") == typeof data;
+        var HAS_BROKEN_LINEHEIGHT = "string" == typeof data;
         if (HAS_BROKEN_LINEHEIGHT) {
           data = function(data) {
             /** @type {!Array} */
@@ -6277,7 +6279,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
           /** @type {boolean} */
           buffer = true;
         }
-        if (_0x6c71("0x38") != typeof ArrayBuffer && data instanceof ArrayBuffer) {
+        if ("undefined" != typeof ArrayBuffer && data instanceof ArrayBuffer) {
           /** @type {boolean} */
           buffer = true;
           /** @type {!Uint8Array} */
@@ -6378,12 +6380,12 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         var value;
         var data = this[_0x6c71("0x253")];
         /** @type {boolean} */
-        var converter = _0x6c71("20") == typeof data;
+        var converter = "string" == typeof data;
         /** @type {number} */
         var i = 0;
         var num_blocks = this[_0x6c71("0x252")];
         var result = new Number;
-        (item = this[_0x6c71("0x251")] >= 16 ? this["v1"]["rotl"](1)["add"](this["v2"]["rotl"](7)["add"](this["v3"]["rotl"](12)["add"](this["v4"]["rotl"](18)))) : this[_0x6c71("0x250")]["add"](key))["add"](result[_0x6c71("0xa0")](this[_0x6c71("0x251")]));
+        (item = this[_0x6c71("0x251")] >= 16 ? this["v1"]["rotl"](1)["add"](this["v2"]["rotl"](7)["add"](this["v3"]["rotl"](12)["add"](this["v4"]["rotl"](18)))) : this[_0x6c71("0x250")]["add"](key))["add"](result["fromNumber"](this[_0x6c71("0x251")]));
         for (; i <= num_blocks - 4;) {
           if (converter) {
             result["fromBits"](data["charCodeAt"](i + 1) << 8 | data["charCodeAt"](i), data["charCodeAt"](i + 3) << 8 | data["charCodeAt"](i + 2));
@@ -6400,7 +6402,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         }
         return value = item["clone"]()["shiftRight"](15), item[_0x6c71("0xad")](value)["multiply"](level), value = item["clone"]()["shiftRight"](13), item["xor"](value)["multiply"](power), value = item["clone"]()["shiftRight"](16), item["xor"](value), this["init"](this[_0x6c71("0x250")]), item;
       };
-      if (_0x6c71("0x38") != typeof define && define[_0x6c71("0xb5")]) {
+      if ("undefined" != typeof define && define["amd"]) {
         define([], function() {
           return URI;
         });
@@ -6414,7 +6416,7 @@ function _0x490cf3(_0x48f037,_0x2d7a1a,_0x596d63,_0x3babfd,_0x42c5b0){return _0x
         }
       }
     }(this);
-  })["call"](this, saveNotifs(_0x6c71("0xe4"))["Buffer"]);
+  })["call"](this, saveNotifs("buffer")["Buffer"]);
 }, {
   "buffer" : 3,
   "cuint" : 43
