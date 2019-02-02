@@ -1,17 +1,5 @@
 //Legend Mod Sniff Mode by jimboy3100
 
-//Game Configurations
-//var agarversion="v12/1922/";
-var agarversion="";
-var LMGameConfiguration = $.ajax({
-        type: "GET",
-		url: "https://jimboy3100.github.io/agario/live/"+agarversion+"GameConfiguration.json",
-		async: false,
-        datatype: "json",
-        success: function(info) {
-			//var GameConfiguration = info;
-		}
-}).responseJSON;
 
 //preload url 
 var url = window.location.href;
