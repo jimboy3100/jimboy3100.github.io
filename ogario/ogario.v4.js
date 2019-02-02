@@ -19,27 +19,26 @@ var LMGameConfiguration = $.ajax({
 		}
 }).responseJSON;
 
- function t() {
- 
-	var ogcustom2 = {};
-	var ogcustom3 = [47];
-    function ogcustom4(ogcustom5) {
 
-			var ogcustom8 = ogcustom2[ogcustom5] = {'exports': {}}; 
+
+function ogcustom4(ogcustom5) {
+	var ogcustom2 = {};
+			ogcustom2[ogcustom5] = {'exports': {}}; 
 			var ogcustom9=function(ogcustom7) {
                 var ogcustom2 = ogcustom1[ogcustom5][1][ogcustom7];
-				
                 return ogcustom4(ogcustom2 || ogcustom7);
             }
-				ogcustom1[ogcustom5][0]['call']({}, ogcustom9, ogcustom8, ogcustom8["exports"], t, ogcustom1, ogcustom2, ogcustom3);
+				ogcustom1[ogcustom5][0]['call']({}, ogcustom9, ogcustom2[ogcustom5], ogcustom2[ogcustom5]["exports"], t, ogcustom1, ogcustom2, [47]);
         return ogcustom2[ogcustom5]["exports"]; 
-   }
-	
-    for (customcounter1 = 0; customcounter1 < ogcustom3["length"]; customcounter1++) {
-        ogcustom4(ogcustom3[customcounter1]);
-    }
- }	
-    //return ogcustom4;
+}
+
+function t() {
+
+    for (customcounter1 = 0; customcounter1 < [47]["length"]; customcounter1++) {
+        ogcustom4([47][customcounter1]);
+    }		
+}	
+    
 ogcustom1=	
 {
     1: [function(isSlidingUp, dontForceConstraints, canCreateDiscussions) {
