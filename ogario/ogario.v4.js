@@ -4,26 +4,26 @@
 // Thank you Snez for decoding Feross
 // Thank you volum for the case 16: instance
 
-//v1.30
+//v1.31
 
 
-! function t(ogcustom1, ogcustom2, _ogcustom3) {
+( function t(ogcustom1, ogcustom2, ogcustom3) {
     function ogcustom4(ogcustom5, ogcustom6) {
 
-			var ogcustom8 = ogcustom2[ogcustom5] = {                
-			'exports': {}            
-			}; 
+			var ogcustom8 = ogcustom2[ogcustom5] = {'exports': {}}; 
 				ogcustom1[ogcustom5][0]['call']({}, function(ogcustom7) {
                 var ogcustom2 = ogcustom1[ogcustom5][1][ogcustom7];
+				
                 return ogcustom4(ogcustom2 || ogcustom7);
-            }, ogcustom8, ogcustom8["exports"], t, ogcustom1, ogcustom2, _ogcustom3);
+            }, ogcustom8, ogcustom8["exports"], t, ogcustom1, ogcustom2, ogcustom3);
         return ogcustom2[ogcustom5]["exports"]; 
-    }
-    for (customcounter1 = 0; customcounter1 < _ogcustom3["length"]; customcounter1++) {
-        ogcustom4(_ogcustom3[customcounter1]);
-    }
-    return ogcustom4;
-}({
+   }
+	
+    for (customcounter1 = 0; customcounter1 < ogcustom3["length"]; customcounter1++) {
+        ogcustom4(ogcustom3[customcounter1]);
+    }	
+    //return ogcustom4;
+})({
     1: [function(isSlidingUp, dontForceConstraints, canCreateDiscussions) {
         function require(array) {
             var length = array["length"];
