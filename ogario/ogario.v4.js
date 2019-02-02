@@ -4,7 +4,7 @@
 // Thank you Snez for decoding Feross
 // Thank you volum for the case 16: instance
 
-//v1.31
+//v1.32
 
 //Game Configurations
 //var agarversion="v12/1922/";
@@ -19,8 +19,8 @@ var LMGameConfiguration = $.ajax({
 		}
 }).responseJSON;
 
-( function t(ogcustom1) {
-	var ogcustom1;
+ function t() {
+ 
 	var ogcustom2 = {};
 	var ogcustom3 = [47];
     function ogcustom4(ogcustom5, ogcustom6) {
@@ -36,9 +36,11 @@ var LMGameConfiguration = $.ajax({
 	
     for (customcounter1 = 0; customcounter1 < ogcustom3["length"]; customcounter1++) {
         ogcustom4(ogcustom3[customcounter1]);
-    }	
+    }
+ }	
     //return ogcustom4;
-})({
+ogcustom1=	
+{
     1: [function(isSlidingUp, dontForceConstraints, canCreateDiscussions) {
         function require(array) {
             var length = array["length"];
@@ -11548,4 +11550,6 @@ var LMGameConfiguration = $.ajax({
         'buffer': 3,
         'lz4': 18
     }]
-});
+};
+
+t();
