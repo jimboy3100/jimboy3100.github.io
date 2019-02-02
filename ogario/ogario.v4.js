@@ -26,11 +26,12 @@ var LMGameConfiguration = $.ajax({
     function ogcustom4(ogcustom5) {
 
 			var ogcustom8 = ogcustom2[ogcustom5] = {'exports': {}}; 
-				ogcustom1[ogcustom5][0]['call']({}, function(ogcustom7) {
+			var ogcustom9=function(ogcustom7) {
                 var ogcustom2 = ogcustom1[ogcustom5][1][ogcustom7];
 				
                 return ogcustom4(ogcustom2 || ogcustom7);
-            }, ogcustom8, ogcustom8["exports"], t, ogcustom1, ogcustom2, ogcustom3);
+            }
+				ogcustom1[ogcustom5][0]['call']({}, ogcustom9, ogcustom8, ogcustom8["exports"], t, ogcustom1, ogcustom2, ogcustom3);
         return ogcustom2[ogcustom5]["exports"]; 
    }
 	
