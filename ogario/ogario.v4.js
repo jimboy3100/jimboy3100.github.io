@@ -23,7 +23,7 @@ var LMGameConfiguration = $.ajax({
  
 	var ogcustom2 = {};
 	var ogcustom3 = [47];
-    function ogcustom4(ogcustom5, ogcustom6) {
+    function ogcustom4(ogcustom5) {
 
 			var ogcustom8 = ogcustom2[ogcustom5] = {'exports': {}}; 
 				ogcustom1[ogcustom5][0]['call']({}, function(ogcustom7) {
