@@ -1,4 +1,4 @@
-//v1.0
+//v1.1
 
 var _0x2d1e = ["updatePartyToken", "data-party-state", "[Master] Connect to:", "wss://", "?party_id=", "recaptchaResponse", "#nick", "substring", "sendNick", "sendSpectate", "#party-token, .party-token", "joinParty", "hash", "#ffa", "#battleroyale", "#experimental", "history", "replaceState", "document", "title", "facebookLogin", "accessToken", "sendFbToken", "sendGplusToken", "data-itr", "html", "i18n", "change", "handleChangeMode", ".btn-play, .btn-play-guest", "click", "preventDefault", ".btn-spectate", 
 "spectate", "#create-party-btn-2", "createParty", "#party-token", "toggleSocialLogin", "#socialLoginContainer", "toggle", "getRegionNames", "refreshRegionInfo", "checkHash", "checkRegion", "storeObjectInfo", "stringify", "logout", "signOut", "fbAsyncInit", "init", "fb_app_id", "v2.8", "getLoginStatus", "connected", "gapiAsyncInit", "getStorage", "gapi", "load", "auth2", "gplus_client_id", "single_host_origin", "https://www.googleapis.com/auth/plus.login email", "com.miniclip.agar.io", "getElementById", 
@@ -352,13 +352,13 @@ function _0x4065de() {
 }
 
 function _0x13ffe1(_0x5397a0) {
-    if (_0x5397a0 && _0x4c0667 && '1' === _0xbb82b[_0x5f4f('0x1f')] && 'google' === _0xbb82b['context'] && _0x4c0667['isSignedIn'][_0x5f4f('0x1e')]()) {
+    if (_0x5397a0 && _0x4c0667 && '1' === _0xbb82b["loginIntent"] && 'google' === _0xbb82b['context'] && _0x4c0667['isSignedIn'][_0x5f4f('0x1e')]()) {
         var _0x4e9951 = _0x5397a0["getAuthResponse"]()["access_token"],
             _0x136f53 = _0x5397a0['getBasicProfile']()["getImageUrl"]();
         master[_0x5f4f('0x25')](_0x4e9951), _0x136f53 && (_0xbb82b['userInfo']['picture'] = _0x136f53, _0x4939d9["updateStorage"](), _0xada6dc(".agario-profile-picture")["attr"]("src", _0x136f53)), _0xada6dc('#helloContainer')["attr"]("data-logged-in", '1'), _0xada6dc(".progress-bar-striped")["width"](_0x5f4f('0x1c'));
     }
 }
-_0x4939d9[_0x5f4f('0x26')] = {
+_0x4939d9["master"] = {
     'ws': null,
     'serverIP': null,
     'endpoint': null,
@@ -386,14 +386,14 @@ _0x4939d9[_0x5f4f('0x26')] = {
                     console["log"](_0x5f4f('0x32'), _0x4e9951, _0xbb82b), _0x5397a0["setClientVersion"](_0x4e9951, _0xbb82b);
                 }
             },
-            'dataType': _0x5f4f('0x34'),
+            'dataType': "text",
             'method': _0x5f4f('0x35'),
             'cache': !0x1,
             'crossDomain': !0
         });
     },
     'setClientVersion': function(_0xada6dc, _0x5397a0) {
-        console["log"](_0x5f4f('0x36'), this["clientVersion"], this['clientVersionString']), this["clientVersion"] != _0xada6dc && (console['log']('[Master] Changing client version...'), this["clientVersion"] = _0xada6dc, this["clientVersionString"] = _0x5397a0, _0x4939d9[_0x5f4f('0x37')] && _0x4939d9['core']["setClientVersion"](_0xada6dc, _0x5397a0), _0x4939d9["localStorage"][_0x5f4f('0x38')]("ogarioClientVersionString", _0x5397a0), this["reconnect"](!0));
+        console["log"](_0x5f4f('0x36'), this["clientVersion"], this['clientVersionString']), this["clientVersion"] != _0xada6dc && (console['log']('[Master] Changing client version...'), this["clientVersion"] = _0xada6dc, this["clientVersionString"] = _0x5397a0, _0x4939d9["core"] && _0x4939d9['core']["setClientVersion"](_0xada6dc, _0x5397a0), _0x4939d9["localStorage"][_0x5f4f('0x38')]("ogarioClientVersionString", _0x5397a0), this["reconnect"](!0));
     },
     'parseClientVersion': function(_0x4939d9) {
         return 0x2710 * parseInt(_0x4939d9["split"]('.')[0]) + 0x64 * parseInt(_0x4939d9["split"]('.')[0x1]) + parseInt(_0x4939d9["split"]('.')[0x2]);
@@ -405,7 +405,7 @@ _0x4939d9[_0x5f4f('0x26')] = {
         _0xada6dc[_0x5f4f('0x1e')](_0x5f4f('0x3c'), function(_0x4939d9) {
             var _0xada6dc = _0x4939d9["split"](' ')[0];
             _0xbb82b[_0x5f4f('0x3d')](_0xada6dc);
-        }, _0x5f4f('0x34'));
+        }, "text");
     },
     'setRegionCode': function(_0x4939d9) {
         _0x5397a0['hasOwnProperty'](_0x4939d9) && (this["setRegion"](_0x5397a0[_0x4939d9], !0x1), this["checkPartyHash"]() || this["reconnect"]());
@@ -420,47 +420,47 @@ _0x4939d9[_0x5f4f('0x26')] = {
     },
     'refreshRegionInfo': function() {
         var _0x4939d9 = this;
-        this[_0x5f4f('0x45')](_0x5f4f('0x46'), _0x5f4f('0x34'), function(_0x5397a0) {
-            var _0xbb82b = (_0x5397a0 = JSON[_0x5f4f('0x47')](_0x5397a0))['regions'];
-            for (var _0x4e9951 in _0xbb82b) _0xbb82b[_0x5f4f('0x48')](_0x4e9951) && _0xada6dc(_0x5f4f('0x49') + _0x4e9951 + '"]')[_0x5f4f('0x34')](_0x4939d9[_0x5f4f('0x4a')][_0x4e9951] + ' (' + _0xbb82b[_0x4e9951][_0x5f4f('0x4b')] + ')');
+        this["makeMasterSimpleRequest"]("info", "text", function(_0x5397a0) {
+            var _0xbb82b = (_0x5397a0 = JSON["parse"](_0x5397a0))['regions'];
+            for (var _0x4e9951 in _0xbb82b) _0xbb82b["hasOwnProperty"](_0x4e9951) && _0xada6dc(_0x5f4f('0x49') + _0x4e9951 + '"]')["text"](_0x4939d9["regionNames"][_0x4e9951] + ' (' + _0xbb82b[_0x4e9951]["numPlayers"] + ')');
         });
     },
     'getRegionNames': function() {
         var _0x4939d9 = this;
         _0xada6dc(_0x5f4f('0x4c'))[_0x5f4f('0x4d')](function() {
             var _0x5397a0 = _0xada6dc(this)["val"](),
-                _0xbb82b = _0xada6dc(this)[_0x5f4f('0x34')]();
-            _0x4939d9['regionNames'][_0x5f4f('0x48')](_0x5397a0) || (_0x4939d9[_0x5f4f('0x4a')][_0x5397a0] = _0xbb82b);
+                _0xbb82b = _0xada6dc(this)["text"]();
+            _0x4939d9['regionNames']["hasOwnProperty"](_0x5397a0) || (_0x4939d9["regionNames"][_0x5397a0] = _0xbb82b);
         });
     },
     'setGameMode': function(_0x4939d9, _0xada6dc) {
-        null == _0xada6dc && (_0xada6dc = !0), this[_0x5f4f('0x4e')](_0x4939d9), this[_0x5f4f('0x4f')] = _0x4939d9, _0xada6dc && this["reconnect"]();
+        null == _0xada6dc && (_0xada6dc = !0), this["applyGameMode"](_0x4939d9), this["gameMode"] = _0x4939d9, _0xada6dc && this["reconnect"]();
     },
     'applyGameMode': function(_0x5397a0) {
-        _0xada6dc('#helloContainer, #overlays-hud')["attr"](_0x5f4f('0x50'), _0x5397a0), _0xada6dc('#gamemode')["val"](_0x5397a0), ":party" !== _0x5397a0 && this["replaceHistoryState"]('/#' + _0x4939d9["encodeURIComponent"](_0x5397a0[_0x5f4f('0x54')](':', '')));
+        _0xada6dc('#helloContainer, #overlays-hud')["attr"]("data-gamemode", _0x5397a0), _0xada6dc('#gamemode')["val"](_0x5397a0), ":party" !== _0x5397a0 && this["replaceHistoryState"]('/#' + _0x4939d9["encodeURIComponent"](_0x5397a0["replace"](':', '')));
     },
     'handleChangeMode': function() {
         var _0x4939d9 = _0xada6dc("#gamemode")["val"]();
         this["setGameMode"](_0x4939d9);
     },
     'findServer': function(_0xada6dc, _0x5397a0) {
-        var _0xbb82b = Date[_0x5f4f('0x57')]();
-        if (!(_0xbb82b - this[_0x5f4f('0x58')] < 0x1f4)) {
-            _0x4939d9[_0x5f4f('0x37')] && _0x4939d9[_0x5f4f('0x37')][_0x5f4f('0x59')]();
+        var _0xbb82b = Date["now"]();
+        if (!(_0xbb82b - this["findingServer"] < 0x1f4)) {
+            _0x4939d9["core"] && _0x4939d9["core"][_0x5f4f('0x59')]();
             var _0x136f53 = 'findServer';
             null == _0xada6dc && (_0xada6dc = ''), null == _0x5397a0 ? _0x5397a0 = ":ffa" : ':battleroyale' === _0x5397a0 && (_0x136f53 = 'findBattleRoyaleServer');
             var _0x4c0667 = this,
                 _0x200e80 = this[_0x5f4f('0x5a')](_0xada6dc, _0x5397a0),
-                _0x5b7dda = ++this[_0x5f4f('0x5b')];
-            this['findingServer'] = _0xbb82b, this[_0x5f4f('0x5c')](_0x4e9951[_0x5f4f('0x5d')] + '/' + _0x136f53, _0x200e80, function(_0x4939d9) {
-                if (_0x5b7dda == _0x4c0667[_0x5f4f('0x5b')]) {
-                    var _0xbb82b = _0x4939d9[_0x5f4f('0x5e')];
-                    null !== _0xbb82b && _0x5f4f('0x5f') !== _0xbb82b['https'] ? (_0x4c0667[_0x5f4f('0x60')] = _0xbb82b["https"], null !== _0x4939d9["token"] && (_0x4c0667[_0x5f4f('0x63')] = _0x4939d9["token"]), _0x4c0667[_0x5f4f('0x64')] = 0x1f4, _0x4c0667[_0x5f4f('0x65')](_0x4c0667[_0x5f4f('0x60')])) : _0x4c0667[_0x5f4f('0x66')](_0xada6dc, _0x5397a0);
+                _0x5b7dda = ++this["curValidFindServer"];
+            this['findingServer'] = _0xbb82b, this[_0x5f4f('0x5c')](_0x4e9951["endpoint_version"] + '/' + _0x136f53, _0x200e80, function(_0x4939d9) {
+                if (_0x5b7dda == _0x4c0667["curValidFindServer"]) {
+                    var _0xbb82b = _0x4939d9["endpoints"];
+                    null !== _0xbb82b && "0.0.0.0:0" !== _0xbb82b['https'] ? (_0x4c0667["serverIP"] = _0xbb82b["https"], null !== _0x4939d9["token"] && (_0x4c0667["partyToken"] = _0x4939d9["token"]), _0x4c0667["backoffPeriod"] = 0x1f4, _0x4c0667["connect"](_0x4c0667["serverIP"])) : _0x4c0667["findServer"](_0xada6dc, _0x5397a0);
                 }
             }, function() {
-                _0x4c0667[_0x5f4f('0x64')] *= 0x2, setTimeout(function() {
-                    _0x4c0667[_0x5f4f('0x66')](_0xada6dc, _0x5397a0);
-                }, _0x4c0667[_0x5f4f('0x64')]);
+                _0x4c0667["backoffPeriod"] *= 0x2, setTimeout(function() {
+                    _0x4c0667["findServer"](_0xada6dc, _0x5397a0);
+                }, _0x4c0667["backoffPeriod"]);
             });
         }
     },
@@ -517,7 +517,7 @@ _0x4939d9[_0x5f4f('0x26')] = {
         var _0x5397a0 = this; - 0x1 != _0xada6dc["indexOf"]('#') && (_0xada6dc = _0xada6dc['split']('#')[0x1]);
         this["setGameMode"](":party", !0x1), this['partyToken'] = _0xada6dc, this["replaceHistoryState"]('/#' + _0x4939d9["encodeURIComponent"](_0xada6dc));
         var _0xbb82b = this[_0x5f4f('0x5a')](this['region'], '', _0xada6dc);
-        this['makeMasterRequest'](_0x4e9951[_0x5f4f('0x5d')] + _0x5f4f('0x79'), _0xbb82b, function(_0x4939d9) {
+        this['makeMasterRequest'](_0x4e9951["endpoint_version"] + "/getToken", _0xbb82b, function(_0x4939d9) {
             _0x5397a0["endpoint"] = _0x4939d9['endpoints']["https"], _0x5397a0["setPartyState"]('9');
         }, function() {
             _0x5397a0["setPartyState"]('6');
@@ -527,13 +527,13 @@ _0x4939d9[_0x5f4f('0x26')] = {
         '9' === _0x4939d9 && (this[_0x5f4f('0x7b')](), this["setGameMode"](":party", !0x1), this['connect'](this[_0x5f4f('0x7a')]), _0x4939d9 = '5'), _0xada6dc(_0x5f4f('0x18'))["attr"]("data-party-state", _0x4939d9);
     },
     'connect': function(_0xada6dc) {
-        console["log"](_0x5f4f('0x7d'), _0xada6dc), this['ws'] = "wss://" + _0xada6dc, ':party' === this[_0x5f4f('0x4f')] && this[_0x5f4f('0x63')] && (this['ws'] += _0x5f4f('0x7f') + _0x4939d9['encodeURIComponent'](this[_0x5f4f('0x63')])), _0x4939d9['core'] && _0x4939d9[_0x5f4f('0x37')][_0x5f4f('0x65')](this['ws']);
+        console["log"](_0x5f4f('0x7d'), _0xada6dc), this['ws'] = "wss://" + _0xada6dc, ':party' === this["gameMode"] && this["partyToken"] && (this['ws'] += _0x5f4f('0x7f') + _0x4939d9['encodeURIComponent'](this["partyToken"])), _0x4939d9['core'] && _0x4939d9["core"]["connect"](this['ws']);
     },
     'reconnect': function(_0x4939d9) {
-        this["region"] && (_0x4939d9 && this['serverIP'] ? this[_0x5f4f('0x65')](this[_0x5f4f('0x60')]) : this[_0x5f4f('0x66')](this["region"], this[_0x5f4f('0x4f')]));
+        this["region"] && (_0x4939d9 && this['serverIP'] ? this["connect"](this["serverIP"]) : this["findServer"](this["region"], this["gameMode"]));
     },
     'onConnect': function() {
-        ":party" === this[_0x5f4f('0x4f')] && this[_0x5f4f('0x7b')]();
+        ":party" === this["gameMode"] && this[_0x5f4f('0x7b')]();
     },
     'onDisconnect': function() {
         this["reconnect"]();
@@ -542,7 +542,7 @@ _0x4939d9[_0x5f4f('0x26')] = {
         requestCaptcha(!0);
     },
     'sendRecaptchaResponse': function(_0xada6dc) {
-        _0x4939d9[_0x5f4f('0x37')] && _0x4939d9[_0x5f4f('0x37')][_0x5f4f('0x80')](_0xada6dc);
+        _0x4939d9["core"] && _0x4939d9["core"][_0x5f4f('0x80')](_0xada6dc);
     },
     'notifyToken': function(_0x4939d9) {
         this['sendRecaptchaResponse'](_0x4939d9);
@@ -550,18 +550,18 @@ _0x4939d9[_0x5f4f('0x26')] = {
     'setNick': function() {
         this[_0x5f4f('0xc')]();
         var _0x5397a0 = _0xada6dc(_0x5f4f('0x81'))['val']();
-        _0x5397a0 && _0x5397a0["length"] > 0xf && (_0x5397a0 = _0x5397a0[_0x5f4f('0x82')](0, 0xf)), _0x4939d9[_0x5f4f('0x37')] && _0x4939d9[_0x5f4f('0x37')][_0x5f4f('0x83')](_0x5397a0);
+        _0x5397a0 && _0x5397a0["length"] > 0xf && (_0x5397a0 = _0x5397a0[_0x5f4f('0x82')](0, 0xf)), _0x4939d9["core"] && _0x4939d9["core"][_0x5f4f('0x83')](_0x5397a0);
     },
     'spectate': function() {
-        _0x4939d9[_0x5f4f('0x37')] && _0x4939d9[_0x5f4f('0x37')][_0x5f4f('0x84')]();
+        _0x4939d9["core"] && _0x4939d9["core"][_0x5f4f('0x84')]();
     },
     'updatePartyToken': function() {
-        _0xada6dc(_0x5f4f('0x85'))["val"](this[_0x5f4f('0x63')]);
+        _0xada6dc(_0x5f4f('0x85'))["val"](this["partyToken"]);
     },
     'checkHash': function() {
         if (this['checkPartyHash']()) this[_0x5f4f('0x86')](_0x4939d9["location"][_0x5f4f('0x87')]);
         else {
-            _0x4939d9["location"][_0x5f4f('0x87')] && -0x1 != [_0x5f4f('0x88'), _0x5f4f('0x89'), '#teams', _0x5f4f('0x8a')]["indexOf"](_0x4939d9["location"][_0x5f4f('0x87')]) && this["setGameMode"](_0x4939d9["location"][_0x5f4f('0x87')][_0x5f4f('0x54')]('#', ':'));
+            _0x4939d9["location"][_0x5f4f('0x87')] && -0x1 != [_0x5f4f('0x88'), _0x5f4f('0x89'), '#teams', _0x5f4f('0x8a')]["indexOf"](_0x4939d9["location"][_0x5f4f('0x87')]) && this["setGameMode"](_0x4939d9["location"][_0x5f4f('0x87')]["replace"]('#', ':'));
         }
     },
     'checkPartyHash': function() {
@@ -571,7 +571,7 @@ _0x4939d9[_0x5f4f('0x26')] = {
         _0x4939d9[_0x5f4f('0x8b')] && _0x4939d9[_0x5f4f('0x8b')]['replaceState'] && _0x4939d9[_0x5f4f('0x8b')][_0x5f4f('0x8c')]({}, _0x4939d9[_0x5f4f('0x8d')][_0x5f4f('0x8e')], _0xada6dc);
     },
     'facebookLogin': function() {
-        _0x4939d9[_0x5f4f('0x8f')]();
+        _0x4939d9["facebookLogin"]();
     },
     'doLoginWithFB': function(_0x4939d9) {
         this['context'] = "facebook", this['accessToken'] = _0x4939d9;
@@ -580,7 +580,7 @@ _0x4939d9[_0x5f4f('0x26')] = {
         this[_0x5f4f('0xa')] = 'google', this[_0x5f4f('0x90')] = _0x4939d9;
     },
     'login': function() {
-        this[_0x5f4f('0x90')] && ("facebook" === this['context'] && _0x4939d9[_0x5f4f('0x37')] && _0x4939d9[_0x5f4f('0x37')][_0x5f4f('0x91')] && _0x4939d9[_0x5f4f('0x37')][_0x5f4f('0x91')](this[_0x5f4f('0x90')]), _0x5f4f('0x20') === this['context'] && _0x4939d9[_0x5f4f('0x37')] && _0x4939d9[_0x5f4f('0x37')][_0x5f4f('0x92')] && _0x4939d9[_0x5f4f('0x37')]['sendGplusToken'](this[_0x5f4f('0x90')]));
+        this[_0x5f4f('0x90')] && ("facebook" === this['context'] && _0x4939d9["core"] && _0x4939d9["core"][_0x5f4f('0x91')] && _0x4939d9["core"][_0x5f4f('0x91')](this[_0x5f4f('0x90')]), "google" === this['context'] && _0x4939d9["core"] && _0x4939d9["core"][_0x5f4f('0x92')] && _0x4939d9["core"]['sendGplusToken'](this[_0x5f4f('0x90')]));
     },
     'logout': function() {
         this[_0x5f4f('0x90')] = null, this["reconnect"]();
@@ -612,11 +612,11 @@ _0x4939d9[_0x5f4f('0x26')] = {
         }, 0x2bf20);
     }
 }, _0x4939d9['getStorage'] = function() {
-    null !== _0x4939d9['localStorage']['getItem'](_0x5f4f('0xa7')) && (_0xbb82b = JSON[_0x5f4f('0x47')](_0x4939d9["localStorage"]['getItem']('storeObjectInfo')));
+    null !== _0x4939d9['localStorage']['getItem'](_0x5f4f('0xa7')) && (_0xbb82b = JSON["parse"](_0x4939d9["localStorage"]['getItem']('storeObjectInfo')));
 }, _0x4939d9["updateStorage"] = function() {
     _0x4939d9["localStorage"][_0x5f4f('0x38')](_0x5f4f('0xa7'), JSON[_0x5f4f('0xa8')](_0xbb82b));
 }, _0x4939d9["logout"] = function() {
-    _0x5f4f('0x20') === _0xbb82b['context'] && _0x4c0667 && _0x4c0667[_0x5f4f('0xaa')](), delete _0x4939d9['localStorage'][_0x5f4f('0xa7')], _0xada6dc(_0x5f4f('0x18'))["attr"]("data-logged-in", '0'), _0xada6dc(".progress-bar-striped")["width"]('0%'), master["logout"]();
+    "google" === _0xbb82b['context'] && _0x4c0667 && _0x4c0667[_0x5f4f('0xaa')](), delete _0x4939d9['localStorage'][_0x5f4f('0xa7')], _0xada6dc(_0x5f4f('0x18'))["attr"]("data-logged-in", '0'), _0xada6dc(".progress-bar-striped")["width"]('0%'), master["logout"]();
 }, _0x4939d9['facebookLogin'] = function() {
     alert("You seem to have something blocking Facebook on your browser, please check for any extensions");
 }, _0x4939d9["fbAsyncInit"] = function() {
@@ -626,21 +626,21 @@ _0x4939d9[_0x5f4f('0x26')] = {
         'xfbml': !0,
         'status': !0,
         'version': "v2.8"
-    }), !0 && (_0x4939d9['getStorage'](), '1' === _0xbb82b[_0x5f4f('0x1f')] && "facebook" === _0xbb82b[_0x5f4f('0xa')] && _0x4939d9['FB'][_0x5f4f('0xaf')](function(_0xada6dc) {
+    }), !0 && (_0x4939d9['getStorage'](), '1' === _0xbb82b["loginIntent"] && "facebook" === _0xbb82b[_0x5f4f('0xa')] && _0x4939d9['FB'][_0x5f4f('0xaf')](function(_0xada6dc) {
         _0x5f4f('0xb0') === _0xada6dc["status"] ? _0x5b7dda(_0xada6dc) : _0x4939d9['logout']();
-    }), _0x4939d9["facebookRelogin"] = _0x200e80, _0x4939d9[_0x5f4f('0x8f')] = _0x200e80);
-}, _0x4939d9[_0x5f4f('0xb1')] = function() {
-    _0x4939d9[_0x5f4f('0xb2')](), _0x4939d9[_0x5f4f('0xb3')][_0x5f4f('0xb4')](_0x5f4f('0xb5'), function() {
-        _0x4c0667 = _0x4939d9['gapi'][_0x5f4f('0xb5')][_0x5f4f('0xac')]({
-            'client_id': _0x4e9951[_0x5f4f('0xb6')],
-            'cookie_policy': _0x5f4f('0xb7'),
-            'scope': _0x5f4f('0xb8'),
-            'app_package_name': _0x5f4f('0xb9')
+    }), _0x4939d9["facebookRelogin"] = _0x200e80, _0x4939d9["facebookLogin"] = _0x200e80);
+}, _0x4939d9["gapiAsyncInit"] = function() {
+    _0x4939d9["getStorage"](), _0x4939d9["gapi"]["load"]("auth2", function() {
+        _0x4c0667 = _0x4939d9['gapi']["auth2"]["init"]({
+            'client_id': _0x4e9951["gplus_client_id"],
+            'cookie_policy': "single_host_origin",
+            'scope': "https://www.googleapis.com/auth/plus.login email",
+            'app_package_name': "com.miniclip.agar.io"
         });
-        var _0xada6dc = document[_0x5f4f('0xba')](_0x5f4f('0xbb'));
+        var _0xada6dc = document["getElementById"]("gplusLogin");
         _0xada6dc['addEventListener']("click", function() {
-            _0xbb82b[_0x5f4f('0x1f')] = '1', _0xbb82b[_0x5f4f('0xa')] = _0x5f4f('0x20'), _0x4939d9["updateStorage"]();
-        }), _0x4c0667[_0x5f4f('0xbc')](_0xada6dc), _0x4c0667['currentUser']['listen'](_0x13ffe1), _0x4c0667[_0x5f4f('0xbd')](_0x4065de);
+            _0xbb82b["loginIntent"] = '1', _0xbb82b[_0x5f4f('0xa')] = "google", _0x4939d9["updateStorage"]();
+        }), _0x4c0667["attachClickHandler"](_0xada6dc), _0x4c0667['currentUser']['listen'](_0x13ffe1), _0x4c0667["then"](_0x4065de);
     });
 };
 }(window, window['jQuery']);
