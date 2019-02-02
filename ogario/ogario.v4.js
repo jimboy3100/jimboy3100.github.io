@@ -19,7 +19,7 @@ var LMGameConfiguration = $.ajax({
 		}
 }).responseJSON;
 
-( function t(ogcustom1, ogcustom2, ogcustom3) {
+( function t(ogcustom1) {
 	var ogcustom1;
 	var ogcustom2 = {};
 	var ogcustom3 = [47];
