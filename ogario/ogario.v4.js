@@ -5,47 +5,2821 @@
 // Thank you volum for the case 16: instance
 
 //v1.28
-var obfuscatedbigarraywithnopurpose1 = ['shiftMessage', '[Legend mod Express] Game server socket error', 'onDisconnect', '[Legend mod Express] Game server socket close', 'shiftKey', 'sendAction', 'sendPosition', 'playerNick', 'unescape', 'cursorX', 'clientVersionString', 'getFloat32', 'pieChart', 'drawPieChart', 'playerPosition', 'decodeURIComponent', 'isPlayer', 'handleLeaderboard', 'ghostCells', '[Legend mod Express] Captcha requested', 'recaptchaRequested', 'logout', 'battleRoyale', 'startTime', 'joined', 'radius', 'shrinkTime', 'timeLeft', 'serverTimeDiff', 'targetRadius', 'rank', '[Legend mod Express] Received protocol key:', 'generateClientKey', 'login', 'serverTime', 'handleSubmessage', 'updateCells', 'viewMinX', 'readDoubleLE', 'viewMinY', 'setMapOffset', 'viewMaxX', 'viewMaxY', '<span class=\"teammate\">', 'mapMinX', 'mapMinY', 'mapMaxX', 'mapMaxY', 'removePlayerCell', 'onPlayerDeath', 'color2Hex', 'playerSize', 'recalculatePlayerMass', 'biggerSTECellsCache', 'biggerCellsCache', 'STECellsCache', 'cacheCells', 'smallerCellsCache', '#FF008C', '#BE00FF', '#FF0A00', 'clientX', 'cursorY', 'clientY', 'detail', 'keyCode', 'sendSplit', 'sendFreeSpectate', 'sendEject', 'onkeyup', 'pressedKeys', 'userAgent', 'addEventListener', 'DOMMouseScroll', 'setZoom', 'onmousewheel', 'setClientVersion', 'ctx', 'onmousemove', 'getCursorPosition', 'innerWidth', 'innerHeight', 'calculatePlayerMassAndPosition', 'camX', 'camY', 'getZoom', 'setView', 'sortCells', 'compareCells', 'drawGrid', 'translate', 'drawBattleArea', 'drawMapBorders', 'drawVirusesRange', 'drawFood', 'drawSplitRange', 'drawCursorTracking', 'drawGhostCells', 'autoHideFoodOnZoom', 'drawCachedFood', 'optimizedFood', 'pellet', 'rect', 'darkTheme', 'drawCircles', '#00C8FF', '#64FF00', '#FF3333', '#3333FF', 'drawDangerArea', 'battleAreaMap', 'battleAreaMapCtx', 'drawSafeArea', 'maxRadius', 'globalCompositeOperation', 'drawDashedCircle', 'fpsLastRequest', 'renderedFrames', 'renderFrame', 'requestAnimationFrame', 'setCanvas', 'resizeCanvas', 'render', 'hk-feed', 'normal', 'hk-macroFeed', 'macroFeed', 'hk-split', 'SPACE', 'hk-doubleSplit', 'doubleSplit', 'Popsplit', 'hk-split16', 'split16', 'hk-pause', 'hk-showTop5', 'setShowTop5', 'ALT+T', 'setShowTime', 'hk-showSplitRange', 'setShowSplitInd', 'ALT+I', 'setShowTeammatesInd', 'hk-showOppColors', 'setShowOppColors', 'hk-transparentSkins', 'hk-showSkins', 'setShowSkins', 'hk-showStats', 'ALT+S', 'setShowStats', 'hk-toggleCells', 'toggleCells', 'hk-showFood', 'setShowFood', 'hk-showGrid', 'setShowGrid', 'hk-showMiniMapGuides', 'ALT+G', 'setShowMiniMapGuides', 'hk-showHUD', 'ALT+H', 'hk-copyLb', 'copyLb', 'hk-showLb', 'setShowLb', 'hk-toggleAutoZoom', 'toggleAutoZoom', 'hk-resetZoom', 'resetZoom', 'hk-toggleDeath', 'toggleDeath', 'hk-clearChat', 'displayChatHistory', 'hk-showBgSectors', 'setShowBgSectors', 'hk-hideBots', 'ALT+B', 'hk-showNames', 'setShowNames', 'hk-hideTeammatesNames', 'setHideTeammatesNames', 'hk-showMass', 'setShowMass', 'hk-showMiniMap', 'ALT+M', 'setShowMiniMap', 'ENTER', 'enterChatMessage', 'TILDE', 'hk-autoResp', 'toggleAutoResp', 'ALT+1', 'hk-zoomLevel', 'ALT+2', 'ALT+3', 'ALT+4', 'ALT+5', 'hk-switchServerMode', 'switchServerMode', 'hk-showTargeting', 'setShowTargeting', 'hk-setTargeting', 'setTargeting', 'hk-cancelTargeting', 'hk-changeTarget', 'hk-privateMiniMap', 'hk-showQuest', 'setShowQuest', 'sendCommand', 'command', 'comm7', 'comm0', 'MOUSE WHEEL', 'LEFT', 'comm13', 'DOWN', 'custom-key-in form-control input-sm', 'defaultKey', 'spec-messageKey', 'defaultMessageKey', 'ogarioHotkeys', 'loadDefaultHotkeys', 'ogarioCommands', 'saveCommands', '#hotkeys .command-in', 'each', '#hotkeys-cfg .custom-key-in', '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">', '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>', 'hk-inst-assign', '</li><li>', 'hk-inst-delete', 'hk-inst-keys', '</li></ul></div></div>', 'hk-', '<div class=\"row\"><div class=\"key-label\"><input id=\"', '\" class=\"command-in form-control input-sm\" value=\"', '\" maxlength=\"80\" /></div><div class=\"default-key\">', '</div><div class=\"custom-key\"><input id=\"', '\" class=\"custom-key-in form-control input-sm\" value=\"', '\" /></div></div>', '#hotkeys-cfg', '<div class=\"row\"><div class=\"key-label\">', 'label', '</div><div class=\"default-key\">', '#reset-hotkeys', 'resetHotkeys', '#save-hotkeys', 'saveHotkeys', '#hotkeys', '#close-hotkeys', '.hotkeys-link', 'ctrlKey', 'CTRL', 'altKey', 'ALT', 'TAB', 'ESC', 'RIGHT', 'DEL', 'lastPressedKey', 'lastKeyId', 'setDefaultHotkey', 'deleteHotkey', 'hk-chatMessage', 'loadHotkeys', 'setHotkeysMenu', 'history', 'replaceState', 'specialOn', '#helloContainer', '-ms-transform', '-webkit-transform', 'innerW', 'innerH', 'onkeydown', 'target', 'inputClassName', 'setHotkey', 'keyDown', 'getPressedKey', 'keyUp', 'onmousedown', 'which', 'mouseInvert', 'onmouseup', 'onbeforeunload', 'exit', 'lz4', '/ogario', 'onresize', 'sendNick', 'sendSpectate', 'ProxyMobileData ERROR: Array data required.', 'getClientVersion', 'getDefaultSettings', 'ogario', 'jQuery', 'function', 'Cannot find module \'', 'code', 'MODULE_NOT_FOUND', 'call', 'exports', 'byteLength', 'toByteArray', 'length', 'charCodeAt', 'fromByteArray', 'push', 'join', 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/', 'ieee754', 'Buffer', 'alloc', '__proto__', 'prototype', 'number', 'string', 'If encoding is specified then the first argument must be a string', '\"value\" argument must not be a number', '\'length\' is out of bounds', 'isEncoding', '\"encoding\" must be a valid string encoding', 'write', 'slice', 'isBuffer', 'copy', 'type', 'data', 'First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.', '\"size\" argument must be a number', 'Attempt to allocate Buffer larger than maximum size: 0x', 'toString', ' bytes', 'latin1', 'utf-8', 'ucs2', 'utf16le', 'utf-16le', 'hex', 'toLowerCase', 'from', 'indexOf', 'val must be string, number or Buffer', 'readUInt16BE', 'Invalid hex string', 'substr', 'min', 'fromCharCode', 'apply', 'kMaxLength', 'TYPED_ARRAY_SUPPORT', 'foo', 'undefined', 'error', 'This browser lacks typed array (Uint8Array) support which is required by \`buffer\` v5.x. Use \`buffer\` v4.x if you require old browser support.', 'species', 'defineProperty', 'fill', 'allocUnsafe', 'allocUnsafeSlow', '_isBuffer', 'compare', 'Arguments must be Buffers', 'utf8', 'binary', '\"list\" argument must be an Array of Buffers', 'swap16', 'Buffer size must be a multiple of 16-bits', 'swap32', 'swap64', 'Buffer size must be a multiple of 64-bits', 'ascii', 'base64', 'Unknown encoding: ', 'equals', 'Argument must be a Buffer', 'inspect', 'INSPECT_MAX_BYTES', 'match', ' ... ', '<Buffer ', 'Out of range index', 'includes', 'Buffer.write(string, encoding, offset[, length]) is no longer supported', 'Attempt to write outside buffer bounds', 'toJSON', '_arr', 'offset is not uint', 'Trying to access beyond buffer length', '\"value\" argument is out of bounds', 'Index out of range', 'readUIntLE', 'readUIntBE', 'readUInt8', 'readUInt16LE', 'readUInt32LE', 'readUInt32BE', 'readIntLE', 'pow', 'readIntBE', 'readInt8', 'readInt16LE', 'readInt16BE', 'readInt32LE', 'readInt32BE', 'readFloatLE', 'read', 'writeUIntLE', 'writeUIntBE', 'writeUInt8', 'writeUInt16LE', 'writeUInt16BE', 'writeUInt32LE', 'writeUInt32BE', 'writeIntLE', 'writeIntBE', 'writeInt8', 'writeInt16LE', 'writeInt16BE', 'writeInt32LE', 'writeInt32BE', 'writeFloatLE', 'writeDoubleLE', 'writeDoubleBE', 'targetStart out of bounds', 'sourceStart out of bounds', 'sourceEnd out of bounds', 'set', 'encoding must be a string', 'Out of range index', 'Invalid code point', 'replace', 'isView', 'isArray', '[object Array]', 'isBoolean', 'boolean', 'isNull', 'isNullOrUndefined', 'isNumber', 'isString', 'isSymbol', 'isRegExp', '[object RegExp]', '[object Date]', 'isError', 'isPrimitive', '../../is-buffer/index.js', 'UINT32', './lib/uint32', 'UINT64', './lib/uint64', '_high', 'remainder', '_low', 'fromBits', 'fromNumber', 'fromString', 'toNumber', 'add', 'subtract', 'multiply', 'div', 'division by zero', 'clone', 'shiftRight', 'greaterThan', 'lessThan', 'not', 'xor', 'shiftr', 'shiftLeft', 'shiftl', 'rotateLeft', 'rotl', 'rotateRight', 'rotr', 'amd', '_a00', '_a16', '_a32', '_a48', 'negate', 'and', '_events', '_maxListeners', 'EventEmitter', 'setMaxListeners', 'n must be a positive number', 'emit', 'Uncaught, unspecified \"error\" event. (', 'context', 'addListener', 'listener must be a function', 'newListener', 'listener', 'defaultMaxListeners', 'warned', '(node) warning: possible EventEmitter memory leak detected. %d listeners added. Use emitter.setMaxListeners() to increase limit.', 'trace', 'once', 'removeListener', 'removeAllListeners', 'listeners', 'listenerCount', 'abs', 'floor', 'log', 'LN2', 'create', 'super_', 'constructor', 'cuint', 'uncompress', 'input too large', 'compressBound', ' < ', 'imul', 'compress', 'compressHC', 'compressDependent', './decoder_stream', 'end', 'concat', 'buffer', 'stream', 'Transform', 'util', 'inherits', './static', 'utils', './binding', 'SIZES', 'options', 'binding', 'useJS', 'pos', 'descriptor', 'state', 'MAGIC', 'streamSize', 'dictId', 'currentStreamChecksum', 'skippableSize', '_transform', '_main', 'emit_Error', 'check_Size', 'notEnoughData', 'Unexpected end of LZ4 stream', 'read_MagicNumber', 'MAGICNUMBER_SKIPPABLE', 'MAGICNUMBER', 'Invalid magic number: ', 'toUpperCase', 'DESCRIPTOR', 'SKIP_SIZE', 'read_SkippableSize', 'SKIP_DATA', 'descriptorStart', 'Invalid version: ', 'Reserved bit set', 'blockMaxSizes', 'Invalid block max size: ', 'SIZE', 'read_Size', 'DICTID', 'read_DictId', 'DESCRIPTOR_CHECKSUM', 'read_DescriptorChecksum', 'DATABLOCK_SIZE', 'read_DataBlockSize', 'DATABLOCK_DATA', 'read_DataBlockData', 'dataBlock', 'DATABLOCK_CHECKSUM', 'read_DataBlockChecksum', 'blockChecksum', 'DATABLOCK_UNCOMPRESS', 'uncompress_DataBlock', 'blockMaxSize', 'streamChecksum', 'read_EOS', 'EOS', 'Invalid stream checksum: ', '_flush', './encoder_stream', 'LZ4_compress', 'bindings', 'STATES', 'forEach', 'highCompression', 'VERSION', 'dict', 'first', 'checksum', 'headerSize', 'header', 'flg', 'update_Checksum', 'CHECKSUM_UPDATE', 'compress_DataBlock', 'DATABLOCK_COMPRESS', 'size', 'CHECKSUM', 'version', 'createDecoderStream', 'decode', './decoder', 'LZ4_uncompress', 'encode', './encoder', 'decodeBlock', 'encodeBound', 'encodeBlock', 'encodeBlockHC', 'MAGICNUMBER_BUFFER', 'EOS_BUFFER', 'extension', '.lz4', './utils', 'xxhashjs', 'update', 'v1.', '\"callback\" argument must be a function', 'nextTick', '_process', 'setTimeout has not been defined', 'run', 'fun', 'array', 'title', 'versions', 'prependListener', 'prependOnceListener', 'process.binding is not supported', 'cwd', 'chdir', 'process.chdir is not supported', 'umask', './lib/_stream_duplex.js', 'process-nextick-args', 'core-util-is', './_stream_readable', './_stream_writable', 'readable', 'writable', 'allowHalfOpen', 'ended', 'destroyed', '_readableState', '_writableState', '_destroy', './_stream_transform', 'isarray', 'ReadableState', './internal/streams/stream', 'safe-buffer', 'Uint8Array', 'debuglog', './internal/streams/BufferList', './internal/streams/destroy', 'close', 'destroy', 'resume', './_stream_duplex', 'objectMode', 'readableObjectMode', 'highWaterMark', 'pipes', 'pipesCount', 'flowing', 'endEmitted', 'reading', 'sync', 'needReadable', 'emittedReadable', 'readableListening', 'resumeScheduled', 'defaultEncoding', 'awaitDrain', 'readingMore', 'decoder', 'encoding', 'string_decoder/', 'StringDecoder', '_read', 'Invalid non-string/buffer chunk', 'getPrototypeOf', 'stream.unshift() after end event', 'stream.push() after EOF', '_undestroy', 'unshift', 'isPaused', 'setEncoding', 'head', 'emitReadable', 'emit readable', 'maybeReadMore read 0', 'readable nexttick read 0', 'resume read 0', 'flow', 'clear', 'shift', 'next', 'tail', '\"endReadable()\" called on non-empty stream', 'read: emitReadable', 'need readable', 'length less than watermark', 'reading or ended', 'do read', '_read() is not implemented', 'pipe', 'stdout', 'stderr', 'hasUnpiped', 'cleanup', 'finish', 'drain', 'unpipe', 'needDrain', 'onend', 'ondata', 'false write response, pause', 'pause', 'onfinish', 'pipe resume', 'wrapped end', 'wrapped data', 'bind', 'wrapped _read', '_fromList', 'afterTransform', '_transformState', 'transforming', 'writecb', 'write callback called multiple times', 'writechunk', 'needTransform', 'writeencoding', 'transform', 'flush', 'prefinish', 'Calling transform done when ws.length != 0', 'Calling transform done when still transforming', '_transform() is not implemented', '_write', 'entry', 'callback', 'pendingcb', 'corkedRequestsFree', 'browser', 'v0.9.', 'WritableState', 'writableObjectMode', 'finalCalled', 'ending', 'decodeStrings', 'writing', 'corked', 'bufferProcessing', 'onwrite', 'writelen', 'errorEmitted', 'bufferedRequest', 'lastBufferedRequest', 'prefinished', 'bufferedRequestCount', '_writev', 'writev', 'final', '_final', 'isBuf', 'allBuffers', 'chunk', 'finished', 'getBuffer', 'deprecate', '_writableState.buffer is deprecated. Use _writableState.getBuffer instead.', 'hasInstance', 'Cannot pipe, not readable', 'write after end', 'May not write null values to stream', 'cork', 'uncork', 'setDefaultEncoding', 'ucs-2', 'raw', '_write() is not implemented', 'undestroy', 'Cannot call a class as a function', 'events', './readable', './lib/_stream_readable.js', 'Stream', 'Writable', './lib/_stream_writable.js', 'Duplex', './lib/_stream_transform.js', 'PassThrough', './lib/_stream_passthrough.js', 'Argument must not be a number', 'Argument must be a number', 'SlowBuffer', 'Readable', 'readable-stream/readable.js', 'readable-stream/writable.js', 'readable-stream/duplex.js', 'readable-stream/transform.js', 'readable-stream/passthrough.js', '_isStdio', 'text', 'fillLast', 'lastNeed', 'lastTotal', 'lastChar', 'repeat', 'localStorage', 'true', 'noDeprecation', 'throwDeprecation', 'traceDeprecation', 'warn', 'object', 'format', '[Circular]', 'depth', 'showHidden', 'colors', 'customInspect', 'stylize', 'styles', 'null', 'keys', 'getOwnPropertyNames', 'message', 'description', 'name', '[Function', 'special', 'regexp', ' [Function', '[Object]', 'seen', 'pop', 'reduce', ',\n  ', 'get', '[Getter]', '[Setter]', 'value', 'split', 'map', '   ', '[object Error]', 'NODE_DEBUG', 'test', 'pid', '%s %d: %s', 'cyan', 'yellow', 'grey', 'bold', 'green', 'magenta', 'symbol', 'isObject', 'isDate', 'isFunction', 'Jan', 'Feb', 'Apr', 'Jun', 'Aug', 'Sep', 'Nov', 'Dec', '%s - %s', 'getMinutes', 'getSeconds', 'getMonth', 'xxh_update', '2654435761', '3266489917', '668265263', '374761393', 'digest', 'seed', 'total_len', 'memsize', 'memory', 'init', 'XXH', 'Ustawienia', 'Przywróc ustawienia domyślne', 'Nazwy', 'Masa', 'Skiny', 'Pokarm', 'Przezroczystość / kolory', 'Siatka / sektory', 'Minimapa', 'Wspomagacze', 'Sterowanie myszką', 'HUD', 'Czat', 'Statystyki', 'Dodatkowe', 'Wyłącz skiny', 'Pokaż masę', 'Pokaż zadanie (quest)', 'Auto zoom', 'Opóźnienie animacji', 'Szybkość zoomu', 'Szybkie odrodzenie (klawisz)', 'Auto odrodzenie', 'Autoukrywanie nazw i masy', 'Autoukrywanie masy', 'Autoukrywanie pokarmu (masa)', 'Autoukrywanie pokarmu (zoom)', 'Zoptymalizowane nazwy', 'Skrócona masa (k)', 'Licznik strzałów (wirusy)', 'Ukryj własną masę', 'Podstawowe skiny', 'Własne skiny', 'Mój przezroczysty skin', 'Przezroczyste kulki', 'Przezroczyste wirusy', 'Przezroczyste skiny', 'Siatka', 'Sektory w tle', 'Granice mapy', 'Duchy kulek', 'Pokaż minimapę', 'Pokaż siatkę minimapy', 'Pokaż prowadnice na minimapie', 'Pokaż duchy kulek na minimapie', 'Jednokolorowi gracze', 'Kolorowy pokarm', 'Kolory przeciwników', 'Zasięg podziału', 'Obwódki nazw', 'Obwódki masy', 'Śledzenie kursora', 'Wskaźniki graczy teamu', 'LPM - Split myszką', 'PPM - Feed myszką', 'Odwróć klawisze myszki', 'Wyłącz czat', 'Ukryj czat', 'Emotikony', 'Pokaż obrazki na czacie', 'Pokaż filmiki na czacie', 'Czatbox zamiast wyskakujących wiadomości', 'Pokaż top 5 teamu', 'Pokaż namierzanie', 'Pokaż aktualny czas', 'Pokaż masę w topce', 'Nagłówek \"Topka\"', 'Wyśrodkowana topka', 'Pokaż statystyki', 'Statystyki: Masa', 'Statystyki: STE', 'Statystyki: n/16', 'Statystyki: FPS', 'Blokuj popupy (reklamy/sklep/zadanie)', 'Skróty klawiszowe', 'Aby ustawić skrót klawiszowy kliknij na polu skrótu i naciśnij wybrany klawisz.', 'Aby usunąć skrót klawiszowy kliknij na polu skrótu i naciśnij klawisz DELETE.', 'Możliwe kombinacje skrótów klawiszowych z użyciem klawiszy CTRL oraz ALT.', 'Szybki feed', 'Podział', 'Podział na 16', 'Pauza kulki', 'Pokaż/ukryj top 5 teamu', 'Pokaż/ukryj aktualny czas', 'Pokaż/ukryj zasięg podziału', 'Pokaż/ukryj zasięg podziału z ringami', 'Pokaż/ukryj wskaźniki graczy teamu', 'Pokaż/ukryj kolory przeciwników', 'Przełącz skiny (własne/standardowe)', 'Przełącz kulkę (najmniejsza/największa)', 'Pokaż/ukryj pokarm', 'Pokaż/ukryj siatkę', 'Pokaż/ukryj prowadnice na minimapie', 'Pokaż/ukryj czat', 'Pokaż/ukryj HUD', 'Pokaż/ukryj topkę', 'Włącz/wyłącz auto zoom', 'Reset zoomu', 'Zoom - poziom', 'Przełącz miejsce śmierci', 'Pokaż historię czatu / Czyść czat', 'Pokaż/ukryj małe boty', 'Pokaż/ukryj nazwy', 'Pokaż/ukryj nazwy graczy teamu', 'Pokaż/ukryj masę', 'Pokaż/ukryj minimapę', 'Napisz wiadomość na czacie', 'Szybkie odrodzenie (respawn)', 'Włącz/wyłacz auto odrodzenie', 'Przełącz serwer [publiczny/prywatny]', 'Pokaż/ukryj panel namierzania', 'Włącz/wyłącz namierzanie (śledzenie)', 'Zmień cel', 'Pokaż cel na minimapie', 'Pokaż/ukryj zadanie', 'Feeduj!', 'Pomocy na %currentSector%!', 'Wróg na %currentSector%!', 'Zabij pomocnika!', 'Zjedz wirusa!', 'Zjebałem, wybacz.', 'Ja pierdolę...', 'Kurwa mać!', 'Lewo!', 'Góra!', 'Prawo!', 'Dół!', 'Zapisz komendy', 'Przywróc ustawienia domyślne wyglądu', 'Motyw', 'Ciemny motyw', 'Jasny motyw', 'Tło', 'Obwódki wirusów', 'Czcionka nazw', 'Czcionka masy', 'Skala nazw', 'Skala masy', 'Skala masy wirusów', 'Skala obwódek tekstu', 'Wielkość pokarmu', 'Grubość granic mapy', 'Grubość siatki sektorów', 'Przezroczystość skinów', 'Przezroczystość wirusów', 'Przezroczystość nazw i masy', 'Grubość obwódki wirusów', 'Bezpieczna strefa', 'Strefa zagrożenia', 'Przezroczystość duchów kulek', 'Motyw menu', 'Kolor główny', 'Tekst przycisku', 'Panel', 'Tekst panelu', 'Tekst panelu (2)', 'Przycisk #1 (2)', 'Przycisk #2', 'Przycisk #2 (2)', 'Przycisk #3', 'Przycisk #3 (2)', 'Przycisk #4', 'Przycisk #4 (2)', 'Grafika tła panelu', 'Czas', 'Topka - ja', 'Tło wiadomości', 'Tekst wiadomości', 'Czas wiadomości', 'Nick wiadomości', 'Tekst komendy', 'Nick komendy', 'Tło czatboxu', 'Skala czatu', 'Sektory', 'Aktualny sektor', 'Prowadnice', 'Nick', 'Obwódka nicku', 'Moja kulka', 'Obwódka mojej kulki', 'Gracze', 'Czcionka minimapy', 'Czcionka nicku', 'Szerokość minimapy', 'Przezroczystość sektorów', 'Rozmiar nicku', 'Wielkość mojej kulki', 'Grubość obwódki mojej kulki', 'Wielkość graczy', 'Grafika / kursory', 'Czat został włączony!', 'Czat został ukryty!', 'Skiny zostały włączone!', 'Skiny zostały ukryte!', 'Małe boty stały się widoczne!', 'Małe boty zostały ukryte!', 'Auto odrodzenie zostało włączone!', 'Auto odrodzenie zostało wyłączone!', 'Auto zoom został wyłączony!', 'Brak celu', 'Nie żyje', 'Dystans', 'Masa razem', 'Aktywnych graczy', 'Łącznie masy', 'Eksport / import ustawień', 'Eksportuj ustawienia', 'Aby wyeksportować wybrane ustawienia skopiuj poniższy kod i zapisz go w pliku tekstowym z kodowaniem Unicode.', 'Aby zaimportować wybrane ustawienia wklej poniżej wyeksportowany wcześniej kod i naciśnij przycisk \"Importuj ustawienia\".', 'Profil', 'Profile', 'Dzięki Awesome!', 'Zapisz ustawienia', 'Zapisano!', 'Resetuj ustawienia', 'Zamknij', 'Napisz wiadomość', 'Aktywne party', 'Brak aktywnych party ;(', 'Playlista', 'Odwiedź', 'UWAGA! Popupy zostały zablokowane w ustawieniach.', 'Odblokuj tymczasowo', 'Topka', 'Użytkownik', 'Użytkownik %user% został wyciszony.', 'Wyłączono wyciszenie użytkownika %user%.', 'Wycisz', 'Wyłącz wyciszenie', 'Pokaż aktywnych użytkowników', 'Brak', 'Dźwięki', 'Wróć', 'Stwórz party', 'Zaloguj', 'Wyloguj', 'Zaloguj z Facebook', 'Zaloguj z Google', 'Darmowe Monety', 'Graj', 'Graj jako gość', 'Sklep', 'Obserwuj', 'Home', 'Settings', 'Zoom', 'Respawn', 'Names', 'Mass', 'Food', 'Transparency / colors', 'Minimap', 'Helpers', 'Mouse control', 'Chat', 'Stats', 'Extras', 'No names', 'No colors', 'Skip stats after death', 'Show quest', 'Quick respawn (hotkey)', 'Auto hide names and mass', 'Auto hide names', 'Auto hide mass', 'Auto hide food (mass)', 'Optimized names', 'Hide my name', 'Hide teammates names', 'Optimized mass (+/-2%)', 'Short mass (k)', 'Hide my mass', 'Vanilla skins', 'Custom skins', 'My transparent skin', 'My custom color', 'Transparent cells', 'Transparent viruses', 'Transparent skins', 'Show grid', 'Show background sectors', 'Show map borders', 'Show minimap', 'Show minimap grid', 'Show minimap guides', 'Show ghost cells', 'Optimized food', 'Opponents colors', 'Viruses colors', 'Viruses range', 'Names and mass stroke', 'Names stroke', 'Mass stroke', 'Cursor tracking', 'Teammates indicators', 'LMB - Mouse split', 'RMB - Mouse feed', 'Invert mouse buttons', 'Hide chat', 'Sound notifications', 'Emoticons', 'Show images on chat', 'Show videos on chat', 'Chatbox instead of popups', 'Message notification sound', 'Command notification sound', 'Show team top 5', 'Show targeting', 'Show current time', 'Show leaderboard mass', '\"Leaderboard\" header', 'Centered leaderboard', 'Game stats at the top', 'Show game stats', 'Game stats: Mass', 'Game stats: STE', 'Game stats: n/16', 'Game stats: FPS', 'Block popups (ads/shop/quest)', 'Hotkeys', 'Feed', 'Split 16', 'Cell pause', 'Show/hide team top 5', 'Show/hide split range', 'Show/hide split indicators', 'Show/hide teammates indicators', 'Show/hide opponents colors', 'Toggle skins (custom/default)', 'Show/hide skins', 'Toggle transparent skins', 'Show/hide game stats', 'Toggle own cells (smallest/biggest)', 'Show/hide food', 'Show/hide minimap guides', 'Show/hide chat', 'Show/hide HUD', 'Copy leaderboard', 'Toggle auto zoom', 'Reset zoom', 'Zoom level', 'Toggle death location', 'Show/hide background sectors', 'Show/hide small bots', 'Show/hide names', 'Show/hide teammates names', 'Show/hide mass', 'Show/hide minimap', 'Enter chat message', 'Quick respawn', 'Toggle auto respawn', 'Switch server [public/private]', 'Change target', 'Show target on the minimap', 'Show/hide quest', 'Commands', 'Split into me!', 'Need backup at %currentSector%!', 'Enemy spotted at %currentSector%!', 'Need a teammate!', 'Tank the virus!', 'Eat the virus!', 'Let\'s bait!', 'Fuck!', 'Tricksplit!', 'Left!', 'Up!', 'Right!', 'Bottom!', 'Save commands', 'Theme', 'Basic theming', 'Theme preset', 'Theme type', 'Dark theme', 'Light theme', 'Main color', 'Grid', 'Sectors font', 'Virus', 'Virus stroke', 'Mass font', 'Names scale', 'Virus mass scale', 'Text stroke scale', 'Food size', 'Map borders width', 'Sectors grid width', 'Sectors font size', 'Cells transparency', 'Skins transparency', 'Virus transparency', 'Names & mass transparency', 'Virus stroke size', 'Teammate indicator', 'Split range', 'Safe area', 'Danger area', 'Ghost cells', 'Ghost cells transparency', 'Menu theme', 'Panel (2)', 'Panel text', 'Panel text (2)', 'Button #1', 'Button #1 (2)', 'Button #2', 'Button #2 (2)', 'Button #3 (2)', 'Button #4', 'Button #4 (2)', 'Panel background image', 'Background', 'Text', 'Time', 'Leaderboard - me', 'Leaderboard - teammate', 'HUD font', 'HUD scale', 'Message background', 'Message text', 'Message time', 'Message nick', 'Command background', 'Command time', 'Command nick', 'Chat scale', 'Sectors', 'Guides', 'Nick stroke', 'My cell', 'My cell stroke', 'Teammates', 'Minimap font', 'Nick font', 'Minimap width', 'Sectors transparency', 'Nick size', 'Nick stroke size', 'My cell size', 'My cell stroke size', 'Graphics / cursors', 'Custom background image', 'Custom cursor image', 'Chat is visible!', 'Chat is hidden!', 'Skins are hidden!', 'Small bots are visible!', 'Small bots are hidden!', 'Auto respawn is on!', 'Auto respawn is off!', 'Auto zoom is on!', 'Target not set', 'Dead', 'Distance', 'Mass altogether', 'Active players', 'Total mass', 'Export / import settings', 'Export settings', 'Profiles', 'Skins', 'Add skins', 'Save settings', 'Saved!', 'Close', 'Active parties', 'No active parties ;(', 'Playlist', 'Visit', 'Legend mod Express: Are you sure you want to quit the game?', 'WARNING! Popups are blocked in the settings.', 'Score', 'Leaderboard', 'User', 'User %user% has been muted.', 'User %user% has been unmuted.', 'Mute', 'Unmute', 'Muted users', 'Active users', 'None', 'Sounds', 'Gifts', 'Daily Quest', 'Shop', 'navigator', 'language', 'userLanguage', 'hasOwnProperty', 'comm1', 'comm2', 'comm3', 'comm4', 'comm5', 'comm6', 'comm8', 'comm9', 'comm10', 'comm11', 'comm12', 'comm14', '&amp;', '&lt;', '&gt;', '&quot;', 'wink.svg', 'smirk.svg', 'joy.svg', 'sad.svg', 'cry.svg', 'tongue.svg', 'tonguew.svg', 'kiss.svg', 'smileh.svg', 'cool.svg', 'astonished.svg', 'sweat.svg', 'neutral.svg', 'unamused.svg', 'sleep.svg', 'relaxed.svg', 'expressionless.svg', 'money.svg', 'devil.svg', 'finger.svg', 'clap.svg', 'ok.svg', 'victory.svg', 'thumb.svg', 'thumbd.svg', 'OGARio v3', '#01d9cc', '#000a11', '#00243e', '#000000', '#00b9e8', '#5000ff', '#ffffff', 'ubuntu-bold', 'ogario-v3', '#002f52', '#8096a7', '#018cf6', '#0176ce', '#0099c0', '#8d5fe6', '#814ee3', '#bf00aa', '#a80096', 'rgba(0,0,0,0.4)', 'https://cdn.ogario.ovh/static/img/cursors/cursor_02.cur', 'OGARio v2', '#ff7800', '#292929', '#666666', '#e16400', 'rgba(255,120,0,0.9)', 'OGARio LE', '#b5a642', '#111111', '#998c36', 'rgba(181,166,66,0.9)', 'SniiKz\'s Style', '#fc0079', '#050008', '#1d0526', '#4f0242', '#4d0227', '#aa084e', '#8a063f', 'https://cdn.ogario.ovh/static/img/pattern.png', 'rgba(36,36,36,0.49)', '#737373', '#1fe000', '#e8e8e8', '#545454', '#05ff00', 'rgba(36,36,36,0.9)', '#4d4d4d', '#f0ff3d', '#acba07', '#305eff', '#2b2b2b', '#651fff', '#f2fbff', '#858a8c', '#ced6d9', '#33ff33', '#2de52d', 'rgba(255,255,255,0.9)', 'Agar.io Dark', '#999999', '#333333', '#f300d8', '#df00c6', '#222222', '#bbbbbb', '#428bca', '#5cb85c', '#449d44', '#f0ad4e', '#ec971f', '#d9534f', '#c9302c', 'Agar.io', '#5bc0de', '#cccccc', '#3071a9', 'Ubuntu', 'ubuntu', 'rgba(191,0,170,0.9)', 'getItem', 'ogarioThemeSettings', 'parse', 'setItem', 'stringify', 'removeItem', 'location', 'reload', '<style type=\'text/css\'>', 'appendTo', '<div class=\"preset-box\"><span class=\"title-box\">', '\" class=\"form-control\"></select></div></div>', 'append', '<option value=\"', '</option>', 'val', 'change', '<div class=\"color-box\"><span class=\"title-box\">', '-picker\"><input type=\"text\" value=\"', '\" id=\"', '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>', '-picker', 'changeColor.colorpicker', 'color', 'toHex', 'colorpicker', '</span><div class=\"input-group ', 'rgba', 'toRGB', 'rgba(', '<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">', ': </span><span id=\"', '</span></div><input id=\"', '\" max=\"', '\" step=\"', '\" value=\"', '\"></div>', '-slider', 'input', '<div class=\"input-box\"><span class=\"title-box\">', '\" class=\"form-control\" placeholder=\"', 'customCursor', '<div class=\"cursor-box\"><a href=\"#\" class=\"active\"><img src=\"', '\"></a></div>', '<div class=\"cursor-box\"><a href=\"#\"><img src=\"', 'Family', 'setFontFamily', 'setFontWeight', 'Weight', '</span><div class=\"select-wrapper\"><select id=\"', '<option value=\"ubuntu\">Ubuntu</option><option value=\"ubuntu-bold\">Ubuntu Bold</option>', '<option value=\"roboto\">Roboto</option><option value=\"roboto-bold\">Roboto Bold</option>', '<option value=\"oswald\">Oswald</option><option value=\"oswald-bold\">Oswald Bold</option>', 'setFont', 'roboto', 'Roboto', 'oswald', 'Oswald', '#theme', '<ul class=\"submenu-tabs\"><li class=\"theme-main-tab active\"><a href=\"#theme-main\" class=\"active ogicon-paint-format\" data-toggle=\"tab-tooltip\" title=\"', 'basicTheming', '\"></a></li><li class=\"theme-menu-tab\"><a href=\"#theme-menu\" class=\"ogicon-menu\" data-toggle=\"tab-tooltip\" title=\"', 'menuTheming', '\"></a></li><li class=\"theme-hud-tab\"><a href=\"#theme-hud\" class=\"ogicon-display\" data-toggle=\"tab-tooltip\" title=\"', 'hudTheming', '\"></a></li><li class=\"theme-chat-tab\"><a href=\"#theme-chat\" class=\"ogicon-bubbles\" data-toggle=\"tab-tooltip\" title=\"', 'chatTheming', 'miniMapTheming', '\"></a></li><li class=\"theme-images-tab\"><a href=\"#theme-images\" class=\"ogicon-compass\" data-toggle=\"tab-tooltip\" title=\"', 'imagesTheming', 'addPresetBox', '#theme-main', 'themePreset', 'preset', 'changeThemePreset', 'addColorBox', 'bgColor', 'setBgColor', 'bordersColor', 'gridColor', 'sectorsColor', 'namesColor', 'namesStrokeColor', 'massColor', 'massStrokeColor', 'virusColor', 'virusStrokeColor', 'foodColor', 'setFoodColor', 'setIndicatorColor', 'cursorTrackingColor', 'splitRangeColor', 'safeAreaColor', 'dangerAreaColor', 'ghostCellsColor', 'addFontBox', 'namesFont', 'sectorsFont', 'sectorsFontSize', 'addSliderBox', 'namesScale', 'massScale', 'virMassScale', 'strokeScale', 'foodSize', 'virusStrokeSize', 'bordersWidth', 'sectorsWidth', 'skinsAlpha', 'textAlpha', 'ghostCellsAlpha', '#theme-menu', 'menuPreset', 'menuOpacity', 'menuMainColor', 'menuPanelColor', 'setMenuPanelColor', 'menuTextColor', 'setMenuTextColor', 'menuTextColor2', 'setMenuButtons', 'btn1Color2', 'btn2Color', 'btn3Color', 'btn3Color2', 'btn4Color2', 'addInputBox', 'menuBg', 'Image URL', 'setMenuBg', 'hudMainColor', 'setHudColors', 'addRgbaColorBox', '#theme-hud', 'hudColor', 'hudTextColor', 'statsHudColor', 'timeHudColor', 'top5MassColor', 'lbTeammateColor', 'hudFont', 'hudScale', 'setHudScale', '#theme-chat', 'messageColor', 'messageTextColor', 'setChatColors', 'messageTimeColor', 'messageNickColor', 'commandsColor', 'commandsTextColor', 'commandsNickColor', 'chatScale', 'setChatScale', '#theme-minimap', 'miniMapSectorsColor', 'miniMapSectorColor', 'miniMapNickColor', 'miniMapNickStrokeColor', 'miniMapMyCellColor', 'miniMapMyCellStrokeColor', 'miniMapDeathLocationColor', 'miniMapGuidesColor', 'miniMapGhostCellsColor', 'miniMapFont', 'setMiniMapFont', 'miniMapNickFont', 'miniMapWidth', 'setMiniMapWidth', 'setMiniMapSectorsOpacity', 'miniMapNickSize', 'miniMapNickStrokeSize', 'miniMapMyCellSize', 'miniMapMyCellStrokeSize', 'miniMapTeammatesSize', 'miniMapGhostCellsAlpha', '#theme-images', 'customBackground', 'setCustomBackground', 'https://cdn.ogario.ovh/static/img/cursors/cursor_', 'addCursorBox', '.cur', 'click', '#theme-images .cursor-box a', 'preventDefault', 'img', 'src', 'setCustomCursor', '#customCursor', 'addClass', 'active', 'saveSett', '</button>', '#theme .btn-save', 'saved', '<div class=\"restore-settings\"><a href=\"#\">', 'restoreThemeSettings', '#theme .restore-settings a', '.skin', '#color', '#theme .', 'input[type=text]#', 'select#', 'changePreset', 'setTheme', 'massFont', 'body', 'css', 'background-color', 'preDrawPellet', 'preDrawIndicator', 'background-image', 'url(', 'none', '*{cursor:url(', '), auto !important}', '*{cursor: auto}', 'addCustomCSS', 'cursorCSS', 'setMenuOpacity', 'setMenuMainColor', 'opacity', '!important}::selection{background-color:', '!important}.menu-main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:', '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:', '}.ps-scrollbar-y{background-color:', '!important}', '#main-menu,.agario-side-panel,#hotkeys,#exp-imp{background-color: ', 'menuPanelColor2', '}.agario-panel h5,.agario-side-panel h5,#stats h2,.menu-tabs,.submenu-tabs,#skins a.default,#stats hr,#hotkeys-cfg div.row, #exp-imp h1{border-color: ', '}.quick:hover,#skins a,#profiles{color:', 'menuPanelColorCSS', '.agario-panel,.agario-side-panel,.agario-panel input,.agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.dark .yt-username,#stream-mode,#hide-url,.menu-tabs a,.submenu-tabs a,#skins a.default:hover,#quick-menu a,#prev-profile.default:hover,#next-profile.default:hover,#statsText,#hotkeys,#hotkeys-cfg .command-in,#exp-imp{color:', '}#skins a.default:hover{border-color:', '}::-webkit-input-placeholder{color:', '!important}::-moz-placeholder{color:', '}#hotkeys-cfg .command-in,#theme .color-box{border-color:', 'a,a:hover{color:', 'btn1Color', '}.btn,#hotkeys-cfg .custom-key-in{color:', 'menuBtnTextColor', '}.btn-primary{background-color:', '!important}.btn-primary:active,.btn-primary:disabled,.btn-primary:focus,.btn-primary:hover{background-color:', '!important}.btn-success{background-color:', '!important}.btn-success:active,.btn-success:disabled,.btn-success:focus,.btn-success:hover{background-color:', 'btn2Color2', '!important}.btn-warning:active,.btn-warning:disabled,.btn-warning:focus,.btn-warning:hover{background-color:', '!important}.btn-danger{background-color:', 'btn4Color', '!important}.btn-danger:active,.btn-danger:disabled,.btn-danger:focus,.btn-danger:hover{background-color:', '!important}#hotkeys-cfg .custom-key-in{background-color:', ';border-color:', 'menuButtonsCSS', '#menuBg', '.menu-panel, .agario-side-panel, #hotkeys, #exp-imp', 'setHudFont', '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:', '}.stats-hud-color{color:', '}.time-hud-color{color:', '}.top5-mass-color{color:', '}#leaderboard-positions .me{color:', 'lbMeColor', '}#leaderboard-positions .teammate{color:', 'hudCSS', '#overlays-hud', 'hudFontFamily', 'hudFontWeight', 'round', 'font-size', '#top5-hud', 'width', 'top', '#top5-pos', 'padding-left', '#time-hud', '#pause-hud', '#target-hud', 'padding-top', '#message,#messages li,.toast-success{background-color:', '}#message,.message-text,.toast-success .message-text{color:', '}.message-nick,.mute-user,.mute-user:hover,.toast-success .message-nick,.toast .mute-user,.toast .mute-user:hover{color:', '}.message-time{color:', '}.command-text,.toast-warning .command-text{color:', '}.command-time{color:', 'commandsTimeColor', '}#chat-box{background-color:', 'chatBoxColor', 'chatCSS', '#message-box, #messages, #toast-container, #chat-box', '#messages, #toast-container, #chat-box', '#message-box', 'height', '#toast-container{width:', 'px;font-size:', 'px}', 'chatScaleCSS', 'miniMapTop', '#minimap-hud', 'resetMiniMapSectors', '#minimap-sectors', 'miniMapSectorsOpacity', 'setFonts', 'setMenu', 'setHud', 'setChat', 'setMiniMap', 'loadThemeSettings', 'I <3 OGARio', 'mainColor', 'https://cdn.ogario.ovh/static/sounds/notification_01.mp3', 'Legend mod Express v4', 'v4 (4.0.0 b35)', ':ffa', 'now', 'b2dhcmlvLm92aA==', 'playerX', 'mapOffsetX', 'playerY', 'mapOffsetY', 'core', 'feedInterval', 'feed', 'vanillaSkins', 'vannillaSkins', 'customSkins', 'selectBiggestCell', 'showTop5', 'setTop5', 'show', 'hide', 'showTargeting', 'setTargetingHUD', '#target-hud, #target-panel-hud', 'showTime', 'displayTime', 'splitRange', 'showSplitInd', 'oppRings', 'teammatesInd', 'oppColors', 'noSkins', 'setSkins', 'showCustomSkins', 'displayChatInfo', 'showSkinsMsg', 'transparentSkins', 'toggle', 'showFood', 'showGrid', 'showMiniMapGuides', ':teams', 'gameMode', '#leaderboard-hud', 'showBgSectors', 'hideSmallBots', 'hideSmallBotsMsg', 'noNames', 'hideTeammatesNames', 'showMass', 'showMiniMap', 'showQuest', 'setQuest', '#quest-hud', 'autoZoom', 'zoomResetValue', 'zoomValue', 'lastDeath', 'deathLocations', ':visible', '.btn-play-guest', 'play', 'tryResp', 'quickResp', 'hideMenu', 'gameServerConnect', 'autoResp', 'setAutoResp', 'stop', '.btn-play', '#skipStats', 'prop', 'checked', 'skipStats', 'autoRespMsg', '<input>', '#leaderboard-positions', 'select', 'execCommand', 'remove', 'centeredLb', 'hud-text-center', 'normalLb', '#leaderboard-hud h4', 'html', 'leaderboard', 'ogario.ovh', 'fpsAtTop', '#stats-hud', 'removeClass', 'hud-bottom', 'hud-top', 'protocolMode', '#block-warn', 'blockPopups', 'unblockPopups', '#openfl-content, #openfl-overlay', 'block-popups', 'disabled', '#openfl-overlay.disabler', '#freeCoins, #gifting, #openShopBtn, #dailyQuests', 'leaderboardPositionsHUD', 'innerHTML', 'leaderboardDataHUD', 'showStats', 'showStatsMass', 'playerMass', 'mass', ' | ', 'playerScore', 'score', 'STE', ' | STE: ', 'showStatsN16', 'playerSplitCells', 'showStatsFPS', 'FPS: ', 'fps', 'statsHUD', 'textContent', 'displayStats', 'toLocaleString', 'parties', '<li><a href=\"https://agar.io/#', '\" onclick=\"$(\'#party-token\').val(\'', '</a></li>', 'activeParties', 'className', 'no-parties', 'top5', '<li><span class=\"cell-counter\" style=\"background-color: ', '</span>', '<a href=\"#\" data-user-id=\"', '\" class=\"set-target ogicon-target\"></a> ', '<span class=\"hud-main-color\">[', 'calculateMapSector', ']</span>', '<span class=\"top5-mass-color\">[', 'shortMassFormat', ']</span> ', 'escapeHTML', 'nick', '</li>', 'top5pos', 'top5totalMass', 'top5totalPlayers', 'top5limit', 'clearChatHistory', 'chatHistory', '#messages', '<li><span class=\"message-nick\">', ': </span><span class=\"message-text\">', '</span></li>', 'empty', 'showChatBox', '#chat-box .message', 'hideChat', 'disableChat', 'setHideChat', 'setShowChatBox', '#chat-box', 'sendChatMessage', 'blur', 'showNickDialog', '.menu-panel', '#stats', '#oferwallContainer', 'closeOfferwall', '#videoContainer', 'closeVideoContainer', '#overlays', 'fadeIn', '.ogario-menu', 'fadeOut', 'http:', 'https:', 'ogarioSettings', '#export-', '#import-settings', '#import-', 'showMiniMapGrid', 'chatSounds', 'setChatSoundsBtn', 'setCenteredLb', 'setNormalLb', 'setFpsAtTop', 'saveSettings', 'ogarioPlayerProfiles', 'Profile #', 'ogarioSelectedProfile', 'selectedProfile', 'clanTag', 'skinURL', 'default', '<a href=\"#\" id=\"skin-popover\" data-toggle=\"popover\" title=\"\" data-html=\"true\" data-content=\"<img src=\'', '\' width=\'500\'>\"></a>', '#skin-popover', 'popover', 'crossOrigin', 'onload', 'changeSkinPreview', 'setSkinPreview', 'skin-preview', 'next-profile', '#nick', '#clantag', '#skin', 'setValue', '#skins a', 'selected', '#skins a[data-profile=\'', 'setPlayerSettings', 'setProfile', '<label><input type=\"checkbox\" id=\"', '\" class=\"js-switch\"> ', '</label>', '#og-options', '<div class=\"options-box ', '<label>', ' <input type=\"checkbox\" class=\"js-switch\" id=\"', '\"></label>', '</span><input id=\"', '\" /></div>', '-value\" class=\"value\">', '-slider\" type=\"range\" min=\"', '-value', 'i18n_dict', '#mainPanel', 'before', '<div id=\"exp-bar\" class=\"agario-panel\"><span class=\"ogicon-user\"></span><div class=\"agario-exp-bar progress\"><span class=\"progress-bar-text\"></span><div class=\"progress-bar progress-bar-striped\" style=\"width: 0%;\"></div></div><div class=\"progress-bar-star\"></div></div><div id=\"main-menu\" class=\"agario-panel\"><ul class=\"menu-tabs\"><li class=\"start-tab active\"><a href=\"#main-panel\" class=\"active ogicon-home\" data-toggle=\"tab-tooltip\" title=\"', 'start', '\"></a></li><li class=\"profile-tab\"><a href=\"#profile\" class=\"ogicon-user\" data-toggle=\"tab-tooltip\" title=\"', 'profile', '\"></a></li><li class=\"settings-tab\"><a href=\"#og-settings\" class=\"ogicon-cog\" data-toggle=\"tab-tooltip\" title=\"', 'settings', '\"></a></li><li class=\"theme-tab\"><a href=\"#theme\" class=\"ogicon-droplet\" data-toggle=\"tab-tooltip\" title=\"', 'theme', 'hotkeys', 'sounds', '\"></a></li></ul><div id=\"main-panel\" class=\"menu-panel\"></div><div id=\"profile\" class=\"menu-panel\"></div><div id=\"og-settings\" class=\"menu-panel\"><div class=\"submenu-panel\"></div></div><div id=\"theme\" class=\"menu-panel\"></div><div id=\"music\" class=\"menu-panel\"></div></div>', '#main-panel', '<a href=\"#\" class=\"quick quick-menu ogicon-menu\"></a><a href=\"#\" class=\"quick quick-skins ogicon-images\"></a><div id=\"profiles\"><div id=\"prev-profile\"></div><div id=\"skin-preview\"></div><div id=\"next-profile\"></div></div>', '#mainPanel div[role=form]', '#main-panel div[role=form] .form-group:first', '<input id=\"clantag\" class=\"form-control\" placeholder=\"Tag, e.g. Ⓜ\" maxlength=\"10\"><div class=\"input-group nick\"></div>', '.nick', '<span class=\"input-group-btn\"><button id=\"stream-mode\" class=\"btn active ogicon-eye\"></button></span>', 'after', '<div class=\"input-group skin\"><input id=\"skin\" class=\"form-control\" placeholder=\"Skin URL (imgur.com direct link)\" maxlength=\"40\"><input type=\"hidden\" id=\"color\" value=\"', '#locationKnown, #locationUnknown', 'insertAfter', '#region', '<button class=\"btn btn-warning btn-server-info ogicon-cogs\"></button>', '.btn-spectate, .btn-logout', '#agario-main-buttons', 'clearfix', '<div id=\"server-info\" class=\"form-group clearfix\"><input id=\"server-ws\" class=\"form-control\" placeholder=\"Server WS\"><button id=\"server-connect\" class=\"btn btn-success ogicon-power\"></button><button id=\"server-reconnect\" class=\"btn btn-primary ogicon-redo2\"></button><input id=\"server-token\" class=\"form-control\" placeholder=\"Server token\"><button id=\"server-join\" class=\"btn btn-success\" data-itr=\"page_join_party\">Join</button></div>', '#helloContainer div[role=form]', '<div id=\"ogario-party\" class=\"clearfix\"><input id=\"party-token\" class=\"form-control\" placeholder=\"Party token\"></div>', '#ogario-party', '#og-settings .submenu-panel', '#main-menu', 'menu-panel', 'attr', '.center-container', 'ogario-menu', '<div id=\"menu-footer\" class=\"menu-main-color\">', 'visit', ' <a href=\"http://legendmod.ml\" target=\"_blank\">legendmod.ml</a> | ', '#leftPanel, #rightPanel', 'removeAttr', '.agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel', '#profile', 'agario-side-panel', '.agario-profile-panel', '<div id=\"block-warn\">', 'blockWarn', '</a></div>', '#exp-bar', 'agario-profile-panel', '.left-container', '.agario-shop-panel', '#tags-container', '<div id=\"quick-menu\" class=\"agario-panel agario-side-panel\"><a href=\"https://ogario.ovh/skins/\" class=\"quick-more-skins ogicon-grin\" target=\"_blank\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"', 'skins', '\"></a><a href=\"https://youtube.com/channel/UCaWiPNJWnhzYDrBQoXokn6w\" class=\"quick-yt ogicon-youtube2\" target=\"_blank\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"Team OGARio\"></a></div>', '#quick-menu', 'prepend', '<a href=\"#\" class=\"quick-shop ogicon-cart\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"', 'page_shop', '\"></a><a href=\"#\" class=\"quick-free-coins ogicon-coin-dollar\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"', 'page_menu_main_free_coins', '\"></a><a href=\"#\" class=\"quick-free-gifts ogicon-gift\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"', 'page_menu_main_gifts', '\"></a><a href=\"#\" class=\"quick-quests ogicon-trophy\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"', 'page_menu_main_dailyquests', '\"></a>', '.party-dialog, .partymode-info', '.agario-party-6', '.right-container', '<div class=\"agario-party\"></div>', '.agario-party', 'agario-panel agario-side-panel', '.agario-party h4, #cancel-party-btn', '.agario-party .btn', 'btn-sm', '<div id=\"skins-panel\" class=\"agario-panel agario-side-panel\"><div id=\"skins\"></div><a href=\"https://ogario.ovh/skins/\" id=\"more-skins\" class=\"btn btn-block btn-success\" target=\"_blank\">', 'moreSkins', '.btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr=\'page_option_dark_theme\'], #options #darkTheme', '#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom', '#advertisement', 'agario-panel', '#adsBottom', '-100px', '#noNames, #showMass', '<div id=\"og-options\"></div>', 'animationGroup', 'addOptions', 'zoomGroup', 'respGroup', 'optimizedNames', 'autoHideNames', 'hideMyName', 'namesStroke', 'optimizedMass', 'autoHideMass', 'shortMass', 'virMassShots', 'massStroke', 'skinsGroup', 'autoHideFood', 'rainbowFood', 'foodGroup', 'myCustomColor', 'myTransparentSkin', 'transparentCells', 'transparentViruses', 'transparencyGroup', 'showMapBorders', 'chatEmoticons', 'showChatVideos', 'chatGroup', 'showMiniMapGhostCells', 'miniMapGroup', 'virColors', 'cursorTracking', 'showGhostCells', 'mouseSplit', 'mouseFeed', 'mouseGroup', 'showLbData', 'hudGroup', 'showStatsSTE', 'statsGroup', 'extrasGroup', '#noSkins, #noColors, #skipStats, #showQuest', 'js-switch-vanilla', '.skinsGroup h5', '<label class=\"noSkins\">', '#noSkins', '.noSkins', '.transparencyGroup h5', '<label class=\"noColors\">', 'noColors', ' </label>', '#noColors', '.noColors', '.extrasGroup h5', '<label class=\"skipStats\">', '.skipStats', '<label class=\"showQuest\">', '#showQuest', '.showQuest', '#options', '#settingsChoice', '.extrasGroup', 'select-wrapper', '.animationGroup', 'zoomSpeedValue', '#og-settings', '<button class=\"btn btn-block btn-success btn-export\">', 'exportImport', 'restoreSettings', '#music', '<div class=\"agario-panel radio-panel\"><h5 class=\"menu-main-color\">Radio (', 'thanks', ')</h5><audio src=\"http://frshoutcast.comunicazion.eu:8815/;\" controls></audio><span class=\"playlist\"><span class=\"ogicon-file-music\"></span> <a href=\"http://frshoutcast.comunicazion.eu:8815/played.html?sid=1\" target=\"_blank\">', 'playlist', '</a></span></div>', '<div class=\"agario-panel sounds-panel\"><h5 class=\"menu-main-color\">', '</h5></div>', '<div class=\"agario-panel ogario-yt-panel\"><h5 class=\"menu-main-color\">Team OGARio (tag: Ⓜ)</h5><div class=\"g-ytsubscribe\" data-channelid=\"UCaWiPNJWnhzYDrBQoXokn6w\" data-layout=\"full\" data-theme=\"dark\" data-count=\"default\"></div></div>', '.sounds-panel', 'messageSound', 'Sound URL', 'setMessageSound', 'commandSound', 'totalPartyPlayers', ': <span id=\"top5-total-players\" class=\"top5-mass-color\">0</span><br><span class=\"hud-main-color ogicon-pacman\"></span> ', 'totalPartyMass', '</div> <div id=\"leaderboard-hud\" class=\"hud-b\"><h4 class=\"hud-main-color\">legendmod.ml</h4><div id=\"leaderboard-data\"></div><div id=\"leaderboard-positions\"></div></div> <div id=\"btl-leaderboard-hud\"><div class=\"hud hud-c\"><span id=\"btl-players-status\">Players ready</span>: <span id=\"btl-players-count\">0</span></div></div> <div id=\"minimap-hud\" class=\"hud-b\"><canvas id=\"minimap-sectors\"></canvas><canvas id=\"minimap\"></canvas></div><div id=\"target-hud\" class=\"hud\"><div id=\"target-player\"><span id=\"target-skin\"><img src=\"https://cdn.ogario.ovh/static/img/blank.png\" alt=\"\"> </span><span id=\"target-nick\"></span> <span id=\"target-status\" class=\"hud-main-color\">[', 'targetNotSet', ']</span></div><div id=\"target-summary\"></div></div><div id=\"target-panel-hud\" class=\"hud\"><a href=\"#\" id=\"set-targeting\" class=\"ogicon-target\"></a><a href=\"#\" id=\"set-private-minimap\" class=\"ogicon-location2\"></a><a href=\"#\" id=\"cancel-targeting\" class=\"ogicon-cancel-circle\"></a><a href=\"#\" id=\"change-target\" class=\"ogicon-arrow-right\"></a></div> <div id=\"quest-hud\" class=\"hud\"></div> <div id=\"btl-hud\" class=\"hud\"></div></div>', '<ul id=\"messages\"></ul>', '<div id=\"message-box\"><div id=\"chat-emoticons\"></div><div id=\"message-menu\"><a href=\"#\" class=\"chat-sound-notifications ogicon-volume-high\"></a><a href=\"#\" class=\"chat-active-users ogicon-user-check\"></a><a href=\"#\" class=\"chat-muted-users ogicon-user-minus\"></a><a href=\"#\" class=\"show-chat-emoticons ogicon-smile\"></a></div><input type=\"text\" id=\"message\" class=\"form-control\" placeholder=\"', 'enterChatMsg', '<div id=\"chat-box\"></div>', '#chat-emoticons', '<img src=\"https://cdn.ogario.ovh/static/emoticons/', '\" alt=\"', '\" class=\"emoticon\">', '<div id=\"exp-imp\"><div id=\"exp-imp-menu\"><button id=\"close-exp-imp\" class=\"btn btn-danger\">', '</button></div><div id=\"exp-imp-settings\"></div></div>', '<h1>', 'exportSettings', '</h1><h2>', 'exportInfo', '</h2>', 'addOption', '#exp-imp-settings', 'export-ogarioCommands', 'commands', 'export-ogarioHotkeys', 'export-ogarioPlayerProfiles', 'export-ogarioSettings', 'export-ogarioThemeSettings', 'importSettings', 'importInfo', 'import-ogarioCommands', 'import-ogarioHotkeys', 'profiles', 'import-ogarioSettings', 'setThemeMenu', '#skins', '<div class=\"skin-box\"><a href=\"#profile-', '\" id=\"profile-', '\" data-profile=\"', 'profile-', '#profile-', 'switchMenuTabs', '.submenu-tabs a', 'submenu-panel', '.quick-menu', 'showQuickMenu', 'setShowQuickMenu', '.quick-skins', 'showSkinsPanel', 'setShowSkinsPanel', 'region', '#gamemode', 'leaveParty', '#quality', 'getQuality', 'selectProfile', 'data-profile', '#prev-profile', 'prevProfile', '#next-profile', 'nextProfile', '#stream-mode', 'streamMode', 'setStreamMode', '#hide-url', 'hideSkinUrl', 'setHideSkinUrl', '.btn-server-info', '#server-info', '#server-connect', '#server-reconnect', 'gameServerReconnect', '#server-join', 'gameServerJoin', '#server-token', '#og-options input[type=\'checkbox\']', 'setSettings', '#og-settings .restore-settings a', '#og-settings .btn-export', '#exp-imp-settings, #export-settings', 'perfectScrollbar', '#exp-imp', 'focus', '#export-settings', '#export-settings-btn', '#openfl-content', '.quick-shop', 'openShop', '.quick-free-coins', 'showFreeCoins', '.quick-free-gifts', 'showGifting', '.quick-quests', 'showQuests', '#set-targeting', '#cancel-targeting', 'cancelTargeting', '#set-private-minimap', 'setPrivateMiniMap', '#change-target', 'changeTarget', '.team-top-limit', 'data-limit', 'setTop5limit', 'displayTop5', '.team-top', 'setTarget', 'data-user-id', '.mute-user', 'muteChatUser', '.btn-mute-user', 'btn-red btn-mute-user', 'btn-green btn-unmute-user', 'unmute', '.btn-unmute-user', 'unmuteChatUser', 'mute', '.chat-active-users', 'displayChatActiveUsers', '.chat-muted-users', 'displayChatMutedUsers', '.show-chat-emoticons', '#message', '#chat-emoticons .emoticon', 'alt', 'getElementById', 'stats-hud', 'active-parties', 'top5-pos', 'top5-total-mass', 'leaderboard-positions', 'leaderboard-data', 'timeHUD', 'time-hud', 'questHUD', 'quest-hud', '#canvas', 'contextmenu', '.btn', '[data-toggle=\'tab-tooltip\']', 'tooltip', 'hover', 'querySelectorAll', '.js-switch', 'small', 'rangeslider', 'toast-bottom-left', 'parent', 'hasClass', 'hotkeys-link', 'profile-tab', 'setBlockPopups', 'siblings', 'find', 'href', ' .submenu-panel', 'display', 'scale_setting', 'setCanvasScale', 'setRegion', 'setParty', ':party', 'hash', '#join-party-btn-2', '.js-switch-vanilla', '#noNames', '#showMass', 'unlockButtons', 'devicePixelRatio', 'High', 'Medium', 'Low', 'VeryLow', 'canvasScale', 'ogicon-eye-blocked', 'stream-mode', '#clantag, #nick, #party-token', 'hide-url', '#skins-panel', '.btn-play, .btn-play-guest, .btn-login-play, .btn-spectate', 'onSpectate', '#create-party-btn-2', 'onCreate', 'skipServerData', 'joinParty', '#statsContinue2', 'isSocketOpen', 'sendPartyData', 'connect', 'addKeyListeners', 'UA-67142685-2', 'auto', 'ogarioTracker', 'ogarioTracker.send', 'pageview', 'onJoin', 'sendPlayerJoin', 'partyToken', 'playerColor', 'onPlayerSpawn', 'foodIsHidden', 'showMenu', 'sendPlayerDeath', 'updateDeathLocations', 'trim', 'checkSkinURL', 'Anonymous', 'complete', 'cacheQueue', 'cacheSkin', 'createElement', 'canvas', 'getContext', 'beginPath', 'arc', 'clip', 'drawImage', 'customSkinsCache', '_cached', 'toDataURL', 'customSkinsMap', 'checkSkinsMap', 'getCachedSkin', 'mapOffset', 'mapSize', 'sectorsY', 'sectorsX', 'mapOffsetFixed', 'miniMap', 'miniMapCtx', 'clearRect', 'minimap', 'ogarioCtx', 'currentSector', 'font', 'miniMapFontWeight', 'px ', 'fillStyle', 'fillText', 'drawMiniMapSectors', 'save', 'drawBattleAreaOnMinimap', 'inView', 'pi2', 'globalAlpha', 'shadowColor', 'shadowBlur', 'shadowOffsetX', 'shadowOffsetY', 'strokeStyle', 'moveTo', 'lineTo', 'stroke', 'closePath', 'lineWidth', 'teamPlayers', 'drawPosition', 'privateMiniMap', 'max', '#FFFFFF', 'minimap-sectors', 'miniMapSectors', 'dTok', 'drawSectors', 'miniMapFontFamily', 'right', 'token', 'indicator', 'drawTeammatesInd', 'setAutoHideCellInfo', 'cells', 'setMass', 'setDrawing', 'setDrawingScale', 'drawNick', 'namesFontFamily', 'namesFontWeight', 'hideEnemiesMass', 'massFontFamily', 'massFontWeight', '#C80000', 'playerMaxMass', 'playerMinMass', '#FFDC00', 'viewScale', '#party-token', 'flushSkinsMap', 'flushChatData', '#pre-join-party-btn', '.party-token', '#join-party-btn', '#party-token, .party-token', '#leave-party-btn', '.party-icon-back', 'flushPartyData', 'lastSentNick', 'lastSentClanTag', 'lastSentSkinURL', 'lastSentCustomColor', 'lastSentPartyToken', 'lastSentServerToken', 'chatUsers', 'createServerToken', 'updateServerInfo', 'agar.io', 'closeConnection', 'wss://ip-', '.tech.agar.io:', 'wss://live-arena-', '.agar.io:443', '.tech.agar.io', 'serverIP', 'serverArena', 'serverToken', 'flushData', 'flushCells', 'encodeURIComponent', '#server-ws', 'reconnect', 'master', 'recreateWS', '[Legend mod Express] Connecting to server', 'privateIP', 'socket', 'publicIP', 'ogarioWS', 'binaryType', 'arraybuffer', 'onopen', 'setUint8', 'setUint16', 'onmessage', 'handleMessage', 'onclose', '[Legend mod Express] Socket close', 'onerror', '[Legend mod Express] Socket error', 'privateMode', 'Zamknięto połączenie z serwerem!', 'info', '.party-panel', 'Przełączono na serwer publiczny!', '#active-parties', 'readyState', 'OPEN', 'createView', 'send', 'getUint8', 'playerID', 'sendPlayerUpdate', 'updateTeamPlayerPosition', 'sendBuffer', 'sendPlayerState', 'strToBuff', 'sendPlayerData', 'FFA', ':battleroyale', 'BTR', 'TMS', 'EXP', 'PTY', 'sendServerGameMode', 'sendPlayerClanTag', 'sendPlayerNick', 'setUint32', 'getPlayerX', 'setInt32', 'getUint16', 'getUint32', 'skinID', 'setColor', 'lastX', 'customColor', 'alive', 'lastY', 'miniMapNickFontFamily', 'textAlign', 'center', 'oneColoredTeammates', 'miniMapTeammatesColor', 'checkPlayerID', 'getInt32', 'updateTime', 'targeting', 'targetID', 'sendPlayerPosition', 'setTargetStatus', 'isChatUserMuted', 'addChatUser', 'sort', 'toTimeString', 'displayChatMessage', 'lastMessageSentTime', '%currentSector%', 'prepareCommand', 'comm', 'chatMutedUsers', 'chatMutedUserIDs', 'userMuted', '%user%', '<strong>', '</strong>', ' <button data-user-id=\"', '\" class=\"btn btn-xs btn-green btn-unmute-user\">', 'splice', 'userUnmuted', '\" style=\"width:100%;border:none;\">', '<iframe type=\"text/html\" width=\"100%\" height=\"auto\" src=\"https://www.youtube.com/embed/', '?autoplay=1&amp;vq=tiny\" frameborder=\"0\" />', 'parseEmoticons', 'parseMessage', '\" class=\"mute-user ogicon-user-minus\"></a> ', '<div class=\"message\"><span class=\"message-time\">[', '] </span>', '<span class=\"message-nick\">', '</span></div>', 'animate', 'playSound', 'success', '<div class=\"message command\"><span class=\"command-time\">[', '<span class=\"command-nick\">', ': </span><span class=\"command-text\">', 'warning', '<li><strong>', '\" class=\"btn btn-xs ', '</button></li>', '</ol>', 'displayUserList', 'setCommandSound', '.chat-sound-notifications', 'ogicon-volume-mute2', 'ogicon-volume-high', 'setSound', '#target-status', 'targetStatus', '#target-summary, #target-status', 'updateTarget', 'targetNick', 'targetSkinURL', '#target-skin, #target-nick, #target-summary', '#target-panel-hud a', 'setTargetingInfo', '#target-skin, #target-nick, #target-status, #target-summary', '#target-summary', 'targetDead', 'resetTargetPosition', 'setTargetPosition', '#target-skin', '#target-skin img', 'https://cdn.ogario.ovh/static/img/blank.png', 'targetDistance', ': <span class=\"hud-main-color\">', 'targetMass', 'getQuestProgressLabel', 'setLang', 'setMainButtons', 'setDisableChat', 'updateTeamPlayers', 'updateInterval', 'txt', 'txtCanvas', 'txtCtx', 'strokeWidth', 'strokeColor', '700 16px Ubuntu', 'fontFamily', 'fontWeight', 'scale', 'quality', 'measuredWidth', 'redraw', 'remeasure', 'setStroke', 'setStrokeColor', 'fontSize', 'setFontSize', 'margin', 'createCanvas', 'setStrokeWidth', 'measureWidth', 'measureText', 'drawTxt', 'strokeText', 'targetX', 'targetY', 'oppColor', 'targetSize', 'alpha', 'nickCanvas', 'lastMass', 'kMass', 'lastNickSize', 'massSize', 'virMassSize', 'nickStrokeSize', 'massStrokeSize', 'isFood', 'isVirus', 'rescale', 'redrawNick', 'redrawMass', 'strokeNick', 'strokeMass', 'removed', 'redrawed', 'time', 'skin', 'isPlayerCell', 'setNick', 'removeCell', 'virusesRange', 'viruses', 'food', 'playerCells', 'playerCellIDs', 'removedCells', 'indexedCells', 'moveCell', 'animation', 'isInView', 'viewX', 'canvasWidth', 'viewY', 'canvasHeight', 'massTxt', 'massCanvas', 'ceil', 'nickScale', 'nickSize', 'setScale', 'setStrokeSize', 'setTxt', 'drawMass', 'draw', 'restore', 'virusAlpha', 'setVirusColor', 'setVirusStrokeColor', 'cellsAlpha', 'hideMyMass', '[Legend mod Express] Connecting to game server:', 'flushCellsData', 'protocolKey', 'clientKey', 'accessTokenSent', 'connectionOpened', 'onOpen', 'onError', 'onClose', 'getWS', 'sendServerData', 'displayLeaderboard', 'onConnect', '[Legend mod Express] Game server socket open', 'sendMessage', 'clientVersion'];
-(function(_0xfb08ce,_0x3dcf62){
-var _0x371bf1=function(_0x3cceb3){while(--_0x3cceb3){_0xfb08ce['push'](_0xfb08ce['shift']());}};var _0x1b2dd9=function(){
-	var _0x3c99bb={
+var obfuscatedbigarraywithnopurpose1 = [
+    'shiftMessage',
+    '[Legend mod Express] Game server socket error',
+    'onDisconnect',
+    '[Legend mod Express] Game server socket close',
+    'shiftKey',
+    'sendAction',
+    'sendPosition',
+    'playerNick',
+    'unescape',
+    'cursorX',
+    'clientVersionString',
+    'getFloat32',
+    'pieChart',
+    'drawPieChart',
+    'playerPosition',
+    'decodeURIComponent',
+    'isPlayer',
+    'handleLeaderboard',
+    'ghostCells',
+    '[Legend mod Express] Captcha requested',
+    'recaptchaRequested',
+    'logout',
+    'battleRoyale',
+    'startTime',
+    'joined',
+    'radius',
+    'shrinkTime',
+    'timeLeft',
+    'serverTimeDiff',
+    'targetRadius',
+    'rank',
+    '[Legend mod Express] Received protocol key:',
+    'generateClientKey',
+    'login',
+    'serverTime',
+    'handleSubmessage',
+    'updateCells',
+    'viewMinX',
+    'readDoubleLE',
+    'viewMinY',
+    'setMapOffset',
+    'viewMaxX',
+    'viewMaxY',
+    '<span class=\"teammate\">',
+    'mapMinX',
+    'mapMinY',
+    'mapMaxX',
+    'mapMaxY',
+    'removePlayerCell',
+    'onPlayerDeath',
+    'color2Hex',
+    'playerSize',
+    'recalculatePlayerMass',
+    'biggerSTECellsCache',
+    'biggerCellsCache',
+    'STECellsCache',
+    'cacheCells',
+    'smallerCellsCache',
+    '#FF008C',
+    '#BE00FF',
+    '#FF0A00',
+    'clientX',
+    'cursorY',
+    'clientY',
+    'detail',
+    'keyCode',
+    'sendSplit',
+    'sendFreeSpectate',
+    'sendEject',
+    'onkeyup',
+    'pressedKeys',
+    'userAgent',
+    'addEventListener',
+    'DOMMouseScroll',
+    'setZoom',
+    'onmousewheel',
+    'setClientVersion',
+    'ctx',
+    'onmousemove',
+    'getCursorPosition',
+    'innerWidth',
+    'innerHeight',
+    'calculatePlayerMassAndPosition',
+    'camX',
+    'camY',
+    'getZoom',
+    'setView',
+    'sortCells',
+    'compareCells',
+    'drawGrid',
+    'translate',
+    'drawBattleArea',
+    'drawMapBorders',
+    'drawVirusesRange',
+    'drawFood',
+    'drawSplitRange',
+    'drawCursorTracking',
+    'drawGhostCells',
+    'autoHideFoodOnZoom',
+    'drawCachedFood',
+    'optimizedFood',
+    'pellet',
+    'rect',
+    'darkTheme',
+    'drawCircles',
+    '#00C8FF',
+    '#64FF00',
+    '#FF3333',
+    '#3333FF',
+    'drawDangerArea',
+    'battleAreaMap',
+    'battleAreaMapCtx',
+    'drawSafeArea',
+    'maxRadius',
+    'globalCompositeOperation',
+    'drawDashedCircle',
+    'fpsLastRequest',
+    'renderedFrames',
+    'renderFrame',
+    'requestAnimationFrame',
+    'setCanvas',
+    'resizeCanvas',
+    'render',
+    'hk-feed',
+    'normal',
+    'hk-macroFeed',
+    'macroFeed',
+    'hk-split',
+    'SPACE',
+    'hk-doubleSplit',
+    'doubleSplit',
+    'Popsplit',
+    'hk-split16',
+    'split16',
+    'hk-pause',
+    'hk-showTop5',
+    'setShowTop5',
+    'ALT+T',
+    'setShowTime',
+    'hk-showSplitRange',
+    'setShowSplitInd',
+    'ALT+I',
+    'setShowTeammatesInd',
+    'hk-showOppColors',
+    'setShowOppColors',
+    'hk-transparentSkins',
+    'hk-showSkins',
+    'setShowSkins',
+    'hk-showStats',
+    'ALT+S',
+    'setShowStats',
+    'hk-toggleCells',
+    'toggleCells',
+    'hk-showFood',
+    'setShowFood',
+    'hk-showGrid',
+    'setShowGrid',
+    'hk-showMiniMapGuides',
+    'ALT+G',
+    'setShowMiniMapGuides',
+    'hk-showHUD',
+    'ALT+H',
+    'hk-copyLb',
+    'copyLb',
+    'hk-showLb',
+    'setShowLb',
+    'hk-toggleAutoZoom',
+    'toggleAutoZoom',
+    'hk-resetZoom',
+    'resetZoom',
+    'hk-toggleDeath',
+    'toggleDeath',
+    'hk-clearChat',
+    'displayChatHistory',
+    'hk-showBgSectors',
+    'setShowBgSectors',
+    'hk-hideBots',
+    'ALT+B',
+    'hk-showNames',
+    'setShowNames',
+    'hk-hideTeammatesNames',
+    'setHideTeammatesNames',
+    'hk-showMass',
+    'setShowMass',
+    'hk-showMiniMap',
+    'ALT+M',
+    'setShowMiniMap',
+    'ENTER',
+    'enterChatMessage',
+    'TILDE',
+    'hk-autoResp',
+    'toggleAutoResp',
+    'ALT+1',
+    'hk-zoomLevel',
+    'ALT+2',
+    'ALT+3',
+    'ALT+4',
+    'ALT+5',
+    'hk-switchServerMode',
+    'switchServerMode',
+    'hk-showTargeting',
+    'setShowTargeting',
+    'hk-setTargeting',
+    'setTargeting',
+    'hk-cancelTargeting',
+    'hk-changeTarget',
+    'hk-privateMiniMap',
+    'hk-showQuest',
+    'setShowQuest',
+    'sendCommand',
+    'command',
+    'comm7',
+    'comm0',
+    'MOUSE WHEEL',
+    'LEFT',
+    'comm13',
+    'DOWN',
+    'custom-key-in form-control input-sm',
+    'defaultKey',
+    'spec-messageKey',
+    'defaultMessageKey',
+    'ogarioHotkeys',
+    'loadDefaultHotkeys',
+    'ogarioCommands',
+    'saveCommands',
+    '#hotkeys .command-in',
+    'each',
+    '#hotkeys-cfg .custom-key-in',
+    '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">',
+    '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>',
+    'hk-inst-assign',
+    '</li><li>',
+    'hk-inst-delete',
+    'hk-inst-keys',
+    '</li></ul></div></div>',
+    'hk-',
+    '<div class=\"row\"><div class=\"key-label\"><input id=\"',
+    '\" class=\"command-in form-control input-sm\" value=\"',
+    '\" maxlength=\"80\" /></div><div class=\"default-key\">',
+    '</div><div class=\"custom-key\"><input id=\"',
+    '\" class=\"custom-key-in form-control input-sm\" value=\"',
+    '\" /></div></div>',
+    '#hotkeys-cfg',
+    '<div class=\"row\"><div class=\"key-label\">',
+    'label',
+    '</div><div class=\"default-key\">',
+    '#reset-hotkeys',
+    'resetHotkeys',
+    '#save-hotkeys',
+    'saveHotkeys',
+    '#hotkeys',
+    '#close-hotkeys',
+    '.hotkeys-link',
+    'ctrlKey',
+    'CTRL',
+    'altKey',
+    'ALT',
+    'TAB',
+    'ESC',
+    'RIGHT',
+    'DEL',
+    'lastPressedKey',
+    'lastKeyId',
+    'setDefaultHotkey',
+    'deleteHotkey',
+    'hk-chatMessage',
+    'loadHotkeys',
+    'setHotkeysMenu',
+    'history',
+    'replaceState',
+    'specialOn',
+    '#helloContainer',
+    '-ms-transform',
+    '-webkit-transform',
+    'innerW',
+    'innerH',
+    'onkeydown',
+    'target',
+    'inputClassName',
+    'setHotkey',
+    'keyDown',
+    'getPressedKey',
+    'keyUp',
+    'onmousedown',
+    'which',
+    'mouseInvert',
+    'onmouseup',
+    'onbeforeunload',
+    'exit',
+    'lz4',
+    '/ogario',
+    'onresize',
+    'sendNick',
+    'sendSpectate',
+    'ProxyMobileData ERROR: Array data required.',
+    'getClientVersion',
+    'getDefaultSettings',
+    'ogario',
+    'jQuery',
+    'function',
+    'Cannot find module \'',
+    'code',
+    'MODULE_NOT_FOUND',
+    'call',
+    'exports',
+    'byteLength',
+    'toByteArray',
+    'length',
+    'charCodeAt',
+    'fromByteArray',
+    'push',
+    'join',
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',
+    'ieee754',
+    'Buffer',
+    'alloc',
+    '__proto__',
+    'prototype',
+    'number',
+    'string',
+    'If encoding is specified then the first argument must be a string',
+    '\"value\" argument must not be a number',
+    '\'length\' is out of bounds',
+    'isEncoding',
+    '\"encoding\" must be a valid string encoding',
+    'write',
+    'slice',
+    'isBuffer',
+    'copy',
+    'type',
+    'data',
+    'First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.',
+    '\"size\" argument must be a number',
+    'Attempt to allocate Buffer larger than maximum size: 0x',
+    'toString',
+    ' bytes',
+    'latin1',
+    'utf-8',
+    'ucs2',
+    'utf16le',
+    'utf-16le',
+    'hex',
+    'toLowerCase',
+    'from',
+    'indexOf',
+    'val must be string, number or Buffer',
+    'readUInt16BE',
+    'Invalid hex string',
+    'substr',
+    'min',
+    'fromCharCode',
+    'apply',
+    'kMaxLength',
+    'TYPED_ARRAY_SUPPORT',
+    'foo',
+    'undefined',
+    'error',
+    'This browser lacks typed array (Uint8Array) support which is required by \`buffer\` v5.x. Use \`buffer\` v4.x if you require old browser support.',
+    'species',
+    'defineProperty',
+    'fill',
+    'allocUnsafe',
+    'allocUnsafeSlow',
+    '_isBuffer',
+    'compare',
+    'Arguments must be Buffers',
+    'utf8',
+    'binary',
+    '\"list\" argument must be an Array of Buffers',
+    'swap16',
+    'Buffer size must be a multiple of 16-bits',
+    'swap32',
+    'swap64',
+    'Buffer size must be a multiple of 64-bits',
+    'ascii',
+    'base64',
+    'Unknown encoding: ',
+    'equals',
+    'Argument must be a Buffer',
+    'inspect',
+    'INSPECT_MAX_BYTES',
+    'match',
+    ' ... ',
+    '<Buffer ',
+    'Out of range index',
+    'includes',
+    'Buffer.write(string, encoding, offset[, length]) is no longer supported',
+    'Attempt to write outside buffer bounds',
+    'toJSON',
+    '_arr',
+    'offset is not uint',
+    'Trying to access beyond buffer length',
+    '\"value\" argument is out of bounds',
+    'Index out of range',
+    'readUIntLE',
+    'readUIntBE',
+    'readUInt8',
+    'readUInt16LE',
+    'readUInt32LE',
+    'readUInt32BE',
+    'readIntLE',
+    'pow',
+    'readIntBE',
+    'readInt8',
+    'readInt16LE',
+    'readInt16BE',
+    'readInt32LE',
+    'readInt32BE',
+    'readFloatLE',
+    'read',
+    'writeUIntLE',
+    'writeUIntBE',
+    'writeUInt8',
+    'writeUInt16LE',
+    'writeUInt16BE',
+    'writeUInt32LE',
+    'writeUInt32BE',
+    'writeIntLE',
+    'writeIntBE',
+    'writeInt8',
+    'writeInt16LE',
+    'writeInt16BE',
+    'writeInt32LE',
+    'writeInt32BE',
+    'writeFloatLE',
+    'writeDoubleLE',
+    'writeDoubleBE',
+    'targetStart out of bounds',
+    'sourceStart out of bounds',
+    'sourceEnd out of bounds',
+    'set',
+    'encoding must be a string',
+    'Out of range index',
+    'Invalid code point',
+    'replace',
+    'isView',
+    'isArray',
+    '[object Array]',
+    'isBoolean',
+    'boolean',
+    'isNull',
+    'isNullOrUndefined',
+    'isNumber',
+    'isString',
+    'isSymbol',
+    'isRegExp',
+    '[object RegExp]',
+    '[object Date]',
+    'isError',
+    'isPrimitive',
+    '../../is-buffer/index.js',
+    'UINT32',
+    './lib/uint32',
+    'UINT64',
+    './lib/uint64',
+    '_high',
+    'remainder',
+    '_low',
+    'fromBits',
+    'fromNumber',
+    'fromString',
+    'toNumber',
+    'add',
+    'subtract',
+    'multiply',
+    'div',
+    'division by zero',
+    'clone',
+    'shiftRight',
+    'greaterThan',
+    'lessThan',
+    'not',
+    'xor',
+    'shiftr',
+    'shiftLeft',
+    'shiftl',
+    'rotateLeft',
+    'rotl',
+    'rotateRight',
+    'rotr',
+    'amd',
+    '_a00',
+    '_a16',
+    '_a32',
+    '_a48',
+    'negate',
+    'and',
+    '_events',
+    '_maxListeners',
+    'EventEmitter',
+    'setMaxListeners',
+    'n must be a positive number',
+    'emit',
+    'Uncaught, unspecified \"error\" event. (',
+    'context',
+    'addListener',
+    'listener must be a function',
+    'newListener',
+    'listener',
+    'defaultMaxListeners',
+    'warned',
+    '(node) warning: possible EventEmitter memory leak detected. %d listeners added. Use emitter.setMaxListeners() to increase limit.',
+    'trace',
+    'once',
+    'removeListener',
+    'removeAllListeners',
+    'listeners',
+    'listenerCount',
+    'abs',
+    'floor',
+    'log',
+    'LN2',
+    'create',
+    'super_',
+    'constructor',
+    'cuint',
+    'uncompress',
+    'input too large',
+    'compressBound',
+    ' < ',
+    'imul',
+    'compress',
+    'compressHC',
+    'compressDependent',
+    './decoder_stream',
+    'end',
+    'concat',
+    'buffer',
+    'stream',
+    'Transform',
+    'util',
+    'inherits',
+    './static',
+    'utils',
+    './binding',
+    'SIZES',
+    'options',
+    'binding',
+    'useJS',
+    'pos',
+    'descriptor',
+    'state',
+    'MAGIC',
+    'streamSize',
+    'dictId',
+    'currentStreamChecksum',
+    'skippableSize',
+    '_transform',
+    '_main',
+    'emit_Error',
+    'check_Size',
+    'notEnoughData',
+    'Unexpected end of LZ4 stream',
+    'read_MagicNumber',
+    'MAGICNUMBER_SKIPPABLE',
+    'MAGICNUMBER',
+    'Invalid magic number: ',
+    'toUpperCase',
+    'DESCRIPTOR',
+    'SKIP_SIZE',
+    'read_SkippableSize',
+    'SKIP_DATA',
+    'descriptorStart',
+    'Invalid version: ',
+    'Reserved bit set',
+    'blockMaxSizes',
+    'Invalid block max size: ',
+    'SIZE',
+    'read_Size',
+    'DICTID',
+    'read_DictId',
+    'DESCRIPTOR_CHECKSUM',
+    'read_DescriptorChecksum',
+    'DATABLOCK_SIZE',
+    'read_DataBlockSize',
+    'DATABLOCK_DATA',
+    'read_DataBlockData',
+    'dataBlock',
+    'DATABLOCK_CHECKSUM',
+    'read_DataBlockChecksum',
+    'blockChecksum',
+    'DATABLOCK_UNCOMPRESS',
+    'uncompress_DataBlock',
+    'blockMaxSize',
+    'streamChecksum',
+    'read_EOS',
+    'EOS',
+    'Invalid stream checksum: ',
+    '_flush',
+    './encoder_stream',
+    'LZ4_compress',
+    'bindings',
+    'STATES',
+    'forEach',
+    'highCompression',
+    'VERSION',
+    'dict',
+    'first',
+    'checksum',
+    'headerSize',
+    'header',
+    'flg',
+    'update_Checksum',
+    'CHECKSUM_UPDATE',
+    'compress_DataBlock',
+    'DATABLOCK_COMPRESS',
+    'size',
+    'CHECKSUM',
+    'version',
+    'createDecoderStream',
+    'decode',
+    './decoder',
+    'LZ4_uncompress',
+    'encode',
+    './encoder',
+    'decodeBlock',
+    'encodeBound',
+    'encodeBlock',
+    'encodeBlockHC',
+    'MAGICNUMBER_BUFFER',
+    'EOS_BUFFER',
+    'extension',
+    '.lz4',
+    './utils',
+    'xxhashjs',
+    'update',
+    'v1.',
+    '\"callback\" argument must be a function',
+    'nextTick',
+    '_process',
+    'setTimeout has not been defined',
+    'run',
+    'fun',
+    'array',
+    'title',
+    'versions',
+    'prependListener',
+    'prependOnceListener',
+    'process.binding is not supported',
+    'cwd',
+    'chdir',
+    'process.chdir is not supported',
+    'umask',
+    './lib/_stream_duplex.js',
+    'process-nextick-args',
+    'core-util-is',
+    './_stream_readable',
+    './_stream_writable',
+    'readable',
+    'writable',
+    'allowHalfOpen',
+    'ended',
+    'destroyed',
+    '_readableState',
+    '_writableState',
+    '_destroy',
+    './_stream_transform',
+    'isarray',
+    'ReadableState',
+    './internal/streams/stream',
+    'safe-buffer',
+    'Uint8Array',
+    'debuglog',
+    './internal/streams/BufferList',
+    './internal/streams/destroy',
+    'close',
+    'destroy',
+    'resume',
+    './_stream_duplex',
+    'objectMode',
+    'readableObjectMode',
+    'highWaterMark',
+    'pipes',
+    'pipesCount',
+    'flowing',
+    'endEmitted',
+    'reading',
+    'sync',
+    'needReadable',
+    'emittedReadable',
+    'readableListening',
+    'resumeScheduled',
+    'defaultEncoding',
+    'awaitDrain',
+    'readingMore',
+    'decoder',
+    'encoding',
+    'string_decoder/',
+    'StringDecoder',
+    '_read',
+    'Invalid non-string/buffer chunk',
+    'getPrototypeOf',
+    'stream.unshift() after end event',
+    'stream.push() after EOF',
+    '_undestroy',
+    'unshift',
+    'isPaused',
+    'setEncoding',
+    'head',
+    'emitReadable',
+    'emit readable',
+    'maybeReadMore read 0',
+    'readable nexttick read 0',
+    'resume read 0',
+    'flow',
+    'clear',
+    'shift',
+    'next',
+    'tail',
+    '\"endReadable()\" called on non-empty stream',
+    'read: emitReadable',
+    'need readable',
+    'length less than watermark',
+    'reading or ended',
+    'do read',
+    '_read() is not implemented',
+    'pipe',
+    'stdout',
+    'stderr',
+    'hasUnpiped',
+    'cleanup',
+    'finish',
+    'drain',
+    'unpipe',
+    'needDrain',
+    'onend',
+    'ondata',
+    'false write response, pause',
+    'pause',
+    'onfinish',
+    'pipe resume',
+    'wrapped end',
+    'wrapped data',
+    'bind',
+    'wrapped _read',
+    '_fromList',
+    'afterTransform',
+    '_transformState',
+    'transforming',
+    'writecb',
+    'write callback called multiple times',
+    'writechunk',
+    'needTransform',
+    'writeencoding',
+    'transform',
+    'flush',
+    'prefinish',
+    'Calling transform done when ws.length != 0',
+    'Calling transform done when still transforming',
+    '_transform() is not implemented',
+    '_write',
+    'entry',
+    'callback',
+    'pendingcb',
+    'corkedRequestsFree',
+    'browser',
+    'v0.9.',
+    'WritableState',
+    'writableObjectMode',
+    'finalCalled',
+    'ending',
+    'decodeStrings',
+    'writing',
+    'corked',
+    'bufferProcessing',
+    'onwrite',
+    'writelen',
+    'errorEmitted',
+    'bufferedRequest',
+    'lastBufferedRequest',
+    'prefinished',
+    'bufferedRequestCount',
+    '_writev',
+    'writev',
+    'final',
+    '_final',
+    'isBuf',
+    'allBuffers',
+    'chunk',
+    'finished',
+    'getBuffer',
+    'deprecate',
+    '_writableState.buffer is deprecated. Use _writableState.getBuffer instead.',
+    'hasInstance',
+    'Cannot pipe, not readable',
+    'write after end',
+    'May not write null values to stream',
+    'cork',
+    'uncork',
+    'setDefaultEncoding',
+    'ucs-2',
+    'raw',
+    '_write() is not implemented',
+    'undestroy',
+    'Cannot call a class as a function',
+    'events',
+    './readable',
+    './lib/_stream_readable.js',
+    'Stream',
+    'Writable',
+    './lib/_stream_writable.js',
+    'Duplex',
+    './lib/_stream_transform.js',
+    'PassThrough',
+    './lib/_stream_passthrough.js',
+    'Argument must not be a number',
+    'Argument must be a number',
+    'SlowBuffer',
+    'Readable',
+    'readable-stream/readable.js',
+    'readable-stream/writable.js',
+    'readable-stream/duplex.js',
+    'readable-stream/transform.js',
+    'readable-stream/passthrough.js',
+    '_isStdio',
+    'text',
+    'fillLast',
+    'lastNeed',
+    'lastTotal',
+    'lastChar',
+    'repeat',
+    'localStorage',
+    'true',
+    'noDeprecation',
+    'throwDeprecation',
+    'traceDeprecation',
+    'warn',
+    'object',
+    'format',
+    '[Circular]',
+    'depth',
+    'showHidden',
+    'colors',
+    'customInspect',
+    'stylize',
+    'styles',
+    'null',
+    'keys',
+    'getOwnPropertyNames',
+    'message',
+    'description',
+    'name',
+    '[Function',
+    'special',
+    'regexp',
+    ' [Function',
+    '[Object]',
+    'seen',
+    'pop',
+    'reduce',
+    ',\n  ',
+    'get',
+    '[Getter]',
+    '[Setter]',
+    'value',
+    'split',
+    'map',
+    '   ',
+    '[object Error]',
+    'NODE_DEBUG',
+    'test',
+    'pid',
+    '%s %d: %s',
+    'cyan',
+    'yellow',
+    'grey',
+    'bold',
+    'green',
+    'magenta',
+    'symbol',
+    'isObject',
+    'isDate',
+    'isFunction',
+    'Jan',
+    'Feb',
+    'Apr',
+    'Jun',
+    'Aug',
+    'Sep',
+    'Nov',
+    'Dec',
+    '%s - %s',
+    'getMinutes',
+    'getSeconds',
+    'getMonth',
+    'xxh_update',
+    '2654435761',
+    '3266489917',
+    '668265263',
+    '374761393',
+    'digest',
+    'seed',
+    'total_len',
+    'memsize',
+    'memory',
+    'init',
+    'XXH',
+    'Ustawienia',
+    'Przywróc ustawienia domyślne',
+    'Nazwy',
+    'Masa',
+    'Skiny',
+    'Pokarm',
+    'Przezroczystość / kolory',
+    'Siatka / sektory',
+    'Minimapa',
+    'Wspomagacze',
+    'Sterowanie myszką',
+    'HUD',
+    'Czat',
+    'Statystyki',
+    'Dodatkowe',
+    'Wyłącz skiny',
+    'Pokaż masę',
+    'Pokaż zadanie (quest)',
+    'Auto zoom',
+    'Opóźnienie animacji',
+    'Szybkość zoomu',
+    'Szybkie odrodzenie (klawisz)',
+    'Auto odrodzenie',
+    'Autoukrywanie nazw i masy',
+    'Autoukrywanie masy',
+    'Autoukrywanie pokarmu (masa)',
+    'Autoukrywanie pokarmu (zoom)',
+    'Zoptymalizowane nazwy',
+    'Skrócona masa (k)',
+    'Licznik strzałów (wirusy)',
+    'Ukryj własną masę',
+    'Podstawowe skiny',
+    'Własne skiny',
+    'Mój przezroczysty skin',
+    'Przezroczyste kulki',
+    'Przezroczyste wirusy',
+    'Przezroczyste skiny',
+    'Siatka',
+    'Sektory w tle',
+    'Granice mapy',
+    'Duchy kulek',
+    'Pokaż minimapę',
+    'Pokaż siatkę minimapy',
+    'Pokaż prowadnice na minimapie',
+    'Pokaż duchy kulek na minimapie',
+    'Jednokolorowi gracze',
+    'Kolorowy pokarm',
+    'Kolory przeciwników',
+    'Zasięg podziału',
+    'Obwódki nazw',
+    'Obwódki masy',
+    'Śledzenie kursora',
+    'Wskaźniki graczy teamu',
+    'LPM - Split myszką',
+    'PPM - Feed myszką',
+    'Odwróć klawisze myszki',
+    'Wyłącz czat',
+    'Ukryj czat',
+    'Emotikony',
+    'Pokaż obrazki na czacie',
+    'Pokaż filmiki na czacie',
+    'Czatbox zamiast wyskakujących wiadomości',
+    'Pokaż top 5 teamu',
+    'Pokaż namierzanie',
+    'Pokaż aktualny czas',
+    'Pokaż masę w topce',
+    'Nagłówek \"Topka\"',
+    'Wyśrodkowana topka',
+    'Pokaż statystyki',
+    'Statystyki: Masa',
+    'Statystyki: STE',
+    'Statystyki: n/16',
+    'Statystyki: FPS',
+    'Blokuj popupy (reklamy/sklep/zadanie)',
+    'Skróty klawiszowe',
+    'Aby ustawić skrót klawiszowy kliknij na polu skrótu i naciśnij wybrany klawisz.',
+    'Aby usunąć skrót klawiszowy kliknij na polu skrótu i naciśnij klawisz DELETE.',
+    'Możliwe kombinacje skrótów klawiszowych z użyciem klawiszy CTRL oraz ALT.',
+    'Szybki feed',
+    'Podział',
+    'Podział na 16',
+    'Pauza kulki',
+    'Pokaż/ukryj top 5 teamu',
+    'Pokaż/ukryj aktualny czas',
+    'Pokaż/ukryj zasięg podziału',
+    'Pokaż/ukryj zasięg podziału z ringami',
+    'Pokaż/ukryj wskaźniki graczy teamu',
+    'Pokaż/ukryj kolory przeciwników',
+    'Przełącz skiny (własne/standardowe)',
+    'Przełącz kulkę (najmniejsza/największa)',
+    'Pokaż/ukryj pokarm',
+    'Pokaż/ukryj siatkę',
+    'Pokaż/ukryj prowadnice na minimapie',
+    'Pokaż/ukryj czat',
+    'Pokaż/ukryj HUD',
+    'Pokaż/ukryj topkę',
+    'Włącz/wyłącz auto zoom',
+    'Reset zoomu',
+    'Zoom - poziom',
+    'Przełącz miejsce śmierci',
+    'Pokaż historię czatu / Czyść czat',
+    'Pokaż/ukryj małe boty',
+    'Pokaż/ukryj nazwy',
+    'Pokaż/ukryj nazwy graczy teamu',
+    'Pokaż/ukryj masę',
+    'Pokaż/ukryj minimapę',
+    'Napisz wiadomość na czacie',
+    'Szybkie odrodzenie (respawn)',
+    'Włącz/wyłacz auto odrodzenie',
+    'Przełącz serwer [publiczny/prywatny]',
+    'Pokaż/ukryj panel namierzania',
+    'Włącz/wyłącz namierzanie (śledzenie)',
+    'Zmień cel',
+    'Pokaż cel na minimapie',
+    'Pokaż/ukryj zadanie',
+    'Feeduj!',
+    'Pomocy na %currentSector%!',
+    'Wróg na %currentSector%!',
+    'Zabij pomocnika!',
+    'Zjedz wirusa!',
+    'Zjebałem, wybacz.',
+    'Ja pierdolę...',
+    'Kurwa mać!',
+    'Lewo!',
+    'Góra!',
+    'Prawo!',
+    'Dół!',
+    'Zapisz komendy',
+    'Przywróc ustawienia domyślne wyglądu',
+    'Motyw',
+    'Ciemny motyw',
+    'Jasny motyw',
+    'Tło',
+    'Obwódki wirusów',
+    'Czcionka nazw',
+    'Czcionka masy',
+    'Skala nazw',
+    'Skala masy',
+    'Skala masy wirusów',
+    'Skala obwódek tekstu',
+    'Wielkość pokarmu',
+    'Grubość granic mapy',
+    'Grubość siatki sektorów',
+    'Przezroczystość skinów',
+    'Przezroczystość wirusów',
+    'Przezroczystość nazw i masy',
+    'Grubość obwódki wirusów',
+    'Bezpieczna strefa',
+    'Strefa zagrożenia',
+    'Przezroczystość duchów kulek',
+    'Motyw menu',
+    'Kolor główny',
+    'Tekst przycisku',
+    'Panel',
+    'Tekst panelu',
+    'Tekst panelu (2)',
+    'Przycisk #1 (2)',
+    'Przycisk #2',
+    'Przycisk #2 (2)',
+    'Przycisk #3',
+    'Przycisk #3 (2)',
+    'Przycisk #4',
+    'Przycisk #4 (2)',
+    'Grafika tła panelu',
+    'Czas',
+    'Topka - ja',
+    'Tło wiadomości',
+    'Tekst wiadomości',
+    'Czas wiadomości',
+    'Nick wiadomości',
+    'Tekst komendy',
+    'Nick komendy',
+    'Tło czatboxu',
+    'Skala czatu',
+    'Sektory',
+    'Aktualny sektor',
+    'Prowadnice',
+    'Nick',
+    'Obwódka nicku',
+    'Moja kulka',
+    'Obwódka mojej kulki',
+    'Gracze',
+    'Czcionka minimapy',
+    'Czcionka nicku',
+    'Szerokość minimapy',
+    'Przezroczystość sektorów',
+    'Rozmiar nicku',
+    'Wielkość mojej kulki',
+    'Grubość obwódki mojej kulki',
+    'Wielkość graczy',
+    'Grafika / kursory',
+    'Czat został włączony!',
+    'Czat został ukryty!',
+    'Skiny zostały włączone!',
+    'Skiny zostały ukryte!',
+    'Małe boty stały się widoczne!',
+    'Małe boty zostały ukryte!',
+    'Auto odrodzenie zostało włączone!',
+    'Auto odrodzenie zostało wyłączone!',
+    'Auto zoom został wyłączony!',
+    'Brak celu',
+    'Nie żyje',
+    'Dystans',
+    'Masa razem',
+    'Aktywnych graczy',
+    'Łącznie masy',
+    'Eksport / import ustawień',
+    'Eksportuj ustawienia',
+    'Aby wyeksportować wybrane ustawienia skopiuj poniższy kod i zapisz go w pliku tekstowym z kodowaniem Unicode.',
+    'Aby zaimportować wybrane ustawienia wklej poniżej wyeksportowany wcześniej kod i naciśnij przycisk \"Importuj ustawienia\".',
+    'Profil',
+    'Profile',
+    'Dzięki Awesome!',
+    'Zapisz ustawienia',
+    'Zapisano!',
+    'Resetuj ustawienia',
+    'Zamknij',
+    'Napisz wiadomość',
+    'Aktywne party',
+    'Brak aktywnych party ;(',
+    'Playlista',
+    'Odwiedź',
+    'UWAGA! Popupy zostały zablokowane w ustawieniach.',
+    'Odblokuj tymczasowo',
+    'Topka',
+    'Użytkownik',
+    'Użytkownik %user% został wyciszony.',
+    'Wyłączono wyciszenie użytkownika %user%.',
+    'Wycisz',
+    'Wyłącz wyciszenie',
+    'Pokaż aktywnych użytkowników',
+    'Brak',
+    'Dźwięki',
+    'Wróć',
+    'Stwórz party',
+    'Zaloguj',
+    'Wyloguj',
+    'Zaloguj z Facebook',
+    'Zaloguj z Google',
+    'Darmowe Monety',
+    'Graj',
+    'Graj jako gość',
+    'Sklep',
+    'Obserwuj',
+    'Home',
+    'Settings',
+    'Zoom',
+    'Respawn',
+    'Names',
+    'Mass',
+    'Food',
+    'Transparency / colors',
+    'Minimap',
+    'Helpers',
+    'Mouse control',
+    'Chat',
+    'Stats',
+    'Extras',
+    'No names',
+    'No colors',
+    'Skip stats after death',
+    'Show quest',
+    'Quick respawn (hotkey)',
+    'Auto hide names and mass',
+    'Auto hide names',
+    'Auto hide mass',
+    'Auto hide food (mass)',
+    'Optimized names',
+    'Hide my name',
+    'Hide teammates names',
+    'Optimized mass (+/-2%)',
+    'Short mass (k)',
+    'Hide my mass',
+    'Vanilla skins',
+    'Custom skins',
+    'My transparent skin',
+    'My custom color',
+    'Transparent cells',
+    'Transparent viruses',
+    'Transparent skins',
+    'Show grid',
+    'Show background sectors',
+    'Show map borders',
+    'Show minimap',
+    'Show minimap grid',
+    'Show minimap guides',
+    'Show ghost cells',
+    'Optimized food',
+    'Opponents colors',
+    'Viruses colors',
+    'Viruses range',
+    'Names and mass stroke',
+    'Names stroke',
+    'Mass stroke',
+    'Cursor tracking',
+    'Teammates indicators',
+    'LMB - Mouse split',
+    'RMB - Mouse feed',
+    'Invert mouse buttons',
+    'Hide chat',
+    'Sound notifications',
+    'Emoticons',
+    'Show images on chat',
+    'Show videos on chat',
+    'Chatbox instead of popups',
+    'Message notification sound',
+    'Command notification sound',
+    'Show team top 5',
+    'Show targeting',
+    'Show current time',
+    'Show leaderboard mass',
+    '\"Leaderboard\" header',
+    'Centered leaderboard',
+    'Game stats at the top',
+    'Show game stats',
+    'Game stats: Mass',
+    'Game stats: STE',
+    'Game stats: n/16',
+    'Game stats: FPS',
+    'Block popups (ads/shop/quest)',
+    'Hotkeys',
+    'Feed',
+    'Split 16',
+    'Cell pause',
+    'Show/hide team top 5',
+    'Show/hide split range',
+    'Show/hide split indicators',
+    'Show/hide teammates indicators',
+    'Show/hide opponents colors',
+    'Toggle skins (custom/default)',
+    'Show/hide skins',
+    'Toggle transparent skins',
+    'Show/hide game stats',
+    'Toggle own cells (smallest/biggest)',
+    'Show/hide food',
+    'Show/hide minimap guides',
+    'Show/hide chat',
+    'Show/hide HUD',
+    'Copy leaderboard',
+    'Toggle auto zoom',
+    'Reset zoom',
+    'Zoom level',
+    'Toggle death location',
+    'Show/hide background sectors',
+    'Show/hide small bots',
+    'Show/hide names',
+    'Show/hide teammates names',
+    'Show/hide mass',
+    'Show/hide minimap',
+    'Enter chat message',
+    'Quick respawn',
+    'Toggle auto respawn',
+    'Switch server [public/private]',
+    'Change target',
+    'Show target on the minimap',
+    'Show/hide quest',
+    'Commands',
+    'Split into me!',
+    'Need backup at %currentSector%!',
+    'Enemy spotted at %currentSector%!',
+    'Need a teammate!',
+    'Tank the virus!',
+    'Eat the virus!',
+    'Let\'s bait!',
+    'Fuck!',
+    'Tricksplit!',
+    'Left!',
+    'Up!',
+    'Right!',
+    'Bottom!',
+    'Save commands',
+    'Theme',
+    'Basic theming',
+    'Theme preset',
+    'Theme type',
+    'Dark theme',
+    'Light theme',
+    'Main color',
+    'Grid',
+    'Sectors font',
+    'Virus',
+    'Virus stroke',
+    'Mass font',
+    'Names scale',
+    'Virus mass scale',
+    'Text stroke scale',
+    'Food size',
+    'Map borders width',
+    'Sectors grid width',
+    'Sectors font size',
+    'Cells transparency',
+    'Skins transparency',
+    'Virus transparency',
+    'Names & mass transparency',
+    'Virus stroke size',
+    'Teammate indicator',
+    'Split range',
+    'Safe area',
+    'Danger area',
+    'Ghost cells',
+    'Ghost cells transparency',
+    'Menu theme',
+    'Panel (2)',
+    'Panel text',
+    'Panel text (2)',
+    'Button #1',
+    'Button #1 (2)',
+    'Button #2',
+    'Button #2 (2)',
+    'Button #3 (2)',
+    'Button #4',
+    'Button #4 (2)',
+    'Panel background image',
+    'Background',
+    'Text',
+    'Time',
+    'Leaderboard - me',
+    'Leaderboard - teammate',
+    'HUD font',
+    'HUD scale',
+    'Message background',
+    'Message text',
+    'Message time',
+    'Message nick',
+    'Command background',
+    'Command time',
+    'Command nick',
+    'Chat scale',
+    'Sectors',
+    'Guides',
+    'Nick stroke',
+    'My cell',
+    'My cell stroke',
+    'Teammates',
+    'Minimap font',
+    'Nick font',
+    'Minimap width',
+    'Sectors transparency',
+    'Nick size',
+    'Nick stroke size',
+    'My cell size',
+    'My cell stroke size',
+    'Graphics / cursors',
+    'Custom background image',
+    'Custom cursor image',
+    'Chat is visible!',
+    'Chat is hidden!',
+    'Skins are hidden!',
+    'Small bots are visible!',
+    'Small bots are hidden!',
+    'Auto respawn is on!',
+    'Auto respawn is off!',
+    'Auto zoom is on!',
+    'Target not set',
+    'Dead',
+    'Distance',
+    'Mass altogether',
+    'Active players',
+    'Total mass',
+    'Export / import settings',
+    'Export settings',
+    'Profiles',
+    'Skins',
+    'Add skins',
+    'Save settings',
+    'Saved!',
+    'Close',
+    'Active parties',
+    'No active parties ;(',
+    'Playlist',
+    'Visit',
+    'Legend mod Express: Are you sure you want to quit the game?',
+    'WARNING! Popups are blocked in the settings.',
+    'Score',
+    'Leaderboard',
+    'User',
+    'User %user% has been muted.',
+    'User %user% has been unmuted.',
+    'Mute',
+    'Unmute',
+    'Muted users',
+    'Active users',
+    'None',
+    'Sounds',
+    'Gifts',
+    'Daily Quest',
+    'Shop',
+    'navigator',
+    'language',
+    'userLanguage',
+    'hasOwnProperty',
+    'comm1',
+    'comm2',
+    'comm3',
+    'comm4',
+    'comm5',
+    'comm6',
+    'comm8',
+    'comm9',
+    'comm10',
+    'comm11',
+    'comm12',
+    'comm14',
+    '&amp;',
+    '&lt;',
+    '&gt;',
+    '&quot;',
+    'wink.svg',
+    'smirk.svg',
+    'joy.svg',
+    'sad.svg',
+    'cry.svg',
+    'tongue.svg',
+    'tonguew.svg',
+    'kiss.svg',
+    'smileh.svg',
+    'cool.svg',
+    'astonished.svg',
+    'sweat.svg',
+    'neutral.svg',
+    'unamused.svg',
+    'sleep.svg',
+    'relaxed.svg',
+    'expressionless.svg',
+    'money.svg',
+    'devil.svg',
+    'finger.svg',
+    'clap.svg',
+    'ok.svg',
+    'victory.svg',
+    'thumb.svg',
+    'thumbd.svg',
+    'OGARio v3',
+    '#01d9cc',
+    '#000a11',
+    '#00243e',
+    '#000000',
+    '#00b9e8',
+    '#5000ff',
+    '#ffffff',
+    'ubuntu-bold',
+    'ogario-v3',
+    '#002f52',
+    '#8096a7',
+    '#018cf6',
+    '#0176ce',
+    '#0099c0',
+    '#8d5fe6',
+    '#814ee3',
+    '#bf00aa',
+    '#a80096',
+    'rgba(0,0,0,0.4)',
+    'https://cdn.ogario.ovh/static/img/cursors/cursor_02.cur',
+    'OGARio v2',
+    '#ff7800',
+    '#292929',
+    '#666666',
+    '#e16400',
+    'rgba(255,120,0,0.9)',
+    'OGARio LE',
+    '#b5a642',
+    '#111111',
+    '#998c36',
+    'rgba(181,166,66,0.9)',
+    'SniiKz\'s Style',
+    '#fc0079',
+    '#050008',
+    '#1d0526',
+    '#4f0242',
+    '#4d0227',
+    '#aa084e',
+    '#8a063f',
+    'https://cdn.ogario.ovh/static/img/pattern.png',
+    'rgba(36,36,36,0.49)',
+    '#737373',
+    '#1fe000',
+    '#e8e8e8',
+    '#545454',
+    '#05ff00',
+    'rgba(36,36,36,0.9)',
+    '#4d4d4d',
+    '#f0ff3d',
+    '#acba07',
+    '#305eff',
+    '#2b2b2b',
+    '#651fff',
+    '#f2fbff',
+    '#858a8c',
+    '#ced6d9',
+    '#33ff33',
+    '#2de52d',
+    'rgba(255,255,255,0.9)',
+    'Agar.io Dark',
+    '#999999',
+    '#333333',
+    '#f300d8',
+    '#df00c6',
+    '#222222',
+    '#bbbbbb',
+    '#428bca',
+    '#5cb85c',
+    '#449d44',
+    '#f0ad4e',
+    '#ec971f',
+    '#d9534f',
+    '#c9302c',
+    'Agar.io',
+    '#5bc0de',
+    '#cccccc',
+    '#3071a9',
+    'Ubuntu',
+    'ubuntu',
+    'rgba(191,0,170,0.9)',
+    'getItem',
+    'ogarioThemeSettings',
+    'parse',
+    'setItem',
+    'stringify',
+    'removeItem',
+    'location',
+    'reload',
+    '<style type=\'text/css\'>',
+    'appendTo',
+    '<div class=\"preset-box\"><span class=\"title-box\">',
+    '\" class=\"form-control\"></select></div></div>',
+    'append',
+    '<option value=\"',
+    '</option>',
+    'val',
+    'change',
+    '<div class=\"color-box\"><span class=\"title-box\">',
+    '-picker\"><input type=\"text\" value=\"',
+    '\" id=\"',
+    '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>',
+    '-picker',
+    'changeColor.colorpicker',
+    'color',
+    'toHex',
+    'colorpicker',
+    '</span><div class=\"input-group ',
+    'rgba',
+    'toRGB',
+    'rgba(',
+    '<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">',
+    ': </span><span id=\"',
+    '</span></div><input id=\"',
+    '\" max=\"',
+    '\" step=\"',
+    '\" value=\"',
+    '\"></div>',
+    '-slider',
+    'input',
+    '<div class=\"input-box\"><span class=\"title-box\">',
+    '\" class=\"form-control\" placeholder=\"',
+    'customCursor',
+    '<div class=\"cursor-box\"><a href=\"#\" class=\"active\"><img src=\"',
+    '\"></a></div>',
+    '<div class=\"cursor-box\"><a href=\"#\"><img src=\"',
+    'Family',
+    'setFontFamily',
+    'setFontWeight',
+    'Weight',
+    '</span><div class=\"select-wrapper\"><select id=\"',
+    '<option value=\"ubuntu\">Ubuntu</option><option value=\"ubuntu-bold\">Ubuntu Bold</option>',
+    '<option value=\"roboto\">Roboto</option><option value=\"roboto-bold\">Roboto Bold</option>',
+    '<option value=\"oswald\">Oswald</option><option value=\"oswald-bold\">Oswald Bold</option>',
+    'setFont',
+    'roboto',
+    'Roboto',
+    'oswald',
+    'Oswald',
+    '#theme',
+    '<ul class=\"submenu-tabs\"><li class=\"theme-main-tab active\"><a href=\"#theme-main\" class=\"active ogicon-paint-format\" data-toggle=\"tab-tooltip\" title=\"',
+    'basicTheming',
+    '\"></a></li><li class=\"theme-menu-tab\"><a href=\"#theme-menu\" class=\"ogicon-menu\" data-toggle=\"tab-tooltip\" title=\"',
+    'menuTheming',
+    '\"></a></li><li class=\"theme-hud-tab\"><a href=\"#theme-hud\" class=\"ogicon-display\" data-toggle=\"tab-tooltip\" title=\"',
+    'hudTheming',
+    '\"></a></li><li class=\"theme-chat-tab\"><a href=\"#theme-chat\" class=\"ogicon-bubbles\" data-toggle=\"tab-tooltip\" title=\"',
+    'chatTheming',
+    'miniMapTheming',
+    '\"></a></li><li class=\"theme-images-tab\"><a href=\"#theme-images\" class=\"ogicon-compass\" data-toggle=\"tab-tooltip\" title=\"',
+    'imagesTheming',
+    'addPresetBox',
+    '#theme-main',
+    'themePreset',
+    'preset',
+    'changeThemePreset',
+    'addColorBox',
+    'bgColor',
+    'setBgColor',
+    'bordersColor',
+    'gridColor',
+    'sectorsColor',
+    'namesColor',
+    'namesStrokeColor',
+    'massColor',
+    'massStrokeColor',
+    'virusColor',
+    'virusStrokeColor',
+    'foodColor',
+    'setFoodColor',
+    'setIndicatorColor',
+    'cursorTrackingColor',
+    'splitRangeColor',
+    'safeAreaColor',
+    'dangerAreaColor',
+    'ghostCellsColor',
+    'addFontBox',
+    'namesFont',
+    'sectorsFont',
+    'sectorsFontSize',
+    'addSliderBox',
+    'namesScale',
+    'massScale',
+    'virMassScale',
+    'strokeScale',
+    'foodSize',
+    'virusStrokeSize',
+    'bordersWidth',
+    'sectorsWidth',
+    'skinsAlpha',
+    'textAlpha',
+    'ghostCellsAlpha',
+    '#theme-menu',
+    'menuPreset',
+    'menuOpacity',
+    'menuMainColor',
+    'menuPanelColor',
+    'setMenuPanelColor',
+    'menuTextColor',
+    'setMenuTextColor',
+    'menuTextColor2',
+    'setMenuButtons',
+    'btn1Color2',
+    'btn2Color',
+    'btn3Color',
+    'btn3Color2',
+    'btn4Color2',
+    'addInputBox',
+    'menuBg',
+    'Image URL',
+    'setMenuBg',
+    'hudMainColor',
+    'setHudColors',
+    'addRgbaColorBox',
+    '#theme-hud',
+    'hudColor',
+    'hudTextColor',
+    'statsHudColor',
+    'timeHudColor',
+    'top5MassColor',
+    'lbTeammateColor',
+    'hudFont',
+    'hudScale',
+    'setHudScale',
+    '#theme-chat',
+    'messageColor',
+    'messageTextColor',
+    'setChatColors',
+    'messageTimeColor',
+    'messageNickColor',
+    'commandsColor',
+    'commandsTextColor',
+    'commandsNickColor',
+    'chatScale',
+    'setChatScale',
+    '#theme-minimap',
+    'miniMapSectorsColor',
+    'miniMapSectorColor',
+    'miniMapNickColor',
+    'miniMapNickStrokeColor',
+    'miniMapMyCellColor',
+    'miniMapMyCellStrokeColor',
+    'miniMapDeathLocationColor',
+    'miniMapGuidesColor',
+    'miniMapGhostCellsColor',
+    'miniMapFont',
+    'setMiniMapFont',
+    'miniMapNickFont',
+    'miniMapWidth',
+    'setMiniMapWidth',
+    'setMiniMapSectorsOpacity',
+    'miniMapNickSize',
+    'miniMapNickStrokeSize',
+    'miniMapMyCellSize',
+    'miniMapMyCellStrokeSize',
+    'miniMapTeammatesSize',
+    'miniMapGhostCellsAlpha',
+    '#theme-images',
+    'customBackground',
+    'setCustomBackground',
+    'https://cdn.ogario.ovh/static/img/cursors/cursor_',
+    'addCursorBox',
+    '.cur',
+    'click',
+    '#theme-images .cursor-box a',
+    'preventDefault',
+    'img',
+    'src',
+    'setCustomCursor',
+    '#customCursor',
+    'addClass',
+    'active',
+    'saveSett',
+    '</button>',
+    '#theme .btn-save',
+    'saved',
+    '<div class=\"restore-settings\"><a href=\"#\">',
+    'restoreThemeSettings',
+    '#theme .restore-settings a',
+    '.skin',
+    '#color',
+    '#theme .',
+    'input[type=text]#',
+    'select#',
+    'changePreset',
+    'setTheme',
+    'massFont',
+    'body',
+    'css',
+    'background-color',
+    'preDrawPellet',
+    'preDrawIndicator',
+    'background-image',
+    'url(',
+    'none',
+    '*{cursor:url(',
+    '), auto !important}',
+    '*{cursor: auto}',
+    'addCustomCSS',
+    'cursorCSS',
+    'setMenuOpacity',
+    'setMenuMainColor',
+    'opacity',
+    '!important}::selection{background-color:',
+    '!important}.menu-main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:',
+    '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:',
+    '}.ps-scrollbar-y{background-color:',
+    '!important}',
+    '#main-menu,.agario-side-panel,#hotkeys,#exp-imp{background-color: ',
+    'menuPanelColor2',
+    '}.agario-panel h5,.agario-side-panel h5,#stats h2,.menu-tabs,.submenu-tabs,#skins a.default,#stats hr,#hotkeys-cfg div.row, #exp-imp h1{border-color: ',
+    '}.quick:hover,#skins a,#profiles{color:',
+    'menuPanelColorCSS',
+    '.agario-panel,.agario-side-panel,.agario-panel input,.agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.dark .yt-username,#stream-mode,#hide-url,.menu-tabs a,.submenu-tabs a,#skins a.default:hover,#quick-menu a,#prev-profile.default:hover,#next-profile.default:hover,#statsText,#hotkeys,#hotkeys-cfg .command-in,#exp-imp{color:',
+    '}#skins a.default:hover{border-color:',
+    '}::-webkit-input-placeholder{color:',
+    '!important}::-moz-placeholder{color:',
+    '}#hotkeys-cfg .command-in,#theme .color-box{border-color:',
+    'a,a:hover{color:',
+    'btn1Color',
+    '}.btn,#hotkeys-cfg .custom-key-in{color:',
+    'menuBtnTextColor',
+    '}.btn-primary{background-color:',
+    '!important}.btn-primary:active,.btn-primary:disabled,.btn-primary:focus,.btn-primary:hover{background-color:',
+    '!important}.btn-success{background-color:',
+    '!important}.btn-success:active,.btn-success:disabled,.btn-success:focus,.btn-success:hover{background-color:',
+    'btn2Color2',
+    '!important}.btn-warning:active,.btn-warning:disabled,.btn-warning:focus,.btn-warning:hover{background-color:',
+    '!important}.btn-danger{background-color:',
+    'btn4Color',
+    '!important}.btn-danger:active,.btn-danger:disabled,.btn-danger:focus,.btn-danger:hover{background-color:',
+    '!important}#hotkeys-cfg .custom-key-in{background-color:',
+    ';border-color:',
+    'menuButtonsCSS',
+    '#menuBg',
+    '.menu-panel, .agario-side-panel, #hotkeys, #exp-imp',
+    'setHudFont',
+    '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:',
+    '}.stats-hud-color{color:',
+    '}.time-hud-color{color:',
+    '}.top5-mass-color{color:',
+    '}#leaderboard-positions .me{color:',
+    'lbMeColor',
+    '}#leaderboard-positions .teammate{color:',
+    'hudCSS',
+    '#overlays-hud',
+    'hudFontFamily',
+    'hudFontWeight',
+    'round',
+    'font-size',
+    '#top5-hud',
+    'width',
+    'top',
+    '#top5-pos',
+    'padding-left',
+    '#time-hud',
+    '#pause-hud',
+    '#target-hud',
+    'padding-top',
+    '#message,#messages li,.toast-success{background-color:',
+    '}#message,.message-text,.toast-success .message-text{color:',
+    '}.message-nick,.mute-user,.mute-user:hover,.toast-success .message-nick,.toast .mute-user,.toast .mute-user:hover{color:',
+    '}.message-time{color:',
+    '}.command-text,.toast-warning .command-text{color:',
+    '}.command-time{color:',
+    'commandsTimeColor',
+    '}#chat-box{background-color:',
+    'chatBoxColor',
+    'chatCSS',
+    '#message-box, #messages, #toast-container, #chat-box',
+    '#messages, #toast-container, #chat-box',
+    '#message-box',
+    'height',
+    '#toast-container{width:',
+    'px;font-size:',
+    'px}',
+    'chatScaleCSS',
+    'miniMapTop',
+    '#minimap-hud',
+    'resetMiniMapSectors',
+    '#minimap-sectors',
+    'miniMapSectorsOpacity',
+    'setFonts',
+    'setMenu',
+    'setHud',
+    'setChat',
+    'setMiniMap',
+    'loadThemeSettings',
+    'I <3 OGARio',
+    'mainColor',
+    'https://cdn.ogario.ovh/static/sounds/notification_01.mp3',
+    'Legend mod Express v4',
+    'v4 (4.0.0 b35)',
+    ':ffa',
+    'now',
+    'b2dhcmlvLm92aA==',
+    'playerX',
+    'mapOffsetX',
+    'playerY',
+    'mapOffsetY',
+    'core',
+    'feedInterval',
+    'feed',
+    'vanillaSkins',
+    'vannillaSkins',
+    'customSkins',
+    'selectBiggestCell',
+    'showTop5',
+    'setTop5',
+    'show',
+    'hide',
+    'showTargeting',
+    'setTargetingHUD',
+    '#target-hud, #target-panel-hud',
+    'showTime',
+    'displayTime',
+    'splitRange',
+    'showSplitInd',
+    'oppRings',
+    'teammatesInd',
+    'oppColors',
+    'noSkins',
+    'setSkins',
+    'showCustomSkins',
+    'displayChatInfo',
+    'showSkinsMsg',
+    'transparentSkins',
+    'toggle',
+    'showFood',
+    'showGrid',
+    'showMiniMapGuides',
+    ':teams',
+    'gameMode',
+    '#leaderboard-hud',
+    'showBgSectors',
+    'hideSmallBots',
+    'hideSmallBotsMsg',
+    'noNames',
+    'hideTeammatesNames',
+    'showMass',
+    'showMiniMap',
+    'showQuest',
+    'setQuest',
+    '#quest-hud',
+    'autoZoom',
+    'zoomResetValue',
+    'zoomValue',
+    'lastDeath',
+    'deathLocations',
+    ':visible',
+    '.btn-play-guest',
+    'play',
+    'tryResp',
+    'quickResp',
+    'hideMenu',
+    'gameServerConnect',
+    'autoResp',
+    'setAutoResp',
+    'stop',
+    '.btn-play',
+    '#skipStats',
+    'prop',
+    'checked',
+    'skipStats',
+    'autoRespMsg',
+    '<input>',
+    '#leaderboard-positions',
+    'select',
+    'execCommand',
+    'remove',
+    'centeredLb',
+    'hud-text-center',
+    'normalLb',
+    '#leaderboard-hud h4',
+    'html',
+    'leaderboard',
+    'ogario.ovh',
+    'fpsAtTop',
+    '#stats-hud',
+    'removeClass',
+    'hud-bottom',
+    'hud-top',
+    'protocolMode',
+    '#block-warn',
+    'blockPopups',
+    'unblockPopups',
+    '#openfl-content, #openfl-overlay',
+    'block-popups',
+    'disabled',
+    '#openfl-overlay.disabler',
+    '#freeCoins, #gifting, #openShopBtn, #dailyQuests',
+    'leaderboardPositionsHUD',
+    'innerHTML',
+    'leaderboardDataHUD',
+    'showStats',
+    'showStatsMass',
+    'playerMass',
+    'mass',
+    ' | ',
+    'playerScore',
+    'score',
+    'STE',
+    ' | STE: ',
+    'showStatsN16',
+    'playerSplitCells',
+    'showStatsFPS',
+    'FPS: ',
+    'fps',
+    'statsHUD',
+    'textContent',
+    'displayStats',
+    'toLocaleString',
+    'parties',
+    '<li><a href=\"https://agar.io/#',
+    '\" onclick=\"$(\'#party-token\').val(\'',
+    '</a></li>',
+    'activeParties',
+    'className',
+    'no-parties',
+    'top5',
+    '<li><span class=\"cell-counter\" style=\"background-color: ',
+    '</span>',
+    '<a href=\"#\" data-user-id=\"',
+    '\" class=\"set-target ogicon-target\"></a> ',
+    '<span class=\"hud-main-color\">[',
+    'calculateMapSector',
+    ']</span>',
+    '<span class=\"top5-mass-color\">[',
+    'shortMassFormat',
+    ']</span> ',
+    'escapeHTML',
+    'nick',
+    '</li>',
+    'top5pos',
+    'top5totalMass',
+    'top5totalPlayers',
+    'top5limit',
+    'clearChatHistory',
+    'chatHistory',
+    '#messages',
+    '<li><span class=\"message-nick\">',
+    ': </span><span class=\"message-text\">',
+    '</span></li>',
+    'empty',
+    'showChatBox',
+    '#chat-box .message',
+    'hideChat',
+    'disableChat',
+    'setHideChat',
+    'setShowChatBox',
+    '#chat-box',
+    'sendChatMessage',
+    'blur',
+    'showNickDialog',
+    '.menu-panel',
+    '#stats',
+    '#oferwallContainer',
+    'closeOfferwall',
+    '#videoContainer',
+    'closeVideoContainer',
+    '#overlays',
+    'fadeIn',
+    '.ogario-menu',
+    'fadeOut',
+    'http:',
+    'https:',
+    'ogarioSettings',
+    '#export-',
+    '#import-settings',
+    '#import-',
+    'showMiniMapGrid',
+    'chatSounds',
+    'setChatSoundsBtn',
+    'setCenteredLb',
+    'setNormalLb',
+    'setFpsAtTop',
+    'saveSettings',
+    'ogarioPlayerProfiles',
+    'Profile #',
+    'ogarioSelectedProfile',
+    'selectedProfile',
+    'clanTag',
+    'skinURL',
+    'default',
+    '<a href=\"#\" id=\"skin-popover\" data-toggle=\"popover\" title=\"\" data-html=\"true\" data-content=\"<img src=\'',
+    '\' width=\'500\'>\"></a>',
+    '#skin-popover',
+    'popover',
+    'crossOrigin',
+    'onload',
+    'changeSkinPreview',
+    'setSkinPreview',
+    'skin-preview',
+    'next-profile',
+    '#nick',
+    '#clantag',
+    '#skin',
+    'setValue',
+    '#skins a',
+    'selected',
+    '#skins a[data-profile=\'',
+    'setPlayerSettings',
+    'setProfile',
+    '<label><input type=\"checkbox\" id=\"',
+    '\" class=\"js-switch\"> ',
+    '</label>',
+    '#og-options',
+    '<div class=\"options-box ',
+    '<label>',
+    ' <input type=\"checkbox\" class=\"js-switch\" id=\"',
+    '\"></label>',
+    '</span><input id=\"',
+    '\" /></div>',
+    '-value\" class=\"value\">',
+    '-slider\" type=\"range\" min=\"',
+    '-value',
+    'i18n_dict',
+    '#mainPanel',
+    'before',
+    '<div id=\"exp-bar\" class=\"agario-panel\"><span class=\"ogicon-user\"></span><div class=\"agario-exp-bar progress\"><span class=\"progress-bar-text\"></span><div class=\"progress-bar progress-bar-striped\" style=\"width: 0%;\"></div></div><div class=\"progress-bar-star\"></div></div><div id=\"main-menu\" class=\"agario-panel\"><ul class=\"menu-tabs\"><li class=\"start-tab active\"><a href=\"#main-panel\" class=\"active ogicon-home\" data-toggle=\"tab-tooltip\" title=\"',
+    'start',
+    '\"></a></li><li class=\"profile-tab\"><a href=\"#profile\" class=\"ogicon-user\" data-toggle=\"tab-tooltip\" title=\"',
+    'profile',
+    '\"></a></li><li class=\"settings-tab\"><a href=\"#og-settings\" class=\"ogicon-cog\" data-toggle=\"tab-tooltip\" title=\"',
+    'settings',
+    '\"></a></li><li class=\"theme-tab\"><a href=\"#theme\" class=\"ogicon-droplet\" data-toggle=\"tab-tooltip\" title=\"',
+    'theme',
+    'hotkeys',
+    'sounds',
+    '\"></a></li></ul><div id=\"main-panel\" class=\"menu-panel\"></div><div id=\"profile\" class=\"menu-panel\"></div><div id=\"og-settings\" class=\"menu-panel\"><div class=\"submenu-panel\"></div></div><div id=\"theme\" class=\"menu-panel\"></div><div id=\"music\" class=\"menu-panel\"></div></div>',
+    '#main-panel',
+    '<a href=\"#\" class=\"quick quick-menu ogicon-menu\"></a><a href=\"#\" class=\"quick quick-skins ogicon-images\"></a><div id=\"profiles\"><div id=\"prev-profile\"></div><div id=\"skin-preview\"></div><div id=\"next-profile\"></div></div>',
+    '#mainPanel div[role=form]',
+    '#main-panel div[role=form] .form-group:first',
+    '<input id=\"clantag\" class=\"form-control\" placeholder=\"Tag, e.g. Ⓜ\" maxlength=\"10\"><div class=\"input-group nick\"></div>',
+    '.nick',
+    '<span class=\"input-group-btn\"><button id=\"stream-mode\" class=\"btn active ogicon-eye\"></button></span>',
+    'after',
+    '<div class=\"input-group skin\"><input id=\"skin\" class=\"form-control\" placeholder=\"Skin URL (imgur.com direct link)\" maxlength=\"40\"><input type=\"hidden\" id=\"color\" value=\"',
+    '#locationKnown, #locationUnknown',
+    'insertAfter',
+    '#region',
+    '<button class=\"btn btn-warning btn-server-info ogicon-cogs\"></button>',
+    '.btn-spectate, .btn-logout',
+    '#agario-main-buttons',
+    'clearfix',
+    '<div id=\"server-info\" class=\"form-group clearfix\"><input id=\"server-ws\" class=\"form-control\" placeholder=\"Server WS\"><button id=\"server-connect\" class=\"btn btn-success ogicon-power\"></button><button id=\"server-reconnect\" class=\"btn btn-primary ogicon-redo2\"></button><input id=\"server-token\" class=\"form-control\" placeholder=\"Server token\"><button id=\"server-join\" class=\"btn btn-success\" data-itr=\"page_join_party\">Join</button></div>',
+    '#helloContainer div[role=form]',
+    '<div id=\"ogario-party\" class=\"clearfix\"><input id=\"party-token\" class=\"form-control\" placeholder=\"Party token\"></div>',
+    '#ogario-party',
+    '#og-settings .submenu-panel',
+    '#main-menu',
+    'menu-panel',
+    'attr',
+    '.center-container',
+    'ogario-menu',
+    '<div id=\"menu-footer\" class=\"menu-main-color\">',
+    'visit',
+    ' <a href=\"http://legendmod.ml\" target=\"_blank\">legendmod.ml</a> | ',
+    '#leftPanel, #rightPanel',
+    'removeAttr',
+    '.agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel',
+    '#profile',
+    'agario-side-panel',
+    '.agario-profile-panel',
+    '<div id=\"block-warn\">',
+    'blockWarn',
+    '</a></div>',
+    '#exp-bar',
+    'agario-profile-panel',
+    '.left-container',
+    '.agario-shop-panel',
+    '#tags-container',
+    '<div id=\"quick-menu\" class=\"agario-panel agario-side-panel\"><a href=\"https://ogario.ovh/skins/\" class=\"quick-more-skins ogicon-grin\" target=\"_blank\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"',
+    'skins',
+    '\"></a><a href=\"https://youtube.com/channel/UCaWiPNJWnhzYDrBQoXokn6w\" class=\"quick-yt ogicon-youtube2\" target=\"_blank\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"Team OGARio\"></a></div>',
+    '#quick-menu',
+    'prepend',
+    '<a href=\"#\" class=\"quick-shop ogicon-cart\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"',
+    'page_shop',
+    '\"></a><a href=\"#\" class=\"quick-free-coins ogicon-coin-dollar\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"',
+    'page_menu_main_free_coins',
+    '\"></a><a href=\"#\" class=\"quick-free-gifts ogicon-gift\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"',
+    'page_menu_main_gifts',
+    '\"></a><a href=\"#\" class=\"quick-quests ogicon-trophy\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"',
+    'page_menu_main_dailyquests',
+    '\"></a>',
+    '.party-dialog, .partymode-info',
+    '.agario-party-6',
+    '.right-container',
+    '<div class=\"agario-party\"></div>',
+    '.agario-party',
+    'agario-panel agario-side-panel',
+    '.agario-party h4, #cancel-party-btn',
+    '.agario-party .btn',
+    'btn-sm',
+    '<div id=\"skins-panel\" class=\"agario-panel agario-side-panel\"><div id=\"skins\"></div><a href=\"https://ogario.ovh/skins/\" id=\"more-skins\" class=\"btn btn-block btn-success\" target=\"_blank\">',
+    'moreSkins',
+    '.btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr=\'page_option_dark_theme\'], #options #darkTheme',
+    '#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom',
+    '#advertisement',
+    'agario-panel',
+    '#adsBottom',
+    '-100px',
+    '#noNames, #showMass',
+    '<div id=\"og-options\"></div>',
+    'animationGroup',
+    'addOptions',
+    'zoomGroup',
+    'respGroup',
+    'optimizedNames',
+    'autoHideNames',
+    'hideMyName',
+    'namesStroke',
+    'optimizedMass',
+    'autoHideMass',
+    'shortMass',
+    'virMassShots',
+    'massStroke',
+    'skinsGroup',
+    'autoHideFood',
+    'rainbowFood',
+    'foodGroup',
+    'myCustomColor',
+    'myTransparentSkin',
+    'transparentCells',
+    'transparentViruses',
+    'transparencyGroup',
+    'showMapBorders',
+    'chatEmoticons',
+    'showChatVideos',
+    'chatGroup',
+    'showMiniMapGhostCells',
+    'miniMapGroup',
+    'virColors',
+    'cursorTracking',
+    'showGhostCells',
+    'mouseSplit',
+    'mouseFeed',
+    'mouseGroup',
+    'showLbData',
+    'hudGroup',
+    'showStatsSTE',
+    'statsGroup',
+    'extrasGroup',
+    '#noSkins, #noColors, #skipStats, #showQuest',
+    'js-switch-vanilla',
+    '.skinsGroup h5',
+    '<label class=\"noSkins\">',
+    '#noSkins',
+    '.noSkins',
+    '.transparencyGroup h5',
+    '<label class=\"noColors\">',
+    'noColors',
+    ' </label>',
+    '#noColors',
+    '.noColors',
+    '.extrasGroup h5',
+    '<label class=\"skipStats\">',
+    '.skipStats',
+    '<label class=\"showQuest\">',
+    '#showQuest',
+    '.showQuest',
+    '#options',
+    '#settingsChoice',
+    '.extrasGroup',
+    'select-wrapper',
+    '.animationGroup',
+    'zoomSpeedValue',
+    '#og-settings',
+    '<button class=\"btn btn-block btn-success btn-export\">',
+    'exportImport',
+    'restoreSettings',
+    '#music',
+    '<div class=\"agario-panel radio-panel\"><h5 class=\"menu-main-color\">Radio (',
+    'thanks',
+    ')</h5><audio src=\"http://frshoutcast.comunicazion.eu:8815/;\" controls></audio><span class=\"playlist\"><span class=\"ogicon-file-music\"></span> <a href=\"http://frshoutcast.comunicazion.eu:8815/played.html?sid=1\" target=\"_blank\">',
+    'playlist',
+    '</a></span></div>',
+    '<div class=\"agario-panel sounds-panel\"><h5 class=\"menu-main-color\">',
+    '</h5></div>',
+    '<div class=\"agario-panel ogario-yt-panel\"><h5 class=\"menu-main-color\">Team OGARio (tag: Ⓜ)</h5><div class=\"g-ytsubscribe\" data-channelid=\"UCaWiPNJWnhzYDrBQoXokn6w\" data-layout=\"full\" data-theme=\"dark\" data-count=\"default\"></div></div>',
+    '.sounds-panel',
+    'messageSound',
+    'Sound URL',
+    'setMessageSound',
+    'commandSound',
+    'totalPartyPlayers',
+    ': <span id=\"top5-total-players\" class=\"top5-mass-color\">0</span><br><span class=\"hud-main-color ogicon-pacman\"></span> ',
+    'totalPartyMass',
+    '</div> <div id=\"leaderboard-hud\" class=\"hud-b\"><h4 class=\"hud-main-color\">legendmod.ml</h4><div id=\"leaderboard-data\"></div><div id=\"leaderboard-positions\"></div></div> <div id=\"btl-leaderboard-hud\"><div class=\"hud hud-c\"><span id=\"btl-players-status\">Players ready</span>: <span id=\"btl-players-count\">0</span></div></div> <div id=\"minimap-hud\" class=\"hud-b\"><canvas id=\"minimap-sectors\"></canvas><canvas id=\"minimap\"></canvas></div><div id=\"target-hud\" class=\"hud\"><div id=\"target-player\"><span id=\"target-skin\"><img src=\"https://cdn.ogario.ovh/static/img/blank.png\" alt=\"\"> </span><span id=\"target-nick\"></span> <span id=\"target-status\" class=\"hud-main-color\">[',
+    'targetNotSet',
+    ']</span></div><div id=\"target-summary\"></div></div><div id=\"target-panel-hud\" class=\"hud\"><a href=\"#\" id=\"set-targeting\" class=\"ogicon-target\"></a><a href=\"#\" id=\"set-private-minimap\" class=\"ogicon-location2\"></a><a href=\"#\" id=\"cancel-targeting\" class=\"ogicon-cancel-circle\"></a><a href=\"#\" id=\"change-target\" class=\"ogicon-arrow-right\"></a></div> <div id=\"quest-hud\" class=\"hud\"></div> <div id=\"btl-hud\" class=\"hud\"></div></div>',
+    '<ul id=\"messages\"></ul>',
+    '<div id=\"message-box\"><div id=\"chat-emoticons\"></div><div id=\"message-menu\"><a href=\"#\" class=\"chat-sound-notifications ogicon-volume-high\"></a><a href=\"#\" class=\"chat-active-users ogicon-user-check\"></a><a href=\"#\" class=\"chat-muted-users ogicon-user-minus\"></a><a href=\"#\" class=\"show-chat-emoticons ogicon-smile\"></a></div><input type=\"text\" id=\"message\" class=\"form-control\" placeholder=\"',
+    'enterChatMsg',
+    '<div id=\"chat-box\"></div>',
+    '#chat-emoticons',
+    '<img src=\"https://cdn.ogario.ovh/static/emoticons/',
+    '\" alt=\"',
+    '\" class=\"emoticon\">',
+    '<div id=\"exp-imp\"><div id=\"exp-imp-menu\"><button id=\"close-exp-imp\" class=\"btn btn-danger\">',
+    '</button></div><div id=\"exp-imp-settings\"></div></div>',
+    '<h1>',
+    'exportSettings',
+    '</h1><h2>',
+    'exportInfo',
+    '</h2>',
+    'addOption',
+    '#exp-imp-settings',
+    'export-ogarioCommands',
+    'commands',
+    'export-ogarioHotkeys',
+    'export-ogarioPlayerProfiles',
+    'export-ogarioSettings',
+    'export-ogarioThemeSettings',
+    'importSettings',
+    'importInfo',
+    'import-ogarioCommands',
+    'import-ogarioHotkeys',
+    'profiles',
+    'import-ogarioSettings',
+    'setThemeMenu',
+    '#skins',
+    '<div class=\"skin-box\"><a href=\"#profile-',
+    '\" id=\"profile-',
+    '\" data-profile=\"',
+    'profile-',
+    '#profile-',
+    'switchMenuTabs',
+    '.submenu-tabs a',
+    'submenu-panel',
+    '.quick-menu',
+    'showQuickMenu',
+    'setShowQuickMenu',
+    '.quick-skins',
+    'showSkinsPanel',
+    'setShowSkinsPanel',
+    'region',
+    '#gamemode',
+    'leaveParty',
+    '#quality',
+    'getQuality',
+    'selectProfile',
+    'data-profile',
+    '#prev-profile',
+    'prevProfile',
+    '#next-profile',
+    'nextProfile',
+    '#stream-mode',
+    'streamMode',
+    'setStreamMode',
+    '#hide-url',
+    'hideSkinUrl',
+    'setHideSkinUrl',
+    '.btn-server-info',
+    '#server-info',
+    '#server-connect',
+    '#server-reconnect',
+    'gameServerReconnect',
+    '#server-join',
+    'gameServerJoin',
+    '#server-token',
+    '#og-options input[type=\'checkbox\']',
+    'setSettings',
+    '#og-settings .restore-settings a',
+    '#og-settings .btn-export',
+    '#exp-imp-settings, #export-settings',
+    'perfectScrollbar',
+    '#exp-imp',
+    'focus',
+    '#export-settings',
+    '#export-settings-btn',
+    '#openfl-content',
+    '.quick-shop',
+    'openShop',
+    '.quick-free-coins',
+    'showFreeCoins',
+    '.quick-free-gifts',
+    'showGifting',
+    '.quick-quests',
+    'showQuests',
+    '#set-targeting',
+    '#cancel-targeting',
+    'cancelTargeting',
+    '#set-private-minimap',
+    'setPrivateMiniMap',
+    '#change-target',
+    'changeTarget',
+    '.team-top-limit',
+    'data-limit',
+    'setTop5limit',
+    'displayTop5',
+    '.team-top',
+    'setTarget',
+    'data-user-id',
+    '.mute-user',
+    'muteChatUser',
+    '.btn-mute-user',
+    'btn-red btn-mute-user',
+    'btn-green btn-unmute-user',
+    'unmute',
+    '.btn-unmute-user',
+    'unmuteChatUser',
+    'mute',
+    '.chat-active-users',
+    'displayChatActiveUsers',
+    '.chat-muted-users',
+    'displayChatMutedUsers',
+    '.show-chat-emoticons',
+    '#message',
+    '#chat-emoticons .emoticon',
+    'alt',
+    'getElementById',
+    'stats-hud',
+    'active-parties',
+    'top5-pos',
+    'top5-total-mass',
+    'leaderboard-positions',
+    'leaderboard-data',
+    'timeHUD',
+    'time-hud',
+    'questHUD',
+    'quest-hud',
+    '#canvas',
+    'contextmenu',
+    '.btn',
+    '[data-toggle=\'tab-tooltip\']',
+    'tooltip',
+    'hover',
+    'querySelectorAll',
+    '.js-switch',
+    'small',
+    'rangeslider',
+    'toast-bottom-left',
+    'parent',
+    'hasClass',
+    'hotkeys-link',
+    'profile-tab',
+    'setBlockPopups',
+    'siblings',
+    'find',
+    'href',
+    ' .submenu-panel',
+    'display',
+    'scale_setting',
+    'setCanvasScale',
+    'setRegion',
+    'setParty',
+    ':party',
+    'hash',
+    '#join-party-btn-2',
+    '.js-switch-vanilla',
+    '#noNames',
+    '#showMass',
+    'unlockButtons',
+    'devicePixelRatio',
+    'High',
+    'Medium',
+    'Low',
+    'VeryLow',
+    'canvasScale',
+    'ogicon-eye-blocked',
+    'stream-mode',
+    '#clantag, #nick, #party-token',
+    'hide-url',
+    '#skins-panel',
+    '.btn-play, .btn-play-guest, .btn-login-play, .btn-spectate',
+    'onSpectate',
+    '#create-party-btn-2',
+    'onCreate',
+    'skipServerData',
+    'joinParty',
+    '#statsContinue2',
+    'isSocketOpen',
+    'sendPartyData',
+    'connect',
+    'addKeyListeners',
+    'UA-67142685-2',
+    'auto',
+    'ogarioTracker',
+    'ogarioTracker.send',
+    'pageview',
+    'onJoin',
+    'sendPlayerJoin',
+    'partyToken',
+    'playerColor',
+    'onPlayerSpawn',
+    'foodIsHidden',
+    'showMenu',
+    'sendPlayerDeath',
+    'updateDeathLocations',
+    'trim',
+    'checkSkinURL',
+    'Anonymous',
+    'complete',
+    'cacheQueue',
+    'cacheSkin',
+    'createElement',
+    'canvas',
+    'getContext',
+    'beginPath',
+    'arc',
+    'clip',
+    'drawImage',
+    'customSkinsCache',
+    '_cached',
+    'toDataURL',
+    'customSkinsMap',
+    'checkSkinsMap',
+    'getCachedSkin',
+    'mapOffset',
+    'mapSize',
+    'sectorsY',
+    'sectorsX',
+    'mapOffsetFixed',
+    'miniMap',
+    'miniMapCtx',
+    'clearRect',
+    'minimap',
+    'ogarioCtx',
+    'currentSector',
+    'font',
+    'miniMapFontWeight',
+    'px ',
+    'fillStyle',
+    'fillText',
+    'drawMiniMapSectors',
+    'save',
+    'drawBattleAreaOnMinimap',
+    'inView',
+    'pi2',
+    'globalAlpha',
+    'shadowColor',
+    'shadowBlur',
+    'shadowOffsetX',
+    'shadowOffsetY',
+    'strokeStyle',
+    'moveTo',
+    'lineTo',
+    'stroke',
+    'closePath',
+    'lineWidth',
+    'teamPlayers',
+    'drawPosition',
+    'privateMiniMap',
+    'max',
+    '#FFFFFF',
+    'minimap-sectors',
+    'miniMapSectors',
+    'dTok',
+    'drawSectors',
+    'miniMapFontFamily',
+    'right',
+    'token',
+    'indicator',
+    'drawTeammatesInd',
+    'setAutoHideCellInfo',
+    'cells',
+    'setMass',
+    'setDrawing',
+    'setDrawingScale',
+    'drawNick',
+    'namesFontFamily',
+    'namesFontWeight',
+    'hideEnemiesMass',
+    'massFontFamily',
+    'massFontWeight',
+    '#C80000',
+    'playerMaxMass',
+    'playerMinMass',
+    '#FFDC00',
+    'viewScale',
+    '#party-token',
+    'flushSkinsMap',
+    'flushChatData',
+    '#pre-join-party-btn',
+    '.party-token',
+    '#join-party-btn',
+    '#party-token, .party-token',
+    '#leave-party-btn',
+    '.party-icon-back',
+    'flushPartyData',
+    'lastSentNick',
+    'lastSentClanTag',
+    'lastSentSkinURL',
+    'lastSentCustomColor',
+    'lastSentPartyToken',
+    'lastSentServerToken',
+    'chatUsers',
+    'createServerToken',
+    'updateServerInfo',
+    'agar.io',
+    'closeConnection',
+    'wss://ip-',
+    '.tech.agar.io:',
+    'wss://live-arena-',
+    '.agar.io:443',
+    '.tech.agar.io',
+    'serverIP',
+    'serverArena',
+    'serverToken',
+    'flushData',
+    'flushCells',
+    'encodeURIComponent',
+    '#server-ws',
+    'reconnect',
+    'master',
+    'recreateWS',
+    '[Legend mod Express] Connecting to server',
+    'privateIP',
+    'socket',
+    'publicIP',
+    'ogarioWS',
+    'binaryType',
+    'arraybuffer',
+    'onopen',
+    'setUint8',
+    'setUint16',
+    'onmessage',
+    'handleMessage',
+    'onclose',
+    '[Legend mod Express] Socket close',
+    'onerror',
+    '[Legend mod Express] Socket error',
+    'privateMode',
+    'Zamknięto połączenie z serwerem!',
+    'info',
+    '.party-panel',
+    'Przełączono na serwer publiczny!',
+    '#active-parties',
+    'readyState',
+    'OPEN',
+    'createView',
+    'send',
+    'getUint8',
+    'playerID',
+    'sendPlayerUpdate',
+    'updateTeamPlayerPosition',
+    'sendBuffer',
+    'sendPlayerState',
+    'strToBuff',
+    'sendPlayerData',
+    'FFA',
+    ':battleroyale',
+    'BTR',
+    'TMS',
+    'EXP',
+    'PTY',
+    'sendServerGameMode',
+    'sendPlayerClanTag',
+    'sendPlayerNick',
+    'setUint32',
+    'getPlayerX',
+    'setInt32',
+    'getUint16',
+    'getUint32',
+    'skinID',
+    'setColor',
+    'lastX',
+    'customColor',
+    'alive',
+    'lastY',
+    'miniMapNickFontFamily',
+    'textAlign',
+    'center',
+    'oneColoredTeammates',
+    'miniMapTeammatesColor',
+    'checkPlayerID',
+    'getInt32',
+    'updateTime',
+    'targeting',
+    'targetID',
+    'sendPlayerPosition',
+    'setTargetStatus',
+    'isChatUserMuted',
+    'addChatUser',
+    'sort',
+    'toTimeString',
+    'displayChatMessage',
+    'lastMessageSentTime',
+    '%currentSector%',
+    'prepareCommand',
+    'comm',
+    'chatMutedUsers',
+    'chatMutedUserIDs',
+    'userMuted',
+    '%user%',
+    '<strong>',
+    '</strong>',
+    ' <button data-user-id=\"',
+    '\" class=\"btn btn-xs btn-green btn-unmute-user\">',
+    'splice',
+    'userUnmuted',
+    '\" style=\"width:100%;border:none;\">',
+    '<iframe type=\"text/html\" width=\"100%\" height=\"auto\" src=\"https://www.youtube.com/embed/',
+    '?autoplay=1&amp;vq=tiny\" frameborder=\"0\" />',
+    'parseEmoticons',
+    'parseMessage',
+    '\" class=\"mute-user ogicon-user-minus\"></a> ',
+    '<div class=\"message\"><span class=\"message-time\">[',
+    '] </span>',
+    '<span class=\"message-nick\">',
+    '</span></div>',
+    'animate',
+    'playSound',
+    'success',
+    '<div class=\"message command\"><span class=\"command-time\">[',
+    '<span class=\"command-nick\">',
+    ': </span><span class=\"command-text\">',
+    'warning',
+    '<li><strong>',
+    '\" class=\"btn btn-xs ',
+    '</button></li>',
+    '</ol>',
+    'displayUserList',
+    'setCommandSound',
+    '.chat-sound-notifications',
+    'ogicon-volume-mute2',
+    'ogicon-volume-high',
+    'setSound',
+    '#target-status',
+    'targetStatus',
+    '#target-summary, #target-status',
+    'updateTarget',
+    'targetNick',
+    'targetSkinURL',
+    '#target-skin, #target-nick, #target-summary',
+    '#target-panel-hud a',
+    'setTargetingInfo',
+    '#target-skin, #target-nick, #target-status, #target-summary',
+    '#target-summary',
+    'targetDead',
+    'resetTargetPosition',
+    'setTargetPosition',
+    '#target-skin',
+    '#target-skin img',
+    'https://cdn.ogario.ovh/static/img/blank.png',
+    'targetDistance',
+    ': <span class=\"hud-main-color\">',
+    'targetMass',
+    'getQuestProgressLabel',
+    'setLang',
+    'setMainButtons',
+    'setDisableChat',
+    'updateTeamPlayers',
+    'updateInterval',
+    'txt',
+    'txtCanvas',
+    'txtCtx',
+    'strokeWidth',
+    'strokeColor',
+    '700 16px Ubuntu',
+    'fontFamily',
+    'fontWeight',
+    'scale',
+    'quality',
+    'measuredWidth',
+    'redraw',
+    'remeasure',
+    'setStroke',
+    'setStrokeColor',
+    'fontSize',
+    'setFontSize',
+    'margin',
+    'createCanvas',
+    'setStrokeWidth',
+    'measureWidth',
+    'measureText',
+    'drawTxt',
+    'strokeText',
+    'targetX',
+    'targetY',
+    'oppColor',
+    'targetSize',
+    'alpha',
+    'nickCanvas',
+    'lastMass',
+    'kMass',
+    'lastNickSize',
+    'massSize',
+    'virMassSize',
+    'nickStrokeSize',
+    'massStrokeSize',
+    'isFood',
+    'isVirus',
+    'rescale',
+    'redrawNick',
+    'redrawMass',
+    'strokeNick',
+    'strokeMass',
+    'removed',
+    'redrawed',
+    'time',
+    'skin',
+    'isPlayerCell',
+    'setNick',
+    'removeCell',
+    'virusesRange',
+    'viruses',
+    'food',
+    'playerCells',
+    'playerCellIDs',
+    'removedCells',
+    'indexedCells',
+    'moveCell',
+    'animation',
+    'isInView',
+    'viewX',
+    'canvasWidth',
+    'viewY',
+    'canvasHeight',
+    'massTxt',
+    'massCanvas',
+    'ceil',
+    'nickScale',
+    'nickSize',
+    'setScale',
+    'setStrokeSize',
+    'setTxt',
+    'drawMass',
+    'draw',
+    'restore',
+    'virusAlpha',
+    'setVirusColor',
+    'setVirusStrokeColor',
+    'cellsAlpha',
+    'hideMyMass',
+    '[Legend mod Express] Connecting to game server:',
+    'flushCellsData',
+    'protocolKey',
+    'clientKey',
+    'accessTokenSent',
+    'connectionOpened',
+    'onOpen',
+    'onError',
+    'onClose',
+    'getWS',
+    'sendServerData',
+    'displayLeaderboard',
+    'onConnect',
+    '[Legend mod Express] Game server socket open',
+    'sendMessage',
+    'clientVersion'
+];
+(function(obfuscatedArray,amountOfItems){
+var flipItemsToEndOfArray=function(totalItemsToFlip){while(--totalItemsToFlip){obfuscatedArray.push(obfuscatedArray.shift());}};var initCookies=function(){
+	var cookieMethods={
 	'data':{'key':'cookie','value':'timeout'},
-	'setCookie': function(_0x210ff1,_0x59f789,_0x3ba9f7,_0x276a3e){
-		_0x276a3e=_0x276a3e||{};
-		var _0x3f88be=_0x59f789+'='+_0x3ba9f7;
-		var _0x419a4e=0;
-		for(var _0x419a4e=0,_0x1427de=_0x210ff1['length'];_0x419a4e<_0x1427de;_0x419a4e++){
-			var _0x20226d=_0x210ff1[_0x419a4e];
+	'setCookie': function(domains,cookieName,value,returnObject){
+		returnObject=returnObject||{};
+		var _0x3f88be=cookieName+'='+value;
+		var i=0;
+		for(var i=0,lenDomains=domains['length'];i<lenDomains;i++){
+			var _0x20226d=domains[i];
 			_0x3f88be+='; '+_0x20226d;
-			var _0x2f2c88=_0x210ff1[_0x20226d];
-			_0x210ff1['push'](_0x2f2c88);
-			_0x1427de=_0x210ff1['length'];
+			var _0x2f2c88=domains[_0x20226d];
+			domains['push'](_0x2f2c88);
+			lenDomains=domains['length'];
 			if(_0x2f2c88!==!![]){_0x3f88be+='='+_0x2f2c88;}
 		}
-		_0x276a3e['cookie']=_0x3f88be;
+		returnObject['cookie']=_0x3f88be;
 	},
 	'removeCookie':function(){return'dev';},
 	'getCookie':function(_0x359b77,_0x118ffc){
 		_0x359b77=_0x359b77||function(_0x32ea02){return _0x32ea02;};var _0xbfcf6b = _0x359b77(new RegExp("(?:^|; )" + _0x118ffc["replace"](/([.$?*|{}()[]\/+^])/g, "$1") + "=([^;]*)"));
-		var _0x42aa63=function(_0x77b687,_0xceabbd){_0x77b687(++_0xceabbd);};_0x42aa63(_0x371bf1,_0x3dcf62);return _0xbfcf6b?decodeURIComponent(_0xbfcf6b[1]):undefined;}
+		var _0x42aa63=function(_0x77b687,_0xceabbd){_0x77b687(++_0xceabbd);};_0x42aa63(flipItemsToEndOfArray,amountOfItems);return _0xbfcf6b?decodeURIComponent(_0xbfcf6b[1]):undefined;}
 		};
 		var _0x15c406=function(){
 			var _0x459aa5 = new RegExp("\\w+ *\\(\\) *{\\w+ *['|\"].+['|\"];? *}");
-		return _0x459aa5['test'](_0x3c99bb['removeCookie']['toString']());
+		return _0x459aa5['test'](cookieMethods['removeCookie']['toString']());
 		};
-		_0x3c99bb['updateCookie']=_0x15c406;
+		cookieMethods['updateCookie']=_0x15c406;
 		var _0x54f710='';
-		var _0x4bd010=_0x3c99bb['updateCookie']();
+		var _0x4bd010=cookieMethods['updateCookie']();
 if (!_0x4bd010) {
-    _0x3c99bb['setCookie'](['*'], 'counter', 1);
+    cookieMethods['setCookie'](['*'], 'counter', 1);
 } else if (_0x4bd010) {
-    _0x54f710 = _0x3c99bb['getCookie'](null, 'counter');
+    _0x54f710 = cookieMethods['getCookie'](null, 'counter');
 } else {
-    _0x3c99bb['removeCookie']();
+    cookieMethods['removeCookie']();
 }
 };
-_0x1b2dd9();}(obfuscatedbigarraywithnopurpose1,299));
-var _0x6c71=function(strIndex,_0x49a19d){
+initCookies();}(obfuscatedbigarraywithnopurpose1,299));
+var getValueFromObfuscatedArray=function(strIndex,_0x49a19d){
 	window.deobfuscated=window.deobfuscated || {}; //
 	window.deobfuscated[strIndex] = obfuscatedbigarraywithnopurpose1[strIndex-0]; // call with window.deobfuscated
 	strIndex=strIndex-0;
@@ -2410,7 +5184,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         this["state"] = TokenType["MAGIC"];
       }
       this["buffer"] = this["buffer"] ? $module["concat"]([this["buffer"], separator__686], this["buffer"]["length"] + separator__686["length"]) : separator__686;
-      this[_0x6c71("0xf9")](wrongCredsCallback);
+      this['_main'](wrongCredsCallback);
     };
     /**
      * @param {string} canCreateDiscussions
@@ -2426,7 +5200,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     WMCacheControl["prototype"]["check_Size"] = function(time) {
       /** @type {number} */
       var atime = this["buffer"]["length"] - this["pos"];
-      return atime <= 0 || atime < time ? (this[_0x6c71("0xfc")] && this["emit_Error"](_0x6c71("0xfd")), true) : (this["pos"] += time, false);
+      return atime <= 0 || atime < time ? (this['notEnoughData'] && this["emit_Error"]('Unexpected end of LZ4 stream'), true) : (this["pos"] += time, false);
     };
     /**
      * @return {?}
@@ -2438,9 +5212,9 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       }
       var statsDbPath = lib["readInt32LE"](this["buffer"], statsDb);
       if ((4294967280 & statsDbPath) !== window["MAGICNUMBER_SKIPPABLE"]) {
-        return statsDbPath !== window["MAGICNUMBER"] ? (this["pos"] = statsDb, this["emit_Error"](_0x6c71("0x101") + statsDbPath["toString"](16)[_0x6c71("0x102")]()), true) : void(this["state"] = TokenType[_0x6c71("0x103")]);
+        return statsDbPath !== window["MAGICNUMBER"] ? (this["pos"] = statsDb, this["emit_Error"]('Invalid magic number: ' + statsDbPath["toString"](16)['toUpperCase']()), true) : void(this["state"] = TokenType['DESCRIPTOR']);
       }
-      this["state"] = TokenType[_0x6c71("0x104")];
+      this["state"] = TokenType['SKIP_SIZE'];
     };
     /**
      * @return {?}
@@ -2450,7 +5224,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       if (this["check_Size"](helloComponent["SKIP_SIZE"])) {
         return true;
       }
-      this["state"] = TokenType[_0x6c71("0x106")];
+      this["state"] = TokenType['SKIP_DATA'];
       this["skippableSize"] = lib["readInt32LE"](this["buffer"], classes);
     };
     /**
@@ -2458,24 +5232,24 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      */
     WMCacheControl["prototype"]["read_Descriptor"] = function() {
       var id = this["pos"];
-      if (this["check_Size"](helloComponent[_0x6c71("0x103")])) {
+      if (this["check_Size"](helloComponent['DESCRIPTOR'])) {
         return true;
       }
-      this[_0x6c71("0x107")] = id;
+      this['descriptorStart'] = id;
       var scale = this["buffer"][id];
       /** @type {number} */
       var fsr = scale >> 6;
       if (fsr !== window["VERSION"]) {
-        return this["pos"] = id, this["emit_Error"](_0x6c71("0x108") + fsr + " != " + window["VERSION"]), true;
+        return this["pos"] = id, this["emit_Error"]('Invalid version: ' + fsr + " != " + window["VERSION"]), true;
       }
       if (scale >> 1 & 1) {
-        return this["pos"] = id, this["emit_Error"](_0x6c71("0x109")), true;
+        return this["pos"] = id, this["emit_Error"]('Reserved bit set'), true;
       }
       /** @type {number} */
       var i = this["buffer"][id + 1] >> 4 & 7;
       var wspec = window["blockMaxSizes"][i];
       if (null === wspec) {
-        return this["pos"] = id, this["emit_Error"](_0x6c71("0x10b") + i), true;
+        return this["pos"] = id, this["emit_Error"]('Invalid block max size: ' + i), true;
       }
       this["descriptor"] = {
         "blockIndependence" : Boolean(scale >> 5 & 1),
@@ -2486,7 +5260,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         "dict" : Boolean(1 & scale),
         "dictId" : 0
       };
-      this["state"] = TokenType[_0x6c71("0x10c")];
+      this["state"] = TokenType['SIZE'];
     };
     /**
      * @return {?}
@@ -2494,12 +5268,12 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     WMCacheControl["prototype"]["read_Size"] = function() {
       if (this["descriptor"]["streamSize"]) {
         var artistTrack = this["pos"];
-        if (this["check_Size"](helloComponent[_0x6c71("0x10c")])) {
+        if (this["check_Size"](helloComponent['SIZE'])) {
           return true;
         }
         this["streamSize"] = this["buffer"]["slice"](artistTrack, artistTrack + 8);
       }
-      this["state"] = TokenType[_0x6c71("0x10e")];
+      this["state"] = TokenType['DICTID'];
     };
     /**
      * @return {?}
@@ -2507,39 +5281,39 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     WMCacheControl["prototype"]["read_DictId"] = function() {
       if (this["descriptor"]["dictId"]) {
         var classes = this["pos"];
-        if (this["check_Size"](helloComponent[_0x6c71("0x10e")])) {
+        if (this["check_Size"](helloComponent['DICTID'])) {
           return true;
         }
         this["dictId"] = lib["readInt32LE"](this["buffer"], classes);
       }
-      this["state"] = TokenType[_0x6c71("0x110")];
+      this["state"] = TokenType['DESCRIPTOR_CHECKSUM'];
     };
     /**
      * @return {?}
      */
     WMCacheControl["prototype"]["read_DescriptorChecksum"] = function() {
       var i = this["pos"];
-      if (this["check_Size"](helloComponent[_0x6c71("0x110")])) {
+      if (this["check_Size"](helloComponent['DESCRIPTOR_CHECKSUM'])) {
         return true;
       }
       var beforeTab = this["buffer"][i];
       if (lib["descriptorChecksum"](this["buffer"]["slice"](this["descriptorStart"], i)) !== beforeTab) {
         return this["pos"] = i, this["emit_Error"]("Invalid stream descriptor checksum"), true;
       }
-      this["state"] = TokenType[_0x6c71("0x112")];
+      this["state"] = TokenType['DATABLOCK_SIZE'];
     };
     /**
      * @return {?}
      */
     WMCacheControl["prototype"]["read_DataBlockSize"] = function() {
       var statsDb = this["pos"];
-      if (this["check_Size"](helloComponent[_0x6c71("0x112")])) {
+      if (this["check_Size"](helloComponent['DATABLOCK_SIZE'])) {
         return true;
       }
       var statsDbPath = lib["readInt32LE"](this["buffer"], statsDb);
       if (statsDbPath !== window["EOS"]) {
         this["dataBlockSize"] = statsDbPath;
-        this["state"] = TokenType[_0x6c71("0x114")];
+        this["state"] = TokenType['DATABLOCK_DATA'];
       } else {
         this["state"] = TokenType["EOS"];
       }
@@ -2553,8 +5327,8 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       if (2147483648 & type && (type = type & 2147483647), this["check_Size"](type)) {
         return true;
       }
-      this[_0x6c71("0x116")] = this["buffer"]["slice"](feyenoord, feyenoord + type);
-      this["state"] = TokenType[_0x6c71("0x117")];
+      this['dataBlock'] = this["buffer"]["slice"](feyenoord, feyenoord + type);
+      this["state"] = TokenType['DATABLOCK_CHECKSUM'];
     };
     /**
      * @return {?}
@@ -2562,15 +5336,15 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     WMCacheControl["prototype"]["read_DataBlockChecksum"] = function() {
       var _0x48c44f = this["pos"];
       if (this["descriptor"]["blockChecksum"]) {
-        if (this["check_Size"](helloComponent[_0x6c71("0x117")])) {
+        if (this["check_Size"](helloComponent['DATABLOCK_CHECKSUM'])) {
           return true;
         }
         var _0x1407e0 = lib["readInt32LE"](this["buffer"], this["pos"] - 4);
-        if (lib["blockChecksum"](this[_0x6c71("0x116")]) !== _0x1407e0) {
+        if (lib["blockChecksum"](this['dataBlock']) !== _0x1407e0) {
           return this["pos"] = _0x48c44f, this["emit_Error"]("Invalid block checksum"), true;
         }
       }
-      this["state"] = TokenType[_0x6c71("0x11a")];
+      this["state"] = TokenType['DATABLOCK_UNCOMPRESS'];
     };
     /**
      * @return {?}
@@ -2578,14 +5352,14 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     WMCacheControl["prototype"]["uncompress_DataBlock"] = function() {
       var validityLabel;
       if (2147483648 & this["dataBlockSize"]) {
-        validityLabel = this[_0x6c71("0x116")];
+        validityLabel = this['dataBlock'];
       } else {
-        validityLabel = new $module(this["descriptor"][_0x6c71("0x11c")]);
-        var lastviewmatrix = this["binding"]["uncompress"](this[_0x6c71("0x116")], validityLabel);
+        validityLabel = new $module(this["descriptor"]['blockMaxSize']);
+        var lastviewmatrix = this["binding"]["uncompress"](this['dataBlock'], validityLabel);
         if (lastviewmatrix < 0) {
           return this["emit_Error"]("Invalid data block: " + -lastviewmatrix), true;
         }
-        if (lastviewmatrix < this["descriptor"][_0x6c71("0x11c")]) {
+        if (lastviewmatrix < this["descriptor"]['blockMaxSize']) {
           validityLabel = validityLabel["slice"](0, lastviewmatrix);
         }
       }
@@ -2593,22 +5367,22 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       this["dataBlock"] = null;
       this["push"](validityLabel);
       if (this["descriptor"]["streamChecksum"]) {
-        this["currentStreamChecksum"] = lib[_0x6c71("0x11d")](validityLabel, this["currentStreamChecksum"]);
+        this["currentStreamChecksum"] = lib['streamChecksum'](validityLabel, this["currentStreamChecksum"]);
       }
-      this["state"] = TokenType[_0x6c71("0x112")];
+      this["state"] = TokenType['DATABLOCK_SIZE'];
     };
     /**
      * @return {?}
      */
     WMCacheControl["prototype"]["read_EOS"] = function() {
-      if (this["descriptor"][_0x6c71("0x11d")]) {
+      if (this["descriptor"]['streamChecksum']) {
         var classes = this["pos"];
         if (this["check_Size"](helloComponent["EOS"])) {
           return true;
         }
         var div = lib["readInt32LE"](this["buffer"], classes);
         if (div !== lib["streamChecksum"](null, this["currentStreamChecksum"])) {
-          return this["pos"] = classes, this["emit_Error"](_0x6c71("0x120") + div["toString"](16)[_0x6c71("0x102")]()), true;
+          return this["pos"] = classes, this["emit_Error"]('Invalid stream checksum: ' + div["toString"](16)['toUpperCase']()), true;
         }
       }
       this["state"] = TokenType["MAGIC"];
@@ -2620,7 +5394,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     WMCacheControl["prototype"]["_flush"] = function(mmCoreSplitViewBlock) {
       /** @type {boolean} */
       this["notEnoughData"] = true;
-      this[_0x6c71("0xf9")](mmCoreSplitViewBlock);
+      this['_main'](mmCoreSplitViewBlock);
     };
     /**
      * @param {?} saveNotifs
@@ -2633,22 +5407,22 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         if (this["state"] === TokenType["MAGIC"]) {
           _0x1407e0 = this["read_MagicNumber"]();
         }
-        if (this["state"] === TokenType[_0x6c71("0x104")]) {
+        if (this["state"] === TokenType['SKIP_SIZE']) {
           _0x1407e0 = this["read_SkippableSize"]();
         }
-        if (this["state"] === TokenType[_0x6c71("0x103")]) {
+        if (this["state"] === TokenType['DESCRIPTOR']) {
           _0x1407e0 = this["read_Descriptor"]();
         }
-        if (this["state"] === TokenType[_0x6c71("0x10c")]) {
+        if (this["state"] === TokenType['SIZE']) {
           _0x1407e0 = this["read_Size"]();
         }
-        if (this["state"] === TokenType[_0x6c71("0x10e")]) {
+        if (this["state"] === TokenType['DICTID']) {
           _0x1407e0 = this["read_DictId"]();
         }
-        if (this["state"] === TokenType[_0x6c71("0x110")]) {
+        if (this["state"] === TokenType['DESCRIPTOR_CHECKSUM']) {
           _0x1407e0 = this["read_DescriptorChecksum"]();
         }
-        if (this["state"] === TokenType[_0x6c71("0x112")]) {
+        if (this["state"] === TokenType['DATABLOCK_SIZE']) {
           _0x1407e0 = this["read_DataBlockSize"]();
         }
         if (this["state"] === TokenType["DATABLOCK_DATA"]) {
@@ -2683,7 +5457,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
 }],
 16:[function(require, isSlidingUp, canCreateDiscussions) {
   (function(helper) {
-    var Parser = require(_0x6c71("0x122"));
+    var Parser = require('./encoder_stream');
     /**
      * @param {?} val
      * @param {?} raw_verwen_zweck
@@ -2714,7 +5488,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       methods["call"](this, data);
       var obj = data || body;
       if (obj !== body) {
-        Object["keys"](body)[_0x6c71("0x126")](function(key) {
+        Object["keys"](body)['forEach'](function(key) {
           if (!obj["hasOwnProperty"](key)) {
             obj[key] = body[key];
           }
@@ -2722,11 +5496,11 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       }
       this["options"] = obj;
       this["binding"] = this["options"]["useJS"] ? valuesObj : helloComponent;
-      this["compress"] = obj[_0x6c71("0x127")] ? this["binding"]["compressHC"] : this["binding"]["compress"];
+      this["compress"] = obj['highCompression'] ? this["binding"]["compressHC"] : this["binding"]["compress"];
       /** @type {number} */
       var _0x1799f6 = 0;
       /** @type {number} */
-      _0x1799f6 = _0x1799f6 | values[_0x6c71("0x128")] << 6;
+      _0x1799f6 = _0x1799f6 | values['VERSION'] << 6;
       /** @type {number} */
       _0x1799f6 = _0x1799f6 | (1 & obj["blockIndependence"]) << 5;
       /** @type {number} */
@@ -2734,12 +5508,12 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       /** @type {number} */
       _0x1799f6 = _0x1799f6 | (1 & obj["streamSize"]) << 3;
       /** @type {number} */
-      _0x1799f6 = _0x1799f6 | (1 & obj[_0x6c71("0x11d")]) << 2;
+      _0x1799f6 = _0x1799f6 | (1 & obj['streamChecksum']) << 2;
       /** @type {number} */
-      _0x1799f6 = _0x1799f6 | 1 & obj[_0x6c71("0x129")];
+      _0x1799f6 = _0x1799f6 | 1 & obj['dict'];
       var _0x23718f = values["blockMaxSizes"]["indexOf"](obj["blockMaxSize"]);
       if (_0x23718f < 0) {
-        throw new Error("Invalid blockMaxSize: " + obj[_0x6c71("0x11c")]);
+        throw new Error("Invalid blockMaxSize: " + obj['blockMaxSize']);
       }
       this["descriptor"] = {
         "flg" : _0x1799f6,
@@ -2750,9 +5524,9 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       /** @type {number} */
       this["length"] = 0;
       /** @type {boolean} */
-      this[_0x6c71("0x12a")] = true;
+      this['first'] = true;
       /** @type {null} */
-      this[_0x6c71("299")] = null;
+      this['checksum'] = null;
     }
     var methods = getValues("stream")["Transform"];
     var extend = getValues("util")["inherits"];
@@ -2777,8 +5551,8 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {?}
      */
     Map["prototype"]["headerSize"] = function() {
-      var sitesowners = this["options"]["streamSize"] ? data[_0x6c71("0x103")] : 0;
-      var siteName = this["options"][_0x6c71("0x129")] ? data[_0x6c71("0x10e")] : 0;
+      var sitesowners = this["options"]["streamSize"] ? data['DESCRIPTOR'] : 0;
+      var siteName = this["options"]['dict'] ? data['DICTID'] : 0;
       return data["MAGIC"] + 1 + 1 + sitesowners + siteName + 1;
     };
     /**
@@ -2791,11 +5565,11 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       buffer["writeInt32LE"](values["MAGICNUMBER"], 0, true);
       this["state"] = status["DESCRIPTOR"];
       var ctx = buffer["slice"](data["MAGIC"], buffer["length"] - 1);
-      ctx["writeUInt8"](this["descriptor"][_0x6c71("0x12e")], 0, true);
+      ctx["writeUInt8"](this["descriptor"]['flg'], 0, true);
       ctx["writeUInt8"](this["descriptor"]["bd"], 1, true);
       /** @type {number} */
       var y = 2;
-      return this["state"] = status[_0x6c71("0x10c")], this["options"]["streamSize"] && (ctx["writeInt32LE"](0, y, true), ctx["writeInt32LE"](this["size"], y + 4, true), y = y + data["SIZE"]), this["state"] = status[_0x6c71("0x10e")], this["options"]["dict"] && (ctx["writeInt32LE"](this["dictId"], y, true), y = y + data[_0x6c71("0x10e")]), this["state"] = status[_0x6c71("0x110")], buffer["writeUInt8"](window["descriptorChecksum"](ctx), data["MAGIC"] + 
+      return this["state"] = status['SIZE'], this["options"]["streamSize"] && (ctx["writeInt32LE"](0, y, true), ctx["writeInt32LE"](this["size"], y + 4, true), y = y + data["SIZE"]), this["state"] = status['DICTID'], this["options"]["dict"] && (ctx["writeInt32LE"](this["dictId"], y, true), y = y + data['DICTID']), this["state"] = status['DESCRIPTOR_CHECKSUM'], buffer["writeUInt8"](window["descriptorChecksum"](ctx), data["MAGIC"] + 
       y, false), buffer;
     };
     /**
@@ -2803,9 +5577,9 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     Map["prototype"]["update_Checksum"] = function(axsPath) {
-      this["state"] = status[_0x6c71("0x130")];
+      this["state"] = status['CHECKSUM_UPDATE'];
       if (this["options"]["streamChecksum"]) {
-        this[_0x6c71("299")] = window[_0x6c71("0x11d")](axsPath, this["checksum"]);
+        this['checksum'] = window['streamChecksum'](axsPath, this["checksum"]);
       }
     };
     /**
@@ -2813,16 +5587,16 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {?}
      */
     Map["prototype"]["compress_DataBlock"] = function(handlers) {
-      this["state"] = status[_0x6c71("0x132")];
-      var suffix = this["options"]["blockChecksum"] ? data[_0x6c71("0x117")] : 0;
+      this["state"] = status['DATABLOCK_COMPRESS'];
+      var suffix = this["options"]["blockChecksum"] ? data['DATABLOCK_CHECKSUM'] : 0;
       var left = this["binding"]["compressBound"](handlers["length"]);
-      var buffer = new Buffer(data[_0x6c71("0x112")] + left + suffix);
-      var handler = buffer["slice"](data["DATABLOCK_SIZE"], data[_0x6c71("0x112")] + left);
+      var buffer = new Buffer(data['DATABLOCK_SIZE'] + left + suffix);
+      var handler = buffer["slice"](data["DATABLOCK_SIZE"], data['DATABLOCK_SIZE'] + left);
       var i = this["compress"](handlers, handler);
-      if (this["state"] = status["DATABLOCK_SIZE"], i > 0 && i <= this["options"][_0x6c71("0x11c")] ? (buffer["writeUInt32LE"](i, 0, true), buffer = buffer["slice"](0, data[_0x6c71("0x112")] + i + suffix)) : (buffer["writeInt32LE"](2147483648 | handlers["length"], 0, true), buffer = buffer["slice"](0, data[_0x6c71("0x112")] + handlers["length"] + suffix), handlers["copy"](buffer, data[_0x6c71("0x112")])), this["state"] = status[_0x6c71("0x117")], this["options"]["blockChecksum"]) {
+      if (this["state"] = status["DATABLOCK_SIZE"], i > 0 && i <= this["options"]['blockMaxSize'] ? (buffer["writeUInt32LE"](i, 0, true), buffer = buffer["slice"](0, data['DATABLOCK_SIZE'] + i + suffix)) : (buffer["writeInt32LE"](2147483648 | handlers["length"], 0, true), buffer = buffer["slice"](0, data['DATABLOCK_SIZE'] + handlers["length"] + suffix), handlers["copy"](buffer, data['DATABLOCK_SIZE'])), this["state"] = status['DATABLOCK_CHECKSUM'], this["options"]["blockChecksum"]) {
         buffer["slice"](-suffix)["writeInt32LE"](window["blockChecksum"](handler), 0, true);
       }
-      return this["update_Checksum"](handlers), this[_0x6c71("0x133")] += handlers["length"], buffer;
+      return this["update_Checksum"](handlers), this['size'] += handlers["length"], buffer;
     };
     /**
      * @param {?} mmCoreSplitViewBlock
@@ -2835,10 +5609,10 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         this["buffer"]["push"](mmCoreSplitViewBlock);
         this["length"] += mmCoreSplitViewBlock["length"];
       }
-      if (this[_0x6c71("0x12a")]) {
+      if (this['first']) {
         this["push"](this["header"]());
         /** @type {boolean} */
-        this[_0x6c71("0x12a")] = false;
+        this['first'] = false;
       }
       var den_rate = this["options"]["blockMaxSize"];
       if (this["length"] < den_rate) {
@@ -2868,7 +5642,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     Map["prototype"]["_flush"] = function(saveNotifs) {
-      if (this[_0x6c71("0x12a")] && (this["push"](this["header"]()), this[_0x6c71("0x12a")] = false), this["length"] > 0) {
+      if (this['first'] && (this["push"](this["header"]()), this['first'] = false), this["length"] > 0) {
         var button2 = Buffer["concat"](this["buffer"], this["length"]);
         /** @type {!Array} */
         this["buffer"] = [];
@@ -2877,9 +5651,9 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         var button2Component = this["compress_DataBlock"](button2);
         this["push"](button2Component);
       }
-      if (this["options"][_0x6c71("0x11d")]) {
+      if (this["options"]['streamChecksum']) {
         this["state"] = status["CHECKSUM"];
-        (buffer = new Buffer(data["EOS"] + data[_0x6c71("0x134")]))["writeInt32LE"](window["streamChecksum"](null, this[_0x6c71("299")]), data["EOS"], true);
+        (buffer = new Buffer(data["EOS"] + data['CHECKSUM']))["writeInt32LE"](window["streamChecksum"](null, this['checksum']), data["EOS"], true);
       } else {
         var buffer = new Buffer(data["EOS"]);
       }
@@ -2903,9 +5677,9 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
   /** @type {string} */
   module["exports"]["version"] = "0.5.1";
   module["exports"]["createDecoderStream"] = make("./decoder_stream");
-  module["exports"]["decode"] = make(_0x6c71("0x138"))["LZ4_uncompress"];
-  module["exports"]["createEncoderStream"] = make(_0x6c71("0x122"));
-  module["exports"]["encode"] = make(_0x6c71("0x13b"))["LZ4_compress"];
+  module["exports"]["decode"] = make('./decoder')["LZ4_uncompress"];
+  module["exports"]["createEncoderStream"] = make('./encoder_stream');
+  module["exports"]["encode"] = make('./encoder')["LZ4_compress"];
   var _0x4d8265 = module["exports"]["utils"]["bindings"];
   module["exports"]["decodeBlock"] = _0x4d8265["uncompress"];
   module["exports"]["encodeBound"] = _0x4d8265["compressBound"];
@@ -2934,7 +5708,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     p["MAGICNUMBER_SKIPPABLE"] = 407710288;
     /** @type {!Array} */
     p["blockMaxSizes"] = [null, null, null, null, 65536, 262144, 1 << 20, 4 << 20];
-    p["extension"] = _0x6c71("0x143");
+    p["extension"] = '.lz4';
     p["STATES"] = {
       "MAGIC" : 0,
       "DESCRIPTOR" : 1,
@@ -2964,14 +5738,14 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       "EOS" : 4,
       "SKIP_SIZE" : 4
     };
-    p["utils"] = funcToGraph(_0x6c71("0x144"));
+    p["utils"] = funcToGraph('./utils');
   })["call"](this, funcToGraph("buffer")["Buffer"]);
 }, {
   "./utils" : 20,
   "buffer" : 3
 }],
 20:[function(conflictFunc, canCreateDiscussions, result) {
-  var getFileJSON = conflictFunc(_0x6c71("0x145"));
+  var getFileJSON = conflictFunc('xxhashjs');
   /**
    * @param {?} fileData
    * @return {?}
@@ -3009,7 +5783,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
 }],
 21:[function(saveNotifs, h, canCreateDiscussions) {
   (function(p) {
-    if (!p["version"] || 0 === p["version"]["indexOf"]("v0.") || 0 === p["version"]["indexOf"](_0x6c71("0x147")) && 0 !== p["version"]["indexOf"]("v1.8.")) {
+    if (!p["version"] || 0 === p["version"]["indexOf"]("v0.") || 0 === p["version"]["indexOf"]('v1.') && 0 !== p["version"]["indexOf"]("v1.8.")) {
       /**
        * @param {!Object} val
        * @param {?} PL$3
@@ -3019,7 +5793,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
        */
       h["exports"] = function(val, PL$3, c, d) {
         if ("function" != typeof val) {
-          throw new TypeError(_0x6c71("0x148"));
+          throw new TypeError('"callback" argument must be a function');
         }
         var b;
         var i;
@@ -3056,7 +5830,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     } else {
       h["exports"] = p["nextTick"];
     }
-  })["call"](this, saveNotifs(_0x6c71("0x14a")));
+  })["call"](this, saveNotifs('_process'));
 }, {
   "_process" : 22
 }],
@@ -3065,7 +5839,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    * @return {?}
    */
   function defaultSetTimout() {
-    throw new Error(_0x6c71("0x14b"));
+    throw new Error('setTimeout has not been defined');
   }
   /**
    * @return {?}
@@ -3163,8 +5937,8 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    * @return {undefined}
    */
   function EarlyError(formatters, customFormatters) {
-    this[_0x6c71("0x14d")] = formatters;
-    this[_0x6c71("0x14e")] = customFormatters;
+    this['fun'] = formatters;
+    this['array'] = customFormatters;
   }
   /**
    * @return {undefined}
@@ -3220,7 +5994,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    * @return {undefined}
    */
   EarlyError["prototype"]["run"] = function() {
-    this[_0x6c71("0x14d")]["apply"](null, this["array"]);
+    this['fun']["apply"](null, this["array"]);
   };
   /** @type {string} */
   config["title"]= "browser";
@@ -3262,7 +6036,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    * @return {?}
    */
   config["binding"] = function(canCreateDiscussions) {
-    throw new Error(_0x6c71("0x153"));
+    throw new Error('process.binding is not supported');
   };
   /**
    * @return {?}
@@ -3275,7 +6049,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    * @return {?}
    */
   config["chdir"] = function(canCreateDiscussions) {
-    throw new Error(_0x6c71("0x156"));
+    throw new Error('process.chdir is not supported');
   };
   /**
    * @return {?}
@@ -3285,7 +6059,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
   };
 }, {}],
 23:[function(require, tasks, isSlidingUp) {
-  tasks["exports"] = require(_0x6c71("0x158"));
+  tasks["exports"] = require('./lib/_stream_duplex.js');
 }, {
   "./lib/_stream_duplex.js" : 24
 }],	
@@ -3306,7 +6080,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
   }
   /** @type {function(?): ?} */
   ruleTo["exports"] = t;
-  var operators = require(_0x6c71("0x165"));
+  var operators = require('./_stream_transform');
   var util = require("core-util-is");
   util["inherits"] = require("inherits");
   util["inherits"](t, operators);
@@ -3332,60 +6106,60 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     function constructor(options, callsiteNames) {
-      connectionFn = connectionFn || require(_0x6c71("0x171"));
+      connectionFn = connectionFn || require('./_stream_duplex');
       options = options || {};
       /** @type {boolean} */
-      this[_0x6c71("0x172")] = !!options[_0x6c71("0x172")];
+      this['objectMode'] = !!options['objectMode'];
       if (callsiteNames instanceof connectionFn) {
-        this[_0x6c71("0x172")] = this[_0x6c71("0x172")] || !!options[_0x6c71("0x173")];
+        this['objectMode'] = this['objectMode'] || !!options['readableObjectMode'];
       }
-      var latinCharacter = options[_0x6c71("372")];
+      var latinCharacter = options['highWaterMark'];
       /** @type {number} */
       var character = this["objectMode"] ? 16 : 16384;
-      this[_0x6c71("372")] = latinCharacter || 0 === latinCharacter ? latinCharacter : character;
-      this[_0x6c71("372")] = Math["floor"](this[_0x6c71("372")]);
+      this['highWaterMark'] = latinCharacter || 0 === latinCharacter ? latinCharacter : character;
+      this['highWaterMark'] = Math["floor"](this['highWaterMark']);
       this["buffer"] = new ASTY;
       /** @type {number} */
       this["length"] = 0;
       /** @type {null} */
-      this[_0x6c71("0x175")] = null;
+      this['pipes'] = null;
       /** @type {number} */
-      this[_0x6c71("0x176")] = 0;
+      this['pipesCount'] = 0;
       /** @type {null} */
-      this[_0x6c71("0x177")] = null;
+      this['flowing'] = null;
       /** @type {boolean} */
-      this[_0x6c71("0x160")] = false;
+      this['ended'] = false;
       /** @type {boolean} */
-      this[_0x6c71("0x178")] = false;
+      this['endEmitted'] = false;
       /** @type {boolean} */
-      this[_0x6c71("377")] = false;
+      this['reading'] = false;
       /** @type {boolean} */
-      this[_0x6c71("0x17a")] = true;
+      this['sync'] = true;
       /** @type {boolean} */
-      this[_0x6c71("379")] = false;
+      this['needReadable'] = false;
       /** @type {boolean} */
-      this[_0x6c71("0x17c")] = false;
+      this['emittedReadable'] = false;
       /** @type {boolean} */
-      this[_0x6c71("0x17d")] = false;
+      this['readableListening'] = false;
       /** @type {boolean} */
-      this[_0x6c71("0x17e")] = false;
+      this['resumeScheduled'] = false;
       /** @type {boolean} */
       this["destroyed"] = false;
-      this[_0x6c71("0x17f")] = options[_0x6c71("0x17f")] || "utf8";
+      this['defaultEncoding'] = options['defaultEncoding'] || "utf8";
       /** @type {number} */
-      this[_0x6c71("0x180")] = 0;
+      this['awaitDrain'] = 0;
       /** @type {boolean} */
-      this[_0x6c71("0x181")] = false;
+      this['readingMore'] = false;
       /** @type {null} */
-      this[_0x6c71("0x182")] = null;
+      this['decoder'] = null;
       /** @type {null} */
-      this[_0x6c71("0x183")] = null;
-      if (options[_0x6c71("0x183")]) {
+      this['encoding'] = null;
+      if (options['encoding']) {
         if (!Logger) {
-          Logger = require(_0x6c71("0x184"))[_0x6c71("0x185")];
+          Logger = require('string_decoder/')['StringDecoder'];
         }
-        this[_0x6c71("0x182")] = new Logger(options[_0x6c71("0x183")]);
-        this[_0x6c71("0x183")] = options[_0x6c71("0x183")];
+        this['decoder'] = new Logger(options['encoding']);
+        this['encoding'] = options['encoding'];
       }
     }
     /**
@@ -3393,12 +6167,12 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {?}
      */
     function module(options) {
-      if (connectionFn = connectionFn || require(_0x6c71("0x171")), !(this instanceof module)) {
+      if (connectionFn = connectionFn || require('./_stream_duplex'), !(this instanceof module)) {
         return new module(options);
       }
       this["_readableState"] = new constructor(options, this);
       /** @type {boolean} */
-      this[_0x6c71("0x15d")] = true;
+      this['readable'] = true;
       if (options) {
         if ("function" == typeof options["read"]) {
           this["_read"] = options["read"];
@@ -3422,20 +6196,20 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       var context = filter["_readableState"];
       if (null === obj) {
         /** @type {boolean} */
-        context[_0x6c71("377")] = false;
+        context['reading'] = false;
         (function(proto, data) {
-          if (data[_0x6c71("0x160")]) {
+          if (data['ended']) {
             return;
           }
           if (data["decoder"]) {
-            var PL$53 = data[_0x6c71("0x182")]["end"]();
+            var PL$53 = data['decoder']["end"]();
             if (PL$53 && PL$53["length"]) {
               data["buffer"]["push"](PL$53);
-              data["length"] += data[_0x6c71("0x172")] ? 1 : PL$53["length"];
+              data["length"] += data['objectMode'] ? 1 : PL$53["length"];
             }
           }
           /** @type {boolean} */
-          data[_0x6c71("0x160")] = true;
+          data['ended'] = true;
           go(proto);
         })(filter, context);
       } else {
@@ -3444,38 +6218,38 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
             var obj;
             /** @type {!Array} */
             data = tableData;
-            if (!(args["isBuffer"](data) || data instanceof Stream || "string" == typeof tableData || void 0 === tableData || selector[_0x6c71("0x172")])) {
+            if (!(args["isBuffer"](data) || data instanceof Stream || "string" == typeof tableData || void 0 === tableData || selector['objectMode'])) {
               /** @type {!TypeError} */
-              obj = new TypeError(_0x6c71("0x187"));
+              obj = new TypeError('Invalid non-string/buffer chunk');
             }
             var data;
             return obj;
           }(context, obj);
         }
         if (msg) {
-          filter["emit"](_0x6c71("0x39"), msg);
+          filter["emit"]('error', msg);
         } else {
-          if (context[_0x6c71("0x172")] || obj && obj["length"] > 0) {
-            if (!("string" == typeof obj || context["objectMode"] || Object[_0x6c71("0x188")](obj) === args["prototype"])) {
+          if (context['objectMode'] || obj && obj["length"] > 0) {
+            if (!("string" == typeof obj || context["objectMode"] || Object['getPrototypeOf'](obj) === args["prototype"])) {
               obj = function(url) {
                 return args["from"](url);
               }(obj);
             }
             if (cb) {
-              if (context[_0x6c71("0x178")]) {
-                filter["emit"]("error", new Error(_0x6c71("0x189")));
+              if (context['endEmitted']) {
+                filter["emit"]("error", new Error('stream.unshift() after end event'));
               } else {
                 fn(filter, context, obj, true);
               }
             } else {
-              if (context[_0x6c71("0x160")]) {
-                filter["emit"](_0x6c71("0x39"), new Error(_0x6c71("0x18a")));
+              if (context['ended']) {
+                filter["emit"]('error', new Error('stream.push() after EOF'));
               } else {
                 /** @type {boolean} */
-                context[_0x6c71("377")] = false;
-                if (context[_0x6c71("0x182")] && !name) {
+                context['reading'] = false;
+                if (context['decoder'] && !name) {
                   obj = context["decoder"]["write"](obj);
-                  if (context[_0x6c71("0x172")] || 0 !== obj["length"]) {
+                  if (context['objectMode'] || 0 !== obj["length"]) {
                     fn(filter, context, obj, false);
                   } else {
                     factory(filter, context);
@@ -3488,13 +6262,13 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
           } else {
             if (!cb) {
               /** @type {boolean} */
-              context[_0x6c71("377")] = false;
+              context['reading'] = false;
             }
           }
         }
       }
       return function(a) {
-        return !a[_0x6c71("0x160")] && (a[_0x6c71("379")] || a["length"] < a[_0x6c71("372")] || 0 === a["length"]);
+        return !a['ended'] && (a['needReadable'] || a["length"] < a['highWaterMark'] || 0 === a["length"]);
       }(context);
     }
     /**
@@ -3505,17 +6279,17 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     function fn(value, options, obj, indicate) {
-      if (options[_0x6c71("0x177")] && 0 === options["length"] && !options[_0x6c71("0x17a")]) {
+      if (options['flowing'] && 0 === options["length"] && !options['sync']) {
         value["emit"]("data", obj);
         value["read"](0);
       } else {
-        options["length"] += options[_0x6c71("0x172")] ? 1 : obj["length"];
+        options["length"] += options['objectMode'] ? 1 : obj["length"];
         if (indicate) {
           options["buffer"]["unshift"](obj);
         } else {
           options["buffer"]["push"](obj);
         }
-        if (options[_0x6c71("379")]) {
+        if (options['needReadable']) {
           go(value);
         }
       }
@@ -3527,23 +6301,23 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {?}
      */
     function convertToPropTypes(n, arr) {
-      return n <= 0 || 0 === arr["length"] && arr[_0x6c71("0x160")] ? 0 : arr[_0x6c71("0x172")] ? 1 : n != n ? arr["flowing"] && arr["length"] ? arr["buffer"][_0x6c71("0x18f")]["data"]["length"] : arr["length"] : (n > arr[_0x6c71("372")] && (arr[_0x6c71("372")] = function(n) {
+      return n <= 0 || 0 === arr["length"] && arr['ended'] ? 0 : arr['objectMode'] ? 1 : n != n ? arr["flowing"] && arr["length"] ? arr["buffer"]['head']["data"]["length"] : arr["length"] : (n > arr['highWaterMark'] && (arr['highWaterMark'] = function(n) {
         return n >= nMax ? n = nMax : (n--, n = n | n >>> 1, n = n | n >>> 2, n = n | n >>> 4, n = n | n >>> 8, n = n | n >>> 16, n++), n;
-      }(n)), n <= arr["length"] ? n : arr[_0x6c71("0x160")] ? arr["length"] : (arr[_0x6c71("379")] = true, 0));
+      }(n)), n <= arr["length"] ? n : arr['ended'] ? arr["length"] : (arr['needReadable'] = true, 0));
     }
     /**
      * @param {!Object} options
      * @return {undefined}
      */
     function go(options) {
-      var types = options[_0x6c71("354")];
+      var types = options['_readableState'];
       /** @type {boolean} */
-      types[_0x6c71("379")] = false;
-      if (!types[_0x6c71("0x17c")]) {
-        debug(_0x6c71("400"), types[_0x6c71("0x177")]);
+      types['needReadable'] = false;
+      if (!types['emittedReadable']) {
+        debug('emitReadable', types['flowing']);
         /** @type {boolean} */
-        types[_0x6c71("0x17c")] = true;
-        if (types[_0x6c71("0x17a")]) {
+        types['emittedReadable'] = true;
+        if (types['sync']) {
           setTimeout(filter, options);
         } else {
           filter(options);
@@ -3555,8 +6329,8 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     function filter(config) {
-      debug(_0x6c71("401"));
-      config["emit"](_0x6c71("0x15d"));
+      debug('emit readable');
+      config["emit"]('readable');
       configuration(config);
     }
     /**
@@ -3567,7 +6341,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     function factory(value, properties) {
       if (!properties["readingMore"]) {
         /** @type {boolean} */
-        properties[_0x6c71("0x181")] = true;
+        properties['readingMore'] = true;
         setTimeout(sendRequest, value, properties);
       }
     }
@@ -3578,7 +6352,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      */
     function sendRequest(instrumentId, prices) {
       var minBuy = prices["length"];
-      for (; !prices[_0x6c71("377")] && !prices[_0x6c71("0x177")] && !prices[_0x6c71("0x160")] && prices["length"] < prices[_0x6c71("372")] && (debug(_0x6c71("0x192")), instrumentId["read"](0), minBuy !== prices["length"]);) {
+      for (; !prices['reading'] && !prices['flowing'] && !prices['ended'] && prices["length"] < prices['highWaterMark'] && (debug('maybeReadMore read 0'), instrumentId["read"](0), minBuy !== prices["length"]);) {
         minBuy = prices["length"];
       }
       /** @type {boolean} */
@@ -3589,7 +6363,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     function onOpenHandlerFn(decreaseCounter) {
-      debug(_0x6c71("0x193"));
+      debug('readable nexttick read 0');
       decreaseCounter["read"](0);
     }
     /**
@@ -3598,17 +6372,17 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     function resume(config, value) {
-      if (!value[_0x6c71("377")]) {
-        debug(_0x6c71("0x194"));
+      if (!value['reading']) {
+        debug('resume read 0');
         config["read"](0);
       }
       /** @type {boolean} */
-      value[_0x6c71("0x17e")] = false;
+      value['resumeScheduled'] = false;
       /** @type {number} */
-      value[_0x6c71("0x180")] = 0;
+      value['awaitDrain'] = 0;
       config["emit"]("resume");
       configuration(config);
-      if (value["flowing"] && !value[_0x6c71("377")]) {
+      if (value["flowing"] && !value['reading']) {
         config["read"](0);
       }
     }
@@ -3618,8 +6392,8 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      */
     function configuration(options) {
       var types = options["_readableState"];
-      debug(_0x6c71("0x195"), types[_0x6c71("0x177")]);
-      for (; types[_0x6c71("0x177")] && null !== options["read"]();) {
+      debug('flow', types['flowing']);
+      for (; types['flowing'] && null !== options["read"]();) {
       }
     }
     /**
@@ -3628,33 +6402,33 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {?}
      */
     function type(value, args) {
-      return 0 === args["length"] ? null : (args[_0x6c71("0x172")] ? innerStuff = args["buffer"]["shift"]() : !value || value >= args["length"] ? (innerStuff = args[_0x6c71("0x182")] ? args["buffer"]["join"]("") : 1 === args["buffer"]["length"] ? args["buffer"][_0x6c71("0x18f")]["data"] : args["buffer"]["concat"](args["length"]), args["buffer"][_0x6c71("0x196")]()) : innerStuff = function(module, event, response) {
+      return 0 === args["length"] ? null : (args['objectMode'] ? innerStuff = args["buffer"]["shift"]() : !value || value >= args["length"] ? (innerStuff = args['decoder'] ? args["buffer"]["join"]("") : 1 === args["buffer"]["length"] ? args["buffer"]['head']["data"] : args["buffer"]["concat"](args["length"]), args["buffer"]['clear']()) : innerStuff = function(module, event, response) {
         var result;
-        if (module < event[_0x6c71("0x18f")]["data"]["length"]) {
-          result = event[_0x6c71("0x18f")]["data"]["slice"](0, module);
-          event[_0x6c71("0x18f")]["data"] = event[_0x6c71("0x18f")]["data"]["slice"](module);
+        if (module < event['head']["data"]["length"]) {
+          result = event['head']["data"]["slice"](0, module);
+          event['head']["data"] = event['head']["data"]["slice"](module);
         } else {
-          result = module === event[_0x6c71("0x18f")]["data"]["length"] ? event[_0x6c71("0x197")]() : response ? function(i, object) {
-            var value = object[_0x6c71("0x18f")];
+          result = module === event['head']["data"]["length"] ? event['shift']() : response ? function(i, object) {
+            var value = object['head'];
             /** @type {number} */
             var amount = 1;
             var result = value["data"];
             /** @type {number} */
             i = i - result["length"];
-            for (; value = value[_0x6c71("0x198")];) {
+            for (; value = value['next'];) {
               var data = value["data"];
               var index = i > data["length"] ? data["length"] : i;
               if (index === data["length"] ? result = result + data : result = result + data["slice"](0, i), 0 === (i = i - index)) {
                 if (index === data["length"]) {
                   ++amount;
-                  if (value[_0x6c71("0x198")]) {
-                    object[_0x6c71("0x18f")] = value[_0x6c71("0x198")];
+                  if (value['next']) {
+                    object['head'] = value['next'];
                   } else {
                     /** @type {null} */
-                    object["head"] = object[_0x6c71("0x199")] = null;
+                    object["head"] = object['tail'] = null;
                   }
                 } else {
-                  object[_0x6c71("0x18f")] = value;
+                  object['head'] = value;
                   value["data"] = data["slice"](index);
                 }
                 break;
@@ -3664,26 +6438,26 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
             return object["length"] -= amount, result;
           }(module, event) : function(m, data) {
             var u = args["allocUnsafe"](m);
-            var result = data[_0x6c71("0x18f")];
+            var result = data['head'];
             /** @type {number} */
             var dDarkness = 1;
             result["data"]["copy"](u);
             /** @type {number} */
             m = m - result["data"]["length"];
-            for (; result = result[_0x6c71("0x198")];) {
+            for (; result = result['next'];) {
               var props = result["data"];
               var val = m > props["length"] ? props["length"] : m;
               if (props["copy"](u, u["length"] - m, 0, val), 0 === (m = m - val)) {
                 if (val === props["length"]) {
                   ++dDarkness;
-                  if (result[_0x6c71("0x198")]) {
-                    data[_0x6c71("0x18f")] = result["next"];
+                  if (result['next']) {
+                    data['head'] = result["next"];
                   } else {
                     /** @type {null} */
-                    data[_0x6c71("0x18f")] = data[_0x6c71("0x199")] = null;
+                    data['head'] = data['tail'] = null;
                   }
                 } else {
-                  data[_0x6c71("0x18f")] = result;
+                  data['head'] = result;
                   result["data"] = props["slice"](val);
                 }
                 break;
@@ -3694,7 +6468,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
           }(module, event);
         }
         return result;
-      }(value, args["buffer"], args[_0x6c71("0x182")]), innerStuff);
+      }(value, args["buffer"], args['decoder']), innerStuff);
       var innerStuff;
     }
     /**
@@ -3702,9 +6476,9 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     function init(a) {
-      var left = a[_0x6c71("354")];
+      var left = a['_readableState'];
       if (left["length"] > 0) {
-        throw new Error(_0x6c71("0x19a"));
+        throw new Error('"endReadable()" called on non-empty stream');
       }
       if (!left["endEmitted"]) {
         /** @type {boolean} */
@@ -3718,9 +6492,9 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     function connect(url, response) {
-      if (!(url[_0x6c71("0x178")] || 0 !== url["length"])) {
+      if (!(url['endEmitted'] || 0 !== url["length"])) {
         /** @type {boolean} */
-        url[_0x6c71("0x178")] = true;
+        url['endEmitted'] = true;
         /** @type {boolean} */
         response["readable"] = false;
         response["emit"]("end");
@@ -3746,7 +6520,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     /** @type {function(?): ?} */
     stats_results["exports"] = module;
     var connectionFn;
-    var bannerInit = require(_0x6c71("0x166"));
+    var bannerInit = require('isarray');
     /** @type {function(number, ?): undefined} */
     module["ReadableState"] = constructor;
     require("events")["EventEmitter"];
@@ -3758,29 +6532,29 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     var next = function(v, node) {
       return v["listeners"](node)["length"];
     };
-    var query = require(_0x6c71("0x168"));
-    var args = require(_0x6c71("0x169"))["Buffer"];
+    var query = require('./internal/streams/stream');
+    var args = require('safe-buffer')["Buffer"];
     var Stream = isSlidingUp["Uint8Array"] || function() {
     };
-    var handlers = require(_0x6c71("346"));
+    var handlers = require('core-util-is');
     handlers["inherits"] = require("inherits");
     var TagHourlyStat = require("util");
     var debug = void 0;
     debug = TagHourlyStat && TagHourlyStat["debuglog"] ? TagHourlyStat["debuglog"]("stream") : function() {
     };
     var Logger;
-    var ASTY = require(_0x6c71("0x16c"));
-    var CheckDailyStat = require(_0x6c71("0x16d"));
+    var ASTY = require('./internal/streams/BufferList');
+    var CheckDailyStat = require('./internal/streams/destroy');
     handlers["inherits"](module, query);
     /** @type {!Array} */
-    var PL$13 = [_0x6c71("0x39"), _0x6c71("0x16e"), _0x6c71("0x16f"), "pause", _0x6c71("0x170")];
+    var PL$13 = ['error', 'close', 'destroy', "pause", 'resume'];
     Object["defineProperty"](module["prototype"], "destroyed", {
       "get" : function() {
-        return void 0 !== this[_0x6c71("354")] && this["_readableState"]["destroyed"];
+        return void 0 !== this['_readableState'] && this["_readableState"]["destroyed"];
       },
       "set" : function(mymuted) {
         if (this["_readableState"]) {
-          this[_0x6c71("354")][_0x6c71("0x161")] = mymuted;
+          this['_readableState']['destroyed'] = mymuted;
         }
       }
     });
@@ -3802,8 +6576,8 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      */
     module["prototype"]["push"] = function(data, key) {
       var endDate;
-      var match = this[_0x6c71("354")];
-      return match["objectMode"] ? endDate = true : "string" == typeof data && ((key = key || match[_0x6c71("0x17f")]) !== match[_0x6c71("0x183")] && (data = args["from"](data, key), key = ""), endDate = true), install(this, data, key, false, endDate);
+      var match = this['_readableState'];
+      return match["objectMode"] ? endDate = true : "string" == typeof data && ((key = key || match['defaultEncoding']) !== match['encoding'] && (data = args["from"](data, key), key = ""), endDate = true), install(this, data, key, false, endDate);
     };
     /**
      * @param {!Object} data
@@ -3816,14 +6590,14 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {?}
      */
     module["prototype"]["isPaused"]= function() {
-      return false === this[_0x6c71("354")][_0x6c71("0x177")];
+      return false === this['_readableState']['flowing'];
     };
     /**
      * @param {?} name
      * @return {?}
      */
     module["prototype"]["setEncoding"] = function(name) {
-      return Logger || (Logger = require(_0x6c71("0x184"))[_0x6c71("0x185")]), this["_readableState"][_0x6c71("0x182")] = new Logger(name), this["_readableState"]["encoding"] = name, this;
+      return Logger || (Logger = require('string_decoder/')['StringDecoder']), this["_readableState"]['decoder'] = new Logger(name), this["_readableState"]["encoding"] = name, this;
     };
     /** @type {number} */
     var nMax = 8388608;
@@ -3832,29 +6606,29 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {?}
      */
     module["prototype"]["read"] = function(value) {
-      debug(_0x6c71("0x6e"), value);
+      debug('read', value);
       /** @type {number} */
       value = parseInt(value, 10);
-      var values = this[_0x6c71("354")];
+      var values = this['_readableState'];
       /** @type {number} */
       var prev = value;
-      if (0 !== value && (values["emittedReadable"] = false), 0 === value && values[_0x6c71("379")] && (values["length"] >= values[_0x6c71("372")] || values[_0x6c71("0x160")])) {
-        return debug(_0x6c71("0x19b"), values["length"], values[_0x6c71("0x160")]), 0 === values["length"] && values[_0x6c71("0x160")] ? init(this) : go(this), null;
+      if (0 !== value && (values["emittedReadable"] = false), 0 === value && values['needReadable'] && (values["length"] >= values['highWaterMark'] || values['ended'])) {
+        return debug('read: emitReadable', values["length"], values['ended']), 0 === values["length"] && values['ended'] ? init(this) : go(this), null;
       }
-      if (0 === (value = convertToPropTypes(value, values)) && values[_0x6c71("0x160")]) {
+      if (0 === (value = convertToPropTypes(value, values)) && values['ended']) {
         return 0 === values["length"] && init(this), null;
       }
       var artistTrack;
-      var app_name = values[_0x6c71("379")];
-      return debug(_0x6c71("0x19c"), app_name), (0 === values["length"] || values["length"] - value < values[_0x6c71("372")]) && debug(_0x6c71("0x19d"), app_name = true), values[_0x6c71("0x160")] || values[_0x6c71("377")] ? debug(_0x6c71("0x19e"), app_name = false) : app_name && (debug(_0x6c71("0x19f")), values[_0x6c71("377")] = true, values["sync"] = true, 0 === values["length"] && (values["needReadable"] = true), this["_read"](values["highWaterMark"]), values[_0x6c71("0x17a")] = false, 
-      values[_0x6c71("377")] || (value = convertToPropTypes(prev, values))), null === (artistTrack = value > 0 ? type(value, values) : null) ? (values[_0x6c71("379")] = true, value = 0) : values["length"] -= value, 0 === values["length"] && (values[_0x6c71("0x160")] || (values[_0x6c71("379")] = true), prev !== value && values[_0x6c71("0x160")] && init(this)), null !== artistTrack && this["emit"]("data", artistTrack), artistTrack;
+      var app_name = values['needReadable'];
+      return debug('need readable', app_name), (0 === values["length"] || values["length"] - value < values['highWaterMark']) && debug('length less than watermark', app_name = true), values['ended'] || values['reading'] ? debug('reading or ended', app_name = false) : app_name && (debug('do read'), values['reading'] = true, values["sync"] = true, 0 === values["length"] && (values["needReadable"] = true), this["_read"](values["highWaterMark"]), values['sync'] = false, 
+      values['reading'] || (value = convertToPropTypes(prev, values))), null === (artistTrack = value > 0 ? type(value, values) : null) ? (values['needReadable'] = true, value = 0) : values["length"] -= value, 0 === values["length"] && (values['ended'] || (values['needReadable'] = true), prev !== value && values['ended'] && init(this)), null !== artistTrack && this["emit"]("data", artistTrack), artistTrack;
     };
     /**
      * @param {?} canCreateDiscussions
      * @return {undefined}
      */
     module["prototype"]["_read"] = function(canCreateDiscussions) {
-      this["emit"](_0x6c71("0x39"), new Error(_0x6c71("0x1a0")));
+      this["emit"]('error', new Error('_read() is not implemented'));
     };
     /**
      * @param {!Object} PL$12
@@ -3869,21 +6643,21 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
        */
       function type(type, msg) {
         debug("onunpipe");
-        if (type === p && msg && false === msg[_0x6c71("0x1a4")]) {
+        if (type === p && msg && false === msg['hasUnpiped']) {
           /** @type {boolean} */
           msg["hasUnpiped"] = true;
-          debug(_0x6c71("0x1a5"));
-          PL$12["removeListener"](_0x6c71("0x16e"), onResponse);
-          PL$12["removeListener"](_0x6c71("0x1a6"), onfinish);
-          PL$12["removeListener"](_0x6c71("0x1a7"), value);
+          debug('cleanup');
+          PL$12["removeListener"]('close', onResponse);
+          PL$12["removeListener"]('finish', onfinish);
+          PL$12["removeListener"]('drain', value);
           PL$12["removeListener"]("error", onerror);
-          PL$12["removeListener"](_0x6c71("0x1a8"), type);
-          p["removeListener"](_0x6c71("0xe2"), callback);
-          p["removeListener"](_0x6c71("0xe2"), unpipe);
+          PL$12["removeListener"]('unpipe', type);
+          p["removeListener"]('end', callback);
+          p["removeListener"]('end', unpipe);
           p["removeListener"]("data", save);
           /** @type {boolean} */
           _0x49aad3 = true;
-          if (!(!delay["awaitDrain"] || PL$12[_0x6c71("0x163")] && !PL$12[_0x6c71("0x163")][_0x6c71("0x1a9")])) {
+          if (!(!delay["awaitDrain"] || PL$12['_writableState'] && !PL$12['_writableState']['needDrain'])) {
             value();
           }
         }
@@ -3892,7 +6666,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
        * @return {undefined}
        */
       function callback() {
-        debug(_0x6c71("0x1aa"));
+        debug('onend');
         PL$12["end"]();
       }
       /**
@@ -3900,13 +6674,13 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
        * @return {undefined}
        */
       function save(close) {
-        debug(_0x6c71("0x1ab"));
+        debug('ondata');
         /** @type {boolean} */
         _0x1ad8db = false;
         if (!(false !== PL$12["write"](close) || _0x1ad8db)) {
-          if ((1 === delay[_0x6c71("0x176")] && delay[_0x6c71("0x175")] === PL$12 || delay["pipesCount"] > 1 && -1 !== each(delay["pipes"], PL$12)) && !_0x49aad3) {
-            debug(_0x6c71("0x1ac"), p[_0x6c71("354")][_0x6c71("0x180")]);
-            p["_readableState"][_0x6c71("0x180")]++;
+          if ((1 === delay['pipesCount'] && delay['pipes'] === PL$12 || delay["pipesCount"] > 1 && -1 !== each(delay["pipes"], PL$12)) && !_0x49aad3) {
+            debug('false write response, pause', p['_readableState']['awaitDrain']);
+            p["_readableState"]['awaitDrain']++;
             /** @type {boolean} */
             _0x1ad8db = true;
           }
@@ -3920,9 +6694,9 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       function onerror(url) {
         debug("onerror", url);
         unpipe();
-        PL$12["removeListener"](_0x6c71("0x39"), onerror);
-        if (0 === next(PL$12, _0x6c71("0x39"))) {
-          PL$12["emit"](_0x6c71("0x39"), url);
+        PL$12["removeListener"]('error', onerror);
+        if (0 === next(PL$12, 'error')) {
+          PL$12["emit"]('error', url);
         }
       }
       /**
@@ -3936,7 +6710,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
        * @return {undefined}
        */
       function onfinish() {
-        debug(_0x6c71("0x1ae"));
+        debug('onfinish');
         PL$12["removeListener"]("close", onResponse);
         unpipe();
       }
@@ -3948,44 +6722,44 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         p["unpipe"](PL$12);
       }
       var p = this;
-      var delay = this[_0x6c71("354")];
-      switch(delay[_0x6c71("0x176")]) {
+      var delay = this['_readableState'];
+      switch(delay['pipesCount']) {
         case 0:
           /** @type {!Object} */
-          delay[_0x6c71("0x175")] = PL$12;
+          delay['pipes'] = PL$12;
           break;
         case 1:
           /** @type {!Array} */
-          delay[_0x6c71("0x175")] = [delay["pipes"], PL$12];
+          delay['pipes'] = [delay["pipes"], PL$12];
           break;
         default:
-          delay[_0x6c71("0x175")]["push"](PL$12);
+          delay['pipes']["push"](PL$12);
       }
-      delay[_0x6c71("0x176")] += 1;
-      debug("pipe count=%d opts=%j", delay[_0x6c71("0x176")], changesIdentifyUser);
+      delay['pipesCount'] += 1;
+      debug("pipe count=%d opts=%j", delay['pipesCount'], changesIdentifyUser);
       /** @type {function(): undefined} */
-      var cb = (!changesIdentifyUser || false !== changesIdentifyUser["end"]) && PL$12 !== canCreateDiscussions[_0x6c71("0x1a2")] && PL$12 !== canCreateDiscussions[_0x6c71("0x1a3")] ? callback : unpipe;
-      if (delay[_0x6c71("0x178")]) {
+      var cb = (!changesIdentifyUser || false !== changesIdentifyUser["end"]) && PL$12 !== canCreateDiscussions['stdout'] && PL$12 !== canCreateDiscussions['stderr'] ? callback : unpipe;
+      if (delay['endEmitted']) {
         setTimeout(cb);
       } else {
-        p["once"](_0x6c71("0xe2"), cb);
+        p["once"]('end', cb);
       }
-      PL$12["on"](_0x6c71("0x1a8"), type);
+      PL$12["on"]('unpipe', type);
       var value = function(config) {
         return function() {
-          var m = config[_0x6c71("354")];
-          debug("pipeOnDrain", m[_0x6c71("0x180")]);
-          if (m[_0x6c71("0x180")]) {
-            m[_0x6c71("0x180")]--;
+          var m = config['_readableState'];
+          debug("pipeOnDrain", m['awaitDrain']);
+          if (m['awaitDrain']) {
+            m['awaitDrain']--;
           }
-          if (0 === m[_0x6c71("0x180")] && next(config, "data")) {
+          if (0 === m['awaitDrain'] && next(config, "data")) {
             /** @type {boolean} */
             m["flowing"] = true;
             configuration(config);
           }
         };
       }(p);
-      PL$12["on"](_0x6c71("0x1a7"), value);
+      PL$12["on"]('drain', value);
       /** @type {boolean} */
       var _0x49aad3 = false;
       /** @type {boolean} */
@@ -4004,7 +6778,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         } else {
           PL$12["on"](inc, PL$16);
         }
-      }(PL$12, _0x6c71("0x39"), onerror), PL$12["once"](_0x6c71("0x16e"), onResponse), PL$12["once"]("finish", onfinish), PL$12["emit"](_0x6c71("0x1a1"), p), delay[_0x6c71("0x177")] || (debug(_0x6c71("0x1af")), p["resume"]()), PL$12;
+      }(PL$12, 'error', onerror), PL$12["once"]('close', onResponse), PL$12["once"]("finish", onfinish), PL$12["emit"]('pipe', p), delay['flowing'] || (debug('pipe resume'), p["resume"]()), PL$12;
     };
     /**
      * @param {string} hash
@@ -4015,30 +6789,30 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       var unpipeInfo = {
         "hasUnpiped" : false
       };
-      if (0 === hashes[_0x6c71("0x176")]) {
+      if (0 === hashes['pipesCount']) {
         return this;
       }
-      if (1 === hashes[_0x6c71("0x176")]) {
-        return hash && hash !== hashes[_0x6c71("0x175")] ? this : (hash || (hash = hashes[_0x6c71("0x175")]), hashes[_0x6c71("0x175")] = null, hashes[_0x6c71("0x176")] = 0, hashes[_0x6c71("0x177")] = false, hash && hash["emit"](_0x6c71("0x1a8"), this, unpipeInfo), this);
+      if (1 === hashes['pipesCount']) {
+        return hash && hash !== hashes['pipes'] ? this : (hash || (hash = hashes['pipes']), hashes['pipes'] = null, hashes['pipesCount'] = 0, hashes['flowing'] = false, hash && hash["emit"]('unpipe', this, unpipeInfo), this);
       }
       if (!hash) {
         var signedTransactions = hashes["pipes"];
-        var season = hashes[_0x6c71("0x176")];
+        var season = hashes['pipesCount'];
         /** @type {null} */
-        hashes[_0x6c71("0x175")] = null;
+        hashes['pipes'] = null;
         /** @type {number} */
-        hashes[_0x6c71("0x176")] = 0;
+        hashes['pipesCount'] = 0;
         /** @type {boolean} */
-        hashes[_0x6c71("0x177")] = false;
+        hashes['flowing'] = false;
         /** @type {number} */
         var signedTransactionsCounter = 0;
         for (; signedTransactionsCounter < season; signedTransactionsCounter++) {
-          signedTransactions[signedTransactionsCounter]["emit"](_0x6c71("0x1a8"), this, unpipeInfo);
+          signedTransactions[signedTransactionsCounter]["emit"]('unpipe', this, unpipeInfo);
         }
         return this;
       }
       var index = each(hashes["pipes"], hash);
-      return -1 === index ? this : (hashes["pipes"]["splice"](index, 1), hashes[_0x6c71("0x176")] -= 1, 1 === hashes[_0x6c71("0x176")] && (hashes["pipes"] = hashes[_0x6c71("0x175")][0]), hash["emit"]("unpipe", this, unpipeInfo), this);
+      return -1 === index ? this : (hashes["pipes"]["splice"](index, 1), hashes['pipesCount'] -= 1, 1 === hashes['pipesCount'] && (hashes["pipes"] = hashes['pipes'][0]), hash["emit"]("unpipe", this, unpipeInfo), this);
     };
     /**
      * @param {string} timedout
@@ -4048,18 +6822,18 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     module["prototype"]["on"] = function(timedout, data) {
       var renderBodyErr = query["prototype"]["on"]["call"](this, timedout, data);
       if ("data" === timedout) {
-        if (false !== this[_0x6c71("354")][_0x6c71("0x177")]) {
+        if (false !== this['_readableState']['flowing']) {
           this["resume"]();
         }
       } else {
-        if (_0x6c71("0x15d") === timedout) {
-          var _0x32227a = this[_0x6c71("354")];
-          if (!(_0x32227a[_0x6c71("0x178")] || _0x32227a[_0x6c71("0x17d")])) {
+        if ('readable' === timedout) {
+          var _0x32227a = this['_readableState'];
+          if (!(_0x32227a['endEmitted'] || _0x32227a['readableListening'])) {
             /** @type {boolean} */
-            _0x32227a[_0x6c71("0x17d")] = _0x32227a[_0x6c71("379")] = true;
+            _0x32227a['readableListening'] = _0x32227a['needReadable'] = true;
             /** @type {boolean} */
-            _0x32227a[_0x6c71("0x17c")] = false;
-            if (_0x32227a[_0x6c71("377")]) {
+            _0x32227a['emittedReadable'] = false;
+            if (_0x32227a['reading']) {
               if (_0x32227a["length"]) {
                 go(this);
               }
@@ -4077,10 +6851,10 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      */
     module["prototype"]["resume"] = function() {
       var THREAD_STARTED = this["_readableState"];
-      return THREAD_STARTED[_0x6c71("0x177")] || (debug(_0x6c71("0x170")), THREAD_STARTED[_0x6c71("0x177")] = true, function(timeToFadeIn, type) {
-        if (!type[_0x6c71("0x17e")]) {
+      return THREAD_STARTED['flowing'] || (debug('resume'), THREAD_STARTED['flowing'] = true, function(timeToFadeIn, type) {
+        if (!type['resumeScheduled']) {
           /** @type {boolean} */
-          type[_0x6c71("0x17e")] = true;
+          type['resumeScheduled'] = true;
           setTimeout(resume, timeToFadeIn, type);
         }
       }(this, THREAD_STARTED)), this;
@@ -4089,29 +6863,29 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {?}
      */
     module["prototype"]["pause"] = function() {
-      return debug("call pause flowing=%j", this[_0x6c71("354")][_0x6c71("0x177")]), false !== this[_0x6c71("354")]["flowing"] && (debug(_0x6c71("0x1ad")), this[_0x6c71("354")]["flowing"] = false, this["emit"](_0x6c71("0x1ad"))), this;
+      return debug("call pause flowing=%j", this['_readableState']['flowing']), false !== this['_readableState']["flowing"] && (debug('pause'), this['_readableState']["flowing"] = false, this["emit"]('pause')), this;
     };
     /**
      * @param {!Object} obj
      * @return {?}
      */
     module["prototype"]["wrap"] = function(obj) {
-      var parts = this[_0x6c71("354")];
+      var parts = this['_readableState'];
       /** @type {boolean} */
       var _0xdc6991 = false;
       var i = this;
       var key;
-      for (key in obj["on"](_0x6c71("0xe2"), function() {
-        if (debug(_0x6c71("0x1b0")), parts[_0x6c71("0x182")] && !parts[_0x6c71("0x160")]) {
-          var PL$53 = parts[_0x6c71("0x182")]["end"]();
+      for (key in obj["on"]('end', function() {
+        if (debug('wrapped end'), parts['decoder'] && !parts['ended']) {
+          var PL$53 = parts['decoder']["end"]();
           if (PL$53 && PL$53["length"]) {
             i["push"](PL$53);
           }
         }
         i["push"](null);
       }), obj["on"]("data", function(match) {
-        if (!(debug(_0x6c71("0x1b1")), parts[_0x6c71("0x182")] && (match = parts["decoder"]["write"](match)), parts[_0x6c71("0x172")] && null == match)) {
-          if (parts[_0x6c71("0x172")] || match && match["length"]) {
+        if (!(debug('wrapped data'), parts['decoder'] && (match = parts["decoder"]["write"](match)), parts['objectMode'] && null == match)) {
+          if (parts['objectMode'] || match && match["length"]) {
             if (!i["push"](match)) {
               /** @type {boolean} */
               _0xdc6991 = true;
@@ -4131,10 +6905,10 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       /** @type {number} */
       var PL$17 = 0;
       for (; PL$17 < PL$13["length"]; PL$17++) {
-        obj["on"](PL$13[PL$17], i["emit"][_0x6c71("0x1b2")](i, PL$13[PL$17]));
+        obj["on"](PL$13[PL$17], i["emit"]['bind'](i, PL$13[PL$17]));
       }
       return i["_read"] = function(supporterL) {
-        debug(_0x6c71("0x1b3"), supporterL);
+        debug('wrapped _read', supporterL);
         if (_0xdc6991) {
           /** @type {boolean} */
           _0xdc6991 = false;
@@ -4144,7 +6918,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     };
     /** @type {function(number, !Object): ?} */
     module["_fromList"] = type;
-  })["call"](this, require(_0x6c71("0x14a")), "undefined" != typeof global ? global : "undefined" != typeof self ? self : "undefined" != typeof window ? window : {});
+  })["call"](this, require('_process'), "undefined" != typeof global ? global : "undefined" != typeof self ? self : "undefined" != typeof window ? window : {});
 }, {
   "./_stream_duplex" : 24,
   "./internal/streams/BufferList" : 29,
@@ -4171,41 +6945,41 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @param {?} isBgroundImg
      * @return {?}
      */
-    this[_0x6c71("437")] = function(arg0, isBgroundImg) {
+    this['afterTransform'] = function(arg0, isBgroundImg) {
       return function(data, song, isBgroundImg) {
-        var pkValue = data[_0x6c71("0x1b6")];
+        var pkValue = data['_transformState'];
         /** @type {boolean} */
-        pkValue[_0x6c71("439")] = false;
-        var isGoodSong = pkValue[_0x6c71("0x1b8")];
+        pkValue['transforming'] = false;
+        var isGoodSong = pkValue['writecb'];
         if (!isGoodSong) {
-          return data["emit"]("error", new Error(_0x6c71("441")));
+          return data["emit"]("error", new Error('write callback called multiple times'));
         }
         /** @type {null} */
-        pkValue[_0x6c71("0x1ba")] = null;
+        pkValue['writechunk'] = null;
         /** @type {null} */
-        pkValue[_0x6c71("0x1b8")] = null;
+        pkValue['writecb'] = null;
         if (null != isBgroundImg) {
           data["push"](isBgroundImg);
         }
         isGoodSong(song);
         var args = data["_readableState"];
         /** @type {boolean} */
-        args[_0x6c71("377")] = false;
-        if (args[_0x6c71("379")] || args["length"] < args[_0x6c71("372")]) {
-          data["_read"](args[_0x6c71("372")]);
+        args['reading'] = false;
+        if (args['needReadable'] || args["length"] < args['highWaterMark']) {
+          data["_read"](args['highWaterMark']);
         }
       }(callback, arg0, isBgroundImg);
     };
     /** @type {boolean} */
-    this[_0x6c71("443")] = false;
+    this['needTransform'] = false;
     /** @type {boolean} */
-    this[_0x6c71("439")] = false;
+    this['transforming'] = false;
     /** @type {null} */
-    this[_0x6c71("0x1b8")] = null;
+    this['writecb'] = null;
     /** @type {null} */
     this["writechunk"] = null;
     /** @type {null} */
-    this[_0x6c71("0x1bc")] = null;
+    this['writeencoding'] = null;
   }
   /**
    * @param {?} mRotation
@@ -4219,18 +6993,18 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     this["_transformState"] = new extractPresetLocal(this);
     var form = this;
     /** @type {boolean} */
-    this[_0x6c71("354")]["needReadable"] = true;
+    this['_readableState']["needReadable"] = true;
     /** @type {boolean} */
-    this[_0x6c71("354")]["sync"] = false;
+    this['_readableState']["sync"] = false;
     if (mRotation) {
-      if ("function" == typeof mRotation[_0x6c71("445")]) {
-        this["_transform"] = mRotation[_0x6c71("445")];
+      if ("function" == typeof mRotation['transform']) {
+        this["_transform"] = mRotation['transform'];
       }
-      if ("function" == typeof mRotation[_0x6c71("446")]) {
-        this["_flush"] = mRotation[_0x6c71("446")];
+      if ("function" == typeof mRotation['flush']) {
+        this["_flush"] = mRotation['flush'];
       }
     }
-    this["once"](_0x6c71("445"), function() {
+    this["once"]('transform', function() {
       if ("function" == typeof this["_flush"]) {
         this["_flush"](function(data, value) {
           build(form, data, value);
@@ -4248,26 +7022,26 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    */
   function build(self, args, params) {
     if (args) {
-      return self["emit"](_0x6c71("0x39"), args);
+      return self["emit"]('error', args);
     }
     if (null != params) {
       self["push"](params);
     }
-    var ownVal = self[_0x6c71("0x163")];
-    var theOldFunction = self[_0x6c71("0x1b6")];
+    var ownVal = self['_writableState'];
+    var theOldFunction = self['_transformState'];
     if (ownVal["length"]) {
-      throw new Error(_0x6c71("0x1c0"));
+      throw new Error('Calling transform done when ws.length != 0');
     }
     if (theOldFunction["transforming"]) {
-      throw new Error(_0x6c71("0x1c1"));
+      throw new Error('Calling transform done when still transforming');
     }
     return self["push"](null);
   }
   /** @type {function(?): ?} */
   module["exports"] = render;
   var NodeList = require("./_stream_duplex");
-  var lang = require(_0x6c71("346"));
-  lang["inherits"] = require(_0x6c71("0xe8"));
+  var lang = require('core-util-is');
+  lang["inherits"] = require('inherits');
   lang["inherits"](render, NodeList);
   /**
    * @param {?} mmCoreSplitViewBlock
@@ -4275,7 +7049,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    * @return {?}
    */
   render["prototype"]["push"] = function(mmCoreSplitViewBlock, mmaPushNotificationsComponent) {
-    return this[_0x6c71("0x1b6")][_0x6c71("443")] = false, NodeList["prototype"]["push"]["call"](this, mmCoreSplitViewBlock, mmaPushNotificationsComponent);
+    return this['_transformState']['needTransform'] = false, NodeList["prototype"]["push"]["call"](this, mmCoreSplitViewBlock, mmaPushNotificationsComponent);
   };
   /**
    * @param {?} canCreateDiscussions
@@ -4284,7 +7058,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    * @return {?}
    */
   render["prototype"]["_transform"] = function(canCreateDiscussions, isSlidingUp, dontForceConstraints) {
-    throw new Error(_0x6c71("0x1c2"));
+    throw new Error('_transform() is not implemented');
   };
   /**
    * @param {?} toolbar
@@ -4293,10 +7067,10 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    * @return {undefined}
    */
   render["prototype"]["_write"] = function(toolbar, defaultSetting, maybeValue) {
-    var settings = this[_0x6c71("0x1b6")];
-    if (settings[_0x6c71("0x1b8")] = maybeValue, settings[_0x6c71("0x1ba")] = toolbar, settings[_0x6c71("0x1bc")] = defaultSetting, !settings[_0x6c71("439")]) {
-      var defaultLocaleSettings = this[_0x6c71("354")];
-      if (settings["needTransform"] || defaultLocaleSettings[_0x6c71("379")] || defaultLocaleSettings["length"] < defaultLocaleSettings[_0x6c71("372")]) {
+    var settings = this['_transformState'];
+    if (settings['writecb'] = maybeValue, settings['writechunk'] = toolbar, settings['writeencoding'] = defaultSetting, !settings['transforming']) {
+      var defaultLocaleSettings = this['_readableState'];
+      if (settings["needTransform"] || defaultLocaleSettings['needReadable'] || defaultLocaleSettings["length"] < defaultLocaleSettings['highWaterMark']) {
         this["_read"](defaultLocaleSettings["highWaterMark"]);
       }
     }
@@ -4306,11 +7080,11 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    * @return {undefined}
    */
   render["prototype"]["_read"] = function(canCreateDiscussions) {
-    var _0x1eaa05 = this[_0x6c71("0x1b6")];
-    if (null !== _0x1eaa05[_0x6c71("0x1ba")] && _0x1eaa05[_0x6c71("0x1b8")] && !_0x1eaa05[_0x6c71("439")]) {
+    var _0x1eaa05 = this['_transformState'];
+    if (null !== _0x1eaa05['writechunk'] && _0x1eaa05['writecb'] && !_0x1eaa05['transforming']) {
       /** @type {boolean} */
-      _0x1eaa05[_0x6c71("439")] = true;
-      this["_transform"](_0x1eaa05["writechunk"], _0x1eaa05[_0x6c71("0x1bc")], _0x1eaa05[_0x6c71("437")]);
+      _0x1eaa05['transforming'] = true;
+      this["_transform"](_0x1eaa05["writechunk"], _0x1eaa05['writeencoding'], _0x1eaa05['afterTransform']);
     } else {
       /** @type {boolean} */
       _0x1eaa05["needTransform"] = true;
@@ -4325,7 +7099,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     var _0x13ad5d = this;
     NodeList["prototype"]["_destroy"]["call"](this, mmCoreSplitViewBlock, function(notifications) {
       saveNotifs(notifications);
-      _0x13ad5d["emit"](_0x6c71("0x16e"));
+      _0x13ad5d["emit"]('close');
     });
   };
 }, {
@@ -4342,9 +7116,9 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     function Array(val) {
       var pornResult = this;
       /** @type {null} */
-      this[_0x6c71("0x198")] = null;
+      this['next'] = null;
       /** @type {null} */
-      this[_0x6c71("0x1c4")] = null;
+      this['entry'] = null;
       /**
        * @return {undefined}
        */
@@ -4352,19 +7126,19 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         !function(obj, err, response_2) {
           var result = obj["entry"];
           /** @type {null} */
-          obj[_0x6c71("0x1c4")] = null;
+          obj['entry'] = null;
           for (; result;) {
-            var callback = result[_0x6c71("0x1c5")];
-            err[_0x6c71("0x1c6")]--;
+            var callback = result['callback'];
+            err['pendingcb']--;
             callback(response_2);
             result = result["next"];
           }
           if (err["corkedRequestsFree"]) {
             /** @type {!Object} */
-            err["corkedRequestsFree"][_0x6c71("0x198")] = obj;
+            err["corkedRequestsFree"]['next'] = obj;
           } else {
             /** @type {!Object} */
-            err[_0x6c71("0x1c7")] = obj;
+            err['corkedRequestsFree'] = obj;
           }
         }(pornResult, val);
       };
@@ -4383,79 +7157,79 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       connectionFn = connectionFn || require("./_stream_duplex");
       cb = cb || {};
       /** @type {boolean} */
-      this[_0x6c71("0x172")] = !!cb[_0x6c71("0x172")];
+      this['objectMode'] = !!cb['objectMode'];
       if (date instanceof connectionFn) {
-        this[_0x6c71("0x172")] = this[_0x6c71("0x172")] || !!cb[_0x6c71("0x1cb")];
+        this['objectMode'] = this['objectMode'] || !!cb['writableObjectMode'];
       }
-      var latinCharacter = cb[_0x6c71("372")];
+      var latinCharacter = cb['highWaterMark'];
       /** @type {number} */
-      var character = this[_0x6c71("0x172")] ? 16 : 16384;
+      var character = this['objectMode'] ? 16 : 16384;
       this["highWaterMark"] = latinCharacter || 0 === latinCharacter ? latinCharacter : character;
-      this[_0x6c71("372")] = Math["floor"](this[_0x6c71("372")]);
+      this['highWaterMark'] = Math["floor"](this['highWaterMark']);
       /** @type {boolean} */
-      this[_0x6c71("0x1cc")] = false;
+      this['finalCalled'] = false;
       /** @type {boolean} */
       this["needDrain"] = false;
       /** @type {boolean} */
-      this[_0x6c71("0x1cd")] = false;
+      this['ending'] = false;
       /** @type {boolean} */
-      this[_0x6c71("0x160")] = false;
+      this['ended'] = false;
       /** @type {boolean} */
       this["finished"] = false;
       /** @type {boolean} */
-      this[_0x6c71("0x161")] = false;
+      this['destroyed'] = false;
       /** @type {boolean} */
-      var _0x42bf80 = false === cb[_0x6c71("0x1ce")];
+      var _0x42bf80 = false === cb['decodeStrings'];
       /** @type {boolean} */
-      this[_0x6c71("0x1ce")] = !_0x42bf80;
-      this[_0x6c71("0x17f")] = cb[_0x6c71("0x17f")] || "utf8";
+      this['decodeStrings'] = !_0x42bf80;
+      this['defaultEncoding'] = cb['defaultEncoding'] || "utf8";
       /** @type {number} */
       this["length"] = 0;
       /** @type {boolean} */
-      this[_0x6c71("0x1cf")] = false;
+      this['writing'] = false;
       /** @type {number} */
-      this[_0x6c71("0x1d0")] = 0;
+      this['corked'] = 0;
       /** @type {boolean} */
-      this[_0x6c71("0x17a")] = true;
+      this['sync'] = true;
       /** @type {boolean} */
-      this[_0x6c71("0x1d1")] = false;
+      this['bufferProcessing'] = false;
       /**
        * @param {?} PL$14
        * @return {undefined}
        */
-      this[_0x6c71("0x1d2")] = function(PL$14) {
+      this['onwrite'] = function(PL$14) {
         !function(value, bbls) {
-          var params = value[_0x6c71("0x163")];
-          var appURI = params[_0x6c71("0x17a")];
-          var callback = params[_0x6c71("0x1b8")];
+          var params = value['_writableState'];
+          var appURI = params['sync'];
+          var callback = params['writecb'];
           if (function(a) {
             /** @type {boolean} */
             a["writing"] = false;
             /** @type {null} */
             a["writecb"] = null;
-            a["length"] -= a[_0x6c71("0x1d3")];
+            a["length"] -= a['writelen'];
             /** @type {number} */
-            a[_0x6c71("0x1d3")] = 0;
+            a['writelen'] = 0;
           }(params), bbls) {
             !function(self, obj, appURI, message, onerror) {
-              --obj[_0x6c71("0x1c6")];
+              --obj['pendingcb'];
               if (appURI) {
                 debug(onerror, message);
                 debug(log, self, obj);
                 /** @type {boolean} */
-                self[_0x6c71("0x163")]["errorEmitted"] = true;
-                self["emit"](_0x6c71("0x39"), message);
+                self['_writableState']["errorEmitted"] = true;
+                self["emit"]('error', message);
               } else {
                 onerror(message);
                 /** @type {boolean} */
-                self[_0x6c71("0x163")][_0x6c71("0x1d4")] = true;
-                self["emit"](_0x6c71("0x39"), message);
+                self['_writableState']['errorEmitted'] = true;
+                self["emit"]('error', message);
                 log(self, obj);
               }
             }(value, params, appURI, bbls, callback);
           } else {
             var m = map(params);
-            if (!(m || params[_0x6c71("0x1d0")] || params[_0x6c71("0x1d1")] || !params[_0x6c71("0x1d5")])) {
+            if (!(m || params['corked'] || params['bufferProcessing'] || !params['bufferedRequest'])) {
               set(value, params);
             }
             if (appURI) {
@@ -4469,20 +7243,20 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       /** @type {null} */
       this["writecb"] = null;
       /** @type {number} */
-      this[_0x6c71("0x1d3")] = 0;
+      this['writelen'] = 0;
       /** @type {null} */
-      this[_0x6c71("0x1d5")] = null;
+      this['bufferedRequest'] = null;
       /** @type {null} */
-      this[_0x6c71("0x1d6")] = null;
+      this['lastBufferedRequest'] = null;
       /** @type {number} */
-      this[_0x6c71("0x1c6")] = 0;
+      this['pendingcb'] = 0;
       /** @type {boolean} */
-      this[_0x6c71("0x1d7")] = false;
+      this['prefinished'] = false;
       /** @type {boolean} */
-      this[_0x6c71("0x1d4")] = false;
+      this['errorEmitted'] = false;
       /** @type {number} */
-      this[_0x6c71("0x1d8")] = 0;
-      this[_0x6c71("0x1c7")] = new Array(this);
+      this['bufferedRequestCount'] = 0;
+      this['corkedRequestsFree'] = new Array(this);
     }
     /**
      * @param {!Object} allow
@@ -4494,19 +7268,19 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       }
       this["_writableState"] = new handler(allow, this);
       /** @type {boolean} */
-      this[_0x6c71("350")] = true;
+      this['writable'] = true;
       if (allow) {
         if ("function" == typeof allow["write"]) {
           this["_write"] = allow["write"];
         }
         if ("function" == typeof allow["writev"]) {
-          this[_0x6c71("0x1d9")] = allow[_0x6c71("0x1da")];
+          this['_writev'] = allow['writev'];
         }
         if ("function" == typeof allow["destroy"]) {
           this["_destroy"] = allow["destroy"];
         }
-        if ("function" == typeof allow[_0x6c71("0x1db")]) {
-          this[_0x6c71("0x1dc")] = allow[_0x6c71("0x1db")];
+        if ("function" == typeof allow['final']) {
+          this['_final'] = allow['final'];
         }
       }
       fn["call"](this);
@@ -4522,20 +7296,20 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     function callback(context, args, value, result, key, data, t) {
-      args[_0x6c71("0x1d3")] = result;
+      args['writelen'] = result;
       /** @type {!Object} */
-      args[_0x6c71("0x1b8")] = t;
+      args['writecb'] = t;
       /** @type {boolean} */
-      args[_0x6c71("0x1cf")] = true;
+      args['writing'] = true;
       /** @type {boolean} */
-      args[_0x6c71("0x17a")] = true;
+      args['sync'] = true;
       if (value) {
-        context[_0x6c71("0x1d9")](key, args["onwrite"]);
+        context['_writev'](key, args["onwrite"]);
       } else {
-        context["_write"](key, data, args[_0x6c71("0x1d2")]);
+        context["_write"](key, data, args['onwrite']);
       }
       /** @type {boolean} */
-      args[_0x6c71("0x17a")] = false;
+      args['sync'] = false;
     }
     /**
      * @param {!Object} self
@@ -4547,14 +7321,14 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     function connect(self, context, remote, callback) {
       if (!remote) {
         (function(proplist, context) {
-          if (0 === context["length"] && context[_0x6c71("0x1a9")]) {
+          if (0 === context["length"] && context['needDrain']) {
             /** @type {boolean} */
-            context[_0x6c71("0x1a9")] = false;
+            context['needDrain'] = false;
             proplist["emit"]("drain");
           }
         })(self, context);
       }
-      context[_0x6c71("0x1c6")]--;
+      context['pendingcb']--;
       callback();
       log(self, context);
     }
@@ -4565,9 +7339,9 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      */
     function set(params, obj) {
       /** @type {boolean} */
-      obj[_0x6c71("0x1d1")] = true;
+      obj['bufferProcessing'] = true;
       var data = obj["bufferedRequest"];
-      if (params[_0x6c71("0x1d9")] && data && data[_0x6c71("0x198")]) {
+      if (params['_writev'] && data && data['next']) {
         var node = obj["bufferedRequestCount"];
         /** @type {!Array} */
         var log = new Array(node);
@@ -4579,7 +7353,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         var NOOP = true;
         for (; data;) {
           log[index] = data;
-          if (!data[_0x6c71("0x1dd")]) {
+          if (!data['isBuf']) {
             /** @type {boolean} */
             NOOP = false;
           }
@@ -4588,44 +7362,44 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
           index = index + 1;
         }
         /** @type {boolean} */
-        log[_0x6c71("0x1de")] = NOOP;
-        callback(params, obj, true, obj["length"], log, "", state[_0x6c71("0x1a6")]);
-        obj[_0x6c71("0x1c6")]++;
+        log['allBuffers'] = NOOP;
+        callback(params, obj, true, obj["length"], log, "", state['finish']);
+        obj['pendingcb']++;
         /** @type {null} */
-        obj[_0x6c71("0x1d6")] = null;
-        if (state[_0x6c71("0x198")]) {
-          obj[_0x6c71("0x1c7")] = state[_0x6c71("0x198")];
+        obj['lastBufferedRequest'] = null;
+        if (state['next']) {
+          obj['corkedRequestsFree'] = state['next'];
           /** @type {null} */
           state["next"] = null;
         } else {
-          obj[_0x6c71("0x1c7")] = new Array(obj);
+          obj['corkedRequestsFree'] = new Array(obj);
         }
       } else {
         for (; data;) {
-          var payload = data[_0x6c71("0x1df")];
-          var fn = data[_0x6c71("0x183")];
-          var err = data[_0x6c71("0x1c5")];
-          if (callback(params, obj, false, obj["objectMode"] ? 1 : payload["length"], payload, fn, err), data = data[_0x6c71("0x198")], obj[_0x6c71("0x1cf")]) {
+          var payload = data['chunk'];
+          var fn = data['encoding'];
+          var err = data['callback'];
+          if (callback(params, obj, false, obj["objectMode"] ? 1 : payload["length"], payload, fn, err), data = data['next'], obj['writing']) {
             break;
           }
         }
         if (null === data) {
           /** @type {null} */
-          obj[_0x6c71("0x1d6")] = null;
+          obj['lastBufferedRequest'] = null;
         }
       }
       /** @type {number} */
       obj["bufferedRequestCount"] = 0;
-      obj[_0x6c71("0x1d5")] = data;
+      obj['bufferedRequest'] = data;
       /** @type {boolean} */
-      obj[_0x6c71("0x1d1")] = false;
+      obj['bufferProcessing'] = false;
     }
     /**
      * @param {!Object} context
      * @return {?}
      */
     function map(context) {
-      return context[_0x6c71("0x1cd")] && 0 === context["length"] && null === context[_0x6c71("0x1d5")] && !context[_0x6c71("0x1e0")] && !context[_0x6c71("0x1cf")];
+      return context['ending'] && 0 === context["length"] && null === context['bufferedRequest'] && !context['finished'] && !context['writing'];
     }
     /**
      * @param {!Object} self
@@ -4633,13 +7407,13 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     function end(self, instance) {
-      self[_0x6c71("0x1dc")](function(actionId) {
-        instance[_0x6c71("0x1c6")]--;
+      self['_final'](function(actionId) {
+        instance['pendingcb']--;
         if (actionId) {
-          self["emit"](_0x6c71("0x39"), actionId);
+          self["emit"]('error', actionId);
         }
         /** @type {boolean} */
-        instance[_0x6c71("0x1d7")] = true;
+        instance['prefinished'] = true;
         self["emit"]("prefinish");
         log(self, instance);
       });
@@ -4652,28 +7426,28 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     function log(self, context) {
       var fontSize = map(context);
       return fontSize && (!function(srv, properties) {
-        if (!(properties[_0x6c71("0x1d7")] || properties[_0x6c71("0x1cc")])) {
-          if ("function" == typeof srv[_0x6c71("0x1dc")]) {
-            properties[_0x6c71("0x1c6")]++;
+        if (!(properties['prefinished'] || properties['finalCalled'])) {
+          if ("function" == typeof srv['_final']) {
+            properties['pendingcb']++;
             /** @type {boolean} */
-            properties[_0x6c71("0x1cc")] = true;
+            properties['finalCalled'] = true;
             debug(end, srv, properties);
           } else {
             /** @type {boolean} */
             properties["prefinished"] = true;
-            srv["emit"](_0x6c71("445"));
+            srv["emit"]('transform');
           }
         }
-      }(self, context), 0 === context[_0x6c71("0x1c6")] && (context[_0x6c71("0x1e0")] = true, self["emit"](_0x6c71("0x1a6")))), fontSize;
+      }(self, context), 0 === context['pendingcb'] && (context['finished'] = true, self["emit"]('finish'))), fontSize;
     }
-    var debug = require(_0x6c71("0x159"));
+    var debug = require('process-nextick-args');
     /** @type {function(!Object): ?} */
     module["exports"] = WMCacheControl;
     var connectionFn;
-    var setTimeout = !canCreateDiscussions["browser"] && ["v0.10", _0x6c71("0x1c9")]["indexOf"](canCreateDiscussions["version"]["slice"](0, 5)) > -1 ? setImmediate : debug;
+    var setTimeout = !canCreateDiscussions["browser"] && ["v0.10", 'v0.9.']["indexOf"](canCreateDiscussions["version"]["slice"](0, 5)) > -1 ? setImmediate : debug;
     /** @type {function(number, !Object): undefined} */
     WMCacheControl["WritableState"] = handler;
-    var app = require(_0x6c71("346"));
+    var app = require('core-util-is');
     app["inherits"] = require("inherits");
     var _0x42bf80 = {
       "deprecate" : require("util-deprecate")
@@ -4689,12 +7463,12 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {?}
      */
     handler["prototype"]["getBuffer"] = function() {
-      var value = this[_0x6c71("0x1d5")];
+      var value = this['bufferedRequest'];
       /** @type {!Array} */
       var settingHandler = [];
       for (; value;) {
         settingHandler["push"](value);
-        value = value[_0x6c71("0x198")];
+        value = value['next'];
       }
       return settingHandler;
     };
@@ -4703,7 +7477,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         Object["defineProperty"](handler["prototype"], "buffer", {
           "get" : _0x42bf80["deprecate"](function() {
             return this["getBuffer"]();
-          }, _0x6c71("0x1e3"), "DEP0003")
+          }, '_writableState.buffer is deprecated. Use _writableState.getBuffer instead.', "DEP0003")
         });
       } catch (_0x25e961) {
       }
@@ -4712,7 +7486,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       then = Function["prototype"][Symbol["hasInstance"]];
       Object["defineProperty"](WMCacheControl, Symbol["hasInstance"], {
         "value" : function(source) {
-          return !!then["call"](this, source) || source && source[_0x6c71("0x163")] instanceof handler;
+          return !!then["call"](this, source) || source && source['_writableState'] instanceof handler;
         }
       });
     } else {
@@ -4728,7 +7502,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     WMCacheControl["prototype"]["pipe"] = function() {
-      this["emit"](_0x6c71("0x39"), new Error(_0x6c71("0x1e5")));
+      this["emit"]('error', new Error('Cannot pipe, not readable'));
     };
     /**
      * @param {!Array} el
@@ -4738,27 +7512,27 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      */
     WMCacheControl["prototype"]["write"] = function(el, callback, name) {
       var value;
-      var options = this[_0x6c71("0x163")];
+      var options = this['_writableState'];
       /** @type {boolean} */
       var observable = false;
       var clojIsReversed = (value = el, (_["isBuffer"](value) || value instanceof BigNumber) && !options["objectMode"]);
       return clojIsReversed && !_["isBuffer"](el) && (el = function(obj) {
         return _["from"](obj);
-      }(el)), "function" == typeof callback && (name = callback, callback = null), clojIsReversed ? callback = "buffer" : callback || (callback = options[_0x6c71("0x17f")]), "function" != typeof name && (name = __anonymous_function__), options[_0x6c71("0x160")] ? function(tests, fmt) {
+      }(el)), "function" == typeof callback && (name = callback, callback = null), clojIsReversed ? callback = "buffer" : callback || (callback = options['defaultEncoding']), "function" != typeof name && (name = __anonymous_function__), options['ended'] ? function(tests, fmt) {
         /** @type {!Error} */
-        var i = new Error(_0x6c71("0x1e6"));
-        tests["emit"](_0x6c71("0x39"), i);
+        var i = new Error('write after end');
+        tests["emit"]('error', i);
         debug(fmt, i);
       }(this, name) : (clojIsReversed || function(tests, withHashes, diff, d) {
         /** @type {boolean} */
         var _0x35c689 = true;
         /** @type {boolean} */
         var i = false;
-        return null === diff ? i = new TypeError(_0x6c71("0x1e7")) : "string" == typeof diff || void 0 === diff || withHashes[_0x6c71("0x172")] || (i = new TypeError(_0x6c71("0x187"))), i && (tests["emit"](_0x6c71("0x39"), i), debug(d, i), _0x35c689 = false), _0x35c689;
+        return null === diff ? i = new TypeError('May not write null values to stream') : "string" == typeof diff || void 0 === diff || withHashes['objectMode'] || (i = new TypeError('Invalid non-string/buffer chunk')), i && (tests["emit"]('error', i), debug(d, i), _0x35c689 = false), _0x35c689;
       }(this, options, el, name)) && (options["pendingcb"]++, observable = function(elem, commands, isSlidingUp, data, options, obj) {
         if (!isSlidingUp) {
           var result = function(diff, obj, predicate) {
-            if (!(diff[_0x6c71("0x172")] || false === diff[_0x6c71("0x1ce")] || "string" != typeof obj)) {
+            if (!(diff['objectMode'] || false === diff['decodeStrings'] || "string" != typeof obj)) {
               obj = _["from"](obj, predicate);
             }
             return obj;
@@ -4770,17 +7544,17 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
             data = result;
           }
         }
-        var missingCoins = commands[_0x6c71("0x172")] ? 1 : data["length"];
+        var missingCoins = commands['objectMode'] ? 1 : data["length"];
         commands["length"] += missingCoins;
         /** @type {boolean} */
-        var _0x18f779 = commands["length"] < commands[_0x6c71("372")];
+        var _0x18f779 = commands["length"] < commands['highWaterMark'];
         if (!_0x18f779) {
           /** @type {boolean} */
           commands["needDrain"] = true;
         }
-        if (commands["writing"] || commands[_0x6c71("0x1d0")]) {
+        if (commands["writing"] || commands['corked']) {
           var commandList = commands["lastBufferedRequest"];
-          commands[_0x6c71("0x1d6")] = {
+          commands['lastBufferedRequest'] = {
             "chunk" : data,
             "encoding" : options,
             "isBuf" : isSlidingUp,
@@ -4788,11 +7562,11 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
             "next" : null
           };
           if (commandList) {
-            commandList[_0x6c71("0x198")] = commands[_0x6c71("0x1d6")];
+            commandList['next'] = commands['lastBufferedRequest'];
           } else {
-            commands["bufferedRequest"] = commands[_0x6c71("0x1d6")];
+            commands["bufferedRequest"] = commands['lastBufferedRequest'];
           }
-          commands[_0x6c71("0x1d8")] += 1;
+          commands['bufferedRequestCount'] += 1;
         } else {
           callback(elem, commands, false, missingCoins, data, options, obj);
         }
@@ -4803,16 +7577,16 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     WMCacheControl["prototype"]["cork"] = function() {
-      this[_0x6c71("0x163")][_0x6c71("0x1d0")]++;
+      this['_writableState']['corked']++;
     };
     /**
      * @return {undefined}
      */
     WMCacheControl["prototype"]["uncork"] = function() {
-      var callback = this[_0x6c71("0x163")];
-      if (callback[_0x6c71("0x1d0")]) {
-        callback[_0x6c71("0x1d0")]--;
-        if (!(callback[_0x6c71("0x1cf")] || callback[_0x6c71("0x1d0")] || callback[_0x6c71("0x1e0")] || callback[_0x6c71("0x1d1")] || !callback[_0x6c71("0x1d5")])) {
+      var callback = this['_writableState'];
+      if (callback['corked']) {
+        callback['corked']--;
+        if (!(callback['writing'] || callback['corked'] || callback['finished'] || callback['bufferProcessing'] || !callback['bufferedRequest'])) {
           set(this, callback);
         }
       }
@@ -4822,10 +7596,10 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {?}
      */
     WMCacheControl["prototype"]["setDefaultEncoding"] = function(format) {
-      if ("string" == typeof format && (format = format["toLowerCase"]()), !(["hex", "utf8", "utf-8", "ascii", "binary", "base64", "ucs2", _0x6c71("0x1eb"), "utf16le", "utf-16le", _0x6c71("0x1ec")]["indexOf"]((format + "")["toLowerCase"]()) > -1)) {
+      if ("string" == typeof format && (format = format["toLowerCase"]()), !(["hex", "utf8", "utf-8", "ascii", "binary", "base64", "ucs2", 'ucs-2', "utf16le", "utf-16le", 'raw']["indexOf"]((format + "")["toLowerCase"]()) > -1)) {
         throw new TypeError("Unknown encoding: " + format);
       }
-      return this["_writableState"][_0x6c71("0x17f")] = format, this;
+      return this["_writableState"]['defaultEncoding'] = format, this;
     };
     /**
      * @param {?} canCreateDiscussions
@@ -4834,7 +7608,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     WMCacheControl["prototype"]["_write"] = function(canCreateDiscussions, isSlidingUp, stepCallback) {
-      stepCallback(new Error(_0x6c71("0x1ed")));
+      stepCallback(new Error('_write() is not implemented'));
     };
     /** @type {null} */
     WMCacheControl["prototype"]["_writev"] = null;
@@ -4845,7 +7619,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     WMCacheControl["prototype"]["end"] = function(data, somePerson, person) {
-      var box = this[_0x6c71("0x163")];
+      var box = this['_writableState'];
       if ("function" == typeof data) {
         /** @type {string} */
         person = data;
@@ -4864,37 +7638,37 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       if (null != data) {
         this["write"](data, somePerson);
       }
-      if (box[_0x6c71("0x1d0")]) {
+      if (box['corked']) {
         /** @type {number} */
-        box[_0x6c71("0x1d0")] = 1;
+        box['corked'] = 1;
         this["uncork"]();
       }
-      if (!(box[_0x6c71("0x1cd")] || box[_0x6c71("0x1e0")])) {
+      if (!(box['ending'] || box['finished'])) {
         (function(self, elem, context) {
           /** @type {boolean} */
-          elem[_0x6c71("0x1cd")] = true;
+          elem['ending'] = true;
           log(self, elem);
           if (context) {
-            if (elem[_0x6c71("0x1e0")]) {
+            if (elem['finished']) {
               debug(context);
             } else {
-              self["once"](_0x6c71("0x1a6"), context);
+              self["once"]('finish', context);
             }
           }
           /** @type {boolean} */
-          elem[_0x6c71("0x160")] = true;
+          elem['ended'] = true;
           /** @type {boolean} */
-          self[_0x6c71("350")] = false;
+          self['writable'] = false;
         })(this, box, person);
       }
     };
     Object["defineProperty"](WMCacheControl["prototype"], "destroyed", {
       "get" : function() {
-        return void 0 !== this[_0x6c71("0x163")] && this[_0x6c71("0x163")][_0x6c71("0x161")];
+        return void 0 !== this['_writableState'] && this['_writableState']['destroyed'];
       },
       "set" : function(mymuted) {
-        if (this[_0x6c71("0x163")]) {
-          this["_writableState"][_0x6c71("0x161")] = mymuted;
+        if (this['_writableState']) {
+          this["_writableState"]['destroyed'] = mymuted;
         }
       }
     });
@@ -4909,7 +7683,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       this["end"]();
       saveNotifs(notifications);
     };
-  })["call"](this, require(_0x6c71("0x14a")), "undefined" != typeof global ? global : "undefined" != typeof self ? self : "undefined" != typeof window ? window : {});
+  })["call"](this, require('_process'), "undefined" != typeof global ? global : "undefined" != typeof self ? self : "undefined" != typeof window ? window : {});
 }, {
   "./_stream_duplex" : 24,
   "./internal/streams/destroy" : 30,
@@ -4930,11 +7704,11 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     function TailNode() {
       !function(impromptuInstance, Impromptu) {
         if (!(impromptuInstance instanceof Impromptu)) {
-          throw new TypeError(_0x6c71("0x1ef"));
+          throw new TypeError('Cannot call a class as a function');
         }
       }(this, TailNode);
       /** @type {null} */
-      this[_0x6c71("0x18f")] = null;
+      this['head'] = null;
       /** @type {null} */
       this["tail"] = null;
       /** @type {number} */
@@ -4951,9 +7725,9 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         "next" : null
       };
       if (this["length"] > 0) {
-        this["tail"][_0x6c71("0x198")] = item;
+        this["tail"]['next'] = item;
       } else {
-        this[_0x6c71("0x18f")] = item;
+        this['head'] = item;
       }
       this["tail"] = item;
       ++this["length"];
@@ -4965,29 +7739,29 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     TailNode["prototype"]["unshift"] = function(instancesTypes) {
       var dummy = {
         "data" : instancesTypes,
-        "next" : this[_0x6c71("0x18f")]
+        "next" : this['head']
       };
       if (0 === this["length"]) {
-        this[_0x6c71("0x199")] = dummy;
+        this['tail'] = dummy;
       }
-      this[_0x6c71("0x18f")] = dummy;
+      this['head'] = dummy;
       ++this["length"];
     };
     /**
      * @return {?}
      */
-    TailNode["prototype"][_0x6c71("0x197")] = function() {
+    TailNode["prototype"]['shift'] = function() {
       if (0 !== this["length"]) {
-        var _0x52c1eb = this[_0x6c71("0x18f")]["data"];
-        return 1 === this["length"] ? this[_0x6c71("0x18f")] = this[_0x6c71("0x199")] = null : this["head"] = this[_0x6c71("0x18f")][_0x6c71("0x198")], --this["length"], _0x52c1eb;
+        var _0x52c1eb = this['head']["data"];
+        return 1 === this["length"] ? this['head'] = this['tail'] = null : this["head"] = this['head']['next'], --this["length"], _0x52c1eb;
       }
     };
     /**
      * @return {undefined}
      */
-    TailNode["prototype"][_0x6c71("0x196")] = function() {
+    TailNode["prototype"]['clear'] = function() {
       /** @type {null} */
-      this[_0x6c71("0x18f")] = this[_0x6c71("0x199")] = null;
+      this['head'] = this['tail'] = null;
       /** @type {number} */
       this["length"] = 0;
     };
@@ -4999,7 +7773,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       if (0 === this["length"]) {
         return "";
       }
-      var object = this[_0x6c71("0x18f")];
+      var object = this['head'];
       var msg = "" + object["data"];
       for (; object = object["next"];) {
         msg = msg + (result + object["data"]);
@@ -5015,13 +7789,13 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         return Long["alloc"](0);
       }
       if (1 === this["length"]) {
-        return this[_0x6c71("0x18f")]["data"];
+        return this['head']["data"];
       }
       var filter_error;
       var wsFunction;
       var tradeOffset;
       var local_mobile_core_user_remove_user_device = Long["allocUnsafe"](high >>> 0);
-      var data = this[_0x6c71("0x18f")];
+      var data = this['head'];
       /** @type {number} */
       var offset = 0;
       for (; data;) {
@@ -5030,7 +7804,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         tradeOffset = offset;
         filter_error["copy"](wsFunction, tradeOffset);
         offset = offset + data["data"]["length"];
-        data = data[_0x6c71("0x198")];
+        data = data['next'];
       }
       return local_mobile_core_user_remove_user_device;
     };
@@ -5046,37 +7820,37 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    * @return {undefined}
    */
   function constructor(isSummary, connection) {
-    isSummary["emit"](_0x6c71("0x39"), connection);
+    isSummary["emit"]('error', connection);
   }
-  var debug = debu(_0x6c71("0x159"));
+  var debug = debu('process-nextick-args');
   data["exports"] = {
     "destroy" : function(value, error) {
       var mediaQueryStack = this;
-      var inputWin = this[_0x6c71("354")] && this[_0x6c71("354")][_0x6c71("0x161")];
-      var winRef = this[_0x6c71("0x163")] && this[_0x6c71("0x163")][_0x6c71("0x161")];
+      var inputWin = this['_readableState'] && this['_readableState']['destroyed'];
+      var winRef = this['_writableState'] && this['_writableState']['destroyed'];
       if (inputWin || winRef) {
         if (error) {
           error(value);
         } else {
-          if (!(!value || this[_0x6c71("0x163")] && this[_0x6c71("0x163")][_0x6c71("0x1d4")])) {
+          if (!(!value || this['_writableState'] && this['_writableState']['errorEmitted'])) {
             debug(constructor, this, value);
           }
         }
       } else {
         if (this["_readableState"]) {
           /** @type {boolean} */
-          this[_0x6c71("354")][_0x6c71("0x161")] = true;
+          this['_readableState']['destroyed'] = true;
         }
-        if (this[_0x6c71("0x163")]) {
+        if (this['_writableState']) {
           /** @type {boolean} */
-          this["_writableState"][_0x6c71("0x161")] = true;
+          this["_writableState"]['destroyed'] = true;
         }
         this["_destroy"](value || null, function(token) {
           if (!error && token) {
             debug(constructor, mediaQueryStack, token);
-            if (mediaQueryStack[_0x6c71("0x163")]) {
+            if (mediaQueryStack['_writableState']) {
               /** @type {boolean} */
-              mediaQueryStack["_writableState"][_0x6c71("0x1d4")] = true;
+              mediaQueryStack["_writableState"]['errorEmitted'] = true;
             }
           } else {
             if (error) {
@@ -5087,27 +7861,27 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       }
     },
     "undestroy" : function() {
-      if (this[_0x6c71("354")]) {
+      if (this['_readableState']) {
         /** @type {boolean} */
-        this[_0x6c71("354")][_0x6c71("0x161")] = false;
+        this['_readableState']['destroyed'] = false;
         /** @type {boolean} */
-        this[_0x6c71("354")][_0x6c71("377")] = false;
+        this['_readableState']['reading'] = false;
         /** @type {boolean} */
-        this[_0x6c71("354")][_0x6c71("0x160")] = false;
+        this['_readableState']['ended'] = false;
         /** @type {boolean} */
-        this["_readableState"][_0x6c71("0x178")] = false;
+        this["_readableState"]['endEmitted'] = false;
       }
       if (this["_writableState"]) {
         /** @type {boolean} */
-        this[_0x6c71("0x163")][_0x6c71("0x161")] = false;
+        this['_writableState']['destroyed'] = false;
         /** @type {boolean} */
-        this[_0x6c71("0x163")][_0x6c71("0x160")] = false;
+        this['_writableState']['ended'] = false;
         /** @type {boolean} */
         this["_writableState"]["ending"] = false;
         /** @type {boolean} */
-        this[_0x6c71("0x163")][_0x6c71("0x1e0")] = false;
+        this['_writableState']['finished'] = false;
         /** @type {boolean} */
-        this["_writableState"][_0x6c71("0x1d4")] = false;
+        this["_writableState"]['errorEmitted'] = false;
       }
     }
   };
@@ -5115,24 +7889,24 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
   "process-nextick-args" : 21
 }],
 31:[function(saveNotifs, module, canCreateDiscussions) {
-  module["exports"] = saveNotifs(_0x6c71("0x1f0"))["EventEmitter"];
+  module["exports"] = saveNotifs('events')["EventEmitter"];
 }, {
   "events" : 8
 }],
 32:[function(saveNotifs, canCreateDiscussions, isSlidingUp) {
-  canCreateDiscussions["exports"] = saveNotifs(_0x6c71("0x1f1"))["PassThrough"];
+  canCreateDiscussions["exports"] = saveNotifs('./readable')["PassThrough"];
 }, {
   "./readable" : 33
 }],
 33:[function(render, result, data) {
   /** @type {!Object} */
-  (data = result["exports"] = render(_0x6c71("0x1f2")))["Stream"] = data;
+  (data = result["exports"] = render('./lib/_stream_readable.js'))["Stream"] = data;
   /** @type {!Object} */
   data["Readable"] = data;
-  data["Writable"] = render(_0x6c71("0x1f5"));
+  data["Writable"] = render('./lib/_stream_writable.js');
   data["Duplex"] = render("./lib/_stream_duplex.js");
-  data["Transform"] = render(_0x6c71("0x1f7"));
-  data["PassThrough"] = render(_0x6c71("0x1f9"));
+  data["Transform"] = render('./lib/_stream_transform.js');
+  data["PassThrough"] = render('./lib/_stream_passthrough.js');
 }, {
   "./lib/_stream_duplex.js" : 24,
   "./lib/_stream_passthrough.js" : 25,
@@ -5141,12 +7915,12 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
   "./lib/_stream_writable.js" : 28
 }],
 34:[function(saveNotifs, canCreateDiscussions, isSlidingUp) {
-  canCreateDiscussions["exports"] = saveNotifs(_0x6c71("0x1f1"))["Transform"];
+  canCreateDiscussions["exports"] = saveNotifs('./readable')["Transform"];
 }, {
   "./readable" : 33
 }],
 35:[function(require, tasks, isSlidingUp) {
-  tasks["exports"] = require(_0x6c71("0x1f5"));
+  tasks["exports"] = require('./lib/_stream_writable.js');
 }, {
   "./lib/_stream_writable.js" : 28
 }],
@@ -5189,7 +7963,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    */
   callback["from"] = function(val, lastErrorObject, callback) {
     if ("number" == typeof val) {
-      throw new TypeError(_0x6c71("0x1fa"));
+      throw new TypeError('Argument must not be a number');
     }
     return fn(val, lastErrorObject, callback);
   };
@@ -5201,7 +7975,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    */
   callback["alloc"] = function(responce, model, relations) {
     if ("number" != typeof responce) {
-      throw new TypeError(_0x6c71("0x1fb"));
+      throw new TypeError('Argument must be a number');
     }
     var _destructure2 = fn(responce);
     return void 0 !== model ? "string" == typeof relations ? _destructure2["fill"](model, relations) : _destructure2["fill"](model) : _destructure2["fill"](0), _destructure2;
@@ -5212,7 +7986,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    */
   callback["allocUnsafe"] = function(responce) {
     if ("number" != typeof responce) {
-      throw new TypeError(_0x6c71("0x1fb"));
+      throw new TypeError('Argument must be a number');
     }
     return fn(responce);
   };
@@ -5222,9 +7996,9 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    */
   callback["allocUnsafeSlow"] = function(got_res) {
     if ("number" != typeof got_res) {
-      throw new TypeError(_0x6c71("0x1fb"));
+      throw new TypeError('Argument must be a number');
     }
-    return out[_0x6c71("0x1fc")](got_res);
+    return out['SlowBuffer'](got_res);
   };
 }, {
   "buffer" : 3
@@ -5238,15 +8012,15 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
   }
   /** @type {function(): undefined} */
   payloadKeyObject["exports"] = embed;
-  var uglifyConf = require(_0x6c71("0x1f0"))["EventEmitter"];
+  var uglifyConf = require('events')["EventEmitter"];
   require("inherits")(embed, uglifyConf);
-  embed["Readable"] = require(_0x6c71("0x1fe"));
-  embed["Writable"] = require(_0x6c71("0x1ff"));
-  embed["Duplex"] = require(_0x6c71("512"));
-  embed["Transform"] = require(_0x6c71("0x201"));
-  embed["PassThrough"] = require(_0x6c71("0x202"));
+  embed["Readable"] = require('readable-stream/readable.js');
+  embed["Writable"] = require('readable-stream/writable.js');
+  embed["Duplex"] = require('readable-stream/duplex.js');
+  embed["Transform"] = require('readable-stream/transform.js');
+  embed["PassThrough"] = require('readable-stream/passthrough.js');
   /** @type {function(): undefined} */
-  embed[_0x6c71("0x1f3")] = embed;
+  embed['Stream'] = embed;
   /**
    * @param {!Object} PL$5
    * @param {boolean} canCreateDiscussions
@@ -5266,7 +8040,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     function PL$25() {
-      if (p[_0x6c71("0x15d")] && p["resume"]) {
+      if (p['readable'] && p["resume"]) {
         p["resume"]();
       }
     }
@@ -5297,7 +8071,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {undefined}
      */
     function B103(canCreateDiscussions) {
-      if (forwarder(), 0 === uglifyConf["listenerCount"](this, _0x6c71("0x39"))) {
+      if (forwarder(), 0 === uglifyConf["listenerCount"](this, 'error')) {
         throw canCreateDiscussions;
       }
     }
@@ -5306,25 +8080,25 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      */
     function forwarder() {
       p["removeListener"]("data", extendUndefined);
-      PL$5["removeListener"](_0x6c71("0x1a7"), PL$25);
-      p["removeListener"](_0x6c71("0xe2"), cb);
-      p["removeListener"](_0x6c71("0x16e"), B107);
-      p["removeListener"](_0x6c71("0x39"), B103);
-      PL$5["removeListener"](_0x6c71("0x39"), B103);
-      p["removeListener"](_0x6c71("0xe2"), forwarder);
-      p["removeListener"](_0x6c71("0x16e"), forwarder);
-      PL$5["removeListener"](_0x6c71("0x16e"), forwarder);
+      PL$5["removeListener"]('drain', PL$25);
+      p["removeListener"]('end', cb);
+      p["removeListener"]('close', B107);
+      p["removeListener"]('error', B103);
+      PL$5["removeListener"]('error', B103);
+      p["removeListener"]('end', forwarder);
+      p["removeListener"]('close', forwarder);
+      PL$5["removeListener"]('close', forwarder);
     }
     var p = this;
     p["on"]("data", extendUndefined);
     PL$5["on"]("drain", PL$25);
-    if (!(PL$5[_0x6c71("0x203")] || canCreateDiscussions && false === canCreateDiscussions["end"])) {
-      p["on"](_0x6c71("0xe2"), cb);
-      p["on"](_0x6c71("0x16e"), B107);
+    if (!(PL$5['_isStdio'] || canCreateDiscussions && false === canCreateDiscussions["end"])) {
+      p["on"]('end', cb);
+      p["on"]('close', B107);
     }
     /** @type {boolean} */
     var _0xc89370 = false;
-    return p["on"](_0x6c71("0x39"), B103), PL$5["on"](_0x6c71("0x39"), B103), p["on"]("end", forwarder), p["on"](_0x6c71("0x16e"), forwarder), PL$5["on"](_0x6c71("0x16e"), forwarder), PL$5["emit"]("pipe", p), PL$5;
+    return p["on"]('error', B103), PL$5["on"]('error', B103), p["on"]("end", forwarder), p["on"]('close', forwarder), PL$5["on"]('close', forwarder), PL$5["emit"]("pipe", p), PL$5;
   };
 }, {
   "events" : 8,
@@ -5342,7 +8116,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    */
   function write(cb_) {
     var data;
-    switch(this[_0x6c71("0x183")] = function(e) {
+    switch(this['encoding'] = function(e) {
       var error = function(encoding) {
         if (!encoding) {
           return "utf8";
@@ -5354,7 +8128,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
             case "utf-8":
               return "utf8";
             case "ucs2":
-            case _0x6c71("0x1eb"):
+            case 'ucs-2':
             case "utf16le":
             case "utf-16le":
               return "utf16le";
@@ -5379,10 +8153,10 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         throw new Error("Unknown encoding: " + e);
       }
       return error || e;
-    }(cb_), this[_0x6c71("0x183")]) {
+    }(cb_), this['encoding']) {
       case "utf16le":
         /** @type {function(!Object, ?): ?} */
-        this[_0x6c71("0x204")] = read;
+        this['text'] = read;
         /** @type {function(string): ?} */
         this["end"] = tojsonObject;
         /** @type {number} */
@@ -5390,13 +8164,13 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         break;
       case "utf8":
         /** @type {function(!Object): ?} */
-        this[_0x6c71("0x205")] = mixinStatics;
+        this['fillLast'] = mixinStatics;
         /** @type {number} */
         data = 4;
         break;
       case "base64":
         /** @type {function(!Object, ?): ?} */
-        this[_0x6c71("0x204")] = forEach;
+        this['text'] = forEach;
         /** @type {function(string): ?} */
         this["end"] = mapDestPath;
         /** @type {number} */
@@ -5406,10 +8180,10 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         return this["write"] = extractPresetLocal, void(this["end"] = WAssert);
     }
     /** @type {number} */
-    this[_0x6c71("0x206")] = 0;
+    this['lastNeed'] = 0;
     /** @type {number} */
-    this[_0x6c71("0x207")] = 0;
-    this[_0x6c71("0x208")] = MEPermPrun["allocUnsafe"](data);
+    this['lastTotal'] = 0;
+    this['lastChar'] = MEPermPrun["allocUnsafe"](data);
   }
   /**
    * @param {number} i
@@ -5424,21 +8198,21 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    */
   function mixinStatics(from) {
     /** @type {number} */
-    var data = this[_0x6c71("0x207")] - this[_0x6c71("0x206")];
+    var data = this['lastTotal'] - this['lastNeed'];
     var response = function(EMSarray, b, originalEventData) {
       if (128 != (192 & b[0])) {
-        return EMSarray[_0x6c71("0x206")] = 0, "\ufffd"[_0x6c71("0x209")](originalEventData);
+        return EMSarray['lastNeed'] = 0, "\ufffd"['repeat'](originalEventData);
       }
       if (EMSarray["lastNeed"] > 1 && b["length"] > 1) {
         if (128 != (192 & b[1])) {
-          return EMSarray[_0x6c71("0x206")] = 1, "\ufffd"["repeat"](originalEventData + 1);
+          return EMSarray['lastNeed'] = 1, "\ufffd"["repeat"](originalEventData + 1);
         }
-        if (EMSarray[_0x6c71("0x206")] > 2 && b["length"] > 2 && 128 != (192 & b[2])) {
-          return EMSarray[_0x6c71("0x206")] = 2, "\ufffd"[_0x6c71("0x209")](originalEventData + 2);
+        if (EMSarray['lastNeed'] > 2 && b["length"] > 2 && 128 != (192 & b[2])) {
+          return EMSarray['lastNeed'] = 2, "\ufffd"['repeat'](originalEventData + 2);
         }
       }
     }(this, from, data);
-    return void 0 !== response ? response : this[_0x6c71("0x206")] <= from["length"] ? (from["copy"](this[_0x6c71("0x208")], data, 0, this["lastNeed"]), this[_0x6c71("0x208")]["toString"](this[_0x6c71("0x183")], 0, this[_0x6c71("0x207")])) : (from["copy"](this[_0x6c71("0x208")], data, 0, from["length"]), void(this[_0x6c71("0x206")] -= from["length"]));
+    return void 0 !== response ? response : this['lastNeed'] <= from["length"] ? (from["copy"](this['lastChar'], data, 0, this["lastNeed"]), this['lastChar']["toString"](this['encoding'], 0, this['lastTotal'])) : (from["copy"](this['lastChar'], data, 0, from["length"]), void(this['lastNeed'] -= from["length"]));
   }
   /**
    * @param {!Object} async
@@ -5451,12 +8225,12 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       if (p) {
         var _0x21ec1c = p["charCodeAt"](p["length"] - 1);
         if (_0x21ec1c >= 55296 && _0x21ec1c <= 56319) {
-          return this[_0x6c71("0x206")] = 2, this[_0x6c71("0x207")] = 4, this[_0x6c71("0x208")][0] = async[async["length"] - 2], this[_0x6c71("0x208")][1] = async[async["length"] - 1], p["slice"](0, -1);
+          return this['lastNeed'] = 2, this['lastTotal'] = 4, this['lastChar'][0] = async[async["length"] - 2], this['lastChar'][1] = async[async["length"] - 1], p["slice"](0, -1);
         }
       }
       return p;
     }
-    return this[_0x6c71("0x206")] = 1, this[_0x6c71("0x207")] = 2, this[_0x6c71("0x208")][0] = async[async["length"] - 1], async["toString"]("utf16le", callback, async["length"] - 1);
+    return this['lastNeed'] = 1, this['lastTotal'] = 2, this['lastChar'][0] = async[async["length"] - 1], async["toString"]("utf16le", callback, async["length"] - 1);
   }
   /**
    * @param {string} x
@@ -5464,9 +8238,9 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    */
   function tojsonObject(x) {
     var comic_number_and_created_date_string = x && x["length"] ? this["write"](x) : "";
-    if (this[_0x6c71("0x206")]) {
+    if (this['lastNeed']) {
       /** @type {number} */
-      var year = this[_0x6c71("0x207")] - this[_0x6c71("0x206")];
+      var year = this['lastTotal'] - this['lastNeed'];
       return comic_number_and_created_date_string + this["lastChar"]["toString"]("utf16le", 0, year);
     }
     return comic_number_and_created_date_string;
@@ -5479,7 +8253,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
   function forEach(collection, options) {
     /** @type {number} */
     var functionType = (collection["length"] - options) % 3;
-    return 0 === functionType ? collection["toString"]("base64", options) : (this[_0x6c71("0x206")] = 3 - functionType, this[_0x6c71("0x207")] = 3, 1 === functionType ? this[_0x6c71("0x208")][0] = collection[collection["length"] - 1] : (this["lastChar"][0] = collection[collection["length"] - 2], this["lastChar"][1] = collection[collection["length"] - 1]), collection["toString"]("base64", options, collection["length"] - functionType));
+    return 0 === functionType ? collection["toString"]("base64", options) : (this['lastNeed'] = 3 - functionType, this['lastTotal'] = 3, 1 === functionType ? this['lastChar'][0] = collection[collection["length"] - 1] : (this["lastChar"][0] = collection[collection["length"] - 2], this["lastChar"][1] = collection[collection["length"] - 1]), collection["toString"]("base64", options, collection["length"] - functionType));
   }
   /**
    * @param {string} file
@@ -5487,14 +8261,14 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    */
   function mapDestPath(file) {
     var dataUrl = file && file["length"] ? this["write"](file) : "";
-    return this[_0x6c71("0x206")] ? dataUrl + this[_0x6c71("0x208")]["toString"]("base64", 0, 3 - this[_0x6c71("0x206")]) : dataUrl;
+    return this['lastNeed'] ? dataUrl + this['lastChar']["toString"]("base64", 0, 3 - this['lastNeed']) : dataUrl;
   }
   /**
    * @param {?} callback
    * @return {?}
    */
   function extractPresetLocal(callback) {
-    return callback["toString"](this[_0x6c71("0x183")]);
+    return callback["toString"](this['encoding']);
   }
   /**
    * @param {string} message
@@ -5503,8 +8277,8 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
   function WAssert(message) {
     return message && message["length"] ? this["write"](message) : "";
   }
-  var MEPermPrun = saveNotifs(_0x6c71("0x169"))["Buffer"];
-  var check = MEPermPrun[_0x6c71("24")] || function(fn) {
+  var MEPermPrun = saveNotifs('safe-buffer')["Buffer"];
+  var check = MEPermPrun['isEncoding'] || function(fn) {
     switch((fn = "" + fn) && fn["toLowerCase"]()) {
       case "hex":
       case "utf8":
@@ -5513,10 +8287,10 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       case "binary":
       case "base64":
       case "ucs2":
-      case _0x6c71("0x1eb"):
+      case 'ucs-2':
       case "utf16le":
       case "utf-16le":
-      case _0x6c71("0x1ec"):
+      case 'raw':
         return true;
       default:
         return false;
@@ -5534,18 +8308,18 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     }
     var result;
     var i;
-    if (this[_0x6c71("0x206")]) {
-      if (void 0 === (result = this[_0x6c71("0x205")](change))) {
+    if (this['lastNeed']) {
+      if (void 0 === (result = this['fillLast'](change))) {
         return "";
       }
-      i = this[_0x6c71("0x206")];
+      i = this['lastNeed'];
       /** @type {number} */
       this["lastNeed"] = 0;
     } else {
       /** @type {number} */
       i = 0;
     }
-    return i < change["length"] ? result ? result + this[_0x6c71("0x204")](change, i) : this[_0x6c71("0x204")](change, i) : result || "";
+    return i < change["length"] ? result ? result + this['text'](change, i) : this['text'](change, i) : result || "";
   };
   /**
    * @param {string} foundVersion
@@ -5553,14 +8327,14 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    */
   write["prototype"]["end"] = function(foundVersion) {
     var opt_by = foundVersion && foundVersion["length"] ? this["write"](foundVersion) : "";
-    return this[_0x6c71("0x206")] ? opt_by + "\ufffd"[_0x6c71("0x209")](this[_0x6c71("0x207")] - this["lastNeed"]) : opt_by;
+    return this['lastNeed'] ? opt_by + "\ufffd"['repeat'](this['lastTotal'] - this["lastNeed"]) : opt_by;
   };
   /**
    * @param {!Object} arr
    * @param {undefined} i
    * @return {?}
    */
-  write["prototype"][_0x6c71("0x204")] = function(arr, i) {
+  write["prototype"]['text'] = function(arr, i) {
     var value = function(EMSarray, a, nconst) {
       /** @type {number} */
       var i = a["length"] - 1;
@@ -5569,28 +8343,28 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       }
       var result = eq(a[i]);
       if (result >= 0) {
-        return result > 0 && (EMSarray[_0x6c71("0x206")] = result - 1), result;
+        return result > 0 && (EMSarray['lastNeed'] = result - 1), result;
       }
       if (--i < nconst) {
         return 0;
       }
       if ((result = eq(a[i])) >= 0) {
-        return result > 0 && (EMSarray[_0x6c71("0x206")] = result - 2), result;
+        return result > 0 && (EMSarray['lastNeed'] = result - 2), result;
       }
       if (--i < nconst) {
         return 0;
       }
       if ((result = eq(a[i])) >= 0) {
-        return result > 0 && (2 === result ? result = 0 : EMSarray[_0x6c71("0x206")] = result - 3), result;
+        return result > 0 && (2 === result ? result = 0 : EMSarray['lastNeed'] = result - 3), result;
       }
       return 0;
     }(this, arr, i);
     if (!this["lastNeed"]) {
       return arr["toString"]("utf8", i);
     }
-    this[_0x6c71("0x207")] = value;
+    this['lastTotal'] = value;
     /** @type {number} */
-    var series = arr["length"] - (value - this[_0x6c71("0x206")]);
+    var series = arr["length"] - (value - this['lastNeed']);
     return arr["copy"](this["lastChar"], 0, series), arr["toString"]("utf8", i, series);
   };
   /**
@@ -5599,10 +8373,10 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    */
   write["prototype"]["fillLast"] = function(canCreateDiscussions) {
     if (this["lastNeed"] <= canCreateDiscussions["length"]) {
-      return canCreateDiscussions["copy"](this["lastChar"], this[_0x6c71("0x207")] - this[_0x6c71("0x206")], 0, this[_0x6c71("0x206")]), this[_0x6c71("0x208")]["toString"](this[_0x6c71("0x183")], 0, this[_0x6c71("0x207")]);
+      return canCreateDiscussions["copy"](this["lastChar"], this['lastTotal'] - this['lastNeed'], 0, this['lastNeed']), this['lastChar']["toString"](this['encoding'], 0, this['lastTotal']);
     }
-    canCreateDiscussions["copy"](this["lastChar"], this[_0x6c71("0x207")] - this[_0x6c71("0x206")], 0, canCreateDiscussions["length"]);
-    this[_0x6c71("0x206")] -= canCreateDiscussions["length"];
+    canCreateDiscussions["copy"](this["lastChar"], this['lastTotal'] - this['lastNeed'], 0, canCreateDiscussions["length"]);
+    this['lastNeed'] -= canCreateDiscussions["length"];
   };
 }, {
   "safe-buffer" : 36
@@ -5622,7 +8396,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         return false;
       }
       var val = instruction["localStorage"][field];
-      return null != val && _0x6c71("0x20b") === String(val)["toLowerCase"]();
+      return null != val && 'true' === String(val)["toLowerCase"]();
     }
     /**
      * @param {?} _getModal
@@ -5630,20 +8404,20 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {?}
      */
     canCreateDiscussions["exports"] = function(_getModal, a) {
-      if (getName(_0x6c71("0x20c"))) {
+      if (getName('noDeprecation')) {
         return _getModal;
       }
       /** @type {boolean} */
       var _0x5e098f = false;
       return function() {
         if (!_0x5e098f) {
-          if (getName(_0x6c71("0x20d"))) {
+          if (getName('throwDeprecation')) {
             throw new Error(a);
           }
-          if (getName(_0x6c71("0x20e"))) {
+          if (getName('traceDeprecation')) {
             console["trace"](a);
           } else {
-            console[_0x6c71("0x20f")](a);
+            console['warn'](a);
           }
           /** @type {boolean} */
           _0x5e098f = true;
@@ -5664,7 +8438,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
    * @return {?}
    */
   canCreateDiscussions["exports"] = function(canCreateDiscussions) {
-    return canCreateDiscussions && _0x6c71("0x210") == typeof canCreateDiscussions && "function" == typeof canCreateDiscussions["copy"] && "function" == typeof canCreateDiscussions["fill"] && "function" == typeof canCreateDiscussions["readUInt8"];
+    return canCreateDiscussions && 'object' == typeof canCreateDiscussions && "function" == typeof canCreateDiscussions["copy"] && "function" == typeof canCreateDiscussions["fill"] && "function" == typeof canCreateDiscussions["readUInt8"];
   };
 }, {}],
 42:[function(require, canCreateDiscussions, obj) {
@@ -5679,7 +8453,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         "seen" : [],
         "stylize" : stylizeNoColor
       };
-      return arguments["length"] >= 3 && (data[_0x6c71("0x213")] = arguments[2]), arguments["length"] >= 4 && (data["colors"] = arguments[3]), isNaN(width) ? data[_0x6c71("0x214")] = width : width && obj["_extend"](data, width), $(data[_0x6c71("0x214")]) && (data[_0x6c71("0x214")] = false), $(data["depth"]) && (data[_0x6c71("0x213")] = 2), $(data["colors"]) && (data["colors"] = false), $(data["customInspect"]) && (data[_0x6c71("0x216")] = true), data["colors"] && (data[_0x6c71("0x217")] = 
+      return arguments["length"] >= 3 && (data['depth'] = arguments[2]), arguments["length"] >= 4 && (data["colors"] = arguments[3]), isNaN(width) ? data['showHidden'] = width : width && obj["_extend"](data, width), $(data['showHidden']) && (data['showHidden'] = false), $(data["depth"]) && (data['depth'] = 2), $(data["colors"]) && (data["colors"] = false), $(data["customInspect"]) && (data['customInspect'] = true), data["colors"] && (data['stylize'] = 
       item), next(data, dir, data["depth"]);
     }
     /**
@@ -5706,53 +8480,53 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {?}
      */
     function next(i, target, data) {
-      if (i[_0x6c71("0x216")] && target && proxy(target["inspect"]) && target["inspect"] !== obj["inspect"] && (!target["constructor"] || target["constructor"]["prototype"] !== target)) {
+      if (i['customInspect'] && target && proxy(target["inspect"]) && target["inspect"] !== obj["inspect"] && (!target["constructor"] || target["constructor"]["prototype"] !== target)) {
         var buffer = target["inspect"](data, i);
         return fn(buffer) || (buffer = next(i, buffer, data)), buffer;
       }
       var image = function(element, input) {
         if ($(input)) {
-          return element[_0x6c71("0x217")]("undefined", "undefined");
+          return element['stylize']("undefined", "undefined");
         }
         if (fn(input)) {
           /** @type {string} */
-          var selector = "'" + JSON["stringify"](input)[_0x6c71("0x87")](/^"|"$/g, "")[_0x6c71("0x87")](/'/g, "\\'")[_0x6c71("0x87")](/\\"/g, '"') + "'";
-          return element[_0x6c71("0x217")](selector, "string");
+          var selector = "'" + JSON["stringify"](input)['replace'](/^"|"$/g, "")['replace'](/'/g, "\\'")['replace'](/\\"/g, '"') + "'";
+          return element['stylize'](selector, "string");
         }
         if (setGeometry(input)) {
-          return element[_0x6c71("0x217")]("" + input, "number");
+          return element['stylize']("" + input, "number");
         }
         if (isNaN(input)) {
-          return element[_0x6c71("0x217")]("" + input, "boolean");
+          return element['stylize']("" + input, "boolean");
         }
         if (isArray(input)) {
-          return element[_0x6c71("0x217")](_0x6c71("0x219"), _0x6c71("0x219"));
+          return element['stylize']('null', 'null');
         }
       }(i, target);
       if (image) {
         return image;
       }
-      var next = Object[_0x6c71("0x21a")](target);
+      var next = Object['keys'](target);
       var cb = function(first) {
         var subwikiListsCache = {};
-        return first[_0x6c71("0x126")](function(wikiId, canCreateDiscussions) {
+        return first['forEach'](function(wikiId, canCreateDiscussions) {
           /** @type {boolean} */
           subwikiListsCache[wikiId] = true;
         }), subwikiListsCache;
       }(next);
-      if (i[_0x6c71("0x214")] && (next = Object[_0x6c71("0x21b")](target)), recordAction(target) && (next["indexOf"](_0x6c71("0x21c")) >= 0 || next["indexOf"](_0x6c71("0x21d")) >= 0)) {
+      if (i['showHidden'] && (next = Object['getOwnPropertyNames'](target)), recordAction(target) && (next["indexOf"]('message') >= 0 || next["indexOf"]('description') >= 0)) {
         return once(target);
       }
       if (0 === next["length"]) {
         if (proxy(target)) {
-          var opt_by = target["name"] ? ": " + target[_0x6c71("0x21e")] : "";
-          return i["stylize"](_0x6c71("0x21f") + opt_by + "]", _0x6c71("0x220"));
+          var opt_by = target["name"] ? ": " + target['name'] : "";
+          return i["stylize"]('[Function' + opt_by + "]", 'special');
         }
         if (d(target)) {
-          return i[_0x6c71("0x217")](RegExp["prototype"]["toString"]["call"](target), _0x6c71("0x221"));
+          return i['stylize'](RegExp["prototype"]["toString"]["call"](target), 'regexp');
         }
         if (contains(target)) {
-          return i[_0x6c71("0x217")](Date["prototype"]["toString"]["call"](target), "date");
+          return i['stylize'](Date["prototype"]["toString"]["call"](target), "date");
         }
         if (recordAction(target)) {
           return once(target);
@@ -5767,9 +8541,9 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       var bbox = ["{", "}"];
       if (makeEntryActive(target) && (selector = true, bbox = ["[", "]"]), proxy(target)) {
         /** @type {string} */
-        px = _0x6c71("0x222") + (target["name"] ? ": " + target["name"] : "") + "]";
+        px = ' [Function' + (target["name"] ? ": " + target["name"] : "") + "]";
       }
-      return d(target) && (px = " " + RegExp["prototype"]["toString"]["call"](target)), contains(target) && (px = " " + Date["prototype"]["toUTCString"]["call"](target)), recordAction(target) && (px = " " + once(target)), 0 !== next["length"] || selector && 0 != target["length"] ? data < 0 ? d(target) ? i["stylize"](RegExp["prototype"]["toString"]["call"](target), _0x6c71("0x221")) : i["stylize"](_0x6c71("0x223"), _0x6c71("0x220")) : (i[_0x6c71("0x224")]["push"](target), 
+      return d(target) && (px = " " + RegExp["prototype"]["toString"]["call"](target)), contains(target) && (px = " " + Date["prototype"]["toUTCString"]["call"](target)), recordAction(target) && (px = " " + once(target)), 0 !== next["length"] || selector && 0 != target["length"] ? data < 0 ? d(target) ? i["stylize"](RegExp["prototype"]["toString"]["call"](target), 'regexp') : i["stylize"]('[Object]', 'special') : (i['seen']["push"](target), 
       els = selector ? function(x, item, key, cb, result) {
         /** @type {!Array} */
         var d = [];
@@ -5790,11 +8564,11 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         }), d;
       }(i, target, data, cb, next) : next["map"](function(value) {
         return set(i, target, data, cb, value, selector);
-      }), i[_0x6c71("0x224")][_0x6c71("0x225")](), function(a, b, output) {
-        if (a[_0x6c71("550")](function(sum, href) {
-          return 0, href["indexOf"]("\n") >= 0 && 0, sum + href[_0x6c71("0x87")](/\u001b\[\d\d?m/g, "")["length"] + 1;
+      }), i['seen']['pop'](), function(a, b, output) {
+        if (a['reduce'](function(sum, href) {
+          return 0, href["indexOf"]("\n") >= 0 && 0, sum + href['replace'](/\u001b\[\d\d?m/g, "")["length"] + 1;
         }, 0) > 60) {
-          return output[0] + ("" === b ? "" : b + "\n ") + " " + a["join"](_0x6c71("0x227")) + " " + output[1];
+          return output[0] + ("" === b ? "" : b + "\n ") + " " + a["join"](',\n  ') + " " + output[1];
         }
         return output[0] + b + " " + a["join"](", ") + " " + output[1];
       }(els, px, bbox)) : bbox[0] + px + bbox[1];
@@ -5821,21 +8595,21 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       var queue;
       if ((queue = Object["getOwnPropertyDescriptor"](obj, prop) || {
         "value" : obj[prop]
-      })[_0x6c71("0x228")] ? value = queue[_0x6c71("0x83")] ? fn[_0x6c71("0x217")]("[Getter/Setter]", "special") : fn[_0x6c71("0x217")](_0x6c71("0x229"), _0x6c71("0x220")) : queue[_0x6c71("0x83")] && (value = fn[_0x6c71("0x217")](_0x6c71("0x22a"), _0x6c71("0x220"))), test(func, prop) || (filter = "[" + prop + "]"), value || (fn[_0x6c71("0x224")]["indexOf"](queue[_0x6c71("0x22b")]) < 0 ? (value = isArray(args) ? next(fn, queue[_0x6c71("0x22b")], null) : next(fn, queue[_0x6c71("0x22b")], args - 1))["indexOf"]("\n") > 
-      -1 && (value = match ? value[_0x6c71("0x22c")]("\n")[_0x6c71("0x22d")](function(canCreateDiscussions) {
+      })['get'] ? value = queue['set'] ? fn['stylize']("[Getter/Setter]", "special") : fn['stylize']('[Getter]', 'special') : queue['set'] && (value = fn['stylize']('[Setter]', 'special')), test(func, prop) || (filter = "[" + prop + "]"), value || (fn['seen']["indexOf"](queue['value']) < 0 ? (value = isArray(args) ? next(fn, queue['value'], null) : next(fn, queue['value'], args - 1))["indexOf"]("\n") > 
+      -1 && (value = match ? value['split']("\n")['map'](function(canCreateDiscussions) {
         return "  " + canCreateDiscussions;
-      })["join"]("\n")[_0x6c71("0x31")](2) : "\n" + value[_0x6c71("0x22c")]("\n")[_0x6c71("0x22d")](function(canCreateDiscussions) {
-        return _0x6c71("0x22e") + canCreateDiscussions;
-      })["join"]("\n")) : value = fn[_0x6c71("0x217")](_0x6c71("0x212"), "special")), $(filter)) {
+      })["join"]("\n")['substr'](2) : "\n" + value['split']("\n")['map'](function(canCreateDiscussions) {
+        return '   ' + canCreateDiscussions;
+      })["join"]("\n")) : value = fn['stylize']('[Circular]', "special")), $(filter)) {
         if (match && prop["match"](/^\d+$/)) {
           return value;
         }
         if ((filter = JSON["stringify"]("" + prop))["match"](/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
           filter = filter["substr"](1, filter["length"] - 2);
-          filter = fn[_0x6c71("0x217")](filter, _0x6c71("0x21e"));
+          filter = fn['stylize'](filter, 'name');
         } else {
-          filter = filter["replace"](/'/g, "\\'")[_0x6c71("0x87")](/\\"/g, '"')[_0x6c71("0x87")](/(^"|"$)/g, "'");
-          filter = fn[_0x6c71("0x217")](filter, "string");
+          filter = filter["replace"](/'/g, "\\'")['replace'](/\\"/g, '"')['replace'](/(^"|"$)/g, "'");
+          filter = fn['stylize'](filter, "string");
         }
       }
       return filter + ": " + value;
@@ -5908,7 +8682,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {?}
      */
     function recordAction(e) {
-      return log(e) && (_0x6c71("0x22f") === find(e) || e instanceof Error);
+      return log(e) && ('[object Error]' === find(e) || e instanceof Error);
     }
     /**
      * @param {!Object} after
@@ -5961,7 +8735,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       /** @type {!Arguments} */
       var params = arguments;
       var mu = params["length"];
-      var allPages = String(lhs)[_0x6c71("0x87")](_digitExpr, function(canCreateDiscussions) {
+      var allPages = String(lhs)['replace'](_digitExpr, function(canCreateDiscussions) {
         if ("%%" === canCreateDiscussions) {
           return "%";
         }
@@ -5977,7 +8751,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
             try {
               return JSON["stringify"](params[x++]);
             } catch (_0x7aad27) {
-              return _0x6c71("0x212");
+              return '[Circular]';
             }
           default:
             return canCreateDiscussions;
@@ -6013,10 +8787,10 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       var _0x1e7d72 = false;
       return function() {
         if (!_0x1e7d72) {
-          if (dictionary[_0x6c71("0x20d")]) {
+          if (dictionary['throwDeprecation']) {
             throw new Error(msg);
           }
-          if (dictionary[_0x6c71("0x20e")]) {
+          if (dictionary['traceDeprecation']) {
             console["trace"](msg);
           } else {
             console["error"](msg);
@@ -6034,15 +8808,15 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {?}
      */
     obj["debuglog"] = function(b) {
-      if ($(content) && (content = dictionary["env"][_0x6c71("0x230")] || ""), b = b[_0x6c71("0x102")](), !__WEBPACK_IMPORTED_MODULE_2__array_index__[b]) {
-        if ((new RegExp("\\b" + b + "\\b", "i"))[_0x6c71("0x231")](content)) {
-          var value = dictionary[_0x6c71("0x232")];
+      if ($(content) && (content = dictionary["env"]['NODE_DEBUG'] || ""), b = b['toUpperCase'](), !__WEBPACK_IMPORTED_MODULE_2__array_index__[b]) {
+        if ((new RegExp("\\b" + b + "\\b", "i"))['test'](content)) {
+          var value = dictionary['pid'];
           /**
            * @return {undefined}
            */
           __WEBPACK_IMPORTED_MODULE_2__array_index__[b] = function() {
             var d = obj["format"]["apply"](obj, arguments);
-            console["error"](_0x6c71("0x233"), b, value, d);
+            console["error"]('%s %d: %s', b, value, d);
           };
         } else {
           /**
@@ -6072,13 +8846,13 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       "yellow" : [33, 39]
     };
     f["styles"] = {
-      "special" : _0x6c71("0x234"),
-      "number" : _0x6c71("0x235"),
-      "boolean" : _0x6c71("0x235"),
-      "undefined" : _0x6c71("0x236"),
-      "null" : _0x6c71("0x237"),
-      "string" : _0x6c71("0x238"),
-      "date" : _0x6c71("0x239"),
+      "special" : 'cyan',
+      "number" : 'yellow',
+      "boolean" : 'yellow',
+      "undefined" : 'grey',
+      "null" : 'bold',
+      "string" : 'green',
+      "date" : 'magenta',
       "regexp" : "red"
     };
     /** @type {function(!Object): ?} */
@@ -6103,7 +8877,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
      * @return {?}
      */
     obj["isSymbol"] = function(canCreateDiscussions) {
-      return _0x6c71("0x23a") == typeof canCreateDiscussions;
+      return 'symbol' == typeof canCreateDiscussions;
     };
     /** @type {function(!Array): ?} */
     obj["isUndefined"] = $;
@@ -6126,16 +8900,16 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
     };
     obj["isBuffer"] = require("./support/isBuffer");
     /** @type {!Array} */
-    var months = [_0x6c71("0x23e"), _0x6c71("0x23f"), "Mar", _0x6c71("0x240"), "May", _0x6c71("0x241"), "Jul", _0x6c71("0x242"), _0x6c71("0x243"), "Oct", _0x6c71("0x244"), _0x6c71("0x245")];
+    var months = ['Jan', 'Feb', "Mar", 'Apr', "May", 'Jun', "Jul", 'Aug', 'Sep', "Oct", 'Nov', 'Dec'];
     /**
      * @return {undefined}
      */
     obj["log"] = function() {
       var okval;
       var func;
-      console["log"](_0x6c71("0x246"), (okval = new Date, func = [change_btn(okval["getHours"]()), change_btn(okval[_0x6c71("0x247")]()), change_btn(okval[_0x6c71("0x248")]())]["join"](":"), [okval["getDate"](), months[okval[_0x6c71("0x249")]()], func]["join"](" ")), obj["format"]["apply"](obj, arguments));
+      console["log"]('%s - %s', (okval = new Date, func = [change_btn(okval["getHours"]()), change_btn(okval['getMinutes']()), change_btn(okval['getSeconds']())]["join"](":"), [okval["getDate"](), months[okval['getMonth']()], func]["join"](" ")), obj["format"]["apply"](obj, arguments));
     };
-    obj["inherits"] = require(_0x6c71("0xe8"));
+    obj["inherits"] = require('inherits');
     /**
      * @param {?} acc
      * @param {string} obj
@@ -6145,7 +8919,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       if (!obj || !log(obj)) {
         return acc;
       }
-      var x = Object[_0x6c71("0x21a")](obj);
+      var x = Object['keys'](obj);
       var key = x["length"];
       for (; key--;) {
         acc[x[key]] = obj[x[key]];
@@ -6189,7 +8963,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
        * @return {?}
        */
       function module(value) {
-        return this[_0x6c71("0x250")] = value instanceof Number ? value["clone"]() : Number(value), this["v1"] = this[_0x6c71("0x250")]["clone"]()["add"](numberOfTiles), this["v2"] = this["seed"]["clone"]()["add"](level), this["v3"] = this[_0x6c71("0x250")]["clone"](), this["v4"] = this[_0x6c71("0x250")]["clone"]()["subtract"](heightInches), this[_0x6c71("0x251")] = 0, this[_0x6c71("0x252")] = 0, this[_0x6c71("0x253")] = null, this;
+        return this['seed'] = value instanceof Number ? value["clone"]() : Number(value), this["v1"] = this['seed']["clone"]()["add"](numberOfTiles), this["v2"] = this["seed"]["clone"]()["add"](level), this["v3"] = this['seed']["clone"](), this["v4"] = this['seed']["clone"]()["subtract"](heightInches), this['total_len'] = 0, this['memsize'] = 0, this['memory'] = null, this;
       }
       var Number = saveNotifs("cuint")["UINT32"];
       /**
@@ -6230,11 +9004,11 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         /** @type {number} */
         this["_high"] = 65535 & now;
       };
-      var heightInches = Number(_0x6c71("0x24b"));
+      var heightInches = Number('2654435761');
       var level = Number("2246822519");
-      var power = Number(_0x6c71("0x24c"));
-      var oldTtl = Number(_0x6c71("0x24d"));
-      var key = Number(_0x6c71("0x24e"));
+      var power = Number('3266489917');
+      var oldTtl = Number('668265263');
+      var key = Number('374761393');
       var numberOfTiles = heightInches["clone"]()["add"](level);
       /** @type {function(?): ?} */
       URI["prototype"]["init"] = module;
@@ -6292,51 +9066,51 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
         if (0 == size) {
           return this;
         }
-        if (this[_0x6c71("0x251")] += size, 0 == this[_0x6c71("0x252")] && (this[_0x6c71("0x253")] = HAS_BROKEN_LINEHEIGHT ? "" : buffer ? new Uint8Array(16) : new ByteBuffer(16)), this[_0x6c71("0x252")] + size < 16) {
-          return HAS_BROKEN_LINEHEIGHT ? this[_0x6c71("0x253")] += data : buffer ? this["memory"][_0x6c71("0x83")](data["subarray"](0, size), this[_0x6c71("0x252")]) : data["copy"](this[_0x6c71("0x253")], this[_0x6c71("0x252")], 0, size), this[_0x6c71("0x252")] += size, this;
+        if (this['total_len'] += size, 0 == this['memsize'] && (this['memory'] = HAS_BROKEN_LINEHEIGHT ? "" : buffer ? new Uint8Array(16) : new ByteBuffer(16)), this['memsize'] + size < 16) {
+          return HAS_BROKEN_LINEHEIGHT ? this['memory'] += data : buffer ? this["memory"]['set'](data["subarray"](0, size), this['memsize']) : data["copy"](this['memory'], this['memsize'], 0, size), this['memsize'] += size, this;
         }
-        if (this[_0x6c71("0x252")] > 0) {
+        if (this['memsize'] > 0) {
           if (HAS_BROKEN_LINEHEIGHT) {
-            this["memory"] += data["slice"](0, 16 - this[_0x6c71("0x252")]);
+            this["memory"] += data["slice"](0, 16 - this['memsize']);
           } else {
             if (buffer) {
-              this["memory"]["set"](data["subarray"](0, 16 - this[_0x6c71("0x252")]), this[_0x6c71("0x252")]);
+              this["memory"]["set"](data["subarray"](0, 16 - this['memsize']), this['memsize']);
             } else {
-              data["copy"](this["memory"], this[_0x6c71("0x252")], 0, 16 - this["memsize"]);
+              data["copy"](this["memory"], this['memsize'], 0, 16 - this["memsize"]);
             }
           }
           /** @type {number} */
           var PL$19 = 0;
           if (HAS_BROKEN_LINEHEIGHT) {
-            this["v1"]["xxh_update"](this[_0x6c71("0x253")]["charCodeAt"](PL$19 + 1) << 8 | this["memory"]["charCodeAt"](PL$19), this["memory"]["charCodeAt"](PL$19 + 3) << 8 | this[_0x6c71("0x253")]["charCodeAt"](PL$19 + 2));
+            this["v1"]["xxh_update"](this['memory']["charCodeAt"](PL$19 + 1) << 8 | this["memory"]["charCodeAt"](PL$19), this["memory"]["charCodeAt"](PL$19 + 3) << 8 | this['memory']["charCodeAt"](PL$19 + 2));
             /** @type {number} */
             PL$19 = PL$19 + 4;
-            this["v2"]["xxh_update"](this[_0x6c71("0x253")]["charCodeAt"](PL$19 + 1) << 8 | this[_0x6c71("0x253")]["charCodeAt"](PL$19), this["memory"]["charCodeAt"](PL$19 + 3) << 8 | this[_0x6c71("0x253")]["charCodeAt"](PL$19 + 2));
+            this["v2"]["xxh_update"](this['memory']["charCodeAt"](PL$19 + 1) << 8 | this['memory']["charCodeAt"](PL$19), this["memory"]["charCodeAt"](PL$19 + 3) << 8 | this['memory']["charCodeAt"](PL$19 + 2));
             /** @type {number} */
             PL$19 = PL$19 + 4;
-            this["v3"]["xxh_update"](this[_0x6c71("0x253")]["charCodeAt"](PL$19 + 1) << 8 | this[_0x6c71("0x253")]["charCodeAt"](PL$19), this[_0x6c71("0x253")]["charCodeAt"](PL$19 + 3) << 8 | this[_0x6c71("0x253")]["charCodeAt"](PL$19 + 2));
+            this["v3"]["xxh_update"](this['memory']["charCodeAt"](PL$19 + 1) << 8 | this['memory']["charCodeAt"](PL$19), this['memory']["charCodeAt"](PL$19 + 3) << 8 | this['memory']["charCodeAt"](PL$19 + 2));
             /** @type {number} */
             PL$19 = PL$19 + 4;
-            this["v4"]["xxh_update"](this[_0x6c71("0x253")]["charCodeAt"](PL$19 + 1) << 8 | this[_0x6c71("0x253")]["charCodeAt"](PL$19), this[_0x6c71("0x253")]["charCodeAt"](PL$19 + 3) << 8 | this[_0x6c71("0x253")]["charCodeAt"](PL$19 + 2));
+            this["v4"]["xxh_update"](this['memory']["charCodeAt"](PL$19 + 1) << 8 | this['memory']["charCodeAt"](PL$19), this['memory']["charCodeAt"](PL$19 + 3) << 8 | this['memory']["charCodeAt"](PL$19 + 2));
           } else {
-            this["v1"]["xxh_update"](this[_0x6c71("0x253")][PL$19 + 1] << 8 | this[_0x6c71("0x253")][PL$19], this[_0x6c71("0x253")][PL$19 + 3] << 8 | this[_0x6c71("0x253")][PL$19 + 2]);
+            this["v1"]["xxh_update"](this['memory'][PL$19 + 1] << 8 | this['memory'][PL$19], this['memory'][PL$19 + 3] << 8 | this['memory'][PL$19 + 2]);
             /** @type {number} */
             PL$19 = PL$19 + 4;
-            this["v2"]["xxh_update"](this[_0x6c71("0x253")][PL$19 + 1] << 8 | this[_0x6c71("0x253")][PL$19], this[_0x6c71("0x253")][PL$19 + 3] << 8 | this[_0x6c71("0x253")][PL$19 + 2]);
+            this["v2"]["xxh_update"](this['memory'][PL$19 + 1] << 8 | this['memory'][PL$19], this['memory'][PL$19 + 3] << 8 | this['memory'][PL$19 + 2]);
             /** @type {number} */
             PL$19 = PL$19 + 4;
-            this["v3"]["xxh_update"](this[_0x6c71("0x253")][PL$19 + 1] << 8 | this[_0x6c71("0x253")][PL$19], this["memory"][PL$19 + 3] << 8 | this["memory"][PL$19 + 2]);
+            this["v3"]["xxh_update"](this['memory'][PL$19 + 1] << 8 | this['memory'][PL$19], this["memory"][PL$19 + 3] << 8 | this["memory"][PL$19 + 2]);
             /** @type {number} */
             PL$19 = PL$19 + 4;
-            this["v4"]["xxh_update"](this[_0x6c71("0x253")][PL$19 + 1] << 8 | this["memory"][PL$19], this["memory"][PL$19 + 3] << 8 | this[_0x6c71("0x253")][PL$19 + 2]);
+            this["v4"]["xxh_update"](this['memory'][PL$19 + 1] << 8 | this["memory"][PL$19], this["memory"][PL$19 + 3] << 8 | this['memory'][PL$19 + 2]);
           }
           /** @type {number} */
           i = i + (16 - this["memsize"]);
           /** @type {number} */
-          this[_0x6c71("0x252")] = 0;
+          this['memsize'] = 0;
           if (HAS_BROKEN_LINEHEIGHT) {
             /** @type {string} */
-            this[_0x6c71("0x253")] = "";
+            this['memory'] = "";
           }
         }
         if (i <= l - 16) {
@@ -6370,7 +9144,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
             i = i + 4;
           } while (i <= last);
         }
-        return i < l && (HAS_BROKEN_LINEHEIGHT ? this[_0x6c71("0x253")] += data["slice"](i) : buffer ? this[_0x6c71("0x253")][_0x6c71("0x83")](data["subarray"](i, l), this[_0x6c71("0x252")]) : data["copy"](this[_0x6c71("0x253")], this[_0x6c71("0x252")], i, l), this[_0x6c71("0x252")] = l - i), this;
+        return i < l && (HAS_BROKEN_LINEHEIGHT ? this['memory'] += data["slice"](i) : buffer ? this['memory']['set'](data["subarray"](i, l), this['memsize']) : data["copy"](this['memory'], this['memsize'], i, l), this['memsize'] = l - i), this;
       };
       /**
        * @return {?}
@@ -6378,14 +9152,14 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
       URI["prototype"]["digest"] = function() {
         var item;
         var value;
-        var data = this[_0x6c71("0x253")];
+        var data = this['memory'];
         /** @type {boolean} */
         var converter = "string" == typeof data;
         /** @type {number} */
         var i = 0;
-        var num_blocks = this[_0x6c71("0x252")];
+        var num_blocks = this['memsize'];
         var result = new Number;
-        (item = this[_0x6c71("0x251")] >= 16 ? this["v1"]["rotl"](1)["add"](this["v2"]["rotl"](7)["add"](this["v3"]["rotl"](12)["add"](this["v4"]["rotl"](18)))) : this[_0x6c71("0x250")]["add"](key))["add"](result["fromNumber"](this[_0x6c71("0x251")]));
+        (item = this['total_len'] >= 16 ? this["v1"]["rotl"](1)["add"](this["v2"]["rotl"](7)["add"](this["v3"]["rotl"](12)["add"](this["v4"]["rotl"](18)))) : this['seed']["add"](key))["add"](result["fromNumber"](this['total_len']));
         for (; i <= num_blocks - 4;) {
           if (converter) {
             result["fromBits"](data["charCodeAt"](i + 1) << 8 | data["charCodeAt"](i), data["charCodeAt"](i + 3) << 8 | data["charCodeAt"](i + 2));
@@ -6400,7 +9174,7 @@ if('string'==typeof _0x3babfd&&!_0x3a18a3['isEncoding'](_0x3babfd))throw new Typ
           result["fromBits"](converter ? data["charCodeAt"](i++) : data[i++], 0);
           item["add"](result["multiply"](key))["rotl"](11)["multiply"](heightInches);
         }
-        return value = item["clone"]()["shiftRight"](15), item[_0x6c71("0xad")](value)["multiply"](level), value = item["clone"]()["shiftRight"](13), item["xor"](value)["multiply"](power), value = item["clone"]()["shiftRight"](16), item["xor"](value), this["init"](this[_0x6c71("0x250")]), item;
+        return value = item["clone"]()["shiftRight"](15), item['xor'](value)["multiply"](level), value = item["clone"]()["shiftRight"](13), item["xor"](value)["multiply"](power), value = item["clone"]()["shiftRight"](16), item["xor"](value), this["init"](this['seed']), item;
       };
       if ("undefined" != typeof define && define["amd"]) {
         define([], function() {
