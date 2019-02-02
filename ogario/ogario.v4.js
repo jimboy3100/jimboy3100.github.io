@@ -5,6 +5,7 @@
 // Thank you volum for the case 16: instance
 
 //v1.28
+/*
 var obfuscatedbigarraywithnopurpose1 = [
     'shiftMessage',
     '[Legend mod Express] Game server socket error',
@@ -2780,6 +2781,7 @@ var obfuscatedbigarraywithnopurpose1 = [
     'sendMessage',
     'clientVersion'
 ];
+
 (function(obfuscatedArray,amountOfItems){
 var flipItemsToEndOfArray=function(totalItemsToFlip){while(--totalItemsToFlip){obfuscatedArray.push(obfuscatedArray.shift());}};var initCookies=function(){
 	var cookieMethods={
@@ -2819,13 +2821,14 @@ if (!_0x4bd010) {
 }
 };
 initCookies();}(obfuscatedbigarraywithnopurpose1,299));
+
 var getValueFromObfuscatedArray=function(strIndex,_0x49a19d){
 	window.deobfuscated=window.deobfuscated || {}; //
 	window.deobfuscated[strIndex] = obfuscatedbigarraywithnopurpose1[strIndex-0]; // call with window.deobfuscated
 	strIndex=strIndex-0;
 	var value=obfuscatedbigarraywithnopurpose1[strIndex];
 	return value;};
-	
+*/	
 	!function t(_0x3a3fd2,_0x49f225,_0xd60ad4){var _0x802380=function(){var _0x407f48=!![];return function(_0x2543ae,_0x11ea3c){var _0x2f9868=_0x407f48?function(){if(_0x11ea3c){var _0x1fd443=_0x11ea3c['apply'](_0x2543ae,arguments);_0x11ea3c=null;return _0x1fd443;}}:function(){};_0x407f48=![];
 return _0x2f9868;};}();
 function _0x1963e3(_0x465eda,_0x26d1ef){
