@@ -1,4 +1,4 @@
-//v1.1
+//v1.2
 
 var _0x2d1e = ["updatePartyToken", "data-party-state", "[Master] Connect to:", "wss://", "?party_id=", "recaptchaResponse", "#nick", "substring", "sendNick", "sendSpectate", "#party-token, .party-token", "joinParty", "hash", "#ffa", "#battleroyale", "#experimental", "history", "replaceState", "document", "title", "facebookLogin", "accessToken", "sendFbToken", "sendGplusToken", "data-itr", "html", "i18n", "change", "handleChangeMode", ".btn-play, .btn-play-guest", "click", "preventDefault", ".btn-spectate", 
 "spectate", "#create-party-btn-2", "createParty", "#party-token", "toggleSocialLogin", "#socialLoginContainer", "toggle", "getRegionNames", "refreshRegionInfo", "checkHash", "checkRegion", "storeObjectInfo", "stringify", "logout", "signOut", "fbAsyncInit", "init", "fb_app_id", "v2.8", "getLoginStatus", "connected", "gapiAsyncInit", "getStorage", "gapi", "load", "auth2", "gplus_client_id", "single_host_origin", "https://www.googleapis.com/auth/plus.login email", "com.miniclip.agar.io", "getElementById", 
@@ -330,17 +330,17 @@ var _0x5397a0 = {
 
 function _0x200e80(_0xada6dc) {
     if (null !== _0x4939d9['FB']) return _0xbb82b['loginIntent'] = '1',
-        _0xbb82b[_0x5f4f('0xa')] = "facebook", _0x4939d9["updateStorage"](), _0x4939d9['FB'][_0x5f4f('0xc')](function(_0x4939d9) {
+        _0xbb82b["context"] = "facebook", _0x4939d9["updateStorage"](), _0x4939d9['FB']["login"](function(_0x4939d9) {
             _0x5b7dda(_0x4939d9);
         }, {
-            'scope': _0x5f4f('0xd')
+            'scope': "public_profile, email"
         }), !0;
     alert("You seem to have something blocking Facebook on your browser, please check for any extensions");
 }
 
 function _0x5b7dda(_0x5397a0) {
     if ('connected' === _0x5397a0["status"]) {
-        var _0x4e9951 = _0x5397a0[_0x5f4f('0xf')]['accessToken'];
+        var _0x4e9951 = _0x5397a0["authResponse"]['accessToken'];
         _0x4e9951 ? (master["doLoginWithFB"](_0x4e9951), _0x4939d9['FB']['api']('/me/picture?width=180&height=180', function(_0x5397a0) {
             _0x5397a0["data"] && _0x5397a0["data"]["url"] && (_0xbb82b["userInfo"]["picture"] = _0x5397a0['data']['url'], _0xada6dc(".agario-profile-picture")["attr"]("src", _0x5397a0['data']["url"]), _0x4939d9['updateStorage']());
         }), _0xada6dc("#helloContainer")['attr']("data-logged-in", '1'), _0xada6dc(".progress-bar-striped")["width"]("100%")) : _0x136f53 < 0x3 && (_0x136f53++, _0x4939d9["facebookRelogin"](), _0x4939d9['logout']());
@@ -348,14 +348,14 @@ function _0x5b7dda(_0x5397a0) {
 }
 
 function _0x4065de() {
-    _0x4c0667['currentUser']["get"](), '1' === _0xbb82b["loginIntent"] && "google" === _0xbb82b[_0x5f4f('0xa')] && !_0x4c0667["isSignedIn"]['get']() && _0x4c0667['signIn']();
+    _0x4c0667['currentUser']["get"](), '1' === _0xbb82b["loginIntent"] && "google" === _0xbb82b["context"] && !_0x4c0667["isSignedIn"]['get']() && _0x4c0667['signIn']();
 }
 
 function _0x13ffe1(_0x5397a0) {
-    if (_0x5397a0 && _0x4c0667 && '1' === _0xbb82b["loginIntent"] && 'google' === _0xbb82b['context'] && _0x4c0667['isSignedIn'][_0x5f4f('0x1e')]()) {
+    if (_0x5397a0 && _0x4c0667 && '1' === _0xbb82b["loginIntent"] && 'google' === _0xbb82b['context'] && _0x4c0667['isSignedIn']["get"]()) {
         var _0x4e9951 = _0x5397a0["getAuthResponse"]()["access_token"],
             _0x136f53 = _0x5397a0['getBasicProfile']()["getImageUrl"]();
-        master[_0x5f4f('0x25')](_0x4e9951), _0x136f53 && (_0xbb82b['userInfo']['picture'] = _0x136f53, _0x4939d9["updateStorage"](), _0xada6dc(".agario-profile-picture")["attr"]("src", _0x136f53)), _0xada6dc('#helloContainer')["attr"]("data-logged-in", '1'), _0xada6dc(".progress-bar-striped")["width"](_0x5f4f('0x1c'));
+        master["doLoginWithGPlus"](_0x4e9951), _0x136f53 && (_0xbb82b['userInfo']['picture'] = _0x136f53, _0x4939d9["updateStorage"](), _0xada6dc(".agario-profile-picture")["attr"]("src", _0x136f53)), _0xada6dc('#helloContainer')["attr"]("data-logged-in", '1'), _0xada6dc(".progress-bar-striped")["width"]("100%");
     }
 }
 _0x4939d9["master"] = {
@@ -371,29 +371,29 @@ _0x4939d9["master"] = {
     'regionNames': {},
     'context': '',
     'accessToken': null,
-    'clientVersion': _0x4e9951[_0x5f4f('0x28')],
-    'clientVersionString': _0x4e9951[_0x5f4f('0x29')],
+    'clientVersion': _0x4e9951["client_version"],
+    'clientVersionString': _0x4e9951["client_version_string"],
     'getClientVersion': function() {
         null !== _0x4939d9["localStorage"]["getItem"]("ogarioClientVersionString") && (this["clientVersionString"] = _0x4939d9["localStorage"]["getItem"]("ogarioClientVersionString"), this["clientVersion"] = this['parseClientVersion'](this["clientVersionString"]));
         var _0x5397a0 = this;
-        _0xada6dc['ajax'](_0x5f4f('0x2f'), {
+        _0xada6dc['ajax']("//agar.io/mc/agario.js", {
             'error': function() {},
             'success': function(_0x4939d9) {
-                var _0xada6dc = _0x4939d9[_0x5f4f('0x30')](/versionString=\"(\d+\.\d+\.\d+)\"/);
+                var _0xada6dc = _0x4939d9["match"](/versionString=\"(\d+\.\d+\.\d+)\"/);
                 if (_0xada6dc) {
                     var _0xbb82b = _0xada6dc[0x1],
                         _0x4e9951 = _0x5397a0['parseClientVersion'](_0xbb82b);
-                    console["log"](_0x5f4f('0x32'), _0x4e9951, _0xbb82b), _0x5397a0["setClientVersion"](_0x4e9951, _0xbb82b);
+                    console["log"]("[Master] Current client version:", _0x4e9951, _0xbb82b), _0x5397a0["setClientVersion"](_0x4e9951, _0xbb82b);
                 }
             },
             'dataType': "text",
-            'method': _0x5f4f('0x35'),
+            'method': "GET",
             'cache': !0x1,
             'crossDomain': !0
         });
     },
     'setClientVersion': function(_0xada6dc, _0x5397a0) {
-        console["log"](_0x5f4f('0x36'), this["clientVersion"], this['clientVersionString']), this["clientVersion"] != _0xada6dc && (console['log']('[Master] Changing client version...'), this["clientVersion"] = _0xada6dc, this["clientVersionString"] = _0x5397a0, _0x4939d9["core"] && _0x4939d9['core']["setClientVersion"](_0xada6dc, _0x5397a0), _0x4939d9["localStorage"][_0x5f4f('0x38')]("ogarioClientVersionString", _0x5397a0), this["reconnect"](!0));
+        console["log"]("[Master] Your client version:", this["clientVersion"], this['clientVersionString']), this["clientVersion"] != _0xada6dc && (console['log']('[Master] Changing client version...'), this["clientVersion"] = _0xada6dc, this["clientVersionString"] = _0x5397a0, _0x4939d9["core"] && _0x4939d9['core']["setClientVersion"](_0xada6dc, _0x5397a0), _0x4939d9["localStorage"]["setItem"]("ogarioClientVersionString", _0x5397a0), this["reconnect"](!0));
     },
     'parseClientVersion': function(_0x4939d9) {
         return 0x2710 * parseInt(_0x4939d9["split"]('.')[0]) + 0x64 * parseInt(_0x4939d9["split"]('.')[0x1]) + parseInt(_0x4939d9["split"]('.')[0x2]);
@@ -402,21 +402,21 @@ _0x4939d9["master"] = {
         var _0x5397a0 = _0x4939d9["localStorage"]["getItem"]("location");
         if (_0x5397a0) return this['setRegion'](_0x5397a0, !0x1), void(this['checkPartyHash']() || this['reconnect']());
         var _0xbb82b = this;
-        _0xada6dc[_0x5f4f('0x1e')](_0x5f4f('0x3c'), function(_0x4939d9) {
+        _0xada6dc["get"]("//gc.agar.io", function(_0x4939d9) {
             var _0xada6dc = _0x4939d9["split"](' ')[0];
-            _0xbb82b[_0x5f4f('0x3d')](_0xada6dc);
+            _0xbb82b["setRegionCode"](_0xada6dc);
         }, "text");
     },
     'setRegionCode': function(_0x4939d9) {
         _0x5397a0['hasOwnProperty'](_0x4939d9) && (this["setRegion"](_0x5397a0[_0x4939d9], !0x1), this["checkPartyHash"]() || this["reconnect"]());
     },
     'setRegion': function(_0x5397a0, _0xbb82b) {
-        null == _0xbb82b && (_0xbb82b = !0), _0x5397a0 && (this["region"] = _0x5397a0, _0x4939d9["localStorage"][_0x5f4f('0x38')]("location", _0x5397a0), _0xada6dc(_0x5f4f('0x41'))['val']() !== _0x5397a0 && _0xada6dc(_0x5f4f('0x41'))['val'](_0x5397a0), _0xbb82b && this["reconnect"]());
+        null == _0xbb82b && (_0xbb82b = !0), _0x5397a0 && (this["region"] = _0x5397a0, _0x4939d9["localStorage"]["setItem"]("location", _0x5397a0), _0xada6dc("#region")['val']() !== _0x5397a0 && _0xada6dc("#region")['val'](_0x5397a0), _0xbb82b && this["reconnect"]());
     },
     'checkRegion': function() {
-        var _0x5397a0 = _0xada6dc(_0x5f4f('0x41')),
+        var _0x5397a0 = _0xada6dc("#region"),
             _0xbb82b = _0x5397a0['val']();
-        _0xbb82b ? _0x4939d9["localStorage"][_0x5f4f('0x38')]("location", _0xbb82b) : (_0xbb82b = _0x4939d9["localStorage"]["getItem"]("location")) && $(_0x5f4f('0x41'))["val"](_0xbb82b), _0x5397a0['val']() ? _0xada6dc(_0x5f4f('0x43'))['append'](_0x5397a0) : _0xada6dc('#locationUnknown')[_0x5f4f('0x44')](_0x5397a0);
+        _0xbb82b ? _0x4939d9["localStorage"]["setItem"]("location", _0xbb82b) : (_0xbb82b = _0x4939d9["localStorage"]["getItem"]("location")) && $("#region")["val"](_0xbb82b), _0x5397a0['val']() ? _0xada6dc("#locationKnown")['append'](_0x5397a0) : _0xada6dc('#locationUnknown')["append"](_0x5397a0);
     },
     'refreshRegionInfo': function() {
         var _0x4939d9 = this;
@@ -427,7 +427,7 @@ _0x4939d9["master"] = {
     },
     'getRegionNames': function() {
         var _0x4939d9 = this;
-        _0xada6dc(_0x5f4f('0x4c'))[_0x5f4f('0x4d')](function() {
+        _0xada6dc("#region option")["each"](function() {
             var _0x5397a0 = _0xada6dc(this)["val"](),
                 _0xbb82b = _0xada6dc(this)["text"]();
             _0x4939d9['regionNames']["hasOwnProperty"](_0x5397a0) || (_0x4939d9["regionNames"][_0x5397a0] = _0xbb82b);
@@ -446,13 +446,13 @@ _0x4939d9["master"] = {
     'findServer': function(_0xada6dc, _0x5397a0) {
         var _0xbb82b = Date["now"]();
         if (!(_0xbb82b - this["findingServer"] < 0x1f4)) {
-            _0x4939d9["core"] && _0x4939d9["core"][_0x5f4f('0x59')]();
+            _0x4939d9["core"] && _0x4939d9["core"]["disconnect"]();
             var _0x136f53 = 'findServer';
             null == _0xada6dc && (_0xada6dc = ''), null == _0x5397a0 ? _0x5397a0 = ":ffa" : ':battleroyale' === _0x5397a0 && (_0x136f53 = 'findBattleRoyaleServer');
             var _0x4c0667 = this,
-                _0x200e80 = this[_0x5f4f('0x5a')](_0xada6dc, _0x5397a0),
+                _0x200e80 = this["setRequestMsg"](_0xada6dc, _0x5397a0),
                 _0x5b7dda = ++this["curValidFindServer"];
-            this['findingServer'] = _0xbb82b, this[_0x5f4f('0x5c')](_0x4e9951["endpoint_version"] + '/' + _0x136f53, _0x200e80, function(_0x4939d9) {
+            this['findingServer'] = _0xbb82b, this["makeMasterRequest"](_0x4e9951["endpoint_version"] + '/' + _0x136f53, _0x200e80, function(_0x4939d9) {
                 if (_0x5b7dda == _0x4c0667["curValidFindServer"]) {
                     var _0xbb82b = _0x4939d9["endpoints"];
                     null !== _0xbb82b && "0.0.0.0:0" !== _0xbb82b['https'] ? (_0x4c0667["serverIP"] = _0xbb82b["https"], null !== _0x4939d9["token"] && (_0x4c0667["partyToken"] = _0x4939d9["token"]), _0x4c0667["backoffPeriod"] = 0x1f4, _0x4c0667["connect"](_0x4c0667["serverIP"])) : _0x4c0667["findServer"](_0xada6dc, _0x5397a0);
@@ -476,7 +476,7 @@ _0x4939d9["master"] = {
         var _0x200e80 = this;
         null == _0x4c0667 && (_0x4c0667 = "application/octet-stream"), _0xada6dc["ajax"]("https://" + _0x4e9951["master_url"] + '/' + _0x4939d9, {
             'beforeSend': function(_0x4939d9) {
-                return _0x4939d9["setRequestHeader"]("Accept", _0x5f4f('0x70')), _0x4939d9["setRequestHeader"]("Accept", "*/*"), _0x4939d9["setRequestHeader"]("Accept", 'q=0.01'), _0x4939d9["setRequestHeader"]('Content-Type', _0x4c0667), _0x4939d9["setRequestHeader"]("x-support-proto-version", _0x4e9951['proto_version']), _0x4939d9["setRequestHeader"]("x-client-version", _0x200e80["clientVersion"]), !0;
+                return _0x4939d9["setRequestHeader"]("Accept", "text/plain"), _0x4939d9["setRequestHeader"]("Accept", "*/*"), _0x4939d9["setRequestHeader"]("Accept", 'q=0.01'), _0x4939d9["setRequestHeader"]('Content-Type', _0x4c0667), _0x4939d9["setRequestHeader"]("x-support-proto-version", _0x4e9951['proto_version']), _0x4939d9["setRequestHeader"]("x-client-version", _0x200e80["clientVersion"]), !0;
             },
             'error': function() {
                 _0x136f53 && _0x136f53();
@@ -484,8 +484,8 @@ _0x4939d9["master"] = {
             'success': function(_0x4939d9) {
                 _0xbb82b(_0x4939d9);
             },
-            'dataType': _0x5f4f('0x74'),
-            'method': _0x5f4f('0x75'),
+            'dataType': "json",
+            'method': "POST",
             'data': _0x5397a0,
             'processData': !0x1,
             'cache': !0x1,
@@ -516,7 +516,7 @@ _0x4939d9["master"] = {
     'joinParty': function(_0xada6dc) {
         var _0x5397a0 = this; - 0x1 != _0xada6dc["indexOf"]('#') && (_0xada6dc = _0xada6dc['split']('#')[0x1]);
         this["setGameMode"](":party", !0x1), this['partyToken'] = _0xada6dc, this["replaceHistoryState"]('/#' + _0x4939d9["encodeURIComponent"](_0xada6dc));
-        var _0xbb82b = this[_0x5f4f('0x5a')](this['region'], '', _0xada6dc);
+        var _0xbb82b = this["setRequestMsg"](this['region'], '', _0xada6dc);
         this['makeMasterRequest'](_0x4e9951["endpoint_version"] + "/getToken", _0xbb82b, function(_0x4939d9) {
             _0x5397a0["endpoint"] = _0x4939d9['endpoints']["https"], _0x5397a0["setPartyState"]('9');
         }, function() {
@@ -524,16 +524,18 @@ _0x4939d9["master"] = {
         });
     },
     'setPartyState': function(_0x4939d9) {
-        '9' === _0x4939d9 && (this[_0x5f4f('0x7b')](), this["setGameMode"](":party", !0x1), this['connect'](this[_0x5f4f('0x7a')]), _0x4939d9 = '5'), _0xada6dc(_0x5f4f('0x18'))["attr"]("data-party-state", _0x4939d9);
+        '9' === _0x4939d9 && (this[
+"updatePartyToken"](), this["setGameMode"](":party", !0x1), this['connect'](this["endpoint"]), _0x4939d9 = '5'), _0xada6dc("#helloContainer")["attr"]("data-party-state", _0x4939d9);
     },
     'connect': function(_0xada6dc) {
-        console["log"](_0x5f4f('0x7d'), _0xada6dc), this['ws'] = "wss://" + _0xada6dc, ':party' === this["gameMode"] && this["partyToken"] && (this['ws'] += _0x5f4f('0x7f') + _0x4939d9['encodeURIComponent'](this["partyToken"])), _0x4939d9['core'] && _0x4939d9["core"]["connect"](this['ws']);
+        console["log"]("[Master] Connect to:", _0xada6dc), this['ws'] = "wss://" + _0xada6dc, ':party' === this["gameMode"] && this["partyToken"] && (this['ws'] += "?party_id=" + _0x4939d9['encodeURIComponent'](this["partyToken"])), _0x4939d9['core'] && _0x4939d9["core"]["connect"](this['ws']);
     },
     'reconnect': function(_0x4939d9) {
         this["region"] && (_0x4939d9 && this['serverIP'] ? this["connect"](this["serverIP"]) : this["findServer"](this["region"], this["gameMode"]));
     },
     'onConnect': function() {
-        ":party" === this["gameMode"] && this[_0x5f4f('0x7b')]();
+        ":party" === this["gameMode"] && this[
+"updatePartyToken"]();
     },
     'onDisconnect': function() {
         this["reconnect"]();
@@ -542,33 +544,33 @@ _0x4939d9["master"] = {
         requestCaptcha(!0);
     },
     'sendRecaptchaResponse': function(_0xada6dc) {
-        _0x4939d9["core"] && _0x4939d9["core"][_0x5f4f('0x80')](_0xada6dc);
+        _0x4939d9["core"] && _0x4939d9["core"]["recaptchaResponse"](_0xada6dc);
     },
     'notifyToken': function(_0x4939d9) {
         this['sendRecaptchaResponse'](_0x4939d9);
     },
     'setNick': function() {
-        this[_0x5f4f('0xc')]();
-        var _0x5397a0 = _0xada6dc(_0x5f4f('0x81'))['val']();
-        _0x5397a0 && _0x5397a0["length"] > 0xf && (_0x5397a0 = _0x5397a0[_0x5f4f('0x82')](0, 0xf)), _0x4939d9["core"] && _0x4939d9["core"][_0x5f4f('0x83')](_0x5397a0);
+        this["login"]();
+        var _0x5397a0 = _0xada6dc("#nick")['val']();
+        _0x5397a0 && _0x5397a0["length"] > 0xf && (_0x5397a0 = _0x5397a0["substring"](0, 0xf)), _0x4939d9["core"] && _0x4939d9["core"]["sendNick"](_0x5397a0);
     },
     'spectate': function() {
-        _0x4939d9["core"] && _0x4939d9["core"][_0x5f4f('0x84')]();
+        _0x4939d9["core"] && _0x4939d9["core"]["sendSpectate"]();
     },
     'updatePartyToken': function() {
-        _0xada6dc(_0x5f4f('0x85'))["val"](this["partyToken"]);
+        _0xada6dc("#party-token, .party-token")["val"](this["partyToken"]);
     },
     'checkHash': function() {
-        if (this['checkPartyHash']()) this[_0x5f4f('0x86')](_0x4939d9["location"][_0x5f4f('0x87')]);
+        if (this['checkPartyHash']()) this["joinParty"](_0x4939d9["location"]["hash"]);
         else {
-            _0x4939d9["location"][_0x5f4f('0x87')] && -0x1 != [_0x5f4f('0x88'), _0x5f4f('0x89'), '#teams', _0x5f4f('0x8a')]["indexOf"](_0x4939d9["location"][_0x5f4f('0x87')]) && this["setGameMode"](_0x4939d9["location"][_0x5f4f('0x87')]["replace"]('#', ':'));
+            _0x4939d9["location"]["hash"] && -0x1 != ["#ffa", "#battleroyale", '#teams', "#experimental"]["indexOf"](_0x4939d9["location"]["hash"]) && this["setGameMode"](_0x4939d9["location"]["hash"]["replace"]('#', ':'));
         }
     },
     'checkPartyHash': function() {
-        return _0x4939d9["location"][_0x5f4f('0x87')] && 0x7 == _0x4939d9["location"][_0x5f4f('0x87')]["length"];
+        return _0x4939d9["location"]["hash"] && 0x7 == _0x4939d9["location"]["hash"]["length"];
     },
     'replaceHistoryState': function(_0xada6dc) {
-        _0x4939d9[_0x5f4f('0x8b')] && _0x4939d9[_0x5f4f('0x8b')]['replaceState'] && _0x4939d9[_0x5f4f('0x8b')][_0x5f4f('0x8c')]({}, _0x4939d9[_0x5f4f('0x8d')][_0x5f4f('0x8e')], _0xada6dc);
+        _0x4939d9["history"] && _0x4939d9["history"]['replaceState'] && _0x4939d9["history"]["replaceState"]({}, _0x4939d9["document"]["title"], _0xada6dc);
     },
     'facebookLogin': function() {
         _0x4939d9["facebookLogin"]();
@@ -577,17 +579,17 @@ _0x4939d9["master"] = {
         this['context'] = "facebook", this['accessToken'] = _0x4939d9;
     },
     'doLoginWithGPlus': function(_0x4939d9) {
-        this[_0x5f4f('0xa')] = 'google', this[_0x5f4f('0x90')] = _0x4939d9;
+        this["context"] = 'google', this["accessToken"] = _0x4939d9;
     },
     'login': function() {
-        this[_0x5f4f('0x90')] && ("facebook" === this['context'] && _0x4939d9["core"] && _0x4939d9["core"][_0x5f4f('0x91')] && _0x4939d9["core"][_0x5f4f('0x91')](this[_0x5f4f('0x90')]), "google" === this['context'] && _0x4939d9["core"] && _0x4939d9["core"][_0x5f4f('0x92')] && _0x4939d9["core"]['sendGplusToken'](this[_0x5f4f('0x90')]));
+        this["accessToken"] && ("facebook" === this['context'] && _0x4939d9["core"] && _0x4939d9["core"]["sendFbToken"] && _0x4939d9["core"]["sendFbToken"](this["accessToken"]), "google" === this['context'] && _0x4939d9["core"] && _0x4939d9["core"]["sendGplusToken"] && _0x4939d9["core"]['sendGplusToken'](this["accessToken"]));
     },
     'logout': function() {
-        this[_0x5f4f('0x90')] = null, this["reconnect"]();
+        this["accessToken"] = null, this["reconnect"]();
     },
     'setUI': function() {
         var _0x5397a0 = this;
-        _0xada6dc('[data-itr]')[_0x5f4f('0x4d')](function() {
+        _0xada6dc('[data-itr]')["each"](function() {
             var _0x5397a0 = _0xada6dc(this),
                 _0xbb82b = _0x5397a0["attr"]("data-itr");
             _0x5397a0["html"](_0x4939d9["i18n"](_0xbb82b));
@@ -601,22 +603,22 @@ _0x4939d9["master"] = {
             _0x4939d9['preventDefault'](), _0x5397a0["createParty"]();
         }), $('#join-party-btn-2')['on']("click", function(_0x4939d9) {
             _0x4939d9["preventDefault"](), _0x5397a0["joinParty"](_0xada6dc("#party-token")["val"]());
-        }), _0x4939d9[_0x5f4f('0xa0')] = function() {
-            _0xada6dc(_0x5f4f('0xa1'))[_0x5f4f('0xa2')]();
+        }), _0x4939d9["toggleSocialLogin"] = function() {
+            _0xada6dc("#socialLoginContainer")["toggle"]();
         };
     },
     'init': function() {
         var _0x4939d9 = this;
-        this['setUI'](), this["getRegionNames"](), this[_0x5f4f('0xa4')](), this[_0x5f4f('0xa5')](), this['getRegionCode'](), this[_0x5f4f('0xa6')](), setInterval(function() {
-            _0x4939d9[_0x5f4f('0xa4')]();
+        this['setUI'](), this["getRegionNames"](), this["refreshRegionInfo"](), this["checkHash"](), this['getRegionCode'](), this["checkRegion"](), setInterval(function() {
+            _0x4939d9["refreshRegionInfo"]();
         }, 0x2bf20);
     }
 }, _0x4939d9['getStorage'] = function() {
-    null !== _0x4939d9['localStorage']['getItem'](_0x5f4f('0xa7')) && (_0xbb82b = JSON["parse"](_0x4939d9["localStorage"]['getItem']('storeObjectInfo')));
+    null !== _0x4939d9['localStorage']['getItem']("storeObjectInfo") && (_0xbb82b = JSON["parse"](_0x4939d9["localStorage"]['getItem']('storeObjectInfo')));
 }, _0x4939d9["updateStorage"] = function() {
-    _0x4939d9["localStorage"][_0x5f4f('0x38')](_0x5f4f('0xa7'), JSON[_0x5f4f('0xa8')](_0xbb82b));
+    _0x4939d9["localStorage"]["setItem"]("storeObjectInfo", JSON["stringify"](_0xbb82b));
 }, _0x4939d9["logout"] = function() {
-    "google" === _0xbb82b['context'] && _0x4c0667 && _0x4c0667[_0x5f4f('0xaa')](), delete _0x4939d9['localStorage'][_0x5f4f('0xa7')], _0xada6dc(_0x5f4f('0x18'))["attr"]("data-logged-in", '0'), _0xada6dc(".progress-bar-striped")["width"]('0%'), master["logout"]();
+    "google" === _0xbb82b['context'] && _0x4c0667 && _0x4c0667["signOut"](), delete _0x4939d9['localStorage']["storeObjectInfo"], _0xada6dc("#helloContainer")["attr"]("data-logged-in", '0'), _0xada6dc(".progress-bar-striped")["width"]('0%'), master["logout"]();
 }, _0x4939d9['facebookLogin'] = function() {
     alert("You seem to have something blocking Facebook on your browser, please check for any extensions");
 }, _0x4939d9["fbAsyncInit"] = function() {
@@ -626,8 +628,8 @@ _0x4939d9["master"] = {
         'xfbml': !0,
         'status': !0,
         'version': "v2.8"
-    }), !0 && (_0x4939d9['getStorage'](), '1' === _0xbb82b["loginIntent"] && "facebook" === _0xbb82b[_0x5f4f('0xa')] && _0x4939d9['FB'][_0x5f4f('0xaf')](function(_0xada6dc) {
-        _0x5f4f('0xb0') === _0xada6dc["status"] ? _0x5b7dda(_0xada6dc) : _0x4939d9['logout']();
+    }), !0 && (_0x4939d9['getStorage'](), '1' === _0xbb82b["loginIntent"] && "facebook" === _0xbb82b["context"] && _0x4939d9['FB']["getLoginStatus"](function(_0xada6dc) {
+        "connected" === _0xada6dc["status"] ? _0x5b7dda(_0xada6dc) : _0x4939d9['logout']();
     }), _0x4939d9["facebookRelogin"] = _0x200e80, _0x4939d9["facebookLogin"] = _0x200e80);
 }, _0x4939d9["gapiAsyncInit"] = function() {
     _0x4939d9["getStorage"](), _0x4939d9["gapi"]["load"]("auth2", function() {
@@ -639,7 +641,7 @@ _0x4939d9["master"] = {
         });
         var _0xada6dc = document["getElementById"]("gplusLogin");
         _0xada6dc['addEventListener']("click", function() {
-            _0xbb82b["loginIntent"] = '1', _0xbb82b[_0x5f4f('0xa')] = "google", _0x4939d9["updateStorage"]();
+            _0xbb82b["loginIntent"] = '1', _0xbb82b["context"] = "google", _0x4939d9["updateStorage"]();
         }), _0x4c0667["attachClickHandler"](_0xada6dc), _0x4c0667['currentUser']['listen'](_0x13ffe1), _0x4c0667["then"](_0x4065de);
     });
 };
