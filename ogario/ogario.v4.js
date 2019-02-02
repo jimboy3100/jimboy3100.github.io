@@ -20,6 +20,9 @@ var LMGameConfiguration = $.ajax({
 }).responseJSON;
 
 ( function t(ogcustom1, ogcustom2, ogcustom3) {
+	var ogcustom1;
+	var ogcustom2 = {};
+	var ogcustom3 = [47];
     function ogcustom4(ogcustom5, ogcustom6) {
 
 			var ogcustom8 = ogcustom2[ogcustom5] = {'exports': {}}; 
@@ -11545,4 +11548,4 @@ var LMGameConfiguration = $.ajax({
         'buffer': 3,
         'lz4': 18
     }]
-}, {}, [47]);
+});
