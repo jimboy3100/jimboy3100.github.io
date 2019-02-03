@@ -10366,7 +10366,7 @@ ogcustom1=
                                 //console.log('Player '+csssettings+' is using skin : '+ogario1ThemeSettings);
                                 var skin2search = ogario1ThemeSettings.replace('%', '');
                                 var LMAgarGameConfiguration = window.LMGameConfiguration;
-				    if(LMAgarGameConfiguration!=undefined){
+				    if (LMAgarGameConfiguration!=undefined){
                                 var EquippableSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Equippable Skins"];
                                 for (var player = 0; player < EquippableSkins.length; player++) {
                                     //console.log(LMAgarGameConfiguration.gameConfig["Gameplay - Equippable Skins"]);
