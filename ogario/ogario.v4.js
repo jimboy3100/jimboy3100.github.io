@@ -4,7 +4,7 @@
 // Thank you Snez for decoding Feross
 // Thank you volum for the case 16: instance
 
-//v1.32
+//v1.33
 
 //Game Configurations
 //var agarversion="v12/1922/";
