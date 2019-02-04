@@ -4,7 +4,7 @@
 // Thank you Snez for decoding Feross
 // Thank you volum for the case 16: instance
 
-//v1.34
+//v1.35
 
 //Game Configurations
 //var agarversion="v12/1922/";
@@ -7777,7 +7777,7 @@ ogcustom1=
                         'z-index': '1',
                         'opacity': '0',
                         'bottom': `-100px`
-                    }), s(`#noNames, #showMass`)[`remove`](), s(`#og-settings .submenu-panel`)[`append`](`<div id=\"og-options\"></div>`), this['addOptions']([], `animationGroup`), this[`addOptions`]([`autoZoom`], `zoomGroup`), this[`addOptions`]([`quickResp`, `autoResp`], `respGroup`), this[`addOptions`]([`noNames`, `optimizedNames`, `autoHideNames`, `hideMyName`, `hideTeammatesNames`, `namesStroke`], 'namesGroup'), this[`addOptions`]([`showMass`, `optimizedMass`, `autoHideMass`, 'hideMyMass', 'hideEnemiesMass', `shortMass`, `virMassShots`, `massStroke`], 'massGroup'), this['protocolMode'] ? this['addOptions']([`customSkins`], `skinsGroup`) : this[`addOptions`]([`customSkins`, 'vanillaSkins'], 'skinsGroup'), this[`addOptions`](['optimizedFood', `autoHideFood`, 'autoHideFoodOnZoom', `rainbowFood`], `foodGroup`), this[`addOptions`]([`myCustomColor`, `myTransparentSkin`, `transparentSkins`, `transparentCells`, `transparentViruses`], `transparencyGroup`), this[`addOptions`]([`showGrid`, 'showBgSectors', `showMapBorders`], 'gridGroup'), this[`addOptions`]([`disableChat`, `chatSounds`, `chatEmoticons`, 'showChatImages', `showChatVideos`, `showChatBox`], `chatGroup`), this['addOptions'](['showMiniMap', `showMiniMapGrid`, `showMiniMapGuides`, `showMiniMapGhostCells`, 'oneColoredTeammates'], `miniMapGroup`), this[`addOptions`]([`oppColors`, `oppRings`, `virColors`, `splitRange`, 'virusesRange', `cursorTracking`, 'teammatesInd', `showGhostCells`], 'helpersGroup'), this[`addOptions`]([`mouseSplit`, `mouseFeed`, 'mouseInvert'], `mouseGroup`), this[`addOptions`]([`showTop5`, 'showTargeting', `showLbData`, 'centeredLb', `normalLb`, `fpsAtTop`], `hudGroup`), this[`addOptions`](['showStats', `showStatsMass`, `showStatsSTE`, 'showStatsN16', `showStatsFPS`, `showTime`], `statsGroup`), this['protocolMode'] || (this[`addOptions`]([`blockPopups`], `extrasGroup`), s(`#noSkins, #noColors, #skipStats, #showQuest`)[`addClass`](`js-switch-vanilla`), s(`.skinsGroup h5`)['after'](`<label class=\"noSkins\">` + h[`noSkins`] + ' </label>'), s(`#noSkins`)[`appendTo`](s(`.noSkins`)), s(`.transparencyGroup h5`)[`after`](`<label class=\"noColors\">` + h[`noColors`] + ` </label>`), s(`#noColors`)[`appendTo`](s(`.noColors`)), s(`.extrasGroup h5`)[`after`](`<label class=\"skipStats\">` + h[`skipStats`] + ' </label>'), s(`#skipStats`)[`appendTo`](s(`.skipStats`)), s(`.skipStats`)[`after`](`<label class=\"showQuest\">` + h[`showQuest`] + ' </label>'), s(`#showQuest`)['appendTo'](s(`.showQuest`)), s(`#options`)['remove'](), s(`#settingsChoice`)[`appendTo`](s(`.extrasGroup`))[`addClass`](`select-wrapper`)), this[`addSliderBox`](`.animationGroup`, 'animation', 100, 200, 1), this[`addSliderBox`]('.zoomGroup', `zoomSpeedValue`, 0.75, 0.99, 0.01), s(`#og-settings`)[`append`](`<button class=\"btn btn-block btn-success btn-export\">` + h[`exportImport`] + `</button>`), s(`#og-settings`)[`append`](`<div class=\"restore-settings\"><a href=\"#\">` + h[`restoreSettings`] + '</a></div>'), s(`#music`)[`append`](`<div class=\"agario-panel radio-panel\"><h5 class=\"menu-main-color\">Radio (` + h[`thanks`] + `)</h5><audio src=\"http://frshoutcast.comunicazion.eu:8815/;\" controls></audio><span class=\"playlist\"><span class=\"ogicon-file-music\"></span> <a href=\"http://frshoutcast.comunicazion.eu:8815/played.html?sid=1\" target=\"_blank\">` + h[`playlist`] + `</a></span></div>`), s(`#music`)[`append`](`<div class=\"agario-panel sounds-panel\"><h5 class=\"menu-main-color\">` + h[`sounds`] + `</h5></div>`), s(`#music`)[`append`](`<div class=\"agario-panel ogario-yt-panel\"><h5 class=\"menu-main-color\">Team OGARio (tag: Ⓜ)</h5><div class=\"g-ytsubscribe\" data-channelid=\"UCaWiPNJWnhzYDrBQoXokn6w\" data-layout=\"full\" data-theme=\"dark\" data-count=\"default\"></div></div>`), this[`addInputBox`](`.sounds-panel`, `messageSound`, `Sound URL`, `setMessageSound`), this[`addInputBox`]('.sounds-panel', `commandSound`, 'Sound URL', 'setCommandSound'), s(`body`)[`append`]('<div id=\"overlays-hud\" data-gamemode=\":ffa\"><div id=\"stats-hud\" class=\"hud stats-hud-color\"></div> <div id=\"top5-hud\" class=\"hud\"><h5 class=\"hud-main-color\">Team top <span class=\"team-top\">5</span></h5><div class=\"hud-main-color team-top-menu\"><a href=\"#\" data-limit=\"5\" class=\"team-top-limit active\">5</a> | <a href=\"#\" data-limit=\"10\" class=\"team-top-limit\">10</a> | <a href=\"#\" data-limit=\"100\" class=\"team-top-limit\">100</a></div><ol id=\"top5-pos\"></ol><div id=\"top5-total\"><span class=\"hud-main-color ogicon-users\"></span> ' + h[`totalPartyPlayers`] + `: <span id=\"top5-total-players\" class=\"top5-mass-color\">0</span><br><span class=\"hud-main-color ogicon-pacman\"></span> ` + h[`totalPartyMass`] + ': <span id=\"top5-total-mass\" class=\"top5-mass-color\">0</span></div></div> <div id=\"time-hud\" class=\"hud time-hud-color\"></div> <div id=\"pause-hud\" class=\"hud\">' + h[`pause`] + `</div> <div id=\"leaderboard-hud\" class=\"hud-b\"><h4 class=\"hud-main-color\">legendmod.ml</h4><div id=\"leaderboard-data\"></div><div id=\"leaderboard-positions\"></div></div> <div id=\"btl-leaderboard-hud\"><div class=\"hud hud-c\"><span id=\"btl-players-status\">Players ready</span>: <span id=\"btl-players-count\">0</span></div></div> <div id=\"minimap-hud\" class=\"hud-b\"><canvas id=\"minimap-sectors\"></canvas><canvas id=\"minimap\"></canvas></div><div id=\"target-hud\" class=\"hud\"><div id=\"target-player\"><span id=\"target-skin\"><img src=\"https://cdn.ogario.ovh/static/img/blank.png\" alt=\"\"> </span><span id=\"target-nick\"></span> <span id=\"target-status\" class=\"hud-main-color\">[` + h[`targetNotSet`] + `]</span></div><div id=\"target-summary\"></div></div><div id=\"target-panel-hud\" class=\"hud\"><a href=\"#\" id=\"set-targeting\" class=\"ogicon-target\"></a><a href=\"#\" id=\"set-private-minimap\" class=\"ogicon-location2\"></a><a href=\"#\" id=\"cancel-targeting\" class=\"ogicon-cancel-circle\"></a><a href=\"#\" id=\"change-target\" class=\"ogicon-arrow-right\"></a></div> <div id=\"quest-hud\" class=\"hud\"></div> <div id=\"btl-hud\" class=\"hud\"></div></div>`), s(`body`)[`append`](`<ul id=\"messages\"></ul>`), s(`body`)['append'](`<div id=\"message-box\"><div id=\"chat-emoticons\"></div><div id=\"message-menu\"><a href=\"#\" class=\"chat-sound-notifications ogicon-volume-high\"></a><a href=\"#\" class=\"chat-active-users ogicon-user-check\"></a><a href=\"#\" class=\"chat-muted-users ogicon-user-minus\"></a><a href=\"#\" class=\"show-chat-emoticons ogicon-smile\"></a></div><input type=\"text\" id=\"message\" class=\"form-control\" placeholder=\"` + h[`enterChatMsg`] + '...\" maxlength=\"80\"></div>'), s(`body`)[`append`](`<div id=\"chat-box\"></div>`), d) d[`hasOwnProperty`](t) && s(`#chat-emoticons`)[`append`](`<img src=\"https://cdn.ogario.ovh/static/emoticons/` + d[t] + `\" alt=\"` + t + `\" class=\"emoticon\">`);
+                    }), s(`#noNames, #showMass`)[`remove`](), s(`#og-settings .submenu-panel`)[`append`](`<div id=\"og-options\"></div>`), this['addOptions']([], `animationGroup`), this[`addOptions`]([`autoZoom`], `zoomGroup`), this[`addOptions`]([`quickResp`, `autoResp`], `respGroup`), this[`addOptions`]([`noNames`, `optimizedNames`, `autoHideNames`, `hideMyName`, `hideTeammatesNames`, `namesStroke`], 'namesGroup'), this[`addOptions`]([`showMass`, `optimizedMass`, `autoHideMass`, 'hideMyMass', 'hideEnemiesMass', `shortMass`, `virMassShots`, `massStroke`], 'massGroup'), this['protocolMode'] ? this['addOptions']([`customSkins`], `skinsGroup`) : this[`addOptions`]([`customSkins`, 'vanillaSkins'], 'skinsGroup'), this[`addOptions`](['optimizedFood', `autoHideFood`, 'autoHideFoodOnZoom', `rainbowFood`], `foodGroup`), this[`addOptions`]([`myCustomColor`, `myTransparentSkin`, `transparentSkins`, `transparentCells`, `transparentViruses`], `transparencyGroup`), this[`addOptions`]([`showGrid`, 'showBgSectors', `showMapBorders`], 'gridGroup'), this[`addOptions`]([`disableChat`, `chatSounds`, `chatEmoticons`, 'showChatImages', `showChatVideos`, `showChatBox`], `chatGroup`), this['addOptions'](['showMiniMap', `showMiniMapGrid`, `showMiniMapGuides`, `showMiniMapGhostCells`, 'oneColoredTeammates'], `miniMapGroup`), this[`addOptions`]([`oppColors`, `oppRings`, `virColors`, `splitRange`, 'virusesRange', `cursorTracking`, 'teammatesInd', `showGhostCells`], 'helpersGroup'), this[`addOptions`]([`mouseSplit`, `mouseFeed`, 'mouseInvert'], `mouseGroup`), this[`addOptions`]([`showTop5`, 'showTargeting', `showLbData`, 'centeredLb', `normalLb`, `fpsAtTop`], `hudGroup`), this[`addOptions`](['showStats', `showStatsMass`, `showStatsSTE`, 'showStatsN16', `showStatsFPS`, `showTime`], `statsGroup`), this['protocolMode'] || (this[`addOptions`]([`blockPopups`], `extrasGroup`), s(`#noSkins, #noColors, #skipStats, #showQuest`)[`addClass`](`js-switch-vanilla`), s(`.skinsGroup h5`)['after'](`<label class=\"noSkins\">` + h[`noSkins`] + ' </label>'), s(`#noSkins`)[`appendTo`](s(`.noSkins`)), s(`.transparencyGroup h5`)[`after`](`<label class=\"noColors\">` + h[`noColors`] + ` </label>`), s(`#noColors`)[`appendTo`](s(`.noColors`)), s(`.extrasGroup h5`)[`after`](`<label class=\"skipStats\">` + h[`skipStats`] + ' </label>'), s(`#skipStats`)[`appendTo`](s(`.skipStats`)), s(`.skipStats`)[`after`](`<label class=\"showQuest\">` + h[`showQuest`] + ' </label>'), s(`#showQuest`)['appendTo'](s(`.showQuest`)), s(`#options`)['remove'](), s(`#settingsChoice`)[`appendTo`](s(`.extrasGroup`))[`addClass`](`select-wrapper`)), this[`addSliderBox`](`.animationGroup`, 'animation', 100, 200, 1), this[`addSliderBox`]('.zoomGroup', `zoomSpeedValue`, 0.50, 1.99, 0.01), s(`#og-settings`)[`append`](`<button class=\"btn btn-block btn-success btn-export\">` + h[`exportImport`] + `</button>`), s(`#og-settings`)[`append`](`<div class=\"restore-settings\"><a href=\"#\">` + h[`restoreSettings`] + '</a></div>'), s(`#music`)[`append`](`<div class=\"agario-panel radio-panel\"><h5 class=\"menu-main-color\">Radio (` + h[`thanks`] + `)</h5><audio src=\"http://frshoutcast.comunicazion.eu:8815/;\" controls></audio><span class=\"playlist\"><span class=\"ogicon-file-music\"></span> <a href=\"http://frshoutcast.comunicazion.eu:8815/played.html?sid=1\" target=\"_blank\">` + h[`playlist`] + `</a></span></div>`), s(`#music`)[`append`](`<div class=\"agario-panel sounds-panel\"><h5 class=\"menu-main-color\">` + h[`sounds`] + `</h5></div>`), s(`#music`)[`append`](`<div class=\"agario-panel ogario-yt-panel\"><h5 class=\"menu-main-color\">Team OGARio (tag: Ⓜ)</h5><div class=\"g-ytsubscribe\" data-channelid=\"UCaWiPNJWnhzYDrBQoXokn6w\" data-layout=\"full\" data-theme=\"dark\" data-count=\"default\"></div></div>`), this[`addInputBox`](`.sounds-panel`, `messageSound`, `Sound URL`, `setMessageSound`), this[`addInputBox`]('.sounds-panel', `commandSound`, 'Sound URL', 'setCommandSound'), s(`body`)[`append`]('<div id=\"overlays-hud\" data-gamemode=\":ffa\"><div id=\"stats-hud\" class=\"hud stats-hud-color\"></div> <div id=\"top5-hud\" class=\"hud\"><h5 class=\"hud-main-color\">Team top <span class=\"team-top\">5</span></h5><div class=\"hud-main-color team-top-menu\"><a href=\"#\" data-limit=\"5\" class=\"team-top-limit active\">5</a> | <a href=\"#\" data-limit=\"10\" class=\"team-top-limit\">10</a> | <a href=\"#\" data-limit=\"100\" class=\"team-top-limit\">100</a></div><ol id=\"top5-pos\"></ol><div id=\"top5-total\"><span class=\"hud-main-color ogicon-users\"></span> ' + h[`totalPartyPlayers`] + `: <span id=\"top5-total-players\" class=\"top5-mass-color\">0</span><br><span class=\"hud-main-color ogicon-pacman\"></span> ` + h[`totalPartyMass`] + ': <span id=\"top5-total-mass\" class=\"top5-mass-color\">0</span></div></div> <div id=\"time-hud\" class=\"hud time-hud-color\"></div> <div id=\"pause-hud\" class=\"hud\">' + h[`pause`] + `</div> <div id=\"leaderboard-hud\" class=\"hud-b\"><h4 class=\"hud-main-color\">legendmod.ml</h4><div id=\"leaderboard-data\"></div><div id=\"leaderboard-positions\"></div></div> <div id=\"btl-leaderboard-hud\"><div class=\"hud hud-c\"><span id=\"btl-players-status\">Players ready</span>: <span id=\"btl-players-count\">0</span></div></div> <div id=\"minimap-hud\" class=\"hud-b\"><canvas id=\"minimap-sectors\"></canvas><canvas id=\"minimap\"></canvas></div><div id=\"target-hud\" class=\"hud\"><div id=\"target-player\"><span id=\"target-skin\"><img src=\"https://cdn.ogario.ovh/static/img/blank.png\" alt=\"\"> </span><span id=\"target-nick\"></span> <span id=\"target-status\" class=\"hud-main-color\">[` + h[`targetNotSet`] + `]</span></div><div id=\"target-summary\"></div></div><div id=\"target-panel-hud\" class=\"hud\"><a href=\"#\" id=\"set-targeting\" class=\"ogicon-target\"></a><a href=\"#\" id=\"set-private-minimap\" class=\"ogicon-location2\"></a><a href=\"#\" id=\"cancel-targeting\" class=\"ogicon-cancel-circle\"></a><a href=\"#\" id=\"change-target\" class=\"ogicon-arrow-right\"></a></div> <div id=\"quest-hud\" class=\"hud\"></div> <div id=\"btl-hud\" class=\"hud\"></div></div>`), s(`body`)[`append`](`<ul id=\"messages\"></ul>`), s(`body`)['append'](`<div id=\"message-box\"><div id=\"chat-emoticons\"></div><div id=\"message-menu\"><a href=\"#\" class=\"chat-sound-notifications ogicon-volume-high\"></a><a href=\"#\" class=\"chat-active-users ogicon-user-check\"></a><a href=\"#\" class=\"chat-muted-users ogicon-user-minus\"></a><a href=\"#\" class=\"show-chat-emoticons ogicon-smile\"></a></div><input type=\"text\" id=\"message\" class=\"form-control\" placeholder=\"` + h[`enterChatMsg`] + '...\" maxlength=\"80\"></div>'), s(`body`)[`append`](`<div id=\"chat-box\"></div>`), d) d[`hasOwnProperty`](t) && s(`#chat-emoticons`)[`append`](`<img src=\"https://cdn.ogario.ovh/static/emoticons/` + d[t] + `\" alt=\"` + t + `\" class=\"emoticon\">`);
                 s(`body`)[`append`](`<div id=\"exp-imp\"><div id=\"exp-imp-menu\"><button id=\"close-exp-imp\" class=\"btn btn-danger\">` + h[`close`] + `</button></div><div id=\"exp-imp-settings\"></div></div>`), s('#exp-imp-settings')[`append`](`<h1>` + h[`exportSettings`] + `</h1><h2>` + h[`exportInfo`] + `</h2>`), this[`addOption`](`#exp-imp-settings`, `export-ogarioCommands`, h[`commands`], !0), this['addOption'](`#exp-imp-settings`, `export-ogarioHotkeys`, h[`hotkeys`], !0), this['addOption'](`#exp-imp-settings`, `export-ogarioPlayerProfiles`, h['profiles'], !0), this[`addOption`](`#exp-imp-settings`, `export-ogarioSettings`, h['settings'], !0), this[`addOption`](`#exp-imp-settings`, `export-ogarioThemeSettings`, h['theme'], !0), s(`#exp-imp-settings`)[`append`]('<textarea id=\"export-settings\" class=\"form-control\" rows=\"14\" cols=\"100\" spellcheck=\"false\" readonly /><button id=\"export-settings-btn\" class=\"btn btn-block btn-success\">' + h[`exportSettings`] + '</button>'), s(`#exp-imp-settings`)['append']('<h1>' + h[`importSettings`] + `</h1><h2>` + h[`importInfo`] + `</h2>`), this[`addOption`](`#exp-imp-settings`, `import-ogarioCommands`, h[`commands`], !0), this[`addOption`](`#exp-imp-settings`, `import-ogarioHotkeys`, h[`hotkeys`], !0), this[`addOption`](`#exp-imp-settings`, 'import-ogarioPlayerProfiles', h[`profiles`], !0), this[`addOption`](`#exp-imp-settings`, `import-ogarioSettings`, h[`settings`], !0), this[`addOption`](`#exp-imp-settings`, 'import-ogarioThemeSettings', h['theme'], !0), s('#exp-imp-settings')['append']('<textarea id=\"import-settings\" class=\"form-control\" rows=\"14\" cols=\"100\" spellcheck=\"false\" /><button id=\"import-settings-btn\" class=\"btn btn-block btn-success\">' + h[`importSettings`] + `</button>`), y && y[`setThemeMenu`]();
                 for (var e = 0; e < ogario1PlayerProfiles[`length`]; e++) s(`#skins`)[`append`](`<div class=\"skin-box\"><a href=\"#profile-` + e + `\" id=\"profile-` + e + `\" data-profile=\"` + e + `\"></a></div>`), this['setSkinPreview'](ogario1PlayerProfiles[e]['skinURL'], `profile-` + e), e == this[`selectedProfile`] && s(`#profile-` + e)[`addClass`]('selected');
             },
@@ -8806,16 +8806,16 @@ ogcustom1=
                     this['x'] = t, this['y'] = e, this[`isVirus`] = s, this[`isPlayerCell`] = o, this['setMass'](i), this[`setNick`](a);
                 }, this[`removeCell`] = function() {
                     this[`removed`] = !0;
-                    var t = doagarcommand[`cells`]['indexOf'](this); - 1 != t ? (doagarcommand[`cells`][`splice`](t, 1), ogario1Settings[`virusesRange`] && -1 != (t = doagarcommand[`viruses`][`indexOf`](this)) && doagarcommand[`viruses`][`splice`](t, 1)) : -1 != (t = doagarcommand[`food`][`indexOf`](this)) && doagarcommand[`food`]['splice'](t, 1), -1 != (t = doagarcommand[`playerCells`][`indexOf`](this)) && (doagarcommand['removePlayerCell'] = !0, doagarcommand[`playerCells`][`splice`](t, 1), -1 != (t = doagarcommand[`playerCellIDs`][`indexOf`](this['id'])) && doagarcommand[`playerCellIDs`]['splice'](t, 1)), this[`redrawed`] && doagarcommand[`removedCells`][`push`](this), delete doagarcommand[`indexedCells`][this['id']];
+                    var t = M[`cells`]['indexOf'](this); - 1 != t ? (M[`cells`][`splice`](t, 1), ogario1Settings[`virusesRange`] && -1 != (t = M[`viruses`][`indexOf`](this)) && M[`viruses`][`splice`](t, 1)) : -1 != (t = M[`food`][`indexOf`](this)) && M[`food`]['splice'](t, 1), -1 != (t = M[`playerCells`][`indexOf`](this)) && (M['removePlayerCell'] = !0, M[`playerCells`][`splice`](t, 1), -1 != (t = M[`playerCellIDs`][`indexOf`](this['id'])) && M[`playerCellIDs`]['splice'](t, 1)), this[`redrawed`] && M[`removedCells`][`push`](this), delete M[`indexedCells`][this['id']];
                 }, this[`moveCell`] = function() {
-                    var t = (doagarcommand[`time`] - this[`time`]) / ogario1Settings[`animation`];
+                    var t = (M[`time`] - this[`time`]) / ogario1Settings[`animation`];
                     if (t = t < 0 ? 0 : t > 1 ? 1 : t, this['x'] += (this[`targetX`] - this['x']) * t, this['y'] += (this[`targetY`] - this['y']) * t, this[`size`] += (this['targetSize'] - this[`size`]) * t, this[`alpha`] = t, this[`removed`]) {
                         if (1 == t) {
-                            var e = doagarcommand[`removedCells`][`indexOf`](this); - 1 != e && doagarcommand[`removedCells`][`splice`](e, 1);
+                            var e = M[`removedCells`][`indexOf`](this); - 1 != e && M[`removedCells`][`splice`](e, 1);
                         }
-                    } else this[`time`] = doagarcommand[`time`];
+                    } else this[`time`] = M[`time`];
                 }, this[`isInView`] = function() {
-                    return !(this['id'] <= 0) && !(this['x'] + this[`size`] + 40 < doagarcommand[`viewX`] - doagarcommand[`canvasWidth`] / 2 / doagarcommand[`scale`] || this['y'] + this[`size`] + 40 < doagarcommand[`viewY`] - doagarcommand['canvasHeight'] / 2 / doagarcommand['scale'] || this['x'] - this[`size`] - 40 > doagarcommand[`viewX`] + doagarcommand[`canvasWidth`] / 2 / doagarcommand[`scale`] || this['y'] - this['size'] - 40 > doagarcommand['viewY'] + doagarcommand[`canvasHeight`] / 2 / doagarcommand[`scale`]);
+                    return !(this['id'] <= 0) && !(this['x'] + this[`size`] + 40 < M[`viewX`] - M[`canvasWidth`] / 2 / M[`scale`] || this['y'] + this[`size`] + 40 < M[`viewY`] - M['canvasHeight'] / 2 / M['scale'] || this['x'] - this[`size`] - 40 > M[`viewX`] + M[`canvasWidth`] / 2 / M[`scale`] || this['y'] - this['size'] - 40 > M['viewY'] + M[`canvasHeight`] / 2 / M[`scale`]);
                 }, this[`setMass`] = function(t) {
                     return this[`size`] = t, !(t <= 40) && (this['massCanvas'] ? (this[`mass`] = ~~(t * t / 100), this[`redrawMass`] = !0, this[`isVirus`] ? (this[`virMassShots`] && this[`mass`] < 200 && (this[`mass`] = ~~((200 - this[`mass`]) / 14)), this[`massTxt`] = this[`mass`][`toString`](), this.mass > 220 ? (this.virusColor = g.mVirusColor, this.virusStroke = g.mVirusStrokeColor) : (this.virusColor = g.virusColor, this.virusStroke = g.virusStrokeColor), !0) : (this[`massTxt`] = this[`mass`][`toString`](), this['mass'] <= 200 || (this[`shortMass`] && this['mass'] >= 1000 ? (this[`kMass`] = Math[`round`](this[`mass`] / 100) / 10, this['massTxt'] = this[`kMass`] + 'k', !0) : (this[`optimizedMass`] && (this['redrawMass'] = Math[`abs`]((this[`mass`] - this[`lastMass`]) / this[`mass`]) >= 0.02 || this[`rescale`]), !0)))) : (this[`massCanvas`] = new irenderfromagario(), !1));
                 }, this[`setNick`] = function(t) {
@@ -8871,20 +8871,20 @@ ogcustom1=
                     return ptx;
                 },
                 this[`draw`] = function(t, e) {
-                    if (!(doagarcommand[`hideSmallBots`] && this['size'] <= 36)) {
+                    if (!(M[`hideSmallBots`] && this['size'] <= 36)) {
                         t[`save`](), this['redrawed']++, e && this[`moveCell`](), this['removed'] && (t['globalAlpha'] *= 1 - this[`alpha`]);
                         var i = t[`globalAlpha`],
                             s = !1,
                             o = this[`isFood`] ? this[`size`] + g[`foodSize`] : this[`size`];
                         if (t[`beginPath`](), t[`arc`](this['x'], this['y'], o, 0, this[`pi2`], !1), t[`closePath`](), this[`isFood`]) return t[`fillStyle`] = this[`color`], t[`fill`](), void t[`restore`]();
                         if (this[`isVirus`]) {
-                            return ogario1Settings[`transparentViruses`] && (t[`globalAlpha`] *= g[`virusAlpha`], s = !0), ogario1Settings['virColors'] && doagarcommand[`play`] ? (t['fillStyle'] = ogarminimapdrawer[`setVirusColor`](o), t['strokeStyle'] = ogarminimapdrawer[`setVirusStrokeColor`](o)) : (t['fillStyle'] = this.virusColor, t[`strokeStyle`] = this.virusStroke), t[`fill`](), s && (t['globalAlpha'] = i, s = !1), t['lineWidth'] = g[`virusStrokeSize`], t[`stroke`](this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), ogario1Settings['showMass'] && (this[`setDrawing`](), this[`setDrawingScale`](), this['setMass'](this['size']), this['drawMass'](t)), void t[`restore`]();
+                            return ogario1Settings[`transparentViruses`] && (t[`globalAlpha`] *= g[`virusAlpha`], s = !0), ogario1Settings['virColors'] && M[`play`] ? (t['fillStyle'] = ogarminimapdrawer[`setVirusColor`](o), t['strokeStyle'] = ogarminimapdrawer[`setVirusStrokeColor`](o)) : (t['fillStyle'] = this.virusColor, t[`strokeStyle`] = this.virusStroke), t[`fill`](), s && (t['globalAlpha'] = i, s = !1), t['lineWidth'] = g[`virusStrokeSize`], t[`stroke`](this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), ogario1Settings['showMass'] && (this[`setDrawing`](), this[`setDrawingScale`](), this['setMass'](this['size']), this['drawMass'](t)), void t[`restore`]();
                         }
                         ogario1Settings[`transparentCells`] && (t[`globalAlpha`] *= g[`cellsAlpha`], s = !0);
                         var a = this[`color`];
-                        doagarcommand[`play`] && (this[`isPlayerCell`] ? ogario1Settings[`myCustomColor`] && (a = ogarcopythelb[`color`]) : ogario1Settings[`oppColors`] && !ogario1Settings[`oppRings`] && (a = this['oppColor'])), t[`fillStyle`] = a, t[`fill`](), s && (t['globalAlpha'] = i, s = !1);
+                        M[`play`] && (this[`isPlayerCell`] ? ogario1Settings[`myCustomColor`] && (a = ogarcopythelb[`color`]) : ogario1Settings[`oppColors`] && !ogario1Settings[`oppRings`] && (a = this['oppColor'])), t[`fillStyle`] = a, t[`fill`](), s && (t['globalAlpha'] = i, s = !1);
                         var n = null;
-                        if (ogario1Settings['customSkins'] && doagarcommand['showCustomSkins'] && (n = ogarminimapdrawer['getCustomSkin'](this['targetNick'], this['color'])) && (((ogario1Settings[`transparentSkins`] || doagarcommand[`play`] && ogario1Settings[`oppColors`]) && (!this[`isPlayerCell`] || ogario1Settings['myTransparentSkin']) || this['isPlayerCell'] && ogario1Settings['myTransparentSkin']) && (t[`globalAlpha`] *= g[`skinsAlpha`], s = !0), t[`drawImage`](n, this['x'] - o, this['y'] - o, 2 * o, 2 * o), s && (t[`globalAlpha`] = i, s = !1)), ogario1Settings[`teammatesInd`] && !this[`isPlayerCell`] && o <= 200 && (n || ogarminimapdrawer[`checkSkinsMap`](this[`targetNick`], this[`color`])) && ogarfooddrawer[`drawTeammatesInd`](t, this['x'], this['y'], o), ogario1Settings[`noNames`] && !ogario1Settings[`showMass`] || e) t['restore']();
+                        if (ogario1Settings['customSkins'] && M['showCustomSkins'] && (n = ogarminimapdrawer['getCustomSkin'](this['targetNick'], this['color'])) && (((ogario1Settings[`transparentSkins`] || M[`play`] && ogario1Settings[`oppColors`]) && (!this[`isPlayerCell`] || ogario1Settings['myTransparentSkin']) || this['isPlayerCell'] && ogario1Settings['myTransparentSkin']) && (t[`globalAlpha`] *= g[`skinsAlpha`], s = !0), t[`drawImage`](n, this['x'] - o, this['y'] - o, 2 * o, 2 * o), s && (t[`globalAlpha`] = i, s = !1)), ogario1Settings[`teammatesInd`] && !this[`isPlayerCell`] && o <= 200 && (n || ogarminimapdrawer[`checkSkinsMap`](this[`targetNick`], this[`color`])) && ogarfooddrawer[`drawTeammatesInd`](t, this['x'], this['y'], o), ogario1Settings[`noNames`] && !ogario1Settings[`showMass`] || e) t['restore']();
                         else {
                             var r = !1;
                             !this[`isPlayerCell`] && (r = ogarminimapdrawer[`setAutoHideCellInfo`](o)) && ogario1Settings[`autoHideNames`] && ogario1Settings[`autoHideMass`] ? t[`restore`]() : (this[`setDrawing`](), this['setDrawingScale'](), t[`globalAlpha`] *= g[`textAlpha`], ogario1Settings['noNames'] || r && ogario1Settings[`autoHideNames`] || this[`isPlayerCell`] && ogario1Settings[`hideMyName`] || n && ogario1Settings[`hideTeammatesNames`] || this[`setNick`](this[`targetNick`]) && this[`drawNick`](t), !ogario1Settings[`showMass`] || r && ogario1Settings[`autoHideMass`] || this[`isPlayerCell`] && ogario1Settings[`hideMyMass`] || ogario1Settings[`hideEnemiesMass`] && !this[`isPlayerCell`] && !this[`isVirus`] || this[`setMass`](this[`size`]) && this[`drawMass`](t), t[`restore`]());
@@ -8892,7 +8892,7 @@ ogcustom1=
                     }
                 };
         }
-        var doagarcommand = {
+        var M = {
             'ws': null,
             'socket': null,
             'protocolKey': null,
@@ -9357,10 +9357,10 @@ ogcustom1=
                         }
                     }
                     //8 & d && (y = e['decodeURIComponent'](escape(s())));
-                    var doagarcommand = 1 & d,
+                    var M = 1 & d,
                         ogarioset1final = 1 & f,
                         ogariocellssetts = null;
-                    this['indexedCells'][`hasOwnProperty`](l) ? (ogariocellssetts = this[`indexedCells`][l], m && (ogariocellssetts[`color`] = m)) : ((ogariocellssetts = new ogarbasicassembly(l, h, c, u, m, ogarioset1final, doagarcommand, !1, ogario1Settings[`shortMass`], ogario1Settings[`virMassShots`]))[`time`] = this[`time`], ogarioset1final ? this['food'][`push`](ogariocellssetts) : (doagarcommand && ogario1Settings[`virusesRange`] && this[`viruses`][`push`](ogariocellssetts), this[`cells`][`push`](ogariocellssetts), -1 != this['playerCellIDs']['indexOf'](l) && -1 == this[`playerCells`][`indexOf`](ogariocellssetts) && (ogariocellssetts[`isPlayerCell`] = !0, this[`playerColor`] = m, this[`playerCells`]['push'](ogariocellssetts))), this['indexedCells'][l] = ogariocellssetts), ogariocellssetts[`isPlayerCell`] && (y = this['playerNick']), y && (ogariocellssetts[`targetNick`] = y), ogariocellssetts[`targetX`] = h, ogariocellssetts[`targetY`] = c, ogariocellssetts[`targetSize`] = u, ogariocellssetts[`isFood`] = ogarioset1final, ogariocellssetts[`isVirus`] = doagarcommand, g && (ogariocellssetts[`skin`] = g), 4 & f && (t[`readUInt32LE`](i), i += 4);
+                    this['indexedCells'][`hasOwnProperty`](l) ? (ogariocellssetts = this[`indexedCells`][l], m && (ogariocellssetts[`color`] = m)) : ((ogariocellssetts = new ogarbasicassembly(l, h, c, u, m, ogarioset1final, M, !1, ogario1Settings[`shortMass`], ogario1Settings[`virMassShots`]))[`time`] = this[`time`], ogarioset1final ? this['food'][`push`](ogariocellssetts) : (M && ogario1Settings[`virusesRange`] && this[`viruses`][`push`](ogariocellssetts), this[`cells`][`push`](ogariocellssetts), -1 != this['playerCellIDs']['indexOf'](l) && -1 == this[`playerCells`][`indexOf`](ogariocellssetts) && (ogariocellssetts[`isPlayerCell`] = !0, this[`playerColor`] = m, this[`playerCells`]['push'](ogariocellssetts))), this['indexedCells'][l] = ogariocellssetts), ogariocellssetts[`isPlayerCell`] && (y = this['playerNick']), y && (ogariocellssetts[`targetNick`] = y), ogariocellssetts[`targetX`] = h, ogariocellssetts[`targetY`] = c, ogariocellssetts[`targetSize`] = u, ogariocellssetts[`isFood`] = ogarioset1final, ogariocellssetts[`isVirus`] = M, g && (ogariocellssetts[`skin`] = g), 4 & f && (t[`readUInt32LE`](i), i += 4);
                 }
                 for (o = t[`readUInt16LE`](i), i += 2, a = 0; a < o; a++) {
                     l = t[`readUInt32LE`](i);
@@ -9441,7 +9441,7 @@ ogcustom1=
                 this[`cursorX`] = (this[`clientX`] - this[`canvasWidth`] / 2) / this[`viewScale`] + this[`viewX`], this[`cursorY`] = (this[`clientY`] - this['canvasHeight'] / 2) / this[`viewScale`] + this[`viewY`];
             },
             'setZoom': function(t) {
-                t[`preventDefault`](), this[`zoomValue`] *= Math[`pow`](ogario1Settings[`zoomSpeedValue`], t['wheelDelta'] / -0x78 || t[`detail`] || 0), this[`zoomValue`] > 4 / this[`viewScale`] && (this[`zoomValue`] = 4 / this[`viewScale`]);
+                t[`preventDefault`](), this[`zoomValue`] *= Math[`pow`](ogario1Settings[`zoomSpeedValue`], t['wheelDelta'] / -120 || t[`detail`] || 0), this[`zoomValue`] > 4 / this[`viewScale`] && (this[`zoomValue`] = 4 / this[`viewScale`]);
             },
             'setTargetPosition': function(t, e) {
                 this[`targetX`] = t - this[`mapOffsetX`], this[`targetY`] = e - this[`mapOffsetY`], this[`targetDistance`] = Math[`round`](Math['sqrt'](Math[`pow`](this[`playerX`] - this[`targetX`], 2) + Math[`pow`](this[`playerY`] - this['targetY'], 2)));
@@ -9485,7 +9485,7 @@ ogcustom1=
             }
         };
         e['sendAction'] = function(t) {
-            doagarcommand['sendAction'](t);
+            M['sendAction'](t);
         };
         var ogarfooddrawer = {
                 'canvas': null,
@@ -9506,32 +9506,41 @@ ogcustom1=
                 'indicator': null,
                 'setCanvas': function() {
                     this[`canvas`] = document[`getElementById`](`canvas`), this[`ctx`] = this[`canvas`][`getContext`]('2d'), this[`canvas`][`onmousemove`] = function(t) {
-                        doagarcommand['clientX'] = t[`clientX`], doagarcommand[`clientY`] = t['clientY'], doagarcommand[`getCursorPosition`]();
+                        M['clientX'] = t[`clientX`], M[`clientY`] = t['clientY'], M[`getCursorPosition`]();
                     };
                 },
                 'resizeCanvas': function() {
-                    this[`canvasWidth`] = e[`innerWidth`], this[`canvasHeight`] = e[`innerHeight`], this[`canvas`][`width`] = this[`canvasWidth`], this['canvas'][`height`] = this[`canvasHeight`], doagarcommand[`canvasWidth`] = this[`canvasWidth`], doagarcommand[`canvasHeight`] = this[`canvasHeight`], this['renderFrame']();
+                    this[`canvasWidth`] = e[`innerWidth`], this[`canvasHeight`] = e[`innerHeight`], this[`canvas`][`width`] = this[`canvasWidth`], this['canvas'][`height`] = this[`canvasHeight`], M[`canvasWidth`] = this[`canvasWidth`], M[`canvasHeight`] = this[`canvasHeight`], this['renderFrame']();
                 },
                 'setView': function() {
-                    this[`setScale`](), doagarcommand[`playerCells`][`length`] ? (doagarcommand[`calculatePlayerMassAndPosition`](), this[`camX`] = (this[`camX`] + doagarcommand[`viewX`]) / 2, this[`camY`] = (this[`camY`] + doagarcommand[`viewY`]) / 2) : (this[`camX`] = (29 * this[`camX`] + doagarcommand[`viewX`]) / 30, this[`camY`] = (29 * this[`camY`] + doagarcommand[`viewY`]) / 30), doagarcommand['playerX'] = this[`camX`], doagarcommand[`playerY`] = this['camY'];
+                    this[`setScale`](),
+					M[`playerCells`][`length`] ?
+					(M[`calculatePlayerMassAndPosition`](),
+					this.camX += (M.viewX - this.camX) / 2,
+					this.camY += (M.viewY - this.camY) / 2) :
+//					this[`camX`] = (this[`camX`] + M[`viewX`]) / 2,
+//					this[`camY`] = (this[`camY`] + M[`viewY`]) / 2) :
+					(this[`camX`] = (29 * this[`camX`] + M[`viewX`]) / 30,
+					this[`camY`] = (29 * this[`camY`] + M[`viewY`]) / 30),
+					M['playerX'] = this[`camX`], M[`playerY`] = this['camY'];
                 },
                 'setScale': function() {
-                    if (!doagarcommand[`autoZoom`]) return this[`scale`] = (9 * this[`scale`] + this[`getZoom`]()) / 10, void(doagarcommand[`viewScale`] = this[`scale`]);
-                    doagarcommand[`play`] ? this['scale'] = (9 * this['scale'] + Math[`pow`](Math['min'](64 / doagarcommand[`playerSize`], 1), 0.4) * this['getZoom']()) / 10 : this[`scale`] = (9 * this[`scale`] + doagarcommand[`scale`] * this['getZoom']()) / 10, doagarcommand['viewScale'] = this[`scale`];
+                    if (!M[`autoZoom`]) return this[`scale`] = (9 * this[`scale`] + this[`getZoom`]()) / 10, void(M[`viewScale`] = this[`scale`]);
+                    M[`play`] ? this['scale'] = (9 * this['scale'] + Math[`pow`](Math['min'](64 / M[`playerSize`], 1), 0.4) * this['getZoom']()) / 10 : this[`scale`] = (9 * this[`scale`] + M[`scale`] * this['getZoom']()) / 10, M['viewScale'] = this[`scale`];
                 },
                 'getZoom': function() {
-                    return Math[`max`](this[`canvasWidth`] / 1080, this[`canvasHeight`] / 1920) * doagarcommand[`zoomValue`];
+                    return Math[`max`](this[`canvasWidth`] / 1080, this[`canvasHeight`] / 1920) * M[`zoomValue`];
                 },
                 'renderFrame': function() {
-                    for (doagarcommand[`time`] = Date[`now`](), e = 0; e < doagarcommand['cells'][`length`]; e++) doagarcommand[`cells`][e][`moveCell`]();
-                    if (this[`setView`](), doagarcommand[`getCursorPosition`](), doagarcommand[`sortCells`](), doagarcommand[`compareCells`](), this[`ctx`][`clearRect`](0, 0, this[`canvasWidth`], this[`canvasHeight`]), ogario1Settings[`showGrid`] && this[`drawGrid`](this[`ctx`], this[`canvasWidth`], this[`canvasHeight`], this[`scale`], this[`camX`], this[`camY`]), this['ctx'][`save`](), this[`ctx`][`translate`](this[`canvasWidth`] / 2, this[`canvasHeight`] / 2), this[`ctx`][`scale`](this[`scale`], this[`scale`]), this['ctx']['translate'](-this[`camX`], -this[`camY`]), ogario1Settings[`showBgSectors`] && this[`drawSectors`](this['ctx'], doagarcommand[`mapOffsetFixed`], g[`sectorsX`], g[`sectorsY`], doagarcommand[`mapMinX`], doagarcommand[`mapMinY`], doagarcommand[`mapMaxX`], doagarcommand['mapMaxY'], g[`gridColor`], g[`sectorsColor`], g[`sectorsWidth`], !0), `:battleroyale` === doagarcommand[`gameMode`] && this[`drawBattleArea`](this[`ctx`]), ogario1Settings['showMapBorders']) {
+                    for (M[`time`] = Date[`now`](), e = 0; e < M['cells'][`length`]; e++) M[`cells`][e][`moveCell`]();
+                    if (this[`setView`](), M[`getCursorPosition`](), M[`sortCells`](), M[`compareCells`](), this[`ctx`][`clearRect`](0, 0, this[`canvasWidth`], this[`canvasHeight`]), ogario1Settings[`showGrid`] && this[`drawGrid`](this[`ctx`], this[`canvasWidth`], this[`canvasHeight`], this[`scale`], this[`camX`], this[`camY`]), this['ctx'][`save`](), this[`ctx`][`translate`](this[`canvasWidth`] / 2, this[`canvasHeight`] / 2), this[`ctx`][`scale`](this[`scale`], this[`scale`]), this['ctx']['translate'](-this[`camX`], -this[`camY`]), ogario1Settings[`showBgSectors`] && this[`drawSectors`](this['ctx'], M[`mapOffsetFixed`], g[`sectorsX`], g[`sectorsY`], M[`mapMinX`], M[`mapMinY`], M[`mapMaxX`], M['mapMaxY'], g[`gridColor`], g[`sectorsColor`], g[`sectorsWidth`], !0), `:battleroyale` === M[`gameMode`] && this[`drawBattleArea`](this[`ctx`]), ogario1Settings['showMapBorders']) {
                         var t = g['bordersWidth'] / 2;
-                        this[`drawMapBorders`](this[`ctx`], doagarcommand[`mapOffsetFixed`], doagarcommand[`mapMinX`] - t, doagarcommand[`mapMinY`] - t, doagarcommand[`mapMaxX`] + t, doagarcommand[`mapMaxY`] + t, g[`bordersColor`], g['bordersWidth']);
+                        this[`drawMapBorders`](this[`ctx`], M[`mapOffsetFixed`], M[`mapMinX`] - t, M[`mapMinY`] - t, M[`mapMaxX`] + t, M[`mapMaxY`] + t, g[`bordersColor`], g['bordersWidth']);
                     }
-                    ogario1Settings['virusesRange'] && this[`drawVirusesRange`](this[`ctx`], doagarcommand[`viruses`]), this[`drawFood`](), doagarcommand[`play`] && (ogario1Settings[`splitRange`] && this[`drawSplitRange`](this[`ctx`], doagarcommand[`biggerSTECellsCache`], doagarcommand[`playerCells`], doagarcommand['selectBiggestCell']), ogario1Settings[`oppRings`] && this['drawOppRings'](this[`ctx`], this[`scale`], doagarcommand[`biggerSTECellsCache`], doagarcommand[`biggerCellsCache`], doagarcommand[`smallerCellsCache`], doagarcommand[`STECellsCache`]), ogario1Settings['cursorTracking'] && this[`drawCursorTracking`](this[`ctx`], doagarcommand['playerCells'], doagarcommand[`cursorX`], doagarcommand['cursorY'])), this[`drawGhostCells`]();
-                    for (var e = 0; e < doagarcommand[`removedCells`][`length`]; e++) doagarcommand[`removedCells`][e]['draw'](this['ctx'], !0);
-                    for (e = 0; e < doagarcommand[`cells`][`length`]; e++) doagarcommand[`cells`][e][`draw`](this['ctx']);
-                    this[`ctx`][`restore`](), ':teams' === doagarcommand[`gameMode`] && this['pieChart'] && this[`pieChart`][`width`] && this['ctx'][`drawImage`](this[`pieChart`], this[`canvasWidth`] - this[`pieChart`][`width`] - 10, 10);
+                    ogario1Settings['virusesRange'] && this[`drawVirusesRange`](this[`ctx`], M[`viruses`]), this[`drawFood`](), M[`play`] && (ogario1Settings[`splitRange`] && this[`drawSplitRange`](this[`ctx`], M[`biggerSTECellsCache`], M[`playerCells`], M['selectBiggestCell']), ogario1Settings[`oppRings`] && this['drawOppRings'](this[`ctx`], this[`scale`], M[`biggerSTECellsCache`], M[`biggerCellsCache`], M[`smallerCellsCache`], M[`STECellsCache`]), ogario1Settings['cursorTracking'] && this[`drawCursorTracking`](this[`ctx`], M['playerCells'], M[`cursorX`], M['cursorY'])), this[`drawGhostCells`]();
+                    for (var e = 0; e < M[`removedCells`][`length`]; e++) M[`removedCells`][e]['draw'](this['ctx'], !0);
+                    for (e = 0; e < M[`cells`][`length`]; e++) M[`cells`][e][`draw`](this['ctx']);
+                    this[`ctx`][`restore`](), ':teams' === M[`gameMode`] && this['pieChart'] && this[`pieChart`][`width`] && this['ctx'][`drawImage`](this[`pieChart`], this[`canvasWidth`] - this[`pieChart`][`width`] - 10, 10);
                 },
                 'drawGrid': function(t, e, i, s, o, a) {
                     var n = e / s,
@@ -9577,11 +9586,11 @@ ogcustom1=
                     }
                 },
                 'drawFood': function() {
-                    if (doagarcommand[`showFood`] && !(ogario1Settings[`autoHideFoodOnZoom`] && this['scale'] < 0.2)) {
-                        if (ogario1Settings['autoHideFood'] && !doagarcommand['foodIsHidden'] && doagarcommand[`playerMass`] > 1000) return doagarcommand[`showFood`] = !1, void(doagarcommand['foodIsHidden'] = !0);
+                    if (M[`showFood`] && !(ogario1Settings[`autoHideFoodOnZoom`] && this['scale'] < 0.2)) {
+                        if (ogario1Settings['autoHideFood'] && !M['foodIsHidden'] && M[`playerMass`] > 1000) return M[`showFood`] = !1, void(M['foodIsHidden'] = !0);
                         if (ogario1Settings[`rainbowFood`])
-                            for (var t = 0; t < doagarcommand['food'][`length`]; t++) doagarcommand['food'][t][`moveCell`](), doagarcommand[`food`][t][`draw`](this['ctx']);
-                        else this[`drawCachedFood`](this[`ctx`], doagarcommand[`food`], this['scale']);
+                            for (var t = 0; t < M['food'][`length`]; t++) M['food'][t][`moveCell`](), M[`food`][t][`draw`](this['ctx']);
+                        else this[`drawCachedFood`](this[`ctx`], M[`food`], this['scale']);
                     }
                 },
                 'drawCachedFood': function(t, e, i, s) {
@@ -9640,32 +9649,32 @@ ogcustom1=
                     var t = this[`pieChart`][`getContext`]('2d'),
                         e = Math['min'](200, 0.3 * this[`canvasWidth`]) / 200;
                     this['pieChart'][`width`] = 200 * e, this[`pieChart`][`height`] = 240 * e, t['scale'](e, e);
-                    for (var i = [`#333333`, `#FF3333`, '#33FF33', `#3333FF`], s = 0, o = 0; o < doagarcommand[`pieChart`][`length`]; o++) {
-                        var a = s + doagarcommand['pieChart'][o] * this[`pi2`];
+                    for (var i = [`#333333`, `#FF3333`, '#33FF33', `#3333FF`], s = 0, o = 0; o < M[`pieChart`][`length`]; o++) {
+                        var a = s + M['pieChart'][o] * this[`pi2`];
                         t[`fillStyle`] = i[o + 1], t['beginPath'](), t[`moveTo`](100, 140), t[`arc`](100, 140, 80, s, a, !1), t['fill'](), s = a;
                     }
                 },
                 'drawBattleArea': function(t) {
-                    doagarcommand[`battleRoyale`][`state`] && (this[`drawDangerArea`](t, doagarcommand[`battleRoyale`]['x'], doagarcommand[`battleRoyale`]['y'], doagarcommand['battleRoyale']['radius'], doagarcommand[`mapMinX`], doagarcommand[`mapMinY`], doagarcommand[`mapMaxX`] - doagarcommand[`mapMinX`], doagarcommand[`mapMaxY`] - doagarcommand['mapMinY'], g[`dangerAreaColor`], 0.25), this['drawSafeArea'](t, doagarcommand[`battleRoyale`][`targetX`], doagarcommand[`battleRoyale`][`targetY`], doagarcommand[`battleRoyale`][`targetRadius`], 40, g[`safeAreaColor`]));
+                    M[`battleRoyale`][`state`] && (this[`drawDangerArea`](t, M[`battleRoyale`]['x'], M[`battleRoyale`]['y'], M['battleRoyale']['radius'], M[`mapMinX`], M[`mapMinY`], M[`mapMaxX`] - M[`mapMinX`], M[`mapMaxY`] - M['mapMinY'], g[`dangerAreaColor`], 0.25), this['drawSafeArea'](t, M[`battleRoyale`][`targetX`], M[`battleRoyale`][`targetY`], M[`battleRoyale`][`targetRadius`], 40, g[`safeAreaColor`]));
                 },
                 'drawBattleAreaOnMinimap': function(t, e, i, s, o, a) {
-                    if (doagarcommand[`battleRoyale`][`state`]) {
+                    if (M[`battleRoyale`][`state`]) {
                         this['battleAreaMap'] || (this[`battleAreaMap`] = document['createElement']('canvas'), this[`battleAreaMapCtx`] = this[`battleAreaMap`]['getContext']('2d')), this['battleAreaMap'][`width`] != e ? (this[`battleAreaMap`][`width`] = e, this[`battleAreaMap`]['height'] = i) : this[`battleAreaMapCtx`][`clearRect`](0, 0, e, i);
-                        var n = (doagarcommand[`battleRoyale`]['x'] + o) * s,
-                            r = (doagarcommand[`battleRoyale`]['y'] + a) * s,
-                            l = doagarcommand[`battleRoyale`][`radius`] * s;
-                        this[`drawDangerArea`](this[`battleAreaMapCtx`], n, r, l, 0, 0, e, i, g[`dangerAreaColor`], 0.25), n = ~~((doagarcommand[`battleRoyale`]['targetX'] + o) * s), r = ~~((doagarcommand['battleRoyale'][`targetY`] + a) * s), l = ~~(doagarcommand[`battleRoyale`][`targetRadius`] * s), this[`drawSafeArea`](this['battleAreaMapCtx'], n, r, l, 2, g[`safeAreaColor`]), t[`drawImage`](this[`battleAreaMap`], 0, 0);
+                        var n = (M[`battleRoyale`]['x'] + o) * s,
+                            r = (M[`battleRoyale`]['y'] + a) * s,
+                            l = M[`battleRoyale`][`radius`] * s;
+                        this[`drawDangerArea`](this[`battleAreaMapCtx`], n, r, l, 0, 0, e, i, g[`dangerAreaColor`], 0.25), n = ~~((M[`battleRoyale`]['targetX'] + o) * s), r = ~~((M['battleRoyale'][`targetY`] + a) * s), l = ~~(M[`battleRoyale`][`targetRadius`] * s), this[`drawSafeArea`](this['battleAreaMapCtx'], n, r, l, 2, g[`safeAreaColor`]), t[`drawImage`](this[`battleAreaMap`], 0, 0);
                     }
                 },
                 'drawDangerArea': function(t, e, i, s, o, a, n, r, l, h) {
-                    doagarcommand['battleRoyale'][`radius`] == doagarcommand[`battleRoyale`][`maxRadius`] || s <= 0 || (t[`save`](), t[`globalAlpha`] = h, t[`fillStyle`] = l, t['fillRect'](o, a, n, r), t[`globalCompositeOperation`] = 'destination-out', t[`globalAlpha`] = 1, t[`beginPath`](), t['arc'](e, i, s, 0, this['pi2'], !1), t[`fill`](), t[`restore`]());
+                    M['battleRoyale'][`radius`] == M[`battleRoyale`][`maxRadius`] || s <= 0 || (t[`save`](), t[`globalAlpha`] = h, t[`fillStyle`] = l, t['fillRect'](o, a, n, r), t[`globalCompositeOperation`] = 'destination-out', t[`globalAlpha`] = 1, t[`beginPath`](), t['arc'](e, i, s, 0, this['pi2'], !1), t[`fill`](), t[`restore`]());
                 },
                 'drawSafeArea': function(t, e, i, s, o, a) {
-                    doagarcommand[`battleRoyale`][`state`] > 2 || s <= 0 || this[`drawDashedCircle`](t, e, i, s, 0x3c, o, a);
+                    M[`battleRoyale`][`state`] > 2 || s <= 0 || this[`drawDashedCircle`](t, e, i, s, 0x3c, o, a);
                 },
                 'drawGhostCells': function() {
                     if (ogario1Settings[`showGhostCells`]) {
-                        var t = doagarcommand[`ghostCells`];
+                        var t = M[`ghostCells`];
                         this['ctx']['beginPath']();
                         for (var e = 0; e < t['length']; e++)
                             if (!t[e][`inView`]) {
@@ -10477,51 +10486,51 @@ ogcustom1=
             ogario1Settings[`mouseFeed`] && (3 == t[`which`] && !ogario1Settings[`mouseInvert`] || 1 == t[`which`] && ogario1Settings[`mouseInvert`]) && ogarminimapdrawer && ogarminimapdrawer['macroFeed'](!1);
         }, e[`onbeforeunload`] = function(t) {
             return i[`play`] ? h[`exit`] : void 0;
-        }, i = doagarcommand, o = t('buffer')[`Buffer`], a = t(`lz4`), `/ogario` === e[`location`]['pathname'] && ogarjoiner('/' + e['location']['hash']), e[`onresize`] = function() {
+        }, i = M, o = t('buffer')[`Buffer`], a = t(`lz4`), `/ogario` === e[`location`]['pathname'] && ogarjoiner('/' + e['location']['hash']), e[`onresize`] = function() {
             ogarfooddrawer[`resizeCanvas`](), ogarhusettings();
         }, ogarassembler(), e[`core`] = {
             'connect': function(t) {
-                doagarcommand[`connect`](t);
+                M[`connect`](t);
             },
             'disconnect': function() {},
             'sendNick': function(t) {
-                doagarcommand[`sendNick`](t);
+                M[`sendNick`](t);
             },
             'sendSpectate': function() {
-                doagarcommand[`sendSpectate`]();
+                M[`sendSpectate`]();
             },
             'eject': function() {
-                doagarcommand['sendEject']();
+                M['sendEject']();
             },
             'split': function() {
-                doagarcommand['sendSplit']();
+                M['sendSplit']();
             },
             'specialOn': function() {
-                doagarcommand['sendFreeSpectate']();
+                M['sendFreeSpectate']();
             },
             'specialOff': function() {
-                doagarcommand['sendFreeSpectate']();
+                M['sendFreeSpectate']();
             },
             'sendFbToken': function(t) {
-                doagarcommand['sendFbToken'](t);
+                M['sendFbToken'](t);
             },
             'sendGplusToken': function(t) {
-                doagarcommand['sendGplusToken'](t);
+                M['sendGplusToken'](t);
             },
             'recaptchaResponse': function(t) {
-                doagarcommand['sendRecaptcha'](t);
+                M['sendRecaptcha'](t);
             },
             'setClientVersion': function(t, e) {
-                doagarcommand['setClientVersion'](t, e);
+                M['setClientVersion'](t, e);
             },
             'proxyMobileData': function(t = []) {
                 if (Array['isArray'](t)) {
                     8 == t[0] && t[`unshift`](102);
-                    var e = doagarcommand[`createView`](t[`length`]);
-                    doagarcommand[`sendMessage`](e);
+                    var e = M[`createView`](t[`length`]);
+                    M[`sendMessage`](e);
                 } else console[`log`](`ProxyMobileData ERROR: Array data required.`);
             }
-        }, e['master'][`getClientVersion`](), y[`init`](), ogarminimapdrawer[`init`](), ogarminimapdrawer[`getDefaultSettings`](), ogarminimapdrawer[`connect`](), lastkeys[`init`](), doagarcommand['init'](), ogarfooddrawer[`init`](), e[`master`][`init`](), ogarhusettings();
+        }, e['master'][`getClientVersion`](), y[`init`](), ogarminimapdrawer[`init`](), ogarminimapdrawer[`getDefaultSettings`](), ogarminimapdrawer[`connect`](), lastkeys[`init`](), M['init'](), ogarfooddrawer[`init`](), e[`master`][`init`](), ogarhusettings();
     })(window, window[`ogario`], window[`jQuery`]);
 }, {
     'buffer': 3,
