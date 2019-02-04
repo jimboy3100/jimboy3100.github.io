@@ -1,0 +1,143 @@
+
+<html lang="en-us"><head>	
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/normalize.css" media="screen">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/stylesheet.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/github-light.css" media="screen">
+    </head>
+    <body>
+        <section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
+            <section height="200px" style="padding-top: 0px;padding-bottom: 0px; background-image: url();background-repeat: no-repeat; background-position: center; background-size: 100%;  color: black;text-align: center;">
+			</section>
+	<script>
+	setTimeout(function(){
+	document.title = "OGARio Developers"; 
+	(function() {
+    var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    link.type = 'image/x-icon';
+    link.rel = 'shortcut icon';
+    link.href = 'https://agar.io/favicon-32x32.png';
+    document.getElementsByTagName('head')[0].appendChild(link);
+	})();
+	}, 1000);			
+			<br>
+	</script>
+           <h2>OGARio Developers - The OGARio ongoing project</h2>
+		  <br><img class="irc_mi" src="https://jimboy3100.github.io/banners/ogario.png" width="810" height="100">
+		  <br>
+<b>Welcome to the Discord community for developing custom OGARio scripts</b>
+<br>
+<br><b>Please note:</b>
+<br>
+<br>We tag our developers as:
+<br>Guests - (skillful developers)
+<br>Developers (Ogario developers) - Very good and selected developers, who can prove their work on agar.io and know about agar.io protocols
+<br>
+<br><b>Guest:</b>
+<br>
+<br>1. A developer can join our community and ask for question. After been answered, he is obliged to leave our discord server.
+<br>2. A well known developer who is reserved in order to answer question if needed.
+<br>3. Active developers sharing their scripts.
+<br>
+<br><b>Ogario developer:</b>
+<br>
+<br>These are the developers who will improve the real ogario.js and ogario.master.js code.
+<br>
+<br><b>Rules for the Ogario developers:</b>
+<br>
+<br>1. Must NOT and under no circumstances reveal our decoded ogario.js and ogario.master.js files to others.
+<br>2. Must NOT keep their updated ogario.js and ogario.master.js files for themselves, but share it in this room.
+<br>3. Must be active on our Discord server and improve the files.
+<br>4. Must not use scripts that ruin agario.
+<br>
+<br><b>Ogario developers also:</b>
+<br>
+<br>Have their own scripts, which is their own work that combine with ogario.js or not.
+<br>Their scripts must not use Canvas rendering or similar stuff from our files, but rather use it in our files.
+<br>
+<br><b>The OGARio Discord community is an ongoing project</b> 
+<br>
+<br>On this project hard work is done, which belongs to this community only.
+<br>* If a guest does not comply with rules, he will be removed.
+<br>** If Ogario developer will not comply with rules, he will be permanently banned with no access to the ongoing project.
+<br>
+<br>If you are skillful developer and fully understand the rules, please click <a href="https://discord.gg/jKyDqpf" target="_blank">here</a>.
+
+<h2>For Ogario developer (only)</h2>
+
+<br>1. If you don't own a website, make a github account and repo with same name + github.io (otherwise you will be forced to use code as raw).
+		  <br><img class="irc_mi" src="https://jimboy3100.github.io/developers/icons/iconcreatenewrepo.png" width="810" height="300">
+<br>2. Copy the our ogario.js and ogario.master.js files to your github repo.
+<br>
+<br>3. Use notepad++, Visual Studio or any integrated development environment.
+<br>
+<br>4. Use the source from <b>http://cdn.ogario.ovh:9000/v4/beta/</b> , type on your browser: <b>view-source:http://cdn.ogario.ovh:9000/v4/beta/</b>
+<br>
+<br>5. Change the line: 
+<textarea rows="1" cols="80">
+<script src="https://cdn.ogario.ovh/v4/beta/ogario.v4.master.js?v=40035">
+</textarea>
+<br> with 
+<textarea rows="1" cols="80">
+<script src="https://mygithubrepo.github.io/ogario.yourversion.master.js?v=40035">
+</textarea>
+<br> and the line:
+<textarea rows="1" cols="80">
+<script src="https://cdn.ogario.ovh/v4/beta/ogario.v4.js?v=40035">
+</textarea>
+<br> with 
+<textarea rows="1" cols="80">
+<script src="https://mygithubrepo.github.io/ogario.yourversion.js?v=40035">
+</textarea>
+<br>
+<br>6. Make your own OGARio.v4.user.js testing script on <a href="https://tampermonkey.net/" target="_blank">tampermonkey</a>:
+<br><textarea rows="5" cols="80">
+// ==UserScript==
+// @name         OGARio Devs [Yourname]
+// @namespace    ogario.v4.[Yourname].[Your version]
+// @version      4.0.0.[Your version]
+// @description  Testing OGARio Script
+// @author       OGARio Devs
+// @match        *://agar.io/*
+// @run-at       document-start
+// @grant        GM_xmlhttpRequest
+// @connect      cdn.ogario.ovh
+// ==/UserScript==
+
+
+// Check location
+if (location.host === "agar.io" && location.pathname === "/") {
+    location.href = "https://agar.io/ogario" + location.hash;
+    return;
+}
+
+// Inject script
+window.stop();
+document.documentElement.innerHTML = "";
+GM_xmlhttpRequest({
+    method : "GET",
+    url : "https://cdn.ogario.ovh/v4/beta/",
+    onload : function(e) {
+        document.open();
+        document.write(e.responseText);
+        document.close();
+    }
+});
+</textarea> 
+<br>
+<br>7. Change the line: <b>// @connect      cdn.ogario.ovh</b> to your webpage e.g: <b>// @connect      mygithubrepo.github.io</b> 
+<br>Change the line: <b>url : "https://cdn.ogario.ovh/v4/beta/",</b> to your html webpage url e.g: <b>url : "https://mygithubrepo.github.io/ogario.html",</b>
+<br>
+<br><a href="http://jimboy3100.github.io/LMexpress/LMexpress.user.js" target="_blank">Example</a>
+<br><br>* Note that the newest scripts need 5-10 minutes for being used. Refresh your <b>https://mygithubrepo.github.io/ogario.yourversion.js</b> file on browser.
+<br>Watch it on chrome sources [F12].
+<br>
+<br>
+<br>
+
+
+ </section>
+	
+</body></html>
