@@ -4,7 +4,7 @@
 // Thank you Snez for decoding Feross
 // Thank you volum for the case 16: instance
 
-//v1.35
+//v1.36
 
 //Game Configurations
 //var agarversion="v12/1922/";
@@ -6329,25 +6329,25 @@ ogcustom1=
                 }
             },
             r = 'en',
-            l = e[`navigator`][`language`] || e['navigator'][`userLanguage`];
-        l && n[`hasOwnProperty`](l) && (r = l);
+            l = e.navigator.language || e.navigator.userLanguage;
+        l && n.hasOwnProperty(l) && (r = l);
         var h = n[r],
             c = {
-                'comm1': h[`comm1`],
-                'comm2': h[`comm2`],
-                'comm3': h[`comm3`],
-                'comm4': h[`comm4`],
-                'comm5': h[`comm5`],
-                'comm6': h[`comm6`],
-                'comm7': h['comm7'],
-                'comm8': h[`comm8`],
-                'comm9': h[`comm9`],
-                'comm0': h['comm0'],
-                'comm10': h[`comm10`],
-                'comm11': h[`comm11`],
-                'comm12': h[`comm12`],
-                'comm13': h['comm13'],
-                'comm14': h[`comm14`]
+                'comm1': h.comm1,
+                'comm2': h.comm2,
+                'comm3': h.comm3,
+                'comm4': h.comm4,
+                'comm5': h.comm5,
+                'comm6': h.comm6,
+                'comm7': h.comm7,
+                'comm8': h.comm8,
+                'comm9': h.comm9,
+                'comm0': h.comm0,
+                'comm10': h.comm10,
+                'comm11': h.comm11,
+                'comm12': h.comm12,
+                'comm13': h.comm13,
+                'comm14': h.comm14
             },
             u = {
                 '&': `&amp;`,
@@ -6944,115 +6944,115 @@ ogcustom1=
                 'cursorCSS': null,
                 'loadThemeSettings': function() {
                     var t = null;
-                    for (var s in null !== e[`localStorage`][`getItem`](`ogarioThemeSettings`) && (t = JSON[`parse`](e[`localStorage`][`getItem`](`ogarioThemeSettings`))), g) g[`hasOwnProperty`](s) && (t && t[`hasOwnProperty`](s) && (g[s] = t[s]), i[`hasOwnProperty`](s) && (i[s] = g[s]));
+                    for (var s in null !== e.localStorage.getItem(`ogarioThemeSettings`) && (t = JSON.parse(e.localStorage.getItem(`ogarioThemeSettings`))), g) g.hasOwnProperty(s) && (t && t.hasOwnProperty(s) && (g[s] = t[s]), i.hasOwnProperty(s) && (i[s] = g[s]));
                 },
                 'saveThemeSettings': function() {
-                    e[`localStorage`][`setItem`](`ogarioThemeSettings`, JSON[`stringify`](g));
+                    e.localStorage.setItem(`ogarioThemeSettings`, JSON.stringify(g));
                 },
                 'restoreThemeSettings': function() {
-                    null !== e['localStorage'][`getItem`](`ogarioThemeSettings`) && (e[`localStorage`][`removeItem`](`ogarioThemeSettings`), e[`location`][`reload`]());
+                    null !== e.localStorage.getItem(`ogarioThemeSettings`) && (e.localStorage.removeItem(`ogarioThemeSettings`), e.location.reload());
                 },
                 'addCustomCSS': function(t, e) {
                     this[t] || (this[t] = s(`<style type=\'text/css\'>`)[`appendTo`](`head`)), this[t]['html'](e);
                 },
                 'addPresetBox': function(t, e, i, o, a) {
-                    for (var n in s(t)['append'](`<div class=\"preset-box\"><span class=\"title-box\">` + h[e] + '</span><div class=\"select-wrapper\"><select id=\"' + e + `\" class=\"form-control\"></select></div></div>`), i) i[`hasOwnProperty`](n) && s('#' + e)[`append`](`<option value=\"` + n + '\">' + i[n][`name`] + `</option>`);
-                    s('#' + e)[`val`](g[o]);
+                    for (var n in s(t).append(`<div class=\"preset-box\"><span class=\"title-box\">` + h[e] + '</span><div class=\"select-wrapper\"><select id=\"' + e + `\" class=\"form-control\"></select></div></div>`), i) i.hasOwnProperty(n) && s('#' + e).append(`<option value=\"` + n + '\">' + i[n][`name`] + `</option>`);
+                    s('#' + e).val(g[o]);
                     var r = this;
                     s('#' + e)['on'](`change`, function() {
-                        var t = this[`value`];
+                        var t = this.value;
                         g[o] = t, r[a](t);
                     });
                 },
                 'addColorBox': function(t, e, o) {
-                    if (s(t)[`append`](`<div class=\"color-box\"><span class=\"title-box\">` + h[e] + '</span><div class=\"input-group ' + e + `-picker\"><input type=\"text\" value=\"` + g[e] + `\" id=\"` + e + `\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>`), o) {
+                    if (s(t).append(`<div class=\"color-box\"><span class=\"title-box\">` + h[e] + '</span><div class=\"input-group ' + e + `-picker\"><input type=\"text\" value=\"` + g[e] + `\" id=\"` + e + `\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>`), o) {
                         var a = this;
                         s(t + ' .' + e + `-picker`)['colorpicker']({
                             'format': `hex`
                         })['on'](`changeColor.colorpicker`, function(t) {
-                            g[e] = t[`color`][`toHex`](), i[`hasOwnProperty`](e) && (i[e] = g[e]), a[o]();
+                            g[e] = t[`color`][`toHex`](), i.hasOwnProperty(e) && (i[e] = g[e]), a[o]();
                         });
-                    } else s(t + ' .' + e + '-picker')[`colorpicker`]({
+                    } else s(t + ' .' + e + '-picker').colorpicker({
                         'format': `hex`
                     })['on'](`changeColor.colorpicker`, function(t) {
-                        g[e] = t[`color`]['toHex'](), i[`hasOwnProperty`](e) && (i[e] = g[e]);
+                        g[e] = t[`color`]['toHex'](), i.hasOwnProperty(e) && (i[e] = g[e]);
                     });
                 },
                 'addRgbaColorBox': function(t, e, o) {
-                    if (s(t)['append'](`<div class=\"color-box\"><span class=\"title-box\">` + h[e] + `</span><div class=\"input-group ` + e + `-picker\"><input type=\"text\" value=\"` + g[e] + `\" id=\"` + e + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>'), o) {
+                    if (s(t).append(`<div class=\"color-box\"><span class=\"title-box\">` + h[e] + `</span><div class=\"input-group ` + e + `-picker\"><input type=\"text\" value=\"` + g[e] + `\" id=\"` + e + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>'), o) {
                         var a = this;
-                        s(t + ' .' + e + `-picker`)[`colorpicker`]({
+                        s(t + ' .' + e + `-picker`).colorpicker({
                             'format': `rgba`
                         })['on'](`changeColor.colorpicker`, function(t) {
                             var s = t[`color`][`toRGB`]();
-                            g[e] = 'rgba(' + s['r'] + ',' + s['g'] + ',' + s['b'] + ',' + s['a'] + ')', i[`hasOwnProperty`](e) && (i[e] = g[e]), a[o]();
+                            g[e] = 'rgba(' + s['r'] + ',' + s['g'] + ',' + s['b'] + ',' + s['a'] + ')', i.hasOwnProperty(e) && (i[e] = g[e]), a[o]();
                         });
-                    } else s(t + ' .' + e + `-picker`)[`colorpicker`]({
+                    } else s(t + ' .' + e + `-picker`).colorpicker({
                         'format': 'rgba'
                     })['on'](`changeColor.colorpicker`, function(t) {
                         var s = t[`color`][`toRGB`]();
-                        g[e] = `rgba(` + s['r'] + ',' + s['g'] + ',' + s['b'] + ',' + s['a'] + ')', i[`hasOwnProperty`](e) && (i[e] = g[e]);
+                        g[e] = `rgba(` + s['r'] + ',' + s['g'] + ',' + s['b'] + ',' + s['a'] + ')', i.hasOwnProperty(e) && (i[e] = g[e]);
                     });
                 },
                 'addSliderBox': function(t, e, o, a, n, r) {
-                    if (s(t)[`append`](`<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">` + h[e] + `: </span><span id=\"` + e + '-value\" class=\"value\">' + g[e] + `</span></div><input id=\"` + e + '-slider\" type=\"range\" min=\"' + o + `\" max=\"` + a + `\" step=\"` + n + `\" value=\"` + g[e] + `\"></div>`), r) {
+                    if (s(t).append(`<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">` + h[e] + `: </span><span id=\"` + e + '-value\" class=\"value\">' + g[e] + `</span></div><input id=\"` + e + '-slider\" type=\"range\" min=\"' + o + `\" max=\"` + a + `\" step=\"` + n + `\" value=\"` + g[e] + `\"></div>`), r) {
                         var l = this;
                         s('#' + e + `-slider`)['on'](`input`, function() {
-                            var t = parseFloat(s(this)[`val`]());
-                            s('#' + e + '-value')[`text`](t), g[e] = t, i[`hasOwnProperty`](e) && (i[e] = t), l[r]();
+                            var t = parseFloat(s(this).val());
+                            s('#' + e + '-value')[`text`](t), g[e] = t, i.hasOwnProperty(e) && (i[e] = t), l[r]();
                         });
                     } else s('#' + e + `-slider`)['on'](`input`, function() {
                         var t = parseFloat(s(this)['val']());
-                        s('#' + e + '-value')[`text`](t), g[e] = t, i[`hasOwnProperty`](e) && (i[e] = t);
+                        s('#' + e + '-value')[`text`](t), g[e] = t, i.hasOwnProperty(e) && (i[e] = t);
                     });
                 },
                 'addInputBox': function(t, e, i, o) {
-                    s(t)[`append`](`<div class=\"input-box\"><span class=\"title-box\">` + h[e] + '</span><input id=\"' + e + `\" class=\"form-control\" placeholder=\"` + i + '\" value=\"' + g[e] + '\" /></div>');
+                    s(t).append(`<div class=\"input-box\"><span class=\"title-box\">` + h[e] + '</span><input id=\"' + e + `\" class=\"form-control\" placeholder=\"` + i + '\" value=\"' + g[e] + '\" /></div>');
                     var a = this;
                     s('#' + e)['on'](`input`, function() {
-                        g[e] = this[`value`], a[o]();
+                        g[e] = this.value, a[o]();
                     });
                 },
                 'addCursorBox': function(t, e) {
-                    e === g[`customCursor`] ? s(t)['append'](`<div class=\"cursor-box\"><a href=\"#\" class=\"active\"><img src=\"` + e + `\"></a></div>`) : s(t)[`append`](`<div class=\"cursor-box\"><a href=\"#\"><img src=\"` + e + '\"></a></div>');
+                    e === g.customCursor ? s(t).append(`<div class=\"cursor-box\"><a href=\"#\" class=\"active\"><img src=\"` + e + `\"></a></div>`) : s(t).append(`<div class=\"cursor-box\"><a href=\"#\"><img src=\"` + e + '\"></a></div>');
                 },
                 'setFont': function(t, e) {
-                    g[t] = e, g[t + `Family`] = this[`setFontFamily`](e), g[t + 'Weight'] = this[`setFontWeight`](e), i['hasOwnProperty'](t + `Family`) && (i[t + `Family`] = g[t + `Family`]), i[`hasOwnProperty`](t + `Weight`) && (i[t + 'Weight'] = g[t + `Weight`]);
+                    g[t] = e, g[t + `Family`] = this[`setFontFamily`](e), g[t + 'Weight'] = this.setFontWeight(e), i.hasOwnProperty(t + `Family`) && (i[t + `Family`] = g[t + `Family`]), i.hasOwnProperty(t + `Weight`) && (i[t + 'Weight'] = g[t + `Weight`]);
                 },
                 'addFontBox': function(t, e, i) {
-                    s(t)[`append`]('<div class=\"font-box\"><span class=\"title-box\">' + h[e] + `</span><div class=\"select-wrapper\"><select id=\"` + e + `\" class=\"form-control\"></select></div></div>`), s('#' + e)[`append`](`<option value=\"ubuntu\">Ubuntu</option><option value=\"ubuntu-bold\">Ubuntu Bold</option>`), s('#' + e)[`append`](`<option value=\"roboto\">Roboto</option><option value=\"roboto-bold\">Roboto Bold</option>`), s('#' + e)[`append`](`<option value=\"oswald\">Oswald</option><option value=\"oswald-bold\">Oswald Bold</option>`), s('#' + e)[`val`](g[e]);
+                    s(t).append('<div class=\"font-box\"><span class=\"title-box\">' + h[e] + `</span><div class=\"select-wrapper\"><select id=\"` + e + `\" class=\"form-control\"></select></div></div>`), s('#' + e).append(`<option value=\"ubuntu\">Ubuntu</option><option value=\"ubuntu-bold\">Ubuntu Bold</option>`), s('#' + e).append(`<option value=\"roboto\">Roboto</option><option value=\"roboto-bold\">Roboto Bold</option>`), s('#' + e).append(`<option value=\"oswald\">Oswald</option><option value=\"oswald-bold\">Oswald Bold</option>`), s('#' + e).val(g[e]);
                     var o = this;
                     i ? s('#' + e)['on'](`change`, function() {
-                        var t = this[`value`];
-                        o[`setFont`](e, t), o[i]();
+                        var t = this.value;
+                        o.setFont(e, t), o[i]();
                     }) : s('#' + e)['on'](`change`, function() {
                         var t = this['value'];
-                        o[`setFont`](e, t);
+                        o.setFont(e, t);
                     });
                 },
                 'setFontFamily': function(t) {
-                    return -1 != t[`indexOf`](`roboto`) ? `Roboto` : -1 != t[`indexOf`](`oswald`) ? `Oswald` : 'Ubuntu';
+                    return -1 != t.indexOf(`roboto`) ? `Roboto` : -1 != t.indexOf(`oswald`) ? `Oswald` : 'Ubuntu';
                 },
                 'setFontWeight': function(t) {
-                    return -1 != t[`indexOf`]('bold') ? 700 : 400;
+                    return -1 != t.indexOf('bold') ? 700 : 400;
                 },
                 'setThemeMenu': function() {
                     var t = this;
-                    s(`#theme`)[`append`](`<ul class=\"submenu-tabs\"><li class=\"theme-main-tab active\"><a href=\"#theme-main\" class=\"active ogicon-paint-format\" data-toggle=\"tab-tooltip\" title=\"` + h[`basicTheming`] + `\"></a></li><li class=\"theme-menu-tab\"><a href=\"#theme-menu\" class=\"ogicon-menu\" data-toggle=\"tab-tooltip\" title=\"` + h[`menuTheming`] + `\"></a></li><li class=\"theme-hud-tab\"><a href=\"#theme-hud\" class=\"ogicon-display\" data-toggle=\"tab-tooltip\" title=\"` + h[`hudTheming`] + `\"></a></li><li class=\"theme-chat-tab\"><a href=\"#theme-chat\" class=\"ogicon-bubbles\" data-toggle=\"tab-tooltip\" title=\"` + h[`chatTheming`] + '\"></a></li><li class=\"theme-minimap-tab\"><a href=\"#theme-minimap\" class=\"ogicon-location2\" data-toggle=\"tab-tooltip\" title=\"' + h[`miniMapTheming`] + `\"></a></li><li class=\"theme-images-tab\"><a href=\"#theme-images\" class=\"ogicon-compass\" data-toggle=\"tab-tooltip\" title=\"` + h[`imagesTheming`] + '\"></a></li></ul><div id=\"theme-main\" class=\"submenu-panel\"></div><div id=\"theme-menu\" class=\"submenu-panel\"></div><div id=\"theme-hud\" class=\"submenu-panel\"></div><div id=\"theme-chat\" class=\"submenu-panel\"></div><div id=\"theme-minimap\" class=\"submenu-panel\"></div><div id=\"theme-images\" class=\"submenu-panel\"></div>'), this[`addPresetBox`](`#theme-main`, `themePreset`, f, `preset`, `changeThemePreset`), this[`addColorBox`](`#theme-main`, `bgColor`, `setBgColor`), this[`addColorBox`](`#theme-main`, `bordersColor`), this[`addColorBox`](`#theme-main`, `gridColor`), this[`addColorBox`]('#theme-main', `sectorsColor`), this[`addColorBox`](`#theme-main`, `namesColor`), this[`addColorBox`](`#theme-main`, `namesStrokeColor`), this[`addColorBox`]('#theme-main', `massColor`), this[`addColorBox`](`#theme-main`, `massStrokeColor`), this[`addColorBox`](`#theme-main`, `virusColor`), this[`addColorBox`](`#theme-main`, `virusStrokeColor`), this.addColorBox('#theme-main', 'mVirusColor'), this.addColorBox('#theme-main', 'mVirusStrokeColor'), this[`addColorBox`](`#theme-main`, `foodColor`, `setFoodColor`), this['addColorBox'](`#theme-main`, 'teammatesIndColor', `setIndicatorColor`), this[`addColorBox`]('#theme-main', `cursorTrackingColor`), this['addColorBox']('#theme-main', `splitRangeColor`), this[`addColorBox`](`#theme-main`, `safeAreaColor`), this[`addColorBox`](`#theme-main`, `dangerAreaColor`), this['addColorBox'](`#theme-main`, `ghostCellsColor`), this[`addFontBox`](`#theme-main`, `namesFont`), this[`addFontBox`](`#theme-main`, 'massFont'), this[`addFontBox`]('#theme-main', `sectorsFont`), this['addSliderBox'](`#theme-main`, `sectorsFontSize`, 200, 2000, 10), this[`addSliderBox`](`#theme-main`, `namesScale`, 0.5, 2, 0.1), this[`addSliderBox`]('#theme-main', `massScale`, 1, 5, 1), this[`addSliderBox`](`#theme-main`, `virMassScale`, 1, 5, 1), this[`addSliderBox`](`#theme-main`, `strokeScale`, 1, 4, 0.1), this[`addSliderBox`](`#theme-main`, `foodSize`, 1, 50, 1, 'setFoodColor'), this[`addSliderBox`](`#theme-main`, `virusStrokeSize`, 2, 40, 1), this['addSliderBox'](`#theme-main`, `bordersWidth`, 2, 200, 2), this[`addSliderBox`](`#theme-main`, `sectorsWidth`, 2, 200, 2), this[`addSliderBox`](`#theme-main`, 'cellsAlpha', 0.01, 0.99, 0.01), this[`addSliderBox`](`#theme-main`, `skinsAlpha`, 0.01, 0.99, 0.01), this[`addSliderBox`](`#theme-main`, 'virusAlpha', 0, 1, 0.01), this[`addSliderBox`](`#theme-main`, `textAlpha`, 0.1, 1, 0.01), this[`addSliderBox`](`#theme-main`, `ghostCellsAlpha`, 0.01, 0.99, 0.01), this[`addPresetBox`](`#theme-menu`, `menuPreset`, m, `menuPreset`, 'changeMenuPreset'), this[`addSliderBox`](`#theme-menu`, `menuOpacity`, 0.1, 1, 0.01, 'setMenuOpacity'), this[`addColorBox`](`#theme-menu`, `menuMainColor`, 'setMenuMainColor'), this[`addColorBox`]('#theme-menu', 'menuBtnTextColor', 'setMenuButtons'), this[`addColorBox`](`#theme-menu`, `menuPanelColor`, `setMenuPanelColor`), this[`addColorBox`](`#theme-menu`, 'menuPanelColor2', `setMenuPanelColor`), this['addColorBox']('#theme-menu', `menuTextColor`, `setMenuTextColor`), this[`addColorBox`](`#theme-menu`, `menuTextColor2`, `setMenuTextColor`), this[`addColorBox`](`#theme-menu`, 'btn1Color', `setMenuButtons`), this[`addColorBox`](`#theme-menu`, `btn1Color2`, `setMenuButtons`), this[`addColorBox`](`#theme-menu`, `btn2Color`, `setMenuButtons`), this[`addColorBox`](`#theme-menu`, 'btn2Color2', `setMenuButtons`), this[`addColorBox`](`#theme-menu`, `btn3Color`, `setMenuButtons`), this[`addColorBox`]('#theme-menu', `btn3Color2`, `setMenuButtons`), this[`addColorBox`](`#theme-menu`, 'btn4Color', `setMenuButtons`), this[`addColorBox`](`#theme-menu`, `btn4Color2`, `setMenuButtons`), this[`addInputBox`](`#theme-menu`, `menuBg`, `Image URL`, `setMenuBg`), this[`addColorBox`]('#theme-hud', `hudMainColor`, `setHudColors`), this[`addRgbaColorBox`](`#theme-hud`, `hudColor`, 'setHudColors'), this['addColorBox'](`#theme-hud`, `hudTextColor`, `setHudColors`), this[`addColorBox`](`#theme-hud`, `statsHudColor`, 'setHudColors'), this['addColorBox'](`#theme-hud`, `timeHudColor`, `setHudColors`), this[`addColorBox`](`#theme-hud`, `top5MassColor`, `setHudColors`), this[`addColorBox`](`#theme-hud`, 'lbMeColor', `setHudColors`), this[`addColorBox`](`#theme-hud`, `lbTeammateColor`, 'setHudColors'), this[`addFontBox`](`#theme-hud`, `hudFont`, 'setHudFont'), this['addSliderBox']('#theme-hud', `hudScale`, 1, 2, 0.01, `setHudScale`), this[`addRgbaColorBox`](`#theme-chat`, `messageColor`, 'setChatColors'), this[`addColorBox`](`#theme-chat`, `messageTextColor`, `setChatColors`), this[`addColorBox`](`#theme-chat`, `messageTimeColor`, `setChatColors`), this[`addColorBox`](`#theme-chat`, `messageNickColor`, `setChatColors`), this[`addRgbaColorBox`](`#theme-chat`, `commandsColor`, `setChatColors`), this['addColorBox']('#theme-chat', `commandsTextColor`, `setChatColors`), this[`addColorBox`]('#theme-chat', 'commandsTimeColor', `setChatColors`), this[`addColorBox`](`#theme-chat`, `commandsNickColor`, `setChatColors`), this[`addRgbaColorBox`](`#theme-chat`, 'chatBoxColor', 'setChatColors'), this[`addSliderBox`]('#theme-chat', `chatScale`, 1, 2, 0.01, `setChatScale`), this[`addColorBox`](`#theme-minimap`, `miniMapSectorsColor`, 'setMiniMapSectorsColor'), this[`addColorBox`](`#theme-minimap`, `miniMapSectorColor`), this[`addColorBox`](`#theme-minimap`, `miniMapNickColor`), this['addColorBox'](`#theme-minimap`, `miniMapNickStrokeColor`), this[`addColorBox`](`#theme-minimap`, `miniMapMyCellColor`), this['addColorBox']('#theme-minimap', `miniMapMyCellStrokeColor`), this[`addColorBox`]('#theme-minimap', 'miniMapTeammatesColor'), this[`addColorBox`](`#theme-minimap`, `miniMapDeathLocationColor`), this[`addColorBox`](`#theme-minimap`, `miniMapGuidesColor`), this[`addColorBox`](`#theme-minimap`, `miniMapGhostCellsColor`), this[`addFontBox`](`#theme-minimap`, `miniMapFont`, `setMiniMapFont`), this['addFontBox']('#theme-minimap', `miniMapNickFont`), this[`addSliderBox`](`#theme-minimap`, `miniMapWidth`, 200, 400, 2, `setMiniMapWidth`), this['addSliderBox']('#theme-minimap', 'miniMapSectorsOpacity', 0, 1, 0.01, `setMiniMapSectorsOpacity`), this['addSliderBox']('#theme-minimap', `miniMapNickSize`, 8, 16, 1), this[`addSliderBox`](`#theme-minimap`, `miniMapNickStrokeSize`, 0, 6, 1), this[`addSliderBox`](`#theme-minimap`, `miniMapMyCellSize`, 4, 10, 0.5), this[`addSliderBox`](`#theme-minimap`, `miniMapMyCellStrokeSize`, 0, 10, 1), this[`addSliderBox`](`#theme-minimap`, `miniMapTeammatesSize`, 4, 10, 0.5), this['addSliderBox'](`#theme-minimap`, `miniMapGhostCellsAlpha`, 0.01, 0.99, 0.01), this[`addInputBox`](`#theme-images`, `customBackground`, `Image URL`, `setCustomBackground`), this[`addInputBox`]('#theme-images', `customCursor`, 'Cursor image URL', 'setCustomCursor');
+                    s(`#theme`).append(`<ul class=\"submenu-tabs\"><li class=\"theme-main-tab active\"><a href=\"#theme-main\" class=\"active ogicon-paint-format\" data-toggle=\"tab-tooltip\" title=\"` + h[`basicTheming`] + `\"></a></li><li class=\"theme-menu-tab\"><a href=\"#theme-menu\" class=\"ogicon-menu\" data-toggle=\"tab-tooltip\" title=\"` + h[`menuTheming`] + `\"></a></li><li class=\"theme-hud-tab\"><a href=\"#theme-hud\" class=\"ogicon-display\" data-toggle=\"tab-tooltip\" title=\"` + h[`hudTheming`] + `\"></a></li><li class=\"theme-chat-tab\"><a href=\"#theme-chat\" class=\"ogicon-bubbles\" data-toggle=\"tab-tooltip\" title=\"` + h[`chatTheming`] + '\"></a></li><li class=\"theme-minimap-tab\"><a href=\"#theme-minimap\" class=\"ogicon-location2\" data-toggle=\"tab-tooltip\" title=\"' + h[`miniMapTheming`] + `\"></a></li><li class=\"theme-images-tab\"><a href=\"#theme-images\" class=\"ogicon-compass\" data-toggle=\"tab-tooltip\" title=\"` + h[`imagesTheming`] + '\"></a></li></ul><div id=\"theme-main\" class=\"submenu-panel\"></div><div id=\"theme-menu\" class=\"submenu-panel\"></div><div id=\"theme-hud\" class=\"submenu-panel\"></div><div id=\"theme-chat\" class=\"submenu-panel\"></div><div id=\"theme-minimap\" class=\"submenu-panel\"></div><div id=\"theme-images\" class=\"submenu-panel\"></div>'), this[`addPresetBox`](`#theme-main`, `themePreset`, f, `preset`, `changeThemePreset`), this[`addColorBox`](`#theme-main`, `bgColor`, `setBgColor`), this[`addColorBox`](`#theme-main`, `bordersColor`), this[`addColorBox`](`#theme-main`, `gridColor`), this[`addColorBox`]('#theme-main', `sectorsColor`), this[`addColorBox`](`#theme-main`, `namesColor`), this[`addColorBox`](`#theme-main`, `namesStrokeColor`), this[`addColorBox`]('#theme-main', `massColor`), this[`addColorBox`](`#theme-main`, `massStrokeColor`), this[`addColorBox`](`#theme-main`, `virusColor`), this[`addColorBox`](`#theme-main`, `virusStrokeColor`), this.addColorBox('#theme-main', 'mVirusColor'), this.addColorBox('#theme-main', 'mVirusStrokeColor'), this[`addColorBox`](`#theme-main`, `foodColor`, `setFoodColor`), this['addColorBox'](`#theme-main`, 'teammatesIndColor', `setIndicatorColor`), this[`addColorBox`]('#theme-main', `cursorTrackingColor`), this['addColorBox']('#theme-main', `splitRangeColor`), this[`addColorBox`](`#theme-main`, `safeAreaColor`), this[`addColorBox`](`#theme-main`, `dangerAreaColor`), this['addColorBox'](`#theme-main`, `ghostCellsColor`), this[`addFontBox`](`#theme-main`, `namesFont`), this[`addFontBox`](`#theme-main`, 'massFont'), this[`addFontBox`]('#theme-main', `sectorsFont`), this['addSliderBox'](`#theme-main`, `sectorsFontSize`, 200, 2000, 10), this[`addSliderBox`](`#theme-main`, `namesScale`, 0.5, 2, 0.1), this[`addSliderBox`]('#theme-main', `massScale`, 1, 5, 1), this[`addSliderBox`](`#theme-main`, `virMassScale`, 1, 5, 1), this[`addSliderBox`](`#theme-main`, `strokeScale`, 1, 4, 0.1), this[`addSliderBox`](`#theme-main`, `foodSize`, 1, 50, 1, 'setFoodColor'), this[`addSliderBox`](`#theme-main`, `virusStrokeSize`, 2, 40, 1), this['addSliderBox'](`#theme-main`, `bordersWidth`, 2, 200, 2), this[`addSliderBox`](`#theme-main`, `sectorsWidth`, 2, 200, 2), this[`addSliderBox`](`#theme-main`, 'cellsAlpha', 0.01, 0.99, 0.01), this[`addSliderBox`](`#theme-main`, `skinsAlpha`, 0.01, 0.99, 0.01), this[`addSliderBox`](`#theme-main`, 'virusAlpha', 0, 1, 0.01), this[`addSliderBox`](`#theme-main`, `textAlpha`, 0.1, 1, 0.01), this[`addSliderBox`](`#theme-main`, `ghostCellsAlpha`, 0.01, 0.99, 0.01), this[`addPresetBox`](`#theme-menu`, `menuPreset`, m, `menuPreset`, 'changeMenuPreset'), this[`addSliderBox`](`#theme-menu`, `menuOpacity`, 0.1, 1, 0.01, 'setMenuOpacity'), this[`addColorBox`](`#theme-menu`, `menuMainColor`, 'setMenuMainColor'), this[`addColorBox`]('#theme-menu', 'menuBtnTextColor', 'setMenuButtons'), this[`addColorBox`](`#theme-menu`, `menuPanelColor`, `setMenuPanelColor`), this[`addColorBox`](`#theme-menu`, 'menuPanelColor2', `setMenuPanelColor`), this['addColorBox']('#theme-menu', `menuTextColor`, `setMenuTextColor`), this[`addColorBox`](`#theme-menu`, `menuTextColor2`, `setMenuTextColor`), this[`addColorBox`](`#theme-menu`, 'btn1Color', `setMenuButtons`), this[`addColorBox`](`#theme-menu`, `btn1Color2`, `setMenuButtons`), this[`addColorBox`](`#theme-menu`, `btn2Color`, `setMenuButtons`), this[`addColorBox`](`#theme-menu`, 'btn2Color2', `setMenuButtons`), this[`addColorBox`](`#theme-menu`, `btn3Color`, `setMenuButtons`), this[`addColorBox`]('#theme-menu', `btn3Color2`, `setMenuButtons`), this[`addColorBox`](`#theme-menu`, 'btn4Color', `setMenuButtons`), this[`addColorBox`](`#theme-menu`, `btn4Color2`, `setMenuButtons`), this[`addInputBox`](`#theme-menu`, `menuBg`, `Image URL`, `setMenuBg`), this[`addColorBox`]('#theme-hud', `hudMainColor`, `setHudColors`), this[`addRgbaColorBox`](`#theme-hud`, `hudColor`, 'setHudColors'), this['addColorBox'](`#theme-hud`, `hudTextColor`, `setHudColors`), this[`addColorBox`](`#theme-hud`, `statsHudColor`, 'setHudColors'), this['addColorBox'](`#theme-hud`, `timeHudColor`, `setHudColors`), this[`addColorBox`](`#theme-hud`, `top5MassColor`, `setHudColors`), this[`addColorBox`](`#theme-hud`, 'lbMeColor', `setHudColors`), this[`addColorBox`](`#theme-hud`, `lbTeammateColor`, 'setHudColors'), this[`addFontBox`](`#theme-hud`, `hudFont`, 'setHudFont'), this['addSliderBox']('#theme-hud', `hudScale`, 1, 2, 0.01, `setHudScale`), this[`addRgbaColorBox`](`#theme-chat`, `messageColor`, 'setChatColors'), this[`addColorBox`](`#theme-chat`, `messageTextColor`, `setChatColors`), this[`addColorBox`](`#theme-chat`, `messageTimeColor`, `setChatColors`), this[`addColorBox`](`#theme-chat`, `messageNickColor`, `setChatColors`), this[`addRgbaColorBox`](`#theme-chat`, `commandsColor`, `setChatColors`), this['addColorBox']('#theme-chat', `commandsTextColor`, `setChatColors`), this[`addColorBox`]('#theme-chat', 'commandsTimeColor', `setChatColors`), this[`addColorBox`](`#theme-chat`, `commandsNickColor`, `setChatColors`), this[`addRgbaColorBox`](`#theme-chat`, 'chatBoxColor', 'setChatColors'), this[`addSliderBox`]('#theme-chat', `chatScale`, 1, 2, 0.01, `setChatScale`), this[`addColorBox`](`#theme-minimap`, `miniMapSectorsColor`, 'setMiniMapSectorsColor'), this[`addColorBox`](`#theme-minimap`, `miniMapSectorColor`), this[`addColorBox`](`#theme-minimap`, `miniMapNickColor`), this['addColorBox'](`#theme-minimap`, `miniMapNickStrokeColor`), this[`addColorBox`](`#theme-minimap`, `miniMapMyCellColor`), this['addColorBox']('#theme-minimap', `miniMapMyCellStrokeColor`), this[`addColorBox`]('#theme-minimap', 'miniMapTeammatesColor'), this[`addColorBox`](`#theme-minimap`, `miniMapDeathLocationColor`), this[`addColorBox`](`#theme-minimap`, `miniMapGuidesColor`), this[`addColorBox`](`#theme-minimap`, `miniMapGhostCellsColor`), this[`addFontBox`](`#theme-minimap`, `miniMapFont`, `setMiniMapFont`), this['addFontBox']('#theme-minimap', `miniMapNickFont`), this[`addSliderBox`](`#theme-minimap`, `miniMapWidth`, 200, 400, 2, `setMiniMapWidth`), this['addSliderBox']('#theme-minimap', 'miniMapSectorsOpacity', 0, 1, 0.01, `setMiniMapSectorsOpacity`), this['addSliderBox']('#theme-minimap', `miniMapNickSize`, 8, 16, 1), this[`addSliderBox`](`#theme-minimap`, `miniMapNickStrokeSize`, 0, 6, 1), this[`addSliderBox`](`#theme-minimap`, `miniMapMyCellSize`, 4, 10, 0.5), this[`addSliderBox`](`#theme-minimap`, `miniMapMyCellStrokeSize`, 0, 10, 1), this[`addSliderBox`](`#theme-minimap`, `miniMapTeammatesSize`, 4, 10, 0.5), this['addSliderBox'](`#theme-minimap`, `miniMapGhostCellsAlpha`, 0.01, 0.99, 0.01), this[`addInputBox`](`#theme-images`, `customBackground`, `Image URL`, `setCustomBackground`), this[`addInputBox`]('#theme-images', `customCursor`, 'Cursor image URL', 'setCustomCursor');
                     for (var e = `https://cdn.ogario.ovh/static/img/cursors/cursor_`, i = 0; i < 35; i++) i < 9 ? this[`addCursorBox`](`#theme-images`, e + '0' + (i + 1) + `.cur`) : this['addCursorBox'](`#theme-images`, e + '' + (i + 1) + `.cur`);
                     s(document)['on'](`click`, `#theme-images .cursor-box a`, function(e) {
-                        e[`preventDefault`]();
+                        e.preventDefault();
                         var i = s(`img`, this)['attr'](`src`);
-                        g[`customCursor`] = i, t[`setCustomCursor`](), s(`#customCursor`)[`val`](i), s(`#theme-images .cursor-box a`)['removeClass']('active'), s(this)[`addClass`](`active`);
-                    }), s(`#theme`)[`append`]('<button class=\"btn btn-block btn-success btn-save\"\">' + h[`saveSett`] + `</button>`), s(document)['on'](`click`, `#theme .btn-save`, function(e) {
-                        e[`preventDefault`]();
+                        g.customCursor = i, t[`setCustomCursor`](), s(`#customCursor`).val(i), s(`#theme-images .cursor-box a`)['removeClass']('active'), s(this)[`addClass`](`active`);
+                    }), s(`#theme`).append('<button class=\"btn btn-block btn-success btn-save\"\">' + h[`saveSett`] + `</button>`), s(document)['on'](`click`, `#theme .btn-save`, function(e) {
+                        e.preventDefault();
                         var i = s(this);
                         i[`text`](h[`saved`]), t['saveThemeSettings'](), setTimeout(function() {
                             i[`text`](h['saveSett']);
                         }, 500);
-                    }), s(`#theme`)['append'](`<div class=\"restore-settings\"><a href=\"#\">` + h[`restoreThemeSettings`] + '</a></div>'), s(document)['on']('click', `#theme .restore-settings a`, function(e) {
-                        e[`preventDefault`](), t[`restoreThemeSettings`]();
-                    }), s(`.skin`)[`colorpicker`]({
+                    }), s(`#theme`).append(`<div class=\"restore-settings\"><a href=\"#\">` + h[`restoreThemeSettings`] + '</a></div>'), s(document)['on']('click', `#theme .restore-settings a`, function(e) {
+                        e.preventDefault(), t[`restoreThemeSettings`]();
+                    }), s(`.skin`).colorpicker({
                         'format': `hex`,
                         'input': `#color`
                     });
@@ -7061,69 +7061,69 @@ ogcustom1=
                     if (e[t]) {
                         g[t] = t;
                         t = e[t];
-                        for (var o in t) t[`hasOwnProperty`](o) && g[`hasOwnProperty`](o) && (g[o] = t[o], i[`hasOwnProperty`](o) && (i[o] = g[o]), s(`#theme .` + o + `-picker`) && s('#theme .' + o + `-picker`)[`colorpicker`]('setValue', g[o]), s('#' + o + '-slider') && s('#' + o + `-slider`)[`val`](g[o])[`change`](), (s(`input[type=text]#` + o) || s(`select#` + o)) && s('#' + o)[`val`](g[o]));
+                        for (var o in t) t.hasOwnProperty(o) && g.hasOwnProperty(o) && (g[o] = t[o], i.hasOwnProperty(o) && (i[o] = g[o]), s(`#theme .` + o + `-picker`) && s('#theme .' + o + `-picker`).colorpicker('setValue', g[o]), s('#' + o + '-slider') && s('#' + o + `-slider`).val(g[o])[`change`](), (s(`input[type=text]#` + o) || s(`select#` + o)) && s('#' + o).val(g[o]));
                     }
                 },
                 'changeThemePreset': function(t) {
-                    this[`changePreset`](t, f), this[`setTheme`]();
+                    this.changePreset(t, f), this.setTheme();
                 },
                 'setFonts': function() {
-                    this[`setFont`]('namesFont', g[`namesFont`]), this[`setFont`](`massFont`, g[`namesFont`]), this[`setFont`](`sectorsFont`, g[`sectorsFont`]);
+                    this.setFont('namesFont', g.namesFont), this.setFont(`massFont`, g.namesFont), this.setFont(`sectorsFont`, g.sectorsFont);
                 },
                 'setBgColor': function() {
-                    s(`body`)[`css`](`background-color`, g[`bgColor`]);
+                    s(`body`).css(`background-color`, g.bgColor);
                 },
                 'setFoodColor': function() {
-                    ogario1Settings['optimizedFood'] && ogarfooddrawer && ogarfooddrawer[`preDrawPellet`]();
+                    v['optimizedFood'] && ogarfooddrawer && ogarfooddrawer.preDrawPellet();
                 },
                 'setIndicatorColor': function() {
-                    ogarfooddrawer && ogarfooddrawer[`preDrawIndicator`]();
+                    ogarfooddrawer && ogarfooddrawer.preDrawIndicator();
                 },
                 'setCustomBackground': function() {
-                    g['customBackground'] ? s(`body`)[`css`](`background-image`, `url(` + g[`customBackground`] + ')') : s(`body`)['css'](`background-image`, `none`);
+                    g['customBackground'] ? s(`body`).css(`background-image`, `url(` + g[`customBackground`] + ')') : s(`body`)['css'](`background-image`, `none`);
                 },
                 'setCustomCursor': function() {
-                    if (g[`customCursor`]) var t = `*{cursor:url(` + g[`customCursor`] + `), auto !important}`;
+                    if (g.customCursor) var t = `*{cursor:url(` + g.customCursor + `), auto !important}`;
                     else t = `*{cursor: auto}`;
-                    this[`addCustomCSS`](`cursorCSS`, t);
+                    this.addCustomCSS(`cursorCSS`, t);
                 },
                 'setMenu': function() {
-                    this[`setMenuOpacity`](), this[`setMenuMainColor`](), this['setMenuPanelColor'](), this[`setMenuTextColor`](), this[`setMenuButtons`](), this[`setMenuBg`]();
+                    this.setMenuOpacity(), this.setMenuMainColor(), this['setMenuPanelColor'](), this[`setMenuTextColor`](), this[`setMenuButtons`](), this[`setMenuBg`]();
                 },
                 'changeMenuPreset': function(t) {
-                    this[`changePreset`](t, m), this['setMenu']();
+                    this.changePreset(t, m), this['setMenu']();
                 },
                 'setMenuOpacity': function() {
                     s('#helloContainer, #hotkeys, #exp-imp')['css'](`opacity`, g[`menuOpacity`]);
                 },
                 'setMenuMainColor': function() {
                     var t = '::-moz-selection{background-color:' + g['menuMainColor'] + `!important}::selection{background-color:` + g[`menuMainColor`] + `!important}.menu-main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:` + g[`menuMainColor`] + `}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:` + g['menuMainColor'] + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + g['menuMainColor'] + `}.ps-scrollbar-y{background-color:` + g[`menuMainColor`] + `!important}`;
-                    this[`addCustomCSS`]('menuMainColorCSS', t);
+                    this.addCustomCSS('menuMainColorCSS', t);
                 },
                 'setMenuPanelColor': function() {
                     var t = `#main-menu,.agario-side-panel,#hotkeys,#exp-imp{background-color: ` + g['menuPanelColor'] + '}label:hover,.agario-panel input,.agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.nick .input-group-btn,.skin .input-group-btn,#stream-mode,#hide-url,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs,#exp-bar .progress,#quick-menu a:hover,.quick,.select-wrapper,#hotkeys-cfg div.row:hover,#hotkeys-cfg .command-in,#exp-imp-settings textarea,.restore-settings{background-color: ' + g[`menuPanelColor2`] + `}.agario-panel h5,.agario-side-panel h5,#stats h2,.menu-tabs,.submenu-tabs,#skins a.default,#stats hr,#hotkeys-cfg div.row, #exp-imp h1{border-color: ` + g[`menuPanelColor2`] + `}.quick:hover,#skins a,#profiles{color:` + g['menuPanelColor2'] + '}input.stream-mode,input.hide-url{color:' + g['menuPanelColor2'] + `!important}`;
-                    this[`addCustomCSS`](`menuPanelColorCSS`, t);
+                    this.addCustomCSS(`menuPanelColorCSS`, t);
                 },
                 'setMenuTextColor': function() {
                     var t = `.agario-panel,.agario-side-panel,.agario-panel input,.agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.dark .yt-username,#stream-mode,#hide-url,.menu-tabs a,.submenu-tabs a,#skins a.default:hover,#quick-menu a,#prev-profile.default:hover,#next-profile.default:hover,#statsText,#hotkeys,#hotkeys-cfg .command-in,#exp-imp{color:` + g[`menuTextColor`] + `}#skins a.default:hover{border-color:` + g[`menuTextColor`] + `}::-webkit-input-placeholder{color:` + g[`menuTextColor2`] + `!important}::-moz-placeholder{color:` + g[`menuTextColor2`] + '!important}#user-id-tag, #version-tag,#statsSubtext,#hotkeys-inst,#exp-imp textarea,.restore-settings a,.restore-settings a:hover{color:' + g[`menuTextColor2`] + `}#hotkeys-cfg .command-in,#theme .color-box{border-color:` + g[`menuTextColor2`] + '}';
-                    this[`addCustomCSS`]('menuTextColorCSS', t);
+                    this.addCustomCSS('menuTextColorCSS', t);
                 },
                 'setMenuButtons': function() {
                     var t = `a,a:hover{color:` + g[`btn1Color`] + `}.btn,#hotkeys-cfg .custom-key-in{color:` + g[`menuBtnTextColor`] + `}.btn-primary{background-color:` + g[`btn1Color`] + `!important}.btn-primary:active,.btn-primary:disabled,.btn-primary:focus,.btn-primary:hover{background-color:` + g['btn1Color2'] + `!important}.btn-success{background-color:` + g[`btn2Color`] + `!important}.btn-success:active,.btn-success:disabled,.btn-success:focus,.btn-success:hover{background-color:` + g[`btn2Color2`] + '!important}.btn-warning{background-color:' + g[`btn3Color`] + `!important}.btn-warning:active,.btn-warning:disabled,.btn-warning:focus,.btn-warning:hover{background-color:` + g[`btn3Color2`] + `!important}.btn-danger{background-color:` + g[`btn4Color`] + `!important}.btn-danger:active,.btn-danger:disabled,.btn-danger:focus,.btn-danger:hover{background-color:` + g[`btn4Color2`] + `!important}#hotkeys-cfg .custom-key-in{background-color:` + g['btn4Color2'] + `;border-color:` + g[`btn4Color2`] + '}';
-                    this[`addCustomCSS`](`menuButtonsCSS`, t);
+                    this.addCustomCSS(`menuButtonsCSS`, t);
                 },
                 'setMenuBg': function() {
-                    s(`#menuBg`)[`val`](g[`menuBg`]), g['menuBg'] ? s(`.menu-panel, .agario-side-panel, #hotkeys, #exp-imp`)[`css`](`background-image`, 'url(' + g[`menuBg`] + ')') : s(`.menu-panel, .agario-side-panel, #hotkeys, #exp-imp`)[`css`](`background-image`, `none`);
+                    s(`#menuBg`).val(g[`menuBg`]), g['menuBg'] ? s(`.menu-panel, .agario-side-panel, #hotkeys, #exp-imp`).css(`background-image`, 'url(' + g[`menuBg`] + ')') : s(`.menu-panel, .agario-side-panel, #hotkeys, #exp-imp`).css(`background-image`, `none`);
                 },
                 'setHud': function() {
                     this[`setHudColors`](), this[`setHudFont`](), this[`setHudScale`]();
                 },
                 'setHudColors': function() {
                     var t = `.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:` + g[`hudMainColor`] + '}.hud,.hud-b,#chat-emoticons{background-color:' + g[`hudColor`] + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + g[`hudTextColor`] + `}.stats-hud-color{color:` + g[`statsHudColor`] + `}.time-hud-color{color:` + g[`timeHudColor`] + `}.top5-mass-color{color:` + g[`top5MassColor`] + `}#leaderboard-positions .me{color:` + g[`lbMeColor`] + `}#leaderboard-positions .teammate{color:` + g[`lbTeammateColor`] + '}';
-                    this[`addCustomCSS`](`hudCSS`, t);
+                    this.addCustomCSS(`hudCSS`, t);
                 },
                 'setHudFont': function() {
-                    this[`setFont`](`hudFont`, g[`hudFont`]), s(`#overlays-hud`)[`css`]({
+                    this.setFont(`hudFont`, g[`hudFont`]), s(`#overlays-hud`).css({
                         'font-family': g[`hudFontFamily`],
                         'font-weight': g[`hudFontWeight`]
                     });
@@ -7136,14 +7136,14 @@ ogcustom1=
                         a = Math[`floor`](280 * g[`hudScale`]),
                         n = Math['floor'](85 * g[`hudScale`]),
                         r = Math['floor'](20 * g[`hudScale`]);
-                    s(`#overlays-hud`)['css'](`font-size`, t + 'px'), s('#leaderboard-hud, #time-hud')['width'](e), s(`#top5-hud`)[`width`](e + 30)[`css`](`top`, i + 'px'), s(`#top5-pos`)[`css`](`padding-left`, o + 'px'), s(`#time-hud`)[`css`](`top`, a + 'px'), s(`#pause-hud`)['css']('top', n + 'px'), s(`#target-hud`)[`css`](`padding-top`, r + 'px');
+                    s(`#overlays-hud`)['css'](`font-size`, t + 'px'), s('#leaderboard-hud, #time-hud')['width'](e), s(`#top5-hud`)[`width`](e + 30).css(`top`, i + 'px'), s(`#top5-pos`).css(`padding-left`, o + 'px'), s(`#time-hud`).css(`top`, a + 'px'), s(`#pause-hud`)['css']('top', n + 'px'), s(`#target-hud`).css(`padding-top`, r + 'px');
                 },
                 'setChat': function() {
                     this[`setChatColors`](), this[`setChatScale`]();
                 },
                 'setChatColors': function() {
                     var t = `#message,#messages li,.toast-success{background-color:` + g[`messageColor`] + `}#message,.message-text,.toast-success .message-text{color:` + g[`messageTextColor`] + `}.message-nick,.mute-user,.mute-user:hover,.toast-success .message-nick,.toast .mute-user,.toast .mute-user:hover{color:` + g[`messageNickColor`] + `}.message-time{color:` + g[`messageTimeColor`] + '}.toast-warning{background-color:' + g[`commandsColor`] + `}.command-text,.toast-warning .command-text{color:` + g[`commandsTextColor`] + '}.command-nick,.toast-warning .command-nick,.toast-warning .mute-user,.toast-warning .mute-user:hover{color:' + g[`commandsNickColor`] + `}.command-time{color:` + g[`commandsTimeColor`] + `}#chat-box{background-color:` + g[`chatBoxColor`] + '}';
-                    this[`addCustomCSS`](`chatCSS`, t);
+                    this.addCustomCSS(`chatCSS`, t);
                 },
                 'setChatScale': function() {
                     var t = Math['round'](14 * g[`chatScale`]),
@@ -7151,19 +7151,19 @@ ogcustom1=
                         i = Math[`round`](350 * g['chatScale']),
                         o = Math['round'](300 * g[`chatScale`]),
                         a = Math[`floor`](14 * g[`chatScale`]);
-                    s(`#message-box, #messages, #toast-container, #chat-box`)['css'](`font-size`, t + 'px'), s(`#messages, #toast-container, #chat-box`)[`width`](e), s(`#message-box`)['width'](i), s('#chat-box')[`height`](o), s('.user-list')[`css`](`padding-left`, a + 'px');
+                    s(`#message-box, #messages, #toast-container, #chat-box`)['css'](`font-size`, t + 'px'), s(`#messages, #toast-container, #chat-box`)[`width`](e), s(`#message-box`)['width'](i), s('#chat-box')[`height`](o), s('.user-list').css(`padding-left`, a + 'px');
                     var n = `#toast-container{width:` + e + `px;font-size:` + t + `px}`;
-                    this[`addCustomCSS`](`chatScaleCSS`, n);
+                    this.addCustomCSS(`chatScaleCSS`, n);
                 },
                 'setMiniMap': function() {
                     this[`setMiniMapFont`](), this[`setMiniMapWidth`](), this[`setMiniMapSectorsOpacity`]();
                 },
                 'setMiniMapFont': function() {
-                    this[`setFont`]('miniMapFont', g['miniMapFont']), ogarminimapdrawer && ogarminimapdrawer['resetMiniMapSectors']();
+                    this.setFont('miniMapFont', g['miniMapFont']), ogarminimapdrawer && ogarminimapdrawer['resetMiniMapSectors']();
                 },
                 'setMiniMapWidth': function() {
                     var t = g[`miniMapWidth`] / 200;
-                    g[`miniMapTop`] = Math[`round`](20 * t), s(`#minimap-hud`)[`css`]({
+                    g[`miniMapTop`] = Math[`round`](20 * t), s(`#minimap-hud`).css({
                         'width': g[`miniMapWidth`],
                         'height': g[`miniMapWidth`] + g[`miniMapTop`]
                     }), ogarminimapdrawer && ogarminimapdrawer[`resetMiniMapSectors`]();
@@ -7172,7 +7172,7 @@ ogcustom1=
                     ogarminimapdrawer && ogarminimapdrawer['resetMiniMapSectors']();
                 },
                 'setMiniMapSectorsOpacity': function() {
-                    s(`#minimap-sectors`)[`css`](`opacity`, g[`miniMapSectorsOpacity`]);
+                    s(`#minimap-sectors`).css(`opacity`, g[`miniMapSectorsOpacity`]);
                 },
                 'setTheme': function() {
                     this[`setFonts`](), this['setBgColor'](), this[`setCustomBackground`](), this[`setCustomCursor`](), this[`setMenu`](), this[`setHud`](), this[`setChat`](), this[`setMiniMap`]();
@@ -7188,7 +7188,7 @@ ogcustom1=
                 'skinURL': '',
                 'color': g[`mainColor`]
             },
-            ogario1Settings = {
+            v = {
                 'quickResp': !0,
                 'autoResp': !1,
                 'autoZoom': !1,
@@ -7393,37 +7393,37 @@ ogcustom1=
                 this[`selectBiggestCell`] = !this[`selectBiggestCell`], i[`selectBiggestCell`] = this[`selectBiggestCell`];
             },
             'setShowTop5': function() {
-                ogario1Settings[`showTop5`] = !ogario1Settings[`showTop5`], this[`setTop5`]();
+                v[`showTop5`] = !v[`showTop5`], this[`setTop5`]();
             },
             'setTop5': function() {
-                ogario1Settings[`showTop5`] ? s(`#top5-hud`)[`show`]() : s(`#top5-hud`)[`hide`]();
+                v[`showTop5`] ? s(`#top5-hud`)[`show`]() : s(`#top5-hud`)[`hide`]();
             },
             'setShowTargeting': function() {
-                ogario1Settings[`showTargeting`] = !ogario1Settings[`showTargeting`], this[`setTargetingHUD`]();
+                v[`showTargeting`] = !v[`showTargeting`], this[`setTargetingHUD`]();
             },
             'setTargetingHUD': function() {
-                ogario1Settings[`showTargeting`] ? s(`#target-hud, #target-panel-hud`)[`show`]() : s('#target-hud, #target-panel-hud')[`hide`]();
+                v[`showTargeting`] ? s(`#target-hud, #target-panel-hud`)[`show`]() : s('#target-hud, #target-panel-hud')[`hide`]();
             },
             'setShowTime': function() {
-                ogario1Settings[`showTime`] = !ogario1Settings[`showTime`], ogario1Settings[`showTime`] ? (s(`#time-hud`)[`show`](), this[`displayTime`]()) : s(`#time-hud`)[`hide`]();
+                v[`showTime`] = !v[`showTime`], v[`showTime`] ? (s(`#time-hud`)[`show`](), this[`displayTime`]()) : s(`#time-hud`)[`hide`]();
             },
             'setShowSplitRange': function() {
-                ogario1Settings[`splitRange`] = !ogario1Settings['splitRange'], i[`splitRange`] = ogario1Settings[`splitRange`];
+                v[`splitRange`] = !v['splitRange'], i[`splitRange`] = v[`splitRange`];
             },
             'setShowSplitInd': function() {
-                this[`showSplitInd`] = !this['showSplitInd'], ogario1Settings['splitRange'] = this[`showSplitInd`], ogario1Settings[`oppRings`] = this['showSplitInd'], i[`splitRange`] = ogario1Settings['splitRange'], i[`oppRings`] = ogario1Settings[`oppRings`];
+                this[`showSplitInd`] = !this['showSplitInd'], v['splitRange'] = this[`showSplitInd`], v[`oppRings`] = this['showSplitInd'], i[`splitRange`] = v['splitRange'], i[`oppRings`] = v[`oppRings`];
             },
             'setShowTeammatesInd': function() {
-                ogario1Settings[`teammatesInd`] = !ogario1Settings[`teammatesInd`];
+                v[`teammatesInd`] = !v[`teammatesInd`];
             },
             'setShowOppColors': function() {
-                ogario1Settings[`oppColors`] = !ogario1Settings[`oppColors`], i[`oppColors`] = ogario1Settings[`oppColors`];
+                v[`oppColors`] = !v[`oppColors`], i[`oppColors`] = v[`oppColors`];
             },
             'setShowSkins': function() {
                 this[`noSkins`] = !this[`noSkins`], e[`core`] && e[`core`][`setSkins`] && e[`core`][`setSkins`](!this[`noSkins`]), i[`showCustomSkins`] = !this[`noSkins`], this[`displayChatInfo`](!this[`noSkins`], `showSkinsMsg`);
             },
             'setTransparentSkins': function() {
-                ogario1Settings[`transparentSkins`] = !ogario1Settings[`transparentSkins`], i['transparentSkins'] = ogario1Settings[`transparentSkins`];
+                v[`transparentSkins`] = !v[`transparentSkins`], i['transparentSkins'] = v[`transparentSkins`];
             },
             'setShowStats': function() {
                 s('#stats-hud')[`toggle`]();
@@ -7435,34 +7435,34 @@ ogcustom1=
                 s(`#overlays-hud`)['toggle']();
             },
             'setShowGrid': function() {
-                ogario1Settings[`showGrid`] = !ogario1Settings[`showGrid`];
+                v[`showGrid`] = !v[`showGrid`];
             },
             'setShowMiniMapGuides': function() {
-                ogario1Settings['showMiniMapGuides'] = !ogario1Settings[`showMiniMapGuides`];
+                v['showMiniMapGuides'] = !v[`showMiniMapGuides`];
             },
             'setShowLb': function() {
                 `:teams` !== this[`gameMode`] && s(`#leaderboard-hud`)[`toggle`]();
             },
             'setShowBgSectors': function() {
-                ogario1Settings[`showBgSectors`] = !ogario1Settings[`showBgSectors`];
+                v[`showBgSectors`] = !v[`showBgSectors`];
             },
             'setHideSmallBots': function() {
                 i[`hideSmallBots`] = !i[`hideSmallBots`], this[`displayChatInfo`](!i['hideSmallBots'], `hideSmallBotsMsg`);
             },
             'setShowNames': function() {
-                ogario1Settings[`noNames`] = !ogario1Settings[`noNames`];
+                v[`noNames`] = !v[`noNames`];
             },
             'setHideTeammatesNames': function() {
-                ogario1Settings[`hideTeammatesNames`] = !ogario1Settings[`hideTeammatesNames`];
+                v[`hideTeammatesNames`] = !v[`hideTeammatesNames`];
             },
             'setShowMass': function() {
-                ogario1Settings[`showMass`] = !ogario1Settings[`showMass`];
+                v[`showMass`] = !v[`showMass`];
             },
             'setShowMiniMap': function() {
-                ogario1Settings[`showMiniMap`] = !ogario1Settings['showMiniMap'], this['setMiniMap']();
+                v[`showMiniMap`] = !v['showMiniMap'], this['setMiniMap']();
             },
             'setMiniMap': function() {
-                ogario1Settings['showMiniMap'] ? s(`#minimap-hud`)[`show`]() : s(`#minimap-hud`)['hide']();
+                v['showMiniMap'] ? s(`#minimap-hud`)[`show`]() : s(`#minimap-hud`)['hide']();
             },
             'setShowQuest': function() {
                 `:ffa` === this[`gameMode`] && (this[`showQuest`] = !this[`showQuest`], this[`setQuest`]());
@@ -7493,20 +7493,20 @@ ogcustom1=
                 }
             },
             'quickResp': function() {
-                ogario1Settings[`quickResp`] && (this[`hideMenu`](), this[`gameServerConnect`](this['ws']), i[`play`] = !1, this['tryResp']());
+                v[`quickResp`] && (this[`hideMenu`](), this[`gameServerConnect`](this['ws']), i[`play`] = !1, this['tryResp']());
             },
             'autoResp': function() {
-                ogario1Settings[`autoResp`] && (this[`setAutoResp`](), s('#overlays')[`stop`]()[`hide`](), s(`.btn-play-guest`)['is'](`:visible`) ? s('.btn-play-guest')[`click`]() : s(`.btn-play`)[`click`]());
+                v[`autoResp`] && (this[`setAutoResp`](), s('#overlays')[`stop`]()[`hide`](), s(`.btn-play-guest`)['is'](`:visible`) ? s('.btn-play-guest')[`click`]() : s(`.btn-play`)[`click`]());
             },
             'setAutoResp': function() {
-                ogario1Settings[`autoResp`] && (s(`#skipStats`)[`prop`](`checked`) || (s(`#skipStats`)[`click`](), this[`skipStats`] = !0));
+                v[`autoResp`] && (s(`#skipStats`)[`prop`](`checked`) || (s(`#skipStats`)[`click`](), this[`skipStats`] = !0));
             },
             'toggleAutoResp': function() {
-                ogario1Settings[`autoResp`] = !ogario1Settings[`autoResp`], this[`setAutoResp`](), this[`displayChatInfo`](ogario1Settings[`autoResp`], `autoRespMsg`);
+                v[`autoResp`] = !v[`autoResp`], this[`setAutoResp`](), this[`displayChatInfo`](v[`autoResp`], `autoRespMsg`);
             },
             'copyLb': function() {
                 var t = s(`<input>`);
-                s(`body`)[`append`](t), t[`val`](s(`#leaderboard-positions`)['text']())[`select`]();
+                s(`body`).append(t), t.val(s(`#leaderboard-positions`)['text']())[`select`]();
                 try {
                     document[`execCommand`]('copy');
                 } catch (ogarcopierlbcather) {}
@@ -7516,16 +7516,16 @@ ogcustom1=
                 this[`pause`] = !this[`pause`], i[`pause`] = this[`pause`], this['pause'] ? (i['resetTargetPosition'](), s(`#pause-hud`)[`show`]()) : s(`#pause-hud`)[`hide`]();
             },
             'setCenteredLb': function() {
-                ogario1Settings[`centeredLb`] ? s(`#leaderboard-hud`)[`addClass`](`hud-text-center`) : s(`#leaderboard-hud`)['removeClass'](`hud-text-center`);
+                v[`centeredLb`] ? s(`#leaderboard-hud`)[`addClass`](`hud-text-center`) : s(`#leaderboard-hud`)['removeClass'](`hud-text-center`);
             },
             'setNormalLb': function() {
-                ogario1Settings[`normalLb`] ? s(`#leaderboard-hud h4`)[`html`](h[`leaderboard`]) : s(`#leaderboard-hud h4`)[`html`](`ogario.ovh`);
+                v[`normalLb`] ? s(`#leaderboard-hud h4`)[`html`](h[`leaderboard`]) : s(`#leaderboard-hud h4`)[`html`](`ogario.ovh`);
             },
             'setFpsAtTop': function() {
-                ogario1Settings[`fpsAtTop`] ? s(`#stats-hud`)[`removeClass`](`hud-bottom`)[`addClass`](`hud-top`) : s(`#stats-hud`)[`removeClass`](`hud-top`)['addClass'](`hud-bottom`);
+                v[`fpsAtTop`] ? s(`#stats-hud`)[`removeClass`](`hud-bottom`)[`addClass`](`hud-top`) : s(`#stats-hud`)[`removeClass`](`hud-top`)['addClass'](`hud-bottom`);
             },
             'setBlockPopups': function() {
-                this[`protocolMode`] ? s(`#block-warn`)[`hide`]() : ogario1Settings[`blockPopups`] ? this[`blockPopups`]() : this[`unblockPopups`]();
+                this[`protocolMode`] ? s(`#block-warn`)[`hide`]() : v[`blockPopups`] ? this[`blockPopups`]() : this[`unblockPopups`]();
             },
             'blockPopups': function() {
                 s(`#openfl-content, #openfl-overlay`)[`hide`](), s(`#openfl-content, #openfl-overlay`)[`addClass`](`block-popups`), s('#freeCoins, #gifting, #openShopBtn, #dailyQuests')[`prop`](`disabled`, !0), s(`#block-warn`)[`show`]();
@@ -7534,15 +7534,15 @@ ogcustom1=
                 s(`#openfl-overlay.disabler`)['click'](), s('#openfl-content, #openfl-overlay')[`hide`](), s(`#openfl-content, #openfl-overlay`)['removeClass']('block-popups'), s(`#freeCoins, #gifting, #openShopBtn, #dailyQuests`)[`prop`](`disabled`, !1), s(`#block-warn`)[`hide`]();
             },
             'tempUnblockPopups': function() {
-                ogario1Settings[`blockPopups`] && this[`unblockPopups`]();
+                v[`blockPopups`] && this[`unblockPopups`]();
             },
             'displayLeaderboard': function(t, e = '') {
                 this[`leaderboardPositionsHUD`] && (this[`leaderboardPositionsHUD`][`innerHTML`] = t, this[`leaderboardDataHUD`][`innerHTML`] = e);
             },
             'displayStats': function() {
-                if (ogario1Settings[`showStats`]) {
+                if (v[`showStats`]) {
                     var t = '';
-                    i[`play`] && (ogario1Settings[`showStatsMass`] && i[`playerMass`] && (t += h[`mass`] + ': ' + i[`playerMass`] + ` | `), i[`playerScore`] && (t += h[`score`] + ': ' + i['playerScore']), ogario1Settings['showStatsSTE'] && i[`STE`] && (t += ` | STE: ` + i['STE']), ogario1Settings[`showStatsN16`] && i[`playerSplitCells`] && (t += ` | ` + i[`playerSplitCells`] + '/16'), ogario1Settings[`showStatsFPS`] && (t += ' | ')), ogario1Settings[`showStatsFPS`] && (t += `FPS: ` + ogarfooddrawer[`fps`]), this[`statsHUD`][`textContent`] = t;
+                    i[`play`] && (v[`showStatsMass`] && i[`playerMass`] && (t += h[`mass`] + ': ' + i[`playerMass`] + ` | `), i[`playerScore`] && (t += h[`score`] + ': ' + i['playerScore']), v['showStatsSTE'] && i[`STE`] && (t += ` | STE: ` + i['STE']), v[`showStatsN16`] && i[`playerSplitCells`] && (t += ` | ` + i[`playerSplitCells`] + '/16'), v[`showStatsFPS`] && (t += ' | ')), v[`showStatsFPS`] && (t += `FPS: ` + ogarfooddrawer[`fps`]), this[`statsHUD`][`textContent`] = t;
                     var e = this;
                     setTimeout(function() {
                         e[`displayStats`]();
@@ -7550,7 +7550,7 @@ ogcustom1=
                 } else s('#stats-hud')[`hide`]();
             },
             'displayTime': function() {
-                if (ogario1Settings[`showTime`]) {
+                if (v[`showTime`]) {
                     var t = new Date()[`toLocaleString`]();
                     this['timeHUD'][`textContent`] = t;
                     var e = this;
@@ -7564,8 +7564,8 @@ ogcustom1=
                 this[`activeParties`][`className`] = '' === t ? `no-parties` : '', this[`activeParties`]['innerHTML'] = t;
             },
             'displayTop5': function() {
-                if (ogario1Settings['showTop5']) {
-                    for (var t = '', e = 0, s = this[`top5`][`length`], o = 0; o < s; o++) e += this[`top5`][o][`mass`], o >= this['top5limit'] || (t += `<li><span class=\"cell-counter\" style=\"background-color: ` + this[`top5`][o][`color`] + '\">' + (o + 1) + `</span>`, ogario1Settings[`showTargeting`] && (t += `<a href=\"#\" data-user-id=\"` + this[`top5`][o]['id'] + `\" class=\"set-target ogicon-target\"></a> `), t += `<span class=\"hud-main-color\">[` + this[`calculateMapSector`](this[`top5`][o]['x'], this[`top5`][o]['y']) + `]</span>`, t += `<span class=\"top5-mass-color\">[` + this[`shortMassFormat`](this[`top5`][o][`mass`]) + `]</span> ` + this[`escapeHTML`](this[`top5`][o][`nick`]) + `</li>`);
+                if (v['showTop5']) {
+                    for (var t = '', e = 0, s = this[`top5`][`length`], o = 0; o < s; o++) e += this[`top5`][o][`mass`], o >= this['top5limit'] || (t += `<li><span class=\"cell-counter\" style=\"background-color: ` + this[`top5`][o][`color`] + '\">' + (o + 1) + `</span>`, v[`showTargeting`] && (t += `<a href=\"#\" data-user-id=\"` + this[`top5`][o]['id'] + `\" class=\"set-target ogicon-target\"></a> `), t += `<span class=\"hud-main-color\">[` + this[`calculateMapSector`](this[`top5`][o]['x'], this[`top5`][o]['y']) + `]</span>`, t += `<span class=\"top5-mass-color\">[` + this[`shortMassFormat`](this[`top5`][o][`mass`]) + `]</span> ` + this[`escapeHTML`](this[`top5`][o][`nick`]) + `</li>`);
                     this[`top5pos`]['innerHTML'] = t, i['play'] && i[`playerMass`] && (e += i[`playerMass`], s++), this[`top5totalMass`][`textContent`] = this[`shortMassFormat`](e), this[`top5totalPlayers`][`textContent`] = s;
                 }
             },
@@ -7575,34 +7575,34 @@ ogcustom1=
             'displayChatHistory': function(t) {
                 if (t) {
                     this[`clearChatHistory`](!0);
-                    for (var e = 0; e < this[`chatHistory`][`length`]; e++) s(`#messages`)['append'](`<li><span class=\"message-nick\">` + this[`chatHistory`][e][`nick`] + `: </span><span class=\"message-text\">` + this['chatHistory'][e][`message`] + `</span></li>`);
+                    for (var e = 0; e < this[`chatHistory`][`length`]; e++) s(`#messages`).append(`<li><span class=\"message-nick\">` + this[`chatHistory`][e][`nick`] + `: </span><span class=\"message-text\">` + this['chatHistory'][e][`message`] + `</span></li>`);
                 } else this[`clearChatHistory`](!1);
             },
             'clearChatHistory': function(t) {
-                s(`#messages`)[`empty`](), t && (toastr[`clear`](), ogario1Settings[`showChatBox`] && (s(`#chat-box .message`)[`remove`](), this[`chatHistory`]['length'] = 0));
+                s(`#messages`)[`empty`](), t && (toastr[`clear`](), v[`showChatBox`] && (s(`#chat-box .message`)[`remove`](), this[`chatHistory`]['length'] = 0));
             },
             'displayChatInfo': function(t, e) {
                 t ? toastr['info'](h[e + 'A']) : toastr['error'](h[e + 'B']);
             },
             'setDisableChat': function() {
-                ogario1Settings[`hideChat`] = ogario1Settings[`disableChat`], this[`setHideChat`]();
+                v[`hideChat`] = v[`disableChat`], this[`setHideChat`]();
             },
             'hideChat': function() {
-                ogario1Settings['hideChat'] = !ogario1Settings[`hideChat`], this[`setHideChat`](), this[`displayChatInfo`](!ogario1Settings[`hideChat`], 'hideChatMsg');
+                v['hideChat'] = !v[`hideChat`], this[`setHideChat`](), this[`displayChatInfo`](!v[`hideChat`], 'hideChatMsg');
             },
             'setHideChat': function() {
-                ogario1Settings['hideChat'] && s('#message-box')[`hide`](), this[`setShowChatBox`]();
+                v['hideChat'] && s('#message-box')[`hide`](), this[`setShowChatBox`]();
             },
             'setShowChatBox': function() {
-                !ogario1Settings[`hideChat`] && ogario1Settings[`showChatBox`] ? s(`#chat-box`)['show']() : s(`#chat-box`)[`hide`]();
+                !v[`hideChat`] && v[`showChatBox`] ? s(`#chat-box`)['show']() : s(`#chat-box`)[`hide`]();
             },
             'enterChatMessage': function() {
                 var t = s(`#message-box`),
                     e = s('#message');
                 if (t['is'](`:visible`)) {
-                    var o = e[`val`]();
-                    o['length'] ? (this[`sendChatMessage`](101, o), i[`play`] && (e[`blur`](), t[`hide`]())) : (e[`blur`](), t[`hide`]()), e[`val`]('');
-                } else t[`show`](), e['focus'](), e[`val`]('');
+                    var o = e.val();
+                    o['length'] ? (this[`sendChatMessage`](101, o), i[`play`] && (e[`blur`](), t[`hide`]())) : (e[`blur`](), t[`hide`]()), e.val('');
+                } else t[`show`](), e['focus'](), e.val('');
             },
             'showMenu': function(t) {
                 if (e['MC'] && e['MC'][`showNickDialog`]) return s('.ogario-menu')[`show`](), s(`.menu-panel`)['hide'](), i[`play`] || this['skipStats'] ? s('#main-panel')[`show`]() : s(`#stats`)['show'](), e['MC']['showNickDialog'](300), s(`#oferwallContainer`)['is'](`:visible`) && e[`closeOfferwall`](), void(s(`#videoContainer`)['is'](`:visible`) && e[`closeVideoContainer`]());
@@ -7621,41 +7621,41 @@ ogcustom1=
             },
             'loadSettings': function() {
                 var t = null;
-                for (var s in null !== e[`localStorage`][`getItem`](`ogarioSettings`) && (t = JSON[`parse`](e[`localStorage`][`getItem`]('ogarioSettings'))), ogario1Settings) ogario1Settings[`hasOwnProperty`](s) && (t && t['hasOwnProperty'](s) && (ogario1Settings[s] = t[s]), i[`hasOwnProperty`](s) && (i[s] = ogario1Settings[s]));
+                for (var s in null !== e.localStorage.getItem(`ogarioSettings`) && (t = JSON.parse(e.localStorage.getItem('ogarioSettings'))), v) v.hasOwnProperty(s) && (t && t.hasOwnProperty(s) && (v[s] = t[s]), i.hasOwnProperty(s) && (i[s] = v[s]));
             },
             'saveSettings': function(t, i) {
-                e['localStorage'][`setItem`](i, JSON['stringify'](t));
+                e.localStorage.setItem(i, JSON['stringify'](t));
             },
             'exportSettings': function() {
                 var t = {
                     'ogarioCommands': c,
                     'ogarioHotkeys': ogario1Hotkeys,
                     'ogarioPlayerProfiles': ogario1PlayerProfiles,
-                    'ogarioSettings': ogario1Settings,
+                    'ogarioSettings': v,
                     'ogarioThemeSettings': g
                 };
                 for (var e in t) {
-                    if (t[`hasOwnProperty`](e)) s(`#export-` + e)['prop'](`checked`) || delete t[e];
+                    if (t.hasOwnProperty(e)) s(`#export-` + e)['prop'](`checked`) || delete t[e];
                 }
-                t = JSON[`stringify`](t), s('#export-settings')[`val`](t), s(`#import-settings`)[`val`](''), t = null;
+                t = JSON.stringify(t), s('#export-settings').val(t), s(`#import-settings`).val(''), t = null;
             },
             'importSettings': function() {
                 s(`#import-settings`)[`blur`]();
-                var t = s(`#import-settings`)[`val`]();
+                var t = s(`#import-settings`).val();
                 if (t) {
-                    for (var i in t = JSON[`parse`](t))
-                        if (t[`hasOwnProperty`](i)) {
+                    for (var i in t = JSON.parse(t))
+                        if (t.hasOwnProperty(i)) {
                             if (!s(`#import-` + i)[`prop`](`checked`)) continue;
-                            e[`localStorage`][`setItem`](i, JSON[`stringify`](t[i]));
-                        } e['location'][`reload`]();
+                            e.localStorage.setItem(i, JSON.stringify(t[i]));
+                        } e['location'].reload();
                 }
             },
             'restoreSettings': function() {
-                null !== e[`localStorage`]['getItem'](`ogarioSettings`) && (e[`localStorage`][`removeItem`](`ogarioSettings`), e['location'][`reload`]());
+                null !== e.localStorage['getItem'](`ogarioSettings`) && (e.localStorage.removeItem(`ogarioSettings`), e['location'].reload());
             },
             'setSettings': function(t, e) {
-                if (ogario1Settings[`hasOwnProperty`](t) && null !== e) {
-                    switch (ogario1Settings[t] = e, i[`hasOwnProperty`](t) && (i[t] = e), t) {
+                if (v.hasOwnProperty(t) && null !== e) {
+                    switch (v[t] = e, i.hasOwnProperty(t) && (i[t] = e), t) {
                         case `autoResp`:
                             this[`setAutoResp`]();
                             break;
@@ -7698,11 +7698,11 @@ ogcustom1=
                         case `blockPopups`:
                             this['setBlockPopups']();
                     }
-                    this[`saveSettings`](ogario1Settings, `ogarioSettings`);
+                    this[`saveSettings`](v, `ogarioSettings`);
                 }
             },
             'loadProfiles': function() {
-                if (null !== e[`localStorage`][`getItem`](`ogarioPlayerProfiles`)) ogario1PlayerProfiles = JSON[`parse`](e[`localStorage`]['getItem'](`ogarioPlayerProfiles`));
+                if (null !== e.localStorage.getItem(`ogarioPlayerProfiles`)) ogario1PlayerProfiles = JSON.parse(e.localStorage['getItem'](`ogarioPlayerProfiles`));
                 else
                     for (var t = 0; t < 10; t++) ogario1PlayerProfiles[`push`]({
                         'nick': `Profile #` + (t + 1),
@@ -7710,10 +7710,10 @@ ogcustom1=
                         'skinURL': '',
                         'color': g['mainColor']
                     });
-                null !== e[`localStorage`][`getItem`](`ogarioSelectedProfile`) && (this[`selectedProfile`] = JSON['parse'](e[`localStorage`][`getItem`]('ogarioSelectedProfile'))), ogarcopythelb[`nick`] = ogario1PlayerProfiles[this[`selectedProfile`]][`nick`], ogarcopythelb[`clanTag`] = ogario1PlayerProfiles[this['selectedProfile']][`clanTag`], ogarcopythelb[`skinURL`] = ogario1PlayerProfiles[this['selectedProfile']]['skinURL'], ogarcopythelb[`color`] = ogario1PlayerProfiles[this[`selectedProfile`]][`color`];
+                null !== e.localStorage.getItem(`ogarioSelectedProfile`) && (this[`selectedProfile`] = JSON['parse'](e.localStorage.getItem('ogarioSelectedProfile'))), ogarcopythelb[`nick`] = ogario1PlayerProfiles[this[`selectedProfile`]][`nick`], ogarcopythelb[`clanTag`] = ogario1PlayerProfiles[this['selectedProfile']][`clanTag`], ogarcopythelb[`skinURL`] = ogario1PlayerProfiles[this['selectedProfile']]['skinURL'], ogarcopythelb[`color`] = ogario1PlayerProfiles[this[`selectedProfile`]][`color`];
             },
             'changeSkinPreview': function(t, e) {
-                t && e && ('skin-preview' === e ? (s('#skin-preview')[`removeClass`](`default`)[`append`](`<a href=\"#\" id=\"skin-popover\" data-toggle=\"popover\" title=\"\" data-html=\"true\" data-content=\"<img src=\'` + t['src'] + `\' width=\'500\'>\"></a>`), s('#skin-popover')[`append`](s(t)[`fadeIn`](1000)), s(`#skin-popover`)[`popover`]()) : s('#' + e)[`removeClass`](`default`)[`append`](s(t)[`fadeIn`](1000)));
+                t && e && ('skin-preview' === e ? (s('#skin-preview')[`removeClass`](`default`).append(`<a href=\"#\" id=\"skin-popover\" data-toggle=\"popover\" title=\"\" data-html=\"true\" data-content=\"<img src=\'` + t['src'] + `\' width=\'500\'>\"></a>`), s('#skin-popover').append(s(t)[`fadeIn`](1000)), s(`#skin-popover`)[`popover`]()) : s('#' + e)[`removeClass`](`default`).append(s(t)[`fadeIn`](1000)));
             },
             'setSkinPreview': function(t, e) {
                 if (s('#' + e)[`empty`]()[`addClass`](`default`), t && 0 != t[`length`]) {
@@ -7727,7 +7727,7 @@ ogcustom1=
             'setProfile': function() {
                 var t = (ogario1PlayerProfiles[`length`] + this['selectedProfile'] - 1) % ogario1PlayerProfiles[`length`],
                     e = (this[`selectedProfile`] + 1) % ogario1PlayerProfiles[`length`];
-                this[`setSkinPreview`](ogario1PlayerProfiles[t][`skinURL`], 'prev-profile'), this['setSkinPreview'](ogario1PlayerProfiles[this['selectedProfile']][`skinURL`], `skin-preview`), this[`setSkinPreview`](ogario1PlayerProfiles[e][`skinURL`], `next-profile`), this[`saveSettings`](this[`selectedProfile`], `ogarioSelectedProfile`), s(`#nick`)[`val`](ogario1PlayerProfiles[this[`selectedProfile`]][`nick`]), s(`#clantag`)['val'](ogario1PlayerProfiles[this[`selectedProfile`]]['clanTag']), s(`#skin`)[`val`](ogario1PlayerProfiles[this['selectedProfile']]['skinURL']), s('#color')[`val`](ogario1PlayerProfiles[this['selectedProfile']][`color`]), s(`.skin`)['colorpicker'](`setValue`, ogario1PlayerProfiles[this[`selectedProfile`]][`color`]), s(`#skins a`)[`removeClass`](`selected`), s(`#skins a[data-profile=\'` + this['selectedProfile'] + '\']')[`addClass`]('selected');
+                this[`setSkinPreview`](ogario1PlayerProfiles[t][`skinURL`], 'prev-profile'), this['setSkinPreview'](ogario1PlayerProfiles[this['selectedProfile']][`skinURL`], `skin-preview`), this[`setSkinPreview`](ogario1PlayerProfiles[e][`skinURL`], `next-profile`), this[`saveSettings`](this[`selectedProfile`], `ogarioSelectedProfile`), s(`#nick`).val(ogario1PlayerProfiles[this[`selectedProfile`]][`nick`]), s(`#clantag`)['val'](ogario1PlayerProfiles[this[`selectedProfile`]]['clanTag']), s(`#skin`).val(ogario1PlayerProfiles[this['selectedProfile']]['skinURL']), s('#color').val(ogario1PlayerProfiles[this['selectedProfile']][`color`]), s(`.skin`)['colorpicker'](`setValue`, ogario1PlayerProfiles[this[`selectedProfile`]][`color`]), s(`#skins a`)[`removeClass`](`selected`), s(`#skins a[data-profile=\'` + this['selectedProfile'] + '\']')[`addClass`]('selected');
             },
             'prevProfile': function() {
                 this[`setPlayerSettings`](), this[`selectedProfile`] = (ogario1PlayerProfiles[`length`] + this[`selectedProfile`] - 1) % ogario1PlayerProfiles[`length`], this[`setProfile`]();
@@ -7739,86 +7739,86 @@ ogcustom1=
                 this[`setPlayerSettings`](), this['selectedProfile'] = parseInt(t), this[`setProfile`]();
             },
             'addOption': function(t, e, i, o) {
-                s(t)[`append`](`<label><input type=\"checkbox\" id=\"` + e + `\" class=\"js-switch\"> ` + i + `</label>`), s('#' + e)[`prop`](`checked`, o);
+                s(t).append(`<label><input type=\"checkbox\" id=\"` + e + `\" class=\"js-switch\"> ` + i + `</label>`), s('#' + e)[`prop`](`checked`, o);
             },
             'addOptions': function(t, e) {
                 if (t) {
-                    s(`#og-options`)[`append`](`<div class=\"options-box ` + e + '\"><h5 class=\"menu-main-color\">' + h[e] + '</h5></div>');
+                    s(`#og-options`).append(`<div class=\"options-box ` + e + '\"><h5 class=\"menu-main-color\">' + h[e] + '</h5></div>');
                     for (var i = 0; i < t['length']; i++) {
                         var o = t[i];
-                        ogario1Settings[`hasOwnProperty`](o) && (s('.' + e)[`append`](`<label>` + h[o] + ` <input type=\"checkbox\" class=\"js-switch\" id=\"` + o + `\"></label>`), s('#' + o)[`prop`]('checked', ogario1Settings[o]));
+                        v.hasOwnProperty(o) && (s('.' + e).append(`<label>` + h[o] + ` <input type=\"checkbox\" class=\"js-switch\" id=\"` + o + `\"></label>`), s('#' + o)[`prop`]('checked', v[o]));
                     }
                 }
             },
             'addInputBox': function(t, e, i, o) {
-                s(t)['append']('<div class=\"input-box\"><span class=\"title-box\">' + h[e] + `</span><input id=\"` + e + '\" class=\"form-control\" placeholder=\"' + i + `\" value=\"` + ogario1Settings[e] + `\" /></div>`);
+                s(t).append('<div class=\"input-box\"><span class=\"title-box\">' + h[e] + `</span><input id=\"` + e + '\" class=\"form-control\" placeholder=\"' + i + `\" value=\"` + v[e] + `\" /></div>`);
                 var a = this;
                 s('#' + e)['on'](`input`, function() {
-                    ogario1Settings[e] = this[`value`], a[o](), a[`saveSettings`](ogario1Settings, `ogarioSettings`);
+                    v[e] = this.value, a[o](), a[`saveSettings`](v, `ogarioSettings`);
                 });
             },
             'addSliderBox': function(t, e, o, a, n, r) {
-                s(t)['append'](`<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">` + h[e] + ': </span><span id=\"' + e + `-value\" class=\"value\">` + ogario1Settings[e] + '</span></div><input id=\"' + e + `-slider\" type=\"range\" min=\"` + o + `\" max=\"` + a + '\" step=\"' + n + `\" value=\"` + ogario1Settings[e] + `\"></div>`);
+                s(t).append(`<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">` + h[e] + ': </span><span id=\"' + e + `-value\" class=\"value\">` + v[e] + '</span></div><input id=\"' + e + `-slider\" type=\"range\" min=\"` + o + `\" max=\"` + a + '\" step=\"' + n + `\" value=\"` + v[e] + `\"></div>`);
                 var l = this;
                 r ? s('#' + e + `-slider`)['on'](`input`, function() {
                     var t = parseFloat(s(this)['val']());
-                    s('#' + e + '-value')[`text`](t), ogario1Settings[e] = t, i[`hasOwnProperty`](e) && (i[e] = t), l[r](), l[`saveSettings`](ogario1Settings, 'ogarioSettings');
+                    s('#' + e + '-value')[`text`](t), v[e] = t, i.hasOwnProperty(e) && (i[e] = t), l[r](), l[`saveSettings`](v, 'ogarioSettings');
                 }) : s('#' + e + `-slider`)['on'](`input`, function() {
-                    var t = parseFloat(s(this)[`val`]());
-                    s('#' + e + `-value`)[`text`](t), ogario1Settings[e] = t, i[`hasOwnProperty`](e) && (i[e] = t), l['saveSettings'](ogario1Settings, 'ogarioSettings');
+                    var t = parseFloat(s(this).val());
+                    s('#' + e + `-value`)[`text`](t), v[e] = t, i.hasOwnProperty(e) && (i[e] = t), l['saveSettings'](v, 'ogarioSettings');
                 });
             },
             'setLang': function() {
                 if ('pl' === r && e[`i18n_dict`] && e['i18n_dict']['en'])
-                    for (var t in e[`i18n_dict`]['en']) e[`i18n_dict`]['en']['hasOwnProperty'](t) && h['hasOwnProperty'](t) && (e[`i18n_dict`]['en'][t] = h[t]);
+                    for (var t in e[`i18n_dict`]['en']) e[`i18n_dict`]['en'].hasOwnProperty(t) && h.hasOwnProperty(t) && (e[`i18n_dict`]['en'][t] = h[t]);
             },
             'setMenu': function() {
-                for (var t in document[`title`] = this[`name`], s(`#mainPanel`)[`before`](`<div id=\"exp-bar\" class=\"agario-panel\"><span class=\"ogicon-user\"></span><div class=\"agario-exp-bar progress\"><span class=\"progress-bar-text\"></span><div class=\"progress-bar progress-bar-striped\" style=\"width: 0%;\"></div></div><div class=\"progress-bar-star\"></div></div><div id=\"main-menu\" class=\"agario-panel\"><ul class=\"menu-tabs\"><li class=\"start-tab active\"><a href=\"#main-panel\" class=\"active ogicon-home\" data-toggle=\"tab-tooltip\" title=\"` + h[`start`] + `\"></a></li><li class=\"profile-tab\"><a href=\"#profile\" class=\"ogicon-user\" data-toggle=\"tab-tooltip\" title=\"` + h[`profile`] + `\"></a></li><li class=\"settings-tab\"><a href=\"#og-settings\" class=\"ogicon-cog\" data-toggle=\"tab-tooltip\" title=\"` + h[`settings`] + `\"></a></li><li class=\"theme-tab\"><a href=\"#theme\" class=\"ogicon-droplet\" data-toggle=\"tab-tooltip\" title=\"` + h[`theme`] + '\"></a></li><li class=\"hotkeys-tab\"><a href=\"#\" class=\"hotkeys-link ogicon-keyboard\" data-toggle=\"tab-tooltip\" title=\"' + h[`hotkeys`] + '\"></a></li><li class=\"music-tab\"><a href=\"#music\" class=\"ogicon-music\" data-toggle=\"tab-tooltip\" title=\"Radio / ' + h[`sounds`] + `\"></a></li></ul><div id=\"main-panel\" class=\"menu-panel\"></div><div id=\"profile\" class=\"menu-panel\"></div><div id=\"og-settings\" class=\"menu-panel\"><div class=\"submenu-panel\"></div></div><div id=\"theme\" class=\"menu-panel\"></div><div id=\"music\" class=\"menu-panel\"></div></div>`), s(`#main-panel`)[`append`](`<a href=\"#\" class=\"quick quick-menu ogicon-menu\"></a><a href=\"#\" class=\"quick quick-skins ogicon-images\"></a><div id=\"profiles\"><div id=\"prev-profile\"></div><div id=\"skin-preview\"></div><div id=\"next-profile\"></div></div>`), s(`#mainPanel div[role=form]`)['appendTo'](s(`#main-panel`)), s(`#main-panel div[role=form] .form-group:first`)['remove'](), s(`#nick`)[`before`](`<input id=\"clantag\" class=\"form-control\" placeholder=\"Tag, e.g. Ⓜ\" maxlength=\"10\"><div class=\"input-group nick\"></div>`), s(`#nick`)[`appendTo`](s('.nick')), s(`.nick`)['append'](`<span class=\"input-group-btn\"><button id=\"stream-mode\" class=\"btn active ogicon-eye\"></button></span>`), s('.nick')[`after`](`<div class=\"input-group skin\"><input id=\"skin\" class=\"form-control\" placeholder=\"Skin URL (imgur.com direct link)\" maxlength=\"40\"><input type=\"hidden\" id=\"color\" value=\"` + ogarcopythelb[`color`] + '\" maxlength=\"7\" /><span class=\"input-group-addon\"><i></i></span><span class=\"input-group-btn\"><button id=\"hide-url\" class=\"btn active ogicon-eye\"></button></span></div>'), s(`#locationKnown, #locationUnknown`)[`insertAfter`](s('.skin')), s(`#region`)['before'](`<button class=\"btn btn-warning btn-server-info ogicon-cogs\"></button>`), s(`.btn-spectate, .btn-logout`)[`appendTo`]('#agario-main-buttons'), s(`#agario-main-buttons`)[`addClass`](`clearfix`)[`before`](`<div id=\"server-info\" class=\"form-group clearfix\"><input id=\"server-ws\" class=\"form-control\" placeholder=\"Server WS\"><button id=\"server-connect\" class=\"btn btn-success ogicon-power\"></button><button id=\"server-reconnect\" class=\"btn btn-primary ogicon-redo2\"></button><input id=\"server-token\" class=\"form-control\" placeholder=\"Server token\"><button id=\"server-join\" class=\"btn btn-success\" data-itr=\"page_join_party\">Join</button></div>`), s(`#helloContainer div[role=form]`)[`after`](`<div id=\"ogario-party\" class=\"clearfix\"><input id=\"party-token\" class=\"form-control\" placeholder=\"Party token\"></div>`), s(`#ogario-party`)[`append`]('<button id=\"join-party-btn-2\" class=\"btn btn-success\" data-itr=\"page_join_party\">Join</button><button id=\"create-party-btn-2\" class=\"btn btn-primary\" data-itr=\"page_create_party\">Create</button>'), s('#pre-join-party-btn:first, #join-party-btn:first, #create-party-btn:first, #leave-party-btn:first, #joinPartyToken:first, .party-icon-back:first')[`appendTo`](s('#ogario-party')), s('#settingsChoice, #options')[`appendTo`](s(`#og-settings .submenu-panel`)), s('#stats')[`appendTo`](s(`#main-menu`))[`addClass`](`menu-panel`), s('#statsContinue')[`attr`]('id', 'statsContinue2'), s('#mainPanel')[`empty`]()[`remove`](), s(`.center-container`)[`addClass`](`ogario-menu`), s(`.center-container`)['append'](`<div id=\"menu-footer\" class=\"menu-main-color\">` + h[`visit`] + ` <a href=\"http://legendmod.ml\" target=\"_blank\">legendmod.ml</a> | ` + this[`version`] + ' <a href=\"https://goo.gl/nRREoR\" class=\"release ogicon-info\" target=\"_blank\"></a></div>'), s(`#leftPanel, #rightPanel`)[`addClass`](`ogario-menu`)[`removeAttr`]('id'), s(`.agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel`)[`appendTo`](s(`#profile`))['removeClass'](`agario-side-panel`), s(`.agario-profile-panel`)[`after`](`<div id=\"block-warn\">` + h[`blockWarn`] + '<br><a href=\"#\" id=\"unblock-popups\">' + h[`unblockPopups`] + `</a></div>`), s(`#exp-bar`)[`addClass`](`agario-profile-panel`), s(`.left-container`)[`empty`](), s(`.agario-shop-panel`)[`after`]('<div class=\"agario-panel ogario-yt-panel\"><h5 class=\"menu-main-color\">Team OGARio (tag: Ⓜ)</h5><div class=\"g-ytsubscribe\" data-channelid=\"UCaWiPNJWnhzYDrBQoXokn6w\" data-layout=\"full\" data-theme=\"dark\" data-count=\"default\"></div></div>'), s(`#tags-container`)[`appendTo`](s('#profile')), s('.btn-logout')[`appendTo`](s(`#profile`)), s('.left-container')[`append`](`<div id=\"quick-menu\" class=\"agario-panel agario-side-panel\"><a href=\"https://ogario.ovh/skins/\" class=\"quick-more-skins ogicon-grin\" target=\"_blank\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + h[`skins`] + `\"></a><a href=\"https://youtube.com/channel/UCaWiPNJWnhzYDrBQoXokn6w\" class=\"quick-yt ogicon-youtube2\" target=\"_blank\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"Team OGARio\"></a></div>`), this['protocolMode'] || s(`#quick-menu`)[`prepend`](`<a href=\"#\" class=\"quick-shop ogicon-cart\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + h[`page_shop`] + `\"></a><a href=\"#\" class=\"quick-free-coins ogicon-coin-dollar\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + h[`page_menu_main_free_coins`] + `\"></a><a href=\"#\" class=\"quick-free-gifts ogicon-gift\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + h[`page_menu_main_gifts`] + `\"></a><a href=\"#\" class=\"quick-quests ogicon-trophy\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + h[`page_menu_main_dailyquests`] + `\"></a>`), s(`.party-dialog, .partymode-info`)[`remove`](), s(`.agario-party-6`)['appendTo'](s(`.center-container`)), s(`.right-container`)[`empty`](), s(`.right-container`)[`append`](`<div class=\"agario-party\"></div>`), s(`.agario-party-6`)[`appendTo`](s(`.agario-party`))[`addClass`](`agario-panel agario-side-panel`), s(`.agario-party h4, #cancel-party-btn`)[`remove`](), s(`.agario-party .btn`)[`addClass`](`btn-sm`), s(`.right-container`)['append'](`<div id=\"skins-panel\" class=\"agario-panel agario-side-panel\"><div id=\"skins\"></div><a href=\"https://ogario.ovh/skins/\" id=\"more-skins\" class=\"btn btn-block btn-success\" target=\"_blank\">` + h[`moreSkins`] + `</a></div>`), s(`.btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr=\'page_option_dark_theme\'], #options #darkTheme`)['remove'](), s(`#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom`)[`css`]('display', `none`), s(`#advertisement`)[`removeClass`](`agario-panel`), s(`#adsBottom`)['css']({
+                for (var t in document[`title`] = this[`name`], s(`#mainPanel`)[`before`](`<div id=\"exp-bar\" class=\"agario-panel\"><span class=\"ogicon-user\"></span><div class=\"agario-exp-bar progress\"><span class=\"progress-bar-text\"></span><div class=\"progress-bar progress-bar-striped\" style=\"width: 0%;\"></div></div><div class=\"progress-bar-star\"></div></div><div id=\"main-menu\" class=\"agario-panel\"><ul class=\"menu-tabs\"><li class=\"start-tab active\"><a href=\"#main-panel\" class=\"active ogicon-home\" data-toggle=\"tab-tooltip\" title=\"` + h[`start`] + `\"></a></li><li class=\"profile-tab\"><a href=\"#profile\" class=\"ogicon-user\" data-toggle=\"tab-tooltip\" title=\"` + h[`profile`] + `\"></a></li><li class=\"settings-tab\"><a href=\"#og-settings\" class=\"ogicon-cog\" data-toggle=\"tab-tooltip\" title=\"` + h[`settings`] + `\"></a></li><li class=\"theme-tab\"><a href=\"#theme\" class=\"ogicon-droplet\" data-toggle=\"tab-tooltip\" title=\"` + h[`theme`] + '\"></a></li><li class=\"hotkeys-tab\"><a href=\"#\" class=\"hotkeys-link ogicon-keyboard\" data-toggle=\"tab-tooltip\" title=\"' + h[`hotkeys`] + '\"></a></li><li class=\"music-tab\"><a href=\"#music\" class=\"ogicon-music\" data-toggle=\"tab-tooltip\" title=\"Radio / ' + h[`sounds`] + `\"></a></li></ul><div id=\"main-panel\" class=\"menu-panel\"></div><div id=\"profile\" class=\"menu-panel\"></div><div id=\"og-settings\" class=\"menu-panel\"><div class=\"submenu-panel\"></div></div><div id=\"theme\" class=\"menu-panel\"></div><div id=\"music\" class=\"menu-panel\"></div></div>`), s(`#main-panel`).append(`<a href=\"#\" class=\"quick quick-menu ogicon-menu\"></a><a href=\"#\" class=\"quick quick-skins ogicon-images\"></a><div id=\"profiles\"><div id=\"prev-profile\"></div><div id=\"skin-preview\"></div><div id=\"next-profile\"></div></div>`), s(`#mainPanel div[role=form]`)['appendTo'](s(`#main-panel`)), s(`#main-panel div[role=form] .form-group:first`)['remove'](), s(`#nick`)[`before`](`<input id=\"clantag\" class=\"form-control\" placeholder=\"Tag, e.g. Ⓜ\" maxlength=\"10\"><div class=\"input-group nick\"></div>`), s(`#nick`)[`appendTo`](s('.nick')), s(`.nick`).append(`<span class=\"input-group-btn\"><button id=\"stream-mode\" class=\"btn active ogicon-eye\"></button></span>`), s('.nick')[`after`](`<div class=\"input-group skin\"><input id=\"skin\" class=\"form-control\" placeholder=\"Skin URL (imgur.com direct link)\" maxlength=\"40\"><input type=\"hidden\" id=\"color\" value=\"` + ogarcopythelb[`color`] + '\" maxlength=\"7\" /><span class=\"input-group-addon\"><i></i></span><span class=\"input-group-btn\"><button id=\"hide-url\" class=\"btn active ogicon-eye\"></button></span></div>'), s(`#locationKnown, #locationUnknown`)[`insertAfter`](s('.skin')), s(`#region`)['before'](`<button class=\"btn btn-warning btn-server-info ogicon-cogs\"></button>`), s(`.btn-spectate, .btn-logout`)[`appendTo`]('#agario-main-buttons'), s(`#agario-main-buttons`)[`addClass`](`clearfix`)[`before`](`<div id=\"server-info\" class=\"form-group clearfix\"><input id=\"server-ws\" class=\"form-control\" placeholder=\"Server WS\"><button id=\"server-connect\" class=\"btn btn-success ogicon-power\"></button><button id=\"server-reconnect\" class=\"btn btn-primary ogicon-redo2\"></button><input id=\"server-token\" class=\"form-control\" placeholder=\"Server token\"><button id=\"server-join\" class=\"btn btn-success\" data-itr=\"page_join_party\">Join</button></div>`), s(`#helloContainer div[role=form]`)[`after`](`<div id=\"ogario-party\" class=\"clearfix\"><input id=\"party-token\" class=\"form-control\" placeholder=\"Party token\"></div>`), s(`#ogario-party`).append('<button id=\"join-party-btn-2\" class=\"btn btn-success\" data-itr=\"page_join_party\">Join</button><button id=\"create-party-btn-2\" class=\"btn btn-primary\" data-itr=\"page_create_party\">Create</button>'), s('#pre-join-party-btn:first, #join-party-btn:first, #create-party-btn:first, #leave-party-btn:first, #joinPartyToken:first, .party-icon-back:first')[`appendTo`](s('#ogario-party')), s('#settingsChoice, #options')[`appendTo`](s(`#og-settings .submenu-panel`)), s('#stats')[`appendTo`](s(`#main-menu`))[`addClass`](`menu-panel`), s('#statsContinue')[`attr`]('id', 'statsContinue2'), s('#mainPanel')[`empty`]()[`remove`](), s(`.center-container`)[`addClass`](`ogario-menu`), s(`.center-container`).append(`<div id=\"menu-footer\" class=\"menu-main-color\">` + h[`visit`] + ` <a href=\"http://legendmod.ml\" target=\"_blank\">legendmod.ml</a> | ` + this[`version`] + ' <a href=\"https://goo.gl/nRREoR\" class=\"release ogicon-info\" target=\"_blank\"></a></div>'), s(`#leftPanel, #rightPanel`)[`addClass`](`ogario-menu`)[`removeAttr`]('id'), s(`.agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel`)[`appendTo`](s(`#profile`))['removeClass'](`agario-side-panel`), s(`.agario-profile-panel`)[`after`](`<div id=\"block-warn\">` + h[`blockWarn`] + '<br><a href=\"#\" id=\"unblock-popups\">' + h[`unblockPopups`] + `</a></div>`), s(`#exp-bar`)[`addClass`](`agario-profile-panel`), s(`.left-container`)[`empty`](), s(`.agario-shop-panel`)[`after`]('<div class=\"agario-panel ogario-yt-panel\"><h5 class=\"menu-main-color\">Team OGARio (tag: Ⓜ)</h5><div class=\"g-ytsubscribe\" data-channelid=\"UCaWiPNJWnhzYDrBQoXokn6w\" data-layout=\"full\" data-theme=\"dark\" data-count=\"default\"></div></div>'), s(`#tags-container`)[`appendTo`](s('#profile')), s('.btn-logout')[`appendTo`](s(`#profile`)), s('.left-container').append(`<div id=\"quick-menu\" class=\"agario-panel agario-side-panel\"><a href=\"https://ogario.ovh/skins/\" class=\"quick-more-skins ogicon-grin\" target=\"_blank\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + h[`skins`] + `\"></a><a href=\"https://youtube.com/channel/UCaWiPNJWnhzYDrBQoXokn6w\" class=\"quick-yt ogicon-youtube2\" target=\"_blank\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"Team OGARio\"></a></div>`), this['protocolMode'] || s(`#quick-menu`)[`prepend`](`<a href=\"#\" class=\"quick-shop ogicon-cart\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + h[`page_shop`] + `\"></a><a href=\"#\" class=\"quick-free-coins ogicon-coin-dollar\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + h[`page_menu_main_free_coins`] + `\"></a><a href=\"#\" class=\"quick-free-gifts ogicon-gift\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + h[`page_menu_main_gifts`] + `\"></a><a href=\"#\" class=\"quick-quests ogicon-trophy\" data-toggle=\"tab-tooltip\" data-placement=\"left\" title=\"` + h[`page_menu_main_dailyquests`] + `\"></a>`), s(`.party-dialog, .partymode-info`)[`remove`](), s(`.agario-party-6`)['appendTo'](s(`.center-container`)), s(`.right-container`)[`empty`](), s(`.right-container`).append(`<div class=\"agario-party\"></div>`), s(`.agario-party-6`)[`appendTo`](s(`.agario-party`))[`addClass`](`agario-panel agario-side-panel`), s(`.agario-party h4, #cancel-party-btn`)[`remove`](), s(`.agario-party .btn`)[`addClass`](`btn-sm`), s(`.right-container`).append(`<div id=\"skins-panel\" class=\"agario-panel agario-side-panel\"><div id=\"skins\"></div><a href=\"https://ogario.ovh/skins/\" id=\"more-skins\" class=\"btn btn-block btn-success\" target=\"_blank\">` + h[`moreSkins`] + `</a></div>`), s(`.btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr=\'page_option_dark_theme\'], #options #darkTheme`)['remove'](), s(`#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom`).css('display', `none`), s(`#advertisement`)[`removeClass`](`agario-panel`), s(`#adsBottom`)['css']({
                         'z-index': '1',
                         'opacity': '0',
                         'bottom': `-100px`
-                    }), s(`#noNames, #showMass`)[`remove`](), s(`#og-settings .submenu-panel`)[`append`](`<div id=\"og-options\"></div>`), this['addOptions']([], `animationGroup`), this[`addOptions`]([`autoZoom`], `zoomGroup`), this[`addOptions`]([`quickResp`, `autoResp`], `respGroup`), this[`addOptions`]([`noNames`, `optimizedNames`, `autoHideNames`, `hideMyName`, `hideTeammatesNames`, `namesStroke`], 'namesGroup'), this[`addOptions`]([`showMass`, `optimizedMass`, `autoHideMass`, 'hideMyMass', 'hideEnemiesMass', `shortMass`, `virMassShots`, `massStroke`], 'massGroup'), this['protocolMode'] ? this['addOptions']([`customSkins`], `skinsGroup`) : this[`addOptions`]([`customSkins`, 'vanillaSkins'], 'skinsGroup'), this[`addOptions`](['optimizedFood', `autoHideFood`, 'autoHideFoodOnZoom', `rainbowFood`], `foodGroup`), this[`addOptions`]([`myCustomColor`, `myTransparentSkin`, `transparentSkins`, `transparentCells`, `transparentViruses`], `transparencyGroup`), this[`addOptions`]([`showGrid`, 'showBgSectors', `showMapBorders`], 'gridGroup'), this[`addOptions`]([`disableChat`, `chatSounds`, `chatEmoticons`, 'showChatImages', `showChatVideos`, `showChatBox`], `chatGroup`), this['addOptions'](['showMiniMap', `showMiniMapGrid`, `showMiniMapGuides`, `showMiniMapGhostCells`, 'oneColoredTeammates'], `miniMapGroup`), this[`addOptions`]([`oppColors`, `oppRings`, `virColors`, `splitRange`, 'virusesRange', `cursorTracking`, 'teammatesInd', `showGhostCells`], 'helpersGroup'), this[`addOptions`]([`mouseSplit`, `mouseFeed`, 'mouseInvert'], `mouseGroup`), this[`addOptions`]([`showTop5`, 'showTargeting', `showLbData`, 'centeredLb', `normalLb`, `fpsAtTop`], `hudGroup`), this[`addOptions`](['showStats', `showStatsMass`, `showStatsSTE`, 'showStatsN16', `showStatsFPS`, `showTime`], `statsGroup`), this['protocolMode'] || (this[`addOptions`]([`blockPopups`], `extrasGroup`), s(`#noSkins, #noColors, #skipStats, #showQuest`)[`addClass`](`js-switch-vanilla`), s(`.skinsGroup h5`)['after'](`<label class=\"noSkins\">` + h[`noSkins`] + ' </label>'), s(`#noSkins`)[`appendTo`](s(`.noSkins`)), s(`.transparencyGroup h5`)[`after`](`<label class=\"noColors\">` + h[`noColors`] + ` </label>`), s(`#noColors`)[`appendTo`](s(`.noColors`)), s(`.extrasGroup h5`)[`after`](`<label class=\"skipStats\">` + h[`skipStats`] + ' </label>'), s(`#skipStats`)[`appendTo`](s(`.skipStats`)), s(`.skipStats`)[`after`](`<label class=\"showQuest\">` + h[`showQuest`] + ' </label>'), s(`#showQuest`)['appendTo'](s(`.showQuest`)), s(`#options`)['remove'](), s(`#settingsChoice`)[`appendTo`](s(`.extrasGroup`))[`addClass`](`select-wrapper`)), this[`addSliderBox`](`.animationGroup`, 'animation', 100, 200, 1), this[`addSliderBox`]('.zoomGroup', `zoomSpeedValue`, 0.50, 1.99, 0.01), s(`#og-settings`)[`append`](`<button class=\"btn btn-block btn-success btn-export\">` + h[`exportImport`] + `</button>`), s(`#og-settings`)[`append`](`<div class=\"restore-settings\"><a href=\"#\">` + h[`restoreSettings`] + '</a></div>'), s(`#music`)[`append`](`<div class=\"agario-panel radio-panel\"><h5 class=\"menu-main-color\">Radio (` + h[`thanks`] + `)</h5><audio src=\"http://frshoutcast.comunicazion.eu:8815/;\" controls></audio><span class=\"playlist\"><span class=\"ogicon-file-music\"></span> <a href=\"http://frshoutcast.comunicazion.eu:8815/played.html?sid=1\" target=\"_blank\">` + h[`playlist`] + `</a></span></div>`), s(`#music`)[`append`](`<div class=\"agario-panel sounds-panel\"><h5 class=\"menu-main-color\">` + h[`sounds`] + `</h5></div>`), s(`#music`)[`append`](`<div class=\"agario-panel ogario-yt-panel\"><h5 class=\"menu-main-color\">Team OGARio (tag: Ⓜ)</h5><div class=\"g-ytsubscribe\" data-channelid=\"UCaWiPNJWnhzYDrBQoXokn6w\" data-layout=\"full\" data-theme=\"dark\" data-count=\"default\"></div></div>`), this[`addInputBox`](`.sounds-panel`, `messageSound`, `Sound URL`, `setMessageSound`), this[`addInputBox`]('.sounds-panel', `commandSound`, 'Sound URL', 'setCommandSound'), s(`body`)[`append`]('<div id=\"overlays-hud\" data-gamemode=\":ffa\"><div id=\"stats-hud\" class=\"hud stats-hud-color\"></div> <div id=\"top5-hud\" class=\"hud\"><h5 class=\"hud-main-color\">Team top <span class=\"team-top\">5</span></h5><div class=\"hud-main-color team-top-menu\"><a href=\"#\" data-limit=\"5\" class=\"team-top-limit active\">5</a> | <a href=\"#\" data-limit=\"10\" class=\"team-top-limit\">10</a> | <a href=\"#\" data-limit=\"100\" class=\"team-top-limit\">100</a></div><ol id=\"top5-pos\"></ol><div id=\"top5-total\"><span class=\"hud-main-color ogicon-users\"></span> ' + h[`totalPartyPlayers`] + `: <span id=\"top5-total-players\" class=\"top5-mass-color\">0</span><br><span class=\"hud-main-color ogicon-pacman\"></span> ` + h[`totalPartyMass`] + ': <span id=\"top5-total-mass\" class=\"top5-mass-color\">0</span></div></div> <div id=\"time-hud\" class=\"hud time-hud-color\"></div> <div id=\"pause-hud\" class=\"hud\">' + h[`pause`] + `</div> <div id=\"leaderboard-hud\" class=\"hud-b\"><h4 class=\"hud-main-color\">legendmod.ml</h4><div id=\"leaderboard-data\"></div><div id=\"leaderboard-positions\"></div></div> <div id=\"btl-leaderboard-hud\"><div class=\"hud hud-c\"><span id=\"btl-players-status\">Players ready</span>: <span id=\"btl-players-count\">0</span></div></div> <div id=\"minimap-hud\" class=\"hud-b\"><canvas id=\"minimap-sectors\"></canvas><canvas id=\"minimap\"></canvas></div><div id=\"target-hud\" class=\"hud\"><div id=\"target-player\"><span id=\"target-skin\"><img src=\"https://cdn.ogario.ovh/static/img/blank.png\" alt=\"\"> </span><span id=\"target-nick\"></span> <span id=\"target-status\" class=\"hud-main-color\">[` + h[`targetNotSet`] + `]</span></div><div id=\"target-summary\"></div></div><div id=\"target-panel-hud\" class=\"hud\"><a href=\"#\" id=\"set-targeting\" class=\"ogicon-target\"></a><a href=\"#\" id=\"set-private-minimap\" class=\"ogicon-location2\"></a><a href=\"#\" id=\"cancel-targeting\" class=\"ogicon-cancel-circle\"></a><a href=\"#\" id=\"change-target\" class=\"ogicon-arrow-right\"></a></div> <div id=\"quest-hud\" class=\"hud\"></div> <div id=\"btl-hud\" class=\"hud\"></div></div>`), s(`body`)[`append`](`<ul id=\"messages\"></ul>`), s(`body`)['append'](`<div id=\"message-box\"><div id=\"chat-emoticons\"></div><div id=\"message-menu\"><a href=\"#\" class=\"chat-sound-notifications ogicon-volume-high\"></a><a href=\"#\" class=\"chat-active-users ogicon-user-check\"></a><a href=\"#\" class=\"chat-muted-users ogicon-user-minus\"></a><a href=\"#\" class=\"show-chat-emoticons ogicon-smile\"></a></div><input type=\"text\" id=\"message\" class=\"form-control\" placeholder=\"` + h[`enterChatMsg`] + '...\" maxlength=\"80\"></div>'), s(`body`)[`append`](`<div id=\"chat-box\"></div>`), d) d[`hasOwnProperty`](t) && s(`#chat-emoticons`)[`append`](`<img src=\"https://cdn.ogario.ovh/static/emoticons/` + d[t] + `\" alt=\"` + t + `\" class=\"emoticon\">`);
-                s(`body`)[`append`](`<div id=\"exp-imp\"><div id=\"exp-imp-menu\"><button id=\"close-exp-imp\" class=\"btn btn-danger\">` + h[`close`] + `</button></div><div id=\"exp-imp-settings\"></div></div>`), s('#exp-imp-settings')[`append`](`<h1>` + h[`exportSettings`] + `</h1><h2>` + h[`exportInfo`] + `</h2>`), this[`addOption`](`#exp-imp-settings`, `export-ogarioCommands`, h[`commands`], !0), this['addOption'](`#exp-imp-settings`, `export-ogarioHotkeys`, h[`hotkeys`], !0), this['addOption'](`#exp-imp-settings`, `export-ogarioPlayerProfiles`, h['profiles'], !0), this[`addOption`](`#exp-imp-settings`, `export-ogarioSettings`, h['settings'], !0), this[`addOption`](`#exp-imp-settings`, `export-ogarioThemeSettings`, h['theme'], !0), s(`#exp-imp-settings`)[`append`]('<textarea id=\"export-settings\" class=\"form-control\" rows=\"14\" cols=\"100\" spellcheck=\"false\" readonly /><button id=\"export-settings-btn\" class=\"btn btn-block btn-success\">' + h[`exportSettings`] + '</button>'), s(`#exp-imp-settings`)['append']('<h1>' + h[`importSettings`] + `</h1><h2>` + h[`importInfo`] + `</h2>`), this[`addOption`](`#exp-imp-settings`, `import-ogarioCommands`, h[`commands`], !0), this[`addOption`](`#exp-imp-settings`, `import-ogarioHotkeys`, h[`hotkeys`], !0), this[`addOption`](`#exp-imp-settings`, 'import-ogarioPlayerProfiles', h[`profiles`], !0), this[`addOption`](`#exp-imp-settings`, `import-ogarioSettings`, h[`settings`], !0), this[`addOption`](`#exp-imp-settings`, 'import-ogarioThemeSettings', h['theme'], !0), s('#exp-imp-settings')['append']('<textarea id=\"import-settings\" class=\"form-control\" rows=\"14\" cols=\"100\" spellcheck=\"false\" /><button id=\"import-settings-btn\" class=\"btn btn-block btn-success\">' + h[`importSettings`] + `</button>`), y && y[`setThemeMenu`]();
-                for (var e = 0; e < ogario1PlayerProfiles[`length`]; e++) s(`#skins`)[`append`](`<div class=\"skin-box\"><a href=\"#profile-` + e + `\" id=\"profile-` + e + `\" data-profile=\"` + e + `\"></a></div>`), this['setSkinPreview'](ogario1PlayerProfiles[e]['skinURL'], `profile-` + e), e == this[`selectedProfile`] && s(`#profile-` + e)[`addClass`]('selected');
+                    }), s(`#noNames, #showMass`)[`remove`](), s(`#og-settings .submenu-panel`).append(`<div id=\"og-options\"></div>`), this['addOptions']([], `animationGroup`), this[`addOptions`]([`autoZoom`], `zoomGroup`), this[`addOptions`]([`quickResp`, `autoResp`], `respGroup`), this[`addOptions`]([`noNames`, `optimizedNames`, `autoHideNames`, `hideMyName`, `hideTeammatesNames`, `namesStroke`], 'namesGroup'), this[`addOptions`]([`showMass`, `optimizedMass`, `autoHideMass`, 'hideMyMass', 'hideEnemiesMass', `shortMass`, `virMassShots`, `massStroke`], 'massGroup'), this['protocolMode'] ? this['addOptions']([`customSkins`], `skinsGroup`) : this[`addOptions`]([`customSkins`, 'vanillaSkins'], 'skinsGroup'), this[`addOptions`](['optimizedFood', `autoHideFood`, 'autoHideFoodOnZoom', `rainbowFood`], `foodGroup`), this[`addOptions`]([`myCustomColor`, `myTransparentSkin`, `transparentSkins`, `transparentCells`, `transparentViruses`], `transparencyGroup`), this[`addOptions`]([`showGrid`, 'showBgSectors', `showMapBorders`], 'gridGroup'), this[`addOptions`]([`disableChat`, `chatSounds`, `chatEmoticons`, 'showChatImages', `showChatVideos`, `showChatBox`], `chatGroup`), this['addOptions'](['showMiniMap', `showMiniMapGrid`, `showMiniMapGuides`, `showMiniMapGhostCells`, 'oneColoredTeammates'], `miniMapGroup`), this[`addOptions`]([`oppColors`, `oppRings`, `virColors`, `splitRange`, 'virusesRange', `cursorTracking`, 'teammatesInd', `showGhostCells`], 'helpersGroup'), this[`addOptions`]([`mouseSplit`, `mouseFeed`, 'mouseInvert'], `mouseGroup`), this[`addOptions`]([`showTop5`, 'showTargeting', `showLbData`, 'centeredLb', `normalLb`, `fpsAtTop`], `hudGroup`), this[`addOptions`](['showStats', `showStatsMass`, `showStatsSTE`, 'showStatsN16', `showStatsFPS`, `showTime`], `statsGroup`), this['protocolMode'] || (this[`addOptions`]([`blockPopups`], `extrasGroup`), s(`#noSkins, #noColors, #skipStats, #showQuest`)[`addClass`](`js-switch-vanilla`), s(`.skinsGroup h5`)['after'](`<label class=\"noSkins\">` + h[`noSkins`] + ' </label>'), s(`#noSkins`)[`appendTo`](s(`.noSkins`)), s(`.transparencyGroup h5`)[`after`](`<label class=\"noColors\">` + h[`noColors`] + ` </label>`), s(`#noColors`)[`appendTo`](s(`.noColors`)), s(`.extrasGroup h5`)[`after`](`<label class=\"skipStats\">` + h[`skipStats`] + ' </label>'), s(`#skipStats`)[`appendTo`](s(`.skipStats`)), s(`.skipStats`)[`after`](`<label class=\"showQuest\">` + h[`showQuest`] + ' </label>'), s(`#showQuest`)['appendTo'](s(`.showQuest`)), s(`#options`)['remove'](), s(`#settingsChoice`)[`appendTo`](s(`.extrasGroup`))[`addClass`](`select-wrapper`)), this[`addSliderBox`](`.animationGroup`, 'animation', 100, 200, 1), this[`addSliderBox`]('.zoomGroup', `zoomSpeedValue`, 0.50, 1.99, 0.01), s(`#og-settings`).append(`<button class=\"btn btn-block btn-success btn-export\">` + h[`exportImport`] + `</button>`), s(`#og-settings`).append(`<div class=\"restore-settings\"><a href=\"#\">` + h[`restoreSettings`] + '</a></div>'), s(`#music`).append(`<div class=\"agario-panel radio-panel\"><h5 class=\"menu-main-color\">Radio (` + h[`thanks`] + `)</h5><audio src=\"http://frshoutcast.comunicazion.eu:8815/;\" controls></audio><span class=\"playlist\"><span class=\"ogicon-file-music\"></span> <a href=\"http://frshoutcast.comunicazion.eu:8815/played.html?sid=1\" target=\"_blank\">` + h[`playlist`] + `</a></span></div>`), s(`#music`).append(`<div class=\"agario-panel sounds-panel\"><h5 class=\"menu-main-color\">` + h[`sounds`] + `</h5></div>`), s(`#music`).append(`<div class=\"agario-panel ogario-yt-panel\"><h5 class=\"menu-main-color\">Team OGARio (tag: Ⓜ)</h5><div class=\"g-ytsubscribe\" data-channelid=\"UCaWiPNJWnhzYDrBQoXokn6w\" data-layout=\"full\" data-theme=\"dark\" data-count=\"default\"></div></div>`), this[`addInputBox`](`.sounds-panel`, `messageSound`, `Sound URL`, `setMessageSound`), this[`addInputBox`]('.sounds-panel', `commandSound`, 'Sound URL', 'setCommandSound'), s(`body`).append('<div id=\"overlays-hud\" data-gamemode=\":ffa\"><div id=\"stats-hud\" class=\"hud stats-hud-color\"></div> <div id=\"top5-hud\" class=\"hud\"><h5 class=\"hud-main-color\">Team top <span class=\"team-top\">5</span></h5><div class=\"hud-main-color team-top-menu\"><a href=\"#\" data-limit=\"5\" class=\"team-top-limit active\">5</a> | <a href=\"#\" data-limit=\"10\" class=\"team-top-limit\">10</a> | <a href=\"#\" data-limit=\"100\" class=\"team-top-limit\">100</a></div><ol id=\"top5-pos\"></ol><div id=\"top5-total\"><span class=\"hud-main-color ogicon-users\"></span> ' + h[`totalPartyPlayers`] + `: <span id=\"top5-total-players\" class=\"top5-mass-color\">0</span><br><span class=\"hud-main-color ogicon-pacman\"></span> ` + h[`totalPartyMass`] + ': <span id=\"top5-total-mass\" class=\"top5-mass-color\">0</span></div></div> <div id=\"time-hud\" class=\"hud time-hud-color\"></div> <div id=\"pause-hud\" class=\"hud\">' + h[`pause`] + `</div> <div id=\"leaderboard-hud\" class=\"hud-b\"><h4 class=\"hud-main-color\">legendmod.ml</h4><div id=\"leaderboard-data\"></div><div id=\"leaderboard-positions\"></div></div> <div id=\"btl-leaderboard-hud\"><div class=\"hud hud-c\"><span id=\"btl-players-status\">Players ready</span>: <span id=\"btl-players-count\">0</span></div></div> <div id=\"minimap-hud\" class=\"hud-b\"><canvas id=\"minimap-sectors\"></canvas><canvas id=\"minimap\"></canvas></div><div id=\"target-hud\" class=\"hud\"><div id=\"target-player\"><span id=\"target-skin\"><img src=\"https://cdn.ogario.ovh/static/img/blank.png\" alt=\"\"> </span><span id=\"target-nick\"></span> <span id=\"target-status\" class=\"hud-main-color\">[` + h[`targetNotSet`] + `]</span></div><div id=\"target-summary\"></div></div><div id=\"target-panel-hud\" class=\"hud\"><a href=\"#\" id=\"set-targeting\" class=\"ogicon-target\"></a><a href=\"#\" id=\"set-private-minimap\" class=\"ogicon-location2\"></a><a href=\"#\" id=\"cancel-targeting\" class=\"ogicon-cancel-circle\"></a><a href=\"#\" id=\"change-target\" class=\"ogicon-arrow-right\"></a></div> <div id=\"quest-hud\" class=\"hud\"></div> <div id=\"btl-hud\" class=\"hud\"></div></div>`), s(`body`).append(`<ul id=\"messages\"></ul>`), s(`body`).append(`<div id=\"message-box\"><div id=\"chat-emoticons\"></div><div id=\"message-menu\"><a href=\"#\" class=\"chat-sound-notifications ogicon-volume-high\"></a><a href=\"#\" class=\"chat-active-users ogicon-user-check\"></a><a href=\"#\" class=\"chat-muted-users ogicon-user-minus\"></a><a href=\"#\" class=\"show-chat-emoticons ogicon-smile\"></a></div><input type=\"text\" id=\"message\" class=\"form-control\" placeholder=\"` + h[`enterChatMsg`] + '...\" maxlength=\"80\"></div>'), s(`body`).append(`<div id=\"chat-box\"></div>`), d) d.hasOwnProperty(t) && s(`#chat-emoticons`).append(`<img src=\"https://cdn.ogario.ovh/static/emoticons/` + d[t] + `\" alt=\"` + t + `\" class=\"emoticon\">`);
+                s(`body`).append(`<div id=\"exp-imp\"><div id=\"exp-imp-menu\"><button id=\"close-exp-imp\" class=\"btn btn-danger\">` + h[`close`] + `</button></div><div id=\"exp-imp-settings\"></div></div>`), s('#exp-imp-settings').append(`<h1>` + h[`exportSettings`] + `</h1><h2>` + h[`exportInfo`] + `</h2>`), this[`addOption`](`#exp-imp-settings`, `export-ogarioCommands`, h[`commands`], !0), this['addOption'](`#exp-imp-settings`, `export-ogarioHotkeys`, h[`hotkeys`], !0), this['addOption'](`#exp-imp-settings`, `export-ogarioPlayerProfiles`, h['profiles'], !0), this[`addOption`](`#exp-imp-settings`, `export-ogarioSettings`, h['settings'], !0), this[`addOption`](`#exp-imp-settings`, `export-ogarioThemeSettings`, h['theme'], !0), s(`#exp-imp-settings`).append('<textarea id=\"export-settings\" class=\"form-control\" rows=\"14\" cols=\"100\" spellcheck=\"false\" readonly /><button id=\"export-settings-btn\" class=\"btn btn-block btn-success\">' + h[`exportSettings`] + '</button>'), s(`#exp-imp-settings`).append('<h1>' + h[`importSettings`] + `</h1><h2>` + h[`importInfo`] + `</h2>`), this[`addOption`](`#exp-imp-settings`, `import-ogarioCommands`, h[`commands`], !0), this[`addOption`](`#exp-imp-settings`, `import-ogarioHotkeys`, h[`hotkeys`], !0), this[`addOption`](`#exp-imp-settings`, 'import-ogarioPlayerProfiles', h[`profiles`], !0), this[`addOption`](`#exp-imp-settings`, `import-ogarioSettings`, h[`settings`], !0), this[`addOption`](`#exp-imp-settings`, 'import-ogarioThemeSettings', h['theme'], !0), s('#exp-imp-settings').append('<textarea id=\"import-settings\" class=\"form-control\" rows=\"14\" cols=\"100\" spellcheck=\"false\" /><button id=\"import-settings-btn\" class=\"btn btn-block btn-success\">' + h[`importSettings`] + `</button>`), y && y[`setThemeMenu`]();
+                for (var e = 0; e < ogario1PlayerProfiles[`length`]; e++) s(`#skins`).append(`<div class=\"skin-box\"><a href=\"#profile-` + e + `\" id=\"profile-` + e + `\" data-profile=\"` + e + `\"></a></div>`), this['setSkinPreview'](ogario1PlayerProfiles[e]['skinURL'], `profile-` + e), e == this[`selectedProfile`] && s(`#profile-` + e)[`addClass`]('selected');
             },
             'setUI': function() {
                 var t = this;
                 s(document)['on'](`click`, '.menu-tabs a', function(e) {
-                    e[`preventDefault`](), t[`switchMenuTabs`](s(this), `menu-panel`);
+                    e.preventDefault(), t[`switchMenuTabs`](s(this), `menu-panel`);
                 }), s(document)['on']('click', `.submenu-tabs a`, function(e) {
-                    e[`preventDefault`](), t['switchMenuTabs'](s(this), `submenu-panel`);
+                    e.preventDefault(), t['switchMenuTabs'](s(this), `submenu-panel`);
                 }), s(document)['on'](`click`, `.quick-menu`, function(e) {
-                    e[`preventDefault`](), ogario1Settings[`showQuickMenu`] = !ogario1Settings[`showQuickMenu`], t[`saveSettings`](ogario1Settings, `ogarioSettings`), t[`setShowQuickMenu`]();
+                    e.preventDefault(), v[`showQuickMenu`] = !v[`showQuickMenu`], t[`saveSettings`](v, `ogarioSettings`), t[`setShowQuickMenu`]();
                 }), s(document)['on'](`click`, `.quick-skins`, function(e) {
-                    e[`preventDefault`](), ogario1Settings['showSkinsPanel'] = !ogario1Settings[`showSkinsPanel`], t[`saveSettings`](ogario1Settings, 'ogarioSettings'), t[`setShowSkinsPanel`]();
+                    e.preventDefault(), v['showSkinsPanel'] = !v[`showSkinsPanel`], t[`saveSettings`](v, 'ogarioSettings'), t[`setShowSkinsPanel`]();
                 }), s(document)['on'](`change`, '#region', function() {
                     t[`region`] = this['value'];
                 }), s(document)['on'](`change`, `#gamemode`, function() {
-                    var e = this[`value`];
+                    var e = this.value;
                     ':party' !== e && t[`leaveParty`](), t[`gameMode`] = i['gameMode'] = e, t[`setQuest`]();
                 }), s(document)['on'](`change`, `#quality`, function() {
-                    t[`getQuality`](this[`value`]), ogarhusettings();
+                    t[`getQuality`](this.value), ogarhusettings();
                 }), s(document)['on'](`input`, '#skin', function() {
-                    var e = this[`value`];
+                    var e = this.value;
                     t[`setSkinPreview`](e, `skin-preview`), t[`setSkinPreview`](e, `profile-` + t[`selectedProfile`]);
                 }), s(document)['on'](`click`, `#skins a`, function(e) {
-                    e[`preventDefault`](), t[`selectProfile`](s(this)['attr'](`data-profile`));
+                    e.preventDefault(), t[`selectProfile`](s(this)['attr'](`data-profile`));
                 }), s(document)['on'](`click`, `#prev-profile`, function() {
                     t[`prevProfile`]();
                 }), s(document)['on'](`click`, `#next-profile`, function() {
                     t[`nextProfile`]();
                 }), s(document)['on'](`click`, `#stream-mode`, function() {
-                    ogario1Settings[`streamMode`] = !ogario1Settings[`streamMode`], t[`saveSettings`](ogario1Settings, `ogarioSettings`), t[`setStreamMode`]();
+                    v[`streamMode`] = !v[`streamMode`], t[`saveSettings`](v, `ogarioSettings`), t[`setStreamMode`]();
                 }), s(document)['on'](`click`, `#hide-url`, function() {
-                    ogario1Settings[`hideSkinUrl`] = !ogario1Settings[`hideSkinUrl`], t[`saveSettings`](ogario1Settings, `ogarioSettings`), t[`setHideSkinUrl`]();
+                    v[`hideSkinUrl`] = !v[`hideSkinUrl`], t[`saveSettings`](v, `ogarioSettings`), t[`setHideSkinUrl`]();
                 }), s(document)['on']('click', `.btn-server-info`, function() {
                     s(`#server-info`)[`toggle`]();
                 }), s(document)['on']('click', `#server-connect`, function() {
-                    t[`gameServerConnect`](s('#server-ws')[`val`]());
+                    t[`gameServerConnect`](s('#server-ws').val());
                 }), s(document)['on'](`click`, `#server-reconnect`, function() {
                     t[`gameServerReconnect`]();
                 }), s(document)['on'](`click`, `#server-join`, function() {
-                    t[`gameServerJoin`](s(`#server-token`)[`val`]());
+                    t[`gameServerJoin`](s(`#server-token`).val());
                 }), s(document)['on'](`change`, `#og-options input[type=\'checkbox\']`, function() {
                     var e = s(this);
                     t[`setSettings`](e['attr']('id'), e[`prop`](`checked`));
@@ -7831,49 +7831,49 @@ ogcustom1=
                 }), s(document)['on'](`click`, `#og-settings .btn-export`, function(e) {
                     e['preventDefault'](), t['exportSettings'](), s('#exp-imp')[`fadeIn`](500), s(`#exp-imp-settings, #export-settings`)[`perfectScrollbar`](`update`);
                 }), s(document)['on'](`click`, '#close-exp-imp', function(t) {
-                    t[`preventDefault`](), s(`#exp-imp`)[`fadeOut`](500);
+                    t.preventDefault(), s(`#exp-imp`)[`fadeOut`](500);
                 }), s(document)['on'](`focus`, `#export-settings`, function() {
                     s(this)[`select`]();
                 }), s(document)['on'](`click`, `#export-settings-btn`, function(e) {
-                    e[`preventDefault`](), t[`exportSettings`]();
+                    e.preventDefault(), t[`exportSettings`]();
                 }), s(document)['on']('click', '#import-settings-btn', function(e) {
                     e['preventDefault'](), t[`importSettings`]();
                 }), s(document)['on'](`click`, '#unblock-popups', function(e) {
                     e['preventDefault'](), t['unblockPopups']();
                 }), s(document)['on'](`click`, '#openfl-overlay.disabler', function() {
-                    ogario1Settings['blockPopups'] && t[`blockPopups`]();
+                    v['blockPopups'] && t[`blockPopups`]();
                 }), s(document)['on'](`click`, `#openfl-content`, function() {
-                    if (ogario1Settings['blockPopups']) {
+                    if (v['blockPopups']) {
                         var e = s(this);
                         setTimeout(function() {
                             e['is'](`:visible`) || t[`blockPopups`]();
                         }, 1000);
                     }
                 }), s(document)['on']('click', `.quick-shop`, function(i) {
-                    i[`preventDefault`](), t[`unblockPopups`](), e['MC'] && e['MC'][`openShop`] && e['MC'][`openShop`]();
+                    i.preventDefault(), t[`unblockPopups`](), e['MC'] && e['MC'][`openShop`] && e['MC'][`openShop`]();
                 }), s(document)['on'](`click`, `.quick-free-coins`, function(i) {
-                    i[`preventDefault`](), t[`unblockPopups`](), e['MC'] && e['MC'][`showFreeCoins`] && e['MC'][`showFreeCoins`]();
+                    i.preventDefault(), t[`unblockPopups`](), e['MC'] && e['MC'][`showFreeCoins`] && e['MC'][`showFreeCoins`]();
                 }), s(document)['on']('click', `.quick-free-gifts`, function(i) {
-                    i[`preventDefault`](), t['unblockPopups'](), e['MC'] && e['MC'][`showGifting`] && e['MC'][`showGifting`]();
+                    i.preventDefault(), t['unblockPopups'](), e['MC'] && e['MC'][`showGifting`] && e['MC'][`showGifting`]();
                 }), s(document)['on'](`click`, `.quick-quests`, function(i) {
-                    i[`preventDefault`](), t[`unblockPopups`](), e['MC'] && e['MC'][`showQuests`] && e['MC'][`showQuests`]();
+                    i.preventDefault(), t[`unblockPopups`](), e['MC'] && e['MC'][`showQuests`] && e['MC'][`showQuests`]();
                 }), s(document)['on']('click', `#set-targeting`, function(e) {
-                    e[`preventDefault`](), t['setTargeting']();
+                    e.preventDefault(), t['setTargeting']();
                 }), s(document)['on']('click', `#cancel-targeting`, function(e) {
-                    e[`preventDefault`](), t[`cancelTargeting`]();
+                    e.preventDefault(), t[`cancelTargeting`]();
                 }), s(document)['on'](`click`, `#set-private-minimap`, function(e) {
-                    e[`preventDefault`](), t[`setPrivateMiniMap`]();
+                    e.preventDefault(), t[`setPrivateMiniMap`]();
                 }), s(document)['on']('click', `#change-target`, function(e) {
                     e['preventDefault'](), t[`changeTarget`]();
                 }), s(document)['on'](`click`, `.team-top-limit`, function(e) {
-                    e[`preventDefault`]();
+                    e.preventDefault();
                     var i = s(this),
                         o = parseInt(i[`attr`](`data-limit`));
                     o && (t[`setTop5limit`](o), t[`displayTop5`](), s(`.team-top`)['text'](o), s(`.team-top-limit`)[`removeClass`]('active'), i['addClass'](`active`));
                 }), s(document)['on'](`click`, '#top5-pos .set-target', function(e) {
-                    e[`preventDefault`](), t[`setTarget`](parseInt(s(this)[`attr`](`data-user-id`)));
+                    e.preventDefault(), t[`setTarget`](parseInt(s(this)[`attr`](`data-user-id`)));
                 }), s(document)['on'](`click`, `.mute-user`, function(e) {
-                    e[`preventDefault`](), t[`muteChatUser`](parseInt(s(this)[`attr`](`data-user-id`)));
+                    e.preventDefault(), t[`muteChatUser`](parseInt(s(this)[`attr`](`data-user-id`)));
                 }), s(document)['on']('click', `.btn-mute-user`, function() {
                     var e = s(this);
                     t[`muteChatUser`](parseInt(e['attr'](`data-user-id`))), e[`removeClass`](`btn-red btn-mute-user`)[`addClass`](`btn-green btn-unmute-user`)[`text`](h[`unmute`]);
@@ -7881,11 +7881,11 @@ ogcustom1=
                     var e = s(this);
                     t[`unmuteChatUser`](parseInt(e[`attr`](`data-user-id`))), e[`removeClass`](`btn-green btn-unmute-user`)['addClass']('btn-red btn-mute-user')['text'](h[`mute`]);
                 }), s(document)['on'](`click`, '.chat-sound-notifications', function(e) {
-                    e['preventDefault'](), ogario1Settings[`chatSounds`] = !ogario1Settings[`chatSounds`], t['saveSettings'](ogario1Settings, `ogarioSettings`), t[`setChatSoundsBtn`]();
+                    e['preventDefault'](), v[`chatSounds`] = !v[`chatSounds`], t['saveSettings'](v, `ogarioSettings`), t[`setChatSoundsBtn`]();
                 }), s(document)['on'](`click`, `.chat-active-users`, function(e) {
-                    e[`preventDefault`](), t[`displayChatActiveUsers`]();
+                    e.preventDefault(), t[`displayChatActiveUsers`]();
                 }), s(document)['on']('click', `.chat-muted-users`, function(e) {
-                    e[`preventDefault`](), t[`displayChatMutedUsers`]();
+                    e.preventDefault(), t[`displayChatMutedUsers`]();
                 }), s(document)['on'](`click`, `.show-chat-emoticons`, function(t) {
                     t['preventDefault']();
                     var e = s(this),
@@ -7894,8 +7894,8 @@ ogcustom1=
                 }), s(document)['on']('click', `#chat-emoticons .emoticon`, function() {
                     var t = s(this)[`attr`](`alt`),
                         e = s(`#message`),
-                        i = e[`val`]();
-                    i[`length`] + t[`length`] <= 80 && e[`val`](i + t), e['focus']();
+                        i = e.val();
+                    i[`length`] + t[`length`] <= 80 && e.val(i + t), e['focus']();
                 }), this['statsHUD'] = document[`getElementById`](`stats-hud`), this['activeParties'] = document['getElementById'](`active-parties`), this[`top5pos`] = document[`getElementById`](`top5-pos`), this[`top5totalMass`] = document[`getElementById`](`top5-total-mass`), this['top5totalPlayers'] = document[`getElementById`]('top5-total-players'), this[`leaderboardPositionsHUD`] = document['getElementById'](`leaderboard-positions`), this['leaderboardDataHUD'] = document['getElementById'](`leaderboard-data`), this[`timeHUD`] = document[`getElementById`](`time-hud`), this[`questHUD`] = document[`getElementById`](`quest-hud`), s(`#canvas`)[`bind`](`contextmenu`, function() {
                     return !1;
                 }), s(document)['on']('mouseup', `.btn`, function() {
@@ -7927,24 +7927,24 @@ ogcustom1=
                 var o = t[`attr`](`href`);
                 if (`submenu-panel` === e) {
                     var a = s(o)[`parent`]()[`attr`]('id');
-                    s('#' + a + ` .submenu-panel`)[`not`](o)[`css`](`display`, `none`);
-                } else s(`.menu-panel`)[`not`](o)[`css`]('display', `none`);
+                    s('#' + a + ` .submenu-panel`)[`not`](o).css(`display`, `none`);
+                } else s(`.menu-panel`)[`not`](o).css('display', `none`);
                 s(o)[`fadeIn`](1000), ogarhusettings(), s('.submenu-panel')[`perfectScrollbar`](`update`);
             },
             'getDefaultSettings': function() {
-                if (this['noSkins'] = s(`#noSkins`)['prop'](`checked`), this['noColors'] = s(`#noColors`)[`prop`](`checked`), this[`skipStats`] = s(`#skipStats`)[`prop`](`checked`), this[`showQuest`] = s(`#showQuest`)[`prop`](`checked`), i[`showCustomSkins`] = !this[`noSkins`], null !== e['localStorage']['getItem'](`scale_setting`)) {
-                    var t = JSON['parse'](e[`localStorage`][`getItem`](`scale_setting`));
+                if (this['noSkins'] = s(`#noSkins`)['prop'](`checked`), this['noColors'] = s(`#noColors`)[`prop`](`checked`), this[`skipStats`] = s(`#skipStats`)[`prop`](`checked`), this[`showQuest`] = s(`#showQuest`)[`prop`](`checked`), i[`showCustomSkins`] = !this[`noSkins`], null !== e.localStorage['getItem'](`scale_setting`)) {
+                    var t = JSON['parse'](e.localStorage.getItem(`scale_setting`));
                     this[`setCanvasScale`](t);
                 } else {
-                    var o = s('#quality')[`val`]();
+                    var o = s('#quality').val();
                     this[`getQuality`](o);
                 }
-                null !== e[`localStorage`][`getItem`](`location`) ? (this[`region`] = e[`localStorage`]['getItem'](`location`), s(`#region`)[`val`](this[`region`]), e['MC'] && e['MC'][`setRegion`] && e['MC'][`setRegion`](this[`region`])) : this[`region`] = s(`#region`)[`val`](), this[`setParty`](), `:party` === this['gameMode'] && e[`location`][`hash`] && s(`#join-party-btn-2`)['click'](), Array['prototype']['slice'][`call`](document[`querySelectorAll`](`.js-switch-vanilla`))['forEach'](function(t) {
+                null !== e.localStorage.getItem(`location`) ? (this[`region`] = e.localStorage['getItem'](`location`), s(`#region`).val(this[`region`]), e['MC'] && e['MC'][`setRegion`] && e['MC'][`setRegion`](this[`region`])) : this[`region`] = s(`#region`).val(), this[`setParty`](), `:party` === this['gameMode'] && e.location[`hash`] && s(`#join-party-btn-2`)['click'](), Array['prototype']['slice'][`call`](document[`querySelectorAll`](`.js-switch-vanilla`))['forEach'](function(t) {
                     new Switchery(t, {
                         'color': g[`menuMainColor`],
                         'size': `small`
                     });
-                }), s(`#nick`)[`val`](ogarcopythelb[`nick`])[`blur`](), s(`#noNames`)[`prop`](`checked`, !ogario1Settings[`noNames`]), s(`#showMass`)['prop'](`checked`, ogario1Settings[`showMass`]), this[`unlockButtons`](), this['setAutoResp'](), this[`setQuest`]();
+                }), s(`#nick`).val(ogarcopythelb[`nick`])[`blur`](), s(`#noNames`)[`prop`](`checked`, !v[`noNames`]), s(`#showMass`)['prop'](`checked`, v[`showMass`]), this[`unlockButtons`](), this['setAutoResp'](), this[`setQuest`]();
             },
             'getQuality': function(t) {
                 var i = 1;
@@ -7969,16 +7969,16 @@ ogcustom1=
                 this['canvasScale'] = t, i[`canvasScale`] = t;
             },
             'setStreamMode': function() {
-                ogario1Settings[`streamMode`] ? (s(`#stream-mode`)[`addClass`](`ogicon-eye-blocked`), s('#clantag, #nick, #party-token')[`addClass`](`stream-mode`)) : (s('#stream-mode')[`removeClass`](`ogicon-eye-blocked`), s(`#clantag, #nick, #party-token`)[`removeClass`]('stream-mode'));
+                v[`streamMode`] ? (s(`#stream-mode`)[`addClass`](`ogicon-eye-blocked`), s('#clantag, #nick, #party-token')[`addClass`](`stream-mode`)) : (s('#stream-mode')[`removeClass`](`ogicon-eye-blocked`), s(`#clantag, #nick, #party-token`)[`removeClass`]('stream-mode'));
             },
             'setHideSkinUrl': function() {
-                ogario1Settings[`hideSkinUrl`] ? (s('#hide-url')[`addClass`]('ogicon-eye-blocked'), s(`#skin`)[`addClass`](`hide-url`)) : (s(`#hide-url`)[`removeClass`](`ogicon-eye-blocked`), s(`#skin`)['removeClass'](`hide-url`));
+                v[`hideSkinUrl`] ? (s('#hide-url')[`addClass`]('ogicon-eye-blocked'), s(`#skin`)[`addClass`](`hide-url`)) : (s(`#hide-url`)[`removeClass`](`ogicon-eye-blocked`), s(`#skin`)['removeClass'](`hide-url`));
             },
             'setShowQuickMenu': function() {
-                ogario1Settings[`showQuickMenu`] ? s(`#quick-menu`)[`fadeIn`](500) : s(`#quick-menu`)[`fadeOut`](500);
+                v[`showQuickMenu`] ? s(`#quick-menu`)[`fadeIn`](500) : s(`#quick-menu`)[`fadeOut`](500);
             },
             'setShowSkinsPanel': function() {
-                ogario1Settings[`showSkinsPanel`] ? s(`#skins-panel`)[`fadeIn`](500) : s(`#skins-panel`)[`fadeOut`](500);
+                v[`showSkinsPanel`] ? s(`#skins-panel`)[`fadeIn`](500) : s(`#skins-panel`)[`fadeOut`](500);
             },
             'unlockButtons': function() {
                 s(`.btn-play, .btn-play-guest, .btn-login-play, .btn-spectate`)[`prop`](`disabled`, !1);
@@ -8008,10 +8008,10 @@ ogcustom1=
                 }
             },
             'onPlay': function() {
-                this[`play`](), this['hideMenu'](), e[`addKeyListeners`] && e[`addKeyListeners`](), ogario1Settings[`autoHideFood`] && (i[`showFood`] = !0), e['ga'] && e['ga'](`create`, `UA-67142685-2`, `auto`, `ogarioTracker`), e['ga'] && e['ga'](`ogarioTracker.send`, `pageview`);
+                this[`play`](), this['hideMenu'](), e[`addKeyListeners`] && e[`addKeyListeners`](), v[`autoHideFood`] && (i[`showFood`] = !0), e['ga'] && e['ga'](`create`, `UA-67142685-2`, `auto`, `ogarioTracker`), e['ga'] && e['ga'](`ogarioTracker.send`, `pageview`);
             },
             'onSpectate': function() {
-                this[`onJoin`](), this[`sendPlayerJoin`](), this[`hideMenu`](), e[`addKeyListeners`] && e['addKeyListeners'](), ogario1Settings[`autoHideFood`] && (i[`showFood`] = !1);
+                this[`onJoin`](), this[`sendPlayerJoin`](), this[`hideMenu`](), e[`addKeyListeners`] && e['addKeyListeners'](), v[`autoHideFood`] && (i[`showFood`] = !1);
             },
             'join': function() {
                 this[`setParty`](), this[`setPlayerSettings`](), this[`sendPartyData`](), this['sendPlayerDeath']();
@@ -8049,10 +8049,10 @@ ogcustom1=
                 i[`play`] = !1, i['playerColor'] = null, i[`foodIsHidden`] = !1, i['playerMass'] = 0, i[`playerScore`] = 0, i[`playerSplitCells`] = 0, this[`showMenu`](300), this[`sendPlayerDeath`](), this[`updateDeathLocations`](i[`playerX`], i['playerY']), this[`unlockButtons`](), ogarcommando1(), this[`autoResp`]();
             },
             'setPlayerSettings': function() {
-                var t = s(`#nick`)[`val`](),
-                    e = s(`#clantag`)[`val`](),
+                var t = s(`#nick`).val(),
+                    e = s(`#clantag`).val(),
                     o = s(`#skin`)['val'](),
-                    a = s(`#color`)[`val`]();
+                    a = s(`#color`).val();
                 ogarcopythelb[`nick`] = t, ogarcopythelb[`clanTag`] = e[`trim`](), ogarcopythelb[`skinURL`] = this[`checkSkinURL`](o['trim']()), 7 == a[`length`] && (ogarcopythelb[`color`] = a), ogarcopythelb[`clanTag`][`length`] > 0 && (i[`clanTag`] = ogarcopythelb[`clanTag`]), ogario1PlayerProfiles[this[`selectedProfile`]][`nick`] = ogarcopythelb[`nick`], ogario1PlayerProfiles[this[`selectedProfile`]][`clanTag`] = ogarcopythelb[`clanTag`], ogario1PlayerProfiles[this[`selectedProfile`]][`skinURL`] = ogarcopythelb[`skinURL`], ogario1PlayerProfiles[this[`selectedProfile`]][`color`] = ogarcopythelb[`color`], this[`saveSettings`](ogario1PlayerProfiles, `ogarioPlayerProfiles`);
             },
             'loadSkin': function(t, e) {
@@ -8093,13 +8093,13 @@ ogcustom1=
             'cacheCustomSkin': function(t, e, i) {
                 if (i) {
                     var s = ':party' === this['gameMode'] ? t + e : t;
-                    if (s && (this[`customSkinsMap`][s] = i), this[`customSkinsCache`][`hasOwnProperty`](i)) return;
+                    if (s && (this[`customSkinsMap`][s] = i), this[`customSkinsCache`].hasOwnProperty(i)) return;
                     this['loadSkin'](this[`customSkinsCache`], i);
                 }
             },
             'checkSkinsMap': function(t, e) {
                 var i = `:party` === this['gameMode'] ? t + e : t;
-                return !!this['customSkinsMap'][`hasOwnProperty`](i);
+                return !!this['customSkinsMap'].hasOwnProperty(i);
             },
             'getCustomSkin': function(t, e) {
                 if (!this[`checkSkinsMap`](t, e)) return null;
@@ -8134,7 +8134,7 @@ ogcustom1=
                     var n = o / i[`mapSize`],
                         r = i[`mapOffsetX`] + i[`mapOffset`],
                         l = i[`mapOffsetY`] + i[`mapOffset`];
-                    if (this['drawSelectedCell'](this[`miniMapCtx`]), this[`currentSector`] = this[`calculateMapSector`](i[`playerX`], i[`playerY`], !0), this[`miniMapCtx`]['globalAlpha'] = 1, this['miniMapCtx'][`font`] = g[`miniMapFontWeight`] + ' ' + (e - 4) + `px ` + g['miniMapFontFamily'], this[`miniMapCtx`][`fillStyle`] = g[`miniMapSectorColor`], this[`miniMapCtx`][`fillText`](this['currentSector'], 10, e), this['miniMapSectors'] || this[`drawMiniMapSectors`](g[`sectorsX`], g[`sectorsY`], o, s, a), this['miniMapCtx'][`save`](), this['miniMapCtx']['translate'](9.5, a), ':battleroyale' === this[`gameMode`] && ogarfooddrawer && ogarfooddrawer[`drawBattleAreaOnMinimap`](this['miniMapCtx'], o, o, n, r, l), ogario1Settings[`showMiniMapGhostCells`]) {
+                    if (this['drawSelectedCell'](this[`miniMapCtx`]), this[`currentSector`] = this[`calculateMapSector`](i[`playerX`], i[`playerY`], !0), this[`miniMapCtx`]['globalAlpha'] = 1, this['miniMapCtx'][`font`] = g[`miniMapFontWeight`] + ' ' + (e - 4) + `px ` + g['miniMapFontFamily'], this[`miniMapCtx`][`fillStyle`] = g[`miniMapSectorColor`], this[`miniMapCtx`][`fillText`](this['currentSector'], 10, e), this['miniMapSectors'] || this[`drawMiniMapSectors`](g[`sectorsX`], g[`sectorsY`], o, s, a), this['miniMapCtx'][`save`](), this['miniMapCtx']['translate'](9.5, a), ':battleroyale' === this[`gameMode`] && ogarfooddrawer && ogarfooddrawer[`drawBattleAreaOnMinimap`](this['miniMapCtx'], o, o, n, r, l), v[`showMiniMapGhostCells`]) {
                         var h = i['ghostCells'];
                         this[`miniMapCtx`][`beginPath`]();
                         for (var c = 0; c < h[`length`]; c++)
@@ -8144,7 +8144,7 @@ ogcustom1=
                                 this[`miniMapCtx`]['moveTo'](u, d), this[`miniMapCtx`][`arc`](u, d, ~~(h[c][`size`] * n), 0, this[`pi2`], !1);
                             } this[`miniMapCtx`]['fillStyle'] = g[`miniMapGhostCellsColor`], this[`miniMapCtx`][`globalAlpha`] = g[`miniMapGhostCellsAlpha`], this[`miniMapCtx`][`shadowColor`] = g[`miniMapGhostCellsColor`], this['miniMapCtx'][`shadowBlur`] = 10, this[`miniMapCtx`][`shadowOffsetX`] = 0, this['miniMapCtx'][`shadowOffsetY`] = 0, this[`miniMapCtx`]['fill'](), this[`miniMapCtx`][`globalAlpha`] = 1, this[`miniMapCtx`][`shadowBlur`] = 0;
                     }
-                    if (ogario1Settings[`showMiniMapGuides`]) {
+                    if (v[`showMiniMapGuides`]) {
                         u = Math[`round`]((i[`playerX`] + r) * n), d = Math[`round`]((i[`playerY`] + l) * n);
                         this['miniMapCtx']['lineWidth'] = 1, this[`miniMapCtx`][`strokeStyle`] = g[`miniMapGuidesColor`], this[`miniMapCtx`][`beginPath`](), this[`miniMapCtx`][`moveTo`](u, 0), this['miniMapCtx'][`lineTo`](u, o - 1), this[`miniMapCtx`][`moveTo`](0, d), this[`miniMapCtx`][`lineTo`](o - 1, d), this[`miniMapCtx`][`stroke`]();
                     }
@@ -8167,7 +8167,7 @@ ogcustom1=
                 this[`miniMapSectors`] = null;
             },
             'drawSelectedCell': function(t) {
-                i[`play`] && i[`playerSplitCells`] > 1 && (ogario1Settings[`splitRange`] || ogario1Settings['oppColors'] || ogario1Settings[`oppRings`] || ogario1Settings[`showStatsSTE`]) && (t[`fillStyle`] = `#FFFFFF`, t['globalAlpha'] = this[`selectBiggestCell`] ? 0.6 : 0.3, t[`beginPath`](), t['arc'](0x30, 15, 6, 0, this[`pi2`], !1), t[`closePath`](), t[`fill`](), t[`globalAlpha`] = this[`selectBiggestCell`] ? 0.3 : 0.6, t[`beginPath`](), t[`arc`](0x3c, 15, 4, 0, this[`pi2`], !1), t['closePath'](), t[`fill`]());
+                i[`play`] && i[`playerSplitCells`] > 1 && (v[`splitRange`] || v['oppColors'] || v[`oppRings`] || v[`showStatsSTE`]) && (t[`fillStyle`] = `#FFFFFF`, t['globalAlpha'] = this[`selectBiggestCell`] ? 0.6 : 0.3, t[`beginPath`](), t['arc'](0x30, 15, 6, 0, this[`pi2`], !1), t[`closePath`](), t[`fill`](), t[`globalAlpha`] = this[`selectBiggestCell`] ? 0.3 : 0.6, t[`beginPath`](), t[`arc`](0x3c, 15, 4, 0, this[`pi2`], !1), t['closePath'](), t[`fill`]());
             },
             'dTok': function(t, e) {
                 t[`font`] = g['miniMapFontWeight'] + ' ' + (g[`miniMapTop`] - 6) + `px ` + g[`miniMapFontFamily`], t['textAlign'] = `right`, t['textBaseline'] = 'top', t['fillText'](atob(this[`token`]), e, 7);
@@ -8176,12 +8176,12 @@ ogcustom1=
                 this[`indicator`] && t[`drawImage`](this[`indicator`], e - 45, i - s - 90);
             },
             'drawCellInfo': function(t, e, s, o, a, n, r, l, h, c, u, d) {
-                if (!n && !h && (t[`globalAlpha`] = i[`globalAlpha`], ogario1Settings[`teammatesInd`] && d && !l && a <= 200 && this[`drawTeammatesInd`](t, s, o, a), !ogario1Settings[`noNames`] || ogario1Settings[`showMass`])) {
+                if (!n && !h && (t[`globalAlpha`] = i[`globalAlpha`], v[`teammatesInd`] && d && !l && a <= 200 && this[`drawTeammatesInd`](t, s, o, a), !v[`noNames`] || v[`showMass`])) {
                     var f = !1;
-                    if (l || r || !(f = this[`setAutoHideCellInfo`](a)) || !ogario1Settings[`autoHideNames`] || !ogario1Settings[`autoHideMass`]) {
+                    if (l || r || !(f = this[`setAutoHideCellInfo`](a)) || !v[`autoHideNames`] || !v[`autoHideMass`]) {
                         var m = null;
-                        if (!this[`cells`][`hasOwnProperty`](e)) return (m = new ogarbasicassembly(s, o, r, l, ogario1Settings['shortMass'], ogario1Settings[`virMassShots`]))[`setMass`](a), m['setNick'](c), void(this[`cells`][e] = m);
-                        (m = this[`cells`][e])[`update`](s, o, a, r, l, c), m[`setDrawing`](ogario1Settings[`optimizedNames`], ogario1Settings[`optimizedMass`], ogario1Settings[`shortMass`], ogario1Settings['virMassShots'], ogario1Settings[`namesStroke`], ogario1Settings['massStroke']), m[`setDrawingScale`](i['viewScale'], g[`namesScale`], g[`massScale`], g['virMassScale'], g[`strokeScale`]), t[`globalAlpha`] = g[`textAlpha`], ogario1Settings[`noNames`] || f && ogario1Settings[`autoHideNames`] || l && ogario1Settings['hideMyName'] || d && ogario1Settings[`hideTeammatesNames`] || m[`drawNick`](t, g[`namesColor`], g[`namesFontFamily`], g[`namesFontWeight`], g['namesStrokeColor']), !ogario1Settings[`showMass`] || f && ogario1Settings[`autoHideMass`] || l && ogario1Settings['hideMyMass'] || ogario1Settings[`hideEnemiesMass`] && !l && !r || m['drawMass'](t, g['massColor'], g[`massFontFamily`], g[`massFontWeight`], g['massStrokeColor']);
+                        if (!this[`cells`].hasOwnProperty(e)) return (m = new ogarbasicassembly(s, o, r, l, v['shortMass'], v[`virMassShots`]))[`setMass`](a), m['setNick'](c), void(this[`cells`][e] = m);
+                        (m = this[`cells`][e])[`update`](s, o, a, r, l, c), m[`setDrawing`](v[`optimizedNames`], v[`optimizedMass`], v[`shortMass`], v['virMassShots'], v[`namesStroke`], v['massStroke']), m[`setDrawingScale`](i['viewScale'], g[`namesScale`], g[`massScale`], g['virMassScale'], g[`strokeScale`]), t[`globalAlpha`] = g[`textAlpha`], v[`noNames`] || f && v[`autoHideNames`] || l && v['hideMyName'] || d && v[`hideTeammatesNames`] || m[`drawNick`](t, g[`namesColor`], g[`namesFontFamily`], g[`namesFontWeight`], g['namesStrokeColor']), !v[`showMass`] || f && v[`autoHideMass`] || l && v['hideMyMass'] || v[`hideEnemiesMass`] && !l && !r || m['drawMass'](t, g['massColor'], g[`massFontFamily`], g[`massFontWeight`], g['massStrokeColor']);
                     }
                 }
             },
@@ -8195,9 +8195,9 @@ ogcustom1=
                 return t <= 40 || i[`viewScale`] < 0.5 && t < 550 && t < 25 / i[`viewScale`];
             },
             'setParty': function() {
-                var t = s(`#party-token`)[`val`]();
-                if (this[`gameMode`] = i[`gameMode`] = s(`#gamemode`)[`val`](), this[`setQuest`](), `:party` === this['gameMode'] && t) {
-                    var e = t; - 1 != t[`indexOf`]('#') && (e = (t = t[`split`]('#'))[1]), this[`partyToken`] !== e && (this['partyToken'] = e, this[`flushSkinsMap`](), this[`flushChatData`](), this[`cancelTargeting`]());
+                var t = s(`#party-token`).val();
+                if (this[`gameMode`] = i[`gameMode`] = s(`#gamemode`).val(), this[`setQuest`](), `:party` === this['gameMode'] && t) {
+                    var e = t; - 1 != t.indexOf('#') && (e = (t = t[`split`]('#'))[1]), this[`partyToken`] !== e && (this['partyToken'] = e, this[`flushSkinsMap`](), this[`flushChatData`](), this[`cancelTargeting`]());
                 }
             },
             'createParty': function() {
@@ -8208,10 +8208,10 @@ ogcustom1=
                 t && (s(`#pre-join-party-btn`)[`click`](), s(`.party-token`)['val'](t), s(`#join-party-btn`)[`click`]());
             },
             'leaveParty': function() {
-                s(`#party-token, .party-token`)[`val`](''), s(`#leave-party-btn`)[`click`]();
+                s(`#party-token, .party-token`).val(''), s(`#leave-party-btn`)[`click`]();
             },
             'closeParty': function() {
-                s(`#party-token, .party-token`)[`val`](''), s(`.party-icon-back`)[`click`]();
+                s(`#party-token, .party-token`).val(''), s(`.party-icon-back`)[`click`]();
             },
             'flushData': function() {
                 this[`flushPartyData`](), this[`flushSkinsMap`](), this[`flushChatData`](), this[`cancelTargeting`](), i[`play`] = !1, i['playerColor'] = null;
@@ -8229,7 +8229,7 @@ ogcustom1=
                 this[`chatUsers`] = {};
             },
             'getWS': function(t) {
-                t && (this['ws'] = t, this[`createServerToken`](), this[`updateServerInfo`](), -1 == this['ws'][`indexOf`](`agar.io`) && this[`closeConnection`]());
+                t && (this['ws'] = t, this[`createServerToken`](), this[`updateServerInfo`](), -1 == this['ws'].indexOf(`agar.io`) && this[`closeConnection`]());
             },
             'recreateWS': function(t) {
                 if (!t) return null;
@@ -8252,7 +8252,7 @@ ogcustom1=
                 }
             },
             'updateServerInfo': function() {
-                s(`#server-ws`)['val'](this['ws']), s(`#server-token`)[`val`](this[`serverToken`]), s(`#party-token, .party-token`)[`val`](this['partyToken']);
+                s(`#server-ws`)['val'](this['ws']), s(`#server-token`).val(this[`serverToken`]), s(`#party-token, .party-token`).val(this['partyToken']);
             },
             'gameServerConnect': function(t) {
                 t && (this[`skipServerData`] = !0, e[`core`] && e['core']['connect'] && e[`core`]['connect'](t));
@@ -8402,7 +8402,7 @@ ogcustom1=
                 this[`isSocketOpen`]() && this[`sendBuffer`](this[`strToBuff`](18, t));
             },
             'sendServerData': function() {
-                this[`skipServerData`] ? this[`skipServerData`] = !1 : (this['region'] = s('#region')[`val`](), this[`gameMode`] = s('#gamemode')[`val`](), this['sendServerRegion'](), this[`sendServerGameMode`]());
+                this[`skipServerData`] ? this[`skipServerData`] = !1 : (this['region'] = s('#region').val(), this[`gameMode`] = s('#gamemode').val(), this['sendServerRegion'](), this[`sendServerGameMode`]());
             },
             'sendPartyData': function() {
                 this[`sendPlayerClanTag`](), this['sendPartyToken'](), this['sendServerToken'](), this[`sendPlayerNick`]();
@@ -8460,7 +8460,7 @@ ogcustom1=
                                 this[`lastX`] = (29 * this[`lastX`] + this['x']) / 30, this[`lastY`] = (29 * this['lastY'] + this['y']) / 30;
                                 var a = (this[`lastX`] + e) * i,
                                     n = (this[`lastY`] + e) * i;
-                                this[`nick`][`length`] > 0 && (t[`font`] = g['miniMapNickFontWeight'] + ' ' + g[`miniMapNickSize`] + 'px ' + g[`miniMapNickFontFamily`], t[`textAlign`] = `center`, g[`miniMapNickStrokeSize`] > 0 && (t[`lineWidth`] = g[`miniMapNickStrokeSize`], t[`strokeStyle`] = g[`miniMapNickStrokeColor`], t['strokeText'](this[`nick`], a, n - (2 * g['miniMapTeammatesSize'] + 2))), t[`fillStyle`] = g[`miniMapNickColor`], t['fillText'](this[`nick`], a, n - (2 * g[`miniMapTeammatesSize`] + 2))), t[`beginPath`](), t[`arc`](a, n, g[`miniMapTeammatesSize`], 0, this['pi2'], !1), t[`closePath`](), ogario1Settings[`oneColoredTeammates`] ? t['fillStyle'] = g[`miniMapTeammatesColor`] : t[`fillStyle`] = this[`customColor`], t[`fill`]();
+                                this[`nick`][`length`] > 0 && (t[`font`] = g['miniMapNickFontWeight'] + ' ' + g[`miniMapNickSize`] + 'px ' + g[`miniMapNickFontFamily`], t[`textAlign`] = `center`, g[`miniMapNickStrokeSize`] > 0 && (t[`lineWidth`] = g[`miniMapNickStrokeSize`], t[`strokeStyle`] = g[`miniMapNickStrokeColor`], t['strokeText'](this[`nick`], a, n - (2 * g['miniMapTeammatesSize'] + 2))), t[`fillStyle`] = g[`miniMapNickColor`], t['fillText'](this[`nick`], a, n - (2 * g[`miniMapTeammatesSize`] + 2))), t[`beginPath`](), t[`arc`](a, n, g[`miniMapTeammatesSize`], 0, this['pi2'], !1), t[`closePath`](), v[`oneColoredTeammates`] ? t['fillStyle'] = g[`miniMapTeammatesColor`] : t[`fillStyle`] = this[`customColor`], t[`fill`]();
                             }
                         };
                     }(i, o, l, a);
@@ -8509,7 +8509,7 @@ ogcustom1=
                 }
             },
             'readChatMessage': function(t) {
-                if (!ogario1Settings[`disableChat`]) {
+                if (!v[`disableChat`]) {
                     var e = new Date()[`toTimeString`]()[`replace`](/^(\d{2}:\d{2}).*/, '$1'),
                         i = t[`getUint8`](1),
                         s = t['getUint32'](2, !0),
@@ -8544,7 +8544,7 @@ ogcustom1=
                 this['chatUsers'][t] = e;
             },
             'getChatUserNick': function(t) {
-                return this[`chatUsers`][`hasOwnProperty`](t) ? this[`chatUsers`][t] : '';
+                return this[`chatUsers`].hasOwnProperty(t) ? this[`chatUsers`][t] : '';
             },
             'muteChatUser': function(t) {
                 if (t && !this[`isChatUserMuted`](t)) {
@@ -8554,7 +8554,7 @@ ogcustom1=
             },
             'unmuteChatUser': function(t) {
                 if (t) {
-                    var e = this['chatMutedUserIDs'][`indexOf`](t); - 1 != e && (this['chatMutedUserIDs'][`splice`](e, 1), toastr[`info`](h[`userUnmuted`]['replace'](`%user%`, `<strong>` + this[`escapeHTML`](this[`chatMutedUsers`][t]) + `</strong>`)), delete this[`chatMutedUsers`][t]);
+                    var e = this['chatMutedUserIDs'].indexOf(t); - 1 != e && (this['chatMutedUserIDs'][`splice`](e, 1), toastr[`info`](h[`userUnmuted`]['replace'](`%user%`, `<strong>` + this[`escapeHTML`](this[`chatMutedUsers`][t]) + `</strong>`)), delete this[`chatMutedUsers`][t]);
                 }
             },
             'isChatUserMuted': function(t) {
@@ -8562,11 +8562,11 @@ ogcustom1=
             },
             'parseMessage': function(t) {
                 var e = /\[img\](https?:\/\/i\.(?:imgur|hizliresim)\.com\/\w{6,8}\.(?:jpg|jpeg|png|gif)\??\d*)\[\/img\]/i;
-                if (e[`test`](t)) return ogario1Settings['showChatImages'] ? '<img src=\"' + t[`match`](e)[1][`replace`](`http:`, `https:`) + `\" style=\"width:100%;border:none;\">` : '';
+                if (e[`test`](t)) return v['showChatImages'] ? '<img src=\"' + t[`match`](e)[1][`replace`](`http:`, `https:`) + `\" style=\"width:100%;border:none;\">` : '';
                 var i = /\[yt\]([\w-]{11})\[\/yt\]/i;
-                if (i['test'](t)) return ogario1Settings['showChatVideos'] ? `<iframe type=\"text/html\" width=\"100%\" height=\"auto\" src=\"https://www.youtube.com/embed/` + t['match'](i)[1] + `?autoplay=1&amp;vq=tiny\" frameborder=\"0\" />` : '';
+                if (i['test'](t)) return v['showChatVideos'] ? `<iframe type=\"text/html\" width=\"100%\" height=\"auto\" src=\"https://www.youtube.com/embed/` + t['match'](i)[1] + `?autoplay=1&amp;vq=tiny\" frameborder=\"0\" />` : '';
                 var s = this[`escapeHTML`](t);
-                return ogario1Settings[`chatEmoticons`] && (s = this[`parseEmoticons`](s)), s;
+                return v[`chatEmoticons`] && (s = this[`parseEmoticons`](s)), s;
             },
             'parseEmoticons': function(t) {
                 return String(t)[`replace`](/\&lt\;3/g, '<3')['replace'](/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\))/g, function(t) {
@@ -8580,26 +8580,26 @@ ogcustom1=
                     if (!(0 == a[`length`] || a[`length`] > 15 || 0 == n[`length`])) {
                         var r = '';
                         if (0 != i && i != this['playerID'] && (this[`addChatUser`](i, a), r = '<a href=\"#\" data-user-id=\"' + i + `\" class=\"mute-user ogicon-user-minus\"></a> `), a = this[`escapeHTML`](a), 101 == e) {
-                            if (ogario1Settings[`showChatBox`]) return s(`#chat-box`)[`append`](`<div class=\"message\"><span class=\"message-time\">[` + t + `] </span>` + r + `<span class=\"message-nick\">` + a + `: </span><span class=\"message-text\">` + n + `</span></div>`), s(`#chat-box`)['perfectScrollbar'](`update`), s(`#chat-box`)[`animate`]({
+                            if (v[`showChatBox`]) return s(`#chat-box`).append(`<div class=\"message\"><span class=\"message-time\">[` + t + `] </span>` + r + `<span class=\"message-nick\">` + a + `: </span><span class=\"message-text\">` + n + `</span></div>`), s(`#chat-box`)['perfectScrollbar'](`update`), s(`#chat-box`)[`animate`]({
                                 'scrollTop': s(`#chat-box`)['prop']('scrollHeight')
-                            }, 500), void(ogario1Settings[`chatSounds`] && this[`playSound`](this[`messageSound`]));
-                            ogario1Settings[`hideChat`] || (toastr[`success`]('<span class=\"message-nick\">' + a + ': </span><span class=\"message-text\">' + n + `</span>` + r), ogario1Settings['chatSounds'] && this[`playSound`](this[`messageSound`])), this[`chatHistory`][`push`]({
+                            }, 500), void(v[`chatSounds`] && this[`playSound`](this[`messageSound`]));
+                            v[`hideChat`] || (toastr[`success`]('<span class=\"message-nick\">' + a + ': </span><span class=\"message-text\">' + n + `</span>` + r), v['chatSounds'] && this[`playSound`](this[`messageSound`])), this[`chatHistory`][`push`]({
                                 'nick': a,
                                 'message': n
                             }), this['chatHistory'][`length`] > 15 && this[`chatHistory`][`shift`]();
                         } else if (102 == e) {
-                            if (ogario1Settings[`showChatBox`]) return s(`#chat-box`)[`append`](`<div class=\"message command\"><span class=\"command-time\">[` + t + '] </span>' + r + `<span class=\"command-nick\">` + a + `: </span><span class=\"command-text\">` + n + `</span></div>`), s(`#chat-box`)[`perfectScrollbar`]('update'), s('#chat-box')[`animate`]({
+                            if (v[`showChatBox`]) return s(`#chat-box`).append(`<div class=\"message command\"><span class=\"command-time\">[` + t + '] </span>' + r + `<span class=\"command-nick\">` + a + `: </span><span class=\"command-text\">` + n + `</span></div>`), s(`#chat-box`)[`perfectScrollbar`]('update'), s('#chat-box')[`animate`]({
                                 'scrollTop': s('#chat-box')[`prop`]('scrollHeight')
-                            }, 500), void(ogario1Settings['chatSounds'] && this[`playSound`](this[`commandSound`]));
-                            ogario1Settings[`hideChat`] || (toastr[`warning`](`<span class=\"command-nick\">` + a + `: </span><span class=\"command-text\">` + n + `</span>` + r), ogario1Settings['chatSounds'] && this[`playSound`](this['commandSound']));
-                        } else s(`#messages`)[`append`](o);
+                            }, 500), void(v['chatSounds'] && this[`playSound`](this[`commandSound`]));
+                            v[`hideChat`] || (toastr[`warning`](`<span class=\"command-nick\">` + a + `: </span><span class=\"command-text\">` + n + `</span>` + r), v['chatSounds'] && this[`playSound`](this['commandSound']));
+                        } else s(`#messages`).append(o);
                     }
                 }
             },
             'displayUserList': function(t, e, i, s, o) {
                 var a = '';
                 if (Object[`keys`](t)[`length`]) {
-                    for (var n in a += '<ol class=\"user-list\">', t) t['hasOwnProperty'](n) && (a += `<li><strong>` + this[`escapeHTML`](t[n]) + '</strong> <button data-user-id=\"' + n + `\" class=\"btn btn-xs ` + i + '\">' + s + `</button></li>`);
+                    for (var n in a += '<ol class=\"user-list\">', t) t.hasOwnProperty(n) && (a += `<li><strong>` + this[`escapeHTML`](t[n]) + '</strong> <button data-user-id=\"' + n + `\" class=\"btn btn-xs ` + i + '\">' + s + `</button></li>`);
                     a += `</ol>`;
                 } else a += h['none'];
                 toastr[o](a, e, {
@@ -8617,13 +8617,13 @@ ogcustom1=
                 this[`setMessageSound`](), this[`setCommandSound`]();
             },
             'setChatSoundsBtn': function() {
-                ogario1Settings[`chatSounds`] ? s(`.chat-sound-notifications`)[`removeClass`](`ogicon-volume-mute2`)[`addClass`](`ogicon-volume-high`) : s(`.chat-sound-notifications`)[`removeClass`](`ogicon-volume-high`)[`addClass`](`ogicon-volume-mute2`);
+                v[`chatSounds`] ? s(`.chat-sound-notifications`)[`removeClass`](`ogicon-volume-mute2`)[`addClass`](`ogicon-volume-high`) : s(`.chat-sound-notifications`)[`removeClass`](`ogicon-volume-high`)[`addClass`](`ogicon-volume-mute2`);
             },
             'setMessageSound': function() {
-                this[`messageSound`] = this[`setSound`](ogario1Settings[`messageSound`]);
+                this[`messageSound`] = this[`setSound`](v[`messageSound`]);
             },
             'setCommandSound': function() {
-                this[`commandSound`] = this[`setSound`](ogario1Settings[`commandSound`]);
+                this[`commandSound`] = this[`setSound`](v[`commandSound`]);
             },
             'setSound': function(t) {
                 return t ? new Audio(t) : null;
@@ -8678,7 +8678,7 @@ ogcustom1=
                     } null !== e && (t = e), null !== t ? this['setTarget'](this[`teamPlayers`][t]['id']) : this[`setTargetStatus`](0);
             },
             'updateTarget': function(t, e, o, a, n, r) {
-                i[`setTargetPosition`](o, a), this[`targetNick`] !== t && (this[`targetNick`] = t, s('#target-nick')[`html`](this['escapeHTML'](t))), s(`#target-skin`)[`css`](`background-color`, r), e && this[`targetSkinURL`] !== e && (this[`customSkinsCache`]['hasOwnProperty'](e + '_cached') ? (s(`#target-skin img`)[`attr`]('src', e), this[`targetSkinURL`] = e) : s(`#target-skin img`)[`attr`](`src`, `https://cdn.ogario.ovh/static/img/blank.png`)), s(`#target-status`)[`text`]('[' + this[`shortMassFormat`](n) + ']');
+                i[`setTargetPosition`](o, a), this[`targetNick`] !== t && (this[`targetNick`] = t, s('#target-nick')[`html`](this['escapeHTML'](t))), s(`#target-skin`).css(`background-color`, r), e && this[`targetSkinURL`] !== e && (this[`customSkinsCache`].hasOwnProperty(e + '_cached') ? (s(`#target-skin img`)[`attr`]('src', e), this[`targetSkinURL`] = e) : s(`#target-skin img`)[`attr`](`src`, `https://cdn.ogario.ovh/static/img/blank.png`)), s(`#target-status`)[`text`]('[' + this[`shortMassFormat`](n) + ']');
                 var l = this[`calculateMapSector`](o, a),
                     c = h[`targetDistance`] + `: <span class=\"hud-main-color\">` + i[`targetDistance`] + ' [' + l + ']</span>';
                 i[`play`] && (c += ` | ` + h[`targetMass`] + `: <span class=\"hud-main-color\">` + this[`shortMassFormat`](n + i[`playerMass`]) + `</span>`), s(`#target-summary`)[`html`](c), 1 != this[`targetStatus`] && this[`setTargetStatus`](1);
@@ -8687,7 +8687,7 @@ ogcustom1=
                 this[`showQuest`] && `:ffa` === this[`gameMode`] && e['MC'] && e['MC'][`getQuestProgressLabel`] && (this['questHUD'][`textContent`] = e['MC'][`getQuestProgressLabel`]());
             },
             'init': function() {
-                this['loadSettings'](), this['loadProfiles'](), this[`setLang`](), this[`setMenu`](), this['setUI'](), y && y[`setTheme`](), this['setShowQuickMenu'](), this[`setShowSkinsPanel`](), this[`setProfile`](), this[`setMainButtons`](), this[`setStreamMode`](), this[`setHideSkinUrl`](), this[`setMiniMap`](), this['setAutoResp'](), this[`setDisableChat`](), this[`setShowChatBox`](), this[`setTop5`](), this[`setTargetingHUD`](), this[`setQuest`](), this[`displayTime`](), this[`setCenteredLb`](), this[`setNormalLb`](), this[`setFpsAtTop`](), this[`displayStats`](), this[`setBlockPopups`](), this['preloadChatSounds'](), this[`setChatSoundsBtn`]();
+                this['loadSettings'](), this['loadProfiles'](), this[`setLang`](), this[`setMenu`](), this['setUI'](), y && y.setTheme(), this['setShowQuickMenu'](), this[`setShowSkinsPanel`](), this[`setProfile`](), this[`setMainButtons`](), this[`setStreamMode`](), this[`setHideSkinUrl`](), this[`setMiniMap`](), this['setAutoResp'](), this[`setDisableChat`](), this[`setShowChatBox`](), this[`setTop5`](), this[`setTargetingHUD`](), this[`setQuest`](), this[`displayTime`](), this[`setCenteredLb`](), this[`setNormalLb`](), this[`setFpsAtTop`](), this[`displayStats`](), this[`setBlockPopups`](), this['preloadChatSounds'](), this[`setChatSoundsBtn`]();
                 var t = this;
                 setInterval(function() {
                     t['drawMiniMap']();
@@ -8737,25 +8737,25 @@ ogcustom1=
                     this[`stroke`] && this[`strokeColor`] !== ogariostrokecolorsetter && (this[`strokeColor`] = ogariostrokecolorsetter,
                         this[`redraw`] = !0);
                 },
-                this[`setFont`] = function() {
+                this.setFont = function() {
                     this[`font`] = this[`fontWeight`] + ' ' + this[`fontSize`] + `px ` + this[`fontFamily`];
                 },
                 this[`setFontFamily`] = function(ogariofontfamilysetter) {
                     this['fontFamily'] !== ogariofontfamilysetter && (this[`fontFamily`] = ogariofontfamilysetter,
-                        this[`setFont`](),
+                        this.setFont(),
                         this[`redraw`] = !0,
                         this[`remeasure`] = !0);
                 },
-                this[`setFontWeight`] = function(ogariofontweightsetter) {
+                this.setFontWeight = function(ogariofontweightsetter) {
                     this['fontWeight'] != ogariofontweightsetter && (this['fontWeight'] = ogariofontweightsetter,
-                        this[`setFont`](),
+                        this.setFont(),
                         this[`redraw`] = !0,
                         this[`remeasure`] = !0);
                 },
                 this[`setFontSize`] = function(ogariofontsizesetter) {
                     this['fontSize'] != ogariofontsizesetter && (this[`fontSize`] = ogariofontsizesetter,
                         this[`margin`] = ~~(0.2 * ogariofontsizesetter),
-                        this[`setFont`](),
+                        this.setFont(),
                         this[`redraw`] = !0);
                 },
                 this[`setScale`] = function(ogarioscalesetter) {
@@ -8770,7 +8770,7 @@ ogcustom1=
                 this[`setDrawing`] = function(ogarsetDrawinglabel1, ogarsetDrawinglabel2, ogarsetDrawinglabel3, ogarsetDrawinglabel4, ogarsetDrawinglabel5, ogarsetDrawinglabel6) {
                     this[`setColor`](ogarsetDrawinglabel1),
                         this[`setFontFamily`](ogarsetDrawinglabel2),
-                        this[`setFontWeight`](ogarsetDrawinglabel3),
+                        this.setFontWeight(ogarsetDrawinglabel3),
                         this[`setStroke`](ogarsetDrawinglabel4),
                         this['setStrokeWidth'](ogarsetDrawinglabel5),
                         this[`setStrokeColor`](ogarsetDrawinglabel6);
@@ -8806,12 +8806,12 @@ ogcustom1=
                     this['x'] = t, this['y'] = e, this[`isVirus`] = s, this[`isPlayerCell`] = o, this['setMass'](i), this[`setNick`](a);
                 }, this[`removeCell`] = function() {
                     this[`removed`] = !0;
-                    var t = M[`cells`]['indexOf'](this); - 1 != t ? (M[`cells`][`splice`](t, 1), ogario1Settings[`virusesRange`] && -1 != (t = M[`viruses`][`indexOf`](this)) && M[`viruses`][`splice`](t, 1)) : -1 != (t = M[`food`][`indexOf`](this)) && M[`food`]['splice'](t, 1), -1 != (t = M[`playerCells`][`indexOf`](this)) && (M['removePlayerCell'] = !0, M[`playerCells`][`splice`](t, 1), -1 != (t = M[`playerCellIDs`][`indexOf`](this['id'])) && M[`playerCellIDs`]['splice'](t, 1)), this[`redrawed`] && M[`removedCells`][`push`](this), delete M[`indexedCells`][this['id']];
+                    var t = M[`cells`]['indexOf'](this); - 1 != t ? (M[`cells`][`splice`](t, 1), v[`virusesRange`] && -1 != (t = M[`viruses`].indexOf(this)) && M[`viruses`][`splice`](t, 1)) : -1 != (t = M[`food`].indexOf(this)) && M[`food`]['splice'](t, 1), -1 != (t = M[`playerCells`].indexOf(this)) && (M['removePlayerCell'] = !0, M[`playerCells`][`splice`](t, 1), -1 != (t = M[`playerCellIDs`].indexOf(this['id'])) && M[`playerCellIDs`]['splice'](t, 1)), this[`redrawed`] && M[`removedCells`][`push`](this), delete M[`indexedCells`][this['id']];
                 }, this[`moveCell`] = function() {
-                    var t = (M[`time`] - this[`time`]) / ogario1Settings[`animation`];
+                    var t = (M[`time`] - this[`time`]) / v[`animation`];
                     if (t = t < 0 ? 0 : t > 1 ? 1 : t, this['x'] += (this[`targetX`] - this['x']) * t, this['y'] += (this[`targetY`] - this['y']) * t, this[`size`] += (this['targetSize'] - this[`size`]) * t, this[`alpha`] = t, this[`removed`]) {
                         if (1 == t) {
-                            var e = M[`removedCells`][`indexOf`](this); - 1 != e && M[`removedCells`][`splice`](e, 1);
+                            var e = M[`removedCells`].indexOf(this); - 1 != e && M[`removedCells`][`splice`](e, 1);
                         }
                     } else this[`time`] = M[`time`];
                 }, this[`isInView`] = function() {
@@ -8828,7 +8828,7 @@ ogcustom1=
                 }, this['setStrokeSize'] = function() {
                     this[`strokeNick`] && !this[`isVirus`] && (this[`nickStrokeSize`] = ~~(0.1 * this[`nickSize`] * this[`strokeScale`])), this[`strokeMass`] && (this[`massStrokeSize`] = ~~(0.1 * this[`massSize`] * this[`strokeScale`]));
                 }, this['setDrawing'] = function() {
-                    this[`optimizedNames`] = ogario1Settings[`optimizedNames`], this['optimizedMass'] = ogario1Settings['optimizedMass'], this[`shortMass`] = ogario1Settings['shortMass'], this[`virMassShots`] = ogario1Settings[`virMassShots`], this['strokeNick'] = ogario1Settings['namesStroke'], this[`strokeMass`] = ogario1Settings[`massStroke`];
+                    this[`optimizedNames`] = v[`optimizedNames`], this['optimizedMass'] = v['optimizedMass'], this[`shortMass`] = v['shortMass'], this[`virMassShots`] = v[`virMassShots`], this['strokeNick'] = v['namesStroke'], this[`strokeMass`] = v[`massStroke`];
                 }, this[`setDrawingScale`] = function() {
                     this[`setScale`](i[`viewScale`], g[`namesScale`], g[`massScale`], g[`virMassScale`], g[`strokeScale`]), this[`setFontSize`](), this[`setStrokeSize`](), this[`margin`] = 0;
                 }, this['drawNick'] = function(mainCanvas) {
@@ -8878,16 +8878,16 @@ ogcustom1=
                             o = this[`isFood`] ? this[`size`] + g[`foodSize`] : this[`size`];
                         if (t[`beginPath`](), t[`arc`](this['x'], this['y'], o, 0, this[`pi2`], !1), t[`closePath`](), this[`isFood`]) return t[`fillStyle`] = this[`color`], t[`fill`](), void t[`restore`]();
                         if (this[`isVirus`]) {
-                            return ogario1Settings[`transparentViruses`] && (t[`globalAlpha`] *= g[`virusAlpha`], s = !0), ogario1Settings['virColors'] && M[`play`] ? (t['fillStyle'] = ogarminimapdrawer[`setVirusColor`](o), t['strokeStyle'] = ogarminimapdrawer[`setVirusStrokeColor`](o)) : (t['fillStyle'] = this.virusColor, t[`strokeStyle`] = this.virusStroke), t[`fill`](), s && (t['globalAlpha'] = i, s = !1), t['lineWidth'] = g[`virusStrokeSize`], t[`stroke`](this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), ogario1Settings['showMass'] && (this[`setDrawing`](), this[`setDrawingScale`](), this['setMass'](this['size']), this['drawMass'](t)), void t[`restore`]();
+                            return v[`transparentViruses`] && (t[`globalAlpha`] *= g[`virusAlpha`], s = !0), v['virColors'] && M[`play`] ? (t['fillStyle'] = ogarminimapdrawer[`setVirusColor`](o), t['strokeStyle'] = ogarminimapdrawer[`setVirusStrokeColor`](o)) : (t['fillStyle'] = this.virusColor, t[`strokeStyle`] = this.virusStroke), t[`fill`](), s && (t['globalAlpha'] = i, s = !1), t['lineWidth'] = g[`virusStrokeSize`], t[`stroke`](this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), v['showMass'] && (this[`setDrawing`](), this[`setDrawingScale`](), this['setMass'](this['size']), this['drawMass'](t)), void t[`restore`]();
                         }
-                        ogario1Settings[`transparentCells`] && (t[`globalAlpha`] *= g[`cellsAlpha`], s = !0);
+                        v[`transparentCells`] && (t[`globalAlpha`] *= g[`cellsAlpha`], s = !0);
                         var a = this[`color`];
-                        M[`play`] && (this[`isPlayerCell`] ? ogario1Settings[`myCustomColor`] && (a = ogarcopythelb[`color`]) : ogario1Settings[`oppColors`] && !ogario1Settings[`oppRings`] && (a = this['oppColor'])), t[`fillStyle`] = a, t[`fill`](), s && (t['globalAlpha'] = i, s = !1);
+                        M[`play`] && (this[`isPlayerCell`] ? v[`myCustomColor`] && (a = ogarcopythelb[`color`]) : v[`oppColors`] && !v[`oppRings`] && (a = this['oppColor'])), t[`fillStyle`] = a, t[`fill`](), s && (t['globalAlpha'] = i, s = !1);
                         var n = null;
-                        if (ogario1Settings['customSkins'] && M['showCustomSkins'] && (n = ogarminimapdrawer['getCustomSkin'](this['targetNick'], this['color'])) && (((ogario1Settings[`transparentSkins`] || M[`play`] && ogario1Settings[`oppColors`]) && (!this[`isPlayerCell`] || ogario1Settings['myTransparentSkin']) || this['isPlayerCell'] && ogario1Settings['myTransparentSkin']) && (t[`globalAlpha`] *= g[`skinsAlpha`], s = !0), t[`drawImage`](n, this['x'] - o, this['y'] - o, 2 * o, 2 * o), s && (t[`globalAlpha`] = i, s = !1)), ogario1Settings[`teammatesInd`] && !this[`isPlayerCell`] && o <= 200 && (n || ogarminimapdrawer[`checkSkinsMap`](this[`targetNick`], this[`color`])) && ogarfooddrawer[`drawTeammatesInd`](t, this['x'], this['y'], o), ogario1Settings[`noNames`] && !ogario1Settings[`showMass`] || e) t['restore']();
+                        if (v['customSkins'] && M['showCustomSkins'] && (n = ogarminimapdrawer['getCustomSkin'](this['targetNick'], this['color'])) && (((v[`transparentSkins`] || M[`play`] && v[`oppColors`]) && (!this[`isPlayerCell`] || v['myTransparentSkin']) || this['isPlayerCell'] && v['myTransparentSkin']) && (t[`globalAlpha`] *= g[`skinsAlpha`], s = !0), t[`drawImage`](n, this['x'] - o, this['y'] - o, 2 * o, 2 * o), s && (t[`globalAlpha`] = i, s = !1)), v[`teammatesInd`] && !this[`isPlayerCell`] && o <= 200 && (n || ogarminimapdrawer[`checkSkinsMap`](this[`targetNick`], this[`color`])) && ogarfooddrawer[`drawTeammatesInd`](t, this['x'], this['y'], o), v[`noNames`] && !v[`showMass`] || e) t['restore']();
                         else {
                             var r = !1;
-                            !this[`isPlayerCell`] && (r = ogarminimapdrawer[`setAutoHideCellInfo`](o)) && ogario1Settings[`autoHideNames`] && ogario1Settings[`autoHideMass`] ? t[`restore`]() : (this[`setDrawing`](), this['setDrawingScale'](), t[`globalAlpha`] *= g[`textAlpha`], ogario1Settings['noNames'] || r && ogario1Settings[`autoHideNames`] || this[`isPlayerCell`] && ogario1Settings[`hideMyName`] || n && ogario1Settings[`hideTeammatesNames`] || this[`setNick`](this[`targetNick`]) && this[`drawNick`](t), !ogario1Settings[`showMass`] || r && ogario1Settings[`autoHideMass`] || this[`isPlayerCell`] && ogario1Settings[`hideMyMass`] || ogario1Settings[`hideEnemiesMass`] && !this[`isPlayerCell`] && !this[`isVirus`] || this[`setMass`](this[`size`]) && this[`drawMass`](t), t[`restore`]());
+                            !this[`isPlayerCell`] && (r = ogarminimapdrawer[`setAutoHideCellInfo`](o)) && v[`autoHideNames`] && v[`autoHideMass`] ? t[`restore`]() : (this[`setDrawing`](), this['setDrawingScale'](), t[`globalAlpha`] *= g[`textAlpha`], v['noNames'] || r && v[`autoHideNames`] || this[`isPlayerCell`] && v[`hideMyName`] || n && v[`hideTeammatesNames`] || this[`setNick`](this[`targetNick`]) && this[`drawNick`](t), !v[`showMass`] || r && v[`autoHideMass`] || this[`isPlayerCell`] && v[`hideMyMass`] || v[`hideEnemiesMass`] && !this[`isPlayerCell`] && !this[`isVirus`] || this[`setMass`](this[`size`]) && this[`drawMass`](t), t[`restore`]());
                         }
                     }
                 };
@@ -9233,9 +9233,9 @@ ogcustom1=
                         s += 2;
                         for (n = 0; n < ogario1PlayerProfiles; n++) {
                             var ogarcopythelb = e[`decodeURIComponent`](escape(i())),
-                                ogario1Settings = t[`getUint32`](s, !0);
+                                v = t[`getUint32`](s, !0);
                             s += 4, this[`battleRoyale`][`rank`]['push']({
-                                'place': ogario1Settings,
+                                'place': v,
                                 'name': ogarcopythelb
                             });
                         }
@@ -9273,9 +9273,9 @@ ogcustom1=
             'handleLeaderboard': function() {
                 for (var t = '', e = '', i = 0; i < this['leaderboard'][`length`] && 10 != i; i++) {
                     var s = '<span>';
-                    'isPlayer' === this[`leaderboard`][i]['id'] ? s = '<span class=\"me\">' : ogarcopythelb['clanTag'][`length`] && 0 == this[`leaderboard`][i][`nick`][`indexOf`](ogarcopythelb[`clanTag`]) && (s = `<span class=\"teammate\">`), t += s + (i + 1) + '. ' + ogarminimapdrawer[`escapeHTML`](this['leaderboard'][i]['nick']) + `</span>`;
+                    'isPlayer' === this[`leaderboard`][i]['id'] ? s = '<span class=\"me\">' : ogarcopythelb['clanTag'][`length`] && 0 == this[`leaderboard`][i][`nick`].indexOf(ogarcopythelb[`clanTag`]) && (s = `<span class=\"teammate\">`), t += s + (i + 1) + '. ' + ogarminimapdrawer[`escapeHTML`](this['leaderboard'][i]['nick']) + `</span>`;
                 }
-                if (this[`playerPosition`] > 10 && (t += '<span class=\"me\">' + this[`playerPosition`] + '. ' + ogarminimapdrawer[`escapeHTML`](this['playerNick']) + `</span>`), ogario1Settings[`showLbData`])
+                if (this[`playerPosition`] > 10 && (t += '<span class=\"me\">' + this[`playerPosition`] + '. ' + ogarminimapdrawer[`escapeHTML`](this['playerNick']) + `</span>`), v[`showLbData`])
                     for (var o = 0; o < this[`ghostCells`][`length`] && o != i; o++) e += '<span class=\"lb-data\">', e += `<span class=\"top5-mass-color\">[` + ogarminimapdrawer[`shortMassFormat`](this['ghostCells'][o][`mass`]) + `]</span>`, e += `<span class=\"hud-main-color\">[` + ogarminimapdrawer[`calculateMapSector`](this[`ghostCells`][o]['x'], this[`ghostCells`][o]['y']) + `]</span>`, e += `</span>`;
                 ogarminimapdrawer[`displayLeaderboard`](t, e);
             },
@@ -9332,7 +9332,9 @@ ogcustom1=
                     //4 & d && (g = s()),
                     //8 & d && (y = e['decodeURIComponent'](escape(s())));
                     if (4 & d) {
-                        g = s();
+						g = s();
+//						console.log('skin '+g);
+                        
                     }
                     if (8 & d) {
                         y = e['decodeURIComponent'](escape(s()));
@@ -9360,7 +9362,7 @@ ogcustom1=
                     var M = 1 & d,
                         ogarioset1final = 1 & f,
                         ogariocellssetts = null;
-                    this['indexedCells'][`hasOwnProperty`](l) ? (ogariocellssetts = this[`indexedCells`][l], m && (ogariocellssetts[`color`] = m)) : ((ogariocellssetts = new ogarbasicassembly(l, h, c, u, m, ogarioset1final, M, !1, ogario1Settings[`shortMass`], ogario1Settings[`virMassShots`]))[`time`] = this[`time`], ogarioset1final ? this['food'][`push`](ogariocellssetts) : (M && ogario1Settings[`virusesRange`] && this[`viruses`][`push`](ogariocellssetts), this[`cells`][`push`](ogariocellssetts), -1 != this['playerCellIDs']['indexOf'](l) && -1 == this[`playerCells`][`indexOf`](ogariocellssetts) && (ogariocellssetts[`isPlayerCell`] = !0, this[`playerColor`] = m, this[`playerCells`]['push'](ogariocellssetts))), this['indexedCells'][l] = ogariocellssetts), ogariocellssetts[`isPlayerCell`] && (y = this['playerNick']), y && (ogariocellssetts[`targetNick`] = y), ogariocellssetts[`targetX`] = h, ogariocellssetts[`targetY`] = c, ogariocellssetts[`targetSize`] = u, ogariocellssetts[`isFood`] = ogarioset1final, ogariocellssetts[`isVirus`] = M, g && (ogariocellssetts[`skin`] = g), 4 & f && (t[`readUInt32LE`](i), i += 4);
+                    this['indexedCells'].hasOwnProperty(l) ? (ogariocellssetts = this[`indexedCells`][l], m && (ogariocellssetts[`color`] = m)) : ((ogariocellssetts = new ogarbasicassembly(l, h, c, u, m, ogarioset1final, M, !1, v[`shortMass`], v[`virMassShots`]))[`time`] = this[`time`], ogarioset1final ? this['food'][`push`](ogariocellssetts) : (M && v[`virusesRange`] && this[`viruses`][`push`](ogariocellssetts), this[`cells`][`push`](ogariocellssetts), -1 != this['playerCellIDs']['indexOf'](l) && -1 == this[`playerCells`].indexOf(ogariocellssetts) && (ogariocellssetts[`isPlayerCell`] = !0, this[`playerColor`] = m, this[`playerCells`]['push'](ogariocellssetts))), this['indexedCells'][l] = ogariocellssetts), ogariocellssetts[`isPlayerCell`] && (y = this['playerNick']), y && (ogariocellssetts[`targetNick`] = y), ogariocellssetts[`targetX`] = h, ogariocellssetts[`targetY`] = c, ogariocellssetts[`targetSize`] = u, ogariocellssetts[`isFood`] = ogarioset1final, ogariocellssetts[`isVirus`] = M, g && (ogariocellssetts[`skin`] = g), 4 & f && (t[`readUInt32LE`](i), i += 4);
                 }
                 for (o = t[`readUInt16LE`](i), i += 2, a = 0; a < o; a++) {
                     l = t[`readUInt32LE`](i);
@@ -9388,21 +9390,21 @@ ogcustom1=
                 this['viewX'] = i, this[`viewY`] = s, this[`playerSize`] = t, this[`playerMass`] = ~~(e / 100), this[`recalculatePlayerMass`]();
             },
             'recalculatePlayerMass': function() {
-                if (this[`playerScore`] = Math['max'](this[`playerScore`], this['playerMass']), ogario1Settings[`virColors`] || ogario1Settings[`splitRange`] || ogario1Settings[`oppColors`] || ogario1Settings['oppRings'] || ogario1Settings[`showStatsSTE`]) {
+                if (this[`playerScore`] = Math['max'](this[`playerScore`], this['playerMass']), v[`virColors`] || v[`splitRange`] || v[`oppColors`] || v['oppRings'] || v[`showStatsSTE`]) {
                     var t = this['playerCells'],
                         e = t[`length`];
                     t[`sort`](function(t, e) {
                         return t['size'] == e[`size`] ? t['id'] - e['id'] : t[`size`] - e[`size`];
                     }), this['playerMinMass'] = ~~(t[0][`size`] * t[0][`size`] / 100), this['playerMaxMass'] = ~~(t[e - 1][`size`] * t[e - 1][`size`] / 100), this[`playerSplitCells`] = e;
                 }
-                if (ogario1Settings[`showStatsSTE`]) {
+                if (v[`showStatsSTE`]) {
                     var i = this[`selectBiggestCell`] ? this[`playerMaxMass`] : this[`playerMinMass`];
                     this['STE'] = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null;
                 }
             },
             'compareCells': function() {
-                if (this[`play`] && (ogario1Settings[`oppColors`] || ogario1Settings[`oppRings`] || ogario1Settings[`splitRange`])) {
-                    (ogario1Settings[`oppRings`] || ogario1Settings[`splitRange`]) && (this[`biggerSTECellsCache`] = [], this[`biggerCellsCache`] = [], this['smallerCellsCache'] = [], this[`STECellsCache`] = []);
+                if (this[`play`] && (v[`oppColors`] || v[`oppRings`] || v[`splitRange`])) {
+                    (v[`oppRings`] || v[`splitRange`]) && (this[`biggerSTECellsCache`] = [], this[`biggerCellsCache`] = [], this['smallerCellsCache'] = [], this[`STECellsCache`] = []);
                     for (var t = 0; t < this['cells'][`length`]; t++) {
                         var e = this[`cells`][t];
                         if (!e[`isVirus`]) {
@@ -9410,7 +9412,7 @@ ogcustom1=
                                 s = this[`selectBiggestCell`] ? this[`playerMaxMass`] : this[`playerMinMass`],
                                 o = i / s,
                                 a = s < 1000 ? 0.35 : 0.38;
-                            ogario1Settings[`oppColors`] && !ogario1Settings[`oppRings`] && (e['oppColor'] = this['setCellOppColor'](e[`isPlayerCell`], o, a)), e[`isPlayerCell`] || !ogario1Settings[`splitRange`] && !ogario1Settings[`oppRings`] || this[`cacheCells`](e['x'], e['y'], e[`size`], o, a);
+                            v[`oppColors`] && !v[`oppRings`] && (e['oppColor'] = this['setCellOppColor'](e[`isPlayerCell`], o, a)), e[`isPlayerCell`] || !v[`splitRange`] && !v[`oppRings`] || this[`cacheCells`](e['x'], e['y'], e[`size`], o, a);
                         }
                     }
                 }
@@ -9441,7 +9443,7 @@ ogcustom1=
                 this[`cursorX`] = (this[`clientX`] - this[`canvasWidth`] / 2) / this[`viewScale`] + this[`viewX`], this[`cursorY`] = (this[`clientY`] - this['canvasHeight'] / 2) / this[`viewScale`] + this[`viewY`];
             },
             'setZoom': function(t) {
-                t[`preventDefault`](), this[`zoomValue`] *= Math[`pow`](ogario1Settings[`zoomSpeedValue`], t['wheelDelta'] / -120 || t[`detail`] || 0), this[`zoomValue`] > 4 / this[`viewScale`] && (this[`zoomValue`] = 4 / this[`viewScale`]);
+                t.preventDefault(), this[`zoomValue`] *= Math[`pow`](v[`zoomSpeedValue`], t['wheelDelta'] / -120 || t[`detail`] || 0), this[`zoomValue`] > 4 / this[`viewScale`] && (this[`zoomValue`] = 4 / this[`viewScale`]);
             },
             'setTargetPosition': function(t, e) {
                 this[`targetX`] = t - this[`mapOffsetX`], this[`targetY`] = e - this[`mapOffsetY`], this[`targetDistance`] = Math[`round`](Math['sqrt'](Math[`pow`](this[`playerX`] - this[`targetX`], 2) + Math[`pow`](this[`playerY`] - this['targetY'], 2)));
@@ -9516,13 +9518,13 @@ ogcustom1=
                     this[`setScale`](),
 					M[`playerCells`][`length`] ?
 					(M[`calculatePlayerMassAndPosition`](),
-					this.camX += (M.viewX - this.camX) / 2,
-					this.camY += (M.viewY - this.camY) / 2) :
-//					this[`camX`] = (this[`camX`] + M[`viewX`]) / 2,
-//					this[`camY`] = (this[`camY`] + M[`viewY`]) / 2) :
-					(this[`camX`] = (29 * this[`camX`] + M[`viewX`]) / 30,
-					this[`camY`] = (29 * this[`camY`] + M[`viewY`]) / 30),
-					M['playerX'] = this[`camX`], M[`playerY`] = this['camY'];
+//					this.camX += (M.viewX - this.camX) / 2,
+//					this.camY += (M.viewY - this.camY) / 2) :
+					this.camX = (this.camX + M[`viewX`]) / 2,
+					this.camY = (this.camY + M[`viewY`]) / 2) :
+					(this.camX = (29 * this.camX + M[`viewX`]) / 30,
+					this.camY = (29 * this.camY + M[`viewY`]) / 30),
+					M['playerX'] = this.camX, M[`playerY`] = this['camY'];
                 },
                 'setScale': function() {
                     if (!M[`autoZoom`]) return this[`scale`] = (9 * this[`scale`] + this[`getZoom`]()) / 10, void(M[`viewScale`] = this[`scale`]);
@@ -9533,11 +9535,11 @@ ogcustom1=
                 },
                 'renderFrame': function() {
                     for (M[`time`] = Date[`now`](), e = 0; e < M['cells'][`length`]; e++) M[`cells`][e][`moveCell`]();
-                    if (this[`setView`](), M[`getCursorPosition`](), M[`sortCells`](), M[`compareCells`](), this[`ctx`][`clearRect`](0, 0, this[`canvasWidth`], this[`canvasHeight`]), ogario1Settings[`showGrid`] && this[`drawGrid`](this[`ctx`], this[`canvasWidth`], this[`canvasHeight`], this[`scale`], this[`camX`], this[`camY`]), this['ctx'][`save`](), this[`ctx`][`translate`](this[`canvasWidth`] / 2, this[`canvasHeight`] / 2), this[`ctx`][`scale`](this[`scale`], this[`scale`]), this['ctx']['translate'](-this[`camX`], -this[`camY`]), ogario1Settings[`showBgSectors`] && this[`drawSectors`](this['ctx'], M[`mapOffsetFixed`], g[`sectorsX`], g[`sectorsY`], M[`mapMinX`], M[`mapMinY`], M[`mapMaxX`], M['mapMaxY'], g[`gridColor`], g[`sectorsColor`], g[`sectorsWidth`], !0), `:battleroyale` === M[`gameMode`] && this[`drawBattleArea`](this[`ctx`]), ogario1Settings['showMapBorders']) {
+                    if (this[`setView`](), M[`getCursorPosition`](), M[`sortCells`](), M[`compareCells`](), this[`ctx`][`clearRect`](0, 0, this[`canvasWidth`], this[`canvasHeight`]), v[`showGrid`] && this[`drawGrid`](this[`ctx`], this[`canvasWidth`], this[`canvasHeight`], this[`scale`], this.camX, this.camY), this['ctx'][`save`](), this[`ctx`][`translate`](this[`canvasWidth`] / 2, this[`canvasHeight`] / 2), this[`ctx`][`scale`](this[`scale`], this[`scale`]), this['ctx']['translate'](-this.camX, -this.camY), v[`showBgSectors`] && this[`drawSectors`](this['ctx'], M[`mapOffsetFixed`], g[`sectorsX`], g[`sectorsY`], M[`mapMinX`], M[`mapMinY`], M[`mapMaxX`], M['mapMaxY'], g[`gridColor`], g[`sectorsColor`], g[`sectorsWidth`], !0), `:battleroyale` === M[`gameMode`] && this[`drawBattleArea`](this[`ctx`]), v['showMapBorders']) {
                         var t = g['bordersWidth'] / 2;
                         this[`drawMapBorders`](this[`ctx`], M[`mapOffsetFixed`], M[`mapMinX`] - t, M[`mapMinY`] - t, M[`mapMaxX`] + t, M[`mapMaxY`] + t, g[`bordersColor`], g['bordersWidth']);
                     }
-                    ogario1Settings['virusesRange'] && this[`drawVirusesRange`](this[`ctx`], M[`viruses`]), this[`drawFood`](), M[`play`] && (ogario1Settings[`splitRange`] && this[`drawSplitRange`](this[`ctx`], M[`biggerSTECellsCache`], M[`playerCells`], M['selectBiggestCell']), ogario1Settings[`oppRings`] && this['drawOppRings'](this[`ctx`], this[`scale`], M[`biggerSTECellsCache`], M[`biggerCellsCache`], M[`smallerCellsCache`], M[`STECellsCache`]), ogario1Settings['cursorTracking'] && this[`drawCursorTracking`](this[`ctx`], M['playerCells'], M[`cursorX`], M['cursorY'])), this[`drawGhostCells`]();
+                    v['virusesRange'] && this[`drawVirusesRange`](this[`ctx`], M[`viruses`]), this[`drawFood`](), M[`play`] && (v[`splitRange`] && this[`drawSplitRange`](this[`ctx`], M[`biggerSTECellsCache`], M[`playerCells`], M['selectBiggestCell']), v[`oppRings`] && this['drawOppRings'](this[`ctx`], this[`scale`], M[`biggerSTECellsCache`], M[`biggerCellsCache`], M[`smallerCellsCache`], M[`STECellsCache`]), v['cursorTracking'] && this[`drawCursorTracking`](this[`ctx`], M['playerCells'], M[`cursorX`], M['cursorY'])), this[`drawGhostCells`]();
                     for (var e = 0; e < M[`removedCells`][`length`]; e++) M[`removedCells`][e]['draw'](this['ctx'], !0);
                     for (e = 0; e < M[`cells`][`length`]; e++) M[`cells`][e][`draw`](this['ctx']);
                     this[`ctx`][`restore`](), ':teams' === M[`gameMode`] && this['pieChart'] && this[`pieChart`][`width`] && this['ctx'][`drawImage`](this[`pieChart`], this[`canvasWidth`] - this[`pieChart`][`width`] - 10, 10);
@@ -9557,7 +9559,7 @@ ogcustom1=
                             f = ~~((r - a) / s),
                             m = 0,
                             y = 0;
-                        if (t[`strokeStyle`] = l, t[`fillStyle`] = h, t[`lineWidth`] = c, u || !u && ogario1Settings[`showMiniMapGrid`]) {
+                        if (t[`strokeStyle`] = l, t[`fillStyle`] = h, t[`lineWidth`] = c, u || !u && v[`showMiniMapGrid`]) {
                             t[`beginPath`]();
                             for (var ogario1PlayerProfiles = 0; ogario1PlayerProfiles < i + 1; ogario1PlayerProfiles++) m = o + d * ogario1PlayerProfiles, t[`moveTo`](ogario1PlayerProfiles == i ? n : m, a), t['lineTo'](ogario1PlayerProfiles == i ? n : m, r);
                             for (ogario1PlayerProfiles = 0; ogario1PlayerProfiles < s + 1; ogario1PlayerProfiles++) y = a + f * ogario1PlayerProfiles, t[`moveTo`](o - c / 2, ogario1PlayerProfiles == s ? r : y), t[`lineTo`](n + c / 2, ogario1PlayerProfiles == s ? r : y);
@@ -9586,16 +9588,16 @@ ogcustom1=
                     }
                 },
                 'drawFood': function() {
-                    if (M[`showFood`] && !(ogario1Settings[`autoHideFoodOnZoom`] && this['scale'] < 0.2)) {
-                        if (ogario1Settings['autoHideFood'] && !M['foodIsHidden'] && M[`playerMass`] > 1000) return M[`showFood`] = !1, void(M['foodIsHidden'] = !0);
-                        if (ogario1Settings[`rainbowFood`])
+                    if (M[`showFood`] && !(v[`autoHideFoodOnZoom`] && this['scale'] < 0.2)) {
+                        if (v['autoHideFood'] && !M['foodIsHidden'] && M[`playerMass`] > 1000) return M[`showFood`] = !1, void(M['foodIsHidden'] = !0);
+                        if (v[`rainbowFood`])
                             for (var t = 0; t < M['food'][`length`]; t++) M['food'][t][`moveCell`](), M[`food`][t][`draw`](this['ctx']);
                         else this[`drawCachedFood`](this[`ctx`], M[`food`], this['scale']);
                     }
                 },
                 'drawCachedFood': function(t, e, i, s) {
                     if (e[`length`]) {
-                        if (ogario1Settings[`optimizedFood`] && this[`pellet`])
+                        if (v[`optimizedFood`] && this[`pellet`])
                             for (var o = 0; o < e[`length`]; o++) {
                                 var a = e[o]['x'] - 10 - g[`foodSize`],
                                     n = e[o]['y'] - 10 - g[`foodSize`];
@@ -9673,7 +9675,7 @@ ogcustom1=
                     M[`battleRoyale`][`state`] > 2 || s <= 0 || this[`drawDashedCircle`](t, e, i, s, 0x3c, o, a);
                 },
                 'drawGhostCells': function() {
-                    if (ogario1Settings[`showGhostCells`]) {
+                    if (v[`showGhostCells`]) {
                         var t = M[`ghostCells`];
                         this['ctx']['beginPath']();
                         for (var e = 0; e < t['length']; e++)
@@ -9700,7 +9702,7 @@ ogcustom1=
                     e[`lineWidth`] = 2, e[`fillStyle`] = g['teammatesIndColor'], e['strokeStyle'] = `#000000`, e[`beginPath`](), e[`moveTo`](0, 0), e[`lineTo`](90, 0), e[`lineTo`](45, 50), e[`closePath`](), e[`fill`](), e[`stroke`](), this[`indicator`] = new Image(), this['indicator'][`src`] = t[`toDataURL`](), t = null;
                 },
                 'countFps': function() {
-                    if (ogario1Settings['showStatsFPS']) {
+                    if (v['showStatsFPS']) {
                         var t = Date[`now`]();
                         this[`fpsLastRequest`] || (this[`fpsLastRequest`] = t), t - this['fpsLastRequest'] >= 1000 && (this[`fps`] = this[`renderedFrames`], this['renderedFrames'] = 0, this[`fpsLastRequest`] = t), this[`renderedFrames`]++;
                     }
@@ -9709,7 +9711,7 @@ ogcustom1=
                     ogarfooddrawer['countFps'](), ogarfooddrawer[`renderFrame`](), e[`requestAnimationFrame`](ogarfooddrawer['render']);
                 },
                 'init': function() {
-                    this[`setCanvas`](), this[`resizeCanvas`](), this['preDrawPellet'](), this[`preDrawIndicator`](), e[`requestAnimationFrame`](ogarfooddrawer[`render`]);
+                    this[`setCanvas`](), this[`resizeCanvas`](), this['preDrawPellet'](), this.preDrawIndicator(), e[`requestAnimationFrame`](ogarfooddrawer[`render`]);
                 }
             },
             ogarioefaultHotkeys = {},
@@ -10313,49 +10315,49 @@ ogcustom1=
                 'defaultMessageKey': `ENTER`,
                 'inputClassName': `custom-key-in form-control input-sm`,
                 'loadDefaultHotkeys': function() {
-                    for (var t in ogario1Hotkeys = {}, ogario11Hotkeys) ogario11Hotkeys[`hasOwnProperty`](t) && (ogario1Hotkeys[ogario11Hotkeys[t][`defaultKey`]] = t);
+                    for (var t in ogario1Hotkeys = {}, ogario11Hotkeys) ogario11Hotkeys.hasOwnProperty(t) && (ogario1Hotkeys[ogario11Hotkeys[t][`defaultKey`]] = t);
                     ogario1Hotkeys[`spec-messageKey`] = this[`defaultMessageKey`];
                 },
                 'loadHotkeys': function() {
-                    null !== e['localStorage'][`getItem`](`ogarioHotkeys`) ? ogario1Hotkeys = JSON[`parse`](e[`localStorage`]['getItem'](`ogarioHotkeys`)) : this[`loadDefaultHotkeys`](), null !== e[`localStorage`][`getItem`](`ogarioCommands`) && (c = JSON[`parse`](e[`localStorage`][`getItem`](`ogarioCommands`)));
+                    null !== e.localStorage.getItem(`ogarioHotkeys`) ? ogario1Hotkeys = JSON.parse(e.localStorage['getItem'](`ogarioHotkeys`)) : this[`loadDefaultHotkeys`](), null !== e.localStorage.getItem(`ogarioCommands`) && (c = JSON.parse(e.localStorage.getItem(`ogarioCommands`)));
                 },
                 'saveHotkeys': function() {
-                    e[`localStorage`][`setItem`](`ogarioHotkeys`, JSON[`stringify`](ogario1Hotkeys)), this[`saveCommands`]();
+                    e.localStorage.setItem(`ogarioHotkeys`, JSON.stringify(ogario1Hotkeys)), this[`saveCommands`]();
                 },
                 'saveCommands': function() {
                     s(`#hotkeys .command-in`)[`each`](function() {
                         var t = s(this),
                             e = t[`attr`]('id');
-                        c[`hasOwnProperty`](e) && (c[e] = t[`val`]());
-                    }), e[`localStorage`]['setItem'](`ogarioCommands`, JSON['stringify'](c));
+                        c.hasOwnProperty(e) && (c[e] = t.val());
+                    }), e.localStorage['setItem'](`ogarioCommands`, JSON['stringify'](c));
                 },
                 'resetHotkeys': function() {
                     this[`loadDefaultHotkeys`](), s(`#hotkeys-cfg .custom-key-in`)['each'](function() {
                         var t = s(this)['attr']('id');
-                        ogario11Hotkeys[t] && s(this)[`val`](ogario11Hotkeys[t][`defaultKey`]);
+                        ogario11Hotkeys[t] && s(this).val(ogario11Hotkeys[t][`defaultKey`]);
                     });
                 },
                 'setHotkeysMenu': function() {
                     var t = this;
-                    for (var e in s(`body`)[`append`]('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + h[`restoreSettings`] + `</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">` + h[`saveSett`] + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + h['close'] + `</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>` + h[`hk-inst-assign`] + `</li><li>` + h[`hk-inst-delete`] + `</li><li>` + h[`hk-inst-keys`] + `</li></ul></div></div>`), ogario11Hotkeys)
-                        if (ogario11Hotkeys[`hasOwnProperty`](e)) {
+                    for (var e in s(`body`).append('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + h[`restoreSettings`] + `</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">` + h[`saveSett`] + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + h['close'] + `</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>` + h[`hk-inst-assign`] + `</li><li>` + h[`hk-inst-delete`] + `</li><li>` + h[`hk-inst-keys`] + `</li></ul></div></div>`), ogario11Hotkeys)
+                        if (ogario11Hotkeys.hasOwnProperty(e)) {
                             var i = ogario11Hotkeys[e],
                                 o = '';
                             for (var a in ogario1Hotkeys)
-                                if (ogario1Hotkeys[`hasOwnProperty`](a) && ogario1Hotkeys[a] === e) {
+                                if (ogario1Hotkeys.hasOwnProperty(a) && ogario1Hotkeys[a] === e) {
                                     o = a;
                                     break;
                                 } if ('hk-switchServerMode' === e && ogarminimapdrawer && !ogarminimapdrawer[`privateIP`]) continue;
                             if (`command` === i[`type`]) {
                                 var n = e[`replace`](`hk-`, '');
-                                s('#hotkeys-cfg')['append'](`<div class=\"row\"><div class=\"key-label\"><input id=\"` + n + `\" class=\"command-in form-control input-sm\" value=\"` + c[n] + `\" maxlength=\"80\" /></div><div class=\"default-key\">` + i['defaultKey'] + `</div><div class=\"custom-key\"><input id=\"` + e + `\" class=\"custom-key-in form-control input-sm\" value=\"` + o + `\" /></div></div>`);
-                            } else s(`#hotkeys-cfg`)[`append`](`<div class=\"row\"><div class=\"key-label\">` + i[`label`] + `</div><div class=\"default-key\">` + i[`defaultKey`] + `</div><div class=\"custom-key\"><input id=\"` + e + `\" class=\"custom-key-in form-control input-sm\" value=\"` + o + `\" /></div></div>`);
+                                s('#hotkeys-cfg').append(`<div class=\"row\"><div class=\"key-label\"><input id=\"` + n + `\" class=\"command-in form-control input-sm\" value=\"` + c[n] + `\" maxlength=\"80\" /></div><div class=\"default-key\">` + i['defaultKey'] + `</div><div class=\"custom-key\"><input id=\"` + e + `\" class=\"custom-key-in form-control input-sm\" value=\"` + o + `\" /></div></div>`);
+                            } else s(`#hotkeys-cfg`).append(`<div class=\"row\"><div class=\"key-label\">` + i[`label`] + `</div><div class=\"default-key\">` + i[`defaultKey`] + `</div><div class=\"custom-key\"><input id=\"` + e + `\" class=\"custom-key-in form-control input-sm\" value=\"` + o + `\" /></div></div>`);
                         } s(document)['on'](`click`, `#reset-hotkeys`, function(e) {
-                        e[`preventDefault`](), t[`resetHotkeys`]();
+                        e.preventDefault(), t[`resetHotkeys`]();
                     }), s(document)['on'](`click`, `#save-hotkeys`, function(e) {
-                        e[`preventDefault`](), t[`saveHotkeys`](), s(`#hotkeys`)[`fadeOut`](500);
+                        e.preventDefault(), t[`saveHotkeys`](), s(`#hotkeys`)[`fadeOut`](500);
                     }), s(document)['on']('click', `#close-hotkeys`, function(t) {
-                        t[`preventDefault`](), s(`#hotkeys`)[`fadeOut`](500);
+                        t.preventDefault(), s(`#hotkeys`)[`fadeOut`](500);
                     }), s(document)['on'](`click`, `.hotkeys-link`, function(t) {
                         s(`#hotkeys`)[`fadeIn`](500), s(`#hotkeys-cfg`)['perfectScrollbar'](`update`), ogarcommando1();
                     }), s(`#hotkeys-cfg`)[`perfectScrollbar`](), y && y[`setMenuBg`]();
@@ -10410,22 +10412,22 @@ ogcustom1=
                     return '' !== e ? '' !== i ? e + '+' + i : e : i;
                 },
                 'deleteHotkey': function(t, e) {
-                    delete ogario1Hotkeys[t], s('#' + e)[`val`]('');
+                    delete ogario1Hotkeys[t], s('#' + e).val('');
                 },
                 'setDefaultHotkey': function(t) {
                     var e = !1;
-                    return ogario11Hotkeys[t] && !ogario1Hotkeys[`hasOwnProperty`](ogario11Hotkeys[t][`defaultKey`]) ? (e = ogario11Hotkeys[t][`defaultKey`], ogario1Hotkeys[e] = t, e) : e;
+                    return ogario11Hotkeys[t] && !ogario1Hotkeys.hasOwnProperty(ogario11Hotkeys[t][`defaultKey`]) ? (e = ogario11Hotkeys[t][`defaultKey`], ogario1Hotkeys[e] = t, e) : e;
                 },
                 'setHotkey': function(t, e) {
                     if (e && (this[`lastPressedKey`] !== t || this[`lastKeyId`] !== e)) {
-                        var i = s('#' + e)[`val`]();
+                        var i = s('#' + e).val();
                         if (this['deleteHotkey'](i, e), `DEL` !== t) {
                             if (ogario1Hotkeys[t] && ogario1Hotkeys[t] !== e) {
                                 var o = ogario1Hotkeys[t],
                                     a = this[`setDefaultHotkey`](o);
-                                a ? (ogario1Hotkeys[a] = o, s('#' + o)[`val`](a)) : this[`deleteHotkey`](t, o);
+                                a ? (ogario1Hotkeys[a] = o, s('#' + o).val(a)) : this[`deleteHotkey`](t, o);
                             }
-                            ogario1Hotkeys[t] = e, s('#' + e)[`val`](t), `hk-chatMessage` === e && (ogario1Hotkeys[`spec-messageKey`] = t), this[`lastPressedKey`] = t, this[`lastKeyId`] = e;
+                            ogario1Hotkeys[t] = e, s('#' + e).val(t), `hk-chatMessage` === e && (ogario1Hotkeys[`spec-messageKey`] = t), this[`lastPressedKey`] = t, this[`lastKeyId`] = e;
                         }
                     }
                 },
@@ -10454,7 +10456,7 @@ ogcustom1=
                 l = n * r,
                 h = Math['round'](o / 2 - 0.5 * l),
                 c = 'translate(-50%, 0%) scale(' + r + ')';
-            a[`css`](`transform`, c), a[`css`](`-ms-transform`, c), a[`css`](`-webkit-transform`, c), a[`css`]('top', h + 'px'), i[`innerW`] = t, i[`innerH`] = o;
+            a.css(`transform`, c), a.css(`-ms-transform`, c), a.css(`-webkit-transform`, c), a.css('top', h + 'px'), i[`innerW`] = t, i[`innerH`] = o;
         }
 
         function ogarcommando1() {
@@ -10463,10 +10465,10 @@ ogcustom1=
         document[`onkeydown`] = function(t) {
             var e = lastkeys['getPressedKey'](t);
             if (('INPUT' !== t[`target`]['tagName'] || t[`target`][`className`] === lastkeys[`inputClassName`] || e === ogario1Hotkeys[`spec-messageKey`]) && '' !== e && !ogarioefaultHotkeys[e]) {
-                if (ogarioefaultHotkeys[e] = !0, `ESC` === e) return t[`preventDefault`](), void(ogarminimapdrawer && ogarminimapdrawer[`showMenu`]());
-                if (t[`target`][`className`] === lastkeys[`inputClassName`]) return t[`preventDefault`](), void lastkeys[`setHotkey`](e, t[`target`]['id']);
+                if (ogarioefaultHotkeys[e] = !0, `ESC` === e) return t.preventDefault(), void(ogarminimapdrawer && ogarminimapdrawer[`showMenu`]());
+                if (t[`target`][`className`] === lastkeys[`inputClassName`]) return t.preventDefault(), void lastkeys[`setHotkey`](e, t[`target`]['id']);
                 if (ogario1Hotkeys[e]) {
-                    t[`preventDefault`]();
+                    t.preventDefault();
                     var i = ogario1Hotkeys[e];
                     '' !== i && ogario11Hotkeys[i] && ogario11Hotkeys[i][`keyDown`] && ogario11Hotkeys[i][`keyDown`]();
                 }
@@ -10481,12 +10483,12 @@ ogcustom1=
                 ogarioefaultHotkeys[e] = !1;
             }
         }, e[`onmousedown`] = function(t) {
-            s(`#overlays`)['is'](`:visible`) || (2 == t['which'] ? (t['preventDefault'](), ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](10)) : (ogario1Settings['mouseSplit'] && (1 == t[`which`] && !ogario1Settings[`mouseInvert`] || 3 == t[`which`] && ogario1Settings[`mouseInvert`]) && (t[`preventDefault`](), ogarminimapdrawer && ogarminimapdrawer[`split`]()), ogario1Settings['mouseFeed'] && (3 == t[`which`] && !ogario1Settings[`mouseInvert`] || 1 == t[`which`] && ogario1Settings[`mouseInvert`]) && (t[`preventDefault`](), ogarminimapdrawer && ogarminimapdrawer[`macroFeed`](!0))));
+            s(`#overlays`)['is'](`:visible`) || (2 == t['which'] ? (t['preventDefault'](), ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](10)) : (v['mouseSplit'] && (1 == t[`which`] && !v[`mouseInvert`] || 3 == t[`which`] && v[`mouseInvert`]) && (t.preventDefault(), ogarminimapdrawer && ogarminimapdrawer[`split`]()), v['mouseFeed'] && (3 == t[`which`] && !v[`mouseInvert`] || 1 == t[`which`] && v[`mouseInvert`]) && (t.preventDefault(), ogarminimapdrawer && ogarminimapdrawer[`macroFeed`](!0))));
         }, e[`onmouseup`] = function(t) {
-            ogario1Settings[`mouseFeed`] && (3 == t[`which`] && !ogario1Settings[`mouseInvert`] || 1 == t[`which`] && ogario1Settings[`mouseInvert`]) && ogarminimapdrawer && ogarminimapdrawer['macroFeed'](!1);
+            v[`mouseFeed`] && (3 == t[`which`] && !v[`mouseInvert`] || 1 == t[`which`] && v[`mouseInvert`]) && ogarminimapdrawer && ogarminimapdrawer['macroFeed'](!1);
         }, e[`onbeforeunload`] = function(t) {
             return i[`play`] ? h[`exit`] : void 0;
-        }, i = M, o = t('buffer')[`Buffer`], a = t(`lz4`), `/ogario` === e[`location`]['pathname'] && ogarjoiner('/' + e['location']['hash']), e[`onresize`] = function() {
+        }, i = M, o = t('buffer')[`Buffer`], a = t(`lz4`), `/ogario` === e.location['pathname'] && ogarjoiner('/' + e['location']['hash']), e[`onresize`] = function() {
             ogarfooddrawer[`resizeCanvas`](), ogarhusettings();
         }, ogarassembler(), e[`core`] = {
             'connect': function(t) {
