@@ -4,7 +4,7 @@
 // Thank you Snez for decoding Feross
 // Thank you volum for the case 16: instance
 
-//v1.42
+//v1.41
 
 //Game Configurations
 //var agarversion="v12/1922/";
@@ -6934,13 +6934,6 @@ ogcustom1=
                                     (t && t.hasOwnProperty(s) && (g[s] = t[s]),
                                         i.hasOwnProperty(s) && (i[s] = g[s]));
                             },
-							
-							
-							
-							
-							
-							
-							
                 'saveThemeSettings': function() {
                     e.localStorage.setItem(`ogarioThemeSettings`, JSON.stringify(g));
                 },
@@ -7176,10 +7169,9 @@ ogcustom1=
                     this[`loadThemeSettings`]();
                 }
             },
-			
             ogario1PlayerProfiles = [],
             ogarcopythelb = {
-                'nick': 'I<3Legendmod',
+                'nick': `I<3Legendmod`,
                 'clanTag': '℄',
                 'skinURL': '',
                 'color': g.mainColor
@@ -7263,7 +7255,7 @@ ogcustom1=
                             commandSound: "https://cdn.ogario.ovh/static/sounds/notification_02.mp3"
                         };
         var b = {
-						name: "Legend mod Express v4",
+						name: `Legend mod Express v4`,
 						version: "v4 (4.0.0 b36)",
                         privateMode: !1,
                         protocolMode: !0,
@@ -7777,302 +7769,142 @@ ogcustom1=
                 s(`body`).append(`<div id=\"exp-imp\"><div id=\"exp-imp-menu\"><button id=\"close-exp-imp\" class=\"btn btn-danger\">` + h[`close`] + `</button></div><div id=\"exp-imp-settings\"></div></div>`), s('#exp-imp-settings').append(`<h1>` + h[`exportSettings`] + `</h1><h2>` + h[`exportInfo`] + `</h2>`), this[`addOption`](`#exp-imp-settings`, `export-ogarioCommands`, h[`commands`], !0), this['addOption'](`#exp-imp-settings`, `export-ogarioHotkeys`, h[`hotkeys`], !0), this['addOption'](`#exp-imp-settings`, `export-ogarioPlayerProfiles`, h['profiles'], !0), this[`addOption`](`#exp-imp-settings`, `export-ogarioSettings`, h['settings'], !0), this[`addOption`](`#exp-imp-settings`, `export-ogarioThemeSettings`, h['theme'], !0), s(`#exp-imp-settings`).append('<textarea id=\"export-settings\" class=\"form-control\" rows=\"14\" cols=\"100\" spellcheck=\"false\" readonly /><button id=\"export-settings-btn\" class=\"btn btn-block btn-success\">' + h[`exportSettings`] + '</button>'), s(`#exp-imp-settings`).append('<h1>' + h[`importSettings`] + `</h1><h2>` + h[`importInfo`] + `</h2>`), this[`addOption`](`#exp-imp-settings`, `import-ogarioCommands`, h[`commands`], !0), this[`addOption`](`#exp-imp-settings`, `import-ogarioHotkeys`, h[`hotkeys`], !0), this[`addOption`](`#exp-imp-settings`, 'import-ogarioPlayerProfiles', h[`profiles`], !0), this[`addOption`](`#exp-imp-settings`, `import-ogarioSettings`, h[`settings`], !0), this[`addOption`](`#exp-imp-settings`, 'import-ogarioThemeSettings', h['theme'], !0), s('#exp-imp-settings').append('<textarea id=\"import-settings\" class=\"form-control\" rows=\"14\" cols=\"100\" spellcheck=\"false\" /><button id=\"import-settings-btn\" class=\"btn btn-block btn-success\">' + h[`importSettings`] + `</button>`), y && y[`setThemeMenu`]();
                 for (var e = 0; e < ogario1PlayerProfiles[`length`]; e++) s(`#skins`).append(`<div class=\"skin-box\"><a href=\"#profile-` + e + `\" id=\"profile-` + e + `\" data-profile=\"` + e + `\"></a></div>`), this['setSkinPreview'](ogario1PlayerProfiles[e]['skinURL'], `profile-` + e), e == this[`selectedProfile`] && s(`#profile-` + e)[`addClass`]('selected');
             },
-                        setUI: function() {
-                            var t = this;
-                            s(document).on("click", ".menu-tabs a", function(e) {
-                                    e.preventDefault(), t.switchMenuTabs(s(this), "menu-panel");
-                                }),
-                                s(document).on("click", ".submenu-tabs a", function(e) {
-                                    e.preventDefault(),
-                                        t.switchMenuTabs(s(this), "submenu-panel");
-                                }),
-                                s(document).on("click", ".quick-menu", function(e) {
-                                    e.preventDefault(),
-                                        (v.showQuickMenu = !v.showQuickMenu),
-                                        t.saveSettings(v, "ogarioSettings"),
-                                        t.setShowQuickMenu();
-                                }),
-                                s(document).on("click", ".quick-skins", function(e) {
-                                    e.preventDefault(),
-                                        (v.showSkinsPanel = !v.showSkinsPanel),
-                                        t.saveSettings(v, "ogarioSettings"),
-                                        t.setShowSkinsPanel();
-                                }),
-                                s(document).on("change", "#region", function() {
-                                    t.region = this.value;
-                                }),
-                                s(document).on("change", "#gamemode", function() {
-                                    var e = this.value;
-                                    ":party" !== e && t.leaveParty(),
-                                        (t.gameMode = i.gameMode = e),
-                                        t.setQuest();
-                                }),
-                                s(document).on("change", "#quality", function() {
-                                    t.getQuality(this.value), D();
-                                }),
-                                s("#skin").popover({
-                                    html: !0,
-                                    placement: "bottom",
-                                    trigger: "manual",
-                                    animation: !1
-                                }),
-                                s(document).on("input click", "#skin", function() {
-                                    var e = this.value;
-                                    t.setSkinPreview(e, "skin-preview"),
-                                        t.setSkinPreview(e, "profile-" + t.selectedProfile);
-                                }),
-                                s(document).on("click", ".skin .example-url a", function(t) {
-                                    t.preventDefault(),
-                                        s("#skin")
-                                        .val(this.href)
-                                        .click();
-                                }),
-                                s(document).on("click", "#overlays", function() {
-                                    s(".skin:hover").length ||
-                                        s(".skin-switch:hover").length ||
-                                        s("#skin").popover("hide");
-                                }),
-                                s(document).on("click", "#skins a", function(e) {
-                                    e.preventDefault(),
-                                        t.selectProfile(s(this).attr("data-profile"));
-                                }),
-                                s(document).on("click", "#prev-profile", function() {
-                                    t.prevProfile();
-                                }),
-                                s(document).on("click", "#next-profile", function() {
-                                    t.nextProfile();
-                                }),
-                                s(document).on("click", "#stream-mode", function() {
-                                    (v.streamMode = !v.streamMode),
-                                    t.saveSettings(v, "ogarioSettings"),
-                                        t.setStreamMode();
-                                }),
-                                s(document).on("click", "#hide-url", function() {
-                                    (v.hideSkinUrl = !v.hideSkinUrl),
-                                    t.saveSettings(v, "ogarioSettings"),
-                                        t.setHideSkinUrl();
-                                }),
-                                s(document).on("click", ".btn-server-info", function() {
-                                    s("#server-info").toggle();
-                                }),
-                                s(document).on("click", "#server-connect", function() {
-                                    t.gameServerConnect(s("#server-ws").val());
-                                }),
-                                s(document).on("click", "#server-reconnect", function() {
-                                    t.gameServerReconnect();
-                                }),
-                                s(document).on("click", "#server-join", function() {
-                                    t.gameServerJoin(s("#server-token").val());
-                                }),
-                                s(document).on(
-                                    "change",
-                                    "#og-options input[type='checkbox']",
-                                    function() {
-                                        var e = s(this);
-                                        t.setSettings(e.attr("id"), e.prop("checked"));
-                                    }
-                                ),
-                                s(document).on("change", ".js-switch-vanilla", function() {
-                                    var e = s(this),
-                                        o = e.attr("id");
-                                    void 0 !== t[o] &&
-                                        ((t[o] = e.prop("checked")),
-                                            "noSkins" === o && (i.showCustomSkins = !t.noSkins),
-                                            "showQuest" === o && t.setQuest());
-                                }),
-                                s(document).on(
-                                    "click",
-                                    "#og-settings .restore-settings a",
-                                    function(e) {
-                                        e.preventDefault(), t.restoreSettings();
-                                    }
-                                ),
-                                s(document).on("click", "#og-settings .btn-export", function(
-                                    e
-                                ) {
-                                    e.preventDefault(),
-                                        t.exportSettings(),
-                                        s("#exp-imp").fadeIn(500),
-                                        s("#exp-imp-settings, #export-settings").perfectScrollbar(
-                                            "update"
-                                        );
-                                }),
-                                s(document).on("click", "#close-exp-imp", function(t) {
-                                    t.preventDefault(), s("#exp-imp").fadeOut(500);
-                                }),
-                                s(document).on("focus", "#export-settings", function() {
-                                    s(this).select();
-                                }),
-                                s(document).on("click", "#export-settings-btn", function(e) {
-                                    e.preventDefault(), t.exportSettings();
-                                }),
-                                s(document).on("click", "#import-settings-btn", function(e) {
-                                    e.preventDefault(), t.importSettings();
-                                }),
-                                s(document).on("click", "#unblock-popups", function(e) {
-                                    e.preventDefault(), t.unblockPopups();
-                                }),
-                                s(document).on("click", "#openfl-overlay.disabler", function() {
-                                    v.blockPopups && t.blockPopups();
-                                }),
-                                s(document).on("click", "#openfl-content", function() {
-                                    if (v.blockPopups) {
-                                        var e = s(this);
-                                        setTimeout(function() {
-                                            e.is(":visible") || t.blockPopups();
-                                        }, 1e3);
-                                    }
-                                }),
-                                s(document).on("click", ".quick-shop", function(i) {
-                                    i.preventDefault(),
-                                        t.unblockPopups(),
-                                        e.MC && e.MC.openShop && e.MC.openShop();
-                                }),
-                                s(document).on("click", ".quick-free-coins", function(i) {
-                                    i.preventDefault(),
-                                        t.unblockPopups(),
-                                        e.MC && e.MC.showFreeCoins && e.MC.showFreeCoins();
-                                }),
-                                s(document).on("click", ".quick-free-gifts", function(i) {
-                                    i.preventDefault(),
-                                        t.unblockPopups(),
-                                        e.MC && e.MC.showGifting && e.MC.showGifting();
-                                }),
-                                s(document).on("click", ".quick-quests", function(i) {
-                                    i.preventDefault(),
-                                        t.unblockPopups(),
-                                        e.MC && e.MC.showQuests && e.MC.showQuests();
-                                }),
-                                s(document).on("click", "#set-targeting", function(e) {
-                                    e.preventDefault(), t.setTargeting();
-                                }),
-                                s(document).on("click", "#cancel-targeting", function(e) {
-                                    e.preventDefault(), t.cancelTargeting();
-                                }),
-                                s(document).on("click", "#set-private-minimap", function(e) {
-                                    e.preventDefault(), t.setPrivateMiniMap();
-                                }),
-                                s(document).on("click", "#change-target", function(e) {
-                                    e.preventDefault(), t.changeTarget();
-                                }),
-                                s(document).on("click", ".team-top-limit", function(e) {
-                                    e.preventDefault();
-                                    var i = s(this),
-                                        o = parseInt(i.attr("data-limit"));
-                                    o &&
-                                        (t.setTop5limit(o),
-                                            t.displayTop5(),
-                                            s(".team-top").text(o),
-                                            s(".team-top-limit").removeClass("active"),
-                                            i.addClass("active"));
-                                }),
-                                s(document).on("click", "#top5-pos .set-target", function(e) {
-                                    e.preventDefault(),
-                                        t.setTarget(parseInt(s(this).attr("data-user-id")));
-                                }),
-                                s(document).on("click", ".mute-user", function(e) {
-                                    e.preventDefault(),
-                                        t.muteChatUser(parseInt(s(this).attr("data-user-id")));
-                                }),
-                                s(document).on("click", ".btn-mute-user", function() {
-                                    var e = s(this);
-                                    t.muteChatUser(parseInt(e.attr("data-user-id"))),
-                                        e
-                                        .removeClass("btn-red btn-mute-user")
-                                        .addClass("btn-green btn-unmute-user")
-                                        .text(h.unmute);
-                                }),
-                                s(document).on("click", ".btn-unmute-user", function() {
-                                    var e = s(this);
-                                    t.unmuteChatUser(parseInt(e.attr("data-user-id"))),
-                                        e
-                                        .removeClass("btn-green btn-unmute-user")
-                                        .addClass("btn-red btn-mute-user")
-                                        .text(h.mute);
-                                }),
-                                s(document).on("click", ".chat-sound-notifications", function(
-                                    e
-                                ) {
-                                    e.preventDefault(),
-                                        (v.chatSounds = !v.chatSounds),
-                                        t.saveSettings(v, "ogarioSettings"),
-                                        t.setChatSoundsBtn();
-                                }),
-                                s(document).on("click", ".chat-active-users", function(e) {
-                                    e.preventDefault(), t.displayChatActiveUsers();
-                                }),
-                                s(document).on("click", ".chat-muted-users", function(e) {
-                                    e.preventDefault(), t.displayChatMutedUsers();
-                                }),
-                                s(document).on("click", ".show-chat-emoticons", function(t) {
-                                    t.preventDefault();
-                                    var e = s(this),
-                                        i = s("#chat-emoticons");
-                                    i.toggle(),
-                                        i.is(":visible") ?
-                                        e.addClass("active") :
-                                        (e.removeClass("active"), s("#message").focus());
-                                }),
-                                s(document).on(
-                                    "click",
-                                    "#chat-emoticons .emoticon",
-                                    function() {
-                                        var t = s(this).attr("alt"),
-                                            e = s("#message"),
-                                            i = e.val();
-                                        i.length + t.length <= 80 && e.val(i + t), e.focus();
-                                    }
-                                ),
-                                (this.statsHUD = document.getElementById("stats-hud")),
-                                (this.activeParties = document.getElementById(
-                                    "active-parties"
-                                )),
-                                (this.top5pos = document.getElementById("top5-pos")),
-                                (this.top5totalMass = document.getElementById(
-                                    "top5-total-mass"
-                                )),
-                                (this.top5totalPlayers = document.getElementById(
-                                    "top5-total-players"
-                                )),
-                                (this.leaderboardPositionsHUD = document.getElementById(
-                                    "leaderboard-positions"
-                                )),
-                                (this.leaderboardDataHUD = document.getElementById(
-                                    "leaderboard-data"
-                                )),
-                                (this.timeHUD = document.getElementById("time-hud")),
-                                (this.questHUD = document.getElementById("quest-hud")),
-                                s("#canvas").bind("contextmenu", function() {
-                                    return !1;
-                                }),
-                                s(document).on("mouseup", ".btn", function() {
-                                    $(this).blur();
-                                }),
-                                s("[data-toggle='tab-tooltip']").tooltip({
-                                    trigger: "hover"
-                                }),
-                                s(
-                                    ".submenu-panel, #chat-box, #exp-imp-settings, #export-settings, #import-settings"
-                                ).perfectScrollbar({
-                                    suppressScrollX: !0
-                                }),
-                                Array.prototype.slice
-                                .call(document.querySelectorAll(".js-switch"))
-                                .forEach(function(t) {
-                                    new Switchery(t, {
-                                        color: g.menuMainColor,
-                                        size: "small"
-                                    });
-                                }),
-                                s("input[type='range']").rangeslider({
-                                    polyfill: !1
-                                }),
-                                (toastr.options = {
-                                    newestOnTop: !1,
-                                    positionClass: "toast-bottom-left",
-                                    timeOut: 15e3
-                                });
-                        },
+            'setUI': function() {
+                var t = this;
+                s(document)['on'](`click`, '.menu-tabs a', function(e) {
+                    e.preventDefault(), t[`switchMenuTabs`](s(this), `menu-panel`);
+                }), s(document)['on']('click', `.submenu-tabs a`, function(e) {
+                    e.preventDefault(), t['switchMenuTabs'](s(this), `submenu-panel`);
+                }), s(document)['on'](`click`, `.quick-menu`, function(e) {
+                    e.preventDefault(), v[`showQuickMenu`] = !v[`showQuickMenu`], t[`saveSettings`](v, `ogarioSettings`), t[`setShowQuickMenu`]();
+                }), s(document)['on'](`click`, `.quick-skins`, function(e) {
+                    e.preventDefault(), v['showSkinsPanel'] = !v[`showSkinsPanel`], t[`saveSettings`](v, 'ogarioSettings'), t[`setShowSkinsPanel`]();
+                }), s(document)['on'](`change`, '#region', function() {
+                    t[`region`] = this['value'];
+                }), s(document)['on'](`change`, `#gamemode`, function() {
+                    var e = this.value;
+                    ':party' !== e && t[`leaveParty`](), t[`gameMode`] = i['gameMode'] = e, t[`setQuest`]();
+                }), s(document)['on'](`change`, `#quality`, function() {
+                    t[`getQuality`](this.value), D();
+                }), s(document)['on'](`input`, '#skin', function() {
+                    var e = this.value;
+                    t[`setSkinPreview`](e, `skin-preview`), t[`setSkinPreview`](e, `profile-` + t[`selectedProfile`]);
+                }), s(document)['on'](`click`, `#skins a`, function(e) {
+                    e.preventDefault(), t[`selectProfile`](s(this)['attr'](`data-profile`));
+                }), s(document)['on'](`click`, `#prev-profile`, function() {
+                    t[`prevProfile`]();
+                }), s(document)['on'](`click`, `#next-profile`, function() {
+                    t[`nextProfile`]();
+                }), s(document)['on'](`click`, `#stream-mode`, function() {
+                    v[`streamMode`] = !v[`streamMode`], t[`saveSettings`](v, `ogarioSettings`), t[`setStreamMode`]();
+                }), s(document)['on'](`click`, `#hide-url`, function() {
+                    v[`hideSkinUrl`] = !v[`hideSkinUrl`], t[`saveSettings`](v, `ogarioSettings`), t[`setHideSkinUrl`]();
+                }), s(document)['on']('click', `.btn-server-info`, function() {
+                    s(`#server-info`)[`toggle`]();
+                }), s(document)['on']('click', `#server-connect`, function() {
+                    t[`gameServerConnect`](s('#server-ws').val());
+                }), s(document)['on'](`click`, `#server-reconnect`, function() {
+                    t[`gameServerReconnect`]();
+                }), s(document)['on'](`click`, `#server-join`, function() {
+                    t[`gameServerJoin`](s(`#server-token`).val());
+                }), s(document)['on'](`change`, `#og-options input[type=\'checkbox\']`, function() {
+                    var e = s(this);
+                    t[`setSettings`](e['attr']('id'), e[`prop`](`checked`));
+                }), s(document)['on'](`change`, '.js-switch-vanilla', function() {
+                    var e = s(this),
+                        o = e[`attr`]('id');
+                    void 0 !== t[o] && (t[o] = e['prop'](`checked`), `noSkins` === o && (i['showCustomSkins'] = !t[`noSkins`]), `showQuest` === o && t[`setQuest`]());
+                }), s(document)['on'](`click`, `#og-settings .restore-settings a`, function(e) {
+                    e['preventDefault'](), t[`restoreSettings`]();
+                }), s(document)['on'](`click`, `#og-settings .btn-export`, function(e) {
+                    e['preventDefault'](), t['exportSettings'](), s('#exp-imp')[`fadeIn`](500), s(`#exp-imp-settings, #export-settings`)[`perfectScrollbar`](`update`);
+                }), s(document)['on'](`click`, '#close-exp-imp', function(t) {
+                    t.preventDefault(), s(`#exp-imp`)[`fadeOut`](500);
+                }), s(document)['on'](`focus`, `#export-settings`, function() {
+                    s(this)[`select`]();
+                }), s(document)['on'](`click`, `#export-settings-btn`, function(e) {
+                    e.preventDefault(), t[`exportSettings`]();
+                }), s(document)['on']('click', '#import-settings-btn', function(e) {
+                    e['preventDefault'](), t[`importSettings`]();
+                }), s(document)['on'](`click`, '#unblock-popups', function(e) {
+                    e['preventDefault'](), t['unblockPopups']();
+                }), s(document)['on'](`click`, '#openfl-overlay.disabler', function() {
+                    v['blockPopups'] && t[`blockPopups`]();
+                }), s(document)['on'](`click`, `#openfl-content`, function() {
+                    if (v['blockPopups']) {
+                        var e = s(this);
+                        setTimeout(function() {
+                            e['is'](`:visible`) || t[`blockPopups`]();
+                        }, 1000);
+                    }
+                }), s(document)['on']('click', `.quick-shop`, function(i) {
+                    i.preventDefault(), t[`unblockPopups`](), e['MC'] && e['MC'][`openShop`] && e['MC'][`openShop`]();
+                }), s(document)['on'](`click`, `.quick-free-coins`, function(i) {
+                    i.preventDefault(), t[`unblockPopups`](), e['MC'] && e['MC'][`showFreeCoins`] && e['MC'][`showFreeCoins`]();
+                }), s(document)['on']('click', `.quick-free-gifts`, function(i) {
+                    i.preventDefault(), t['unblockPopups'](), e['MC'] && e['MC'][`showGifting`] && e['MC'][`showGifting`]();
+                }), s(document)['on'](`click`, `.quick-quests`, function(i) {
+                    i.preventDefault(), t[`unblockPopups`](), e['MC'] && e['MC'][`showQuests`] && e['MC'][`showQuests`]();
+                }), s(document)['on']('click', `#set-targeting`, function(e) {
+                    e.preventDefault(), t['setTargeting']();
+                }), s(document)['on']('click', `#cancel-targeting`, function(e) {
+                    e.preventDefault(), t[`cancelTargeting`]();
+                }), s(document)['on'](`click`, `#set-private-minimap`, function(e) {
+                    e.preventDefault(), t[`setPrivateMiniMap`]();
+                }), s(document)['on']('click', `#change-target`, function(e) {
+                    e['preventDefault'](), t[`changeTarget`]();
+                }), s(document)['on'](`click`, `.team-top-limit`, function(e) {
+                    e.preventDefault();
+                    var i = s(this),
+                        o = parseInt(i[`attr`](`data-limit`));
+                    o && (t[`setTop5limit`](o), t[`displayTop5`](), s(`.team-top`)['text'](o), s(`.team-top-limit`)[`removeClass`]('active'), i['addClass'](`active`));
+                }), s(document)['on'](`click`, '#top5-pos .set-target', function(e) {
+                    e.preventDefault(), t[`setTarget`](parseInt(s(this)[`attr`](`data-user-id`)));
+                }), s(document)['on'](`click`, `.mute-user`, function(e) {
+                    e.preventDefault(), t[`muteChatUser`](parseInt(s(this)[`attr`](`data-user-id`)));
+                }), s(document)['on']('click', `.btn-mute-user`, function() {
+                    var e = s(this);
+                    t[`muteChatUser`](parseInt(e['attr'](`data-user-id`))), e[`removeClass`](`btn-red btn-mute-user`)[`addClass`](`btn-green btn-unmute-user`)[`text`](h[`unmute`]);
+                }), s(document)['on'](`click`, `.btn-unmute-user`, function() {
+                    var e = s(this);
+                    t[`unmuteChatUser`](parseInt(e[`attr`](`data-user-id`))), e[`removeClass`](`btn-green btn-unmute-user`)['addClass']('btn-red btn-mute-user')['text'](h[`mute`]);
+                }), s(document)['on'](`click`, '.chat-sound-notifications', function(e) {
+                    e['preventDefault'](), v[`chatSounds`] = !v[`chatSounds`], t['saveSettings'](v, `ogarioSettings`), t[`setChatSoundsBtn`]();
+                }), s(document)['on'](`click`, `.chat-active-users`, function(e) {
+                    e.preventDefault(), t[`displayChatActiveUsers`]();
+                }), s(document)['on']('click', `.chat-muted-users`, function(e) {
+                    e.preventDefault(), t[`displayChatMutedUsers`]();
+                }), s(document)['on'](`click`, `.show-chat-emoticons`, function(t) {
+                    t['preventDefault']();
+                    var e = s(this),
+                        i = s(`#chat-emoticons`);
+                    i[`toggle`](), i['is'](`:visible`) ? e[`addClass`](`active`) : (e[`removeClass`]('active'), s(`#message`)[`focus`]());
+                }), s(document)['on']('click', `#chat-emoticons .emoticon`, function() {
+                    var t = s(this)[`attr`](`alt`),
+                        e = s(`#message`),
+                        i = e.val();
+                    i[`length`] + t[`length`] <= 80 && e.val(i + t), e['focus']();
+                }), this['statsHUD'] = document[`getElementById`](`stats-hud`), this['activeParties'] = document['getElementById'](`active-parties`), this[`top5pos`] = document[`getElementById`](`top5-pos`), this[`top5totalMass`] = document[`getElementById`](`top5-total-mass`), this['top5totalPlayers'] = document[`getElementById`]('top5-total-players'), this[`leaderboardPositionsHUD`] = document['getElementById'](`leaderboard-positions`), this['leaderboardDataHUD'] = document['getElementById'](`leaderboard-data`), this[`timeHUD`] = document[`getElementById`](`time-hud`), this[`questHUD`] = document[`getElementById`](`quest-hud`), s(`#canvas`)[`bind`](`contextmenu`, function() {
+                    return !1;
+                }), s(document)['on']('mouseup', `.btn`, function() {
+                    $(this)[`blur`]();
+                }), s(`[data-toggle=\'tab-tooltip\']`)[`tooltip`]({
+                    'trigger': `hover`
+                }), s('.submenu-panel, #chat-box, #exp-imp-settings, #export-settings, #import-settings')[`perfectScrollbar`]({
+                    'suppressScrollX': !0
+                }), Array[`prototype`]['slice'][`call`](document[`querySelectorAll`](`.js-switch`))[`forEach`](function(t) {
+                    new Switchery(t, {
+                        'color': g[`menuMainColor`],
+                        'size': `small`
+                    });
+                }), s('input[type=\'range\']')[`rangeslider`]({
+                    'polyfill': !1
+                }), toastr[`options`] = {
+                    'newestOnTop': !1,
+                    'positionClass': `toast-bottom-left`,
+                    'timeOut': 15000
+                };
+            },
             'switchMenuTabs': function(t, e) {
                 var i = t[`parent`]();
                 if (`menu-panel` === e) {
