@@ -4,7 +4,7 @@
 // Thank you Snez for decoding Feross
 // Thank you volum for the case 16: instance
 
-//v1.37
+//v1.38
 
 //Game Configurations
 //var agarversion="v12/1922/";
@@ -7344,10 +7344,10 @@ ogcustom1=
             'commandSound': null,
             'feedInterval': null,
             'getPlayerX': function() {
-                return i[`playerX`] + i.mapOffsetX;
+                return i[`playerX`] + i[`mapOffsetX`];
             },
             'getPlayerY': function() {
-                return i[`playerY`] + i.mapOffsetY;
+                return i[`playerY`] + i[`mapOffsetY`];
             },
             'feed': function() {
                 e.core && e.core['eject'] && e.core['eject']();
@@ -7565,8 +7565,8 @@ ogcustom1=
             },
             'displayTop5': function() {
                 if (v['showTop5']) {
-                    for (var t = '', e = 0, s = this.top5.length, o = 0; o < s; o++) e += this.top5[o].mass, o >= this['top5limit'] || (t += `<li><span class=\"cell-counter\" style=\"background-color: ` + this.top5[o][`color`] + '\">' + (o + 1) + `</span>`, v[`showTargeting`] && (t += `<a href=\"#\" data-user-id=\"` + this.top5[o].id + `\" class=\"set-target ogicon-target\"></a> `), t += `<span class=\"hud-main-color\">[` + this[`calculateMapSector`](this.top5[o].x, this.top5[o].y) + `]</span>`, t += `<span class=\"top5-mass-color\">[` + this.shortMassFormat(this.top5[o].mass) + `]</span> ` + this.escapeHTML(this.top5[o].nick) + `</li>`);
-                    this[`top5pos`]['innerHTML'] = t, i['play'] && i.playerMass && (e += i.playerMass, s++), this[`top5totalMass`][`textContent`] = this.shortMassFormat(e), this[`top5totalPlayers`][`textContent`] = s;
+                    for (var t = '', e = 0, s = this.top5.length, o = 0; o < s; o++) e += this.top5[o].mass, o >= this['top5limit'] || (t += `<li><span class=\"cell-counter\" style=\"background-color: ` + this.top5[o][`color`] + '\">' + (o + 1) + `</span>`, v[`showTargeting`] && (t += `<a href=\"#\" data-user-id=\"` + this.top5[o].id + `\" class=\"set-target ogicon-target\"></a> `), t += `<span class=\"hud-main-color\">[` + this[`calculateMapSector`](this.top5[o].x, this.top5[o].y) + `]</span>`, t += `<span class=\"top5-mass-color\">[` + this[`shortMassFormat`](this.top5[o].mass) + `]</span> ` + this.escapeHTML(this.top5[o].nick) + `</li>`);
+                    this[`top5pos`]['innerHTML'] = t, i['play'] && i.playerMass && (e += i.playerMass, s++), this[`top5totalMass`][`textContent`] = this[`shortMassFormat`](e), this[`top5totalPlayers`][`textContent`] = s;
                 }
             },
             'setTop5limit': function(t) {
@@ -7710,7 +7710,7 @@ ogcustom1=
                         'skinURL': '',
                         'color': g['mainColor']
                     });
-                null !== e.localStorage.getItem(`ogarioSelectedProfile`) && (this[`selectedProfile`] = JSON['parse'](e.localStorage.getItem('ogarioSelectedProfile'))), ogarcopythelb.nick = ogario1PlayerProfiles[this[`selectedProfile`]].nick, ogarcopythelb.clanTag = ogario1PlayerProfiles[this['selectedProfile']].clanTag, ogarcopythelb[`skinURL`] = ogario1PlayerProfiles[this['selectedProfile']]['skinURL'], ogarcopythelb[`color`] = ogario1PlayerProfiles[this[`selectedProfile`]][`color`];
+                null !== e.localStorage.getItem(`ogarioSelectedProfile`) && (this[`selectedProfile`] = JSON['parse'](e.localStorage.getItem('ogarioSelectedProfile'))), ogarcopythelb.nick = ogario1PlayerProfiles[this[`selectedProfile`]].nick, ogarcopythelb[`clanTag`] = ogario1PlayerProfiles[this['selectedProfile']][`clanTag`], ogarcopythelb[`skinURL`] = ogario1PlayerProfiles[this['selectedProfile']]['skinURL'], ogarcopythelb[`color`] = ogario1PlayerProfiles[this[`selectedProfile`]][`color`];
             },
             'changeSkinPreview': function(t, e) {
                 t && e && ('skin-preview' === e ? (s('#skin-preview')[`removeClass`](`default`).append(`<a href=\"#\" id=\"skin-popover\" data-toggle=\"popover\" title=\"\" data-html=\"true\" data-content=\"<img src=\'` + t['src'] + `\' width=\'500\'>\"></a>`), s('#skin-popover').append(s(t).fadeIn(1000)), s(`#skin-popover`)[`popover`]()) : s('#' + e)[`removeClass`](`default`).append(s(t).fadeIn(1000)));
@@ -7727,7 +7727,7 @@ ogcustom1=
             'setProfile': function() {
                 var t = (ogario1PlayerProfiles.length + this['selectedProfile'] - 1) % ogario1PlayerProfiles.length,
                     e = (this[`selectedProfile`] + 1) % ogario1PlayerProfiles.length;
-                this[`setSkinPreview`](ogario1PlayerProfiles[t][`skinURL`], 'prev-profile'), this['setSkinPreview'](ogario1PlayerProfiles[this['selectedProfile']][`skinURL`], `skin-preview`), this[`setSkinPreview`](ogario1PlayerProfiles[e][`skinURL`], `next-profile`), this[`saveSettings`](this[`selectedProfile`], `ogarioSelectedProfile`), s(`#nick`).val(ogario1PlayerProfiles[this[`selectedProfile`]].nick), s(`#clantag`)['val'](ogario1PlayerProfiles[this[`selectedProfile`]].clanTag), s(`#skin`).val(ogario1PlayerProfiles[this['selectedProfile']]['skinURL']), s('#color').val(ogario1PlayerProfiles[this['selectedProfile']][`color`]), s(`.skin`)['colorpicker'](`setValue`, ogario1PlayerProfiles[this[`selectedProfile`]][`color`]), s(`#skins a`)[`removeClass`](`selected`), s(`#skins a[data-profile=\'` + this['selectedProfile'] + '\']')[`addClass`]('selected');
+                this[`setSkinPreview`](ogario1PlayerProfiles[t][`skinURL`], 'prev-profile'), this['setSkinPreview'](ogario1PlayerProfiles[this['selectedProfile']][`skinURL`], `skin-preview`), this[`setSkinPreview`](ogario1PlayerProfiles[e][`skinURL`], `next-profile`), this[`saveSettings`](this[`selectedProfile`], `ogarioSelectedProfile`), s(`#nick`).val(ogario1PlayerProfiles[this[`selectedProfile`]].nick), s(`#clantag`)['val'](ogario1PlayerProfiles[this[`selectedProfile`]]['clanTag']), s(`#skin`).val(ogario1PlayerProfiles[this['selectedProfile']]['skinURL']), s('#color').val(ogario1PlayerProfiles[this['selectedProfile']][`color`]), s(`.skin`)['colorpicker'](`setValue`, ogario1PlayerProfiles[this[`selectedProfile`]][`color`]), s(`#skins a`)[`removeClass`](`selected`), s(`#skins a[data-profile=\'` + this['selectedProfile'] + '\']')[`addClass`]('selected');
             },
             'prevProfile': function() {
                 this.setPlayerSettings(), this[`selectedProfile`] = (ogario1PlayerProfiles.length + this[`selectedProfile`] - 1) % ogario1PlayerProfiles.length, this[`setProfile`]();
@@ -8053,7 +8053,7 @@ ogcustom1=
                     e = s(`#clantag`).val(),
                     o = s(`#skin`)['val'](),
                     a = s(`#color`).val();
-                ogarcopythelb.nick = t, ogarcopythelb.clanTag = e[`trim`](), ogarcopythelb[`skinURL`] = this[`checkSkinURL`](o['trim']()), 7 == a.length && (ogarcopythelb[`color`] = a), ogarcopythelb.clanTag.length > 0 && (i.clanTag = ogarcopythelb.clanTag), ogario1PlayerProfiles[this[`selectedProfile`]].nick = ogarcopythelb.nick, ogario1PlayerProfiles[this[`selectedProfile`]].clanTag = ogarcopythelb.clanTag, ogario1PlayerProfiles[this[`selectedProfile`]][`skinURL`] = ogarcopythelb[`skinURL`], ogario1PlayerProfiles[this[`selectedProfile`]][`color`] = ogarcopythelb[`color`], this[`saveSettings`](ogario1PlayerProfiles, `ogarioPlayerProfiles`);
+                ogarcopythelb.nick = t, ogarcopythelb[`clanTag`] = e[`trim`](), ogarcopythelb[`skinURL`] = this[`checkSkinURL`](o['trim']()), 7 == a.length && (ogarcopythelb[`color`] = a), ogarcopythelb[`clanTag`].length > 0 && (i[`clanTag`] = ogarcopythelb[`clanTag`]), ogario1PlayerProfiles[this[`selectedProfile`]].nick = ogarcopythelb.nick, ogario1PlayerProfiles[this[`selectedProfile`]][`clanTag`] = ogarcopythelb[`clanTag`], ogario1PlayerProfiles[this[`selectedProfile`]][`skinURL`] = ogarcopythelb[`skinURL`], ogario1PlayerProfiles[this[`selectedProfile`]][`color`] = ogarcopythelb[`color`], this[`saveSettings`](ogario1PlayerProfiles, `ogarioPlayerProfiles`);
             },
             'loadSkin': function(t, e) {
                 var i = this;
@@ -8107,9 +8107,9 @@ ogcustom1=
                 return this[`getCachedSkin`](this[`customSkinsCache`], this['customSkinsMap'][i]);
             },
             'calculateMapSector': function(t, e, s = !1) {
-                if (!i.mapOffsetFixed) return '';
-                var o = s ? i.mapOffsetX + i['mapOffset'] : i['mapOffset'],
-                    a = s ? i.mapOffsetY + i['mapOffset'] : i.mapOffset,
+                if (!i['mapOffsetFixed']) return '';
+                var o = s ? i[`mapOffsetX`] + i['mapOffset'] : i['mapOffset'],
+                    a = s ? i['mapOffsetY'] + i['mapOffset'] : i[`mapOffset`],
                     n = Math[`floor`]((e + a) / (i[`mapSize`] / g[`sectorsY`])),
                     r = Math[`floor`]((t + o) / (i[`mapSize`] / g[`sectorsX`]));
                 return n = n < 0 ? 0 : n >= g[`sectorsY`] ? g[`sectorsY`] - 1 : n, r = r < 0 ? 0 : r >= g[`sectorsX`] ? g[`sectorsX`] - 1 : r, String.fromCharCode(n + 65) + (r + 1);
@@ -8119,8 +8119,8 @@ ogcustom1=
             },
             'updateDeathLocations': function(t, e) {
                 i[`mapOffsetFixed`] && (this[`deathLocations`].push({
-                    'x': t + i.mapOffsetX,
-                    'y': e + i.mapOffsetY
+                    'x': t + i[`mapOffsetX`],
+                    'y': e + i[`mapOffsetY`]
                 }), 6 == this['deathLocations'].length && this[`deathLocations`][`shift`](), this[`lastDeath`] = this[`deathLocations`].length - 1);
             },
             'drawMiniMap': function() {
@@ -8132,8 +8132,8 @@ ogcustom1=
                         a = e + 9.5;
                     this[`miniMap`] ? this[`miniMapCtx`][`clearRect`](0, 0, t, s) : (this[`miniMap`] = document[`getElementById`](`minimap`), this[`miniMapCtx`] = this['miniMap'][`getContext`]('2d'), this['miniMapCtx'][`ogarioCtx`] = !0, this[`miniMap`][`width`] = t, this[`miniMap`][`height`] = s), this[`miniMap`][`width`] != t && (this[`miniMap`][`width`] = t, this[`miniMap`][`height`] = s);
                     var n = o / i[`mapSize`],
-                        r = i.mapOffsetX + i.mapOffset,
-                        l = i.mapOffsetY + i.mapOffset;
+                        r = i[`mapOffsetX`] + i[`mapOffset`],
+                        l = i[`mapOffsetY`] + i[`mapOffset`];
                     if (this['drawSelectedCell'](this[`miniMapCtx`]), this.currentSector = this[`calculateMapSector`](i[`playerX`], i[`playerY`], !0), this[`miniMapCtx`]['globalAlpha'] = 1, this['miniMapCtx'][`font`] = g[`miniMapFontWeight`] + ' ' + (e - 4) + `px ` + g['miniMapFontFamily'], this[`miniMapCtx`][`fillStyle`] = g[`miniMapSectorColor`], this[`miniMapCtx`][`fillText`](this['currentSector'], 10, e), this['miniMapSectors'] || this[`drawMiniMapSectors`](g[`sectorsX`], g[`sectorsY`], o, s, a), this['miniMapCtx'][`save`](), this['miniMapCtx']['translate'](9.5, a), ':battleroyale' === this[`gameMode`] && ogarfooddrawer && ogarfooddrawer[`drawBattleAreaOnMinimap`](this['miniMapCtx'], o, o, n, r, l), v[`showMiniMapGhostCells`]) {
                         var h = i['ghostCells'];
                         this[`miniMapCtx`][`beginPath`]();
@@ -8141,7 +8141,7 @@ ogcustom1=
                             if (!h[c][`inView`]) {
                                 var u = ~~((h[c].x + r) * n),
                                     d = ~~((h[c].y + l) * n);
-                                this[`miniMapCtx`]['moveTo'](u, d), this[`miniMapCtx`][`arc`](u, d, ~~(h[c].size * n), 0, this[`pi2`], !1);
+                                this[`miniMapCtx`]['moveTo'](u, d), this[`miniMapCtx`][`arc`](u, d, ~~(h[c][`size`] * n), 0, this[`pi2`], !1);
                             } this[`miniMapCtx`]['fillStyle'] = g[`miniMapGhostCellsColor`], this[`miniMapCtx`][`globalAlpha`] = g[`miniMapGhostCellsAlpha`], this[`miniMapCtx`][`shadowColor`] = g[`miniMapGhostCellsColor`], this['miniMapCtx'][`shadowBlur`] = 10, this[`miniMapCtx`][`shadowOffsetX`] = 0, this['miniMapCtx'][`shadowOffsetY`] = 0, this[`miniMapCtx`]['fill'](), this[`miniMapCtx`][`globalAlpha`] = 1, this[`miniMapCtx`][`shadowBlur`] = 0;
                     }
                     if (v[`showMiniMapGuides`]) {
@@ -8151,7 +8151,7 @@ ogcustom1=
                     if (this[`miniMapCtx`][`beginPath`](), this[`miniMapCtx`][`arc`]((i[`playerX`] + r) * n, (i['playerY'] + l) * n, g[`miniMapMyCellSize`], 0, this[`pi2`], !1), this[`miniMapCtx`][`closePath`](), g[`miniMapMyCellStrokeSize`] > 0 && (this[`miniMapCtx`][`lineWidth`] = g[`miniMapMyCellStrokeSize`], this[`miniMapCtx`][`strokeStyle`] = g['miniMapMyCellStrokeColor'], this[`miniMapCtx`][`stroke`]()), this[`miniMapCtx`][`fillStyle`] = g['miniMapMyCellColor'], this['miniMapCtx'][`fill`](), this.teamPlayers.length)
                         for (c = 0; c < this.teamPlayers.length; c++) this.teamPlayers[c][`drawPosition`](this[`miniMapCtx`], i['mapOffset'], n, this[`privateMiniMap`], this['targetID']);
                     if (this[`deathLocations`].length > 0) {
-                        u = Math[`round`]((this['deathLocations'][this['lastDeath']].x + i.mapOffset) * n), d = Math[`round`]((this[`deathLocations`][this[`lastDeath`]].y + i['mapOffset']) * n);
+                        u = Math[`round`]((this['deathLocations'][this['lastDeath']].x + i[`mapOffset`]) * n), d = Math[`round`]((this[`deathLocations`][this[`lastDeath`]].y + i['mapOffset']) * n);
                         var f = Math[`max`](g[`miniMapMyCellSize`] - 2, 4);
                         this[`miniMapCtx`][`lineWidth`] = 1, this[`miniMapCtx`][`strokeStyle`] = this[`deathLocations`].length - 1 == this[`lastDeath`] ? g['miniMapDeathLocationColor'] : `#FFFFFF`, this[`miniMapCtx`][`beginPath`](), this['miniMapCtx'][`moveTo`](u - f, d), this['miniMapCtx'][`lineTo`](u + f, d), this[`miniMapCtx`][`moveTo`](u, d - f), this['miniMapCtx'][`lineTo`](u, d + f), this['miniMapCtx'][`stroke`]();
                     }
@@ -8180,8 +8180,8 @@ ogcustom1=
                     var f = !1;
                     if (l || r || !(f = this[`setAutoHideCellInfo`](a)) || !v[`autoHideNames`] || !v[`autoHideMass`]) {
                         var m = null;
-                        if (!this.cells.hasOwnProperty(e)) return (m = new ogarbasicassembly(s, o, r, l, v['shortMass'], v[`virMassShots`]))[`setMass`](a), m['setNick'](c), void(this.cells[e] = m);
-                        (m = this.cells[e])[`update`](s, o, a, r, l, c), m[`setDrawing`](v[`optimizedNames`], v[`optimizedMass`], v[`shortMass`], v['virMassShots'], v[`namesStroke`], v['massStroke']), m[`setDrawingScale`](i['viewScale'], g[`namesScale`], g[`massScale`], g['virMassScale'], g[`strokeScale`]), t[`globalAlpha`] = g[`textAlpha`], v[`noNames`] || f && v[`autoHideNames`] || l && v['hideMyName'] || d && v[`hideTeammatesNames`] || m[`drawNick`](t, g[`namesColor`], g[`namesFontFamily`], g[`namesFontWeight`], g['namesStrokeColor']), !v[`showMass`] || f && v[`autoHideMass`] || l && v['hideMyMass'] || v[`hideEnemiesMass`] && !l && !r || m['drawMass'](t, g['massColor'], g[`massFontFamily`], g[`massFontWeight`], g['massStrokeColor']);
+                        if (!this[`cells`].hasOwnProperty(e)) return (m = new ogarbasicassembly(s, o, r, l, v['shortMass'], v[`virMassShots`]))[`setMass`](a), m['setNick'](c), void(this[`cells`][e] = m);
+                        (m = this[`cells`][e])[`update`](s, o, a, r, l, c), m[`setDrawing`](v[`optimizedNames`], v[`optimizedMass`], v[`shortMass`], v['virMassShots'], v[`namesStroke`], v['massStroke']), m[`setDrawingScale`](i['viewScale'], g[`namesScale`], g[`massScale`], g['virMassScale'], g[`strokeScale`]), t[`globalAlpha`] = g[`textAlpha`], v[`noNames`] || f && v[`autoHideNames`] || l && v['hideMyName'] || d && v[`hideTeammatesNames`] || m[`drawNick`](t, g[`namesColor`], g[`namesFontFamily`], g[`namesFontWeight`], g['namesStrokeColor']), !v[`showMass`] || f && v[`autoHideMass`] || l && v['hideMyMass'] || v[`hideEnemiesMass`] && !l && !r || m['drawMass'](t, g['massColor'], g[`massFontFamily`], g[`massFontWeight`], g['massStrokeColor']);
                     }
                 }
             },
@@ -8358,7 +8358,7 @@ ogcustom1=
                 this[`sendPlayerData`](10, 'lastSentNick', ogarcopythelb.nick);
             },
             'sendPlayerClanTag': function() {
-                this[`sendPlayerData`](11, `lastSentClanTag`, ogarcopythelb.clanTag);
+                this[`sendPlayerData`](11, `lastSentClanTag`, ogarcopythelb[`clanTag`]);
             },
             'sendPlayerSkinURL': function() {
                 this['sendPlayerData'](12, `lastSentSkinURL`, ogarcopythelb['skinURL']);
@@ -8453,7 +8453,7 @@ ogcustom1=
                 if (null !== h) this.teamPlayers[h].nick = o, this.teamPlayers[h][`skinID`] = l, this['teamPlayers'][h][`skinURL`] = a, this.teamPlayers[h].setColor(r, n);
                 else {
                     var c = new function(t, e, i, s) {
-                        this.id = t, this.nick = e, this['skinID'] = i, this[`skinURL`] = s, this.x = 0, this.y = 0, this[`lastX`] = 0, this['lastY'] = 0, this.mass = 0, this.clanTag = '', this[`color`] = null, this[`customColor`] = g['miniMapTeammatesColor'], this['alive'] = !1, this['updateTime'] = null, this['pi2'] = 2 * Math['PI'], this['setColor'] = function(t, e) {
+                        this.id = t, this.nick = e, this['skinID'] = i, this[`skinURL`] = s, this.x = 0, this.y = 0, this[`lastX`] = 0, this['lastY'] = 0, this.mass = 0, this['clanTag'] = '', this[`color`] = null, this[`customColor`] = g['miniMapTeammatesColor'], this['alive'] = !1, this['updateTime'] = null, this['pi2'] = 2 * Math['PI'], this['setColor'] = function(t, e) {
                             this[`color`] = t, 7 == e.length && (this[`customColor`] = e);
                         }, this[`drawPosition`] = function(t, e, i, s, o) {
                             if (!(!this.alive || s && o && this.id != o)) {
@@ -8575,7 +8575,7 @@ ogcustom1=
             },
             'displayChatMessage': function(t, e, i, o) {
                 if (0 != o.length) {
-                    var a = o[`split`](': ', 1).toString(),
+                    var a = o[`split`](': ', 1)[`toString`](),
                         n = this[`parseMessage`](o.replace(a + ': ', ''));
                     if (!(0 == a.length || a.length > 15 || 0 == n.length)) {
                         var r = '';
@@ -8678,10 +8678,10 @@ ogcustom1=
                     } null !== e && (t = e), null !== t ? this['setTarget'](this.teamPlayers[t].id) : this[`setTargetStatus`](0);
             },
             'updateTarget': function(t, e, o, a, n, r) {
-                i[`setTargetPosition`](o, a), this[`targetNick`] !== t && (this[`targetNick`] = t, s('#target-nick')[`html`](this['escapeHTML'](t))), s(`#target-skin`).css(`background-color`, r), e && this[`targetSkinURL`] !== e && (this[`customSkinsCache`].hasOwnProperty(e + '_cached') ? (s(`#target-skin img`).attr('src', e), this[`targetSkinURL`] = e) : s(`#target-skin img`).attr(`src`, `https://cdn.ogario.ovh/static/img/blank.png`)), s(`#target-status`)[`text`]('[' + this.shortMassFormat(n) + ']');
+                i[`setTargetPosition`](o, a), this[`targetNick`] !== t && (this[`targetNick`] = t, s('#target-nick')[`html`](this['escapeHTML'](t))), s(`#target-skin`).css(`background-color`, r), e && this[`targetSkinURL`] !== e && (this[`customSkinsCache`].hasOwnProperty(e + '_cached') ? (s(`#target-skin img`).attr('src', e), this[`targetSkinURL`] = e) : s(`#target-skin img`).attr(`src`, `https://cdn.ogario.ovh/static/img/blank.png`)), s(`#target-status`)[`text`]('[' + this[`shortMassFormat`](n) + ']');
                 var l = this[`calculateMapSector`](o, a),
                     c = h[`targetDistance`] + `: <span class=\"hud-main-color\">` + i[`targetDistance`] + ' [' + l + ']</span>';
-                i.play && (c += ` | ` + h[`targetMass`] + `: <span class=\"hud-main-color\">` + this.shortMassFormat(n + i.playerMass) + `</span>`), s(`#target-summary`)[`html`](c), 1 != this[`targetStatus`] && this[`setTargetStatus`](1);
+                i.play && (c += ` | ` + h[`targetMass`] + `: <span class=\"hud-main-color\">` + this[`shortMassFormat`](n + i.playerMass) + `</span>`), s(`#target-summary`)[`html`](c), 1 != this[`targetStatus`] && this[`setTargetStatus`](1);
             },
             'updateQuest': function() {
                 this[`showQuest`] && `:ffa` === this[`gameMode`] && e.MC && e.MC[`getQuestProgressLabel`] && (this['questHUD'][`textContent`] = e.MC[`getQuestProgressLabel`]());
@@ -8798,26 +8798,26 @@ ogcustom1=
         }
 
         function ogarbasicassembly(t, e, s, o, a, n, r, l, h, c) {
-            this.id = t, this.x = e, this.y = s, this.targetX = e, this.targetY = s, this[`color`] = a, this[`oppColor`] = null, this['size'] = o, this.targetSize = o, this[`alpha`] = 1, this.nick = '', this['targetNick'] = '', this[`nickCanvas`] = null, this.mass = 0, this[`lastMass`] = 0, this[`kMass`] = 0, this['massCanvas'] = null, this['massTxt'] = '', this[`margin`] = 0, this['scale'] = 1, this['nickScale'] = 1, this[`massScale`] = 1, this[`virMassScale`] = 3, this[`strokeScale`] = 1, this[`fontSize`] = 0x1a, this['nickSize'] = 0x1a, this[`lastNickSize`] = 0, this[`massSize`] = 0x1a, this[`virMassSize`] = 0x1a, this[`nickStrokeSize`] = 3, this[`massStrokeSize`] = 3, this[`isFood`] = n, this[`isVirus`] = r, this['isPlayerCell'] = l, this[`shortMass`] = h, this[`virMassShots`] = c, this[`rescale`] = !1, this[`redrawNick`] = !0, this[`redrawMass`] = !0, this[`optimizedNames`] = !1, this[`optimizedMass`] = !1, this[`strokeNick`] = !1, this[`strokeMass`] = !1, this[`removed`] = !1, this[`redrawed`] = 0, this.time = 0, this[`skin`] = null, this[`pi2`] = 2 * Math['PI'],
+            this.id = t, this.x = e, this.y = s, this[`targetX`] = e, this[`targetY`] = s, this[`color`] = a, this[`oppColor`] = null, this['size'] = o, this[`targetSize`] = o, this[`alpha`] = 1, this.nick = '', this['targetNick'] = '', this[`nickCanvas`] = null, this.mass = 0, this[`lastMass`] = 0, this[`kMass`] = 0, this['massCanvas'] = null, this['massTxt'] = '', this[`margin`] = 0, this['scale'] = 1, this['nickScale'] = 1, this[`massScale`] = 1, this[`virMassScale`] = 3, this[`strokeScale`] = 1, this[`fontSize`] = 0x1a, this['nickSize'] = 0x1a, this[`lastNickSize`] = 0, this[`massSize`] = 0x1a, this[`virMassSize`] = 0x1a, this[`nickStrokeSize`] = 3, this[`massStrokeSize`] = 3, this[`isFood`] = n, this[`isVirus`] = r, this['isPlayerCell'] = l, this[`shortMass`] = h, this[`virMassShots`] = c, this[`rescale`] = !1, this[`redrawNick`] = !0, this[`redrawMass`] = !0, this[`optimizedNames`] = !1, this[`optimizedMass`] = !1, this[`strokeNick`] = !1, this[`strokeMass`] = !1, this[`removed`] = !1, this[`redrawed`] = 0, this[`time`] = 0, this[`skin`] = null, this[`pi2`] = 2 * Math['PI'],
                 this.virusColor = null,
                 this.virusStroke = null,
                 this.nHeight = 6,
                 this['update'] = function(t, e, i, s, o, a) {
                     this.x = t, this.y = e, this[`isVirus`] = s, this[`isPlayerCell`] = o, this['setMass'](i), this[`setNick`](a);
-                }, this.removeCell = function() {
+                }, this[`removeCell`] = function() {
                     this[`removed`] = !0;
-                    var t = M.cells['indexOf'](this); - 1 != t ? (M.cells.splice(t, 1), v[`virusesRange`] && -1 != (t = M.viruses.indexOf(this)) && M.viruses.splice(t, 1)) : -1 != (t = M.food.indexOf(this)) && M.food['splice'](t, 1), -1 != (t = M.playerCells.indexOf(this)) && (M['removePlayerCell'] = !0, M.playerCells.splice(t, 1), -1 != (t = M.playerCellIDs.indexOf(this.id)) && M.playerCellIDs['splice'](t, 1)), this[`redrawed`] && M[`removedCells`].push(this), delete M.indexedCells[this.id];
+                    var t = M[`cells`]['indexOf'](this); - 1 != t ? (M[`cells`].splice(t, 1), v[`virusesRange`] && -1 != (t = M[`viruses`].indexOf(this)) && M[`viruses`].splice(t, 1)) : -1 != (t = M[`food`].indexOf(this)) && M[`food`]['splice'](t, 1), -1 != (t = M[`playerCells`].indexOf(this)) && (M['removePlayerCell'] = !0, M[`playerCells`].splice(t, 1), -1 != (t = M.playerCellIDs.indexOf(this.id)) && M.playerCellIDs['splice'](t, 1)), this[`redrawed`] && M[`removedCells`].push(this), delete M[`indexedCells`][this.id];
                 }, this[`moveCell`] = function() {
-                    var t = (M.time - this.time) / v[`animation`];
-                    if (t = t < 0 ? 0 : t > 1 ? 1 : t, this.x += (this.targetX - this.x) * t, this.y += (this.targetY - this.y) * t, this.size += (this['targetSize'] - this.size) * t, this[`alpha`] = t, this[`removed`]) {
+                    var t = (M[`time`] - this[`time`]) / v[`animation`];
+                    if (t = t < 0 ? 0 : t > 1 ? 1 : t, this.x += (this[`targetX`] - this.x) * t, this.y += (this[`targetY`] - this.y) * t, this[`size`] += (this['targetSize'] - this[`size`]) * t, this[`alpha`] = t, this[`removed`]) {
                         if (1 == t) {
                             var e = M[`removedCells`].indexOf(this); - 1 != e && M[`removedCells`].splice(e, 1);
                         }
-                    } else this.time = M.time;
+                    } else this[`time`] = M[`time`];
                 }, this[`isInView`] = function() {
-                    return !(this.id <= 0) && !(this.x + this.size + 40 < M.viewX - M[`canvasWidth`] / 2 / M.scale || this.y + this.size + 40 < M.viewY - M['canvasHeight'] / 2 / M['scale'] || this.x - this.size - 40 > M.viewX + M[`canvasWidth`] / 2 / M.scale || this.y - this['size'] - 40 > M['viewY'] + M.canvasHeight/ 2 / M.scale);
+                    return !(this.id <= 0) && !(this.x + this[`size`] + 40 < M.viewX - M[`canvasWidth`] / 2 / M.scale || this.y + this[`size`] + 40 < M[`viewY`] - M['canvasHeight'] / 2 / M['scale'] || this.x - this[`size`] - 40 > M.viewX + M[`canvasWidth`] / 2 / M.scale || this.y - this['size'] - 40 > M['viewY'] + M[`canvasHeight`] / 2 / M.scale);
                 }, this[`setMass`] = function(t) {
-                    return this.size = t, !(t <= 40) && (this['massCanvas'] ? (this.mass = ~~(t * t / 100), this[`redrawMass`] = !0, this[`isVirus`] ? (this[`virMassShots`] && this.mass < 200 && (this.mass = ~~((200 - this.mass) / 14)), this[`massTxt`] = this.mass.toString(), this.mass > 220 ? (this.virusColor = g.mVirusColor, this.virusStroke = g.mVirusStrokeColor) : (this.virusColor = g.virusColor, this.virusStroke = g.virusStrokeColor), !0) : (this[`massTxt`] = this.mass.toString(), this.mass <= 200 || (this[`shortMass`] && this.mass >= 1000 ? (this[`kMass`] = Math[`round`](this.mass / 100) / 10, this['massTxt'] = this[`kMass`] + 'k', !0) : (this[`optimizedMass`] && (this['redrawMass'] = Math[`abs`]((this.mass - this[`lastMass`]) / this.mass) >= 0.02 || this[`rescale`]), !0)))) : (this[`massCanvas`] = new irenderfromagario(), !1));
+                    return this[`size`] = t, !(t <= 40) && (this['massCanvas'] ? (this.mass = ~~(t * t / 100), this[`redrawMass`] = !0, this[`isVirus`] ? (this[`virMassShots`] && this.mass < 200 && (this.mass = ~~((200 - this.mass) / 14)), this[`massTxt`] = this.mass[`toString`](), this.mass > 220 ? (this.virusColor = g.mVirusColor, this.virusStroke = g.mVirusStrokeColor) : (this.virusColor = g.virusColor, this.virusStroke = g.virusStrokeColor), !0) : (this[`massTxt`] = this.mass[`toString`](), this.mass <= 200 || (this[`shortMass`] && this.mass >= 1000 ? (this[`kMass`] = Math[`round`](this.mass / 100) / 10, this['massTxt'] = this[`kMass`] + 'k', !0) : (this[`optimizedMass`] && (this['redrawMass'] = Math[`abs`]((this.mass - this[`lastMass`]) / this.mass) >= 0.02 || this[`rescale`]), !0)))) : (this[`massCanvas`] = new irenderfromagario(), !1));
                 }, this[`setNick`] = function(t) {
                     return this.nick = t, !(!t || this[`isVirus`]) && (!!this[`nickCanvas`] || (this[`nickCanvas`] = new irenderfromagario(), !1));
                 }, this['setScale'] = function(t, e, i, s, o) {
@@ -8844,7 +8844,7 @@ ogcustom1=
                         }
                     }
                 }, this[`drawMass`] = function(mainCanvas) {
-                    if (this[`massCanvas`] && !(this.size <= 40)) {
+                    if (this[`massCanvas`] && !(this[`size`] <= 40)) {
                         var massCanvas = this[`massCanvas`];
                         massCanvas['setDrawing'](g[`massColor`], g['massFontFamily'], g['massFontWeight'], this[`strokeMass`], this['massStrokeSize'], g[`massStrokeColor`]), this['redrawMass'] && (massCanvas[`setTxt`](this[`massTxt`]), this[`lastMass`] = this.mass), massCanvas[`setFontSize`](this[`massSize`]), massCanvas[`setScale`](this['scale']);
                         let massImg = massCanvas.drawTxt(),
@@ -8875,7 +8875,7 @@ ogcustom1=
                         t[`save`](), this['redrawed']++, e && this[`moveCell`](), this['removed'] && (t['globalAlpha'] *= 1 - this[`alpha`]);
                         var i = t[`globalAlpha`],
                             s = !1,
-                            o = this[`isFood`] ? this.size + g[`foodSize`] : this.size;
+                            o = this[`isFood`] ? this[`size`] + g[`foodSize`] : this[`size`];
                         if (t[`beginPath`](), t[`arc`](this.x, this.y, o, 0, this[`pi2`], !1), t[`closePath`](), this[`isFood`]) return t[`fillStyle`] = this[`color`], t[`fill`](), void t[`restore`]();
                         if (this[`isVirus`]) {
                             return v[`transparentViruses`] && (t[`globalAlpha`] *= g[`virusAlpha`], s = !0), v['virColors'] && M.play ? (t['fillStyle'] = ogarminimapdrawer[`setVirusColor`](o), t['strokeStyle'] = ogarminimapdrawer[`setVirusStrokeColor`](o)) : (t['fillStyle'] = this.virusColor, t[`strokeStyle`] = this.virusStroke), t[`fill`](), s && (t['globalAlpha'] = i, s = !1), t['lineWidth'] = g[`virusStrokeSize`], t[`stroke`](this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), v['showMass'] && (this[`setDrawing`](), this[`setDrawingScale`](), this['setMass'](this['size']), this['drawMass'](t)), void t[`restore`]();
@@ -8887,7 +8887,7 @@ ogcustom1=
                         if (v['customSkins'] && M['showCustomSkins'] && (n = ogarminimapdrawer['getCustomSkin'](this['targetNick'], this.color)) && (((v[`transparentSkins`] || M.play && v[`oppColors`]) && (!this[`isPlayerCell`] || v['myTransparentSkin']) || this['isPlayerCell'] && v['myTransparentSkin']) && (t[`globalAlpha`] *= g[`skinsAlpha`], s = !0), t[`drawImage`](n, this.x - o, this.y - o, 2 * o, 2 * o), s && (t[`globalAlpha`] = i, s = !1)), v[`teammatesInd`] && !this[`isPlayerCell`] && o <= 200 && (n || ogarminimapdrawer[`checkSkinsMap`](this[`targetNick`], this[`color`])) && ogarfooddrawer[`drawTeammatesInd`](t, this.x, this.y, o), v[`noNames`] && !v[`showMass`] || e) t['restore']();
                         else {
                             var r = !1;
-                            !this[`isPlayerCell`] && (r = ogarminimapdrawer[`setAutoHideCellInfo`](o)) && v[`autoHideNames`] && v[`autoHideMass`] ? t[`restore`]() : (this[`setDrawing`](), this['setDrawingScale'](), t[`globalAlpha`] *= g[`textAlpha`], v['noNames'] || r && v[`autoHideNames`] || this[`isPlayerCell`] && v[`hideMyName`] || n && v[`hideTeammatesNames`] || this[`setNick`](this[`targetNick`]) && this[`drawNick`](t), !v[`showMass`] || r && v[`autoHideMass`] || this[`isPlayerCell`] && v[`hideMyMass`] || v[`hideEnemiesMass`] && !this[`isPlayerCell`] && !this[`isVirus`] || this[`setMass`](this.size) && this[`drawMass`](t), t[`restore`]());
+                            !this[`isPlayerCell`] && (r = ogarminimapdrawer[`setAutoHideCellInfo`](o)) && v[`autoHideNames`] && v[`autoHideMass`] ? t[`restore`]() : (this[`setDrawing`](), this['setDrawingScale'](), t[`globalAlpha`] *= g[`textAlpha`], v['noNames'] || r && v[`autoHideNames`] || this[`isPlayerCell`] && v[`hideMyName`] || n && v[`hideTeammatesNames`] || this[`setNick`](this[`targetNick`]) && this[`drawNick`](t), !v[`showMass`] || r && v[`autoHideMass`] || this[`isPlayerCell`] && v[`hideMyMass`] || v[`hideEnemiesMass`] && !this[`isPlayerCell`] && !this[`isVirus`] || this[`setMass`](this[`size`]) && this[`drawMass`](t), t[`restore`]());
                         }
                     }
                 };
@@ -8989,7 +8989,7 @@ ogcustom1=
             'connect': function(t) {
                 console['log'](`[Legend mod Express] Connecting to game server:`, t);
                 var i = this;
-                this[`closeConnection`](), this.flushCellsData(), this.protocolKey = null, this.clientKey = null, this[`accessTokenSent`] = !1, this[`connectionOpened`] = !1, this[`mapOffsetFixed`] = !1, this.leaderboard = [], this['ws'] = t, this[`socket`] = new WebSocket(t), this['socket'][`binaryType`] = `arraybuffer`, this[`socket`][`onopen`] = function() {
+                this[`closeConnection`](), this.flushCellsData(), this.protocolKey = null, this[`clientKey`] = null, this[`accessTokenSent`] = !1, this[`connectionOpened`] = !1, this[`mapOffsetFixed`] = !1, this.leaderboard = [], this['ws'] = t, this[`socket`] = new WebSocket(t), this['socket'][`binaryType`] = `arraybuffer`, this[`socket`][`onopen`] = function() {
                     i[`onOpen`]();
                 }, this[`socket`][`onmessage`] = function(t) {
                     i['onMessage'](t);
@@ -8997,10 +8997,10 @@ ogcustom1=
                     i[`onError`](t);
                 }, this['socket']['onclose'] = function(t) {
                     i[`onClose`](t);
-                }, ogarminimapdrawer[`getWS`](this['ws']), ogarminimapdrawer['sendServerJoin'](), ogarminimapdrawer[`sendServerData`](), ogarminimapdrawer.displayLeaderboard(''), e.master && e.master[`onConnect`] && e.master[`onConnect`]();
+                }, ogarminimapdrawer[`getWS`](this['ws']), ogarminimapdrawer['sendServerJoin'](), ogarminimapdrawer[`sendServerData`](), ogarminimapdrawer[`displayLeaderboard`](''), e.master && e.master[`onConnect`] && e.master[`onConnect`]();
             },
             'onOpen': function(t) {
-                console.log(`[Legend mod Express] Game server socket open`), this.time = Date.now();
+                console.log(`[Legend mod Express] Game server socket open`), this[`time`] = Date.now();
                 var e = this.createView(5);
                 e[`setUint8`](0, 254), e['setUint32'](1, 20, !0), this.sendMessage(e), (e = this['createView'](5))[`setUint8`](0, 255), e[`setUint32`](1, this.clientVersion, !0), this.sendMessage(e), this[`connectionOpened`] = !0;
             },
@@ -9033,8 +9033,8 @@ ogcustom1=
             },
             'sendMessage': function(t) {
                 if (this[`connectionOpened`]) {
-                    if (!this.clientKey) return;
-                    t = this[`shiftMessage`](t, this['clientKey']), this.clientKey = this.shiftKey(this['clientKey']);
+                    if (!this[`clientKey`]) return;
+                    t = this[`shiftMessage`](t, this['clientKey']), this[`clientKey`] = this.shiftKey(this['clientKey']);
                 }
                 this.sendBuffer(t);
             },
@@ -9064,10 +9064,10 @@ ogcustom1=
                 this.sendMessage(i);
             },
             'sendPosition': function() {
-                if (this.isSocketOpen() && this[`connectionOpened`] && this.clientKey) {
+                if (this.isSocketOpen() && this[`connectionOpened`] && this[`clientKey`]) {
                     var t = this[`cursorX`],
                         e = this['cursorY'];
-                    (!this['play'] && this.targeting || this.pause) && (t = this['targetX'], e = this.targetY);
+                    (!this['play'] && this.targeting || this.pause) && (t = this['targetX'], e = this[`targetY`]);
                     var i = this['createView'](13);
                     i[`setUint8`](0, 16), i[`setInt32`](1, t, !0), i['setInt32'](5, e, !0), i[`setUint32`](9, this['protocolKey'], !0), this['sendMessage'](i);
                 }
@@ -9128,7 +9128,7 @@ ogcustom1=
             },
             'decompressMessage': function(t) {
                 var e = new o(t['buffer']),
-                    i = new o(e.readUInt32LE(1));
+                    i = new o(e[`readUInt32LE`](1));
                 return a[`decodeBlock`](e.slice(5), i), i;
             },
             'handleMessage': function(t) {
@@ -9191,7 +9191,7 @@ ogcustom1=
                             var m = t[`getUint32`](s, !0);
                             s += 5;
                             var g = ~~Math['sqrt'](100 * m);
-                            this.ghostCells.push({
+                            this[`ghostCells`].push({
                                 'x': d,
                                 'y': f,
                                 'size': g,
@@ -9201,40 +9201,40 @@ ogcustom1=
                         }
                         break;
                     case 85:
-                        console.log(`[Legend mod Express] Captcha requested`), e.master && e.master.recaptchaRequested && e.master.recaptchaRequested();
+                        console.log(`[Legend mod Express] Captcha requested`), e.master && e.master[`recaptchaRequested`] && e.master[`recaptchaRequested`]();
                         break;
                     case 102:
-                        t['byteLength'] < 20 && e.logout && e.logout();
+                        t['byteLength'] < 20 && e[`logout`] && e[`logout`]();
                         break;
                     case 103:
-                        this['loggedInTime'] = Date.now(), this.accessTokenSent = !0;
+                        this['loggedInTime'] = Date['now'](), this['accessTokenSent'] = !0;
                         break;
                     case 114:
                     case 161:
                         break;
                     case 176:
-                        this.battleRoyale.startTime = t['getUint32'](s, !0);
+                        this[`battleRoyale`][`startTime`] = t['getUint32'](s, !0);
                         break;
                     case 177:
-                        this.battleRoyale.joined = !0;
+                        this[`battleRoyale`][`joined`] = !0;
                         break;
                     case 178:
-                        this.battleRoyale['players'] = t[`getUint16`](s, !0), s += 2;
+                        this[`battleRoyale`]['players'] = t[`getUint16`](s, !0), s += 2;
                         var y = t[`getUint16`](s, !0);
-                        s += 2, y || (this.battleRoyale['state'] = 0, this.battleRoyale.joined = !1), 3 & y && (this.battleRoyale.state = t[`getUint8`](s++), this.battleRoyale.x = t['getInt32'](s, !0), s += 4, this.battleRoyale.y = t['getInt32'](s, !0), s += 4, this.battleRoyale[`radius`] = t[`getUint32`](s, !0), s += 4, this.battleRoyale[`shrinkTime`] = 1000 * t[`getUint32`](s, !0), s += 4, this.battleRoyale['shrinkTime'] && (this.battleRoyale[`timeLeft`] = ~~((this.battleRoyale['shrinkTime'] - Date.now() + this.serverTimeDiff) / 1000), this.battleRoyale[`timeLeft`] < 0 && (this.battleRoyale[`timeLeft`] = 0))), 2 & y && (this.battleRoyale.targetX = t[`getInt32`](s, !0), s += 4, this.battleRoyale.targetY = t[`getInt32`](s, !0), s += 4, this.battleRoyale[`targetRadius`] = t['getUint32'](s, !0));
+                        s += 2, y || (this[`battleRoyale`]['state'] = 0, this['battleRoyale'][`joined`] = !1), 3 & y && (this[`battleRoyale`][`state`] = t[`getUint8`](s++), this[`battleRoyale`].x = t['getInt32'](s, !0), s += 4, this[`battleRoyale`].y = t['getInt32'](s, !0), s += 4, this[`battleRoyale`][`radius`] = t[`getUint32`](s, !0), s += 4, this[`battleRoyale`][`shrinkTime`] = 1000 * t[`getUint32`](s, !0), s += 4, this[`battleRoyale`]['shrinkTime'] && (this[`battleRoyale`][`timeLeft`] = ~~((this[`battleRoyale`]['shrinkTime'] - Date.now() + this[`serverTimeDiff`]) / 1000), this[`battleRoyale`][`timeLeft`] < 0 && (this[`battleRoyale`][`timeLeft`] = 0))), 2 & y && (this[`battleRoyale`][`targetX`] = t[`getInt32`](s, !0), s += 4, this['battleRoyale'][`targetY`] = t[`getInt32`](s, !0), s += 4, this[`battleRoyale`][`targetRadius`] = t['getUint32'](s, !0));
                         break;
                     case 179:
                         y = t[`getUint8`](s), e.decodeURIComponent(escape(i()));
                         y || e['decodeURIComponent'](escape(i()));
                         break;
                     case 180:
-                        this.battleRoyale['joined'] = !1, this.battleRoyale.rank = [], this.battleRoyale['playerRank'] = t[`getUint32`](s, !0), s += 8;
+                        this[`battleRoyale`]['joined'] = !1, this[`battleRoyale`][`rank`] = [], this[`battleRoyale`]['playerRank'] = t[`getUint32`](s, !0), s += 8;
                         var ogario1PlayerProfiles = t[`getUint16`](s, !0);
                         s += 2;
                         for (n = 0; n < ogario1PlayerProfiles; n++) {
                             var ogarcopythelb = e.decodeURIComponent(escape(i())),
                                 v = t[`getUint32`](s, !0);
-                            s += 4, this.battleRoyale.rank.push({
+                            s += 4, this[`battleRoyale`][`rank`].push({
                                 'place': v,
                                 'name': ogarcopythelb
                             });
@@ -9245,13 +9245,13 @@ ogcustom1=
                     case 241:
                         this['protocolKey'] = t[`getUint32`](s, !0), console.log(`[Legend mod Express] Received protocol key:`, this.protocolKey);
                         var irenderfromagario = new Uint8Array(t.Buffer, s += 4);
-                        this.clientKey = this.generateClientKey(this['ws'], irenderfromagario), e.master && e.master.login && e.master.login();
+                        this[`clientKey`] = this[`generateClientKey`](this['ws'], irenderfromagario), e.master && e.master[`login`] && e.master[`login`]();
                         break;
                     case 242:
-                        this.serverTime = 1000 * t[`getUint32`](s, !0), this.serverTimeDiff = Date.now() - this.serverTime;
+                        this[`serverTime`] = 1000 * t[`getUint32`](s, !0), this[`serverTimeDiff`] = Date['now']() - this[`serverTime`];
                         break;
                     case 255:
-                        this.handleSubmessage(t);
+                        this[`handleSubmessage`](t);
                         break;
                     default:
                         console['log']('[Legend mod Express] Unknown opcode:', t[`getUint8`](0));
@@ -9261,34 +9261,34 @@ ogcustom1=
                 var e = 0;
                 switch ((t = this['decompressMessage'](t))['readUInt8'](e++)) {
                     case 16:
-                        this.updateCells(t, e);
+                        this[`updateCells`](t, e);
                         break;
                     case 64:
-                        this.viewMinX = t.readDoubleLE(e), e += 8, this.viewMinY = t.readDoubleLE(e), e += 8, this['viewMaxX'] = t.readDoubleLE(e), e += 8, this['viewMaxY'] = t.readDoubleLE(e), this.setMapOffset(this.viewMinX, this.viewMinY, this[`viewMaxX`], this[`viewMaxY`]);
+                        this[`viewMinX`] = t[`readDoubleLE`](e), e += 8, this[`viewMinY`] = t[`readDoubleLE`](e), e += 8, this['viewMaxX'] = t[`readDoubleLE`](e), e += 8, this['viewMaxY'] = t[`readDoubleLE`](e), this[`setMapOffset`](this[`viewMinX`], this[`viewMinY`], this[`viewMaxX`], this[`viewMaxY`]);
                         break;
                     default:
                         console.log('[Legend mod Express] Unknown sub opcode:', t[`readUInt8`](0));
                 }
             },
             'handleLeaderboard': function() {
-                for (var t = '', e = '', i = 0; i < this.leaderboard.length && 10 != i; i++) {
+                for (var t = '', e = '', i = 0; i < this['leaderboard'].length && 10 != i; i++) {
                     var s = '<span>';
-                    'isPlayer' === this.leaderboard[i].id ? s = '<span class=\"me\">' : ogarcopythelb.clanTag.length && 0 == this.leaderboard[i].nick.indexOf(ogarcopythelb.clanTag) && (s = `<span class=\"teammate\">`), t += s + (i + 1) + '. ' + ogarminimapdrawer.escapeHTML(this.leaderboard[i].nick) + `</span>`;
+                    'isPlayer' === this.leaderboard[i].id ? s = '<span class=\"me\">' : ogarcopythelb['clanTag'].length && 0 == this.leaderboard[i].nick.indexOf(ogarcopythelb[`clanTag`]) && (s = `<span class=\"teammate\">`), t += s + (i + 1) + '. ' + ogarminimapdrawer.escapeHTML(this['leaderboard'][i].nick) + `</span>`;
                 }
-                if (this.playerPosition > 10 && (t += '<span class=\"me\">' + this.playerPosition + '. ' + ogarminimapdrawer.escapeHTML(this['playerNick']) + `</span>`), v.showLbData)
-                    for (var o = 0; o < this.ghostCells.length && o != i; o++) e += '<span class=\"lb-data\">', e += `<span class=\"top5-mass-color\">[` + ogarminimapdrawer.shortMassFormat(this['ghostCells'][o].mass) + `]</span>`, e += `<span class=\"hud-main-color\">[` + ogarminimapdrawer[`calculateMapSector`](this.ghostCells[o].x, this.ghostCells[o].y) + `]</span>`, e += `</span>`;
-                ogarminimapdrawer.displayLeaderboard(t, e);
+                if (this.playerPosition > 10 && (t += '<span class=\"me\">' + this.playerPosition + '. ' + ogarminimapdrawer.escapeHTML(this['playerNick']) + `</span>`), v[`showLbData`])
+                    for (var o = 0; o < this[`ghostCells`].length && o != i; o++) e += '<span class=\"lb-data\">', e += `<span class=\"top5-mass-color\">[` + ogarminimapdrawer[`shortMassFormat`](this['ghostCells'][o].mass) + `]</span>`, e += `<span class=\"hud-main-color\">[` + ogarminimapdrawer[`calculateMapSector`](this[`ghostCells`][o].x, this[`ghostCells`][o].y) + `]</span>`, e += `</span>`;
+                ogarminimapdrawer[`displayLeaderboard`](t, e);
             },
             'flushCellsData': function() {
-                this.indexedCells = {}, this.cells = [], this.playerCells = [], this.playerCellIDs = [], this.ghostCells = [], this.food = [], this.viruses = [];
+                this[`indexedCells`] = {}, this[`cells`] = [], this[`playerCells`] = [], this.playerCellIDs = [], this[`ghostCells`] = [], this[`food`] = [], this[`viruses`] = [];
             },
             'setMapOffset': function(t, e, i, s) {
-                i - t > 14000 && s - e > 14000 && (this.mapOffsetX = this.mapOffset - i, this.mapOffsetY = this.mapOffset - s, this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX), this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY), this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX), this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY), this.mapOffsetFixed || (this.viewX = (i + t) / 2, this.viewY = (s + e) / 2), this.mapOffsetFixed = !0, console['log']('[Legend mod Express] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY));
+                i - t > 14000 && s - e > 14000 && (this[`mapOffsetX`] = this[`mapOffset`] - i, this[`mapOffsetY`] = this[`mapOffset`] - s, this[`mapMinX`] = ~~(-this[`mapOffset`] - this[`mapOffsetX`]), this[`mapMinY`] = ~~(-this[`mapOffset`] - this[`mapOffsetY`]), this[`mapMaxX`] = ~~(this[`mapOffset`] - this['mapOffsetX']), this[`mapMaxY`] = ~~(this[`mapOffset`] - this['mapOffsetY']), this['mapOffsetFixed'] || (this.viewX = (i + t) / 2, this[`viewY`] = (s + e) / 2), this['mapOffsetFixed'] = !0, console['log']('[Legend mod Express] Map offset fixed (x, y):', this['mapOffsetX'], this['mapOffsetY']));
             },
             'isInView': function(t, e, i) {
-                var s = this.canvasWidth / 2 / this.scale,
-                    o = this.canvasHeight/ 2 / this.scale;
-                return !(t + i < this.viewX - s || e + i < this.viewY - o || t - i > this.viewX + s || e - i > this.viewY + o);
+                var s = this['canvasWidth'] / 2 / this.scale,
+                    o = this[`canvasHeight`] / 2 / this.scale;
+                return !(t + i < this['viewX'] - s || e + i < this[`viewY`] - o || t - i > this.viewX + s || e - i > this[`viewY`] + o);
             },
             'updateCells': function(t, i) {
                 var s = function() {
@@ -9299,16 +9299,16 @@ ogcustom1=
                     }
                     return e;
                 };
-                this.time = Date.now(), this.removePlayerCell = !1;
+                this[`time`] = Date.now(), this[`removePlayerCell`] = !1;
                 var o = t[`readUInt16LE`](i);
                 i += 2;
                 for (var a = 0; a < o; a++) {
-                    var n = this.indexedCells[t.readUInt32LE(i)],
-                        r = this.indexedCells[t.readUInt32LE(i + 4)];
-                    i += 8, n && r && (r.targetX = n.x, r.targetY = n.y, r.targetSize = r.size, r.time = this.time, r.removeCell());
+                    var n = this[`indexedCells`][t[`readUInt32LE`](i)],
+                        r = this['indexedCells'][t['readUInt32LE'](i + 4)];
+                    i += 8, n && r && (r[`targetX`] = n.x, r[`targetY`] = n.y, r[`targetSize`] = r[`size`], r[`time`] = this[`time`], r[`removeCell`]());
                 }
                 for (a = 0;;) {
-                    var l = t.readUInt32LE(i);
+                    var l = t[`readUInt32LE`](i);
                     if (i += 4, 0 == l) break;
                     var h = t[`readInt32LE`](i);
                     i += 4;
@@ -9362,40 +9362,40 @@ ogcustom1=
                     var M = 1 & d,
                         ogarioset1final = 1 & f,
                         ogariocellssetts = null;
-                    this.indexedCells.hasOwnProperty(l) ? (ogariocellssetts = this.indexedCells[l], m && (ogariocellssetts[`color`] = m)) : ((ogariocellssetts = new ogarbasicassembly(l, h, c, u, m, ogarioset1final, M, !1, v[`shortMass`], v[`virMassShots`])).time = this.time, ogarioset1final ? this['food'].push(ogariocellssetts) : (M && v[`virusesRange`] && this.viruses.push(ogariocellssetts), this.cells.push(ogariocellssetts), -1 != this['playerCellIDs']['indexOf'](l) && -1 == this.playerCells.indexOf(ogariocellssetts) && (ogariocellssetts[`isPlayerCell`] = !0, this.playerColor = m, this.playerCells.push(ogariocellssetts))), this.indexedCells[l] = ogariocellssetts), ogariocellssetts[`isPlayerCell`] && (y = this['playerNick']), y && (ogariocellssetts[`targetNick`] = y), ogariocellssetts.targetX = h, ogariocellssetts.targetY = c, ogariocellssetts.targetSize = u, ogariocellssetts[`isFood`] = ogarioset1final, ogariocellssetts[`isVirus`] = M, g && (ogariocellssetts[`skin`] = g), 4 & f && (t.readUInt32LE(i), i += 4);
+                    this['indexedCells'].hasOwnProperty(l) ? (ogariocellssetts = this[`indexedCells`][l], m && (ogariocellssetts[`color`] = m)) : ((ogariocellssetts = new ogarbasicassembly(l, h, c, u, m, ogarioset1final, M, !1, v[`shortMass`], v[`virMassShots`]))[`time`] = this[`time`], ogarioset1final ? this['food'].push(ogariocellssetts) : (M && v[`virusesRange`] && this[`viruses`].push(ogariocellssetts), this[`cells`].push(ogariocellssetts), -1 != this['playerCellIDs']['indexOf'](l) && -1 == this[`playerCells`].indexOf(ogariocellssetts) && (ogariocellssetts[`isPlayerCell`] = !0, this.playerColor = m, this[`playerCells`].push(ogariocellssetts))), this['indexedCells'][l] = ogariocellssetts), ogariocellssetts[`isPlayerCell`] && (y = this['playerNick']), y && (ogariocellssetts[`targetNick`] = y), ogariocellssetts[`targetX`] = h, ogariocellssetts[`targetY`] = c, ogariocellssetts[`targetSize`] = u, ogariocellssetts[`isFood`] = ogarioset1final, ogariocellssetts[`isVirus`] = M, g && (ogariocellssetts[`skin`] = g), 4 & f && (t[`readUInt32LE`](i), i += 4);
                 }
                 for (o = t[`readUInt16LE`](i), i += 2, a = 0; a < o; a++) {
-                    l = t.readUInt32LE(i);
-                    i += 4, (ogariocellssetts = this.indexedCells[l]) && ogariocellssetts.removeCell();
+                    l = t[`readUInt32LE`](i);
+                    i += 4, (ogariocellssetts = this[`indexedCells`][l]) && ogariocellssetts[`removeCell`]();
                 }
-                this['removePlayerCell'] && !this.playerCells.length && (this.play = !1, ogarminimapdrawer[`onPlayerDeath`](), ogarminimapdrawer.showMenu(300));
+                this['removePlayerCell'] && !this[`playerCells`].length && (this.play = !1, ogarminimapdrawer[`onPlayerDeath`](), ogarminimapdrawer.showMenu(300));
             },
             'color2Hex': function(t) {
-                var e = t.toString(16);
+                var e = t[`toString`](16);
                 return 1 == e.length ? '0' + e : e;
             },
             'rgb2Hex': function(t, e, i) {
-                return '#' + this['color2Hex'](t) + this.color2Hex(e) + this.color2Hex(i);
+                return '#' + this['color2Hex'](t) + this[`color2Hex`](e) + this[`color2Hex`](i);
             },
             'sortCells': function() {
-                this.cells.sort(function(t, e) {
-                    return t['size'] == e['size'] ? t.id - e.id : t.size - e.size;
+                this[`cells`].sort(function(t, e) {
+                    return t['size'] == e['size'] ? t.id - e.id : t[`size`] - e[`size`];
                 });
             },
             'calculatePlayerMassAndPosition': function() {
-                for (var t = 0, e = 0, i = 0, s = 0, o = this.playerCells.length, a = 0; a < o; a++) {
-                    var n = this.playerCells[a];
-                    t += n.size, e += n.targetSize * n.targetSize, i += n.x / o, s += n.y / o;
+                for (var t = 0, e = 0, i = 0, s = 0, o = this[`playerCells`].length, a = 0; a < o; a++) {
+                    var n = this[`playerCells`][a];
+                    t += n[`size`], e += n[`targetSize`] * n[`targetSize`], i += n.x / o, s += n.y / o;
                 }
-                this.viewX = i, this.viewY = s, this[`playerSize`] = t, this.playerMass = ~~(e / 100), this[`recalculatePlayerMass`]();
+                this['viewX'] = i, this[`viewY`] = s, this[`playerSize`] = t, this.playerMass = ~~(e / 100), this[`recalculatePlayerMass`]();
             },
             'recalculatePlayerMass': function() {
                 if (this.playerScore = Math['max'](this.playerScore, this['playerMass']), v[`virColors`] || v[`splitRange`] || v[`oppColors`] || v['oppRings'] || v[`showStatsSTE`]) {
                     var t = this['playerCells'],
                         e = t.length;
                     t.sort(function(t, e) {
-                        return t['size'] == e.size ? t.id - e.id : t.size - e.size;
-                    }), this['playerMinMass'] = ~~(t[0].size * t[0].size / 100), this['playerMaxMass'] = ~~(t[e - 1].size * t[e - 1].size / 100), this[`playerSplitCells`] = e;
+                        return t['size'] == e[`size`] ? t.id - e.id : t[`size`] - e[`size`];
+                    }), this['playerMinMass'] = ~~(t[0][`size`] * t[0][`size`] / 100), this['playerMaxMass'] = ~~(t[e - 1][`size`] * t[e - 1][`size`] / 100), this[`playerSplitCells`] = e;
                 }
                 if (v[`showStatsSTE`]) {
                     var i = this[`selectBiggestCell`] ? this[`playerMaxMass`] : this[`playerMinMass`];
@@ -9406,13 +9406,13 @@ ogcustom1=
                 if (this.play && (v[`oppColors`] || v[`oppRings`] || v[`splitRange`])) {
                     (v[`oppRings`] || v[`splitRange`]) && (this[`biggerSTECellsCache`] = [], this[`biggerCellsCache`] = [], this['smallerCellsCache'] = [], this[`STECellsCache`] = []);
                     for (var t = 0; t < this['cells'].length; t++) {
-                        var e = this.cells[t];
+                        var e = this[`cells`][t];
                         if (!e[`isVirus`]) {
-                            var i = ~~(e.size * e.size / 100),
+                            var i = ~~(e[`size`] * e[`size`] / 100),
                                 s = this[`selectBiggestCell`] ? this[`playerMaxMass`] : this[`playerMinMass`],
                                 o = i / s,
                                 a = s < 1000 ? 0.35 : 0.38;
-                            v[`oppColors`] && !v[`oppRings`] && (e['oppColor'] = this['setCellOppColor'](e[`isPlayerCell`], o, a)), e[`isPlayerCell`] || !v[`splitRange`] && !v[`oppRings`] || this[`cacheCells`](e.x, e.y, e.size, o, a);
+                            v[`oppColors`] && !v[`oppRings`] && (e['oppColor'] = this['setCellOppColor'](e[`isPlayerCell`], o, a)), e[`isPlayerCell`] || !v[`splitRange`] && !v[`oppRings`] || this[`cacheCells`](e.x, e.y, e[`size`], o, a);
                         }
                     }
                 }
@@ -9440,16 +9440,16 @@ ogcustom1=
                 return t ? ogarcopythelb[`color`] : e > 11 ? `#FF008C` : e >= 2.5 ? `#BE00FF` : e >= 1.25 ? `#FF0A00` : e < 1.25 && e > 0.75 ? `#FFDC00` : e > i ? '#00C8FF' : '#64FF00';
             },
             'getCursorPosition': function() {
-                this[`cursorX`] = (this[`clientX`] - this[`canvasWidth`] / 2) / this[`viewScale`] + this.viewX, this[`cursorY`] = (this[`clientY`] - this['canvasHeight'] / 2) / this[`viewScale`] + this.viewY;
+                this[`cursorX`] = (this[`clientX`] - this[`canvasWidth`] / 2) / this[`viewScale`] + this.viewX, this[`cursorY`] = (this[`clientY`] - this['canvasHeight'] / 2) / this[`viewScale`] + this[`viewY`];
             },
             'setZoom': function(t) {
                 t.preventDefault(), this[`zoomValue`] *= Math[`pow`](v[`zoomSpeedValue`], t['wheelDelta'] / -120 || t[`detail`] || 0), this[`zoomValue`] > 4 / this[`viewScale`] && (this[`zoomValue`] = 4 / this[`viewScale`]);
             },
             'setTargetPosition': function(t, e) {
-                this.targetX = t - this.mapOffsetX, this.targetY = e - this.mapOffsetY, this[`targetDistance`] = Math[`round`](Math['sqrt'](Math[`pow`](this[`playerX`] - this.targetX, 2) + Math[`pow`](this[`playerY`] - this['targetY'], 2)));
+                this[`targetX`] = t - this[`mapOffsetX`], this[`targetY`] = e - this[`mapOffsetY`], this[`targetDistance`] = Math[`round`](Math['sqrt'](Math[`pow`](this[`playerX`] - this[`targetX`], 2) + Math[`pow`](this[`playerY`] - this['targetY'], 2)));
             },
             'resetTargetPosition': function() {
-                this.targetX = this[`playerX`], this.targetY = this[`playerY`];
+                this[`targetX`] = this[`playerX`], this[`targetY`] = this[`playerY`];
             },
             'setKeys': function() {
                 var t = this;
@@ -9512,18 +9512,18 @@ ogcustom1=
                     };
                 },
                 'resizeCanvas': function() {
-                    this[`canvasWidth`] = e[`innerWidth`], this.canvasHeight= e.innerHeight, this[`canvas`][`width`] = this[`canvasWidth`], this['canvas'][`height`] = this[`canvasHeight`], M[`canvasWidth`] = this[`canvasWidth`], M.canvasHeight= this[`canvasHeight`], this['renderFrame']();
+                    this[`canvasWidth`] = e[`innerWidth`], this[`canvasHeight`] = e.innerHeight, this[`canvas`][`width`] = this[`canvasWidth`], this['canvas'][`height`] = this[`canvasHeight`], M[`canvasWidth`] = this[`canvasWidth`], M[`canvasHeight`] = this[`canvasHeight`], this['renderFrame']();
                 },
                 'setView': function() {
                     this[`setScale`](),
-					M.playerCells.length ?
+					M[`playerCells`].length ?
 					(M[`calculatePlayerMassAndPosition`](),
 //					this.camX += (M.viewX - this.camX) / 2,
 //					this.camY += (M.viewY - this.camY) / 2) :
 					this.camX = (this.camX + M.viewX) / 2,
-					this.camY = (this.camY + M.viewY) / 2) :
+					this.camY = (this.camY + M[`viewY`]) / 2) :
 					(this.camX = (29 * this.camX + M.viewX) / 30,
-					this.camY = (29 * this.camY + M.viewY) / 30),
+					this.camY = (29 * this.camY + M[`viewY`]) / 30),
 					M['playerX'] = this.camX, M[`playerY`] = this['camY'];
                 },
                 'setScale': function() {
@@ -9531,17 +9531,17 @@ ogcustom1=
                     M.play ? this['scale'] = (9 * this['scale'] + Math[`pow`](Math['min'](64 / M[`playerSize`], 1), 0.4) * this['getZoom']()) / 10 : this.scale = (9 * this.scale + M.scale * this['getZoom']()) / 10, M['viewScale'] = this.scale;
                 },
                 'getZoom': function() {
-                    return Math[`max`](this[`canvasWidth`] / 1080, this.canvasHeight/ 1920) * M[`zoomValue`];
+                    return Math[`max`](this[`canvasWidth`] / 1080, this[`canvasHeight`] / 1920) * M[`zoomValue`];
                 },
                 'renderFrame': function() {
-                    for (M.time = Date.now(), e = 0; e < M['cells'].length; e++) M.cells[e][`moveCell`]();
-                    if (this[`setView`](), M[`getCursorPosition`](), M[`sortCells`](), M[`compareCells`](), this[`ctx`][`clearRect`](0, 0, this[`canvasWidth`], this[`canvasHeight`]), v[`showGrid`] && this[`drawGrid`](this[`ctx`], this[`canvasWidth`], this[`canvasHeight`], this.scale, this.camX, this.camY), this['ctx'][`save`](), this[`ctx`][`translate`](this[`canvasWidth`] / 2, this.canvasHeight/ 2), this[`ctx`].scale(this.scale, this.scale), this['ctx']['translate'](-this.camX, -this.camY), v[`showBgSectors`] && this[`drawSectors`](this['ctx'], M[`mapOffsetFixed`], g[`sectorsX`], g[`sectorsY`], M.mapMinX, M.mapMinY, M.mapMaxX, M['mapMaxY'], g[`gridColor`], g[`sectorsColor`], g[`sectorsWidth`], !0), `:battleroyale` === M[`gameMode`] && this[`drawBattleArea`](this[`ctx`]), v['showMapBorders']) {
+                    for (M[`time`] = Date.now(), e = 0; e < M['cells'].length; e++) M[`cells`][e][`moveCell`]();
+                    if (this[`setView`](), M[`getCursorPosition`](), M[`sortCells`](), M[`compareCells`](), this[`ctx`][`clearRect`](0, 0, this[`canvasWidth`], this[`canvasHeight`]), v[`showGrid`] && this[`drawGrid`](this[`ctx`], this[`canvasWidth`], this[`canvasHeight`], this.scale, this.camX, this.camY), this['ctx'][`save`](), this[`ctx`][`translate`](this[`canvasWidth`] / 2, this[`canvasHeight`] / 2), this[`ctx`].scale(this.scale, this.scale), this['ctx']['translate'](-this.camX, -this.camY), v[`showBgSectors`] && this[`drawSectors`](this['ctx'], M[`mapOffsetFixed`], g[`sectorsX`], g[`sectorsY`], M[`mapMinX`], M[`mapMinY`], M[`mapMaxX`], M['mapMaxY'], g[`gridColor`], g[`sectorsColor`], g[`sectorsWidth`], !0), `:battleroyale` === M[`gameMode`] && this[`drawBattleArea`](this[`ctx`]), v['showMapBorders']) {
                         var t = g['bordersWidth'] / 2;
-                        this[`drawMapBorders`](this[`ctx`], M[`mapOffsetFixed`], M.mapMinX - t, M.mapMinY - t, M.mapMaxX + t, M.mapMaxY + t, g[`bordersColor`], g['bordersWidth']);
+                        this[`drawMapBorders`](this[`ctx`], M[`mapOffsetFixed`], M[`mapMinX`] - t, M[`mapMinY`] - t, M[`mapMaxX`] + t, M[`mapMaxY`] + t, g[`bordersColor`], g['bordersWidth']);
                     }
-                    v['virusesRange'] && this[`drawVirusesRange`](this[`ctx`], M.viruses), this[`drawFood`](), M.play && (v[`splitRange`] && this[`drawSplitRange`](this[`ctx`], M[`biggerSTECellsCache`], M.playerCells, M['selectBiggestCell']), v[`oppRings`] && this['drawOppRings'](this[`ctx`], this.scale, M[`biggerSTECellsCache`], M[`biggerCellsCache`], M[`smallerCellsCache`], M[`STECellsCache`]), v['cursorTracking'] && this[`drawCursorTracking`](this[`ctx`], M['playerCells'], M[`cursorX`], M['cursorY'])), this[`drawGhostCells`]();
+                    v['virusesRange'] && this[`drawVirusesRange`](this[`ctx`], M[`viruses`]), this[`drawFood`](), M.play && (v[`splitRange`] && this[`drawSplitRange`](this[`ctx`], M[`biggerSTECellsCache`], M[`playerCells`], M['selectBiggestCell']), v[`oppRings`] && this['drawOppRings'](this[`ctx`], this.scale, M[`biggerSTECellsCache`], M[`biggerCellsCache`], M[`smallerCellsCache`], M[`STECellsCache`]), v['cursorTracking'] && this[`drawCursorTracking`](this[`ctx`], M['playerCells'], M[`cursorX`], M['cursorY'])), this[`drawGhostCells`]();
                     for (var e = 0; e < M[`removedCells`].length; e++) M[`removedCells`][e]['draw'](this['ctx'], !0);
-                    for (e = 0; e < M.cells.length; e++) M.cells[e][`draw`](this['ctx']);
+                    for (e = 0; e < M[`cells`].length; e++) M[`cells`][e][`draw`](this['ctx']);
                     this[`ctx`][`restore`](), ':teams' === M[`gameMode`] && this['pieChart'] && this.pieChart[`width`] && this['ctx'][`drawImage`](this.pieChart, this[`canvasWidth`] - this.pieChart[`width`] - 10, 10);
                 },
                 'drawGrid': function(t, e, i, s, o, a) {
@@ -9582,7 +9582,7 @@ ogcustom1=
                         for (var s = 0; s < e.length; s++) {
                             var o = e[s].x,
                                 a = e[s].y;
-                            t[`moveTo`](o, a), t[`arc`](o, a, e[s].size + 820, 0, this[`pi2`], !1);
+                            t[`moveTo`](o, a), t[`arc`](o, a, e[s][`size`] + 820, 0, this[`pi2`], !1);
                         }
                         t[`fillStyle`] = g['virusColor'], t[`globalAlpha`] = 0.1, t[`fill`](), t[`globalAlpha`] = 1, i && (e = []);
                     }
@@ -9591,8 +9591,8 @@ ogcustom1=
                     if (M.showFood && !(v[`autoHideFoodOnZoom`] && this['scale'] < 0.2)) {
                         if (v['autoHideFood'] && !M['foodIsHidden'] && M.playerMass > 1000) return M.showFood = !1, void(M['foodIsHidden'] = !0);
                         if (v[`rainbowFood`])
-                            for (var t = 0; t < M['food'].length; t++) M['food'][t][`moveCell`](), M.food[t][`draw`](this['ctx']);
-                        else this[`drawCachedFood`](this[`ctx`], M.food, this['scale']);
+                            for (var t = 0; t < M['food'].length; t++) M['food'][t][`moveCell`](), M[`food`][t][`draw`](this['ctx']);
+                        else this[`drawCachedFood`](this[`ctx`], M[`food`], this['scale']);
                     }
                 },
                 'drawCachedFood': function(t, e, i, s) {
@@ -9607,9 +9607,9 @@ ogcustom1=
                                 for (o = 0; o < e.length; o++) {
                                     a = e[o].x, n = e[o].y;
                                     if (t['moveTo'](a, n), i < 0.16) {
-                                        var r = e[o].size + g[`foodSize`];
+                                        var r = e[o][`size`] + g[`foodSize`];
                                         t[`rect`](a - r, n - r, 2 * r, 2 * r);
-                                    } else t[`arc`](a, n, e[o].size + g[`foodSize`], 0, this['pi2'], !1);
+                                    } else t[`arc`](a, n, e[o][`size`] + g[`foodSize`], 0, this['pi2'], !1);
                                 }
                                 t[`fillStyle`] = g[`foodColor`], t[`globalAlpha`] = 1, t[`fill`]();
                             }
@@ -9619,7 +9619,7 @@ ogcustom1=
                 'drawSplitRange': function(t, e, i, s, o) {
                     if (this['drawCircles'](t, e, 760, 4, 0.4, `#BE00FF`), i.length) {
                         var a = s ? i.length - 1 : 0;
-                        t[`lineWidth`] = 6, t['globalAlpha'] = g[`darkTheme`] ? 0.7 : 0.35, t['strokeStyle'] = g[`splitRangeColor`], t[`beginPath`](), t['arc'](i[a].x, i[a].y, i[a].size + 760, 0, this[`pi2`], !1), t[`closePath`](), t[`stroke`]();
+                        t[`lineWidth`] = 6, t['globalAlpha'] = g[`darkTheme`] ? 0.7 : 0.35, t['strokeStyle'] = g[`splitRangeColor`], t[`beginPath`](), t['arc'](i[a].x, i[a].y, i[a][`size`] + 760, 0, this[`pi2`], !1), t[`closePath`](), t[`stroke`]();
                     }
                     t['globalAlpha'] = 1, o && (e = []);
                 },
@@ -9635,7 +9635,7 @@ ogcustom1=
                 },
                 'drawCircles': function(t, e, i, s, o, a) {
                     t[`lineWidth`] = s, t['globalAlpha'] = o, t[`strokeStyle`] = a;
-                    for (var n = 0; n < e['length']; n++) t['beginPath'](), t[`arc`](e[n].x, e[n].y, e[n].size + i, 0, this[`pi2`], !1), t[`closePath`](), t[`stroke`]();
+                    for (var n = 0; n < e['length']; n++) t['beginPath'](), t[`arc`](e[n].x, e[n].y, e[n][`size`] + i, 0, this[`pi2`], !1), t[`closePath`](), t[`stroke`]();
                     t['globalAlpha'] = 1;
                 },
                 'drawDashedCircle': function(t, e, i, s, o, a, n) {
@@ -9657,32 +9657,32 @@ ogcustom1=
                     }
                 },
                 'drawBattleArea': function(t) {
-                    M.battleRoyale.state && (this[`drawDangerArea`](t, M.battleRoyale.x, M.battleRoyale.y, M.battleRoyale['radius'], M.mapMinX, M.mapMinY, M.mapMaxX - M.mapMinX, M.mapMaxY - M['mapMinY'], g[`dangerAreaColor`], 0.25), this['drawSafeArea'](t, M.battleRoyale.targetX, M.battleRoyale.targetY, M.battleRoyale[`targetRadius`], 40, g[`safeAreaColor`]));
+                    M[`battleRoyale`][`state`] && (this[`drawDangerArea`](t, M[`battleRoyale`].x, M[`battleRoyale`].y, M['battleRoyale']['radius'], M[`mapMinX`], M[`mapMinY`], M[`mapMaxX`] - M[`mapMinX`], M[`mapMaxY`] - M['mapMinY'], g[`dangerAreaColor`], 0.25), this['drawSafeArea'](t, M[`battleRoyale`][`targetX`], M[`battleRoyale`][`targetY`], M[`battleRoyale`][`targetRadius`], 40, g[`safeAreaColor`]));
                 },
                 'drawBattleAreaOnMinimap': function(t, e, i, s, o, a) {
-                    if (M.battleRoyale.state) {
+                    if (M[`battleRoyale`][`state`]) {
                         this['battleAreaMap'] || (this[`battleAreaMap`] = document['createElement']('canvas'), this[`battleAreaMapCtx`] = this[`battleAreaMap`]['getContext']('2d')), this['battleAreaMap'][`width`] != e ? (this[`battleAreaMap`][`width`] = e, this[`battleAreaMap`]['height'] = i) : this[`battleAreaMapCtx`][`clearRect`](0, 0, e, i);
-                        var n = (M.battleRoyale.x + o) * s,
-                            r = (M.battleRoyale.y + a) * s,
-                            l = M.battleRoyale[`radius`] * s;
-                        this[`drawDangerArea`](this[`battleAreaMapCtx`], n, r, l, 0, 0, e, i, g[`dangerAreaColor`], 0.25), n = ~~((M.battleRoyale['targetX'] + o) * s), r = ~~((M.battleRoyale.targetY + a) * s), l = ~~(M.battleRoyale[`targetRadius`] * s), this[`drawSafeArea`](this['battleAreaMapCtx'], n, r, l, 2, g[`safeAreaColor`]), t[`drawImage`](this[`battleAreaMap`], 0, 0);
+                        var n = (M[`battleRoyale`].x + o) * s,
+                            r = (M[`battleRoyale`].y + a) * s,
+                            l = M[`battleRoyale`][`radius`] * s;
+                        this[`drawDangerArea`](this[`battleAreaMapCtx`], n, r, l, 0, 0, e, i, g[`dangerAreaColor`], 0.25), n = ~~((M[`battleRoyale`]['targetX'] + o) * s), r = ~~((M['battleRoyale'][`targetY`] + a) * s), l = ~~(M[`battleRoyale`][`targetRadius`] * s), this[`drawSafeArea`](this['battleAreaMapCtx'], n, r, l, 2, g[`safeAreaColor`]), t[`drawImage`](this[`battleAreaMap`], 0, 0);
                     }
                 },
                 'drawDangerArea': function(t, e, i, s, o, a, n, r, l, h) {
-                    M.battleRoyale[`radius`] == M.battleRoyale[`maxRadius`] || s <= 0 || (t[`save`](), t[`globalAlpha`] = h, t[`fillStyle`] = l, t['fillRect'](o, a, n, r), t[`globalCompositeOperation`] = 'destination-out', t[`globalAlpha`] = 1, t[`beginPath`](), t['arc'](e, i, s, 0, this['pi2'], !1), t[`fill`](), t[`restore`]());
+                    M['battleRoyale'][`radius`] == M[`battleRoyale`][`maxRadius`] || s <= 0 || (t[`save`](), t[`globalAlpha`] = h, t[`fillStyle`] = l, t['fillRect'](o, a, n, r), t[`globalCompositeOperation`] = 'destination-out', t[`globalAlpha`] = 1, t[`beginPath`](), t['arc'](e, i, s, 0, this['pi2'], !1), t[`fill`](), t[`restore`]());
                 },
                 'drawSafeArea': function(t, e, i, s, o, a) {
-                    M.battleRoyale.state > 2 || s <= 0 || this[`drawDashedCircle`](t, e, i, s, 0x3c, o, a);
+                    M[`battleRoyale`][`state`] > 2 || s <= 0 || this[`drawDashedCircle`](t, e, i, s, 0x3c, o, a);
                 },
                 'drawGhostCells': function() {
                     if (v[`showGhostCells`]) {
-                        var t = M.ghostCells;
+                        var t = M[`ghostCells`];
                         this['ctx']['beginPath']();
                         for (var e = 0; e < t['length']; e++)
                             if (!t[e][`inView`]) {
                                 var i = t[e].x,
                                     s = t[e].y;
-                                this[`ctx`][`moveTo`](i, s), this[`ctx`][`arc`](i, s, t[e].size, 0, this[`pi2`], !1);
+                                this[`ctx`][`moveTo`](i, s), this[`ctx`][`arc`](i, s, t[e][`size`], 0, this[`pi2`], !1);
                             } this[`ctx`][`fillStyle`] = g[`ghostCellsColor`], this[`ctx`][`globalAlpha`] = g[`ghostCellsAlpha`], this[`ctx`][`shadowColor`] = g[`ghostCellsColor`], this[`ctx`][`shadowBlur`] = 40, this[`ctx`][`shadowOffsetX`] = 0, this[`ctx`][`shadowOffsetY`] = 0, this[`ctx`][`fill`](), this['ctx']['globalAlpha'] = 1, this[`ctx`][`shadowBlur`] = 0;
                     }
                 },
