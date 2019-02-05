@@ -4,7 +4,7 @@
 // Thank you Snez for decoding Feross
 // Thank you volum for the case 16: instance
 
-//v1.36
+//v1.37
 
 //Game Configurations
 //var agarversion="v12/1922/";
@@ -9486,6 +9486,7 @@ ogcustom1=
                 }, 40), e['master'] && e['master'][`clientVersion`] && this[`setClientVersion`](e[`master`][`clientVersion`], e[`master`][`clientVersionString`]);
             }
         };
+		window.legendmod = M; // look at this
         e['sendAction'] = function(t) {
             M['sendAction'](t);
         };
@@ -10435,7 +10436,7 @@ ogcustom1=
                     this[`loadHotkeys`](), this[`setHotkeysMenu`]();
                 }
             };
-
+		window.legendmodcanvas = ogarfooddrawer; //look at this
         function ogarjoiner(t) {
             e[`history`] && e[`history`]['replaceState'] && e[`history`][`replaceState`]({}, e['document'][`title`], t);
         }
