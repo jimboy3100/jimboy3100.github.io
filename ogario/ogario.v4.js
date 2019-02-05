@@ -4,7 +4,7 @@
 // Thank you Snez for decoding Feross
 // Thank you volum for the case 16: instance
 
-//v1.41
+//v1.36
 
 //Game Configurations
 //var agarversion="v12/1922/";
@@ -5658,672 +5658,676 @@ ogcustom1=
     (function(e, i, s) {
         var o = null,
             a = null,
-			n = {
-                            pl: {
-                                start: "Start",
-                                settings: "Ustawienia",
-                                restoreSettings: "Przywróc ustawienia domyślne",
-                                animationGroup: "Animacja",
-                                zoomGroup: "Zoom",
-                                respGroup: "Odrodzenie",
-                                namesGroup: "Nazwy",
-                                massGroup: "Masa",
-                                skinsGroup: "Skiny",
-                                foodGroup: "Pokarm",
-                                transparencyGroup: "Przezroczystość / kolory",
-                                gridGroup: "Siatka / sektory",
-                                miniMapGroup: "Minimapa",
-                                helpersGroup: "Wspomagacze",
-                                mouseGroup: "Sterowanie myszką",
-                                hudGroup: "HUD",
-                                chatGroup: "Czat",
-                                statsGroup: "Statystyki",
-                                extrasGroup: "Dodatkowe",
-                                noSkins: "Wyłącz skiny",
-                                noNames: "Wyłącz nazwy",
-                                noColors: "Wyłącz kolory",
-                                showMass: "Pokaż masę",
-                                skipStats: "Pomiń statystyki po śmierci",
-                                showQuest: "Pokaż zadanie (quest)",
-                                autoZoom: "Auto zoom",
-                                animation: "Opóźnienie animacji",
-                                zoomSpeedValue: "Szybkość zoomu",
-                                quickResp: "Szybkie odrodzenie (klawisz)",
-                                autoResp: "Auto odrodzenie",
-                                autoHideCellsInfo: "Autoukrywanie nazw i masy",
-                                autoHideNames: "Autoukrywanie nazw",
-                                autoHideMass: "Autoukrywanie masy",
-                                autoHideFood: "Autoukrywanie pokarmu (masa)",
-                                autoHideFoodOnZoom: "Autoukrywanie pokarmu (zoom)",
-                                optimizedNames: "Zoptymalizowane nazwy",
-                                hideMyName: "Ukryj własną nazwę",
-                                hideTeammatesNames: "Ukryj nazwy graczy teamu",
-                                optimizedMass: "Zoptymalizowana masa (+/-2%)",
-                                shortMass: "Skrócona masa (k)",
-                                virMassShots: "Licznik strzałów (wirusy)",
-                                hideMyMass: "Ukryj własną masę",
-                                hideEnemiesMass: "Ukryj masę przeciwników",
-                                vanillaSkins: "Podstawowe skiny",
-                                customSkins: "Własne skiny",
-                                myTransparentSkin: "Mój przezroczysty skin",
-                                myCustomColor: "Mój własny kolor",
-                                transparentCells: "Przezroczyste kulki",
-                                transparentViruses: "Przezroczyste wirusy",
-                                transparentSkins: "Przezroczyste skiny",
-                                showGrid: "Siatka",
-                                showBgSectors: "Sektory w tle",
-                                showMapBorders: "Granice mapy",
-                                showGhostCells: "Duchy kulek",
-                                showMiniMap: "Pokaż minimapę",
-                                showMiniMapGrid: "Pokaż siatkę minimapy",
-                                showMiniMapGuides: "Pokaż prowadnice na minimapie",
-                                showMiniMapGhostCells: "Pokaż duchy kulek na minimapie",
-                                oneColoredTeammates: "Jednokolorowi gracze",
-                                optimizedFood: "Zoptymalizowany pokarm",
-                                rainbowFood: "Kolorowy pokarm",
-                                oppColors: "Kolory przeciwników",
-                                oppRings: "Ringi przeciwników",
-                                virColors: "Kolory wirusów",
-                                splitRange: "Zasięg podziału",
-                                virusesRange: "Zasięg wirusów",
-                                textStroke: "Obwódki nazw i masy",
-                                namesStroke: "Obwódki nazw",
-                                massStroke: "Obwódki masy",
-                                cursorTracking: "Śledzenie kursora",
-                                teammatesInd: "Wskaźniki graczy teamu",
-                                mouseSplit: "LPM - Split myszką",
-                                mouseFeed: "PPM - Feed myszką",
-                                mouseInvert: "Odwróć klawisze myszki",
-                                disableChat: "Wyłącz czat",
-                                hideChat: "Ukryj czat",
-                                chatSounds: "Powiadomienia dźwiękowe",
-                                chatEmoticons: "Emotikony",
-                                showChatImages: "Pokaż obrazki na czacie",
-                                showChatVideos: "Pokaż filmiki na czacie",
-                                showChatBox: "Czatbox zamiast wyskakujących wiadomości",
-                                messageSound: "Dźwięk powiadomienia o wiadomości",
-                                commandSound: "Dźwięk powiadomienia o komendzie",
-                                showTop5: "Pokaż top 5 teamu",
-                                showTargeting: "Pokaż namierzanie",
-                                showTime: "Pokaż aktualny czas",
-                                showLbData: "Pokaż masę w topce",
-                                normalLb: 'Nagłówek "Topka"',
-                                centeredLb: "Wyśrodkowana topka",
-                                fpsAtTop: "Statystyki na górze",
-                                showStats: "Pokaż statystyki",
-                                showStatsMass: "Statystyki: Masa",
-                                showStatsSTE: "Statystyki: STE",
-                                showStatsN16: "Statystyki: n/16",
-                                showStatsFPS: "Statystyki: FPS",
-                                blockPopups: "Blokuj popupy (reklamy/sklep/zadanie)",
-                                hotkeys: "Skróty klawiszowe",
-                                "hk-inst-assign": "Aby ustawić skrót klawiszowy kliknij na polu skrótu i naciśnij wybrany klawisz.",
-                                "hk-inst-delete": "Aby usunąć skrót klawiszowy kliknij na polu skrótu i naciśnij klawisz DELETE.",
-                                "hk-inst-keys": "Możliwe kombinacje skrótów klawiszowych z użyciem klawiszy CTRL oraz ALT.",
-                                "hk-feed": "Feed",
-                                "hk-macroFeed": "Szybki feed",
-                                "hk-split": "Podział",
-                                "hk-doubleSplit": "Podwójny podział",
-                                "hk-split16": "Podział na 16",
-                                "hk-pause": "Pauza kulki",
-                                "hk-showTop5": "Pokaż/ukryj top 5 teamu",
-                                "hk-showTime": "Pokaż/ukryj aktualny czas",
-                                "hk-showSplitRange": "Pokaż/ukryj zasięg podziału",
-                                "hk-showSplitInd": "Pokaż/ukryj zasięg podziału z ringami",
-                                "hk-showTeammatesInd": "Pokaż/ukryj wskaźniki graczy teamu",
-                                "hk-showOppColors": "Pokaż/ukryj kolory przeciwników",
-                                "hk-toggleSkins": "Przełącz skiny (własne/standardowe)",
-                                "hk-showSkins": "Pokaż/ukryj skiny",
-                                "hk-transparentSkins": "Włącz/wyłącz przezroczyste skiny",
-                                "hk-showStats": "Pokaż/ukryj statystyki gry",
-                                "hk-toggleCells": "Przełącz kulkę (najmniejsza/największa)",
-                                "hk-showFood": "Pokaż/ukryj pokarm",
-                                "hk-showGrid": "Pokaż/ukryj siatkę",
-                                "hk-showMiniMapGuides": "Pokaż/ukryj prowadnice na minimapie",
-                                "hk-hideChat": "Pokaż/ukryj czat",
-                                "hk-showHUD": "Pokaż/ukryj HUD",
-                                "hk-copyLb": "Kopiuj topkę",
-                                "hk-showLb": "Pokaż/ukryj topkę",
-                                "hk-toggleAutoZoom": "Włącz/wyłącz auto zoom",
-                                "hk-resetZoom": "Reset zoomu",
-                                "hk-zoomLevel": "Zoom - poziom",
-                                "hk-toggleDeath": "Przełącz miejsce śmierci",
-                                "hk-clearChat": "Pokaż historię czatu / Czyść czat",
-                                "hk-showBgSectors": "Pokaż/ukryj sektory w tle",
-                                "hk-hideBots": "Pokaż/ukryj małe boty",
-                                "hk-showNames": "Pokaż/ukryj nazwy",
-                                "hk-hideTeammatesNames": "Pokaż/ukryj nazwy graczy teamu",
-                                "hk-showMass": "Pokaż/ukryj masę",
-                                "hk-showMiniMap": "Pokaż/ukryj minimapę",
-                                "hk-chatMessage": "Napisz wiadomość na czacie",
-                                "hk-quickResp": "Szybkie odrodzenie (respawn)",
-                                "hk-autoResp": "Włącz/wyłacz auto odrodzenie",
-                                "hk-switchServerMode": "Przełącz serwer [publiczny/prywatny]",
-                                "hk-showTargeting": "Pokaż/ukryj panel namierzania",
-                                "hk-setTargeting": "Włącz/wyłącz namierzanie (śledzenie)",
-                                "hk-cancelTargeting": "Zatrzymaj namierzanie",
-                                "hk-changeTarget": "Zmień cel",
-                                "hk-privateMiniMap": "Pokaż cel na minimapie",
-                                "hk-showQuest": "Pokaż/ukryj zadanie",
-                                commands: "Komendy",
-                                comm1: "Feeduj!",
-                                comm2: "Dziel się!",
-                                comm3: "Pomocy na %currentSector%!",
-                                comm4: "Wróg na %currentSector%!",
-                                comm5: "Zabij pomocnika!",
-                                comm6: "Strzel z wirusa!",
-                                comm7: "Zjedz wirusa!",
-                                comm8: "Zjebałem, wybacz.",
-                                comm9: "Ja pierdolę...",
-                                comm0: "Kurwa mać!",
-                                comm10: "Trick!",
-                                comm11: "Lewo!",
-                                comm12: "Góra!",
-                                comm13: "Prawo!",
-                                comm14: "Dół!",
-                                saveComm: "Zapisz komendy",
-                                theme: "Wygląd",
-                                restoreThemeSettings: "Przywróc ustawienia domyślne wyglądu",
-                                basicTheming: "Podstawowy",
-                                themePreset: "Motyw",
-                                themeType: "Typ motywu",
-                                darkTheme: "Ciemny motyw",
-                                lightTheme: "Jasny motyw",
-                                mainColor: "Kolor główny",
-                                bgColor: "Tło",
-                                bordersColor: "Granice mapy",
-                                gridColor: "Siatka",
-                                sectorsColor: "Czcionka sektorów",
-                                namesColor: "Nazwy",
-                                namesStrokeColor: "Obwódki nazw",
-                                massColor: "Masa",
-                                massStrokeColor: "Obwódki masy",
-                                virusColor: "Wirusy",
-                                virusStrokeColor: "Obwódki wirusów",
-                                foodColor: "Pokarm",
-                                namesFont: "Czcionka nazw",
-                                massFont: "Czcionka masy",
-                                sectorsFont: "Czcionka sektorów",
-                                namesScale: "Skala nazw",
-                                massScale: "Skala masy",
-                                virMassScale: "Skala masy wirusów",
-                                strokeScale: "Skala obwódek tekstu",
-                                foodSize: "Wielkość pokarmu",
-                                bordersWidth: "Grubość granic mapy",
-                                sectorsWidth: "Grubość siatki sektorów",
-                                sectorsFontSize: "Rozmiar czcionki sektorów",
-                                cellsAlpha: "Przezroczystość kulek",
-                                skinsAlpha: "Przezroczystość skinów",
-                                virusAlpha: "Przezroczystość wirusów",
-                                textAlpha: "Przezroczystość nazw i masy",
-                                virusStrokeSize: "Grubość obwódki wirusów",
-                                teammatesIndColor: "Wskaźnik gracza",
-                                cursorTrackingColor: "Śledzenie kursora",
-                                splitRangeColor: "Zasięg podziału",
-                                safeAreaColor: "Bezpieczna strefa",
-                                dangerAreaColor: "Strefa zagrożenia",
-                                ghostCellsColor: "Duchy kulek",
-                                ghostCellsAlpha: "Przezroczystość duchów kulek",
-                                menuTheming: "Menu",
-                                menuPreset: "Motyw menu",
-                                menuMainColor: "Kolor główny",
-                                menuBtnTextColor: "Tekst przycisku",
-                                menuPanelColor: "Panel",
-                                menuPanelColor2: "Panel (2)",
-                                menuTextColor: "Tekst panelu",
-                                menuTextColor2: "Tekst panelu (2)",
-                                btn1Color: "Przycisk #1",
-                                btn1Color2: "Przycisk #1 (2)",
-                                btn2Color: "Przycisk #2",
-                                btn2Color2: "Przycisk #2 (2)",
-                                btn3Color: "Przycisk #3",
-                                btn3Color2: "Przycisk #3 (2)",
-                                btn4Color: "Przycisk #4",
-                                btn4Color2: "Przycisk #4 (2)",
-                                menuBg: "Grafika tła panelu",
-                                menuOpacity: "Przezroczystość",
-                                hudTheming: "HUD",
-                                hudMainColor: "Kolor główny",
-                                hudColor: "Tło",
-                                hudTextColor: "Tekst",
-                                statsHudColor: "Statystyki",
-                                timeHudColor: "Czas",
-                                top5MassColor: "Masa",
-                                lbMeColor: "Topka - ja",
-                                lbTeammateColor: "Topka - team",
-                                hudFont: "Czcionka HUD",
-                                hudScale: "Skala HUD",
-                                chatTheming: "Czat",
-                                messageColor: "Tło wiadomości",
-                                messageTextColor: "Tekst wiadomości",
-                                messageTimeColor: "Czas wiadomości",
-                                messageNickColor: "Nick wiadomości",
-                                commandsColor: "Tło komendy",
-                                commandsTextColor: "Tekst komendy",
-                                commandsTimeColor: "Czas komendy",
-                                commandsNickColor: "Nick komendy",
-                                chatBoxColor: "Tło czatboxu",
-                                chatScale: "Skala czatu",
-                                miniMapTheming: "Minimapa",
-                                miniMapSectorsColor: "Sektory",
-                                miniMapSectorColor: "Aktualny sektor",
-                                miniMapGuidesColor: "Prowadnice",
-                                miniMapNickColor: "Nick",
-                                miniMapNickStrokeColor: "Obwódka nicku",
-                                miniMapMyCellColor: "Moja kulka",
-                                miniMapMyCellStrokeColor: "Obwódka mojej kulki",
-                                miniMapTeammatesColor: "Gracze",
-                                miniMapDeathLocationColor: "Miejsce śmierci",
-                                miniMapFont: "Czcionka minimapy",
-                                miniMapNickFont: "Czcionka nicku",
-                                miniMapWidth: "Szerokość minimapy",
-                                miniMapSectorsOpacity: "Przezroczystość sektorów",
-                                miniMapNickSize: "Rozmiar nicku",
-                                miniMapNickStrokeSize: "Grubość obwódki nicku",
-                                miniMapMyCellSize: "Wielkość mojej kulki",
-                                miniMapMyCellStrokeSize: "Grubość obwódki mojej kulki",
-                                miniMapTeammatesSize: "Wielkość graczy",
-                                miniMapGhostCellsColor: "Duchy kulek",
-                                miniMapGhostCellsAlpha: "Przezroczystość duchów kulek",
-                                imagesTheming: "Grafika / kursory",
-                                customBackground: "Grafika tła",
-                                customCursor: "Grafika kursora",
-                                hideChatMsgA: "Czat został włączony!",
-                                hideChatMsgB: "Czat został ukryty!",
-                                showSkinsMsgA: "Skiny zostały włączone!",
-                                showSkinsMsgB: "Skiny zostały ukryte!",
-                                hideSmallBotsMsgA: "Małe boty stały się widoczne!",
-                                hideSmallBotsMsgB: "Małe boty zostały ukryte!",
-                                autoRespMsgA: "Auto odrodzenie zostało włączone!",
-                                autoRespMsgB: "Auto odrodzenie zostało wyłączone!",
-                                autoZoomMsgA: "Auto zoom został włączony!",
-                                autoZoomMsgB: "Auto zoom został wyłączony!",
-                                targetNotSet: "Brak celu",
-                                targetDead: "Nie żyje",
-                                targetDistance: "Dystans",
-                                targetMass: "Masa razem",
-                                totalPartyPlayers: "Aktywnych graczy",
-                                totalPartyMass: "Łącznie masy",
-                                exportImport: "Eksport / import ustawień",
-                                exportSettings: "Eksportuj ustawienia",
-                                exportInfo: "Aby wyeksportować wybrane ustawienia skopiuj poniższy kod i zapisz go w pliku tekstowym z kodowaniem Unicode.",
-                                importSettings: "Importuj ustawienia",
-                                importInfo: 'Aby zaimportować wybrane ustawienia wklej poniżej wyeksportowany wcześniej kod i naciśnij przycisk "Importuj ustawienia".',
-                                profile: "Profil",
-                                profiles: "Profile",
-                                skins: "Skiny",
-                                moreSkins: "Dodaj skiny",
-                                thanks: "Dzięki Awesome!",
-                                saveSett: "Zapisz ustawienia",
-                                saved: "Zapisano!",
-                                resetSett: "Resetuj ustawienia",
-                                close: "Zamknij",
-                                enterChatMsg: "Napisz wiadomość",
-                                activeParties: "Aktywne party",
-                                noActiveParties: "Brak aktywnych party ;(",
-                                playlist: "Playlista",
-                                pause: "PAUZA!",
-                                visit: "Odwiedź",
-                                exit: "OGARio by szymy: Czy na pewno chcesz opuścic grę?",
-                                blockWarn: "UWAGA! Popupy zostały zablokowane w ustawieniach.",
-                                unblockPopups: "Odblokuj tymczasowo",
-                                mass: "Masa",
-                                score: "Top",
-                                leaderboard: "Topka",
-                                user: "Użytkownik",
-                                userMuted: "Użytkownik %user% został wyciszony.",
-                                userUnmuted: "Wyłączono wyciszenie użytkownika %user%.",
-                                mute: "Wycisz",
-                                unmute: "Wyłącz wyciszenie",
-                                mutedUsers: "Wyciszeni użytkownicy",
-                                activeUsers: "Aktywni użytkownicy",
-                                showActiveUsers: "Pokaż aktywnych użytkowników",
-                                none: "Brak",
-                                sounds: "Dźwięki",
-                                page_back_button: "Wróć",
-                                page_create_party: "Stwórz party",
-                                page_join_party: "Dołącz",
-                                page_login_and_play: "Zaloguj",
-                                page_logout: "Wyloguj",
-                                page_menu_login_facebook: "Zaloguj z Facebook",
-                                page_menu_login_google: "Zaloguj z Google",
-                                page_menu_main_free_coins: "Darmowe Monety",
-                                page_menu_main_gifts: "Prezenty",
-                                page_menu_main_dailyquests: "Zadania",
-                                page_party_join_error: "Nie można dołączyć do tego party. Upewnij się, że token jest prawidłowy lub stwórz nowy.",
-                                page_play: "Graj",
-                                page_play_as_guest: "Graj jako gość",
-                                page_shop: "Sklep",
-                                page_spectate: "Obserwuj",
-                                page_stats: "Statystyki"
-                            },
-                            en: {
-                                start: "Home",
-                                settings: "Settings",
-                                restoreSettings: "Restore default settings",
-                                animationGroup: "Animation",
-                                zoomGroup: "Zoom",
-                                respGroup: "Respawn",
-                                namesGroup: "Names",
-                                massGroup: "Mass",
-                                skinsGroup: "Skins",
-                                foodGroup: "Food",
-                                transparencyGroup: "Transparency / colors",
-                                gridGroup: "Grid / sectors",
-                                miniMapGroup: "Minimap",
-                                helpersGroup: "Helpers",
-                                mouseGroup: "Mouse control",
-                                hudGroup: "HUD",
-                                chatGroup: "Chat",
-                                statsGroup: "Stats",
-                                extrasGroup: "Extras",
-                                noSkins: "No skins",
-                                noNames: "No names",
-                                noColors: "No colors",
-                                showMass: "Show mass",
-                                skipStats: "Skip stats after death",
-                                showQuest: "Show quest",
-                                autoZoom: "Auto zoom",
-                                animation: "Animation delay",
-                                zoomSpeedValue: "Zoom speed",
-                                quickResp: "Quick respawn (hotkey)",
-                                autoResp: "Auto respawn",
-                                autoHideCellsInfo: "Auto hide names and mass",
-                                autoHideNames: "Auto hide names",
-                                autoHideMass: "Auto hide mass",
-                                autoHideFood: "Auto hide food (mass)",
-                                autoHideFoodOnZoom: "Auto hide food (zoom)",
-                                optimizedNames: "Optimized names",
-                                hideMyName: "Hide my name",
-                                hideTeammatesNames: "Hide teammates names",
-                                optimizedMass: "Optimized mass (+/-2%)",
-                                shortMass: "Short mass (k)",
-                                virMassShots: "Virus shots",
-                                hideMyMass: "Hide my mass",
-                                hideEnemiesMass: "Hide enemies mass",
-                                vanillaSkins: "Vanilla skins",
-                                customSkins: "Custom skins",
-                                myTransparentSkin: "My transparent skin",
-                                myCustomColor: "My custom color",
-                                transparentCells: "Transparent cells",
-                                transparentViruses: "Transparent viruses",
-                                transparentSkins: "Transparent skins",
-                                showGrid: "Show grid",
-                                showBgSectors: "Show background sectors",
-                                showMapBorders: "Show map borders",
-                                showGhostCells: "Ghost cells",
-                                showMiniMap: "Show minimap",
-                                showMiniMapGrid: "Show minimap grid",
-                                showMiniMapGuides: "Show minimap guides",
-                                showMiniMapGhostCells: "Show ghost cells",
-                                oneColoredTeammates: "One-colored teammates",
-                                optimizedFood: "Optimized food",
-                                rainbowFood: "Rainbow food",
-                                oppColors: "Opponents colors",
-                                oppRings: "Opponents rings",
-                                virColors: "Viruses colors",
-                                splitRange: "Split range",
-                                virusesRange: "Viruses range",
-                                textStroke: "Names and mass stroke",
-                                namesStroke: "Names stroke",
-                                massStroke: "Mass stroke",
-                                cursorTracking: "Cursor tracking",
-                                teammatesInd: "Teammates indicators",
-                                mouseSplit: "LMB - Mouse split",
-                                mouseFeed: "RMB - Mouse feed",
-                                mouseInvert: "Invert mouse buttons",
-                                disableChat: "Disable chat",
-                                hideChat: "Hide chat",
-                                chatSounds: "Sound notifications",
-                                chatEmoticons: "Emoticons",
-                                showChatImages: "Show images on chat",
-                                showChatVideos: "Show videos on chat",
-                                showChatBox: "Chatbox instead of popups",
-                                messageSound: "Message notification sound",
-                                commandSound: "Command notification sound",
-                                showTop5: "Show team top 5",
-                                showTargeting: "Show targeting",
-                                showTime: "Show current time",
-                                showLbData: "Show leaderboard mass",
-                                normalLb: '"Leaderboard" header',
-                                centeredLb: "Centered leaderboard",
-                                fpsAtTop: "Game stats at the top",
-                                showStats: "Show game stats",
-                                showStatsMass: "Game stats: Mass",
-                                showStatsSTE: "Game stats: STE",
-                                showStatsN16: "Game stats: n/16",
-                                showStatsFPS: "Game stats: FPS",
-                                blockPopups: "Block popups (ads/shop/quest)",
-                                hotkeys: "Hotkeys",
-                                "hk-inst-assign": "To assign a hotkey click on the input field and press your chosen key.",
-                                "hk-inst-delete": "To delete a hotkey click on the input field and press the DELETE key.",
-                                "hk-inst-keys": "Possible key combinations with the CTRL and ALT keys.",
-                                "hk-feed": "Feed",
-                                "hk-macroFeed": "Macro feed",
-                                "hk-split": "Split",
-                                "hk-doubleSplit": "Double split",
-                                "hk-split16": "Split 16",
-                                "hk-pause": "Cell pause",
-                                "hk-showTop5": "Show/hide team top 5",
-                                "hk-showTime": "Show/hide current time",
-                                "hk-showSplitRange": "Show/hide split range",
-                                "hk-showSplitInd": "Show/hide split indicators",
-                                "hk-showTeammatesInd": "Show/hide teammates indicators",
-                                "hk-showOppColors": "Show/hide opponents colors",
-                                "hk-toggleSkins": "Toggle skins (custom/default)",
-                                "hk-showSkins": "Show/hide skins",
-                                "hk-transparentSkins": "Toggle transparent skins",
-                                "hk-showStats": "Show/hide game stats",
-                                "hk-toggleCells": "Toggle own cells (smallest/biggest)",
-                                "hk-showFood": "Show/hide food",
-                                "hk-showGrid": "Show/hide grid",
-                                "hk-showMiniMapGuides": "Show/hide minimap guides",
-                                "hk-hideChat": "Show/hide chat",
-                                "hk-showHUD": "Show/hide HUD",
-                                "hk-copyLb": "Copy leaderboard",
-                                "hk-showLb": "Show/hide leaderboard",
-                                "hk-toggleAutoZoom": "Toggle auto zoom",
-                                "hk-resetZoom": "Reset zoom",
-                                "hk-zoomLevel": "Zoom level",
-                                "hk-toggleDeath": "Toggle death location",
-                                "hk-clearChat": "Show chat history / Clear chat",
-                                "hk-showBgSectors": "Show/hide background sectors",
-                                "hk-hideBots": "Show/hide small bots",
-                                "hk-showNames": "Show/hide names",
-                                "hk-hideTeammatesNames": "Show/hide teammates names",
-                                "hk-showMass": "Show/hide mass",
-                                "hk-showMiniMap": "Show/hide minimap",
-                                "hk-chatMessage": "Enter chat message",
-                                "hk-quickResp": "Quick respawn",
-                                "hk-autoResp": "Toggle auto respawn",
-                                "hk-switchServerMode": "Switch server [public/private]",
-                                "hk-showTargeting": "Show/hide targeting panel",
-                                "hk-setTargeting": "Start/stop targeting (following)",
-                                "hk-cancelTargeting": "Cancel targeting",
-                                "hk-changeTarget": "Change target",
-                                "hk-privateMiniMap": "Show target on the minimap",
-                                "hk-showQuest": "Show/hide quest",
-                                commands: "Commands",
-                                comm1: "Feed me!",
-                                comm2: "Split into me!",
-                                comm3: "Need backup at %currentSector%!",
-                                comm4: "Enemy spotted at %currentSector%!",
-                                comm5: "Need a teammate!",
-                                comm6: "Tank the virus!",
-                                comm7: "Eat the virus!",
-                                comm8: "Let's bait!",
-                                comm9: "Fake tricksplit!",
-                                comm0: "Fuck!",
-                                comm10: "Tricksplit!",
-                                comm11: "Left!",
-                                comm12: "Up!",
-                                comm13: "Right!",
-                                comm14: "Bottom!",
-                                saveComm: "Save commands",
-                                theme: "Theme",
-                                restoreThemeSettings: "Restore theme default settings",
-                                basicTheming: "Basic theming",
-                                themePreset: "Theme preset",
-                                themeType: "Theme type",
-                                darkTheme: "Dark theme",
-                                lightTheme: "Light theme",
-                                mainColor: "Main color",
-                                bgColor: "Background",
-                                bordersColor: "Map borders",
-                                gridColor: "Grid",
-                                sectorsColor: "Sectors font",
-                                namesColor: "Names",
-                                namesStrokeColor: "Names stroke",
-                                massColor: "Mass",
-                                massStrokeColor: "Mass stroke",
-                                virusColor: "Virus",
-                                virusStrokeColor: "Virus stroke",
-                                foodColor: "Food",
-                                namesFont: "Names font",
-                                massFont: "Mass font",
-                                sectorsFont: "Sectors font",
-                                namesScale: "Names scale",
-                                massScale: "Mass scale",
-                                virMassScale: "Virus mass scale",
-                                strokeScale: "Text stroke scale",
-                                foodSize: "Food size",
-                                bordersWidth: "Map borders width",
-                                sectorsWidth: "Sectors grid width",
-                                sectorsFontSize: "Sectors font size",
-                                cellsAlpha: "Cells transparency",
-                                skinsAlpha: "Skins transparency",
-                                virusAlpha: "Virus transparency",
-                                textAlpha: "Names & mass transparency",
-                                virusStrokeSize: "Virus stroke size",
-                                teammatesIndColor: "Teammate indicator",
-                                cursorTrackingColor: "Cursor tracking",
-                                splitRangeColor: "Split range",
-                                safeAreaColor: "Safe area",
-                                dangerAreaColor: "Danger area",
-                                ghostCellsColor: "Ghost cells",
-                                ghostCellsAlpha: "Ghost cells transparency",
-                                menuTheming: "Menu",
-                                menuPreset: "Menu theme",
-                                menuMainColor: "Main color",
-                                menuBtnTextColor: "Button text",
-                                menuPanelColor: "Panel",
-                                menuPanelColor2: "Panel (2)",
-                                menuTextColor: "Panel text",
-                                menuTextColor2: "Panel text (2)",
-                                btn1Color: "Button #1",
-                                btn1Color2: "Button #1 (2)",
-                                btn2Color: "Button #2",
-                                btn2Color2: "Button #2 (2)",
-                                btn3Color: "Button #3",
-                                btn3Color2: "Button #3 (2)",
-                                btn4Color: "Button #4",
-                                btn4Color2: "Button #4 (2)",
-                                menuBg: "Panel background image",
-                                menuOpacity: "Transparency",
-                                hudTheming: "HUD",
-                                hudMainColor: "Main color",
-                                hudColor: "Background",
-                                hudTextColor: "Text",
-                                statsHudColor: "Stats",
-                                timeHudColor: "Time",
-                                top5MassColor: "Mass",
-                                lbMeColor: "Leaderboard - me",
-                                lbTeammateColor: "Leaderboard - teammate",
-                                hudFont: "HUD font",
-                                hudScale: "HUD scale",
-                                chatTheming: "Chat",
-                                messageColor: "Message background",
-                                messageTextColor: "Message text",
-                                messageTimeColor: "Message time",
-                                messageNickColor: "Message nick",
-                                commandsColor: "Command background",
-                                commandsTextColor: "Command text",
-                                commandsTimeColor: "Command time",
-                                commandsNickColor: "Command nick",
-                                chatBoxColor: "Chatbox color",
-                                chatScale: "Chat scale",
-                                miniMapTheming: "Minimap",
-                                miniMapSectorsColor: "Sectors",
-                                miniMapSectorColor: "Current sector",
-                                miniMapGuidesColor: "Guides",
-                                miniMapNickColor: "Nick",
-                                miniMapNickStrokeColor: "Nick stroke",
-                                miniMapMyCellColor: "My cell",
-                                miniMapMyCellStrokeColor: "My cell stroke",
-                                miniMapTeammatesColor: "Teammates",
-                                miniMapDeathLocationColor: "Death location",
-                                miniMapFont: "Minimap font",
-                                miniMapNickFont: "Nick font",
-                                miniMapWidth: "Minimap width",
-                                miniMapSectorsOpacity: "Sectors transparency",
-                                miniMapNickSize: "Nick size",
-                                miniMapNickStrokeSize: "Nick stroke size",
-                                miniMapMyCellSize: "My cell size",
-                                miniMapMyCellStrokeSize: "My cell stroke size",
-                                miniMapTeammatesSize: "Teammates size",
-                                miniMapGhostCellsColor: "Ghost cells",
-                                miniMapGhostCellsAlpha: "Ghost cells transparency",
-                                imagesTheming: "Graphics / cursors",
-                                customBackground: "Custom background image",
-                                customCursor: "Custom cursor image",
-                                hideChatMsgA: "Chat is visible!",
-                                hideChatMsgB: "Chat is hidden!",
-                                showSkinsMsgA: "Skins are visible!",
-                                showSkinsMsgB: "Skins are hidden!",
-                                hideSmallBotsMsgA: "Small bots are visible!",
-                                hideSmallBotsMsgB: "Small bots are hidden!",
-                                autoRespMsgA: "Auto respawn is on!",
-                                autoRespMsgB: "Auto respawn is off!",
-                                autoZoomMsgA: "Auto zoom is on!",
-                                autoZoomMsgB: "Auto zoom is off!",
-                                targetNotSet: "Target not set",
-                                targetDead: "Dead",
-                                targetDistance: "Distance",
-                                targetMass: "Mass altogether",
-                                totalPartyPlayers: "Active players",
-                                totalPartyMass: "Total mass",
-                                exportImport: "Export / import settings",
-                                exportSettings: "Export settings",
-                                exportInfo: "To export selected settings copy the code below and save it to a text file encoded in Unicode.",
-                                importSettings: "Import settings",
-                                importInfo: 'To import selected settings paste an exported code below and press the "Import settings" button.',
-                                profile: "Profile",
-                                profiles: "Profiles",
-                                skins: "Skins",
-                                moreSkins: "Add skins",
-                                thanks: "Thanks to Awesome!",
-                                saveSett: "Save settings",
-                                saved: "Saved!",
-                                resetSett: "Reset to default",
-                                close: "Close",
-                                enterChatMsg: "Enter chat message",
-                                activeParties: "Active parties",
-                                noActiveParties: "No active parties ;(",
-                                playlist: "Playlist",
-                                pause: "PAUSE!",
-                                visit: "Visit",
-                                exit: "OGARio by szymy: Are you sure you want to quit the game?",
-                                blockWarn: "WARNING! Popups are blocked in the settings.",
-                                unblockPopups: "Temporary unblock",
-                                mass: "Mass",
-                                score: "Score",
-                                leaderboard: "Leaderboard",
-                                user: "User",
-                                userMuted: "User %user% has been muted.",
-                                userUnmuted: "User %user% has been unmuted.",
-                                mute: "Mute",
-                                unmute: "Unmute",
-                                mutedUsers: "Muted users",
-                                activeUsers: "Active users",
-                                showActiveUsers: "Show active users",
-                                none: "None",
-                                sounds: "Sounds",
-                                page_menu_main_free_coins: "Free Coins",
-                                page_menu_main_gifts: "Gifts",
-                                page_menu_main_dailyquests: "Daily Quest",
-                                page_shop: "Shop"
-                            }
-                        },
+            n = {
+                'pl': {
+                    'start': 'Start',
+                    'settings': `Ustawienia`,
+                    'restoreSettings': `Przywróc ustawienia domyślne`,
+                    'animationGroup': 'Animacja',
+                    'zoomGroup': 'Zoom',
+                    'respGroup': 'Odrodzenie',
+                    'namesGroup': `Nazwy`,
+                    'massGroup': `Masa`,
+                    'skinsGroup': `Skiny`,
+                    'foodGroup': `Pokarm`,
+                    'transparencyGroup': `Przezroczystość / kolory`,
+                    'gridGroup': `Siatka / sektory`,
+                    'miniMapGroup': `Minimapa`,
+                    'helpersGroup': `Wspomagacze`,
+                    'mouseGroup': `Sterowanie myszką`,
+                    'hudGroup': `HUD`,
+                    'chatGroup': `Czat`,
+                    'statsGroup': `Statystyki`,
+                    'extrasGroup': `Dodatkowe`,
+                    'noSkins': `Wyłącz skiny`,
+                    'noNames': 'Wyłącz nazwy',
+                    'noColors': 'Wyłącz kolory',
+                    'showMass': `Pokaż masę`,
+                    'skipStats': 'Pomiń statystyki po śmierci',
+                    'showQuest': `Pokaż zadanie (quest)`,
+                    'autoZoom': `Auto zoom`,
+                    'animation': `Opóźnienie animacji`,
+                    'zoomSpeedValue': `Szybkość zoomu`,
+                    'quickResp': `Szybkie odrodzenie (klawisz)`,
+                    'autoResp': `Auto odrodzenie`,
+                    'autoHideCellsInfo': `Autoukrywanie nazw i masy`,
+                    'autoHideNames': 'Autoukrywanie nazw',
+                    'autoHideMass': `Autoukrywanie masy`,
+                    'autoHideFood': `Autoukrywanie pokarmu (masa)`,
+                    'autoHideFoodOnZoom': `Autoukrywanie pokarmu (zoom)`,
+                    'optimizedNames': `Zoptymalizowane nazwy`,
+                    'hideMyName': 'Ukryj własną nazwę',
+                    'hideTeammatesNames': 'Ukryj nazwy graczy teamu',
+                    'optimizedMass': 'Zoptymalizowana masa (+/-2%)',
+                    'shortMass': `Skrócona masa (k)`,
+                    'virMassShots': `Licznik strzałów (wirusy)`,
+                    'hideMyMass': `Ukryj własną masę`,
+                    'hideEnemiesMass': 'Ukryj masę przeciwników',
+                    'vanillaSkins': `Podstawowe skiny`,
+                    'customSkins': `Własne skiny`,
+                    'myTransparentSkin': `Mój przezroczysty skin`,
+                    'myCustomColor': 'Mój własny kolor',
+                    'transparentCells': `Przezroczyste kulki`,
+                    'transparentViruses': `Przezroczyste wirusy`,
+                    'transparentSkins': `Przezroczyste skiny`,
+                    'showGrid': `Siatka`,
+                    'showBgSectors': `Sektory w tle`,
+                    'showMapBorders': `Granice mapy`,
+                    'showGhostCells': `Duchy kulek`,
+                    'showMiniMap': `Pokaż minimapę`,
+                    'showMiniMapGrid': `Pokaż siatkę minimapy`,
+                    'showMiniMapGuides': `Pokaż prowadnice na minimapie`,
+                    'showMiniMapGhostCells': `Pokaż duchy kulek na minimapie`,
+                    'oneColoredTeammates': `Jednokolorowi gracze`,
+                    'optimizedFood': 'Zoptymalizowany pokarm',
+                    'rainbowFood': `Kolorowy pokarm`,
+                    'oppColors': `Kolory przeciwników`,
+                    'oppRings': 'Ringi przeciwników',
+                    'virColors': 'Kolory wirusów',
+                    'splitRange': `Zasięg podziału`,
+                    'virusesRange': 'Zasięg wirusów',
+                    'textStroke': 'Obwódki nazw i masy',
+                    'namesStroke': `Obwódki nazw`,
+                    'massStroke': `Obwódki masy`,
+                    'cursorTracking': `Śledzenie kursora`,
+                    'teammatesInd': `Wskaźniki graczy teamu`,
+                    'mouseSplit': `LPM - Split myszką`,
+                    'mouseFeed': `PPM - Feed myszką`,
+                    'mouseInvert': `Odwróć klawisze myszki`,
+                    'disableChat': `Wyłącz czat`,
+                    'hideChat': `Ukryj czat`,
+                    'chatSounds': 'Powiadomienia dźwiękowe',
+                    'chatEmoticons': `Emotikony`,
+                    'showChatImages': `Pokaż obrazki na czacie`,
+                    'showChatVideos': `Pokaż filmiki na czacie`,
+                    'showChatBox': `Czatbox zamiast wyskakujących wiadomości`,
+                    'messageSound': 'Dźwięk powiadomienia o wiadomości',
+                    'commandSound': 'Dźwięk powiadomienia o komendzie',
+                    'showTop5': `Pokaż top 5 teamu`,
+                    'showTargeting': `Pokaż namierzanie`,
+                    'showTime': `Pokaż aktualny czas`,
+                    'showLbData': `Pokaż masę w topce`,
+                    'normalLb': `Nagłówek \"Topka\"`,
+                    'centeredLb': `Wyśrodkowana topka`,
+                    'fpsAtTop': 'Statystyki na górze',
+                    'showStats': `Pokaż statystyki`,
+                    'showStatsMass': `Statystyki: Masa`,
+                    'showStatsSTE': `Statystyki: STE`,
+                    'showStatsN16': `Statystyki: n/16`,
+                    'showStatsFPS': `Statystyki: FPS`,
+                    'blockPopups': `Blokuj popupy (reklamy/sklep/zadanie)`,
+                    'hotkeys': `Skróty klawiszowe`,
+                    'hk-inst-assign': `Aby ustawić skrót klawiszowy kliknij na polu skrótu i naciśnij wybrany klawisz.`,
+                    'hk-inst-delete': `Aby usunąć skrót klawiszowy kliknij na polu skrótu i naciśnij klawisz DELETE.`,
+                    'hk-inst-keys': `Możliwe kombinacje skrótów klawiszowych z użyciem klawiszy CTRL oraz ALT.`,
+                    'hk-feed': 'Feed',
+                    'hk-macroFeed': `Szybki feed`,
+                    'hk-split': `Podział`,
+                    'hk-doubleSplit': 'Podwójny podział',
+                    'hk-split16': `Podział na 16`,
+                    'hk-pause': `Pauza kulki`,
+                    'hk-showTop5': `Pokaż/ukryj top 5 teamu`,
+                    'hk-showTime': `Pokaż/ukryj aktualny czas`,
+                    'hk-showSplitRange': `Pokaż/ukryj zasięg podziału`,
+                    'hk-showSplitInd': `Pokaż/ukryj zasięg podziału z ringami`,
+                    'hk-showTeammatesInd': `Pokaż/ukryj wskaźniki graczy teamu`,
+                    'hk-showOppColors': `Pokaż/ukryj kolory przeciwników`,
+                    'hk-toggleSkins': `Przełącz skiny (własne/standardowe)`,
+                    'hk-showSkins': 'Pokaż/ukryj skiny',
+                    'hk-transparentSkins': 'Włącz/wyłącz przezroczyste skiny',
+                    'hk-showStats': 'Pokaż/ukryj statystyki gry',
+                    'hk-toggleCells': `Przełącz kulkę (najmniejsza/największa)`,
+                    'hk-showFood': `Pokaż/ukryj pokarm`,
+                    'hk-showGrid': `Pokaż/ukryj siatkę`,
+                    'hk-showMiniMapGuides': `Pokaż/ukryj prowadnice na minimapie`,
+                    'hk-hideChat': `Pokaż/ukryj czat`,
+                    'hk-showHUD': `Pokaż/ukryj HUD`,
+                    'hk-copyLb': 'Kopiuj topkę',
+                    'hk-showLb': `Pokaż/ukryj topkę`,
+                    'hk-toggleAutoZoom': `Włącz/wyłącz auto zoom`,
+                    'hk-resetZoom': `Reset zoomu`,
+                    'hk-zoomLevel': `Zoom - poziom`,
+                    'hk-toggleDeath': `Przełącz miejsce śmierci`,
+                    'hk-clearChat': `Pokaż historię czatu / Czyść czat`,
+                    'hk-showBgSectors': 'Pokaż/ukryj sektory w tle',
+                    'hk-hideBots': `Pokaż/ukryj małe boty`,
+                    'hk-showNames': `Pokaż/ukryj nazwy`,
+                    'hk-hideTeammatesNames': `Pokaż/ukryj nazwy graczy teamu`,
+                    'hk-showMass': `Pokaż/ukryj masę`,
+                    'hk-showMiniMap': `Pokaż/ukryj minimapę`,
+                    'hk-chatMessage': `Napisz wiadomość na czacie`,
+                    'hk-quickResp': `Szybkie odrodzenie (respawn)`,
+                    'hk-autoResp': `Włącz/wyłacz auto odrodzenie`,
+                    'hk-switchServerMode': `Przełącz serwer [publiczny/prywatny]`,
+                    'hk-showTargeting': `Pokaż/ukryj panel namierzania`,
+                    'hk-setTargeting': `Włącz/wyłącz namierzanie (śledzenie)`,
+                    'hk-cancelTargeting': 'Zatrzymaj namierzanie',
+                    'hk-changeTarget': `Zmień cel`,
+                    'hk-privateMiniMap': `Pokaż cel na minimapie`,
+                    'hk-showQuest': `Pokaż/ukryj zadanie`,
+                    'commands': 'Komendy',
+                    'comm1': `Feeduj!`,
+                    'comm2': 'Dziel się!',
+                    'comm3': `Pomocy na %currentSector%!`,
+                    'comm4': `Wróg na %currentSector%!`,
+                    'comm5': `Zabij pomocnika!`,
+                    'comm6': 'Strzel z wirusa!',
+                    'comm7': `Zjedz wirusa!`,
+                    'comm8': `Zjebałem, wybacz.`,
+                    'comm9': `Ja pierdolę...`,
+                    'comm0': `Kurwa mać!`,
+                    'comm10': 'Trick!',
+                    'comm11': `Lewo!`,
+                    'comm12': `Góra!`,
+                    'comm13': `Prawo!`,
+                    'comm14': `Dół!`,
+                    'saveComm': `Zapisz komendy`,
+                    'theme': 'Wygląd',
+                    'restoreThemeSettings': `Przywróc ustawienia domyślne wyglądu`,
+                    'basicTheming': 'Podstawowy',
+                    'themePreset': `Motyw`,
+                    'themeType': 'Typ motywu',
+                    'darkTheme': `Ciemny motyw`,
+                    'lightTheme': `Jasny motyw`,
+                    'mainColor': 'Kolor główny',
+                    'bgColor': `Tło`,
+                    'bordersColor': `Granice mapy`,
+                    'gridColor': `Siatka`,
+                    'sectorsColor': 'Czcionka sektorów',
+                    'namesColor': `Nazwy`,
+                    'namesStrokeColor': `Obwódki nazw`,
+                    'massColor': `Masa`,
+                    'massStrokeColor': `Obwódki masy`,
+                    'virusColor': 'Wirusy',
+                    'virusStrokeColor': `Obwódki wirusów`,
+                    'mVirusColor': 'Mothercell',
+                    'mVirusStrokeColor': 'Mothercell stroke',
+                    'foodColor': `Pokarm`,
+                    'namesFont': `Czcionka nazw`,
+                    'massFont': `Czcionka masy`,
+                    'sectorsFont': 'Czcionka sektorów',
+                    'namesScale': `Skala nazw`,
+                    'massScale': `Skala masy`,
+                    'virMassScale': `Skala masy wirusów`,
+                    'strokeScale': `Skala obwódek tekstu`,
+                    'foodSize': `Wielkość pokarmu`,
+                    'bordersWidth': `Grubość granic mapy`,
+                    'sectorsWidth': `Grubość siatki sektorów`,
+                    'sectorsFontSize': 'Rozmiar czcionki sektorów',
+                    'cellsAlpha': 'Przezroczystość kulek',
+                    'skinsAlpha': `Przezroczystość skinów`,
+                    'virusAlpha': `Przezroczystość wirusów`,
+                    'textAlpha': `Przezroczystość nazw i masy`,
+                    'virusStrokeSize': `Grubość obwódki wirusów`,
+                    'teammatesIndColor': 'Wskaźnik gracza',
+                    'cursorTrackingColor': `Śledzenie kursora`,
+                    'splitRangeColor': 'Zasięg podziału',
+                    'safeAreaColor': `Bezpieczna strefa`,
+                    'dangerAreaColor': `Strefa zagrożenia`,
+                    'ghostCellsColor': `Duchy kulek`,
+                    'ghostCellsAlpha': `Przezroczystość duchów kulek`,
+                    'menuTheming': 'Menu',
+                    'menuPreset': `Motyw menu`,
+                    'menuMainColor': `Kolor główny`,
+                    'menuBtnTextColor': `Tekst przycisku`,
+                    'menuPanelColor': `Panel`,
+                    'menuPanelColor2': 'Panel (2)',
+                    'menuTextColor': `Tekst panelu`,
+                    'menuTextColor2': `Tekst panelu (2)`,
+                    'btn1Color': 'Przycisk #1',
+                    'btn1Color2': `Przycisk #1 (2)`,
+                    'btn2Color': `Przycisk #2`,
+                    'btn2Color2': `Przycisk #2 (2)`,
+                    'btn3Color': `Przycisk #3`,
+                    'btn3Color2': `Przycisk #3 (2)`,
+                    'btn4Color': `Przycisk #4`,
+                    'btn4Color2': `Przycisk #4 (2)`,
+                    'menuBg': `Grafika tła panelu`,
+                    'menuOpacity': 'Przezroczystość',
+                    'hudTheming': `HUD`,
+                    'hudMainColor': `Kolor główny`,
+                    'hudColor': `Tło`,
+                    'hudTextColor': 'Tekst',
+                    'statsHudColor': `Statystyki`,
+                    'timeHudColor': `Czas`,
+                    'top5MassColor': 'Masa',
+                    'lbMeColor': `Topka - ja`,
+                    'lbTeammateColor': 'Topka - team',
+                    'hudFont': 'Czcionka HUD',
+                    'hudScale': 'Skala HUD',
+                    'chatTheming': 'Czat',
+                    'messageColor': `Tło wiadomości`,
+                    'messageTextColor': `Tekst wiadomości`,
+                    'messageTimeColor': `Czas wiadomości`,
+                    'messageNickColor': `Nick wiadomości`,
+                    'commandsColor': 'Tło komendy',
+                    'commandsTextColor': `Tekst komendy`,
+                    'commandsTimeColor': 'Czas komendy',
+                    'commandsNickColor': `Nick komendy`,
+                    'chatBoxColor': `Tło czatboxu`,
+                    'chatScale': `Skala czatu`,
+                    'miniMapTheming': `Minimapa`,
+                    'miniMapSectorsColor': `Sektory`,
+                    'miniMapSectorColor': `Aktualny sektor`,
+                    'miniMapGuidesColor': `Prowadnice`,
+                    'miniMapNickColor': `Nick`,
+                    'miniMapNickStrokeColor': `Obwódka nicku`,
+                    'miniMapMyCellColor': `Moja kulka`,
+                    'miniMapMyCellStrokeColor': `Obwódka mojej kulki`,
+                    'miniMapTeammatesColor': `Gracze`,
+                    'miniMapDeathLocationColor': 'Miejsce śmierci',
+                    'miniMapFont': `Czcionka minimapy`,
+                    'miniMapNickFont': `Czcionka nicku`,
+                    'miniMapWidth': `Szerokość minimapy`,
+                    'miniMapSectorsOpacity': `Przezroczystość sektorów`,
+                    'miniMapNickSize': `Rozmiar nicku`,
+                    'miniMapNickStrokeSize': 'Grubość obwódki nicku',
+                    'miniMapMyCellSize': `Wielkość mojej kulki`,
+                    'miniMapMyCellStrokeSize': `Grubość obwódki mojej kulki`,
+                    'miniMapTeammatesSize': `Wielkość graczy`,
+                    'miniMapGhostCellsColor': `Duchy kulek`,
+                    'miniMapGhostCellsAlpha': `Przezroczystość duchów kulek`,
+                    'imagesTheming': `Grafika / kursory`,
+                    'customBackground': 'Grafika tła',
+                    'customCursor': 'Grafika kursora',
+                    'hideChatMsgA': `Czat został włączony!`,
+                    'hideChatMsgB': `Czat został ukryty!`,
+                    'showSkinsMsgA': `Skiny zostały włączone!`,
+                    'showSkinsMsgB': `Skiny zostały ukryte!`,
+                    'hideSmallBotsMsgA': `Małe boty stały się widoczne!`,
+                    'hideSmallBotsMsgB': `Małe boty zostały ukryte!`,
+                    'autoRespMsgA': `Auto odrodzenie zostało włączone!`,
+                    'autoRespMsgB': `Auto odrodzenie zostało wyłączone!`,
+                    'autoZoomMsgA': 'Auto zoom został włączony!',
+                    'autoZoomMsgB': `Auto zoom został wyłączony!`,
+                    'targetNotSet': `Brak celu`,
+                    'targetDead': `Nie żyje`,
+                    'targetDistance': `Dystans`,
+                    'targetMass': `Masa razem`,
+                    'totalPartyPlayers': `Aktywnych graczy`,
+                    'totalPartyMass': `Łącznie masy`,
+                    'exportImport': `Eksport / import ustawień`,
+                    'exportSettings': `Eksportuj ustawienia`,
+                    'exportInfo': `Aby wyeksportować wybrane ustawienia skopiuj poniższy kod i zapisz go w pliku tekstowym z kodowaniem Unicode.`,
+                    'importSettings': 'Importuj ustawienia',
+                    'importInfo': `Aby zaimportować wybrane ustawienia wklej poniżej wyeksportowany wcześniej kod i naciśnij przycisk \"Importuj ustawienia\".`,
+                    'profile': `Profil`,
+                    'profiles': `Profile`,
+                    'skins': `Skiny`,
+                    'moreSkins': 'Dodaj skiny',
+                    'thanks': `Dzięki Awesome!`,
+                    'saveSett': `Zapisz ustawienia`,
+                    'saved': `Zapisano!`,
+                    'resetSett': `Resetuj ustawienia`,
+                    'close': `Zamknij`,
+                    'enterChatMsg': `Napisz wiadomość`,
+                    'activeParties': `Aktywne party`,
+                    'noActiveParties': `Brak aktywnych party ;(`,
+                    'playlist': `Playlista`,
+                    'pause': 'PAUZA!',
+                    'visit': `Odwiedź`,
+                    'exit': 'Legend mod Express: Czy na pewno chcesz opuścic grę?',
+                    'blockWarn': `UWAGA! Popupy zostały zablokowane w ustawieniach.`,
+                    'unblockPopups': `Odblokuj tymczasowo`,
+                    'mass': `Masa`,
+                    'score': 'Top',
+                    'leaderboard': `Topka`,
+                    'user': `Użytkownik`,
+                    'userMuted': `Użytkownik %user% został wyciszony.`,
+                    'userUnmuted': `Wyłączono wyciszenie użytkownika %user%.`,
+                    'mute': `Wycisz`,
+                    'unmute': `Wyłącz wyciszenie`,
+                    'mutedUsers': 'Wyciszeni użytkownicy',
+                    'activeUsers': 'Aktywni użytkownicy',
+                    'showActiveUsers': `Pokaż aktywnych użytkowników`,
+                    'none': `Brak`,
+                    'sounds': `Dźwięki`,
+                    'page_back_button': `Wróć`,
+                    'page_create_party': `Stwórz party`,
+                    'page_join_party': 'Dołącz',
+                    'page_login_and_play': `Zaloguj`,
+                    'page_logout': `Wyloguj`,
+                    'page_menu_login_facebook': `Zaloguj z Facebook`,
+                    'page_menu_login_google': `Zaloguj z Google`,
+                    'page_menu_main_free_coins': `Darmowe Monety`,
+                    'page_menu_main_gifts': 'Prezenty',
+                    'page_menu_main_dailyquests': 'Zadania',
+                    'page_party_join_error': 'Nie można dołączyć do tego party. Upewnij się, że token jest prawidłowy lub stwórz nowy.',
+                    'page_play': `Graj`,
+                    'page_play_as_guest': `Graj jako gość`,
+                    'page_shop': `Sklep`,
+                    'page_spectate': `Obserwuj`,
+                    'page_stats': 'Statystyki'
+                },
+                'en': {
+                    'start': `Home`,
+                    'settings': `Settings`,
+                    'restoreSettings': 'Restore default settings',
+                    'animationGroup': 'Animation',
+                    'zoomGroup': `Zoom`,
+                    'respGroup': `Respawn`,
+                    'namesGroup': `Names`,
+                    'massGroup': `Mass`,
+                    'skinsGroup': 'Skins',
+                    'foodGroup': `Food`,
+                    'transparencyGroup': `Transparency / colors`,
+                    'gridGroup': 'Grid / sectors',
+                    'miniMapGroup': `Minimap`,
+                    'helpersGroup': `Helpers`,
+                    'mouseGroup': `Mouse control`,
+                    'hudGroup': `HUD`,
+                    'chatGroup': `Chat`,
+                    'statsGroup': `Stats`,
+                    'extrasGroup': `Extras`,
+                    'noSkins': 'No skins',
+                    'noNames': `No names`,
+                    'noColors': `No colors`,
+                    'showMass': 'Show mass',
+                    'skipStats': `Skip stats after death`,
+                    'showQuest': `Show quest`,
+                    'autoZoom': `Auto zoom`,
+                    'animation': 'Animation delay',
+                    'zoomSpeedValue': 'Zoom speed',
+                    'quickResp': `Quick respawn (hotkey)`,
+                    'autoResp': 'Auto respawn',
+                    'autoHideCellsInfo': `Auto hide names and mass`,
+                    'autoHideNames': `Auto hide names`,
+                    'autoHideMass': `Auto hide mass`,
+                    'autoHideFood': `Auto hide food (mass)`,
+                    'autoHideFoodOnZoom': 'Auto hide food (zoom)',
+                    'optimizedNames': `Optimized names`,
+                    'hideMyName': `Hide my name`,
+                    'hideTeammatesNames': `Hide teammates names`,
+                    'optimizedMass': `Optimized mass (+/-2%)`,
+                    'shortMass': `Short mass (k)`,
+                    'virMassShots': 'Virus shots',
+                    'hideMyMass': `Hide my mass`,
+                    'hideEnemiesMass': 'Hide enemies mass',
+                    'vanillaSkins': `Vanilla skins`,
+                    'customSkins': `Custom skins`,
+                    'myTransparentSkin': `My transparent skin`,
+                    'myCustomColor': `My custom color`,
+                    'transparentCells': `Transparent cells`,
+                    'transparentViruses': `Transparent viruses`,
+                    'transparentSkins': `Transparent skins`,
+                    'showGrid': `Show grid`,
+                    'showBgSectors': `Show background sectors`,
+                    'showMapBorders': `Show map borders`,
+                    'showGhostCells': 'Ghost cells',
+                    'showMiniMap': `Show minimap`,
+                    'showMiniMapGrid': `Show minimap grid`,
+                    'showMiniMapGuides': `Show minimap guides`,
+                    'showMiniMapGhostCells': `Show ghost cells`,
+                    'oneColoredTeammates': 'One-colored teammates',
+                    'optimizedFood': `Optimized food`,
+                    'rainbowFood': 'Rainbow food',
+                    'oppColors': `Opponents colors`,
+                    'oppRings': 'Opponents rings',
+                    'virColors': `Viruses colors`,
+                    'splitRange': 'Split range',
+                    'virusesRange': `Viruses range`,
+                    'textStroke': `Names and mass stroke`,
+                    'namesStroke': `Names stroke`,
+                    'massStroke': `Mass stroke`,
+                    'cursorTracking': `Cursor tracking`,
+                    'teammatesInd': `Teammates indicators`,
+                    'mouseSplit': `LMB - Mouse split`,
+                    'mouseFeed': `RMB - Mouse feed`,
+                    'mouseInvert': `Invert mouse buttons`,
+                    'disableChat': 'Disable chat',
+                    'hideChat': `Hide chat`,
+                    'chatSounds': `Sound notifications`,
+                    'chatEmoticons': `Emoticons`,
+                    'showChatImages': `Show images on chat`,
+                    'showChatVideos': `Show videos on chat`,
+                    'showChatBox': `Chatbox instead of popups`,
+                    'messageSound': `Message notification sound`,
+                    'commandSound': `Command notification sound`,
+                    'showTop5': `Show team top 5`,
+                    'showTargeting': `Show targeting`,
+                    'showTime': `Show current time`,
+                    'showLbData': `Show leaderboard mass`,
+                    'normalLb': `\"Leaderboard\" header`,
+                    'centeredLb': `Centered leaderboard`,
+                    'fpsAtTop': `Game stats at the top`,
+                    'showStats': `Show game stats`,
+                    'showStatsMass': `Game stats: Mass`,
+                    'showStatsSTE': `Game stats: STE`,
+                    'showStatsN16': `Game stats: n/16`,
+                    'showStatsFPS': `Game stats: FPS`,
+                    'blockPopups': `Block popups (ads/shop/quest)`,
+                    'hotkeys': `Hotkeys`,
+                    'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
+                    'hk-inst-delete': 'To delete a hotkey click on the input field and press the DELETE key.',
+                    'hk-inst-keys': 'Possible key combinations with the CTRL and ALT keys.',
+                    'hk-feed': `Feed`,
+                    'hk-macroFeed': 'Macro feed',
+                    'hk-split': 'Split',
+                    'hk-doubleSplit': 'Double split',
+                    'hk-split16': `Split 16`,
+                    'hk-pause': `Cell pause`,
+                    'hk-showTop5': `Show/hide team top 5`,
+                    'hk-showTime': 'Show/hide current time',
+                    'hk-showSplitRange': `Show/hide split range`,
+                    'hk-showSplitInd': `Show/hide split indicators`,
+                    'hk-showTeammatesInd': `Show/hide teammates indicators`,
+                    'hk-showOppColors': `Show/hide opponents colors`,
+                    'hk-toggleSkins': `Toggle skins (custom/default)`,
+                    'hk-showSkins': `Show/hide skins`,
+                    'hk-transparentSkins': `Toggle transparent skins`,
+                    'hk-showStats': `Show/hide game stats`,
+                    'hk-toggleCells': `Toggle own cells (smallest/biggest)`,
+                    'hk-showFood': `Show/hide food`,
+                    'hk-showGrid': 'Show/hide grid',
+                    'hk-showMiniMapGuides': `Show/hide minimap guides`,
+                    'hk-hideChat': `Show/hide chat`,
+                    'hk-showHUD': `Show/hide HUD`,
+                    'hk-copyLb': `Copy leaderboard`,
+                    'hk-showLb': 'Show/hide leaderboard',
+                    'hk-toggleAutoZoom': `Toggle auto zoom`,
+                    'hk-resetZoom': `Reset zoom`,
+                    'hk-zoomLevel': `Zoom level`,
+                    'hk-toggleDeath': `Toggle death location`,
+                    'hk-clearChat': 'Show chat history / Clear chat',
+                    'hk-showBgSectors': `Show/hide background sectors`,
+                    'hk-hideBots': `Show/hide small bots`,
+                    'hk-showNames': `Show/hide names`,
+                    'hk-hideTeammatesNames': `Show/hide teammates names`,
+                    'hk-showMass': `Show/hide mass`,
+                    'hk-showMiniMap': `Show/hide minimap`,
+                    'hk-chatMessage': `Enter chat message`,
+                    'hk-quickResp': `Quick respawn`,
+                    'hk-autoResp': `Toggle auto respawn`,
+                    'hk-switchServerMode': `Switch server [public/private]`,
+                    'hk-showTargeting': 'Show/hide targeting panel',
+                    'hk-setTargeting': 'Start/stop targeting (following)',
+                    'hk-cancelTargeting': 'Cancel targeting',
+                    'hk-changeTarget': `Change target`,
+                    'hk-privateMiniMap': `Show target on the minimap`,
+                    'hk-showQuest': `Show/hide quest`,
+                    'commands': `Commands`,
+                    'comm1': 'Feed me!',
+                    'comm2': `Split into me!`,
+                    'comm3': `Need backup at %currentSector%!`,
+                    'comm4': `Enemy spotted at %currentSector%!`,
+                    'comm5': `Need a teammate!`,
+                    'comm6': `Tank the virus!`,
+                    'comm7': `Eat the virus!`,
+                    'comm8': `Let\'s bait!`,
+                    'comm9': 'Fake tricksplit!',
+                    'comm0': `Fuck!`,
+                    'comm10': `Tricksplit!`,
+                    'comm11': `Left!`,
+                    'comm12': `Up!`,
+                    'comm13': `Right!`,
+                    'comm14': `Bottom!`,
+                    'saveComm': `Save commands`,
+                    'theme': `Theme`,
+                    'restoreThemeSettings': 'Restore theme default settings',
+                    'basicTheming': `Basic theming`,
+                    'themePreset': `Theme preset`,
+                    'themeType': `Theme type`,
+                    'darkTheme': `Dark theme`,
+                    'lightTheme': `Light theme`,
+                    'mainColor': `Main color`,
+                    'bgColor': 'Background',
+                    'bordersColor': 'Map borders',
+                    'gridColor': `Grid`,
+                    'sectorsColor': `Sectors font`,
+                    'namesColor': 'Names',
+                    'namesStrokeColor': `Names stroke`,
+                    'massColor': `Mass`,
+                    'massStrokeColor': `Mass stroke`,
+                    'virusColor': `Virus`,
+                    'virusStrokeColor': `Virus stroke`,
+                    'mVirusColor': 'Mothercell',
+                    'mVirusStrokeColor': 'Mothercell stroke',
+                    'foodColor': `Food`,
+                    'namesFont': 'Names font',
+                    'massFont': `Mass font`,
+                    'sectorsFont': `Sectors font`,
+                    'namesScale': `Names scale`,
+                    'massScale': 'Mass scale',
+                    'virMassScale': `Virus mass scale`,
+                    'strokeScale': `Text stroke scale`,
+                    'foodSize': `Food size`,
+                    'bordersWidth': `Map borders width`,
+                    'sectorsWidth': `Sectors grid width`,
+                    'sectorsFontSize': `Sectors font size`,
+                    'cellsAlpha': `Cells transparency`,
+                    'skinsAlpha': `Skins transparency`,
+                    'virusAlpha': `Virus transparency`,
+                    'textAlpha': `Names & mass transparency`,
+                    'virusStrokeSize': `Virus stroke size`,
+                    'teammatesIndColor': `Teammate indicator`,
+                    'cursorTrackingColor': `Cursor tracking`,
+                    'splitRangeColor': `Split range`,
+                    'safeAreaColor': `Safe area`,
+                    'dangerAreaColor': `Danger area`,
+                    'ghostCellsColor': `Ghost cells`,
+                    'ghostCellsAlpha': `Ghost cells transparency`,
+                    'menuTheming': 'Menu',
+                    'menuPreset': `Menu theme`,
+                    'menuMainColor': 'Main color',
+                    'menuBtnTextColor': 'Button text',
+                    'menuPanelColor': `Panel`,
+                    'menuPanelColor2': `Panel (2)`,
+                    'menuTextColor': `Panel text`,
+                    'menuTextColor2': `Panel text (2)`,
+                    'btn1Color': `Button #1`,
+                    'btn1Color2': `Button #1 (2)`,
+                    'btn2Color': `Button #2`,
+                    'btn2Color2': `Button #2 (2)`,
+                    'btn3Color': 'Button #3',
+                    'btn3Color2': `Button #3 (2)`,
+                    'btn4Color': `Button #4`,
+                    'btn4Color2': `Button #4 (2)`,
+                    'menuBg': `Panel background image`,
+                    'menuOpacity': 'Transparency',
+                    'hudTheming': 'HUD',
+                    'hudMainColor': `Main color`,
+                    'hudColor': `Background`,
+                    'hudTextColor': `Text`,
+                    'statsHudColor': 'Stats',
+                    'timeHudColor': `Time`,
+                    'top5MassColor': 'Mass',
+                    'lbMeColor': `Leaderboard - me`,
+                    'lbTeammateColor': `Leaderboard - teammate`,
+                    'hudFont': `HUD font`,
+                    'hudScale': `HUD scale`,
+                    'chatTheming': `Chat`,
+                    'messageColor': `Message background`,
+                    'messageTextColor': `Message text`,
+                    'messageTimeColor': `Message time`,
+                    'messageNickColor': `Message nick`,
+                    'commandsColor': `Command background`,
+                    'commandsTextColor': 'Command text',
+                    'commandsTimeColor': `Command time`,
+                    'commandsNickColor': `Command nick`,
+                    'chatBoxColor': 'Chatbox color',
+                    'chatScale': `Chat scale`,
+                    'miniMapTheming': 'Minimap',
+                    'miniMapSectorsColor': `Sectors`,
+                    'miniMapSectorColor': 'Current sector',
+                    'miniMapGuidesColor': `Guides`,
+                    'miniMapNickColor': `Nick`,
+                    'miniMapNickStrokeColor': `Nick stroke`,
+                    'miniMapMyCellColor': `My cell`,
+                    'miniMapMyCellStrokeColor': `My cell stroke`,
+                    'miniMapTeammatesColor': `Teammates`,
+                    'miniMapDeathLocationColor': 'Death location',
+                    'miniMapFont': `Minimap font`,
+                    'miniMapNickFont': `Nick font`,
+                    'miniMapWidth': `Minimap width`,
+                    'miniMapSectorsOpacity': `Sectors transparency`,
+                    'miniMapNickSize': `Nick size`,
+                    'miniMapNickStrokeSize': `Nick stroke size`,
+                    'miniMapMyCellSize': `My cell size`,
+                    'miniMapMyCellStrokeSize': `My cell stroke size`,
+                    'miniMapTeammatesSize': 'Teammates size',
+                    'miniMapGhostCellsColor': 'Ghost cells',
+                    'miniMapGhostCellsAlpha': `Ghost cells transparency`,
+                    'imagesTheming': `Graphics / cursors`,
+                    'customBackground': `Custom background image`,
+                    'customCursor': `Custom cursor image`,
+                    'hideChatMsgA': `Chat is visible!`,
+                    'hideChatMsgB': `Chat is hidden!`,
+                    'showSkinsMsgA': 'Skins are visible!',
+                    'showSkinsMsgB': `Skins are hidden!`,
+                    'hideSmallBotsMsgA': `Small bots are visible!`,
+                    'hideSmallBotsMsgB': `Small bots are hidden!`,
+                    'autoRespMsgA': `Auto respawn is on!`,
+                    'autoRespMsgB': `Auto respawn is off!`,
+                    'autoZoomMsgA': `Auto zoom is on!`,
+                    'autoZoomMsgB': 'Auto zoom is off!',
+                    'targetNotSet': `Target not set`,
+                    'targetDead': `Dead`,
+                    'targetDistance': `Distance`,
+                    'targetMass': `Mass altogether`,
+                    'totalPartyPlayers': `Active players`,
+                    'totalPartyMass': `Total mass`,
+                    'exportImport': `Export / import settings`,
+                    'exportSettings': `Export settings`,
+                    'exportInfo': 'To export selected settings copy the code below and save it to a text file encoded in Unicode.',
+                    'importSettings': 'Import settings',
+                    'importInfo': 'To import selected settings paste an exported code below and press the \"Import settings\" button.',
+                    'profile': `Profile`,
+                    'profiles': `Profiles`,
+                    'skins': `Skins`,
+                    'moreSkins': `Add skins`,
+                    'thanks': 'Thanks to Awesome!',
+                    'saveSett': `Save settings`,
+                    'saved': `Saved!`,
+                    'resetSett': 'Reset to default',
+                    'close': `Close`,
+                    'enterChatMsg': `Enter chat message`,
+                    'activeParties': `Active parties`,
+                    'noActiveParties': `No active parties ;(`,
+                    'playlist': `Playlist`,
+                    'pause': 'PAUSE!',
+                    'visit': `Visit`,
+                    'exit': `Legend mod Express: Are you sure you want to quit the game?`,
+                    'blockWarn': `WARNING! Popups are blocked in the settings.`,
+                    'unblockPopups': 'Temporary unblock',
+                    'mass': `Mass`,
+                    'score': `Score`,
+                    'leaderboard': `Leaderboard`,
+                    'user': `User`,
+                    'userMuted': `User %user% has been muted.`,
+                    'userUnmuted': `User %user% has been unmuted.`,
+                    'mute': `Mute`,
+                    'unmute': `Unmute`,
+                    'mutedUsers': `Muted users`,
+                    'activeUsers': `Active users`,
+                    'showActiveUsers': 'Show active users',
+                    'none': `None`,
+                    'sounds': `Sounds`,
+                    'page_menu_main_free_coins': 'Free Coins',
+                    'page_menu_main_gifts': `Gifts`,
+                    'page_menu_main_dailyquests': `Daily Quest`,
+                    'page_shop': `Shop`
+                }
+            },
             r = 'en',
             l = e.navigator.language || e.navigator.userLanguage;
         l && n.hasOwnProperty(l) && (r = l);
@@ -6345,595 +6349,603 @@ ogcustom1=
                 'comm13': h.comm13,
                 'comm14': h.comm14
             },
-                        u = {
-                            "&": "&amp;",
-                            "<": "&lt;",
-                            ">": "&gt;",
-                            '"': "&quot;",
-                            "'": "&#39;",
-                            "/": "&#x2F;"
-                        },
-                        d = {
-                            ":)": "smile.svg",
-                            ";)": "wink.svg",
-                            "=)": "smirk.svg",
-                            ":D": "grin.svg",
-                            "X-D": "xgrin.svg",
-                            "=D": "joy.svg",
-                            ":(": "sad.svg",
-                            ";(": "cry.svg",
-                            ":P": "tongue.svg",
-                            ";P": "tonguew.svg",
-                            ":*": "kiss.svg",
-                            "$)": "smileh.svg",
-                            "<3": "heart.svg",
-                            "8=)": "cool.svg",
-                            ":o": "astonished.svg",
-                            "(:|": "sweat.svg",
-                            ":|": "neutral.svg",
-                            ":\\": "unamused.svg",
-                            ":@": "pouting.svg",
-                            "|-)": "sleep.svg",
-                            "^_^": "relaxed.svg",
-                            "-_-": "expressionless.svg",
-                            $_$: "money.svg",
-                            "O:)": "angel.svg",
-                            "3:)": "devil.svg",
-                            "(poop)": "poo.svg",
-                            "(fuck)": "finger.svg",
-                            "(clap)": "clap.svg",
-                            "(ok)": "ok.svg",
-                            "(victory)": "victory.svg",
-                            "(y)": "thumb.svg",
-                            "(n)": "thumbd.svg"
-                        },
-                        p = [{
-                                name: "imgur.com",
-                                url: "https://imgur.com/",
-                                example: "https://i.imgur.com/xdmUp5N.png",
-                                pattern: "https?://w+.imgur.com/w{6,}.(?:%file_ext%)??d*"
-                            },
-                            {
-                                name: "put.re",
-                                url: "https://put.re/",
-                                example: "https://s.put.re/iYHAW65g.png",
-                                pattern: "https?://w+.put.re/w{8,}.(?:%file_ext%)"
-                            },
-                            {
-                                name: "postimages.org",
-                                url: "https://postimages.org/",
-                                example: "https://i.postimg.cc/zzK0sRPg/xdmUp5N.png",
-                                pattern: "https?://w+.postimg.cc/w{8,}/w+.(?:%file_ext%)"
-                            }
-                        ],
-                        f = {
-                            "ogario-v3": {
-                                name: "OGARio v3",
-                                darkTheme: !0,
-                                mainColor: "#01d9cc",
-                                bgColor: "#000a11",
-                                bordersColor: "#01d9cc",
-                                gridColor: "#00243e",
-                                sectorsColor: "#00243e",
-                                namesColor: "#ffffff",
-                                namesStrokeColor: "#000000",
-                                massColor: "#ffffff",
-                                massStrokeColor: "#000000",
-                                virusColor: "#002f52",
-                                virusStrokeColor: "#00b9e8",
-                                foodColor: "#5000ff",
-                                teammatesIndColor: "#ffffff",
-                                cursorTrackingColor: "#ffffff",
-                                splitRangeColor: "#ffffff",
-                                safeAreaColor: "#ffffff",
-                                dangerAreaColor: "#bf00aa",
-                                namesFont: "ubuntu-bold",
-                                massFont: "ubuntu-bold",
-                                sectorsFont: "ubuntu",
-                                namesScale: 1,
-                                massScale: 3,
-                                foodSize: 5,
-                                bordersWidth: 40,
-                                sectorsWidth: 40,
-                                sectorsFontSize: 1200,
-                                cellsAlpha: 0.9,
-                                skinsAlpha: 0.7,
-                                virusAlpha: 0.6,
-                                textAlpha: 1,
-                                virusStrokeSize: 14,
-                                menuPreset: "ogario-v3",
-                                menuMainColor: "#01d9cc",
-                                menuBtnTextColor: "#ffffff",
-                                menuPanelColor: "#00243e",
-                                menuPanelColor2: "#002f52",
-                                menuTextColor: "#ffffff",
-                                menuTextColor2: "#8096a7",
-                                btn1Color: "#018cf6",
-                                btn1Color2: "#0176ce",
-                                btn2Color: "#00b9e8",
-                                btn2Color2: "#0099c0",
-                                btn3Color: "#8d5fe6",
-                                btn3Color2: "#814ee3",
-                                btn4Color: "#bf00aa",
-                                btn4Color2: "#a80096",
-                                menuBg: "https://cdn.ogario.ovh/static/img/pattern.png",
-                                menuOpacity: 0.96,
-                                hudMainColor: "#01d9cc",
-                                hudColor: "rgba(0,0,0,0.4)",
-                                hudTextColor: "#ffffff",
-                                statsHudColor: "#ffffff",
-                                timeHudColor: "#01d9cc",
-                                top5MassColor: "#bf00aa",
-                                lbMeColor: "#bf00aa",
-                                lbTeammateColor: "#018cf6",
-                                hudFont: "ubuntu-bold",
-                                hudScale: 1,
-                                messageColor: "rgba(0,0,0,0.4)",
-                                messageTextColor: "#ffffff",
-                                messageTimeColor: "#018cf6",
-                                messageNickColor: "#01d9cc",
-                                commandsColor: "rgba(191,0,170,0.9)",
-                                commandsTextColor: "#ffffff",
-                                commandsTimeColor: "#bf00aa",
-                                commandsNickColor: "#ffffff",
-                                chatBoxColor: "rgba(0,0,0,0.4)",
-                                chatScale: 1,
-                                miniMapSectorsColor: "#ffffff",
-                                miniMapSectorColor: "#01d9cc",
-                                miniMapGuidesColor: "#bf00aa",
-                                miniMapNickColor: "#ffffff",
-                                miniMapNickStrokeColor: "#000000",
-                                miniMapMyCellColor: "#ffffff",
-                                miniMapMyCellStrokeColor: "#bf00aa",
-                                miniMapTeammatesColor: "#01d9cc",
-                                miniMapDeathLocationColor: "#bf00aa",
-                                miniMapFont: "ubuntu-bold",
-                                miniMapNickFont: "ubuntu-bold",
-                                miniMapWidth: 240,
-                                miniMapSectorsOpacity: 0.1,
-                                miniMapNickSize: 11,
-                                miniMapNickStrokeSize: 2,
-                                miniMapMyCellSize: 7.5,
-                                miniMapMyCellStrokeSize: 4,
-                                miniMapTeammatesSize: 5.5,
-                                customBackground: "",
-                                customCursor: "https://cdn.ogario.ovh/static/img/cursors/cursor_02.cur"
-                            },
-                            "ogario-orange": {
-                                name: "OGARio v2",
-                                darkTheme: !0,
-                                mainColor: "#ff7800",
-                                bgColor: "#111111",
-                                bordersColor: "#ff7800",
-                                gridColor: "#292929",
-                                sectorsColor: "#292929",
-                                namesColor: "#ffffff",
-                                namesStrokeColor: "#000000",
-                                massColor: "#ffffff",
-                                massStrokeColor: "#000000",
-                                virusColor: "#666666",
-                                virusStrokeColor: "#666666",
-                                foodColor: "#e16400",
-                                hudMainColor: "#ff7800",
-                                statsHudColor: "#ff7800",
-                                top5MassColor: "#ff7800",
-                                timeHudColor: "#ff7800",
-                                messageNickColor: "#ff7800",
-                                commandsColor: "rgba(255,120,0,0.9)",
-                                commandsTimeColor: "#ff7800",
-                                commandsTextColor: "#ffffff",
-                                miniMapSectorsColor: "#ffffff",
-                                miniMapSectorColor: "#ff7800",
-                                miniMapGuidesColor: "#ff7800",
-                                miniMapMyCellColor: "#ffffff",
-                                miniMapMyCellStrokeColor: "#ff7800",
-                                miniMapTeammatesColor: "#ff7800",
-                                miniMapDeathLocationColor: "#ff7800",
-                                miniMapSectorsOpacity: 0.1
-                            },
-                            "ogario-gold": {
-                                name: "OGARio LE",
-                                darkTheme: !0,
-                                mainColor: "#b5a642",
-                                bgColor: "#000000",
-                                bordersColor: "#b5a642",
-                                gridColor: "#111111",
-                                sectorsColor: "#111111",
-                                namesColor: "#ffffff",
-                                namesStrokeColor: "#000000",
-                                massColor: "#ffffff",
-                                massStrokeColor: "#000000",
-                                virusColor: "#666666",
-                                virusStrokeColor: "#666666",
-                                foodColor: "#998c36",
-                                hudMainColor: "#b5a642",
-                                statsHudColor: "#b5a642",
-                                top5MassColor: "#b5a642",
-                                timeHudColor: "#b5a642",
-                                messageNickColor: "#b5a642",
-                                commandsColor: "rgba(181,166,66,0.9)",
-                                commandsTimeColor: "#b5a642",
-                                commandsTextColor: "#ffffff",
-                                miniMapSectorsColor: "#ffffff",
-                                miniMapSectorColor: "#b5a642",
-                                miniMapGuidesColor: "#b5a642",
-                                miniMapMyCellColor: "#ffffff",
-                                miniMapMyCellStrokeColor: "#b5a642",
-                                miniMapTeammatesColor: "#b5a642",
-                                miniMapDeathLocationColor: "#b5a642",
-                                miniMapSectorsOpacity: 0.1
-                            },
-                            "sniikz-style": {
-                                name: "SniiKz's Style",
-                                darkTheme: !0,
-                                mainColor: "#01d9cc",
-                                bgColor: "#000000",
-                                bordersColor: "#ffffff",
-                                gridColor: "#00243e",
-                                sectorsColor: "#00243e",
-                                namesColor: "#ffffff",
-                                namesStrokeColor: "#000000",
-                                massColor: "#ffffff",
-                                massStrokeColor: "#000000",
-                                virusColor: "#3b3b3b",
-                                virusStrokeColor: "#ffffff",
-                                foodColor: "#5000ff",
-                                teammatesIndColor: "#ffffff",
-                                cursorTrackingColor: "#ffffff",
-                                splitRangeColor: "#ffffff",
-                                safeAreaColor: "#ffffff",
-                                dangerAreaColor: "#bf00aa",
-                                massScale: 4,
-                                foodSize: 1,
-                                bordersWidth: 40,
-                                sectorsWidth: 40,
-                                sectorsFontSize: 1200,
-                                cellsAlpha: 0.99,
-                                skinsAlpha: 0.7,
-                                virusAlpha: 0.4,
-                                virusStrokeSize: 10,
-                                menuPreset: "ogario-v3",
-                                menuMainColor: "#fc0079",
-                                menuBtnTextColor: "#ffffff",
-                                menuPanelColor: "#050008",
-                                menuPanelColor2: "#1d0526",
-                                menuTextColor: "#ffffff",
-                                menuTextColor2: "#65458f",
-                                btn1Color: "#4f0242",
-                                btn1Color2: "#3b0431",
-                                btn2Color: "#6b0036",
-                                btn2Color2: "#4d0227",
-                                btn3Color: "#aa084e",
-                                btn3Color2: "#80063b",
-                                btn4Color: "#aa084e",
-                                btn4Color2: "#8a063f",
-                                menuBg: "https://cdn.ogario.ovh/static/img/pattern.png",
-                                menuOpacity: 1,
-                                hudMainColor: "#5974ff",
-                                hudColor: "rgba(36,36,36,0.49)",
-                                hudTextColor: "#ffffff",
-                                statsHudColor: "#ffffff",
-                                timeHudColor: "#737373",
-                                top5MassColor: "#1fe000",
-                                lbMeColor: "#bf00aa",
-                                lbTeammateColor: "#018cf6",
-                                hudScale: 1.15,
-                                messageColor: "rgba(0,0,0,0.4)",
-                                messageTextColor: "#e8e8e8",
-                                messageTimeColor: "#545454",
-                                messageNickColor: "#05ff00",
-                                commandsColor: "rgba(36,36,36,0.9)",
-                                commandsTextColor: "#ffffff",
-                                commandsTimeColor: "#545454",
-                                commandsNickColor: "#ffffff",
-                                chatBoxColor: "rgba(0,0,0,0.4)",
-                                chatScale: 1,
-                                miniMapSectorsColor: "#ffffff",
-                                miniMapSectorColor: "#000000",
-                                miniMapGuidesColor: "#ff00a8",
-                                miniMapNickColor: "#ffffff",
-                                miniMapNickStrokeColor: "#4d4d4d",
-                                miniMapMyCellColor: "#f0ff3d",
-                                miniMapMyCellStrokeColor: "#acba07",
-                                miniMapTeammatesColor: "#305eff",
-                                miniMapDeathLocationColor: "#2b2b2b",
-                                miniMapWidth: 250,
-                                miniMapSectorsOpacity: 0.1,
-                                miniMapNickSize: 9,
-                                miniMapNickStrokeSize: 0,
-                                miniMapMyCellSize: 5,
-                                miniMapMyCellStrokeSize: 0,
-                                miniMapTeammatesSize: 5,
-                                customBackground: "",
-                                customCursor: "https://cdn.ogario.ovh/static/img/cursors/cursor_01.cur"
-                            },
-                            "hkg-style": {
-                                name: "HKG Style",
-                                darkTheme: !0,
-                                mainColor: "#651fff",
-                                bgColor: "#000000",
-                                bordersColor: "#ffffff",
-                                gridColor: "#111111",
-                                sectorsColor: "#111111",
-                                namesColor: "#ffffff",
-                                namesStrokeColor: "#000000",
-                                massColor: "#ffffff",
-                                massStrokeColor: "#000000",
-                                virusColor: "#666666",
-                                virusStrokeColor: "#666666",
-                                foodColor: "#651fff",
-                                hudMainColor: "#651fff",
-                                statsHudColor: "#651fff",
-                                top5MassColor: "#651fff",
-                                timeHudColor: "#651fff",
-                                messageNickColor: "#651fff",
-                                commandsColor: "rgba(101,31,255,0.9)",
-                                commandsTimeColor: "#651fff",
-                                commandsTextColor: "#ffffff",
-                                miniMapSectorsColor: "#ffffff",
-                                miniMapSectorColor: "#651fff",
-                                miniMapGuidesColor: "#651fff",
-                                miniMapMyCellColor: "#ffffff",
-                                miniMapMyCellStrokeColor: "#651fff",
-                                miniMapTeammatesColor: "#651fff",
-                                miniMapDeathLocationColor: "#651fff",
-                                miniMapSectorsOpacity: 0.1
-                            },
-                            "agario-light": {
-                                name: "Agar.io Light",
-                                darkTheme: !1,
-                                mainColor: "#ffffff",
-                                bgColor: "#f2fbff",
-                                bordersColor: "#858a8c",
-                                gridColor: "#ced6d9",
-                                sectorsColor: "#ced6d9",
-                                namesColor: "#ffffff",
-                                namesStrokeColor: "#000000",
-                                massColor: "#ffffff",
-                                massStrokeColor: "#000000",
-                                virusColor: "#33ff33",
-                                virusStrokeColor: "#2de52d",
-                                foodColor: "#2de52d",
-                                hudMainColor: "#ffffff",
-                                statsHudColor: "#ffffff",
-                                top5MassColor: "#ffffff",
-                                timeHudColor: "#ffffff",
-                                messageNickColor: "#ffffff",
-                                commandsColor: "rgba(255,255,255,0.9)",
-                                commandsTimeColor: "#ffffff",
-                                commandsTextColor: "#000000",
-                                miniMapSectorsColor: "#ffffff",
-                                miniMapSectorColor: "#ffffff",
-                                miniMapGuidesColor: "#ffffff",
-                                miniMapMyCellColor: "#ffffff",
-                                miniMapMyCellStrokeColor: "#ffffff",
-                                miniMapTeammatesColor: "#ffffff",
-                                miniMapDeathLocationColor: "#ffffff",
-                                miniMapSectorsOpacity: 0.25
-                            },
-                            "agario-dark": {
-                                name: "Agar.io Dark",
-                                darkTheme: !0,
-                                mainColor: "#ffffff",
-                                bgColor: "#111111",
-                                bordersColor: "#999999",
-                                gridColor: "#333333",
-                                sectorsColor: "#333333",
-                                namesColor: "#ffffff",
-                                namesStrokeColor: "#000000",
-                                massColor: "#ffffff",
-                                massStrokeColor: "#000000",
-                                virusColor: "#33ff33",
-                                virusStrokeColor: "#2de52d",
-                                foodColor: "#2de52d",
-                                hudMainColor: "#ffffff",
-                                statsHudColor: "#ffffff",
-                                top5MassColor: "#ffffff",
-                                timeHudColor: "#ffffff",
-                                messageNickColor: "#ffffff",
-                                commandsColor: "rgba(255,255,255,0.9)",
-                                commandsTimeColor: "#ffffff",
-                                commandsTextColor: "#ffffff",
-                                miniMapSectorsColor: "#ffffff",
-                                miniMapSectorColor: "#ffffff",
-                                miniMapGuidesColor: "#ffffff",
-                                miniMapMyCellColor: "#ffffff",
-                                miniMapMyCellStrokeColor: "#ffffff",
-                                miniMapTeammatesColor: "#ffffff",
-                                miniMapDeathLocationColor: "#ffffff",
-                                miniMapSectorsOpacity: 0.1
-                            }
-                        },
-                        m = {
-                            "ogario-v3": {
-                                name: "OGARio v3",
-                                menuMainColor: "#01d9cc",
-                                menuBtnTextColor: "#ffffff",
-                                menuPanelColor: "#00243e",
-                                menuPanelColor2: "#002f52",
-                                menuTextColor: "#ffffff",
-                                menuTextColor2: "#8096a7",
-                                btn1Color: "#018cf6",
-                                btn1Color2: "#0176ce",
-                                btn2Color: "#00b9e8",
-                                btn2Color2: "#0099c0",
-                                btn3Color: "#8d5fe6",
-                                btn3Color2: "#814ee3",
-                                btn4Color: "#f300d8",
-                                btn4Color2: "#df00c6",
-                                menuBg: "https://cdn.ogario.ovh/static/img/pattern.png"
-                            },
-                            "ogario-v2": {
-                                name: "OGARio v2",
-                                menuMainColor: "#ff7800",
-                                menuBtnTextColor: "#ffffff",
-                                menuPanelColor: "#222222",
-                                menuPanelColor2: "#333333",
-                                menuTextColor: "#bbbbbb",
-                                menuTextColor2: "#bbbbbb",
-                                btn1Color: "#428bca",
-                                btn1Color2: "#3071a9",
-                                btn2Color: "#5cb85c",
-                                btn2Color2: "#449d44",
-                                btn3Color: "#f0ad4e",
-                                btn3Color2: "#ec971f",
-                                btn4Color: "#d9534f",
-                                btn4Color2: "#c9302c",
-                                menuBg: ""
-                            },
-                            agario: {
-                                name: "Agar.io",
-                                menuMainColor: "#5bc0de",
-                                menuBtnTextColor: "#ffffff",
-                                menuPanelColor: "#ffffff",
-                                menuPanelColor2: "#cccccc",
-                                menuTextColor: "#333333",
-                                menuTextColor2: "#999999",
-                                btn1Color: "#428bca",
-                                btn1Color2: "#3071a9",
-                                btn2Color: "#5cb85c",
-                                btn2Color2: "#449d44",
-                                btn3Color: "#f0ad4e",
-                                btn3Color2: "#ec971f",
-                                btn4Color: "#d9534f",
-                                btn4Color2: "#c9302c",
-                                menuBg: ""
-                            }
-                        },
-                        g = {
-                            preset: "ogario-v3",
-                            darkTheme: !0,
-                            mainColor: "#01d9cc",
-                            bgColor: "#000a11",
-                            bordersColor: "#01d9cc",
-                            gridColor: "#00243e",
-                            sectorsColor: "#00243e",
-                            namesColor: "#ffffff",
-                            namesStrokeColor: "#000000",
-                            massColor: "#ffffff",
-                            massStrokeColor: "#000000",
-                            virusColor: "#002f52",
-                            virusStrokeColor: "#00b9e8",
-                            foodColor: "#5000ff",
-                            teammatesIndColor: "#ffffff",
-                            cursorTrackingColor: "#ffffff",
-                            splitRangeColor: "#ffffff",
-                            ghostCellsColor: "#ffffff",
-                            safeAreaColor: "#ffffff",
-                            dangerAreaColor: "#bf00aa",
-                            namesFont: "ubuntu-bold",
-                            namesFontFamily: "Ubuntu",
-                            namesFontWeight: 700,
-                            massFont: "ubuntu-bold",
-                            massFontFamily: "Ubuntu",
-                            massFontWeight: 700,
-                            sectorsFont: "ubuntu",
-                            sectorsFontFamily: "Ubuntu",
-                            sectorsFontWeight: 400,
-                            sectorsX: 5,
-                            sectorsY: 5,
-                            namesScale: 1,
-                            massScale: 3,
-                            virMassScale: 3,
-                            strokeScale: 1,
-                            foodSize: 5,
-                            bordersWidth: 40,
-                            sectorsWidth: 40,
-                            sectorsFontSize: 1200,
-                            cellsAlpha: 0.9,
-                            skinsAlpha: 0.7,
-                            virusAlpha: 0.6,
-                            textAlpha: 1,
-                            ghostCellsAlpha: 0.3,
-                            virusStrokeSize: 14,
-                            menuPreset: "ogario-v3",
-                            menuMainColor: "#01d9cc",
-                            menuBtnTextColor: "#ffffff",
-                            menuPanelColor: "#00243e",
-                            menuPanelColor2: "#002f52",
-                            menuTextColor: "#ffffff",
-                            menuTextColor2: "#8096a7",
-                            btn1Color: "#018cf6",
-                            btn1Color2: "#0176ce",
-                            btn2Color: "#00b9e8",
-                            btn2Color2: "#0099c0",
-                            btn3Color: "#8d5fe6",
-                            btn3Color2: "#814ee3",
-                            btn4Color: "#bf00aa",
-                            btn4Color2: "#a80096",
-                            menuBg: "https://cdn.ogario.ovh/static/img/pattern.png",
-                            menuOpacity: 0.96,
-                            hudMainColor: "#01d9cc",
-                            hudColor: "rgba(0,0,0,0.4)",
-                            hudTextColor: "#ffffff",
-                            statsHudColor: "#ffffff",
-                            timeHudColor: "#01d9cc",
-                            top5MassColor: "#bf00aa",
-                            lbMeColor: "#bf00aa",
-                            lbTeammateColor: "#018cf6",
-                            hudFont: "ubuntu-bold",
-                            hudFontFamily: "Ubuntu",
-                            hudFontWeight: 700,
-                            hudScale: 1,
-                            messageColor: "rgba(0,0,0,0.4)",
-                            messageTextColor: "#ffffff",
-                            messageTimeColor: "#018cf6",
-                            messageNickColor: "#01d9cc",
-                            commandsColor: "rgba(191,0,170,0.9)",
-                            commandsTextColor: "#ffffff",
-                            commandsTimeColor: "#bf00aa",
-                            commandsNickColor: "#ffffff",
-                            chatBoxColor: "rgba(0,0,0,0.4)",
-                            chatScale: 1,
-                            miniMapSectorsColor: "#ffffff",
-                            miniMapSectorColor: "#01d9cc",
-                            miniMapGuidesColor: "#bf00aa",
-                            miniMapNickColor: "#ffffff",
-                            miniMapNickStrokeColor: "#000000",
-                            miniMapMyCellColor: "#ffffff",
-                            miniMapMyCellStrokeColor: "#bf00aa",
-                            miniMapTeammatesColor: "#01d9cc",
-                            miniMapDeathLocationColor: "#bf00aa",
-                            miniMapGhostCellsColor: "#ffffff",
-                            miniMapFont: "ubuntu-bold",
-                            miniMapFontFamily: "Ubuntu",
-                            miniMapFontWeight: 700,
-                            miniMapNickFont: "ubuntu-bold",
-                            miniMapNickFontFamily: "Ubuntu",
-                            miniMapNickFontWeight: 700,
-                            miniMapWidth: 240,
-                            miniMapTop: 24,
-                            miniMapSectorsOpacity: 0.1,
-                            miniMapNickSize: 11,
-                            miniMapNickStrokeSize: 2,
-                            miniMapMyCellSize: 7.5,
-                            miniMapMyCellStrokeSize: 4,
-                            miniMapTeammatesSize: 5.5,
-                            miniMapGhostCellsAlpha: 0.15,
-                            customBackground: "",
-                            customCursor: "https://cdn.ogario.ovh/static/img/cursors/cursor_02.cur"
-                        },
-                        y = {
-                            menuMainColorCSS: null,
-                            menuPanelColorCSS: null,
-                            menuTextlColorCSS: null,
-                            menuButtonsCSS: null,
-                            hudCSS: null,
-                            chatCSS: null,
-                            chatScaleCSS: null,
-                            cursorCSS: null,
-                            loadThemeSettings: function() {
-                                var t = null;
-                                for (var s in (null !==
-                                        e.localStorage.getItem("ogarioThemeSettings") &&
-                                        (t = JSON.parse(
-                                            e.localStorage.getItem("ogarioThemeSettings")
-                                        )),
-                                        g))
-                                    g.hasOwnProperty(s) &&
-                                    (t && t.hasOwnProperty(s) && (g[s] = t[s]),
-                                        i.hasOwnProperty(s) && (i[s] = g[s]));
-                            },
+            u = {
+                '&': `&amp;`,
+                '<': `&lt;`,
+                '>': `&gt;`,
+                '"': `&quot;`,
+                '\'': '&#39;',
+                '/': '&#x2F;'
+            },
+            d = {
+                ':)': 'smile.svg',
+                ';)': `wink.svg`,
+                '=)': `smirk.svg`,
+                ':D': 'grin.svg',
+                'X-D': 'xgrin.svg',
+                '=D': `joy.svg`,
+                ':(': `sad.svg`,
+                ';(': `cry.svg`,
+                ':P': `tongue.svg`,
+                ';P': `tonguew.svg`,
+                ':*': `kiss.svg`,
+                '$)': `smileh.svg`,
+                '<3': 'heart.svg',
+                '8=)': `cool.svg`,
+                ':o': `astonished.svg`,
+                '(:|': `sweat.svg`,
+                ':|': `neutral.svg`,
+                ':\\': `unamused.svg`,
+                ':@': 'pouting.svg',
+                '|-)': `sleep.svg`,
+                '^_^': `relaxed.svg`,
+                '-_-': `expressionless.svg`,
+                '$_$': `money.svg`,
+                'O:)': 'angel.svg',
+                '3:)': `devil.svg`,
+                '(poop)': 'poo.svg',
+                '(fuck)': `finger.svg`,
+                '(clap)': `clap.svg`,
+                '(ok)': `ok.svg`,
+                '(victory)': `victory.svg`,
+                '(y)': `thumb.svg`,
+                '(n)': `thumbd.svg`
+            },
+            p = [{
+                    name: "imgur.com",
+                    url: "https://imgur.com/",
+                    example: "https://i.imgur.com/xdmUp5N.png",
+                    pattern: "https?://w+.imgur.com/w{6,}.(?:%file_ext%)??d*"
+                },
+                {
+                    name: "put.re",
+                    url: "https://put.re/",
+                    example: "https://s.put.re/iYHAW65g.png",
+                    pattern: "https?://w+.put.re/w{8,}.(?:%file_ext%)"
+                },
+                {
+                    name: "postimages.org",
+                    url: "https://postimages.org/",
+                    example: "https://i.postimg.cc/zzK0sRPg/xdmUp5N.png",
+                    pattern: "https?://w+.postimg.cc/w{8,}/w+.(?:%file_ext%)"
+                }
+            ],
+            f = {
+                'ogario-v3': {
+                    'name': `OGARio v3`,
+                    'darkTheme': !0,
+                    'mainColor': `#01d9cc`,
+                    'bgColor': `#000a11`,
+                    'bordersColor': `#01d9cc`,
+                    'gridColor': `#00243e`,
+                    'sectorsColor': `#00243e`,
+                    'namesColor': '#ffffff',
+                    'namesStrokeColor': `#000000`,
+                    'massColor': '#ffffff',
+                    'massStrokeColor': `#000000`,
+                    'virusColor': '#002f52',
+                    'virusStrokeColor': `#00b9e8`,
+                    'mVirusColor': '#ce6363',
+                    'mVirusStrokeColor': '#b95959',
+                    'foodColor': `#5000ff`,
+                    'teammatesIndColor': `#ffffff`,
+                    'cursorTrackingColor': `#ffffff`,
+                    'splitRangeColor': `#ffffff`,
+                    'safeAreaColor': `#ffffff`,
+                    'dangerAreaColor': '#bf00aa',
+                    'namesFont': `ubuntu-bold`,
+                    'massFont': `ubuntu-bold`,
+                    'sectorsFont': 'ubuntu',
+                    'namesScale': 1,
+                    'massScale': 3,
+                    'foodSize': 5,
+                    'bordersWidth': 40,
+                    'sectorsWidth': 40,
+                    'sectorsFontSize': 1200,
+                    'cellsAlpha': 0.9,
+                    'skinsAlpha': 0.7,
+                    'virusAlpha': 0.6,
+                    'textAlpha': 1,
+                    'virusStrokeSize': 14,
+                    'menuPreset': `ogario-v3`,
+                    'menuMainColor': `#01d9cc`,
+                    'menuBtnTextColor': `#ffffff`,
+                    'menuPanelColor': '#00243e',
+                    'menuPanelColor2': `#002f52`,
+                    'menuTextColor': `#ffffff`,
+                    'menuTextColor2': `#8096a7`,
+                    'btn1Color': `#018cf6`,
+                    'btn1Color2': `#0176ce`,
+                    'btn2Color': `#00b9e8`,
+                    'btn2Color2': `#0099c0`,
+                    'btn3Color': `#8d5fe6`,
+                    'btn3Color2': `#814ee3`,
+                    'btn4Color': `#bf00aa`,
+                    'btn4Color2': `#a80096`,
+                    'menuBg': 'https://cdn.ogario.ovh/static/img/pattern.png',
+                    'menuOpacity': 0.96,
+                    'hudMainColor': `#01d9cc`,
+                    'hudColor': `rgba(0,0,0,0.4)`,
+                    'hudTextColor': `#ffffff`,
+                    'statsHudColor': `#ffffff`,
+                    'timeHudColor': `#01d9cc`,
+                    'top5MassColor': `#bf00aa`,
+                    'lbMeColor': `#bf00aa`,
+                    'lbTeammateColor': `#018cf6`,
+                    'hudFont': `ubuntu-bold`,
+                    'hudScale': 1,
+                    'messageColor': `rgba(0,0,0,0.4)`,
+                    'messageTextColor': `#ffffff`,
+                    'messageTimeColor': `#018cf6`,
+                    'messageNickColor': `#01d9cc`,
+                    'commandsColor': 'rgba(191,0,170,0.9)',
+                    'commandsTextColor': `#ffffff`,
+                    'commandsTimeColor': `#bf00aa`,
+                    'commandsNickColor': `#ffffff`,
+                    'chatBoxColor': `rgba(0,0,0,0.4)`,
+                    'chatScale': 1,
+                    'miniMapSectorsColor': `#ffffff`,
+                    'miniMapSectorColor': '#01d9cc',
+                    'miniMapGuidesColor': `#bf00aa`,
+                    'miniMapNickColor': '#ffffff',
+                    'miniMapNickStrokeColor': '#000000',
+                    'miniMapMyCellColor': '#ffffff',
+                    'miniMapMyCellStrokeColor': '#bf00aa',
+                    'miniMapTeammatesColor': '#01d9cc',
+                    'miniMapDeathLocationColor': '#bf00aa',
+                    'miniMapFont': `ubuntu-bold`,
+                    'miniMapNickFont': `ubuntu-bold`,
+                    'miniMapWidth': 240,
+                    'miniMapSectorsOpacity': 0.1,
+                    'miniMapNickSize': 11,
+                    'miniMapNickStrokeSize': 2,
+                    'miniMapMyCellSize': 7.5,
+                    'miniMapMyCellStrokeSize': 4,
+                    'miniMapTeammatesSize': 5.5,
+                    'customBackground': '',
+                    'customCursor': `https://cdn.ogario.ovh/static/img/cursors/cursor_02.cur`
+                },
+                'ogario-orange': {
+                    'name': `OGARio v2`,
+                    'darkTheme': !0,
+                    'mainColor': `#ff7800`,
+                    'bgColor': '#111111',
+                    'bordersColor': `#ff7800`,
+                    'gridColor': `#292929`,
+                    'sectorsColor': `#292929`,
+                    'namesColor': `#ffffff`,
+                    'namesStrokeColor': `#000000`,
+                    'massColor': `#ffffff`,
+                    'massStrokeColor': `#000000`,
+                    'virusColor': '#666666',
+                    'virusStrokeColor': `#666666`,
+                    'mVirusColor': '#ce6363',
+                    'mVirusStrokeColor': '#b95959',
+                    'foodColor': `#e16400`,
+                    'hudMainColor': `#ff7800`,
+                    'statsHudColor': `#ff7800`,
+                    'top5MassColor': `#ff7800`,
+                    'timeHudColor': `#ff7800`,
+                    'messageNickColor': `#ff7800`,
+                    'commandsColor': `rgba(255,120,0,0.9)`,
+                    'commandsTimeColor': `#ff7800`,
+                    'commandsTextColor': `#ffffff`,
+                    'miniMapSectorsColor': `#ffffff`,
+                    'miniMapSectorColor': `#ff7800`,
+                    'miniMapGuidesColor': '#ff7800',
+                    'miniMapMyCellColor': `#ffffff`,
+                    'miniMapMyCellStrokeColor': `#ff7800`,
+                    'miniMapTeammatesColor': '#ff7800',
+                    'miniMapDeathLocationColor': `#ff7800`,
+                    'miniMapSectorsOpacity': 0.1
+                },
+                'ogario-gold': {
+                    'name': `OGARio LE`,
+                    'darkTheme': !0,
+                    'mainColor': `#b5a642`,
+                    'bgColor': `#000000`,
+                    'bordersColor': `#b5a642`,
+                    'gridColor': `#111111`,
+                    'sectorsColor': '#111111',
+                    'namesColor': `#ffffff`,
+                    'namesStrokeColor': `#000000`,
+                    'massColor': '#ffffff',
+                    'massStrokeColor': '#000000',
+                    'virusColor': `#666666`,
+                    'virusStrokeColor': `#666666`,
+                    'mVirusColor': '#ce6363',
+                    'mVirusStrokeColor': '#b95959',
+                    'foodColor': `#998c36`,
+                    'hudMainColor': `#b5a642`,
+                    'statsHudColor': '#b5a642',
+                    'top5MassColor': `#b5a642`,
+                    'timeHudColor': `#b5a642`,
+                    'messageNickColor': '#b5a642',
+                    'commandsColor': `rgba(181,166,66,0.9)`,
+                    'commandsTimeColor': `#b5a642`,
+                    'commandsTextColor': `#ffffff`,
+                    'miniMapSectorsColor': `#ffffff`,
+                    'miniMapSectorColor': '#b5a642',
+                    'miniMapGuidesColor': `#b5a642`,
+                    'miniMapMyCellColor': `#ffffff`,
+                    'miniMapMyCellStrokeColor': '#b5a642',
+                    'miniMapTeammatesColor': `#b5a642`,
+                    'miniMapDeathLocationColor': `#b5a642`,
+                    'miniMapSectorsOpacity': 0.1
+                },
+                'sniikz-style': {
+                    'name': `SniiKz\'s Style`,
+                    'darkTheme': !0,
+                    'mainColor': `#01d9cc`,
+                    'bgColor': '#000000',
+                    'bordersColor': '#ffffff',
+                    'gridColor': `#00243e`,
+                    'sectorsColor': `#00243e`,
+                    'namesColor': `#ffffff`,
+                    'namesStrokeColor': `#000000`,
+                    'massColor': `#ffffff`,
+                    'massStrokeColor': `#000000`,
+                    'virusColor': '#3b3b3b',
+                    'virusStrokeColor': `#ffffff`,
+                    'mVirusColor': '#ce6363',
+                    'mVirusStrokeColor': '#b95959',
+                    'foodColor': `#5000ff`,
+                    'teammatesIndColor': '#ffffff',
+                    'cursorTrackingColor': `#ffffff`,
+                    'splitRangeColor': `#ffffff`,
+                    'safeAreaColor': `#ffffff`,
+                    'dangerAreaColor': `#bf00aa`,
+                    'massScale': 4,
+                    'foodSize': 1,
+                    'bordersWidth': 40,
+                    'sectorsWidth': 40,
+                    'sectorsFontSize': 1200,
+                    'cellsAlpha': 0.99,
+                    'skinsAlpha': 0.7,
+                    'virusAlpha': 0.4,
+                    'virusStrokeSize': 10,
+                    'menuPreset': 'ogario-v3',
+                    'menuMainColor': `#fc0079`,
+                    'menuBtnTextColor': '#ffffff',
+                    'menuPanelColor': `#050008`,
+                    'menuPanelColor2': `#1d0526`,
+                    'menuTextColor': `#ffffff`,
+                    'menuTextColor2': '#65458f',
+                    'btn1Color': `#4f0242`,
+                    'btn1Color2': '#3b0431',
+                    'btn2Color': '#6b0036',
+                    'btn2Color2': `#4d0227`,
+                    'btn3Color': `#aa084e`,
+                    'btn3Color2': '#80063b',
+                    'btn4Color': `#aa084e`,
+                    'btn4Color2': `#8a063f`,
+                    'menuBg': `https://cdn.ogario.ovh/static/img/pattern.png`,
+                    'menuOpacity': 1,
+                    'hudMainColor': '#5974ff',
+                    'hudColor': `rgba(36,36,36,0.49)`,
+                    'hudTextColor': `#ffffff`,
+                    'statsHudColor': `#ffffff`,
+                    'timeHudColor': `#737373`,
+                    'top5MassColor': `#1fe000`,
+                    'lbMeColor': `#bf00aa`,
+                    'lbTeammateColor': `#018cf6`,
+                    'hudScale': 1.15,
+                    'messageColor': `rgba(0,0,0,0.4)`,
+                    'messageTextColor': `#e8e8e8`,
+                    'messageTimeColor': `#545454`,
+                    'messageNickColor': `#05ff00`,
+                    'commandsColor': `rgba(36,36,36,0.9)`,
+                    'commandsTextColor': `#ffffff`,
+                    'commandsTimeColor': `#545454`,
+                    'commandsNickColor': `#ffffff`,
+                    'chatBoxColor': 'rgba(0,0,0,0.4)',
+                    'chatScale': 1,
+                    'miniMapSectorsColor': '#ffffff',
+                    'miniMapSectorColor': `#000000`,
+                    'miniMapGuidesColor': '#ff00a8',
+                    'miniMapNickColor': `#ffffff`,
+                    'miniMapNickStrokeColor': `#4d4d4d`,
+                    'miniMapMyCellColor': `#f0ff3d`,
+                    'miniMapMyCellStrokeColor': `#acba07`,
+                    'miniMapTeammatesColor': `#305eff`,
+                    'miniMapDeathLocationColor': `#2b2b2b`,
+                    'miniMapWidth': 250,
+                    'miniMapSectorsOpacity': 0.1,
+                    'miniMapNickSize': 9,
+                    'miniMapNickStrokeSize': 0,
+                    'miniMapMyCellSize': 5,
+                    'miniMapMyCellStrokeSize': 0,
+                    'miniMapTeammatesSize': 5,
+                    'customBackground': '',
+                    'customCursor': 'https://cdn.ogario.ovh/static/img/cursors/cursor_01.cur'
+                },
+                'hkg-style': {
+                    'name': 'HKG Style',
+                    'darkTheme': !0,
+                    'mainColor': `#651fff`,
+                    'bgColor': `#000000`,
+                    'bordersColor': `#ffffff`,
+                    'gridColor': `#111111`,
+                    'sectorsColor': '#111111',
+                    'namesColor': `#ffffff`,
+                    'namesStrokeColor': '#000000',
+                    'massColor': `#ffffff`,
+                    'massStrokeColor': `#000000`,
+                    'virusColor': `#666666`,
+                    'virusStrokeColor': `#666666`,
+                    'mVirusColor': '#ce6363',
+                    'mVirusStrokeColor': '#b95959',
+                    'foodColor': `#651fff`,
+                    'hudMainColor': `#651fff`,
+                    'statsHudColor': `#651fff`,
+                    'top5MassColor': `#651fff`,
+                    'timeHudColor': `#651fff`,
+                    'messageNickColor': `#651fff`,
+                    'commandsColor': 'rgba(101,31,255,0.9)',
+                    'commandsTimeColor': `#651fff`,
+                    'commandsTextColor': `#ffffff`,
+                    'miniMapSectorsColor': `#ffffff`,
+                    'miniMapSectorColor': '#651fff',
+                    'miniMapGuidesColor': `#651fff`,
+                    'miniMapMyCellColor': `#ffffff`,
+                    'miniMapMyCellStrokeColor': `#651fff`,
+                    'miniMapTeammatesColor': `#651fff`,
+                    'miniMapDeathLocationColor': '#651fff',
+                    'miniMapSectorsOpacity': 0.1
+                },
+                'agario-light': {
+                    'name': 'Agar.io Light',
+                    'darkTheme': !1,
+                    'mainColor': `#ffffff`,
+                    'bgColor': `#f2fbff`,
+                    'bordersColor': `#858a8c`,
+                    'gridColor': `#ced6d9`,
+                    'sectorsColor': `#ced6d9`,
+                    'namesColor': `#ffffff`,
+                    'namesStrokeColor': `#000000`,
+                    'massColor': `#ffffff`,
+                    'massStrokeColor': `#000000`,
+                    'virusColor': `#33ff33`,
+                    'virusStrokeColor': '#2de52d',
+                    'mVirusColor': '#ce6363',
+                    'mVirusStrokeColor': '#b95959',
+                    'foodColor': `#2de52d`,
+                    'hudMainColor': '#ffffff',
+                    'statsHudColor': `#ffffff`,
+                    'top5MassColor': `#ffffff`,
+                    'timeHudColor': `#ffffff`,
+                    'messageNickColor': `#ffffff`,
+                    'commandsColor': `rgba(255,255,255,0.9)`,
+                    'commandsTimeColor': '#ffffff',
+                    'commandsTextColor': '#000000',
+                    'miniMapSectorsColor': '#ffffff',
+                    'miniMapSectorColor': `#ffffff`,
+                    'miniMapGuidesColor': `#ffffff`,
+                    'miniMapMyCellColor': `#ffffff`,
+                    'miniMapMyCellStrokeColor': `#ffffff`,
+                    'miniMapTeammatesColor': `#ffffff`,
+                    'miniMapDeathLocationColor': `#ffffff`,
+                    'miniMapSectorsOpacity': 0.25
+                },
+                'agario-dark': {
+                    'name': `Agar.io Dark`,
+                    'darkTheme': !0,
+                    'mainColor': '#ffffff',
+                    'bgColor': `#111111`,
+                    'bordersColor': `#999999`,
+                    'gridColor': `#333333`,
+                    'sectorsColor': `#333333`,
+                    'namesColor': `#ffffff`,
+                    'namesStrokeColor': `#000000`,
+                    'massColor': '#ffffff',
+                    'massStrokeColor': '#000000',
+                    'virusColor': `#33ff33`,
+                    'virusStrokeColor': `#2de52d`,
+                    'mVirusColor': '#ce6363',
+                    'mVirusStrokeColor': '#b95959',
+                    'foodColor': '#2de52d',
+                    'hudMainColor': `#ffffff`,
+                    'statsHudColor': `#ffffff`,
+                    'top5MassColor': `#ffffff`,
+                    'timeHudColor': `#ffffff`,
+                    'messageNickColor': `#ffffff`,
+                    'commandsColor': 'rgba(255,255,255,0.9)',
+                    'commandsTimeColor': `#ffffff`,
+                    'commandsTextColor': '#ffffff',
+                    'miniMapSectorsColor': `#ffffff`,
+                    'miniMapSectorColor': `#ffffff`,
+                    'miniMapGuidesColor': `#ffffff`,
+                    'miniMapMyCellColor': '#ffffff',
+                    'miniMapMyCellStrokeColor': '#ffffff',
+                    'miniMapTeammatesColor': `#ffffff`,
+                    'miniMapDeathLocationColor': `#ffffff`,
+                    'miniMapSectorsOpacity': 0.1
+                }
+            },
+            m = {
+                'ogario-v3': {
+                    'name': `OGARio v3`,
+                    'menuMainColor': `#01d9cc`,
+                    'menuBtnTextColor': `#ffffff`,
+                    'menuPanelColor': `#00243e`,
+                    'menuPanelColor2': '#002f52',
+                    'menuTextColor': `#ffffff`,
+                    'menuTextColor2': '#8096a7',
+                    'btn1Color': '#018cf6',
+                    'btn1Color2': `#0176ce`,
+                    'btn2Color': '#00b9e8',
+                    'btn2Color2': `#0099c0`,
+                    'btn3Color': '#8d5fe6',
+                    'btn3Color2': '#814ee3',
+                    'btn4Color': `#f300d8`,
+                    'btn4Color2': `#df00c6`,
+                    'menuBg': `https://cdn.ogario.ovh/static/img/pattern.png`
+                },
+                'ogario-v2': {
+                    'name': 'OGARio v2',
+                    'menuMainColor': `#ff7800`,
+                    'menuBtnTextColor': `#ffffff`,
+                    'menuPanelColor': `#222222`,
+                    'menuPanelColor2': `#333333`,
+                    'menuTextColor': '#bbbbbb',
+                    'menuTextColor2': `#bbbbbb`,
+                    'btn1Color': `#428bca`,
+                    'btn1Color2': '#3071a9',
+                    'btn2Color': `#5cb85c`,
+                    'btn2Color2': `#449d44`,
+                    'btn3Color': `#f0ad4e`,
+                    'btn3Color2': `#ec971f`,
+                    'btn4Color': `#d9534f`,
+                    'btn4Color2': `#c9302c`,
+                    'menuBg': ''
+                },
+                'agario': {
+                    'name': `Agar.io`,
+                    'menuMainColor': `#5bc0de`,
+                    'menuBtnTextColor': '#ffffff',
+                    'menuPanelColor': `#ffffff`,
+                    'menuPanelColor2': `#cccccc`,
+                    'menuTextColor': `#333333`,
+                    'menuTextColor2': `#999999`,
+                    'btn1Color': `#428bca`,
+                    'btn1Color2': `#3071a9`,
+                    'btn2Color': `#5cb85c`,
+                    'btn2Color2': `#449d44`,
+                    'btn3Color': `#f0ad4e`,
+                    'btn3Color2': `#ec971f`,
+                    'btn4Color': `#d9534f`,
+                    'btn4Color2': `#c9302c`,
+                    'menuBg': ''
+                }
+            },
+            g = {
+                'preset': `ogario-v3`,
+                'darkTheme': !0,
+                'mainColor': `#01d9cc`,
+                'bgColor': `#000a11`,
+                'bordersColor': `#01d9cc`,
+                'gridColor': `#00243e`,
+                'sectorsColor': `#00243e`,
+                'namesColor': `#ffffff`,
+                'namesStrokeColor': `#000000`,
+                'massColor': `#ffffff`,
+                'massStrokeColor': `#000000`,
+                'virusColor': `#002f52`,
+                'virusStrokeColor': '#00b9e8',
+                'mVirusColor': '#ce6363',
+                'mVirusStrokeColor': '#b95959',
+                'foodColor': '#5000ff',
+                'teammatesIndColor': `#ffffff`,
+                'cursorTrackingColor': `#ffffff`,
+                'splitRangeColor': `#ffffff`,
+                'ghostCellsColor': `#ffffff`,
+                'safeAreaColor': '#ffffff',
+                'dangerAreaColor': `#bf00aa`,
+                'namesFont': `ubuntu-bold`,
+                'namesFontFamily': `Ubuntu`,
+                'namesFontWeight': 700,
+                'massFont': `ubuntu-bold`,
+                'massFontFamily': `Ubuntu`,
+                'massFontWeight': 700,
+                'sectorsFont': `ubuntu`,
+                'sectorsFontFamily': `Ubuntu`,
+                'sectorsFontWeight': 400,
+                'sectorsX': 5,
+                'sectorsY': 5,
+                'namesScale': 1,
+                'massScale': 3,
+                'virMassScale': 3,
+                'strokeScale': 1,
+                'foodSize': 5,
+                'bordersWidth': 40,
+                'sectorsWidth': 40,
+                'sectorsFontSize': 1200,
+                'cellsAlpha': 0.9,
+                'skinsAlpha': 0.7,
+                'virusAlpha': 0.6,
+                'textAlpha': 1,
+                'ghostCellsAlpha': 0.3,
+                'virusStrokeSize': 14,
+                'menuPreset': `ogario-v3`,
+                'menuMainColor': `#01d9cc`,
+                'menuBtnTextColor': '#ffffff',
+                'menuPanelColor': '#00243e',
+                'menuPanelColor2': `#002f52`,
+                'menuTextColor': `#ffffff`,
+                'menuTextColor2': `#8096a7`,
+                'btn1Color': `#018cf6`,
+                'btn1Color2': `#0176ce`,
+                'btn2Color': '#00b9e8',
+                'btn2Color2': `#0099c0`,
+                'btn3Color': '#8d5fe6',
+                'btn3Color2': `#814ee3`,
+                'btn4Color': '#bf00aa',
+                'btn4Color2': `#a80096`,
+                'menuBg': `https://cdn.ogario.ovh/static/img/pattern.png`,
+                'menuOpacity': 0.96,
+                'hudMainColor': `#01d9cc`,
+                'hudColor': `rgba(0,0,0,0.4)`,
+                'hudTextColor': '#ffffff',
+                'statsHudColor': `#ffffff`,
+                'timeHudColor': `#01d9cc`,
+                'top5MassColor': '#bf00aa',
+                'lbMeColor': `#bf00aa`,
+                'lbTeammateColor': `#018cf6`,
+                'hudFont': `ubuntu-bold`,
+                'hudFontFamily': 'Ubuntu',
+                'hudFontWeight': 700,
+                'hudScale': 1,
+                'messageColor': 'rgba(0,0,0,0.4)',
+                'messageTextColor': `#ffffff`,
+                'messageTimeColor': `#018cf6`,
+                'messageNickColor': `#01d9cc`,
+                'commandsColor': `rgba(191,0,170,0.9)`,
+                'commandsTextColor': `#ffffff`,
+                'commandsTimeColor': `#bf00aa`,
+                'commandsNickColor': `#ffffff`,
+                'chatBoxColor': 'rgba(0,0,0,0.4)',
+                'chatScale': 1,
+                'miniMapSectorsColor': `#ffffff`,
+                'miniMapSectorColor': '#01d9cc',
+                'miniMapGuidesColor': `#bf00aa`,
+                'miniMapNickColor': `#ffffff`,
+                'miniMapNickStrokeColor': `#000000`,
+                'miniMapMyCellColor': '#ffffff',
+                'miniMapMyCellStrokeColor': `#bf00aa`,
+                'miniMapTeammatesColor': `#01d9cc`,
+                'miniMapDeathLocationColor': `#bf00aa`,
+                'miniMapGhostCellsColor': '#ffffff',
+                'miniMapFont': `ubuntu-bold`,
+                'miniMapFontFamily': `Ubuntu`,
+                'miniMapFontWeight': 700,
+                'miniMapNickFont': `ubuntu-bold`,
+                'miniMapNickFontFamily': 'Ubuntu',
+                'miniMapNickFontWeight': 700,
+                'miniMapWidth': 240,
+                'miniMapTop': 24,
+                'miniMapSectorsOpacity': 0.1,
+                'miniMapNickSize': 11,
+                'miniMapNickStrokeSize': 2,
+                'miniMapMyCellSize': 7.5,
+                'miniMapMyCellStrokeSize': 4,
+                'miniMapTeammatesSize': 5.5,
+                'miniMapGhostCellsAlpha': 0.15,
+                'customBackground': '',
+                'customCursor': 'https://cdn.ogario.ovh/static/img/cursors/cursor_02.cur'
+            },
+            y = {
+                'menuMainColorCSS': null,
+                'menuPanelColorCSS': null,
+                'menuTextlColorCSS': null,
+                'menuButtonsCSS': null,
+                'hudCSS': null,
+                'chatCSS': null,
+                'chatScaleCSS': null,
+                'cursorCSS': null,
+                'loadThemeSettings': function() {
+                    var t = null;
+                    for (var s in null !== e.localStorage.getItem(`ogarioThemeSettings`) && (t = JSON.parse(e.localStorage.getItem(`ogarioThemeSettings`))), g) g.hasOwnProperty(s) && (t && t.hasOwnProperty(s) && (g[s] = t[s]), i.hasOwnProperty(s) && (i[s] = g[s]));
+                },
                 'saveThemeSettings': function() {
                     e.localStorage.setItem(`ogarioThemeSettings`, JSON.stringify(g));
                 },
@@ -7062,10 +7074,10 @@ ogcustom1=
                     s(`body`).css(`background-color`, g.bgColor);
                 },
                 'setFoodColor': function() {
-                    v['optimizedFood'] && x && x.preDrawPellet();
+                    v['optimizedFood'] && ogarfooddrawer && ogarfooddrawer.preDrawPellet();
                 },
                 'setIndicatorColor': function() {
-                    x && x.preDrawIndicator();
+                    ogarfooddrawer && ogarfooddrawer.preDrawIndicator();
                 },
                 'setCustomBackground': function() {
                     g['customBackground'] ? s(`body`).css(`background-image`, `url(` + g[`customBackground`] + ')') : s(`body`)['css'](`background-image`, `none`);
@@ -7147,17 +7159,17 @@ ogcustom1=
                     this[`setMiniMapFont`](), this[`setMiniMapWidth`](), this[`setMiniMapSectorsOpacity`]();
                 },
                 'setMiniMapFont': function() {
-                    this.setFont('miniMapFont', g['miniMapFont']), b && b['resetMiniMapSectors']();
+                    this.setFont('miniMapFont', g['miniMapFont']), ogarminimapdrawer && ogarminimapdrawer['resetMiniMapSectors']();
                 },
                 'setMiniMapWidth': function() {
                     var t = g[`miniMapWidth`] / 200;
                     g[`miniMapTop`] = Math[`round`](20 * t), s(`#minimap-hud`).css({
                         'width': g[`miniMapWidth`],
                         'height': g[`miniMapWidth`] + g[`miniMapTop`]
-                    }), b && b[`resetMiniMapSectors`]();
+                    }), ogarminimapdrawer && ogarminimapdrawer[`resetMiniMapSectors`]();
                 },
                 'setMiniMapSectorsColor': function() {
-                    b && b['resetMiniMapSectors']();
+                    ogarminimapdrawer && ogarminimapdrawer['resetMiniMapSectors']();
                 },
                 'setMiniMapSectorsOpacity': function() {
                     s(`#minimap-sectors`).css(`opacity`, g[`miniMapSectorsOpacity`]);
@@ -7172,165 +7184,165 @@ ogcustom1=
             ogario1PlayerProfiles = [],
             ogarcopythelb = {
                 'nick': `I<3Legendmod`,
-                'clanTag': '℄',
+                'clanTag': 'Ⓜ',
                 'skinURL': '',
-                'color': g.mainColor
+                'color': g[`mainColor`]
             },
-                        v = {
-                            quickResp: !0,
-                            autoResp: !1,
-                            autoZoom: !1,
-                            autoHideNames: !0,
-                            autoHideMass: !0,
-                            autoHideFood: !1,
-                            autoHideFoodOnZoom: !1,
-                            noNames: !1,
-                            optimizedNames: !0,
-                            hideMyName: !0,
-                            hideTeammatesNames: !1,
-                            showMass: !0,
-                            optimizedMass: !0,
-                            shortMass: !0,
-                            virMassShots: !0,
-                            hideMyMass: !1,
-                            hideEnemiesMass: !1,
-                            vanillaSkins: !1,
-                            customSkins: !0,
-                            myTransparentSkin: !1,
-                            myCustomColor: !1,
-                            transparentCells: !1,
-                            transparentViruses: !0,
-                            transparentSkins: !1,
-                            showGrid: !1,
-                            showBgSectors: !1,
-                            showMapBorders: !0,
-                            showGhostCells: !1,
-                            showMiniMap: !0,
-                            showMiniMapGrid: !1,
-                            showMiniMapGuides: !0,
-                            showMiniMapGhostCells: !1,
-                            oneColoredTeammates: !1,
-                            optimizedFood: !0,
-                            rainbowFood: !1,
-                            oppColors: !1,
-                            oppRings: !1,
-                            virColors: !1,
-                            splitRange: !1,
-                            virusesRange: !1,
-                            textStroke: !1,
-                            namesStroke: !1,
-                            massStroke: !1,
-                            cursorTracking: !1,
-                            teammatesInd: !1,
-                            mouseSplit: !1,
-                            mouseFeed: !1,
-                            mouseInvert: !1,
-                            disableChat: !1,
-                            hideChat: !1,
-                            chatSounds: !0,
-                            chatEmoticons: !0,
-                            showChatBox: !1,
-                            showChatImages: !0,
-                            showChatVideos: !0,
-                            showTop5: !0,
-                            showTargeting: !0,
-                            showLbData: !1,
-                            showTime: !0,
-                            normalLb: !1,
-                            centeredLb: !0,
-                            fpsAtTop: !0,
-                            showStats: !0,
-                            showStatsMass: !0,
-                            showStatsSTE: !1,
-                            showStatsN16: !1,
-                            showStatsFPS: !0,
-                            blockPopups: !1,
-                            streamMode: !1,
-                            hideSkinUrl: !1,
-                            showQuickMenu: !0,
-                            showSkinsPanel: !0,
-                            animation: 140,
-                            zoomSpeedValue: 0.9,
-                            messageSound: "https://cdn.ogario.ovh/static/sounds/notification_01.mp3",
-                            commandSound: "https://cdn.ogario.ovh/static/sounds/notification_02.mp3"
-                        };
-        var b = {
-						name: `Legend mod Express v4`,
-						version: "v4 (4.0.0 b36)",
-                        privateMode: !1,
-                        protocolMode: !0,
-                        publicIP: "wss://srv.ogario.eu",
-                        privateIP: null,
-                        updateInterval: 1e3,
-                        updateTick: 0,
-                        updateMaxTick: 2,
-                        currentSector: "",
-                        miniMap: null,
-                        miniMapCtx: null,
-                        miniMapSectors: null,
-                        pi2: 2 * Math.PI,
-                        socket: null,
-                        cells: {},
-                        teamPlayers: [],
-                        parties: [],
-                        chatHistory: [],
-                        chatUsers: {},
-                        chatMutedUsers: {},
-                        chatMutedUserIDs: [],
-                        customSkinsCache: {},
-                        customSkinsMap: {},
-                        cacheQueue: [],
-                        deathLocations: [],
-                        playerID: null,
-                        playerMass: 0,
-                        selectedProfile: 0,
-                        lastDeath: 0,
-                        skipServerData: !1,
-                        gameMode: ":ffa",
-                        region: "",
-                        partyToken: "",
-                        ws: "",
-                        serverIP: "",
-                        serverArena: "",
-                        serverToken: "",
-                        lastSentNick: "",
-                        lastSentClanTag: null,
-                        lastSentSkinURL: "",
-                        lastSentCustomColor: "",
-                        lastSentPartyToken: "",
-                        lastSentServerToken: "",
-                        lastMessageSentTime: Date.now(),
-                        rFps: 0,
-                        renderedFrames: 0,
-                        fpsLastRequest: null,
-                        statsHUD: null,
-                        leaderboardPositionsHUD: null,
-                        leaderboardDataHUD: null,
-                        activeParties: null,
-                        top5pos: null,
-                        top5totalMass: null,
-                        top5totalPlayers: null,
-                        top5limit: 5,
-                        timeHUD: null,
-                        questHUD: null,
-                        retryResp: 0,
-                        token: "b2dhcmlvLm92aA==",
-                        canvasScale: 1,
-                        selectBiggestCell: !0,
-                        noColors: !1,
-                        skipStats: !1,
-                        showQuest: !1,
-                        showSplitInd: !1,
-                        pause: !1,
-                        targetID: 0,
-                        targetStatus: 0,
-                        targetNick: "",
-                        targetSkinURL: "",
-                        targeting: !1,
-                        privateMiniMap: !1,
-                        messageSound: null,
-                        commandSound: null,
-                        feedInterval: null,
+            v = {
+                'quickResp': !0,
+                'autoResp': !1,
+                'autoZoom': !1,
+                'autoHideNames': !0,
+                'autoHideMass': !0,
+                'autoHideFood': !1,
+                'autoHideFoodOnZoom': !1,
+                'noNames': !1,
+                'optimizedNames': !0,
+                'hideMyName': !0,
+                'hideTeammatesNames': !1,
+                'showMass': !0,
+                'optimizedMass': !0,
+                'shortMass': !0,
+                'virMassShots': !0,
+                'hideMyMass': !1,
+                'hideEnemiesMass': !1,
+                'vanillaSkins': !1,
+                'customSkins': !0,
+                'myTransparentSkin': !1,
+                'myCustomColor': !1,
+                'transparentCells': !1,
+                'transparentViruses': !0,
+                'transparentSkins': !1,
+                'showGrid': !1,
+                'showBgSectors': !1,
+                'showMapBorders': !0,
+                'showGhostCells': !1,
+                'showMiniMap': !0,
+                'showMiniMapGrid': !1,
+                'showMiniMapGuides': !0,
+                'showMiniMapGhostCells': !0,
+                'oneColoredTeammates': !1,
+                'optimizedFood': !0,
+                'rainbowFood': !1,
+                'oppColors': !1,
+                'oppRings': !1,
+                'virColors': !1,
+                'splitRange': !1,
+                'virusesRange': !1,
+                'textStroke': !1,
+                'namesStroke': !1,
+                'massStroke': !1,
+                'cursorTracking': !1,
+                'teammatesInd': !1,
+                'mouseSplit': !1,
+                'mouseFeed': !1,
+                'mouseInvert': !1,
+                'disableChat': !1,
+                'hideChat': !1,
+                'chatSounds': !0,
+                'chatEmoticons': !0,
+                'showChatBox': !1,
+                'showChatImages': !0,
+                'showChatVideos': !0,
+                'showTop5': !0,
+                'showTargeting': !0,
+                'showLbData': !0,
+                'showTime': !0,
+                'normalLb': !1,
+                'centeredLb': !0,
+                'fpsAtTop': !0,
+                'showStats': !0,
+                'showStatsMass': !0,
+                'showStatsSTE': !1,
+                'showStatsN16': !1,
+                'showStatsFPS': !0,
+                'blockPopups': !1,
+                'streamMode': !1,
+                'hideSkinUrl': !1,
+                'showQuickMenu': !0,
+                'showSkinsPanel': !0,
+                'animation': 140,
+                'zoomSpeedValue': 0.9,
+                'messageSound': `https://cdn.ogario.ovh/static/sounds/notification_01.mp3`,
+                'commandSound': 'https://cdn.ogario.ovh/static/sounds/notification_02.mp3'
+            };
+        var ogarminimapdrawer = {
+            'name': `Legend mod Express v4`,
+            'version': `v4 (4.0.0 b35)`,
+            'privateMode': !1,
+            'protocolMode': !0,
+            'publicIP': 'wss://srv.ogario.eu',
+            'privateIP': null,
+            'updateInterval': 1000,
+            'updateTick': 0,
+            'updateMaxTick': 2,
+            'currentSector': '',
+            'miniMap': null,
+            'miniMapCtx': null,
+            'miniMapSectors': null,
+            'pi2': 2 * Math['PI'],
+            'socket': null,
+            'cells': {},
+            'teamPlayers': [],
+            'parties': [],
+            'chatHistory': [],
+            'chatUsers': {},
+            'chatMutedUsers': {},
+            'chatMutedUserIDs': [],
+            'customSkinsCache': {},
+            'customSkinsMap': {},
+            'cacheQueue': [],
+            'deathLocations': [],
+            'playerID': null,
+            'playerMass': 0,
+            'selectedProfile': 0,
+            'lastDeath': 0,
+            'skipServerData': !1,
+            'gameMode': `:ffa`,
+            'region': '',
+            'partyToken': '',
+            'ws': '',
+            'serverIP': '',
+            'serverArena': '',
+            'serverToken': '',
+            'lastSentNick': '',
+            'lastSentClanTag': null,
+            'lastSentSkinURL': '',
+            'lastSentCustomColor': '',
+            'lastSentPartyToken': '',
+            'lastSentServerToken': '',
+            'lastMessageSentTime': Date[`now`](),
+            'rFps': 0,
+            'renderedFrames': 0,
+            'fpsLastRequest': null,
+            'statsHUD': null,
+            'leaderboardPositionsHUD': null,
+            'leaderboardDataHUD': null,
+            'activeParties': null,
+            'top5pos': null,
+            'top5totalMass': null,
+            'top5totalPlayers': null,
+            'top5limit': 5,
+            'timeHUD': null,
+            'questHUD': null,
+            'retryResp': 0,
+            'token': `b2dhcmlvLm92aA==`,
+            'canvasScale': 1,
+            'selectBiggestCell': !0,
+            'noColors': !1,
+            'skipStats': !1,
+            'showQuest': !1,
+            'showSplitInd': !1,
+            'pause': !1,
+            'targetID': 0,
+            'targetStatus': 0,
+            'targetNick': '',
+            'targetSkinURL': '',
+            'targeting': !1,
+            'privateMiniMap': !1,
+            'messageSound': null,
+            'commandSound': null,
+            'feedInterval': null,
             'getPlayerX': function() {
                 return i[`playerX`] + i[`mapOffsetX`];
             },
@@ -7530,7 +7542,7 @@ ogcustom1=
             'displayStats': function() {
                 if (v[`showStats`]) {
                     var t = '';
-                    i[`play`] && (v[`showStatsMass`] && i[`playerMass`] && (t += h[`mass`] + ': ' + i[`playerMass`] + ` | `), i[`playerScore`] && (t += h[`score`] + ': ' + i['playerScore']), v['showStatsSTE'] && i[`STE`] && (t += ` | STE: ` + i['STE']), v[`showStatsN16`] && i[`playerSplitCells`] && (t += ` | ` + i[`playerSplitCells`] + '/16'), v[`showStatsFPS`] && (t += ' | ')), v[`showStatsFPS`] && (t += `FPS: ` + x[`fps`]), this[`statsHUD`][`textContent`] = t;
+                    i[`play`] && (v[`showStatsMass`] && i[`playerMass`] && (t += h[`mass`] + ': ' + i[`playerMass`] + ` | `), i[`playerScore`] && (t += h[`score`] + ': ' + i['playerScore']), v['showStatsSTE'] && i[`STE`] && (t += ` | STE: ` + i['STE']), v[`showStatsN16`] && i[`playerSplitCells`] && (t += ` | ` + i[`playerSplitCells`] + '/16'), v[`showStatsFPS`] && (t += ' | ')), v[`showStatsFPS`] && (t += `FPS: ` + ogarfooddrawer[`fps`]), this[`statsHUD`][`textContent`] = t;
                     var e = this;
                     setTimeout(function() {
                         e[`displayStats`]();
@@ -7617,7 +7629,7 @@ ogcustom1=
             'exportSettings': function() {
                 var t = {
                     'ogarioCommands': c,
-                    'ogarioHotkeys': T,
+                    'ogarioHotkeys': ogario1Hotkeys,
                     'ogarioPlayerProfiles': ogario1PlayerProfiles,
                     'ogarioSettings': v,
                     'ogarioThemeSettings': g
@@ -7785,7 +7797,7 @@ ogcustom1=
                     var e = this.value;
                     ':party' !== e && t[`leaveParty`](), t[`gameMode`] = i['gameMode'] = e, t[`setQuest`]();
                 }), s(document)['on'](`change`, `#quality`, function() {
-                    t[`getQuality`](this.value), D();
+                    t[`getQuality`](this.value), ogarhusettings();
                 }), s(document)['on'](`input`, '#skin', function() {
                     var e = this.value;
                     t[`setSkinPreview`](e, `skin-preview`), t[`setSkinPreview`](e, `profile-` + t[`selectedProfile`]);
@@ -7917,7 +7929,7 @@ ogcustom1=
                     var a = s(o)[`parent`]()[`attr`]('id');
                     s('#' + a + ` .submenu-panel`)[`not`](o).css(`display`, `none`);
                 } else s(`.menu-panel`)[`not`](o).css('display', `none`);
-                s(o)[`fadeIn`](1000), D(), s('.submenu-panel')[`perfectScrollbar`](`update`);
+                s(o)[`fadeIn`](1000), ogarhusettings(), s('.submenu-panel')[`perfectScrollbar`](`update`);
             },
             'getDefaultSettings': function() {
                 if (this['noSkins'] = s(`#noSkins`)['prop'](`checked`), this['noColors'] = s(`#noColors`)[`prop`](`checked`), this[`skipStats`] = s(`#skipStats`)[`prop`](`checked`), this[`showQuest`] = s(`#showQuest`)[`prop`](`checked`), i[`showCustomSkins`] = !this[`noSkins`], null !== e.localStorage['getItem'](`scale_setting`)) {
@@ -8122,7 +8134,7 @@ ogcustom1=
                     var n = o / i[`mapSize`],
                         r = i[`mapOffsetX`] + i[`mapOffset`],
                         l = i[`mapOffsetY`] + i[`mapOffset`];
-                    if (this['drawSelectedCell'](this[`miniMapCtx`]), this[`currentSector`] = this[`calculateMapSector`](i[`playerX`], i[`playerY`], !0), this[`miniMapCtx`]['globalAlpha'] = 1, this['miniMapCtx'][`font`] = g[`miniMapFontWeight`] + ' ' + (e - 4) + `px ` + g['miniMapFontFamily'], this[`miniMapCtx`][`fillStyle`] = g[`miniMapSectorColor`], this[`miniMapCtx`][`fillText`](this['currentSector'], 10, e), this['miniMapSectors'] || this[`drawMiniMapSectors`](g[`sectorsX`], g[`sectorsY`], o, s, a), this['miniMapCtx'][`save`](), this['miniMapCtx']['translate'](9.5, a), ':battleroyale' === this[`gameMode`] && x && x[`drawBattleAreaOnMinimap`](this['miniMapCtx'], o, o, n, r, l), v[`showMiniMapGhostCells`]) {
+                    if (this['drawSelectedCell'](this[`miniMapCtx`]), this[`currentSector`] = this[`calculateMapSector`](i[`playerX`], i[`playerY`], !0), this[`miniMapCtx`]['globalAlpha'] = 1, this['miniMapCtx'][`font`] = g[`miniMapFontWeight`] + ' ' + (e - 4) + `px ` + g['miniMapFontFamily'], this[`miniMapCtx`][`fillStyle`] = g[`miniMapSectorColor`], this[`miniMapCtx`][`fillText`](this['currentSector'], 10, e), this['miniMapSectors'] || this[`drawMiniMapSectors`](g[`sectorsX`], g[`sectorsY`], o, s, a), this['miniMapCtx'][`save`](), this['miniMapCtx']['translate'](9.5, a), ':battleroyale' === this[`gameMode`] && ogarfooddrawer && ogarfooddrawer[`drawBattleAreaOnMinimap`](this['miniMapCtx'], o, o, n, r, l), v[`showMiniMapGhostCells`]) {
                         var h = i['ghostCells'];
                         this[`miniMapCtx`][`beginPath`]();
                         for (var c = 0; c < h[`length`]; c++)
@@ -8149,7 +8161,7 @@ ogcustom1=
             'drawMiniMapSectors': function(t, e, s, o, a) {
                 this['miniMapSectors'] = document[`getElementById`](`minimap-sectors`);
                 var n = this[`miniMapSectors`][`getContext`]('2d');
-                n[`ogarioCtx`] = !0, this[`miniMapSectors`]['width'] = s, this['miniMapSectors'][`height`] = o, n[`fillStyle`] = '#FFFFFF', this[`dTok`](n, s - 1), x[`drawSectors`](n, i[`mapOffsetFixed`], t, e, 0.5, a, s - 0.5, o - 9.5, g['miniMapSectorsColor'], g[`miniMapSectorsColor`], 1, !1);
+                n[`ogarioCtx`] = !0, this[`miniMapSectors`]['width'] = s, this['miniMapSectors'][`height`] = o, n[`fillStyle`] = '#FFFFFF', this[`dTok`](n, s - 1), ogarfooddrawer[`drawSectors`](n, i[`mapOffsetFixed`], t, e, 0.5, a, s - 0.5, o - 9.5, g['miniMapSectorsColor'], g[`miniMapSectorsColor`], 1, !1);
             },
             'resetMiniMapSectors': function() {
                 this[`miniMapSectors`] = null;
@@ -8236,7 +8248,7 @@ ogcustom1=
                 if (!s && i && (this['serverArena'] = i[1], s = this[`serverArena`]), s) {
                     this[`serverToken`] !== s && (this['serverToken'] = s, this[`flushData`](), this[`flushCells`]()), this[`partyToken`] = '';
                     var o = this['ws'][`match`](/party_id=([A-Z0-9]{6})/);
-                    o && (this[`partyToken`] = o[1], A('/#' + e[`encodeURIComponent`](this[`partyToken`])));
+                    o && (this[`partyToken`] = o[1], ogarjoiner('/#' + e[`encodeURIComponent`](this[`partyToken`])));
                 }
             },
             'updateServerInfo': function() {
@@ -8866,16 +8878,16 @@ ogcustom1=
                             o = this[`isFood`] ? this[`size`] + g[`foodSize`] : this[`size`];
                         if (t[`beginPath`](), t[`arc`](this['x'], this['y'], o, 0, this[`pi2`], !1), t[`closePath`](), this[`isFood`]) return t[`fillStyle`] = this[`color`], t[`fill`](), void t[`restore`]();
                         if (this[`isVirus`]) {
-                            return v[`transparentViruses`] && (t[`globalAlpha`] *= g[`virusAlpha`], s = !0), v['virColors'] && M[`play`] ? (t['fillStyle'] = b[`setVirusColor`](o), t['strokeStyle'] = b[`setVirusStrokeColor`](o)) : (t['fillStyle'] = this.virusColor, t[`strokeStyle`] = this.virusStroke), t[`fill`](), s && (t['globalAlpha'] = i, s = !1), t['lineWidth'] = g[`virusStrokeSize`], t[`stroke`](this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), v['showMass'] && (this[`setDrawing`](), this[`setDrawingScale`](), this['setMass'](this['size']), this['drawMass'](t)), void t[`restore`]();
+                            return v[`transparentViruses`] && (t[`globalAlpha`] *= g[`virusAlpha`], s = !0), v['virColors'] && M[`play`] ? (t['fillStyle'] = ogarminimapdrawer[`setVirusColor`](o), t['strokeStyle'] = ogarminimapdrawer[`setVirusStrokeColor`](o)) : (t['fillStyle'] = this.virusColor, t[`strokeStyle`] = this.virusStroke), t[`fill`](), s && (t['globalAlpha'] = i, s = !1), t['lineWidth'] = g[`virusStrokeSize`], t[`stroke`](this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), v['showMass'] && (this[`setDrawing`](), this[`setDrawingScale`](), this['setMass'](this['size']), this['drawMass'](t)), void t[`restore`]();
                         }
                         v[`transparentCells`] && (t[`globalAlpha`] *= g[`cellsAlpha`], s = !0);
                         var a = this[`color`];
                         M[`play`] && (this[`isPlayerCell`] ? v[`myCustomColor`] && (a = ogarcopythelb[`color`]) : v[`oppColors`] && !v[`oppRings`] && (a = this['oppColor'])), t[`fillStyle`] = a, t[`fill`](), s && (t['globalAlpha'] = i, s = !1);
                         var n = null;
-                        if (v['customSkins'] && M['showCustomSkins'] && (n = b['getCustomSkin'](this['targetNick'], this['color'])) && (((v[`transparentSkins`] || M[`play`] && v[`oppColors`]) && (!this[`isPlayerCell`] || v['myTransparentSkin']) || this['isPlayerCell'] && v['myTransparentSkin']) && (t[`globalAlpha`] *= g[`skinsAlpha`], s = !0), t[`drawImage`](n, this['x'] - o, this['y'] - o, 2 * o, 2 * o), s && (t[`globalAlpha`] = i, s = !1)), v[`teammatesInd`] && !this[`isPlayerCell`] && o <= 200 && (n || b[`checkSkinsMap`](this[`targetNick`], this[`color`])) && x[`drawTeammatesInd`](t, this['x'], this['y'], o), v[`noNames`] && !v[`showMass`] || e) t['restore']();
+                        if (v['customSkins'] && M['showCustomSkins'] && (n = ogarminimapdrawer['getCustomSkin'](this['targetNick'], this['color'])) && (((v[`transparentSkins`] || M[`play`] && v[`oppColors`]) && (!this[`isPlayerCell`] || v['myTransparentSkin']) || this['isPlayerCell'] && v['myTransparentSkin']) && (t[`globalAlpha`] *= g[`skinsAlpha`], s = !0), t[`drawImage`](n, this['x'] - o, this['y'] - o, 2 * o, 2 * o), s && (t[`globalAlpha`] = i, s = !1)), v[`teammatesInd`] && !this[`isPlayerCell`] && o <= 200 && (n || ogarminimapdrawer[`checkSkinsMap`](this[`targetNick`], this[`color`])) && ogarfooddrawer[`drawTeammatesInd`](t, this['x'], this['y'], o), v[`noNames`] && !v[`showMass`] || e) t['restore']();
                         else {
                             var r = !1;
-                            !this[`isPlayerCell`] && (r = b[`setAutoHideCellInfo`](o)) && v[`autoHideNames`] && v[`autoHideMass`] ? t[`restore`]() : (this[`setDrawing`](), this['setDrawingScale'](), t[`globalAlpha`] *= g[`textAlpha`], v['noNames'] || r && v[`autoHideNames`] || this[`isPlayerCell`] && v[`hideMyName`] || n && v[`hideTeammatesNames`] || this[`setNick`](this[`targetNick`]) && this[`drawNick`](t), !v[`showMass`] || r && v[`autoHideMass`] || this[`isPlayerCell`] && v[`hideMyMass`] || v[`hideEnemiesMass`] && !this[`isPlayerCell`] && !this[`isVirus`] || this[`setMass`](this[`size`]) && this[`drawMass`](t), t[`restore`]());
+                            !this[`isPlayerCell`] && (r = ogarminimapdrawer[`setAutoHideCellInfo`](o)) && v[`autoHideNames`] && v[`autoHideMass`] ? t[`restore`]() : (this[`setDrawing`](), this['setDrawingScale'](), t[`globalAlpha`] *= g[`textAlpha`], v['noNames'] || r && v[`autoHideNames`] || this[`isPlayerCell`] && v[`hideMyName`] || n && v[`hideTeammatesNames`] || this[`setNick`](this[`targetNick`]) && this[`drawNick`](t), !v[`showMass`] || r && v[`autoHideMass`] || this[`isPlayerCell`] && v[`hideMyMass`] || v[`hideEnemiesMass`] && !this[`isPlayerCell`] && !this[`isVirus`] || this[`setMass`](this[`size`]) && this[`drawMass`](t), t[`restore`]());
                         }
                     }
                 };
@@ -8985,7 +8997,7 @@ ogcustom1=
                     i[`onError`](t);
                 }, this['socket']['onclose'] = function(t) {
                     i[`onClose`](t);
-                }, b[`getWS`](this['ws']), b['sendServerJoin'](), b[`sendServerData`](), b[`displayLeaderboard`](''), e[`master`] && e[`master`][`onConnect`] && e[`master`][`onConnect`]();
+                }, ogarminimapdrawer[`getWS`](this['ws']), ogarminimapdrawer['sendServerJoin'](), ogarminimapdrawer[`sendServerData`](), ogarminimapdrawer[`displayLeaderboard`](''), e[`master`] && e[`master`][`onConnect`] && e[`master`][`onConnect`]();
             },
             'onOpen': function(t) {
                 console[`log`](`[Legend mod Express] Game server socket open`), this[`time`] = Date[`now`]();
@@ -9140,14 +9152,14 @@ ogcustom1=
                         this[`protocolKey`] && (this[`protocolKey`] = this[`shiftKey`](this[`protocolKey`])), this[`flushCellsData`]();
                         break;
                     case 32:
-                        this[`playerCellIDs`][`push`](t[`getUint32`](s, !0)), this[`play`] || (this[`play`] = !0, b[`hideMenu`](), this[`playerColor`] = null, b[`onPlayerSpawn`]());
+                        this[`playerCellIDs`][`push`](t[`getUint32`](s, !0)), this[`play`] || (this[`play`] = !0, ogarminimapdrawer[`hideMenu`](), this[`playerColor`] = null, ogarminimapdrawer[`onPlayerSpawn`]());
                         break;
                     case 50:
                         this[`pieChart`] = [];
                         var a = t[`getUint32`](s, !0);
                         s += 4;
                         for (var n = 0; n < a; n++) this[`pieChart`][`push`](t[`getFloat32`](s, !0)), s += 4;
-                        x[`drawPieChart`]();
+                        ogarfooddrawer[`drawPieChart`]();
                         break;
                     case 53:
                         if (this[`leaderboard`] = [], this[`playerPosition`] = 0, 54 == t[`getUint8`](0)) {
@@ -9261,11 +9273,11 @@ ogcustom1=
             'handleLeaderboard': function() {
                 for (var t = '', e = '', i = 0; i < this['leaderboard'][`length`] && 10 != i; i++) {
                     var s = '<span>';
-                    'isPlayer' === this[`leaderboard`][i]['id'] ? s = '<span class=\"me\">' : ogarcopythelb['clanTag'][`length`] && 0 == this[`leaderboard`][i][`nick`].indexOf(ogarcopythelb[`clanTag`]) && (s = `<span class=\"teammate\">`), t += s + (i + 1) + '. ' + b[`escapeHTML`](this['leaderboard'][i]['nick']) + `</span>`;
+                    'isPlayer' === this[`leaderboard`][i]['id'] ? s = '<span class=\"me\">' : ogarcopythelb['clanTag'][`length`] && 0 == this[`leaderboard`][i][`nick`].indexOf(ogarcopythelb[`clanTag`]) && (s = `<span class=\"teammate\">`), t += s + (i + 1) + '. ' + ogarminimapdrawer[`escapeHTML`](this['leaderboard'][i]['nick']) + `</span>`;
                 }
-                if (this[`playerPosition`] > 10 && (t += '<span class=\"me\">' + this[`playerPosition`] + '. ' + b[`escapeHTML`](this['playerNick']) + `</span>`), v[`showLbData`])
-                    for (var o = 0; o < this[`ghostCells`][`length`] && o != i; o++) e += '<span class=\"lb-data\">', e += `<span class=\"top5-mass-color\">[` + b[`shortMassFormat`](this['ghostCells'][o][`mass`]) + `]</span>`, e += `<span class=\"hud-main-color\">[` + b[`calculateMapSector`](this[`ghostCells`][o]['x'], this[`ghostCells`][o]['y']) + `]</span>`, e += `</span>`;
-                b[`displayLeaderboard`](t, e);
+                if (this[`playerPosition`] > 10 && (t += '<span class=\"me\">' + this[`playerPosition`] + '. ' + ogarminimapdrawer[`escapeHTML`](this['playerNick']) + `</span>`), v[`showLbData`])
+                    for (var o = 0; o < this[`ghostCells`][`length`] && o != i; o++) e += '<span class=\"lb-data\">', e += `<span class=\"top5-mass-color\">[` + ogarminimapdrawer[`shortMassFormat`](this['ghostCells'][o][`mass`]) + `]</span>`, e += `<span class=\"hud-main-color\">[` + ogarminimapdrawer[`calculateMapSector`](this[`ghostCells`][o]['x'], this[`ghostCells`][o]['y']) + `]</span>`, e += `</span>`;
+                ogarminimapdrawer[`displayLeaderboard`](t, e);
             },
             'flushCellsData': function() {
                 this[`indexedCells`] = {}, this[`cells`] = [], this[`playerCells`] = [], this[`playerCellIDs`] = [], this[`ghostCells`] = [], this[`food`] = [], this[`viruses`] = [];
@@ -9356,7 +9368,7 @@ ogcustom1=
                     l = t[`readUInt32LE`](i);
                     i += 4, (ogariocellssetts = this[`indexedCells`][l]) && ogariocellssetts[`removeCell`]();
                 }
-                this['removePlayerCell'] && !this[`playerCells`][`length`] && (this[`play`] = !1, b[`onPlayerDeath`](), b[`showMenu`](300));
+                this['removePlayerCell'] && !this[`playerCells`][`length`] && (this[`play`] = !1, ogarminimapdrawer[`onPlayerDeath`](), ogarminimapdrawer[`showMenu`](300));
             },
             'color2Hex': function(t) {
                 var e = t[`toString`](16);
@@ -9477,7 +9489,7 @@ ogcustom1=
         e['sendAction'] = function(t) {
             M['sendAction'](t);
         };
-        var x = {
+        var ogarfooddrawer = {
                 'canvas': null,
                 'ctx': null,
                 'canvasWidth': 0,
@@ -9556,8 +9568,8 @@ ogcustom1=
                         t['font'] = u ? g['sectorsFontWeight'] + ' ' + g[`sectorsFontSize`] + `px ` + g['sectorsFontFamily'] : g[`miniMapFontWeight`] + ' ' + ~~(0.4 * f) + `px ` + g['miniMapFontFamily'], t[`textAlign`] = `center`, t['textBaseline'] = 'middle';
                         for (ogario1PlayerProfiles = 0; ogario1PlayerProfiles < s; ogario1PlayerProfiles++)
                             for (var ogarcopythelb = 0; ogarcopythelb < i; ogarcopythelb++) {
-                                var b = String[`fromCharCode`](65 + ogario1PlayerProfiles) + (ogarcopythelb + 1);
-                                m = ~~(o + d / 2 + ogarcopythelb * d), y = ~~(a + f / 2 + ogario1PlayerProfiles * f), t[`fillText`](b, m, y);
+                                var ogarminimapdrawer = String[`fromCharCode`](65 + ogario1PlayerProfiles) + (ogarcopythelb + 1);
+                                m = ~~(o + d / 2 + ogarcopythelb * d), y = ~~(a + f / 2 + ogario1PlayerProfiles * f), t[`fillText`](ogarminimapdrawer, m, y);
                             }
                     }
                 },
@@ -9696,957 +9708,833 @@ ogcustom1=
                     }
                 },
                 'render': function() {
-                    x['countFps'](), x[`renderFrame`](), e[`requestAnimationFrame`](x['render']);
+                    ogarfooddrawer['countFps'](), ogarfooddrawer[`renderFrame`](), e[`requestAnimationFrame`](ogarfooddrawer['render']);
                 },
                 'init': function() {
-                    this[`setCanvas`](), this[`resizeCanvas`](), this['preDrawPellet'](), this.preDrawIndicator(), e[`requestAnimationFrame`](x[`render`]);
+                    this[`setCanvas`](), this[`resizeCanvas`](), this['preDrawPellet'](), this.preDrawIndicator(), e[`requestAnimationFrame`](ogarfooddrawer[`render`]);
                 }
             },
-            _ = {},
-            T = {},
-                        z = {
-                            "hk-feed": {
-                                label: h["hk-feed"],
-                                defaultKey: "W",
-                                keyDown: function() {
-                                    b && b.feed();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-macroFeed": {
-                                label: h["hk-macroFeed"],
-                                defaultKey: "E",
-                                keyDown: function() {
-                                    b && b.macroFeed(!0);
-                                },
-                                keyUp: function() {
-                                    b && b.macroFeed(!1);
-                                },
-                                type: "normal"
-                            },
-                            "hk-split": {
-                                label: h["hk-split"],
-                                defaultKey: "SPACE",
-                                keyDown: function() {
-                                    b && b.split();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-doubleSplit": {
-                                label: h["hk-doubleSplit"],
-                                defaultKey: "Q",
-                                keyDown: function() {
-                                    b && b.doubleSplit();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-popSplit": {
-                                label: "Popsplit",
-                                defaultKey: "ALT+Q",
-                                keyDown: function() {
-                                    b && b.popSplit();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-split16": {
-                                label: h["hk-split16"],
-                                defaultKey: "SHIFT",
-                                keyDown: function() {
-                                    b && b.split16();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-pause": {
-                                label: h["hk-pause"],
-                                defaultKey: "R",
-                                keyDown: function() {
-                                    b && b.setPause();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showTop5": {
-                                label: h["hk-showTop5"],
-                                defaultKey: "T",
-                                keyDown: function() {
-                                    b && b.setShowTop5();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showTime": {
-                                label: h["hk-showTime"],
-                                defaultKey: "ALT+T",
-                                keyDown: function() {
-                                    b && b.setShowTime();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showSplitRange": {
-                                label: h["hk-showSplitRange"],
-                                defaultKey: "U",
-                                keyDown: function() {
-                                    b && b.setShowSplitRange();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showSplitInd": {
-                                label: h["hk-showSplitInd"],
-                                defaultKey: "I",
-                                keyDown: function() {
-                                    b && b.setShowSplitInd();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showTeammatesInd": {
-                                label: h["hk-showTeammatesInd"],
-                                defaultKey: "ALT+I",
-                                keyDown: function() {
-                                    b && b.setShowTeammatesInd();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showOppColors": {
-                                label: h["hk-showOppColors"],
-                                defaultKey: "O",
-                                keyDown: function() {
-                                    b && b.setShowOppColors();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-toggleSkins": {
-                                label: h["hk-toggleSkins"],
-                                defaultKey: "A",
-                                keyDown: function() {
-                                    b && b.toggleSkins();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-transparentSkins": {
-                                label: h["hk-transparentSkins"],
-                                defaultKey: "",
-                                keyDown: function() {
-                                    b && b.setTransparentSkins();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showSkins": {
-                                label: h["hk-showSkins"],
-                                defaultKey: "S",
-                                keyDown: function() {
-                                    b && b.setShowSkins();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showStats": {
-                                label: h["hk-showStats"],
-                                defaultKey: "ALT+S",
-                                keyDown: function() {
-                                    b && b.setShowStats();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-toggleCells": {
-                                label: h["hk-toggleCells"],
-                                defaultKey: "D",
-                                keyDown: function() {
-                                    b && b.toggleCells();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showFood": {
-                                label: h["hk-showFood"],
-                                defaultKey: "F",
-                                keyDown: function() {
-                                    b && b.setShowFood();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showGrid": {
-                                label: h["hk-showGrid"],
-                                defaultKey: "G",
-                                keyDown: function() {
-                                    b && b.setShowGrid();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showMiniMapGuides": {
-                                label: h["hk-showMiniMapGuides"],
-                                defaultKey: "ALT+G",
-                                keyDown: function() {
-                                    b && b.setShowMiniMapGuides();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-hideChat": {
-                                label: h["hk-hideChat"],
-                                defaultKey: "H",
-                                keyDown: function() {
-                                    b && b.hideChat();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showHUD": {
-                                label: h["hk-showHUD"],
-                                defaultKey: "ALT+H",
-                                keyDown: function() {
-                                    b && b.setShowHUD();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-copyLb": {
-                                label: h["hk-copyLb"],
-                                defaultKey: "L",
-                                keyDown: function() {
-                                    b && b.copyLb();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showLb": {
-                                label: h["hk-showLb"],
-                                defaultKey: "ALT+L",
-                                keyDown: function() {
-                                    b && b.setShowLb();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-toggleAutoZoom": {
-                                label: h["hk-toggleAutoZoom"],
-                                defaultKey: "",
-                                keyDown: function() {
-                                    b && b.toggleAutoZoom();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-resetZoom": {
-                                label: h["hk-resetZoom"],
-                                defaultKey: "Z",
-                                keyDown: function() {
-                                    b && b.resetZoom(!0);
-                                },
-                                keyUp: function() {
-                                    b && b.resetZoom(!1);
-                                },
-                                type: "normal"
-                            },
-                            "hk-toggleDeath": {
-                                label: h["hk-toggleDeath"],
-                                defaultKey: "X",
-                                keyDown: function() {
-                                    b && b.toggleDeath();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-clearChat": {
-                                label: h["hk-clearChat"],
-                                defaultKey: "C",
-                                keyDown: function() {
-                                    b && b.displayChatHistory(!0);
-                                },
-                                keyUp: function() {
-                                    b && b.displayChatHistory(!1);
-                                },
-                                type: "normal"
-                            },
-                            "hk-showBgSectors": {
-                                label: h["hk-showBgSectors"],
-                                defaultKey: "B",
-                                keyDown: function() {
-                                    b && b.setShowBgSectors();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-hideBots": {
-                                label: h["hk-hideBots"],
-                                defaultKey: "ALT+B",
-                                keyDown: function() {
-                                    b && b.setHideSmallBots();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showNames": {
-                                label: h["hk-showNames"],
-                                defaultKey: "N",
-                                keyDown: function() {
-                                    b && b.setShowNames();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-hideTeammatesNames": {
-                                label: h["hk-hideTeammatesNames"],
-                                defaultKey: "",
-                                keyDown: function() {
-                                    b && b.setHideTeammatesNames();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showMass": {
-                                label: h["hk-showMass"],
-                                defaultKey: "M",
-                                keyDown: function() {
-                                    b && b.setShowMass();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showMiniMap": {
-                                label: h["hk-showMiniMap"],
-                                defaultKey: "ALT+M",
-                                keyDown: function() {
-                                    b && b.setShowMiniMap();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-chatMessage": {
-                                label: h["hk-chatMessage"],
-                                defaultKey: "ENTER",
-                                keyDown: function() {
-                                    b && b.enterChatMessage();
-                                },
-                                keyUp: null,
-                                type: "special"
-                            },
-                            "hk-quickResp": {
-                                label: h["hk-quickResp"],
-                                defaultKey: "TILDE",
-                                keyDown: function() {
-                                    b && b.quickResp();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-autoResp": {
-                                label: h["hk-autoResp"],
-                                defaultKey: "",
-                                keyDown: function() {
-                                    b && b.toggleAutoResp();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-zoom1": {
-                                label: h["hk-zoomLevel"] + " 1",
-                                defaultKey: "ALT+1",
-                                keyDown: function() {
-                                    b && b.setZoom(0.5);
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-zoom2": {
-                                label: h["hk-zoomLevel"] + " 2",
-                                defaultKey: "ALT+2",
-                                keyDown: function() {
-                                    b && b.setZoom(0.25);
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-zoom3": {
-                                label: h["hk-zoomLevel"] + " 3",
-                                defaultKey: "ALT+3",
-                                keyDown: function() {
-                                    b && b.setZoom(0.125);
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-zoom4": {
-                                label: h["hk-zoomLevel"] + " 4",
-                                defaultKey: "ALT+4",
-                                keyDown: function() {
-                                    b && b.setZoom(0.075);
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-zoom5": {
-                                label: h["hk-zoomLevel"] + " 5",
-                                defaultKey: "ALT+5",
-                                keyDown: function() {
-                                    b && b.setZoom(0.05);
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-switchServerMode": {
-                                label: h["hk-switchServerMode"],
-                                defaultKey: "=",
-                                keyDown: function() {
-                                    b && b.switchServerMode();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showTargeting": {
-                                label: h["hk-showTargeting"],
-                                defaultKey: "",
-                                keyDown: function() {
-                                    b && b.setShowTargeting();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-setTargeting": {
-                                label: h["hk-setTargeting"],
-                                defaultKey: "",
-                                keyDown: function() {
-                                    b && b.setTargeting();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-cancelTargeting": {
-                                label: h["hk-cancelTargeting"],
-                                defaultKey: "",
-                                keyDown: function() {
-                                    b && b.cancelTargeting();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-changeTarget": {
-                                label: h["hk-changeTarget"],
-                                defaultKey: "",
-                                keyDown: function() {
-                                    b && b.changeTarget();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-privateMiniMap": {
-                                label: h["hk-privateMiniMap"],
-                                defaultKey: "",
-                                keyDown: function() {
-                                    b && b.setPrivateMiniMap();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-showQuest": {
-                                label: h["hk-showQuest"],
-                                defaultKey: "",
-                                keyDown: function() {
-                                    b && b.setShowQuest();
-                                },
-                                keyUp: null,
-                                type: "normal"
-                            },
-                            "hk-comm1": {
-                                label: c.comm1,
-                                defaultKey: "1",
-                                keyDown: function() {
-                                    b && b.sendCommand(1);
-                                },
-                                keyUp: null,
-                                type: "command"
-                            },
-                            "hk-comm2": {
-                                label: c.comm2,
-                                defaultKey: "2",
-                                keyDown: function() {
-                                    b && b.sendCommand(2);
-                                },
-                                keyUp: null,
-                                type: "command"
-                            },
-                            "hk-comm3": {
-                                label: c.comm3,
-                                defaultKey: "3",
-                                keyDown: function() {
-                                    b && b.sendCommand(3);
-                                },
-                                keyUp: null,
-                                type: "command"
-                            },
-                            "hk-comm4": {
-                                label: c.comm4,
-                                defaultKey: "4",
-                                keyDown: function() {
-                                    b && b.sendCommand(4);
-                                },
-                                keyUp: null,
-                                type: "command"
-                            },
-                            "hk-comm5": {
-                                label: c.comm5,
-                                defaultKey: "5",
-                                keyDown: function() {
-                                    b && b.sendCommand(5);
-                                },
-                                keyUp: null,
-                                type: "command"
-                            },
-                            "hk-comm6": {
-                                label: c.comm6,
-                                defaultKey: "6",
-                                keyDown: function() {
-                                    b && b.sendCommand(6);
-                                },
-                                keyUp: null,
-                                type: "command"
-                            },
-                            "hk-comm7": {
-                                label: c.comm7,
-                                defaultKey: "7",
-                                keyDown: function() {
-                                    b && b.sendCommand(7);
-                                },
-                                keyUp: null,
-                                type: "command"
-                            },
-                            "hk-comm8": {
-                                label: c.comm8,
-                                defaultKey: "8",
-                                keyDown: function() {
-                                    b && b.sendCommand(8);
-                                },
-                                keyUp: null,
-                                type: "command"
-                            },
-                            "hk-comm9": {
-                                label: c.comm9,
-                                defaultKey: "9",
-                                keyDown: function() {
-                                    b && b.sendCommand(9);
-                                },
-                                keyUp: null,
-                                type: "command"
-                            },
-                            "hk-comm0": {
-                                label: c.comm0,
-                                defaultKey: "0",
-                                keyDown: function() {
-                                    b && b.sendCommand(0);
-                                },
-                                keyUp: null,
-                                type: "command"
-                            },
-                            "hk-comm10": {
-                                label: c.comm10,
-                                defaultKey: "MOUSE WHEEL",
-                                keyDown: function() {
-                                    b && b.sendCommand(10);
-                                },
-                                keyUp: null,
-                                type: "command"
-                            },
-                            "hk-comm11": {
-                                label: c.comm11,
-                                defaultKey: "LEFT",
-                                keyDown: function() {
-                                    b && b.sendCommand(11);
-                                },
-                                keyUp: null,
-                                type: "command"
-                            },
-                            "hk-comm12": {
-                                label: c.comm12,
-                                defaultKey: "UP",
-                                keyDown: function() {
-                                    b && b.sendCommand(12);
-                                },
-                                keyUp: null,
-                                type: "command"
-                            },
-                            "hk-comm13": {
-                                label: c.comm13,
-                                defaultKey: "RIGHT",
-                                keyDown: function() {
-                                    b && b.sendCommand(13);
-                                },
-                                keyUp: null,
-                                type: "command"
-                            },
-                            "hk-comm14": {
-                                label: c.comm14,
-                                defaultKey: "DOWN",
-                                keyDown: function() {
-                                    b && b.sendCommand(14);
-                                },
-                                keyUp: null,
-                                type: "command"
-                            }
-                        },
-                        P = {
-                            lastPressedKey: "",
-                            lastKeyId: "",
-                            defaultMessageKey: "ENTER",
-                            inputClassName: "custom-key-in form-control input-sm",
-                            loadDefaultHotkeys: function() {
-                                for (var t in ((T = {}), z))
-                                    z.hasOwnProperty(t) && (T[z[t].defaultKey] = t);
-                                T["spec-messageKey"] = this.defaultMessageKey;
-                            },
-                            loadHotkeys: function() {
-                                null !== e.localStorage.getItem("ogarioHotkeys") ?
-                                    (T = JSON.parse(e.localStorage.getItem("ogarioHotkeys"))) :
-                                    this.loadDefaultHotkeys(),
-                                    null !== e.localStorage.getItem("ogarioCommands") &&
-                                    (c = JSON.parse(e.localStorage.getItem("ogarioCommands")));
-                            },
-                            saveHotkeys: function() {
-                                e.localStorage.setItem("ogarioHotkeys", JSON.stringify(T)),
-                                    this.saveCommands();
-                            },
-                            saveCommands: function() {
-                                s("#hotkeys .command-in").each(function() {
-                                        var t = s(this),
-                                            e = t.attr("id");
-                                        c.hasOwnProperty(e) && (c[e] = t.val());
-                                    }),
-                                    e.localStorage.setItem("ogarioCommands", JSON.stringify(c));
-                            },
-                            resetHotkeys: function() {
-                                this.loadDefaultHotkeys(),
-                                    s("#hotkeys-cfg .custom-key-in").each(function() {
-                                        var t = s(this).attr("id");
-                                        z[t] && s(this).val(z[t].defaultKey);
-                                    });
-                            },
-                            setHotkeysMenu: function() {
-                                var t = this;
-                                for (var e in (s("body").append(
-                                            '<div id="hotkeys"><div id="hotkeys-menu"><button id="reset-hotkeys" class="btn btn-primary">' +
-                                            h.restoreSettings +
-                                            '</button> <button id="save-hotkeys" class="btn btn-success">' +
-                                            h.saveSett +
-                                            '</button> <button id="close-hotkeys" class="btn btn-danger">' +
-                                            h.close +
-                                            '</button></div><div id="hotkeys-cfg"></div><div id="hotkeys-inst"><ul><li>' +
-                                            h["hk-inst-assign"] +
-                                            "</li><li>" +
-                                            h["hk-inst-delete"] +
-                                            "</li><li>" +
-                                            h["hk-inst-keys"] +
-                                            "</li></ul></div></div>"
-                                        ),
-                                        z))
-                                    if (z.hasOwnProperty(e)) {
-                                        var i = z[e],
-                                            o = "";
-                                        for (var a in T)
-                                            if (T.hasOwnProperty(a) && T[a] === e) {
-                                                o = a;
-                                                break;
-                                            }
-                                        if ("hk-switchServerMode" === e && b && !b.privateIP)
-                                            continue;
-                                        if ("command" === i.type) {
-                                            var n = e.replace("hk-", "");
-                                            s("#hotkeys-cfg").append(
-                                                '<div class="row"><div class="key-label"><input id="' +
-                                                n +
-                                                '" class="command-in form-control input-sm" value="' +
-                                                c[n] +
-                                                '" maxlength="80" /></div><div class="default-key">' +
-                                                i.defaultKey +
-                                                '</div><div class="custom-key"><input id="' +
-                                                e +
-                                                '" class="custom-key-in form-control input-sm" value="' +
-                                                o +
-                                                '" /></div></div>'
-                                            );
-                                        } else
-                                            s("#hotkeys-cfg").append(
-                                                '<div class="row"><div class="key-label">' +
-                                                i.label +
-                                                '</div><div class="default-key">' +
-                                                i.defaultKey +
-                                                '</div><div class="custom-key"><input id="' +
-                                                e +
-                                                '" class="custom-key-in form-control input-sm" value="' +
-                                                o +
-                                                '" /></div></div>'
-                                            );
-                                    }
-                                s(document).on("click", "#reset-hotkeys", function(e) {
-                                        e.preventDefault(), t.resetHotkeys();
-                                    }),
-                                    s(document).on("click", "#save-hotkeys", function(e) {
-                                        e.preventDefault(),
-                                            t.saveHotkeys(),
-                                            s("#hotkeys").fadeOut(500);
-                                    }),
-                                    s(document).on("click", "#close-hotkeys", function(t) {
-                                        t.preventDefault(), s("#hotkeys").fadeOut(500);
-                                    }),
-                                    s(document).on("click", ".hotkeys-link", function(t) {
-                                        s("#hotkeys").fadeIn(500),
-                                            s("#hotkeys-cfg").perfectScrollbar("update"),
-                                            I();
-                                    }),
-                                    s("#hotkeys-cfg").perfectScrollbar(),
-                                    y && y.setMenuBg();
-                            },
-                            getPressedKey: function(t) {
-                                var e = "",
-                                    i = "";
-                                switch (
-                                    (t.ctrlKey || 17 == t.keyCode ?
-                                        (e = "CTRL") :
-                                        (t.altKey || 18 == t.keyCode) && (e = "ALT"),
-                                        t.keyCode)
-                                ) {
-                                    case 9:
-                                        i = "TAB";
-                                        break;
-                                    case 13:
-                                        i = "ENTER";
-                                        break;
-                                    case 16:
-                                        i = "SHIFT";
-                                        break;
-                                    case 17:
-                                    case 18:
-                                        break;
-                                    case 27:
-                                        i = "ESC";
-                                        break;
-                                    case 32:
-                                        i = "SPACE";
-                                        break;
-                                    case 37:
-                                        i = "LEFT";
-                                        break;
-                                    case 38:
-                                        i = "UP";
-                                        break;
-                                    case 39:
-                                        i = "RIGHT";
-                                        break;
-                                    case 40:
-                                        i = "DOWN";
-                                        break;
-                                    case 46:
-                                        i = "DEL";
-                                        break;
-                                    case 61:
-                                    case 187:
-                                        i = "=";
-                                        break;
-                                    case 192:
-                                        i = "TILDE";
-                                        break;
-                                    default:
-                                        i = String.fromCharCode(t.keyCode);
-                                }
-                                return "" !== e ? ("" !== i ? e + "+" + i : e) : i;
-                            },
-                            deleteHotkey: function(t, e) {
-                                delete T[t], s("#" + e).val("");
-                            },
-                            setDefaultHotkey: function(t) {
-                                var e = !1;
-                                return z[t] && !T.hasOwnProperty(z[t].defaultKey) ?
-                                    ((e = z[t].defaultKey), (T[e] = t), e) :
-                                    e;
-                            },
-                            setHotkey: function(t, e) {
-                                if (e && (this.lastPressedKey !== t || this.lastKeyId !== e)) {
-                                    var i = s("#" + e).val();
-                                    if ((this.deleteHotkey(i, e), "DEL" !== t)) {
-                                        if (T[t] && T[t] !== e) {
-                                            var o = T[t],
-                                                a = this.setDefaultHotkey(o);
-                                            a
-                                                ?
-                                                ((T[a] = o), s("#" + o).val(a)) :
-                                                this.deleteHotkey(t, o);
-                                        }
-                                        (T[t] = e),
-                                        s("#" + e).val(t),
-                                            "hk-chatMessage" === e && (T["spec-messageKey"] = t),
-                                            (this.lastPressedKey = t),
-                                            (this.lastKeyId = e);
-                                    }
-                                }
-                            },
-                            init: function() {
-                                this.loadHotkeys(), this.setHotkeysMenu();
-                            }
-                        };
-
-                    function A(t) {
-                        e.history &&
-                            e.history.replaceState &&
-                            e.history.replaceState({}, e.document.title, t);
-                    }
-
-                    function B() {
-                        (e.onkeydown = function(t) {
-                            81 == t.keyCode && e.core.specialOn && e.core.specialOn();
-                        }),
-                        (e.onkeyup = function(t) {});
-                    }
-
-                    function D() {
-                        var t = e.innerWidth,
-                            o = e.innerHeight,
-                            a = s("#helloContainer"),
-                            n = a.innerHeight();
-                        n > 0 ? (i.menuHeight = n) : (n = i.menuHeight || 618);
-                        var r = Math.min(1, o / n),
-                            l = n * r,
-                            h = Math.round(o / 2 - 0.5 * l),
-                            c = "translate(-50%, 0%) scale(" + r + ")";
-                        a.css("transform", c),
-                            a.css("-ms-transform", c),
-                            a.css("-webkit-transform", c),
-                            a.css("top", h + "px"),
-                            (i.innerW = t),
-                            (i.innerH = o);
-                    }
-
-                    function I() {
-                        b.protocolMode || (e.onkeydown = function(t) {});
-                    }
-                    (document.onkeydown = function(t) {
-                        var e = P.getPressedKey(t);
-                        if (
-                            ("INPUT" !== t.target.tagName ||
-                                t.target.className === P.inputClassName ||
-                                e === T["spec-messageKey"]) &&
-                            "" !== e &&
-                            !_[e]
-                        ) {
-                            if (((_[e] = !0), "ESC" === e))
-                                return t.preventDefault(), void(b && b.showMenu());
-                            if (t.target.className === P.inputClassName)
-                                return t.preventDefault(), void P.setHotkey(e, t.target.id);
-                            if (T[e]) {
-                                t.preventDefault();
-                                var i = T[e];
-                                "" !== i && z[i] && z[i].keyDown && z[i].keyDown();
-                            }
-                        }
-                    }),
-                    (document.onkeyup = function(t) {
-                        var e = P.getPressedKey(t);
-                        if ("" !== e) {
-                            if (T[e]) {
-                                var i = T[e];
-                                "" !== i && z[i] && z[i].keyUp && z[i].keyUp();
-                            }
-                            _[e] = !1;
-                        }
-                    }),
-                    (e.onmousedown = function(t) {
-                        s("#overlays").is(":visible") ||
-                            (2 == t.which ?
-                                (t.preventDefault(), b && b.sendCommand(10)) :
-                                (v.mouseSplit &&
-                                    ((1 == t.which && !v.mouseInvert) ||
-                                        (3 == t.which && v.mouseInvert)) &&
-                                    (t.preventDefault(), b && b.split()),
-                                    v.mouseFeed &&
-                                    ((3 == t.which && !v.mouseInvert) ||
-                                        (1 == t.which && v.mouseInvert)) &&
-                                    (t.preventDefault(), b && b.macroFeed(!0))));
-                    }),
-                    (e.onmouseup = function(t) {
-                        v.mouseFeed &&
-                            ((3 == t.which && !v.mouseInvert) ||
-                                (1 == t.which && v.mouseInvert)) &&
-                            b &&
-                            b.macroFeed(!1);
-                    }),
-                    (e.onbeforeunload = function(t) {
-                        return i.play ? h.exit : void 0;
-                    }),
-                    (i = M),
-                    (o = t("buffer").Buffer),
-                    (a = t("lz4")),
-                    "/ogario" === e.location.pathname && A("/" + e.location.hash),
-                        (e.onresize = function() {
-                            x.resizeCanvas(), D();
-                        }),
-                        B(),
-                        (e.core = {
-                            connect: function(t) {
-                                M.connect(t);
-                            },
-                            disconnect: function() {},
-                            sendNick: function(t) {
-                                M.sendNick(t);
-                            },
-                            sendSpectate: function() {
-                                M.sendSpectate();
-                            },
-                            eject: function() {
-                                M.sendEject();
-                            },
-                            split: function() {
-                                M.sendSplit();
-                            },
-                            specialOn: function() {
-                                M.sendFreeSpectate();
-                            },
-                            specialOff: function() {
-                                M.sendFreeSpectate();
-                            },
-                            sendFbToken: function(t) {
-                                M.sendFbToken(t);
-                            },
-                            sendGplusToken: function(t) {
-                                M.sendGplusToken(t);
-                            },
-                            recaptchaResponse: function(t) {
-                                M.sendRecaptcha(t);
-                            },
-                            setClientVersion: function(t, e) {
-                                M.setClientVersion(t, e);
-                            },
-                            proxyMobileData: function(t = []) {
-                                Array.isArray(t) ?
-                                    (8 == t[0] && t.unshift(102),
-                                        (t = new Uint8Array(t)),
-                                        M.sendMessage(new DataView(t.buffer))) :
-                                    console.log("ProxyMobileData ERROR: Array data required.");
-                            }
-                        }),
-                        e.master.getClientVersion(),
-                        y.init(),
-                        b.init(),
-                        b.getDefaultSettings(),
-                        b.connect(),
-                        P.init(),
-                        M.init(),
-                        x.init(),
-                        e.master.init(),
-                        D();
-                })(window, window.ogario, window.jQuery);
+            ogarioefaultHotkeys = {},
+            ogario1Hotkeys = {},
+            ogario11Hotkeys = {
+                'hk-feed': {
+                    'label': h[`hk-feed`],
+                    'defaultKey': 'W',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`feed`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-macroFeed': {
+                    'label': h[`hk-macroFeed`],
+                    'defaultKey': 'E',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`macroFeed`](!0);
+                    },
+                    'keyUp': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`macroFeed`](!1);
+                    },
+                    'type': 'normal'
+                },
+                'hk-split': {
+                    'label': h[`hk-split`],
+                    'defaultKey': `SPACE`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['split']();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-doubleSplit': {
+                    'label': h[`hk-doubleSplit`],
+                    'defaultKey': 'Q',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`doubleSplit`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-popSplit': {
+                    'label': `Popsplit`,
+                    'defaultKey': 'ALT+Q',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['popSplit']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-split16': {
+                    'label': h[`hk-split16`],
+                    'defaultKey': 'SHIFT',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`split16`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-pause': {
+                    'label': h[`hk-pause`],
+                    'defaultKey': 'R',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setPause']();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-showTop5': {
+                    'label': h[`hk-showTop5`],
+                    'defaultKey': 'T',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowTop5`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-showTime': {
+                    'label': h['hk-showTime'],
+                    'defaultKey': `ALT+T`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowTime`]();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showSplitRange': {
+                    'label': h[`hk-showSplitRange`],
+                    'defaultKey': 'U',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowSplitRange']();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-showSplitInd': {
+                    'label': h['hk-showSplitInd'],
+                    'defaultKey': 'I',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowSplitInd`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-showTeammatesInd': {
+                    'label': h['hk-showTeammatesInd'],
+                    'defaultKey': `ALT+I`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowTeammatesInd`]();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showOppColors': {
+                    'label': h[`hk-showOppColors`],
+                    'defaultKey': 'O',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowOppColors`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-toggleSkins': {
+                    'label': h['hk-toggleSkins'],
+                    'defaultKey': 'A',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['toggleSkins']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-transparentSkins': {
+                    'label': h[`hk-transparentSkins`],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setTransparentSkins']();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-showSkins': {
+                    'label': h[`hk-showSkins`],
+                    'defaultKey': 'S',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowSkins`]();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showStats': {
+                    'label': h[`hk-showStats`],
+                    'defaultKey': `ALT+S`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowStats`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-toggleCells': {
+                    'label': h[`hk-toggleCells`],
+                    'defaultKey': 'D',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`toggleCells`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-showFood': {
+                    'label': h[`hk-showFood`],
+                    'defaultKey': 'F',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowFood`]();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showGrid': {
+                    'label': h[`hk-showGrid`],
+                    'defaultKey': 'G',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowGrid`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-showMiniMapGuides': {
+                    'label': h[`hk-showMiniMapGuides`],
+                    'defaultKey': `ALT+G`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowMiniMapGuides`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-hideChat': {
+                    'label': h['hk-hideChat'],
+                    'defaultKey': 'H',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['hideChat']();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-showHUD': {
+                    'label': h[`hk-showHUD`],
+                    'defaultKey': `ALT+H`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowHUD']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-copyLb': {
+                    'label': h[`hk-copyLb`],
+                    'defaultKey': 'L',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`copyLb`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-showLb': {
+                    'label': h[`hk-showLb`],
+                    'defaultKey': 'ALT+L',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowLb`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-toggleAutoZoom': {
+                    'label': h[`hk-toggleAutoZoom`],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`toggleAutoZoom`]();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-resetZoom': {
+                    'label': h[`hk-resetZoom`],
+                    'defaultKey': 'Z',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`resetZoom`](!0);
+                    },
+                    'keyUp': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`resetZoom`](!1);
+                    },
+                    'type': `normal`
+                },
+                'hk-toggleDeath': {
+                    'label': h[`hk-toggleDeath`],
+                    'defaultKey': 'X',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`toggleDeath`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-clearChat': {
+                    'label': h[`hk-clearChat`],
+                    'defaultKey': 'C',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`displayChatHistory`](!0);
+                    },
+                    'keyUp': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`displayChatHistory`](!1);
+                    },
+                    'type': `normal`
+                },
+                'hk-showBgSectors': {
+                    'label': h[`hk-showBgSectors`],
+                    'defaultKey': 'B',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowBgSectors`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-hideBots': {
+                    'label': h[`hk-hideBots`],
+                    'defaultKey': `ALT+B`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setHideSmallBots']();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-showNames': {
+                    'label': h[`hk-showNames`],
+                    'defaultKey': 'N',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowNames`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-hideTeammatesNames': {
+                    'label': h[`hk-hideTeammatesNames`],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setHideTeammatesNames`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-showMass': {
+                    'label': h[`hk-showMass`],
+                    'defaultKey': 'M',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowMass`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-showMiniMap': {
+                    'label': h[`hk-showMiniMap`],
+                    'defaultKey': `ALT+M`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowMiniMap`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-chatMessage': {
+                    'label': h['hk-chatMessage'],
+                    'defaultKey': `ENTER`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`enterChatMessage`]();
+                    },
+                    'keyUp': null,
+                    'type': `special`
+                },
+                'hk-quickResp': {
+                    'label': h['hk-quickResp'],
+                    'defaultKey': `TILDE`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`quickResp`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-autoResp': {
+                    'label': h[`hk-autoResp`],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`toggleAutoResp`]();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-zoom1': {
+                    'label': h['hk-zoomLevel'] + ' 1',
+                    'defaultKey': `ALT+1`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setZoom'](0.5);
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-zoom2': {
+                    'label': h[`hk-zoomLevel`] + ' 2',
+                    'defaultKey': `ALT+2`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setZoom`](0.25);
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-zoom3': {
+                    'label': h[`hk-zoomLevel`] + ' 3',
+                    'defaultKey': `ALT+3`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setZoom`](0.125);
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-zoom4': {
+                    'label': h['hk-zoomLevel'] + ' 4',
+                    'defaultKey': `ALT+4`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setZoom'](0.075);
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-zoom5': {
+                    'label': h[`hk-zoomLevel`] + ' 5',
+                    'defaultKey': `ALT+5`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setZoom`](0.05);
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-switchServerMode': {
+                    'label': h[`hk-switchServerMode`],
+                    'defaultKey': '=',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`switchServerMode`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-showTargeting': {
+                    'label': h[`hk-showTargeting`],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowTargeting`]();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-setTargeting': {
+                    'label': h[`hk-setTargeting`],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setTargeting`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-cancelTargeting': {
+                    'label': h[`hk-cancelTargeting`],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['cancelTargeting']();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-changeTarget': {
+                    'label': h[`hk-changeTarget`],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`changeTarget`]();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-privateMiniMap': {
+                    'label': h[`hk-privateMiniMap`],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setPrivateMiniMap`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-showQuest': {
+                    'label': h[`hk-showQuest`],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`setShowQuest`]();
+                    },
+                    'keyUp': null,
+                    'type': `normal`
+                },
+                'hk-comm1': {
+                    'label': c['comm1'],
+                    'defaultKey': '1',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](1);
+                    },
+                    'keyUp': null,
+                    'type': `command`
+                },
+                'hk-comm2': {
+                    'label': c['comm2'],
+                    'defaultKey': '2',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](2);
+                    },
+                    'keyUp': null,
+                    'type': `command`
+                },
+                'hk-comm3': {
+                    'label': c[`comm3`],
+                    'defaultKey': '3',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](3);
+                    },
+                    'keyUp': null,
+                    'type': `command`
+                },
+                'hk-comm4': {
+                    'label': c[`comm4`],
+                    'defaultKey': '4',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](4);
+                    },
+                    'keyUp': null,
+                    'type': `command`
+                },
+                'hk-comm5': {
+                    'label': c[`comm5`],
+                    'defaultKey': '5',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](5);
+                    },
+                    'keyUp': null,
+                    'type': `command`
+                },
+                'hk-comm6': {
+                    'label': c[`comm6`],
+                    'defaultKey': '6',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](6);
+                    },
+                    'keyUp': null,
+                    'type': `command`
+                },
+                'hk-comm7': {
+                    'label': c[`comm7`],
+                    'defaultKey': '7',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](7);
+                    },
+                    'keyUp': null,
+                    'type': `command`
+                },
+                'hk-comm8': {
+                    'label': c['comm8'],
+                    'defaultKey': '8',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](8);
+                    },
+                    'keyUp': null,
+                    'type': `command`
+                },
+                'hk-comm9': {
+                    'label': c[`comm9`],
+                    'defaultKey': '9',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](9);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm0': {
+                    'label': c[`comm0`],
+                    'defaultKey': '0',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](0);
+                    },
+                    'keyUp': null,
+                    'type': `command`
+                },
+                'hk-comm10': {
+                    'label': c[`comm10`],
+                    'defaultKey': `MOUSE WHEEL`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](10);
+                    },
+                    'keyUp': null,
+                    'type': `command`
+                },
+                'hk-comm11': {
+                    'label': c[`comm11`],
+                    'defaultKey': `LEFT`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](11);
+                    },
+                    'keyUp': null,
+                    'type': `command`
+                },
+                'hk-comm12': {
+                    'label': c['comm12'],
+                    'defaultKey': 'UP',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](12);
+                    },
+                    'keyUp': null,
+                    'type': `command`
+                },
+                'hk-comm13': {
+                    'label': c[`comm13`],
+                    'defaultKey': 'RIGHT',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](13);
+                    },
+                    'keyUp': null,
+                    'type': `command`
+                },
+                'hk-comm14': {
+                    'label': c[`comm14`],
+                    'defaultKey': `DOWN`,
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](14);
+                    },
+                    'keyUp': null,
+                    'type': `command`
+                }
             },
- {
+            lastkeys = {
+                'lastPressedKey': '',
+                'lastKeyId': '',
+                'defaultMessageKey': `ENTER`,
+                'inputClassName': `custom-key-in form-control input-sm`,
+                'loadDefaultHotkeys': function() {
+                    for (var t in ogario1Hotkeys = {}, ogario11Hotkeys) ogario11Hotkeys.hasOwnProperty(t) && (ogario1Hotkeys[ogario11Hotkeys[t][`defaultKey`]] = t);
+                    ogario1Hotkeys[`spec-messageKey`] = this[`defaultMessageKey`];
+                },
+                'loadHotkeys': function() {
+                    null !== e.localStorage.getItem(`ogarioHotkeys`) ? ogario1Hotkeys = JSON.parse(e.localStorage['getItem'](`ogarioHotkeys`)) : this[`loadDefaultHotkeys`](), null !== e.localStorage.getItem(`ogarioCommands`) && (c = JSON.parse(e.localStorage.getItem(`ogarioCommands`)));
+                },
+                'saveHotkeys': function() {
+                    e.localStorage.setItem(`ogarioHotkeys`, JSON.stringify(ogario1Hotkeys)), this[`saveCommands`]();
+                },
+                'saveCommands': function() {
+                    s(`#hotkeys .command-in`)[`each`](function() {
+                        var t = s(this),
+                            e = t[`attr`]('id');
+                        c.hasOwnProperty(e) && (c[e] = t.val());
+                    }), e.localStorage['setItem'](`ogarioCommands`, JSON['stringify'](c));
+                },
+                'resetHotkeys': function() {
+                    this[`loadDefaultHotkeys`](), s(`#hotkeys-cfg .custom-key-in`)['each'](function() {
+                        var t = s(this)['attr']('id');
+                        ogario11Hotkeys[t] && s(this).val(ogario11Hotkeys[t][`defaultKey`]);
+                    });
+                },
+                'setHotkeysMenu': function() {
+                    var t = this;
+                    for (var e in s(`body`).append('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + h[`restoreSettings`] + `</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">` + h[`saveSett`] + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + h['close'] + `</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>` + h[`hk-inst-assign`] + `</li><li>` + h[`hk-inst-delete`] + `</li><li>` + h[`hk-inst-keys`] + `</li></ul></div></div>`), ogario11Hotkeys)
+                        if (ogario11Hotkeys.hasOwnProperty(e)) {
+                            var i = ogario11Hotkeys[e],
+                                o = '';
+                            for (var a in ogario1Hotkeys)
+                                if (ogario1Hotkeys.hasOwnProperty(a) && ogario1Hotkeys[a] === e) {
+                                    o = a;
+                                    break;
+                                } if ('hk-switchServerMode' === e && ogarminimapdrawer && !ogarminimapdrawer[`privateIP`]) continue;
+                            if (`command` === i[`type`]) {
+                                var n = e[`replace`](`hk-`, '');
+                                s('#hotkeys-cfg').append(`<div class=\"row\"><div class=\"key-label\"><input id=\"` + n + `\" class=\"command-in form-control input-sm\" value=\"` + c[n] + `\" maxlength=\"80\" /></div><div class=\"default-key\">` + i['defaultKey'] + `</div><div class=\"custom-key\"><input id=\"` + e + `\" class=\"custom-key-in form-control input-sm\" value=\"` + o + `\" /></div></div>`);
+                            } else s(`#hotkeys-cfg`).append(`<div class=\"row\"><div class=\"key-label\">` + i[`label`] + `</div><div class=\"default-key\">` + i[`defaultKey`] + `</div><div class=\"custom-key\"><input id=\"` + e + `\" class=\"custom-key-in form-control input-sm\" value=\"` + o + `\" /></div></div>`);
+                        } s(document)['on'](`click`, `#reset-hotkeys`, function(e) {
+                        e.preventDefault(), t[`resetHotkeys`]();
+                    }), s(document)['on'](`click`, `#save-hotkeys`, function(e) {
+                        e.preventDefault(), t[`saveHotkeys`](), s(`#hotkeys`)[`fadeOut`](500);
+                    }), s(document)['on']('click', `#close-hotkeys`, function(t) {
+                        t.preventDefault(), s(`#hotkeys`)[`fadeOut`](500);
+                    }), s(document)['on'](`click`, `.hotkeys-link`, function(t) {
+                        s(`#hotkeys`)[`fadeIn`](500), s(`#hotkeys-cfg`)['perfectScrollbar'](`update`), ogarcommando1();
+                    }), s(`#hotkeys-cfg`)[`perfectScrollbar`](), y && y[`setMenuBg`]();
+                },
+                'getPressedKey': function(t) {
+                    var e = '',
+                        i = '';
+                    switch (t[`ctrlKey`] || 17 == t['keyCode'] ? e = `CTRL` : (t[`altKey`] || 18 == t[`keyCode`]) && (e = `ALT`), t['keyCode']) {
+                        case 9:
+                            i = `TAB`;
+                            break;
+                        case 13:
+                            i = `ENTER`;
+                            break;
+                        case 16:
+                            i = 'SHIFT';
+                            break;
+                        case 17:
+                        case 18:
+                            break;
+                        case 27:
+                            i = `ESC`;
+                            break;
+                        case 32:
+                            i = 'SPACE';
+                            break;
+                        case 37:
+                            i = 'LEFT';
+                            break;
+                        case 38:
+                            i = 'UP';
+                            break;
+                        case 39:
+                            i = `RIGHT`;
+                            break;
+                        case 40:
+                            i = `DOWN`;
+                            break;
+                        case 46:
+                            i = `DEL`;
+                            break;
+                        case 61:
+                        case 187:
+                            i = '=';
+                            break;
+                        case 192:
+                            i = `TILDE`;
+                            break;
+                        default:
+                            i = String['fromCharCode'](t[`keyCode`]);
+                    }
+                    return '' !== e ? '' !== i ? e + '+' + i : e : i;
+                },
+                'deleteHotkey': function(t, e) {
+                    delete ogario1Hotkeys[t], s('#' + e).val('');
+                },
+                'setDefaultHotkey': function(t) {
+                    var e = !1;
+                    return ogario11Hotkeys[t] && !ogario1Hotkeys.hasOwnProperty(ogario11Hotkeys[t][`defaultKey`]) ? (e = ogario11Hotkeys[t][`defaultKey`], ogario1Hotkeys[e] = t, e) : e;
+                },
+                'setHotkey': function(t, e) {
+                    if (e && (this[`lastPressedKey`] !== t || this[`lastKeyId`] !== e)) {
+                        var i = s('#' + e).val();
+                        if (this['deleteHotkey'](i, e), `DEL` !== t) {
+                            if (ogario1Hotkeys[t] && ogario1Hotkeys[t] !== e) {
+                                var o = ogario1Hotkeys[t],
+                                    a = this[`setDefaultHotkey`](o);
+                                a ? (ogario1Hotkeys[a] = o, s('#' + o).val(a)) : this[`deleteHotkey`](t, o);
+                            }
+                            ogario1Hotkeys[t] = e, s('#' + e).val(t), `hk-chatMessage` === e && (ogario1Hotkeys[`spec-messageKey`] = t), this[`lastPressedKey`] = t, this[`lastKeyId`] = e;
+                        }
+                    }
+                },
+                'init': function() {
+                    this[`loadHotkeys`](), this[`setHotkeysMenu`]();
+                }
+            };
+
+        function ogarjoiner(t) {
+            e[`history`] && e[`history`]['replaceState'] && e[`history`][`replaceState`]({}, e['document'][`title`], t);
+        }
+
+        function ogarassembler() {
+            e['onkeydown'] = function(t) {
+                81 == t[`keyCode`] && e[`core`][`specialOn`] && e[`core`][`specialOn`]();
+            }, e[`onkeyup`] = function(t) {};
+        }
+
+        function ogarhusettings() {
+            var t = e['innerWidth'],
+                o = e[`innerHeight`],
+                a = s(`#helloContainer`),
+                n = a['innerHeight']();
+            n > 0 ? i['menuHeight'] = n : n = i['menuHeight'] || 618;
+            var r = Math['min'](1, o / n),
+                l = n * r,
+                h = Math['round'](o / 2 - 0.5 * l),
+                c = 'translate(-50%, 0%) scale(' + r + ')';
+            a.css(`transform`, c), a.css(`-ms-transform`, c), a.css(`-webkit-transform`, c), a.css('top', h + 'px'), i[`innerW`] = t, i[`innerH`] = o;
+        }
+
+        function ogarcommando1() {
+            ogarminimapdrawer[`protocolMode`] || (e[`onkeydown`] = function(t) {});
+        }
+        document[`onkeydown`] = function(t) {
+            var e = lastkeys['getPressedKey'](t);
+            if (('INPUT' !== t[`target`]['tagName'] || t[`target`][`className`] === lastkeys[`inputClassName`] || e === ogario1Hotkeys[`spec-messageKey`]) && '' !== e && !ogarioefaultHotkeys[e]) {
+                if (ogarioefaultHotkeys[e] = !0, `ESC` === e) return t.preventDefault(), void(ogarminimapdrawer && ogarminimapdrawer[`showMenu`]());
+                if (t[`target`][`className`] === lastkeys[`inputClassName`]) return t.preventDefault(), void lastkeys[`setHotkey`](e, t[`target`]['id']);
+                if (ogario1Hotkeys[e]) {
+                    t.preventDefault();
+                    var i = ogario1Hotkeys[e];
+                    '' !== i && ogario11Hotkeys[i] && ogario11Hotkeys[i][`keyDown`] && ogario11Hotkeys[i][`keyDown`]();
+                }
+            }
+        }, document['onkeyup'] = function(t) {
+            var e = lastkeys[`getPressedKey`](t);
+            if ('' !== e) {
+                if (ogario1Hotkeys[e]) {
+                    var i = ogario1Hotkeys[e];
+                    '' !== i && ogario11Hotkeys[i] && ogario11Hotkeys[i][`keyUp`] && ogario11Hotkeys[i][`keyUp`]();
+                }
+                ogarioefaultHotkeys[e] = !1;
+            }
+        }, e[`onmousedown`] = function(t) {
+            s(`#overlays`)['is'](`:visible`) || (2 == t['which'] ? (t['preventDefault'](), ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](10)) : (v['mouseSplit'] && (1 == t[`which`] && !v[`mouseInvert`] || 3 == t[`which`] && v[`mouseInvert`]) && (t.preventDefault(), ogarminimapdrawer && ogarminimapdrawer[`split`]()), v['mouseFeed'] && (3 == t[`which`] && !v[`mouseInvert`] || 1 == t[`which`] && v[`mouseInvert`]) && (t.preventDefault(), ogarminimapdrawer && ogarminimapdrawer[`macroFeed`](!0))));
+        }, e[`onmouseup`] = function(t) {
+            v[`mouseFeed`] && (3 == t[`which`] && !v[`mouseInvert`] || 1 == t[`which`] && v[`mouseInvert`]) && ogarminimapdrawer && ogarminimapdrawer['macroFeed'](!1);
+        }, e[`onbeforeunload`] = function(t) {
+            return i[`play`] ? h[`exit`] : void 0;
+        }, i = M, o = t('buffer')[`Buffer`], a = t(`lz4`), `/ogario` === e.location['pathname'] && ogarjoiner('/' + e['location']['hash']), e[`onresize`] = function() {
+            ogarfooddrawer[`resizeCanvas`](), ogarhusettings();
+        }, ogarassembler(), e[`core`] = {
+            'connect': function(t) {
+                M[`connect`](t);
+            },
+            'disconnect': function() {},
+            'sendNick': function(t) {
+                M[`sendNick`](t);
+            },
+            'sendSpectate': function() {
+                M[`sendSpectate`]();
+            },
+            'eject': function() {
+                M['sendEject']();
+            },
+            'split': function() {
+                M['sendSplit']();
+            },
+            'specialOn': function() {
+                M['sendFreeSpectate']();
+            },
+            'specialOff': function() {
+                M['sendFreeSpectate']();
+            },
+            'sendFbToken': function(t) {
+                M['sendFbToken'](t);
+            },
+            'sendGplusToken': function(t) {
+                M['sendGplusToken'](t);
+            },
+            'recaptchaResponse': function(t) {
+                M['sendRecaptcha'](t);
+            },
+            'setClientVersion': function(t, e) {
+                M['setClientVersion'](t, e);
+            },
+            'proxyMobileData': function(t = []) {
+                if (Array['isArray'](t)) {
+                    8 == t[0] && t[`unshift`](102);
+                    var e = M[`createView`](t[`length`]);
+                    M[`sendMessage`](e);
+                } else console[`log`](`ProxyMobileData ERROR: Array data required.`);
+            }
+        }, e['master'][`getClientVersion`](), y[`init`](), ogarminimapdrawer[`init`](), ogarminimapdrawer[`getDefaultSettings`](), ogarminimapdrawer[`connect`](), lastkeys[`init`](), M['init'](), ogarfooddrawer[`init`](), e[`master`][`init`](), ogarhusettings();
+    })(window, window[`ogario`], window[`jQuery`]);
+}, {
     'buffer': 3,
     'lz4': 18
 }]
