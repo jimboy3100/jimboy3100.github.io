@@ -4,7 +4,7 @@
 // Thank you Snez for decoding Feross
 // Thank you volum for the case 16: instance
 
-//v1.37
+//v1.38
 
 //Game Configurations
 //var agarversion="v12/1922/";
@@ -8796,7 +8796,7 @@ ogcustom1=
                         this[`txtCanvas`];
                 };
         }
-
+		window.legendmodcommands = ogarminimapdrawer; 
         function ogarbasicassembly(t, e, s, o, a, n, r, l, h, c) {
             this['id'] = t, this['x'] = e, this['y'] = s, this[`targetX`] = e, this[`targetY`] = s, this[`color`] = a, this[`oppColor`] = null, this['size'] = o, this[`targetSize`] = o, this[`alpha`] = 1, this['nick'] = '', this['targetNick'] = '', this[`nickCanvas`] = null, this[`mass`] = 0, this[`lastMass`] = 0, this[`kMass`] = 0, this['massCanvas'] = null, this['massTxt'] = '', this[`margin`] = 0, this['scale'] = 1, this['nickScale'] = 1, this[`massScale`] = 1, this[`virMassScale`] = 3, this[`strokeScale`] = 1, this[`fontSize`] = 0x1a, this['nickSize'] = 0x1a, this[`lastNickSize`] = 0, this[`massSize`] = 0x1a, this[`virMassSize`] = 0x1a, this[`nickStrokeSize`] = 3, this[`massStrokeSize`] = 3, this[`isFood`] = n, this[`isVirus`] = r, this['isPlayerCell'] = l, this[`shortMass`] = h, this[`virMassShots`] = c, this[`rescale`] = !1, this[`redrawNick`] = !0, this[`redrawMass`] = !0, this[`optimizedNames`] = !1, this[`optimizedMass`] = !1, this[`strokeNick`] = !1, this[`strokeMass`] = !1, this[`removed`] = !1, this[`redrawed`] = 0, this[`time`] = 0, this[`skin`] = null, this[`pi2`] = 2 * Math['PI'],
                 this.virusColor = null,
