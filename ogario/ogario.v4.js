@@ -4,7 +4,7 @@
 // Thank you Snez for decoding Feross
 // Thank you volum for the case 16: instance
 
-//v1.40
+//v1.43
 
 //Game Configurations
 //var agarversion="v12/1922/";
@@ -8069,7 +8069,7 @@ ogcustom1=
                 if (0 != this['cacheQueue'][`length`]) {
                     var e = this[`cacheQueue`]['shift']();
                     if (e) {
-                        console.log(e);
+                        //console.log(e);
                         var i = document[`createElement`](`canvas`);
                         i[`width`] = 512, i[`height`] = 512;
                         var s = i[`getContext`]('2d');
@@ -8096,12 +8096,25 @@ ogcustom1=
             'cacheCustomSkin': function(t, e, i) {
                 if (i) {
                     var s = ':party' === this['gameMode'] ? t + e : t;
+//					console.log(this[`customSkinsMap`][s]);
+//					console.log(s);
+//					console.log(i);
+/*					
+					if (window.vanillaSkinname!=null){
+						console.log(window.vanillaSkinname);
+						console.log(window.vanillaSkin);					
+						this[`customSkinsMap`][window.vanillaSkinname]=window.vanillaSkin;
+						this['loadSkin'](this[`customSkinsCache`], window.vanillaSkin);
+						}
+*/					
+					
                     if (s && (this[`customSkinsMap`][s] = i), this[`customSkinsCache`].hasOwnProperty(i)) return;
                     this['loadSkin'](this[`customSkinsCache`], i);
                 }
             },
             'checkSkinsMap': function(t, e) {
                 var i = `:party` === this['gameMode'] ? t + e : t;
+				//console.log(['customSkinsMap'].hasOwnProperty(i));
                 return !!this['customSkinsMap'].hasOwnProperty(i);
             },
             'getCustomSkin': function(t, e) {
@@ -9352,11 +9365,13 @@ ogcustom1=
                                 for (var player = 0; player < EquippableSkins.length; player++) {
                                     //console.log(LMAgarGameConfiguration.gameConfig["Gameplay - Equippable Skins"]);
                                     if (EquippableSkins[player].productId == "skin_" + skin2search) {
-                                        console.log("Player: " + y + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);
-                                        //loadSkin(y,"https://jimboy3100.github.io/agario/live/"+g);	//test
-                                        //console.log(EquippableSkins[player].skinType);
-                                        //console.log(EquippableSkins[player].gameplayId);
-                                        //console.log(EquippableSkins[player].image);
+                                        //console.log("Player: " + y + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);
+						if (EquippableSkins[player].image == "Kraken.png" || EquippableSkins[player].image == "Tiger_Pattern.png" || EquippableSkins[player].image == "UFO.png" || EquippableSkins[player].image == "artshop_pencil.png" || EquippableSkins[player].image == "birthday_2017_1_sad.png"  || EquippableSkins[player].image == "last_master_duel_master.png"  || EquippableSkins[player].image == "party_mode.png" ){
+						if (ogarminimapdrawer[`customSkinsMap`][y]==undefined){
+						ogarminimapdrawer[`customSkinsMap`][y]="https://jimboy3100.github.io/agario/live/"+EquippableSkins[player].image;
+						ogarminimapdrawer['loadSkin'](ogarminimapdrawer[`customSkinsCache`], "https://jimboy3100.github.io/agario/live/"+EquippableSkins[player].image);
+							}
+						}				
                                     }
                                 }
                             }
