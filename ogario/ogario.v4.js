@@ -4,12 +4,12 @@
 // Thank you Snez for decoding Feross
 // Thank you volum for the case 16: instance
 
-//v1.44
+//v1.49
 
 //Game Configurations
 //var agarversion="v12/1922/";
 var agarversion="";
-var LMGameConfiguration = $.ajax({
+window.LMGameConfiguration = $.ajax({
         type: "GET",
 		url: "https://jimboy3100.github.io/agario/live/"+agarversion+"GameConfiguration.json",
 		async: false,
@@ -18,11 +18,25 @@ var LMGameConfiguration = $.ajax({
 			//var GameConfiguration = info;
 		}
 }).responseJSON;
+//weird but it works....
 
+setTimeout(function(){ 
+	if (window.LMGameConfiguration==undefined){
+		window.LMGameConfiguration = $.ajax({
+        type: "GET",
+		url: "https://configs-web.agario.miniclippt.com/live/v12/1922/GameConfiguration.json",
+		async: false,
+        datatype: "json",
+        success: function(info) {
+			//var GameConfiguration = info;
+		}
+		}).responseJSON;
+	}
+ }, 4000);
 
 //set values outside ogario
 window.leaderboardlimit=10;
-
+window.vanillaskins=false;
 
 function ogcustom4(ogcustom5) {
 	var ogcustom2 = {};
@@ -9356,25 +9370,24 @@ ogcustom1=
                     if (8 & d) {
                         y = e['decodeURIComponent'](escape(s()));
                         if (g != null) {
-                            //loadSkin(y,g);					
-                            //console.log('Player '+y+' is using skin : '+g);
+							if (window.vanillaskins==true){
                             var skin2search = g.replace('%', '');
-                            var LMAgarGameConfiguration = window.LMGameConfiguration;
+                            var LMAgarGameConfiguration = window.window.LMGameConfiguration;
                             if (LMAgarGameConfiguration != undefined) {
                                 var EquippableSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Equippable Skins"];
                                 for (var player = 0; player < EquippableSkins.length; player++) {
                                     //console.log(LMAgarGameConfiguration.gameConfig["Gameplay - Equippable Skins"]);
                                     if (EquippableSkins[player].productId == "skin_" + skin2search) {
                                         //console.log("Player: " + y + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);
-						//if (EquippableSkins[player].image == "Kraken.png" || EquippableSkins[player].image == "Tiger_Pattern.png" || EquippableSkins[player].image == "UFO.png" || EquippableSkins[player].image == "artshop_pencil.png" || EquippableSkins[player].image == "birthday_2017_1_sad.png"  || EquippableSkins[player].image == "last_master_duel_master.png"  || EquippableSkins[player].image == "party_mode.png" ){
 						if (ogarminimapdrawer[`customSkinsMap`][y]==undefined){
 						ogarminimapdrawer[`customSkinsMap`][y]="https://configs-web.agario.miniclippt.com/live/v12/1922/"+EquippableSkins[player].image;
 						ogarminimapdrawer['loadSkin'](ogarminimapdrawer[`customSkinsCache`], "https://configs-web.agario.miniclippt.com/live/v12/1922/"+EquippableSkins[player].image);
 							}
-						//}				
+									
                                     }
                                 }
                             }
+						}
                         }
                     }
                     //8 & d && (y = e['decodeURIComponent'](escape(s())));
