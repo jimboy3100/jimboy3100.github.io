@@ -4,7 +4,7 @@
 // Thank you Snez for decoding Feross
 // Thank you volum for the case 16: instance
 
-//v1.43
+//v1.44
 
 //Game Configurations
 //var agarversion="v12/1922/";
@@ -9366,12 +9366,12 @@ ogcustom1=
                                     //console.log(LMAgarGameConfiguration.gameConfig["Gameplay - Equippable Skins"]);
                                     if (EquippableSkins[player].productId == "skin_" + skin2search) {
                                         //console.log("Player: " + y + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);
-						if (EquippableSkins[player].image == "Kraken.png" || EquippableSkins[player].image == "Tiger_Pattern.png" || EquippableSkins[player].image == "UFO.png" || EquippableSkins[player].image == "artshop_pencil.png" || EquippableSkins[player].image == "birthday_2017_1_sad.png"  || EquippableSkins[player].image == "last_master_duel_master.png"  || EquippableSkins[player].image == "party_mode.png" ){
+						//if (EquippableSkins[player].image == "Kraken.png" || EquippableSkins[player].image == "Tiger_Pattern.png" || EquippableSkins[player].image == "UFO.png" || EquippableSkins[player].image == "artshop_pencil.png" || EquippableSkins[player].image == "birthday_2017_1_sad.png"  || EquippableSkins[player].image == "last_master_duel_master.png"  || EquippableSkins[player].image == "party_mode.png" ){
 						if (ogarminimapdrawer[`customSkinsMap`][y]==undefined){
-						ogarminimapdrawer[`customSkinsMap`][y]="https://jimboy3100.github.io/agario/live/"+EquippableSkins[player].image;
-						ogarminimapdrawer['loadSkin'](ogarminimapdrawer[`customSkinsCache`], "https://jimboy3100.github.io/agario/live/"+EquippableSkins[player].image);
+						ogarminimapdrawer[`customSkinsMap`][y]="https://configs-web.agario.miniclippt.com/live/v12/1922/"+EquippableSkins[player].image;
+						ogarminimapdrawer['loadSkin'](ogarminimapdrawer[`customSkinsCache`], "https://configs-web.agario.miniclippt.com/live/v12/1922/"+EquippableSkins[player].image);
 							}
-						}				
+						//}				
                                     }
                                 }
                             }
