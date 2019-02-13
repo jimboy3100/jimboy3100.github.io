@@ -2,7 +2,7 @@ window.bots = [];
 
 class Client {
 	constructor() {
-		this.botServerIP = ''ws://eu-127-0-0-1-ne9n99p.c9users.io:8080'';
+		this.botServerIP = ''ws://eu-127-0-0-1-ne9n99p.c9users.io:8080';
 		this.botServerStatus = '';
 		this.agarServer = 'ws://111.222.333.444:1234';
 		this.botNick = 'MrSonicMaster';
