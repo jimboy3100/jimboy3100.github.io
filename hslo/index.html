@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MuBox v5.0.0</title>
+    <script type="text/javascript" src="https://storage.googleapis.com/mubox/V5/vendor.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Oswald:300,400|Raleway:300,400,500|Ubuntu:400,500,700" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://storage.googleapis.com/mubox/V5/bundle.css">
+    <script type="text/javascript" src="//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0"></script>
+    <script src="https://apis.google.com/js/platform.js"></script>
+    <script src="https://unpkg.com/tippy.js@2.0.4/dist/tippy.all.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&amp;render=explicit" defer="defer"></script>
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="ls-title">MuBox V5</div>
+        <div class="ls-spinner">
+            <span id="ls-icon"><i class="fa fa-circle-o-notch fa-spin"></i></span>
+            <span id="ls-message">Loading...</span>
+        </div>
+    </div>
+    
+    <div id="Recaptcha-container">
+        <div id="Recaptcha"></div>
+    </div>
+
+    <div id="anouncement">
+        New update:<br><br>
+        Latest version: 5.0.1<br>
+        Thanks all the helping from Yufox<br>
+        Bai bai 2Cool..இдஇ
+    </div>
+
+    <div id="huds">
+        <div id="leaderboard-hud">
+            <div id="leaderboard-head" Hstr="html.leaderboard.title">Leaderboard</div>
+            <div id="leaderboard-positions"></div>
+            <div id="leaderboard-chart">
+                <div class="chart-bar red"></div>
+                <div class="chart-bar green"></div>
+                <div class="chart-bar blue"></div>
+            </div>
+        </div>
+
+        <div id="message-hud">
+            <div id="emojiContainer"></div>
+            <input id="message" Hstr="placeholder.huds.enterChatMsg">
+        </div>
+
+        <div id="chatroom"></div>
+
+        <div id="stats-hud"><i class="fa fa-lock" aria-hidden="true"></i></div>
+
+        <div id="targeting-hud">
+            <div>
+                <div class="spectate-mode-btn active" id="spectate-mode-top"><i class="fa fa-video-camera"></i></div>
+                <div class="spectate-mode-btn" id="spectate-mode-mouse"><i class="fa fa-mouse-pointer"></i></div>
+                <div class="spectate-mode-btn" id="spectate-mode-target"><i class="fa fa-bullseye"></i></div>
+            </div>
+            <div id="targeting-no-1" class="static"><span Hstr="html.huds.targeting_bigCellVp">BIGGEST CELL VIEWPORT</span> <i class="fa fa-video-camera"></i></div>
+            <div id="targeting-mouse" class="static"><span Hstr="html.huds.targeting_followVp">VIEWPORT FOLLOWING MOUSE</span> <i class="fa fa-mouse-pointer"></i></div>
+            <div id="targeting-players">
+                <div class="static"><span Hstr="html.huds.targeting_players">TARGETING PLAYERS</span> <i class="fa fa-bullseye"></i></div>
+                <div id="targeting-player1"><span class="nick">Target 1</span> [<span class="mass">NOT SELECTED</span>]</div>
+                <div id="targeting-player2"><span class="nick">Target 2</span> [<span class="mass">NOT SELECTED</span>]</div>
+                <div id="targeting-playersMass"><span Hstr="html.huds.targeting_totalMass">TOTAL MASS</span> [<span class="mass">0</span>]</div>
+            </div>
+        </div>
+
+        <div id="teamlist-hud">
+            <div id="teams-vs">
+                <div class="team-vs-info">
+                    <div id="team-vs-1">
+                        <div id="teamlist-alive1" class="team-info"><i class="fa fa-play"></i> <span>0</span></div>
+                        <div id="teamlist-spectate1" class="team-info"><i class="fa fa-pause"></i> <span>0</span></div>
+                        <div id="teamlist-totalmass1" class="team-info"><i class="fa fa-eercast"></i> <span>0</span></div>
+                    </div>
+                    <div id="team-vs-2">
+                        <div id="teamlist-alive2" class="team-info"><i class="fa fa-play"></i> <span>0</span></div>
+                        <div id="teamlist-spectate2" class="team-info"><i class="fa fa-pause"></i> <span>0</span></div>
+                        <div id="teamlist-totalmass2" class="team-info"><i class="fa fa-eercast"></i> <span>0</span></div>
+                    </div>
+                </div>
+                <div class="team-vs-bar"><div class="team-vs-bar-inner"></div></div>
+            </div>
+            <div id="teamlist-head">
+                <i class="fa fa-bars" aria-hidden="true"></i> <span Hstr="html.huds.teamlist_title">Team players</span>
+            </div>
+            <div id="teamlist-positions"></div>
+            <div id="info-tp">
+                <div id="teamlist-alive" class="team-info"><i class="fa fa-play"></i> <span>0</span></div>
+                <div id="teamlist-spectate" class="team-info"><i class="fa fa-pause"></i> <span>0</span></div>
+                <div id="teamlist-totalmass" class="team-info"><i class="fa fa-eercast"></i> <span>0</span></div>
+            </div>
+        </div>
+
+        <div class="minimap-head">
+            <button class="minimap-button" id="minimap-show-1">1</button>
+            <button class="minimap-button" id="minimap-show-2">2</button>
+            <button class="minimap-button active" id="minimap-show-0">All</button>
+            <div id="fps-hud"></div>
+        </div>
+        <div id="minimap-hud">
+            <div class="minimap-grid">
+                <div class="minimap-row">
+                    <div class="minimap-sector">A1</div>
+                    <div class="minimap-sector">A2</div>
+                    <div class="minimap-sector">A3</div>
+                    <div class="minimap-sector">A4</div>
+                    <div class="minimap-sector">A5</div>
+                </div>
+                <div class="minimap-row">
+                    <div class="minimap-sector">B1</div>
+                    <div class="minimap-sector">B2</div>
+                    <div class="minimap-sector">B3</div>
+                    <div class="minimap-sector">B4</div>
+                    <div class="minimap-sector">B5</div>
+                </div>
+                <div class="minimap-row">
+                    <div class="minimap-sector">C1</div>
+                    <div class="minimap-sector">C2</div>
+                    <div class="minimap-sector">C3</div>
+                    <div class="minimap-sector">C4</div>
+                    <div class="minimap-sector">C5</div>
+                </div>
+                <div class="minimap-row">
+                    <div class="minimap-sector">D1</div>
+                    <div class="minimap-sector">D2</div>
+                    <div class="minimap-sector">D3</div>
+                    <div class="minimap-sector">D4</div>
+                    <div class="minimap-sector">D5</div>
+                </div>
+                <div class="minimap-row">
+                    <div class="minimap-sector">E1</div>
+                    <div class="minimap-sector">E2</div>
+                    <div class="minimap-sector">E3</div>
+                    <div class="minimap-sector">E4</div>
+                    <div class="minimap-sector">E5</div>
+                </div>
+            </div>
+
+            <canvas id="minimap-nodes"></canvas>
+        </div>
+
+        <div id="notifications"></div>
+    </div>
+
+    <div id="menu-overlay">
+        <div class="menu-bar">
+            <div class="menu-bar-button" id="login-facebook">
+                <i class="fa fa-facebook"></i>
+            </div>
+            <div class="menu-bar-button" id="login-google">
+                <i class="fa fa-google-plus"></i>
+            </div>
+            <div class="menu-bar-button" id="logout">
+                <i class="fa fa-sign-out"></i>
+            </div>
+            <div class="menu-bar-button last" id="changelog">
+                <a style="color: #fff !important; text-decoration: none;" href="https://docs.google.com/document/d/1chCbhjoQBuKeOQh8eeaXo7BuGd7d91vfNsYre7QyyXI/edit?usp=sharing" target="_blank" class="fa fa-info-circle"></a>
+            </div>
+            <div class="menu-bar-ip" id="ip-box"></div>
+            <div class="hslo-skin-box">
+                <div id="hslo-skin-preview"></div>
+                <div class="hslo-skin-button" id="hslo-login">Login <i class="fa fa-sign-out"></i></div>
+                <div class="hslo-skin-button clicked" id="hslo-logout">Logout <i class="fa fa-sign-in"></i></div>
+                <div class="hslo-skin-title">HSLO Skin</div>
+            </div>
+        </div>
+
+        <div class="hslo-skin-menu">
+            <div class="center">
+                <div class="hslo-skin-input">
+                    <div class="title">Username</div>
+                    <input id="hslo-skin-username">
+                </div>
+                <div class="hslo-skin-input">
+                    <div class="title">Password</div>
+                    <input type="password" id="hslo-skin-password">
+                </div>
+                <button class="menu-button" id="hslo-skin-submit">Login</button>
+                <button class="menu-button" id="hslo-skin-close">Close</button>
+            </div>
+        </div>
+
+        <div class="menu-blur"></div>
+        <div class="control-bar-container">
+            <div class="control-bar">
+                <div class="bar-button-container">
+                    <div class="bar-button-bg settings"></div>
+                    <div class="bar-button-bg dummy"></div>
+                    <div class="bar-button-bg play"></div>
+                    <div class="bar-button-bg spectate"></div>
+                    <div class="bar-button-bg inputs"></div>
+                    <div class="bar-button-bg theme"></div>
+                </div>
+                <div class="bar-button-container">
+                    <div class="bar-button" id="button-settings">
+                        <i class="material-icons">tune</i>
+                        <div class="text">
+                            <span Hstr="html.mainMenu.btn_settings">Settings</span>
+                        </div>
+                    </div>
+                    <div class="bar-button dummy"></div>
+                    <div class="bar-button" id="button-play">
+                        <i class="material-icons">play_arrow</i>
+                        <div class="text">
+                            <span Hstr="html.mainMenu.btn_play">Play</span>
+                        </div>
+                    </div>
+                    <div class="bar-button" id="button-spectate">
+                        <i class="material-icons">remove_red_eye</i>
+                        <div class="text">
+                            <span Hstr="html.mainMenu.btn_spectate">Spectate</span>
+                        </div>
+                    </div>
+                    <div class="bar-button" id="button-inputs">
+                        <i class="material-icons">keyboard</i>
+                        <div class="text">
+                            <span Hstr="html.mainMenu.btn_inputs">Input</span>
+                        </div>
+                    </div>
+                    <div class="bar-button" id="button-theme">
+                        <i class="material-icons">color_lens</i>
+                        <div class="text">
+                            <span Hstr="html.mainMenu.btn_theme">Theme</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bar-circle-outer">
+                <div class="bar-circle">
+                    <div class="skin-preview"></div>
+                </div>
+            </div>
+            <div class="skin-wheel">
+                <div class="skin-wheel-bg"></div>
+                <div class="skin-selector one" value="1"></div>
+                <div class="skin-selector two" value="2"></div>
+                <div class="skin-selector three" value="3"></div>
+                <div class="skin-selector four" value="4"></div>
+                <div class="skin-selector five" value="5"></div>
+                <div class="skin-selector six" value="6"></div>
+                <div class="skin-selector seven" value="7"></div>
+                <div class="skin-selector eight" value="8"></div>
+            </div>
+        </div>
+
+        <div id="player-data">
+            <button id="streamMode"><i class="fa fa-eye"></i></button>
+            <input class="menu-inputs" id="tag" Hstr="placeholder.mainMenu.input_tag1" maxlength="10">
+            <div class="double-tags" style="display: none;">
+                <input class="menu-inputs" id="tag2" Hstr="placeholder.mainMenu.input_tag2" maxlength="10">
+                <button class="menu-button tag-buttons active-tag" id="normal-tag"><i class="fa fa-tag"></i></button>
+                <button class="menu-button tag-buttons" id="double-tag"><i class="fa fa-tags"></i></button>
+            </div>
+            <input class="menu-inputs" id="nick" Hstr="placeholder.mainMenu.input_nick" maxlength="15">
+            <input class="menu-inputs" id="nick2" placeholder="Nick 2" maxlength="15">
+            <input class="menu-inputs" id="skin" Hstr="placeholder.mainMenu.input_skinUrl" maxlength="60">
+            <select id="gamemode" class="menu-inputs">
+                <option selected="selected" value="" Hstr="html.mainMenu.select_ffa">FFA</option>
+                <option selected="selected" value=":teams" Hstr="html.mainMenu.select_teams">Teams</option>
+                <option selected="selected" value=":experimental" Hstr="html.mainMenu.select_experimental">Experimental</option>
+                <option value=":party" Hstr="html.mainMenu.select_party">Party</option>
+            </select>
+            <select class="menu-inputs" id="regions"></select>
+            <input class="menu-inputs" id="party-token" Hstr="placeholder.mainMenu.input_token">
+            <button class="menu-button" id="join-party">
+                <span Hstr="html.mainMenu.btn_join">Join</span>
+            </button>
+            <button class="menu-button" id="create-party">
+                <span Hstr="html.mainMenu.btn_create">Create</span>
+            </button>
+        </div>
+
+
+        <div id="settings" class="menu-panel">
+            <div class="settings-close"><i class="fa fa-times" aria-hidden="true"></i></div>
+            <div class="settings-container">
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.language">Language</span>
+                    <span class="settings-options" type="options" name="language">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="EN" class="active">English</b>
+                        <b value="JA">Japanese</b>
+                        <b value="ZH">Chinese</b>
+                        <b value="KO">Korean</b>
+                        <b value="ES">Spanish</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row divider"></div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.CellAnimation">Animation delay</span>
+                    <span class="settings-options" type="range" name="CellAnimation">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="120" step="10" min="100" max="200" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.eatAnimation">Cell eat [sucking] animation</span>
+                    <span class="settings-options" type="options" name="eatAnimation">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" class="active" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.cellTextAnimation">Cell text animation</span>
+                    <span class="settings-options" type="options" name="cellTextAnimation">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="stepped" Hstr="html.settingMenu.opt_stepped">Stepped</b>
+                        <b value="on" class="active" Hstr="html.settingMenu.opt_linear">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row divider"></div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.zoomSpeed">Zoom speed</span>
+                    <span class="settings-options" type="range" name="zoomSpeed">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="92" step="2" min="70" max="96" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.cameraSpeed">Camera speed [2 default]</span>
+                    <span class="settings-options" type="range" name="cameraSpeed">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="2" step="1" min="1" max="20" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.autoZoom">Auto zoom</span>
+                    <span class="settings-options" type="options" name="autoZoom">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" class="active" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row divider"></div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.autoHideText">Auto hide text</span>
+                    <span class="settings-options" type="options" name="autoHideText">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" class="active" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.hideOwnNick">Hide own nick</span>
+                    <span class="settings-options" type="options" name="hideOwnNick">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" class="active" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.hideOwnMass">Hide own mass</span>
+                    <span class="settings-options" type="options" name="hideOwnMass">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" class="active" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row divider"></div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.cellNick">Cell Nick</span>
+                    <span class="settings-options" type="options" name="cellNick">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" class="active" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.nickShadow">Nick shadow</span>
+                    <span class="settings-options" type="options" name="nickShadow">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" class="active" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="performance" Hstr="html.settingMenu.opt_perf">Performance</b>
+                        <b value="normal" Hstr="html.settingMenu.opt_normal">Normal</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.cellMass">Cell Mass</span>
+                    <span class="settings-options" type="options" name="cellMass">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="shortened" class="active" Hstr="html.settingMenu.opt_shortened">Shortened</b>
+                        <b value="full" Hstr="html.settingMenu.opt_full">Full</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.massShadow">Mass shadow</span>
+                    <span class="settings-options" type="options" name="massShadow">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" class="active" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="performance" Hstr="html.settingMenu.opt_perf">Performance</b>
+                        <b value="normal" Hstr="html.settingMenu.opt_normal">Normal</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row divider"></div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.urlSkins">URL skins</span>
+                    <span class="settings-options" type="options" name="urlSkins">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" class="active" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.hsloSkins">HSLO skins</span>
+                    <span class="settings-options" type="options" name="hsloSkins">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" class="active" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row divider"></div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.vanillaGrid">Vanilla grid</span>
+                    <span class="settings-options" type="options" name="vanillaGrid">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" class="active" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.bgSectors">Background sectors</span>
+                    <span class="settings-options" type="options" name="bgSectors">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="onlyLines" Hstr="html.settingMenu.opt_onlyLines">Only lines</b>
+                        <b value="snowflakes" class="active" Hstr="html.settingMenu.opt_snowflakes">Snowflakes</b>
+                        <b value="normal" Hstr="html.settingMenu.opt_normal">Normal</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row divider"></div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.food">Food</span>
+                    <span class="settings-options" type="options" name="food">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="monoColored" Hstr="html.settingMenu.opt_singleClr">Mono colored</b>
+                        <b value="rainbow" class="active" Hstr="html.settingMenu.opt_rainbow">rainbow</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row divider"></div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.cursorLine">Cursor lines</span>
+                    <span class="settings-options" type="options" name="cursorLine">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" class="active" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.opponentRings">Opponent rings</span>
+                    <span class="settings-options" type="options" name="opponentRings">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" class="active" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.splitRings">Split rings</span>
+                    <span class="settings-options" type="options" name="splitRings">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" class="active" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.virusRange">Viruses range</span>
+                    <span class="settings-options" type="options" name="virusRange">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" class="active" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.teamIndicator">Teammate indicator</span>
+                    <span class="settings-options" type="options" name="teamIndicator">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" class="active" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.commander">Commander</span>
+                    <span class="settings-options" type="options" name="commander">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" class="active" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row divider"></div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.chatType">Chat type</span>
+                    <span class="settings-options" type="options" name="chatType">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="chatroom" Hstr="html.settingMenu.opt_chatroom">Chatroom</b>
+                        <b value="popup" class="active" Hstr="html.settingMenu.opt_popup">Pop up</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.targeting">Cell Targeting [Spectate mode]</span>
+                    <span class="settings-options" type="options" name="targeting">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" class="active" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.settingMenu.sounds">Sounds</span>
+                    <span class="settings-options" type="options" name="sounds">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="off" class="active" Hstr="html.settingMenu.opt_off">Off</b>
+                        <b value="on" Hstr="html.settingMenu.opt_on">On</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div id="inputs" class="menu-panel">
+            <div class="inputs-tab-bar">
+                <span class="inputs-tab active" target="#hotkeys"><i class="fa fa-keyboard-o"></i> <span Hstr="html.hkMenu.title">Hotkeys</span></span>
+
+                <span class="inputs-tab" target="#mouse"><i class="fa fa-mouse-pointer"></i> <span Hstr="html.mouseMenu.title">Mouse</span></span>
+
+                <span class="inputs-tab" target="#commands"><i class="fa fa-comments"></i> <span Hstr="html.commandsMenu.title">Commands</span></span>
+
+                <span class="inputs-tab close" target="#close"><i class="fa fa-times" aria-hidden="true"></i></span>
+            </div>
+            <div class="inputs-menu-container">
+                <div id="hotkeys" class="inputs-menu active">
+                    <div class="row" name="toggleMenuKey">
+                        <span class="title" Hstr="html.hkMenu.toggleMenuKey">Show / hide menu</span>
+                        <input class="key" value="ESC">
+                    </div>
+                    <div class="row" name="feedKey">
+                        <span class="title" Hstr="html.hkMenu.feedKey">Feed</span>
+                        <input class="key" value="W">
+                    </div>
+                    <div class="row" name="macroFeedKey">
+                        <span class="title" Hstr="html.hkMenu.macroFeedKey">Macro feed</span>
+                        <input class="key" value="Q">
+                    </div>
+                    <div class="row" name="splitKey">
+                        <span class="title" Hstr="html.hkMenu.splitKey">Split</span>
+                        <input class="key" value="SPACE">
+                    </div>
+                    <div class="row" name="doubleSplitKey">
+                        <span class="title" Hstr="html.hkMenu.doubleSplitKey">Double split</span>
+                        <input class="key" value="E">
+                    </div>
+                    <div class="row" name="split16Key">
+                        <span class="title" Hstr="html.hkMenu.split16Key">Split 16</span>
+                        <input class="key" value="R">
+                    </div>
+                    <div class="row" name="stopKey">
+                        <span class="title" Hstr="html.hkMenu.stopKey">Cell pause</span>
+                        <input class="key" value="S">
+                    </div>
+                    <div class="row" name="chatKey">
+                        <span class="title" Hstr="html.hkMenu.chatKey">Chat key</span>
+                        <input class="key" value="Enter">
+                    </div>
+                    <div class="row" name="freeSpectateKey">
+                        <span class="title" Hstr="html.hkMenu.freeSpectateKey">Toggle spectate mode</span>
+                        <input class="key" value="Y">
+                    </div>
+                    <div class="row" name="toggleSplitRings">
+                        <span class="title" Hstr="html.hkMenu.toggleSplitRings">Toggle split rings</span>
+                        <input class="key" value="N">
+                    </div>
+                    <div class="row" name="toggleOpponentRings">
+                        <span class="title" Hstr="html.hkMenu.toggleOpponentRings">Toggle opponent rings</span>
+                        <input class="key" value="N">
+                    </div>
+                    <div class="row" name="toggleNick">
+                        <span class="title" Hstr="html.hkMenu.toggleNick">Toggle Cell nick</span>
+                        <input class="key" value="N">
+                    </div>
+                    <div class="row" name="toggleMass">
+                        <span class="title" Hstr="html.hkMenu.toggleMass">Toggle cell mass</span>
+                        <input class="key" value="M">
+                    </div>
+                    <div class="row" name="toggleSkin">
+                        <span class="title" Hstr="html.hkMenu.toggleSkin">Toggle Skin</span>
+                        <input class="key" value="A">
+                    </div>
+                    <div class="row" name="toggleFood">
+                        <span class="title" Hstr="html.hkMenu.toggleFood">Toggle food</span>
+                        <input class="key" value="F">
+                    </div>
+                    <div class="row" name="respawnKey">
+                        <span class="title" Hstr="html.hkMenu.respawnKey">Quick respawn</span>
+                        <input class="key" value="TILDE">
+                    </div>
+                    <div class="row" name="command0Key">
+                        <span class="title" Hstr="html.hkMenu.command0Key">Command 0</span>
+                        <input class="key" value="0">
+                    </div>
+                    <div class="row" name="command1Key">
+                        <span class="title" Hstr="html.hkMenu.command1Key">Command 1</span>
+                        <input class="key" value="1">
+                    </div>
+                    <div class="row" name="command2Key">
+                        <span class="title" Hstr="html.hkMenu.command2Key">Command 2</span>
+                        <input class="key" value="2">
+                    </div>
+                    <div class="row" name="command3Key">
+                        <span class="title" Hstr="html.hkMenu.command3Key">Command 3</span>
+                        <input class="key" value="3">
+                    </div>
+                    <div class="row" name="command4Key">
+                        <span class="title" Hstr="html.hkMenu.command4Key">Command 4</span>
+                        <input class="key" value="4">
+                    </div>
+                    <div class="row" name="command5Key">
+                        <span class="title" Hstr="html.hkMenu.command5Key">Command 5</span>
+                        <input class="key" value="5">
+                    </div>
+                    <div class="row" name="command6Key">
+                        <span class="title" Hstr="html.hkMenu.command6Key">Command 6</span>
+                        <input class="key" value="6">
+                    </div>
+                    <div class="row" name="command7Key">
+                        <span class="title" Hstr="html.hkMenu.command7Key">Command 7</span>
+                        <input class="key" value="7">
+                    </div>
+                    <div class="row" name="command8Key">
+                        <span class="title" Hstr="html.hkMenu.command8Key">Command 8</span>
+                        <input class="key" value="8">
+                    </div>
+                    <div class="row" name="command9Key">
+                        <span class="title" Hstr="html.hkMenu.command9Key">Command 9</span>
+                        <input class="key" value="9">
+                    </div>
+                    <div class="row" name="zoom1key">
+                        <span class="title" Hstr="html.hkMenu.zoom1key">Zoom level 1</span>
+                        <input class="key" value="ALT+1">
+                    </div>
+                    <div class="row" name="zoom2key">
+                        <span class="title" Hstr="html.hkMenu.zoom2key">Zoom level 2</span>
+                        <input class="key" value="ALT+2">
+                    </div>
+                    <div class="row" name="zoom3key">
+                        <span class="title" Hstr="html.hkMenu.zoom3key">Zoom level 3</span>
+                        <input class="key" value="ALT+3">
+                    </div>
+                    <div class="row" name="zoom4key">
+                        <span class="title" Hstr="html.hkMenu.zoom4key">Zoom level 4</span>
+                        <input class="key" value="ALT+4">
+                    </div>
+                    <div class="row" name="zoom5key">
+                        <span class="title" Hstr="html.hkMenu.zoom5key">Zoom level 5</span>
+                        <input class="key" value="ALT+5">
+                    </div>
+                </div>
+                <div id="mouse" class="inputs-menu">
+                    <div class="row">
+                        <span class="title" Hstr="html.mouseMenu.lmb">Left click</span>
+                        <span class="mouse-options" type="options" name="leftClick">
+                            <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                            <b value="off" class="active" Hstr="html.mouseMenu.off">Off</b>
+                            <b value="feed" Hstr="html.mouseMenu.feed">Feed</b>
+                            <b value="macroFeed" Hstr="html.mouseMenu.macroFeed">Macro feed</b>
+                            <b value="split" Hstr="html.mouseMenu.split">Split</b>
+                            <b value="doubleSplit" Hstr="html.mouseMenu.doubleSplit">Double split</b>
+                            <b value="split16" Hstr="html.mouseMenu.split16">Split 16</b>
+                            <b value="commander" Hstr="html.mouseMenu.commander">Commander</b>
+                            <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <div class="row">
+                        <span class="title" Hstr="html.mouseMenu.scroll">Middle click</span>
+                        <span class="mouse-options" type="options" name="middleClick">
+                            <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                            <b value="off" class="active" Hstr="html.mouseMenu.off">Off</b>
+                            <b value="feed" Hstr="html.mouseMenu.feed">Feed</b>
+                            <b value="macroFeed" Hstr="html.mouseMenu.macroFeed">Macro feed</b>
+                            <b value="split" Hstr="html.mouseMenu.split">Split</b>
+                            <b value="doubleSplit" Hstr="html.mouseMenu.doubleSplit">Double split</b>
+                            <b value="split16" Hstr="html.mouseMenu.split16">Split 16</b>
+                            <b value="commander" Hstr="html.mouseMenu.commander">Commander</b>
+                            <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <div class="row">
+                        <span class="title" Hstr="html.mouseMenu.rmb">Right click</span>
+                        <span class="mouse-options" type="options" name="rightClick">
+                            <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                            <b value="off" class="active" Hstr="html.mouseMenu.off">Off</b>
+                            <b value="feed" Hstr="html.mouseMenu.feed">Feed</b>
+                            <b value="macroFeed" Hstr="html.mouseMenu.macroFeed">Macro feed</b>
+                            <b value="split" Hstr="html.mouseMenu.split">Split</b>
+                            <b value="doubleSplit" Hstr="html.mouseMenu.doubleSplit">Double split</b>
+                            <b value="split16" Hstr="html.mouseMenu.split16">Split 16</b>
+                            <b value="commander" Hstr="html.mouseMenu.commander">Commander</b>
+                            <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                    <div class="row mouse-targeting-info">
+                        <span Hstr="html.mouseMenu.targeting_h1">Targeting</span>:
+                        <br><br>
+                        <span Hstr="html.mouseMenu.rmb">Right Mouse button</span>:
+                        <br>
+                        <span Hstr="html.mouseMenu.targeting_txt1">Lock target 1</span>
+                        <br><br>
+                        <span Hstr="html.mouseMenu.lmb">Left Mouse button</span>:
+                        <br>
+                        <span Hstr="html.mouseMenu.targeting_txt2">Lock target 2</span>
+                        <br><br>
+                        <span Hstr="html.mouseMenu.targeting_txt3">Middle Mouse button or Toggle spectate key</span>:
+                        <br>
+                        <span Hstr="html.mouseMenu.targeting_txt4">Toggle top cell mode to follow mouse mode</span>
+                        <br>
+                        <span Hstr="html.mouseMenu.targeting_txt5">Toggle targeting mode to follow mouse mode</span>
+                        <br>
+                        <span Hstr="html.mouseMenu.targeting_txt6">Toggle follow mouse mode to top cell mode</span>
+                        <br>
+                    </div>
+                </div>
+                <div id="commands" class="inputs-menu">
+                    <div class="row">
+                        <span class="command-input-box"><i>0</i><input placeholder="Command 0" id="command0"></span>
+                    </div>
+                    <div class="row">
+                        <span class="command-input-box"><i>1</i><input placeholder="Command 1" id="command1"></span>
+                    </div>
+                    <div class="row">
+                        <span class="command-input-box"><i>2</i><input placeholder="Command 2" id="command2"></span>
+                    </div>
+                    <div class="row">
+                        <span class="command-input-box"><i>3</i><input placeholder="Command 3" id="command3"></span>
+                    </div>
+                    <div class="row">
+                        <span class="command-input-box"><i>4</i><input placeholder="Command 4" id="command4"></span>
+                    </div>
+                    <div class="row">
+                        <span class="command-input-box"><i>5</i><input placeholder="Command 5" id="command5"></span>
+                    </div>
+                    <div class="row">
+                        <span class="command-input-box"><i>6</i><input placeholder="Command 6" id="command6"></span>
+                    </div>
+                    <div class="row">
+                        <span class="command-input-box"><i>7</i><input placeholder="Command 7" id="command7"></span>
+                    </div>
+                    <div class="row">
+                        <span class="command-input-box"><i>8</i><input placeholder="Command 8" id="command8"></span>
+                    </div>
+                    <div class="row">
+                        <span class="command-input-box"><i>9</i><input placeholder="Command 9" id="command9"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="theme" class="menu-panel">
+            <div class="theme-close">X</div>
+            <div class="theme-container">
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.selectedPreset">Theme preset</span>
+                    <span class="theme-options" type="options" name="selectedPreset">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="HSLO v2">HSLO v2</b>
+                        <b value="HSLO v3">HSLO v3</b>
+                        <b value="HSLO v4">HSLO v4</b>
+                        <b value="Pastels">Pastels</b>
+                        <b value="Agarplus v2">Agarplus v2</b>
+                        <b value="Ogario v4">Ogario v4</b>
+                        <b value="HKG">HKG</b>
+                        <b value="Yin">Yin</b>
+                        <b value="VNDOT">VNDOT</b>
+                        <b value="OZYDOT">OZYDOT</b>
+                        <b value="custom" class="active">Custom</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.cursor">Cursor</span>
+                    <span class="theme-options" type="range" name="cursor">
+                        <img src="" id="cursorDisplay">
+                        <div id="cursorOff">[OFF] </div>
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="13" step="1" min="1" max="15" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.chatFontSize">Chat font size</span>
+                    <span class="theme-options" type="range" name="chatFontSize">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="14" step="1" min="10" max="24" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.lbSize">Leaderboard size</span>
+                    <span class="theme-options" type="range" name="lbSize">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="100" step="5" min="70" max="200" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.minimapSize">Minimap size</span>
+                    <span class="theme-options" type="range" name="minimapSize">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="200" step="5" min="100" max="250" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.skinBorder">Skin border</span>
+                    <span class="theme-options" type="range" name="skinBorder">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="90" step="5" min="70" max="100" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.cellTransparency">Cell transparency</span>
+                    <span class="theme-options" type="range" name="cellTransparency">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="100" step="5" min="40" max="100" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.lightenCellColor">Lighten cell color</span>
+                    <span class="theme-options" type="range" name="lightenCellColor">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="100" step="5" min="40" max="100" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.borderColor">Border color</span>
+                    <span class="theme-options" type="colorpicker">
+                        <input id="borderColor" opacity="0">
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.borderWidth">Border width</span>
+                    <span class="theme-options" type="range" name="borderWidth">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="60" step="2" min="2" max="150" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.gridColor">Grid color</span>
+                    <span class="theme-options" type="colorpicker">
+                        <input id="gridColor" opacity="0">
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.gridTextColor">Grid text color</span>
+                    <span class="theme-options" type="colorpicker">
+                        <input id="gridTextColor" opacity="0">
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.gridTextSize">Grid text size</span>
+                    <span class="theme-options" type="range" name="gridTextSize">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="1500" step="100" min="500" max="2000" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.gridTextFont">Grid text font</span>
+                    <span class="theme-options" type="options" name="gridTextFont">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="ubuntu">Ubuntu</b>
+                        <b value="raleway">Raleway</b>
+                        <b value="cursive">Cursive</b>
+                        <b value="monospace">Monospace</b>
+                        <b value="serif">Serif</b>
+                        <b value="sans-serif">Sans serif</b>
+                        <b value="oswald" class="active">Oswald</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.gridWidth">Grid width</span>
+                    <span class="theme-options" type="range" name="gridWidth">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="10" step="2" min="2" max="150" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.nickColor">Nick color</span>
+                    <span class="theme-options" type="colorpicker">
+                        <input id="nickColor" opacity="0">
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.nickStrokeColor">Nick stroke color</span>
+                    <span class="theme-options" type="colorpicker">
+                        <input id="nickStrokeColor" opacity="0">
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.cellNickSize">Nick size</span>
+                    <span class="theme-options" type="range" name="cellNickSize">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="100" step="5" min="100" max="200" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.nickFont">Nick font</span>
+                    <span class="theme-options" type="options" name="nickFont">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="ubuntu">Ubuntu</b>
+                        <b value="raleway">Raleway</b>
+                        <b value="cursive">Cursive</b>
+                        <b value="monospace">Monospace</b>
+                        <b value="serif">Serif</b>
+                        <b value="sans-serif">Sans serif</b>
+                        <b value="oswald" class="active">Oswald</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.massColor">Mass color</span>
+                    <span class="theme-options" type="colorpicker">
+                        <input id="massColor" opacity="0">
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.massStrokeColor">Mass stroke color</span>
+                    <span class="theme-options" type="colorpicker">
+                        <input id="massStrokeColor" opacity="0">
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.cellMassSize">Mass size</span>
+                    <span class="theme-options" type="range" name="cellMassSize">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="100" step="5" min="100" max="200" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.massFont">Mass font</span>
+                    <span class="theme-options" type="options" name="massFont">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <b value="ubuntu">Ubuntu</b>
+                        <b value="raleway">Raleway</b>
+                        <b value="cursive">Cursive</b>
+                        <b value="monospace">Monospace</b>
+                        <b value="serif">Serif</b>
+                        <b value="sans-serif">Sans serif</b>
+                        <b value="oswald" class="active">Oswald</b>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.foodColor">Food color</span>
+                    <span class="theme-options" type="colorpicker">
+                        <input id="foodColor" opacity="0">
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.foodSize">Food size</span>
+                    <span class="theme-options" type="range" name="foodSize">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="4" step="1" min="1" max="10" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.virusColor">Virus color</span>
+                    <span class="theme-options" type="colorpicker">
+                        <input id="virusColor" opacity="0">
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.virusBorderColor">Virus border color</span>
+                    <span class="theme-options" type="colorpicker">
+                        <input id="virusBorderColor" opacity="0">
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.virusBorderWidth">virus border width</span>
+                    <span class="theme-options" type="range" name="virusBorderWidth">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="10" step="1" min="1" max="25" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.backgroundColor">Background color</span>
+                    <span class="theme-options" type="colorpicker">
+                        <input id="backgroundColor" opacity="0">
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.commanderColor">Commander color</span>
+                    <span class="theme-options" type="colorpicker">
+                        <input id="commanderColor" opacity="0">
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.indicatorSize">Indicator size</span>
+                    <span class="theme-options" type="range" name="indicatorSize">
+                        <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                        <span value="70" step="5" min="50" max="150" class="outer"><span class="inner"></span></span>
+                        <i class="fa fa-chevron-right" aria-hidden="true"></i>
+                        <span class="range-value">[0]</span>
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.team1color">Team 1 color [Double Tag Mode]</span>
+                    <span class="theme-options" type="colorpicker">
+                        <input id="team1color" opacity="0">
+                    </span>
+                </div>
+                <div class="row">
+                    <span class="title" Hstr="html.themeMenu.team2color">Team 2 color [Double Tag Mode]</span>
+                    <span class="theme-options" type="colorpicker">
+                        <input id="team2color" opacity="0">
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript" id="bundlejs" src="https://storage.googleapis.com/mubox/V5/bundle.out.js" defer></script>
+
+
+</body>
+</html>
