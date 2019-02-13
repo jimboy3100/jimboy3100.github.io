@@ -1,17 +1,19 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.65
+//v1.67
 //Game Configurations
 
-window.agarversion="v12/1963/";
+//window.agarversion="v12/1963/";
+window.agarversion="v12/1922/";
+
 var Lmagarversion="";
 
 window.LMGameConfiguration = $.ajax({
         type: "GET",
 		url: "https://jimboy3100.github.io/agario/live/"+Lmagarversion+"GameConfiguration.json",
 		async: false,
-        datatype: "json",
+        datatype: "jsonp",
         success: function(info) {
 			//var GameConfiguration = info;
 		}
@@ -24,7 +26,7 @@ setTimeout(function(){
         type: "GET",
 		url: "https://configs-web.agario.miniclippt.com/live/"+window.agarversion+"GameConfiguration.json",
 		async: false,
-        datatype: "json",
+        datatype: "jsonp",
         success: function(info) {
 			//var GameConfiguration = info;
 		}
@@ -2111,15 +2113,15 @@ var core = function(t, e, i) {
                 null !== e.localStorage.getItem(`ogarioSelectedProfile`) && (this[`selectedProfile`] = JSON['parse'](e.localStorage.getItem('ogarioSelectedProfile'))), ogarcopythelb[`nick`] = ogario1PlayerProfiles[this[`selectedProfile`]][`nick`], ogarcopythelb[`clanTag`] = ogario1PlayerProfiles[this['selectedProfile']][`clanTag`], ogarcopythelb[`skinURL`] = ogario1PlayerProfiles[this['selectedProfile']]['skinURL'], ogarcopythelb[`color`] = ogario1PlayerProfiles[this[`selectedProfile`]][`color`];
             },
             'changeSkinPreview': function(t, e) {
-                t && e && ('skin-preview' === e ? (s('#skin-preview')[`removeClass`](`default`).append(`<a href=\"#\" id=\"skin-popover\" data-toggle=\"popover\" title=\"\" data-html=\"true\" data-content=\"<img src=\'` + t['src'] + `\' width=\'500\'>\"></a>`), s('#skin-popover').append(s(t)[`fadeIn`](1000)), s(`#skin-popover`)[`popover`]()) : s('#' + e)[`removeClass`](`default`).append(s(t)[`fadeIn`](1000)));
+                t && e && ('skin-preview' === e ? (s('#skin-preview')[`removeClass`](`default`).append(`<a href=\"#\" id=\"skin-popover\" data-toggle=\"popover\" title=\"\" data-html=\"true\" data-content=\"<img src=\'` + t.src + `\' width=\'500\'>\"></a>`), s('#skin-popover').append(s(t)[`fadeIn`](1000)), s(`#skin-popover`)[`popover`]()) : s('#' + e)[`removeClass`](`default`).append(s(t)[`fadeIn`](1000)));
             },
             'setSkinPreview': function(t, e) {
                 if (s('#' + e)[`empty`]()[`addClass`](`default`), t && 0 != t[`length`]) {
                     var i = this,
                         o = new Image();
-                    o[`crossOrigin`] = 'Anonymous', o[`onload`] = function() {
+                    o.crossOrigin = 'Anonymous', o.onload = function() {
                         i[`changeSkinPreview`](o, e);
-                    }, o[`src`] = t;
+                    }, o.src = t;
                 }
             },
             'setProfile': function() {
@@ -2455,9 +2457,9 @@ var core = function(t, e, i) {
             },
             'loadSkin': function(t, e) {
                 var i = this;
-                t[e] = new Image(), t[e][`crossOrigin`] = `Anonymous`, t[e]['onload'] = function() {
+                t[e] = new Image(), t[e].crossOrigin = `Anonymous`, t[e]['onload'] = function() {
                     this[`complete`] && this[`width`] && this[`height`] && this[`width`] <= 2000 && this['height'] <= 2000 && (i['cacheQueue'][`push`](e), 1 == i[`cacheQueue`][`length`] && i[`cacheSkin`](i['customSkinsCache']));
-                }, t[e]['src'] = e;
+                }, t[e].src = e;
             },
             'cacheSkin': function(t) {
                 //console.log(t);  //////// return the image src
@@ -2468,7 +2470,7 @@ var core = function(t, e, i) {
                         var i = document[`createElement`](`canvas`);
                         i[`width`] = 512, i[`height`] = 512;
                         var s = i[`getContext`]('2d');
-                        s[`beginPath`](), s[`arc`](256, 256, 256, 0, 2 * Math['PI'], !1), s[`clip`](), s[`drawImage`](this[`customSkinsCache`][e], 0, 0, 512, 512), this[`customSkinsCache`][e + `_cached`] = new Image(), this[`customSkinsCache`][e + `_cached`][`src`] = i[`toDataURL`](), i = null, this[`cacheSkin`](this[`customSkinsCache`]);
+                        s[`beginPath`](), s[`arc`](256, 256, 256, 0, 2 * Math['PI'], !1), s[`clip`](), s[`drawImage`](this[`customSkinsCache`][e], 0, 0, 512, 512), this[`customSkinsCache`][e + `_cached`] = new Image(), this[`customSkinsCache`][e + `_cached`].src = i[`toDataURL`](), i = null, this[`cacheSkin`](this[`customSkinsCache`]);
                     }
                 }
             },
@@ -2481,7 +2483,7 @@ var core = function(t, e, i) {
                     var i = document[`createElement`](`canvas`);
                     i[`width`] = 512, i[`height`] = 512;
                     var s = i[`getContext`]('2d');
-                    s[`beginPath`](), s[`arc`](256, 256, 256, 0, 2 * Math['PI'], !1), s[`clip`](), s[`drawImage`](this[`customSkinsCache`][e], 0, 0, 512, 512), this[`customSkinsCache`][e + `_cached`] = new Image(), this[`customSkinsCache`][e + `_cached`][`src`] = i[`toDataURL`](), i = null, this[`cacheSkin`](this[`customSkinsCache`]);
+                    s[`beginPath`](), s[`arc`](256, 256, 256, 0, 2 * Math['PI'], !1), s[`clip`](), s[`drawImage`](this[`customSkinsCache`][e], 0, 0, 512, 512), this[`customSkinsCache`][e + `_cached`] = new Image(), this[`customSkinsCache`][e + `_cached`].src = i[`toDataURL`](), i = null, this[`cacheSkin`](this[`customSkinsCache`]);
                     //}
                 }
             },
@@ -4116,14 +4118,14 @@ var core = function(t, e, i) {
                         e = document[`createElement`](`canvas`);
                     e['width'] = 2 * t, e['height'] = 2 * t;
                     var i = e[`getContext`]('2d');
-                    i[`arc`](t, t, t, 0, this[`pi2`], !1), i[`fillStyle`] = g[`foodColor`], i[`fill`](), this['pellet'] = new Image(), this[`pellet`][`src`] = e[`toDataURL`](), e = null;
+                    i[`arc`](t, t, t, 0, this[`pi2`], !1), i[`fillStyle`] = g[`foodColor`], i[`fill`](), this['pellet'] = new Image(), this[`pellet`].src = e[`toDataURL`](), e = null;
                 },
                 'preDrawIndicator': function() {
                     this[`indicator`] = null;
                     var t = document['createElement'](`canvas`);
                     t['width'] = 90, t[`height`] = 50;
                     var e = t[`getContext`]('2d');
-                    e[`lineWidth`] = 2, e[`fillStyle`] = g['teammatesIndColor'], e['strokeStyle'] = `#000000`, e[`beginPath`](), e[`moveTo`](0, 0), e[`lineTo`](90, 0), e[`lineTo`](45, 50), e[`closePath`](), e[`fill`](), e[`stroke`](), this[`indicator`] = new Image(), this['indicator'][`src`] = t[`toDataURL`](), t = null;
+                    e[`lineWidth`] = 2, e[`fillStyle`] = g['teammatesIndColor'], e['strokeStyle'] = `#000000`, e[`beginPath`](), e[`moveTo`](0, 0), e[`lineTo`](90, 0), e[`lineTo`](45, 50), e[`closePath`](), e[`fill`](), e[`stroke`](), this[`indicator`] = new Image(), this['indicator'].src = t[`toDataURL`](), t = null;
                 },
                 'countFps': function() {
                     if (v['showStatsFPS']) {
