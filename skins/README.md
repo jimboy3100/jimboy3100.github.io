@@ -1,4 +1,4 @@
-# Legend mod Themes
+# Legend mod Skins
 
 ## Images
 
