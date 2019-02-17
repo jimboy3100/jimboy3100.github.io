@@ -2,7 +2,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.72
+//v1.73
 //Game Configurations
 
 //window.agarversion="v12/1963/";
@@ -1665,7 +1665,8 @@ var core = function(t, e, i) {
                 'animation': 140,
                 'zoomSpeedValue': 0.9,
                 'messageSound': 'https://jimboy3100.github.io/sounds/notification_01.mp3',
-                'commandSound': 'https://jimboy3100.github.io/sounds/notification_02.mp3'
+//                'commandSound': 'https://jimboy3100.github.io/sounds/notification_02.mp3'
+                'commandSound': 'https://jimboy3100.github.io/sounds/chat-message.mp3'
             };
         var ogarminimapdrawer = {
             'name': `LM express`,
@@ -2409,7 +2410,8 @@ var core = function(t, e, i) {
                 }
             },
             'onPlay': function() {
-                this[`play`](), this['hideMenu'](), e[`addKeyListeners`] && e[`addKeyListeners`](), v[`autoHideFood`] && (i[`showFood`] = !0), e['ga'] && e['ga'](`create`, `UA-92655864-7`, `auto`, `ogarioTracker`), e['ga'] && e['ga'](`ogarioTracker.send`, `pageview`);
+//                this[`play`](), this['hideMenu'](), e[`addKeyListeners`] && e[`addKeyListeners`](), v[`autoHideFood`] && (i[`showFood`] = !0), e['ga'] && e['ga'](`create`, `UA-92655864-7`, `auto`, `ogarioTracker`), e['ga'] && e['ga'](`ogarioTracker.send`, `pageview`);
+                this[`play`](), this['hideMenu'](), e[`addKeyListeners`] && e[`addKeyListeners`](), v[`autoHideFood`] && (i[`showFood`] = !0);
             },
             'onSpectate': function() {
                 this[`onJoin`](), this[`sendPlayerJoin`](), this[`hideMenu`](), e[`addKeyListeners`] && e['addKeyListeners'](), v[`autoHideFood`] && (i[`showFood`] = !1);
