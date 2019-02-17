@@ -175,7 +175,7 @@ else if (location.host === "agar.io" && location.pathname === "/") {
             cfg.prefix = GM_getValue("prefix", "🎤");
             cfg.lang = GM_getValue("lang", "default");
             cfg.unpause = GM_getValue("unpause", false);
-            console.log("load prefix=" + cfg.prefix + " lang=" + cfg.lang + " unpause=" + cfg.unpause);
+            //console.log("load prefix=" + cfg.prefix + " lang=" + cfg.lang + " unpause=" + cfg.unpause);
             $("#message-box").mousedown(function() {
                 return false;
             });
@@ -202,7 +202,7 @@ else if (location.host === "agar.io" && location.pathname === "/") {
             if (cfg.lang !== "default") {
                 recognition.lang = cfg.lang;
             }
-            console.log("cfg.lang/recognition.lang=" + cfg.lang + "/" + recognition.lang);
+            //console.log("cfg.lang/recognition.lang=" + cfg.lang + "/" + recognition.lang);
             recognition.addEventListener('result', function(event) {
                 var text_to = event.results.item(0).item(0).transcript;
                 var text_pre = $("#message").val();
