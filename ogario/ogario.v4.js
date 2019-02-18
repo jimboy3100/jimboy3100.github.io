@@ -2,7 +2,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.79
+//v1.80
 //Game Configurations
 
 //window.agarversion="v12/1963/";
@@ -803,7 +803,7 @@ var core = function(t, e, i) {
 				'(heel)': 'newheel.svg',
 				'(kiss)': 'newkiss.svg',
 				'(lipstick)': 'newlipstick.svg',	
-				'(rage)': 'newrage.svg',
+//				'(rage)': 'newrage.svg',
 				'(teacher)': 'newteacher.svg',	
 				'(together)': 'newtogether.svg',	
 				'(toothy)': 'newtoothy.svg',	
