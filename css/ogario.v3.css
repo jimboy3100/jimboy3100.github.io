@@ -85,15 +85,21 @@ label:hover{
     display:inline-block
 }
 #helloContainer{
-    width:740px;
+    width:830px;
     opacity:.96
 }
 .center-container{
     width:350px;
     margin:0
 }
-.left-container,.right-container{
+.left-container{
     width:190px;
+    margin:0;
+    padding-top:42px;
+    pointer-events:auto
+}
+.right-container{
+    width:280px;
     margin:0;
     padding-top:42px;
     pointer-events:auto
@@ -500,7 +506,7 @@ input.hide-url::selection,input.stream-mode::selection{
     right:10px
 }
 #skins-panel{
-    width:190px
+    width:280px
 }
 #skins{
     width:100%;
