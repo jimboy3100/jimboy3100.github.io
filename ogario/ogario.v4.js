@@ -3006,7 +3006,7 @@ var core = function(t, e, i) {
                 /*return String(t)[`replace`](/\&lt\;3/g, '<3')['replace'](/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\))/g, function(t) {
                     return `<img src=\"https://jimboy3100.github.io/banners/emoticons/` + d[t] + `\" alt=\"` + t + `\" class=\"emoticon\">`;
                 });*/
-                return String(t).replace(/\&lt\;3/g, '<3').replace(/℄/g, '℄ Legend Clan').replace(/LC/g, '℄ Legend Clan').replace(/lc/g, '℄ Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(t) {
+                return String(t).replace(/\&lt\;3/g, '<3').replace(/℄/g, '℄ Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(t) {
                     return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + d[t] + '\" alt=\"' + t + '\" class=\"emoticon\">';
                 });
             				
@@ -3067,8 +3067,14 @@ var core = function(t, e, i) {
                 return t ? new Audio(t) : null;
             },
             'playSound': function(t) {
-                t && t.play && (t.pause(), t.currentTime = 0, t.play());
+                //t && t.play && (t.pause(), t.currentTime = 0, t.play());
 				//t && t.play && t.play!==null && (t.pause(), t.currentTime = 0, t.play());
+				t.pause();
+				t.currentTime = 0;
+				var nopromise = {
+				catch : new Function()
+					};
+				(t.play() || nopromise).catch(function(){}); 
             },
             'setTargeting': function() {
                 this[`targetID`] && (this['targeting'] = !this[`targeting`], i[`targeting`] = this['targeting'], this['setTargetingInfo']());
