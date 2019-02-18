@@ -2,7 +2,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.78
+//v1.79
 //Game Configurations
 
 //window.agarversion="v12/1963/";
@@ -753,8 +753,8 @@ var core = function(t, e, i) {
             u = {
                 '&': '&amp;',
                 '<': '&lt;',
-                '>': `&gt;`,
-                '"': `&quot;`,
+                '>': '&gt;',
+                '"': '&quot;',
                 '\'': '&#39;',
                 '/': '&#x2F;'
             },
@@ -792,23 +792,23 @@ var core = function(t, e, i) {
                 '(y)': 'thumb.svg',
                 '(n)': 'thumbd.svg',
 				
-				':<': 'newangry.svg',
-				':-@': 'newclown.svg',
-				':-z': 'newcrazy.svg',
-				'3:-)': 'newdevil.svg',
-				'3:-(': 'newdevil2.svg',
-				'--fb--': 'newfb.svg',
-				'--g+--': 'newgplus.svg',
-				':ooo': 'newghost.svg',
-				'o--DD': 'newheel.svg',
-				':-*': 'newkiss.svg',
-				':-*)': 'newlipstick.svg',	
-				':-@': 'newrage.svg',
-				':-a': 'newteacher.svg',	
-				'q-p': 'newtogether.svg',	
-				':-E': 'newtoothy.svg',	
-				';-(': 'newbaby.svg',
-				':-O': 'newwow.svg'					
+				'(angry)': 'newangry.svg',
+				'(clown)': 'newclown.svg',
+				'(crazy)': 'newcrazy.svg',
+				'(devil)': 'newdevil.svg',
+				'(devil2)': 'newdevil2.svg',
+				'(fb)': 'newfb.svg',
+				'(g+)': 'newgplus.svg',
+				'(ghost)': 'newghost.svg',
+				'(heel)': 'newheel.svg',
+				'(kiss)': 'newkiss.svg',
+				'(lipstick)': 'newlipstick.svg',	
+				'(rage)': 'newrage.svg',
+				'(teacher)': 'newteacher.svg',	
+				'(together)': 'newtogether.svg',	
+				'(toothy)': 'newtoothy.svg',	
+				'(baby)': 'newbaby.svg',
+				'(wow)': 'newwow.svg'					
             },
             p = [{
                     name: "imgur.com",
@@ -3003,9 +3003,13 @@ var core = function(t, e, i) {
                 return v[`chatEmoticons`] && (s = this[`parseEmoticons`](s)), s;
             },
             'parseEmoticons': function(t) {
-                return String(t)[`replace`](/\&lt\;3/g, '<3')['replace'](/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\))/g, function(t) {
+                /*return String(t)[`replace`](/\&lt\;3/g, '<3')['replace'](/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\))/g, function(t) {
                     return `<img src=\"https://jimboy3100.github.io/banners/emoticons/` + d[t] + `\" alt=\"` + t + `\" class=\"emoticon\">`;
+                });*/
+                return String(t).replace(/\&lt\;3/g, '<3').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(t) {
+                    return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + d[t] + '\" alt=\"' + t + '\" class=\"emoticon\">';
                 });
+            				
             },
             'displayChatMessage': function(t, e, i, o) {
                 if (0 != o[`length`]) {
