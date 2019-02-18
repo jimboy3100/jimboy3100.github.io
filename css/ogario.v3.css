@@ -85,7 +85,7 @@ label:hover{
     display:inline-block
 }
 #helloContainer{
-    width:830px;
+    width:920px;
     opacity:.96
 }
 .center-container{
@@ -93,7 +93,7 @@ label:hover{
     margin:0
 }
 .left-container{
-    width:190px;
+    width:280px;
     margin:0;
     padding-top:42px;
     pointer-events:auto
