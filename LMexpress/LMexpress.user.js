@@ -97,7 +97,7 @@ $(".tab-content").after('<button id="Mass3x" class="btn potion-slot-button blue 
 				}, 3000);
 			}
         });
-$("#canvas").remove();$(".vanilla-build").remove();$(".nav.nav-tabs").remove();$("#v-ex-menu").remove();$("#service-message-area").remove();$(".radio-module").remove();$(".tosBox.right").remove();$(".tosBox.left").remove();$("#nick").remove();$("#skinCustomButton").remove();$("#play").remove();$("#direct-connect").remove();$("#backgroundPlus").remove();$("#psk").remove();$("#virusColorScheme").remove();$('#mainui-modes').parent().remove();$("#imagebig").remove();
+$("#canvas").remove();$(".vanilla-build").remove();$(".nav.nav-tabs").remove();$("#v-ex-menu").remove();$(".vanilla-build").remove();$("#service-message-area").remove();$(".radio-module").remove();$(".tosBox.right").remove();$(".tosBox.left").remove();$("#nick").remove();$("#skinCustomButton").remove();$("#play").remove();$("#direct-connect").remove();$("#backgroundPlus").remove();$("#psk").remove();$("#virusColorScheme").remove();$('#mainui-modes').parent().remove();$("#imagebig").remove();
 }, 10000);
 }
 else if(getParameterByName("mod", url)=="tiny"){
