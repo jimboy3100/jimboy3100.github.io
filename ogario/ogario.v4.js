@@ -2,7 +2,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.85 test
+//v1.87
 //Game Configurations
 
 //window.agarversion="v12/1963/";
@@ -201,6 +201,7 @@ var core = function(t, e, i) {
                     'hk-autoResp': `Włącz/wyłacz auto odrodzenie`,
                     'hk-switchServerMode': `Przełącz serwer [publiczny/prywatny]`,
                     'hk-showTargeting': `Pokaż/ukryj panel namierzania`,
+					'hk-voiceChat': 'Głos do tekstu',
                     'hk-setTargeting': `Włącz/wyłącz namierzanie (śledzenie)`,
                     'hk-cancelTargeting': 'Zatrzymaj namierzanie',
                     'hk-changeTarget': `Zmień cel`,
@@ -541,6 +542,7 @@ var core = function(t, e, i) {
                     'hk-autoResp': `Toggle auto respawn`,
                     'hk-switchServerMode': `Switch server [public/private]`,
                     'hk-showTargeting': 'Show/hide targeting panel',
+					'hk-voiceChat': 'Voice to text',
                     'hk-setTargeting': 'Start/stop targeting (following)',
                     'hk-cancelTargeting': 'Cancel targeting',
                     'hk-changeTarget': `Change target`,
@@ -2970,6 +2972,7 @@ var core = function(t, e, i) {
                 }
             },
             'sendChatMessage': function(t, e) {
+				//console.log(t);console.log(e);
                 if (!(Date[`now`]() - this[`lastMessageSentTime`] < 500 || 0 == e.length || 0 == ogarcopythelb[`nick`].length) && this['isSocketOpen']()) {
                     e = ogarcopythelb['nick'] + ': ' + e;
                     var i = this[`createView`](10 + 2 * e.length);
@@ -3489,6 +3492,7 @@ var core = function(t, e, i) {
                 this.socket[`send`](t[`buffer`]);
             },
             'sendMessage': function(t) {
+				//console.log(t);
                 if (this[`connectionOpened`]) {
                     if (!this[`clientKey`]) return;
                     t = this[`shiftMessage`](t, this['clientKey']), this[`clientKey`] = this[`shiftKey`](this['clientKey']);
@@ -3540,9 +3544,11 @@ var core = function(t, e, i) {
                 }
             },
             'sendFbToken': function(t) {
+				console.log("Facebook token: " + t);
                 this.sendAccessToken(t, 2);
             },
             'sendGplusToken': function(t) {
+				console.log("Google Plus token: " + t);
                 this.sendAccessToken(t, 3);
             },
             'sendRecaptcha': function(t) {
@@ -4581,6 +4587,18 @@ var core = function(t, e, i) {
                     'keyUp': null,
                     'type': `normal`
                 },
+                'hk-voiceChat': {
+                    'label': h['hk-voiceChat'],
+                    'defaultKey': `=`,
+                    'keyDown': function() {
+                        //ogarminimapdrawer && ogarminimapdrawer[`enterChatMessage`]();
+						//if ($('#message-box').css('display') == 'block') {
+						$(".voice-start.icon-mic").click();
+						//}
+                    },
+                    'keyUp': null,
+                    'type': `special`
+                },				
                 'hk-switchServerMode': {
                     'label': h[`hk-switchServerMode`],
                     'defaultKey': '=',
