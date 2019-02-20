@@ -150,7 +150,7 @@ else if (location.host === "agar.io" && location.pathname === "/") {
     // Inject Chat to text userscript
     (function() {
         'use strict';
-
+var textspeach="";
         function pre_loop() {
             if (!document.getElementById("message-box")) {
                 setTimeout(pre_loop, 4000);
@@ -175,7 +175,7 @@ else if (location.host === "agar.io" && location.pathname === "/") {
             cfg.prefix = GM_getValue("prefix", "🎤");
             cfg.lang = GM_getValue("lang", "default");
             cfg.unpause = GM_getValue("unpause", false);
-            //console.log("load prefix=" + cfg.prefix + " lang=" + cfg.lang + " unpause=" + cfg.unpause);
+            console.log("load prefix=" + cfg.prefix + " lang=" + cfg.lang + " unpause=" + cfg.unpause);
             $("#message-box").mousedown(function() {
                 return false;
             });
@@ -196,22 +196,25 @@ else if (location.host === "agar.io" && location.pathname === "/") {
             $("#message-menu").append('<a href="#" class="chatbox-clear icon-clear" style="float:right;">C</a>');
             $(".chatbox-clear").click(function() {
                 $("#message").val("");
+				textspeach="";
             });
             window.SpeechRecognition = window.SpeechRecognition || webkitSpeechRecognition;
             var recognition = new window.SpeechRecognition();
             if (cfg.lang !== "default") {
                 recognition.lang = cfg.lang;
             }
-            //console.log("cfg.lang/recognition.lang=" + cfg.lang + "/" + recognition.lang);
+            console.log("cfg.lang/recognition.lang=" + cfg.lang + "/" + recognition.lang);
             recognition.addEventListener('result', function(event) {
                 var text_to = event.results.item(0).item(0).transcript;
-                var text_pre = $("#message").val();
+/*                var text_pre = $("#message").val();
                 if (text_pre === "") {
                     text_to = cfg.prefix + text_to;
                 } else {
                     text_to = text_pre + " " + text_to;
                 }
-                $("#message").val(text_to);
+                $("#message").val(text_to); */
+				textspeach=text_to;
+				legendmod3.sendChatMessage(101,text_to)
             }, false);
             recognition.addEventListener('end', function(event) {
                 fn_recognition_end();
@@ -224,11 +227,13 @@ else if (location.host === "agar.io" && location.pathname === "/") {
             function fn_recognition_start() {
                 $("#voice-config").css("display", "none");
                 $(".voice-start").css("background-color", "green");
+				$("#VoiceBtn1").css("background-color", "green");
                 recognition.start();
             }
 
             function fn_recognition_end() {
                 $(".voice-start").css("background-color", "");
+				$("#VoiceBtn1").css("background-color", "");
             }
             $("#og-options").append('<div id="voice-config" class="options-box voiceGroup"></div>');
             $("#voice-config").append('<h5 class="menu-main-color">Voice</h5>');
