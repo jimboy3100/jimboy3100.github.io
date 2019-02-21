@@ -768,7 +768,8 @@ var core = function(t, e, i) {
         l && n.hasOwnProperty(l) && (r = l);
         var h = n[r];
 		if (n[r].comm15!=undefined){
-		console.log(h.comm15);}
+		//console.log(h.comm15);
+		}
             c = {
                 'comm1': h.comm1,
                 'comm2': h.comm2,
