@@ -214,7 +214,7 @@ var textspeach="";
                 }
                 $("#message").val(text_to); */
 				textspeach=text_to;
-				legendmod3.sendChatMessage(101,text_to)
+				legendmod3.sendChatMessage(101,"🎤 " +text_to)
             }, false);
             recognition.addEventListener('end', function(event) {
                 fn_recognition_end();
