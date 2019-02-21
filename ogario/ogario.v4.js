@@ -2,7 +2,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.93 test
+//v1.94 test
 //Game Configurations
 
 //window.agarversion="v12/1963/";
@@ -767,8 +767,8 @@ var core = function(t, e, i) {
             l = e.navigator.language || e.navigator.userLanguage;
         l && n.hasOwnProperty(l) && (r = l);
         var h = n[r];
-		//if (n[r].comm15==undefined){
-			//console.log(n[r].comm15);
+		if (n[r].comm15!=undefined){
+		console.log(h.comm15);}
             c = {
                 'comm1': h.comm1,
                 'comm2': h.comm2,
@@ -780,6 +780,7 @@ var core = function(t, e, i) {
                 'comm8': h.comm8,
                 'comm9': h.comm9,
                 'comm10': h.comm10,
+				'comm0': h.comm0,
                 'comm11': h.comm11,
                 'comm12': h.comm12,
                 'comm13': h.comm13,
@@ -4886,7 +4887,7 @@ var core = function(t, e, i) {
                 },
                 'hk-comm15': {
                     'label': c[`comm15`],
-                    'defaultKey': '',
+                    'defaultKey': 'CTRL+1',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](15);
                     },
@@ -4895,7 +4896,7 @@ var core = function(t, e, i) {
                 },
                 'hk-comm16': {
                     'label': c[`comm16`],
-                    'defaultKey': '',
+                    'defaultKey': 'CTRL+2',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](16);
                     },
@@ -4904,7 +4905,7 @@ var core = function(t, e, i) {
                 },
                 'hk-comm17': {
                     'label': c[`comm17`],
-                    'defaultKey': '',
+                    'defaultKey': 'CTRL+3',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](17);
                     },
@@ -4913,7 +4914,7 @@ var core = function(t, e, i) {
                 },
                 'hk-comm18': {
                     'label': c[`comm18`],
-                    'defaultKey': '',
+                    'defaultKey': 'CTRL+4',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](18);
                     },
@@ -4922,7 +4923,7 @@ var core = function(t, e, i) {
                 },
                 'hk-comm19': {
                     'label': c[`comm19`],
-                    'defaultKey': '',
+                    'defaultKey': 'CTRL+5',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](19);
                     },
@@ -4931,7 +4932,7 @@ var core = function(t, e, i) {
                 },
                 'hk-comm20': {
                     'label': c[`comm20`],
-                    'defaultKey': '',
+                    'defaultKey': 'CTRL+7',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](20);
                     },
@@ -4940,7 +4941,7 @@ var core = function(t, e, i) {
                 },
                 'hk-comm21': {
                     'label': c[`comm21`],
-                    'defaultKey': '',
+                    'defaultKey': 'CTRL+8',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](21);
                     },
@@ -4949,7 +4950,7 @@ var core = function(t, e, i) {
                 },
                 'hk-comm22': {
                     'label': c[`comm22`],
-                    'defaultKey': '',
+                    'defaultKey': 'CTRL+9',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](22);
                     },
@@ -4958,7 +4959,7 @@ var core = function(t, e, i) {
                 },
                 'hk-comm23': {
                     'label': c[`comm23`],
-                    'defaultKey': '',
+                    'defaultKey': 'CTRL+0',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](23);
                     },
@@ -4967,7 +4968,7 @@ var core = function(t, e, i) {
                 },
                 'hk-comm24': {
                     'label': c[`comm24`],
-                    'defaultKey': '',
+                    'defaultKey': 'CTRL+Z',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](24);
                     },
@@ -4976,7 +4977,7 @@ var core = function(t, e, i) {
                 },
                 'hk-comm25': {
                     'label': c[`comm25`],
-                    'defaultKey': '',
+                    'defaultKey': 'CTRL+X',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](25);
                     },
@@ -4985,7 +4986,7 @@ var core = function(t, e, i) {
                 },
                 'hk-comm26': {
                     'label': c[`comm26`],
-                    'defaultKey': '',
+                    'defaultKey': 'CTRL+Q',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](26);
                     },
@@ -4994,7 +4995,7 @@ var core = function(t, e, i) {
                 },
                 'hk-comm27': {
                     'label': c[`comm27`],
-                    'defaultKey': '',
+                    'defaultKey': 'CTRL+V',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](27);
                     },
@@ -5003,7 +5004,7 @@ var core = function(t, e, i) {
                 },
                 'hk-comm28': {
                     'label': c[`comm28`],
-                    'defaultKey': '',
+                    'defaultKey': 'CTRL+B',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](28);
                     },
@@ -5012,7 +5013,7 @@ var core = function(t, e, i) {
                 },		
                 'hk-comm29': {
                     'label': c[`comm29`],
-                    'defaultKey': '',
+                    'defaultKey': 'CTRL+A',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](29);
                     },
@@ -5021,7 +5022,7 @@ var core = function(t, e, i) {
                 },	
                 'hk-comm30': {
                     'label': c[`comm30`],
-                    'defaultKey': '',
+                    'defaultKey': 'CTRL+D',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer[`sendCommand`](30);
                     },
