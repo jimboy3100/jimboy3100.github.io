@@ -2,7 +2,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.109 test
+//v1.112 test
 //Game Configurations
 
 //window.agarversion="v12/1963/";
@@ -2839,6 +2839,17 @@ var core = function(t, e, i) {
             'isSocketOpen': function() {
                 return null !== this.socket && this.socket['readyState'] === this.socket['OPEN'];
             },
+        "writeUint32" : function(data, value) {
+          for (; !![];) {
+            if ((value & -128) == 0) {
+              data["push"](value);
+              return;
+            } else {
+              data["push"](value & 127 | 128);
+              value = value >>> 7;
+            }
+          }
+        },			
             'createView': function(t) {
                 return new DataView(new ArrayBuffer(t));
             },
@@ -3624,7 +3635,7 @@ var core = function(t, e, i) {
                     i.setUint8(0, 16), i['setInt32'](1, t, !0), i['setInt32'](5, e, !0), i.setUint32(9, this['protocolKey'], !0), this.sendMessage(i);
                 }
             },
-            'sendAccessToken': function(t, e, i) {
+/*            'sendAccessToken': function(t, e, i) {
                 if (!this['accessTokenSent']) {
                     i || (i = 102);
                     for (var s = t.length, o = this.clientVersionString.length, a = [i, 8, 1, 18, s + o + 23, 1, 8, 10, 0x52, s + o + 18, 1, 8, e, 18, o + 8, 8, 5, 18, o], n = 0; n < o; n++) a.push(this.clientVersionString.charCodeAt(n));
@@ -3633,14 +3644,49 @@ var core = function(t, e, i) {
                     var r = new DataView(a['buffer']);
                     this.sendMessage(r);
                 }
-            },
+            }, */
+        "sendAccessToken" : function(shapes, options, oW) {
+          if (this["accessTokenSent"]) {
+            return;
+          }
+          if (!oW) {
+            oW = 102;
+          }
+          var curr = shapes["length"];
+          var count = this["clientVersionString"]["length"];
+          var data = [oW, 8, 1, 18];
+          //this["writeUint32"](data, curr + count + 23);
+		  ogarminimapdrawer["writeUint32"](data, curr + count + 23);
+          data["push"](8, 10, 82);
+		  ogarminimapdrawer['writeUint32'](data, curr + count + 18);
+          //this['writeUint32'](data, curr + count + 18);
+          data["push"](8, options, 18, count + 8, 8, 5, 18, count);
+          var prev = 0;
+          for (; prev < count; prev++) {
+            data["push"](this["clientVersionString"]["charCodeAt"](prev));
+          }
+          data["push"](24, 0, 32, 0, 26);
+		  ogarminimapdrawer["writeUint32"](data, curr + 3);
+          //this["writeUint32"](data, curr + 3);
+          data["push"](10);
+		  ogarminimapdrawer["writeUint32"](data, curr);
+          //this["writeUint32"](data, curr);
+          prev = 0;
+          for (; prev < curr; prev++) {
+            data["push"](shapes["charCodeAt"](prev));
+          }
+          data = new Uint8Array(data);
+          var raw_basefont = new DataView(data["buffer"]);
+          this["sendMessage"](raw_basefont);
+        },			
             'sendFbToken': function(t) {
 				console.log("Facebook token: " + t);
                 this.sendAccessToken(t, 2);
             },
             'sendGplusToken': function(t) {
 				console.log("Google Plus token: " + t);
-                this.sendAccessToken(t, 3);
+                //this.sendAccessToken(t, 3);
+				this.sendAccessToken(t, 4);
             },
             'sendRecaptcha': function(t) {
                 var e = this.createView(2 + t.length);
