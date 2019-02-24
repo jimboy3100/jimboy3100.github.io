@@ -2,7 +2,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.112 test
+//v1.113 test
 //Game Configurations
 
 //window.agarversion="v12/1963/";
@@ -3123,7 +3123,7 @@ var core = function(t, e, i) {
                     return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + d[t] + '\" alt=\"' + t + '\" class=\"emoticon\">';
                 });*/
                 return String(t).replace(/\&lt\;3/g, '<3').replace(/℄/g, '℄ Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(t) {
-                    console.log(d[t]);
+                    //console.log(d[t]);
 					return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + d[t] + '\" alt=\"' + t + '\" class=\"emoticon\">';
                 });
             				
@@ -3681,11 +3681,11 @@ var core = function(t, e, i) {
           this["sendMessage"](raw_basefont);
         },			
             'sendFbToken': function(t) {
-				console.log("Facebook token: " + t);
+				console.log("[Legend mod Express] Facebook token: " + t);
                 this.sendAccessToken(t, 2);
             },
             'sendGplusToken': function(t) {
-				console.log("Google Plus token: " + t);
+				console.log("[Legend mod Express] Google Plus token: " + t);
                 //this.sendAccessToken(t, 3);
 				this.sendAccessToken(t, 4);
             },
@@ -3876,6 +3876,7 @@ var core = function(t, e, i) {
                     var s = '<span>';
                     'isPlayer' === this['leaderboard'][i]['id'] ? s = '<span class=\"me\">' : ogarcopythelb['clanTag'].length && 0 == this['leaderboard'][i]['nick'].indexOf(ogarcopythelb['clanTag']) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer['escapeHTML'](this['leaderboard'][i]['nick']) + '</span>';
                 }
+				t+='<span class="me">Total : '+this.leaderboard.length+'</span>'
                 if (this['playerPosition'] > window.leaderboardlimit && (t += '<span class=\"me\">' + this['playerPosition'] + '. ' + ogarminimapdrawer['escapeHTML'](this['playerNick']) + '</span>'), v['showLbData'])
                     for (var o = 0; o < this['ghostCells'].length && o != i; o++) e += '<span class=\"lb-data\">', e += '<span class=\"top5-mass-color\">[' + ogarminimapdrawer['shortMassFormat'](this['ghostCells'][o]['mass']) + ']</span>', e += '<span class=\"hud-main-color\">[' + ogarminimapdrawer['calculateMapSector'](this['ghostCells'][o]['x'], this['ghostCells'][o]['y']) + ']</span>', e += '</span>';
                 ogarminimapdrawer['displayLeaderboard'](t, e);
