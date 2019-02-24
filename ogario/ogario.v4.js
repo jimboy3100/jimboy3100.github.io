@@ -3876,8 +3876,9 @@ var core = function(t, e, i) {
                     var s = '<span>';
                     'isPlayer' === this['leaderboard'][i]['id'] ? s = '<span class=\"me\">' : ogarcopythelb['clanTag'].length && 0 == this['leaderboard'][i]['nick'].indexOf(ogarcopythelb['clanTag']) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer['escapeHTML'](this['leaderboard'][i]['nick']) + '</span>';
                 }
-				t+='<span class="me">Total : '+this.leaderboard.length+'</span>'
-                if (this['playerPosition'] > window.leaderboardlimit && (t += '<span class=\"me\">' + this['playerPosition'] + '. ' + ogarminimapdrawer['escapeHTML'](this['playerNick']) + '</span>'), v['showLbData'])
+				
+                if (this['playerPosition'] > window.leaderboardlimit && (t += '<span class=\"me\">' + this['playerPosition'] + '. ' + ogarminimapdrawer['escapeHTML'](this['playerNick']) + '</span>'), v['showLbData']);
+					t+='<span class="me">Total : '+this.leaderboard.length+'</span>';
                     for (var o = 0; o < this['ghostCells'].length && o != i; o++) e += '<span class=\"lb-data\">', e += '<span class=\"top5-mass-color\">[' + ogarminimapdrawer['shortMassFormat'](this['ghostCells'][o]['mass']) + ']</span>', e += '<span class=\"hud-main-color\">[' + ogarminimapdrawer['calculateMapSector'](this['ghostCells'][o]['x'], this['ghostCells'][o]['y']) + ']</span>', e += '</span>';
                 ogarminimapdrawer['displayLeaderboard'](t, e);
 				///////////////// establish core.registerSkin
