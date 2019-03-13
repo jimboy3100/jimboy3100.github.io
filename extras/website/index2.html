@@ -1,457 +1,46 @@
 
 <html lang="en-us"><head>	
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/normalize.css" media="screen">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-		<link href="https://fonts.googleapis.com/css?family=Barlow+Condensed:500,800" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/stylesheet.css" media="screen">
-        <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/github-light.css" media="screen">
-		<style>
+  <!-- Google -->
+  <meta name="google-site-verification" content="OrWzyxbeEDi74jEvD72zeJP8gCasT9CMc0O6BVIEdp0" />
+  <meta name="google-site-verification" content="y6NJ8Fa4Uc0_p70ypQMd8P5LkDTsQRUAiKEzUOvWutk" />
+  <meta name="keywords" content="legendmod.ml, legend mod, legend mod agario, legend express, legend express agario, agar, agar.io, agar.io mod, lc, lc clan, lc agar, ℄, ℄ agar, ℄ clan, ℄ agar clan, legend clan, legend clan agar, Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys,Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respaw">
+  <meta name="description" content="Legend Mod is an agar.io mod that reduces lag and improves performance, while at the same time providing many new features for agar.io. It was developed for and by the members of Legend Clan (also known as ℄ or LC).">
 
-* {
-   box-sizing: border-box;
-}
+  <!-- Facebook -->
+  <meta property="og:site_name" content="Legend Mod">
+  <meta property="og:title" content="LC clan facebook page">
+  <meta property="og:description" content="℄ or LC (short for Legend Clan), is an agar.io clan consisting of players of all skill levels, with strong values of respect and trust between its members.">
+  <meta property="og:url" content="https://www.facebook.com/Lcclan/">
+  <meta property="og:image" content="https://jimboy3100.github.io/banners/icon32croped.ico.gif">
+  <meta property="og:type" content="website">
 
-::-webkit-input-placeholder { 
-    color: #d1d1d1 !important; 
-}
+  <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/normalize.css" media="screen">
+  <link href="https://fonts.googleapis.com/css?family=Barlow+Condensed:500,800" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/stylesheet.css" media="screen">
+  <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/website/github-light.css" media="screen">
+  <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/css/styles.css" media="all">
 
-::-moz-placeholder { 
-    color: #d1d1d1 !important;
-}
+  <!-- Fav Icon -->
+  <link type="image/x-icon" rel="shortcut icon" href="https://jimboy3100.github.io/banners/icon32croped.ico.gif">
 
-::-moz-selection {
-    color: #fff !important;
-    background-color: #a06ee1 !important;
-}
+  <!-- Because cssFiles and jsFiles are relative urls -->
+  <base href="/">
 
-::selection {
-    color: #fff !important;
-    background-color: #a06ee1 !important;
-}
-
-#navbar {
-    //width: 100%;
-	display: flex; 
-	justify-content: center;
-	height: 76px;
-	background-color: #fff;
-	//position: fixed;
-	//top: 0;
-	/left: 0;
-	//right: 0;
-	//z-index: 1000;
-}
-
-#nav {
-	width: 550px;
-	overflow: hidden;
-}
-
-#nav ul {
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
-	float: left;
-}
-
-#nav ul li {
-	list-style-type: none;
-	margin-left: 8px;
-	float: left;
-}
-
-#nav a {
-	display: block;
-	font-family: "OpenSans-Semibold", sans-serif;
-	font-weight: normal;
-	font-size: 1em;
-	color: #969696;
-	border: 2px solid #969696;
-	border-radius: 8px;
-    text-decoration: none;
-	padding: 8px 8px;
-    margin-top: 18px;
-}
-
-#nav a:hover, #nav .active {
-	color: #a06ee1;
-	border-color: #a06ee1;
-    text-decoration: none;
-}
-
-#nav .active {
-	color: #fff;
-	background-color: #a06ee1;
-}
-
-#nav .active:hover {
-	color: #fff;
-}
-
-#skin-url {
-    width: 500px;
-    height: 42px;
-    color: #d1d1d1;
-    font-family: "OpenSans-Semibold", sans-serif;
-    font-size: 1em;
-    border-radius: 8px;
-    border: 2px solid #d1d1d1;
-    margin-top: 18px;
-    padding: 10px;
-}
-
-#hizliresim {
-    display: none;
-}
-
-.skins-wrapper {
-    overflow: hidden;
-    padding: 10px;
-    //margin-top: 40px;
-}
-
-.skin-box {
-    width: 140px;
-    height: 140px;
-    cursor: pointer;
-    float: left;
-}
-
-.skin-box img {
-    width: 100px;
-    height: 100px;
-    border: none;
-    border-radius: 50%;
-    margin: 20px;
-    transition: all linear 0.2s;
-}
-
-.skin-box:hover img {
-    width: 140px;
-    height: 140px;
-    border: none;
-    border-radius: 50%;
-    margin: 0;
-	
-}
-
-#jim {
-  height: 100%;
-  margin: 0;
-  background-color: #e12835;
-  background-image: radial-gradient(#e12835 20%, #be2633 50%, rgba(0, 0, 0, 0.5) 100%);
-  background-size: 120%;
-  background-position: center;
-  font-family: "Barlow Condensed", sans-serif;
-  -webkit-animation: tighten-vinette ease-out 1800ms forwards;
-          animation: tighten-vinette ease-out 1800ms forwards;
-}
-
-.images {
-  pointer-events: none;
-  height: 100vh;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  position: absolute;
-  opacity: .6;
-  z-index: 20;
-  background-size: cover;
-  background-position: center;
-  background-repeat: none;
-  background-image: url("https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/banners/iconLc1.jpg");
-}
-
-.wrapper {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo {
-  cursor: pointer;
-  text-align: center;
-}
-.logo:hover .restart {
-  opacity: .8;
-}
-
-.restart {
-  color: #fff;
-  margin-top: 20px;
-  font-size: 1.5rem;
-  text-transform: uppercase;
-  letter-spacing: -.08rem;
-  transition: opacity 150ms linear;
-}
-
-.marvel, .studios {
-  position: relative;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: -.2rem;
-  font-size: 5rem;
-  margin: .05rem .05rem .5rem;
-  padding: 0 0.4rem;
-  display: inline-block;
-}
-
-.studios {
-  font-weight: 500;
-  letter-spacing: -.3rem;
-  -webkit-transform: translateX(-95px);
-          transform: translateX(-95px);
-}
-
-.marvel {
-  z-index: 10;
-  font-weight: 800;
-  -webkit-transform: translateX(95px);
-          transform: translateX(95px);
-}
-.marvel:before {
-  z-index: -10;
-  content: '';
-  display: block;
-  background-color: #e12835;
-  border: solid rgba(255, 255, 255, 0.2) 1px;
-  height: 100%;
-  width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.studios:after, .studios:before {
-  content: '';
-  display: block;
-  height: 3px;
-  position: absolute;
-  background-color: #fff;
-  display: block;
-  left: 0.4rem;
-  right: 0.4rem;
-}
-
-.studios:before {
-  top: 0;
-}
-.studios:after {
-  bottom: 0;
-}
-
-.wrapper.run-animation {
-  -webkit-animation: shrink ease-out 4800ms forwards 600ms;
-          animation: shrink ease-out 4800ms forwards 600ms;
-}
-.wrapper.run-animation .marvel {
-  -webkit-transform: translateX(95px);
-          transform: translateX(95px);
-  -webkit-animation: slide-out-X 750ms ease forwards;
-          animation: slide-out-X 750ms ease forwards;
-}
-.wrapper.run-animation .studios {
-  -webkit-transform: translateX(-95px);
-          transform: translateX(-95px);
-  color: transparent;
-  -webkit-animation: slide-out-X 750ms ease forwards, show-text 300ms linear forwards 1500ms;
-          animation: slide-out-X 750ms ease forwards, show-text 300ms linear forwards 1500ms;
-}
-.wrapper.run-animation .studios:before {
-  -webkit-transform: translateY(2.9rem);
-          transform: translateY(2.9rem);
-  -webkit-animation: slide-out-Y 300ms ease forwards 750ms;
-          animation: slide-out-Y 300ms ease forwards 750ms;
-}
-.wrapper.run-animation .studios:after {
-  -webkit-transform: translateY(-2.9rem);
-          transform: translateY(-2.9rem);
-  -webkit-animation: slide-out-Y 300ms ease forwards 750ms;
-          animation: slide-out-Y 300ms ease forwards 750ms;
-}
-.wrapper.run-animation .restart {
-  opacity: 0;
-  -webkit-animation: fade-down 1200ms ease 3600ms forwards;
-          animation: fade-down 1200ms ease 3600ms forwards;
-}
-.wrapper.run-animation ~ .images {
-  -webkit-animation: flicker-images 1500ms 2 steps(1, end), fade-out 4500ms forwards;
-          animation: flicker-images 1500ms 2 steps(1, end), fade-out 4500ms forwards;
-}
-
-@-webkit-keyframes slide-out-X {
-  100% {
-    -webkit-transform: translateX(0);
-            transform: translateX(0);
-  }
-}
-
-@keyframes slide-out-X {
-  100% {
-    -webkit-transform: translateX(0);
-            transform: translateX(0);
-  }
-}
-@-webkit-keyframes slide-out-Y {
-  100% {
-    -webkit-transform: translateY(0);
-            transform: translateY(0);
-  }
-}
-@keyframes slide-out-Y {
-  100% {
-    -webkit-transform: translateY(0);
-            transform: translateY(0);
-  }
-}
-@-webkit-keyframes show-text {
-  100% {
-    color: #fff;
-  }
-}
-@keyframes show-text {
-  100% {
-    color: #fff;
-  }
-}
-@-webkit-keyframes shrink {
-  100% {
-    -webkit-transform: scale(0.8);
-            transform: scale(0.8);
-  }
-}
-@keyframes shrink {
-  100% {
-    -webkit-transform: scale(0.8);
-            transform: scale(0.8);
-  }
-}
-@-webkit-keyframes tighten-vinette {
-  100% {
-    background-size: 120%;
-  }
-}
-@keyframes tighten-vinette {
-  100% {
-    background-size: 120%;
-  }
-}
-@-webkit-keyframes fade-down {
-  0% {
-    -webkit-transform: translateY(-2rem);
-            transform: translateY(-2rem);
-    opacity: 0;
-  }
-  100% {
-    -webkit-transform: translateY(0);
-            transform: translateY(0);
-    opacity: .5;
-  }
-}
-@keyframes fade-down {
-  0% {
-    -webkit-transform: translateY(-2rem);
-            transform: translateY(-2rem);
-    opacity: 0;
-  }
-  100% {
-    -webkit-transform: translateY(0);
-            transform: translateY(0);
-    opacity: .5;
-  }
-}
-@-webkit-keyframes fade-out {
-  100% {
-    opacity: 0;
-  }
-}
-@keyframes fade-out {
-  100% {
-    opacity: 0;
-  }
-}
-@-webkit-keyframes flicker-images {
-  0% {
-    background-image: url("https://jimboy3100.github.io/banners/Lcclan5.gif");
-  }
-  10% {
-    background-image: url("https://jimboy3100.github.io/banners/Lcclan6.png");
-  }
-  20% {
-    background-image: url("https://jimboy3100.github.io/banners/Lcclan7.png");
-  }
-  30% {
-    background-image: url("https://jimboy3100.github.io/banners/Lcclan8.png");
-  }
-  40% {
-    background-image: url("https://coubsecure-s.akamaihd.net/get/b13/p/coub/simple/cw_timeline_pic/f3255e88d15/1315cc69ae28903792b46/big_1449287538_image.jpg");
-  }
-  50% {
-    background-image: url("https://i.ytimg.com/vi/73zLHCcawbQ/maxresdefault.jpg");
-  }
-  60% {
-    background-image: url("https://jimboy3100.github.io/banners/Lcclan9.jpg");
-  }
-  70% {
-    background-image: url("https://jimboy3100.github.io/banners/Lcclan12.jpg");
-  }
-  80% {
-    background-image: url("https://jimboy3100.github.io/banners/Lcclan20.png");
-  }
-  90% {
-    background-image: url("https://jimboy3100.github.io/banners/Lcclan13.jpg");
-  }
-  100% {
-    background-image: url("https://jimboy3100.github.io/banners/iconLc3.png");
-  }
-}
-@keyframes flicker-images {
-  0% {
-    background-image: url("https://jimboy3100.github.io/banners/Lcclan5.gif");
-  }
-  10% {
-    background-image: url("https://jimboy3100.github.io/banners/Lcclan6.png");
-  }
-  20% {
-    background-image: url("https://jimboy3100.github.io/banners/Lcclan7.png");
-  }
-  30% {
-    background-image: url("https://jimboy3100.github.io/banners/Lcclan8.png");
-  }
-  40% {
-    background-image: url("https://coubsecure-s.akamaihd.net/get/b13/p/coub/simple/cw_timeline_pic/f3255e88d15/1315cc69ae28903792b46/big_1449287538_image.jpg");
-  }
-  50% {
-    background-image: url("https://i.ytimg.com/vi/73zLHCcawbQ/maxresdefault.jpg");
-  }
-  60% {
-    background-image: url("https://jimboy3100.github.io/banners/Lcclan9.jpg");
-  }
-  70% {
-    background-image: url("https://jimboy3100.github.io/banners/Lcclan12.jpg");
-  }
-  80% {
-    background-image: url("https://jimboy3100.github.io/banners/Lcclan20.png");
-  }
-  90% {
-    background-image: url("https://jimboy3100.github.io/banners/Lcclan13.jpg);
-  }
-  100% {
-    background-image: url("https://jimboy3100.github.io/banners/iconLc3.png");
-  }
-}
-		</style>		
   <script>
-  if (document.location.search.match(/type=embed/gi)) {
-    window.parent.postMessage("resize", "*");
-  }
-</script>		
-<title>legendmod.ml</title><link type="image/x-icon" rel="shortcut icon" href="https://jimboy3100.github.io/banners/icon32croped.ico.gif"></head>
-	
+    if (document.location.search.match(/type=embed/gi)) {
+      window.parent.postMessage("resize", "*");
+    }
+  </script>
+
+  <title>Legend Mod for agar.io | By ℄ Clan</title>
+
+</head>
+
 <body>
 <div id="jim">
   <div class="wrapper run-animation" id="animate">
@@ -544,10 +133,7 @@ if (element) {
 </div>
 <h2 class="project-tagline">Step 2, Install Script
 <font size="3"><br>Disable other "main" Tampermonkey userscripts or Chrome Extensions</font></h2>
-<span style="color: black;"></span><a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="http://jimboy3100.github.io/LMexpress/LMexpress.user.js" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Legend Express v1.5</span></a> <span style="color: black;">(Smooth mod, Html based)</span> 
-
-<br>
-<span style="color: black;"></span><a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="http://jimboy3100.github.io/LMexpress/LMexpressExpansion1.user.js" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Legend Express Expansion 1</span></a> <span style="color: black;">(Install Express Exp 1 for Old Skins)</span> 
+<span style="color: black;"></span><a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="http://jimboy3100.github.io/LMexpress/LMexpress.user.js" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Legend Express v1.6</span></a> <span style="color: black;">(Smooth mod, Html based)</span> 
 
 <br><span style="color: black;">Cannot install? </span><a href="https://www.youtube.com/watch?v=vuRK1qUnSKY" target="_blank"><b>Watch video</b></a>
 <br><span style="color: black;">Join the </span><a name="LmDevelopers" onclick="document.getElementsByName('Developers')[0].click();"><b>developer team</b></a> of Legend mod Project
