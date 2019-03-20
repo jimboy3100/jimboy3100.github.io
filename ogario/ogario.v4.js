@@ -2,7 +2,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.122 test
+//v1.123 test
 //Game Configurations
 
 //window.agarversion="v12/1963/";
@@ -59,7 +59,7 @@ function UpperCase(str) {
 function LowerCase(str) {
     return str.toLowerCase();
 }
-var legendflags =["2ch", "4chan", "8ch", "9gag","cameron", "irs", "receita-federal", "9gag","agario-candle", "australia", "austria", "ayy-lmao", "bait", "bangladesh", "belgium", "berlusconi","blatter", "boris", "bosnia", "botswana","brazil", "bulgaria", "bush", "byzantium","cambodia", "canada", "chavez", "chile","china", "cia", "clinton", "confederate","croatia", "cuba", "denmark", "dilma","earth", "estonia", "european-union", "facebook", "facepunch", "feminism", "fidel", "finland", "france", "french-kingdom", "german-empire","germany", "greece", "hillary", "hollande", "hungary", "imperial-japan", "india", "indiana", "iran", "iraq", "ireland", "italy","jamaica", "japan", "kc", "kim-jong-un","latvia", "lithuania", "luxembourg", "maldivas","mars", "matriarchy", "merkel", "mexico","nasa", "netherlands", "nigeria", "north-korea","norway", "obama", "origin","pakistan","palin", "patriarchy", "peru", "pewdiepie","piccolo", "pokerface", "portugal", "prodota","prussia", "putin", "qing-dynasty", "quebec", "queen", "reddit", "romania"];
+var legendflags =["argentina", "belarus", "cambodia", "isis","jamaica", "mexico", "pakistan", "poland","scotland", "somalia", "spain", "sweden", "switzerland","thailand", "venezuela", "2ch", "4chan", "8ch", "9gag","cameron", "irs", "receita-federal", "9gag","agario-candle", "australia", "austria", "ayy-lmao", "bait", "bangladesh", "belgium", "berlusconi","blatter", "boris", "bosnia", "botswana","brazil", "bulgaria", "bush", "byzantium","cambodia", "canada", "chavez", "chile","china", "cia", "clinton", "confederate","croatia", "cuba", "denmark", "dilma","earth", "estonia", "european-union", "facebook", "facepunch", "feminism", "fidel", "finland", "france", "french-kingdom", "german-empire","germany", "greece", "hillary", "hollande", "hungary", "imperial-japan", "india", "indiana", "iran", "iraq", "ireland", "italy","jamaica", "japan", "kc", "kim-jong-un","latvia", "lithuania", "luxembourg", "maldivas","mars", "matriarchy", "merkel", "mexico","nasa", "netherlands", "nigeria", "north-korea","norway", "obama", "origin","pakistan","palin", "patriarchy", "peru", "pewdiepie","piccolo", "pokerface", "portugal", "prodota","prussia", "putin", "qing-dynasty", "quebec", "queen", "reddit", "romania"];
 
 var core = function(t, e, i) {
     //here starts ogario
