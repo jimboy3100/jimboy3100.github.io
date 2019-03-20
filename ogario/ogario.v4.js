@@ -2,7 +2,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.114 test
+//v1.122 test
 //Game Configurations
 
 //window.agarversion="v12/1963/";
@@ -53,6 +53,13 @@ core.registerSkin = function(a, b, c, d, e){
 	window.customskinsurl=c;
 }
 */
+function UpperCase(str) {
+    return str.toUpperCase();
+}
+function LowerCase(str) {
+    return str.toLowerCase();
+}
+var legendflags =["2ch", "4chan", "8ch", "9gag","cameron", "irs", "receita-federal", "9gag","agario-candle", "australia", "austria", "ayy-lmao", "bait", "bangladesh", "belgium", "berlusconi","blatter", "boris", "bosnia", "botswana","brazil", "bulgaria", "bush", "byzantium","cambodia", "canada", "chavez", "chile","china", "cia", "clinton", "confederate","croatia", "cuba", "denmark", "dilma","earth", "estonia", "european-union", "facebook", "facepunch", "feminism", "fidel", "finland", "france", "french-kingdom", "german-empire","germany", "greece", "hillary", "hollande", "hungary", "imperial-japan", "india", "indiana", "iran", "iraq", "ireland", "italy","jamaica", "japan", "kc", "kim-jong-un","latvia", "lithuania", "luxembourg", "maldivas","mars", "matriarchy", "merkel", "mexico","nasa", "netherlands", "nigeria", "north-korea","norway", "obama", "origin","pakistan","palin", "patriarchy", "peru", "pewdiepie","piccolo", "pokerface", "portugal", "prodota","prussia", "putin", "qing-dynasty", "quebec", "queen", "reddit", "romania"];
 
 var core = function(t, e, i) {
     //here starts ogario
@@ -2567,6 +2574,9 @@ var core = function(t, e, i) {
                 if (i.play = !0, i['playerColor']) return this['sendPlayerSpawn'](), void this['cacheCustomSkin'](ogarcopythelb['nick'], i['playerColor'], ogarcopythelb['skinURL']);
                 var t = this;
                 setTimeout(function() {
+					///////// trigger special effects
+					//ogarfooddrawer.drawCommander();
+					/////////
                     t['onPlayerSpawn']();
                 }, 100);
             },
@@ -3962,9 +3972,16 @@ var core = function(t, e, i) {
                                     if (window.EquippableSkins[player].productId == "skin_" + skin2search) {
                                         //console.log("Player: " + y + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);
 										if (ogarminimapdrawer['customSkinsMap'][y]==undefined){	
-											if (window.EquippableSkins[player].image!="uses_spine"){
-												ogarminimapdrawer['customSkinsMap'][y]="https://configs-web.agario.miniclippt.com/live/"+window.agarversion+window.EquippableSkins[player].image;
+											if (window.EquippableSkins[player].image!="uses_spine"){		
+																					
+												if(legendflags.includes(LowerCase(y))){
+													console.log("[Legend mod Express] " + LowerCase(y) + " skin found. Skin registered");
+													core.registerSkin(y, null, "https://jimboy3100.github.io/agario/live/flags/"+ LowerCase(y) +".png", null);
+												}
+												else{
+												ogarminimapdrawer['customSkinsMap'][y]="https://configs-web.agario.miniclippt.com/live/"+window.agarversion+window.EquippableSkins[player].image;												
 												ogarminimapdrawer['loadSkin'](ogarminimapdrawer['customSkinsCache'], "https://configs-web.agario.miniclippt.com/live/"+window.agarversion+window.EquippableSkins[player].image);
+												}
 												}
 											}								
 										}
@@ -4190,6 +4207,62 @@ var core = function(t, e, i) {
                             }
                     }
                 },
+				///////////////////// special effects - not work
+				'drawCommander': function() {
+								console.log("starting drawCommander");
+                                var t = this.ctx;
+                                cimg = new Image();
+                                //cimg.src = "https://i1.wp.com/ithacalaundry.gr/wp-content/uploads/cropped-ithaca-favicon.png?fit=512%2C512&ssl=1";
+								cimg.src = g.commanderImage;
+                                cimg1 = new Image();
+                                cimg1.src = g.commanderImage1;
+								//cimg1.src = "https://scontent.fskg1-1.fna.fbcdn.net/v/t1.0-9/53221702_10156422422342261_562265876800208896_n.jpg?_nc_cat=108&_nc_ht=scontent.fskg1-1.fna&oh=ef19be66005c1c6cacdc27e41b8d42a9&oe=5D155E79";
+                                cimg2 = new Image();
+								//cimg2.src = "https://scontent.fskg1-1.fna.fbcdn.net/v/t1.0-9/53169405_10205850786385701_7192010659427516416_o.jpg?_nc_cat=101&_nc_ht=scontent.fskg1-1.fna&oh=c75d0d11379b4d0297a38b4d19cba329&oe=5D151D7D";
+                                cimg2.src = g.commanderImage2;
+                                t.save(),
+								
+                                    t.globalAlpha = M.cAlpha,
+                                    t.translate(i.playerX, i.playerY),
+                                    t.rotate(M.cAngle),
+                                    t.drawImage(cimg, M.cRadius),
+                                    t.restore();
+                                t.save(),
+                                    t.globalAlpha = M.cAlpha,
+                                    t.translate(i.playerX, i.playerY),
+                                    t.rotate(M.cAngle1),
+                                    t.drawImage(cimg1, M.cRadius),
+                                    t.restore();
+                                t.save(),
+                                    t.globalAlpha = M.cAlpha,
+                                    t.translate(i.playerX, i.playerY),
+                                    t.rotate(M.cAngle2),
+                                    t.drawImage(cimg2, M.cRadius),
+                                    t.restore();
+                                t.globalAlpha = 1;
+                                this.updateCommander();
+                            },
+				'updateCommander': function() {
+					console.log("update drawCommander");
+                    M.cRadius += 7,
+                        M.cAngle += 0.007;
+                    M.cAngle1 -= 0.006;
+                    M.cAngle2 += 0.003;
+          M.cAlpha *= 0.9887;
+                    if (M.cAlpha <= 0.0001) {
+                        this.resetCommander();
+                    }
+                },				
+                'resetCommander': function() {
+					console.log("reset drawCommander");
+                    M.cRadius = 10,
+                        M.cAngle = 4,
+                        M.cAngle1 = 0,
+                        M.cAngle2 = 0,
+                        M.cAlpha = 1;
+                    M.drawCommander = !1;
+                },			
+			///////				
                 'drawMapBorders': function(t, e, i, s, o, a, n, r) {
                     e && (t['strokeStyle'] = n, t['lineWidth'] = r, t['beginPath'](), t['moveTo'](i, s), t['lineTo'](o, s), t['lineTo'](o, a), t['lineTo'](i, a), t['closePath'](), t['stroke']());
                 },
