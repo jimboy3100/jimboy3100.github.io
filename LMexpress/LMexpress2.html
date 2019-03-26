@@ -1,5 +1,5 @@
-
 <!DOCTYPE html>
+
 <html>
  <head>
   <meta charset="utf-8">
@@ -24,15 +24,34 @@
   <script src="https://jimboy3100.github.io/perfect-scrollbar.jquery.min.js"></script>
   <script src="https://jimboy3100.github.io/Youtubeiframe_api.js"></script>
   <script src="https://jimboy3100.github.io/key-event.js"></script>
-  <script src="https://jimboy3100.github.io/LMexpress/legend.sniff2.js"></script>
-  <script src="https://moby2033.github.io/static/js/i18n.js"></script>
-  <script src="https://moby2033.github.io/v4/beta/ogario.v4.master.js?v=26"></script>
+  <script src="https://jimboy3100.github.io/LMexpress/LMexpress.sniff2.js"></script>
+  <script src="https://jimboy3100.github.io/LMexpress/i18n.js"></script>
+  <script src="https://jimboy3100.github.io/ogario/ogario.v4.master.regionobj.js"></script>
+  <script src="https://jimboy3100.github.io/ogario/ogario.v4.master.js?v=32"></script>
 
   
  </head>
 
 <body> 
  <div id="fb-root"></div>
+<script>
+/*
+var CutNameConflictwithMessage=false;
+(function(){
+    var _privateLog = console.log;
+    console.log = function (message) {
+		if (CutNameConflictwithMessage==false){
+		if (~message.indexOf("OGARio by szymy")){
+		//console.log = _privateLog;
+		}
+		else{
+			_privateLog.apply(console, arguments);
+		}
+		}
+    };
+})();
+*/	
+ </script>
  <script>
   (function(d, s, id) {
    var js, fjs = d.getElementsByTagName(s)[0];
@@ -47,7 +66,7 @@
    <div id="leftPanel" class="side-container left-container">
     <div class="agario-panel agario-side-panel agario-profile-panel">
      <div class="clearfix" style="margin-bottom: 16px;">
-      <img class="agario-profile-picture" src="mc/img/profilepic_guest.png"/>
+      <img class="agario-profile-picture" src=""/>
       <div class="agario-profile-name-container">
        <div class="agario-profile-name"></div>
       </div>
@@ -70,7 +89,8 @@
        <div class="form-group clearfix">
         <input id="nick" class="form-control" placeholder="Nick" maxlength="15" autofocus />
         <select id="gamemode" class="form-control" required>
-         <option value="" data-itr="page_gamemode_ffa"></option>
+         <option value=":ffa" data-itr="page_gamemode_ffa"></option>
+         <option value=":battleroyale" data-itr="page_gamemode_battle_royale"></option>
          <option value=":teams" data-itr="page_gamemode_teams"></option>
          <option value=":experimental" data-itr="page_gamemode_experimental"></option>
          <option value=":party" data-itr="page_party"></option>
@@ -139,8 +159,8 @@
  </div>
  <canvas id="canvas"></canvas>
  <script src="https://jimboy3100.github.io/LMexpress/LMexpress.sniff.js"></script>
- <script src="https://moby2033.github.io/v4/beta/ogario.v4.js?v=26" charset="utf-8"></script>
- <script src="https://jimboy3000.github.io/LMexpress/LMexpress.js"></script>
+ <script src="https://jimboy3100.github.io/ogario/ogario.v4.privateservers.js?v=32" charset="utf-8"></script>
+ <script src="https://jimboy3100.github.io/LMexpress/LMexpress.js"></script>
  <script src="https://jimboy3100.github.io/LMexpress/LMexpress.sniff3.js"></script>
  <div style="font-family:'Ubuntu'">&nbsp;</div>
  <div id="captchaWindow" style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index:500">
