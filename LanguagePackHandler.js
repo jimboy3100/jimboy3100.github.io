@@ -14,6 +14,18 @@ else{
 	$("#LanguageAuthorPanel").text(Languageletter34+ ': ');
 	$("#LanguageAuthor").text(translator);	
 }
+$("#SHOSHOBtn").click();
+$("#SHOSHOBtn").click();
+$("#XPBtn").click();
+$("#XPBtn").click();
+$("#MAINBTBtn").click();
+$("#MAINBTBtn").click();
+$("#AnimatedSkinBtn").click();
+$("#AnimatedSkinBtn").click();
+$("#HideAllBthn").click();
+$("#HideAllBthn").click();
+$("#TIMEcalBtn").click();
+$("#TIMEcalBtn").click();
 
 
 $(".ogicon-home").attr('data-original-title',Languageletter0);
