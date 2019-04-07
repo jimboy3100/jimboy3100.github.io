@@ -2,17 +2,16 @@
 //Legend Mod By Jimboy3100
 //v1.2e
 
-//Language Pack Handler
 //Legend Mod By Jimboy3100
 var Languagetimesused;
 var Languagetimesused1;
 
 if($('#LanguageAuthorPanel').length==0){
-	$("#TimesUsed").after('<div id="LanguageAuthorPanel" class="user-name" style="display:inline-block;">'+Languageletter34+': </div><div id="LanguageAuthor" style="display:inline-block"></div><br>');
+	$("#TimesUsed").after('<br><div id="LanguageAuthorPanel" class="user-name" style="display:inline-block;">'+Languageletter34+': </div><div id="LanguageAuthor" style="display:inline-block"></div><br>');
 	$("#LanguageAuthor").text(translator);
 	}
 else{
-	$("#LanguageAuthorPanel").text(Languageletter34);
+	$("#LanguageAuthorPanel").text(Languageletter34+ ': ');
 	$("#LanguageAuthor").text(translator);	
 }
 
@@ -557,5 +556,3 @@ function Languagestimeusedplus1(){
 Languagetimesused1++;
 return Languagetimesused1;
 }
-
-
