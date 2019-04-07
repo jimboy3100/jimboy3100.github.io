@@ -8,11 +8,12 @@ var Languagetimesused;
 var Languagetimesused1;
 
 if($('#LanguageAuthorPanel').length==0){
-	$("#TimesUsed").after('<div id="LanguageAuthorPanel" class="user-name" style="display:inline-block;">'+Languageletter34+': <div id="LanguageAuthor" style="display:inline-block"></div></div><br>');
+	$("#TimesUsed").after('<div id="LanguageAuthorPanel" class="user-name" style="display:inline-block;">'+Languageletter34+': </div><div id="LanguageAuthor" style="display:inline-block"></div><br>');
 	$("#LanguageAuthor").text(translator);
 	}
 else{
-	$("#LanguageAuthor").text(translator);
+	$("#LanguageAuthorPanel").text(Languageletter34);
+	$("#LanguageAuthor").text(translator);	
 }
 
 
