@@ -1,5 +1,560 @@
 //Language Pack Handler
 //Legend Mod By Jimboy3100
-//v1.2d
+//v1.2e
 
-var _0xfede=["\x64\x61\x74\x61\x2D\x6F\x72\x69\x67\x69\x6E\x61\x6C\x2D\x74\x69\x74\x6C\x65","\x61\x74\x74\x72","\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x68\x6F\x6D\x65","\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x75\x73\x65\x72","\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x63\x6F\x67","\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x64\x72\x6F\x70\x6C\x65\x74","\x2E\x68\x6F\x74\x6B\x65\x79\x73\x2D\x6C\x69\x6E\x6B\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x6B\x65\x79\x62\x6F\x61\x72\x64","\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x6D\x75\x73\x69\x63","\x2E\x6C\x65\x67\x65\x6E\x64\x2D\x74\x61\x62","\x70\x6C\x61\x63\x65\x68\x6F\x6C\x64\x65\x72","\x23\x63\x6C\x61\x6E\x74\x61\x67","\x23\x6E\x69\x63\x6B","\x23\x73\x6B\x69\x6E","\x23\x72\x65\x67\x69\x6F\x6E","\x23\x67\x61\x6D\x65\x6D\x6F\x64\x65","\x74\x65\x78\x74","\x23\x63\x6F\x6E\x6E\x65\x63\x74\x32","\x23\x73\x65\x72\x76\x65\x72\x2D\x6A\x6F\x69\x6E","\x2E\x62\x74\x6E\x2E\x62\x74\x6E\x2D\x70\x6C\x61\x79\x2D\x67\x75\x65\x73\x74\x2E\x62\x74\x6E\x2D\x73\x75\x63\x63\x65\x73\x73\x2E\x62\x74\x6E\x2D\x6E\x65\x65\x64\x73\x2D\x73\x65\x72\x76\x65\x72","\x2E\x62\x74\x6E\x2E\x62\x74\x6E\x2D\x70\x6C\x61\x79\x2D\x67\x75\x65\x73\x74\x2E\x62\x74\x6E\x2D\x73\x75\x63\x63\x65\x73\x73","\x2E\x62\x74\x6E\x2E\x62\x74\x6E\x2D\x77\x61\x72\x6E\x69\x6E\x67\x2E\x62\x74\x6E\x2D\x6C\x6F\x67\x69\x6E\x2D\x70\x6C\x61\x79\x2E\x62\x74\x6E\x2D\x6E\x65\x65\x64\x73\x2D\x73\x65\x72\x76\x65\x72","\x2E\x62\x74\x6E\x2E\x62\x74\x6E\x2D\x77\x61\x72\x6E\x69\x6E\x67\x2E\x62\x74\x6E\x2D\x6C\x6F\x67\x69\x6E\x2D\x70\x6C\x61\x79","\x74\x6F\x70","\x74\x6F\x6F\x6C\x74\x69\x70","\x2E\x62\x74\x6E\x2E\x62\x74\x6E\x2D\x77\x61\x72\x6E\x69\x6E\x67\x2E\x62\x74\x6E\x2D\x73\x70\x65\x63\x74\x61\x74\x65\x2E\x62\x74\x6E\x2D\x6E\x65\x65\x64\x73\x2D\x73\x65\x72\x76\x65\x72","\x6C\x61\x73\x74","\x63\x68\x69\x6C\x64\x72\x65\x6E","\x2E\x62\x74\x6E\x2E\x62\x74\x6E\x2D\x70\x72\x69\x6D\x61\x72\x79\x2E\x62\x74\x6E\x2D\x6C\x6F\x67\x69\x6E\x2E\x62\x74\x6E\x2D\x66\x62","\x2E\x62\x74\x6E\x2E\x62\x74\x6E\x2D\x70\x72\x69\x6D\x61\x72\x79\x2E\x62\x74\x6E\x2D\x6C\x6F\x67\x69\x6E\x2E\x62\x74\x6E\x2D\x67\x70\x6C\x75\x73","\x2E\x62\x74\x6E\x2E\x62\x74\x6E\x2D\x70\x6C\x61\x79\x2E\x62\x74\x6E\x2D\x70\x72\x69\x6D\x61\x72\x79\x2E\x62\x74\x6E\x2D\x6E\x65\x65\x64\x73\x2D\x73\x65\x72\x76\x65\x72","\x2E\x71\x75\x69\x63\x6B\x2D\x73\x68\x6F\x70\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x63\x61\x72\x74","\x2E\x71\x75\x69\x63\x6B\x2D\x66\x72\x65\x65\x2D\x63\x6F\x69\x6E\x73\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x63\x6F\x69\x6E\x2D\x64\x6F\x6C\x6C\x61\x72","\x2E\x71\x75\x69\x63\x6B\x2D\x66\x72\x65\x65\x2D\x67\x69\x66\x74\x73\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x67\x69\x66\x74","\x2E\x71\x75\x69\x63\x6B\x2D\x71\x75\x65\x73\x74\x73\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x74\x72\x6F\x70\x68\x79","\x2E\x71\x75\x69\x63\x6B\x2D\x6D\x6F\x72\x65\x2D\x73\x6B\x69\x6E\x73\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x67\x72\x69\x6E","\x2E\x71\x75\x69\x63\x6B\x2D\x79\x74\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x79\x6F\x75\x74\x75\x62\x65\x32","\x23\x4C\x65\x67\x47\x6F\x6F\x67\x6C\x65\x46\x6F\x72\x6D","\x23\x4D\x6F\x64\x49\x6E\x66\x6F\x51\x75\x69\x63\x6B","\x23\x6D\x6F\x72\x65\x2D\x73\x6B\x69\x6E\x73","\x2E\x62\x74\x6E\x2E\x62\x74\x6E\x2D\x70\x72\x69\x6D\x61\x72\x79\x2E\x62\x74\x6E\x2D\x73\x75\x63\x63\x65\x73\x73\x2E\x62\x74\x6E\x2D\x66\x72\x65\x65\x63\x6F\x69\x6E\x73","\x23\x67\x69\x66\x74\x69\x6E\x67","\x23\x64\x61\x69\x6C\x79\x51\x75\x65\x73\x74\x73","\x23\x6F\x70\x65\x6E\x53\x68\x6F\x70\x42\x74\x6E","\x2E\x62\x74\x6E\x2E\x62\x74\x6E\x2D\x64\x61\x6E\x67\x65\x72\x2E\x62\x74\x6E\x2D\x6C\x6F\x67\x6F\x75\x74","\x3C\x64\x69\x76\x20\x63\x6C\x61\x73\x73\x3D\x22\x54\x69\x6D\x65\x73\x55\x73\x65\x64\x50\x61\x6E\x65\x6C\x22\x20\x61\x6C\x69\x67\x6E\x3D\x22\x72\x69\x67\x68\x74\x22\x20\x64\x69\x73\x70\x6C\x61\x79\x3A\x69\x6E\x6C\x69\x6E\x65\x2D\x62\x6C\x6F\x63\x6B\x3B\x3E\x3C\x68\x36\x3E\x3C\x69\x3E","\x20","\x3C\x62\x72\x3E","\x20\x6A\x69\x6D\x62\x6F\x79\x33\x31\x30\x30\x3C\x62\x72\x3E","\x3C\x2F\x69\x3E\x3C\x2F\x68\x36\x3E\x3C\x2F\x64\x69\x76\x3E","\x72\x65\x70\x6C\x61\x63\x65\x57\x69\x74\x68","\x2E\x54\x69\x6D\x65\x73\x55\x73\x65\x64\x50\x61\x6E\x65\x6C","\x23\x74\x63\x6D\x3E\x23\x74\x63\x6D\x2D\x68\x65\x61\x64\x65\x72\x3E\x70","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x61\x6E\x69\x6D\x61\x74\x69\x6F\x6E\x47\x72\x6F\x75\x70\x3E\x68\x35","\x3A\x20","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x61\x6E\x69\x6D\x61\x74\x69\x6F\x6E\x47\x72\x6F\x75\x70\x3E\x44\x49\x56\x3E\x44\x49\x56\x3E\x53\x50\x41\x4E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x31\x29","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x7A\x6F\x6F\x6D\x47\x72\x6F\x75\x70\x3E\x68\x35","\x41\x75\x74\x6F\x20\x7A\x6F\x6F\x6D","\x72\x65\x70\x6C\x61\x63\x65","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x7A\x6F\x6F\x6D\x47\x72\x6F\x75\x70\x3E\x4C\x41\x42\x45\x4C","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x7A\x6F\x6F\x6D\x47\x72\x6F\x75\x70\x3E\x44\x49\x56\x3E\x44\x49\x56\x3E\x53\x50\x41\x4E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x31\x29","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x72\x65\x73\x70\x47\x72\x6F\x75\x70\x3E\x68\x35","\x51\x75\x69\x63\x6B\x20\x72\x65\x73\x70\x61\x77\x6E","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x72\x65\x73\x70\x47\x72\x6F\x75\x70\x3E\x4C\x41\x42\x45\x4C","\x41\x75\x74\x6F\x20\x72\x65\x73\x70\x61\x77\x6E","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x6E\x61\x6D\x65\x73\x47\x72\x6F\x75\x70\x3E\x68\x35","\x4E\x6F\x20\x6E\x61\x6D\x65\x73","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x6E\x61\x6D\x65\x73\x47\x72\x6F\x75\x70\x3E\x4C\x41\x42\x45\x4C","\x4F\x70\x74\x69\x6D\x69\x7A\x65\x64\x20\x6E\x61\x6D\x65\x73","\x41\x75\x74\x6F\x20\x68\x69\x64\x65\x20\x6E\x61\x6D\x65\x73","\x48\x69\x64\x65\x20\x6D\x79\x20\x6E\x61\x6D\x65","\x48\x69\x64\x65\x20\x74\x65\x61\x6D\x6D\x61\x74\x65\x73\x20\x6E\x61\x6D\x65\x73","\x4E\x61\x6D\x65\x73\x20\x73\x74\x72\x6F\x6B\x65","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x6D\x61\x73\x73\x47\x72\x6F\x75\x70\x3E\x68\x35","\x53\x68\x6F\x77\x20\x6D\x61\x73\x73","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x6D\x61\x73\x73\x47\x72\x6F\x75\x70\x3E\x4C\x41\x42\x45\x4C","\x4F\x70\x74\x69\x6D\x69\x7A\x65\x64\x20\x6D\x61\x73\x73","\x41\x75\x74\x6F\x20\x68\x69\x64\x65\x20\x6D\x61\x73\x73","\x48\x69\x64\x65\x20\x6D\x79\x20\x6D\x61\x73\x73","\x48\x69\x64\x65\x20\x65\x6E\x65\x6D\x69\x65\x73\x20\x6D\x61\x73\x73","\x53\x68\x6F\x72\x74\x20\x6D\x61\x73\x73","\x56\x69\x72\x75\x73\x20\x73\x68\x6F\x74\x73","\x4D\x61\x73\x73\x20\x73\x74\x72\x6F\x6B\x65","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x73\x6B\x69\x6E\x73\x47\x72\x6F\x75\x70\x3E\x68\x35","\x4E\x6F\x20\x73\x6B\x69\x6E\x73","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x73\x6B\x69\x6E\x73\x47\x72\x6F\x75\x70\x3E\x4C\x41\x42\x45\x4C","\x43\x75\x73\x74\x6F\x6D\x20\x73\x6B\x69\x6E\x73","\x56\x61\x6E\x69\x6C\x6C\x61\x20\x73\x6B\x69\x6E\x73","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x66\x6F\x6F\x64\x47\x72\x6F\x75\x70\x3E\x68\x35","\x4F\x70\x74\x69\x6D\x69\x7A\x65\x64\x20\x66\x6F\x6F\x64","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x66\x6F\x6F\x64\x47\x72\x6F\x75\x70\x3E\x4C\x41\x42\x45\x4C","\x41\x75\x74\x6F\x20\x68\x69\x64\x65\x20\x66\x6F\x6F\x64","\x52\x61\x69\x6E\x62\x6F\x77\x20\x66\x6F\x6F\x64","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x74\x72\x61\x6E\x73\x70\x61\x72\x65\x6E\x63\x79\x47\x72\x6F\x75\x70\x3E\x68\x35","\x4E\x6F\x20\x63\x6F\x6C\x6F\x72\x73","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x74\x72\x61\x6E\x73\x70\x61\x72\x65\x6E\x63\x79\x47\x72\x6F\x75\x70\x3E\x4C\x41\x42\x45\x4C","\x4D\x79\x20\x63\x75\x73\x74\x6F\x6D\x20\x63\x6F\x6C\x6F\x72","\x4D\x79\x20\x74\x72\x61\x6E\x73\x70\x61\x72\x65\x6E\x74\x20\x73\x6B\x69\x6E","\x54\x72\x61\x6E\x73\x70\x61\x72\x65\x6E\x74\x20\x73\x6B\x69\x6E\x73","\x54\x72\x61\x6E\x73\x70\x61\x72\x65\x6E\x74\x20\x63\x65\x6C\x6C\x73","\x54\x72\x61\x6E\x73\x70\x61\x72\x65\x6E\x74\x20\x76\x69\x72\x75\x73\x65\x73","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x67\x72\x69\x64\x47\x72\x6F\x75\x70\x3E\x68\x35","\x53\x68\x6F\x77\x20\x67\x72\x69\x64","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x67\x72\x69\x64\x47\x72\x6F\x75\x70\x3E\x4C\x41\x42\x45\x4C","\x53\x68\x6F\x77\x20\x62\x61\x63\x6B\x67\x72\x6F\x75\x6E\x64\x20\x73\x65\x63\x74\x6F\x72\x73","\x53\x68\x6F\x77\x20\x6D\x61\x70\x20\x62\x6F\x72\x64\x65\x72\x73","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x63\x68\x61\x74\x47\x72\x6F\x75\x70\x3E\x68\x35","\x44\x69\x73\x61\x62\x6C\x65\x20\x63\x68\x61\x74","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x63\x68\x61\x74\x47\x72\x6F\x75\x70\x3E\x4C\x41\x42\x45\x4C","\x53\x6F\x75\x6E\x64\x20\x6E\x6F\x74\x69\x66\x69\x63\x61\x74\x69\x6F\x6E\x73","\x45\x6D\x6F\x74\x69\x63\x6F\x6E\x73","\x53\x68\x6F\x77\x20\x69\x6D\x61\x67\x65\x73\x20\x6F\x6E\x20\x63\x68\x61\x74","\x53\x68\x6F\x77\x20\x76\x69\x64\x65\x6F\x73\x20\x6F\x6E\x20\x63\x68\x61\x74","\x43\x68\x61\x74\x62\x6F\x78\x20\x69\x6E\x73\x74\x65\x61\x64\x20\x6F\x66\x20\x70\x6F\x70\x75\x70\x73","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x6D\x69\x6E\x69\x4D\x61\x70\x47\x72\x6F\x75\x70\x3E\x68\x35","\x53\x68\x6F\x77\x20\x6D\x69\x6E\x69\x6D\x61\x70","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x6D\x69\x6E\x69\x4D\x61\x70\x47\x72\x6F\x75\x70\x3E\x4C\x41\x42\x45\x4C","\x53\x68\x6F\x77\x20\x6D\x69\x6E\x69\x6D\x61\x70\x20\x67\x72\x69\x64","\x53\x68\x6F\x77\x20\x6D\x69\x6E\x69\x6D\x61\x70\x20\x67\x75\x69\x64\x65\x73","\x4F\x6E\x65\x2D\x63\x6F\x6C\x6F\x72\x65\x64\x20\x74\x65\x61\x6D\x6D\x61\x74\x65\x73","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x68\x65\x6C\x70\x65\x72\x73\x47\x72\x6F\x75\x70\x3E\x68\x35","\x4F\x70\x70\x6F\x6E\x65\x6E\x74\x73\x20\x63\x6F\x6C\x6F\x72\x73","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x68\x65\x6C\x70\x65\x72\x73\x47\x72\x6F\x75\x70\x3E\x4C\x41\x42\x45\x4C","\x4F\x70\x70\x6F\x6E\x65\x6E\x74\x73\x20\x72\x69\x6E\x67\x73","\x56\x69\x72\x75\x73\x65\x73\x20\x63\x6F\x6C\x6F\x72\x73","\x53\x70\x6C\x69\x74\x20\x72\x61\x6E\x67\x65","\x56\x69\x72\x75\x73\x65\x73\x20\x72\x61\x6E\x67\x65","\x43\x75\x72\x73\x6F\x72\x20\x74\x72\x61\x63\x6B\x69\x6E\x67","\x54\x65\x61\x6D\x6D\x61\x74\x65\x73\x20\x69\x6E\x64\x69\x63\x61\x74\x6F\x72\x73","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x6D\x6F\x75\x73\x65\x47\x72\x6F\x75\x70\x3E\x68\x35","\x4C\x4D\x42\x20\x2D\x20\x4D\x6F\x75\x73\x65\x20\x73\x70\x6C\x69\x74","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x6D\x6F\x75\x73\x65\x47\x72\x6F\x75\x70\x3E\x4C\x41\x42\x45\x4C","\x52\x4D\x42\x20\x2D\x20\x4D\x6F\x75\x73\x65\x20\x66\x65\x65\x64","\x49\x6E\x76\x65\x72\x74\x20\x6D\x6F\x75\x73\x65\x20\x62\x75\x74\x74\x6F\x6E\x73","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x68\x75\x64\x47\x72\x6F\x75\x70\x3E\x68\x35","\x53\x68\x6F\x77\x20\x74\x65\x61\x6D\x20\x74\x6F\x70\x20\x35","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x68\x75\x64\x47\x72\x6F\x75\x70\x3E\x4C\x41\x42\x45\x4C","\x53\x68\x6F\x77\x20\x74\x61\x72\x67\x65\x74\x69\x6E\x67","\x43\x65\x6E\x74\x65\x72\x65\x64\x20\x6C\x65\x61\x64\x65\x72\x62\x6F\x61\x72\x64","\x47\x61\x6D\x65\x20\x73\x74\x61\x74\x73\x20\x61\x74\x20\x74\x68\x65\x20\x74\x6F\x70","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x73\x74\x61\x74\x73\x47\x72\x6F\x75\x70\x3E\x68\x35","\x53\x68\x6F\x77\x20\x67\x61\x6D\x65\x20\x73\x74\x61\x74\x73","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x73\x74\x61\x74\x73\x47\x72\x6F\x75\x70\x3E\x4C\x41\x42\x45\x4C","\x47\x61\x6D\x65\x20\x73\x74\x61\x74\x73\x3A\x20\x4D\x61\x73\x73","\x47\x61\x6D\x65\x20\x73\x74\x61\x74\x73\x3A\x20\x53\x54\x45","\x47\x61\x6D\x65\x20\x73\x74\x61\x74\x73\x3A\x20\x6E\x2F\x31\x36","\x47\x61\x6D\x65\x20\x73\x74\x61\x74\x73\x3A\x20\x46\x50\x53","\x53\x68\x6F\x77\x20\x63\x75\x72\x72\x65\x6E\x74\x20\x74\x69\x6D\x65","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x65\x78\x74\x72\x61\x73\x47\x72\x6F\x75\x70\x3E\x68\x35","\x53\x6B\x69\x70\x20\x73\x74\x61\x74\x73\x20\x61\x66\x74\x65\x72\x20\x64\x65\x61\x74\x68","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x65\x78\x74\x72\x61\x73\x47\x72\x6F\x75\x70\x3E\x4C\x41\x42\x45\x4C","\x53\x68\x6F\x77\x20\x71\x75\x65\x73\x74","\x47\x61\x6D\x65\x20\x73\x6F\x75\x6E\x64\x73","\x4D\x65\x6E\x75\x20\x73\x6F\x75\x6E\x64\x73","\x42\x6C\x6F\x63\x6B\x20\x70\x6F\x70\x75\x70\x73","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x76\x6F\x69\x63\x65\x47\x72\x6F\x75\x70\x3E\x2E\x6D\x65\x6E\x75\x2D\x6D\x61\x69\x6E\x2D\x63\x6F\x6C\x6F\x72","\x56\x6F\x69\x63\x65\x2D\x50\x72\x65\x66\x69\x78","\x2E\x6F\x70\x74\x69\x6F\x6E\x73\x2D\x62\x6F\x78\x2E\x76\x6F\x69\x63\x65\x47\x72\x6F\x75\x70\x3E\x4C\x41\x42\x45\x4C","\x56\x6F\x69\x63\x65\x2D\x6C\x61\x6E\x67","\x23\x71\x75\x61\x6C\x69\x74\x79\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x31\x29","\x23\x71\x75\x61\x6C\x69\x74\x79\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x32\x29","\x23\x71\x75\x61\x6C\x69\x74\x79\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x33\x29","\x23\x71\x75\x61\x6C\x69\x74\x79\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x34\x29","\x23\x71\x75\x61\x6C\x69\x74\x79\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x35\x29","\x23\x71\x75\x61\x6C\x69\x74\x79\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x36\x29","\x2E\x62\x74\x6E\x2E\x62\x74\x6E\x2D\x62\x6C\x6F\x63\x6B\x2E\x62\x74\x6E\x2D\x73\x75\x63\x63\x65\x73\x73\x2E\x62\x74\x6E\x2D\x65\x78\x70\x6F\x72\x74","\x65\x71","\x2E\x72\x65\x73\x74\x6F\x72\x65\x2D\x73\x65\x74\x74\x69\x6E\x67\x73\x3E\x61","\x23\x65\x78\x70\x2D\x69\x6D\x70\x2D\x73\x65\x74\x74\x69\x6E\x67\x73\x3E\x68\x31","\x23\x65\x78\x70\x2D\x69\x6D\x70\x2D\x73\x65\x74\x74\x69\x6E\x67\x73\x3E\x68\x32","\x43\x6F\x6D\x6D\x61\x6E\x64\x73","\x23\x65\x78\x70\x2D\x69\x6D\x70\x2D\x73\x65\x74\x74\x69\x6E\x67\x73\x3E\x4C\x41\x42\x45\x4C","\x48\x6F\x74\x6B\x65\x79\x73","\x50\x72\x6F\x66\x69\x6C\x65\x73","\x53\x65\x74\x74\x69\x6E\x67\x73","\x54\x68\x65\x6D\x65","\x23\x65\x78\x70\x6F\x72\x74\x2D\x73\x65\x74\x74\x69\x6E\x67\x73\x2D\x62\x74\x6E","\x23\x69\x6D\x70\x6F\x72\x74\x2D\x73\x65\x74\x74\x69\x6E\x67\x73\x2D\x62\x74\x6E","\x23\x69\x6D\x70\x6F\x72\x74\x2D\x73\x65\x74\x74\x69\x6E\x67\x73\x2D\x62\x74\x6E\x32","\x23\x74\x68\x65\x6D\x65\x3E\x75\x6C\x3E\x6C\x69\x3E\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x70\x61\x69\x6E\x74\x2D\x66\x6F\x72\x6D\x61\x74","\x23\x74\x68\x65\x6D\x65\x3E\x75\x6C\x3E\x6C\x69\x3E\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x6D\x65\x6E\x75","\x23\x74\x68\x65\x6D\x65\x3E\x75\x6C\x3E\x6C\x69\x3E\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x64\x69\x73\x70\x6C\x61\x79","\x23\x74\x68\x65\x6D\x65\x3E\x75\x6C\x3E\x6C\x69\x3E\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x62\x75\x62\x62\x6C\x65\x73","\x23\x74\x68\x65\x6D\x65\x3E\x75\x6C\x3E\x6C\x69\x3E\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x6C\x6F\x63\x61\x74\x69\x6F\x6E\x32","\x23\x74\x68\x65\x6D\x65\x3E\x75\x6C\x3E\x6C\x69\x3E\x2E\x6F\x67\x69\x63\x6F\x6E\x2D\x63\x6F\x6D\x70\x61\x73\x73","\x2E\x70\x72\x65\x73\x65\x74\x2D\x62\x6F\x78\x3E\x73\x70\x61\x6E","\x23\x74\x68\x65\x6D\x65\x50\x72\x65\x73\x65\x74\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x33\x29","\x20\x31","\x23\x74\x68\x65\x6D\x65\x50\x72\x65\x73\x65\x74\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x34\x29","\x20\x32","\x23\x74\x68\x65\x6D\x65\x50\x72\x65\x73\x65\x74\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x35\x29","\x23\x74\x68\x65\x6D\x65\x2D\x6D\x61\x69\x6E\x3E\x64\x69\x76\x3E\x73\x70\x61\x6E","\x23\x74\x68\x65\x6D\x65\x2D\x6D\x61\x69\x6E\x3E\x64\x69\x76\x3E\x64\x69\x76\x3E\x73\x70\x61\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x31\x29","\x2E\x62\x74\x6E\x2E\x62\x74\x6E\x2D\x62\x6C\x6F\x63\x6B\x2E\x62\x74\x6E\x2D\x73\x75\x63\x63\x65\x73\x73\x2E\x62\x74\x6E\x2D\x73\x61\x76\x65","\x2E\x70\x72\x65\x73\x65\x74\x2D\x62\x6F\x78\x3E\x64\x69\x76\x3E\x73\x70\x61\x6E","\x23\x74\x68\x65\x6D\x65\x2D\x6D\x65\x6E\x75\x3E\x64\x69\x76\x3E\x64\x69\x76\x3E\x73\x70\x61\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x31\x29","\x23\x74\x68\x65\x6D\x65\x2D\x6D\x65\x6E\x75\x3E\x64\x69\x76\x3E\x73\x70\x61\x6E","\x20\x28\x32\x29","\x20\x23\x31","\x20\x23\x31\x20\x28\x32\x29","\x20\x23\x32","\x20\x23\x32\x20\x28\x32\x29","\x20\x23\x33","\x20\x23\x33\x20\x28\x32\x29","\x20\x23\x34","\x20\x23\x34\x20\x28\x32\x29","\x23\x6D\x65\x6E\x75\x42\x67","\x23\x74\x68\x65\x6D\x65\x2D\x68\x75\x64\x3E\x64\x69\x76\x3E\x73\x70\x61\x6E","\x23\x74\x68\x65\x6D\x65\x2D\x68\x75\x64\x3E\x64\x69\x76\x3E\x64\x69\x76\x3E\x73\x70\x61\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x31\x29","\x23\x74\x68\x65\x6D\x65\x2D\x63\x68\x61\x74\x3E\x64\x69\x76\x3E\x73\x70\x61\x6E","\x23\x74\x68\x65\x6D\x65\x2D\x63\x68\x61\x74\x3E\x64\x69\x76\x3E\x64\x69\x76\x3E\x73\x70\x61\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x31\x29","\x23\x74\x68\x65\x6D\x65\x2D\x6D\x69\x6E\x69\x6D\x61\x70\x3E\x64\x69\x76\x3E\x73\x70\x61\x6E","\x23\x74\x68\x65\x6D\x65\x2D\x6D\x69\x6E\x69\x6D\x61\x70\x3E\x64\x69\x76\x3E\x64\x69\x76\x3E\x73\x70\x61\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x31\x29","\x23\x74\x68\x65\x6D\x65\x2D\x69\x6D\x61\x67\x65\x73\x3E\x64\x69\x76\x3E\x73\x70\x61\x6E","\x23\x63\x75\x73\x74\x6F\x6D\x42\x61\x63\x6B\x67\x72\x6F\x75\x6E\x64","\x23\x63\x75\x73\x74\x6F\x6D\x43\x75\x72\x73\x6F\x72","\x23\x68\x6F\x74\x6B\x65\x79\x73\x2D\x63\x66\x67\x3E\x64\x69\x76\x3E\x64\x69\x76\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x31\x29","\x20\x33","\x20\x34","\x20\x35","\x3C\x64\x69\x76\x20\x69\x64\x3D\x22\x68\x6F\x74\x6B\x65\x79\x73\x2D\x69\x6E\x73\x74\x22\x3E\x3C\x75\x6C\x3E\x3C\x6C\x69\x3E","\x3C\x2F\x6C\x69\x3E\x3C\x6C\x69\x3E","\x3C\x2F\x6C\x69\x3E\x3C\x2F\x75\x6C\x3E\x3C\x2F\x64\x69\x76\x3E","\x23\x68\x6F\x74\x6B\x65\x79\x73\x2D\x69\x6E\x73\x74","\x23\x72\x65\x73\x65\x74\x2D\x68\x6F\x74\x6B\x65\x79\x73","\x23\x73\x61\x76\x65\x2D\x68\x6F\x74\x6B\x65\x79\x73","\x23\x63\x6C\x6F\x73\x65\x2D\x68\x6F\x74\x6B\x65\x79\x73","\x23\x63\x6C\x6F\x73\x65\x2D\x65\x78\x70\x2D\x69\x6D\x70","\x23\x79\x6F\x75\x74\x75\x62\x65\x70\x6C\x61\x79\x65\x72\x3E\x68\x35","\x23\x6D\x75\x73\x69\x63\x55\x72\x6C","\x2E\x61\x67\x61\x72\x69\x6F\x2D\x70\x61\x6E\x65\x6C\x2E\x73\x6F\x75\x6E\x64\x73\x2D\x70\x61\x6E\x65\x6C\x3E\x68\x35","\x2E\x61\x67\x61\x72\x69\x6F\x2D\x70\x61\x6E\x65\x6C\x2E\x73\x6F\x75\x6E\x64\x73\x2D\x70\x61\x6E\x65\x6C\x3E\x64\x69\x76\x3E\x73\x70\x61\x6E","\x23\x63\x6F\x70\x79\x53\x49\x50\x42\x74\x6E","\x68\x69\x64\x65","\x23\x64\x72\x6F\x70\x44\x6F\x77\x6E\x33","\x76\x61\x6C","","\x73\x68\x6F\x77","\x23\x64\x72\x6F\x70\x44\x6F\x77\x6E\x32","\x23\x64\x72\x6F\x70\x44\x6F\x77\x6E","\x6D\x6F\x75\x73\x65\x65\x6E\x74\x65\x72","\x6D\x6F\x75\x73\x65\x6C\x65\x61\x76\x65","\x23\x6C\x65\x61\x64\x65\x72\x62\x6F\x61\x72\x64\x2D\x6D\x65\x6E\x75","\x23\x63\x6F\x70\x79\x4C\x42\x42\x74\x6E","\x23\x64\x72\x6F\x70\x44\x6F\x77\x6E\x3E\x23\x63\x6F\x70\x79\x4C\x42\x42\x74\x6E","\x23\x63\x6F\x70\x79\x53\x49\x50\x61\x6E\x64\x50\x61\x73\x73","\x23\x63\x6F\x70\x79\x53\x49\x50\x50\x61\x73\x73\x4C\x42","\x23\x73\x65\x61\x72\x63\x68\x53\x68\x6F\x72\x74\x63\x75\x74","\x23\x72\x65\x63\x6F\x6E\x6E\x65\x63\x74\x42\x74\x6E","\x23\x6C\x6F\x67\x54\x69\x74\x6C\x65","\x23\x73\x65\x61\x72\x63\x68\x49\x6E\x70\x75\x74","\x23\x63\x6C\x6F\x73\x65\x42\x74\x6E","\x23\x6E\x6F\x74\x65\x73\x63\x6C\x65\x61\x72","\x23\x6D\x65\x73\x73\x61\x67\x65","\x23\x74\x65\x61\x6D\x62\x74\x65\x78\x74","\x68\x74\x6D\x6C","\x54\x65\x61\x6D\x20\x74\x6F\x70\x20","\x65\x61\x63\x68","\x23\x74\x6F\x70\x35\x2D\x68\x75\x64\x20\x3E\x20\x68\x35","\x23\x6C\x65\x61\x64\x62\x74\x65\x78\x74","\x23\x6C\x65\x61\x64\x65\x72\x62\x6F\x61\x72\x64\x2D\x68\x75\x64\x20\x3E\x20\x68\x34","\x23\x43\x68\x61\x74\x42\x74\x6E","\x23\x53\x65\x6E\x64\x43\x6F\x6D\x6D\x61\x6E\x64\x73","\x23\x49\x6D\x61\x67\x65\x73","\x23\x79\x6F\x75\x74","\x23\x43\x75\x74\x6E\x61\x6D\x65\x73","\x23\x42\x69\x6E\x6F","\x23\x70\x6C\x61\x79\x65\x72\x42\x74\x6E","\x23\x66\x75\x6C\x6C\x73\x63\x72\x65\x65\x6E\x42\x74\x6E","\x23\x52\x6F\x74\x61\x74\x65\x52\x69\x67\x68\x74","\x23\x62\x6F\x74\x74\x6F\x6D\x6C\x65\x66\x74","\x23\x42\x61\x63\x6B\x74\x6F\x6D\x65\x6E\x75","\x23\x6E\x6F\x74\x65\x73\x61\x76\x65\x66\x6F\x72\x6C\x61\x74\x65\x72","\x23\x6E\x6F\x74\x65\x73\x52\x65\x67\x69\x6F\x6E","\x23\x6E\x6F\x74\x65\x73\x50\x6C\x61\x79\x65\x72\x73","\x23\x6E\x6F\x74\x65\x73\x53\x65\x72\x76\x65\x72","\x23\x74\x61\x72\x67\x65\x74\x2D\x73\x74\x61\x74\x75\x73","\x5B\x54\x61\x72\x67\x65\x74\x20\x6E\x6F\x74\x20\x73\x65\x74\x5D","\x3A\x20\x20","\x23\x6C\x65\x67\x65\x6E\x64\x6D\x61\x6E\x75\x61\x6C\x62\x61\x63\x6B","\x23\x6C\x65\x67\x65\x6E\x64\x6D\x61\x6E\x75\x61\x6C\x6D\x65\x73\x73","\x23\x63\x68\x61\x74\x62\x74\x6E\x74\x69\x74\x6C\x65","\x20\x20","\x23\x6C\x65\x67\x65\x6E\x64\x64\x69\x73\x63\x6F\x72\x64\x77\x65\x62\x68","\x23\x62\x61\x63\x6B\x67\x72\x6F\x75\x6E\x64\x50\x69\x63\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x31\x29","\x23\x62\x61\x63\x6B\x67\x72\x6F\x75\x6E\x64\x50\x69\x63\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x32\x29","\x23\x62\x61\x63\x6B\x67\x72\x6F\x75\x6E\x64\x50\x69\x63\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x33\x29","\x23\x62\x61\x63\x6B\x67\x72\x6F\x75\x6E\x64\x50\x69\x63\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x34\x29","\x23\x62\x61\x63\x6B\x67\x72\x6F\x75\x6E\x64\x50\x69\x63\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x35\x29","\x23\x6D\x73\x67\x63\x6F\x6D\x6D\x61\x6E\x64\x31","\x23\x6D\x73\x67\x63\x6F\x6D\x6D\x61\x6E\x64\x32","\x23\x6D\x73\x67\x63\x6F\x6D\x6D\x61\x6E\x64\x33","\x23\x6D\x73\x67\x63\x6F\x6D\x6D\x61\x6E\x64\x34","\x23\x6D\x73\x67\x63\x6F\x6D\x6D\x61\x6E\x64\x35","\x23\x6D\x73\x67\x63\x6F\x6D\x6D\x61\x6E\x64\x36","\x23\x6D\x69\x6E\x69\x6D\x61\x70\x50\x69\x63\x74\x75\x72\x65","\x23\x6D\x69\x6E\x62\x74\x65\x78\x74","\x23\x6C\x65\x61\x64\x62\x50\x69\x63\x74\x75\x72\x65","\x23\x74\x65\x61\x6D\x62\x50\x69\x63\x74\x75\x72\x65","\x23\x63\x61\x6E\x76\x61\x73\x50\x69\x63\x74\x75\x72\x65","\x23\x69\x6D\x67\x55\x72\x6C","\x23\x69\x6D\x67\x48\x72\x65\x66","\x23\x63\x68\x61\x6E\x67\x65\x70\x68\x6F\x74\x6F\x73\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x31\x29","\x23\x63\x68\x61\x6E\x67\x65\x70\x68\x6F\x74\x6F\x73\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x32\x29","\x23\x63\x68\x61\x6E\x67\x65\x70\x68\x6F\x74\x6F\x73\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x33\x29","\x23\x63\x68\x61\x6E\x67\x65\x70\x68\x6F\x74\x6F\x73\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x34\x29","\x23\x63\x68\x61\x6E\x67\x65\x70\x68\x6F\x74\x6F\x73\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x35\x29","\x20\x36","\x23\x63\x68\x61\x6E\x67\x65\x70\x68\x6F\x74\x6F\x73\x3E\x6F\x70\x74\x69\x6F\x6E\x3A\x6E\x74\x68\x2D\x63\x68\x69\x6C\x64\x28\x36\x29","\x20\x68\x74\x74\x70\x3A\x2F\x2F\x69\x2E\x69\x6D\x67\x75\x72\x2E\x63\x6F\x6D\x2F\x52\x56\x42\x69\x33\x54\x31\x2E\x67\x69\x66","\x23\x70\x69\x63\x31\x75\x72\x6C","\x23\x70\x69\x63\x32\x75\x72\x6C","\x23\x70\x69\x63\x33\x75\x72\x6C","\x23\x70\x69\x63\x34\x75\x72\x6C","\x23\x70\x69\x63\x35\x75\x72\x6C","\x23\x70\x69\x63\x36\x75\x72\x6C","\x23\x79\x74\x31\x75\x72\x6C","\x23\x79\x74\x32\x75\x72\x6C","\x23\x79\x74\x33\x75\x72\x6C","\x23\x79\x74\x34\x75\x72\x6C","\x23\x79\x74\x35\x75\x72\x6C","\x23\x79\x74\x36\x75\x72\x6C","\x23\x70\x69\x63\x31\x64\x61\x74\x61","\x23\x70\x69\x63\x32\x64\x61\x74\x61","\x23\x70\x69\x63\x33\x64\x61\x74\x61","\x23\x70\x69\x63\x34\x64\x61\x74\x61","\x23\x70\x69\x63\x35\x64\x61\x74\x61","\x23\x70\x69\x63\x36\x64\x61\x74\x61","\x23\x79\x74\x31\x64\x61\x74\x61","\x23\x79\x74\x32\x64\x61\x74\x61","\x23\x79\x74\x33\x64\x61\x74\x61","\x23\x79\x74\x34\x64\x61\x74\x61","\x23\x79\x74\x35\x64\x61\x74\x61","\x23\x79\x74\x36\x64\x61\x74\x61","\x2E\x20\x68\x74\x74\x70\x73\x3A\x2F\x2F\x64\x69\x73\x63\x6F\x72\x64\x61\x70\x70\x2E\x63\x6F\x6D\x2F\x61\x70\x69\x2F\x77\x65\x62\x68\x6F\x6F\x6B\x73\x2F\x2E\x2E\x2E\x2F\x2E\x2E\x2E","\x23\x64\x69\x73\x63\x77\x65\x62\x68\x6F\x6F\x6B\x31","\x23\x64\x69\x73\x63\x77\x65\x62\x68\x6F\x6F\x6B\x32","\x23\x48\x69\x64\x65\x41\x6C\x6C\x42\x74\x68\x6E","\x23\x6C\x6F\x67\x6F\x75\x74\x62\x74\x6E","\x23\x43\x6F\x70\x79\x41\x6C\x6C","\x2E\x62\x74\x6E\x2E\x62\x74\x6E\x2D\x70\x6C\x61\x79\x2E\x62\x74\x6E\x2D\x70\x72\x69\x6D\x61\x72\x79","\x23\x70\x6F\x74\x69\x6F\x6E\x73","\x23\x53\x70\x65\x63\x69\x61\x6C\x44\x65\x61\x6C\x73\x42\x74\x6E","\x23\x53\x70\x65\x63\x69\x61\x6C\x44\x65\x61\x6C\x73\x51\x75\x69\x63\x6B\x42\x74\x6E","\x2E\x62\x74\x6E\x2E\x62\x74\x6E\x2D\x70\x72\x69\x6D\x61\x72\x79\x2E\x62\x74\x6E\x2D\x73\x75\x63\x63\x65\x73\x73\x2E\x62\x74\x6E\x2D\x6C\x65\x61\x67\x75\x65\x73","\x23\x56\x69\x64\x65\x6F\x53\x6B\x69\x6E\x73\x51\x75\x69\x63\x6B","\x23\x4D\x69\x6E\x69\x53\x63\x72\x69\x70\x74\x73","\x23\x4F\x70\x65\x6E\x75\x73\x65\x72\x53\x63\x72\x69\x70\x74\x73","\x23\x56\x6F\x69\x63\x65\x42\x74\x6E","\x23\x64\x6F\x6E\x61\x74\x69\x6F\x6E\x62\x74\x6E","\x23\x6F\x70\x65\x6E\x6E\x61\x6D\x65\x63\x68\x61\x72\x73","\x23\x6F\x70\x65\x6E\x73\x6B\x69\x6E\x63\x68\x61\x6E\x67\x65\x72","\x23\x49\x6E\x66\x6F\x62\x74\x6E\x31\x31","\x23\x54\x65\x6D\x70\x6C\x61\x74\x65\x73\x42\x74\x6E","\x23\x4D\x61\x6E\x75\x61\x6C\x79\x54\x65\x6D\x70\x6C\x61\x74\x65\x73\x42\x74\x6E","\x23\x4C\x61\x6E\x67\x75\x61\x67\x65\x73\x54\x65\x6D\x70\x42\x74\x6E","\x23\x63\x68\x6F\x6F\x73\x65\x6C\x61\x6E\x67\x74\x65\x78\x74\x31","\x31","\x77\x69\x64\x74\x68","\x33\x30\x30\x70\x78","\x63\x73\x73","\x69\x6E\x66\x6F","\x23\x75\x73\x65\x72\x73\x63\x72\x69\x70\x74\x65\x72\x31","\x23\x75\x73\x65\x72\x73\x63\x72\x69\x70\x74\x65\x72\x32","\x23\x75\x73\x65\x72\x73\x63\x72\x69\x70\x74\x42\x74\x6E\x31","\x23\x75\x73\x65\x72\x73\x63\x72\x69\x70\x74\x70\x61\x67\x65\x73","\x23\x45\x72\x61\x73\x65\x53\x63\x72\x69\x70\x74\x65\x72","\x55\x73\x65\x72\x20\x53\x63\x72\x69\x70\x74\x20\x31\x20","\x23\x55\x73\x65\x72\x73\x63\x72\x69\x70\x74\x74\x65\x78\x74\x41","\x55\x73\x65\x72\x20\x53\x63\x72\x69\x70\x74\x20\x32\x20","\x23\x55\x73\x65\x72\x73\x63\x72\x69\x70\x74\x74\x65\x78\x74\x42","\x55\x73\x65\x72\x20\x53\x63\x72\x69\x70\x74\x20\x33\x20","\x23\x55\x73\x65\x72\x73\x63\x72\x69\x70\x74\x74\x65\x78\x74\x43","\x55\x73\x65\x72\x20\x53\x63\x72\x69\x70\x74\x20\x34\x20","\x23\x55\x73\x65\x72\x73\x63\x72\x69\x70\x74\x74\x65\x78\x74\x44","\x55\x73\x65\x72\x20\x53\x63\x72\x69\x70\x74\x20\x35\x20","\x23\x55\x73\x65\x72\x73\x63\x72\x69\x70\x74\x74\x65\x78\x74\x45","\x20\x68\x74\x74\x70\x3A\x2F\x2F\x2E\x2E\x2E\x20\x6F\x72\x20\x68\x74\x74\x70\x73\x3A\x2F\x2F\x2E\x2E\x2E","\x55\x73\x65\x72\x20\x53\x63\x72\x69\x70\x74\x20\x31\x20\x2E\x6A\x73\x20\x55\x52\x4C\x20\x28","\x29","\x23\x55\x73\x65\x72\x73\x63\x72\x69\x70\x74\x41","\x55\x73\x65\x72\x20\x53\x63\x72\x69\x70\x74\x20\x32\x20\x2E\x6A\x73\x20\x55\x52\x4C\x20\x28","\x23\x55\x73\x65\x72\x73\x63\x72\x69\x70\x74\x42","\x55\x73\x65\x72\x20\x53\x63\x72\x69\x70\x74\x20\x33\x20\x2E\x6A\x73\x20\x55\x52\x4C\x20\x28","\x23\x55\x73\x65\x72\x73\x63\x72\x69\x70\x74\x43","\x55\x73\x65\x72\x20\x53\x63\x72\x69\x70\x74\x20\x34\x20\x2E\x6A\x73\x20\x55\x52\x4C\x20\x28","\x23\x55\x73\x65\x72\x73\x63\x72\x69\x70\x74\x44","\x55\x73\x65\x72\x20\x53\x63\x72\x69\x70\x74\x20\x35\x20\x2E\x6A\x73\x20\x55\x52\x4C\x20\x28","\x23\x55\x73\x65\x72\x73\x63\x72\x69\x70\x74\x45","\x57\x41\x52\x4E\x49\x4E\x47\x21\x20\x50\x6F\x70\x75\x70\x73\x20\x61\x72\x65\x20\x62\x6C\x6F\x63\x6B\x65\x64\x20\x69\x6E\x20\x74\x68\x65\x20\x73\x65\x74\x74\x69\x6E\x67\x73\x2E","\x23\x62\x6C\x6F\x63\x6B\x2D\x77\x61\x72\x6E","\x54\x65\x6D\x70\x6F\x72\x61\x72\x79\x20\x75\x6E\x62\x6C\x6F\x63\x6B"];var Languagetimesused;var Languagetimesused1;$(_0xfede[2])[_0xfede[1]](_0xfede[0],Languageletter0);$(_0xfede[3])[_0xfede[1]](_0xfede[0],Languageletter1);$(_0xfede[4])[_0xfede[1]](_0xfede[0],Languageletter2);$(_0xfede[5])[_0xfede[1]](_0xfede[0],Languageletter3);$(_0xfede[6])[_0xfede[1]](_0xfede[0],Languageletter4);$(_0xfede[7])[_0xfede[1]](_0xfede[0],Languageletter5);$(_0xfede[8])[_0xfede[1]](_0xfede[0],Languageletter6);$(_0xfede[10])[_0xfede[1]](_0xfede[9],Languageletter7a)[_0xfede[1]](_0xfede[0],Languageletter7);$(_0xfede[11])[_0xfede[1]](_0xfede[9],Languageletter8a)[_0xfede[1]](_0xfede[0],Languageletter8);$(_0xfede[12])[_0xfede[1]](_0xfede[9],Languageletter9a)[_0xfede[1]](_0xfede[0],Languageletter9);$(_0xfede[13])[_0xfede[1]](_0xfede[0],Languageletter10);$(_0xfede[14])[_0xfede[1]](_0xfede[0],Languageletter11);$(_0xfede[16])[_0xfede[15]](Languageletter12a)[_0xfede[1]](_0xfede[0],Languageletter12);$(_0xfede[17])[_0xfede[15]](Languageletter13);$(_0xfede[18])[_0xfede[15]](Languageletter14);$(_0xfede[19])[_0xfede[15]](Languageletter14);$(_0xfede[20])[_0xfede[15]](Languageletter15);$(_0xfede[21])[_0xfede[15]](Languageletter15);$(_0xfede[24])[_0xfede[23]]({title:Languageletter16,placement:_0xfede[22]});$(_0xfede[24])[_0xfede[1]](_0xfede[0],Languageletter16);$(_0xfede[27])[_0xfede[26]]()[_0xfede[25]]()[_0xfede[15]](Languageletter17);$(_0xfede[28])[_0xfede[26]]()[_0xfede[25]]()[_0xfede[15]](Languageletter18);$(_0xfede[29])[_0xfede[15]](Languageletter19);$(_0xfede[30])[_0xfede[1]](_0xfede[0],Languageletter20);$(_0xfede[31])[_0xfede[1]](_0xfede[0],Languageletter21);$(_0xfede[32])[_0xfede[1]](_0xfede[0],Languageletter22);$(_0xfede[33])[_0xfede[1]](_0xfede[0],Languageletter23);$(_0xfede[34])[_0xfede[1]](_0xfede[0],Languageletter24);$(_0xfede[35])[_0xfede[1]](_0xfede[0],Languageletter25);$(_0xfede[36])[_0xfede[1]](_0xfede[0],Languageletter25a);$(_0xfede[37])[_0xfede[1]](_0xfede[0],Languageletter25b);$(_0xfede[38])[_0xfede[15]](Languageletter26);$(_0xfede[39])[_0xfede[15]](Languageletter21);$(_0xfede[40])[_0xfede[15]](Languageletter22);$(_0xfede[41])[_0xfede[15]](Languageletter23);$(_0xfede[42])[_0xfede[15]](Languageletter20);$(_0xfede[43])[_0xfede[1]](_0xfede[0],Languageletter31);$(_0xfede[50])[_0xfede[49]](_0xfede[44]+ Languageletter32+ _0xfede[45]+ timesopened+ _0xfede[46]+ Languageletter33+ _0xfede[47]+ Languageletter34+ _0xfede[45]+ translator+ _0xfede[48]);$(_0xfede[51])[_0xfede[15]](Languageletter35);$(_0xfede[52])[_0xfede[15]](Languageletter36);$(_0xfede[54])[_0xfede[15]](Languageletter37+ _0xfede[53]);$(_0xfede[55])[_0xfede[15]](Languageletter37b);$(_0xfede[58])[_0xfede[57]](_0xfede[56],Languageletter37a);$(_0xfede[59])[_0xfede[15]](Languageletter38+ _0xfede[53]);$(_0xfede[60])[_0xfede[15]](Languageletter39);$(_0xfede[62])[_0xfede[57]](_0xfede[61],Languageletter41);$(_0xfede[62])[_0xfede[57]](_0xfede[63],Languageletter40);$(_0xfede[64])[_0xfede[15]](Languageletter42);$(_0xfede[66])[_0xfede[57]](_0xfede[65],Languageletter43);$(_0xfede[66])[_0xfede[57]](_0xfede[67],Languageletter44);$(_0xfede[66])[_0xfede[57]](_0xfede[68],Languageletter45);$(_0xfede[66])[_0xfede[57]](_0xfede[69],Languageletter46);$(_0xfede[66])[_0xfede[57]](_0xfede[70],Languageletter47);$(_0xfede[66])[_0xfede[57]](_0xfede[71],Languageletter48);$(_0xfede[72])[_0xfede[15]](Languageletter49);$(_0xfede[74])[_0xfede[57]](_0xfede[73],Languageletter50);$(_0xfede[74])[_0xfede[57]](_0xfede[75],Languageletter51);$(_0xfede[74])[_0xfede[57]](_0xfede[76],Languageletter52);$(_0xfede[74])[_0xfede[57]](_0xfede[77],Languageletter53);$(_0xfede[74])[_0xfede[57]](_0xfede[78],Languageletter54);$(_0xfede[74])[_0xfede[57]](_0xfede[79],Languageletter55);$(_0xfede[74])[_0xfede[57]](_0xfede[80],Languageletter56);$(_0xfede[74])[_0xfede[57]](_0xfede[81],Languageletter57);$(_0xfede[82])[_0xfede[15]](Languageletter58);$(_0xfede[84])[_0xfede[57]](_0xfede[83],Languageletter59);$(_0xfede[84])[_0xfede[57]](_0xfede[85],Languageletter60);$(_0xfede[84])[_0xfede[57]](_0xfede[86],Languageletter61);$(_0xfede[87])[_0xfede[15]](Languageletter6a2);$(_0xfede[89])[_0xfede[57]](_0xfede[88],Languageletter62);$(_0xfede[89])[_0xfede[57]](_0xfede[90],Languageletter63);$(_0xfede[89])[_0xfede[57]](_0xfede[90],Languageletter64);$(_0xfede[89])[_0xfede[57]](_0xfede[91],Languageletter65);$(_0xfede[92])[_0xfede[15]](Languageletter66);$(_0xfede[94])[_0xfede[57]](_0xfede[93],Languageletter67);$(_0xfede[94])[_0xfede[57]](_0xfede[95],Languageletter68);$(_0xfede[94])[_0xfede[57]](_0xfede[96],Languageletter69);$(_0xfede[94])[_0xfede[57]](_0xfede[97],Languageletter70);$(_0xfede[94])[_0xfede[57]](_0xfede[98],Languageletter70a);$(_0xfede[94])[_0xfede[57]](_0xfede[99],Languageletter71);$(_0xfede[100])[_0xfede[15]](Languageletter72);$(_0xfede[102])[_0xfede[57]](_0xfede[101],Languageletter73);$(_0xfede[102])[_0xfede[57]](_0xfede[103],Languageletter74);$(_0xfede[102])[_0xfede[57]](_0xfede[104],Languageletter75);$(_0xfede[105])[_0xfede[15]](Languageletter76);$(_0xfede[107])[_0xfede[57]](_0xfede[106],Languageletter77);$(_0xfede[107])[_0xfede[57]](_0xfede[108],Languageletter78);$(_0xfede[107])[_0xfede[57]](_0xfede[109],Languageletter79);$(_0xfede[107])[_0xfede[57]](_0xfede[110],Languageletter80);$(_0xfede[107])[_0xfede[57]](_0xfede[111],Languageletter81);$(_0xfede[107])[_0xfede[57]](_0xfede[112],Languageletter82);$(_0xfede[113])[_0xfede[15]](Languageletter82a);$(_0xfede[115])[_0xfede[57]](_0xfede[114],Languageletter82b);$(_0xfede[115])[_0xfede[57]](_0xfede[116],Languageletter82c);$(_0xfede[115])[_0xfede[57]](_0xfede[117],Languageletter82d);$(_0xfede[115])[_0xfede[57]](_0xfede[118],Languageletter82e);$(_0xfede[119])[_0xfede[15]](Languageletter83);$(_0xfede[121])[_0xfede[57]](_0xfede[120],Languageletter84);$(_0xfede[121])[_0xfede[57]](_0xfede[122],Languageletter85);$(_0xfede[121])[_0xfede[57]](_0xfede[123],Languageletter86);$(_0xfede[121])[_0xfede[57]](_0xfede[124],Languageletter87);$(_0xfede[121])[_0xfede[57]](_0xfede[125],Languageletter88);$(_0xfede[121])[_0xfede[57]](_0xfede[126],Languageletter89);$(_0xfede[121])[_0xfede[57]](_0xfede[127],Languageletter90);$(_0xfede[128])[_0xfede[15]](Languageletter91);$(_0xfede[130])[_0xfede[57]](_0xfede[129],Languageletter92);$(_0xfede[130])[_0xfede[57]](_0xfede[131],Languageletter93);$(_0xfede[130])[_0xfede[57]](_0xfede[132],Languageletter94);$(_0xfede[133])[_0xfede[15]](Languageletter94a);$(_0xfede[135])[_0xfede[57]](_0xfede[134],Languageletter95);$(_0xfede[135])[_0xfede[57]](_0xfede[136],Languageletter96);$(_0xfede[135])[_0xfede[57]](_0xfede[137],Languageletter97);$(_0xfede[135])[_0xfede[57]](_0xfede[138],Languageletter98);$(_0xfede[139])[_0xfede[15]](Languageletter99);$(_0xfede[141])[_0xfede[57]](_0xfede[140],Languageletter100);$(_0xfede[141])[_0xfede[57]](_0xfede[142],Languageletter101);$(_0xfede[141])[_0xfede[57]](_0xfede[143],Languageletter102);$(_0xfede[141])[_0xfede[57]](_0xfede[144],Languageletter103);$(_0xfede[141])[_0xfede[57]](_0xfede[145],Languageletter104);$(_0xfede[141])[_0xfede[57]](_0xfede[146],Languageletter105);$(_0xfede[147])[_0xfede[15]](Languageletter106);$(_0xfede[149])[_0xfede[57]](_0xfede[148],Languageletter107);$(_0xfede[149])[_0xfede[57]](_0xfede[150],Languageletter108);$(_0xfede[149])[_0xfede[57]](_0xfede[151],Languageletter108a);$(_0xfede[149])[_0xfede[57]](_0xfede[152],Languageletter108b);$(_0xfede[149])[_0xfede[57]](_0xfede[153],Languageletter109);$(_0xfede[154])[_0xfede[15]](Languageletter109a);$(_0xfede[156])[_0xfede[57]](_0xfede[155],Languageletter109b);$(_0xfede[156])[_0xfede[57]](_0xfede[157],Languageletter109c);$(_0xfede[158])[_0xfede[15]](Languageletter110);$(_0xfede[159])[_0xfede[15]](Languageletter111);$(_0xfede[160])[_0xfede[15]](Languageletter112);$(_0xfede[161])[_0xfede[15]](Languageletter113);$(_0xfede[162])[_0xfede[15]](Languageletter114);$(_0xfede[163])[_0xfede[15]](Languageletter115);$(_0xfede[164])[_0xfede[15]](Languageletter116);$(_0xfede[166])[_0xfede[165]](0)[_0xfede[15]](Languageletter117);$(_0xfede[167])[_0xfede[165]](0)[_0xfede[15]](Languageletter118);$(_0xfede[167])[_0xfede[165]](1)[_0xfede[15]](Languageletter119);$(_0xfede[168])[_0xfede[165]](0)[_0xfede[15]](Languageletter120);$(_0xfede[168])[_0xfede[165]](1)[_0xfede[15]](Languageletter121);$(_0xfede[170])[_0xfede[57]](_0xfede[169],Languageletter122);$(_0xfede[170])[_0xfede[57]](_0xfede[171],Languageletter123);$(_0xfede[170])[_0xfede[57]](_0xfede[172],Languageletter124);$(_0xfede[170])[_0xfede[57]](_0xfede[173],Languageletter125);$(_0xfede[170])[_0xfede[57]](_0xfede[174],Languageletter126);$(_0xfede[175])[_0xfede[15]](Languageletter127);$(_0xfede[176])[_0xfede[15]](Languageletter128);$(_0xfede[177])[_0xfede[15]](Languageletter128);$(_0xfede[178])[_0xfede[1]](_0xfede[0],Languageletter129);$(_0xfede[179])[_0xfede[1]](_0xfede[0],Languageletter130);$(_0xfede[180])[_0xfede[1]](_0xfede[0],Languageletter131);$(_0xfede[181])[_0xfede[1]](_0xfede[0],Languageletter132);$(_0xfede[182])[_0xfede[1]](_0xfede[0],Languageletter133);$(_0xfede[183])[_0xfede[1]](_0xfede[0],Languageletter134);$(_0xfede[184])[_0xfede[15]](Languageletter135);$(_0xfede[185])[_0xfede[15]](Languageletter136);$(_0xfede[187])[_0xfede[15]](Languageletter137+ _0xfede[186]);$(_0xfede[189])[_0xfede[15]](Languageletter137+ _0xfede[188]);$(_0xfede[190])[_0xfede[165]](1)[_0xfede[15]](Languageletter139);$(_0xfede[190])[_0xfede[165]](2)[_0xfede[15]](Languageletter140);$(_0xfede[190])[_0xfede[165]](3)[_0xfede[15]](Languageletter141);$(_0xfede[190])[_0xfede[165]](4)[_0xfede[15]](Languageletter142);$(_0xfede[190])[_0xfede[165]](5)[_0xfede[15]](Languageletter143);$(_0xfede[190])[_0xfede[165]](6)[_0xfede[15]](Languageletter144);$(_0xfede[190])[_0xfede[165]](7)[_0xfede[15]](Languageletter145);$(_0xfede[190])[_0xfede[165]](8)[_0xfede[15]](Languageletter146);$(_0xfede[190])[_0xfede[165]](9)[_0xfede[15]](Languageletter147);$(_0xfede[190])[_0xfede[165]](10)[_0xfede[15]](Languageletter148);$(_0xfede[190])[_0xfede[165]](11)[_0xfede[15]](Languageletter149);$(_0xfede[190])[_0xfede[165]](12)[_0xfede[15]](Languageletter150);$(_0xfede[190])[_0xfede[165]](13)[_0xfede[15]](Languageletter151);$(_0xfede[190])[_0xfede[165]](14)[_0xfede[15]](Languageletter152);$(_0xfede[190])[_0xfede[165]](15)[_0xfede[15]](Languageletter153);$(_0xfede[190])[_0xfede[165]](16)[_0xfede[15]](Languageletter154);$(_0xfede[190])[_0xfede[165]](17)[_0xfede[15]](Languageletter155+ _0xfede[53]);$(_0xfede[191])[_0xfede[165]](0)[_0xfede[15]](Languageletter157+ _0xfede[53]);$(_0xfede[191])[_0xfede[165]](1)[_0xfede[15]](Languageletter158+ _0xfede[53]);$(_0xfede[191])[_0xfede[165]](2)[_0xfede[15]](Languageletter159+ _0xfede[53]);$(_0xfede[191])[_0xfede[165]](3)[_0xfede[15]](Languageletter160+ _0xfede[53]);$(_0xfede[191])[_0xfede[165]](4)[_0xfede[15]](Languageletter161+ _0xfede[53]);$(_0xfede[191])[_0xfede[165]](5)[_0xfede[15]](Languageletter162+ _0xfede[53]);$(_0xfede[191])[_0xfede[165]](6)[_0xfede[15]](Languageletter163+ _0xfede[53]);$(_0xfede[191])[_0xfede[165]](7)[_0xfede[15]](Languageletter164+ _0xfede[53]);$(_0xfede[191])[_0xfede[165]](8)[_0xfede[15]](Languageletter165+ _0xfede[53]);$(_0xfede[191])[_0xfede[165]](9)[_0xfede[15]](Languageletter166+ _0xfede[53]);$(_0xfede[191])[_0xfede[165]](10)[_0xfede[15]](Languageletter167+ _0xfede[53]);$(_0xfede[191])[_0xfede[165]](11)[_0xfede[15]](Languageletter168+ _0xfede[53]);$(_0xfede[191])[_0xfede[165]](12)[_0xfede[15]](Languageletter169+ _0xfede[53]);$(_0xfede[166])[_0xfede[165]](1)[_0xfede[15]](Languageletter170);$(_0xfede[192])[_0xfede[15]](Languageletter171);$(_0xfede[184])[_0xfede[165]](1)[_0xfede[15]](Languageletter172);$(_0xfede[193])[_0xfede[165]](1)[_0xfede[15]](Languageletter173);$(_0xfede[194])[_0xfede[165]](0)[_0xfede[15]](Languageletter174+ _0xfede[53]);$(_0xfede[195])[_0xfede[165]](1)[_0xfede[15]](Languageletter175);$(_0xfede[195])[_0xfede[165]](2)[_0xfede[15]](Languageletter176);$(_0xfede[195])[_0xfede[165]](3)[_0xfede[15]](Languageletter177);$(_0xfede[195])[_0xfede[165]](4)[_0xfede[15]](Languageletter177+ _0xfede[196]);$(_0xfede[195])[_0xfede[165]](5)[_0xfede[15]](Languageletter179);$(_0xfede[195])[_0xfede[165]](6)[_0xfede[15]](Languageletter179+ _0xfede[196]);$(_0xfede[195])[_0xfede[165]](7)[_0xfede[15]](Languageletter181+ _0xfede[197]);$(_0xfede[195])[_0xfede[165]](8)[_0xfede[15]](Languageletter181+ _0xfede[198]);$(_0xfede[195])[_0xfede[165]](9)[_0xfede[15]](Languageletter181+ _0xfede[199]);$(_0xfede[195])[_0xfede[165]](10)[_0xfede[15]](Languageletter181+ _0xfede[200]);$(_0xfede[195])[_0xfede[165]](11)[_0xfede[15]](Languageletter181+ _0xfede[201]);$(_0xfede[195])[_0xfede[165]](12)[_0xfede[15]](Languageletter181+ _0xfede[202]);$(_0xfede[195])[_0xfede[165]](13)[_0xfede[15]](Languageletter181+ _0xfede[203]);$(_0xfede[195])[_0xfede[165]](14)[_0xfede[15]](Languageletter181+ _0xfede[204]);$(_0xfede[195])[_0xfede[165]](15)[_0xfede[15]](Languageletter189);$(_0xfede[205])[_0xfede[1]](_0xfede[9],Languageletter190);$(_0xfede[206])[_0xfede[165]](0)[_0xfede[15]](Languageletter191);$(_0xfede[206])[_0xfede[165]](1)[_0xfede[15]](Languageletter192);$(_0xfede[206])[_0xfede[165]](2)[_0xfede[15]](Languageletter193);$(_0xfede[206])[_0xfede[165]](3)[_0xfede[15]](Languageletter194);$(_0xfede[206])[_0xfede[165]](4)[_0xfede[15]](Languageletter195);$(_0xfede[206])[_0xfede[165]](5)[_0xfede[15]](Languageletter196);$(_0xfede[206])[_0xfede[165]](6)[_0xfede[15]](Languageletter197);$(_0xfede[206])[_0xfede[165]](7)[_0xfede[15]](Languageletter198);$(_0xfede[206])[_0xfede[165]](8)[_0xfede[15]](Languageletter199);$(_0xfede[207])[_0xfede[165]](0)[_0xfede[15]](Languageletter200+ _0xfede[53]);$(_0xfede[208])[_0xfede[165]](0)[_0xfede[15]](Languageletter201);$(_0xfede[208])[_0xfede[165]](1)[_0xfede[15]](Languageletter202);$(_0xfede[208])[_0xfede[165]](2)[_0xfede[15]](Languageletter203);$(_0xfede[208])[_0xfede[165]](3)[_0xfede[15]](Languageletter204);$(_0xfede[208])[_0xfede[165]](4)[_0xfede[15]](Languageletter205);$(_0xfede[208])[_0xfede[165]](5)[_0xfede[15]](Languageletter206);$(_0xfede[208])[_0xfede[165]](6)[_0xfede[15]](Languageletter207);$(_0xfede[208])[_0xfede[165]](7)[_0xfede[15]](Languageletter208);$(_0xfede[208])[_0xfede[165]](8)[_0xfede[15]](Languageletter209);$(_0xfede[209])[_0xfede[165]](0)[_0xfede[15]](Languageletter210+ _0xfede[53]);$(_0xfede[210])[_0xfede[165]](0)[_0xfede[15]](Languageletter211);$(_0xfede[210])[_0xfede[165]](1)[_0xfede[15]](Languageletter212);$(_0xfede[210])[_0xfede[165]](2)[_0xfede[15]](Languageletter213);$(_0xfede[210])[_0xfede[165]](3)[_0xfede[15]](Languageletter214);$(_0xfede[210])[_0xfede[165]](4)[_0xfede[15]](Languageletter215);$(_0xfede[210])[_0xfede[165]](5)[_0xfede[15]](Languageletter216);$(_0xfede[210])[_0xfede[165]](6)[_0xfede[15]](Languageletter217);$(_0xfede[210])[_0xfede[165]](7)[_0xfede[15]](Languageletter218);$(_0xfede[210])[_0xfede[165]](8)[_0xfede[15]](Languageletter219);$(_0xfede[210])[_0xfede[165]](9)[_0xfede[15]](Languageletter220);$(_0xfede[210])[_0xfede[165]](9)[_0xfede[15]](Languageletter221);$(_0xfede[211])[_0xfede[165]](0)[_0xfede[15]](Languageletter222+ _0xfede[53]);$(_0xfede[211])[_0xfede[165]](1)[_0xfede[15]](Languageletter223+ _0xfede[53]);$(_0xfede[211])[_0xfede[165]](2)[_0xfede[15]](Languageletter224+ _0xfede[53]);$(_0xfede[211])[_0xfede[165]](3)[_0xfede[15]](Languageletter225+ _0xfede[53]);$(_0xfede[211])[_0xfede[165]](4)[_0xfede[15]](Languageletter226+ _0xfede[53]);$(_0xfede[211])[_0xfede[165]](5)[_0xfede[15]](Languageletter227+ _0xfede[53]);$(_0xfede[211])[_0xfede[165]](6)[_0xfede[15]](Languageletter228+ _0xfede[53]);$(_0xfede[212])[_0xfede[165]](0)[_0xfede[15]](Languageletter229);$(_0xfede[212])[_0xfede[165]](1)[_0xfede[15]](Languageletter230);$(_0xfede[213])[_0xfede[1]](_0xfede[9],Languageletter231);$(_0xfede[214])[_0xfede[1]](_0xfede[9],Languageletter232);$(_0xfede[215])[_0xfede[165]](0)[_0xfede[15]](Languageletter233);$(_0xfede[215])[_0xfede[165]](1)[_0xfede[15]](Languageletter234);$(_0xfede[215])[_0xfede[165]](2)[_0xfede[15]](Languageletter235);$(_0xfede[215])[_0xfede[165]](3)[_0xfede[15]](Languageletter236);$(_0xfede[215])[_0xfede[165]](4)[_0xfede[15]](Languageletter237);$(_0xfede[215])[_0xfede[165]](5)[_0xfede[15]](Languageletter238);$(_0xfede[215])[_0xfede[165]](6)[_0xfede[15]](Languageletter239);$(_0xfede[215])[_0xfede[165]](7)[_0xfede[15]](Languageletter240);$(_0xfede[215])[_0xfede[165]](8)[_0xfede[15]](Languageletter241);$(_0xfede[215])[_0xfede[165]](9)[_0xfede[15]](Languageletter242);$(_0xfede[215])[_0xfede[165]](10)[_0xfede[15]](Languageletter243);$(_0xfede[215])[_0xfede[165]](11)[_0xfede[15]](Languageletter244);$(_0xfede[215])[_0xfede[165]](12)[_0xfede[15]](Languageletter245);$(_0xfede[215])[_0xfede[165]](13)[_0xfede[15]](Languageletter246);$(_0xfede[215])[_0xfede[165]](14)[_0xfede[15]](Languageletter247);$(_0xfede[215])[_0xfede[165]](15)[_0xfede[15]](Languageletter248);$(_0xfede[215])[_0xfede[165]](16)[_0xfede[15]](Languageletter249);$(_0xfede[215])[_0xfede[165]](17)[_0xfede[15]](Languageletter250);$(_0xfede[215])[_0xfede[165]](18)[_0xfede[15]](Languageletter251);$(_0xfede[215])[_0xfede[165]](19)[_0xfede[15]](Languageletter252);$(_0xfede[215])[_0xfede[165]](20)[_0xfede[15]](Languageletter253);$(_0xfede[215])[_0xfede[165]](21)[_0xfede[15]](Languageletter254);$(_0xfede[215])[_0xfede[165]](22)[_0xfede[15]](Languageletter255);$(_0xfede[215])[_0xfede[165]](23)[_0xfede[15]](Languageletter256);$(_0xfede[215])[_0xfede[165]](24)[_0xfede[15]](Languageletter257);$(_0xfede[215])[_0xfede[165]](25)[_0xfede[15]](Languageletter258);$(_0xfede[215])[_0xfede[165]](26)[_0xfede[15]](Languageletter259);$(_0xfede[215])[_0xfede[165]](27)[_0xfede[15]](Languageletter260);$(_0xfede[215])[_0xfede[165]](28)[_0xfede[15]](Languageletter261);$(_0xfede[215])[_0xfede[165]](29)[_0xfede[15]](Languageletter262);$(_0xfede[215])[_0xfede[165]](30)[_0xfede[15]](Languageletter263);$(_0xfede[215])[_0xfede[165]](31)[_0xfede[15]](Languageletter264);$(_0xfede[215])[_0xfede[165]](32)[_0xfede[15]](Languageletter265);$(_0xfede[215])[_0xfede[165]](33)[_0xfede[15]](Languageletter266);$(_0xfede[215])[_0xfede[165]](34)[_0xfede[15]](Languageletter267);$(_0xfede[215])[_0xfede[165]](35)[_0xfede[15]](Languageletter268);$(_0xfede[215])[_0xfede[165]](36)[_0xfede[15]](Languageletter269);$(_0xfede[215])[_0xfede[165]](37)[_0xfede[15]](Languageletter270);$(_0xfede[215])[_0xfede[165]](38)[_0xfede[15]](Languageletter271+ _0xfede[186]);$(_0xfede[215])[_0xfede[165]](39)[_0xfede[15]](Languageletter271+ _0xfede[188]);$(_0xfede[215])[_0xfede[165]](40)[_0xfede[15]](Languageletter271+ _0xfede[216]);$(_0xfede[215])[_0xfede[165]](41)[_0xfede[15]](Languageletter271+ _0xfede[217]);$(_0xfede[215])[_0xfede[165]](42)[_0xfede[15]](Languageletter271+ _0xfede[218]);$(_0xfede[215])[_0xfede[165]](43)[_0xfede[15]](Languageletter272);$(_0xfede[215])[_0xfede[165]](44)[_0xfede[15]](Languageletter273);$(_0xfede[215])[_0xfede[165]](45)[_0xfede[15]](Languageletter274);$(_0xfede[215])[_0xfede[165]](46)[_0xfede[15]](Languageletter275);$(_0xfede[215])[_0xfede[165]](47)[_0xfede[15]](Languageletter276);$(_0xfede[215])[_0xfede[165]](48)[_0xfede[15]](Languageletter277);$(_0xfede[222])[_0xfede[49]](_0xfede[219]+ Languageletter278+ _0xfede[220]+ Languageletter279+ _0xfede[220]+ Languageletter280+ _0xfede[221]);$(_0xfede[223])[_0xfede[15]](Languageletter281);$(_0xfede[224])[_0xfede[15]](Languageletter282);$(_0xfede[225])[_0xfede[15]](Languageletter283);$(_0xfede[226])[_0xfede[15]](Languageletter283);$(_0xfede[227])[_0xfede[15]](Languageletter284);$(_0xfede[228])[_0xfede[1]](_0xfede[9],Languageletter284a)[_0xfede[1]](_0xfede[0],Languageletter285);$(_0xfede[229])[_0xfede[15]](Languageletter286);$(_0xfede[230])[_0xfede[165]](0)[_0xfede[15]](Languageletter287);$(_0xfede[230])[_0xfede[165]](1)[_0xfede[15]](Languageletter288);$(_0xfede[231])[_0xfede[15]](Languageletter291)[_0xfede[1]](_0xfede[0],Languageletter289);$(_0xfede[231])[_0xfede[15]](Languageletter291)[_0xfede[1]](_0xfede[0],Languageletter289);$(_0xfede[231])[_0xfede[239]](function(){$(_0xfede[233])[_0xfede[232]]();$(_0xfede[231])[_0xfede[15]](Languageletter290);if($(_0xfede[10])[_0xfede[234]]()!= _0xfede[235]){$(_0xfede[237])[_0xfede[236]](100)}else {$(_0xfede[238])[_0xfede[236]](100)}});$(_0xfede[241])[_0xfede[240]](function(){$(_0xfede[238])[_0xfede[232]]();$(_0xfede[233])[_0xfede[232]]();$(_0xfede[231])[_0xfede[15]](Languageletter291)});$(_0xfede[242])[_0xfede[15]](Languageletter290a)[_0xfede[1]](_0xfede[0],Languageletter291a);$(_0xfede[243])[_0xfede[15]](Languageletter290a)[_0xfede[1]](_0xfede[0],Languageletter291a);$(_0xfede[244])[_0xfede[15]](Languageletter290b)[_0xfede[1]](_0xfede[0],Languageletter291b);$(_0xfede[245])[_0xfede[15]](Languageletter290c)[_0xfede[1]](_0xfede[0],Languageletter291c);$(_0xfede[246])[_0xfede[1]](_0xfede[0],Languageletter292);$(_0xfede[247])[_0xfede[1]](_0xfede[0],Languageletter293);$(_0xfede[248])[_0xfede[15]](Languageletter294);$(_0xfede[249])[_0xfede[1]](_0xfede[9],Languageletter295);$(_0xfede[250])[_0xfede[1]](_0xfede[0],Languageletter283);$(_0xfede[251])[_0xfede[1]](_0xfede[0],Languageletter295a);$(_0xfede[252])[_0xfede[1]](_0xfede[9],Languageletter295b);if($(_0xfede[253])[_0xfede[234]]()== _0xfede[235]){$(_0xfede[257])[_0xfede[256]](function(){var _0xb7c8x3=$(this)[_0xfede[254]]();$(this)[_0xfede[254]](_0xb7c8x3[_0xfede[57]](_0xfede[255],Languageletter298+ _0xfede[45]))})};if($(_0xfede[258])[_0xfede[234]]()== _0xfede[235]){$(_0xfede[259])[_0xfede[15]](Languageletter299)};$(_0xfede[260])[_0xfede[1]](_0xfede[0],Languageletter300);$(_0xfede[261])[_0xfede[1]](_0xfede[0],Languageletter301);$(_0xfede[262])[_0xfede[1]](_0xfede[0],Languageletter302);$(_0xfede[263])[_0xfede[1]](_0xfede[0],Languageletter303);$(_0xfede[264])[_0xfede[1]](_0xfede[0],Languageletter304);$(_0xfede[265])[_0xfede[1]](_0xfede[0],Languageletter305);$(_0xfede[266])[_0xfede[1]](_0xfede[0],Languageletter306);$(_0xfede[267])[_0xfede[1]](_0xfede[0],Languageletter307);$(_0xfede[268])[_0xfede[1]](_0xfede[0],Languageletter308);$(_0xfede[269])[_0xfede[15]](Languageletter309);$(_0xfede[270])[_0xfede[15]](Languageletter283);$(_0xfede[271])[_0xfede[15]](Languageletter311);$(_0xfede[272])[_0xfede[15]](Languageletter312+ _0xfede[53]);$(_0xfede[273])[_0xfede[15]](Languageletter313+ _0xfede[53]);$(_0xfede[274])[_0xfede[15]](Languageletter314+ _0xfede[53]);if($(_0xfede[275])[_0xfede[15]]()== _0xfede[276]){$(_0xfede[275])[_0xfede[15]](Languageletter315)};$(_0xfede[278])[_0xfede[15]](Languageletter316+ _0xfede[277]);$(_0xfede[279])[_0xfede[15]](Languageletter317+ _0xfede[277]);$(_0xfede[280])[_0xfede[15]](Languageletter318+ _0xfede[277]);$(_0xfede[282])[_0xfede[15]](Languageletter319+ _0xfede[281]);$(_0xfede[283])[_0xfede[15]](Languageletter133);$(_0xfede[284])[_0xfede[15]](Languageletter320);$(_0xfede[285])[_0xfede[15]](Languageletter321);$(_0xfede[286])[_0xfede[15]](Languageletter322);$(_0xfede[287])[_0xfede[15]](Languageletter323);$(_0xfede[288])[_0xfede[1]](_0xfede[0],Languageletter324);$(_0xfede[289])[_0xfede[1]](_0xfede[0],Languageletter325);$(_0xfede[290])[_0xfede[1]](_0xfede[0],Languageletter326);$(_0xfede[291])[_0xfede[1]](_0xfede[0],Languageletter327);$(_0xfede[292])[_0xfede[1]](_0xfede[0],Languageletter328);$(_0xfede[293])[_0xfede[1]](_0xfede[0],Languageletter329);$(_0xfede[294])[_0xfede[1]](_0xfede[9],Languageletter331)[_0xfede[1]](_0xfede[0],Languageletter330);$(_0xfede[295])[_0xfede[1]](_0xfede[9],Languageletter332);$(_0xfede[296])[_0xfede[1]](_0xfede[9],Languageletter333a)[_0xfede[1]](_0xfede[0],Languageletter330);$(_0xfede[258])[_0xfede[1]](_0xfede[9],Languageletter334);$(_0xfede[297])[_0xfede[1]](_0xfede[9],Languageletter334a)[_0xfede[1]](_0xfede[0],Languageletter330);$(_0xfede[258])[_0xfede[1]](_0xfede[9],Languageletter334);$(_0xfede[298])[_0xfede[1]](_0xfede[9],Languageletter335)[_0xfede[1]](_0xfede[0],Languageletter330);$(_0xfede[299])[_0xfede[1]](_0xfede[9],Languageletter336)[_0xfede[1]](_0xfede[0],Languageletter330);$(_0xfede[300])[_0xfede[1]](_0xfede[9],Languageletter337)[_0xfede[1]](_0xfede[0],Languageletter341);$(_0xfede[301])[_0xfede[15]](Languageletter338+ _0xfede[186]);$(_0xfede[302])[_0xfede[15]](Languageletter338+ _0xfede[188]);$(_0xfede[303])[_0xfede[15]](Languageletter338+ _0xfede[216]);$(_0xfede[304])[_0xfede[15]](Languageletter338+ _0xfede[217]);$(_0xfede[305])[_0xfede[15]](Languageletter338+ _0xfede[218]);$(_0xfede[307])[_0xfede[15]](Languageletter338+ _0xfede[306]);$(_0xfede[309])[_0xfede[1]](_0xfede[9],Languageletter342c+ _0xfede[186])[_0xfede[1]](_0xfede[0],Languageletter339+ _0xfede[308]);$(_0xfede[310])[_0xfede[1]](_0xfede[9],Languageletter342c+ _0xfede[188])[_0xfede[1]](_0xfede[0],Languageletter339+ _0xfede[308]);$(_0xfede[311])[_0xfede[1]](_0xfede[9],Languageletter342c+ _0xfede[216])[_0xfede[1]](_0xfede[0],Languageletter339+ _0xfede[308]);$(_0xfede[312])[_0xfede[1]](_0xfede[9],Languageletter342c+ _0xfede[217])[_0xfede[1]](_0xfede[0],Languageletter339+ _0xfede[308]);$(_0xfede[313])[_0xfede[1]](_0xfede[9],Languageletter342c+ _0xfede[218])[_0xfede[1]](_0xfede[0],Languageletter339+ _0xfede[308]);$(_0xfede[314])[_0xfede[1]](_0xfede[9],Languageletter342c+ _0xfede[306])[_0xfede[1]](_0xfede[0],Languageletter339+ _0xfede[308]);$(_0xfede[315])[_0xfede[1]](_0xfede[9],Languageletter342d+ _0xfede[186])[_0xfede[1]](_0xfede[0],Languageletter340);$(_0xfede[316])[_0xfede[1]](_0xfede[9],Languageletter342d+ _0xfede[188])[_0xfede[1]](_0xfede[0],Languageletter340);$(_0xfede[317])[_0xfede[1]](_0xfede[9],Languageletter342d+ _0xfede[216])[_0xfede[1]](_0xfede[0],Languageletter340);$(_0xfede[318])[_0xfede[1]](_0xfede[9],Languageletter342d+ _0xfede[217])[_0xfede[1]](_0xfede[0],Languageletter340);$(_0xfede[319])[_0xfede[1]](_0xfede[9],Languageletter342d+ _0xfede[218])[_0xfede[1]](_0xfede[0],Languageletter340);$(_0xfede[320])[_0xfede[1]](_0xfede[9],Languageletter342d+ _0xfede[306])[_0xfede[1]](_0xfede[0],Languageletter340);$(_0xfede[321])[_0xfede[1]](_0xfede[9],Languageletter342a+ _0xfede[186]);$(_0xfede[322])[_0xfede[1]](_0xfede[9],Languageletter342a+ _0xfede[188]);$(_0xfede[323])[_0xfede[1]](_0xfede[9],Languageletter342a+ _0xfede[216]);$(_0xfede[324])[_0xfede[1]](_0xfede[9],Languageletter342a+ _0xfede[217]);$(_0xfede[325])[_0xfede[1]](_0xfede[9],Languageletter342a+ _0xfede[218]);$(_0xfede[326])[_0xfede[1]](_0xfede[9],Languageletter342a+ _0xfede[306]);$(_0xfede[327])[_0xfede[1]](_0xfede[9],Languageletter342b+ _0xfede[186]);$(_0xfede[328])[_0xfede[1]](_0xfede[9],Languageletter342b+ _0xfede[188]);$(_0xfede[329])[_0xfede[1]](_0xfede[9],Languageletter342b+ _0xfede[216]);$(_0xfede[330])[_0xfede[1]](_0xfede[9],Languageletter342b+ _0xfede[217]);$(_0xfede[331])[_0xfede[1]](_0xfede[9],Languageletter342b+ _0xfede[218]);$(_0xfede[332])[_0xfede[1]](_0xfede[9],Languageletter342b+ _0xfede[306]);$(_0xfede[334])[_0xfede[1]](_0xfede[9],Languageletter342+ _0xfede[186])[_0xfede[1]](_0xfede[0],Languageletter343+ _0xfede[333]);$(_0xfede[335])[_0xfede[1]](_0xfede[9],Languageletter342+ _0xfede[188])[_0xfede[1]](_0xfede[0],Languageletter344+ _0xfede[333]);$(_0xfede[336])[_0xfede[1]](_0xfede[0],Languageletter345);$(_0xfede[337])[_0xfede[15]](Languageletter31);$(_0xfede[338])[_0xfede[1]](_0xfede[0],Languageletter26a);$(_0xfede[339])[_0xfede[15]](Languageletter19);$(_0xfede[340])[_0xfede[15]](Languageletter349);$(_0xfede[341])[_0xfede[15]](Languageletter351);$(_0xfede[342])[_0xfede[1]](_0xfede[0],Languageletter351);$(_0xfede[343])[_0xfede[15]](Languageletter352);$(_0xfede[36])[_0xfede[1]](_0xfede[0],Languageletter353);$(_0xfede[344])[_0xfede[1]](_0xfede[0],Languageletter354);$(_0xfede[345])[_0xfede[1]](_0xfede[0],Languageletter355);$(_0xfede[346])[_0xfede[15]](Languageletter356);$(_0xfede[347])[_0xfede[1]](_0xfede[0],Languageletter357);$(_0xfede[348])[_0xfede[1]](_0xfede[0],Languageletter358);$(_0xfede[349])[_0xfede[1]](_0xfede[0],Languageletter359);$(_0xfede[350])[_0xfede[1]](_0xfede[0],Languageletter360);$(_0xfede[351])[_0xfede[15]](Externalletter1);$(_0xfede[352])[_0xfede[15]](Externalletter2);$(_0xfede[353])[_0xfede[15]](Externalletter3);$(_0xfede[354])[_0xfede[15]](Externalletter0a);$(_0xfede[355])[_0xfede[15]](Externalletter0b);if(Languagetimesused== _0xfede[356]){Languagestimeusedplus1();if(Languagetimesused1== 1){toastr[_0xfede[360]](Externalletter0c,_0xfede[235],{timeOut:5000,extendedTimeOut:5000})[_0xfede[359]](_0xfede[357],_0xfede[358])}};setTimeout(function(){$(_0xfede[270])[_0xfede[15]](Languageletter283);$(_0xfede[361])[_0xfede[15]](Externalletter6);$(_0xfede[362])[_0xfede[15]](Externalletter13);$(_0xfede[363])[_0xfede[15]](Externalletter7);$(_0xfede[364])[_0xfede[15]](Externalletter8);$(_0xfede[365])[_0xfede[15]](Externalletter9);$(_0xfede[367])[_0xfede[1]](_0xfede[9],_0xfede[366]+ Externalletter10);$(_0xfede[369])[_0xfede[1]](_0xfede[9],_0xfede[368]+ Externalletter10);$(_0xfede[371])[_0xfede[1]](_0xfede[9],_0xfede[370]+ Externalletter10);$(_0xfede[373])[_0xfede[1]](_0xfede[9],_0xfede[372]+ Externalletter10);$(_0xfede[375])[_0xfede[1]](_0xfede[9],_0xfede[374]+ Externalletter10);$(_0xfede[379])[_0xfede[1]](_0xfede[9],_0xfede[377]+ Externalletter12+ _0xfede[378])[_0xfede[1]](_0xfede[0],Externalletter11+ _0xfede[376]);$(_0xfede[381])[_0xfede[1]](_0xfede[9],_0xfede[380]+ Externalletter12+ _0xfede[378])[_0xfede[1]](_0xfede[0],Externalletter11+ _0xfede[376]);$(_0xfede[383])[_0xfede[1]](_0xfede[9],_0xfede[382]+ Externalletter12+ _0xfede[378])[_0xfede[1]](_0xfede[0],Externalletter11+ _0xfede[376]);$(_0xfede[385])[_0xfede[1]](_0xfede[9],_0xfede[384]+ Externalletter12+ _0xfede[378])[_0xfede[1]](_0xfede[0],Externalletter11+ _0xfede[376]);$(_0xfede[387])[_0xfede[1]](_0xfede[9],_0xfede[386]+ Externalletter12+ _0xfede[378])[_0xfede[1]](_0xfede[0],Externalletter11+ _0xfede[376])},4000);setTimeout(function(){$(_0xfede[389])[_0xfede[57]](_0xfede[388],Languageletter347);$(_0xfede[389])[_0xfede[57]](_0xfede[390],Languageletter348)},1500);function Languagestimeusedplus1(){Languagetimesused1++;return Languagetimesused1}
+//Language Pack Handler
+//Legend Mod By Jimboy3100
+var Languagetimesused;
+var Languagetimesused1;
+
+if($('#LanguageAuthorPanel').length==0){
+	$("#TimesUsed").after('<div id="LanguageAuthorPanel" class="user-name" style="display:inline-block;">'+Languageletter34+': <div id="LanguageAuthor" style="display:inline-block"></div></div><br>');
+	$("#LanguageAuthor").text(translator);
+	}
+else{
+	$("#LanguageAuthor").text(translator);
+}
+
+
+$(".ogicon-home").attr('data-original-title',Languageletter0);
+$(".ogicon-user").attr('data-original-title',Languageletter1);
+$(".ogicon-cog").attr('data-original-title',Languageletter2);
+$(".ogicon-droplet").attr('data-original-title',Languageletter3);
+$(".hotkeys-link.ogicon-keyboard").attr('data-original-title',Languageletter4);
+$(".ogicon-music").attr('data-original-title',Languageletter5);
+$(".legend-tab").attr('data-original-title',Languageletter6);
+
+$("#clantag").attr('placeholder',Languageletter7a).attr('data-original-title',Languageletter7);
+$("#nick").attr('placeholder',Languageletter8a).attr('data-original-title',Languageletter8);
+$("#skin").attr('placeholder',Languageletter9a).attr('data-original-title',Languageletter9);
+$("#region").attr('data-original-title',Languageletter10);
+$("#gamemode").attr('data-original-title',Languageletter11);
+$("#connect2").text(Languageletter12a).attr('data-original-title',Languageletter12);
+$("#server-join").text(Languageletter13);
+$(".btn.btn-play-guest.btn-success.btn-needs-server").text(Languageletter14);
+$(".btn.btn-play-guest.btn-success").text(Languageletter14);
+$(".btn.btn-warning.btn-login-play.btn-needs-server").text(Languageletter15);
+$(".btn.btn-warning.btn-login-play").text(Languageletter15);
+
+$(".btn.btn-warning.btn-spectate.btn-needs-server").tooltip({
+            title: Languageletter16,
+            placement: "top"
+        });
+$(".btn.btn-warning.btn-spectate.btn-needs-server").attr('data-original-title',Languageletter16);
+$(".btn.btn-primary.btn-login.btn-fb").children().last().text(Languageletter17);
+$(".btn.btn-primary.btn-login.btn-gplus").children().last().text(Languageletter18);
+$(".btn.btn-play.btn-primary.btn-needs-server").text(Languageletter19);
+
+$(".quick-shop.ogicon-cart").attr('data-original-title',Languageletter20);
+$(".quick-free-coins.ogicon-coin-dollar").attr('data-original-title',Languageletter21);
+$(".quick-free-gifts.ogicon-gift").attr('data-original-title',Languageletter22);
+$(".quick-quests.ogicon-trophy").attr('data-original-title',Languageletter23);
+$(".quick-more-skins.ogicon-grin").attr('data-original-title',Languageletter24);
+$(".quick-yt.ogicon-youtube2").attr('data-original-title',Languageletter25);
+$("#LegGoogleForm").attr('data-original-title',Languageletter25a);
+$("#ModInfoQuick").attr('data-original-title',Languageletter25b);
+
+$("#more-skins").text(Languageletter26);
+
+
+$(".btn.btn-primary.btn-success.btn-freecoins").text(Languageletter21);
+$("#gifting").text(Languageletter22);
+$("#dailyQuests").text(Languageletter23);
+$("#openShopBtn").text(Languageletter20);
+$(".btn.btn-danger.btn-logout").attr('data-original-title',Languageletter31);
+
+
+$(".TimesUsedPanel").replaceWith('<div class="TimesUsedPanel" align="right" display:inline-block;><h6><i>' + Languageletter32+' '+timesopened+
+		'<br>'+ Languageletter33 + ' jimboy3100<br>' + Languageletter34 + ' ' + translator + '</i></h6></div>');
+
+$("#tcm>#tcm-header>p").text(Languageletter35);
+
+
+$(".options-box.animationGroup>h5").text(Languageletter36);
+$(".options-box.animationGroup>DIV>DIV>SPAN:nth-child(1)").text(Languageletter37 + ": ");
+$(".options-box.zoomGroup>h5").text(Languageletter37b);
+$(".options-box.zoomGroup>LABEL").replace('Auto zoom', Languageletter37a);
+$(".options-box.zoomGroup>DIV>DIV>SPAN:nth-child(1)").text(Languageletter38 + ": ");
+
+$(".options-box.respGroup>h5").text(Languageletter39);
+$(".options-box.respGroup>LABEL").replace('Quick respawn', Languageletter41);
+$(".options-box.respGroup>LABEL").replace('Auto respawn', Languageletter40);
+$(".options-box.namesGroup>h5").text(Languageletter42);
+$(".options-box.namesGroup>LABEL").replace('No names', Languageletter43);
+$(".options-box.namesGroup>LABEL").replace('Optimized names', Languageletter44);
+$(".options-box.namesGroup>LABEL").replace('Auto hide names', Languageletter45);
+$(".options-box.namesGroup>LABEL").replace('Hide my name', Languageletter46);
+$(".options-box.namesGroup>LABEL").replace('Hide teammates names', Languageletter47);
+$(".options-box.namesGroup>LABEL").replace('Names stroke', Languageletter48);
+$(".options-box.massGroup>h5").text(Languageletter49);
+$(".options-box.massGroup>LABEL").replace('Show mass', Languageletter50);
+$(".options-box.massGroup>LABEL").replace('Optimized mass',  Languageletter51);
+$(".options-box.massGroup>LABEL").replace('Auto hide mass', Languageletter52);
+$(".options-box.massGroup>LABEL").replace('Hide my mass', Languageletter53);
+$(".options-box.massGroup>LABEL").replace('Hide enemies mass', Languageletter54);
+$(".options-box.massGroup>LABEL").replace('Short mass', Languageletter55);
+$(".options-box.massGroup>LABEL").replace('Virus shots', Languageletter56);
+$(".options-box.massGroup>LABEL").replace('Mass stroke', Languageletter57);
+$(".options-box.skinsGroup>h5").text(Languageletter58);
+$(".options-box.skinsGroup>LABEL").replace('No skins', Languageletter59);
+$(".options-box.skinsGroup>LABEL").replace('Custom skins', Languageletter60);
+$(".options-box.skinsGroup>LABEL").replace('Vanilla skins', Languageletter61);
+$(".options-box.foodGroup>h5").text(Languageletter6a2);
+$(".options-box.foodGroup>LABEL").replace('Optimized food', Languageletter62);
+$(".options-box.foodGroup>LABEL").replace('Auto hide food', Languageletter63);
+$(".options-box.foodGroup>LABEL").replace('Auto hide food', Languageletter64);
+$(".options-box.foodGroup>LABEL").replace('Rainbow food', Languageletter65);
+$(".options-box.transparencyGroup>h5").text(Languageletter66);
+$(".options-box.transparencyGroup>LABEL").replace('No colors', Languageletter67);
+$(".options-box.transparencyGroup>LABEL").replace('My custom color', Languageletter68);
+$(".options-box.transparencyGroup>LABEL").replace('My transparent skin', Languageletter69);
+$(".options-box.transparencyGroup>LABEL").replace('Transparent skins', Languageletter70);
+$(".options-box.transparencyGroup>LABEL").replace('Transparent cells', Languageletter70a);
+$(".options-box.transparencyGroup>LABEL").replace('Transparent viruses', Languageletter71);
+$(".options-box.gridGroup>h5").text(Languageletter72);
+$(".options-box.gridGroup>LABEL").replace('Show grid', Languageletter73);
+$(".options-box.gridGroup>LABEL").replace('Show background sectors', Languageletter74);
+$(".options-box.gridGroup>LABEL").replace('Show map borders', Languageletter75);
+$(".options-box.chatGroup>h5").text(Languageletter76);
+$(".options-box.chatGroup>LABEL").replace('Disable chat', Languageletter77);
+$(".options-box.chatGroup>LABEL").replace('Sound notifications', Languageletter78);
+$(".options-box.chatGroup>LABEL").replace('Emoticons', Languageletter79);
+$(".options-box.chatGroup>LABEL").replace('Show images on chat', Languageletter80);
+$(".options-box.chatGroup>LABEL").replace('Show videos on chat', Languageletter81);
+$(".options-box.chatGroup>LABEL").replace('Chatbox instead of popups', Languageletter82);
+$(".options-box.miniMapGroup>h5").text(Languageletter82a);
+$(".options-box.miniMapGroup>LABEL").replace('Show minimap', Languageletter82b);
+$(".options-box.miniMapGroup>LABEL").replace('Show minimap grid', Languageletter82c);
+$(".options-box.miniMapGroup>LABEL").replace('Show minimap guides', Languageletter82d);
+$(".options-box.miniMapGroup>LABEL").replace('One-colored teammates', Languageletter82e);
+$(".options-box.helpersGroup>h5").text(Languageletter83);
+$(".options-box.helpersGroup>LABEL").replace('Opponents colors', Languageletter84);
+$(".options-box.helpersGroup>LABEL").replace('Opponents rings', Languageletter85);
+$(".options-box.helpersGroup>LABEL").replace('Viruses colors', Languageletter86);
+$(".options-box.helpersGroup>LABEL").replace('Split range', Languageletter87);
+$(".options-box.helpersGroup>LABEL").replace('Viruses range', Languageletter88);
+$(".options-box.helpersGroup>LABEL").replace('Cursor tracking', Languageletter89);
+$(".options-box.helpersGroup>LABEL").replace('Teammates indicators', Languageletter90);
+$(".options-box.mouseGroup>h5").text(Languageletter91);
+$(".options-box.mouseGroup>LABEL").replace('LMB - Mouse split', Languageletter92);
+$(".options-box.mouseGroup>LABEL").replace('RMB - Mouse feed', Languageletter93);
+$(".options-box.mouseGroup>LABEL").replace('Invert mouse buttons', Languageletter94);
+$(".options-box.hudGroup>h5").text(Languageletter94a);
+$(".options-box.hudGroup>LABEL").replace('Show team top 5', Languageletter95);
+$(".options-box.hudGroup>LABEL").replace('Show targeting', Languageletter96);
+$(".options-box.hudGroup>LABEL").replace('Centered leaderboard', Languageletter97);
+$(".options-box.hudGroup>LABEL").replace('Game stats at the top', Languageletter98);
+$(".options-box.statsGroup>h5").text(Languageletter99);
+$(".options-box.statsGroup>LABEL").replace('Show game stats', Languageletter100);
+$(".options-box.statsGroup>LABEL").replace('Game stats: Mass', Languageletter101);
+$(".options-box.statsGroup>LABEL").replace('Game stats: STE', Languageletter102);
+$(".options-box.statsGroup>LABEL").replace('Game stats: n/16', Languageletter103);
+$(".options-box.statsGroup>LABEL").replace('Game stats: FPS', Languageletter104);
+$(".options-box.statsGroup>LABEL").replace('Show current time', Languageletter105);
+$(".options-box.extrasGroup>h5").text(Languageletter106);
+$(".options-box.extrasGroup>LABEL").replace('Skip stats after death', Languageletter107);
+$(".options-box.extrasGroup>LABEL").replace('Show quest', Languageletter108);
+$(".options-box.extrasGroup>LABEL").replace('Game sounds', Languageletter108a);
+$(".options-box.extrasGroup>LABEL").replace('Menu sounds', Languageletter108b);
+$(".options-box.extrasGroup>LABEL").replace('Block popups', Languageletter109);
+$(".options-box.voiceGroup>.menu-main-color").text(Languageletter109a);
+$(".options-box.voiceGroup>LABEL").replace('Voice-Prefix', Languageletter109b);
+$(".options-box.voiceGroup>LABEL").replace('Voice-lang', Languageletter109c);
+
+$('#quality>option:nth-child(1)').text(Languageletter110);
+$('#quality>option:nth-child(2)').text(Languageletter111);
+$('#quality>option:nth-child(3)').text(Languageletter112);
+$('#quality>option:nth-child(4)').text(Languageletter113);
+$('#quality>option:nth-child(5)').text(Languageletter114);
+$('#quality>option:nth-child(6)').text(Languageletter115);
+
+$(".btn.btn-block.btn-success.btn-export").text(Languageletter116);
+$(".restore-settings>a").eq(0).text(Languageletter117);
+
+$("#exp-imp-settings>h1").eq(0).text(Languageletter118);
+$("#exp-imp-settings>h1").eq(1).text(Languageletter119);
+$("#exp-imp-settings>h2").eq(0).text(Languageletter120);
+$("#exp-imp-settings>h2").eq(1).text(Languageletter121);
+
+$("#exp-imp-settings>LABEL").replace('Commands', Languageletter122);
+$("#exp-imp-settings>LABEL").replace('Hotkeys', Languageletter123);
+$("#exp-imp-settings>LABEL").replace('Profiles', Languageletter124);
+$("#exp-imp-settings>LABEL").replace('Settings', Languageletter125);
+$("#exp-imp-settings>LABEL").replace('Theme', Languageletter126);
+$("#export-settings-btn").text(Languageletter127);
+$("#import-settings-btn").text(Languageletter128);
+$("#import-settings-btn2").text(Languageletter128);
+
+$("#theme>ul>li>.ogicon-paint-format").attr('data-original-title', Languageletter129);
+$("#theme>ul>li>.ogicon-menu").attr('data-original-title', Languageletter130);
+$("#theme>ul>li>.ogicon-display").attr('data-original-title', Languageletter131);
+$("#theme>ul>li>.ogicon-bubbles").attr('data-original-title', Languageletter132);
+$("#theme>ul>li>.ogicon-location2").attr('data-original-title', Languageletter133);
+$("#theme>ul>li>.ogicon-compass").attr('data-original-title', Languageletter134);
+
+$(".preset-box>span").text(Languageletter135);
+
+$('#themePreset>option:nth-child(3)').text(Languageletter136);
+$('#themePreset>option:nth-child(4)').text(Languageletter137 + " 1");
+$('#themePreset>option:nth-child(5)').text(Languageletter137 + " 2");
+
+$("#theme-main>div>span").eq(1).text(Languageletter139);
+$("#theme-main>div>span").eq(2).text(Languageletter140);
+$("#theme-main>div>span").eq(3).text(Languageletter141);
+$("#theme-main>div>span").eq(4).text(Languageletter142);
+$("#theme-main>div>span").eq(5).text(Languageletter143);
+$("#theme-main>div>span").eq(6).text(Languageletter144);
+$("#theme-main>div>span").eq(7).text(Languageletter145);
+$("#theme-main>div>span").eq(8).text(Languageletter146);
+$("#theme-main>div>span").eq(9).text(Languageletter147);
+$("#theme-main>div>span").eq(10).text(Languageletter148);
+$("#theme-main>div>span").eq(11).text(Languageletter149);
+$("#theme-main>div>span").eq(12).text(Languageletter150);
+$("#theme-main>div>span").eq(13).text(Languageletter151);
+$("#theme-main>div>span").eq(14).text(Languageletter152);
+$("#theme-main>div>span").eq(15).text(Languageletter153);
+$("#theme-main>div>span").eq(16).text(Languageletter154);
+$("#theme-main>div>span").eq(17).text(Languageletter155 + ": ");
+
+$("#theme-main>div>div>span:nth-child(1)").eq(0).text(Languageletter157 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(1).text(Languageletter158 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(2).text(Languageletter159 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(3).text(Languageletter160 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(4).text(Languageletter161 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(5).text(Languageletter162 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(6).text(Languageletter163 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(7).text(Languageletter164 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(8).text(Languageletter165 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(9).text(Languageletter166 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(10).text(Languageletter167 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(11).text(Languageletter168 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169 + ": ");
+
+$(".restore-settings>a").eq(1).text(Languageletter170);
+$(".btn.btn-block.btn-success.btn-save").text(Languageletter171);
+
+$(".preset-box>span").eq(1).text(Languageletter172);
+$(".preset-box>div>span").eq(1).text(Languageletter173);
+
+$("#theme-menu>div>div>span:nth-child(1)").eq(0).text(Languageletter174 + ": ");
+$("#theme-menu>div>span").eq(1).text(Languageletter175);
+$("#theme-menu>div>span").eq(2).text(Languageletter176);
+$("#theme-menu>div>span").eq(3).text(Languageletter177);
+$("#theme-menu>div>span").eq(4).text(Languageletter177 + " (2)");
+$("#theme-menu>div>span").eq(5).text(Languageletter179);
+$("#theme-menu>div>span").eq(6).text(Languageletter179 + " (2)");
+$("#theme-menu>div>span").eq(7).text(Languageletter181 +" #1");
+$("#theme-menu>div>span").eq(8).text(Languageletter181 +" #1 (2)");
+$("#theme-menu>div>span").eq(9).text(Languageletter181 +" #2");
+$("#theme-menu>div>span").eq(10).text(Languageletter181 +" #2 (2)");
+$("#theme-menu>div>span").eq(11).text(Languageletter181 +" #3");
+$("#theme-menu>div>span").eq(12).text(Languageletter181 +" #3 (2)");
+$("#theme-menu>div>span").eq(13).text(Languageletter181 +" #4");
+$("#theme-menu>div>span").eq(14).text(Languageletter181 +" #4 (2)");
+$("#theme-menu>div>span").eq(15).text(Languageletter189);
+$("#menuBg").attr('placeholder', Languageletter190);
+
+$("#theme-hud>div>span").eq(0).text(Languageletter191);
+$("#theme-hud>div>span").eq(1).text(Languageletter192);
+$("#theme-hud>div>span").eq(2).text(Languageletter193);
+$("#theme-hud>div>span").eq(3).text(Languageletter194);
+$("#theme-hud>div>span").eq(4).text(Languageletter195);
+$("#theme-hud>div>span").eq(5).text(Languageletter196);
+$("#theme-hud>div>span").eq(6).text(Languageletter197);
+$("#theme-hud>div>span").eq(7).text(Languageletter198);
+$("#theme-hud>div>span").eq(8).text(Languageletter199);
+$("#theme-hud>div>div>span:nth-child(1)").eq(0).text(Languageletter200 + ": ");
+
+$("#theme-chat>div>span").eq(0).text(Languageletter201);
+$("#theme-chat>div>span").eq(1).text(Languageletter202);
+$("#theme-chat>div>span").eq(2).text(Languageletter203);
+$("#theme-chat>div>span").eq(3).text(Languageletter204);
+$("#theme-chat>div>span").eq(4).text(Languageletter205);
+$("#theme-chat>div>span").eq(5).text(Languageletter206);
+$("#theme-chat>div>span").eq(6).text(Languageletter207);
+$("#theme-chat>div>span").eq(7).text(Languageletter208);
+$("#theme-chat>div>span").eq(8).text(Languageletter209);
+$("#theme-chat>div>div>span:nth-child(1)").eq(0).text(Languageletter210 + ": ");
+
+$("#theme-minimap>div>span").eq(0).text(Languageletter211);
+$("#theme-minimap>div>span").eq(1).text(Languageletter212);
+$("#theme-minimap>div>span").eq(2).text(Languageletter213);
+$("#theme-minimap>div>span").eq(3).text(Languageletter214);
+$("#theme-minimap>div>span").eq(4).text(Languageletter215);
+$("#theme-minimap>div>span").eq(5).text(Languageletter216);
+$("#theme-minimap>div>span").eq(6).text(Languageletter217);
+$("#theme-minimap>div>span").eq(7).text(Languageletter218);
+$("#theme-minimap>div>span").eq(8).text(Languageletter219);
+$("#theme-minimap>div>span").eq(9).text(Languageletter220);
+$("#theme-minimap>div>span").eq(9).text(Languageletter221);
+
+$("#theme-minimap>div>div>span:nth-child(1)").eq(0).text(Languageletter222 + ": ");
+$("#theme-minimap>div>div>span:nth-child(1)").eq(1).text(Languageletter223 + ": ");
+$("#theme-minimap>div>div>span:nth-child(1)").eq(2).text(Languageletter224 + ": ");
+$("#theme-minimap>div>div>span:nth-child(1)").eq(3).text(Languageletter225 + ": ");
+$("#theme-minimap>div>div>span:nth-child(1)").eq(4).text(Languageletter226 + ": ");
+$("#theme-minimap>div>div>span:nth-child(1)").eq(5).text(Languageletter227 + ": ");
+$("#theme-minimap>div>div>span:nth-child(1)").eq(6).text(Languageletter228 + ": ");
+
+$("#theme-images>div>span").eq(0).text(Languageletter229);
+$("#theme-images>div>span").eq(1).text(Languageletter230);
+$("#customBackground").attr('placeholder',Languageletter231);
+$("#customCursor").attr('placeholder',Languageletter232);
+
+
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(0).text(Languageletter233);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(1).text(Languageletter234);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(2).text(Languageletter235);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(3).text(Languageletter236);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(4).text(Languageletter237);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(5).text(Languageletter238);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(6).text(Languageletter239);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(7).text(Languageletter240);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(8).text(Languageletter241);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(9).text(Languageletter242);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(10).text(Languageletter243);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(11).text(Languageletter244);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(12).text(Languageletter245);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(13).text(Languageletter246);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(14).text(Languageletter247);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(15).text(Languageletter248);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(16).text(Languageletter249);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(17).text(Languageletter250);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(18).text(Languageletter251);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(19).text(Languageletter252);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(20).text(Languageletter253);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(21).text(Languageletter254);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(22).text(Languageletter255);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(23).text(Languageletter256);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(24).text(Languageletter257);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(25).text(Languageletter258);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(26).text(Languageletter259);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(27).text(Languageletter260);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(28).text(Languageletter261);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(29).text(Languageletter262);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(30).text(Languageletter263);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(31).text(Languageletter264);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(32).text(Languageletter265);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(33).text(Languageletter266);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(34).text(Languageletter267);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(35).text(Languageletter268);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(36).text(Languageletter269);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(37).text(Languageletter270);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(38).text(Languageletter271 + " 1");
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(39).text(Languageletter271 + " 2");
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(40).text(Languageletter271 + " 3");
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(41).text(Languageletter271 + " 4");
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(42).text(Languageletter271 + " 5");
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(43).text(Languageletter272);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(44).text(Languageletter273);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(45).text(Languageletter274);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(46).text(Languageletter275);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(47).text(Languageletter276);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(48).text(Languageletter277);
+
+$("#hotkeys-inst").replaceWith('<div id="hotkeys-inst"><ul><li>' + Languageletter278 + '</li><li>' + Languageletter279 + '</li><li>' + Languageletter280 + '</li></ul></div>');
+
+$("#reset-hotkeys").text(Languageletter281);
+$("#save-hotkeys").text(Languageletter282);
+$("#close-hotkeys").text(Languageletter283);
+$("#close-exp-imp").text(Languageletter283);
+
+$("#youtubeplayer>h5").text(Languageletter284);
+$("#musicUrl").attr('placeholder', Languageletter284a).attr('data-original-title',Languageletter285);
+$(".agario-panel.sounds-panel>h5").text(Languageletter286);
+$(".agario-panel.sounds-panel>div>span").eq(0).text(Languageletter287);
+$(".agario-panel.sounds-panel>div>span").eq(1).text(Languageletter288);
+
+$("#copySIPBtn").text(Languageletter291).attr('data-original-title',Languageletter289);
+$("#copySIPBtn").text(Languageletter291).attr('data-original-title',Languageletter289);
+        $("#copySIPBtn").mouseenter(function() {
+            $("#dropDown3").hide();
+            $("#copySIPBtn").text(Languageletter290);
+			if ($("#clantag").val()!=""){
+				$("#dropDown2").show(100);
+			}
+            else {
+				$("#dropDown").show(100);
+				}
+        });
+$("#leaderboard-menu").mouseleave(function () {$("#dropDown").hide();$("#dropDown3").hide();$("#copySIPBtn").text(Languageletter291);});
+$("#copyLBBtn").text(Languageletter290a).attr('data-original-title', Languageletter291a);
+$("#dropDown>#copyLBBtn").text(Languageletter290a).attr('data-original-title', Languageletter291a);
+$("#copySIPandPass").text(Languageletter290b).attr('data-original-title', Languageletter291b);
+$("#copySIPPassLB").text(Languageletter290c).attr('data-original-title', Languageletter291c);
+
+
+$("#searchShortcut").attr('data-original-title', Languageletter292);
+$("#reconnectBtn").attr('data-original-title', Languageletter293);
+$("#logTitle").text(Languageletter294);
+$("#searchInput").attr('placeholder',Languageletter295);
+$("#closeBtn").attr("data-original-title", Languageletter283);
+$("#notesclear").attr("data-original-title", Languageletter295a);
+$("#message").attr('placeholder', Languageletter295b);
+//$("#top5-total").each(function() { var text = $(this).html();
+//   $(this).html(text.replace(' Active players: ', ' ' + Languageletter296 + ': ')); 
+//});
+//$("#top5-total").each(function() { var text = $(this).html();
+//  $(this).html(text.replace(' Total mass: ', ' ' + Languageletter297 + ': ')); 
+//});
+
+if($('#teambtext').val()==""){
+	$("#top5-hud > h5").each(function() { var text = $(this).html();
+   $(this).html(text.replace('Team top ', Languageletter298 + ' ')); 
+});}
+if($('#leadbtext').val()==""){
+	$("#leaderboard-hud > h4").text(Languageletter299);
+};
+$("#ChatBtn").attr("data-original-title", Languageletter300);
+$("#SendCommands").attr("data-original-title", Languageletter301);
+$("#Images").attr("data-original-title", Languageletter302);
+$("#yout").attr("data-original-title", Languageletter303);
+$("#Cutnames").attr("data-original-title", Languageletter304);
+$("#Bino").attr("data-original-title", Languageletter305);
+$("#playerBtn").attr("data-original-title", Languageletter306);
+$("#fullscreenBtn").attr("data-original-title", Languageletter307);
+$("#RotateRight").attr("data-original-title", Languageletter308);
+$("#bottomleft").text( Languageletter309);
+$("#Backtomenu").text( Languageletter283);
+$("#notesaveforlater").text(Languageletter311);
+$("#notesRegion").text(Languageletter312 + ": ");
+$("#notesPlayers").text(Languageletter313 + ": ");
+$("#notesServer").text(Languageletter314 + ": ");
+if($("#target-status").text()=="[Target not set]"){$("#target-status").text(Languageletter315)}
+
+$("#legendmanualback").text(Languageletter316 + ":  ");
+$("#legendmanualmess").text(Languageletter317 + ":  ");
+$("#chatbtntitle").text(Languageletter318 + ":  ");
+$("#legenddiscordwebh").text(Languageletter319 +"  ");
+
+$('#backgroundPic>option:nth-child(1)').text(Languageletter133);
+$('#backgroundPic>option:nth-child(2)').text(Languageletter320);
+$('#backgroundPic>option:nth-child(3)').text(Languageletter321);
+$('#backgroundPic>option:nth-child(4)').text(Languageletter322);
+$('#backgroundPic>option:nth-child(5)').text(Languageletter323);
+
+$('#msgcommand1').attr("data-original-title", Languageletter324);
+$('#msgcommand2').attr("data-original-title", Languageletter325);
+$('#msgcommand3').attr("data-original-title", Languageletter326);
+$('#msgcommand4').attr("data-original-title", Languageletter327);
+$('#msgcommand5').attr("data-original-title", Languageletter328);
+$('#msgcommand6').attr("data-original-title", Languageletter329);
+
+
+$('#minimapPicture').attr('placeholder',Languageletter331).attr('data-original-title',Languageletter330);
+$('#minbtext').attr('placeholder',Languageletter332);
+$('#leadbPicture').attr('placeholder',Languageletter333a).attr('data-original-title',Languageletter330);
+$('#leadbtext').attr('placeholder',Languageletter334);
+$('#teambPicture').attr('placeholder',Languageletter334a).attr('data-original-title',Languageletter330);
+$('#leadbtext').attr('placeholder',Languageletter334);
+$('#canvasPicture').attr('placeholder',Languageletter335).attr('data-original-title',Languageletter330);
+$('#imgUrl').attr('placeholder',Languageletter336).attr('data-original-title',Languageletter330);
+$('#imgHref').attr('placeholder',Languageletter337).attr('data-original-title',Languageletter341);
+
+$('#changephotos>option:nth-child(1)').text(Languageletter338 + " 1");
+$('#changephotos>option:nth-child(2)').text(Languageletter338 + " 2");
+$('#changephotos>option:nth-child(3)').text(Languageletter338 + " 3");
+$('#changephotos>option:nth-child(4)').text(Languageletter338 + " 4");
+$('#changephotos>option:nth-child(5)').text(Languageletter338 + " 5");
+$('#changephotos>option:nth-child(6)').text(Languageletter338 + " 6");
+
+
+$('#pic1url').attr('placeholder',Languageletter342c + " 1").attr("data-original-title", Languageletter339 + " http://i.imgur.com/RVBi3T1.gif");
+$('#pic2url').attr('placeholder',Languageletter342c + " 2").attr("data-original-title", Languageletter339 + " http://i.imgur.com/RVBi3T1.gif");
+$('#pic3url').attr('placeholder',Languageletter342c + " 3").attr("data-original-title", Languageletter339 + " http://i.imgur.com/RVBi3T1.gif");
+$('#pic4url').attr('placeholder',Languageletter342c + " 4").attr("data-original-title", Languageletter339 + " http://i.imgur.com/RVBi3T1.gif");
+$('#pic5url').attr('placeholder',Languageletter342c + " 5").attr("data-original-title", Languageletter339 + " http://i.imgur.com/RVBi3T1.gif");
+$('#pic6url').attr('placeholder',Languageletter342c + " 6").attr("data-original-title", Languageletter339 + " http://i.imgur.com/RVBi3T1.gif");
+
+$('#yt1url').attr('placeholder',Languageletter342d + " 1").attr("data-original-title", Languageletter340);
+$('#yt2url').attr('placeholder',Languageletter342d + " 2").attr("data-original-title", Languageletter340);
+$('#yt3url').attr('placeholder',Languageletter342d + " 3").attr("data-original-title", Languageletter340);
+$('#yt4url').attr('placeholder',Languageletter342d + " 4").attr("data-original-title", Languageletter340);
+$('#yt5url').attr('placeholder',Languageletter342d + " 5").attr("data-original-title", Languageletter340);
+$('#yt6url').attr('placeholder',Languageletter342d + " 6").attr("data-original-title", Languageletter340);
+
+$('#pic1data').attr('placeholder',Languageletter342a + " 1");
+$('#pic2data').attr('placeholder',Languageletter342a + " 2");
+$('#pic3data').attr('placeholder',Languageletter342a + " 3");
+$('#pic4data').attr('placeholder',Languageletter342a + " 4");
+$('#pic5data').attr('placeholder',Languageletter342a + " 5");
+$('#pic6data').attr('placeholder',Languageletter342a + " 6");
+
+$('#yt1data').attr('placeholder',Languageletter342b + " 1");
+$('#yt2data').attr('placeholder',Languageletter342b + " 2");
+$('#yt3data').attr('placeholder',Languageletter342b + " 3");
+$('#yt4data').attr('placeholder',Languageletter342b + " 4");
+$('#yt5data').attr('placeholder',Languageletter342b + " 5");
+$('#yt6data').attr('placeholder',Languageletter342b + " 6");
+
+
+$('#discwebhook1').attr('placeholder',Languageletter342 + ' 1').attr('data-original-title', Languageletter343 + '. https://discordapp.com/api/webhooks/.../...');
+$('#discwebhook2').attr('placeholder',Languageletter342 + ' 2').attr('data-original-title', Languageletter344 + '. https://discordapp.com/api/webhooks/.../...');
+
+$("#HideAllBthn").attr('data-original-title',Languageletter345);
+
+$("#logoutbtn").text(Languageletter31); //for LM Express
+$("#CopyAll").attr('data-original-title',Languageletter26a); //for LM Express
+//$("#legendlanguagetext").text(Languageletter346+ "  :");
+$(".btn.btn-play.btn-primary").text(Languageletter19); //may not work
+
+$("#potions").text(Languageletter349);
+//$("#oldSkinsBtn").text(Languageletter350);
+$("#SpecialDealsBtn").text(Languageletter351);
+$("#SpecialDealsQuickBtn").attr("data-original-title", Languageletter351);
+$(".btn.btn-primary.btn-success.btn-leagues").text(Languageletter352); //Leaderboards
+$("#LegGoogleForm").attr("data-original-title", Languageletter353);
+$("#VideoSkinsQuick").attr("data-original-title", Languageletter354);
+$("#MiniScripts").attr("data-original-title", Languageletter355);
+$("#OpenuserScripts").text(Languageletter356);
+$("#VoiceBtn").attr("data-original-title", Languageletter357);
+$("#donationbtn").attr("data-original-title", Languageletter358);
+$("#opennamechars").attr("data-original-title", Languageletter359);
+$("#openskinchanger").attr("data-original-title", Languageletter360);
+//$("#MorefpsText").text(Languageletter361);
+
+$("#Infobtn11").text(Externalletter1);
+$("#TemplatesBtn").text(Externalletter2);
+$("#ManualyTemplatesBtn").text(Externalletter3);
+$("#LanguagesTempBtn").text(Externalletter0a);
+$("#chooselangtext1").text(Externalletter0b);
+
+if (Languagetimesused=="1"){
+	Languagestimeusedplus1();
+	if (Languagetimesused1==1){
+toastr["info"](Externalletter0c, "", {
+    timeOut: 5000,
+    extendedTimeOut: 5000
+     }).css("width", "300px");
+	}
+}
+setTimeout(function () {
+$("#Backtomenu").text(Languageletter283);
+$("#userscripter1").text(Externalletter6);
+$("#userscripter2").text(Externalletter13);
+$("#userscriptBtn1").text(Externalletter7);
+$("#userscriptpages").text(Externalletter8);
+$("#EraseScripter").text(Externalletter9);
+$("#UserscripttextA").attr('placeholder','User Script 1 '+ Externalletter10);
+$("#UserscripttextB").attr('placeholder','User Script 2 '+ Externalletter10);
+$("#UserscripttextC").attr('placeholder','User Script 3 '+ Externalletter10);
+$("#UserscripttextD").attr('placeholder','User Script 4 '+ Externalletter10);
+$("#UserscripttextE").attr('placeholder','User Script 5 '+ Externalletter10);
+$("#UserscriptA").attr('placeholder','User Script 1 .js URL ('+ Externalletter12+')').attr("data-original-title", Externalletter11+" http://... or https://...");
+$("#UserscriptB").attr('placeholder','User Script 2 .js URL ('+ Externalletter12+')').attr("data-original-title", Externalletter11+" http://... or https://...");
+$("#UserscriptC").attr('placeholder','User Script 3 .js URL ('+ Externalletter12+')').attr("data-original-title", Externalletter11+" http://... or https://...");
+$("#UserscriptD").attr('placeholder','User Script 4 .js URL ('+ Externalletter12+')').attr("data-original-title", Externalletter11+" http://... or https://...");
+$("#UserscriptE").attr('placeholder','User Script 5 .js URL ('+ Externalletter12+')').attr("data-original-title", Externalletter11+" http://... or https://...");
+}, 4000);
+
+setTimeout(function () {
+$("#block-warn").replace('WARNING! Popups are blocked in the settings.', Languageletter347);
+$("#block-warn").replace('Temporary unblock', Languageletter348);
+}, 1500);
+
+function Languagestimeusedplus1(){
+Languagetimesused1++;
+return Languagetimesused1;
+}
+
+
