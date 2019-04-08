@@ -1329,7 +1329,21 @@ var _0xb15e=["\x6C\x69\x6E\x6B\x5B\x72\x65\x6C\x2A\x3D\x27\x69\x63\x6F\x6E\x27\x
                      {id: 'eSwYkS3', delay: '0.03'},
                      {id: 'uId5x5t', delay: '0.03'}
                   ]
-               },			   
+               },	
+               '℄💖 丅ᕼᗴᗝ🆇🅻': {
+                  cached:    false,
+                  ready:     false,
+                  current:   0,
+                  timestamp: 0,
+                  id:        't_rex',
+                  color:     '7c0001',
+                  frames:    [
+                     {id: 'jeyvjUh', delay: '2'},
+                     {id: 'eM38lQG', delay: '0.12'},
+                     {id: 'jn7xfpf', delay: '0.12'},
+                     {id: 'eM38lQG', delay: '0.12'}
+                  ]
+               },		    
                '℄🌀Jimboy3100': {
                   cached:    false,
                   ready:     false,
