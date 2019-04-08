@@ -22,7 +22,7 @@
 
 
 
-var translator="S̶　　　　　　　　　🦂";		//Put your nickname, in order to be reffered to mod, or use name "Unknown"
+var translator="Suleyman";		//Put your nickname, in order to be reffered to mod, or use name "Unknown"
 
 
 var Languageletter0="Ana Menü";		//Home
