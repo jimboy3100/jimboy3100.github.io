@@ -1330,7 +1330,7 @@ var _0xb15e=["\x6C\x69\x6E\x6B\x5B\x72\x65\x6C\x2A\x3D\x27\x69\x63\x6F\x6E\x27\x
                      {id: 'uId5x5t', delay: '0.03'}
                   ]
                },	
-               '℄💖 丅ᕼᗴᗝ🆇🅻': {
+               '℄💖    丅ᕼᗴᗝ': {
                   cached:    false,
                   ready:     false,
                   current:   0,
