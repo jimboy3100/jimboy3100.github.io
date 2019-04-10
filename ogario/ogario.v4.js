@@ -2,7 +2,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.127 test
+//v1.128 test
 //Game Configurations
 
 //window.agarversion="v12/1963/";
@@ -3887,7 +3887,7 @@ var core = function(t, e, i) {
                     'isPlayer' === this['leaderboard'][i]['id'] ? s = '<span class=\"me\">' : ogarcopythelb['clanTag'].length && 0 == this['leaderboard'][i]['nick'].indexOf(ogarcopythelb['clanTag']) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer['escapeHTML'](this['leaderboard'][i]['nick']) + '</span>';
                 } */
 				var teammatenicks=[];
-				for (i=0;i<=legendmod3.top5.length;i++){
+				for (i=0;i<legendmod3.top5.length;i++){
 				teammatenicks.push(legendmod3.top5[i].nick);		
 				}
 				for (var t = '', e = '', i = 0; i < this['leaderboard'].length && window.leaderboardlimit != i; i++) {
