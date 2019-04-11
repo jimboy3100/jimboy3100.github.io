@@ -2,7 +2,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.128 test
+//v1.131 test
 //Game Configurations
 
 //window.agarversion="v12/1963/";
@@ -2609,19 +2609,6 @@ var core = function(t, e, i) {
                     }
                 }
             },
-            'cacheVanillaSkin': function(vanSkin) {
-                //console.log(t);  //////// returns img scr of server/tag
-                //if (0 != this['cacheQueue'].length) {
-                var e = vanSkin;
-                if (e) {
-                    console.log(e);
-                    var i = document['createElement']('canvas');
-                    i['width'] = 512, i['height'] = 512;
-                    var s = i['getContext']('2d');
-                    s['beginPath'](), s.arc(256, 256, 256, 0, 2 * Math['PI'], !1), s['clip'](), s['drawImage'](this['customSkinsCache'][e], 0, 0, 512, 512), this['customSkinsCache'][e + '_cached'] = new Image(), this['customSkinsCache'][e + '_cached'].src = i.toDataURL(), i = null, this['cacheSkin'](this['customSkinsCache']);
-                    //}
-                }
-            },
             'getCachedSkin': function(t, e) {
                 return t[e + '_cached'] && t[e + '_cached']['complete'] && t[e + '_cached']['width'] ? t[e + '_cached'] : null;
             },
@@ -3886,13 +3873,16 @@ var core = function(t, e, i) {
                     var s = '<span>';
                     'isPlayer' === this['leaderboard'][i]['id'] ? s = '<span class=\"me\">' : ogarcopythelb['clanTag'].length && 0 == this['leaderboard'][i]['nick'].indexOf(ogarcopythelb['clanTag']) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer['escapeHTML'](this['leaderboard'][i]['nick']) + '</span>';
                 } */
-				var teammatenicks=[];
+				window.teammatenicks=[];
 				for (i=0;i<legendmod3.top5.length;i++){
-				teammatenicks.push(legendmod3.top5[i].nick);		
+					window.teammatenicks.push(legendmod3.top5[i].nick);		
+				}
+				if (window.agartoolteammatenicks!=undefined){
+					window.teammatenicks = window.teammatenicks.concat(window.agartoolteammatenicks); 
 				}
 				for (var t = '', e = '', i = 0; i < this['leaderboard'].length && window.leaderboardlimit != i; i++) {
                     var s = '<span>';
-                    'isPlayer' === this['leaderboard'][i]['id'] ? s = '<span class=\"me\">' : ogarcopythelb['clanTag'].length && 0 != teammatenicks.includes(this['leaderboard'][i]['nick']) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer['escapeHTML'](this['leaderboard'][i]['nick']) + '</span>';
+                    'isPlayer' === this['leaderboard'][i]['id'] ? s = '<span class=\"me\">' : ogarcopythelb['clanTag'].length && 0 != window.teammatenicks.includes(this['leaderboard'][i]['nick']) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer['escapeHTML'](this['leaderboard'][i]['nick']) + '</span>';
                 }				
                 if (this['playerPosition'] > window.leaderboardlimit && (t += '<span class=\"me\">' + this['playerPosition'] + '. ' + ogarminimapdrawer['escapeHTML'](this['playerNick']) + '</span>'), v['showLbData']);
 					t+='<span class="me">Total : '+this.leaderboard.length+'</span>';
