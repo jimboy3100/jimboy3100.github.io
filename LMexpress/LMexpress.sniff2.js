@@ -1312,6 +1312,24 @@ var _0xb15e=["\x6C\x69\x6E\x6B\x5B\x72\x65\x6C\x2A\x3D\x27\x69\x63\x6F\x6E\x27\x
                      {id: 'WQA1R3N', delay: '0.06'}
                   ]
 			   },
+               '℄🔥Quantum': {
+                  cached:    false,
+                  ready:     false,
+                  current:   0,
+                  timestamp: 0,
+                  id:        'blackhole',
+                  color:     '000000',
+                  frames:    [
+                     {id: 'gNeYD4y', delay: '0.12'},
+                     {id: 'RWhq2m6', delay: '0.12'},
+                     {id: 'Gzeutvv', delay: '0.12'},
+                     {id: 'ZM5d6S7', delay: '0.12'},
+                     {id: 'iP1LjJq', delay: '0.12'},
+                     {id: '62GWoaP', delay: '0.12'},
+                     {id: '71GSwyR', delay: '0.12'},
+                     {id: 'w5b0kBu', delay: '0.12'}
+                  ]
+               },			   
                '℄💖   ᒎᑌᑎᛕƳ🆇🅻': {
                   cached:    false,
                   ready:     false,
