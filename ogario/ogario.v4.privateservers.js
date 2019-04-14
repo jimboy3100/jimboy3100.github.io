@@ -2,7 +2,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.123 test
+//v1.124 test
 //Game Configurations
 
 //window.agarversion="v12/1963/";
@@ -3765,6 +3765,17 @@ var core = function(t, e, i) {
                 switch (54 == o && (o = 53), o) {
                     case 5:
                         break;
+						/////////////
+					case 16:
+						console.log(t);
+						break;
+					case 64:
+						console.log(t);
+						break;			
+					case 99:
+						console.log(t);
+						break;	
+						////						
                     case 17:
                         this['viewX'] = t.getFloat32(s, !0), s += 4, this['viewY'] = t.getFloat32(s, !0), s += 4, this['scale'] = t.getFloat32(s, !0);
                         break;
