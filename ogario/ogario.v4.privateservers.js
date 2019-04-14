@@ -2,7 +2,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.124 test
+//v1.125 test
 //Game Configurations
 
 //window.agarversion="v12/1963/";
@@ -3767,13 +3767,13 @@ var core = function(t, e, i) {
                         break;
 						/////////////
 					case 16:
-						console.log(t);
+						console.log(t.getUint32(s, !0));
 						break;
 					case 64:
-						console.log(t);
+						console.log(t.getUint32(s, !0));
 						break;			
 					case 99:
-						console.log(t);
+						console.log(t.getUint32(s, !0));
 						break;	
 						////						
                     case 17:
