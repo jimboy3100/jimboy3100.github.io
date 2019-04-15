@@ -2,12 +2,14 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.144 test
+//v1.152 test
 //Game Configurations
 
 //window.agarversion="v12/1963/";
 window.agarversion="v12/1922/";
 
+
+//window.disableIntegrity=false;
 var Lmagarversion="";
 
 window.LMGameConfiguration = $.ajax({
@@ -2085,7 +2087,7 @@ var core = function(t, e, i) {
                 if (v['showTop5']) {
 					//console.log(['top5'].length);
 					//console.log(['teamPlayers'].length);
-                    for (var t = '', e = 0, s = this['teamPlayers'].length, o = 0; o < s; o++) e += this['teamPlayers'][o]['mass'], o >= this['top5limit'] || (t += '<li><span class=\"cell-counter\" style=\"background-color: ' + this['teamPlayers'][o]['color'] + '\">' + (o + 1) + '</span>', v['showTargeting'] && (t += '<a href=\"#\" data-user-id=\"' + this['teamPlayers'][o]['id'] + '\" class=\"set-target ogicon-target\"></a> '), t += '<span class=\"hud-main-color\">[' + this['calculateMapSector'](this['teamPlayers'][o]['x'], this['teamPlayers'][o]['y']) + ']</span>', t += '<span class=\"top5-mass-color\">[' + this['shortMassFormat'](this['teamPlayers'][o]['mass']) + ']</span> ' + this['escapeHTML'](this['teamPlayers'][o]['nick']) + '</li>');
+                    for (var t = '', e = 0, s = this['top5'].length, o = 0; o < s; o++) e += this['top5'][o]['mass'], o >= this['top5limit'] || (t += '<li><span class=\"cell-counter\" style=\"background-color: ' + this['top5'][o]['color'] + '\">' + (o + 1) + '</span>', v['showTargeting'] && (t += '<a href=\"#\" data-user-id=\"' + this['top5'][o]['id'] + '\" class=\"set-target ogicon-target\"></a> '), t += '<span class=\"hud-main-color\">[' + this['calculateMapSector'](this['top5'][o]['x'], this['top5'][o]['y']) + ']</span>', t += '<span class=\"top5-mass-color\">[' + this['shortMassFormat'](this['top5'][o]['mass']) + ']</span> ' + this['escapeHTML'](this['top5'][o]['nick']) + '</li>');
                     this['top5pos']['innerHTML'] = t, i.play && i['playerMass'] && (e += i['playerMass'], s++), this['top5totalMass']['textContent'] = this['shortMassFormat'](e), this['top5totalPlayers']['textContent'] = s;
                 }
             },
@@ -3704,7 +3706,13 @@ var core = function(t, e, i) {
                 e.setUint8(t.length + 1, 0), this.sendMessage(e);
             },
             'setClientVersion': function(t, e) {
-                this.clientVersion = t, this.clientVersionString = e, console.log('[Legend mod Express] Client version:', t, e);
+				
+				if (window.disableIntegrity!=false){ //
+					this.clientVersion = t, this.clientVersionString = e, console.log('[Legend mod Express] Client version:', t, e);
+				} //
+				else{ //
+					this.clientVersion = 0, this.clientVersionString = e, console.log('[Legend mod Express] Client version:', t, e); //
+				} //
             },
             'generateClientKey': function(t, e) {
                 if (!t.length || !e.byteLength) return null;
@@ -3726,14 +3734,24 @@ var core = function(t, e, i) {
                 return i != u && (i = 0 | Math['imul'](n[c] ^ u, s)), i ^= u = i >>> 13, i = 0 | Math['imul'](i, s), i ^= u = i >>> 15, console.log('[Legend mod Express] Generated client key:', i), i;
             },
             'shiftKey': function(t) {
-                return t = 0 | Math['imul'](t, 1540483477), t = 114296087 ^ (0 | Math['imul'](t >>> 24 ^ t, 1540483477)), (t = 0 | Math['imul'](t >>> 13 ^ t, 1540483477)) >>> 15 ^ t;
+				//if (window.disableIntegrity!=false){ //
+					return t = 0 | Math['imul'](t, 1540483477), t = 114296087 ^ (0 | Math['imul'](t >>> 24 ^ t, 1540483477)), (t = 0 | Math['imul'](t >>> 13 ^ t, 1540483477)) >>> 15 ^ t;
+				//} //
+				//else{ //
+					//return 0; //	
+				//} //
             },
             'shiftMessage': function(t, e, i) {
+				//if (window.disableIntegrity!=false){ //
                 if (i)
                     for (s = 0; s < t.length; s++) t.writeUInt8(t.readUInt8(s) ^ e >>> s % 4 * 8 & 255, s);
                 else
                     for (var s = 0; s < t.byteLength; s++) t.setUint8(s, t.getUint8(s) ^ e >>> s % 4 * 8 & 255);
                 return t;
+				//} //
+				//else{ //				
+					//return t; //
+				//} //
             },
             'decompressMessage': function(t) {
                 var e = new o(t['buffer']),
