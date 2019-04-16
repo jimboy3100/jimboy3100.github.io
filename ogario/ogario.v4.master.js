@@ -1,5 +1,6 @@
 // decoded by Alexander Lylko
 // on 24.02.2019 23:40 ｚᶻ͛
+// recoded by Jimboy3100
 
 (function(window, $) {
 	var _0x4a1f6b = {
@@ -341,11 +342,17 @@
 				return;
 			}
 			var _0xb6f198 = this;
-			$.get('//gc.agar.io', function(_0x4a6f91) {
+			/*$.get('//gc.agar.io', function(_0x4a6f91) {
 				var _0x4f6506 = _0x4a6f91.split(' ');
 				var _0x102283 = _0x4f6506[0x0];
 				_0xb6f198.setRegionCode(_0x102283);
-			}, 'text');
+			}, 'text'); */
+			userData=$.get("https://extreme-ip-lookup.com/json/", function (response) { $("#response").html(JSON.stringify(response, null, 4));
+				if (userData!=null) {localStorage.setItem("userData", JSON.stringify(userData));}
+				_0xb6f198.setRegionCode(userData.responseJSON.countryCode);
+			}, "jsonp");			
+			
+			
 		},
 		'setRegionCode': function(_0x845190) {
 			if(_0x4a1f6b.hasOwnProperty(_0x845190)) {
