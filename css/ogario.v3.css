@@ -1384,3 +1384,25 @@ input.hide-url::selection,input.stream-mode::selection{
         max-height:490px
     }
 }
+#pos-skin img {
+	width: 26px;
+	height: 26px;
+	position: absolute;
+	margin-left: 2px;
+	margin-top: 2px;
+	border-radius: 50%;
+	box-shadow: 0 0 8px #000;
+}
+#top5-pos li {
+	margin-top: 0px;
+	width: 250px;
+	height: 26px;
+}
+#pos-skin, #top5-pos .cell-counter {
+	margin-right: 5px;
+	height: 30px!important;
+	width: 30px!important;
+}
+#top5-pos {
+	padding-left: 0!important;
+}
