@@ -1389,12 +1389,10 @@ input.hide-url::selection,input.stream-mode::selection{
 	width: 25px;
 	height: 25px;
 	border-radius: 50%;
-	box-shadow: 0 0 8px #000;
 }
 #top5-pos li {
 	margin-top: 5px;
-	background: #0000004f;
-	border-bottom: #fff solid 2px;
+	border-bottom: #fff solid 0px;
 	width: 250px;
 	height: 25px;
 }
