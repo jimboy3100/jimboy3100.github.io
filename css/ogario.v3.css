@@ -109,6 +109,14 @@ label:hover{
     border-top:5px solid #01d9cc;
     padding:0
 }
+////
+#player {
+	border-radius: 20px 0px 0px 20px;
+}
+
+////
+
+
 #main-panel,#theme-main{
     display:block
 }
