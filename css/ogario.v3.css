@@ -1393,7 +1393,7 @@ input.hide-url::selection,input.stream-mode::selection{
 #top5-pos li {
 	margin-top: 5px;
 	border-bottom: #fff solid 0px;
-	width: 250px;
+	width: 280px;
 	height: 25px;
 }
 #pos-skin, #top5-pos .cell-counter {
