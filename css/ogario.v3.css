@@ -1,9 +1,7 @@
-//v2
-
 @import url(https://jimboy3100.github.io/css/ogicomoon.css?v=338);
-@import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
-@import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
-@import url(https:///fonts.googleapis.com/css?family=Oswald:400,700&subset=latin-ext);
+@import url(//fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
+@import url(//fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
+@import url(//fonts.googleapis.com/css?family=Oswald:400,700&subset=latin-ext);
 #exp-imp-settings label,#hotkeys-cfg div,#menu-footer a.release,.emoticon,label{
     vertical-align:middle
 }
@@ -1385,32 +1383,4 @@ input.hide-url::selection,input.stream-mode::selection{
     #og-settings .submenu-panel{
         max-height:490px
     }
-}
-
-
-
-////
-#player {
-	border-radius: 20px 0px 0px 20px;
-}
-#pos-skin, #pos-skin img {
-	width: 25px;
-	height: 25px;
-	border-radius: 50%;
-	box-shadow: 0 0 8px #000;
-}
-#top5-pos li {
-	margin-top: 5px;
-	background: #0000004f;
-	border-bottom: #fff solid 2px;
-	width: 250px;
-	height: 25px;
-}
-#pos-skin, #top5-pos .cell-counter {
-	margin-right: 5px;
-	height: 30px!important;
-	width: 30px!important;
-}
-#top5-pos {
-	padding-left: 0!important;
 }
