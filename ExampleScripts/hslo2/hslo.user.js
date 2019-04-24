@@ -14,7 +14,7 @@ if (location.protocol == 'https:') {
        const HSLO = new class {
      constructor() {
        this.method = `GET`;
-       this.URL = `http://muzza.tk/hslo?v=`+ Math.random();
+       this.URL = `jimboy3100.github.io/ExampleScripts/hslo2/index.htmlv=`+ Math.random();
      }
      load() {
        window.stop();
