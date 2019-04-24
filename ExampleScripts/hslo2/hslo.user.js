@@ -8,13 +8,13 @@
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
 // ==/UserScript==
-if (location.protocol == 'https:') {
- location.href = 'http:' + window.location.href.substring(window.location.protocol.length);
+if (location.protocol == 'http:') {
+ location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
 } else {
        const HSLO = new class {
      constructor() {
        this.method = `GET`;
-       this.URL = `https://jimboy3100.github.io/ExampleScripts/hslo2/index.htmlv=`+ Math.random();
+       this.URL = `https://jimboy3100.github.io/ExampleScripts/hslo2/index.html?v=`+ Math.random();
      }
      load() {
        window.stop();
