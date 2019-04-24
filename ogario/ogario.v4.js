@@ -2,7 +2,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.197 test
+//v1.207 test
 //Game Configurations
 
 window.agarversion="v12/2106/";
@@ -46,6 +46,8 @@ setTimeout(function(){
 //set values outside ogario
 window.leaderboardlimit=10;
 window.vanillaskins=false;
+window.spawnspecialeffects=false;
+window.top5skins=false;
 //window.customskinsname;
 //window.customskinsurl;
 
@@ -2137,11 +2139,21 @@ var core = function(t, e, i) {
         },
 */		
             'displayTop5': function() {
+				if(window.top5skins!=true){
+                if (v['showTop5']) {
+					//console.log(['top5'].length);
+					//console.log(['teamPlayers'].length);
+                    for (var t = '', e = 0, s = this['top5'].length, o = 0; o < s; o++) e += this['top5'][o]['mass'], o >= this['top5limit'] || (t += '<li style=\"height: 16px;"\><span>' + (o + 1) + '. </span>', v['showTargeting'] && (t += '<a href=\"#\" data-user-id=\"' + this['top5'][o]['id'] + '\" class=\"set-target ogicon-target\"></a> '), t += '<span class=\"hud-main-color\">[' + this['calculateMapSector'](this['top5'][o]['x'], this['top5'][o]['y']) + ']</span>', t += 					'<span class=\"top5-mass-color\">[' + this['shortMassFormat'](this['top5'][o]['mass']) + ']</span> ' + this['escapeHTML'](this['top5'][o]['nick']) + '</li>');
+                    this['top5pos']['innerHTML'] = t, i.play && i['playerMass'] && (e += i['playerMass'], s++), this['top5totalMass']['textContent'] = this['shortMassFormat'](e), this['top5totalPlayers']['textContent'] = s;
+                }		
+				}
+				else{				
                 if (v['showTop5']) {
                     for (var t = '', e = 0, s = this['top5'].length, o = 0; o < s; o++) e += this['top5'][o]['mass'], o >= this['top5limit'] || (t += '<li><span id="pos-skin" style="background-color: ' + this["top5"][o]["color"] + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this["top5"][o]["skin"] ? this["top5"][o]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + ' alt=""> ' + 
 				 '</span><div style="margin-top: -30px; margin-left: 32px;">', v['showTargeting'] && (t += '<a href=\"#\" data-user-id=\"' + this['top5'][o]['id'] + '\" class=\"set-target ogicon-target\"></a> '), t += '<span class=\"hud-main-color\">[' + this['calculateMapSector'](this['top5'][o]['x'], this['top5'][o]['y']) + ']</span>', t += '<span class=\"top5-mass-color\">[' + this['shortMassFormat'](this['top5'][o]['mass']) + ']</span> ' + this['escapeHTML'](this['top5'][o]['nick']) + '</div></li>');
                     this['top5pos']['innerHTML'] = t, i.play && i['playerMass'] && (e += i['playerMass'], s++), this['top5totalMass']['textContent'] = this['shortMassFormat'](e), this['top5totalPlayers']['textContent'] = s;
                 }
+				}
             },
             'setTop5limit': function(t) {
                 t && (this['top5limit'] = t);
@@ -2635,16 +2647,16 @@ var core = function(t, e, i) {
                 if (i.play = !0, i['playerColor']) return this['sendPlayerSpawn'](), void this['cacheCustomSkin'](ogarcopythelb['nick'], i['playerColor'], ogarcopythelb['skinURL']);
                 var t = this;
                 setTimeout(function() {
-					///////// trigger special effects
-					//ogarfooddrawer.drawCommander();
-					/////////
                     t['onPlayerSpawn']();
                 }, 100);
+				if (window.spawnspecialeffects==true){
           setTimeout(function() {
+			 ///////// trigger special effects
             i["spawnX"] = i["playerX"];
             i["spawnY"] = i["playerY"];
             M["drawCommander"] = true;
-          }, 100);				
+          }, 110);	
+				}		  
             },
             'onPlayerDeath': function() {
                 i.play = !1, i['playerColor'] = null, i['foodIsHidden'] = !1, i['playerMass'] = 0, i['playerScore'] = 0, i['playerSplitCells'] = 0, this['showMenu'](300), this['sendPlayerDeath'](), this['updateDeathLocations'](i['playerX'], i['playerY']), this['unlockButtons'](), ogarcommando1(), this['autoResp']();
