@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         HSLO
-// @description  HSLO multibox edition
-// @version      5.2.5
+// @name         Legend Box Agar.io Extension
+// @description  Legend Box Party Multibox
+// @version      1.0
 // @author       2coolife | Protocol fixed by Muzza&ReF
 // @match        http://agar.io/*
 // @match        https://agar.io/*
@@ -11,7 +11,7 @@
 if (location.protocol == 'http:') {
  location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
 } else {
-       const HSLO = new class {
+       const LegendBox = new class {
      constructor() {
        this.method = `GET`;
        this.URL = `https://jimboy3100.github.io/ExampleScripts/hslo2/index.html?v=`+ Math.random();
@@ -25,7 +25,7 @@ if (location.protocol == 'http:') {
              method: this.method,
              url: this.URL,
              onload: function(e) {
-                 HSLO.write(e.responseText);
+                 LegendBox.write(e.responseText);
              }
          });
      }
@@ -35,5 +35,5 @@ if (location.protocol == 'http:') {
        document.close();
      }
    }
-   HSLO.load();
+   LegendBox.load();
 }
