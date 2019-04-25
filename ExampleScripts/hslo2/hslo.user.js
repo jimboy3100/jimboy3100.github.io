@@ -7,6 +7,7 @@
 // @match        https://agar.io/*
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
+// @connect      jimboy3100.github.io
 // ==/UserScript==
 if (location.protocol == 'http:') {
  location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
