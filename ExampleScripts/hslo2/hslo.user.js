@@ -2,7 +2,7 @@
 // @name         Legend Box Agar.io Extension
 // @description  Legend Box Party Multibox
 // @version      1.0
-// @author       2coolife | Protocol fixed by Muzza&ReF
+// @author       Jimboy3100 | HSLO project
 // @match        http://agar.io/*
 // @match        https://agar.io/*
 // @run-at       document-start
