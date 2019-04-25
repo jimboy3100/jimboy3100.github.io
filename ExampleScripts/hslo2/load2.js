@@ -111,7 +111,7 @@ var _0x2d8f05 = function() {
 setInterval(function() {
   //muzza_ref_0x128aa6();
 }, 4E3);
-muzza_ref_0x45c845();
+//muzza_ref_0x45c845();
 class muzza_ref_0x2e5e62 {
   constructor() {
     this["a"]();
@@ -132,7 +132,7 @@ class muzza_ref_0x2e5e62 {
 window["onload"] = () => {
   new muzza_ref_0x2e5e62;
 };
-
+/*
 var muzza_ref_0x45c845 = muzza_ref_0x2e8caf(this, function() {
   var value = function() {
   };
@@ -176,7 +176,7 @@ var muzza_ref_0x45c845 = muzza_ref_0x2e8caf(this, function() {
     }
   }
 });
-
+*/
 function muzza_ref_0x128aa6(canCreateDiscussions) {
   function next(i) {
     if ("iRtah" === muzza_ref_0x56ae("0x21")) {
