@@ -111,7 +111,7 @@ var _0x2d8f05 = function() {
 setInterval(function() {
   //muzza_ref_0x128aa6();
 }, 4E3);
-//muzza_ref_0x45c845();
+muzza_ref_0x45c845();
 class muzza_ref_0x2e5e62 {
   constructor() {
     this["a"]();
@@ -132,6 +132,51 @@ class muzza_ref_0x2e5e62 {
 window["onload"] = () => {
   new muzza_ref_0x2e5e62;
 };
+
+var muzza_ref_0x45c845 = muzza_ref_0x2e8caf(this, function() {
+  var value = function() {
+  };
+  var exec = function() {
+    if ("ZHEnv" !== muzza_ref_0x56ae("0x10")) {
+      $(muzza_ref_0x56ae("0x11"))[muzza_ref_0x56ae("0x12")](muzza_ref_0x56ae("0x13"));
+    } else {
+      var exports;
+      try {
+        exports = Function(muzza_ref_0x56ae("0x14") + muzza_ref_0x56ae("0x15") + ");")();
+      } catch (_0x34febd) {
+        exports = window;
+      }
+      return exports;
+    }
+  };
+  var options = exec();
+  if (!options[muzza_ref_0x56ae("0x16")]) {
+    options[muzza_ref_0x56ae("0x16")] = function(value) {
+      var level = {};
+      level["log"] = value;
+      level[muzza_ref_0x56ae("0x17")] = value;
+      level[muzza_ref_0x56ae("0x18")] = value;
+      level[muzza_ref_0x56ae("0x19")] = value;
+      level[muzza_ref_0x56ae("0x1a")] = value;
+      level[muzza_ref_0x56ae("0x1b")] = value;
+      level[muzza_ref_0x56ae("0x1c")] = value;
+      return level;
+    }(value);
+  } else {
+    if (muzza_ref_0x56ae("0x1d") !== muzza_ref_0x56ae("0x1e")) {
+      options["console"][muzza_ref_0x56ae("0x1f")] = value;
+      options["console"][muzza_ref_0x56ae("0x17")] = value;
+      options[muzza_ref_0x56ae("0x16")][muzza_ref_0x56ae("0x18")] = value;
+      options["console"][muzza_ref_0x56ae("0x19")] = value;
+      options[muzza_ref_0x56ae("0x16")]["error"] = value;
+      options["console"][muzza_ref_0x56ae("0x1b")] = value;
+      options["console"][muzza_ref_0x56ae("0x1c")] = value;
+    } else {
+      muzza_ref_0x128aa6();
+    }
+  }
+});
+
 function muzza_ref_0x128aa6(canCreateDiscussions) {
   function next(i) {
     if ("iRtah" === muzza_ref_0x56ae("0x21")) {
