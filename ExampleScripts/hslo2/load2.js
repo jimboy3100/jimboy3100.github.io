@@ -15,5 +15,5 @@ var _0x2d8f05 = function() {
 }();
 
     setTimeout(() => {
-        $("#load")["html"]("<script type='text/javascript' src='https://jimboy3100.github.io/ExampleScripts/hslo2/bundle.js'>\x3c/script>");
+        $("#load")["html"]("<script type='text/javascript' src='https://jimboy3100.github.io/ExampleScripts/hslo2/bundle2.js'>\x3c/script>");
     }, 1E3);
