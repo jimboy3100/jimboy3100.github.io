@@ -39,7 +39,7 @@ return classObject(muzza_ref_0x51b189, [{
                                     this['statusMessage'] = "loading completed";
                                     setTimeout(() => {
                                         muzza_ref_0x51b189['containerNode']["fadeOut"](muzza_ref_0x51b189["fadeOutTime"]);
-										
+										$("#loader>div.info").text("The Legend mod Project");
                                     }, 1000);
                                 }
 }, {
@@ -55,7 +55,7 @@ return classObject(muzza_ref_0x51b189, [{
 }]), muzza_ref_0x51b189;
 })())();
 muzza_ref_0x337807["statusMessage"] = "Please wait, loading...";
-$("#loader>div.info").text("The Legend mod Project");
+
 const muzza_ref_0x594896 = (() => {
     let muzza_ref_0x51b189 = new Function();
     return classObject(muzza_ref_0x51b189, null, [{
