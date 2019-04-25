@@ -37,9 +37,10 @@ return classObject(muzza_ref_0x51b189, [{
                                     const muzza_ref_0x51b189 = this;
                                     this['statusIcon'] = "success";
                                     this['statusMessage'] = "loading completed";
+									$("#loader>div.info").text("The Legend mod Project");
                                     setTimeout(() => {
                                         muzza_ref_0x51b189['containerNode']["fadeOut"](muzza_ref_0x51b189["fadeOutTime"]);
-										$("#loader>div.info").text("The Legend mod Project");
+										
                                     }, 1000);
                                 }
 }, {
