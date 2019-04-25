@@ -15,7 +15,7 @@ return classObject(muzza_ref_0x51b189, [{
     } else {
         window["requestAnimationFrame"](() => {
             this['_000083']();
-        }), this[muzza_ref_0x4965('0xf4', 'WjjD')]();
+        }), this["event"]();
     }
 }
 }]), muzza_ref_0x51b189;
@@ -78,10 +78,10 @@ const muzza_ref_0x594896 = (() => {
             }
         }
     }, {
-        'key': muzza_ref_0x4965('0x11b', 'owSU'),
+        'key': "update",
         'value'(muzza_ref_0x337807) {
             const muzza_ref_0x522a14 = muzza_ref_0x337807["attr"]("Hstr")['split']('.');
-            let muzza_ref_0x31dc25 = window["lang_" + this[muzza_ref_0x4965('0x11f', '436$')]] || window["lang_EN"];
+            let muzza_ref_0x31dc25 = window["lang_" + this["selected"]] || window["lang_EN"];
             const _0x22cbe9 = muzza_ref_0x522a14[0x0],
                 muzza_ref_0x1bec58 = muzza_ref_0x522a14[0x1],
                 muzza_ref_0x51b189 = muzza_ref_0x522a14[0x2];
@@ -216,7 +216,7 @@ window["lang_EN"] = {
         'opt_onlyLines': muzza_ref_0x4965('0x17a', 'u5yT'),
         'opt_snowflakes': muzza_ref_0x4965('0x17b', '15i*'),
         'opt_chatroom': 'Chatroom',
-        'opt_popup': muzza_ref_0x4965('0x17c', 'Ha6R')
+        'opt_popup': "Pop up chat"
     },
     'hkMenu': {
         'title': "Hotkeys",
@@ -333,10 +333,10 @@ window["lang_EN"] = {
 var muzza_ref_0x94dc9b = new((() => {
     let muzza_ref_0x51b189 = new Function();
     return classObject(muzza_ref_0x51b189, [{
-        'key': muzza_ref_0x4965('0x1cc', 'QPjj'),
+        'key': "init",
         'value'() {
             if (muzza_ref_0x4965('0x1cd', 'Y5q%') === muzza_ref_0x4965('0x1ce', '7pcr')) {
-                this[muzza_ref_0x4965('0x1cf', 'bsK5')] = ![], this['_000467'] = $(muzza_ref_0x4965('0x1d0', '3FAY'));
+                this["_000466"] = ![], this['_000467'] = $(muzza_ref_0x4965('0x1d0', '3FAY'));
                 this[muzza_ref_0x4965('0x1d1', 'B(^x')] = muzza_ref_0x215634[muzza_ref_0x4965('0xb7', '7pcr')](muzza_ref_0x4965('0x1d2', 'X4g@'), muzza_ref_0x4965('0x1d3', 'xVTO')) || muzza_ref_0x594896[muzza_ref_0x4965('0x1d4', 'ZK8x')];
                 this['CellAnimation'] = ~~muzza_ref_0x215634[muzza_ref_0x4965('0x1d5', 'u5yT')](muzza_ref_0x4965('0x1d6', 'xjXt'), muzza_ref_0x4965('0x1d7', 'Y5q%')) || 0x8c;
                 this[muzza_ref_0x4965('0x1d8', 'rJZu')] = muzza_ref_0x215634[muzza_ref_0x4965('0x1d9', '0vPp')](muzza_ref_0x4965('0x1da', 'mW@0'), muzza_ref_0x4965('0x1db', 'gkT2')) || 'on';
@@ -367,9 +367,9 @@ var muzza_ref_0x94dc9b = new((() => {
                 this[muzza_ref_0x4965('0x22b', '15i*')] = muzza_ref_0x215634['get'](muzza_ref_0x4965('0x22c', '15i*'), muzza_ref_0x4965('0x22d', 'j06^')) || muzza_ref_0x4965('0x22e', '7pcr');
                 this['sounds'] = muzza_ref_0x215634[muzza_ref_0x4965('0x22f', '15i*')](muzza_ref_0x4965('0x230', 'nR5p'), muzza_ref_0x4965('0x231', '0vPp')) || 'on';
                 this[muzza_ref_0x4965('0x232', 'Ha6R')] = muzza_ref_0x215634[muzza_ref_0x4965('0x233', '41)*')]('settings', 'targeting') || muzza_ref_0x4965('0x234', 'kg[p');
-                this['chatType'] = muzza_ref_0x215634['get'](muzza_ref_0x4965('0x1fe', '6H(%'), muzza_ref_0x4965('0x235', 'B(^x')) || muzza_ref_0x4965('0x236', 'bsK5');
+                this['chatType'] = muzza_ref_0x215634['get']("settings", "chatType") || muzza_ref_0x4965('0x236', 'bsK5');
                 this['_000469']();
-                this[muzza_ref_0x4965('0x237', 'ZK8x')]();
+                this["_000468"]();
             } else {
                 const _0x54688a = new muzza_ref_0x3accdf(muzza_ref_0x51b189),
                     _0x402680 = _0x54688a[muzza_ref_0x4965('0x238', 'QEkW')]();
@@ -377,9 +377,9 @@ var muzza_ref_0x94dc9b = new((() => {
             }
         }
     }, {
-        'key': muzza_ref_0x4965('0x245', 'R4N7'),
+        'key': "_000469",
         'value'() {
-            $(muzza_ref_0x4965('0x246', '41)*'))[muzza_ref_0x4965('0x247', 'Jz6U')](function() {
+            $(muzza_ref_0x4965('0x246', '41)*'))["each"](function() {
                 const muzza_ref_0x51b189 = $(this)[muzza_ref_0x4965('0x248', '0vPp')]('type');
                 muzza_ref_0x4965('0x249', 'owSU') === muzza_ref_0x51b189 ? muzza_ref_0x94dc9b[muzza_ref_0x4965('0x24a', 'WjjD')](this, 0x2) : muzza_ref_0x4965('0x24b', '@q2j') === muzza_ref_0x51b189 && muzza_ref_0x94dc9b[muzza_ref_0x4965('0x24c', 'Xrz(')](this, 0x2);
             }), this[muzza_ref_0x4965('0x24d', '3FAY')](), this[muzza_ref_0x4965('0x24e', 'Mf7K')]();
@@ -529,7 +529,7 @@ var muzza_ref_0x94dc9b = new((() => {
             }
         }
     }, {
-        'key': muzza_ref_0x4965('0x2dc', '[Ffc'),
+        'key': "_000462",
         'value'() {
             if (muzza_ref_0x4965('0x2dd', '6H(%') === muzza_ref_0x4965('0x2de', 'ma5I')) {
                 const _0x1af56a = this[muzza_ref_0x4965('0x2df', 'wZlH')][muzza_ref_0x4965('0x2e0', '@q2j')](this[muzza_ref_0x4965('0x2e1', 'Y5q%')], !![]);
@@ -556,15 +556,15 @@ const muzza_ref_0x379093 = (() => {
         return classObject(muzza_ref_0x51b189, null, [{
             'key': muzza_ref_0x4965('0x2f0', '6jtJ'),
             'value'() {
-                this[muzza_ref_0x4965('0x2f1', 'U1YJ')] = ![], this[muzza_ref_0x4965('0x2f2', 'uK*C')] = muzza_ref_0x4965('0x2f3', 'X4g@'), this[muzza_ref_0x4965('0x2f4', 'kg[p')] = $(muzza_ref_0x4965('0x2f5', '2P#b')), this[muzza_ref_0x4965('0x2f6', 'R4N7')](), muzza_ref_0x5ea0e7[muzza_ref_0x4965('0x2f7', 'ma5I')](), muzza_ref_0x4dc13c[muzza_ref_0x4965('0x2f8', 'u5yT')](), muzza_ref_0x176eaf[muzza_ref_0x4965('0x2f9', 'nR5p')](), muzza_ref_0x443b01[muzza_ref_0x4965('0x2fa', 'j06^')]();
+                this[muzza_ref_0x4965('0x2f1', 'U1YJ')] = ![], this["target"] = muzza_ref_0x4965('0x2f3', 'X4g@'), this[muzza_ref_0x4965('0x2f4', 'kg[p')] = $(muzza_ref_0x4965('0x2f5', '2P#b')), this[muzza_ref_0x4965('0x2f6', 'R4N7')](), muzza_ref_0x5ea0e7[muzza_ref_0x4965('0x2f7', 'ma5I')](), muzza_ref_0x4dc13c[muzza_ref_0x4965('0x2f8', 'u5yT')](), muzza_ref_0x176eaf[muzza_ref_0x4965('0x2f9', 'nR5p')](), muzza_ref_0x443b01[muzza_ref_0x4965('0x2fa', 'j06^')]();
             }
         }, {
-            'key': muzza_ref_0x4965('0x2fb', 'gkT2'),
+            'key': "toggle",
             'value'() {
                 if (muzza_ref_0x4965('0x2fc', 'kg[p') !== muzza_ref_0x4965('0x2fd', 'bsK5')) {
-                    grecaptcha[muzza_ref_0x4965('0x2fe', '@q2j')]();
+                    grecaptcha["reset"]();
                 } else {
-                    this[muzza_ref_0x4965('0x2ff', 'QPjj')] ? this[muzza_ref_0x4965('0x300', '15i*')]() : this['open']();
+                    this["_000466"] ? this["close"]() : this['open']();
                 }
             }
         }, {
@@ -578,12 +578,12 @@ const muzza_ref_0x379093 = (() => {
                 }
             }
         }, {
-            'key': muzza_ref_0x4965('0x307', '7pcr'),
+            'key': "open",
             'value'() {
-                this['_000466'] = !![], this[muzza_ref_0x4965('0x308', 'WjjD')]['fadeIn'](0xfa);
+                this['_000466'] = !![], this["_000467"]['fadeIn'](0xfa);
             }
         }, {
-            'key': muzza_ref_0x4965('0x309', 'xjXt'),
+            'key': "_000468",
             'value'() {
                 if (muzza_ref_0x4965('0x30a', ')#VO') !== muzza_ref_0x4965('0x30b', 'uK*C')) {
                     this['id'] = muzza_ref_0x31dc25, this[muzza_ref_0x4965('0x30c', 'nR5p')] = 0x2, this['x'] = 0x5a, this['y'] = 0x5a, this[muzza_ref_0x4965('0x30d', 'xjXt')] = 0x0, this[muzza_ref_0x4965('0x30e', 'QPjj')] = 0x0, this['nick'] = '', this[muzza_ref_0x4965('0x30f', 'tjmC')] = '', this[muzza_ref_0x4965('0x310', 'DlIt')] = muzza_ref_0x4965('0x311', 'owSU'), this['_000289'] = ![], this[muzza_ref_0x4965('0x312', '6H(%')] = 0x5a, this[muzza_ref_0x4965('0x313', 'R4N7')] = 0x5a, this[muzza_ref_0x4965('0x314', '[Ffc')] = muzza_ref_0x5906c3[muzza_ref_0x4965('0x315', 'Mf7K')], this[muzza_ref_0x4965('0x316', 'kg[p')] = muzza_ref_0x5906c3[muzza_ref_0x4965('0x317', 'ZK8x')], this[muzza_ref_0x4965('0x318', '436$')] = 0x1;
@@ -653,15 +653,15 @@ const muzza_ref_0x379093 = (() => {
                 }
             }
         }, {
-            'key': muzza_ref_0x4965('0x384', 'u5yT'),
+            'key': "_000468",
             'value'() {
-                if (muzza_ref_0x4965('0x385', '[Ffc') === muzza_ref_0x4965('0x386', 'WjjD')) {
-                    return 0x0 | this[muzza_ref_0x4965('0x387', 'ma5I')] * this[muzza_ref_0x4965('0x388', 'oK32')] / 0x64;
+                if ("KpWVx" === "MlaPM") {
+                    return 0x0 | this[muzza_ref_0x4965('0x387', 'ma5I')] * this["_000311"] / 0x64;
                 } else {
                     const muzza_ref_0x51b189 = this;
                     $('.bar-circle-outer')[muzza_ref_0x4965('0x389', '[Ffc')](() => {
-                        $(muzza_ref_0x4965('0x38a', 'Mf7K'))['fadeIn'](0xfa), muzza_ref_0x51b189[muzza_ref_0x4965('0x38b', '3FAY')] = !![];
-                    }), $(muzza_ref_0x4965('0x38c', 'liz*'))['each'](function() {
+                        $(".skin-wheel")['fadeIn'](0xfa), muzza_ref_0x51b189["_000460"] = !![];
+                    }), $(".skin-selector")['each'](function() {
                         const muzza_ref_0x51b189 = this;
                         $(this)[muzza_ref_0x4965('0x38d', 'ZK8x')](() => {
                             const muzza_ref_0x337807 = 0x0 | $(muzza_ref_0x51b189)[muzza_ref_0x4965('0x38e', '7pcr')](muzza_ref_0x4965('0x38f', 'tjmC'));
@@ -678,10 +678,10 @@ const muzza_ref_0x379093 = (() => {
                             }
                             console['log'](muzza_ref_0x4965('0x39a', 'u5yT') + muzza_ref_0xdff648[muzza_ref_0x4965('0x39b', 'xjXt')]);
                         } else {
-                            muzza_ref_0x51b189[muzza_ref_0x4965('0x39c', 'wZlH')] && ($(muzza_ref_0x4965('0x39d', 'j06^'))[muzza_ref_0x4965('0x39e', '6H(%')](0xfa), muzza_ref_0x51b189[muzza_ref_0x4965('0x39f', '[Ffc')] = ![]);
+                            muzza_ref_0x51b189["_000460"] && ($(muzza_ref_0x4965('0x39d', 'j06^'))[muzza_ref_0x4965('0x39e', '6H(%')](0xfa), muzza_ref_0x51b189[muzza_ref_0x4965('0x39f', '[Ffc')] = ![]);
                         }
-                    }), $('#tag')[muzza_ref_0x4965('0x3a0', 'WjjD')](() => {
-                        muzza_ref_0x51b189[muzza_ref_0x4965('0x3a1', 'DlIt')]($(muzza_ref_0x4965('0x3a2', 'owSU'))[muzza_ref_0x4965('0x377', 'nR5p')]());
+                    }), $('#tag')["blur"](() => {
+                        muzza_ref_0x51b189["_000455"]($("#tag")["val"]());
                     }), $(muzza_ref_0x4965('0x3a3', '436$'))[muzza_ref_0x4965('0x3a4', 'nR5p')](() => {
                         if ('qvklO' !== muzza_ref_0x4965('0x3a5', '41)*')) {
                             muzza_ref_0x51b189[muzza_ref_0x4965('0x3a6', 'UDYg')]();
@@ -693,11 +693,11 @@ const muzza_ref_0x379093 = (() => {
                             muzza_ref_0x51b189['_000457']($(muzza_ref_0x4965('0x3ad', 'wZlH'))[muzza_ref_0x4965('0x3ae', 'Ha6R')]());
                         } else {
                             this['protocolKey'] = null;
-                            this[muzza_ref_0x4965('0x3af', 'X4g@')] = null;
-                            this[muzza_ref_0x4965('0x3b0', '3FAY')] = null;
-                            this[muzza_ref_0x4965('0x3b1', 'B(^x')] = null;
+                            this["protocolKey2"] = null;
+                            this["clientKey"] = null;
+                            this["clientKey2"] = null;
                         }
-                    }), $(muzza_ref_0x4965('0x3b2', '[Ffc'))[muzza_ref_0x4965('0x3b3', 'Jz6U')](() => {
+                    }), $("#skin")[muzza_ref_0x4965('0x3b3', 'Jz6U')](() => {
                         if (muzza_ref_0x4965('0x3b4', 'rf9h') !== muzza_ref_0x4965('0x3b5', 'xVTO')) {
                             muzza_ref_0x51b189[muzza_ref_0x4965('0x3b6', 'xjXt')]($(muzza_ref_0x4965('0x3b7', 'Y5q%'))[muzza_ref_0x4965('0x3b8', 'mW@0')]());
                         } else {
