@@ -5255,14 +5255,14 @@ var _0x4c5b = function(i, parameter1) {
           this["setStrokeSize"]();
           this["margin"] = 0;
         };
-        this[_0x4c5b("0x2ca")] = function(functions) {
-          if (this[_0x4c5b("0x28e")] && this["nickCanvas"] && !this[_0x4c5b("0x2a9")]) {
-            var extendedRegExp = this[_0x4c5b("0x290")];
-            extendedRegExp["setDrawing"](data[_0x4c5b("0x2cb")], data[_0x4c5b("0x2cc")], data["namesFontWeight"], this[_0x4c5b("0x2c6")], this[_0x4c5b("0x29a")], data[_0x4c5b("0x2cd")]);
-            extendedRegExp["setTxt"](this[_0x4c5b("0x28e")]);
-            if (this[_0x4c5b("0x2a1")]) {
+        this["drawNick"] = function(functions) {
+          if (this["nick"] && this["nickCanvas"] && !this["isVirus"]) {
+            var extendedRegExp = this["nickCanvas")];
+            extendedRegExp["setDrawing"](data["namesColor"], data["namesFontFamily")], data["namesFontWeight"], this["strokeNick"], this["nickStrokeSize"], data["namesStrokeColor"]);
+            extendedRegExp["setTxt"](this["nick"]);
+            if (this["redrawNick"]) {
               extendedRegExp["setFontSize"](this["nickSize"]);
-              this[_0x4c5b("0x297")] = this[_0x4c5b("0x2c4")];
+              this["lastNickSize"] = this["nickSize"];
             }
             extendedRegExp["setScale"](this["scale"]);
             var value = extendedRegExp["drawTxt"]();
@@ -5272,7 +5272,7 @@ var _0x4c5b = function(i, parameter1) {
             functions["drawImage"](value, ~~this["x"] - ~~(val / 2), ~~this["y"] - this["margin"], val, length);
           }
         };
-        this[_0x4c5b("0x2cf")] = function(KUTE) {
+        this["drawMass"] = function(KUTE) {
           if (this[_0x4c5b("0x292")] && !(40 >= this["size"])) {
             var extendedRegExp = this[_0x4c5b("0x292")];
             extendedRegExp["setDrawing"](data["massColor"], data[_0x4c5b("0x2d0")], data[_0x4c5b("0x2d1")], this[_0x4c5b("0x2d2")], this[_0x4c5b("0x29b")], data[_0x4c5b("0x2d3")]);
@@ -5289,7 +5289,7 @@ var _0x4c5b = function(i, parameter1) {
             KUTE["drawImage"](el, ~~this["x"] - ~~(ops / 2), to, ops, lastviewmatrix);
           }
         };
-        this[_0x4c5b("0x2d4")] = function(args, canCreateDiscussions) {
+        this["draw"] = function(args, canCreateDiscussions) {
           if (!(attrs[_0x4c5b("0x2d5")] && 76 >= this["size"])) {
             args["save"]();
             this[_0x4c5b("0x2a5")]++;
@@ -5306,22 +5306,22 @@ var _0x4c5b = function(i, parameter1) {
               return args["fillStyle"] = this["color"], args[_0x4c5b("0x4e")](), void args["restore"]();
             }
             if (this["isVirus"]) {
-              return settings[_0x4c5b("0x2db")] && (args["globalAlpha"] *= data[_0x4c5b("0x2dc")], previousStyle = true), settings[_0x4c5b("0x2dd")] && attrs[_0x4c5b("0x2de")] ? (args["fillStyle"] = m[_0x4c5b("0x2df")](id), args["strokeStyle"] = m[_0x4c5b("0x2e0")](id)) : (args["fillStyle"] = data["virusColor"], args["strokeStyle"] = data[_0x4c5b("0x2e1")]), args[_0x4c5b("0x4e")](), previousStyle && (args["globalAlpha"] = parent, previousStyle = false), args["lineWidth"] = 
-              data[_0x4c5b("0x2e2")], settings["virusGlow"] ? (args[_0x4c5b("0x2e3")] = data[_0x4c5b("0x2e4")], args["shadowColor"] = data[_0x4c5b("0x2e5")]) : _0x4c5b("0x2e6"), args["stroke"](), settings[_0x4c5b("0x2e7")] && settings[_0x4c5b("0x2e8")] && (this["setDrawing"](), this[_0x4c5b("0x2e9")](), settings["virusGlow"] ? args[_0x4c5b("0x2e3")] = 0 : "yote", this["setMass"](this["size"]), this[_0x4c5b("0x2cf")](args)), void args["restore"]();
+              return settings["transparentViruses"] && (args["globalAlpha"] *= data["virusAlpha"], previousStyle = true), settings["virColors"] && attrs["play"] ? (args["fillStyle"] = m["setVirusColor"](id), args["strokeStyle"] = m["setVirusStrokeColor"](id)) : (args["fillStyle"] = data["virusColor"], args["strokeStyle"] = data["virusStrokeColor"]), args["fill"](), previousStyle && (args["globalAlpha"] = parent, previousStyle = false), args["lineWidth"] = 
+              data["virusStrokeSize"], settings["virusGlow"] ? (args["shadowBlur"] = data["virusGlowSize"], args["shadowColor"] = data["virusGlowColor"]) : "yeet", args["stroke"](), settings["showMass"] && settings["showVirusMass"] && (this["setDrawing"](), this["setDrawingScale"](), settings["virusGlow"] ? args["shadowBlur"] = 0 : "yote", this["setMass"](this["size"]), this["drawMass"](args)), void args["restore"]();
             }
-            if (settings[_0x4c5b("0x2eb")]) {
+            if (settings["transparentCells"]) {
               args["globalAlpha"] *= data["cellsAlpha"];
               previousStyle = true;
             }
             var color = this["color"];
-            if (attrs[_0x4c5b("0x2de")]) {
-              if (this[_0x4c5b("0x29d")]) {
-                if (settings[_0x4c5b("0x2ec")]) {
+            if (attrs["play"]) {
+              if (this["isPlayerCell"]) {
+                if (settings["myCustomColor"]) {
                   color = names["color"];
                 }
               } else {
-                if (settings["oppColors"] && !settings[_0x4c5b("0x2ed")]) {
-                  color = this[_0x4c5b("0x28b")];
+                if (settings["oppColors"] && !settings["oppRings"]) {
+                  color = this["oppColor"];
                 }
               }
             }
