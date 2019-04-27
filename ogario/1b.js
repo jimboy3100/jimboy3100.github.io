@@ -5202,7 +5202,7 @@ var _0x4c5b = function(i, parameter1) {
           }
         };
         this[_0x4c5b("0x2b9")] = function() {
-          return !(0 >= this["id"]) && !(this["x"] + this["size"] + 40 < attrs["viewX"] - attrs[_0x4c5b("0x2ba")] / 2 / attrs["scale"] || this["y"] + this["size"] + 40 < attrs["viewY"] - attrs["canvasHeight"] / 2 / attrs["scale"] || this["x"] - this["size"] - 40 > attrs[_0x4c5b("0x2bb")] + attrs[_0x4c5b("0x2ba")] / 2 / attrs["scale"] || this["y"] - this["size"] - 40 > attrs["viewY"] + attrs[_0x4c5b("0x2bc")] / 2 / attrs["scale"]);
+          return !(0 >= this["id"]) && !(this["x"] + this["size"] + 40 < attrs["viewX"] - attrs[_0x4c5b("0x2ba")] / 2 / attrs["scale"] || this["y"] + this["size"] + 40 < attrs["viewY"] - attrs["canvasHeight"] / 2 / attrs["scale"] || this["x"] - this["size"] - 40 > attrs[_0x4c5b("0x2bb")] + attrs[_0x4c5b("0x2ba")] / 2 / attrs["scale"] || this["y"] - this["size"] - 40 > attrs["viewY"] + attrs["canvasHeight"] / 2 / attrs["scale"]);
         };
         this[_0x4c5b("0x2aa")] = function(size) {
           return this["size"] = size, !(40 >= size) && (this[_0x4c5b("0x292")] ? (this[_0x4c5b("0x291")] = ~~(size * size / 100), this[_0x4c5b("0x2bd")] = true, this["isVirus"] ? (this[_0x4c5b("0x29f")] && 200 > this[_0x4c5b("0x291")] && (this[_0x4c5b("0x291")] = ~~((200 - this[_0x4c5b("0x291")]) / 14)), this["massTxt"] = this[_0x4c5b("0x291")][_0x4c5b("0x25")](), true) : (this[_0x4c5b("0x2be")] = this[_0x4c5b("0x291")][_0x4c5b("0x25")](), 200 >= this[_0x4c5b("0x291")] || (this[_0x4c5b("0x29e")] && 
@@ -5302,7 +5302,7 @@ var _0x4c5b = function(i, parameter1) {
             var parent = args["globalAlpha"];
             var previousStyle = false;
             var id = this["isFood"] ? this["size"] + data[_0x4c5b("0x2d7")] : this["size"];
-            if (args["beginPath"](), args["arc"](this["x"], this["y"], id, 0, this["pi2"], false), args[_0x4c5b("0x2da")](), this[_0x4c5b("0x29c")]) {
+            if (args["beginPath"](), args["arc"](this["x"], this["y"], id, 0, this["pi2"], false), args["closePath"](), this[_0x4c5b("0x29c")]) {
               return args["fillStyle"] = this["color"], args[_0x4c5b("0x4e")](), void args["restore"]();
             }
             if (this["isVirus"]) {
@@ -5426,8 +5426,8 @@ var _0x4c5b = function(i, parameter1) {
           "animation" : _0x4c5b("0x320"),
           "cameraSpeed" : _0x4c5b("0x321"),
           "commanderDelay" : "Commander Delay",
-          "suckAnimation" : _0x4c5b("0x322"),
-          "virusGlow" : _0x4c5b("0x323"),
+          "suckAnimation" : "Cell Eat [Sucking] Animation",
+          "virusGlow" : "Virus Glow",
           "borderGlow" : "Border Glow",
           "zoomSpeedValue" : _0x4c5b("0x324"),
           "quickResp" : _0x4c5b("0x325"),
@@ -5604,8 +5604,8 @@ var _0x4c5b = function(i, parameter1) {
           "virusAlpha" : _0x4c5b("0x3a9"),
           "textAlpha" : "Names & mass transparency",
           "virusStrokeSize" : _0x4c5b("0x3aa"),
-          "virusGlowSize" : _0x4c5b("0x3ab"),
-          "borderGlowSize" : _0x4c5b("0x3ac"),
+          "virusGlowSize" : "Virus Glow Size",
+          "borderGlowSize" : "Border Glow Size",
           "teammatesIndColor" : "Teammate indicator",
           "cursorTrackingColor" : "Cursor tracking",
           "splitRangeColor" : _0x4c5b("0x3ad"),
@@ -5811,7 +5811,7 @@ var _0x4c5b = function(i, parameter1) {
           "massStrokeColor" : _0x4c5b("0x42c"),
           "virusColor" : _0x4c5b("0x42d"),
           "virusStrokeColor" : _0x4c5b("0x42c"),
-          "virusGlowColor" : _0x4c5b("0x429"),
+          "virusGlowColor" : "#fff",
           "foodColor" : _0x4c5b("0x429"),
           "teammatesIndColor" : _0x4c5b("0x429"),
           "cursorTrackingColor" : _0x4c5b("0x429"),
@@ -6183,8 +6183,8 @@ var _0x4c5b = function(i, parameter1) {
           var _0x140cc3 = this;
           this["addPresetBox"](_0x4c5b("0x475"), _0x4c5b("0x476"), artistTrack, _0x4c5b("0x477"), "changeThemePreset");
           this[_0x4c5b("0x478")](_0x4c5b("0x475"), "bgColor", _0x4c5b("0x479"));
-          this[_0x4c5b("0x478")](_0x4c5b("0x475"), _0x4c5b("0x47a"));
-          this[_0x4c5b("0x478")]("#theme-main", _0x4c5b("0x47b"));
+          this[_0x4c5b("0x478")](_0x4c5b("0x475"), "bordersColor");
+          this[_0x4c5b("0x478")]("#theme-main", "borderGlowColor");
           this["addColorBox"](_0x4c5b("0x475"), _0x4c5b("0x47c"));
           this[_0x4c5b("0x478")]("#theme-main", "sectorsColor");
           this[_0x4c5b("0x478")](_0x4c5b("0x475"), "namesColor");
@@ -6213,9 +6213,9 @@ var _0x4c5b = function(i, parameter1) {
           this[_0x4c5b("0x48b")](_0x4c5b("0x475"), _0x4c5b("0x2d7"), 1, 50, 1, _0x4c5b("0x47f"));
           this[_0x4c5b("0x48b")](_0x4c5b("0x475"), _0x4c5b("0x2e2"), 2, 40, 1);
           this[_0x4c5b("0x48b")](_0x4c5b("0x475"), _0x4c5b("0x2e4"), 0, 40, 1);
-          this["addSliderBox"](_0x4c5b("0x475"), _0x4c5b("0x48d"), 0, 40, 1);
-          this[_0x4c5b("0x48b")]("#theme-main", _0x4c5b("0x48e"), 2, 200, 2);
-          this["addSliderBox"](_0x4c5b("0x475"), _0x4c5b("0x48f"), 2, 200, 2);
+          this["addSliderBox"](_0x4c5b("0x475"), "borderGlowSize", 0, 40, 1);
+          this[_0x4c5b("0x48b")]("#theme-main", "bordersWidth", 2, 200, 2);
+          this["addSliderBox"](_0x4c5b("0x475"), "sectorsWidth", 2, 200, 2);
           this[_0x4c5b("0x48b")](_0x4c5b("0x475"), _0x4c5b("0x490"), .01, .99, .01);
           this["addSliderBox"](_0x4c5b("0x475"), _0x4c5b("0x2f2"), .01, .99, .01);
           this[_0x4c5b("0x48b")](_0x4c5b("0x475"), _0x4c5b("0x2dc"), 0, 1, .01);
@@ -6826,7 +6826,7 @@ var _0x4c5b = function(i, parameter1) {
           settings[_0x4c5b("0x55e")] = !settings[_0x4c5b("0x55e")];
         },
         "setShowLb" : function() {
-          if (_0x4c5b("0x55f") !== this[_0x4c5b("0x560")]) {
+          if (_0x4c5b("0x55f") !== this["gameMode"]) {
             $(_0x4c5b("0x561"))[_0x4c5b("0x55b")]();
           }
         },
@@ -6858,13 +6858,13 @@ var _0x4c5b = function(i, parameter1) {
           }
         },
         "setShowQuest" : function() {
-          if (_0x4c5b("0x53e") === this[_0x4c5b("0x560")]) {
+          if (_0x4c5b("0x53e") === this["gameMode"]) {
             this[_0x4c5b("0x566")] = !this["showQuest"];
             this[_0x4c5b("0x567")]();
           }
         },
         "setQuest" : function() {
-          if (this[_0x4c5b("0x566")] && _0x4c5b("0x53e") === this[_0x4c5b("0x560")]) {
+          if (this[_0x4c5b("0x566")] && _0x4c5b("0x53e") === this["gameMode"]) {
             $(_0x4c5b("0x568"))[_0x4c5b("0x54c")]();
           } else {
             $(_0x4c5b("0x568"))[_0x4c5b("0x54f")]();
@@ -7420,9 +7420,9 @@ var _0x4c5b = function(i, parameter1) {
         },
         "setMenu" : function() {
           var key;
-          for (key in document[_0x4c5b("0x155")] = this[_0x4c5b("0x217")], this[_0x4c5b("0x601")]([_0x4c5b("0x2b4")], _0x4c5b("0x602")), this["addOptions"]([_0x4c5b("0x603"), _0x4c5b("0x604")], _0x4c5b("0x605")), this[_0x4c5b("0x601")]([_0x4c5b("0x569")], _0x4c5b("0x606")), this["addOptions"]([_0x4c5b("0x573"), _0x4c5b("0x577")], _0x4c5b("0x607")), this[_0x4c5b("0x601")]([_0x4c5b("0x2f5"), _0x4c5b("0x2a2"), _0x4c5b("0x2f9"), _0x4c5b("0x2fa"), _0x4c5b("0x2fb"), _0x4c5b("0x2c7")], _0x4c5b("0x608")), 
+          for (key in document[_0x4c5b("0x155")] = this[_0x4c5b("0x217")], this[_0x4c5b("0x601")]([_0x4c5b("0x2b4")], _0x4c5b("0x602")), this["addOptions"]([_0x4c5b("0x603"), "borderGlow"], _0x4c5b("0x605")), this[_0x4c5b("0x601")]([_0x4c5b("0x569")], _0x4c5b("0x606")), this["addOptions"]([_0x4c5b("0x573"), _0x4c5b("0x577")], _0x4c5b("0x607")), this[_0x4c5b("0x601")]([_0x4c5b("0x2f5"), _0x4c5b("0x2a2"), _0x4c5b("0x2f9"), _0x4c5b("0x2fa"), _0x4c5b("0x2fb"), _0x4c5b("0x2c7")], _0x4c5b("0x608")), 
           this[_0x4c5b("0x601")](["showMass", _0x4c5b("0x2e8"), _0x4c5b("0x2a3"), _0x4c5b("0x2f7"), _0x4c5b("0x609"), _0x4c5b("0x2fc"), "shortMass", _0x4c5b("0x29f"), _0x4c5b("0x2c8")], _0x4c5b("0x60a")), this[_0x4c5b("0x601")]([_0x4c5b("0x2ee"), _0x4c5b("0x547")], "skinsGroup"), this["addOptions"](["optimizedFood", _0x4c5b("0x60b"), _0x4c5b("0x60c"), _0x4c5b("0x60d")], "foodGroup"), this[_0x4c5b("0x601")]([_0x4c5b("0x2ec"), _0x4c5b("0x2f1"), "transparentSkins", _0x4c5b("0x2eb"), _0x4c5b("0x2db")], 
-          _0x4c5b("0x60e")), this[_0x4c5b("0x601")]([_0x4c5b("0x55d"), _0x4c5b("0x562"), _0x4c5b("0x60f")], _0x4c5b("0x610")), this[_0x4c5b("0x601")]([_0x4c5b("0x5c1"), _0x4c5b("0x5d4"), _0x4c5b("0x611"), _0x4c5b("0x612"), _0x4c5b("0x613"), _0x4c5b("0x5d6")], "chatGroup"), this[_0x4c5b("0x601")]([_0x4c5b("0x564"), _0x4c5b("0x5d3"), "showMiniMapGuides", _0x4c5b("0x614"), "oneColoredTeammates"], _0x4c5b("0x615")), this[_0x4c5b("0x601")]([_0x4c5b("0x2f0"), _0x4c5b("0x2ed"), _0x4c5b("0x2dd"), _0x4c5b("0x553"), 
+          _0x4c5b("0x60e")), this[_0x4c5b("0x601")]([_0x4c5b("0x55d"), _0x4c5b("0x562"), "showMapBorders"], _0x4c5b("0x610")), this[_0x4c5b("0x601")]([_0x4c5b("0x5c1"), _0x4c5b("0x5d4"), _0x4c5b("0x611"), _0x4c5b("0x612"), _0x4c5b("0x613"), _0x4c5b("0x5d6")], "chatGroup"), this[_0x4c5b("0x601")]([_0x4c5b("0x564"), _0x4c5b("0x5d3"), "showMiniMapGuides", _0x4c5b("0x614"), "oneColoredTeammates"], _0x4c5b("0x615")), this[_0x4c5b("0x601")]([_0x4c5b("0x2f0"), _0x4c5b("0x2ed"), _0x4c5b("0x2dd"), _0x4c5b("0x553"), 
           _0x4c5b("0x2af"), _0x4c5b("0x616"), _0x4c5b("0x2f3"), _0x4c5b("0x617")], _0x4c5b("0x618")), this[_0x4c5b("0x601")]([_0x4c5b("0x619"), _0x4c5b("0x61a"), "mouseInvert"], _0x4c5b("0x61b")), this[_0x4c5b("0x601")]([_0x4c5b("0x54a"), _0x4c5b("0x54d"), _0x4c5b("0x61c"), _0x4c5b("0x584"), _0x4c5b("0x586")], _0x4c5b("0x61d")), this[_0x4c5b("0x601")](["showStats", _0x4c5b("0x590"), _0x4c5b("0x597"), _0x4c5b("0x594"), _0x4c5b("0x59a"), "showStatsFPS", _0x4c5b("0x550")], "statsGroup"), $(_0x4c5b("0x61e"))["appendTo"]($(_0x4c5b("0x61f")))[_0x4c5b("0x4d1")](_0x4c5b("0x620")), 
           this[_0x4c5b("0x48b")](_0x4c5b("0x621"), _0x4c5b("0x2b8"), 70, 225, 1), this[_0x4c5b("0x48b")](_0x4c5b("0x621"), "cameraSpeed", 1, 25, 1), this[_0x4c5b("0x48b")](_0x4c5b("0x622"), _0x4c5b("0x623"), 25, 1E3, 5), this["addSliderBox"](_0x4c5b("0x624"), _0x4c5b("0x625"), .75, .99, .01), this[_0x4c5b("0x48b")](_0x4c5b("0x626"), _0x4c5b("0x627"), 10, 30, 1), this[_0x4c5b("0x48b")](_0x4c5b("0x626"), _0x4c5b("0x5ad"), 5, 30, 1), $(_0x4c5b("0x628"))[_0x4c5b("0x448")](_0x4c5b("0x629") + args[_0x4c5b("0x62a")] + 
           _0x4c5b("0x4d4")), $(_0x4c5b("0x628"))[_0x4c5b("0x448")](_0x4c5b("0x62b") + args[_0x4c5b("0x62c")] + _0x4c5b("0x4d9")), this[_0x4c5b("0x498")](_0x4c5b("0x62d"), _0x4c5b("0x62e"), _0x4c5b("0x62f"), "setMessageSound"), this[_0x4c5b("0x498")](_0x4c5b("0x62d"), _0x4c5b("0x630"), _0x4c5b("0x62f"), "setCommandSound"), obj) {
@@ -7487,7 +7487,7 @@ var _0x4c5b = function(i, parameter1) {
             if (":party" !== diamond_wide_long) {
               filters["leaveParty"]();
             }
-            filters[_0x4c5b("0x560")] = attributes[_0x4c5b("0x560")] = diamond_wide_long;
+            filters["gameMode"] = attributes["gameMode"] = diamond_wide_long;
             filters[_0x4c5b("0x567")]();
           });
           $(document)["on"](_0x4c5b("0x470"), _0x4c5b("0x65c"), function() {
@@ -7794,7 +7794,7 @@ var _0x4c5b = function(i, parameter1) {
             }
           }
           this[_0x4c5b("0x6d3")]();
-          if (_0x4c5b("0x6d4") === this[_0x4c5b("0x560")] && window[_0x4c5b("0x5d2")][_0x4c5b("0x6d5")]) {
+          if (_0x4c5b("0x6d4") === this["gameMode"] && window[_0x4c5b("0x5d2")][_0x4c5b("0x6d5")]) {
             $(_0x4c5b("0x6d6"))[_0x4c5b("0x4c9")]();
           }
           Array[_0x4c5b("0x10")][_0x4c5b("0x1b")][_0x4c5b("0x4")](document[_0x4c5b("0x6d7")](_0x4c5b("0x67a")))[_0x4c5b("0x12e")](function(remove) {
@@ -8051,7 +8051,7 @@ var _0x4c5b = function(i, parameter1) {
         },
         "cacheCustomSkin" : function(value, _, val) {
           if (val) {
-            var id = _0x4c5b("0x6d4") === this[_0x4c5b("0x560")] ? value + _ : value;
+            var id = _0x4c5b("0x6d4") === this["gameMode"] ? value + _ : value;
             if (id && (this["customSkinsMap"][id] = val), this[_0x4c5b("0x700")][_0x4c5b("0x3fe")](val)) {
               return;
             }
@@ -8059,14 +8059,14 @@ var _0x4c5b = function(i, parameter1) {
           }
         },
         "checkSkinsMap" : function(key, eventPath) {
-          var parent = _0x4c5b("0x6d4") === this[_0x4c5b("0x560")] ? key + eventPath : key;
+          var parent = _0x4c5b("0x6d4") === this["gameMode"] ? key + eventPath : key;
           return !!this[_0x4c5b("0x706")][_0x4c5b("0x3fe")](parent);
         },
         "getCustomSkin" : function(mmCoreSplitViewBlock, $state) {
           if (!this[_0x4c5b("0x2f4")](mmCoreSplitViewBlock, $state)) {
             return null;
           }
-          var expectedSiteKey = _0x4c5b("0x6d4") === this[_0x4c5b("0x560")] ? mmCoreSplitViewBlock + $state : mmCoreSplitViewBlock;
+          var expectedSiteKey = _0x4c5b("0x6d4") === this["gameMode"] ? mmCoreSplitViewBlock + $state : mmCoreSplitViewBlock;
           return this[_0x4c5b("0x707")](this[_0x4c5b("0x700")], this["customSkinsMap"][expectedSiteKey]);
         },
         "calculateMapSector" : function(isSlidingUp, $cont, closeExpr = false) {
@@ -8083,7 +8083,7 @@ var _0x4c5b = function(i, parameter1) {
           return 1E3 > width ? width : Math[_0x4c5b("0x2bf")](width / 100) / 10 + "k";
         },
         "updateDeathLocations" : function(params, key) {
-          if (attributes[_0x4c5b("0x70c")]) {
+          if (attributes["mapOffsetFixed"]) {
             this[_0x4c5b("0x56e")][_0x4c5b("0x7")]({
               "x" : params + attributes["mapOffsetX"],
               "y" : key + attributes[_0x4c5b("0x70d")]
@@ -8095,7 +8095,7 @@ var _0x4c5b = function(i, parameter1) {
           }
         },
         "drawMiniMap" : function() {
-          if (attributes[_0x4c5b("0x70c")]) {
+          if (attributes["mapOffsetFixed"]) {
             var time = data[_0x4c5b("0x534")];
             var label = data[_0x4c5b("0x535")];
             var lastTime = time + label;
@@ -8117,7 +8117,7 @@ var _0x4c5b = function(i, parameter1) {
             var px = attributes[_0x4c5b("0x712")] + attributes["mapOffset"];
             var height = attributes[_0x4c5b("0x70d")] + attributes[_0x4c5b("0x708")];
             if (this["currentSector"] = this[_0x4c5b("0x5b2")](attributes[_0x4c5b("0x541")], attributes[_0x4c5b("0x542")], true), this[_0x4c5b("0x70e")]["globalAlpha"] = 1, this[_0x4c5b("0x70e")]["font"] = data[_0x4c5b("0x713")] + _0x4c5b("0x714") + data[_0x4c5b("0x715")], this[_0x4c5b("0x70e")]["fillStyle"] = data[_0x4c5b("0x4b3")], this[_0x4c5b("0x716")] || this[_0x4c5b("0x717")](data[_0x4c5b("0x70b")], data[_0x4c5b("0x70a")], max, lastTime, _propName), this[_0x4c5b("0x70e")]["save"](), 
-            this[_0x4c5b("0x70e")]["translate"](10, _propName), ":battleroyale" === this[_0x4c5b("0x560")] && methods && methods[_0x4c5b("0x719")](this[_0x4c5b("0x70e")], max, max, ratio, px, height), settings["showMiniMapGhostCells"]) {
+            this[_0x4c5b("0x70e")]["translate"](10, _propName), ":battleroyale" === this["gameMode"] && methods && methods[_0x4c5b("0x719")](this[_0x4c5b("0x70e")], max, max, ratio, px, height), settings["showMiniMapGhostCells"]) {
               var PL$13 = attributes[_0x4c5b("0x71a")];
               this[_0x4c5b("0x70e")]["beginPath"]();
               var PL$17 = 0;
@@ -8134,8 +8134,8 @@ var _0x4c5b = function(i, parameter1) {
               this[_0x4c5b("0x70e")][_0x4c5b("0x4e")]();
               this[_0x4c5b("0x70e")]["globalAlpha"] = 1;
             }
-            if (settings[_0x4c5b("0x55e")] && (x0 = Math[_0x4c5b("0x2bf")]((attributes["playerX"] + px) * ratio - 10), x1 = Math[_0x4c5b("0x2bf")]((attributes[_0x4c5b("0x542")] + height) * ratio), this[_0x4c5b("0x70e")]["lineWidth"] = 1, this[_0x4c5b("0x70e")]["strokeStyle"] = data[_0x4c5b("0x4b9")], this[_0x4c5b("0x70e")]["beginPath"](), this["miniMapCtx"][_0x4c5b("0x71d")](x0, 0), this[_0x4c5b("0x70e")][_0x4c5b("0x71e")](x0, max), this[_0x4c5b("0x70e")][_0x4c5b("0x71d")](-9.5, x1), 
-            this[_0x4c5b("0x70e")][_0x4c5b("0x71e")](max, x1), this[_0x4c5b("0x70e")]["stroke"]()), this["miniMapCtx"]["beginPath"](), this[_0x4c5b("0x70e")]["arc"]((attributes[_0x4c5b("0x541")] + px) * ratio - 10, (attributes[_0x4c5b("0x542")] + height) * ratio, data[_0x4c5b("0x4c1")], 0, this["pi2"], false), this[_0x4c5b("0x70e")][_0x4c5b("0x2da")](), 0 < data[_0x4c5b("0x4c2")] && (this[_0x4c5b("0x70e")]["lineWidth"] = data[_0x4c5b("0x4c2")], this[_0x4c5b("0x70e")]["strokeStyle"] = 
+            if (settings[_0x4c5b("0x55e")] && (x0 = Math[_0x4c5b("0x2bf")]((attributes["playerX"] + px) * ratio - 10), x1 = Math[_0x4c5b("0x2bf")]((attributes[_0x4c5b("0x542")] + height) * ratio), this[_0x4c5b("0x70e")]["lineWidth"] = 1, this[_0x4c5b("0x70e")]["strokeStyle"] = data[_0x4c5b("0x4b9")], this[_0x4c5b("0x70e")]["beginPath"](), this["miniMapCtx"]["moveTo"](x0, 0), this[_0x4c5b("0x70e")]["lineTo"](x0, max), this[_0x4c5b("0x70e")]["moveTo"](-9.5, x1), 
+            this[_0x4c5b("0x70e")]["lineTo"](max, x1), this[_0x4c5b("0x70e")]["stroke"]()), this["miniMapCtx"]["beginPath"](), this[_0x4c5b("0x70e")]["arc"]((attributes[_0x4c5b("0x541")] + px) * ratio - 10, (attributes[_0x4c5b("0x542")] + height) * ratio, data[_0x4c5b("0x4c1")], 0, this["pi2"], false), this[_0x4c5b("0x70e")]["closePath"](), 0 < data[_0x4c5b("0x4c2")] && (this[_0x4c5b("0x70e")]["lineWidth"] = data[_0x4c5b("0x4c2")], this[_0x4c5b("0x70e")]["strokeStyle"] = 
             data[_0x4c5b("0x4b6")], this[_0x4c5b("0x70e")]["stroke"]()), this[_0x4c5b("0x70e")]["fillStyle"] = data[_0x4c5b("0x4b5")], this[_0x4c5b("0x70e")][_0x4c5b("0x4e")](), this[_0x4c5b("0x71f")]["length"]) {
               PL$17 = 0;
               for (; PL$17 < this[_0x4c5b("0x71f")]["length"]; PL$17++) {
@@ -8149,10 +8149,10 @@ var _0x4c5b = function(i, parameter1) {
               this[_0x4c5b("0x70e")]["lineWidth"] = 1;
               this[_0x4c5b("0x70e")]["strokeStyle"] = this[_0x4c5b("0x56e")]["length"] - 1 == this[_0x4c5b("0x56d")] ? data[_0x4c5b("0x4b8")] : _0x4c5b("0x25b");
               this[_0x4c5b("0x70e")]["beginPath"]();
-              this[_0x4c5b("0x70e")][_0x4c5b("0x71d")](x0 - x2, x1);
-              this["miniMapCtx"][_0x4c5b("0x71e")](x0 + x2, x1);
-              this["miniMapCtx"][_0x4c5b("0x71d")](x0, x1 - x2);
-              this["miniMapCtx"][_0x4c5b("0x71e")](x0, x1 + x2);
+              this[_0x4c5b("0x70e")]["moveTo"](x0 - x2, x1);
+              this["miniMapCtx"]["lineTo"](x0 + x2, x1);
+              this["miniMapCtx"]["moveTo"](x0, x1 - x2);
+              this["miniMapCtx"]["lineTo"](x0, x1 + x2);
               this[_0x4c5b("0x70e")]["stroke"]();
             }
             this[_0x4c5b("0x70e")]["restore"]();
@@ -8165,7 +8165,7 @@ var _0x4c5b = function(i, parameter1) {
           this[_0x4c5b("0x716")]["height"] = OSDConfigService;
           options["fillStyle"] = _0x4c5b("0x25b");
           this[_0x4c5b("0x724")](options, breadcrumbs);
-          methods[_0x4c5b("0x725")](options, attributes[_0x4c5b("0x70c")], mmCoreSplitViewBlock, $state, 0, RequestTrackingService, breadcrumbs, OSDConfigService, data["miniMapSectorsColor"], data[_0x4c5b("0x726")], 0, false);
+          methods[_0x4c5b("0x725")](options, attributes["mapOffsetFixed"], mmCoreSplitViewBlock, $state, 0, RequestTrackingService, breadcrumbs, OSDConfigService, data["miniMapSectorsColor"], data[_0x4c5b("0x726")], 0, false);
         },
         "resetMiniMapSectors" : function() {
           this[_0x4c5b("0x716")] = null;
@@ -8210,7 +8210,7 @@ var _0x4c5b = function(i, parameter1) {
         },
         "setParty" : function() {
           var outFile = $(_0x4c5b("0x72d"))[_0x4c5b("0x44d")]();
-          if (this[_0x4c5b("0x560")] = attributes[_0x4c5b("0x560")] = $(_0x4c5b("0x65b"))["val"](), this[_0x4c5b("0x567")](), _0x4c5b("0x6d4") === this[_0x4c5b("0x560")] && outFile) {
+          if (this["gameMode"] = attributes["gameMode"] = $(_0x4c5b("0x65b"))["val"](), this[_0x4c5b("0x567")](), _0x4c5b("0x6d4") === this["gameMode"] && outFile) {
             var originalOutFile = outFile;
             if (-1 != outFile[_0x4c5b("0x2d")]("#")) {
               originalOutFile = (outFile = outFile[_0x4c5b("0x227")]("#"))[1];
@@ -8521,7 +8521,7 @@ var _0x4c5b = function(i, parameter1) {
         },
         "sendServerGameMode" : function() {
           var artistTrack = _0x4c5b("0x774");
-          switch(this[_0x4c5b("0x560")]) {
+          switch(this["gameMode"]) {
             case _0x4c5b("0x775"):
               artistTrack = "BTR";
               break;
@@ -8543,7 +8543,7 @@ var _0x4c5b = function(i, parameter1) {
             this[_0x4c5b("0x77a")] = false;
           } else {
             this[_0x4c5b("0x65a")] = $(_0x4c5b("0x6d1"))[_0x4c5b("0x44d")]();
-            this[_0x4c5b("0x560")] = $(_0x4c5b("0x65b"))["val"]();
+            this["gameMode"] = $(_0x4c5b("0x65b"))["val"]();
             this[_0x4c5b("0x77b")]();
             this["sendServerGameMode"]();
           }
@@ -8625,7 +8625,7 @@ var _0x4c5b = function(i, parameter1) {
           var inputel = $();
           var $unusedPanel = $();
           var x = $();
-          var patternlab = _0x4c5b("0x6d4") === this[_0x4c5b("0x560")] ? key + x : key;
+          var patternlab = _0x4c5b("0x6d4") === this["gameMode"] ? key + x : key;
           var otherSideWidth = this[_0x4c5b("0x783")](headPath);
           if (null !== otherSideWidth) {
             this[_0x4c5b("0x71f")][otherSideWidth][_0x4c5b("0x28e")] = key;
@@ -8674,7 +8674,7 @@ var _0x4c5b = function(i, parameter1) {
                   }
                   config["beginPath"]();
                   config["arc"](start, destOffset, data[_0x4c5b("0x78d")], 0, this["pi2"], false);
-                  config[_0x4c5b("0x2da")]();
+                  config["closePath"]();
                   config["fillStyle"] = settings[_0x4c5b("0x78f")] ? data["miniMapTeammatesColor"] : this["color"];
                   config["fill"]();
                 }
@@ -9073,7 +9073,7 @@ var _0x4c5b = function(i, parameter1) {
           }
         },
         "updateQuest" : function() {
-          if (this[_0x4c5b("0x566")] && _0x4c5b("0x53e") === this[_0x4c5b("0x560")] && window["MC"] && window["MC"][_0x4c5b("0x7db")]) {
+          if (this[_0x4c5b("0x566")] && _0x4c5b("0x53e") === this["gameMode"] && window["MC"] && window["MC"][_0x4c5b("0x7db")]) {
             this[_0x4c5b("0x6b5")]["textContent"] = window["MC"][_0x4c5b("0x7db")]();
           }
         },
@@ -9521,12 +9521,12 @@ var _0x4c5b = function(i, parameter1) {
               }
               break;
             case 50:
-              this[_0x4c5b("0x80b")] = [];
+              this["pieChart"] = [];
               var i = data[_0x4c5b("0x76a")](x, true);
               x = x + 4;
               var whichFriend = 0;
               for (; whichFriend < i; whichFriend++) {
-                this[_0x4c5b("0x80b")][_0x4c5b("0x7")](data["getFloat32"](x, true));
+                this["pieChart"][_0x4c5b("0x7")](data["getFloat32"](x, true));
                 x = x + 4;
               }
               methods["drawPieChart"]();
@@ -9756,10 +9756,10 @@ var _0x4c5b = function(i, parameter1) {
             this[_0x4c5b("0x712")] = this[_0x4c5b("0x708")] - state;
             this[_0x4c5b("0x70d")] = this[_0x4c5b("0x708")] - participant;
             this[_0x4c5b("0x830")] = ~~(-this[_0x4c5b("0x708")] - this[_0x4c5b("0x712")]);
-            this[_0x4c5b("0x831")] = ~~(-this[_0x4c5b("0x708")] - this[_0x4c5b("0x70d")]);
+            this["mapMinY"] = ~~(-this[_0x4c5b("0x708")] - this[_0x4c5b("0x70d")]);
             this["mapMaxX"] = ~~(this[_0x4c5b("0x708")] - this[_0x4c5b("0x712")]);
-            this[_0x4c5b("0x832")] = ~~(this[_0x4c5b("0x708")] - this[_0x4c5b("0x70d")]);
-            if (!this[_0x4c5b("0x70c")]) {
+            this["mapMaxY"] = ~~(this[_0x4c5b("0x708")] - this[_0x4c5b("0x70d")]);
+            if (!this["mapOffsetFixed"]) {
               this[_0x4c5b("0x2bb")] = (state + userId) / 2;
               this[_0x4c5b("0x80a")] = (participant + courseId) / 2;
             }
@@ -9769,7 +9769,7 @@ var _0x4c5b = function(i, parameter1) {
         },
         "isInView" : function(position, start, offset) {
           var padding = this[_0x4c5b("0x2ba")] / 2 / this["scale"];
-          var paddingRight = this[_0x4c5b("0x2bc")] / 2 / this["scale"];
+          var paddingRight = this["canvasHeight"] / 2 / this["scale"];
           return !(position + offset < this[_0x4c5b("0x2bb")] - padding || start + offset < this[_0x4c5b("0x80a")] - paddingRight || position - offset > this["viewX"] + padding || start - offset > this[_0x4c5b("0x80a")] + paddingRight);
         },
         "updateCells" : function(validator, value) {
@@ -9992,7 +9992,7 @@ var _0x4c5b = function(i, parameter1) {
         },
         "getCursorPosition" : function() {
           this[_0x4c5b("0x800")] = (this[_0x4c5b("0x843")] - this["canvasWidth"] / 2) / this[_0x4c5b("0x2c9")] + this[_0x4c5b("0x2bb")];
-          this[_0x4c5b("0x801")] = (this[_0x4c5b("0x844")] - this[_0x4c5b("0x2bc")] / 2) / this["viewScale"] + this[_0x4c5b("0x80a")];
+          this[_0x4c5b("0x801")] = (this[_0x4c5b("0x844")] - this["canvasHeight"] / 2) / this["viewScale"] + this[_0x4c5b("0x80a")];
         },
         "setZoom" : function(repaintEverything) {
           repaintEverything[_0x4c5b("0x4da")]();
@@ -10092,9 +10092,9 @@ var _0x4c5b = function(i, parameter1) {
         },
         "resizeCanvas" : function() {
           this[_0x4c5b("0x2ba")] = window[_0x4c5b("0x300")];
-          this[_0x4c5b("0x2bc")] = window[_0x4c5b("0x301")];
+          this["canvasHeight"] = window[_0x4c5b("0x301")];
           this["canvas"]["width"] = this["canvasWidth"];
-          this["canvas"]["height"] = this[_0x4c5b("0x2bc")];
+          this["canvas"]["height"] = this["canvasHeight"];
           attrs[_0x4c5b("0x2ba")] = this[_0x4c5b("0x2ba")];
           attrs["canvasHeight"] = this["canvasHeight"];
           this[_0x4c5b("0x854")]();
@@ -10124,11 +10124,11 @@ var _0x4c5b = function(i, parameter1) {
           for (; i < attrs[_0x4c5b("0x2ad")]["length"]; i++) {
             attrs["cells"][i][_0x4c5b("0x2b7")]();
           }
-          if (this[_0x4c5b("0x85a")](), attrs[_0x4c5b("0x85b")](), attrs[_0x4c5b("0x85c")](), attrs[_0x4c5b("0x85d")](), this["ctx"][_0x4c5b("0x70f")](0, 0, this[_0x4c5b("0x2ba")], this["canvasHeight"]), settings[_0x4c5b("0x55d")] && this[_0x4c5b("0x85e")](this["ctx"], this[_0x4c5b("0x2ba")], this[_0x4c5b("0x2bc")], this["scale"], this[_0x4c5b("0x856")], this[_0x4c5b("0x858")]), this["ctx"]["save"](), this["ctx"]["translate"](this[_0x4c5b("0x2ba")] / 
-          2, this[_0x4c5b("0x2bc")] / 2), this["ctx"]["scale"](this["scale"], this["scale"]), this["ctx"]["translate"](-this[_0x4c5b("0x856")], -this[_0x4c5b("0x858")]), settings["showBgSectors"] && this["drawSectors"](this["ctx"], attrs[_0x4c5b("0x70c")], data[_0x4c5b("0x70b")], data[_0x4c5b("0x70a")], attrs[_0x4c5b("0x830")], attrs["mapMinY"], attrs[_0x4c5b("0x85f")], attrs[_0x4c5b("0x832")], data[_0x4c5b("0x47c")], data[_0x4c5b("0x860")], 
-          data[_0x4c5b("0x48f")], true), ":battleroyale" === attrs[_0x4c5b("0x560")] && this[_0x4c5b("0x861")](this["ctx"]), settings[_0x4c5b("0x60f")]) {
-            var CHANGE = data[_0x4c5b("0x48e")] / 2;
-            this["drawMapBorders"](this["ctx"], attrs[_0x4c5b("0x70c")], attrs["mapMinX"] - CHANGE, attrs[_0x4c5b("0x831")] - CHANGE, attrs[_0x4c5b("0x85f")] + CHANGE, attrs[_0x4c5b("0x832")] + CHANGE, data[_0x4c5b("0x47a")], data["bordersWidth"]);
+          if (this[_0x4c5b("0x85a")](), attrs[_0x4c5b("0x85b")](), attrs[_0x4c5b("0x85c")](), attrs[_0x4c5b("0x85d")](), this["ctx"][_0x4c5b("0x70f")](0, 0, this[_0x4c5b("0x2ba")], this["canvasHeight"]), settings[_0x4c5b("0x55d")] && this[_0x4c5b("0x85e")](this["ctx"], this[_0x4c5b("0x2ba")], this["canvasHeight"], this["scale"], this[_0x4c5b("0x856")], this[_0x4c5b("0x858")]), this["ctx"]["save"](), this["ctx"]["translate"](this["canvasWidth"] / 
+          2, this["canvasHeight"] / 2), this["ctx"]["scale"](this["scale"], this["scale"]), this["ctx"]["translate"](-this[_0x4c5b("0x856")], -this[_0x4c5b("0x858")]), settings["showBgSectors"] && this["drawSectors"](this["ctx"], attrs["mapOffsetFixed"], data[_0x4c5b("0x70b")], data[_0x4c5b("0x70a")], attrs[_0x4c5b("0x830")], attrs["mapMinY"], attrs["mapMaxX"], attrs["mapMaxY"], data[_0x4c5b("0x47c")], data[_0x4c5b("0x860")], 
+          data["sectorsWidth"], true), ":battleroyale" === attrs["gameMode"] && this["drawBattleArea"](this["ctx"]), settings["showMapBorders"]) {
+            var CHANGE = data["bordersWidth"] / 2;
+            this["drawMapBorders"](this["ctx"], attrs["mapOffsetFixed"], attrs["mapMinX"] - CHANGE, attrs["mapMinY"] - CHANGE, attrs["mapMaxX"] + CHANGE, attrs["mapMaxY"] + CHANGE, data["bordersColor"], data["bordersWidth"]);
           }
           this["drawCommander"]();
           if (settings[_0x4c5b("0x2af")]) {
@@ -10156,8 +10156,8 @@ var _0x4c5b = function(i, parameter1) {
             attrs[_0x4c5b("0x2ad")][i][_0x4c5b("0x2d4")](this["ctx"]);
           }
           this["ctx"]["restore"]();
-          if (":teams" === attrs[_0x4c5b("0x560")] && this[_0x4c5b("0x80b")] && this[_0x4c5b("0x80b")]["width"]) {
-            this["ctx"]["drawImage"](this[_0x4c5b("0x80b")], this[_0x4c5b("0x2ba")] - this[_0x4c5b("0x80b")]["width"] - 10, 10);
+          if (":teams" === attrs["gameMode"] && this["pieChart"] && this["pieChart"]["width"]) {
+            this["ctx"]["drawImage"](this["pieChart"], this[_0x4c5b("0x2ba")] - this["pieChart"]["width"] - 10, 10);
           }
         },
         "drawGrid" : function(x, y, w, h, counteraxis, subplot) {
@@ -10169,12 +10169,12 @@ var _0x4c5b = function(i, parameter1) {
           x["globalAlpha"] = 1 * h;
           x["beginPath"]();
           for (; j < ratio; j = j + 50) {
-            x[_0x4c5b("0x71d")](j * h - .5, 0);
-            x[_0x4c5b("0x71e")](j * h - .5, r * h);
+            x["moveTo"](j * h - .5, 0);
+            x["lineTo"](j * h - .5, r * h);
           }
           for (; d < r; d = d + 50) {
-            x[_0x4c5b("0x71d")](0, d * h - .5);
-            x[_0x4c5b("0x71e")](ratio * h, d * h - .5);
+            x["moveTo"](0, d * h - .5);
+            x["lineTo"](ratio * h, d * h - .5);
           }
           x["stroke"]();
           x["globalAlpha"] = 1;
@@ -10190,14 +10190,14 @@ var _0x4c5b = function(i, parameter1) {
               var i = 0;
               for (; i < steps + 1; i++) {
                 r = start + p * i;
-                result[_0x4c5b("0x71d")](i == steps ? to : r, startAngle);
+                result["moveTo"](i == steps ? to : r, startAngle);
                 result["lineTo"](i == steps ? to : r, what);
               }
               i = 0;
               for (; i < num + 1; i++) {
                 edeeef = startAngle + angle * i;
-                result[_0x4c5b("0x71d")](start - val / 2, i == num ? what : edeeef);
-                result[_0x4c5b("0x71e")](to + val / 2, i == num ? what : edeeef);
+                result["moveTo"](start - val / 2, i == num ? what : edeeef);
+                result["lineTo"](to + val / 2, i == num ? what : edeeef);
               }
               result["stroke"]();
             }
@@ -10222,23 +10222,23 @@ var _0x4c5b = function(i, parameter1) {
             ctx["strokeStyle"] = radius;
             ctx["lineWidth"] = canvas;
             ctx["beginPath"]();
-            ctx[_0x4c5b("0x71d")](text, x1);
+            ctx["moveTo"](text, x1);
             ctx["lineTo"](x0, x1);
-            ctx[_0x4c5b("0x71e")](x0, y0);
-            ctx[_0x4c5b("0x71e")](text, y0);
-            if (settings[_0x4c5b("0x604")]) {
-              ctx[_0x4c5b("0x2e3")] = data[_0x4c5b("0x48d")];
-              ctx["shadowColor"] = data[_0x4c5b("0x47b")];
+            ctx["lineTo"](x0, y0);
+            ctx["lineTo"](text, y0);
+            if (settings["borderGlow"]) {
+              ctx["shadowBlur"] = data["borderGlowSize"];
+              ctx["shadowColor"] = data["borderGlowColor"];
             } else {
-              _0x4c5b("0x86b");
+              "skrrt";
             }
-            ctx[_0x4c5b("0x2da")]();
+            ctx["closePath"]();
             ctx["stroke"]();
           }
-          if (settings[_0x4c5b("0x604")]) {
-            ctx[_0x4c5b("0x2e3")] = 0;
+          if (settings["borderGlow"]) {
+            ctx["shadowBlur"] = 0;
           } else {
-            _0x4c5b("0x86b");
+            "skrrt";
           }
         },
         "drawCommander" : function() {
@@ -10342,7 +10342,7 @@ var _0x4c5b = function(i, parameter1) {
               rng["beginPath"]();
               y = 0;
               for (; y < rows["length"]; y++) {
-                if (r = rows[y]["x"], offset = rows[y]["y"], rng[_0x4c5b("0x71d")](r, offset), .16 > firstLineToRender) {
+                if (r = rows[y]["x"], offset = rows[y]["y"], rng["moveTo"](r, offset), .16 > firstLineToRender) {
                   var rOffset = rows[y]["size"] + data[_0x4c5b("0x2d7")];
                   rng[_0x4c5b("0x879")](r - rOffset, offset - rOffset, 2 * rOffset, 2 * rOffset);
                 } else {
@@ -10395,8 +10395,8 @@ var _0x4c5b = function(i, parameter1) {
           m["beginPath"]();
           var i = 0;
           for (; i < n["length"]; i++) {
-            m[_0x4c5b("0x71d")](n[i]["x"], n[i]["y"]);
-            m[_0x4c5b("0x71e")](t, themes);
+            m["moveTo"](n[i]["x"], n[i]["y"]);
+            m["lineTo"](t, themes);
           }
           m["stroke"]();
           m["globalAlpha"] = 1;
@@ -10409,7 +10409,7 @@ var _0x4c5b = function(i, parameter1) {
           for (; i < data["length"]; i++) {
             canvas["beginPath"]();
             canvas["arc"](data[i]["x"], data[i]["y"], data[i]["size"] + edges, 0, this["pi2"], false);
-            canvas[_0x4c5b("0x2da")]();
+            canvas["closePath"]();
             canvas["stroke"]();
           }
           canvas["globalAlpha"] = 1;
@@ -10432,14 +10432,14 @@ var _0x4c5b = function(i, parameter1) {
         },
         "drawPieChart" : function() {
           if (!this["pieChart"]) {
-            this[_0x4c5b("0x80b")] = document["createElement"]("canvas");
+            this["pieChart"] = document["createElement"]("canvas");
           }
-          var options = this[_0x4c5b("0x80b")]["getContext"]("2d");
+          var options = this["pieChart"]["getContext"]("2d");
           var data = Math[_0x4c5b("0x34")](200, .3 * this["canvasWidth"]) / 200;
-          this[_0x4c5b("0x80b")]["width"] = 200 * data;
-          this[_0x4c5b("0x80b")]["height"] = 240 * data;
+          this["pieChart"]["width"] = 200 * data;
+          this["pieChart"]["height"] = 240 * data;
           options["scale"](data, data);
-          var m = [_0x4c5b("0x87d"), _0x4c5b("0x87e"), _0x4c5b("0x87f"), _0x4c5b("0x880")];
+          var m = ["#333333, #FF3333", "#33FF33", "#3333FF"];
           var border = 0;
           var name = 0;
           var leg_x;
@@ -10447,15 +10447,15 @@ var _0x4c5b = function(i, parameter1) {
             leg_x = border + attrs["pieChart"][name] * this["pi2"];
             options["fillStyle"] = m[name + 1];
             options["beginPath"]();
-            options[_0x4c5b("0x71d")](100, 140);
+            options["moveTo"](100, 140);
             options["arc"](100, 140, 80, border, leg_x, false);
-            options[_0x4c5b("0x4e")]();
+            options["fill"]();
             border = leg_x;
           }
         },
         "drawBattleArea" : function(mmCoreSplitViewBlock) {
           if (attrs["battleRoyale"][_0x4c5b("0xfb")]) {
-            this[_0x4c5b("0x881")](mmCoreSplitViewBlock, attrs[_0x4c5b("0x813")]["x"], attrs[_0x4c5b("0x813")]["y"], attrs["battleRoyale"]["radius"], attrs[_0x4c5b("0x830")], attrs[_0x4c5b("0x831")], attrs[_0x4c5b("0x85f")] - attrs[_0x4c5b("0x830")], attrs["mapMaxY"] - attrs["mapMinY"], data[_0x4c5b("0x485")], .25);
+            this[_0x4c5b("0x881")](mmCoreSplitViewBlock, attrs[_0x4c5b("0x813")]["x"], attrs[_0x4c5b("0x813")]["y"], attrs["battleRoyale"]["radius"], attrs[_0x4c5b("0x830")], attrs["mapMinY"], attrs["mapMaxX"] - attrs[_0x4c5b("0x830")], attrs["mapMaxY"] - attrs["mapMinY"], data[_0x4c5b("0x485")], .25);
             this[_0x4c5b("0x882")](mmCoreSplitViewBlock, attrs[_0x4c5b("0x813")]["targetX"], attrs[_0x4c5b("0x813")]["targetY"], attrs[_0x4c5b("0x813")][_0x4c5b("0x81a")], 40, data[_0x4c5b("0x484")]);
           }
         },
@@ -10510,7 +10510,7 @@ var _0x4c5b = function(i, parameter1) {
               if (!PL$32[PL$66][_0x4c5b("0x71b")]) {
                 var tempX1 = PL$32[PL$66]["x"];
                 var childEdge = PL$32[PL$66]["y"];
-                this["ctx"][_0x4c5b("0x71d")](tempX1, childEdge);
+                this["ctx"]["moveTo"](tempX1, childEdge);
                 this["ctx"]["arc"](tempX1, childEdge, PL$32[PL$66]["size"], 0, this["pi2"], false);
               }
             }
@@ -10546,9 +10546,9 @@ var _0x4c5b = function(i, parameter1) {
           proto["beginPath"]();
           proto[_0x4c5b("0x88c")] = _0x4c5b("0x2bf");
           proto["moveTo"](77, 11);
-          proto[_0x4c5b("0x71e")](46, 39);
-          proto[_0x4c5b("0x71d")](13, 11);
-          proto[_0x4c5b("0x71e")](44, 39);
+          proto["lineTo"](46, 39);
+          proto["moveTo"](13, 11);
+          proto["lineTo"](44, 39);
           proto["stroke"]();
           proto[_0x4c5b("0x4e")]();
           proto["closePath"]();
