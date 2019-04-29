@@ -25,7 +25,7 @@ var textspeach="";
             }
             return initialize();
         }
-        return pre_loop();
+        pre_loop();
 
         function initialize() {
             var lang_hash = {
