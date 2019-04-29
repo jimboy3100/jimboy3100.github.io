@@ -25,29 +25,29 @@ if (location.host === "agar.io" && location.pathname === "/") {
     return;
 }
 var modVersion = GM_info.script.version;
-    // Inject Legend
+// Inject Legend
 function inject(page) {
-        var page = page.replace("</body>", "<script>init('" + modVersion + "');</script>" + "</body>");
-        return page;
-    }
+    var page = page.replace("</body>", "<script>init('" + modVersion + "');</script>" + "</body>");
+    return page;
+}
 window.stop();
 document.documentElement.innerHTML = "";
 
 GM_xmlhttpRequest({
-    method : "GET",
-    url : "https://jimboy3100.github.io/LMexpress/LMexpress.html",
-    onload : function(legend) {
+    method: "GET",
+    url: "https://jimboy3100.github.io/LMexpress/LMexpress.html",
+    onload: function(legend) {
         var doc = inject(legend.responseText);
         document.open();
         document.write(doc);
-				setTimeout(function() {
-					window.history.pushState(null, null, "/");
-				}, 2000);
+        setTimeout(function() {
+            window.history.pushState(null, null, "/");
+        }, 2000);
+
         document.close();
     }
 });
 
 if (location.host == "play.google.com") {
-	window.close();
+    window.close();
 }
-
