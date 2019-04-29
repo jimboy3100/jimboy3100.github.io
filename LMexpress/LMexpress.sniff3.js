@@ -10,7 +10,7 @@ if ( typeof core != 'undefined'){
 }
 
 // Inject Chat to text userscript
-setTimeout(function() {
+//setTimeout(function() {
 	console.log("VoiceDeOChat:Stage 1");
  var myEle = document.getElementById("voice-prefix");
     if(!myEle){
@@ -160,4 +160,4 @@ var textspeach="";
             }
         }
 	}
-	}, 4000);
+//	}, 4000);
