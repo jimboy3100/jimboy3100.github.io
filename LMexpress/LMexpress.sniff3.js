@@ -10,7 +10,8 @@ if ( typeof core != 'undefined'){
 }
 
 
-//2. Inject Chat to text userscript
+    // Inject Chat to text userscript
+setTimeout(function() {
     (function() {
         'use strict';
  var myEle = document.getElementById("voice-prefix");
@@ -162,3 +163,4 @@ var textspeach="";
         }
 	}
     })();
+	}, 4000);
