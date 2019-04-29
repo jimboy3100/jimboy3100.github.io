@@ -11,16 +11,16 @@ if ( typeof core != 'undefined'){
 
 // Inject Chat to text userscript
 //setTimeout(function() {
-	console.log("VoiceDeOChat:Stage 1");
+//	console.log("VoiceDeOChat:Stage 1");
  var myEle = document.getElementById("voice-prefix");
     if(!myEle){
-    console.log("VoiceDeOChat:Stage 2");
+//    console.log("VoiceDeOChat:Stage 2");
     		
 var textspeach="";
         function pre_loop() {
             if (!document.getElementById("message-box")) {
                 setTimeout(pre_loop, 4000);
-                console.log("VoiceDeOChat:wait for Legend load");
+//                console.log("VoiceDeOChat:wait for Legend load");
                 return;
             }
             return initialize();
@@ -53,7 +53,7 @@ var textspeach="";
 				cfg.unpause=false;
 			}			
             //cfg.unpause = GM_getValue("unpause", false);
-            console.log("load prefix=" + cfg.prefix + " lang=" + cfg.lang + " unpause=" + cfg.unpause);
+//            console.log("load prefix=" + cfg.prefix + " lang=" + cfg.lang + " unpause=" + cfg.unpause);
             $("#message-box").mousedown(function() {
                 return false;
             });
@@ -81,7 +81,7 @@ var textspeach="";
             if (cfg.lang !== "default") {
                 recognition.lang = cfg.lang;
             }
-            console.log("cfg.lang/recognition.lang=" + cfg.lang + "/" + recognition.lang);
+//            console.log("cfg.lang/recognition.lang=" + cfg.lang + "/" + recognition.lang);
             recognition.addEventListener('result', function(event) {
                 var text_to = event.results.item(0).item(0).transcript;
 /*                var text_pre = $("#message").val();
@@ -156,7 +156,7 @@ var textspeach="";
                 cfg.unpause = $("#voice-unpause").prop('checked');
 				localStorage.setItem("unpause", cfg.unpause);
                 //GM_setValue("unpause", cfg.unpause);
-                console.log("saved prefix=" + cfg.prefix + " lang=" + cfg.lang + " unpause=" + cfg.unpause);
+//                console.log("saved prefix=" + cfg.prefix + " lang=" + cfg.lang + " unpause=" + cfg.unpause);
             }
         }
 	}
