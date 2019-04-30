@@ -9,8 +9,8 @@
 // @icon         https://jimboy3100.github.io/banners/CropedImage128.gif
 // @match        https://agar.io/*
 // @match        https://play.google.com/*
-// @downloadURL  jimboy3100.github.io/legendmod.user.js
-// @updateURL    jimboy3100.github.io/legendmod.user.js
+// @downloadURL  jimboy3100.github.io/LMexpress/LMexpress.user.js
+// @updateURL    jimboy3100.github.io/LMexpress/LMexpress.user.js
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
 // @connect      jimboy3100.github.io
