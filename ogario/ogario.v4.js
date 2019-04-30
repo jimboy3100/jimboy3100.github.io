@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.58 test
+//v1.72 test
 //Game Configurations
 window.agarversion = "v12/2106/";
 //window.agarversion="v12/1922/";
@@ -43,6 +43,7 @@ setTimeout(function() {
 
 //set values outside ogario
 window.leaderboardlimit = 10;
+window.teamboardlimit = 5;
 window.vanillaskins = false;
 window.spawnspecialeffects = false;
 window.top5skins = false;
@@ -381,8 +382,8 @@ var core = function(t, e, i) {
                     'targetDead': 'Nie żyje',
                     'targetDistance': 'Dystans',
                     'targetMass': 'Masa razem',
-                    'totalPartyPlayers': 'Aktywnych graczy',
-                    'totalPartyMass': 'Łącznie masy',
+                    'totalPartyPlayers': '',
+                    'totalPartyMass': '',
                     'exportImport': 'Eksport / import ustawień',
                     'exportSettings': 'Eksportuj ustawienia',
                     'exportInfo': 'Aby wyeksportować wybrane ustawienia skopiuj poniższy kod i zapisz go w pliku tekstowym z kodowaniem Unicode.',
@@ -523,7 +524,7 @@ var core = function(t, e, i) {
                     'showChatBox': 'Chatbox instead of popups',
                     'messageSound': 'Message notification sound',
                     'commandSound': 'Command notification sound',
-                    'showTop5': 'Show team top 5',
+                    'showTop5': 'Show teamboard',
                     'showTargeting': 'Show targeting',
                     'showTime': 'Show current time',
                     'showLbData': 'Show leaderboard mass',
@@ -546,7 +547,7 @@ var core = function(t, e, i) {
                     'hk-doubleSplit': 'Double split',
                     'hk-split16': 'Split 16',
                     'hk-pause': 'Cell pause',
-                    'hk-showTop5': 'Show/hide team top 5',
+                    'hk-showTop5': 'Show/hide teamboard',
                     'hk-showTime': 'Show/hide current time',
                     'hk-showSplitRange': 'Show/hide split range',
                     'hk-showSplitInd': 'Show/hide split indicators',
@@ -746,8 +747,8 @@ var core = function(t, e, i) {
                     'targetDead': 'Dead',
                     'targetDistance': 'Distance',
                     'targetMass': 'Mass altogether',
-                    'totalPartyPlayers': 'Active players',
-                    'totalPartyMass': 'Total mass',
+                    'totalPartyPlayers': '',
+                    'totalPartyMass': '',
                     'exportImport': 'Export / import settings',
                     'exportSettings': 'Export settings',
                     'exportInfo': 'To export selected settings copy the code below and save it to a text file encoded in Unicode.',
@@ -2085,7 +2086,7 @@ var core = function(t, e, i) {
                 v['centeredLb'] ? s('#leaderboard-hud').addClass('hud-text-center') : s('#leaderboard-hud').removeClass('hud-text-center');
             },
             'setNormalLb': function() {
-                v['normalLb'] ? s('#leaderboard-hud h5').html(h['leaderboard']) : s('#leaderboard-hud h5').html('legendmod.ml');
+                v['normalLb'] ? s('#leaderboard-hud h5').html(h['leaderboard']) : s('#leaderboard-hud h5').html('legendmod');
             },
             'setFpsAtTop': function() {
                 v['fpsAtTop'] ? s('#stats-hud').removeClass('hud-bottom').addClass('hud-top') : s('#stats-hud').removeClass('hud-top').addClass('hud-bottom');
@@ -2171,7 +2172,7 @@ var core = function(t, e, i) {
                     if (v['showTop5']) {
                         //console.log(['top5'].length);
                         //console.log(['teamPlayers'].length);
-                        for (var t = '', e = 0, s = this['top5'].length, o = 0; o < s; o++) e += this['top5'][o]['mass'], o >= this['top5limit'] || (t += '<li style=\"height: 16px;"\><span>' + (o + 1) + '. </span>', v['showTargeting'] && (t += '<a href=\"#\" data-user-id=\"' + this['top5'][o]['id'] + '\" class=\"set-target ogicon-target\"></a> '), t += '<span class=\"hud-main-color\">[' + this['calculateMapSector'](this['top5'][o]['x'], this['top5'][o]['y']) + ']</span>', t += '<span class=\"top5-mass-color\">[' + this['shortMassFormat'](this['top5'][o]['mass']) + ']</span> ' + this['escapeHTML'](this['top5'][o]['nick']) + '</li>');
+                        for (var t = '', e = 0, s = this['top5'].length, o = 0; o < s; o++) e += this['top5'][o]['mass'], o >= window.teamboardlimit || (t += '<li style=\"height: 16px;"\><span>' + (o + 1) + '. </span>', v['showTargeting'] && (t += '<a href=\"#\" data-user-id=\"' + this['top5'][o]['id'] + '\" class=\"set-target ogicon-target\"></a> '), t += '<span class=\"hud-main-color\">[' + this['calculateMapSector'](this['top5'][o]['x'], this['top5'][o]['y']) + ']</span>', t += '<span class=\"top5-mass-color\">[' + this['shortMassFormat'](this['top5'][o]['mass']) + ']</span> ' + this['escapeHTML'](this['top5'][o]['nick']) + '</li>');
                         this['top5pos']['innerHTML'] = t, i.play && i['playerMass'] && (e += i['playerMass'], s++), this['top5totalMass']['textContent'] = this['shortMassFormat'](e), this['top5totalPlayers']['textContent'] = s;
                     }
                 }
@@ -2183,7 +2184,7 @@ var core = function(t, e, i) {
                     var o = 0;
                     for (; o < s; o++) {
                         e = e + this["top5"][o]["mass"];
-                        if (!(o >= this["top5limit"])) {
+                        if (!(o >= window.teamboardlimit)) {
                             t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this["top5"][o]["id"] + '"style="background-color: ' + this["top5"][o]["color"] + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this["top5"][o]["skin"] ? this["top5"][o]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
                             /* if (v["showTargeting"]) {
                               t = t + ('<a href="#" data-user-id="' + this["top5"][o]["id"] + '" class="set-target ogicon-target"></a> ');
@@ -2202,6 +2203,7 @@ var core = function(t, e, i) {
                 }
 				}
             },
+/*			
             'setTop5limit': function(t) {
                 t && (this['top5limit'] = t);
             },
@@ -2209,7 +2211,8 @@ var core = function(t, e, i) {
                 if (canCreateDiscussions) {
                     this["top5limit"] = canCreateDiscussions;
                 }
-            },
+            }, */
+			
             'displayChatHistory': function(t) {
                 if (t) {
                     this['clearChatHistory'](!0);
@@ -2458,8 +2461,8 @@ var core = function(t, e, i) {
                         " </label>"), s("#noSkins").appendTo(s(".noSkins")), s(".transparencyGroup h5")["after"]('<label class="noColors">' + h["noColors"] + " </label>"), s("#noColors").appendTo(s(".noColors")), s(".extrasGroup h5")["after"]('<label class="skipStats">' + h["skipStats"] + " </label>"), s("#skipStats").appendTo(s(".skipStats")), s(".skipStats")["after"]('<label class="showQuest">' + h["showQuest"] + " </label>"), s("#showQuest").appendTo(s(".showQuest")), s("#options").remove(), s("#settingsChoice").appendTo(s(".extrasGroup")).addClass("select-wrapper")),
                     this["addSliderBox"](".animationGroup", "animation", 100, 200, 1), this["addSliderBox"](".zoomGroup", "zoomSpeedValue", 0.50, 1.99, 0.01), s("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + h["exportImport"] + "</button>"), s("#og-settings").append('<div class="restore-settings"><a href="#">' + h["restoreSettings"] + "</a></div>"), s("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + h["thanks"] + ')</h5><audio src="" controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' +
                         h["playlist"] + "</a></span></div>"), s("#music").append('<div class="agario-panel sounds-panel"><h5 class="menu-main-color">' + h["sounds"] + "</h5></div>"), s("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCaWiPNJWnhzYDrBQoXokn6w" data-layout="full" data-theme="dark" data-count="default"></div></div>'), this["addInputBox"](".sounds-panel", "messageSound", "Sound URL", "setMessageSound"),
-                    this["addInputBox"](".sounds-panel", "commandSound", "Sound URL", "setCommandSound"), s("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color">Team top <span class="team-top">5</span></h5><div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="15" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
-                        h["totalPartyPlayers"] + ': <span id="top5-total-players" class="top5-mass-color">0</span><br><span class="hud-main-color ogicon-pacman"></span> ' + h["totalPartyMass"] + ': <span id="top5-total-mass" class="top5-mass-color">0</span></div></div> <div id="time-hud" class="hud time-hud-color"></div> <div id="pause-hud" class="hud">' + h.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">legendmod.ml</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://jimboy3100.github.io/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span> <span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
+                    this["addInputBox"](".sounds-panel", "commandSound", "Sound URL", "setCommandSound"), s("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color">Team<span class="team-top"></span></h5><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' + //<div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="10" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
+                        h["totalPartyPlayers"] + ': <span id="top5-total-players" class="top5-mass-color">0</span>   <span class="hud-main-color ogicon-pacman"></span> ' + h["totalPartyMass"] + ': <span id="top5-total-mass" class="top5-mass-color">0</span></div></div> <div id="time-hud" class="hud time-hud-color"></div> <div id="pause-hud" class="hud">' + h.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">legendmod.ml</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://jimboy3100.github.io/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
                         h["targetNotSet"] + '</span></div><div id="target-summary"></div></div><div id="target-panel-hud" class="hud"><a href="#" id="set-targeting" class="ogicon-target"></a><a href="#" id="set-private-minimap" class="ogicon-location2"></a><a href="#" id="cancel-targeting" class="ogicon-cancel-circle"></a><a href="#" id="change-target" class="ogicon-arrow-right"></a></div> <div id="quest-hud" class="hud"></div> <div id="btl-hud" class="hud"></div></div>'), s("body").append('<ul id="messages"></ul>'), s("body").append('<div id="message-box"><div id="chat-emoticons"></div><div id="message-menu"><a href="#" class="chat-sound-notifications ogicon-volume-high"></a><a href="#" class="chat-active-users ogicon-user-check"></a><a href="#" class="chat-muted-users ogicon-user-minus"></a><a href="#" class="show-chat-emoticons ogicon-smile"></a></div><input type="text" id="message" class="form-control" placeholder="' +
                         h["enterChatMsg"] + '..." maxlength="80"></div>'), s("body").append('<div id="chat-box"></div>'), d) {
                     if (d.hasOwnProperty(t)) {
@@ -3050,11 +3053,12 @@ var core = function(t, e, i) {
             'dTok': function(t, e) {
                 t['font'] = g['miniMapFontWeight'] + ' ' + (g['miniMapTop'] - 6) + 'px ' + g['miniMapFontFamily'], t['textAlign'] = 'right', t['textBaseline'] = 'top', t['fillText'](atob(this['token']), e, 7);
             },
-            'drawTeammatesInd': function(t, e, i, s) {
+/*            'drawTeammatesInd': function(t, e, i, s) {
                 this['indicator'] && t['drawImage'](this['indicator'], e - 45, i - s - 90);
-            },
+            }, */
             'drawCellInfo': function(t, e, s, o, a, n, r, l, h, c, u, d) {
-                if (!n && !h && (t['globalAlpha'] = i['globalAlpha'], v['teammatesInd'] && d && !l && a <= 200 && this['drawTeammatesInd'](t, s, o, a), !v['noNames'] || v['showMass'])) {
+                //if (!n && !h && (t['globalAlpha'] = i['globalAlpha'], v['teammatesInd'] && d && !l && a <= 200 && this['drawTeammatesInd'](t, s, o, a), !v['noNames'] || v['showMass'])) {
+				if (!n && !h && (t['globalAlpha'] = i['globalAlpha'], v['teammatesInd'] && d && !l && a <= 200 && ogarfooddrawer['drawTeammatesInd'](t, s, o, a), !v['noNames'] || v['showMass'])) {
                     var f = false;
                     if (l || r || !(f = this['setAutoHideCellInfo'](a)) || !v['autoHideNames'] || !v['autoHideMass']) {
                         var m = null;
@@ -3349,6 +3353,12 @@ var core = function(t, e, i) {
                         if (this['teamPlayers'][e]['id'] == t) return e;
                 return null;
             },
+            'checkPlayerChat': function(t) {
+                if (t)
+                    for (var e = 0; e < this['teamPlayers'].length; e++)
+                        if (this['teamPlayers'][e]['id'] == t) return e;
+                return null;
+            },			
             'updateTeamPlayer': function(t) {
                 function e() {
                     var paginationStr = "";
@@ -3917,7 +3927,9 @@ var core = function(t, e, i) {
                         }
                         var node = null;
                         if (v["customSkins"] && M["showCustomSkins"] && (node = ogarminimapdrawer["getCustomSkin"](this["targetNick"], this["color"])) && (((v["transparentSkins"] || M.play && v["oppColors"]) && (!this["isPlayerCell"] || v["myTransparentSkin"]) || this["isPlayerCell"] && v["myTransparentSkin"]) && (style["globalAlpha"] *= g["skinsAlpha"], s = true), style["drawImage"](node, this["x"] - y, this["y"] - y, 2 * y, 2 * y), s && (style["globalAlpha"] = value, s = false)), v["teammatesInd"] && !this["isPlayerCell"] &&
-                            y <= 200 && (node || ogarminimapdrawer["checkSkinsMap"](this["targetNick"], this["color"])) && ogarfooddrawer["drawTeammatesInd"](style, this["x"], this["y"], y), v["noNames"] && !v["showMass"] || canCreateDiscussions) {
+//                            y <= 200 && (node || ogarminimapdrawer["checkSkinsMap"](this["targetNick"], this["color"])) && ogarfooddrawer["drawTeammatesInd"](style, this["x"], this["y"], y), v["noNames"] && !v["showMass"] || canCreateDiscussions) {
+                            y <= 800 && window.teammatenicks && (window.teammatenicks.includes(this["targetNick"])) && ogarfooddrawer["drawTeammatesInd"](style, this["x"], this["y"], y), v["noNames"] && !v["showMass"] || canCreateDiscussions) {
+
                             style["restore"]();
                         } else {
                             var recursive = false;
@@ -4915,7 +4927,8 @@ var core = function(t, e, i) {
                     t['lineWidth'] = a, t['strokeStyle'] = n;
                     for (var l = 0; l < o; l += 2) t['beginPath'](), t.arc(e, i, s - a / 2, l * r, (l + 1) * r, false), t['stroke']();
                 },
-                'drawTeammatesInd': function(t, e, i, s) {
+                'drawTeammatesInd': function(t, e, i, s) {		
+					//console.log("t:"+ t + " e:" + e + " i:" + i + "s:" + s);
                     this['indicator'] && t['drawImage'](this['indicator'], e - 45, i - s - 90);
                 },
                 'drawPieChart': function() {
