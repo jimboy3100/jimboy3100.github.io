@@ -925,7 +925,8 @@ input.hide-url::selection,input.stream-mode::selection{
     font-size:95%;
     font-weight:inherit;
     text-transform:uppercase;
-    margin:6px
+    margin:6px;
+	font-weight: bold
 }
 #leaderboard-positions{
     font-size:70%;
