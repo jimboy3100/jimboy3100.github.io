@@ -924,7 +924,7 @@ input.hide-url::selection,input.stream-mode::selection{
 #leaderboard-hud h5{
     font-size:95%;
     font-weight:inherit;
-    text-transform:uppercase;
+    text-transform:capitalize;
     margin:6px;
 	font-weight: bold
 }
