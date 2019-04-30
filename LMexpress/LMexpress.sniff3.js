@@ -126,7 +126,7 @@ var textspeach="";
                 }
             }
             fn_lang_make();
-            $("#voice-config").append('<label title="Voice UnPause><input type="checkbox" id="voice-unpause"' + (cfg.unpause ? ' checked' : '') + '/>UnPause</label>');
+            $("#voice-config").append('<label title="Voice UnPause"><input type="checkbox" id="voice-unpause"' + (cfg.unpause ? ' checked' : '') + '/>UnPause</label>');
 
             var observ_obj = $("#og-settings");
             var observ_cur = observ_obj.css("display");
