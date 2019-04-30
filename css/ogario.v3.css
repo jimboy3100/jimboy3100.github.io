@@ -741,7 +741,7 @@ input.hide-url::selection,input.stream-mode::selection{
     text-align:right;
     padding:9px 5px 0 0
 }
-#leaderboard-hud h4,#top5-hud h5,.hud-text-center,.team-top-menu{
+#leaderboard-hud h5,#top5-hud h5,.hud-text-center,.team-top-menu{
     text-align:center
 }
 .cursor-box a img{
@@ -921,7 +921,7 @@ input.hide-url::selection,input.stream-mode::selection{
     padding:0;
     top:10px
 }
-#leaderboard-hud h4{
+#leaderboard-hud h5{
     font-size:95%;
     font-weight:inherit;
     text-transform:uppercase;
