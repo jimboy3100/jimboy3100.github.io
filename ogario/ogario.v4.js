@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.55 test
+//v1.56 test
 //Game Configurations
 window.agarversion = "v12/2106/";
 //window.agarversion="v12/1922/";
@@ -3650,13 +3650,13 @@ var core = function(t, e, i) {
             'setTargetStatus': function(t) {
                 switch (t) {
                     case 0:
-                        this['targetStatus'] = 0, this['targetID'] = 0, this['targetNick'] = '', this['targetSkinURL'] = '', this['targeting'] = false, i['targeting'] = false, this['privateMiniMap'] = false, s('#target-skin, #target-nick, #target-summary').hide(), s('#target-status').show().text( h['targetNotSet'] ), s('#target-panel-hud a').removeClass('active'); //s('#target-status').show().text('[' + h['targetNotSet'] + ']'), s('#target-panel-hud a').removeClass('active');
+                        this['targetStatus'] = 0, this['targetID'] = 0, this['targetNick'] = '', this['targetSkinURL'] = '', this['targeting'] = false, i['targeting'] = false, this['privateMiniMap'] = false, s('#target-skin, #target-nick, #target-summary').hide(), $("#target-hud").hide(), s('#target-status').show().text( h['targetNotSet'] ), s('#target-panel-hud a').removeClass('active'); //s('#target-status').show().text('[' + h['targetNotSet'] + ']'), s('#target-panel-hud a').removeClass('active');
                         break;
                     case 1:
-                        this['targetStatus'] = 1, this['targeting'] || (this['targeting'] = true, i['targeting'] = true, this['setTargetingInfo']()), s('#target-skin, #target-nick, #target-status, #target-summary').show();
+                        this['targetStatus'] = 1, this['targeting'] || (this['targeting'] = true, i['targeting'] = true, $("#target-hud").show(), this['setTargetingInfo']()), s('#target-skin, #target-nick, #target-status, #target-summary').show();
                         break;
                     case 2:
-                        this['targetStatus'] = 2, s('#target-summary').hide(), s('#target-status').show().text('[' + h['targetDead'] + ']'), i['resetTargetPosition']();
+                        this['targetStatus'] = 2, s('#target-summary').hide(), $("#target-hud").show(), s('#target-status').show().text('[' + h['targetDead'] + ']'), i['resetTargetPosition']();
                 }
             },
             'changeTarget': function() {
