@@ -2,8 +2,10 @@
 
 
 //preload url 
-//var url = window.location.href;
-//localStorage.setItem("url", url);
+if (window.location.href!="https://agar.io/legendmod" && window.location.href!="http://agar.io/legendmod"){
+var url = window.location.href;
+localStorage.setItem("url", url);
+}
 //check dying light expansion
 var dyinglight1load = localStorage.getItem("dyinglight1load");
 //Check Fayiz Private Servers
