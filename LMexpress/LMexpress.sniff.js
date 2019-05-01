@@ -2,7 +2,7 @@
 
 
 //preload url 
-if (window.location.href!="https://agar.io/legendmod" && window.location.href!="http://agar.io/legendmod"){
+if (window.location.href!="https://agar.io/legendmod" && window.location.href!="http://agar.io/legendmod" && window.location.href!="https://agar.io/"){
 var url = window.location.href;
 localStorage.setItem("url", url);
 }
