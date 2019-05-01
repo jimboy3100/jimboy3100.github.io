@@ -22,7 +22,7 @@
 // Check location
 if (location.host === "agar.io" && location.pathname === "/") {
 var url = window.location.href;
-localStorage.setItem("url", url);    
+localStorage.setItem("url", url);
     location.href = "https://agar.io/legendmod" + location.hash;
     return;
 }
