@@ -2,8 +2,8 @@
 
 
 //preload url 
-var url = window.location.href;
-localStorage.setItem("url", url);
+//var url = window.location.href;
+//localStorage.setItem("url", url);
 //check dying light expansion
 var dyinglight1load = localStorage.getItem("dyinglight1load");
 //Check Fayiz Private Servers
