@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.93 MEGA TEST
+//v1.98 MEGA TEST
 //Game Configurations
 
 window.agarversion = "v12/2106/";
@@ -103,7 +103,7 @@ var core = function(t, e, i) {
                     'suckAnimation': 'Cell Eat [Sucking] Animation',
                     'virusGlow': 'Virus Glow',
                     'borderGlow': 'Border Glow',
-                    'zoomSpeedValue': 'Szybkość zoomu',
+                    'zoomSpeedValue2': 'Szybkość zoomu',
                     'quickResp': 'Szybkie odrodzenie (klawisz)',
                     'autoResp': 'Auto odrodzenie',
                     'autoHideCellsInfo': 'Autoukrywanie nazw i masy',
@@ -469,7 +469,7 @@ var core = function(t, e, i) {
                     'suckAnimation': 'Cell Eat [Sucking] Animation',
                     'virusGlow': 'Virus Glow',
                     'borderGlow': 'Border Glow',
-                    'zoomSpeedValue': 'Zoom speed',
+                    'zoomSpeedValue2': 'Zoom speed',
                     'quickResp': 'Quick respawn (hotkey)',
                     'autoResp': 'Auto respawn',
                     'autoHideCellsInfo': 'Auto hide names and mass',
@@ -1505,7 +1505,8 @@ var core = function(t, e, i) {
                 'loadThemeSettings': function() {
                     var t = null;
                     for (var s in null !== e.localStorage.getItem('ogarioThemeSettings') && (t = JSON.parse(e.localStorage.getItem('ogarioThemeSettings'))), g) g.hasOwnProperty(s) && (t && t.hasOwnProperty(s) && (g[s] = t[s]), i.hasOwnProperty(s) && (i[s] = g[s]));
-                },
+					//if (v['zoomSpeedValue2'] && v['zoomSpeedValue2']>0.99){v['zoomSpeedValue2']=v['zoomSpeedValue2']-1};
+				},
                 'saveThemeSettings': function() {
                     e.localStorage.setItem('ogarioThemeSettings', JSON.stringify(g));
                 },
@@ -1807,8 +1808,8 @@ var core = function(t, e, i) {
                 'showTop5': true,
                 'showTargeting': true,
                 'showLbData': true,
-                'showTime': true,
-                'normalLb': false,
+                'showTime': false,
+                'normalLb': true,
                 'centeredLb': true,
                 'fpsAtTop': true,
                 'showStats': true,
@@ -1832,12 +1833,12 @@ var core = function(t, e, i) {
                 "limTP": 5,
                 ////				
                 //'zoomSpeedValue': .87,
-				'zoomSpeedValue': -0.13,
+				'zoomSpeedValue2': -0.13,
                 'messageSound': 'https://jimboy3100.github.io/sounds/notification_01.mp3',
                 //                'commandSound': 'https://jimboy3100.github.io/sounds/notification_02.mp3'
                 'commandSound': 'https://jimboy3100.github.io/sounds/chat-message.mp3'
             };
-			if (v['zoomSpeedValue']>1){v['zoomSpeedValue']=v['zoomSpeedValue']-1};
+			
         window.legendmod4 = c;
         var ogarminimapdrawer = {
             'name': 'LM express',
@@ -2271,6 +2272,7 @@ var core = function(t, e, i) {
             'loadSettings': function() {
                 var t = null;
                 for (var s in null !== e.localStorage.getItem('ogarioSettings') && (t = JSON.parse(e.localStorage.getItem('ogarioSettings'))), v) v.hasOwnProperty(s) && (t && t.hasOwnProperty(s) && (v[s] = t[s]), i.hasOwnProperty(s) && (i[s] = v[s]));
+				
             },
             'saveSettings': function(t, i) {
                 e.localStorage.setItem(i, JSON['stringify'](t));
@@ -2465,7 +2467,7 @@ var core = function(t, e, i) {
                         "mouseInvert"
                     ], "mouseGroup"), this["addOptions"](["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop"], "hudGroup"), this["addOptions"](["showStats", "showStatsMass", "showStatsSTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"), this["protocolMode"] || (this["addOptions"](["blockPopups"], "extrasGroup"), s("#noSkins, #noColors, #skipStats, #showQuest").addClass("js-switch-vanilla"), s(".skinsGroup h5")["after"]('<label class="noSkins">' + h["noSkins"] +
                         " </label>"), s("#noSkins").appendTo(s(".noSkins")), s(".transparencyGroup h5")["after"]('<label class="noColors">' + h["noColors"] + " </label>"), s("#noColors").appendTo(s(".noColors")), s(".extrasGroup h5")["after"]('<label class="skipStats">' + h["skipStats"] + " </label>"), s("#skipStats").appendTo(s(".skipStats")), s(".skipStats")["after"]('<label class="showQuest">' + h["showQuest"] + " </label>"), s("#showQuest").appendTo(s(".showQuest")), s("#options").remove(), s("#settingsChoice").appendTo(s(".extrasGroup")).addClass("select-wrapper")),
-                    this["addSliderBox"](".animationGroup", "animation", 20, 200, 1), this["addSliderBox"](".zoomGroup", "zoomSpeedValue", -0.90, 0.90, 0.01), s("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + h["exportImport"] + "</button>"), s("#og-settings").append('<div class="restore-settings"><a href="#">' + h["restoreSettings"] + "</a></div>"), s("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + h["thanks"] + ')</h5><audio src="" controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' +
+                    this["addSliderBox"](".animationGroup", "animation", 20, 200, 1), this["addSliderBox"](".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01), s("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + h["exportImport"] + "</button>"), s("#og-settings").append('<div class="restore-settings"><a href="#">' + h["restoreSettings"] + "</a></div>"), s("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + h["thanks"] + ')</h5><audio src="" controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' +
                         h["playlist"] + "</a></span></div>"), s("#music").append('<div class="agario-panel sounds-panel"><h5 class="menu-main-color">' + h["sounds"] + "</h5></div>"), s("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCaWiPNJWnhzYDrBQoXokn6w" data-layout="full" data-theme="dark" data-count="default"></div></div>'), this["addInputBox"](".sounds-panel", "messageSound", "Sound URL", "setMessageSound"),
                     this["addInputBox"](".sounds-panel", "commandSound", "Sound URL", "setCommandSound"), s("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color">Team<span class="team-top"></span></h5><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' + //<div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="10" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
                         h["totalPartyPlayers"] + ': <span id="top5-total-players" class="top5-mass-color">0</span>   <span class="hud-main-color ogicon-pacman"></span> ' + h["totalPartyMass"] + ': <span id="top5-total-mass" class="top5-mass-color">0</span></div></div> <div id="time-hud" class="hud time-hud-color"></div> <div id="pause-hud" class="hud">' + h.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">legendmod.ml</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://jimboy3100.github.io/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
@@ -4635,8 +4637,8 @@ var core = function(t, e, i) {
                 this['cursorX'] = (this['clientX'] - this['canvasWidth'] / 2) / this['viewScale'] + this['viewX'], this['cursorY'] = (this['clientY'] - this['canvasHeight'] / 2) / this['viewScale'] + this['viewY'];
             },
             'setZoom': function(t) {
-                //t.preventDefault(), this['zoomValue'] *= Math['pow'](v['zoomSpeedValue'], t['wheelDelta'] / -120 || t['detail'] || 0), this['zoomValue'] > 4 / this['viewScale'] && (this['zoomValue'] = 4 / this['viewScale']);
-                this['zoomValue'] *= Math['pow'](v['zoomSpeedValue']+1, t['wheelDelta'] / -120 || t['detail'] || 0), this['zoomValue'] > 4 / this['viewScale'] && (this['zoomValue'] = 4 / this['viewScale']);
+                //t.preventDefault(), this['zoomValue'] *= Math['pow'](v['zoomSpeedValue2'], t['wheelDelta'] / -120 || t['detail'] || 0), this['zoomValue'] > 4 / this['viewScale'] && (this['zoomValue'] = 4 / this['viewScale']);
+                this['zoomValue'] *= Math['pow'](v['zoomSpeedValue2']+1, t['wheelDelta'] / -120 || t['detail'] || 0), this['zoomValue'] > 4 / this['viewScale'] && (this['zoomValue'] = 4 / this['viewScale']);
             },
             'setTargetPosition': function(t, e) {
                 this['targetX'] = t - this['mapOffsetX'], this['targetY'] = e - this['mapOffsetY'], this['targetDistance'] = Math.round(Math['sqrt'](Math['pow'](this['playerX'] - this['targetX'], 2) + Math['pow'](this['playerY'] - this['targetY'], 2)));
