@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-//v1.91 MEGA TEST
+//v1.93 MEGA TEST
 //Game Configurations
 
 window.agarversion = "v12/2106/";
@@ -1471,6 +1471,9 @@ var core = function(t, e, i) {
                 "commanderImage": "https://jimboy3100.github.io/banners/drawCommander.png",
                 "commanderImage1": "https://jimboy3100.github.io/banners/drawCommander1.png",
                 "commanderImage2": "https://jimboy3100.github.io/banners/drawCommander2.png",
+                "commanderImage3": "https://jimboy3100.github.io/banners/drawCommander3.png",
+                "commanderImage4": "https://jimboy3100.github.io/banners/drawCommander4.png",
+                "commanderImage5": "https://jimboy3100.github.io/banners/drawCommander5.png",				
                 ////
                 'miniMapFont': 'ubuntu-bold',
                 'miniMapFontFamily': 'Ubuntu',
@@ -1828,11 +1831,13 @@ var core = function(t, e, i) {
                 "limLB": 10,
                 "limTP": 5,
                 ////				
-                'zoomSpeedValue': .87,
+                //'zoomSpeedValue': .87,
+				'zoomSpeedValue': -0.13,
                 'messageSound': 'https://jimboy3100.github.io/sounds/notification_01.mp3',
                 //                'commandSound': 'https://jimboy3100.github.io/sounds/notification_02.mp3'
                 'commandSound': 'https://jimboy3100.github.io/sounds/chat-message.mp3'
             };
+			if (v['zoomSpeedValue']>1){v['zoomSpeedValue']=v['zoomSpeedValue']-1};
         window.legendmod4 = c;
         var ogarminimapdrawer = {
             'name': 'LM express',
@@ -2460,7 +2465,7 @@ var core = function(t, e, i) {
                         "mouseInvert"
                     ], "mouseGroup"), this["addOptions"](["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop"], "hudGroup"), this["addOptions"](["showStats", "showStatsMass", "showStatsSTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"), this["protocolMode"] || (this["addOptions"](["blockPopups"], "extrasGroup"), s("#noSkins, #noColors, #skipStats, #showQuest").addClass("js-switch-vanilla"), s(".skinsGroup h5")["after"]('<label class="noSkins">' + h["noSkins"] +
                         " </label>"), s("#noSkins").appendTo(s(".noSkins")), s(".transparencyGroup h5")["after"]('<label class="noColors">' + h["noColors"] + " </label>"), s("#noColors").appendTo(s(".noColors")), s(".extrasGroup h5")["after"]('<label class="skipStats">' + h["skipStats"] + " </label>"), s("#skipStats").appendTo(s(".skipStats")), s(".skipStats")["after"]('<label class="showQuest">' + h["showQuest"] + " </label>"), s("#showQuest").appendTo(s(".showQuest")), s("#options").remove(), s("#settingsChoice").appendTo(s(".extrasGroup")).addClass("select-wrapper")),
-                    this["addSliderBox"](".animationGroup", "animation", 100, 200, 1), this["addSliderBox"](".zoomGroup", "zoomSpeedValue", 0.50, 1.99, 0.01), s("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + h["exportImport"] + "</button>"), s("#og-settings").append('<div class="restore-settings"><a href="#">' + h["restoreSettings"] + "</a></div>"), s("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + h["thanks"] + ')</h5><audio src="" controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' +
+                    this["addSliderBox"](".animationGroup", "animation", 20, 200, 1), this["addSliderBox"](".zoomGroup", "zoomSpeedValue", -0.90, 0.90, 0.01), s("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + h["exportImport"] + "</button>"), s("#og-settings").append('<div class="restore-settings"><a href="#">' + h["restoreSettings"] + "</a></div>"), s("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + h["thanks"] + ')</h5><audio src="" controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' +
                         h["playlist"] + "</a></span></div>"), s("#music").append('<div class="agario-panel sounds-panel"><h5 class="menu-main-color">' + h["sounds"] + "</h5></div>"), s("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCaWiPNJWnhzYDrBQoXokn6w" data-layout="full" data-theme="dark" data-count="default"></div></div>'), this["addInputBox"](".sounds-panel", "messageSound", "Sound URL", "setMessageSound"),
                     this["addInputBox"](".sounds-panel", "commandSound", "Sound URL", "setCommandSound"), s("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color">Team<span class="team-top"></span></h5><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' + //<div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="10" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
                         h["totalPartyPlayers"] + ': <span id="top5-total-players" class="top5-mass-color">0</span>   <span class="hud-main-color ogicon-pacman"></span> ' + h["totalPartyMass"] + ': <span id="top5-total-mass" class="top5-mass-color">0</span></div></div> <div id="time-hud" class="hud time-hud-color"></div> <div id="pause-hud" class="hud">' + h.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">legendmod.ml</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://jimboy3100.github.io/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
@@ -3935,7 +3940,7 @@ var core = function(t, e, i) {
 						//style["drawImage"](node, this["x"] - y, this["y"] - y, 2 * y, 2 * y), s && (style["globalAlpha"] = value, s = false)), 
 						style["drawImage"](node, this["x"] - y, this["y"] - y, 2 * y, 2 * y), 
 						//this["targetNick"].includes("℄") && (style["rotate"](M["cAngle1"])) && (style["drawImage"](cimg2, this["x"] - y * 1.5, this["y"] - y * 1.5, 3 * y, 3 * y)) &&
-						this["targetNick"].includes("℄🌀Jimboy3100") && (style["drawImage"](cimg2, this["x"] - y * 2, this["y"] - y * 2, 4 * y, 4 * y)),
+						(this["targetNick"].includes("℄🌀Jimboy3100") || this["targetNick"].includes("℄🌀     ᑕᖇᗩƵƳ😈") || this["targetNick"].includes("℄🌀Shere Khan")) && (style["drawImage"](cimg2, this["x"] - y * 2, this["y"] - y * 2, 4 * y, 4 * y)),
 						//(M["cAngle"] += .007), console.log(M["cAngle"]),
 						//style["rotate"](M["cAngle1"]),
 						s && (style["globalAlpha"] = value, s = false)), 
@@ -4631,7 +4636,7 @@ var core = function(t, e, i) {
             },
             'setZoom': function(t) {
                 //t.preventDefault(), this['zoomValue'] *= Math['pow'](v['zoomSpeedValue'], t['wheelDelta'] / -120 || t['detail'] || 0), this['zoomValue'] > 4 / this['viewScale'] && (this['zoomValue'] = 4 / this['viewScale']);
-                this['zoomValue'] *= Math['pow'](v['zoomSpeedValue'], t['wheelDelta'] / -120 || t['detail'] || 0), this['zoomValue'] > 4 / this['viewScale'] && (this['zoomValue'] = 4 / this['viewScale']);
+                this['zoomValue'] *= Math['pow'](v['zoomSpeedValue']+1, t['wheelDelta'] / -120 || t['detail'] || 0), this['zoomValue'] > 4 / this['viewScale'] && (this['zoomValue'] = 4 / this['viewScale']);
             },
             'setTargetPosition': function(t, e) {
                 this['targetX'] = t - this['mapOffsetX'], this['targetY'] = e - this['mapOffsetY'], this['targetDistance'] = Math.round(Math['sqrt'](Math['pow'](this['playerX'] - this['targetX'], 2) + Math['pow'](this['playerY'] - this['targetY'], 2)));
