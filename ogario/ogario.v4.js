@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.100 MEGA TEST
+// v1.101 MEGA TEST
 // Game Configurations
 
 window.agarversion = "v12/2106/";
@@ -4226,6 +4226,7 @@ var core = function(t, e, i) {
                 this.sendAccessToken(t, 4);
             },
             'sendRecaptcha': function(t) {
+				sendRecaptcha(t);
                 var e = this.createView(2 + t.length);
                 e.setUint8(0, 86);
                 for (var i = 0; i < t.length; i++) e.setUint8(1 + i, t.charCodeAt(i));
