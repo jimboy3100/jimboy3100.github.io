@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.99 MEGA TEST
+// v1.100 MEGA TEST
 // Game Configurations
 
 window.agarversion = "v12/2106/";
@@ -4124,8 +4124,8 @@ var core = function(t, e, i) {
                 this.socket['send'](t['buffer']);
             },
             'sendMessage': function(t) {
-                //console.log(t);
-                if (this['connectionOpened']) {
+            
+			
                     if (!this['clientKey']) return;
                     t = this['shiftMessage'](t, this['clientKey']), this['clientKey'] = this['shiftKey'](this['clientKey']);
                 }
@@ -6062,6 +6062,7 @@ var core = function(t, e, i) {
                 M['sendGplusToken'](t);
             },
             'recaptchaResponse': function(t) {
+				console.log(t);
                 M['sendRecaptcha'](t);
             },
             'setClientVersion': function(t, e) {
