@@ -373,8 +373,8 @@
 		'setNick': function() {
 			this.login();
 			var _0x330ae2 = $('#nick').val();
-			if(_0x330ae2 && _0x330ae2.length > 0xf) {
-				_0x330ae2 = _0x330ae2.substring(0x0, 0xf);
+			if(_0x330ae2 && _0x330ae2.length > 30) {
+				_0x330ae2 = _0x330ae2.substring(0x0, 30);
 			}
 			if(window.core) {
 				window.core.sendNick(_0x330ae2);
