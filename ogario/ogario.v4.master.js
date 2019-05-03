@@ -1,7 +1,7 @@
 // decoded by Alexander Lylko
 // on 24.02.2019 23:40 ｚᶻ͛
 // recoded by Jimboy3100
-
+//
 (function(window, $) {
 	var _0x4d36c9 = {
 		'context': null,
@@ -373,8 +373,8 @@
 		'setNick': function() {
 			this.login();
 			var _0x330ae2 = $('#nick').val();
-			if(_0x330ae2 && _0x330ae2.length > 30) {
-				_0x330ae2 = _0x330ae2.substring(0x0, 30);
+			if(_0x330ae2 && _0x330ae2.length > 0xf) {
+				_0x330ae2 = _0x330ae2.substring(0x0, 0xf);
 			}
 			if(window.core) {
 				window.core.sendNick(_0x330ae2);
