@@ -4183,7 +4183,11 @@ var core = function(t, e, i) {
             var w = ~~(nickImg.width / this.scale);
             var h = ~~(nickImg.height / this.scale);
             this.margin = ~~(h / 2);
+		
+		// Fix crash when the image has a height of 0 and cannot be drawn
+		try {
             t.drawImage(nickImg, ~~this.x - ~~(w / 2), ~~this.y - this.margin, w, h);
+		} catch (e) {}
         };
 				this.drawMass = function(context) {
                     if (this.massCanvas && !(this.size <= 40)) {
