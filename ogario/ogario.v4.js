@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.102 MEGA TEST
+// v1.130c MEGA TEST
 // Game Configurations
 
 window.agarversion = "v12/2106/";
@@ -159,6 +159,8 @@ var core = function(t, e, i) {
                     'showChatBox': 'Czatbox zamiast wyskakujących wiadomości',
                     'messageSound': 'Dźwięk powiadomienia o wiadomości',
                     'commandSound': 'Dźwięk powiadomienia o komendzie',
+					'virusSoundurl': 'Virus shot sound',
+					'virusSound': 'Virus shot sound',					
                     'showTop5': 'Pokaż top 5 teamu',
                     'showTargeting': 'Pokaż namierzanie',
                     'showTime': 'Pokaż aktualny czas',
@@ -525,6 +527,8 @@ var core = function(t, e, i) {
                     'showChatBox': 'Chatbox instead of popups',
                     'messageSound': 'Message notification sound',
                     'commandSound': 'Command notification sound',
+					'virusSoundurl': 'Virus shot sound',
+					'virusSound': 'Virus shot sound',
                     'showTop5': 'Show teamboard',
                     'showTargeting': 'Show targeting',
                     'showTime': 'Show current time',
@@ -1750,6 +1754,8 @@ var core = function(t, e, i) {
                 'color': g['mainColor']
             },
             v = {
+				'jellyPhisycs':false,
+				'virusSound':true,				
                 'quickResp': true,
                 'autoResp': false,
                 'autoZoom': false,
@@ -1836,7 +1842,10 @@ var core = function(t, e, i) {
 				'zoomSpeedValue2': -0.13,
                 'messageSound': 'https://jimboy3100.github.io/sounds/notification_01.mp3',
                 //                'commandSound': 'https://jimboy3100.github.io/sounds/notification_02.mp3'
-                'commandSound': 'https://jimboy3100.github.io/sounds/chat-message.mp3'
+                'commandSound': 'https://jimboy3100.github.io/sounds/chat-message.mp3',
+				'virusSoundurl': 'https://jimboy3100.github.io/sounds/sound-gunshot.mp3',
+				'soundSplit': 'https://www.myinstants.com/media/sounds/quack_5.mp3'
+				
             };
 			
         window.legendmod4 = c;
@@ -1916,6 +1925,8 @@ var core = function(t, e, i) {
             'privateMiniMap': false,
             'messageSound': null,
             'commandSound': null,
+			'virusSound': null,
+			'virusSoundurl': null,
             'feedInterval': null,
             'getPlayerX': function() {
                 return i['playerX'] + i['mapOffsetX'];
@@ -2451,25 +2462,35 @@ var core = function(t, e, i) {
                         ogarcopythelb["color"] + '" maxlength="7" /><span class="input-group-addon"><i></i></span><span class="input-group-btn"><button id="hide-url" class="btn active ogicon-eye"></button></span></div>'), s("#locationKnown, #locationUnknown")["insertAfter"](s(".skin")), s("#region")["before"]('<button class="btn btn-warning btn-server-info ogicon-cogs"></button>'), s(".btn-spectate, .btn-logout").appendTo("#agario-main-buttons"), s("#agario-main-buttons").addClass("clearfix")["before"]('<div id="server-info" class="form-group clearfix"><input id="server-ws" class="form-control" placeholder="Server WS"><button id="server-connect" class="btn btn-success ogicon-power"></button><button id="server-reconnect" class="btn btn-primary ogicon-redo2"></button><input id="server-token" class="form-control" placeholder="Server token"><button id="server-join" class="btn btn-success" data-itr="page_join_party">Join</button></div>'),
                     s("#helloContainer div[role=form]")["after"]('<div id="ogario-party" class="clearfix"><input id="party-token" class="form-control" placeholder="Party token"></div>'), s("#ogario-party").append('<button id="join-party-btn-2" class="btn btn-success" data-itr="page_join_party">Join</button><button id="create-party-btn-2" class="btn btn-primary" data-itr="page_create_party">Create</button>'), s("#pre-join-party-btn:first, #join-party-btn:first, #create-party-btn:first, #leave-party-btn:first, #joinPartyToken:first, .party-icon-back:first").appendTo(s("#ogario-party")),
                     s("#settingsChoice, #options").appendTo(s("#og-settings .submenu-panel")), s("#stats").appendTo(s("#main-menu")).addClass("menu-panel"), s("#statsContinue")["attr"]("id", "statsContinue2"), s("#mainPanel")["empty"]().remove(), s(".center-container").addClass("ogario-menu"), s(".center-container").append('<div id="menu-footer" class="menu-main-color">' + h["visit"] + ' <a href="http://legendmod.ml" target="_blank">legendmod.ml</a> | ' + this["version"] + ' <a href="https://goo.gl/nRREoR" class="release ogicon-info" target="_blank"></a></div>'),
-                    s("#leftPanel, #rightPanel").addClass("ogario-menu")["removeAttr"]("id"), s(".agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel").appendTo(s("#profile")).removeClass("agario-side-panel"), s(".agario-profile-panel")["after"]('<div id="block-warn">' + h["blockWarn"] + '<br><a href="#" id="unblock-popups">' + h["unblockPopups"] + "</a></div>"), s("#exp-bar").addClass("agario-profile-panel"), s(".left-container")["empty"](), s(".agario-shop-panel")["after"]('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">The Legend Mod Project</h5><div class="g-ytsubscribe" data-channelid="UCaWiPNJWnhzYDrBQoXokn6w" data-layout="full" data-theme="dark" data-count="default"></div></div>'),
-                    s("#tags-container").appendTo(s("#profile")), s(".btn-logout").appendTo(s("#profile")), s(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://jimboy3100.github.io/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + h["skins"] + '"></a><a href="https://youtube.com/channel/UCaWiPNJWnhzYDrBQoXokn6w" class="quick-yt ogicon-youtube2" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="Team OGARio"></a></div>'),
+                    s("#leftPanel, #rightPanel").addClass("ogario-menu")["removeAttr"]("id"), s(".agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel").appendTo(s("#profile")).removeClass("agario-side-panel"), s(".agario-profile-panel")["after"]('<div id="block-warn">' + h["blockWarn"] + '<br><a href="#" id="unblock-popups">' + h["unblockPopups"] + "</a></div>"), s("#exp-bar").addClass("agario-profile-panel"), s(".left-container")["empty"](), s(".agario-shop-panel")["after"]('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">The Legend Mod Project</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>'),
+                    s("#tags-container").appendTo(s("#profile")), s(".btn-logout").appendTo(s("#profile")), s(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://jimboy3100.github.io/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + h["skins"] + '"></a><a href="https://youtube.com/channel/UCoj-ZStcJ0jLMOSK7FOBTbA" class="quick-yt ogicon-youtube2" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="Team OGARio"></a></div>'),
                     this["protocolMode"] || s("#quick-menu")["prepend"]('<a href="#" class="quick-shop ogicon-cart" data-toggle="tab-tooltip" data-placement="left" title="' + h["page_shop"] + '"></a><a href="#" class="quick-free-coins ogicon-coin-dollar" data-toggle="tab-tooltip" data-placement="left" title="' + h["page_menu_main_free_coins"] + '"></a><a href="#" class="quick-free-gifts ogicon-gift" data-toggle="tab-tooltip" data-placement="left" title="' + h["page_menu_main_gifts"] + '"></a><a href="#" class="quick-quests ogicon-trophy" data-toggle="tab-tooltip" data-placement="left" title="' +
                         h["page_menu_main_dailyquests"] + '"></a>'), s(".party-dialog, .partymode-info").remove(), s(".agario-party-6").appendTo(s(".center-container")), s(".right-container")["empty"](), s(".right-container").append('<div class="agario-party"></div>'), s(".agario-party-6").appendTo(s(".agario-party")).addClass("agario-panel agario-side-panel"), s(".agario-party h4, #cancel-party-btn").remove(), s(".agario-party .btn").addClass("btn-sm"), s(".right-container").append('<div id="skins-panel" class="agario-panel agario-side-panel"><div id="skins"></div><a href="https://ogario.ovh/skins/" id="more-skins" class="btn btn-block btn-success" target="_blank">' +
                         h["moreSkins"] + "</a></div>"), s(".btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr='page_option_dark_theme'], #options #darkTheme").remove(), s("#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom").css("display", "none"), s("#advertisement").removeClass("agario-panel"), s("#adsBottom")["css"]({
                         "z-index": "1",
                         "opacity": "0",
                         "bottom": "-100px"
-                    }), s("#noNames, #showMass").remove(), s("#og-settings .submenu-panel").append('<div id="og-options"></div>'), this["addOptions"]([], "animationGroup"), this["addOptions"](["autoZoom"], "zoomGroup"), this["addOptions"](["quickResp", "autoResp"], "respGroup"), this["addOptions"](["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup"), this["addOptions"](["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass",
-                        "virMassShots", "massStroke"
-                    ], "massGroup"), this["protocolMode"] ? this["addOptions"](["customSkins"], "skinsGroup") : this["addOptions"](["customSkins", "vanillaSkins"], "skinsGroup"), this["addOptions"](["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup"), this["addOptions"](["myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow"], "transparencyGroup"), this["addOptions"](["showGrid", "showBgSectors", "showMapBorders",
-                        "borderGlow"
-                    ], "gridGroup"), this["addOptions"](["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox"], "chatGroup"), this["addOptions"](["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup"), this["addOptions"](["oppColors", "oppRings", "virColors", "splitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells"], "helpersGroup"), this["addOptions"](["mouseSplit", "mouseFeed",
-                        "mouseInvert"
-                    ], "mouseGroup"), this["addOptions"](["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop"], "hudGroup"), this["addOptions"](["showStats", "showStatsMass", "showStatsSTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"), this["protocolMode"] || (this["addOptions"](["blockPopups"], "extrasGroup"), s("#noSkins, #noColors, #skipStats, #showQuest").addClass("js-switch-vanilla"), s(".skinsGroup h5")["after"]('<label class="noSkins">' + h["noSkins"] +
+                    }), s("#noNames, #showMass").remove(), s("#og-settings .submenu-panel").append('<div id="og-options"></div>'), 
+					this["addOptions"]([], "animationGroup"), 
+					this["addOptions"](["autoZoom"], "zoomGroup"), 
+					this["addOptions"](["quickResp", "autoResp"], "respGroup"), 
+					this["addOptions"](["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup"), 
+					this["addOptions"](["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound"], "massGroup"),
+					this["protocolMode"] ? this["addOptions"](["customSkins"], "skinsGroup") : this["addOptions"](["customSkins", "vanillaSkins"], "skinsGroup"), 
+					this["addOptions"](["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup"), 
+					this["addOptions"](["myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow"], "transparencyGroup"), 
+					this["addOptions"](["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup"), 
+					this["addOptions"](["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox"], "chatGroup"), 
+					this["addOptions"](["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup"), 
+					this["addOptions"](["oppColors", "oppRings", "virColors", "splitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells"], "helpersGroup"), 
+					this["addOptions"](["mouseSplit", "mouseFeed","mouseInvert"], "mouseGroup"), 
+					this["addOptions"](["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop"], "hudGroup"), 
+					this["addOptions"](["showStats", "showStatsMass", "showStatsSTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"), 
+					this["protocolMode"] || (this["addOptions"](["blockPopups"], "extrasGroup"), s("#noSkins, #noColors, #skipStats, #showQuest").addClass("js-switch-vanilla"), s(".skinsGroup h5")["after"]('<label class="noSkins">' + h["noSkins"] +
                         " </label>"), s("#noSkins").appendTo(s(".noSkins")), s(".transparencyGroup h5")["after"]('<label class="noColors">' + h["noColors"] + " </label>"), s("#noColors").appendTo(s(".noColors")), s(".extrasGroup h5")["after"]('<label class="skipStats">' + h["skipStats"] + " </label>"), s("#skipStats").appendTo(s(".skipStats")), s(".skipStats")["after"]('<label class="showQuest">' + h["showQuest"] + " </label>"), s("#showQuest").appendTo(s(".showQuest")), s("#options").remove(), s("#settingsChoice").appendTo(s(".extrasGroup")).addClass("select-wrapper")),
                     this["addSliderBox"](".animationGroup", "animation", 20, 200, 1), this["addSliderBox"](".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01), s("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + h["exportImport"] + "</button>"), s("#og-settings").append('<div class="restore-settings"><a href="#">' + h["restoreSettings"] + "</a></div>"), s("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + h["thanks"] + ')</h5><audio src="" controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' +
-                        h["playlist"] + "</a></span></div>"), s("#music").append('<div class="agario-panel sounds-panel"><h5 class="menu-main-color">' + h["sounds"] + "</h5></div>"), s("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCaWiPNJWnhzYDrBQoXokn6w" data-layout="full" data-theme="dark" data-count="default"></div></div>'), this["addInputBox"](".sounds-panel", "messageSound", "Sound URL", "setMessageSound"),
-                    this["addInputBox"](".sounds-panel", "commandSound", "Sound URL", "setCommandSound"), s("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color">Team<span class="team-top"></span></h5><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' + //<div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="10" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
+                        h["playlist"] + "</a></span></div>"), s("#music").append('<div class="agario-panel sounds-panel"><h5 class="menu-main-color">' + h["sounds"] + "</h5></div>"), s("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>'), this["addInputBox"](".sounds-panel", "messageSound", "Sound URL", "setMessageSound"),
+                    this["addInputBox"](".sounds-panel", "commandSound", "Sound URL", "setCommandSound"), this["addInputBox"](".sounds-panel", "virusSoundurl", "Sound URL", "setvirusSound"), s("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color">Team<span class="team-top"></span></h5><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' + //<div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="10" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
                         h["totalPartyPlayers"] + ': <span id="top5-total-players" class="top5-mass-color">0</span>   <span class="hud-main-color ogicon-pacman"></span> ' + h["totalPartyMass"] + ': <span id="top5-total-mass" class="top5-mass-color">0</span></div></div> <div id="time-hud" class="hud time-hud-color"></div> <div id="pause-hud" class="hud">' + h.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">legendmod.ml</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://jimboy3100.github.io/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
                         h["targetNotSet"] + '</span></div><div id="target-summary"></div></div><div id="target-panel-hud" class="hud"><a href="#" id="set-targeting" class="ogicon-target"></a><a href="#" id="set-private-minimap" class="ogicon-location2"></a><a href="#" id="cancel-targeting" class="ogicon-cancel-circle"></a><a href="#" id="change-target" class="ogicon-arrow-right"></a></div> <div id="quest-hud" class="hud"></div> <div id="btl-hud" class="hud"></div></div>'), s("body").append('<ul id="messages"></ul>'), s("body").append('<div id="message-box"><div id="chat-emoticons"></div><div id="message-menu"><a href="#" class="chat-sound-notifications ogicon-volume-high"></a><a href="#" class="chat-active-users ogicon-user-check"></a><a href="#" class="chat-muted-users ogicon-user-minus"></a><a href="#" class="show-chat-emoticons ogicon-smile"></a></div><input type="text" id="message" class="form-control" placeholder="' +
                         h["enterChatMsg"] + '..." maxlength="80"></div>'), s("body").append('<div id="chat-box"></div>'), d) {
@@ -3621,7 +3642,7 @@ var core = function(t, e, i) {
                 this['displayUserList'](this['chatMutedUsers'], h['mutedUsers'], 'btn-green btn-unmute-user', h['unmute'], 'error');
             },
             'preloadChatSounds': function() {
-                this['setMessageSound'](), this['setCommandSound']();
+                this['setMessageSound'](), this['setCommandSound'](), this['setvirusSound']();
             },
             'setChatSoundsBtn': function() {
                 v['chatSounds'] ? s('.chat-sound-notifications').removeClass('ogicon-volume-mute2').addClass('ogicon-volume-high') : s('.chat-sound-notifications').removeClass('ogicon-volume-high').addClass('ogicon-volume-mute2');
@@ -3632,10 +3653,13 @@ var core = function(t, e, i) {
             'setCommandSound': function() {
                 this['commandSound'] = this['setSound'](v['commandSound']);
             },
+            'setvirusSound': function() {
+                this['virusSoundurl'] = this['setSound'](v['virusSoundurl']);
+            },			
             'setSound': function(t) {
                 return t ? new Audio(t) : null;
             },
-            'playSound': function(t) {
+/*            'playSound': function(t) {
                 //t && t.play && (t.pause(), t.currentTime = 0, t.play());
                 //t && t.play && t.play!==null && (t.pause(), t.currentTime = 0, t.play());
                 t.pause();
@@ -3645,6 +3669,14 @@ var core = function(t, e, i) {
                 };
                 (t.play() || nopromise).catch(function() {});
             },
+*/
+        'playSound': function (t) {
+            if (t && t.play) {
+                t.pause();
+                t.currentTime = 0;
+                t.play();
+            }
+        },			
             'setTargeting': function() {
                 this['targetID'] && (this['targeting'] = !this['targeting'], i['targeting'] = this['targeting'], this['setTargetingInfo']());
             },
@@ -3814,63 +3846,357 @@ var core = function(t, e, i) {
 
         function ogarbasicassembly(t, e, s, o, a, n, r, l, h, c) {
 			cimg2 = new Image;
-            cimg2["src"] = g["commanderImage2"];
+            cimg2.src = g.commanderImage2;
 			
-            this['id'] = t, this['x'] = e, this['y'] = s, this['targetX'] = e, this['targetY'] = s, this['color'] = a, this['oppColor'] = null, this['size'] = o, this['targetSize'] = o, this['alpha'] = 1, this['nick'] = '', this['targetNick'] = '', this['nickCanvas'] = null, this['mass'] = 0, this['lastMass'] = 0, this['kMass'] = 0, this['massCanvas'] = null, this['massTxt'] = '', this['margin'] = 0, this['scale'] = 1, this['nickScale'] = 1, this['massScale'] = 1, this['virMassScale'] = 3, this['strokeScale'] = 1, this['fontSize'] = 0x1a, this['nickSize'] = 0x1a, this['lastNickSize'] = 0, this['massSize'] = 0x1a, this['virMassSize'] = 0x1a, this['nickStrokeSize'] = 3, this['massStrokeSize'] = 3, this['isFood'] = n, this['isVirus'] = r, this['isPlayerCell'] = l, this['shortMass'] = h, this['virMassShots'] = c, this['rescale'] = false, this['redrawNick'] = true, this['redrawMass'] = true, this['optimizedNames'] = false, this['optimizedMass'] = false, this['strokeNick'] = false, this['strokeMass'] = false, this['removed'] = false, this['redrawed'] = 0, this['time'] = 0, this['skin'] = null, this.pi2 = 2 * Math['PI'],
-                this.virusColor = null,
-                this.virusStroke = null,
-                this.nHeight = 6,
-                this['update'] = function(t, e, i, s, o, a) {
-                    this['x'] = t, this['y'] = e, this['isVirus'] = s, this['isPlayerCell'] = o, this['setMass'](i), this['setNick'](a);
-                }, this['removeCell'] = function() {
-                    this['removed'] = true;
-                    var t = M['cells']['indexOf'](this); - 1 != t ? (M['cells']['splice'](t, 1), v['virusesRange'] && -1 != (t = M['viruses'].indexOf(this)) && M['viruses']['splice'](t, 1)) : -1 != (t = M['food'].indexOf(this)) && M['food']['splice'](t, 1), -1 != (t = M['playerCells'].indexOf(this)) && (M['removePlayerCell'] = true, M['playerCells']['splice'](t, 1), -1 != (t = M['playerCellIDs'].indexOf(this['id'])) && M['playerCellIDs']['splice'](t, 1)), this['redrawed'] && M['removedCells'].push(this), delete M['indexedCells'][this['id']];
-                }, this['moveCell'] = function() {
-                    var t = (M['time'] - this['time']) / v['animation'];
-                    if (t = t < 0 ? 0 : t > 1 ? 1 : t, this['x'] += (this['targetX'] - this['x']) * t, this['y'] += (this['targetY'] - this['y']) * t, this['size'] += (this['targetSize'] - this['size']) * t, this['alpha'] = t, this['removed']) {
-                        if (1 == t) {
-                            var e = M['removedCells'].indexOf(this); - 1 != e && M['removedCells']['splice'](e, 1);
-                        }
-                    } else this['time'] = M['time'];
-                }, this['isInView'] = function() {
-                    return !(this['id'] <= 0) && !(this['x'] + this['size'] + 40 < M['viewX'] - M['canvasWidth'] / 2 / M['scale'] || this['y'] + this['size'] + 40 < M['viewY'] - M['canvasHeight'] / 2 / M['scale'] || this['x'] - this['size'] - 40 > M['viewX'] + M['canvasWidth'] / 2 / M['scale'] || this['y'] - this['size'] - 40 > M['viewY'] + M['canvasHeight'] / 2 / M['scale']);
-                }, this['setMass'] = function(t) {
-                    return this['size'] = t, !(t <= 40) && (this['massCanvas'] ? (this['mass'] = ~~(t * t / 100), this['redrawMass'] = true, this['isVirus'] ? (this['virMassShots'] && this['mass'] < 200 && (this['mass'] = ~~((200 - this['mass']) / 14)), this['massTxt'] = this['mass']['toString'](), this.mass > 220 ? (this.virusColor = g.mVirusColor, this.virusStroke = g.mVirusStrokeColor) : (this.virusColor = g.virusColor, this.virusStroke = g.virusStrokeColor), true) : (this['massTxt'] = this['mass']['toString'](), this['mass'] <= 200 || (this['shortMass'] && this['mass'] >= 1000 ? (this['kMass'] = Math.round(this['mass'] / 100) / 10, this['massTxt'] = this['kMass'] + 'k', true) : (this['optimizedMass'] && (this['redrawMass'] = Math['abs']((this['mass'] - this['lastMass']) / this['mass']) >= 0.02 || this['rescale']), true)))) : (this['massCanvas'] = new irenderfromagario(), false));
-                }, this['setNick'] = function(t) {
-                    return this['nick'] = t, !(!t || this['isVirus']) && (!!this['nickCanvas'] || (this['nickCanvas'] = new irenderfromagario(), false));
-                }, this['setScale'] = function(t, e, i, s, o) {
-                    var a = Math['ceil'](10 * t) / 10;
-                    this['rescale'] = false, this['scale'] != a && (this['scale'] = a, this['rescale'] = true), this['nickScale'] = e, this['massScale'] = i, this['virMassScale'] = s, this['strokeScale'] = o;
-                }, this['setFontSize'] = function() {
-                    this['isVirus'] ? this['massSize'] = Math['ceil'](this['virMassSize'] * this['scale'] * this['virMassScale']) : (this['fontSize'] = Math['max'](0.3 * this['size'], 0x1a) * this['scale'], this['nickSize'] = ~~(this['fontSize'] * this['nickScale']), this['massSize'] = ~~(0.5 * this['fontSize'] * this['massScale']), this['optimizedNames'] ? this['redrawNick'] = Math['abs']((this['nickSize'] - this['lastNickSize']) / this['nickSize']) >= 0.3 || this['rescale'] : this['redrawNick'] = true);
-                }, this['setStrokeSize'] = function() {
-                    this['strokeNick'] && !this['isVirus'] && (this['nickStrokeSize'] = ~~(0.1 * this['nickSize'] * this['strokeScale'])), this['strokeMass'] && (this['massStrokeSize'] = ~~(0.1 * this['massSize'] * this['strokeScale']));
-                }, this['setDrawing'] = function() {
-                    this['optimizedNames'] = v['optimizedNames'], this['optimizedMass'] = v['optimizedMass'], this['shortMass'] = v['shortMass'], this['virMassShots'] = v['virMassShots'], this['strokeNick'] = v['namesStroke'], this['strokeMass'] = v['massStroke'];
-                }, this['setDrawingScale'] = function() {
-                    this['setScale'](i['viewScale'], g['namesScale'], g['massScale'], g['virMassScale'], g['strokeScale']), this['setFontSize'](), this['setStrokeSize'](), this['margin'] = 0;
-                }, this['drawNick'] = function(mainCanvas) {
-                    if (this['nick'] && this['nickCanvas'] && !this['isVirus']) {
-                        var nickCanvas = this['nickCanvas'];
-                        nickCanvas['setDrawing'](g['namesColor'], g['namesFontFamily'], g['namesFontWeight'], this['strokeNick'], this['nickStrokeSize'], g['namesStrokeColor']), nickCanvas['setTxt'](this['nick']), this['redrawNick'] && (nickCanvas['setFontSize'](this['nickSize']), this['lastNickSize'] = this['nickSize']), nickCanvas['setScale'](this['scale']);
-                        const nickImg = nickCanvas.drawTxt(),
-                            w = ~~(nickImg.width / this.scale),
-                            h = ~~(nickImg.height / this.scale);
-                        this.margin = ~~(h / 2);
-                        if (w > 1 && h > 1) {
-                            mainCanvas.drawImage(nickImg, ~~(this.x - w / 2), ~~this.y - this.margin, w, h);
-                        }
+            this.id = t; 
+			this.x = e; 
+			this.y = s; 
+			this.targetX = e;
+			this.targetY = s; 
+			this.color = a; 
+			this.oppColor = null;
+			this.size = o; 
+			this.targetSize = o;
+			this.alpha = 1;
+			this.nick = '';
+			this.targetNick = '';
+			this.nickCanvas = null;
+			this.mass = 0;
+			this.lastMass = 0;
+			this.kMass = 0; 
+			this.massCanvas = null;
+			this.massTxt = '';
+			this.margin = 0;
+			this.scale = 1;
+			this.nickScale = 1;
+			this.massScale = 1;
+			this.virMassScale = 3;
+			this.strokeScale = 1;
+			this.fontSize = 26;
+			this.nickSize = 26;
+			this.lastNickSize = 0;
+			this.massSize = 26;
+			this.virMassSize = 26;
+			this.nickStrokeSize = 3;
+			this.massStrokeSize = 3;
+			this.isFood = n;
+			this.isVirus = r;
+			this.isPlayerCell = l;
+			this.shortMass = h;
+			this.virMassShots = c;
+			this.rescale = false;
+			this.redrawNick = true;
+			this.redrawMass = true;
+			this.optimizedNames = false;
+			this.optimizedMass = false;
+			this.strokeNick = false;
+			this.strokeMass = false;
+			this.removed = false;
+			this.redrawed = 0;
+			this.time = 0;
+			this.skin = null;
+			this.pi2 = 2 * Math.PI;			
+                this.virusColor = null;
+                this.virusStroke = null;
+                this.nHeight = 6;
+
+        this.updateNumPoints= function() {
+            //adjustment of the number of contacts
+            var numPoints = this.size * ogarfooddrawer.scale | 0;
+            numPoints = Math.max(numPoints, 5);
+            numPoints = Math.min(numPoints, 120);
+            if (this.isVirus) numPoints = 100;
+            while (this.points.length > numPoints) {
+                var i = Math.random() * this.points.length | 0;
+                this.points.splice(i, 1);
+                this.pointsVel.splice(i, 1);
+            }
+            if (this.points.length == 0 && numPoints != 0) {
+                this.points.push({
+                    x: this.x,
+                    y: this.y,
+                    rl: this.size,
+                    parent: this//?
+                });
+                this.pointsVel.push(Math.random() - 0.5);
+            }
+            while (this.points.length < numPoints) {
+                var i = Math.random() * this.points.length | 0;
+                var point = this.points[i];
+                var vel = this.pointsVel[i];
+                this.points.splice(i, 0, {
+                    x: point.x,
+                    y: point.y,
+                    rl: point.rl,
+                    parent: this
+                });
+                this.pointsVel.splice(i, 0, vel);
+            }
+        }
+        this.sqDist = function(a, b) {
+            return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+        }
+        this.movePoints= function() {
+            //console.log(this.id)
+            var pointsVel = this.pointsVel.slice();
+            var len = this.points.length;
+            for (var i = 0; i < len; ++i) {
+                var prevVel = pointsVel[(i - 1 + len) % len];
+                var nextVel = pointsVel[(i + 1) % len];
+                var newVel = (this.pointsVel[i] + Math.random() - 0.5) * 0.7;
+                newVel = Math.max(Math.min(newVel, 10), -10);
+                this.pointsVel[i] = (prevVel + nextVel + 8 * newVel) / 10;
+            }
+            this.maxPointRad = 0
+            for (var i = 0; i < len; ++i) {
+                var curP = this.points[i];
+                var curRl = curP.rl;
+                var prevRl = this.points[(i - 1 + len) % len].rl;
+                var nextRl = this.points[(i + 1) % len].rl;
+                var self = this;
+                var affected = M.quadtree.some({
+                    x: curP.x - 5,
+                    y: curP.y - 5,
+                    w: 10,
+                    h: 10
+                }, function(item) {
+                    return item.parent != self && this.sqDist(item, curP) <= 25;
+                }.bind(this));
+
+                //this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY
+
+                //(curP.x < M.mapMinX || curP.y < M.mapMaxY ||
+                //curP.x > M.mapMaxX || curP.y > M.mapMinY))
+
+
+                //(curP.x < M.viewMinX || curP.y < M.viewMaxY ||
+                //curP.x > M.viewMaxX || curP.y > M.viewMinY))
+
+                /*if (!affected &&
+                    (curP.x < M.mapMinX || curP.y < M.mapMaxY ||
+                    curP.x > M.mapMaxX || curP.y > M.mapMinY))
+                {
+                    affected = true;
+                }*/
+                if (affected) {
+                    //console.log('affected!!!!!')
+                    this.pointsVel[i] = Math.min(this.pointsVel[i], 0);
+                    this.pointsVel[i] -= 1;
+                }
+                curRl += this.pointsVel[i];
+                curRl = Math.max(curRl, 0);
+
+                curRl = (9 * curRl + this.size) / 10;//собака
+
+                curP.rl = (prevRl + this.size + 8 * curRl) / 10;//собака
+
+                //curP.rl = (prevRl + nextRl + 8 * curRl) / 10;
+
+                var angle = 2 * Math.PI * i / len;
+                var rl = curP.rl;
+                if(rl > this.maxPointRad) this.maxPointRad = rl
+                if (this.isVirus && i % 2 == 0) {
+                    rl += 5;
+                }
+
+                curP.x = this.x + Math.cos(angle) * rl;
+                curP.y = this.y + Math.sin(angle) * rl;
+            }
+        };
+		
+                this.update = function(t, e, i, s, o, a) {
+                    this.x = t;
+					this.y = e;
+					this.isVirus = s;
+					this.isPlayerCell = o;
+					this.setMass(i);
+					this.setNick(a);
+                };
+        this.removeCell = function () {
+            this.removed = true;
+            var t = M.cells.indexOf(this);
+            if (t != -1) {
+                M.cells.splice(t, 1);
+                if (v.virusesRange) {
+                    t = M.viruses.indexOf(this);
+                    if (t != -1) {
+                        M.viruses.splice(t, 1);
                     }
-                }, this["drawMass"] = function(context) {
-                    if (this["massCanvas"] && !(this["size"] <= 40)) {
-                        var massCanvas = this["massCanvas"];
-                        massCanvas["setDrawing"](g["massColor"], g["massFontFamily"], g["massFontWeight"], this["strokeMass"], this["massStrokeSize"], g["massStrokeColor"]);
-                        if (this["redrawMass"]) {
-                            massCanvas["setTxt"](this["massTxt"]);
-                            this["lastMass"] = this["mass"];
+                }
+            } else {
+                t = M.food.indexOf(this);
+                if (t != -1) {
+                    M.food.splice(t, 1);
+                }
+            }
+            t = M.playerCells.indexOf(this);
+            if (t != -1) {
+                M.removePlayerCell = true;
+                M.playerCells.splice(t, 1);
+                t = M.playerCellIDs.indexOf(this.id);
+                if (t != -1) {
+                    M.playerCellIDs.splice(t, 1);
+                }
+            }
+            if (this.redrawed) {
+                M.removedCells.push(this);
+            }
+            delete M.indexedCells[this.id];
+        };
+        this.moveCell = function () {
+            var t = M.time - this.time;
+            var t1 = t / v.animation;
+            t1 = t1 < 0 ? 0 : t1 > 1 ? 1 : t1;
+            this.x += (this.targetX - this.x) * t1;
+            this.y += (this.targetY - this.y) * t1;
+            this.size += (this.targetSize - this.size) * t1;
+            this.alpha = t1;
+            if (!this.removed) {
+                this.time = M.time;
+                return;
+            }
+            if (t1 == 1) {
+                var t2 = M.removedCells.indexOf(this);
+                if (t2 != -1) {
+                    M.removedCells.splice(t2, 1);
+                }
+            }
+        };
+				this.isInView = function() {
+                    return !(this.id <= 0) && !(this.x + this.size + 40 < M.viewX - M.canvasWidth / 2 / M.scale || this.y + this.size + 40 < M.viewY - M.canvasHeight / 2 / M.scale || this.x - this.size - 40 > M.viewX + M.canvasWidth / 2 / M.scale || this.y - this.size - 40 > M.viewY + M.canvasHeight / 2 / M.scale);
+                };
+				/*
+				this.setMass = function(t) {
+                    return this.size = t, !(t <= 40) && (this.massCanvas ? (this.mass = ~~(t * t / 100), this.redrawMass = true, this.isVirus ? (this.virMassShots && this.mass < 200 && (this.mass = ~~((200 - this.mass) / 14)), this.massTxt = this.mass.toString(), this.mass > 220 ? (this.virusColor = g.mVirusColor, this.virusStroke = g.mVirusStrokeColor) : (this.virusColor = g.virusColor, this.virusStroke = g.virusStrokeColor), true) : (this.massTxt = this.mass.toString(), this.mass <= 200 || (this.shortMass && this.mass >= 1000 ? (this.kMass = Math.round(this.mass / 100) / 10, this.massTxt = this.kMass + 'k', true) : (this.optimizedMass && (this.redrawMass = Math.abs((this.mass - this.lastMass) / this.mass) >= 0.02 || this.rescale), true)))) : (this.massCanvas = new irenderfromagario(), false));
+                };
+				*/
+				this.setMass = function(t) {
+					this.size = t;
+					if (t <= 40) {
+						return false;
+					}
+					if (!this.massCanvas) {
+						this.massCanvas = new irenderfromagario();
+					return false;
+            }			
+			this.mass = ~~(t * t / 100); 
+			this.redrawMass = true;
+			if(this.isVirus){
+				if(this.virMassShots){
+					if(this.mass <= 200){
+					this.mass = ~~((200 - this.mass) / 14);					
+					this.virusColor = g.virusColor, this.virusStroke = g.virusStrokeColor;		
+					
+					}
+					else if (this.mass > 220){
+					this.virusColor = g.mVirusColor, this.virusStroke = g.mVirusStrokeColor;
+					}					
+				}
+				if(v.virusSound && this.lastMass && this.mass < this.lastMass) {
+					void ogarminimapdrawer.playSound(ogarminimapdrawer.setSound(v['virusSoundurl']));
+					}
+					this.massTxt = this.mass.toString();											
+			}
+            this.massTxt = this.mass.toString();
+
+            if (this.shortMass && this.mass >= 1000) {
+                this.kMass = Math.round(this.mass / 100) / 10;
+                this.massTxt = this.kMass + 'k';
+            return true;    
+            }
+            if (this.optimizedMass) {
+                this.redrawMass = Math.abs((this.mass - this.lastMass) / this.mass) >= 0.02 || this.rescale;				
+            }
+            return true;
+        };
+		
+        this.setNick = function (t) {
+            this.nick = t;
+            if (!t || this.isVirus) {
+                return false;
+            }
+            if (!this.nickCanvas) {
+                this.nickCanvas = new irenderfromagario();
+                return false;
+            }
+            return true;
+        };
+        this.setScale = function (t, e, i, s, o) {
+            var t = Math.ceil(t * 10) / 10;
+            this.rescale = false;
+            if (this.scale != t) {
+                this.scale = t;
+                this.rescale = true;
+            }
+            this.nickScale = e;
+            this.massScale = i;
+            this.virMassScale = s;
+            this.strokeScale = o;
+        };
+        this.setFontSize = function () {
+            if (this.isVirus) {
+                this.massSize = Math.ceil(this.virMassSize * this.scale * this.virMassScale);
+                return;
+            }
+            this.fontSize = Math.max(this.size * 0.3, 26) * this.scale;
+            this.nickSize = ~~(this.fontSize * this.nickScale);
+            this.massSize = ~~(this.fontSize * 0.5 * this.massScale);
+            if (this.optimizedNames) {
+                this.redrawNick = Math.abs((this.nickSize - this.lastNickSize) / this.nickSize) >= 0.3 || this.rescale;
+                return;
+            }
+            this.redrawNick = true;
+        };
+        this.setStrokeSize = function () {
+            if (this.strokeNick && !this.isVirus) {
+                this.nickStrokeSize = ~~(this.nickSize * 0.1 * this.strokeScale);
+            }
+            if (this.strokeMass) {
+                this.massStrokeSize = ~~(this.massSize * 0.1 * this.strokeScale);
+            }
+        };
+        this.setDrawing = function () {
+            this.optimizedNames = v.optimizedNames;
+            this.optimizedMass = v.optimizedMass;
+            this.shortMass = v.shortMass;
+            this.virMassShots = v.virMassShots;
+            this.strokeNick = v.namesStroke;
+            this.strokeMass = v.massStroke;
+        };
+        this.setDrawingScale = function () {
+            this.setScale(i.viewScale, g.namesScale, g.massScale, g.virMassScale, g.strokeScale);
+            this.setFontSize();
+            this.setStrokeSize();
+            this.margin = 0;
+        };
+        this.drawNick = function (t) {
+            if (!this.nick || !this.nickCanvas || this.isVirus) {
+                return;
+            }
+            var nickCanvas = this.nickCanvas;
+            nickCanvas.setDrawing(g.namesColor, g.namesFontFamily, g.namesFontWeight, this.strokeNick, this.nickStrokeSize, g.namesStrokeColor);
+            nickCanvas.setTxt(this.nick);
+            if (this.redrawNick) {
+                nickCanvas.setFontSize(this.nickSize);
+                this.lastNickSize = this.nickSize;
+            }
+            nickCanvas.setScale(this.scale);
+            var nickImg = nickCanvas.drawTxt();
+            var w = ~~(nickImg.width / this.scale);
+            var h = ~~(nickImg.height / this.scale);
+            this.margin = ~~(h / 2);
+            t.drawImage(nickImg, ~~this.x - ~~(w / 2), ~~this.y - this.margin, w, h);
+        };
+				this.drawMass = function(context) {
+                    if (this.massCanvas && !(this.size <= 40)) {
+                        var massCanvas = this.massCanvas;
+                        massCanvas.setDrawing(g.massColor, g.massFontFamily, g.massFontWeight, this.strokeMass, this.massStrokeSize, g.massStrokeColor);
+                        if (this.redrawMass) {
+                            massCanvas.setTxt(this.massTxt);
+                            this.lastMass = this.mass;
                         }
-                        massCanvas["setFontSize"](this["massSize"]);
-                        massCanvas["setScale"](this["scale"]);
+                        massCanvas.setFontSize(this.massSize);
+                        massCanvas.setScale(this.scale);
                         let data = massCanvas.drawTxt();
                         let width = ~~(data.width / this.scale);
                         let height = ~~(data.height / this.scale);
@@ -3879,7 +4205,7 @@ var core = function(t, e, i) {
                             context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
                         }
                     }
-                },
+                };
                 this.createStrokeVirusPath = function(shadowXpos, shadowYpos, zeroSizeMax, pixelSizeTargetMax = 6) {
                     const nAngelsOfVirus = ~~(45 * zeroSizeMax / 98);
                     const GROUPSIZE = this.pi2 / nAngelsOfVirus;
@@ -3893,83 +4219,83 @@ var core = function(t, e, i) {
                         ctxfx.lineTo(~~(shadowXpos + tileHeight * Math.sin(j)), ~~(shadowYpos + tileHeight * Math.cos(j)));
                     }
                     return ctxfx;
-                },
-                this["draw"] = function(style, canCreateDiscussions) {
-                    if (!(M["hideSmallBots"] && this["size"] <= 36)) {
-                        style["save"]();
-                        this["redrawed"]++;
+                };
+                this.draw = function(style, canCreateDiscussions) {
+                    if (!(M.hideSmallBots && this.size <= 36)) {
+                        style.save();
+                        this.redrawed++;
                         if (canCreateDiscussions) {
-                            this["moveCell"]();
+                            this.moveCell();
                         }
-                        if (this["removed"]) {
-                            style["globalAlpha"] *= 1 - this["alpha"];
+                        if (this.removed) {
+                            style.globalAlpha *= 1 - this.alpha;
                         }
-                        var value = style["globalAlpha"];
+                        var value = style.globalAlpha;
                         var s = false;
-                        var y = this["isFood"] ? this["size"] + g["foodSize"] : this["size"];
-                        if (style["beginPath"](), style.arc(this["x"], this["y"], y, 0, this.pi2, false), style["closePath"](), this["isFood"]) {
-                            return style["fillStyle"] = this["color"], style.fill(), void style["restore"]();
+                        var y = this.isFood ? this.size + g.foodSize : this.size;
+                        if (style.beginPath(), style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
+                            return style.fillStyle = this.color, style.fill(), void style.restore();
                         }
-                        if (this["isVirus"]) {
-                            return v["transparentViruses"] && (style["globalAlpha"] *= g["virusAlpha"], s = true), v["virColors"] && M.play ? (style["fillStyle"] = ogarminimapdrawer["setVirusColor"](y), style["strokeStyle"] = ogarminimapdrawer["setVirusStrokeColor"](y)) : (style["fillStyle"] = this.virusColor, style["strokeStyle"] = this.virusStroke), style.fill(), s && (style["globalAlpha"] = value, s = false), style["lineWidth"] = g["virusStrokeSize"], v["virusGlow"] ? (style["shadowBlur"] = g["virusGlowSize"], style["shadowColor"] =
-                                g["virusGlowColor"]) : "yeet", style["stroke"](this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), v["showMass"] && (this["setDrawing"](), this["setDrawingScale"](), v["virusGlow"] ? style["shadowBlur"] = 0 : "yote", this["setMass"](this["size"]), this["drawMass"](style)), void style["restore"]();
+                        if (this.isVirus) {
+                            return v.transparentViruses && (style.globalAlpha *= g.virusAlpha, s = true), v.virColors && M.play ? (style.fillStyle = ogarminimapdrawer.setVirusColor(y), style.strokeStyle = ogarminimapdrawer.setVirusStrokeColor(y)) : (style.fillStyle = this.virusColor, style.strokeStyle = this.virusStroke), style.fill(), s && (style.globalAlpha = value, s = false), style.lineWidth = g.virusStrokeSize, v.virusGlow ? (style.shadowBlur = g.virusGlowSize, style.shadowColor =
+                                g.virusGlowColor) : "yeet", style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), v.showMass && (this.setDrawing(), this.setDrawingScale(), v.virusGlow ? style.shadowBlur = 0 : "yote", this.setMass(this.size), this.drawMass(style)), void style.restore();
                         }
-                        if (v["transparentCells"]) {
-                            style["globalAlpha"] *= g["cellsAlpha"];
+                        if (v.transparentCells) {
+                            style.globalAlpha *= g.cellsAlpha;
                             s = true;
                         }
-                        var color = this["color"];
+                        var color = this.color;
                         if (M.play) {
-                            if (this["isPlayerCell"]) {
-                                if (v["myCustomColor"]) {
-                                    color = ogarcopythelb["color"];
+                            if (this.isPlayerCell) {
+                                if (v.myCustomColor) {
+                                    color = ogarcopythelb.color;
                                 }
                             } else {
-                                if (v["oppColors"] && !v["oppRings"]) {
-                                    color = this["oppColor"];
+                                if (v.oppColors && !v.oppRings) {
+                                    color = this.oppColor;
                                 }
                             }
                         }
-                        style["fillStyle"] = color;
+                        style.fillStyle = color;
                         style.fill();
                         if (s) {
-                            style["globalAlpha"] = value;
+                            style.globalAlpha = value;
                             s = false;
                         }
                         var node = null;
-                        if (v["customSkins"] && M["showCustomSkins"] && (node = ogarminimapdrawer["getCustomSkin"](this["targetNick"], this["color"])) && (((v["transparentSkins"] || M.play && v["oppColors"]) && (!this["isPlayerCell"] || v["myTransparentSkin"]) || this["isPlayerCell"] && v["myTransparentSkin"]) && (style["globalAlpha"] *= g["skinsAlpha"], s = true), 
+                        if (v.customSkins && M.showCustomSkins && (node = ogarminimapdrawer.getCustomSkin(this.targetNick, this.color)) && (((v.transparentSkins || M.play && v.oppColors) && (!this.isPlayerCell || v.myTransparentSkin) || this.isPlayerCell && v.myTransparentSkin) && (style.globalAlpha *= g.skinsAlpha, s = true), 
 						
-						//style["drawImage"](node, this["x"] - y, this["y"] - y, 2 * y, 2 * y), s && (style["globalAlpha"] = value, s = false)), 
-						style["drawImage"](node, this["x"] - y, this["y"] - y, 2 * y, 2 * y), 
-						//this["targetNick"].includes("℄") && (style["rotate"](M["cAngle1"])) && (style["drawImage"](cimg2, this["x"] - y * 1.5, this["y"] - y * 1.5, 3 * y, 3 * y)) &&
-						(this["targetNick"].includes("℄🌀Jimboy3100") || this["targetNick"].includes("℄🌀     ᑕᖇᗩƵƳ😈") || this["targetNick"].includes("℄🌀Shere Khan")) && (style["drawImage"](cimg2, this["x"] - y * 2, this["y"] - y * 2, 4 * y, 4 * y)),
-						//(M["cAngle"] += .007), console.log(M["cAngle"]),
-						//style["rotate"](M["cAngle1"]),
-						s && (style["globalAlpha"] = value, s = false)), 
-						v["teammatesInd"] && !this["isPlayerCell"] && y <= 800 && window.teammatenicks && (window.teammatenicks.includes(this["targetNick"])) && ogarfooddrawer["drawTeammatesInd"](style, this["x"], this["y"], y), v["noNames"] && !v["showMass"] || canCreateDiscussions) {
+						//style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), s && (style.globalAlpha = value, s = false)), 
+						style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), 
+						//this.targetNick.includes("℄") && (style.rotate(M.cAngle1)) && (style.drawImage(cimg2, this.x - y * 1.5, this.y - y * 1.5, 3 * y, 3 * y)) &&
+						(this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("℄🌀     ᑕᖇᗩƵƳ😈") || this.targetNick.includes("℄🌀Shere Khan")) && (style.drawImage(cimg2, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)),
+						//(M.cAngle += .007), console.log(M.cAngle),
+						//style.rotate(M.cAngle1),
+						s && (style.globalAlpha = value, s = false)), 
+						v.teammatesInd && !this.isPlayerCell && y <= 800 && window.teammatenicks && (window.teammatenicks.includes(this.targetNick)) && ogarfooddrawer.drawTeammatesInd(style, this.x, this.y, y), v.noNames && !v.showMass || canCreateDiscussions) {
 
-//                            y <= 200 && (node || ogarminimapdrawer["checkSkinsMap"](this["targetNick"], this["color"])) && ogarfooddrawer["drawTeammatesInd"](style, this["x"], this["y"], y), v["noNames"] && !v["showMass"] || canCreateDiscussions) {
+//                            y <= 200 && (node || ogarminimapdrawer.checkSkinsMap(this.targetNick, this.color)) && ogarfooddrawer.drawTeammatesInd(style, this.x, this.y, y), v.noNames && !v.showMass || canCreateDiscussions) {
 
-                            style["restore"]();
+                            style.restore();
                         } else {
                             var recursive = false;
-                            if (!this["isPlayerCell"] && (recursive = ogarminimapdrawer["setAutoHideCellInfo"](y)) && v["autoHideNames"] && v["autoHideMass"]) {
-                                style["restore"]();
+                            if (!this.isPlayerCell && (recursive = ogarminimapdrawer.setAutoHideCellInfo(y)) && v.autoHideNames && v.autoHideMass) {
+                                style.restore();
                             } else {
-                                this["setDrawing"]();
-                                this["setDrawingScale"]();
-                                style["globalAlpha"] *= g["textAlpha"];
-                                if (!(v["noNames"] || recursive && v["autoHideNames"] || this["isPlayerCell"] && v["hideMyName"] || node && v["hideTeammatesNames"])) {
-                                    if (this["setNick"](this["targetNick"])) {
-                                        this["drawNick"](style);
+                                this.setDrawing();
+                                this.setDrawingScale();
+                                style.globalAlpha *= g.textAlpha;
+                                if (!(v.noNames || recursive && v.autoHideNames || this.isPlayerCell && v.hideMyName || node && v.hideTeammatesNames)) {
+                                    if (this.setNick(this.targetNick)) {
+                                        this.drawNick(style);
                                     }
                                 }
-                                if (!(!v["showMass"] || recursive && v["autoHideMass"] || this["isPlayerCell"] && v["hideMyMass"] || v["hideEnemiesMass"] && !this["isPlayerCell"] && !this["isVirus"])) {
-                                    if (this["setMass"](this["size"])) {
-                                        this["drawMass"](style);
+                                if (!(!v.showMass || recursive && v.autoHideMass || this.isPlayerCell && v.hideMyMass || v.hideEnemiesMass && !this.isPlayerCell && !this.isVirus)) {
+                                    if (this.setMass(this.size)) {
+                                        this.drawMass(style);
                                     }
                                 }
-                                style["restore"]();
+                                style.restore();
                             }
                         }
                     }
@@ -3977,6 +4303,20 @@ var core = function(t, e, i) {
         }
         window.legendmod1 = ogarbasicassembly;
         var M = {
+				'quadtree':null,
+				updateQuadtree: function(cells) {
+				var w = ogarfooddrawer.canvasWidth / ogarfooddrawer.scale;
+				var h = ogarfooddrawer.canvasHeight / ogarfooddrawer.scale;
+				var x = (M.viewX - w / 2);
+				var y = (M.viewY - h / 2);
+				this.quadtree = new PointQuadTree(x, y, w, h, 32);
+				for (var i = 0; i < cells.length; ++i) {
+					var cell = cells[i];
+					for (var n = 0; n < cell.points.length; ++n) {
+						this.quadtree.insert(cell.points[n]);
+					}
+				}
+			},			
             'ws': null,
             'socket': null,
             'protocolKey': null,
@@ -4176,7 +4516,7 @@ var core = function(t, e, i) {
                             if (!this['accessTokenSent']) {
                                 i || (i = 102);
                                 for (var s = t.length, o = this.clientVersionString.length, a = [i, 8, 1, 18, s + o + 23, 1, 8, 10, 0x52, s + o + 18, 1, 8, e, 18, o + 8, 8, 5, 18, o], n = 0; n < o; n++) a.push(this.clientVersionString.charCodeAt(n));
-                                for (a.push(24, 0, 32, 0, 0x1a, s + 3, 1, 10, s, 1), n = 0; n < s; n++) a.push(t.charCodeAt(n));
+                                for (a.push(24, 0, 32, 0, 26, s + 3, 1, 10, s, 1), n = 0; n < s; n++) a.push(t.charCodeAt(n));
                                 a = new Uint8Array(a);
                                 var r = new DataView(a['buffer']);
                                 this.sendMessage(r);
@@ -4732,8 +5072,12 @@ var core = function(t, e, i) {
                 'getZoom': function() {
                     return Math['max'](this['canvasWidth'] / 1080, this['canvasHeight'] / 1920) * M['zoomValue'];
                 },
-                'renderFrame': function() {
-                    for (M['time'] = Date['now'](), e = 0; e < M['cells'].length; e++) M['cells'][e]['moveCell']();
+/*                'renderFrame': function() {
+                    //for (M['time'] = Date['now'](), e = 0; e < M['cells'].length; e++) M['cells'][e]['moveCell']();
+				    M.time = Date.now();
+						for (i = 0; i < M.cells.length; i++) {
+							M.cells[i].moveCell();
+						}	
                     if (this['setView'](), M['getCursorPosition'](), M['sortCells'](), M['compareCells'](), this['ctx']['clearRect'](0, 0, this['canvasWidth'], this['canvasHeight']), v['showGrid'] && this['drawGrid'](this['ctx'], this['canvasWidth'], this['canvasHeight'], this['scale'], this.camX, this.camY), this['ctx']['save'](), this['ctx']['translate'](this['canvasWidth'] / 2, this['canvasHeight'] / 2), this['ctx']['scale'](this['scale'], this['scale']), this['ctx']['translate'](-this.camX, -this.camY), v['showBgSectors'] && this['drawSectors'](this['ctx'], M['mapOffsetFixed'], g['sectorsX'], g['sectorsY'], M['mapMinX'], M['mapMinY'], M['mapMaxX'], M['mapMaxY'], g['gridColor'], g['sectorsColor'], g['sectorsWidth'], true), ':battleroyale' === M['gameMode'] && this['drawBattleArea'](this['ctx']), v['showMapBorders']) {
                         var t = g['bordersWidth'] / 2;
                         this['drawMapBorders'](this['ctx'], M['mapOffsetFixed'], M['mapMinX'] - t, M['mapMinY'] - t, M['mapMaxX'] + t, M['mapMaxY'] + t, g['bordersColor'], g['bordersWidth']);
@@ -4743,7 +5087,144 @@ var core = function(t, e, i) {
                     for (var e = 0; e < M['removedCells'].length; e++) M['removedCells'][e]['draw'](this['ctx'], true);
                     for (e = 0; e < M['cells'].length; e++) M['cells'][e]['draw'](this['ctx']);
                     this['ctx']['restore'](), ':teams' === M['gameMode'] && this['pieChart'] && this['pieChart']['width'] && this['ctx']['drawImage'](this['pieChart'], this['canvasWidth'] - this['pieChart']['width'] - 10, 10);
-                },
+                }, */
+        'renderFrame': function () {
+            //this.ctx.start2D();
+            M.time = Date.now();
+            for (i = 0x0; i < M.cells.length; i++) {
+                M.cells[i].moveCell();
+            }
+            this.setView();
+            M.getCursorPosition();
+            M.sortCells();
+            M.compareCells();
+            this.ctx.clearRect(0x0, 0x0, this.canvasWidth, this.canvasHeight);
+            if (v.showGrid) {
+                this.drawGrid(this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
+            }
+            this.ctx.save();
+            this.ctx.translate(this.canvasWidth / 0x2, this.canvasHeight / 0x2);
+            this.ctx.scale(this.scale, this.scale);
+            this.ctx.translate(-this.camX, -this.camY);
+            if (v.showBgSectors) {
+                this.drawSectors(this.ctx, M.mapOffsetFixed, g.sectorsX, g.sectorsY, M.mapMinX, M.mapMinY, M.mapMaxX, M.mapMaxY, g.gridColor, g.sectorsColor, g.sectorsWidth, true);
+            }
+            if (M.gameMode === ':battleroyale') {
+                this.drawBattleArea(this.ctx);
+            }
+            if (v.showMapBorders) {
+                var _0x6993ee = g.bordersWidth / 0x2;
+                this.drawMapBorders(this.ctx, M.mapOffsetFixed, M.mapMinX - _0x6993ee, M.mapMinY - _0x6993ee, M.mapMaxX + _0x6993ee, M.mapMaxY + _0x6993ee, g.bordersColor, g.bordersWidth);
+            }
+
+
+            if (v.virusesRange) {
+                this.drawVirusesRange(this.ctx, M.viruses);
+            }
+            this.drawFood();
+            if (M.play) {
+                if (v.splitRange) {
+                    this.drawSplitRange(this.ctx, M.biggerSTECellsCache, M.playerCells, M.selectBiggestCell);
+                }
+                if (v.oppRings) {
+                    this.drawOppRings(this.ctx, this.scale, M.biggerSTECellsCache, M.biggerCellsCache, M.smallerCellsCache, M.STECellsCache);
+                }
+                if (v.cursorTracking) {
+                    this.drawCursorTracking(this.ctx, M.playerCells, M.cursorX, M.cursorY);
+                }
+            }
+
+            this.drawGhostCells();
+            
+            for (var i = 0x0; i < M.removedCells.length; i++) {
+                M.removedCells[i].draw(this.ctx, true);
+            }
+
+
+            v.jellyPhisycs&&M.updateQuadtree(M.cells);//
+
+            for (i = 0x0; i < M.cells.length; i++) {
+
+                if(v.jellyPhisycs){
+                    M.cells[i].updateNumPoints();
+                    M.cells[i].movePoints();
+                }
+
+                M.cells[i].draw(this.ctx);
+
+
+                if(ogarfooddrawer.LMB && this.pointInCircle(M.cursorX, M.cursorY, M.cells[i].x, M.cells[i].y, M.cells[i].size)){
+                   M.selected = M.cells[i].id
+                   //this.drawRing(this.ctx,M.cells[i].x,M.cells[i].y,M.cells[i].size,0.75,'#ffffff')
+                }
+            }
+            M.indexedCells[M.selected] && this.drawRing(this.ctx,
+                M.indexedCells[M.selected].x,
+                M.indexedCells[M.selected].y,
+                M.indexedCells[M.selected].size,
+            0.75,'#ffffff')
+            
+            if(ogarfooddrawer.RMB && M.indexedCells[M.selected] && M.playerCellIDs.length){
+                var index = M.selectBiggestCell ? M.playerCells.length - 0x1 : 0x0;
+                //ctx.arc(playerCells[index].x, playerCells[index].y, playerCells[index].size + 0x2f8, 0x0, this.pi2, false);
+                if(M.playerCells[index] == undefined) return;
+                var xc = M.playerCells[index].targetX//.x
+                var yc = M.playerCells[index].targetY//.y
+                
+                var x = M.indexedCells[M.selected].targetX//.x
+                var y = M.indexedCells[M.selected].targetY//.y
+                
+                var a = xc - x
+                var b = yc - y
+                var distance = Math.sqrt( a*a + b*b ) - (M.indexedCells[M.selected].size+M.playerCells[index].size)
+                
+                var ang = Math.atan2(y - yc, x - xc);
+             
+                M.cursorX= xc +(Math.cos(ang)*distance)
+                M.cursorY= yc +(Math.sin(ang)*distance)
+                M.sendPosition()
+                //console.log(xc,yc,x,y,M.cursorX,M.cursorY)
+                //Math.deg(ang)
+
+                
+                /*var xc = M.playerCells[index].x,
+                    yc = M.playerCells[index].y,*/
+                //R = 100000000,
+                /*ang = Math.atan2(M.indexedCells[M.selected].y - yc, M.indexedCells[M.selected].x - xc);
+                M.cursorX= Math.cos(ang)
+                M.cursorY= Math.sin(ang)*/
+                //Math.deg(ang)
+
+                //M.cursorX = M.indexedCells[M.selected].x
+                //M.cursorY = M.indexedCells[M.selected].y
+            }
+
+
+            this.ctx.restore();
+            if (M.gameMode === ':teams') {
+                if (this.pieChart && this.pieChart.width) {
+                    this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 0xa, 0xa);
+                }
+            }
+            //this.ctx.finish2D();
+        },
+        pointInCircle: function(x, y, cx, cy, radius) {
+            var distancesquared = (x - cx) * (x - cx) + (y - cy) * (y - cy);
+            return distancesquared <= radius * radius;
+        },
+        drawRing : function (ctx, x, y, size, alpha, color) {
+            ctx.lineWidth = 20;
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = color;
+                ctx.beginPath();
+                ctx.arc(x, y, size-10, 0x0, this.pi2, false);
+                ctx.closePath();
+                ctx.stroke();
+            
+            ctx.globalAlpha = 1;
+        },
+
+		
                 'drawGrid': function(t, e, i, s, o, a) {
                     var n = e / s;
                     var r = i / s;
