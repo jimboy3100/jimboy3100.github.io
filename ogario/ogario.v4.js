@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.130b MEGA TEST
+// v1.144 MEGA TEST
 // Game Configurations
 
 window.agarversion = "v12/2106/";
@@ -57,6 +57,7 @@ core.registerSkin = function(a, b, c, d, e){
 	window.customskinsurl=c;
 }
 */
+var dyinglight1load;
 function UpperCase(str) {
     return str.toUpperCase();
 }
@@ -160,6 +161,7 @@ var core = function(t, e, i) {
                     'messageSound': 'Dźwięk powiadomienia o wiadomości',
                     'commandSound': 'Dźwięk powiadomienia o komendzie',
 					'virusSoundurl': 'Virus shot sound',
+					'virusSound': 'Virus shot sound',
                     'showTop5': 'Pokaż top 5 teamu',
                     'showTargeting': 'Pokaż namierzanie',
                     'showTime': 'Pokaż aktualny czas',
@@ -527,6 +529,7 @@ var core = function(t, e, i) {
                     'messageSound': 'Message notification sound',
                     'commandSound': 'Command notification sound',
 					'virusSoundurl': 'Virus shot sound',
+					'virusSound': 'Virus shot sound',
                     'showTop5': 'Show teamboard',
                     'showTargeting': 'Show targeting',
                     'showTime': 'Show current time',
@@ -1475,7 +1478,10 @@ var core = function(t, e, i) {
                 "commanderImage2": "https://jimboy3100.github.io/banners/drawCommander2.png",
                 "commanderImage3": "https://jimboy3100.github.io/banners/drawCommander3.png",
                 "commanderImage4": "https://jimboy3100.github.io/banners/drawCommander4.png",
-                "commanderImage5": "https://jimboy3100.github.io/banners/drawCommander5.png",				
+                "commanderImage5": "https://jimboy3100.github.io/banners/drawCommander5.png",	
+				"commanderImageDyingLight": "https://jimboy3100.github.io/banners/icondyinglightzombie.png",	
+				"commanderImageDyingLightvirus": "https://jimboy3100.github.io/banners/icondyinglightvirus.png",
+			
                 ////
                 'miniMapFont': 'ubuntu-bold',
                 'miniMapFontFamily': 'Ubuntu',
@@ -2473,7 +2479,7 @@ var core = function(t, e, i) {
 					this["addOptions"](["autoZoom"], "zoomGroup"), 
 					this["addOptions"](["quickResp", "autoResp"], "respGroup"), 
 					this["addOptions"](["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup"), 
-					this["addOptions"](["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSoundurl"], "massGroup"),
+					this["addOptions"](["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound"], "massGroup"),
 					this["protocolMode"] ? this["addOptions"](["customSkins"], "skinsGroup") : this["addOptions"](["customSkins", "vanillaSkins"], "skinsGroup"), 
 					this["addOptions"](["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup"), 
 					this["addOptions"](["myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow"], "transparencyGroup"), 
@@ -3844,8 +3850,17 @@ var core = function(t, e, i) {
 
         function ogarbasicassembly(t, e, s, o, a, n, r, l, h, c) {
 			cimg2 = new Image;
-            cimg2.src = g.commanderImage2;
-			
+            cimg2.src = g.commanderImage2;		
+			cimg5 = new Image;			
+            cimg5.src = g.commanderImage5;
+			if (dyinglight1load=="yes"){
+			cimgDyingLight = new Image;
+            cimgDyingLight.src = g.commanderImageDyingLight;	
+			cimgDyingLight = new Image;
+            cimgDyingLight.src = g.commanderImageDyingLight;	
+			cimgDyingLightvirus = new Image;
+            cimgDyingLightvirus.src = g.commanderImageDyingLightvirus;	
+			}			
             this.id = t; 
 			this.x = e; 
 			this.y = s; 
@@ -4183,11 +4198,7 @@ var core = function(t, e, i) {
             var w = ~~(nickImg.width / this.scale);
             var h = ~~(nickImg.height / this.scale);
             this.margin = ~~(h / 2);
-		
-		// Fix crash when the image has a height of 0 and cannot be drawn
-		try {
             t.drawImage(nickImg, ~~this.x - ~~(w / 2), ~~this.y - this.margin, w, h);
-		} catch (e) {}
         };
 				this.drawMass = function(context) {
                     if (this.massCanvas && !(this.size <= 40)) {
@@ -4239,6 +4250,9 @@ var core = function(t, e, i) {
                             return style.fillStyle = this.color, style.fill(), void style.restore();
                         }
                         if (this.isVirus) {
+							if (dyinglight1load == "yes" ) {
+							style.drawImage(cimgDyingLightvirus, this.x - 0.8 * this.size, this.y - 0.8 * this.size, 1.6 * this.size, 1.6 * this.size);
+							}							
                             return v.transparentViruses && (style.globalAlpha *= g.virusAlpha, s = true), v.virColors && M.play ? (style.fillStyle = ogarminimapdrawer.setVirusColor(y), style.strokeStyle = ogarminimapdrawer.setVirusStrokeColor(y)) : (style.fillStyle = this.virusColor, style.strokeStyle = this.virusStroke), style.fill(), s && (style.globalAlpha = value, s = false), style.lineWidth = g.virusStrokeSize, v.virusGlow ? (style.shadowBlur = g.virusGlowSize, style.shadowColor =
                                 g.virusGlowColor) : "yeet", style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), v.showMass && (this.setDrawing(), this.setDrawingScale(), v.virusGlow ? style.shadowBlur = 0 : "yote", this.setMass(this.size), this.drawMass(style)), void style.restore();
                         }
@@ -4265,21 +4279,38 @@ var core = function(t, e, i) {
                             s = false;
                         }
                         var node = null;
-                        if (v.customSkins && M.showCustomSkins && (node = ogarminimapdrawer.getCustomSkin(this.targetNick, this.color)) && (((v.transparentSkins || M.play && v.oppColors) && (!this.isPlayerCell || v.myTransparentSkin) || this.isPlayerCell && v.myTransparentSkin) && (style.globalAlpha *= g.skinsAlpha, s = true), 
+                        if (v.customSkins && M.showCustomSkins && (node = ogarminimapdrawer.getCustomSkin(this.targetNick, this.color)) && 
+						(((v.transparentSkins || M.play && v.oppColors) && (!this.isPlayerCell || v.myTransparentSkin) || this.isPlayerCell && v.myTransparentSkin) && (style.globalAlpha *= g.skinsAlpha, s = true), 
 						
 						//style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), s && (style.globalAlpha = value, s = false)), 
+						
 						style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), 
+						
 						//this.targetNick.includes("℄") && (style.rotate(M.cAngle1)) && (style.drawImage(cimg2, this.x - y * 1.5, this.y - y * 1.5, 3 * y, 3 * y)) &&
-						(this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("℄🌀     ᑕᖇᗩƵƳ😈") || this.targetNick.includes("℄🌀Shere Khan")) && (style.drawImage(cimg2, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)),
+						(this.targetNick.includes("The Dying Light")) && (style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)),
+						(this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("℄🌀     ᑕᖇᗩƵƳ😈") || this.targetNick.includes("℄🌀ᔕᕼᗴᖇᗴ ᛕᕼᗩᑎ")) && 
+						(style.drawImage(cimg2, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)),
 						//(M.cAngle += .007), console.log(M.cAngle),
 						//style.rotate(M.cAngle1),
+						
 						s && (style.globalAlpha = value, s = false)), 
-						v.teammatesInd && !this.isPlayerCell && y <= 800 && window.teammatenicks && (window.teammatenicks.includes(this.targetNick)) && ogarfooddrawer.drawTeammatesInd(style, this.x, this.y, y), v.noNames && !v.showMass || canCreateDiscussions) {
+						
+						v.teammatesInd && !this.isPlayerCell && y <= 800 && 
+						window.teammatenicks && 
+						(window.teammatenicks.includes(this.targetNick)) && 
+						ogarfooddrawer.drawTeammatesInd(style, this.x, this.y, y), 
+						
+						v.noNames && !v.showMass || canCreateDiscussions) {
 
 //                            y <= 200 && (node || ogarminimapdrawer.checkSkinsMap(this.targetNick, this.color)) && ogarfooddrawer.drawTeammatesInd(style, this.x, this.y, y), v.noNames && !v.showMass || canCreateDiscussions) {
 
                             style.restore();
                         } else {
+							if (dyinglight1load == "yes" && node==null) {
+							style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
+							}
+							
+							
                             var recursive = false;
                             if (!this.isPlayerCell && (recursive = ogarminimapdrawer.setAutoHideCellInfo(y)) && v.autoHideNames && v.autoHideMass) {
                                 style.restore();
@@ -4325,13 +4356,13 @@ var core = function(t, e, i) {
             'clientKey': null,
             'connectionOpened': false,
             'accessTokenSent': false,
-            'clientVersion': 30400,
+            'clientVersion': 0x76c0,
             'clientVersionString': '3.4.0',
             'time': Date['now'](),
             'serverTime': 0,
             'serverTimeDiff': 0,
             'loggedInTime': 0,
-            'mapSize': 15927,
+            'mapSize': 0x373e,
             'mapOffset': 7071,
             'mapOffsetX': 0,
             'mapOffsetY': 0,
@@ -5093,14 +5124,14 @@ var core = function(t, e, i) {
         'renderFrame': function () {
             //this.ctx.start2D();
             M.time = Date.now();
-            for (i = 0; i < M.cells.length; i++) {
+            for (i = 0x0; i < M.cells.length; i++) {
                 M.cells[i].moveCell();
             }
             this.setView();
             M.getCursorPosition();
             M.sortCells();
             M.compareCells();
-            this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+            this.ctx.clearRect(0x0, 0x0, this.canvasWidth, this.canvasHeight);
             if (v.showGrid) {
                 this.drawGrid(this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
             }
@@ -5130,6 +5161,7 @@ var core = function(t, e, i) {
                 }
                 if (v.oppRings) {
                     this.drawOppRings(this.ctx, this.scale, M.biggerSTECellsCache, M.biggerCellsCache, M.smallerCellsCache, M.STECellsCache);
+					
                 }
                 if (v.cursorTracking) {
                     this.drawCursorTracking(this.ctx, M.playerCells, M.cursorX, M.cursorY);
@@ -5138,14 +5170,14 @@ var core = function(t, e, i) {
 
             this.drawGhostCells();
             
-            for (var i = 0; i < M.removedCells.length; i++) {
+            for (var i = 0x0; i < M.removedCells.length; i++) {
                 M.removedCells[i].draw(this.ctx, true);
             }
 
 
             v.jellyPhisycs&&M.updateQuadtree(M.cells);//
 
-            for (i = 0; i < M.cells.length; i++) {
+            for (i = 0x0; i < M.cells.length; i++) {
 
                 if(v.jellyPhisycs){
                     M.cells[i].updateNumPoints();
@@ -5167,8 +5199,8 @@ var core = function(t, e, i) {
             0.75,'#ffffff')
             
             if(ogarfooddrawer.RMB && M.indexedCells[M.selected] && M.playerCellIDs.length){
-                var index = M.selectBiggestCell ? M.playerCells.length - 1 : 0;
-                //ctx.arc(playerCells[index].x, playerCells[index].y, playerCells[index].size + 0x2f8, 0, this.pi2, false);
+                var index = M.selectBiggestCell ? M.playerCells.length - 0x1 : 0x0;
+                //ctx.arc(playerCells[index].x, playerCells[index].y, playerCells[index].size + 0x2f8, 0x0, this.pi2, false);
                 if(M.playerCells[index] == undefined) return;
                 var xc = M.playerCells[index].targetX//.x
                 var yc = M.playerCells[index].targetY//.y
@@ -5205,7 +5237,7 @@ var core = function(t, e, i) {
             this.ctx.restore();
             if (M.gameMode === ':teams') {
                 if (this.pieChart && this.pieChart.width) {
-                    this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
+                    this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 0xa, 0xa);
                 }
             }
             //this.ctx.finish2D();
@@ -5219,7 +5251,7 @@ var core = function(t, e, i) {
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = color;
                 ctx.beginPath();
-                ctx.arc(x, y, size-10, 0, this.pi2, false);
+                ctx.arc(x, y, size-10, 0x0, this.pi2, false);
                 ctx.closePath();
                 ctx.stroke();
             
