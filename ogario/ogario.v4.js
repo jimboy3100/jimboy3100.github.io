@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.159 MEGA TEST
+// v1.165 MEGA TEST
 // Game Configurations
 
 window.agarversion = "v12/2106/";
@@ -3862,10 +3862,22 @@ var core = function(t, e, i) {
 			if (dyinglight1load=="yes"){
 			cimgDyingLight = new Image;
             cimgDyingLight.src = g.commanderImageDyingLight;	
-			cimgDyingLight = new Image;
-            cimgDyingLight.src = g.commanderImageDyingLight;	
 			cimgDyingLightvirus = new Image;
             cimgDyingLightvirus.src = g.commanderImageDyingLightvirus;	
+			
+			
+			cimgDyingLight1 = new Image;
+            cimgDyingLight1.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie2.png';			
+			cimgDyingLight2 = new Image;
+            cimgDyingLight2.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie3.png';		
+			cimgDyingLight3 = new Image;
+            cimgDyingLight3.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie4.png';		
+			cimgDyingLight4 = new Image;
+            cimgDyingLight4.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie5.png';		
+			cimgDyingLight5 = new Image;
+            cimgDyingLight5.src = 'https://jimboy3100.github.io/banners/icondyinglightzombiebig.png';		
+			cimgDyingLight6 = new Image;
+            cimgDyingLight6.src = 'https://jimboy3100.github.io/banners/icondyinglightvolaltile.png';			
 			}		
 			this.oldAlpha=0;
             this.id = t; 
@@ -4279,12 +4291,18 @@ var core = function(t, e, i) {
                                 }
                             }
                         }
+						if (dyinglight1load != "yes"){
                         style.fillStyle = color;
                         style.fill();
+						}
                         if (s) {
                             style.globalAlpha = value;
                             s = false;
                         }
+						if (dyinglight1load != "yes"){
+                            style.globalAlpha = 1;
+                            s = false;							
+						}
                         var node = null;
                         if (v.customSkins && M.showCustomSkins && (node = ogarminimapdrawer.getCustomSkin(this.targetNick, this.color)) && 
 						(((v.transparentSkins || M.play && v.oppColors) && (!this.isPlayerCell || v.myTransparentSkin) || this.isPlayerCell && v.myTransparentSkin) && (style.globalAlpha *= g.skinsAlpha, s = true), 
@@ -4295,7 +4313,7 @@ var core = function(t, e, i) {
 						(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (this.oldAlpha=style.globalAlpha, style.globalAlpha = 0.1, style.drawImage(cimg7, this.x - y * 4, this.y - y * 4, 8 * y, 8 * y), style.globalAlpha=this.oldAlpha),
 						//(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (style.drawImage(cimg6, this.x - y, this.y - y, 2 * y, 2 * y)),
 						//this.targetNick.includes("℄") && (style.rotate(M.cAngle1)) && (style.drawImage(cimg2, this.x - y * 1.5, this.y - y * 1.5, 3 * y, 3 * y)) &&
-						(this.targetNick.includes("The Dying Light")) && (style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)),
+						(this.targetNick.includes("The Dying Light")) && (style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)), 
 						(this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("℄🌀     ᑕᖇᗩƵƳ😈") || this.targetNick.includes("℄🌀ᔕᕼᗴᖇᗴ ᛕᕼᗩᑎ")) && 
 						(style.drawImage(cimg2, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)),
 						//(M.cAngle += .007), console.log(M.cAngle),
@@ -4315,7 +4333,28 @@ var core = function(t, e, i) {
                             style.restore();
                         } else {
 							if (dyinglight1load == "yes" && node==null) {
-							style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
+							//console.log(this.mass);
+							if (this.mass && this.mass<=500){							
+								style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
+								}
+							else if (this.mass && this.mass<=1000){
+								style.drawImage(cimgDyingLight1, this.x - y, this.y - y, 2 * y, 2 * y);
+								}
+							else if (this.mass && this.mass<=1500){
+								style.drawImage(cimgDyingLight2, this.x - y, this.y - y, 2 * y, 2 * y);
+								}
+							else if (this.mass && this.mass<=2500){
+								style.drawImage(cimgDyingLight3, this.x - y, this.y - y, 2 * y, 2 * y);
+								}
+							else if (this.mass && this.mass<=5000){
+								style.drawImage(cimgDyingLight4, this.x - y, this.y - y, 2 * y, 2 * y);
+								}
+							else if (this.mass && this.mass<=10000){
+								style.drawImage(cimgDyingLight5, this.x - y, this.y - y, 2 * y, 2 * y);
+								}	
+							else if (this.mass && this.mass>10000){
+								style.drawImage(cimgDyingLight6, this.x - y, this.y - y, 2 * y, 2 * y);
+								}									
 							}
 							
 							
@@ -4333,11 +4372,13 @@ var core = function(t, e, i) {
                                 }
                                 if (!(!v.showMass || recursive && v.autoHideMass || this.isPlayerCell && v.hideMyMass || v.hideEnemiesMass && !this.isPlayerCell && !this.isVirus)) {
                                     if (this.setMass(this.size)) {
+										
                                         this.drawMass(style);
                                     }
                                 }
                                 style.restore();
                             }
+							
                         }
                     }
                 };
