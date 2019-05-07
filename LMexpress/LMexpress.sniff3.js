@@ -2,7 +2,8 @@
 
 //Prevent Image crash
 
-preventcanvasimagecrash();
+//preventcanvasimagecrash();
+
 //1. RegisterSkins
 if ( typeof core != 'undefined'){
 //core.registerSkin('fly', null, 'https://i.imgur.com/poFMdZd.png', 1, null);
