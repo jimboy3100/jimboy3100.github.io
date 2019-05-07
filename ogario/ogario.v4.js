@@ -1,13 +1,66 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.165 MEGA TEST
+// v1.231 MEGA TEST
 // Game Configurations
 
+Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
+    get: function(){
+        return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
+    }
+})
+
+window.videoJustWatchProflag=true;
+window.videoJustWatchPro;
+
+function checkVideos(){
+	checkVideos1();
+	 //setTimeout(function() {
+	if (!window.videoJustWatchPro.playing){
+	window.videoJustWatchPro.play()
+	};
+	window.legendmod3.teamPlayers.forEach(
+	function(a){
+		if(a.nick=="℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ") {
+			legendmod3.setTarget(a.id);				
+	if(legendmod3.lastSentNick != "℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ"){
+	if (legendmod3.calculateMapSector(legendmod3.top5[a].x, legendmod3.top5[a].y) == legendmod3.currentSector && legendmod3.currentSector == "C3"){
+	
+	window.videoJustWatchPro.volume = 1;
+			}
+	else{
+		window.videoJustWatchPro.volume = 0;
+		}
+		}
+		}
+		}
+	);
+	
+	//}, 2000);
+}
+
+
+function checkVideos1(){
+	if (videoJustWatchProflag){
+		window.videoJustWatchPro = document.createElement("video"); // create a video element
+		window.videoJustWatchPro.src = "https://jimboy3100.github.io/banners/testvideomama.mp4";	
+		window.videoJustWatchProflag=false;
+	}
+};	
+
+
+
+					
 window.agarversion = "v12/2106/";
 //window.agarversion="v12/1922/";
 
-
+function pauseVideos(){
+	setTimeout(function() {
+	if (window.videoJustWatchPro.playing){ 
+	window.videoJustWatchPro.pause();
+		}
+	}, 1000);
+}
 //window.disableIntegrity=false;
 var Lmagarversion = "";
 
@@ -2903,6 +2956,8 @@ var core = function(t, e, i) {
                 }
             },
             'onPlayerDeath': function() {
+				//
+				pauseVideos(),
                 i.play = false, i['playerColor'] = null, i['foodIsHidden'] = false, i['playerMass'] = 0, i['playerScore'] = 0, i['playerSplitCells'] = 0, this['showMenu'](300), this['sendPlayerDeath'](), this['updateDeathLocations'](i['playerX'], i['playerY']), this['unlockButtons'](), ogarcommando1(), this['autoResp']();
             },
             'setPlayerSettings': function() {
@@ -2976,6 +3031,7 @@ var core = function(t, e, i) {
                     a = s ? i['mapOffsetY'] + i['mapOffset'] : i['mapOffset'],
                     n = Math['floor']((e + a) / (i['mapSize'] / g['sectorsY'])),
                     r = Math['floor']((t + o) / (i['mapSize'] / g['sectorsX']));
+					window.calculateMapSector = n < 0 ? 0 : n >= g['sectorsY'] ? g['sectorsY'] - 1 : n, r = r < 0 ? 0 : r >= g['sectorsX'] ? g['sectorsX'] - 1 : r, String['fromCharCode'](n + 65) + (r + 1);
                 return n = n < 0 ? 0 : n >= g['sectorsY'] ? g['sectorsY'] - 1 : n, r = r < 0 ? 0 : r >= g['sectorsX'] ? g['sectorsX'] - 1 : r, String['fromCharCode'](n + 65) + (r + 1);
             },
             'shortMassFormat': function(t) {
@@ -4095,6 +4151,7 @@ var core = function(t, e, i) {
             }
         };
 				this.isInView = function() {
+					//console.log("hi");
                     return !(this.id <= 0) && !(this.x + this.size + 40 < M.viewX - M.canvasWidth / 2 / M.scale || this.y + this.size + 40 < M.viewY - M.canvasHeight / 2 / M.scale || this.x - this.size - 40 > M.viewX + M.canvasWidth / 2 / M.scale || this.y - this.size - 40 > M.viewY + M.canvasHeight / 2 / M.scale);
                 };
 				/*
@@ -4252,7 +4309,7 @@ var core = function(t, e, i) {
                     }
                     return ctxfx;
                 };
-                this.draw = function(style, canCreateDiscussions) {
+                this.draw = function(style, canCreateDiscussions) {				
                     if (!(M.hideSmallBots && this.size <= 36)) {
                         style.save();
                         this.redrawed++;
@@ -4299,18 +4356,20 @@ var core = function(t, e, i) {
                             style.globalAlpha = value;
                             s = false;
                         }
-						if (dyinglight1load != "yes"){
+						/*if (dyinglight1load != "yes"){
                             style.globalAlpha = 1;
                             s = false;							
-						}
-                        var node = null;
+						}*/
+                        var node = null;							
+
                         if (v.customSkins && M.showCustomSkins && (node = ogarminimapdrawer.getCustomSkin(this.targetNick, this.color)) && 
 						(((v.transparentSkins || M.play && v.oppColors) && (!this.isPlayerCell || v.myTransparentSkin) || this.isPlayerCell && v.myTransparentSkin) && (style.globalAlpha *= g.skinsAlpha, s = true), 
 						
 						//style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), s && (style.globalAlpha = value, s = false)), 
-						
-						style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), 
-						(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (this.oldAlpha=style.globalAlpha, style.globalAlpha = 0.1, style.drawImage(cimg7, this.x - y * 4, this.y - y * 4, 8 * y, 8 * y), style.globalAlpha=this.oldAlpha),
+						//(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (this.oldAlpha=style.globalAlpha, style.globalAlpha = 0.1, style.drawImage(cimg7, this.x - y * 4, this.y - y * 4, 8 * y, 8 * y), style.globalAlpha=this.oldAlpha), //cimg7						
+						(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ") && checkVideos()),
+						this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ") && (window.videoJustWatchPro !=undefined && style.drawImage(window.videoJustWatchPro, this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) ),
+						!this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ") && style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), 
 						//(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (style.drawImage(cimg6, this.x - y, this.y - y, 2 * y, 2 * y)),
 						//this.targetNick.includes("℄") && (style.rotate(M.cAngle1)) && (style.drawImage(cimg2, this.x - y * 1.5, this.y - y * 1.5, 3 * y, 3 * y)) &&
 						(this.targetNick.includes("The Dying Light")) && (style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)), 
@@ -4334,10 +4393,10 @@ var core = function(t, e, i) {
                         } else {
 							if (dyinglight1load == "yes" && node==null) {
 							//console.log(this.mass);
-							if (this.mass && this.mass<=500){							
+							//if (this.mass && this.mass<=500){							
 								style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
-								}
-							else if (this.mass && this.mass<=1000){
+								//}
+							/*else if (this.mass && this.mass<=1000){
 								style.drawImage(cimgDyingLight1, this.x - y, this.y - y, 2 * y, 2 * y);
 								}
 							else if (this.mass && this.mass<=1500){
@@ -4354,7 +4413,7 @@ var core = function(t, e, i) {
 								}	
 							else if (this.mass && this.mass>10000){
 								style.drawImage(cimgDyingLight6, this.x - y, this.y - y, 2 * y, 2 * y);
-								}									
+								}*/									
 							}
 							
 							
@@ -4380,6 +4439,7 @@ var core = function(t, e, i) {
                             }
 							
                         }
+						
                     }
                 };
         }
@@ -4890,6 +4950,7 @@ var core = function(t, e, i) {
             'isInView': function(t, e, i) {
                 var s = this['canvasWidth'] / 2 / this['scale'],
                     o = this['canvasHeight'] / 2 / this['scale'];
+					//console.log("t:" + t + " e:" + e + " i:" + i  + " result:" + !(t + i < this['viewX'] - s || e + i < this['viewY'] - o || t - i > this['viewX'] + s || e - i > this['viewY'] + o));
                 return !(t + i < this['viewX'] - s || e + i < this['viewY'] - o || t - i > this['viewX'] + s || e - i > this['viewY'] + o);
             },
             'updateCells': function(t, i) {
@@ -5065,7 +5126,7 @@ var core = function(t, e, i) {
                 this['zoomValue'] *= Math['pow'](v['zoomSpeedValue2']+1, t['wheelDelta'] / -120 || t['detail'] || 0), this['zoomValue'] > 4 / this['viewScale'] && (this['zoomValue'] = 4 / this['viewScale']);
             },
             'setTargetPosition': function(t, e) {
-                this['targetX'] = t - this['mapOffsetX'], this['targetY'] = e - this['mapOffsetY'], this['targetDistance'] = Math.round(Math['sqrt'](Math['pow'](this['playerX'] - this['targetX'], 2) + Math['pow'](this['playerY'] - this['targetY'], 2)));
+                this['targetX'] = t - this['mapOffsetX'], this['targetY'] = e - this['mapOffsetY'], this['targetDistance'] = Math.round(Math['sqrt'](Math['pow'](this['playerX'] - this['targetX'], 2) + Math['pow'](this['playerY'] - this['targetY'], 2)));window.targetDistance=this['targetDistance'];
             },
             'resetTargetPosition': function() {
                 this['targetX'] = this['playerX'], this['targetY'] = this['playerY'];
@@ -5596,6 +5657,8 @@ var core = function(t, e, i) {
                         var e = 0;
                         for (; e < t.length; e++) {
                             if (!t[e]["inView"]) {
+								//
+								
                                 var i = t[e]["x"];
                                 var s = t[e]["y"];
                                 this["ctx"]["moveTo"](i, s);
