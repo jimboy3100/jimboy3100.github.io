@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.234 MEGA TEST
+// v1.236 MEGA TEST
 // Game Configurations
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
@@ -18,8 +18,18 @@ function checkVideos(){
 	 //setTimeout(function() {
 		 if (window.videoJustWatchPro.readyState==4){
 	if (!window.videoJustWatchPro.playing){
-	window.videoJustWatchPro.play()
+	window.videoJustWatchPro.play();
+	setTimeout(function() {
+		checkVideos2();
+	}, 2000);	
 	};
+
+		 }
+	//}, 2000);
+}
+
+function checkVideos2(){
+	window.videoJustWatchProflag2=false;
 	for(i=0; i<legendmod3.top5.length-1 ;i++){
 	
 		if(i.nick=="℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ") {
@@ -28,19 +38,25 @@ function checkVideos(){
 	if (legendmod3.calculateMapSector(legendmod3.top5[i].x, legendmod3.top5[i].y) == legendmod3.currentSector && legendmod3.currentSector == "C3"){
 	
 	window.videoJustWatchPro.volume = 1;
+	window.videoJustWatchProflag2=true;
 			}
 	else{
 		window.videoJustWatchPro.volume = 0;
 		}
+		
 		}
 		}
 		
 		 }
-		 }
-	//}, 2000);
+	checkvideoJustWatchProflag2();		 
 }
 
-
+function checkvideoJustWatchProflag2(){
+	
+	if (!window.videoJustWatchProflag2){
+		window.videoJustWatchPro.volume = 0;
+	}
+}
 function checkVideos1(){
 	if (videoJustWatchProflag){
 		window.videoJustWatchPro = document.createElement("video"); // create a video element
