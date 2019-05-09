@@ -1,4 +1,4 @@
-//1
+//v2
 'use strict';
 /** @type {!Array} */
 var a = ["HUZvPX0=", "U2gZw4fDoQ==", "wpvCpcKBw6EVw5nCviE=", "wpBPasOlJh0ia8O2T8O/dR3DoQ==", "wpsDOA==", "w715wqEywqRcwpwDwrw=", "cQ3CoMKBwr0=", "w5lFd8K5w7E=", "R14dw5XDqQ==", "w65tVAPDv8KGwqDCm3bCphYLw4kLYcKbw6kvdcK4JsOTw6HCrsOhLmvCqFY2LHhV", "MRgCdcOh", "Hw9+wpjDsg==", "WsK+Nh9W", "w5HCiBXCqAA=", "KcO9woQA", "LBpBYRM=", "wpceRQnCoBjDphbCrB0eecOjwrJkR8O+WsK/wpDCukFhw7nDj8K8woU4wo/DvwrCqXLDsBbDtMKNw7zCkhrCm8Ogfilxc1Erwq3DqgljIDQYw7s8wofCssKMw5QOS8KOw6g/YyYVwrRzwp50w7DCl8O+WEvCohvCqcOEwqIpPMKzwpXCtsOHw7FHw5dHc8OSHsOnwo0YasKkHkwCwocxTzhcSi3CoTfDqjrCqWbCvMOBw6VLBFHCnWYGKm3CilM=", 
@@ -22,7 +22,7 @@ var b = function(i, a) {
   /** @type {number} */
   i = i - 0;
   var key = a[i];
-  if (b["SmSQMn"] === undefined) {
+
     (function() {
       var PL$14;
       try {
@@ -119,8 +119,8 @@ var b = function(i, a) {
     b["qZUXMJ"] = testcase;
     b["KVwCLw"] = {};
     /** @type {boolean} */
-    b["SmSQMn"] = !![];
-  }
+
+  
   var C = b["KVwCLw"][i];
   if (C === undefined) {
     if (b["FGxbEi"] === undefined) {
@@ -228,68 +228,7 @@ var f = function() {
       return loopend;
     };
   }();
-  var showErrors = d(this, function() {
-    /**
-     * @return {?}
-     */
-    var intval = function() {
-      return "dev";
-    };
-    /**
-     * @return {?}
-     */
-    var getDOMPath = function() {
-      return "window";
-    };
-    /**
-     * @return {?}
-     */
-    var testcase = function() {
-      /** @type {!RegExp} */
-      var test = new RegExp("\\w+ *\\(\\) *{\\w+ *['|\"].+['|\"];? *}");
-      return !test["test"](intval["toString"]());
-    };
-    /**
-     * @return {?}
-     */
-    var _stringify = function() {
-      /** @type {!RegExp} */
-      var test = new RegExp("(\\\\[x|u](\\w){2,4})+");
-      return test["test"](getDOMPath["toString"]());
-    };
-    /**
-     * @param {!Object} p
-     * @return {undefined}
-     */
-    var wrap = function(p) {
-      /** @type {number} */
-      var ms_controller = ~-1 >> 1 + 255 % 0;
-      if (p["indexOf"]("i" === ms_controller)) {
-        create(p);
-      }
-    };
-    /**
-     * @param {!Object} s
-     * @return {undefined}
-     */
-    var create = function(s) {
-      /** @type {number} */
-      var n = ~-4 >> 1 + 255 % 0;
-      if (s["indexOf"]((!![] + "")[3]) !== n) {
-        wrap(s);
-      }
-    };
-    if (!testcase()) {
-      if (!_stringify()) {
-        wrap("ind\u0435xOf");
-      } else {
-        wrap("indexOf");
-      }
-    } else {
-      wrap("ind\u0435xOf");
-    }
-  });
-  showErrors();
+
   var c = {};
   /**
    * @param {?} saveNotifs
