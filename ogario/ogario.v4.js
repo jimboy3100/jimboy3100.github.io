@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.237 MEGA TEST
+// v1.239 MEGA TEST
 // Game Configurations
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
@@ -4191,15 +4191,14 @@ var core = function(t, e, i) {
 			this.mass = ~~(t * t / 100); 
 			this.redrawMass = true;
 			if(this.isVirus){
-				if(this.virMassShots){
-					if(this.mass <= 200){
-					this.mass = ~~((200 - this.mass) / 14);					
-					this.virusColor = g.virusColor, this.virusStroke = g.virusStrokeColor;		
-					
-					}
+				if(this.mass <= 200){
+					this.virusColor = g.virusColor, this.virusStroke = g.virusStrokeColor;							
+					}	
 					else if (this.mass > 220){
 					this.virusColor = g.mVirusColor, this.virusStroke = g.mVirusStrokeColor;
 					}					
+				if(this.virMassShots){				
+					this.mass = ~~((200 - this.mass) / 14);										
 				}
 				if(v.virusSound && this.lastMass && this.mass < this.lastMass) {
 					void ogarminimapdrawer.playSound(ogarminimapdrawer.setSound(v['virusSoundurl']));
