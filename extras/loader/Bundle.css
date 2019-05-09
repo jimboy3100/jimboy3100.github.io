@@ -1,3 +1,33 @@
+@keyframes spinRight {
+    0% {
+        transform: rotate(0)
+    }
+
+    100% {
+        transform: rotate(360deg)
+    }
+}
+
+@keyframes spinLeft {
+    0% {
+        transform: rotate(0)
+    }
+
+    100% {
+        transform: rotate(-360deg)
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0
+    }
+
+    100% {
+        opacity: 1
+    }
+}
+
 #loading-screen {
     z-index: 200;
     position: fixed;
