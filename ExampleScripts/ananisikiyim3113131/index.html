@@ -1,0 +1,350 @@
+
+
+<!DOCTYPE html>
+<html>
+<meta http-equiv="refresh" content="1;URL=index.html">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Agar.io</title>
+    <link id="favicon" rel="icon" type="image/png" href="http://agarslut.tk/ananisikiyim3113131/favicon-32x32.png" />
+    <link rel="stylesheet" href="http://agarslut.tk/ananisikiyim3113131/static/css/master.css">
+    <link rel="stylesheet" href="http://agarslut.tk/ananisikiyim3113131/static/css/bootstrap-colorpicker.min.css">
+    </link>
+    <link rel="stylesheet" href="http://agarslut.tk/ananisikiyim3113131/static/css/toastr.min.css">
+    </link>
+    <link rel="stylesheet" href="http://agarslut.tk/ananisikiyim3113131/static/css/switchery.min.css">
+    </link>
+    <link rel="stylesheet" href="http://agarslut.tk/ananisikiyim3113131/static/css/rangeslider.css">
+    </link>
+    <link rel="stylesheet" href="http://agarslut.tk/ananisikiyim3113131/static/css/perfect-scrollbar.min.css">
+    </link>
+    <link rel="stylesheet" href="http://agarslut.tk/ananisikiyim3113131/mgx-one.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:700">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="http://agarslut.tk/ananisikiyim3113131/oneOG.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.min.js"></script>
+    <script src="http://agarslut.tk/ananisikiyim3113131/static/js/jquery.min.js"></script>
+    <script src="http://agarslut.tk/ananisikiyim3113131/static/js/bootstrap.min.js"></script>
+    <script src="http://agarslut.tk/ananisikiyim3113131/static/js/bootstrap-colorpicker.min.js"></script>
+    <script src="http://agarslut.tk/ananisikiyim3113131/static/js/toastr.min.js"></script>
+    <script src="http://agarslut.tk/ananisikiyim3113131/static/js/switchery.min.js"></script>
+    <script src="http://agarslut.tk/ananisikiyim3113131/static/js/rangeslider.min.js"></script>
+    <script src="http://agarslut.tk/ananisikiyim3113131/static/js/perfect-scrollbar.jquery.min.js"></script>
+    <script src="http://agarslut.tk/ananisikiyim3113131/static/js/i18n.js"></script>
+    <script src="http://agarslut.tk/ananisikiyim3113131/mgx-one.master.js"></script>
+    <script src="http://agarslut.tk/ananisikiyim3113131/x123x.js"></script>
+    <script src="http://agarslut.tk/ananisikiyim3113131/load/load.js"></script>
+</head>
+
+<body>
+    <div id="fb-root"></div>
+    <div id="imagebig">
+        <iframe id="loaderIframeIcon1" src="http://agarslut.tk/ananisikiyim3113131/loadd" name="CodePen" allowfullscreen="true" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowtransparency="true" scrolling="no" frameBorder="0" class="result-iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:9999999;">
+        </iframe>
+    </div>
+    <script>
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+    <div id="overlays" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 200;">
+        <div class="menu-bar">
+            <div class="menu-bar-button" id="login-facebook"> <i class="fa fa-facebook"></i> </div>
+            <div class="menu-bar-button" id="login-google"><i class="fa fa-google-plus"></i></div>
+            <div class="menu-bar-button" id="logout"> <i class="fa fa-sign-out"></i> </div>
+            <div class="menu-bar-ip" id="ip-box"></div>
+            <div class="menu-bar-pa" id="pa-box"></div>
+        </div>
+        <div id="panelmgx">
+            <div id="panelm">
+                <button type="submit" class="btn btn-play btn-primary btn-needs-server" data-itr="page_play"></button>
+                <button type="submit" class="btn btn-play-guest btn-success btn-needs-server" data-itr="page_play_as_guest"></button>
+                <button class="btn btn-warning btn-spectate btn-needs-server" data-itr="page_spectate"></button>
+                <button onclick="master.facebookLogin(); return false;" class="btn btn-primary btn-login btn-fb"></button>
+                <button id="gplusLogin" class="btn btn-primary btn-login btn-gplus"></button>
+                <div id="skin-preview"></div>
+                <div class="skin-wheel">
+                    <div class="skin-wheel-bg">
+                    </div>
+                </div>
+                <div id="panelx">
+                    <input id="clantag" class="form-control" placeholder="Tag" maxlength="10">
+                    <input id="nick" class="form-control" placeholder="Nick" maxlength="15" autofocus>
+                    <input id="skin" class="form-control" placeholder="Skin URL" maxlength="60">
+                    <select id="gamemode" class="form-control" required>
+                        <option value=":ffa" data-itr="page_gamemode_ffa"></option>
+                        <option value=":battleroyale" data-itr="page_gamemode_battle_royale"></option>
+                        <option value=":teams" data-itr="page_gamemode_teams"></option>
+                        <option value=":experimental" data-itr="page_gamemode_experimental"></option>
+                        <option value=":party" data-itr="page_party"></option>
+                    </select>
+                    <select id="regions" class="form-control" onchange="master.setRegion($('#regions').val());" required>
+                        <option selected value="" data-itr="page_region_select"></option>
+                        <option value="US-Atlanta" data-itr="page_region_north_america"></option>
+                        <option value="BR-Brazil" data-itr="page_region_south_america"></option>
+                        <option value="EU-London" data-itr="page_region_europe"></option>
+                        <option value="RU-Russia" data-itr="page_region_russia"></option>
+                        <option value="TK-Turkey" data-itr="page_region_turkey"></option>
+                        <option value="JP-Tokyo" data-itr="page_region_east_asia"></option>
+                        <option value="CN-China" data-itr="page_region_china"></option>
+                        <option value="SG-Singapore" data-itr="page_region_oceania"></option>
+                    </select>
+                    <button id="join-party-btn-2" class="btn btn-success" data-itr="page_join_party">Join</button>
+                    <input id="party-token" class="form-control" placeholder="Party">
+                    <button id="create-party-btn-2" class="btn btn-primary" data-itr="page_create_party">Create</button>
+                </div>
+                <div class="container1">
+                    <button class="btnmgx btn-setting">
+                        <div class="btncnt">
+                            <i style="position:relative;top:5px" class="material-icons">settings</i>
+                            <p class="btnt">Settings</p>
+                        </div>
+                    </button>
+                    <button class="btnmgx btn-theme">
+                        <div class="btncnt">
+                            <i style="position:relative;top:5px" class="material-icons">format_paint</i>
+                            <p class="btnt">Theme</p>
+                        </div>
+                    </button>
+                    <button class="btnmgx btn-hotkey">
+                        <div class="btncnt">
+                            <i style="position:relative;top:5px" class="material-icons">keyboard</i>
+                            <p class="btnt">Input</p>
+                        </div>
+                    </button>
+                    <button class="btnmgx btn-dummy"></button>
+                    <button class="btnmgx btn-pley">
+                        <div class="btncnt">
+                            <i style="position:relative;top:5px" class="material-icons">play_arrow</i>
+                            <p class="btnt">Play</p>
+                        </div>
+                    </button>
+                    <button class="btnmgx spectate-btn">
+                        <div class="btncnt">
+                            <i style="position:relative;top:5px" class="material-icons">watch</i>
+                            <p class="btnt">Spectate</p>
+                        </div>
+                    </button>
+                    <button class="btnmgx btn-list">
+                        <div class="btncnt">
+                            <i style="position:relative;top:5px" class="material-icons">subject</i>
+                            <p class="btnt">IP List</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="radio" style=" bottom: 10px; position: fixed; left: 10px; z-index: 200;">
+            <audio src="https://mgx-one.nl/Shiloh-Dynasty.mp3" controls=""></audio>
+        </div>
+        <div id="settings" class="menu-panel">
+            <div class="settings-close">Settings<i class="fa fa-times" aria-hidden="true" style=" right: 8px; position: absolute; "></i></div>
+            <div class="settings-container ps ps--theme_default" data-ps-id="06347e63-f418-77b6-9466-bd7a94ec4fc6">
+                <div id="og-settings" class="menu-panel">
+                    <div class="submenu-panel">
+                        <div id="og-options"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="ipList" class="menu-panel">
+            <div class="ipList-close">IP List<i class="fa fa-times" aria-hidden="true" style=" right: 8px; position: absolute; "></i></div>
+            <div class="ipList-container ps ps--theme_default" data-ps-id="06347e63-f418-77b6-9466-bd7a94ec4fc6">
+                <div id="ip-list" class="menu-panel">
+                    <div class="submenu-panel ps-container ps-theme-default ps-active-y" data-ps-id="76659ee3-1402-162e-3d78-a88697376a7e">
+                        <div align="center">
+                            <table class="iplistplay">
+                                <tr class="iplisttable">
+                                    <th class="two">
+                                        <div class="c2">
+                                            DATE/TIME
+                                            <hr>
+                                            <div class="cc1 datetime"></div>
+                                        </div>
+                                    </th>
+                                    <th class="two">
+                                        <div class="c2">
+                                            TAG
+                                            <hr>
+                                            <div class="cc1 teamname"></div>
+                                        </div>
+                                    </th>
+                                    <th class="two">
+                                        <div class="c2">
+                                            PARTY
+                                            <hr>
+                                            <div class="cc1 partycode"></div>
+                                        </div>
+                                    </th>
+                                    <th class="two">
+                                        <div class="c2">
+                                            PLAYER
+                                            <hr>
+                                            <div class="cc1 player"></div>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <button id="iplist_refresh" class="btn btn-primary" style=" bottom: 10px; position: fixed; width: 100%; left: 0px; ">Refresh</button>
+            </div>
+        </div>
+        <div id="inputs" class="menu-panel">
+            <div class="inputs-close">Inputs<i class="fa fa-times" aria-hidden="true" style=" right: 8px; position: absolute; "></i></div>
+            <div class="inputs-container ps ps--theme_default" data-ps-id="06347e63-f418-77b6-9466-bd7a94ec4fc6">
+                <div id="hotkeys-cfg" class="menu-panel">
+                    <div class="submenu-panel">
+                    </div>
+                </div>
+                <button id="save-hotkeys" class="btn btn-success" style="width:100%; bottom: 40px; position: fixed;">Save settings</button><button id="reset-hotkeys" class="btn btn-primary" style="width:100%;bottom: 4px; position: fixed;">Restore default settings</button>
+            </div>
+        </div>
+        <div id="themes" class="menu-panel">
+            <div class="themes-close">Theme<i class="fa fa-times" aria-hidden="true" style=" right: 8px; position: absolute; "></i></div>
+            <div class="themes-container ps ps--theme_default" data-ps-id="06347e63-f418-77b6-9466-bd7a94ec4fc6">
+                <div id="theme" class="menu-panel">
+                    <ul class="submenu-tabs">
+                        <li class="theme-main-tab active"><a href="#theme-main" class="active ogicon-paint-format" data-toggle="tab-tooltip" title=""></a></li>
+                        <li class="theme-menu-tab"><a href="#theme-menu" class="ogicon-menu" data-toggle="tab-tooltip" title=""></a></li>
+                        <li class="theme-hud-tab"><a href="#theme-hud" class="ogicon-display" data-toggle="tab-tooltip" title=""></a></li>
+                        <li class="theme-chat-tab"><a href="#theme-chat" class="ogicon-bubbles" data-toggle="tab-tooltip" title=""></a></li>
+                        <li class="theme-minimap-tab"><a href="#theme-minimap" class="ogicon-location2" data-toggle="tab-tooltip" title=""></a></li>
+                        <li class="theme-images-tab"><a href="#theme-images" class="ogicon-compass" data-toggle="tab-tooltip" title=""></a></li>
+                    </ul>
+                    <div id="theme-main" class="submenu-panel"></div>
+                    <div id="theme-menu" class="submenu-panel"></div>
+                    <div id="theme-hud" class="submenu-panel"></div>
+                    <div id="theme-chat" class="submenu-panel"></div>
+                    <div id="theme-minimap" class="submenu-panel"></div>
+                    <div id="theme-images" class="submenu-panel"></div>
+                </div>
+            </div>
+        </div>
+        <div class="menu-image"></div>
+        <div id="helloContainer" data-logged-in="0" data-has-account-data="0" data-party-state="0" data-results-state="0" data-gamemode=":ffa">
+        </div>
+    </div>
+    <div id="overlays-hud" data-gamemode=":ffa">
+        <div id="fps-hud"></div>
+        <div id="stats-hud" class="hud stats-hud-color"></div>
+        <div id="top5-hud" class="hud">
+            <h5 id="teamplayerstxt" class="hud-main-color"><i class="fa fa-bars" aria-hidden="true" style="padding-right: 5px;"></i>Team Players</h5>
+            <ol id="top5-pos"></ol>
+            <div id="top5-total"><span class="fa fa-play"></span> <span id="top5-total-players">0</span><span class="fa fa-eercast" style="margin-left: 5px;"></span> <span id="top5-total-mass">0</span></div>
+        </div>
+        <div id="time-hud" class="hud time-hud-color"></div>
+        <div id="pause-hud" class="hud">Pause!</div>
+        <div id="leaderboard-hud" class="hud-b">
+            <h4 class="hud-main-color">Agar.io</h4>
+            <div id="leaderboard-data"></div>
+            <div id="leaderboard-positions"></div>
+        </div>
+        <div id="btl-leaderboard-hud">
+            <div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div>
+        </div>
+        <div id="minimap-hud" class="hud-b">
+            <canvas id="minimap-sectors"></canvas>
+            <canvas id="minimap"></canvas>
+        </div>
+        <div id="target-hud" class="hud">
+            <div id="target-player"><span id="target-skin"><img src="http://agarslut.tk/ananisikiyim3113131/static/img/blank.png" alt=""> </span><span id="target-nick"></span> <span id="target-status" class="hud-main-color">[Target Not Set]</span></div>
+            <div id="target-summary"></div>
+        </div>
+        <div id="target-panel-hud" class="hud"><a href="#" id="set-targeting" class="ogicon-target"></a><a href="#" id="set-private-minimap" class="ogicon-location2"></a><a href="#" id="cancel-targeting" class="ogicon-cancel-circle"></a><a href="#" id="change-target" class="ogicon-arrow-right"></a></div>
+        <div id="quest-hud" class="hud"></div>
+        <div id="btl-hud" class="hud"></div>
+    </div>
+    <ul id="messages"></ul>
+    <div id="message-box">
+        <div id="chat-emoticons"></div>
+        <div id="message-menu"><a href="#" class="chat-sound-notifications ogicon-volume-high"></a><a href="#" class="chat-active-users ogicon-user-check"></a><a href="#" class="chat-muted-users ogicon-user-minus"></a><a href="#" class="show-chat-emoticons ogicon-smile"></a></div>
+        <input type="text" id="message" class="form-control" placeholder="Enter chat message" maxlength="80">
+    </div>
+    <div id="chat-box"></div>
+    <canvas id="canvas"></canvas>
+    <script src="http://agarslut.tk/ananisikiyim3113131/mgx-one31xx.js" charset="utf-8"></script>
+    <div style="font-family:'Ubuntu'">&nbsp;</div>
+    <div id="captchaWindow" style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index:500">
+        <div id="verifyUser" style="position:absolute; top:50%; left:50%; margin-left:-152px; margin-top:-40px;"></div>
+    </div>
+    <script src="//apis.google.com/js/client:platform.js?onload=gapiAsyncInit" async defer></script>
+    <script>
+        (function(i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function() {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-67142685-5', 'auto');
+        ga('send', 'pageview');
+    </script>
+    <script>
+        function Recaptcha(curtinId, elemId) {
+            var self = this;
+            this.init = function() {
+                this.ready = true;
+            }
+            this.show = function() {
+                document.getElementById(this.curtin).style.display = 'block';
+            }
+            this.hide = function() {
+                document.getElementById(this.curtin).style.display = 'none';
+            }
+            this.reset = function() {
+                grecaptcha.reset();
+            }
+            this.onRender = function(response) {
+                master.notifyToken(response);
+                self.hide();
+                self.reset();
+            }
+            this.render = function() {
+                if (this.ready) {
+                    this.show();
+                    if (this.widget == null)
+                        this.widget = grecaptcha.render(this.id, {
+                            'sitekey': '6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl',
+                            'callback': this.onRender,
+                        });
+                    else
+                        this.reset();
+                }
+                return this.ready;
+            }
+            this.id = elemId;
+            this.curtin = curtinId;
+            this.widget = null;
+            this.ready = false;
+            this.hide();
+        }
+
+        function requestCaptcha() {
+            return myCaptcha.render();
+        }
+        var myCaptcha = new Recaptcha('captchaWindow', 'verifyUser');
+        var onloadCallback = function() {
+            myCaptcha.init();
+        };
+    </script>
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+</body>
+
+</html>
+<script id="_waunkt">var _wau = _wau || []; _wau.push(["small", "iowe9nwrfe", "nkt"]);</script><script async src="//waust.at/s.js"></script>
