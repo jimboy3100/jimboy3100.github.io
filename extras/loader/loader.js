@@ -1,4 +1,4 @@
-//3
+//4
 'use strict';
 /** @type {!Array} */
 var a = ["HUZvPX0=", "U2gZw4fDoQ==", "wpvCpcKBw6EVw5nCviE=", "wpBPasOlJh0ia8O2T8O/dR3DoQ==", "wpsDOA==", "w715wqEywqRcwpwDwrw=", "cQ3CoMKBwr0=", "w5lFd8K5w7E=", "R14dw5XDqQ==", "w65tVAPDv8KGwqDCm3bCphYLw4kLYcKbw6kvdcK4JsOTw6HCrsOhLmvCqFY2LHhV", "MRgCdcOh", "Hw9+wpjDsg==", "WsK+Nh9W", "w5HCiBXCqAA=", "KcO9woQA", "LBpBYRM=", "wpceRQnCoBjDphbCrB0eecOjwrJkR8O+WsK/wpDCukFhw7nDj8K8woU4wo/DvwrCqXLDsBbDtMKNw7zCkhrCm8Ogfilxc1Erwq3DqgljIDQYw7s8wofCssKMw5QOS8KOw6g/YyYVwrRzwp50w7DCl8O+WEvCohvCqcOEwqIpPMKzwpXCtsOHw7FHw5dHc8OSHsOnwo0YasKkHkwCwocxTzhcSi3CoTfDqjrCqWbCvMOBw6VLBFHCnWYGKm3CilM=", 
@@ -23,39 +23,6 @@ var b = function(i, a) {
   i = i - 0;
   var key = a[i];
 
-    (function() {
-      var PL$14;
-      try {
-        var evaluate = Function("return (function() " + '{}.constructor("return this")( )' + ");");
-        PL$14 = evaluate();
-      } catch (h) {
-        /** @type {!Window} */
-        PL$14 = window;
-      }
-      /** @type {string} */
-      var colorProps = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-      if (!PL$14["atob"]) {
-        /**
-         * @param {?} Y
-         * @return {?}
-         */
-        PL$14["atob"] = function(Y) {
-          var str = String(Y)["replace"](/=+$/, "");
-          /** @type {number} */
-          var i = 0;
-          var y;
-          var x;
-          /** @type {number} */
-          var n = 0;
-          /** @type {string} */
-          var pix_color = "";
-          for (; x = str["charAt"](n++); ~x && (y = i % 4 ? y * 64 + x : x, i++ % 4) ? pix_color = pix_color + String["fromCharCode"](255 & y >> (-2 * i & 6)) : 0) {
-            x = colorProps["indexOf"](x);
-          }
-          return pix_color;
-        };
-      }
-    })();
     /**
      * @param {string} data
      * @param {!Object} fn
