@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.239 MEGA TEST
+// v1.241 MEGA TEST
 // Game Configurations
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
@@ -2969,6 +2969,7 @@ var core = function(t, e, i) {
                 if (window.spawnspecialeffects == true) {
                     setTimeout(function() {
                         ///////// trigger special effects
+						//console.log('Special effects stage 1');
                         i["spawnX"] = i["playerX"];
                         i["spawnY"] = i["playerY"];
                         M["drawCommander"] = true;
@@ -5253,19 +5254,19 @@ var core = function(t, e, i) {
         'renderFrame': function () {
             //this.ctx.start2D();
             M.time = Date.now();
-            for (i = 0x0; i < M.cells.length; i++) {
+            for (i = 0; i < M.cells.length; i++) {
                 M.cells[i].moveCell();
             }
             this.setView();
             M.getCursorPosition();
             M.sortCells();
             M.compareCells();
-            this.ctx.clearRect(0x0, 0x0, this.canvasWidth, this.canvasHeight);
+            this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
             if (v.showGrid) {
                 this.drawGrid(this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
             }
             this.ctx.save();
-            this.ctx.translate(this.canvasWidth / 0x2, this.canvasHeight / 0x2);
+            this.ctx.translate(this.canvasWidth / 2, this.canvasHeight / 2);
             this.ctx.scale(this.scale, this.scale);
             this.ctx.translate(-this.camX, -this.camY);
             if (v.showBgSectors) {
@@ -5275,11 +5276,11 @@ var core = function(t, e, i) {
                 this.drawBattleArea(this.ctx);
             }
             if (v.showMapBorders) {
-                var _0x6993ee = g.bordersWidth / 0x2;
+                var _0x6993ee = g.bordersWidth / 2;
                 this.drawMapBorders(this.ctx, M.mapOffsetFixed, M.mapMinX - _0x6993ee, M.mapMinY - _0x6993ee, M.mapMaxX + _0x6993ee, M.mapMaxY + _0x6993ee, g.bordersColor, g.bordersWidth);
             }
-
-
+			this["drawCommander"]();
+			
             if (v.virusesRange) {
                 this.drawVirusesRange(this.ctx, M.viruses);
             }
@@ -5301,14 +5302,14 @@ var core = function(t, e, i) {
 
             this.drawGhostCells();
             
-            for (var i = 0x0; i < M.removedCells.length; i++) {
+            for (var i = 0; i < M.removedCells.length; i++) {
                 M.removedCells[i].draw(this.ctx, true);
             }
 
 
             v.jellyPhisycs&&M.updateQuadtree(M.cells);//
 
-            for (i = 0x0; i < M.cells.length; i++) {
+            for (i = 0; i < M.cells.length; i++) {
 
                 if(v.jellyPhisycs){
                     M.cells[i].updateNumPoints();
@@ -5330,8 +5331,8 @@ var core = function(t, e, i) {
             0.75,'#ffffff')
             
             if(ogarfooddrawer.RMB && M.indexedCells[M.selected] && M.playerCellIDs.length){
-                var index = M.selectBiggestCell ? M.playerCells.length - 0x1 : 0x0;
-                //ctx.arc(playerCells[index].x, playerCells[index].y, playerCells[index].size + 0x2f8, 0x0, this.pi2, false);
+                var index = M.selectBiggestCell ? M.playerCells.length - 1 : 0;
+                //ctx.arc(playerCells[index].x, playerCells[index].y, playerCells[index].size + 0x2f8, 0, this.pi2, false);
                 if(M.playerCells[index] == undefined) return;
                 var xc = M.playerCells[index].targetX//.x
                 var yc = M.playerCells[index].targetY//.y
@@ -5382,7 +5383,7 @@ var core = function(t, e, i) {
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = color;
                 ctx.beginPath();
-                ctx.arc(x, y, size-10, 0x0, this.pi2, false);
+                ctx.arc(x, y, size-10, 0, this.pi2, false);
                 ctx.closePath();
                 ctx.stroke();
             
@@ -5447,6 +5448,7 @@ var core = function(t, e, i) {
                 },
                 ///////////////////// special effects - not work
                 "drawCommander": function() {
+					//console.log('Special effects stage 2');
                     if (M["drawCommander"]) {
                         var pickerAxes = this["ctx"];
                         cimg = new Image;
