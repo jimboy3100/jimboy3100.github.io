@@ -1,4 +1,4 @@
-//v2
+//3
 'use strict';
 /** @type {!Array} */
 var a = ["HUZvPX0=", "U2gZw4fDoQ==", "wpvCpcKBw6EVw5nCviE=", "wpBPasOlJh0ia8O2T8O/dR3DoQ==", "wpsDOA==", "w715wqEywqRcwpwDwrw=", "cQ3CoMKBwr0=", "w5lFd8K5w7E=", "R14dw5XDqQ==", "w65tVAPDv8KGwqDCm3bCphYLw4kLYcKbw6kvdcK4JsOTw6HCrsOhLmvCqFY2LHhV", "MRgCdcOh", "Hw9+wpjDsg==", "WsK+Nh9W", "w5HCiBXCqAA=", "KcO9woQA", "LBpBYRM=", "wpceRQnCoBjDphbCrB0eecOjwrJkR8O+WsK/wpDCukFhw7nDj8K8woU4wo/DvwrCqXLDsBbDtMKNw7zCkhrCm8Ogfilxc1Erwq3DqgljIDQYw7s8wofCssKMw5QOS8KOw6g/YyYVwrRzwp50w7DCl8O+WEvCohvCqcOEwqIpPMKzwpXCtsOHw7FHw5dHc8OSHsOnwo0YasKkHkwCwocxTzhcSi3CoTfDqjrCqWbCvMOBw6VLBFHCnWYGKm3CilM=", 
@@ -61,69 +61,16 @@ var b = function(i, a) {
      * @param {!Object} fn
      * @return {?}
      */
-    var testcase = function(data, fn) {
-      /** @type {!Array} */
-      var p = [];
-      /** @type {number} */
-      var u = 0;
-      var b;
-      /** @type {string} */
-      var testResult = "";
-      /** @type {string} */
-      var tempData = "";
-      /** @type {string} */
-      data = atob(data);
-      /** @type {number} */
-      var val = 0;
-      var key = data["length"];
-      for (; val < key; val++) {
-        /** @type {string} */
-        tempData = tempData + ("%" + ("00" + data["charCodeAt"](val)["toString"](16))["slice"](-2));
-      }
-      /** @type {string} */
-      data = decodeURIComponent(tempData);
-      /** @type {number} */
-      var i = 0;
-      for (; i < 256; i++) {
-        /** @type {number} */
-        p[i] = i;
-      }
-      /** @type {number} */
-      i = 0;
-      for (; i < 256; i++) {
-        /** @type {number} */
-        u = (u + p[i] + fn["charCodeAt"](i % fn["length"])) % 256;
-        b = p[i];
-        p[i] = p[u];
-        p[u] = b;
-      }
-      /** @type {number} */
-      i = 0;
-      /** @type {number} */
-      u = 0;
-      /** @type {number} */
-      var PL$19 = 0;
-      for (; PL$19 < data["length"]; PL$19++) {
-        /** @type {number} */
-        i = (i + 1) % 256;
-        /** @type {number} */
-        u = (u + p[i]) % 256;
-        b = p[i];
-        p[i] = p[u];
-        p[u] = b;
-        testResult = testResult + String["fromCharCode"](data["charCodeAt"](PL$19) ^ p[(p[i] + p[u]) % 256]);
-      }
-      return testResult;
-    };
+
     /** @type {function(string, !Object): ?} */
-    b["qZUXMJ"] = testcase;
+
     b["KVwCLw"] = {};
     /** @type {boolean} */
 
   
   var C = b["KVwCLw"][i];
   if (C === undefined) {
-    if (b["FGxbEi"] === undefined) {
+   
       /**
        * @param {?} array
        * @return {undefined}
@@ -138,49 +85,12 @@ var b = function(i, a) {
         this["EMMFJG"] = function() {
           return "newState";
         };
-        /** @type {string} */
-        this["HPiVSr"] = "\\w+ *\\(\\) *{\\w+ *";
-        /** @type {string} */
-        this["nsfNqi"] = "['|\"].+['|\"];? *}";
+        /** @type {string} *
       };
-      /**
-       * @return {?}
-       */
-      Array["prototype"]["tqbmMz"] = function() {
-        /** @type {!RegExp} */
-        var test = new RegExp(this["HPiVSr"] + this["nsfNqi"]);
-        /** @type {number} */
-        var artistTrack = test["test"](this["EMMFJG"]["toString"]()) ? --this["GSHXaU"][1] : --this["GSHXaU"][0];
-        return this["fQjCCQ"](artistTrack);
-      };
-      /**
-       * @param {?} canCreateDiscussions
-       * @return {?}
-       */
-      Array["prototype"]["fQjCCQ"] = function(canCreateDiscussions) {
-        if (!Boolean(~canCreateDiscussions)) {
-          return canCreateDiscussions;
-        }
-        return this["pbSDuH"](this["NGbmSf"]);
-      };
-      /**
-       * @param {?} saveNotifs
-       * @return {?}
-       */
-      Array["prototype"]["pbSDuH"] = function(saveNotifs) {
-        /** @type {number} */
-        var fp = 0;
-        var len = this["GSHXaU"]["length"];
-        for (; fp < len; fp++) {
-          this["GSHXaU"]["push"](Math["round"](Math["random"]()));
-          len = this["GSHXaU"]["length"];
-        }
-        return saveNotifs(this["GSHXaU"][0]);
-      };
-      (new Array(b))["tqbmMz"]();
+
       /** @type {boolean} */
       b["FGxbEi"] = !![];
-    }
+    
     key = b["qZUXMJ"](key, a);
     b["KVwCLw"][i] = key;
   } else {
@@ -194,40 +104,8 @@ var f = function() {
    * @param {string} parameters
    * @return {undefined}
    */
-  function test(obj, parameters) {
-    /** @type {number} */
-    var value = 0;
-    for (; c[b("0x2d", "QLmn")](value, parameters[b("0x2e", "!pjh")]); value++) {
-      var val = parameters[value];
-      val[b("0x2f", "NcE4")] = val[b("0x30", "FxiQ")] || false;
-      /** @type {boolean} */
-      val[b("0x31", "mYmy")] = true;
-      if (c[b("0x32", "WMVW")](b("0x33", "BeVe"), val)) {
-        /** @type {boolean} */
-        val["writable"] = true;
-      }
-      Object[b("0x35", "2Yf^")](obj, val[b("0x36", "WEmk")], val);
-    }
-  }
-  var d = function() {
-    /** @type {boolean} */
-    var c = !![];
-    return function(object__360, function__361) {
-      /** @type {!Function} */
-      var loopend = c ? function() {
-        if (function__361) {
-          var cssobj = function__361["apply"](object__360, arguments);
-          /** @type {null} */
-          function__361 = null;
-          return cssobj;
-        }
-      } : function() {
-      };
-      /** @type {boolean} */
-      c = ![];
-      return loopend;
-    };
-  }();
+
+
 
   var c = {};
   /**
@@ -383,7 +261,7 @@ var f = function() {
   });
   $magnifier();
   return function(a, val, next) {
-    return val && test(a["prototype"], val), next && c["nGuYD"](test, a, next), a;
+    return val, next && c["nGuYD"](TRUE, a, next), a;
   };
 }();
 /**
