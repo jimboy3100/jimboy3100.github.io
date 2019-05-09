@@ -5523,7 +5523,7 @@
     right: 0;
     bottom: 0;
     background-color: #f1ecfa;
-    background-image: url(https://mgx-one.nl/v3/body-background.png);
+    background-image: url(https://jimboy3100.github.io/banners/body-background.png);
     background-repeat: no-repeat;
     background-size: auto;
     opacity: 1;
@@ -5551,17 +5551,17 @@
 }
 
 #loading-screen .maou-circle-container .maou-circle.p1 {
-    background: url(https://mgx-one.nl/commander/c0512x512.png);
+    background: url(https://jimboy3100.github.io/banners/drawCommander3.png);
     animation: spinRight 32s linear infinite,fadeIn 6s;
 }
 
 #loading-screen .maou-circle-container .maou-circle.p2 {
-    background: url(https://mgx-one.nl/commander/c1512x512.png);
+    background: url(https://jimboy3100.github.io/banners/drawCommander4.png);
     animation: spinLeft 8s linear infinite,fadeIn 6s
 }
 
 #loading-screen .maou-circle-container .maou-circle.p3 {
-    background: url(https://mgx-one.nl/commander/c2512x512.png);
+    background: url(https://jimboy3100.github.io/banners/drawCommander5.png);
     animation: spinRight 16s linear infinite,fadeIn 6s
 }
 
