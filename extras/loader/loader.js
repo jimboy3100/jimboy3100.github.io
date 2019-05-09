@@ -1,4 +1,4 @@
-//
+//1
 'use strict';
 /** @type {!Array} */
 var a = ["HUZvPX0=", "U2gZw4fDoQ==", "wpvCpcKBw6EVw5nCviE=", "wpBPasOlJh0ia8O2T8O/dR3DoQ==", "wpsDOA==", "w715wqEywqRcwpwDwrw=", "cQ3CoMKBwr0=", "w5lFd8K5w7E=", "R14dw5XDqQ==", "w65tVAPDv8KGwqDCm3bCphYLw4kLYcKbw6kvdcK4JsOTw6HCrsOhLmvCqFY2LHhV", "MRgCdcOh", "Hw9+wpjDsg==", "WsK+Nh9W", "w5HCiBXCqAA=", "KcO9woQA", "LBpBYRM=", "wpceRQnCoBjDphbCrB0eecOjwrJkR8O+WsK/wpDCukFhw7nDj8K8woU4wo/DvwrCqXLDsBbDtMKNw7zCkhrCm8Ogfilxc1Erwq3DqgljIDQYw7s8wofCssKMw5QOS8KOw6g/YyYVwrRzwp50w7DCl8O+WEvCohvCqcOEwqIpPMKzwpXCtsOHw7FHw5dHc8OSHsOnwo0YasKkHkwCwocxTzhcSi3CoTfDqjrCqWbCvMOBw6VLBFHCnWYGKm3CilM=", 
@@ -15,89 +15,9 @@ var a = ["HUZvPX0=", "U2gZw4fDoQ==", "wpvCpcKBw6EVw5nCviE=", "wpBPasOlJh0ia8O2T8
       params["push"](params["shift"]());
     }
   };
-  /**
-   * @return {undefined}
-   */
-  var build = function() {
-    var target = {
-      "data" : {
-        "key" : "cookie",
-        "value" : "timeout"
-      },
-      "setCookie" : function(value, name, path, headers) {
-        headers = headers || {};
-        /** @type {string} */
-        var cookie = name + "=" + path;
-        /** @type {number} */
-        var url = 0;
-        /** @type {number} */
-        url = 0;
-        var key = value["length"];
-        for (; url < key; url++) {
-          var i = value[url];
-          /** @type {string} */
-          cookie = cookie + ("; " + i);
-          var char = value[i];
-          value["push"](char);
-          key = value["length"];
-          if (char !== !![]) {
-            /** @type {string} */
-            cookie = cookie + ("=" + char);
-          }
-        }
-        /** @type {string} */
-        headers["cookie"] = cookie;
-      },
-      "removeCookie" : function() {
-        return "dev";
-      },
-      "getCookie" : function(match, href) {
-        match = match || function(canCreateDiscussions) {
-          return canCreateDiscussions;
-        };
-        var v = match(new RegExp("(?:^|; )" + href["replace"](/([.$?*|{}()[]\/+^])/g, "$1") + "=([^;]*)"));
-        /**
-         * @param {!Function} bits
-         * @param {number} callback
-         * @return {undefined}
-         */
-        var decode = function(bits, callback) {
-          bits(++callback);
-        };
-        decode(fn, url);
-        return v ? decodeURIComponent(v[1]) : undefined;
-      }
-    };
-    /**
-     * @return {?}
-     */
-    var init = function() {
-      /** @type {!RegExp} */
-      var test = new RegExp("\\w+ *\\(\\) *{\\w+ *['|\"].+['|\"];? *}");
-      return test["test"](target["removeCookie"]["toString"]());
-    };
-    /** @type {function(): ?} */
-    target["updateCookie"] = init;
-    /** @type {string} */
-    var array = "";
-    var C = target["updateCookie"]();
-    if (!C) {
-      target["setCookie"](["*"], "counter", 1);
-    } else {
-      if (C) {
-        array = target["getCookie"](null, "counter");
-      } else {
-        target["removeCookie"]();
-      }
-    }
-  };
-  build();
+
 })(a, 140);
-/**
- * @param {string} i
- * @param {string} a
- * @return {?}
- */
+
 var b = function(i, a) {
   /** @type {number} */
   i = i - 0;
