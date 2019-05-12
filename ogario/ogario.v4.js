@@ -1,7663 +1,7050 @@
-/**************
- * Legend express v0.035a by Jimboy3100   email:jimboy3100@hotmail.com
- *************/
- 
-var semimodVersion = "35"; // the version 1.1-> 1.11
-//fix ffa
-/*
-setTimeout(function() {
-$('#gamemode>option:nth-child(1)').val(':ffa');	
-$('#gamemode').trigger('change');
-}, 1500);
-*/
-$("#toast-container").hide();setTimeout(function() {$("#toast-container").show()}, 8000);
-appendLMhiFbPs();
-PreLcCelebration();
-loadericon();
-PremiumUsers();
-document.title = "LM express";
-//Authenticate Mod Script
-var accesstomod;
-getaccesstoken();
+// Open Source script
+// Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
+// This is part of the Legend mod project
+// v1.328 MEGA TEST
+// Game Configurations
 
-/*
-var CutNameConflictwithMessage=false;
-(function(){
-    var _privateLog = console.log;
-    console.log = function (message) {
-		if (CutNameConflictwithMessage==false){
-		if (~message.indexOf("OGARio by szymy")){
-		console.log = _privateLog;
-		}
-		else{
-			_privateLog.apply(console, arguments);
-		}
-		}
-    };
-})();
-
-(function(){
-    var _privateLog = console.log;
-    console.log = function (message) {
-		if (~message.indexOf("OGARio by szymy")){
-		}
-		else{
-			_privateLog.apply(console, arguments);
-		}
-    };
-})();
-*/
-$("#gamemode").prop('disabled', false);
-$("#region").prop('disabled', false);   		
-var oldgamemode=$("#gamemode");
-//privateservutil();
-
-var currentIP = "0.0.0.0:0";
-var currentIPopened;
-var currentToken = "";
-var previousMode = localStorage.getItem("gamemode");
-
-var checkonlyonce = localStorage.getItem("checkonlyonce");
-//var checkonlytwice = localStorage.getItem("checkonlytwice");
-var defaultMusicUrl = "https://www.youtube.com/watch?v=e7nkA7Ue5yg";
-var coinTimer;
-var musicPlayer;
-var originalDeath;
-var stateObj = {foo: "bar"};
-var containermain;
-var closebutton1 = "0";
-var modebetter = "";
-var modbetter2 = "";
-var fullornot = "NO";
-var minimapbckimg = "";
-var leadbimg = "";
-var teambimg = "";
-var canvasbimg = "";
-var pic1urlimg = "https://i.imgur.com/RVBi3T1.gif";
-var pic2urlimg = "https://i.imgur.com/p2T29QE.gif";
-var pic3urlimg = "https://i.imgur.com/EucIfYY.gif";
-var pic4urlimg = "https://i.imgur.com/KOoBDaK.gif";
-var pic5urlimg = "https://i.imgur.com/CS03xWv.gif";
-var pic6urlimg = "https://i.imgur.com/tfMUu2J.gif";
-var pic1dataimg = "Bad Choice!";
-var pic2dataimg = "Why?";
-var pic3dataimg = "Yow!!";
-var pic4dataimg = "Death!";
-var pic5dataimg = "Relax!";
-var pic6dataimg = "Legend Mod!";
-var yt1url = "dQw4w9WgXcQ";
-var yt2url = "btPJPFnesV4";
-var yt3url = "UD-MkihnOXg";
-var yt4url = "vpoqWs6BuIY";
-var yt5url = "VUvfn5-BLM8";
-var yt6url = "CnIfNSpCf70";
-var yt1data = "Rick Astley - Never Gonna Give You Up";
-var yt2data = "Survivor - Eye Of The Tiger";
-var yt3data = "Lion king - The Lion Sleeps Tonight";
-var yt4data = "Agario - Jumbo Solo vs Teams";
-var yt5data = "Agario - Kill3r vs Teams";
-var yt6data = "Legend mod Promo";
-var lastIP = localStorage.getItem("lastIP");
-var previousnickname = localStorage.getItem("previousnickname");
-var minbtext = localStorage.getItem("minbtext");
-var leadbtext = localStorage.getItem("leadbtext");
-var teambtext = localStorage.getItem("teambtext");
-var imgUrl = localStorage.getItem("imgUrl");
-var imgHref = localStorage.getItem("imgHref");
-var showToken = localStorage.getItem("showTK");
-var showPlayer = localStorage.getItem("showPlayer");
-var SHOSHOBtn = localStorage.getItem("SHOSHOBtn");
-var XPBtn = localStorage.getItem("XPBtn");
-var MAINBTBtn = localStorage.getItem("MAINBTBtn");
-var AnimatedSkinBtn = localStorage.getItem("AnimatedSkinBtn");
-//var YoutubeAutoBtn = localStorage.getItem("YoutubeAutoBtn");
-var TIMEcalBtn = localStorage.getItem("TIMEcalBtn");
-var troll1Btn = localStorage.getItem("troll1Btn");
-var ComPosition = localStorage.getItem("ComPosition");
-var autoCoinBtn = localStorage.getItem("autoCoinBtn");
-var timesopened = localStorage.getItem("timesopened");
-var url = localStorage.getItem("url");
-var region = getParameterByName("r", url);
-var realmode = getParameterByName("m", url);
-var searchStr = getParameterByName("search", url);
-var searchSip = getParameterByName("sip", url);
-var privateSrv = getParameterByName("ip", url);
-var clanpass = getParameterByName("pass", url);
-var searchedplayer = getParameterByName("player", url);
-var realmode2 = "";
-var mode=""; //just in case
-var token = "";
-var messageone = 1; //If legendmod is being used
-var hiddenfromclan = 0;
-var saveclanpassword= localStorage.getItem("saveclanpassword");
-var troll1;
-var seticon = "YES";
-var setmessagecom = "YES";
-var setyt = "YES";
-var searching;
-var timerId;
-T = {};
-var playerState = 0;
-var MSGCOMMANDS = "";
-var MSGCOMMANDS2;
-var MSGCOMMANDS;
-var MSGNICK;
-var playerMsg = "";
-var commandMsg = "";
-var otherMsg = "";
-var rotateminimap = 0;
-var rotateminimapfirst = 0;
-var openthecommunication = "NO";
-var clickedname = "NO";
-var oldteammode;
-var checkedGameNames = 0;
-var timesdisconnected = 0;
-var PanelImageSrc;
-var AdminClanSymbol;
-var AdminPassword;
-var AdminRights = 0;
-var LegendClanSymbol = "0";
-var legbgcolor = $("#menuPanelColor").val();
-var legbgpic = $("#menuBg").val();
-var legmaincolor = $("#hudMainColor ").val();
-var dyinglight1load = localStorage.getItem("dyinglight1load");
-var url2;
-var semiurl2;
-var PostedThings;
-var Ultimouseenabled=0;
-var setscriptingcom = "YES";
-var usedonceSkin=0;
-var toastrSkinNotice=0;
-var detailed="";
-var detailed1;
-var fromstart="false";
-userData = {}; 
-userData = JSON.parse(localStorage.getItem("userData"));
-var userip="0.0.0.0:0";
-var usercity="NotFound";
-var usercountry="NotFound";
-var userfirstname = localStorage.getItem("userfirstname");
-var userlastname = localStorage.getItem("userlastname");
-var usergender = localStorage.getItem("usergender");
-var userid = localStorage.getItem("userid");
-var fbresponse={};
-var prevPrivateServer = localStorage.getItem("prevPrivateServer");
-var CopyTkPwLb2; 
-var languagemod = localStorage.getItem("languagemod");
-//for MsgCommands
-var MSGCOMMANDS2a;
-var MSGCOMMANDSA;
-var MSGCOMMANDS2;
-var MSGCOMMANDS3;
-var Express= "True";
-var acceptServerBtnFlag=null;
-//for the LM JSON
-var LegendJSON;
-var LegendSettings="true";
-var LegendSettingsfirstclicked="false"; 
-var switcheryLegendSwitch, switcheryLegendSwitch2;
-var UniversalChatSaved = localStorage.getItem("UniversalChatSaved");
-var VanillaskinsSaved = localStorage.getItem("VanillaskinsSaved");
-var top5skinsSaved = localStorage.getItem("top5skinsSaved");
-var spawnspecialeffectsSaved = localStorage.getItem("spawnspecialeffectsSaved");
-var AnimatedRainbowColorSaved = localStorage.getItem("AnimatedRainbowColorSaved");
-if (localStorage.getItem("leaderboardlimit")!=null){
-	window.leaderboardlimit=localStorage.getItem("leaderboardlimit");
-}
-if (localStorage.getItem("teamboardlimit")!=null){
-	window.teamboardlimit=localStorage.getItem("teamboardlimit");
-}
-//
-var Premadeletter0 = "Communication Activated";
-var Premadeletter1 = "Cannot open this youtube URL";
-var Premadeletter2 = "You cannot chat if player name > 15 chars";
-var Premadeletter3 = "Easter Egg 1 Activated";
-var Premadeletter4 = "Easter Egg 2 Activated";
-var Premadeletter5 = "Easter Egg 3 Activated";
-var Premadeletter6 = "Video works better on vanilla, visit:";
-var Premadeletter7 = "Notes:<b>Facebook</b> compatibility is better than <b>Google Plus</b>.";
-var Premadeletter8 = "Notes:Agar.io can only connect to <b>Google Plus</b> on onload events. If logout occurs, rejoin Agar.io or use <b>Facebook</b>.";
-var Premadeletter9 = "If logout occurs on onload events, delete Chrome cookies from ";
-var Premadeletter10 = "Disconnected from server :(";
-var Premadeletter11 = "You were banned, restart your rooter!";
-var Premadeletter12 = "Connected!";
-var Premadeletter13 = "PLAY";
-//var Premadeletter13a = "Click play on youtube tab at first";
-var Premadeletter14 = "SPECTATE";
-var Premadeletter15 = "Invalid token or server has closed :(";
-var Premadeletter16 = "can be Updated to";
-var Premadeletter17 = "Welcome back";
-var Premadeletter18 = "Your shortcut area and other areas (from last tab) are still disabled! We suggest you enable them.";
-var Premadeletter19 = "Enable Them";
-var Premadeletter20 = "Keep Them Disabled";
-var Premadeletter21 = "Searching IP";
-var Premadeletter22 = "Your teammate";
-var Premadeletter23 = "wants you to hide all (leaderboard and minimap)";
-var Premadeletter24 = "Accept";
-var Premadeletter25 = "NO WAY!";
-var Premadeletter26 = "wants you to change your name to";
-var Premadeletter27 = "wants to troll you";
-var Premadeletter28 = "wants you to open Youtube Player";
-var Premadeletter29 = "Leaderboard found";
-var Premadeletter30 = "Search";
-var Premadeletter31 = "The leaderboard was not found. Keep trying...";
-var Premadeletter32 = "Search was canceled";
-var Premadeletter33 = "You are invisible to Team / Clan";
-var Premadeletter34 = "You are visible to Team / Clan";
-var Premadeletter35 = "Hide/Show can be used only while playing";
-var Premadeletter36 = "This is not valid Discord Webhook address";
-var Premadeletter37 = "Server is locked";
-var Premadeletter38 = "You must be on spectate mode";
-var Premadeletter39 = "Due to spamming issues, you must be in game and use password";
-var Premadeletter40 = "Auto Youtube On";
-var Premadeletter41 = "Auto Youtube Off";
-var Premadeletter42 = "Show Shortcuts";
-var Premadeletter43 = "Hide Shortcuts";
-var Premadeletter44 = "Show XP BAR";
-var Premadeletter45 = "Hide XP BAR";
-var Premadeletter45a = "Rounded Hud";
-var Premadeletter45b = "Square Hud";
-var Premadeletter46 = "Lin. color Hud";
-var Premadeletter47 = "Bold color Hud";
-var Premadeletter48 = "Show Everything";
-var Premadeletter49 = "Hide Everything";
-var Premadeletter50 = "Show Timer Calc.";
-var Premadeletter51 = "Hide Timer Calc."
-//var Premadeletter52="Edit Names";
-//var Premadeletter52a="Close Names";
-var Premadeletter53 = "Auto free coins";
-var Premadeletter54 = "Stop free coins";
-var Premadeletter55 = "Troll on Death";
-var Premadeletter56 = "No troll on Death";
-var Premadeletter57 = "Communication";
-var Premadeletter58 = "Hidden";
-var Premadeletter59 = "Visible";
-var Premadeletter60 = "Pause";
-var Premadeletter61 = "Enable YT as background";
-var Premadeletter62 = "Disable YT as background";
-var Premadeletter63 = "wants you to open the url";
-var Premadeletter63a = "wants you to join server with tag/password";
-var Premadeletter63b = "wants you to join server with NO TAG";
-var Premadeletter64 = "wants you to embed and play this youtube video";
-var Premadeletter65 = "wants you to join the following Skype room";
-var Premadeletter66 = "wants you to join the following Discord room";
-var Premadeletter67 = "wants you to leave this server and join this new one";
-
-var Premadeletter68 = "You pressed";
-var Premadeletter69 = "restart if";
-var Premadeletter70 = "drops";
-var Premadeletter71 = "Animated skins";
-var Premadeletter72 = "enabled";
-var Premadeletter73 = "drop";
-var Premadeletter74 = "when";
-var Premadeletter75 = "Animated skins will be";
-var Premadeletter76 = "disabled";
-var Premadeletter77 = "after rejoin";
-var Premadeletter78 = "Better FPS";
-var Premadeletter79 = "performance when 16";
-var Premadeletter80 = "When Dying Light Expansion is enabled, Troll on death cannot occur";
-var Premadeletter81 = "Private Server";
-var Premadeletter82 = "Connect to any";
-var Premadeletter83 = "server, or make your own";
-var Premadeletter84 = "Play agario-like games if you know the IP of servers";
-var Premadeletter85 = "Your account\'s image has been copied to clipboard. Paste it"; // erase the 's
-var Premadeletter86 = "to custom skin Url area";
-var Premadeletter87 = "You must Login to use picture of your profile";
-var Premadeletter88 = "You are using a wrong version";
-var Premadeletter89 = "Game will terminate now";
-var Premadeletter90 = "Special Deals";
-var Premadeletter91 = "Agario may or may not give you the Skin, but only the coins";
-var Premadeletter91a = "Use at your own risk";
-var Premadeletter92 = "If friend's UID is wrong, purchase will fail";
-var Premadeletter93 = "UID Factory Settings";
-var Premadeletter94 = "You must login to load Special Deals";
-var Premadeletter95 = "Fake\'s image has been copied to clipboard. Paste it"; // erase the 's
-var Premadeletter96 = "to custom skin Url area in order to activate the fake\'s flag function"; // erase the 's
-var Premadeletter97 = "Inform me when you finish with Recapatcha";
-var Premadeletter98 = "I have finished";
-var Premadeletter99 = "Never Mind";
-var Premadeletter100 = "Calculating your XP, please wait...";
-var Premadeletter101 = "Do";
-var Premadeletter102 = "NOT";
-var Premadeletter103 = "press";
-var Premadeletter104 = "Erase custom skin URL";
-var Premadeletter105 = "select video skin";	
-var Premadeletter106 = "unselect video skin";	
-var Premadeletter107 = "mute audio";
-var Premadeletter108 = "The LM Project";
-var Premadeletter109 = "Upload / Download";
-var Premadeletter109a = "Upload";
-var Premadeletter109b = "Download";	
-var Premadeletter110 = "do not enter anything here unless you know what it is";	
-var Premadeletter111 = "click on the orange icon to buy";	
-var Premadeletter112 = "For some payment methods";
-var Premadeletter113 = "Close";			
-var Premadeletter114 = "COPY";			
-var Premadeletter115 = "is used to buy offers for your friends";
-var Premadeletter116 = "To make purchases, you must be logged in to your account…";
-var Premadeletter117 = "Library"; 
-var Premadeletter118 = "visit"; 
-var Premadeletter119 = "Report as Fake (change Skin)"; 
-var Premadeletter120 = "Enter your EXACT name of the player"; 
-var Premadeletter121 = "Abusing players and inappropriate use will lead UID of user";
-var Premadeletter122 = "to permanent ban from usage of this extension"; 
-
-
-var showonceusers3=0;
-var client2;
-var xhttp = new XMLHttpRequest();
-//var a= xhttp.response;
-
-
-//Animated Skins
-var animatedi;
-var animateda;
-var animatedkey;
-window.a=0;
-var b,c;
-var animatedserverchanged=false;
-
-loadersetings();
-
-//
-function postSNEZ(server, username, password, data)
-{
-xhttp.open("POST", server, false);
-xhttp.setRequestHeader("username", username);
-xhttp.setRequestHeader("password", password);
-xhttp.send(data);
-}
-function getSNEZ(server, username, password)
-{
-xhttp.open("GET", server, false);
-xhttp.setRequestHeader("username", username);
-xhttp.setRequestHeader("password", password);
-xhttp.send();
-}
-
-var stylesLegendModConsole1 = [
-    'background: linear-gradient(#D33106, #571402)'
-    , 'border: 1px solid #3E0E02'
-    , 'color: #99c2ff'
-    , 'display: block'
-    , 'text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3)'
-    , 'box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 5px 3px -5px rgba(0, 0, 0, 0.5), 0 -13px 5px -10px rgba(255, 255, 255, 0.4) inset'
-    , 'line-height: 40px'
-    , 'text-align: center'
-    , 'font-weight: bold'
-].join(';');
-var stylesLegendModConsole2 = [
-    'background: linear-gradient(grey, black)'
-    , 'border: 1px solid #3E0E02'
-    , 'color: #FFFFFF'
-    , 'display: block'
-    , 'text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3)'
-    , 'box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 5px 3px -5px rgba(0, 0, 0, 0.5), 0 -13px 5px -10px rgba(255, 255, 255, 0.4) inset'
-//    , 'line-height: 40px'
-    , 'text-align: center'
-//    , 'font-weight: bold'
-].join(';');
-
-//Animated color texts
-   var tcm2 = {
-      prototypes:  {
-         canvas: (CanvasRenderingContext2D.prototype),
-         old:    {}
-      },
-      f: {
-         prototype_override: function(type, name, runat, callback) {
-            if ( !(type in tcm2.prototypes.old) )       tcm2.prototypes.old[type]       = {};
-            if ( !(name in tcm2.prototypes.old[type]) ) tcm2.prototypes.old[type][name] = tcm2.prototypes[type][name];
-            tcm2.prototypes[type][name] = function() {
-               (runat == 'before' && callback(this, arguments));
-               tcm2.prototypes.old[type][name].apply(this, arguments);
-               (runat == 'after'  && callback(this, arguments));
-            };
-         },
-		   gradient: function(a) {
-		      var c = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff', '#ff00ff'];
-		      var g = a.createLinearGradient(0, 0, a.canvas.width, 0);
-		      g.addColorStop(0, c[Math.floor(Math.random() * c.length)]);
-		      g.addColorStop(1, c[Math.floor(Math.random() * c.length)]);
-		      return g;
-		   },
-         override: function() {
-			  tcm2.f.prototype_override('canvas', 'fillText', 'before', function(a, b) {
-				  if (a.canvas.id!="minimap" && a.canvas.id!="minimap-sectors" && a.canvas.id!="ao2t-minimap"){
-				  //console.log(a.canvas.id);
-				  a.fillStyle   = tcm2.f.gradient(a);
-				  }
-			  }
-);
-         }
-      }
-   };
-   //tcm2.f.override();
-
-
-var $head = $("head");
-var $headlinklast = $head.find("link[rel='stylesheet']:last");
-var linkElement = "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css' type='text/css' media='screen'>";
-if ($headlinklast.length){
-   $headlinklast.after(linkElement);
-}
-else {
-   $head.append(linkElement);
-}
-
-if (realmode == "") {modebetter2 = ":ffa";} 
-else {modebetter2 = realmode;}
-privateserverpassword();
-urlIpWhenOpened();
-var minbtext2 = minbtext;
-var minbtext3 = minbtext;
-if (minbtext == null || minbtext == "") {
-    minbtext = "Legend express"; //Legend express/Locked
-    minbtext2 = "Legend express";
-	minbtext3 = "Legend express/Private";
-}
-LMminimapTextAct();
-
-var datasent2;
-//fzogarOgarIframeListener();
-emphasischat();
-function init(modVersion) {
-// ANNOUNCEMENTS
-//toastr["info"]('<b><font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://jimboy3100.github.io/banners/particles.gif);">'+'Legend mod </span></font> is back!<br><font color="red"></b>Enable Vanilla skins on Settings</font>').css("width", "350px");
-        if (modVersion != "1.6") {	           
-			toastr["info"]('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + Premadeletter16 + ' <font color="yellow"><b>v1.6</b></font>. <br>(Https Protocol)<br>visit: <a target="_blank" href="http://www.legendmod.ml"><font color="yellow"><b><u>www.legendmod.ml</u></b></font></a>');
-		}	
-	$("#ogario-party").wrap('<div style="display: none;" id="hidendivtoken"></div>');
-	universalchat();
-		$('.options-box.chatGroup').append('<label><input type="checkbox" id="UniversalChat" class="js-switch" data-switchery="true" checked style="display: none;"> Agar Tool/Legend Mod</input></label>');
-		var elemLegendSwitch = document.querySelector('#UniversalChat');
-		var ogarioswitchbackcolor=$("input#export-ogarioThemeSettings.js-switch").next().css( "background-color" );
-		var UniversalChat = new Switchery(elemLegendSwitch, { size: 'small', color: ogarioswitchbackcolor, jackColor: 'rgb(250, 250, 250)' });
-
-		$("#UniversalChat").click(function() {
-			if (UniversalChat.isChecked()) {
-				$("#ao2t-hud").show();
-				localStorage.setItem("UniversalChatSaved", true);
-					if ($("#ao2t-capture").hasClass("disconnected")){
-					$("#ao2t-capture").click();
-				}				
-			} else {				
-				$("#ao2t-hud").hide();
-				localStorage.setItem("UniversalChatSaved", false);
-					if ($("#ao2t-capture").hasClass("connected")){
-					$("#ao2t-capture").click();
-				}
-			}
-		});	
-		$('.options-box.skinsGroup').append('<label><input type="checkbox" id="Vanillaskins" class="js-switch" data-switchery="true" style="display: none;"> Vanilla skins</input></label>');
-		var elemLegendSwitch2 = document.querySelector('#Vanillaskins');
-		var ogarioswitchbackcolor=$("input#export-ogarioThemeSettings.js-switch").next().css( "background-color" );
-		var Vanillaskinsbtn = new Switchery(elemLegendSwitch2, { size: 'small', color: ogarioswitchbackcolor, jackColor: 'rgb(250, 250, 250)' });
-
-		$("#Vanillaskins").click(function() {
-			if (Vanillaskinsbtn.isChecked()) {
-				localStorage.setItem("VanillaskinsSaved", "true");
-				window.vanillaskins=true;
-				// Animated Skins
-				var animateSkinsStart = setInterval(animateSkincheckTimer, 60000);
-			} else {				
-				localStorage.setItem("VanillaskinsSaved", "false");
-				toastr["info"]("Changes will fully be reflected after restart");
-				window.vanillaskins=false;
-				// Animated Skins
-				animateSkinsStop();
-			}
-		});	
-		$('.options-box.hudGroup').append('<label><input type="checkbox" id="top5skins" class="js-switch" data-switchery="true" style="display: none;"> Skins on teamboard</input></label>');
-		var elemLegendSwitch3 = document.querySelector('#top5skins');
-		var ogarioswitchbackcolor=$("input#export-ogarioThemeSettings.js-switch").next().css( "background-color" );
-		var top5skinsbtn = new Switchery(elemLegendSwitch3, { size: 'small', color: ogarioswitchbackcolor, jackColor: 'rgb(250, 250, 250)' });
-
-		$("#top5skins").click(function() {
-			if (top5skinsbtn.isChecked()) {
-				localStorage.setItem("top5skinsSaved", "true");
-				window.top5skins=true;
-			} else {				
-				localStorage.setItem("top5skinsSaved", "false");
-				window.top5skins=false;
-			}
-		});	
-		$('.options-box.respGroup').append('<label><input type="checkbox" id="spawnspecialeffects" class="js-switch" data-switchery="true" style="display: none;"> Spawn special effects</input></label>');
-		var elemLegendSwitch4 = document.querySelector('#spawnspecialeffects');
-		var ogarioswitchbackcolor=$("input#export-ogarioThemeSettings.js-switch").next().css( "background-color" );
-		var spawnspecialeffectsbtn = new Switchery(elemLegendSwitch4, { size: 'small', color: ogarioswitchbackcolor, jackColor: 'rgb(250, 250, 250)' });
-
-		$("#spawnspecialeffects").click(function() {
-			if (spawnspecialeffectsbtn.isChecked()) {
-				localStorage.setItem("spawnspecialeffectsSaved", "true");
-				window.spawnspecialeffects=true;
-			} else {				
-				localStorage.setItem("spawnspecialeffectsSaved", "false");
-				window.spawnspecialeffects=false;
-			}
-		});			
-		
-		$('.options-box.transparencyGroup').append('<label><input type="checkbox" id="AnimatedRainbowColor" class="js-switch" data-switchery="true" style="display: none;">Animated rainbow colors</input></label>');
-		var elemLegendSwitch2 = document.querySelector('#AnimatedRainbowColor');
-		var ogarioswitchbackcolor=$("input#export-ogarioThemeSettings.js-switch").next().css( "background-color" );
-		var AnimatedRainbowColorbtn = new Switchery(elemLegendSwitch2, { size: 'small', color: ogarioswitchbackcolor, jackColor: 'rgb(250, 250, 250)' });		
-		
-		$("#AnimatedRainbowColor").click(function() {
-			if (AnimatedRainbowColorbtn.isChecked()) {
-				localStorage.setItem("AnimatedRainbowColorSaved", "true");
-				tcm2.f.override();
-				// Animated Skins
-				
-			} else {				
-				localStorage.setItem("AnimatedRainbowColorSaved", "false");
-				toastr["info"]("Changes will fully be reflected after restart");
-			}
-		});			
-		
-/*           if (UniversalChatSaved == "false") { //For Setting DoubleSplitRange
-                $("#UniversalChat").click();
-				setTimeout(function() {
-				$("#ao2t-hud").hide();
-				}, 1100);
-            }		
-*/
-				   
-    //var connectedbanner=0;
-	$("#gamemode").prop('disabled', false);
-	$("#region").prop('disabled', false);   
-
-    if (timesopened != null) {
-        timesopened++;
-        localStorage.setItem("timesopened", timesopened);
-    } else if (timesopened == null) {
-        localStorage.setItem("timesopened", "0");
+Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
+    get: function(){
+        return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
     }
-	pre_loopLM(modVersion);
-}
-
-
-function getEmbedUrl(url) {
-    url = url.trim();
-    var musicParams = "showinfo=0&controls=2&vq=tiny&enablejsapi=1";
-	//var musicParams = "showinfo=0&controls=2&vq=tiny&enablejsapi=1&autoplay=1";
-    var videoId = getParameterByName("v", url);
-    var listId = getParameterByName("list", url);
-    if (videoId != null && listId == null) {
-        return "https://www.youtube.com/embed/" + videoId + "?" + musicParams;
-    } else if (listId != null && videoId != null) {
-        return "https://www.youtube.com/embed/" + videoId + "?list=" + listId + "&" + musicParams;
-    } else if (url.startsWith("https://youtu.be/")) {
-        if (listId != null) {
-            return url.replace("https://youtu.be/", "https://www.youtube.com/embed/") + "&" + musicParams;
-        } else {
-            return url.replace("https://youtu.be/", "https://www.youtube.com/embed/") + "?" + musicParams;
-        }
-    } else {
-        return false;
-    }
-}
-function loadersetings() {
-    setTimeout(function() {
-        if (timesopened >= 3) {
-            if (checkonlyonce != "true") {
-                //if($("#SHOSHOBtn").attr('aria-pressed') == "false"){
-                if (SHOSHOBtn != "true") {
-                    toastr["error"](Premadeletter18 + '</br> <button id=enableshortcuts1 class="btn btn-sm btn-primary btn-play btn-enable-shortcuts" onclick="enableshortcuts();" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter19 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-play btn-enable-shortcuts" style="width: 100%;margin-top: 10px;">' + Premadeletter20 + '</button>', "", {
-                        timeOut: 15000,
-                        extendedTimeOut: 15000
-                    }).css("width", "300px");
-        checkonlyonce = "true";
-        localStorage.setItem("checkonlyonce", checkonlyonce);	
-				}
-				}
-            }		
-			/*
-            if (checkonlytwice != "true") {
-                //if($("#SHOSHOBtn").attr('aria-pressed') == "false"){
-			toastr["info"]('<center><b><font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://jimboy3100.github.io/banners/particles.gif);">'+'Legend Box </span></font> is released!<br><font color="red">It\'s Multibox</font></b></a><iframe id="animatedpromosIframe4" class="result-iframe" style="border: none;" src="https://jimboy3100.github.io/extras/banneranimated5.html" name="CodePen" width="300" height="300" frameborder="0" scrolling="no" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowfullscreen="allowfullscreen"></iframe><br><b><u><a target="_blank" href="http://www.legendmod.ml"><font color="blue">www.legendmod.ml</font></u></b></center>').css("width", "350px");
-        checkonlytwice = "true";
-        localStorage.setItem("checkonlytwice", checkonlytwice);				
-            }					
-        }
-		*/
-        if (timesopened == 10 || timesopened == 100 || timesopened == 1000) {
-            //if($("#SHOSHOBtn").attr('aria-pressed') == "false"){
-            if (SHOSHOBtn != "true") {
-                    toastr["error"](Premadeletter18 + '</br> <button id=enableshortcuts1 class="btn btn-sm btn-primary btn-play btn-enable-shortcuts" onclick="enableshortcuts();" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter19 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-play btn-enable-shortcuts" style="width: 100%;margin-top: 10px;">' + Premadeletter20 + '</button>', "", {
-					timeOut: 15000,
-                    extendedTimeOut: 15000
-                }).css("width", "300px");
-        checkonlyonce = "true";
-        localStorage.setItem("checkonlyonce", checkonlyonce);				
-            }
-        }
-
-    }, 3500);
-}
-function loadericon() {
-	//continue loadericon
-//    setTimeout(function() {
-        setTimeout(function() {
-        $("#imagebig").fadeOut(1500);
-		setTimeout(function() {$("#imagebig").remove();}, 1600); //remove it
-		}, 1000);   
-//		}, 100);
-}
-function PremiumUsers(){
-        var ProLicenceUsersTableJS = document.createElement("script");
-        ProLicenceUsersTableJS.type = "text/javascript";
-        ProLicenceUsersTableJS.src = "https://jimboy3100.github.io/AjaxData/ProLicenceUsersTableJS.js";
-        $("body").append(ProLicenceUsersTableJS);
-}
-function getaccesstoken() {
-    $.ajax({
-        type: "GET",
-        url: "https://jimboy3100.github.io/AjaxData/accesstoken.html",
-        datatype: "json",
-        success: function(info) {
-		  accesstomod =  info[17];
-			//return accesstomod;
-			getaccesstoken2(accesstomod);
-		}
-	});
-}
-
-function getaccesstoken2(accesstomod) {
-//    setTimeout(function() {
-        if(accesstomod != "a" && accesstomod != null){
-			toastr["error"]('<b>[SERVER]:</b> ' + Premadeletter88 + ', <br>' + Premadeletter118 + ': <a target="_blank" href="https://jimboy3100.github.io/legendmod.user.js"><font color="yellow"><b><u>www.legendmod.ml</u></b></font></a><br>' + Premadeletter89).css("width", "300px");
-				setTimeout(function() {
-					document.documentElement.innerHTML = "";
-					}, 8000);
-				}
-//   }, 10000);
-}
-function enableshortcuts() {
-    if ($("#IPBtn").attr('aria-pressed') == "false") {
-        $("#IPBtn").click();
-    }
-    if ($("#SHOSHOBtn").attr('aria-pressed') == "false") {
-        $("#SHOSHOBtn").click();
-    }
-	if($("#MAINBTBtn").attr('aria-pressed') == "false"){
-		$("#MAINBTBtn").click(); }
-    if ($("#XPBtn").attr('aria-pressed') == "false") {
-        $("#XPBtn").click();
-    }
-
-	
-}
-
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
-
-
-function appendLMhiFbPs(){
-$("body").on('DOMNodeInserted', ".toast.toast-warning", function() {
-    MSGCOMMANDS2 = $(".toast.toast-warning").html();
-	if (MSGCOMMANDS2.includes("You are using an old version of OGARio by")) {
-	toastr["error"]("You are using a wrong version, visit: www.legendmod.ml");
-	
-	}		
-    else if (MSGCOMMANDS2.includes("Welcome! You are connected to the OGARio")) {
-		$(".toast.toast-warning").remove();
-		$("#gamemode").prop('disabled', false);
-		$("#region").prop('disabled', false);   
-		$(".toast.toast-warning").remove();
-//		setTimeout(function () {
-				if (clanpass!=null&&clanpass!="") {		
-					$("#clantag").val(clanpass);
-					$('#clantag').css('background-color', '#ff6347');						
-				}
-				if (privateSrv!=null) {
-					if ($('#clantag').val() == ""){
-					if(privateSrv.includes("eu.fzogar.xyz:4000")){$("#clantag").val("PS1");} 
-					else if(privateSrv.includes("eu.fzogar.xyz:4001")){$("#clantag").val("PS2");}
-					else if(privateSrv.includes("eu.fzogar.xyz:5001")){$("#clantag").val("PS3");}
-					else if(privateSrv.includes("eu.fzogar.xyz:5002")){$("#clantag").val("PS4");}
-					else if(privateSrv.includes("sg.fzogar.xyz:4000")){$("#clantag").val("PS5");}
-					else if(privateSrv.includes("sg.fzogar.xyz:4001")){$("#clantag").val("PS6");}
-					else if(privateSrv.includes("in.fzogar.xyz:443")){$("#clantag").val("PS7");}
-					else{$("#clantag").val("PS");}
-					}
-				}		
-		$("#overlays").show();
-		$(".center-container.ogario-menu").show();
-		$(".side-container.right-container").show();
-		$(".side-container.left-container").show();	
-//		},200);
-//		if($('#region>option:nth-child(1)').val()!=":PrS")	{
-//		$('#region').prepend('<option value=":PrS" data-itr="PrS">Private Servers</option>');	
-//		}
-	
-
-		//userData=$.get("http://gd.geobytes.com/GetCityDetails", function (response) { $("#response").html(JSON.stringify(response, null, 4)); }, "jsonp");
-		userData=$.get("https://extreme-ip-lookup.com/json/", function (response) { $("#response").html(JSON.stringify(response, null, 4));
-		if (userData!=null) {localStorage.setItem("userData", JSON.stringify(userData));}
-		}, "jsonp");
-/*		setTimeout(function (){ 
-		if (userData!=null) {localStorage.setItem("userData", JSON.stringify(userData));}
-		},300); */
-    }	
-
-
 });
 
-
-$("body").on('DOMSubtreeModified', "#chat-box", function() {
-    var MSGCOMMANDS3 = $(".command-text").text();
-	if (MSGCOMMANDS3.includes("You are using an old version of OGARio by")) {
-	$(".command-text").text('You are using a wrong version, visit: www.legendmod.ml');	
-	}	
-    else if (MSGCOMMANDS3.includes("Welcome! You are connected to the OGARio by szymy server. Have a nice mass!")) {
-		$("#gamemode").prop('disabled', false);
-		$("#region").prop('disabled', false);   
-	//	$(".toast.toast-warning").remove();
-	        $(".command-text").text(Premadeletter0);
-//		setTimeout(function () {
-		//spectate();
-				if (clanpass!=null&&clanpass!="") {		
-					$("#clantag").val(clanpass);
-					$('#clantag').css('background-color', '#ff6347');						
-				}
-				if (privateSrv!=null) {
-					if ($('#clantag').val() == ""){
-					if(privateSrv.includes("eu.fzogar.xyz:4000")){$("#clantag").val("PS1");} 
-					else if(privateSrv.includes("eu.fzogar.xyz:4001")){$("#clantag").val("PS2");}
-					else if(privateSrv.includes("eu.fzogar.xyz:5001")){$("#clantag").val("PS3");}
-					else if(privateSrv.includes("eu.fzogar.xyz:5002")){$("#clantag").val("PS4");}
-					else if(privateSrv.includes("sg.fzogar.xyz:4000")){$("#clantag").val("PS5");}
-					else if(privateSrv.includes("sg.fzogar.xyz:4001")){$("#clantag").val("PS6");}
-					else if(privateSrv.includes("sg.fzogar.xyz:4002")){$("#clantag").val("PS7");}
-					else{$("#clantag").val("PS");}
-					}
-				}			
-		$("#overlays").show();
-		$(".center-container.ogario-menu").show();
-		$(".side-container.right-container").show();
-		$(".side-container.left-container").show();			
-//		},200);
-
-//		if($('#region>option:nth-child(1)').val()!=":PrS")	{
-//		$('#region').prepend('<option value=":PrS" data-itr="PrS">Private Servers</option>');	
-		userData=$.get("https://extreme-ip-lookup.com/json/", function (response) { $("#response").html(JSON.stringify(response, null, 4));
-		if (userData!=null) {localStorage.setItem("userData", JSON.stringify(userData));}
-		}, "jsonp");
-/*		setTimeout(function (){ 
-		if (userData!=null) {localStorage.setItem("userData", JSON.stringify(userData));}
-		},300); */
-
-//		}		
-    }
-
-});
-
-$("body").on('DOMNodeInserted', ".toast.toast-success", function() {
-            MSGCOMMANDS = $(".toast.toast-success").text();
-			MSGNICK = $(".message-nick").last().text().replace(": ", "");
-			MsgCommands1(MSGCOMMANDS, MSGNICK);
-
-});	
-$("body").on('DOMSubtreeModified', "#chat-box", function() {
-            MSGCOMMANDS = $(".message-text").text();
-			MSGNICK = $(".message-nick").last().text().replace(": ", "");
-			MsgCommands1(MSGCOMMANDS, MSGNICK);
-
-});
+function Video(src, append) {
+  var v = document.createElement("video");
+  if (src != "") {
+    v.src = src;
+  }
+  if (append == true) {
+    document.body.appendChild(v);
+  }
+  return v;
 }
 
-        
-		
 /*
-
-        $('#server-reconnect').click(function() {
-            adres();
-			setTimeout(function() {
-                $("#server").val(currentIP);
-            }, 2500);
-        });
-
-		$("#gamemode").change(function () {
-            adres();
-			setTimeout(function() {
-				if ($("#gamemode").val() != ":party") {				
-                $("#server").val(currentIP);
-				}
-            }, 2500);
-        });
-		$("#region").change(function () {
-            adres();
-			setTimeout(function() {
-                $("#server").val(currentIP);
-            }, 2500);
-        });		
+$("#skin-preview").removeClass("default").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<video src=\'' + t.src + "' width='500'>\"></a>");
+$("#skin-popover").append('<video id="vid1" src = "https://jimboy3100.github.io/banners/testvideomama.mp4" width="500"  controls></video>');
 */
-		
-function adres(info, thismode, thisregion) {
-	var info, thismode, thisregion;
-if (thismode==null || thisregion==null){
-	joinSERVERfindinfo();
-}
-	if ($("#gamemode").val() != ":party") {
-		setTimeout(function(){		
-			currentIP = "live-arena-"+$("#server-token").val()+".agar.io";
-			$("#server").val(currentIP);
-				
-                if (privateSrv==null) {
-                    if (realmode != ":party") {
-				if(!thismode){
-					realmode = $("#gamemode").val();
-				}				
-				else {
-					realmode=thismode;
-				}
-				if(!thisregion){
-					region = $("#region").val();
-				}				
-				else {
-					region=thisregion;
-				}					
-						if (currentIPopened==true){							
-						history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + realmode);
-						return currentIPopened=false;
-						}
-						else if (thismode!=null && thisregion!=null){							
-						history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + realmode);
-						//history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + realmode);
-						}
-                       else{
-						   history.pushState(stateObj, "page 2", "?sip=" + currentIP);
-						   realmode=null;
-						   region=null;
-						   return realmode, region;
-					   }
-                    }
-                    else if (realmode == ":party") {
-				window.history.pushState(null, null, window.location.pathname);
-                $("#server").val("#" + window.location.href.replace('https://agar.io/#',''));						
-                    }
-				}
-				else if (privateSrv!=null) {				
-                history.pushState(stateObj, "page 2", "?ip=" + privateSrv + "&?SERVER=PRIVATE");			
-			}	                
+window.videoJustWatchProflag={};
+window.videoJustWatchProflag2={};
 
-			}, 1800);
-	}
-	else {
-            setTimeout(function() {
-//				if (info!="noinfo"){                     
-				window.history.pushState(null, null, window.location.pathname);
-                $("#server").val("#" + window.location.href.replace('https://agar.io/#',''));
-//				}			
-            }, 2000);
-        }
-}
+//window.videoJustWatchProflag=true;
+window.videoJustWatchPro;
 
-function privateserverpassword(){
-setTimeout(function () {
-		if (privateSrv!=null) {				
-			$(".btn-spectate").click();
-			prevPrivateServer=1;
-			localStorage.setItem("prevPrivateServer", 1);
-			return prevPrivateServer=1;						
-        }
-		else{
-			if (prevPrivateServer=="1"){
-				$("#clantag").val(saveclanpassword);
-				prevPrivateServer=0;
-				localStorage.setItem("prevPrivateServer", 0);
-			return prevPrivateServer=0;
-			}
-		}
-}, 6000);
-}
-function LMserverbox(){
-
-    
-        (function(a, c) {
-            function r(a, d) {
-                if (d) {
-                    var f = new Date;
-                    f.setTime(f.getTime() + 864E5 * d);
-                    f = "; expires=" + f.toGMTString()
-                } else f = "";
-                document.cookie = "agario_redirect=" + a + f + "; path=/"
-            }
-            $(function() {
-                $("#gamemode").after('<input id="server" class="form-control" style="width: 74%;  display: none; margin-left: 0px; margin-top: 5px"><button type="submit" id="connect" class="btn btn-primary" style="width: 24%; display: none; margin-left: 6px; margin-top: -3px">Connect</button><button type="submit2" id="connect2" class="btn btn-primary btn " style="width: 24%; display: none; margin-left: 6px; margin-top: -3px">Connect</button>');
-                $("#connect2").tooltip({
-                    title: "Connect to server, or restablish communication",
-                    placement: "left"
-                });
-                $("#connect2").click(function() {
-                    if ($("#server").val().includes("#") == false) {
-						if ($("#server").val().includes(":80") == true) {$("#server").val($("#server").val().replace(":80",""));} //fixing code for :80  
-                        var texture2, texture3;
-					    var texture2, texture3;
-                        texture3 = $("#server").val();
-                        texture2 = texture3.replace("live-arena-", "");
-						texture2 = texture2.replace(".agar.io:80", "");
-						texture2 = texture2.replace(".agar.io", "");
-						$("#server-token").val(texture2);
-						$("#server-join").click();
-/*                     setTimeout(function() {
-
-							if (fromstart==true){
-								realmode = getParameterByName("m", url);
-								returnfromstartfalse();
-							}
-							else{
-                            realmode = $("#gamemode").val();
-							}
-                            var tmz = $("#server").val();
-                            currentIP = tmz;
-                            if (realmode != ":party") {
-                                setTimeout(function() {
-                                    history.pushState(stateObj, "page 2", "?sip=" + tmz);
-                                }, 1000);
-                                setTimeout(function() {
-                                    history.pushState(stateObj, "page 2", "?sip=" + tmz);
-                                }, 2000);
-                                setTimeout(function() {
-                                    history.pushState(stateObj, "page 2", "?sip=" + tmz);
-                                }, 3000);
-                            }
-                        }, 1000); */
-                    } else {
-                        joinpartyfromconnect();
-                    }
-
-                });
-            });
-		joinSIPonstart();
-		joinPLAYERonstart();
-	
-        })(window, window.jQuery);
-    
-	
-}
-function urlIpWhenOpened(){
-	
-setTimeout(function() {
-currentIP = "live-arena-"+$("#server-token").val()+".agar.io";	
-        if (searchSip != null && privateSrv==null) {
-            if (region == null) {
-                    history.pushState(stateObj, "page 2", "?sip=" + searchSip);
-            } else {
-                    history.pushState(stateObj, "page 2", "?sip=" + searchSip + "&?r=" + region + "&?m=" + realmode);
-            }
-        }
-        else if (searchSip == null) {
-                    history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + $('#gamemode').val());
-					region=$('#region').val();
-					realmode=$('#gamemode').val();
-					return region, realmode;
-        }		
-		else if (privateSrv==null) {
-            if (realmode != ":party") {
-                history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + realmode);
-            }
-        }		
-
-    }, //5000
-    6000); //8000
-}
-function onhashchange(){return false}
-function LMminimapTextAct(){
-LMminimapText();
-setTimeout(function() {LMminimapText();  }, 2000);
-setTimeout(function() {LMminimapText();  }, 2500);
-setTimeout(function() {LMminimapText();  }, 3000);
-setTimeout(function() {LMminimapText();  }, 3500);
-setTimeout(function() {LMminimapText();  }, 4000);
-setTimeout(function() {LMminimapText();  }, 4500);
-setTimeout(function() {LMminimapText();  }, 5500);
-setTimeout(function() {LMminimapText();  }, 6000);
-setTimeout(function() {LMminimapText();  }, 6500);
-setTimeout(function() {LMminimapText();  }, 7000);
-setTimeout(function() {LMminimapText();  }, 7500);
-
-setTimeout(function() {LMminimapText();}, 11000);
-setTimeout(function() {LMminimapText();}, 12000);
-setTimeout(function() {LMminimapText();}, 18000);
-setTimeout(function() {LMminimapText();}, 22000);
-}
-function LMminimapText(){
-	var c = document.getElementById("minimap-sectors");
-    var ctx = c.getContext("2d");
-    ctx.clearRect(0, 0, c.width, c.height / 9);
-    ctx.font = "16px Georgia";
-    if (searchSip != null) { ctx.fillText(minbtext, c.width / 2, 22) }
-	else if (privateSrv!=null) {ctx.fillText(minbtext3, c.width / 2, 22);}
-	else {ctx.fillText(minbtext2, c.width / 2, 22); }	
-}
-function delay(time, func) {
-    setTimeout(function() {
-        func();
-    }, time);
-}
-
-function spectate() {
-//    hideMenu();
-    $(".btn-spectate").click();
-}
-function play() {
-    $('*[data-itr="page_play"]').click();
-}
-
-function changeServer() {
-    $("#server-reconnect").click();	
-//    adres();
-    appendLog($("#leaderboard-positions").text());
-}
-
-
-
-function isValidIpAndPort(input) {
-    var parts = input.split(":");
-    var ip = parts[0].split(".");
-    var port = parts[1];
-    return validateNum(port, 1, 65535) &&
-        ip.length == 4 &&
-        ip.every(function(segment) {
-            return validateNum(segment, 0, 255);
-        });
-}
-
-function validateNum(input, min, max) {
-    var num = +input;
-    return num >= min && num <= max && input === num.toString();
-}
-
-function joinToken(token) {
-    //var lastMode = $("#gamemode").val();
-    appendLog($("#leaderboard-positions").text());
-    $("#joinPartyToken").val(token);
-    $("#join-party-btn").click();
-    $("#joinPartyToken").val("");
-    $("#gamemode").val("");
-    //setTimeout(function(){ $("#gamemode").val(lastMode); }, 1000);
-    currentToken = token;
-    if (localStorage.getItem("showTK") == "true") {
-//        $("#cur-tk-hud").fadeTo('fast', 0.2).fadeTo('fast', 1.0);
-//        $("#cur-tk-hud").text("TK: #" + currentToken).attr("style", "opacity: 0;");
-
-    }
-	$("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-}
-
-function searchHandler(searchStr) {
-    searchStr = searchStr.trim();
-    if (searchIPHandler(searchStr)) { // is an IP      
-    } else if (searchTKHandler(searchStr)) { // is a token     
-    } else {
-        searchPlayer(searchStr);
-    }
-}
-function searchTKHandler(searchStr) {
-    searchStr = searchStr.trim();
-
-    if (searchStr.startsWith("https://agar.io/#")) {		
-        joinpartyfromconnect(searchStr.replace("https://agar.io/#", ""));
-		realmodereturn();
-		
-    } else if (searchStr.startsWith("agar.io/#")) {
-		joinToken(searchStr.replace("agar.io/#", ""));	
-		realmodereturn();
-    } else {
-        return false;
-    }
-	$("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-    return true;	
-}
-function realmodereturn(){
-		region = $("#region").val();
-		realmode = $("#gamemode").val();
-		return realmode, region;
-}
-function realmodereturnfromStart(){
-		region = getParameterByName("r", url);
-		realmode = getParameterByName("m", url);
-		fromstart=true;
-		return fromstart, region, realmode,fromstart;
-}
-function returnfromstartfalse(){
-return fromstart=false;	
-}
-
-function searchIPHandler(searchStr) {	//VERY WEIRD FUNCTION, MOD DOESNT LOAD IF CHANGED
-    //	if (messageone==0){toastr["info"]("Initializing Communication, please wait...").css("width", "250px");}
-	region=$("#regioncheck").val(); //...
-	realmode=$("#gamemodecheck").val(); //...
-    $("#Backtomenu").hide();
-    hideMenu();
-    showSearchHud();
-    //setTimeout(function () {
-    searchStr = searchStr.trim();
-    if (isValidIpAndPort(searchStr)) {
-        findIP(searchStr);
-    } else if (isValidIpAndPort(searchStr.replace("wss://", ""))) {
-        findIP(searchStr.replace("wss://", ""));
-    } else if (isValidIpAndPort(searchStr.replace("agar.io/?search=wss://", ""))) {
-        findIP(searchStr.replace("agar.io/?search=wss://", ""));
-    } else if (isValidIpAndPort(searchStr.replace("https://agar.io/?search=wss://", ""))) {
-        findIP(searchStr.replace("https://agar.io/?search=wss://", ""));
-    } else if (getParameterByName("search", searchStr)) {
-        if (region) {
-            $('#region option[value="'+region+'"]').prop('selected', 'selected').change();
-            getInfo();
-        }
-        //      MC.setGameMode(mode);                  //important
-        findIP(ip.replace("wss://", ""));
-    } else {
-        return false;
-    }
-    return true;
-    //}, 1000);
-}
-
-function findIP(searchIP) {
- //   setTimeout(function() {
-        if (realmode == ":party") {
-            $('#gamemode option[value=":party"]').prop('selected', 'selected').change();
-        }
-        if (realmode == ":ffa") {
-            $('#gamemode option[value=""]').prop('selected', 'selected').change();
-        }
-        if (realmode == ":teams") {
-            $('#gamemode option[value=":teams"]').prop('selected', 'selected').change();
-        }
-        if (realmode == ":experimental") {
-            $('#gamemode option[value=":experimental"]').prop('selected', 'selected').change();
-        }
- //   }, 1500); //weird
-    if (!searching) {
-        if ($.trim(searchIP) == '') {} else {
-//            showCancelSearch();
-            searching = true;
-            var interval = 1800;
-            var maxTries = 8;
-            var numTries = 0;
-            var numAttempts = 0;
-            var maxAttempts = 2;
-            toastr["success"](Premadeletter21 + " \'wss://" + searchIP + "\'...").css("width", "210px");
-            numTries++;
-            if (currentIP == searchIP) {
-				$("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-                searching = false;
-//                hideCancelSearch();
-                //hideSearchHud();
-	                toastr["info"](Premadeletter29 + '! </br> <button  class="btn btn-play btn-primary btn-needs-server" onclick=hideSearchHud();play(); style="margin-top: 10px;border-color: darkblue;">' + Premadeletter13 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-spectate-shortcut" onclick=hideSearchHud(); style="width: 100%;margin-top: 10px;">' + Premadeletter14 + '</button>', "", {
-                    timeOut: 20000,
-                    extendedTimeOut: 20000
-                }).css("width", "210px");
-                //    testmessage();
-                //MC.setQuality($('#quality').val());
-                //showMenu();
-            } else {
-                changeServer();
-                timerId = setInterval(function() {
-//                    if (MC.isConnecting() == false || numAttempts == maxAttempts) {
-					if (numAttempts == maxAttempts) {
-                        numAttempts = 0;
-                        //console.log("MC.isConnecting(): " + MC.isConnecting());
-                        numTries++;
-                        toastr["success"](Premadeletter30 + ": " + numTries + "\/" + maxTries).css("width", "210px");
-                        if (numTries >= maxTries) {
-							$("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-                            clearInterval(timerId);
-                            searching = false;
-                            hideCancelSearch();
-                            toastr["error"](Premadeletter31).css("width", "210px");
-                        }
-                        if (currentIP == searchIP) {
-							$("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-                            clearInterval(timerId);
-                            searching = false;
-                            hideCancelSearch();
-                            //hideSearchHud();							
-	                toastr["info"](Premadeletter29 + '! </br> <button  class="btn btn-play btn-primary btn-needs-server" onclick=hideSearchHud();play(); style="margin-top: 10px;border-color: darkblue;">' + Premadeletter13 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-spectate-shortcut" onclick=hideSearchHud(); style="width: 100%;margin-top: 10px;">' + Premadeletter14 + '</button>', "", {
-                    timeOut: 20000,
-                    extendedTimeOut: 20000
-                }).css("width", "210px");
-                            //       testmessage();
-                            //		$("#gamemode").val("nothing");
-                            //MC.setQuality($('#quality').val());
-                            //showMenu();
-                        } else {
-                            //console.log("MC.isConnecting(): " + MC.isConnecting());
-                            changeServer();
-                        }
-                    } else {
-                        numAttempts++;
-                        //console.log("numAttempts: " + numAttempts);
-                    }
-                }, interval);
-
-            }
-        }
-    } else {
-		$("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-        clearInterval(timerId);
-        searching = false;
-//        hideCancelSearch();
-		$("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-        toastr["error"](Premadeletter32 + "!").css("width", "210px");
-    }
-}
-
-function searchPlayer(searchString) {
-    if (!searching) {
-        if ($.trim(searchString) == '') {} else {
-//            showCancelSearch();
-            searching = true;
-            //var interval = 2500;
-            var interval = 1800;
-            var maxTries = 8;
-            var numTries = 0;
-            var minNamesFound = 3;
-            var numAttempts = 0;
-            var maxAttempts = 2;
-            toastr["success"](Premadeletter30 + " \'" + searchString + "\'...").css("width", "210px");
-            var leaderboard = $("#leaderboard-positions").text();
-            var names = searchString.split(/[1-9]\.\s|10\.\s/g).filter(function(el) {
-                return el.length != 0;
-            });
-            //console.log(leaderboard);
-
-            var numNames = names.length;
-            //console.log("Number of names: " + numNames);
-
-            var found = false;
-            numTries++;
-            toastr["success"](Premadeletter30 + ": " + numTries + "\/" + maxTries).css("width", "210px");
-            if (numNames == 1) {
-                found = foundName(leaderboard, searchString);
-            } else if (numNames > 1) {
-                found = foundNames(leaderboard, names, minNamesFound);
-            }
-
-            if (found) {
-				$("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-                searching = false;
-//                hideCancelSearch();
-                //hideSearchHud();
-	                toastr["info"](Premadeletter29 + '! </br> <button  class="btn btn-play btn-primary btn-needs-server" onclick=hideSearchHud();play(); style="margin-top: 10px;border-color: darkblue;">' + Premadeletter13 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-spectate-shortcut" onclick=hideSearchHud(); style="width: 100%;margin-top: 10px;">' + Premadeletter14 + '</button>', "", {
-                    timeOut: 20000,
-                    extendedTimeOut: 20000
-                }).css("width", "210px");
-                //		testmessage();
-                $("#gamemode").val("nothing");
-                //MC.setQuality($('#quality').val());
-                //showMenu();
-            } else {
-                changeServer();
-
-                // start timer
-
-                timerId = setInterval(function() {
-
-                //    if (MC.isConnecting() == false || numAttempts == maxAttempts) {
-					if (numAttempts == maxAttempts) {	
-						
-                        numAttempts = 0;
-                        //console.log("MC.isConnecting(): " + MC.isConnecting());
-                        leaderboard = $("#leaderboard-positions").text();
-
-                        //console.log(leaderboard);
-                        //console.log("Number of names: " + numNames);
-
-                        if (numNames == 1) {
-                            found = foundName(leaderboard, searchString);
-                        } else if (numNames > 1) {
-                            found = foundNames(leaderboard, names, minNamesFound);
-                        }
-                        numTries++;
-                        toastr["success"](Premadeletter30 + ": " + numTries + "\/" + maxTries).css("width", "210px");
-                        if (numTries >= maxTries) {
-                            clearInterval(timerId);
-                            searching = false;
-//                            hideCancelSearch();
-                            toastr["error"](Premadeletter31).css("width", "210px");
-                        }
-                        if (found) {
-							$("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-                            clearInterval(timerId);
-                            searching = false;
-//                            hideCancelSearch();
-                            //hideSearchHud();
-	                toastr["info"](Premadeletter29 + '! </br> <button  class="btn btn-play btn-primary btn-needs-server" onclick=hideSearchHud();play(); style="margin-top: 10px;border-color: darkblue;">' + Premadeletter13 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-spectate-shortcut" onclick=hideSearchHud(); style="width: 100%;margin-top: 10px;">' + Premadeletter14 + '</button>', "", {
-                    timeOut: 20000,
-                    extendedTimeOut: 20000
-                }).css("width", "210px");
-                            //			testmessage();
-                            //MC.setQuality($('#quality').val());
-                            //showMenu();
-                        } else {
-                            //console.log("MC.isConnecting(): " + MC.isConnecting());
-                            changeServer();
-                        }
-                    } else {
-                        numAttempts++;
-                        //console.log("numAttempts: " + numAttempts);
-                    }
-                }, interval);
-            }
-        }
-
-    } else {
-        clearInterval(timerId);
-        searching = false;
-//        hideCancelSearch();
-        toastr["error"](Premadeletter32).css("width", "210px");
-    }
-}
-function copyToClipboard(element) {
-  var $temp = $("<textarea>");
-  $("body").append($temp);
-  var html = $(element).html();
-  html = html.replace(/<br>/g, "\n"); // or \r\n
-  console.log(html);
-  $temp.val(html).select();
-  document.execCommand("copy");
-  $temp.remove();
-}
-
-function copyToClipboardAll(){	
-$("#CopyTkPwLb").remove();
-	if ($("#top5-pos").text()!=""){
-		$("#connect2").after('<er id="CopyTkPwLb" style="display: none;">Server: '+CopyTkPwLb2+'<br>Leaderboard: '+$("#leaderboard-positions").text() + '<br>Teamboard:' +$("#top5-pos").text() +'<br>My Game Name: ' +$("#nick").val() +'</er>');
-	}
-	else{
-		$("#connect2").after('<er id="CopyTkPwLb" style="display: none;">Server: '+CopyTkPwLb2+'<br>Leaderboard: '+$("#leaderboard-positions").text() + '<br>My Game Name: ' +$("#nick").val()+'</er>');
-	}
-copyToClipboard('er#CopyTkPwLb');
-}
-
-function foundName(leaderboard, name) {
-    return leaderboard.includes(name);
-}
-function playYoutube(){
-    if (musicPlayer != undefined) {
-        var playerState = musicPlayer.getPlayerState();
-        if (playerState != 1) {
-            musicPlayer.playVideo();
-            } else {
-        musicPlayer.pauseVideo();
-        }
-    }
-}
-function foundNames(leaderboard, names, minNamesFound) {
-    var numNames = names.length;
-    var countFound = 0;
-    var found = false;
-
-    for (var i = 0; i < numNames; i++) {
-        found = foundName(leaderboard, names[i]);
-        if (found) {
-            countFound++;
-        }
-    }
-    //if (countFound >= minNamesFound) {alert(countFound);}
-    //console.log("found: " + countFound);
-    return (countFound >= minNamesFound) ? true : false;
-}
-function openhelper() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/legendhelper.js";
-    $("body").append(s);
-}
-function opennamechars() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/nicks/nicknamechars.js";
-    $("body").append(s);
-}
-
-function legendformIframe() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/legendformIframe.js";
-    $("body").append(s);
-}
-function joinpartyfromconnect(thismode) {
-					    $("#party-token").val($("#server").val());
-						$("#join-party-btn-2").click();
-						return realmode = ":party";
-}
-
-function BeforeReportFakesSkin(){
-	if ($("#skin").val()!="https://jimboy3100.github.io/banners/iconfake1.png"){
-		toastr["info"](Premadeletter95 + ' <font color="red"><b>Ctrl+V</font></b>, ' + Premadeletter96).css("width", "350px"); // erase the 's		
-		copy("https://jimboy3100.github.io/banners/iconfake1.png");		
-	}
-	else{
-		ReportFakesSkin();
-	}
-}
-function ReportFakesSkin() {
-var Temporaryletter1;
-var Temporaryletter2;
-var Languageletter320;		//Leaderboard
-var Languageletter321;		//Teamboard
-if (Languageletter320!=null){Temporaryletter2=Languageletter320} else{Temporaryletter2 = "Leaderboard";}
-if (Languageletter321!=null){Temporaryletter1=Languageletter321} else{Temporaryletter1 = "Teamboard";}
-
-$("#menu-footer").after('<div id="SkinChanger" style="display: none; background-image: url('+legbgpic+'); background-color: '+legbgcolor+'; border: 1px solid black; height: 540px; width: 500px; ";>'+
-	'<div id="SkinChangerhud" style="display:block; margin-left: 10px; margin-right: 10px;">'+ //margin-left: 10px"
-	'<div id="SkinChangertoolshud1" align="middle"><h5 class="main-color"><b>'+Premadeletter119+'</b></h5>'+	
-	'<p style="color:white; font-size:12px; margin-bottom: -4px;" align="middle">'+Premadeletter120+
-	'<br><font id= "Leadboardlet1" style="color:white; size:12px; margin-right: 70px;">'+Temporaryletter2+'</font><font id= "Teamboardlet1" style="color:white; size:12px; margin-left: 70px;">'+Temporaryletter1+'</font></p>'+
-											'<input id="LeaderboardInput1" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline; " " data-toggle="tooltip" data-placement="top" data-original-title="" >' +	
-											'<input id="TeamboardInput1" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +																							
-											'<input id="LeaderboardInput2" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +	
-											'<input id="TeamboardInput2" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +	
-											'<input id="LeaderboardInput3" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +	
-											'<input id="TeamboardInput3" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +																							
-											'<input id="LeaderboardInput4" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +	
-											'<input id="TeamboardInput4" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +	
-											'<input id="LeaderboardInput5" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +	
-											'<input id="TeamboardInput5" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +																							
-											'<input id="LeaderboardInput6" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +	
-											'<input id="TeamboardInput6" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +	
-											'<input id="LeaderboardInput7" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +	
-											'<input id="TeamboardInput7" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +																							
-											'<input id="LeaderboardInput8" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +	
-											'<input id="TeamboardInput8" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +	
-											'<input id="LeaderboardInput9" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +	
-											'<input id="TeamboardInput9" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +																							
-											'<input id="LeaderboardInput10" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +	
-											'<input id="TeamboardInput10" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +	
-											'</div><p style="color:white; font-size:12px";" align="middle">'+Premadeletter121+'<br>'+Premadeletter122+'</u></p>'+											
-											'</div></div>');
-$('#LeaderboardInput1').copyCSS('#server').css('width', '40%');	
-$('#LeaderboardInput2').copyCSS('#server').css('width', '40%');	
-$('#LeaderboardInput3').copyCSS('#server').css('width', '40%');	
-$('#LeaderboardInput4').copyCSS('#server').css('width', '40%');	
-$('#LeaderboardInput5').copyCSS('#server').css('width', '40%');	
-$('#LeaderboardInput6').copyCSS('#server').css('width', '40%');	
-$('#LeaderboardInput7').copyCSS('#server').css('width', '40%');	
-$('#LeaderboardInput8').copyCSS('#server').css('width', '40%');	
-$('#LeaderboardInput9').copyCSS('#server').css('width', '40%');	
-$('#LeaderboardInput10').copyCSS('#server').css('width', '40%');	
-$('#TeamboardInput1').copyCSS('#server').css('width', '40%');
-$('#TeamboardInput2').copyCSS('#server').css('width', '40%');
-$('#TeamboardInput3').copyCSS('#server').css('width', '40%');
-$('#TeamboardInput4').copyCSS('#server').css('width', '40%');
-$('#TeamboardInput5').copyCSS('#server').css('width', '40%');
-$('#TeamboardInput6').copyCSS('#server').css('width', '40%');
-$('#TeamboardInput7').copyCSS('#server').css('width', '40%');
-$('#TeamboardInput8').copyCSS('#server').css('width', '40%');
-$('#TeamboardInput9').copyCSS('#server').css('width', '40%');
-$('#TeamboardInput10').copyCSS('#server').css('width', '40%');
-										
-$("#SkinChangerhud").after('<button id="SkinBacktomenu" onclick="exitSkinChanger(); return false" class="btn btn-danger"  style="margin-left: 10px;" data-original-title="" title="">'+Premadeletter113+'</button>');
-OthersSkinChanger();
-SkinBtnsPut();
-OpenSkinChanger();
-}
-
-
-function OthersSkinChanger(){
-	var leaderboardnames = [$("#leaderboard-positions").text().split('1. ').pop().split('2. ')[0], $("#leaderboard-positions").text().split('2. ').pop().split('3. ')[0], $("#leaderboard-positions").text().split('3. ').pop().split('4. ')[0], $("#leaderboard-positions").text().split('4. ').pop().split('5. ')[0], $("#leaderboard-positions").text().split('5. ').pop().split('6. ')[0], $("#leaderboard-positions").text().split('6. ').pop().split('7. ')[0], $("#leaderboard-positions").text().split('7. ').pop().split('8. ')[0], $("#leaderboard-positions").text().split('8. ').pop().split('9. ')[0], $("#leaderboard-positions").text().split('9. ').pop().split('10. ')[0], $("#leaderboard-positions").text().split('10. ').pop().split('11. ')[0]];
-//$(".team-top-limit")[2].click();
-var Top5b={};
-var Top5c={};
-var Top5d={};
-var Top5a=$("#top5-pos").text();
-for (var n=1;n<=21;n++){
-	Top5b[n]=Top5a.split('[')[n];
-if (Top5b[n]!=null){
-	Top5c[n]=Top5b[n].split('] ')[1];
-	Top5d[n]=Top5c[n].slice(0, -1);	
-}
-else {Top5d[n-1]=Top5c[n-1];break;}
-console.log(Top5d[n]);
-}
-//}
-
-$("#LeaderboardInput1").val(leaderboardnames[0]);
-$("#LeaderboardInput2").val(leaderboardnames[1]);
-$("#LeaderboardInput3").val(leaderboardnames[2]);
-$("#LeaderboardInput4").val(leaderboardnames[3]);
-$("#LeaderboardInput5").val(leaderboardnames[4]);
-$("#LeaderboardInput6").val(leaderboardnames[5]);
-$("#LeaderboardInput7").val(leaderboardnames[6]);
-$("#LeaderboardInput8").val(leaderboardnames[7]);
-$("#LeaderboardInput9").val(leaderboardnames[8]);
-$("#LeaderboardInput10").val(leaderboardnames[9]);
-
-$("#TeamboardInput1").val(Top5d[1]);
-$("#TeamboardInput2").val(Top5d[2]);
-$("#TeamboardInput3").val(Top5d[3]);
-$("#TeamboardInput4").val(Top5d[4]);
-$("#TeamboardInput5").val(Top5d[5]);
-$("#TeamboardInput6").val(Top5d[6]);
-$("#TeamboardInput7").val(Top5d[7]);
-$("#TeamboardInput8").val(Top5d[8]);
-$("#TeamboardInput9").val(Top5d[9]);
-$("#TeamboardInput10").val(Top5d[10]);
-
-}
-function SkinBtnsPut(){
-$("#LeaderboardInput1").before('<button id="LeaderboardIconFake1" class="btn btn-info" style="background-color: transparent;" onclick="Leader11();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#LeaderboardInput2").before('<button id="LeaderboardIconFake2" class="btn btn-info" style="background-color: transparent;" onclick="Leader12();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#LeaderboardInput3").before('<button id="LeaderboardIconFake3" class="btn btn-info" style="background-color: transparent;" onclick="Leader13();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#LeaderboardInput4").before('<button id="LeaderboardIconFake4" class="btn btn-info" style="background-color: transparent;" onclick="Leader14();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#LeaderboardInput5").before('<button id="LeaderboardIconFake5" class="btn btn-info" style="background-color: transparent;" onclick="Leader15();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#LeaderboardInput6").before('<button id="LeaderboardIconFake6" class="btn btn-info" style="background-color: transparent;" onclick="Leader16();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#LeaderboardInput7").before('<button id="LeaderboardIconFake7" class="btn btn-info" style="background-color: transparent;" onclick="Leader17();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#LeaderboardInput8").before('<button id="LeaderboardIconFake8" class="btn btn-info" style="background-color: transparent;" onclick="Leader18();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#LeaderboardInput9").before('<button id="LeaderboardIconFake9" class="btn btn-info" style="background-color: transparent;" onclick="Leader19();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#LeaderboardInput10").before('<button id="LeaderboardIconFake10" class="btn btn-info" style="background-color: transparent;" onclick="Leader20();return false;"><i class="fa fa-wpexplorer"></i></button>');
-
-
-$("#TeamboardInput1").after('<button id="TeamboardIconFake1" class="btn btn-info" style="background-color: transparent;" onclick="Teamer11();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#TeamboardInput2").after('<button id="TeamboardIconFake2" class="btn btn-info" style="background-color: transparent;" onclick="Teamer12();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#TeamboardInput3").after('<button id="TeamboardIconFake3" class="btn btn-info" style="background-color: transparent;" onclick="Teamer13();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#TeamboardInput4").after('<button id="TeamboardIconFake4" class="btn btn-info" style="background-color: transparent;" onclick="Teamer14();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#TeamboardInput5").after('<button id="TeamboardIconFake5" class="btn btn-info" style="background-color: transparent;" onclick="Teamer15();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#TeamboardInput6").after('<button id="TeamboardIconFake6" class="btn btn-info" style="background-color: transparent;" onclick="Teamer16();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#TeamboardInput7").after('<button id="TeamboardIconFake7" class="btn btn-info" style="background-color: transparent;" onclick="Teamer17();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#TeamboardInput8").after('<button id="TeamboardIconFake8" class="btn btn-info" style="background-color: transparent;" onclick="Teamber18();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#TeamboardInput9").after('<button id="TeamboardIconFake9" class="btn btn-info" style="background-color: transparent;" onclick="Teamer19();return false;"><i class="fa fa-wpexplorer"></i></button>');
-$("#TeamboardInput10").after('<button id="TeamboardIconFake10" class="btn btn-info" style="background-color: transparent;" onclick="Teamer20();return false;"><i class="fa fa-wpexplorer"></i></button>');
-
-}
-
-
-
-
-function exitSkinChanger(){
-$("#main-menu").show();	
-$("#skins-panel").show();
-$("#quick-menu").show();
-$("#exp-bar").show();
-$("#SkinChanger").remove();		
-}
-
-function OpenSkinChanger(){
-$("#main-menu").hide();	
-$("#skins-panel").hide();
-$("#quick-menu").hide();
-$("#exp-bar").hide();
-$("#SkinChanger").show();	
-}
-
-//function LeaderboardController(){core.registerSkin(otherMsg, null, 'https://jimboy3100.github.io/banners/iconfake1.png', 1, null);}
-function ProceedToChangeSkins(){
-	console.log("ProceedToChangeSkins function loaded");
-	$("#loaderIframeIcon1").show();
-	loadericon();
-	$("#SkinBacktomenu").click();
-//    setTimeout(function() {
-		setTimeout(function() {$('#server-join').click();}, 1500);
-		
-		setTimeout(function() {$("#nick").val(previousnickname);}, 4500);
-		$("#overlays").show();
-		$(".center-container.ogario-menu").show();
-		$(".side-container.right-container").show();
-		$(".side-container.left-container").show();			
-//    }, 4000);	
-}
-function BeforeChangingSkins(){
-	$(".btn.btn-play.btn-primary").click();
-	$( "body" ).append('<div id="imagebig"><iframe id="loaderIframeIcon1" src="https://jimboy3100.github.io/extras/banneranimated2applyingskins.html" name="CodePen" allowfullscreen="true" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowtransparency="true" scrolling="no" frameBorder="0" class="result-iframe" style="display: none; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe></div>');	
+function checkVideos(a, b){
+	checkVideos1(a);
+	 //setTimeout(function() {
+		 if (window.videoJustWatchPro.readyState==4){
+	if (!window.videoJustWatchPro.playing){
+	window.videoJustWatchPro.play();
 	setTimeout(function() {
-	if($("#captchaWindow").is(":visible")==false){
-	console.log("No recapatcha");
-	ProceedToChangeSkins();
-	}
+		checkVideos2(b);
+	}, 2000);	
+	};
+
+		 }
+	//}, 2000);
+	return true;
+}
+
+function checkVideos2(b){
+	
+	for(i=0; i<legendmod3.top5.length-1 ;i++){
+	
+		if(i.nick==b) {
+			legendmod3.setTarget(i.id);				
+	if(legendmod3.lastSentNick != b){
+		window.videoJustWatchProflag2[b]=false;
+	if (legendmod3.calculateMapSector(legendmod3.top5[i].x, legendmod3.top5[i].y) == legendmod3.currentSector && legendmod3.currentSector == "C3"){
+	
+	window.videoJustWatchPro.volume = 1;
+	window.videoJustWatchProflag2[b]=true;
+			}
 	else{
-			toastr["warning"](Premadeletter97 + '!' + '<button class="btn btn-sm btn-warning btn-spectate btn-noplay-finishedRecapatcha" style="margin-top: 10px;border-color: darkblue;">'+Premadeletter98+'</button><br><button class="btn btn-sm btn-warning btn-spectate btn-noplay-youtube" style="width: 100%;margin-top: 10px;">' + Premadeletter99 + '</button>', "", {
-                        timeOut: 40000,
-                        extendedTimeOut: 40000
-                    }).css("width", "300px");
-                     $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click(function() {
-                        ProceedToChangeSkins();
-                    });  
-	console.log("Recapatcha needed");
-	ogarioplayfalse();
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 500);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 1000);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 1500);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 2000);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 2500);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 3000);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 3500);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 4000);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 4500);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 5000);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 5500);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 6000);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 6500);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 7000);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 7500);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 8000);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 8500);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 9000);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 9500);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 10000);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 10500);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 11000);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 11500);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 12000);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 12500);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 13000);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 13500);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 14000);
-	setTimeout(function() {if($("#captchaWindow").is(":visible")==false){$(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();return false;}}, 14500);
-
-	}}, 2500);
-}
-function prevnamereturner(){
-	return previousnickname=$("#nick").val();
-}
-function ogarioplayfalse(){
-	return ogario.play="false";
+		window.videoJustWatchPro.volume = 0;
+		}
+		
+		}
+		}
+		
+		 }
+	if(legendmod3.lastSentNick != b){	 
+	checkvideoJustWatchProflag2(b);		
+	}	
 }
 
-function Leader11() {
-	prevnamereturner(); $("#nick").val($('#LeaderboardInput1').val()); BeforeChangingSkins();
+function checkvideoJustWatchProflag2(b){
+	
+	if (!window.videoJustWatchProflag2[b]){
+		window.videoJustWatchPro.volume = 0;
+	}
 }
-function Leader12() {
-	prevnamereturner(); $("#nick").val($('#LeaderboardInput2').val()); BeforeChangingSkins();
-}
-function Leader13() {
-	prevnamereturner(); $("#nick").val($('#LeaderboardInput3').val()); BeforeChangingSkins();
-}
-function Leader14() {
-	prevnamereturner(); $("#nick").val($('#LeaderboardInput4').val()); BeforeChangingSkins();
-}
-function Leader15() {
-	prevnamereturner(); $("#nick").val($('#LeaderboardInput5').val()); BeforeChangingSkins();
-}
-function Leader16() {
-	prevnamereturner(); $("#nick").val($('#LeaderboardInput6').val()); BeforeChangingSkins();
-}
-function Leader17() {
-	prevnamereturner(); $("#nick").val($('#LeaderboardInput7').val()); BeforeChangingSkins();
-}
-function Leader18() {
-	prevnamereturner(); $("#nick").val($('#LeaderboardInput8').val()); BeforeChangingSkins();
-}
-function Leader19() {
-	prevnamereturner(); $("#nick").val($('#LeaderboardInput9').val()); BeforeChangingSkins();
-}
-function Leader20() {
-	prevnamereturner(); $("#nick").val($('#LeaderboardInput10').val()); BeforeChangingSkins();
-}
-function Teamer11() {
-	prevnamereturner(); $("#nick").val($("#TeamboardInput1").val()); BeforeChangingSkins();
-}
-function Teamer12() {
-    prevnamereturner(); $("#nick").val($("#TeamboardInput2").val()); BeforeChangingSkins();
-}
-function Teamer13() {
-    prevnamereturner(); $("#nick").val($("#TeamboardInput3").val()); BeforeChangingSkins();	
-}
-function Teamer14() {
-    prevnamereturner(); $("#nick").val($("#TeamboardInput4").val()); BeforeChangingSkins();
-}
-function Teamer15() {
-    prevnamereturner(); $("#nick").val($("#TeamboardInput5").val()); BeforeChangingSkins();	
-}
-function Teamer16() {
-	prevnamereturner(); $("#nick").val($("#TeamboardInput6").val()); BeforeChangingSkins();
-}
-function Teamer17() {
-    prevnamereturner(); $("#nick").val($("#TeamboardInput7").val()); BeforeChangingSkins();	
-}
-function Teamer18() {
-    prevnamereturner(); $("#nick").val($("#TeamboardInput8").val()); BeforeChangingSkins();		
-}
-function Teamer19() {
-    prevnamereturner(); $("#nick").val($("#TeamboardInput9").val()); BeforeChangingSkins();		
-}
-function Teamer20() {
-    prevnamereturner(); $("#nick").val($("#TeamboardInput10").val()); BeforeChangingSkins();	
-}
-function copy(text) {
-    $("#tempCopy").val(text);
-    $("#tempCopy").show();
-    $("#tempCopy").select();
-    document.execCommand('copy');
-    $("#tempCopy").hide();
-    $("#tempCopy").val("");
-}
-/*
-function fzogarOgarSettings(datasent2){
-        setTimeout(function() {
-            $("#import-settings-btn").attr('class', 'btn btn-success');
-            document.getElementById("import-settings").value = datasent2;
-            window.history.pushState(null, null, window.location.pathname);
-            //$('#import-settings-btn').click();
-			$('#import-settings-btn2').click();
-        }, 100);
-}		
-
-function fzogarOgarIframe() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/AjaxData/fzogarOgarIframe.js";
-    $("body").append(s);
-}
+function checkVideos1(a){
+	
+	if (!videoJustWatchProflag[a]){
+		console.log("video skins activated");
+		window.videoJustWatchPro = document.createElement("video"); // create a video element
+		window.videoJustWatchPro.src = a;	
+		window.videoJustWatchProflag[a]=true;
+	}
+};	
 
 
-function fzogarOgarIframeListener(){
-///////////////////////////////////////////////////////////////////////////
-// Here "addEventListener" is for standards-compliant web browsers and "attachEvent" is for IE Browsers.
-var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
-var eventer = window[eventMethod];
-// Now...
-// if 
-//    "attachEvent", then we need to select "onmessage" as the event. 
-// if 
-//    "addEventListener", then we need to select "message" as the event
-var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
-// Listen to message from child IFrame window
-eventer(messageEvent, function (e) {
-       //alert(e.data);
-       // Do whatever you want to do with the data got from IFrame in Parent form.
-	   if (~e.data.indexOf("PostedOgarSettings1")){ 
 
-//		try{window.parent.postMessage("PostedOgarSettings2?datasent="+$('#export-settings').val(), "*"); 
-//        } catch (e) {}
-		//alert(e.data);
-		datasent2=e.data;
-		datasent2=datasent2.replace("PostedOgarSettings1?datasent=", "");
-		fzogarOgarSettings(datasent2);
-	//	var datasent = getParameterByName("datasent", datasent2);
-	//   alert(datasent);
-	   
-	   }
-		return datasent2;
-}, false);
-///////////////////////////////////////////////////////////////////////////
+					
+window.agarversion = "v12/2106/";
+//window.agarversion="v12/1922/";
+
+function pauseVideos(){
+	setTimeout(function() {
+	if (window.videoJustWatchPro && window.videoJustWatchPro.playing){ 
+	window.videoJustWatchPro.pause();
+		}
+	}, 1000);
+}
+//window.disableIntegrity=false;
+var Lmagarversion = "";
+
+window.LMGameConfiguration = $.ajax({
+    type: "GET",
+    url: "https://jimboy3100.github.io/agario/live/" + Lmagarversion + "GameConfiguration.json",
+    async: false,
+    datatype: "jsonp",
+    success: function(info) {
+        //var GameConfiguration = info;
+    }
+}).responseJSON;
+//weird but it works....
+
+setTimeout(function() {
+    if (window.LMGameConfiguration == undefined) {
+        window.LMGameConfiguration = $.ajax({
+            type: "GET",
+            url: "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + "GameConfiguration.json",
+            async: false,
+            datatype: "jsonp",
+            success: function(info) {
+                //var GameConfiguration = info;
+            }
+        }).responseJSON;
+    }
+}, 3000);
+setTimeout(function() {
+    if (window.LMGameConfiguration != undefined) {
+        window.LMAgarGameConfiguration = window.LMGameConfiguration;
+        window.EquippableSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Equippable Skins"];
+    }
+}, 5000);
+
+//set values outside ogario
+window.leaderboardlimit = 10;
+window.teamboardlimit = 5;
+window.vanillaskins = false;
+window.spawnspecialeffects = false;
+window.top5skins = false;
+//window.customskinsname;
+//window.customskinsurl;
+
+/*core.registerSkin('fly', null, 'https://i.imgur.com/poFMdZd.png', 1, null)
+core.registerSkin = function(a, b, c, d, e){
+	window.customskinsname=a;
+	window.customskinsurl=c;
 }
 */
-function LegendSettingsfirst() {
-	$('#export-settings').before('<label><input type="checkbox" id="export-LegendSettings" class="js-switch" data-switchery="true" checked style="display: none;"> API</label>');
-	var elemLegendSwitch = document.querySelector('#export-LegendSettings');
-	var ogarioswitchbackcolor=$("input#export-ogarioThemeSettings.js-switch").next().css( "background-color" );
-	var switcheryLegendSwitch = new Switchery(elemLegendSwitch, { size: 'small', color: ogarioswitchbackcolor, jackColor: 'rgb(250, 250, 250)' });
-	$('#import-settings').before('<label><input type="checkbox" id="import-LegendSettings" class="js-switch" data-switchery="true" checked style="display: none;"> API</label>');
-	var elemLegendSwitch2 = document.querySelector('#import-LegendSettings');
-	var switcheryLegendSwitch2 = new Switchery(elemLegendSwitch2, { size: 'small', color: ogarioswitchbackcolor, jackColor: 'rgb(250, 250, 250)' });
-
-    LegendJSON = JSON.parse(document.getElementById("export-settings").value);
-    LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch);
-    $("#export-settings-btn").click(function() {
-        LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch);
-		setTimeout(function() {
-			copy($("#export-settings").val());
-			}, 200);		
-    });
-
-    $("#import-settings-btn").clone().insertAfter("#import-settings-btn").attr('id', 'import-settings-btn2');
-    $("#import-settings-btn2").css({
-        width: "676px",
-        margin: "12px"
-    });
-    $("#import-settings-btn").hide();
-    $("#import-settings-btn2").click(function() {
-        LegendSettingsImport(switcheryLegendSwitch2);
-		return switcheryLegendSwitch, switcheryLegendSwitch2;
-    });
-
+var dyinglight1load;
+function UpperCase(str) {
+    return str.toUpperCase();
 }
 
-function LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch) {
-    setTimeout(function() {
-        if (switcheryLegendSwitch.isChecked()) {
-            LegendJSON = JSON.parse(document.getElementById("export-settings").value);
-            parseLegendJSONAPI(LegendJSON);
-            var LegendJSONnice = JSON.stringify(LegendJSON, null, 4);
-            document.getElementById("export-settings").value = LegendJSONnice;
-        } else {
-            LegendJSON = JSON.parse(document.getElementById("export-settings").value);
-            parseLegendJSONAPI(LegendJSON);
-            delete LegendJSON.legendSettings;
-            var LegendJSONnice = JSON.stringify(LegendJSON, null, 4);
-            document.getElementById("export-settings").value = LegendJSONnice;
-        }
-        return LegendJSON;
-    }, 100);
+function LowerCase(str) {
+    return str.toLowerCase();
 }
+var legendflags = ["argentina", "belarus", "cambodia", "isis", "jamaica", "mexico", "pakistan", "poland", "scotland", "somalia", "spain", "sweden", "switzerland", "thailand", "venezuela", "2ch", "4chan", "8ch", "9gag", "cameron", "irs", "receita-federal", "9gag", "agario-candle", "australia", "austria", "ayy-lmao", "bait", "bangladesh", "belgium", "berlusconi", "blatter", "boris", "bosnia", "botswana", "brazil", "bulgaria", "bush", "byzantium", "cambodia", "canada", "chavez", "chile", "china", "cia", "clinton", "confederate", "croatia", "cuba", "denmark", "dilma", "earth", "estonia", "european-union", "facebook", "facepunch", "feminism", "fidel", "finland", "france", "french-kingdom", "german-empire", "germany", "greece", "hillary", "hollande", "hungary", "imperial-japan", "india", "indiana", "iran", "iraq", "ireland", "italy", "jamaica", "japan", "kc", "kim-jong-un", "latvia", "lithuania", "luxembourg", "maldivas", "mars", "matriarchy", "merkel", "mexico", "nasa", "netherlands", "nigeria", "north-korea", "norway", "obama", "origin", "pakistan", "palin", "patriarchy", "peru", "pewdiepie", "piccolo", "pokerface", "portugal", "prodota", "prussia", "putin", "qing-dynasty", "quebec", "queen", "reddit", "romania"];
 
-function parseLegendJSONAPI(LegendJSON) {
-	
-	if(LegendJSON.ogarioCommands.comm15==undefined){
-		LegendJSON.ogarioCommands.comm15="Fake Tricksplit";LegendJSON.ogarioCommands.comm16="Popsplit";LegendJSON.ogarioCommands.comm17="Double Popsplit";LegendJSON.ogarioCommands.comm18="Reversed Tricksplit";
-		LegendJSON.ogarioCommands.comm19="Canonsplit";LegendJSON.ogarioCommands.comm20="Reversed Canonsplit";LegendJSON.ogarioCommands.comm21="Bowlingsplit";LegendJSON.ogarioCommands.comm22="Auto feed trick";
-		LegendJSON.ogarioCommands.comm23="Pause";LegendJSON.ogarioCommands.comm24="ANTI alarm stage 1";LegendJSON.ogarioCommands.comm25="ANTI alarm stage 2";LegendJSON.ogarioCommands.comm26="ANTI alarm stage 3";
-		LegendJSON.ogarioCommands.comm27="ANTI alarm stage 4";LegendJSON.ogarioCommands.comm28="ANTI alarm stage 5";LegendJSON.ogarioCommands.comm29="Presplit";LegendJSON.ogarioCommands.comm30="Party Run tricks";
-	}
-	
-    LegendJSON.legendSettings = {};
-    LegendJSON.legendSettings.previousMode = localStorage.getItem("gamemode");
-    LegendJSON.legendSettings.checkonlyonce = localStorage.getItem("checkonlyonce");
-    LegendJSON.legendSettings.previousnickname = localStorage.getItem("previousnickname");
-    LegendJSON.legendSettings.showToken = localStorage.getItem("showTK");
-    LegendJSON.legendSettings.showPlayer = localStorage.getItem("showPlayer");
-    LegendJSON.legendSettings.SHOSHOBtn = localStorage.getItem("SHOSHOBtn");
-    LegendJSON.legendSettings.XPBtn = localStorage.getItem("XPBtn");
-    LegendJSON.legendSettings.MAINBTBtn = localStorage.getItem("MAINBTBtn");
-    LegendJSON.legendSettings.AnimatedSkinBtn = localStorage.getItem("AnimatedSkinBtn");
-//    LegendJSON.legendSettings.YoutubeAutoBtn = localStorage.getItem("YoutubeAutoBtn");
-    LegendJSON.legendSettings.TIMEcalBtn = localStorage.getItem("TIMEcalBtn");
-    LegendJSON.legendSettings.troll1Btn = localStorage.getItem("troll1Btn ");
-    LegendJSON.legendSettings.ComPosition = localStorage.getItem("ComPosition");
-    LegendJSON.legendSettings.autoCoinBtn = localStorage.getItem("autoCoinBtn");
-    LegendJSON.legendSettings.timesopened = localStorage.getItem("timesopened");
-    LegendJSON.legendSettings.saveclanpassword = localStorage.getItem("saveclanpassword");
-    LegendJSON.legendSettings.dyinglight1load = localStorage.getItem("dyinglight1load");
-    LegendJSON.legendSettings.languagemod = localStorage.getItem("languagemod");
-//    LegendJSON.legendSettings.userfirstname = localStorage.getItem("userfirstname");
-//   LegendJSON.legendSettings.userlastname = localStorage.getItem("userlastname");
-//    LegendJSON.legendSettings.usergender = localStorage.getItem("usergender");
-    LegendJSON.legendSettings.prevPrivateServer = localStorage.getItem("prevPrivateServer");
-    LegendJSON.legendSettings.initialMusicUrl = localStorage.getItem("musicUrl");
-	
-	LegendJSON.legendSettings.VanillaskinsSaved = localStorage.getItem("VanillaskinsSaved");
-	LegendJSON.legendSettings.top5skinsSaved = localStorage.getItem("top5skinsSaved");
-	LegendJSON.legendSettings.spawnspecialeffectsSaved = localStorage.getItem("spawnspecialeffectsSaved");
-	if (localStorage.getItem("leaderboardlimit")!=null){
-	LegendJSON.legendSettings.leaderboardlimit = localStorage.getItem("leaderboardlimit");
-	}	
-	if (localStorage.getItem("teamboardlimit")!=null){
-	LegendJSON.legendSettings.teamboardlimit = localStorage.getItem("teamboardlimit");
-	}	
-	LegendJSON.legendSettings.AnimatedRainbowColorSaved = localStorage.getItem("AnimatedRainbowColorSaved");
-	if (localStorage.getItem("AnimatedRainbowColorSaved")!=null){
-	LegendJSON.legendSettings.AnimatedRainbowColorSaved = localStorage.getItem("AnimatedRainbowColorSaved");
-	}	
-    if (LegendJSON.legendSettings.initialMusicUrl == "null" || LegendJSON.legendSettings.initialMusicUrl==null) {
-        LegendJSON.legendSettings.initialMusicUrl = defaultMusicUrl;
-    };
-    LegendJSON.legendSettings.lastIP = localStorage.getItem("lastIP");
-    if (LegendJSON.legendSettings.lastIP == "null" || LegendJSON.legendSettings.lastIP==null) {
-        LegendJSON.legendSettings.lastIP = "0.0.0.0:0"
-    };
-    LegendJSON.legendSettings.note1 = localStorage.getItem("note1");
-    if (LegendJSON.legendSettings.note1 == "null" || LegendJSON.legendSettings.note1==null) {
-        LegendJSON.legendSettings.note1 = ""
-    };
-    LegendJSON.legendSettings.note2 = localStorage.getItem("note2");
-    if (LegendJSON.legendSettings.note2 == "null" || LegendJSON.legendSettings.note2==null) {
-        LegendJSON.legendSettings.note2 = ""
-    };
-    LegendJSON.legendSettings.note3 = localStorage.getItem("note3");
-    if (LegendJSON.legendSettings.note3 == "null" || LegendJSON.legendSettings.note3==null) {
-        LegendJSON.legendSettings.note3 = ""
-    };
-    LegendJSON.legendSettings.note4 = localStorage.getItem("note4");
-    if (LegendJSON.legendSettings.note4 == "null" || LegendJSON.legendSettings.note4==null) {
-        LegendJSON.legendSettings.note4 = ""
-    };
-    LegendJSON.legendSettings.note5 = localStorage.getItem("note5");
-    if (LegendJSON.legendSettings.note5 == "null" || LegendJSON.legendSettings.note5==null) {
-        LegendJSON.legendSettings.note5 = ""
-    };
-    LegendJSON.legendSettings.note6 = localStorage.getItem("note6");
-    if (LegendJSON.legendSettings.note6 == "null" || LegendJSON.legendSettings.note6==null) {
-        LegendJSON.legendSettings.note6 = ""
-    };
-    LegendJSON.legendSettings.note7 = localStorage.getItem("note7");
-    if (LegendJSON.legendSettings.note7 == "null" || LegendJSON.legendSettings.note7==null) {
-        LegendJSON.legendSettings.note7 = ""
-    };
-    LegendJSON.legendSettings.minimapbckimg = localStorage.getItem("minimapbckimg");
-    if (LegendJSON.legendSettings.minimapbckimg == "null" || LegendJSON.legendSettings.minimapbckimg==null) {
-        LegendJSON.legendSettings.minimapbckimg = ""
-    };
-    LegendJSON.legendSettings.teambimg = localStorage.getItem("teambimg");
-    if (LegendJSON.legendSettings.teambimg == "null" || LegendJSON.legendSettings.teambimg==null) {
-        LegendJSON.legendSettings.teambimg = ""
-    };
-    LegendJSON.legendSettings.canvasbimg = localStorage.getItem("canvasbimg");
-    if (LegendJSON.legendSettings.canvasbimg == "null" || LegendJSON.legendSettings.canvasbimg==null) {
-        LegendJSON.legendSettings.canvasbimg = ""
-    };
-    LegendJSON.legendSettings.leadbtext = localStorage.getItem("leadbtext");
-    if (LegendJSON.legendSettings.leadbtext == "null" || LegendJSON.legendSettings.leadbtext==null) {
-        LegendJSON.legendSettings.leadbtext = ""
-    };
-    LegendJSON.legendSettings.leadbimg = localStorage.getItem("leadbimg");
-    if (LegendJSON.legendSettings.leadbimg == "null" || LegendJSON.legendSettings.leadbimg==null) {
-        LegendJSON.legendSettings.leadbimg = ""
-    };
-    LegendJSON.legendSettings.teambtext = localStorage.getItem("teambtext");
-    if (LegendJSON.legendSettings.teambtext == "null" || LegendJSON.legendSettings.teambtext==null) {
-        LegendJSON.legendSettings.teambtext = ""
-    };
-    LegendJSON.legendSettings.imgUrl = localStorage.getItem("imgUrl");
-    if (LegendJSON.legendSettings.imgUrl == "null" || LegendJSON.legendSettings.imgUrl==null) {
-        LegendJSON.legendSettings.imgUrl = ""
-    };
-    LegendJSON.legendSettings.imgHref = localStorage.getItem("imgHref");
-    if (LegendJSON.legendSettings.imgHref == "null" || LegendJSON.legendSettings.imgHref==null) {
-        LegendJSON.legendSettings.imgHref = ""
-    };
-    LegendJSON.legendSettings.minbtext = localStorage.getItem("minbtext");
-    if (LegendJSON.legendSettings.minbtext == "null" || LegendJSON.legendSettings.minbtext==null) {
-        LegendJSON.legendSettings.minbtext = ""
-    };
-    LegendJSON.legendSettings.pic1urlimg = localStorage.getItem("pic1urlimg");
-    if (LegendJSON.legendSettings.pic1urlimg == "null" || LegendJSON.legendSettings.pic1urlimg==null) {
-        LegendJSON.legendSettings.pic1urlimg = ""
-    };
-    LegendJSON.legendSettings.pic2urlimg = localStorage.getItem("pic2urlimg");
-    if (LegendJSON.legendSettings.pic2urlimg == "null" || LegendJSON.legendSettings.pic2urlimg==null) {
-        LegendJSON.legendSettings.pic2urlimg = ""
-    };
-    LegendJSON.legendSettings.pic3urlimg = localStorage.getItem("pic3urlimg");
-    if (LegendJSON.legendSettings.pic3urlimg == "null" || LegendJSON.legendSettings.pic3urlimg==null) {
-        LegendJSON.legendSettings.pic3urlimg = ""
-    };
-    LegendJSON.legendSettings.pic4urlimg = localStorage.getItem("pic4urlimg");
-    if (LegendJSON.legendSettings.pic4urlimg == "null" || LegendJSON.legendSettings.pic4urlimg==null) {
-        LegendJSON.legendSettings.pic4urlimg = ""
-    };
-    LegendJSON.legendSettings.pic5urlimg = localStorage.getItem("pic5urlimg");
-    if (LegendJSON.legendSettings.pic5urlimg == "null" || LegendJSON.legendSettings.pic5urlimg==null) {
-        LegendJSON.legendSettings.pic5urlimg = ""
-    };
-    LegendJSON.legendSettings.pic6urlimg = localStorage.getItem("pic6urlimg");
-    if (LegendJSON.legendSettings.pic6urlimg == "null" || LegendJSON.legendSettings.pic6urlimg==null) {
-        LegendJSON.legendSettings.pic6urlimg = ""
-    };
-    LegendJSON.legendSettings.yt1urlimg = localStorage.getItem("yt1urlimg");
-    if (LegendJSON.legendSettings.yt1urlimg == "null" || LegendJSON.legendSettings.yt1urlimg==null) {
-        LegendJSON.legendSettings.yt1urlimg = ""
-    };
-    LegendJSON.legendSettings.yt2urlimg = localStorage.getItem("yt2urlimg");
-    if (LegendJSON.legendSettings.yt2urlimg == "null" || LegendJSON.legendSettings.yt2urlimg==null) {
-        LegendJSON.legendSettings.yt2urlimg = ""
-    };
-    LegendJSON.legendSettings.yt3urlimg = localStorage.getItem("yt3urlimg");
-    if (LegendJSON.legendSettings.yt3urlimg == "null" || LegendJSON.legendSettings.yt3urlimg==null) {
-        LegendJSON.legendSettings.yt3urlimg = ""
-    };
-    LegendJSON.legendSettings.yt4urlimg = localStorage.getItem("yt4urlimg");
-    if (LegendJSON.legendSettings.yt4urlimg == "null" || LegendJSON.legendSettings.yt4urlimg==null) {
-        LegendJSON.legendSettings.yt4urlimg = ""
-    };
-    LegendJSON.legendSettings.yt5urlimg = localStorage.getItem("yt5urlimg");
-    if (LegendJSON.legendSettings.yt5urlimg == "null" || LegendJSON.legendSettings.yt5urlimg==null) {
-        LegendJSON.legendSettings.yt5urlimg = ""
-    };
-    LegendJSON.legendSettings.yt6urlimg = localStorage.getItem("yt6urlimg");
-    if (LegendJSON.legendSettings.yt6urlimg == "null" || LegendJSON.legendSettings.yt6urlimg==null) {
-        LegendJSON.legendSettings.yt6urlimg = ""
-    };
-    LegendJSON.legendSettings.pic1dataimg = localStorage.getItem("pic1dataimg");
-    if (LegendJSON.legendSettings.pic1dataimg == "null" || LegendJSON.legendSettings.pic1dataimg==null) {
-        LegendJSON.legendSettings.pic1dataimg = ""
-    };
-    LegendJSON.legendSettings.pic2dataimg = localStorage.getItem("pic2dataimg");
-    if (LegendJSON.legendSettings.pic2dataimg == "null" || LegendJSON.legendSettings.pic2dataimg==null) {
-        LegendJSON.legendSettings.pic2dataimg = ""
-    };
-    LegendJSON.legendSettings.pic3dataimg = localStorage.getItem("pic3dataimg");
-    if (LegendJSON.legendSettings.pic3dataimg == "null" || LegendJSON.legendSettings.pic3dataimg==null) {
-        LegendJSON.legendSettings.pic3dataimg = ""
-    };
-    LegendJSON.legendSettings.pic4dataimg = localStorage.getItem("pic4dataimg");
-    if (LegendJSON.legendSettings.pic4dataimg == "null" || LegendJSON.legendSettings.pic4dataimg==null) {
-        LegendJSON.legendSettings.pic4dataimg = ""
-    };
-    LegendJSON.legendSettings.pic5dataimg = localStorage.getItem("pic5dataimg");
-    if (LegendJSON.legendSettings.pic5dataimg == "null" || LegendJSON.legendSettings.pic5dataimg==null) {
-        LegendJSON.legendSettings.pic5dataimg = ""
-    };
-    LegendJSON.legendSettings.pic6dataimg = localStorage.getItem("pic6dataimg");
-    if (LegendJSON.legendSettings.pic6dataimg == "null" || LegendJSON.legendSettings.pic6dataimg==null) {
-        LegendJSON.legendSettings.pic6dataimg = ""
-    };
-    LegendJSON.legendSettings.yt1dataimg = localStorage.getItem("yt1dataimg");
-    if (LegendJSON.legendSettings.yt1dataimg == "null" || LegendJSON.legendSettings.yt1dataimg==null) {
-        LegendJSON.legendSettings.yt1dataimg = ""
-    };
-    LegendJSON.legendSettings.yt2dataimg = localStorage.getItem("yt2dataimg");
-    if (LegendJSON.legendSettings.yt2dataimg == "null" || LegendJSON.legendSettings.yt2dataimg==null) {
-        LegendJSON.legendSettings.yt2dataimg = ""
-    };
-    LegendJSON.legendSettings.yt3dataimg = localStorage.getItem("yt3dataimg");
-    if (LegendJSON.legendSettings.yt3dataimg == "null" || LegendJSON.legendSettings.yt3dataimg==null) {
-        LegendJSON.legendSettings.yt3dataimg = ""
-    };
-    LegendJSON.legendSettings.yt4dataimg = localStorage.getItem("yt4dataimg");
-    if (LegendJSON.legendSettings.yt4dataimg == "null" || LegendJSON.legendSettings.yt4dataimg==null) {
-        LegendJSON.legendSettings.yt4dataimg = ""
-    };
-    LegendJSON.legendSettings.yt5dataimg = localStorage.getItem("yt5dataimg");
-    if (LegendJSON.legendSettings.yt5dataimg == "null" || LegendJSON.legendSettings.yt5dataimg==null) {
-        LegendJSON.legendSettings.yt5dataimg = ""
-    };
-    LegendJSON.legendSettings.yt6dataimg = localStorage.getItem("yt6dataimg");
-    if (LegendJSON.legendSettings.yt6dataimg == "null" || LegendJSON.legendSettings.yt6dataimg==null) {
-        LegendJSON.legendSettings.yt6dataimg = ""
-    };
-    LegendJSON.legendSettings.discwebhook1 = localStorage.getItem("discwebhook1");
-    if (LegendJSON.legendSettings.discwebhook1 == "null" || LegendJSON.legendSettings.discwebhook1==null) {
-        LegendJSON.legendSettings.discwebhook1 = ""
-    };
-    LegendJSON.legendSettings.discwebhook2 = localStorage.getItem("discwebhook2");
-    if (LegendJSON.legendSettings.discwebhook2 == "null" || LegendJSON.legendSettings.discwebhook2==null) {
-        LegendJSON.legendSettings.discwebhook2 = ""
-    };
-    LegendJSON.legendSettings.Userscript1 = localStorage.getItem("Userscript1");
-    if (LegendJSON.legendSettings.Userscript1 == "null" || LegendJSON.legendSettings.Userscript1==null) {
-        LegendJSON.legendSettings.Userscript1 = ""
-    };
-    LegendJSON.legendSettings.Userscript2 = localStorage.getItem("Userscript2");
-    if (LegendJSON.legendSettings.Userscript2 == "null" || LegendJSON.legendSettings.Userscript2==null) {
-        LegendJSON.legendSettings.Userscript2 = ""
-    };
-    LegendJSON.legendSettings.Userscript3 = localStorage.getItem("Userscript3");
-    if (LegendJSON.legendSettings.Userscript3 == "null" || LegendJSON.legendSettings.Userscript3==null) {
-        LegendJSON.legendSettings.Userscript3 = ""
-    };
-    LegendJSON.legendSettings.Userscript4 = localStorage.getItem("Userscript4");
-    if (LegendJSON.legendSettings.Userscript4 == "null" || LegendJSON.legendSettings.Userscript4==null) {
-        LegendJSON.legendSettings.Userscript4 = ""
-    };
-    LegendJSON.legendSettings.Userscript5 = localStorage.getItem("Userscript5");
-    if (LegendJSON.legendSettings.Userscript5 == "null" || LegendJSON.legendSettings.Userscript5==null) {
-        LegendJSON.legendSettings.Userscript5 = ""
-    };	
-    LegendJSON.legendSettings.Userscripttexture1 = localStorage.getItem("Userscripttexture1");
-    if (LegendJSON.legendSettings.Userscripttexture1 == "null" || LegendJSON.legendSettings.Userscripttexture1==null) {
-        LegendJSON.legendSettings.Userscripttexture1 = ""
-    };
-    LegendJSON.legendSettings.Userscripttexture2 = localStorage.getItem("Userscripttexture2");
-    if (LegendJSON.legendSettings.Userscripttexture2 == "null" || LegendJSON.legendSettings.Userscripttexture2==null) {
-        LegendJSON.legendSettings.Userscripttexture2 = ""
-    };
-    LegendJSON.legendSettings.Userscripttexture3 = localStorage.getItem("Userscripttexture3");
-    if (LegendJSON.legendSettings.Userscripttexture3 == "null" || LegendJSON.legendSettings.Userscripttexture3==null) {
-        LegendJSON.legendSettings.Userscripttexture3 = ""
-    };
-    LegendJSON.legendSettings.Userscripttexture4 = localStorage.getItem("Userscripttexture4");
-    if (LegendJSON.legendSettings.Userscripttexture4 == "null" || LegendJSON.legendSettings.Userscripttexture4==null) {
-        LegendJSON.legendSettings.Userscripttexture4 = ""
-    };
-    LegendJSON.legendSettings.Userscripttexture5 = localStorage.getItem("Userscripttexture5");
-    if (LegendJSON.legendSettings.Userscripttexture5 == "null" || LegendJSON.legendSettings.Userscripttexture5==null) {
-        LegendJSON.legendSettings.Userscripttexture5 = ""
-    };	
-    return LegendJSON;
-}
-
-function LegendSettingsImport(switcheryLegendSwitch2) {
-    if (switcheryLegendSwitch2.isChecked()) {
-        LegendJSON = JSON.parse(document.getElementById("import-settings").value);
-//        parseLegendJSONAPI(LegendJSON);
-        saveLegendJSONAPI();
-        setTimeout(function() {
-            $("#import-settings-btn").click();
-        }, 100)
-    } else {
-        $("#import-settings-btn").click();
-    }
-}
-
-function saveLegendJSONAPI() {
-	if (LegendJSON.legendSettings!=undefined){
-
-    localStorage.setItem("gamemode", LegendJSON.legendSettings.previousMode);
-    localStorage.setItem("checkonlyonce", LegendJSON.legendSettings.checkonlyonce);
-    localStorage.setItem("previousnickname", LegendJSON.legendSettings.previousnickname);
-    localStorage.setItem("showTK", LegendJSON.legendSettings.showToken);
-    localStorage.setItem("showPlayer", LegendJSON.legendSettings.showPlayer);
-    localStorage.setItem("SHOSHOBtn", LegendJSON.legendSettings.SHOSHOBtn);
-    localStorage.setItem("XPBtn", LegendJSON.legendSettings.XPBtn);
-    localStorage.setItem("MAINBTBtn", LegendJSON.legendSettings.MAINBTBtn);
-    localStorage.setItem("AnimatedSkinBtn", LegendJSON.legendSettings.AnimatedSkinBtn);
-//    localStorage.setItem("YoutubeAutoBtn", LegendJSON.legendSettings.YoutubeAutoBtn);
-    localStorage.setItem("TIMEcalBtn", LegendJSON.legendSettings.TIMEcalBtn);
-    localStorage.setItem("troll1Btn", LegendJSON.legendSettings.troll1Btn);
-    localStorage.setItem("ComPosition", LegendJSON.legendSettings.ComPosition);
-    localStorage.setItem("autoCoinBtn", LegendJSON.legendSettings.autoCoinBtn);
-    localStorage.setItem("timesopened", LegendJSON.legendSettings.timesopened);
-    localStorage.setItem("saveclanpassword", LegendJSON.legendSettings.saveclanpassword);
-    localStorage.setItem("dyinglight1load", LegendJSON.legendSettings.dyinglight1load);
-    localStorage.setItem("languagemod", LegendJSON.legendSettings.languagemod);
-	
-    localStorage.setItem("VanillaskinsSaved", LegendJSON.legendSettings.VanillaskinsSaved);
-	localStorage.setItem("top5skinsSaved", LegendJSON.legendSettings.top5skinsSaved);
-	localStorage.setItem("spawnspecialeffectsSaved", LegendJSON.legendSettings.spawnspecialeffectsSaved);
-	if (LegendJSON.legendSettings.leaderboardlimit!=null){
-	localStorage.setItem("leaderboardlimit", LegendJSON.legendSettings.leaderboardlimit);	
-	}	  
-	if (LegendJSON.legendSettings.teamboardlimit!=null){
-	localStorage.setItem("teamboardlimit", LegendJSON.legendSettings.teamboardlimit);	
-	}	
-    localStorage.setItem("AnimatedRainbowColorSaved", LegendJSON.legendSettings.AnimatedRainbowColorSaved);
-	if (LegendJSON.legendSettings.AnimatedRainbowColorSaved!=null){
-	localStorage.setItem("AnimatedRainbowColorSaved", LegendJSON.legendSettings.AnimatedRainbowColorSaved);	
-	}		
-//    localStorage.setItem("userfirstname", LegendJSON.legendSettings.userfirstname);
-//    localStorage.setItem("userlastname", LegendJSON.legendSettings.userlastname);
-//    localStorage.setItem("usergender", LegendJSON.legendSettings.usergender);
-    localStorage.setItem("prevPrivateServer", LegendJSON.legendSettings.prevPrivateServer);
-    localStorage.setItem("musicUrl", LegendJSON.legendSettings.initialMusicUrl);
-    localStorage.setItem("lastIP", LegendJSON.legendSettings.lastIP);
-    localStorage.setItem("note1", LegendJSON.legendSettings.note1);
-    localStorage.setItem("note2", LegendJSON.legendSettings.note2);
-    localStorage.setItem("note3", LegendJSON.legendSettings.note3);
-    localStorage.setItem("note4", LegendJSON.legendSettings.note4);
-    localStorage.setItem("note5", LegendJSON.legendSettings.note5);
-    localStorage.setItem("note6", LegendJSON.legendSettings.note6);
-    localStorage.setItem("note7", LegendJSON.legendSettings.note7);
-    localStorage.setItem("minimapbckimg", LegendJSON.legendSettings.minimapbckimg);
-    localStorage.setItem("teambimg", LegendJSON.legendSettings.teambimg);
-    localStorage.setItem("canvasbimg", LegendJSON.legendSettings.canvasbimg);
-    localStorage.setItem("leadbtext", LegendJSON.legendSettings.leadbtext);
-    localStorage.setItem("leadbimg", LegendJSON.legendSettings.leadbimg);
-    localStorage.setItem("teambtext", LegendJSON.legendSettings.teambtext);
-    localStorage.setItem("imgUrl", LegendJSON.legendSettings.imgUrl);
-    localStorage.setItem("imgHref", LegendJSON.legendSettings.imgHref);
-    localStorage.setItem("minbtext", LegendJSON.legendSettings.minbtext);
-    localStorage.setItem("pic1urlimg", LegendJSON.legendSettings.pic1urlimg);
-    localStorage.setItem("pic2urlimg", LegendJSON.legendSettings.pic2urlimg);
-    localStorage.setItem("pic3urlimg", LegendJSON.legendSettings.pic3urlimg);
-    localStorage.setItem("pic4urlimg", LegendJSON.legendSettings.pic4urlimg);
-    localStorage.setItem("pic5urlimg", LegendJSON.legendSettings.pic5urlimg);
-    localStorage.setItem("pic6urlimg", LegendJSON.legendSettings.pic6urlimg);
-    localStorage.setItem("yt1urlimg", LegendJSON.legendSettings.yt1urlimg);
-    localStorage.setItem("yt2urlimg", LegendJSON.legendSettings.yt2urlimg);
-    localStorage.setItem("yt3urlimg", LegendJSON.legendSettings.yt3urlimg);
-    localStorage.setItem("yt4urlimg", LegendJSON.legendSettings.yt4urlimg);
-    localStorage.setItem("yt5urlimg", LegendJSON.legendSettings.yt5urlimg);
-    localStorage.setItem("yt6urlimg", LegendJSON.legendSettings.yt6urlimg);
-    localStorage.setItem("pic1dataimg", LegendJSON.legendSettings.pic1dataimg);
-    localStorage.setItem("pic2dataimg", LegendJSON.legendSettings.pic2dataimg);
-    localStorage.setItem("pic3dataimg", LegendJSON.legendSettings.pic3dataimg);
-    localStorage.setItem("pic4dataimg", LegendJSON.legendSettings.pic4dataimg);
-    localStorage.setItem("pic5dataimg", LegendJSON.legendSettings.pic5dataimg);
-    localStorage.setItem("pic6dataimg", LegendJSON.legendSettings.pic6dataimg);
-    localStorage.setItem("yt1dataimg", LegendJSON.legendSettings.yt1dataimg);
-    localStorage.setItem("yt2dataimg", LegendJSON.legendSettings.yt2dataimg);
-    localStorage.setItem("yt3dataimg", LegendJSON.legendSettings.yt3dataimg);
-    localStorage.setItem("yt4dataimg", LegendJSON.legendSettings.yt4dataimg);
-    localStorage.setItem("yt5dataimg", LegendJSON.legendSettings.yt5dataimg);
-    localStorage.setItem("yt6dataimg", LegendJSON.legendSettings.yt6dataimg);
-    localStorage.setItem("discwebhook1", LegendJSON.legendSettings.discwebhook1);
-    localStorage.setItem("discwebhook2", LegendJSON.legendSettings.discwebhook2);
-	localStorage.setItem("Userscript1", LegendJSON.legendSettings.Userscript1);
-	localStorage.setItem("Userscript2", LegendJSON.legendSettings.Userscript2);
-	localStorage.setItem("Userscript3", LegendJSON.legendSettings.Userscript3);
-	localStorage.setItem("Userscript4", LegendJSON.legendSettings.Userscript4);
-	localStorage.setItem("Userscript5", LegendJSON.legendSettings.Userscript5);
-	localStorage.setItem("Userscripttexture1", LegendJSON.legendSettings.Userscripttexture1);
-	localStorage.setItem("Userscripttexture2", LegendJSON.legendSettings.Userscripttexture2);
-	localStorage.setItem("Userscripttexture3", LegendJSON.legendSettings.Userscripttexture3);
-	localStorage.setItem("Userscripttexture4", LegendJSON.legendSettings.Userscripttexture4);
-	localStorage.setItem("Userscripttexture5", LegendJSON.legendSettings.Userscripttexture5);
-	}
-}
-
-function YoutubeEmbPlayer(pastedDataorNot){
-            var finalUrl = getEmbedUrl(pastedDataorNot.trim());
-            if (finalUrl == false) {
-                toastr["error"](Premadeletter1).css("width", "210px");
- //               setTimeout(function() {
-                    if (localStorage.getItem("musicUrl") == null) {
-                        $("#musicUrl").val(defaultMusicUrl);
-                    } else {
-                        $("#musicUrl").val(localStorage.getItem("musicUrl"));
-                    }
- //               }, 500);
-            } else {
-                $("#musicFrame").attr("src", finalUrl);
-                localStorage.setItem("musicUrl", pastedDataorNot.trim());
-            }
-}
-
-function MsgCommands1(MSGCOMMANDS, MSGNICK) {	
-
-			if (MSGCOMMANDS.includes("[url]")) {
-				if ($("#nick").val().includes("url")==false){
-				$(".message-text").remove();
-				$(".toast.toast-success").remove();
-				}				
-			MSGCOMMANDS=MSGCOMMANDS.split("[url]").pop();
-			MSGCOMMANDS=MSGCOMMANDS.split('[/url]')[0];	
-				if (MSGCOMMANDS.includes("https://")==false&&MSGCOMMANDS.includes("https://")==false&&MSGCOMMANDS.includes("HTTP://")==false&&MSGCOMMANDS.includes("HTTPS://")==false) {	
-				MSGCOMMANDS="https://"+MSGCOMMANDS;	
-				}
-			toastr["warning"](Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
-		    timeOut: 20000,
-		    extendedTimeOut: 20000
-		    }).css("width", "250px");
-			$("#acceptURL").click(function() {
-		    window.open(MSGCOMMANDS,'_blank');
-		    });
-			}
-			else if (MSGCOMMANDS.includes("[tag]")) {
-				if ($("#nick").val().includes("tag")==false){
-				$(".message-text").remove();
-				$(".toast.toast-success").remove();
-				}				
-			MSGCOMMANDS=MSGCOMMANDS.split("[tag]").pop();
-			MSGCOMMANDS=MSGCOMMANDS.split('[/tag]')[0];	
-			if (MSGCOMMANDS!=""){
-			toastr["warning"](Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63a + ': <i id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
-		    timeOut: 20000,
-		    extendedTimeOut: 20000
-		    }).css("width", "250px");
-			$("#acceptURL").click(function() {
-		    $("#clantag").val(MSGCOMMANDS);
-			$('#clantag').css('background-color', '#ff6347');	
-			newsubmit();
-		    });
-			}
-				
-			else {
-			toastr["warning"](Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63b + ': <i id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
-		    timeOut: 20000,
-		    extendedTimeOut: 20000
-		    }).css("width", "250px");
-			$("#acceptURL").click(function() {
-		    $("#clantag").val(MSGCOMMANDS);
-			$('#clantag').css('background-color', '#ff6347');	
-			newsubmit();
-		    });
-			}
-			}				
-			else if (MSGCOMMANDS.includes("[yut]")) {
-				if ($("#nick").val().includes("yut")==false){
-				$(".message-text").remove();
-				$(".toast.toast-success").remove();
-				}		
-			MSGCOMMANDS=MSGCOMMANDS.split("[yut]").pop();
-			MSGCOMMANDS=MSGCOMMANDS.split('[/yut]')[0];	
-				if (MSGCOMMANDS.includes("https://")==false&&MSGCOMMANDS.includes("https://")==false&&MSGCOMMANDS.includes("HTTPS://")==false&&MSGCOMMANDS.includes("HTTPS://")==false) {	
-				MSGCOMMANDS="https://"+MSGCOMMANDS;	
-				}
-			toastr["warning"](Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter64 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <iframe type="text/html" width="100%" height="auto" src="https://www.youtube.com/embed/' + getParameterByName("v", MSGCOMMANDS) + '?autoplay=1&amp;vq=tiny" frameborder="0"></iframe></br> <button id="acceptYoutubeEmb" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="margin-top: -10px; width: 100%">' + Premadeletter25 + '</button>', "", {
-		    timeOut: 20000,
-		    extendedTimeOut: 20000
-		    }).css("width", "300px");
-			$("#acceptYoutubeEmb").click(function() {
-		    YoutubeEmbPlayer(MSGCOMMANDS);
-			$("#musicUrl").val(MSGCOMMANDS);
-			//setTimeout(function() {
-			//$("#playerI").click();
-			playYoutube(); //it's different on LME
-			//}, 1000);
-		    });
-			}
-			else if (MSGCOMMANDS.includes("[skype]")) {
-				if ($("#nick").val().includes("skype")==false){
-				$(".message-text").remove();
-				$(".toast.toast-success").remove();
-				}		
-			MSGCOMMANDS=MSGCOMMANDS.split("[skype]").pop();
-			MSGCOMMANDS=MSGCOMMANDS.split('[/skype]')[0];	
-				if (MSGCOMMANDS.includes("https://")==false&&MSGCOMMANDS.includes("https://")==false&&MSGCOMMANDS.includes("HTTP://")==false&&MSGCOMMANDS.includes("HTTPS://")==false) {
-				MSGCOMMANDS="https://"+MSGCOMMANDS;	
-				}
-			if (MSGCOMMANDS.includes("join.skype.com/")){	
-			toastr["warning"]('<img src="https://jimboy3100.github.io/banners/iconskype.png" style="float:left;width:100px;height:100px;">'+Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter65 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
-		    timeOut: 10000,
-		    extendedTimeOut: 10000
-		    }).css("width", "300px");
-			$("#acceptURL").click(function() {
-		    window.open(MSGCOMMANDS,'_blank');
-		    });
-			}
-			}
-			else if (MSGCOMMANDS.includes("[discord]")) {
-				if ($("#nick").val().includes("discord")==false){
-				$(".message-text").remove();
-				$(".toast.toast-success").remove();
-				}		
-			MSGCOMMANDS=MSGCOMMANDS.split("[discord]").pop();
-			MSGCOMMANDS=MSGCOMMANDS.split('[/discord]')[0];	
-				if (MSGCOMMANDS.includes("https://")==false&&MSGCOMMANDS.includes("https://")==false&&MSGCOMMANDS.includes("HTTPS://")==false&&MSGCOMMANDS.includes("HTTPS://")==false) {
-				MSGCOMMANDS="https://"+MSGCOMMANDS;	
-				}
-				if (MSGCOMMANDS.includes("discordapp.com/invite")||MSGCOMMANDS.includes("discord.gg")){
-			toastr["warning"]('<img src="https://jimboy3100.github.io/banners/icondiscord.png" style="float:left;width:100px;height:100px;">'+Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter66 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
-		    timeOut: 20000,
-		    extendedTimeOut: 20000
-		    }).css("width", "300px");
-			$("#acceptURL").click(function() {
-		    window.open(MSGCOMMANDS,'_blank');
-		    });	
-			}
-			}
-			else if (MSGCOMMANDS.includes("[srv]")) {
-				if (MSGCOMMANDS.includes("sip=")||MSGCOMMANDS.includes("agar.io/#")){
-				if ($("#nick").val().includes("srv")==false){
-				$(".message-text").remove();
-				$(".toast.toast-success").remove();
-				}	//split pop is included on functions above
-			MsgServCommandsreturner();
-			acceptServerBtn();
-				}
-			}
-		    else if (MSGCOMMANDS.includes("Legend.Mod")) {
-
-		        playerMsg = getParameterByName("player", MSGCOMMANDS);
-		        commandMsg = getParameterByName("com", MSGCOMMANDS);
-		        otherMsg = getParameterByName("do", MSGCOMMANDS);
-		        //		$( ".toast.toast-success" ).text("");
-		        //		$(".message-text").text();.hide();
-		        $(".message-text").remove();
-				$(".toast.toast-success").remove();
-		        //without confirmation
-		        if (commandMsg == "Team5") {
-		            $("#top5-hud").css('background-image', 'url(" https://jimboy3100.github.io/banners/icogeneral.gif ")').css({
-		                opacity: 0.8
-		            });
-		            setTimeout(function() {
-		                $("#top5-hud").css('background-image', 'url(" ")').css({
-		                    opacity: 1
-		                });
-		            }, 12000);
-		        } else if (commandMsg == "Hello") {
-					if ($('#message-box').css('display') == 'none') {
-//		            if (MC.isInGame()) {
-//		                if (!ogario.spectate) {
-		                    var nickname = $("#nick").val();
-		                    $("#nick").val("Hello Team");
-		                    $("#helloContainer").show();
-		                    newsubmit();
-		                    setTimeout(function() {
-		                        $("#nick").val(nickname);
-		                        $("#helloContainer").show();
-		                        newsubmit();
-		                    }, 5000);
-//		                }
-		            }
-		        }
-
-		        //with confirmation
-		        else if (commandMsg == "HideAll") {
-		            toastr["warning"](Premadeletter22 + ' ' + playerMsg + ' ' + Premadeletter23 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-hideall" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
-		                timeOut: 20000,
-		                extendedTimeOut: 20000
-		            }).css("width", "210px");
-		            $(".btn.btn-sm.btn-primary.btn-play.btn-do-hideall").click(function() {
-		                $("#HideAllBthn").click();
-		            });
-		        } else if (commandMsg == "NamePerm") {
-		            toastr["warning"](Premadeletter22 + ' ' + playerMsg + ' ' + Premadeletter26 + ': ' + playerMsg + ' </br> <button class="btn btn-sm btn-primary btn-play btn-do-NamePerm" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-NamePerm" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
-		                timeOut: 20000,
-		                extendedTimeOut: 20000
-		            }).css("width", "210px");
-		            $(".btn.btn-sm.btn-primary.btn-play.btn-do-NamePerm").click(function() {
-		                $("#nick").val(playerMsg);
-		                $("#helloContainer").show();
-		                newsubmit();
-		            });
-		        } else if (commandMsg == "dTroll2") {
-		            toastr["warning"](Premadeletter22 + ' ' + playerMsg + ' ' + Premadeletter27 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-troll" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-troll" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
-		                timeOut: 20000,
-		                extendedTimeOut: 20000
-		            }).css("width", "210px");
-		            $(".btn.btn-sm.btn-primary.btn-play.btn-do-troll").click(function() {
-		                settrolling();		                
-		            });
-		        } else if (commandMsg == "Youtube") {
-		            toastr["warning"](Premadeletter22 + ' ' + playerMsg + ' ' + Premadeletter28 + '<button class="btn btn-sm btn-primary btn-play btn-play-youtube" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-noplay-youtube" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
-		                timeOut: 20000,
-		                extendedTimeOut: 20000
-		            }).css("width", "210px");
-		            $(".btn.btn-sm.btn-primary.btn-play.btn-play-youtube").click(function() {
-		                $("#playerBtn").click();
-		                setTimeout(function() {
-		                    $("#playerBtn").focusout();
-		                }, 100);
-		            });
-		            //	$("#playerBtn").click();			
-		        }
-
-		    }			
-		    else if (MSGCOMMANDS.includes("https://agar.io/sip=151.80.91.73:1511")) {	
-		        commandMsg = getParameterByName("com", MSGCOMMANDS);
-		        otherMsg = getParameterByName("do", MSGCOMMANDS);
-		        $(".message-text").remove();
-				$(".toast.toast-success").remove();
-		        LegendClanSymbol = $("#nick").val();
-				console.log("Step1");
-		        if (~LegendClanSymbol.indexOf("?") != -1) {
-					console.log("Step2");
-		            if (commandMsg == "EU-London") {
-		                setTimeout(function() {
-							 $("#server-join").click();
-		                }, 60000);
-		            } else if (commandMsg == "RU-Russia") {
-		                setTimeout(function() {
-		                    $("#server-join").click();
-		                }, 1000);
-		            }
-					else{
-						//bug fix
-		                setTimeout(function() {
-		                    $("#server-join").click();
-		                }, 1000);						
-					}
-		        }
-		    }	
-}
-
-function isLegendExpress(Express){
-    if (messageone!="0"&&messageone!="1"){return Express="False";}
-	else {return Express="True";}
-//var Express;isLegendExpress(Express);
-}
-
-function MsgServCommandsreturner2(MSGCOMMANDS2a){
-	return MSGCOMMANDS2a;
-}
-function acceptServerBtn(){
-	if (acceptServerBtnFlag==null){
-			$("#acceptServer").click(function() {
-				
-				
-				if(isLegendExpress(Express)=="True"){ //if is Legend express
-					if (MSGCOMMANDS.includes("agar.io/#")){ //if sent server is Party mode
-					console.log("1a - Legend express, Party mode");
-				if (getParameterByName("pass", MSGCOMMANDS)!=null){
-					$("#clantag").val(getParameterByName("pass", MSGCOMMANDS));	
-				};				
-					$('#server').val(MSGCOMMANDSA);
-					$("#connect2").click();					
-					}
-					else if (MSGCOMMANDS3.includes("sip=")){	//if not Party mode
-					console.log("1b - Legend express, Not Party mode");
-				if (getParameterByName("pass", MSGCOMMANDS)!=null){
-					$("#clantag").val(getParameterByName("pass", MSGCOMMANDS));	
-				};						
-				$("#server-token").val(getParameterByName("sip", MSGCOMMANDS3).replace("live-arena-", "").replace(".agar.io", ""));
-				$("#server-join").click();			
-					}
-				}
-				else{ //if is Legend mod
-					if (searchSip==null){ //if is not Locked
-						if (MSGCOMMANDS.includes("agar.io/#")){ //if sent server is Party mode
-						console.log("2a - Legend Mod, No Locked, Party Mode");
-							if (getParameterByName("pass", MSGCOMMANDS)!=null){
-							$("#clantag").val(getParameterByName("pass", MSGCOMMANDS));	
-							};							
-						$('#server').val(MSGCOMMANDSA);
-						$("#connect2").click();							
-						}
-						else if(MSGCOMMANDS3.includes("sip=")){	 //if not Party	mode	
-							console.log("2b - Legend Mod, Locked, No Party mode");
-							if (getParameterByName("pass", MSGCOMMANDS)!=null){
-							$("#clantag").val(getParameterByName("pass", MSGCOMMANDS));	
-							};								
-					$("#server-token").val(getParameterByName("sip", MSGCOMMANDS3).replace("live-arena-", "").replace(".agar.io", ""));
-					$("#server-join").click();	
-					
-					}
-					}
-					else{	//if Locked	
-					console.log("2b - Legend Mod, Locked");	
-					MSGCOMMANDS=MSGCOMMANDS.split("[srv]").pop();
-					MSGCOMMANDS=MSGCOMMANDS.split('[/srv]')[0];	
-					if (MSGCOMMANDS.length>70){
-						MSGCOMMANDS=MSGCOMMANDS.split('[')[0];	
-					}
-					location.replace(MSGCOMMANDS);					
-					//window.open(MSGCOMMANDS,'_blank');
-								
-					}
-				}
-		   // window.open(MSGCOMMANDS2a,'_blank');
-		    });
-			}
-	//return acceptServerBtnFlag=1;
-}
-function MsgServCommandsreturner(){
-			MSGCOMMANDS2=MSGCOMMANDS;
-			MSGCOMMANDS3=MSGCOMMANDS;
-			MSGCOMMANDS2=MSGCOMMANDS2.split("[srv]").pop();
-			MSGCOMMANDS2=MSGCOMMANDS2.split('[/srv]')[0];	
-			if (MSGCOMMANDS2.includes("https://")==false&&MSGCOMMANDS2.includes("https://")==false&&MSGCOMMANDS2.includes("HTTP://")==false&&MSGCOMMANDS2.includes("HTTPS://")==false) {
-			MSGCOMMANDS2="https://"+MSGCOMMANDS2;	
-			}				
-			if (MSGCOMMANDS2.includes("agar.io/#")){ //if sent server is Party mode
-			MSGCOMMANDS2a=MSGCOMMANDS2;
-			MsgServCommandsreturner2(MSGCOMMANDS2a);
-			MSGCOMMANDSA= "#"+MSGCOMMANDS2a.split("#").pop();
-			toastr["warning"]('<div><img src="https://jimboy3100.github.io/banners/iconagario.png" style="float:left;width:100px;height:100px;"></img>'+Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter67 + '</font></a></br>Server (Party mode): '+ MSGCOMMANDSA + '<button id="acceptServer" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button></div>', "", {		    
-			timeOut: 10000,
-		    extendedTimeOut: 10000
-		    }).css("width", "300px");
-			}
-			else if (getParameterByName("r", MSGCOMMANDS2a)!=null){
-				var modetosend, passtosend;
-				
-				if (getParameterByName("pass", MSGCOMMANDS)==null){
-					passtosend="No Password Loaded";		
-				}
-				else{
-					passtosend=getParameterByName("pass", MSGCOMMANDS);
-				}
-				if (getParameterByName("mode", MSGCOMMANDS)==null){
-					modetosend="Unknown";
-				}
-				else{
-					modetosend=getParameterByName("mode", MSGCOMMANDS);
-				}				
-			toastr["warning"]('<div><img src="https://jimboy3100.github.io/banners/iconagario.png" style="float:left;width:100px;height:100px;"></img>'+Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter67  + '</font></a></br>Server: '+ getParameterByName("sip", MSGCOMMANDS).replace("live-arena-", "").replace(".agar.io", "")+ '</br>Mode: ' + modetosend + '</br> Region: '+ getParameterByName("r", MSGCOMMANDS)+ '</br> Password: ' + passtosend + '</br> <button id="acceptServer" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button></div>', "", {
-		    timeOut: 10000,
-		    extendedTimeOut: 10000
-		    }).css("width", "300px");
-			}
-			else {
-				var passtosend;
-				
-				if (getParameterByName("pass", MSGCOMMANDS)==null){
-					passtosend="No Password Loaded";		
-				}
-				else{
-					passtosend=getParameterByName("pass", MSGCOMMANDS);
-				}				
-			toastr["warning"]('<div><img src="https://jimboy3100.github.io/banners/iconagario.png" style="float:left;width:100px;height:100px;"></img>'+Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter67  + '</font></a></br>Server: '+ getParameterByName("sip", MSGCOMMANDS).replace("live-arena-", "").replace(".agar.io", "")+ '</br> Password: ' + passtosend + '<button id="acceptServer" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button></div>', "", {
-		    timeOut: 10000,
-		    extendedTimeOut: 10000
-		    }).css("width", "300px");	
-			}
-			return MSGCOMMANDS, MSGCOMMANDS2, MSGCOMMANDS2a, MSGCOMMANDSA, MSGCOMMANDS3;
-}
-
-
-function universalchat(){
-$("#overlays").css("z-index", 100);
-fixservbtn();
- setTimeout(function() {
-		fixservbtn2(); 
-}, 2000);
-
-var legbgpic = $("#menuBg").val();
-var legbgcolor = $("#menuPanelColor").val();
-
-
-
-    var global = window;
-    var my = {
-        "name": "<i class='fa fa-universal-access' aria-hidden='true'></i>",
-//        "log": function(msg){ console.log(this.name + ":"+ msg); },
-//		"log": function(msg){ toastr["success"](this.name + ":"+ msg); },		
-		"log": function(msg){ 
-		if(($('#chat-box').is(":visible")==false)){
-			window.teammatelegendmodnicks.forEach(function(a){
-				if (~msg.indexOf(a)+":") {	
-					msg="[Universal chat]:";
-				}
-				});
-		    if (~msg.indexOf("Received a command with an unknown name")) {
-				if (~msg.indexOf("Received a command with an unknown name: customSkins")) {
-				}
-				else{
-					toastr["success"]('<div class="toast-message"><span class="message-nick">'+this.name+': </span><span class="message-text">'+msg+'</span><a href="#" data-user-id="agar tool" class="mute-user ogicon-user-minus"></a> </div>');
-				}
-			}
-			else if (~msg.indexOf("load socket.io")) {
-				toastr["warning"]('<div class="toast-message"><span class="message-nick">'+this.name+': </span><span class="message-text">'+msg+'</span><a href="#" data-user-id="agar tool" class="mute-user ogicon-user-minus"></a> </div>');
-				//playSound($('#commandSound').val());
-				} 
-			else if (~msg.indexOf("minimap server")) {				
-				toastr["warning"]('<div class="toast-message"><span class="message-nick">'+this.name+': </span><span class="message-text">'+msg+'</span><a href="#" data-user-id="agar tool" class="mute-user ogicon-user-minus"></a> </div>');
-				}		
-			else if (~msg.indexOf($('#nick').val()+':')) {
-//				toastr["warning"]('<div class="toast-message"><span class="message-nick">'+this.name+': </span><span class="message-text">'+msg+'</span><a href="#" data-user-id="agar tool" class="mute-user ogicon-user-minus"></a> </div>');
-				} 
-			else if (~msg.indexOf('[Universal chat]:')) {
-//				toastr["warning"]('<div class="toast-message"><span class="message-nick">'+this.name+': </span><span class="message-text">'+msg+'</span><a href="#" data-user-id="agar tool" class="mute-user ogicon-user-minus"></a> </div>');
-				} 				
-			else if (~msg.indexOf('?')) {
-				msg.slice(1);
-				toastr["warning"]('<div class="toast-message"><span class="message-nick">'+this.name+': </span><span class="message-text">'+msg+'</span><a href="#" data-user-id="agar tool" class="mute-user ogicon-user-minus"></a> </div>');
-				playSound($('#commandSound').val());
-				} 					
-			else {
-				toastr["success"]('<div class="toast-message"><span class="message-nick">'+this.name+': </span><span class="message-text">'+msg+'</span><a href="#" data-user-id="agar tool" class="mute-user ogicon-user-minus"></a> </div>');
-				playSound($('#messageSound').val());}
-		}
-			},
-//        "tool_symbol": "Send text Universaly"
-		"tool_symbol": ""
-    };
-'use strict';
-var stat = {
-  "AgarToolVersion" : 5,
-  "AgarToolServer" : "wss://minimap.agartool.io:9000",
-  minimapBalls : {},
-  "socketIoURL" : "https://jimboy3100.github.io/ExampleScripts/socket-io.min.js",
-  "minimapNickFont" : "700 11px Ubuntu",
-  "minimapNickColor" : "#ffffff",
-  "minimapNickStrokeColor" : "#000000",
-  "minimapNickStrokeSize" : 2,
-  "minimapTop" : 24,
-  "minimapTeammatesSize" : 5.5,
-  "minimapOffsetX" : 71,
-  "mapSize" : 14142,
-  "mapOffset" : 7071,
-  "pi2" : 2 * Math.PI,
-  "messageBoxBottom" : ["82px", "40%"],
-  "keyCodeEnter" : 13,
-  "keyCodeA" : 65,
-  "keyCodeR" : 82
-};
-var cfg = {};
-var cfg_org = {
-  "user_show" : true,
-  "minimap_show" : true,
-  "tgar_prefix" : "O",
-  "tgar_color" : "#8C81C7",
-  "update_interval" : 1000,
-  "ogar_user" : true,
-  "ogar_prefix" : "L.M",
-  "lmsa_teamtop" : false,
-  "lmsa_chat" : false,
-  "chat_close" : false,
-  "chat_unpause" : true,
-  "chat_vcenter" : false,
-  "chat_alt" : true,
-  "chat_ctrlalt" : true,
-  "chat_ctrl" : true,
-  "skin_toggle_auto" : false,
-  "skin_toggle_interval" : 10000
-};
-    function pre_loop(){
-        // At this point jQuery can not be used
-        if(! document.getElementById("top5-hud")){
-            my.pre_loop_timeout = (my.pre_loop_timeout || 1000) + 1000;
-            setTimeout(pre_loop, my.pre_loop_timeout);
-            my.log("wait for Legend Mod load");
-            return;
-        }
-        // Just to be sure, another 1 sec wait
-        setTimeout(initialize, 1000);
-    }
-    pre_loop();
-
-    function initialize(){
-//      $.extend(cfg, cfg_org, JSON.parse(GM_getValue("config", '{}')));
-		$.extend(cfg, cfg_org, JSON.parse(my.storage_getValue("config",'{}')));
-        global.ao2t = {my:my, stat:stat, cfg:cfg};
-        var local_style = '';
-        local_style += '#ao2t-hud {';
-        local_style +=     ' font-size: 80%; pointer-events: auto;';
-        local_style += '}';
-        local_style += '#ao2t-hud * {';
-        local_style +=     ' user-select: auto!important;';
-        local_style += '}';
-        local_style += '#ao2t-cfg-dlg {';
-        local_style +=     ' border-radius:0; font-size: 80%; padding: 2px 10px; position: fixed;';
-        local_style +=     ' pointer-events: auto; background-image: url('+legbgpic+'); background-color: '+legbgcolor+' ; color: #ffffff;';
-        local_style +=     ' overflow: hidden;';
-        local_style += '}';
-        local_style += '#ao2t-cfg-dlg * {';
-        local_style +=     ' width: auto; user-select: auto!important; pointer-events: auto;';
-        local_style +=     ' position: relative; float: initial;';
-        //local_style +=     ' display: run-in;'; // NG
-        local_style += '}';
-        local_style += '#ao2t-cfg-dlg input {';
-        local_style +=     ' background-color: rgba(0,0,0,0.4); color: #ffffff;';
-        local_style += '}';
-        $("head").append('<style>\n'+ local_style +'\n</style>');
-        $("#top5-hud").append(''+
-            '<div id="ao2t-hud"><span class="hud-main-color">Universal:'+
-                 ' <span id="ao2t-capture"><i class="fa fa-universal-access" aria-hidden="true"></i></span>'+
-                 ' <span id="ao2t-config"><i class="fa fa-wrench" aria-hidden="true"></i></span></span>'+
-//                 '<div id="ao2t-top5" style="padding-left: 1em;"></div>'+
-				 '<div id="ao2t-top5" style="font-size: 14px;"></div>'+
-            '</div>');
-        $("#ao2t-capture").click(function(event){
-//            my.log("capture_click");
-            stat.capture = ! stat.capture;
-            if(stat.capture){
-                if(global.ogario){
-		    $("#ao2t-capture").removeClass("disconnected").addClass("connected");
-                    //$("#ao2t-capture").text('??');
-					$("#ao2t-capture").html('<i class="fa fa-times" aria-hidden="true"></i>');
-                }else{                   
-			$("#ao2t-capture").removeClass("disconnected").addClass("connected");					
-			$("#ao2t-capture").html('<i class="fa fa-times" aria-hidden="true"></i>');
-					
+var core = function(t, e, i) {
+    //here starts ogario
+    (function(e, i, s) {
+        var o = null,
+            a = null,
+            n = {
+                'pl': {
+                    'start': 'Start',
+                    'settings': 'Ustawienia',
+                    'restoreSettings': 'Przywróc ustawienia domyślne',
+                    'animationGroup': 'Animacja',
+                    'zoomGroup': 'Zoom',
+                    'respGroup': 'Odrodzenie',
+                    'namesGroup': 'Nazwy',
+                    'massGroup': 'Masa',
+                    'skinsGroup': 'Skiny',
+                    'foodGroup': 'Pokarm',
+                    'transparencyGroup': 'Przezroczystość / kolory',
+                    'gridGroup': 'Siatka / sektory',
+                    'miniMapGroup': 'Minimapa',
+                    'helpersGroup': 'Wspomagacze',
+                    'mouseGroup': 'Sterowanie myszką',
+                    'hudGroup': 'HUD',
+                    'chatGroup': 'Czat',
+                    'statsGroup': 'Statystyki',
+                    'extrasGroup': 'Dodatkowe',
+                    'noSkins': 'Wyłącz skiny',
+                    'noNames': 'Wyłącz nazwy',
+                    'noColors': 'Wyłącz kolory',
+                    'showMass': 'Pokaż masę',
+                    'skipStats': 'Pomiń statystyki po śmierci',
+                    'showQuest': 'Pokaż zadanie (quest)',
+                    'autoZoom': 'Auto zoom',
+                    'animation': 'Opóźnienie animacji',
+                    'suckAnimation': 'Cell Eat [Sucking] Animation',
+                    'virusGlow': 'Virus Glow',
+                    'borderGlow': 'Border Glow',
+                    'zoomSpeedValue2': 'Szybkość zoomu',
+                    'quickResp': 'Szybkie odrodzenie (klawisz)',
+                    'autoResp': 'Auto odrodzenie',
+                    'autoHideCellsInfo': 'Autoukrywanie nazw i masy',
+                    'autoHideNames': 'Autoukrywanie nazw',
+                    'autoHideMass': 'Autoukrywanie masy',
+                    'autoHideFood': 'Autoukrywanie pokarmu (masa)',
+                    'autoHideFoodOnZoom': 'Autoukrywanie pokarmu (zoom)',
+                    'optimizedNames': 'Zoptymalizowane nazwy',
+                    'hideMyName': 'Ukryj własną nazwę',
+                    'hideTeammatesNames': 'Ukryj nazwy graczy teamu',
+                    'optimizedMass': 'Zoptymalizowana masa (+/-2%)',
+                    'shortMass': 'Skrócona masa (k)',
+                    'virMassShots': 'Licznik strzałów (wirusy)',
+                    'hideMyMass': 'Ukryj własną masę',
+                    'hideEnemiesMass': 'Ukryj masę przeciwników',
+                    'vanillaSkins': 'Podstawowe skiny',
+                    'customSkins': 'Własne skiny',
+                    'myTransparentSkin': 'Mój przezroczysty skin',
+                    'myCustomColor': 'Mój własny kolor',
+                    'transparentCells': 'Przezroczyste kulki',
+                    'transparentViruses': 'Przezroczyste wirusy',
+                    'transparentSkins': 'Przezroczyste skiny',
+                    'showGrid': 'Siatka',
+                    'showBgSectors': 'Sektory w tle',
+                    'showMapBorders': 'Granice mapy',
+                    'showGhostCells': 'Duchy kulek',
+                    'showMiniMap': 'Pokaż minimapę',
+                    'showMiniMapGrid': 'Pokaż siatkę minimapy',
+                    'showMiniMapGuides': 'Pokaż prowadnice na minimapie',
+                    'showMiniMapGhostCells': 'Pokaż duchy kulek na minimapie',
+                    'oneColoredTeammates': 'Jednokolorowi gracze',
+                    'optimizedFood': 'Zoptymalizowany pokarm',
+                    'rainbowFood': 'Kolorowy pokarm',
+                    'oppColors': 'Kolory przeciwników',
+                    'oppRings': 'Ringi przeciwników',
+                    'virColors': 'Kolory wirusów',
+                    'splitRange': 'Zasięg podziału',
+                    'virusesRange': 'Zasięg wirusów',
+                    'textStroke': 'Obwódki nazw i masy',
+                    'namesStroke': 'Obwódki nazw',
+                    'massStroke': 'Obwódki masy',
+                    'cursorTracking': 'Śledzenie kursora',
+                    'teammatesInd': 'Wskaźniki graczy teamu',
+                    'mouseSplit': 'LPM - Split myszką',
+                    'mouseFeed': 'PPM - Feed myszką',
+                    'mouseInvert': 'Odwróć klawisze myszki',
+                    'disableChat': 'Wyłącz czat',
+                    'hideChat': 'Ukryj czat',
+                    'chatSounds': 'Powiadomienia dźwiękowe',
+                    'chatEmoticons': 'Emotikony',
+                    'showChatImages': 'Pokaż obrazki na czacie',
+                    'showChatVideos': 'Pokaż filmiki na czacie',
+                    'showChatBox': 'Czatbox zamiast wyskakujących wiadomości',
+                    'messageSound': 'Dźwięk powiadomienia o wiadomości',
+                    'commandSound': 'Dźwięk powiadomienia o komendzie',
+					'virusSoundurl': 'Virus shot sound',
+					'virusSound': 'Virus shot sound',
+                    'showTop5': 'Pokaż top 5 teamu',
+                    'showTargeting': 'Pokaż namierzanie',
+                    'showTime': 'Pokaż aktualny czas',
+                    'showLbData': 'Pokaż masę w topce',
+                    'normalLb': 'Nagłówek \"Topka\"',
+                    'centeredLb': 'Wyśrodkowana topka',
+                    'fpsAtTop': 'Statystyki na górze',
+                    'showStats': 'Pokaż statystyki',
+                    'showStatsMass': 'Statystyki: Masa',
+                    'showStatsSTE': 'Statystyki: STE',
+                    'showStatsN16': 'Statystyki: n/16',
+                    'showStatsFPS': 'Statystyki: FPS',
+                    'blockPopups': 'Blokuj popupy (reklamy/sklep/zadanie)',
+                    'hotkeys': 'Skróty klawiszowe',
+                    'hk-inst-assign': 'Aby ustawić skrót klawiszowy kliknij na polu skrótu i naciśnij wybrany klawisz.',
+                    'hk-inst-delete': 'Aby usunąć skrót klawiszowy kliknij na polu skrótu i naciśnij klawisz DELETE.',
+                    'hk-inst-keys': 'Możliwe kombinacje skrótów klawiszowych z użyciem klawiszy CTRL oraz ALT.',
+                    'hk-feed': 'Feed',
+                    'hk-macroFeed': 'Szybki feed',
+                    'hk-split': 'Podział',
+                    'hk-doubleSplit': 'Podwójny podział',
+                    'hk-split16': 'Podział na 16',
+                    'hk-pause': 'Pauza kulki',
+                    'hk-showTop5': 'Pokaż/ukryj top 5 teamu',
+                    'hk-showTime': 'Pokaż/ukryj aktualny czas',
+                    'hk-showSplitRange': 'Pokaż/ukryj zasięg podziału',
+                    'hk-showSplitInd': 'Pokaż/ukryj zasięg podziału z ringami',
+                    'hk-showTeammatesInd': 'Pokaż/ukryj wskaźniki graczy teamu',
+                    'hk-showOppColors': 'Pokaż/ukryj kolory przeciwników',
+                    'hk-toggleSkins': 'Przełącz skiny (własne/standardowe)',
+                    'hk-showSkins': 'Pokaż/ukryj skiny',
+                    'hk-transparentSkins': 'Włącz/wyłącz przezroczyste skiny',
+                    'hk-showStats': 'Pokaż/ukryj statystyki gry',
+                    'hk-toggleCells': 'Przełącz kulkę (najmniejsza/największa)',
+                    'hk-showFood': 'Pokaż/ukryj pokarm',
+                    'hk-showGrid': 'Pokaż/ukryj siatkę',
+                    'hk-showMiniMapGuides': 'Pokaż/ukryj prowadnice na minimapie',
+                    'hk-hideChat': 'Pokaż/ukryj czat',
+                    'hk-showHUD': 'Pokaż/ukryj HUD',
+                    'hk-copyLb': 'Kopiuj topkę',
+                    'hk-showLb': 'Pokaż/ukryj topkę',
+                    'hk-toggleAutoZoom': 'Włącz/wyłącz auto zoom',
+                    'hk-resetZoom': 'Reset zoomu',
+                    'hk-zoomLevel': 'Zoom - poziom',
+                    'hk-toggleDeath': 'Przełącz miejsce śmierci',
+                    'hk-clearChat': 'Pokaż historię czatu / Czyść czat',
+                    'hk-showBgSectors': 'Pokaż/ukryj sektory w tle',
+                    'hk-hideBots': 'Pokaż/ukryj małe boty',
+                    'hk-showNames': 'Pokaż/ukryj nazwy',
+                    'hk-hideTeammatesNames': 'Pokaż/ukryj nazwy graczy teamu',
+                    'hk-showMass': 'Pokaż/ukryj masę',
+                    'hk-showMiniMap': 'Pokaż/ukryj minimapę',
+                    'hk-chatMessage': 'Napisz wiadomość na czacie',
+                    'hk-quickResp': 'Szybkie odrodzenie (respawn)',
+                    'hk-autoResp': 'Włącz/wyłacz auto odrodzenie',
+                    'hk-switchServerMode': 'Przełącz serwer [publiczny/prywatny]',
+                    'hk-showTargeting': 'Pokaż/ukryj panel namierzania',
+                    'hk-voiceChat': 'Głos do tekstu',
+                    'hk-setTargeting': 'Włącz/wyłącz namierzanie (śledzenie)',
+                    'hk-cancelTargeting': 'Zatrzymaj namierzanie',
+                    'hk-changeTarget': 'Zmień cel',
+                    'hk-privateMiniMap': 'Pokaż cel na minimapie',
+                    'hk-showQuest': 'Pokaż/ukryj zadanie',
+                    'commands': 'Komendy',
+                    'comm1': 'Feeduj!',
+                    'comm2': 'Dziel się!',
+                    'comm3': 'Pomocy na %currentSector%!',
+                    'comm4': 'Wróg na %currentSector%!',
+                    'comm5': 'Zabij pomocnika!',
+                    'comm6': 'Strzel z wirusa!',
+                    'comm7': 'Zjedz wirusa!',
+                    'comm8': 'Zjebałem, wybacz.',
+                    'comm9': 'Ja pierdolę...',
+                    'comm0': 'Kurwa mać!',
+                    'comm10': 'Trick!',
+                    'comm11': 'Lewo!',
+                    'comm12': 'Góra!',
+                    'comm13': 'Prawo!',
+                    'comm14': 'Dół!',
+                    'comm15': 'Fake Tricksplit',
+                    'comm16': 'Popsplit',
+                    'comm17': 'Double Popsplit',
+                    'comm18': 'Reversed Tricksplit',
+                    'comm19': 'Canonsplit',
+                    'comm20': 'Reversed Canonsplit',
+                    'comm21': 'Bowlingsplit',
+                    'comm22': 'Auto feed trick',
+                    'comm23': 'Pause',
+                    'comm24': 'ANTI alarm stage 1',
+                    'comm25': 'ANTI alarm stage 2',
+                    'comm26': 'ANTI alarm stage 3',
+                    'comm27': 'ANTI alarm stage 4',
+                    'comm28': 'ANTI alarm stage 5',
+                    'comm29': 'Presplit',
+                    'comm30': 'Party Run tricks',
+                    'saveComm': 'Zapisz komendy',
+                    'theme': 'Wygląd',
+                    'restoreThemeSettings': 'Przywróc ustawienia domyślne wyglądu',
+                    'basicTheming': 'Podstawowy',
+                    'themePreset': 'Motyw',
+                    'themeType': 'Typ motywu',
+                    'darkTheme': 'Ciemny motyw',
+                    'lightTheme': 'Jasny motyw',
+                    'mainColor': 'Kolor główny',
+                    'bgColor': 'Tło',
+                    'bordersColor': 'Granice mapy',
+                    'gridColor': 'Siatka',
+                    'sectorsColor': 'Czcionka sektorów',
+                    'namesColor': 'Nazwy',
+                    'namesStrokeColor': 'Obwódki nazw',
+                    'massColor': 'Masa',
+                    'massStrokeColor': 'Obwódki masy',
+                    'virusColor': 'Wirusy',
+                    'virusStrokeColor': 'Obwódki wirusów',
+                    'virusGlowColor': "Virus Glow",
+                    "borderGlowColor": "Border Glow",
+                    'mVirusColor': 'Mothercell',
+                    'mVirusStrokeColor': 'Mothercell stroke',
+                    'virusGlowSize': 'Virus Glow Size',
+                    'borderGlowSize': 'Border Glow Size',
+                    'foodColor': 'Pokarm',
+                    'namesFont': 'Czcionka nazw',
+                    'massFont': 'Czcionka masy',
+                    'sectorsFont': 'Czcionka sektorów',
+                    'namesScale': 'Skala nazw',
+                    'massScale': 'Skala masy',
+                    'virMassScale': 'Skala masy wirusów',
+                    'strokeScale': 'Skala obwódek tekstu',
+                    'foodSize': 'Wielkość pokarmu',
+                    'bordersWidth': 'Grubość granic mapy',
+                    'sectorsWidth': 'Grubość siatki sektorów',
+                    'sectorsFontSize': 'Rozmiar czcionki sektorów',
+                    'cellsAlpha': 'Przezroczystość kulek',
+                    'skinsAlpha': 'Przezroczystość skinów',
+                    'virusAlpha': 'Przezroczystość wirusów',
+                    'textAlpha': 'Przezroczystość nazw i masy',
+                    'virusStrokeSize': 'Grubość obwódki wirusów',
+                    "virusGlowSize": "Virus Glow Size",
+                    'teammatesIndColor': 'Wskaźnik gracza',
+                    'cursorTrackingColor': 'Śledzenie kursora',
+                    'splitRangeColor': 'Zasięg podziału',
+                    'safeAreaColor': 'Bezpieczna strefa',
+                    'dangerAreaColor': 'Strefa zagrożenia',
+                    'ghostCellsColor': 'Duchy kulek',
+                    'ghostCellsAlpha': 'Przezroczystość duchów kulek',
+                    'menuTheming': 'Menu',
+                    'menuPreset': 'Motyw menu',
+                    'menuMainColor': 'Kolor główny',
+                    'menuBtnTextColor': 'Tekst przycisku',
+                    'menuPanelColor': 'Panel',
+                    'menuPanelColor2': 'Panel (2)',
+                    'menuTextColor': 'Tekst panelu',
+                    'menuTextColor2': 'Tekst panelu (2)',
+                    'btn1Color': 'Przycisk #1',
+                    'btn1Color2': 'Przycisk #1 (2)',
+                    'btn2Color': 'Przycisk #2',
+                    'btn2Color2': 'Przycisk #2 (2)',
+                    'btn3Color': 'Przycisk #3',
+                    'btn3Color2': 'Przycisk #3 (2)',
+                    'btn4Color': 'Przycisk #4',
+                    'btn4Color2': 'Przycisk #4 (2)',
+                    'menuBg': 'Grafika tła panelu',
+                    'menuOpacity': 'Przezroczystość',
+                    'hudTheming': 'HUD',
+                    'hudMainColor': 'Kolor główny',
+                    'hudColor': 'Tło',
+                    'hudTextColor': 'Tekst',
+                    'statsHudColor': 'Statystyki',
+                    'timeHudColor': 'Czas',
+                    'top5MassColor': 'Masa',
+                    'lbMeColor': 'Topka - ja',
+                    'lbTeammateColor': 'Topka - team',
+                    'hudFont': 'Czcionka HUD',
+                    'hudScale': 'Skala HUD',
+                    'chatTheming': 'Czat',
+                    'messageColor': 'Tło wiadomości',
+                    'messageTextColor': 'Tekst wiadomości',
+                    'messageTimeColor': 'Czas wiadomości',
+                    'messageNickColor': 'Nick wiadomości',
+                    'commandsColor': 'Tło komendy',
+                    'commandsTextColor': 'Tekst komendy',
+                    'commandsTimeColor': 'Czas komendy',
+                    'commandsNickColor': 'Nick komendy',
+                    'chatBoxColor': 'Tło czatboxu',
+                    'chatScale': 'Skala czatu',
+                    'miniMapTheming': 'Minimapa',
+                    'miniMapSectorsColor': 'Sektory',
+                    'miniMapSectorColor': 'Aktualny sektor',
+                    'miniMapGuidesColor': 'Prowadnice',
+                    'miniMapNickColor': 'Nick',
+                    'miniMapNickStrokeColor': 'Obwódka nicku',
+                    'miniMapMyCellColor': 'Moja kulka',
+                    'miniMapMyCellStrokeColor': 'Obwódka mojej kulki',
+                    'miniMapTeammatesColor': 'Gracze',
+                    'miniMapDeathLocationColor': 'Miejsce śmierci',
+                    'miniMapFont': 'Czcionka minimapy',
+                    'miniMapNickFont': 'Czcionka nicku',
+                    'miniMapWidth': 'Szerokość minimapy',
+                    'miniMapSectorsOpacity': 'Przezroczystość sektorów',
+                    'miniMapNickSize': 'Rozmiar nicku',
+                    'miniMapNickStrokeSize': 'Grubość obwódki nicku',
+                    'miniMapMyCellSize': 'Wielkość mojej kulki',
+                    'miniMapMyCellStrokeSize': 'Grubość obwódki mojej kulki',
+                    'miniMapTeammatesSize': 'Wielkość graczy',
+                    'miniMapGhostCellsColor': 'Duchy kulek',
+                    'miniMapGhostCellsAlpha': 'Przezroczystość duchów kulek',
+                    'imagesTheming': 'Grafika / kursory',
+                    'customBackground': 'Grafika tła',
+                    'customCursor': 'Grafika kursora',
+                    'hideChatMsgA': 'Czat został włączony!',
+                    'hideChatMsgB': 'Czat został ukryty!',
+                    'showSkinsMsgA': 'Skiny zostały włączone!',
+                    'showSkinsMsgB': 'Skiny zostały ukryte!',
+                    'hideSmallBotsMsgA': 'Małe boty stały się widoczne!',
+                    'hideSmallBotsMsgB': 'Małe boty zostały ukryte!',
+                    'autoRespMsgA': 'Auto odrodzenie zostało włączone!',
+                    'autoRespMsgB': 'Auto odrodzenie zostało wyłączone!',
+                    'autoZoomMsgA': 'Auto zoom został włączony!',
+                    'autoZoomMsgB': 'Auto zoom został wyłączony!',
+//                   'targetNotSet': 'Brak celu',
+					'targetNotSet': '',
+                    'targetDead': 'Nie żyje',
+                    'targetDistance': 'Dystans',
+                    'targetMass': 'Masa razem',
+                    'totalPartyPlayers': '',
+                    'totalPartyMass': '',
+                    'exportImport': 'Eksport / import ustawień',
+                    'exportSettings': 'Eksportuj ustawienia',
+                    'exportInfo': 'Aby wyeksportować wybrane ustawienia skopiuj poniższy kod i zapisz go w pliku tekstowym z kodowaniem Unicode.',
+                    'importSettings': 'Importuj ustawienia',
+                    'importInfo': 'Aby zaimportować wybrane ustawienia wklej poniżej wyeksportowany wcześniej kod i naciśnij przycisk \"Importuj ustawienia\".',
+                    'profile': 'Profil',
+                    'profiles': 'Profile',
+                    'skins': 'Skiny',
+                    'moreSkins': 'Dodaj skiny',
+                    'thanks': 'Dzięki Awesome!',
+                    'saveSett': 'Zapisz ustawienia',
+                    'saved': 'Zapisano!',
+                    'resetSett': 'Resetuj ustawienia',
+                    'close': 'Zamknij',
+                    'enterChatMsg': 'Napisz wiadomość',
+                    'activeParties': 'Aktywne party',
+                    'noActiveParties': 'Brak aktywnych party ;(',
+                    'playlist': 'Playlista',
+                    'pause': 'PAUZA!',
+                    'visit': 'Odwiedź',
+                    'exit': 'Legend mod Express: Czy na pewno chcesz opuścic grę?',
+                    'blockWarn': 'UWAGA! Popupy zostały zablokowane w ustawieniach.',
+                    'unblockPopups': 'Odblokuj tymczasowo',
+                    'mass': 'Masa',
+                    'score': 'Top',
+                    'leaderboard': 'Topka',
+                    'user': 'Użytkownik',
+                    'userMuted': 'Użytkownik %user% został wyciszony.',
+                    'userUnmuted': 'Wyłączono wyciszenie użytkownika %user%.',
+                    'mute': 'Wycisz',
+                    'unmute': 'Wyłącz wyciszenie',
+                    'mutedUsers': 'Wyciszeni użytkownicy',
+                    'activeUsers': 'Aktywni użytkownicy',
+                    'showActiveUsers': 'Pokaż aktywnych użytkowników',
+                    'none': 'Brak',
+                    'sounds': 'Dźwięki',
+                    'page_back_button': 'Wróć',
+                    'page_create_party': 'Stwórz party',
+                    'page_join_party': 'Dołącz',
+                    'page_login_and_play': 'Zaloguj',
+                    'page_logout': 'Wyloguj',
+                    'page_menu_login_facebook': 'Zaloguj z Facebook',
+                    'page_menu_login_google': 'Zaloguj z Google',
+                    'page_menu_main_free_coins': 'Darmowe Monety',
+                    'page_menu_main_gifts': 'Prezenty',
+                    'page_menu_main_dailyquests': 'Zadania',
+                    'page_party_join_error': 'Nie można dołączyć do tego party. Upewnij się, że token jest prawidłowy lub stwórz nowy.',
+                    'page_play': 'Graj',
+                    'page_play_as_guest': 'Graj jako gość',
+                    'page_shop': 'Sklep',
+                    'page_spectate': 'Obserwuj',
+                    'page_stats': 'Statystyki'
+                },
+                'en': {
+                    'start': 'Home',
+                    'settings': 'Settings',
+                    'restoreSettings': 'Restore default settings',
+                    'animationGroup': 'Animation',
+                    'zoomGroup': 'Zoom',
+                    'respGroup': 'Respawn',
+                    'namesGroup': 'Names',
+                    'massGroup': 'Mass',
+                    'skinsGroup': 'Skins',
+                    'foodGroup': 'Food',
+                    'transparencyGroup': 'Transparency / colors',
+                    'gridGroup': 'Grid / sectors',
+                    'miniMapGroup': 'Minimap',
+                    'helpersGroup': 'Helpers',
+                    'mouseGroup': 'Mouse control',
+                    'hudGroup': 'HUD',
+                    'chatGroup': 'Chat',
+                    'statsGroup': 'Stats',
+                    'extrasGroup': 'Extras',
+                    'noSkins': 'No skins',
+                    'noNames': 'No names',
+                    'noColors': 'No colors',
+                    'showMass': 'Show mass',
+                    'skipStats': 'Skip stats after death',
+                    'showQuest': 'Show quest',
+                    'autoZoom': 'Auto zoom',
+                    'animation': 'Animation delay',
+                    'suckAnimation': 'Cell Eat [Sucking] Animation',
+                    'virusGlow': 'Virus Glow',
+                    'borderGlow': 'Border Glow',
+                    'zoomSpeedValue2': 'Zoom speed',
+                    'quickResp': 'Quick respawn (hotkey)',
+                    'autoResp': 'Auto respawn',
+                    'autoHideCellsInfo': 'Auto hide names and mass',
+                    'autoHideNames': 'Auto hide names',
+                    'autoHideMass': 'Auto hide mass',
+                    'autoHideFood': 'Auto hide food (mass)',
+                    'autoHideFoodOnZoom': 'Auto hide food (zoom)',
+                    'optimizedNames': 'Optimized names',
+                    'hideMyName': 'Hide my name',
+                    'hideTeammatesNames': 'Hide teammates names',
+                    'optimizedMass': 'Optimized mass (+/-2%)',
+                    'shortMass': 'Short mass (k)',
+                    'virMassShots': 'Virus shots',
+                    'hideMyMass': 'Hide my mass',
+                    'hideEnemiesMass': 'Hide enemies mass',
+                    'vanillaSkins': 'Vanilla skins',
+                    'customSkins': 'Custom skins',
+                    'myTransparentSkin': 'My transparent skin',
+                    'myCustomColor': 'My custom color',
+                    'transparentCells': 'Transparent cells',
+                    'transparentViruses': 'Transparent viruses',
+                    'transparentSkins': 'Transparent skins',
+                    'showGrid': 'Show grid',
+                    'showBgSectors': 'Show background sectors',
+                    'showMapBorders': 'Show map borders',
+                    'showGhostCells': 'Ghost cells',
+                    'showMiniMap': 'Show minimap',
+                    'showMiniMapGrid': 'Show minimap grid',
+                    'showMiniMapGuides': 'Show minimap guides',
+                    'showMiniMapGhostCells': 'Show ghost cells',
+                    'oneColoredTeammates': 'One-colored teammates',
+                    'optimizedFood': 'Optimized food',
+                    'rainbowFood': 'Rainbow food',
+                    'oppColors': 'Opponents colors',
+                    'oppRings': 'Opponents rings',
+                    'virColors': 'Viruses colors',
+                    'splitRange': 'Split range',
+                    'virusesRange': 'Viruses range',
+                    'textStroke': 'Names and mass stroke',
+                    'namesStroke': 'Names stroke',
+                    'massStroke': 'Mass stroke',
+                    'cursorTracking': 'Cursor tracking',
+                    'teammatesInd': 'Teammates indicators',
+                    'mouseSplit': 'LMB - Mouse split',
+                    'mouseFeed': 'RMB - Mouse feed',
+                    'mouseInvert': 'Invert mouse buttons',
+                    'disableChat': 'Disable chat',
+                    'hideChat': 'Hide chat',
+                    'chatSounds': 'Sound notifications',
+                    'chatEmoticons': 'Emoticons',
+                    'showChatImages': 'Show images on chat',
+                    'showChatVideos': 'Show videos on chat',
+                    'showChatBox': 'Chatbox instead of popups',
+                    'messageSound': 'Message notification sound',
+                    'commandSound': 'Command notification sound',
+					'virusSoundurl': 'Virus shot sound',
+					'virusSound': 'Virus shot sound',
+                    'showTop5': 'Show teamboard',
+                    'showTargeting': 'Show targeting',
+                    'showTime': 'Show current time',
+                    'showLbData': 'Show leaderboard mass',
+                    'normalLb': '\"Leaderboard\" header',
+                    'centeredLb': 'Centered leaderboard',
+                    'fpsAtTop': 'Game stats at the top',
+                    'showStats': 'Show game stats',
+                    'showStatsMass': 'Game stats: Mass',
+                    'showStatsSTE': 'Game stats: STE',
+                    'showStatsN16': 'Game stats: n/16',
+                    'showStatsFPS': 'Game stats: FPS',
+                    'blockPopups': 'Block popups (ads/shop/quest)',
+                    'hotkeys': 'Hotkeys',
+                    'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
+                    'hk-inst-delete': 'To delete a hotkey click on the input field and press the DELETE key.',
+                    'hk-inst-keys': 'Possible key combinations with the CTRL and ALT keys.',
+                    'hk-feed': 'Feed',
+                    'hk-macroFeed': 'Macro feed',
+                    'hk-split': 'Split',
+                    'hk-doubleSplit': 'Double split',
+                    'hk-split16': 'Split 16',
+                    'hk-pause': 'Cell pause',
+                    'hk-showTop5': 'Show/hide teamboard',
+                    'hk-showTime': 'Show/hide current time',
+                    'hk-showSplitRange': 'Show/hide split range',
+                    'hk-showSplitInd': 'Show/hide split indicators',
+                    'hk-showTeammatesInd': 'Show/hide teammates indicators',
+                    'hk-showOppColors': 'Show/hide opponents colors',
+                    'hk-toggleSkins': 'Toggle skins (custom/default)',
+                    'hk-showSkins': 'Show/hide skins',
+                    'hk-transparentSkins': 'Toggle transparent skins',
+                    'hk-showStats': 'Show/hide game stats',
+                    'hk-toggleCells': 'Toggle own cells (smallest/biggest)',
+                    'hk-showFood': 'Show/hide food',
+                    'hk-showGrid': 'Show/hide grid',
+                    'hk-showMiniMapGuides': 'Show/hide minimap guides',
+                    'hk-hideChat': 'Show/hide chat',
+                    'hk-showHUD': 'Show/hide HUD',
+                    'hk-copyLb': 'Copy leaderboard',
+                    'hk-showLb': 'Show/hide leaderboard',
+                    'hk-toggleAutoZoom': 'Toggle auto zoom',
+                    'hk-resetZoom': 'Reset zoom',
+                    'hk-zoomLevel': 'Zoom level',
+                    'hk-toggleDeath': 'Toggle death location',
+                    'hk-clearChat': 'Show chat history / Clear chat',
+                    'hk-showBgSectors': 'Show/hide background sectors',
+                    'hk-hideBots': 'Show/hide small bots',
+                    'hk-showNames': 'Show/hide names',
+                    'hk-hideTeammatesNames': 'Show/hide teammates names',
+                    'hk-showMass': 'Show/hide mass',
+                    'hk-showMiniMap': 'Show/hide minimap',
+                    'hk-chatMessage': 'Enter chat message',
+                    'hk-quickResp': 'Quick respawn',
+                    'hk-autoResp': 'Toggle auto respawn',
+                    'hk-switchServerMode': 'Switch server [public/private]',
+                    'hk-showTargeting': 'Show/hide targeting panel',
+                    'hk-voiceChat': 'Voice to text',
+                    'hk-setTargeting': 'Start/stop targeting (following)',
+                    'hk-cancelTargeting': 'Cancel targeting',
+                    'hk-changeTarget': 'Change target',
+                    'hk-privateMiniMap': 'Show target on the minimap',
+                    'hk-showQuest': 'Show/hide quest',
+                    'commands': 'Commands',
+                    'comm1': 'Feed me!',
+                    'comm2': 'Split into me!',
+                    'comm3': 'Need backup at %currentSector%!',
+                    'comm4': 'Enemy spotted at %currentSector%!',
+                    'comm5': 'Need a teammate!',
+                    'comm6': 'Tank the virus!',
+                    'comm7': 'Eat the virus!',
+                    'comm8': 'Let\'s bait!',
+                    'comm9': 'Fake tricksplit!',
+                    'comm0': 'Fuck!',
+                    'comm10': 'Tricksplit!',
+                    'comm11': 'Left!',
+                    'comm12': 'Up!',
+                    'comm13': 'Right!',
+                    'comm14': 'Bottom!',
+                    'comm15': 'Fake Tricksplit',
+                    'comm16': 'Popsplit',
+                    'comm17': 'Double Popsplit',
+                    'comm18': 'Reversed Tricksplit',
+                    'comm19': 'Canonsplit',
+                    'comm20': 'Reversed Canonsplit',
+                    'comm21': 'Bowlingsplit',
+                    'comm22': 'Auto feed trick',
+                    'comm23': 'Pause',
+                    'comm24': 'ANTI alarm stage 1',
+                    'comm25': 'ANTI alarm stage 2',
+                    'comm26': 'ANTI alarm stage 3',
+                    'comm27': 'ANTI alarm stage 4',
+                    'comm28': 'ANTI alarm stage 5',
+                    'comm29': 'Presplit',
+                    'comm30': 'Party Run tricks',
+                    'saveComm': 'Save commands',
+                    'theme': 'Theme',
+                    'restoreThemeSettings': 'Restore theme default settings',
+                    'basicTheming': 'Basic theming',
+                    'themePreset': 'Theme preset',
+                    'themeType': 'Theme type',
+                    'darkTheme': 'Dark theme',
+                    'lightTheme': 'Light theme',
+                    'mainColor': 'Main color',
+                    'bgColor': 'Background',
+                    'bordersColor': 'Map borders',
+                    'gridColor': 'Grid',
+                    'sectorsColor': 'Sectors font',
+                    'namesColor': 'Names',
+                    'namesStrokeColor': 'Names stroke',
+                    'massColor': 'Mass',
+                    'massStrokeColor': 'Mass stroke',
+                    'virusColor': 'Virus',
+                    'virusStrokeColor': 'Virus stroke',
+                    'virusGlowColor': "Virus Glow",
+                    "borderGlowColor": "Border Glow",
+                    'mVirusColor': 'Mothercell',
+                    'mVirusStrokeColor': 'Mothercell stroke',
+                    'virusGlowSize': 'Virus Glow Size',
+                    'borderGlowSize': 'Border Glow Size',
+                    'foodColor': 'Food',
+                    'namesFont': 'Names font',
+                    'massFont': 'Mass font',
+                    'sectorsFont': 'Sectors font',
+                    'namesScale': 'Names scale',
+                    'massScale': 'Mass scale',
+                    'virMassScale': 'Virus mass scale',
+                    'strokeScale': 'Text stroke scale',
+                    'foodSize': 'Food size',
+                    'bordersWidth': 'Map borders width',
+                    'sectorsWidth': 'Sectors grid width',
+                    'sectorsFontSize': 'Sectors font size',
+                    'cellsAlpha': 'Cells transparency',
+                    'skinsAlpha': 'Skins transparency',
+                    'virusAlpha': 'Virus transparency',
+                    'textAlpha': 'Names & mass transparency',
+                    'virusStrokeSize': 'Virus stroke size',
+                    "virusGlowSize": "Virus Glow Size",
+                    'teammatesIndColor': 'Teammate indicator',
+                    'cursorTrackingColor': 'Cursor tracking',
+                    'splitRangeColor': 'Split range',
+                    'safeAreaColor': 'Safe area',
+                    'dangerAreaColor': 'Danger area',
+                    'ghostCellsColor': 'Ghost cells',
+                    'ghostCellsAlpha': 'Ghost cells transparency',
+                    'menuTheming': 'Menu',
+                    'menuPreset': 'Menu theme',
+                    'menuMainColor': 'Main color',
+                    'menuBtnTextColor': 'Button text',
+                    'menuPanelColor': 'Panel',
+                    'menuPanelColor2': 'Panel (2)',
+                    'menuTextColor': 'Panel text',
+                    'menuTextColor2': 'Panel text (2)',
+                    'btn1Color': 'Button #1',
+                    'btn1Color2': 'Button #1 (2)',
+                    'btn2Color': 'Button #2',
+                    'btn2Color2': 'Button #2 (2)',
+                    'btn3Color': 'Button #3',
+                    'btn3Color2': 'Button #3 (2)',
+                    'btn4Color': 'Button #4',
+                    'btn4Color2': 'Button #4 (2)',
+                    'menuBg': 'Panel background image',
+                    'menuOpacity': 'Transparency',
+                    'hudTheming': 'HUD',
+                    'hudMainColor': 'Main color',
+                    'hudColor': 'Background',
+                    'hudTextColor': 'Text',
+                    'statsHudColor': 'Stats',
+                    'timeHudColor': 'Time',
+                    'top5MassColor': 'Mass',
+                    'lbMeColor': 'Leaderboard - me',
+                    'lbTeammateColor': 'Leaderboard - teammate',
+                    'hudFont': 'HUD font',
+                    'hudScale': 'HUD scale',
+                    'chatTheming': 'Chat',
+                    'messageColor': 'Message background',
+                    'messageTextColor': 'Message text',
+                    'messageTimeColor': 'Message time',
+                    'messageNickColor': 'Message nick',
+                    'commandsColor': 'Command background',
+                    'commandsTextColor': 'Command text',
+                    'commandsTimeColor': 'Command time',
+                    'commandsNickColor': 'Command nick',
+                    'chatBoxColor': 'Chatbox color',
+                    'chatScale': 'Chat scale',
+                    'miniMapTheming': 'Minimap',
+                    'miniMapSectorsColor': 'Sectors',
+                    'miniMapSectorColor': 'Current sector',
+                    'miniMapGuidesColor': 'Guides',
+                    'miniMapNickColor': 'Nick',
+                    'miniMapNickStrokeColor': 'Nick stroke',
+                    'miniMapMyCellColor': 'My cell',
+                    'miniMapMyCellStrokeColor': 'My cell stroke',
+                    'miniMapTeammatesColor': 'Teammates',
+                    'miniMapDeathLocationColor': 'Death location',
+                    'miniMapFont': 'Minimap font',
+                    'miniMapNickFont': 'Nick font',
+                    'miniMapWidth': 'Minimap width',
+                    'miniMapSectorsOpacity': 'Sectors transparency',
+                    'miniMapNickSize': 'Nick size',
+                    'miniMapNickStrokeSize': 'Nick stroke size',
+                    'miniMapMyCellSize': 'My cell size',
+                    'miniMapMyCellStrokeSize': 'My cell stroke size',
+                    'miniMapTeammatesSize': 'Teammates size',
+                    'miniMapGhostCellsColor': 'Ghost cells',
+                    'miniMapGhostCellsAlpha': 'Ghost cells transparency',
+                    'imagesTheming': 'Graphics / cursors',
+                    'customBackground': 'Custom background image',
+                    'customCursor': 'Custom cursor image',
+                    'hideChatMsgA': 'Chat is visible!',
+                    'hideChatMsgB': 'Chat is hidden!',
+                    'showSkinsMsgA': 'Skins are visible!',
+                    'showSkinsMsgB': 'Skins are hidden!',
+                    'hideSmallBotsMsgA': 'Small bots are visible!',
+                    'hideSmallBotsMsgB': 'Small bots are hidden!',
+                    'autoRespMsgA': 'Auto respawn is on!',
+                    'autoRespMsgB': 'Auto respawn is off!',
+                    'autoZoomMsgA': 'Auto zoom is on!',
+                    'autoZoomMsgB': 'Auto zoom is off!',
+                    'targetNotSet': '',
+                    'targetDead': 'Dead',
+                    'targetDistance': 'Distance',
+                    'targetMass': 'Mass altogether',
+                    'totalPartyPlayers': '',
+                    'totalPartyMass': '',
+                    'exportImport': 'Export / import settings',
+                    'exportSettings': 'Export settings',
+                    'exportInfo': 'To export selected settings copy the code below and save it to a text file encoded in Unicode.',
+                    'importSettings': 'Import settings',
+                    'importInfo': 'To import selected settings paste an exported code below and press the \"Import settings\" button.',
+                    'profile': 'Profile',
+                    'profiles': 'Profiles',
+                    'skins': 'Skins',
+                    'moreSkins': 'Add skins',
+                    'thanks': 'Thanks to Awesome!',
+                    'saveSett': 'Save settings',
+                    'saved': 'Saved!',
+                    'resetSett': 'Reset to default',
+                    'close': 'Close',
+                    'enterChatMsg': 'Enter chat message',
+                    'activeParties': 'Active parties',
+                    'noActiveParties': 'No active parties ;(',
+                    'playlist': 'Playlist',
+                    'pause': 'PAUSE!',
+                    'visit': 'Visit',
+                    'exit': 'Legend mod Express: Are you sure you want to quit the game?',
+                    'blockWarn': 'WARNING! Popups are blocked in the settings.',
+                    'unblockPopups': 'Temporary unblock',
+                    'mass': 'Mass',
+                    'score': 'Score',
+                    'leaderboard': 'Leaderboard',
+                    'user': 'User',
+                    'userMuted': 'User %user% has been muted.',
+                    'userUnmuted': 'User %user% has been unmuted.',
+                    'mute': 'Mute',
+                    'unmute': 'Unmute',
+                    'mutedUsers': 'Muted users',
+                    'activeUsers': 'Active users',
+                    'showActiveUsers': 'Show active users',
+                    'none': 'None',
+                    'sounds': 'Sounds',
+                    'page_menu_main_free_coins': 'Free Coins',
+                    'page_menu_main_gifts': 'Gifts',
+                    'page_menu_main_dailyquests': 'Daily Quest',
+                    'page_shop': 'Shop'
                 }
-                my.capture_start();
-            }else{
-		$("#ao2t-capture").removeClass("connected").addClass("disconnected");
-                $("#ao2t-capture").html('<i class="fa fa-universal-access" aria-hidden="true"></i>');
-                my.capture_end();
-            }
-        });
-        $('#ao2t-capture').mouseenter(function() {
-            $('#ao2t-capture').css('color', $("#hudTextColor").val());
-            return clickedname = "YES";
-        }).mouseleave(function() {
-            $('#ao2t-capture').css('color', '');
-        });
-        $('#ao2t-config').mouseenter(function() {
-            $('#ao2t-config').css('color', $("#hudTextColor").val());
-            return clickedname = "YES";
-        }).mouseleave(function() {
-            $('#ao2t-config').css('color', '');
-        });
+            },
+            r = 'en',
+            l = e.navigator.language || e.navigator.userLanguage;
+        l && n.hasOwnProperty(l) && (r = l);
+        var h = n[r];
+        if (n[r].comm15 != undefined) {
+            //console.log(h.comm15);
+        }
+        c = {
+            'comm1': h.comm1,
+            'comm2': h.comm2,
+            'comm3': h.comm3,
+            'comm4': h.comm4,
+            'comm5': h.comm5,
+            'comm6': h.comm6,
+            'comm7': h.comm7,
+            'comm8': h.comm8,
+            'comm9': h.comm9,
+            'comm10': h.comm10,
+            'comm0': h.comm0,
+            'comm11': h.comm11,
+            'comm12': h.comm12,
+            'comm13': h.comm13,
+            'comm14': h.comm14,
+            'comm15': h.comm15,
+            'comm16': h.comm16,
+            'comm17': h.comm17,
+            'comm18': h.comm18,
+            'comm19': h.comm19,
+            'comm20': h.comm20,
+            'comm21': h.comm21,
+            'comm22': h.comm22,
+            'comm23': h.comm23,
+            'comm24': h.comm24,
+            'comm25': h.comm25,
+            'comm26': h.comm26,
+            'comm27': h.comm27,
+            'comm28': h.comm28,
+            'comm29': h.comm29,
+            'comm30': h.comm30
+        }
+        /*}
+		else{
+            c = { //new JSON
+                'comm1': h.comm1,
+                'comm2': h.comm2,
+                'comm3': h.comm3,
+                'comm4': h.comm4,
+                'comm5': h.comm5,
+                'comm6': h.comm6,
+                'comm7': h.comm7,
+                'comm8': h.comm8,
+                'comm9': h.comm9,
+                'comm10': h.comm10,
+                'comm11': h.comm11,
+                'comm12': h.comm12,
+                'comm13': h.comm13,
+                'comm14': h.comm14,
+				'comm15': 'Fake Tricksplit',
+					'comm16': 'Popsplit',
+					'comm17': 'Double Popsplit',
+					'comm18': 'Reversed Tricksplit',
+					'comm19': 'Canonsplit',
+					'comm20': 'Reversed Canonsplit',
+					'comm21': 'Bowlingsplit',
+					'comm22': 'Auto feed trick',
+					'comm23': 'Pause',
+					'comm24': 'ANTI alarm stage 1',
+					'comm25': 'ANTI alarm stage 2',
+					'comm26': 'ANTI alarm stage 3',
+					'comm27': 'ANTI alarm stage 4',
+					'comm28': 'ANTI alarm stage 5',
+					'comm29': 'Presplit',
+					'comm30': 'Party Run tricks'				
+			}; 		
+		};
+		n[r].comm15=c.comm15; n[r].comm16=c.comm16; n[r].comm17=c.comm17; n[r].comm18=c.comm18; n[r].comm19=c.comm19; n[r].comm20=c.comm20; n[r].comm21=c.comm21; n[r].comm22=c.comm22; n[r].comm23=c.comm23; n[r].comm24=c.comm24;
+		n[r].comm25=c.comm25; n[r].comm26=c.comm26; n[r].comm27=c.comm27; n[r].comm28=c.comm28; n[r].comm29=c.comm29; n[r].comm30=c.comm30;		*/
+        u = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                '\'': '&#39;',
+                '/': '&#x2F;'
+            },
+            d = {
+                ':)': 'smile.svg',
+                ';)': 'wink.svg',
+                '=)': 'smirk.svg',
+                ':D': 'grin.svg',
+                'X-D': 'xgrin.svg',
+                '=D': 'joy.svg',
+                ':(': 'sad.svg',
+                ';(': 'cry.svg',
+                ':P': 'tongue.svg',
+                ';P': 'tonguew.svg',
+                ':*': 'kiss.svg',
+                '$)': 'smileh.svg',
+                '<3': 'heart.svg',
+                '8=)': 'cool.svg',
+                ':o': 'astonished.svg',
+                '(:|': 'sweat.svg',
+                ':|': 'neutral.svg',
+                ':\\': 'unamused.svg',
+                ':@': 'pouting.svg',
+                '|-)': 'sleep.svg',
+                '^_^': 'relaxed.svg',
+                '-_-': 'expressionless.svg',
+                '$_$': 'money.svg',
+                'O:)': 'angel.svg',
+                '3:)': 'devil.svg',
+                '(poop)': 'poo.svg',
+                '(fuck)': 'finger.svg',
+                '(clap)': 'clap.svg',
+                '(ok)': 'ok.svg',
+                '(victory)': 'victory.svg',
+                '(y)': 'thumb.svg',
+                '(n)': 'thumbd.svg',
 
-        $("#ao2t-config").click(my.config);
-        // LMB-Mouse split correction (Do not separate by left click on button)
-        if(cfg.lmsa_teamtop){
-            //$(".team-top-menu").mousedown(function(){return false;});
-            $("#top5-hud").mousedown(function(){return false;});
-        }else{
-            $("#ao2t-hud").mousedown(function(event){ return false;});
-        }
-        if(cfg.lmsa_chat){
-            $("#message-box").mousedown(function(){return false;});
-        }
-        // --- chat close ---
-        if(cfg.chat_close){
-            $("#message-menu").append('<a href="#" id="ao2t-chat-close" style="float:right;">X</a>');
-            $("#ao2t-chat-close").click(function(){
-                my.chatClose();
-            });
-        }
-        if(cfg.chat_vcenter){
-            $("#message-box").css("bottom", stat.messageBoxBottom[1]);
-        }
-        $("#message").keydown(function(event){
-            var modify = (event.altKey ? "a" : "")+
-                (event.ctrlKey ? "c" : "")+
-                (event.metaKey ? "m" : "")+
-                (event.shiftKey ? "s" : "");
-            if(event.keyCode === stat.keyCodeEnter){
-                if(modify === "a" && cfg.chat_alt){
-                    my.chatSend();
-                    return false;
-                }else if(modify === "ac" && cfg.chat_ctrlalt){
-                    my.chatSend({"ogar":true});
-                    return false;
-                }else if(modify === "c" && cfg.chat_ctrl){
-                    my.chatClose();
-                    return false;
+                '(angry)': 'newangry.svg',
+                '(clown)': 'newclown.svg',
+                '(crazy)': 'newcrazy.svg',
+                '(devil)': 'newdevil.svg',
+                '(devil2)': 'newdevil2.svg',
+                '(fb)': 'newfb.svg',
+                '(google)': 'newgplus.svg',
+                '(ghost)': 'newghost.svg',
+                '(heel)': 'newheel.svg',
+                '(kiss)': 'newkiss.svg',
+                '(lipstick)': 'newlipstick.svg',
+                //				'(rage)': 'newrage.svg',
+                '(teacher)': 'newteacher.svg',
+                '(together)': 'newtogether.svg',
+                '(toothy)': 'newtoothy.svg',
+                '(baby)': 'newbaby.svg',
+                '(wow)': 'newwow.svg'
+            },
+            p = [{
+                    name: "imgur.com",
+                    url: "https://imgur.com/",
+                    example: "https://i.imgur.com/xdmUp5N.png",
+                    pattern: "https?://w+.imgur.com/w{6,}.(?:%file_ext%)??d*"
+                },
+                {
+                    name: "put.re",
+                    url: "https://put.re/",
+                    example: "https://s.put.re/iYHAW65g.png",
+                    pattern: "https?://w+.put.re/w{8,}.(?:%file_ext%)"
+                },
+                {
+                    name: "postimages.org",
+                    url: "https://postimages.org/",
+                    example: "https://i.postimg.cc/zzK0sRPg/xdmUp5N.png",
+                    pattern: "https?://w+.postimg.cc/w{8,}/w+.(?:%file_ext%)"
                 }
-            }
-        });
-        // --- skin toggle ---
-        my.skinToggle_start();
-    }
-    my.capture_start = function(){
-        // If not, add chat submit button
-        if($("#ao2t-message").length){
-            $("#ao2t-message").show(); // .prop('disabled', false);
-            $("#ao2t-minimap").show();
-        }else{
-            my.capture_init();
-        }
-        // Connection
-        stat.tag = $('#clantag').val();
-        stat.nick = $('#nick').val();
-        stat.token = $('#server-token').val();
-        stat.ws = 'wss://live-arena-'+ stat.token +'.agar.io:80';
-        my.connect();
-        stat.update_timerid = setInterval(my.update, cfg.update_interval);
-    };
-    my.capture_end = function(){
-        $("#ao2t-message").hide(); // .prop('disabled', true);
-        $('#ao2t-top5').html('');
-        $("#ao2t-minimap").hide();
-        my.disconnect();
-        clearInterval(stat.update_timerid);
-        stat.update_timerid = null;
-    };
-    my.capture_init = function(){
-//        $("#message-menu").append('<a href="#" id="ao2t-message" style="float:right;">'+ my.tool_symbol +'</a>');
-		  $("#message-menu").prepend('<a href="#" id="ao2t-message" style="float:left;">'+ my.tool_symbol +'</a>');
-//	  	$(".show-chat-emoticons.ogicon-smile").after('<a href="#" id="ao2t-message" style="float:right;">'+ my.tool_symbol +'</a>');
-
-        $("#ao2t-message").click(my.chatSend);
-        // minimap
-        var minimap = $("#minimap");
-        var minimapWidth = minimap.attr('width');
-        var minimapHeight = minimap.attr('height');
-        minimap.before('<canvas id="ao2t-minimap"'+
-                       ' style="position: absolute;"'+
-                       ' width="'+ minimapWidth +'" height="'+ minimapHeight +'">');
-        //stat.minimapOffsetX = stat.minimapOffsetY + minimapHeight - minimapWidth;
-    };
-    my.chatSend = function(flg_){
-        var flg = flg_ || {};
-        if(! stat.connected){
-			if ($("#ao2t-capture").hasClass("connected")){
-            global.toastr.error("L.M:->A.T: not connected");
-            return;
-			}
-        }
-		
-        var msg = '[Universal chat]:' + $("#message").val();
-		var msgLM=$("#message").val();
-		if (msgLM.indexOf('[url]')==-1 && msgLM.indexOf('[yut]')==-1 && msgLM.indexOf('[skype]')==-1 && msgLM.indexOf('[discord]')==-1 && msgLM.indexOf('[srv]')==-1 && msgLM.indexOf('[tag]')==-1 &&msgLM.indexOf('Legend.Mod')==-1 && msgLM.indexOf('https://agar.io/sip=151.80.91.73:1511')==-1){
-        if(msgLM.length){
-            my.sendMinimapServerCommand({
-                name: "chat",
-//                nick: "LM: " + stat.nick,
-//				nick: stat.nick,
-				nick:  $('#nick').val(),
-                message: "LM:"+msg
-            });
-            if(flg.ogar){
-                $(document).trigger(jQuery.Event('keydown',{ keyCode: stat.keyCodeEnter, which: stat.keyCodeEnter } ));
-            }else{
- //               $("#message-box").hide();
-            }
-        }
-    }
-	else {
-		console.log("Message included Script command, thus it is not sent to agar tool");
-	}
-	};
-    my.chatClose = function(){
-        $("#message-box").css("display", "none");
-        if(cfg.chat_unpause && $("#pause-hud").css("display") == "block"){ // Release during PAUSE
-            $(document).trigger(jQuery.Event('keydown',{ keyCode: stat.keyCodeR, which: stat.keyCodeR } ));
-            $(document).trigger(jQuery.Event('keyup',{ keyCode: stat.keyCodeR, which: stat.keyCodeR } ));
-        }
-    };
-    my.update = function(){
-        var ogarAlive = my.ogarIsAlive();
-        if(ogarAlive != stat.alive){
-            my.tgarAlive(ogarAlive);
-        }
-        if(stat.alive){
-            my.tgarReposition();
-        }
-        my.ogarMinimapUpdate();
-    };
-
-    // -----  Configuration  -----
-    my.config = function(){
-//        my.log("config_click2");
-        if(!($('#ao2t-cfg-dlg').length)){
-            my.config_init();
-        }
-        my.cfg_load(cfg);
-        $("#ao2t-cfg-dlg").show();
-        $("#overlays").show();
-    };
-    my.config_init = function(){
-        $("#overlays").append('<div id="ao2t-cfg-dlg"'+
-            '  style="width:400px; height:450px; top:150px; left:300px; display: none;'+
-            '">'+
-              'Agar Tool/Legend Mod tools'+
-              '<div style="overflow: scroll; '+
-                    'position: relative; top:1.5em; left:0.5em; right:0.5em; bottom:1.5em;">'+
-                '<div id="ao2t-cfg-base">'+
-                '</div>'+
-              '</div><br><br>'+
-              '&nbsp;<span id="ao2t-cfg-default" class="btn btn-primary">DEFAULT</span>'+
-              '&nbsp;<span id="ao2t-cfg-ok" class="btn btn-success">OK</span>'+
-              '&nbsp;<span id="ao2t-cfg-cancel" class="btn btn-danger">CANCEL</span>'+
-            '</div>');
-        $('#ao2t-cfg-base').append(''+
-            '&nbsp;&nbsp;&nbsp;Update frequency [milliseconds]:<input type="text" data-ao2t-config="update_interval" style="width:6em;"/>'+
-            '<br/>Agar Tool Obtained from'+
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="user_show"/>user list</label>'+
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="minimap_show"/>minimap</label>'+
-              '&nbsp;Prefix:<input type="text" data-ao2t-config="tgar_prefix" style="width:4em;"/>'+
-              '&nbsp;&nbsp;color:<input type="text" data-ao2t-config="tgar_color" style="width:6em;"/>'+
-            //    '<span class="input-group-addon"><i id="tgar_color" style="background-color: rgb(0, 0, 0);"></i></span>'+
-            '<br/>Send to Agar Tool'+
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="ogar_user"/>user info</label>'+
-              '&nbsp;Prefix:<input type="text" data-ao2t-config="ogar_prefix" style="width:4em;"/>'+
-            '<br/>LMB-Mouse split correction'+
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="lmsa_teamtop"/>Teamboard</label>'+
-              '&nbsp;<label><input type="checkbox" data-ao2t-config="lmsa_chat"/>chat</label>'+
-            '<br/>Chat option'+
-              '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="chat_close"/>close</label>'+
-                '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_unpause"/>unpause</label>'+
-                '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_vcenter"/>vcenter</label>'+
-              '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="chat_alt"/>Alt>T</label>'+
-                '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_ctrlalt"/>Ctrl+Alt>O+T</label>'+
-                '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_ctrl"/>Ctrl>Close</label>'+
-            '<br/>Other'+
-              '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="skin_toggle_auto"/>skin auto toggle</label>'+
-              '&nbsp;&nbsp;&nbsp;Frequency [milliseconds]:<input type="text" data-ao2t-config="skin_toggle_interval" style="width:6em;"/>'+
-            '<br/>&nbsp;&nbsp;* Changes will be reflected after restart'+
-            '');
-        $("#ao2t-cfg-default").click(function(){
-            my.cfg_load(cfg_org);
-        });
-        $("#ao2t-cfg-ok").click(function(){
-			if ($("#helloContainer").is(":visible")){
-//			      setTimeout(function() {
-					showMenu2();
-//				   }, 100);
-			}
-		cfg = my.cfg_save();
-//            GM_setValue("config", JSON.stringify(cfg));
-			my.storage_setValue("config", JSON.stringify(cfg));
-            my.config_cancel();
-            $("#message-box").css("bottom", stat.messageBoxBottom[cfg.chat_vcenter ? 1: 0]);
-            my.skinToggle_start();
-
-         });
-        $("#ao2t-cfg-cancel").click(function(){
-			if ($("#helloContainer").is(":visible")){
-//			      setTimeout(function() {
-					showMenu2();
-//				   }, 100);
-			}
-			my.config_cancel();
-        });
-        my.config_cancel = function(){
-            $("#overlays").hide();
-            $("#ao2t-cfg-dlg").hide();
-        };
-        //$("#tgar_color").colorpicker({'format': 'hex'}).on('changeColor.colorpicker', function(event){
-        //    var id = event.target.id;
-        //    $('[data-ao2t-config="'+ id +'"]').val(event.color.toHex());
-        //    event.target.style.backgroundColor = event.color.toRGB();
-        //});
-    };
-    // -----  skin toggle  -----
-    my.skinToggle_start = function(){
-        if(stat.skinToggle_timerid){
-            clearInterval(stat.skinToggle_timerid);
-            delete stat.skinToggle_timerid;
-        }
-        if(cfg.skin_toggle_auto && cfg.skin_toggle_interval > 0){
-            stat.skinToggle_timerid = setInterval(my.skinToggle_update, cfg.skin_toggle_interval);
-        }
-    };
-    my.skinToggle_update = function(){
-        //my.log("skinToggle_update in");
-        // --- check Legend Mod.v3 mode ---
-        if(global.ogario && global.ogario.customSkins && global.ogario.vanillaSkins){
-            //my.log("skinToggle_update hasBoth");
-            stat.skinToggle_hasBoth = true;
-        }
-        my.skinToggle_update_sub();
-        if(stat.skinToggle_hasBoth && global.ogario.customSkins && ! global.ogario.vanillaSkins){
-            //my.log("skinToggle_update retry");
-            my.skinToggle_update_sub();
-        }
-    };
-    my.skinToggle_update_sub = function(){
-        $(document).trigger(jQuery.Event('keydown',{ keyCode: stat.keyCodeA, which: stat.keyCodeA } ));
-        $(document).trigger(jQuery.Event('keyup',{ keyCode: stat.keyCodeA, which: stat.keyCodeA } ));
-    };
-    // =====  Agar Tool Communication processing / connection  =====
-    my.connect = function(){
-        my.disconnect();
-        if(! global.io){
-            my.log("load socket.io");
-            return loadScript(stat.socketIoURL, my.connect);
-        }
-        var grab_opt = {
-            query: "version=" + encodeURIComponent(stat.AgarToolVersion) +
-                 "&server=" + encodeURIComponent(stat.ws)
-        };
-        stat.grab_socket = io.connect(stat.AgarToolServer, grab_opt);
-        stat.grab_socket.on("info", function(minimap_info){
-            stat.minimap_info = minimap_info;
-            my.minimap_connect();
-        });
-    };
-    my.disconnect = function(){
-        if(stat.connected && stat.alive){
-            my.tgarAlive(false);
-        }
-        stat.connected = false;
-        stat.alive = false;
-        var save_grab_socket = stat.grab_socket;
-        var save_minimap_socket = stat.minimap_socket;
-        stat.grab_socket = null;
-        stat.minimap_socket = null;
-        if(save_grab_socket){
-            save_grab_socket.disconnect();
-        }
-        if(save_minimap_socket){
-            save_minimap_socket.disconnect();
-        }
-    };
-	my.minimap_connect = function(){
-		if ($("#ao2t-hud").hasClass("OnceUsed")==false){
-//		toastr["warning"]('<b>[SERVER]: </b>Legend Mod and Agar Tool successfully connected. <br>Use {Send Text Universaly} button on chat box to send to Agar.io Tool');
-        $("#ao2t-hud").addClass("OnceUsed");
-		}
-		my.log("minimap server="+ stat.minimap_info.minimapServer);
-        my.resetMinimap();
-        var minimap_opt = {
-            reconnection: !1,
-            query: "server=" + encodeURIComponent(stat.minimap_info.agarServer)+
-               "&tag=" + encodeURIComponent(stat.tag)
-        };
-        stat.minimap_socket = io.connect(stat.minimap_info.minimapServer, minimap_opt);
-        stat.minimap_socket.on("command", my.minimap_command);
-        stat.minimap_socket.on("connect", function(){
-            stat.connected = true;
-            //if(stat.alive){
-            //    my.sendMinimapServerCommand({
-            //        name: "alive",
-            //        playerName: stat.nick
-            //    });
-            //}
-        });
-        stat.minimap_socket.on("disconnect", function(){
-            stat.minimap_socket = null;
-            my.minimap_disconnect();
-        });
-        stat.minimap_socket.on("connect_error", function(){
-            stat.minimap_socket = null;
-            my.minimap_disconnect();
-        });
-    };
-	my.minimap_disconnect = function(){
-        stat.connected = false;
-        var save_grab_socket = stat.grab_socket;
-        var save_minimap_socket = stat.minimap_socket;
-        stat.grab_socket = null;
-        stat.minimap_socket = null;
-        if(save_grab_socket){
-            save_grab_socket.disconnect();
-        }
-        if(save_minimap_socket){
-            save_minimap_socket.disconnect();
-        }
-    };
-    // =====  Agar Tool Communication processing / processing  =====
-    my.minimap_command = function(cmd){
-        if (void 0 === cmd.name){
-            return;
-        }
-        //my.log("cmd="+ cmd.name);
-        switch (cmd.name){
-            case "add":
-                if(! cmd.playerName){
-                    cmd.playerName = "An unnamed cell";
+            ],
+            f = {
+                'ogario-v3': {
+                    'name': 'OGARio v3',
+                    'darkTheme': true,
+                    'mainColor': '#01d9cc',
+                    'bgColor': '#000a11',
+                    'bordersColor': '#01d9cc',
+                    'gridColor': '#00243e',
+                    'sectorsColor': '#00243e',
+                    'namesColor': '#ffffff',
+                    'namesStrokeColor': '#000000',
+                    'massColor': '#ffffff',
+                    'massStrokeColor': '#000000',
+                    'virusColor': '#002f52',
+                    'virusStrokeColor': '#00b9e8',
+                    'virusGlowColor': '#fff',
+                    'mVirusColor': '#ce6363',
+                    'mVirusStrokeColor': '#b95959',
+                    'foodColor': '#5000ff',
+                    'teammatesIndColor': '#ffffff',
+                    'cursorTrackingColor': '#ffffff',
+                    'splitRangeColor': '#ffffff',
+                    'safeAreaColor': '#ffffff',
+                    'dangerAreaColor': '#bf00aa',
+                    'namesFont': 'ubuntu-bold',
+                    'massFont': 'ubuntu-bold',
+                    'sectorsFont': 'ubuntu',
+                    'namesScale': 1,
+                    'massScale': 3,
+                    'foodSize': 5,
+                    'bordersWidth': 40,
+                    'sectorsWidth': 40,
+                    'sectorsFontSize': 1200,
+                    'cellsAlpha': 0.9,
+                    'skinsAlpha': 0.7,
+                    'virusAlpha': 0.6,
+                    'textAlpha': 1,
+                    'virusStrokeSize': 20,
+                    "virusGlowSize": "#fff",
+                    "virusGlowSize": 14,
+                    "borderGlowSize": 14,
+                    'menuPreset': 'ogario-v3',
+                    'menuMainColor': '#01d9cc',
+                    'menuBtnTextColor': '#ffffff',
+                    'menuPanelColor': '#00243e',
+                    'menuPanelColor2': '#002f52',
+                    'menuTextColor': '#ffffff',
+                    'menuTextColor2': '#8096a7',
+                    'btn1Color': '#018cf6',
+                    'btn1Color2': '#0176ce',
+                    'btn2Color': '#00b9e8',
+                    'btn2Color2': '#0099c0',
+                    'btn3Color': '#8d5fe6',
+                    'btn3Color2': '#814ee3',
+                    'btn4Color': '#bf00aa',
+                    'btn4Color2': '#a80096',
+                    'menuBg': 'https://jimboy3100.github.io/banners/static/img/pattern.png',
+                    'menuOpacity': 0.96,
+                    'hudMainColor': '#01d9cc',
+                    'hudColor': 'rgba(0,0,0,0.4)',
+                    'hudTextColor': '#ffffff',
+                    'statsHudColor': '#ffffff',
+                    'timeHudColor': '#01d9cc',
+                    'top5MassColor': '#bf00aa',
+                    'lbMeColor': '#bf00aa',
+                    'lbTeammateColor': '#018cf6',
+                    'hudFont': 'ubuntu-bold',
+                    'hudScale': 1,
+                    'messageColor': 'rgba(0,0,0,0.4)',
+                    'messageTextColor': '#ffffff',
+                    'messageTimeColor': '#018cf6',
+                    'messageNickColor': '#01d9cc',
+                    'commandsColor': 'rgba(191,0,170,0.9)',
+                    'commandsTextColor': '#ffffff',
+                    'commandsTimeColor': '#bf00aa',
+                    'commandsNickColor': '#ffffff',
+                    'chatBoxColor': 'rgba(0,0,0,0.4)',
+                    'chatScale': 1,
+                    'miniMapSectorsColor': '#ffffff',
+                    'miniMapSectorColor': '#01d9cc',
+                    'miniMapGuidesColor': '#bf00aa',
+                    'miniMapNickColor': '#ffffff',
+                    'miniMapNickStrokeColor': '#000000',
+                    'miniMapMyCellColor': '#ffffff',
+                    'miniMapMyCellStrokeColor': '#bf00aa',
+                    'miniMapTeammatesColor': '#01d9cc',
+                    'miniMapDeathLocationColor': '#bf00aa',
+                    'miniMapFont': 'ubuntu-bold',
+                    'miniMapNickFont': 'ubuntu-bold',
+                    'miniMapWidth': 240,
+                    'miniMapSectorsOpacity': 0.1,
+                    'miniMapNickSize': 11,
+                    'miniMapNickStrokeSize': 2,
+                    'miniMapMyCellSize': 7.5,
+                    'miniMapMyCellStrokeSize': 4,
+                    'miniMapTeammatesSize': 5.5,
+                    'customBackground': '',
+                    'customCursor': 'https://jimboy3100.github.io/cursors/cursor_02.cur'
+                },
+                'ogario-orange': {
+                    'name': 'OGARio v2',
+                    'darkTheme': true,
+                    'mainColor': '#ff7800',
+                    'bgColor': '#111111',
+                    'bordersColor': '#ff7800',
+                    'gridColor': '#292929',
+                    'sectorsColor': '#292929',
+                    'namesColor': '#ffffff',
+                    'namesStrokeColor': '#000000',
+                    'massColor': '#ffffff',
+                    'massStrokeColor': '#000000',
+                    'virusColor': '#666666',
+                    'virusStrokeColor': '#666666',
+                    'mVirusColor': '#ce6363',
+                    'mVirusStrokeColor': '#b95959',
+                    'foodColor': '#e16400',
+                    'hudMainColor': '#ff7800',
+                    'statsHudColor': '#ff7800',
+                    'top5MassColor': '#ff7800',
+                    'timeHudColor': '#ff7800',
+                    'messageNickColor': '#ff7800',
+                    'commandsColor': 'rgba(255,120,0,0.9)',
+                    'commandsTimeColor': '#ff7800',
+                    'commandsTextColor': '#ffffff',
+                    'miniMapSectorsColor': '#ffffff',
+                    'miniMapSectorColor': '#ff7800',
+                    'miniMapGuidesColor': '#ff7800',
+                    'miniMapMyCellColor': '#ffffff',
+                    'miniMapMyCellStrokeColor': '#ff7800',
+                    'miniMapTeammatesColor': '#ff7800',
+                    'miniMapDeathLocationColor': '#ff7800',
+                    'miniMapSectorsOpacity': 0.1
+                },
+                'ogario-gold': {
+                    'name': 'OGARio LE',
+                    'darkTheme': true,
+                    'mainColor': '#b5a642',
+                    'bgColor': '#000000',
+                    'bordersColor': '#b5a642',
+                    'gridColor': '#111111',
+                    'sectorsColor': '#111111',
+                    'namesColor': '#ffffff',
+                    'namesStrokeColor': '#000000',
+                    'massColor': '#ffffff',
+                    'massStrokeColor': '#000000',
+                    'virusColor': '#666666',
+                    'virusStrokeColor': '#666666',
+                    'mVirusColor': '#ce6363',
+                    'mVirusStrokeColor': '#b95959',
+                    'foodColor': '#998c36',
+                    'hudMainColor': '#b5a642',
+                    'statsHudColor': '#b5a642',
+                    'top5MassColor': '#b5a642',
+                    'timeHudColor': '#b5a642',
+                    'messageNickColor': '#b5a642',
+                    'commandsColor': 'rgba(181,166,66,0.9)',
+                    'commandsTimeColor': '#b5a642',
+                    'commandsTextColor': '#ffffff',
+                    'miniMapSectorsColor': '#ffffff',
+                    'miniMapSectorColor': '#b5a642',
+                    'miniMapGuidesColor': '#b5a642',
+                    'miniMapMyCellColor': '#ffffff',
+                    'miniMapMyCellStrokeColor': '#b5a642',
+                    'miniMapTeammatesColor': '#b5a642',
+                    'miniMapDeathLocationColor': '#b5a642',
+                    'miniMapSectorsOpacity': 0.1
+                },
+                'sniikz-style': {
+                    'name': 'SniiKz\'s Style',
+                    'darkTheme': true,
+                    'mainColor': '#01d9cc',
+                    'bgColor': '#000000',
+                    'bordersColor': '#ffffff',
+                    'gridColor': '#00243e',
+                    'sectorsColor': '#00243e',
+                    'namesColor': '#ffffff',
+                    'namesStrokeColor': '#000000',
+                    'massColor': '#ffffff',
+                    'massStrokeColor': '#000000',
+                    'virusColor': '#3b3b3b',
+                    'virusStrokeColor': '#ffffff',
+                    'mVirusColor': '#ce6363',
+                    'mVirusStrokeColor': '#b95959',
+                    'foodColor': '#5000ff',
+                    'teammatesIndColor': '#ffffff',
+                    'cursorTrackingColor': '#ffffff',
+                    'splitRangeColor': '#ffffff',
+                    'safeAreaColor': '#ffffff',
+                    'dangerAreaColor': '#bf00aa',
+                    'massScale': 4,
+                    'foodSize': 1,
+                    'bordersWidth': 40,
+                    'sectorsWidth': 40,
+                    'sectorsFontSize': 1200,
+                    'cellsAlpha': 0.99,
+                    'skinsAlpha': 0.7,
+                    'virusAlpha': 0.4,
+                    'virusStrokeSize': 10,
+                    "virusStrokeSize": 20,
+                    "virusGlowSize": 14,
+                    "borderGlowSize": 14,
+                    'menuPreset': 'ogario-v3',
+                    'menuMainColor': '#fc0079',
+                    'menuBtnTextColor': '#ffffff',
+                    'menuPanelColor': '#050008',
+                    'menuPanelColor2': '#1d0526',
+                    'menuTextColor': '#ffffff',
+                    'menuTextColor2': '#65458f',
+                    'btn1Color': '#4f0242',
+                    'btn1Color2': '#3b0431',
+                    'btn2Color': '#6b0036',
+                    'btn2Color2': '#4d0227',
+                    'btn3Color': '#aa084e',
+                    'btn3Color2': '#80063b',
+                    'btn4Color': '#aa084e',
+                    'btn4Color2': '#8a063f',
+                    'menuBg': 'https://jimboy3100.github.io/banners/static/img/pattern.png',
+                    'menuOpacity': 1,
+                    'hudMainColor': '#5974ff',
+                    'hudColor': 'rgba(36,36,36,0.49)',
+                    'hudTextColor': '#ffffff',
+                    'statsHudColor': '#ffffff',
+                    'timeHudColor': '#737373',
+                    'top5MassColor': '#1fe000',
+                    'lbMeColor': '#bf00aa',
+                    'lbTeammateColor': '#018cf6',
+                    'hudScale': 1.15,
+                    'messageColor': 'rgba(0,0,0,0.4)',
+                    'messageTextColor': '#e8e8e8',
+                    'messageTimeColor': '#545454',
+                    'messageNickColor': '#05ff00',
+                    'commandsColor': 'rgba(36,36,36,0.9)',
+                    'commandsTextColor': '#ffffff',
+                    'commandsTimeColor': '#545454',
+                    'commandsNickColor': '#ffffff',
+                    'chatBoxColor': 'rgba(0,0,0,0.4)',
+                    'chatScale': 1,
+                    'miniMapSectorsColor': '#ffffff',
+                    'miniMapSectorColor': '#000000',
+                    'miniMapGuidesColor': '#ff00a8',
+                    'miniMapNickColor': '#ffffff',
+                    'miniMapNickStrokeColor': '#4d4d4d',
+                    'miniMapMyCellColor': '#f0ff3d',
+                    'miniMapMyCellStrokeColor': '#acba07',
+                    'miniMapTeammatesColor': '#305eff',
+                    'miniMapDeathLocationColor': '#2b2b2b',
+                    'miniMapWidth': 250,
+                    'miniMapSectorsOpacity': 0.1,
+                    'miniMapNickSize': 9,
+                    'miniMapNickStrokeSize': 0,
+                    'miniMapMyCellSize': 5,
+                    'miniMapMyCellStrokeSize': 0,
+                    'miniMapTeammatesSize': 5,
+                    'customBackground': '',
+                    'customCursor': 'https://jimboy3100.github.io/cursors/cursor_01.cur'
+                },
+                'hkg-style': {
+                    'name': 'HKG Style',
+                    'darkTheme': true,
+                    'mainColor': '#651fff',
+                    'bgColor': '#000000',
+                    'bordersColor': '#ffffff',
+                    'gridColor': '#111111',
+                    'sectorsColor': '#111111',
+                    'namesColor': '#ffffff',
+                    'namesStrokeColor': '#000000',
+                    'massColor': '#ffffff',
+                    'massStrokeColor': '#000000',
+                    'virusColor': '#666666',
+                    'virusStrokeColor': '#666666',
+                    'mVirusColor': '#ce6363',
+                    'mVirusStrokeColor': '#b95959',
+                    'foodColor': '#651fff',
+                    'hudMainColor': '#651fff',
+                    'statsHudColor': '#651fff',
+                    'top5MassColor': '#651fff',
+                    'timeHudColor': '#651fff',
+                    'messageNickColor': '#651fff',
+                    'commandsColor': 'rgba(101,31,255,0.9)',
+                    'commandsTimeColor': '#651fff',
+                    'commandsTextColor': '#ffffff',
+                    'miniMapSectorsColor': '#ffffff',
+                    'miniMapSectorColor': '#651fff',
+                    'miniMapGuidesColor': '#651fff',
+                    'miniMapMyCellColor': '#ffffff',
+                    'miniMapMyCellStrokeColor': '#651fff',
+                    'miniMapTeammatesColor': '#651fff',
+                    'miniMapDeathLocationColor': '#651fff',
+                    'miniMapSectorsOpacity': 0.1
+                },
+                'agario-light': {
+                    'name': 'Agar.io Light',
+                    'darkTheme': false,
+                    'mainColor': '#ffffff',
+                    'bgColor': '#f2fbff',
+                    'bordersColor': '#858a8c',
+                    'gridColor': '#ced6d9',
+                    'sectorsColor': '#ced6d9',
+                    'namesColor': '#ffffff',
+                    'namesStrokeColor': '#000000',
+                    'massColor': '#ffffff',
+                    'massStrokeColor': '#000000',
+                    'virusColor': '#33ff33',
+                    'virusStrokeColor': '#2de52d',
+                    'mVirusColor': '#ce6363',
+                    'mVirusStrokeColor': '#b95959',
+                    'foodColor': '#2de52d',
+                    'hudMainColor': '#ffffff',
+                    'statsHudColor': '#ffffff',
+                    'top5MassColor': '#ffffff',
+                    'timeHudColor': '#ffffff',
+                    'messageNickColor': '#ffffff',
+                    'commandsColor': 'rgba(255,255,255,0.9)',
+                    'commandsTimeColor': '#ffffff',
+                    'commandsTextColor': '#000000',
+                    'miniMapSectorsColor': '#ffffff',
+                    'miniMapSectorColor': '#ffffff',
+                    'miniMapGuidesColor': '#ffffff',
+                    'miniMapMyCellColor': '#ffffff',
+                    'miniMapMyCellStrokeColor': '#ffffff',
+                    'miniMapTeammatesColor': '#ffffff',
+                    'miniMapDeathLocationColor': '#ffffff',
+                    'miniMapSectorsOpacity': 0.25
+                },
+                'agario-dark': {
+                    'name': 'Agar.io Dark',
+                    'darkTheme': true,
+                    'mainColor': '#ffffff',
+                    'bgColor': '#111111',
+                    'bordersColor': '#999999',
+                    'gridColor': '#333333',
+                    'sectorsColor': '#333333',
+                    'namesColor': '#ffffff',
+                    'namesStrokeColor': '#000000',
+                    'massColor': '#ffffff',
+                    'massStrokeColor': '#000000',
+                    'virusColor': '#33ff33',
+                    'virusStrokeColor': '#2de52d',
+                    'mVirusColor': '#ce6363',
+                    'mVirusStrokeColor': '#b95959',
+                    'foodColor': '#2de52d',
+                    'hudMainColor': '#ffffff',
+                    'statsHudColor': '#ffffff',
+                    'top5MassColor': '#ffffff',
+                    'timeHudColor': '#ffffff',
+                    'messageNickColor': '#ffffff',
+                    'commandsColor': 'rgba(255,255,255,0.9)',
+                    'commandsTimeColor': '#ffffff',
+                    'commandsTextColor': '#ffffff',
+                    'miniMapSectorsColor': '#ffffff',
+                    'miniMapSectorColor': '#ffffff',
+                    'miniMapGuidesColor': '#ffffff',
+                    'miniMapMyCellColor': '#ffffff',
+                    'miniMapMyCellStrokeColor': '#ffffff',
+                    'miniMapTeammatesColor': '#ffffff',
+                    'miniMapDeathLocationColor': '#ffffff',
+                    'miniMapSectorsOpacity': 0.1
                 }
-				
-                my.addBallToMinimap(!1, cmd.socketID, cmd.playerName, cmd.x, cmd.y, cfg.tgar_color, !0);
-                break;
-            case "remove":
-                my.removeBallFromMinimap(cmd.socketID);
-                break;
-            case "position":
-                my.moveBallOnMinimap(cmd.socketID, cmd.x, cmd.y);
-                break;
-            case "customSkins":				
-                window.agtoolball=cmd.customs;
-				if(legendmod.showCustomSkins){
-				Object.keys(window.agtoolball).forEach(function(key) {
-				console.log("Custom skin from agar tool added: " + key.split("%")[0] +"  "+ window.agtoolball[key]);
-				if (key.split("%")[0]!=0){
-				core.registerSkin(key.split("%")[0], null, window.agtoolball[key], 1, null)}
-				});	
-				}
-                break;				
-            case "reset":
-                my.resetMinimap();
-                break;
-            case "chat":
-				//console.log(cmd);
-                if(! cmd.playerName){
-                    cmd.playerName = "An unnamed cell";
+            },
+            m = {
+                'ogario-v3': {
+                    'name': 'OGARio v3',
+                    'menuMainColor': '#01d9cc',
+                    'menuBtnTextColor': '#ffffff',
+                    'menuPanelColor': '#00243e',
+                    'menuPanelColor2': '#002f52',
+                    'menuTextColor': '#ffffff',
+                    'menuTextColor2': '#8096a7',
+                    'btn1Color': '#018cf6',
+                    'btn1Color2': '#0176ce',
+                    'btn2Color': '#00b9e8',
+                    'btn2Color2': '#0099c0',
+                    'btn3Color': '#8d5fe6',
+                    'btn3Color2': '#814ee3',
+                    'btn4Color': '#f300d8',
+                    'btn4Color2': '#df00c6',
+                    'menuBg': 'https://jimboy3100.github.io/banners/static/img/pattern.png'
+                },
+                'ogario-v2': {
+                    'name': 'OGARio v2',
+                    'menuMainColor': '#ff7800',
+                    'menuBtnTextColor': '#ffffff',
+                    'menuPanelColor': '#222222',
+                    'menuPanelColor2': '#333333',
+                    'menuTextColor': '#bbbbbb',
+                    'menuTextColor2': '#bbbbbb',
+                    'btn1Color': '#428bca',
+                    'btn1Color2': '#3071a9',
+                    'btn2Color': '#5cb85c',
+                    'btn2Color2': '#449d44',
+                    'btn3Color': '#f0ad4e',
+                    'btn3Color2': '#ec971f',
+                    'btn4Color': '#d9534f',
+                    'btn4Color2': '#c9302c',
+                    'menuBg': ''
+                },
+                'agario': {
+                    'name': 'Agar.io',
+                    'menuMainColor': '#5bc0de',
+                    'menuBtnTextColor': '#ffffff',
+                    'menuPanelColor': '#ffffff',
+                    'menuPanelColor2': '#cccccc',
+                    'menuTextColor': '#333333',
+                    'menuTextColor2': '#999999',
+                    'btn1Color': '#428bca',
+                    'btn1Color2': '#3071a9',
+                    'btn2Color': '#5cb85c',
+                    'btn2Color2': '#449d44',
+                    'btn3Color': '#f0ad4e',
+                    'btn3Color2': '#ec971f',
+                    'btn4Color': '#d9534f',
+                    'btn4Color2': '#c9302c',
+                    'menuBg': ''
                 }
-//                my.log("chat:"+ cmd.playerName +":"+ cmd.message);
-                my.log(""+ cmd.playerName +": "+ cmd.message);				
-                my.ogarChatAdd(cmd.playerName, cmd.message);
-                break;
-            case "command":
-				//console.log(cmd);
-                if(! cmd.playerName){
-                    cmd.playerName = "An unnamed cell";
-                }
-//                my.log("chat:"+ cmd.playerName +":"+ cmd.message);
-                my.log("?"+ cmd.playerName +": "+ cmd.message);				
-                my.ogarChatAdd(cmd.playerName, cmd.message);
-                break;	
-			case "ls":
-				console.log("Unknown command ls: "+ cmd.message);
-				window.agtoolball1
-				break;
-			case "hc":
-				console.log("Unknown command ls: "+ cmd.message);
-				break;				
-            default:
-                my.log("Received a command with an unknown name: " + cmd.name);
-        }
-    };
-    my.sendMinimapServerCommand = function(e){
-        if(stat.minimap_socket && stat.minimap_socket.connected){
-            stat.minimap_socket.emit("command", e);
-            return true;
-        }
-        return false;
-    };
-    my.resetMinimap = function(){
-        //$("#messageTableTemp").empty(), $("#messageTableComplete").empty();
-        for (var e in stat.minimapBalls){
-            if(! stat.minimapBalls[e].isDefault){
-                delete stat.minimapBalls[e];
-            }
-        }
-        // test
-        //my.addBallToMinimap(true, "a", "0x0", 0, 0, "#FF0000", !0);
-        //my.addBallToMinimap(true, "b", "UL3000", -3000, -3000, "#FF0000", !0);
-        //my.addBallToMinimap(true, "c", "UR3000", -3000,  3000, "#FF0000", !0);
-        //my.addBallToMinimap(true, "d", "DR3000",  3000,  3000, "#FF0000", !0);
-        //my.addBallToMinimap(true, "e", "DL3000",  3000, -3000, "#FF0000", !0);
-        //my.addBallToMinimap(true, "f", "TL", -7000,  -7000, "#FF0000", !0);
-        //my.addBallToMinimap(true, "g", "BR",  7000,   7000, "#FF0000", !0);
-    };
-    my.addBallToMinimap = function(isDefault, id, name, x, y, color, visible){
-        stat.minimapBalls[id] = new MinimapBall(isDefault, name, x, y, color, visible);
-    };
-    my.removeBallFromMinimap = function (id){
-        if(stat.minimapBalls[id]){
-            delete stat.minimapBalls[id];
-        }
-    };
-    my.moveBallOnMinimap = function(id, x, y){
-        if(stat.minimapBalls[id]){
-            stat.minimapBalls[id].x = x;
-            stat.minimapBalls[id].y = y;
-        }
-    };
-    function MinimapBall(isDefault, name, x, y, color, visible) {
-        this.isDefault = isDefault;
-        this.name = name;
-        this.x = x;
-        this.y = y;
-        this.lastX = x;
-        this.lastY = y;
-        this.color = color;
-        this.visible = visible;
-    }
-    my.tgarAlive = function(alive){
-        stat.alive = alive;
-        if(cfg.ogar_user){
-            //my.log("alive -> "+ stat.alive +" name="+ cfg.ogar_prefix + stat.nick);
-            if(stat.alive){
-                stat.alive = my.sendMinimapServerCommand({
-                    name: "alive",
-                    playerName: cfg.ogar_prefix + stat.nick,
-					customSkins: $("#skin").val()
-                });
-                //my.log("alive >>"+ stat.alive);
-            }else{
-                my.sendMinimapServerCommand({
-                    name: "dead"
-                });
-            }
-        }
-    };
-    my.tgarReposition = function(){
-        if(cfg.ogar_user && global.ogario){
-            my.sendMinimapServerCommand({
-                name: "position",
-                x: ogario.playerX + ogario.mapOffsetX,
-                y: ogario.playerY + ogario.mapOffsetY
-            });
-        }
-    };
-
-    // =====  Process Legend Mod  ======
-    my.ogarChatAdd = function(nick, msg){
-		if ((~msg.indexOf('LM:'))==false) {
-        var time_txt = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
-        var user_icon = my.tool_symbol;
-        var chat_html = '<div class="message">'+
-            '<span class="message-time">['+ time_txt +'] </span>'+
-            //user_icon +
-            //'<span class="message-nick">'+ escapeHtml(nick) +': </span>'+
-            '<span style="color:'+ cfg.tgar_color +'; font-weight:700;">'+
-                user_icon +' '+ escapeHtml(nick) +'</span>: '+
-            '<span class="message-text">' + escapeHtml(msg) + '</span>'+
-            '</div>';
-        $("#chat-box").append(chat_html);
-        $("#chat-box").perfectScrollbar('update');
-        $('#chat-box').animate({
-            'scrollTop': $("#chat-box").prop("scrollHeight")
-        }, 0x1f4);
-		}
-    };
-    my.ogarMinimapUpdate = function(){
-		window.agartoolteammatenicks=[];
-        var minimap_elem = document.getElementById("ao2t-minimap");
-        var minimapWidth = minimap_elem.width;
-        var minimapHeight = minimap_elem.height;
-        var minimapMulti = (minimapWidth - 0x12) / my.ogarGetMapSize();
-        var mapOffset = my.ogarGetMapOffset();
-        //var mapOffsetX = ogario.mapOffset - ogario.mapOffsetX;
-        //var mapOffsetY = ogario.mapOffset - ogario.mapOffsetY;
-        stat.minimapOffsetX = 0x12 / 2;
-        stat.minimapOffsetY = stat.minimapOffsetX + (minimapHeight - minimapWidth);
-        var mapOffsetX = stat.minimapOffsetX;
-        var mapOffsetY = stat.minimapOffsetY;
-        var mapOffsetT = -(0x2 * stat.minimapTeammatesSize + 2);
-        var ctx = minimap_elem.getContext('2d');
-        ctx.clearRect(0, 0, minimapWidth, minimapHeight);
-        ctx.font = stat.minimapNickFont;
-        var user_txt = '';
-        var sep = '1. ';
-        var keys = Object.keys(stat.minimapBalls).sort();
-        if(keys.length === 0){
-            user_txt = "no tgar user";
-        }
-		var count=2;
-        for(var key; (key = keys.shift()); ){
-
-            var ball = stat.minimapBalls[key];
+            },
+            g = {
+                'preset': 'ogario-v3',
+                'darkTheme': true,
+                'mainColor': '#01d9cc',
+                'bgColor': '#000a11',
+                'bordersColor': '#01d9cc',
+                "borderGlowColor": "#ffffff",
+                'gridColor': '#00243e',
+                'sectorsColor': '#00243e',
+                'namesColor': '#ffffff',
+                'namesStrokeColor': '#000000',
+                'massColor': '#ffffff',
+                'massStrokeColor': '#000000',
+                'virusColor': '#002f52',
+                'virusStrokeColor': '#00b9e8',
+                'mVirusColor': '#ce6363',
+                'mVirusStrokeColor': '#b95959',
+                'foodColor': '#5000ff',
+                'teammatesIndColor': '#ffffff',
+                'cursorTrackingColor': '#ffffff',
+                'splitRangeColor': '#ffffff',
+                'ghostCellsColor': '#ffffff',
+                'safeAreaColor': '#ffffff',
+                'dangerAreaColor': '#bf00aa',
+                'namesFont': 'ubuntu-bold',
+                'namesFontFamily': 'Ubuntu',
+                'namesFontWeight': 700,
+                'massFont': 'ubuntu-bold',
+                'massFontFamily': 'Ubuntu',
+                'massFontWeight': 700,
+                'sectorsFont': 'ubuntu',
+                'sectorsFontFamily': 'Ubuntu',
+                'sectorsFontWeight': 400,
+                'sectorsX': 5,
+                'sectorsY': 5,
+                'namesScale': 1,
+                'massScale': 3,
+                'virMassScale': 3,
+                'strokeScale': 1,
+                'foodSize': 5,
+                'bordersWidth': 40,
+                'sectorsWidth': 40,
+                'sectorsFontSize': 1200,
+                'cellsAlpha': 0.9,
+                'skinsAlpha': 0.7,
+                'virusAlpha': 0.6,
+                'textAlpha': 1,
+                'virusStrokeSize': 20,
+                'virusGlowColor': '#fff',
+                'virusGlowSize': 14,
+                'borderGlowSize': 14,
+                'ghostCellsAlpha': 0.3,
+                'virusStrokeSize': 14,
+                'menuPreset': 'ogario-v3',
+                'menuMainColor': '#01d9cc',
+                'menuBtnTextColor': '#ffffff',
+                'menuPanelColor': '#00243e',
+                'menuPanelColor2': '#002f52',
+                'menuTextColor': '#ffffff',
+                'menuTextColor2': '#8096a7',
+                'btn1Color': '#018cf6',
+                'btn1Color2': '#0176ce',
+                'btn2Color': '#00b9e8',
+                'btn2Color2': '#0099c0',
+                'btn3Color': '#8d5fe6',
+                'btn3Color2': '#814ee3',
+                'btn4Color': '#bf00aa',
+                'btn4Color2': '#a80096',
+                'menuBg': 'https://jimboy3100.github.io/banners/static/img/pattern.png',
+                'menuOpacity': 0.96,
+                'hudMainColor': '#01d9cc',
+                'hudColor': 'rgba(0,0,0,0.4)',
+                'hudTextColor': '#ffffff',
+                'statsHudColor': '#ffffff',
+                'timeHudColor': '#01d9cc',
+                'top5MassColor': '#bf00aa',
+                'lbMeColor': '#bf00aa',
+                'lbTeammateColor': '#018cf6',
+                'hudFont': 'ubuntu-bold',
+                'hudFontFamily': 'Ubuntu',
+                'hudFontWeight': 700,
+                'hudScale': 1,
+                'messageColor': 'rgba(0,0,0,0.4)',
+                'messageTextColor': '#ffffff',
+                'messageTimeColor': '#018cf6',
+                'messageNickColor': '#01d9cc',
+                'commandsColor': 'rgba(191,0,170,0.9)',
+                'commandsTextColor': '#ffffff',
+                'commandsTimeColor': '#bf00aa',
+                'commandsNickColor': '#ffffff',
+                'chatBoxColor': 'rgba(0,0,0,0.4)',
+                'chatScale': 1,
+                'miniMapSectorsColor': '#ffffff',
+                'miniMapSectorColor': '#01d9cc',
+                'miniMapGuidesColor': '#bf00aa',
+                'miniMapNickColor': '#ffffff',
+                'miniMapNickStrokeColor': '#000000',
+                'miniMapMyCellColor': '#ffffff',
+                'miniMapMyCellStrokeColor': '#bf00aa',
+                'miniMapTeammatesColor': '#01d9cc',
+                'miniMapDeathLocationColor': '#bf00aa',
+                'miniMapGhostCellsColor': '#ffffff',
+                ////
+                "color": "#fff",
+                //"commanderImage" : "https://i.imgur.com/wQKUDB3.png",				
+                "commanderImage": "https://jimboy3100.github.io/banners/drawCommander.png",
+                "commanderImage1": "https://jimboy3100.github.io/banners/drawCommander1.png",
+                "commanderImage2": "https://jimboy3100.github.io/banners/drawCommander2.png",
+                "commanderImage3": "https://jimboy3100.github.io/banners/drawCommander3.png",
+                "commanderImage4": "https://jimboy3100.github.io/banners/drawCommander4.png",
+                "commanderImage5": "https://jimboy3100.github.io/banners/drawCommander5.png",	
+				"commanderImage6": "https://jimboy3100.github.io/banners/iconJustWatchPro.png",	
+				"commanderImageDyingLight": "https://jimboy3100.github.io/banners/icondyinglightzombie.png",	
+				"commanderImageDyingLightvirus": "https://jimboy3100.github.io/banners/icondyinglightvirus.png",
 			
-			///////Public Array for agar tool teammates 
-			window.agartoolteammatenicks.push(escapeHtml(ball.name));
-            user_txt += sep + escapeHtml(ball.name);
-//			user_txt += count + ": ";
-            sep = '<br/>'+ count + ". ";
-//			user_txt += count + ": ";
-			count++;
-			
-            if(cfg.minimap_show){
-                var name = cfg.tgar_prefix + ball.name;
-                var mapX = (ball.x + mapOffset) * minimapMulti + mapOffsetX;
-                var mapY = (ball.y + mapOffset) * minimapMulti + mapOffsetY;
-                ctx.textAlign = 'center';
-                ctx.lineWidth = stat.minimapNickStrokeSize;
-                ctx.strokeStyle = stat.minimapNickStrokeColor;
-                ctx.strokeText(name, mapX, mapY + mapOffsetT);
-                ctx.fillStyle = cfg.tgar_color; // stat.minimapNickColor
-                ctx.fillText(name, mapX, mapY + mapOffsetT);
-                ctx.beginPath();
-                ctx.arc(mapX, mapY, stat.minimapTeammatesSize, 0x0, stat.pi2, !0x1);
-                ctx.closePath();
-                ctx.fillStyle = ball.color;
-                ctx.fill();
-            }
-        }
-        if(cfg.user_show){
-            $('#ao2t-top5').html(user_txt);
-        }
-    };
-    // --- for Legend Mod Express ----
-    my.ogarIsAlive = function(){
-        return global.ogario ? global.ogario.play : false;
-    };
-    my.ogarGetMapSize = function(){
-        return global.ogario ? global.ogario.mapSize : stat.mapSize;
-    };
-    my.ogarGetMapOffset = function(){
-        return global.ogario ? global.ogario.mapOffset : stat.mapOffset;
-    };
-
-    // =====  Other processing ======
-    my.cfg_save = function(){
-        var cfg_new = {};
-        $('[data-ao2t-config]').each(function(){
-            var elem = $(this);
-            var type = elem.prop('type');
-            var name = elem.attr('data-ao2t-config');
-            var value;
-            if(type === "checkbox"){
-                value = elem.prop('checked');
-            }else{
-                value = $(this).val();
-            }
-            cfg_new[name] = value;
-        });
-        return cfg_new;
-    };
-    my.cfg_load = function(cfg_new){
-        $('[data-ao2t-config]').each(function(){
-            var elem = $(this);
-            var type = elem.prop('type');
-            var name = elem.attr('data-ao2t-config');
-            if(cfg_new.hasOwnProperty(name)){
-                var value = cfg_new[name];
-                if(type === "checkbox"){
-                    elem.prop('checked', value);
-                }else{
-                    $(this).val(value);
-                }
-            }
-        });
-    };
-	my.storage_getValue = function(name, defval_){
-		return	global.localStorage[my.name +"_"+ name] || defval_;
-	};
-	my.storage_setValue = function(name, value){
-		global.localStorage[my.name +"_"+ name] = value;
-	};
-	function loadScript(url, callback){
-		var script = document.createElement("script");
-		script.type = "text/javascript";
-		script.src = url;
-		if(typeof callback !== 'undefined'){
-			script.onload = callback;
-		}
-		document.head.appendChild(script);
-	}
-    function escapeHtml(e) {
-        return e.replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
-
-
-
-
-
-
-
-
-
-
-//setTimeout(function() {
-$('#ao2t-capture').click();
-
-$('#message').keydown(function(e){
-    if (e.keyCode === 13) { // If Enter key pressed
-		
-		$('#ao2t-message').click(); 
-//		$('#message').val("");		
-    }
-});	
-//}, 500);	
-
-
-
-}
-
-function fixservbtn(){
-$("#clantag").blur(function() {
-			Universalchatfix();
-        });	
-$("#server-connect").click(function() {
-        setTimeout(function() {
-		Universalchatfix();
-			}, 1000);
-    });
-/*$("#server-reconnect").click(function() {
-        setTimeout(function() {
-		Universalchatfix();
-			}, 200);
-    });*/
-$("#server-join").click(function() {
-        setTimeout(function() {
-		Universalchatfix();
-			}, 1000);
-    });
-$('#tag').blur(function() {
-			setTimeout(function() {
-			Universalchatfix();
-			}, 1000);
-        });
-$("#gamemode").change(function () {
-			setTimeout(function() {
-			Universalchatfix();
-			}, 1000);
-		});
-$("#region").change(function () {
-			setTimeout(function() {
-			Universalchatfix();
-			}, 1000);
-		});
-$("#join-party-btn-2").click(function () {
-			setTimeout(function() {
-			Universalchatfix();
-			}, 1000);
-		});
-$("#create-party-btn-2").click(function () {
-			setTimeout(function() {
-			Universalchatfix();
-			}, 1000);
-		});
-}
-function fixservbtn2(){
-$("#server-reconnect").click(function() {
-        setTimeout(function() {
-		Universalchatfix();
-			}, 1000);
-    });
-}
-
-function Universalchatfix(){
-if ($("#ao2t-capture").hasClass("connected")){
-	$("#ao2t-capture").click();
-
-	$("#ao2t-capture").click();
-}
-}
-function showMenu() {
-	$("#overlays").show();
-//$("#overlays").css("right", "0em");
-
-$('a[href="#main-panel"]').click();
-}
-function showMenu2() {
-	$("#overlays").show();
-//$("#overlays").css("right", "-999em");
-$('a[href="#main-panel"]').click();
-}
-
-function hideMenu() {
-	$("#overlays").hide();
-    //$("#overlays").css("left", "-999em");
-}
-function hideMenu2() {
-    $("#overlays").hide();
-}
-
-
-function showSearchHud() {
-    getInfo();
-    $("#backgroundFade").fadeIn();
-    $("#notes").fadeIn();
-    $("#statsInfo").fadeIn();
-    $("#searchHud").fadeIn();
-    $("#searchLog").fadeIn();
-}	
-function hideSearchHud() {
-    $("#searchHud").fadeOut();
-    $("#backgroundFade").fadeOut();
-    $("#notes").fadeOut();
-    $("#statsInfo").fadeOut();
-    $("#searchLog").fadeOut();
-}
-function appendLog(message) {
-	//$("#logTitle").text("Leaderboard history");
-    var region = $("#region").val();
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-        '<span class="main-color">' + region.substring(0, 2) + '</span> &nbsp;' +
-        '<a href="javascript:void(0);" class="logEntry" data-token="' + currentToken + '" style="color: lightgrey; font-size: 14px;">' + message + '</a></p>');
-
-    $("#log p").first().show(100);
-    bumpLog();
-}
-
-/*
-function appendLog2(message, message2) {
-	$("#logTitle").text("Legend mod users (click and join)");
-    var region = $("#region").val();
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-        '<span class="main-color">' + region.substring(0, 2) + '</span> &nbsp;' +
-        '<a onclick="connectto(\`'+message2+'\`);return false;" class="logEntry" data-token="' + currentToken + '" style="color: lightgrey; font-size: 14px;">' + message + '</a></p>');
-
-    $("#log p").first().show(100);
-    bumpLog();
-}*/
-function appendLog2(message, message2) {
-	//$("#logTitle").text("Legend mod users (click and join)");
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-//        '<span class="main-color">' + region.substring(0, 2) + '</span> &nbsp;' +
-        '<a onclick="connectto(\`'+message2+'\`);return false;" class="logEntry" data-token="' + currentToken + '" style="color: lightgrey; font-size: 14px;">' + message + '</a></p>');
-
-    $("#log p").first().show(100);
-    bumpLog();
-}
-
-function appendLog3(message, message2, message3, message4) {
-	//$("#logTitle").text("Legend mod users (click and join)");
-//	console.log(message3);
-//	console.log(message4);
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-//        '<span class="main-color">' + region.substring(0, 2) + '</span> &nbsp;' +
-        '<a onclick="connectto(\`'+message2+'\`);connectto2(\`'+message3+'\`);connectto3(\`'+message4+'\`);return false;" class="logEntry" data-token="' + currentToken + '" style="color: lightgrey; font-size: 14px;">' + message + '</a></p>');
-    $("#log p").first().show(100);
-    bumpLog();
-}
-function appendLog4(message, message2) {
-	//$("#logTitle").text("Alive Servers");
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-//        '<span class="main-color">' + region.substring(0, 2) + '</span> &nbsp;' +
-        '<a onclick="connectto1a(\`'+message2+'\`);return false;" class="logEntry" data-token="' + currentToken + '" style="color: lightgrey; font-size: 14px;">' + message + '</a></p>');
-
-    $("#log p").first().show(100);
-    bumpLog();
-}
-function appendLogGraphql() {
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-        '<span class="main-color">Graphql</span> &nbsp;' +
-        '<a href="https://github.com/vbalien/agarlist/tree/master/server" target="_blank" class="logEntry" style="color: lightgrey; font-size: 14px;">by 엘련</a></p>');
-
-    $("#log p").first().show(100);
-    bumpLog();
-}
-function appendLogGraphMain() {
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-        '<span class="main-color">Main Graph</span> &nbsp;' +
-        '<a href="javascript:void(0);" target="_blank" class="logEntry" style="color: lightgrey; font-size: 14px;">by Snez</a></p>');
-
-    $("#log p").first().show(100);
-    bumpLog();
-}
-function connectto(message2){
-				$('#server-token').val(message2);
-				$('#server-join').click();
-        setTimeout(function() {
-			if ($('#server-token').val()!=$('#searchInput').val()){
-				toastr["error"]("Server not available!");
-			}
-			}, 1500);				
-}
-function connectto1a(message2){
-				$('#server-ws').val("wss://" + message2);
-				$('#server-connect').click();
-        setTimeout(function() {
-			if ($('#server-token').val()!=$('#searchInput').val()){
-				toastr["error"]("Server not available!");
-			}
-			}, 1500);					
-}
-function connectto2(message3){
-			$('#region').val(message3);		
-}
-function connectto3(message4){
-			$("#gamemode").val(message4);			
-}
-function bumpLog() {
-    $("#log").animate({
-        scrollTop: 0
-    }, "slow");
-}
-
-function PreLcCelebration() {
-var checkonetimeLc = localStorage.getItem("checkonetimeLc");
-if (checkonetimeLc == null) {
-//   if ($("#nick").val().includes("?")) {
-        var checkdate;
-        Date.prototype.yyyymmdd = function() {
-            var yyyy = this.getFullYear().toString();
-            var mm = (this.getMonth() + 1).toString(); // getMonth() is zero-based
-            var dd = this.getDate().toString();
-            return yyyy + "/" + (mm[1] ? mm : "0" + mm[0]) + "/" + (dd[1] ? dd : "0" + dd[0]); // padding
-        };
-
-        var date = new Date();
-        checkdate = date.yyyymmdd();
-        if (checkdate == "2018/11/12") {
-            LcCelebration();
-        }
-//    }
-}
-}
-
-function getInfo() {
-    $.ajax({
-        type: "GET",
-        url: "https://webbouncer-live-v6-0.agario.miniclippt.com/info",
-        datatype: "json",
-        success: function(info) {
-            //$("#currentRegion").html($('#region').val());
-            var regions = info.regions;
-            var currentRegion;
-            for (var key in regions) {
-                if (key == $('#region').val()) {
-                    currentRegion = regions[key];
-                    break;
-                }
-            }
-            //console.log(info);
-            //console.log(currentRegion);
-            if (currentRegion != undefined) {
-                $("#numPlayers").html(kFormatter(currentRegion.numPlayers));
-                $("#numServers").html(currentRegion.numRealms);
-                $("#pps").html(Math.round(currentRegion.avgPlayersPerRealm));
-            }
-            $("#totalPlayers").html(kFormatter(info.totals.numPlayers));
-        }
-    });
-}
-
-function LcCelebration() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/extras/LcHistory/LcHistoryBanner.js";
-    $("body").append(s);
-    checkonetimeLc = 1;
-    localStorage.setItem("checkonetimeLc", checkonetimeLc);
-    return checkonetimeLc;
-}
-
-function SquareAgar(){
-				var headID = document.getElementsByTagName("head")[0];
-				$(headID).append('<style type="text/css" id="RNCN">.agario-panel, .center-container, .btn, .form-control, '+
-				'.input-group-addon, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel{border-radius: 10px;}.menu-tabs,'+
-				'#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys{border-radius: 10px 10px 0 0;} #hotkeys {border-radius: 10px;} .skin, .input-group-btn, .input-group.nick {border-radius: 0 15px 15px 0;}  '+
-				'.colorpicker-element .input-group-addon i, .colorpicker-element .add-on i{ border-radius: 50%; }.agario-profile-picture { border-radius: 32px;}'+
-				'#menu-footer { border-radius: 0 0 10px 10px; } #leaderboard-hud { border-radius: 15px;} #dropDown, #dropDown2 { border-radius: 15px;} #minimap-hud { border-radius: 0 0 15px 15px;}'+
-//				'#menu-footer { border-radius: 0 0 10px 10px; } #leaderboard-hud { border-radius: 15px;} #dropDown, #dropDown2 { border-radius: 15px;} #minimap-hud { border-radius: 15px 15px 15px 15px;}'+
-				'#top5-hud{ border-radius: 15px; } #target-hud{ border-radius: 15px; } #legendAdImg, #stats-hud { border-radius: 10px; } '+
-				'#time-hud { border-radius: 10px; } </style>');	
-}
-
-
-function rotateminimapsectors() {
-    var c = document.getElementById("minimap");
-    var ctx = c.getContext("2d");
-    ctx.rotate(90 * Math.PI / 180);
-    var a = $("#minimap").height() - $("#minimap").width();
-    ctx.translate(a, -$("#minimap").height());
-    //		rotateminimap=rotateminimap+1;
-    //		if (rotateminimap==4){rotateminimap=0};
-    //	var s = document.createElement("script");s.type = "text/javascript";s.src = "https://jimboy3100.github.io/legendrotateminimap.js";$("body").append(s);
-    //		return rotateminimap;
-}
-		
-function sendicon1() {
-    if ($('#message-box').css('display') == 'block') {
-        KeyEvent.simulate(13, 13);
-    }
-    KeyEvent.simulate(13, 13);
-    $("#message").val("[img]" + pic1urlimg + "[/img]");
-    setTimeout(function() {
-        KeyEvent.simulate(13, 13);
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-    }, 50);
-}
-
-function sendicon2() {
-    if ($('#message-box').css('display') == 'block') {
-        KeyEvent.simulate(13, 13);
-    }
-    KeyEvent.simulate(13, 13);
-    $("#message").val("[img]" + pic2urlimg + "[/img]");
-    setTimeout(function() {
-        KeyEvent.simulate(13, 13);
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-    }, 50);
-}
-
-function sendicon3() {
-    if ($('#message-box').css('display') == 'block') {
-        KeyEvent.simulate(13, 13);
-    }
-    KeyEvent.simulate(13, 13);
-    $("#message").val("[img]" + pic3urlimg + "[/img]");
-    setTimeout(function() {
-        KeyEvent.simulate(13, 13);
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-    }, 50);
-}
-
-function sendicon4() {
-    if ($('#message-box').css('display') == 'block') {
-        KeyEvent.simulate(13, 13);
-    }
-    KeyEvent.simulate(13, 13);
-    $("#message").val("[img]" + pic4urlimg + "[/img]");
-    setTimeout(function() {
-        KeyEvent.simulate(13, 13);
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-    }, 50);
-}
-
-function sendicon5() {
-    if ($('#message-box').css('display') == 'block') {
-        KeyEvent.simulate(13, 13);
-    }
-    KeyEvent.simulate(13, 13);
-    $("#message").val("[img]" + pic5urlimg + "[/img]");
-    setTimeout(function() {
-        KeyEvent.simulate(13, 13);
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-    }, 50);
-}
-
-function sendicon6() {
-    if ($('#message-box').css('display') == 'block') {
-        KeyEvent.simulate(13, 13);
-    }
-    KeyEvent.simulate(13, 13);
-    $("#message").val("[img]" + pic6urlimg + "[/img]");
-    setTimeout(function() {
-        KeyEvent.simulate(13, 13);
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-    }, 50);
-}
-
-function setpic1data() {
-    localStorage.setItem("pic1dataimg", $("#pic1data").val())
-    $("#sendicon1").attr("data-original-title", $("#pic1data").val());
-}
-
-function setpic2data() {
-    localStorage.setItem("pic2dataimg", $("#pic2data").val())
-    $("#sendicon2").attr("data-original-title", $("#pic2data").val());
-}
-
-function setpic3data() {
-    localStorage.setItem("pic3dataimg", $("#pic3data").val())
-    $("#sendicon3").attr("data-original-title", $("#pic3data").val());
-}
-
-function setpic4data() {
-    localStorage.setItem("pic4dataimg", $("#pic4data").val())
-    $("#sendicon4").attr("data-original-title", $("#pic4data").val());
-}
-
-function setpic5data() {
-    localStorage.setItem("pic5dataimg", $("#pic5data").val())
-    $("#sendicon5").attr("data-original-title", $("#pic5data").val());
-}
-
-function setpic6data() {
-    localStorage.setItem("pic6dataimg", $("#pic6data").val())
-    $("#sendicon6").attr("data-original-title", $("#pic6data").val());
-}
-
-
-function sendyt1() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-        KeyEvent.simulate(13, 13);
-        $("#message").val("[yt]" + yt1url + "[/yt]");
-        setTimeout(function() {
-            KeyEvent.simulate(13, 13);
-            if ($('#message-box').css('display') == 'block') {
-                KeyEvent.simulate(13, 13);
-            }
-        }, 50);
-    } else {
-        toastr["info"](Premadeletter39);
-    }
-}
-
-function sendyt2() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-        KeyEvent.simulate(13, 13);
-        $("#message").val("[yt]" + yt2url + "[/yt]");
-        setTimeout(function() {
-            KeyEvent.simulate(13, 13);
-            if ($('#message-box').css('display') == 'block') {
-                KeyEvent.simulate(13, 13);
-            }
-        }, 50);
-    } else {
-        toastr["info"](Premadeletter39);
-    }
-}
-
-function sendyt3() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-        KeyEvent.simulate(13, 13);
-        $("#message").val("[yt]" + yt3url + "[/yt]");
-        setTimeout(function() {
-            KeyEvent.simulate(13, 13);
-            if ($('#message-box').css('display') == 'block') {
-                KeyEvent.simulate(13, 13);
-            }
-        }, 50);
-    } else {
-        toastr["info"](Premadeletter39);
-    }
-}
-
-function sendyt4() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-        KeyEvent.simulate(13, 13);
-        $("#message").val("[yt]" + yt4url + "[/yt]");
-        setTimeout(function() {
-            KeyEvent.simulate(13, 13);
-            if ($('#message-box').css('display') == 'block') {
-                KeyEvent.simulate(13, 13);
-            }
-        }, 50);
-    } else {
-        toastr["info"](Premadeletter39);
-    }
-}
-
-function sendyt5() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-        KeyEvent.simulate(13, 13);
-        $("#message").val("[yt]" + yt5url + "[/yt]");
-        setTimeout(function() {
-            KeyEvent.simulate(13, 13);
-            if ($('#message-box').css('display') == 'block') {
-                KeyEvent.simulate(13, 13);
-            }
-        }, 50);
-    } else {
-        toastr["info"](Premadeletter39);
-    }
-}
-
-function sendyt6() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-        KeyEvent.simulate(13, 13);
-        $("#message").val("[yt]" + yt6url + "[/yt]");
-        setTimeout(function() {
-            KeyEvent.simulate(13, 13);
-            if ($('#message-box').css('display') == 'block') {
-                KeyEvent.simulate(13, 13);
-            }
-        }, 50);
-    } else {
-        toastr["info"](Premadeletter39);
-    }
-}
-
-function setyt1data() {
-    localStorage.setItem("yt1dataimg", $("#yt1data").val())
-    $("#sendyt1").attr("data-original-title", $("#yt1data").val());
-}
-
-function setyt2data() {
-    localStorage.setItem("yt2dataimg", $("#yt2data").val())
-    $("#sendyt2").attr("data-original-title", $("#yt2data").val());
-}
-
-function setyt3data() {
-    localStorage.setItem("yt3dataimg", $("#yt3data").val())
-    $("#sendyt3").attr("data-original-title", $("#yt3data").val());
-}
-
-function setyt4data() {
-    localStorage.setItem("yt4dataimg", $("#yt4data").val())
-    $("#sendyt4").attr("data-original-title", $("#yt4data").val());
-}
-
-function setyt5data() {
-    localStorage.setItem("yt5dataimg", $("#yt5data").val())
-    $("#sendyt5").attr("data-original-title", $("#yt5data").val());
-}
-
-function setyt6data() {
-    localStorage.setItem("yt6dataimg", $("#yt6data").val())
-    $("#sendyt6").attr("data-original-title", $("#yt6data").val());
-}
-
-function setyt1url() {
-    yt1url = $("#yt1url").val();
-    if (getParameterByName("v", yt1url) != null) {
-        yt1url = getParameterByName("v", yt1url);
-    }
-    localStorage.setItem("yt1urlimg", yt1url);
-    return yt1url;
-}
-
-function setyt2url() {
-    yt2url = $("#yt2url").val();
-    if (getParameterByName("v", yt2url) != null) {
-        yt2url = getParameterByName("v", yt2url);
-    }
-    localStorage.setItem("yt2urlimg", yt2url);
-    return yt2url;
-}
-
-function setyt3url() {
-    yt3url = $("#yt3url").val();
-    if (getParameterByName("v", yt3url) != null) {
-        yt3url = getParameterByName("v", yt3url);
-    }
-    localStorage.setItem("yt3urlimg", yt3url);
-    return yt3url;
-}
-
-function setyt4url() {
-    yt4url = $("#yt4url").val();
-    if (getParameterByName("v", yt4url) != null) {
-        yt4url = getParameterByName("v", yt4url);
-    }
-    localStorage.setItem("yt4urlimg", yt4url);
-    return yt4url;
-}
-
-function setyt5url() {
-    yt5url = $("#yt5url").val();
-    if (getParameterByName("v", yt5url) != null) {
-        yt5url = getParameterByName("v", yt5url);
-    }
-    localStorage.setItem("yt5urlimg", yt5url);
-    return yt5url;
-}
-
-function setyt6url() {
-    yt6url = $("#yt6url").val();
-    if (getParameterByName("v", yt6url) != null) {
-        yt6url = getParameterByName("v", yt6url);
-    }
-    localStorage.setItem("yt6urlimg", yt6url);
-    return yt6url;
-}
-
-function enableshortcuts() {
-    if ($("#IPBtn").attr('aria-pressed') == "false") {
-        $("#IPBtn").click();
-    }
-    if ($("#SHOSHOBtn").attr('aria-pressed') == "false") {
-        $("#SHOSHOBtn").click();
-    }
-    //	if($("#TIMEBtn").attr('aria-pressed') == "false"){
-    //	$("#TIMEBtn").click(); }
-    //	if($("#MAINBBtn").attr('aria-pressed') == "false"){
-    //	$("#MAINBBtn").click(); }
-    //	if($("#MAINBTBtn").attr('aria-pressed') == "false"){
-    //	$("#MAINBTBtn").click(); }
-	    	if($("#MAINBTBtn").attr('aria-pressed') == "false"){
-				$("#MAINBTBtn").click(); }
-//			if($("#AnimatedSkinBtn").attr('aria-pressed') == "false"){
-//				$("#AnimatedSkinBtn").click(); }
-    if ($("#XPBtn").attr('aria-pressed') == "false") {
-        $("#XPBtn").click();
-    }
-    //	if($("#MANUIBtn").attr('aria-pressed') == "false"){
-    //	$("#MANUIBtn").click(); }
-}		
-
-
-function seticonfunction() {
-    if (setmessagecom == "NO") {
-        YessetMsgComReturn();
-    }
-    if (setyt == "NO") {
-        YessetytReturn();
-    }
-	if (setscriptingcom == "NO") {
-        YessetScriptingComReturn();
-    }	
-    if (seticon == "YES") {
-        NoseticonReturn();
-    } else if (seticon == "NO") {
-        YesseticonReturn();
-    }
-}
-
-function setmessagecomfunction() {
-    if (seticon == "NO") {
-        YesseticonReturn();
-    }
-    if (setyt == "NO") {
-        YessetytReturn();
-    }
-	if (setscriptingcom == "NO") {
-        YessetScriptingComReturn();
-    }	
-    if (setmessagecom == "YES") {
-        NosetMsgComReturn();
-    } else if (setmessagecom == "NO") {
-        YessetMsgComReturn();
-    }
-}
-
-function setytfunction() {
-    if (setmessagecom == "NO") {
-        YessetMsgComReturn();
-    }
-    if (seticon == "NO") {
-        YesseticonReturn();
-    }
-	if (setscriptingcom == "NO") {
-        YessetScriptingComReturn();
-    }	
-    if (setyt == "YES") {
-        NosetytReturn();		
-    } else if (setyt == "NO") {
-        YessetytReturn();
-    }
-}
-function setscriptingfunction() {
-    if (seticon == "NO") {
-        YesseticonReturn();
-    }	
-    if (setyt == "NO") {
-        YessetytReturn();
-    }
-    if (setmessagecom == "NO") {
-        YessetMsgComReturn();
-    }	
-    if (setscriptingcom == "YES") {
-        NosetScriptingComReturn();
-    } else if (setscriptingcom == "NO") {
-        YessetScriptingComReturn();
-    }
-}
-
-function NoseticonReturn() {
-    $("#images-hud").show();
-    return seticon = "NO";
-}
-
-function YesseticonReturn() {
-    $("#images-hud").hide();
-    return seticon = "YES";
-}
-
-function NosetMsgComReturn() {
-    $("#msgcommands-hud").show();
-    return setmessagecom = "NO";
-}
-
-function YessetMsgComReturn() {
-    $("#msgcommands-hud").hide();
-    return setmessagecom = "YES";
-}
-
-function NosetytReturn() {
-    $("#yt-hud").show();
-    return setyt = "NO";
-}
-
-function YessetytReturn() {
-    $("#yt-hud").hide();
-    return setyt = "YES";
-}
-function NosetScriptingComReturn() {
-    $("#scripting-hud").show();
-    return setscriptingcom = "NO";
-}
-
-function YessetScriptingComReturn() {
-    $("#scripting-hud").hide();
-    return setscriptingcom = "YES";
-}
-
-
-function changePicFun() {
-    $("#minimapPicture").hide();
-    $("#leadbPicture").hide();
-    $("#teambPicture").hide();
-    $("#canvasPicture").hide();
-    $("#leadbtext").hide();
-    $("#teambtext").hide();
-    $("#imgUrl").hide();
-    $("#imgHref").hide();
-    $("#minbtext").hide();
-    if ($("#backgroundPic").val() == 1) {
-        $("#minimapPicture").show();
-        $("#minbtext").show();
-    }
-    if ($("#backgroundPic").val() == 2) {
-        $("#leadbPicture").show();
-        $("#leadbtext").show();
-    }
-    if ($("#backgroundPic").val() == 3) {
-        $("#teambPicture").show();
-        $("#teambtext").show();
-    }
-    if ($("#backgroundPic").val() == 4) {
-        $("#canvasPicture").show();
-    }
-    if ($("#backgroundPic").val() == 5) {
-        $("#imgUrl").show();
-        $("#imgHref").show();
-    }
-}
-
-function changePhotoFun() {
-    $("#pic1url").hide();
-    $("#pic2url").hide();
-    $("#pic3url").hide();
-    $("#pic4url").hide();
-    $("#pic5url").hide();
-    $("#pic6url").hide();
-    $("#yt1url").hide();
-    $("#yt2url").hide();
-    $("#yt3url").hide();
-    $("#yt4url").hide();
-    $("#yt5url").hide();
-    $("#yt6url").hide();
-
-    $("#pic1data").hide();
-    $("#pic2data").hide();
-    $("#pic3data").hide();
-    $("#pic4data").hide();
-    $("#pic5data").hide();
-    $("#pic6data").hide();
-    $("#yt1data").hide();
-    $("#yt2data").hide();
-    $("#yt3data").hide();
-    $("#yt4data").hide();
-    $("#yt5data").hide();
-    $("#yt6data").hide();
-
-    if ($("#changephotos").val() == 1) {
-        $("#pic1url").show();
-        $("#pic1data").show();
-    }
-    if ($("#changephotos").val() == 2) {
-        $("#pic2url").show();
-        $("#pic2data").show();
-    }
-    if ($("#changephotos").val() == 3) {
-        $("#pic3url").show();
-        $("#pic3data").show();
-    }
-    if ($("#changephotos").val() == 4) {
-        $("#pic4url").show();
-        $("#pic4data").show();
-    }
-    if ($("#changephotos").val() == 5) {
-        $("#pic5url").show();
-        $("#pic5data").show();
-    }
-    if ($("#changephotos").val() == 6) {
-        $("#pic6url").show();
-        $("#pic6data").show();
-    }
-    if ($("#changephotos").val() == 7) {
-        $("#yt1url").show();
-        $("#yt1data").show();
-    }
-    if ($("#changephotos").val() == 8) {
-        $("#yt2url").show();
-        $("#yt2data").show();
-    }
-    if ($("#changephotos").val() == 9) {
-        $("#yt3url").show();
-        $("#yt3data").show();
-    }
-    if ($("#changephotos").val() == 10) {
-        $("#yt4url").show();
-        $("#yt4data").show();
-    }
-    if ($("#changephotos").val() == 11) {
-        $("#yt5url").show();
-        $("#yt5data").show();
-    }
-    if ($("#changephotos").val() == 12) {
-        $("#yt6url").show();
-        $("#yt6data").show();
-    }
-
-}		
-
-function toggleFullScreen(fullornot) {
-    if (fullornot == "NO") {
-        launchIntoFullscreen(document.documentElement);
-        return this.fullornot = "YES"
-    } else {
-        exitFullscreen();
-        return this.fullornot = "NO"
-    }
-}
-
-function launchIntoFullscreen(element) {
-    if (element.requestFullscreen) {
-        element.requestFullscreen();
-    } else if (element.mozRequestFullScreen) {
-        element.mozRequestFullScreen();
-    } else if (element.webkitRequestFullscreen) {
-        element.webkitRequestFullscreen();
-    } else if (element.msRequestFullscreen) {
-        element.msRequestFullscreen();
-    }
-}
-
-function exitFullscreen() {
-    if (document.exitFullscreen) {
-        document.exitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-    }
-}
-
-function Bino() {
-//    if (MC.isInGame()) {
-//        if (ogario.spectate) {
-            KeyEvent.simulate(81, 81)
-//        } else {
-//            toastr["info"](Premadeletter38);
-//        }
-//    }
-}
-
-
-function msgcommand1f() {
-    commandMsg = "Hello";
-    otherMsg = "";
-    dosendmsgcommand();
-}
-
-function msgcommand2f() {
-    commandMsg = "Team5";
-    otherMsg = "";
-    dosendmsgcommand();
-}
-
-function msgcommand3f() {
-    commandMsg = "NamePerm";
-    otherMsg = "";
-    dosendmsgcommand();
-}
-
-function msgcommand4f() {
-    commandMsg = "dTroll2";
-    otherMsg = "";
-    dosendmsgcommand();
-}
-
-function msgcommand5f() {
-    commandMsg = "Youtube";
-    otherMsg = "";
-    dosendmsgcommand();
-}
-
-function msgcommand6f() {
-    commandMsg = "HideAll";
-    otherMsg = "";
-    dosendmsgcommand();
-}
-
-function dosendmsgcommand() {
-
-//    if ((MC.isInGame() && $("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
-        if ($('#message-box').css('display') == 'none') {
-            KeyEvent.simulate(13, 13);
-        };
-        setTimeout(function() {
-            $("#message").val("Legend.Mod&?player=" + $("#nick").val() + "&?com=" + commandMsg + "&?do=" + otherMsg);
-            KeyEvent.simulate(13, 13);
-            if ($('#message').css('display') == 'block') {
-                KeyEvent.simulate(13, 13);
-            };
-            if ($('#message-box').css('display') == 'block') {
-                KeyEvent.simulate(13, 13);
-            }
-        }, 100);
- //   } else {
- //       toastr["info"](Premadeletter39);
- //   }
-
-}
-
-function CutNameConflictwithMessageFunction(){
-	return CutNameConflictwithMessage=true;
-}
-
-function inject(type, code) {
-        switch (type) {
-            case 'javascript':
-                var inject = document.createElement('script');
-                inject.type = 'text/javascript';
-                inject.appendChild(document.createTextNode(code));
-                break;
-            case 'stylesheet':
-                var inject = document.createElement('style');
-                inject.type = 'text/css';
-                inject.appendChild(document.createTextNode(code));
-                break;
-        }
-        (document.head || document.documentElement).appendChild(inject);
-}
-function StartEditGameNames() {
-
-    inject('stylesheet', '#tcm,#tcm>#tcm-main>div>div{overflow-x:hidden;overflow-y:auto}#tcm>#tcm-header,#tcm>#tcm-main>div{text-align:center}@keyframes bounce-in{0%,100%,20%,40%,60%,80%{-webkit-transition-timing-function:cubic-bezier(.215,.61,.355,1);transition-timing-function:cubic-bezier(.215,.61,.355,1)}0%{opacity:0;-webkit-transform:scale3d(.3,.3,.3);transform:scale3d(.3,.3,.3)}20%{-webkit-transform:scale3d(1.1,1.1,1.1);transform:scale3d(1.1,1.1,1.1)}40%{-webkit-transform:scale3d(.9,.9,.9);transform:scale3d(.9,.9,.9)}60%{opacity:1;-webkit-transform:scale3d(1.03,1.03,1.03);transform:scale3d(1.03,1.03,1.03)}80%{-webkit-transform:scale3d(.97,.97,.97);transform:scale3d(.97,.97,.97)}100%{opacity:1;-webkit-transform:scale3d(1,1,1);transform:scale3d(1,1,1)}}@-webkit-keyframes bounce-in{0%,100%,20%,40%,60%,80%{-webkit-transition-timing-function:cubic-bezier(.215,.61,.355,1);transition-timing-function:cubic-bezier(.215,.61,.355,1)}0%{opacity:0;-webkit-transform:scale3d(.3,.3,.3);transform:scale3d(.3,.3,.3)}20%{-webkit-transform:scale3d(1.1,1.1,1.1);transform:scale3d(1.1,1.1,1.1)}40%{-webkit-transform:scale3d(.9,.9,.9);transform:scale3d(.9,.9,.9)}60%{opacity:1;-webkit-transform:scale3d(1.03,1.03,1.03);transform:scale3d(1.03,1.03,1.03)}80%{-webkit-transform:scale3d(.97,.97,.97);transform:scale3d(.97,.97,.97)}100%{opacity:1;-webkit-transform:scale3d(1,1,1);transform:scale3d(1,1,1)}}@-moz-keyframes bounce-in{0%,100%,20%,40%,60%,80%{-moz-transition-timing-function:cubic-bezier(.215,.61,.355,1);transition-timing-function:cubic-bezier(.215,.61,.355,1)}0%{opacity:0;-moz-transform:scale3d(.3,.3,.3);transform:scale3d(.3,.3,.3)}20%{-moz-transform:scale3d(1.1,1.1,1.1);transform:scale3d(1.1,1.1,1.1)}40%{-moz-transform:scale3d(.9,.9,.9);transform:scale3d(.9,.9,.9)}60%{opacity:1;-moz-transform:scale3d(1.03,1.03,1.03);transform:scale3d(1.03,1.03,1.03)}80%{-moz-transform:scale3d(.97,.97,.97);transform:scale3d(.97,.97,.97)}100%{opacity:1;-moz-transform:scale3d(1,1,1);transform:scale3d(1,1,1)}}#tcm{position:fixed;top:20%;left:1%;display:block;width:240px;max-height:96%;background:rgba(0,0,0,.8);border:1px solid #444;border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;z-index:999999999;animation:1s both bounce-in;-webkit-animation:1s both bounce-in;-moz-animation:1s both bounce-in}#tcm>#tcm-header,#tcm>#tcm-header>p,#tcm>#tcm-header>span{position:relative;display:block}#tcm :focus{outline:0}#tcm *{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}#tcm>#tcm-header{width:initial;background:rgba(255,255,255,.4);padding:8px}#tcm>#tcm-header>span{font-family:Pacifico,cursive;font-size:20px;color:#FFF;text-transform:capitalize;margin:0 0 8px}#tcm>#tcm-header>p{font-size:12px;color:#222;margin:0}#tcm>#tcm-main>div>div,#tcm>#tcm-main>div>span{margin:0 0 8px;position:relative;display:block}#tcm>#tcm-main,#tcm>#tcm-main>div{position:relative;display:block;width:initial}#tcm>#tcm-main{padding:8px}#tcm>#tcm-main>div>span{font-size:14px;color:#FFF;text-transform:capitalize}#tcm>#tcm-main>div>div{width:100%;max-height:160px;min-height:20px;background:#222;border:1px solid #444;border-radius:2px;-webkit-border-radius:2px;-moz-border-radius:2px}#tcm>#tcm-main>div>div>span{position:relative;display:block;width:100%;text-align:center;font-size:12px;color:#FFF;padding:4px 0;cursor:pointer}#tcm>#tcm-main>div>div>span:hover{background:rgba(0,0,0,.2)}');
-    inject('javascript', ! function e(o) {
-        if ("undefined" != typeof document.getElementsByTagName("head")[0] && "undefined" != typeof document.getElementsByTagName("body")[0]) {
-            var t = {
-                l: {
-                    score: 0,
-                    names: [],
-                    leaderboard: {},
-                    toggled: !0,
-                    prototypes: {
-                        canvas: CanvasRenderingContext2D.prototype,
-                        old: {}
+                ////
+                'miniMapFont': 'ubuntu-bold',
+                'miniMapFontFamily': 'Ubuntu',
+                'miniMapFontWeight': 700,
+                'miniMapNickFont': 'ubuntu-bold',
+                'miniMapNickFontFamily': 'Ubuntu',
+                'miniMapNickFontWeight': 700,
+                'miniMapWidth': 240,
+                'miniMapTop': 24,
+                'miniMapSectorsOpacity': 0.1,
+                'miniMapNickSize': 11,
+                'miniMapNickStrokeSize': 2,
+                'miniMapMyCellSize': 7.5,
+                'miniMapMyCellStrokeSize': 4,
+                'miniMapTeammatesSize': 5.5,
+                'miniMapGhostCellsAlpha': 0.15,
+                'customBackground': '',
+                'customCursor': 'https://jimboy3100.github.io/cursors/cursor_02.cur'
+            },
+            y = {
+                'menuMainColorCSS': null,
+                'menuPanelColorCSS': null,
+                'menuTextlColorCSS': null,
+                'menuButtonsCSS': null,
+                'hudCSS': null,
+                'chatCSS': null,
+                'chatScaleCSS': null,
+                'cursorCSS': null,
+                'loadThemeSettings': function() {
+                    var t = null;
+                    for (var s in null !== e.localStorage.getItem('ogarioThemeSettings') && (t = JSON.parse(e.localStorage.getItem('ogarioThemeSettings'))), g) g.hasOwnProperty(s) && (t && t.hasOwnProperty(s) && (g[s] = t[s]), i.hasOwnProperty(s) && (i[s] = g[s]));
+					//if (v['zoomSpeedValue2'] && v['zoomSpeedValue2']>0.99){v['zoomSpeedValue2']=v['zoomSpeedValue2']-1};
+				},
+                'saveThemeSettings': function() {
+                    e.localStorage.setItem('ogarioThemeSettings', JSON.stringify(g));
+                },
+                'restoreThemeSettings': function() {
+                    null !== e.localStorage.getItem('ogarioThemeSettings') && (e.localStorage.removeItem('ogarioThemeSettings'), e.location.reload());
+                },
+                'addCustomCSS': function(t, e) {
+                    this[t] || (this[t] = s("<style type=\'text/css\'>").appendTo('head')), this[t].html(e);
+                },
+                'addPresetBox': function(t, e, i, o, a) {
+                    for (var n in s(t).append('<div class=\"preset-box\"><span class=\"title-box\">' + h[e] + '</span><div class=\"select-wrapper\"><select id=\"' + e + '\" class=\"form-control\"></select></div></div>'), i) i.hasOwnProperty(n) && s('#' + e).append('<option value=\"' + n + '\">' + i[n]['name'] + '</option>');
+                    s('#' + e).val(g[o]);
+                    var r = this;
+                    s('#' + e).on('change', function() {
+                        var t = this.value;
+                        g[o] = t, r[a](t);
+                    });
+                },
+                'addColorBox': function(t, e, o) {
+                    if (s(t).append('<div class=\"color-box\"><span class=\"title-box\">' + h[e] + '</span><div class=\"input-group ' + e + '-picker\"><input type=\"text\" value=\"' + g[e] + '\" id=\"' + e + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>'), o) {
+                        var a = this;
+                        s(t + ' .' + e + '-picker')['colorpicker']({
+                            'format': 'hex'
+                        }).on('changeColor.colorpicker', function(t) {
+                            g[e] = t.color.toHex(), i.hasOwnProperty(e) && (i[e] = g[e]), a[o]();
+                        });
+                    } else s(t + ' .' + e + '-picker').colorpicker({
+                        'format': 'hex'
+                    }).on('changeColor.colorpicker', function(t) {
+                        g[e] = t.color.toHex(), i.hasOwnProperty(e) && (i[e] = g[e]);
+                    });
+                },
+                'addRgbaColorBox': function(t, e, o) {
+                    if (s(t).append('<div class=\"color-box\"><span class=\"title-box\">' + h[e] + '</span><div class=\"input-group ' + e + '-picker\"><input type=\"text\" value=\"' + g[e] + '\" id=\"' + e + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>'), o) {
+                        var a = this;
+                        s(t + ' .' + e + '-picker').colorpicker({
+                            'format': 'rgba'
+                        }).on('changeColor.colorpicker', function(t) {
+                            var s = t.color.toRGB();
+                            g[e] = 'rgba(' + s['r'] + ',' + s['g'] + ',' + s['b'] + ',' + s['a'] + ')', i.hasOwnProperty(e) && (i[e] = g[e]), a[o]();
+                        });
+                    } else s(t + ' .' + e + '-picker').colorpicker({
+                        'format': 'rgba'
+                    }).on('changeColor.colorpicker', function(t) {
+                        var s = t.color.toRGB();
+                        g[e] = 'rgba(' + s['r'] + ',' + s['g'] + ',' + s['b'] + ',' + s['a'] + ')', i.hasOwnProperty(e) && (i[e] = g[e]);
+                    });
+                },
+                'addSliderBox': function(t, e, o, a, n, r) {
+                    if (s(t).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">' + h[e] + ': </span><span id=\"' + e + '-value\" class=\"value\">' + g[e] + '</span></div><input id=\"' + e + '-slider\" type=\"range\" min=\"' + o + '\" max=\"' + a + '\" step=\"' + n + '\" value=\"' + g[e] + '\"></div>'), r) {
+                        var l = this;
+                        s('#' + e + '-slider').on('input', function() {
+                            var t = parseFloat(s(this).val());
+                            s('#' + e + '-value').text(t), g[e] = t, i.hasOwnProperty(e) && (i[e] = t), l[r]();
+                        });
+                    } else s('#' + e + '-slider').on('input', function() {
+                        var t = parseFloat(s(this).val());
+                        s('#' + e + '-value').text(t), g[e] = t, i.hasOwnProperty(e) && (i[e] = t);
+                    });
+                },
+                'addInputBox': function(t, e, i, o) {
+                    s(t).append('<div class=\"input-box\"><span class=\"title-box\">' + h[e] + '</span><input id=\"' + e + '\" class=\"form-control\" placeholder=\"' + i + '\" value=\"' + g[e] + '\" /></div>');
+                    var a = this;
+                    s('#' + e).on('input', function() {
+                        g[e] = this.value, a[o]();
+                    });
+                },
+                'addCursorBox': function(t, e) {
+                    e === g.customCursor ? s(t).append('<div class=\"cursor-box\"><a href=\"#\" class=\"active\"><img src=\"' + e + '\"></a></div>') : s(t).append('<div class=\"cursor-box\"><a href=\"#\"><img src=\"' + e + '\"></a></div>');
+                },
+                'setFont': function(t, e) {
+                    g[t] = e, g[t + 'Family'] = this['setFontFamily'](e), g[t + 'Weight'] = this.setFontWeight(e), i.hasOwnProperty(t + 'Family') && (i[t + 'Family'] = g[t + 'Family']), i.hasOwnProperty(t + 'Weight') && (i[t + 'Weight'] = g[t + 'Weight']);
+                },
+                'addFontBox': function(t, e, i) {
+                    s(t).append('<div class=\"font-box\"><span class=\"title-box\">' + h[e] + '</span><div class=\"select-wrapper\"><select id=\"' + e + '\" class=\"form-control\"></select></div></div>'), s('#' + e).append('<option value=\"ubuntu\">Ubuntu</option><option value=\"ubuntu-bold\">Ubuntu Bold</option>'), s('#' + e).append('<option value=\"roboto\">Roboto</option><option value=\"roboto-bold\">Roboto Bold</option>'), s('#' + e).append('<option value=\"oswald\">Oswald</option><option value=\"oswald-bold\">Oswald Bold</option>'), s('#' + e).val(g[e]);
+                    var o = this;
+                    i ? s('#' + e).on('change', function() {
+                        var t = this.value;
+                        o.setFont(e, t), o[i]();
+                    }) : s('#' + e).on('change', function() {
+                        var t = this.value;
+                        o.setFont(e, t);
+                    });
+                },
+                'setFontFamily': function(t) {
+                    return -1 != t.indexOf('roboto') ? 'Roboto' : -1 != t.indexOf('oswald') ? 'Oswald' : 'Ubuntu';
+                },
+                'setFontWeight': function(t) {
+                    return -1 != t.indexOf('bold') ? 700 : 400;
+                },
+                'setThemeMenu': function() {
+                    var t = this;
+                    s('#theme').append('<ul class=\"submenu-tabs\"><li class=\"theme-main-tab active\"><a href=\"#theme-main\" class=\"active ogicon-paint-format\" data-toggle=\"tab-tooltip\" title=\"' + h['basicTheming'] + '\"></a></li><li class=\"theme-menu-tab\"><a href=\"#theme-menu\" class=\"ogicon-menu\" data-toggle=\"tab-tooltip\" title=\"' + h['menuTheming'] + '\"></a></li><li class=\"theme-hud-tab\"><a href=\"#theme-hud\" class=\"ogicon-display\" data-toggle=\"tab-tooltip\" title=\"' + h['hudTheming'] + '\"></a></li><li class=\"theme-chat-tab\"><a href=\"#theme-chat\" class=\"ogicon-bubbles\" data-toggle=\"tab-tooltip\" title=\"' + h['chatTheming'] + '\"></a></li><li class=\"theme-minimap-tab\"><a href=\"#theme-minimap\" class=\"ogicon-location2\" data-toggle=\"tab-tooltip\" title=\"' + h['miniMapTheming'] + '\"></a></li><li class=\"theme-images-tab\"><a href=\"#theme-images\" class=\"ogicon-compass\" data-toggle=\"tab-tooltip\" title=\"' + h['imagesTheming'] + '\"></a></li></ul><div id=\"theme-main\" class=\"submenu-panel\"></div><div id=\"theme-menu\" class=\"submenu-panel\"></div><div id=\"theme-hud\" class=\"submenu-panel\"></div><div id=\"theme-chat\" class=\"submenu-panel\"></div><div id=\"theme-minimap\" class=\"submenu-panel\"></div><div id=\"theme-images\" class=\"submenu-panel\"></div>'), this['addPresetBox']('#theme-main', 'themePreset', f, 'preset', 'changeThemePreset'), this['addColorBox']('#theme-main', 'bgColor', 'setBgColor'), this['addColorBox']('#theme-main', 'bordersColor'), this['addColorBox']('#theme-main', 'borderGlowColor'), this['addColorBox']('#theme-main', 'gridColor'), this['addColorBox']('#theme-main', 'sectorsColor'), this['addColorBox']('#theme-main', 'namesColor'), this['addColorBox']('#theme-main', 'namesStrokeColor'), this['addColorBox']('#theme-main', 'massColor'), this['addColorBox']('#theme-main', 'massStrokeColor'), this['addColorBox']('#theme-main', 'virusColor'), this['addColorBox']('#theme-main', 'virusStrokeColor'), this.addColorBox('#theme-main', 'mVirusColor'), this.addColorBox('#theme-main', 'mVirusStrokeColor'), this.addColorBox('#theme-main', 'virusGlowColor'), this['addColorBox']('#theme-main', 'foodColor', 'setFoodColor'), this['addColorBox']('#theme-main', 'teammatesIndColor', 'setIndicatorColor'), this['addColorBox']('#theme-main', 'cursorTrackingColor'), this['addColorBox']('#theme-main', 'splitRangeColor'), this['addColorBox']('#theme-main', 'safeAreaColor'), this['addColorBox']('#theme-main', 'dangerAreaColor'), this['addColorBox']('#theme-main', 'ghostCellsColor'), this['addFontBox']('#theme-main', 'namesFont'), this['addFontBox']('#theme-main', 'massFont'), this['addFontBox']('#theme-main', 'sectorsFont'), this['addSliderBox']('#theme-main', 'sectorsFontSize', 200, 2000, 10), this['addSliderBox']('#theme-main', 'namesScale', 0.5, 2, 0.1), this['addSliderBox']('#theme-main', 'massScale', 1, 5, 1), this['addSliderBox']('#theme-main', 'virMassScale', 1, 5, 1), this['addSliderBox']('#theme-main', 'strokeScale', 1, 4, 0.1), this['addSliderBox']('#theme-main', 'foodSize', 1, 50, 1, 'setFoodColor'), this['addSliderBox']('#theme-main', 'virusStrokeSize', 2, 40, 1), this['addSliderBox']('#theme-main', 'bordersWidth', 2, 200, 2), this['addSliderBox']('#theme-main', 'borderGlowSize', 0, 40, 1), this['addSliderBox']('#theme-main', 'virusGlowSize', 0, 40, 1), this['addSliderBox']('#theme-main', 'sectorsWidth', 2, 200, 2), this['addSliderBox']('#theme-main', 'cellsAlpha', 0.01, 0.99, 0.01), this['addSliderBox']('#theme-main', 'skinsAlpha', 0.01, 0.99, 0.01), this['addSliderBox']('#theme-main', 'virusAlpha', 0, 1, 0.01), this['addSliderBox']('#theme-main', 'textAlpha', 0.1, 1, 0.01), this['addSliderBox']('#theme-main', 'ghostCellsAlpha', 0.01, 0.99, 0.01), this['addPresetBox']('#theme-menu', 'menuPreset', m, 'menuPreset', 'changeMenuPreset'), this['addSliderBox']('#theme-menu', 'menuOpacity', 0.1, 1, 0.01, 'setMenuOpacity'), this['addColorBox']('#theme-menu', 'menuMainColor', 'setMenuMainColor'), this['addColorBox']('#theme-menu', 'menuBtnTextColor', 'setMenuButtons'), this['addColorBox']('#theme-menu', 'menuPanelColor', 'setMenuPanelColor'), this['addColorBox']('#theme-menu', 'menuPanelColor2', 'setMenuPanelColor'), this['addColorBox']('#theme-menu', 'menuTextColor', 'setMenuTextColor'), this['addColorBox']('#theme-menu', 'menuTextColor2', 'setMenuTextColor'), this['addColorBox']('#theme-menu', 'btn1Color', 'setMenuButtons'), this['addColorBox']('#theme-menu', 'btn1Color2', 'setMenuButtons'), this['addColorBox']('#theme-menu', 'btn2Color', 'setMenuButtons'), this['addColorBox']('#theme-menu', 'btn2Color2', 'setMenuButtons'), this['addColorBox']('#theme-menu', 'btn3Color', 'setMenuButtons'), this['addColorBox']('#theme-menu', 'btn3Color2', 'setMenuButtons'), this['addColorBox']('#theme-menu', 'btn4Color', 'setMenuButtons'), this['addColorBox']('#theme-menu', 'btn4Color2', 'setMenuButtons'), this['addInputBox']('#theme-menu', 'menuBg', 'Image URL', 'setMenuBg'), this['addColorBox']('#theme-hud', 'hudMainColor', 'setHudColors'), this['addRgbaColorBox']('#theme-hud', 'hudColor', 'setHudColors'), this['addColorBox']('#theme-hud', 'hudTextColor', 'setHudColors'), this['addColorBox']('#theme-hud', 'statsHudColor', 'setHudColors'), this['addColorBox']('#theme-hud', 'timeHudColor', 'setHudColors'), this['addColorBox']('#theme-hud', 'top5MassColor', 'setHudColors'), this['addColorBox']('#theme-hud', 'lbMeColor', 'setHudColors'), this['addColorBox']('#theme-hud', 'lbTeammateColor', 'setHudColors'), this['addFontBox']('#theme-hud', 'hudFont', 'setHudFont'), this['addSliderBox']('#theme-hud', 'hudScale', 1, 2, 0.01, 'setHudScale'), this['addRgbaColorBox']('#theme-chat', 'messageColor', 'setChatColors'), this['addColorBox']('#theme-chat', 'messageTextColor', 'setChatColors'), this['addColorBox']('#theme-chat', 'messageTimeColor', 'setChatColors'), this['addColorBox']('#theme-chat', 'messageNickColor', 'setChatColors'), this['addRgbaColorBox']('#theme-chat', 'commandsColor', 'setChatColors'), this['addColorBox']('#theme-chat', 'commandsTextColor', 'setChatColors'), this['addColorBox']('#theme-chat', 'commandsTimeColor', 'setChatColors'), this['addColorBox']('#theme-chat', 'commandsNickColor', 'setChatColors'), this['addRgbaColorBox']('#theme-chat', 'chatBoxColor', 'setChatColors'), this['addSliderBox']('#theme-chat', 'chatScale', 1, 2, 0.01, 'setChatScale'), this['addColorBox']('#theme-minimap', 'miniMapSectorsColor', 'setMiniMapSectorsColor'), this['addColorBox']('#theme-minimap', 'miniMapSectorColor'), this['addColorBox']('#theme-minimap', 'miniMapNickColor'), this['addColorBox']('#theme-minimap', 'miniMapNickStrokeColor'), this['addColorBox']('#theme-minimap', 'miniMapMyCellColor'), this['addColorBox']('#theme-minimap', 'miniMapMyCellStrokeColor'), this['addColorBox']('#theme-minimap', 'miniMapTeammatesColor'), this['addColorBox']('#theme-minimap', 'miniMapDeathLocationColor'), this['addColorBox']('#theme-minimap', 'miniMapGuidesColor'), this['addColorBox']('#theme-minimap', 'miniMapGhostCellsColor'), this['addFontBox']('#theme-minimap', 'miniMapFont', 'setMiniMapFont'), this['addFontBox']('#theme-minimap', 'miniMapNickFont'), this['addSliderBox']('#theme-minimap', 'miniMapWidth', 200, 400, 2, 'setMiniMapWidth'), this['addSliderBox']('#theme-minimap', 'miniMapSectorsOpacity', 0, 1, 0.01, 'setMiniMapSectorsOpacity'), this['addSliderBox']('#theme-minimap', 'miniMapNickSize', 8, 16, 1), this['addSliderBox']('#theme-minimap', 'miniMapNickStrokeSize', 0, 6, 1), this['addSliderBox']('#theme-minimap', 'miniMapMyCellSize', 4, 10, 0.5), this['addSliderBox']('#theme-minimap', 'miniMapMyCellStrokeSize', 0, 10, 1), this['addSliderBox']('#theme-minimap', 'miniMapTeammatesSize', 4, 10, 0.5), this['addSliderBox']('#theme-minimap', 'miniMapGhostCellsAlpha', 0.01, 0.99, 0.01), this['addInputBox']('#theme-images', 'customBackground', 'Image URL', 'setCustomBackground'), this['addInputBox']('#theme-images', 'customCursor', 'Cursor image URL', 'setCustomCursor');
+                    for (var e = 'https://jimboy3100.github.io/cursors/cursor_', i = 0; i < 35; i++) i < 9 ? this['addCursorBox']('#theme-images', e + '0' + (i + 1) + '.cur') : this['addCursorBox']('#theme-images', e + '' + (i + 1) + '.cur');
+                    s(document).on('click', '#theme-images .cursor-box a', function(e) {
+                        e.preventDefault();
+                        var i = s('img', this)['attr']('src');
+                        g.customCursor = i, t['setCustomCursor'](), s('#customCursor').val(i), s('#theme-images .cursor-box a').removeClass('active'), s(this).addClass('active');
+                    }), s('#theme').append('<button class=\"btn btn-block btn-success btn-save\"\">' + h['saveSett'] + '</button>'), s(document).on('click', '#theme .btn-save', function(e) {
+                        e.preventDefault();
+                        var i = s(this);
+                        i.text(h['saved']), t['saveThemeSettings'](), setTimeout(function() {
+                            i.text(h['saveSett']);
+                        }, 500);
+                    }), s('#theme').append('<div class=\"restore-settings\"><a href=\"#\">' + h['restoreThemeSettings'] + '</a></div>'), s(document).on('click', '#theme .restore-settings a', function(e) {
+                        e.preventDefault(), t['restoreThemeSettings']();
+                    }), s('.skin').colorpicker({
+                        'format': 'hex',
+                        'input': '#color'
+                    });
+                },
+                'changePreset': function(t, e) {
+                    if (e[t]) {
+                        g[t] = t;
+                        t = e[t];
+                        for (var o in t) t.hasOwnProperty(o) && g.hasOwnProperty(o) && (g[o] = t[o], i.hasOwnProperty(o) && (i[o] = g[o]), s('#theme .' + o + '-picker') && s('#theme .' + o + '-picker').colorpicker('setValue', g[o]), s('#' + o + '-slider') && s('#' + o + '-slider').val(g[o])['change'](), (s('input[type=text]#' + o) || s('select#' + o)) && s('#' + o).val(g[o]));
                     }
                 },
-                f: {
-                    prototype_override: function(e, o, s, a) {
-                        e in t.l.prototypes.old || (t.l.prototypes.old[e] = {}), o in t.l.prototypes.old[e] || (t.l.prototypes.old[e][o] = t.l.prototypes[e][o]), t.l.prototypes[e][o] = function() {
-                            "before" == s && a(this, arguments), t.l.prototypes.old[e][o].apply(this, arguments), "after" == s && a(this, arguments)
+                'changeThemePreset': function(t) {
+                    this.changePreset(t, f), this.setTheme();
+                },
+                'setFonts': function() {
+                    this.setFont('namesFont', g.namesFont), this.setFont('massFont', g.namesFont), this.setFont('sectorsFont', g.sectorsFont);
+                },
+                'setBgColor': function() {
+                    s('body').css('background-color', g.bgColor);
+                },
+                'setFoodColor': function() {
+                    v['optimizedFood'] && ogarfooddrawer && ogarfooddrawer.preDrawPellet();
+                },
+                'setIndicatorColor': function() {
+                    ogarfooddrawer && ogarfooddrawer.preDrawIndicator();
+                },
+                'setCustomBackground': function() {
+                    g['customBackground'] ? s('body').css('background-image', 'url(' + g['customBackground'] + ')') : s('body')['css']('background-image', 'none');
+                },
+                'setCustomCursor': function() {
+                    if (g.customCursor) var t = '*{cursor:url(' + g.customCursor + '), auto !important}';
+                    else t = '*{cursor: auto}';
+                    this.addCustomCSS('cursorCSS', t);
+                },
+                'setMenu': function() {
+                    this.setMenuOpacity(), this.setMenuMainColor(), this['setMenuPanelColor'](), this['setMenuTextColor'](), this['setMenuButtons'](), this['setMenuBg']();
+                },
+                'changeMenuPreset': function(t) {
+                    this.changePreset(t, m), this['setMenu']();
+                },
+                'setMenuOpacity': function() {
+                    s('#helloContainer, #hotkeys, #exp-imp')['css']('opacity', g['menuOpacity']);
+                },
+                'setMenuMainColor': function() {
+                    var t = '::-moz-selection{background-color:' + g['menuMainColor'] + '!important}::selection{background-color:' + g['menuMainColor'] + '!important}.menu-main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:' + g['menuMainColor'] + '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:' + g['menuMainColor'] + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + g['menuMainColor'] + '}.ps-scrollbar-y{background-color:' + g['menuMainColor'] + '!important}';
+                    this.addCustomCSS('menuMainColorCSS', t);
+                },
+                'setMenuPanelColor': function() {
+                    var t = '#main-menu,.agario-side-panel,#hotkeys,#exp-imp{background-color: ' + g['menuPanelColor'] + '}label:hover,.agario-panel input,.agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.nick .input-group-btn,.skin .input-group-btn,#stream-mode,#hide-url,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs,#exp-bar .progress,#quick-menu a:hover,.quick,.select-wrapper,#hotkeys-cfg div.row:hover,#hotkeys-cfg .command-in,#exp-imp-settings textarea,.restore-settings{background-color: ' + g['menuPanelColor2'] + '}.agario-panel h5,.agario-side-panel h5,#stats h2,.menu-tabs,.submenu-tabs,#skins a.default,#stats hr,#hotkeys-cfg div.row, #exp-imp h1{border-color: ' + g['menuPanelColor2'] + '}.quick:hover,#skins a,#profiles{color:' + g['menuPanelColor2'] + '}input.stream-mode,input.hide-url{color:' + g['menuPanelColor2'] + '!important}';
+                    this.addCustomCSS('menuPanelColorCSS', t);
+                },
+                'setMenuTextColor': function() {
+                    var t = '.agario-panel,.agario-side-panel,.agario-panel input,.agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.dark .yt-username,#stream-mode,#hide-url,.menu-tabs a,.submenu-tabs a,#skins a.default:hover,#quick-menu a,#prev-profile.default:hover,#next-profile.default:hover,#statsText,#hotkeys,#hotkeys-cfg .command-in,#exp-imp{color:' + g['menuTextColor'] + '}#skins a.default:hover{border-color:' + g['menuTextColor'] + '}::-webkit-input-placeholder{color:' + g['menuTextColor2'] + '!important}::-moz-placeholder{color:' + g['menuTextColor2'] + '!important}#user-id-tag, #version-tag,#statsSubtext,#hotkeys-inst,#exp-imp textarea,.restore-settings a,.restore-settings a:hover{color:' + g['menuTextColor2'] + '}#hotkeys-cfg .command-in,#theme .color-box{border-color:' + g['menuTextColor2'] + '}';
+                    this.addCustomCSS('menuTextColorCSS', t);
+                },
+                'setMenuButtons': function() {
+                    var t = 'a,a:hover{color:' + g['btn1Color'] + '}.btn,#hotkeys-cfg .custom-key-in{color:' + g['menuBtnTextColor'] + '}.btn-primary{background-color:' + g['btn1Color'] + '!important}.btn-primary:active,.btn-primary:disabled,.btn-primary:focus,.btn-primary:hover{background-color:' + g['btn1Color2'] + '!important}.btn-success{background-color:' + g['btn2Color'] + '!important}.btn-success:active,.btn-success:disabled,.btn-success:focus,.btn-success:hover{background-color:' + g['btn2Color2'] + '!important}.btn-warning{background-color:' + g['btn3Color'] + '!important}.btn-warning:active,.btn-warning:disabled,.btn-warning:focus,.btn-warning:hover{background-color:' + g['btn3Color2'] + '!important}.btn-danger{background-color:' + g['btn4Color'] + '!important}.btn-danger:active,.btn-danger:disabled,.btn-danger:focus,.btn-danger:hover{background-color:' + g['btn4Color2'] + '!important}#hotkeys-cfg .custom-key-in{background-color:' + g['btn4Color2'] + ';border-color:' + g['btn4Color2'] + '}';
+                    this.addCustomCSS('menuButtonsCSS', t);
+                },
+                'setMenuBg': function() {
+                    s('#menuBg').val(g['menuBg']), g['menuBg'] ? s('.menu-panel, .agario-side-panel, #hotkeys, #exp-imp').css('background-image', 'url(' + g['menuBg'] + ')') : s('.menu-panel, .agario-side-panel, #hotkeys, #exp-imp').css('background-image', 'none');
+                },
+                'setHud': function() {
+                    this['setHudColors'](), this['setHudFont'](), this['setHudScale']();
+                },
+                'setHudColors': function() {
+                    var t = '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:' + g['hudMainColor'] + '}.hud,.hud-b,#chat-emoticons{background-color:' + g['hudColor'] + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + g['hudTextColor'] + '}.stats-hud-color{color:' + g['statsHudColor'] + '}.time-hud-color{color:' + g['timeHudColor'] + '}.top5-mass-color{color:' + g['top5MassColor'] + '}#leaderboard-positions .me{color:' + g['lbMeColor'] + '}#leaderboard-positions .teammate{color:' + g['lbTeammateColor'] + '}';
+                    this.addCustomCSS('hudCSS', t);
+                },
+                'setHudFont': function() {
+                    this.setFont('hudFont', g['hudFont']), s('#overlays-hud').css({
+                        'font-family': g['hudFontFamily'],
+                        'font-weight': g['hudFontWeight']
+                    });
+                },
+                'setHudScale': function() {
+                    var t = Math.round(20 * g['hudScale']),
+                        e = Math.round(200 * g['hudScale']),
+                        i = Math['floor'](55 * g['hudScale']),
+                        o = Math['floor'](6 * g['hudScale']),
+                        a = Math['floor'](280 * g['hudScale']),
+                        n = Math['floor'](85 * g['hudScale']),
+                        r = Math['floor'](20 * g['hudScale']);
+                    s('#overlays-hud')['css']('font-size', t + 'px'), s('#leaderboard-hud, #time-hud')['width'](e), s('#top5-hud')['width'](e + 30).css('top', i + 'px'), s('#top5-pos').css('padding-left', o + 'px'), s('#time-hud').css('top', a + 'px'), s('#pause-hud')['css']('top', n + 'px'), s('#target-hud').css('padding-top', r + 'px');
+                },
+                'setChat': function() {
+                    this['setChatColors'](), this['setChatScale']();
+                },
+                'setChatColors': function() {
+                    var t = '#message,#messages li,.toast-success{background-color:' + g['messageColor'] + '}#message,.message-text,.toast-success .message-text{color:' + g['messageTextColor'] + '}.message-nick,.mute-user,.mute-user:hover,.toast-success .message-nick,.toast .mute-user,.toast .mute-user:hover{color:' + g['messageNickColor'] + '}.message-time{color:' + g['messageTimeColor'] + '}.toast-warning{background-color:' + g['commandsColor'] + '}.command-text,.toast-warning .command-text{color:' + g['commandsTextColor'] + '}.command-nick,.toast-warning .command-nick,.toast-warning .mute-user,.toast-warning .mute-user:hover{color:' + g['commandsNickColor'] + '}.command-time{color:' + g['commandsTimeColor'] + '}#chat-box{background-color:' + g['chatBoxColor'] + '}';
+                    this.addCustomCSS('chatCSS', t);
+                },
+                'setChatScale': function() {
+                    var t = Math.round(14 * g['chatScale']),
+                        e = Math.round(280 * g['chatScale']),
+                        i = Math.round(350 * g['chatScale']),
+                        o = Math.round(300 * g['chatScale']),
+                        a = Math['floor'](14 * g['chatScale']);
+                    s('#message-box, #messages, #toast-container, #chat-box')['css']('font-size', t + 'px'), s('#messages, #toast-container, #chat-box')['width'](e), s('#message-box')['width'](i), s('#chat-box')['height'](o), s('.user-list').css('padding-left', a + 'px');
+                    var n = '#toast-container{width:' + e + 'px;font-size:' + t + 'px}';
+                    this.addCustomCSS('chatScaleCSS', n);
+                },
+                'setMiniMap': function() {
+                    this['setMiniMapFont'](), this['setMiniMapWidth'](), this['setMiniMapSectorsOpacity']();
+                },
+                'setMiniMapFont': function() {
+                    this.setFont('miniMapFont', g['miniMapFont']), ogarminimapdrawer && ogarminimapdrawer['resetMiniMapSectors']();
+                },
+                'setMiniMapWidth': function() {
+                    var t = g['miniMapWidth'] / 200;
+                    g['miniMapTop'] = Math.round(20 * t), s('#minimap-hud').css({
+                        'width': g['miniMapWidth'],
+                        'height': g['miniMapWidth'] + g['miniMapTop']
+                    }), ogarminimapdrawer && ogarminimapdrawer['resetMiniMapSectors']();
+                },
+                'setMiniMapSectorsColor': function() {
+                    ogarminimapdrawer && ogarminimapdrawer['resetMiniMapSectors']();
+                },
+                'setMiniMapSectorsOpacity': function() {
+                    s('#minimap-sectors').css('opacity', g['miniMapSectorsOpacity']);
+                },
+                'setTheme': function() {
+                    this['setFonts'](), this['setBgColor'](), this['setCustomBackground'](), this['setCustomCursor'](), this['setMenu'](), this['setHud'](), this['setChat'](), this['setMiniMap']();
+                },
+                'init': function() {
+                    this['loadThemeSettings']();
+                }
+            },
+            ogario1PlayerProfiles = [],
+            ogarcopythelb = {
+                'nick': 'I<3Legendmod',
+                'clanTag': 'Ⓜ',
+                'skinURL': '',
+                'color': g.mainColor
+            },
+            v = {
+				'jellyPhisycs':false,
+				'virusSound':false,				
+                'quickResp': true,
+                'autoResp': false,
+                'autoZoom': false,
+                'autoHideNames': true,
+                'autoHideMass': true,
+                'autoHideFood': false,
+                'autoHideFoodOnZoom': false,
+                'noNames': false,
+                'optimizedNames': true,
+                'hideMyName': true,
+                'hideTeammatesNames': false,
+                'showMass': true,
+                'optimizedMass': true,
+                'shortMass': true,
+                'virMassShots': true,
+                'hideMyMass': false,
+                'hideEnemiesMass': false,
+                'vanillaSkins': false,
+                'customSkins': true,
+                'myTransparentSkin': false,
+                'myCustomColor': false,
+                'transparentCells': false,
+                'transparentViruses': true,
+                'transparentSkins': false,
+                'showGrid': false,
+                'showBgSectors': false,
+                'showMapBorders': true,
+                'showGhostCells': false,
+                'showMiniMap': true,
+                'showMiniMapGrid': false,
+                'showMiniMapGuides': true,
+                'showMiniMapGhostCells': true,
+                'oneColoredTeammates': false,
+                'optimizedFood': true,
+                'rainbowFood': false,
+                'oppColors': false,
+                'oppRings': false,
+                'virColors': false,
+                'splitRange': false,
+                'virusesRange': false,
+                'textStroke': false,
+                'namesStroke': false,
+                'massStroke': false,
+                'cursorTracking': false,
+                'teammatesInd': false,
+                'mouseSplit': false,
+                'mouseFeed': false,
+                'mouseInvert': false,
+                'disableChat': false,
+                'hideChat': false,
+                'chatSounds': true,
+                'chatEmoticons': true,
+                'showChatBox': false,
+                'showChatImages': true,
+                'showChatVideos': true,
+                'showTop5': true,
+                'showTargeting': true,
+                'showLbData': true,
+                'showTime': false,
+                'normalLb': true,
+                'centeredLb': true,
+                'fpsAtTop': true,
+                'showStats': true,
+                'showStatsMass': true,
+                'showStatsSTE': false,
+                'showStatsN16': false,
+                'showStatsFPS': true,
+                'blockPopups': false,
+                'streamMode': false,
+                'hideSkinUrl': false,
+                'showQuickMenu': true,
+                'showSkinsPanel': true,
+                'animation': 140,
+                ////
+                "cameraSpeed": 7,
+                "commanderDelay": 1E3,
+                "suckAnimation": false,
+                "virusGlow": false,
+                "borderGlow": false,
+                "limLB": 10,
+                "limTP": 5,
+                ////				
+                //'zoomSpeedValue': .87,
+				'zoomSpeedValue2': -0.13,
+                'messageSound': 'https://jimboy3100.github.io/sounds/notification_01.mp3',
+                //                'commandSound': 'https://jimboy3100.github.io/sounds/notification_02.mp3'
+                'commandSound': 'https://jimboy3100.github.io/sounds/chat-message.mp3',
+				'virusSoundurl': 'https://jimboy3100.github.io/sounds/sound-gunshot.mp3',
+				'soundSplit': 'https://www.myinstants.com/media/sounds/quack_5.mp3'
+				
+            };
+			
+        window.legendmod4 = c;
+        var ogarminimapdrawer = {
+            'name': 'LM express',
+            'version': 'v1',
+            'privateMode': false,
+            'protocolMode': true,
+            'publicIP': 'wss://srv.ogario.eu',
+            'privateIP': null,
+            'updateInterval': 1000,
+            'updateTick': 0,
+            'updateMaxTick': 2,
+            'currentSector': '',
+            'miniMap': null,
+            'miniMapCtx': null,
+            'miniMapSectors': null,
+            'pi2': 2 * Math['PI'],
+            'socket': null,
+            'cells': {},
+            'teamPlayers': [],
+            'parties': [],
+            'chatHistory': [],
+            'chatUsers': {},
+            'chatMutedUsers': {},
+            'chatMutedUserIDs': [],
+            'customSkinsCache': {},
+            'customSkinsMap': {},
+            'cacheQueue': [],
+            'deathLocations': [],
+            'playerID': null,
+            'playerMass': 0,
+            'selectedProfile': 0,
+            'lastDeath': 0,
+            'skipServerData': false,
+            'gameMode': ':ffa',
+            'region': '',
+            'partyToken': '',
+            'ws': '',
+            'serverIP': '',
+            'serverArena': '',
+            'serverToken': '',
+            'lastSentNick': '',
+            'lastSentClanTag': null,
+            'lastSentSkinURL': '',
+            'lastSentCustomColor': '',
+            'lastSentPartyToken': '',
+            'lastSentServerToken': '',
+            'lastMessageSentTime': Date['now'](),
+            'rFps': 0,
+            'renderedFrames': 0,
+            'fpsLastRequest': null,
+            'statsHUD': null,
+            'leaderboardPositionsHUD': null,
+            'leaderboardDataHUD': null,
+            'activeParties': null,
+            'top5pos': null,
+            'top5totalMass': null,
+            'top5totalPlayers': null,
+            'top5limit': 5,
+            'timeHUD': null,
+            'questHUD': null,
+            'retryResp': 0,
+            'token': 'b2dhcmlvLm92aA==',
+            'canvasScale': 1,
+            'selectBiggestCell': true,
+            'noColors': false,
+            'skipStats': false,
+            'showQuest': false,
+            'showSplitInd': false,
+            'pause': false,
+            'targetID': 0,
+            'targetStatus': 0,
+            'targetNick': '',
+            'targetSkinURL': '',
+            'targeting': false,
+            'privateMiniMap': false,
+            'messageSound': null,
+            'commandSound': null,
+			'virusSound': null,
+			'virusSoundurl': null,
+            'feedInterval': null,
+            'getPlayerX': function() {
+                return i['playerX'] + i['mapOffsetX'];
+            },
+            'getPlayerY': function() {
+                return i['playerY'] + i['mapOffsetY'];
+            },
+            'feed': function() {
+                e.core && e.core.eject && e.core.eject();
+            },
+            'macroFeed': function(t) {
+                if (t) {
+                    if (this.feedInterval) return;
+                    var e = this;
+                    this.feed(), this.feedInterval = setInterval(function() {
+                        e.feed();
+                    }, 80);
+                } else this.feedInterval && (clearInterval(this.feedInterval), this.feedInterval = null);
+            },
+            'split': function() {
+                e.core && e.core.split && e.core.split();
+            },
+            'doubleSplit': function() {
+                var t = this;
+                t.split(), setTimeout(function() {
+                    t.split();
+                }, 40);
+            },
+            'popSplit': function() {
+                var t = this;
+                t.split(), setTimeout(function() {
+                    t.split();
+                }, 200);
+            },
+            'split16': function() {
+                var t = this;
+                t.split(), setTimeout(function() {
+                    t.split();
+                }, 40), setTimeout(function() {
+                    t.split();
+                }, 80), setTimeout(function() {
+                    t.split();
+                }, 0x78);
+            },
+            'toggleSkins': function() {
+                i['vanillaSkins'] && i['customSkins'] ? i['vanillaSkins'] = false : !i['vannillaSkins'] && i['customSkins'] ? (i['vanillaSkins'] = true, i['customSkins'] = false) : (i['vanillaSkins'] = true, i['customSkins'] = true);
+            },
+            'toggleCells': function() {
+                this['selectBiggestCell'] = !this['selectBiggestCell'], i['selectBiggestCell'] = this['selectBiggestCell'];
+            },
+            'setShowTop5': function() {
+                v['showTop5'] = !v['showTop5'], this['setTop5']();
+            },
+            'setTop5': function() {
+                v['showTop5'] ? s('#top5-hud').show() : s('#top5-hud').hide();
+            },
+            'setShowTargeting': function() {
+                v['showTargeting'] = !v['showTargeting'], this['setTargetingHUD']();
+            },
+            'setTargetingHUD': function() {
+                v['showTargeting'] ? s('#target-hud, #target-panel-hud').show() : s('#target-hud, #target-panel-hud').hide();
+            },
+            'setShowTime': function() {
+                v['showTime'] = !v['showTime'], v['showTime'] ? (s('#time-hud').show(), this['displayTime']()) : s('#time-hud').hide();
+            },
+            'setShowSplitRange': function() {
+                v['splitRange'] = !v['splitRange'], i['splitRange'] = v['splitRange'];
+            },
+            'setShowSplitInd': function() {
+                this['showSplitInd'] = !this['showSplitInd'], v['splitRange'] = this['showSplitInd'], v['oppRings'] = this['showSplitInd'], i['splitRange'] = v['splitRange'], i['oppRings'] = v['oppRings'];
+            },
+            'setShowTeammatesInd': function() {
+                v['teammatesInd'] = !v['teammatesInd'];
+            },
+            'setShowOppColors': function() {
+                v['oppColors'] = !v['oppColors'], i['oppColors'] = v['oppColors'];
+            },
+            'setShowSkins': function() {
+                this['noSkins'] = !this['noSkins'], e.core && e.core['setSkins'] && e.core['setSkins'](!this['noSkins']), i['showCustomSkins'] = !this['noSkins'], this['displayChatInfo'](!this['noSkins'], 'showSkinsMsg');
+            },
+            'setTransparentSkins': function() {
+                v['transparentSkins'] = !v['transparentSkins'], i['transparentSkins'] = v['transparentSkins'];
+            },
+            'setShowStats': function() {
+                s('#stats-hud')['toggle']();
+            },
+            'setShowFood': function() {
+                i['showFood'] = !i['showFood'];
+            },
+            'setShowHUD': function() {
+                s('#overlays-hud')['toggle']();
+            },
+            'setShowGrid': function() {
+                v['showGrid'] = !v['showGrid'];
+            },
+            'setShowMiniMapGuides': function() {
+                v['showMiniMapGuides'] = !v['showMiniMapGuides'];
+            },
+            'setShowLb': function() {
+                ':teams' !== this['gameMode'] && s('#leaderboard-hud')['toggle']();
+            },
+            'setShowBgSectors': function() {
+                v['showBgSectors'] = !v['showBgSectors'];
+            },
+            'setHideSmallBots': function() {
+                i['hideSmallBots'] = !i['hideSmallBots'], this['displayChatInfo'](!i['hideSmallBots'], 'hideSmallBotsMsg');
+            },
+            'setShowNames': function() {
+                v['noNames'] = !v['noNames'];
+            },
+            'setHideTeammatesNames': function() {
+                v['hideTeammatesNames'] = !v['hideTeammatesNames'];
+            },
+            'setShowMass': function() {
+                v['showMass'] = !v['showMass'];
+            },
+            'setShowMiniMap': function() {
+                v['showMiniMap'] = !v['showMiniMap'], this['setMiniMap']();
+            },
+            'setMiniMap': function() {
+                v['showMiniMap'] ? s('#minimap-hud').show() : s('#minimap-hud').hide();
+            },
+            'setShowQuest': function() {
+                ':ffa' === this['gameMode'] && (this['showQuest'] = !this['showQuest'], this['setQuest']());
+            },
+            'setQuest': function() {
+                this['showQuest'] && ':ffa' === this['gameMode'] ? s('#quest-hud').show() : s('#quest-hud').hide();
+            },
+            'toggleAutoZoom': function() {
+                i['autoZoom'] = !i['autoZoom'], this['displayChatInfo'](i['autoZoom'], 'autoZoomMsg');
+            },
+            'resetZoom': function(t) {
+                t ? (i['zoomResetValue'] = 1, i['zoomValue'] = 1) : i['zoomResetValue'] = 0;
+            },
+            'setZoom': function(t) {
+                i['zoomValue'] = t;
+            },
+            'toggleDeath': function() {
+                this['lastDeath']--, this['lastDeath'] < 0 && (this['lastDeath'] = this['deathLocations'].length - 1);
+            },
+            'tryResp': function() {
+                if (i.play || 20 == this['retryResp']) this['retryResp'] = 0;
+                else {
+                    this['retryResp']++;
+                    var t = this;
+                    setTimeout(function() {
+                        s('.btn-play-guest')['is'](':visible') ? s('.btn-play-guest')['click']() : s('.btn-play')['click'](), i.play || t['tryResp']();
+                    }, 500);
+                }
+            },
+            'quickResp': function() {
+                v['quickResp'] && (this['hideMenu'](), this['gameServerConnect'](this['ws']), i.play = false, this['tryResp']());
+            },
+            'autoResp': function() {
+                v['autoResp'] && (this['setAutoResp'](), s('#overlays')['stop']().hide(), s('.btn-play-guest')['is'](':visible') ? s('.btn-play-guest')['click']() : s('.btn-play')['click']());
+            },
+            'setAutoResp': function() {
+                v['autoResp'] && (s('#skipStats')['prop']('checked') || (s('#skipStats')['click'](), this['skipStats'] = true));
+            },
+            'toggleAutoResp': function() {
+                v['autoResp'] = !v['autoResp'], this['setAutoResp'](), this['displayChatInfo'](v['autoResp'], 'autoRespMsg');
+            },
+            'copyLb': function() {
+                var t = s('<input>');
+                s('body').append(t), t.val(s('#leaderboard-positions').text()).select();
+                try {
+                    document.execCommand('copy');
+                } catch (ogarcopierlbcather) {}
+                t.remove();
+            },
+            'setPause': function() {
+                this.pause = !this.pause, i.pause = this.pause, this.pause ? (i['resetTargetPosition'](), s('#pause-hud').show()) : s('#pause-hud').hide();
+            },
+            'setCenteredLb': function() {
+                v['centeredLb'] ? s('#leaderboard-hud').addClass('hud-text-center') : s('#leaderboard-hud').removeClass('hud-text-center');
+            },
+            'setNormalLb': function() {
+                v['normalLb'] ? s('#leaderboard-hud h5').html(h['leaderboard']) : s('#leaderboard-hud h5').html('legendmod');
+            },
+            'setFpsAtTop': function() {
+                v['fpsAtTop'] ? s('#stats-hud').removeClass('hud-bottom').addClass('hud-top') : s('#stats-hud').removeClass('hud-top').addClass('hud-bottom');
+            },
+            'setBlockPopups': function() {
+                this['protocolMode'] ? s('#block-warn').hide() : v['blockPopups'] ? this['blockPopups']() : this['unblockPopups']();
+            },
+            'blockPopups': function() {
+                s('#openfl-content, #openfl-overlay').hide(), s('#openfl-content, #openfl-overlay').addClass('block-popups'), s('#freeCoins, #gifting, #openShopBtn, #dailyQuests')['prop']('disabled', true), s('#block-warn').show();
+            },
+            'unblockPopups': function() {
+                s('#openfl-overlay.disabler')['click'](), s('#openfl-content, #openfl-overlay').hide(), s('#openfl-content, #openfl-overlay').removeClass('block-popups'), s('#freeCoins, #gifting, #openShopBtn, #dailyQuests')['prop']('disabled', false), s('#block-warn').hide();
+            },
+            'tempUnblockPopups': function() {
+                v['blockPopups'] && this['unblockPopups']();
+            },
+            'displayLeaderboard': function(t, e = '') {
+                this['leaderboardPositionsHUD'] && (this['leaderboardPositionsHUD']['innerHTML'] = t, this['leaderboardDataHUD']['innerHTML'] = e);
+            },
+            'displayStats': function() {
+                if (v['showStats']) {
+                    var t = '';
+                    i.play && (v['showStatsMass'] && i['playerMass'] && (t += h['mass'] + ': ' + i['playerMass'] + ' | '), i['playerScore'] && (t += h['score'] + ': ' + i['playerScore']), v['showStatsSTE'] && i['STE'] && (t += ' | STE: ' + i['STE']), v['showStatsN16'] && i['playerSplitCells'] && (t += ' | ' + i['playerSplitCells'] + '/16'), v['showStatsFPS'] && (t += ' | ')), v['showStatsFPS'] && (t += 'FPS: ' + ogarfooddrawer['fps']), this['statsHUD']['textContent'] = t;
+                    var e = this;
+                    setTimeout(function() {
+                        e['displayStats']();
+                    }, 250);
+                } else s('#stats-hud').hide();
+            },
+            'displayTime': function() {
+                if (v['showTime']) {
+                    var t = new Date()['toLocaleString']();
+                    this['timeHUD']['textContent'] = t;
+                    var e = this;
+                    setTimeout(function() {
+                        e['displayTime']();
+                    }, 1000);
+                } else s('#time-hud').hide();
+            },
+            'displayParties': function() {
+                for (var t = '', e = 0; e < this['parties'].length; e++) t += '<li><a href=\"https://agar.io/#' + this['parties'][e] + '\" onclick=\"$(\'#party-token\').val(\'' + this['parties'][e] + '\'); $(\'#join-party-btn-2\').click();\">https://agar.io/#' + this['parties'][e] + '</a></li>';
+                this['activeParties']['className'] = '' === t ? 'no-parties' : '', this['activeParties']['innerHTML'] = t;
+            },
+            /*			
+                        'displayTop5': function() {
+                            if (v['showTop5']) {
+            					//console.log(['top5'].length);
+            					//console.log(['teamPlayers'].length);
+                                for (var t = '', e = 0, s = this['top5'].length, o = 0; o < s; o++) e += this['top5'][o]['mass'], o >= this['top5limit'] || (t += '<li><span class=\"cell-counter\" style=\"background-color: ' + this['top5'][o].color + '\">' + (o + 1) + '</span>', v['showTargeting'] && (t += '<a href=\"#\" data-user-id=\"' + this['top5'][o]['id'] + '\" class=\"set-target ogicon-target\"></a> '), t += '<span class=\"hud-main-color\">[' + this['calculateMapSector'](this['top5'][o]['x'], this['top5'][o]['y']) + ']</span>', t += 					'<span class=\"top5-mass-color\">[' + this['shortMassFormat'](this['top5'][o]['mass']) + ']</span> ' + this['escapeHTML'](this['top5'][o].nick) + '</li>');
+                                this['top5pos']['innerHTML'] = t, i.play && i['playerMass'] && (e += i['playerMass'], s++), this['top5totalMass']['textContent'] = this['shortMassFormat'](e), this['top5totalPlayers']['textContent'] = s;
+                            }
+                        },
+                        'setTop5limit': function(t) {
+                            t && (this['top5limit'] = t);
+                        },
+
+                    "displayTop5" : function() {
+                      if (v["showTop5"]) {
+                        var pix_color = "";
+                        var bufferString = 0;
+                        var PL$29 = this["top5"]["length"];
+                        var entityType = 0;
+                        for (; entityType < PL$29; entityType++) {
+                          bufferString = bufferString + this["top5"][entityType].mass;
+                          if (!(entityType >= v["limTP"])) {
+                            pix_color = pix_color + ('<li id="player"><span id="pos-skin" style="background-color: ' + this["top5"][entityType]["color"] + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this["top5"][entityType]["skin"] ? this["top5"][entityType]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + '" alt=""> ' + 
+            				'<span class=\"top5-mass-color\">[' + this['shortMassFormat'](this['top5'][entityType]['mass']) + ']</span> ' + this["escapeHTML"](this["top5"][entityType].nick) + '</span><span class=\"hud-main-color\">[' + this["calculateMapSector"](this["top5"][entityType]["x"], this["top5"][entityType]["y"]) +']</span><span id= "top5mass" class=""> ' + 
+                            this["shortMassFormat"](this["top5"][entityType].mass) + '</span></li>');
+                          }
                         }
+                        this["top5pos"]["innerHTML"] = pix_color;
+                        if (i["play"] && i["playerMass"]) {
+                          bufferString = bufferString + i["playerMass"];
+                          PL$29++;
+                        }
+                        this["top5totalMass"]["textContent"] = this["shortMassFormat"](bufferString);
+                        this["top5totalPlayers"]["textContent"] = PL$29;
+                      }
                     },
-                    filltext_override: function() {
-                        t.f.prototype_override("canvas", "fillText", "before", function(e, o) {
-                            var s = o[0];
-                            if (console.log(o), s.match(/^(1|2|3|4|5|6|7|8|9|10)\.(.+?)$/)) {
-                                var a = "",
-                                    n = s.split(/\.(.+)?/);
-                                t.l.leaderboard[n[0]] = n[1];
-                                for (k in t.l.leaderboard) a += t.u.span("leaderboard name #" + k, t.l.leaderboard[k]);
-                                document.getElementById("tcm-leaderboard").innerHTML = a
-                            } else s.match(/^score\:\s([0-9]+)$/i) ? (t.l.score = parseInt(s.split(/score:\s([0-9]+)?/i)[1]), document.getElementById("tcm-score").innerHTML = t.u.span("score", t.l.score)) : !("" !== s && s.length <= 15) || t.l.names.indexOf(s) > -1 || s.match(/(leaderboard|connect|loading|starting\smass|xp\sboost|open\sshop|([0-9]{2})m\s(([0-9]{2})h\s)?([0-9]{2})s)/i) || s.match(/^(free\scoins|\s?([0-9]+)\scoins|\s?with\soffers|collect\sin\:|hourly\scoins|come\sback\sin|to\searn\:|starter\spack|hourly\sbonus|level\s([0-9]+)|([0-9\.]+)|.([0-9\.]+)|([0-9\.]+)\%|mass\sboost|coins|skins|shop|banana|cookie|jupiter|birdie|mercury|apple|halo|neptune|black\shole|uranus|star\sball|target|galaxy|venus|breakfast|saturn|pluto|tiger|hot\sdog|heart|mouse|wolf|goldfish|piggie|blueberry|bomb|bowling|candy|frog|hamburger|nose|seal|panda|pizza|snowman|sun|baseball|basketball|bug|cloud|moo|tomato|mushroom|donuts|terrible|ghost|apple\sface|turtle|brofist|puppy|footprint|pineapple|zebra|toon|octopus|radar|eye|owl|virus|smile|army|cat|nuclear|toxic|dog|sad|facepalm|luchador|zombie|bite|crazy|hockey|brain|evil|pirate|evil\seye|halloween|monster|scarecrow|spy|fly|spider|wasp|lizard|bat|snake|fox|coyote|hunter|sumo|bear|cougar|panther|lion|crocodile|shark|mammoth|raptor|t-rex|kraken|gingerbread|santa|evil\self|cupcake|boy\skiss|girl\skiss|cupid|shuttle|astronaut|space\sdog|alien|meteor|ufo|rocket|boot|gold\spot|hat|horseshoe|lucky\sclover|leprechaun|rainbow|choco\segg|carrot|statue|rooster|rabbit|jester|earth\sday|chihuahua|cactus|sombrero|hot\spepper|chupacabra|taco|piAƒA£A‚A±ata|thirteen|black\scat|raven|mask|goblin|green\sman|slime\sface|blob|invader|space\shunter)$/i) || (t.l.names.push(s), document.getElementById("tcm-names").innerHTML = document.getElementById("tcm-names").innerHTML.concat(t.u.span("cell name", s)))
-                        })
-                    },
-                    hotkeys: function(e) {
-                        88 == e.keyCode && (document.getElementById("tcm").style.display = t.l.toggled ? "none" : "block", t.l.toggled = t.l.toggled ? !1 : !0)
-                    }
-                },
-                u: {
-                    fonts: function() {
-                        return '<link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet" type="text/css" />'
-                    },
-                    html: function() {
-                        return '<div id="tcm" style="display:block;"><div id="tcm-header"><span>Copy Tools</span><p>Copy cell names (press x to show/hide)</p></div><div id="tcm-main"><div><span style="display: none;">leaderboard names</span><div id="tcm-leaderboard" style="display: none;"></div></div><div><span>cell names</span><div id="tcm-names"></div></div><div></div></div></div>'
-                    },
-                    span: function(e, o) {
-                        return "<span onclick=\"javascript:prompt('" + e + "', '" + o + "')\">" + o + "</span>"
+            */
+            'displayTop5': function() {
+                if (window.top5skins != true) {
+                    if (v['showTop5']) {
+                        //console.log(['top5'].length);
+                        //console.log(['teamPlayers'].length);
+                        for (var t = '', e = 0, s = this['top5'].length, o = 0; o < s; o++) e += this['top5'][o]['mass'], o >= window.teamboardlimit || (t += '<li style=\"height: 16px;"\><span>' + (o + 1) + '. </span>', v['showTargeting'] && (t += '<a href=\"#\" data-user-id=\"' + this['top5'][o]['id'] + '\" class=\"set-target ogicon-target\"></a> '), t += '<span class=\"hud-main-color\">[' + this['calculateMapSector'](this['top5'][o]['x'], this['top5'][o]['y']) + ']</span>', t += '<span class=\"top5-mass-color\">[' + this['shortMassFormat'](this['top5'][o]['mass']) + ']</span> ' + this['escapeHTML'](this['top5'][o].nick) + '</li>');
+                        this['top5pos']['innerHTML'] = t, i.play && i['playerMass'] && (e += i['playerMass'], s++), this['top5totalMass']['textContent'] = this['shortMassFormat'](e), this['top5totalPlayers']['textContent'] = s;
                     }
                 }
-            };
-            document.getElementsByTagName("head")[0].insertAdjacentHTML("beforeend", t.u.fonts()), document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", t.u.html()), o.addEventListener("keydown", t.f.hotkeys), t.f.filltext_override()
-        } else o.setTimeout(function() {
-            e(o)
-        }, 100)
-    }(window));
-}
-
-function StopEditGameNames() {
-    $("#tcm").hide();
-}
-
-function ContinueEditGameNames() {
-    $("#tcm").show();
-}
-
-function Ultimouse() {
-	if (Ultimouseenabled==0){
-		var s = document.createElement("script");
-		s.type = "text/javascript";
-		s.src = "https://jimboy3100.github.io/auc/auc.user.js";
-		$("body").append(s);
-		return Ultimouseenabled=1;
-	}
-}
-function chatfunction() {
-//    if (MC.isInGame()) {
-      if ($("#helloContainer").is(":visible")==false) {	
-//        if (!ogario.spectate) {
-            //	if (messageone==1){
-            if (hiddenfromclan == 0) {
-                saveclanpassword = $("#clantag").val();
-                toastr["info"](Premadeletter33);
-                $("#ChatBtn1").attr('class', 'fa fa-comments-o');
-                $("#ChatBtn").attr("data-original-title", Premadeletter58);
-                $("#clantag").val("HIDDEN");
-                //	MC.onPlayerDeath=function(){ $("#clantag").val(saveclanpassword); }
-                $(".btn.btn-warning.btn-spectate.btn-needs-server").click();
-                hiddenfromclan = 1;
-                return saveclanpassword, hiddenfromclan;
-            } else if (hiddenfromclan == 1) {
-                toastr["info"](Premadeletter34);
-                $("#ChatBtn1").attr('class', 'fa fa-eye-slash');
-                $("#ChatBtn").attr("data-original-title", Premadeletter59);
-                $("#clantag").val(saveclanpassword);
-                $(".btn.btn-warning.btn-spectate.btn-needs-server").click();
-                hiddenfromclan = 0;
-                return hiddenfromclan;
-            }
-        }
-        /* else if (messageone==0){
-		var tempmode = getGameMode();
-		$("#ChatBtn1").attr('class', 'fa fa-eye-slash');
-		$("#ChatBtn").attr("data-original-title", "Chat is ON, hide/show up");
-	//	MC.onPlayerDeath=function(){ $("#clantag").val(saveclanpassword); }
-		$("#create-party-btn-2").click();
-		setTimeout(function () {
-		if(tempmode==":party"){$('#gamemode option[value=":party"]').prop('selected', 'selected').change();}
-		if(tempmode==""){$('#gamemode option[value=""]').prop('selected', 'selected').change();}
-		if(tempmode==":teams"){$('#gamemode option[value=":teams"]').prop('selected', 'selected').change();}
-		if(tempmode==":experimental"){$('#gamemode option[value=":experimental"]').prop('selected', 'selected').change();}
-		}, 6000);
-		setTimeout(function () {
-		MC.setQuality($('#quality').val());
-		}, 8000);
-	}
-	
-	
-    }   */
-	else {
-        toastr["info"](Premadeletter35 + "!").css("width", "210px");
-    }
-}
-function displayTimer() {
-    // initilized all local variables:
-    var minutes = '00',
-        seconds = '00',
-        time = '',
-        timeNow = new Date().getTime();
-
-    T.difference = timeNow - T.timerStarted;
-
-
-    // seconds
-    if (T.difference > 1000) {
-        seconds = Math.floor(T.difference / 1000);
-        if (seconds > 60) {
-            seconds = seconds % 60;
-        }
-        if (seconds < 10) {
-            seconds = '0' + String(seconds);
-        }
-    }
-
-    // minutes
-    if (T.difference > 60000) {
-        minutes = Math.floor11(T.difference / 60000);
-        1
-        if (minutes > 60) {
-            minutes = minutes % 60;
-        }
-        if (minutes < 10) {
-            minutes = '0' + String(minutes);
-        }
-    }
-
-
-    time += minutes + ':'
-    time += seconds
-
-    T.timerDiv.innerHTML = time;
-}
-
-function startTimer() {
-    $("#playtimer").hide();
-    $("#stoptimer").show();
-    $("#cleartimer").show();
-    // save start time
-    T.timerStarted = new Date().getTime()
-    console.log('T.timerStarted: ' + T.timerStarted)
-
-    if (T.difference > 0) {
-        T.timerStarted = T.timerStarted - T.difference
-    }
-    // update timer periodically
-    T.timerInterval = setInterval(function() {
-        displayTimer()
-    }, 10);
-
-}
-
-function stopTimer() {
-    $("#playtimer").show();
-    $("#stoptimer").hide();
-    $("#cleartimer").show();
-    clearInterval(T.timerInterval); // stop updating the timer
-
-}
-
-function clearTimer() {
-    $("#playtimer").show();
-    $("#stoptimer").hide();
-    $("#cleartimer").hide();
-    clearInterval(T.timerInterval);
-    T.timerDiv.innerHTML = "00:00";
-    T.difference = 0;
-}
-
-
-function setminbgname() {
-    minimapbckimg = $("#minimapPicture").val();
-    localStorage.setItem("minimapbckimg", minimapbckimg);
-    $("#minimap-hud").css('background-image', 'url("' + minimapbckimg + '")').css({
-        opacity: 0.8
-    });
-}
-
-function setminbtext() {
-    var minbtext = $("#minbtext").val();
-    localStorage.setItem("minbtext", minbtext);
-    var c = document.getElementById("minimap-sectors");
-    var ctx = c.getContext("2d");
-    ctx.clearRect(0, 0, c.width, c.height / 9);
-    ctx.font = "16px Georgia";
-    ctx.fillText(minbtext, c.width / 2, 22);
-}
-
-function setleadbgname() {
-    leadbimg = $("#leadbPicture").val();
-    localStorage.setItem("leadbimg", leadbimg);
-    $("#leaderboard-hud").css('background-image', 'url("' + leadbimg + '")').css({
-        opacity: 0.8
-    });
-}
-
-function setteambgname() {
-    teambimg = $("#teambPicture").val();
-    localStorage.setItem("teambimg", teambimg);
-    $("#top5-hud").css('background-image', 'url("' + teambimg + '")').css({
-        opacity: 0.8
-    });
-}
-
-function setcanvasbgname() {
-    canvasbimg = $("#canvasPicture").val();
-    localStorage.setItem("canvasbimg", canvasbimg);
-    $("#canvas").css('background-image', 'url("' + canvasbimg + '")').css({
-        opacity: 1
-    });
-}
-
-function setleadbtext() {
-    leadbtext = $("#leadbtext").val();
-    localStorage.setItem("leadbtext", leadbtext);
-    $("#leaderboard-hud > h4").text(leadbtext);
-}
-
-function setteambtext() {
-    teambtext = $("#teambtext").val();
-    localStorage.setItem("teambtext", teambtext);
-    $("#top5-hud > h5").text(teambtext);
-}
-
-function setimgUrl() {
-    imgUrl = $("#imgUrl").val();
-    localStorage.setItem("imgUrl", imgUrl);
-}
-
-function setimgHref() {
-    imgHref = $("#imgHref").val();
-    localStorage.setItem("imgHref", imgHref);
-}
-
-
-function setpic1url() {
-    pic1urlimg = $("#pic1url").val();
-    localStorage.setItem("pic1urlimg", pic1urlimg);
-    return pic1urlimg;
-}
-
-function setpic2url() {
-    pic2urlimg = $("#pic2url").val();
-    localStorage.setItem("pic2urlimg", pic2urlimg);
-    return pic2urlimg;
-}
-
-function setpic3url() {
-    pic3urlimg = $("#pic3url").val();
-    localStorage.setItem("pic3urlimg", pic3urlimg);
-    return pic3urlimg;
-}
-
-function setpic4url() {
-    pic4urlimg = $("#pic4url").val();
-    localStorage.setItem("pic4urlimg", pic4urlimg);
-    return pic4urlimg;
-}
-
-function setpic5url() {
-    pic5urlimg = $("#pic5url").val();
-    localStorage.setItem("pic5urlimg", pic5urlimg);
-    return pic5urlimg;
-}
-
-function setpic6url() {
-    pic6urlimg = $("#pic6url").val();
-    localStorage.setItem("pic6urlimg", pic6urlimg);
-    return pic6urlimg;
-}
-
-function setdiscwebhook1() {
-    discwebhook1 = $("#discwebhook1").val();
-    var containsrealwebhook = $('#discwebhook1').val();
-
-    if (~containsrealwebhook.indexOf("discordapp.com/api/webhooks/")) {
-        localStorage.setItem("discwebhook1", discwebhook1);
- //       setTimeout(function() {
-            var s = document.createElement("script");
-            s.type = "text/javascript";
-            s.src = "https://jimboy3100.github.io/DiscordSIP.user.js";
-            $("body").append(s);
-  //      }, 1000);
-    } else {
-        if (containsrealwebhook == "") {
-            localStorage.setItem("discwebhook1", discwebhook1);
-        } else {
-            toastr["error"](Premadeletter36).css("width", "210px");
-        }
-        //return discwebhook1;
-    }
-}
-
-function setdiscwebhook2() {
-    discwebhook2 = $("#discwebhook2").val();
-    var containsrealwebhook = $('#discwebhook2').val();
-    if (~containsrealwebhook.indexOf("discordapp.com/api/webhooks/")) {
-        localStorage.setItem("discwebhook2", discwebhook2);
-    } else {
-        if (containsrealwebhook == "") {
-            localStorage.setItem("discwebhook2", discwebhook2);
-        } else {
-            toastr["error"](Premadeletter36).css("width", "210px");
-        }
-        //return discwebhook2;
-    }
-}
-
-function openbleedmod() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/BleedingMod.js";
-    $("body").append(s);
-}
-
-function openrotatingmod() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/rotating500images.js";
-    $("body").append(s);
-}
-
-function languagemodfun(){
-if (languagemod == 2) {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/LanguagePackGreek.js";
-    $("body").append(s);
-    setTimeout(function() {
-        $('#legendlanguages').val("2");
-        var s1 = document.createElement("script");
-        s1.type = "text/javascript";
-        s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-        $("body").append(s1);
-    }, 800);
-}
-if (languagemod == 3) {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/LanguagePackSpanish.js";
-    $("body").append(s);
-    setTimeout(function() {
-        $('#legendlanguages').val("3");
-        var s1 = document.createElement("script");
-        s1.type = "text/javascript";
-        s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-        $("body").append(s1);
-    }, 800);
-}
-if (languagemod == 4) {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/LanguagePackBulgarian.js";
-    $("body").append(s);
-    setTimeout(function() {
-        $('#legendlanguages').val("4");
-        var s1 = document.createElement("script");
-        s1.type = "text/javascript";
-        s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-        $("body").append(s1);
-    }, 800);
-}
-if (languagemod == 5) {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/LanguagePackFrench.js";
-    $("body").append(s);
-    setTimeout(function() {
-        $('#legendlanguages').val("5");
-        var s1 = document.createElement("script");
-        s1.type = "text/javascript";
-        s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-        $("body").append(s1);
-    }, 800);
-}
-if (languagemod == 6) {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/LanguagePackArabic.js";
-    $("body").append(s);
-    setTimeout(function() {
-        $('#legendlanguages').val("6");
-        var s1 = document.createElement("script");
-        s1.type = "text/javascript";
-        s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-        $("body").append(s1);
-    }, 800);
-}
-if (languagemod == 7) {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/LanguagePackTraditionalChinese.js";
-    $("body").append(s);
-    setTimeout(function() {
-        $('#legendlanguages').val("7");
-        var s1 = document.createElement("script");
-        s1.type = "text/javascript";
-        s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-        $("body").append(s1);
-    }, 800);
-}
-if (languagemod == 8) {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/LanguagePackRussian.js";
-    $("body").append(s);
-    setTimeout(function() {
-        $('#legendlanguages').val("8");
-        var s1 = document.createElement("script");
-        s1.type = "text/javascript";
-        s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-        $("body").append(s1);
-    }, 800);
-}
-if (languagemod == 9) {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/LanguagePackGerman.js";
-    $("body").append(s);
-    setTimeout(function() {
-        $('#legendlanguages').val("9");
-        var s1 = document.createElement("script");
-        s1.type = "text/javascript";
-        s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-        $("body").append(s1);
-    }, 800);
-}
-if (languagemod == 10) {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/LanguagePackTurkish.js";
-    $("body").append(s);
-    setTimeout(function() {
-        $('#legendlanguages').val("10");
-        var s1 = document.createElement("script");
-        s1.type = "text/javascript";
-        s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-        $("body").append(s1);
-    }, 800);
-}
-}
-function changeModLanguage() {
-    if ($("#legendlanguages").val() == 1) {
-        localStorage.setItem("languagemod", 1);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackEnglish.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages").val() == 2) {
-        localStorage.setItem("languagemod", 2);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackGreek.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages").val() == 3) {
-        localStorage.setItem("languagemod", 3);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackSpanish.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages").val() == 4) {
-        localStorage.setItem("languagemod", 4);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackBulgarian.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages").val() == 5) {
-        localStorage.setItem("languagemod", 5);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackFrench.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages").val() == 6) {
-        localStorage.setItem("languagemod", 6);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackArabic.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages").val() == 7) {
-        localStorage.setItem("languagemod", 7);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackTraditionalChinese.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }	
-    if ($("#legendlanguages").val() == 8) {
-        localStorage.setItem("languagemod", 8);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackRussian.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }	
-    if ($("#legendlanguages").val() == 9) {
-        localStorage.setItem("languagemod", 9);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackGerman.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }	
-    if ($("#legendlanguages").val() == 10) {
-        localStorage.setItem("languagemod", 10);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackTurkish.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }	
-}
-function newsubmit(){
-	if (legendmod.play==true){
-		$('*[data-itr="page_play"]').click();
-	}
-}
-function triggerLMbtns() {
-			$('#leaderboardlimit').val(window.leaderboardlimit);
-			$('#teamboardlimit').val(window.teamboardlimit);
-			$('.btn').css("text-transform", "capitalize");
-            PanelImageSrc = $("#menuBg").val();
-            if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://jimboy3100.github.io/pattern.png") {
-                $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
-            }
-            $("#copyLBBtn").blur(function() {
-                if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://jimboy3100.github.io/pattern.png") {
-                    $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
+				else{
+                if (v["showTop5"]) {
+                    var t = "";
+                    var e = 0;
+                    var s = this["top5"].length;
+                    var o = 0;
+                    for (; o < s; o++) {
+                        e = e + this["top5"][o].mass;
+                        if (!(o >= window.teamboardlimit)) {
+                            t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this["top5"][o]["id"] + '"style="background-color: ' + this["top5"][o]["color"] + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this["top5"][o]["skin"] ? this["top5"][o]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
+                            /* if (v["showTargeting"]) {
+                              t = t + ('<a href="#" data-user-id="' + this["top5"][o]["id"] + '" class="set-target ogicon-target"></a> ');
+                            } */
+                            t = t + ('<span class="hud-main-color">[' + this["calculateMapSector"](this["top5"][o]["x"], this["top5"][o]["y"]) + "]</span>");
+                            t = t + ('<span class="top5-mass-color">[' + this["shortMassFormat"](this["top5"][o].mass) + "]</span> " + this["escapeHTML"](this["top5"][o].nick) + "</div></li>");
+                        }
+                    }
+                    this["top5pos"]["innerHTML"] = t;
+                    if (i.play && i["playerMass"]) {
+                        e = e + i["playerMass"];
+                        s++;
+                    }
+                    this["top5totalMass"]["textContent"] = this["shortMassFormat"](e);
+                    this["top5totalPlayers"]["textContent"] = s;
                 }
-            });			
-            $("#dropDown>#copyLBBtn").blur(function() {
-                if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://jimboy3100.github.io/pattern.png") {
-                    $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
+				}
+            },
+/*			
+            'setTop5limit': function(t) {
+                t && (this['top5limit'] = t);
+            },
+            "setTop5limit": function(canCreateDiscussions) {
+                if (canCreateDiscussions) {
+                    this["top5limit"] = canCreateDiscussions;
                 }
-            });			
-            $("#copySIPandPass").blur(function() {
-                if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://jimboy3100.github.io/pattern.png") {
-                    $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
-                }
-            });			
-            $("#copySIPPassLB").blur(function() {
-                if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://jimboy3100.github.io/pattern.png") {
-                    $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
-                }
-            });	
-            //	if (autoRespawn == "true") { $("#autoRespawnBtn").click(); }
-            //	if (IPBtn  == "true") { $("#IPBtn").click(); }
-            if (SHOSHOBtn == "true") {
-                $("#SHOSHOBtn").click();
-            }
-            //	if (TIMEBtn == "true") { $("#TIMEBtn").click(); }
-            //	if (MAINBBtn == "true") { $("#MAINBBtn").click(); }
-            //	if (MAINBTBtn  == "true") { $("#MAINBTBtn").click(); }
-            //	if (MANUIBtn  == "true") { $("#MANUIBtn").click(); }
-			if (MAINBTBtn  == "true") { $("#MAINBTBtn").click(); }
-            if (AnimatedSkinBtn  == "true") { $("#AnimatedSkinBtn").click();  }
-			toastrSkinNotice=1;
-            //	if (RotationBtn  == "true") { $("#RotationBtn").click(); }
-//            if (YoutubeAutoBtn == "true") {
-//                $("#YoutubeAutoBtn").click();
-//            }
-            if (XPBtn == "true") {
-                $("#XPBtn").click();
-            }
-            if (TIMEcalBtn == "true") {
-                $("#TIMEcalBtn").click();
-            }
-/*            if (troll1Btn == "true") {
-                $("#troll1Btn").click();
-            }*/
-            if (ComPosition == 0) {
-                $("#topright").click();
-            }
-            if (ComPosition == 1) {
-                $("#topleft").click();
-            }
-            if (ComPosition == 2) {
-                $("#bottomright").click();
-            }
- //           if (DoubleSplitRangeSaved == "true") { //For Setting DoubleSplitRange
- //               $("#DoubleSplitRange").click();
- //           }	
-           if (UniversalChatSaved == "false") { 
-                $("#UniversalChat").click();
-           }
-           if (VanillaskinsSaved == "true") { 
-                $("#Vanillaskins").click();
-           }	
-           if (top5skinsSaved == "true") { 
-                $("#top5skins").click();
-           }		
-           if (spawnspecialeffectsSaved == "true") { 
-                $("#spawnspecialeffects").click();
-           }			   
-           if (AnimatedRainbowColorSaved == "true") { 
-                $("#AnimatedRainbowColor").click();
-           }			   
-            //	if (ComPosition  == 3) { $("#bottomleft").click(); }
-/*            if (autoCoinBtn == "true") {
-                setTimeout(function() {
-                    $("#autoCoinBtn").click();
-                }, 5000); 
-            }*/
-            //	if (copyGameNames == "true") {
-            //		setTimeout(function () {$("#copyGameNames").click();}, 1000); }	
-
-            document.getElementById("minimapPicture").value = localStorage.getItem("minimapbckimg");
-            if ($('#minimapPicture').val() != "") {
-                setminbgname();
-            }
-            document.getElementById("leadbPicture").value = localStorage.getItem("leadbimg");
-            if ($('#leadbPicture').val() != "") {
-                setleadbgname();
-            }
-            document.getElementById("teambPicture").value = localStorage.getItem("teambimg");
-            if ($('#teambPicture').val() != "") {
-                setteambgname();
-            }
-            document.getElementById("canvasPicture").value = localStorage.getItem("canvasbimg");
-            if ($('#canvasPicture').val() != "") {
-                setcanvasbgname();
-            }
-            document.getElementById("leadbtext").value = localStorage.getItem("leadbtext");
-            if ($('#leadbtext').val() != "") {
-                setleadbtext();
-            }
-            document.getElementById("teambtext").value = localStorage.getItem("teambtext");
-            if ($('#teambtext').val() != "") {
-                setteambtext();
-            }
-            document.getElementById("imgUrl").value = localStorage.getItem("imgUrl");
-            if ($('#imgUrl').val() != "") {
-                setimgUrl();
-            }
-            document.getElementById("imgHref").value = localStorage.getItem("imgHref");
-            if ($('#imgHref').val() != "") {
-                setimgHref();
-            }
-            document.getElementById("minbtext").value = localStorage.getItem("minbtext");
-            if ($('minbtext').val() != "") {
-                setminbtext();
-            }
-
-            document.getElementById("pic1url").value = localStorage.getItem("pic1urlimg");
-            if ($('#pic1url').val() != "") {
-                setpic1url();
-            }
-            document.getElementById("pic2url").value = localStorage.getItem("pic2urlimg");
-            if ($('#pic2url').val() != "") {
-                setpic2url();
-            }
-            document.getElementById("pic3url").value = localStorage.getItem("pic3urlimg");
-            if ($('#pic3url').val() != "") {
-                setpic3url();
-            }
-            document.getElementById("pic4url").value = localStorage.getItem("pic4urlimg");
-            if ($('#pic4url').val() != "") {
-                setpic4url();
-            }
-            document.getElementById("pic5url").value = localStorage.getItem("pic5urlimg");
-            if ($('#pic5url').val() != "") {
-                setpic5url();
-            }
-            document.getElementById("pic6url").value = localStorage.getItem("pic6urlimg");
-            if ($('#pic6url').val() != "") {
-                setpic6url();
-            }
-            document.getElementById("yt1url").value = localStorage.getItem("yt1urlimg");
-            if ($('#yt1url').val() != "") {
-                setyt1url();
-            }
-            document.getElementById("yt2url").value = localStorage.getItem("yt2urlimg");
-            if ($('#yt2url').val() != "") {
-                setyt2url();
-            }
-            document.getElementById("yt3url").value = localStorage.getItem("yt3urlimg");
-            if ($('#yt3url').val() != "") {
-                setyt3url();
-            }
-            document.getElementById("yt4url").value = localStorage.getItem("yt4urlimg");
-            if ($('#yt4url').val() != "") {
-                setyt4url();
-            }
-            document.getElementById("yt5url").value = localStorage.getItem("yt5urlimg");
-            if ($('#yt5url').val() != "") {
-                setyt5url();
-            }
-            document.getElementById("yt6url").value = localStorage.getItem("yt6urlimg");
-            if ($('#yt6url').val() != "") {
-                setyt6url();
-            }
-            document.getElementById("pic1data").value = localStorage.getItem("pic1dataimg");
-            if ($('#pic1data').val() != "") {
-                setpic1data();
-            }
-            document.getElementById("pic2data").value = localStorage.getItem("pic2dataimg");
-            if ($('#pic2data').val() != "") {
-                setpic2data();
-            }
-            document.getElementById("pic3data").value = localStorage.getItem("pic3dataimg");
-            if ($('#pic3data').val() != "") {
-                setpic3data();
-            }
-            document.getElementById("pic4data").value = localStorage.getItem("pic4dataimg");
-            if ($('#pic4data').val() != "") {
-                setpic4data();
-            }
-            document.getElementById("pic5data").value = localStorage.getItem("pic5dataimg");
-            if ($('#pic5data').val() != "") {
-                setpic5data();
-            }
-            document.getElementById("pic6data").value = localStorage.getItem("pic6dataimg");
-            if ($('#pic6data').val() != "") {
-                setpic6data();
-            }
-            document.getElementById("yt1data").value = localStorage.getItem("yt1dataimg");
-            if ($('#yt1data').val() != "") {
-                setyt1data();
-            }
-            document.getElementById("yt2data").value = localStorage.getItem("yt2dataimg");
-            if ($('#yt2data').val() != "") {
-                setyt2data();
-            }
-            document.getElementById("yt3data").value = localStorage.getItem("yt3dataimg");
-            if ($('#yt3data').val() != "") {
-                setyt3data();
-            }
-            document.getElementById("yt4data").value = localStorage.getItem("yt4dataimg");
-            if ($('#yt4data').val() != "") {
-                setyt4data();
-            }
-            document.getElementById("yt5data").value = localStorage.getItem("yt5dataimg");
-            if ($('#yt5data').val() != "") {
-                setyt5data();
-            }
-            document.getElementById("yt6data").value = localStorage.getItem("yt6dataimg");
-            if ($('#yt6data').val() != "") {
-                setyt6data();
-            }
-
-            document.getElementById("discwebhook1").value = localStorage.getItem("discwebhook1");
-            if ($('#discwebhook1').val() != "" && $('#discwebhook1').val() != null) {
-                setdiscwebhook1();
-            }
-            document.getElementById("discwebhook2").value = localStorage.getItem("discwebhook2");
-            if ($('#discwebhook2').val() != "" && $('#discwebhook2').val() != null) {
-                setdiscwebhook2();
-            }
-
-            if (dyinglight1load == null || dyinglight1load == "null") {
-                $("#LEGENDAds2").load("https://jimboy3100.github.io/banners/bannerDyingLight");
-            } else if (dyinglight1load == "yes") {
-                opendyinglight();
-                $("#LEGENDAds2").load("https://jimboy3100.github.io/banners/bannerStopDyingLight");
-            }
-}
-function opendyinglight() {
-//toastr["info"]("Function is not ready yet");	
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/dyinglight.js";
-    $("body").append(s);
-	
-}	
-
-function bluebtns(){
-	var Top5MassColor = $("#top5MassColor").val();
-	
-		//blue onmouseover-onmouseout buttons
-        $('#searchShortcut').mouseenter(function() {$('#searchShortcut').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#searchShortcut').css('background-color', "transparent");});		
-        $('#dropDown3>#lastIPBtn').mouseenter(function() {$('#dropDown3>#lastIPBtn').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#dropDown3>#lastIPBtn').css('background-color', "transparent");});		
-        $('#copySIPBtn').mouseenter(function() {$('#copySIPBtn').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#copySIPBtn').css('background-color', "transparent");});		
-        $('#copyLBBtn').mouseenter(function() {$('#copyLBBtn').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#copyLBBtn').css('background-color', "transparent");});			
-        $('#dropDown>#copyLBBtn').mouseenter(function() {$('#dropDown>#copyLBBtn').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#dropDown>#copyLBBtn').css('background-color', "transparent");});			
-		$('#copySIPandPass').mouseenter(function() {$('#copySIPandPass').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#copySIPandPass').css('background-color', "transparent");});
-		$('#copySIPPassLB').mouseenter(function() {$('#copySIPPassLB').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#copySIPPassLB').css('background-color', "transparent");});		
-        $('#reconnectBtn').mouseenter(function() {$('#reconnectBtn').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#reconnectBtn').css('background-color', "transparent");});
-		
-        $('#VoiceBtn').mouseenter(function() {$('#VoiceBtn').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#VoiceBtn').css('background-color', "transparent");});
-        $('#ChatBtn').mouseenter(function() {$('#ChatBtn').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#ChatBtn').css('background-color', "transparent");});
-        $('#MiniScripts').mouseenter(function() {$('#MiniScripts').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#MiniScripts').css('background-color', "transparent");});
-		$('#SendCommands').mouseenter(function() {$('#SendCommands').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#SendCommands').css('background-color', "transparent");});
-        $('#shortcuts-hud>#Images').mouseenter(function() {$('#shortcuts-hud>#Images').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#shortcuts-hud>#Images').css('background-color', "transparent");});
-        $('#yout').mouseenter(function() {$('#yout').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#yout').css('background-color', "transparent");});
-        $('#Bino').mouseenter(function() {$('#Bino').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#Bino').css('background-color', "transparent");});
-        $('#playerBtn').mouseenter(function() {$('#playerBtn').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#playerBtn').css('background-color', "transparent");});
-        $('#fullscreenBtn').mouseenter(function() {$('#fullscreenBtn').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#fullscreenBtn').css('background-color', "transparent");});
-
-        $('#Cutnames').mouseenter(function() {$('#Cutnames').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#Cutnames').css('background-color', "transparent");});				
-        $('#Ultimouse').mouseenter(function() {$('#Ultimouse').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#Ultimouse').css('background-color', "transparent");});						
-		
-        $('#msgcommand1').mouseenter(function() {$('#msgcommand1').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#msgcommand1').css('background-color', "transparent");});	
-        $('#msgcommand2').mouseenter(function() {$('#msgcommand2').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#msgcommand2').css('background-color', "transparent");});	
-        $('#msgcommand3').mouseenter(function() {$('#msgcommand3').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#msgcommand3').css('background-color', "transparent");});	
-        $('#msgcommand4').mouseenter(function() {$('#msgcommand4').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#msgcommand4').css('background-color', "transparent");});	
-        $('#msgcommand5').mouseenter(function() {$('#msgcommand5').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#msgcommand5').css('background-color', "transparent");});	
-        $('#msgcommand6').mouseenter(function() {$('#msgcommand6').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#msgcommand6').css('background-color', "transparent");});	
-		
-        $('#sendicon1').mouseenter(function() {$('#sendicon1').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#sendicon1').css('background-color', "transparent");});	
-        $('#sendicon2').mouseenter(function() {$('#sendicon2').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#sendicon2').css('background-color', "transparent");});	
-        $('#sendicon3').mouseenter(function() {$('#sendicon3').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#sendicon3').css('background-color', "transparent");});	
-        $('#sendicon4').mouseenter(function() {$('#sendicon4').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#sendicon4').css('background-color', "transparent");});	
-        $('#sendicon5').mouseenter(function() {$('#sendicon5').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#sendicon5').css('background-color', "transparent");});	
-        $('#sendicon6').mouseenter(function() {$('#sendicon6').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#sendicon6').css('background-color', "transparent");});
-		
-        $('#sendyt1').mouseenter(function() {$('#sendyt1').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#sendyt1').css('background-color', "transparent");});	
-        $('#sendyt2').mouseenter(function() {$('#sendyt2').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#sendyt2').css('background-color', "transparent");});	
-        $('#sendyt3').mouseenter(function() {$('#sendyt3').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#sendyt3').css('background-color', "transparent");});	
-        $('#sendyt4').mouseenter(function() {$('#sendyt4').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#sendyt4').css('background-color', "transparent");});	
-        $('#sendyt5').mouseenter(function() {$('#sendyt5').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#sendyt5').css('background-color', "transparent");});	
-        $('#sendyt6').mouseenter(function() {$('#sendyt6').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#sendyt6').css('background-color', "transparent");});
-		
-        $('#RotateRight').mouseenter(function() {$('#RotateRight').css('background-color', Top5MassColor);})
-		.mouseleave(function() {$('#RotateRight').css('background-color', "transparent");});	
-}		
-
-function YoutubebackgroundEnable(){
-inject('stylesheet', '*{-webkit-box-sizing: border-box;box-sizing: border-box}.video-background{background: #000;position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: -99}.video-foreground,.video-background iframe{position: absolute;top: 0;left: 0;width: 100%;height: 100%;pointer-events: none}#vidtop-content{top: 0;color: #fff}.vid-info{position: absolute;top: 0;right: 0;width: 33%;background: rgba(0,0,0,0.3);color: #fff;padding: 1rem;font-family: Avenir, Helvetica, sans-serif}.vid-info h1{font-size: 2rem;font-weight: 700;margin-top: 0;line-height: 1.2}.vid-info a{display: block;color: #fff;text-decoration: none;background: rgba(0,0,0,0.5);-webkit-transition: .6s background;transition: .6s background;border-bottom: none;margin: 1rem auto;text-align: center}@media (min-aspect-ratio: 16/9){.video-foreground{height: 300%;top: -100%}}@media (max-aspect-ratio: 16/9){.video-foreground{width: 300%;left: -100%}}@media all and (max-width: 600px){.vid-info{width: 50%;padding: .5rem}.vid-info h1{margin-bottom: .2rem}}@media all and (max-width: 500px){.vid-info .acronym{display: none}}');
-$("body").append('<div class="video-background"><div class="video-foreground"><iframe frameborder="0" height="100%" width="100%" src="https://www.youtube.com/embed/'+getParameterByName("v", $("#musicUrl").val())+'?controls=0&showinfo=0&rel=0&autoplay=1&loop=1&start_radio=1&playlist='+getParameterByName("list", $("#musicUrl").val())+'"></iframe></div></div></div>');
-}
-function YoutubebackgroundDisable(){
-$('.video-background').remove();
-}
-function kFormatter(num) {
-    return num > 999 ? (num / 1000).toFixed(1) + "k" : num;
-}
-function settrolling() {
+            }, */
 			
-            //afterdeathtonormalmode();
-			playSound("https://jimboy3100.github.io/banners/troll1.mp3");	
-			$("#canvas").css('background-image', 'url(" https://media.giphy.com/media/eVy46EWyclTIA/giphy.gif ")').css({
-                opacity: 0.8
-            });
-            $("#minimap-hud").css('background-image', 'url(" https://jimboy3100.github.io/banners/icoeucid.gif ")').css({
-                opacity: 1
-            });
-            $("#leaderboard-hud").css('background-image', 'url(" https://media.giphy.com/media/VSuWfl1qCiRsk/giphy.gif ")').css({
-                opacity: 0.8
-            });
-            setTimeout(function() {
-                $("#canvas").css('background-image', 'url(" https://media.giphy.com/media/aw9WgvgNd1bQk/giphy.gif ")').css({
-                    opacity: 0.8
+            'displayChatHistory': function(t) {
+                if (t) {
+                    this['clearChatHistory'](!0);
+                    for (var e = 0; e < this['chatHistory'].length; e++) s('#messages').append('<li><span class=\"message-nick\">' + this['chatHistory'][e].nick + ': </span><span class=\"message-text\">' + this['chatHistory'][e]['message'] + '</span></li>');
+                } else this['clearChatHistory'](!1);
+            },
+            'clearChatHistory': function(t) {
+                s('#messages').empty(), t && (toastr['clear'](), v['showChatBox'] && (s('#chat-box .message').remove(), this['chatHistory'].length = 0));
+            },
+            'displayChatInfo': function(t, e) {
+                t ? toastr['info'](h[e + 'A']) : toastr['error'](h[e + 'B']);
+            },
+            'setDisableChat': function() {
+                v['hideChat'] = v['disableChat'], this['setHideChat']();
+            },
+            'hideChat': function() {
+                v['hideChat'] = !v['hideChat'], this['setHideChat'](), this['displayChatInfo'](!v['hideChat'], 'hideChatMsg');
+            },
+            'setHideChat': function() {
+                v['hideChat'] && s('#message-box').hide(), this['setShowChatBox']();
+            },
+            'setShowChatBox': function() {
+                !v['hideChat'] && v['showChatBox'] ? s('#chat-box').show() : s('#chat-box').hide();
+            },
+            'enterChatMessage': function() {
+                var t = s('#message-box'),
+                    e = s('#message');
+                if (t['is'](':visible')) {
+                    var o = e.val();
+                    o.length ? (this['sendChatMessage'](101, o), i.play && (e['blur'](), t.hide())) : (e['blur'](), t.hide()), e.val('');
+                } else t.show(), e['focus'](), e.val('');
+            },
+            'showMenu': function(t) {
+                if (e.MC && e.MC['showNickDialog']) return s('.ogario-menu').show(), s('.menu-panel').hide(), i.play || this['skipStats'] ? s('#main-panel').show() : s('#stats').show(), e.MC['showNickDialog'](300), s('#oferwallContainer')['is'](':visible') && e['closeOfferwall'](), void(s('#videoContainer')['is'](':visible') && e['closeVideoContainer']());
+                t ? s('#overlays')['fadeIn'](t) : s('#overlays').show();
+            },
+            'hideMenu': function(t) {
+                e.MC && e.MC['showNickDialog'] ? s('.ogario-menu').hide() : t ? s('#overlays')['fadeOut'](t) : s('#overlays').hide();
+            },
+            'escapeHTML': function(t) {
+                return String(t).replace(/[&<>"'\/]/g, function(t) {
+                    return u[t];
                 });
-            }, 4000);
-            setTimeout(function() {
-                $("#canvas").css('background-image', 'url(" ")').css({
-                    opacity: 1
+            },
+            'checkSkinURL': function(t) {
+                //return /^https?:\/\/i\.(?:imgur|hizliresim)\.com\/\w{6,8}\.(?:jpg|jpeg|png)\??\d*$/i .test(t) ? t.replace('http:', 'https:') : '';
+                return t.replace('http:', 'https:');
+                //return /^https?:\/\/(i|s))\.(?:imgur|hizliresim|put)\.(com|re)\/\w{6,8}\.(?:jpg|jpeg|png)\??\d*$/i .test(t) ? t.replace('http:', 'https:') : '';
+            },
+            'loadSettings': function() {
+                var t = null;
+                for (var s in null !== e.localStorage.getItem('ogarioSettings') && (t = JSON.parse(e.localStorage.getItem('ogarioSettings'))), v) v.hasOwnProperty(s) && (t && t.hasOwnProperty(s) && (v[s] = t[s]), i.hasOwnProperty(s) && (i[s] = v[s]));
+				
+            },
+            'saveSettings': function(t, i) {
+                e.localStorage.setItem(i, JSON['stringify'](t));
+            },
+            'exportSettings': function() {
+                var t = {
+                    'ogarioCommands': c,
+                    'ogarioHotkeys': ogario1Hotkeys,
+                    'ogarioPlayerProfiles': ogario1PlayerProfiles,
+                    'ogarioSettings': v,
+                    'ogarioThemeSettings': g
+                };
+                for (var e in t) {
+                    if (t.hasOwnProperty(e)) s('#export-' + e)['prop']('checked') || delete t[e];
+                }
+                t = JSON.stringify(t), s('#export-settings').val(t), s('#import-settings').val(''), t = null;
+            },
+            'importSettings': function() {
+                s('#import-settings')['blur']();
+                var t = s('#import-settings').val();
+                if (t) {
+                    for (var i in t = JSON.parse(t))
+                        if (t.hasOwnProperty(i)) {
+                            if (!s('#import-' + i)['prop']('checked')) continue;
+                            e.localStorage.setItem(i, JSON.stringify(t[i]));
+                        } e['location'].reload();
+                }
+            },
+            'restoreSettings': function() {
+                null !== e.localStorage.getItem('ogarioSettings') && (e.localStorage.removeItem('ogarioSettings'), e['location'].reload());
+            },
+            'setSettings': function(t, e) {
+                if (v.hasOwnProperty(t) && null !== e) {
+                    switch (v[t] = e, i.hasOwnProperty(t) && (i[t] = e), t) {
+                        case 'autoResp':
+                            this['setAutoResp']();
+                            break;
+                        case 'showMiniMap':
+                            this['setMiniMap']();
+                            break;
+                        case 'showMiniMapGrid':
+                            this['resetMiniMapSectors']();
+                            break;
+                        case 'disableChat':
+                            this['setDisableChat']();
+                            break;
+                        case 'chatSounds':
+                            this['setChatSoundsBtn']();
+                            break;
+                        case 'showChatBox':
+                            this['setShowChatBox']();
+                            break;
+                        case 'showTop5':
+                            this['setTop5']();
+                            break;
+                        case 'showTargeting':
+                            this['setTargetingHUD']();
+                            break;
+                        case 'showTime':
+                            this['displayTime'](), s('#time-hud').show();
+                            break;
+                        case 'centeredLb':
+                            this['setCenteredLb']();
+                            break;
+                        case 'normalLb':
+                            this['setNormalLb']();
+                            break;
+                        case 'fpsAtTop':
+                            this['setFpsAtTop']();
+                            break;
+                        case 'showStats':
+                            this['displayStats'](), s('#stats-hud').show();
+                            break;
+                        case 'blockPopups':
+                            this['setBlockPopups']();
+                    }
+                    this['saveSettings'](v, 'ogarioSettings');
+                }
+            },
+            'loadProfiles': function() {
+                if (null !== e.localStorage.getItem('ogarioPlayerProfiles')) {
+                    ogario1PlayerProfiles = JSON.parse(e.localStorage.getItem('ogarioPlayerProfiles'))
+                    if (ogario1PlayerProfiles.length == 10) { //fix for old players
+                        for (var t = 10; t < 15; t++) ogario1PlayerProfiles.push({
+                            'nick': 'Profile #' + (t + 1),
+                            'clanTag': '',
+                            'skinURL': '',
+                            'color': g.mainColor
+                        });
+                    }
+                } else {
+                    for (var t = 0; t < 15; t++) ogario1PlayerProfiles.push({
+                        'nick': 'Profile #' + (t + 1),
+                        'clanTag': '',
+                        'skinURL': '',
+                        'color': g.mainColor
+                    });
+                }
+                if (null !== e.localStorage.getItem('ogarioSelectedProfile')){ 
+				this['selectedProfile'] = JSON['parse'](e.localStorage.getItem('ogarioSelectedProfile'));
+				}
+				ogarcopythelb.nick = ogario1PlayerProfiles[this['selectedProfile']].nick;
+				ogarcopythelb.clanTag = ogario1PlayerProfiles[this['selectedProfile']].clanTag;
+				ogarcopythelb.skinURL = ogario1PlayerProfiles[this['selectedProfile']].skinURL;
+				ogarcopythelb.color = ogario1PlayerProfiles[this['selectedProfile']].color;
+            },
+            'changeSkinPreview': function(e, t) {
+				//console.log(e,t);
+                if (t && e) {
+                    if ("skin-preview" === t) { //or if ("skin-preview" === e)
+						//console.log(e,e.src);	
+						
+						if (e.src.includes(".mp4")){ //console.log("stage 3a videos");
+					
+                        s("#skin-preview").removeClass("default");
+						s("#skin-preview").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<video src=\'' + e.src + "' width='500'>\"></a>");
+						s("#skin-popover").append('<video id="videoskinpreview" src = "https://jimboy3100.github.io/banners/testvideomama.mp4" width="500"  controls></video>');
+//						s("#skin-popover").popover();
+						
+						//s("#skin-preview").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<video src=\'' + t.src + "' width='500'>\"></a>");
+						}
+						else{
+						//console.log("default settings for images on changeSkinPreview")
+						s("#skin-preview").removeClass("default");
+						s("#skin-preview").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<img src=\'' + e.src + "' width='500'>\"></a>");	
+						}
+                        s("#skin-popover").append(s(e).fadeIn(1000));
+                        s("#skin-popover").popover();
+                    } else {
+						if (e.src.includes(".mp4")){ //console.log("stage 3b videos");
+					
+                        s("#" + t).removeClass("default");
+						s("#" + t).append(s(e).fadeIn(1000));
+						
+						}
+						else{
+                        s("#" + t).removeClass("default");
+						s("#" + t).append(s(e).fadeIn(1000));
+					}
+                    }
+                }
+            },
+            'setSkinPreview': function(t, e) {
+				
+				if (t.includes(".mp4")){
+					//console.log("stage 1 videos");
+					
+                if (s('#' + e).empty().addClass('default'), t && 0 != t.length) {
+					//console.log("stage 1 images/videos: " + t);	
+					var i = this;
+					o = new Video(); 
+					o.src = t;					
+                       // o = new Image(); 					
+                    o.crossOrigin = 'anonymous';
+					setTimeout(function() {
+					//newo.onload = function() {
+                        i['changeSkinPreview'](o, e);
+                    //}; 	
+					}, 500);
+					
+				}
+				}
+				else {					
+                    checktypeImgVid = new Image();
+					//console.log("stage 1 images");	
+								
+                if (s('#' + e).empty().addClass('default'), t && 0 != t.length) {
+					//console.log("stage 1 images/videos: " + t);	
+					var i = this, 
+					o = checktypeImgVid; o.src = t;
+                       // o = new Image(); 					
+                    o.crossOrigin = 'anonymous', o.onload = function() {
+                        i['changeSkinPreview'](o, e);
+                    }; 
+                }
+				}
+            },
+            'setProfile': function() {
+                var t = (ogario1PlayerProfiles.length + this['selectedProfile'] - 1) % ogario1PlayerProfiles.length,
+                    e = (this['selectedProfile'] + 1) % ogario1PlayerProfiles.length;
+                //console.log(ogario1PlayerProfiles.length);
+                this['setSkinPreview'](ogario1PlayerProfiles[t].skinURL, 'prev-profile');
+				this['setSkinPreview'](ogario1PlayerProfiles[this['selectedProfile']].skinURL, 'skin-preview');
+				this['setSkinPreview'](ogario1PlayerProfiles[e].skinURL, 'next-profile');
+				this['saveSettings'](this['selectedProfile'], 'ogarioSelectedProfile');
+				s('#nick').val(ogario1PlayerProfiles[this['selectedProfile']].nick);
+				s('#clantag').val(ogario1PlayerProfiles[this['selectedProfile']].clanTag);
+				s('#skin').val(ogario1PlayerProfiles[this['selectedProfile']].skinURL);
+				s('#color').val(ogario1PlayerProfiles[this['selectedProfile']].color);
+				s('.skin')['colorpicker']('setValue', ogario1PlayerProfiles[this['selectedProfile']].color);
+				s('#skins a').removeClass('selected');
+				s('#skins a[data-profile=\'' + this['selectedProfile'] + '\']').addClass('selected');
+            },
+            'prevProfile': function() {
+                this['setPlayerSettings'](),
+				this['selectedProfile'] = (ogario1PlayerProfiles.length + this['selectedProfile'] - 1) % ogario1PlayerProfiles.length, this['setProfile']();
+            },
+            'nextProfile': function() {
+                this['setPlayerSettings'](),
+				this['selectedProfile'] = (this['selectedProfile'] + 1) % ogario1PlayerProfiles.length, this['setProfile']();
+            },
+            'selectProfile': function(t) {
+                this['setPlayerSettings']();
+				this['selectedProfile'] = parseInt(t);
+				this['setProfile']();
+            },
+            'addOption': function(t, e, i, o) {
+                s(t).append('<label><input type=\"checkbox\" id=\"' + e + '\" class=\"js-switch\"> ' + i + '</label>');
+				s('#' + e)['prop']('checked', o);
+            },
+            'addOptions': function(t, e) {
+                if (t) {
+                    s('#og-options').append('<div class=\"options-box ' + e + '\"><h5 class=\"menu-main-color\">' + h[e] + '</h5></div>');
+                    for (var i = 0; i < t.length; i++) {
+                        var o = t[i];
+                        if(v.hasOwnProperty(o)){
+							s('.' + e).append('<label>' + h[o] + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + o + '\"></label>'); 
+							s('#' + o)['prop']('checked', v[o]);
+						}
+                    }
+                }
+            },
+            'addInputBox': function(t, e, i, o) {
+                s(t).append('<div class=\"input-box\"><span class=\"title-box\">' + h[e] + '</span><input id=\"' + e + '\" class=\"form-control\" placeholder=\"' + i + '\" value=\"' + v[e] + '\" /></div>');
+                var a = this;
+                s('#' + e).on('input', function() {
+                    v[e] = this.value, a[o](), a['saveSettings'](v, 'ogarioSettings');
                 });
-                $("#leaderboard-hud").css('background-image', 'url("' + leadbimg + '")').css({
-                    opacity: 0.8
+            },
+            'addSliderBox': function(t, e, o, a, n, r) {
+                s(t).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">' + h[e] + ': </span><span id=\"' + e + '-value\" class=\"value\">' + v[e] + '</span></div><input id=\"' + e + '-slider\" type=\"range\" min=\"' + o + '\" max=\"' + a + '\" step=\"' + n + '\" value=\"' + v[e] + '\"></div>');
+                var l = this;
+                r ? s('#' + e + '-slider').on('input', function() {
+                    var t = parseFloat(s(this).val());
+                    s('#' + e + '-value').text(t), v[e] = t, i.hasOwnProperty(e) && (i[e] = t), l[r](), l['saveSettings'](v, 'ogarioSettings');
+                }) : s('#' + e + '-slider').on('input', function() {
+                    var t = parseFloat(s(this).val());
+                    s('#' + e + '-value').text(t), v[e] = t, i.hasOwnProperty(e) && (i[e] = t), l['saveSettings'](v, 'ogarioSettings');
                 });
-            }, 8000);
-            setTimeout(function() {
-                $("#minimap-hud").css('background-image', 'url("' + minimapbckimg + '")').css({
-                    opacity: 0.8
+            },
+            'setLang': function() {
+                if ('pl' === r && e.i18n_dict && e.i18n_dict.en)
+                    for (var t in e.i18n_dict.en) e.i18n_dict.en.hasOwnProperty(t) && h.hasOwnProperty(t) && (e.i18n_dict.en[t] = h[t]);
+            },
+            'setMenu': function() {
+                var t;
+                for (t in document["title"] = this["name"], s("#mainPanel")["before"]('<div id="exp-bar" class="agario-panel"><span class="ogicon-user"></span><div class="agario-exp-bar progress"><span class="progress-bar-text"></span><div class="progress-bar progress-bar-striped" style="width: 0%;"></div></div><div class="progress-bar-star"></div></div><div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
+                        h["start"] + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + h["profile"] + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + h["settings"] + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + h["theme"] + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
+                        h["hotkeys"] + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="Radio / ' + h["sounds"] + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>'), s("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-skins ogicon-images"></a><div id="profiles"><div id="prev-profile"></div><div id="skin-preview"></div><div id="next-profile"></div></div>'),
+                    s("#mainPanel div[role=form]").appendTo(s("#main-panel")), s("#main-panel div[role=form] .form-group:first").remove(), s("#nick")["before"]('<input id="clantag" class="form-control" placeholder="Tag, e.g. \u24c2" maxlength="10"><div class="input-group nick"></div>'), s("#nick").appendTo(s(".nick")), s(".nick").append('<span class="input-group-btn"><button id="stream-mode" class="btn active ogicon-eye"></button></span>'), s(".nick")["after"]('<div class="input-group skin"><input id="skin" class="form-control" placeholder="Skin URL (imgur.com direct link)" maxlength="40"><input type="hidden" id="color" value="' +
+                        ogarcopythelb["color"] + '" maxlength="7" /><span class="input-group-addon"><i></i></span><span class="input-group-btn"><button id="hide-url" class="btn active ogicon-eye"></button></span></div>'), s("#locationKnown, #locationUnknown")["insertAfter"](s(".skin")), s("#region")["before"]('<button class="btn btn-warning btn-server-info ogicon-cogs"></button>'), s(".btn-spectate, .btn-logout").appendTo("#agario-main-buttons"), s("#agario-main-buttons").addClass("clearfix")["before"]('<div id="server-info" class="form-group clearfix"><input id="server-ws" class="form-control" placeholder="Server WS"><button id="server-connect" class="btn btn-success ogicon-power"></button><button id="server-reconnect" class="btn btn-primary ogicon-redo2"></button><input id="server-token" class="form-control" placeholder="Server token"><button id="server-join" class="btn btn-success" data-itr="page_join_party">Join</button></div>'),
+                    s("#helloContainer div[role=form]")["after"]('<div id="ogario-party" class="clearfix"><input id="party-token" class="form-control" placeholder="Party token"></div>'), s("#ogario-party").append('<button id="join-party-btn-2" class="btn btn-success" data-itr="page_join_party">Join</button><button id="create-party-btn-2" class="btn btn-primary" data-itr="page_create_party">Create</button>'), s("#pre-join-party-btn:first, #join-party-btn:first, #create-party-btn:first, #leave-party-btn:first, #joinPartyToken:first, .party-icon-back:first").appendTo(s("#ogario-party")),
+                    s("#settingsChoice, #options").appendTo(s("#og-settings .submenu-panel")), s("#stats").appendTo(s("#main-menu")).addClass("menu-panel"), s("#statsContinue")["attr"]("id", "statsContinue2"), s("#mainPanel")["empty"]().remove(), s(".center-container").addClass("ogario-menu"), s(".center-container").append('<div id="menu-footer" class="menu-main-color">' + h["visit"] + ' <a href="http://legendmod.ml" target="_blank">legendmod.ml</a> | ' + this["version"] + ' <a href="https://goo.gl/nRREoR" class="release ogicon-info" target="_blank"></a></div>'),
+                    s("#leftPanel, #rightPanel").addClass("ogario-menu")["removeAttr"]("id"), s(".agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel").appendTo(s("#profile")).removeClass("agario-side-panel"), s(".agario-profile-panel")["after"]('<div id="block-warn">' + h["blockWarn"] + '<br><a href="#" id="unblock-popups">' + h["unblockPopups"] + "</a></div>"), s("#exp-bar").addClass("agario-profile-panel"), s(".left-container")["empty"](), s(".agario-shop-panel")["after"]('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">The Legend Mod Project</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>'),
+                    s("#tags-container").appendTo(s("#profile")), s(".btn-logout").appendTo(s("#profile")), s(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://jimboy3100.github.io/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + h["skins"] + '"></a><a href="https://youtube.com/channel/UCoj-ZStcJ0jLMOSK7FOBTbA" class="quick-yt ogicon-youtube2" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="Team OGARio"></a></div>'),
+                    this["protocolMode"] || s("#quick-menu")["prepend"]('<a href="#" class="quick-shop ogicon-cart" data-toggle="tab-tooltip" data-placement="left" title="' + h["page_shop"] + '"></a><a href="#" class="quick-free-coins ogicon-coin-dollar" data-toggle="tab-tooltip" data-placement="left" title="' + h["page_menu_main_free_coins"] + '"></a><a href="#" class="quick-free-gifts ogicon-gift" data-toggle="tab-tooltip" data-placement="left" title="' + h["page_menu_main_gifts"] + '"></a><a href="#" class="quick-quests ogicon-trophy" data-toggle="tab-tooltip" data-placement="left" title="' +
+                        h["page_menu_main_dailyquests"] + '"></a>'), s(".party-dialog, .partymode-info").remove(), s(".agario-party-6").appendTo(s(".center-container")), s(".right-container")["empty"](), s(".right-container").append('<div class="agario-party"></div>'), s(".agario-party-6").appendTo(s(".agario-party")).addClass("agario-panel agario-side-panel"), s(".agario-party h4, #cancel-party-btn").remove(), s(".agario-party .btn").addClass("btn-sm"), s(".right-container").append('<div id="skins-panel" class="agario-panel agario-side-panel"><div id="skins"></div><a href="https://ogario.ovh/skins/" id="more-skins" class="btn btn-block btn-success" target="_blank">' +
+                        h["moreSkins"] + "</a></div>"), s(".btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr='page_option_dark_theme'], #options #darkTheme").remove(), s("#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom").css("display", "none"), s("#advertisement").removeClass("agario-panel"), s("#adsBottom")["css"]({
+                        "z-index": "1",
+                        "opacity": "0",
+                        "bottom": "-100px"
+                    }), s("#noNames, #showMass").remove(), s("#og-settings .submenu-panel").append('<div id="og-options"></div>'), 
+					this["addOptions"]([], "animationGroup"), 
+					this["addOptions"](["autoZoom"], "zoomGroup"), 
+					this["addOptions"](["quickResp", "autoResp"], "respGroup"), 
+					this["addOptions"](["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup"), 
+					this["addOptions"](["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound"], "massGroup"),
+					this["protocolMode"] ? this["addOptions"](["customSkins"], "skinsGroup") : this["addOptions"](["customSkins", "vanillaSkins"], "skinsGroup"), 
+					this["addOptions"](["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup"), 
+					this["addOptions"](["myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow"], "transparencyGroup"), 
+					this["addOptions"](["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup"), 
+					this["addOptions"](["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox"], "chatGroup"), 
+					this["addOptions"](["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup"), 
+					this["addOptions"](["oppColors", "oppRings", "virColors", "splitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells"], "helpersGroup"), 
+					this["addOptions"](["mouseSplit", "mouseFeed","mouseInvert"], "mouseGroup"), 
+					this["addOptions"](["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop"], "hudGroup"), 
+					this["addOptions"](["showStats", "showStatsMass", "showStatsSTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"), 
+					this["protocolMode"] || (this["addOptions"](["blockPopups"], "extrasGroup"), s("#noSkins, #noColors, #skipStats, #showQuest").addClass("js-switch-vanilla"), s(".skinsGroup h5")["after"]('<label class="noSkins">' + h["noSkins"] +
+                        " </label>"), s("#noSkins").appendTo(s(".noSkins")), s(".transparencyGroup h5")["after"]('<label class="noColors">' + h["noColors"] + " </label>"), s("#noColors").appendTo(s(".noColors")), s(".extrasGroup h5")["after"]('<label class="skipStats">' + h["skipStats"] + " </label>"), s("#skipStats").appendTo(s(".skipStats")), s(".skipStats")["after"]('<label class="showQuest">' + h["showQuest"] + " </label>"), s("#showQuest").appendTo(s(".showQuest")), s("#options").remove(), s("#settingsChoice").appendTo(s(".extrasGroup")).addClass("select-wrapper")),
+                    this["addSliderBox"](".animationGroup", "animation", 20, 200, 1), this["addSliderBox"](".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01), s("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + h["exportImport"] + "</button>"), s("#og-settings").append('<div class="restore-settings"><a href="#">' + h["restoreSettings"] + "</a></div>"), s("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + h["thanks"] + ')</h5><audio src="" controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' +
+                        h["playlist"] + "</a></span></div>"), s("#music").append('<div class="agario-panel sounds-panel"><h5 class="menu-main-color">' + h["sounds"] + "</h5></div>"), s("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>'), this["addInputBox"](".sounds-panel", "messageSound", "Sound URL", "setMessageSound"),
+                    this["addInputBox"](".sounds-panel", "commandSound", "Sound URL", "setCommandSound"), this["addInputBox"](".sounds-panel", "virusSoundurl", "Sound URL", "setvirusSound"), s("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color">Team<span class="team-top"></span></h5><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' + //<div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="10" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
+                        h["totalPartyPlayers"] + ': <span id="top5-total-players" class="top5-mass-color">0</span>   <span class="hud-main-color ogicon-pacman"></span> ' + h["totalPartyMass"] + ': <span id="top5-total-mass" class="top5-mass-color">0</span></div></div> <div id="time-hud" class="hud time-hud-color"></div> <div id="pause-hud" class="hud">' + h.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">legendmod.ml</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://jimboy3100.github.io/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
+                        h["targetNotSet"] + '</span></div><div id="target-summary"></div></div><div id="target-panel-hud" class="hud"><a href="#" id="set-targeting" class="ogicon-target"></a><a href="#" id="set-private-minimap" class="ogicon-location2"></a><a href="#" id="cancel-targeting" class="ogicon-cancel-circle"></a><a href="#" id="change-target" class="ogicon-arrow-right"></a></div> <div id="quest-hud" class="hud"></div> <div id="btl-hud" class="hud"></div></div>'), s("body").append('<ul id="messages"></ul>'), s("body").append('<div id="message-box"><div id="chat-emoticons"></div><div id="message-menu"><a href="#" class="chat-sound-notifications ogicon-volume-high"></a><a href="#" class="chat-active-users ogicon-user-check"></a><a href="#" class="chat-muted-users ogicon-user-minus"></a><a href="#" class="show-chat-emoticons ogicon-smile"></a></div><input type="text" id="message" class="form-control" placeholder="' +
+                        h["enterChatMsg"] + '..." maxlength="80"></div>'), s("body").append('<div id="chat-box"></div>'), d) {
+                    if (d.hasOwnProperty(t)) {
+                        s("#chat-emoticons").append('<img src="https://jimboy3100.github.io/banners/emoticons/' + d[t] + '" alt="' + t + '" class="emoticon">');
+                    }
+                }
+                s("body").append('<div id="exp-imp"><div id="exp-imp-menu"><button id="close-exp-imp" class="btn btn-danger">' + h["close"] + '</button></div><div id="exp-imp-settings"></div></div>'), s("#exp-imp-settings").append("<h1>" + h["exportSettings"] + "</h1><h2>" + h["exportInfo"] + "</h2>"), this["addOption"]("#exp-imp-settings", "export-ogarioCommands", h["commands"], true), this["addOption"]("#exp-imp-settings", "export-ogarioHotkeys", h["hotkeys"], true), this["addOption"]("#exp-imp-settings", "export-ogarioPlayerProfiles",
+                    h["profiles"], true), this["addOption"]("#exp-imp-settings", "export-ogarioSettings", h["settings"], true), this["addOption"]("#exp-imp-settings", "export-ogarioThemeSettings", h["theme"], true), s("#exp-imp-settings").append('<textarea id="export-settings" class="form-control" rows="14" cols="100" spellcheck="false" readonly /><button id="export-settings-btn" class="btn btn-block btn-success">' + h["exportSettings"] + "</button>"), s("#exp-imp-settings").append("<h1>" + h["importSettings"] + "</h1><h2>" +
+                    h["importInfo"] + "</h2>"), this["addOption"]("#exp-imp-settings", "import-ogarioCommands", h["commands"], true), this["addOption"]("#exp-imp-settings", "import-ogarioHotkeys", h["hotkeys"], true), this["addOption"]("#exp-imp-settings", "import-ogarioPlayerProfiles", h["profiles"], true), this["addOption"]("#exp-imp-settings", "import-ogarioSettings", h["settings"], true), this["addOption"]("#exp-imp-settings", "import-ogarioThemeSettings", h["theme"], true), s("#exp-imp-settings").append('<textarea id="import-settings" class="form-control" rows="14" cols="100" spellcheck="false" /><button id="import-settings-btn" class="btn btn-block btn-success">' +
+                    h["importSettings"] + "</button>"), y && y["setThemeMenu"]();
+                /** @type {number} */
+                var e = 0;
+                for (; e < ogario1PlayerProfiles.length; e++) {
+                    s("#skins").append('<div class="skin-box"><a href="#profile-' + e + '" id="profile-' + e + '" data-profile="' + e + '"></a></div>');
+                    this["setSkinPreview"](ogario1PlayerProfiles[e].skinURL, "profile-" + e);
+                    if (e == this["selectedProfile"]) {
+                        s("#profile-" + e).addClass("selected");
+                    }
+                }
+            },
+            'setUI': function() {
+                var t = this;
+                s(document).on("click", ".menu-tabs a", function(event) {
+                        event.preventDefault();
+                        t["switchMenuTabs"](s(this), "menu-panel");
+                    }), s(document).on("click", ".submenu-tabs a", function(event) {
+                        event.preventDefault();
+                        t["switchMenuTabs"](s(this), "submenu-panel");
+                    }), s(document).on("click", ".quick-menu", function(event) {
+                        event.preventDefault();
+                        v["showQuickMenu"] = !v["showQuickMenu"];
+                        t["saveSettings"](v, "ogarioSettings");
+                        t["setShowQuickMenu"]();
+                    }), s(document).on("click", ".quick-skins", function(event) {
+                        event.preventDefault();
+                        v["showSkinsPanel"] = !v["showSkinsPanel"];
+                        t["saveSettings"](v, "ogarioSettings");
+                        t["setShowSkinsPanel"]();
+                    }), s(document).on("change", "#region", function() {
+                        t["region"] = this.value;
+                    }), s(document).on("change", "#gamemode", function() {
+                        var dummy = this.value;
+                        if (":party" !== dummy) {
+                            t["leaveParty"]();
+                        }
+                        t["gameMode"] = i["gameMode"] = dummy;
+                        t["setQuest"]();
+                    }), s(document).on("change", "#quality", function() {
+                        t["getQuality"](this.value);
+                        ogarhusettings();
+                    }), s(document).on("input", "#skin", function() {
+                        var hexInputVal = this.value;
+                        t["setSkinPreview"](hexInputVal, "skin-preview");
+                        t["setSkinPreview"](hexInputVal, "profile-" + t["selectedProfile"]);
+                    }), s(document).on("click", "#skins a", function(event) {
+                        event.preventDefault();
+                        t["selectProfile"](s(this)["attr"]("data-profile"));
+                    }), s(document).on("click", "#prev-profile", function() {
+                        t["prevProfile"]();
+                    }), s(document).on("click", "#next-profile", function() {
+                        t["nextProfile"]();
+                    }), s(document).on("click", "#stream-mode", function() {
+                        /** @type {boolean} */
+                        v["streamMode"] = !v["streamMode"];
+                        t["saveSettings"](v, "ogarioSettings");
+                        t["setStreamMode"]();
+                    }), s(document).on("click", "#hide-url", function() {
+                        /** @type {boolean} */
+                        v["hideSkinUrl"] = !v["hideSkinUrl"];
+                        t["saveSettings"](v, "ogarioSettings");
+                        t["setHideSkinUrl"]();
+                    }), s(document).on("click", ".btn-server-info", function() {
+                        s("#server-info")["toggle"]();
+                    }), s(document).on("click", "#server-connect", function() {
+                        t["gameServerConnect"](s("#server-ws").val());
+                    }), s(document).on("click", "#server-reconnect", function() {
+                        t["gameServerReconnect"]();
+                    }), s(document).on("click", "#server-join", function() {
+                        t["gameServerJoin"](s("#server-token").val());
+                    }), s(document).on("change", "#og-options input[type='checkbox']", function() {
+                        var template = s(this);
+                        t["setSettings"](template["attr"]("id"), template["prop"]("checked"));
+                    }), s(document).on("change", ".js-switch-vanilla", function() {
+                        var template = s(this);
+                        var p = template["attr"]("id");
+                        if (void 0 !== t[p]) {
+                            t[p] = template["prop"]("checked");
+                            if ("noSkins" === p) {
+                                /** @type {boolean} */
+                                i["showCustomSkins"] = !t["noSkins"];
+                            }
+                            if ("showQuest" === p) {
+                                t["setQuest"]();
+                            }
+                        }
+                    }), s(document).on("click", "#og-settings .restore-settings a", function(result) {
+                        result["preventDefault"]();
+                        t["restoreSettings"]();
+                    }), s(document).on("click", "#og-settings .btn-export", function(result) {
+                        result["preventDefault"]();
+                        t["exportSettings"]();
+                        s("#exp-imp").fadeIn(500);
+                        s("#exp-imp-settings, #export-settings")["perfectScrollbar"]("update");
+                    }), s(document).on("click", "#close-exp-imp", function(event) {
+                        event.preventDefault();
+                        s("#exp-imp")["fadeOut"](500);
+                    }), s(document).on("focus", "#export-settings", function() {
+                        s(this).select();
+                    }), s(document).on("click", "#export-settings-btn", function(event) {
+                        event.preventDefault();
+                        t["exportSettings"]();
+                    }), s(document).on("click", "#import-settings-btn", function(result) {
+                        result["preventDefault"]();
+                        t["importSettings"]();
+                    }), s(document).on("click", "#unblock-popups", function(result) {
+                        result["preventDefault"]();
+                        t["unblockPopups"]();
+                    }), s(document).on("click", "#openfl-overlay.disabler", function() {
+                        if (v["blockPopups"]) {
+                            t["blockPopups"]();
+                        }
+                    }), s(document).on("click", "#openfl-content", function() {
+                        if (v["blockPopups"]) {
+                            var container = s(this);
+                            setTimeout(function() {
+                                if (!container["is"](":visible")) {
+                                    t["blockPopups"]();
+                                }
+                            }, 1000);
+                        }
+                    }), s(document).on("click", ".quick-shop", function(event) {
+                        event.preventDefault();
+                        t["unblockPopups"]();
+                        if (e.MC && e.MC["openShop"]) {
+                            e.MC["openShop"]();
+                        }
+                    }), s(document).on("click", ".quick-free-coins", function(event) {
+                        event.preventDefault();
+                        t["unblockPopups"]();
+                        if (e.MC && e.MC["showFreeCoins"]) {
+                            e.MC["showFreeCoins"]();
+                        }
+                    }), s(document).on("click", ".quick-free-gifts", function(event) {
+                        event.preventDefault();
+                        t["unblockPopups"]();
+                        if (e.MC && e.MC["showGifting"]) {
+                            e.MC["showGifting"]();
+                        }
+                    }), s(document).on("click", ".quick-quests", function(event) {
+                        event.preventDefault();
+                        t["unblockPopups"]();
+                        if (e.MC && e.MC["showQuests"]) {
+                            e.MC["showQuests"]();
+                        }
+                    }), s(document).on("click", "#set-targeting", function(event) {
+                        event.preventDefault();
+                        t["setTargeting"]();
+                    }), s(document).on("click", "#cancel-targeting", function(event) {
+                        event.preventDefault();
+                        t["cancelTargeting"]();
+                    }), s(document).on("click", "#set-private-minimap", function(event) {
+                        event.preventDefault();
+                        t["setPrivateMiniMap"]();
+                    }), s(document).on("click", "#change-target", function(result) {
+                        result["preventDefault"]();
+                        t["changeTarget"]();
+                    }), s(document).on("click", ".team-top-limit", function(event) {
+                        event.preventDefault();
+                        var template = s(this);
+                        /** @type {number} */
+                        var param = parseInt(template["attr"]("data-limit"));
+                        if (param) {
+                            t["setTop5limit"](param);
+                            t["displayTop5"]();
+                            s(".team-top").text(param);
+                            s(".team-top-limit").removeClass("active");
+                            template.addClass("active");
+                        }
+                    }), s(document).on("click", "#top5-pos .set-target", function(event) {
+                        event.preventDefault();
+                        t["setTarget"](parseInt(s(this)["attr"]("data-user-id")));
+                    }), s(document).on("click", ".mute-user", function(event) {
+                        event.preventDefault();
+                        t["muteChatUser"](parseInt(s(this)["attr"]("data-user-id")));
+                    }), s(document).on("click", ".btn-mute-user", function() {
+                        var template = s(this);
+                        t["muteChatUser"](parseInt(template["attr"]("data-user-id")));
+                        template.removeClass("btn-red btn-mute-user").addClass("btn-green btn-unmute-user").text(h["unmute"]);
+                    }), s(document).on("click", ".btn-unmute-user", function() {
+                        var template = s(this);
+                        t["unmuteChatUser"](parseInt(template["attr"]("data-user-id")));
+                        template.removeClass("btn-green btn-unmute-user").addClass("btn-red btn-mute-user").text(h["mute"]);
+                    }), s(document).on("click", ".chat-sound-notifications", function(result) {
+                        result["preventDefault"]();
+                        /** @type {boolean} */
+                        v["chatSounds"] = !v["chatSounds"];
+                        t["saveSettings"](v, "ogarioSettings");
+                        t["setChatSoundsBtn"]();
+                    }), s(document).on("click", ".chat-active-users", function(event) {
+                        event.preventDefault();
+                        t["displayChatActiveUsers"]();
+                    }), s(document).on("click", ".chat-muted-users", function(event) {
+                        event.preventDefault();
+                        t["displayChatMutedUsers"]();
+                    }), s(document).on("click", ".show-chat-emoticons", function(result) {
+                        result["preventDefault"]();
+                        var template = s(this);
+                        var p = s("#chat-emoticons");
+                        p["toggle"]();
+                        if (p["is"](":visible")) {
+                            template.addClass("active");
+                        } else {
+                            template.removeClass("active");
+                            s("#message")["focus"]();
+                        }
+                    }), s(document).on("click", "#chat-emoticons .emoticon", function() {
+                        var d = s(this)["attr"]("alt");
+                        var e = s("#message");
+                        var n = e.val();
+                        if (n.length + d.length <= 80) {
+                            e.val(n + d);
+                        }
+                        e["focus"]();
+                    }), this["statsHUD"] = document.getElementById("stats-hud"), this["activeParties"] = document.getElementById("active-parties"), this["top5pos"] = document.getElementById("top5-pos"), this["top5totalMass"] = document.getElementById("top5-total-mass"), this["top5totalPlayers"] = document.getElementById("top5-total-players"), this["leaderboardPositionsHUD"] = document.getElementById("leaderboard-positions"), this["leaderboardDataHUD"] = document.getElementById("leaderboard-data"), this["timeHUD"] =
+                    document.getElementById("time-hud"), this["questHUD"] = document.getElementById("quest-hud"), s("#canvas")["bind"]("contextmenu", function() {
+                        return false;
+                    }), s(document).on("mouseup", ".btn", function() {
+                        $(this)["blur"]();
+                    }), s("[data-toggle='tab-tooltip']")["tooltip"]({
+                        "trigger": "hover"
+                    }), s(".submenu-panel, #chat-box, #exp-imp-settings, #export-settings, #import-settings")["perfectScrollbar"]({
+                        "suppressScrollX": true
+                    }), Array["prototype"]["slice"]["call"](document["querySelectorAll"](".js-switch"))["forEach"](function(remove) {
+                        new Switchery(remove, {
+                            "color": g["menuMainColor"],
+                            "size": "small"
+                        });
+                    }), s("input[type='range']")["rangeslider"]({
+                        "polyfill": false
+                    }), toastr["options"] = {
+                        "newestOnTop": false,
+                        "positionClass": "toast-bottom-left",
+                        "timeOut": 15000
+                    };
+
+            },
+            'switchMenuTabs': function(t, e) {
+                var i = t['parent']();
+                if ('menu-panel' === e) {
+                    if (t['hasClass']('hotkeys-link')) return;
+                    i['hasClass']('profile-tab') && this['setBlockPopups']();
+                }
+                t.addClass('active'), i.addClass('active'), i['siblings']().removeClass('active'), i['siblings']()['find']('a').removeClass('active');
+                var o = t['attr']('href');
+                if ('submenu-panel' === e) {
+                    var a = s(o)['parent']()['attr']('id');
+                    s('#' + a + ' .submenu-panel')['not'](o).css('display', 'none');
+                } else s('.menu-panel')['not'](o).css('display', 'none');
+                s(o)['fadeIn'](1000), ogarhusettings(), s('.submenu-panel')['perfectScrollbar']('update');
+            },
+            'getDefaultSettings': function() {
+                if (this["noSkins"] = s("#noSkins")["prop"]("checked"), this["noColors"] = s("#noColors")["prop"]("checked"), this["skipStats"] = s("#skipStats")["prop"]("checked"), this["showQuest"] = s("#showQuest")["prop"]("checked"), i["showCustomSkins"] = !this["noSkins"], null !== e.localStorage.getItem("scale_setting")) {
+                    var t = JSON["parse"](e.localStorage.getItem("scale_setting"));
+                    this["setCanvasScale"](t);
+                } else {
+                    var o = s("#quality").val();
+                    this["getQuality"](o);
+                }
+                null !== e.localStorage.getItem("location") ? (this["region"] = e.localStorage.getItem("location"), s("#region").val(this["region"]), e.MC && e.MC["setRegion"] && e.MC["setRegion"](this["region"])) : this["region"] = s("#region").val(), this["setParty"](), ":party" === this["gameMode"] && e.location["hash"] && s("#join-party-btn-2")["click"](), Array["prototype"]["slice"]["call"](document["querySelectorAll"](".js-switch-vanilla"))["forEach"](function(remove) {
+                    new Switchery(remove, {
+                        "color": g["menuMainColor"],
+                        "size": "small"
+                    });
+                }), s("#nick").val(ogarcopythelb.nick)["blur"](), s("#noNames")["prop"]("checked", !v["noNames"]), s("#showMass")["prop"]("checked", v["showMass"]), this["unlockButtons"](), this["setAutoResp"](), this["setQuest"]();
+            },
+            'getQuality': function(t) {
+                var i = 1;
+                switch ('devicePixelRatio' in e && (i = e['devicePixelRatio']), t) {
+                    case 'High':
+                        this['setCanvasScale'](1);
+                        break;
+                    case 'Medium':
+                        this['setCanvasScale'](0.9);
+                        break;
+                    case 'Low':
+                        this['setCanvasScale'](0.75);
+                        break;
+                    case 'VeryLow':
+                        this['setCanvasScale'](0.5);
+                        break;
+                    default:
+                        this['setCanvasScale'](i);
+                }
+            },
+            'setCanvasScale': function(t) {
+                this['canvasScale'] = t, i['canvasScale'] = t;
+            },
+            'setStreamMode': function() {
+                if (v["streamMode"]) {
+                    s("#stream-mode").addClass("ogicon-eye-blocked");
+                    s("#clantag, #nick, #party-token").addClass("stream-mode");
+                } else {
+                    s("#stream-mode").removeClass("ogicon-eye-blocked");
+                    s("#clantag, #nick, #party-token").removeClass("stream-mode");
+                }
+            },
+            'setHideSkinUrl': function() {
+                if (v["hideSkinUrl"]) {
+                    s("#hide-url").addClass("ogicon-eye-blocked");
+                    s("#skin").addClass("hide-url");
+                } else {
+                    s("#hide-url").removeClass("ogicon-eye-blocked");
+                    s("#skin").removeClass("hide-url");
+                }
+            },
+            'setShowQuickMenu': function() {
+                if (v["showQuickMenu"]) {
+                    s("#quick-menu").fadeIn(500);
+                } else {
+                    s("#quick-menu")["fadeOut"](500);
+                }
+            },
+            'setShowSkinsPanel': function() {
+                if (v["showSkinsPanel"]) {
+                    s("#skins-panel").fadeIn(500);
+                } else {
+                    s("#skins-panel")["fadeOut"](500);
+                }
+            },
+            'unlockButtons': function() {
+                s('.btn-play, .btn-play-guest, .btn-login-play, .btn-spectate')['prop']('disabled', false);
+            },
+            'setMainButtons': function() {
+                var t = this;
+                s(document).on("click", ".btn-play, .btn-play-guest", function() {
+                    t["onPlay"]();
+                }), s(document).on("click", ".btn-spectate", function() {
+                    t["onSpectate"]();
+                }), s(document).on("click", "#create-party-btn-2", function() {
+                    t["onCreate"]();
+                }), s(document).on("click", "#join-party-btn-2", function() {
+                    t["skipServerData"] = true;
+                    t["joinParty"]();
+                    t["onJoin"]();
+                }), s(document).on("click", "#statsContinue2", function() {
+                    s("#stats, #main-panel")["toggle"]();
                 });
-				}, 27000);
- 
-}
-function preventcanvasimagecrash(){
-CanvasRenderingContext2D.prototype._drawImage = CanvasRenderingContext2D.prototype.drawImage;
-CanvasRenderingContext2D.prototype.drawImage = function() {
-	
-    const image = arguments[0];
-	//console.log(image.width);
-    if (!image || image.width < 1 || image.height < 1) return void console.log('Preventing canvas to crash from image width and height');
-    this._drawImage(...arguments);
-}
-}
-
-function doGl(){  
-	$("#UserProfilePic>img").attr('src',gapi.auth2.getAuthInstance().currentUser.Ab.w3.Paa);
-	$("#UserProfileName1").text(gapi.auth2.getAuthInstance().currentUser.Ab.w3.ofa);
-	$("#UserProfileUID1").text(gapi.auth2.getAuthInstance().currentUser.Ab.w3.Eea);
-	
-		userfirstname=gapi.auth2.getAuthInstance().currentUser.Ab.w3.ofa;
-		userid=gapi.auth2.getAuthInstance().currentUser.Ab.w3.Eea;
-		userlastname=gapi.auth2.getAuthInstance().currentUser.Ab.w3.wea;
-		if (userfirstname!=null) {localStorage.setItem("userfirstname", userfirstname);}
-		if (userlastname!=null) {localStorage.setItem("userlastname", userlastname);}
-		if (userid!=null) {localStorage.setItem("userid", userid);}		
-		return userfirstname, userlastname, usergender, userid;
-
-}
-function doFB(){
-	
-FB.api('/me', {fields: 'first_name, last_name, gender, id'}, function(fbresponse) {   
-    $("#UserProfilePic>img").attr('src','https://graph.facebook.com/' + fbresponse.id + '/picture?type=large');
-//	setTimeout(function (){ 
-	$("#UserProfileName1").text(fbresponse[Object.keys(fbresponse)[0]]);
-	$("#UserProfileUID1").text(fbresponse[Object.keys(fbresponse)[2]]);
-					userfirstname=fbresponse[Object.keys(fbresponse)[0]]; if (userfirstname!=null) {localStorage.setItem("userfirstname", userfirstname);}
-					userlastname=fbresponse[Object.keys(fbresponse)[1]]; if (userlastname!=null) {localStorage.setItem("userlastname", userlastname);}					
-					userid=fbresponse[Object.keys(fbresponse)[2]]; if (userid!=null) {localStorage.setItem("userid", userid);}
-					usergender=fbresponse[Object.keys(fbresponse)[3]]; if (usergender!=null) {localStorage.setItem("usergender", usergender);}
-					return userfirstname, userlastname, usergender, userid;	
-//	},250);
-});
-}
-function doGl2(){
-//				setTimeout(function() {	
-				if (gapi.auth2.getAuthInstance().isSignedIn.get()){
-				doGl();	
-				}				
-//            }, 1000); 	
-}
-
-function doFB2(){
-//				setTimeout(function() {	
-				FB.getLoginStatus(function(response) {
-				if (response.status === 'connected') {
-				doFB();	
-				}	
-				});			
-//            }, 1000); 	
-}	
-
-function loginsfbGplstart(){
-//				setTimeout(function() {	
-				if (gapi.auth2.getAuthInstance().isSignedIn.get()){
-				doGl();	
+            },
+            'play': function() {
+                if (this['setPlayerSettings'](), this['setParty'](), this['isSocketOpen']()) this['sendPartyData']();
+                else {
+                    this.connect();
+                    var t = this;
+                    setTimeout(function() {
+                        t['sendPartyData']();
+                    }, 1000);
+                }
+            },
+            'onPlay': function() {
+                //                this.play(), this['hideMenu'](), e['addKeyListeners'] && e['addKeyListeners'](), v['autoHideFood'] && (i['showFood'] = true), e['ga'] && e['ga']('create', 'UA-92655864-7', 'auto', 'ogarioTracker'), e['ga'] && e['ga']('ogarioTracker.send', 'pageview');
+                this.play(), this['hideMenu'](), e['addKeyListeners'] && e['addKeyListeners'](), v['autoHideFood'] && (i['showFood'] = true);
+            },
+            'onSpectate': function() {
+                this['onJoin'](), this['sendPlayerJoin'](), this['hideMenu'](), e['addKeyListeners'] && e['addKeyListeners'](), v['autoHideFood'] && (i['showFood'] = false);
+            },
+            'join': function() {
+                this['setParty'](), this['setPlayerSettings'](), this['sendPartyData'](), this['sendPlayerDeath']();
+            },
+            'onJoin': function() {
+                if (this['setParty'](), this['isSocketOpen']()) this['join']();
+                else {
+                    this.connect();
+                    var t = this;
+                    setTimeout(function() {
+                        t['join'](), t['sendPlayerJoin']();
+                    }, 1000);
+                }
+            },
+            'create': function() {
+                if (this['setParty'](), this['partyToken']) this['onJoin']();
+                else {
+                    var t = this;
+                    setTimeout(function() {
+                        t['create']();
+                    }, 100);
+                }
+            },
+            'onCreate': function() {
+                this['setParty'](), ':party' === this['gameMode'] && this['partyToken'] ? this['gameServerReconnect']() : this['createParty'](), this['create']();
+            },
+            'onPlayerSpawn': function() {
+                if (i.play = true, i['playerColor']) return this['sendPlayerSpawn'](), void this['cacheCustomSkin'](ogarcopythelb.nick, i['playerColor'], ogarcopythelb.skinURL);
+                var t = this;
+                setTimeout(function() {
+                    t['onPlayerSpawn']();
+                }, 100);
+                if (window.spawnspecialeffects == true) {
+                    setTimeout(function() {
+                        ///////// trigger special effects
+						//console.log('Special effects stage 1');
+                        i["spawnX"] = i["playerX"];
+                        i["spawnY"] = i["playerY"];
+                        M["drawCommander"] = true;
+                    }, 110);
+                }
+            },
+            'onPlayerDeath': function() {
+				//
+				pauseVideos(),
+                i.play = false, i['playerColor'] = null, i['foodIsHidden'] = false, i['playerMass'] = 0, i['playerScore'] = 0, i['playerSplitCells'] = 0, this['showMenu'](300), this['sendPlayerDeath'](), this['updateDeathLocations'](i['playerX'], i['playerY']), this['unlockButtons'](), ogarcommando1(), this['autoResp']();
+            },
+            'setPlayerSettings': function() {
+                var t = s('#nick').val(),
+                    e = s('#clantag').val(),
+                    o = s('#skin').val(),
+                    a = s('#color').val();
+                ogarcopythelb.nick = t, 
+				ogarcopythelb.clanTag = e['trim'](), 
+				ogarcopythelb.skinURL = this['checkSkinURL'](o['trim']()), 
+				7 == a.length && (ogarcopythelb.color = a), 
+				ogarcopythelb.clanTag.length > 0 && (i.clanTag = ogarcopythelb.clanTag), 
+				ogario1PlayerProfiles[this['selectedProfile']].nick = ogarcopythelb.nick, 
+				ogario1PlayerProfiles[this['selectedProfile']].clanTag = ogarcopythelb.clanTag, 
+				ogario1PlayerProfiles[this['selectedProfile']].skinURL = ogarcopythelb.skinURL, 
+				ogario1PlayerProfiles[this['selectedProfile']].color = ogarcopythelb.color, 
+				this['saveSettings'](ogario1PlayerProfiles, 'ogarioPlayerProfiles');
+            },
+            'loadSkin': function(t, e) {
+                var i = this;
+				//console.log ("t:" + t + "e:" + e);
+				if (e.includes(".mp4")){
+					t[e] = new Video();
+					//console.log("stage 2 videos");
 				}
 				else{
-				FB.getLoginStatus(function(response) {
-				if (response.status === 'connected') {
-				doFB();	
-				}	
-				});						
+					t[e] = new Image();
 				}
-//            }, 1000);					
-}
-function loginsfbGpl(){	
-				master._doLoginWithGPlus=master.doLoginWithGPlus;
-				//master.doLoginWithGPlus = joint([ master._doLoginWithGPlus, doGl2]);
-				master.doLoginWithGPlus = joint([ doGl2, master._doLoginWithGPlus]);
-				master._doLoginWithFB=master.doLoginWithFB;
-				//master._doLoginWithFB = joint([ master._doLoginWithFB, doFB2]);
-				master._doLoginWithFB = joint([ doFB2, master._doLoginWithFB]);
-		$("#logoutbtn").click(function() {
-					$("#UserProfileName1").text("Guest");
-					$("#UserProfileUID1").text("");
-					$("#UserProfilePic>img").attr('src','https://jimboy3100.github.io/banners/profilepic_guest.png');	
-                });					
-}
-function loginsfbGpl2(){	
-		$("#logoutbtn").click(function() {
-					$("#UserProfileName1").text("Guest");
-					$("#UserProfileUID1").text("");
-					$("#UserProfilePic>img").attr('src','https://jimboy3100.github.io/banners/profilepic_guest.png');	
-                });		
-		$(".btn.btn-primary.btn-login.btn-fb").click(function() {
-		//toastr["warning"]("<b>[SERVER]:</b> Facebook login info will be reflected after restart");		
-     setTimeout(function() {	
-	 doFB2();
-	 }, 5000);
-        });
-		$(".btn.btn-primary.btn-login.btn-gplus").click(function() {
-     setTimeout(function() {	
-	 doGl2();
-	 }, 5000);
-        });
-}
-function joint(a){var b;return b=a[a.length-1],a.pop(),a=a.length>1?joint(a):a[0],function(){b.apply(new a)}}
+				t[e].crossOrigin = 'anonymous'; 
+				t[e]['onload'] = function() {
+                    this['complete'] && this['width'] && this['height'] && this['width'] <= 2000 && this['height'] <= 2000 && (i['cacheQueue'].push(e), 1 == i['cacheQueue'].length && i['cacheSkin'](i['customSkinsCache']));
+                }, t[e].src = e;
+            },
+            'cacheSkin': function(t) {
+                //console.log(t);  //////// return the image src
+                if (0 != this["cacheQueue"].length) {
+                    var e = this["cacheQueue"]["shift"]();
+                    if (e) {
+                        var i = document["createElement"]("canvas");
+                        i["width"] = 512;
+                        i["height"] = 512;
+                        var s = i["getContext"]("2d");
+                        s["beginPath"]();
+                        s.arc(256, 256, 256, 0, 2 * Math.PI, false);
+                        s["clip"]();
+                        s["drawImage"](this["customSkinsCache"][e], 0, 0, 512, 512);
+                        this["customSkinsCache"][e + "_cached"] = new Image;
+                        this["customSkinsCache"][e + "_cached"].src = i.toDataURL();
+                        i = null;
+                        this["cacheSkin"](this["customSkinsCache"]);
+                    }
+                }
+            },
+            'getCachedSkin': function(t, e) {
+                return t[e + '_cached'] && t[e + '_cached']['complete'] && t[e + '_cached']['width'] ? t[e + '_cached'] : null;
+            },
+            'cacheCustomSkin': function(t, e, i) {
+                if (i) {
+                    var s = ':party' === this['gameMode'] ? t + e : t;
+                    //					console.log(this['customSkinsMap'][s]);
+                    //					console.log(s);
+                    //					console.log(i);
+                    /*					
+                    					if (window.vanillaSkinname!=null){
+                    						console.log(window.vanillaSkinname);
+                    						console.log(window.vanillaSkin);					
+                    						this['customSkinsMap'][window.vanillaSkinname]=window.vanillaSkin;
+                    						this['loadSkin'](this['customSkinsCache'], window.vanillaSkin);
+                    						}
+                    */
 
-function useProfilePhotoCustom(){
-	if ($("#UserProfilePic>img").attr('src')!= "https://jimboy3100.github.io/banners/profilepic_guest.png" && $("#UserProfilePic>img").attr('src')!="https://jimboy3100.github.io/banners/profilepic_guest.png"){	
-		copy($("#UserProfilePic>img").attr('src'));
-		toastr["info"](Premadeletter85 + ' <font color="red"><b>Ctrl+V</font></b>, '+Premadeletter86).css("width", "350px");
-	}
-	else{
-		toastr["info"](Premadeletter87).css("width", "350px");
-	}
-}
+                    if (s && (this['customSkinsMap'][s] = i), this['customSkinsCache'].hasOwnProperty(i)) return;
+                    this['loadSkin'](this['customSkinsCache'], i);
+                }
+            },
+            'checkSkinsMap': function(t, e) {
+                var i = ':party' === this['gameMode'] ? t + e : t;
+                //console.log(['customSkinsMap'].hasOwnProperty(i));
+                return !!this['customSkinsMap'].hasOwnProperty(i);
+            },
+            'getCustomSkin': function(t, e) {
+                if (!this['checkSkinsMap'](t, e)) return null;
+                var i = ':party' === this['gameMode'] ? t + e : t;
+                return this['getCachedSkin'](this['customSkinsCache'], this['customSkinsMap'][i]);
+            },	
+            'calculateMapSector': function(t, e, s = false) {
+                if (!i['mapOffsetFixed']) return '';
+                var o = s ? i['mapOffsetX'] + i['mapOffset'] : i['mapOffset'],
+                    a = s ? i['mapOffsetY'] + i['mapOffset'] : i['mapOffset'],
+                    n = Math['floor']((e + a) / (i['mapSize'] / g['sectorsY'])),
+                    r = Math['floor']((t + o) / (i['mapSize'] / g['sectorsX']));
+					window.calculateMapSector = n < 0 ? 0 : n >= g['sectorsY'] ? g['sectorsY'] - 1 : n, r = r < 0 ? 0 : r >= g['sectorsX'] ? g['sectorsX'] - 1 : r, String['fromCharCode'](n + 65) + (r + 1);
+                return n = n < 0 ? 0 : n >= g['sectorsY'] ? g['sectorsY'] - 1 : n, r = r < 0 ? 0 : r >= g['sectorsX'] ? g['sectorsX'] - 1 : r, String['fromCharCode'](n + 65) + (r + 1);
+            },
+            'shortMassFormat': function(t) {
+                return t < 1000 ? t : Math.round(t / 100) / 10 + 'k';
+            },
+            'updateDeathLocations': function(t, e) {
+                if (i["mapOffsetFixed"]) {
+                    this["deathLocations"].push({
+                        "x": t + i["mapOffsetX"],
+                        "y": e + i["mapOffsetY"]
+                    });
+                    if (6 == this["deathLocations"].length) {
+                        this["deathLocations"]["shift"]();
+                    }
+                    this["lastDeath"] = this["deathLocations"].length - 1;
+                }
+            },
+            'drawMiniMap': function() {
+                if (i["mapOffsetFixed"]) {
+                    var t = g["miniMapWidth"];
+                    var e = g["miniMapTop"];
+                    var s = t + e;
+                    var o = t - 18;
+                    var a = e + 9.5;
+                    if (this["miniMap"]) {
+                        this["miniMapCtx"]["clearRect"](0, 0, t, s);
+                    } else {
+                        this["miniMap"] = document.getElementById("minimap");
+                        this["miniMapCtx"] = this["miniMap"]["getContext"]("2d");
+                        this["miniMapCtx"]["ogarioCtx"] = true;
+                        this["miniMap"]["width"] = t;
+                        this["miniMap"]["height"] = s;
+                    }
+                    if (this["miniMap"]["width"] != t) {
+                        this["miniMap"]["width"] = t;
+                        this["miniMap"]["height"] = s;
+                    }
+                    var n = o / i["mapSize"];
+                    var r = i["mapOffsetX"] + i["mapOffset"];
+                    var l = i["mapOffsetY"] + i["mapOffset"];
+                    if (this["drawSelectedCell"](this["miniMapCtx"]), this["currentSector"] = this["calculateMapSector"](i["playerX"], i["playerY"], true), this["miniMapCtx"]["globalAlpha"] = 1, this["miniMapCtx"]["font"] = g["miniMapFontWeight"] + " " + (e - 4) + "px " + g["miniMapFontFamily"], this["miniMapCtx"]["fillStyle"] = g["miniMapSectorColor"], this["miniMapCtx"]["fillText"](this["currentSector"], 10, e), this["miniMapSectors"] || this["drawMiniMapSectors"](g["sectorsX"], g["sectorsY"], o, s, a), this["miniMapCtx"]["save"](),
+                        this["miniMapCtx"]["translate"](9.5, a), ":battleroyale" === this["gameMode"] && ogarfooddrawer && ogarfooddrawer["drawBattleAreaOnMinimap"](this["miniMapCtx"], o, o, n, r, l), v["showMiniMapGhostCells"]) {
+                        var h = i["ghostCells"];
+                        this["miniMapCtx"]["beginPath"]();
+                        var c = 0;
+                        for (; c < h.length; c++) {
+                            if (!h[c]["inView"]) {
+                                var u = ~~((h[c]["x"] + r) * n);
+                                var d = ~~((h[c]["y"] + l) * n);
+                                this["miniMapCtx"]["moveTo"](u, d);
+                                this["miniMapCtx"].arc(u, d, ~~(h[c]["size"] * n), 0, this.pi2, false);
+                            }
+                        }
+                        this["miniMapCtx"]["fillStyle"] = g["miniMapGhostCellsColor"];
+                        this["miniMapCtx"]["globalAlpha"] = g["miniMapGhostCellsAlpha"];
+                        this["miniMapCtx"]["shadowColor"] = g["miniMapGhostCellsColor"];
+                        this["miniMapCtx"]["shadowBlur"] = 10;
+                        this["miniMapCtx"]["shadowOffsetX"] = 0;
+                        this["miniMapCtx"]["shadowOffsetY"] = 0;
+                        this["miniMapCtx"].fill();
+                        this["miniMapCtx"]["globalAlpha"] = 1;
+                        this["miniMapCtx"]["shadowBlur"] = 0;
+                    }
+                    if (v["showMiniMapGuides"]) {
+                        u = Math.round((i["playerX"] + r) * n);
+                        d = Math.round((i["playerY"] + l) * n);
+                        this["miniMapCtx"]["lineWidth"] = 1;
+                        this["miniMapCtx"]["strokeStyle"] = g["miniMapGuidesColor"];
+                        this["miniMapCtx"]["beginPath"]();
+                        this["miniMapCtx"]["moveTo"](u, 0);
+                        this["miniMapCtx"]["lineTo"](u, o - 1);
+                        this["miniMapCtx"]["moveTo"](0, d);
+                        this["miniMapCtx"]["lineTo"](o - 1, d);
+                        this["miniMapCtx"]["stroke"]();
+                    }
+                    if (this["miniMapCtx"]["beginPath"](), this["miniMapCtx"].arc((i["playerX"] + r) * n, (i["playerY"] + l) * n, g["miniMapMyCellSize"], 0, this.pi2, false), this["miniMapCtx"]["closePath"](), g["miniMapMyCellStrokeSize"] > 0 && (this["miniMapCtx"]["lineWidth"] = g["miniMapMyCellStrokeSize"], this["miniMapCtx"]["strokeStyle"] = g["miniMapMyCellStrokeColor"], this["miniMapCtx"]["stroke"]()), this["miniMapCtx"]["fillStyle"] = g["miniMapMyCellColor"], this["miniMapCtx"].fill(), this["teamPlayers"].length) {
+                        c = 0;
+                        for (; c < this["teamPlayers"].length; c++) {
+                            this["teamPlayers"][c]["drawPosition"](this["miniMapCtx"], i["mapOffset"], n, this["privateMiniMap"], this["targetID"], legendmod3["teamPlayers"][c]["color"]);
+                        }
+                    }
+                    if (this["deathLocations"].length > 0) {
+                        u = Math.round((this["deathLocations"][this["lastDeath"]]["x"] + i["mapOffset"]) * n);
+                        d = Math.round((this["deathLocations"][this["lastDeath"]]["y"] + i["mapOffset"]) * n);
+                        var f = Math["max"](g["miniMapMyCellSize"] - 2, 4);
+                        this["miniMapCtx"]["lineWidth"] = 1;
+                        this["miniMapCtx"]["strokeStyle"] = this["deathLocations"].length - 1 == this["lastDeath"] ? g["miniMapDeathLocationColor"] : "#FFFFFF";
+                        this["miniMapCtx"]["beginPath"]();
+                        this["miniMapCtx"]["moveTo"](u - f, d);
+                        this["miniMapCtx"]["lineTo"](u + f, d);
+                        this["miniMapCtx"]["moveTo"](u, d - f);
+                        this["miniMapCtx"]["lineTo"](u, d + f);
+                        this["miniMapCtx"]["stroke"]();
+                    }
+                    this["miniMapCtx"]["restore"]();
+                }
+            },
+            'drawMiniMapSectors': function(t, e, s, o, a) {
+                this['miniMapSectors'] = document.getElementById('minimap-sectors');
+                var n = this['miniMapSectors']['getContext']('2d');
+                n['ogarioCtx'] = true, this['miniMapSectors']['width'] = s, this['miniMapSectors']['height'] = o, n['fillStyle'] = '#FFFFFF', this['dTok'](n, s - 1), ogarfooddrawer['drawSectors'](n, i['mapOffsetFixed'], t, e, 0.5, a, s - 0.5, o - 9.5, g['miniMapSectorsColor'], g['miniMapSectorsColor'], 1, false);
+            },
+            'resetMiniMapSectors': function() {
+                this['miniMapSectors'] = null;
+            },
+            'drawSelectedCell': function(t) {
+                i.play && i['playerSplitCells'] > 1 && (v['splitRange'] || v['oppColors'] || v['oppRings'] || v['showStatsSTE']) && (t['fillStyle'] = '#FFFFFF', t['globalAlpha'] = this['selectBiggestCell'] ? 0.6 : 0.3, t['beginPath'](), t.arc(0x30, 15, 6, 0, this.pi2, false), t['closePath'](), t.fill(), t['globalAlpha'] = this['selectBiggestCell'] ? 0.3 : 0.6, t['beginPath'](), t.arc(0x3c, 15, 4, 0, this.pi2, false), t['closePath'](), t.fill());
+            },
+            'dTok': function(t, e) {
+                t['font'] = g['miniMapFontWeight'] + ' ' + (g['miniMapTop'] - 6) + 'px ' + g['miniMapFontFamily'], t['textAlign'] = 'right', t['textBaseline'] = 'top', t['fillText'](atob(this['token']), e, 7);
+            },
+/*            'drawTeammatesInd': function(t, e, i, s) {
+                this['indicator'] && t['drawImage'](this['indicator'], e - 45, i - s - 90);
+            }, */
+            'drawCellInfo': function(t, e, s, o, a, n, r, l, h, c, u, d) {
+                //if (!n && !h && (t['globalAlpha'] = i['globalAlpha'], v['teammatesInd'] && d && !l && a <= 200 && this['drawTeammatesInd'](t, s, o, a), !v['noNames'] || v['showMass'])) {
+				if (!n && !h && (t['globalAlpha'] = i['globalAlpha'], v['teammatesInd'] && d && !l && a <= 200 && ogarfooddrawer['drawTeammatesInd'](t, s, o, a), !v['noNames'] || v['showMass'])) {
+                    var f = false;
+                    if (l || r || !(f = this['setAutoHideCellInfo'](a)) || !v['autoHideNames'] || !v['autoHideMass']) {
+                        var m = null;
+                        if (!this['cells'].hasOwnProperty(e)) return (m = new ogarbasicassembly(s, o, r, l, v['shortMass'], v['virMassShots']))['setMass'](a), m['setNick'](c), void(this['cells'][e] = m);
+                        (m = this['cells'][e])['update'](s, o, a, r, l, c), m['setDrawing'](v['optimizedNames'], v['optimizedMass'], v['shortMass'], v['virMassShots'], v['namesStroke'], v['massStroke']), m['setDrawingScale'](i['viewScale'], g['namesScale'], g['massScale'], g['virMassScale'], g['strokeScale']), t['globalAlpha'] = g['textAlpha'], v['noNames'] || f && v['autoHideNames'] || l && v['hideMyName'] || d && v['hideTeammatesNames'] || m['drawNick'](t, g['namesColor'], g['namesFontFamily'], g['namesFontWeight'], g['namesStrokeColor']), !v['showMass'] || f && v['autoHideMass'] || l && v['hideMyMass'] || v['hideEnemiesMass'] && !l && !r || m['drawMass'](t, g['massColor'], g['massFontFamily'], g['massFontWeight'], g['massStrokeColor']);
+                    }
+                }
+            },
+            'setVirusColor': function(t) {
+                return Math['floor'](t * t / 100) > 183 ? '#C80000' : g['virusColor'];
+            },
+            'setVirusStrokeColor': function(t) {
+                return i.play && 0 != i['playerMaxMass'] ? Math['floor'](t * t / 100) / (this['selectBiggestCell'] ? i['playerMaxMass'] : i['playerMinMass']) > 0.76 ? '#FFDC00' : '#C80000' : g['virusStrokeColor'];
+            },
+            'setAutoHideCellInfo': function(t) {
+                return t <= 40 || i['viewScale'] < 0.5 && t < 550 && t < 25 / i['viewScale'];
+            },
+            'setParty': function() {
+                var t = s('#party-token').val();
+                if (this['gameMode'] = i['gameMode'] = s('#gamemode').val(), this['setQuest'](), ':party' === this['gameMode'] && t) {
+                    var e = t; - 1 != t.indexOf('#') && (e = (t = t.split('#'))[1]), this['partyToken'] !== e && (this['partyToken'] = e, this['flushSkinsMap'](), this['flushChatData'](), this['cancelTargeting']());
+                }
+            },
+            'createParty': function() {
+                s('#create-party-btn')['click']();
+            },
+            'joinParty': function() {
+                var t = s('#party-token').val();
+                t && (s('#pre-join-party-btn')['click'](), s('.party-token').val(t), s('#join-party-btn')['click']());
+            },
+            'leaveParty': function() {
+                s('#party-token, .party-token').val(''), s('#leave-party-btn')['click']();
+            },
+            'closeParty': function() {
+                s('#party-token, .party-token').val(''), s('.party-icon-back')['click']();
+            },
+            'flushData': function() {
+                this['flushPartyData'](), this['flushSkinsMap'](), this['flushChatData'](), this['cancelTargeting'](), i.play = false, i['playerColor'] = null;
+            },
+            'flushPartyData': function() {
+                this['teamPlayers'] = [], this['parties'] = [], this['lastSentNick'] = '', this['lastSentClanTag'] = null, this['lastSentSkinURL'] = '', this['lastSentCustomColor'] = '', this['lastSentPartyToken'] = '', this['lastSentServerToken'] = '';
+            },
+            'flushCells': function() {
+                this['cells'] = {};
+            },
+            'flushSkinsMap': function() {
+                this['customSkinsMap'] = {};
+            },
+            'flushChatData': function() {
+                this['chatUsers'] = {};
+            },
+            'getWS': function(t) {
+                t && (this['ws'] = t, this['createServerToken'](), this['updateServerInfo'](), -1 == this['ws'].indexOf('agar.io') && this['closeConnection']());
+            },
+            'recreateWS': function(t) {
+                if (!t) return null;
+                var e = null;
+                if (/^[a-zA-Z0-9=+\/]{12,}$/.test(t)) {
+                    var i = atob(t);
+                    /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/.test(i) && (e = 'wss://ip-' + i.replace(/\./g, '-').replace(':', '.tech.agar.io:'));
+                }
+                return !e && /^[a-z0-9]{5,}$/.test(t) && (e = 'wss://live-arena-' + t + '.agar.io:443'), e;
+            },
+            'createServerToken': function() {
+                var t = this['ws']['match'](/ip-\d+/),
+                    i = this['ws']['match'](/live-arena-([\w\d]+)/),
+                    s = null;
+                t && ((t = this['ws'].replace('.tech.agar.io', '').replace(/-/g, '.')['match'](/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/)) && (this['serverIP'] = t[0], s = btoa(this['serverIP'])));
+                if (!s && i && (this['serverArena'] = i[1], s = this['serverArena']), s) {
+                    this['serverToken'] !== s && (this['serverToken'] = s, this['flushData'](), this['flushCells']()), this['partyToken'] = '';
+                    var o = this['ws']['match'](/party_id=([A-Z0-9]{6})/);
+                    o && (this['partyToken'] = o[1], ogarjoiner('/#' + e['encodeURIComponent'](this['partyToken'])));
+                }
+            },
+            'updateServerInfo': function() {
+                s('#server-ws').val(this['ws']), s('#server-token').val(this['serverToken']), s('#party-token, .party-token').val(this['partyToken']);
+            },
+            'gameServerConnect': function(t) {
+                t && (this['skipServerData'] = true, e.core && e.core.connect && e.core.connect(t));
+            },
+            'gameServerReconnect': function() {
+                e.MC && e.MC['reconnect'] ? e.MC['reconnect']() : e.master && e.master['reconnect'] && e.master['reconnect']();
+            },
+            'gameServerJoin': function(t) {
+                var e = this['recreateWS'](t);
+                e && (this['skipServerData'] = true, this['gameServerConnect'](e));
+            },
+            'connect': function() {
+                pauseVideos(), this['closeConnection'](), this['flushData'](), this['setParty'](), console.log('[Legend mod Express] Connecting to server'), this['privateMode'] && this['privateIP'] ? this.socket = new WebSocket(this['privateIP']) : this.socket = new WebSocket(this['publicIP']), this.socket['ogarioWS'] = true, this.socket['binaryType'] = 'arraybuffer';
+                var t = this;
+                this.socket['onopen'] = function() {
+                    console.log('[Legend mod Express] Socket open');
+                    var e = t.createView(3);
+                    e.setUint8(0, 0), e.setUint16(1, 401, true), t['sendBuffer'](e), t['sendPartyData']();
+                }, this.socket['onmessage'] = function(e) {
+                    t['handleMessage'](e);
+                }, this.socket['onclose'] = function(e) {
+                    t['flushData'](), console.log('[Legend mod Express] Socket close', e);
+                }, this.socket['onerror'] = function(e) {
+                    t['flushData'](), console.log('[Legend mod Express] Socket error', e);
+                };
+            },
+            'closeConnection': function() {
+                if (this.socket) {
+                    this.socket['onmessage'] = null;
+                    try {
+                        this.socket['close']();
+                    } catch (ogarcloseconlabel) {}
+                    this.socket = null;
+                }
+            },
+            'reconnect': function() {
+                this['setParty']();
+                var t = this;
+                setTimeout(function() {
+                    t.connect();
+                }, 1000);
+            },
+            'switchServerMode': function() {
+                if (this["privateIP"]) {
+                    this["privateMode"] = !this["privateMode"];
+                    if (this["isSocketOpen"]()) {
+                        this["closeConnection"]();
+                        toastr["error"]("Zamkni\u0119to po\u0142\u0105czenie z serwerem!");
+                    }
+                    if (this["privateMode"]) {
+                        toastr["info"]("Prze\u0142\u0105czono na serwer prywatny!");
+                        s(".party-panel").show();
+                    } else {
+                        toastr["info"]("Prze\u0142\u0105czono na serwer publiczny!");
+                        s("#active-parties")["empty"]();
+                        s(".party-panel").hide();
+                    }
+                    this["onJoin"]();
+                    if (i.play) {
+                        this["onPlayerSpawn"]();
+                    }
+                }
+            },
+            'isSocketOpen': function() {
+                return null !== this.socket && this.socket['readyState'] === this.socket['OPEN'];
+            },
+            "writeUint32": function(data, value) {
+                for (; !![];) {
+                    if ((value & -128) == 0) {
+                        data["push"](value);
+                        return;
+                    } else {
+                        data["push"](value & 127 | 128);
+                        value = value >>> 7;
+                    }
+                }
+            },
+            'createView': function(t) {
+                return new DataView(new ArrayBuffer(t));
+            },
+            'strToBuff': function(t, e) {
+                var i = this.createView(1 + 2 * e.length);
+                i.setUint8(0, t);
+                for (var s = 0; s < e.length; s++) i.setUint16(1 + 2 * s, e.charCodeAt(s), true);
+                return i;
+            },
+            'sendBuffer': function(t) {
+                this.socket['send'](t['buffer']);
+            },
+            'handleMessage': function(t) {
+                this['readMessage'](new DataView(t['data']));
+            },
+            'readMessage': function(t) {
+                switch (t.getUint8(0)) {
+                    case 0:
+                        this['playerID'] = t.getUint32(1, true);
+                        break;
+                    case 1:
+                        this['sendPlayerUpdate']();
+                        break;
+                    case 20:
+                        this['updateTeamPlayer'](t);
+                        break;
+                    case 30:
+                        this['updateTeamPlayerPosition'](t);
+                        break;
+                    case 96:
+                        break;
+                    case 100:
+                        this['readChatMessage'](t);
+                }
+            },
+            'sendPlayerState': function(t) {
+                if (this['isSocketOpen']()) {
+                    var e = this.createView(1);
+                    e.setUint8(0, t), this['sendBuffer'](e);
+                }
+            },
+            'sendPlayerSpawn': function() {
+                this['sendPlayerState'](1);
+            },
+            'sendPlayerDeath': function() {
+                this['sendPlayerState'](2);
+            },
+            'sendPlayerJoin': function() {
+                this['sendPlayerState'](3);
+            },
+            'sendPlayerData': function(t, e, i) {
+                null !== this[e] && this[e] === i || this['isSocketOpen']() && (this['sendBuffer'](this['strToBuff'](t, i)), this[e] = i);
+            },
+            'sendPlayerNick': function() {
+                this['sendPlayerData'](10, 'lastSentNick', ogarcopythelb.nick);
+            },
+            'sendPlayerClanTag': function() {
+                this['sendPlayerData'](11, 'lastSentClanTag', ogarcopythelb.clanTag);
+            },
+            'sendPlayerSkinURL': function() {
+                this['sendPlayerData'](12, 'lastSentSkinURL', ogarcopythelb.skinURL);
+            },
+            'sendPlayerCustomColor': function() {
+                this['sendPlayerData'](13, 'lastSentCustomColor', ogarcopythelb.color);
+            },
+            'sendPlayerColor': function() {
+                this['isSocketOpen']() && i['playerColor'] && this['sendBuffer'](this['strToBuff'](14, i['playerColor']));
+            },
+            'sendPartyToken': function() {
+                this['setParty'](), this['sendPlayerData'](15, 'lastSentPartyToken', this['partyToken']);
+            },
+            'sendServerToken': function() {
+                this['sendPlayerData'](16, 'lastSentServerToken', this['serverToken']);
+            },
+            'sendServerJoin': function() {
+                this['sendServerToken'](), this['sendPlayerJoin']();
+            },
+            'sendServerRegion': function() {
+                if (this['region']) {
+                    var t = this['region'].split('-');
+                    this['isSocketOpen']() && this['sendBuffer'](this['strToBuff'](17, t[0]));
+                }
+            },
+            'sendServerGameMode': function() {
+                var t = 'FFA';
+                switch (this['gameMode']) {
+                    case ':battleroyale':
+                        t = 'BTR';
+                        break;
+                    case ':teams':
+                        t = 'TMS';
+                        break;
+                    case ':experimental':
+                        t = 'EXP';
+                        break;
+                    case ':party':
+                        t = 'PTY';
+                }
+                this['isSocketOpen']() && this['sendBuffer'](this['strToBuff'](18, t));
+            },
+            'sendServerData': function() {
+                this['skipServerData'] ? this['skipServerData'] = false : (this['region'] = s('#region').val(), this['gameMode'] = s('#gamemode').val(), this['sendServerRegion'](), this['sendServerGameMode']());
+            },
+            'sendPartyData': function() {
+                this['sendPlayerClanTag'](), this['sendPartyToken'](), this['sendServerToken'](), this['sendPlayerNick']();
+            },
+            'sendPlayerUpdate': function() {
+                if (this['isSocketOpen']() && i.play && this['playerID'] && i['playerColor']) {
+                    function t(t) {
+                        for (var e = 0; e < t.length; e++) s.setUint16(o, t.charCodeAt(e), true), o += 2;
+                        s.setUint16(o, 0, true), o += 2;
+                    }
+                    var e = 41;
+                    e += 2 * ogarcopythelb.nick.length, e += 2 * ogarcopythelb.skinURL.length;
+                    var s = this.createView(e);
+                    s.setUint8(0, 20), s.setUint32(1, this['playerID'], true);
+                    var o = 5;
+                    t(ogarcopythelb.nick), t(ogarcopythelb.skinURL), t(ogarcopythelb.color), t(i['playerColor']), this['sendBuffer'](s);
+                }
+            },
+            'sendPlayerPosition': function() {
+                if (this["isSocketOpen"]() && i.play && this["playerID"]) {
+                    var t = this.createView(17);
+                    t.setUint8(0, 30);
+                    t.setUint32(1, this["playerID"], true);
+                    t["setInt32"](5, this["getPlayerX"](), true);
+                    t["setInt32"](9, this["getPlayerY"](), true);
+                    if (void 0 !== i["playerMass"]) {
+                        t.setUint32(13, i["playerMass"], true);
+                    } else {
+                        t.setUint32(13, this["playerMass"], true);
+                    }
+                    this["sendBuffer"](t);
+                }
+            },
+            'checkPlayerID': function(t) {
+                if (t)
+                    for (var e = 0; e < this['teamPlayers'].length; e++)
+                        if (this['teamPlayers'][e]['id'] == t) return e;
+                return null;
+            },
+            'checkPlayerChat': function(t) {
+                if (t)
+                    for (var e = 0; e < this['teamPlayers'].length; e++)
+                        if (this['teamPlayers'][e]['id'] == t) return e;
+                return null;
+            },			
+            'updateTeamPlayer': function(t) {
+                function e() {
+                    var paginationStr = "";
+                    for (;;) {
+                        var i = t.getUint16(s, true);
+                        if (0 == i) {
+                            break;
+                        }
+                        paginationStr = paginationStr + String["fromCharCode"](i);
+                        s = s + 2;
+                    }
+                    return s = s + 2, paginationStr;
+                }
+                var i = t.getUint32(1, true);
+                var s = 5;
+                var o = e();
+                var a = this["checkSkinURL"](e());
+                var n = e();
+                var r = e();
+                var l = ":party" === this["gameMode"] ? o + r : o;
+                var h = this["checkPlayerID"](i);
+                if (null !== h) {
+                    this["teamPlayers"][h].nick = o;
+                    this["teamPlayers"][h].skinID = l;
+                    this["teamPlayers"][h].skinURL = a;
+                    this["teamPlayers"][h].setColor(r, n);
+                } else {
+                    var c = new function(envId, cb, i, s) {
+                        this["id"] = envId;
+                        this.nick = cb;
+                        this.skinID = i;
+                        this.skinURL = s;
+                        this["x"] = 0;
+                        this["y"] = 0;
+                        this["lastX"] = 0;
+                        this["lastY"] = 0;
+                        this.mass = 0;
+                        this.clanTag = "";
+                        this["color"] = null;
+                        this["customColor"] = g["miniMapTeammatesColor"];
+                        this["alive"] = false;
+                        this.updateTime = null;
+                        this.pi2 = 2 * Math.PI;
+                        this.setColor = function(i, inRevIdx) {
+                            this["color"] = i;
+                            if (7 == inRevIdx.length) {
+                                this["customColor"] = inRevIdx;
+                            }
+                        };
+                        this["drawPosition"] = function(options, margin, mult, startcode, endcode, value) {
+                            if (!(!this["alive"] || startcode && endcode && this["id"] != endcode)) {
+                                this["lastX"] = (29 * this["lastX"] + this["x"]) / 30;
+                                this["lastY"] = (29 * this["lastY"] + this["y"]) / 30;
+                                var w = (this["lastX"] + margin) * mult;
+                                var h = (this["lastY"] + margin) * mult;
+                                if (this.nick.length > 0) {
+                                    options["font"] = g["miniMapNickFontWeight"] + " " + g["miniMapNickSize"] + "px " + g["miniMapNickFontFamily"];
+                                    options["textAlign"] = "center";
+                                    if (g["miniMapNickStrokeSize"] > 0) {
+                                        options["lineWidth"] = g["miniMapNickStrokeSize"];
+                                        options["strokeStyle"] = g["miniMapNickStrokeColor"];
+                                        options["strokeText"](this.nick, w, h - (2 * g["miniMapTeammatesSize"] + 2));
+                                    }
+                                    options["fillStyle"] = g["miniMapNickColor"];
+                                    options["fillText"](this.nick, w, h - (2 * g["miniMapTeammatesSize"] + 2));
+                                }
+                                options["beginPath"]();
+                                options.arc(w, h, g["miniMapTeammatesSize"], 0, this.pi2, false);
+                                options["closePath"]();
+                                if (v["oneColoredTeammates"]) {
+                                    options["fillStyle"] = g["miniMapTeammatesColor"];
+                                } else {
+                                    options["fillStyle"] = value;
+                                }
+                                options.fill();
+                            }
+                        };
+                    }(i, o, l, a);
+                    c.setColor(r, n);
+                    this["teamPlayers"].push(c);
+                }
+                this["cacheCustomSkin"](o, r, a);
+            },
+            'updateTeamPlayerPosition': function(t) {
+                var e = t.getUint32(1, true),
+                    i = this['checkPlayerID'](e);
+                if (null !== i) {
+                    var s = t.getInt32(5, true),
+                        o = t.getInt32(9, true),
+                        a = t.getUint32(13, true);
+                    if (a > 360000) return;
+                    var n = this['teamPlayers'][i];
+                    n['x'] = s, n['y'] = o, n['mass'] = a, n['alive'] = true, n['updateTime'] = Date['now'](), this['targeting'] && this['targetID'] && e == this['targetID'] && this['updateTarget'](n.nick, n.skinURL, s, o, a, n.color);
+                }
+            },
+            'updateTeamPlayers': function() {
+                this["sendPlayerPosition"](), this["chatUsers"] = {}, this["top5"] = [];
+                var t = 0;
+                for (; t < this["teamPlayers"].length; t++) {
+                    var e = this["teamPlayers"][t];
+                    if (e["alive"] && Date["now"]() - e.updateTime >= 2000 || 0 == e.mass) {
+                        e["alive"] = false;
+                        if (this["targeting"] && this["targetID"] && e["id"] == this["targetID"]) {
+                            this["setTargetStatus"](2);
+                        }
+                    }
+                    if (e["alive"]) {
+                        this["top5"].push({
+                            "id": e["id"],
+                            "nick": e.nick,
+                            "x": e["x"],
+                            "y": e["y"],
+                            "mass": e.mass,
+                            "color": e["color"],
+                            "skin": e.skinURL
+                        });
+                        if (!this["isChatUserMuted"](e["id"])) {
+                            this["addChatUser"](e["id"], e.nick);
+                        }
+                    }
+                }
+                this["top5"]["sort"](function(row, conf) {
+                    return conf.mass - row.mass;
+                }), this["displayTop5"]();
 
-function emphasischat(){
-    var global = window; // unsafeWindow;
-    var my = {
-        "name": "OChatBetter",
-        "log": function(msg){ console.log(this.name + ":"+ msg); },
-    };
-    var stat = {
-    };
-    var cfg= {}, cfg_org = {
-        "emphasis_bgcolor": "rgba(128,128,128,0.9)", // Historical emphasis background color
-        "emphasis_time": 5000,	// Emphasis time [milliseconds]
-        "histhide_time": 10000, // Time to erase history [milliseconds]
-        "scroll_dulation": 200, // History scroll completion period [milliseconds]
-    };
-    function pre_loop(){
-        // At this point jQuery can not be used
-        if(! document.getElementById("top5-hud")){
-            my.pre_loop_timeout = (my.pre_loop_timeout || 1000) + 1000;
-            setTimeout(pre_loop, my.pre_loop_timeout);
-            my.log("wait for OGARio load");
-            return;
+            },
+            'updateParties': function(t) {
+                this['parties'] = [];
+                for (var e = t.getUint8(1), i = 2, s = 0; s < e; s++) {
+                    for (var o = '';;) {
+                        var a = t.getUint16(i, true);
+                        if (0 == a) break;
+                        o += String['fromCharCode'](a), i += 2;
+                    }
+                    i += 2, this['parties'].push(o);
+                }
+            },
+            'readChatMessage': function(t) {
+                if (!v['disableChat']) {
+                    var e = new Date()['toTimeString']().replace(/^(\d{2}:\d{2}).*/, '$1'),
+                        i = t.getUint8(1),
+                        s = t.getUint32(2, true),
+                        o = t.getUint32(6, true);
+                    if (!(this['isChatUserMuted'](s) || 0 != o && o != this['playerID'] && s != this['playerID'])) {
+                        for (var a = '', n = 10; n < t.byteLength; n += 2) {
+                            var r = t.getUint16(n, true);
+                            if (0 == r) break;
+                            a += String['fromCharCode'](r);
+                        }
+                        this['displayChatMessage'](e, i, s, a);
+                    }
+                }
+            },
+            'sendChatMessage': function(t, e) {
+                //console.log(t);console.log(e);
+                if (!(Date['now']() - this['lastMessageSentTime'] < 500 || 0 == e.length || 0 == ogarcopythelb.nick.length) && this['isSocketOpen']()) {
+                    e = ogarcopythelb.nick + ': ' + e;
+                    var i = this.createView(10 + 2 * e.length);
+                    i.setUint8(0, 100), i.setUint8(1, t), i.setUint32(2, this['playerID'], true), i.setUint32(6, 0, true);
+                    for (var s = 0; s < e.length; s++) i.setUint16(10 + 2 * s, e.charCodeAt(s), true);
+                    this['sendBuffer'](i), this['lastMessageSentTime'] = Date['now']();
+                }
+            },
+            'prepareCommand': function(t) {
+                return t.replace('%currentSector%', this['currentSector']);
+            },
+            'sendCommand': function(t) {
+                var e = this['prepareCommand'](c['comm' + t]);
+                this['sendChatMessage'](102, e);
+            },
+            'addChatUser': function(t, e) {
+                this['chatUsers'][t] = e;
+            },
+            'getChatUserNick': function(t) {
+                return this['chatUsers'].hasOwnProperty(t) ? this['chatUsers'][t] : '';
+            },
+            'muteChatUser': function(t) {
+                if (t && !this['isChatUserMuted'](t)) {
+                    var e = this['getChatUserNick'](t);
+                    this['chatMutedUsers'][t] = e, this['chatMutedUserIDs'].push(t), toastr['error'](h['userMuted'].replace('%user%', '<strong>' + this['escapeHTML'](e) + '</strong>') + ' <button data-user-id=\"' + t + '\" class=\"btn btn-xs btn-green btn-unmute-user\">' + h['unmute'] + '</button>');
+                }
+            },
+            'unmuteChatUser': function(t) {
+                if (t) {
+                    var e = this["chatMutedUserIDs"].indexOf(t);
+                    if (-1 != e) {
+                        this["chatMutedUserIDs"]["splice"](e, 1);
+                        toastr["info"](h["userUnmuted"].replace("%user%", "<strong>" + this["escapeHTML"](this["chatMutedUsers"][t]) + "</strong>"));
+                        delete this["chatMutedUsers"][t];
+                    }
+                }
+            },
+            'isChatUserMuted': function(t) {
+                return -1 != this['chatMutedUserIDs']['indexOf'](t);
+            },
+            'parseMessage': function(t) {
+                var e = /\[img\](https?:\/\/i\.(?:imgur|hizliresim)\.com\/\w{6,8}\.(?:jpg|jpeg|png|gif)\??\d*)\[\/img\]/i;
+                if (e.test(t)) return v['showChatImages'] ? '<img src=\"' + t['match'](e)[1].replace('http:', 'https:') + '\" style=\"width:100%;border:none;\">' : '';
+                var i = /\[yt\]([\w-]{11})\[\/yt\]/i;
+                if (i.test(t)) return v['showChatVideos'] ? '<iframe type=\"text/html\" width=\"100%\" height=\"auto\" src=\"https://www.youtube.com/embed/' + t['match'](i)[1] + '?autoplay=1&amp;vq=tiny\" frameborder=\"0\" />' : '';
+                var s = this['escapeHTML'](t);
+                return v['chatEmoticons'] && (s = this['parseEmoticons'](s)), s;
+            },
+            'parseEmoticons': function(t) {
+                /*return String(t).replace(/\&lt\;3/g, '<3').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\))/g, function(t) {
+                    return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + d[t] + '\" alt=\"' + t + '\" class=\"emoticon\">';
+                });*/
+                return String(t).replace(/\&lt\;3/g, '<3').replace(/℄/g, '℄ Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(t) {
+                    //console.log(d[t]);
+                    return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + d[t] + '\" alt=\"' + t + '\" class=\"emoticon\">';
+                });
+
+            },
+            'displayChatMessage': function(t, e, i, o) {
+                if (0 != o.length) {
+                    var a = o.split(': ', 1)['toString'](),
+                        n = this['parseMessage'](o.replace(a + ': ', ''));
+                    if (!(0 == a.length || a.length > 15 || 0 == n.length)) {
+                        var r = '';
+                        if (0 != i && i != this['playerID'] && (this['addChatUser'](i, a), r = '<a href=\"#\" data-user-id=\"' + i + '\" class=\"mute-user ogicon-user-minus\"></a> '), a = this['escapeHTML'](a), 101 == e) {
+                            if (v['showChatBox']) return s('#chat-box').append('<div class=\"message\"><span class=\"message-time\">[' + t + '] </span>' + r + '<span class=\"message-nick\">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'), s('#chat-box')['perfectScrollbar']('update'), s('#chat-box')['animate']({
+                                'scrollTop': s('#chat-box')['prop']('scrollHeight')
+                            }, 500), void(v['chatSounds'] && this['playSound'](this['messageSound']));
+                            v['hideChat'] || (toastr['success']('<span class=\"message-nick\">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r), v['chatSounds'] && this['playSound'](this['messageSound'])), this['chatHistory'].push({
+                                'nick': a,
+                                'message': n
+                            }), this['chatHistory'].length > 15 && this['chatHistory']['shift']();
+                        } else if (102 == e) {
+                            if (v['showChatBox']) return s('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + t + '] </span>' + r + '<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'), s('#chat-box')['perfectScrollbar']('update'), s('#chat-box')['animate']({
+                                'scrollTop': s('#chat-box')['prop']('scrollHeight')
+                            }, 500), void(v['chatSounds'] && this['playSound'](this['commandSound']));
+                            v['hideChat'] || (toastr['warning']('<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r), v['chatSounds'] && this['playSound'](this['commandSound']));
+                        } else s('#messages').append(o);
+                    }
+                }
+            },
+            'displayUserList': function(t, e, i, s, o) {
+                var a = '';
+                if (Object['keys'](t).length) {
+                    for (var n in a += '<ol class=\"user-list\">', t) t.hasOwnProperty(n) && (a += '<li><strong>' + this['escapeHTML'](t[n]) + '</strong> <button data-user-id=\"' + n + '\" class=\"btn btn-xs ' + i + '\">' + s + '</button></li>');
+                    a += '</ol>';
+                } else a += h['none'];
+                toastr[o](a, e, {
+                    'closeButton': true,
+                    'tapToDismiss': false
+                });
+            },
+            'displayChatActiveUsers': function() {
+                this['displayUserList'](this['chatUsers'], h['activeUsers'], 'btn-red btn-mute-user', h['mute'], 'info');
+            },
+            'displayChatMutedUsers': function() {
+                this['displayUserList'](this['chatMutedUsers'], h['mutedUsers'], 'btn-green btn-unmute-user', h['unmute'], 'error');
+            },
+            'preloadChatSounds': function() {
+                this['setMessageSound'](), this['setCommandSound'](), this['setvirusSound']();
+            },
+            'setChatSoundsBtn': function() {
+                v['chatSounds'] ? s('.chat-sound-notifications').removeClass('ogicon-volume-mute2').addClass('ogicon-volume-high') : s('.chat-sound-notifications').removeClass('ogicon-volume-high').addClass('ogicon-volume-mute2');
+            },
+            'setMessageSound': function() {
+                this['messageSound'] = this['setSound'](v['messageSound']);
+            },
+            'setCommandSound': function() {
+                this['commandSound'] = this['setSound'](v['commandSound']);
+            },
+            'setvirusSound': function() {
+                this['virusSoundurl'] = this['setSound'](v['virusSoundurl']);
+            },			
+            'setSound': function(t) {
+                return t ? new Audio(t) : null;
+            },
+/*            'playSound': function(t) {
+                //t && t.play && (t.pause(), t.currentTime = 0, t.play());
+                //t && t.play && t.play!==null && (t.pause(), t.currentTime = 0, t.play());
+                t.pause();
+                t.currentTime = 0;
+                var nopromise = {
+                    catch: new Function()
+                };
+                (t.play() || nopromise).catch(function() {});
+            },
+*/
+        'playSound': function (t) {
+            if (t && t.play) {
+                t.pause();
+                t.currentTime = 0;
+                t.play();
+            }
+        },			
+            'setTargeting': function() {
+                this['targetID'] && (this['targeting'] = !this['targeting'], i['targeting'] = this['targeting'], this['setTargetingInfo']());
+            },
+            'setTargetingInfo': function() {
+                this['targeting'] ? (s('#set-targeting').addClass('active'), s('#target-status').show(), 2 != this['targetStatus'] && s('#target-summary').show()) : (s('#set-targeting').removeClass('active'), s('#target-summary, #target-status').hide());
+            },
+            'cancelTargeting': function() {
+                this['setTargetStatus'](0);
+            },
+            'setPrivateMiniMap': function() {
+                this['targetID'] && (this['privateMiniMap'] = !this['privateMiniMap'], this['privateMiniMap'] ? s('#set-private-minimap').addClass('active') : s('#set-private-minimap').removeClass('active'));
+            },
+            'setTarget': function(t) {
+                var e = this['checkPlayerID'](t);
+                if (null !== e) {
+                    var i = this['teamPlayers'][e];
+                    if (this['targetID'] = i['id'], this['updateTarget'](i.nick, i.skinURL, i['x'], i['y'], i['mass'], i.color), !i['alive']) return void this['setTargetStatus'](2);
+                    this['setTargetStatus'](1);
+                } else this['setTargetStatus'](0);
+            },
+            'setTargetStatus': function(t) {
+                switch (t) {
+                    case 0:
+                        this['targetStatus'] = 0, this['targetID'] = 0, this['targetNick'] = '', this['targetSkinURL'] = '', this['targeting'] = false, i['targeting'] = false, this['privateMiniMap'] = false, s('#target-skin, #target-nick, #target-summary').hide(), $("#target-hud").hide(), s('#target-status').show().text( h['targetNotSet'] ), s('#target-panel-hud a').removeClass('active'); //s('#target-status').show().text('[' + h['targetNotSet'] + ']'), s('#target-panel-hud a').removeClass('active');
+                        break;
+                    case 1:
+                        this['targetStatus'] = 1, this['targeting'] || (this['targeting'] = true, i['targeting'] = true, $("#target-hud").show(), this['setTargetingInfo']()), s('#target-skin, #target-nick, #target-status, #target-summary').show();
+                        break;
+                    case 2:
+                        this['targetStatus'] = 2, s('#target-summary').hide(), $("#target-hud").show(), s('#target-status').show().text('[' + h['targetDead'] + ']'), i['resetTargetPosition']();
+                }
+            },
+            'changeTarget': function() {
+                for (var t = this['checkPlayerID'](this['targetID']), e = null, i = 0; i < this['teamPlayers'].length; i++)
+                    if (this['teamPlayers'][i]['alive']) {
+                        if (null === t) {
+                            t = i;
+                            break;
+                        }
+                        if (i < t && null === e) e = i;
+                        else if (i > t) {
+                            e = i;
+                            break;
+                        }
+                    } null !== e && (t = e), null !== t ? this['setTarget'](this['teamPlayers'][t]['id']) : this['setTargetStatus'](0);
+            },
+            'updateTarget': function(t, e, o, a, n, r) {
+                i['setTargetPosition'](o, a), this['targetNick'] !== t && (this['targetNick'] = t, s('#target-nick').html(this['escapeHTML'](t))), s('#target-skin').css('background-color', r), e && this['targetSkinURL'] !== e && (this['customSkinsCache'].hasOwnProperty(e + '_cached') ? (s('#target-skin img')['attr']('src', e), this['targetSkinURL'] = e) : s('#target-skin img')['attr']('src', 'https://jimboy3100.github.io/banners/static/img/blank.png')), s('#target-status').text('[' + this['shortMassFormat'](n) + ']');
+                var l = this['calculateMapSector'](o, a),
+                    c = h['targetDistance'] + ': <span class=\"hud-main-color\">' + i['targetDistance'] + ' [' + l + ']</span>';
+                i.play && (c += ' | ' + h['targetMass'] + ': <span class=\"hud-main-color\">' + this['shortMassFormat'](n + i['playerMass']) + '</span>'), s('#target-summary').html(c), 1 != this['targetStatus'] && this['setTargetStatus'](1);
+            },
+            'updateQuest': function() {
+                this['showQuest'] && ':ffa' === this['gameMode'] && e.MC && e.MC['getQuestProgressLabel'] && (this['questHUD']['textContent'] = e.MC['getQuestProgressLabel']());
+            },
+            'init': function() {
+                this['loadSettings'](), this['loadProfiles'](), this['setLang'](), this['setMenu'](), this['setUI'](), y && y.setTheme(), this['setShowQuickMenu'](), this['setShowSkinsPanel'](), this['setProfile'](), this['setMainButtons'](), this['setStreamMode'](), this['setHideSkinUrl'](), this['setMiniMap'](), this['setAutoResp'](), this['setDisableChat'](), this['setShowChatBox'](), this['setTop5'](), this['setTargetingHUD'](), this['setQuest'](), this['displayTime'](), this['setCenteredLb'](), this['setNormalLb'](), this['setFpsAtTop'](), this['displayStats'](), this['setBlockPopups'](), this['preloadChatSounds'](), this['setChatSoundsBtn']();
+                var t = this;
+                setInterval(function() {
+                    t['drawMiniMap']();
+                }, 33), setInterval(function() {
+                    t['updateTeamPlayers']();
+                }, this['updateInterval']);
+            }
+        };
+
+        function irenderfromagario() {
+            this['txt'] = '',
+                this['txtCanvas'] = null,
+                this['txtCtx'] = null,
+                this.color = '#FFFFFF',
+                this['stroke'] = false,
+                this['strokeWidth'] = 2,
+                this['strokeColor'] = '#000000',
+                this['font'] = '700 16px Ubuntu',
+                this['fontFamily'] = 'Ubuntu',
+                this['fontWeight'] = 700,
+                this['fontSize'] = 16,
+                this['margin'] = 3,
+                this['scale'] = 1,
+                this['quality'] = 1,
+                this['measuredWidth'] = 0,
+                this['redraw'] = false,
+                this['remeasure'] = false,
+                this['setTxt'] = function(ogariosettxtsetter) {
+                    this['txt'] !== ogariosettxtsetter && (this['txt'] = ogariosettxtsetter,
+                        this['redraw'] = true,
+                        this['remeasure'] = true);
+                },
+                this['setColor'] = function(ogariocolorsetter) {
+                    this.color !== ogariocolorsetter && (this.color = ogariocolorsetter,
+                        this['redraw'] = true);
+                },
+                this['setStroke'] = function(ogariostrokesetter) {
+                    this['stroke'] !== ogariostrokesetter && (this['stroke'] = ogariostrokesetter,
+                        this['redraw'] = true);
+                },
+                this['setStrokeWidth'] = function(ogariostrokewidthsetter) {
+                    this['stroke'] && this['strokeWidth'] != ogariostrokewidthsetter && (this['strokeWidth'] = ogariostrokewidthsetter,
+                        this['redraw'] = true,
+                        this['remeasure'] = true);
+                },
+                this['setStrokeColor'] = function(ogariostrokecolorsetter) {
+                    this['stroke'] && this['strokeColor'] !== ogariostrokecolorsetter && (this['strokeColor'] = ogariostrokecolorsetter,
+                        this['redraw'] = true);
+                },
+                this.setFont = function() {
+                    this['font'] = this['fontWeight'] + ' ' + this['fontSize'] + 'px ' + this['fontFamily'];
+                },
+                this['setFontFamily'] = function(ogariofontfamilysetter) {
+                    this['fontFamily'] !== ogariofontfamilysetter && (this['fontFamily'] = ogariofontfamilysetter,
+                        this.setFont(),
+                        this['redraw'] = true,
+                        this['remeasure'] = true);
+                },
+                this.setFontWeight = function(ogariofontweightsetter) {
+                    this['fontWeight'] != ogariofontweightsetter && (this['fontWeight'] = ogariofontweightsetter,
+                        this.setFont(),
+                        this['redraw'] = true,
+                        this['remeasure'] = true);
+                },
+                this['setFontSize'] = function(ogariofontsizesetter) {
+                    this['fontSize'] != ogariofontsizesetter && (this['fontSize'] = ogariofontsizesetter,
+                        this['margin'] = ~~(0.2 * ogariofontsizesetter),
+                        this.setFont(),
+                        this['redraw'] = true);
+                },
+                this['setScale'] = function(ogarioscalesetter) {
+                    this['scale'] != ogarioscalesetter && (this['scale'] = ogarioscalesetter,
+                        this['redraw'] = true);
+                },
+                this['createCanvas'] = function() {
+                    this['txtCanvas'] || (this['txtCanvas'] = document['createElement']('canvas'),
+                        this['txtCtx'] = this['txtCanvas']['getContext']('2d'),
+                        this['txtCtx']['ogarioCtx'] = true);
+                },
+                this['setDrawing'] = function(ogarsetDrawinglabel1, ogarsetDrawinglabel2, ogarsetDrawinglabel3, ogarsetDrawinglabel4, ogarsetDrawinglabel5, ogarsetDrawinglabel6) {
+                    this['setColor'](ogarsetDrawinglabel1),
+                        this['setFontFamily'](ogarsetDrawinglabel2),
+                        this.setFontWeight(ogarsetDrawinglabel3),
+                        this['setStroke'](ogarsetDrawinglabel4),
+                        this['setStrokeWidth'](ogarsetDrawinglabel5),
+                        this['setStrokeColor'](ogarsetDrawinglabel6);
+                },
+                this['measureWidth'] = function() {
+                    return this['remeasure'] && (this['txtCtx']['font'] = this['fontWeight'] + ' 10px ' + this['fontFamily'],
+                            this['measuredWidth'] = this['txtCtx']['measureText'](this['txt'])['width'],
+                            this['remeasure'] = false),
+                        ~~(this['fontSize'] / 10 * this['measuredWidth']) + 2 * this['strokeWidth'];
+                },
+                this['drawTxt'] = function() {
+                    return this['createCanvas'](),
+                        this['redraw'] && (this['redraw'] = false,
+                            this['txtCanvas']['width'] = this['measureWidth'](),
+                            this['txtCanvas']['height'] = this['fontSize'] + this['margin'] * 2,
+                            this['txtCtx']['font'] = this['font'],
+                            this['txtCtx']['globalAlpha'] = 1,
+                            this['txtCtx']['lineWidth'] = this['strokeWidth'],
+                            this['txtCtx']['strokeStyle'] = this['strokeColor'],
+                            this['txtCtx']['fillStyle'] = this.color,
+                            this['stroke'] && this['txtCtx']['strokeText'](this['txt'], this['strokeWidth'], ~~(this['fontSize'] + this['margin'] * 0.5)),
+                            this['txtCtx']['fillText'](this['txt'], this['strokeWidth'], ~~(this['fontSize'] + this['margin'] * 0.5))),
+                        this['txtCanvas'];
+                };
         }
-        // Just to be sure, another 1 wait
-        setTimeout(initialize, 1000);
-    }
-    pre_loop();
+        window.legendmod3 = ogarminimapdrawer;
 
-    function initialize(){
-        //$.extend(cfg, cfg_org, JSON.parse(GM_getValue("config", '{}')));
-        cfg = cfg_org;
-        global[my.name] = {my:my, stat:stat, cfg:cfg};
-        stat.obs_hist = new MutationObserver((mutations) => {
-            //my.log("hist changed");
-            mutations.forEach((mutation) => {
-                my.hist_add(mutation.addedNodes);
-            });
-        });
-        stat.obs_hist.observe($("#chat-box").get(0), {"childList": true});
-        stat.obs_inpt = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if(mutation.attributeName !== 'style'){
+        function ogarbasicassembly(t, e, s, o, a, n, r, l, h, c) {
+			cimg2 = new Image;
+            cimg2.src = g.commanderImage2;		
+			cimg5 = new Image;			
+            cimg5.src = g.commanderImage5;
+			cimg6 = new Image;			
+            cimg6.src = g.commanderImage6;		
+			cimg7 = new Image;			
+            cimg7.src = 'https://jimboy3100.github.io/banners/iconLcForCanvas.png';				
+						
+			if (dyinglight1load=="yes"){
+			cimgDyingLight = new Image;
+            cimgDyingLight.src = g.commanderImageDyingLight;	
+			cimgDyingLightvirus = new Image;
+            cimgDyingLightvirus.src = g.commanderImageDyingLightvirus;	
+			
+			
+			cimgDyingLight1 = new Image;
+            cimgDyingLight1.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie2.png';			
+			cimgDyingLight2 = new Image;
+            cimgDyingLight2.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie3.png';		
+			cimgDyingLight3 = new Image;
+            cimgDyingLight3.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie4.png';		
+			cimgDyingLight4 = new Image;
+            cimgDyingLight4.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie5.png';		
+			cimgDyingLight5 = new Image;
+            cimgDyingLight5.src = 'https://jimboy3100.github.io/banners/icondyinglightzombiebig.png';		
+			cimgDyingLight6 = new Image;
+            cimgDyingLight6.src = 'https://jimboy3100.github.io/banners/icondyinglightvolaltile.png';			
+			}		
+			this.oldAlpha=0;
+            this.id = t; 
+			this.x = e; 
+			this.y = s; 
+			this.targetX = e;
+			this.targetY = s; 
+			this.color = a; 
+			this.oppColor = null;
+			this.size = o; 
+			this.targetSize = o;
+			this.alpha = 1;
+			this.nick = '';
+			this.targetNick = '';
+			this.nickCanvas = null;
+			this.mass = 0;
+			this.lastMass = 0;
+			this.kMass = 0; 
+			this.massCanvas = null;
+			this.massTxt = '';
+			this.margin = 0;
+			this.scale = 1;
+			this.nickScale = 1;
+			this.massScale = 1;
+			this.virMassScale = 3;
+			this.strokeScale = 1;
+			this.fontSize = 26;
+			this.nickSize = 26;
+			this.lastNickSize = 0;
+			this.massSize = 26;
+			this.virMassSize = 26;
+			this.nickStrokeSize = 3;
+			this.massStrokeSize = 3;
+			this.isFood = n;
+			this.isVirus = r;
+			this.isPlayerCell = l;
+			this.shortMass = h;
+			this.virMassShots = c;
+			this.rescale = false;
+			this.redrawNick = true;
+			this.redrawMass = true;
+			this.optimizedNames = false;
+			this.optimizedMass = false;
+			this.strokeNick = false;
+			this.strokeMass = false;
+			this.removed = false;
+			this.redrawed = 0;
+			this.time = 0;
+			this.skin = null;
+			this.pi2 = 2 * Math.PI;			
+                this.virusColor = null;
+                this.virusStroke = null;
+                this.nHeight = 6;
+
+        this.updateNumPoints= function() {
+            //adjustment of the number of contacts
+            var numPoints = this.size * ogarfooddrawer.scale | 0;
+            numPoints = Math.max(numPoints, 5);
+            numPoints = Math.min(numPoints, 120);
+            if (this.isVirus) numPoints = 100;
+            while (this.points.length > numPoints) {
+                var i = Math.random() * this.points.length | 0;
+                this.points.splice(i, 1);
+                this.pointsVel.splice(i, 1);
+            }
+            if (this.points.length == 0 && numPoints != 0) {
+                this.points.push({
+                    x: this.x,
+                    y: this.y,
+                    rl: this.size,
+                    parent: this//?
+                });
+                this.pointsVel.push(Math.random() - 0.5);
+            }
+            while (this.points.length < numPoints) {
+                var i = Math.random() * this.points.length | 0;
+                var point = this.points[i];
+                var vel = this.pointsVel[i];
+                this.points.splice(i, 0, {
+                    x: point.x,
+                    y: point.y,
+                    rl: point.rl,
+                    parent: this
+                });
+                this.pointsVel.splice(i, 0, vel);
+            }
+        }
+        this.sqDist = function(a, b) {
+            return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+        }
+        this.movePoints= function() {
+            //console.log(this.id)
+            var pointsVel = this.pointsVel.slice();
+            var len = this.points.length;
+            for (var i = 0; i < len; ++i) {
+                var prevVel = pointsVel[(i - 1 + len) % len];
+                var nextVel = pointsVel[(i + 1) % len];
+                var newVel = (this.pointsVel[i] + Math.random() - 0.5) * 0.7;
+                newVel = Math.max(Math.min(newVel, 10), -10);
+                this.pointsVel[i] = (prevVel + nextVel + 8 * newVel) / 10;
+            }
+            this.maxPointRad = 0
+            for (var i = 0; i < len; ++i) {
+                var curP = this.points[i];
+                var curRl = curP.rl;
+                var prevRl = this.points[(i - 1 + len) % len].rl;
+                var nextRl = this.points[(i + 1) % len].rl;
+                var self = this;
+                var affected = M.quadtree.some({
+                    x: curP.x - 5,
+                    y: curP.y - 5,
+                    w: 10,
+                    h: 10
+                }, function(item) {
+                    return item.parent != self && this.sqDist(item, curP) <= 25;
+                }.bind(this));
+
+                //this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY
+
+                //(curP.x < M.mapMinX || curP.y < M.mapMaxY ||
+                //curP.x > M.mapMaxX || curP.y > M.mapMinY))
+
+
+                //(curP.x < M.viewMinX || curP.y < M.viewMaxY ||
+                //curP.x > M.viewMaxX || curP.y > M.viewMinY))
+
+                /*if (!affected &&
+                    (curP.x < M.mapMinX || curP.y < M.mapMaxY ||
+                    curP.x > M.mapMaxX || curP.y > M.mapMinY))
+                {
+                    affected = true;
+                }*/
+                if (affected) {
+                    //console.log('affected!!!!!')
+                    this.pointsVel[i] = Math.min(this.pointsVel[i], 0);
+                    this.pointsVel[i] -= 1;
+                }
+                curRl += this.pointsVel[i];
+                curRl = Math.max(curRl, 0);
+
+                curRl = (9 * curRl + this.size) / 10;//собака
+
+                curP.rl = (prevRl + this.size + 8 * curRl) / 10;//собака
+
+                //curP.rl = (prevRl + nextRl + 8 * curRl) / 10;
+
+                var angle = 2 * Math.PI * i / len;
+                var rl = curP.rl;
+                if(rl > this.maxPointRad) this.maxPointRad = rl
+                if (this.isVirus && i % 2 == 0) {
+                    rl += 5;
+                }
+
+                curP.x = this.x + Math.cos(angle) * rl;
+                curP.y = this.y + Math.sin(angle) * rl;
+            }
+        };
+		
+                this.update = function(t, e, i, s, o, a) {
+                    this.x = t;
+					this.y = e;
+					this.isVirus = s;
+					this.isPlayerCell = o;
+					this.setMass(i);
+					this.setNick(a);
+                };
+        this.removeCell = function () {
+            this.removed = true;
+            var t = M.cells.indexOf(this);
+            if (t != -1) {
+                M.cells.splice(t, 1);
+                if (v.virusesRange) {
+                    t = M.viruses.indexOf(this);
+                    if (t != -1) {
+                        M.viruses.splice(t, 1);
+                    }
+                }
+            } else {
+                t = M.food.indexOf(this);
+                if (t != -1) {
+                    M.food.splice(t, 1);
+                }
+            }
+            t = M.playerCells.indexOf(this);
+            if (t != -1) {
+                M.removePlayerCell = true;
+                M.playerCells.splice(t, 1);
+                t = M.playerCellIDs.indexOf(this.id);
+                if (t != -1) {
+                    M.playerCellIDs.splice(t, 1);
+                }
+            }
+            if (this.redrawed) {
+                M.removedCells.push(this);
+            }
+            delete M.indexedCells[this.id];
+        };
+        this.moveCell = function () {
+            var t = M.time - this.time;
+            var t1 = t / v.animation;
+            t1 = t1 < 0 ? 0 : t1 > 1 ? 1 : t1;
+            this.x += (this.targetX - this.x) * t1;
+            this.y += (this.targetY - this.y) * t1;
+            this.size += (this.targetSize - this.size) * t1;
+            this.alpha = t1;
+            if (!this.removed) {
+                this.time = M.time;
+                return;
+            }
+            if (t1 == 1) {
+                var t2 = M.removedCells.indexOf(this);
+                if (t2 != -1) {
+                    M.removedCells.splice(t2, 1);
+                }
+            }
+        };
+				this.isInView = function() {
+					//console.log("hi");
+                    return !(this.id <= 0) && !(this.x + this.size + 40 < M.viewX - M.canvasWidth / 2 / M.scale || this.y + this.size + 40 < M.viewY - M.canvasHeight / 2 / M.scale || this.x - this.size - 40 > M.viewX + M.canvasWidth / 2 / M.scale || this.y - this.size - 40 > M.viewY + M.canvasHeight / 2 / M.scale);
+                };
+				/*
+				this.setMass = function(t) {
+                    return this.size = t, !(t <= 40) && (this.massCanvas ? (this.mass = ~~(t * t / 100), this.redrawMass = true, this.isVirus ? (this.virMassShots && this.mass < 200 && (this.mass = ~~((200 - this.mass) / 14)), this.massTxt = this.mass.toString(), this.mass > 220 ? (this.virusColor = g.mVirusColor, this.virusStroke = g.mVirusStrokeColor) : (this.virusColor = g.virusColor, this.virusStroke = g.virusStrokeColor), true) : (this.massTxt = this.mass.toString(), this.mass <= 200 || (this.shortMass && this.mass >= 1000 ? (this.kMass = Math.round(this.mass / 100) / 10, this.massTxt = this.kMass + 'k', true) : (this.optimizedMass && (this.redrawMass = Math.abs((this.mass - this.lastMass) / this.mass) >= 0.02 || this.rescale), true)))) : (this.massCanvas = new irenderfromagario(), false));
+                };
+				*/
+				this.setMass = function(t) {
+					this.size = t;
+					if (t <= 40) {
+						return false;
+					}
+					if (!this.massCanvas) {
+						this.massCanvas = new irenderfromagario();
+					return false;
+            }			
+			this.mass = ~~(t * t / 100); 
+			this.redrawMass = true;
+			if(this.isVirus){
+				if(this.mass <= 200){
+					this.virusColor = g.virusColor, this.virusStroke = g.virusStrokeColor;							
+					}	
+					else if (this.mass > 220){
+					this.virusColor = g.mVirusColor, this.virusStroke = g.mVirusStrokeColor;
+					}					
+				if(this.virMassShots){				
+					this.mass = ~~((200 - this.mass) / 14);										
+				}
+				if(v.virusSound && this.lastMass && this.mass < this.lastMass) {
+					void ogarminimapdrawer.playSound(ogarminimapdrawer.setSound(v['virusSoundurl']));
+					}
+					this.massTxt = this.mass.toString();											
+			}
+            this.massTxt = this.mass.toString();
+
+            if (this.shortMass && this.mass >= 1000) {
+                this.kMass = Math.round(this.mass / 100) / 10;
+                this.massTxt = this.kMass + 'k';
+            return true;    
+            }
+            if (this.optimizedMass) {
+                this.redrawMass = Math.abs((this.mass - this.lastMass) / this.mass) >= 0.02 || this.rescale;				
+            }
+            return true;
+        };
+		
+        this.setNick = function (t) {
+            this.nick = t;
+            if (!t || this.isVirus) {
+                return false;
+            }
+            if (!this.nickCanvas) {
+                this.nickCanvas = new irenderfromagario();
+                return false;
+            }
+            return true;
+        };
+        this.setScale = function (t, e, i, s, o) {
+            var t = Math.ceil(t * 10) / 10;
+            this.rescale = false;
+            if (this.scale != t) {
+                this.scale = t;
+                this.rescale = true;
+            }
+            this.nickScale = e;
+            this.massScale = i;
+            this.virMassScale = s;
+            this.strokeScale = o;
+        };
+        this.setFontSize = function () {
+            if (this.isVirus) {
+                this.massSize = Math.ceil(this.virMassSize * this.scale * this.virMassScale);
+                return;
+            }
+            this.fontSize = Math.max(this.size * 0.3, 26) * this.scale;
+            this.nickSize = ~~(this.fontSize * this.nickScale);
+            this.massSize = ~~(this.fontSize * 0.5 * this.massScale);
+            if (this.optimizedNames) {
+                this.redrawNick = Math.abs((this.nickSize - this.lastNickSize) / this.nickSize) >= 0.3 || this.rescale;
+                return;
+            }
+            this.redrawNick = true;
+        };
+        this.setStrokeSize = function () {
+            if (this.strokeNick && !this.isVirus) {
+                this.nickStrokeSize = ~~(this.nickSize * 0.1 * this.strokeScale);
+            }
+            if (this.strokeMass) {
+                this.massStrokeSize = ~~(this.massSize * 0.1 * this.strokeScale);
+            }
+        };
+        this.setDrawing = function () {
+            this.optimizedNames = v.optimizedNames;
+            this.optimizedMass = v.optimizedMass;
+            this.shortMass = v.shortMass;
+            this.virMassShots = v.virMassShots;
+            this.strokeNick = v.namesStroke;
+            this.strokeMass = v.massStroke;
+        };
+        this.setDrawingScale = function () {
+            this.setScale(i.viewScale, g.namesScale, g.massScale, g.virMassScale, g.strokeScale);
+            this.setFontSize();
+            this.setStrokeSize();
+            this.margin = 0;
+        };
+        this.drawNick = function (t) {
+            if (!this.nick || !this.nickCanvas || this.isVirus) {
+                return;
+            }
+            var nickCanvas = this.nickCanvas;
+            nickCanvas.setDrawing(g.namesColor, g.namesFontFamily, g.namesFontWeight, this.strokeNick, this.nickStrokeSize, g.namesStrokeColor);
+            nickCanvas.setTxt(this.nick);
+            if (this.redrawNick) {
+                nickCanvas.setFontSize(this.nickSize);
+                this.lastNickSize = this.nickSize;
+            }
+            nickCanvas.setScale(this.scale);
+            var nickImg = nickCanvas.drawTxt();
+            var w = ~~(nickImg.width / this.scale);
+            var h = ~~(nickImg.height / this.scale);
+            this.margin = ~~(h / 2);
+            t.drawImage(nickImg, ~~this.x - ~~(w / 2), ~~this.y - this.margin, w, h);
+        };
+				this.drawMass = function(context) {
+                    if (this.massCanvas && !(this.size <= 40)) {
+                        var massCanvas = this.massCanvas;
+                        massCanvas.setDrawing(g.massColor, g.massFontFamily, g.massFontWeight, this.strokeMass, this.massStrokeSize, g.massStrokeColor);
+                        if (this.redrawMass) {
+                            massCanvas.setTxt(this.massTxt);
+                            this.lastMass = this.mass;
+                        }
+                        massCanvas.setFontSize(this.massSize);
+                        massCanvas.setScale(this.scale);
+                        let data = massCanvas.drawTxt();
+                        let width = ~~(data.width / this.scale);
+                        let height = ~~(data.height / this.scale);
+                        let textureY = this.margin === 0 ? ~~(this.y - height / 2) : ~~this.y + this.margin;
+                        if (width > 1 && height > 1) {
+                            context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
+                        }
+                    }
+                };
+                this.createStrokeVirusPath = function(shadowXpos, shadowYpos, zeroSizeMax, pixelSizeTargetMax = 6) {
+                    const nAngelsOfVirus = ~~(45 * zeroSizeMax / 98);
+                    const GROUPSIZE = this.pi2 / nAngelsOfVirus;
+                    const degreeStep = GROUPSIZE / 2;
+                    const ctxfx = new Path2D;
+                    const radiusX = zeroSizeMax - pixelSizeTargetMax;
+                    const tileHeight = radiusX + this.nHeight;
+                    const n = this.pi2 + GROUPSIZE;
+                    for (let i = 0, j = degreeStep; i <= n; j = (i = i + GROUPSIZE) + degreeStep) {
+                        ctxfx.lineTo(~~(shadowXpos + radiusX * Math.sin(i)), ~~(shadowYpos + radiusX * Math.cos(i)));
+                        ctxfx.lineTo(~~(shadowXpos + tileHeight * Math.sin(j)), ~~(shadowYpos + tileHeight * Math.cos(j)));
+                    }
+                    return ctxfx;
+                };
+                this.draw = function(style, canCreateDiscussions) {				
+                    if (!(M.hideSmallBots && this.size <= 36)) {
+                        style.save();
+                        this.redrawed++;
+                        if (canCreateDiscussions) {
+                            this.moveCell();
+                        }
+                        if (this.removed) {
+                            style.globalAlpha *= 1 - this.alpha;
+                        }
+                        var value = style.globalAlpha;
+                        var s = false;
+                        var y = this.isFood ? this.size + g.foodSize : this.size;
+                        if (style.beginPath(), style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
+                            return style.fillStyle = this.color, style.fill(), void style.restore();
+                        }
+                        if (this.isVirus) {
+							if (dyinglight1load == "yes" ) {
+							style.drawImage(cimgDyingLightvirus, this.x - 0.8 * this.size, this.y - 0.8 * this.size, 1.6 * this.size, 1.6 * this.size);
+							}							
+                            return v.transparentViruses && (style.globalAlpha *= g.virusAlpha, s = true), v.virColors && M.play ? (style.fillStyle = ogarminimapdrawer.setVirusColor(y), style.strokeStyle = ogarminimapdrawer.setVirusStrokeColor(y)) : (style.fillStyle = this.virusColor, style.strokeStyle = this.virusStroke), style.fill(), s && (style.globalAlpha = value, s = false), style.lineWidth = g.virusStrokeSize, v.virusGlow ? (style.shadowBlur = g.virusGlowSize, style.shadowColor =
+                                g.virusGlowColor) : "yeet", style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), v.showMass && (this.setDrawing(), this.setDrawingScale(), v.virusGlow ? style.shadowBlur = 0 : "yote", this.setMass(this.size), this.drawMass(style)), void style.restore();
+                        }
+                        if (v.transparentCells) {
+                            style.globalAlpha *= g.cellsAlpha;
+                            s = true;
+                        }
+                        var color = this.color;
+                        if (M.play) {
+                            if (this.isPlayerCell) {
+                                if (v.myCustomColor) {
+                                    color = ogarcopythelb.color;
+                                }
+                            } else {
+                                if (v.oppColors && !v.oppRings) {
+                                    color = this.oppColor;
+                                }
+                            }
+                        }
+						if (dyinglight1load != "yes"){
+                        style.fillStyle = color;
+                        style.fill();
+						}
+                        if (s) {
+                            style.globalAlpha = value;
+                            s = false;
+                        }
+						/*if (dyinglight1load != "yes"){
+                            style.globalAlpha = 1;
+                            s = false;							
+						}*/
+                        var node = null;						
+						var node2 = {}; //, node2.src = ogarminimapdrawer.customSkinsMap[this.targetNick]
+						
+                        if (v.customSkins && M.showCustomSkins && (node = ogarminimapdrawer.getCustomSkin(this.targetNick, this.color)) && (node2.src = ogarminimapdrawer.customSkinsMap[this.targetNick]) &&
+						(((v.transparentSkins || M.play && v.oppColors) && (!this.isPlayerCell || v.myTransparentSkin) || this.isPlayerCell && v.myTransparentSkin) && (style.globalAlpha *= g.skinsAlpha, s = true), 
+						
+						//style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), s && (style.globalAlpha = value, s = false)), 
+						//(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (this.oldAlpha=style.globalAlpha, style.globalAlpha = 0.1, style.drawImage(cimg7, this.x - y * 4, this.y - y * 4, 8 * y, 8 * y), style.globalAlpha=this.oldAlpha), //cimg7						
+						((node2.src.includes(".mp4") && checkVideos(node2.src, this.targetNick)),
+						(node2.src.includes(".mp4") && style.drawImage(window.videoJustWatchPro, this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) )),
+						//node2.src.includes(".mp4") && (style.drawImage(node2, this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y)),
+						(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ") && checkVideos("https://jimboy3100.github.io/banners/testvideomama.mp4","℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")),
+						this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ") && (style.drawImage(window.videoJustWatchPro, this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) ),
+						!this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ") && !node2.src.includes(".mp4") && style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), 
+						//(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (style.drawImage(cimg6, this.x - y, this.y - y, 2 * y, 2 * y)),
+						//this.targetNick.includes("℄") && (style.rotate(M.cAngle1)) && (style.drawImage(cimg2, this.x - y * 1.5, this.y - y * 1.5, 3 * y, 3 * y)) &&
+						(this.targetNick.includes("The Dying Light")) && (style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)), 
+						(this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("℄🌀     ᑕᖇᗩƵƳ😈") || this.targetNick.includes("℄🌀ᔕᕼᗴᖇᗴ ᛕᕼᗩᑎ")) && 
+						(style.drawImage(cimg2, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)),
+						//(M.cAngle += .007), console.log(M.cAngle),
+						//style.rotate(M.cAngle1),
+						
+						s && (style.globalAlpha = value, s = false)), 
+						
+						v.teammatesInd && !this.isPlayerCell && y <= 800 && 
+						window.teammatenicks && 
+						(window.teammatenicks.includes(this.targetNick)) && 
+						ogarfooddrawer.drawTeammatesInd(style, this.x, this.y, y), 
+						
+						v.noNames && !v.showMass || canCreateDiscussions) {
+
+//                            y <= 200 && (node || ogarminimapdrawer.checkSkinsMap(this.targetNick, this.color)) && ogarfooddrawer.drawTeammatesInd(style, this.x, this.y, y), v.noNames && !v.showMass || canCreateDiscussions) {
+
+                            style.restore();
+                        } else {
+							if (v.customSkins && M.showCustomSkins && ogarminimapdrawer.customSkinsMap[this.targetNick] && (node2.src = ogarminimapdrawer.customSkinsMap[this.targetNick])){
+								if (node2.src.includes(".mp4") && checkVideos(node2.src, this.targetNick)){
+						    (node2.src.includes(".mp4") && style.drawImage(window.videoJustWatchPro, this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) )
+								}							
+							}
+							if (dyinglight1load == "yes" && node==null) {
+							//console.log(this.mass);
+							//if (this.mass && this.mass<=500){							
+								style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
+								//}
+							/*else if (this.mass && this.mass<=1000){
+								style.drawImage(cimgDyingLight1, this.x - y, this.y - y, 2 * y, 2 * y);
+								}
+							else if (this.mass && this.mass<=1500){
+								style.drawImage(cimgDyingLight2, this.x - y, this.y - y, 2 * y, 2 * y);
+								}
+							else if (this.mass && this.mass<=2500){
+								style.drawImage(cimgDyingLight3, this.x - y, this.y - y, 2 * y, 2 * y);
+								}
+							else if (this.mass && this.mass<=5000){
+								style.drawImage(cimgDyingLight4, this.x - y, this.y - y, 2 * y, 2 * y);
+								}
+							else if (this.mass && this.mass<=10000){
+								style.drawImage(cimgDyingLight5, this.x - y, this.y - y, 2 * y, 2 * y);
+								}	
+							else if (this.mass && this.mass>10000){
+								style.drawImage(cimgDyingLight6, this.x - y, this.y - y, 2 * y, 2 * y);
+								}*/									
+							}
+							
+							
+                            var recursive = false;
+                            if (!this.isPlayerCell && (recursive = ogarminimapdrawer.setAutoHideCellInfo(y)) && v.autoHideNames && v.autoHideMass) {
+                                style.restore();
+                            } else {
+                                this.setDrawing();
+                                this.setDrawingScale();
+                                style.globalAlpha *= g.textAlpha;
+                                if (!(v.noNames || recursive && v.autoHideNames || this.isPlayerCell && v.hideMyName || node && v.hideTeammatesNames)) {
+                                    if (this.setNick(this.targetNick)) {
+                                        this.drawNick(style);
+                                    }
+                                }
+                                if (!(!v.showMass || recursive && v.autoHideMass || this.isPlayerCell && v.hideMyMass || v.hideEnemiesMass && !this.isPlayerCell && !this.isVirus)) {
+                                    if (this.setMass(this.size)) {
+										
+                                        this.drawMass(style);
+                                    }
+                                }
+                                style.restore();
+                            }
+							
+                        }
+						
+                    }
+                };
+        }
+        window.legendmod1 = ogarbasicassembly;
+        var M = {
+				'quadtree':null,
+				updateQuadtree: function(cells) {
+				var w = ogarfooddrawer.canvasWidth / ogarfooddrawer.scale;
+				var h = ogarfooddrawer.canvasHeight / ogarfooddrawer.scale;
+				var x = (M.viewX - w / 2);
+				var y = (M.viewY - h / 2);
+				this.quadtree = new PointQuadTree(x, y, w, h, 32);
+				for (var i = 0; i < cells.length; ++i) {
+					var cell = cells[i];
+					for (var n = 0; n < cell.points.length; ++n) {
+						this.quadtree.insert(cell.points[n]);
+					}
+				}
+			},			
+            'ws': null,
+            'socket': null,
+            'protocolKey': null,
+            'clientKey': null,
+            'connectionOpened': false,
+            'accessTokenSent': false,
+            'clientVersion': 0x76c0,
+            'clientVersionString': '3.4.0',
+            'time': Date['now'](),
+            'serverTime': 0,
+            'serverTimeDiff': 0,
+            'loggedInTime': 0,
+            'mapSize': 0x373e,
+            'mapOffset': 7071,
+            'mapOffsetX': 0,
+            'mapOffsetY': 0,
+            'mapOffsetFixed': false,
+            'mapMinX': -7071,
+            'mapMinY': -7071,
+            'mapMaxX': 7071,
+            'mapMaxY': 7071,
+            'viewMinX': 0,
+            'viewMinY': 0,
+            'viewMaxX': 0,
+            'viewMaxY': 0,
+            'canvasWidth': 0,
+            'canvasHeight': 0,
+            'canvasScale': 1,
+            'indexedCells': {},
+            'cells': [],
+            'removedCells': [],
+            'food': [],
+            'viruses': [],
+            'playerCells': [],
+            'playerCellIDs': [],
+            'ghostCells': [],
+            'playerX': 0,
+            'playerY': 0,
+            'playerSize': 0,
+            'playerMass': 0,
+            'playerMaxMass': 0,
+            'playerMinMass': 0,
+            'playerScore': 0,
+            'playerSplitCells': 0,
+            'playerColor': null,
+            'playerNick': '',
+            'playerPosition': 0,
+            'leaderboard': [],
+            'biggerSTECellsCache': [],
+            'biggerCellsCache': [],
+            'smallerCellsCache': [],
+            'STECellsCache': [],
+            'STE': 0,
+            'autoZoom': false,
+            'zoomValue': 0.1,
+            'viewX': 0,
+            'viewY': 0,
+            'scale': 1,
+            'viewScale': 1,
+            'clientX': 0,
+            'clientY': 0,
+            'cursorX': 0,
+            'cursorY': 0,
+            'targetX': 0,
+            'targetY': 0,
+            'targetDistance': 0,
+            ////
+            "cRadius": 10,
+            "cAngle": 4,
+            "cAngle1": 0,
+            "cAngle2": 0,
+            "cAlpha": 1,
+            "drawCommander": 0,
+            ////
+            'battleRoyale': {
+                'state': 0,
+                'players': 0,
+                'startTime': 0,
+                'shrinkTime': 0,
+                'timeLeft': 0,
+                'x': 0,
+                'y': 0,
+                'radius': 0,
+                'targetX': 0,
+                'targetY': 0,
+                'targetRadius': 0,
+                'maxRadius': 11313,
+                'rank': [],
+                'playerRank': 0,
+                'joined': false
+            },
+            'play': false,
+            'pause': false,
+            'targeting': false,
+            'removePlayerCell': false,
+            'showCustomSkins': true,
+            'showFood': true,
+            'foodIsHidden': false,
+            'selectBiggestCell': true,
+            'hideSmallBots': false,
+            'pressedKeys': {},
+            'connect': function(t) {
+                console.log('[Legend mod Express] Connecting to game server:', t);
+                var i = this;
+                this['closeConnection'](), this['flushCellsData'](), this['protocolKey'] = null, this['clientKey'] = null, this['accessTokenSent'] = false, this['connectionOpened'] = false, this['mapOffsetFixed'] = false, this['leaderboard'] = [], this['ws'] = t, this.socket = new WebSocket(t), this.socket['binaryType'] = 'arraybuffer', this.socket['onopen'] = function() {
+                    i['onOpen']();
+                }, this.socket['onmessage'] = function(t) {
+                    i['onMessage'](t);
+                }, this.socket['onerror'] = function(t) {
+                    i['onError'](t);
+                }, this.socket['onclose'] = function(t) {
+                    i['onClose'](t);
+                }, ogarminimapdrawer['getWS'](this['ws']), ogarminimapdrawer['sendServerJoin'](), ogarminimapdrawer['sendServerData'](), ogarminimapdrawer['displayLeaderboard'](''), e.master && e.master['onConnect'] && e.master['onConnect']();
+            },
+            'onOpen': function(t) {
+                console.log('[Legend mod Express] Game server socket open'), this['time'] = Date['now']();
+                var e = this.createView(5);
+                e.setUint8(0, 254), e.setUint32(1, 20, true), this.sendMessage(e), (e = this.createView(5)).setUint8(0, 255), e.setUint32(1, this.clientVersion, true), this.sendMessage(e), this['connectionOpened'] = true;
+            },
+            'onMessage': function(t) {
+                t = new DataView(t['data']), this['protocolKey'] && (t = this['shiftMessage'](t, this['protocolKey'] ^ this.clientVersion)), this['handleMessage'](t);
+            },
+            'onError': function(t) {
+                console.log('[Legend mod Express] Game server socket error'), this['flushCellsData'](), e.master && e.master['onDisconnect'] && e.master['onDisconnect']();
+            },
+            'onClose': function(t) {
+                console.log('[Legend mod Express] Game server socket close'), this['flushCellsData'](), e.master && e.master['onDisconnect'] && e.master['onDisconnect']();
+            },
+            'closeConnection': function() {
+                if (this.socket) {
+                    this.socket['onopen'] = null, this.socket['onmessage'] = null, this.socket['onerror'] = null, this.socket['onclose'] = null;
+                    try {
+                        this.socket['close']();
+                    } catch (ogarcloseconncloser) {}
+                    this.socket = null, this['ws'] = null;
+                }
+            },
+            'isSocketOpen': function() {
+                return null !== this.socket && this.socket['readyState'] === this.socket['OPEN'];
+            },
+            'createView': function(t) {
+                return new DataView(new ArrayBuffer(t));
+            },
+            'sendBuffer': function(t) {
+                this.socket['send'](t['buffer']);
+            },
+            'sendMessage': function(t) {
+                //console.log(t);
+                if (this['connectionOpened']) {
+                    if (!this['clientKey']) return;
+                    t = this['shiftMessage'](t, this['clientKey']), this['clientKey'] = this['shiftKey'](this['clientKey']);
+                }
+                this['sendBuffer'](t);
+            },
+            'sendAction': function(t) {
+                if (this['isSocketOpen']()) {
+                    var e = this.createView(1);
+                    e.setUint8(0, t), this.sendMessage(e);
+                }
+            },
+            'sendSpectate': function() {
+                this.sendAction(1);
+            },
+            'sendFreeSpectate': function() {
+                this.sendAction(18);
+            },
+            'sendEject': function() {
+                this['sendPosition'](), this.sendAction(21);
+            },
+            'sendSplit': function() {
+                this['sendPosition'](), this.sendAction(17);
+            },
+            'sendNick': function(t) {
+                this['playerNick'] = t, t = e['unescape'](e['encodeURIComponent'](t));
+                var i = this.createView(1 + t.length);
+                i.setUint8(0, 0);
+                for (var s = 0; s < t.length; s++) i.setUint8(s + 1, t.charCodeAt(s));
+                this.sendMessage(i);
+            },
+            'sendPosition': function() {
+                if (this["isSocketOpen"]() && this["connectionOpened"] && this["clientKey"]) {
+                    var t = this["cursorX"];
+                    var e = this["cursorY"];
+                    if (!this.play && this["targeting"] || this.pause) {
+                        t = this["targetX"];
+                        e = this["targetY"];
+                    }
+                    var i = this.createView(13);
+                    i.setUint8(0, 16);
+                    i["setInt32"](1, t, true);
+                    i["setInt32"](5, e, true);
+                    i.setUint32(9, this["protocolKey"], true);
+                    this.sendMessage(i);
+                }
+            },
+            /*            'sendAccessToken': function(t, e, i) {
+                            if (!this['accessTokenSent']) {
+                                i || (i = 102);
+                                for (var s = t.length, o = this.clientVersionString.length, a = [i, 8, 1, 18, s + o + 23, 1, 8, 10, 0x52, s + o + 18, 1, 8, e, 18, o + 8, 8, 5, 18, o], n = 0; n < o; n++) a.push(this.clientVersionString.charCodeAt(n));
+                                for (a.push(24, 0, 32, 0, 26, s + 3, 1, 10, s, 1), n = 0; n < s; n++) a.push(t.charCodeAt(n));
+                                a = new Uint8Array(a);
+                                var r = new DataView(a['buffer']);
+                                this.sendMessage(r);
+                            }
+                        }, */
+            "sendAccessToken": function(shapes, options, oW) {
+                if (this["accessTokenSent"]) {
                     return;
                 }
-                var displayValue = mutation.target.style.display;
-                //my.log("input changed display="+ displayValue);
-                if(displayValue === "block"){
-                    my.inpt_show();
-                }else if(displayValue === "none"){
-                    my.inpt_hide();
+                if (!oW) {
+                    oW = 102;
                 }
-            });
-        });
-        stat.obs_inpt.observe($("#message-box").get(0), {"attributes": true});
-    }
-
-    my.hist_add = function(nodes){
-        my.hist_show(true);
-        nodes.forEach((node_elem) => {
-            var node = $(node_elem);
-            if(node.hasClass("message")){
-                var bgOrg = node.css("background-color");
-                node.css("background-color", cfg.emphasis_bgcolor);
-                setTimeout(function(){
-                    node.css("background-color", bgOrg);
-                }, cfg.emphasis_time);
-            }
-        });
-        // Scroll adjustment
-        var chat_box = $("#chat-box");
-        chat_box.perfectScrollbar("update");
-        chat_box.animate({"scrollTop": chat_box.prop("scrollHeight")}, cfg.scroll_dulation);
-        //chat_box.prop("scrollTop", chat_box.prop("scrollHeight"));
-    };
-    my.hist_show = function(withTimer){
-        // Stop the timer
-        if(stat.histhide_timeID){
-            clearTimeout(stat.histhide_timeID);
-            stat.histhide_timeID = null;
-        }
-        var displayValue = $("#chat-box").css("display");
-        if(displayValue === "none"){
-            stat.histhide_enable = true;
-            //$("#chat-box").show();
-        }
-        if(stat.histhide_enable && withTimer){
-            stat.histhide_timeID = setTimeout(function(){
-                //$("#chat-box").hide();
-                stat.histhide_enable = false;
-            }, cfg.histhide_time);
-        }
-    };
-    my.inpt_show = function(){
-        my.hist_show(false);
-    };
-    my.inpt_hide = function(){
-         //$("#chat-box").hide();
-    };
-}
-
-function SNEZOgarUpload() {
-//$("#export-settings-btn").click();
-//postSNEZ("https://lmsettings.snez.org/", "test", "test1234", "{ a: 1, b: 2, d: 4}");
-
-if (userid==""||userid==null){
-toastr["warning"]("<b>[SERVER]:</b> User login needed");	
-}
-else{
-//postSNEZ("https://lmsettings.snez.org/", userid, "LMSettings", $('#export-settings').val());
-postSNEZ("https://lmsettings.snez.org/", userid, "LMSettings", escape($('#export-settings').val()));
-toastr["warning"]("<b>[SERVER]:</b> Settings successfully uploaded. UID: <font color='yellow'><b>"+userid+"</b></font>");
-}
-}	
-function SNEZOgarDownload() {
-if (userid==""||userid==null){
-toastr["warning"]("<b>[SERVER]:</b> User login needed");	
-}
-else{	
-getSNEZ("https://lmsettings.snez.org/", userid, "LMSettings");
-var responseSNEZ= xhttp.response;
-$('#import-settings').val(unescape(responseSNEZ));
-//$('#import-settings').val(responseSNEZ);
-$("#import-settings-btn2").click();
-}		
-}
-
-function SNEZServers(){
-var onUILoaded = function(callback, params)
-{
-    var timerID = setInterval(function()
-    {
-        //var elements = ["nick", "server", "clantag", "server-reconnect"];
-		var elements = ["nick", "server-token", "clantag", "server-reconnect"];
-        var loaded = true;
-        elements.forEach(function(elementId)
-        {
-            if (!document.getElementById(elementId))
-                loaded = false;
-        });
-
-        if (loaded)
-        {
-            clearInterval(timerID);
-            callback(params);
-        }
-    }, 100);
-}
-
-// ---------------
-
-var state = {
-    nickname: null,
-    server: null,
-    tag: null
-};
-var elements = {
-    nickname: "nick",
-    server: "server-token",
-    tag: "clantag",
-    reconnectButton: "server-reconnect"
-};
-
-var socket = {
-    server: "wss://agar.snez.org:3051/",
-    client: null,
-    connect: function()
-    {
-        socket.client = new WebSocket(socket.server);
-        socket.client.onopen = socket.updateServerDetails;
-        socket.client.onclose = socket.reconnect;
-        socket.client.onmessage = socket.onMessage;
-    },
-    reconnect: function()
-    {
-        console.log("Reconnecting in 5 seconds...");
-
-        setTimeout(function(){
-            socket.connect();
-        }, 5000);
-    },
-    updateServerDetails: function()
-    {
-//        console.log("Details have changed");
-//        console.log(state);
-
-        socket.send({
-            id: getSessionID(),
-            type: "update_details",
-            data: state
-        });
-    },
-    updateDetails: function()
-    {
-        var nick = document.getElementById(elements.nickname);
-//		var server = $("#server-ws").val().replace("wss://", "").replace("ws://", "").replace(":80", "")+"&?r=" + $('#region').val() + "&?m=" + realmode;		
-//        var server = document.getElementById(elements.server);
-		var servertemp;
-		if (realmode != null && region != null){
-		servertemp = "live-arena-" + $('#server-token').val() + ".agar.io"+"&?r=" + $('#region').val() + "&?m=" + realmode;
-		}
-		else{
-		servertemp = "live-arena-" + $('#server-token').val() + ".agar.io";
-		}		
-        var tag = document.getElementById(elements.tag);
-		
-        //var nick = document.getElementById("nick");
-        //var server = document.getElementById("server");
-		//var server = document.getElementById("server-ws").value;
-		//var server = $("#server-ws").val().replace("wss://", "").replace("ws://", "").replace(":80", "");
-        //var tag = document.getElementById("clantag");
-
-        //state.nickname = nick.value;
-        //state.server = server;
-        //state.tag = tag.value;
-        if (state.nickname != nick.value ||
-            state.server != servertemp ||
-            state.tag != tag.value)
-        {
-            state.nickname = nick.value;
-            state.server = servertemp;
-            state.tag = tag.value;
-        socket.updateServerDetails();
-		}
-    },
-    send: function(msg)
-    {
-        if (socket.client.readyState !== socket.client.OPEN)
-            return;
-
-        socket.client.send(JSON.stringify(msg));
-    },
-    onMessage: function(message)
-    {
-        try
-        {
-            var data = JSON.parse(message.data);
-            switch(data.type)
-            {
-                case "ping":
-                    socket.send({ type: "pong" });
-                    break;
-            }
-        }
-        catch (e)
-        {
-            console.log(e);
-        }
-    }
-};
-
-var initLc = function()
-{
-    var nick = document.getElementById(elements.nickname);
-    var server = document.getElementById(elements.server);
-    var tag = document.getElementById(elements.tag);
-    var reconnectButton = document.getElementById(elements.reconnectButton);
-
-    if (!nick)
-    {
-        console.log("Could not initialize Snez Info sending");
-        return;
-    }
-
-    nick.addEventListener("change", socket.updateDetails);
-    server.addEventListener("change", socket.updateDetails);
-    tag.addEventListener("change", socket.updateDetails);
-
-    var reconnectTimer = null;
-
-    reconnectButton.addEventListener("click", function(e)
-    {
-        clearTimeout(reconnectTimer);
-        reconnectTimer = setTimeout(socket.updateDetails, 5000);
-    });
-
-    socket.connect();
-
-    setInterval(socket.updateDetails, 5000);
-};
-
-function getSessionID()
-{
-    return getCookie("__cfduid");
-}
-
-function getCookie(cname)
-{
-    var name = cname + "=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var ca = decodedCookie.split(';');
-    for(var i = 0; i <ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0) == ' ') {
-            c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
-        }
-    }
-    return "";
-}
-
-onUILoaded(initLc, null);
-	
-
-}
-
-function getSNEZServers(ifcalled){
-client2 = {
-
-    // Properties
-    server: "wss://agar.snez.org:3051/",
-    ws: null,
-    isOpen: false,
-    onOpenCallback: null,
-    onCloseCallback: null,
-    onMessageCallback: null,
-
-    // Methods
-    connect: function()
-    {
-        client2.ws = new WebSocket(client2.server);
-        client2.ws.onopen = client2.onOpen;
-        client2.ws.onclose = client2.onClose;
-        client2.ws.onmessage = client2.onMessage;
-		
-    },
-	disconnect: function()
-	{
-   // Close the connection, if open.
-
-      client2.ws.close();
-
-	},
-    onOpen: function()
-    {
-        console.log("Connected.");
- //       app.state = "Connected.";
-    },
-
-    onClose: function()
-    {
-//       console.log("Reconnecting in 5 seconds...");
-//        setTimeout(client2.connect, 5000);
-    },
-
-    onMessage: function(evt)
-    {
-        if (client2.isEmpty(evt))
-            return;
-
-        try
-        {
-            var data = JSON.parse(evt.data);
-
-            if (client2.isEmpty(data) || client2.isEmpty(data.type))
-                return;
-        }
-        catch (e)
-        {
-            console.log(e);
-            return;
-        }
-
-        switch (data.type)
-        {
-            case "ping":
-                client2.send({ type: "pong" });
-                break;
-            case "players_list":
-                client2.updatePlayers(data.data);
-                break;
-        }
-    },
-
-    isEmpty: function(obj)
-    {
-        if (typeof obj == 'undefined')
-            return true;
-
-        // For arrays or empty strings
-        if (obj.length === 0)
-            return true;
-
-        // For objects
-        for(var key in obj)
-            if (obj.hasOwnProperty(key))
-                return false;
-
-        return true;
-    },
-
-    updatePlayers: function(data)
-    {
-		var showonceusers=0;
-		var showonceusers2=0;
-		showonceusers3=0;
-		var showonceusers4=0;
-		data = JSON.parse(data); //...
-//		for (var player in data) {
- // 			if (data.hasOwnProperty(player)) {
-        for (var player = 0; player < data.length; player++) {
-            if (data[player].nickname) {				
-				if (data[player].nickname){
-    			if (data[player].nickname.indexOf($("#searchInput").val()) >= 0) {
-					if (showonceusers==0){
-					showonceusers++;
-					if (ifcalled==null){
-					toastr["info"]("User Found. Revealing server...");}
-					}
-					var temporaryserver=JSON.stringify(data[player]);
-					var temporaryserver2;
-					var temporaryserver3;
-					var temporaryserver1 = getParameterByName("r", temporaryserver);
-					var temporaryserver1a = getParameterByName("m", temporaryserver);					
-					temporaryserver = temporaryserver.substring(0, temporaryserver.indexOf('.agar.io'));
-					temporaryserver2 = temporaryserver.split('live-arena-').pop();
-					temporaryserver3 = temporaryserver.split('nickname\"\:\"').pop();
-					temporaryserver3 =temporaryserver3.substring(temporaryserver3, temporaryserver3.indexOf('\"\,\"server'));
-					if (temporaryserver1a){temporaryserver1a=temporaryserver1a.split('\"\,\"tag')[0];
-					appendLog3("Region:<span id='regioninfo'>" + temporaryserver1 + "</span>, Mode<span id='modeinfo'>" + temporaryserver1a + "</span>. <span class='main-color'><span id='playerinfo'>" +temporaryserver3.trim() + "</span> <span data-toggle='popover' data-placement='left' title='' data-content='data-html='true' class='country-icon flag-icon flag-icon-" + data[player].extra.ip_info.country.toLowerCase() + "' data-original-title='Player Details'></span></span>" + " (<span id='tokeninfo'>" + temporaryserver2 + "</span>)", temporaryserver2, temporaryserver1, temporaryserver1a);}
-					else{appendLog2("<span class='main-color'><span id='playerinfo'>" +temporaryserver3.trim() + "</span> <span data-toggle='popover' data-placement='left' title='' data-content='data-html='true' class='country-icon flag-icon flag-icon-" + data[player].extra.ip_info.country.toLowerCase() + "' data-original-title='Player Details'></span></span>" + " (<span id='tokeninfo'>" + temporaryserver2 + "</span>)", temporaryserver2);}
-					showonceusers3++;
-					showonceusers3returner(showonceusers3);	
-    			}
-    			else if (data[player].server.indexOf($("#searchInput").val()) >= 0) {
-					if ($("#searchInput").val().length>=4){
-					if (showonceusers2==0){
-					showonceusers2++;
-					if (ifcalled==null){
-					toastr["info"]("Server Found. Revealing users...");}
-					}
-					var temporaryserver=JSON.stringify(data[player]);
-					var temporaryserver2;
-					var temporaryserver3;
-					var temporaryserver1 = getParameterByName("r", temporaryserver);
-					var temporaryserver1a = getParameterByName("m", temporaryserver);						
-					temporaryserver = temporaryserver.substring(0, temporaryserver.indexOf('.agar.io'));
-					temporaryserver2 = temporaryserver.split('live-arena-').pop();
-					temporaryserver3 = temporaryserver.split('nickname\"\:\"').pop();
-					temporaryserver3 =temporaryserver3.substring(temporaryserver3, temporaryserver3.indexOf('\"\,\"server'));
-					if (temporaryserver1a){temporaryserver1a=temporaryserver1a.split('\"\,\"tag')[0];
-					appendLog3("Region:<span id='regioninfo'>" + temporaryserver1 + "</span>, Mode<span id='modeinfo'>" + temporaryserver1a + "</span>. <span id='playerinfo'>" + temporaryserver3.trim() + " <span data-toggle='popover' data-placement='left' title='' data-content='data-html='true' class='country-icon flag-icon flag-icon-" + data[player].extra.ip_info.country.toLowerCase() + "' data-original-title='Player Details'></span></span> (<span class='main-color'><span id='tokeninfo'>" + temporaryserver2 + "</span></span>)", temporaryserver2, temporaryserver1, temporaryserver1a);}	
-					else{appendLog2("<span id='playerinfo'>" + temporaryserver3.trim() + " <span data-toggle='popover' data-placement='left' title='' data-content='data-html='true' class='country-icon flag-icon flag-icon-" + data[player].extra.ip_info.country.toLowerCase() + "' data-original-title='Player Details'></span></span> (<span class='main-color'><span id='tokeninfo'>" + temporaryserver2 + "</span></span>)", temporaryserver2);}
-					showonceusers3++;
-					showonceusers3returner(showonceusers3);
-					//console.log(data[player]);	
-										
-					}
-				}									
-				}
-				
-  			}
-		
-		}
-		client2.ws.close();	
-				 if (showonceusers3==0){
-					showonceusers4++;
-					if (showonceusers4==1){
-					if (ifcalled==null){	
-		            toastr["warning"]('Server / Leaderboard, not found. Do you want the 1-by-1 manual search leaderboards of <font color="yellow">' + $("#region").val() + ' / ' + $("#gamemode").val() + '</font> ?' + '</br> <button id= "manualsearch" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-exit" style="width: 100%;margin-top: -20px;">' + Premadeletter25 + '</button>', "", {
-		                timeOut: 20000,
-		                extendedTimeOut: 20000
-		            }).css("width", "350px");
-					}
-		            $("#manualsearch").click(function() {
-					$("#searchSpan>i").removeClass("fa fa-search").addClass("fa fa-times");
-            var searchString = $("#searchInput").val();
-            searchHandler(searchString);	                
-		            });
-				}
-				}			
-	return client2;	
-    },
-    send: function(data)
-    {
-        client2.ws.send(JSON.stringify(data));
-    }
-};
-
-}
-function showonceusers3returner(showonceusers3){
-	return showonceusers3;
-}
-
-function pre_loopLM(modVersion) {
-            if (!document.getElementById("message-box")) {
-                setTimeout(pre_loopLM, 200);
-                console.log("Ogario not loaded");
-                return;
-            }
-            return initializeLM(modVersion);
-}
-function initializeLM(modVersion) {
-	
-$("#server-ws").hide();
-$("#server-connect").hide();
-//$('#region').before($("#server-reconnect"));
-$("#server-info").show();
-//$(".btn.btn-warning.btn-server-info.ogicon-cogs").after($("#server-reconnect"));
-$(".btn.btn-warning.btn-server-info.ogicon-cogs").hide();
-
-$("#server-token").css("margin-top", "-10px");
-$("#server-join").css("margin-top", "-10px");
-$("#agario-main-buttons").css("margin-top", "-10px");
-$("#gamemode").css("margin-left", "2px");
-$("#server-reconnect").remove();
-$(".btn.btn-warning.btn-server-info.ogicon-cogs").after('<button id="server-reconnect" class="btn btn-success" style="display: inline-block; float: left; margin-top: 6px; width: 11%; text-transform: capitalize;"><i class="fa fa-refresh"></i></button>');
-
-$("#server-reconnect").css("display", "inline-block");
-$("#server-reconnect").css("float", "left");
-$("#server-reconnect").css("margin-top", "6px");
-$("#server-reconnect").css("width", "11%");
-	
-//preventcanvasimagecrash();
-//    setTimeout(function() {
-        //document.title = "Legend express v" + modVersion;
-		$("#leaderboard-hud > h4").text("Leaderboard");
-        $("button:contains('Spectate')").html('<span class="glyphicon glyphicon-globe"></span>').attr('data-toggle', "tooltip").prop('title', 'Spectate');
-        $("button:contains('Logout')").html('<span class="glyphicon glyphicon-off"></span>').attr('data-toggle', "tooltip").prop('title', 'Logout');
-        $("button:contains('Copy')").removeClass("btn-info").addClass("btn-link");
-
-        $("#create-party-btn-2").html('<span class="glyphicon glyphicon-plus"></span>');
-        $("#create-party-btn-2").attr('data-toggle', "tooltip").prop('title', "Create party");
-
-        $("#join-party-btn").html('<span class="glyphicon glyphicon-save"></span>').attr('data-toggle', "tooltip").prop('title', "Join party").attr("style", "width: 49% !important; float: right;");
-
-        //backgroud div
-        $("body").prepend('<div id="backgroundFade" style="width: 100%; height: 100%; position: absolute; background: black; z-index: 100; opacity: 0.6; display: none;"></div>');
-
-        $("#overlays").css("z-index", 100);
-
-        $("#overlays-hud").prepend('<div id="statsInfo" class="main-color" style="pointer-events: auto;display: none;font-size: 13px;margin-top: 3px;float: left;font-weight: 700;background-color: rgba(0, 0, 0, 0.2);padding: 3px;border-radius: 4px;width: 65%;height: 44px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 85px;position: fixed;pointer-events: auto;color: #ffffff;"><p id="regionmodecheck" style="float: left;margin-left: 10px;">'+
-			'<i class="fa fa-search retro" onclick="getInfo2(); return false;"></i>  '+
-			'<select id="regioncheck" class="form-control main-color note" onchange="getInfo2();getInfo3();" style="display: inline-block; font-size: 13px; position: relative; width: 150px; height: 32px; pointer-events: auto;background:'+legbgcolor+'"; border: none; border-bottom: 1px solid; margin-left: 20px; text-align: center; border-color: darkgrey;">'+
-         '<option style="background:'+legbgcolor+'" value="US-Atlanta" data-itr="page_region_north_america">North America</option>'+
-         '<option style="background:'+legbgcolor+'" value="BR-Brazil" data-itr="page_region_south_america">South America</option>'+
-		 '<option style="background:'+legbgcolor+'"  value="EU-London" data-itr="page_region_europe">Europe</option>'+
-         '<option style="background:'+legbgcolor+'"  value="RU-Russia" data-itr="page_region_russia">Russia</option>'+
-         '<option style="background:'+legbgcolor+'" value="TK-Turkey" data-itr="page_region_turkey">Turkey</option>'+
-         '<option style="background:'+legbgcolor+'"  value="JP-Tokyo" data-itr="page_region_east_asia">East Asia</option>'+
-         '<option style="background:'+legbgcolor+'"  value="CN-China" data-itr="page_region_china">China </option>'+
-         '<option style="background:'+legbgcolor+'"  value="SG-Singapore" data-itr="page_region_oceania">Oceania</option></select>'+			
-		
-        '<select id="gamemodecheck" class="form-control main-color note" onchange="getInfo2();" style="display: inline-block; font-size: 13px; position: relative; width: 150px; height: 32px; pointer-events: auto;background:'+legbgcolor+'"; border: none; border-bottom: 1px solid; margin-left: 10px; text-align: center; border-color: darkgrey;">'+
-         '<option style="background:'+legbgcolor+'" value=":ffa" data-itr="page_gamemode_ffa">FFA</option>'+	
-         '<option style="background:'+legbgcolor+'" value=":battleroyale" data-itr="page_gamemode_battle_royale">Battle Royal</option>'+	
-         '<option style="background:'+legbgcolor+'" value=":teams" data-itr="page_gamemode_teams">Teams</option>'+	
-         '<option style="background:'+legbgcolor+'" value=":experimental" data-itr="page_gamemode_experimental">Experimental</option>'+	
-         '<option style="background:'+legbgcolor+'" value=":party" data-itr="page_party">Party</option>'+	
-        '</select>'+	
-		'</p>'+
-			
-			'<p style="float: right; margin-right: 10px;"><span id="notesServer">Servers: </span><span id="numServers"></span> (<span id="pps"></span> <span data-toggle="tooltip" data-placement="top" data-original-title="Players per server">PPS</span>)</p>'+
-			'<p style="float: right;margin-right: 100px;"><span id="notesPlayers">Players: </span><span id="numPlayers"></span> / <span id="totalPlayers"  data-toggle="tooltip" data-placement="top" data-original-title="Total players online"></span></p></div>' +
-            '<div id="searchHud" class="hud" style="width: 65%; height: 60px; z-index: 15; margin: auto; top: 0; right: 0; left: 0; bottom: 0; position: fixed;">' +
-            '<div id="" style="margin-top: 10px;">' +
-            '<input id="searchInput" class="form-control" title="" placeholder="Enter friend\'s token, IP, leaderboard, name or clan tag..." style="pointer-events: auto;margin-bottom: 10px;float: left;width: 80% !important;text-align: center;">' +
-            '<button id="searchBtn" class="btn btn-copy-token copy-party-token btn-primary" data-toggle="tooltip" data-placement="bottom" data-original-title="Cancel search" style="pointer-events: auto;margin-bottom:10px;width: 15%;"><span id="searchSpan"><i class="fa fa-search"></i></span></button>' +
-//            '<button id="closeBtn" class="btn btn-copy-token copy-party-token" data-toggle="tooltip" style="pointer-events: auto;color: #ffffff;margin-bottom:10px;width: 10%; background-color: transparent;" data-placement="right" data-original-title="Close" title=""><i class="fa fa-window-close fa-2"></i></button>' +
-            '</div></div>'
-        );
-		//$("#regionmodecheck").hide();
-		$("#leaderboard-hud").append('<input id="tempCopy" style="display: none;" value="">' +
-            '</div>');
-        $("#clantag").attr('placeholder', 'Password').tooltip({
-            title: "Leave it empty for Public, or insert password of Clan, or use it as Tag",
-            placement: "left"
-        });
-        $("#skin").attr('maxlength', 150).attr('placeholder', 'Manual direct skin URL').tooltip({
-            title: "Insert your manual skin weblink",
-            placement: "left"
-        });
-        $("#region").tooltip({
-            title: "The region to play",
-            placement: "left"
-        });
-        $("#gamemode").tooltip({
-            title: "The mode to play",
-            placement: "top"
-        });
-        $("#nick").attr('placeholder', 'Name').tooltip({
-            title: "Insert your in-game name",
-            placement: "bottom"
-        });
-        $("#statsInfo").before('<div id="notes" class="main-color" style="display:none;font-size: 13px;float: left;font-weight: 700;border-radius: 4px;width: 65%;height: 147px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 400px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;background-color: rgba(0, 0, 0, 0.2);"><h5 id="notesaveforlater" class="main-color text-center" style="margin-top: 0px;">Save for later</h5>' +
-            '<input id="note1" class="form-control main-color note" style="background: transparent;color: lightgrey;  width: 25%;float:left; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-right: 7px; text-align: center;">' +
-            '<input id="note2" class="form-control main-color note" style="background: transparent; color: lightgrey; width: 24%; float: left; border: none; border-bottom: 1px solid; margin-left: 0px; margin-right: 7px; text-align: center; border-color: darkgrey;">' +
-            '<input id="note3" class="form-control main-color note" style="background: transparent; width: 49%; border: none; border-bottom: 1px solid; margin-left: 10px; text-align: center; border-color: darkgrey;">' +
-            '<input id="note4" class="form-control main-color note" style="background: transparent; color: lightgrey; width: 25%; float: left; border: none; border-bottom: 1px solid; margin-right: 7px; text-align: center; border-color: darkgrey;">' +
-            '<input id="note5" class="form-control main-color note" style="background: transparent; color: lightgrey; width: 24%; float: left; border: none; border-bottom: 1px solid; margin-left: 0px; margin-right: 7px; text-align: center; border-color: darkgrey;">' +
-            '<input id="note6" class="form-control main-color note" style="background: transparent; color: lightgrey; width: 49%; border: none; border-bottom: 1px solid; margin-left: 10px; text-align: center; border-color: darkgrey;">' +
-            '<input id="note7" class="form-control main-color note" style="background: transparent; color: lightgrey; border: none; border-bottom: 1px solid; text-align: center; border-color: darkgrey;">' +
-            '</div>');
-		$("#notes").append('<button id="closeBtn" class="btn btn-danger" style="margin-top: 20px;" data-itr="page_login_and_play" data-original-title="" title="">Close</button>');
-		$('.glyphicon.glyphicon-globe').removeClass('glyphicon glyphicon-globe').addClass('fa fa-globe fa-lg');
-		$('.btn.btn-warning.btn-spectate.btn-needs-server').after('<button id="logoutbtn" onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout">Logout</button>');
-				
-        $("#minimap-hud").prepend('<div id="timertools-hud" class="hud" align="center" style="width: 50%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -90px; display: block;">' +
-            '<button id="playtimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100% display: block;" onclick="startTimer();" data-toggle="tooltip" data-original-title="Start Timer"" ><i id="playtime" class="fa fa-play-circle" style="padding-left: 0px;"></i></button>' +
-            '<button id="stoptimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100% display: none;" onclick="stopTimer();" data-toggle="tooltip" data-original-title="Pause Timer""><i id="pausetime" class="fa fa-pause-circle" style="padding-left: 0px;"></i></button>' +
-            '<button id="cleartimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100% display: none;" onclick="clearTimer();" data-toggle="tooltip" data-original-title="Stop Timer"><i id="cleartime" class="fa fa-stop-circle" style="padding-left: 0px;"></i></button>' +
-            '<a id="timer" style="padding: 0px; color: #d6d3d3; width: 12%; height: 100% position: absolute; right: 0px;">00:00</a>');
-        $("#stoptimer").hide();
-        $("#cleartimer").hide();
-		
-//        $(".menu-tabs").children().attr("style", "width: 14.27%;");
-          $(".menu-tabs>:nth-child(2)").after('<li class="legend-tab" style="width: 16.66%; padding:12px;" data-toggle="tooltip" data-original-title="API" data-placement="top"><a style="margin-top: 2px; height: 100%; padding:12px;" onclick="$(\'#main-menu\').children(\'div\').hide(); $(\'.menu-tabs\').children(\'li\').removeClass(\'active\'); $(\'.menu-tabs\').children(\'li\').children(\'a\').removeClass(\'active\'); $(\'#legend\').fadeIn(); $(this).addClass(\'active\'); $(this).parent().addClass(\'active\');" href="javascript:void(0);" class="fa fa-puzzle-piece fa-lg"></a></li>');		$(".menu-tabs").children().attr("style", "width: 16.66%;");
-
-		$(".menu-tabs").children().attr("style", "width: 16.66%;");
-		$(".profile-tab").hide();    
-        $("#main-menu>#profile").after('<div id="legend" class="menu-panel"><div class="agario-panel legend-panel">' + //<h5 class="menu-main-color">Main Tools</h5>
-            //											'<button id="IPBtn" type="button" class="btn btn-sm btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-trademark"></i>Show Connector</button>' +
-            '<div id="UserProfile" style="margin-bottom: 10px;">' +
-			'<div id="UserProfilePic" class="user-picture"><img align="right" src="https://jimboy3100.github.io/banners/profilepic_guest.png" style="width: 60px; display:inline-block;border-radius: 30px;"></img></div>' +
-			'<div style="display:inline-block; width: 70%;">' +
-			'<div id="UserProfileName">Name: <div id="UserProfileName1" class="user-name" style="display:inline-block" >Guest</div></div>' +
-			'<div id="UserProfileUID">User ID (UID): <div id="UserProfileUID1" class="user-name" style="display:inline-block" ></div></div>' +
-			'<div id="TimesUsedPanel" class="user-name" style="display:inline-block;">Times Used: <div id="TimesUsed" style="display:inline-block"></div></div><br>'+			
-			'</div></div>' +
-			'<button id="SHOSHOBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-puzzle-piece"></i>' + Premadeletter42 + '</button>' +
-            '<button id="XPBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-gamepad"></i>' + Premadeletter44 + '</button>' +
-            //                                          '<button id="TIMEBtn" type="button" class="btn btn-sm btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-clock-o"></i>' + Premadeletter46 + '</button>' +
-            //											'<button id="MAINBBtn" type="button" class="btn btn-sm btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-bars"></i>Show Main Banner</button>' +
-                                                        '<button id="MAINBTBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-minus"></i>' + Premadeletter45a + '</button>' +
-            											'<button id="AnimatedSkinBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-grav"></i>' + Premadeletter46 + '</button>' +
-            //											'<button id="RotationBtn" type="button" class="btn btn-sm btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-repeat"></i>Show Rotation Btns</button>' +
-            '<button id="HideAllBthn" type="button" class="btn btn-sm btn-danger" data-toggle="button" aria-pressed="false" autocomplete="off" data-toggle="tooltip" data-placement="right" data-original-title="Temporarily Hide/Show Everything. Function for Youtubers" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-exclamation-triangle"></i>' + Premadeletter49 + '</button>' +
-            '<button id="TIMEcalBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-calculator"></i>' + Premadeletter50 + '</button>' +
-            //											'<button id="copyGameNames" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%; display: none;"><i class="fa fa-scissors"></i>' + Premadeletter52 + '</button>' +
- /*           '<button id="autoCoinBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-clock-o"></i>' + Premadeletter53 + '</button>' +
-            //											'<button id="autoRespawnBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" data-original-title="" title="" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-flash"></i> Auto respawn</button>' +
-            '<button id="troll1Btn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" data-original-title="" title="" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-bath"></i>' + Premadeletter55 + '</button>' +
-            //											'<button id="OpenInfo" type="button" class="btn btn-sm btn-danger" data-toggle="button" aria-pressed="false" autocomplete="off" data-toggle="tooltip" data-placement="right" data-original-title="Mod Information and choose Template" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-info-circle"></i>Information</button>' +
- */           '<button id="OpenuserScripts" type="submit" class="btn btn-primary btn" style="margin-top: 2px; display: block; width: 100%; padding: 4px 0 6px 0;"><i class="fa fa-code"></i>User Scripts</button>' +
-
-            '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 2px; padding: 4px 0 0px 0;"><span id="legendmanualback" class="title" style="">Manual background:  </span>' +
-            '<select id="backgroundPic" class="form-control" onchange="changePicFun();" required="" data-original-title="" title="" style="display:inline; width: 40%" >' +
-            '<option value="1" data-itr="">Minimap</option>' +
-            '<option value="2" data-itr="">Leaderboard</option>' +
-            '<option value="3" data-itr="">Teamboard</option>' +
-            '<option value="4" data-itr="">Main Canvas</option>' +
-            '<option value="5" data-itr="">Main Banner</option>' +
-            '</select>' +
-
-            '<input id="minimapPicture" class="form-control" placeholder="Minimap Image URL" value="" style="margin-top: 2px; display: block;" onblur="setminbgname();" data-toggle="tooltip" data-placement="right" data-original-title="Url of image starting with https://... or https://..." >' +
-            '<input id="minbtext" class="form-control" placeholder="Minimap Text" value="" style="margin-top: 2px; display: block;" onblur="setminbtext();">' +
-            '<input id="leadbPicture" class="form-control" placeholder="Leaderboard Image URL" value="" style="margin-top: 2px; display: none;" onblur="setleadbgname();" data-toggle="tooltip" data-placement="right" data-original-title="Url of image starting with https://... or https://..." >' +
-            '<input id="leadbtext" class="form-control" placeholder="Leaderboard Logo Text" value="" style="margin-top: 2px; display: none; " onblur="setleadbtext();">' +
-            '<input id="teambPicture" class="form-control" placeholder="Teamboard Image URL" value="" style="margin-top: 2px; display: none;" onblur="setteambgname();" data-toggle="tooltip" data-placement="right"  data-original-title="Url of image starting with https://... or https://..." >' +
-            '<input id="teambtext" class="form-control" placeholder="Teamboard Logo Text" value="" style="margin-top: 2px; display: none; " onblur="setteambtext();">' +
-            '<input id="canvasPicture" class="form-control" placeholder="Main Canvas Image URL" value="" style="margin-top: 2px; display: none;" onblur="setcanvasbgname();" data-toggle="tooltip" data-placement="right" data-original-title="Url of image starting with https://... or https://..." >' +
-            '<input id="imgUrl" class="form-control" placeholder="Main Banner Icon URL" value="" style="margin-top: 2px; display: none; " onblur="setimgUrl();" data-toggle="tooltip" data-placement="right" data-original-title="Url of image starting with http://... or https://..." >' +
-            '<input id="imgHref" class="form-control" placeholder="Main Banner Link URL" value="" style="margin-top: 2px; display: none; " onblur="setimgHref();" data-toggle="tooltip" data-placement="right" data-original-title="Url of link to redirect" >' +
-            '</div>' +
-
-            '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 4px 0 0px 0;"><span id="legendmanualmess" class="title" style="">Manual Message Icons&Youtube:  </span>' +
-            '<select id="changephotos" class="form-control" onchange="changePhotoFun();" required="" data-original-title="" title="" style="display:inline; width: 35%" >' +
-            '<option value="1" data-itr="">Icon 1</option>' +
-            '<option value="2" data-itr="">Icon 2</option>' +
-            '<option value="3" data-itr="">Icon 3</option>' +
-            '<option value="4" data-itr="">Icon 4</option>' +
-            '<option value="5" data-itr="">Icon 5</option>' +
-            '<option value="6" data-itr="">Icon 6</option>' +
-            '<option value="7" data-itr="">Youtube 1</option>' +
-            '<option value="8" data-itr="">Youtube 2</option>' +
-            '<option value="9" data-itr="">Youtube 3</option>' +
-            '<option value="10" data-itr="">Youtube 4</option>' +
-            '<option value="11" data-itr="">Youtube 5</option>' +
-            '<option value="12" data-itr="">Youtube 6</option>' +
-            '</select>' +
-
-            '<input id="pic1data" class="form-control" placeholder="Message Icon Text 1" value="" style="margin-top: 2px; display: block; " onblur="setpic1data();">' +
-            '<input id="pic2data" class="form-control" placeholder="Message Icon Text 2" value="" style="margin-top: 2px; display: none; " onblur="setpic2data();">' +
-            '<input id="pic3data" class="form-control" placeholder="Message Icon Text 3" value="" style="margin-top: 2px; display: none; " onblur="setpic3data();">' +
-            '<input id="pic4data" class="form-control" placeholder="Message Icon Text 4" value="" style="margin-top: 2px; display: none; " onblur="setpic4data();">' +
-            '<input id="pic5data" class="form-control" placeholder="Message Icon Text 5" value="" style="margin-top: 2px; display: none; " onblur="setpic5data();">' +
-            '<input id="pic6data" class="form-control" placeholder="Message Icon Text 6" value="" style="margin-top: 2px; display: none; " onblur="setpic6data();">' +
-            '<input id="yt1data" class="form-control" placeholder="Youtube Message Text 1" value="" style="margin-top: 2px; display: none; " onblur="setyt1data();">' +
-            '<input id="yt2data" class="form-control" placeholder="Youtube Message Text 2" value="" style="margin-top: 2px; display: none; " onblur="setyt2data();">' +
-            '<input id="yt3data" class="form-control" placeholder="Youtube Message Text 3" value="" style="margin-top: 2px; display: none; " onblur="setyt3data();">' +
-            '<input id="yt4data" class="form-control" placeholder="Youtube Message Text 4" value="" style="margin-top: 2px; display: none; " onblur="setyt4data();">' +
-            '<input id="yt5data" class="form-control" placeholder="Youtube Message Text 5" value="" style="margin-top: 2px; display: none; " onblur="setyt5data();">' +
-            '<input id="yt6data" class="form-control" placeholder="Youtube Message Text 6" value="" style="margin-top: 2px; display: none; " onblur="setyt6data();">' +
-
-            '<input id="pic1url" class="form-control" placeholder="Message Icon Imgur Url 1" value="" style="margin-top: 2px; display: block;" onblur="setpic1url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-            '<input id="pic2url" class="form-control" placeholder="Message Icon Imgur Url 2" value="" style="margin-top: 2px; display: none;" onblur="setpic2url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-            '<input id="pic3url" class="form-control" placeholder="Message Icon Imgur Url 3" value="" style="margin-top: 2px; display: none;" onblur="setpic3url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-            '<input id="pic4url" class="form-control" placeholder="Message Icon Imgur Url 4" value="" style="margin-top: 2px; display: none;" onblur="setpic4url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-            '<input id="pic5url" class="form-control" placeholder="Message Icon Imgur Url 5" value="" style="margin-top: 2px; display: none;" onblur="setpic5url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-            '<input id="pic6url" class="form-control" placeholder="Message Icon Imgur Url 6" value="" style="margin-top: 2px; display: none;" onblur="setpic6url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-            '<input id="yt1url" class="form-control" placeholder="Youtube Message Url 1" value="" style="margin-top: 2px; display: none;" onblur="setyt1url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-            '<input id="yt2url" class="form-control" placeholder="Youtube Message Url 2" value="" style="margin-top: 2px; display: none;" onblur="setyt2url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-            '<input id="yt3url" class="form-control" placeholder="Youtube Message Url 3" value="" style="margin-top: 2px; display: none;" onblur="setyt3url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-            '<input id="yt4url" class="form-control" placeholder="Youtube Message Url 4" value="" style="margin-top: 2px; display: none;" onblur="setyt4url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-            '<input id="yt5url" class="form-control" placeholder="Youtube Message Url 5" value="" style="margin-top: 2px; display: none;" onblur="setyt5url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-            '<input id="yt6url" class="form-control" placeholder="Youtube Message Url 6" value="" style="margin-top: 2px; display: none;" onblur="setyt6url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-            '</div></div>' +
-
-            '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 0px 0 0px 0;"><span id="legendlanguagetext" class="title" style="" data-toggle="tooltip" data-placement="right" data-original-title="Visit https://jimboy3100.github.io/ LanguagePackEnglish.js to Upload a Language Pack">Choose Language:  </span>' +
-            '<select id="legendlanguages" class="form-control" onchange="changeModLanguage();" required="" data-original-title="" title="" style="display:inline; width: 50%" >' +
-            '<option value="1" data-itr="">English</option>' +
-            '<option value="6" data-itr="">Arabic</option>' +
-            '<option value="4" data-itr="">Bulgarian</option>' +
-            '<option value="5" data-itr="">French - Francais</option>' +
-			'<option value="9" data-itr="">German - Deutsch</option>' +
-            '<option value="2" data-itr="">Greek - Ελληνικά</option>' +
-			'<option value="8" data-itr="">Russian</option>' +
-            '<option value="3" data-itr="">Spanish - Espanol</option>' +
-			'<option value="7" data-itr="">Trad. Chinese</option>' +
-			'<option value="10" data-itr="">Turkish - Türk</option>' +
-            '</select></div>' +
-
-            '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 4px; padding: 0px 0 0px 0;"><span id= "chatbtntitle" class="title" style="">Chat Position:  </span><div class="btn-group">' +
-            '<button id="bottomleft" type="button" class="btn btn-primary">Default</button>' +
-            '<button id="bottomright" type="button" class="btn btn-primary"><i class="fa fa-arrow-down" aria-hidden="true"></i><i class="fa fa-arrow-right" aria-hidden="true"></i></button>' +
-            '<button id="topleft" type="button" class="btn btn-primary"><i class="fa fa-arrow-up" aria-hidden="true"></i><i class="fa fa-arrow-left" aria-hidden="true"></i></button>' +
-            '<button id="topright" type="button" class="btn btn-primary"><i class="fa fa-arrow-up" aria-hidden="true"></i><i class="fa fa-arrow-right" aria-hidden="true"></i></button>' +
-            '</div></div>' +
-            '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 4px; padding: 0px 0 0px 0;"><span id="legenddiscordwebh" class="title" style="">Discord Webhook Url (for sending TOKEN)  </span>' +
-            '<input id="discwebhook1" class="form-control" placeholder="Discord Webhook 1 Url" value="" data-toggle="tooltip" data-placement="right" data-original-title="Must be filled for function to work. https://discordapp.com/api/webhooks/.../..." style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%; display: inline-block; " onblur="setdiscwebhook1();">' +
-            '<input id="discwebhook2" class="form-control" placeholder="Discord Webhook 2 Url" value="" data-toggle="tooltip" data-placement="right" data-original-title="Secondary Webhook(optional). https://discordapp.com/api/webhooks/.../..." style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%; display: inline-block;" onblur="setdiscwebhook2();">' +
-            '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 4px; padding: 0px 0 0px 0;"><span id="legendotherscripts" class="title" style="">Expansions: </span>' +
-            '</div><div id="LEGENDAds2"></div><div id="LEGENDAds3"></div>' +   
-            '</div></div>');
-		    loginsfbGpl2();
-			//fix userprofile
-			$("#UserProfile").css("font-size", "12px");
-			$("#UserProfilePic").click(function() {useProfilePhotoCustom();});
-//			loginsfbGpl();			
-//		$("#exp-bar").hide();
-//		$(".menu-tabs").children().attr("style", "width: 19.99%;");
-//		$(".profile-tab").hide();
-				
-        $("#time-hud").attr("style", "top: 290px !important;");
-
-        // fix leaderboard buttons
-        $("#leaderboard-menu").css("pointer-events", "auto");
-
-		
-        // fix stats text size
-        $('[id="statsText"]').css("font-size", "medium");
-
-		
-        // detect paste
-        $(document).bind("paste", function(e) {
-            if (!searching && !($("input,textarea").is(":focus"))) {
-                var pastedData = e.originalEvent.clipboardData.getData('text');
-                hideMenu();
-                showSearchHud();
-                $("#searchInput").val(pastedData);
-                $("#searchInput").select();
-                //searchHandler(pastedData);
-				$("#searchBtn").click();
-            }
-        });
-
-        $("#searchInput").bind("paste", function(e) {
-            if (!searching) {
-                var pastedData = e.originalEvent.clipboardData.getData('text');
-                $("#searchInput").val(pastedData);
-                $("#searchInput").select();
-                //searchHandler(pastedData);
-				$("#searchBtn").click();
-            }		
-        });
-
-        //load notes
-        $("#note1").val(localStorage.getItem('note1'));
-        $("#note2").val(localStorage.getItem('note2'));
-        $("#note3").val(localStorage.getItem('note3'));
-        $("#note4").val(localStorage.getItem('note4'));
-        $("#note5").val(localStorage.getItem('note5'));
-        $("#note6").val(localStorage.getItem('note6'));
-        $("#note7").val(localStorage.getItem('note7'));
-
-		$(".note").keyup(function(event) {
-            localStorage.setItem(event.target.id, $(event.target).val());
-        });
-        var initialMusicUrl = (localStorage.getItem("musicUrl") == null ? defaultMusicUrl : localStorage.getItem("musicUrl"));
-        //	var savemusic=$(".agario-panel.sounds-panel").html();
-        $('.agario-panel.radio-panel').after('<div id="youtubeplayer" style="margin-left: 0px;"><h5 class="main-color" style="margin-right: 15px;">Youtube player</h5>' +
-            '<iframe id="musicFrame" width="350" height="180" src="' + getEmbedUrl(initialMusicUrl) + '" frameborder="0" allowfullscreen=""></iframe></div>' +
-            '<div id="afteryoutubeplayer"><input id="musicUrl" onclick="$(this).select();" type="text" placeholder="Youtube Url" value="' + initialMusicUrl + '" class="form-control" data-toggle="tooltip" data-placement="right" data-original-title="Paste your video/playlist here">'); 
-//            '<button id="YoutubeAutoBtn" type="button" class="btn btn-block btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px;"><i class="fa fa-youtube-play"></i>' + Premadeletter40 + '</button></div>'+
-//			'<button id="YoutubeBackgroundBtn" type="button" class="btn btn-block btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px;"><i class="fa fa-youtube-play"></i>' + Premadeletter61 + '</button></div>' +
-			
-		$('.agario-panel.radio-panel').hide();
-        $('.agario-panel.ogario-yt-panel').hide();
-
-        if ($('#menuBg').val() == "https://cdn.ogario.ovh/static/img/pattern.png") {
-            $('#menuBg').val("https://jimboy3100.github.io/pattern.png");
-        }
-        if ($('#messageSound').val() == "https://cdn.ogario.ovh/static/sounds/notification_01.mp3") {
-            $('#messageSound').val("https://jimboy3100.github.io/notification_01.mp3");
-        }
-        if ($('#commandSound').val() == "https://cdn.ogario.ovh/static/sounds/notification_02.mp3") {
-            $('#commandSound').val("https://jimboy3100.github.io/notification_02.mp3");
-        }
-        //    $("#music").replaceWith('<div id="music" class="menu-panel" style="display: none;"><div class="agario-panel"><h5 class="main-color">Youtube player</h5>' +
-        //                            '<iframe id="musicFrame" width="320" height="180" src="' + getEmbedUrl(initialMusicUrl) + '" frameborder="0" allowfullscreen=""></iframe>' +
-        //                            '<input id="musicUrl" onclick="$(this).select();" type="text" placeholder="Youtube Url" value="' + initialMusicUrl + '" class="form-control" data-toggle="tooltip" data-placement="right" data-original-title="Paste your video/playlist here">'+
-        //							'<button id="YoutubeAutoBtn" type="button" class="btn btn-block btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px;"><i class="fa fa-youtube-play"></i>Auto Youtube On</button></div>');
-        //	$('#music').append(savemusic+'</div>');						
-
-		ytFrame();
-		
-/*		 $("#YoutubeBackgroundBtn").click(function() {
-            var checked = !($(this).attr('aria-pressed') == "true");
-            if (checked) {               
-				YoutubebackgroundEnable();
-                $(this).html('<i class="fa fa-youtube-play"></i>' + Premadeletter62);
-            } else {
-				YoutubebackgroundDisable();
-                $(this).html('<i class="fa fa-youtube-play"></i>' + Premadeletter61);
-            }
-        });*/
-
-        //roller and other icons
-        $('#exp-bar > .icon-user').addClass('fa fa-cog fa-spin fa-3x fa-fw').removeClass('icon-user');
-        //$('.music-tab').children().addClass('quick-yt icon-youtube2').removeClass('icon-music').attr('data-original-title', 'Youtube & Sounds');
-        $('.music-tab').children().attr('data-original-title', 'Youtube & Sounds');
-        document.getElementsByClassName('quick-yt ogicon-youtube2')[0].setAttribute('id', 'legendid');
-		
-        document.getElementsByClassName('quick-yt ogicon-youtube2')[0].href = "https://www.youtube.com/watch?v=CnIfNSpCf70";
-        document.getElementsByClassName('quick-yt ogicon-youtube2')[0].setAttribute('data-original-title', 'Legend Promo Video');
- //       $('#legendid').addClass('fa fa-thumbs-o-up').removeClass('quick-yt icon-youtube2');
-        $("#more-skins").attr('href', 'https://jimboy3100.github.io/skins/');
-        $(".quick-more-skins.ogicon-grin").attr('href', 'https://jimboy3100.github.io/skins/');
-		$("#quick-menu").append('<a id= "oldSkinsBtn" class="fa fa-shopping-basket" data-toggle="tooltip" data-container="body" data-placement="left" title="" data-original-title="Old Skins/ MassX3 1h"></a>');
-		$(".quick-more-skins.ogicon-grin").after('<a id= "themesBtn" target="_blank" href="https://jimboy3100.github.io/themes/" class="fa fa-tint" data-toggle="tooltip" data-container="body" data-placement="left" title="" data-original-title="Themes"></a>'+
-//		'<a id= "LMImplements" class="fa fa-eercast" data-toggle="tooltip" data-container="body" data-placement="left" title="" data-original-title="Implementations from Legend Mod"></a>'+
-		'<a id= "LegGoogleForm" class="fa fa-check-square-o" data-toggle="tooltip" data-container="body" data-placement="left" title="" data-original-title="New Ideas & Statistics Form" onclick="legendformIframe();return false;"></a>'+	
-		'<a id= "ModInfoQuick" class="fa fa-info" data-toggle="tooltip" data-container="body" data-placement="left" title="" data-original-title="Mod Info & Templates" onclick="openhelper();return false;"></a>');
-        $("#LegGoogleForm").tooltip('show').tooltip('hide');
-		$("#oldSkinsBtn").tooltip('show').tooltip('hide');
-		$("#oldSkinsBtn").hide();
-		$("#ModInfoQuick").tooltip('show').tooltip('hide');
-//		$("#LMImplements").tooltip('show').tooltip('hide');
-		// prevent edit
-        $("#musicUrl").on("input", function() {
-            $(this).attr("maxlength", "1000");
-        });
-        $("#musicUrl").bind("paste", function(e) {
-            $(this).attr("maxlength", "1000");
-            var pastedDataorNot = e.originalEvent.clipboardData.getData('text');
-			YoutubeEmbPlayer(pastedDataorNot);
-        });
-
-        // save notes
-
-		//fzogar Upload / Download Settings
-		$("#import-settings-btn").attr('class', 'btn btn-success');
-//		$("#close-exp-imp").before('<button id="fzogarOgarBtn" onclick="fzogarOgarIframe(); return false" style="margin-right: 25px;" class="btn btn-success" data-original-title="" title="">Upload / Download</button>');
-
-        $("#searchHud").after('<div id="searchLog" class="main-color" style="font-size: 13px;float: left;font-weight: 700;border-radius: 4px;width: 65%;height: 270px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: -390px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;display: none;background-color: rgba(0, 0, 0, 0.2);"><h5 id="logTitle" class="main-color text-center" style="margin-top: 0px;">Results</h5>' +
-            '<div id="log" style="font-weight: normal; overflow-x: hidden; overflow-y: auto;height: 90%;">' +
-            '</div></div>');
-
-        $("#minimap-hud").prepend('<div id="rotate-hud" class="" style="width: 11%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: 0px; display: block;">' +
-            //	'<button id="RotateLeft" class="btn-link" style="padding: 0px;color: #d6d3d3; width: 49%;height: 100%;" onclick="rotateminimapsectors2();" data-toggle="tooltip"  data-original-title="Rotate Left"><i class="fa fa-undo" style="padding-left: 0px;"></i></button>'+
-            '<button id="RotateRight" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 100%; height: 100%;" onclick="rotateminimapsectors();" data-toggle="tooltip" data-original-title="Rotate"><i class="fa fa-repeat" style="padding-left: 0px;"></i></button></div>');
-
-        $("#minimap-hud").prepend('<div id="shortcuts-hud" class="hud" style="width: 100%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -30px; display: block;">' +
-            '<button id="VoiceBtn" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 11%; height: 100%;" data-toggle="tooltip" data-original-title="Voice & Camera Chat"><i id="VoiceBtn1" class="fa fa-microphone" style="padding-left: 0px;"></i></button>' +
-            '<button id="ChatBtn" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 11%; height: 100%;" data-toggle="tooltip" data-original-title=' + Premadeletter57 + '><i id="ChatBtn1" class="fa fa-comment-o" style="padding-left: 0px;"></i></button>' +
-            '<button id="MiniScripts" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 11%; height: 100%;" onclick="setscriptingfunction();" data-toggle="tooltip" data-original-title="Mini Scripts"><i id="MiniScripts1" class="fa fa-linode" style="padding-left: 0px;"></i></button>' +
-            '<button id="SendCommands" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 11%; height: 100%;" onclick="setmessagecomfunction();" data-toggle="tooltip" data-original-title="Message Script Commands"><i id="SendCommands1" class="fa fa-sitemap" style="padding-left: 0px;"></i></button>' +
-            '<button id="Images" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 11%; height: 100%;" onclick="seticonfunction();" data-toggle="tooltip" data-original-title="Message Imgur Icons"><i id="Images1" class="fa fa-picture-o" style="padding-left: 0px;"></i></button>' +
-            '<button id="yout" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 11%; height: 100%;" onclick="setytfunction();" data-toggle="tooltip" data-original-title="Message Youtube Videos"><i id="yout1" class="fa fa-youtube" style="padding-left: 0px;"></i></button>' +
-            '<button id="Bino" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 11%; height: 100%;" onclick="Bino();" data-toggle="tooltip" data-original-title="[Spectate Mode Only] Binoculars"><i id="BinoBtnI" class="fa fa-binoculars" style="padding-center: 0px;"></i></button>' +
-            '<button id="playerBtn" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 11%; height: 100%;" data-toggle="tooltip" data-original-title="Click play on youtube tab at first"><i id="playerI" class="fa fa-play-circle" style="padding-center: 0px;"></i></button>' +
-            '<button id="fullscreenBtn" class="btn-link" style="padding: 0px;color: #d6d3d3;width: 11%;height: 100%;" onclick="toggleFullScreen(fullornot);" data-toggle="tooltip" data-original-title="Fullscreen"><i class="fa fa-tv" style="padding-left: 0px;"></i></button></div>');
-
-
-        $("#minimap-hud").prepend('<div id="images-hud" class="hud" style="width: 70%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
-            '<button id="sendicon1" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon1();" data-toggle="tooltip" data-original-title="Bad Choice!"><i id="sendicon11" class="fa fa-exclamation-triangle" style="padding-left: 0px;"></i></button>' +
-            '<button id="sendicon2" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon2();" data-toggle="tooltip" data-original-title="Why?"><i id="sendicon21" class="fa fa-question-circle" style="padding-left: 0px;"></i></button>' +
-            '<button id="sendicon3" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon3();" data-toggle="tooltip" data-original-title="Yow!!"><i id="sendicon31" class="fa fa-wheelchair" style="padding-center: 0px;"></i></button>' +
-            '<button id="sendicon4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon4();" data-toggle="tooltip" data-original-title="Death!"><i id="sendicon41" class="fa fa-cutlery" style="padding-center: 0px;"></i></button>' +
-            '<button id="sendicon5" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon5();" data-toggle="tooltip" data-original-title="Relax!"><i id="sendicon51" class="fa fa-bed" style="padding-left: 0px;"></i></button>' +
-            '<button id="sendicon6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon6();" data-toggle="tooltip" data-original-title="Legend mod!"><i id="sendicon61" class="fa fa-telegram" style="padding-left: 0px;"></i></button></div>');
-
-        $("#minimap-hud").prepend('<div id="yt-hud" class="hud" style="width: 70%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
-            '<button id="sendyt1" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt1();" data-toggle="tooltip" data-original-title="Rick Astley - Never Gonna Give You Up"><i id="sendyt11" class="fa fa-music" style="padding-left: 0px;"></i></button>' +
-            '<button id="sendyt2" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt2();" data-toggle="tooltip" data-original-title="Survivor - Eye Of The Tiger"><i id="sendyt21" class="fa fa-music" style="padding-left: 0px;"></i></button>' +
-            '<button id="sendyt3" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt3();" data-toggle="tooltip" data-original-title="Lion king - The Lion Sleeps Tonight"><i id="sendyt31" class="fa fa-music" style="padding-center: 0px;"></i></button>' +
-            '<button id="sendyt4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt4();" data-toggle="tooltip" data-original-title="Agario - Jumbo Solo vs Teams"><i id="sendyt41" class="fa fa-video-camera" style="padding-center: 0px;"></i></button>' +
-            '<button id="sendyt5" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt5();" data-toggle="tooltip" data-original-title="Agario - Kill3r vs Teams"><i id="sendyt51" class="fa fa-video-camera" style="padding-left: 0px;"></i></button>' +
-            '<button id="sendyt6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt6();" data-toggle="tooltip" data-original-title="Promotional Video"><i id="sendyt61" class="fa fa-telegram" style="padding-left: 0px;"></i></button></div>');
-
-        $("#minimap-hud").prepend('<div id="msgcommands-hud" class="hud" style="width: 70%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
-            '<button id="msgcommand1" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand1f();" data-toggle="tooltip" data-original-title="Hello Team!"><i id="msgcommand11" class="fa fa-coffee" style="padding-left: 0px;"></i></button>' +
-            '<button id="msgcommand2" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand2f();" data-toggle="tooltip" data-original-title="Laugh to Team"><i id="msgcommand21" class="fa fa-smile-o" style="padding-left: 0px;"></i></button>' +
-            '<button id="msgcommand3" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand3f();" data-toggle="tooltip" data-original-title="Team Change Name to yours"><i id="msgcommand31" class="fa fa-magic" style="padding-center: 0px;"></i></button>' +
-            '<button id="msgcommand4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand4f();" data-toggle="tooltip" data-original-title="Troll Teammate"><i id="msgcommand41" class="fa fa-bath" style="padding-center: 0px;"></i></button>' +
-            '<button id="msgcommand5" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand5f();" data-toggle="tooltip" data-original-title="Open Youtube Music"><i id="msgcommand51" class="fa fa-youtube-play" style="padding-left: 0px;"></i></button>' +
-            '<button id="msgcommand6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand6f();" data-toggle="tooltip" data-original-title="Insane mode (Hide Everything)"><i id="msgcommand" class="fa fa-exclamation-triangle" style="padding-left: 0px;"></i></button></div>');
-
-		$("#minimap-hud").prepend('<div id="scripting-hud" class="hud" style="width: 25%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
-            '<button id="Cutnames" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 50%; height: 100%;" data-toggle="tooltip" data-original-title="Edit names"><i id="Cutnames1" class="fa fa-scissors" style="padding-left: 0px;"></i></button>' +
-            '<button id="Cutnames" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 50%; height: 100%;" onclick="Ultimouse();" data-toggle="tooltip" data-original-title="Ultimouse Control"><i id="Ultimouse1" class="fa fa-mouse-pointer" style="padding-left: 0px;"></i></button></div>');
-			
-         $("#leaderboard-hud").append('<div id="leaderboard-menu" style="pointer-events: auto;">' +
-            '<a id="searchShortcut" class="btn btn-info" data-toggle="tooltip" data-placement="left" data-original-title="Join server (Backspace)" style="width: 33.3%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;border-top-color: rgb(141, 201, 64);border-bottom-style: none;border-left-style: none;border: none;margin-top: 0px; background-color: transparent;color: '+legmaincolor+' ; " data-toggle="tooltip" data-original-title="Search leaderboards" title=""><i class="fa fa-search fa-lg"></i></a>' +
-            '<a id="copySIPBtn" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: '+legmaincolor+' ; width: 33.3%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;/* border: none; */border-left-style: none;border-right-style: none;border-bottom-style: none;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Token/SIP">Copy</a>' +
-            '<a id="reconnectBtn" class="btn btn-info" title="" data-toggle="tooltip" data-placement="bottom" data-original-title="Change server (+)" style="' +
-            'background-color: transparent;color: '+legmaincolor+' ;width: 33.3%; text-shadow: 0.3px 0.3px #000000; font-size: small; margin-top: 0px; border: none;"><i class="fa fa-refresh fa-lg"></i></a>' +
-
-            '<div id="dropDown3" class="hud" style="position: absolute; pointer-events: auto; width: 33%; left: 0px; padding: 0px; border-radius: 0px;">' +
-            '<a id="lastIPBtn" data-disabled="true" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="width: 100%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;border-top-color: rgb(141, 201, 64);border-bottom-style: none;border-left-style: none;border: none;margin-top: 0px; background-color: transparent;color: '+legmaincolor+' ;" data-toggle="tooltip" data-html="true" data-placement="left" data-original-title="<p style=&quot;margin-top:3px; margin-bottom:0px; margin-right: 2px;&quot; align=&quot;center&quot;><span class=&quot;hud-main-color&quot; style=&quot;position:absolute; left: 15px;&quot;>NEW</span>Join back</p><hr style=&quot;margin-top:5px; margin-bottom:10px; border-color:darkslategray;&quot;/><p class=&quot;&quot; style=&quot;margin-bottom:3px; font-weight:normal;&quot; align=&quot;justify&quot;>Connect to last IP you played</p>"><i class="fa fa-arrow-circle-down fa-lg"></i></a>' +
-            '</div>' +
-            '<div id="dropDown2" class="hud" style="position: absolute; pointer-events: auto; width: 33%; height: 90px; left: 67px; padding: 0px; border-radius: 0px;">' +
-            '<a id="copySIPandPass" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: '+legmaincolor+' ; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Token/SIP&Password">TK&PW</a>' +
-            '<a id="copyLBBtn" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: '+legmaincolor+' ; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Leaderboard (L)">LB</a>' +
-            '<a id="copySIPPassLB" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: '+legmaincolor+' ; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Token/SIP, Password, Leaderboard...">TK&ALL</a>' +            
-			'</div>' +
-            '<div id="dropDown" class="hud" style="position: absolute; pointer-events: auto; width: 33%; height: 30px; left: 67px; padding: -30px; border-radius: 0px;">' +
-            '<a id="copyLBBtn" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: '+legmaincolor+' ; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Leaderboard (L)">LB</a>' +
-//            '<a id="copySIPPassLB" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Token/SIP&Leaderboard">TK&PW&L</a>' +
-            '</div>' +
-
-            '<input id="tempCopy" style="display: none;" value="">' +
-            '</div>');	
-        // player shortcut			
-			
-	$(".options-box.zoomGroup").after('<div class="options-box leaderboard">'+
-   '<h5 class="menu-main-color">Leaderboards</h5>'+
-   '<label>Leaderboard Players<input type="checkbox" class="js-switch" id="quickleaderbaord" data-switchery="true" style="display: none;">'+
-   '<span><select id="leaderboardlimit" class="form-control" onchange="changeleaderboardlimit();" required="" data-original-title="" title="" style="display:inline; position: absolute;margin-top: -10px; right: 10px; width: 80px" >' +
-            '<option selected value="10" data-itr="">10</option>' +
-            '<option value="15" data-itr="">15</option>' +
-            '<option value="20" data-itr="">20</option>' +
-            '<option value="25" data-itr="">25</option>' +
-            '<option value="30" data-itr="">30</option>' +
-            '</select></span></label><br><br>'+
-   '<label>Team Players<input type="checkbox" class="js-switch" id="quickteambaord" data-switchery="true" style="display: none;">'+
-   '<span><select id="teamboardlimit" class="form-control" onchange="changeteamboardlimit();" required="" data-original-title="" title="" style="display:inline; position: absolute;margin-top: -10px; right: 10px; width: 80px" >' +
-            '<option selected value="5" data-itr="">5</option>' +
-            '<option value="10" data-itr="">10</option>' +
-			'<option value="15" data-itr="">15</option>' +
-            '<option value="20" data-itr="">20</option>' +
-            '<option value="25" data-itr="">25</option>' +
-            '<option value="30" data-itr="">30</option>' +
-			'<option value="35" data-itr="">35</option>' +
-			'<option value="40" data-itr="">40</option>' +
-            '</select></span></label>'+			
-			'</div>');
-		
-        $("#playerBtn").click(function() {                          
-                if (playerState != 1) {
-                    $('#musicFrame')[0].contentWindow.postMessage('{"event":"command","func":"' + 'playVideo' + '","args":""}', '*');
-                    $("#playerI").removeClass("fa-play-circle").addClass("fa-pause-circle");
-                    $(this).attr('data-original-title', Premadeletter60).tooltip('fixTitle').tooltip('show');
-					return playerState = 1;
-                } else {
-                    $('#musicFrame')[0].contentWindow.postMessage('{"event":"command","func":"' + 'pauseVideo' + '","args":""}', '*');
-                    $("#playerI").removeClass("fa-pause-circle").addClass("fa-play-circle");
-                    $(this).attr('data-original-title', Premadeletter13).tooltip('fixTitle').tooltip('show');
-					return playerState = 0;
+                var curr = shapes["length"];
+                var count = this["clientVersionString"]["length"];
+                var data = [oW, 8, 1, 18];
+                //this["writeUint32"](data, curr + count + 23);
+                ogarminimapdrawer["writeUint32"](data, curr + count + 23);
+                data["push"](8, 10, 82);
+                ogarminimapdrawer['writeUint32'](data, curr + count + 18);
+                //this['writeUint32'](data, curr + count + 18);
+                data["push"](8, options, 18, count + 8, 8, 5, 18, count);
+                var prev = 0;
+                for (; prev < count; prev++) {
+                    data["push"](this["clientVersionString"]["charCodeAt"](prev));
                 }
-            
-        });					
-        $("#copySIPBtn").mouseenter(function() {
-            $("#dropDown3").hide();
-            $("#copySIPBtn").text("Token");
-			if ($("#clantag").val()!=""){
-				$("#dropDown2").show(100);
-			}
-            else {
-				$("#dropDown").show(100);
-				}
-        });
-        $("#leaderboard-menu").mouseleave(function() {
-            $("#dropDown").hide();
-			$("#dropDown2").hide();
-            $("#dropDown3").hide();
-            $("#copySIPBtn").text("Copy");
-        });	
-		
-        $("#logTitle").after('<a href="#" id="notesclear" style="color: lightgrey;float: right;position: absolute;right: 12px;top: 9px;" class="main-color" onclick="$(\'#log\').html(\'\');" data-toggle="" data-placement="left" data-original-title="Clear list"><i class="fa fa-trash fa-2"></i></a>');
-        $("#searchBtn").tooltip('disable');
-		$("#copyLBBtn").click(function() {
-            copy($("#leaderboard-positions").text());
-        });
-        $("#dropDown>#copyLBBtn").click(function() {
-            copy($("#leaderboard-positions").text());
-        });	
-        $("#lastIPBtn").click(function() {
-            lastIP = localStorage.getItem("lastIP");
-            if (lastIP==""||lastIP==null){}
-			else{	
-				$('#server-token').val(lastIP);
-				$('#server-join').click();
-				setTimeout(function() {
-					if ($('#server-token').val()!=lastIP){
-						                            toastr["error"](Premadeletter31).css("width", "210px");
-					}
-				}, 1000);
-				}
-        });
-
-        $("#copyIPBtn").click(function() {
-            if (searchSip != null) {
-                copy("https://agar.io/?r=" + region + "&m=" + realmode + "&search=wss://" + searchSip);
-            } else {
-                copy("https://agar.io/?r=" + $('#region').val() + "&m=" + realmode + "&search=wss://" + currentIP);
-            }
-        });
-
-        $("#copySIPBtn").click(function() {
-                if (realmode == ":party") {
-					CopyTkPwLb2="https://agar.io/?sip="+$("#server-token").val();
-                   // CopyTkPwLb2="http://agar.io/"+"?&pass=" + $("#clantag").val() + $("#server").val();
-					copy(CopyTkPwLb2);					
-                } else if (realmode != ":party") {
-					if (region!=null&&realmode!=null){
-					CopyTkPwLb2="https://agar.io/?sip="+$("#server-token").val()+"&?r=" + $('#region').val() + "&m=" + realmode;	
-					//CopyTkPwLb2="http://agar.io/?sip=" + searchSip + "&?pass=" + $("#clantag").val() + "&?r=" + region + "&m=" + realmode;	
-					copy(CopyTkPwLb2);
-					}
-					else{
-					CopyTkPwLb2="https://agar.io/?sip=" +$("#server-token").val();	
-					copy(CopyTkPwLb2);
-					}
+                data["push"](24, 0, 32, 0, 26);
+                ogarminimapdrawer["writeUint32"](data, curr + 3);
+                //this["writeUint32"](data, curr + 3);
+                data["push"](10);
+                ogarminimapdrawer["writeUint32"](data, curr);
+                //this["writeUint32"](data, curr);
+                prev = 0;
+                for (; prev < curr; prev++) {
+                    data["push"](shapes["charCodeAt"](prev));
                 }
-             else if (privateSrv==null) { //else if (searchSip != null && privateSrv==null)
-                if (realmode == ":party") {
-					CopyTkPwLb2="https://agar.io/?sip="+$("#server-token").val();
-                   // CopyTkPwLb2="http://agar.io/"+"?&pass=" + $("#clantag").val() + $("#server").val();
-					copy(CopyTkPwLb2);
-                } else if (realmode != ":party") {					
-                    CopyTkPwLb2="https://agar.io/?sip="+$("#server-token").val()+"&?r=" + $('#region').val() + "&m=" + realmode;
-					//CopyTkPwLb2="http://agar.io/?sip="+$("#server-token").val()+"&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-					copy(CopyTkPwLb2);
+                data = new Uint8Array(data);
+                var raw_basefont = new DataView(data["buffer"]);
+                this["sendMessage"](raw_basefont);
+            },
+            'sendFbToken': function(t) {
+                console.log("[Legend mod Express] Facebook token: " + t);
+                this.sendAccessToken(t, 2);
+            },
+            'sendGplusToken': function(t) {
+                console.log("[Legend mod Express] Google Plus token: " + t);
+                //this.sendAccessToken(t, 3);
+                this.sendAccessToken(t, 4);
+            },
+            'sendRecaptcha': function(t) {
+                var e = this.createView(2 + t.length);
+                e.setUint8(0, 86);
+                for (var i = 0; i < t.length; i++) e.setUint8(1 + i, t.charCodeAt(i));
+                e.setUint8(t.length + 1, 0), this.sendMessage(e);
+            },
+            'setClientVersion': function(t, e) {
+
+                if (window.disableIntegrity != false) { //
+                    this.clientVersion = t, this.clientVersionString = e, console.log('[Legend mod Express] Client version:', t, e);
+                } //
+                else { //
+                    this.clientVersion = 0, this.clientVersionString = e, console.log('[Legend mod Express] Client version:', t, e); //
+                } //
+            },
+            'generateClientKey': function(t, e) {
+                if (!t.length || !e.byteLength) return null;
+                for (var i = null, s = 1540483477, o = t['match'](/(ws+:\/\/)([^:]*)(:\d+)/)[2], a = o.length + e.byteLength, n = new Uint8Array(a), r = 0; r < o.length; r++) n[r] = o.charCodeAt(r);
+                n['set'](e, o.length);
+                for (var l = new DataView(n['buffer']), h = a - 1, c = 4 + (h - 4 & -4) | 0, u = 255 ^ h, d = 0; h > 3;) i = 0 | Math['imul'](l.getInt32(d, true), s), u = (0 | Math['imul'](i >>> 24 ^ i, s)) ^ (0 | Math['imul'](u, s)), h -= 4, d += 4;
+                switch (h) {
+                    case 3:
+                        u = n[c + 2] << 16 ^ u, u = n[c + 1] << 8 ^ u;
+                        break;
+                    case 2:
+                        u = n[c + 1] << 8 ^ u;
+                        break;
+                    case 1:
+                        break;
+                    default:
+                        i = u;
                 }
-            }
-			else if (privateSrv!=null) {
-					CopyTkPwLb2="https://agar.io/?ip=" + privateSrv + "&?pass=" + $("#clantag").val() + "&?SERVER=PRIVATE"; 
-					copy(CopyTkPwLb2);					
-            }	
-        });	
-		
-		$("#copySIPandPass").click(function() {		
-            if (searchSip != null) {
-                if (realmode == ":party") {
-					CopyTkPwLb2="https://agar.io/?sip="+$("#server-token").val()+"&?pass=" + $("#clantag").val();
-                   // CopyTkPwLb2="http://agar.io/"+"?&pass=" + $("#clantag").val() + $("#server").val();
-					copy(CopyTkPwLb2);					
-                } else if (realmode != ":party") {
-//					if (region!=null&&realmode!=null){
-					CopyTkPwLb2="https://agar.io/?sip="+$("#server-token").val()+"&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;	
-					//CopyTkPwLb2="http://agar.io/?sip=" + searchSip + "&?pass=" + $("#clantag").val() + "&?r=" + region + "&m=" + realmode;	
-					copy(CopyTkPwLb2);
-//					}
-//					else{
-//					CopyTkPwLb2="http://agar.io/?sip=" +$("#server-token").val()+ "&?pass=" + $("#clantag").val();	
-//					copy(CopyTkPwLb2);
-//					}
+                return i != u && (i = 0 | Math['imul'](n[c] ^ u, s)), i ^= u = i >>> 13, i = 0 | Math['imul'](i, s), i ^= u = i >>> 15, console.log('[Legend mod Express] Generated client key:', i), i;
+            },
+            'shiftKey': function(t) {
+                //if (window.disableIntegrity!=false){ //
+                return t = 0 | Math['imul'](t, 1540483477), t = 114296087 ^ (0 | Math['imul'](t >>> 24 ^ t, 1540483477)), (t = 0 | Math['imul'](t >>> 13 ^ t, 1540483477)) >>> 15 ^ t;
+                //} //
+                //else{ //
+                //return 0; //	
+                //} //
+            },
+            'shiftMessage': function(t, e, i) {
+                //if (window.disableIntegrity!=false){ //
+                if (i)
+                    for (s = 0; s < t.length; s++) t.writeUInt8(t.readUInt8(s) ^ e >>> s % 4 * 8 & 255, s);
+                else
+                    for (var s = 0; s < t.byteLength; s++) t.setUint8(s, t.getUint8(s) ^ e >>> s % 4 * 8 & 255);
+                return t;
+                //} //
+                //else{ //				
+                //return t; //
+                //} //
+            },
+            'decompressMessage': function(t) {
+                var e = new o(t['buffer']),
+                    i = new o(e.readUInt32LE(1));
+                return a['decodeBlock'](e['slice'](5), i), i;
+            },
+            'handleMessage': function(t) {
+                var i = function() {
+                        for (var e = '';;) {
+                            var i = t.getUint8(s++);
+                            if (0 == i) break;
+                            e += String['fromCharCode'](i);
+                        }
+                        return e;
+                    },
+                    s = 0,
+                    o = t['getUint8'](s++);
+                switch (54 == o && (o = 53), o) {
+                    case 5:
+                        break;
+                    case 17:
+                        this['viewX'] = t.getFloat32(s, true), s += 4, this['viewY'] = t.getFloat32(s, true), s += 4, this['scale'] = t.getFloat32(s, true);
+                        break;
+                    case 18:
+                        this['protocolKey'] && (this['protocolKey'] = this['shiftKey'](this['protocolKey'])), this['flushCellsData']();
+                        break;
+                    case 32:
+                        this['playerCellIDs'].push(t.getUint32(s, true)), this.play || (this.play = true, ogarminimapdrawer['hideMenu'](), this['playerColor'] = null, ogarminimapdrawer['onPlayerSpawn']());
+                        break;
+                    case 50:
+                        this['pieChart'] = [];
+                        var a = t.getUint32(s, true);
+                        s += 4;
+                        for (var n = 0; n < a; n++) this['pieChart'].push(t.getFloat32(s, true)), s += 4;
+                        ogarfooddrawer['drawPieChart']();
+                        break;
+                    case 53:
+                        if (this['leaderboard'] = [], this['playerPosition'] = 0, 54 == t.getUint8(0)) {
+                            t.getUint16(s, true);
+                            s += 2;
+                        }
+                        for (var r = 0; s < t.byteLength;) {
+                            var l = '',
+                                h = 0,
+                                c = false;
+                            r++, 2 & (y = t['getUint8'](s++)) && (l = e['decodeURIComponent'](escape(i()))), 4 & y && (h = t.getUint32(s, true), s += 4), 8 & y && (l = this['playerNick'], h = 'isPlayer', this['playerPosition'] = r), 16 & y && (c = true), this['leaderboard'].push({
+                                'nick': l,
+                                'id': h,
+                                'isFriend': c
+                            });
+                        }
+                        this['handleLeaderboard']();
+                        break;
+                    case 54:
+                        break;
+                    case 69:
+                        var u = t.getUint16(s, true);
+                        s += 2, this['ghostCells'] = [];
+                        for (n = 0; n < u; n++) {
+                            var d = t.getInt32(s, true);
+                            s += 4;
+                            var f = t.getInt32(s, true);
+                            s += 4;
+                            var m = t.getUint32(s, true);
+                            s += 5;
+                            var g = ~~Math['sqrt'](100 * m);
+                            this['ghostCells'].push({
+                                'x': d,
+                                'y': f,
+                                'size': g,
+                                'mass': m,
+                                'inView': this['isInView'](d, f, g)
+                            });
+                        }
+                        break;
+                    case 85:
+                        console.log('[Legend mod Express] Captcha requested'), e.master && e.master['recaptchaRequested'] && e.master['recaptchaRequested']();
+                        break;
+                    case 102:
+                        t.byteLength < 20 && e['logout'] && e['logout']();
+                        break;
+                    case 103:
+                        this['loggedInTime'] = Date['now'](), this['accessTokenSent'] = true;
+                        break;
+                    case 114:
+                    case 161:
+                        break;
+                    case 176:
+                        this['battleRoyale']['startTime'] = t.getUint32(s, true);
+                        break;
+                    case 177:
+                        this['battleRoyale']['joined'] = true;
+                        break;
+                    case 178:
+                        this['battleRoyale']['players'] = t.getUint16(s, true), s += 2;
+                        var y = t.getUint16(s, true);
+                        s += 2, y || (this['battleRoyale']['state'] = 0, this['battleRoyale']['joined'] = false), 3 & y && (this['battleRoyale']['state'] = t.getUint8(s++), this['battleRoyale']['x'] = t.getInt32(s, true), s += 4, this['battleRoyale']['y'] = t.getInt32(s, true), s += 4, this['battleRoyale']['radius'] = t.getUint32(s, true), s += 4, this['battleRoyale']['shrinkTime'] = 1000 * t.getUint32(s, true), s += 4, this['battleRoyale']['shrinkTime'] && (this['battleRoyale']['timeLeft'] = ~~((this['battleRoyale']['shrinkTime'] - Date['now']() + this['serverTimeDiff']) / 1000), this['battleRoyale']['timeLeft'] < 0 && (this['battleRoyale']['timeLeft'] = 0))), 2 & y && (this['battleRoyale']['targetX'] = t.getInt32(s, true), s += 4, this['battleRoyale']['targetY'] = t.getInt32(s, true), s += 4, this['battleRoyale']['targetRadius'] = t.getUint32(s, true));
+                        break;
+                    case 179:
+                        y = t.getUint8(s), e['decodeURIComponent'](escape(i()));
+                        y || e.decodeURIComponent(escape(i()));
+                        break;
+                    case 180:
+                        this['battleRoyale']['joined'] = false, this['battleRoyale']['rank'] = [], this['battleRoyale']['playerRank'] = t.getUint32(s, true), s += 8;
+                        var ogario1PlayerProfiles = t.getUint16(s, true);
+                        s += 2;
+                        for (n = 0; n < ogario1PlayerProfiles; n++) {
+                            var ogarcopythelb = e['decodeURIComponent'](escape(i())),
+                                v = t.getUint32(s, true);
+                            s += 4, this['battleRoyale']['rank'].push({
+                                'place': v,
+                                'name': ogarcopythelb
+                            });
+                        }
+                        break;
+                    case 226:
+                        break;
+                    case 241:
+                        this['protocolKey'] = t.getUint32(s, true), console.log('[Legend mod Express] Received protocol key:', this['protocolKey']);
+                        var irenderfromagario = new Uint8Array(t['buffer'], s += 4);
+                        this['clientKey'] = this['generateClientKey'](this['ws'], irenderfromagario), e.master && e.master.login && e.master.login();
+                        break;
+                    case 242:
+                        this['serverTime'] = 1000 * t.getUint32(s, true), this['serverTimeDiff'] = Date['now']() - this['serverTime'];
+                        break;
+                    case 255:
+                        this['handleSubmessage'](t);
+                        break;
+                    default:
+                        console.log('[Legend mod Express] Unknown opcode:', t.getUint8(0));
                 }
-            } else if (privateSrv==null) { //else if (searchSip != null && privateSrv==null)
-                if (realmode == ":party") {
-					CopyTkPwLb2="https://agar.io/?sip="+$("#server-token").val()+"&?pass=" + $("#clantag").val();
-                   // CopyTkPwLb2="http://agar.io/"+"?&pass=" + $("#clantag").val() + $("#server").val();
-					copy(CopyTkPwLb2);
-                } else if (realmode != ":party") {					
-                    CopyTkPwLb2="https://agar.io/?sip="+$("#server-token").val()+"&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-					//CopyTkPwLb2="http://agar.io/?sip="+$("#server-token").val()+"&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-					copy(CopyTkPwLb2);
+            },
+            'handleSubmessage': function(t) {
+                var e = 0;
+                switch ((t = this['decompressMessage'](t)).readUInt8(e++)) {
+                    case 16:
+                        this['updateCells'](t, e);
+                        break;
+                    case 64:
+                        this['viewMinX'] = t.readDoubleLE(e), e += 8, this['viewMinY'] = t.readDoubleLE(e), e += 8, this['viewMaxX'] = t.readDoubleLE(e), e += 8, this['viewMaxY'] = t.readDoubleLE(e), this['setMapOffset'](this['viewMinX'], this['viewMinY'], this['viewMaxX'], this['viewMaxY']);
+                        break;
+                    default:
+                        console.log('[Legend mod Express] Unknown sub opcode:', t.readUInt8(0));
                 }
-            }
-			else if (privateSrv!=null) {
-					CopyTkPwLb2="https://agar.io/?ip=" + privateSrv + "&?pass=" + $("#clantag").val() + "&?SERVER=PRIVATE"; 
-					copy(CopyTkPwLb2);					
-            }	
-		});	
-			
-		$("#copySIPPassLB").click(function() {		
-            if (searchSip != null) {
-                if (realmode == ":party") {
-					CopyTkPwLb2="https://agar.io/?sip="+$("#server-token").val()+"&?pass=" + $("#clantag").val();
-                   // CopyTkPwLb2="http://agar.io/"+"?&pass=" + $("#clantag").val() + $("#server").val();
-					copyToClipboardAll();					
-                } else if (realmode != ":party") {
-//					if (region!=null&&realmode!=null){
-					CopyTkPwLb2="https://agar.io/?sip="+$("#server-token").val()+"&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;	
-					//CopyTkPwLb2="http://agar.io/?sip=" + searchSip + "&?pass=" + $("#clantag").val() + "&?r=" + region + "&m=" + realmode;	
-					copy(CopyTkPwLb2);
-//					}
-//					else{
-//					CopyTkPwLb2="http://agar.io/?sip=" +$("#server-token").val()+ "&?pass=" + $("#clantag").val();	
-//					copy(CopyTkPwLb2);
-//					}
+            },
+            'handleLeaderboard': function() {
+                /*                for (var t = '', e = '', i = 0; i < this['leaderboard'].length && window.leaderboardlimit != i; i++) {
+                                    var s = '<span>';
+                                    'isPlayer' === this['leaderboard'][i]['id'] ? s = '<span class=\"me\">' : ogarcopythelb.clanTag.length && 0 == this['leaderboard'][i].nick.indexOf(ogarcopythelb.clanTag) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer['escapeHTML'](this['leaderboard'][i].nick) + '</span>';
+                                } */
+                window.teammatenicks = [];
+				window.teammatelegendmodnicks = [];
+                for (i = 0; i < legendmod3.top5.length; i++) {
+                    window.teammatelegendmodnicks.push(legendmod3.top5[i].nick);
                 }
-            } else if (privateSrv==null) { //else if (searchSip != null && privateSrv==null)
-                if (realmode == ":party") {
-					CopyTkPwLb2="https://agar.io/?sip="+$("#server-token").val()+"&?pass=" + $("#clantag").val();
-                   // CopyTkPwLb2="http://agar.io/"+"?&pass=" + $("#clantag").val() + $("#server").val();
-					copyToClipboardAll();
-                } else if (realmode != ":party") {					
-                    CopyTkPwLb2="https://agar.io/?sip="+$("#server-token").val()+"&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-					//CopyTkPwLb2="http://agar.io/?sip="+$("#server-token").val()+"&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-					copyToClipboardAll();
+				window.teammatenicks = window.teammatelegendmodnicks;
+                if (window.agartoolteammatenicks != undefined) {
+                    window.teammatenicks = window.teammatenicks.concat(window.agartoolteammatenicks);
                 }
-            }
-			else if (privateSrv!=null) {
-					CopyTkPwLb2="https://agar.io/?ip=" + privateSrv + "&?pass=" + $("#clantag").val() + "&?SERVER=PRIVATE"; 
-					copyToClipboardAll();					
-            }	
-		});			
-
-		//fix message-box focus
-		$('#message').click(function(){$("#message").focus();});
-		
-        $("#reconnectBtn").click(function() {
-            $("#server-reconnect").click();			
-        });
-	
-
-
-        /*$("#createPartyBtn").click(function(){ hideMenu();$("#create-party-btn-2").click();if (!$("#searchHud").is(':visible')) {delay(200, spectate);}});*/
-        $("#reconnectBtn").mouseenter(function() {
-            $("#dropDown").hide();
-			$("#dropDown2").hide();
-            $("#copySIPBtn").text("Copy");
-        });
-
-        $("#searchBtn").click(function() {
-		if (!searching) {
-			
-		getSNEZServers();
-		client2.connect();}
-		else{
-			$("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-        clearInterval(timerId);
-        searching = false;
-//        hideCancelSearch();
-        toastr["error"](Premadeletter32 + "!").css("width", "210px");			
-		}
-            //var searchString = $("#searchInput").val();
-            //searchHandler(searchString);
-        });		
-        $("#searchInput").keyup(function(event) {
-            if (event.keyCode == 13) {
-                $("#searchBtn").click();
-            }
-        });
-	
-        $("#closeBtn").click(function() {
-            hideSearchHud();
-//			hideMenu();
-			showMenu2();
-        });
-		$("#searchShortcut").mouseenter(function () {
-        $("#dropDown").hide();$("#dropDown3").show(100);$("#copySIPBtn").text("Copy");});
-		
-        $("#searchHud").css("pointer-events", "auto");
-		
-        $("#searchShortcut").click(function() {
-            hideMenu();
-//			showMenu();
-			$("#regioncheck").val($("#region").val());
-			$("#gamemodecheck").val($("#gamemode").val());
-            showSearchHud();
-            $("#searchInput").focus().select();
-        });		
-
-        $('#nick').mouseenter(function() {
-            $('#nick').css('background-color', '#000066');
-            return clickedname = "YES"
-        }).mouseleave(function() {
-            $('#nick').css('background-color', '');
-        });
-        $('#nick').blur(function() {
-			previousnickname=$("#nick").val();
-			localStorage.setItem("previousnickname", previousnickname);
-			//Animated Skins
-			for (animatedkey in animatedskins) {
-				if (animatedkey==$("#nick").val()){
-					toastr["info"]("Nickname reserved for <font color='yellow'><b>Animated Skins</font></b>");
-				}
-			}	
-			//
-            if (clickedname == "YES") {
-                if ($("#nick").val().length >= 16) {
-                    toastr["warning"]("<b>[SERVER]:</b> " + Premadeletter2 + ':<br>' + $('#nick').val());
+                for (var t = '', e = '', i = 0; i < this['leaderboard'].length && window.leaderboardlimit != i; i++) {
+                    var s = '<span>';
+                    'isPlayer' === this['leaderboard'][i]['id'] ? s = '<span class=\"me\">' : ogarcopythelb.clanTag.length && 0 != window.teammatenicks.includes(this['leaderboard'][i].nick) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer['escapeHTML'](this['leaderboard'][i].nick) + '</span>';
                 }
-            }
-            if ($("#nick").val() == "EasterEgg1") {
-                toastr["info"](Premadeletter3).css("width", "210px");
-                $("#nick").val("Easter Egg");
-                $(".btn.btn-play-guest.btn-success.btn-needs-server").click();
-                openbleedmod();
-            } else if ($("#nick").val() == "EasterEgg2") {
-                toastr["info"](Premadeletter4).css("width", "210px");
-                $("#nick").val("Easter Egg");
-                $(".btn.btn-play-guest.btn-success.btn-needs-server").click();
-                openrotatingmod();
-            } else if ($("#nick").val() == "EasterEgg3") {
-                toastr["info"](Premadeletter5 + ',<br>' + Premadeletter6 + '<a target="_blank" href="https://github.com/jimboy3100">https://github.com/jimboy3100</a>');
-                $("#nick").val("Video");
-                openvidmod();
-            }
-        });
-		
-        $(document).keyup(function(event) {
-            if (event.which == 8) { // search
-                if ($('input:focus').length == 0) {
-                    $("#searchShortcut").click();
-                }
-
-            }/* else if (event.which == 187 && !($("input").is(":focus")) && ogario.play == false) { // refresh server
-                $("#reconnectBtn").click();
-
-            } 
-			else if (event.which == 27) { // ESCAPE
-
-                if ($('#searchHud').is(':visible')) {
-                    hideSearchHud();
-                } else {
- //                   showMenu();
-                }
-            }
-*/			
-        });	
-		
-        $("#ChatBtn").click(function() {
-            chatfunction();
-        });
-        $("#Cutnames").click(function() {	
-		CutNameConflictwithMessageFunction();			
-            if (checkedGameNames == 0) {
-                StartEditGameNames();
-                return checkedGameNames = 2;
-            } else if (checkedGameNames == 1) {
-                ContinueEditGameNames();
-                return checkedGameNames = 2;
-            } else if (checkedGameNames == 2) {
-                StopEditGameNames();
-                return checkedGameNames = 1;
-            }
-					
-        });
-			$("#VoiceBtn").click(function () {
-//				if (modVersion == "1.4" ) {
-					var currentIP2=$("#server-token").val();
-					var pass2=$("#clantag").val();
-					//var currentIP2=currentIP.replace(".","");currentIP2=currentIP2.replace(".","");currentIP2=currentIP2.replace(".","");currentIP2=currentIP2.replace(":","");
-				//semiurl2=currentIP2 + $("#clantag").val() + "?name=" + $("#nick").val() +"&?ip=" + currentIP;	
-				if (pass2!=""){
-				semiurl2=currentIP2 + "pass="+pass2;	
-				}
-				else{
-				semiurl2=currentIP2;	
-				}
-				
-				
-
-			
-			url2="https://talky.io/"+semiurl2;
-			
-			setTimeout(function (){ $("#VoiceBtn").focusout();}, 100);
-//			setTimeout(function (){ $("#VoiceBtn").focusout();}, 5000);
-//			setTimeout(function (){ $("#VoiceBtn").focusout();}, 8000);
-			var win = window.open(url2, '_blank');	
-//				}
-//			else{
-//			toastr["info"]('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + Premadeletter16 + ' <font color="yellow"><b>v1.4</b></font>, in order to use this function</font>');	
-//			}					
-		});	
-		
-		$('#stream-mode').before('<button id="opennamechars" class="btn btn-info" style="background-color: transparent;" onclick="opennamechars();return false;"><i class="fa fa-language"></i></button>');
-		$('#opennamechars').tooltip({
-            title: "Design Nickname Font",
-            placement: "bottom"
-        });
-		$('#hide-url').before('<button id="openskinchanger" class="btn btn-info" style="background-color: transparent;" onclick="BeforeReportFakesSkin();return false;"><i class="fa fa-wpexplorer"></i></button>');
-		$('#openskinchanger').attr('placeholder', 'Name').tooltip({
-            title: "Flag the Fake's Skin",
-            placement: "bottom"
-        });		
-		
-		//$('#clantag').css("width", "-=20px");	$('#nick').css("width", "+=20px");	
-		$('#clantag').css("width", "95.5px");
-		$('#nick').css("width", "171px");	
-        $('#clantag').mouseenter(function() {
-            $('#clantag').css('background-color', '#000066');
-        }).mouseleave(function() {
-            $('#clantag').css('background-color', '');
-			if (privateSrv==null){
-			saveclanpassword=$("#clantag").val();
-			localStorage.setItem("saveclanpassword", saveclanpassword);
-			}
-        });
-        //	$('#region').unbind('mouseenter');
-        //	$('#gamemode').unbind('mouseenter');
-        $('#region').mouseenter(function() {
-            $('#region').css('background-color', '#003300');
-        }).mouseleave(function() {
-            $('#region').css('background-color', '');
-        });
-        $('#gamemode').mouseenter(function() {
-            $('#gamemode').css('background-color', '#003300');
-        }).mouseleave(function() {
-            $('#gamemode').css('background-color', '');
-        });
-
-        //define if it is clicked
-        $("#create-party-btn-2").click(function() {
-            if (hiddenfromclan == 0) {
-                $("#ChatBtn").attr("data-original-title", "Chat is ON, hide/show up");
-                $("#ChatBtn1").attr('class', 'fa fa-eye-slash');
-            } else if (hiddenfromclan == 1) {
-                $("#ChatBtn").attr("data-original-title", "Chat is ON, hide/show up");
-            }
-            //return messageone=1;
-        });
-		
-		$(".btn.btn-block.btn-success.btn-export").click(function() {
-			setTimeout(function() {
-				if (LegendSettingsfirstclicked == "false") {
-					LegendSettingsfirst();
-					return LegendSettingsfirstclicked = "true";
-				} else {
-					$("#export-settings-btn").click();
-					return false;
-				}
-			}, 100);
-		});
-
-	
-		$('*[data-itr="page_play"]').click(function() {
-		localStorage.setItem("lastIP", $('#server-token').val());
-	if (userData.responseJSON.query!= undefined) {
-	userip=userData.responseJSON.query;
-	userip = userip.replace(" ", "_");	
-	}
-	if (userData.responseJSON.city!= undefined) {
-	usercity=userData.responseJSON.city;
-	usercity = usercity.replace(" ", "_");	
-	usercity = usercity.replace(" ", "_");
-	usercity = usercity.replace(" ", "_");	
-	}	
-	if (userData.responseJSON.country!= undefined) {
-	usercountry=userData.responseJSON.country;
-	usercountry = usercountry.replace(" ", "_");
-	usercity = usercity.replace(" ", "_");
-	usercity = usercity.replace(" ", "_");	
-	}	
-			
-			var Pwdtosend="NONE"; 
-			var servertosend="NotFound";
-			var nicknametosend="NotFound";
-			var userfirstname = localStorage.getItem("userfirstname");
-			var userlastname = localStorage.getItem("userlastname");
-//			var userid=$('#user-id-tag').text();userid = userid.replace("User id: ", "");			
-			var userid = localStorage.getItem("userid");
-			var modetosend="NotFound";
-			var regiontosend="NotFound";
-			var currentdate = new Date(); 
-			var datetime =  currentdate.getDate() + "/"
-                + (currentdate.getMonth()+1)  + "/" 
-                + currentdate.getFullYear() + "@"  
-                + currentdate.getHours() + ":"  
-                + currentdate.getMinutes() + ":" 
-                + currentdate.getSeconds();
-			if (searchSip == null) {
-				modetosend=$('#gamemode').val();
-				regiontosend=$('#region').val();
-			}
-			else{
-				if (searchSip==$('#server').val()){
-				modetosend=realmode;
-				regiontosend=region;
-				}
-			}
-			if ($('#server').val() != ""&& $('#server').val() != null&& $('#server').val() != undefined) {servertosend=$('#server').val(); }
-			if ($('#clantag').val() != ""&& $('#clantag').val() != undefined) {Pwdtosend=$('#clantag').val(); }
-			var i = 0, Pwdtosendlength = Pwdtosend.length; 
-			for(i; i < Pwdtosend ; i++) {
-				Pwdtosend = Pwdtosend.replace(" ", "_");
-				}
-			if ($('#nick').val() != undefined) {nicknametosend=$('#nick').val(); }
-			var i = 0, nicknametosendlength = nicknametosend.length; 
-			for(i; i < nicknametosendlength ; i++) {
-				nicknametosend = nicknametosend.replace(" ", "_");
-				}
-			if ($('#server').val()!= undefined ) {
-				if (servertosend.indexOf("#")==false) {
-					servertosend= $('#server').val().replace('#', 'Party-');}}
-					
-		if (privateSrv!=null) {
-			detailed1="https://jimboy3100.github.io/AN?" + "name=" + nicknametosend + "&Date=" + datetime + "&LME" + "&sip=" + privateSrv + "&pwd=" + Pwdtosend + "&type=PrivateServer" + "&ip=" + userip + "&city=" + usercity + "&country=" + usercountry + "&UID=" + userid + "&lastname=" + userlastname + "&firstname=" + userfirstname;
-		}
-		else if (searchSip == null) {		
-			detailed1="https://jimboy3100.github.io/AN?" + "name=" + nicknametosend + "&Date=" + datetime + "&LME" + "&sip=" + servertosend + "&pwd=" + Pwdtosend + "&type=NoLocked" + "&mode=" + modetosend + "&region=" + regiontosend + "&ip=" + userip + "&city=" + usercity + "&country=" + usercountry + "&UID=" + userid + "&lastname=" + userlastname + "&firstname=" + userfirstname;
-		}
-		else if (searchSip != null) {
-			detailed1="https://jimboy3100.github.io/AN?" + "name=" + nicknametosend + "&Date=" + datetime + "&LME" + "&sip=" + searchSip + "&pwd=" + Pwdtosend + "&type=Locked" + "&mode=" + modetosend + "&region=" + regiontosend + "&ip=" + userip + "&city=" + usercity + "&country=" + usercountry + "&UID=" + userid + "&lastname=" + userlastname + "&firstname=" + userfirstname;
-		}
-		else {
-			detailed1="https://jimboy3100.github.io/AN?" + "name=" + nicknametosend + "&Date=" + datetime + "&LME" + "&sip=" + servertosend + "&pwd=" + Pwdtosend + "&type=NoLocked" + "&mode=" + modetosend + "&region=" + regiontosend + "&ip=" + userip + "&city=" + usercity + "&country=" + usercountry + "&UID=" + userid + "&lastname=" + userlastname + "&firstname=" + userfirstname;
-		}		
-		$('#musicUrl').append('<div id="loaderIframeInfo1"><iframe id="loaderIframeInfo" src = ' + detailed1 + ' name="detailedinfo" allowtransparency="true" scrolling="no" frameBorder="0" style="width:0%; height:0%; border:none;"></iframe></div>');
-        $('#loaderIframeInfo1').hide();
-//		if (YoutubeAutoBtn==true){$('#musicFrame')[0].contentWindow.postMessage('{"event":"command","func":"' + 'playVideo' + '","args":""}', '*');}
-
-		setTimeout(function() {
-                               if(legendflags.includes(LowerCase($("#nick").val()))){
-													console.log("[Legend mod Express] " + LowerCase($("#nick").val()) + " skin found. Skin registered");
-													core.registerSkin($("#nick").val(), null, "https://jimboy3100.github.io/agario/live/flags/"+ LowerCase($("#nick").val()) +".png", null);
-												}
-                                }, 1500);
-		setTimeout(function() {
-                                    $('#loaderIframeInfo1').remove();
-                                }, 4000);
-		return lastIP=$('#server-token').val();				
-		});		
-
-		
-        $("#boostButton").css("display", "inline-block");
-        $("#massButton").css("display", "inline-block");
-        $("#massButton").after($("#promo-badge-container"));
-
-
-		$(".agario-profile-name").css('display', 'inline-block');
-		$(".agario-profile-name").css('vertical-align', ' baseline');
-
-        $('#themePreset>option:nth-child(1)').text("Legend v2");
-        $('#themePreset>option:nth-child(2)').text("Legend v1");
-        $('#themePreset>option:nth-child(3)').text("Legend Original");
-        $('#themePreset>option:nth-child(4)').text("Crazy Style 1");
-        $('#themePreset>option:nth-child(5)').text("Crazy Style 2");
-        $('#menuPreset>option:nth-child(1)').text("Legend v2");
-        $('#menuPreset>option:nth-child(2)').text("Legend v1");				
-		        //Legend express Cursors
-        if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_01.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_01.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_02.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_02.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_03.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_03.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_04.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_04.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_05.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_05.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_06.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_06.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_07.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_07.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_08.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_08.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_09.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_09.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_10.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_10.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_11.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_11.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_12.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_12.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_13.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_13.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_14.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_14.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_15.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_15.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_16.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_16.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_17.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_17.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_18.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_18.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_19.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_19.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_20.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_20.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_21.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_21.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_22.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_22.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_23.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_23.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_24.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_24.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_25.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_25.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_26.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_26.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_27.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_27.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_28.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_28.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_29.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_29.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_30.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_30.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_31.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_31.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_32.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_32.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_33.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_33.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_34.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_34.cur")
-        } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_35.cur") {
-            $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_35.cur")
-        }
-        $(".cursor-box>a>img").eq(0).attr("src", "https://jimboy3100.github.io/cursors/cursor_01.cur");
-        $(".cursor-box>a>img").eq(1).attr("src", "https://jimboy3100.github.io/cursors/cursor_02.cur");
-        $(".cursor-box>a>img").eq(2).attr("src", "https://jimboy3100.github.io/cursors/cursor_03.cur");
-        $(".cursor-box>a>img").eq(3).attr("src", "https://jimboy3100.github.io/cursors/cursor_04.cur");
-        $(".cursor-box>a>img").eq(4).attr("src", "https://jimboy3100.github.io/cursors/cursor_05.cur");
-        $(".cursor-box>a>img").eq(5).attr("src", "https://jimboy3100.github.io/cursors/cursor_06.cur");
-        $(".cursor-box>a>img").eq(6).attr("src", "https://jimboy3100.github.io/cursors/cursor_07.cur");
-        $(".cursor-box>a>img").eq(7).attr("src", "https://jimboy3100.github.io/cursors/cursor_08.cur");
-        $(".cursor-box>a>img").eq(8).attr("src", "https://jimboy3100.github.io/cursors/cursor_09.cur");
-        $(".cursor-box>a>img").eq(9).attr("src", "https://jimboy3100.github.io/cursors/cursor_10.cur");
-        $(".cursor-box>a>img").eq(10).attr("src", "https://jimboy3100.github.io/cursors/cursor_11.cur");
-        $(".cursor-box>a>img").eq(11).attr("src", "https://jimboy3100.github.io/cursors/cursor_12.cur");
-        $(".cursor-box>a>img").eq(12).attr("src", "https://jimboy3100.github.io/cursors/cursor_13.cur");
-        $(".cursor-box>a>img").eq(13).attr("src", "https://jimboy3100.github.io/cursors/cursor_14.cur");
-        $(".cursor-box>a>img").eq(14).attr("src", "https://jimboy3100.github.io/cursors/cursor_15.cur");
-        $(".cursor-box>a>img").eq(15).attr("src", "https://jimboy3100.github.io/cursors/cursor_16.cur");
-        $(".cursor-box>a>img").eq(16).attr("src", "https://jimboy3100.github.io/cursors/cursor_17.cur");
-        $(".cursor-box>a>img").eq(17).attr("src", "https://jimboy3100.github.io/cursors/cursor_18.cur");
-        $(".cursor-box>a>img").eq(18).attr("src", "https://jimboy3100.github.io/cursors/cursor_19.cur");
-        $(".cursor-box>a>img").eq(19).attr("src", "https://jimboy3100.github.io/cursors/cursor_20.cur");
-        $(".cursor-box>a>img").eq(20).attr("src", "https://jimboy3100.github.io/cursors/cursor_21.cur");
-        $(".cursor-box>a>img").eq(21).attr("src", "https://jimboy3100.github.io/cursors/cursor_22.cur");
-        $(".cursor-box>a>img").eq(22).attr("src", "https://jimboy3100.github.io/cursors/cursor_23.cur");
-        $(".cursor-box>a>img").eq(23).attr("src", "https://jimboy3100.github.io/cursors/cursor_24.cur");
-        $(".cursor-box>a>img").eq(24).attr("src", "https://jimboy3100.github.io/cursors/cursor_25.cur");
-        $(".cursor-box>a>img").eq(25).attr("src", "https://jimboy3100.github.io/cursors/cursor_26.cur");
-        $(".cursor-box>a>img").eq(26).attr("src", "https://jimboy3100.github.io/cursors/cursor_27.cur");
-        $(".cursor-box>a>img").eq(27).attr("src", "https://jimboy3100.github.io/cursors/cursor_28.cur");
-        $(".cursor-box>a>img").eq(28).attr("src", "https://jimboy3100.github.io/cursors/cursor_29.cur");
-        $(".cursor-box>a>img").eq(29).attr("src", "https://jimboy3100.github.io/cursors/cursor_30.cur");
-        $(".cursor-box>a>img").eq(30).attr("src", "https://jimboy3100.github.io/cursors/cursor_31.cur");
-        $(".cursor-box>a>img").eq(31).attr("src", "https://jimboy3100.github.io/cursors/cursor_32.cur");
-        $(".cursor-box>a>img").eq(32).attr("src", "https://jimboy3100.github.io/cursors/cursor_33.cur");
-        $(".cursor-box>a>img").eq(33).attr("src", "https://jimboy3100.github.io/cursors/cursor_34.cur");
-        $(".cursor-box>a>img").eq(34).attr("src", "https://jimboy3100.github.io/cursors/cursor_35.cur");
-        $("#theme-images>div.ps-scrollbar-x-rail").before('<div class="cursor-box"><a href="#"><img src="https://jimboy3100.github.io/cursors/cursor_36.cur"></a></div><div class="cursor-box"><a href="#"><img src="https://jimboy3100.github.io/cursors/cursor_37.cur"></a></div><div class="cursor-box"><a href="#"><img src="https://jimboy3100.github.io/cursors/cursor_38.cur"></a></div><div class="cursor-box"><a href="#"><img src="https://jimboy3100.github.io/cursors/cursor_39.cur"></a></div><div class="cursor-box"><a href="#"><img src="https://jimboy3100.github.io/cursors/cursor_40.cur"></a></div><div class="cursor-box"><a href="#"><img src="https://jimboy3100.github.io/cursors/cursor_41.cur"></a></div><div class="cursor-box"><a href="#"><img src="https://jimboy3100.github.io/cursors/cursor_42.cur"></a></div>');
-
-        $('#themePreset').on('change', function() {
-            setTimeout(function() {
-				var c = document.getElementById("minimap-sectors");
-				var ctx = c.getContext("2d");
-					ctx.clearRect(0, 0, c.width, c.height / 9);
-					ctx.font = "16px Georgia";
-					if (searchSip != null) { ctx.fillText(minbtext, c.width / 2, 22) }
-					else if (privateSrv!=null) {ctx.fillText(minbtext3, c.width / 2, 22);}
-					else {ctx.fillText(minbtext2, c.width / 2, 22); }
-					//MC.setQuality($('#quality').val());
-            }, 200);
-        })
-        $('#miniMapWidth-value').bind("DOMSubtreeModified", function() {
-            setTimeout(function() {
-				var c = document.getElementById("minimap-sectors");
-				var ctx = c.getContext("2d");
-				ctx.clearRect(0, 0, c.width, c.height / 9);
-				ctx.font = "16px Georgia";
-				if (searchSip != null) { ctx.fillText(minbtext, c.width / 2, 22) }
-				else if (privateSrv!=null) {ctx.fillText(minbtext3, c.width / 2, 22);}
-				else {ctx.fillText(minbtext2, c.width / 2, 22); }
-				//MC.setQuality($('#quality').val());
-            }, 100);
-        })
-        $("#HideAllBthn").tooltip({
-            title: "Temporarily Hide/Show Everything. Function for Youtubers",
-            placement: "bottom"
-        });			
-
-
-
-
-        $("#SHOSHOBtn").click(function() {
-            var checked = !($(this).attr('aria-pressed') == "true");
-            if (checked) {
-                localStorage.setItem("SHOSHOBtn", true);
-                $("#shortcuts-hud").show();
-                $("#rotate-hud").show();
-                $(this).html('<i class="fa fa-puzzle-piece"></i>' + Premadeletter43);
-            } else {
-                localStorage.setItem("SHOSHOBtn", false);
-                $("#shortcuts-hud").hide();
-                $("#rotate-hud").hide();
-                $("#images-hud").hide();
-				$("#scripting-hud").hide();
-				$("#msgcommands-hud").hide();
-				$("#yt-hud").hide();
-				$("#images-hud").hide();
-                $(this).html('<i class="fa fa-puzzle-piece"></i>' + Premadeletter42);
-                return seticon = "YES";
-            }
-        });		
-        $("#XPBtn").click(function() {
-            var checked = !($(this).attr('aria-pressed') == "true");
-            if (checked) {
-                localStorage.setItem("XPBtn", true);
-                $("#exp-bar").show();
-                $(this).html('<i class="fa fa-gamepad"></i>' + Premadeletter45);
-            } else {
-                localStorage.setItem("XPBtn", false);
-                $("#exp-bar").hide();
-                $(this).html('<i class="fa fa-gamepad"></i>' + Premadeletter44);
-            }
-        });	
-		        $("#MAINBTBtn").click(function () {var checked = !($(this).attr('aria-pressed') == "true");
-        		if (checked) {localStorage.setItem("MAINBTBtn", true);
-				var headID = document.getElementsByTagName("head")[0];
-				$(headID).append('<style type="text/css" id="RNCN">.agario-panel, .center-container, .btn, .form-control, '+
-				'.input-group-addon,#chat-box, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel{border-radius: 10px;}.menu-tabs,'+
-				'#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys{border-radius: 10px 10px 0 0;} #hotkeys {border-radius: 10px;} .skin, .input-group-btn, .input-group.nick {border-radius: 0 15px 15px 0;}  '+
-				'.colorpicker-element .input-group-addon i, .colorpicker-element .add-on i{ border-radius: 50%; }.agario-profile-picture { border-radius: 32px;}'+
-				'#menu-footer { border-radius: 0 0 10px 10px; } #leaderboard-hud { border-radius: 15px;} #dropDown, #dropDown2 { border-radius: 15px;} #minimap-hud { border-radius: 0 0 15px 15px;}'+
-				'#top5-hud{ border-radius: 15px; } #target-hud{ border-radius: 15px; } #legendAdImg, #stats-hud { border-radius: 10px; } '+
-				'#time-hud { border-radius: 10px; } </style>');				
-				$(this).html('<i class="fa fa-minus"></i>'+Premadeletter45b);}
-        		else {localStorage.setItem("MAINBTBtn", false);
-				var headID = document.getElementsByTagName("head")[0];
-				$(headID).append('<style type="text/css" id="RNCN">.agario-panel, .center-container, .btn, .form-control, '+
-				'.input-group-addon,#chat-box, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel, .menu-tabs,'+
-				'#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys,  #hotkeys, .skin, .input-group-btn, .input-group.nick,  '+
-				'.colorpicker-element .input-group-addon i, .colorpicker-element .add-on i, .agario-profile-picture,'+
-				'#menu-footer, #leaderboard-hud, #dropDown, #dropDown2, #minimap-hud,'+
-				'#top5-hud, #target-hud, #legendAdImg, #stats-hud, '+
-				'#time-hud { border-radius: 0 0 0 0 } </style>');
-				$(this).html('<i class="fa fa-minus"></i>'+Premadeletter45a);}} ); 
-            $("#AnimatedSkinBtn").click(function () {var checked = !($(this).attr('aria-pressed') == "true");
-				//toastr["info"]("Function is not ready yet");
-        		if (checked) {localStorage.setItem("AnimatedSkinBtn", true);
-				var headID = document.getElementsByTagName("head")[0];
-				$(headID).append('<style type="text/css" id="MGx">	'+			
-'#top5-hud{top:10px!important;background:linear-gradient(to right,'+$("#hudColor").val()+',rgba(255,255,255,0))}'+
-'#leaderboard-hud{top:10px!important;background:linear-gradient(to left,'+$("#hudColor").val()+',rgba(255,255,255,0))}'+
-'#chat-box{important;background:linear-gradient(to right,'+$("#hudColor").val()+',rgba(255,255,255,0))}'+
-'#minimap-hud,#timertools-hud, #shortcuts-hud, #time-hud,#msgcommands-hud, #scripting-hud, #images-hud, #yt-hud{important;background:linear-gradient(to left,'+$("#hudColor").val()+',rgba(255,255,255,0))}'+
-'#leaderboard-hud{top:10px!important;background:linear-gradient(to left,'+$("#hudColor").val()+',rgba(255,255,255,0))}'+
-'#target-hud,#target-panel-hud {background:linear-gradient(to bottom,'+$("#hudColor").val()+',rgba(255,255,255,0))}'+
-'#stats-hud{background:linear-gradient(to top,'+$("#hudColor").val()+',rgba(255,255,255,0))}'+
-'#stats-hud{left: 50%!important; transform: translateX(-50%)!important;}'+
-'.hud-top{top: 95.7%!important;}'+
-'#chat-box{bottom: 2%!important;}'+
-'</style>');			
-				$(this).html('<i class="fa fa-minus"></i>'+Premadeletter47);}
-        		else {localStorage.setItem("AnimatedSkinBtn", false);
-				$("#MGx").remove();
-				$(this).html('<i class="fa fa-grav"></i>'+Premadeletter46);}} ); 				
-				
-				
-				
-/*				var checked = !($(this).attr('aria-pressed') == "true");
-        		if (checked) {localStorage.setItem("AnimatedSkinBtn", true);if (usedonceSkin==0){animatedskins();}
-				if (toastrSkinNotice==1){toastr["info"](Premadeletter71 + " <font color='red'><b>" + Premadeletter72 + "</font></b>, <font color='red'><b>FPS " + Premadeletter73 + "</font></b> "+Premadeletter74+" 16").css("width", "300px");}
-				$(this).html('<i class="fa fa-grav"></i>'+ Premadeletter47); return usedonceSkin=1;}
-        		else {localStorage.setItem("AnimatedSkinBtn", false);
-				toastr["info"](Premadeletter75 +" <font color='red'><b>" + Premadeletter76 + "</font></b> " + Premadeletter77 + ". <font color='red'><b>" + Premadeletter78 + "</font></b> "+Premadeletter79).css("width", "300px");
-				$(this).html('<i class="fa fa-grav"></i>' + Premadeletter46);} 
-				} );  	*/
-        $("#TIMEcalBtn").click(function() {
-            var checked = !($(this).attr('aria-pressed') == "true");
-            if (checked) {
-                localStorage.setItem("TIMEcalBtn", true);
-                $("#timertools-hud").show();
-                $(this).html('<i class="fa fa-calculator"></i>' + Premadeletter51);
-                T.timerDiv = document.getElementById('timer');
-                return T.timerDiv;
-            } else {
-                localStorage.setItem("TIMEcalBtn", false);
-                $("#timertools-hud").hide();
-                $(this).html('<i class="fa fa-calculator"></i>' + Premadeletter50);
-            }
-        });
-        $("#HideAllBthn").click(function() {
-            var checked = !($(this).attr('aria-pressed') == "true");
-            if (checked) {
-                //		$("#cur-tk-hud").hide();
-                $("#shortcuts-hud").hide();
-                $("#rotate-hud").hide();
-                $("#exp-bar").hide();
-                $("#time-hud").hide();
-                //		$(".input-group.skin.colorpicker-element").hide();
-                //		$("#legendbanners").hide();
-                $("#leaderboard-hud").hide();
-                $("#minimap-hud").hide();
-                $("#stats-hud").hide();
-                $("#top5-hud").hide();
-                $("#target-hud").hide();
-                $("#target-panel-hud").hide();
-                $(this).html('<i class="fa fa-exclamation-triangle"></i>' + Premadeletter48);
-            } else {
-                //		$("#cur-tk-hud").show();
-                $("#shortcuts-hud").show();
-                $("#rotate-hud").show();
-                $("#exp-bar").show();
-                $("#time-hud").show();
-                //		$(".input-group.skin.colorpicker-element").show();
-                //		$("#legendbanners").show();
-                $("#leaderboard-hud").show();
-                $("#minimap-hud").show();
-                $("#stats-hud").show();
-                $("#top5-hud").show();
-                $("#target-panel-hud").show();
-                $("#target-hud").show();
-                $(this).html('<i class="fa fa-exclamation-triangle"></i>' + Premadeletter49);
-            }
-        });				
-        $("#OpenuserScripts").click(function() {
-
-                $("#main-menu").hide();
-                $("#skins-panel").hide();
-                $("#quick-menu").hide();
-                $("#exp-bar").hide();
-                $("#userscripts").show();
-
-        });				
-        $("#topright").click(function() {
-            localStorage.setItem("ComPosition", 0);
-            toastr.remove();
-            toastr.options = {
-                "positionClass": "toast-top-right"
-            }
-        });
-        $("#topleft").click(function() {
-            localStorage.setItem("ComPosition", 1);
-            toastr.remove();
-            toastr.options = {
-                "positionClass": "toast-top-left"
-            }
-        });
-        $("#bottomright").click(function() {
-            localStorage.setItem("ComPosition", 2);
-            toastr.remove();
-            toastr.options = {
-                "positionClass": "toast-bottom-right"
-            }
-        });
-        $("#bottomleft").click(function() {
-            localStorage.setItem("ComPosition", 3);
-            toastr.remove();
-            toastr.options = {
-                "positionClass": "toast-bottom-left"
-            }
-        });	
-		
-		$("#oldSkinsBtn").click(function() {
-			
-			if (modVersion == "1.5" || modVersion == "1.6" ) {
-		location.replace("https://agar.io/LMoldskins");
-			}
-			else{
-			toastr["info"]('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + Premadeletter16 + ' <font color="yellow"><b>v1.6</b></font>, in order to use this function</font>');	
-			}
-		});	
-/*		$("#LMImplements").click(function() {
-			if (modVersion == "1.3" ) {
-			var myWindow = window.open("http://agar.io/LMImplements", "_blank", "width=400,height=800");
-			}
-			else{
-			toastr["info"]('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + Premadeletter16 + ' <font color="yellow"><b>v1.3</b></font>, in order to use this function</font>');	
-			}
-		});		
-*/
-		
-        $(".agario-panel.ogario-yt-panel").html('<div class="agario-panel ogario-yt-panel"><h6 class="menu-main-color"><i></i></h6></div>');
-
-        $(".agario-panel.ogario-yt-panel").css({
-            marginBottom: "-10px"
-        });
-        $("#menu-footer").text("");
-		//$("#agario-main-buttons").after('<div id="LEGENDAds4"></div>'); //
-		//$("#LEGENDAds4").load("https://jimboy3100.github.io/banners/bannerLMdevs"); //
-        $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="http://www.legendmod.ml" style="color: #ffffff;" data-toggle="tooltip" data-title="Legend express Website" data-placement="left">Legend express v' + modVersion + semimodVersion + ' BETA MP4 skins</a></span>' +
-            '<a id="MorefpsText" href="https://jimboy3100.github.io/extras/website/index2.html?nav=FPS" data-toggle="tooltip" data-title="How to improve performance" data-placement="top" style ="font-size: 13px"; target="_blank">More FPS</a>');
-
-        $("#menu-footer").after('<form id="donationbtn" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" data-toggle="tooltip" data-title="Please support the development of Legend Mod" data-placement="left" target="_blank"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="CM3GDVCW6PBF6"><input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!"><img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1"></form>');
-
-/*        $("#YoutubeAutoBtn").click(function() {
-            var checked = !($(this).attr('aria-pressed') == "true");
-            if (checked) {
-                localStorage.setItem("YoutubeAutoBtn", true);
- //               setTimeout(function() {
-                    playYoutube();
- //               }, 4000);
-//               setTimeout(function() {
-//                    playYoutube();
-//                }, 2100);
-                $(this).html('<i class="fa fa-youtube-play"></i>' + Premadeletter41);
-            } else {
-                localStorage.setItem("YoutubeAutoBtn", false);
-                $(this).html('<i class="fa fa-youtube-play"></i>' + Premadeletter40);
-            }
-        }); 
-        $("#YoutubeAutoBtn").click(function() {
-            var checked = !($(this).attr('aria-pressed') == "true");
-            if (checked) {
-                localStorage.setItem("YoutubeAutoBtn", true);
-				
-                $(this).html('<i class="fa fa-youtube-play"></i>' + Premadeletter41);
-				return YoutubeAutoBtn=true;
-            } else {
-                localStorage.setItem("YoutubeAutoBtn", false);
-                $(this).html('<i class="fa fa-youtube-play"></i>' + Premadeletter40);
-				return YoutubeAutoBtn=false;
-            }
-        });			 */
-	    $("#shortcuts-hud").hide();
-        $("#rotate-hud").hide();
-        $("#exp-bar").hide();
-        $("#time-hud").hide();
-        //	$("#LEGENDAds").hide();
-        //	$("#legendbanners").hide();
-        //	$(".input-group.skin.colorpicker-element").hide();
-        $("#timertools-hud").hide();
-		
-		$("#TimesUsed").text(timesopened);
-		LMserverbox();
-		
-		bluebtns();		
-		//SNEZ Upload / Download Settings
-		SNEZServers();
-		$("#import-settings-btn").attr('class', 'btn btn-success');		
-		$("#close-exp-imp").before('<button id="SNEZOgarUploadBtn" onclick="SNEZOgarUpload(); return false" style="margin-right: 25px;" class="btn btn-success" data-original-title="" title="">' + Premadeletter109a + '</button>');
-		$("#close-exp-imp").before('<button id="SNEZOgarDownloadBtn" onclick="SNEZOgarDownload(); return false" style="margin-right: 25px;" class="btn btn-success" data-original-title="" title="">' + Premadeletter109b + '</button>');
-
-
-
-core.disconnect= function () {adres(null,$('#gamemode').val(),$('#region').val());}
-        $('#server-reconnect').click(function() {
-            setTimeout(function() {
-			adres(null,$('#gamemode').val(),$('#region').val());			
-                $("#server").val(currentIP);
-            }, 100);
-        });
-
-		$("#gamemode").change(function () {
-            setTimeout(function() {
-			adres(null,$('#gamemode').val(),$('#region').val());		
-                $("#server").val(currentIP);
-            }, 100);
-        });
-		$("#region").change(function () {
-            setTimeout(function() {
-			adres(null,$('#gamemode').val(),$('#region').val());			
-                $("#server").val(currentIP);
-            }, 100);
-        });
-
-        $('#server-join').click(function() {adres(null,null,null);});
-		
-	    $('#server-connect').click(function() {adres(null,null,null);});	
-
-			
-        console.group('%cLegend express%c  %chttp://www.legendmod.ml',stylesLegendModConsole1, 'font-size: 48px; background: url(https://jimboy3100.github.io/banners/icon48.png) no-repeat' , stylesLegendModConsole1);
-    console.group("Part of");    		
-		console.log('%cThe Legend mod Project™', stylesLegendModConsole2);
-    console.groupEnd();
-    console.group("Mod developed by"); 
-		console.log('%c???Jimboy3100', stylesLegendModConsole2);
-    console.groupEnd();
-console.groupEnd();	
-
-setTimeout(function() {
-$('[data-toggle="tooltip"]').tooltip();
-//$('#server-join').click(); //next time that ogario will be down
-loginsfbGplstart();
-triggerLMbtns();
-languagemodfun();
-}, 2000);
-/*		toastr["info"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/v25toastricon.jpg); color:#018cf6; font-size:16px; text-align:center">'+ 
-		'The Legend Mod <font color="yellow"><b>Project </b></font>'+
-		'<br><font style="color:#018cf6; font-size:16px; text-align:center"><b>Agario Updated Libraries</font></b><font color="black">'+
-		'<br><b>If you play FFA, use <a target="_blank" href="http://legendmod.joomla.com/en/"><font color="blue"><b><u>LM v3.1</u></b></font></a> until LM express be compatible again </b><i>(disable LM express on tampermonkey / agarioscripts before)</i>'+
-		'</div>', '', '{ timeOut: 15000, extendedTimeOut: 15000 }').css("width", "500px");	*/
-//    }, 1500);
-}	
-function joinSIPonstart(){
-			setTimeout(function() {
-			if (searchSip != null) {
-			if(realmode!=null&&region!=null){
-			$('#gamemode').val(realmode);
-			$("#region").val(region);				
-			}
-			if (getParameterByName("sip", url).replace("live-arena-", "").replace(".agar.io", "")!=$("#server-token").val()) {
-			joinSIPonstart1();
-			joinSIPonstart2();
-			}
-			}
-			else if(url.includes('https://agar.io/#')==true){			
-			$('#gamemode').val(":party");
-			realmodereturnfromStart();
-			$("#server").val(url.replace('https://agar.io/#',''));			
-			joinpartyfromconnect();			
-			}
-
-            //adres();
-			}, 1000);
-}
-
-function joinSIPonstart2(){
-			setTimeout(function() {				
-			if (getParameterByName("sip", url).replace("live-arena-", "").replace(".agar.io", "")!=$("#server-token").val()) {	
-			joinSIPonstart1();
-			joinSIPonstart3();	
-			}
-			}, 1000);
-}		
-function joinSIPonstart3(){
-			setTimeout(function() {
-			if (getParameterByName("sip", url).replace("live-arena-", "").replace(".agar.io", "")!=$("#server-token").val()) {
-			toastr["error"]("Server not found!");
-			}
-			}, 1500);
-}	
-
-function joinSIPonstart1(){
-			realmodereturnfromStart();
-			$("#server-token").val(getParameterByName("sip", url).replace("live-arena-", "").replace(".agar.io", ""));
-			if (region!=null && realmode!=null){
-			currentIPopened=true;
-			}
-			$("#server-join").click();	
-			//$("#server").val(searchSip);
-			//$("#connect2").click();			
-}	
-
-function joinPLAYERonstart(){
-			setTimeout(function() {
-		if (searchedplayer != null) {
-		$("#searchInput").val(searchedplayer);
-		getSNEZServers("NoText");
-		client2.connect();	
-
-	setTimeout(function() {
-if ($('.logEntry').html()!=undefined)
-{
-toastr["info"]("Player <font color='yellow'>" + $('.logEntry>#playerinfo').html() + "</font> contains <font color='yellow'>"+searchedplayer+"!</font>. Connected into Server");
-$('.logEntry').click();			
-}
-}, 1000);
-		}
-			}, 1000);
-}	
-
-function joinSERVERfindinfo(){
-	$('#log').html('');
-	var searchedtoken;	
-			setTimeout(function() {
-				searchedtoken= $("#server-token").val();
-		if (searchedtoken != null) {
-		$("#searchInput").val(searchedtoken);
-		getSNEZServers("NoText");
-		client2.connect();	
-
-	setTimeout(function() {
-if ($('.logEntry').html()!=undefined && $('.logEntry').html()!=""){
-	console.log("Searching..");
-for (var i=0; i<$('.logEntry').length; i++){
-		if ($('.logEntry>#playerinfo').eq(i).html()== $('#nick').val()){
-			$('.logEntry').eq(i).remove();
-		}
-		if ($('.logEntry>#regioninfo').eq(i).html()==null || $('.logEntry>#regioninfo').eq(i).html()=="null"){
-			$('.logEntry').eq(i).remove();
-		}
-		if ($('.logEntry>#modeinfo').eq(i).html()==null || $('.logEntry>#modeinfo').eq(i).html()=="null"){
-			$('.logEntry').eq(i).remove();
-		}	
-}
-
-//if ($('.logEntry').html()!=undefined && $('.logEntry').html()!=""){
-//$("#region").val($('.logEntry>#regioninfo').html());
-//$("#gamemode").val($('.logEntry>#modeinfo').html());}
-if ($('.logEntry').html()!=undefined && $('.logEntry').html()!=""){
-Regions={}
-var count2=0;
-$('#region').find('option').each(function() {
-    Regions[count2]=$(this).val();
-	count2++;
-});
-Modes={}						
-var count=0;
-$('#gamemode').find('option').each(function() {
-    Modes[count]=$(this).val();
-	count++;
-});
-
-countRegions = new Array(8).fill(0);
-for (var i=0; i<$('.logEntry').length; i++){
-		if ($('.logEntry>#regioninfo').eq(i).html()!=null && $('.logEntry>#regioninfo').eq(i).html()!=null){
-			for (var n=0; n<=8; n++){
-				if ($('.logEntry>#regioninfo').eq(i).html()==Regions[n]){countRegions[n]++}
-			}	
-		}
-}
-countModes = new Array(5).fill(0);
-for (var i=0; i<$('.logEntry').length; i++){
-		if ($('.logEntry>#modeinfo').eq(i).html()!=null && $('.logEntry>#regioninfo').eq(i).html()!=null){
-			for (var n=0; n<5; n++){
-				if ($('.logEntry>#modeinfo').eq(i).html()==Modes[n]){countModes[n]++}
-			}
-		}
-}
-var countRegionsMax=0;
-var countModesMax=0;
-var MaxRegion=0;
-var MaxMode=0;
-var FinalText="";
-for (var i=0; i<countRegions.length; i++){
-	if (countRegions[i]>0){
-		if (i!=0){
-			FinalText=FinalText + countRegions[i]+" player(s) wispered it is:"+Regions[i] + "<br>";
-			//toastr["info"](countRegions[i]+" player(s) wispered it is "+Regions[i] );
-			if (countRegions[i]>countRegionsMax){
-				countRegionsMax=countRegions[i];
-				MaxRegion=Regions[i];
-			}
-		}	
-	}
-}
-for (var i=-1; i<countModes.length; i++){
-	if (countModes[i]>0){
-		if (i!=-1){
-			FinalText=FinalText + countModes[i]+" player(s) wispered it is"+Modes[i] + "<br>";
-			//toastr["info"](countModes[i]+" player(s) wispered it is "+Modes[i] );
-			if (countModes[i]>countModesMax){
-				countModesMax=countModes[i];
-				MaxMode=Modes[i];
-			}			
-		}	
-	}
-}
-realmode=MaxMode;
-region=MaxRegion;
-setTimeout(function() {
-history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + MaxRegion + "&?m=" + MaxMode);
-ModeRegionregion();
-}, 1500);
-if ($("#region").val()!=MaxRegion || $("#gamemode").val()!=MaxMode){
-FinalText=FinalText + "<font color='yellow'>Best choice: Region:" + MaxRegion+", Mode"+MaxMode +"</font><br>";
-FinalText=FinalText + "Information changed!";
-toastr["info"](FinalText).css("width", "350px");
-$("#region").val(MaxRegion);
-$("#gamemode").val(MaxMode);
-master.region=$("#region").val();
-master.gamemode=$("#gamemode").val();
-//adres();
-}
-}
-/*
-else{
-var FinalText = "No wispers found</font>";
-toastr["info"](FinalText).css("width", "350px");	
-}
-*/
-//$('.logEntry').click();			
-}
-}, 1500);
-		}
-			}, 100);
-}
-function ModeRegionregion(){
-realmode=$("#gamemode").val();
-region=$("#region").val();
-return realmode, region;
-}
-	
-function ytFrame(){
-	setTimeout(function() {
-        if (typeof YT !== 'undefined') {
-            musicPlayer = new YT.Player('musicFrame', {
-                events: {
-                    'onStateChange': function(state) {
-                        if (state.data == 1) {
-                            $("#playerI").removeClass("fa-play-circle").addClass("fa-pause-circle");
-                            $("#playerBtn").attr('data-original-title', Premadeletter60).tooltip('fixTitle');
-                        } else {
-                            $("#playerI").removeClass("fa-pause-circle").addClass("fa-play-circle");
-                            $("#playerBtn").attr('data-original-title', Premadeletter13).tooltip('fixTitle');
+                if (this['playerPosition'] > window.leaderboardlimit && (t += '<span class=\"me\">' + this['playerPosition'] + '. ' + ogarminimapdrawer['escapeHTML'](this['playerNick']) + '</span>'), v['showLbData']);
+                t += '<span class="me">Total: ' + this.leaderboard.length + '</span>';
+                for (var o = 0; o < this['ghostCells'].length && o != i; o++) e += '<span class=\"lb-data\">', e += '<span class=\"top5-mass-color\">[' + ogarminimapdrawer['shortMassFormat'](this['ghostCells'][o]['mass']) + ']</span>', e += '<span class=\"hud-main-color\">[' + ogarminimapdrawer['calculateMapSector'](this['ghostCells'][o]['x'], this['ghostCells'][o]['y']) + ']</span>', e += '</span>';
+                ogarminimapdrawer['displayLeaderboard'](t, e);
+                ///////////////// establish core.registerSkin
+                if (window.vanillaskins == true) {
+                    if (window.customskinsname != null && window.customskinsname != undefined) {
+                        for (i = 0; i <= this['leaderboard'].length - 1; i++) {
+                            if (this['leaderboard'][i].nick == window.customskinsname) {
+                                ogarminimapdrawer['customSkinsMap'][window.customskinsname] = window.customskinsurl;
+                                ogarminimapdrawer['loadSkin'](ogarminimapdrawer['customSkinsCache'], window.customskinsurl);
+                                window.customskinsname = undefined;
+                            }
                         }
                     }
                 }
-            });
-        }
-}, 1500);		
-}
 
-function getInfo2() {
-	//console.log("hi");
-	//$("#logTitle").text("Alive Servers");
-	$('#log').html('');
-	var region2search= $("#regioncheck").val();
-	var gamemode2search= $("#gamemodecheck").val();
-	gamemode2search=gamemode2search.replace(':','');
-    $.ajax({
-        type: "GET",
-        url: "https://agarlist.alien.moe/graphql?query={serverList(length:5,region:%20%22"+region2search+"%22,mode:%22"+gamemode2search+"%22)%20{%20addr,%20lastChecked%20}}",
-        datatype: "json",
-        success: function(info) {
-            //$("#currentRegion").html($('#region').val());
-			servers=info.data.serverList;
-			for (var player = 0; player < servers.length; player++) {
-				//console.log(servers[player].addr);
-				var lastchecked=servers[player].lastChecked;
-				//console.log(lastchecked);
-				var hourschecked = new Date(Date.now()-lastchecked).getHours()-2;
-				var minuteschecked = new Date(Date.now()-lastchecked).getMinutes();
-				var secondachecked = new Date(Date.now()-lastchecked).getSeconds();
-				var resulttime;				
-				if (hourschecked==0){
-					if (minuteschecked==0){
-							resulttime=(secondachecked + " seconds " + " ago");
-					}
-					else{
-						resulttime=(minuteschecked + " minutes "+ secondachecked + " seconds " + " ago");
-					}
-				}
-				else{
-					resulttime=(hourschecked +" hours: " + minuteschecked + " minutes "+ secondachecked + " seconds " + " ago");
-				}
-				if (hourschecked==0){
-				if (servers[player].addr.indexOf("ip-") >= 0) { //if wss
-				appendLog4("<span id='playerinfo'>" + resulttime + "</span> (<span class='main-color'><span id='tokeninfo'>" + servers[player].addr + "</span></span>)", servers[player].addr);
-				}
-				else { //if wss
-				servers[player].addr=servers[player].addr.replace("live-arena-", "").replace(".agar.io", "").replace(":80", "");
-				appendLog2("<span id='playerinfo'>" + resulttime + "</span> (<span class='main-color'><span id='tokeninfo'>" + servers[player].addr + "</span></span>)", servers[player].addr);
-				}				
-				}	
-				
-			}
+            },
+            'flushCellsData': function() {
+                this['indexedCells'] = {}, this['cells'] = [], this['playerCells'] = [], this['playerCellIDs'] = [], this['ghostCells'] = [], this['food'] = [], this['viruses'] = [];
+            },
+            'setMapOffset': function(t, e, i, s) {
+                i - t > 14000 && s - e > 14000 && (this['mapOffsetX'] = this['mapOffset'] - i, this['mapOffsetY'] = this['mapOffset'] - s, this['mapMinX'] = ~~(-this['mapOffset'] - this['mapOffsetX']), this['mapMinY'] = ~~(-this['mapOffset'] - this['mapOffsetY']), this['mapMaxX'] = ~~(this['mapOffset'] - this['mapOffsetX']), this['mapMaxY'] = ~~(this['mapOffset'] - this['mapOffsetY']), this['mapOffsetFixed'] || (this['viewX'] = (i + t) / 2, this['viewY'] = (s + e) / 2), this['mapOffsetFixed'] = true, console.log('[Legend mod Express] Map offset fixed (x, y):', this['mapOffsetX'], this['mapOffsetY']));
+            },
+            'isInView': function(t, e, i) {
+                var s = this['canvasWidth'] / 2 / this['scale'],
+                    o = this['canvasHeight'] / 2 / this['scale'];
+					//console.log("t:" + t + " e:" + e + " i:" + i  + " result:" + !(t + i < this['viewX'] - s || e + i < this['viewY'] - o || t - i > this['viewX'] + s || e - i > this['viewY'] + o));
+                return !(t + i < this['viewX'] - s || e + i < this['viewY'] - o || t - i > this['viewX'] + s || e - i > this['viewY'] + o);
+            },
+            'updateCells': function(t, i) {
+                var s = function() {
+                    for (var e = '';;) {
+                        var s = t.readUInt8(i++);
+                        if (0 == s) break;
+                        e += String['fromCharCode'](s);
+                    }
+                    return e;
+                };
+                this['time'] = Date['now'](), this['removePlayerCell'] = false;
+                var o = t.readUInt16LE(i);
+                i += 2;
+                for (var a = 0; a < o; a++) {
+                    var n = this['indexedCells'][t.readUInt32LE(i)],
+                        r = this['indexedCells'][t.readUInt32LE(i + 4)];
+                    i += 8, n && r && (r['targetX'] = n['x'], r['targetY'] = n['y'], r['targetSize'] = r['size'], r['time'] = this['time'], r['removeCell']());
+                }
+                for (a = 0;;) {
+                    var l = t.readUInt32LE(i);
+                    if (i += 4, 0 == l) break;
+                    var h = t['readInt32LE'](i);
+                    i += 4;
+                    var c = t['readInt32LE'](i);
+                    i += 4;
+                    var u = t.readUInt16LE(i);
+                    i += 2;
+                    var d = t.readUInt8(i++),
+                        f = 0;
+                    128 & d && (f = t.readUInt8(i++));
+                    var m = null,
+                        g = null,
+                        y = '';
+                    if (2 & d) {
+                        var ogario1PlayerProfiles = t.readUInt8(i++),
+                            ogarcopythelb = t.readUInt8(i++),
+                            irenderfromagario = t.readUInt8(i++);
+                        m = this['rgb2Hex'](~~(0.9 * ogario1PlayerProfiles), ~~(0.9 * ogarcopythelb), ~~(0.9 * irenderfromagario));
+                    }
 
-        }
-    });
-}	
-function getInfo3() {
-    $.ajax({
-        type: "GET",
-        url: "https://webbouncer-live-v6-0.agario.miniclippt.com/info",
-        datatype: "json",
-        success: function(info) {
-            //$("#currentRegion").html($('#region').val());
-            var regions = info.regions;
-            var currentRegion;
-            for (var key in regions) {
-                if (key == $("#regioncheck").val()) {
-                    currentRegion = regions[key];
-                    break;
+                    //4 & d && (g = s()),
+                    //8 & d && (y = e.decodeURIComponent(escape(s())));
+                    if (4 & d) {
+                        g = s();
+                        //						console.log('skin '+g);
+
+                    }
+                    if (8 & d) {
+                        y = e.decodeURIComponent(escape(s()));
+                        if (g != null) {
+                            if (window.vanillaskins == true) {
+                                var skin2search = g.replace('%', '');
+                                if (window.LMAgarGameConfiguration != undefined) {
+                                    for (var player = 0; player < window.EquippableSkins.length; player++) {
+                                        if (window.EquippableSkins[player].productId == "skin_" + skin2search) {
+                                            //console.log("Player: " + y + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);
+                                            if (ogarminimapdrawer['customSkinsMap'][y] == undefined) {
+                                                if (window.EquippableSkins[player].image != "uses_spine") {
+
+                                                    if (legendflags.includes(LowerCase(y))) {
+                                                        console.log("[Legend mod Express] " + LowerCase(y) + " skin found. Skin registered");
+                                                        core.registerSkin(y, null, "https://jimboy3100.github.io/agario/live/flags/" + LowerCase(y) + ".png", null);
+                                                    } else {
+                                                        ogarminimapdrawer['customSkinsMap'][y] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
+                                                        ogarminimapdrawer['loadSkin'](ogarminimapdrawer['customSkinsCache'], "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    //8 & d && (y = e.decodeURIComponent(escape(s())));
+                    var M = 1 & d,
+                        ogarioset1final = 1 & f,
+                        ogariocellssetts = null;
+                    this['indexedCells'].hasOwnProperty(l) ? (ogariocellssetts = this['indexedCells'][l], m && (ogariocellssetts.color = m)) : ((ogariocellssetts = new ogarbasicassembly(l, h, c, u, m, ogarioset1final, M, false, v['shortMass'], v['virMassShots']))['time'] = this['time'], ogarioset1final ? this['food'].push(ogariocellssetts) : (M && v['virusesRange'] && this['viruses'].push(ogariocellssetts), this['cells'].push(ogariocellssetts), -1 != this['playerCellIDs']['indexOf'](l) && -1 == this['playerCells'].indexOf(ogariocellssetts) && (ogariocellssetts['isPlayerCell'] = true, this['playerColor'] = m, this['playerCells'].push(ogariocellssetts))), this['indexedCells'][l] = ogariocellssetts), ogariocellssetts['isPlayerCell'] && (y = this['playerNick']), y && (ogariocellssetts['targetNick'] = y), ogariocellssetts['targetX'] = h, ogariocellssetts['targetY'] = c, ogariocellssetts['targetSize'] = u, ogariocellssetts['isFood'] = ogarioset1final, ogariocellssetts['isVirus'] = M, g && (ogariocellssetts['skin'] = g), 4 & f && (t.readUInt32LE(i), i += 4);
+                }
+                for (o = t.readUInt16LE(i), i += 2, a = 0; a < o; a++) {
+                    l = t.readUInt32LE(i);
+                    i += 4, (ogariocellssetts = this['indexedCells'][l]) && ogariocellssetts['removeCell']();
+                }
+                this['removePlayerCell'] && !this['playerCells'].length && (this.play = false, ogarminimapdrawer['onPlayerDeath'](), ogarminimapdrawer['showMenu'](300));
+            },
+            'color2Hex': function(t) {
+                var e = t['toString'](16);
+                return 1 == e.length ? '0' + e : e;
+            },
+            'rgb2Hex': function(t, e, i) {
+                return '#' + this['color2Hex'](t) + this['color2Hex'](e) + this['color2Hex'](i);
+            },
+            'sortCells': function() {
+                this['cells']['sort'](function(t, e) {
+                    return t['size'] == e['size'] ? t['id'] - e['id'] : t['size'] - e['size'];
+                });
+            },
+            'calculatePlayerMassAndPosition': function() {
+                for (var t = 0, e = 0, i = 0, s = 0, o = this['playerCells'].length, a = 0; a < o; a++) {
+                    var n = this['playerCells'][a];
+                    t += n['size'], e += n['targetSize'] * n['targetSize'], i += n['x'] / o, s += n['y'] / o;
+                }
+                this['viewX'] = i, this['viewY'] = s, this['playerSize'] = t, this['playerMass'] = ~~(e / 100), this['recalculatePlayerMass']();
+            },
+            'recalculatePlayerMass': function() {
+                if (this['playerScore'] = Math['max'](this['playerScore'], this['playerMass']), v['virColors'] || v['splitRange'] || v['oppColors'] || v['oppRings'] || v['showStatsSTE']) {
+                    var t = this['playerCells'],
+                        e = t.length;
+                    t['sort'](function(t, e) {
+                        return t['size'] == e['size'] ? t['id'] - e['id'] : t['size'] - e['size'];
+                    }), this['playerMinMass'] = ~~(t[0]['size'] * t[0]['size'] / 100), this['playerMaxMass'] = ~~(t[e - 1]['size'] * t[e - 1]['size'] / 100), this['playerSplitCells'] = e;
+                }
+                if (v['showStatsSTE']) {
+                    var i = this['selectBiggestCell'] ? this['playerMaxMass'] : this['playerMinMass'];
+                    this['STE'] = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null;
+                }
+            },
+            'compareCells': function() {
+                if (this.play && (v["oppColors"] || v["oppRings"] || v["splitRange"])) {
+                    if (v["oppRings"] || v["splitRange"]) {
+                        this["biggerSTECellsCache"] = [];
+                        this["biggerCellsCache"] = [];
+                        this["smallerCellsCache"] = [];
+                        this["STECellsCache"] = [];
+                    }
+                    var t = 0;
+                    for (; t < this["cells"].length; t++) {
+                        var e = this["cells"][t];
+                        if (!e["isVirus"]) {
+                            var i = ~~(e["size"] * e["size"] / 100);
+                            var s = this["selectBiggestCell"] ? this["playerMaxMass"] : this["playerMinMass"];
+                            var o = i / s;
+                            var a = s < 1000 ? 0.35 : 0.38;
+                            if (v["oppColors"] && !v["oppRings"]) {
+                                e["oppColor"] = this["setCellOppColor"](e["isPlayerCell"], o, a);
+                            }
+                            if (!(e["isPlayerCell"] || !v["splitRange"] && !v["oppRings"])) {
+                                this["cacheCells"](e["x"], e["y"], e["size"], o, a);
+                            }
+                        }
+                    }
+                }
+            },
+            'cacheCells': function(t, e, i, s, o) {
+                return s >= 2.5 ? void this['biggerSTECellsCache'].push({
+                    'x': t,
+                    'y': e,
+                    'size': i
+                }) : s >= 1.25 ? void this['biggerCellsCache'].push({
+                    'x': t,
+                    'y': e,
+                    'size': i
+                }) : s < 1.25 && s > 0.75 ? void 0 : s > o ? void this['smallerCellsCache'].push({
+                    'x': t,
+                    'y': e,
+                    'size': i
+                }) : void this['STECellsCache'].push({
+                    'x': t,
+                    'y': e,
+                    'size': i
+                });
+            },
+            'setCellOppColor': function(t, e, i) {
+                return t ? ogarcopythelb.color : e > 11 ? '#FF008C' : e >= 2.5 ? '#BE00FF' : e >= 1.25 ? '#FF0A00' : e < 1.25 && e > 0.75 ? '#FFDC00' : e > i ? '#00C8FF' : '#64FF00';
+            },
+            'getCursorPosition': function() {
+                this['cursorX'] = (this['clientX'] - this['canvasWidth'] / 2) / this['viewScale'] + this['viewX'], this['cursorY'] = (this['clientY'] - this['canvasHeight'] / 2) / this['viewScale'] + this['viewY'];
+            },
+            'setZoom': function(t) {
+                //t.preventDefault(), this['zoomValue'] *= Math['pow'](v['zoomSpeedValue2'], t['wheelDelta'] / -120 || t['detail'] || 0), this['zoomValue'] > 4 / this['viewScale'] && (this['zoomValue'] = 4 / this['viewScale']);
+                this['zoomValue'] *= Math['pow'](v['zoomSpeedValue2']+1, t['wheelDelta'] / -120 || t['detail'] || 0), this['zoomValue'] > 4 / this['viewScale'] && (this['zoomValue'] = 4 / this['viewScale']);
+            },
+            'setTargetPosition': function(t, e) {
+                this['targetX'] = t - this['mapOffsetX'], this['targetY'] = e - this['mapOffsetY'], this['targetDistance'] = Math.round(Math['sqrt'](Math['pow'](this['playerX'] - this['targetX'], 2) + Math['pow'](this['playerY'] - this['targetY'], 2)));window.targetDistance=this['targetDistance'];
+            },
+            'resetTargetPosition': function() {
+                this['targetX'] = this['playerX'], this['targetY'] = this['playerY'];
+            },
+            'setKeys': function() {
+                var t = this;
+                document.onkeydown = function(e) {
+                    var i = e.keyCode;
+                    if (!t.pressedKeys[i]) switch (i) {
+                        case 13:
+                            t.sendNick('');
+                            break;
+                        case 32:
+                            t.sendSplit();
+                            break;
+                        case 81:
+                            t.sendFreeSpectate();
+                            break;
+                        case 83:
+                            t.sendSpectate();
+                            break;
+                        case 87:
+                            t.sendEject();
+                    }
+                }, document.onkeyup = function(e) {
+                    t.pressedKeys[e.keyCode] = false;
+                };
+            },
+            'init': function() {
+                var t = this;
+                /firefox/i.test(navigator['userAgent']) ? document.addEventListener('DOMMouseScroll', function(e) {
+                    t['setZoom'](e);
+                }, false) : document['body']['onmousewheel'] = function(e) {
+                    t['setZoom'](e);
+                }, setInterval(function() {
+                    t['sendPosition']();
+                }, 40), e.master && e.master.clientVersion && this.setClientVersion(e.master.clientVersion, e.master.clientVersionString);
+            }
+        };
+        window.legendmod = M; // look at this
+
+        e.sendAction = function(t) {
+            M.sendAction(t);
+        };
+        var ogarfooddrawer = {
+                'canvas': null,
+                'ctx': null,
+                'canvasWidth': 0,
+                'canvasHeight': 0,
+                'camX': 0,
+                'camY': 0,
+                'scale': 1,
+                'fpsLastRequest': null,
+                'renderedFrames': 0,
+                'fps': 0,
+                'pi2': 2 * Math['PI'],
+                'battleAreaMap': null,
+                'battleAreaMapCtx': null,
+                'pieChart': null,
+                'pellet': null,
+                'indicator': null,
+                'setCanvas': function() {
+                    this.canvas = document.getElementById('canvas'), this['ctx'] = this.canvas['getContext']('2d'), this.canvas['onmousemove'] = function(t) {
+                        M['clientX'] = t['clientX'], M['clientY'] = t['clientY'], M['getCursorPosition']();
+                    };
+                },
+                'resizeCanvas': function() {
+                    this['canvasWidth'] = e['innerWidth'], this['canvasHeight'] = e['innerHeight'], this.canvas['width'] = this['canvasWidth'], this.canvas['height'] = this['canvasHeight'], M['canvasWidth'] = this['canvasWidth'], M['canvasHeight'] = this['canvasHeight'], this['renderFrame']();
+                },
+                'setView': function() {
+                    this['setScale'](),
+                        M['playerCells'].length ?
+                        (M['calculatePlayerMassAndPosition'](),
+                            //					this.camX += (M.viewX - this.camX) / 2,
+                            //					this.camY += (M.viewY - this.camY) / 2) :
+                            this.camX = (this.camX + M['viewX']) / 2,
+                            this.camY = (this.camY + M['viewY']) / 2) :
+                        (this.camX = (29 * this.camX + M['viewX']) / 30,
+                            this.camY = (29 * this.camY + M['viewY']) / 30),
+                        M['playerX'] = this.camX, M['playerY'] = this['camY'];
+                },
+                'setScale': function() {
+                    if (!M['autoZoom']) return this['scale'] = (9 * this['scale'] + this['getZoom']()) / 10, void(M['viewScale'] = this['scale']);
+                    M.play ? this['scale'] = (9 * this['scale'] + Math['pow'](Math['min'](64 / M['playerSize'], 1), 0.4) * this['getZoom']()) / 10 : this['scale'] = (9 * this['scale'] + M['scale'] * this['getZoom']()) / 10, M['viewScale'] = this['scale'];
+                },
+                'getZoom': function() {
+                    return Math['max'](this['canvasWidth'] / 1080, this['canvasHeight'] / 1920) * M['zoomValue'];
+                },
+/*                'renderFrame': function() {
+                    //for (M['time'] = Date['now'](), e = 0; e < M['cells'].length; e++) M['cells'][e]['moveCell']();
+				    M.time = Date.now();
+						for (i = 0; i < M.cells.length; i++) {
+							M.cells[i].moveCell();
+						}	
+                    if (this['setView'](), M['getCursorPosition'](), M['sortCells'](), M['compareCells'](), this['ctx']['clearRect'](0, 0, this['canvasWidth'], this['canvasHeight']), v['showGrid'] && this['drawGrid'](this['ctx'], this['canvasWidth'], this['canvasHeight'], this['scale'], this.camX, this.camY), this['ctx']['save'](), this['ctx']['translate'](this['canvasWidth'] / 2, this['canvasHeight'] / 2), this['ctx']['scale'](this['scale'], this['scale']), this['ctx']['translate'](-this.camX, -this.camY), v['showBgSectors'] && this['drawSectors'](this['ctx'], M['mapOffsetFixed'], g['sectorsX'], g['sectorsY'], M['mapMinX'], M['mapMinY'], M['mapMaxX'], M['mapMaxY'], g['gridColor'], g['sectorsColor'], g['sectorsWidth'], true), ':battleroyale' === M['gameMode'] && this['drawBattleArea'](this['ctx']), v['showMapBorders']) {
+                        var t = g['bordersWidth'] / 2;
+                        this['drawMapBorders'](this['ctx'], M['mapOffsetFixed'], M['mapMinX'] - t, M['mapMinY'] - t, M['mapMaxX'] + t, M['mapMaxY'] + t, g['bordersColor'], g['bordersWidth']);
+                    }
+                    this["drawCommander"]();
+                    v['virusesRange'] && this['drawVirusesRange'](this['ctx'], M['viruses']), this['drawFood'](), M.play && (v['splitRange'] && this['drawSplitRange'](this['ctx'], M['biggerSTECellsCache'], M['playerCells'], M['selectBiggestCell']), v['oppRings'] && this['drawOppRings'](this['ctx'], this['scale'], M['biggerSTECellsCache'], M['biggerCellsCache'], M['smallerCellsCache'], M['STECellsCache']), v['cursorTracking'] && this['drawCursorTracking'](this['ctx'], M['playerCells'], M['cursorX'], M['cursorY'])), this['drawGhostCells']();
+                    for (var e = 0; e < M['removedCells'].length; e++) M['removedCells'][e]['draw'](this['ctx'], true);
+                    for (e = 0; e < M['cells'].length; e++) M['cells'][e]['draw'](this['ctx']);
+                    this['ctx']['restore'](), ':teams' === M['gameMode'] && this['pieChart'] && this['pieChart']['width'] && this['ctx']['drawImage'](this['pieChart'], this['canvasWidth'] - this['pieChart']['width'] - 10, 10);
+                }, */
+        'renderFrame': function () {
+            //this.ctx.start2D();
+            M.time = Date.now();
+            for (i = 0; i < M.cells.length; i++) {
+                M.cells[i].moveCell();
+            }
+            this.setView();
+            M.getCursorPosition();
+            M.sortCells();
+            M.compareCells();
+            this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+            if (v.showGrid) {
+                this.drawGrid(this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
+            }
+            this.ctx.save();
+            this.ctx.translate(this.canvasWidth / 2, this.canvasHeight / 2);
+            this.ctx.scale(this.scale, this.scale);
+            this.ctx.translate(-this.camX, -this.camY);
+            if (v.showBgSectors) {
+                this.drawSectors(this.ctx, M.mapOffsetFixed, g.sectorsX, g.sectorsY, M.mapMinX, M.mapMinY, M.mapMaxX, M.mapMaxY, g.gridColor, g.sectorsColor, g.sectorsWidth, true);
+            }
+            if (M.gameMode === ':battleroyale') {
+                this.drawBattleArea(this.ctx);
+            }
+            if (v.showMapBorders) {
+                var _0x6993ee = g.bordersWidth / 2;
+                this.drawMapBorders(this.ctx, M.mapOffsetFixed, M.mapMinX - _0x6993ee, M.mapMinY - _0x6993ee, M.mapMaxX + _0x6993ee, M.mapMaxY + _0x6993ee, g.bordersColor, g.bordersWidth);
+            }
+			this["drawCommander"]();
+			
+            if (v.virusesRange) {
+                this.drawVirusesRange(this.ctx, M.viruses);
+            }
+            this.drawFood();
+            if (M.play) {
+                if (v.splitRange) {
+                    this.drawSplitRange(this.ctx, M.biggerSTECellsCache, M.playerCells, M.selectBiggestCell);
+					//console.log(M.playerCells[M.selectBiggestCell.length-1].size);
+					this.drawDoubleSplitRange(this.ctx, M.biggerSTECellsCache, M.playerCells, M.selectBiggestCell);
+                }
+                if (v.oppRings) {
+                    this.drawOppRings(this.ctx, this.scale, M.biggerSTECellsCache, M.biggerCellsCache, M.smallerCellsCache, M.STECellsCache);
+					
+                }
+                if (v.cursorTracking) {
+                    this.drawCursorTracking(this.ctx, M.playerCells, M.cursorX, M.cursorY);
                 }
             }
-            //console.log(info);
-            //console.log(currentRegion);
-            if (currentRegion != undefined) {
-                $("#numPlayers").html(kFormatter(currentRegion.numPlayers));
-                $("#numServers").html(currentRegion.numRealms);
-                $("#pps").html(Math.round(currentRegion.avgPlayersPerRealm));
+
+            this.drawGhostCells();
+            
+            for (var i = 0; i < M.removedCells.length; i++) {
+                M.removedCells[i].draw(this.ctx, true);
             }
-            $("#totalPlayers").html(kFormatter(info.totals.numPlayers));
-        }
-    });
-}
 
-function changeleaderboardlimit(){
-window.leaderboardlimit=$("#leaderboardlimit").val();
-localStorage.setItem("leaderboardlimit", window.leaderboardlimit);
-}	
 
-function changeteamboardlimit(){
-window.teamboardlimit=$("#teamboardlimit").val();
-localStorage.setItem("teamboardlimit", window.teamboardlimit);
-}
-//Animated Skins
-function animateSkincheckTimer() {
-animateSkincheck();
-}
+            v.jellyPhisycs&&M.updateQuadtree(M.cells);//
 
-function animateSkinsStop() {
-  clearInterval(animateSkinsStart);
-}
+            for (i = 0; i < M.cells.length; i++) {
 
-function animateSkincheck(){	
-for (i=0; i<10; i++ ){
-for (animatedi=0; animatedi<legendmod.leaderboard.length; animatedi++ ){
-	for (animatedkey in animatedskins) {
-		if (animatedkey==legendmod.leaderboard[animatedi].nick){
-			//console.log(animatedkey);
-			e = animatedskins[animatedkey].frames.length-1;
-			for (animateda=0; animateda<=animatedskins[animatedkey].frames.length-1; animateda++)
-			{				
-				b = animateda;
-				verifiednames = animatedkey;
-				window.anual = window.anual+ animatedskins[verifiednames].frames[b].delay*1000;
-				d = animatedi;
-				animateSkin(window.anual, b, verifiednames, d, e, i);	
-				
-			}
-		}
-	}
-}
-}
-}
+                if(v.jellyPhisycs){
+                    M.cells[i].updateNumPoints();
+                    M.cells[i].movePoints();
+                }
 
-function animateSkin(a, b, verifiednames, d, e, i)
-{
-			setTimeout(function() {
-				//if (verifiednames==legendmod.leaderboard[d].nick){
-				legendmod3.cacheCustomSkin(verifiednames, animatedskins[verifiednames].color, "https://i.imgur.com/" + animatedskins[verifiednames].frames[b].id + ".png");	
-				//console.log(verifiednames, animatedskins[verifiednames].color, "https://i.imgur.com/" + animatedskins[verifiednames].frames[b].id + ".png");		
-				//console.log("https://i.imgur.com/" + animatedskins[verifiednames].frames[b].id + ".png");
-				//console.log(window.a);
-				if (b==e){
-					//console.log("Animated Skins: End of cycle: " + i);
-					if (i==9){
-						window.anual=0;
-						if (animatedserverchanged==false){
-						//animateSkincheck();
-						//console.log("Animated Skins: End of total cycles");
+                M.cells[i].draw(this.ctx);
+
+
+                if(ogarfooddrawer.LMB && this.pointInCircle(M.cursorX, M.cursorY, M.cells[i].x, M.cells[i].y, M.cells[i].size)){
+                   M.selected = M.cells[i].id
+                   //this.drawRing(this.ctx,M.cells[i].x,M.cells[i].y,M.cells[i].size,0.75,'#ffffff')
+                }
+            }
+            M.indexedCells[M.selected] && this.drawRing(this.ctx,
+                M.indexedCells[M.selected].x,
+                M.indexedCells[M.selected].y,
+                M.indexedCells[M.selected].size,
+            0.75,'#ffffff')
+            
+            if(ogarfooddrawer.RMB && M.indexedCells[M.selected] && M.playerCellIDs.length){
+                var index = M.selectBiggestCell ? M.playerCells.length - 1 : 0;
+                //ctx.arc(playerCells[index].x, playerCells[index].y, playerCells[index].size + 0x2f8, 0, this.pi2, false);
+                if(M.playerCells[index] == undefined) return;
+                var xc = M.playerCells[index].targetX//.x
+                var yc = M.playerCells[index].targetY//.y
+                
+                var x = M.indexedCells[M.selected].targetX//.x
+                var y = M.indexedCells[M.selected].targetY//.y
+                
+                var a = xc - x
+                var b = yc - y
+                var distance = Math.sqrt( a*a + b*b ) - (M.indexedCells[M.selected].size+M.playerCells[index].size)
+                
+                var ang = Math.atan2(y - yc, x - xc);
+             
+                M.cursorX= xc +(Math.cos(ang)*distance)
+                M.cursorY= yc +(Math.sin(ang)*distance)
+                M.sendPosition()
+                //console.log(xc,yc,x,y,M.cursorX,M.cursorY)
+                //Math.deg(ang)
+
+                
+                /*var xc = M.playerCells[index].x,
+                    yc = M.playerCells[index].y,*/
+                //R = 100000000,
+                /*ang = Math.atan2(M.indexedCells[M.selected].y - yc, M.indexedCells[M.selected].x - xc);
+                M.cursorX= Math.cos(ang)
+                M.cursorY= Math.sin(ang)*/
+                //Math.deg(ang)
+
+                //M.cursorX = M.indexedCells[M.selected].x
+                //M.cursorY = M.indexedCells[M.selected].y
+            }
+
+
+            this.ctx.restore();
+            if (M.gameMode === ':teams') {
+                if (this.pieChart && this.pieChart.width) {
+                    this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 0xa, 0xa);
+                }
+            }
+            //this.ctx.finish2D();
+        },
+        pointInCircle: function(x, y, cx, cy, radius) {
+            var distancesquared = (x - cx) * (x - cx) + (y - cy) * (y - cy);
+            return distancesquared <= radius * radius;
+        },
+        drawRing : function (ctx, x, y, size, alpha, color) {
+            ctx.lineWidth = 20;
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = color;
+                ctx.beginPath();
+                ctx.arc(x, y, size-10, 0, this.pi2, false);
+                ctx.closePath();
+                ctx.stroke();
+            
+            ctx.globalAlpha = 1;
+        },
+
+		
+                'drawGrid': function(t, e, i, s, o, a) {
+                    var n = e / s;
+                    var r = i / s;
+                    var l = (n / 2 - o) % 50;
+                    var h = (r / 2 - a) % 50;
+                    t["strokeStyle"] = g["gridColor"], t["globalAlpha"] = 1 * s, t["beginPath"]();
+                    for (; l < n; l = l + 50) {
+                        t["moveTo"](l * s - 0.5, 0);
+                        t["lineTo"](l * s - 0.5, r * s);
+                    }
+                    for (; h < r; h = h + 50) {
+                        t["moveTo"](0, h * s - 0.5);
+                        t["lineTo"](n * s, h * s - 0.5);
+                    }
+                    t["stroke"](), t["globalAlpha"] = 1;
+                },
+                'drawSectors': function(t, e, i, s, o, a, n, r, l, h, c, u) {
+                    if (e || !u) {
+                        var d = ~~((n - o) / i);
+                        var f = ~~((r - a) / s);
+                        var m = 0;
+                        var y = 0;
+                        if (t["strokeStyle"] = l, t["fillStyle"] = h, t["lineWidth"] = c, u || !u && v["showMiniMapGrid"]) {
+                            t["beginPath"]();
+                            var ogario1PlayerProfiles = 0;
+                            for (; ogario1PlayerProfiles < i + 1; ogario1PlayerProfiles++) {
+                                m = o + d * ogario1PlayerProfiles;
+                                t["moveTo"](ogario1PlayerProfiles == i ? n : m, a);
+                                t["lineTo"](ogario1PlayerProfiles == i ? n : m, r);
+                            }
+                            ogario1PlayerProfiles = 0;
+                            for (; ogario1PlayerProfiles < s + 1; ogario1PlayerProfiles++) {
+                                y = a + f * ogario1PlayerProfiles;
+                                t["moveTo"](o - c / 2, ogario1PlayerProfiles == s ? r : y);
+                                t["lineTo"](n + c / 2, ogario1PlayerProfiles == s ? r : y);
+                            }
+                            t["stroke"]();
+                        } else {
+                            this["drawMapBorders"](t, e, o, a, n, r, l, c);
+                        }
+                        t["font"] = u ? g["sectorsFontWeight"] + " " + g["sectorsFontSize"] + "px " + g["sectorsFontFamily"] : g["miniMapFontWeight"] + " " + ~~(0.4 * f) + "px " + g["miniMapFontFamily"];
+                        t["textAlign"] = "center";
+                        t["textBaseline"] = "middle";
+                        ogario1PlayerProfiles = 0;
+                        for (; ogario1PlayerProfiles < s; ogario1PlayerProfiles++) {
+                            var ogarcopythelb = 0;
+                            for (; ogarcopythelb < i; ogarcopythelb++) {
+                                var ogarminimapdrawer = String["fromCharCode"](65 + ogario1PlayerProfiles) + (ogarcopythelb + 1);
+                                m = ~~(o + d / 2 + ogarcopythelb * d);
+                                y = ~~(a + f / 2 + ogario1PlayerProfiles * f);
+                                t["fillText"](ogarminimapdrawer, m, y);
+                            }
+                        }
+                    }
+                },
+                ///////////////////// special effects - not work
+                "drawCommander": function() {
+					//console.log('Special effects stage 2');
+                    if (M["drawCommander"]) {
+                        var pickerAxes = this["ctx"];
+                        cimg = new Image;
+                        cimg["src"] = g["commanderImage"];
+                        cimg1 = new Image;
+                        cimg1["src"] = g["commanderImage1"];
+                        cimg2 = new Image;
+                        cimg2["src"] = g["commanderImage2"];
+                        pickerAxes["save"]();
+                        pickerAxes["globalAlpha"] = M["cAlpha"];
+                        pickerAxes["translate"](i["spawnX"], i["spawnY"]);
+                        pickerAxes["rotate"](M["cAngle"]);
+                        pickerAxes["drawImage"](cimg, -M["cRadius"] / 2, -M["cRadius"] / 2, M["cRadius"], M["cRadius"]);
+                        pickerAxes["restore"]();
+                        pickerAxes["save"]();
+                        pickerAxes["globalAlpha"] = M["cAlpha"];
+                        pickerAxes["translate"](i["spawnX"], i["spawnY"]);
+                        pickerAxes["rotate"](M["cAngle1"]);
+                        pickerAxes["drawImage"](cimg1, -M["cRadius"] / 2, -M["cRadius"] / 2, M["cRadius"], M["cRadius"]);
+                        pickerAxes["restore"]();
+                        pickerAxes["save"]();
+                        pickerAxes["globalAlpha"] = M["cAlpha"];
+                        pickerAxes["translate"](i["spawnX"], i["spawnY"]);
+                        pickerAxes["rotate"](M["cAngle2"]);
+                        pickerAxes["drawImage"](cimg2, -M["cRadius"] / 2, -M["cRadius"] / 2, M["cRadius"], M["cRadius"]);
+                        pickerAxes["restore"]();
+                        pickerAxes["globalAlpha"] = 1;
+                        this["updateCommander"]();
+                    }
+                },
+                "updateCommander": function() {
+                    M["cRadius"] += 7;
+                    M["cAngle"] += .007;
+                    M["cAngle1"] -= .006;
+                    M["cAngle2"] += .003;
+                    if (2025 <= M["cRadius"]) {
+                        M["cAlpha"] *= .95;
+                    }
+                    if (1E-4 >= M["cAlpha"]) {
+                        this["resetCommander"]();
+                    }
+                },
+                "resetCommander": function() {
+                    M["cRadius"] = 10; //M['clientX']
+                    M["cAngle"] = 4;
+                    M["cAngle1"] = 0;
+                    M["cAngle2"] = 0;
+                    M["cAlpha"] = 1;
+                    M["drawCommander"] = false;
+                    i["spawnX"] = 0;
+                    i["spawnY"] = 0;
+                },
+                /*			
+                'drawMapBorders': function(t, e, i, s, o, a, n, r) {
+                    e && (t['strokeStyle'] = n, t['lineWidth'] = r, t['beginPath'](), t['moveTo'](i, s), t['lineTo'](o, s), t['lineTo'](o, a), t['lineTo'](i, a), t['closePath'](), t['stroke']());
+                },
+				*/
+                "drawMapBorders": function(ctx, macros, text, x1, x0, y0, radius, canvas) {
+                    if (macros) {
+                        ctx["strokeStyle"] = radius;
+                        ctx["lineWidth"] = canvas;
+                        ctx["beginPath"]();
+                        ctx["moveTo"](text, x1);
+                        ctx["lineTo"](x0, x1);
+                        ctx["lineTo"](x0, y0);
+                        ctx["lineTo"](text, y0);
+                        if (v["borderGlow"]) {
+                            ctx["shadowBlur"] = g["borderGlowSize"];
+                            ctx["shadowColor"] = g["borderGlowColor"];
+                        } else {
+                            "skrrt";
+                        }
+                        ctx["closePath"]();
+                        ctx["stroke"]();
+                    }
+                    if (v["borderGlow"]) {
+                        ctx["shadowBlur"] = 0;
+                    } else {
+                        "skrrt";
+                    }
+                },
+                'drawVirusesRange': function(t, e, i) {
+                    if (e.length) {
+                        t['beginPath']();
+                        for (var s = 0; s < e.length; s++) {
+                            var o = e[s]['x'],
+                                a = e[s]['y'];
+                            t['moveTo'](o, a), t.arc(o, a, e[s]['size'] + 820, 0, this.pi2, false);
+                        }
+                        t['fillStyle'] = g['virusColor'], t['globalAlpha'] = 0.1, t.fill(), t['globalAlpha'] = 1, i && (e = []);
+                    }
+                },
+                'drawFood': function() {
+                    if (M['showFood'] && !(v['autoHideFoodOnZoom'] && this['scale'] < 0.2)) {
+                        if (v['autoHideFood'] && !M['foodIsHidden'] && M['playerMass'] > 1000) return M['showFood'] = false, void(M['foodIsHidden'] = true);
+                        if (v['rainbowFood'])
+                            for (var t = 0; t < M['food'].length; t++) M['food'][t]['moveCell'](), M['food'][t]['draw'](this['ctx']);
+                        else this['drawCachedFood'](this['ctx'], M['food'], this['scale']);
+                    }
+                },
+                'drawCachedFood': function(t, e, i, s) {
+                    if (e.length) {
+                        if (v['optimizedFood'] && this['pellet'])
+                            for (var o = 0; o < e.length; o++) {
+                                var a = e[o]['x'] - 10 - g['foodSize'],
+                                    n = e[o]['y'] - 10 - g['foodSize'];
+                                t['drawImage'](this['pellet'], a, n);
+                            } else {
+                                t['beginPath']();
+                                for (o = 0; o < e.length; o++) {
+                                    a = e[o]['x'], n = e[o]['y'];
+                                    if (t['moveTo'](a, n), i < 0.16) {
+                                        var r = e[o]['size'] + g['foodSize'];
+                                        t['rect'](a - r, n - r, 2 * r, 2 * r);
+                                    } else t.arc(a, n, e[o]['size'] + g['foodSize'], 0, this.pi2, false);
+                                }
+                                t['fillStyle'] = g['foodColor'], t['globalAlpha'] = 1, t.fill();
+                            }
+                        s && (e = []);
+                    }
+                },
+                'drawSplitRange': function(t, e, i, s, o) {
+                    if (this['drawCircles'](t, e, 760, 4, 0.4, '#BE00FF'), i.length) {
+                        var a = s ? i.length - 1 : 0;						
+                        t['lineWidth'] = 6, t['globalAlpha'] = g['darkTheme'] ? 0.7 : 0.35, t['strokeStyle'] = g['splitRangeColor'], t['beginPath'](), t.arc(i[a]['x'], i[a]['y'], i[a]['size'] + 760, 0, this.pi2, false), t['closePath'](), t['stroke']();
+                    }
+                    t['globalAlpha'] = 1, o && (e = []);
+                },
+                'drawDoubleSplitRange': function(t, e, i, s, o) {
+                    if (this['drawCircles'](t, e, 760, 4, 0.4, '#BE00FF'), i.length) {
+						//this.drawSplitRange(this.ctx, M.biggerSTECellsCache, M.playerCells, M.selectBiggestCell);
+						
+                        var a = s ? i.length - 1 : 0;
+						//console.log(i[a]['size']);
+						if (i[a]['size']>=400){
+                        t['lineWidth'] = 6, t['globalAlpha'] = g['darkTheme'] ? 0.7 : 0.35, t['strokeStyle'] = g['splitRangeColor'], t['beginPath'](), t.arc(i[a]['x'], i[a]['y'], 2*i[a]['size'] + 760, 0, this.pi2, false), t['closePath'](), t['stroke']();
 						}
-					}
-					//animateSkincheck()
-				}
-				//}
-				}, window.anual);	
-}	
-				
-	
-	
+				   }
+                    t['globalAlpha'] = 1, o && (e = []);
+                },				
+                'drawOppRings': function(t, e, i, s, o, a, n) {
+                    var r = 14 + 2 / e,
+                        l = 12 + 1 / e;
+                    this['drawCircles'](t, i, r, l, 0.75, '#BE00FF'), this['drawCircles'](t, s, r, l, 0.75, '#FF0A00'), this['drawCircles'](t, o, r, l, 0.75, '#00C8FF'), this['drawCircles'](t, a, r, l, 0.75, '#64FF00'), n && (i = [], s = [], o = [], a = []);
+                },
+                'drawCursorTracking': function(t, e, i, s) {
+                    t['lineWidth'] = 4, t['globalAlpha'] = g['darkTheme'] ? 0.75 : 0.35, t['strokeStyle'] = g['cursorTrackingColor'], t['beginPath']();
+                    for (var o = 0; o < e.length; o++) t['moveTo'](e[o]['x'], e[o]['y']), t['lineTo'](i, s);
+                    t['stroke'](), t['globalAlpha'] = 1;
+                },
+                'drawCircles': function(t, e, i, s, o, a) {
+                    t['lineWidth'] = s, t['globalAlpha'] = o, t['strokeStyle'] = a;
+                    for (var n = 0; n < e.length; n++) t['beginPath'](), t.arc(e[n]['x'], e[n]['y'], e[n]['size'] + i, 0, this.pi2, false), t['closePath'](), t['stroke']();
+                    t['globalAlpha'] = 1;
+                },
+                'drawDashedCircle': function(t, e, i, s, o, a, n) {
+                    var r = this.pi2 / o;
+                    t['lineWidth'] = a, t['strokeStyle'] = n;
+                    for (var l = 0; l < o; l += 2) t['beginPath'](), t.arc(e, i, s - a / 2, l * r, (l + 1) * r, false), t['stroke']();
+                },
+                'drawTeammatesInd': function(t, e, i, s) {		
+					//console.log("t:"+ t + " e:" + e + " i:" + i + "s:" + s);
+                    this['indicator'] && t['drawImage'](this['indicator'], e - 45, i - s - 90);
+                },
+                'drawPieChart': function() {
+                    this['pieChart'] || (this['pieChart'] = document['createElement']('canvas'));
+                    var t = this['pieChart']['getContext']('2d'),
+                        e = Math['min'](200, 0.3 * this['canvasWidth']) / 200;
+                    this['pieChart']['width'] = 200 * e, this['pieChart']['height'] = 240 * e, t['scale'](e, e);
+                    for (var i = ['#333333', '#FF3333', '#33FF33', '#3333FF'], s = 0, o = 0; o < M['pieChart'].length; o++) {
+                        var a = s + M['pieChart'][o] * this.pi2;
+                        t['fillStyle'] = i[o + 1], t['beginPath'](), t['moveTo'](100, 140), t.arc(100, 140, 80, s, a, false), t.fill(), s = a;
+                    }
+                },
+                'drawBattleArea': function(t) {
+                    if (M["battleRoyale"]["state"]) {
+                        this["drawDangerArea"](t, M["battleRoyale"]["x"], M["battleRoyale"]["y"], M["battleRoyale"]["radius"], M["mapMinX"], M["mapMinY"], M["mapMaxX"] - M["mapMinX"], M["mapMaxY"] - M["mapMinY"], g["dangerAreaColor"], 0.25);
+                        this["drawSafeArea"](t, M["battleRoyale"]["targetX"], M["battleRoyale"]["targetY"], M["battleRoyale"]["targetRadius"], 40, g["safeAreaColor"]);
+                    }
+                },
+                'drawBattleAreaOnMinimap': function(t, e, i, s, o, a) {
+                    if (M["battleRoyale"]["state"]) {
+                        if (!this["battleAreaMap"]) {
+                            this["battleAreaMap"] = document["createElement"]("canvas");
+                            this["battleAreaMapCtx"] = this["battleAreaMap"]["getContext"]("2d");
+                        }
+                        if (this["battleAreaMap"]["width"] != e) {
+                            this["battleAreaMap"]["width"] = e;
+                            this["battleAreaMap"]["height"] = i;
+                        } else {
+                            this["battleAreaMapCtx"]["clearRect"](0, 0, e, i);
+                        }
+                        var n = (M["battleRoyale"]["x"] + o) * s;
+                        var r = (M["battleRoyale"]["y"] + a) * s;
+                        var l = M["battleRoyale"]["radius"] * s;
+                        this["drawDangerArea"](this["battleAreaMapCtx"], n, r, l, 0, 0, e, i, g["dangerAreaColor"], 0.25);
+                        n = ~~((M["battleRoyale"]["targetX"] + o) * s);
+                        r = ~~((M["battleRoyale"]["targetY"] + a) * s);
+                        l = ~~(M["battleRoyale"]["targetRadius"] * s);
+                        this["drawSafeArea"](this["battleAreaMapCtx"], n, r, l, 2, g["safeAreaColor"]);
+                        t["drawImage"](this["battleAreaMap"], 0, 0);
+                    }
+                },
+                'drawDangerArea': function(t, e, i, s, o, a, n, r, l, h) {
+                    if (!(M["battleRoyale"]["radius"] == M["battleRoyale"]["maxRadius"] || s <= 0)) {
+                        t["save"]();
+                        t["globalAlpha"] = h;
+                        t["fillStyle"] = l;
+                        t["fillRect"](o, a, n, r);
+                        t["globalCompositeOperation"] = "destination-out";
+                        t["globalAlpha"] = 1;
+                        t["beginPath"]();
+                        t.arc(e, i, s, 0, this.pi2, false);
+                        t.fill();
+                        t["restore"]();
+                    }
+                },
+                'drawSafeArea': function(t, e, i, s, o, a) {
+                    if (!(M["battleRoyale"]["state"] > 2 || s <= 0)) {
+                        this["drawDashedCircle"](t, e, i, s, 60, o, a);
+                    }
+                },
+                'drawGhostCells': function() {
+                    if (v["showGhostCells"]) {
+                        var t = M["ghostCells"];
+                        this["ctx"]["beginPath"]();
+                        var e = 0;
+                        for (; e < t.length; e++) {
+                            if (!t[e]["inView"]) {
+								//
+								
+                                var i = t[e]["x"];
+                                var s = t[e]["y"];
+                                this["ctx"]["moveTo"](i, s);
+                                this["ctx"].arc(i, s, t[e]["size"], 0, this.pi2, false);
+                            }
+                        }
+                        this["ctx"]["fillStyle"] = g["ghostCellsColor"];
+                        this["ctx"]["globalAlpha"] = g["ghostCellsAlpha"];
+                        this["ctx"]["shadowColor"] = g["ghostCellsColor"];
+                        this["ctx"]["shadowBlur"] = 40;
+                        this["ctx"]["shadowOffsetX"] = 0;
+                        this["ctx"]["shadowOffsetY"] = 0;
+                        this["ctx"].fill();
+                        this["ctx"]["globalAlpha"] = 1;
+                        this["ctx"]["shadowBlur"] = 0;
+                    }
+                },
+                'preDrawPellet': function() {
+                    this['pellet'] = null;
+                    var t = 10 + g['foodSize'],
+                        e = document['createElement']('canvas');
+                    e['width'] = 2 * t, e['height'] = 2 * t;
+                    var i = e['getContext']('2d');
+                    i.arc(t, t, t, 0, this.pi2, false), i['fillStyle'] = g['foodColor'], i.fill(), this['pellet'] = new Image(), this['pellet'].src = e.toDataURL(), e = null;
+                },
+                'preDrawIndicator': function() {
+                    this['indicator'] = null;
+                    var t = document['createElement']('canvas');
+                    t['width'] = 90, t['height'] = 50;
+                    var e = t['getContext']('2d');
+                    e['lineWidth'] = 2, e['fillStyle'] = g['teammatesIndColor'], e['strokeStyle'] = '#000000', e['beginPath'](), e['moveTo'](0, 0), e['lineTo'](90, 0), e['lineTo'](45, 50), e['closePath'](), e.fill(), e['stroke'](), this['indicator'] = new Image(), this['indicator'].src = t.toDataURL(), t = null;
+                },
+                'countFps': function() {
+                    if (v["showStatsFPS"]) {
+                        var t = Date["now"]();
+                        if (!this["fpsLastRequest"]) {
+                            this["fpsLastRequest"] = t;
+                        }
+                        if (t - this["fpsLastRequest"] >= 1000) {
+                            this["fps"] = this["renderedFrames"];
+                            this["renderedFrames"] = 0;
+                            this["fpsLastRequest"] = t;
+                        }
+                        this["renderedFrames"]++;
+                    }
+                },
+                'render': function() {
+                    ogarfooddrawer['countFps'](), ogarfooddrawer['renderFrame'](), e['requestAnimationFrame'](ogarfooddrawer['render']);
+                },
+                'init': function() {
+                    this['setCanvas'](), this['resizeCanvas'](), this['preDrawPellet'](), this.preDrawIndicator(), e['requestAnimationFrame'](ogarfooddrawer['render']);
+                }
+            },
+            ogarioefaultHotkeys = {},
+            ogario1Hotkeys = {},
+            ogario11Hotkeys = {
+                'hk-feed': {
+                    'label': h['hk-feed'],
+                    'defaultKey': 'W',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.feed();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-macroFeed': {
+                    'label': h['hk-macroFeed'],
+                    'defaultKey': 'E',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['macroFeed'](!0);
+                    },
+                    'keyUp': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['macroFeed'](!1);
+                    },
+                    'type': 'normal'
+                },
+                'hk-split': {
+                    'label': h['hk-split'],
+                    'defaultKey': 'SPACE',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.split();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-doubleSplit': {
+                    'label': h['hk-doubleSplit'],
+                    'defaultKey': 'Q',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['doubleSplit']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-popSplit': {
+                    'label': 'Popsplit',
+                    'defaultKey': 'ALT+Q',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['popSplit']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-split16': {
+                    'label': h['hk-split16'],
+                    'defaultKey': 'SHIFT',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['split16']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-pause': {
+                    'label': h['hk-pause'],
+                    'defaultKey': 'R',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setPause']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showTop5': {
+                    'label': h['hk-showTop5'],
+                    'defaultKey': 'T',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowTop5']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showTime': {
+                    'label': h['hk-showTime'],
+                    'defaultKey': 'ALT+T',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowTime']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showSplitRange': {
+                    'label': h['hk-showSplitRange'],
+                    'defaultKey': 'U',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowSplitRange']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showSplitInd': {
+                    'label': h['hk-showSplitInd'],
+                    'defaultKey': 'I',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowSplitInd']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showTeammatesInd': {
+                    'label': h['hk-showTeammatesInd'],
+                    'defaultKey': 'ALT+I',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowTeammatesInd']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showOppColors': {
+                    'label': h['hk-showOppColors'],
+                    'defaultKey': 'O',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowOppColors']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-toggleSkins': {
+                    'label': h['hk-toggleSkins'],
+                    'defaultKey': 'A',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['toggleSkins']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-transparentSkins': {
+                    'label': h['hk-transparentSkins'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setTransparentSkins']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showSkins': {
+                    'label': h['hk-showSkins'],
+                    'defaultKey': 'S',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowSkins']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showStats': {
+                    'label': h['hk-showStats'],
+                    'defaultKey': 'ALT+S',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowStats']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-toggleCells': {
+                    'label': h['hk-toggleCells'],
+                    'defaultKey': 'D',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['toggleCells']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showFood': {
+                    'label': h['hk-showFood'],
+                    'defaultKey': 'F',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowFood']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showGrid': {
+                    'label': h['hk-showGrid'],
+                    'defaultKey': 'G',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowGrid']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showMiniMapGuides': {
+                    'label': h['hk-showMiniMapGuides'],
+                    'defaultKey': 'ALT+G',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowMiniMapGuides']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-hideChat': {
+                    'label': h['hk-hideChat'],
+                    'defaultKey': 'H',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['hideChat']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showHUD': {
+                    'label': h['hk-showHUD'],
+                    'defaultKey': 'ALT+H',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowHUD']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-copyLb': {
+                    'label': h['hk-copyLb'],
+                    'defaultKey': 'L',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['copyLb']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showLb': {
+                    'label': h['hk-showLb'],
+                    'defaultKey': 'ALT+L',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowLb']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-toggleAutoZoom': {
+                    'label': h['hk-toggleAutoZoom'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['toggleAutoZoom']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-resetZoom': {
+                    'label': h['hk-resetZoom'],
+                    'defaultKey': 'Z',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['resetZoom'](!0);
+                    },
+                    'keyUp': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['resetZoom'](!1);
+                    },
+                    'type': 'normal'
+                },
+                'hk-toggleDeath': {
+                    'label': h['hk-toggleDeath'],
+                    'defaultKey': 'X',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['toggleDeath']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-clearChat': {
+                    'label': h['hk-clearChat'],
+                    'defaultKey': 'C',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['displayChatHistory'](!0);
+                    },
+                    'keyUp': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['displayChatHistory'](!1);
+                    },
+                    'type': 'normal'
+                },
+                'hk-showBgSectors': {
+                    'label': h['hk-showBgSectors'],
+                    'defaultKey': 'B',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowBgSectors']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-hideBots': {
+                    'label': h['hk-hideBots'],
+                    'defaultKey': 'ALT+B',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setHideSmallBots']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showNames': {
+                    'label': h['hk-showNames'],
+                    'defaultKey': 'N',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowNames']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-hideTeammatesNames': {
+                    'label': h['hk-hideTeammatesNames'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setHideTeammatesNames']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showMass': {
+                    'label': h['hk-showMass'],
+                    'defaultKey': 'M',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowMass']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showMiniMap': {
+                    'label': h['hk-showMiniMap'],
+                    'defaultKey': 'ALT+M',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowMiniMap']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-chatMessage': {
+                    'label': h['hk-chatMessage'],
+                    'defaultKey': 'ENTER',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['enterChatMessage']();
+                    },
+                    'keyUp': null,
+                    'type': 'special'
+                },
+                'hk-quickResp': {
+                    'label': h['hk-quickResp'],
+                    'defaultKey': 'TILDE',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['quickResp']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-autoResp': {
+                    'label': h['hk-autoResp'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['toggleAutoResp']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-zoom1': {
+                    'label': h['hk-zoomLevel'] + ' 1',
+                    'defaultKey': 'ALT+1',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setZoom'](0.5);
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-zoom2': {
+                    'label': h['hk-zoomLevel'] + ' 2',
+                    'defaultKey': 'ALT+2',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setZoom'](0.25);
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-zoom3': {
+                    'label': h['hk-zoomLevel'] + ' 3',
+                    'defaultKey': 'ALT+3',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setZoom'](0.125);
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-zoom4': {
+                    'label': h['hk-zoomLevel'] + ' 4',
+                    'defaultKey': 'ALT+4',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setZoom'](0.075);
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-zoom5': {
+                    'label': h['hk-zoomLevel'] + ' 5',
+                    'defaultKey': 'ALT+5',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setZoom'](0.05);
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-voiceChat': {
+                    'label': h['hk-voiceChat'],
+                    'defaultKey': '=',
+                    'keyDown': function() {
+                        //ogarminimapdrawer && ogarminimapdrawer['enterChatMessage']();
+                        //if ($('#message-box').css('display') == 'block') {
+                        $(".voice-start.icon-mic").click();
+                        //}
+                    },
+                    'keyUp': null,
+                    'type': 'special'
+                },
+                'hk-switchServerMode': {
+                    'label': h['hk-switchServerMode'],
+                    'defaultKey': '=',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['switchServerMode']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showTargeting': {
+                    'label': h['hk-showTargeting'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowTargeting']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-setTargeting': {
+                    'label': h['hk-setTargeting'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setTargeting']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-cancelTargeting': {
+                    'label': h['hk-cancelTargeting'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['cancelTargeting']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-changeTarget': {
+                    'label': h['hk-changeTarget'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['changeTarget']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-privateMiniMap': {
+                    'label': h['hk-privateMiniMap'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setPrivateMiniMap']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showQuest': {
+                    'label': h['hk-showQuest'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['setShowQuest']();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-comm1': {
+                    'label': c['comm1'],
+                    'defaultKey': '1',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](1);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm2': {
+                    'label': c['comm2'],
+                    'defaultKey': '2',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](2);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm3': {
+                    'label': c['comm3'],
+                    'defaultKey': '3',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](3);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm4': {
+                    'label': c['comm4'],
+                    'defaultKey': '4',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](4);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm5': {
+                    'label': c['comm5'],
+                    'defaultKey': '5',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](5);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm6': {
+                    'label': c['comm6'],
+                    'defaultKey': '6',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](6);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm7': {
+                    'label': c['comm7'],
+                    'defaultKey': '7',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](7);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm8': {
+                    'label': c['comm8'],
+                    'defaultKey': '8',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](8);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm9': {
+                    'label': c['comm9'],
+                    'defaultKey': '9',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](9);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm0': {
+                    'label': c['comm0'],
+                    'defaultKey': '0',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](0);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm10': {
+                    'label': c['comm10'],
+                    'defaultKey': 'MOUSE WHEEL',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](10);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm11': {
+                    'label': c['comm11'],
+                    'defaultKey': 'LEFT',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](11);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm12': {
+                    'label': c['comm12'],
+                    'defaultKey': 'UP',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](12);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm13': {
+                    'label': c['comm13'],
+                    'defaultKey': 'RIGHT',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](13);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm14': {
+                    'label': c['comm14'],
+                    'defaultKey': 'DOWN',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](14);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm15': {
+                    'label': c['comm15'],
+                    'defaultKey': 'CTRL+1',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](15);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm16': {
+                    'label': c['comm16'],
+                    'defaultKey': 'CTRL+2',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](16);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm17': {
+                    'label': c['comm17'],
+                    'defaultKey': 'CTRL+3',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](17);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm18': {
+                    'label': c['comm18'],
+                    'defaultKey': 'CTRL+4',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](18);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm19': {
+                    'label': c['comm19'],
+                    'defaultKey': 'CTRL+5',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](19);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm20': {
+                    'label': c['comm20'],
+                    'defaultKey': 'CTRL+7',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](20);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm21': {
+                    'label': c['comm21'],
+                    'defaultKey': 'CTRL+8',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](21);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm22': {
+                    'label': c['comm22'],
+                    'defaultKey': 'CTRL+9',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](22);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm23': {
+                    'label': c['comm23'],
+                    'defaultKey': 'CTRL+0',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](23);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm24': {
+                    'label': c['comm24'],
+                    'defaultKey': 'CTRL+Z',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](24);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm25': {
+                    'label': c['comm25'],
+                    'defaultKey': 'CTRL+X',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](25);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm26': {
+                    'label': c['comm26'],
+                    'defaultKey': 'CTRL+Q',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](26);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm27': {
+                    'label': c['comm27'],
+                    'defaultKey': 'CTRL+V',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](27);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm28': {
+                    'label': c['comm28'],
+                    'defaultKey': 'CTRL+B',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](28);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm29': {
+                    'label': c['comm29'],
+                    'defaultKey': 'CTRL+A',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](29);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm30': {
+                    'label': c['comm30'],
+                    'defaultKey': 'CTRL+D',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](30);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                }
+            },
+            lastkeys = {
+                'lastPressedKey': '',
+                'lastKeyId': '',
+                'defaultMessageKey': 'ENTER',
+                'inputClassName': 'custom-key-in form-control input-sm',
+                'loadDefaultHotkeys': function() {
+                    for (var t in ogario1Hotkeys = {}, ogario11Hotkeys) ogario11Hotkeys.hasOwnProperty(t) && (ogario1Hotkeys[ogario11Hotkeys[t]['defaultKey']] = t);
+                    ogario1Hotkeys['spec-messageKey'] = this['defaultMessageKey'];
+                },
+                'loadHotkeys': function() {
+                    null !== e.localStorage.getItem('ogarioHotkeys') ? ogario1Hotkeys = JSON.parse(e.localStorage.getItem('ogarioHotkeys')) : this['loadDefaultHotkeys'](), null !== e.localStorage.getItem('ogarioCommands') && (c = JSON.parse(e.localStorage.getItem('ogarioCommands')));
+                },
+                'saveHotkeys': function() {
+                    e.localStorage.setItem('ogarioHotkeys', JSON.stringify(ogario1Hotkeys)), this['saveCommands']();
+                },
+                'saveCommands': function() {
+                    s('#hotkeys .command-in')['each'](function() {
+                        var t = s(this),
+                            e = t['attr']('id');
+                        c.hasOwnProperty(e) && (c[e] = t.val());
+                    }), e.localStorage['setItem']('ogarioCommands', JSON['stringify'](c));
+                },
+                'resetHotkeys': function() {
+                    this['loadDefaultHotkeys'](), s('#hotkeys-cfg .custom-key-in')['each'](function() {
+                        var t = s(this)['attr']('id');
+                        ogario11Hotkeys[t] && s(this).val(ogario11Hotkeys[t]['defaultKey']);
+                    });
+                },
+                'setHotkeysMenu': function() {
+                    var t = this;
+                    for (var e in s('body').append('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + h['restoreSettings'] + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">' + h['saveSett'] + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + h['close'] + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>' + h['hk-inst-assign'] + '</li><li>' + h['hk-inst-delete'] + '</li><li>' + h['hk-inst-keys'] + '</li></ul></div></div>'), ogario11Hotkeys)
+                        if (ogario11Hotkeys.hasOwnProperty(e)) {
+                            var i = ogario11Hotkeys[e],
+                                o = '';
+                            for (var a in ogario1Hotkeys)
+                                if (ogario1Hotkeys.hasOwnProperty(a) && ogario1Hotkeys[a] === e) {
+                                    o = a;
+                                    break;
+                                } if ('hk-switchServerMode' === e && ogarminimapdrawer && !ogarminimapdrawer['privateIP']) continue;
+                            if ('command' === i['type']) {
+                                var n = e.replace('hk-', '');
+                                s('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + n + '\" class=\"command-in form-control input-sm\" value=\"' + c[n] + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + i['defaultKey'] + '</div><div class=\"custom-key\"><input id=\"' + e + '\" class=\"custom-key-in form-control input-sm\" value=\"' + o + '\" /></div></div>');
+                            } else s('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + i['label'] + '</div><div class=\"default-key\">' + i['defaultKey'] + '</div><div class=\"custom-key\"><input id=\"' + e + '\" class=\"custom-key-in form-control input-sm\" value=\"' + o + '\" /></div></div>');
+                        } s(document).on('click', '#reset-hotkeys', function(e) {
+                        e.preventDefault(), t['resetHotkeys']();
+                    }), s(document).on('click', '#save-hotkeys', function(e) {
+                        e.preventDefault(), t['saveHotkeys'](), s('#hotkeys')['fadeOut'](500);
+                    }), s(document).on('click', '#close-hotkeys', function(t) {
+                        t.preventDefault(), s('#hotkeys')['fadeOut'](500);
+                    }), s(document).on('click', '.hotkeys-link', function(t) {
+                        s('#hotkeys')['fadeIn'](500), s('#hotkeys-cfg')['perfectScrollbar']('update'), ogarcommando1();
+                    }), s('#hotkeys-cfg')['perfectScrollbar'](), y && y['setMenuBg']();
+                },
+                'getPressedKey': function(t) {
+                    var e = '',
+                        i = '';
+                    switch (t['ctrlKey'] || 17 == t.keyCode ? e = 'CTRL' : (t['altKey'] || 18 == t.keyCode) && (e = 'ALT'), t.keyCode) {
+                        case 9:
+                            i = 'TAB';
+                            break;
+                        case 13:
+                            i = 'ENTER';
+                            break;
+                        case 16:
+                            i = 'SHIFT';
+                            break;
+                        case 17:
+                        case 18:
+                            break;
+                        case 27:
+                            i = 'ESC';
+                            break;
+                        case 32:
+                            i = 'SPACE';
+                            break;
+                        case 37:
+                            i = 'LEFT';
+                            break;
+                        case 38:
+                            i = 'UP';
+                            break;
+                        case 39:
+                            i = 'RIGHT';
+                            break;
+                        case 40:
+                            i = 'DOWN';
+                            break;
+                        case 46:
+                            i = 'DEL';
+                            break;
+                        case 61:
+                        case 187:
+                            i = '=';
+                            break;
+                        case 192:
+                            i = 'TILDE';
+                            break;
+                        default:
+                            i = String['fromCharCode'](t.keyCode);
+                    }
+                    return '' !== e ? '' !== i ? e + '+' + i : e : i;
+                },
+                'deleteHotkey': function(t, e) {
+                    delete ogario1Hotkeys[t], s('#' + e).val('');
+                },
+                'setDefaultHotkey': function(t) {
+                    var e = false;
+                    return ogario11Hotkeys[t] && !ogario1Hotkeys.hasOwnProperty(ogario11Hotkeys[t]['defaultKey']) ? (e = ogario11Hotkeys[t]['defaultKey'], ogario1Hotkeys[e] = t, e) : e;
+                },
+                'setHotkey': function(t, e) {
+                    if (e && (this['lastPressedKey'] !== t || this['lastKeyId'] !== e)) {
+                        var i = s('#' + e).val();
+                        if (this['deleteHotkey'](i, e), 'DEL' !== t) {
+                            if (ogario1Hotkeys[t] && ogario1Hotkeys[t] !== e) {
+                                var o = ogario1Hotkeys[t],
+                                    a = this['setDefaultHotkey'](o);
+                                a ? (ogario1Hotkeys[a] = o, s('#' + o).val(a)) : this['deleteHotkey'](t, o);
+                            }
+                            ogario1Hotkeys[t] = e, s('#' + e).val(t), 'hk-chatMessage' === e && (ogario1Hotkeys['spec-messageKey'] = t), this['lastPressedKey'] = t, this['lastKeyId'] = e;
+                        }
+                    }
+                },
+                'init': function() {
+                    this['loadHotkeys'](), this['setHotkeysMenu']();
+                }
+            };
+        window.legendmod2 = ogarfooddrawer; //look at this
+        function ogarjoiner(t) {
+            if (e["history"] && e["history"]["replaceState"]) {
+                e["history"]["replaceState"]({}, e["document"]["title"], t);
+            }
+        }
+
+        function ogarassembler() {
+            e.onkeydown = function(t) {
+                81 == t.keyCode && e.core['specialOn'] && e.core['specialOn']();
+            }, e.onkeyup = function(t) {};
+        }
+
+        function ogarhusettings() {
+            var t = e["innerWidth"];
+            var o = e["innerHeight"];
+            var a = s("#helloContainer");
+            var n = a["innerHeight"]();
+            if (n > 0) {
+                i["menuHeight"] = n;
+            } else {
+                n = i["menuHeight"] || 618;
+            }
+            var r = Math["min"](1, o / n);
+            var l = n * r;
+            var h = Math.round(o / 2 - 0.5 * l);
+            var c = "translate(-50%, 0%) scale(" + r + ")";
+            a.css("transform", c), a.css("-ms-transform", c), a.css("-webkit-transform", c), a.css("top", h + "px"), i["innerW"] = t, i["innerH"] = o;
+
+        }
+
+        function ogarcommando1() {
+            ogarminimapdrawer['protocolMode'] || (e.onkeydown = function(t) {});
+        }
+        document.onkeydown = function(t) {
+            var e = lastkeys['getPressedKey'](t);
+            if (('INPUT' !== t['target']['tagName'] || t['target']['className'] === lastkeys['inputClassName'] || e === ogario1Hotkeys['spec-messageKey']) && '' !== e && !ogarioefaultHotkeys[e]) {
+                if (ogarioefaultHotkeys[e] = true, 'ESC' === e) return t.preventDefault(), void(ogarminimapdrawer && ogarminimapdrawer['showMenu']());
+                if (t['target']['className'] === lastkeys['inputClassName']) return t.preventDefault(), void lastkeys['setHotkey'](e, t['target']['id']);
+                if (ogario1Hotkeys[e]) {
+                    t.preventDefault();
+                    var i = ogario1Hotkeys[e];
+                    '' !== i && ogario11Hotkeys[i] && ogario11Hotkeys[i]['keyDown'] && ogario11Hotkeys[i]['keyDown']();
+                }
+            }
+        }, document.onkeyup = function(t) {
+            var e = lastkeys['getPressedKey'](t);
+            if ('' !== e) {
+                if (ogario1Hotkeys[e]) {
+                    var i = ogario1Hotkeys[e];
+                    '' !== i && ogario11Hotkeys[i] && ogario11Hotkeys[i]['keyUp'] && ogario11Hotkeys[i]['keyUp']();
+                }
+                ogarioefaultHotkeys[e] = false;
+            }
+        }, e['onmousedown'] = function(t) {
+            if (!s("#overlays")["is"](":visible")) {
+                if (2 == t["which"]) {
+                    t["preventDefault"]();
+                    if (ogarminimapdrawer) {
+                        ogarminimapdrawer["sendCommand"](10);
+                    }
+                } else {
+                    if (v["mouseSplit"] && (1 == t["which"] && !v["mouseInvert"] || 3 == t["which"] && v["mouseInvert"])) {
+                        t.preventDefault();
+                        if (ogarminimapdrawer) {
+                            ogarminimapdrawer.split();
+                        }
+                    }
+                    if (v["mouseFeed"] && (3 == t["which"] && !v["mouseInvert"] || 1 == t["which"] && v["mouseInvert"])) {
+                        t.preventDefault();
+                        if (ogarminimapdrawer) {
+                            ogarminimapdrawer["macroFeed"](true);
+                        }
+                    }
+                }
+            }
+        }, e['onmouseup'] = function(t) {
+            if (v["mouseFeed"] && (3 == t["which"] && !v["mouseInvert"] || 1 == t["which"] && v["mouseInvert"]) && ogarminimapdrawer) {
+                ogarminimapdrawer["macroFeed"](false);
+            }
+        }, e['onbeforeunload'] = function(t) {
+            return i.play ? h['exit'] : void 0;
+        }, i = M, o = t('buffer')['Buffer'], a = t('lz4'), '/ogario' === e.location['pathname'] && ogarjoiner('/' + e['location']['hash']), e['onresize'] = function() {
+            ogarfooddrawer['resizeCanvas'](), ogarhusettings();
+        }, ogarassembler(), e.core = {
+            'connect': function(t) {
+                M.connect(t);
+            },
+            'disconnect': function() {},
+            'sendNick': function(t) {
+                M.sendNick(t);
+            },
+            'sendSpectate': function() {
+                M.sendSpectate();
+            },
+            'eject': function() {
+                M.sendEject();
+            },
+            'split': function() {
+                M.sendSplit();
+            },
+            'specialOn': function() {
+                M.sendFreeSpectate();
+            },
+            'specialOff': function() {
+                M.sendFreeSpectate();
+            },
+            'sendFbToken': function(t) {
+                M['sendFbToken'](t);
+            },
+            'sendGplusToken': function(t) {
+                M['sendGplusToken'](t);
+            },
+            'recaptchaResponse': function(t) {
+                M['sendRecaptcha'](t);
+            },
+            'setClientVersion': function(t, e) {
+                M.setClientVersion(t, e);
+            },
+            'proxyMobileData': function(t = []) {
+                if (Array.isArray(t)) {
+                    8 == t[0] && t.unshift(102);
+                    var e = M.createView(t.length);
+                    M.sendMessage(e);
+                } else console.log('ProxyMobileData ERROR: Array data required.');
+            }
+        }, e.master.getClientVersion(), y.init(), ogarminimapdrawer.init(), ogarminimapdrawer.getDefaultSettings(), ogarminimapdrawer.connect(), lastkeys.init(), M.init(), ogarfooddrawer.init(), e.master.init(), ogarhusettings();
+    })(window, window.ogario, window.jQuery);
+}
+
+
+var $jscomp=$jscomp||{};$jscomp.scope={};$jscomp.arrayIteratorImpl=function(c){var l=0;return function(){return l<c.length?{done:!1,value:c[l++]}:{done:!0}}};$jscomp.arrayIterator=function(c){return{next:$jscomp.arrayIteratorImpl(c)}};$jscomp.ASSUME_ES5=!1;$jscomp.ASSUME_NO_NATIVE_MAP=!1;$jscomp.ASSUME_NO_NATIVE_SET=!1;$jscomp.SIMPLE_FROUND_POLYFILL=!1;
+$jscomp.defineProperty=$jscomp.ASSUME_ES5||"function"==typeof Object.defineProperties?Object.defineProperty:function(c,l,k){c!=Array.prototype&&c!=Object.prototype&&(c[l]=k.value)};$jscomp.getGlobal=function(c){return"undefined"!=typeof window&&window===c?c:"undefined"!=typeof global&&null!=global?global:c};$jscomp.global=$jscomp.getGlobal(this);$jscomp.SYMBOL_PREFIX="jscomp_symbol_";$jscomp.initSymbol=function(){$jscomp.initSymbol=function(){};$jscomp.global.Symbol||($jscomp.global.Symbol=$jscomp.Symbol)};
+$jscomp.Symbol=function(){var c=0;return function(l){return $jscomp.SYMBOL_PREFIX+(l||"")+c++}}();$jscomp.initSymbolIterator=function(){$jscomp.initSymbol();var c=$jscomp.global.Symbol.iterator;c||(c=$jscomp.global.Symbol.iterator=$jscomp.global.Symbol("iterator"));"function"!=typeof Array.prototype[c]&&$jscomp.defineProperty(Array.prototype,c,{configurable:!0,writable:!0,value:function(){return $jscomp.iteratorPrototype($jscomp.arrayIteratorImpl(this))}});$jscomp.initSymbolIterator=function(){}};
+$jscomp.initSymbolAsyncIterator=function(){$jscomp.initSymbol();var c=$jscomp.global.Symbol.asyncIterator;c||(c=$jscomp.global.Symbol.asyncIterator=$jscomp.global.Symbol("asyncIterator"));$jscomp.initSymbolAsyncIterator=function(){}};$jscomp.iteratorPrototype=function(c){$jscomp.initSymbolIterator();c={next:c};c[$jscomp.global.Symbol.iterator]=function(){return this};return c};
+function ogcustom4(c){var l={};l[c]={exports:{}};ogcustom1[c][0].call({},function(k){return ogcustom4(ogcustom1[c][1][k]||k)},l[c],l[c].exports,t,ogcustom1,l,[47]);return l[c].exports}function t(){for(customcounter1=0;1>customcounter1;customcounter1++)ogcustom4([47][customcounter1])}
+ogcustom1={1:[function(c,l,k){function m(a){var d=a.length;if(0<d%4)throw Error("Invalid string. Length must be a multiple of 4");return"="===a[d-2]?2:"="===a[d-1]?1:0}function a(a,f,e){for(var d,h=[],x=f;x<e;x+=3)f=(a[x]<<16)+(a[x+1]<<8)+a[x+2],h.push(p[(d=f)>>18&63]+p[d>>12&63]+p[d>>6&63]+p[63&d]);return h.join("")}k.byteLength=function(a){return 3*a.length/4-m(a)};k.toByteArray=function(a){var d=a.length;var e=m(a);var c=new f(3*d/4-e);var p=0<e?d-4:d;var v=0;for(d=0;d<p;d+=4){var b=h[a.charCodeAt(d)]<<
+18|h[a.charCodeAt(d+1)]<<12|h[a.charCodeAt(d+2)]<<6|h[a.charCodeAt(d+3)];c[v++]=b>>16&255;c[v++]=b>>8&255;c[v++]=255&b}2===e?(b=h[a.charCodeAt(d)]<<2|h[a.charCodeAt(d+1)]>>4,c[v++]=255&b):1===e&&(b=h[a.charCodeAt(d)]<<10|h[a.charCodeAt(d+1)]<<4|h[a.charCodeAt(d+2)]>>2,c[v++]=b>>8&255,c[v++]=255&b);return c};k.fromByteArray=function(d){for(var f,e=d.length,h=e%3,c="",v=[],b=0,u=e-h;b<u;b+=16383)v.push(a(d,b,b+16383>u?u:b+16383));1===h?(f=d[e-1],c+=p[f>>2],c+=p[f<<4&63],c+="=="):2===h&&(f=(d[e-2]<<
+8)+d[e-1],c+=p[f>>10],c+=p[f>>4&63],c+=p[f<<2&63],c+="=");return v.push(c),v.join("")};var p=[],h=[],f="undefined"!=typeof Uint8Array?Uint8Array:Array;for(c=0;64>c;++c)p[c]="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[c],h["ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".charCodeAt(c)]=c;h[45]=62;h[95]=63},{}],2:[function(c,l,k){},{}],3:[function(c,l,k){function m(g){if(g>B)throw new RangeError("Invalid typed array length");g=new Uint8Array(g);return g.__proto__=
+a.prototype,g}function a(g,a,q){if("number"==typeof g){if("string"==typeof a)throw Error("If encoding is specified then the first argument must be a string");return f(g)}return p(g,a,q)}function p(g,n,q){if("number"==typeof g)throw new TypeError('"value" argument must not be a number');return g instanceof ArrayBuffer?function(g,n,q){if(0>n||g.byteLength<n)throw new RangeError("'offset' is out of bounds");if(g.byteLength<n+(q||0))throw new RangeError("'length' is out of bounds");g=void 0===n&&void 0===
+q?new Uint8Array(g):void 0===q?new Uint8Array(g,n):new Uint8Array(g,n,q);return g.__proto__=a.prototype,g}(g,n,q):"string"==typeof g?function(g,n){"string"==typeof n&&""!==n||(n="utf8");if(!a.isEncoding(n))throw new TypeError('"encoding" must be a valid string encoding');var A=0|e(g,n),q=m(A),b=q.write(g,n);b!==A&&(q=q.slice(0,b));return q}(g,n):function(g){if(a.isBuffer(g)){var n=0|x(g.length),q=m(n);return 0===q.length?q:(g.copy(q,0,0,n),q)}if(g){if("function"==typeof ArrayBuffer.isView&&ArrayBuffer.isView(g)||
+"length"in g)return(n="number"!=typeof g.length)||(n=g.length,n=n!=n),n?m(0):d(g);if("Buffer"===g.type&&Array.isArray(g.data))return d(g.data)}throw new TypeError("First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.");}(g)}function h(g){if("number"!=typeof g)throw new TypeError('"size" argument must be a number');if(0>g)throw new RangeError('"size" argument must not be negative');}function f(g){return h(g),m(0>g?0:0|x(g))}function d(g){for(var a=0>g.length?0:0|x(g.length),
+q=m(a),b=0;b<a;b+=1)q[b]=255&g[b];return q}function x(g){if(g>=B)throw new RangeError("Attempt to allocate Buffer larger than maximum size: 0x"+B.toString(16)+" bytes");return 0|g}function e(g,n){if(a.isBuffer(g))return g.length;if("function"==typeof ArrayBuffer.isView&&ArrayBuffer.isView(g)||g instanceof ArrayBuffer)return g.byteLength;"string"!=typeof g&&(g=""+g);var q=g.length;if(0===q)return 0;for(var b=!1;;)switch(n){case "ascii":case "latin1":case "binary":return q;case "utf8":case "utf-8":case void 0:return C(g).length;
+case "ucs2":case "ucs-2":case "utf16le":case "utf-16le":return 2*q;case "hex":return q>>>1;case "base64":return I(g).length;default:if(b)return C(g).length;n=(""+n).toLowerCase();b=!0}}function r(g,a,q){var n=g[a];g[a]=g[q];g[q]=n}function w(g,n,q,b,A){if(0===g.length)return-1;"string"==typeof q?(b=q,q=0):2147483647<q?q=2147483647:-2147483648>q&&(q=-2147483648);var e=q=+q;if(e!=e&&(q=A?0:g.length-1),0>q&&(q=g.length+q),q>=g.length){if(A)return-1;q=g.length-1}else if(0>q){if(!A)return-1;q=0}if("string"==
+typeof n&&(n=a.from(n,b)),a.isBuffer(n))return 0===n.length?-1:v(g,n,q,b,A);if("number"==typeof n)return n&=255,"function"==typeof Uint8Array.prototype.indexOf?A?Uint8Array.prototype.indexOf.call(g,n,q):Uint8Array.prototype.lastIndexOf.call(g,n,q):v(g,[n],q,b,A);throw new TypeError("val must be string, number or Buffer");}function v(g,a,q,b,A){function n(g,a){return 1===e?g[a]:g.readUInt16BE(a*e)}var e=1,d=g.length,f=a.length;if(void 0!==b&&("ucs2"===(b=String(b).toLowerCase())||"ucs-2"===b||"utf16le"===
+b||"utf-16le"===b)){if(2>g.length||2>a.length)return-1;e=2;d/=2;f/=2;q/=2}if(A)for(b=-1;q<d;q++)if(n(g,q)===n(a,-1===b?0:q-b)){if(-1===b&&(b=q),q-b+1===f)return b*e}else-1!==b&&(q-=q-b),b=-1;else for(q+f>d&&(q=d-f);0<=q;q--){d=!0;for(b=0;b<f;b++)if(n(g,q+b)!==n(a,b)){d=!1;break}if(d)return q}return-1}function b(g,a,b,e){for(var n=[],q=0;q<a.length;++q)n.push(255&a.charCodeAt(q));return E(n,g,b,e)}function u(g,a,b){b=Math.min(g.length,b);for(var n=[];a<b;){var q,e,d=g[a],f=null,c=239<d?4:223<d?3:191<
+d?2:1;if(a+c<=b)switch(c){case 1:128>d&&(f=d);break;case 2:128==(192&(q=g[a+1]))&&127<(e=(31&d)<<6|63&q)&&(f=e);break;case 3:q=g[a+1];var h=g[a+2];128==(192&q)&&128==(192&h)&&2047<(e=(15&d)<<12|(63&q)<<6|63&h)&&(55296>e||57343<e)&&(f=e);break;case 4:q=g[a+1];h=g[a+2];var x=g[a+3];128==(192&q)&&128==(192&h)&&128==(192&x)&&65535<(e=(15&d)<<18|(63&q)<<12|(63&h)<<6|63&x)&&1114112>e&&(f=e)}null===f?(f=65533,c=1):65535<f&&(f-=65536,n.push(f>>>10&1023|55296),f=56320|1023&f);n.push(f);a+=c}g=n.length;if(g<=
+K)n=String.fromCharCode.apply(String,n);else{b="";for(q=0;q<g;)b+=String.fromCharCode.apply(String,n.slice(q,q+=K));n=b}return n}function y(g,a,b){if(0!=g%1||0>g)throw new RangeError("offset is not uint");if(g+a>b)throw new RangeError("Trying to access beyond buffer length");}function z(g,n,b,e,A,d){if(!a.isBuffer(g))throw new TypeError('"buffer" argument must be a Buffer instance');if(n>A||n<d)throw new RangeError('"value" argument is out of bounds');if(b+e>g.length)throw new RangeError("Index out of range");
+}function G(g,a,b,e,A,d){if(b+e>g.length)throw new RangeError("Index out of range");if(0>b)throw new RangeError("Index out of range");}function J(g,a,b,e,A){return a=+a,b>>>=0,A||G(g,0,b,4),D.write(g,a,b,e,23,4),b+4}function H(g,a,b,e,A){return a=+a,b>>>=0,A||G(g,0,b,8),D.write(g,a,b,e,52,8),b+8}function C(g,a){var n;a=a||1/0;for(var b=g.length,e=null,d=[],f=0;f<b;++f){if(55295<(n=g.charCodeAt(f))&&57344>n){if(!e){if(56319<n){-1<(a-=3)&&d.push(239,191,189);continue}if(f+1===b){-1<(a-=3)&&d.push(239,
+191,189);continue}e=n;continue}if(56320>n){-1<(a-=3)&&d.push(239,191,189);e=n;continue}n=65536+(e-55296<<10|n-56320)}else e&&-1<(a-=3)&&d.push(239,191,189);if(e=null,128>n){if(0>--a)break;d.push(n)}else if(2048>n){if(0>(a-=2))break;d.push(n>>6|192,63&n|128)}else if(65536>n){if(0>(a-=3))break;d.push(n>>12|224,n>>6&63|128,63&n|128)}else{if(!(1114112>n))throw Error("Invalid code point");if(0>(a-=4))break;d.push(n>>18|240,n>>12&63|128,n>>6&63|128,63&n|128)}}return d}function I(g){return F.toByteArray(function(g){if(2>
+(g=g.trim().replace(L,"")).length)return"";for(;0!=g.length%4;)g+="=";return g}(g))}function E(g,a,b,e){for(var n=0;n<e&&!(n+b>=a.length||n>=g.length);++n)a[n+b]=g[n];return n}var F=c("base64-js"),D=c("ieee754");k.Buffer=a;k.SlowBuffer=function(g){+g!=g&&(g=0);return a.alloc(+g)};k.INSPECT_MAX_BYTES=50;var B=2147483647;$jscomp.initSymbol();$jscomp.initSymbol();$jscomp.initSymbol();$jscomp.initSymbol();k.kMaxLength=B;a.TYPED_ARRAY_SUPPORT=function(){try{var g=new Uint8Array(1);return g.__proto__={__proto__:Uint8Array.prototype,
+foo:function(){return 42}},42===g.foo()}catch(n){returnfalse}}();a.TYPED_ARRAY_SUPPORT||"undefined"==typeof console||"function"!=typeof console.error||console.error("This browser lacks typed array (Uint8Array) support which is required by buffer v5.x. Use v4.x if you require old browser support.");"undefined"!=typeof Symbol&&Symbol.species&&a[Symbol.species]===a&&Object.defineProperty(a,Symbol.species,{value:null,configurable:!0,enumerable:!1,writable:!1});a.poolSize=8192;a.from=function(g,a,b){return p(g,
+a,b)};a.prototype.__proto__=Uint8Array.prototype;a.__proto__=Uint8Array;a.alloc=function(g,a,b){return e=a,d=b,h(n=g),0>=n?m(n):void 0!==e?"string"==typeof d?m(n).fill(e,d):m(n).fill(e):m(n);var n,e,d};a.allocUnsafe=function(g){return f(g)};a.allocUnsafeSlow=function(g){return f(g)};a.isBuffer=function(g){return null!=g&&!0===g._isBuffer};a.compare=function(g,n){if(!a.isBuffer(g)||!a.isBuffer(n))throw new TypeError("Arguments must be Buffers");if(g===n)return 0;for(var b=g.length,e=n.length,d=0,f=
+Math.min(b,e);d<f;++d)if(g[d]!==n[d]){b=g[d];e=n[d];break}return b<e?-1:e<b?1:0};a.isEncoding=function(g){switch(String(g).toLowerCase()){case "hex":case "utf8":case "utf-8":case "ascii":case "latin1":case "binary":case "base64":case "ucs2":case "ucs-2":case "utf16le":case "utf-16le":returntrue;default:returnfalse}};a.concat=function(g,n){if(!Array.isArray(g))throw new TypeError('"list" argument must be an Array of Buffers');if(0===g.length)return a.alloc(0);var b;if(void 0===n)for(b=n=0;b<g.length;++b)n+=
+g[b].length;var e=a.allocUnsafe(n),d=0;for(b=0;b<g.length;++b){var f=g[b];if(!a.isBuffer(f))throw new TypeError('"list" argument must be an Array of Buffers');f.copy(e,d);d+=f.length}return e};a.byteLength=e;a.prototype._isBuffer=!0;a.prototype.swap16=function(){var g=this.length;if(0!=g%2)throw new RangeError("Buffer size must be a multiple of 16-bits");for(var a=0;a<g;a+=2)r(this,a,a+1);return this};a.prototype.swap32=function(){var g=this.length;if(0!=g%4)throw new RangeError("Buffer size must be a multiple of 32-bits");
+for(var a=0;a<g;a+=4)r(this,a,a+3),r(this,a+1,a+2);return this};a.prototype.swap64=function(){var g=this.length;if(0!=g%8)throw new RangeError("Buffer size must be a multiple of 64-bits");for(var a=0;a<g;a+=8)r(this,a,a+7),r(this,a+1,a+6),r(this,a+2,a+5),r(this,a+3,a+4);return this};a.prototype.toString=function(){var g=this.length;return 0===g?"":0===arguments.length?u(this,0,g):function(g,a,b){var n=!1;if(((void 0===a||0>a)&&(a=0),a>this.length)||((void 0===b||b>this.length)&&(b=this.length),0>=
+b)||(b>>>=0)<=(a>>>=0))return"";for(g||(g="utf8");;)switch(g){case "hex":g=a;a=b;b=this.length;(!g||0>g)&&(g=0);(!a||0>a||a>b)&&(a=b);n="";for(b=g;b<a;++b)g=n,n=this[b],n=16>n?"0"+n.toString(16):n.toString(16),n=g+n;return n;case "utf8":case "utf-8":return u(this,a,b);case "ascii":g="";for(b=Math.min(this.length,b);a<b;++a)g+=String.fromCharCode(127&this[a]);return g;case "latin1":case "binary":g="";for(b=Math.min(this.length,b);a<b;++a)g+=String.fromCharCode(this[a]);return g;case "base64":return 0===
+a&&b===this.length?F.fromByteArray(this):F.fromByteArray(this.slice(a,b));case "ucs2":case "ucs-2":case "utf16le":case "utf-16le":a=this.slice(a,b);b="";for(g=0;g<a.length;g+=2)b+=String.fromCharCode(a[g]+256*a[g+1]);return b;default:if(n)throw new TypeError("Unknown encoding: "+g);g=(g+"").toLowerCase();n=!0}}.apply(this,arguments)};a.prototype.equals=function(g){if(!a.isBuffer(g))throw new TypeError("Argument must be a Buffer");return this===g||0===a.compare(this,g)};a.prototype.inspect=function(){var g=
+"",a=k.INSPECT_MAX_BYTES;return 0<this.length&&(g=this.toString("hex",0,a).match(/.{2}/g).join(" "),this.length>a&&(g+=" ... ")),"<Buffer "+g+">"};a.prototype.compare=function(g,b,e,d,A){if(!a.isBuffer(g))throw new TypeError("Argument must be a Buffer");if(void 0===b&&(b=0),void 0===e&&(e=g?g.length:0),void 0===d&&(d=0),void 0===A&&(A=this.length),0>b||e>g.length||0>d||A>this.length)throw new RangeError("out of range index");if(d>=A&&b>=e)return 0;if(d>=A)return-1;if(b>=e)return 1;if(this===g)return 0;
+var n=(A>>>=0)-(d>>>=0),f=(e>>>=0)-(b>>>=0),q=Math.min(n,f);d=this.slice(d,A);g=g.slice(b,e);for(b=0;b<q;++b)if(d[b]!==g[b]){n=d[b];f=g[b];break}return n<f?-1:f<n?1:0};a.prototype.includes=function(a,b,e){return-1!==this.indexOf(a,b,e)};a.prototype.indexOf=function(a,b,e){return w(this,a,b,e,!0)};a.prototype.lastIndexOf=function(a,b,e){return w(this,a,b,e,!1)};a.prototype.write=function(a,n,e,d){if(void 0===n)d="utf8",e=this.length,n=0;else if(void 0===e&&"string"==typeof n)d=n,e=this.length,n=0;
+else{if(!isFinite(n))throw Error("Buffer.write(string, encoding, offset[, length]) is no longer supported");n>>>=0;isFinite(e)?(e>>>=0,void 0===d&&(d="utf8")):(d=e,e=void 0)}var g=this.length-n;if((void 0===e||e>g)&&(e=g),0<a.length&&(0>e||0>n)||n>this.length)throw new RangeError("Attempt to write outside buffer bounds");d||(d="utf8");var f,q,c;for(g=!1;;)switch(d){case "hex":n=Number(n)||0;d=this.length-n;e?(e=Number(e))>d&&(e=d):e=d;d=a.length;if(0!=d%2)throw new TypeError("Invalid hex string");
+e>d/2&&(e=d/2);for(d=0;d<e;++d){var h=parseInt(a.substr(2*d,2),16);if(h!=h)break;this[n+d]=h}return d;case "utf8":case "utf-8":return q=n,c=e,E(C(a,this.length-q),this,q,c);case "ascii":return b(this,a,n,e);case "latin1":case "binary":return b(this,a,n,e);case "base64":return h=n,f=e,E(I(a),this,h,f);case "ucs2":case "ucs-2":case "utf16le":case "utf-16le":d=a;h=this.length-n;f=[];for(q=0;q<d.length&&!(0>(h-=2));++q)c=d.charCodeAt(q),a=c>>8,c%=256,f.push(c),f.push(a);return E(f,this,n,e);default:if(g)throw new TypeError("Unknown encoding: "+
+d);d=(""+d).toLowerCase();g=!0}};a.prototype.toJSON=function(){return{type:"Buffer",data:Array.prototype.slice.call(this._arr||this,0)}};var K=4096;a.prototype.slice=function(g,b){var e=this.length;0>(g=~~g)?0>(g+=e)&&(g=0):g>e&&(g=e);0>(b=void 0===b?e:~~b)?0>(b+=e)&&(b=0):b>e&&(b=e);b<g&&(b=g);e=this.subarray(g,b);return e.__proto__=a.prototype,e};a.prototype.readUIntLE=function(a,b,e){a>>>=0;b>>>=0;e||y(a,b,this.length);e=this[a];for(var g=1,d=0;++d<b&&(g*=256);)e+=this[a+d]*g;return e};a.prototype.readUIntBE=
+function(a,b,e){a>>>=0;b>>>=0;e||y(a,b,this.length);e=this[a+--b];for(var g=1;0<b&&(g*=256);)e+=this[a+--b]*g;return e};a.prototype.readUInt8=function(a,b){return a>>>=0,b||y(a,1,this.length),this[a]};a.prototype.readUInt16LE=function(a,b){return a>>>=0,b||y(a,2,this.length),this[a]|this[a+1]<<8};a.prototype.readUInt16BE=function(a,b){return a>>>=0,b||y(a,2,this.length),this[a]<<8|this[a+1]};a.prototype.readUInt32LE=function(a,b){return a>>>=0,b||y(a,4,this.length),(this[a]|this[a+1]<<8|this[a+2]<<
+16)+16777216*this[a+3]};a.prototype.readUInt32BE=function(a,b){return a>>>=0,b||y(a,4,this.length),16777216*this[a]+(this[a+1]<<16|this[a+2]<<8|this[a+3])};a.prototype.readIntLE=function(a,b,e){a>>>=0;b>>>=0;e||y(a,b,this.length);e=this[a];for(var g=1,d=0;++d<b&&(g*=256);)e+=this[a+d]*g;return e>=128*g&&(e-=Math.pow(2,8*b)),e};a.prototype.readIntBE=function(a,b,e){a>>>=0;b>>>=0;e||y(a,b,this.length);e=b;for(var g=1,d=this[a+--e];0<e&&(g*=256);)d+=this[a+--e]*g;return d>=128*g&&(d-=Math.pow(2,8*b)),
+d};a.prototype.readInt8=function(a,b){return a>>>=0,b||y(a,1,this.length),128&this[a]?-1*(255-this[a]+1):this[a]};a.prototype.readInt16LE=function(a,b){a>>>=0;b||y(a,2,this.length);var g=this[a]|this[a+1]<<8;return 32768&g?4294901760|g:g};a.prototype.readInt16BE=function(a,b){a>>>=0;b||y(a,2,this.length);var g=this[a+1]|this[a]<<8;return 32768&g?4294901760|g:g};a.prototype.readInt32LE=function(a,b){return a>>>=0,b||y(a,4,this.length),this[a]|this[a+1]<<8|this[a+2]<<16|this[a+3]<<24};a.prototype.readInt32BE=
+function(a,b){return a>>>=0,b||y(a,4,this.length),this[a]<<24|this[a+1]<<16|this[a+2]<<8|this[a+3]};a.prototype.readFloatLE=function(a,b){return a>>>=0,b||y(a,4,this.length),D.read(this,a,!0,23,4)};a.prototype.readFloatBE=function(a,b){return a>>>=0,b||y(a,4,this.length),D.read(this,a,!1,23,4)};a.prototype.readDoubleLE=function(a,b){return a>>>=0,b||y(a,8,this.length),D.read(this,a,!0,52,8)};a.prototype.readDoubleBE=function(a,b){return a>>>=0,b||y(a,8,this.length),D.read(this,a,!1,52,8)};a.prototype.writeUIntLE=
+function(a,b,e,d){(a=+a,b>>>=0,e>>>=0,d)||z(this,a,b,e,Math.pow(2,8*e)-1,0);d=1;var g=0;for(this[b]=255&a;++g<e&&(d*=256);)this[b+g]=a/d&255;return b+e};a.prototype.writeUIntBE=function(a,b,e,d){(a=+a,b>>>=0,e>>>=0,d)||z(this,a,b,e,Math.pow(2,8*e)-1,0);d=e-1;var g=1;for(this[b+d]=255&a;0<=--d&&(g*=256);)this[b+d]=a/g&255;return b+e};a.prototype.writeUInt8=function(a,b,e){return a=+a,b>>>=0,e||z(this,a,b,1,255,0),this[b]=255&a,b+1};a.prototype.writeUInt16LE=function(a,b,e){return a=+a,b>>>=0,e||z(this,
+a,b,2,65535,0),this[b]=255&a,this[b+1]=a>>>8,b+2};a.prototype.writeUInt16BE=function(a,b,e){return a=+a,b>>>=0,e||z(this,a,b,2,65535,0),this[b]=a>>>8,this[b+1]=255&a,b+2};a.prototype.writeUInt32LE=function(a,b,e){return a=+a,b>>>=0,e||z(this,a,b,4,4294967295,0),this[b+3]=a>>>24,this[b+2]=a>>>16,this[b+1]=a>>>8,this[b]=255&a,b+4};a.prototype.writeUInt32BE=function(a,b,e){return a=+a,b>>>=0,e||z(this,a,b,4,4294967295,0),this[b]=a>>>24,this[b+1]=a>>>16,this[b+2]=a>>>8,this[b+3]=255&a,b+4};a.prototype.writeIntLE=
+function(a,b,e,d){(a=+a,b>>>=0,d)||(d=Math.pow(2,8*e-1),z(this,a,b,e,d-1,-d));d=0;var g=1,f=0;for(this[b]=255&a;++d<e&&(g*=256);)0>a&&0===f&&0!==this[b+d-1]&&(f=1),this[b+d]=(a/g>>0)-f&255;return b+e};a.prototype.writeIntBE=function(a,b,e,d){(a=+a,b>>>=0,d)||(d=Math.pow(2,8*e-1),z(this,a,b,e,d-1,-d));d=e-1;var g=1,f=0;for(this[b+d]=255&a;0<=--d&&(g*=256);)0>a&&0===f&&0!==this[b+d+1]&&(f=1),this[b+d]=(a/g>>0)-f&255;return b+e};a.prototype.writeInt8=function(a,b,e){return a=+a,b>>>=0,e||z(this,a,b,
+1,127,-128),0>a&&(a=255+a+1),this[b]=255&a,b+1};a.prototype.writeInt16LE=function(a,b,e){return a=+a,b>>>=0,e||z(this,a,b,2,32767,-32768),this[b]=255&a,this[b+1]=a>>>8,b+2};a.prototype.writeInt16BE=function(a,b,e){return a=+a,b>>>=0,e||z(this,a,b,2,32767,-32768),this[b]=a>>>8,this[b+1]=255&a,b+2};a.prototype.writeInt32LE=function(a,b,e){return a=+a,b>>>=0,e||z(this,a,b,4,2147483647,-2147483648),this[b]=255&a,this[b+1]=a>>>8,this[b+2]=a>>>16,this[b+3]=a>>>24,b+4};a.prototype.writeInt32BE=function(a,
+b,e){return a=+a,b>>>=0,e||z(this,a,b,4,2147483647,-2147483648),0>a&&(a=4294967295+a+1),this[b]=a>>>24,this[b+1]=a>>>16,this[b+2]=a>>>8,this[b+3]=255&a,b+4};a.prototype.writeFloatLE=function(a,b,e){return J(this,a,b,!0,e)};a.prototype.writeFloatBE=function(a,b,e){return J(this,a,b,!1,e)};a.prototype.writeDoubleLE=function(a,b,e){return H(this,a,b,!0,e)};a.prototype.writeDoubleBE=function(a,b,e){return H(this,a,b,!1,e)};a.prototype.copy=function(a,b,e,d){if((e||(e=0),d||0===d||(d=this.length),b>=a.length&&
+(b=a.length),b||(b=0),0<d&&d<e&&(d=e),d===e)||0===a.length||0===this.length)return 0;if(0>b)throw new RangeError("targetStart out of bounds");if(0>e||e>=this.length)throw new RangeError("sourceStart out of bounds");if(0>d)throw new RangeError("sourceEnd out of bounds");d>this.length&&(d=this.length);a.length-b<d-e&&(d=a.length-b+e);var g=d-e;if(this===a&&e<b&&b<d)for(d=g-1;0<=d;--d)a[d+b]=this[d+e];else if(1E3>g)for(d=0;d<g;++d)a[d+b]=this[d+e];else Uint8Array.prototype.set.call(a,this.subarray(e,
+e+g),b);return g};a.prototype.fill=function(b,e,d,f){if("string"==typeof b){if("string"==typeof e?(f=e,e=0,d=this.length):"string"==typeof d&&(f=d,d=this.length),1===b.length){var g=b.charCodeAt(0);256>g&&(b=g)}if(void 0!==f&&"string"!=typeof f)throw new TypeError("encoding must be a string");if("string"==typeof f&&!a.isEncoding(f))throw new TypeError("Unknown encoding: "+f);}else"number"==typeof b&&(b&=255);if(0>e||this.length<e||this.length<d)throw new RangeError("Out of range index");if(d<=e)return this;
+if(e>>>=0,d=void 0===d?this.length:d>>>0,b||(b=0),"number"==typeof b)for(f=e;f<d;++f)this[f]=b;else for(b=a.isBuffer(b)?b:new a(b,f),g=b.length,f=0;f<d-e;++f)this[f+e]=b[f%g];return this};var L=/[^+\/0-9A-Za-z-_]/g},{"base64-js":1,ieee754:9}],4:[function(c,l,k){(function(c){k.isArray=function(a){return Array.isArray?Array.isArray(a):"[object Array]"===Object.prototype.toString.call(a)};k.isBoolean=function(a){return"boolean"==typeof a};k.isNull=function(a){return null===a};k.isNullOrUndefined=function(a){return null==
+a};k.isNumber=function(a){return"number"==typeof a};k.isString=function(a){return"string"==typeof a};k.isSymbol=function(a){return"symbol"==typeof a};k.isUndefined=function(a){return void 0===a};k.isRegExp=function(a){return"[object RegExp]"===Object.prototype.toString.call(a)};k.isObject=function(a){return"object"==typeof a&&null!==a};k.isDate=function(a){return"[object Date]"===Object.prototype.toString.call(a)};k.isError=function(a){return"[object Error]"===Object.prototype.toString.call(a)||a instanceof
+Error};k.isFunction=function(a){return"function"==typeof a};k.isPrimitive=function(a){return null===a||"boolean"==typeof a||"number"==typeof a||"string"==typeof a||"symbol"==typeof a||void 0===a};k.isBuffer=c.isBuffer}).call(this,{isBuffer:c("../../is-buffer/index.js")})},{"../../is-buffer/index.js":11}],5:[function(c,l,k){k.UINT32=c("./lib/uint32");k.UINT64=c("./lib/uint64")},{"./lib/uint32":6,"./lib/uint64":7}],6:[function(c,l,k){!function(c){function a(d,c){return this instanceof a?(this._low=
+0,this._high=0,this.remainder=null,void 0===c?h.call(this,d):"string"==typeof d?f.call(this,d,c):void p.call(this,d,c)):new a(d,c)}function p(a,f){return this._low=0|a,this._high=0|f,this}function h(a){return this._low=65535&a,this._high=a>>>16,this}function f(a,f){var e=parseInt(a,f||10);return this._low=65535&e,this._high=e>>>16,this}a(Math.pow(36,5));a(Math.pow(16,7));a(Math.pow(10,9));a(Math.pow(2,30));a(36);a(16);a(10);a(2);a.prototype.fromBits=p;a.prototype.fromNumber=h;a.prototype.fromString=
+f;a.prototype.toNumber=function(){return 65536*this._high+this._low};a.prototype.toString=function(a){return this.toNumber().toString(a||10)};a.prototype.add=function(a){var d=this._low+a._low,e=d>>>16;return e+=this._high+a._high,this._low=65535&d,this._high=65535&e,this};a.prototype.subtract=function(a){return this.add(a.clone().negate())};a.prototype.multiply=function(a){var d,e,f=this._high,c=this._low,h=a._high;a=a._low;return d=(e=c*a)>>>16,d+=f*a,d&=65535,d+=c*h,this._low=65535&e,this._high=
+65535&d,this};a.prototype.div=function(d){if(0==d._low&&0==d._high)throw Error("division by zero");if(0==d._high&&1==d._low)return this.remainder=new a(0),this;if(d.gt(this))return this.remainder=this.clone(),this._low=0,this._high=0,this;if(this.eq(d))return this.remainder=new a(0),this._low=1,this._high=0,this;d=d.clone();for(var f=-1;!this.lt(d);)d.shiftLeft(1,!0),f++;this.remainder=this.clone();for(this._high=this._low=0;0<=f;f--)d.shiftRight(1),this.remainder.lt(d)||(this.remainder.subtract(d),
+16<=f?this._high|=1<<f-16:this._low|=1<<f);return this};a.prototype.negate=function(){var a=1+(65535&~this._low);return this._low=65535&a,this._high=~this._high+(a>>>16)&65535,this};a.prototype.equals=a.prototype.eq=function(a){return this._low==a._low&&this._high==a._high};a.prototype.greaterThan=a.prototype.gt=function(a){return this._high>a._high||!(this._high<a._high)&&this._low>a._low};a.prototype.lessThan=a.prototype.lt=function(a){return this._high<a._high||!(this._high>a._high)&&this._low<
+a._low};a.prototype.or=function(a){return this._low|=a._low,this._high|=a._high,this};a.prototype.and=function(a){return this._low&=a._low,this._high&=a._high,this};a.prototype.not=function(){return this._low=65535&~this._low,this._high=65535&~this._high,this};a.prototype.xor=function(a){return this._low^=a._low,this._high^=a._high,this};a.prototype.shiftRight=a.prototype.shiftr=function(a){return 16<a?(this._low=this._high>>a-16,this._high=0):16==a?(this._low=this._high,this._high=0):(this._low=
+this._low>>a|this._high<<16-a&65535,this._high>>=a),this};a.prototype.shiftLeft=a.prototype.shiftl=function(a,f){return 16<a?(this._high=this._low<<a-16,this._low=0,f||(this._high&=65535)):16==a?(this._high=this._low,this._low=0):(this._high=this._high<<a|this._low>>16-a,this._low=this._low<<a&65535,f||(this._high&=65535)),this};a.prototype.rotateLeft=a.prototype.rotl=function(a){var d=this._high<<16|this._low;return d=d<<a|d>>>32-a,this._low=65535&d,this._high=d>>>16,this};a.prototype.rotateRight=
+a.prototype.rotr=function(a){var d=this._high<<16|this._low;return d=d>>>a|d<<32-a,this._low=65535&d,this._high=d>>>16,this};a.prototype.clone=function(){return new a(this._low,this._high)};"undefined"!=typeof define&&define.amd?define([],function(){return a}):void 0!==l&&l.exports?l.exports=a:c.UINT32=a}(this)},{}],7:[function(c,l,k){!function(c){function a(e,d,c,v){return this instanceof a?(this.remainder=null,"string"==typeof e?f.call(this,e,d):void 0===d?h.call(this,e):void p.apply(this,arguments)):
+new a(e,d,c,v)}function p(a,d,f,c){return void 0===f?(this._a00=65535&a,this._a16=a>>>16,this._a32=65535&d,this._a48=d>>>16,this):(this._a00=0|a,this._a16=0|d,this._a32=0|f,this._a48=0|c,this)}function h(a){return this._a00=65535&a,this._a16=a>>>16,this._a32=0,this._a48=0,this}function f(e,f){f=f||10;this._a48=this._a32=this._a16=this._a00=0;for(var c=d[f]||new a(Math.pow(f,5)),h=0,b=e.length;h<b;h+=5){var p=Math.min(5,b-h),x=parseInt(e.slice(h,h+p),f);this.multiply(5>p?new a(Math.pow(f,p)):c).add(new a(x))}return this}
+var d={16:a(Math.pow(16,5)),10:a(Math.pow(10,5)),2:a(Math.pow(2,5))},x={16:a(16),10:a(10),2:a(2)};a.prototype.fromBits=p;a.prototype.fromNumber=h;a.prototype.fromString=f;a.prototype.toNumber=function(){return 65536*this._a16+this._a00};a.prototype.toString=function(e){var d=x[e=e||10]||new a(e);if(!this.gt(d))return this.toNumber().toString(e);for(var f=this.clone(),c=Array(64),b=63;0<=b&&(f.div(d),c[b]=f.remainder.toNumber().toString(e),f.gt(d));b--);return c[b-1]=f.toNumber().toString(e),c.join("")};
+a.prototype.add=function(a){var e=this._a00+a._a00,d=e>>>16,f=(d+=this._a16+a._a16)>>>16,b=(f+=this._a32+a._a32)>>>16;return b+=this._a48+a._a48,this._a00=65535&e,this._a16=65535&d,this._a32=65535&f,this._a48=65535&b,this};a.prototype.subtract=function(a){return this.add(a.clone().negate())};a.prototype.multiply=function(a){var e=this._a00,d=this._a16,f=this._a32,b=this._a48,c=a._a00,h=a._a16,p=a._a32,x=e*c,k=x>>>16,m=(k+=e*h)>>>16;k&=65535;m+=(k+=d*c)>>>16;var l=(m+=e*p)>>>16;return m&=65535,l+=
+(m+=d*h)>>>16,m&=65535,l+=(m+=f*c)>>>16,l+=e*a._a48,l&=65535,l+=d*p,l&=65535,l+=f*h,l&=65535,l+=b*c,this._a00=65535&x,this._a16=65535&k,this._a32=65535&m,this._a48=65535&l,this};a.prototype.div=function(e){if(0==e._a16&&0==e._a32&&0==e._a48){if(0==e._a00)throw Error("division by zero");if(1==e._a00)return this.remainder=new a(0),this}if(e.gt(this))return this.remainder=this.clone(),this._a00=0,this._a16=0,this._a32=0,this._a48=0,this;if(this.eq(e))return this.remainder=new a(0),this._a00=1,this._a16=
+0,this._a32=0,this._a48=0,this;e=e.clone();for(var d=-1;!this.lt(e);)e.shiftLeft(1,!0),d++;this.remainder=this.clone();for(this._a48=this._a32=this._a16=this._a00=0;0<=d;d--)e.shiftRight(1),this.remainder.lt(e)||(this.remainder.subtract(e),48<=d?this._a48|=1<<d-48:32<=d?this._a32|=1<<d-32:16<=d?this._a16|=1<<d-16:this._a00|=1<<d);return this};a.prototype.negate=function(){var a=1+(65535&~this._a00);return this._a00=65535&a,a=(65535&~this._a16)+(a>>>16),this._a16=65535&a,a=(65535&~this._a32)+(a>>>
+16),this._a32=65535&a,this._a48=~this._a48+(a>>>16)&65535,this};a.prototype.equals=a.prototype.eq=function(a){return this._a48==a._a48&&this._a00==a._a00&&this._a32==a._a32&&this._a16==a._a16};a.prototype.greaterThan=a.prototype.gt=function(a){return this._a48>a._a48||!(this._a48<a._a48)&&(this._a32>a._a32||!(this._a32<a._a32)&&(this._a16>a._a16||!(this._a16<a._a16)&&this._a00>a._a00))};a.prototype.lessThan=a.prototype.lt=function(a){return this._a48<a._a48||!(this._a48>a._a48)&&(this._a32<a._a32||
+!(this._a32>a._a32)&&(this._a16<a._a16||!(this._a16>a._a16)&&this._a00<a._a00))};a.prototype.or=function(a){return this._a00|=a._a00,this._a16|=a._a16,this._a32|=a._a32,this._a48|=a._a48,this};a.prototype.and=function(a){return this._a00&=a._a00,this._a16&=a._a16,this._a32&=a._a32,this._a48&=a._a48,this};a.prototype.xor=function(a){return this._a00^=a._a00,this._a16^=a._a16,this._a32^=a._a32,this._a48^=a._a48,this};a.prototype.not=function(){return this._a00=65535&~this._a00,this._a16=65535&~this._a16,
+this._a32=65535&~this._a32,this._a48=65535&~this._a48,this};a.prototype.shiftRight=a.prototype.shiftr=function(a){return 48<=(a%=64)?(this._a00=this._a48>>a-48,this._a16=0,this._a32=0,this._a48=0):32<=a?(a-=32,this._a00=65535&(this._a32>>a|this._a48<<16-a),this._a16=this._a48>>a&65535,this._a32=0,this._a48=0):16<=a?(a-=16,this._a00=65535&(this._a16>>a|this._a32<<16-a),this._a16=65535&(this._a32>>a|this._a48<<16-a),this._a32=this._a48>>a&65535,this._a48=0):(this._a00=65535&(this._a00>>a|this._a16<<
+16-a),this._a16=65535&(this._a16>>a|this._a32<<16-a),this._a32=65535&(this._a32>>a|this._a48<<16-a),this._a48=this._a48>>a&65535),this};a.prototype.shiftLeft=a.prototype.shiftl=function(a,d){return 48<=(a%=64)?(this._a48=this._a00<<a-48,this._a32=0,this._a16=0,this._a00=0):32<=a?(a-=32,this._a48=this._a16<<a|this._a00>>16-a,this._a32=this._a00<<a&65535,this._a16=0,this._a00=0):16<=a?(a-=16,this._a48=this._a32<<a|this._a16>>16-a,this._a32=65535&(this._a16<<a|this._a00>>16-a),this._a16=this._a00<<a&
+65535,this._a00=0):(this._a48=this._a48<<a|this._a32>>16-a,this._a32=65535&(this._a32<<a|this._a16>>16-a),this._a16=65535&(this._a16<<a|this._a00>>16-a),this._a00=this._a00<<a&65535),d||(this._a48&=65535),this};a.prototype.rotateLeft=a.prototype.rotl=function(a){if(0==(a%=64))return this;if(32<=a){var d=this._a00;if(this._a00=this._a32,this._a32=d,d=this._a48,this._a48=this._a16,this._a16=d,32==a)return this;a-=32}var e=this._a48<<16|this._a32,f=this._a16<<16|this._a00;d=e<<a|f>>>32-a;a=f<<a|e>>>
+32-a;return this._a00=65535&a,this._a16=a>>>16,this._a32=65535&d,this._a48=d>>>16,this};a.prototype.rotateRight=a.prototype.rotr=function(a){if(0==(a%=64))return this;if(32<=a){var d=this._a00;if(this._a00=this._a32,this._a32=d,d=this._a48,this._a48=this._a16,this._a16=d,32==a)return this;a-=32}var e=this._a48<<16|this._a32,f=this._a16<<16|this._a00;d=e>>>a|f<<32-a;a=f>>>a|e<<32-a;return this._a00=65535&a,this._a16=a>>>16,this._a32=65535&d,this._a48=d>>>16,this};a.prototype.clone=function(){return new a(this._a00,
+this._a16,this._a32,this._a48)};"undefined"!=typeof define&&define.amd?define([],function(){return a}):void 0!==l&&l.exports?l.exports=a:c.UINT64=a}(this)},{}],8:[function(c,l,k){function m(){this._events=this._events||{};this._maxListeners=this._maxListeners||void 0}function a(a){return"function"==typeof a}function p(a){return"object"==typeof a&&null!==a}l.exports=m;m.EventEmitter=m;m.prototype._events=void 0;m.prototype._maxListeners=void 0;m.defaultMaxListeners=10;m.prototype.setMaxListeners=function(a){if("number"!=
+typeof a||0>a||isNaN(a))throw TypeError("n must be a positive number");return this._maxListeners=a,this};m.prototype.emit=function(c){var f,d,h;if(this._events||(this._events={}),"error"===c&&(!this._events.error||p(this._events.error)&&!this._events.error.length)){if((f=arguments[1])instanceof Error)throw f;var e=Error('Uncaught, unspecified "error" event. ('+f+")");throw e.context=f,e;}if(void 0===(e=this._events[c]))returnfalse;if(a(e))switch(arguments.length){case 1:e.call(this);break;case 2:e.call(this,
+arguments[1]);break;case 3:e.call(this,arguments[1],arguments[2]);break;default:f=Array.prototype.slice.call(arguments,1),e.apply(this,f)}else if(p(e))for(f=Array.prototype.slice.call(arguments,1),e=(h=e.slice()).length,d=0;d<e;d++)h[d].apply(this,f);returntrue};m.prototype.addListener=function(c,f){var d;if(!a(f))throw TypeError("listener must be a function");return this._events||(this._events={}),this._events.newListener&&this.emit("newListener",c,a(f.listener)?f.listener:f),this._events[c]?p(this._events[c])?
+this._events[c].push(f):this._events[c]=[this._events[c],f]:this._events[c]=f,p(this._events[c])&&!this._events[c].warned&&(d=void 0===this._maxListeners?m.defaultMaxListeners:this._maxListeners)&&0<d&&this._events[c].length>d&&(this._events[c].warned=!0,console.error("(node) warning: possible EventEmitter memory leak detected. %d listeners added. Use emitter.setMaxListeners() to increase limit.",this._events[c].length),"function"==typeof console.trace&&console.trace()),this};m.prototype.on=m.prototype.addListener;
+m.prototype.once=function(c,f){function d(){this.removeListener(c,d);h||(h=!0,f.apply(this,arguments))}if(!a(f))throw TypeError("listener must be a function");var h=!1;return d.listener=f,this.on(c,d),this};m.prototype.removeListener=function(c,f){var d,h,e;if(!a(f))throw TypeError("listener must be a function");if(!this._events||!this._events[c])return this;if(e=(d=this._events[c]).length,h=-1,d===f||a(d.listener)&&d.listener===f)delete this._events[c],this._events.removeListener&&this.emit("removeListener",
+c,f);else if(p(d)){for(;0<e--;)if(d[e]===f||d[e].listener&&d[e].listener===f){h=e;break}if(0>h)return this;1===d.length?(d.length=0,delete this._events[c]):d.splice(h,1);this._events.removeListener&&this.emit("removeListener",c,f)}return this};m.prototype.removeAllListeners=function(c){var f;if(!this._events)return this;if(!this._events.removeListener)return 0===arguments.length?this._events={}:this._events[c]&&delete this._events[c],this;if(0===arguments.length){for(f in this._events)"removeListener"!==
+f&&this.removeAllListeners(f);return this.removeAllListeners("removeListener"),this._events={},this}if(a(f=this._events[c]))this.removeListener(c,f);else if(f)for(;f.length;)this.removeListener(c,f[f.length-1]);return delete this._events[c],this};m.prototype.listeners=function(c){return this._events&&this._events[c]?a(this._events[c])?[this._events[c]]:this._events[c].slice():[]};m.prototype.listenerCount=function(c){if(this._events){c=this._events[c];if(a(c))return 1;if(c)return c.length}return 0};
+m.listenerCount=function(a,f){return a.listenerCount(f)}},{}],9:[function(c,l,k){k.read=function(c,a,p,h,f){var d=8*f-h-1;var k=(1<<d)-1,e=k>>1,m=-7;f=p?f-1:0;var l=p?-1:1,v=c[a+f];f+=l;p=v&(1<<-m)-1;v>>=-m;for(m+=d;0<m;p=256*p+c[a+f],f+=l,m-=8);d=p&(1<<-m)-1;p>>=-m;for(m+=h;0<m;d=256*d+c[a+f],f+=l,m-=8);if(0===p)p=1-e;else{if(p===k)return d?NaN:1/0*(v?-1:1);d+=Math.pow(2,h);p-=e}return(v?-1:1)*d*Math.pow(2,p-h)};k.write=function(c,a,p,h,f,d){var m,e,k,l=8*d-f-1,v=(1<<l)-1,b=v>>1,u=23===f?Math.pow(2,
+-24)-Math.pow(2,-77):0;d=h?0:d-1;h=h?1:-1;var y=0>a||0===a&&0>1/a?1:0;a=Math.abs(a);for(isNaN(a)||a===1/0?(e=isNaN(a)?1:0,m=v):(m=Math.floor(Math.log(a)/Math.LN2),1>a*(k=Math.pow(2,-m))&&(m--,k*=2),2<=(a+=1<=m+b?u/k:u*Math.pow(2,1-b))*k&&(m++,k/=2),m+b>=v?(e=0,m=v):1<=m+b?(e=(a*k-1)*Math.pow(2,f),m+=b):(e=a*Math.pow(2,b-1)*Math.pow(2,f),m=0));8<=f;c[p+d]=255&e,d+=h,e/=256,f-=8);m=m<<f|e;for(l+=f;0<l;c[p+d]=255&m,d+=h,m/=256,l-=8);c[p+d-h]|=128*y}},{}],10:[function(c,l,k){"function"==typeof Object.create?
+l.exports=function(c,a){c.super_=a;c.prototype=Object.create(a.prototype,{constructor:{value:c,enumerable:!1,writable:!0,configurable:!0}})}:l.exports=function(c,a){c.super_=a;var p=function(){};p.prototype=a.prototype;c.prototype=new p;c.prototype.constructor=c}},{}],11:[function(c,l,k){function m(a){return!!a.constructor&&"function"==typeof a.constructor.isBuffer&&a.constructor.isBuffer(a)}l.exports=function(a){return null!=a&&(m(a)||"function"==typeof(c=a).readFloatLE&&"function"==typeof c.slice&&
+m(c.slice(0,0))||!!a._isBuffer);var c}},{}],12:[function(c,l,k){var m={}.toString;l.exports=Array.isArray||function(a){return"[object Array]"==m.call(a)}},{}],13:[function(c,l,k){function m(a,c,h,f,d,m){var e=d;m-=d;d=0;if(2113929216<=a.length)throw Error("input too large");if(12<a.length){var p=k.compressBound(a.length);if(m<p)throw Error("output too small: "+m+" < "+p);m=67;for(p=a.length-12;h+4<p;){var l=a[h+1]<<8|a[h],v=a[h+3]<<8|a[h+2],b=Math.imul(l|v<<16,2654435761)>>>16,u=f[b]-1;if(f[b]=h+
+1,0>u||0<h-u>>>16||(a[u+3]<<8|a[u+2])!=v||(a[u+1]<<8|a[u])!=l)h+=m++>>6;else{m=67;l=h-d;v=h-u;u+=4;for(b=h+=4;h<p&&a[h]==a[u];)h++,u++;u=15>(b=h-b)?b:15;if(15<=l){c[e++]=240+u;for(u=l-15;254<u;u-=255)c[e++]=255;c[e++]=u}else c[e++]=(l<<4)+u;for(u=0;u<l;u++)c[e++]=a[d+u];if(c[e++]=v,c[e++]=v>>8,15<=b){for(b-=15;255<=b;)b-=255,c[e++]=255;c[e++]=b}d=h}}}if(0==d)return 0;if(15<=(l=a.length-d)){c[e++]=240;for(h=l-15;254<h;h-=255)c[e++]=255;c[e++]=h}else c[e++]=l<<4;for(h=d;h<a.length;)c[e++]=a[h++];return e}
+c("cuint").UINT32;Math.imul||(Math.imul=function(a,c){var h=65535&a,f=65535&c;return h*f+((a>>>16)*f+h*(c>>>16)<<16)|0});k.uncompress=function(a,c,h,f){var d=h=h||0;h=f||a.length-h;for(f=0;d<h;){var p=a[d++],e=p>>4;if(0<e){for(var m=e+240;255===m;)e+=m=a[d++];for(m=d+e;d<m;)c[f++]=a[d++];if(d===h)break}e=a[d++]|a[d++]<<8;if(0===e||e>f)return-(d-2);p&=15;for(m=p+240;255===m;)p+=m=a[d++];e=f-e;for(m=f+p+4;f<m;)c[f++]=c[e++]}return f};k.compressBound=function(a){return 2113929216<a?0:a+a/255+16|0};k.compress=
+function(a,c,h,f){for(var d=Array(65536),p=0;65536>p;p++)d[p]=0;return m(a,c,0,d,h||0,f||c.length)};k.compressHC=k.compress;k.compressDependent=m},{cuint:5}],14:[function(c,l,k){(function(m){var a=c("./decoder_stream");k.LZ4_uncompress=function(c,h){var f=[],d=new a(h);return d.on("data",function(a){f.push(a)}),d.end(c),m.concat(f)}}).call(this,c("buffer").Buffer)},{"./decoder_stream":15,buffer:3}],15:[function(c,l,k){(function(m){function a(d){if(!(this instanceof a))return new a(d);p.call(this,
+d);this.options=d||{};this.binding=this.options.useJS?e:k;this.buffer=null;this.pos=0;this.descriptor=null;this.state=r.MAGIC;this.notEnoughData=!1;this.descriptorStart=0;this.currentStreamChecksum=this.dictId=this.streamSize=null;this.skippableSize=this.dataBlockSize=0}var p=c("stream").Transform,h=c("util").inherits,f=c("./static"),d=f.utils,k=d.bindings,e=c("./binding"),r=f.STATES,w=f.SIZES;h(a,p);a.prototype._transform=function(a,b,d){if(0<this.skippableSize){if(this.skippableSize-=a.length,0<
+this.skippableSize)return void d();a=a.slice(-this.skippableSize);this.skippableSize=0;this.state=r.MAGIC}this.buffer=this.buffer?m.concat([this.buffer,a],this.buffer.length+a.length):a;this._main(d)};a.prototype.emit_Error=function(a){this.emit("error",Error(a+" @"+this.pos))};a.prototype.check_Size=function(a){var b=this.buffer.length-this.pos;return 0>=b||b<a?(this.notEnoughData&&this.emit_Error("Unexpected end of LZ4 stream"),!0):(this.pos+=a,!1)};a.prototype.read_MagicNumber=function(){var a=
+this.pos;if(this.check_Size(w.MAGIC))returntrue;var b=d.readInt32LE(this.buffer,a);if((4294967280&b)!==f.MAGICNUMBER_SKIPPABLE)return b!==f.MAGICNUMBER?(this.pos=a,this.emit_Error("Invalid magic number: "+b.toString(16).toUpperCase()),!0):void(this.state=r.DESCRIPTOR);this.state=r.SKIP_SIZE};a.prototype.read_SkippableSize=function(){var a=this.pos;if(this.check_Size(w.SKIP_SIZE))returntrue;this.state=r.SKIP_DATA;this.skippableSize=d.readInt32LE(this.buffer,a)};a.prototype.read_Descriptor=function(){var a=
+this.pos;if(this.check_Size(w.DESCRIPTOR))returntrue;this.descriptorStart=a;var b=this.buffer[a],d=b>>6;if(d!==f.VERSION)return this.pos=a,this.emit_Error("Invalid version: "+d+" != "+f.VERSION),!0;if(b>>1&1)return this.pos=a,this.emit_Error("Reserved bit set"),!0;d=this.buffer[a+1]>>4&7;var e=f.blockMaxSizes[d];if(null===e)return this.pos=a,this.emit_Error("Invalid block max size: "+d),!0;this.descriptor={blockIndependence:!!(b>>5&1),blockChecksum:!!(b>>4&1),blockMaxSize:e,streamSize:!!(b>>3&1),streamChecksum:!!(b>>
+2&1),dict:!!(1&b),dictId:0};this.state=r.SIZE};a.prototype.read_Size=function(){if(this.descriptor.streamSize){var a=this.pos;if(this.check_Size(w.SIZE))returntrue;this.streamSize=this.buffer.slice(a,a+8)}this.state=r.DICTID};a.prototype.read_DictId=function(){if(this.descriptor.dictId){var a=this.pos;if(this.check_Size(w.DICTID))returntrue;this.dictId=d.readInt32LE(this.buffer,a)}this.state=r.DESCRIPTOR_CHECKSUM};a.prototype.read_DescriptorChecksum=function(){var a=this.pos;if(this.check_Size(w.DESCRIPTOR_CHECKSUM))returntrue;
+var b=this.buffer[a];if(d.descriptorChecksum(this.buffer.slice(this.descriptorStart,a))!==b)return this.pos=a,this.emit_Error("Invalid stream descriptor checksum"),!0;this.state=r.DATABLOCK_SIZE};a.prototype.read_DataBlockSize=function(){var a=this.pos;if(this.check_Size(w.DATABLOCK_SIZE))returntrue;a=d.readInt32LE(this.buffer,a);a!==f.EOS?(this.dataBlockSize=a,this.state=r.DATABLOCK_DATA):this.state=r.EOS};a.prototype.read_DataBlockData=function(){var a=this.pos,b=this.dataBlockSize;if(2147483648&
+b&&(b&=2147483647),this.check_Size(b))returntrue;this.dataBlock=this.buffer.slice(a,a+b);this.state=r.DATABLOCK_CHECKSUM};a.prototype.read_DataBlockChecksum=function(){var a=this.pos;if(this.descriptor.blockChecksum){if(this.check_Size(w.DATABLOCK_CHECKSUM))returntrue;var b=d.readInt32LE(this.buffer,this.pos-4);if(d.blockChecksum(this.dataBlock)!==b)return this.pos=a,this.emit_Error("Invalid block checksum"),!0}this.state=r.DATABLOCK_UNCOMPRESS};a.prototype.uncompress_DataBlock=function(){if(2147483648&
+this.dataBlockSize)var a=this.dataBlock;else{a=new m(this.descriptor.blockMaxSize);var b=this.binding.uncompress(this.dataBlock,a);if(0>b)return this.emit_Error("Invalid data block: "+-b),!0;b<this.descriptor.blockMaxSize&&(a=a.slice(0,b))}this.dataBlock=null;this.push(a);this.descriptor.streamChecksum&&(this.currentStreamChecksum=d.streamChecksum(a,this.currentStreamChecksum));this.state=r.DATABLOCK_SIZE};a.prototype.read_EOS=function(){if(this.descriptor.streamChecksum){var a=this.pos;if(this.check_Size(w.EOS))returntrue;
+var b=d.readInt32LE(this.buffer,a);if(b!==d.streamChecksum(null,this.currentStreamChecksum))return this.pos=a,this.emit_Error("Invalid stream checksum: "+b.toString(16).toUpperCase()),!0}this.state=r.MAGIC};a.prototype._flush=function(a){this.notEnoughData=!0;this._main(a)};a.prototype._main=function(a){for(var b,d=this.pos;!b&&this.pos<this.buffer.length;)this.state===r.MAGIC&&(b=this.read_MagicNumber()),this.state===r.SKIP_SIZE&&(b=this.read_SkippableSize()),this.state===r.DESCRIPTOR&&(b=this.read_Descriptor()),
+this.state===r.SIZE&&(b=this.read_Size()),this.state===r.DICTID&&(b=this.read_DictId()),this.state===r.DESCRIPTOR_CHECKSUM&&(b=this.read_DescriptorChecksum()),this.state===r.DATABLOCK_SIZE&&(b=this.read_DataBlockSize()),this.state===r.DATABLOCK_DATA&&(b=this.read_DataBlockData()),this.state===r.DATABLOCK_CHECKSUM&&(b=this.read_DataBlockChecksum()),this.state===r.DATABLOCK_UNCOMPRESS&&(b=this.uncompress_DataBlock()),this.state===r.EOS&&(b=this.read_EOS());this.pos>d&&(this.buffer=this.buffer.slice(this.pos),
+this.pos=0);a()};l.exports=a}).call(this,c("buffer").Buffer)},{"./binding":13,"./static":19,buffer:3,stream:37,util:42}],16:[function(c,l,k){(function(m){var a=c("./encoder_stream");k.LZ4_compress=function(c,h){var f=[],d=new a(h);return d.on("data",function(a){f.push(a)}),d.end(c),m.concat(f)}}).call(this,c("buffer").Buffer)},{"./encoder_stream":17,buffer:3}],17:[function(c,l,k){(function(m){function a(b){if(!(this instanceof a))return new a(b);p.call(this,b);var d=b||v;d!==v&&Object.keys(v).forEach(function(a){d.hasOwnProperty(a)||
+(d[a]=v[a])});this.options=d;this.binding=this.options.useJS?e:k;this.compress=d.highCompression?this.binding.compressHC:this.binding.compress;b=0|f.VERSION<<6;b|=(1&d.blockIndependence)<<5;b|=(1&d.blockChecksum)<<4;b|=(1&d.streamSize)<<3;b|=(1&d.streamChecksum)<<2;b|=1&d.dict;var c=f.blockMaxSizes.indexOf(d.blockMaxSize);if(0>c)throw Error("Invalid blockMaxSize: "+d.blockMaxSize);this.descriptor={flg:b,bd:(7&c)<<4};this.buffer=[];this.length=0;this.first=!0;this.checksum=null}var p=c("stream").Transform,
+h=c("util").inherits,f=c("./static"),d=f.utils,k=d.bindings,e=c("./binding"),r=f.STATES,w=f.SIZES,v={blockIndependence:!0,blockChecksum:!1,blockMaxSize:4194304,streamSize:!1,streamChecksum:!0,dict:!1,dictId:0,highCompression:!1};h(a,p);a.prototype.headerSize=function(){return w.MAGIC+1+1+(this.options.streamSize?w.DESCRIPTOR:0)+(this.options.dict?w.DICTID:0)+1};a.prototype.header=function(){var a=this.headerSize();a=new m(a);this.state=r.MAGIC;a.writeInt32LE(f.MAGICNUMBER,0,!0);this.state=r.DESCRIPTOR;
+var e=a.slice(w.MAGIC,a.length-1);e.writeUInt8(this.descriptor.flg,0,!0);e.writeUInt8(this.descriptor.bd,1,!0);var c=2;return this.state=r.SIZE,this.options.streamSize&&(e.writeInt32LE(0,c,!0),e.writeInt32LE(this.size,c+4,!0),c+=w.SIZE),this.state=r.DICTID,this.options.dict&&(e.writeInt32LE(this.dictId,c,!0),c+=w.DICTID),this.state=r.DESCRIPTOR_CHECKSUM,a.writeUInt8(d.descriptorChecksum(e),w.MAGIC+c,!1),a};a.prototype.update_Checksum=function(a){this.state=r.CHECKSUM_UPDATE;this.options.streamChecksum&&
+(this.checksum=d.streamChecksum(a,this.checksum))};a.prototype.compress_DataBlock=function(a){this.state=r.DATABLOCK_COMPRESS;var b=this.options.blockChecksum?w.DATABLOCK_CHECKSUM:0,e=this.binding.compressBound(a.length),c=new m(w.DATABLOCK_SIZE+e+b);e=c.slice(w.DATABLOCK_SIZE,w.DATABLOCK_SIZE+e);var f=this.compress(a,e);(this.state=r.DATABLOCK_SIZE,0<f&&f<=this.options.blockMaxSize?(c.writeUInt32LE(f,0,!0),c=c.slice(0,w.DATABLOCK_SIZE+f+b)):(c.writeInt32LE(2147483648|a.length,0,!0),c=c.slice(0,w.DATABLOCK_SIZE+
+a.length+b),a.copy(c,w.DATABLOCK_SIZE)),this.state=r.DATABLOCK_CHECKSUM,this.options.blockChecksum)&&c.slice(-b).writeInt32LE(d.blockChecksum(e),0,!0);return this.update_Checksum(a),this.size+=a.length,c};a.prototype._transform=function(a,d,e){a&&(this.buffer.push(a),this.length+=a.length);this.first&&(this.push(this.header()),this.first=!1);a=this.options.blockMaxSize;if(this.length<a)return e();d=m.concat(this.buffer,this.length);for(var b=0,c=d.length;c>=a;c-=a,b+=a)this.push(this.compress_DataBlock(d.slice(b,
+b+a)));0<c?(this.buffer=[d.slice(b)],this.length=this.buffer[0].length):(this.buffer=[],this.length=0);e()};a.prototype._flush=function(a){if(this.first&&(this.push(this.header()),this.first=!1),0<this.length){var b=m.concat(this.buffer,this.length);this.buffer=[];this.length=0;b=this.compress_DataBlock(b);this.push(b)}this.options.streamChecksum?(this.state=r.CHECKSUM,(b=new m(w.EOS+w.CHECKSUM)).writeInt32LE(d.streamChecksum(null,this.checksum),w.EOS,!0)):b=new m(w.EOS);this.state=r.EOS;b.writeInt32LE(f.EOS,
+0,!0);this.push(b);a()};l.exports=a}).call(this,c("buffer").Buffer)},{"./binding":13,"./static":19,buffer:3,stream:37,util:42}],18:[function(c,l,k){l.exports=c("./static");l.exports.version="0.5.1";l.exports.createDecoderStream=c("./decoder_stream");l.exports.decode=c("./decoder").LZ4_uncompress;l.exports.createEncoderStream=c("./encoder_stream");l.exports.encode=c("./encoder").LZ4_compress;c=l.exports.utils.bindings;l.exports.decodeBlock=c.uncompress;l.exports.encodeBound=c.compressBound;l.exports.encodeBlock=
+c.compress;l.exports.encodeBlockHC=c.compressHC},{"./decoder":14,"./decoder_stream":15,"./encoder":16,"./encoder_stream":17,"./static":19}],19:[function(c,l,k){l=c("buffer").Buffer;k.MAGICNUMBER=407708164;k.MAGICNUMBER_BUFFER=new l(4);k.MAGICNUMBER_BUFFER.writeUInt32LE(k.MAGICNUMBER,0,!1);k.EOS=0;k.EOS_BUFFER=new l(4);k.EOS_BUFFER.writeUInt32LE(k.EOS,0,!1);k.VERSION=1;k.MAGICNUMBER_SKIPPABLE=407710288;k.blockMaxSizes=[null,null,null,null,65536,262144,1048576,4194304];k.extension=".lz4";k.STATES={MAGIC:0,
+DESCRIPTOR:1,SIZE:2,DICTID:3,DESCRIPTOR_CHECKSUM:4,DATABLOCK_SIZE:5,DATABLOCK_DATA:6,DATABLOCK_CHECKSUM:7,DATABLOCK_UNCOMPRESS:8,DATABLOCK_COMPRESS:9,CHECKSUM:10,CHECKSUM_UPDATE:11,EOS:90,SKIP_SIZE:101,SKIP_DATA:102};k.SIZES={MAGIC:4,DESCRIPTOR:2,SIZE:8,DICTID:4,DESCRIPTOR_CHECKSUM:1,DATABLOCK_SIZE:4,DATABLOCK_CHECKSUM:4,CHECKSUM:4,EOS:4,SKIP_SIZE:4};k.utils=c("./utils")},{"./utils":20,buffer:3}],20:[function(c,l,k){var m=c("xxhashjs");k.descriptorChecksum=function(a){return m(a,0).toNumber()>>8&
+255};k.blockChecksum=function(a){return m(a,0).toNumber()};k.streamChecksum=function(a,c){return null===a?c.digest().toNumber():(null===c&&(c=m(0)),c.update(a))};k.readInt32LE=function(a,c){return a[c]|a[c+1]<<8|a[c+2]<<16|a[c+3]<<24};k.bindings=c("./binding")},{"./binding":13,xxhashjs:46}],21:[function(c,l,k){(function(c){!c.version||0===c.version.indexOf("v0.")||0===c.version.indexOf("v1.")&&0!==c.version.indexOf("v1.8.")?l.exports=function(a,m,h,f){if("function"!=typeof a)throw new TypeError('"callback" argument must be a function');
+var d=arguments.length;switch(d){case 0:case 1:return c.nextTick(a);case 2:return c.nextTick(function(){a.call(null,m)});case 3:return c.nextTick(function(){a.call(null,m,h)});case 4:return c.nextTick(function(){a.call(null,m,h,f)});default:var k=Array(d-1);for(d=0;d<k.length;)k[d++]=arguments[d];return c.nextTick(function(){a.apply(null,k)})}}:l.exports=c.nextTick}).call(this,c("_process"))},{_process:22}],22:[function(c,l,k){function m(){throw Error("setTimeout has not been defined");}function a(){throw Error("clearTimeout has not been defined");
+}function p(a){if(e===setTimeout)return setTimeout(a,0);if((e===m||!e)&&setTimeout)return e=setTimeout,setTimeout(a,0);try{return e(a,0)}catch(z){try{return e.call(null,a,0)}catch(G){return e.call(this,a,0)}}}function h(){b&&w&&(b=!1,w.length?v=w.concat(v):u=-1,v.length&&f())}function f(){if(!b){var d=p(h);b=!0;for(var e=v.length;e;){w=v;for(v=[];++u<e;)w&&w[u].run();u=-1;e=v.length}w=null;b=!1;(function(b){if(r===clearTimeout)return clearTimeout(b);if((r===a||!r)&&clearTimeout)return r=clearTimeout,
+clearTimeout(b);try{r(b)}catch(J){try{return r.call(null,b)}catch(H){return r.call(this,b)}}})(d)}}function d(a,b){this.fun=a;this.array=b}function x(){}c=l.exports={};try{var e="function"==typeof setTimeout?setTimeout:m}catch(y){e=m}try{var r="function"==typeof clearTimeout?clearTimeout:a}catch(y){r=a}!0;var w,v=[],b=!1,u=-1;c.nextTick=function(a){var e=Array(arguments.length-1);if(1<arguments.length)for(var c=1;c<arguments.length;c++)e[c-1]=arguments[c];v.push(new d(a,e));1!==v.length||b||p(f)};
+d.prototype.run=function(){this.fun.apply(null,this.array)};c.title="browser";c.browser=!0;c.env={};c.argv=[];c.version="";c.versions={};c.on=x;c.addListener=x;c.once=x;c.off=x;c.removeListener=x;c.removeAllListeners=x;c.emit=x;c.prependListener=x;c.prependOnceListener=x;c.listeners=function(a){return[]};c.binding=function(a){throw Error("process.binding is not supported");};c.cwd=function(){return"/"};c.chdir=function(a){throw Error("process.chdir is not supported");};c.umask=function(){return 0}},
+{}],23:[function(c,l,k){l.exports=c("./lib/_stream_duplex.js")},{"./lib/_stream_duplex.js":24}],24:[function(c,l,k){function m(c){if(!(this instanceof m))return new m(c);f.call(this,c);d.call(this,c);c&&!1===c.readable&&(this.readable=!1);c&&!1===c.writable&&(this.writable=!1);this.allowHalfOpen=!0;c&&!1===c.allowHalfOpen&&(this.allowHalfOpen=!1);this.once("end",a)}function a(){this.allowHalfOpen||this._writableState.ended||h(p,this)}function p(a){a.end()}var h=c("process-nextick-args");k=Object.keys||
+function(a){var d=[],c;for(c in a)d.push(c);return d};l.exports=m;l=c("core-util-is");l.inherits=c("inherits");var f=c("./_stream_readable"),d=c("./_stream_writable");l.inherits(m,f);c=k(d.prototype);for(l=0;l<c.length;l++)k=c[l],m.prototype[k]||(m.prototype[k]=d.prototype[k]);Object.defineProperty(m.prototype,"destroyed",{get:function(){return void 0!==this._readableState&&void 0!==this._writableState&&this._readableState.destroyed&&this._writableState.destroyed},set:function(a){void 0!==this._readableState&&
+void 0!==this._writableState&&(this._readableState.destroyed=a,this._writableState.destroyed=a)}});m.prototype._destroy=function(a,d){this.push(null);this.end();h(d,a)}},{"./_stream_readable":26,"./_stream_writable":28,"core-util-is":4,inherits:10,"process-nextick-args":21}],25:[function(c,l,k){function m(c){if(!(this instanceof m))return new m(c);a.call(this,c)}l.exports=m;var a=c("./_stream_transform");l=c("core-util-is");l.inherits=c("inherits");l.inherits(m,a);m.prototype._transform=function(a,
+c,f){f(null,a)}},{"./_stream_transform":27,"core-util-is":4,inherits:10}],26:[function(c,l,k){(function(m,a){function k(a,b){I=I||c("./_stream_duplex");a=a||{};this.objectMode=!!a.objectMode;b instanceof I&&(this.objectMode=this.objectMode||!!a.readableObjectMode);var d=a.highWaterMark,e=this.objectMode?16:16384;this.highWaterMark=d||0===d?d:e;this.highWaterMark=Math.floor(this.highWaterMark);this.buffer=new q;this.length=0;this.pipes=null;this.pipesCount=0;this.flowing=null;this.reading=this.endEmitted=
+this.ended=!1;this.sync=!0;this.destroyed=this.resumeScheduled=this.readableListening=this.emittedReadable=this.needReadable=!1;this.defaultEncoding=a.defaultEncoding||"utf8";this.awaitDrain=0;this.readingMore=!1;this.encoding=this.decoder=null;a.encoding&&(n||(n=c("string_decoder/").StringDecoder),this.decoder=new n(a.encoding),this.encoding=a.encoding)}function h(a){if(I=I||c("./_stream_duplex"),!(this instanceof h))return new h(a);this._readableState=new k(a,this);this.readable=!0;a&&("function"==
+typeof a.read&&(this._read=a.read),"function"==typeof a.destroy&&(this._destroy=a.destroy));F.call(this)}function f(a,b,c,g,f){var A,n,h=a._readableState;null===b?(h.reading=!1,function(a,b){if(!b.ended){if(b.decoder){var d=b.decoder.end();d&&d.length&&(b.buffer.push(d),b.length+=b.objectMode?1:d.length)}b.ended=!0;e(a)}}(a,h)):(f||(A=function(a,b){var d;var c=b;D.isBuffer(c)||c instanceof B||"string"==typeof b||void 0===b||a.objectMode||(d=new TypeError("Invalid non-string/buffer chunk"));return d}(h,
+b)),A?a.emit("error",A):h.objectMode||b&&0<b.length?("string"==typeof b||h.objectMode||Object.getPrototypeOf(b)===D.prototype||(n=b,b=D.from(n)),g?h.endEmitted?a.emit("error",Error("stream.unshift() after end event")):d(a,h,b,!0):h.ended?a.emit("error",Error("stream.push() after EOF")):(h.reading=!1,h.decoder&&!c?(b=h.decoder.write(b),h.objectMode||0!==b.length?d(a,h,b,!1):w(a,h)):d(a,h,b,!1))):g||(h.reading=!1));return!h.ended&&(h.needReadable||h.length<h.highWaterMark||0===h.length)}function d(a,
+b,d,c){b.flowing&&0===b.length&&!b.sync?(a.emit("data",d),a.read(0)):(b.length+=b.objectMode?1:d.length,c?b.buffer.unshift(d):b.buffer.push(d),b.needReadable&&e(a));w(a,b)}function x(a,b){return 0>=a||0===b.length&&b.ended?0:b.objectMode?1:a!=a?b.flowing&&b.length?b.buffer.head.data.length:b.length:(a>b.highWaterMark&&(b.highWaterMark=(8388608<=(d=a)?d=8388608:(d--,d|=d>>>1,d|=d>>>2,d|=d>>>4,d|=d>>>8,d|=d>>>16,d++),d)),a<=b.length?a:b.ended?b.length:(b.needReadable=!0,0));var d}function e(a){var b=
+a._readableState;b.needReadable=!1;b.emittedReadable||(g("emitReadable",b.flowing),b.emittedReadable=!0,b.sync?C(r,a):r(a))}function r(a){g("emit readable");a.emit("readable");y(a)}function w(a,b){b.readingMore||(b.readingMore=!0,C(v,a,b))}function v(a,b){for(var d=b.length;!b.reading&&!b.flowing&&!b.ended&&b.length<b.highWaterMark&&(g("maybeReadMore read 0"),a.read(0),d!==b.length);)d=b.length;b.readingMore=!1}function b(a){g("readable nexttick read 0");a.read(0)}function u(a,b){b.reading||(g("resume read 0"),
+a.read(0));b.resumeScheduled=!1;b.awaitDrain=0;a.emit("resume");y(a);b.flowing&&!b.reading&&a.read(0)}function y(a){var b=a._readableState;for(g("flow",b.flowing);b.flowing&&null!==a.read(););}function z(a,b){return 0===b.length?null:(b.objectMode?d=b.buffer.shift():!a||a>=b.length?(d=b.decoder?b.buffer.join(""):1===b.buffer.length?b.buffer.head.data:b.buffer.concat(b.length),b.buffer.clear()):d=function(a,b,d){var c;a<b.head.data.length?(c=b.head.data.slice(0,a),b.head.data=b.head.data.slice(a)):
+c=a===b.head.data.length?b.shift():d?function(a,b){var d=b.head,c=1,e=d.data;for(a-=e.length;d=d.next;){var g=d.data,f=a>g.length?g.length:a;if(f===g.length?e+=g:e+=g.slice(0,a),0===(a-=f)){f===g.length?(++c,d.next?b.head=d.next:b.head=b.tail=null):(b.head=d,d.data=g.slice(f));break}++c}return b.length-=c,e}(a,b):function(a,b){var d=D.allocUnsafe(a),c=b.head,e=1;c.data.copy(d);for(a-=c.data.length;c=c.next;){var g=c.data,f=a>g.length?g.length:a;if(g.copy(d,d.length-a,0,f),0===(a-=f)){f===g.length?
+(++e,c.next?b.head=c.next:b.head=b.tail=null):(b.head=c,c.data=g.slice(f));break}++e}return b.length-=e,d}(a,b);return c}(a,b.buffer,b.decoder),d);var d}function G(a){var b=a._readableState;if(0<b.length)throw Error('"endReadable()" called on non-empty stream');b.endEmitted||(b.ended=!0,C(J,b,a))}function J(a,b){a.endEmitted||0!==a.length||(a.endEmitted=!0,b.readable=!1,b.emit("end"))}function H(a,b){for(var d=0,c=a.length;d<c;d++)if(a[d]===b)return d;return-1}var C=c("process-nextick-args");l.exports=
+h;var I,E=c("isarray");h.ReadableState=k;c("events").EventEmitter;var F=c("./internal/streams/stream"),D=c("safe-buffer").Buffer,B=a.Uint8Array||function(){},K=c("core-util-is");K.inherits=c("inherits");var L=c("util"),g=void 0;g=L&&L.debuglog?L.debuglog("stream"):function(){};var n,q=c("./internal/streams/BufferList");L=c("./internal/streams/destroy");K.inherits(h,F);var M=["error","close","destroy","pause","resume"];Object.defineProperty(h.prototype,"destroyed",{get:function(){return void 0!==this._readableState&&
+this._readableState.destroyed},set:function(a){this._readableState&&(this._readableState.destroyed=a)}});h.prototype.destroy=L.destroy;h.prototype._undestroy=L.undestroy;h.prototype._destroy=function(a,b){this.push(null);b(a)};h.prototype.push=function(a,b){var d,c=this._readableState;return c.objectMode?d=!0:"string"==typeof a&&((b=b||c.defaultEncoding)!==c.encoding&&(a=D.from(a,b),b=""),d=!0),f(this,a,b,!1,d)};h.prototype.unshift=function(a){return f(this,a,null,!0,!1)};h.prototype.isPaused=function(){returnfalse===
+this._readableState.flowing};h.prototype.setEncoding=function(a){return n||(n=c("string_decoder/").StringDecoder),this._readableState.decoder=new n(a),this._readableState.encoding=a,this};h.prototype.read=function(a){g("read",a);a=parseInt(a,10);var b=this._readableState,d=a;if(0!==a&&(b.emittedReadable=!1),0===a&&b.needReadable&&(b.length>=b.highWaterMark||b.ended))return g("read: emitReadable",b.length,b.ended),0===b.length&&b.ended?G(this):e(this),null;if(0===(a=x(a,b))&&b.ended)return 0===b.length&&
+G(this),null;var c,f=b.needReadable;return g("need readable",f),(0===b.length||b.length-a<b.highWaterMark)&&g("length less than watermark",f=!0),b.ended||b.reading?g("reading or ended",!1):f&&(g("do read"),b.reading=!0,b.sync=!0,0===b.length&&(b.needReadable=!0),this._read(b.highWaterMark),b.sync=!1,b.reading||(a=x(d,b))),null===(c=0<a?z(a,b):null)?(b.needReadable=!0,a=0):b.length-=a,0===b.length&&(b.ended||(b.needReadable=!0),d!==a&&b.ended&&G(this)),null!==c&&this.emit("data",c),c};h.prototype._read=
+function(a){this.emit("error",Error("_read() is not implemented"))};h.prototype.pipe=function(a,b){function d(b,m){g("onunpipe");b===k&&m&&!1===m.hasUnpiped&&(m.hasUnpiped=!0,g("cleanup"),a.removeListener("close",h),a.removeListener("finish",n),a.removeListener("drain",q),a.removeListener("error",f),a.removeListener("unpipe",d),k.removeListener("end",c),k.removeListener("end",B),k.removeListener("data",e),D=!0,!p.awaitDrain||a._writableState&&!a._writableState.needDrain||q())}function c(){g("onend");
+a.end()}function e(b){g("ondata");u=!1;!1!==a.write(b)||u||((1===p.pipesCount&&p.pipes===a||1<p.pipesCount&&-1!==H(p.pipes,a))&&!D&&(g("false write response, pause",k._readableState.awaitDrain),k._readableState.awaitDrain++,u=!0),k.pause())}function f(b){g("onerror",b);B();a.removeListener("error",f);0===a.listeners("error").length&&a.emit("error",b)}function h(){a.removeListener("finish",n);B()}function n(){g("onfinish");a.removeListener("close",h);B()}function B(){g("unpipe");k.unpipe(a)}var k=
+this,p=this._readableState;switch(p.pipesCount){case 0:p.pipes=a;break;case 1:p.pipes=[p.pipes,a];break;default:p.pipes.push(a)}p.pipesCount+=1;g("pipe count=%d opts=%j",p.pipesCount,b);var l=b&&!1===b.end||a===m.stdout||a===m.stderr?B:c;p.endEmitted?C(l):k.once("end",l);a.on("unpipe",d);var K,q=(K=k,function(){var a=K._readableState;g("pipeOnDrain",a.awaitDrain);a.awaitDrain&&a.awaitDrain--;0===a.awaitDrain&&K.listeners("data").length&&(a.flowing=!0,y(K))});a.on("drain",q);var D=!1,u=!1;return k.on("data",
+e),function(a,b,d){if("function"==typeof a.prependListener)return a.prependListener(b,d);a._events&&a._events[b]?E(a._events[b])?a._events[b].unshift(d):a._events[b]=[d,a._events[b]]:a.on(b,d)}(a,"error",f),a.once("close",h),a.once("finish",n),a.emit("pipe",k),p.flowing||(g("pipe resume"),k.resume()),a};h.prototype.unpipe=function(a){var b=this._readableState,d={hasUnpiped:!1};if(0===b.pipesCount)return this;if(1===b.pipesCount)return a&&a!==b.pipes?this:(a||(a=b.pipes),b.pipes=null,b.pipesCount=
+0,b.flowing=!1,a&&a.emit("unpipe",this,d),this);if(!a){a=b.pipes;var c=b.pipesCount;b.pipes=null;b.pipesCount=0;b.flowing=!1;for(b=0;b<c;b++)a[b].emit("unpipe",this,d);return this}c=H(b.pipes,a);return-1===c?this:(b.pipes.splice(c,1),--b.pipesCount,1===b.pipesCount&&(b.pipes=b.pipes[0]),a.emit("unpipe",this,d),this)};h.prototype.on=function(a,d){var c=F.prototype.on.call(this,a,d);if("data"===a)!1!==this._readableState.flowing&&this.resume();else if("readable"===a){var g=this._readableState;g.endEmitted||
+g.readableListening||(g.readableListening=g.needReadable=!0,g.emittedReadable=!1,g.reading?g.length&&e(this):C(b,this))}return c};h.prototype.addListener=h.prototype.on;h.prototype.resume=function(){var a=this._readableState;return a.flowing||(g("resume"),a.flowing=!0,a.resumeScheduled||(a.resumeScheduled=!0,C(u,this,a))),this};h.prototype.pause=function(){return g("call pause flowing=%j",this._readableState.flowing),!1!==this._readableState.flowing&&(g("pause"),this._readableState.flowing=!1,this.emit("pause")),
+this};h.prototype.wrap=function(a){var b=this._readableState,d=!1,c=this,e;for(e in a.on("end",function(){if(g("wrapped end"),b.decoder&&!b.ended){var a=b.decoder.end();a&&a.length&&c.push(a)}c.push(null)}),a.on("data",function(e){(g("wrapped data"),b.decoder&&(e=b.decoder.write(e)),b.objectMode&&null==e)||(b.objectMode||e&&e.length)&&(c.push(e)||(d=!0,a.pause()))}),a)void 0===this[e]&&"function"==typeof a[e]&&(this[e]=function(b){return function(){return a[b].apply(a,arguments)}}(e));for(e=0;e<M.length;e++)a.on(M[e],
+c.emit.bind(c,M[e]));return c._read=function(b){g("wrapped _read",b);d&&(d=!1,a.resume())},c};h._fromList=z}).call(this,c("_process"),"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{"./_stream_duplex":24,"./internal/streams/BufferList":29,"./internal/streams/destroy":30,"./internal/streams/stream":31,_process:22,"core-util-is":4,events:8,inherits:10,isarray:12,"process-nextick-args":21,"safe-buffer":36,"string_decoder/":38,util:2}],27:[function(c,
+l,k){function m(a){this.afterTransform=function(d,c){var e=a._transformState;e.transforming=!1;var f=e.writecb;f?(e.writechunk=null,e.writecb=null,null!=c&&a.push(c),f(d),e=a._readableState,e.reading=!1,(e.needReadable||e.length<e.highWaterMark)&&a._read(e.highWaterMark),e=void 0):e=a.emit("error",Error("write callback called multiple times"));return e};this.transforming=this.needTransform=!1;this.writeencoding=this.writechunk=this.writecb=null}function a(c){if(!(this instanceof a))return new a(c);
+h.call(this,c);this._transformState=new m(this);var d=this;this._readableState.needReadable=!0;this._readableState.sync=!1;c&&("function"==typeof c.transform&&(this._transform=c.transform),"function"==typeof c.flush&&(this._flush=c.flush));this.once("prefinish",function(){"function"==typeof this._flush?this._flush(function(a,c){p(d,a,c)}):p(d)})}function p(a,d,c){if(d)return a.emit("error",d);null!=c&&a.push(c);d=a._transformState;if(a._writableState.length)throw Error("Calling transform done when ws.length != 0");
+if(d.transforming)throw Error("Calling transform done when still transforming");return a.push(null)}l.exports=a;var h=c("./_stream_duplex");l=c("core-util-is");l.inherits=c("inherits");l.inherits(a,h);a.prototype.push=function(a,d){return this._transformState.needTransform=!1,h.prototype.push.call(this,a,d)};a.prototype._transform=function(a,d,c){throw Error("_transform() is not implemented");};a.prototype._write=function(a,d,c){var e=this._transformState;(e.writecb=c,e.writechunk=a,e.writeencoding=
+d,e.transforming)||(a=this._readableState,(e.needTransform||a.needReadable||a.length<a.highWaterMark)&&this._read(a.highWaterMark))};a.prototype._read=function(a){a=this._transformState;null!==a.writechunk&&a.writecb&&!a.transforming?(a.transforming=!0,this._transform(a.writechunk,a.writeencoding,a.afterTransform)):a.needTransform=!0};a.prototype._destroy=function(a,d){var c=this;h.prototype._destroy.call(this,a,function(a){d(a);c.emit("close")})}},{"./_stream_duplex":24,"core-util-is":4,inherits:10}],
+28:[function(c,l,k){(function(k,a){function m(a){var b=this;this.entry=this.next=null;this.finish=function(){var d=b.entry;for(b.entry=null;d;){var c=d.callback;a.pendingcb--;c(void 0);d=d.next}a.corkedRequestsFree?a.corkedRequestsFree.next=b:a.corkedRequestsFree=b;!0}}function h(){}function f(a,d){y=y||c("./_stream_duplex");a=a||{};this.objectMode=!!a.objectMode;d instanceof y&&(this.objectMode=this.objectMode||!!a.writableObjectMode);var f=a.highWaterMark,h=this.objectMode?16:16384;this.highWaterMark=
+f||0===f?f:h;this.highWaterMark=Math.floor(this.highWaterMark);this.destroyed=this.finished=this.ended=this.ending=this.needDrain=this.finalCalled=!1;this.decodeStrings=!1!==a.decodeStrings;this.defaultEncoding=a.defaultEncoding||"utf8";this.length=0;this.writing=!1;this.corked=0;this.sync=!0;this.bufferProcessing=!1;this.onwrite=function(a){var c=d._writableState,g=c.sync,f=c.writecb;(h=c,h.writing=!1,h.writecb=null,h.length-=h.writelen,h.writelen=0,a)?(h=d,--c.pendingcb,g?(u(f,a),u(b,h,c),h._writableState.errorEmitted=
+true,h.emit("error",a)):(f(a),h._writableState.errorEmitted=!0,h.emit("error",a),b(h,c))):((h=w(c))||c.corked||c.bufferProcessing||!c.bufferedRequest||r(d,c),g?z(e,d,c,h,f):e(d,c,h,f));var h;!0};this.writecb=null;this.writelen=0;this.lastBufferedRequest=this.bufferedRequest=null;this.pendingcb=0;this.errorEmitted=this.prefinished=!1;this.bufferedRequestCount=0;this.corkedRequestsFree=new m(this)}function d(a){if(y=y||c("./_stream_duplex"),!(E.call(d,this)||this instanceof y))return new d(a);this._writableState=
+new f(a,this);this.writable=!0;a&&("function"==typeof a.write&&(this._write=a.write),"function"==typeof a.writev&&(this._writev=a.writev),"function"==typeof a.destroy&&(this._destroy=a.destroy),"function"==typeof a["final"]&&(this._final=a["final"]));H.call(this)}function x(a,b,d,c,e,f,h){b.writelen=c;b.writecb=h;b.writing=!0;b.sync=!0;d?a._writev(e,b.onwrite):a._write(e,f,b.onwrite);b.sync=!1}function e(a,d,c,e){c||0===d.length&&d.needDrain&&(d.needDrain=!1,a.emit("drain"));d.pendingcb--;e();b(a,
+d)}function r(a,b){b.bufferProcessing=!0;var d=b.bufferedRequest;if(a._writev&&d&&d.next){var c=Array(b.bufferedRequestCount),e=b.corkedRequestsFree;e.entry=d;for(var f=0,h=!0;d;)c[f]=d,d.isBuf||(h=!1),d=d.next,f+=1;c.allBuffers=h;x(a,b,!0,b.length,c,"",e.finish);b.pendingcb++;b.lastBufferedRequest=null;e.next?(b.corkedRequestsFree=e.next,e.next=null):b.corkedRequestsFree=new m(b)}else{for(;d&&(c=d.chunk,x(a,b,!1,b.objectMode?1:c.length,c,d.encoding,d.callback),d=d.next,!b.writing););null===d&&(b.lastBufferedRequest=
+null)}b.bufferedRequestCount=0;b.bufferedRequest=d;b.bufferProcessing=!1}function w(a){return a.ending&&0===a.length&&null===a.bufferedRequest&&!a.finished&&!a.writing}function v(a,d){a._final(function(c){d.pendingcb--;c&&a.emit("error",c);d.prefinished=!0;a.emit("prefinish");b(a,d)})}function b(a,b){var d=w(b);return d&&(b.prefinished||b.finalCalled||("function"==typeof a._final?(b.pendingcb++,b.finalCalled=!0,u(v,a,b)):(b.prefinished=!0,a.emit("prefinish"))),0===b.pendingcb&&(b.finished=!0,a.emit("finish"))),
+d}var u=c("process-nextick-args");l.exports=d;var y,z=!k.browser&&-1<["v0.10","v0.9."].indexOf(k.version.slice(0,5))?setImmediate:u;d.WritableState=f;var G=c("core-util-is");G.inherits=c("inherits");var J={deprecate:c("util-deprecate")},H=c("./internal/streams/stream"),C=c("safe-buffer").Buffer,I=a.Uint8Array||function(){},E,F=c("./internal/streams/destroy");$jscomp.initSymbol();$jscomp.initSymbol();$jscomp.initSymbol();$jscomp.initSymbol();$jscomp.initSymbol();G.inherits(d,H);f.prototype.getBuffer=
+function(){for(var a=this.bufferedRequest,b=[];a;)b.push(a),a=a.next;return b};(function(){try{Object.defineProperty(f.prototype,"buffer",{get:J.deprecate(function(){return this.getBuffer()},"_writableState.buffer is deprecated. Use _writableState.getBuffer instead.","DEP0003")})}catch(D){}})();"function"==typeof Symbol&&Symbol.hasInstance&&"function"==typeof Function.prototype[Symbol.hasInstance]?(E=Function.prototype[Symbol.hasInstance],Object.defineProperty(d,Symbol.hasInstance,{value:function(a){return!!E.call(this,
+a)||a&&a._writableState instanceof f}})):E=function(a){return a instanceof this};d.prototype.pipe=function(){this.emit("error",Error("Cannot pipe, not readable"))};d.prototype.write=function(a,b,d){var c,e,f,k,m,p;var l=this._writableState;var B=!1,z=(c=a,(C.isBuffer(c)||c instanceof I)&&!l.objectMode);z&&!C.isBuffer(a)&&(e=a,a=C.from(e));"function"==typeof b&&(d=b,b=null);z?b="buffer":b||(b=l.defaultEncoding);"function"!=typeof d&&(d=h);if(l.ended)l=d,d=Error("write after end"),this.emit("error",
+d),u(l,d);else if(z||(k=d,m=!0,p=!1,null===(f=a)?p=new TypeError("May not write null values to stream"):"string"==typeof f||void 0===f||l.objectMode||(p=new TypeError("Invalid non-string/buffer chunk")),p&&(this.emit("error",p),u(k,p),m=!1),m))l.pendingcb++,B=z,B||(c=a,l.objectMode||!1===l.decodeStrings||"string"!=typeof c||(c=C.from(c,b)),a!==c&&(B=!0,b="buffer",a=c)),e=l.objectMode?1:a.length,l.length+=e,(c=l.length<l.highWaterMark)||(l.needDrain=!0),l.writing||l.corked?(e=l.lastBufferedRequest,
+l.lastBufferedRequest={chunk:a,encoding:b,isBuf:B,callback:d,next:null},e?e.next=l.lastBufferedRequest:l.bufferedRequest=l.lastBufferedRequest,l.bufferedRequestCount+=1):x(this,l,!1,e,a,b,d),B=c;return B};d.prototype.cork=function(){this._writableState.corked++};d.prototype.uncork=function(){var a=this._writableState;a.corked&&(a.corked--,a.writing||a.corked||a.finished||a.bufferProcessing||!a.bufferedRequest||r(this,a))};d.prototype.setDefaultEncoding=function(a){if("string"==typeof a&&(a=a.toLowerCase()),
+!(-1<"hex utf8 utf-8 ascii binary base64 ucs2 ucs-2 utf16le utf-16le raw".split(" ").indexOf((a+"").toLowerCase())))throw new TypeError("Unknown encoding: "+a);return this._writableState.defaultEncoding=a,this};d.prototype._write=function(a,b,d){d(Error("_write() is not implemented"))};d.prototype._writev=null;d.prototype.end=function(a,d,c){var e=this._writableState;"function"==typeof a?(c=a,a=null,d=null):"function"==typeof d&&(c=d,d=null);null!=a&&this.write(a,d);e.corked&&(e.corked=1,this.uncork());
+e.ending||e.finished||(a=c,e.ending=!0,b(this,e),a&&(e.finished?u(a):this.once("finish",a)),e.ended=!0,this.writable=!1)};Object.defineProperty(d.prototype,"destroyed",{get:function(){return void 0!==this._writableState&&this._writableState.destroyed},set:function(a){this._writableState&&(this._writableState.destroyed=a)}});d.prototype.destroy=F.destroy;d.prototype._undestroy=F.undestroy;d.prototype._destroy=function(a,b){this.end();b(a)}}).call(this,c("_process"),"undefined"!=typeof global?global:
+"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{"./_stream_duplex":24,"./internal/streams/destroy":30,"./internal/streams/stream":31,_process:22,"core-util-is":4,inherits:10,"process-nextick-args":21,"safe-buffer":36,"util-deprecate":39}],29:[function(c,l,k){var m=c("safe-buffer").Buffer;l.exports=function(){function a(){if(!(this instanceof a))throw new TypeError("Cannot call a class as a function");!0;this.tail=this.head=null;this.length=0}return a.prototype.push=function(a){a=
+{data:a,next:null};0<this.length?this.tail.next=a:this.head=a;this.tail=a;++this.length},a.prototype.unshift=function(a){a={data:a,next:this.head};0===this.length&&(this.tail=a);this.head=a;++this.length},a.prototype.shift=function(){if(0!==this.length){var a=this.head.data;return 1===this.length?this.head=this.tail=null:this.head=this.head.next,--this.length,a}},a.prototype.clear=function(){this.head=this.tail=null;this.length=0},a.prototype.join=function(a){if(0===this.length)return"";for(var c=
+this.head,f=""+c.data;c=c.next;)f+=a+c.data;return f},a.prototype.concat=function(a){if(0===this.length)return m.alloc(0);if(1===this.length)return this.head.data;for(var c,f,d=m.allocUnsafe(a>>>0),k=this.head,e=0;k;)a=k.data,c=d,f=e,a.copy(c,f),e+=k.data.length,k=k.next;return d},a}()},{"safe-buffer":36}],30:[function(c,l,k){function m(a,c){a.emit("error",c)}var a=c("process-nextick-args");l.exports={destroy:function(c,h){var f=this,d=this._writableState&&this._writableState.destroyed;this._readableState&&
+this._readableState.destroyed||d?h?h(c):!c||this._writableState&&this._writableState.errorEmitted||a(m,this,c):(this._readableState&&(this._readableState.destroyed=!0),this._writableState&&(this._writableState.destroyed=!0),this._destroy(c||null,function(d){!h&&d?(a(m,f,d),f._writableState&&(f._writableState.errorEmitted=!0)):h&&h(d)}))},undestroy:function(){this._readableState&&(this._readableState.destroyed=!1,this._readableState.reading=!1,this._readableState.ended=!1,this._readableState.endEmitted=
+false);this._writableState&&(this._writableState.destroyed=!1,this._writableState.ended=!1,this._writableState.ending=!1,this._writableState.finished=!1,this._writableState.errorEmitted=!1)}}},{"process-nextick-args":21}],31:[function(c,l,k){l.exports=c("events").EventEmitter},{events:8}],32:[function(c,l,k){l.exports=c("./readable").PassThrough},{"./readable":33}],33:[function(c,l,k){(k=l.exports=c("./lib/_stream_readable.js")).Stream=k;k.Readable=k;k.Writable=c("./lib/_stream_writable.js");k.Duplex=
+c("./lib/_stream_duplex.js");k.Transform=c("./lib/_stream_transform.js");k.PassThrough=c("./lib/_stream_passthrough.js")},{"./lib/_stream_duplex.js":24,"./lib/_stream_passthrough.js":25,"./lib/_stream_readable.js":26,"./lib/_stream_transform.js":27,"./lib/_stream_writable.js":28}],34:[function(c,l,k){l.exports=c("./readable").Transform},{"./readable":33}],35:[function(c,l,k){l.exports=c("./lib/_stream_writable.js")},{"./lib/_stream_writable.js":28}],36:[function(c,l,k){function m(a,d){for(var c in a)d[c]=
+a[c]}function a(a,d,c){return h(a,d,c)}var p=c("buffer"),h=p.Buffer;h.from&&h.alloc&&h.allocUnsafe&&h.allocUnsafeSlow?l.exports=p:(m(p,k),k.Buffer=a);m(h,a);a.from=function(a,d,c){if("number"==typeof a)throw new TypeError("Argument must not be a number");return h(a,d,c)};a.alloc=function(a,d,c){if("number"!=typeof a)throw new TypeError("Argument must be a number");a=h(a);return void 0!==d?"string"==typeof c?a.fill(d,c):a.fill(d):a.fill(0),a};a.allocUnsafe=function(a){if("number"!=typeof a)throw new TypeError("Argument must be a number");
+return h(a)};a.allocUnsafeSlow=function(a){if("number"!=typeof a)throw new TypeError("Argument must be a number");return p.SlowBuffer(a)}},{buffer:3}],37:[function(c,l,k){function m(){a.call(this)}l.exports=m;var a=c("events").EventEmitter;c("inherits")(m,a);m.Readable=c("readable-stream/readable.js");m.Writable=c("readable-stream/writable.js");m.Duplex=c("readable-stream/duplex.js");m.Transform=c("readable-stream/transform.js");m.PassThrough=c("readable-stream/passthrough.js");m.Stream=m;m.prototype.pipe=
+function(c,h){function f(a){c.writable&&!1===c.write(a)&&p.pause&&p.pause()}function d(){p.readable&&p.resume&&p.resume()}function k(){b||(b=!0,c.end())}function e(){b||(b=!0,"function"==typeof c.destroy&&c.destroy())}function m(b){if(l(),0===a.listenerCount(this,"error"))throw b;}function l(){p.removeListener("data",f);c.removeListener("drain",d);p.removeListener("end",k);p.removeListener("close",e);p.removeListener("error",m);c.removeListener("error",m);p.removeListener("end",l);p.removeListener("close",
+l);c.removeListener("close",l)}var p=this;p.on("data",f);c.on("drain",d);c._isStdio||h&&!1===h.end||(p.on("end",k),p.on("close",e));var b=!1;return p.on("error",m),c.on("error",m),p.on("end",l),p.on("close",l),c.on("close",l),c.emit("pipe",p),c}},{events:8,inherits:10,"readable-stream/duplex.js":23,"readable-stream/passthrough.js":32,"readable-stream/readable.js":33,"readable-stream/transform.js":34,"readable-stream/writable.js":35}],38:[function(c,l,k){function m(a){switch(this.encoding=function(a){var b=
+function(a){if(!a)return"utf8";for(var b;;)switch(a){case "utf8":case "utf-8":return"utf8";case "ucs2":case "ucs-2":case "utf16le":case "utf-16le":return"utf16le";case "latin1":case "binary":return"latin1";case "base64":case "ascii":case "hex":return a;default:if(b)return;a=(""+a).toLowerCase();b=!0}}(a);if("string"!=typeof b&&(w.isEncoding===v||!v(a)))throw Error("Unknown encoding: "+a);return b||a}(a),this.encoding){case "utf16le":this.text=h;this.end=f;a=4;break;case "utf8":this.fillLast=p;a=4;
+break;case "base64":this.text=d;this.end=x;a=3;break;default:return this.write=e,void(this.end=r)}this.lastTotal=this.lastNeed=0;this.lastChar=w.allocUnsafe(a)}function a(a){return 127>=a?0:6==a>>5?2:14==a>>4?3:30==a>>3?4:-1}function p(a){var b=this.lastTotal-this.lastNeed;a:if(128!=(192&a[0]))var d=(this.lastNeed=0,"\ufffd".repeat(b));else{if(1<this.lastNeed&&1<a.length){if(128!=(192&a[1])){d=(this.lastNeed=1,"\ufffd".repeat(b+1));break a}if(2<this.lastNeed&&2<a.length&&128!=(192&a[2])){d=(this.lastNeed=
+2,"\ufffd".repeat(b+2));break a}}d=void 0}return void 0!==d?d:this.lastNeed<=a.length?(a.copy(this.lastChar,b,0,this.lastNeed),this.lastChar.toString(this.encoding,0,this.lastTotal)):(a.copy(this.lastChar,b,0,a.length),void(this.lastNeed-=a.length))}function h(a,d){if(0==(a.length-d)%2){var b=a.toString("utf16le",d);if(b){var c=b.charCodeAt(b.length-1);if(55296<=c&&56319>=c)return this.lastNeed=2,this.lastTotal=4,this.lastChar[0]=a[a.length-2],this.lastChar[1]=a[a.length-1],b.slice(0,-1)}return b}return this.lastNeed=
+1,this.lastTotal=2,this.lastChar[0]=a[a.length-1],a.toString("utf16le",d,a.length-1)}function f(a){a=a&&a.length?this.write(a):"";return this.lastNeed?a+this.lastChar.toString("utf16le",0,this.lastTotal-this.lastNeed):a}function d(a,d){var b=(a.length-d)%3;return 0===b?a.toString("base64",d):(this.lastNeed=3-b,this.lastTotal=3,1===b?this.lastChar[0]=a[a.length-1]:(this.lastChar[0]=a[a.length-2],this.lastChar[1]=a[a.length-1]),a.toString("base64",d,a.length-b))}function x(a){a=a&&a.length?this.write(a):
+"";return this.lastNeed?a+this.lastChar.toString("base64",0,3-this.lastNeed):a}function e(a){return a.toString(this.encoding)}function r(a){return a&&a.length?this.write(a):""}var w=c("safe-buffer").Buffer,v=w.isEncoding||function(a){switch((a=""+a)&&a.toLowerCase()){case "hex":case "utf8":case "utf-8":case "ascii":case "binary":case "base64":case "ucs2":case "ucs-2":case "utf16le":case "utf-16le":case "raw":returntrue;default:returnfalse}};k.StringDecoder=m;m.prototype.write=function(a){if(0===a.length)return"";
+var b;if(this.lastNeed){if(void 0===(b=this.fillLast(a)))return"";var d=this.lastNeed;this.lastNeed=0}else d=0;return d<a.length?b?b+this.text(a,d):this.text(a,d):b||""};m.prototype.end=function(a){a=a&&a.length?this.write(a):"";return this.lastNeed?a+"\ufffd".repeat(this.lastTotal-this.lastNeed):a};m.prototype.text=function(b,d){var c=b.length-1;if(c<d)c=0;else{var e=a(b[c]);c=0<=e?(0<e&&(this.lastNeed=e-1),e):--c<d?0:0<=(e=a(b[c]))?(0<e&&(this.lastNeed=e-2),e):--c<d?0:0<=(e=a(b[c]))?(0<e&&(2===
+e?e=0:this.lastNeed=e-3),e):0}if(!this.lastNeed)return b.toString("utf8",d);this.lastTotal=c;e=b.length-(c-this.lastNeed);return b.copy(this.lastChar,0,e),b.toString("utf8",d,e)};m.prototype.fillLast=function(a){if(this.lastNeed<=a.length)return a.copy(this.lastChar,this.lastTotal-this.lastNeed,0,this.lastNeed),this.lastChar.toString(this.encoding,0,this.lastTotal);a.copy(this.lastChar,this.lastTotal-this.lastNeed,0,a.length);this.lastNeed-=a.length}},{"safe-buffer":36}],39:[function(c,l,k){(function(c){function a(a){try{if(!c.localStorage)returnfalse}catch(h){returnfalse}a=
+c.localStorage[a];return null!=a&&"true"===String(a).toLowerCase()}l.exports=function(c,h){if(a("noDeprecation"))return c;var f=!1;return function(){if(!f){if(a("throwDeprecation"))throw Error(h);a("traceDeprecation")?console.trace(h):console.warn(h);f=!0}return c.apply(this,arguments)}}}).call(this,"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{}],40:[function(c,l,k){arguments[4][10][0].apply(k,arguments)},{dup:10}],41:[function(c,l,k){l.exports=
+function(c){return c&&"object"==typeof c&&"function"==typeof c.copy&&"function"==typeof c.fill&&"function"==typeof c.readUInt8}},{}],42:[function(c,l,k){(function(l,a){function m(a,b){var c={seen:[],stylize:f};return 3<=arguments.length&&(c.depth=arguments[2]),4<=arguments.length&&(c.colors=arguments[3]),w(b)?c.showHidden=b:b&&k._extend(c,b),u(c.showHidden)&&(c.showHidden=!1),u(c.depth)&&(c.depth=2),u(c.colors)&&(c.colors=!1),u(c.customInspect)&&(c.customInspect=!0),c.colors&&(c.stylize=h),d(c,a,
+c.depth)}function h(a,b){var d=m.styles[b];return d?"\u001b["+m.colors[d][0]+"m"+a+"\u001b["+m.colors[d][1]+"m":a}function f(a,b){return a}function d(a,c,f){if(a.customInspect&&c&&H(c.inspect)&&c.inspect!==k.inspect&&(!c.constructor||c.constructor.prototype!==c)){var g=c.inspect(f,a);return b(g)||(g=d(a,g,f)),g}var h=function(a,d){if(u(d))return a.stylize("undefined","undefined");if(b(d)){var c=""+JSON.stringify(d).replace(/^"|"$/g,"").replace(/'/g,"'").replace(/\\"/g,'"');return a.stylize(c,"string")}if(v(d))return a.stylize(""+
+d,"number");if(w(d))return a.stylize(""+d,"boolean");if(null===d)return a.stylize("null","null")}(a,c);if(h)return h;var l;h=Object.keys(c);var m=(l={},h.forEach(function(a,b){l[a]=!0}),l);if(a.showHidden&&(h=Object.getOwnPropertyNames(c)),J(c)&&(0<=h.indexOf("message")||0<=h.indexOf("description")))return x(c);if(0===h.length){if(H(c))return a.stylize("[Function"+(c.name?": "+c.name:"")+"]","special");if(y(c))return a.stylize(RegExp.prototype.toString.call(c),"regexp");if(G(c))return a.stylize(Date.prototype.toString.call(c),
+"date");if(J(c))return x(c)}var p="",B=!1,z=["{","}"];(r(c)&&(B=!0,z=["[","]"]),H(c))&&(p=" [Function"+(c.name?": "+c.name:"")+"]");return y(c)&&(p=" "+RegExp.prototype.toString.call(c)),G(c)&&(p=" "+Date.prototype.toUTCString.call(c)),J(c)&&(p=" "+x(c)),0!==h.length||B&&0!=c.length?0>f?y(c)?a.stylize(RegExp.prototype.toString.call(c),"regexp"):a.stylize("[Object]","special"):(a.seen.push(c),g=B?function(a,b,d,c,g){for(var f=[],h=0,k=b.length;h<k;++h)Object.prototype.hasOwnProperty.call(b,String(h))?
+f.push(e(a,b,d,c,String(h),!0)):f.push("");return g.forEach(function(g){g.match(/^\d+$/)||f.push(e(a,b,d,c,g,!0))}),f}(a,c,f,m,h):h.map(function(b){return e(a,c,f,m,b,B)}),a.seen.pop(),function(a,b,d){return 60<a.reduce(function(a,b){return 0,0<=b.indexOf("")&&0,a+b.replace(/\u001b\[\d\d?m/g,"").length+1},0)?d[0]+(""===b?"":b+"")+" "+a.join(",")+" "+d[1]:d[0]+b+" "+a.join(", ")+" "+d[1]}(g,p,z)):z[0]+p+z[1]}function x(a){return"["+Error.prototype.toString.call(a)+"]"}function e(a,b,c,e,f,h){var g,
+k,l;if((l=Object.getOwnPropertyDescriptor(b,f)||{value:b[f]}).get?k=l.set?a.stylize("[Getter/Setter]","special"):a.stylize("[Getter]","special"):l.set&&(k=a.stylize("[Setter]","special")),Object.prototype.hasOwnProperty.call(e,f)||(g="["+f+"]"),k||(0>a.seen.indexOf(l.value)?-1<(k=null===c?d(a,l.value,null):d(a,l.value,c-1)).indexOf("")&&(k=h?k.split("").map(function(a){return"  "+a}).join("").substr(2):""+k.split("").map(function(a){return"   "+a}).join("")):k=a.stylize("[Circular]","special")),u(g)){if(h&&
+f.match(/^\d+$/))return k;(g=JSON.stringify(""+f)).match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)?(g=g.substr(1,g.length-2),g=a.stylize(g,"name")):(g=g.replace(/'/g,"'").replace(/\\"/g,'"').replace(/(^"|"$)/g,""),g=a.stylize(g,"string"))}return g+": "+k}function r(a){return Array.isArray(a)}function w(a){return"boolean"==typeof a}function v(a){return"number"==typeof a}function b(a){return"string"==typeof a}function u(a){return void 0===a}function y(a){return z(a)&&"[object RegExp]"===Object.prototype.toString.call(a)}
+function z(a){return"object"==typeof a&&null!==a}function G(a){return z(a)&&"[object Date]"===Object.prototype.toString.call(a)}function J(a){return z(a)&&("[object Error]"===Object.prototype.toString.call(a)||a instanceof Error)}function H(a){return"function"==typeof a}function C(a){return 10>a?"0"+a.toString(10):a.toString(10)}var I=/%[sdj%]/g;k.format=function(a){if(!b(a)){for(var d=[],c=0;c<arguments.length;c++)d.push(m(arguments[c]));return d.join(" ")}c=1;var e=arguments,f=e.length;d=String(a).replace(I,
+function(a){if("%%"===a)return"%";if(c>=f)return a;switch(a){case "%s":return String(e[c++]);case "%d":return Number(e[c++]);case "%j":try{return JSON.stringify(e[c++])}catch(A){return"[Circular]"}default:return a}});for(var h=e[c];c<f;h=e[++c])null!==h&&z(h)?d+=" "+m(h):d+=" "+h;return d};k.deprecate=function(b,d){if(u(a.process))return function(){return k.deprecate(b,d).apply(this,arguments)};if(!0===l.noDeprecation)return b;var c=!1;return function(){if(!c){if(l.throwDeprecation)throw Error(d);
+l.traceDeprecation?console.trace(d):console.error(d);c=!0}return b.apply(this,arguments)}};var E,F={};k.debuglog=function(a){if(u(E)&&(E=l.env.NODE_DEBUG||""),a=a.toUpperCase(),!F[a])if((new RegExp("\b"+a+"\b","i")).test(E)){var b=l.pid;F[a]=function(){var d=k.format.apply(k,arguments);console.error("%s %d: %s",a,b,d)}}else F[a]=function(){};return F[a]};k.inspect=m;m.colors={bold:[1,22],italic:[3,23],underline:[4,24],inverse:[7,27],white:[37,39],grey:[90,39],black:[30,39],blue:[34,39],cyan:[36,39],
+green:[32,39],magenta:[35,39],red:[31,39],yellow:[33,39]};m.styles={special:"cyan",number:"yellow","boolean":"yellow",undefined:"grey","null":"bold",string:"green",date:"magenta",regexp:"red"};k.isArray=r;k.isBoolean=w;k.isNull=function(a){return null===a};k.isNullOrUndefined=function(a){return null==a};k.isNumber=v;k.isString=b;k.isSymbol=function(a){return"symbol"==typeof a};k.isUndefined=u;k.isRegExp=y;k.isObject=z;k.isDate=G;k.isError=J;k.isFunction=H;k.isPrimitive=function(a){return null===a||
+"boolean"==typeof a||"number"==typeof a||"string"==typeof a||"symbol"==typeof a||void 0===a};k.isBuffer=c("./support/isBuffer");var D="Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(" ");k.log=function(){var a,b;console.log("%s - %s",(a=new Date,b=[C(a.getHours()),C(a.getMinutes()),C(a.getSeconds())].join(":"),[a.getDate(),D[a.getMonth()],b].join(" ")),k.format.apply(k,arguments))};k.inherits=c("inherits");k._extend=function(a,b){if(!b||!z(b))return a;for(var d=Object.keys(b),c=d.length;c--;)a[d[c]]=
+b[d[c]];return a}}).call(this,c("_process"),"undefined"!=typeof global?global:"undefined"!=typeof self?self:"undefined"!=typeof window?window:{})},{"./support/isBuffer":41,_process:22,inherits:40}],43:[function(c,l,k){arguments[4][5][0].apply(k,arguments)},{"./lib/uint32":44,"./lib/uint64":45,dup:5}],44:[function(c,l,k){arguments[4][6][0].apply(k,arguments)},{dup:6}],45:[function(c,l,k){arguments[4][7][0].apply(k,arguments)},{dup:7}],46:[function(c,l,k){(function(k){!function(a){function m(){return 2==
+arguments.length?(new m(arguments[1])).update(arguments[0]).digest():this instanceof m?void h.call(this,arguments[0]):new m(arguments[0])}function h(a){return this.seed=a instanceof f?a.clone():f(a),this.v1=this.seed.clone().add(v),this.v2=this.seed.clone().add(x),this.v3=this.seed.clone(),this.v4=this.seed.clone().subtract(d),this.total_len=0,this.memsize=0,this.memory=null,this}var f=c("cuint").UINT32;f.prototype.xxh_update=function(a,c){var b,e=x._low,f=x._high;var h=(b=a*e)>>>16;h=h+c*e&65535;
+h+=a*f;var k=this._low+(65535&b);h=(k>>>16)+(this._high+(65535&h))<<16|65535&k;f=(h=h<<13|h>>>19)>>>16;h=(b=(k=65535&h)*(e=d._low))>>>16;h+=f*e;h&=65535;h+=k*d._high;this._low=65535&b;this._high=65535&h};var d=f("2654435761"),x=f("2246822519"),e=f("3266489917"),r=f("668265263"),w=f("374761393"),v=d.clone().add(x);m.prototype.init=h;m.prototype.update=function(a){var b="string"==typeof a;if(b){var d=[];b=0;for(var c=a.length;b<c;b++){var e=a.charCodeAt(b);128>e?d.push(e):2048>e?d.push(192|e>>6,128|
+63&e):55296>e||57344<=e?d.push(224|e>>12,128|e>>6&63,128|63&e):(b++,e=65536+((1023&e)<<10|1023&a.charCodeAt(b)),d.push(240|e>>18,128|e>>12&63,128|e>>6&63,128|63&e))}a=new Uint8Array(d);b=!1;d=!0}"undefined"!=typeof ArrayBuffer&&a instanceof ArrayBuffer&&(d=!0,a=new Uint8Array(a));c=0;var f=a.length;e=c+f;if(0==f)return this;if(this.total_len+=f,0==this.memsize&&(this.memory=b?"":d?new Uint8Array(16):new k(16)),16>this.memsize+f)return b?this.memory+=a:d?this.memory.set(a.subarray(0,f),this.memsize):
+a.copy(this.memory,this.memsize,0,f),this.memsize+=f,this;0<this.memsize&&(b?this.memory+=a.slice(0,16-this.memsize):d?this.memory.set(a.subarray(0,16-this.memsize),this.memsize):a.copy(this.memory,this.memsize,0,16-this.memsize),f=0,b?(this.v1.xxh_update(this.memory.charCodeAt(f+1)<<8|this.memory.charCodeAt(f),this.memory.charCodeAt(f+3)<<8|this.memory.charCodeAt(f+2)),f+=4,this.v2.xxh_update(this.memory.charCodeAt(f+1)<<8|this.memory.charCodeAt(f),this.memory.charCodeAt(f+3)<<8|this.memory.charCodeAt(f+
+2)),f+=4,this.v3.xxh_update(this.memory.charCodeAt(f+1)<<8|this.memory.charCodeAt(f),this.memory.charCodeAt(f+3)<<8|this.memory.charCodeAt(f+2)),f+=4,this.v4.xxh_update(this.memory.charCodeAt(f+1)<<8|this.memory.charCodeAt(f),this.memory.charCodeAt(f+3)<<8|this.memory.charCodeAt(f+2))):(this.v1.xxh_update(this.memory[f+1]<<8|this.memory[f],this.memory[f+3]<<8|this.memory[f+2]),f+=4,this.v2.xxh_update(this.memory[f+1]<<8|this.memory[f],this.memory[f+3]<<8|this.memory[f+2]),f+=4,this.v3.xxh_update(this.memory[f+
+1]<<8|this.memory[f],this.memory[f+3]<<8|this.memory[f+2]),f+=4,this.v4.xxh_update(this.memory[f+1]<<8|this.memory[f],this.memory[f+3]<<8|this.memory[f+2])),c+=16-this.memsize,this.memsize=0,b&&(this.memory=""));if(c<=e-16){f=e-16;do b?(this.v1.xxh_update(a.charCodeAt(c+1)<<8|a.charCodeAt(c),a.charCodeAt(c+3)<<8|a.charCodeAt(c+2)),c+=4,this.v2.xxh_update(a.charCodeAt(c+1)<<8|a.charCodeAt(c),a.charCodeAt(c+3)<<8|a.charCodeAt(c+2)),c+=4,this.v3.xxh_update(a.charCodeAt(c+1)<<8|a.charCodeAt(c),a.charCodeAt(c+
+3)<<8|a.charCodeAt(c+2)),c+=4,this.v4.xxh_update(a.charCodeAt(c+1)<<8|a.charCodeAt(c),a.charCodeAt(c+3)<<8|a.charCodeAt(c+2))):(this.v1.xxh_update(a[c+1]<<8|a[c],a[c+3]<<8|a[c+2]),c+=4,this.v2.xxh_update(a[c+1]<<8|a[c],a[c+3]<<8|a[c+2]),c+=4,this.v3.xxh_update(a[c+1]<<8|a[c],a[c+3]<<8|a[c+2]),c+=4,this.v4.xxh_update(a[c+1]<<8|a[c],a[c+3]<<8|a[c+2])),c+=4;while(c<=f)}return c<e&&(b?this.memory+=a.slice(c):d?this.memory.set(a.subarray(c,e),this.memsize):a.copy(this.memory,this.memsize,c,e),this.memsize=
+e-c),this};m.prototype.digest=function(){var a,c,h=this.memory,k="string"==typeof h,l=0,m=this.memsize,p=new f;for((a=16<=this.total_len?this.v1.rotl(1).add(this.v2.rotl(7).add(this.v3.rotl(12).add(this.v4.rotl(18)))):this.seed.add(w)).add(p.fromNumber(this.total_len));l<=m-4;)k?p.fromBits(h.charCodeAt(l+1)<<8|h.charCodeAt(l),h.charCodeAt(l+3)<<8|h.charCodeAt(l+2)):p.fromBits(h[l+1]<<8|h[l],h[l+3]<<8|h[l+2]),a.add(p.multiply(e)).rotl(17).multiply(r),l+=4;for(;l<m;)p.fromBits(k?h.charCodeAt(l++):h[l++],
+0),a.add(p.multiply(w)).rotl(11).multiply(d);return c=a.clone().shiftRight(15),a.xor(c).multiply(x),c=a.clone().shiftRight(13),a.xor(c).multiply(e),c=a.clone().shiftRight(16),a.xor(c),this.init(this.seed),a};"undefined"!=typeof define&&define.amd?define([],function(){return m}):void 0!==l&&l.exports?l.exports=m:a.XXH=m}(this)}).call(this,c("buffer").Buffer)},{buffer:3,cuint:43}],47:[core,{buffer:3,lz4:18}]};t();
