@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.328b MEGA TEST
+// v1.328c MEGA TEST
 // Game Configurations
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
@@ -84,7 +84,7 @@ function checkVideos1(a){
 	if (!videoJustWatchProflag[a]){
 		console.log("video skins activated");
 		window.videoJustWatchPro = document.createElement("video"); // create a video element
-		window.videoJustWatchPro.crossOrigin = 'anonymous';
+//		window.videoJustWatchPro.crossOrigin = 'anonymous';
 		window.videoJustWatchPro.src = a;	
 		window.videoJustWatchProflag[a]=true;
 	}
