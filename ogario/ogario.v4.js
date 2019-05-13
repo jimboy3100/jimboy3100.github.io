@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.338 MEGA TEST
+// v1.339 MEGA TEST
 // Game Configurations
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
@@ -4536,9 +4536,7 @@ var core = function(t, e, i) {
 						((v.videoSkins && node2.src.includes(".mp4") && checkVideos(node2.src, this.targetNick)),
 						(node2.src.includes(".mp4") && style.drawImage(window.videoJustWatchPro[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) )),
 						//node2.src.includes(".mp4") && (style.drawImage(node2, this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y)),
-						(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ") && checkVideos("https://jimboy3100.github.io/banners/testvideomama.mp4","℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")),
-						this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ") && (style.drawImage(window.videoJustWatchPro[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) ),
-						!this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ") && !node2.src.includes(".mp4") && style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), 
+						!node2.src.includes(".mp4") && style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), 
 						//(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (style.drawImage(cimg6, this.x - y, this.y - y, 2 * y, 2 * y)),
 						//this.targetNick.includes("℄") && (style.rotate(M.cAngle1)) && (style.drawImage(cimg2, this.x - y * 1.5, this.y - y * 1.5, 3 * y, 3 * y)) &&
 						(this.targetNick.includes("The Dying Light")) && (style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)), 
