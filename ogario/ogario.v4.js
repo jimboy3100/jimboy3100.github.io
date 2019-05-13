@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.339 MEGA TEST
+// v1.403 MEGA TEST
 // Game Configurations
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
@@ -84,7 +84,7 @@ function checkVideos1(a){
 	if (!videoJustWatchProflag[a]){
 		console.log("video skins activated");
 		window.videoJustWatchPro[a] = document.createElement("video"); // create a video element
-//		window.videoJustWatchPro.crossOrigin = 'anonymous';
+//		window.videoJustWatchPro[a].crossOrigin = 'anonymous';
 		window.videoJustWatchPro[a].src = a;	
 		window.videoJustWatchProflag[a]=true;
 	}
@@ -2519,11 +2519,11 @@ var core = function(t, e, i) {
                     if ("skin-preview" === t) { //or if ("skin-preview" === e)
 						//console.log(e,e.src);	
 						
-						if (e.src.includes(".mp4")){ //console.log("stage 3a videos");
-					
+						if (e.src.includes(".mp4") || e.src.includes(".webm") || e.src.includes(".ogg")){ //console.log("stage 3a videos");
+						s("#skin-preview").children().remove();
                         s("#skin-preview").removeClass("default");
-						s("#skin-preview").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<video src=\'' + e.src + "' width='500'>\"></a>");
-						s("#skin-popover").append('<video id="videoskinpreview" src=\'' + e.src + "' width='500' controls>\"></video>");
+						s("#skin-preview").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<video src=\'' + e.src + "' width='350'>\"></a>");
+						s("#skin-popover").append('<video id="videoskinpreview" src=\'' + e.src + "' width='350' controls>\"></video>");
 //						s("#skin-popover").popover();
 						
 						//s("#skin-preview").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<video src=\'' + t.src + "' width='500'>\"></a>");
@@ -2536,7 +2536,7 @@ var core = function(t, e, i) {
                         s("#skin-popover").append(s(e).fadeIn(1000));
                         s("#skin-popover").popover();
                     } else {
-						if (e.src.includes(".mp4")){ //console.log("stage 3b videos");
+						if (e.src.includes(".mp4") || e.src.includes(".webm") || e.src.includes(".ogg")){ //console.log("stage 3b videos");
                         s("#" + t).removeClass("default");
 						s("#" + t).append(s(e).fadeIn(1000));
 						
@@ -2550,7 +2550,7 @@ var core = function(t, e, i) {
             },
             'setSkinPreview': function(t, e) {
 				
-				if (t.includes(".mp4")){
+				if (t.includes(".mp4") || t.includes(".webm") || t.includes(".ogg")){
 					//console.log("stage 1 videos");
 					
                 if (s('#' + e).empty().addClass('default'), t && 0 != t.length) {
@@ -3120,7 +3120,7 @@ var core = function(t, e, i) {
             'loadSkin': function(t, e) {
                 var i = this;
 				//console.log ("t:" + t + "e:" + e);
-				if (e.includes(".mp4")){
+				if (e.includes(".mp4") || e.includes(".webm") || e.includes(".ogv")){
 					t[e] = new Video();
 					//console.log("stage 2 videos");
 				}
@@ -4533,10 +4533,10 @@ var core = function(t, e, i) {
 						
 						//style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), s && (style.globalAlpha = value, s = false)), 
 						//(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (this.oldAlpha=style.globalAlpha, style.globalAlpha = 0.1, style.drawImage(cimg7, this.x - y * 4, this.y - y * 4, 8 * y, 8 * y), style.globalAlpha=this.oldAlpha), //cimg7						
-						((v.videoSkins && node2.src.includes(".mp4") && checkVideos(node2.src, this.targetNick)),
-						(node2.src.includes(".mp4") && style.drawImage(window.videoJustWatchPro[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) )),
+						((v.videoSkins && (node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) && checkVideos(node2.src, this.targetNick)),
+						(node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) && style.drawImage(window.videoJustWatchPro[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) ),
 						//node2.src.includes(".mp4") && (style.drawImage(node2, this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y)),
-						!node2.src.includes(".mp4") && style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), 
+						!node2.src.includes(".mp4") && !node2.src.includes(".webm") && !node2.src.includes(".ogv") && style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), 
 						//(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (style.drawImage(cimg6, this.x - y, this.y - y, 2 * y, 2 * y)),
 						//this.targetNick.includes("℄") && (style.rotate(M.cAngle1)) && (style.drawImage(cimg2, this.x - y * 1.5, this.y - y * 1.5, 3 * y, 3 * y)) &&
 						(this.targetNick.includes("The Dying Light")) && (style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)), 
@@ -4559,8 +4559,8 @@ var core = function(t, e, i) {
                             style.restore();
                         } else {
 							if (v.customSkins && M.showCustomSkins && ogarminimapdrawer.customSkinsMap[this.targetNick] && (node2.src = ogarminimapdrawer.customSkinsMap[this.targetNick])){
-								if (v.videoSkins && node2.src.includes(".mp4") && checkVideos(node2.src, this.targetNick)){
-						    ( node2.src.includes(".mp4") && style.drawImage(window.videoJustWatchPro[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) )
+								if (v.videoSkins && (node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) && checkVideos(node2.src, this.targetNick)){
+						    ( (node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) && style.drawImage(window.videoJustWatchPro[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) )
 								}							
 							}
 							if (dyinglight1load == "yes" && node==null) {
