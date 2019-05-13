@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.333 MEGA TEST
+// v1.338 MEGA TEST
 // Game Configurations
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
@@ -235,11 +235,12 @@ var core = function(t, e, i) {
                     'hideEnemiesMass': 'Ukryj masę przeciwników',
                     'vanillaSkins': 'Podstawowe skiny',
                     'customSkins': 'Własne skiny',
+					'videoSkins': 'Video skins',
                     'myTransparentSkin': 'Mój przezroczysty skin',
                     'myCustomColor': 'Mój własny kolor',
                     'transparentCells': 'Przezroczyste kulki',
                     'transparentViruses': 'Przezroczyste wirusy',
-                    'transparentSkins': 'Przezroczyste skiny',
+                    'transparentSkins': 'Przezroczyste skiny',					
                     'showGrid': 'Siatka',
                     'showBgSectors': 'Sektory w tle',
                     'showMapBorders': 'Granice mapy',
@@ -603,6 +604,7 @@ var core = function(t, e, i) {
                     'hideEnemiesMass': 'Hide enemies mass',
                     'vanillaSkins': 'Vanilla skins',
                     'customSkins': 'Custom skins',
+					'videoSkins': 'Video skins',
                     'myTransparentSkin': 'My transparent skin',
                     'myCustomColor': 'My custom color',
                     'transparentCells': 'Transparent cells',
@@ -1893,6 +1895,7 @@ var core = function(t, e, i) {
                 'hideEnemiesMass': false,
                 'vanillaSkins': false,
                 'customSkins': true,
+				'videoSkins': true,
                 'myTransparentSkin': false,
                 'myCustomColor': false,
                 'transparentCells': false,
@@ -1967,6 +1970,8 @@ var core = function(t, e, i) {
             };
 			
         window.legendmod4 = c;
+		window.legendmod5 = v;
+		
         var ogarminimapdrawer = {
             'name': 'LM express',
             'version': 'v1',
@@ -2669,7 +2674,7 @@ var core = function(t, e, i) {
 					this["addOptions"](["quickResp", "autoResp"], "respGroup"), 
 					this["addOptions"](["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup"), 
 					this["addOptions"](["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound"], "massGroup"),
-					this["protocolMode"] ? this["addOptions"](["customSkins"], "skinsGroup") : this["addOptions"](["customSkins", "vanillaSkins"], "skinsGroup"), 
+					this["protocolMode"] ? this["addOptions"](["customSkins", "videoSkins"], "skinsGroup") : this["addOptions"](["customSkins", "vanillaSkins", "videoSkins"], "skinsGroup"), 
 					this["addOptions"](["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup"), 
 					this["addOptions"](["myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow"], "transparencyGroup"), 
 					this["addOptions"](["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup"), 
@@ -4528,7 +4533,7 @@ var core = function(t, e, i) {
 						
 						//style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), s && (style.globalAlpha = value, s = false)), 
 						//(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (this.oldAlpha=style.globalAlpha, style.globalAlpha = 0.1, style.drawImage(cimg7, this.x - y * 4, this.y - y * 4, 8 * y, 8 * y), style.globalAlpha=this.oldAlpha), //cimg7						
-						((node2.src.includes(".mp4") && checkVideos(node2.src, this.targetNick)),
+						((v.videoSkins && node2.src.includes(".mp4") && checkVideos(node2.src, this.targetNick)),
 						(node2.src.includes(".mp4") && style.drawImage(window.videoJustWatchPro[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) )),
 						//node2.src.includes(".mp4") && (style.drawImage(node2, this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y)),
 						(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ") && checkVideos("https://jimboy3100.github.io/banners/testvideomama.mp4","℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")),
@@ -4556,8 +4561,8 @@ var core = function(t, e, i) {
                             style.restore();
                         } else {
 							if (v.customSkins && M.showCustomSkins && ogarminimapdrawer.customSkinsMap[this.targetNick] && (node2.src = ogarminimapdrawer.customSkinsMap[this.targetNick])){
-								if (node2.src.includes(".mp4") && checkVideos(node2.src, this.targetNick)){
-						    (node2.src.includes(".mp4") && style.drawImage(window.videoJustWatchPro[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) )
+								if (v.videoSkins && node2.src.includes(".mp4") && checkVideos(node2.src, this.targetNick)){
+						    ( node2.src.includes(".mp4") && style.drawImage(window.videoJustWatchPro[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) )
 								}							
 							}
 							if (dyinglight1load == "yes" && node==null) {
