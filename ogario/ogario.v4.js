@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.406 MEGA TEST
+// v1.412 MEGA TEST
 // Game Configurations
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
@@ -238,7 +238,7 @@ var core = function(t, e, i) {
                     'hideEnemiesMass': 'Ukryj masę przeciwników',
                     'vanillaSkins': 'Podstawowe skiny',
                     'customSkins': 'Własne skiny',
-					'videoSkins': 'Video skins',
+					'videoSkins': 'Video skins (.mp4 .webm. ogv)',
 					'videoSkinsMusic': 'Sound from other\'s Video skins when both C3',
                     'myTransparentSkin': 'Mój przezroczysty skin',
                     'myCustomColor': 'Mój własny kolor',
@@ -608,7 +608,7 @@ var core = function(t, e, i) {
                     'hideEnemiesMass': 'Hide enemies mass',
                     'vanillaSkins': 'Vanilla skins',
                     'customSkins': 'Custom skins',
-					'videoSkins': 'Video skins',
+					'videoSkins': 'Video skins (.mp4 .webm. ogv)',
 					'videoSkinsMusic': 'Sound from other\'s Video skins when both C3',
                     'myTransparentSkin': 'My transparent skin',
                     'myCustomColor': 'My custom color',
@@ -5260,16 +5260,21 @@ var core = function(t, e, i) {
                     for (; t < this["cells"].length; t++) {
                         var e = this["cells"][t];
                         if (!e["isVirus"]) {
+							//console.log(i); i for food is 13
                             var i = ~~(e["size"] * e["size"] / 100);
+							if (i != 13){
                             var s = this["selectBiggestCell"] ? this["playerMaxMass"] : this["playerMinMass"];
                             var o = i / s;
                             var a = s < 1000 ? 0.35 : 0.38;
                             if (v["oppColors"] && !v["oppRings"]) {
-                                e["oppColor"] = this["setCellOppColor"](e["isPlayerCell"], o, a);
+								
+									e["oppColor"] = this["setCellOppColor"](e["isPlayerCell"], o, a);
+								
                             }
                             if (!(e["isPlayerCell"] || !v["splitRange"] && !v["oppRings"])) {
                                 this["cacheCells"](e["x"], e["y"], e["size"], o, a);
                             }
+						}
                         }
                     }
                 }
