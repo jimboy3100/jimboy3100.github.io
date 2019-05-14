@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.412 MEGA TEST
+// v1.413 MEGA TEST
 // Game Configurations
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
@@ -238,7 +238,7 @@ var core = function(t, e, i) {
                     'hideEnemiesMass': 'Ukryj masę przeciwników',
                     'vanillaSkins': 'Podstawowe skiny',
                     'customSkins': 'Własne skiny',
-					'videoSkins': 'Video skins (.mp4 .webm. ogv)',
+					'videoSkins': 'Video skins (.mp4 .webm .ogv)',
 					'videoSkinsMusic': 'Sound from other\'s Video skins when both C3',
                     'myTransparentSkin': 'Mój przezroczysty skin',
                     'myCustomColor': 'Mój własny kolor',
@@ -608,7 +608,7 @@ var core = function(t, e, i) {
                     'hideEnemiesMass': 'Hide enemies mass',
                     'vanillaSkins': 'Vanilla skins',
                     'customSkins': 'Custom skins',
-					'videoSkins': 'Video skins (.mp4 .webm. ogv)',
+					'videoSkins': 'Video skins (.mp4 .webm .ogv)',
 					'videoSkinsMusic': 'Sound from other\'s Video skins when both C3',
                     'myTransparentSkin': 'My transparent skin',
                     'myCustomColor': 'My custom color',
