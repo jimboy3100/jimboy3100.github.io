@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.428 MEGA TEST
+// v1.429 MEGA TEST
 // Game Configurations
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
@@ -4661,7 +4661,7 @@ var core = function(t, e, i) {
 								style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);							
 							}
 							
-							
+							}
                             var recursive = false;
                             if (!this.isPlayerCell && (recursive = ogarminimapdrawer.setAutoHideCellInfo(y)) && v.autoHideNames && v.autoHideMass) {
                                 style.restore();
@@ -4683,7 +4683,7 @@ var core = function(t, e, i) {
                                 style.restore();
                             }
 							
-                        }
+
 						
                     }
 				}
