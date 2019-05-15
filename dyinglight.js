@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v1.90
+//v1.91
 var timeslost=0;
 var usedonce=0;
 var usedonce1=1;
