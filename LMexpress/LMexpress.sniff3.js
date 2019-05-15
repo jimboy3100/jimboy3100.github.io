@@ -4,7 +4,9 @@
 
 //preventcanvasimagecrash();
 
-//1. RegisterSkins
+
+/*
+//1. RegisterSkins (declared on ogario.js)
 if ( typeof core != 'undefined'){
 //core.registerSkin('fly', null, 'https://i.imgur.com/poFMdZd.png', 1, null);
 	core.registerSkin = function(a, b, c, d, e){
@@ -12,6 +14,8 @@ if ( typeof core != 'undefined'){
 	window.customskinsurl=c;
 	}
 }
+*/
+
 
 // Inject Chat to text userscript
 //setTimeout(function() {
