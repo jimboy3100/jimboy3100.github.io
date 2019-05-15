@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.413 MEGA TEST
+// v1.418 MEGA TEST
 // Game Configurations
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
@@ -4519,7 +4519,7 @@ var core = function(t, e, i) {
                                 }
                             }
                         }
-						if (dyinglight1load != "yes"){
+						if (dyinglight1load != "yes" || this.targetNick.includes("The Dying Light")){
                         style.fillStyle = color;
                         style.fill();
 						}
@@ -4569,7 +4569,7 @@ var core = function(t, e, i) {
 						    ( (node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) && style.drawImage(window.videoJustWatchPro[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) )
 								}							
 							}
-							if (dyinglight1load == "yes" && node==null) {
+							if (dyinglight1load == "yes" && node==null && this.targetNick.includes("The Dying Light")==false) {
 							//console.log(this.mass);
 							//if (this.mass && this.mass<=500){							
 								style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
