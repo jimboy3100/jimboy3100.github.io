@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.418 MEGA TEST
+// v1.427 MEGA TEST
 // Game Configurations
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
@@ -87,7 +87,7 @@ function checkVideos1(a){
 	if (!videoJustWatchProflag[a]){
 		console.log("video skins activated");
 		window.videoJustWatchPro[a] = document.createElement("video"); // create a video element
-//		window.videoJustWatchPro[a].crossOrigin = 'anonymous';
+		window.videoJustWatchPro[a].crossOrigin = 'anonymous';
 		window.videoJustWatchPro[a].src = a;	
 		window.videoJustWatchProflag[a]=true;
 	}
@@ -280,6 +280,7 @@ var core = function(t, e, i) {
                     'commandSound': 'Dźwięk powiadomienia o komendzie',
 					'virusSoundurl': 'Virus shot sound',
 					'virusSound': 'Virus shot sound',
+					'jellyPhisycs': 'Jelly Physics',
                     'showTop5': 'Pokaż top 5 teamu',
                     'showTargeting': 'Pokaż namierzanie',
                     'showTime': 'Pokaż aktualny czas',
@@ -650,6 +651,7 @@ var core = function(t, e, i) {
                     'commandSound': 'Command notification sound',
 					'virusSoundurl': 'Virus shot sound',
 					'virusSound': 'Virus shot sound',
+					'jellyPhisycs': 'Jelly Physics',
                     'showTop5': 'Show teamboard',
                     'showTargeting': 'Show targeting',
                     'showTime': 'Show current time',
@@ -1879,7 +1881,7 @@ var core = function(t, e, i) {
                 'color': g.mainColor
             },
             v = {
-				'jellyPhisycs':false,
+				'jellyPhisycs':true,
 				'virusSound':false,				
                 'quickResp': true,
                 'autoResp': false,
@@ -2679,7 +2681,7 @@ var core = function(t, e, i) {
 					this["addOptions"](["autoZoom"], "zoomGroup"), 
 					this["addOptions"](["quickResp", "autoResp"], "respGroup"), 
 					this["addOptions"](["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup"), 
-					this["addOptions"](["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound"], "massGroup"),
+					this["addOptions"](["jellyPhisycs","showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound"], "massGroup"),
 					this["protocolMode"] ? this["addOptions"](["customSkins", "videoSkins", "videoSkinsMusic"], "skinsGroup") : this["addOptions"](["customSkins", "vanillaSkins", "videoSkins", "videoSkinsMusic"], "skinsGroup"), 
 					this["addOptions"](["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup"), 
 					this["addOptions"](["myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow"], "transparencyGroup"), 
@@ -4106,7 +4108,14 @@ var core = function(t, e, i) {
             cimgDyingLight5.src = 'https://jimboy3100.github.io/banners/icondyinglightzombiebig.png';		
 			cimgDyingLight6 = new Image;
             cimgDyingLight6.src = 'https://jimboy3100.github.io/banners/icondyinglightvolaltile.png';			
-			}		
+            }		
+            
+            //lylko
+            this.points = []
+            this.pointsVel = []
+            this.maxPointRad = 0
+
+
 			this.oldAlpha=0;
             this.id = t; 
 			this.x = e; 
@@ -4493,9 +4502,42 @@ var core = function(t, e, i) {
                         var value = style.globalAlpha;
                         var s = false;
                         var y = this.isFood ? this.size + g.foodSize : this.size;
-                        if (style.beginPath(), style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
-                            return style.fillStyle = this.color, style.fill(), void style.restore();
-                        }
+                        style.beginPath()
+
+
+                        if (v.jellyPhisycs && this.points.length) {
+                            var point = this.points[0];
+                            style.moveTo(point.x, point.y);
+                            for (var i = 0; i < this.points.length; ++i) {
+                                var point = this.points[i];
+                                style.lineTo(point.x, point.y);
+                            }
+                        }else if (v.jellyPhisycs && this.isVirus) {
+                            style.lineJoin = "miter"
+                            var pointCount = 120;
+                            var incremental = this.pi2 / pointCount;
+                            style.moveTo(this.x, this.y + this.size + 3);
+                            for (var i = 1; i < pointCount; i++) {
+                                var angle = i * incremental;
+                                var dist = this.size - 3 + (i % 2 === 0) * 6;
+                                style.lineTo(
+                                    this.x + dist * Math.sin(angle),
+                                    this.y + dist * Math.cos(angle)
+                                )
+                            }
+                            style.lineTo(this.x, this.y + this.size + 3);
+                        }else style.arc(this.x, this.y, y, 0x0, this.pi2, false);
+
+                        style.closePath();
+
+
+
+                        //if (style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
+                        //    return style.fillStyle = this.color, style.fill(), void style.restore();
+                        //}
+
+
+
                         if (this.isVirus) {
 							if (dyinglight1load == "yes" ) {
 							style.drawImage(cimgDyingLightvirus, this.x - 0.8 * this.size, this.y - 0.8 * this.size, 1.6 * this.size, 1.6 * this.size);
@@ -4533,65 +4575,90 @@ var core = function(t, e, i) {
 						}*/
                         var node = null;						
 						var node2 = {}; //, node2.src = ogarminimapdrawer.customSkinsMap[this.targetNick]
-						
-                        if (v.customSkins && M.showCustomSkins && (node = ogarminimapdrawer.getCustomSkin(this.targetNick, this.color)) && (node2.src = ogarminimapdrawer.customSkinsMap[this.targetNick]) &&
-						(((v.transparentSkins || M.play && v.oppColors) && (!this.isPlayerCell || v.myTransparentSkin) || this.isPlayerCell && v.myTransparentSkin) && (style.globalAlpha *= g.skinsAlpha, s = true), 
-						
+                        
+                        
+
+                        //lylko
+                        if (v.customSkins && M.showCustomSkins){
+                             node = ogarminimapdrawer.getCustomSkin(this.targetNick, this.color);
+                             
+                            if (node){
+                                if ((v.transparentSkins || M.play && v.oppColors) && !(this.isPlayerCell && !v.myTransparentSkin) || this.isPlayerCell && v.myTransparentSkin) {
+                                    style.globalAlpha *= g.skinsAlpha;
+                                    s = true;
+                                }
+                            
+
+                                if(v.jellyPhisycs){
+                                    var lineWidth = Math.max(~~(y / 50), 10);
+                                    style.save();
+                                    style.clip();
+                                    this.maxPointRad && (y=this.maxPointRad);
+                                    style.drawImage(node, this.x - y-lineWidth, this.y - y-lineWidth, 2 * y+lineWidth*2, 2 * y+lineWidth*2);
+									
+                                    style.globalCompositeOperation='luminosity';
+                
+                                    style.lineWidth = lineWidth
+                                    style.strokeStyle = color;
+                                    style.stroke();
+                                    style.globalCompositeOperation='';
+                                    style.restore();
+                
+                                } else style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
+								
+								//special animations
+								if (this.targetNick.includes("The Dying Light")){
+									style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y);
+								}
+								else if(this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("℄🌀     ᑕᖇᗩƵƳ😈") || this.targetNick.includes("℄🌀ᔕᕼᗴᖇᗴ ᛕᕼᗩᑎ")){
+									style.drawImage(cimg2, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y);
+								}
 						//style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), s && (style.globalAlpha = value, s = false)), 
 						//(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (this.oldAlpha=style.globalAlpha, style.globalAlpha = 0.1, style.drawImage(cimg7, this.x - y * 4, this.y - y * 4, 8 * y, 8 * y), style.globalAlpha=this.oldAlpha), //cimg7						
-						((v.videoSkins && (node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) && checkVideos(node2.src, this.targetNick)),
-						(node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) && style.drawImage(window.videoJustWatchPro[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) ),
+						//((v.videoSkins && (node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) && checkVideos(node2.src, this.targetNick)),
+						//(node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) && style.drawImage(window.videoJustWatchPro[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) ),
 						//node2.src.includes(".mp4") && (style.drawImage(node2, this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y)),
-						!node2.src.includes(".mp4") && !node2.src.includes(".webm") && !node2.src.includes(".ogv") && style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), 
+						//!node2.src.includes(".mp4") && !node2.src.includes(".webm") && !node2.src.includes(".ogv") && style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), 
 						//(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (style.drawImage(cimg6, this.x - y, this.y - y, 2 * y, 2 * y)),
 						//this.targetNick.includes("℄") && (style.rotate(M.cAngle1)) && (style.drawImage(cimg2, this.x - y * 1.5, this.y - y * 1.5, 3 * y, 3 * y)) &&
-						(this.targetNick.includes("The Dying Light")) && (style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)), 
-						(this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("℄🌀     ᑕᖇᗩƵƳ😈") || this.targetNick.includes("℄🌀ᔕᕼᗴᖇᗴ ᛕᕼᗩᑎ")) && 
-						(style.drawImage(cimg2, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)),
+						//(this.targetNick.includes("The Dying Light")) && (style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)), 
+						//(this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("℄🌀     ᑕᖇᗩƵƳ😈") || this.targetNick.includes("℄🌀ᔕᕼᗴᖇᗴ ᛕᕼᗩᑎ")) && 
+
 						//(M.cAngle += .007), console.log(M.cAngle),
 						//style.rotate(M.cAngle1),
-						
-						s && (style.globalAlpha = value, s = false)), 
-						
-						v.teammatesInd && !this.isPlayerCell && y <= 800 && 
+                            }
+                        }
+                        if (s){
+                            style.globalAlpha = value;
+                            s = false;
+                        }
+                         
+                       
+						if(v.teammatesInd && !this.isPlayerCell && y <= 800 && 
 						window.teammatenicks && 
-						(window.teammatenicks.includes(this.targetNick)) && 
-						ogarfooddrawer.drawTeammatesInd(style, this.x, this.y, y), 
+						(window.teammatenicks.includes(this.targetNick))){
+						 ogarfooddrawer.drawTeammatesInd(style, this.x, this.y, y)}
 						
-						v.noNames && !v.showMass || canCreateDiscussions) {
+						if(v.noNames && !v.showMass || canCreateDiscussions){
 
 //                            y <= 200 && (node || ogarminimapdrawer.checkSkinsMap(this.targetNick, this.color)) && ogarfooddrawer.drawTeammatesInd(style, this.x, this.y, y), v.noNames && !v.showMass || canCreateDiscussions) {
 
                             style.restore();
+                            return;
                         } else {
-							if (v.customSkins && M.showCustomSkins && ogarminimapdrawer.customSkinsMap[this.targetNick] && (node2.src = ogarminimapdrawer.customSkinsMap[this.targetNick])){
-								if (v.videoSkins && (node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) && checkVideos(node2.src, this.targetNick)){
-						    ( (node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) && style.drawImage(window.videoJustWatchPro[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) )
-								}							
-							}
-							if (dyinglight1load == "yes" && node==null && this.targetNick.includes("The Dying Light")==false) {
-							//console.log(this.mass);
-							//if (this.mass && this.mass<=500){							
-								style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
-								//}
-							/*else if (this.mass && this.mass<=1000){
-								style.drawImage(cimgDyingLight1, this.x - y, this.y - y, 2 * y, 2 * y);
-								}
-							else if (this.mass && this.mass<=1500){
-								style.drawImage(cimgDyingLight2, this.x - y, this.y - y, 2 * y, 2 * y);
-								}
-							else if (this.mass && this.mass<=2500){
-								style.drawImage(cimgDyingLight3, this.x - y, this.y - y, 2 * y, 2 * y);
-								}
-							else if (this.mass && this.mass<=5000){
-								style.drawImage(cimgDyingLight4, this.x - y, this.y - y, 2 * y, 2 * y);
-								}
-							else if (this.mass && this.mass<=10000){
-								style.drawImage(cimgDyingLight5, this.x - y, this.y - y, 2 * y, 2 * y);
+							if (v.customSkins && M.showCustomSkins){
+								node2.src = ogarminimapdrawer.customSkinsMap[this.targetNick];
+								ogarminimapdrawer.customSkinsMap[this.targetNick];								
+								if (node2.src){
+								if (v.videoSkins){ 
+								if (node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")){
+									checkVideos(node2.src, this.targetNick);
+									style.drawImage(window.videoJustWatchPro[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y);
 								}	
-							else if (this.mass && this.mass>10000){
-								style.drawImage(cimgDyingLight6, this.x - y, this.y - y, 2 * y, 2 * y);
-								}*/									
+							}								
+							}
+							if (dyinglight1load == "yes" && node==null && this.targetNick.includes("The Dying Light")==false) {					
+								style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);							
 							}
 							
 							
@@ -4619,7 +4686,8 @@ var core = function(t, e, i) {
                         }
 						
                     }
-                };
+				}
+            };
         }
         window.legendmod1 = ogarbasicassembly;
         var M = {
@@ -5469,8 +5537,8 @@ var core = function(t, e, i) {
                 M.removedCells[i].draw(this.ctx, true);
             }
 
-
-            v.jellyPhisycs&&M.updateQuadtree(M.cells);//
+            //lylko
+           v.jellyPhisycs && M.updateQuadtree(M.cells);//
 
             for (i = 0; i < M.cells.length; i++) {
 
