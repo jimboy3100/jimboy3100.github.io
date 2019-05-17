@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.431a MEGA TEST
+// v1.437 MEGA TEST
 // Game Configurations
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
@@ -117,8 +117,11 @@ Object.getOwnPropertyNames(window.videoJustWatchPro).forEach(function(element) {
 	}, 1000);
 }
 
-function LegendModSpawn(){}
+//functions for mods
 
+function LegendModSpawn(){}
+//window.Bufferdata;
+//window.generatedClientKey;
 
 
 //window.disableIntegrity=false;
@@ -3414,7 +3417,10 @@ var core = function(t, e, i) {
                 this.socket['onopen'] = function() {
                     console.log('[Legend mod Express] Socket open');
                     var e = t.createView(3);
-                    e.setUint8(0, 0), e.setUint16(1, 401, true), t['sendBuffer'](e), t['sendPartyData']();
+                    e.setUint8(0, 0), 
+					e.setUint16(1, 401, true), 
+					t['sendBuffer'](e), 
+					t['sendPartyData']();
                 }, this.socket['onmessage'] = function(e) {
                     t['handleMessage'](e);
                 }, this.socket['onclose'] = function(e) {
@@ -4807,37 +4813,81 @@ var core = function(t, e, i) {
             'connect': function(t) {
                 console.log('[Legend mod Express] Connecting to game server:', t);
                 var i = this;
-                this['closeConnection'](), this['flushCellsData'](), this['protocolKey'] = null, this['clientKey'] = null, this['accessTokenSent'] = false, this['connectionOpened'] = false, this['mapOffsetFixed'] = false, this['leaderboard'] = [], this['ws'] = t, this.socket = new WebSocket(t), this.socket['binaryType'] = 'arraybuffer', this.socket['onopen'] = function() {
+                this['closeConnection'](); 
+				this['flushCellsData']();
+				this['protocolKey'] = null; 
+				this['clientKey'] = null;
+				this['accessTokenSent'] = false;
+				this['connectionOpened'] = false;
+				this['mapOffsetFixed'] = false; 
+				this['leaderboard'] = [];
+				this['ws'] = t;
+				this.socket = new WebSocket(t); 
+				this.socket['binaryType'] = 'arraybuffer'; 
+				this.socket['onopen'] = function() {
                     i['onOpen']();
-                }, this.socket['onmessage'] = function(t) {
+                };
+				this.socket['onmessage'] = function(t) {
                     i['onMessage'](t);
-                }, this.socket['onerror'] = function(t) {
+                };
+				this.socket['onerror'] = function(t) {
                     i['onError'](t);
-                }, this.socket['onclose'] = function(t) {
+                };
+				this.socket['onclose'] = function(t) {
                     i['onClose'](t);
-                }, ogarminimapdrawer['getWS'](this['ws']), ogarminimapdrawer['sendServerJoin'](), ogarminimapdrawer['sendServerData'](), ogarminimapdrawer['displayLeaderboard'](''), e.master && e.master['onConnect'] && e.master['onConnect']();
+                };
+				ogarminimapdrawer['getWS'](this['ws']);
+				ogarminimapdrawer['sendServerJoin']();
+				ogarminimapdrawer['sendServerData']();
+				ogarminimapdrawer['displayLeaderboard']('');
+				if (e.master && e.master['onConnect']) {
+					e.master['onConnect']();
+				}
             },
             'onOpen': function(t) {
-                console.log('[Legend mod Express] Game server socket open'), this['time'] = Date['now']();
+                console.log('[Legend mod Express] Game server socket open'),
+				this['time'] = Date['now']();
                 var e = this.createView(5);
-                e.setUint8(0, 254), e.setUint32(1, 20, true), this.sendMessage(e), (e = this.createView(5)).setUint8(0, 255), e.setUint32(1, this.clientVersion, true), this.sendMessage(e), this['connectionOpened'] = true;
+                e.setUint8(0, 254), 
+				e.setUint32(1, 20, true), 
+				this.sendMessage(e), 
+				(e = this.createView(5)).setUint8(0, 255), 
+				e.setUint32(1, this.clientVersion, true), 
+				this.sendMessage(e), 
+				this['connectionOpened'] = true;
             },
             'onMessage': function(t) {
-                t = new DataView(t['data']), this['protocolKey'] && (t = this['shiftMessage'](t, this['protocolKey'] ^ this.clientVersion)), this['handleMessage'](t);
+                t = new DataView(t['data']);
+				if (this['protocolKey']){
+				t = this['shiftMessage'](t, this['protocolKey'] ^ this.clientVersion);
+				} 
+				this['handleMessage'](t);
             },
             'onError': function(t) {
-                console.log('[Legend mod Express] Game server socket error'), this['flushCellsData'](), e.master && e.master['onDisconnect'] && e.master['onDisconnect']();
+                console.log('[Legend mod Express] Game server socket error'); 
+				this['flushCellsData']();
+				if (e.master && e.master['onDisconnect']){
+					e.master['onDisconnect']();
+				}
             },
             'onClose': function(t) {
-                console.log('[Legend mod Express] Game server socket close'), this['flushCellsData'](), e.master && e.master['onDisconnect'] && e.master['onDisconnect']();
+                console.log('[Legend mod Express] Game server socket close'); 
+				this['flushCellsData'](); 
+				if (e.master && e.master['onDisconnect']){
+					e.master['onDisconnect']();
+				}
             },
             'closeConnection': function() {
                 if (this.socket) {
-                    this.socket['onopen'] = null, this.socket['onmessage'] = null, this.socket['onerror'] = null, this.socket['onclose'] = null;
+                    this.socket['onopen'] = null; 
+					this.socket['onmessage'] = null;
+					this.socket['onerror'] = null; 
+					this.socket['onclose'] = null;
                     try {
                         this.socket['close']();
                     } catch (ogarcloseconncloser) {}
-                    this.socket = null, this['ws'] = null;
+                    this.socket = null;
+					this['ws'] = null;
                 }
             },
             'isSocketOpen': function() {
@@ -4853,14 +4903,16 @@ var core = function(t, e, i) {
                 //console.log(t);
                 if (this['connectionOpened']) {
                     if (!this['clientKey']) return;
-                    t = this['shiftMessage'](t, this['clientKey']), this['clientKey'] = this['shiftKey'](this['clientKey']);
+                    t = this['shiftMessage'](t, this['clientKey']);
+					this['clientKey'] = this['shiftKey'](this['clientKey']);
                 }
                 this['sendBuffer'](t);
             },
             'sendAction': function(t) {
                 if (this['isSocketOpen']()) {
                     var e = this.createView(1);
-                    e.setUint8(0, t), this.sendMessage(e);
+                    e.setUint8(0, t);
+					this.sendMessage(e);
                 }
             },
             'sendSpectate': function() {
@@ -4870,13 +4922,17 @@ var core = function(t, e, i) {
                 this.sendAction(18);
             },
             'sendEject': function() {
-                this['sendPosition'](), this.sendAction(21);
+                this['sendPosition']();
+				this.sendAction(21);
             },
             'sendSplit': function() {
-                this['sendPosition'](), this.sendAction(17);
+                this['sendPosition']();
+				this.sendAction(17);
             },
             'sendNick': function(t) {
+				
                 this['playerNick'] = t, t = e['unescape'](e['encodeURIComponent'](t));
+				window.Bufferdata = t; //
                 var i = this.createView(1 + t.length);
                 i.setUint8(0, 0);
                 for (var s = 0; s < t.length; s++) i.setUint8(s + 1, t.charCodeAt(s));
@@ -4960,10 +5016,14 @@ var core = function(t, e, i) {
             'setClientVersion': function(t, e) {
 
                 if (window.disableIntegrity != false) { //
-                    this.clientVersion = t, this.clientVersionString = e, console.log('[Legend mod Express] Client version:', t, e);
+                    this.clientVersion = t; 
+					this.clientVersionString = e;
+					console.log('[Legend mod Express] Client version:', t, e);
                 } //
                 else { //
-                    this.clientVersion = 0, this.clientVersionString = e, console.log('[Legend mod Express] Client version:', t, e); //
+                    this.clientVersion = 0;
+					this.clientVersionString = e;
+					console.log('[Legend mod Express] Client version:', t, e); //
                 } //
             },
             
@@ -5007,8 +5067,8 @@ var core = function(t, e, i) {
                 //} //
             },
             'decompressMessage': function(t) {
-                var e = new o(t['buffer']),
-                    i = new o(e.readUInt32LE(1));
+                var e = new o(t['buffer']);
+                var i = new o(e.readUInt32LE(1));
                 return a['decodeBlock'](e['slice'](5), i), i;
             },
             'handleMessage': function(t) {
@@ -5026,13 +5086,21 @@ var core = function(t, e, i) {
                     case 5:
                         break;
                     case 17:
-                        this['viewX'] = t.getFloat32(s, true), s += 4, this['viewY'] = t.getFloat32(s, true), s += 4, this['scale'] = t.getFloat32(s, true);
+                        this['viewX'] = t.getFloat32(s, true);
+						s += 4;
+						this['viewY'] = t.getFloat32(s, true);
+						s += 4;
+						this['scale'] = t.getFloat32(s, true);
                         break;
                     case 18:
-                        this['protocolKey'] && (this['protocolKey'] = this['shiftKey'](this['protocolKey'])), this['flushCellsData']();
+                        if (this['protocolKey']){ 
+						this['protocolKey'] = this['shiftKey'](this['protocolKey']);
+						}
+						this['flushCellsData']();
                         break;
                     case 32:
-                        this['playerCellIDs'].push(t.getUint32(s, true)), this.play || (this.play = true, ogarminimapdrawer['hideMenu'](), this['playerColor'] = null, ogarminimapdrawer['onPlayerSpawn']());
+                        this['playerCellIDs'].push(t.getUint32(s, true));
+						this.play || (this.play = true, ogarminimapdrawer['hideMenu'](), this['playerColor'] = null, ogarminimapdrawer['onPlayerSpawn']());
                         break;
                     case 50:
                         this['pieChart'] = [];
@@ -5047,10 +5115,26 @@ var core = function(t, e, i) {
                             s += 2;
                         }
                         for (var r = 0; s < t.byteLength;) {
-                            var l = '',
-                                h = 0,
-                                c = false;
-                            r++, 2 & (y = t['getUint8'](s++)) && (l = e['decodeURIComponent'](escape(i()))), 4 & y && (h = t.getUint32(s, true), s += 4), 8 & y && (l = this['playerNick'], h = 'isPlayer', this['playerPosition'] = r), 16 & y && (c = true), this['leaderboard'].push({
+                            var l = '';
+                            var h = 0;
+                            var c = false;
+                            r++; 
+							if (2 & (y = t['getUint8'](s++))){ 
+							l = e['decodeURIComponent'](escape(i()));
+							}
+							if (4 & y){
+							h = t.getUint32(s, true);
+							s += 4;
+							}
+							if (8 & y){ 
+							l = this['playerNick'];
+							h = 'isPlayer';
+							this['playerPosition'] = r
+							}
+							if (16 & y){
+							c = true;
+							}
+							this['leaderboard'].push({
                                 'nick': l,
                                 'id': h,
                                 'isFriend': c
@@ -5081,13 +5165,14 @@ var core = function(t, e, i) {
                         }
                         break;
                     case 85:
-                        console.log('[Legend mod Express] Captcha requested'), e.master && e.master['recaptchaRequested'] && e.master['recaptchaRequested']();
+                        console.log('[Legend mod Express] Captcha requested'); if(e.master && e.master['recaptchaRequested']) { e.master['recaptchaRequested']();}
                         break;
                     case 102:
                         t.byteLength < 20 && e['logout'] && e['logout']();
                         break;
                     case 103:
-                        this['loggedInTime'] = Date['now'](), this['accessTokenSent'] = true;
+                        this['loggedInTime'] = Date['now']();
+						this['accessTokenSent'] = true;
                         break;
                     case 114:
                     case 161:
@@ -5101,14 +5186,28 @@ var core = function(t, e, i) {
                     case 178:
                         this['battleRoyale']['players'] = t.getUint16(s, true), s += 2;
                         var y = t.getUint16(s, true);
-                        s += 2, y || (this['battleRoyale']['state'] = 0, this['battleRoyale']['joined'] = false), 3 & y && (this['battleRoyale']['state'] = t.getUint8(s++), this['battleRoyale']['x'] = t.getInt32(s, true), s += 4, this['battleRoyale']['y'] = t.getInt32(s, true), s += 4, this['battleRoyale']['radius'] = t.getUint32(s, true), s += 4, this['battleRoyale']['shrinkTime'] = 1000 * t.getUint32(s, true), s += 4, this['battleRoyale']['shrinkTime'] && (this['battleRoyale']['timeLeft'] = ~~((this['battleRoyale']['shrinkTime'] - Date['now']() + this['serverTimeDiff']) / 1000), this['battleRoyale']['timeLeft'] < 0 && (this['battleRoyale']['timeLeft'] = 0))), 2 & y && (this['battleRoyale']['targetX'] = t.getInt32(s, true), s += 4, this['battleRoyale']['targetY'] = t.getInt32(s, true), s += 4, this['battleRoyale']['targetRadius'] = t.getUint32(s, true));
+                        s += 2, y || (this['battleRoyale']['state'] = 0, this['battleRoyale']['joined'] = false),
+						3 & y && (this['battleRoyale']['state'] = t.getUint8(s++),
+						this['battleRoyale']['x'] = t.getInt32(s, true),
+						s += 4, this['battleRoyale']['y'] = t.getInt32(s, true),
+						s += 4, this['battleRoyale']['radius'] = t.getUint32(s, true),
+						s += 4, this['battleRoyale']['shrinkTime'] = 1000 * t.getUint32(s, true),
+						s += 4, this['battleRoyale']['shrinkTime'] && 
+						(this['battleRoyale']['timeLeft'] = ~~((this['battleRoyale']['shrinkTime'] - Date['now']() + this['serverTimeDiff']) / 1000),
+						this['battleRoyale']['timeLeft'] < 0 && (this['battleRoyale']['timeLeft'] = 0))),
+						2 & y && (this['battleRoyale']['targetX'] = t.getInt32(s, true), s += 4,
+						this['battleRoyale']['targetY'] = t.getInt32(s, true), s += 4, this['battleRoyale']['targetRadius'] = t.getUint32(s, true));
                         break;
                     case 179:
-                        y = t.getUint8(s), e['decodeURIComponent'](escape(i()));
+                        y = t.getUint8(s);
+						e['decodeURIComponent'](escape(i()));
                         y || e.decodeURIComponent(escape(i()));
                         break;
                     case 180:
-                        this['battleRoyale']['joined'] = false, this['battleRoyale']['rank'] = [], this['battleRoyale']['playerRank'] = t.getUint32(s, true), s += 8;
+                        this['battleRoyale']['joined'] = false;
+						this['battleRoyale']['rank'] = [];
+						this['battleRoyale']['playerRank'] = t.getUint32(s, true);
+						s += 8;
                         var ogario1PlayerProfiles = t.getUint16(s, true);
                         s += 2;
                         for (n = 0; n < ogario1PlayerProfiles; n++) {
@@ -5123,12 +5222,17 @@ var core = function(t, e, i) {
                     case 226:
                         break;
                     case 241:
-                        this['protocolKey'] = t.getUint32(s, true), console.log('[Legend mod Express] Received protocol key:', this['protocolKey']);
+                        this['protocolKey'] = t.getUint32(s, true);
+						console.log('[Legend mod Express] Received protocol key:', this['protocolKey']);
                         var irenderfromagario = new Uint8Array(t['buffer'], s += 4);
-                        this['clientKey'] = this['generateClientKey'](this['ws'], irenderfromagario), e.master && e.master.login && e.master.login();
+                        this['clientKey'] = this['generateClientKey'](this['ws'], irenderfromagario);
+						if (e.master && e.master.login){ 
+						e.master.login();
+						}
                         break;
                     case 242:
-                        this['serverTime'] = 1000 * t.getUint32(s, true), this['serverTimeDiff'] = Date['now']() - this['serverTime'];
+                        this['serverTime'] = 1000 * t.getUint32(s, true);
+						this['serverTimeDiff'] = Date['now']() - this['serverTime'];
                         break;
                     case 255:
                         this['handleSubmessage'](t);
@@ -5144,7 +5248,11 @@ var core = function(t, e, i) {
                         this['updateCells'](t, e);
                         break;
                     case 64:
-                        this['viewMinX'] = t.readDoubleLE(e), e += 8, this['viewMinY'] = t.readDoubleLE(e), e += 8, this['viewMaxX'] = t.readDoubleLE(e), e += 8, this['viewMaxY'] = t.readDoubleLE(e), this['setMapOffset'](this['viewMinX'], this['viewMinY'], this['viewMaxX'], this['viewMaxY']);
+                        this['viewMinX'] = t.readDoubleLE(e);
+						e += 8; this['viewMinY'] = t.readDoubleLE(e);
+						e += 8; this['viewMaxX'] = t.readDoubleLE(e);
+						e += 8; this['viewMaxY'] = t.readDoubleLE(e);
+						this['setMapOffset'](this['viewMinX'], this['viewMinY'], this['viewMaxX'], this['viewMaxY']);
                         break;
                     default:
                         console.log('[Legend mod Express] Unknown sub opcode:', t.readUInt8(0));
@@ -5187,11 +5295,28 @@ var core = function(t, e, i) {
 
             },
             'flushCellsData': function() {
-                this['indexedCells'] = {}, this['cells'] = [], this['playerCells'] = [], this['playerCellIDs'] = [], this['ghostCells'] = [], this['food'] = [], this['viruses'] = [];
+                this['indexedCells'] = {}, 
+				this['cells'] = []; 
+				this['playerCells'] = []; 
+				this['playerCellIDs'] = []; 
+				this['ghostCells'] = [];
+				this['food'] = [];
+				this['viruses'] = [];
             },
             'setMapOffset': function(t, e, i, s) {
-                i - t > 14000 && s - e > 14000 && (this['mapOffsetX'] = this['mapOffset'] - i, this['mapOffsetY'] = this['mapOffset'] - s, this['mapMinX'] = ~~(-this['mapOffset'] - this['mapOffsetX']), this['mapMinY'] = ~~(-this['mapOffset'] - this['mapOffsetY']), this['mapMaxX'] = ~~(this['mapOffset'] - this['mapOffsetX']), this['mapMaxY'] = ~~(this['mapOffset'] - this['mapOffsetY']), this['mapOffsetFixed'] || (this['viewX'] = (i + t) / 2, this['viewY'] = (s + e) / 2), this['mapOffsetFixed'] = true, console.log('[Legend mod Express] Map offset fixed (x, y):', this['mapOffsetX'], this['mapOffsetY']));
-            },
+                if (i - t > 14000 && s - e > 14000){
+				
+				this['mapOffsetX'] = this['mapOffset'] - i; 
+				this['mapOffsetY'] = this['mapOffset'] - s; 
+				this['mapMinX'] = ~~(-this['mapOffset'] - this['mapOffsetX']);
+				this['mapMinY'] = ~~(-this['mapOffset'] - this['mapOffsetY']);
+				this['mapMaxX'] = ~~(this['mapOffset'] - this['mapOffsetX']);
+				this['mapMaxY'] = ~~(this['mapOffset'] - this['mapOffsetY']);
+				this['mapOffsetFixed'] || (this['viewX'] = (i + t) / 2, this['viewY'] = (s + e) / 2);
+				this['mapOffsetFixed'] = true;
+				console.log('[Legend mod Express] Map offset fixed (x, y):', this['mapOffsetX'], this['mapOffsetY']);
+				}
+			},
             'isInView': function(t, e, i) {
                 var s = this['canvasWidth'] / 2 / this['scale'],
                     o = this['canvasHeight'] / 2 / this['scale'];
@@ -5213,7 +5338,13 @@ var core = function(t, e, i) {
                 for (var a = 0; a < o; a++) {
                     var n = this['indexedCells'][t.readUInt32LE(i)],
                         r = this['indexedCells'][t.readUInt32LE(i + 4)];
-                    i += 8, n && r && (r['targetX'] = n['x'], r['targetY'] = n['y'], r['targetSize'] = r['size'], r['time'] = this['time'], r['removeCell']());
+                    if (i += 8, n && r){ 
+					r['targetX'] = n['x']; 
+					r['targetY'] = n['y']; 
+					r['targetSize'] = r['size'];
+					r['time'] = this['time'];
+					r['removeCell']();
+					}
                 }
                 for (a = 0;;) {
                     var l = t.readUInt32LE(i);
@@ -5298,17 +5429,28 @@ var core = function(t, e, i) {
             'calculatePlayerMassAndPosition': function() {
                 for (var t = 0, e = 0, i = 0, s = 0, o = this['playerCells'].length, a = 0; a < o; a++) {
                     var n = this['playerCells'][a];
-                    t += n['size'], e += n['targetSize'] * n['targetSize'], i += n['x'] / o, s += n['y'] / o;
+                    t += n['size'];
+					e += n['targetSize'] * n['targetSize'];
+					i += n['x'] / o; 
+					s += n['y'] / o;
                 }
-                this['viewX'] = i, this['viewY'] = s, this['playerSize'] = t, this['playerMass'] = ~~(e / 100), this['recalculatePlayerMass']();
+                this['viewX'] = i; 
+				this['viewY'] = s; 
+				this['playerSize'] = t; 
+				this['playerMass'] = ~~(e / 100);
+				this['recalculatePlayerMass']();
             },
             'recalculatePlayerMass': function() {
-                if (this['playerScore'] = Math['max'](this['playerScore'], this['playerMass']), v['virColors'] || v['splitRange'] || v['oppColors'] || v['oppRings'] || v['showStatsSTE']) {
-                    var t = this['playerCells'],
-                        e = t.length;
+                if (this['playerScore'] = Math['max'](this['playerScore'], this['playerMass']),
+				v['virColors'] || v['splitRange'] || v['oppColors'] || v['oppRings'] || v['showStatsSTE']) {
+                    var t = this['playerCells'];
+                    var e = t.length;
                     t['sort'](function(t, e) {
                         return t['size'] == e['size'] ? t['id'] - e['id'] : t['size'] - e['size'];
-                    }), this['playerMinMass'] = ~~(t[0]['size'] * t[0]['size'] / 100), this['playerMaxMass'] = ~~(t[e - 1]['size'] * t[e - 1]['size'] / 100), this['playerSplitCells'] = e;
+                    }); 
+					this['playerMinMass'] = ~~(t[0]['size'] * t[0]['size'] / 100);
+					this['playerMaxMass'] = ~~(t[e - 1]['size'] * t[e - 1]['size'] / 100);
+					this['playerSplitCells'] = e;
                 }
                 if (v['showStatsSTE']) {
                     var i = this['selectBiggestCell'] ? this['playerMaxMass'] : this['playerMinMass'];
@@ -5369,17 +5511,25 @@ var core = function(t, e, i) {
                 return t ? ogarcopythelb.color : e > 11 ? '#FF008C' : e >= 2.5 ? '#BE00FF' : e >= 1.25 ? '#FF0A00' : e < 1.25 && e > 0.75 ? '#FFDC00' : e > i ? '#00C8FF' : '#64FF00';
             },
             'getCursorPosition': function() {
-                this['cursorX'] = (this['clientX'] - this['canvasWidth'] / 2) / this['viewScale'] + this['viewX'], this['cursorY'] = (this['clientY'] - this['canvasHeight'] / 2) / this['viewScale'] + this['viewY'];
+                this['cursorX'] = (this['clientX'] - this['canvasWidth'] / 2) / this['viewScale'] + this['viewX']; 
+				this['cursorY'] = (this['clientY'] - this['canvasHeight'] / 2) / this['viewScale'] + this['viewY'];
             },
             'setZoom': function(t) {
                 //t.preventDefault(), this['zoomValue'] *= Math['pow'](v['zoomSpeedValue2'], t['wheelDelta'] / -120 || t['detail'] || 0), this['zoomValue'] > 4 / this['viewScale'] && (this['zoomValue'] = 4 / this['viewScale']);
-                this['zoomValue'] *= Math['pow'](v['zoomSpeedValue2']+1, t['wheelDelta'] / -120 || t['detail'] || 0), this['zoomValue'] > 4 / this['viewScale'] && (this['zoomValue'] = 4 / this['viewScale']);
+                this['zoomValue'] *= Math['pow'](v['zoomSpeedValue2']+1, t['wheelDelta'] / -120 || t['detail'] || 0);
+				if (this['zoomValue'] > 4 / this['viewScale']){
+				this['zoomValue'] = 4 / this['viewScale'];
+				}
             },
             'setTargetPosition': function(t, e) {
-                this['targetX'] = t - this['mapOffsetX'], this['targetY'] = e - this['mapOffsetY'], this['targetDistance'] = Math.round(Math['sqrt'](Math['pow'](this['playerX'] - this['targetX'], 2) + Math['pow'](this['playerY'] - this['targetY'], 2)));window.targetDistance=this['targetDistance'];
+                this['targetX'] = t - this['mapOffsetX'];
+				this['targetY'] = e - this['mapOffsetY'];
+				this['targetDistance'] = Math.round(Math['sqrt'](Math['pow'](this['playerX'] - this['targetX'], 2) + Math['pow'](this['playerY'] - this['targetY'], 2)));
+				window.targetDistance=this['targetDistance'];
             },
             'resetTargetPosition': function() {
-                this['targetX'] = this['playerX'], this['targetY'] = this['playerY'];
+                this['targetX'] = this['playerX'];
+				this['targetY'] = this['playerY'];
             },
             'setKeys': function() {
                 var t = this;
@@ -5439,12 +5589,22 @@ var core = function(t, e, i) {
                 'pellet': null,
                 'indicator': null,
                 'setCanvas': function() {
-                    this.canvas = document.getElementById('canvas'), this['ctx'] = this.canvas['getContext']('2d'), this.canvas['onmousemove'] = function(t) {
-                        M['clientX'] = t['clientX'], M['clientY'] = t['clientY'], M['getCursorPosition']();
+                    this.canvas = document.getElementById('canvas');
+					this['ctx'] = this.canvas['getContext']('2d');
+					this.canvas['onmousemove'] = function(t) {
+                        M['clientX'] = t['clientX']; 
+						M['clientY'] = t['clientY']; 
+						M['getCursorPosition']();
                     };
                 },
                 'resizeCanvas': function() {
-                    this['canvasWidth'] = e['innerWidth'], this['canvasHeight'] = e['innerHeight'], this.canvas['width'] = this['canvasWidth'], this.canvas['height'] = this['canvasHeight'], M['canvasWidth'] = this['canvasWidth'], M['canvasHeight'] = this['canvasHeight'], this['renderFrame']();
+                    this['canvasWidth'] = e['innerWidth'];
+					this['canvasHeight'] = e['innerHeight']; 
+					this.canvas['width'] = this['canvasWidth']; 
+					this.canvas['height'] = this['canvasHeight']; 
+					M['canvasWidth'] = this['canvasWidth'];
+					M['canvasHeight'] = this['canvasHeight']; 
+					this['renderFrame']();
                 },
                 'setView': function() {
                     this['setScale'](),
@@ -5820,9 +5980,15 @@ var core = function(t, e, i) {
                     t['globalAlpha'] = 1, o && (e = []);
                 },				
                 'drawOppRings': function(t, e, i, s, o, a, n) {
-                    var r = 14 + 2 / e,
-                        l = 12 + 1 / e;
-                    this['drawCircles'](t, i, r, l, 0.75, '#BE00FF'), this['drawCircles'](t, s, r, l, 0.75, '#FF0A00'), this['drawCircles'](t, o, r, l, 0.75, '#00C8FF'), this['drawCircles'](t, a, r, l, 0.75, '#64FF00'), n && (i = [], s = [], o = [], a = []);
+                    var r = 14 + 2 / e;
+                    var l = 12 + 1 / e;
+                    this['drawCircles'](t, i, r, l, 0.75, '#BE00FF');
+					this['drawCircles'](t, s, r, l, 0.75, '#FF0A00');
+					this['drawCircles'](t, o, r, l, 0.75, '#00C8FF');
+					this['drawCircles'](t, a, r, l, 0.75, '#64FF00');
+					if(n){
+						i = [], s = [], o = [], a = [];
+					}
                 },
                 'drawCursorTracking': function(t, e, i, s) {
                     t['lineWidth'] = 4, t['globalAlpha'] = g['darkTheme'] ? 0.75 : 0.35, t['strokeStyle'] = g['cursorTrackingColor'], t['beginPath']();
@@ -5841,7 +6007,9 @@ var core = function(t, e, i) {
                 },
                 'drawTeammatesInd': function(t, e, i, s) {		
 					//console.log("t:"+ t + " e:" + e + " i:" + i + "s:" + s);
-                    this['indicator'] && t['drawImage'](this['indicator'], e - 45, i - s - 90);
+                    if(this['indicator']){
+						t['drawImage'](this['indicator'], e - 45, i - s - 90);
+					}
                 },
                 'drawPieChart': function() {
                     this['pieChart'] || (this['pieChart'] = document['createElement']('canvas'));
@@ -5940,7 +6108,19 @@ var core = function(t, e, i) {
                     var t = document['createElement']('canvas');
                     t['width'] = 90, t['height'] = 50;
                     var e = t['getContext']('2d');
-                    e['lineWidth'] = 2, e['fillStyle'] = g['teammatesIndColor'], e['strokeStyle'] = '#000000', e['beginPath'](), e['moveTo'](0, 0), e['lineTo'](90, 0), e['lineTo'](45, 50), e['closePath'](), e.fill(), e['stroke'](), this['indicator'] = new Image(), this['indicator'].src = t.toDataURL(), t = null;
+                    e['lineWidth'] = 2; 
+					e['fillStyle'] = g['teammatesIndColor']; 
+					e['strokeStyle'] = '#000000';
+					e['beginPath'](); 
+					e['moveTo'](0, 0); 
+					e['lineTo'](90, 0); 
+					e['lineTo'](45, 50); 
+					e['closePath']();
+					e.fill();
+					e['stroke'](); 
+					this['indicator'] = new Image(); 
+					this['indicator'].src = t.toDataURL();
+					t = null;
                 },
                 'countFps': function() {
                     if (v["showStatsFPS"]) {
@@ -5960,7 +6140,11 @@ var core = function(t, e, i) {
                     ogarfooddrawer['countFps'](), ogarfooddrawer['renderFrame'](), e['requestAnimationFrame'](ogarfooddrawer['render']);
                 },
                 'init': function() {
-                    this['setCanvas'](), this['resizeCanvas'](), this['preDrawPellet'](), this.preDrawIndicator(), e['requestAnimationFrame'](ogarfooddrawer['render']);
+                    this['setCanvas']();
+					this['resizeCanvas'](); 
+					this['preDrawPellet'](); 
+					this.preDrawIndicator(); 
+					e['requestAnimationFrame'](ogarfooddrawer['render']);
                 }
             },
             ogarioefaultHotkeys = {},
