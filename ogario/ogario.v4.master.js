@@ -45,7 +45,7 @@
                 jQuery(".progress-bar-striped").width("100%");
                 jQuery("#login-google").attr("class", "menu-bar-button");
                 jQuery("#login-facebook").attr("class", "menu-bar-button barf");
-                toastr.info("Logged in to FaceBook!");
+                toastr.info("Logged in to Facebook!");
             } else {
                 if (f < 3) {
                     f++;
