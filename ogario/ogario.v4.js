@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.437 MEGA TEST
+// v1.481 MEGA TEST
 // Game Configurations
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
@@ -252,6 +252,7 @@ var core = function(t, e, i) {
                     'showMiniMap': 'Pokaż minimapę',
                     'showMiniMapGrid': 'Pokaż siatkę minimapy',
                     'showMiniMapGuides': 'Pokaż prowadnice na minimapie',
+					'showExtraMiniMapGuides': 'Show extra minimap guides',
                     'showMiniMapGhostCells': 'Pokaż duchy kulek na minimapie',
                     'oneColoredTeammates': 'Jednokolorowi gracze',
                     'optimizedFood': 'Zoptymalizowany pokarm',
@@ -623,6 +624,7 @@ var core = function(t, e, i) {
                     'showMiniMap': 'Show minimap',
                     'showMiniMapGrid': 'Show minimap grid',
                     'showMiniMapGuides': 'Show minimap guides',
+					'showExtraMiniMapGuides': 'Show extra minimap guides',
                     'showMiniMapGhostCells': 'Show ghost cells',
                     'oneColoredTeammates': 'One-colored teammates',
                     'optimizedFood': 'Optimized food',
@@ -1916,6 +1918,7 @@ var core = function(t, e, i) {
                 'showMiniMap': true,
                 'showMiniMapGrid': false,
                 'showMiniMapGuides': true,
+				'showExtraMiniMapGuides': false,
                 'showMiniMapGhostCells': true,
                 'oneColoredTeammates': false,
                 'optimizedFood': true,
@@ -2687,7 +2690,7 @@ var core = function(t, e, i) {
 					this["addOptions"](["myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow"], "transparencyGroup"), 
 					this["addOptions"](["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup"), 
 					this["addOptions"](["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox"], "chatGroup"), 
-					this["addOptions"](["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup"), 
+					this["addOptions"](["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup"), 
 					this["addOptions"](["oppColors", "oppRings", "virColors", "splitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells"], "helpersGroup"), 
 					this["addOptions"](["mouseSplit", "mouseFeed","mouseInvert"], "mouseGroup"), 
 					this["addOptions"](["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop"], "hudGroup"), 
@@ -3160,7 +3163,9 @@ var core = function(t, e, i) {
                         s["beginPath"]();
                         s.arc(256, 256, 256, 0, 2 * Math.PI, false);
                         s["clip"]();
+						try {
                         s["drawImage"](this["customSkinsCache"][e], 0, 0, 512, 512);
+						} catch (e) {}
                         this["customSkinsCache"][e + "_cached"] = new Image;
                         this["customSkinsCache"][e + "_cached"].src = i.toDataURL();
                         i = null;
@@ -3247,7 +3252,14 @@ var core = function(t, e, i) {
                     var n = o / i["mapSize"];
                     var r = i["mapOffsetX"] + i["mapOffset"];
                     var l = i["mapOffsetY"] + i["mapOffset"];
-                    if (this["drawSelectedCell"](this["miniMapCtx"]), this["currentSector"] = this["calculateMapSector"](i["playerX"], i["playerY"], true), this["miniMapCtx"]["globalAlpha"] = 1, this["miniMapCtx"]["font"] = g["miniMapFontWeight"] + " " + (e - 4) + "px " + g["miniMapFontFamily"], this["miniMapCtx"]["fillStyle"] = g["miniMapSectorColor"], this["miniMapCtx"]["fillText"](this["currentSector"], 10, e), this["miniMapSectors"] || this["drawMiniMapSectors"](g["sectorsX"], g["sectorsY"], o, s, a), this["miniMapCtx"]["save"](),
+                    if (this["drawSelectedCell"](this["miniMapCtx"]), 
+					this["currentSector"] = this["calculateMapSector"](i["playerX"], i["playerY"], true), 
+					this["miniMapCtx"]["globalAlpha"] = 1,
+					this["miniMapCtx"]["font"] = g["miniMapFontWeight"] + " " + (e - 4) + "px " + g["miniMapFontFamily"],
+					this["miniMapCtx"]["fillStyle"] = g["miniMapSectorColor"],
+					this["miniMapCtx"]["fillText"](this["currentSector"], 10, e),
+					this["miniMapSectors"] || this["drawMiniMapSectors"](g["sectorsX"], g["sectorsY"], o, s, a),
+					this["miniMapCtx"]["save"](),
                         this["miniMapCtx"]["translate"](9.5, a), ":battleroyale" === this["gameMode"] && ogarfooddrawer && ogarfooddrawer["drawBattleAreaOnMinimap"](this["miniMapCtx"], o, o, n, r, l), v["showMiniMapGhostCells"]) {
                         var h = i["ghostCells"];
                         this["miniMapCtx"]["beginPath"]();
@@ -3269,7 +3281,7 @@ var core = function(t, e, i) {
                         this["miniMapCtx"].fill();
                         this["miniMapCtx"]["globalAlpha"] = 1;
                         this["miniMapCtx"]["shadowBlur"] = 0;
-                    }
+                    }																
                     if (v["showMiniMapGuides"]) {
                         u = Math.round((i["playerX"] + r) * n);
                         d = Math.round((i["playerY"] + l) * n);
@@ -3280,8 +3292,30 @@ var core = function(t, e, i) {
                         this["miniMapCtx"]["lineTo"](u, o - 1);
                         this["miniMapCtx"]["moveTo"](0, d);
                         this["miniMapCtx"]["lineTo"](o - 1, d);
-                        this["miniMapCtx"]["stroke"]();
+                        this["miniMapCtx"]["stroke"]();						
                     }
+                    if (v["showExtraMiniMapGuides"]) {
+                        u = Math.round((i["playerX"] + r) * n);
+                        d = Math.round((i["playerY"] + l) * n);
+						
+						//draw the yellow on minimap
+						this.miniMapCtx.beginPath();
+						this.miniMapCtx.lineWidth = "1";
+						this.miniMapCtx.strokeStyle = "yellow";		
+						var miniax = legendmod.canvasWidth / (legendmod.mapMaxX - legendmod.mapMinX) / legendmod.viewScale; //CORRECT
+						var miniay = legendmod.canvasHeight / (legendmod.mapMaxY - legendmod.mapMinY) / legendmod.viewScale; //CORRECT
+						var minidaxx = legendmod3.miniMapSectors.width*miniax;
+						var minidayy = legendmod3.miniMapSectors.width*miniay;		
+					
+						var fixminidaxx = u-(minidaxx/2);
+						var fixminidayy = d-(minidayy/2);						
+						
+						//if (fixminidaxx<0){ fixminidaxx=0; }
+						//if (fixminidayy<0){ fixminidayy=0; }	
+						this.miniMapCtx.rect(fixminidaxx, fixminidayy, minidaxx, minidayy);						
+						this.miniMapCtx.stroke();	
+						
+                    }					
                     if (this["miniMapCtx"]["beginPath"](), this["miniMapCtx"].arc((i["playerX"] + r) * n, (i["playerY"] + l) * n, g["miniMapMyCellSize"], 0, this.pi2, false), this["miniMapCtx"]["closePath"](), g["miniMapMyCellStrokeSize"] > 0 && (this["miniMapCtx"]["lineWidth"] = g["miniMapMyCellStrokeSize"], this["miniMapCtx"]["strokeStyle"] = g["miniMapMyCellStrokeColor"], this["miniMapCtx"]["stroke"]()), this["miniMapCtx"]["fillStyle"] = g["miniMapMyCellColor"], this["miniMapCtx"].fill(), this["teamPlayers"].length) {
                         c = 0;
                         for (; c < this["teamPlayers"].length; c++) {
@@ -4458,7 +4492,9 @@ var core = function(t, e, i) {
             var w = ~~(nickImg.width / this.scale);
             var h = ~~(nickImg.height / this.scale);
             this.margin = ~~(h / 2);
+			try {
             t.drawImage(nickImg, ~~this.x - ~~(w / 2), ~~this.y - this.margin, w, h);
+			} catch (e) {}			
         };
 				this.drawMass = function(context) {
                     if (this.massCanvas && !(this.size <= 40)) {
@@ -4475,7 +4511,9 @@ var core = function(t, e, i) {
                         let height = ~~(data.height / this.scale);
                         let textureY = this.margin === 0 ? ~~(this.y - height / 2) : ~~this.y + this.margin;
                         if (width > 1 && height > 1) {
+							try {
                             context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
+							} catch (e) {}			
                         }
                     }
                 };
@@ -4544,7 +4582,9 @@ var core = function(t, e, i) {
 
                         if (this.isVirus) {
 							if (dyinglight1load == "yes" ) {
+							try {	
 							style.drawImage(cimgDyingLightvirus, this.x - 0.8 * this.size, this.y - 0.8 * this.size, 1.6 * this.size, 1.6 * this.size);
+							} catch (e) {}
 							}							
                             return v.transparentViruses && (style.globalAlpha *= g.virusAlpha, s = true), v.virColors && M.play ? (style.fillStyle = ogarminimapdrawer.setVirusColor(y), style.strokeStyle = ogarminimapdrawer.setVirusStrokeColor(y)) : (style.fillStyle = this.virusColor, style.strokeStyle = this.virusStroke), style.fill(), s && (style.globalAlpha = value, s = false), style.lineWidth = g.virusStrokeSize, v.virusGlow ? (style.shadowBlur = g.virusGlowSize, style.shadowColor =
                                 g.virusGlowColor) : "yeet", style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), v.showMass && (this.setDrawing(), this.setDrawingScale(), v.virusGlow ? style.shadowBlur = 0 : "yote", this.setMass(this.size), this.drawMass(style)), void style.restore();
@@ -4598,8 +4638,9 @@ var core = function(t, e, i) {
                                     style.save();
                                     style.clip();
                                     this.maxPointRad && (y=this.maxPointRad);
+									try {
                                     style.drawImage(node, this.x - y-lineWidth, this.y - y-lineWidth, 2 * y+lineWidth*2, 2 * y+lineWidth*2);
-									
+									} catch (e) {}
                                     style.globalCompositeOperation='luminosity';
                 
                                     style.lineWidth = lineWidth
@@ -4608,14 +4649,22 @@ var core = function(t, e, i) {
                                     style.globalCompositeOperation='';
                                     style.restore();
                 
-                                } else style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
+                                } else {
+									try {
+									style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
+									} catch (e) {}
+									}
 								
 								//special animations
 								if (this.targetNick.includes("The Dying Light")){
+									try {
 									style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y);
+									} catch (e) {}
 								}
 								else if(this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("℄🌀     ᑕᖇᗩƵƳ😈") || this.targetNick.includes("℄🌀ᔕᕼᗴᖇᗴ ᛕᕼᗩᑎ")){
+									try {
 									style.drawImage(cimg2, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y);
+									} catch (e) {}
 								}
 						//style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), s && (style.globalAlpha = value, s = false)), 
 						//(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (this.oldAlpha=style.globalAlpha, style.globalAlpha = 0.1, style.drawImage(cimg7, this.x - y * 4, this.y - y * 4, 8 * y, 8 * y), style.globalAlpha=this.oldAlpha), //cimg7						
@@ -4657,12 +4706,16 @@ var core = function(t, e, i) {
 								if (v.videoSkins){ 
 								if (node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")){
 									checkVideos(node2.src, this.targetNick);
+									try {
 									style.drawImage(window.videoJustWatchPro[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y);
+									} catch (e) {}
 								}	
 							}								
 							}
-							if (dyinglight1load == "yes" && node==null && this.targetNick.includes("The Dying Light")==false) {					
-								style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);							
+							if (dyinglight1load == "yes" && node==null && this.targetNick.includes("The Dying Light")==false) {			
+								try {
+								style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);	
+								} catch (e) {}
 							}
 							
 							}
@@ -5758,7 +5811,7 @@ var core = function(t, e, i) {
 
             this.ctx.restore();
             if (M.gameMode === ':teams') {
-                if (this.pieChart && this.pieChart.width) {
+                if (this.pieChart && this.pieChart.width) {				
                     this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 0xa, 0xa);
                 }
             }
