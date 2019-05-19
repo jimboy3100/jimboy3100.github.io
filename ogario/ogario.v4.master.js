@@ -1,4 +1,4 @@
-//v1
+//
 
 ! function(self, jQuery) {
     function login() {
