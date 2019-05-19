@@ -1,4 +1,4 @@
-//v1.2
+//v1.1
 
 
     function login() {
@@ -181,7 +181,7 @@
             }
         },
         parseClientVersion: function(styleValue) {
-            return 484 * parseInt(styleValue.split(".")[0]) + 100 * parseInt(styleValue.split(".")[1]) + parseInt(styleValue.split(".")[2]);
+            return 1e4 * parseInt(styleValue.split(".")[0]) + 100 * parseInt(styleValue.split(".")[1]) + parseInt(styleValue.split(".")[2]);
         },
 /*        getRegionCode: function() {
             var nextNodeLoc = localStorage.getItem("location");
@@ -565,7 +565,7 @@
             this.checkRegion();
             setInterval(function() {
                 n.refreshRegionInfo();
-            }, 6372);
+            }, 18e4);
         }
     };
     getStorage = function() {
