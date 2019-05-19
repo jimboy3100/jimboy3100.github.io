@@ -1,8 +1,10 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.483 MEGA TEST
+// v1.491 MEGA TEST
 // Game Configurations
+
+window.testobjects = {};
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
     get: function(){
@@ -2256,7 +2258,16 @@ var core = function(t, e, i) {
                 v['blockPopups'] && this['unblockPopups']();
             },
             'displayLeaderboard': function(t, e = '') {
-                this['leaderboardPositionsHUD'] && (this['leaderboardPositionsHUD']['innerHTML'] = t, this['leaderboardDataHUD']['innerHTML'] = e);
+				if (this['leaderboardPositionsHUD']){  
+					this['leaderboardPositionsHUD']['innerHTML'] = t;	
+					if (v['showLbData']){
+						this['leaderboardDataHUD']['innerHTML'] = e;
+						}
+					else {
+						this['leaderboardDataHUD']['innerHTML'] = '';			
+					}					
+				}
+
             },
             'displayStats': function() {
                 if (v['showStats']) {
@@ -2924,8 +2935,9 @@ var core = function(t, e, i) {
                             e.val(n + d);
                         }
                         e["focus"]();
-                    }), this["statsHUD"] = document.getElementById("stats-hud"), this["activeParties"] = document.getElementById("active-parties"), this["top5pos"] = document.getElementById("top5-pos"), this["top5totalMass"] = document.getElementById("top5-total-mass"), this["top5totalPlayers"] = document.getElementById("top5-total-players"), this["leaderboardPositionsHUD"] = document.getElementById("leaderboard-positions"), this["leaderboardDataHUD"] = document.getElementById("leaderboard-data"), this["timeHUD"] =
-                    document.getElementById("time-hud"), this["questHUD"] = document.getElementById("quest-hud"), s("#canvas")["bind"]("contextmenu", function() {
+                    }), this["statsHUD"] = document.getElementById("stats-hud"), this["activeParties"] = document.getElementById("active-parties"), this["top5pos"] = document.getElementById("top5-pos"), this["top5totalMass"] = document.getElementById("top5-total-mass"), this["top5totalPlayers"] = document.getElementById("top5-total-players"), this["leaderboardPositionsHUD"] = document.getElementById("leaderboard-positions"), 
+					this["leaderboardDataHUD"] = document.getElementById("leaderboard-data"),
+					this["timeHUD"] = document.getElementById("time-hud"), this["questHUD"] = document.getElementById("quest-hud"), s("#canvas")["bind"]("contextmenu", function() {
                         return false;
                     }), s(document).on("mouseup", ".btn", function() {
                         $(this)["blur"]();
@@ -4661,7 +4673,7 @@ var core = function(t, e, i) {
 									style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y);
 									} catch (e) {}
 								}
-								else if(this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("℄🌀     ᑕᖇᗩƵƳ😈") || this.targetNick.includes("℄🌀ᔕᕼᗴᖇᗴ ᛕᕼᗩᑎ")){
+								else if(this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("Qᴜᴇᴛᴢᴀʟ   ᶜᵒᵃᵗˡ") || this.targetNick.includes("℄🌀     ᑕᖇᗩƵƳ😈") || this.targetNick.includes("℄🌀ᔕᕼᗴᖇᗴ ᛕᕼᗩᑎ")){
 									try {
 									style.drawImage(cimg2, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y);
 									} catch (e) {}
@@ -5223,7 +5235,9 @@ var core = function(t, e, i) {
                     case 102:
 						//in here there are sent info about the user
 						//searching how protocol works
-						console.log("t: " + t);
+						//console.log("t: " + t);
+						window.testobjects=t;
+						console.log("t.getUint32: " + s);
 						console.log("t.getUint32: " + t.getUint32(s, true));
                         if (t.byteLength < 20 && e['logout']){
 							e['logout']();
