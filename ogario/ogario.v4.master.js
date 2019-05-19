@@ -1,4 +1,4 @@
-
+//v1
 
 ! function(self, jQuery) {
     function login() {
@@ -195,23 +195,23 @@
             }, "text");
         },*/
 		'getRegionCode': function() {
-			var _0x1a6061 = window.localStorage.getItem('location');
-			if(_0x1a6061) {
-				this.setRegion(_0x1a6061, ![]);
+			var nextNodeLoc = window.localStorage.getItem('location');
+			if(nextNodeLoc) {
+				this.setRegion(nextNodeLoc, ![]);
 				if(!this.checkPartyHash()) {
 					this.reconnect();
 				}
 				return;
 			}
-			var _0xb6f198 = this;
+			var canvasLayersManager = this;
 			/*$.get('//gc.agar.io', function(_0x4a6f91) {
 				var _0x4f6506 = _0x4a6f91.split(' ');
 				var _0x102283 = _0x4f6506[0x0];
-				_0xb6f198.setRegionCode(_0x102283);
+				canvasLayersManager.setRegionCode(_0x102283);
 			}, 'text'); */
 			userData=$.get("https://extreme-ip-lookup.com/json/", function (response) { $("#response").html(JSON.stringify(response, null, 4));
 				if (userData!=null) {localStorage.setItem("userData", JSON.stringify(userData));}
-				_0xb6f198.setRegionCode(userData.responseJSON.countryCode);
+				canvasLayersManager.setRegionCode(userData.responseJSON.countryCode);
 			}, "jsonp");
 		},			
         setRegionCode: function(segment) {
