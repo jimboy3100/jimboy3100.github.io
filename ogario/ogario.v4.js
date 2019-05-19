@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.481 MEGA TEST
+// v1.482 MEGA TEST
 // Game Configurations
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
@@ -5221,7 +5221,10 @@ var core = function(t, e, i) {
                         console.log('[Legend mod Express] Captcha requested'); if(e.master && e.master['recaptchaRequested']) { e.master['recaptchaRequested']();}
                         break;
                     case 102:
-                        t.byteLength < 20 && e['logout'] && e['logout']();
+						console.log(t.getUint32(s, true));
+                        if (t.byteLength < 20 && e['logout']){
+							e['logout']();
+							}
                         break;
                     case 103:
                         this['loggedInTime'] = Date['now']();
