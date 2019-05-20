@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.497 MEGA TEST
+// v1.500 MEGA TEST
 // Game Configurations
 
 window.testobjects = {};
@@ -2737,64 +2737,82 @@ var thelegendmodproject = function(t, e, i) {
                 s(document).on("click", ".menu-tabs a", function(event) {
                         event.preventDefault();
                         t["switchMenuTabs"](s(this), "menu-panel");
-                    }), s(document).on("click", ".submenu-tabs a", function(event) {
+                    });
+				s(document).on("click", ".submenu-tabs a", function(event) {
                         event.preventDefault();
                         t["switchMenuTabs"](s(this), "submenu-panel");
-                    }), s(document).on("click", ".quick-menu", function(event) {
+                    });
+				s(document).on("click", ".quick-menu", function(event) {
                         event.preventDefault();
                         v["showQuickMenu"] = !v["showQuickMenu"];
                         t["saveSettings"](v, "ogarioSettings");
                         t["setShowQuickMenu"]();
-                    }), s(document).on("click", ".quick-skins", function(event) {
+                    });
+				s(document).on("click", ".quick-skins", function(event) {
                         event.preventDefault();
                         v["showSkinsPanel"] = !v["showSkinsPanel"];
                         t["saveSettings"](v, "ogarioSettings");
                         t["setShowSkinsPanel"]();
-                    }), s(document).on("change", "#region", function() {
+                    }); 
+				s(document).on("change", "#region", function() {
                         t["region"] = this.value;
-                    }), s(document).on("change", "#gamemode", function() {
+                    }); 
+				s(document).on("change", "#gamemode", function() {
                         var dummy = this.value;
                         if (":party" !== dummy) {
                             t["leaveParty"]();
                         }
                         t["gameMode"] = i["gameMode"] = dummy;
                         t["setQuest"]();
-                    }), s(document).on("change", "#quality", function() {
+                    }); 
+				s(document).on("change", "#quality", function() {
                         t["getQuality"](this.value);
                         ogarhusettings();
-                    }), s(document).on("input", "#skin", function() {
+                    }); 
+				s(document).on("input", "#skin", function() {
                         var hexInputVal = this.value;
                         t["setSkinPreview"](hexInputVal, "skin-preview");
                         t["setSkinPreview"](hexInputVal, "profile-" + t["selectedProfile"]);
-                    }), s(document).on("click", "#skins a", function(event) {
+                    }); 
+				s(document).on("click", "#skins a", function(event) {
                         event.preventDefault();
                         t["selectProfile"](s(this)["attr"]("data-profile"));
-                    }), s(document).on("click", "#prev-profile", function() {
+                    }); 
+				s(document).on("click", "#prev-profile", function() {
                         t["prevProfile"]();
-                    }), s(document).on("click", "#next-profile", function() {
+                    }); 
+				s(document).on("click", "#next-profile", function() {
                         t["nextProfile"]();
-                    }), s(document).on("click", "#stream-mode", function() {
+                    }); 
+				s(document).on("click", "#stream-mode", function() {
                         /** @type {boolean} */
                         v["streamMode"] = !v["streamMode"];
                         t["saveSettings"](v, "ogarioSettings");
                         t["setStreamMode"]();
-                    }), s(document).on("click", "#hide-url", function() {
+                    }); 
+				s(document).on("click", "#hide-url", function() {
                         /** @type {boolean} */
                         v["hideSkinUrl"] = !v["hideSkinUrl"];
                         t["saveSettings"](v, "ogarioSettings");
                         t["setHideSkinUrl"]();
-                    }), s(document).on("click", ".btn-server-info", function() {
+                    }); 
+				s(document).on("click", ".btn-server-info", function() {
                         s("#server-info")["toggle"]();
-                    }), s(document).on("click", "#server-connect", function() {
+                    }); 
+				s(document).on("click", "#server-connect", function() {
                         t["gameServerConnect"](s("#server-ws").val());
-                    }), s(document).on("click", "#server-reconnect", function() {
+                    }); 
+				s(document).on("click", "#server-reconnect", function() {
                         t["gameServerReconnect"]();
-                    }), s(document).on("click", "#server-join", function() {
+                    }); 
+				s(document).on("click", "#server-join", function() {
                         t["gameServerJoin"](s("#server-token").val());
-                    }), s(document).on("change", "#og-options input[type='checkbox']", function() {
+                    }); 
+				s(document).on("change", "#og-options input[type='checkbox']", function() {
                         var template = s(this);
                         t["setSettings"](template["attr"]("id"), template["prop"]("checked"));
-                    }), s(document).on("change", ".js-switch-vanilla", function() {
+                    }); 
+				s(document).on("change", ".js-switch-vanilla", function() {
                         var template = s(this);
                         var p = template["attr"]("id");
                         if (void 0 !== t[p]) {
@@ -2807,33 +2825,42 @@ var thelegendmodproject = function(t, e, i) {
                                 t["setQuest"]();
                             }
                         }
-                    }), s(document).on("click", "#og-settings .restore-settings a", function(result) {
+                    }); 
+				s(document).on("click", "#og-settings .restore-settings a", function(result) {
                         result["preventDefault"]();
                         t["restoreSettings"]();
-                    }), s(document).on("click", "#og-settings .btn-export", function(result) {
+                    }); 
+				s(document).on("click", "#og-settings .btn-export", function(result) {
                         result["preventDefault"]();
                         t["exportSettings"]();
                         s("#exp-imp").fadeIn(500);
                         s("#exp-imp-settings, #export-settings")["perfectScrollbar"]("update");
-                    }), s(document).on("click", "#close-exp-imp", function(event) {
+                    }); 
+				s(document).on("click", "#close-exp-imp", function(event) {
                         event.preventDefault();
                         s("#exp-imp")["fadeOut"](500);
-                    }), s(document).on("focus", "#export-settings", function() {
+                    }); 
+				s(document).on("focus", "#export-settings", function() {
                         s(this).select();
-                    }), s(document).on("click", "#export-settings-btn", function(event) {
+                    }), 
+				s(document).on("click", "#export-settings-btn", function(event) {
                         event.preventDefault();
                         t["exportSettings"]();
-                    }), s(document).on("click", "#import-settings-btn", function(result) {
+                    }); 
+				s(document).on("click", "#import-settings-btn", function(result) {
                         result["preventDefault"]();
                         t["importSettings"]();
-                    }), s(document).on("click", "#unblock-popups", function(result) {
+                    }); 
+				s(document).on("click", "#unblock-popups", function(result) {
                         result["preventDefault"]();
                         t["unblockPopups"]();
-                    }), s(document).on("click", "#openfl-overlay.disabler", function() {
+                    }); 
+				s(document).on("click", "#openfl-overlay.disabler", function() {
                         if (v["blockPopups"]) {
                             t["blockPopups"]();
                         }
-                    }), s(document).on("click", "#openfl-content", function() {
+                    }); 
+				s(document).on("click", "#openfl-content", function() {
                         if (v["blockPopups"]) {
                             var container = s(this);
                             setTimeout(function() {
@@ -2842,43 +2869,52 @@ var thelegendmodproject = function(t, e, i) {
                                 }
                             }, 1000);
                         }
-                    }), s(document).on("click", ".quick-shop", function(event) {
+                    });
+				s(document).on("click", ".quick-shop", function(event) {
                         event.preventDefault();
                         t["unblockPopups"]();
                         if (e.MC && e.MC["openShop"]) {
                             e.MC["openShop"]();
                         }
-                    }), s(document).on("click", ".quick-free-coins", function(event) {
+                    }); 
+				s(document).on("click", ".quick-free-coins", function(event) {
                         event.preventDefault();
                         t["unblockPopups"]();
                         if (e.MC && e.MC["showFreeCoins"]) {
                             e.MC["showFreeCoins"]();
                         }
-                    }), s(document).on("click", ".quick-free-gifts", function(event) {
+                    }); 
+				s(document).on("click", ".quick-free-gifts", function(event) {
                         event.preventDefault();
                         t["unblockPopups"]();
                         if (e.MC && e.MC["showGifting"]) {
                             e.MC["showGifting"]();
                         }
-                    }), s(document).on("click", ".quick-quests", function(event) {
+                    }); 
+				s(document).on("click", ".quick-quests", function(event) {
                         event.preventDefault();
                         t["unblockPopups"]();
                         if (e.MC && e.MC["showQuests"]) {
                             e.MC["showQuests"]();
                         }
-                    }), s(document).on("click", "#set-targeting", function(event) {
+                    }); 
+				s(document).on("click", "#set-targeting", function(event) {
                         event.preventDefault();
                         t["setTargeting"]();
-                    }), s(document).on("click", "#cancel-targeting", function(event) {
+                    }); 
+				s(document).on("click", "#cancel-targeting", function(event) {
                         event.preventDefault();
                         t["cancelTargeting"]();
-                    }), s(document).on("click", "#set-private-minimap", function(event) {
+                    }); 
+				s(document).on("click", "#set-private-minimap", function(event) {
                         event.preventDefault();
                         t["setPrivateMiniMap"]();
-                    }), s(document).on("click", "#change-target", function(result) {
+                    });
+				s(document).on("click", "#change-target", function(result) {
                         result["preventDefault"]();
                         t["changeTarget"]();
-                    }), s(document).on("click", ".team-top-limit", function(event) {
+                    });
+				s(document).on("click", ".team-top-limit", function(event) {
                         event.preventDefault();
                         var template = s(this);
                         /** @type {number} */
@@ -2890,33 +2926,41 @@ var thelegendmodproject = function(t, e, i) {
                             s(".team-top-limit").removeClass("active");
                             template.addClass("active");
                         }
-                    }), s(document).on("click", "#top5-pos .set-target", function(event) {
+                    }); 
+				s(document).on("click", "#top5-pos .set-target", function(event) {
                         event.preventDefault();
                         t["setTarget"](parseInt(s(this)["attr"]("data-user-id")));
-                    }), s(document).on("click", ".mute-user", function(event) {
+                    }); 
+				s(document).on("click", ".mute-user", function(event) {
                         event.preventDefault();
                         t["muteChatUser"](parseInt(s(this)["attr"]("data-user-id")));
-                    }), s(document).on("click", ".btn-mute-user", function() {
+                    }); 
+				s(document).on("click", ".btn-mute-user", function() {
                         var template = s(this);
                         t["muteChatUser"](parseInt(template["attr"]("data-user-id")));
                         template.removeClass("btn-red btn-mute-user").addClass("btn-green btn-unmute-user").text(h["unmute"]);
-                    }), s(document).on("click", ".btn-unmute-user", function() {
+                    }); 
+				s(document).on("click", ".btn-unmute-user", function() {
                         var template = s(this);
                         t["unmuteChatUser"](parseInt(template["attr"]("data-user-id")));
                         template.removeClass("btn-green btn-unmute-user").addClass("btn-red btn-mute-user").text(h["mute"]);
-                    }), s(document).on("click", ".chat-sound-notifications", function(result) {
+                    }); 
+				s(document).on("click", ".chat-sound-notifications", function(result) {
                         result["preventDefault"]();
                         /** @type {boolean} */
                         v["chatSounds"] = !v["chatSounds"];
                         t["saveSettings"](v, "ogarioSettings");
                         t["setChatSoundsBtn"]();
-                    }), s(document).on("click", ".chat-active-users", function(event) {
+                    }); 
+				s(document).on("click", ".chat-active-users", function(event) {
                         event.preventDefault();
                         t["displayChatActiveUsers"]();
-                    }), s(document).on("click", ".chat-muted-users", function(event) {
+                    }); 
+				s(document).on("click", ".chat-muted-users", function(event) {
                         event.preventDefault();
                         t["displayChatMutedUsers"]();
-                    }), s(document).on("click", ".show-chat-emoticons", function(result) {
+                    });
+				s(document).on("click", ".show-chat-emoticons", function(result) {
                         result["preventDefault"]();
                         var template = s(this);
                         var p = s("#chat-emoticons");
@@ -2927,7 +2971,8 @@ var thelegendmodproject = function(t, e, i) {
                             template.removeClass("active");
                             s("#message")["focus"]();
                         }
-                    }), s(document).on("click", "#chat-emoticons .emoticon", function() {
+                    }); 
+				s(document).on("click", "#chat-emoticons .emoticon", function() {
                         var d = s(this)["attr"]("alt");
                         var e = s("#message");
                         var n = e.val();
@@ -2935,24 +2980,36 @@ var thelegendmodproject = function(t, e, i) {
                             e.val(n + d);
                         }
                         e["focus"]();
-                    }), this["statsHUD"] = document.getElementById("stats-hud"), this["activeParties"] = document.getElementById("active-parties"), this["top5pos"] = document.getElementById("top5-pos"), this["top5totalMass"] = document.getElementById("top5-total-mass"), this["top5totalPlayers"] = document.getElementById("top5-total-players"), this["leaderboardPositionsHUD"] = document.getElementById("leaderboard-positions"), 
-					this["leaderboardDataHUD"] = document.getElementById("leaderboard-data"),
-					this["timeHUD"] = document.getElementById("time-hud"), this["questHUD"] = document.getElementById("quest-hud"), s("#canvas")["bind"]("contextmenu", function() {
+                    }); 
+				this["statsHUD"] = document.getElementById("stats-hud"); 
+				this["activeParties"] = document.getElementById("active-parties");
+				this["top5pos"] = document.getElementById("top5-pos");
+				this["top5totalMass"] = document.getElementById("top5-total-mass");
+				this["top5totalPlayers"] = document.getElementById("top5-total-players"); 
+				this["leaderboardPositionsHUD"] = document.getElementById("leaderboard-positions");
+				this["leaderboardDataHUD"] = document.getElementById("leaderboard-data");
+				this["timeHUD"] = document.getElementById("time-hud"), this["questHUD"] = document.getElementById("quest-hud"), s("#canvas")["bind"]("contextmenu", function() {
                         return false;
-                    }), s(document).on("mouseup", ".btn", function() {
+                    }); 
+				s(document).on("mouseup", ".btn", function() {
                         $(this)["blur"]();
-                    }), s("[data-toggle='tab-tooltip']")["tooltip"]({
+                    });
+				s("[data-toggle='tab-tooltip']")["tooltip"]({
                         "trigger": "hover"
-                    }), s(".submenu-panel, #chat-box, #exp-imp-settings, #export-settings, #import-settings")["perfectScrollbar"]({
+                    }); 
+				s(".submenu-panel, #chat-box, #exp-imp-settings, #export-settings, #import-settings")["perfectScrollbar"]({
                         "suppressScrollX": true
-                    }), Array["prototype"]["slice"]["call"](document["querySelectorAll"](".js-switch"))["forEach"](function(remove) {
+                    }); 
+				Array["prototype"]["slice"]["call"](document["querySelectorAll"](".js-switch"))["forEach"](function(remove) {
                         new Switchery(remove, {
                             "color": g["menuMainColor"],
                             "size": "small"
                         });
-                    }), s("input[type='range']")["rangeslider"]({
+                    }); 
+				s("input[type='range']")["rangeslider"]({
                         "polyfill": false
-                    }), toastr["options"] = {
+                    });
+				toastr["options"] = {
                         "newestOnTop": false,
                         "positionClass": "toast-bottom-left",
                         "timeOut": 15000
@@ -3008,7 +3065,8 @@ var thelegendmodproject = function(t, e, i) {
                 }
             },
             'setCanvasScale': function(t) {
-                this['canvasScale'] = t, i['canvasScale'] = t;
+                this['canvasScale'] = t;
+				i['canvasScale'] = t;
             },
             'setStreamMode': function() {
                 if (v["streamMode"]) {
@@ -3049,15 +3107,19 @@ var thelegendmodproject = function(t, e, i) {
                 var t = this;
                 s(document).on("click", ".btn-play, .btn-play-guest", function() {
                     t["onPlay"]();
-                }), s(document).on("click", ".btn-spectate", function() {
+                });
+				s(document).on("click", ".btn-spectate", function() {
                     t["onSpectate"]();
-                }), s(document).on("click", "#create-party-btn-2", function() {
+                }); 
+				s(document).on("click", "#create-party-btn-2", function() {
                     t["onCreate"]();
-                }), s(document).on("click", "#join-party-btn-2", function() {
+                });
+				s(document).on("click", "#join-party-btn-2", function() {
                     t["skipServerData"] = true;
                     t["joinParty"]();
                     t["onJoin"]();
-                }), s(document).on("click", "#statsContinue2", function() {
+                }); 
+				s(document).on("click", "#statsContinue2", function() {
                     s("#stats, #main-panel")["toggle"]();
                 });
             },
@@ -3073,10 +3135,20 @@ var thelegendmodproject = function(t, e, i) {
             },
             'onPlay': function() {
                 //                this.play(), this['hideMenu'](), e['addKeyListeners'] && e['addKeyListeners'](), v['autoHideFood'] && (i['showFood'] = true), e['ga'] && e['ga']('create', 'UA-92655864-7', 'auto', 'ogarioTracker'), e['ga'] && e['ga']('ogarioTracker.send', 'pageview');
-                this.play(), this['hideMenu'](), e['addKeyListeners'] && e['addKeyListeners'](), v['autoHideFood'] && (i['showFood'] = true);
+                this.play(); 
+				this['hideMenu'](); 
+				if (e['addKeyListeners']){
+					e['addKeyListeners']();
+					}
+				if (v['autoHideFood']){
+				i['showFood'] = true};
             },
             'onSpectate': function() {
-                this['onJoin'](), this['sendPlayerJoin'](), this['hideMenu'](), e['addKeyListeners'] && e['addKeyListeners'](), v['autoHideFood'] && (i['showFood'] = false);
+                this['onJoin'](), 
+				this['sendPlayerJoin'](), 
+				this['hideMenu'](), 
+				e['addKeyListeners'] && e['addKeyListeners'](), 
+				v['autoHideFood'] && (i['showFood'] = false);
             },
             'join': function() {
                 this['setParty'](), this['setPlayerSettings'](), this['sendPartyData'](), this['sendPlayerDeath']();
@@ -3087,7 +3159,8 @@ var thelegendmodproject = function(t, e, i) {
                     this.connect();
                     var t = this;
                     setTimeout(function() {
-                        t['join'](), t['sendPlayerJoin']();
+                        t['join'](); 
+						t['sendPlayerJoin']();
                     }, 1000);
                 }
             },
@@ -3122,8 +3195,17 @@ var thelegendmodproject = function(t, e, i) {
             },
             'onPlayerDeath': function() {
 				//
-				pauseVideos(),
-                i.play = false, i['playerColor'] = null, i['foodIsHidden'] = false, i['playerMass'] = 0, i['playerScore'] = 0, i['playerSplitCells'] = 0, this['showMenu'](300), this['sendPlayerDeath'](), this['updateDeathLocations'](i['playerX'], i['playerY']), this['unlockButtons'](), ogarcommando1(), this['autoResp']();
+				pauseVideos();
+                i.play = false;
+				i['playerColor'] = null;
+				i['foodIsHidden'] = false;
+				i['playerMass'] = 0;
+				i['playerScore'] = 0;
+				i['playerSplitCells'] = 0;
+				this['showMenu'](300);
+				this['sendPlayerDeath']();
+				this['updateDeathLocations'](i['playerX'], i['playerY']);
+				this['unlockButtons'](), ogarcommando1(), this['autoResp']();
             },
             'setPlayerSettings': function() {
                 var t = s('#nick').val(),
@@ -3353,7 +3435,12 @@ var thelegendmodproject = function(t, e, i) {
             'drawMiniMapSectors': function(t, e, s, o, a) {
                 this['miniMapSectors'] = document.getElementById('minimap-sectors');
                 var n = this['miniMapSectors']['getContext']('2d');
-                n['ogarioCtx'] = true, this['miniMapSectors']['width'] = s, this['miniMapSectors']['height'] = o, n['fillStyle'] = '#FFFFFF', this['dTok'](n, s - 1), ogarfooddrawer['drawSectors'](n, i['mapOffsetFixed'], t, e, 0.5, a, s - 0.5, o - 9.5, g['miniMapSectorsColor'], g['miniMapSectorsColor'], 1, false);
+                n['ogarioCtx'] = true; 
+				this['miniMapSectors']['width'] = s; 
+				this['miniMapSectors']['height'] = o; 
+				n['fillStyle'] = '#FFFFFF'; 
+				this['dTok'](n, s - 1);
+				ogarfooddrawer['drawSectors'](n, i['mapOffsetFixed'], t, e, 0.5, a, s - 0.5, o - 9.5, g['miniMapSectorsColor'], g['miniMapSectorsColor'], 1, false);
             },
             'resetMiniMapSectors': function() {
                 this['miniMapSectors'] = null;
@@ -3401,16 +3488,30 @@ var thelegendmodproject = function(t, e, i) {
                 t && (s('#pre-join-party-btn')['click'](), s('.party-token').val(t), s('#join-party-btn')['click']());
             },
             'leaveParty': function() {
-                s('#party-token, .party-token').val(''), s('#leave-party-btn')['click']();
+                s('#party-token, .party-token').val(''); 
+				s('#leave-party-btn')['click']();
             },
             'closeParty': function() {
-                s('#party-token, .party-token').val(''), s('.party-icon-back')['click']();
+                s('#party-token, .party-token').val(''); 
+				s('.party-icon-back')['click']();
             },
             'flushData': function() {
-                this['flushPartyData'](), this['flushSkinsMap'](), this['flushChatData'](), this['cancelTargeting'](), i.play = false, i['playerColor'] = null;
+                this['flushPartyData'](); 
+				this['flushSkinsMap'](); 
+				this['flushChatData'](); 
+				this['cancelTargeting'](); 
+				i.play = false; 
+				i['playerColor'] = null;
             },
             'flushPartyData': function() {
-                this['teamPlayers'] = [], this['parties'] = [], this['lastSentNick'] = '', this['lastSentClanTag'] = null, this['lastSentSkinURL'] = '', this['lastSentCustomColor'] = '', this['lastSentPartyToken'] = '', this['lastSentServerToken'] = '';
+                this['teamPlayers'] = [];
+				this['parties'] = []; 
+				this['lastSentNick'] = ''; 
+				this['lastSentClanTag'] = null; 
+				this['lastSentSkinURL'] = ''; 
+				this['lastSentCustomColor'] = ''; 
+				this['lastSentPartyToken'] = ''; 
+				this['lastSentServerToken'] = '';
             },
             'flushCells': function() {
                 this['cells'] = {};
@@ -7177,7 +7278,8 @@ var thelegendmodproject = function(t, e, i) {
                     '' !== i && ogario11Hotkeys[i] && ogario11Hotkeys[i]['keyDown'] && ogario11Hotkeys[i]['keyDown']();
                 }
             }
-        }, document.onkeyup = function(t) {
+        }
+		document.onkeyup = function(t) {
             var e = lastkeys['getPressedKey'](t);
             if ('' !== e) {
                 if (ogario1Hotkeys[e]) {
@@ -7186,7 +7288,8 @@ var thelegendmodproject = function(t, e, i) {
                 }
                 ogarioefaultHotkeys[e] = false;
             }
-        }, e['onmousedown'] = function(t) {
+        } 
+		e['onmousedown'] = function(t) {
             if (!s("#overlays")["is"](":visible")) {
                 if (2 == t["which"]) {
                     t["preventDefault"]();
@@ -7208,15 +7311,26 @@ var thelegendmodproject = function(t, e, i) {
                     }
                 }
             }
-        }, e['onmouseup'] = function(t) {
+        }
+		e['onmouseup'] = function(t) {
             if (v["mouseFeed"] && (3 == t["which"] && !v["mouseInvert"] || 1 == t["which"] && v["mouseInvert"]) && ogarminimapdrawer) {
                 ogarminimapdrawer["macroFeed"](false);
             }
-        }, e['onbeforeunload'] = function(t) {
+        };
+		e['onbeforeunload'] = function(t) {
             return i.play ? h['exit'] : void 0;
-        }, i = M, o = t('buffer')['Buffer'], a = t('lz4'), '/ogario' === e.location['pathname'] && ogarjoiner('/' + e['location']['hash']), e['onresize'] = function() {
+        }; 
+		i = M; 
+		o = t('buffer')['Buffer'];
+		a = t('lz4');
+		if ('/ogario' === e.location['pathname']){
+			ogarjoiner('/' + e['location']['hash']); 
+		}
+		e['onresize'] = function() {
             ogarfooddrawer['resizeCanvas'](), ogarhusettings();
-        }, ogarassembler(), e.core = {
+        };
+		ogarassembler();
+		e.core = {
             'connect': function(t) {
                 M.connect(t);
             },
@@ -7262,7 +7376,17 @@ var thelegendmodproject = function(t, e, i) {
 				window.customskinsname=a;
 				window.customskinsurl=c;
 			}
-        }, e.master.getClientVersion(), y.init(), ogarminimapdrawer.init(), ogarminimapdrawer.getDefaultSettings(), ogarminimapdrawer.connect(), lastkeys.init(), M.init(), ogarfooddrawer.init(), e.master.init(), ogarhusettings();
+        }; 
+		e.master.getClientVersion(); 
+		y.init(); 
+		ogarminimapdrawer.init(); 
+		ogarminimapdrawer.getDefaultSettings(); 
+		ogarminimapdrawer.connect(); 
+		lastkeys.init(); 
+		M.init(); 
+		ogarfooddrawer.init(); 
+		e.master.init();
+		ogarhusettings();
     })(window, window.ogario, window.jQuery);
 }
 
