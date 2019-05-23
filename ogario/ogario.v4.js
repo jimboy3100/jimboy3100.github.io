@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.524 MEGA TEST
+// v1.559 MEGA TEST
 // Game Configurations
 
 window.testobjects = {};
@@ -1640,7 +1640,7 @@ var thelegendmodproject = function(t, e, i) {
                 'loadThemeSettings': function() {
                     var t = null;
                     for (var s in null !== window.localStorage.getItem('ogarioThemeSettings') && (t = JSON.parse(window.localStorage.getItem('ogarioThemeSettings'))), g) g.hasOwnProperty(s) && (t && t.hasOwnProperty(s) && (g[s] = t[s]), i.hasOwnProperty(s) && (i[s] = g[s]));
-					//if (v['zoomSpeedValue2'] && v['zoomSpeedValue2']>0.99){v['zoomSpeedValue2']=v['zoomSpeedValue2']-1};
+					//if (v.zoomSpeedValue2 && v.zoomSpeedValue2>0.99){v.zoomSpeedValue2=v.zoomSpeedValue2-1};
 				},
                 'saveThemeSettings': function() {
                     window.localStorage.setItem('ogarioThemeSettings', JSON.stringify(g));
@@ -1713,7 +1713,7 @@ var thelegendmodproject = function(t, e, i) {
                     e === g.customCursor ? $(t).append('<div class=\"cursor-box\"><a href=\"#\" class=\"active\"><img src=\"' + e + '\"></a></div>') : $(t).append('<div class=\"cursor-box\"><a href=\"#\"><img src=\"' + e + '\"></a></div>');
                 },
                 'setFont': function(t, e) {
-                    g[t] = e, g[t + 'Family'] = this['setFontFamily'](e), g[t + 'Weight'] = this.setFontWeight(e), i.hasOwnProperty(t + 'Family') && (i[t + 'Family'] = g[t + 'Family']), i.hasOwnProperty(t + 'Weight') && (i[t + 'Weight'] = g[t + 'Weight']);
+                    g[t] = e, g[t + 'Family'] = this.setFontFamily(e), g[t + 'Weight'] = this.setFontWeight(e), i.hasOwnProperty(t + 'Family') && (i[t + 'Family'] = g[t + 'Family']), i.hasOwnProperty(t + 'Weight') && (i[t + 'Weight'] = g[t + 'Weight']);
                 },
                 'addFontBox': function(t, e, i) {
                     $(t).append('<div class=\"font-box\"><span class=\"title-box\">' + h[e] + '</span><div class=\"select-wrapper\"><select id=\"' + e + '\" class=\"form-control\"></select></div></div>'), $('#' + e).append('<option value=\"ubuntu\">Ubuntu</option><option value=\"ubuntu-bold\">Ubuntu Bold</option>'), $('#' + e).append('<option value=\"roboto\">Roboto</option><option value=\"roboto-bold\">Roboto Bold</option>'), $('#' + e).append('<option value=\"oswald\">Oswald</option><option value=\"oswald-bold\">Oswald Bold</option>'), $('#' + e).val(g[e]);
@@ -1734,11 +1734,11 @@ var thelegendmodproject = function(t, e, i) {
                 },
                 'setThemeMenu': function() {
                     var t = this;
-                    $('#theme').append('<ul class=\"submenu-tabs\"><li class=\"theme-main-tab active\"><a href=\"#theme-main\" class=\"active ogicon-paint-format\" data-toggle=\"tab-tooltip\" title=\"' + h['basicTheming'] + '\"></a></li><li class=\"theme-menu-tab\"><a href=\"#theme-menu\" class=\"ogicon-menu\" data-toggle=\"tab-tooltip\" title=\"' + h['menuTheming'] + '\"></a></li><li class=\"theme-hud-tab\"><a href=\"#theme-hud\" class=\"ogicon-display\" data-toggle=\"tab-tooltip\" title=\"' + h['hudTheming'] + '\"></a></li><li class=\"theme-chat-tab\"><a href=\"#theme-chat\" class=\"ogicon-bubbles\" data-toggle=\"tab-tooltip\" title=\"' + h['chatTheming'] + '\"></a></li><li class=\"theme-minimap-tab\"><a href=\"#theme-minimap\" class=\"ogicon-location2\" data-toggle=\"tab-tooltip\" title=\"' + h['miniMapTheming'] + '\"></a></li><li class=\"theme-images-tab\"><a href=\"#theme-images\" class=\"ogicon-compass\" data-toggle=\"tab-tooltip\" title=\"' + h['imagesTheming'] + '\"></a></li></ul><div id=\"theme-main\" class=\"submenu-panel\"></div><div id=\"theme-menu\" class=\"submenu-panel\"></div><div id=\"theme-hud\" class=\"submenu-panel\"></div><div id=\"theme-chat\" class=\"submenu-panel\"></div><div id=\"theme-minimap\" class=\"submenu-panel\"></div><div id=\"theme-images\" class=\"submenu-panel\"></div>'), this['addPresetBox']('#theme-main', 'themePreset', f, 'preset', 'changeThemePreset'), this['addColorBox']('#theme-main', 'bgColor', 'setBgColor'), this['addColorBox']('#theme-main', 'bordersColor'), this['addColorBox']('#theme-main', 'borderGlowColor'), this['addColorBox']('#theme-main', 'gridColor'), this['addColorBox']('#theme-main', 'sectorsColor'), this['addColorBox']('#theme-main', 'namesColor'), this['addColorBox']('#theme-main', 'namesStrokeColor'), this['addColorBox']('#theme-main', 'massColor'), this['addColorBox']('#theme-main', 'massStrokeColor'), this['addColorBox']('#theme-main', 'virusColor'), this['addColorBox']('#theme-main', 'virusStrokeColor'), this.addColorBox('#theme-main', 'mVirusColor'), this.addColorBox('#theme-main', 'mVirusStrokeColor'), this.addColorBox('#theme-main', 'virusGlowColor'), this['addColorBox']('#theme-main', 'foodColor', 'setFoodColor'), this['addColorBox']('#theme-main', 'teammatesIndColor', 'setIndicatorColor'), this['addColorBox']('#theme-main', 'cursorTrackingColor'), this['addColorBox']('#theme-main', 'splitRangeColor'), this['addColorBox']('#theme-main', 'safeAreaColor'), this['addColorBox']('#theme-main', 'dangerAreaColor'), this['addColorBox']('#theme-main', 'ghostCellsColor'), this['addFontBox']('#theme-main', 'namesFont'), this['addFontBox']('#theme-main', 'massFont'), this['addFontBox']('#theme-main', 'sectorsFont'), this['addSliderBox']('#theme-main', 'sectorsFontSize', 200, 2000, 10), this['addSliderBox']('#theme-main', 'namesScale', 0.5, 2, 0.1), this['addSliderBox']('#theme-main', 'massScale', 1, 5, 1), this['addSliderBox']('#theme-main', 'virMassScale', 1, 5, 1), this['addSliderBox']('#theme-main', 'strokeScale', 1, 4, 0.1), this['addSliderBox']('#theme-main', 'foodSize', 1, 50, 1, 'setFoodColor'), this['addSliderBox']('#theme-main', 'virusStrokeSize', 2, 40, 1), this['addSliderBox']('#theme-main', 'bordersWidth', 2, 200, 2), this['addSliderBox']('#theme-main', 'borderGlowSize', 0, 40, 1), this['addSliderBox']('#theme-main', 'virusGlowSize', 0, 40, 1), this['addSliderBox']('#theme-main', 'sectorsWidth', 2, 200, 2), this['addSliderBox']('#theme-main', 'cellsAlpha', 0.01, 0.99, 0.01), this['addSliderBox']('#theme-main', 'skinsAlpha', 0.01, 0.99, 0.01), this['addSliderBox']('#theme-main', 'virusAlpha', 0, 1, 0.01), this['addSliderBox']('#theme-main', 'textAlpha', 0.1, 1, 0.01), this['addSliderBox']('#theme-main', 'ghostCellsAlpha', 0.01, 0.99, 0.01), this['addPresetBox']('#theme-menu', 'menuPreset', m, 'menuPreset', 'changeMenuPreset'), this['addSliderBox']('#theme-menu', 'menuOpacity', 0.1, 1, 0.01, 'setMenuOpacity'), this['addColorBox']('#theme-menu', 'menuMainColor', 'setMenuMainColor'), this['addColorBox']('#theme-menu', 'menuBtnTextColor', 'setMenuButtons'), this['addColorBox']('#theme-menu', 'menuPanelColor', 'setMenuPanelColor'), this['addColorBox']('#theme-menu', 'menuPanelColor2', 'setMenuPanelColor'), this['addColorBox']('#theme-menu', 'menuTextColor', 'setMenuTextColor'), this['addColorBox']('#theme-menu', 'menuTextColor2', 'setMenuTextColor'), this['addColorBox']('#theme-menu', 'btn1Color', 'setMenuButtons'), this['addColorBox']('#theme-menu', 'btn1Color2', 'setMenuButtons'), this['addColorBox']('#theme-menu', 'btn2Color', 'setMenuButtons'), this['addColorBox']('#theme-menu', 'btn2Color2', 'setMenuButtons'), this['addColorBox']('#theme-menu', 'btn3Color', 'setMenuButtons'), this['addColorBox']('#theme-menu', 'btn3Color2', 'setMenuButtons'), this['addColorBox']('#theme-menu', 'btn4Color', 'setMenuButtons'), this['addColorBox']('#theme-menu', 'btn4Color2', 'setMenuButtons'), this['addInputBox']('#theme-menu', 'menuBg', 'Image URL', 'setMenuBg'), this['addColorBox']('#theme-hud', 'hudMainColor', 'setHudColors'), this['addRgbaColorBox']('#theme-hud', 'hudColor', 'setHudColors'), this['addColorBox']('#theme-hud', 'hudTextColor', 'setHudColors'), this['addColorBox']('#theme-hud', 'statsHudColor', 'setHudColors'), this['addColorBox']('#theme-hud', 'timeHudColor', 'setHudColors'), this['addColorBox']('#theme-hud', 'top5MassColor', 'setHudColors'), this['addColorBox']('#theme-hud', 'lbMeColor', 'setHudColors'), this['addColorBox']('#theme-hud', 'lbTeammateColor', 'setHudColors'), this['addFontBox']('#theme-hud', 'hudFont', 'setHudFont'), this['addSliderBox']('#theme-hud', 'hudScale', 1, 2, 0.01, 'setHudScale'), this['addRgbaColorBox']('#theme-chat', 'messageColor', 'setChatColors'), this['addColorBox']('#theme-chat', 'messageTextColor', 'setChatColors'), this['addColorBox']('#theme-chat', 'messageTimeColor', 'setChatColors'), this['addColorBox']('#theme-chat', 'messageNickColor', 'setChatColors'), this['addRgbaColorBox']('#theme-chat', 'commandsColor', 'setChatColors'), this['addColorBox']('#theme-chat', 'commandsTextColor', 'setChatColors'), this['addColorBox']('#theme-chat', 'commandsTimeColor', 'setChatColors'), this['addColorBox']('#theme-chat', 'commandsNickColor', 'setChatColors'), this['addRgbaColorBox']('#theme-chat', 'chatBoxColor', 'setChatColors'), this['addSliderBox']('#theme-chat', 'chatScale', 1, 2, 0.01, 'setChatScale'), this['addColorBox']('#theme-minimap', 'miniMapSectorsColor', 'setMiniMapSectorsColor'), this['addColorBox']('#theme-minimap', 'miniMapSectorColor'), this['addColorBox']('#theme-minimap', 'miniMapNickColor'), this['addColorBox']('#theme-minimap', 'miniMapNickStrokeColor'), this['addColorBox']('#theme-minimap', 'miniMapMyCellColor'), this['addColorBox']('#theme-minimap', 'miniMapMyCellStrokeColor'), this['addColorBox']('#theme-minimap', 'miniMapTeammatesColor'), this['addColorBox']('#theme-minimap', 'miniMapDeathLocationColor'), this['addColorBox']('#theme-minimap', 'miniMapGuidesColor'), this['addColorBox']('#theme-minimap', 'miniMapGhostCellsColor'), this['addFontBox']('#theme-minimap', 'miniMapFont', 'setMiniMapFont'), this['addFontBox']('#theme-minimap', 'miniMapNickFont'), this['addSliderBox']('#theme-minimap', 'miniMapWidth', 200, 400, 2, 'setMiniMapWidth'), this['addSliderBox']('#theme-minimap', 'miniMapSectorsOpacity', 0, 1, 0.01, 'setMiniMapSectorsOpacity'), this['addSliderBox']('#theme-minimap', 'miniMapNickSize', 8, 16, 1), this['addSliderBox']('#theme-minimap', 'miniMapNickStrokeSize', 0, 6, 1), this['addSliderBox']('#theme-minimap', 'miniMapMyCellSize', 4, 10, 0.5), this['addSliderBox']('#theme-minimap', 'miniMapMyCellStrokeSize', 0, 10, 1), this['addSliderBox']('#theme-minimap', 'miniMapTeammatesSize', 4, 10, 0.5), this['addSliderBox']('#theme-minimap', 'miniMapGhostCellsAlpha', 0.01, 0.99, 0.01), this['addInputBox']('#theme-images', 'customBackground', 'Image URL', 'setCustomBackground'), this['addInputBox']('#theme-images', 'customCursor', 'Cursor image URL', 'setCustomCursor');
-                    for (var e = 'https://jimboy3100.github.io/cursors/cursor_', i = 0; i < 35; i++) i < 9 ? this['addCursorBox']('#theme-images', e + '0' + (i + 1) + '.cur') : this['addCursorBox']('#theme-images', e + '' + (i + 1) + '.cur');
+                    $('#theme').append('<ul class=\"submenu-tabs\"><li class=\"theme-main-tab active\"><a href=\"#theme-main\" class=\"active ogicon-paint-format\" data-toggle=\"tab-tooltip\" title=\"' + h['basicTheming'] + '\"></a></li><li class=\"theme-menu-tab\"><a href=\"#theme-menu\" class=\"ogicon-menu\" data-toggle=\"tab-tooltip\" title=\"' + h['menuTheming'] + '\"></a></li><li class=\"theme-hud-tab\"><a href=\"#theme-hud\" class=\"ogicon-display\" data-toggle=\"tab-tooltip\" title=\"' + h['hudTheming'] + '\"></a></li><li class=\"theme-chat-tab\"><a href=\"#theme-chat\" class=\"ogicon-bubbles\" data-toggle=\"tab-tooltip\" title=\"' + h['chatTheming'] + '\"></a></li><li class=\"theme-minimap-tab\"><a href=\"#theme-minimap\" class=\"ogicon-location2\" data-toggle=\"tab-tooltip\" title=\"' + h['miniMapTheming'] + '\"></a></li><li class=\"theme-images-tab\"><a href=\"#theme-images\" class=\"ogicon-compass\" data-toggle=\"tab-tooltip\" title=\"' + h['imagesTheming'] + '\"></a></li></ul><div id=\"theme-main\" class=\"submenu-panel\"></div><div id=\"theme-menu\" class=\"submenu-panel\"></div><div id=\"theme-hud\" class=\"submenu-panel\"></div><div id=\"theme-chat\" class=\"submenu-panel\"></div><div id=\"theme-minimap\" class=\"submenu-panel\"></div><div id=\"theme-images\" class=\"submenu-panel\"></div>'), this.addPresetBox('#theme-main', 'themePreset', f, 'preset', 'changeThemePreset'), this.addColorBox('#theme-main', 'bgColor', 'setBgColor'), this.addColorBox('#theme-main', 'bordersColor'), this.addColorBox('#theme-main', 'borderGlowColor'), this.addColorBox('#theme-main', 'gridColor'), this.addColorBox('#theme-main', 'sectorsColor'), this.addColorBox('#theme-main', 'namesColor'), this.addColorBox('#theme-main', 'namesStrokeColor'), this.addColorBox('#theme-main', 'massColor'), this.addColorBox('#theme-main', 'massStrokeColor'), this.addColorBox('#theme-main', 'virusColor'), this.addColorBox('#theme-main', 'virusStrokeColor'), this.addColorBox('#theme-main', 'mVirusColor'), this.addColorBox('#theme-main', 'mVirusStrokeColor'), this.addColorBox('#theme-main', 'virusGlowColor'), this.addColorBox('#theme-main', 'foodColor', 'setFoodColor'), this.addColorBox('#theme-main', 'teammatesIndColor', 'setIndicatorColor'), this.addColorBox('#theme-main', 'cursorTrackingColor'), this.addColorBox('#theme-main', 'splitRangeColor'), this.addColorBox('#theme-main', 'safeAreaColor'), this.addColorBox('#theme-main', 'dangerAreaColor'), this.addColorBox('#theme-main', 'ghostCellsColor'), this['addFontBox']('#theme-main', 'namesFont'), this['addFontBox']('#theme-main', 'massFont'), this['addFontBox']('#theme-main', 'sectorsFont'), this.addSliderBox('#theme-main', 'sectorsFontSize', 200, 2000, 10), this.addSliderBox('#theme-main', 'namesScale', 0.5, 2, 0.1), this.addSliderBox('#theme-main', 'massScale', 1, 5, 1), this.addSliderBox('#theme-main', 'virMassScale', 1, 5, 1), this.addSliderBox('#theme-main', 'strokeScale', 1, 4, 0.1), this.addSliderBox('#theme-main', 'foodSize', 1, 50, 1, 'setFoodColor'), this.addSliderBox('#theme-main', 'virusStrokeSize', 2, 40, 1), this.addSliderBox('#theme-main', 'bordersWidth', 2, 200, 2), this.addSliderBox('#theme-main', 'borderGlowSize', 0, 40, 1), this.addSliderBox('#theme-main', 'virusGlowSize', 0, 40, 1), this.addSliderBox('#theme-main', 'sectorsWidth', 2, 200, 2), this.addSliderBox('#theme-main', 'cellsAlpha', 0.01, 0.99, 0.01), this.addSliderBox('#theme-main', 'skinsAlpha', 0.01, 0.99, 0.01), this.addSliderBox('#theme-main', 'virusAlpha', 0, 1, 0.01), this.addSliderBox('#theme-main', 'textAlpha', 0.1, 1, 0.01), this.addSliderBox('#theme-main', 'ghostCellsAlpha', 0.01, 0.99, 0.01), this.addPresetBox('#theme-menu', 'menuPreset', m, 'menuPreset', 'changeMenuPreset'), this.addSliderBox('#theme-menu', 'menuOpacity', 0.1, 1, 0.01, 'setMenuOpacity'), this.addColorBox('#theme-menu', 'menuMainColor', 'setMenuMainColor'), this.addColorBox('#theme-menu', 'menuBtnTextColor', 'setMenuButtons'), this.addColorBox('#theme-menu', 'menuPanelColor', 'setMenuPanelColor'), this.addColorBox('#theme-menu', 'menuPanelColor2', 'setMenuPanelColor'), this.addColorBox('#theme-menu', 'menuTextColor', 'setMenuTextColor'), this.addColorBox('#theme-menu', 'menuTextColor2', 'setMenuTextColor'), this.addColorBox('#theme-menu', 'btn1Color', 'setMenuButtons'), this.addColorBox('#theme-menu', 'btn1Color2', 'setMenuButtons'), this.addColorBox('#theme-menu', 'btn2Color', 'setMenuButtons'), this.addColorBox('#theme-menu', 'btn2Color2', 'setMenuButtons'), this.addColorBox('#theme-menu', 'btn3Color', 'setMenuButtons'), this.addColorBox('#theme-menu', 'btn3Color2', 'setMenuButtons'), this.addColorBox('#theme-menu', 'btn4Color', 'setMenuButtons'), this.addColorBox('#theme-menu', 'btn4Color2', 'setMenuButtons'), this.addInputBox('#theme-menu', 'menuBg', 'Image URL', 'setMenuBg'), this.addColorBox('#theme-hud', 'hudMainColor', 'setHudColors'), this['addRgbaColorBox']('#theme-hud', 'hudColor', 'setHudColors'), this.addColorBox('#theme-hud', 'hudTextColor', 'setHudColors'), this.addColorBox('#theme-hud', 'statsHudColor', 'setHudColors'), this.addColorBox('#theme-hud', 'timeHudColor', 'setHudColors'), this.addColorBox('#theme-hud', 'top5MassColor', 'setHudColors'), this.addColorBox('#theme-hud', 'lbMeColor', 'setHudColors'), this.addColorBox('#theme-hud', 'lbTeammateColor', 'setHudColors'), this['addFontBox']('#theme-hud', 'hudFont', 'setHudFont'), this.addSliderBox('#theme-hud', 'hudScale', 1, 2, 0.01, 'setHudScale'), this['addRgbaColorBox']('#theme-chat', 'messageColor', 'setChatColors'), this.addColorBox('#theme-chat', 'messageTextColor', 'setChatColors'), this.addColorBox('#theme-chat', 'messageTimeColor', 'setChatColors'), this.addColorBox('#theme-chat', 'messageNickColor', 'setChatColors'), this['addRgbaColorBox']('#theme-chat', 'commandsColor', 'setChatColors'), this.addColorBox('#theme-chat', 'commandsTextColor', 'setChatColors'), this.addColorBox('#theme-chat', 'commandsTimeColor', 'setChatColors'), this.addColorBox('#theme-chat', 'commandsNickColor', 'setChatColors'), this['addRgbaColorBox']('#theme-chat', 'chatBoxColor', 'setChatColors'), this.addSliderBox('#theme-chat', 'chatScale', 1, 2, 0.01, 'setChatScale'), this.addColorBox('#theme-minimap', 'miniMapSectorsColor', 'setMiniMapSectorsColor'), this.addColorBox('#theme-minimap', 'miniMapSectorColor'), this.addColorBox('#theme-minimap', 'miniMapNickColor'), this.addColorBox('#theme-minimap', 'miniMapNickStrokeColor'), this.addColorBox('#theme-minimap', 'miniMapMyCellColor'), this.addColorBox('#theme-minimap', 'miniMapMyCellStrokeColor'), this.addColorBox('#theme-minimap', 'miniMapTeammatesColor'), this.addColorBox('#theme-minimap', 'miniMapDeathLocationColor'), this.addColorBox('#theme-minimap', 'miniMapGuidesColor'), this.addColorBox('#theme-minimap', 'miniMapGhostCellsColor'), this['addFontBox']('#theme-minimap', 'miniMapFont', 'setMiniMapFont'), this['addFontBox']('#theme-minimap', 'miniMapNickFont'), this.addSliderBox('#theme-minimap', 'miniMapWidth', 200, 400, 2, 'setMiniMapWidth'), this.addSliderBox('#theme-minimap', 'miniMapSectorsOpacity', 0, 1, 0.01, 'setMiniMapSectorsOpacity'), this.addSliderBox('#theme-minimap', 'miniMapNickSize', 8, 16, 1), this.addSliderBox('#theme-minimap', 'miniMapNickStrokeSize', 0, 6, 1), this.addSliderBox('#theme-minimap', 'miniMapMyCellSize', 4, 10, 0.5), this.addSliderBox('#theme-minimap', 'miniMapMyCellStrokeSize', 0, 10, 1), this.addSliderBox('#theme-minimap', 'miniMapTeammatesSize', 4, 10, 0.5), this.addSliderBox('#theme-minimap', 'miniMapGhostCellsAlpha', 0.01, 0.99, 0.01), this.addInputBox('#theme-images', 'customBackground', 'Image URL', 'setCustomBackground'), this.addInputBox('#theme-images', 'customCursor', 'Cursor image URL', 'setCustomCursor');
+                    for (var e = 'https://jimboy3100.github.io/cursors/cursor_', i = 0; i < 35; i++) i < 9 ? this.addCursorBox('#theme-images', e + '0' + (i + 1) + '.cur') : this.addCursorBox('#theme-images', e + '' + (i + 1) + '.cur');
                     $(document).on('click', '#theme-images .cursor-box a', function(e) {
                         e.preventDefault();
-                        var i = $('img', this)['attr']('src');
+                        var i = $('img', this).attr('src');
                         g.customCursor = i, t['setCustomCursor'](), $('#customCursor').val(i), $('#theme-images .cursor-box a').removeClass('active'), $(this).addClass('active');
                     }), 
 					$('#theme').append('<button class=\"btn btn-block btn-success btn-save\"\">' + h['saveSett'] + '</button>'), $(document).on('click', '#theme .btn-save', function(e) {
@@ -1780,7 +1780,7 @@ var thelegendmodproject = function(t, e, i) {
 					}
                 },
                 'setCustomBackground': function() {
-                    g['customBackground'] ? $('body').css('background-image', 'url(' + g['customBackground'] + ')') : $('body')['css']('background-image', 'none');
+                    g['customBackground'] ? $('body').css('background-image', 'url(' + g['customBackground'] + ')') : $('body').css('background-image', 'none');
                 },
                 'setCustomCursor': function() {
                     if (g.customCursor) var t = '*{cursor:url(' + g.customCursor + '), auto !important}';
@@ -1788,13 +1788,13 @@ var thelegendmodproject = function(t, e, i) {
                     this.addCustomCSS('cursorCSS', t);
                 },
                 'setMenu': function() {
-                    this.setMenuOpacity(), this.setMenuMainColor(), this['setMenuPanelColor'](), this['setMenuTextColor'](), this['setMenuButtons'](), this['setMenuBg']();
+                    this.setMenuOpacity(), this.setMenuMainColor(), this['setMenuPanelColor'](), this['setMenuTextColor'](), this['setMenuButtons'](), this.setMenuBg();
                 },
                 'changeMenuPreset': function(t) {
-                    this.changePreset(t, m), this['setMenu']();
+                    this.changePreset(t, m), this.setMenu();
                 },
                 'setMenuOpacity': function() {
-                    $('#helloContainer, #hotkeys, #exp-imp')['css']('opacity', g['menuOpacity']);
+                    $('#helloContainer, #hotkeys, #exp-imp').css('opacity', g['menuOpacity']);
                 },
                 'setMenuMainColor': function() {
                     var t = '::-moz-selection{background-color:' + g['menuMainColor'] + '!important}::selection{background-color:' + g['menuMainColor'] + '!important}.menu-main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:' + g['menuMainColor'] + '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:' + g['menuMainColor'] + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + g['menuMainColor'] + '}.ps-scrollbar-y{background-color:' + g['menuMainColor'] + '!important}';
@@ -1831,12 +1831,12 @@ var thelegendmodproject = function(t, e, i) {
                 'setHudScale': function() {
                     var t = Math.round(20 * g['hudScale']),
                         e = Math.round(200 * g['hudScale']),
-                        i = Math['floor'](55 * g['hudScale']),
-                        o = Math['floor'](6 * g['hudScale']),
-                        a = Math['floor'](280 * g['hudScale']),
-                        n = Math['floor'](85 * g['hudScale']),
-                        r = Math['floor'](20 * g['hudScale']);
-                    $('#overlays-hud')['css']('font-size', t + 'px'), $('#leaderboard-hud, #time-hud')['width'](e), $('#top5-hud')['width'](e + 30).css('top', i + 'px'), $('#top5-pos').css('padding-left', o + 'px'), $('#time-hud').css('top', a + 'px'), $('#pause-hud')['css']('top', n + 'px'), $('#target-hud').css('padding-top', r + 'px');
+                        i = Math.floor(55 * g['hudScale']),
+                        o = Math.floor(6 * g['hudScale']),
+                        a = Math.floor(280 * g['hudScale']),
+                        n = Math.floor(85 * g['hudScale']),
+                        r = Math.floor(20 * g['hudScale']);
+                    $('#overlays-hud').css('font-size', t + 'px'), $('#leaderboard-hud, #time-hud').width(e), $('#top5-hud').width(e + 30).css('top', i + 'px'), $('#top5-pos').css('padding-left', o + 'px'), $('#time-hud').css('top', a + 'px'), $('#pause-hud').css('top', n + 'px'), $('#target-hud').css('padding-top', r + 'px');
                 },
                 'setChat': function() {
                     this['setChatColors'](), this['setChatScale']();
@@ -1850,10 +1850,10 @@ var thelegendmodproject = function(t, e, i) {
                     var e = Math.round(280 * g['chatScale']);
                     var i = Math.round(350 * g['chatScale']);
                     var o = Math.round(300 * g['chatScale']);
-                    var a = Math['floor'](14 * g['chatScale']);
-                    $('#message-box, #messages, #toast-container, #chat-box')['css']('font-size', t + 'px'); 
-					$('#messages, #toast-container, #chat-box')['width'](e); 
-					$('#message-box')['width'](i), $('#chat-box')['height'](o); 
+                    var a = Math.floor(14 * g['chatScale']);
+                    $('#message-box, #messages, #toast-container, #chat-box').css('font-size', t + 'px'); 
+					$('#messages, #toast-container, #chat-box').width(e); 
+					$('#message-box').width(i), $('#chat-box').height(o); 
 					$('.user-list').css('padding-left', a + 'px');
                     var n = '#toast-container{width:' + e + 'px;font-size:' + t + 'px}';
                     this.addCustomCSS('chatScaleCSS', n);
@@ -1885,17 +1885,17 @@ var thelegendmodproject = function(t, e, i) {
                     $('#minimap-sectors').css('opacity', g['miniMapSectorsOpacity']);
                 },
                 'setTheme': function() {
-                    this['setFonts'](); 
-					this['setBgColor'](); 
-					this['setCustomBackground'](); 
-					this['setCustomCursor']();
-					this['setMenu']();
-					this['setHud']();
-					this['setChat'](); 
-					this['setMiniMap']();
+                    this.setFonts(); 
+					this.setBgColor(); 
+					this.setCustomBackground(); 
+					this.setCustomCursor();
+					this.setMenu();
+					this.setHud();
+					this.setChat(); 
+					this.setMiniMap();
                 },
                 'init': function() {
-                    this['loadThemeSettings']();
+                    this.loadThemeSettings();
                 }
             },
             ogario1PlayerProfiles = [],
@@ -2020,7 +2020,7 @@ var thelegendmodproject = function(t, e, i) {
             'miniMap': null,
             'miniMapCtx': null,
             'miniMapSectors': null,
-            'pi2': 2 * Math['PI'],
+            'pi2': 2 * Math.PI,
             'socket': null,
             'cells': {},
             'teamPlayers': [],
@@ -2086,10 +2086,10 @@ var thelegendmodproject = function(t, e, i) {
 			'virusSoundurl': null,
             'feedInterval': null,
             'getPlayerX': function() {
-                return i['playerX'] + i['mapOffsetX'];
+                return i.playerX + i.mapOffsetX;
             },
             'getPlayerY': function() {
-                return i['playerY'] + i['mapOffsetY'];
+                return i.playerY + i.mapOffsetY;
             },
             'feed': function() {
                 if (window.core && window.core.eject){ 
@@ -2142,8 +2142,8 @@ var thelegendmodproject = function(t, e, i) {
                 i['vanillaSkins'] && i['customSkins'] ? i['vanillaSkins'] = false : !i['vannillaSkins'] && i['customSkins'] ? (i['vanillaSkins'] = true, i['customSkins'] = false) : (i['vanillaSkins'] = true, i['customSkins'] = true);
             },
             'toggleCells': function() {
-                this['selectBiggestCell'] = !this['selectBiggestCell'], 
-				i['selectBiggestCell'] = this['selectBiggestCell'];
+                this.selectBiggestCell = !this.selectBiggestCell, 
+				i.selectBiggestCell = this.selectBiggestCell;
             },
             'setShowTop5': function() {
                 v['showTop5'] = !v['showTop5'], this['setTop5']();
@@ -2219,19 +2219,19 @@ var thelegendmodproject = function(t, e, i) {
                 v['showMiniMap'] ? $('#minimap-hud').show() : $('#minimap-hud').hide();
             },
             'setShowQuest': function() {
-                ':ffa' === this.gameMode && (this['showQuest'] = !this['showQuest'], this['setQuest']());
+                ':ffa' === this.gameMode && (this.showQuest = !this.showQuest, this.setQuest());
             },
             'setQuest': function() {
-                this['showQuest'] && ':ffa' === this.gameMode ? $('#quest-hud').show() : $('#quest-hud').hide();
+                this.showQuest && ':ffa' === this.gameMode ? $('#quest-hud').show() : $('#quest-hud').hide();
             },
             'toggleAutoZoom': function() {
-                i['autoZoom'] = !i['autoZoom'], this['displayChatInfo'](i['autoZoom'], 'autoZoomMsg');
+                i.autoZoom = !i.autoZoom, this['displayChatInfo'](i.autoZoom, 'autoZoomMsg');
             },
             'resetZoom': function(t) {
-                t ? (i['zoomResetValue'] = 1, i['zoomValue'] = 1) : i['zoomResetValue'] = 0;
+                t ? (i['zoomResetValue'] = 1, i.zoomValue = 1) : i['zoomResetValue'] = 0;
             },
             'setZoom': function(t) {
-                i['zoomValue'] = t;
+                i.zoomValue = t;
             },
             'toggleDeath': function() {
                 this['lastDeath']--; 
@@ -2245,14 +2245,14 @@ var thelegendmodproject = function(t, e, i) {
                     this['retryResp']++;
                     var t = this;
                     setTimeout(function() {
-                        $('.btn-play-guest')['is'](':visible') ? $('.btn-play-guest')['click']() : $('.btn-play')['click'](), i.play || t['tryResp']();
+                        $('.btn-play-guest').is(':visible') ? $('.btn-play-guest').click() : $('.btn-play').click(), i.play || t['tryResp']();
                     }, 500);
                 }
             },
             'quickResp': function() {
                 if(v['quickResp']){ 
 				this.hideMenu();
-				this['gameServerConnect'](this['ws']);
+				this['gameServerConnect'](this.ws);
 				i.play = false;
 				this['tryResp']();
 				}
@@ -2260,10 +2260,10 @@ var thelegendmodproject = function(t, e, i) {
             'autoResp': function() {
                 v['autoResp'] && (this['setAutoResp'](), 
 				$('#overlays')['stop']().hide(), 
-				$('.btn-play-guest')['is'](':visible') ? $('.btn-play-guest')['click']() : $('.btn-play')['click']());
+				$('.btn-play-guest').is(':visible') ? $('.btn-play-guest').click() : $('.btn-play').click());
             },
             'setAutoResp': function() {
-                v['autoResp'] && ($('#skipStats')['prop']('checked') || ($('#skipStats')['click'](), this['skipStats'] = true));
+                v['autoResp'] && ($('#skipStats').prop('checked') || ($('#skipStats').click(), this.skipStats = true));
             },
             'toggleAutoResp': function() {
                 v['autoResp'] = !v['autoResp'], this['setAutoResp'](), this['displayChatInfo'](v['autoResp'], 'autoRespMsg');
@@ -2278,7 +2278,7 @@ var thelegendmodproject = function(t, e, i) {
                 t.remove();
             },
             'setPause': function() {
-                this.pause = !this.pause, i.pause = this.pause, this.pause ? (i['resetTargetPosition'](), $('#pause-hud').show()) : $('#pause-hud').hide();
+                this.pause = !this.pause, i.pause = this.pause, this.pause ? (i.resetTargetPosition(), $('#pause-hud').show()) : $('#pause-hud').hide();
             },
             'setCenteredLb': function() {
                 v['centeredLb'] ? $('#leaderboard-hud').addClass('hud-text-center') : $('#leaderboard-hud').removeClass('hud-text-center');
@@ -2295,24 +2295,24 @@ var thelegendmodproject = function(t, e, i) {
             'blockPopups': function() {
                 $('#openfl-content, #openfl-overlay').hide(); 
 				$('#openfl-content, #openfl-overlay').addClass('block-popups'); 
-				$('#freeCoins, #gifting, #openShopBtn, #dailyQuests')['prop']('disabled', true), $('#block-warn').show();
+				$('#freeCoins, #gifting, #openShopBtn, #dailyQuests').prop('disabled', true), $('#block-warn').show();
             },
             'unblockPopups': function() {
-                $('#openfl-overlay.disabler')['click'](), $('#openfl-content, #openfl-overlay').hide();
+                $('#openfl-overlay.disabler').click(), $('#openfl-content, #openfl-overlay').hide();
 				$('#openfl-content, #openfl-overlay').removeClass('block-popups'); 
-				$('#freeCoins, #gifting, #openShopBtn, #dailyQuests')['prop']('disabled', false), $('#block-warn').hide();
+				$('#freeCoins, #gifting, #openShopBtn, #dailyQuests').prop('disabled', false), $('#block-warn').hide();
             },
             'tempUnblockPopups': function() {
                 v['blockPopups'] && this['unblockPopups']();
             },
             'displayLeaderboard': function(t, e = '') {
 				if (this['leaderboardPositionsHUD']){  
-					this['leaderboardPositionsHUD']['innerHTML'] = t;	
-					if (v['showLbData']){
-						this['leaderboardDataHUD']['innerHTML'] = e;
+					this['leaderboardPositionsHUD'].innerHTML = t;	
+					if (v.showLbData){
+						this['leaderboardDataHUD'].innerHTML = e;
 						}
 					else {
-						this['leaderboardDataHUD']['innerHTML'] = '';			
+						this['leaderboardDataHUD'].innerHTML = '';			
 					}					
 				}
 
@@ -2320,7 +2320,7 @@ var thelegendmodproject = function(t, e, i) {
             'displayStats': function() {
                 if (v['showStats']) {
                     var t = '';
-                    i.play && (v['showStatsMass'] && i['playerMass'] && (t += h['mass'] + ': ' + i['playerMass'] + ' | '), i['playerScore'] && (t += h['score'] + ': ' + i['playerScore']), v['showStatsSTE'] && i['STE'] && (t += ' | STE: ' + i['STE']), v['showStatsN16'] && i['playerSplitCells'] && (t += ' | ' + i['playerSplitCells'] + '/16'), v['showStatsFPS'] && (t += ' | ')), v['showStatsFPS'] && (t += 'FPS: ' + ogarfooddrawer['fps']), this['statsHUD']['textContent'] = t;
+                    i.play && (v.showStatsMass && i.playerMass && (t += h.mass + ': ' + i.playerMass + ' | '), i.playerScore && (t += h['score'] + ': ' + i.playerScore), v['showStatsSTE'] && i['STE'] && (t += ' | STE: ' + i['STE']), v['showStatsN16'] && i.playerSplitCells && (t += ' | ' + i.playerSplitCells + '/16'), v['showStatsFPS'] && (t += ' | ')), v['showStatsFPS'] && (t += 'FPS: ' + ogarfooddrawer['fps']), this['statsHUD'].textContent= t;
                     var e = this;
                     setTimeout(function() {
                         e['displayStats']();
@@ -2329,8 +2329,8 @@ var thelegendmodproject = function(t, e, i) {
             },
             'displayTime': function() {
                 if (v['showTime']) {
-                    var t = new Date()['toLocaleString']();
-                    this['timeHUD']['textContent'] = t;
+                    var t = new Date().toLocaleString();
+                    this['timeHUD'].textContent= t;
                     var e = this;
                     setTimeout(function() {
                         e['displayTime']();
@@ -2338,16 +2338,16 @@ var thelegendmodproject = function(t, e, i) {
                 } else $('#time-hud').hide();
             },
             'displayParties': function() {
-                for (var t = '', e = 0; e < this['parties'].length; e++) t += '<li><a href=\"https://agar.io/#' + this['parties'][e] + '\" onclick=\"$(\'#party-token\').val(\'' + this['parties'][e] + '\'); $(\'#join-party-btn-2\').click();\">https://agar.io/#' + this['parties'][e] + '</a></li>';
-                this['activeParties']['className'] = '' === t ? 'no-parties' : '', this['activeParties']['innerHTML'] = t;
+                for (var t = '', e = 0; e < this.parties.length; e++) t += '<li><a href=\"https://agar.io/#' + this.parties[e] + '\" onclick=\"$(\'#party-token\').val(\'' + this.parties[e] + '\'); $(\'#join-party-btn-2\').click();\">https://agar.io/#' + this.parties[e] + '</a></li>';
+                this['activeParties'].className = '' === t ? 'no-parties' : '', this['activeParties'].innerHTML = t;
             },
             /*			
                         'displayTop5': function() {
                             if (v['showTop5']) {
             					//console.log(['top5'].length);
-            					//console.log(['teamPlayers'].length);
-                                for (var t = '', e = 0, s = this['top5'].length, o = 0; o < s; o++) e += this['top5'][o]['mass'], o >= this['top5limit'] || (t += '<li><span class=\"cell-counter\" style=\"background-color: ' + this['top5'][o].color + '\">' + (o + 1) + '</span>', v['showTargeting'] && (t += '<a href=\"#\" data-user-id=\"' + this['top5'][o]['id'] + '\" class=\"set-target ogicon-target\"></a> '), t += '<span class=\"hud-main-color\">[' + this['calculateMapSector'](this['top5'][o]['x'], this['top5'][o]['y']) + ']</span>', t += 					'<span class=\"top5-mass-color\">[' + this['shortMassFormat'](this['top5'][o]['mass']) + ']</span> ' + this['escapeHTML'](this['top5'][o].nick) + '</li>');
-                                this['top5pos']['innerHTML'] = t, i.play && i['playerMass'] && (e += i['playerMass'], s++), this['top5totalMass']['textContent'] = this['shortMassFormat'](e), this['top5totalPlayers']['textContent'] = s;
+            					//console.log(.teamPlayers.length);
+                                for (var t = '', e = 0, s = this['top5'].length, o = 0; o < s; o++) e += this['top5'][o].mass, o >= this['top5limit'] || (t += '<li><span class=\"cell-counter\" style=\"background-color: ' + this['top5'][o].color + '\">' + (o + 1) + '</span>', v['showTargeting'] && (t += '<a href=\"#\" data-user-id=\"' + this['top5'][o].id + '\" class=\"set-target ogicon-target\"></a> '), t += '<span class=\"hud-main-color\">[' + this.calculateMapSector(this['top5'][o]['x'], this['top5'][o]['y']) + ']</span>', t += 					'<span class=\"top5-mass-color\">[' + this.shortMassFormat(this['top5'][o].mass) + ']</span> ' + this.escapeHTML(this['top5'][o].nick) + '</li>');
+                                this['top5pos'].innerHTML = t, i.play && i.playerMass && (e += i.playerMass, s++), this['top5totalMass'].textContent= this.shortMassFormat(e), this['top5totalPlayers'].textContent= s;
                             }
                         },
                         'setTop5limit': function(t) {
@@ -2358,23 +2358,23 @@ var thelegendmodproject = function(t, e, i) {
                       if (v["showTop5"]) {
                         var pix_color = "";
                         var bufferString = 0;
-                        var PL$29 = this["top5"]["length"];
+                        var PL$29 = this.top5.length;
                         var entityType = 0;
                         for (; entityType < PL$29; entityType++) {
-                          bufferString = bufferString + this["top5"][entityType].mass;
+                          bufferString = bufferString + this.top5[entityType].mass;
                           if (!(entityType >= v["limTP"])) {
-                            pix_color = pix_color + ('<li id="player"><span id="pos-skin" style="background-color: ' + this["top5"][entityType]["color"] + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this["top5"][entityType]["skin"] ? this["top5"][entityType]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + '" alt=""> ' + 
-            				'<span class=\"top5-mass-color\">[' + this['shortMassFormat'](this['top5'][entityType]['mass']) + ']</span> ' + this["escapeHTML"](this["top5"][entityType].nick) + '</span><span class=\"hud-main-color\">[' + this["calculateMapSector"](this["top5"][entityType]["x"], this["top5"][entityType]["y"]) +']</span><span id= "top5mass" class=""> ' + 
-                            this["shortMassFormat"](this["top5"][entityType].mass) + '</span></li>');
+                            pix_color = pix_color + ('<li id="player"><span id="pos-skin" style="background-color: ' + this.top5[entityType].color + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this.top5[entityType]["skin"] ? this.top5[entityType]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + '" alt=""> ' + 
+            				'<span class=\"top5-mass-color\">[' + this.shortMassFormat(this['top5'][entityType].mass) + ']</span> ' + this.escapeHTML(this.top5[entityType].nick) + '</span><span class=\"hud-main-color\">[' + this["calculateMapSector"](this.top5[entityType]["x"], this.top5[entityType]["y"]) +']</span><span id= "top5mass" class=""> ' + 
+                            this["shortMassFormat"](this.top5[entityType].mass) + '</span></li>');
                           }
                         }
-                        this["top5pos"]["innerHTML"] = pix_color;
-                        if (i["play"] && i["playerMass"]) {
-                          bufferString = bufferString + i["playerMass"];
+                        this["top5pos"].innerHTML = pix_color;
+                        if (i["play"] && i.playerMass) {
+                          bufferString = bufferString + i.playerMass;
                           PL$29++;
                         }
-                        this["top5totalMass"]["textContent"] = this["shortMassFormat"](bufferString);
-                        this["top5totalPlayers"]["textContent"] = PL$29;
+                        this["top5totalMass"].textContent= this["shortMassFormat"](bufferString);
+                        this["top5totalPlayers"].textContent= PL$29;
                       }
                     },
             */
@@ -2382,37 +2382,37 @@ var thelegendmodproject = function(t, e, i) {
                 if (window.top5skins != true) {
                     if (v['showTop5']) {
                         //console.log(['top5'].length);
-                        //console.log(['teamPlayers'].length);
-                        for (var t = '', e = 0, s = this['top5'].length, o = 0; o < s; o++) e += this['top5'][o]['mass'], o >= window.teamboardlimit || (t += '<li style=\"height: 16px;"\><span>' + (o + 1) + '. </span>', v['showTargeting'] && (t += '<a href=\"#\" data-user-id=\"' + this['top5'][o]['id'] + '\" class=\"set-target ogicon-target\"></a> '), 
-						t += '<span class=\"hud-main-color\">[' + this['calculateMapSector'](this['top5'][o]['x'], this['top5'][o]['y']) + ']</span>', t += '<span class=\"top5-mass-color\">[' + this['shortMassFormat'](this['top5'][o]['mass']) + ']</span> ' + this['escapeHTML'](this['top5'][o].nick) + '</li>');
-                        this['top5pos']['innerHTML'] = t, i.play && i['playerMass'] && (e += i['playerMass'], s++), 
-						this['top5totalMass']['textContent'] = this['shortMassFormat'](e), this['top5totalPlayers']['textContent'] = s;
+                        //console.log(.teamPlayers.length);
+                        for (var t = '', e = 0, s = this['top5'].length, o = 0; o < s; o++) e += this['top5'][o].mass, o >= window.teamboardlimit || (t += '<li style=\"height: 16px;"\><span>' + (o + 1) + '. </span>', v['showTargeting'] && (t += '<a href=\"#\" data-user-id=\"' + this['top5'][o].id + '\" class=\"set-target ogicon-target\"></a> '), 
+						t += '<span class=\"hud-main-color\">[' + this.calculateMapSector(this['top5'][o]['x'], this['top5'][o]['y']) + ']</span>', t += '<span class=\"top5-mass-color\">[' + this.shortMassFormat(this['top5'][o].mass) + ']</span> ' + this.escapeHTML(this['top5'][o].nick) + '</li>');
+                        this['top5pos'].innerHTML = t, i.play && i.playerMass && (e += i.playerMass, s++), 
+						this['top5totalMass'].textContent= this.shortMassFormat(e), this['top5totalPlayers'].textContent= s;
                     }
                 }
 				else{
                 if (v["showTop5"]) {
                     var t = "";
                     var e = 0;
-                    var s = this["top5"].length;
+                    var s = this.top5.length;
                     var o = 0;
                     for (; o < s; o++) {
-                        e = e + this["top5"][o].mass;
+                        e = e + this.top5[o].mass;
                         if (!(o >= window.teamboardlimit)) {
-                            t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this["top5"][o]["id"] + '"style="background-color: ' + this["top5"][o]["color"] + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this["top5"][o]["skin"] ? this["top5"][o]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
+                            t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this.top5[o].id + '"style="background-color: ' + this.top5[o].color + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this.top5[o]["skin"] ? this.top5[o]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
                             /* if (v["showTargeting"]) {
-                              t = t + ('<a href="#" data-user-id="' + this["top5"][o]["id"] + '" class="set-target ogicon-target"></a> ');
+                              t = t + ('<a href="#" data-user-id="' + this.top5[o].id + '" class="set-target ogicon-target"></a> ');
                             } */
-                            t = t + ('<span class="hud-main-color">[' + this["calculateMapSector"](this["top5"][o]["x"], this["top5"][o]["y"]) + "]</span>");
-                            t = t + ('<span class="top5-mass-color">[' + this["shortMassFormat"](this["top5"][o].mass) + "]</span> " + this["escapeHTML"](this["top5"][o].nick) + "</div></li>");
+                            t = t + ('<span class="hud-main-color">[' + this["calculateMapSector"](this.top5[o]["x"], this.top5[o]["y"]) + "]</span>");
+                            t = t + ('<span class="top5-mass-color">[' + this["shortMassFormat"](this.top5[o].mass) + "]</span> " + this.escapeHTML(this.top5[o].nick) + "</div></li>");
                         }
                     }
-                    this["top5pos"]["innerHTML"] = t;
-                    if (i.play && i["playerMass"]) {
-                        e = e + i["playerMass"];
+                    this["top5pos"].innerHTML = t;
+                    if (i.play && i.playerMass) {
+                        e = e + i.playerMass;
                         s++;
                     }
-                    this["top5totalMass"]["textContent"] = this["shortMassFormat"](e);
-                    this["top5totalPlayers"]["textContent"] = s;
+                    this["top5totalMass"].textContent= this["shortMassFormat"](e);
+                    this["top5totalPlayers"].textContent= s;
                 }
 				}
             },
@@ -2429,47 +2429,47 @@ var thelegendmodproject = function(t, e, i) {
             'displayChatHistory': function(t) {
                 if (t) {
                     this['clearChatHistory'](!0);
-                    for (var e = 0; e < this['chatHistory'].length; e++) $('#messages').append('<li><span class=\"message-nick\">' + this['chatHistory'][e].nick + ': </span><span class=\"message-text\">' + this['chatHistory'][e]['message'] + '</span></li>');
+                    for (var e = 0; e < this.chatHistory.length; e++) $('#messages').append('<li><span class=\"message-nick\">' + this.chatHistory[e].nick + ': </span><span class=\"message-text\">' + this.chatHistory[e]['message'] + '</span></li>');
                 } else this['clearChatHistory'](!1);
             },
             'clearChatHistory': function(t) {
-                $('#messages').empty(), t && (toastr['clear'](), v['showChatBox'] && ($('#chat-box .message').remove(), this['chatHistory'].length = 0));
+                $('#messages').empty(), t && (toastr['clear'](), v.showChatBox && ($('#chat-box .message').remove(), this.chatHistory.length = 0));
             },
             'displayChatInfo': function(t, e) {
                 t ? toastr['info'](h[e + 'A']) : toastr['error'](h[e + 'B']);
             },
             'setDisableChat': function() {
-                v['hideChat'] = v['disableChat']; 
+                v.hideChat = v['disableChat']; 
 				this['setHideChat']();
             },
             'hideChat': function() {
-                v['hideChat'] = !v['hideChat'], this['setHideChat'](), this['displayChatInfo'](!v['hideChat'], 'hideChatMsg');
+                v.hideChat = !v.hideChat, this['setHideChat'](), this['displayChatInfo'](!v.hideChat, 'hideChatMsg');
             },
             'setHideChat': function() {
-				if (v['hideChat']){
+				if (v.hideChat){
 					$('#message-box').hide();
 				}
                  this['setShowChatBox']();
             },
             'setShowChatBox': function() {
-                !v['hideChat'] && v['showChatBox'] ? $('#chat-box').show() : $('#chat-box').hide();
+                !v.hideChat && v.showChatBox ? $('#chat-box').show() : $('#chat-box').hide();
             },
             'enterChatMessage': function() {
                 var t = $('#message-box');
                 var e = $('#message');
-                if (t['is'](':visible')) {
+                if (t.is(':visible')) {
                     var o = e.val();
-                    o.length ? (this['sendChatMessage'](101, o), i.play && (e['blur'](), t.hide())) : (e['blur'](), t.hide()), e.val('');
+                    o.length ? (this['sendChatMessage'](101, o), i.play && (e.blur(), t.hide())) : (e.blur(), t.hide()), e.val('');
                 } else { t.show();
 				e['focus']();
 				e.val('');}
             },
             'showMenu': function(t) {
-                if (window.MC && window.MC['showNickDialog']) return $('.ogario-menu').show(), $('.menu-panel').hide(), i.play || this['skipStats'] ? $('#main-panel').show() : $('#stats').show(), window.MC['showNickDialog'](300), $('#oferwallContainer')['is'](':visible') && window['closeOfferwall'](), void($('#videoContainer')['is'](':visible') && window['closeVideoContainer']());
-                t ? $('#overlays')['fadeIn'](t) : $('#overlays').show();
+                if (window.MC && window.MC.showNickDialog) return $('.ogario-menu').show(), $('.menu-panel').hide(), i.play || this.skipStats ? $('#main-panel').show() : $('#stats').show(), window.MC.showNickDialog(300), $('#oferwallContainer').is(':visible') && window.closeOfferwall(), void($('#videoContainer').is(':visible') && window.closeVideoContainer());
+                t ? $('#overlays').fadeIn(t) : $('#overlays').show();
             },
             'hideMenu': function(t) {
-                window.MC && window.MC['showNickDialog'] ? $('.ogario-menu').hide() : t ? $('#overlays')['fadeOut'](t) : $('#overlays').hide();
+                window.MC && window.MC.showNickDialog ? $('.ogario-menu').hide() : t ? $('#overlays').fadeOut(t) : $('#overlays').hide();
             },
             'escapeHTML': function(t) {
                 return String(t).replace(/[&<>"'\/]/g, function(t) {
@@ -2487,7 +2487,7 @@ var thelegendmodproject = function(t, e, i) {
 				
             },
             'saveSettings': function(t, i) {
-                window.localStorage.setItem(i, JSON['stringify'](t));
+                window.localStorage.setItem(i, JSON.stringify(t));
             },
             'exportSettings': function() {
                 var t = {
@@ -2498,17 +2498,17 @@ var thelegendmodproject = function(t, e, i) {
                     'ogarioThemeSettings': g
                 };
                 for (var e in t) {
-                    if (t.hasOwnProperty(e)) $('#export-' + e)['prop']('checked') || delete t[e];
+                    if (t.hasOwnProperty(e)) $('#export-' + e).prop('checked') || delete t[e];
                 }
                 t = JSON.stringify(t), $('#export-settings').val(t), $('#import-settings').val(''), t = null;
             },
             'importSettings': function() {
-                $('#import-settings')['blur']();
+                $('#import-settings').blur();
                 var t = $('#import-settings').val();
                 if (t) {
                     for (var i in t = JSON.parse(t))
                         if (t.hasOwnProperty(i)) {
-                            if (!$('#import-' + i)['prop']('checked')) continue;
+                            if (!$('#import-' + i).prop('checked')) continue;
                             window.localStorage.setItem(i, JSON.stringify(t[i]));
                         } window.location.reload();
                 }
@@ -2561,7 +2561,7 @@ var thelegendmodproject = function(t, e, i) {
                         case 'blockPopups':
                             this['setBlockPopups']();
                     }
-                    this['saveSettings'](v, 'ogarioSettings');
+                    this.saveSettings(v, 'ogarioSettings');
                 }
             },
             'loadProfiles': function() {
@@ -2584,12 +2584,12 @@ var thelegendmodproject = function(t, e, i) {
                     });
                 }
                 if (null !== window.localStorage.getItem('ogarioSelectedProfile')){ 
-				this['selectedProfile'] = JSON['parse'](window.localStorage.getItem('ogarioSelectedProfile'));
+				this.selectedProfile = JSON.parse(window.localStorage.getItem('ogarioSelectedProfile'));
 				}
-				ogarcopythelb.nick = ogario1PlayerProfiles[this['selectedProfile']].nick;
-				ogarcopythelb.clanTag = ogario1PlayerProfiles[this['selectedProfile']].clanTag;
-				ogarcopythelb.skinURL = ogario1PlayerProfiles[this['selectedProfile']].skinURL;
-				ogarcopythelb.color = ogario1PlayerProfiles[this['selectedProfile']].color;
+				ogarcopythelb.nick = ogario1PlayerProfiles[this.selectedProfile].nick;
+				ogarcopythelb.clanTag = ogario1PlayerProfiles[this.selectedProfile].clanTag;
+				ogarcopythelb.skinURL = ogario1PlayerProfiles[this.selectedProfile].skinURL;
+				ogarcopythelb.color = ogario1PlayerProfiles[this.selectedProfile].color;
             },
             'changeSkinPreview': function(e, t) {
 				//console.log(e,t);
@@ -2663,37 +2663,37 @@ var thelegendmodproject = function(t, e, i) {
 				}
             },
             'setProfile': function() {
-                var t = (ogario1PlayerProfiles.length + this['selectedProfile'] - 1) % ogario1PlayerProfiles.length,
-                    e = (this['selectedProfile'] + 1) % ogario1PlayerProfiles.length;
+                var t = (ogario1PlayerProfiles.length + this.selectedProfile - 1) % ogario1PlayerProfiles.length,
+                    e = (this.selectedProfile + 1) % ogario1PlayerProfiles.length;
                 //console.log(ogario1PlayerProfiles.length);
                 this['setSkinPreview'](ogario1PlayerProfiles[t].skinURL, 'prev-profile');
-				this['setSkinPreview'](ogario1PlayerProfiles[this['selectedProfile']].skinURL, 'skin-preview');
+				this['setSkinPreview'](ogario1PlayerProfiles[this.selectedProfile].skinURL, 'skin-preview');
 				this['setSkinPreview'](ogario1PlayerProfiles[e].skinURL, 'next-profile');
-				this['saveSettings'](this['selectedProfile'], 'ogarioSelectedProfile');
-				$('#nick').val(ogario1PlayerProfiles[this['selectedProfile']].nick);
-				$('#clantag').val(ogario1PlayerProfiles[this['selectedProfile']].clanTag);
-				$('#skin').val(ogario1PlayerProfiles[this['selectedProfile']].skinURL);
-				$('#color').val(ogario1PlayerProfiles[this['selectedProfile']].color);
-				$('.skin')['colorpicker']('setValue', ogario1PlayerProfiles[this['selectedProfile']].color);
+				this.saveSettings(this.selectedProfile, 'ogarioSelectedProfile');
+				$('#nick').val(ogario1PlayerProfiles[this.selectedProfile].nick);
+				$('#clantag').val(ogario1PlayerProfiles[this.selectedProfile].clanTag);
+				$('#skin').val(ogario1PlayerProfiles[this.selectedProfile].skinURL);
+				$('#color').val(ogario1PlayerProfiles[this.selectedProfile].color);
+				$('.skin')['colorpicker']('setValue', ogario1PlayerProfiles[this.selectedProfile].color);
 				$('#skins a').removeClass('selected');
-				$('#skins a[data-profile=\'' + this['selectedProfile'] + '\']').addClass('selected');
+				$('#skins a[data-profile=\'' + this.selectedProfile + '\']').addClass('selected');
             },
             'prevProfile': function() {
                 this.setPlayerSettings(),
-				this['selectedProfile'] = (ogario1PlayerProfiles.length + this['selectedProfile'] - 1) % ogario1PlayerProfiles.length, this['setProfile']();
+				this.selectedProfile = (ogario1PlayerProfiles.length + this.selectedProfile - 1) % ogario1PlayerProfiles.length, this['setProfile']();
             },
             'nextProfile': function() {
                 this.setPlayerSettings(),
-				this['selectedProfile'] = (this['selectedProfile'] + 1) % ogario1PlayerProfiles.length, this['setProfile']();
+				this.selectedProfile = (this.selectedProfile + 1) % ogario1PlayerProfiles.length, this['setProfile']();
             },
             'selectProfile': function(t) {
                 this.setPlayerSettings();
-				this['selectedProfile'] = parseInt(t);
+				this.selectedProfile = parseInt(t);
 				this['setProfile']();
             },
             'addOption': function(t, e, i, o) {
                 $(t).append('<label><input type=\"checkbox\" id=\"' + e + '\" class=\"js-switch\"> ' + i + '</label>');
-				$('#' + e)['prop']('checked', o);
+				$('#' + e).prop('checked', o);
             },
             'addOptions': function(t, e) {
                 if (t) {
@@ -2702,7 +2702,7 @@ var thelegendmodproject = function(t, e, i) {
                         var o = t[i];
                         if(v.hasOwnProperty(o)){
 							$('.' + e).append('<label>' + h[o] + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + o + '\"></label>'); 
-							$('#' + o)['prop']('checked', v[o]);
+							$('#' + o).prop('checked', v[o]);
 						}
                     }
                 }
@@ -2711,7 +2711,7 @@ var thelegendmodproject = function(t, e, i) {
                 $(t).append('<div class=\"input-box\"><span class=\"title-box\">' + h[e] + '</span><input id=\"' + e + '\" class=\"form-control\" placeholder=\"' + i + '\" value=\"' + v[e] + '\" /></div>');
                 var a = this;
                 $('#' + e).on('input', function() {
-                    v[e] = this.value, a[o](), a['saveSettings'](v, 'ogarioSettings');
+                    v[e] = this.value, a[o](), a.saveSettings(v, 'ogarioSettings');
                 });
             },
             'addSliderBox': function(t, e, o, a, n, r) {
@@ -2719,10 +2719,10 @@ var thelegendmodproject = function(t, e, i) {
                 var l = this;
                 r ? $('#' + e + '-slider').on('input', function() {
                     var t = parseFloat($(this).val());
-                    $('#' + e + '-value').text(t), v[e] = t, i.hasOwnProperty(e) && (i[e] = t), l[r](), l['saveSettings'](v, 'ogarioSettings');
+                    $('#' + e + '-value').text(t), v[e] = t, i.hasOwnProperty(e) && (i[e] = t), l[r](), l.saveSettings(v, 'ogarioSettings');
                 }) : $('#' + e + '-slider').on('input', function() {
                     var t = parseFloat($(this).val());
-                    $('#' + e + '-value').text(t), v[e] = t, i.hasOwnProperty(e) && (i[e] = t), l['saveSettings'](v, 'ogarioSettings');
+                    $('#' + e + '-value').text(t), v[e] = t, i.hasOwnProperty(e) && (i[e] = t), l.saveSettings(v, 'ogarioSettings');
                 });
             },
             'setLang': function() {
@@ -2735,38 +2735,38 @@ var thelegendmodproject = function(t, e, i) {
                         h["start"] + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + h["profile"] + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + h["settings"] + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + h["theme"] + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
                         h["hotkeys"] + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="Radio / ' + h["sounds"] + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>'), $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-skins ogicon-images"></a><div id="profiles"><div id="prev-profile"></div><div id="skin-preview"></div><div id="next-profile"></div></div>'),
                     $("#mainPanel div[role=form]").appendTo($("#main-panel")), $("#main-panel div[role=form] .form-group:first").remove(), $("#nick")["before"]('<input id="clantag" class="form-control" placeholder="Tag, e.g. \u24c2" maxlength="10"><div class="input-group nick"></div>'), $("#nick").appendTo($(".nick")), $(".nick").append('<span class="input-group-btn"><button id="stream-mode" class="btn active ogicon-eye"></button></span>'), $(".nick")["after"]('<div class="input-group skin"><input id="skin" class="form-control" placeholder="Skin URL (imgur.com direct link)" maxlength="40"><input type="hidden" id="color" value="' +
-                        ogarcopythelb["color"] + '" maxlength="7" /><span class="input-group-addon"><i></i></span><span class="input-group-btn"><button id="hide-url" class="btn active ogicon-eye"></button></span></div>'), $("#locationKnown, #locationUnknown")["insertAfter"]($(".skin")), $("#region")["before"]('<button class="btn btn-warning btn-server-info ogicon-cogs"></button>'), $(".btn-spectate, .btn-logout").appendTo("#agario-main-buttons"), $("#agario-main-buttons").addClass("clearfix")["before"]('<div id="server-info" class="form-group clearfix"><input id="server-ws" class="form-control" placeholder="Server WS"><button id="server-connect" class="btn btn-success ogicon-power"></button><button id="server-reconnect" class="btn btn-primary ogicon-redo2"></button><input id="server-token" class="form-control" placeholder="Server token"><button id="server-join" class="btn btn-success" data-itr="page_join_party">Join</button></div>'),
+                        ogarcopythelb.color + '" maxlength="7" /><span class="input-group-addon"><i></i></span><span class="input-group-btn"><button id="hide-url" class="btn active ogicon-eye"></button></span></div>'), $("#locationKnown, #locationUnknown")["insertAfter"]($(".skin")), $("#region")["before"]('<button class="btn btn-warning btn-server-info ogicon-cogs"></button>'), $(".btn-spectate, .btn-logout").appendTo("#agario-main-buttons"), $("#agario-main-buttons").addClass("clearfix")["before"]('<div id="server-info" class="form-group clearfix"><input id="server-ws" class="form-control" placeholder="Server WS"><button id="server-connect" class="btn btn-success ogicon-power"></button><button id="server-reconnect" class="btn btn-primary ogicon-redo2"></button><input id="server-token" class="form-control" placeholder="Server token"><button id="server-join" class="btn btn-success" data-itr="page_join_party">Join</button></div>'),
                     $("#helloContainer div[role=form]")["after"]('<div id="ogario-party" class="clearfix"><input id="party-token" class="form-control" placeholder="Party token"></div>'), $("#ogario-party").append('<button id="join-party-btn-2" class="btn btn-success" data-itr="page_join_party">Join</button><button id="create-party-btn-2" class="btn btn-primary" data-itr="page_create_party">Create</button>'), $("#pre-join-party-btn:first, #join-party-btn:first, #create-party-btn:first, #leave-party-btn:first, #joinPartyToken:first, .party-icon-back:first").appendTo($("#ogario-party")),
-                    $("#settingsChoice, #options").appendTo($("#og-settings .submenu-panel")), $("#stats").appendTo($("#main-menu")).addClass("menu-panel"), $("#statsContinue")["attr"]("id", "statsContinue2"), $("#mainPanel")["empty"]().remove(), $(".center-container").addClass("ogario-menu"), $(".center-container").append('<div id="menu-footer" class="menu-main-color">' + h["visit"] + ' <a href="http://legendmod.ml" target="_blank">legendmod.ml</a> | ' + this["version"] + ' <a href="https://goo.gl/nRREoR" class="release ogicon-info" target="_blank"></a></div>'),
-                    $("#leftPanel, #rightPanel").addClass("ogario-menu")["removeAttr"]("id"), $(".agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel").appendTo($("#profile")).removeClass("agario-side-panel"), $(".agario-profile-panel")["after"]('<div id="block-warn">' + h["blockWarn"] + '<br><a href="#" id="unblock-popups">' + h["unblockPopups"] + "</a></div>"), $("#exp-bar").addClass("agario-profile-panel"), $(".left-container")["empty"](), $(".agario-shop-panel")["after"]('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">The Legend Mod Project</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>'),
+                    $("#settingsChoice, #options").appendTo($("#og-settings .submenu-panel")), $("#stats").appendTo($("#main-menu")).addClass("menu-panel"), $("#statsContinue")["attr"]("id", "statsContinue2"), $("#mainPanel").empty().remove(), $(".center-container").addClass("ogario-menu"), $(".center-container").append('<div id="menu-footer" class="menu-main-color">' + h["visit"] + ' <a href="http://legendmod.ml" target="_blank">legendmod.ml</a> | ' + this["version"] + ' <a href="https://goo.gl/nRREoR" class="release ogicon-info" target="_blank"></a></div>'),
+                    $("#leftPanel, #rightPanel").addClass("ogario-menu")["removeAttr"]("id"), $(".agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel").appendTo($("#profile")).removeClass("agario-side-panel"), $(".agario-profile-panel")["after"]('<div id="block-warn">' + h["blockWarn"] + '<br><a href="#" id="unblock-popups">' + h["unblockPopups"] + "</a></div>"), $("#exp-bar").addClass("agario-profile-panel"), $(".left-container").empty(), $(".agario-shop-panel")["after"]('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">The Legend Mod Project</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>'),
                     $("#tags-container").appendTo($("#profile")), $(".btn-logout").appendTo($("#profile")), $(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://jimboy3100.github.io/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + h["skins"] + '"></a><a href="https://youtube.com/channel/UCoj-ZStcJ0jLMOSK7FOBTbA" class="quick-yt ogicon-youtube2" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="Team OGARio"></a></div>'),
-                    this["protocolMode"] || $("#quick-menu")["prepend"]('<a href="#" class="quick-shop ogicon-cart" data-toggle="tab-tooltip" data-placement="left" title="' + h["page_shop"] + '"></a><a href="#" class="quick-free-coins ogicon-coin-dollar" data-toggle="tab-tooltip" data-placement="left" title="' + h["page_menu_main_free_coins"] + '"></a><a href="#" class="quick-free-gifts ogicon-gift" data-toggle="tab-tooltip" data-placement="left" title="' + h["page_menu_main_gifts"] + '"></a><a href="#" class="quick-quests ogicon-trophy" data-toggle="tab-tooltip" data-placement="left" title="' +
-                        h["page_menu_main_dailyquests"] + '"></a>'), $(".party-dialog, .partymode-info").remove(), $(".agario-party-6").appendTo($(".center-container")), $(".right-container")["empty"](), $(".right-container").append('<div class="agario-party"></div>'), $(".agario-party-6").appendTo($(".agario-party")).addClass("agario-panel agario-side-panel"), $(".agario-party h4, #cancel-party-btn").remove(), $(".agario-party .btn").addClass("btn-sm"), $(".right-container").append('<div id="skins-panel" class="agario-panel agario-side-panel"><div id="skins"></div><a href="https://ogario.ovh/skins/" id="more-skins" class="btn btn-block btn-success" target="_blank">' +
+                    this.protocolMode || $("#quick-menu")["prepend"]('<a href="#" class="quick-shop ogicon-cart" data-toggle="tab-tooltip" data-placement="left" title="' + h["page_shop"] + '"></a><a href="#" class="quick-free-coins ogicon-coin-dollar" data-toggle="tab-tooltip" data-placement="left" title="' + h["page_menu_main_free_coins"] + '"></a><a href="#" class="quick-free-gifts ogicon-gift" data-toggle="tab-tooltip" data-placement="left" title="' + h["page_menu_main_gifts"] + '"></a><a href="#" class="quick-quests ogicon-trophy" data-toggle="tab-tooltip" data-placement="left" title="' +
+                        h["page_menu_main_dailyquests"] + '"></a>'), $(".party-dialog, .partymode-info").remove(), $(".agario-party-6").appendTo($(".center-container")), $(".right-container").empty(), $(".right-container").append('<div class="agario-party"></div>'), $(".agario-party-6").appendTo($(".agario-party")).addClass("agario-panel agario-side-panel"), $(".agario-party h4, #cancel-party-btn").remove(), $(".agario-party .btn").addClass("btn-sm"), $(".right-container").append('<div id="skins-panel" class="agario-panel agario-side-panel"><div id="skins"></div><a href="https://ogario.ovh/skins/" id="more-skins" class="btn btn-block btn-success" target="_blank">' +
                         h["moreSkins"] + "</a></div>"), $(".btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr='page_option_dark_theme'], #options #darkTheme").remove(), $("#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom").css("display", "none"), $("#advertisement").removeClass("agario-panel"), $("#adsBottom")["css"]({
                         "z-index": "1",
                         "opacity": "0",
                         "bottom": "-100px"
                     }), $("#noNames, #showMass").remove(), $("#og-settings .submenu-panel").append('<div id="og-options"></div>'), 
-					this["addOptions"]([], "animationGroup"), 
-					this["addOptions"](["autoZoom"], "zoomGroup"), 
-					this["addOptions"](["quickResp", "autoResp"], "respGroup"), 
-					this["addOptions"](["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup"), 
-					this["addOptions"](["jellyPhisycs","showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound"], "massGroup"),
-					this["protocolMode"] ? this["addOptions"](["customSkins", "videoSkins", "videoSkinsMusic"], "skinsGroup") : this["addOptions"](["customSkins", "vanillaSkins", "videoSkins", "videoSkinsMusic"], "skinsGroup"), 
-					this["addOptions"](["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup"), 
-					this["addOptions"](["myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow"], "transparencyGroup"), 
-					this["addOptions"](["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup"), 
-					this["addOptions"](["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox"], "chatGroup"), 
-					this["addOptions"](["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup"), 
-					this["addOptions"](["oppColors", "oppRings", "virColors", "splitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells"], "helpersGroup"), 
-					this["addOptions"](["mouseSplit", "mouseFeed","mouseInvert"], "mouseGroup"), 
-					this["addOptions"](["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop"], "hudGroup"), 
-					this["addOptions"](["showStats", "showStatsMass", "showStatsSTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"), 
-					this["protocolMode"] || (this["addOptions"](["blockPopups"], "extrasGroup"), $("#noSkins, #noColors, #skipStats, #showQuest").addClass("js-switch-vanilla"), $(".skinsGroup h5")["after"]('<label class="noSkins">' + h["noSkins"] +
+					this.addOptions([], "animationGroup"), 
+					this.addOptions(["autoZoom"], "zoomGroup"), 
+					this.addOptions(["quickResp", "autoResp"], "respGroup"), 
+					this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup"), 
+					this.addOptions(["jellyPhisycs","showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound"], "massGroup"),
+					this.protocolMode ? this.addOptions(["customSkins", "videoSkins", "videoSkinsMusic"], "skinsGroup") : this.addOptions(["customSkins", "vanillaSkins", "videoSkins", "videoSkinsMusic"], "skinsGroup"), 
+					this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup"), 
+					this.addOptions(["myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow"], "transparencyGroup"), 
+					this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup"), 
+					this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox"], "chatGroup"), 
+					this.addOptions(["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup"), 
+					this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells"], "helpersGroup"), 
+					this.addOptions(["mouseSplit", "mouseFeed","mouseInvert"], "mouseGroup"), 
+					this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop"], "hudGroup"), 
+					this.addOptions(["showStats", "showStatsMass", "showStatsSTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"), 
+					this.protocolMode || (this.addOptions(["blockPopups"], "extrasGroup"), $("#noSkins, #noColors, #skipStats, #showQuest").addClass("js-switch-vanilla"), $(".skinsGroup h5")["after"]('<label class="noSkins">' + h["noSkins"] +
                         " </label>"), $("#noSkins").appendTo($(".noSkins")), $(".transparencyGroup h5")["after"]('<label class="noColors">' + h["noColors"] + " </label>"), $("#noColors").appendTo($(".noColors")), $(".extrasGroup h5")["after"]('<label class="skipStats">' + h["skipStats"] + " </label>"), $("#skipStats").appendTo($(".skipStats")), $(".skipStats")["after"]('<label class="showQuest">' + h["showQuest"] + " </label>"), $("#showQuest").appendTo($(".showQuest")), $("#options").remove(), $("#settingsChoice").appendTo($(".extrasGroup")).addClass("select-wrapper")),
-                    this["addSliderBox"](".animationGroup", "animation", 20, 200, 1), this["addSliderBox"](".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01), $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + h["exportImport"] + "</button>"), $("#og-settings").append('<div class="restore-settings"><a href="#">' + h["restoreSettings"] + "</a></div>"), $("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + h["thanks"] + ')</h5><audio src="" controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' +
-                        h["playlist"] + "</a></span></div>"), $("#music").append('<div class="agario-panel sounds-panel"><h5 class="menu-main-color">' + h["sounds"] + "</h5></div>"), $("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>'), this["addInputBox"](".sounds-panel", "messageSound", "Sound URL", "setMessageSound"),
-                    this["addInputBox"](".sounds-panel", "commandSound", "Sound URL", "setCommandSound"), this["addInputBox"](".sounds-panel", "virusSoundurl", "Sound URL", "setvirusSound"), $("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color">Team<span class="team-top"></span></h5><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' + //<div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="10" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
+                    this.addSliderBox(".animationGroup", "animation", 20, 200, 1), this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01), $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + h["exportImport"] + "</button>"), $("#og-settings").append('<div class="restore-settings"><a href="#">' + h["restoreSettings"] + "</a></div>"), $("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + h["thanks"] + ')</h5><audio src="" controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' +
+                        h["playlist"] + "</a></span></div>"), $("#music").append('<div class="agario-panel sounds-panel"><h5 class="menu-main-color">' + h["sounds"] + "</h5></div>"), $("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>'), this.addInputBox(".sounds-panel", "messageSound", "Sound URL", "setMessageSound"),
+                    this.addInputBox(".sounds-panel", "commandSound", "Sound URL", "setCommandSound"), this.addInputBox(".sounds-panel", "virusSoundurl", "Sound URL", "setvirusSound"), $("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color">Team<span class="team-top"></span></h5><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' + //<div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="10" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
                         h["totalPartyPlayers"] + ': <span id="top5-total-players" class="top5-mass-color">0</span>   <span class="hud-main-color ogicon-pacman"></span> ' + h["totalPartyMass"] + ': <span id="top5-total-mass" class="top5-mass-color">0</span></div></div> <div id="time-hud" class="hud time-hud-color"></div> <div id="pause-hud" class="hud">' + h.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">legendmod.ml</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://jimboy3100.github.io/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
                         h["targetNotSet"] + '</span></div><div id="target-summary"></div></div><div id="target-panel-hud" class="hud"><a href="#" id="set-targeting" class="ogicon-target"></a><a href="#" id="set-private-minimap" class="ogicon-location2"></a><a href="#" id="cancel-targeting" class="ogicon-cancel-circle"></a><a href="#" id="change-target" class="ogicon-arrow-right"></a></div> <div id="quest-hud" class="hud"></div> <div id="btl-hud" class="hud"></div></div>'), $("body").append('<ul id="messages"></ul>'), $("body").append('<div id="message-box"><div id="chat-emoticons"></div><div id="message-menu"><a href="#" class="chat-sound-notifications ogicon-volume-high"></a><a href="#" class="chat-active-users ogicon-user-check"></a><a href="#" class="chat-muted-users ogicon-user-minus"></a><a href="#" class="show-chat-emoticons ogicon-smile"></a></div><input type="text" id="message" class="form-control" placeholder="' +
                         h["enterChatMsg"] + '..." maxlength="80"></div>'), $("body").append('<div id="chat-box"></div>'), d) {
@@ -2792,23 +2792,23 @@ var thelegendmodproject = function(t, e, i) {
                 var t = this;
                 $(document).on("click", ".menu-tabs a", function(event) {
                         event.preventDefault();
-                        t["switchMenuTabs"]($(this), "menu-panel");
+                        t.switchMenuTabs($(this), "menu-panel");
                     });
 				$(document).on("click", ".submenu-tabs a", function(event) {
                         event.preventDefault();
-                        t["switchMenuTabs"]($(this), "submenu-panel");
+                        t.switchMenuTabs($(this), "submenu-panel");
                     });
 				$(document).on("click", ".quick-menu", function(event) {
                         event.preventDefault();
-                        v["showQuickMenu"] = !v["showQuickMenu"];
-                        t["saveSettings"](v, "ogarioSettings");
-                        t["setShowQuickMenu"]();
+                        v.showQuickMenu = !v.showQuickMenu;
+                        t.saveSettings(v, "ogarioSettings");
+                        t.setShowQuickMenu();
                     });
 				$(document).on("click", ".quick-skins", function(event) {
                         event.preventDefault();
-                        v["showSkinsPanel"] = !v["showSkinsPanel"];
-                        t["saveSettings"](v, "ogarioSettings");
-                        t["setShowSkinsPanel"]();
+                        v.showSkinsPanel = !v.showSkinsPanel;
+                        t.saveSettings(v, "ogarioSettings");
+                        t.setShowSkinsPanel();
                     }); 
 				$(document).on("change", "#region", function() {
                         t.region = this.value;
@@ -2816,10 +2816,10 @@ var thelegendmodproject = function(t, e, i) {
 				$(document).on("change", "#gamemode", function() {
                         var dummy = this.value;
                         if (":party" !== dummy) {
-                            t["leaveParty"]();
+                            t.leaveParty();
                         }
-                        t["gameMode"] = i["gameMode"] = dummy;
-                        t["setQuest"]();
+                        t.gameMode = i.gameMode = dummy;
+                        t.setQuest();
                     }); 
 				$(document).on("change", "#quality", function() {
                         t.getQuality(this.value);
@@ -2827,157 +2827,155 @@ var thelegendmodproject = function(t, e, i) {
                     }); 
 				$(document).on("input", "#skin", function() {
                         var hexInputVal = this.value;
-                        t["setSkinPreview"](hexInputVal, "skin-preview");
-                        t["setSkinPreview"](hexInputVal, "profile-" + t["selectedProfile"]);
+                        t.setSkinPreview(hexInputVal, "skin-preview");
+                        t.setSkinPreview(hexInputVal, "profile-" + t.selectedProfile);
                     }); 
 				$(document).on("click", "#skins a", function(event) {
                         event.preventDefault();
-                        t["selectProfile"]($(this)["attr"]("data-profile"));
+                        t.selectProfile($(this).attr("data-profile"));
                     }); 
 				$(document).on("click", "#prev-profile", function() {
-                        t["prevProfile"]();
+                        t.prevProfile();
                     }); 
 				$(document).on("click", "#next-profile", function() {
-                        t["nextProfile"]();
+                        t.nextProfile();
                     }); 
 				$(document).on("click", "#stream-mode", function() {
-                        /** @type {boolean} */
-                        v["streamMode"] = !v["streamMode"];
-                        t["saveSettings"](v, "ogarioSettings");
-                        t["setStreamMode"]();
+                        v.streamMode = !v.streamMode;
+                        t.saveSettings(v, "ogarioSettings");
+                        t.setStreamMode();
                     }); 
 				$(document).on("click", "#hide-url", function() {
-                        /** @type {boolean} */
-                        v["hideSkinUrl"] = !v["hideSkinUrl"];
-                        t["saveSettings"](v, "ogarioSettings");
-                        t["setHideSkinUrl"]();
+                        v.hideSkinUrl = !v.hideSkinUrl;
+                        t.saveSettings(v, "ogarioSettings");
+                        t.setHideSkinUrl();
                     }); 
 				$(document).on("click", ".btn-server-info", function() {
                         $("#server-info").toggle();
                     }); 
 				$(document).on("click", "#server-connect", function() {
-                        t["gameServerConnect"]($("#server-ws").val());
+                        t.gameServerConnect($("#server-ws").val());
                     }); 
 				$(document).on("click", "#server-reconnect", function() {
-                        t["gameServerReconnect"]();
+                        t.gameServerReconnect();
                     }); 
 				$(document).on("click", "#server-join", function() {
-                        t["gameServerJoin"]($("#server-token").val());
+                        t.gameServerJoin($("#server-token").val());
                     }); 
 				$(document).on("change", "#og-options input[type='checkbox']", function() {
                         var template = $(this);
-                        t["setSettings"](template["attr"]("id"), template.prop("checked"));
+                        t.setSettings(template.attr("id"), template.prop("checked"));
                     }); 
 				$(document).on("change", ".js-switch-vanilla", function() {
                         var template = $(this);
-                        var p = template["attr"]("id");
+                        var p = template.attr("id");
                         if (void 0 !== t[p]) {
                             t[p] = template.prop("checked");
                             if ("noSkins" === p) {
                                 /** @type {boolean} */
-                                i["showCustomSkins"] = !t["noSkins"];
+                                i.showCustomSkins = !t.noSkins;
                             }
                             if ("showQuest" === p) {
-                                t["setQuest"]();
+                                t.setQuest();
                             }
                         }
                     }); 
 				$(document).on("click", "#og-settings .restore-settings a", function(result) {
-                        result["preventDefault"]();
-                        t["restoreSettings"]();
+                        result.preventDefault();
+                        t.restoreSettings();
                     }); 
 				$(document).on("click", "#og-settings .btn-export", function(result) {
-                        result["preventDefault"]();
-                        t["exportSettings"]();
+                        result.preventDefault();
+                        t.exportSettings();
                         $("#exp-imp").fadeIn(500);
-                        $("#exp-imp-settings, #export-settings")["perfectScrollbar"]("update");
+                        $("#exp-imp-settings, #export-settings").perfectScrollbar("update");
                     }); 
 				$(document).on("click", "#close-exp-imp", function(event) {
                         event.preventDefault();
-                        $("#exp-imp")["fadeOut"](500);
+                        $("#exp-imp").fadeOut(500);
                     }); 
 				$(document).on("focus", "#export-settings", function() {
                         $(this).select();
                     }), 
 				$(document).on("click", "#export-settings-btn", function(event) {
                         event.preventDefault();
-                        t["exportSettings"]();
+                        t.exportSettings();
                     }); 
 				$(document).on("click", "#import-settings-btn", function(result) {
-                        result["preventDefault"]();
-                        t["importSettings"]();
+                        result.preventDefault();
+                        t.importSettings();
                     }); 
 				$(document).on("click", "#unblock-popups", function(result) {
-                        result["preventDefault"]();
-                        t["unblockPopups"]();
+                        result.preventDefault();
+                        t.unblockPopups();
                     }); 
 				$(document).on("click", "#openfl-overlay.disabler", function() {
-                        if (v["blockPopups"]) {
-                            t["blockPopups"]();
+                        if (v.blockPopups) {
+                            t.blockPopups();
                         }
                     }); 
 				$(document).on("click", "#openfl-content", function() {
-                        if (v["blockPopups"]) {
+                        if (v.blockPopups) {
                             var container = $(this);
                             setTimeout(function() {
-                                if (!container["is"](":visible")) {
-                                    t["blockPopups"]();
+                                if (!container.is(":visible")) {
+                                    t.blockPopups();
                                 }
                             }, 1000);
                         }
                     });
 				$(document).on("click", ".quick-shop", function(event) {
                         event.preventDefault();
-                        t["unblockPopups"]();
-                        if (window.MC && window.MC["openShop"]) {
-                            window.MC["openShop"]();
+                        t.unblockPopups();
+                        if (window.MC && window.MC.openShop) {
+                            window.MC.openShop();
                         }
                     }); 
 				$(document).on("click", ".quick-free-coins", function(event) {
                         event.preventDefault();
-                        t["unblockPopups"]();
-                        if (window.MC && window.MC["showFreeCoins"]) {
-                            window.MC["showFreeCoins"]();
+                        t.unblockPopups();
+                        if (window.MC && window.MC.showFreeCoins) {
+                            window.MC.showFreeCoins();
                         }
                     }); 
 				$(document).on("click", ".quick-free-gifts", function(event) {
                         event.preventDefault();
-                        t["unblockPopups"]();
-                        if (window.MC && window.MC["showGifting"]) {
-                            window.MC["showGifting"]();
+                        t.unblockPopups();
+                        if (window.MC && window.MC.showGifting) {
+                            window.MC.showGifting();
                         }
                     }); 
 				$(document).on("click", ".quick-quests", function(event) {
                         event.preventDefault();
-                        t["unblockPopups"]();
-                        if (window.MC && window.MC["showQuests"]) {
-                            window.MC["showQuests"]();
+                        t.unblockPopups();
+                        if (window.MC && window.MC.showQuests) {
+                            window.MC.showQuests();
                         }
                     }); 
 				$(document).on("click", "#set-targeting", function(event) {
                         event.preventDefault();
-                        t["setTargeting"]();
+                        t.setTargeting();
                     }); 
 				$(document).on("click", "#cancel-targeting", function(event) {
                         event.preventDefault();
-                        t["cancelTargeting"]();
+                        t.cancelTargeting();
                     }); 
 				$(document).on("click", "#set-private-minimap", function(event) {
                         event.preventDefault();
-                        t["setPrivateMiniMap"]();
+                        t.setPrivateMiniMap();
                     });
 				$(document).on("click", "#change-target", function(result) {
-                        result["preventDefault"]();
-                        t["changeTarget"]();
+                        result.preventDefault();
+                        t.changeTarget();
                     });
 				$(document).on("click", ".team-top-limit", function(event) {
                         event.preventDefault();
                         var template = $(this);
                         /** @type {number} */
-                        var param = parseInt(template["attr"]("data-limit"));
+                        var param = parseInt(template.attr("data-limit"));
                         if (param) {
-                            t["setTop5limit"](param);
-                            t["displayTop5"]();
+                            t.setTop5limit(param);
+                            t.displayTop5();
                             $(".team-top").text(param);
                             $(".team-top-limit").removeClass("active");
                             template.addClass("active");
@@ -2985,87 +2983,87 @@ var thelegendmodproject = function(t, e, i) {
                     }); 
 				$(document).on("click", "#top5-pos .set-target", function(event) {
                         event.preventDefault();
-                        t["setTarget"](parseInt($(this)["attr"]("data-user-id")));
+                        t.setTarget(parseInt($(this).attr("data-user-id")));
                     }); 
 				$(document).on("click", ".mute-user", function(event) {
                         event.preventDefault();
-                        t["muteChatUser"](parseInt($(this)["attr"]("data-user-id")));
+                        t.muteChatUser(parseInt($(this).attr("data-user-id")));
                     }); 
 				$(document).on("click", ".btn-mute-user", function() {
                         var template = $(this);
-                        t["muteChatUser"](parseInt(template["attr"]("data-user-id")));
-                        template.removeClass("btn-red btn-mute-user").addClass("btn-green btn-unmute-user").text(h["unmute"]);
+                        t.muteChatUser(parseInt(template.attr("data-user-id")));
+                        template.removeClass("btn-red btn-mute-user").addClass("btn-green btn-unmute-user").text(h.unmute);
                     }); 
 				$(document).on("click", ".btn-unmute-user", function() {
                         var template = $(this);
-                        t["unmuteChatUser"](parseInt(template["attr"]("data-user-id")));
-                        template.removeClass("btn-green btn-unmute-user").addClass("btn-red btn-mute-user").text(h["mute"]);
+                        t.unmuteChatUser(parseInt(template.attr("data-user-id")));
+                        template.removeClass("btn-green btn-unmute-user").addClass("btn-red btn-mute-user").text(h.mute);
                     }); 
 				$(document).on("click", ".chat-sound-notifications", function(result) {
-                        result["preventDefault"]();
+                        result.preventDefault();
                         /** @type {boolean} */
-                        v["chatSounds"] = !v["chatSounds"];
-                        t["saveSettings"](v, "ogarioSettings");
-                        t["setChatSoundsBtn"]();
+                        v.chatSounds = !v.chatSounds;
+                        t.saveSettings(v, "ogarioSettings");
+                        t.setChatSoundsBtn();
                     }); 
 				$(document).on("click", ".chat-active-users", function(event) {
                         event.preventDefault();
-                        t["displayChatActiveUsers"]();
+                        t.displayChatActiveUsers();
                     }); 
 				$(document).on("click", ".chat-muted-users", function(event) {
                         event.preventDefault();
-                        t["displayChatMutedUsers"]();
+                        t.displayChatMutedUsers();
                     });
 				$(document).on("click", ".show-chat-emoticons", function(result) {
-                        result["preventDefault"]();
+                        result.preventDefault();
                         var template = $(this);
                         var p = $("#chat-emoticons");
                         p.toggle();
-                        if (p["is"](":visible")) {
+                        if (p.is(":visible")) {
                             template.addClass("active");
                         } else {
                             template.removeClass("active");
-                            $("#message")["focus"]();
+                            $("#message").focus();
                         }
                     }); 
 				$(document).on("click", "#chat-emoticons .emoticon", function() {
-                        var d = $(this)["attr"]("alt");
+                        var d = $(this).attr("alt");
                         var e = $("#message");
                         var n = e.val();
                         if (n.length + d.length <= 80) {
                             e.val(n + d);
                         }
-                        e["focus"]();
+                        e.focus();
                     }); 
-				this["statsHUD"] = document.getElementById("stats-hud"); 
-				this["activeParties"] = document.getElementById("active-parties");
-				this["top5pos"] = document.getElementById("top5-pos");
-				this["top5totalMass"] = document.getElementById("top5-total-mass");
-				this["top5totalPlayers"] = document.getElementById("top5-total-players"); 
-				this["leaderboardPositionsHUD"] = document.getElementById("leaderboard-positions");
-				this["leaderboardDataHUD"] = document.getElementById("leaderboard-data");
-				this["timeHUD"] = document.getElementById("time-hud"), this["questHUD"] = document.getElementById("quest-hud"), $("#canvas")["bind"]("contextmenu", function() {
+				this.statsHUD = document.getElementById("stats-hud"); 
+				this.activeParties = document.getElementById("active-parties");
+				this.top5pos = document.getElementById("top5-pos");
+				this.top5totalMass = document.getElementById("top5-total-mass");
+				this.top5totalPlayers = document.getElementById("top5-total-players"); 
+				this.leaderboardPositionsHUD = document.getElementById("leaderboard-positions");
+				this.leaderboardDataHUD = document.getElementById("leaderboard-data");
+				this.timeHUD = document.getElementById("time-hud"), this.questHUD = document.getElementById("quest-hud"), $("#canvas").bind("contextmenu", function() {
                         return false;
                     }); 
 				$(document).on("mouseup", ".btn", function() {
-                        $(this)["blur"]();
+                        $(this).blur();
                     });
-				$("[data-toggle='tab-tooltip']")["tooltip"]({
+				$("[data-toggle='tab-tooltip']").tooltip({
                         "trigger": "hover"
                     }); 
-				$(".submenu-panel, #chat-box, #exp-imp-settings, #export-settings, #import-settings")["perfectScrollbar"]({
+				$(".submenu-panel, #chat-box, #exp-imp-settings, #export-settings, #import-settings").perfectScrollbar({
                         "suppressScrollX": true
                     }); 
-				Array["prototype"]["slice"]["call"](document["querySelectorAll"](".js-switch"))["forEach"](function(remove) {
+				Array.prototype.slice.call(document.querySelectorAll(".js-switch")).forEach(function(remove) {
                         new Switchery(remove, {
-                            "color": g["menuMainColor"],
+                            "color": g.menuMainColor,
                             "size": "small"
                         });
                     }); 
-				$("input[type='range']")["rangeslider"]({
+				$("input[type='range']").rangeslider({
                         "polyfill": false
                     });
-				toastr["options"] = {
+				toastr.options = {
                         "newestOnTop": false,
                         "positionClass": "toast-bottom-left",
                         "timeOut": 15000
@@ -3073,18 +3071,18 @@ var thelegendmodproject = function(t, e, i) {
 
             },
             'switchMenuTabs': function(t, e) {
-                var i = t['parent']();
+                var i = t.parent();
                 if ('menu-panel' === e) {
-                    if (t['hasClass']('hotkeys-link')) return;
-                    i['hasClass']('profile-tab') && this['setBlockPopups']();
+                    if (t.hasClass('hotkeys-link')) return;
+                    i.hasClass('profile-tab') && this['setBlockPopups']();
                 }
                 t.addClass('active'), i.addClass('active'), i['siblings']().removeClass('active'), i['siblings']()['find']('a').removeClass('active');
-                var o = t['attr']('href');
+                var o = t.attr('href');
                 if ('submenu-panel' === e) {
-                    var a = $(o)['parent']()['attr']('id');
-                    $('#' + a + ' .submenu-panel')['not'](o).css('display', 'none');
-                } else $('.menu-panel')['not'](o).css('display', 'none');
-                $(o)['fadeIn'](1000), ogarhusettings(), $('.submenu-panel')['perfectScrollbar']('update');
+                    var a = $(o).parent().attr('id');
+                    $('#' + a + ' .submenu-panel').not(o).css('display', 'none');
+                } else $('.menu-panel').not(o).css('display', 'none');
+                $(o).fadeIn(1000), ogarhusettings(), $('.submenu-panel').perfectScrollbar('update');
             },
             'getDefaultSettings': function() {
                 if (this["noSkins"] = $("#noSkins").prop("checked"), this["noColors"] = $("#noColors").prop("checked"), this["skipStats"] = $("#skipStats").prop("checked"), this["showQuest"] = $("#showQuest").prop("checked"), i["showCustomSkins"] = !this["noSkins"], null !== window.localStorage.getItem("scale_setting")) {
@@ -3094,16 +3092,26 @@ var thelegendmodproject = function(t, e, i) {
                     var o = $("#quality").val();
                     this.getQuality(o);
                 }
-                null !== window.localStorage.getItem("location") ? (this.region = window.localStorage.getItem("location"), $("#region").val(this.region), window.MC && window.MC["setRegion"] && window.MC["setRegion"](this.region)) : this.region = $("#region").val(), this["setParty"](), ":party" === this["gameMode"] && window.location["hash"] && $("#join-party-btn-2")["click"](), Array["prototype"]["slice"]["call"](document["querySelectorAll"](".js-switch-vanilla"))["forEach"](function(remove) {
+                null !== window.localStorage.getItem("location") ? (this.region = window.localStorage.getItem("location"), 
+				$("#region").val(this.region), 
+				window.MC && window.MC.setRegion && window.MC.setRegion(this.region)) : this.region = $("#region").val(), 
+				this.setParty(), ":party" === this.gameMode && window.location.hash && 
+				$("#join-party-btn-2").click(), 
+				Array.prototype.slice.call(document.querySelectorAll(".js-switch-vanilla")).forEach(function(remove) {
                     new Switchery(remove, {
                         "color": g["menuMainColor"],
                         "size": "small"
                     });
-                }), $("#nick").val(ogarcopythelb.nick)["blur"](), $("#noNames").prop("checked", !v["noNames"]), $("#showMass").prop("checked", v["showMass"]), this["unlockButtons"](), this["setAutoResp"](), this["setQuest"]();
+                }), $("#nick").val(ogarcopythelb.nick)["blur"](), 
+				$("#noNames").prop("checked", !v["noNames"]), 
+				$("#showMass").prop("checked", v["showMass"]), 
+				this["unlockButtons"](), 
+				this["setAutoResp"](), 
+				this["setQuest"]();
             },
             'getQuality': function(t) {
                 var i = 1;
-                switch ('devicePixelRatio' in window && (i = window['devicePixelRatio']), t) {
+                switch ('devicePixelRatio' in window && (i = window.devicePixelRatio), t) {
                     case 'High':
                         this['setCanvasScale'](1);
                         break;
@@ -3146,18 +3154,18 @@ var thelegendmodproject = function(t, e, i) {
                 if (v["showQuickMenu"]) {
                     $("#quick-menu").fadeIn(500);
                 } else {
-                    $("#quick-menu")["fadeOut"](500);
+                    $("#quick-menu").fadeOut(500);
                 }
             },
             'setShowSkinsPanel': function() {
                 if (v["showSkinsPanel"]) {
                     $("#skins-panel").fadeIn(500);
                 } else {
-                    $("#skins-panel")["fadeOut"](500);
+                    $("#skins-panel").fadeOut(500);
                 }
             },
             'unlockButtons': function() {
-                $('.btn-play, .btn-play-guest, .btn-login-play, .btn-spectate')['prop']('disabled', false);
+                $('.btn-play, .btn-play-guest, .btn-login-play, .btn-spectate').prop('disabled', false);
             },
             'setMainButtons': function() {
                 var t = this;
@@ -3190,24 +3198,31 @@ var thelegendmodproject = function(t, e, i) {
                 }
             },
             'onPlay': function() {
-                //                this.play(), this.hideMenu(), window.addKeyListeners && window.addKeyListeners(), v['autoHideFood'] && (i['showFood'] = true), window['ga'] && window['ga']('create', 'UA-92655864-7', 'auto', 'ogarioTracker'), window['ga'] && window['ga']('ogarioTracker.send', 'pageview');
+                //                this.play(), this.hideMenu(), window.addKeyListeners && window.addKeyListeners(), v.autoHideFood && (i.showFood = true), window.ga && window.ga('create', 'UA-92655864-7', 'auto', 'ogarioTracker'), window.ga && window.ga('ogarioTracker.send', 'pageview');
                 this.play(); 
 				this.hideMenu(); 
 				if (window.addKeyListeners){
 					window.addKeyListeners();
 					}
-				if (v['autoHideFood']){
-				i['showFood'] = true};
+				if (v.autoHideFood){
+				i.showFood = true};
             },
             'onSpectate': function() {
-                this.onJoin(), 
-				this.sendPlayerJoin(), 
-				this.hideMenu(), 
-				window.addKeyListeners && window.addKeyListeners(), 
-				v['autoHideFood'] && (i['showFood'] = false);
+                this.onJoin();
+				this.sendPlayerJoin(); 
+				this.hideMenu(); 
+				if (window.addKeyListeners){
+					window.addKeyListeners();
+				}					
+				if (v.autoHideFood) {
+					i.showFood = false;
+				}
             },
             'join': function() {
-                this.setParty(), this.setPlayerSettings(), this.sendPartyData(), this.sendPlayerDeath();
+                this.setParty();
+				this.setPlayerSettings();
+				this.sendPartyData();
+				this.sendPlayerDeath();
             },
             'onJoin': function() {
                 if (this.setParty(), this.isSocketOpen()) this.join();
@@ -3233,18 +3248,18 @@ var thelegendmodproject = function(t, e, i) {
                 this.setParty(), ':party' === this.gameMode && this.partyToken ? this.gameServerReconnect() : this.createParty(), this.create();
             },
             'onPlayerSpawn': function() {
-                if (i.play = true, i['playerColor']) return this['sendPlayerSpawn'](), void this['cacheCustomSkin'](ogarcopythelb.nick, i['playerColor'], ogarcopythelb.skinURL);
+                if (i.play = true, i.playerColor) return this.sendPlayerSpawn(), void this.cacheCustomSkin(ogarcopythelb.nick, i.playerColor, ogarcopythelb.skinURL);
                 var t = this;
                 setTimeout(function() {
-                    t['onPlayerSpawn']();
+                    t.onPlayerSpawn();
                 }, 100);
                 if (window.spawnspecialeffects == true) {
                     setTimeout(function() {
                         ///////// trigger special effects
 						//console.log('Special effects stage 1');
-                        i["spawnX"] = i["playerX"];
-                        i["spawnY"] = i["playerY"];
-                        M["drawCommander"] = true;
+                        i.spawnX = i.playerX;
+                        i.spawnY= i.playerY;
+                        M.drawCommander = true;
                     }, 110);
                 }
 				LegendModSpawn();
@@ -3253,15 +3268,15 @@ var thelegendmodproject = function(t, e, i) {
 				//
 				pauseVideos();
                 i.play = false;
-				i['playerColor'] = null;
-				i['foodIsHidden'] = false;
-				i['playerMass'] = 0;
-				i['playerScore'] = 0;
-				i['playerSplitCells'] = 0;
-				this['showMenu'](300);
+				i.playerColor = null;
+				i.foodIsHidden = false;
+				i.playerMass = 0;
+				i.playerScore = 0;
+				i.playerSplitCells = 0;
+				this.showMenu(300);
 				this.sendPlayerDeath();
-				this['updateDeathLocations'](i['playerX'], i['playerY']);
-				this['unlockButtons'](), ogarcommando1(), this['autoResp']();
+				this.updateDeathLocations(i.playerX, i.playerY);
+				this.unlockButtons(), ogarcommando1(), this.autoResp();
             },
             'setPlayerSettings': function() {
                 var t = $('#nick').val(),
@@ -3269,15 +3284,15 @@ var thelegendmodproject = function(t, e, i) {
                     o = $('#skin').val(),
                     a = $('#color').val();
                 ogarcopythelb.nick = t, 
-				ogarcopythelb.clanTag = e['trim'](), 
-				ogarcopythelb.skinURL = this['checkSkinURL'](o['trim']()), 
+				ogarcopythelb.clanTag = e.trim(), 
+				ogarcopythelb.skinURL = this.checkSkinURL(o.trim()), 
 				7 == a.length && (ogarcopythelb.color = a), 
 				ogarcopythelb.clanTag.length > 0 && (i.clanTag = ogarcopythelb.clanTag), 
-				ogario1PlayerProfiles[this['selectedProfile']].nick = ogarcopythelb.nick, 
-				ogario1PlayerProfiles[this['selectedProfile']].clanTag = ogarcopythelb.clanTag, 
-				ogario1PlayerProfiles[this['selectedProfile']].skinURL = ogarcopythelb.skinURL, 
-				ogario1PlayerProfiles[this['selectedProfile']].color = ogarcopythelb.color, 
-				this['saveSettings'](ogario1PlayerProfiles, 'ogarioPlayerProfiles');
+				ogario1PlayerProfiles[this.selectedProfile].nick = ogarcopythelb.nick, 
+				ogario1PlayerProfiles[this.selectedProfile].clanTag = ogarcopythelb.clanTag, 
+				ogario1PlayerProfiles[this.selectedProfile].skinURL = ogarcopythelb.skinURL, 
+				ogario1PlayerProfiles[this.selectedProfile].color = ogarcopythelb.color, 
+				this.saveSettings(ogario1PlayerProfiles, 'ogarioPlayerProfiles');
             },
             'loadSkin': function(t, e) {
                 var i = this;
@@ -3290,93 +3305,83 @@ var thelegendmodproject = function(t, e, i) {
 					t[e] = new Image();
 				}
 				t[e].crossOrigin = 'anonymous'; 
-				t[e]['onload'] = function() {
-                    this['complete'] &&
-					this['width'] &&
-					this['height'] && 
-					this['width'] <= 2000 &&
-					this['height'] <= 2000 &&
-					(i['cacheQueue'].push(e), 
-					1 == i['cacheQueue'].length &&
-					i['cacheSkin'](i['customSkinsCache']));
+				t[e].onload = function() {
+                    this.complete &&
+					this.width &&
+					this.height && 
+					this.width <= 2000 &&
+					this.height <= 2000 &&
+					(i.cacheQueue.push(e), 
+					1 == i.cacheQueue.length &&
+					i.cacheSkin(i.customSkinsCache));
                 }, t[e].src = e;
             },
             'cacheSkin': function(t) {
                 //console.log(t);  //////// return the image src
-                if (0 != this["cacheQueue"].length) {
-                    var e = this["cacheQueue"]["shift"]();
+                if (0 != this.cacheQueue.length) {
+                    var e = this.cacheQueue.shift();
                     if (e) {
-                        var i = document["createElement"]("canvas");
-                        i["width"] = 512;
-                        i["height"] = 512;
-                        var $ = i["getContext"]("2d");
-                        $["beginPath"]();
+                        var i = document.createElement("canvas");
+                        i.width = 512;
+                        i.height = 512;
+                        var $ = i.getContext("2d");
+                        $.beginPath();
                         $.arc(256, 256, 256, 0, 2 * Math.PI, false);
                         $["clip"]();
 						try {
-                        $["drawImage"](this["customSkinsCache"][e], 0, 0, 512, 512);
+                        $.drawImage(this.customSkinsCache[e], 0, 0, 512, 512);
 						} catch (e) {}
-                        this["customSkinsCache"][e + "_cached"] = new Image;
-                        this["customSkinsCache"][e + "_cached"].src = i.toDataURL();
+                        this.customSkinsCache[e + "_cached"] = new Image;
+                        this.customSkinsCache[e + "_cached"].src = i.toDataURL();
                         i = null;
-                        this["cacheSkin"](this["customSkinsCache"]);
+                        this["cacheSkin"](this.customSkinsCache);
                     }
                 }
             },
             'getCachedSkin': function(t, e) {
-                return t[e + '_cached'] && t[e + '_cached']['complete'] && t[e + '_cached']['width'] ? t[e + '_cached'] : null;
+                return t[e + '_cached'] && t[e + '_cached'].complete && t[e + '_cached'].width ? t[e + '_cached'] : null;
             },
             'cacheCustomSkin': function(t, e, i) {
                 if (i) {
                     var s = ':party' === this.gameMode ? t + e : t;
-                    //					console.log(this['customSkinsMap'][s]);
-                    //					console.log(s);
-                    //					console.log(i);
-                    /*					
-                    					if (window.vanillaSkinname!=null){
-                    						console.log(window.vanillaSkinname);
-                    						console.log(window.vanillaSkin);					
-                    						this['customSkinsMap'][window.vanillaSkinname]=window.vanillaSkin;
-                    						this['loadSkin'](this['customSkinsCache'], window.vanillaSkin);
-                    						}
-                    */
-
-                    if (s && (this['customSkinsMap'][s] = i), this['customSkinsCache'].hasOwnProperty(i)) return;
-                    this['loadSkin'](this['customSkinsCache'], i);
+					//console.log("t= " + t);
+					//console.log("e= " + e);
+                    if (s && (this.customSkinsMap[s] = i), this.customSkinsCache.hasOwnProperty(i)) return;
+                    this.loadSkin(this.customSkinsCache, i);
                 }
             },
             'checkSkinsMap': function(t, e) {
                 var i = ':party' === this.gameMode ? t + e : t;
-                //console.log(['customSkinsMap'].hasOwnProperty(i));
-                return !!this['customSkinsMap'].hasOwnProperty(i);
+                //console.log(.customSkinsMap.hasOwnProperty(i));
+                return !!this.customSkinsMap.hasOwnProperty(i);
             },
             'getCustomSkin': function(t, e) {
-                if (!this['checkSkinsMap'](t, e)) return null;
+                if (!this.checkSkinsMap(t, e)) return null;
                 var i = ':party' === this.gameMode ? t + e : t;
-                return this['getCachedSkin'](this['customSkinsCache'], this['customSkinsMap'][i]);
+                return this.getCachedSkin(this.customSkinsCache, this.customSkinsMap[i]);
             },	
             'calculateMapSector': function(t, e, s = false) {
-                if (!i['mapOffsetFixed']) return '';
-                var o = s ? i['mapOffsetX'] + i['mapOffset'] : i['mapOffset'],
-                    a = s ? i['mapOffsetY'] + i['mapOffset'] : i['mapOffset'],
-                    n = Math['floor']((e + a) / (i['mapSize'] / g['sectorsY'])),
-                    r = Math['floor']((t + o) / (i['mapSize'] / g['sectorsX']));
-					window.calculateMapSector = n < 0 ? 0 : n >= g['sectorsY'] ? g['sectorsY'] - 1 : n, r = r < 0 ? 0 : r >= g['sectorsX'] ? g['sectorsX'] - 1 : r, String['fromCharCode'](n + 65) + (r + 1);
-                return n = n < 0 ? 0 : n >= g['sectorsY'] ? g['sectorsY'] - 1 : n, r = r < 0 ? 0 : r >= g['sectorsX'] ? g['sectorsX'] - 1 : r, String['fromCharCode'](n + 65) + (r + 1);
+                if (!i.mapOffsetFixed) return '';
+                var o = s ? i.mapOffsetX+ i.mapOffset : i.mapOffset,
+                    a = s ? i.mapOffsetY + i.mapOffset : i.mapOffset,
+                    n = Math.floor((e + a) / (i.mapSize / g.sectorsY)),
+                    r = Math.floor((t + o) / (i.mapSize / g.sectorsX));
+					window.calculateMapSector = n < 0 ? 0 : n >= g.sectorsY ? g.sectorsY - 1 : n, r = r < 0 ? 0 : r >= g.sectorsX ? g.sectorsX - 1 : r, String.fromCharCode(n + 65) + (r + 1);
+                return n = n < 0 ? 0 : n >= g.sectorsY ? g.sectorsY - 1 : n, r = r < 0 ? 0 : r >= g.sectorsX ? g.sectorsX - 1 : r, String.fromCharCode(n + 65) + (r + 1);
             },
             'shortMassFormat': function(t) {
                 return t < 1000 ? t : Math.round(t / 100) / 10 + 'k';
             },
             'updateDeathLocations': function(t, e) {
-                if (i["mapOffsetFixed"]) {
-                    this["deathLocations"].push({
-                        "x": t + i["mapOffsetX"],
-                        "y": e + i["mapOffsetY"]
+                if (i.mapOffsetFixed) {
+                    this.deathLocations.push({
+                        "x": t + i.mapOffsetX,
+                        "y": e + i.mapOffsetY
                     });
-                    if (6 == this["deathLocations"].length) {
-                        this["deathLocations"]["shift"]();
+                    if (6 == this.deathLocations.length) {
+                        this.deathLocations.shift();
                     }
-                    this["lastDeath"] = this["deathLocations"].length - 1;
+                    this.lastDeath = this.deathLocations.length - 1;
                 }
             },
             'drawMiniMap': function() {
@@ -3387,66 +3392,66 @@ var thelegendmodproject = function(t, e, i) {
                     var o = t - 18;
                     var a = e + 9.5;
                     if (this["miniMap"]) {
-                        this["miniMapCtx"]["clearRect"](0, 0, t, s);
+                        this.miniMapCtx.clearRect(0, 0, t, s);
                     } else {
                         this["miniMap"] = document.getElementById("minimap");
-                        this["miniMapCtx"] = this["miniMap"]["getContext"]("2d");
-                        this["miniMapCtx"]["ogarioCtx"] = true;
-                        this["miniMap"]["width"] = t;
-                        this["miniMap"]["height"] = s;
+                        this.miniMapCtx = this["miniMap"].getContext("2d");
+                        this.miniMapCtx.ogarioCtx = true;
+                        this["miniMap"].width = t;
+                        this["miniMap"].height = s;
                     }
-                    if (this["miniMap"]["width"] != t) {
-                        this["miniMap"]["width"] = t;
-                        this["miniMap"]["height"] = s;
+                    if (this["miniMap"].width != t) {
+                        this["miniMap"].width = t;
+                        this["miniMap"].height = s;
                     }
                     var n = o / i["mapSize"];
-                    var r = i["mapOffsetX"] + i["mapOffset"];
-                    var l = i["mapOffsetY"] + i["mapOffset"];
-                    if (this["drawSelectedCell"](this["miniMapCtx"]), 
-					this["currentSector"] = this["calculateMapSector"](i["playerX"], i["playerY"], true), 
-					this["miniMapCtx"]["globalAlpha"] = 1,
-					this["miniMapCtx"]["font"] = g["miniMapFontWeight"] + " " + (e - 4) + "px " + g["miniMapFontFamily"],
-					this["miniMapCtx"]["fillStyle"] = g["miniMapSectorColor"],
-					this["miniMapCtx"]["fillText"](this["currentSector"], 10, e),
+                    var r = i["mapOffsetX"] + i.mapOffset;
+                    var l = i["mapOffsetY"] + i.mapOffset;
+                    if (this["drawSelectedCell"](this.miniMapCtx), 
+					this["currentSector"] = this["calculateMapSector"](i.playerX, i.playerY, true), 
+					this.miniMapCtx.globalAlpha = 1,
+					this.miniMapCtx.font = g["miniMapFontWeight"] + " " + (e - 4) + "px " + g["miniMapFontFamily"],
+					this.miniMapCtx.fillStyle = g["miniMapSectorColor"],
+					this.miniMapCtx.fillText(this["currentSector"], 10, e),
 					this["miniMapSectors"] || this["drawMiniMapSectors"](g["sectorsX"], g["sectorsY"], o, s, a),
-					this["miniMapCtx"]["save"](),
-                        this["miniMapCtx"]["translate"](9.5, a), ":battleroyale" === this["gameMode"] && ogarfooddrawer && ogarfooddrawer["drawBattleAreaOnMinimap"](this["miniMapCtx"], o, o, n, r, l), v["showMiniMapGhostCells"]) {
-                        var h = i["ghostCells"];
-                        this["miniMapCtx"]["beginPath"]();
+					this.miniMapCtx.save(),
+                        this.miniMapCtx.translate(9.5, a), ":battleroyale" === this.gameMode && ogarfooddrawer && ogarfooddrawer["drawBattleAreaOnMinimap"](this.miniMapCtx, o, o, n, r, l), v["showMiniMapGhostCells"]) {
+                        var h = i.ghostCells;
+                        this.miniMapCtx.beginPath();
                         var c = 0;
                         for (; c < h.length; c++) {
-                            if (!h[c]["inView"]) {
+                            if (!h[c].inView) {
                                 var u = ~~((h[c]["x"] + r) * n);
                                 var d = ~~((h[c]["y"] + l) * n);
-                                this["miniMapCtx"]["moveTo"](u, d);
-                                this["miniMapCtx"].arc(u, d, ~~(h[c]["size"] * n), 0, this.pi2, false);
+                                this.miniMapCtx.moveTo(u, d);
+                                this.miniMapCtx.arc(u, d, ~~(h[c].size * n), 0, this.pi2, false);
                             }
                         }
-                        this["miniMapCtx"]["fillStyle"] = g["miniMapGhostCellsColor"];
-                        this["miniMapCtx"]["globalAlpha"] = g["miniMapGhostCellsAlpha"];
-                        this["miniMapCtx"]["shadowColor"] = g["miniMapGhostCellsColor"];
-                        this["miniMapCtx"]["shadowBlur"] = 10;
-                        this["miniMapCtx"]["shadowOffsetX"] = 0;
-                        this["miniMapCtx"]["shadowOffsetY"] = 0;
-                        this["miniMapCtx"].fill();
-                        this["miniMapCtx"]["globalAlpha"] = 1;
-                        this["miniMapCtx"]["shadowBlur"] = 0;
+                        this.miniMapCtx.fillStyle = g["miniMapGhostCellsColor"];
+                        this.miniMapCtx.globalAlpha = g["miniMapGhostCellsAlpha"];
+                        this.miniMapCtx.shadowColor = g["miniMapGhostCellsColor"];
+                        this.miniMapCtx.shadowBlur = 10;
+                        this.miniMapCtx.shadowOffsetX = 0;
+                        this.miniMapCtx.shadowOffsetY = 0;
+                        this.miniMapCtx.fill();
+                        this.miniMapCtx.globalAlpha = 1;
+                        this.miniMapCtx.shadowBlur = 0;
                     }																
                     if (v["showMiniMapGuides"]) {
-                        u = Math.round((i["playerX"] + r) * n);
-                        d = Math.round((i["playerY"] + l) * n);
-                        this["miniMapCtx"]["lineWidth"] = 1;
-                        this["miniMapCtx"]["strokeStyle"] = g["miniMapGuidesColor"];
-                        this["miniMapCtx"]["beginPath"]();
-                        this["miniMapCtx"]["moveTo"](u, 0);
-                        this["miniMapCtx"]["lineTo"](u, o - 1);
-                        this["miniMapCtx"]["moveTo"](0, d);
-                        this["miniMapCtx"]["lineTo"](o - 1, d);
-                        this["miniMapCtx"]["stroke"]();						
+                        u = Math.round((i.playerX + r) * n);
+                        d = Math.round((i.playerY + l) * n);
+                        this.miniMapCtx.lineWidth = 1;
+                        this.miniMapCtx.strokeStyle = g["miniMapGuidesColor"];
+                        this.miniMapCtx.beginPath();
+                        this.miniMapCtx.moveTo(u, 0);
+                        this.miniMapCtx.lineTo(u, o - 1);
+                        this.miniMapCtx.moveTo(0, d);
+                        this.miniMapCtx.lineTo(o - 1, d);
+                        this.miniMapCtx.stroke();						
                     }
                     if (v["showExtraMiniMapGuides"]) {
-                        u = Math.round((i["playerX"] + r) * n);
-                        d = Math.round((i["playerY"] + l) * n);
+                        u = Math.round((i.playerX + r) * n);
+                        d = Math.round((i.playerY + l) * n);
 						
 						//draw the yellow on minimap
 						this.miniMapCtx.beginPath();
@@ -3466,120 +3471,120 @@ var thelegendmodproject = function(t, e, i) {
 						this.miniMapCtx.stroke();	
 						
                     }					
-                    if (this["miniMapCtx"]["beginPath"](), this["miniMapCtx"].arc((i["playerX"] + r) * n, (i["playerY"] + l) * n, g["miniMapMyCellSize"], 0, this.pi2, false), this["miniMapCtx"]["closePath"](), g["miniMapMyCellStrokeSize"] > 0 && (this["miniMapCtx"]["lineWidth"] = g["miniMapMyCellStrokeSize"], this["miniMapCtx"]["strokeStyle"] = g["miniMapMyCellStrokeColor"], this["miniMapCtx"]["stroke"]()), this["miniMapCtx"]["fillStyle"] = g["miniMapMyCellColor"], this["miniMapCtx"].fill(), this["teamPlayers"].length) {
+                    if (this.miniMapCtx.beginPath(), this.miniMapCtx.arc((i.playerX + r) * n, (i.playerY + l) * n, g.miniMapMyCellSize, 0, this.pi2, false), this.miniMapCtx.closePath(), g.miniMapMyCellStrokeSize > 0 && (this.miniMapCtx.lineWidth = g.miniMapMyCellStrokeSize, this.miniMapCtx.strokeStyle = g.miniMapMyCellStrokeColor, this.miniMapCtx.stroke()), this.miniMapCtx.fillStyle = g.miniMapMyCellColor, this.miniMapCtx.fill(), this.teamPlayers.length) {
                         c = 0;
-                        for (; c < this["teamPlayers"].length; c++) {
-                            this["teamPlayers"][c]["drawPosition"](this["miniMapCtx"], i["mapOffset"], n, this["privateMiniMap"], this["targetID"], legendmod3["teamPlayers"][c]["color"]);
+                        for (; c < this.teamPlayers.length; c++) {
+                            this.teamPlayers[c].drawPosition(this.miniMapCtx, i.mapOffset, n, this.privateMiniMap, this.targetID, legendmod3.teamPlayers[c].color);
                         }
                     }
-                    if (this["deathLocations"].length > 0) {
-                        u = Math.round((this["deathLocations"][this["lastDeath"]]["x"] + i["mapOffset"]) * n);
-                        d = Math.round((this["deathLocations"][this["lastDeath"]]["y"] + i["mapOffset"]) * n);
-                        var f = Math["max"](g["miniMapMyCellSize"] - 2, 4);
-                        this["miniMapCtx"]["lineWidth"] = 1;
-                        this["miniMapCtx"]["strokeStyle"] = this["deathLocations"].length - 1 == this["lastDeath"] ? g["miniMapDeathLocationColor"] : "#FFFFFF";
-                        this["miniMapCtx"]["beginPath"]();
-                        this["miniMapCtx"]["moveTo"](u - f, d);
-                        this["miniMapCtx"]["lineTo"](u + f, d);
-                        this["miniMapCtx"]["moveTo"](u, d - f);
-                        this["miniMapCtx"]["lineTo"](u, d + f);
-                        this["miniMapCtx"]["stroke"]();
+                    if (this.deathLocations.length > 0) {
+                        u = Math.round((this.deathLocations[this.lastDeath].x + i.mapOffset) * n);
+                        d = Math.round((this.deathLocations[this.lastDeath].y + i.mapOffset) * n);
+                        var f = Math.max(g.miniMapMyCellSize- 2, 4);
+                        this.miniMapCtx.lineWidth = 1;
+                        this.miniMapCtx.strokeStyle = this.deathLocations.length - 1 == this.lastDeath ? g.miniMapDeathLocationColor : "#FFFFFF";
+                        this.miniMapCtx.beginPath();
+                        this.miniMapCtx.moveTo(u - f, d);
+                        this.miniMapCtx.lineTo(u + f, d);
+                        this.miniMapCtx.moveTo(u, d - f);
+                        this.miniMapCtx.lineTo(u, d + f);
+                        this.miniMapCtx.stroke();
                     }
-                    this["miniMapCtx"]["restore"]();
+                    this.miniMapCtx.restore();
                 }
             },
             'drawMiniMapSectors': function(t, e, s, o, a) {
-                this['miniMapSectors'] = document.getElementById('minimap-sectors');
-                var n = this['miniMapSectors']['getContext']('2d');
-                n['ogarioCtx'] = true; 
-				this['miniMapSectors']['width'] = s; 
-				this['miniMapSectors']['height'] = o; 
-				n['fillStyle'] = '#FFFFFF'; 
-				this['dTok'](n, s - 1);
-				ogarfooddrawer['drawSectors'](n, i['mapOffsetFixed'], t, e, 0.5, a, s - 0.5, o - 9.5, g['miniMapSectorsColor'], g['miniMapSectorsColor'], 1, false);
+                this.miniMapSectors = document.getElementById('minimap-sectors');
+                var n = this.miniMapSectors.getContext('2d');
+                n.ogarioCtx = true; 
+				this.miniMapSectors.width = s; 
+				this.miniMapSectors.height = o; 
+				n.fillStyle = '#FFFFFF'; 
+				this.dTok(n, s - 1);
+				ogarfooddrawer.drawSectors(n, i.mapOffsetFixed, t, e, 0.5, a, s - 0.5, o - 9.5, g.miniMapSectorsColor, g.miniMapSectorsColor, 1, false);
             },
             'resetMiniMapSectors': function() {
-                this['miniMapSectors'] = null;
+                this.miniMapSectors = null;
             },
             'drawSelectedCell': function(t) {
-                i.play && i['playerSplitCells'] > 1 && (v['splitRange'] || v['oppColors'] || v['oppRings'] || v['showStatsSTE']) && (t['fillStyle'] = '#FFFFFF', t['globalAlpha'] = this['selectBiggestCell'] ? 0.6 : 0.3, t['beginPath'](), t.arc(0x30, 15, 6, 0, this.pi2, false), t['closePath'](), t.fill(), t['globalAlpha'] = this['selectBiggestCell'] ? 0.3 : 0.6, t['beginPath'](), t.arc(0x3c, 15, 4, 0, this.pi2, false), t['closePath'](), t.fill());
+                i.play && i.playerSplitCells > 1 && (v.splitRange || v.oppColors || v.oppRings || v.showStatsSTE) && (t.fillStyle = '#FFFFFF', t.globalAlpha = this.selectBiggestCell ? 0.6 : 0.3, t.beginPath(), t.arc(48, 15, 6, 0, this.pi2, false), t.closePath(), t.fill(), t.globalAlpha = this.selectBiggestCell ? 0.3 : 0.6, t.beginPath(), t.arc(60, 15, 4, 0, this.pi2, false), t.closePath(), t.fill());
             },
             'dTok': function(t, e) {
-                t['font'] = g['miniMapFontWeight'] + ' ' + (g['miniMapTop'] - 6) + 'px ' + g['miniMapFontFamily'], t['textAlign'] = 'right', t['textBaseline'] = 'top', t['fillText'](atob(this['token']), e, 7);
+                t.font = g.miniMapFontWeight + ' ' + (g.miniMapTop - 6) + 'px ' + g.miniMapFontFamily, t.textAlign = 'right', t.textBaseline = 'top', t.fillText(atob(this.token), e, 7);
             },
 /*            'drawTeammatesInd': function(t, e, i, s) {
-                this['indicator'] && t['drawImage'](this['indicator'], e - 45, i - s - 90);
+                this.indicator && t.drawImage(this.indicator, e - 45, i - s - 90);
             }, */
             'drawCellInfo': function(t, e, s, o, a, n, r, l, h, c, u, d) {
-                //if (!n && !h && (t['globalAlpha'] = i['globalAlpha'], v['teammatesInd'] && d && !l && a <= 200 && this['drawTeammatesInd'](t, s, o, a), !v['noNames'] || v['showMass'])) {
-				if (!n && !h && (t['globalAlpha'] = i['globalAlpha'], v['teammatesInd'] && d && !l && a <= 200 && ogarfooddrawer['drawTeammatesInd'](t, s, o, a), !v['noNames'] || v['showMass'])) {
+                //if (!n && !h && (t.globalAlpha = i.globalAlpha, v.teammatesInd && d && !l && a <= 200 && this.drawTeammatesInd(t, s, o, a), !v.noNames || v.showMass)) {
+				if (!n && !h && (t.globalAlpha = i.globalAlpha, v.teammatesInd && d && !l && a <= 200 && ogarfooddrawer.drawTeammatesInd(t, s, o, a), !v.noNames || v.showMass)) {
                     var f = false;
-                    if (l || r || !(f = this['setAutoHideCellInfo'](a)) || !v['autoHideNames'] || !v['autoHideMass']) {
+                    if (l || r || !(f = this.setAutoHideCellInfo(a)) || !v.autoHideNames || !v.autoHideMass) {
                         var m = null;
-                        if (!this['cells'].hasOwnProperty(e)) return (m = new ogarbasicassembly(s, o, r, l, v['shortMass'], v['virMassShots']))['setMass'](a), m['setNick'](c), void(this['cells'][e] = m);
-                        (m = this['cells'][e])['update'](s, o, a, r, l, c), m['setDrawing'](v['optimizedNames'], v['optimizedMass'], v['shortMass'], v['virMassShots'], v['namesStroke'], v['massStroke']), m['setDrawingScale'](i['viewScale'], g['namesScale'], g['massScale'], g['virMassScale'], g['strokeScale']), t['globalAlpha'] = g['textAlpha'], v['noNames'] || f && v['autoHideNames'] || l && v['hideMyName'] || d && v['hideTeammatesNames'] || m['drawNick'](t, g['namesColor'], g['namesFontFamily'], g['namesFontWeight'], g['namesStrokeColor']), !v['showMass'] || f && v['autoHideMass'] || l && v['hideMyMass'] || v['hideEnemiesMass'] && !l && !r || m['drawMass'](t, g['massColor'], g['massFontFamily'], g['massFontWeight'], g['massStrokeColor']);
+                        if (!this.cells.hasOwnProperty(e)) return (m = new ogarbasicassembly(s, o, r, l, v.shortMass, v.virMassShots)).setMass(a), m.setNick(c), void(this.cells[e] = m);
+                        (m = this.cells[e]).update(s, o, a, r, l, c), m.setDrawing(v.optimizedNames, v.optimizedMass, v.shortMass, v.virMassShots, v.namesStroke, v.massStroke), m.setDrawingScale(i.viewScale, g.namesScale, g.massScale, g.virMassScale, g.strokeScale), t.globalAlpha = g.textAlpha, v.noNames || f && v.autoHideNames || l && v.hideMyName || d && v.hideTeammatesNames || m.drawNick(t, g.namesColor, g.namesFontFamily, g.namesFontWeight, g.namesStrokeColor), !v.showMass || f && v.autoHideMass || l && v.hideMyMass || v.hideEnemiesMass && !l && !r || m.drawMass(t, g.massColor, g.massFontFamily, g.massFontWeight, g.massStrokeColor);
                     }
                 }
             },
             'setVirusColor': function(t) {
-                return Math['floor'](t * t / 100) > 183 ? '#C80000' : g['virusColor'];
+                return Math.floor(t * t / 100) > 183 ? '#C80000' : g.virusColor;
             },
             'setVirusStrokeColor': function(t) {
-                return i.play && 0 != i['playerMaxMass'] ? Math['floor'](t * t / 100) / (this['selectBiggestCell'] ? i['playerMaxMass'] : i['playerMinMass']) > 0.76 ? '#FFDC00' : '#C80000' : g['virusStrokeColor'];
+                return i.play && 0 != i.playerMaxMass ? Math.floor(t * t / 100) / (this.selectBiggestCell ? i.playerMaxMass : i.playerMinMass) > 0.76 ? '#FFDC00' : '#C80000' : g.virusStrokeColor;
             },
             'setAutoHideCellInfo': function(t) {
-                return t <= 40 || i['viewScale'] < 0.5 && t < 550 && t < 25 / i['viewScale'];
+                return t <= 40 || i.viewScale < 0.5 && t < 550 && t < 25 / i.viewScale;
             },
             'setParty': function() {
                 var t = $('#party-token').val();
-                if (this.gameMode = i.gameMode = $('#gamemode').val(), this['setQuest'](), ':party' === this.gameMode && t) {
-                    var e = t; - 1 != t.indexOf('#') && (e = (t = t.split('#'))[1]), this.partyToken !== e && (this.partyToken = e, this['flushSkinsMap'](), this['flushChatData'](), this['cancelTargeting']());
+                if (this.gameMode = i.gameMode = $('#gamemode').val(), this.setQuest(), ':party' === this.gameMode && t) {
+                    var e = t; - 1 != t.indexOf('#') && (e = (t = t.split('#'))[1]), this.partyToken !== e && (this.partyToken = e, this.flushSkinsMap(), this.flushChatData(), this.cancelTargeting());
                 }
             },
             'createParty': function() {
-                $('#create-party-btn')['click']();
+                $('#create-party-btn').click();
             },
             'joinParty': function() {
                 var t = $('#party-token').val();
-                t && ($('#pre-join-party-btn')['click'](), $('.party-token').val(t), $('#join-party-btn')['click']());
+                t && ($('#pre-join-party-btn').click(), $('.party-token').val(t), $('#join-party-btn').click());
             },
             'leaveParty': function() {
                 $('#party-token, .party-token').val(''); 
-				$('#leave-party-btn')['click']();
+				$('#leave-party-btn').click();
             },
             'closeParty': function() {
                 $('#party-token, .party-token').val(''); 
-				$('.party-icon-back')['click']();
+				$('.party-icon-back').click();
             },
             'flushData': function() {
                 this['flushPartyData'](); 
-				this['flushSkinsMap'](); 
-				this['flushChatData'](); 
-				this['cancelTargeting'](); 
+				this.flushSkinsMap(); 
+				this.flushChatData(); 
+				this.cancelTargeting(); 
 				i.play = false; 
-				i['playerColor'] = null;
+				i.playerColor = null;
             },
             'flushPartyData': function() {
-                this['teamPlayers'] = [];
-				this['parties'] = []; 
-				this['lastSentNick'] = ''; 
-				this['lastSentClanTag'] = null; 
-				this['lastSentSkinURL'] = ''; 
-				this['lastSentCustomColor'] = ''; 
-				this['lastSentPartyToken'] = ''; 
-				this['lastSentServerToken'] = '';
+                this.teamPlayers = [];
+				this.parties = []; 
+				this.lastSentNick = ''; 
+				this.lastSentClanTag = null; 
+				this.lastSentSkinURL = ''; 
+				this.lastSentCustomColor = ''; 
+				this.lastSentPartyToken = ''; 
+				this.lastSentServerToken = '';
             },
             'flushCells': function() {
-                this['cells'] = {};
+                this.cells = {};
             },
             'flushSkinsMap': function() {
-                this['customSkinsMap'] = {};
+                this.customSkinsMap = {};
             },
             'flushChatData': function() {
-                this['chatUsers'] = {};
+                this.chatUsers = {};
             },
             'getWS': function(t) {
-                t && (this['ws'] = t, this['createServerToken'](), this['updateServerInfo'](), -1 == this['ws'].indexOf('agar.io') && this['closeConnection']());
+                t && (this.ws = t, this.createServerToken(), this.updateServerInfo(), -1 == this.ws.indexOf('agar.io') && this.closeConnection());
             },
             'recreateWS': function(t) {
                 if (!t) return null;
@@ -3591,36 +3596,36 @@ var thelegendmodproject = function(t, e, i) {
                 return !e && /^[a-z0-9]{5,}$/.test(t) && (e = 'wss://live-arena-' + t + '.agar.io:443'), e;
             },
             'createServerToken': function() {
-                var t = this['ws']['match'](/ip-\d+/),
-                    i = this['ws']['match'](/live-arena-([\w\d]+)/),
+                var t = this.ws.match(/ip-\d+/),
+                    i = this.ws.match(/live-arena-([\w\d]+)/),
                     s = null;
-                t && ((t = this['ws'].replace('.tech.agar.io', '').replace(/-/g, '.')['match'](/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/)) && (this['serverIP'] = t[0], s = btoa(this['serverIP'])));
+                t && ((t = this.ws.replace('.tech.agar.io', '').replace(/-/g, '.').match(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/)) && (this.serverIP = t[0], s = btoa(this.serverIP)));
                 if (!s && i && (this['serverArena'] = i[1], s = this['serverArena']), s) {
-                    this['serverToken'] !== s && (this['serverToken'] = s, this['flushData'](), this['flushCells']()), this.partyToken = '';
-                    var o = this['ws']['match'](/party_id=([A-Z0-9]{6})/);
+                    this.serverToken !== s && (this.serverToken = s, this.flushData(), this.flushCells()), this.partyToken = '';
+                    var o = this.ws.match(/party_id=([A-Z0-9]{6})/);
                     o && (this.partyToken = o[1], ogarjoiner('/#' + window.encodeURIComponent(this.partyToken)));
                 }
             },
             'updateServerInfo': function() {
-                $('#server-ws').val(this['ws']), $('#server-token').val(this['serverToken']), $('#party-token, .party-token').val(this.partyToken);
+                $('#server-ws').val(this.ws), $('#server-token').val(this.serverToken), $('#party-token, .party-token').val(this.partyToken);
             },
             'gameServerConnect': function(t) {
-                t && (this['skipServerData'] = true, window.core && window.core.connect && window.core.connect(t));
+                t && (this.skipServerData = true, window.core && window.core.connect && window.core.connect(t));
             },
             'gameServerReconnect': function() {
-                window.MC && window.MC['reconnect'] ? window.MC['reconnect']() : window.master && window.master['reconnect'] && window.master['reconnect']();
+                window.MC && window.MC.reconnect ? window.MC.reconnect() : window.master && window.master.reconnect && window.master.reconnect();
             },
             'gameServerJoin': function(t) {
-                var e = this['recreateWS'](t);
-                e && (this['skipServerData'] = true, this['gameServerConnect'](e));
+                var e = this.recreateWS(t);
+                e && (this.skipServerData = true, this['gameServerConnect'](e));
             },
             'connect': function() {
                 pauseVideos(), 
-				this['closeConnection']();
-				this['flushData']() ; 
+				this.closeConnection();
+				this.flushData() ; 
 				this.setParty(); 
 				console.log('[Legend mod Express] Connecting to server'), 
-				this['privateMode'] && this['privateIP'] ? this.socket = new WebSocket(this['privateIP']) : this.socket = new WebSocket(this['publicIP']), 
+				this.privateMode && this.privateIP ? this.socket = new WebSocket(this.privateIP) : this.socket = new WebSocket(this.publicIP), 
 				this.socket['ogarioWS'] = true, 
 				this.socket['binaryType'] = 'arraybuffer';
                 var t = this;
@@ -3636,11 +3641,11 @@ var thelegendmodproject = function(t, e, i) {
                     t['handleMessage'](e);
                 }
 				this.socket['onclose'] = function(e) {
-                    t['flushData']();
+                    t.flushData();
 					console.log('[Legend mod Express] Socket close', e);
                 }
 				this.socket['onerror'] = function(e) {
-                    t['flushData']();
+                    t.flushData();
 					console.log('[Legend mod Express] Socket error', e);
                 };
             },
@@ -3661,23 +3666,23 @@ var thelegendmodproject = function(t, e, i) {
                 }, 1000);
             },
             'switchServerMode': function() {
-                if (this["privateIP"]) {
-                    this["privateMode"] = !this["privateMode"];
+                if (this.privateIP) {
+                    this.privateMode= !this.privateMode;
                     if (this.isSocketOpen()) {
                         this["closeConnection"]();
                         toastr["error"]("Zamkni\u0119to po\u0142\u0105czenie z serwerem!");
                     }
-                    if (this["privateMode"]) {
+                    if (this.privateMode) {
                         toastr["info"]("Prze\u0142\u0105czono na serwer prywatny!");
                         $(".party-panel").show();
                     } else {
                         toastr["info"]("Prze\u0142\u0105czono na serwer publiczny!");
-                        $("#active-parties")["empty"]();
+                        $("#active-parties").empty();
                         $(".party-panel").hide();
                     }
                     this.onJoin();
                     if (i.play) {
-                        this["onPlayerSpawn"]();
+                        this.onPlayerSpawn();
                     }
                 }
             },
@@ -3687,10 +3692,10 @@ var thelegendmodproject = function(t, e, i) {
             "writeUint32": function(data, value) {
                 for (; !![];) {
                     if ((value & -128) == 0) {
-                        data["push"](value);
+                        data.push(value);
                         return;
                     } else {
-                        data["push"](value & 127 | 128);
+                        data.push(value & 127 | 128);
                         value = value >>> 7;
                     }
                 }
@@ -3713,7 +3718,7 @@ var thelegendmodproject = function(t, e, i) {
             'readMessage': function(t) {
                 switch (t.getUint8(0)) {
                     case 0:
-                        this['playerID'] = t.getUint32(1, true);
+                        this.playerID = t.getUint32(1, true);
                         break;
                     case 1:
                         this['sendPlayerUpdate']();
@@ -3761,20 +3766,21 @@ var thelegendmodproject = function(t, e, i) {
                 this['sendPlayerData'](13, 'lastSentCustomColor', ogarcopythelb.color);
             },
             'sendPlayerColor': function() {
-                this.isSocketOpen() && i['playerColor'] && this['sendBuffer'](this['strToBuff'](14, i['playerColor']));
+                this.isSocketOpen() && i.playerColor && this['sendBuffer'](this['strToBuff'](14, i.playerColor));
             },
             'sendPartyToken': function() {
                 this.setParty(), this['sendPlayerData'](15, 'lastSentPartyToken', this.partyToken);
             },
             'sendServerToken': function() {
-                this['sendPlayerData'](16, 'lastSentServerToken', this['serverToken']);
+                this['sendPlayerData'](16, 'lastSentServerToken', this.serverToken);
             },
             'sendServerJoin': function() {
-                this['sendServerToken'](), this.sendPlayerJoin();
+                this.sendServerToken(); 
+				this.sendPlayerJoin();
             },
             'sendServerRegion': function() {
-                if (this['region']) {
-                    var t = this['region'].split('-');
+                if (this.region) {
+                    var t = this.region.split('-');
                     if (this.isSocketOpen())
 					{
 						this['sendBuffer'](this['strToBuff'](17, t[0]));
@@ -3799,13 +3805,13 @@ var thelegendmodproject = function(t, e, i) {
                 this.isSocketOpen() && this['sendBuffer'](this['strToBuff'](18, t));
             },
             'sendServerData': function() {
-                this['skipServerData'] ? this['skipServerData'] = false : (this['region'] = $('#region').val(), this.gameMode = $('#gamemode').val(), this['sendServerRegion'](), this['sendServerGameMode']());
+                this.skipServerData ? this.skipServerData = false : (this.region = $('#region').val(), this.gameMode = $('#gamemode').val(), this.sendServerRegion(), this.sendServerGameMode());
             },
             'sendPartyData': function() {
-                this['sendPlayerClanTag'](), this['sendPartyToken'](), this['sendServerToken'](), this['sendPlayerNick']();
+                this.sendPlayerClanTag(), this.sendPartyToken(), this.sendServerToken(), this.sendPlayerNick();
             },
             'sendPlayerUpdate': function() {
-                if (this.isSocketOpen() && i.play && this['playerID'] && i['playerColor']) {
+                if (this.isSocketOpen() && i.play && this.playerID && i.playerColor) {
                     function t(t) {
                         for (var e = 0; e < t.length; e++) s.setUint16(o, t.charCodeAt(e), true), o += 2;
                         s.setUint16(o, 0, true), o += 2;
@@ -3813,36 +3819,36 @@ var thelegendmodproject = function(t, e, i) {
                     var e = 41;
                     e += 2 * ogarcopythelb.nick.length, e += 2 * ogarcopythelb.skinURL.length;
                     var s = this.createView(e);
-                    s.setUint8(0, 20), s.setUint32(1, this['playerID'], true);
+                    s.setUint8(0, 20), s.setUint32(1, this.playerID, true);
                     var o = 5;
-                    t(ogarcopythelb.nick), t(ogarcopythelb.skinURL), t(ogarcopythelb.color), t(i['playerColor']), this['sendBuffer'](s);
+                    t(ogarcopythelb.nick), t(ogarcopythelb.skinURL), t(ogarcopythelb.color), t(i.playerColor), this['sendBuffer'](s);
                 }
             },
             'sendPlayerPosition': function() {
-                if (this.isSocketOpen() && i.play && this["playerID"]) {
+                if (this.isSocketOpen() && i.play && this.playerID) {
                     var t = this.createView(17);
                     t.setUint8(0, 30);
-                    t.setUint32(1, this["playerID"], true);
-                    t["setInt32"](5, this["getPlayerX"](), true);
-                    t["setInt32"](9, this["getPlayerY"](), true);
-                    if (void 0 !== i["playerMass"]) {
-                        t.setUint32(13, i["playerMass"], true);
+                    t.setUint32(1, this.playerID, true);
+                    t.setInt32(5, this.getPlayerX(), true);
+                    t.setInt32(9, this.getPlayerY(), true);
+                    if (void 0 !== i.playerMass) {
+                        t.setUint32(13, i.playerMass, true);
                     } else {
-                        t.setUint32(13, this["playerMass"], true);
+                        t.setUint32(13, this.playerMass, true);
                     }
                     this["sendBuffer"](t);
                 }
             },
             'checkPlayerID': function(t) {
                 if (t)
-                    for (var e = 0; e < this['teamPlayers'].length; e++)
-                        if (this['teamPlayers'][e]['id'] == t) return e;
+                    for (var e = 0; e < this.teamPlayers.length; e++)
+                        if (this.teamPlayers[e].id == t) return e;
                 return null;
             },
             'checkPlayerChat': function(t) {
                 if (t)
-                    for (var e = 0; e < this['teamPlayers'].length; e++)
-                        if (this['teamPlayers'][e]['id'] == t) return e;
+                    for (var e = 0; e < this.teamPlayers.length; e++)
+                        if (this.teamPlayers[e].id == t) return e;
                 return null;
             },			
             'updateTeamPlayer': function(t) {
@@ -3853,7 +3859,7 @@ var thelegendmodproject = function(t, e, i) {
                         if (0 == i) {
                             break;
                         }
-                        paginationStr = paginationStr + String["fromCharCode"](i);
+                        paginationStr = paginationStr + String.fromCharCode(i);
                         s = s + 2;
                     }
                     return s = s + 2, paginationStr;
@@ -3861,192 +3867,192 @@ var thelegendmodproject = function(t, e, i) {
                 var i = t.getUint32(1, true);
                 var s = 5;
                 var o = e();
-                var a = this["checkSkinURL"](e());
+                var a = this.checkSkinURL(e());
                 var n = e();
                 var r = e();
-                var l = ":party" === this["gameMode"] ? o + r : o;
-                var h = this["checkPlayerID"](i);
+                var l = ":party" === this.gameMode ? o + r : o;
+                var h = this.checkPlayerID(i);
                 if (null !== h) {
-                    this["teamPlayers"][h].nick = o;
-                    this["teamPlayers"][h].skinID = l;
-                    this["teamPlayers"][h].skinURL = a;
-                    this["teamPlayers"][h].setColor(r, n);
+                    this.teamPlayers[h].nick = o;
+                    this.teamPlayers[h].skinID = l;
+                    this.teamPlayers[h].skinURL = a;
+                    this.teamPlayers[h].setColor(r, n);
                 } else {
                     var c = new function(envId, cb, i, s) {
-                        this["id"] = envId;
+                        this.id = envId;
                         this.nick = cb;
                         this.skinID = i;
                         this.skinURL = s;
                         this["x"] = 0;
                         this["y"] = 0;
-                        this["lastX"] = 0;
-                        this["lastY"] = 0;
+                        this.lastX = 0;
+                        this.lastY= 0;
                         this.mass = 0;
                         this.clanTag = "";
-                        this["color"] = null;
-                        this["customColor"] = g["miniMapTeammatesColor"];
-                        this["alive"] = false;
+                        this.color = null;
+                        this.customColor = g.miniMapTeammatesColor;
+                        this.alive = false;
                         this.updateTime = null;
                         this.pi2 = 2 * Math.PI;
                         this.setColor = function(i, inRevIdx) {
-                            this["color"] = i;
+                            this.color = i;
                             if (7 == inRevIdx.length) {
-                                this["customColor"] = inRevIdx;
+                                this.customColor = inRevIdx;
                             }
                         };
-                        this["drawPosition"] = function(options, margin, mult, startcode, endcode, value) {
-                            if (!(!this["alive"] || startcode && endcode && this["id"] != endcode)) {
-                                this["lastX"] = (29 * this["lastX"] + this["x"]) / 30;
-                                this["lastY"] = (29 * this["lastY"] + this["y"]) / 30;
-                                var w = (this["lastX"] + margin) * mult;
-                                var h = (this["lastY"] + margin) * mult;
+                        this.drawPosition = function(options, margin, mult, startcode, endcode, value) {
+                            if (!(!this.alive || startcode && endcode && this.id != endcode)) {
+                                this.lastX = (29 * this.lastX + this["x"]) / 30;
+                                this.lastY= (29 * this.lastY+ this["y"]) / 30;
+                                var w = (this.lastX + margin) * mult;
+                                var h = (this.lastY+ margin) * mult;
                                 if (this.nick.length > 0) {
-                                    options["font"] = g["miniMapNickFontWeight"] + " " + g["miniMapNickSize"] + "px " + g["miniMapNickFontFamily"];
-                                    options["textAlign"] = "center";
-                                    if (g["miniMapNickStrokeSize"] > 0) {
-                                        options["lineWidth"] = g["miniMapNickStrokeSize"];
-                                        options["strokeStyle"] = g["miniMapNickStrokeColor"];
-                                        options["strokeText"](this.nick, w, h - (2 * g["miniMapTeammatesSize"] + 2));
+                                    options.font = g.miniMapNickFontWeight + " " + g.miniMapNickSize + "px " + g.miniMapNickFontFamily;
+                                    options.textAlign = "center";
+                                    if (g.miniMapNickStrokeSize > 0) {
+                                        options.lineWidth = g.miniMapNickStrokeSize;
+                                        options.strokeStyle = g.miniMapNickStrokeColor;
+                                        options.strokeText(this.nick, w, h - (2 * g.miniMapTeammatesSize+ 2));
                                     }
-                                    options["fillStyle"] = g["miniMapNickColor"];
-                                    options["fillText"](this.nick, w, h - (2 * g["miniMapTeammatesSize"] + 2));
+                                    options.fillStyle = g.miniMapNickColor;
+                                    options.fillText(this.nick, w, h - (2 * g.miniMapTeammatesSize+ 2));
                                 }
-                                options["beginPath"]();
-                                options.arc(w, h, g["miniMapTeammatesSize"], 0, this.pi2, false);
-                                options["closePath"]();
-                                if (v["oneColoredTeammates"]) {
-                                    options["fillStyle"] = g["miniMapTeammatesColor"];
+                                options.beginPath();
+                                options.arc(w, h, g.miniMapTeammatesSize, 0, this.pi2, false);
+                                options.closePath();
+                                if (v.oneColoredTeammates) {
+                                    options.fillStyle = g.miniMapTeammatesColor;
                                 } else {
-                                    options["fillStyle"] = value;
+                                    options.fillStyle = value;
                                 }
                                 options.fill();
                             }
                         };
                     }(i, o, l, a);
                     c.setColor(r, n);
-                    this["teamPlayers"].push(c);
+                    this.teamPlayers.push(c);
                 }
-                this["cacheCustomSkin"](o, r, a);
+                this.cacheCustomSkin(o, r, a);
             },
             'updateTeamPlayerPosition': function(t) {
                 var e = t.getUint32(1, true),
-                    i = this['checkPlayerID'](e);
+                    i = this.checkPlayerID(e);
                 if (null !== i) {
                     var s = t.getInt32(5, true),
                         o = t.getInt32(9, true),
                         a = t.getUint32(13, true);
                     if (a > 360000) return;
-                    var n = this['teamPlayers'][i];
-                    n['x'] = s, n['y'] = o, n['mass'] = a, n['alive'] = true, n['updateTime'] = Date.now(), this['targeting'] && this['targetID'] && e == this['targetID'] && this['updateTarget'](n.nick, n.skinURL, s, o, a, n.color);
+                    var n = this.teamPlayers[i];
+                    n['x'] = s, n['y'] = o, n.mass = a, n.alive = true, n['updateTime'] = Date.now(), this.targeting && this.targetID && e == this.targetID && this.updateTarget(n.nick, n.skinURL, s, o, a, n.color);
                 }
             },
             'updateTeamPlayers': function() {
-                this["sendPlayerPosition"](), this["chatUsers"] = {}, this["top5"] = [];
+                this.sendPlayerPosition(), this.chatUsers = {}, this.top5 = [];
                 var t = 0;
-                for (; t < this["teamPlayers"].length; t++) {
-                    var e = this["teamPlayers"][t];
-                    if (e["alive"] && Date["now"]() - e.updateTime >= 2000 || 0 == e.mass) {
-                        e["alive"] = false;
-                        if (this["targeting"] && this["targetID"] && e["id"] == this["targetID"]) {
-                            this["setTargetStatus"](2);
+                for (; t < this.teamPlayers.length; t++) {
+                    var e = this.teamPlayers[t];
+                    if (e.alive && Date.now() - e.updateTime >= 2000 || 0 == e.mass) {
+                        e.alive = false;
+                        if (this.targeting && this.targetID && e.id == this.targetID) {
+                            this.setTargetStatus(2);
                         }
                     }
-                    if (e["alive"]) {
-                        this["top5"].push({
-                            "id": e["id"],
+                    if (e.alive) {
+                        this.top5.push({
+                            "id": e.id,
                             "nick": e.nick,
                             "x": e["x"],
                             "y": e["y"],
                             "mass": e.mass,
-                            "color": e["color"],
+                            "color": e.color,
                             "skin": e.skinURL
                         });
-                        if (!this["isChatUserMuted"](e["id"])) {
-                            this["addChatUser"](e["id"], e.nick);
+                        if (!this.isChatUserMuted(e.id)) {
+                            this.addChatUser(e.id, e.nick);
                         }
                     }
                 }
-                this["top5"]["sort"](function(row, conf) {
+                this.top5["sort"](function(row, conf) {
                     return conf.mass - row.mass;
-                }), this["displayTop5"]();
+                }), this.displayTop5();
 
             },
             'updateParties': function(t) {
-                this['parties'] = [];
+                this.parties = [];
                 for (var e = t.getUint8(1), i = 2, s = 0; s < e; s++) {
                     for (var o = '';;) {
                         var a = t.getUint16(i, true);
                         if (0 == a) break;
-                        o += String['fromCharCode'](a), i += 2;
+                        o += String.fromCharCode(a), i += 2;
                     }
-                    i += 2, this['parties'].push(o);
+                    i += 2, this.parties.push(o);
                 }
             },
             'readChatMessage': function(t) {
                 if (!v['disableChat']) {
-                    var e = new Date()['toTimeString']().replace(/^(\d{2}:\d{2}).*/, '$1'),
+                    var e = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1'),
                         i = t.getUint8(1),
                         s = t.getUint32(2, true),
                         o = t.getUint32(6, true);
-                    if (!(this['isChatUserMuted'](s) || 0 != o && o != this['playerID'] && s != this['playerID'])) {
+                    if (!(this['isChatUserMuted'](s) || 0 != o && o != this.playerID && s != this.playerID)) {
                         for (var a = '', n = 10; n < t.byteLength; n += 2) {
                             var r = t.getUint16(n, true);
                             if (0 == r) break;
-                            a += String['fromCharCode'](r);
+                            a += String.fromCharCode(r);
                         }
-                        this['displayChatMessage'](e, i, s, a);
+                        this.displayChatMessage(e, i, s, a);
                     }
                 }
             },
             'sendChatMessage': function(t, e) {
                 //console.log(t);console.log(e);
-                if (!(Date.now() - this['lastMessageSentTime'] < 500 || 0 == e.length || 0 == ogarcopythelb.nick.length) && this.isSocketOpen()) {
+                if (!(Date.now() - this.lastMessageSentTime < 500 || 0 == e.length || 0 == ogarcopythelb.nick.length) && this.isSocketOpen()) {
                     e = ogarcopythelb.nick + ': ' + e;
                     var i = this.createView(10 + 2 * e.length);
-                    i.setUint8(0, 100), i.setUint8(1, t), i.setUint32(2, this['playerID'], true), i.setUint32(6, 0, true);
+                    i.setUint8(0, 100), i.setUint8(1, t), i.setUint32(2, this.playerID, true), i.setUint32(6, 0, true);
                     for (var s = 0; s < e.length; s++) i.setUint16(10 + 2 * s, e.charCodeAt(s), true);
-                    this['sendBuffer'](i), this['lastMessageSentTime'] = Date.now();
+                    this['sendBuffer'](i), this.lastMessageSentTime = Date.now();
                 }
             },
             'prepareCommand': function(t) {
-                return t.replace('%currentSector%', this['currentSector']);
+                return t.replace('%currentSector%', this.currentSector);
             },
             'sendCommand': function(t) {
-                var e = this['prepareCommand'](c['comm' + t]);
+                var e = this.prepareCommand(c['comm' + t]);
                 this['sendChatMessage'](102, e);
             },
             'addChatUser': function(t, e) {
-                this['chatUsers'][t] = e;
+                this.chatUsers[t] = e;
             },
             'getChatUserNick': function(t) {
-                return this['chatUsers'].hasOwnProperty(t) ? this['chatUsers'][t] : '';
+                return this.chatUsers.hasOwnProperty(t) ? this.chatUsers[t] : '';
             },
             'muteChatUser': function(t) {
-                if (t && !this['isChatUserMuted'](t)) {
-                    var e = this['getChatUserNick'](t);
-                    this['chatMutedUsers'][t] = e, this['chatMutedUserIDs'].push(t), toastr['error'](h['userMuted'].replace('%user%', '<strong>' + this['escapeHTML'](e) + '</strong>') + ' <button data-user-id=\"' + t + '\" class=\"btn btn-xs btn-green btn-unmute-user\">' + h['unmute'] + '</button>');
+                if (t && !this.isChatUserMuted(t)) {
+                    var e = this.getChatUserNick(t);
+                    this.chatMutedUsers[t] = e, this.chatMutedUserIDs.push(t), toastr['error'](h['userMuted'].replace('%user%', '<strong>' + this.escapeHTML(e) + '</strong>') + ' <button data-user-id=\"' + t + '\" class=\"btn btn-xs btn-green btn-unmute-user\">' + h['unmute'] + '</button>');
                 }
             },
             'unmuteChatUser': function(t) {
                 if (t) {
-                    var e = this["chatMutedUserIDs"].indexOf(t);
+                    var e = this.chatMutedUserIDs.indexOf(t);
                     if (-1 != e) {
-                        this["chatMutedUserIDs"]["splice"](e, 1);
-                        toastr["info"](h["userUnmuted"].replace("%user%", "<strong>" + this["escapeHTML"](this["chatMutedUsers"][t]) + "</strong>"));
-                        delete this["chatMutedUsers"][t];
+                        this.chatMutedUserIDs.splice(e, 1);
+                        toastr["info"](h["userUnmuted"].replace("%user%", "<strong>" + this.escapeHTML(this.chatMutedUser[t]) + "</strong>"));
+                        delete this.chatMutedUser[t];
                     }
                 }
             },
             'isChatUserMuted': function(t) {
-                return -1 != this['chatMutedUserIDs']['indexOf'](t);
+                return -1 != this.chatMutedUserIDs.indexOf(t);
             },
             'parseMessage': function(t) {
                 var e = /\[img\](https?:\/\/i\.(?:imgur|hizliresim)\.com\/\w{6,8}\.(?:jpg|jpeg|png|gif)\??\d*)\[\/img\]/i;
-                if (e.test(t)) return v['showChatImages'] ? '<img src=\"' + t['match'](e)[1].replace('http:', 'https:') + '\" style=\"width:100%;border:none;\">' : '';
+                if (e.test(t)) return v.showChatImages ? '<img src=\"' + t.match(e)[1].replace('http:', 'https:') + '\" style=\"width:100%;border:none;\">' : '';
                 var i = /\[yt\]([\w-]{11})\[\/yt\]/i;
-                if (i.test(t)) return v['showChatVideos'] ? '<iframe type=\"text/html\" width=\"100%\" height=\"auto\" src=\"https://www.youtube.com/embed/' + t['match'](i)[1] + '?autoplay=1&amp;vq=tiny\" frameborder=\"0\" />' : '';
-                var s = this['escapeHTML'](t);
-                return v['chatEmoticons'] && (s = this['parseEmoticons'](s)), s;
+                if (i.test(t)) return v.showChatVideos ? '<iframe type=\"text/html\" width=\"100%\" height=\"auto\" src=\"https://www.youtube.com/embed/' + t.match(i)[1] + '?autoplay=1&amp;vq=tiny\" frameborder=\"0\" />' : '';
+                var s = this.escapeHTML(t);
+                return v['chatEmoticons'] && (s = this.parseEmoticons(s)), s;
             },
             'parseEmoticons': function(t) {
                 /*return String(t).replace(/\&lt\;3/g, '<3').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\))/g, function(t) {
@@ -4060,23 +4066,23 @@ var thelegendmodproject = function(t, e, i) {
             },
             'displayChatMessage': function(t, e, i, o) {
                 if (0 != o.length) {
-                    var a = o.split(': ', 1)['toString'](),
+                    var a = o.split(': ', 1).toString(),
                         n = this['parseMessage'](o.replace(a + ': ', ''));
                     if (!(0 == a.length || a.length > 15 || 0 == n.length)) {
                         var r = '';
-                        if (0 != i && i != this['playerID'] && (this['addChatUser'](i, a), r = '<a href=\"#\" data-user-id=\"' + i + '\" class=\"mute-user ogicon-user-minus\"></a> '), a = this['escapeHTML'](a), 101 == e) {
-                            if (v['showChatBox']) return $('#chat-box').append('<div class=\"message\"><span class=\"message-time\">[' + t + '] </span>' + r + '<span class=\"message-nick\">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'), $('#chat-box')['perfectScrollbar']('update'), $('#chat-box')['animate']({
-                                'scrollTop': $('#chat-box')['prop']('scrollHeight')
-                            }, 500), void(v['chatSounds'] && this['playSound'](this['messageSound']));
-                            v['hideChat'] || (toastr['success']('<span class=\"message-nick\">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r), v['chatSounds'] && this['playSound'](this['messageSound'])), this['chatHistory'].push({
+                        if (0 != i && i != this.playerID && (this.addChatUser(i, a), r = '<a href=\"#\" data-user-id=\"' + i + '\" class=\"mute-user ogicon-user-minus\"></a> '), a = this.escapeHTML(a), 101 == e) {
+                            if (v.showChatBox) return $('#chat-box').append('<div class=\"message\"><span class=\"message-time\">[' + t + '] </span>' + r + '<span class=\"message-nick\">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'), $('#chat-box').perfectScrollbar('update'), $('#chat-box')['animate']({
+                                'scrollTop': $('#chat-box').prop('scrollHeight')
+                            }, 500), void(v.chatSounds && this.playSound(this.messageSound));
+                            v.hideChat || (toastr['success']('<span class=\"message-nick\">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r), v.chatSounds && this.playSound(this.messageSound)), this.chatHistory.push({
                                 'nick': a,
                                 'message': n
-                            }), this['chatHistory'].length > 15 && this['chatHistory']['shift']();
+                            }), this.chatHistory.length > 15 && this.chatHistory.shift();
                         } else if (102 == e) {
-                            if (v['showChatBox']) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + t + '] </span>' + r + '<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'), $('#chat-box')['perfectScrollbar']('update'), $('#chat-box')['animate']({
-                                'scrollTop': $('#chat-box')['prop']('scrollHeight')
-                            }, 500), void(v['chatSounds'] && this['playSound'](this['commandSound']));
-                            v['hideChat'] || (toastr['warning']('<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r), v['chatSounds'] && this['playSound'](this['commandSound']));
+                            if (v.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + t + '] </span>' + r + '<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'), $('#chat-box').perfectScrollbar('update'), $('#chat-box')['animate']({
+                                'scrollTop': $('#chat-box').prop('scrollHeight')
+                            }, 500), void(v.chatSounds && this.playSound(this.commandSound));
+                            v.hideChat || (toastr['warning']('<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r), v.chatSounds && this.playSound(this.commandSound));
                         } else $('#messages').append(o);
                     }
                 }
@@ -4084,7 +4090,7 @@ var thelegendmodproject = function(t, e, i) {
             'displayUserList': function(t, e, i, s, o) {
                 var a = '';
                 if (Object['keys'](t).length) {
-                    for (var n in a += '<ol class=\"user-list\">', t) t.hasOwnProperty(n) && (a += '<li><strong>' + this['escapeHTML'](t[n]) + '</strong> <button data-user-id=\"' + n + '\" class=\"btn btn-xs ' + i + '\">' + s + '</button></li>');
+                    for (var n in a += '<ol class=\"user-list\">', t) t.hasOwnProperty(n) && (a += '<li><strong>' + this.escapeHTML(t[n]) + '</strong> <button data-user-id=\"' + n + '\" class=\"btn btn-xs ' + i + '\">' + s + '</button></li>');
                     a += '</ol>';
                 } else a += h['none'];
                 toastr[o](a, e, {
@@ -4093,25 +4099,25 @@ var thelegendmodproject = function(t, e, i) {
                 });
             },
             'displayChatActiveUsers': function() {
-                this['displayUserList'](this['chatUsers'], h['activeUsers'], 'btn-red btn-mute-user', h['mute'], 'info');
+                this.displayUserList(this.chatUsers, h['activeUsers'], 'btn-red btn-mute-user', h['mute'], 'info');
             },
             'displayChatMutedUsers': function() {
-                this['displayUserList'](this['chatMutedUsers'], h['mutedUsers'], 'btn-green btn-unmute-user', h['unmute'], 'error');
+                this.displayUserList(this.chatMutedUsers, h['mutedUsers'], 'btn-green btn-unmute-user', h['unmute'], 'error');
             },
             'preloadChatSounds': function() {
-                this['setMessageSound'](), this['setCommandSound'](), this['setvirusSound']();
+                this.setMessageSound(), this.setCommandSound(), this.setvirusSound();
             },
             'setChatSoundsBtn': function() {
-                v['chatSounds'] ? $('.chat-sound-notifications').removeClass('ogicon-volume-mute2').addClass('ogicon-volume-high') : $('.chat-sound-notifications').removeClass('ogicon-volume-high').addClass('ogicon-volume-mute2');
+                v.chatSounds ? $('.chat-sound-notifications').removeClass('ogicon-volume-mute2').addClass('ogicon-volume-high') : $('.chat-sound-notifications').removeClass('ogicon-volume-high').addClass('ogicon-volume-mute2');
             },
             'setMessageSound': function() {
-                this['messageSound'] = this['setSound'](v['messageSound']);
+                this.messageSound = this.setSound(v.messageSound);
             },
             'setCommandSound': function() {
-                this['commandSound'] = this['setSound'](v['commandSound']);
+                this.commandSound = this.setSound(v.commandSound);
             },
             'setvirusSound': function() {
-                this['virusSoundurl'] = this['setSound'](v['virusSoundurl']);
+                this.virusSoundurl = this.setSound(v.virusSoundurl);
             },			
             'setSound': function(t) {
                 return t ? new Audio(t) : null;
@@ -4135,40 +4141,40 @@ var thelegendmodproject = function(t, e, i) {
             }
         },			
             'setTargeting': function() {
-                this['targetID'] && (this['targeting'] = !this['targeting'], i['targeting'] = this['targeting'], this['setTargetingInfo']());
+                this.targetID && (this.targeting = !this.targeting, i.targeting = this.targeting, this.setTargetingInfo());
             },
             'setTargetingInfo': function() {
-                this['targeting'] ? ($('#set-targeting').addClass('active'), $('#target-status').show(), 2 != this['targetStatus'] && $('#target-summary').show()) : ($('#set-targeting').removeClass('active'), $('#target-summary, #target-status').hide());
+                this.targeting ? ($('#set-targeting').addClass('active'), $('#target-status').show(), 2 != this.targetStatus && $('#target-summary').show()) : ($('#set-targeting').removeClass('active'), $('#target-summary, #target-status').hide());
             },
             'cancelTargeting': function() {
-                this['setTargetStatus'](0);
+                this.setTargetStatus(0);
             },
             'setPrivateMiniMap': function() {
-                this['targetID'] && (this['privateMiniMap'] = !this['privateMiniMap'], this['privateMiniMap'] ? $('#set-private-minimap').addClass('active') : $('#set-private-minimap').removeClass('active'));
+                this.targetID && (this.privateMiniMap = !this.privateMiniMap, this.privateMiniMap ? $('#set-private-minimap').addClass('active') : $('#set-private-minimap').removeClass('active'));
             },
             'setTarget': function(t) {
-                var e = this['checkPlayerID'](t);
+                var e = this.checkPlayerID(t);
                 if (null !== e) {
-                    var i = this['teamPlayers'][e];
-                    if (this['targetID'] = i['id'], this['updateTarget'](i.nick, i.skinURL, i['x'], i['y'], i['mass'], i.color), !i['alive']) return void this['setTargetStatus'](2);
-                    this['setTargetStatus'](1);
-                } else this['setTargetStatus'](0);
+                    var i = this.teamPlayers[e];
+                    if (this.targetID = i.id, this.updateTarget(i.nick, i.skinURL, i['x'], i['y'], i.mass, i.color), !i.alive) return void this.setTargetStatus(2);
+                    this.setTargetStatus(1);
+                } else this.setTargetStatus(0);
             },
             'setTargetStatus': function(t) {
                 switch (t) {
                     case 0:
-                        this['targetStatus'] = 0, this['targetID'] = 0, this['targetNick'] = '', this['targetSkinURL'] = '', this['targeting'] = false, i['targeting'] = false, this['privateMiniMap'] = false, $('#target-skin, #target-nick, #target-summary').hide(), $("#target-hud").hide(), $('#target-status').show().text( h['targetNotSet'] ), $('#target-panel-hud a').removeClass('active'); //$('#target-status').show().text('[' + h['targetNotSet'] + ']'), $('#target-panel-hud a').removeClass('active');
+                        this.targetStatus = 0, this.targetID = 0, this.targetNick = '', this.targetSkinURL = '', this.targeting = false, i.targeting = false, this.privateMiniMap = false, $('#target-skin, #target-nick, #target-summary').hide(), $("#target-hud").hide(), $('#target-status').show().text( h['targetNotSet'] ), $('#target-panel-hud a').removeClass('active'); //$('#target-status').show().text('[' + h['targetNotSet'] + ']'), $('#target-panel-hud a').removeClass('active');
                         break;
                     case 1:
-                        this['targetStatus'] = 1, this['targeting'] || (this['targeting'] = true, i['targeting'] = true, $("#target-hud").show(), this['setTargetingInfo']()), $('#target-skin, #target-nick, #target-status, #target-summary').show();
+                        this.targetStatus = 1, this.targeting || (this.targeting = true, i.targeting = true, $("#target-hud").show(), this.setTargetingInfo()), $('#target-skin, #target-nick, #target-status, #target-summary').show();
                         break;
                     case 2:
-                        this['targetStatus'] = 2, $('#target-summary').hide(), $("#target-hud").show(), $('#target-status').show().text('[' + h['targetDead'] + ']'), i['resetTargetPosition']();
+                        this.targetStatus = 2, $('#target-summary').hide(), $("#target-hud").show(), $('#target-status').show().text('[' + h['targetDead'] + ']'), i.resetTargetPosition();
                 }
             },
             'changeTarget': function() {
-                for (var t = this['checkPlayerID'](this['targetID']), e = null, i = 0; i < this['teamPlayers'].length; i++)
-                    if (this['teamPlayers'][i]['alive']) {
+                for (var t = this.checkPlayerID(this.targetID), e = null, i = 0; i < this.teamPlayers.length; i++)
+                    if (this.teamPlayers[i].alive) {
                         if (null === t) {
                             t = i;
                             break;
@@ -4178,125 +4184,152 @@ var thelegendmodproject = function(t, e, i) {
                             e = i;
                             break;
                         }
-                    } null !== e && (t = e), null !== t ? this['setTarget'](this['teamPlayers'][t]['id']) : this['setTargetStatus'](0);
+                    } null !== e && (t = e), null !== t ? this.setTarget(this.teamPlayers[t].id) : this.setTargetStatus(0);
             },
             'updateTarget': function(t, e, o, a, n, r) {
-                i['setTargetPosition'](o, a), this['targetNick'] !== t && (this['targetNick'] = t, $('#target-nick').html(this['escapeHTML'](t))), $('#target-skin').css('background-color', r), e && this['targetSkinURL'] !== e && (this['customSkinsCache'].hasOwnProperty(e + '_cached') ? ($('#target-skin img')['attr']('src', e), this['targetSkinURL'] = e) : $('#target-skin img')['attr']('src', 'https://jimboy3100.github.io/banners/static/img/blank.png')), $('#target-status').text('[' + this['shortMassFormat'](n) + ']');
-                var l = this['calculateMapSector'](o, a),
-                    c = h['targetDistance'] + ': <span class=\"hud-main-color\">' + i['targetDistance'] + ' [' + l + ']</span>';
-                i.play && (c += ' | ' + h['targetMass'] + ': <span class=\"hud-main-color\">' + this['shortMassFormat'](n + i['playerMass']) + '</span>'), $('#target-summary').html(c), 1 != this['targetStatus'] && this['setTargetStatus'](1);
+                i.setTargetPosition(o, a), this.targetNick !== t && (this.targetNick = t, $('#target-nick').html(this.escapeHTML(t))), $('#target-skin').css('background-color', r), e && this.targetSkinURL !== e && (this.customSkinsCache.hasOwnProperty(e + '_cached') ? ($('#target-skin img').attr('src', e), this.targetSkinURL = e) : $('#target-skin img').attr('src', 'https://jimboy3100.github.io/banners/static/img/blank.png')), $('#target-status').text('[' + this.shortMassFormat(n) + ']');
+                var l = this.calculateMapSector(o, a),
+                    c = h.targetDistance + ': <span class=\"hud-main-color\">' + i.targetDistance + ' [' + l + ']</span>';
+                i.play && (c += ' | ' + h['targetMass'] + ': <span class=\"hud-main-color\">' + this.shortMassFormat(n + i.playerMass) + '</span>'), $('#target-summary').html(c), 1 != this.targetStatus && this.setTargetStatus(1);
             },
             'updateQuest': function() {
-                this['showQuest'] && ':ffa' === this.gameMode && window.MC && window.MC['getQuestProgressLabel'] && (this['questHUD']['textContent'] = window.MC['getQuestProgressLabel']());
+                this.showQuest && ':ffa' === this.gameMode && window.MC && window.MC.getQuestProgressLabel && (this.questHUD.textContent= window.MC.getQuestProgressLabel());
             },
             'init': function() {
-                this['loadSettings'](), this['loadProfiles'](), this['setLang'](), this['setMenu'](), this['setUI'](), y && y.setTheme(), this['setShowQuickMenu'](), this['setShowSkinsPanel'](), this['setProfile'](), this['setMainButtons'](), this['setStreamMode'](), this['setHideSkinUrl'](), this['setMiniMap'](), this['setAutoResp'](), this['setDisableChat'](), this['setShowChatBox'](), this['setTop5'](), this['setTargetingHUD'](), this['setQuest'](), this['displayTime'](), this['setCenteredLb'](), this['setNormalLb'](), this['setFpsAtTop'](), this['displayStats'](), this['setBlockPopups'](), this['preloadChatSounds'](), this['setChatSoundsBtn']();
+                this.loadSettings(), 
+				this.loadProfiles(), 
+				this.setLang(), 
+				this.setMenu(), 
+				this.setUI(), 
+				y && y.setTheme(), 
+				this.setShowQuickMenu(), 
+				this.setShowSkinsPanel(), 
+				this.setProfile(), 
+				this.setMainButtons(), 
+				this.setStreamMode(), 
+				this.setHideSkinUrl(), 
+				this.setMiniMap(), 
+				this.setAutoResp(), 
+				this.setDisableChat(), 
+				this.setShowChatBox(), 
+				this.setTop5(), 
+				this.setTargetingHUD(), 
+				this.setQuest(), 
+				this.displayTime(), 
+				this.setCenteredLb(), 
+				this.setNormalLb(), 
+				this.setFpsAtTop(), 
+				this.displayStats(), 
+				this.setBlockPopups(), 
+				this.preloadChatSounds(), 
+				this.setChatSoundsBtn();
                 var t = this;
                 setInterval(function() {
-                    t['drawMiniMap']();
-                }, 33), setInterval(function() {
-                    t['updateTeamPlayers']();
-                }, this['updateInterval']);
+                    t.drawMiniMap();
+                }, 33), 
+				setInterval(function() {
+                    t.updateTeamPlayers();
+                }, this.updateInterval);
             }
         };
 
         function irenderfromagario() {
-            this['txt'] = '',
-                this['txtCanvas'] = null,
-                this['txtCtx'] = null,
+            this.txt = '',
+                this.txtCanvas = null,
+                this.txtCtx = null,
                 this.color = '#FFFFFF',
-                this['stroke'] = false,
-                this['strokeWidth'] = 2,
-                this['strokeColor'] = '#000000',
-                this['font'] = '700 16px Ubuntu',
-                this['fontFamily'] = 'Ubuntu',
-                this['fontWeight'] = 700,
-                this['fontSize'] = 16,
-                this['margin'] = 3,
-                this['scale'] = 1,
-                this['quality'] = 1,
-                this['measuredWidth'] = 0,
-                this['redraw'] = false,
-                this['remeasure'] = false,
-                this['setTxt'] = function(ogariosettxtsetter) {
-                    this['txt'] !== ogariosettxtsetter && (this['txt'] = ogariosettxtsetter,
-                        this['redraw'] = true,
-                        this['remeasure'] = true);
+                this.stroke = false,
+                this.strokeWidth = 2,
+                this.strokeColor = '#000000',
+                this.font = '700 16px Ubuntu',
+                this.fontFamily = 'Ubuntu',
+                this.fontWeight = 700,
+                this.fontSize = 16,
+                this.margin = 3,
+                this.scale = 1,
+                this.quality = 1,
+                this.measuredWidth = 0,
+                this.redraw = false,
+                this.remeasure = false,
+                this.setTxt = function(ogariosettxtsetter) {
+                    this.txt !== ogariosettxtsetter && (this.txt = ogariosettxtsetter,
+                        this.redraw = true,
+                        this.remeasure = true);
                 },
-                this['setColor'] = function(ogariocolorsetter) {
+                this.setColor = function(ogariocolorsetter) {
                     this.color !== ogariocolorsetter && (this.color = ogariocolorsetter,
-                        this['redraw'] = true);
+                        this.redraw = true);
                 },
-                this['setStroke'] = function(ogariostrokesetter) {
-                    this['stroke'] !== ogariostrokesetter && (this['stroke'] = ogariostrokesetter,
-                        this['redraw'] = true);
+                this.setStroke = function(ogariostrokesetter) {
+                    this.stroke !== ogariostrokesetter && (this.stroke = ogariostrokesetter,
+                        this.redraw = true);
                 },
-                this['setStrokeWidth'] = function(ogariostrokewidthsetter) {
-                    this['stroke'] && this['strokeWidth'] != ogariostrokewidthsetter && (this['strokeWidth'] = ogariostrokewidthsetter,
-                        this['redraw'] = true,
-                        this['remeasure'] = true);
+                this.setStrokeWidth = function(ogariostrokewidthsetter) {
+                    this.stroke && this.strokeWidth != ogariostrokewidthsetter && (this.strokeWidth = ogariostrokewidthsetter,
+                        this.redraw = true,
+                        this.remeasure = true);
                 },
-                this['setStrokeColor'] = function(ogariostrokecolorsetter) {
-                    this['stroke'] && this['strokeColor'] !== ogariostrokecolorsetter && (this['strokeColor'] = ogariostrokecolorsetter,
-                        this['redraw'] = true);
+                this.setStrokeColor = function(ogariostrokecolorsetter) {
+                    this.stroke && this.strokeColor !== ogariostrokecolorsetter && (this.strokeColor = ogariostrokecolorsetter,
+                        this.redraw = true);
                 },
                 this.setFont = function() {
-                    this['font'] = this['fontWeight'] + ' ' + this['fontSize'] + 'px ' + this['fontFamily'];
+                    this.font = this.fontWeight + ' ' + this.fontSize + 'px ' + this.fontFamily;
                 },
-                this['setFontFamily'] = function(ogariofontfamilysetter) {
-                    this['fontFamily'] !== ogariofontfamilysetter && (this['fontFamily'] = ogariofontfamilysetter,
+                this.setFontFamily = function(ogariofontfamilysetter) {
+                    this.fontFamily !== ogariofontfamilysetter && (this.fontFamily = ogariofontfamilysetter,
                         this.setFont(),
-                        this['redraw'] = true,
-                        this['remeasure'] = true);
+                        this.redraw = true,
+                        this.remeasure = true);
                 },
                 this.setFontWeight = function(ogariofontweightsetter) {
-                    this['fontWeight'] != ogariofontweightsetter && (this['fontWeight'] = ogariofontweightsetter,
+                    this.fontWeight != ogariofontweightsetter && (this.fontWeight = ogariofontweightsetter,
                         this.setFont(),
-                        this['redraw'] = true,
-                        this['remeasure'] = true);
+                        this.redraw = true,
+                        this.remeasure = true);
                 },
-                this['setFontSize'] = function(ogariofontsizesetter) {
-                    this['fontSize'] != ogariofontsizesetter && (this['fontSize'] = ogariofontsizesetter,
-                        this['margin'] = ~~(0.2 * ogariofontsizesetter),
+                this.setFontSize = function(ogariofontsizesetter) {
+                    this.fontSize != ogariofontsizesetter && (this.fontSize = ogariofontsizesetter,
+                        this.margin = ~~(0.2 * ogariofontsizesetter),
                         this.setFont(),
-                        this['redraw'] = true);
+                        this.redraw = true);
                 },
-                this['setScale'] = function(ogarioscalesetter) {
-                    this['scale'] != ogarioscalesetter && (this['scale'] = ogarioscalesetter,
-                        this['redraw'] = true);
+                this.setScale = function(ogarioscalesetter) {
+                    this.scale != ogarioscalesetter && (this.scale = ogarioscalesetter,
+                        this.redraw = true);
                 },
-                this['createCanvas'] = function() {
-                    this['txtCanvas'] || (this['txtCanvas'] = document['createElement']('canvas'),
-                        this['txtCtx'] = this['txtCanvas']['getContext']('2d'),
-                        this['txtCtx']['ogarioCtx'] = true);
+                this.createCanvas = function() {
+                    this.txtCanvas || (this.txtCanvas = document.createElement('canvas'),
+                        this.txtCtx = this.txtCanvas.getContext('2d'),
+                        this.txtCtx.ogarioCtx = true);
                 },
-                this['setDrawing'] = function(ogarsetDrawinglabel1, ogarsetDrawinglabel2, ogarsetDrawinglabel3, ogarsetDrawinglabel4, ogarsetDrawinglabel5, ogarsetDrawinglabel6) {
-                    this['setColor'](ogarsetDrawinglabel1),
-                        this['setFontFamily'](ogarsetDrawinglabel2),
+                this.setDrawing = function(ogarsetDrawinglabel1, ogarsetDrawinglabel2, ogarsetDrawinglabel3, ogarsetDrawinglabel4, ogarsetDrawinglabel5, ogarsetDrawinglabel6) {
+                    this.setColor(ogarsetDrawinglabel1),
+                        this.setFontFamily(ogarsetDrawinglabel2),
                         this.setFontWeight(ogarsetDrawinglabel3),
-                        this['setStroke'](ogarsetDrawinglabel4),
-                        this['setStrokeWidth'](ogarsetDrawinglabel5),
-                        this['setStrokeColor'](ogarsetDrawinglabel6);
+                        this.setStroke(ogarsetDrawinglabel4),
+                        this.setStrokeWidth(ogarsetDrawinglabel5),
+                        this.setStrokeColor(ogarsetDrawinglabel6);
                 },
-                this['measureWidth'] = function() {
-                    return this['remeasure'] && (this['txtCtx']['font'] = this['fontWeight'] + ' 10px ' + this['fontFamily'],
-                            this['measuredWidth'] = this['txtCtx']['measureText'](this['txt'])['width'],
-                            this['remeasure'] = false),
-                        ~~(this['fontSize'] / 10 * this['measuredWidth']) + 2 * this['strokeWidth'];
+                this.measureWidth = function() {
+                    return this.remeasure && (this.txtCtx.font = this.fontWeight + ' 10px ' + this.fontFamily,
+                            this.measuredWidth = this.txtCtx.measureText(this.txt).width,
+                            this.remeasure = false),
+                        ~~(this.fontSize / 10 * this.measuredWidth) + 2 * this.strokeWidth;
                 },
                 this['drawTxt'] = function() {
-                    return this['createCanvas'](),
-                        this['redraw'] && (this['redraw'] = false,
-                            this['txtCanvas']['width'] = this['measureWidth'](),
-                            this['txtCanvas']['height'] = this['fontSize'] + this['margin'] * 2,
-                            this['txtCtx']['font'] = this['font'],
-                            this['txtCtx']['globalAlpha'] = 1,
-                            this['txtCtx']['lineWidth'] = this['strokeWidth'],
-                            this['txtCtx']['strokeStyle'] = this['strokeColor'],
-                            this['txtCtx']['fillStyle'] = this.color,
-                            this['stroke'] && this['txtCtx']['strokeText'](this['txt'], this['strokeWidth'], ~~(this['fontSize'] + this['margin'] * 0.5)),
-                            this['txtCtx']['fillText'](this['txt'], this['strokeWidth'], ~~(this['fontSize'] + this['margin'] * 0.5))),
-                        this['txtCanvas'];
+                    return this.createCanvas(),
+                        this.redraw && (this.redraw = false,
+                            this.txtCanvas.width = this.measureWidth(),
+                            this.txtCanvas.height = this.fontSize + this.margin * 2,
+                            this.txtCtx.font = this.font,
+                            this.txtCtx.globalAlpha = 1,
+                            this.txtCtx.lineWidth = this.strokeWidth,
+                            this.txtCtx.strokeStyle = this.strokeColor,
+                            this.txtCtx.fillStyle = this.color,
+                            this.stroke && this.txtCtx.strokeText(this.txt, this.strokeWidth, ~~(this.fontSize + this.margin * 0.5)),
+                            this.txtCtx.fillText(this.txt, this.strokeWidth, ~~(this.fontSize + this.margin * 0.5))),
+                        this.txtCanvas;
                 };
         }
         window.legendmod3 = ogarminimapdrawer;
@@ -4584,7 +4617,7 @@ var thelegendmodproject = function(t, e, i) {
 					this.mass = ~~((200 - this.mass) / 14);										
 				}
 				if(v.virusSound && this.lastMass && this.mass < this.lastMass) {
-					void ogarminimapdrawer.playSound(ogarminimapdrawer.setSound(v['virusSoundurl']));
+					void ogarminimapdrawer.playSound(ogarminimapdrawer.setSound(v.virusSoundurl));
 					}
 					this.massTxt = this.mass.toString();											
 			}
@@ -4752,7 +4785,7 @@ var thelegendmodproject = function(t, e, i) {
                                 )
                             }
                             style.lineTo(this.x, this.y + this.size + 3);
-                        }else style.arc(this.x, this.y, y, 0x0, this.pi2, false);
+                        }else style.arc(this.x, this.y, y, 0, this.pi2, false);
 
                         style.closePath();
 
@@ -4987,13 +5020,13 @@ var thelegendmodproject = function(t, e, i) {
             'clientKey': null,
             'connectionOpened': false,
             'accessTokenSent': false,
-            'clientVersion': 0x76c0,
+            'clientVersion': 30400,
             'clientVersionString': '3.4.0',
             'time': Date.now(),
             'serverTime': 0,
             'serverTimeDiff': 0,
             'loggedInTime': 0,
-            'mapSize': 0x373e,
+            'mapSize': 14142,
             'mapOffset': 7071,
             'mapOffsetX': 0,
             'mapOffsetY': 0,
@@ -5085,15 +5118,15 @@ var thelegendmodproject = function(t, e, i) {
             'connect': function(t) {
                 console.log('[Legend mod Express] Connecting to game server:', t);
                 var i = this;
-                this['closeConnection'](); 
-				this['flushCellsData']();
-				this['protocolKey'] = null; 
+                this.closeConnection(); 
+				this.flushCellsData();
+				this.protocolKey = null; 
 				this.clientKey = null;
-				this['accessTokenSent'] = false;
+				this.accessTokenSent = false;
 				this.connectionOpened = false;
-				this['mapOffsetFixed'] = false; 
+				this.mapOffsetFixed= false; 
 				this['leaderboard'] = [];
-				this['ws'] = t;
+				this.ws = t;
 				this.socket = new WebSocket(t); 
 				this.socket['binaryType'] = 'arraybuffer'; 
 				this.socket['onopen'] = function() {
@@ -5108,10 +5141,10 @@ var thelegendmodproject = function(t, e, i) {
 				this.socket['onclose'] = function(t) {
                     i['onClose'](t);
                 };
-				ogarminimapdrawer['getWS'](this['ws']);
+				ogarminimapdrawer['getWS'](this.ws);
 				ogarminimapdrawer['sendServerJoin']();
 				ogarminimapdrawer['sendServerData']();
-				ogarminimapdrawer['displayLeaderboard']('');
+				ogarminimapdrawer.displayLeaderboard('');
 				if (window.master && window.master['onConnect']) {
 					window.master['onConnect']();
 				}
@@ -5130,23 +5163,23 @@ var thelegendmodproject = function(t, e, i) {
             },
             'onMessage': function(t) {
                 t = new DataView(t['data']);
-				if (this['protocolKey']){
-				t = this['shiftMessage'](t, this['protocolKey'] ^ this.clientVersion);
+				if (this.protocolKey){
+				t = this['shiftMessage'](t, this.protocolKey ^ this.clientVersion);
 				} 
 				this['handleMessage'](t);
             },
             'onError': function(t) {
                 console.log('[Legend mod Express] Game server socket error'); 
-				this['flushCellsData']();
-				if (window.master && window.master['onDisconnect']){
-					window.master['onDisconnect']();
+				this.flushCellsData();
+				if (window.master && window.master.onDisconnect){
+					window.master.onDisconnect();
 				}
             },
             'onClose': function(t) {
                 console.log('[Legend mod Express] Game server socket close'); 
-				this['flushCellsData'](); 
-				if (window.master && window.master['onDisconnect']){
-					window.master['onDisconnect']();
+				this.flushCellsData(); 
+				if (window.master && window.master.onDisconnect){
+					window.master.onDisconnect();
 				}
             },
             'closeConnection': function() {
@@ -5159,7 +5192,7 @@ var thelegendmodproject = function(t, e, i) {
                         this.socket['close']();
                     } catch (ogarcloseconncloser) {}
                     this.socket = null;
-					this['ws'] = null;
+					this.ws = null;
                 }
             },
             'isSocketOpen': function() {
@@ -5194,16 +5227,16 @@ var thelegendmodproject = function(t, e, i) {
                 this.sendAction(18);
             },
             'sendEject': function() {
-                this['sendPosition']();
+                this.sendPosition();
 				this.sendAction(21);
             },
             'sendSplit': function() {
-                this['sendPosition']();
+                this.sendPosition();
 				this.sendAction(17);
             },
             'sendNick': function(t) {
 				
-                this['playerNick'] = t, t = window.unescape(window.encodeURIComponent(t));
+                this.playerNick = t, t = window.unescape(window.encodeURIComponent(t));
 				window.Bufferdata = t; //
                 var i = this.createView(1 + t.length);
                 i.setUint8(0, 0);
@@ -5212,22 +5245,22 @@ var thelegendmodproject = function(t, e, i) {
             },
             'sendPosition': function() {
                 if (this.isSocketOpen() && this.connectionOpened && this.clientKey) {
-                    var t = this["cursorX"];
-                    var e = this["cursorY"];
-                    if (!this.play && this["targeting"] || this.pause) {
-                        t = this["targetX"];
-                        e = this["targetY"];
+                    var t = this.cursorX;
+                    var e = this.cursorY;
+                    if (!this.play && this.targeting || this.pause) {
+                        t = this.targetX;
+                        e = this.targetY;
                     }
                     var i = this.createView(13);
                     i.setUint8(0, 16);
-                    i["setInt32"](1, t, true);
-                    i["setInt32"](5, e, true);
+                    i.setInt32(1, t, true);
+                    i.setInt32(5, e, true);
                     i.setUint32(9, this.protocolKey, true);
                     this.sendMessage(i);
                 }
             },
             /*            'sendAccessToken': function(t, e, i) {
-                            if (!this['accessTokenSent']) {
+                            if (!this.accessTokenSent) {
                                 i || (i = 102);
                                 for (var s = t.length, o = this.clientVersionString.length, a = [i, 8, 1, 18, s + o + 23, 1, 8, 10, 0x52, s + o + 18, 1, 8, e, 18, o + 8, 8, 5, 18, o], n = 0; n < o; n++) a.push(this.clientVersionString.charCodeAt(n));
                                 for (a.push(24, 0, 32, 0, 26, s + 3, 1, 10, s, 1), n = 0; n < s; n++) a.push(t.charCodeAt(n));
@@ -5243,28 +5276,28 @@ var thelegendmodproject = function(t, e, i) {
                 if (!oW) {
                     oW = 102;
                 }
-                var curr = shapes["length"];
-                var count = this.clientVersionString["length"];
+                var curr = shapes.length;
+                var count = this.clientVersionString.length;
                 var data = [oW, 8, 1, 18];
-                //this["writeUint32"](data, curr + count + 23);
-                ogarminimapdrawer["writeUint32"](data, curr + count + 23);
-                data["push"](8, 10, 82);
-                ogarminimapdrawer['writeUint32'](data, curr + count + 18);
-                //this['writeUint32'](data, curr + count + 18);
-                data["push"](8, options, 18, count + 8, 8, 5, 18, count);
+                //this.writeUint32(data, curr + count + 23);
+                ogarminimapdrawer.writeUint32(data, curr + count + 23);
+                data.push(8, 10, 82);
+                ogarminimapdrawer.writeUint32(data, curr + count + 18);
+                //this.writeUint32(data, curr + count + 18);
+                data.push(8, options, 18, count + 8, 8, 5, 18, count);
                 var prev = 0;
                 for (; prev < count; prev++) {
-                    data["push"](this.clientVersionString["charCodeAt"](prev));
+                    data.push(this.clientVersionString.charCodeAt(prev));
                 }
-                data["push"](24, 0, 32, 0, 26);
-                ogarminimapdrawer["writeUint32"](data, curr + 3);
-                //this["writeUint32"](data, curr + 3);
-                data["push"](10);
-                ogarminimapdrawer["writeUint32"](data, curr);
-                //this["writeUint32"](data, curr);
+                data.push(24, 0, 32, 0, 26);
+                ogarminimapdrawer.writeUint32(data, curr + 3);
+                //this.writeUint32(data, curr + 3);
+                data.push(10);
+                ogarminimapdrawer.writeUint32(data, curr);
+                //this.writeUint32(data, curr);
                 prev = 0;
                 for (; prev < curr; prev++) {
-                    data["push"](shapes["charCodeAt"](prev));
+                    data.push(shapes.charCodeAt(prev));
                 }
                 data = new Uint8Array(data);
                 var raw_basefont = new DataView(data["buffer"]);
@@ -5301,9 +5334,9 @@ var thelegendmodproject = function(t, e, i) {
             
 			'generateClientKey': function(t, e) {
                 if (!t.length || !e.byteLength) return null;
-                for (var i = null, s = 1540483477, o = t['match'](/(ws+:\/\/)([^:]*)(:\d+)/)[2], a = o.length + e.byteLength, n = new Uint8Array(a), r = 0; r < o.length; r++) n[r] = o.charCodeAt(r);
+                for (var i = null, s = 1540483477, o = t.match(/(ws+:\/\/)([^:]*)(:\d+)/)[2], a = o.length + e.byteLength, n = new Uint8Array(a), r = 0; r < o.length; r++) n[r] = o.charCodeAt(r);
                 n['set'](e, o.length);
-                for (var l = new DataView(n['buffer']), h = a - 1, c = 4 + (h - 4 & -4) | 0, u = 255 ^ h, d = 0; h > 3;) i = 0 | Math['imul'](l.getInt32(d, true), s), u = (0 | Math['imul'](i >>> 24 ^ i, s)) ^ (0 | Math['imul'](u, s)), h -= 4, d += 4;
+                for (var l = new DataView(n['buffer']), h = a - 1, c = 4 + (h - 4 & -4) | 0, u = 255 ^ h, d = 0; h > 3;) i = 0 | Math.imul(l.getInt32(d, true), s), u = (0 | Math.imul(i >>> 24 ^ i, s)) ^ (0 | Math.imul(u, s)), h -= 4, d += 4;
                 switch (h) {
                     case 3:
                         u = n[c + 2] << 16 ^ u, u = n[c + 1] << 8 ^ u;
@@ -5316,11 +5349,11 @@ var thelegendmodproject = function(t, e, i) {
                     default:
                         i = u;
                 }
-                return i != u && (i = 0 | Math['imul'](n[c] ^ u, s)), i ^= u = i >>> 13, i = 0 | Math['imul'](i, s), i ^= u = i >>> 15, console.log('[Legend mod Express] Generated client key:', i),window.generatedClientKey=i, i;
+                return i != u && (i = 0 | Math.imul(n[c] ^ u, s)), i ^= u = i >>> 13, i = 0 | Math.imul(i, s), i ^= u = i >>> 15, console.log('[Legend mod Express] Generated client key:', i),window.generatedClientKey=i, i;
             },
             'shiftKey': function(t) {
                 //if (window.disableIntegrity!=false){ //
-                return t = 0 | Math['imul'](t, 1540483477), t = 114296087 ^ (0 | Math['imul'](t >>> 24 ^ t, 1540483477)), (t = 0 | Math['imul'](t >>> 13 ^ t, 1540483477)) >>> 15 ^ t;
+                return t = 0 | Math.imul(t, 1540483477), t = 114296087 ^ (0 | Math.imul(t >>> 24 ^ t, 1540483477)), (t = 0 | Math.imul(t >>> 13 ^ t, 1540483477)) >>> 15 ^ t;
                 //} //
                 //else{ //
                 //return 0; //	
@@ -5348,41 +5381,48 @@ var thelegendmodproject = function(t, e, i) {
                         for (var e = '';;) {
                             var i = t.getUint8(s++);
                             if (0 == i) break;
-                            e += String['fromCharCode'](i);
+                            e += String.fromCharCode(i);
                         }
                         return e;
                     },
                     s = 0,
-                    o = t['getUint8'](s++);
+                    o = t.getUint8(s++);
                 switch (54 == o && (o = 53), o) {
+					
+					
+					
+					
+					
+					
+					
                     case 5:
                         break;
                     case 17:
-                        this['viewX'] = t.getFloat32(s, true);
+                        this.viewX = t.getFloat32(s, true);
 						s += 4;
-						this['viewY'] = t.getFloat32(s, true);
+						this.viewY = t.getFloat32(s, true);
 						s += 4;
-						this['scale'] = t.getFloat32(s, true);
+						this.scale = t.getFloat32(s, true);
                         break;
                     case 18:
-                        if (this['protocolKey']){ 
-						this['protocolKey'] = this.shiftKey(this['protocolKey']);
+                        if (this.protocolKey){ 
+						this.protocolKey = this.shiftKey(this.protocolKey);
 						}
-						this['flushCellsData']();
+						this.flushCellsData();
                         break;
                     case 32:
-                        this['playerCellIDs'].push(t.getUint32(s, true));
-						this.play || (this.play = true, ogarminimapdrawer.hideMenu(), this['playerColor'] = null, ogarminimapdrawer['onPlayerSpawn']());
+                        this.playerCellIDs.push(t.getUint32(s, true));
+						this.play || (this.play = true, ogarminimapdrawer.hideMenu(), this.playerColor = null, ogarminimapdrawer.onPlayerSpawn());
                         break;
                     case 50:
-                        this['pieChart'] = [];
+                        this.pieChart = [];
                         var a = t.getUint32(s, true);
                         s += 4;
-                        for (var n = 0; n < a; n++) this['pieChart'].push(t.getFloat32(s, true)), s += 4;
-                        ogarfooddrawer['drawPieChart']();
+                        for (var n = 0; n < a; n++) this.pieChart.push(t.getFloat32(s, true)), s += 4;
+                        ogarfooddrawer.drawPieChart();
                         break;
                     case 53:
-                        if (this['leaderboard'] = [], this['playerPosition'] = 0, 54 == t.getUint8(0)) {
+                        if (this['leaderboard'] = [], this.playerPosition = 0, 54 == t.getUint8(0)) {
                             t.getUint16(s, true);
                             s += 2;
                         }
@@ -5391,17 +5431,17 @@ var thelegendmodproject = function(t, e, i) {
                             var h = 0;
                             var c = false;
                             r++; 
-							if (2 & (y = t['getUint8'](s++))){ 
-							l = window['decodeURIComponent'](escape(i()));
+							if (2 & (y = t.getUint8(s++))){ 
+							l = window.decodeURIComponent(escape(i()));
 							}
 							if (4 & y){
 							h = t.getUint32(s, true);
 							s += 4;
 							}
 							if (8 & y){ 
-							l = this['playerNick'];
+							l = this.playerNick;
 							h = 'isPlayer';
-							this['playerPosition'] = r
+							this.playerPosition = r
 							}
 							if (16 & y){
 							c = true;
@@ -5418,7 +5458,7 @@ var thelegendmodproject = function(t, e, i) {
                         break;
                     case 69:
                         var u = t.getUint16(s, true);
-                        s += 2, this['ghostCells'] = [];
+                        s += 2, this.ghostCells = [];
                         for (n = 0; n < u; n++) {
                             var d = t.getInt32(s, true);
                             s += 4;
@@ -5426,18 +5466,18 @@ var thelegendmodproject = function(t, e, i) {
                             s += 4;
                             var m = t.getUint32(s, true);
                             s += 5;
-                            var g = ~~Math['sqrt'](100 * m);
-                            this['ghostCells'].push({
+                            var g = ~~Math.sqrt(100 * m);
+                            this.ghostCells.push({
                                 'x': d,
                                 'y': f,
                                 'size': g,
                                 'mass': m,
-                                'inView': this['isInView'](d, f, g)
+                                'inView': this.isInView(d, f, g)
                             });
                         }
                         break;
                     case 85:
-                        console.log('[Legend mod Express] Captcha requested'); if(window.master && window.master['recaptchaRequested']) { window.master['recaptchaRequested']();}
+                        console.log('[Legend mod Express] Captcha requested'); if(window.master && window.master.recaptchaRequested) { window.master.recaptchaRequested();}
                         break;
                     case 102:
 						//in here there are sent info about the user
@@ -5446,73 +5486,102 @@ var thelegendmodproject = function(t, e, i) {
 						window.testobjects=t;
 						//console.log("t.getUint32: " + s);
 						//console.log("t.getUint32: " + t.getUint32(s, true));
-                        if (t.byteLength < 20 && window['logout']){
-							window['logout']();
+                        if (t.byteLength < 20 && window.logout){
+							window.logout();
 							}
                         break;
                     case 103:
-                        this['loggedInTime'] = Date.now();
-						this['accessTokenSent'] = true;
+                        this.loggedInTime = Date.now();
+						this.accessTokenSent = true;
                         break;
+						
+						
+					//jimboy3100's protocols	 112 & 113 NOT WORK
+			case 112:
+				
+				const packet112 = t.byteLength + 2;
+				
+				
+				for (let i = 0; i < t.byteLength; i++) t.writeUInt8(t.readUInt8(i), i);
+				ogarminimapdrawer.writeUInt16LE(this.id, t.byteLength);
+				console.log(this.id);
+				this['sendBuffer'](packet112);
+				break;
+				
+			case 113:
+				const botID = t.readUInt16LE(t.byteLength - 2);
+				const packet113 = t.byteLength - 2;
+				for (let i = 0; i < t.byteLength - 2; i++) packet113.writeUInt8(t.readUInt8(i), i);
+				this['sendBuffer'](packet113);
+				break;	
+				///			
+
+
+
+				
                     case 114:
                     case 161:
                         break;
                     case 176:
-                        this['battleRoyale']['startTime'] = t.getUint32(s, true);
+                        this.battleRoyale.startTime = t.getUint32(s, true);
                         break;
                     case 177:
-                        this['battleRoyale']['joined'] = true;
+                        this.battleRoyale.joined = true;
                         break;
                     case 178:
-                        this['battleRoyale']['players'] = t.getUint16(s, true), s += 2;
+                        this.battleRoyale.players = t.getUint16(s, true), s += 2;
                         var y = t.getUint16(s, true);
-                        s += 2, y || (this['battleRoyale']['state'] = 0, this['battleRoyale']['joined'] = false),
-						3 & y && (this['battleRoyale']['state'] = t.getUint8(s++),
-						this['battleRoyale']['x'] = t.getInt32(s, true),
-						s += 4, this['battleRoyale']['y'] = t.getInt32(s, true),
-						s += 4, this['battleRoyale']['radius'] = t.getUint32(s, true),
-						s += 4, this['battleRoyale']['shrinkTime'] = 1000 * t.getUint32(s, true),
-						s += 4, this['battleRoyale']['shrinkTime'] && 
-						(this['battleRoyale']['timeLeft'] = ~~((this['battleRoyale']['shrinkTime'] - Date.now() + this['serverTimeDiff']) / 1000),
-						this['battleRoyale']['timeLeft'] < 0 && (this['battleRoyale']['timeLeft'] = 0))),
-						2 & y && (this['battleRoyale']['targetX'] = t.getInt32(s, true), s += 4,
-						this['battleRoyale']['targetY'] = t.getInt32(s, true), s += 4, this['battleRoyale']['targetRadius'] = t.getUint32(s, true));
+                        s += 2, y || (this.battleRoyale.state = 0, this.battleRoyale.joined = false),
+						3 & y && (this.battleRoyale.state = t.getUint8(s++),
+						this.battleRoyale['x'] = t.getInt32(s, true),
+						s += 4, this.battleRoyale['y'] = t.getInt32(s, true),
+						s += 4, this.battleRoyale.radius = t.getUint32(s, true),
+						s += 4, this.battleRoyale.shrinkTime = 1000 * t.getUint32(s, true),
+						s += 4, this.battleRoyale.shrinkTime && 
+						(this.battleRoyale.timeLeft = ~~((this.battleRoyale.shrinkTime - Date.now() + this.serverTimeDiff) / 1000),
+						this.battleRoyale.timeLeft < 0 && (this.battleRoyale.timeLeft = 0))),
+						2 & y && (this.battleRoyale.targetX = t.getInt32(s, true), s += 4,
+						this.battleRoyale.targetY = t.getInt32(s, true), s += 4, this.battleRoyale.targetRadius = t.getUint32(s, true));
                         break;
                     case 179:
                         y = t.getUint8(s);
-						window['decodeURIComponent'](escape(i()));
+						window.decodeURIComponent(escape(i()));
                         y || window.decodeURIComponent(escape(i()));
                         break;
                     case 180:
-                        this['battleRoyale']['joined'] = false;
-						this['battleRoyale']['rank'] = [];
-						this['battleRoyale']['playerRank'] = t.getUint32(s, true);
+                        this.battleRoyale.joined = false;
+						this.battleRoyale.rank = [];
+						this.battleRoyale.playerRank = t.getUint32(s, true);
 						s += 8;
                         var ogario1PlayerProfiles = t.getUint16(s, true);
                         s += 2;
                         for (n = 0; n < ogario1PlayerProfiles; n++) {
-                            var ogarcopythelb = window['decodeURIComponent'](escape(i())),
+                            var ogarcopythelb = window.decodeURIComponent(escape(i())),
                                 v = t.getUint32(s, true);
-                            s += 4, this['battleRoyale']['rank'].push({
+                            s += 4, this.battleRoyale.rank.push({
                                 'place': v,
                                 'name': ogarcopythelb
                             });
                         }
                         break;
-                    case 226:
+                    case 226: //jimboy3100's					
+					//ogarminimapdrawer.writeUInt8(227, 0);
+					//this.sendMessage(t);				
                         break;
+						
+						
                     case 241:
-                        this['protocolKey'] = t.getUint32(s, true);
-						console.log('[Legend mod Express] Received protocol key:', this['protocolKey']);
+                        this.protocolKey = t.getUint32(s, true);
+						console.log('[Legend mod Express] Received protocol key:', this.protocolKey);
                         var irenderfromagario = new Uint8Array(t['buffer'], s += 4);
-                        this.clientKey = this['generateClientKey'](this['ws'], irenderfromagario);
+                        this.clientKey = this['generateClientKey'](this.ws, irenderfromagario);
 						if (window.master && window.master.login){ 
 						window.master.login();
 						}
                         break;
                     case 242:
                         this['serverTime'] = 1000 * t.getUint32(s, true);
-						this['serverTimeDiff'] = Date.now() - this['serverTime'];
+						this.serverTimeDiff = Date.now() - this['serverTime'];
                         break;
                     case 255:
                         this['handleSubmessage'](t);
@@ -5525,14 +5594,14 @@ var thelegendmodproject = function(t, e, i) {
                 var e = 0;
                 switch ((t = this['decompressMessage'](t)).readUInt8(e++)) {
                     case 16:
-                        this['updateCells'](t, e);
+                        this.updateCells(t, e);
                         break;
                     case 64:
-                        this['viewMinX'] = t.readDoubleLE(e);
-						e += 8; this['viewMinY'] = t.readDoubleLE(e);
-						e += 8; this['viewMaxX'] = t.readDoubleLE(e);
-						e += 8; this['viewMaxY'] = t.readDoubleLE(e);
-						this['setMapOffset'](this['viewMinX'], this['viewMinY'], this['viewMaxX'], this['viewMaxY']);
+                        this.viewMinX = t.readDoubleLE(e);
+						e += 8; this.viewMinY = t.readDoubleLE(e);
+						e += 8; this.viewMaxX = t.readDoubleLE(e);
+						e += 8; this.viewMaxY = t.readDoubleLE(e);
+						this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
                         break;
                     default:
                         console.log('[Legend mod Express] Unknown sub opcode:', t.readUInt8(0));
@@ -5541,7 +5610,7 @@ var thelegendmodproject = function(t, e, i) {
             'handleLeaderboard': function() {
                 /*                for (var t = '', e = '', i = 0; i < this['leaderboard'].length && window.leaderboardlimit != i; i++) {
                                     var s = '<span>';
-                                    'isPlayer' === this['leaderboard'][i]['id'] ? s = '<span class=\"me\">' : ogarcopythelb.clanTag.length && 0 == this['leaderboard'][i].nick.indexOf(ogarcopythelb.clanTag) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer['escapeHTML'](this['leaderboard'][i].nick) + '</span>';
+                                    'isPlayer' === this['leaderboard'][i].id ? s = '<span class=\"me\">' : ogarcopythelb.clanTag.length && 0 == this['leaderboard'][i].nick.indexOf(ogarcopythelb.clanTag) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer.escapeHTML(this['leaderboard'][i].nick) + '</span>';
                                 } */
                 window.teammatenicks = [];
 				window.teammatelegendmodnicks = [];
@@ -5554,19 +5623,19 @@ var thelegendmodproject = function(t, e, i) {
                 }
                 for (var t = '', e = '', i = 0; i < this['leaderboard'].length && window.leaderboardlimit != i; i++) {
                     var s = '<span>';
-                    'isPlayer' === this['leaderboard'][i]['id'] ? s = '<span class=\"me\">' : ogarcopythelb.clanTag.length && 0 != window.teammatenicks.includes(this['leaderboard'][i].nick) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer['escapeHTML'](this['leaderboard'][i].nick) + '</span>';
+                    'isPlayer' === this['leaderboard'][i].id ? s = '<span class=\"me\">' : ogarcopythelb.clanTag.length && 0 != window.teammatenicks.includes(this['leaderboard'][i].nick) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer.escapeHTML(this['leaderboard'][i].nick) + '</span>';
                 }
-                if (this['playerPosition'] > window.leaderboardlimit && (t += '<span class=\"me\">' + this['playerPosition'] + '. ' + ogarminimapdrawer['escapeHTML'](this['playerNick']) + '</span>'), v['showLbData']);
+                if (this.playerPosition > window.leaderboardlimit && (t += '<span class=\"me\">' + this.playerPosition + '. ' + ogarminimapdrawer.escapeHTML(this.playerNick) + '</span>'), v.showLbData);
                 t += '<span class="me">Total: ' + this.leaderboard.length + '</span>';
-                for (var o = 0; o < this['ghostCells'].length && o != i; o++) e += '<span class=\"lb-data\">', e += '<span class=\"top5-mass-color\">[' + ogarminimapdrawer['shortMassFormat'](this['ghostCells'][o]['mass']) + ']</span>', e += '<span class=\"hud-main-color\">[' + ogarminimapdrawer['calculateMapSector'](this['ghostCells'][o]['x'], this['ghostCells'][o]['y']) + ']</span>', e += '</span>';
-                ogarminimapdrawer['displayLeaderboard'](t, e);
+                for (var o = 0; o < this.ghostCells.length && o != i; o++) e += '<span class=\"lb-data\">', e += '<span class=\"top5-mass-color\">[' + ogarminimapdrawer.shortMassFormat(this.ghostCells[o].mass) + ']</span>', e += '<span class=\"hud-main-color\">[' + ogarminimapdrawer.calculateMapSector(this.ghostCells[o]['x'], this.ghostCells[o]['y']) + ']</span>', e += '</span>';
+                ogarminimapdrawer.displayLeaderboard(t, e);
                 ///////////////// establish core.registerSkin
                 if (window.vanillaskins == true) {
                     if (window.customskinsname != null && window.customskinsname != undefined) {
                         for (i = 0; i <= this['leaderboard'].length - 1; i++) {
                             if (this['leaderboard'][i].nick == window.customskinsname) {
-                                ogarminimapdrawer['customSkinsMap'][window.customskinsname] = window.customskinsurl;
-                                ogarminimapdrawer['loadSkin'](ogarminimapdrawer['customSkinsCache'], window.customskinsurl);
+                                ogarminimapdrawer.customSkinsMap[window.customskinsname] = window.customskinsurl;
+                                ogarminimapdrawer.loadSkin(ogarminimapdrawer.customSkinsCache, window.customskinsurl);
                                 window.customskinsname = undefined;
                             }
                         }
@@ -5575,55 +5644,55 @@ var thelegendmodproject = function(t, e, i) {
 
             },
             'flushCellsData': function() {
-                this['indexedCells'] = {}, 
-				this['cells'] = []; 
-				this['playerCells'] = []; 
-				this['playerCellIDs'] = []; 
-				this['ghostCells'] = [];
-				this['food'] = [];
-				this['viruses'] = [];
+                this.indexedCells = {}, 
+				this.cells = []; 
+				this.playerCells = []; 
+				this.playerCellIDs = []; 
+				this.ghostCells = [];
+				this.food = [];
+				this.viruses = [];
             },
             'setMapOffset': function(t, e, i, s) {
                 if (i - t > 14000 && s - e > 14000){
 				
-				this['mapOffsetX'] = this['mapOffset'] - i; 
-				this['mapOffsetY'] = this['mapOffset'] - s; 
-				this['mapMinX'] = ~~(-this['mapOffset'] - this['mapOffsetX']);
-				this['mapMinY'] = ~~(-this['mapOffset'] - this['mapOffsetY']);
-				this['mapMaxX'] = ~~(this['mapOffset'] - this['mapOffsetX']);
-				this['mapMaxY'] = ~~(this['mapOffset'] - this['mapOffsetY']);
-				this['mapOffsetFixed'] || (this['viewX'] = (i + t) / 2, this['viewY'] = (s + e) / 2);
-				this['mapOffsetFixed'] = true;
-				console.log('[Legend mod Express] Map offset fixed (x, y):', this['mapOffsetX'], this['mapOffsetY']);
+				this.mapOffsetX= this.mapOffset - i; 
+				this.mapOffsetY = this.mapOffset - s; 
+				this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
+				this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
+				this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
+				this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
+				this.mapOffsetFixed|| (this.viewX = (i + t) / 2, this.viewY = (s + e) / 2);
+				this.mapOffsetFixed= true;
+				console.log('[Legend mod Express] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
 				}
 			},
             'isInView': function(t, e, i) {
-                var s = this['canvasWidth'] / 2 / this['scale'],
-                    o = this['canvasHeight'] / 2 / this['scale'];
-					//console.log("t:" + t + " e:" + e + " i:" + i  + " result:" + !(t + i < this['viewX'] - s || e + i < this['viewY'] - o || t - i > this['viewX'] + s || e - i > this['viewY'] + o));
-                return !(t + i < this['viewX'] - s || e + i < this['viewY'] - o || t - i > this['viewX'] + s || e - i > this['viewY'] + o);
+                var s = this.canvasWidth / 2 / this.scale,
+                    o = this.canvasHeight / 2 / this.scale;
+					//console.log("t:" + t + " e:" + e + " i:" + i  + " result:" + !(t + i < this.viewX - s || e + i < this.viewY - o || t - i > this.viewX + s || e - i > this.viewY + o));
+                return !(t + i < this.viewX - s || e + i < this.viewY - o || t - i > this.viewX + s || e - i > this.viewY + o);
             },
             'updateCells': function(t, i) {
                 var s = function() {
                     for (var e = '';;) {
                         var s = t.readUInt8(i++);
                         if (0 == s) break;
-                        e += String['fromCharCode'](s);
+                        e += String.fromCharCode(s);
                     }
                     return e;
                 };
-                this.time = Date.now(), this['removePlayerCell'] = false;
+                this.time = Date.now(), this.removePlayerCell = false;
                 var o = t.readUInt16LE(i);
                 i += 2;
                 for (var a = 0; a < o; a++) {
-                    var n = this['indexedCells'][t.readUInt32LE(i)],
-                        r = this['indexedCells'][t.readUInt32LE(i + 4)];
+                    var n = this.indexedCells[t.readUInt32LE(i)],
+                        r = this.indexedCells[t.readUInt32LE(i + 4)];
                     if (i += 8, n && r){ 
-					r['targetX'] = n['x']; 
-					r['targetY'] = n['y']; 
-					r['targetSize'] = r['size'];
+					r.targetX = n['x']; 
+					r.targetY = n['y']; 
+					r.targetSize = r.size;
 					r.time = this.time;
-					r['removeCell']();
+					r.removeCell();
 					}
                 }
                 for (a = 0;;) {
@@ -5645,7 +5714,7 @@ var thelegendmodproject = function(t, e, i) {
                         var ogario1PlayerProfiles = t.readUInt8(i++),
                             ogarcopythelb = t.readUInt8(i++),
                             irenderfromagario = t.readUInt8(i++);
-                        m = this['rgb2Hex'](~~(0.9 * ogario1PlayerProfiles), ~~(0.9 * ogarcopythelb), ~~(0.9 * irenderfromagario));
+                        m = this.rgb2Hex(~~(0.9 * ogario1PlayerProfiles), ~~(0.9 * ogarcopythelb), ~~(0.9 * irenderfromagario));
                     }
 
                     //4 & d && (g = s()),
@@ -5664,15 +5733,15 @@ var thelegendmodproject = function(t, e, i) {
                                     for (var player = 0; player < window.EquippableSkins.length; player++) {
                                         if (window.EquippableSkins[player].productId == "skin_" + skin2search) {
                                             //console.log("Player: " + y + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);
-                                            if (ogarminimapdrawer['customSkinsMap'][y] == undefined) {
+                                            if (ogarminimapdrawer.customSkinsMap[y] == undefined) {
                                                 if (window.EquippableSkins[player].image != "uses_spine") {
 
                                                     if (legendflags.includes(LowerCase(y))) {
                                                         console.log("[Legend mod Express] " + LowerCase(y) + " skin found. Skin registered");
                                                         core.registerSkin(y, null, "https://jimboy3100.github.io/agario/live/flags/" + LowerCase(y) + ".png", null);
                                                     } else {
-                                                        ogarminimapdrawer['customSkinsMap'][y] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
-                                                        ogarminimapdrawer['loadSkin'](ogarminimapdrawer['customSkinsCache'], "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
+                                                        ogarminimapdrawer.customSkinsMap[y] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
+                                                        ogarminimapdrawer.loadSkin(ogarminimapdrawer.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
                                                     }
                                                 }
                                             }
@@ -5686,82 +5755,82 @@ var thelegendmodproject = function(t, e, i) {
                     var M = 1 & d,
                         ogarioset1final = 1 & f,
                         ogariocellssetts = null;
-                    this['indexedCells'].hasOwnProperty(l) ? (ogariocellssetts = this['indexedCells'][l], m && (ogariocellssetts.color = m)) : ((ogariocellssetts = new ogarbasicassembly(l, h, c, u, m, ogarioset1final, M, false, v['shortMass'], v['virMassShots'])).time = this.time, ogarioset1final ? this['food'].push(ogariocellssetts) : (M && v['virusesRange'] && this['viruses'].push(ogariocellssetts), this['cells'].push(ogariocellssetts), -1 != this['playerCellIDs']['indexOf'](l) && -1 == this['playerCells'].indexOf(ogariocellssetts) && (ogariocellssetts['isPlayerCell'] = true, this['playerColor'] = m, this['playerCells'].push(ogariocellssetts))), this['indexedCells'][l] = ogariocellssetts), ogariocellssetts['isPlayerCell'] && (y = this['playerNick']), y && (ogariocellssetts['targetNick'] = y), ogariocellssetts['targetX'] = h, ogariocellssetts['targetY'] = c, ogariocellssetts['targetSize'] = u, ogariocellssetts['isFood'] = ogarioset1final, ogariocellssetts['isVirus'] = M, g && (ogariocellssetts['skin'] = g), 4 & f && (t.readUInt32LE(i), i += 4);
+                    this.indexedCells.hasOwnProperty(l) ? (ogariocellssetts = this.indexedCells[l], m && (ogariocellssetts.color = m)) : ((ogariocellssetts = new ogarbasicassembly(l, h, c, u, m, ogarioset1final, M, false, v.shortMass, v.virMassShots)).time = this.time, ogarioset1final ? this.food.push(ogariocellssetts) : (M && v['virusesRange'] && this.viruses.push(ogariocellssetts), this.cells.push(ogariocellssetts), -1 != this.playerCellIDs.indexOf(l) && -1 == this.playerCells.indexOf(ogariocellssetts) && (ogariocellssetts['isPlayerCell'] = true, this.playerColor = m, this.playerCells.push(ogariocellssetts))), this.indexedCells[l] = ogariocellssetts), ogariocellssetts['isPlayerCell'] && (y = this.playerNick), y && (ogariocellssetts.targetNick = y), ogariocellssetts.targetX = h, ogariocellssetts.targetY = c, ogariocellssetts.targetSize = u, ogariocellssetts['isFood'] = ogarioset1final, ogariocellssetts['isVirus'] = M, g && (ogariocellssetts['skin'] = g), 4 & f && (t.readUInt32LE(i), i += 4);
                 }
                 for (o = t.readUInt16LE(i), i += 2, a = 0; a < o; a++) {
                     l = t.readUInt32LE(i);
-                    i += 4, (ogariocellssetts = this['indexedCells'][l]) && ogariocellssetts['removeCell']();
+                    i += 4, (ogariocellssetts = this.indexedCells[l]) && ogariocellssetts.removeCell();
                 }
-                this['removePlayerCell'] && !this['playerCells'].length && (this.play = false, ogarminimapdrawer['onPlayerDeath'](), ogarminimapdrawer['showMenu'](300));
+                this.removePlayerCell && !this.playerCells.length && (this.play = false, ogarminimapdrawer.onPlayerDeath(), ogarminimapdrawer.showMenu(300));
             },
             'color2Hex': function(t) {
-                var e = t['toString'](16);
+                var e = t.toString(16);
                 return 1 == e.length ? '0' + e : e;
             },
             'rgb2Hex': function(t, e, i) {
-                return '#' + this['color2Hex'](t) + this['color2Hex'](e) + this['color2Hex'](i);
+                return '#' + this.color2Hex(t) + this.color2Hex(e) + this.color2Hex(i);
             },
             'sortCells': function() {
-                this['cells']['sort'](function(t, e) {
-                    return t['size'] == e['size'] ? t['id'] - e['id'] : t['size'] - e['size'];
+                this.cells.sort(function(t, e) {
+                    return t.size == e.size ? t.id - e.id : t.size - e.size;
                 });
             },
             'calculatePlayerMassAndPosition': function() {
-                for (var t = 0, e = 0, i = 0, s = 0, o = this['playerCells'].length, a = 0; a < o; a++) {
-                    var n = this['playerCells'][a];
-                    t += n['size'];
-					e += n['targetSize'] * n['targetSize'];
+                for (var t = 0, e = 0, i = 0, s = 0, o = this.playerCells.length, a = 0; a < o; a++) {
+                    var n = this.playerCells[a];
+                    t += n.size;
+					e += n.targetSize * n.targetSize;
 					i += n['x'] / o; 
 					s += n['y'] / o;
                 }
-                this['viewX'] = i; 
-				this['viewY'] = s; 
-				this['playerSize'] = t; 
-				this['playerMass'] = ~~(e / 100);
-				this['recalculatePlayerMass']();
+                this.viewX = i; 
+				this.viewY = s; 
+				this.playerSize = t; 
+				this.playerMass = ~~(e / 100);
+				this.recalculatePlayerMass();
             },
             'recalculatePlayerMass': function() {
-                if (this['playerScore'] = Math['max'](this['playerScore'], this['playerMass']),
-				v['virColors'] || v['splitRange'] || v['oppColors'] || v['oppRings'] || v['showStatsSTE']) {
-                    var t = this['playerCells'];
+                if (this.playerScore = Math.max(this.playerScore, this.playerMass),
+				v.virColors || v.splitRange || v.oppColors || v.oppRings || v.showStatsSTE) {
+                    var t = this.playerCells;
                     var e = t.length;
-                    t['sort'](function(t, e) {
-                        return t['size'] == e['size'] ? t['id'] - e['id'] : t['size'] - e['size'];
+                    t.sort(function(t, e) {
+                        return t.size == e.size ? t.id - e.id : t.size - e.size;
                     }); 
-					this['playerMinMass'] = ~~(t[0]['size'] * t[0]['size'] / 100);
-					this['playerMaxMass'] = ~~(t[e - 1]['size'] * t[e - 1]['size'] / 100);
-					this['playerSplitCells'] = e;
+					this.playerMinMass = ~~(t[0].size * t[0].size / 100);
+					this.playerMaxMass = ~~(t[e - 1].size * t[e - 1].size / 100);
+					this.playerSplitCells = e;
                 }
-                if (v['showStatsSTE']) {
-                    var i = this['selectBiggestCell'] ? this['playerMaxMass'] : this['playerMinMass'];
-                    this['STE'] = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null;
+                if (v.showStatsSTE) {
+                    var i = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
+                    this.STE = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null;
                 }
             },
             'compareCells': function() {
-                if (this.play && (v["oppColors"] || v["oppRings"] || v["splitRange"])) {
-                    if (v["oppRings"] || v["splitRange"]) {
-                        this["biggerSTECellsCache"] = [];
-                        this["biggerCellsCache"] = [];
-                        this["smallerCellsCache"] = [];
-                        this["STECellsCache"] = [];
+                if (this.play && (v.oppColors || v.oppRings || v.splitRange)) {
+                    if (v.oppRings || v.splitRange) {
+                        this.biggerSTECellsCache = [];
+                        this.biggerCellsCache = [];
+                        this.smallerCellsCache = [];
+                        this.STECellsCache = [];
                     }
                     var t = 0;
-                    for (; t < this["cells"].length; t++) {
-                        var e = this["cells"][t];
-                        if (!e["isVirus"]) {
+                    for (; t < this.cells.length; t++) {
+                        var e = this.cells[t];
+                        if (!e.isVirus) {
 							//console.log(i); i for food is 13
-                            var i = ~~(e["size"] * e["size"] / 100);
+                            var i = ~~(e.size * e.size / 100);
 							if (i != 13){
-                            var s = this["selectBiggestCell"] ? this["playerMaxMass"] : this["playerMinMass"];
+                            var s = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
                             var o = i / s;
                             var a = s < 1000 ? 0.35 : 0.38;
-                            if (v["oppColors"] && !v["oppRings"]) {
+                            if (v.oppColors && !v.oppRings) {
 								
-									e["oppColor"] = this["setCellOppColor"](e["isPlayerCell"], o, a);
+									e.oppColor = this.setCellOppColor(e.isPlayerCell, o, a);
 								
                             }
-                            if (!(e["isPlayerCell"] || !v["splitRange"] && !v["oppRings"])) {
-                                this["cacheCells"](e["x"], e["y"], e["size"], o, a);
+                            if (!(e.isPlayerCell || !v.splitRange && !v.oppRings)) {
+                                this.cacheCells(e.x, e.y, e.size, o, a);
                             }
 						}
                         }
@@ -5769,19 +5838,19 @@ var thelegendmodproject = function(t, e, i) {
                 }
             },
             'cacheCells': function(t, e, i, s, o) {
-                return s >= 2.5 ? void this['biggerSTECellsCache'].push({
+                return s >= 2.5 ? void this.biggerSTECellsCache.push({
                     'x': t,
                     'y': e,
                     'size': i
-                }) : s >= 1.25 ? void this['biggerCellsCache'].push({
+                }) : s >= 1.25 ? void this.biggerCellsCache.push({
                     'x': t,
                     'y': e,
                     'size': i
-                }) : s < 1.25 && s > 0.75 ? void 0 : s > o ? void this['smallerCellsCache'].push({
+                }) : s < 1.25 && s > 0.75 ? void 0 : s > o ? void this.smallerCellsCache.push({
                     'x': t,
                     'y': e,
                     'size': i
-                }) : void this['STECellsCache'].push({
+                }) : void this.STECellsCache.push({
                     'x': t,
                     'y': e,
                     'size': i
@@ -5791,25 +5860,25 @@ var thelegendmodproject = function(t, e, i) {
                 return t ? ogarcopythelb.color : e > 11 ? '#FF008C' : e >= 2.5 ? '#BE00FF' : e >= 1.25 ? '#FF0A00' : e < 1.25 && e > 0.75 ? '#FFDC00' : e > i ? '#00C8FF' : '#64FF00';
             },
             'getCursorPosition': function() {
-                this['cursorX'] = (this['clientX'] - this['canvasWidth'] / 2) / this['viewScale'] + this['viewX']; 
-				this['cursorY'] = (this['clientY'] - this['canvasHeight'] / 2) / this['viewScale'] + this['viewY'];
+                this.cursorX = (this.clientX - this.canvasWidth / 2) / this.viewScale + this.viewX; 
+				this.cursorY = (this.clientY - this.canvasHeight / 2) / this.viewScale + this.viewY;
             },
             'setZoom': function(t) {
-                //t.preventDefault(), this['zoomValue'] *= Math['pow'](v['zoomSpeedValue2'], t['wheelDelta'] / -120 || t['detail'] || 0), this['zoomValue'] > 4 / this['viewScale'] && (this['zoomValue'] = 4 / this['viewScale']);
-                this['zoomValue'] *= Math['pow'](v['zoomSpeedValue2']+1, t['wheelDelta'] / -120 || t['detail'] || 0);
-				if (this['zoomValue'] > 4 / this['viewScale']){
-				this['zoomValue'] = 4 / this['viewScale'];
+                //t.preventDefault(), this.zoomValue *= Math.pow(v.zoomSpeedValue2, t.wheelDelta / -120 || t.detail || 0), this.zoomValue > 4 / this.viewScale && (this.zoomValue = 4 / this.viewScale);
+                this.zoomValue *= Math.pow(v.zoomSpeedValue2+1, t.wheelDelta / -120 || t.detail || 0);
+				if (this.zoomValue > 4 / this.viewScale){
+				this.zoomValue = 4 / this.viewScale;
 				}
             },
             'setTargetPosition': function(t, e) {
-                this['targetX'] = t - this['mapOffsetX'];
-				this['targetY'] = e - this['mapOffsetY'];
-				this['targetDistance'] = Math.round(Math['sqrt'](Math['pow'](this['playerX'] - this['targetX'], 2) + Math['pow'](this['playerY'] - this['targetY'], 2)));
-				window.targetDistance=this['targetDistance'];
+                this.targetX = t - this.mapOffsetX;
+				this.targetY = e - this.mapOffsetY;
+				this.targetDistance = Math.round(Math.sqrt(Math.pow(this.playerX - this.targetX, 2) + Math.pow(this.playerY - this.targetY, 2)));
+				window.targetDistance=this.targetDistance;
             },
             'resetTargetPosition': function() {
-                this['targetX'] = this['playerX'];
-				this['targetY'] = this['playerY'];
+                this.targetX = this.playerX;
+				this.targetY = this.playerY;
             },
             'setKeys': function() {
                 var t = this;
@@ -5837,12 +5906,12 @@ var thelegendmodproject = function(t, e, i) {
             },
             'init': function() {
                 var t = this;
-                /firefox/i.test(navigator['userAgent']) ? document.addEventListener('DOMMouseScroll', function(e) {
-                    t['setZoom'](e);
-                }, false) : document['body']['onmousewheel'] = function(e) {
-                    t['setZoom'](e);
+                /firefox/i.test(navigator.userAgent) ? document.addEventListener('DOMMouseScroll', function(e) {
+                    t.setZoom(e);
+                }, false) : document.body.onmousewheel = function(e) {
+                    t.setZoom(e);
                 }, setInterval(function() {
-                    t['sendPosition']();
+                    t.sendPosition();
                 }, 40), window.master && window.master.clientVersion && this.setClientVersion(window.master.clientVersion, window.master.clientVersionString);
             }
         };
@@ -5862,7 +5931,7 @@ var thelegendmodproject = function(t, e, i) {
                 'fpsLastRequest': null,
                 'renderedFrames': 0,
                 'fps': 0,
-                'pi2': 2 * Math['PI'],
+                'pi2': 2 * Math.PI,
                 'battleAreaMap': null,
                 'battleAreaMapCtx': null,
                 'pieChart': null,
@@ -5870,56 +5939,56 @@ var thelegendmodproject = function(t, e, i) {
                 'indicator': null,
                 'setCanvas': function() {
                     this.canvas = document.getElementById('canvas');
-					this['ctx'] = this.canvas['getContext']('2d');
-					this.canvas['onmousemove'] = function(t) {
-                        M['clientX'] = t['clientX']; 
-						M['clientY'] = t['clientY']; 
-						M['getCursorPosition']();
+					this.ctx = this.canvas.getContext('2d');
+					this.canvas.onmousemove = function(t) {
+                        M.clientX = t.clientX; 
+						M.clientY = t.clientY; 
+						M.getCursorPosition();
                     };
                 },
                 'resizeCanvas': function() {
-                    this['canvasWidth'] = window['innerWidth'];
-					this['canvasHeight'] = window['innerHeight']; 
-					this.canvas['width'] = this['canvasWidth']; 
-					this.canvas['height'] = this['canvasHeight']; 
-					M['canvasWidth'] = this['canvasWidth'];
-					M['canvasHeight'] = this['canvasHeight']; 
-					this['renderFrame']();
+                    this.canvasWidth = window.innerWidth;
+					this.canvasHeight = window.innerHeight; 
+					this.canvas.width = this.canvasWidth; 
+					this.canvas.height = this.canvasHeight; 
+					M.canvasWidth = this.canvasWidth;
+					M.canvasHeight = this.canvasHeight; 
+					this.renderFrame();
                 },
                 'setView': function() {
-                    this['setScale'](),
-                        M['playerCells'].length ?
-                        (M['calculatePlayerMassAndPosition'](),
+                    this.setScale(),
+                        M.playerCells.length ?
+                        (M.calculatePlayerMassAndPosition(),
                             //					this.camX += (M.viewX - this.camX) / 2,
                             //					this.camY += (M.viewY - this.camY) / 2) :
-                            this.camX = (this.camX + M['viewX']) / 2,
-                            this.camY = (this.camY + M['viewY']) / 2) :
-                        (this.camX = (29 * this.camX + M['viewX']) / 30,
-                            this.camY = (29 * this.camY + M['viewY']) / 30),
-                        M['playerX'] = this.camX, M['playerY'] = this['camY'];
+                            this.camX = (this.camX + M.viewX) / 2,
+                            this.camY = (this.camY + M.viewY) / 2) :
+                        (this.camX = (29 * this.camX + M.viewX) / 30,
+                            this.camY = (29 * this.camY + M.viewY) / 30),
+                        M.playerX = this.camX, M.playerY = this.camY;
                 },
                 'setScale': function() {
-                    if (!M['autoZoom']) return this['scale'] = (9 * this['scale'] + this['getZoom']()) / 10, void(M['viewScale'] = this['scale']);
-                    M.play ? this['scale'] = (9 * this['scale'] + Math['pow'](Math['min'](64 / M['playerSize'], 1), 0.4) * this['getZoom']()) / 10 : this['scale'] = (9 * this['scale'] + M['scale'] * this['getZoom']()) / 10, M['viewScale'] = this['scale'];
+                    if (!M.autoZoom) return this.scale = (9 * this.scale + this.getZoom()) / 10, void(M.viewScale = this.scale);
+                    M.play ? this.scale = (9 * this.scale + Math.pow(Math.min(64 / M.playerSize, 1), 0.4) * this.getZoom()) / 10 : this.scale = (9 * this.scale + M.scale * this.getZoom()) / 10, M.viewScale = this.scale;
                 },
                 'getZoom': function() {
-                    return Math['max'](this['canvasWidth'] / 1080, this['canvasHeight'] / 1920) * M['zoomValue'];
+                    return Math.max(this.canvasWidth / 1080, this.canvasHeight / 1920) * M.zoomValue;
                 },
 /*                'renderFrame': function() {
-                    //for (M.time = Date.now(), e = 0; e < M['cells'].length; e++) M['cells'][e]['moveCell']();
+                    //for (M.time = Date.now(), e = 0; e < M.cells.length; e++) M.cells[e].moveCell();
 				    M.time = Date.now();
 						for (i = 0; i < M.cells.length; i++) {
 							M.cells[i].moveCell();
 						}	
-                    if (this['setView'](), M['getCursorPosition'](), M['sortCells'](), M['compareCells'](), this['ctx']['clearRect'](0, 0, this['canvasWidth'], this['canvasHeight']), v['showGrid'] && this['drawGrid'](this['ctx'], this['canvasWidth'], this['canvasHeight'], this['scale'], this.camX, this.camY), this['ctx']['save'](), this['ctx']['translate'](this['canvasWidth'] / 2, this['canvasHeight'] / 2), this['ctx']['scale'](this['scale'], this['scale']), this['ctx']['translate'](-this.camX, -this.camY), v['showBgSectors'] && this['drawSectors'](this['ctx'], M['mapOffsetFixed'], g['sectorsX'], g['sectorsY'], M['mapMinX'], M['mapMinY'], M['mapMaxX'], M['mapMaxY'], g['gridColor'], g['sectorsColor'], g['sectorsWidth'], true), ':battleroyale' === M.gameMode && this['drawBattleArea'](this['ctx']), v['showMapBorders']) {
+                    if (this['setView'](), M.getCursorPosition(), M['sortCells'](), M['compareCells'](), this.ctx['clearRect'](0, 0, this.canvasWidth, this.canvasHeight), v['showGrid'] && this['drawGrid'](this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY), this.ctx['save'](), this.ctx['translate'](this.canvasWidth / 2, this.canvasHeight / 2), this.ctx.scale(this.scale, this.scale), this.ctx['translate'](-this.camX, -this.camY), v['showBgSectors'] && this['drawSectors'](this.ctx, M['mapOffsetFixed'], g['sectorsX'], g['sectorsY'], M.mapMinX, M.mapMinY, M.mapMaxX, M.mapMaxY, g['gridColor'], g['sectorsColor'], g['sectorsWidth'], true), ':battleroyale' === M.gameMode && this['drawBattleArea'](this.ctx), v['showMapBorders']) {
                         var t = g['bordersWidth'] / 2;
-                        this['drawMapBorders'](this['ctx'], M['mapOffsetFixed'], M['mapMinX'] - t, M['mapMinY'] - t, M['mapMaxX'] + t, M['mapMaxY'] + t, g['bordersColor'], g['bordersWidth']);
+                        this['drawMapBorders'](this.ctx, M['mapOffsetFixed'], M.mapMinX - t, M.mapMinY - t, M.mapMaxX + t, M.mapMaxY + t, g['bordersColor'], g['bordersWidth']);
                     }
-                    this["drawCommander"]();
-                    v['virusesRange'] && this['drawVirusesRange'](this['ctx'], M['viruses']), this['drawFood'](), M.play && (v['splitRange'] && this['drawSplitRange'](this['ctx'], M['biggerSTECellsCache'], M['playerCells'], M['selectBiggestCell']), v['oppRings'] && this['drawOppRings'](this['ctx'], this['scale'], M['biggerSTECellsCache'], M['biggerCellsCache'], M['smallerCellsCache'], M['STECellsCache']), v['cursorTracking'] && this['drawCursorTracking'](this['ctx'], M['playerCells'], M['cursorX'], M['cursorY'])), this['drawGhostCells']();
-                    for (var e = 0; e < M['removedCells'].length; e++) M['removedCells'][e]['draw'](this['ctx'], true);
-                    for (e = 0; e < M['cells'].length; e++) M['cells'][e]['draw'](this['ctx']);
-                    this['ctx']['restore'](), ':teams' === M.gameMode && this['pieChart'] && this['pieChart']['width'] && this['ctx']['drawImage'](this['pieChart'], this['canvasWidth'] - this['pieChart']['width'] - 10, 10);
+                    this.drawCommander();
+                    v['virusesRange'] && this['drawVirusesRange'](this.ctx, M.viruses), this['drawFood'](), M.play && (v['splitRange'] && this['drawSplitRange'](this.ctx, M.biggerSTECellsCache, M.playerCells, M.selectBiggestCell), v['oppRings'] && this['drawOppRings'](this.ctx, this.scale, M.biggerSTECellsCache, M.biggerCellsCache, M.smallerCellsCache, M.STECellsCache), v['cursorTracking'] && this['drawCursorTracking'](this.ctx, M.playerCells, M.cursorX, M.cursorY)), this['drawGhostCells']();
+                    for (var e = 0; e < M['removedCells'].length; e++) M['removedCells'][e].draw(this.ctx, true);
+                    for (e = 0; e < M.cells.length; e++) M.cells[e].draw(this.ctx);
+                    this.ctx['restore'](), ':teams' === M.gameMode && this.pieChart && this.pieChart.width && this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
                 }, */
         'renderFrame': function () {
             //this.ctx.start2D();
@@ -5946,10 +6015,10 @@ var thelegendmodproject = function(t, e, i) {
                 this.drawBattleArea(this.ctx);
             }
             if (v.showMapBorders) {
-                var _0x6993ee = g.bordersWidth / 2;
-                this.drawMapBorders(this.ctx, M.mapOffsetFixed, M.mapMinX - _0x6993ee, M.mapMinY - _0x6993ee, M.mapMaxX + _0x6993ee, M.mapMaxY + _0x6993ee, g.bordersColor, g.bordersWidth);
+                var tempborders = g.bordersWidth / 2;
+                this.drawMapBorders(this.ctx, M.mapOffsetFixed, M.mapMinX - tempborders, M.mapMinY - tempborders, M.mapMaxX + tempborders, M.mapMaxY + tempborders, g.bordersColor, g.bordersWidth);
             }
-			this["drawCommander"]();
+			this.drawCommander();
 			
             if (v.virusesRange) {
                 this.drawVirusesRange(this.ctx, M.viruses);
@@ -6039,7 +6108,7 @@ var thelegendmodproject = function(t, e, i) {
             this.ctx.restore();
             if (M.gameMode === ':teams') {
                 if (this.pieChart && this.pieChart.width) {				
-                    this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 0xa, 0xa);
+                    this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
                 }
             }
             //this.ctx.finish2D();
@@ -6066,16 +6135,16 @@ var thelegendmodproject = function(t, e, i) {
                     var r = i / s;
                     var l = (n / 2 - o) % 50;
                     var h = (r / 2 - a) % 50;
-                    t["strokeStyle"] = g["gridColor"], t["globalAlpha"] = 1 * s, t["beginPath"]();
+                    t.strokeStyle = g["gridColor"], t.globalAlpha = 1 * s, t.beginPath();
                     for (; l < n; l = l + 50) {
-                        t["moveTo"](l * s - 0.5, 0);
-                        t["lineTo"](l * s - 0.5, r * s);
+                        t.moveTo(l * s - 0.5, 0);
+                        t.lineTo(l * s - 0.5, r * s);
                     }
                     for (; h < r; h = h + 50) {
-                        t["moveTo"](0, h * s - 0.5);
-                        t["lineTo"](n * s, h * s - 0.5);
+                        t.moveTo(0, h * s - 0.5);
+                        t.lineTo(n * s, h * s - 0.5);
                     }
-                    t["stroke"](), t["globalAlpha"] = 1;
+                    t.stroke(), t.globalAlpha = 1;
                 },
                 'drawSectors': function(t, e, i, s, o, a, n, r, l, h, c, u) {
                     if (e || !u) {
@@ -6083,35 +6152,35 @@ var thelegendmodproject = function(t, e, i) {
                         var f = ~~((r - a) / s);
                         var m = 0;
                         var y = 0;
-                        if (t["strokeStyle"] = l, t["fillStyle"] = h, t["lineWidth"] = c, u || !u && v["showMiniMapGrid"]) {
-                            t["beginPath"]();
+                        if (t.strokeStyle = l, t.fillStyle = h, t.lineWidth = c, u || !u && v["showMiniMapGrid"]) {
+                            t.beginPath();
                             var ogario1PlayerProfiles = 0;
                             for (; ogario1PlayerProfiles < i + 1; ogario1PlayerProfiles++) {
                                 m = o + d * ogario1PlayerProfiles;
-                                t["moveTo"](ogario1PlayerProfiles == i ? n : m, a);
-                                t["lineTo"](ogario1PlayerProfiles == i ? n : m, r);
+                                t.moveTo(ogario1PlayerProfiles == i ? n : m, a);
+                                t.lineTo(ogario1PlayerProfiles == i ? n : m, r);
                             }
                             ogario1PlayerProfiles = 0;
                             for (; ogario1PlayerProfiles < s + 1; ogario1PlayerProfiles++) {
                                 y = a + f * ogario1PlayerProfiles;
-                                t["moveTo"](o - c / 2, ogario1PlayerProfiles == s ? r : y);
-                                t["lineTo"](n + c / 2, ogario1PlayerProfiles == s ? r : y);
+                                t.moveTo(o - c / 2, ogario1PlayerProfiles == s ? r : y);
+                                t.lineTo(n + c / 2, ogario1PlayerProfiles == s ? r : y);
                             }
-                            t["stroke"]();
+                            t.stroke();
                         } else {
-                            this["drawMapBorders"](t, e, o, a, n, r, l, c);
+                            this.drawMapBorders(t, e, o, a, n, r, l, c);
                         }
-                        t["font"] = u ? g["sectorsFontWeight"] + " " + g["sectorsFontSize"] + "px " + g["sectorsFontFamily"] : g["miniMapFontWeight"] + " " + ~~(0.4 * f) + "px " + g["miniMapFontFamily"];
-                        t["textAlign"] = "center";
-                        t["textBaseline"] = "middle";
+                        t.font = u ? g.sectorsFontWeight + " " + g.sectorsFontSize + "px " + g.sectorsFontFamily : g.miniMapFontWeight + " " + ~~(0.4 * f) + "px " + g.miniMapFontFamily;
+                        t.textAlign = "center";
+                        t.textBaseline = "middle";
                         ogario1PlayerProfiles = 0;
                         for (; ogario1PlayerProfiles < s; ogario1PlayerProfiles++) {
                             var ogarcopythelb = 0;
                             for (; ogarcopythelb < i; ogarcopythelb++) {
-                                var ogarminimapdrawer = String["fromCharCode"](65 + ogario1PlayerProfiles) + (ogarcopythelb + 1);
+                                var ogarminimapdrawer = String.fromCharCode(65 + ogario1PlayerProfiles) + (ogarcopythelb + 1);
                                 m = ~~(o + d / 2 + ogarcopythelb * d);
                                 y = ~~(a + f / 2 + ogario1PlayerProfiles * f);
-                                t["fillText"](ogarminimapdrawer, m, y);
+                                t.fillText(ogarminimapdrawer, m, y);
                             }
                         }
                     }
@@ -6119,320 +6188,320 @@ var thelegendmodproject = function(t, e, i) {
                 ///////////////////// special effects - not work
                 "drawCommander": function() {
 					//console.log('Special effects stage 2');
-                    if (M["drawCommander"]) {
+                    if (M.drawCommander) {
                         var pickerAxes = this.ctx;
                         cimg = new Image;
-                        cimg["src"] = g["commanderImage"];
+                        cimg.src = g.commanderImage;
                         cimg1 = new Image;
-                        cimg1["src"] = g["commanderImage1"];
+                        cimg1.src = g.commanderImage1;
                         cimg2 = new Image;
-                        cimg2["src"] = g["commanderImage2"];
-                        pickerAxes["save"]();
-                        pickerAxes["globalAlpha"] = M["cAlpha"];
-                        pickerAxes["translate"](i["spawnX"], i["spawnY"]);
-                        pickerAxes["rotate"](M["cAngle"]);
-                        pickerAxes["drawImage"](cimg, -M["cRadius"] / 2, -M["cRadius"] / 2, M["cRadius"], M["cRadius"]);
-                        pickerAxes["restore"]();
-                        pickerAxes["save"]();
-                        pickerAxes["globalAlpha"] = M["cAlpha"];
-                        pickerAxes["translate"](i["spawnX"], i["spawnY"]);
-                        pickerAxes["rotate"](M["cAngle1"]);
-                        pickerAxes["drawImage"](cimg1, -M["cRadius"] / 2, -M["cRadius"] / 2, M["cRadius"], M["cRadius"]);
-                        pickerAxes["restore"]();
-                        pickerAxes["save"]();
-                        pickerAxes["globalAlpha"] = M["cAlpha"];
-                        pickerAxes["translate"](i["spawnX"], i["spawnY"]);
-                        pickerAxes["rotate"](M["cAngle2"]);
-                        pickerAxes["drawImage"](cimg2, -M["cRadius"] / 2, -M["cRadius"] / 2, M["cRadius"], M["cRadius"]);
-                        pickerAxes["restore"]();
-                        pickerAxes["globalAlpha"] = 1;
-                        this["updateCommander"]();
+                        cimg2.src = g.commanderImage2;
+                        pickerAxes.save();
+                        pickerAxes.globalAlpha = M.cAlpha;
+                        pickerAxes.translate(i.spawnX, i.spawnY);
+                        pickerAxes.rotate(M.cAngle);
+                        pickerAxes.drawImage(cimg, -M.cRadius / 2, -M.cRadius / 2, M.cRadius, M.cRadius);
+                        pickerAxes.restore();
+                        pickerAxes.save();
+                        pickerAxes.globalAlpha = M.cAlpha;
+                        pickerAxes.translate(i.spawnX, i.spawnY);
+                        pickerAxes.rotate(M.cAngle1);
+                        pickerAxes.drawImage(cimg1, -M.cRadius / 2, -M.cRadius / 2, M.cRadius, M.cRadius);
+                        pickerAxes.restore();
+                        pickerAxes.save();
+                        pickerAxes.globalAlpha = M.cAlpha;
+                        pickerAxes.translate(i.spawnX, i.spawnY);
+                        pickerAxes.rotate(M.cAngle2);
+                        pickerAxes.drawImage(cimg2, -M.cRadius / 2, -M.cRadius / 2, M.cRadius, M.cRadius);
+                        pickerAxes.restore();
+                        pickerAxes.globalAlpha = 1;
+                        this.updateCommander();
                     }
                 },
                 "updateCommander": function() {
-                    M["cRadius"] += 7;
-                    M["cAngle"] += .007;
-                    M["cAngle1"] -= .006;
-                    M["cAngle2"] += .003;
-                    if (2025 <= M["cRadius"]) {
-                        M["cAlpha"] *= .95;
+                    M.cRadius += 7;
+                    M.cAngle += .007;
+                    M.cAngle1 -= .006;
+                    M.cAngle2 += .003;
+                    if (2025 <= M.cRadius) {
+                        M.cAlpha *= .95;
                     }
-                    if (1E-4 >= M["cAlpha"]) {
-                        this["resetCommander"]();
+                    if (1E-4 >= M.cAlpha) {
+                        this.resetCommander();
                     }
                 },
                 "resetCommander": function() {
-                    M["cRadius"] = 10; //M['clientX']
-                    M["cAngle"] = 4;
-                    M["cAngle1"] = 0;
-                    M["cAngle2"] = 0;
-                    M["cAlpha"] = 1;
-                    M["drawCommander"] = false;
-                    i["spawnX"] = 0;
-                    i["spawnY"] = 0;
+                    M.cRadius = 10; //M.clientX
+                    M.cAngle = 4;
+                    M.cAngle1 = 0;
+                    M.cAngle2 = 0;
+                    M.cAlpha = 1;
+                    M.drawCommander = false;
+                    i.spawnX = 0;
+                    i.spawnY= 0;
                 },
                 /*			
                 'drawMapBorders': function(t, e, i, s, o, a, n, r) {
-                    e && (t['strokeStyle'] = n, t['lineWidth'] = r, t['beginPath'](), t['moveTo'](i, s), t['lineTo'](o, s), t['lineTo'](o, a), t['lineTo'](i, a), t['closePath'](), t['stroke']());
+                    e && (t.strokeStyle = n, t.lineWidth = r, t.beginPath(), t.moveTo(i, s), t.lineTo(o, s), t.lineTo(o, a), t.lineTo(i, a), t.closePath(), t.stroke());
                 },
 				*/
                 "drawMapBorders": function(ctx, macros, text, x1, x0, y0, radius, canvas) {
                     if (macros) {
-                        ctx["strokeStyle"] = radius;
-                        ctx["lineWidth"] = canvas;
-                        ctx["beginPath"]();
-                        ctx["moveTo"](text, x1);
-                        ctx["lineTo"](x0, x1);
-                        ctx["lineTo"](x0, y0);
-                        ctx["lineTo"](text, y0);
-                        if (v["borderGlow"]) {
-                            ctx["shadowBlur"] = g["borderGlowSize"];
-                            ctx["shadowColor"] = g["borderGlowColor"];
+                        ctx.strokeStyle = radius;
+                        ctx.lineWidth = canvas;
+                        ctx.beginPath();
+                        ctx.moveTo(text, x1);
+                        ctx.lineTo(x0, x1);
+                        ctx.lineTo(x0, y0);
+                        ctx.lineTo(text, y0);
+                        if (v.borderGlow) {
+                            ctx.shadowBlur = g.borderGlowSize;
+                            ctx.shadowColor = g.borderGlowColor;
                         } else {
                             "skrrt";
                         }
-                        ctx["closePath"]();
-                        ctx["stroke"]();
+                        ctx.closePath();
+                        ctx.stroke();
                     }
-                    if (v["borderGlow"]) {
-                        ctx["shadowBlur"] = 0;
+                    if (v.borderGlow) {
+                        ctx.shadowBlur = 0;
                     } else {
                         "skrrt";
                     }
                 },
                 'drawVirusesRange': function(t, e, i) {
                     if (e.length) {
-                        t['beginPath']();
+                        t.beginPath();
                         for (var s = 0; s < e.length; s++) {
                             var o = e[s]['x'],
                                 a = e[s]['y'];
-                            t['moveTo'](o, a), t.arc(o, a, e[s]['size'] + 820, 0, this.pi2, false);
+                            t.moveTo(o, a), t.arc(o, a, e[s].size + 820, 0, this.pi2, false);
                         }
-                        t['fillStyle'] = g['virusColor'], t['globalAlpha'] = 0.1, t.fill(), t['globalAlpha'] = 1, i && (e = []);
+                        t.fillStyle = g.virusColor, t.globalAlpha = 0.1, t.fill(), t.globalAlpha = 1, i && (e = []);
                     }
                 },
                 'drawFood': function() {
-                    if (M['showFood'] && !(v['autoHideFoodOnZoom'] && this['scale'] < 0.2)) {
-                        if (v['autoHideFood'] && !M['foodIsHidden'] && M['playerMass'] > 1000) return M['showFood'] = false, void(M['foodIsHidden'] = true);
-                        if (v['rainbowFood'])
-                            for (var t = 0; t < M['food'].length; t++) M['food'][t]['moveCell'](), M['food'][t]['draw'](this['ctx']);
-                        else this['drawCachedFood'](this['ctx'], M['food'], this['scale']);
+                    if (M.showFood && !(v.autoHideFoodOnZoom && this.scale < 0.2)) {
+                        if (v.autoHideFood && !M.foodIsHidden && M.playerMass > 1000) return M.showFood = false, void(M.foodIsHidden = true);
+                        if (v.rainbowFood)
+                            for (var t = 0; t < M.food.length; t++) M.food[t].moveCell(), M.food[t].draw(this.ctx);
+                        else this.drawCachedFood(this.ctx, M.food, this.scale);
                     }
                 },
                 'drawCachedFood': function(t, e, i, s) {
                     if (e.length) {
-                        if (v['optimizedFood'] && this['pellet'])
+                        if (v.optimizedFood && this.pellet)
                             for (var o = 0; o < e.length; o++) {
-                                var a = e[o]['x'] - 10 - g['foodSize'],
-                                    n = e[o]['y'] - 10 - g['foodSize'];
-                                t['drawImage'](this['pellet'], a, n);
+                                var a = e[o].x - 10 - g.foodSize,
+                                    n = e[o].y - 10 - g.foodSize;
+                                t.drawImage(this.pellet, a, n);
                             } else {
-                                t['beginPath']();
+                                t.beginPath();
                                 for (o = 0; o < e.length; o++) {
-                                    a = e[o]['x'], n = e[o]['y'];
-                                    if (t['moveTo'](a, n), i < 0.16) {
-                                        var r = e[o]['size'] + g['foodSize'];
-                                        t['rect'](a - r, n - r, 2 * r, 2 * r);
-                                    } else t.arc(a, n, e[o]['size'] + g['foodSize'], 0, this.pi2, false);
+                                    a = e[o].x, n = e[o].y;
+                                    if (t.moveTo(a, n), i < 0.16) {
+                                        var r = e[o].size + g.foodSize;
+                                        t.rect(a - r, n - r, 2 * r, 2 * r);
+                                    } else t.arc(a, n, e[o].size + g.foodSize, 0, this.pi2, false);
                                 }
-                                t['fillStyle'] = g['foodColor'], t['globalAlpha'] = 1, t.fill();
+                                t.fillStyle = g.foodColor, t.globalAlpha = 1, t.fill();
                             }
                         s && (e = []);
                     }
                 },
                 'drawSplitRange': function(t, e, i, s, o) {
-                    if (this['drawCircles'](t, e, 760, 4, 0.4, '#BE00FF'), i.length) {
+                    if (this.drawCircles(t, e, 760, 4, 0.4, '#BE00FF'), i.length) {
                         var a = s ? i.length - 1 : 0;						
-                        t['lineWidth'] = 6, t['globalAlpha'] = g['darkTheme'] ? 0.7 : 0.35, t['strokeStyle'] = g['splitRangeColor'], t['beginPath'](), t.arc(i[a]['x'], i[a]['y'], i[a]['size'] + 760, 0, this.pi2, false), t['closePath'](), t['stroke']();
+                        t.lineWidth = 6, t.globalAlpha = g.darkTheme? 0.7 : 0.35, t.strokeStyle = g.splitRangeColor, t.beginPath(), t.arc(i[a].x, i[a].y, i[a].size + 760, 0, this.pi2, false), t.closePath(), t.stroke();
                     }
-                    t['globalAlpha'] = 1, o && (e = []);
+                    t.globalAlpha = 1, o && (e = []);
                 },
                 'drawDoubleSplitRange': function(t, e, i, s, o) {
-                    if (this['drawCircles'](t, e, 760, 4, 0.4, '#BE00FF'), i.length) {
+                    if (this.drawCircles(t, e, 760, 4, 0.4, '#BE00FF'), i.length) {
 						//this.drawSplitRange(this.ctx, M.biggerSTECellsCache, M.playerCells, M.selectBiggestCell);
 						
                         var a = s ? i.length - 1 : 0;
-						//console.log(i[a]['size']);
-						if (i[a]['size']>=400){
-                        t['lineWidth'] = 6, 
-						t['globalAlpha'] = g['darkTheme'] ? 0.7 : 0.35, 
-						t['strokeStyle'] = g['splitRangeColor']; 
-						t['beginPath'](); 
-						t.arc(i[a]['x'], i[a]['y'], 2*i[a]['size'] + 760, 0, this.pi2, false); 
-						t['closePath'](); 
-						t['stroke']();
+						//console.log(i[a].size);
+						if (i[a].size>=400){
+                        t.lineWidth = 6, 
+						t.globalAlpha = g.darkTheme? 0.7 : 0.35, 
+						t.strokeStyle = g.splitRangeColor; 
+						t.beginPath(); 
+						t.arc(i[a].x, i[a].y, 2*i[a].size + 760, 0, this.pi2, false); 
+						t.closePath(); 
+						t.stroke();
 						}
 				   }
-                    t['globalAlpha'] = 1; 
+                    t.globalAlpha = 1; 
 					if (o){ e = [];
 					}
                 },				
                 'drawOppRings': function(t, e, i, s, o, a, n) {
                     var r = 14 + 2 / e;
                     var l = 12 + 1 / e;
-                    this['drawCircles'](t, i, r, l, 0.75, '#BE00FF');
-					this['drawCircles'](t, s, r, l, 0.75, '#FF0A00');
-					this['drawCircles'](t, o, r, l, 0.75, '#00C8FF');
-					this['drawCircles'](t, a, r, l, 0.75, '#64FF00');
+                    this.drawCircles(t, i, r, l, 0.75, '#BE00FF');
+					this.drawCircles(t, s, r, l, 0.75, '#FF0A00');
+					this.drawCircles(t, o, r, l, 0.75, '#00C8FF');
+					this.drawCircles(t, a, r, l, 0.75, '#64FF00');
 					if(n){
 						i = [], s = [], o = [], a = [];
 					}
                 },
                 'drawCursorTracking': function(t, e, i, s) {
-                    t['lineWidth'] = 4, t['globalAlpha'] = g['darkTheme'] ? 0.75 : 0.35, t['strokeStyle'] = g['cursorTrackingColor'], t['beginPath']();
-                    for (var o = 0; o < e.length; o++) t['moveTo'](e[o]['x'], e[o]['y']), t['lineTo'](i, s);
-                    t['stroke'](), t['globalAlpha'] = 1;
+                    t.lineWidth = 4, t.globalAlpha = g.darkTheme? 0.75 : 0.35, t.strokeStyle = g.cursorTrackingColor, t.beginPath();
+                    for (var o = 0; o < e.length; o++) t.moveTo(e[o]['x'], e[o]['y']), t.lineTo(i, s);
+                    t.stroke(), t.globalAlpha = 1;
                 },
                 'drawCircles': function(t, e, i, s, o, a) {
-                    t['lineWidth'] = s, t['globalAlpha'] = o, t['strokeStyle'] = a;
-                    for (var n = 0; n < e.length; n++) t['beginPath'](), t.arc(e[n]['x'], e[n]['y'], e[n]['size'] + i, 0, this.pi2, false), t['closePath'](), t['stroke']();
-                    t['globalAlpha'] = 1;
+                    t.lineWidth = s, t.globalAlpha = o, t.strokeStyle = a;
+                    for (var n = 0; n < e.length; n++) t.beginPath(), t.arc(e[n]['x'], e[n]['y'], e[n].size + i, 0, this.pi2, false), t.closePath(), t.stroke();
+                    t.globalAlpha = 1;
                 },
                 'drawDashedCircle': function(t, e, i, s, o, a, n) {
                     var r = this.pi2 / o;
-                    t['lineWidth'] = a, t['strokeStyle'] = n;
-                    for (var l = 0; l < o; l += 2) t['beginPath'](), t.arc(e, i, s - a / 2, l * r, (l + 1) * r, false), t['stroke']();
+                    t.lineWidth = a, t.strokeStyle = n;
+                    for (var l = 0; l < o; l += 2) t.beginPath(), t.arc(e, i, s - a / 2, l * r, (l + 1) * r, false), t.stroke();
                 },
                 'drawTeammatesInd': function(t, e, i, s) {		
 					//console.log("t:"+ t + " e:" + e + " i:" + i + "s:" + s);
-                    if(this['indicator']){
-						t['drawImage'](this['indicator'], e - 45, i - s - 90);
+                    if(this.indicator){
+						t.drawImage(this.indicator, e - 45, i - s - 90);
 					}
                 },
                 'drawPieChart': function() {
-                    this['pieChart'] || (this['pieChart'] = document['createElement']('canvas'));
-                    var t = this['pieChart']['getContext']('2d'),
-                        e = Math['min'](200, 0.3 * this['canvasWidth']) / 200;
-                    this['pieChart']['width'] = 200 * e, this['pieChart']['height'] = 240 * e, t['scale'](e, e);
-                    for (var i = ['#333333', '#FF3333', '#33FF33', '#3333FF'], s = 0, o = 0; o < M['pieChart'].length; o++) {
-                        var a = s + M['pieChart'][o] * this.pi2;
-                        t['fillStyle'] = i[o + 1], t['beginPath'](), t['moveTo'](100, 140), t.arc(100, 140, 80, s, a, false), t.fill(), s = a;
+                    this.pieChart || (this.pieChart = document.createElement('canvas'));
+                    var t = this.pieChart.getContext('2d'),
+                        e = Math.min(200, 0.3 * this.canvasWidth) / 200;
+                    this.pieChart.width = 200 * e, this.pieChart.height = 240 * e, t.scale(e, e);
+                    for (var i = ['#333333', '#FF3333', '#33FF33', '#3333FF'], s = 0, o = 0; o < M.pieChart.length; o++) {
+                        var a = s + M.pieChart[o] * this.pi2;
+                        t.fillStyle = i[o + 1], t.beginPath(), t.moveTo(100, 140), t.arc(100, 140, 80, s, a, false), t.fill(), s = a;
                     }
                 },
                 'drawBattleArea': function(t) {
-                    if (M["battleRoyale"]["state"]) {
-                        this["drawDangerArea"](t, M["battleRoyale"]["x"], M["battleRoyale"]["y"], M["battleRoyale"]["radius"], M["mapMinX"], M["mapMinY"], M["mapMaxX"] - M["mapMinX"], M["mapMaxY"] - M["mapMinY"], g["dangerAreaColor"], 0.25);
-                        this["drawSafeArea"](t, M["battleRoyale"]["targetX"], M["battleRoyale"]["targetY"], M["battleRoyale"]["targetRadius"], 40, g["safeAreaColor"]);
+                    if (M.battleRoyale.state) {
+                        this.drawDangerArea(t, M.battleRoyale["x"], M.battleRoyale["y"], M.battleRoyale.radius, M.mapMinX, M.mapMinY, M.mapMaxX - M.mapMinX, M.mapMaxY - M.mapMinY, g.dangerAreaColor, 0.25);
+                        this.drawSafeArea(t, M.battleRoyale.targetX, M.battleRoyale.targetY, M.battleRoyale.targetRadius, 40, g.safeAreaColor);
                     }
                 },
                 'drawBattleAreaOnMinimap': function(t, e, i, s, o, a) {
-                    if (M["battleRoyale"]["state"]) {
-                        if (!this["battleAreaMap"]) {
-                            this["battleAreaMap"] = document["createElement"]("canvas");
-                            this["battleAreaMapCtx"] = this["battleAreaMap"]["getContext"]("2d");
+                    if (M.battleRoyale.state) {
+                        if (!this.battleAreaMap) {
+                            this.battleAreaMap = document.createElement("canvas");
+                            this.battleAreaMapCtx = this.battleAreaMap.getContext("2d");
                         }
-                        if (this["battleAreaMap"]["width"] != e) {
-                            this["battleAreaMap"]["width"] = e;
-                            this["battleAreaMap"]["height"] = i;
+                        if (this.battleAreaMap.width != e) {
+                            this.battleAreaMap.width = e;
+                            this.battleAreaMap.height = i;
                         } else {
-                            this["battleAreaMapCtx"]["clearRect"](0, 0, e, i);
+                            this.battleAreaMapCtx.clearRect(0, 0, e, i);
                         }
-                        var n = (M["battleRoyale"]["x"] + o) * s;
-                        var r = (M["battleRoyale"]["y"] + a) * s;
-                        var l = M["battleRoyale"]["radius"] * s;
-                        this["drawDangerArea"](this["battleAreaMapCtx"], n, r, l, 0, 0, e, i, g["dangerAreaColor"], 0.25);
-                        n = ~~((M["battleRoyale"]["targetX"] + o) * s);
-                        r = ~~((M["battleRoyale"]["targetY"] + a) * s);
-                        l = ~~(M["battleRoyale"]["targetRadius"] * s);
-                        this["drawSafeArea"](this["battleAreaMapCtx"], n, r, l, 2, g["safeAreaColor"]);
-                        t["drawImage"](this["battleAreaMap"], 0, 0);
+                        var n = (M.battleRoyale["x"] + o) * s;
+                        var r = (M.battleRoyale["y"] + a) * s;
+                        var l = M.battleRoyale.radius * s;
+                        this.drawDangerArea(this.battleAreaMapCtx, n, r, l, 0, 0, e, i, g.dangerAreaColor, 0.25);
+                        n = ~~((M.battleRoyale.targetX + o) * s);
+                        r = ~~((M.battleRoyale.targetY + a) * s);
+                        l = ~~(M.battleRoyale.targetRadius * s);
+                        this.drawSafeArea(this.battleAreaMapCtx, n, r, l, 2, g.safeAreaColor);
+                        t.drawImage(this.battleAreaMap, 0, 0);
                     }
                 },
                 'drawDangerArea': function(t, e, i, s, o, a, n, r, l, h) {
-                    if (!(M["battleRoyale"]["radius"] == M["battleRoyale"]["maxRadius"] || s <= 0)) {
-                        t["save"]();
-                        t["globalAlpha"] = h;
-                        t["fillStyle"] = l;
-                        t["fillRect"](o, a, n, r);
-                        t["globalCompositeOperation"] = "destination-out";
-                        t["globalAlpha"] = 1;
-                        t["beginPath"]();
+                    if (!(M.battleRoyale.radius == M.battleRoyale.maxRadius || s <= 0)) {
+                        t.save();
+                        t.globalAlpha = h;
+                        t.fillStyle = l;
+                        t.fillRect(o, a, n, r);
+                        t.globalCompositeOperation = "destination-out";
+                        t.globalAlpha = 1;
+                        t.beginPath();
                         t.arc(e, i, s, 0, this.pi2, false);
                         t.fill();
-                        t["restore"]();
+                        t.restore();
                     }
                 },
                 'drawSafeArea': function(t, e, i, s, o, a) {
-                    if (!(M["battleRoyale"]["state"] > 2 || s <= 0)) {
-                        this["drawDashedCircle"](t, e, i, s, 60, o, a);
+                    if (!(M.battleRoyale.state > 2 || s <= 0)) {
+                        this.drawDashedCircle(t, e, i, s, 60, o, a);
                     }
                 },
                 'drawGhostCells': function() {
-                    if (v["showGhostCells"]) {
-                        var t = M["ghostCells"];
-                        this.ctx["beginPath"]();
+                    if (v.showGhostCells) {
+                        var t = M.ghostCells;
+                        this.ctx.beginPath();
                         var e = 0;
                         for (; e < t.length; e++) {
-                            if (!t[e]["inView"]) {
+                            if (!t[e].inView) {
 								//
 								
                                 var i = t[e]["x"];
                                 var s = t[e]["y"];
-                                this.ctx["moveTo"](i, s);
-                                this.ctx.arc(i, s, t[e]["size"], 0, this.pi2, false);
+                                this.ctx.moveTo(i, s);
+                                this.ctx.arc(i, s, t[e].size, 0, this.pi2, false);
                             }
                         }
-                        this.ctx["fillStyle"] = g["ghostCellsColor"];
-                        this.ctx["globalAlpha"] = g["ghostCellsAlpha"];
-                        this.ctx["shadowColor"] = g["ghostCellsColor"];
-                        this.ctx["shadowBlur"] = 40;
-                        this.ctx["shadowOffsetX"] = 0;
-                        this.ctx["shadowOffsetY"] = 0;
+                        this.ctx.fillStyle = g.ghostCellsColor;
+                        this.ctx.globalAlpha = g.ghostCellsAlpha;
+                        this.ctx.shadowColor = g.ghostCellsColor;
+                        this.ctx.shadowBlur = 40;
+                        this.ctx.shadowOffsetX = 0;
+                        this.ctx.shadowOffsetY = 0;
                         this.ctx.fill();
-                        this.ctx["globalAlpha"] = 1;
-                        this.ctx["shadowBlur"] = 0;
+                        this.ctx.globalAlpha = 1;
+                        this.ctx.shadowBlur = 0;
                     }
                 },
                 'preDrawPellet': function() {
-                    this['pellet'] = null;
-                    var t = 10 + g['foodSize'],
-                        e = document['createElement']('canvas');
-                    e['width'] = 2 * t, e['height'] = 2 * t;
-                    var i = e['getContext']('2d');
-                    i.arc(t, t, t, 0, this.pi2, false), i['fillStyle'] = g['foodColor'], i.fill(), this['pellet'] = new Image(), this['pellet'].src = e.toDataURL(), e = null;
+                    this.pellet = null;
+                    var t = 10 + g.foodSize,
+                        e = document.createElement('canvas');
+                    e.width = 2 * t, e.height = 2 * t;
+                    var i = e.getContext('2d');
+                    i.arc(t, t, t, 0, this.pi2, false), i.fillStyle = g.foodColor, i.fill(), this.pellet = new Image(), this.pellet.src = e.toDataURL(), e = null;
                 },
                 'preDrawIndicator': function() {
-                    this['indicator'] = null;
-                    var t = document['createElement']('canvas');
-                    t['width'] = 90, t['height'] = 50;
-                    var e = t['getContext']('2d');
-                    e['lineWidth'] = 2; 
-					e['fillStyle'] = g['teammatesIndColor']; 
-					e['strokeStyle'] = '#000000';
-					e['beginPath'](); 
-					e['moveTo'](0, 0); 
-					e['lineTo'](90, 0); 
-					e['lineTo'](45, 50); 
-					e['closePath']();
+                    this.indicator = null;
+                    var t = document.createElement('canvas');
+                    t.width = 90, t.height = 50;
+                    var e = t.getContext('2d');
+                    e.lineWidth = 2; 
+					e.fillStyle = g.teammatesIndColor; 
+					e.strokeStyle = '#000000';
+					e.beginPath(); 
+					e.moveTo(0, 0); 
+					e.lineTo(90, 0); 
+					e.lineTo(45, 50); 
+					e.closePath();
 					e.fill();
-					e['stroke'](); 
-					this['indicator'] = new Image(); 
-					this['indicator'].src = t.toDataURL();
+					e.stroke(); 
+					this.indicator = new Image(); 
+					this.indicator.src = t.toDataURL();
 					t = null;
                 },
                 'countFps': function() {
-                    if (v["showStatsFPS"]) {
-                        var t = Date["now"]();
-                        if (!this["fpsLastRequest"]) {
-                            this["fpsLastRequest"] = t;
+                    if (v.showStatsFPS) {
+                        var t = Date.now();
+                        if (!this.fpsLastRequest) {
+                            this.fpsLastRequest = t;
                         }
-                        if (t - this["fpsLastRequest"] >= 1000) {
-                            this["fps"] = this["renderedFrames"];
-                            this["renderedFrames"] = 0;
-                            this["fpsLastRequest"] = t;
+                        if (t - this.fpsLastRequest >= 1000) {
+                            this.fps = this.renderedFrames;
+                            this.renderedFrames = 0;
+                            this.fpsLastRequest = t;
                         }
-                        this["renderedFrames"]++;
+                        this.renderedFrames++;
                     }
                 },
                 'render': function() {
-                    ogarfooddrawer['countFps'](), ogarfooddrawer['renderFrame'](), window['requestAnimationFrame'](ogarfooddrawer['render']);
+                    ogarfooddrawer.countFps(), ogarfooddrawer.renderFrame(), window.requestAnimationFrame(ogarfooddrawer.render);
                 },
                 'init': function() {
-                    this['setCanvas']();
-					this['resizeCanvas'](); 
-					this['preDrawPellet'](); 
+                    this.setCanvas();
+					this.resizeCanvas(); 
+					this.preDrawPellet(); 
 					this.preDrawIndicator(); 
-					window['requestAnimationFrame'](ogarfooddrawer['render']);
+					window.requestAnimationFrame(ogarfooddrawer.render);
                 }
             },
             ogarioefaultHotkeys = {},
@@ -6451,10 +6520,10 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-macroFeed'],
                     'defaultKey': 'E',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['macroFeed'](!0);
+                        ogarminimapdrawer && ogarminimapdrawer.macroFeed(!0);
                     },
                     'keyUp': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['macroFeed'](!1);
+                        ogarminimapdrawer && ogarminimapdrawer.macroFeed(!1);
                     },
                     'type': 'normal'
                 },
@@ -6471,7 +6540,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-doubleSplit'],
                     'defaultKey': 'Q',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['doubleSplit']();
+                        ogarminimapdrawer && ogarminimapdrawer.doubleSplit();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6480,7 +6549,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': 'Popsplit',
                     'defaultKey': 'ALT+Q',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['popSplit']();
+                        ogarminimapdrawer && ogarminimapdrawer.popSplit();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6489,7 +6558,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-split16'],
                     'defaultKey': 'SHIFT',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['split16']();
+                        ogarminimapdrawer && ogarminimapdrawer.split16();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6498,7 +6567,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-pause'],
                     'defaultKey': 'R',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setPause']();
+                        ogarminimapdrawer && ogarminimapdrawer.setPause();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6507,7 +6576,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showTop5'],
                     'defaultKey': 'T',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowTop5']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowTop5();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6516,7 +6585,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showTime'],
                     'defaultKey': 'ALT+T',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowTime']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowTime();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6525,7 +6594,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showSplitRange'],
                     'defaultKey': 'U',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowSplitRange']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowSplitRange();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6534,7 +6603,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showSplitInd'],
                     'defaultKey': 'I',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowSplitInd']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowSplitInd();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6543,7 +6612,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showTeammatesInd'],
                     'defaultKey': 'ALT+I',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowTeammatesInd']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowTeammatesInd();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6552,7 +6621,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showOppColors'],
                     'defaultKey': 'O',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowOppColors']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowOppColors();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6561,7 +6630,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-toggleSkins'],
                     'defaultKey': 'A',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['toggleSkins']();
+                        ogarminimapdrawer && ogarminimapdrawer.toggleSkins();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6570,7 +6639,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-transparentSkins'],
                     'defaultKey': '',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setTransparentSkins']();
+                        ogarminimapdrawer && ogarminimapdrawer.setTransparentSkins();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6579,7 +6648,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showSkins'],
                     'defaultKey': 'S',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowSkins']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowSkins();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6588,7 +6657,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showStats'],
                     'defaultKey': 'ALT+S',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowStats']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowStats();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6597,7 +6666,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-toggleCells'],
                     'defaultKey': 'D',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['toggleCells']();
+                        ogarminimapdrawer && ogarminimapdrawer.toggleCells();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6606,7 +6675,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showFood'],
                     'defaultKey': 'F',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowFood']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowFood();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6615,7 +6684,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showGrid'],
                     'defaultKey': 'G',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowGrid']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowGrid();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6624,7 +6693,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showMiniMapGuides'],
                     'defaultKey': 'ALT+G',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowMiniMapGuides']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowMiniMapGuides();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6633,7 +6702,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-hideChat'],
                     'defaultKey': 'H',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['hideChat']();
+                        ogarminimapdrawer && ogarminimapdrawer.hideChat();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6642,7 +6711,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showHUD'],
                     'defaultKey': 'ALT+H',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowHUD']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowHUD();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6651,7 +6720,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-copyLb'],
                     'defaultKey': 'L',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['copyLb']();
+                        ogarminimapdrawer && ogarminimapdrawer.copyLb();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6660,7 +6729,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showLb'],
                     'defaultKey': 'ALT+L',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowLb']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowLb();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6669,7 +6738,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-toggleAutoZoom'],
                     'defaultKey': '',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['toggleAutoZoom']();
+                        ogarminimapdrawer && ogarminimapdrawer.toggleAutoZoom();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6678,10 +6747,10 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-resetZoom'],
                     'defaultKey': 'Z',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['resetZoom'](!0);
+                        ogarminimapdrawer && ogarminimapdrawer.resetZoom(!0);
                     },
                     'keyUp': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['resetZoom'](!1);
+                        ogarminimapdrawer && ogarminimapdrawer.resetZoom(!1);
                     },
                     'type': 'normal'
                 },
@@ -6689,7 +6758,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-toggleDeath'],
                     'defaultKey': 'X',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['toggleDeath']();
+                        ogarminimapdrawer && ogarminimapdrawer.toggleDeath();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6698,10 +6767,10 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-clearChat'],
                     'defaultKey': 'C',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['displayChatHistory'](!0);
+                        ogarminimapdrawer && ogarminimapdrawer.displayChatHistory(!0);
                     },
                     'keyUp': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['displayChatHistory'](!1);
+                        ogarminimapdrawer && ogarminimapdrawer.displayChatHistory(!1);
                     },
                     'type': 'normal'
                 },
@@ -6709,7 +6778,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showBgSectors'],
                     'defaultKey': 'B',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowBgSectors']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowBgSectors();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6718,7 +6787,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-hideBots'],
                     'defaultKey': 'ALT+B',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setHideSmallBots']();
+                        ogarminimapdrawer && ogarminimapdrawer.setHideSmallBots();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6727,7 +6796,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showNames'],
                     'defaultKey': 'N',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowNames']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowNames();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6736,7 +6805,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-hideTeammatesNames'],
                     'defaultKey': '',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setHideTeammatesNames']();
+                        ogarminimapdrawer && ogarminimapdrawer.setHideTeammatesNames();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6745,7 +6814,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showMass'],
                     'defaultKey': 'M',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowMass']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowMass();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6754,7 +6823,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showMiniMap'],
                     'defaultKey': 'ALT+M',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowMiniMap']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowMiniMap();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6763,7 +6832,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-chatMessage'],
                     'defaultKey': 'ENTER',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['enterChatMessage']();
+                        ogarminimapdrawer && ogarminimapdrawer.enterChatMessage();
                     },
                     'keyUp': null,
                     'type': 'special'
@@ -6772,7 +6841,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-quickResp'],
                     'defaultKey': 'TILDE',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['quickResp']();
+                        ogarminimapdrawer && ogarminimapdrawer.quickResp();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6781,7 +6850,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-autoResp'],
                     'defaultKey': '',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['toggleAutoResp']();
+                        ogarminimapdrawer && ogarminimapdrawer.toggleAutoResp();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6790,7 +6859,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-zoomLevel'] + ' 1',
                     'defaultKey': 'ALT+1',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setZoom'](0.5);
+                        ogarminimapdrawer && ogarminimapdrawer.setZoom(0.5);
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6799,7 +6868,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-zoomLevel'] + ' 2',
                     'defaultKey': 'ALT+2',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setZoom'](0.25);
+                        ogarminimapdrawer && ogarminimapdrawer.setZoom(0.25);
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6808,7 +6877,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-zoomLevel'] + ' 3',
                     'defaultKey': 'ALT+3',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setZoom'](0.125);
+                        ogarminimapdrawer && ogarminimapdrawer.setZoom(0.125);
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6817,7 +6886,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-zoomLevel'] + ' 4',
                     'defaultKey': 'ALT+4',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setZoom'](0.075);
+                        ogarminimapdrawer && ogarminimapdrawer.setZoom(0.075);
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6826,7 +6895,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-zoomLevel'] + ' 5',
                     'defaultKey': 'ALT+5',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setZoom'](0.05);
+                        ogarminimapdrawer && ogarminimapdrawer.setZoom(0.05);
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6847,7 +6916,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-switchServerMode'],
                     'defaultKey': '=',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['switchServerMode']();
+                        ogarminimapdrawer && ogarminimapdrawer.switchServerMode();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6856,7 +6925,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showTargeting'],
                     'defaultKey': '',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowTargeting']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowTargeting();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6865,7 +6934,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-setTargeting'],
                     'defaultKey': '',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setTargeting']();
+                        ogarminimapdrawer && ogarminimapdrawer.setTargeting();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6874,7 +6943,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-cancelTargeting'],
                     'defaultKey': '',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['cancelTargeting']();
+                        ogarminimapdrawer && ogarminimapdrawer.cancelTargeting();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6883,7 +6952,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-changeTarget'],
                     'defaultKey': '',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['changeTarget']();
+                        ogarminimapdrawer && ogarminimapdrawer.changeTarget();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6892,7 +6961,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-privateMiniMap'],
                     'defaultKey': '',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setPrivateMiniMap']();
+                        ogarminimapdrawer && ogarminimapdrawer.setPrivateMiniMap();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6901,7 +6970,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': h['hk-showQuest'],
                     'defaultKey': '',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['setShowQuest']();
+                        ogarminimapdrawer && ogarminimapdrawer.setShowQuest();
                     },
                     'keyUp': null,
                     'type': 'normal'
@@ -6910,7 +6979,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm1'],
                     'defaultKey': '1',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](1);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(1);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -6919,7 +6988,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm2'],
                     'defaultKey': '2',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](2);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(2);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -6928,7 +6997,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm3'],
                     'defaultKey': '3',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](3);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(3);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -6937,7 +7006,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm4'],
                     'defaultKey': '4',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](4);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(4);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -6946,7 +7015,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm5'],
                     'defaultKey': '5',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](5);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(5);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -6955,7 +7024,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm6'],
                     'defaultKey': '6',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](6);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(6);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -6964,7 +7033,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm7'],
                     'defaultKey': '7',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](7);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(7);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -6973,7 +7042,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm8'],
                     'defaultKey': '8',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](8);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(8);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -6982,7 +7051,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm9'],
                     'defaultKey': '9',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](9);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(9);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -6991,7 +7060,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm0'],
                     'defaultKey': '0',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](0);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(0);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7000,7 +7069,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm10'],
                     'defaultKey': 'MOUSE WHEEL',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](10);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(10);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7009,7 +7078,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm11'],
                     'defaultKey': 'LEFT',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](11);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(11);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7018,7 +7087,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm12'],
                     'defaultKey': 'UP',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](12);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(12);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7027,7 +7096,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm13'],
                     'defaultKey': 'RIGHT',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](13);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(13);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7036,7 +7105,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm14'],
                     'defaultKey': 'DOWN',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](14);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(14);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7045,7 +7114,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm15'],
                     'defaultKey': 'CTRL+1',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](15);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(15);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7054,7 +7123,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm16'],
                     'defaultKey': 'CTRL+2',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](16);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(16);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7063,7 +7132,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm17'],
                     'defaultKey': 'CTRL+3',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](17);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(17);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7072,7 +7141,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm18'],
                     'defaultKey': 'CTRL+4',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](18);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(18);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7081,7 +7150,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm19'],
                     'defaultKey': 'CTRL+5',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](19);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(19);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7090,7 +7159,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm20'],
                     'defaultKey': 'CTRL+7',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](20);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(20);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7099,7 +7168,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm21'],
                     'defaultKey': 'CTRL+8',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](21);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(21);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7108,7 +7177,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm22'],
                     'defaultKey': 'CTRL+9',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](22);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(22);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7117,7 +7186,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm23'],
                     'defaultKey': 'CTRL+0',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](23);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(23);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7126,7 +7195,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm24'],
                     'defaultKey': 'CTRL+Z',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](24);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(24);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7135,7 +7204,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm25'],
                     'defaultKey': 'CTRL+X',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](25);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(25);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7144,7 +7213,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm26'],
                     'defaultKey': 'CTRL+Q',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](26);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(26);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7153,7 +7222,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm27'],
                     'defaultKey': 'CTRL+V',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](27);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(27);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7162,7 +7231,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm28'],
                     'defaultKey': 'CTRL+B',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](28);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(28);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7171,7 +7240,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm29'],
                     'defaultKey': 'CTRL+A',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](29);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(29);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7180,7 +7249,7 @@ var thelegendmodproject = function(t, e, i) {
                     'label': c['comm30'],
                     'defaultKey': 'CTRL+D',
                     'keyDown': function() {
-                        ogarminimapdrawer && ogarminimapdrawer['sendCommand'](30);
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(30);
                     },
                     'keyUp': null,
                     'type': 'command'
@@ -7192,26 +7261,26 @@ var thelegendmodproject = function(t, e, i) {
                 'defaultMessageKey': 'ENTER',
                 'inputClassName': 'custom-key-in form-control input-sm',
                 'loadDefaultHotkeys': function() {
-                    for (var t in ogario1Hotkeys = {}, ogario11Hotkeys) ogario11Hotkeys.hasOwnProperty(t) && (ogario1Hotkeys[ogario11Hotkeys[t]['defaultKey']] = t);
+                    for (var t in ogario1Hotkeys = {}, ogario11Hotkeys) ogario11Hotkeys.hasOwnProperty(t) && (ogario1Hotkeys[ogario11Hotkeys[t].defaultKey] = t);
                     ogario1Hotkeys['spec-messageKey'] = this['defaultMessageKey'];
                 },
                 'loadHotkeys': function() {
-                    null !== window.localStorage.getItem('ogarioHotkeys') ? ogario1Hotkeys = JSON.parse(window.localStorage.getItem('ogarioHotkeys')) : this['loadDefaultHotkeys'](), null !== window.localStorage.getItem('ogarioCommands') && (c = JSON.parse(window.localStorage.getItem('ogarioCommands')));
+                    null !== window.localStorage.getItem('ogarioHotkeys') ? ogario1Hotkeys = JSON.parse(window.localStorage.getItem('ogarioHotkeys')) : this.loadDefaultHotkeys(), null !== window.localStorage.getItem('ogarioCommands') && (c = JSON.parse(window.localStorage.getItem('ogarioCommands')));
                 },
                 'saveHotkeys': function() {
-                    window.localStorage.setItem('ogarioHotkeys', JSON.stringify(ogario1Hotkeys)), this['saveCommands']();
+                    window.localStorage.setItem('ogarioHotkeys', JSON.stringify(ogario1Hotkeys)), this.saveCommands();
                 },
                 'saveCommands': function() {
-                    $('#hotkeys .command-in')['each'](function() {
+                    $('#hotkeys .command-in').each(function() {
                         var t = $(this),
-                            e = t['attr']('id');
+                            e = t.attr('id');
                         c.hasOwnProperty(e) && (c[e] = t.val());
-                    }), window.localStorage['setItem']('ogarioCommands', JSON['stringify'](c));
+                    }), window.localStorage.setItem('ogarioCommands', JSON.stringify(c));
                 },
                 'resetHotkeys': function() {
-                    this['loadDefaultHotkeys'](), $('#hotkeys-cfg .custom-key-in')['each'](function() {
-                        var t = $(this)['attr']('id');
-                        ogario11Hotkeys[t] && $(this).val(ogario11Hotkeys[t]['defaultKey']);
+                    this.loadDefaultHotkeys(), $('#hotkeys-cfg .custom-key-in').each(function() {
+                        var t = $(this).attr('id');
+                        ogario11Hotkeys[t] && $(this).val(ogario11Hotkeys[t].defaultKey);
                     });
                 },
                 'setHotkeysMenu': function() {
@@ -7224,32 +7293,32 @@ var thelegendmodproject = function(t, e, i) {
                                 if (ogario1Hotkeys.hasOwnProperty(a) && ogario1Hotkeys[a] === e) {
                                     o = a;
                                     break;
-                                } if ('hk-switchServerMode' === e && ogarminimapdrawer && !ogarminimapdrawer['privateIP']) continue;
+                                } if ('hk-switchServerMode' === e && ogarminimapdrawer && !ogarminimapdrawer.privateIP) continue;
                             if ('command' === i['type']) {
                                 var n = e.replace('hk-', '');
-                                $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + n + '\" class=\"command-in form-control input-sm\" value=\"' + c[n] + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + i['defaultKey'] + '</div><div class=\"custom-key\"><input id=\"' + e + '\" class=\"custom-key-in form-control input-sm\" value=\"' + o + '\" /></div></div>');
-                            } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + i['label'] + '</div><div class=\"default-key\">' + i['defaultKey'] + '</div><div class=\"custom-key\"><input id=\"' + e + '\" class=\"custom-key-in form-control input-sm\" value=\"' + o + '\" /></div></div>');
+                                $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + n + '\" class=\"command-in form-control input-sm\" value=\"' + c[n] + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + i.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + e + '\" class=\"custom-key-in form-control input-sm\" value=\"' + o + '\" /></div></div>');
+                            } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + i['label'] + '</div><div class=\"default-key\">' + i.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + e + '\" class=\"custom-key-in form-control input-sm\" value=\"' + o + '\" /></div></div>');
                         } 
 					$(document).on('click', '#reset-hotkeys', function(t) {
                         t.preventDefault();
-						t['resetHotkeys']();
+						t.resetHotkeys();
                     }), 
 					$(document).on('click', '#save-hotkeys', function(t) {
                         t.preventDefault(); 
-						t['saveHotkeys']();
-						$('#hotkeys')['fadeOut'](500);
+						t.saveHotkey();
+						$('#hotkeys').fadeOut(500);
                     }), 
 					$(document).on('click', '#close-hotkeys', function(t) {
                         t.preventDefault(); 
-						$('#hotkeys')['fadeOut'](500);
+						$('#hotkeys').fadeOut(500);
                     }), 
 					$(document).on('click', '.hotkeys-link', function(t) {
-                        $('#hotkeys')['fadeIn'](500);
-						$('#hotkeys-cfg')['perfectScrollbar']('update'); 
+                        $('#hotkeys').fadeIn(500);
+						$('#hotkeys-cfg').perfectScrollbar('update'); 
 						ogarcommando1();
                     }), 
-					$('#hotkeys-cfg')['perfectScrollbar'](), 
-					y && y['setMenuBg']();
+					$('#hotkeys-cfg').perfectScrollbar(), 
+					y && y.setMenuBg();
                 },
                 'getPressedKey': function(t) {
                     var e = '',
@@ -7296,7 +7365,7 @@ var thelegendmodproject = function(t, e, i) {
                             i = 'TILDE';
                             break;
                         default:
-                            i = String['fromCharCode'](t.keyCode);
+                            i = String.fromCharCode(t.keyCode);
                     }
                     return '' !== e ? '' !== i ? e + '+' + i : e : i;
                 },
@@ -7306,23 +7375,23 @@ var thelegendmodproject = function(t, e, i) {
                 },
                 'setDefaultHotkey': function(t) {
                     var e = false;
-                    return ogario11Hotkeys[t] && !ogario1Hotkeys.hasOwnProperty(ogario11Hotkeys[t]['defaultKey']) ? (e = ogario11Hotkeys[t]['defaultKey'], ogario1Hotkeys[e] = t, e) : e;
+                    return ogario11Hotkeys[t] && !ogario1Hotkeys.hasOwnProperty(ogario11Hotkeys[t].defaultKey) ? (e = ogario11Hotkeys[t].defaultKey, ogario1Hotkeys[e] = t, e) : e;
                 },
                 'setHotkey': function(t, e) {
-                    if (e && (this['lastPressedKey'] !== t || this['lastKeyId'] !== e)) {
+                    if (e && (this.lastPressedKey !== t || this.lastKeyId !== e)) {
                         var i = $('#' + e).val();
-                        if (this['deleteHotkey'](i, e), 'DEL' !== t) {
+                        if (this.deleteHotkey(i, e), 'DEL' !== t) {
                             if (ogario1Hotkeys[t] && ogario1Hotkeys[t] !== e) {
                                 var o = ogario1Hotkeys[t],
-                                    a = this['setDefaultHotkey'](o);
-                                a ? (ogario1Hotkeys[a] = o, $('#' + o).val(a)) : this['deleteHotkey'](t, o);
+                                    a = this.setDefaultHotkey(o);
+                                a ? (ogario1Hotkeys[a] = o, $('#' + o).val(a)) : this.deleteHotkey(t, o);
                             }
                             ogario1Hotkeys[t] = e, 
 							$('#' + e).val(t); 
 							if ('hk-chatMessage' === e){ 
 							ogario1Hotkeys['spec-messageKey'] = t} 
-							this['lastPressedKey'] = t; 
-							this['lastKeyId'] = e;
+							this.lastPressedKey = t; 
+							this.lastKeyId = e;
                         }
                     }
                 },
@@ -7345,77 +7414,77 @@ var thelegendmodproject = function(t, e, i) {
         }
 
         function ogarhusettings() {
-            var t = window["innerWidth"];
-            var o = window["innerHeight"];
+            var t = window.innerWidth;
+            var o = window.innerHeight;
             var a = $("#helloContainer");
-            var n = a["innerHeight"]();
+            var n = a.innerHeight();
             if (n > 0) {
-                i["menuHeight"] = n;
+                i.menuHeight= n;
             } else {
-                n = i["menuHeight"] || 618;
+                n = i.menuHeight|| 618;
             }
             var r = Math.min(1, o / n);
             var l = n * r;
             var h = Math.round(o / 2 - 0.5 * l);
             var c = "translate(-50%, 0%) scale(" + r + ")";
-            a.css("transform", c), a.css("-ms-transform", c), a.css("-webkit-transform", c), a.css("top", h + "px"), i["innerW"] = t, i["innerH"] = o;
+            a.css("transform", c), a.css("-ms-transform", c), a.css("-webkit-transform", c), a.css("top", h + "px"), i.innerW = t, i.innerH = o;
 
         }
 
         function ogarcommando1() {
-            ogarminimapdrawer['protocolMode'] || (window.onkeydown = function(t) {});
+            ogarminimapdrawer.protocolMode || (window.onkeydown = function(t) {});
         }
         document.onkeydown = function(t) {
-            var e = lastkeys['getPressedKey'](t);
-            if (('INPUT' !== t['target']['tagName'] || t['target']['className'] === lastkeys['inputClassName'] || e === ogario1Hotkeys['spec-messageKey']) && '' !== e && !ogarioefaultHotkeys[e]) {
-                if (ogarioefaultHotkeys[e] = true, 'ESC' === e) return t.preventDefault(), void(ogarminimapdrawer && ogarminimapdrawer['showMenu']());
-                if (t['target']['className'] === lastkeys['inputClassName']) return t.preventDefault(), void lastkeys['setHotkey'](e, t['target']['id']);
+            var e = lastkeys.getPressedKey(t);
+            if (('INPUT' !== t.target.tagName || t.target.className === lastkeys.inputClassName || e === ogario1Hotkeys['spec-messageKey']) && '' !== e && !ogarioefaultHotkeys[e]) {
+                if (ogarioefaultHotkeys[e] = true, 'ESC' === e) return t.preventDefault(), void(ogarminimapdrawer && ogarminimapdrawer.showMenu());
+                if (t.target.className === lastkeys.inputClassName) return t.preventDefault(), void lastkeys.setHotkey(e, t.target.id);
                 if (ogario1Hotkeys[e]) {
                     t.preventDefault();
                     var i = ogario1Hotkeys[e];
-                    '' !== i && ogario11Hotkeys[i] && ogario11Hotkeys[i]['keyDown'] && ogario11Hotkeys[i]['keyDown']();
+                    '' !== i && ogario11Hotkeys[i] && ogario11Hotkeys[i].keyDown && ogario11Hotkeys[i].keyDown();
                 }
             }
         }
 		document.onkeyup = function(t) {
-            var e = lastkeys['getPressedKey'](t);
+            var e = lastkeys.getPressedKey(t);
             if ('' !== e) {
                 if (ogario1Hotkeys[e]) {
                     var i = ogario1Hotkeys[e];
-                    '' !== i && ogario11Hotkeys[i] && ogario11Hotkeys[i]['keyUp'] && ogario11Hotkeys[i]['keyUp']();
+                    '' !== i && ogario11Hotkeys[i] && ogario11Hotkeys[i].keyUp && ogario11Hotkeys[i].keyUp();
                 }
                 ogarioefaultHotkeys[e] = false;
             }
         } 
-		window['onmousedown'] = function(t) {
-            if (!$("#overlays")["is"](":visible")) {
-                if (2 == t["which"]) {
-                    t["preventDefault"]();
+		window.onmousedown = function(t) {
+            if (!$("#overlays").is(":visible")) {
+                if (2 == t.which) {
+                    t,preventDefault();
                     if (ogarminimapdrawer) {
-                        ogarminimapdrawer["sendCommand"](10);
+                        ogarminimapdrawer,sendCommand(10);
                     }
                 } else {
-                    if (v["mouseSplit"] && (1 == t["which"] && !v["mouseInvert"] || 3 == t["which"] && v["mouseInvert"])) {
+                    if (v,mouseSplit && (1 == t.which && !v,mouseInvert || 3 == t.which && v,mouseInvert)) {
                         t.preventDefault();
                         if (ogarminimapdrawer) {
                             ogarminimapdrawer.split();
                         }
                     }
-                    if (v["mouseFeed"] && (3 == t["which"] && !v["mouseInvert"] || 1 == t["which"] && v["mouseInvert"])) {
+                    if (v,mouseFeed && (3 == t.which && !v,mouseInvert || 1 == t.which && v,mouseInvert)) {
                         t.preventDefault();
                         if (ogarminimapdrawer) {
-                            ogarminimapdrawer["macroFeed"](true);
+                            ogarminimapdrawer.macroFeed(true);
                         }
                     }
                 }
             }
         }
-		window['onmouseup'] = function(t) {
-            if (v["mouseFeed"] && (3 == t["which"] && !v["mouseInvert"] || 1 == t["which"] && v["mouseInvert"]) && ogarminimapdrawer) {
-                ogarminimapdrawer["macroFeed"](false);
+		window.onmouseup= function(t) {
+            if (v,mouseFeed && (3 == t.which && !v,mouseInvert || 1 == t.which && v,mouseInvert) && ogarminimapdrawer) {
+                ogarminimapdrawer.macroFeed(false);
             }
         };
-		window['onbeforeunload'] = function(t) {
+		window.onbeforeunload = function(t) {
             return i.play ? h.exit : void 0;
         }; 
 		i = M; 
@@ -7424,8 +7493,8 @@ var thelegendmodproject = function(t, e, i) {
 		if ('/ogario' === window.location.pathname){
 			ogarjoiner('/' + window.location.hash); 
 		}
-		window['onresize'] = function() {
-            ogarfooddrawer['resizeCanvas'](), ogarhusettings();
+		window.onresize = function() {
+            ogarfooddrawer.resizeCanvas(), ogarhusettings();
         };
 		ogarassembler();
 		window.core = {
