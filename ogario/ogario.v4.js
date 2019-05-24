@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.553 MEGA TEST
+// v1.554 MEGA TEST
 // Game Configurations
 
 window.testobjects = {};
@@ -1906,6 +1906,7 @@ var thelegendmodproject = function(t, e, i) {
                 'color': g.mainColor
             },
             v = {
+				'isAlphaChanged':false,
 				'jellyPhisycs':false,
 				'virusSound':false,				
                 'quickResp': true,
@@ -4815,7 +4816,7 @@ var thelegendmodproject = function(t, e, i) {
 							//console.log("is jelly");
                 if (v.transparentViruses) {
                     style.globalAlpha *= g.virusAlpha;
-                    isAlphaChanged = true;
+                    v.isAlphaChanged = true;
                 }
                 if (v.virColors && M.play) {
                     style.fillStyle = ogarminimapdrawer.setVirusColor(y);
@@ -4825,9 +4826,9 @@ var thelegendmodproject = function(t, e, i) {
                     style.strokeStyle = g.virusStrokeColor;
                 }
                 style.fill();
-                if (isAlphaChanged) {
+                if (v.isAlphaChanged) {
                     style.globalAlpha = g.cellsAlpha;
-                    isAlphaChanged = false;
+                    v.isAlphaChanged = false;
                 }
                 style.lineWidth = g.virusStrokeSize;
 				if(v.virusGlow){ style.shadowBlur = g.virusGlowSize;
