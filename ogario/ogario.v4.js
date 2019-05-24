@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.554 MEGA TEST
+// v1.556 MEGA TEST
 // Game Configurations
 
 window.testobjects = {};
@@ -50,23 +50,26 @@ function checkVideos(a, b) {
 }
 
 function checkVideos2(a, b) {
-
+		console.log("b is: "+ b);
     for (i = 0; i < legendmod3.top5.length - 1; i++) {
 
         if (i.nick == b) {
-            //legendmod3.setTarget(i.id);				
+            //legendmod3.setTarget(i.id);	
+			
             if (legendmod3.lastSentNick != b) {
                 if (legendmod5.videoSkinsMusic == true) {
                     window.videoJustWatchProflag2[b] = false;
                     if (legendmod3.calculateMapSector(legendmod3.top5[i].x, legendmod3.top5[i].y) == legendmod3.currentSector && legendmod3.currentSector == "C3") {
-
+						//console.log("volume 0, stage 0");
                         window.videoJustWatchPro[a].volume = 1;
                         window.videoJustWatchProflag2[b] = true;
                     } else {
+						//console.log("volume 0, stage 1");
                         window.videoJustWatchPro[a].volume = 0;
                     }
                 }
 				else{
+					//console.log("volume 0, stage 2");
 					window.videoJustWatchPro[a].volume = 0;
 				}
             }
@@ -74,13 +77,14 @@ function checkVideos2(a, b) {
 
     }
     if (legendmod3.lastSentNick != b) {
-        checkvideoJustWatchProflag2(b);
+        checkvideoJustWatchProflag2(a,b);
     }
 }
 
-function checkvideoJustWatchProflag2(b){
+function checkvideoJustWatchProflag2(a,b){
 	
 	if (!window.videoJustWatchProflag2[b]){
+		//console.log("volume 0, stage 3");
 		window.videoJustWatchPro[a].volume = 0;
 	}
 }
