@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.552 MEGA TEST
+// v1.553 MEGA TEST
 // Game Configurations
 
 window.testobjects = {};
@@ -1112,8 +1112,8 @@ var thelegendmodproject = function(t, e, i) {
                     'bordersWidth': 40,
                     'sectorsWidth': 40,
                     'sectorsFontSize': 1200,
-                    'cellsAlpha': 0.9,
-                    'skinsAlpha': 0.7,
+                    'cellsAlpha': 0.99,
+                    'skinsAlpha': 0.99,
                     'virusAlpha': 0.6,
                     'textAlpha': 1,
                     'virusStrokeSize': 20,
@@ -1274,7 +1274,7 @@ var thelegendmodproject = function(t, e, i) {
                     'sectorsWidth': 40,
                     'sectorsFontSize': 1200,
                     'cellsAlpha': 0.99,
-                    'skinsAlpha': 0.7,
+                    'skinsAlpha': 0.99,
                     'virusAlpha': 0.4,
                     'virusStrokeSize': 10,
                     "virusStrokeSize": 20,
@@ -1537,8 +1537,8 @@ var thelegendmodproject = function(t, e, i) {
                 'bordersWidth': 40,
                 'sectorsWidth': 40,
                 'sectorsFontSize': 1200,
-                'cellsAlpha': 0.9,
-                'skinsAlpha': 0.7,
+                'cellsAlpha': 0.99,
+                'skinsAlpha': 0.99,
                 'virusAlpha': 0.6,
                 'textAlpha': 1,
                 'virusStrokeSize': 20,
@@ -1906,7 +1906,7 @@ var thelegendmodproject = function(t, e, i) {
                 'color': g.mainColor
             },
             v = {
-				'jellyPhisycs':true,
+				'jellyPhisycs':false,
 				'virusSound':false,				
                 'quickResp': true,
                 'autoResp': false,
