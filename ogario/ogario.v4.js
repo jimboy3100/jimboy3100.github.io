@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.551 MEGA TEST
+// v1.552 MEGA TEST
 // Game Configurations
 
 window.testobjects = {};
@@ -3643,11 +3643,11 @@ var thelegendmodproject = function(t, e, i) {
                     t['handleMessage'](e);
                 }
 				this.socket['onclose'] = function(e) {
-                    t.flushData();
+                    //t.flushData();
 					console.log('[Legend mod Express] Socket close', e);
                 }
 				this.socket['onerror'] = function(e) {
-                    t.flushData();
+                    //t.flushData();
 					console.log('[Legend mod Express] Socket error', e);
                 };
             },
