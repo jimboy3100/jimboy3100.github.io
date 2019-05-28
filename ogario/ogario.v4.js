@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.557 MEGA TEST
+// v1.573 MEGA TEST
 // Game Configurations
 
 window.testobjects = {};
@@ -5161,7 +5161,7 @@ var thelegendmodproject = function(t, e, i) {
 				this.time = Date.now();
                 var e = this.createView(5);
                 e.setUint8(0, 254), 
-				e.setUint32(1, 20, true), 
+				e.setUint32(1, 21, true), 
 				this.sendMessage(e), 
 				(e = this.createView(5)).setUint8(0, 255), 
 				e.setUint32(1, this.clientVersion, true), 
@@ -5338,7 +5338,7 @@ var thelegendmodproject = function(t, e, i) {
 					console.log('[Legend mod Express] Client version:', t, e); //
                 } //
             },
-            
+/*            
 			'generateClientKey': function(t, e) {
                 if (!t.length || !e.byteLength) return null;
                 for (var i = null, s = 1540483477, o = t.match(/(ws+:\/\/)([^:]*)(:\d+)/)[2], a = o.length + e.byteLength, n = new Uint8Array(a), r = 0; r < o.length; r++) n[r] = o.charCodeAt(r);
@@ -5357,7 +5357,7 @@ var thelegendmodproject = function(t, e, i) {
                         i = u;
                 }
                 return i != u && (i = 0 | Math['imul'](n[c] ^ u, s)), i ^= u = i >>> 13, i = 0 | Math['imul'](i, s), i ^= u = i >>> 15, console.log('[Legend mod Express] Generated client key:', i),window.generatedClientKey=i, i;
-            },
+            }, 
             'shiftKey': function(t) {
                 //if (window.disableIntegrity!=false){ //
                 return t = 0 | Math['imul'](t, 1540483477), t = 114296087 ^ (0 | Math['imul'](t >>> 24 ^ t, 1540483477)), (t = 0 | Math['imul'](t >>> 13 ^ t, 1540483477)) >>> 15 ^ t;
@@ -5365,7 +5365,81 @@ var thelegendmodproject = function(t, e, i) {
                 //else{ //
                 //return 0; //	
                 //} //
-            },
+            },			
+			*/
+        "generateClientKey" : function(option, _relatedTarget) {
+          if (!option['length'] || !_relatedTarget['byteLength']) {
+            return null;
+		  }
+          var j = null;
+          var suggestedValue = 1540483477;
+          var constraints = option['match'](/(ws+:\/\/)([^:]*)(:\d+)/)[2];
+          var framesize = constraints['length'] + _relatedTarget['byteLength'];
+          var data = new Uint8Array(framesize);
+          var value = 0;
+          for (; value < constraints['length']; value++) {
+            data[value] = constraints['charCodeAt'](value);
+		  }
+          data['set'](_relatedTarget, constraints['length']);
+          var dv = new DataView(data["buffer"]);
+          var maxTextureAvailableSpace = framesize - 1;
+          var k = (maxTextureAvailableSpace - 4 & -4) + 4 | 0;
+          var i = maxTextureAvailableSpace ^ 255;
+          var n = 0;
+          for (; maxTextureAvailableSpace > 3;) {
+            j = Math['imul'](dv['getInt32'](n, !![]), suggestedValue) | 0;
+            i = (Math['imul'](j >>> 24 ^ j, suggestedValue) | 0) ^ (Math['imul'](i, suggestedValue) | 0);
+            maxTextureAvailableSpace = maxTextureAvailableSpace - 4;
+            n = n + 4;
+		  }
+          switch(maxTextureAvailableSpace) {
+            case 3:
+              i = data[k + 2] << 16 ^ i;
+              i = data[k + 1] << 8 ^ i;
+              break;
+            case 2:
+              i = data[k + 1] << 8 ^ i;
+              break;
+            case 1:
+              break;
+            default:
+              j = i;
+              break;
+		  }
+          if (j != i) {
+            j = Math['imul'](data[k] ^ i, suggestedValue) | 0;
+		  }
+          i = j >>> 13;
+          j = i ^ j;
+          j = Math["imul"](j, suggestedValue) | 0;
+          i = j >>> 15;
+          j = i ^ j;
+          console['log']('[Legend mod Express] Generated client key:', j);
+          return j;
+		  
+        },	
+        "shiftKey" : function(c) {
+          var suggestedValue = 1540483477;
+          c = Math['imul'](c, suggestedValue) | 0;
+          c = (Math['imul'](c >>> 24 ^ c, suggestedValue) | 0) ^ 114296087;
+          c = Math['imul'](c >>> 13 ^ c, suggestedValue) | 0;
+          return c >>> 15 ^ c;
+        },		
+        "shiftMessage" : function(PL$42, isSlidingUp, $cont) {
+          if (!$cont) {
+            var PL$41 = 0;
+            for (; PL$41 < PL$42["byteLength"]; PL$41++) {
+              PL$42["setUint8"](PL$41, PL$42["getUint8"](PL$41) ^ isSlidingUp >>> PL$41 % 4 * 8 & 255);
+            }
+          } else {
+            PL$41 = 0;
+            for (; PL$41 < PL$42["length"]; PL$41++) {
+              PL$42["writeUInt8"](PL$42["readUInt8"](PL$41) ^ isSlidingUp >>> PL$41 % 4 * 8 & 255, PL$41);
+            }
+          }
+          return PL$42;
+        },
+		/*
             'shiftMessage': function(t, e, i) {
                 //if (window.disableIntegrity!=false){ //
                 if (i)
@@ -5377,23 +5451,76 @@ var thelegendmodproject = function(t, e, i) {
                 //else{ //				
                 //return t; //
                 //} //
-            },
+            },		*/	
             'decompressMessage': function(t) {
                 var e = new o(t['buffer']);
                 var i = new o(e.readUInt32LE(1));
                 return a['decodeBlock'](e['slice'](5), i), i;
             },
-            'handleMessage': function(t) {
+      'Node': function (lsb, msb) {
+        this["view"] = lsb;
+        this["offset"] = msb;
+        this["contentType"] = 1;
+        this["uncompressedSize"] = 0;
+        this["setContentType"] = function() {
+          this["contentType"] = this["readUint32"]();
+        };
+        this["setUncompressedSize"] = function() {
+          this["uncompressedSize"] = this["readUint32"]();
+        };
+        this["compareBytesGt"] = function(first, second) {
+          var stripTerrain = first < 0;
+          var coast = second < 0;
+          if (stripTerrain != coast) {
+            return stripTerrain;
+          }
+          return first > second;
+        };
+        this["skipByte"] = function() {
+          var _0x4556d2 = this["readByte"]();
+          if (_0x4556d2 < 128) {
+            return;
+          }
+          this["skipByte"]();
+        };
+        this["readByte"] = function() {
+          return this["view"]["getUint8"](this["offset"]++);
+        };
+        this["readUint32"] = function() {
+          var result = 0;
+          var shift = 0;
+          for (; !![];) {
+            var digit = this["readByte"]();
+            if (this["compareBytesGt"](32, shift)) {
+              if (digit >= 128) {
+                result = result | (digit & 127) << shift;
+              } else {
+                result = result | digit << shift;
+                break;
+              }
+            } else {
+              this["skipByte"]();
+              break;
+            }
+            shift = shift + 7;
+          }
+          return result;
+        };
+        this["readFlag"] = function() {
+          return this["readUint32"]() >>> 3;
+        };
+      },			
+            'handleMessage': function(data) {
                 var i = function() {
                         for (var e = '';;) {
-                            var i = t.getUint8(s++);
+                            var i = data.getUint8(s++);
                             if (0 == i) break;
                             e += String.fromCharCode(i);
                         }
                         return e;
                     },
                     s = 0,
-                    o = t.getUint8(s++);
+                    o = data.getUint8(s++);
                 switch (54 == o && (o = 53), o) {
 					
 					
@@ -5405,11 +5532,11 @@ var thelegendmodproject = function(t, e, i) {
                     case 5:
                         break;
                     case 17:
-                        this.viewX = t.getFloat32(s, true);
+                        this.viewX = data.getFloat32(s, true);
 						s += 4;
-						this.viewY = t.getFloat32(s, true);
+						this.viewY = data.getFloat32(s, true);
 						s += 4;
-						this.scale = t.getFloat32(s, true);
+						this.scale = data.getFloat32(s, true);
                         break;
                     case 18:
                         if (this.protocolKey){ 
@@ -5418,31 +5545,31 @@ var thelegendmodproject = function(t, e, i) {
 						this.flushCellsData();
                         break;
                     case 32:
-                        this.playerCellIDs.push(t.getUint32(s, true));
+                        this.playerCellIDs.push(data.getUint32(s, true));
 						this.play || (this.play = true, ogarminimapdrawer.hideMenu(), this.playerColor = null, ogarminimapdrawer.onPlayerSpawn());
                         break;
                     case 50:
                         this.pieChart = [];
-                        var a = t.getUint32(s, true);
+                        var a = data.getUint32(s, true);
                         s += 4;
-                        for (var n = 0; n < a; n++) this.pieChart.push(t.getFloat32(s, true)), s += 4;
+                        for (var n = 0; n < a; n++) this.pieChart.push(data.getFloat32(s, true)), s += 4;
                         ogarfooddrawer.drawPieChart();
                         break;
                     case 53:
-                        if (this['leaderboard'] = [], this.playerPosition = 0, 54 == t.getUint8(0)) {
-                            t.getUint16(s, true);
+                        if (this['leaderboard'] = [], this.playerPosition = 0, 54 == data.getUint8(0)) {
+                            data.getUint16(s, true);
                             s += 2;
                         }
-                        for (var r = 0; s < t.byteLength;) {
+                        for (var r = 0; s < data.byteLength;) {
                             var l = '';
                             var h = 0;
                             var c = false;
                             r++; 
-							if (2 & (y = t.getUint8(s++))){ 
+							if (2 & (y = data.getUint8(s++))){ 
 							l = window.decodeURIComponent(escape(i()));
 							}
 							if (4 & y){
-							h = t.getUint32(s, true);
+							h = data.getUint32(s, true);
 							s += 4;
 							}
 							if (8 & y){ 
@@ -5464,14 +5591,14 @@ var thelegendmodproject = function(t, e, i) {
                     case 54:
                         break;
                     case 69:
-                        var u = t.getUint16(s, true);
+                        var u = data.getUint16(s, true);
                         s += 2, this.ghostCells = [];
                         for (n = 0; n < u; n++) {
-                            var d = t.getInt32(s, true);
+                            var d = data.getInt32(s, true);
                             s += 4;
-                            var f = t.getInt32(s, true);
+                            var f = data.getInt32(s, true);
                             s += 4;
-                            var m = t.getUint32(s, true);
+                            var m = data.getUint32(s, true);
                             s += 5;
                             var g = ~~Math.sqrt(100 * m);
                             this.ghostCells.push({
@@ -5486,14 +5613,50 @@ var thelegendmodproject = function(t, e, i) {
                     case 85:
                         console.log('[Legend mod Express] Captcha requested'); if(window.master && window.master['recaptchaRequested']) { window.master['recaptchaRequested']();}
                         break;
+			  case 102:
+              var ret = new Node(data, s);
+              key_or_value = ret["readFlag"]();
+              if (key_or_value == 1) {
+                ret["setContentType"]();
+              }
+              key_or_value = ret["readFlag"]();
+              if (key_or_value == 2) {
+                ret["setUncompressedSize"]();
+              }
+              key_or_value = ret["readFlag"]();
+              if (key_or_value == 1) {
+                var obj = ret["readUint32"]();
+                var previousState = ret["readFlag"]();
+                var artistTrack = ret["readUint32"]();
+                switch(obj) {
+                  case 11:
+                    console["log"]("102 login response", ret["view"]["byteLength"], ret["contentType"], ret["uncompressedSize"], obj, previousState, artistTrack);
+                    break;
+                  case 62:
+                    console["log"]("102 game over");
+                    break;
+                  default:
+                    console["log"]("102 unknown", obj, previousState);
+                }
+              }
+              if (data["byteLength"] < 20) {
+                this["loggedIn"] = ![];
+                if (window["logout"]) {
+                  window["logout"]();
+                }
+              }
+            case 103:
+              this[accessTokenSent] = !![];
+              break;			  
+			  /*
                     case 102:
 						//in here there are sent info about the user
 						//searching how protocol works
-						//console.log("t: " + t);
-						window.testobjects=t;
-						//console.log("t.getUint32: " + s);
-						//console.log("t.getUint32: " + t.getUint32(s, true));
-                        if (t.byteLength < 20 && window['logout']){
+						//console.log("data: " + data);
+						window.testobjects=data;
+						//console.log("data.getUint32: " + s);
+						//console.log("data.getUint32: " + data.getUint32(s, true));
+                        if (data.byteLength < 20 && window['logout']){
 							window['logout']();
 							}
                         break;
@@ -5501,100 +5664,101 @@ var thelegendmodproject = function(t, e, i) {
                         this['loggedInTime'] = Date.now();
 						this['accessTokenSent'] = true;
                         break;
-						
-						
+
 					//jimboy3100's protocols	 112 & 113 NOT WORK
 			case 112:
 				
-				const packet112 = t.byteLength + 2;
+				const packet112 = data.byteLength + 2;
 				
 				
-				for (let i = 0; i < t.byteLength; i++) t.writeUInt8(t.readUInt8(i), i);
-				ogarminimapdrawer['writeUInt16LE'](this.id, t.byteLength);
+				for (let i = 0; i < data.byteLength; i++) data.writeUInt8(data.readUInt8(i), i);
+				ogarminimapdrawer['writeUInt16LE'](this.id, data.byteLength);
 				console.log(this.id);
 				this['sendBuffer'](packet112);
 				break;
 				
 			case 113:
-				const botID = t.readUInt16LE(t.byteLength - 2);
-				const packet113 = t.byteLength - 2;
-				for (let i = 0; i < t.byteLength - 2; i++) packet113.writeUInt8(t.readUInt8(i), i);
+				const botID = data.readUInt16LE(data.byteLength - 2);
+				const packet113 = data.byteLength - 2;
+				for (let i = 0; i < data.byteLength - 2; i++) packet113.writeUInt8(data.readUInt8(i), i);
 				this['sendBuffer'](packet113);
 				break;	
 				///			
 
-
+*/
 
 				
                     case 114:
+						break;
                     case 161:
                         break;
                     case 176:
-                        this['battleRoyale'].startTime = t.getUint32(s, true);
+                        this['battleRoyale'].startTime = data.getUint32(s, true);
                         break;
                     case 177:
                         this['battleRoyale'].joined = true;
                         break;
                     case 178:
-                        this['battleRoyale'].players = t.getUint16(s, true), s += 2;
-                        var y = t.getUint16(s, true);
+                        this['battleRoyale'].players = data.getUint16(s, true), s += 2;
+                        var y = data.getUint16(s, true);
                         s += 2, y || (this['battleRoyale'].state = 0, this['battleRoyale'].joined = false),
-						3 & y && (this['battleRoyale'].state = t.getUint8(s++),
-						this['battleRoyale']['x'] = t.getInt32(s, true),
-						s += 4, this['battleRoyale']['y'] = t.getInt32(s, true),
-						s += 4, this['battleRoyale'].radius = t.getUint32(s, true),
-						s += 4, this['battleRoyale'].shrinkTime = 1000 * t.getUint32(s, true),
+						3 & y && (this['battleRoyale'].state = data.getUint8(s++),
+						this['battleRoyale']['x'] = data.getInt32(s, true),
+						s += 4, this['battleRoyale']['y'] = data.getInt32(s, true),
+						s += 4, this['battleRoyale'].radius = data.getUint32(s, true),
+						s += 4, this['battleRoyale'].shrinkTime = 1000 * data.getUint32(s, true),
 						s += 4, this['battleRoyale'].shrinkTime && 
 						(this['battleRoyale'].timeLeft = ~~((this['battleRoyale'].shrinkTime - Date.now() + this.serverTimeDiff) / 1000),
 						this['battleRoyale'].timeLeft < 0 && (this['battleRoyale'].timeLeft = 0))),
-						2 & y && (this['battleRoyale'].targetX = t.getInt32(s, true), s += 4,
-						this['battleRoyale'].targetY = t.getInt32(s, true), s += 4, this['battleRoyale'].targetRadius = t.getUint32(s, true));
+						2 & y && (this['battleRoyale'].targetX = data.getInt32(s, true), s += 4,
+						this['battleRoyale'].targetY = data.getInt32(s, true), s += 4, this['battleRoyale'].targetRadius = data.getUint32(s, true));
                         break;
                     case 179:
-                        y = t.getUint8(s);
+                        y = data.getUint8(s);
 						window.decodeURIComponent(escape(i()));
                         y || window.decodeURIComponent(escape(i()));
                         break;
                     case 180:
                         this['battleRoyale'].joined = false;
 						this['battleRoyale'].rank = [];
-						this['battleRoyale'].playerRank = t.getUint32(s, true);
+						this['battleRoyale'].playerRank = data.getUint32(s, true);
 						s += 8;
-                        var ogario1PlayerProfiles = t.getUint16(s, true);
+                        var ogario1PlayerProfiles = data.getUint16(s, true);
                         s += 2;
                         for (n = 0; n < ogario1PlayerProfiles; n++) {
                             var ogarcopythelb = window.decodeURIComponent(escape(i())),
-                                v = t.getUint32(s, true);
+                                v = data.getUint32(s, true);
                             s += 4, this['battleRoyale'].rank.push({
                                 'place': v,
                                 'name': ogarcopythelb
                             });
                         }
                         break;
-                    case 226: //jimboy3100's					
-					//ogarminimapdrawer.writeUInt8(227, 0);
-					//this.sendMessage(t);				
-                        break;
-						
-						
+            case 226:
+              var extraOptions = data["getUint16"](1, !![]);
+              data = this["createView"](3);
+              data["setUint8"](0, 227);
+              data["setUint16"](1, extraOptions);
+              this["sendMessage"](data);
+              break;
                     case 241:
-                        this.protocolKey = t.getUint32(s, true);
+                        this.protocolKey = data.getUint32(s, true);
 						console.log('[Legend mod Express] Received protocol key:', this.protocolKey);
-                        var irenderfromagario = new Uint8Array(t['buffer'], s += 4);
+                        var irenderfromagario = new Uint8Array(data['buffer'], s += 4);
                         this.clientKey = this['generateClientKey'](this.ws, irenderfromagario);
 						if (window.master && window.master.login){ 
 						window.master.login();
 						}
                         break;
                     case 242:
-                        this['serverTime'] = 1000 * t.getUint32(s, true);
+                        this['serverTime'] = 1000 * data.getUint32(s, true);
 						this.serverTimeDiff = Date.now() - this['serverTime'];
                         break;
                     case 255:
-                        this['handleSubmessage'](t);
+                        this['handleSubmessage'](data);
                         break;
                     default:
-                        console.log('[Legend mod Express] Unknown opcode:', t.getUint8(0));
+                        console.log('[Legend mod Express] Unknown opcode:', data.getUint8(0));
                 }
             },
             'handleSubmessage': function(t) {
@@ -5649,7 +5813,7 @@ var thelegendmodproject = function(t, e, i) {
                     }
                 }
 
-            },
+            },			
             'flushCellsData': function() {
                 this.indexedCells = {}, 
 				this.cells = []; 
@@ -7539,18 +7703,22 @@ var thelegendmodproject = function(t, e, i) {
             'setClientVersion': function(t, e) {
                 M.setClientVersion(t, e);
             },
-            'proxyMobileData': function(t = []) {
-                if (Array.isArray(t)) {
-                    8 == t[0] && t.unshift(102);
-                    var e = M.createView(t.length);
-                    M.sendMessage(e);
-                } else console.log('ProxyMobileData ERROR: Array data required.');
-            },
+          "proxyMobileData" : function(arr = []) {
+            if (!Array["isArray"](arr)) {
+              console["log"]("ProxyMobileData ERROR: Array data required.");
+              return;
+            }
+            if (arr[0] == 8) {
+              arr["unshift"](102);
+            }
+            arr = new Uint8Array(arr);
+            M["sendMessage"](new DataView(arr["buffer"]));
+          },
 			'registerSkin': function(a, b, c, d, e){
 				window.customskinsname=a;
 				window.customskinsurl=c;
 			}
-        }; 
+        }; 	
 		window.master.getClientVersion(); 
 		y.init(); 
 		ogarminimapdrawer.init(); 
