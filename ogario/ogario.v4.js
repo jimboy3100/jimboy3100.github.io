@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.579 MEGA TEST
+// v1.585 MEGA TEST
 // Game Configurations
 
 window.testobjects = {};
@@ -5007,59 +5007,7 @@ var thelegendmodproject = function(t, e, i) {
         }
         window.legendmod1 = ogarbasicassembly;
 		
-		function Node(lsb, msb) {
-        M["view"] = lsb;
-        M["offset"] = msb;
-        M["contentType"] = 1;
-        M["uncompressedSize"] = 0;
-        M["setContentType"] = function() {
-          M["contentType"] = M["readUint32"]();
-        };
-        M["setUncompressedSize"] = function() {
-          M["uncompressedSize"] = M["readUint32"]();
-        };
-        M["compareBytesGt"] = function(first, second) {
-          var stripTerrain = first < 0;
-          var coast = second < 0;
-          if (stripTerrain != coast) {
-            return stripTerrain;
-          }
-          return first > second;
-        };
-        M["skipByte"] = function() {
-          var _0x4556d2 = M["readByte"]();
-          if (_0x4556d2 < 128) {
-            return;
-          }
-          M["skipByte"]();
-        };
-        M["readByte"] = function() {
-          return M["view"]["getUint8"](M["offset"]++);
-        };
-        M["readUint32"] = function() {
-          var result = 0;
-          var shift = 0;
-          for (; !![];) {
-            var digit = M["readByte"]();
-            if (M["compareBytesGt"](32, shift)) {
-              if (digit >= 128) {
-                result = result | (digit & 127) << shift;
-              } else {
-                result = result | digit << shift;
-                break;
-              }
-            } else {
-              M["skipByte"]();
-              break;
-            }
-            shift = shift + 7;
-          }
-          return result;
-        };
-        M["readFlag"] = function() {
-          return M["readUint32"]() >>> 3;
-        };
-      };
+
 		
         var M = {
 				'quadtree':null,
@@ -5617,24 +5565,30 @@ var thelegendmodproject = function(t, e, i) {
                         console.log('[Legend mod Express] Captcha requested'); if(window.master && window.master['recaptchaRequested']) { window.master['recaptchaRequested']();}
                         break;
 			  case 102:
-			  /*
-              var ret = new Node(data, s);
-              key_or_value = ret["readFlag"]();
+              if (data["byteLength"] < 20) {
+                this["loggedIn"] = ![];
+                if (window["logout"]) {
+                  window["logout"]();
+                }
+              }			  
+			  
+              window.ret = new Node(data, s);
+              var key_or_value = window.ret["readFlag"]();
               if (key_or_value == 1) {
-                ret["setContentType"]();
+                window.ret["setContentType"]();
               }
-              key_or_value = ret["readFlag"]();
+              key_or_value = window.ret["readFlag"]();
               if (key_or_value == 2) {
-                ret["setUncompressedSize"]();
+                window.ret["setUncompressedSize"]();
               }
-              key_or_value = ret["readFlag"]();
+              key_or_value = window.ret["readFlag"]();
               if (key_or_value == 1) {
-                var obj = ret["readUint32"]();
-                var previousState = ret["readFlag"]();
-                var artistTrack = ret["readUint32"]();
+                var obj = window.ret["readUint32"]();
+                var previousState = window.ret["readFlag"]();
+                var artistTrack = window.ret["readUint32"]();
                 switch(obj) {
                   case 11:
-                    console["log"]("102 login response", ret["view"]["byteLength"], ret["contentType"], ret["uncompressedSize"], obj, previousState, artistTrack);
+                    console["log"]("102 login response", window.ret["view"]["byteLength"], window.ret["contentType"], window.ret["uncompressedSize"], obj, previousState, artistTrack);
                     break;
                   case 62:
                     console["log"]("102 game over");
@@ -5643,13 +5597,8 @@ var thelegendmodproject = function(t, e, i) {
                     console["log"]("102 unknown", obj, previousState);
                 }
               }
-			  */
-              if (data["byteLength"] < 20) {
-                this["loggedIn"] = ![];
-                if (window["logout"]) {
-                  window["logout"]();
-                }
-              }
+			  
+
             case 103:
               M["accessTokenSent"] = !![];
               break;			  
@@ -6288,7 +6237,7 @@ var thelegendmodproject = function(t, e, i) {
                 }
             }
             //this.ctx.finish2D();
-        },
+        },		
         pointInCircle: function(x, y, cx, cy, radius) {
             var distancesquared = (x - cx) * (x - cx) + (y - cy) * (y - cy);
             return distancesquared <= radius * radius;
@@ -6679,6 +6628,7 @@ var thelegendmodproject = function(t, e, i) {
 					this.preDrawIndicator(); 
 					window.requestAnimationFrame(ogarfooddrawer.render);
                 }
+		
             },
             ogarioefaultHotkeys = {},
             ogario1Hotkeys = {},
@@ -7673,6 +7623,64 @@ var thelegendmodproject = function(t, e, i) {
             ogarfooddrawer.resizeCanvas(), ogarhusettings();
         };
 		ogarassembler();
+		
+		
+		
+		function Node(lsb, msb) {
+        this["view"] = lsb;
+        this["offset"] = msb;
+        this["contentType"] = 1;
+        this["uncompressedSize"] = 0;
+        this["setContentType"] = function() {
+          this["contentType"] = this["readUint32"]();
+        };
+        this["setUncompressedSize"] = function() {
+          this["uncompressedSize"] = this["readUint32"]();
+        };
+        this["compareBytesGt"] = function(first, second) {
+          var stripTerrain = first < 0;
+          var coast = second < 0;
+          if (stripTerrain != coast) {
+            return stripTerrain;
+          }
+          return first > second;
+        };
+        this["skipByte"] = function() {
+          var checkvarreadByte = this["readByte"]();
+          if (checkvarreadByte < 128) {
+            return;
+          }
+          this["skipByte"]();
+        };
+        this["readByte"] = function() {
+          return this["view"]["getUint8"](this["offset"]++);
+        };
+        this["readUint32"] = function() {
+          var result = 0;
+          var shift = 0;
+          for (; !![];) {
+            var digit = this["readByte"]();
+            if (this["compareBytesGt"](32, shift)) {
+              if (digit >= 128) {
+                result = result | (digit & 127) << shift;
+              } else {
+                result = result | digit << shift;
+                break;
+              }
+            } else {
+              this["skipByte"]();
+              break;
+            }
+            shift = shift + 7;
+          }
+          return result;
+        };
+        this["readFlag"] = function() {
+          return this["readUint32"]() >>> 3;
+        }
+		}	
+
+		
 		window.core = {
             'connect': function(t) {
                 M.connect(t);
