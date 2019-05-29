@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.578 MEGA TEST
+// v1.579 MEGA TEST
 // Game Configurations
 
 window.testobjects = {};
@@ -5470,6 +5470,7 @@ var thelegendmodproject = function(t, e, i) {
           i = j >>> 15;
           j = i ^ j;
           console['log']('[Legend mod Express] Generated client key:', j);
+		  window.generatedClientKey=j;
           return j;
 		  
         },	
