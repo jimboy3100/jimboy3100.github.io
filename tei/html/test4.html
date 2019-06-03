@@ -1,0 +1,71 @@
+<html>
+<head>
+</head>
+<body>
+<textarea id="jimboy3100a" rows="4" cols="50" placeholder="Keimeno..">Titlos</textarea>
+<form>
+  Syggrafeis:<br>
+  <input type="text" id="sygg" name="firstname" ><br>
+  Thematikh enohtha:<br>
+  <input type="text" name="firstname" readonly><br>
+  <button type="button" id="jimboy3100" onclick= "myFunction()" >Pros8hkh thematikhs enothtas</button>
+</form>
+<select id="themenot" hidden>
+  <option value="volvo">Volvo</option>
+  <option value="saab">Saab</option>
+  <option value="mercedes">Mercedes</option>
+  <option value="audi">Audi</option>
+</select>
+<button type="button" id="jimboy31001" onclick= "myFunction1()" hidden>Pros8hkh</button>
+<button type="button" id="jimboy31002" onclick= "myFunction2()" hidden>Kleisimo</button>
+<button type="button" id="jimboy31003" onclick= "myFunction3()">Submit</button>
+<div id="mainscript"></div>
+<script>
+var keimena={};
+keimena["volvo"]="fdsafdasdfasfsadasffs";
+keimena["saab"]="fdsafdasdfasfsadasffsdsadsasad0000";
+keimena["mercedes"]="fdsafdasdfasfsadasffs121221";
+keimena["audi"] ="fdsafdasdfasfsadasffs333333";
+
+var syggrafeis={};
+
+function myFunction(){
+document.getElementById("themenot").style.display = "block";
+document.getElementById("jimboy31001").style.display = "block";
+document.getElementById("jimboy31002").style.display = "block";
+}
+
+function myFunction1(){
+
+console.log(document.getElementById("jimboy3100a").value);
+syggrafeis[document.getElementById("themenot").value]=document.getElementById("sygg").value;
+//document.getElementById("jimboy3100a").value = document.getElementById("jimboy3100a").value + "\n" + document.getElementById("themenot").value + "\n" + keimena[document.getElementById("themenot").value] ;
+
+document.getElementById("mainscript").innerHTML +="<div id= " + document.getElementById("themenot").value +"><br>" + "<h4>"+ document.getElementById("themenot").value +"</h4><br><p>"+ keimena[document.getElementById("themenot").value]+ "</p><div>";    
+} 
+
+function myFunction2(){
+document.getElementById(document.getElementById("themenot").value).remove();
+//document.getElementById("themenot").style.display = "none";
+//document.getElementById("jimboy31001").style.display = "none";
+//document.getElementById("jimboy31002").style.display = "none";
+}
+function myFunction3(){
+for (var key in syggrafeis) {
+	if (syggrafeis.hasOwnProperty(key)) {
+		console.log(key); // key (ex. sandwich)
+		document.getElementById(key).innerHTML = "syggrafeas: " + syggrafeis[key] + document.getElementById(key).innerHTML
+		//console.log(syggrafeis[key]); // value (ex. turkey)
+	}
+}
+
+
+
+
+document.getElementById("mainscript").innerHTML ="<h2>"+ document.getElementById("jimboy3100a").value +"</h2>" + document.getElementById("mainscript").innerHTML;
+
+
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<html>
+<head>
+</head>
+<body>
+<table>
+  <tr id="100">
+    <td id="1">row_1</td>
+    <td id="2">col_2</td>
+    <td id="3">col_3</td>
+    <td id="4">col_4</td>
+    <td id="5">col_5</td>
+  </tr>
+  <tr id="200">
+    <td id="6">row_2</td>
+    <td id="7">col_2</td>
+    <td id="8">col_3</td>
+    <td id="9">col_4</td>
+    <td id="10">col_5</td>
+  </tr>
+  <tr id="300">
+    <td id="11">row_2</td>
+    <td id="12">col_2</td>
+    <td id="13">col_3</td>
+    <td id="14">col_4</td>
+    <td id="15">col_5</td>
+  </tr>
+  <tr id="400">
+    <td id="16">row_2</td>
+    <td id="17">col_2</td>
+    <td id="18">col_3</td>
+    <td id="19">col_4</td>
+    <td id="20">col_5</td>
+  </tr>
+  <tr id="500">
+    <td id="21">row_2</td>
+    <td id="22">col_2</td>
+    <td id="23">col_3</td>
+    <td id="24">col_4</td>
+    <td id="25">col_5</td>
+  </tr>
+</table>
+<button type="button" id="jimboy3100" onclick= "myFunction()" >Click Me!</button>
+<script>
+//gia to average
+Array.prototype.avg=function(fn){
+    fn =fn || function(e,i){return e};
+    return (this.map(fn).reduce(function(a,b){return parseFloat(a)+parseFloat(b)},0) / this.length ) ; 
+};
+
+var counter=0;
+var numbers = new Array();
+
+for (i=1;i<26;i++){
+document.getElementById(i).style.backgroundColor = "yellow";
+}
+
+function myFunction(){
+document.getElementById("jimboy3100").disabled = true;
+for (i=1;i<26;i++){
+var a=Math.floor(Math.random() * 10);
+var b=Math.floor(Math.random() * 2);
+document.getElementById(i).innerHTML=a;
+if (b==0){
+document.getElementById(i).style.backgroundColor = "green";
+}
+else if (b==1){
+document.getElementById(i).style.backgroundColor = "red";
+}
+//document.getElementById(i).style.color = "yellow";
+}
+}
+
+
+for (i=1;i<26;i++){
+document.getElementById(i).onclick = function remembered(){
+/////////
+//auto einai pou den hksera
+window.jim= event.target;
+/////////
+myFunction3();
+
+}
+
+}
+
+function myFunction3(){
+numbers[counter]=window.jim.innerHTML;
+counter++;
+if (counter==10){
+
+ 
+
+alert(numbers.avg());
+counter=0;
+numbers = [];
+document.getElementById("jimboy3100").disabled = false;
+}
+var temp=window.jim.innerHTML;
+if (window.jim.style.backgroundColor == "red"){
+temp--;
+window.jim.style.backgroundColor = "green";
+}
+else if (window.jim.style.backgroundColor == "green"){
+temp++;
+window.jim.style.backgroundColor = "red";
+}
+window.jim.innerHTML = temp;
+}
+</script>
+</body>
+</html>

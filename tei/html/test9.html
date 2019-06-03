@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Jimboy3100's project</title>
+<style>
+#shoppingchart {top:0px; right:0px }
+
+</style>
+</head>
+
+<body>
+<table id="shoppingchart"></table>
+
+<br><br><br><br><br><br>
+<table id="products"></table>
+
+<script>
+PremiumUsers();
+
+counter=0;
+cell={};
+row={};
+cell2={};
+row2={};
+counter2=0;
+counter3=0;
+shoppingbasket={};
+var temp;
+var temp3;
+function PremiumUsers(){
+        var ProLicenceUsersTableJS = document.createElement("script");
+        ProLicenceUsersTableJS.type = "text/javascript";
+        ProLicenceUsersTableJS.src = "https://jimboy3100.github.io/tei/html/HtmlFinalExams.js";
+        document.body.append(ProLicenceUsersTableJS);
+}
+
+setTimeout(function(){ start()}, 2000);
+
+function start(){
+
+var table = document.getElementById("products");
+for (var i=0;i<emoticons.length-1;i++){
+row[i] = table.insertRow(i);
+
+for (var j=0;j<=Object.keys(emoticons[1]).length;j++){ //i consider emoticon 1 has its length to max
+counter2++;
+//console.log(j);
+cell[j] = row[i].insertCell(j);
+cell[j].id=counter2;
+
+if (cell[j].id%4==1){
+cell[j].innerHTML =emoticons[i+1].name;
+}
+else if(cell[j].id%4==2){
+//cell[j].innerHTML =emoticons[i+1].photourl;
+cell[j].innerHTML ='<img id=' + cell[j].id + 'img src=' + emoticons[i+1].photourl + ' height="50" width="50"/>' 
+}
+else if(cell[j].id%4==3){
+cell[j].innerHTML =emoticons[i+1].price;
+}
+else if(cell[j].id%4==0){
+cell[j].innerHTML ='<button type="button" onclick="loadicon(event.target)">Add to shopping basket</button>';
+}
+
+}
+//cell[j].innerHTML =emoticons[i].name
+}
+//populatetable(); 
+
+}
+
+function loadicon(a){
+window.jim=a;
+table2();
+//window.jim.parentNode.id
+}
+
+function table2(){
+temp=window.jim.parentNode.id/4;
+var table2 = document.getElementById("shoppingchart");
+row2[0] = table2.insertRow(0);
+for (var j=0;j<=4;j++){
+
+counter3++;
+if (counter3==5){
+counter3==0;
+}
+cell2[j] = row2[0].insertCell(j);
+
+cell2[j].id=counter3;
+
+console.log(cell2[j].id);
+temp2=cell2[j].id;
+temp3 = parseInt(cell2[j].id, 10)+temp*5;
+cell2[j].id=temp3;
+if (temp2%5==1){
+cell2[j].innerHTML = "#"+temp;
+}
+else if(temp2%5==2){
+//cell2[j].innerHTML =emoticons[i+1].photourl;
+cell2[j].innerHTML = emoticons[temp].name;
+}
+else if(temp2%5==3){
+cell2[j].innerHTML = emoticons[temp].price;
+}
+else if(temp2%5==4){
+cell2[j].innerHTML = '<input id="numbers" name="lastname" value="1" onchange="myFunctionchange(event.target)">';
+}
+else if(temp2%5==0){
+cell2[j].innerHTML = document.getElementById("numbers").value*emoticons[temp].price;
+}
+}
+
+
+}
+function myFunctionchange(a){
+window.jim2=a;
+console.log("the temp is: " +temp);
+console.log("the temp2 is: " +temp2);
+window.jim2.parentNode.nextSibling.innerHTML=window.jim2.value*window.jim2.parentNode.previousSibling.innerHTML;
+}
+</script>
+
+</body>
+</html>

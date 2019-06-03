@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Jimboy3100's project</title>
+</head>
+
+<body>
+<div>
+<img id="imagea" height="50" width="50"/>
+<img id="imageb" height="50" width="50"/>
+<img id="imagec" height="50" width="50"/>
+<br>
+<button type="button" id= "jimboy3100" onclick= "myFunction()" >Epomeno</button>
+<br>
+<button type="button" id= "jimboy3100a" onclick= "myFunction2()" >Ekkinhsh</button>
+<br>
+ <img id="image1" height="80" width="80"/>
+</div>
+
+<script>
+    var imgArray = [
+        'https://jimboy3100.github.io/banners/emoticons/joy.svg',
+        'https://jimboy3100.github.io/banners/emoticons/cry.svg',
+        'https://jimboy3100.github.io/banners/emoticons/cool.svg',
+		'https://jimboy3100.github.io/banners/emoticons/smile.svg',
+		'https://jimboy3100.github.io/banners/emoticons/newbaby.svg',
+		'https://jimboy3100.github.io/banners/emoticons/neutral.svg'
+		],
+        curIndex = 0;
+		imgDuration = 1000;
+		//customised
+		tempcur1 = 0;
+		tempcur2 = 1;
+		tempcur3 = 2;
+		flag= false;
+slideShow();
+
+
+		
+function slideShow() {
+    document.getElementById('image1').src = imgArray[curIndex];
+	//customised
+
+	//console.log(curIndex);
+	if (curIndex==0 || curIndex==3){	
+	document.getElementById('imagea').src = imgArray[tempcur1];
+	document.getElementById('imageb').src = imgArray[tempcur2];
+	document.getElementById('imagec').src = imgArray[tempcur3];
+	}
+	
+	if (curIndex%3 == 0){
+	document.getElementById("imagea").height = "80";
+	document.getElementById("imagea").width = "80";
+	document.getElementById("imageb").height = "50";
+	document.getElementById("imageb").width = "50";
+	document.getElementById("imagec").height = "50";
+	document.getElementById("imagec").width = "50";	
+	}
+	if (curIndex%3 == 1){
+	document.getElementById("imagea").height = "50";
+	document.getElementById("imagea").width = "50";
+	document.getElementById("imageb").height = "80";
+	document.getElementById("imageb").width = "80";
+	document.getElementById("imagec").height = "50";
+	document.getElementById("imagec").width = "50";	
+	}
+	if (curIndex%3 == 2){
+	document.getElementById("imagea").height = "50";
+	document.getElementById("imagea").width = "50";
+	document.getElementById("imageb").height = "50";
+	document.getElementById("imageb").width = "50";
+	document.getElementById("imagec").height = "80";
+	document.getElementById("imagec").width = "80";	
+	}	
+	tempcur1++;
+	tempcur2++;
+	tempcur3++;
+	
+	if (tempcur1 == imgArray.length) { tempcur1 = 0; }
+	if (tempcur2 == imgArray.length) { tempcur2 = 0; }
+	if (tempcur3 == imgArray.length) { tempcur3 = 0; }
+	
+	
+	//
+    curIndex++;
+    if (curIndex == imgArray.length) { curIndex = 0; }
+	if (flag){
+    setTimeout("slideShow()", imgDuration);
+	}
+}
+    
+
+	
+function myFunction(){	
+slideShow();
+}
+function myFunction2(){	
+document.getElementById("jimboy3100").disabled = true;
+document.getElementById("jimboy3100a").disabled = true;
+
+flag=true;
+slideShow();
+return flag;
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Jimboy3100's project</title>
+</head>
+
+<body>
+<div>
+<button type="button" id= "jimboy3100" onclick= "myFunction()" >return pics</button>
+<p id="jimboy3100a"></p>
+<table id="jim">
+  <tr id="100">
+    <td id="1"><img id="image1" height="50" width="50"/></td>
+    <td id="2"><img id="image2" height="50" width="50"/></td>
+    <td id="3"><img id="image3" height="50" width="50"/></td>
+    <td id="4"><img id="image4" height="50" width="50"/></td>
+  </tr>
+</table>  
+<table id="jim2">
+  <tr id="101"></tr>
+</table>  
+</div>
+<script>
+    var imgArray = [
+        'https://jimboy3100.github.io/banners/emoticons/joy.svg',
+        'https://jimboy3100.github.io/banners/emoticons/cry.svg',
+        'https://jimboy3100.github.io/banners/emoticons/cool.svg',
+		'https://jimboy3100.github.io/banners/emoticons/smile.svg'
+		];
+Jimboy3100();		
+function Jimboy3100(){		
+for(curIndex = 1;curIndex<=imgArray.length;curIndex++){
+document.getElementById("image"+curIndex).src = imgArray[curIndex-1];	
+}
+for (var i=1;i<=imgArray.length;i++){
+document.getElementById(i).onclick = function remembered(){
+/////////
+//auto einai pou den hksera
+window.jim= event.target;
+/////////
+myFunction3();
+
+}
+}
+}
+function myFunction3(){
+console.log(window.jim.id);
+
+document.getElementById("101").innerHTML+= window.jim.parentNode.outerHTML;
+window.jim.parentNode.remove();
+}
+
+function myFunction(){
+myFunction1();
+}
+
+
+function myTimer() {
+console.log("timer");
+try {
+  //  Block of code to try
+
+document.getElementById("100").innerHTML+=document.getElementById("101").children[0].outerHTML;
+document.getElementById("101").children[0].remove();
+}
+catch(e) {
+  //  Block of code to handle errors
+  Jimboy3100();
+  myStopFunction();
+}
+//for (var i=0;i<document.getElementById("101").children.length++){
+//}
+}
+
+function myFunction1(){
+				window.myVar = setInterval(myTimer, 3000);
+				
+}
+function myStopFunction() {
+  clearInterval(window.myVar);
+}
+</script>
+
+</body>
+</html>

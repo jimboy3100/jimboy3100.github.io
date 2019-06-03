@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Jimboy3100's project</title>
+</head>
+
+<body>
+<div>
+<button type="button" id= "jimboy3100" onclick= "myFunction()" >Dhmiourgia</button>
+<button type="button" id= "jimboy3100b" onclick= "start()" >Start</button>
+<p id="jimboy3100a"></p>
+<table id="jim"></table>
+  
+</div>
+<script>
+
+var numbers = new Array();
+var numbersIsClicked = new Array();
+
+window.counterX=0;
+var myVar;
+var temp="";
+counter=0;
+cell={};
+row={};
+counter2=0;
+backcolors={};
+
+function myFunction(){	
+var table = document.getElementById("jim");
+for (var i=0;i<5;i++){
+row[i] = table.insertRow(i);
+
+for (var j=0;j<5;j++){
+counter2++;
+console.log(j);
+cell[j] = row[i].insertCell(j);
+cell[j].id=counter2;
+//cell[j].innerHTML = "NEW CELL"+j;
+cell[j].innerHTML = 10+Math.floor(Math.random() * 90);
+}
+}
+populatetable(); 
+}
+
+//setTimeout(function(){ populatetable()}, 1500);
+//populatetable(); table seems to need time to load on javascript when i dynamicaly create it's elements
+
+function populatetable(){
+for (var i=1;i<counter2;i++){
+document.getElementById(i).onclick = function remembered(){
+/////////
+//auto einai pou den hksera
+window.jim= event.target;
+/////////
+myFunction3();
+
+}
+}
+}
+
+function myFunction3(){
+//numbers[counter]=window.jim.innerHTML;
+if (numbersIsClicked[window.jim.id]==undefined){ //fix
+numbersIsClicked[window.jim.id]==false;
+}
+if (numbersIsClicked[window.jim.id]!=true){
+console.log("is not clicked");
+counter++;
+numbersIsClicked[window.jim.id]=true;
+
+if (counter%3 == 0){
+
+for (var key in numbersIsClicked) {
+	if (numbersIsClicked.hasOwnProperty(key)) {
+		temp=temp+document.getElementById(key).innerHTML;
+		//console.log(temp); 
+		//console.log(key); 
+		
+		//console.log(numbersIsClicked[key]); 
+		
+	}
+}
+numbersIsClicked=[];
+document.getElementById("jimboy3100a").innerHTML+="<div id="+ temp +" style='color:#"+ temp +"'>sample text " + temp + "</div>";
+temp="";
+}
+}
+else{
+console.log("is clicked");
+}
+}
+
+function start(){
+var e=0;
+document.getElementById("jimboy3100a").childNodes.forEach(function(element) {
+  e++;
+  backcolors[e]=element.id;
+  console.log(element);
+  myFunction1();
+});
+
+
+}
+
+
+
+
+function myTimer() {
+
+  document.body.style.backgroundColor = "#" + backcolors[window.counterX+1];
+  if (window.counterX<=Object.keys(backcolors).length-1){
+  window.counterX++
+  }
+  else {
+  window.window.counterX=0;
+  }
+}
+
+function myFunction1(){
+				myVar = setInterval(myTimer, 3000);
+				return myVar;
+}
+function myStopFunction() {
+  clearInterval(myVar);
+}
+</script>
+
+</body>
+</html>

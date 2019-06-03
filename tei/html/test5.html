@@ -1,0 +1,102 @@
+<html>
+<head>
+</head>
+<body>
+<table>
+  <tr id="100">
+    <td id="1">row_1</td>
+    <td id="2">col_2</td>
+    <td id="3">col_3</td>
+    <td id="4">col_4</td>
+  </tr>
+  <tr id="200">
+    <td id="5">row_2</td>
+    <td id="6">col_2</td>
+    <td id="7">col_3</td>
+    <td id="8">col_4</td>
+  </tr>
+  <tr id="300">
+    <td id="9">row_2</td>
+    <td id="10">col_2</td>
+    <td id="11">col_3</td>
+    <td id="12">col_4</td>
+  </tr>
+  <tr id="400">
+    <td id="13">row_2</td>
+    <td id="14">col_2</td>
+    <td id="15">col_3</td>
+    <td id="16">col_4</td>
+  </tr>
+</table>
+<button type="button" id= "jimboy3100" onclick= "myFunction()" >Click Me!</button>
+<br>
+<input id="xronometro" value="">
+<script>
+var numbers = new Array();
+var numbersred = 0;
+var numbersgreen = 0;
+var counter=0;
+for (i=1;i<17;i++){
+document.getElementById(i).onclick = function remembered(){
+/////////
+//auto einai pou den hksera
+window.jim= event.target;
+/////////
+myFunction3();
+
+}
+
+}
+function myFunction3(){
+numbers[counter]=window.jim.innerHTML;
+counter++;
+if (window.jim.textContent<5){
+numbersred++;
+window.jim.style.backgroundColor = "red";
+}
+else{
+numbersgreen++;
+window.jim.style.backgroundColor = "green";
+}
+}
+
+
+var counter2;
+function myFunction(){
+numbersred=0;
+numbersgreen=0;
+document.getElementById("jimboy3100").disabled = true;
+for (i=1;i<17;i++){
+var a=Math.floor(Math.random() * 10);
+
+document.getElementById(i).innerHTML=a;
+
+//document.getElementById(i).style.color = "yellow";
+}
+countdown();
+}
+function countdown(){
+var timeleft = 10;
+var downloadTimer = setInterval(function(){
+  counter2 = timeleft + " seconds remaining";
+  document.getElementById("xronometro").value=timeleft-1;
+  timeleft -= 1;
+  if(timeleft <= 0){
+    clearInterval(downloadTimer);
+    counter2 = "Finished";
+	
+	after10sec();	
+  }
+}, 1000);
+}
+function after10sec(){
+alert("ta kokkina htan: " + numbersred + ", ta prasina htan: " + numbersgreen);
+document.getElementById("jimboy3100").disabled = false;
+numbers=[];
+for (i=1;i<17;i++){
+document.getElementById(i).style.backgroundColor="white";
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<html>
+<head>
+</head>
+<body>
+<button type="button" onclick= "myFunction()" >Add icon!</button>
+<table id="bt"></table>
+<img id="slideshow" src="" />
+<br>
+<button type="button" onclick= "myFunction1()" >Start</button>
+<button type="button" onclick= "myStopFunction()" >Stop</button>
+<script>
+var myVar;
+var numbers=0;
+var imgsrc = new Array();
+window.counter=0;
+window.counter1=0;
+function myFunction(){
+numbers++;
+var theDiv = document.getElementById("bt");
+theDiv.innerHTML += "<table><tr id='100'><td id='1'><input id='"+numbers+"' name='lastname'></td><td id='2'><button type='button' onclick= 'loadicon(event.target)'>Load icon!</button></td>	</tr></table>"; 
+}
+function loadicon(a){
+window.jim=a;
+var img = document.createElement("img");
+//img.src = "https://jimboy3100.github.io/banners/icon38.png";
+img.src = window.jim.parentNode.parentNode.firstElementChild.firstElementChild.value;
+console.log("Na prosexete ta CORS policy, xrhsimopoihte eikones apo imgur.com");
+window.jim.parentNode.appendChild(img);
+window.counter++;
+if (img.src.includes("http") && !img.src.isEmpty){
+imgsrc[window.counter]=img.src;
+}
+}
+
+function myFunction1(){
+				myVar = setInterval(myTimer, 1000);
+				return myVar;
+}
+
+
+
+function myTimer() {
+//imgsrc.forEach(function(a){
+//				console.log(a)
+//				});
+
+  if(imgsrc[window.counter1]){
+  document.getElementById("slideshow").src = imgsrc[window.counter1];
+  }
+  if (window.counter1<=imgsrc.length-1){
+  window.counter1++
+  }
+  else {
+  window.counter1=0;
+  }
+}
+
+function myStopFunction() {
+  clearInterval(myVar);
+}
+</script>
+</table>
