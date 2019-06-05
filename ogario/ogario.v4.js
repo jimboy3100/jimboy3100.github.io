@@ -1,14 +1,24 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.595 MEGA TEST
+// v1.628 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
-function containsNonLatinCodepoints(s) {
-    return /[^\u0000-\u00ff]/.test(s);
-}
 
+
+/*
+					document.getElementById("set-targeting").addEventListener('click',function ()
+					{
+					if ($("#target-nick").text()!=null && $("#target-nick").text()!=""){
+					for (var i=0; i< 20 && i < legendmod.leaderboard.length ;i++){
+						if (legendmod.leaderboard[i].nick==$("#target-nick").text()){
+							window.legendmod.targetingLead(i);
+						}
+					}
+					}
+					}  ); 	
+*/
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
     get: function(){
         return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
@@ -4926,6 +4936,11 @@ var thelegendmodproject = function(t, e, i) {
 								else if(this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("Qᴜᴇᴛᴢᴀʟ   ᶜᵒᵃᵗˡ") || this.targetNick.includes("℄🌀     ᑕᖇᗩƵƳ😈") || this.targetNick.includes("℄🌀ᔕᕼᗴᖇᗴ ᛕᕼᗩᑎ")){
 									try {
 									style.drawImage(cimg2, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y);
+									//style.translate(this.x - y * 2, this.y - y * 2, this.y - y * 2);
+									//style.rotate(M.cAngle); 									
+									//style.drawImage(cimg2, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y);
+									//try
+									//M.updateCommander();									
 									} catch (e) {}
 								}
 						//style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), s && (style.globalAlpha = value, s = false)), 
@@ -5603,13 +5618,13 @@ var thelegendmodproject = function(t, e, i) {
                 var artistTrack = window.ret["readUint32"]();
                 switch(obj) {
                   case 11:
-                    console["log"]("102 login response", window.ret["view"]["byteLength"], window.ret["contentType"], window.ret["uncompressedSize"], obj, previousState, artistTrack);
+                    console["log"]("[Legend mod Express] 102 Login response", window.ret["view"]["byteLength"], window.ret["contentType"], window.ret["uncompressedSize"], obj, previousState, artistTrack);
                     break;
                   case 62:
-                    console["log"]("102 game over");
+                    console["log"]("[Legend mod Express] 102 Game over");
                     break;
                   default:
-                    console["log"]("102 unknown", obj, previousState);
+                    console["log"]("[Legend mod Express] 102 Unknown", obj, previousState);
                 }
               }
 			  
@@ -5768,7 +5783,7 @@ var thelegendmodproject = function(t, e, i) {
                 if (this.playerPosition > window.leaderboardlimit && (t += '<span class=\"me\">' + this.playerPosition + '. ' + ogarminimapdrawer.escapeHTML(this.playerNick) + '</span>'), v['showLbData']);
                 t += '<span class="me">Total: ' + this.leaderboard.length + '</span>';
                 for (var o = 0; o < this.ghostCells.length && o != i; o++) e += '<span class=\"lb-data\">', e += '<span class=\"top5-mass-color\">[' + ogarminimapdrawer['shortMassFormat'](this.ghostCells[o].mass) + ']</span>', e += '<span class=\"hud-main-color\">[' + ogarminimapdrawer['calculateMapSector'](this.ghostCells[o]['x'], this.ghostCells[o]['y']) + ']</span>', e += '</span>';
-                ogarminimapdrawer['displayLeaderboard'](t, e);
+				ogarminimapdrawer['displayLeaderboard'](t, e);
                 ///////////////// establish core.registerSkin
                 if (window.vanillaskins == true) {
                     if (window.customskinsname != null && window.customskinsname != undefined) {
@@ -5782,6 +5797,11 @@ var thelegendmodproject = function(t, e, i) {
                     }
                 }
 
+            },		
+            'targetingLead': function(o) {			
+			window.targetingLeadX=legendmod.ghostCells[o].x;
+			window.targetingLeadY=legendmod.ghostCells[o].y;
+			legendmod.drawCommander2=true;
             },			
             'flushCellsData': function() {
                 this.indexedCells = {}, 
@@ -6159,7 +6179,7 @@ var thelegendmodproject = function(t, e, i) {
                 this.drawMapBorders(this.ctx, M.mapOffsetFixed, M.mapMinX - _0x6993ee, M.mapMinY - _0x6993ee, M.mapMaxX + _0x6993ee, M.mapMaxY + _0x6993ee, g.bordersColor, g.bordersWidth);
             }
 			this.drawCommander();
-			
+			this.drawCommander2();
             if (v.virusesRange) {
                 this.drawVirusesRange(this.ctx, M.viruses);
             }
@@ -6325,7 +6345,6 @@ var thelegendmodproject = function(t, e, i) {
                         }
                     }
                 },
-                ///////////////////// special effects - not work
                 "drawCommander": function() {
 					//console.log('Special effects stage 2');
                     if (M.drawCommander) {
@@ -6357,6 +6376,38 @@ var thelegendmodproject = function(t, e, i) {
                         pickerAxes.globalAlpha = 1;
                         this.updateCommander();
                     }
+                },				
+                "drawCommander2": function() {
+					//console.log('Special effects stage 2');
+                    if (M.drawCommander2) {
+                        var pickerAxes = this.ctx;
+                        cimg = new Image;
+                        cimg.src = g.commanderImage3;
+                        cimg1 = new Image;
+                        cimg1.src = g.commanderImage4;
+                        cimg2 = new Image;
+                        cimg2.src = g.commanderImage5;
+                        pickerAxes.save();
+                        pickerAxes.globalAlpha = M.cAlpha;
+                        pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
+                        pickerAxes.rotate(M.cAngle);
+                        pickerAxes.drawImage(cimg, -M.cRadius / 2, -M.cRadius / 2, M.cRadius, M.cRadius);
+                        pickerAxes.restore();
+                        pickerAxes.save();
+                        pickerAxes.globalAlpha = M.cAlpha;
+                        pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
+                        pickerAxes.rotate(M.cAngle1);
+                        pickerAxes.drawImage(cimg1, -M.cRadius / 2, -M.cRadius / 2, M.cRadius, M.cRadius);
+                        pickerAxes.restore();
+                        pickerAxes.save();
+                        pickerAxes.globalAlpha = M.cAlpha;
+                        pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
+                        pickerAxes.rotate(M.cAngle2);
+                        pickerAxes.drawImage(cimg2, -M.cRadius / 2, -M.cRadius / 2, M.cRadius, M.cRadius);
+                        pickerAxes.restore();
+                        pickerAxes.globalAlpha = 1;
+                        this.updateCommander();
+                    }
                 },
                 "updateCommander": function() {
                     M.cRadius += 7;
@@ -6377,6 +6428,7 @@ var thelegendmodproject = function(t, e, i) {
                     M.cAngle2 = 0;
                     M.cAlpha = 1;
                     M.drawCommander = false;
+					M.drawCommander2 = false;
                     i.spawnX = 0;
                     i.spawnY= 0;
                 },
@@ -6583,7 +6635,7 @@ var thelegendmodproject = function(t, e, i) {
                         }
                         this.ctx.fillStyle = g.ghostCellsColor;
                         this.ctx.globalAlpha = g.ghostCellsAlpha;
-                        this.ctx.shadowColor = g.ghostCellsColor;
+						this.ctx.shadowColor = g.ghostCellsColor;					
                         this.ctx.shadowBlur = 40;
                         this.ctx.shadowOffsetX = 0;
                         this.ctx.shadowOffsetY = 0;
