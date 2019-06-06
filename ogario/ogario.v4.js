@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.631 MEGA TEST
+// v1.632 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5584,10 +5584,10 @@ var thelegendmodproject = function(t, e, i) {
                         break;
 			  case 102:
               if (data["byteLength"] < 20) {
-                this["loggedIn"] = ![];
-                if (window["logout"]) {
-                  window["logout"]();
-                }
+                //this["loggedIn"] = ![];
+                //if (window["logout"]) {
+                  //window["logout"]();
+                //}
               }			  
 			  if (data.buffer.byteLength>1000){
 			  window.testobjects = data;			  
