@@ -1,4 +1,4 @@
-//v3
+//v4
 legendmaster(window);
 function legendmaster(self) {
     function login() {
@@ -177,6 +177,7 @@ function legendmaster(self) {
                     self.core.setClientVersion(clientVersion, serverVersion);
                 }
                 self.localStorage.setItem("ogarioClientVersionString", serverVersion);
+				console.log("[Master] setClientVersiont called, reconnecting");
                 this.reconnect(true);
             }
         },
@@ -199,6 +200,7 @@ function legendmaster(self) {
 			if(nextNodeLoc) {
 				this.setRegion(nextNodeLoc, ![]);
 				if(!this.checkPartyHash()) {
+					console.log("[Master] getRegionCode called, reconnecting");
 					this.reconnect();
 				}
 				return;
@@ -218,6 +220,7 @@ function legendmaster(self) {
             if (regionobj.hasOwnProperty(segment)) {
                 this.setRegion(regionobj[segment], false);
                 if (!this.checkPartyHash()) {
+					console.log("[Master] setRegionCode called, reconnecting");
                     this.reconnect();
                 }
             }
@@ -234,6 +237,7 @@ function legendmaster(self) {
                     $("#region").val(items);
                 }
                 if (left) {
+					console.log("[Master] setRegion called, left=null, reconnecting");
                     this.reconnect();
                 }
             }
@@ -283,6 +287,7 @@ function legendmaster(self) {
             this.applyGameMode(val);
             this.gameMode = val;
             if (opt_validate) {
+				console.log("[Master] setGameMode called, opt_validate!=null, reconnecting");
                 this.reconnect();
             }
         },
@@ -451,6 +456,7 @@ function legendmaster(self) {
             }
         },
         onDisconnect: function() {
+			console.log("[Master] onDisconnect called, reconnecting");
             this.reconnect();
         },
         recaptchaRequested: function() {
@@ -522,8 +528,9 @@ function legendmaster(self) {
             }
         },
         logout: function() {
-            this.accessToken = null;
-            this.reconnect();
+              this.accessToken = null;
+			  console.log("[Master] logout called, not reconnecting");
+//            this.reconnect();
         },
         setUI: function() {
             var chat = this;
@@ -589,7 +596,7 @@ function legendmaster(self) {
         master.logout();
     };
     self.facebookLogin = function() {
-        alert("You seem to have something blocking Facebook on your browser, please check for any extensions");
+        alert("[Master] You seem to have something blocking Facebook on your browser, please check for any extensions");
     };
     self.fbAsyncInit = function() {
         self.FB.init({
