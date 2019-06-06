@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.628 MEGA TEST
+// v1.631 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5782,7 +5782,7 @@ var thelegendmodproject = function(t, e, i) {
                 }
                 if (this.playerPosition > window.leaderboardlimit && (t += '<span class=\"me\">' + this.playerPosition + '. ' + ogarminimapdrawer.escapeHTML(this.playerNick) + '</span>'), v['showLbData']);
                 t += '<span class="me">Total: ' + this.leaderboard.length + '</span>';
-                for (var o = 0; o < this.ghostCells.length && o != i; o++) e += '<span class=\"lb-data\">', e += '<span class=\"top5-mass-color\">[' + ogarminimapdrawer['shortMassFormat'](this.ghostCells[o].mass) + ']</span>', e += '<span class=\"hud-main-color\">[' + ogarminimapdrawer['calculateMapSector'](this.ghostCells[o]['x'], this.ghostCells[o]['y']) + ']</span>', e += '</span>';
+                for (var o = 0; o < this.ghostCells.length && o != i; o++) e += '<span class=\"lb-data\" id= "' + 'leaderboardtargeting' + o + '" style="pointer-events: auto;" onclick="window.legendmod.targetingLead(' + o + ');">', e += '<span class=\"top5-mass-color\">[' + ogarminimapdrawer['shortMassFormat'](this.ghostCells[o].mass) + ']</span>', e += '<span class=\"hud-main-color\">[' + ogarminimapdrawer['calculateMapSector'](this.ghostCells[o]['x'], this.ghostCells[o]['y']) + ']</span>', e += '</span>';
 				ogarminimapdrawer['displayLeaderboard'](t, e);
                 ///////////////// establish core.registerSkin
                 if (window.vanillaskins == true) {
