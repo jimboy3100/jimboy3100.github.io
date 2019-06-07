@@ -19,7 +19,13 @@ if (window.agarioUID != null) {
 else{
 	window.agarioUID=localStorage.getItem("agarioUID");
 	window.agarioID=localStorage.getItem("agarioID");	
-}	
+}
+
+SpecialDeals();
+
+
+
+	
 		function SpecialDeals(){
 	GameConfiguration={};
 		$.ajax({
