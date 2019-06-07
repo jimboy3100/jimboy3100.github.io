@@ -1,24 +1,12 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.632 MEGA TEST
+// v1.642 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
 
 
-/*
-					document.getElementById("set-targeting").addEventListener('click',function ()
-					{
-					if ($("#target-nick").text()!=null && $("#target-nick").text()!=""){
-					for (var i=0; i< 20 && i < legendmod.leaderboard.length ;i++){
-						if (legendmod.leaderboard[i].nick==$("#target-nick").text()){
-							window.legendmod.targetingLead(i);
-						}
-					}
-					}
-					}  ); 	
-*/
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
     get: function(){
         return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
@@ -1733,7 +1721,14 @@ var thelegendmodproject = function(t, e, i) {
                     g[t] = e, g[t + 'Family'] = this.setFontFamily(e), g[t + 'Weight'] = this.setFontWeight(e), i.hasOwnProperty(t + 'Family') && (i[t + 'Family'] = g[t + 'Family']), i.hasOwnProperty(t + 'Weight') && (i[t + 'Weight'] = g[t + 'Weight']);
                 },
                 'addFontBox': function(t, e, i) {
-                    $(t).append('<div class=\"font-box\"><span class=\"title-box\">' + h[e] + '</span><div class=\"select-wrapper\"><select id=\"' + e + '\" class=\"form-control\"></select></div></div>'), $('#' + e).append('<option value=\"ubuntu\">Ubuntu</option><option value=\"ubuntu-bold\">Ubuntu Bold</option>'), $('#' + e).append('<option value=\"roboto\">Roboto</option><option value=\"roboto-bold\">Roboto Bold</option>'), $('#' + e).append('<option value=\"oswald\">Oswald</option><option value=\"oswald-bold\">Oswald Bold</option>'), $('#' + e).val(g[e]);
+                    $(t).append('<div class=\"font-box\"><span class=\"title-box\">' + h[e] + '</span><div class=\"select-wrapper\"><select id=\"' + e + '\" class=\"form-control\"></select></div></div>');
+					$('#' + e).append('<option value=\"ubuntu\">Ubuntu</option><option value=\"ubuntu-bold\">Ubuntu Bold</option>');
+					$('#' + e).append('<option value=\"roboto\">Roboto</option><option value=\"roboto-bold\">Roboto Bold</option>'); 
+					$('#' + e).append('<option value=\"oswald\">Oswald</option><option value=\"oswald-bold\">Oswald Bold</option>');
+					$('#' + e).append('<option value=\"shojumaru\">Shojumaru</option><option value=\"shojumaru-bold\">Shojumaru Bold</option>');
+					$('#' + e).append('<option value=\"allura\">Allura</option><option value=\"allura-bold\">Allura Bold</option>');
+					
+					$('#' + e).val(g[e]);
                     var o = this;
                     i ? $('#' + e).on('change', function() {
                         var t = this.value;
@@ -1744,7 +1739,28 @@ var thelegendmodproject = function(t, e, i) {
                     });
                 },
                 'setFontFamily': function(t) {
-                    return -1 != t.indexOf('roboto') ? 'Roboto' : -1 != t.indexOf('oswald') ? 'Oswald' : 'Ubuntu';
+					var tempFont;
+					if (t.indexOf('roboto')==0){
+						tempFont = 'Roboto';
+					}
+					else if (t.indexOf('oswald')==0){
+						tempFont = 'Oswald';
+					}	
+					else if (t.indexOf('shojumaru')==0){
+						console.log('font: shojumaru');
+						tempFont = 'Shojumaru';
+					}								
+					else if (t.indexOf('allura')==0){
+						console.log('font: allura');
+						tempFont = 'Allura';
+					}						
+//					else (if t.indexOf('ubuntu')){
+					else{	
+						tempFont = 'Ubuntu';
+					}		
+	
+					return tempFont;
+                    //return -1 != t.indexOf('roboto') ? 'Roboto' : -1 != t.indexOf('oswald') ? 'Oswald' : 'Ubuntu';
                 },
                 'setFontWeight': function(t) {
                     return -1 != t.indexOf('bold') ? 700 : 400;
