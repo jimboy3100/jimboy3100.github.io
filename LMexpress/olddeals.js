@@ -20,24 +20,17 @@ else{
 	window.agarioUID=localStorage.getItem("agarioUID");
 	window.agarioID=localStorage.getItem("agarioID");	
 }
-
+window.MiniclipConfigDestination = "https://configs-web.agario.miniclippt.com/live/v12/2168/GameConfiguration.json";
 SpecialDeals();
 
 
 
 	
 		function SpecialDeals(){
-	GameConfiguration={};
-		$.ajax({
-        type: "GET",
-        url: "https://configs-web.agario.miniclippt.com/live/v12/2168/GameConfiguration.json",
-        datatype: "json",
-        success: function(info) {
-        return GameConfiguration=info;
-			}
-		});		
+
+
 if (window.agarioUID != null) {
-	
+LoadGameConfiguration();	
         $('#helloContainer').after('<div class="modal fade in" id="specialShopModal" aria-hidden="false" style="display: block;">' +
             '<div class="modal-backdrop fade in"></div>' +
             '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 500px;">' +
@@ -45,7 +38,7 @@ if (window.agarioUID != null) {
             '<div id="CloseSpecialDeals" class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
             '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">Special deals</h4>' +
             '</div>' +
-            '<div class="modal-body"><input type="email" class="form-control" id="agario_uid_input" placeholder="*UID (' + Premadeletter110 + ')" style="width: 85%; display: inline-block">' +
+            '<div class="modal-body"><input type="text" class="form-control" id="agario_uid_input" placeholder="*UID (' + Premadeletter110 + ')" style="width: 85%; display: inline-block">' +
             '<div class="custom-checkbox" style="display: inline-block; margin-left: 10px; vertical-align: sub;"><input id="checkBoxLockUID" type="checkbox" disabled="disabled" style="width: 20px; height: 20px"><label for="cb1"></label></div>' +
             '<div class="bs-callout bs-callout-buy bs-callout-clickable" id="buy_starterpack">' +
             '<h4 id="dealtype" class="pull-left">purchase 125000 coins</h4><h5 class="pull-left"> <i> (' + Premadeletter111 + ')</i></h5>' +
@@ -55,13 +48,21 @@ if (window.agarioUID != null) {
             '<div class="xpmt-skins" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: -120px 310px; background-image: url(""); background-size: cover; border-color: #7c0001"></div>' +
             '</div>' +
             '</div><select id="ss-select-purchases" class="form-control" required="" style="margin-bottom: 30px"></select><select id="BuyDealCurrency" class="form-control" required="" style="display:inline; width: 40%; margin-top: -30px;"><option value="USD" data-itr="">USD</option><option value="EU" data-itr="">EU</option></select><color="red"> ' + Premadeletter112 + '</color>' +
-            '<p class="alert-warning text-center">' + Premadeletter116 + '<br>UID:<span class="alert-success" id="exp-uid">' + window.agarioUID + '</span> <font color="red" onclick=copy(window.agarioUID);><b><u>'+Premadeletter114+' UID</u></b></font><br>ID: ' + window.agarioID + ' .*UID ' + Premadeletter115 + '</p>' +
+            '<input type="text" class="form-control" id="GameConfigurationUrl" value = ' + window.MiniclipConfigDestination + ' placeholder="*Search any GameConfiguration.json destination" style="width: 85%; display: inline-block">' +
+			'<p class="alert-warning text-center">' + Premadeletter116 + '<br>UID:<span class="alert-success" id="exp-uid">' + window.agarioUID + '</span> <font color="red" onclick=copy(window.agarioUID);><b><u>'+Premadeletter114+' UID</u></b></font><br>ID: ' + window.agarioID + ' .*UID ' + Premadeletter115 + '</p>' +
             '</div>' +
             '</div>' +
             '</div>' +
             '</div>');	
 }
 setTimeout(function() { populateSD();}, 1500);
+		
+		$("#GameConfigurationUrl").blur(function() {
+			toastr["warning"]('Do not change this unless you know what it is');
+			window.MiniclipConfigDestination=$("#GameConfigurationUrl").val();
+			LoadGameConfiguration();
+			setTimeout(function() { populateSD();}, 1500);
+			});
         $("#CloseSpecialDeals").click(function() {
             
             $("#specialShopModal").remove();
@@ -69,24 +70,6 @@ setTimeout(function() { populateSD();}, 1500);
         $(".xpmt-buy-content").click(function() {
 			toastr["warning"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/v25toastricon.jpg); color:#018cf6; font-size:16px; text-align:center">' + Premadeletter90 +' v0.5<br>' + 'This is a BETA function, it may not work and you may loose your money' + '<br><font color="red">' + Premadeletter91a + '</font>' + '</br> <button class="btn btn-sm btn-primary" style="width: 100%; margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">'+ Premadeletter25 + '</button></div>', "", { timeOut: 20000, extendedTimeOut: 20000 }).css("width", "300px");	
 			$(".btn.btn-sm.btn-primary").click(function () { buydeals(); });	
- /*           if (ProLicenceUsersTable.ProLicenceUsers[MC.getUserId()] != undefined) {
-                console.log("Authorised User");
-                buydeals();
-            } else {
-                console.log("Non Authorised User");
-                var containsnickname = $("#nick").val();
-                if (~containsnickname.indexOf("℄") || ~containsnickname.indexOf("ΕΛ")) {
-                    toastr["info"]("If you are Lc or EA player, contact Skype Id: Jimboy3100 and refer your <font color='red'><b>UID</b></font color='red'>", "", {
-                        timeOut: 10000,
-                        extendedTimeOut: 10000
-                    }).css("width", "300px");
-                } else {
-                    toastr["info"]("This Function is enabled to those who donated 6$ to author, contact Skype Id: Jimboy3100 and refer your <font color='red'><b>UID</b></font color='red'>", "", {
-                        timeOut: 10000,
-                        extendedTimeOut: 10000
-                    }).css("width", "300px");
-                }
-            } */
         });
         $('#agario_uid_input').blur(function() {
             if (letterCount($('#agario_uid_input').val(), '-', true) == 4) {
@@ -307,10 +290,16 @@ function letterCount(string, letter, caseSensitive) {
     return count;
 }
 
-//not used
-function PremiumUsers(){
-        var ProLicenceUsersTableJS = document.createElement("script");
-        ProLicenceUsersTableJS.type = "text/javascript";
-        ProLicenceUsersTableJS.src = "https://jimboy3100.github.io/AjaxData/ProLicenceUsersTableJS.js";
-        $("body").append(ProLicenceUsersTableJS);
-}		
+function LoadGameConfiguration(){
+	GameConfiguration={};
+		$.ajax({
+        type: "GET",
+        url: window.MiniclipConfigDestination,
+        datatype: "json",
+        success: function(info) {
+        return GameConfiguration=info;
+			}
+		});		
+}
+
+	
