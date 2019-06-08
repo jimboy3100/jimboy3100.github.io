@@ -1982,7 +1982,7 @@ var thelegendmodproject = function(t, e, i) {
                 'oppColors': true,
                 'oppRings': true,
                 'virColors': false,
-                'splitRange': true,
+                'splitRange': false,
                 'virusesRange': false,
                 'textStroke': false,
                 'namesStroke': true,
