@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.646 MEGA TEST
+// v1.649 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -166,8 +166,8 @@ setTimeout(function() {
 }, 5000);
 
 //set values outside ogario
-window.leaderboardlimit = 10;
-window.teamboardlimit = 5;
+window.leaderboardlimit = 20;
+window.teamboardlimit = 20;
 window.vanillaskins = false; //to enable vanilla skins it must be true
 window.spawnspecialeffects = false;
 window.top5skins = false;
@@ -1119,7 +1119,7 @@ var thelegendmodproject = function(t, e, i) {
                     'sectorsFontSize': 1200,
                     'cellsAlpha': 0.99,
                     'skinsAlpha': 0.99,
-                    'virusAlpha': 0.6,
+                    'virusAlpha': 0.25,
                     'textAlpha': 1,
                     'virusStrokeSize': 20,
                     "virusGlowSize": "#fff",
@@ -1504,7 +1504,7 @@ var thelegendmodproject = function(t, e, i) {
                 'darkTheme': true,
                 'mainColor': '#01d9cc',
                 'bgColor': '#000a11',
-                'bordersColor': '#01d9cc',
+                'bordersColor': '#d90101',
                 "borderGlowColor": "#ffffff",
                 'gridColor': '#00243e',
                 'sectorsColor': '#00243e',
@@ -1512,8 +1512,8 @@ var thelegendmodproject = function(t, e, i) {
                 'namesStrokeColor': '#000000',
                 'massColor': '#ffffff',
                 'massStrokeColor': '#000000',
-                'virusColor': '#002f52',
-                'virusStrokeColor': '#00b9e8',
+                'virusColor': '#327a19',
+                'virusStrokeColor': '#327a19',
                 'mVirusColor': '#ce6363',
                 'mVirusStrokeColor': '#b95959',
                 'foodColor': '#5000ff',
@@ -1539,14 +1539,13 @@ var thelegendmodproject = function(t, e, i) {
                 'virMassScale': 3,
                 'strokeScale': 1,
                 'foodSize': 5,
-                'bordersWidth': 40,
+                'bordersWidth': 14,
                 'sectorsWidth': 40,
                 'sectorsFontSize': 1200,
                 'cellsAlpha': 0.99,
                 'skinsAlpha': 0.99,
                 'virusAlpha': 0.6,
                 'textAlpha': 1,
-                'virusStrokeSize': 20,
                 'virusGlowColor': '#fff',
                 'virusGlowSize': 14,
                 'borderGlowSize': 14,
@@ -1940,8 +1939,8 @@ var thelegendmodproject = function(t, e, i) {
             },
             v = {
 				'isAlphaChanged':false,
-				'jellyPhisycs':false,
-				'virusSound':false,				
+				'jellyPhisycs':true,
+				'virusSound':true,				
                 'quickResp': true,
                 'autoResp': false,
                 'autoZoom': false,
@@ -1951,7 +1950,7 @@ var thelegendmodproject = function(t, e, i) {
                 'autoHideFoodOnZoom': false,
                 'noNames': false,
                 'optimizedNames': true,
-                'hideMyName': true,
+                'hideMyName': false,
                 'hideTeammatesNames': false,
                 'showMass': true,
                 'optimizedMass': true,
@@ -1968,26 +1967,26 @@ var thelegendmodproject = function(t, e, i) {
                 'transparentCells': false,
                 'transparentViruses': true,
                 'transparentSkins': false,
-                'showGrid': false,
+                'showGrid': true,
                 'showBgSectors': false,
                 'showMapBorders': true,
                 'showGhostCells': false,
                 'showMiniMap': true,
                 'showMiniMapGrid': false,
                 'showMiniMapGuides': true,
-				'showExtraMiniMapGuides': false,
+				'showExtraMiniMapGuides': true,
                 'showMiniMapGhostCells': true,
                 'oneColoredTeammates': false,
                 'optimizedFood': true,
-                'rainbowFood': false,
+                'rainbowFood': true,
                 'oppColors': false,
                 'oppRings': false,
                 'virColors': false,
                 'splitRange': false,
                 'virusesRange': false,
                 'textStroke': false,
-                'namesStroke': false,
-                'massStroke': false,
+                'namesStroke': true,
+                'massStroke': true,
                 'cursorTracking': false,
                 'teammatesInd': false,
                 'mouseSplit': false,
@@ -2009,8 +2008,8 @@ var thelegendmodproject = function(t, e, i) {
                 'fpsAtTop': true,
                 'showStats': true,
                 'showStatsMass': true,
-                'showStatsSTE': false,
-                'showStatsN16': false,
+                'showStatsSTE': true,
+                'showStatsN16': true,
                 'showStatsFPS': true,
                 'blockPopups': false,
                 'streamMode': false,
@@ -2023,7 +2022,7 @@ var thelegendmodproject = function(t, e, i) {
                 "commanderDelay": 1E3,
                 "suckAnimation": false,
                 "virusGlow": false,
-                "borderGlow": false,
+                "borderGlow": true,
                 "limLB": 10,
                 "limTP": 5,
                 ////				
@@ -5525,8 +5524,10 @@ var thelegendmodproject = function(t, e, i) {
 					
 					
                     case 5:
+						window.testobjectsOpcode5 = data;			  			
                         break;
                     case 17:
+						window.testobjectsOpcode17 = data;		
                         this.viewX = data.getFloat32(s, true);
 						s += 4;
 						this.viewY = data.getFloat32(s, true);
@@ -5534,16 +5535,19 @@ var thelegendmodproject = function(t, e, i) {
 						this.scale = data.getFloat32(s, true);
                         break;
                     case 18:
+						window.testobjectsOpcode18 = data;	
                         if (this.protocolKey){ 
 						this.protocolKey = this.shiftKey(this.protocolKey);
 						}
 						this.flushCellsData();
                         break;
                     case 32:
+						window.testobjectsOpcode32 = data;	
                         this.playerCellIDs.push(data.getUint32(s, true));
 						this.play || (this.play = true, ogarminimapdrawer.hideMenu(), this.playerColor = null, ogarminimapdrawer.onPlayerSpawn());
                         break;
                     case 50:
+						window.testobjectsOpcode50 = data;	
                         this.pieChart = [];
                         var a = data.getUint32(s, true);
                         s += 4;
@@ -5551,6 +5555,7 @@ var thelegendmodproject = function(t, e, i) {
                         ogarfooddrawer.drawPieChart();
                         break;
                     case 53:
+						window.testobjectsOpcode53 = data;	
                         if (this['leaderboard'] = [], this.playerPosition = 0, 54 == data.getUint8(0)) {
                             data.getUint16(s, true);
                             s += 2;
@@ -5584,8 +5589,10 @@ var thelegendmodproject = function(t, e, i) {
                         this['handleLeaderboard']();
                         break;
                     case 54:
+						window.testobjectsOpcode54 = data;	
                         break;
                     case 69:
+						window.testobjectsOpcode65 = data;	
                         var u = data.getUint16(s, true);
                         s += 2, this.ghostCells = [];
                         for (n = 0; n < u; n++) {
@@ -5606,6 +5613,7 @@ var thelegendmodproject = function(t, e, i) {
                         }
                         break;
                     case 85:
+						window.testobjectsOpcode85 = data;	
                         console.log('[Legend mod Express] Captcha requested'); if(window.master && window.master['recaptchaRequested']) { window.master['recaptchaRequested']();}
                         break;
 			  case 102:
@@ -5656,6 +5664,7 @@ var thelegendmodproject = function(t, e, i) {
 			  
 
             case 103:
+			  window.testobjectsOpcode103 = data;	
               M["accessTokenSent"] = !![];
               break;			  
 			  /*
@@ -5699,16 +5708,21 @@ var thelegendmodproject = function(t, e, i) {
 
 				
                     case 114:
+						window.testobjectsOpcode114 = data;	
 						break;
                     case 161:
+						window.testobjectsOpcode161 = data;	
                         break;
                     case 176:
+						window.testobjectsOpcode176 = data;	
                         this['battleRoyale'].startTime = data.getUint32(s, true);
                         break;
                     case 177:
+						window.testobjectsOpcode177 = data;	
                         this['battleRoyale'].joined = true;
                         break;
                     case 178:
+						window.testobjectsOpcode178 = data;	
                         this['battleRoyale'].players = data.getUint16(s, true), s += 2;
                         var y = data.getUint16(s, true);
                         s += 2, y || (this['battleRoyale'].state = 0, this['battleRoyale'].joined = false),
@@ -5724,11 +5738,13 @@ var thelegendmodproject = function(t, e, i) {
 						this['battleRoyale'].targetY = data.getInt32(s, true), s += 4, this['battleRoyale'].targetRadius = data.getUint32(s, true));
                         break;
                     case 179:
+						window.testobjectsOpcode179 = data;	
                         y = data.getUint8(s);
 						window.decodeURIComponent(escape(i()));
                         y || window.decodeURIComponent(escape(i()));
                         break;
                     case 180:
+						window.testobjectsOpcode181 = data;	
                         this['battleRoyale'].joined = false;
 						this['battleRoyale'].rank = [];
 						this['battleRoyale'].playerRank = data.getUint32(s, true);
@@ -5745,6 +5761,7 @@ var thelegendmodproject = function(t, e, i) {
                         }
                         break;
             case 226:
+			  window.testobjectsOpcode226 = data;	
               var extraOptions = data["getUint16"](1, !![]);
               data = this["createView"](3);
               data["setUint8"](0, 227);
@@ -5752,6 +5769,7 @@ var thelegendmodproject = function(t, e, i) {
               this["sendMessage"](data);
               break;
                     case 241:
+						window.testobjectsOpcode241 = data;	
                         this.protocolKey = data.getUint32(s, true);
 						console.log('[Legend mod Express] Received protocol key:', this.protocolKey);
                         var irenderfromagario = new Uint8Array(data['buffer'], s += 4);
@@ -5761,10 +5779,12 @@ var thelegendmodproject = function(t, e, i) {
 						}
                         break;
                     case 242:
+						window.testobjectsOpcode242 = data;	
                         this['serverTime'] = 1000 * data.getUint32(s, true);
 						this.serverTimeDiff = Date.now() - this['serverTime'];
                         break;
                     case 255:
+						window.testobjectsOpcode255 = data;	
                         this['handleSubmessage'](data);
                         break;
                     default:
