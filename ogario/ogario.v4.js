@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.649 MEGA TEST
+// v1.650 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -1979,7 +1979,7 @@ var thelegendmodproject = function(t, e, i) {
                 'oneColoredTeammates': false,
                 'optimizedFood': true,
                 'rainbowFood': true,
-                'oppColors': false,
+                'oppColors': true,
                 'oppRings': false,
                 'virColors': false,
                 'splitRange': false,
@@ -1988,7 +1988,7 @@ var thelegendmodproject = function(t, e, i) {
                 'namesStroke': true,
                 'massStroke': true,
                 'cursorTracking': false,
-                'teammatesInd': false,
+                'teammatesInd': true,
                 'mouseSplit': false,
                 'mouseFeed': false,
                 'mouseInvert': false,
