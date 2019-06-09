@@ -1,11 +1,16 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.651 MEGA TEST
+// v1.688 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
 
+
+function removeEmojis (string) {
+  var regex = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
+  return string.replace(regex, '');
+}
 
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
     get: function(){
@@ -255,7 +260,8 @@ var thelegendmodproject = function(t, e, i) {
                     'showGrid': 'Siatka',
                     'showBgSectors': 'Sektory w tle',
                     'showMapBorders': 'Granice mapy',
-                    'showGhostCells': 'Duchy kulek',
+                    'showGhostCells': 'Duchy kulek (fps drop)',
+					'showGhostCellsInfo': 'Ghost cells info (confusing)',
                     'showMiniMap': 'Pokaż minimapę',
                     'showMiniMapGrid': 'Pokaż siatkę minimapy',
                     'showMiniMapGuides': 'Pokaż prowadnice na minimapie',
@@ -627,7 +633,8 @@ var thelegendmodproject = function(t, e, i) {
                     'showGrid': 'Show grid',
                     'showBgSectors': 'Show background sectors',
                     'showMapBorders': 'Show map borders',
-                    'showGhostCells': 'Ghost cells',
+                    'showGhostCells': 'Ghost cells (fps drop)',
+					'showGhostCellsInfo': 'Ghost cells info (confusing)',
                     'showMiniMap': 'Show minimap',
                     'showMiniMapGrid': 'Show minimap grid',
                     'showMiniMapGuides': 'Show minimap guides',
@@ -1971,6 +1978,7 @@ var thelegendmodproject = function(t, e, i) {
                 'showBgSectors': false,
                 'showMapBorders': true,
                 'showGhostCells': false,
+				'showGhostCellsInfo': false,
                 'showMiniMap': true,
                 'showMiniMapGrid': false,
                 'showMiniMapGuides': true,
@@ -2799,7 +2807,7 @@ var thelegendmodproject = function(t, e, i) {
 					this["addOptions"](["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup"), 
 					this["addOptions"](["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox"], "chatGroup"), 
 					this["addOptions"](["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup"), 
-					this["addOptions"](["oppColors", "oppRings", "virColors", "splitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells"], "helpersGroup"), 
+					this["addOptions"](["oppColors", "oppRings", "virColors", "splitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"), 
 					this["addOptions"](["mouseSplit", "mouseFeed","mouseInvert"], "mouseGroup"), 
 					this["addOptions"](["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop"], "hudGroup"), 
 					this["addOptions"](["showStats", "showStatsMass", "showStatsSTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"), 
@@ -4279,7 +4287,7 @@ var thelegendmodproject = function(t, e, i) {
         };
 
         function irenderfromagario() {
-            this['txt'] = '',
+            this.txt = '',
                 this.txtCanvas = null,
                 this.txtCtx = null,
                 this.color = '#FFFFFF',
@@ -4297,7 +4305,7 @@ var thelegendmodproject = function(t, e, i) {
                 this.redraw = false,
                 this.remeasure = false,
                 this.setTxt = function(ogariosettxtsetter) {
-                    this['txt'] !== ogariosettxtsetter && (this['txt'] = ogariosettxtsetter,
+                    this.txt !== ogariosettxtsetter && (this.txt = ogariosettxtsetter,
                         this.redraw = true,
                         this.remeasure = true);
                 },
@@ -4358,11 +4366,11 @@ var thelegendmodproject = function(t, e, i) {
                 },
                 this.measureWidth = function() {
                     return this.remeasure && (this.txtCtx.font = this.fontWeight + ' 10px ' + this.fontFamily,
-                            this.measuredWidth = this.txtCtx.measureText(this['txt']).width,
+                            this.measuredWidth = this.txtCtx.measureText(this.txt).width,
                             this.remeasure = false),
                         ~~(this.fontSize / 10 * this.measuredWidth) + 2 * this.strokeWidth;
                 },
-                this['drawTxt'] = function() {
+                this.drawTxt = function() {
                     return this.createCanvas(),
                         this.redraw && (this.redraw = false,
                             this.txtCanvas.width = this.measureWidth(),
@@ -4372,8 +4380,8 @@ var thelegendmodproject = function(t, e, i) {
                             this.txtCtx.lineWidth = this.strokeWidth,
                             this.txtCtx.strokeStyle = this.strokeColor,
                             this.txtCtx.fillStyle = this.color,
-                            this.stroke && this.txtCtx.strokeText(this['txt'], this.strokeWidth, ~~(this.fontSize + this.margin * 0.5)),
-                            this.txtCtx.fillText(this['txt'], this.strokeWidth, ~~(this.fontSize + this.margin * 0.5))),
+                            this.stroke && this.txtCtx.strokeText(this.txt, this.strokeWidth, ~~(this.fontSize + this.margin * 0.5)),
+                            this.txtCtx.fillText(this.txt, this.strokeWidth, ~~(this.fontSize + this.margin * 0.5))),
                         this.txtCanvas;
                 };
         }
@@ -6664,20 +6672,65 @@ var thelegendmodproject = function(t, e, i) {
                         this.drawDashedCircle(t, e, i, s, 60, o, a);
                     }
                 },
-                'drawGhostCells': function() {
+				'drawTextAlongArc' : function (ctx, str, centerX, centerY, radius, angle) {
+					var len = str.length,
+					s;
+					this.ctx.save();
+					this.ctx.translate(centerX, centerY);
+					this.ctx.rotate(-1 * angle / 2);
+					this.ctx.rotate(-1 * (angle / len) / 2);
+					for (var n = 0; n < len; n++) {
+						this.ctx.rotate(angle / len);
+						this.ctx.save();
+						this.ctx.translate(0, -1 * radius);
+						s = str[n];
+						this.ctx.fillText(s, 0, 0);
+						this.ctx.restore();
+					}
+				this.ctx.restore();
+				},				
+                'drawGhostCells' : function() {
                     if (v.showGhostCells) {
                         var t = M.ghostCells;
                         this.ctx.beginPath();
                         var e = 0;
                         for (; e < t.length; e++) {
-                            if (!t[e].inView) {
-								//
-								
+                            if (!t[e].inView) {						
                                 var i = t[e]["x"];
                                 var s = t[e]["y"];
                                 this.ctx.moveTo(i, s);
-                                this.ctx.arc(i, s, t[e].size, 0, this.pi2, false);
-                            }
+								this.ctx.arc(i, s, t[e].size, 0, this.pi2, false);	
+								//
+								if (v.showGhostCellsInfo){
+								this.nickScale = 1;								
+								this.fontSize = Math.max(t[e].size * 0.3, 26) * this.scale;								
+								this.nickSize = ~~(this.fontSize * this.nickScale);						
+								this.ctx.font = g.namesFontWeight + " " + this.nickSize*4 + "px " + g.namesFontFamily;
+								this.ctx.textAlign = 'center';
+								this.ctx.fillStyle = g.namesColor;
+								this.ctx.strokeStyle = g.namesStrokeColor;
+								this.ctx.lineWidth = 4;
+								angle = Math.PI * 0.8;
+								
+								if (M.leaderboard[e]!=undefined){ //M instead of legendmod for quicker response
+								
+									this.ghostcellstext = removeEmojis(ogarminimapdrawer.escapeHTML(M.leaderboard[e].nick)); //legendmod3.escapeHTML(legendmod.leaderboard[0].nick)
+								}
+								else{
+									this.ghostcellstext = "Legend mod";
+								}
+								this.drawTextAlongArc(this.ctx, this.ghostcellstext, i, s, t[e].size*this.pi2/6, angle);									
+								if (v.customSkins && M.showCustomSkins){		
+									if (M.leaderboard[e]!=undefined){
+									node = ogarminimapdrawer.getCustomSkin(M.leaderboard[e].nick, "#000000");                           
+										if (node){								
+								this.ctx.drawImage(node, i-t[e].size, s-t[e].size, t[e].size*2, t[e].size*2);	
+										}
+									}	
+								}	
+								}
+                           //
+						   }							
                         }
                         this.ctx.fillStyle = g.ghostCellsColor;
                         this.ctx.globalAlpha = g.ghostCellsAlpha;
