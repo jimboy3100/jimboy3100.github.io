@@ -1,4 +1,4 @@
-//v0.9
+//v1.0
 var Languagetimesused;
 var Languagetimesused1=0;
 var Externalletter0a;
@@ -66,7 +66,7 @@ $("#Userscriptshud3").html('<div id="tutorial9" style="display:block;" width="82
 function LanguagesTempIframe(){
 $("#Userscriptshud3").html('<div id="tutorial10" style="display:block;" width="820" height="490">'+
 	'<p id="chooselangtext1" style="color:white; font-size:24px"; align="middle"><b>' + Externalletter0b + '</b></p>'+
-	'<br><br><select id="legendlanguages2" class="form-control" onchange="changeModLanguage2();" required="" data-original-title="" title="" style="display:inline; width: 50%"><option value="1" data-itr="">English</option><option value="6" data-itr="">Arabic - عربى</option><option value="4" data-itr="">Bulgarian - български</option><option value="5" data-itr="">French - Français</option><option value="9" data-itr="">German - Deutsch</option><option value="2" data-itr="">Greek - Ελληνικά</option><option value="8" data-itr="">Russian - Русские</option><option value="3" data-itr="">Spanish - Español</option><option value="7" data-itr="">Trad. Chinese - 繁體中文</option><option value="10" data-itr="">Turkish - Türk</option></select>'+ 
+	'<br><br><select id="legendlanguages2" class="form-control" onchange="changeModLanguage2();" required="" data-original-title="" title="" style="display:inline; width: 50%"><option selected="selected" value="1" data-itr="">English</option><option value="6" data-itr="">Arabic - عربى</option><option value="4" data-itr="">Bulgarian - български</option><option value="5" data-itr="">French - Français</option><option value="9" data-itr="">German - Deutsch</option><option value="2" data-itr="">Greek - Ελληνικά</option><option value="11" data-itr="">Polish - Polskie</option><option value="8" data-itr="">Russian - Русские</option><option value="3" data-itr="">Spanish - Español</option><option value="7" data-itr="">Trad. Chinese - 繁體中文</option><option value="10" data-itr="">Turkish - Türk</option></select>'+ 
 	'<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div><br><br>');
 	$('#legendlanguages2').val(languagemod);
 }
@@ -275,6 +275,20 @@ function changeModLanguage2() {
         var s = document.createElement("script");
         s.type = "text/javascript";
         s.src = "https://jimboy3100.github.io/LanguagePackTurkish.js";
+        $("body").append(s);
+        setTimeout(function() {
+            var s1 = document.createElement("script");
+            s1.type = "text/javascript";
+            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
+            $("body").append(s1);
+
+        }, 800);
+    }	
+    if ($("#legendlanguages2").val() == 11) {
+        localStorage.setItem("languagemod", 11);
+        var s = document.createElement("script");
+        s.type = "text/javascript";
+        s.src = "https://jimboy3100.github.io/LanguagePackPolish.js";
         $("body").append(s);
         setTimeout(function() {
             var s1 = document.createElement("script");
