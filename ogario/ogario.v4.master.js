@@ -1,4 +1,4 @@
-//v4
+//v5
 legendmaster(window);
 function legendmaster(self) {
     function login() {
@@ -316,9 +316,9 @@ function legendmaster(self) {
                     /** @type {string} */
                     params = ":ffa";
                 } else {
-                    if (params === ":battleroyale") {
-                        picKey = "findBattleRoyaleServer";
-                    }
+                    //if (params === ":battleroyale") {
+                        //picKey = "findBattleRoyaleServer";
+                    //}
                 }
                 var options = this;
                 var container = this.setRequestMsg(id, params);
