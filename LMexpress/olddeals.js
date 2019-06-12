@@ -12,7 +12,7 @@
 
 //		$("#OpenuserScripts").after('<button id="SpecialDealsBtn" class="btn btn-primary btn" type="submit" onclick="BeforeSpecialDeals(); return false;" class="btn btn-primary btn-shop" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px;" data-itr="page_shop"><i class="fa fa-briefcase"></i>Special Deals</button>');		
 
-if (window.agarioUID != null) {
+if (window.agarioUID != undefined) {
 	localStorage.setItem("agarioUID", window.agarioUID);
 	localStorage.setItem("agarioID", window.agarioID);
 }
