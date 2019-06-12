@@ -7,7 +7,7 @@
         s.type = "text/javascript";
         s.src = "https://jimboy3100.github.io/LanguagePackEnglish.js";
         $("body").append(s);
-*/
+
 
 
 //		$("#OpenuserScripts").after('<button id="SpecialDealsBtn" class="btn btn-primary btn" type="submit" onclick="BeforeSpecialDeals(); return false;" class="btn btn-primary btn-shop" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px;" data-itr="page_shop"><i class="fa fa-briefcase"></i>Special Deals</button>');		
@@ -20,6 +20,7 @@ else{
 	window.agarioUID=localStorage.getItem("agarioUID");
 	window.agarioID=localStorage.getItem("agarioID");	
 }
+*/
 window.MiniclipConfigDestination = "https://configs-web.agario.miniclippt.com/live/v12/2168/GameConfiguration.json";
 SpecialDeals();
 
