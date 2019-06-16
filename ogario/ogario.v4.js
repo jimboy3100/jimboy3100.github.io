@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.729 MEGA TEST
+// v1.730 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5338,14 +5338,23 @@ var thelegendmodproject = function(t, e, i) {
                     let virus = this.cells[node];
                     let distanceVirus = this.calcDist(virus.x, virus.y);
 					window.distanceVirus1=distanceVirus;
-                    if (distanceVirus < 100) {
-					console.log("virus is close");
+                    if (distanceVirus < 130) {
+						target.x=-10000;
+					//console.log("virus is close");
+					targetVirus = virus;
+					-legendmod.playerX
+					if (targetVirus.x-legendmod.playerX<0){console.log("virus is right");}
+					else{console.log("virus is left");}
+					//if (targetVirus.y-legendmod.playerY<0){console.log("virus is down");}
+					//else{console.log("virus is up");}		
+
+					
                     //targetVirus = virus;
                     //bestDistVirus = distanceVirus;
                     }
 				}
                 });
-				if (target!= undefined){
+				if (target!= undefined){ //not needed
                 this.sendPosition(target);
 				}
             },
@@ -5382,10 +5391,10 @@ var thelegendmodproject = function(t, e, i) {
                         e = this.targetY;
                     }
                 } else {
-					if (typeof cell != "undefined") {
+					//if (typeof cell != "undefined") { //when used, autoplay not working as expected
                     var t = cell.x;
                     var e = cell.y;
-					}
+					//}
                 }
 
                     
