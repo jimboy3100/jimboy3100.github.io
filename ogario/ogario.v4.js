@@ -1,8 +1,7 @@
 // Open Source script
-// Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Emanuel (Striker)
-//
+// Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.717 MEGA TEST
+// v1.719 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -357,7 +356,7 @@ var thelegendmodproject = function(t, e, i) {
                     'hk-showTargeting': 'Pokaż/ukryj panel namierzania',
                     'hk-voiceChat': 'Głos do tekstu',
 					'hk-GhostCellsInfo': 'Show ghost cells information', 
-					'hk-Autoplay': 'Auto Play', 
+					'hk-Autoplay': 'Auto Play',					
                     'hk-setTargeting': 'Włącz/wyłącz namierzanie (śledzenie)',
                     'hk-cancelTargeting': 'Zatrzymaj namierzanie',
                     'hk-changeTarget': 'Zmień cel',
@@ -731,8 +730,8 @@ var thelegendmodproject = function(t, e, i) {
                     'hk-switchServerMode': 'Switch server [public/private]',
                     'hk-showTargeting': 'Show/hide targeting panel',
                     'hk-voiceChat': 'Voice to text',
-					'hk-GhostCellsInfo': 'Show ghost cells information', 
-					'hk-Autoplay': 'Auto Play',					
+					'hk-GhostCellsInfo': ' Show ghost cells information', 
+					'hk-Autoplay': 'Auto Play',	
                     'hk-setTargeting': 'Start/stop targeting (following)',
                     'hk-cancelTargeting': 'Cancel targeting',
                     'hk-changeTarget': 'Change target',
@@ -2229,7 +2228,7 @@ var thelegendmodproject = function(t, e, i) {
 				else{
 			    window.autoPlay = false;				
 				}				
-            },					
+            },				
             'setShowSplitInd': function() {
                 this['showSplitInd'] = !this['showSplitInd'], 
 				v['splitRange'] = this['showSplitInd'], 
@@ -5315,11 +5314,9 @@ var thelegendmodproject = function(t, e, i) {
             'calcTarget': function () {
                 let target;
                 let bestDist = 10000;
-				let cell;
-				let distance;
                 Object.keys(this.food).forEach(node => {
-                    cell = this.food[node];
-                    distance = this.calcDist(cell.x, cell.y);
+                    let cell = this.food[node];
+                    let distance = this.calcDist(cell.x, cell.y);
                     if (distance < bestDist) {
                     target = cell;
                     bestDist = distance;
@@ -5351,7 +5348,7 @@ var thelegendmodproject = function(t, e, i) {
                 for (var s = 0; s < t.length; s++) i.setUint8(s + 1, t.charCodeAt(s));
                 this.sendMessage(i);
             },
-			'sendPosition': function(cell) {
+            'sendPosition': function(cell) {
                 if (this.isSocketOpen() && this.connectionOpened && this.clientKey) {
                     if (!window.autoPlay) {
                     var t = this["cursorX"];
@@ -5361,13 +5358,11 @@ var thelegendmodproject = function(t, e, i) {
                         e = this.targetY;
                     }
                 } else {
-					try {
-					if ((cell.x !== undefined && cell.y !== undefined) ) {
                     var t = cell.x;
                     var e = cell.y;
-					}                     
-					} catch (e) {}	
                 }
+
+                    
                     var i = this.createView(13);
                     i.setUint8(0, 16);
                     i.setInt32(1, t, true);
@@ -7285,7 +7280,7 @@ var thelegendmodproject = function(t, e, i) {
                     },
                     'keyUp': null,
                     'type': 'special'
-                },		
+                },	
                 'hk-Autoplay': {
                     'label': h['hk-Autoplay'],
                     'defaultKey': 'J',
@@ -7294,7 +7289,7 @@ var thelegendmodproject = function(t, e, i) {
                     },
                     'keyUp': null,
                     'type': 'special'
-                },					
+                },				
                 'hk-switchServerMode': {
                     'label': h['hk-switchServerMode'],
                     'defaultKey': '-',
