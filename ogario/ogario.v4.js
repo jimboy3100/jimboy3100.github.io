@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.713 MEGA TEST
+// v1.714 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5340,7 +5340,7 @@ var thelegendmodproject = function(t, e, i) {
                 for (var s = 0; s < t.length; s++) i.setUint8(s + 1, t.charCodeAt(s));
                 this.sendMessage(i);
             },
-            'sendPosition': function(cell) {
+			'sendPosition': function(cell) {
                 if (this.isSocketOpen() && this.connectionOpened && this.clientKey) {
                     if (!window.autoPlay) {
                     var t = this["cursorX"];
@@ -5350,11 +5350,11 @@ var thelegendmodproject = function(t, e, i) {
                         e = this.targetY;
                     }
                 } else {
+					if ((cell.x && cell.y) !== undefined) {
                     var t = cell.x;
                     var e = cell.y;
+					}
                 }
-
-                    
                     var i = this.createView(13);
                     i.setUint8(0, 16);
                     i.setInt32(1, t, true);
