@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.730 MEGA TEST
+// v1.731 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5342,9 +5342,9 @@ var thelegendmodproject = function(t, e, i) {
 						target.x=-10000;
 					//console.log("virus is close");
 					targetVirus = virus;
-					-legendmod.playerX
-					if (targetVirus.x-legendmod.playerX<0){console.log("virus is right");}
-					else{console.log("virus is left");}
+					console.log("virus is close. X: " +targetVirus.x-legendmod.playerX + " Y: " + targetVirus.y-legendmod.playerY);
+					//if (targetVirus.x-legendmod.playerX<0){console.log("virus is right");}
+					//else{console.log("virus is left");}
 					//if (targetVirus.y-legendmod.playerY<0){console.log("virus is down");}
 					//else{console.log("virus is up");}		
 
