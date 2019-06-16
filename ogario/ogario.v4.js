@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.700 MEGA TEST
+// v1.702 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -38,7 +38,9 @@ window.videoJustWatchProflag2 = {};
 
 //window.videoJustWatchProflag=true;
 window.videoJustWatchPro = {};
-
+window.targetFood = null;
+window.autoPlay = false;
+window.bestDist = 10000;
 function checkVideos(a, b) {
     checkVideos1(a);
     //setTimeout(function() {
@@ -5294,6 +5296,23 @@ var thelegendmodproject = function(t, e, i) {
 					this.sendMessage(e);
                 }
             },
+
+            'calcDist': function(x, y) {
+                return Math.round(Math.sqrt(Math.pow(this.playerX - x, 2) + Math.pow(this.playerY - y, 2)));
+            },
+
+            'calcTarget': function () {
+                Object.keys(this.food).forEach(node => {
+                    let cell = this.food[node];
+                    let distance = this.calcDist(cell.x, cell.y);
+                    if (distance < window.bestDist) {
+                    window.targetFood = cell;
+                    window.bestDist = distance;
+                    }
+                })
+
+                this.sendPosition();
+            },
             'sendSpectate': function() {
                 this.sendAction(1);
             },
@@ -5319,12 +5338,19 @@ var thelegendmodproject = function(t, e, i) {
             },
             'sendPosition': function() {
                 if (this.isSocketOpen() && this.connectionOpened && this.clientKey) {
+                    if (!window.autoPlay) {
                     var t = this["cursorX"];
                     var e = this["cursorY"];
                     if (!this.play && this.targeting || this.pause) {
                         t = this.targetX;
                         e = this.targetY;
                     }
+                } else {
+                    var t = window.targetFood.x;
+                    var e = window.targetFood.y;
+                }
+
+                    
                     var i = this.createView(13);
                     i.setUint8(0, 16);
                     i.setInt32(1, t, true);
@@ -6005,6 +6031,7 @@ var thelegendmodproject = function(t, e, i) {
                     i += 4, (ogariocellssetts = this.indexedCells[l]) && ogariocellssetts.removeCell();
                 }
                 this.removePlayerCell && !this.playerCells.length && (this.play = false, ogarminimapdrawer['onPlayerDeath'](), ogarminimapdrawer.showMenu(300));
+                if (window.autoPlay) this.calcDist();
             },
             'color2Hex': function(t) {
                 var e = t.toString(16);
