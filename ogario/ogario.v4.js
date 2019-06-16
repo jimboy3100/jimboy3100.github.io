@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.707 MEGA TEST
+// v1.708 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5302,17 +5302,16 @@ var thelegendmodproject = function(t, e, i) {
             },
 
             'calcTarget': function () {
-                window.targetFood = null;
                 Object.keys(this.food).forEach(node => {
                     let cell = this.food[node];
                     let distance = this.calcDist(cell.x - this.mapOffsetX, cell.y - this.mapOffsetY);
-                    if (distance < window.bestDist && this.alive) {
+                    if (distance < window.bestDist) {
                     window.targetFood = cell;
                     window.bestDist = distance;
                     }
                 })
 
-                if (this.alive) this.sendPosition();
+                this.sendPosition();
             },
             'sendSpectate': function() {
                 this.sendAction(1);
