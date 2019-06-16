@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.719 MEGA TEST
+// v1.720 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2224,9 +2224,13 @@ var thelegendmodproject = function(t, e, i) {
             'setAutoPlay': function() {
                 if ( window.autoPlay == false){
 			    window.autoPlay = true;
+				$('#pause-hud').text("AI (Emanuel & Jimboy3100) SkyNet v0.01");
+				$('#pause-hud').show();
 				}
 				else{
-			    window.autoPlay = false;				
+			    window.autoPlay = false;	
+				$('#pause-hud').text(h.pause);
+				$('#pause-hud').hide();				
 				}				
             },				
             'setShowSplitInd': function() {
@@ -2352,7 +2356,7 @@ var thelegendmodproject = function(t, e, i) {
                 t.remove();
             },
             'setPause': function() {
-                this.pause = !this.pause, i.pause = this.pause, this.pause ? (i['resetTargetPosition'](), $('#pause-hud').show()) : $('#pause-hud').hide();
+                this.pause = !this.pause, i.pause = this.pause, this.pause ? (i['resetTargetPosition'](), $('#pause-hud').text(h.pause), $('#pause-hud').show()) : $('#pause-hud').hide();
             },
             'setCenteredLb': function() {
                 v['centeredLb'] ? $('#leaderboard-hud').addClass('hud-text-center') : $('#leaderboard-hud').removeClass('hud-text-center');
