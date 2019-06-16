@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.712 MEGA TEST
+// v1.713 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5302,16 +5302,20 @@ var thelegendmodproject = function(t, e, i) {
             },
 
             'calcTarget': function () {
+                let target;
+                let bestDist = 10000;
+				let cell;
+				let distance;
                 Object.keys(this.food).forEach(node => {
-                    let cell = this.food[node];
-                    let distance = this.calcDist(cell.x, cell.y);
-                    if (distance < 1000) {
-                    window.targetFood = cell;
-                    window.bestDist = distance;
+                    cell = this.food[node];
+                    distance = this.calcDist(cell.x, cell.y);
+                    if (distance < bestDist) {
+                    target = cell;
+                    bestDist = distance;
                     }
                 })
 
-                this.sendPosition();
+                this.sendPosition(target);
             },
             'sendSpectate': function() {
                 this.sendAction(1);
@@ -5336,7 +5340,7 @@ var thelegendmodproject = function(t, e, i) {
                 for (var s = 0; s < t.length; s++) i.setUint8(s + 1, t.charCodeAt(s));
                 this.sendMessage(i);
             },
-            'sendPosition': function() {
+            'sendPosition': function(cell) {
                 if (this.isSocketOpen() && this.connectionOpened && this.clientKey) {
                     if (!window.autoPlay) {
                     var t = this["cursorX"];
@@ -5346,8 +5350,8 @@ var thelegendmodproject = function(t, e, i) {
                         e = this.targetY;
                     }
                 } else {
-                    var t = window.targetFood.x;
-                    var e = window.targetFood.y;
+                    var t = cell.x;
+                    var e = cell.y;
                 }
 
                     
