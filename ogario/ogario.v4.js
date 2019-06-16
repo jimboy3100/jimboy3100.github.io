@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.720 MEGA TEST
+// v1.721 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5318,6 +5318,10 @@ var thelegendmodproject = function(t, e, i) {
             'calcTarget': function () {
                 let target;
                 let bestDist = 10000;
+				
+				let targetVirus;
+				let bestDistVirus;
+				
                 Object.keys(this.food).forEach(node => {
                     let cell = this.food[node];
                     let distance = this.calcDist(cell.x, cell.y);
@@ -5325,8 +5329,16 @@ var thelegendmodproject = function(t, e, i) {
                     target = cell;
                     bestDist = distance;
                     }
-                })
-
+                });
+                Object.keys(this.viruses).forEach(node => {
+                    let virus = this.viruses[node];
+                    let distanceVirus = this.calcDist(virus.x, virus.y);
+                    if (distanceVirus < 100) {
+					console.log("virus is close");
+                    //targetVirus = virus;
+                    //bestDistVirus = distanceVirus;
+                    }
+                });
                 this.sendPosition(target);
             },
             'sendSpectate': function() {
