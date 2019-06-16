@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.721 MEGA TEST
+// v1.722 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5333,6 +5333,7 @@ var thelegendmodproject = function(t, e, i) {
                 Object.keys(this.viruses).forEach(node => {
                     let virus = this.viruses[node];
                     let distanceVirus = this.calcDist(virus.x, virus.y);
+					window.distanceVirus1=distanceVirus;
                     if (distanceVirus < 100) {
 					console.log("virus is close");
                     //targetVirus = virus;
