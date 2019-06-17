@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.777 MEGA TEST
+// v1.778 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5376,7 +5376,7 @@ var thelegendmodproject = function(t, e, i) {
 				}
 				else if (distancePlayerCell < this.cells[node].size+600 && this.cells[node].mass * 1.4 < this.playerMass) {
 					if (window.teammatenicks.includes(this.cells[node].name) && legendmod3.lastSentClanTag != ""){
-						$('#pause-hud').html("<font color='" + targetPlayerCell.color + "'>" + this.cells[node].nick + "</font> (mass: " + this.cells[node].mass + ") is teammate. X: " + parseInt(targetPlayerCell.x - this.playerX)
+						$('#pause-hud').html("<font color='" + targetPlayerCell.color + "'>" + this.cells[node].nick + "</font> (mass: " + this.cells[node].mass + ") is teammate. X: " + parseInt(targetPlayerCell.x - this.playerX));
 					}
 					else{
 				if (this.cells[node].mass!=0 && this.cells[node].nick != "" && this.cells[node].mass * 2.7 < this.playerMass && this.playerCells.length==1 && !(this.cells[node].mass * 10 < this.playerMass )){
