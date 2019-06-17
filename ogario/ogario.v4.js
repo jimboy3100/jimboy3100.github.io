@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.776a MEGA TEST
+// v1.777 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5353,7 +5353,7 @@ var thelegendmodproject = function(t, e, i) {
 					targetVirus = PlayerCell;
 					if (window.VirusFlag == true){						
 						window.VirusFlag = false; setTimeout(function() {window.VirusFlag = true;}, 1000);
-						$('#pause-hud').html("<font color='blue'>Virus</font> is close. X: " + parseInt(targetVirus.x - this.playerX) + " , Y: " + parseInt(targetVirus.y - this.playerY));
+						$('#pause-hud').html("<font color='" + targetVirus.color + "'>Virus</font> is close. X: " + parseInt(targetVirus.x - this.playerX) + " , Y: " + parseInt(targetVirus.y - this.playerY));
 					}
 					if (targetVirus.x-this.playerX>0){target2.x=legendmod.mapMinX;}else{target2.x=legendmod.mapMaxX;}
 					if (targetVirus.y-this.playerY>0){target2.y=legendmod.mapMinY;}else{target2.y=legendmod.mapMaxY;}	                    
@@ -5364,7 +5364,7 @@ var thelegendmodproject = function(t, e, i) {
 					targetPlayerCell = PlayerCell;
 					if (window.BiggerCellFlag == true){
 						window.BiggerCellFlag = false; setTimeout(function() {window.BiggerCellFlag = true;}, 1000);
-						$('#pause-hud').html("<font color='blue'>" + this.cells[node].nick + "</font> (mass: " + this.cells[node].mass + ") is close. X: " + parseInt(targetPlayerCell.x - this.playerX) + " , Y: " + parseInt(targetPlayerCell.y - this.playerY));
+						$('#pause-hud').html("<font color='" + targetPlayerCell.color + "'>" + this.cells[node].nick + "</font> (mass: " + this.cells[node].mass + ") is close. X: " + parseInt(targetPlayerCell.x - this.playerX) + " , Y: " + parseInt(targetPlayerCell.y - this.playerY));
 					}
 					if (targetPlayerCell.x-this.playerX>0){target2.x=legendmod.mapMinX;}else{target2.x=legendmod.mapMaxX;}						
 					if (targetPlayerCell.y-this.playerY>0){target2.y=legendmod.mapMinY;}else{target2.y=legendmod.mapMaxY;}		
@@ -5375,12 +5375,16 @@ var thelegendmodproject = function(t, e, i) {
 					if (targetPlayerCell.y>legendmod.mapMaxY-760){ target2.x=legendmod.mapMinX;$('#pause-hud').html("Avoiding cornersY+ " + targetPlayerCell.x); }										
 				}
 				else if (distancePlayerCell < this.cells[node].size+600 && this.cells[node].mass * 1.4 < this.playerMass) {
+					if (window.teammatenicks.includes(this.cells[node].name) && legendmod3.lastSentClanTag != ""){
+						$('#pause-hud').html("<font color='" + targetPlayerCell.color + "'>" + this.cells[node].nick + "</font> (mass: " + this.cells[node].mass + ") is teammate. X: " + parseInt(targetPlayerCell.x - this.playerX)
+					}
+					else{
 				if (this.cells[node].mass!=0 && this.cells[node].nick != "" && this.cells[node].mass * 2.7 < this.playerMass && this.playerCells.length==1 && !(this.cells[node].mass * 10 < this.playerMass )){
 					 //760 
 					targetPlayerCell = PlayerCell;
 					if (window.SmallerCellFlag == true){
 						window.SmallerCellFlag = false; setTimeout(function() {window.SmallerCellFlag = true;}, 1000);
-						$('#pause-hud').html("<font color='blue'>" + this.cells[node].nick + "</font> (mass: " + this.cells[node].mass + ") is close and will be eaten by split. X: " + parseInt(targetPlayerCell.x - this.playerX) + " , Y: " + parseInt(targetPlayerCell.y - this.playerY));
+						$('#pause-hud').html("<font color='" + targetPlayerCell.color + "'>" + this.cells[node].nick + "</font> (mass: " + this.cells[node].mass + ") is close and will be eaten by split. X: " + parseInt(targetPlayerCell.x - this.playerX) + " , Y: " + parseInt(targetPlayerCell.y - this.playerY));
 					}
 					target2.x = this.cells[node].x; target2.y = this.cells[node].y;
 					console.log("Target mass: " + this.cells[node].mass);	
@@ -5393,13 +5397,14 @@ var thelegendmodproject = function(t, e, i) {
 					targetPlayerCell = PlayerCell;
 					if (window.SmallerCellFlag == true){
 						window.SmallerCellFlag = false; setTimeout(function() {window.SmallerCellFlag = true;}, 1000);
-						$('#pause-hud').html("<font color='blue'>" + this.cells[node].nick + "</font> (mass: " + this.cells[node].mass + ") is close, AI follows... X: " + parseInt(targetPlayerCell.x - this.playerX) + " , Y: " + parseInt(targetPlayerCell.y - this.playerY));
+						$('#pause-hud').html("<font color='" + targetPlayerCell.color + "'>" + this.cells[node].nick + "</font> (mass: " + this.cells[node].mass + ") is close, AI follows... X: " + parseInt(targetPlayerCell.x - this.playerX) + " , Y: " + parseInt(targetPlayerCell.y - this.playerY));
 					}
 					target2.x = this.cells[node].x; target2.y = this.cells[node].y;
 					console.log("Target mass: " + this.cells[node].mass);					
 				}	
 				}
-				}				
+				}
+					}				
                 });
 				if (target != undefined){ //not needed
                 this.sendPosition(target, target2);
