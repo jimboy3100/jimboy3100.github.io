@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.771 MEGA TEST
+// v1.776 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2231,7 +2231,7 @@ var thelegendmodproject = function(t, e, i) {
 				if (legendmod.pause){ogarminimapdrawer && ogarminimapdrawer.setPause()};
                 if ( window.autoPlay == false){
 			    window.autoPlay = true;
-				$('#pause-hud').text("AI (Emanuel & Jimboy3100) SkyNet v0.03");
+				$('#pause-hud').text("AI (Emanuel & Jimboy3100) SkyNet v0.04");
 				$('#pause-hud').show();
 				}
 				else{
@@ -5348,20 +5348,19 @@ var thelegendmodproject = function(t, e, i) {
                     let PlayerCell = this.cells[node];
                     let distancePlayerCell = this.calcDist(PlayerCell.x, PlayerCell.y);		
 					
-					if (this.cells[node].isVirus){
-                    if (distancePlayerCell < 200 && this.playerMass >125) {
+					if (this.cells[node].nick != this.playerNick){
+					if (distancePlayerCell < 200 && this.playerMass >125 && this.cells[node].isVirus) {					                   
 					targetVirus = PlayerCell;
 					if (window.VirusFlag == true){						
 						window.VirusFlag = false; setTimeout(function() {window.VirusFlag = true;}, 1000);
 						$('#pause-hud').html("<font color='blue'>Virus</font> is close. X: " + parseInt(targetVirus.x - this.playerX) + " , Y: " + parseInt(targetVirus.y - this.playerY));
 					}
 					if (targetVirus.x-this.playerX>0){target2.x=legendmod.mapMinX;}else{target2.x=legendmod.mapMaxX;}
-					if (targetVirus.y-this.playerY>0){target2.y=legendmod.mapMinY;}else{target2.y=legendmod.mapMaxY;}	
-                    }
+					if (targetVirus.y-this.playerY>0){target2.y=legendmod.mapMinY;}else{target2.y=legendmod.mapMaxY;}	                    
 				}
 				//this.cells[0].isPlayerCell is our cell
-				else if (this.cells[node].nick != this.playerNick && this.cells[node].mass > this.playerMass * 1.25){
-					if (distancePlayerCell < this.cells[node].size+960) { //760 
+				else if (distancePlayerCell < this.cells[node].size+960 && this.cells[node].mass > this.playerMass * 1.25) {
+					 //760 
 					targetPlayerCell = PlayerCell;
 					if (window.BiggerCellFlag == true){
 						window.BiggerCellFlag = false; setTimeout(function() {window.BiggerCellFlag = true;}, 1000);
@@ -5370,38 +5369,36 @@ var thelegendmodproject = function(t, e, i) {
 					if (targetPlayerCell.x-this.playerX>0){target2.x=legendmod.mapMinX;}else{target2.x=legendmod.mapMaxX;}						
 					if (targetPlayerCell.y-this.playerY>0){target2.y=legendmod.mapMinY;}else{target2.y=legendmod.mapMaxY;}		
 					//Avoiding corners
-					if (targetPlayerCell.x<legendmod.mapMinX+1520){ target2.x=legendmod.mapMaxY;$('#pause-hud').html("Avoiding cornersX- " + targetPlayerCell.x); }
-					if (targetPlayerCell.y<legendmod.mapMinY+1520){ target2.x=legendmod.mapMaxX;$('#pause-hud').html("Avoiding cornersY- " + targetPlayerCell.y); }
-					if (targetPlayerCell.x>legendmod.mapMaxX-1520){ target2.x=legendmod.mapMinY;$('#pause-hud').html("Avoiding cornersX+ " + targetPlayerCell.x); }
-					if (targetPlayerCell.y>legendmod.mapMaxY-1520){ target2.x=legendmod.mapMinX;$('#pause-hud').html("Avoiding cornersY+ " + targetPlayerCell.x); }					
-					}
+					if (targetPlayerCell.x<legendmod.mapMinX+760){ target2.x=legendmod.mapMaxY;$('#pause-hud').html("Avoiding cornersX- " + targetPlayerCell.x); }
+					if (targetPlayerCell.y<legendmod.mapMinY+760){ target2.x=legendmod.mapMaxX;$('#pause-hud').html("Avoiding cornersY- " + targetPlayerCell.y); }
+					if (targetPlayerCell.x>legendmod.mapMaxX-760){ target2.x=legendmod.mapMinY;$('#pause-hud').html("Avoiding cornersX+ " + targetPlayerCell.x); }
+					if (targetPlayerCell.y>legendmod.mapMaxY-760){ target2.x=legendmod.mapMinX;$('#pause-hud').html("Avoiding cornersY+ " + targetPlayerCell.x); }										
 				}
-				else if (this.cells[node].mass!=0 && this.cells[node].nick != "" && this.cells[node].nick != this.playerNick && this.cells[node].mass < this.playerMass * 2.7 && !(this.cells[node].mass < this.playerMass * 10)){
-					if (distancePlayerCell < this.cells[node].size+600) { //760 
+				else if (distancePlayerCell < this.cells[node].size+600 && this.cells[node].mass * 1.4 < this.playerMass) {
+				if (this.cells[node].mass!=0 && this.cells[node].nick != "" && this.cells[node].mass * 2.7 < this.playerMass && this.playerCells.length==1 && !(this.cells[node].mass * 10 < this.playerMass )){
+					 //760 
 					targetPlayerCell = PlayerCell;
 					if (window.SmallerCellFlag == true){
 						window.SmallerCellFlag = false; setTimeout(function() {window.SmallerCellFlag = true;}, 1000);
 						$('#pause-hud').html("<font color='blue'>" + this.cells[node].nick + "</font> (mass: " + this.cells[node].mass + ") is close and will be eaten by split. X: " + parseInt(targetPlayerCell.x - this.playerX) + " , Y: " + parseInt(targetPlayerCell.y - this.playerY));
 					}
-					if (this.playerCells.length==1){
 					target2.x = this.cells[node].x; target2.y = this.cells[node].y;
 					console.log("Target mass: " + this.cells[node].mass);	
-						if (this.cells[node].mass!=0 || this.cells[node].mass!="0" && this.playerCells.length==1){ //2nd time to check
+						if (this.cells[node].mass!=0 && this.cells[node].mass!="0" ){ //2nd time to check
 						doSplit=true;
 						}
 					}
-					}
-				}	
-				else if (this.cells[node].mass<50 && this.cells[node].nick != this.playerNick && this.cells[node].mass < this.playerMass * 1.4 && !(this.cells[node].mass < this.playerMass * 10)){
-					if (distancePlayerCell < this.cells[node].size+600) { //760 
+			
+				else if (this.cells[node].mass * 1.4 < this.playerMass && !(this.cells[node].mass * 10 < this.playerMass )){
 					targetPlayerCell = PlayerCell;
 					if (window.SmallerCellFlag == true){
 						window.SmallerCellFlag = false; setTimeout(function() {window.SmallerCellFlag = true;}, 1000);
 						$('#pause-hud').html("<font color='blue'>" + this.cells[node].nick + "</font> (mass: " + this.cells[node].mass + ") is close, AI follows... X: " + parseInt(targetPlayerCell.x - this.playerX) + " , Y: " + parseInt(targetPlayerCell.y - this.playerY));
 					}
 					target2.x = this.cells[node].x; target2.y = this.cells[node].y;
-					console.log("Target mass: " + this.cells[node].mass);
-					}
+					console.log("Target mass: " + this.cells[node].mass);					
+				}	
+				}
 				}				
                 });
 				if (target != undefined){ //not needed
