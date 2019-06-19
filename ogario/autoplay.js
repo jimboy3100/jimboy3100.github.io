@@ -72,7 +72,7 @@ function calcTarget() {
             } catch (err) {
                 //document.getElementById("demo").innerHTML = err.message;
             } finally {
-                if (distancePlayerCell < window.legendmod.playerSize + (PlayerCell.size) && biggercellmass > 125 + 1.25 * ((7 - PlayerCell.mass) * 12) && PlayerCell.isVirus && window.legendmod.playerCells.length != 16) {
+                if (distancePlayerCell < window.legendmod.playerSize + (PlayerCell.size)-10 && biggercellmass > 125 + 1.25 * ((7 - PlayerCell.mass) * 12) && PlayerCell.isVirus && window.legendmod.playerCells.length != 16) {
                     //if ( distancePlayerCell < window.legendmod.playerSize + PlayerCell.size && biggercellmass > 125 + 1.25 * (( 7 - PlayerCell.mass ) * 12 ) && PlayerCell.isVirus ) {		
                     //console.log(PlayerCell.mass, PlayerCell.size); //window.legendmod5.virMassShots=false-> 7, 100... 6, 105.9999999999999  .....    window.legendmod5.virMassShots=true->100,100... 112, 106 
                     //Object.keys(window.DistanceX).forEach(function(key) {
