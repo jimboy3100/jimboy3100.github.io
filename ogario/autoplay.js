@@ -306,8 +306,17 @@ if (negativeY){
 	closestY = -closestY;
 }	
 console.log(closestX, closestY);	
-target2.x = -closestX;
-target2.y = -closestY;
+//here is the difference with the GeneralAvoiding
+if (Math.abs(-closestX)<Math.abs(-closestY)){
+	target2.x = -closestX;
+	target2.y = closestY;
+}
+else{
+	target2.x = closestX;
+	target2.y = -closestY;
+}
+//target2.x = -closestX; normaly
+//target2.y = -closestY; normaly
 return target2;
 }
 function calcDist(x, y) {
