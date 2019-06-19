@@ -176,7 +176,7 @@ function calcTarget() {
                         }
                         $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is teammate. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
                     } else {
-                        if (PlayerCell.mass != 0 && PlayerCell.nick != "" && PlayerCell.mass * 2.8 < biggercellmass && window.legendmod.playerCells.length == 1 && !(PlayerCell.mass * 10 < biggercellmass && biggercellmass > 260)) {
+                        if (PlayerCell.mass != 0 && PlayerCell.nick != "" && PlayerCell.mass * 3 < biggercellmass && window.legendmod.playerCells.length == 1 && !(PlayerCell.mass * 10 < biggercellmass && biggercellmass > 260)) {
                             //760 
 
                             if (window.SmallerCellFlag == true) {
