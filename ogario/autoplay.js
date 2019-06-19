@@ -7,9 +7,6 @@ window.BiggerCellFlag = true;
 window.SmallerCellFlag = true;
 window.bestDist = 10000;
 
-function calcDist(x, y) {
-    return Math.round(Math.sqrt(Math.pow(window.legendmod.playerX - x, 2) + Math.pow(window.legendmod.playerY - y, 2)));
-}
 
 function calcTarget() {
     //legendmod.zoomValue=0.3;
@@ -33,11 +30,14 @@ function calcTarget() {
     let doFeed = false;
     window.DistanceX = [];
     window.DistanceY = [];
+    window.DistanceName = [];
     window.DangerDistanceX = [];
     window.DangerDistanceY = [];
+    window.DangerDistanceName = [];
     window.FlagDangerCells = [];
     var biggercellmass = 0;
     var smallercellmass = 25000;
+    window.SandwichCellCase = null;
     for (var i = 0; i < window.legendmod.playerCells.length; i++) {
         if (window.legendmod.playerCells[i].mass > biggercellmass) {
             biggercellmass = window.legendmod.playerCells[i].mass;
@@ -52,6 +52,7 @@ function calcTarget() {
             let cell = window.legendmod.food[node];
             let distance = calcDist(cell.x, cell.y);
             if (distance < bestDist) {
+                //acting
                 target = cell;
                 bestDist = distance;
             }
@@ -67,6 +68,7 @@ function calcTarget() {
             try {
                 window.DistanceX[PlayerCell.id] = PlayerCell.x - window.legendmod.playerX;
                 window.DistanceY[PlayerCell.id] = PlayerCell.y - window.legendmod.playerY;
+                window.DistanceName[PlayerCell.id] = PlayerCell.nick;
             } catch (err) {
                 //document.getElementById("demo").innerHTML = err.message;
             } finally {
@@ -98,26 +100,19 @@ function calcTarget() {
                     }
                 }
                 //window.legendmod.cells[0].isPlayerCell is our cell
+                //danger cells, avoiding
                 else if ((distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 760 && PlayerCell.mass > biggercellmass * 2.5) || (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 95 && PlayerCell.mass > biggercellmass * 1.25)) {
                     window.DangerDistanceX[PlayerCell.id] = window.DistanceX[PlayerCell.id];
                     window.DangerDistanceY[PlayerCell.id] = window.DistanceY[PlayerCell.id];
+                    window.DangerDistanceName[PlayerCell.id] = window.DistanceName[PlayerCell.id];
                     window.FlagDangerCells.push(PlayerCell.id);
-                    if (window.FlagDangerCells.length > 1) {
-                        for (var i = 1; i < window.FlagDangerCells.length; i++) {
-
-                            //console.log(window.DangerDistanceX[window.FlagDangerCells[i]] + window.DangerDistanceY[window.FlagDangerCells[i]] , window.DangerDistanceY[window.FlagDangerCells[i-1]] + window.DangerDistanceX[window.FlagDangerCells[i-1]]);
-                            if (window.DangerDistanceX[window.FlagDangerCells[i]] + window.DangerDistanceY[window.FlagDangerCells[i]] < 0 && window.DangerDistanceY[window.FlagDangerCells[i - 1]] + window.DangerDistanceX[window.FlagDangerCells[i - 1]] > 0) {
-                                console.log("Danger");
-                            } else if (window.DangerDistanceX[window.FlagDangerCells[i]] + window.DangerDistanceY[window.FlagDangerCells[i]] > 0 && window.DangerDistanceY[window.FlagDangerCells[i - 1]] + window.DangerDistanceX[window.FlagDangerCells[i - 1]] < 0) {
-                                console.log("Danger");
-                            }
-                        }
-                    }
-                    //if (window.FlagDangerCells.length)
+                    DefineSandwichCellCase();
 
                     if (distancePlayerCell - PlayerCell.size < bestDist2) {
                         bestDist2 = distancePlayerCell - PlayerCell.size;
                     }
+
+                    //start of acting
                     if (distancePlayerCell - PlayerCell.size <= bestDist2) { //watch the closer cells
 
                         if (window.BiggerCellFlag == true) {
@@ -127,33 +122,46 @@ function calcTarget() {
                             }, 1000);
                             $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is close. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
                         }
-                        if (window.DistanceX[PlayerCell.id] > 0) {
-                            target2.x = legendmod.mapMinX;
-                        } else {
-                            target2.x = legendmod.mapMaxX;
-                        }
-                        if (window.DistanceY[PlayerCell.id] > 0) {
-                            target2.y = legendmod.mapMinY;
-                        } else {
-                            target2.y = legendmod.mapMaxY;
-                        }
                         //Avoiding corners
-                        if (PlayerCell.x < legendmod.mapMinX + 760) {
-                            target2.x = legendmod.mapMaxY;
-                            $('#pause-hud').html("Avoiding cornersX- " + PlayerCell.x);
+                        if (PlayerCell.x < legendmod.mapMinX + 760 || PlayerCell.y < legendmod.mapMinY + 760 || PlayerCell.x > legendmod.mapMaxX - 760 || PlayerCell.y > legendmod.mapMaxY - 760) {
+                            if (PlayerCell.x < legendmod.mapMinX + 760) {
+                                target2.x = legendmod.mapMaxY;
+                                $('#pause-hud').html("Avoiding corners X- " + PlayerCell.x);
+                            }
+                            if (PlayerCell.y < legendmod.mapMinY + 760) {
+                                target2.x = legendmod.mapMaxX;
+                                $('#pause-hud').html("Avoiding corners Y- " + PlayerCell.y);
+                            }
+                            if (PlayerCell.x > legendmod.mapMaxX - 760) {
+                                target2.x = legendmod.mapMinY;
+                                $('#pause-hud').html("Avoiding corners X+ " + PlayerCell.x);
+                            }
+                            if (PlayerCell.y > legendmod.mapMaxY - 760) {
+                                target2.x = legendmod.mapMinX;
+                                $('#pause-hud').html("Avoiding corners Y+ " + PlayerCell.x);
+                            }
+                        } 
+						else if (window.SandwichCellCase != null) {
+                            if (window.SandwichCellCase == 0) { //down right and up left
+								handleSandwichCellCase(target2);
+                                window.SandwichCellCase = null;
+                            } else if (window.SandwichCellCase == 1) {
+								handleSandwichCellCase(target2)
+                                window.SandwichCellCase = null;
+                            } else if (window.SandwichCellCase == 2) {
+								handleSandwichCellCase(target2);
+                                window.SandwichCellCase = null;
+                            } else if (window.SandwichCellCase == 3) {
+								handleSandwichCellCase(target2);
+                                window.SandwichCellCase = null;
+                            }
+                        } 
+                        //General acting
+                        else {
+                            GeneralAvoiding(target2, PlayerCell);
                         }
-                        if (PlayerCell.y < legendmod.mapMinY + 760) {
-                            target2.x = legendmod.mapMaxX;
-                            $('#pause-hud').html("Avoiding cornersY- " + PlayerCell.y);
-                        }
-                        if (PlayerCell.x > legendmod.mapMaxX - 760) {
-                            target2.x = legendmod.mapMinY;
-                            $('#pause-hud').html("Avoiding cornersX+ " + PlayerCell.x);
-                        }
-                        if (PlayerCell.y > legendmod.mapMaxY - 760) {
-                            target2.x = legendmod.mapMinX;
-                            $('#pause-hud').html("Avoiding cornersY+ " + PlayerCell.x);
-                        }
+
+
                     }
                 } else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 320 && PlayerCell.mass * 1.4 < biggercellmass && biggercellmass > 130) {
                     if (window.teammatenicks.includes(PlayerCell.name) && legendmod3.lastSentClanTag != "") {
@@ -215,4 +223,97 @@ function calcTarget() {
     } else if (doFeed) {
         window.legendmod.sendAction(21);
     }
+}
+
+
+function GeneralAvoiding(target2, PlayerCell) {
+    if (window.DistanceX[PlayerCell.id] > 0) {
+        target2.x = legendmod.mapMinX;
+    } else {
+        target2.x = legendmod.mapMaxX;
+    }
+    if (window.DistanceY[PlayerCell.id] > 0) {
+        target2.y = legendmod.mapMinY;
+    } else {
+        target2.y = legendmod.mapMaxY;
+    }
+    return target2;
+}
+
+function DefineSandwichCellCase() {
+    if (window.FlagDangerCells.length > 1) {
+        for (var i = 1; i < window.FlagDangerCells.length; i++) {
+            //x<0 left y<0 up
+            if (window.DangerDistanceX[window.FlagDangerCells[i - 1]] > 0) {
+                if (window.DangerDistanceY[window.FlagDangerCells[i - 1]] > 0) {
+                    if (window.DangerDistanceX[window.FlagDangerCells[i]] < 0 && window.DangerDistanceY[window.FlagDangerCells[i]] < 0) {
+                        AnnounceDangerCellOpposite(window.DangerDistanceName[window.FlagDangerCells[i - 1]], window.DangerDistanceName[window.FlagDangerCells[i]]);
+                        window.SandwichCellCase = 0;
+                    }
+                } else if (window.DangerDistanceY[window.FlagDangerCells[i - 1]] < 0) {
+                    if (window.DangerDistanceX[window.FlagDangerCells[i]] < 0 && window.DangerDistanceY[window.FlagDangerCells[i]] > 0) {
+                        AnnounceDangerCellOpposite(window.DangerDistanceName[window.FlagDangerCells[i - 1]], window.DangerDistanceName[window.FlagDangerCells[i]]);
+                        window.SandwichCellCase = 1;
+                    }
+                }
+            } else if (window.DangerDistanceX[window.FlagDangerCells[i - 1]] < 0) {
+                if (window.DangerDistanceY[window.FlagDangerCells[i - 1]] > 0) {
+                    if (window.DangerDistanceX[window.FlagDangerCells[i]] > 0 && window.DangerDistanceY[window.FlagDangerCells[i]] < 0) {
+                        AnnounceDangerCellOpposite(window.DangerDistanceName[window.FlagDangerCells[i - 1]], window.DangerDistanceName[window.FlagDangerCells[i]]);
+                        window.SandwichCellCase = 2;
+                    }
+                } else if (window.DangerDistanceY[window.FlagDangerCells[i - 1]] < 0) {
+                    if (window.DangerDistanceX[window.FlagDangerCells[i]] > 0 && window.DangerDistanceY[window.FlagDangerCells[i]] > 0) {
+                        AnnounceDangerCellOpposite(window.DangerDistanceName[window.FlagDangerCells[i - 1]], window.DangerDistanceName[window.FlagDangerCells[i]]);
+                        window.SandwichCellCase = 3;
+                    }
+                }
+            }
+        }
+    }
+}
+function handleSandwichCellCase(target2){
+var closestX=1000;
+var closestY=1000;
+var negativeX=false;
+var negativeY=false;
+Object.keys(window.FlagDangerCells).forEach(function(key) {
+                    console.log(key, window.FlagDangerCells[key], window.DangerDistanceX[window.FlagDangerCells[key]], window.DangerDistanceY[window.FlagDangerCells[key]]);
+					//console.log(window.DangerDistanceX[window.FlagDangerCells[key]], window.DangerDistanceY[window.FlagDangerCells[key]]);
+						if ( Math.abs(window.DangerDistanceX[window.FlagDangerCells[key]]) < closestX){
+							closestX=Math.abs(window.DangerDistanceX[window.FlagDangerCells[key]]);	
+							if (window.DangerDistanceX[window.FlagDangerCells[key]]<0){
+								negativeX=true;
+							}
+							else{
+								negativeX=false;
+							}
+						}		
+						if ( Math.abs(window.DangerDistanceY[window.FlagDangerCells[key]]) < closestY){
+							closestY=Math.abs(window.DangerDistanceY[window.FlagDangerCells[key]]);	
+							if (window.DangerDistanceY[window.FlagDangerCells[key]]<0){
+								negativeY=true;
+							}	
+							else{
+								negativeY=false;
+							}							
+						}				
+                    });
+if (negativeX){
+	closestX = -closestX;
+}	
+if (negativeY){
+	closestY = -closestY;
+}	
+console.log(closestX, closestY);	
+target2.x = -closestX;
+target2.y = -closestY;
+return target2;
+}
+function calcDist(x, y) {
+    return Math.round(Math.sqrt(Math.pow(window.legendmod.playerX - x, 2) + Math.pow(window.legendmod.playerY - y, 2)));
+}
+
+function AnnounceDangerCellOpposite(x, y) {
+    $('#pause-hud').html("<font color='red'>Danger: <font> " + x + " and " + y + " are diametral");
 }
