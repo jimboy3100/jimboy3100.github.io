@@ -54,24 +54,24 @@ function popAgarURL( fun ) {
 			var serverlinks= window.location.href +" :Agario Token";
 		}
 		else if ($( "#connect" ).hasClass( "agartoolbtn")){ //IF using Agar Tools
-		var serverlinks="http://agar.io/?sip=" + "live-arena-" + $( "#server" ).val() + ".agar.io"; 
+		var serverlinks="https://agar.io/?sip=" + "live-arena-" + $( "#server" ).val() + ".agar.io"; 
 		}
 		else if (vanilla!=null){ //IF using Vanilla
 		var maketheserver=$( "#btn-dc-input" ).val();
 		maketheserver=maketheserver.split('live', 2).pop();
 		maketheserver='live'+maketheserver;
 		maketheserver.replace(':80','');
-		var serverlinks= "http://agar.io/?sip=" +maketheserver;
+		var serverlinks= "https://agar.io/?sip=" +maketheserver;
 		}
 		else if (~ogartest.indexOf("ogario")) {
-		var serverlinks= "http://agar.io/?sip=" + "live-arena-" + $( "#server-token" ).val() + ".agar.io"; 
+		var serverlinks= "https://agar.io/?sip=" + "live-arena-" + $( "#server-token" ).val() + ".agar.io"; 
 		}
 		else{
-			var serverlinks="http://agar.io/?sip="+d[1].replace(/-/g,'.')+d[2]+" = regular"+"\r\n"+"http://agar.io/a?sip="+d[1].replace(/-/g,'.')+d[2]+" = ogario"+"\r\n";
+			var serverlinks="https://agar.io/?sip="+d[1].replace(/-/g,'.')+d[2]+" = regular"+"\r\n"+"https://agar.io/a?sip="+d[1].replace(/-/g,'.')+d[2]+" = ogario"+"\r\n";
 		}  
 		//console.log(serverlinks);
         //ally support
-        //    var serverlinks="http://agar.io/?sip="+d[1].replace(/-/g,'.')+d[2]+" = regular";
+        //    var serverlinks="https://agar.io/?sip="+d[1].replace(/-/g,'.')+d[2]+" = regular";
         //    if( $('#btn-dc-input').length )         // use this if you are using id to check
         //   {
         //        serverlinks += "\r\n"+$('#btn-dc-input')[0].value+" = Ally"+"\r\n";
