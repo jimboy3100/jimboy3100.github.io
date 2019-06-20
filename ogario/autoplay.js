@@ -215,7 +215,7 @@ function calcTarget() {
                         }
                         target2.x = PlayerCell.x;
                         target2.y = PlayerCell.y;
-                        console.log("Target mass: " + PlayerCell.mass);
+                        //console.log("Target mass: " + PlayerCell.mass);
                         if (PlayerCell.mass != 0 && PlayerCell.mass != "0") { //2nd time to check
                             doSplit = true;
                         }
@@ -230,7 +230,7 @@ function calcTarget() {
                         }
                         target2.x = PlayerCell.x;
                         target2.y = PlayerCell.y;
-                        console.log("Target mass: " + PlayerCell.mass);
+                        //console.log("Target mass: " + PlayerCell.mass);
                     }
 
                 }
@@ -274,7 +274,8 @@ function GeneralAvoiding(target2, PlayerCell) {
     }
     return target2;
 }
-
+function DefineVirusshootCase(){}
+/*
 function DefineVirusshootCase(){
 	if (window.FlagVirusCells.length > 0 && window.BadCellsDistanceName.length > 0) {
 		for (var i = 0; i < window.FlagVirusCells.length; i++) {			
@@ -297,6 +298,7 @@ function DefineVirusshootCase(){
 		}
 	}
 }
+*/
 function DefineSandwichCellCase() {
     if (window.FlagDangerCells.length > 1) {
         for (var i = 1; i < window.FlagDangerCells.length; i++) {
