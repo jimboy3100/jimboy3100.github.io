@@ -1,5 +1,3 @@
-//v6
-
 window.autoteammatenicks = [];
 window.targetFood = null;
 window.autoPlay = false;
@@ -281,7 +279,7 @@ function GeneralAvoiding(target2, PlayerCell) {
 function DefineVirusshootCase(){
 	if (window.FlagVirusCells.length > 0 && window.BadCellsDistanceName.length > 0) {
 		for (var i = 0; i < window.FlagVirusCells.length; i++) {			
-			for (var j = 0; j < window.BadCellsDistanceName.length; j++) {
+			for (var j = 0; j < window.FlagDangerCells.length; j++) {
 				//if(math.abs(window.VirusDistanceX[window.FlagVirusCells[i]])<400 && math.abs(window.BadCellsDistanceX[window.FlagDangerCells[j]])<760){}
 				
 				if (window.VirusDistanceX[window.FlagVirusCells[i]] > 0 && window.BadCellsDistanceX[window.FlagDangerCells[j]] > 0 && window.VirusDistanceY[window.FlagVirusCells[i]] > 0 && window.BadCellsDistanceY[window.FlagDangerCells[j]] > 0)  {
