@@ -1,4 +1,4 @@
-//v7.1
+//v7.2
 
 window.autoteammatenicks = [];
 window.targetFood = null;
@@ -31,13 +31,13 @@ function calcTarget() {
     let doSplit = false;
     let doSplittoAvoidCorner = false;
     let doFeed = false;
-    window.DistanceX = [];
+    window.DistanceX = []; 
     window.DistanceY = [];
-    window.DistanceName = [];
+    window.DistanceName = []; //names of all cells
 	window.DistanceId= [];
-    window.DangerDistanceX = [];
+    window.DangerDistanceX = []; 
     window.DangerDistanceY = [];
-    window.DangerDistanceName = [];
+    window.DangerDistanceName = []; //names of all cells that can harm
     window.VirusDistanceX = [];
     window.VirusDistanceY = [];
 	let VirusCellDontDoTheRest=false;
@@ -45,11 +45,11 @@ function calcTarget() {
     window.FlagDangerCells = [];
 	window.FlagVirusCells = [];
 
-    window.BadCellsDistanceX = [];
+    window.BadCellsDistanceX = []; 
     window.BadCellsDistanceY = [];
-    window.BadCellsDistanceName = [];
-    let biggercell = {};
-    let smallercell = {};
+    window.BadCellsDistanceName = []; //top 5 leaderboard names
+    let biggercell = {}; //your biggest cell
+    let smallercell = {}; //your smallest cell
     biggercell.mass = 0;
     smallercell.mass = 25000;
     window.SandwichCellCase = null;
@@ -63,7 +63,7 @@ function calcTarget() {
         }
     }
 
-    Object.keys(window.legendmod.food).forEach(node => {
+    Object.keys(window.legendmod.food).forEach(node => { //function to define and eat food
         if (window.legendmod.food[node].isFood) { //not needed					
             let cell = window.legendmod.food[node];
             let distance = calcDist(cell.x, cell.y);
@@ -75,7 +75,7 @@ function calcTarget() {
         } //
     });
 	var distcounterflag=0;
-    Object.keys(window.legendmod.cells).forEach(node => {
+    Object.keys(window.legendmod.cells).forEach(node => { //function to define and act to cells
 		distcounterflag++
         PlayerCell = window.legendmod.cells[node];
         let distancePlayerCell = calcDist(PlayerCell.x, PlayerCell.y);
@@ -97,15 +97,11 @@ function calcTarget() {
             } catch (err) {
                 //document.getElementById("demo").innerHTML = err.message;
             } finally {
-                if (distancePlayerCell < window.legendmod.playerSize + (PlayerCell.size) && biggercell.mass > 125 + 1.25 * ((7 - PlayerCell.mass) * 12) && PlayerCell.isVirus && window.legendmod.playerCells.length != 16) {
-                    //if ( distancePlayerCell < window.legendmod.playerSize + PlayerCell.size && biggercell.mass > 125 + 1.25 * (( 7 - PlayerCell.mass ) * 12 ) && PlayerCell.isVirus ) {		
+                if (distancePlayerCell < window.legendmod.playerSize + (PlayerCell.size) && biggercell.mass > 125 + 1.25 * ((7 - PlayerCell.mass) * 12) && PlayerCell.isVirus && window.legendmod.playerCells.length != 16) { //avoid viruses
+                  		
                     //console.log(PlayerCell.mass, PlayerCell.size); //window.legendmod5.virMassShots=false-> 7, 100... 6, 105.9999999999999  .....    window.legendmod5.virMassShots=true->100,100... 112, 106 
-                    //Object.keys(window.DistanceX).forEach(function(key) {
-                    //console.log(key, window.DistanceX[key]);
-                    //});
-                    //if(){
-
-                    //}
+                    
+                    
                     if (window.VirusFlag == true) {
                         window.VirusFlag = false;
                         setTimeout(function() {
@@ -123,9 +119,8 @@ function calcTarget() {
                     } else {
                         target2.y = legendmod.mapMaxY;
                     }
-                }
-                //if (window.teammatenicks.includes(PlayerCell.name) && legendmod3.lastSentClanTag != "") {
-                else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 760 && window.teammatenicks.includes(PlayerCell.nick) && legendmod3.lastSentClanTag != "") {
+                }                
+                else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 760 && window.teammatenicks.includes(PlayerCell.nick) && legendmod3.lastSentClanTag != "") { //feed teammates on tag
                     //if (!window.autoteammatenicks.includes(PlayerCell.name)) {
                     console.log("feed!");
                     window.autoteammatenicks[PlayerCell.name] = true;
@@ -138,22 +133,21 @@ function calcTarget() {
                     //}
                     $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is teammate. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
                 }
-                //window.legendmod.cells[0].isPlayerCell is our cell
-                //danger cells, avoiding			
-                else if ((distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 760 && PlayerCell.mass > biggercell.mass * 2.5) || (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 95 && PlayerCell.mass > biggercell.mass * 1.25)) {
+                //window.legendmod.cells[0].isPlayerCell is our cell		
+                else if ((distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 760 && PlayerCell.mass > biggercell.mass * 2.5) || (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 95 && PlayerCell.mass > biggercell.mass * 1.25)) { //avoid danger cells
                     window.DangerDistanceX[PlayerCell.id] = window.DistanceX[PlayerCell.id];
                     window.DangerDistanceY[PlayerCell.id] = window.DistanceY[PlayerCell.id];
                     window.DangerDistanceName[PlayerCell.id] = window.DistanceName[PlayerCell.id];
                     window.FlagDangerCells.push(PlayerCell.id);
-                    DefineSandwichCellCase();
+                    DefineSandwichCellCase(); //announce Sandwich Case when players are on opposite axes
 
                     if (distancePlayerCell - PlayerCell.size < bestDist2) {
                         bestDist2 = distancePlayerCell - PlayerCell.size;
                     }
 
-                    //start of acting
+                    //define if top 5 who are not teammates and on tag are behind the virus, announce, act
                     if ((window.DangerDistanceName.includes(legendmod.leaderboard[0].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[1].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[2].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[3].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[4].nick)) &&
-                        true) {
+                        window.legendmod.playerSize>140) {
                         for (var i = 0; i < 5; i++) {
                             //for (var j = 0; j < 5; j++) {
 							for (var j = 0; j < legendmod.leaderboard.length; j++) {
@@ -180,7 +174,7 @@ function calcTarget() {
                         }
 
                         if (window.SandwichCellCase != null) {
-                            if (window.SandwichCellCase == 0) { //down right and up left
+                            if (window.SandwichCellCase == 0) { 
                                 handleSandwichCellCase(target2);
                                 window.SandwichCellCase = null;
                             } else if (window.SandwichCellCase == 1) {
@@ -193,20 +187,20 @@ function calcTarget() {
                                 handleSandwichCellCase(target2);
                                 window.SandwichCellCase = null;
                             }
-                            avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner);
+                            avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner); //avoid being cornered on wall
                         }
                         //General acting
                         else {
-                            GeneralAvoiding(target2, PlayerCell);
-                            avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner);
+                            GeneralAvoiding(target2, PlayerCell); //avoid dangerous cells by going back
+                            avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner); //avoid being cornered on wall
                         }
 
 
                     }
-                } else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 320 && PlayerCell.mass * 1.4 < biggercell.mass && biggercell.mass > 130 && !VirusCellDontDoTheRest) {
+                } else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 320 && PlayerCell.mass * 1.4 < biggercell.mass && biggercell.mass > 130 && !VirusCellDontDoTheRest) { //acting when you have the upper hand
 
 
-                    if (PlayerCell.mass != 0 && PlayerCell.nick != "" && PlayerCell.mass * 3 < biggercell.mass && window.legendmod.playerCells.length == 1 && !(PlayerCell.mass * 10 < biggercell.mass && biggercell.mass > 260)) {
+                    if (PlayerCell.mass != 0 && PlayerCell.nick != "" && PlayerCell.mass * 3 < biggercell.mass && window.legendmod.playerCells.length == 1 && !(PlayerCell.mass * 10 < biggercell.mass && biggercell.mass > 260)) { //split only when you have 1 cell 
                         //760 
 
                         if (window.SmallerCellFlag == true) {
@@ -222,7 +216,7 @@ function calcTarget() {
                         if (PlayerCell.mass != 0 && PlayerCell.mass != "0") { //2nd time to check
                             doSplit = true;
                         }
-                    } else if (PlayerCell.mass * 1.4 < biggercell.mass && !(PlayerCell.mass * 10 < biggercell.mass)) {
+                    } else if (PlayerCell.mass * 1.4 < biggercell.mass && !(PlayerCell.mass * 10 < biggercell.mass)) { //follow cell
 
                         if (window.SmallerCellFlag == true) {
                             window.SmallerCellFlag = false;
