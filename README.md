@@ -8,7 +8,6 @@ Author: jimboy3100@hotmail.com
 
 Website: [www.legendmod.ml](http://www.legendmod.ml)
 
-<iframe width="800" height="452" src="https://www.youtube.com/embed/CnIfNSpCf70?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 ###### [Legend mod GitHub Library](https://github.com/jimboy3100/jimboy3100.github.io)
 
