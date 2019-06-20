@@ -27,19 +27,24 @@ function calcTarget() {
     let PlayerCell;
     let bestDistVirus;
     let doSplit = false;
-	let doSplittoAvoidCorner = false;
+    let doSplittoAvoidCorner = false;
     let doFeed = false;
     window.DistanceX = [];
     window.DistanceY = [];
     window.DistanceName = [];
+	window.DistanceId= [];
     window.DangerDistanceX = [];
     window.DangerDistanceY = [];
     window.DangerDistanceName = [];
-    window.FlagDangerCells = [];
+    window.VirusDistanceX = [];
+    window.VirusDistanceY = [];
 	
-	window.BadCellsDistanceX = [];
-	window.BadCellsDistanceY = [];
-	window.BadCellsDistanceName = [];
+    window.FlagDangerCells = [];
+	window.FlagVirusCells = [];
+
+    window.BadCellsDistanceX = [];
+    window.BadCellsDistanceY = [];
+    window.BadCellsDistanceName = [];
     let biggercell = {};
     let smallercell = {};
     biggercell.mass = 0;
@@ -66,8 +71,9 @@ function calcTarget() {
             }
         } //
     });
-
+	var distcounterflag=0;
     Object.keys(window.legendmod.cells).forEach(node => {
+		distcounterflag++
         PlayerCell = window.legendmod.cells[node];
         let distancePlayerCell = calcDist(PlayerCell.x, PlayerCell.y);
         if (PlayerCell.nick != window.legendmod.playerNick) {
@@ -77,6 +83,14 @@ function calcTarget() {
                 window.DistanceX[PlayerCell.id] = PlayerCell.x - window.legendmod.playerX;
                 window.DistanceY[PlayerCell.id] = PlayerCell.y - window.legendmod.playerY;
                 window.DistanceName[PlayerCell.id] = PlayerCell.nick;
+				window.DistanceId[distcounterflag]=PlayerCell.id; //not used
+				if (PlayerCell.isVirus){
+					window.FlagVirusCells.push(PlayerCell.id);
+				}
+				for (var i = 0; i < FlagVirusCells.length; i++) {
+				window.VirusDistanceX[FlagVirusCells[i]]=window.DistanceX[FlagVirusCells[i]];
+				window.VirusDistanceY[FlagVirusCells[i]]=window.DistanceY[FlagVirusCells[i]];
+				}
             } catch (err) {
                 //document.getElementById("demo").innerHTML = err.message;
             } finally {
@@ -107,20 +121,20 @@ function calcTarget() {
                         target2.y = legendmod.mapMaxY;
                     }
                 }
-                    //if (window.teammatenicks.includes(PlayerCell.name) && legendmod3.lastSentClanTag != "") {
-					else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 760 && window.teammatenicks.includes(PlayerCell.nick) && legendmod3.lastSentClanTag != "") {	
-                        //if (!window.autoteammatenicks.includes(PlayerCell.name)) {
-							console.log("feed!");
-                            window.autoteammatenicks[PlayerCell.name] = true;
-                            target2.x = PlayerCell.x;
-                            target2.y = PlayerCell.y;
-                            console.log("Target mass: " + PlayerCell.mass);
-                            if (PlayerCell.mass != 0 && PlayerCell.mass != "0" && PlayerCell.name != "" && PlayerCell.nick != null) { //2nd time to check
-                                doFeed = true;
-                            }
-                        //}
-                        $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is teammate. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
-                    }				
+                //if (window.teammatenicks.includes(PlayerCell.name) && legendmod3.lastSentClanTag != "") {
+                else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 760 && window.teammatenicks.includes(PlayerCell.nick) && legendmod3.lastSentClanTag != "") {
+                    //if (!window.autoteammatenicks.includes(PlayerCell.name)) {
+                    console.log("feed!");
+                    window.autoteammatenicks[PlayerCell.name] = true;
+                    target2.x = PlayerCell.x;
+                    target2.y = PlayerCell.y;
+                    //console.log("Target mass: " + PlayerCell.mass);
+                    if (PlayerCell.mass != 0 && PlayerCell.mass != "0" && PlayerCell.name != "" && PlayerCell.nick != null) { //2nd time to check
+                        doFeed = true;
+                    }
+                    //}
+                    $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is teammate. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
+                }
                 //window.legendmod.cells[0].isPlayerCell is our cell
                 //danger cells, avoiding			
                 else if ((distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 760 && PlayerCell.mass > biggercell.mass * 2.5) || (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 95 && PlayerCell.mass > biggercell.mass * 1.25)) {
@@ -135,20 +149,23 @@ function calcTarget() {
                     }
 
                     //start of acting
-					if ((window.DangerDistanceName.includes(legendmod.leaderboard[0].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[1].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[2].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[3].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[4].nick))
-						&& true){
-						        for (var i = 0; i < window.FlagDangerCells.length; i++) {
-									for (var j = 0; j < 5; j++) {
-							if (window.DangerDistanceName[window.FlagDangerCells[i]]==legendmod.leaderboard[j].nick){		
-							BadCellsDistanceX[window.FlagDangerCells[i]]=window.DangerDistanceX[window.FlagDangerCells[i]];
-							BadCellsDistanceY[window.FlagDangerCells[i]]=window.DangerDistanceY[window.FlagDangerCells[i]];
-							BadCellsDistanceName[window.FlagDangerCells[i]]=window.DangerDistanceName[window.FlagDangerCells[i]];
-							console.log(window.DangerDistanceName[window.FlagDangerCells[i]],BadCellsDistanceX[window.FlagDangerCells[i]],BadCellsDistanceY[window.FlagDangerCells[i]]);
-							}
-							
-					}
-					}
-						}
+                    if ((window.DangerDistanceName.includes(legendmod.leaderboard[0].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[1].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[2].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[3].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[4].nick)) &&
+                        true) {
+                        for (var i = 0; i < window.FlagDangerCells.length; i++) {
+                            //for (var j = 0; j < 5; j++) {
+							for (var j = 0; j < legendmod.leaderboard.length; j++) {
+                                if (window.DangerDistanceName[window.FlagDangerCells[i]] == legendmod.leaderboard[j].nick) {
+                                    window.BadCellsDistanceX[window.FlagDangerCells[i]] = window.DangerDistanceX[window.FlagDangerCells[i]];
+                                    window.BadCellsDistanceY[window.FlagDangerCells[i]] = window.DangerDistanceY[window.FlagDangerCells[i]];
+                                    window.BadCellsDistanceName[window.FlagDangerCells[i]] = window.DangerDistanceName[window.FlagDangerCells[i]];
+                                    //console.log(window.DangerDistanceName[window.FlagDangerCells[i]], BadCellsDistanceX[window.FlagDangerCells[i]], BadCellsDistanceY[window.FlagDangerCells[i]]);
+                                }
+								DefineVirusshootCase();
+                            }
+                        }
+						
+						
+                    }
                     if (distancePlayerCell - PlayerCell.size <= bestDist2) { //watch the closer cells
 
                         if (window.BiggerCellFlag == true) {
@@ -183,40 +200,39 @@ function calcTarget() {
 
 
                     }
-                } 
-				else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 320 && PlayerCell.mass * 1.4 < biggercell.mass && biggercell.mass > 130) {
- 
-					
-                        if (PlayerCell.mass != 0 && PlayerCell.nick != "" && PlayerCell.mass * 3 < biggercell.mass && window.legendmod.playerCells.length == 1 && !(PlayerCell.mass * 10 < biggercell.mass && biggercell.mass > 260)) {
-                            //760 
+                } else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 320 && PlayerCell.mass * 1.4 < biggercell.mass && biggercell.mass > 130) {
 
-                            if (window.SmallerCellFlag == true) {
-                                window.SmallerCellFlag = false;
-                                setTimeout(function() {
-                                    window.SmallerCellFlag = true;
-                                }, 1000);
-                                $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is close and will be eaten by split. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
-                            }
-                            target2.x = PlayerCell.x;
-                            target2.y = PlayerCell.y;
-                            console.log("Target mass: " + PlayerCell.mass);
-                            if (PlayerCell.mass != 0 && PlayerCell.mass != "0") { //2nd time to check
-                                doSplit = true;
-                            }
-                        } else if (PlayerCell.mass * 1.4 < biggercell.mass && !(PlayerCell.mass * 10 < biggercell.mass)) {
 
-                            if (window.SmallerCellFlag == true) {
-                                window.SmallerCellFlag = false;
-                                setTimeout(function() {
-                                    window.SmallerCellFlag = true;
-                                }, 1000);
-                                $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is close, AI follows... X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
-                            }
-                            target2.x = PlayerCell.x;
-                            target2.y = PlayerCell.y;
-                            console.log("Target mass: " + PlayerCell.mass);
+                    if (PlayerCell.mass != 0 && PlayerCell.nick != "" && PlayerCell.mass * 3 < biggercell.mass && window.legendmod.playerCells.length == 1 && !(PlayerCell.mass * 10 < biggercell.mass && biggercell.mass > 260)) {
+                        //760 
+
+                        if (window.SmallerCellFlag == true) {
+                            window.SmallerCellFlag = false;
+                            setTimeout(function() {
+                                window.SmallerCellFlag = true;
+                            }, 1000);
+                            $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is close and will be eaten by split. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
                         }
-                    
+                        target2.x = PlayerCell.x;
+                        target2.y = PlayerCell.y;
+                        console.log("Target mass: " + PlayerCell.mass);
+                        if (PlayerCell.mass != 0 && PlayerCell.mass != "0") { //2nd time to check
+                            doSplit = true;
+                        }
+                    } else if (PlayerCell.mass * 1.4 < biggercell.mass && !(PlayerCell.mass * 10 < biggercell.mass)) {
+
+                        if (window.SmallerCellFlag == true) {
+                            window.SmallerCellFlag = false;
+                            setTimeout(function() {
+                                window.SmallerCellFlag = true;
+                            }, 1000);
+                            $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is close, AI follows... X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
+                        }
+                        target2.x = PlayerCell.x;
+                        target2.y = PlayerCell.y;
+                        console.log("Target mass: " + PlayerCell.mass);
+                    }
+
                 }
             }
         }
@@ -231,17 +247,15 @@ function calcTarget() {
             window.doSplitFlag = true;
         }, 2000);
         window.legendmod.sendAction(17);
-    } 
-    else if (doSplittoAvoidCorner == true && window.doSplitFlag == true) {
+    } else if (doSplittoAvoidCorner == true && window.doSplitFlag == true) {
         doSplittoAvoidCorner = false;
         window.doSplitFlag = false;
         setTimeout(function() {
             window.doSplitFlag = true;
         }, 8000);
         window.legendmod.sendAction(17);
-    } 	
-	else if (doFeed) {
-		doFeed=false;
+    } else if (doFeed) {
+        doFeed = false;
         window.legendmod.sendAction(21);
     }
 }
@@ -261,6 +275,28 @@ function GeneralAvoiding(target2, PlayerCell) {
     return target2;
 }
 
+function DefineVirusshootCase(){
+	if (window.FlagVirusCells.length > 0 && window.BadCellsDistanceName.length > 0) {
+		for (var i = 0; i < window.FlagVirusCells.length; i++) {			
+			for (var j = 0; j < window.BadCellsDistanceName.length; j++) {
+				//if(math.abs(window.VirusDistanceX[window.FlagVirusCells[i]])<400 && math.abs(window.BadCellsDistanceX[window.FlagDangerCells[j]])<760){}
+				
+				if (window.VirusDistanceX[window.FlagVirusCells[i]] > 0 && window.BadCellsDistanceX[window.FlagDangerCells[j]] > 0 && window.VirusDistanceY[window.FlagVirusCells[i]] > 0 && window.BadCellsDistanceY[window.FlagDangerCells[j]] > 0)  {
+					AnnounceBadCellShooting(window.VirusDistanceX[window.FlagVirusCells[i]], window.VirusDistanceY[window.FlagVirusCells[i]], window.BadCellsDistanceName[window.FlagDangerCells[j]], window.BadCellsDistanceX[window.FlagDangerCells[j]], window.BadCellsDistanceY[window.FlagDangerCells[j]]);				
+				}
+				else if (window.VirusDistanceX[window.FlagVirusCells[i]] > 0 && window.BadCellsDistanceX[window.FlagDangerCells[j]] < 0 && window.VirusDistanceY[window.FlagVirusCells[i]] > 0 && window.BadCellsDistanceY[window.FlagDangerCells[j]] < 0)  {
+					AnnounceBadCellShooting(window.VirusDistanceX[window.FlagVirusCells[i]], window.VirusDistanceY[window.FlagVirusCells[i]], window.BadCellsDistanceName[window.FlagDangerCells[j]], window.BadCellsDistanceX[window.FlagDangerCells[j]], window.BadCellsDistanceY[window.FlagDangerCells[j]]);				
+				}		
+				else if (window.VirusDistanceX[window.FlagVirusCells[i]] < 0 && window.BadCellsDistanceX[window.FlagDangerCells[j]] > 0 && window.VirusDistanceY[window.FlagVirusCells[i]] < 0 && window.BadCellsDistanceY[window.FlagDangerCells[j]] > 0)  {
+					AnnounceBadCellShooting(window.VirusDistanceX[window.FlagVirusCells[i]], window.VirusDistanceY[window.FlagVirusCells[i]], window.BadCellsDistanceName[window.FlagDangerCells[j]], window.BadCellsDistanceX[window.FlagDangerCells[j]], window.BadCellsDistanceY[window.FlagDangerCells[j]]);				
+				}	
+				else if (window.VirusDistanceX[window.FlagVirusCells[i]] < 0 && window.BadCellsDistanceX[window.FlagDangerCells[j]] < 0 && window.VirusDistanceY[window.FlagVirusCells[i]] < 0 && window.BadCellsDistanceY[window.FlagDangerCells[j]] < 0)  {
+					AnnounceBadCellShooting(window.VirusDistanceX[window.FlagVirusCells[i]], window.VirusDistanceY[window.FlagVirusCells[i]], window.BadCellsDistanceName[window.FlagDangerCells[j]], window.BadCellsDistanceX[window.FlagDangerCells[j]], window.BadCellsDistanceY[window.FlagDangerCells[j]]);				
+				}					
+			}
+		}
+	}
+}
 function DefineSandwichCellCase() {
     if (window.FlagDangerCells.length > 1) {
         for (var i = 1; i < window.FlagDangerCells.length; i++) {
@@ -300,7 +336,7 @@ function handleSandwichCellCase(target2) {
     var negativeX = false;
     var negativeY = false;
     Object.keys(window.FlagDangerCells).forEach(function(key) {
-        console.log(key, window.FlagDangerCells[key], window.DangerDistanceX[window.FlagDangerCells[key]], window.DangerDistanceY[window.FlagDangerCells[key]]);
+        //console.log(key, window.FlagDangerCells[key], window.DangerDistanceX[window.FlagDangerCells[key]], window.DangerDistanceY[window.FlagDangerCells[key]]);
         //console.log(window.DangerDistanceX[window.FlagDangerCells[key]], window.DangerDistanceY[window.FlagDangerCells[key]]);
         if (Math.abs(window.DangerDistanceX[window.FlagDangerCells[key]]) < closestX) {
             closestX = Math.abs(window.DangerDistanceX[window.FlagDangerCells[key]]);
@@ -409,7 +445,7 @@ function avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner) {
                 target2.y = legendmod.mapMinY; //go up
             }
         }
-		doSplittoAvoidCorner=true;
+        doSplittoAvoidCorner = true;
     }
     return target2, doSplittoAvoidCorner;
 }
@@ -417,7 +453,13 @@ function avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner) {
 function calcDist(x, y) {
     return Math.round(Math.sqrt(Math.pow(window.legendmod.playerX - x, 2) + Math.pow(window.legendmod.playerY - y, 2)));
 }
+function calcDistVirus(x, y, vx, vx) {
+    return Math.round(Math.sqrt(Math.pow(vx - x, 2) + Math.pow(vy - y, 2)));
+}
 
 function AnnounceDangerCellOpposite(x, y) {
     $('#pause-hud').html("<font color='red'>Danger: <font> " + x + " and " + y + " are diametral");
+}
+function AnnounceBadCellShooting(vx, vy, name, x, y) {
+    $('#pause-hud').html("<font color='yellow'>Shooting: <font> " + name + "(" + x + " , " +  y + ")" + "from virus " + vx + "," + vy);
 }
