@@ -1,4 +1,5 @@
 //v6
+
 window.autoteammatenicks = [];
 window.targetFood = null;
 window.autoPlay = false;
@@ -152,7 +153,7 @@ function calcTarget() {
                     //start of acting
                     if ((window.DangerDistanceName.includes(legendmod.leaderboard[0].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[1].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[2].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[3].nick) || window.DangerDistanceName.includes(legendmod.leaderboard[4].nick)) &&
                         true) {
-                        for (var i = 0; i < window.FlagDangerCells.length; i++) {
+                        for (var i = 0; i < 5; i++) {
                             //for (var j = 0; j < 5; j++) {
 							for (var j = 0; j < legendmod.leaderboard.length; j++) {
                                 if (window.DangerDistanceName[window.FlagDangerCells[i]] == legendmod.leaderboard[j].nick) {
