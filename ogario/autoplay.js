@@ -27,6 +27,7 @@ function calcTarget() {
     let PlayerCell;
     let bestDistVirus;
     let doSplit = false;
+	let doSplittoAvoidCorner = false;
     let doFeed = false;
     window.DistanceX = [];
     window.DistanceY = [];
@@ -35,15 +36,18 @@ function calcTarget() {
     window.DangerDistanceY = [];
     window.DangerDistanceName = [];
     window.FlagDangerCells = [];
-    var biggercellmass = 0;
-    var smallercellmass = 25000;
+    let biggercell = {};
+    let smallercell = {};
+    biggercell.mass = 0;
+    smallercell.mass = 25000;
     window.SandwichCellCase = null;
+
     for (var i = 0; i < window.legendmod.playerCells.length; i++) {
-        if (window.legendmod.playerCells[i].mass > biggercellmass) {
-            biggercellmass = window.legendmod.playerCells[i].mass;
+        if (window.legendmod.playerCells[i].mass > biggercell.mass) {
+            biggercell = window.legendmod.playerCells[i];
         }
-        if (window.legendmod.playerCells[i].mass < smallercellmass) {
-            smallercellmass = window.legendmod.playerCells[i].mass;
+        if (window.legendmod.playerCells[i].mass < smallercell.mass) {
+            smallercell = window.legendmod.playerCells[i];
         }
     }
 
@@ -72,8 +76,8 @@ function calcTarget() {
             } catch (err) {
                 //document.getElementById("demo").innerHTML = err.message;
             } finally {
-                if (distancePlayerCell < window.legendmod.playerSize + (PlayerCell.size) && biggercellmass > 125 + 1.25 * ((7 - PlayerCell.mass) * 12) && PlayerCell.isVirus && window.legendmod.playerCells.length != 16) {
-                    //if ( distancePlayerCell < window.legendmod.playerSize + PlayerCell.size && biggercellmass > 125 + 1.25 * (( 7 - PlayerCell.mass ) * 12 ) && PlayerCell.isVirus ) {		
+                if (distancePlayerCell < window.legendmod.playerSize + (PlayerCell.size) && biggercell.mass > 125 + 1.25 * ((7 - PlayerCell.mass) * 12) && PlayerCell.isVirus && window.legendmod.playerCells.length != 16) {
+                    //if ( distancePlayerCell < window.legendmod.playerSize + PlayerCell.size && biggercell.mass > 125 + 1.25 * (( 7 - PlayerCell.mass ) * 12 ) && PlayerCell.isVirus ) {		
                     //console.log(PlayerCell.mass, PlayerCell.size); //window.legendmod5.virMassShots=false-> 7, 100... 6, 105.9999999999999  .....    window.legendmod5.virMassShots=true->100,100... 112, 106 
                     //Object.keys(window.DistanceX).forEach(function(key) {
                     //console.log(key, window.DistanceX[key]);
@@ -101,7 +105,7 @@ function calcTarget() {
                 }
                 //window.legendmod.cells[0].isPlayerCell is our cell
                 //danger cells, avoiding
-                else if ((distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 760 && PlayerCell.mass > biggercellmass * 2.5) || (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 95 && PlayerCell.mass > biggercellmass * 1.25)) {
+                else if ((distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 760 && PlayerCell.mass > biggercell.mass * 2.5) || (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 95 && PlayerCell.mass > biggercell.mass * 1.25)) {
                     window.DangerDistanceX[PlayerCell.id] = window.DistanceX[PlayerCell.id];
                     window.DangerDistanceY[PlayerCell.id] = window.DistanceY[PlayerCell.id];
                     window.DangerDistanceName[PlayerCell.id] = window.DistanceName[PlayerCell.id];
@@ -122,48 +126,32 @@ function calcTarget() {
                             }, 1000);
                             $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is close. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
                         }
-                        //Avoiding corners
-                        if (PlayerCell.x < legendmod.mapMinX + 760 || PlayerCell.y < legendmod.mapMinY + 760 || PlayerCell.x > legendmod.mapMaxX - 760 || PlayerCell.y > legendmod.mapMaxY - 760) {
-                            if (PlayerCell.x < legendmod.mapMinX + 760) {
-                                target2.x = legendmod.mapMaxY;
-                                $('#pause-hud').html("Avoiding corners X- " + PlayerCell.x);
-                            }
-                            if (PlayerCell.y < legendmod.mapMinY + 760) {
-                                target2.x = legendmod.mapMaxX;
-                                $('#pause-hud').html("Avoiding corners Y- " + PlayerCell.y);
-                            }
-                            if (PlayerCell.x > legendmod.mapMaxX - 760) {
-                                target2.x = legendmod.mapMinY;
-                                $('#pause-hud').html("Avoiding corners X+ " + PlayerCell.x);
-                            }
-                            if (PlayerCell.y > legendmod.mapMaxY - 760) {
-                                target2.x = legendmod.mapMinX;
-                                $('#pause-hud').html("Avoiding corners Y+ " + PlayerCell.x);
-                            }
-                        } 
-						else if (window.SandwichCellCase != null) {
+
+                        if (window.SandwichCellCase != null) {
                             if (window.SandwichCellCase == 0) { //down right and up left
-								handleSandwichCellCase(target2);
+                                handleSandwichCellCase(target2);
                                 window.SandwichCellCase = null;
                             } else if (window.SandwichCellCase == 1) {
-								handleSandwichCellCase(target2)
+                                handleSandwichCellCase(target2)
                                 window.SandwichCellCase = null;
                             } else if (window.SandwichCellCase == 2) {
-								handleSandwichCellCase(target2);
+                                handleSandwichCellCase(target2);
                                 window.SandwichCellCase = null;
                             } else if (window.SandwichCellCase == 3) {
-								handleSandwichCellCase(target2);
+                                handleSandwichCellCase(target2);
                                 window.SandwichCellCase = null;
                             }
-                        } 
+                            avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner);
+                        }
                         //General acting
                         else {
                             GeneralAvoiding(target2, PlayerCell);
+                            avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner);
                         }
 
 
                     }
-                } else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 320 && PlayerCell.mass * 1.4 < biggercellmass && biggercellmass > 130) {
+                } else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 320 && PlayerCell.mass * 1.4 < biggercell.mass && biggercell.mass > 130) {
                     if (window.teammatenicks.includes(PlayerCell.name) && legendmod3.lastSentClanTag != "") {
                         if (!window.autoteammatenicks.includes(PlayerCell.name)) {
                             window.autoteammatenicks[PlayerCell.name] = true;
@@ -176,7 +164,7 @@ function calcTarget() {
                         }
                         $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is teammate. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
                     } else {
-                        if (PlayerCell.mass != 0 && PlayerCell.nick != "" && PlayerCell.mass * 3 < biggercellmass && window.legendmod.playerCells.length == 1 && !(PlayerCell.mass * 10 < biggercellmass && biggercellmass > 260)) {
+                        if (PlayerCell.mass != 0 && PlayerCell.nick != "" && PlayerCell.mass * 3 < biggercell.mass && window.legendmod.playerCells.length == 1 && !(PlayerCell.mass * 10 < biggercell.mass && biggercell.mass > 260)) {
                             //760 
 
                             if (window.SmallerCellFlag == true) {
@@ -192,7 +180,7 @@ function calcTarget() {
                             if (PlayerCell.mass != 0 && PlayerCell.mass != "0") { //2nd time to check
                                 doSplit = true;
                             }
-                        } else if (PlayerCell.mass * 1.4 < biggercellmass && !(PlayerCell.mass * 10 < biggercellmass)) {
+                        } else if (PlayerCell.mass * 1.4 < biggercell.mass && !(PlayerCell.mass * 10 < biggercell.mass)) {
 
                             if (window.SmallerCellFlag == true) {
                                 window.SmallerCellFlag = false;
@@ -220,7 +208,16 @@ function calcTarget() {
             window.doSplitFlag = true;
         }, 2000);
         window.legendmod.sendAction(17);
-    } else if (doFeed) {
+    } 
+    else if (doSplittoAvoidCorner == true && window.doSplitFlag == true) {
+        doSplittoAvoidCorner = false;
+        window.doSplitFlag = false;
+        setTimeout(function() {
+            window.doSplitFlag = true;
+        }, 8000);
+        window.legendmod.sendAction(17);
+    } 	
+	else if (doFeed) {
         window.legendmod.sendAction(21);
     }
 }
@@ -272,53 +269,127 @@ function DefineSandwichCellCase() {
         }
     }
 }
-function handleSandwichCellCase(target2){
-var closestX=1000;
-var closestY=1000;
-var negativeX=false;
-var negativeY=false;
-Object.keys(window.FlagDangerCells).forEach(function(key) {
-                    console.log(key, window.FlagDangerCells[key], window.DangerDistanceX[window.FlagDangerCells[key]], window.DangerDistanceY[window.FlagDangerCells[key]]);
-					//console.log(window.DangerDistanceX[window.FlagDangerCells[key]], window.DangerDistanceY[window.FlagDangerCells[key]]);
-						if ( Math.abs(window.DangerDistanceX[window.FlagDangerCells[key]]) < closestX){
-							closestX=Math.abs(window.DangerDistanceX[window.FlagDangerCells[key]]);	
-							if (window.DangerDistanceX[window.FlagDangerCells[key]]<0){
-								negativeX=true;
-							}
-							else{
-								negativeX=false;
-							}
-						}		
-						if ( Math.abs(window.DangerDistanceY[window.FlagDangerCells[key]]) < closestY){
-							closestY=Math.abs(window.DangerDistanceY[window.FlagDangerCells[key]]);	
-							if (window.DangerDistanceY[window.FlagDangerCells[key]]<0){
-								negativeY=true;
-							}	
-							else{
-								negativeY=false;
-							}							
-						}				
-                    });
-if (negativeX){
-	closestX = -closestX;
-}	
-if (negativeY){
-	closestY = -closestY;
-}	
-console.log(closestX, closestY);	
-//here is the difference with the GeneralAvoiding
-if (Math.abs(-closestX)<Math.abs(-closestY)){
-	target2.x = -closestX;
-	target2.y = closestY;
+
+function handleSandwichCellCase(target2) {
+    var closestX = 1000;
+    var closestY = 1000;
+    var negativeX = false;
+    var negativeY = false;
+    Object.keys(window.FlagDangerCells).forEach(function(key) {
+        console.log(key, window.FlagDangerCells[key], window.DangerDistanceX[window.FlagDangerCells[key]], window.DangerDistanceY[window.FlagDangerCells[key]]);
+        //console.log(window.DangerDistanceX[window.FlagDangerCells[key]], window.DangerDistanceY[window.FlagDangerCells[key]]);
+        if (Math.abs(window.DangerDistanceX[window.FlagDangerCells[key]]) < closestX) {
+            closestX = Math.abs(window.DangerDistanceX[window.FlagDangerCells[key]]);
+            if (window.DangerDistanceX[window.FlagDangerCells[key]] < 0) {
+                negativeX = true;
+            } else {
+                negativeX = false;
+            }
+        }
+        if (Math.abs(window.DangerDistanceY[window.FlagDangerCells[key]]) < closestY) {
+            closestY = Math.abs(window.DangerDistanceY[window.FlagDangerCells[key]]);
+            if (window.DangerDistanceY[window.FlagDangerCells[key]] < 0) {
+                negativeY = true;
+            } else {
+                negativeY = false;
+            }
+        }
+    });
+    if (negativeX) {
+        closestX = -closestX;
+    }
+    if (negativeY) {
+        closestY = -closestY;
+    }
+    console.log(closestX, closestY);
+    //here is the difference with the GeneralAvoiding
+    if (Math.abs(-closestX) < Math.abs(-closestY)) {
+        target2.x = -closestX;
+        target2.y = closestY;
+    } else {
+        target2.x = closestX;
+        target2.y = -closestY;
+    }
+    //target2.x = -closestX; normaly
+    //target2.y = -closestY; normaly
+    return target2;
 }
-else{
-	target2.x = closestX;
-	target2.y = -closestY;
+
+function avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner) {
+    if ((biggercell.x < legendmod.mapMinX + 760 || biggercell.y < legendmod.mapMinY + 760 || biggercell.x > legendmod.mapMaxX - 760 || biggercell.y > legendmod.mapMaxY - 760) && (PlayerCell.x < legendmod.mapMinX + 760 || PlayerCell.y < legendmod.mapMinY + 760 || PlayerCell.x > legendmod.mapMaxX - 760 || PlayerCell.y > legendmod.mapMaxY - 760)) {
+        let defineCornercaseX, defineCornercaseY, distanceCornerX, distanceCornerY;
+        if (PlayerCell.x < legendmod.mapMinX + 760) {
+            if (biggercell.y < PlayerCell.y) { //if i am more up
+                target2.y = legendmod.mapMinY; //go up
+            } else {
+                target2.y = legendmod.mapMaxY; //go down
+            }
+            defineCornercaseX = "left";
+            distanceCornerX = PlayerCell.x - legendmod.mapMinX;
+            $('#pause-hud').html("Avoiding corners X- " + PlayerCell.x);
+        }
+        if (PlayerCell.y < legendmod.mapMinY + 760) {
+            if (biggercell.x < PlayerCell.x) { //if i am more left
+                target2.x = legendmod.mapMinX; //go left
+            } else {
+                target2.x = legendmod.mapMaxX; //go right
+            }
+            defineCornercaseY = "up";
+            distanceCornerY = PlayerCell.y - legendmod.mapMinY;
+            $('#pause-hud').html("Avoiding corners Y- " + PlayerCell.y);
+        }
+        if (PlayerCell.x > legendmod.mapMaxX - 760) {
+            if (biggercell.y < PlayerCell.y) { //if i am more up
+                target2.y = legendmod.mapMinY; //go up
+            } else {
+                target2.y = legendmod.mapMaxY; //go down
+            }
+            defineCornercaseX = "right";
+            distanceCornerX = PlayerCell.x - legendmod.mapMinX;
+            $('#pause-hud').html("Avoiding corners X+ " + PlayerCell.x);
+        }
+        if (PlayerCell.y > legendmod.mapMaxY - 760) {
+            if (biggercell.x < PlayerCell.x) { //if i am more left
+                target2.x = legendmod.mapMinX;
+            } else {
+                target2.x = legendmod.mapMaxX; //go right
+            }
+            defineCornercaseY = "down";
+            distanceCornerY = PlayerCell.y - legendmod.mapMinY;
+            $('#pause-hud').html("Avoiding corners Y+ " + PlayerCell.x);
+        }
+        //min are up left, max are down right
+
+        if (defineCornercaseX == "left" && defineCornercaseY == "up" && (PlayerCell.x < legendmod.mapMinX + 520 || PlayerCell.y < legendmod.mapMinY + 520 || PlayerCell.x > legendmod.mapMaxX - 520 || PlayerCell.y > legendmod.mapMaxY - 520)) {
+            if (Math.abs(distanceCornerX) < Math.abs(distanceCornerY)) { //is very left
+                target2.x = legendmod.mapMaxX; //go right
+            } else { //is very up
+                target2.y = legendmod.mapMaxY; //go down 
+            }
+        } else if (defineCornercaseX == "left" && defineCornercaseY == "down" && (PlayerCell.x < legendmod.mapMinX + 520 || PlayerCell.y < legendmod.mapMinY + 520 || PlayerCell.x > legendmod.mapMaxX - 520 || PlayerCell.y > legendmod.mapMaxY - 520)) {
+            if (Math.abs(distanceCornerX) < Math.abs(distanceCornerY)) { //is very left
+                target2.x = legendmod.mapMaxX; //go right
+            } else { //is very down
+                target2.y = legendmod.mapMinY; //go up
+            }
+        } else if (defineCornercaseX == "right" && defineCornercaseY == "up" && (PlayerCell.x < legendmod.mapMinX + 520 || PlayerCell.y < legendmod.mapMinY + 520 || PlayerCell.x > legendmod.mapMaxX - 520 || PlayerCell.y > legendmod.mapMaxY - 520)) {
+            if (Math.abs(distanceCornerX) < Math.abs(distanceCornerY)) { //is very right
+                target2.x = legendmod.mapMaxX; //go left
+            } else { //is very up
+                target2.y = legendmod.mapMaxY; //go down
+            }
+        } else if (defineCornercaseX == "right" && defineCornercaseY == "down" && (PlayerCell.x < legendmod.mapMinX + 520 || PlayerCell.y < legendmod.mapMinY + 520 || PlayerCell.x > legendmod.mapMaxX - 520 || PlayerCell.y > legendmod.mapMaxY - 520)) {
+            if (Math.abs(distanceCornerX) < Math.abs(distanceCornerY)) { //is vey right
+                target2.x = legendmod.mapMinX; //go left
+            } else { //is very down
+                target2.y = legendmod.mapMinY; //go up
+            }
+        }
+		doSplittoAvoidCorner=true;
+    }
+    return target2, doSplittoAvoidCorner;
 }
-//target2.x = -closestX; normaly
-//target2.y = -closestY; normaly
-return target2;
-}
+
 function calcDist(x, y) {
     return Math.round(Math.sqrt(Math.pow(window.legendmod.playerX - x, 2) + Math.pow(window.legendmod.playerY - y, 2)));
 }
