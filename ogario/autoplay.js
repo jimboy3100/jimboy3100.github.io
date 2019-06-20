@@ -6,11 +6,9 @@ window.VirusFlag = true;
 window.BiggerCellFlag = true;
 window.SmallerCellFlag = true;
 window.bestDist = 10000;
-window.doSplit = false;
-window.doSplittoAvoidCorner = false;
-window.doFeed = false;
 
-function calcTarget() {	
+
+function calcTarget() {
     //legendmod.zoomValue=0.3;
     window.legendmod5.virMassShots = true;
     window.legendmod5.noNames = false;
@@ -28,7 +26,9 @@ function calcTarget() {
     let bestDist2 = 10000;
     let PlayerCell;
     let bestDistVirus;
-
+    let doSplit = false;
+	let doSplittoAvoidCorner = false;
+    let doFeed = false;
     window.DistanceX = [];
     window.DistanceY = [];
     window.DistanceName = [];
@@ -103,8 +103,22 @@ function calcTarget() {
                         target2.y = legendmod.mapMaxY;
                     }
                 }
+                    //if (window.teammatenicks.includes(PlayerCell.name) && legendmod3.lastSentClanTag != "") {
+					else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 760 && window.teammatenicks.includes(PlayerCell.nick)) {	
+                        //if (!window.autoteammatenicks.includes(PlayerCell.name)) {
+							console.log("feed!");
+                            window.autoteammatenicks[PlayerCell.name] = true;
+                            target2.x = PlayerCell.x;
+                            target2.y = PlayerCell.y;
+                            console.log("Target mass: " + PlayerCell.mass);
+                            if (PlayerCell.mass != 0 && PlayerCell.mass != "0" && PlayerCell.name != "" && PlayerCell.nick != null) { //2nd time to check
+                                doFeed = true;
+                            }
+                        //}
+                        $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is teammate. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
+                    }				
                 //window.legendmod.cells[0].isPlayerCell is our cell
-                //danger cells, avoiding
+                //danger cells, avoiding			
                 else if ((distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 760 && PlayerCell.mass > biggercell.mass * 2.5) || (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 95 && PlayerCell.mass > biggercell.mass * 1.25)) {
                     window.DangerDistanceX[PlayerCell.id] = window.DistanceX[PlayerCell.id];
                     window.DangerDistanceY[PlayerCell.id] = window.DistanceY[PlayerCell.id];
@@ -141,30 +155,19 @@ function calcTarget() {
                                 handleSandwichCellCase(target2);
                                 window.SandwichCellCase = null;
                             }
-                            avoidCorners(biggercell, target2, PlayerCell);
+                            avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner);
                         }
                         //General acting
                         else {
                             GeneralAvoiding(target2, PlayerCell);
-                            avoidCorners(biggercell, target2, PlayerCell);
+                            avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner);
                         }
 
 
                     }
                 } else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 320 && PlayerCell.mass * 1.4 < biggercell.mass && biggercell.mass > 130) {
-                    //if (window.teammatenicks.includes(PlayerCell.name) && legendmod3.lastSentClanTag != "") {
-					if (window.teammatenicks.includes(PlayerCell.name)) {	
-                        if (!window.autoteammatenicks.includes(PlayerCell.name)) {
-                            window.autoteammatenicks[PlayerCell.name] = true;
-                            target2.x = PlayerCell.x;
-                            target2.y = PlayerCell.y;
-                            console.log("Target mass: " + PlayerCell.mass);
-                            if (PlayerCell.mass != 0 && PlayerCell.mass != "0" && PlayerCell.name != "" && PlayerCell.name != null) { //2nd time to check
-                                window.doFeed = true;
-                            }
-                        }
-                        $('#pause-hud').html("<font color='" + PlayerCell.color + "'>" + PlayerCell.nick + "</font> (mass: " + PlayerCell.mass + ") is teammate. X: " + parseInt(window.DistanceX[PlayerCell.id]) + " , Y: " + parseInt(window.DistanceY[PlayerCell.id]));
-                    } else {
+ 
+					
                         if (PlayerCell.mass != 0 && PlayerCell.nick != "" && PlayerCell.mass * 3 < biggercell.mass && window.legendmod.playerCells.length == 1 && !(PlayerCell.mass * 10 < biggercell.mass && biggercell.mass > 260)) {
                             //760 
 
@@ -179,7 +182,7 @@ function calcTarget() {
                             target2.y = PlayerCell.y;
                             console.log("Target mass: " + PlayerCell.mass);
                             if (PlayerCell.mass != 0 && PlayerCell.mass != "0") { //2nd time to check
-                                window.doSplit = true;
+                                doSplit = true;
                             }
                         } else if (PlayerCell.mass * 1.4 < biggercell.mass && !(PlayerCell.mass * 10 < biggercell.mass)) {
 
@@ -194,7 +197,7 @@ function calcTarget() {
                             target2.y = PlayerCell.y;
                             console.log("Target mass: " + PlayerCell.mass);
                         }
-                    }
+                    
                 }
             }
         }
@@ -202,24 +205,24 @@ function calcTarget() {
     if (target != undefined) { //not needed
         window.legendmod.sendPosition(target, target2);
     }
-    if (window.doSplit == true && window.doSplitFlag == true) {
-        window.doSplit = false;
+    if (doSplit == true && window.doSplitFlag == true) {
+        doSplit = false;
         window.doSplitFlag = false;
         setTimeout(function() {
             window.doSplitFlag = true;
         }, 2000);
         window.legendmod.sendAction(17);
     } 
-    else if (window.doSplittoAvoidCorner == true && window.doSplitFlag == true) {
-        window.doSplittoAvoidCorner = false;
+    else if (doSplittoAvoidCorner == true && window.doSplitFlag == true) {
+        doSplittoAvoidCorner = false;
         window.doSplitFlag = false;
         setTimeout(function() {
             window.doSplitFlag = true;
         }, 8000);
         window.legendmod.sendAction(17);
     } 	
-	else if (window.doFeed) {
-		window.doFeed=false;
+	else if (doFeed) {
+		doFeed=false;
         window.legendmod.sendAction(21);
     }
 }
@@ -317,7 +320,7 @@ function handleSandwichCellCase(target2) {
     return target2;
 }
 
-function avoidCorners(biggercell, target2, PlayerCell) {
+function avoidCorners(biggercell, target2, PlayerCell, doSplittoAvoidCorner) {
     if ((biggercell.x < legendmod.mapMinX + 760 || biggercell.y < legendmod.mapMinY + 760 || biggercell.x > legendmod.mapMaxX - 760 || biggercell.y > legendmod.mapMaxY - 760) && (PlayerCell.x < legendmod.mapMinX + 760 || PlayerCell.y < legendmod.mapMinY + 760 || PlayerCell.x > legendmod.mapMaxX - 760 || PlayerCell.y > legendmod.mapMaxY - 760)) {
         let defineCornercaseX, defineCornercaseY, distanceCornerX, distanceCornerY;
         if (PlayerCell.x < legendmod.mapMinX + 760) {
@@ -387,9 +390,9 @@ function avoidCorners(biggercell, target2, PlayerCell) {
                 target2.y = legendmod.mapMinY; //go up
             }
         }
-		window.doSplittoAvoidCorner=true;
+		doSplittoAvoidCorner=true;
     }
-    return target2
+    return target2, doSplittoAvoidCorner;
 }
 
 function calcDist(x, y) {
