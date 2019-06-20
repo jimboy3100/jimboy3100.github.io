@@ -15,7 +15,43 @@
 <a href="https://chrome.google.com/webstore/detail/im-not-robot-captcha-clic/ceipnlhmjohemhfpbjdgeigkababhmjc/related" target="_blank" class="logEntry" style="color: lightgrey; font-size: 14px;">ReCaptcha Pass Extension</a>
 <br>Auto FPS boost when on focus (wait several minutes) Relogin on fb/google. Click on the map on which you want to use keyboard. Download to pc, or use http protocol. Keep Legend Mod enabled. 
 <script>
+var url = window.location.href;
 
+var region = getParameterByName("r", url);
+var realmode = getParameterByName("m", url);
+var searchSip = getParameterByName("sip", url);
+//var autoplay = getParameterByName("autoplay", url);
+
+
+if (searchSip!=null){
+	if (realmode!=null){
+		document.getElementById("iframe1").src="https://agar.io/?sip=" + searchSip + "&?r=" + region + "&?m=" + realmode + "&?autoplay=true";
+		document.getElementById("iframe2").src="https://agar.io/?sip=" + searchSip + "&?r=" + region + "&?m=" + realmode + "&?autoplay=true";
+		document.getElementById("iframe3").src="https://agar.io/?sip=" + searchSip + "&?r=" + region + "&?m=" + realmode + "&?autoplay=true";
+		document.getElementById("iframe4").src="https://agar.io/?sip=" + searchSip + "&?r=" + region + "&?m=" + realmode + "&?autoplay=true";
+		document.getElementById("iframe5").src="https://agar.io/?sip=" + searchSip + "&?r=" + region + "&?m=" + realmode + "&?autoplay=true";
+		}
+	else{
+		document.getElementById("iframe1").src="https://agar.io/?sip=" + searchSip + "&?autoplay=true";
+		document.getElementById("iframe2").src="https://agar.io/?sip=" + searchSip + "&?autoplay=true";
+		document.getElementById("iframe3").src="https://agar.io/?sip=" + searchSip + "&?autoplay=true";
+		document.getElementById("iframe4").src="https://agar.io/?sip=" + searchSip + "&?autoplay=true";
+		document.getElementById("iframe5").src="https://agar.io/?sip=" + searchSip + "&?autoplay=true";
+	}
+}
+
+function getParameterByName2(name) {
+    if (name !== "" && name !== null && name != undefined) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    } else {
+        var arr = location.href.split("/");
+        return arr[arr.length - 1];
+    }
+
+}
 </script>
   
 </body>
