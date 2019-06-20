@@ -25,18 +25,38 @@ var searchSip = getParameterByName("sip", url);
 
 if (searchSip!=null){
 	if (realmode!=null){
+		setTimeout(function() {
 		document.getElementById("iframe1").src="https://agar.io/?sip=" + searchSip + "&?r=" + region + "&?m=" + realmode + "&?autoplay=true";
+		}, 2000);
+		setTimeout(function() { 
 		document.getElementById("iframe2").src="https://agar.io/?sip=" + searchSip + "&?r=" + region + "&?m=" + realmode + "&?autoplay=true";
+		}, 4000);
+		setTimeout(function() {
 		document.getElementById("iframe3").src="https://agar.io/?sip=" + searchSip + "&?r=" + region + "&?m=" + realmode + "&?autoplay=true";
+		}, 6000);
+		setTimeout(function() { 
 		document.getElementById("iframe4").src="https://agar.io/?sip=" + searchSip + "&?r=" + region + "&?m=" + realmode + "&?autoplay=true";
+		}, 8000);
+		setTimeout(function() { 
 		document.getElementById("iframe5").src="https://agar.io/?sip=" + searchSip + "&?r=" + region + "&?m=" + realmode + "&?autoplay=true";
+		}, 10000);
 		}
 	else{
+		setTimeout(function() {
 		document.getElementById("iframe1").src="https://agar.io/?sip=" + searchSip + "&?autoplay=true";
+		}, 2000);
+		setTimeout(function() {
 		document.getElementById("iframe2").src="https://agar.io/?sip=" + searchSip + "&?autoplay=true";
+		}, 4000);
+		setTimeout(function() {
 		document.getElementById("iframe3").src="https://agar.io/?sip=" + searchSip + "&?autoplay=true";
+		}, 6000);
+		setTimeout(function() {
 		document.getElementById("iframe4").src="https://agar.io/?sip=" + searchSip + "&?autoplay=true";
+		}, 8000);
+		setTimeout(function() {
 		document.getElementById("iframe5").src="https://agar.io/?sip=" + searchSip + "&?autoplay=true";
+		}, 10000);
 	}
 }
 
