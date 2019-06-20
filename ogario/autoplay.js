@@ -1,3 +1,4 @@
+//v6
 window.autoteammatenicks = [];
 window.targetFood = null;
 window.autoPlay = false;
