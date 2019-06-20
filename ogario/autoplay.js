@@ -160,10 +160,10 @@ function calcTarget() {
                                     window.BadCellsDistanceName[window.FlagDangerCells[i]] = window.DangerDistanceName[window.FlagDangerCells[i]];
                                     //console.log(window.DangerDistanceName[window.FlagDangerCells[i]], BadCellsDistanceX[window.FlagDangerCells[i]], BadCellsDistanceY[window.FlagDangerCells[i]]);
                                 }
-								DefineVirusshootCase();
+								
                             }
                         }
-						
+						DefineVirusshootCase();
 						
                     }
                     if (distancePlayerCell - PlayerCell.size <= bestDist2) { //watch the closer cells
@@ -274,8 +274,8 @@ function GeneralAvoiding(target2, PlayerCell) {
     }
     return target2;
 }
-function DefineVirusshootCase(){}
-/*
+//function DefineVirusshootCase(){}
+
 function DefineVirusshootCase(){
 	if (window.FlagVirusCells.length > 0 && window.BadCellsDistanceName.length > 0) {
 		for (var i = 0; i < window.FlagVirusCells.length; i++) {			
@@ -298,7 +298,7 @@ function DefineVirusshootCase(){
 		}
 	}
 }
-*/
+
 function DefineSandwichCellCase() {
     if (window.FlagDangerCells.length > 1) {
         for (var i = 1; i < window.FlagDangerCells.length; i++) {
@@ -363,7 +363,7 @@ function handleSandwichCellCase(target2) {
     if (negativeY) {
         closestY = -closestY;
     }
-    console.log(closestX, closestY);
+    //console.log(closestX, closestY);
     //here is the difference with the GeneralAvoiding
     if (Math.abs(-closestX) < Math.abs(-closestY)) {
         target2.x = -closestX;
