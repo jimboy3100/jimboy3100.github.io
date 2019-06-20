@@ -463,5 +463,5 @@ function AnnounceDangerCellOpposite(x, y) {
     $('#pause-hud').html("<font color='red'>Danger: <font> " + x + " and " + y + " are diametral");
 }
 function AnnounceBadCellShooting(vx, vy, name, x, y) {
-    $('#pause-hud').html("<font color='yellow'>Shooting: <font> " + name + "(" + x + " , " +  y + ")" + "from virus " + vx + "," + vy);
+    $('#pause-hud').html("<font color='yellow'>Shooting: <font> " + name + "(" + parseInt(x) + " , " +  parseInt(y) + ")" + "from virus " + parseInt(vx) + "," + parseInt(vy));
 }
