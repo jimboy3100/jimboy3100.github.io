@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.815 MEGA TEST
+// v1.819 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -138,9 +138,9 @@ function LegendModSpawn(){};
 
 
 //window.disableIntegrity=false;
-
+window.lastejected=false;
 function calcTarget(){};
-
+//function historystate(){};
 var Lmagarversion = "";
 
 window.LMGameConfiguration = $.ajax({
@@ -4473,6 +4473,9 @@ var thelegendmodproject = function(t, e, i) {
 			this.nickCanvas = null;
 			this.mass = 0;
 			this.lastMass = 0;
+			this.historyMass = [];
+			this.historyX = [];
+			this.historyY = [];
 			this.kMass = 0; 
 			this.massCanvas = null;
 			this.massTxt = '';
@@ -4803,9 +4806,23 @@ var thelegendmodproject = function(t, e, i) {
                     if (this.massCanvas && !(this.size <= 40)) {
                         var massCanvas = this.massCanvas;
                         massCanvas.setDrawing(g.massColor, g.massFontFamily, g.massFontWeight, this.strokeMass, this.massStrokeSize, g.massStrokeColor);
-                        if (this.redrawMass) {
+ 							//
+							this.historyMass.unshift(this.mass);
+							if (this.historyMass.length > 500){
+								this.historyMass.pop();
+							}
+							this.historyX.unshift(this.x);
+							if (this.historyX.length > 500){
+								this.historyX.pop();
+							}		
+							this.historyY.unshift(this.y);
+							if (this.historyY.length > 500){
+								this.historyY.pop();
+							}
+							//
+						if (this.redrawMass) {
                             massCanvas.setTxt(this.massTxt);
-                            this.lastMass = this.mass;
+                            this.lastMass = this.mass;								
                         }
                         massCanvas.setFontSize(this.massSize);
                         massCanvas.setScale(this.scale);
@@ -5327,6 +5344,7 @@ var thelegendmodproject = function(t, e, i) {
             'sendSplit': function() {
                 this.sendPosition();
 				this.sendAction(17);
+				
             },
             'sendNick': function(t) {
 				
@@ -6036,7 +6054,8 @@ var thelegendmodproject = function(t, e, i) {
                     var M = 1 & d,
                         ogarioset1final = 1 & f,
                         ogariocellssetts = null;
-                    this.indexedCells.hasOwnProperty(l) ? (ogariocellssetts = this.indexedCells[l], m && (ogariocellssetts.color = m)) : ((ogariocellssetts = new ogarbasicassembly(l, h, c, u, m, ogarioset1final, M, false, v.shortMass, v.virMassShots)).time = this.time, ogarioset1final ? this.food.push(ogariocellssetts) : (M && v['virusesRange'] && this.viruses.push(ogariocellssetts), this.cells.push(ogariocellssetts), -1 != this.playerCellIDs.indexOf(l) && -1 == this.playerCells.indexOf(ogariocellssetts) && (ogariocellssetts['isPlayerCell'] = true, this.playerColor = m, this.playerCells.push(ogariocellssetts))), this.indexedCells[l] = ogariocellssetts), ogariocellssetts['isPlayerCell'] && (y = this.playerNick), y && (ogariocellssetts.targetNick = y), ogariocellssetts.targetX = h, ogariocellssetts.targetY = c, ogariocellssetts.targetSize = u, ogariocellssetts['isFood'] = ogarioset1final, ogariocellssetts['isVirus'] = M, g && (ogariocellssetts['skin'] = g), 4 & f && (t.readUInt32LE(i), i += 4);
+                    this.indexedCells.hasOwnProperty(l) ? (ogariocellssetts = this.indexedCells[l], m && (ogariocellssetts.color = m)) : ((ogariocellssetts = new ogarbasicassembly(l, h, c, u, m, ogarioset1final, M, false, v.shortMass, v.virMassShots)).time = this.time, ogarioset1final ? this.food.push(ogariocellssetts) : (M && v['virusesRange'] && this.viruses.push(ogariocellssetts), this.cells.push(ogariocellssetts), -1 != this.playerCellIDs.indexOf(l) && -1 == this.playerCells.indexOf(ogariocellssetts) && (ogariocellssetts['isPlayerCell'] = true, this.playerColor = m, 
+					this.playerCells.push(ogariocellssetts))), this.indexedCells[l] = ogariocellssetts), ogariocellssetts['isPlayerCell'] && (y = this.playerNick), y && (ogariocellssetts.targetNick = y), ogariocellssetts.targetX = h, ogariocellssetts.targetY = c, ogariocellssetts.targetSize = u, ogariocellssetts['isFood'] = ogarioset1final, ogariocellssetts['isVirus'] = M, g && (ogariocellssetts['skin'] = g), 4 & f && (t.readUInt32LE(i), i += 4);
                 }
                 for (o = t.readUInt16LE(i), i += 2, a = 0; a < o; a++) {
                     l = t.readUInt32LE(i);
@@ -6044,6 +6063,7 @@ var thelegendmodproject = function(t, e, i) {
                 }
                 this.removePlayerCell && !this.playerCells.length && (this.play = false, ogarminimapdrawer['onPlayerDeath'](), ogarminimapdrawer.showMenu(300));
                 if (window.autoPlay && legendmod.play) {calcTarget();}
+				//if (window.historystate && legendmod.play) {historystate();}
             },
             'color2Hex': function(t) {
                 var e = t.toString(16);
@@ -7779,6 +7799,7 @@ var thelegendmodproject = function(t, e, i) {
                 }
             };
         window.legendmod2 = ogarfooddrawer; //look at this
+		window.legendmod6 = lastkeys;
         function ogarjoiner(t) {
             if (window.history && window.history.replaceState) {
                 window.history.replaceState({}, window.document.title, t);
@@ -7942,9 +7963,11 @@ var thelegendmodproject = function(t, e, i) {
             },
             'eject': function() {
                 M.sendEject();
+				window.lastejected=true;
             },
             'split': function() {
                 M.sendSplit();
+				
             },
             'specialOn': function() {
                 M.sendFreeSpectate();
