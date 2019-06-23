@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.842 MEGA TEST
+// v1.843 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4821,7 +4821,7 @@ var thelegendmodproject = function(t, e, i) {
 							window.playerCellsId[this.id].historyY=[];
 							}
 							else{
-							window.playerCellsId[this.id].historyMass.unshift(this.mass);
+							window.playerCellsId[this.id].historyMass.unshift(this.size); //i test mass with size to find out the merging time
 							if (window.playerCellsId[this.id].historyMass.length > 500){
 								window.playerCellsId[this.id].historyMass.pop();
 							}
