@@ -4721,7 +4721,7 @@ var thelegendmodproject = function(t, e, i) {
                 this.redrawMass = Math.abs((this.mass - this.lastMass) / this.mass) >= 0.02 || this.rescale;				
             }
             if (this.mergeTime && this.mergeTime > 0) {               
-                this.massTxt = this.massTxt + '['+this.mergeTime+']';
+                this.massTxt = this.massTxt + '['+Math.round(this.mergeTime)+']';
             return true;    
             }			
             return true;
