@@ -6,7 +6,7 @@ function CellTimer() {
 //legendmod.cells[i].historyMass->window.playerCellsId[legendmod.cells[i].id].historyMass
 		
 			if (window.playerCellsId && window.legendmod.playerCells[i] && window.legendmod.playerCells[i].id && window.playerCellsId[legendmod.playerCells[i].id] && window.playerCellsId[legendmod.playerCells[i].id].historyMass && 
-			window.playerCellsId[legendmod.playerCells[i].id].historyMass[window.legendmod2.fps]>window.playerCellsId[legendmod.playerCells[i].id].historyMass[0]*1.4){
+			window.playerCellsId[legendmod.playerCells[i].id].historyMass[window.legendmod2.fps]>window.playerCellsId[legendmod.playerCells[i].id].historyMass[0]*1.2){
 				var j=i;
 				var x=0;
 					
@@ -14,8 +14,8 @@ function CellTimer() {
 
 			}
 			else{
-				if(window.playerCellsId && window.legendmod.playerCells[i] && window.legendmod.playerCells[i].id && window.playerCellsId[legendmod.playerCells[i].id]){
-				//window.playerCellsId[legendmod.playerCells[i].id].mergeTime=null;
+				if(window.playerCellsId && window.legendmod.playerCells[i] && window.legendmod.playerCells[i].id && window.playerCellsId[legendmod.playerCells[i].id] && window.playerCellsId[legendmod.playerCells[i].id].historyMass){
+				window.playerCellsId[legendmod.playerCells[i].id].mergeTime=null;
 			}
 			}
 			
@@ -34,7 +34,7 @@ window.playerCellsId[legendmod.playerCells[j].id].mergeTime = 29 + (7/300)*windo
 		}, 1000);
 	}
 	else{
-		window.playerCellsId[legendmod.playerCells[j].id].mergeTime=null;
+		//window.playerCellsId[legendmod.playerCells[j].id].mergeTime=null;
 	}
 }	
 	return j,x;
