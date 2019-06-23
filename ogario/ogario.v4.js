@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.837 MEGA TEST
+// v1.842 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -175,7 +175,7 @@ setTimeout(function() {
 }, 5000);
 
 //set values outside ogario
-window.cellsId = [];
+window.playerCellsId = [];
 //window.counterCell=0;
 window.leaderboardlimit = 20;
 window.teamboardlimit = 20;
@@ -4723,8 +4723,8 @@ var thelegendmodproject = function(t, e, i) {
                 this.redrawMass = Math.abs((this.mass - this.lastMass) / this.mass) >= 0.02 || this.rescale;				
             }
             //if (this.mergeTime && this.mergeTime > 0) {     
-			else if(!v.optimizedMass && window.cellsId && window.cellsId[this.id] && window.cellsId[this.id].mergeTime && window.cellsId[this.id].mergeTime > 1 ){
-                this.massTxt = this.massTxt + '[' + Math.round(window.cellsId[this.id].mergeTime) + ']';
+			else if(!v.optimizedMass && !this.isVirus && this.isPlayerCell && window.playerCellsId && window.legendmod.playerCellIDs.length>1 && window.playerCellsId[this.id] && window.playerCellsId[this.id].mergeTime && window.playerCellsId[this.id].mergeTime > 1 ){
+                this.massTxt = this.massTxt + '[' + Math.round(window.playerCellsId[this.id].mergeTime) + ']';
             return true;    
             }			
             return true;
@@ -4813,26 +4813,26 @@ var thelegendmodproject = function(t, e, i) {
                     if (this.massCanvas && !(this.size <= 40)) {
                         var massCanvas = this.massCanvas;
                         massCanvas.setDrawing(g.massColor, g.massFontFamily, g.massFontWeight, this.strokeMass, this.massStrokeSize, g.massStrokeColor);
- 							if (!v.optimizedMass && window.cellsId){
-							if (window.cellsId[this.id]==undefined){
-							window.cellsId[this.id]={};
-							window.cellsId[this.id].historyMass=[];
-							window.cellsId[this.id].historyX=[];
-							window.cellsId[this.id].historyY=[];
+ 							if (!v.optimizedMass && window.playerCellsId && this.isPlayerCell){
+							if (window.playerCellsId[this.id]==undefined){
+							window.playerCellsId[this.id]={};
+							window.playerCellsId[this.id].historyMass=[];
+							window.playerCellsId[this.id].historyX=[];
+							window.playerCellsId[this.id].historyY=[];
 							}
 							else{
-							window.cellsId[this.id].historyMass.unshift(this.mass);
-							if (window.cellsId[this.id].historyMass.length > 500){
-								window.cellsId[this.id].historyMass.pop();
+							window.playerCellsId[this.id].historyMass.unshift(this.mass);
+							if (window.playerCellsId[this.id].historyMass.length > 500){
+								window.playerCellsId[this.id].historyMass.pop();
 							}
-							window.cellsId[this.id].historyX.unshift(this.x);
-							if (window.cellsId[this.id].historyX.length > 500){
-								window.cellsId[this.id].historyX.pop();
+							window.playerCellsId[this.id].historyX.unshift(this.x);
+							if (window.playerCellsId[this.id].historyX.length > 500){
+								window.playerCellsId[this.id].historyX.pop();
 							}		
-							window.cellsId[this.id].historyY.unshift(this.y);
-							if (window.cellsId[this.id].historyY.length > 500){
+							window.playerCellsId[this.id].historyY.unshift(this.y);
+							if (window.playerCellsId[this.id].historyY.length > 500){
 								//this.historyY.pop();
-								window.cellsId[this.id].historyY.pop();
+								window.playerCellsId[this.id].historyY.pop();
 							}							
 							}
 							}
