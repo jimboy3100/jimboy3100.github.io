@@ -249,7 +249,7 @@ var thelegendmodproject = function(t, e, i) {
                     'optimizedNames': 'Zoptymalizowane nazwy',
                     'hideMyName': 'Ukryj własną nazwę',
                     'hideTeammatesNames': 'Ukryj nazwy graczy teamu',
-                    'optimizedMass': 'Optimized mass (+/-2%) & Merge timer BETA off\r\n Suggested to be enabled for Lag reduce',
+                    'optimizedMass': 'Optimized mass (+/-2%) & Merge timer BETA off\n Suggested to be enabled for Lag reduce',
                     'shortMass': 'Skrócona masa (k)',
                     'virMassShots': 'Licznik strzałów (wirusy)',
                     'hideMyMass': 'Ukryj własną masę',
