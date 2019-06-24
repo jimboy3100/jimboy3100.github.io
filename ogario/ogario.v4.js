@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.844 MEGA TEST
+// v1.845 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4814,7 +4814,17 @@ var thelegendmodproject = function(t, e, i) {
                     if (this.massCanvas && !(this.size <= 40)) {
                         var massCanvas = this.massCanvas;
                         massCanvas.setDrawing(g.massColor, g.massFontFamily, g.massFontWeight, this.strokeMass, this.massStrokeSize, g.massStrokeColor);
- 							if (window.ExternalScripts && !v.optimizedMass && window.playerCellsId && this.isPlayerCell){
+							//
+						if (this.redrawMass) {
+                            massCanvas.setTxt(this.massTxt);
+                            this.lastMass = this.mass;								
+                        }
+                        massCanvas.setFontSize(this.massSize);
+                        massCanvas.setScale(this.scale);						
+                        let width = ~~(data.width / this.scale);
+                        let height = ~~(data.height / this.scale);
+						///
+							if (window.ExternalScripts && !v.optimizedMass && window.playerCellsId && this.isPlayerCell){
 							if (window.playerCellsId[this.id]==undefined){
 							window.playerCellsId[this.id]={};
 							window.playerCellsId[this.id].historyMass=[];
@@ -4836,23 +4846,23 @@ var thelegendmodproject = function(t, e, i) {
 								window.playerCellsId[this.id].historyY.pop();
 							}							
 							}
-							}
-							//
-						if (this.redrawMass) {
-                            massCanvas.setTxt(this.massTxt);
-                            this.lastMass = this.mass;								
-                        }
-                        massCanvas.setFontSize(this.massSize);
-                        massCanvas.setScale(this.scale);
-                        let data = massCanvas.drawTxt();
-                        let width = ~~(data.width / this.scale);
-                        let height = ~~(data.height / this.scale);
+						let data = massCanvas.drawTxt();
+                        let textureY = this.margin === 0 ? ~~(this.y + height / 2) : ~~this.y - this.margin;
+                        if (width > 1 && height > 1) {
+							try {
+                            context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
+							} catch (e) {}			
+                        }							
+							}	
+						///
+						let data = massCanvas.drawTxt();
                         let textureY = this.margin === 0 ? ~~(this.y - height / 2) : ~~this.y + this.margin;
                         if (width > 1 && height > 1) {
 							try {
                             context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
 							} catch (e) {}			
                         }
+						
 						//window.counterCell++;
                     }
                 };
