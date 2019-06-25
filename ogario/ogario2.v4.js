@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.896 MEGA TEST
+// v1.897 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -6327,7 +6327,7 @@ var thelegendmodproject = function(t, e, i) {
                 'pellet': null,
                 'indicator': null,
                 'setCanvas': function() {
-                    //this.canvas = document.getElementById('canvas');
+                    this.canvas = document.getElementById('canvas');
                     this.ctx = this.canvas.getContext('2d');
 					//this.ctx = enableWebGLCanvas(this.canvas);
 					//this.ctx.start2D();
