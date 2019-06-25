@@ -1,4 +1,4 @@
-//Time Merger v1.3
+//Time Merger v1.4
 window.ExternalScripts = true;
 var Intervalstatistics = setInterval(CellTimer, 1000);
 
@@ -10,7 +10,8 @@ function CellTimer() {
 
             if (window.playerCellsId && window.legendmod.playerCells[i] && window.legendmod.playerCells[i].id && window.playerCellsId[legendmod.playerCells[i].id] &&
                 window.playerCellsId[legendmod.playerCells[i].id].historyMass &&
-                window.playerCellsId[legendmod.playerCells[i].id].historyMass[window.legendmod2.fps] > window.playerCellsId[legendmod.playerCells[i].id].historyMass[0] * 1.4) {
+                window.playerCellsId[legendmod.playerCells[i].id].historyMass[window.legendmod2.fps] > window.playerCellsId[legendmod.playerCells[i].id].historyMass[0] * 1.2) {
+					console.log("Mass Merge Timer started with mass" + window.playerCellsId[legendmod.playerCells[i].id].historyMass[window.legendmod2.fps]);
                 var j = i;
                 var x = 0;
 
