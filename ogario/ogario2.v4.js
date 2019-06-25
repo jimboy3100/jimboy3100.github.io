@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.891 MEGA TEST
+// v1.892 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -3581,7 +3581,7 @@ var thelegendmodproject = function(t, e, i) {
             },
             'drawMiniMapSectors': function(t, e, s, o, a) {
                 this.miniMapSectors = document.getElementById('minimap-sectors');
-                var n = this.miniMapSectors.getContext('2d');
+                var n = this.miniMapSectors.getContext('2d');				
                 n.ogarioCtx = true;
                 this.miniMapSectors.width = s;
                 this.miniMapSectors.height = o;
@@ -4387,10 +4387,11 @@ var thelegendmodproject = function(t, e, i) {
                 this.setScale = function(ogarioscalesetter) {
                     this.scale != ogarioscalesetter && (this.scale = ogarioscalesetter,
                         this.redraw = true);
-                },
+                },				
                 this.createCanvas = function() {
                     this.txtCanvas || (this.txtCanvas = document.createElement('canvas'),
-                        this.txtCtx = this.txtCanvas.getContext('2d'),
+                        //this.txtCtx = this.txtCanvas.getContext('2d'),
+						this.txtCtx = enableWebGLCanvas(this.txtCanvas),
                         this.txtCtx.ogarioCtx = true);
                 },
                 this.setDrawing = function(ogarsetDrawinglabel1, ogarsetDrawinglabel2, ogarsetDrawinglabel3, ogarsetDrawinglabel4, ogarsetDrawinglabel5, ogarsetDrawinglabel6) {
@@ -6328,7 +6329,7 @@ var thelegendmodproject = function(t, e, i) {
                 'setCanvas': function() {
                     this.canvas = document.getElementById('canvas');
                     //this.ctx = this.canvas.getContext('2d');
-					this.ctx = enableWebGLCanvas(canvas);
+					this.ctx = enableWebGLCanvas(this.canvas);
                     this.canvas.onmousemove = function(t) {
                         M.clientX = t.clientX;
                         M.clientY = t.clientY;
