@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.887 MEGA TEST
+// v1.888 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2059,7 +2059,7 @@ var thelegendmodproject = function(t, e, i) {
             'version': 'v1',
             'privateMode': false,
             'protocolMode': true,
-            'publicIP': 'wss://srv.ogario.eu',
+            'publicIP': 'wss://srv.ogario.eu', 
             'privateIP': null,
             'updateInterval': 1000,
             'updateTick': 0,
@@ -3732,8 +3732,9 @@ var thelegendmodproject = function(t, e, i) {
                     console.log('[Legend mod Express] Socket close', e);
                 }
                 this.socket['onerror'] = function(e) {
-                    //t.flushData();
+                    //t.flushData();									
                     console.log('[Legend mod Express] Socket error', e);
+					window.noOgarioSocket=true;
                 };
             },
             'closeConnection': function() {
