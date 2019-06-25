@@ -1,4 +1,4 @@
-//Time Merger v1.6
+//Time Merger v1.7
 window.ExternalScripts = true;
 var Intervalstatistics = setInterval(CellTimer, 1000);
 
@@ -36,12 +36,13 @@ function MergeCells(j, x) {
         if (window.playerCellsId[legendmod.playerCells[j].id].mergeTime > -20) {
             setTimeout(function() {
                 MergeCells(j, x);
-				console.log("Mass Merge: " + j,x, window.playerCellsId[legendmod.playerCells[j].id].historyMass[0]);
+				console.log("Mass Merge: " + j, x, window.playerCellsId[legendmod.playerCells[j].id].historyMass[0]);
             }, 1000);
         }
 
     } 
 	else {
+		console.log("Mass Merge Timer ended: " + j, x)
         window.playerCellsId[legendmod.playerCells[j].id].mergeTime = null;
     }
     return j, x;
