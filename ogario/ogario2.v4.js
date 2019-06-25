@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.892 MEGA TEST
+// v1.893 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4390,8 +4390,8 @@ var thelegendmodproject = function(t, e, i) {
                 },				
                 this.createCanvas = function() {
                     this.txtCanvas || (this.txtCanvas = document.createElement('canvas'),
-                        //this.txtCtx = this.txtCanvas.getContext('2d'),
-						this.txtCtx = enableWebGLCanvas(this.txtCanvas),
+                        this.txtCtx = this.txtCanvas.getContext('2d'),
+						//this.txtCtx = enableWebGLCanvas(this.txtCanvas),
                         this.txtCtx.ogarioCtx = true);
                 },
                 this.setDrawing = function(ogarsetDrawinglabel1, ogarsetDrawinglabel2, ogarsetDrawinglabel3, ogarsetDrawinglabel4, ogarsetDrawinglabel5, ogarsetDrawinglabel6) {
@@ -6327,9 +6327,10 @@ var thelegendmodproject = function(t, e, i) {
                 'pellet': null,
                 'indicator': null,
                 'setCanvas': function() {
-                    this.canvas = document.getElementById('canvas');
+                    //this.canvas = document.getElementById('canvas');
                     //this.ctx = this.canvas.getContext('2d');
 					this.ctx = enableWebGLCanvas(this.canvas);
+					this.start2D();
                     this.canvas.onmousemove = function(t) {
                         M.clientX = t.clientX;
                         M.clientY = t.clientY;
