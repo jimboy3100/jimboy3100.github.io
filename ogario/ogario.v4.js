@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.888 MEGA TEST
+// v1.889 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4865,7 +4865,7 @@ var thelegendmodproject = function(t, e, i) {
                             var width = ~~(data.width / this.scale);
 							//console.log(data.width, this.scale, width, this.x - width / 2);
                             var height = ~~(data.height / this.scale);
-                            var textureY = this.margin === 0 ? ~~(this.y + height ) : ~~this.y - 2 * this.margin;
+                            var textureY = this.margin === 0 ? ~~(this.y + height * 2) : ~~this.y - 4 * this.margin;
                             if (width > 1 && height > 1) {
                                 try {
                                     context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
