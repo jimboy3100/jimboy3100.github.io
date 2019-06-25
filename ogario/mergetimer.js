@@ -29,7 +29,7 @@ function CellTimer() {
 
 function MergeCells(j, x) {
     x++;
-    if (window.playerCellsId && window.legendmod.playerCells[j] && window.legendmod.playerCells[j].id && window.playerCellsId[legendmod.playerCells[j].id]) {
+    if (window.legendmod.playerCells.length>1 && window.playerCellsId && window.legendmod.playerCells[j] && window.legendmod.playerCells[j].id && window.playerCellsId[legendmod.playerCells[j].id]) {
         window.playerCellsId[legendmod.playerCells[j].id].mergeTime = 29 + (7 / 300) * window.playerCellsId[legendmod.playerCells[j].id].historyMass[0] - x;
         //console.log(j,x, Math.round(window.playerCellsId[legendmod.playerCells[j].id].mergeTime));
         if (window.playerCellsId[legendmod.playerCells[j].id].mergeTime > 0) {
@@ -38,7 +38,8 @@ function MergeCells(j, x) {
             }, 1000);
         }
 
-    } else {
+    } 
+	else {
         window.playerCellsId[legendmod.playerCells[j].id].mergeTime = null;
     }
     return j, x;
