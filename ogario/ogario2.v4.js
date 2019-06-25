@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.895 MEGA TEST
+// v1.896 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -6328,9 +6328,9 @@ var thelegendmodproject = function(t, e, i) {
                 'indicator': null,
                 'setCanvas': function() {
                     //this.canvas = document.getElementById('canvas');
-                    //this.ctx = this.canvas.getContext('2d');
-					this.ctx = enableWebGLCanvas(this.canvas);
-					this.ctx.start2D();
+                    this.ctx = this.canvas.getContext('2d');
+					//this.ctx = enableWebGLCanvas(this.canvas);
+					//this.ctx.start2D();
                     this.canvas.onmousemove = function(t) {
                         M.clientX = t.clientX;
                         M.clientY = t.clientY;
@@ -6382,7 +6382,7 @@ var thelegendmodproject = function(t, e, i) {
                                     this.ctx['restore'](), ':teams' === M.gameMode && this.pieChart && this.pieChart.width && this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
                                 }, */
                 'renderFrame': function() {
-                    this.ctx.start2D();
+                    //this.ctx.start2D();
                     M.time = Date.now();
                     for (i = 0; i < M.cells.length; i++) {
                         M.cells[i].moveCell();
@@ -6502,7 +6502,7 @@ var thelegendmodproject = function(t, e, i) {
                             this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 0xa, 0xa);
                         }
                     }
-                    this.ctx.finish2D();
+                    //this.ctx.finish2D();
                 },
                 pointInCircle: function(x, y, cx, cy, radius) {
                     var distancesquared = (x - cx) * (x - cx) + (y - cy) * (y - cy);
