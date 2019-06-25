@@ -1,7 +1,8 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.888 MEGA TEST
+// v1.889 MEGA TEST
+//WebGL v1
 // Game Configurations
 
 //window.testobjects = {};
@@ -3407,7 +3408,9 @@ var thelegendmodproject = function(t, e, i) {
                         var i = document.createElement("canvas");
                         i.width = 512;
                         i.height = 512;
-                        var $ = i.getContext("2d");
+                        //var $ = i.getContext("2d");
+						var $ = enableWebGLCanvas(i);
+						$.start2D();
                         $.beginPath();
                         $.arc(256, 256, 256, 0, 2 * Math.PI, false);
                         $["clip"]();
@@ -3418,6 +3421,7 @@ var thelegendmodproject = function(t, e, i) {
                         this["customSkinsCache"][e + "_cached"].src = i.toDataURL();
                         i = null;
                         this["cacheSkin"](this["customSkinsCache"]);
+						$.finish2D();
                     }
                 }
             },
@@ -6325,6 +6329,7 @@ var thelegendmodproject = function(t, e, i) {
                 'setCanvas': function() {
                     this.canvas = document.getElementById('canvas');
                     this.ctx = this.canvas.getContext('2d');
+					//this.ctx = enableWebGLCanvas(canvas);
                     this.canvas.onmousemove = function(t) {
                         M.clientX = t.clientX;
                         M.clientY = t.clientY;
@@ -6788,12 +6793,16 @@ var thelegendmodproject = function(t, e, i) {
                 },
                 'drawPieChart': function() {
                     this.pieChart || (this.pieChart = document.createElement('canvas'));
-                    var t = this.pieChart.getContext('2d'),
+                    //var t = this.pieChart.getContext('2d'),
+					var t = enableWebGLCanvas(this.pieChart),
+					
                         e = Math.min(200, 0.3 * this.canvasWidth) / 200;
+						t.start2D();
                     this.pieChart.width = 200 * e, this.pieChart.height = 240 * e, t.scale(e, e);
                     for (var i = ['#333333', '#FF3333', '#33FF33', '#3333FF'], s = 0, o = 0; o < M.pieChart.length; o++) {
                         var a = s + M.pieChart[o] * this.pi2;
                         t.fillStyle = i[o + 1], t.beginPath(), t.moveTo(100, 140), t.arc(100, 140, 80, s, a, false), t.fill(), s = a;
+						t.finish2D();
                     }
                 },
                 'drawBattleArea': function(t) {
@@ -6916,17 +6925,27 @@ var thelegendmodproject = function(t, e, i) {
                 },
                 'preDrawPellet': function() {
                     this.pellet = null;
-                    var t = 10 + g.foodSize,
-                        e = document.createElement('canvas');
-                    e.width = 2 * t, e.height = 2 * t;
-                    var i = e.getContext('2d');
-                    i.arc(t, t, t, 0, this.pi2, false), i.fillStyle = g.foodColor, i.fill(), this.pellet = new Image(), this.pellet.src = e.toDataURL(), e = null;
+                    var t = 10 + g.foodSize;
+                    e = document.createElement('canvas');					
+                    e.width = 2 * t, e.height = 2 * t;					
+                    //var i = e.getContext('2d');
+					var i = enableWebGLCanvas(e);
+					i.start2D();						
+                    i.arc(t, t, t, 0, this.pi2, false); 
+					i.fillStyle = g.foodColor; 
+					i.fill(); 
+					this.pellet = new Image(); 
+					this.pellet.src = e.toDataURL(); 
+					e = null;
+					i.finish2D();
                 },
                 'preDrawIndicator': function() {
                     this.indicator = null;
                     var t = document.createElement('canvas');
                     t.width = 90, t.height = 50;
-                    var e = t.getContext('2d');
+                    //var e = t.getContext('2d');
+					var e = enableWebGLCanvas(t);
+					e.start2D();					
                     e.lineWidth = 2;
                     e.fillStyle = g.teammatesIndColor;
                     e.strokeStyle = '#000000';
@@ -6940,6 +6959,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.indicator = new Image();
                     this.indicator.src = t.toDataURL();
                     t = null;
+					e.finish2D();
                 },
                 'countFps': function() {
                     if (v.showStatsFPS) {
