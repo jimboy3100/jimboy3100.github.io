@@ -1,4 +1,4 @@
-//Time Merger v1.4
+//Time Merger v1.5
 window.ExternalScripts = true;
 var Intervalstatistics = setInterval(CellTimer, 1000);
 
@@ -10,8 +10,8 @@ function CellTimer() {
 
             if (window.playerCellsId && window.legendmod.playerCells[i] && window.legendmod.playerCells[i].id && window.playerCellsId[legendmod.playerCells[i].id] &&
                 window.playerCellsId[legendmod.playerCells[i].id].historyMass &&
-                window.playerCellsId[legendmod.playerCells[i].id].historyMass[window.legendmod2.fps] > window.playerCellsId[legendmod.playerCells[i].id].historyMass[0] * 1.2) {
-					console.log("Mass Merge Timer started with mass" + window.playerCellsId[legendmod.playerCells[i].id].historyMass[window.legendmod2.fps]);
+                window.playerCellsId[legendmod.playerCells[i].id].historyMass[window.legendmod2.fps] > window.playerCellsId[legendmod.playerCells[i].id].historyMass[0] * 1.4) {
+					console.log("Mass Merge Timer started with mass: " + window.playerCellsId[legendmod.playerCells[i].id].historyMass[window.legendmod2.fps]);
                 var j = i;
                 var x = 0;
 
@@ -36,7 +36,7 @@ function MergeCells(j, x) {
         if (window.playerCellsId[legendmod.playerCells[j].id].mergeTime > 0) {
             setTimeout(function() {
                 MergeCells(j, x);
-				console.log(j,x, window.playerCellsId[legendmod.playerCells[j].id].historyMass[0]);
+				console.log("Mass Merge " + j,x, window.playerCellsId[legendmod.playerCells[j].id].historyMass[0]);
             }, 1000);
         }
 
