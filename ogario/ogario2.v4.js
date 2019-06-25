@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.893 MEGA TEST
+// v1.894 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -6330,7 +6330,7 @@ var thelegendmodproject = function(t, e, i) {
                     //this.canvas = document.getElementById('canvas');
                     //this.ctx = this.canvas.getContext('2d');
 					this.ctx = enableWebGLCanvas(this.canvas);
-					this.start2D();
+					this.ctx.start2D();
                     this.canvas.onmousemove = function(t) {
                         M.clientX = t.clientX;
                         M.clientY = t.clientY;
