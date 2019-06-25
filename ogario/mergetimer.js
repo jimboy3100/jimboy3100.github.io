@@ -1,4 +1,4 @@
-//Time Merger v1.2
+//Time Merger v1.3
 window.ExternalScripts = true;
 var Intervalstatistics = setInterval(CellTimer, 1000);
 
@@ -35,7 +35,7 @@ function MergeCells(j, x) {
         if (window.playerCellsId[legendmod.playerCells[j].id].mergeTime > 0) {
             setTimeout(function() {
                 MergeCells(j, x);
-				console.log(j,x, Math.round(window.playerCellsId[legendmod.playerCells[j].id].mergeTime));
+				console.log(j,x, window.playerCellsId[legendmod.playerCells[j].id].historyMass[0]);
             }, 1000);
         }
 
