@@ -7701,7 +7701,7 @@ var thelegendmodproject = function(t, e, i) {
                 },
                 'hk-comm27': {
                     'label': c['comm27'],
-                    'defaultKey': 'CTRL+V',
+                    'defaultKey': 'CTRL+M',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(27);
                     },
