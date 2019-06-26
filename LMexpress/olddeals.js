@@ -1,5 +1,5 @@
  //OLD DEALS
- //v1
+ //v2
  //for agarioUID, agarioID, look at the case 102: on this file https://jimboy3100.github.io/ogario/ogario.v4.js?v=32
  
  /* you will need this
@@ -91,12 +91,26 @@ setTimeout(function() { populateSD();}, 1500);
             $("#dealcost").text($("#ss-select-purchases option:selected").text().split('=').pop());
 
             var textcropped1 = $("#ss-select-purchases option:selected").text().split('1_skin_').pop();
-            textcropped1 = textcropped1.substr(0, textcropped1.indexOf(' ')).replace(' ', '');
+			textcropped2 = $("#ss-select-purchases option:selected").text();
+			textcropped2 = "skin_" + textcropped2.split('1_skin_', 2)[1].slice(0, -1);
+            textcropped1 = "skin_" + textcropped1.substr(0, textcropped1.indexOf(' ')).replace(' ', '');
             //textcropped1 = textcropped1.charAt(0).toUpperCase() + textcropped1.slice(1);
 			textcropped1 = textcropped1.charAt(0) + textcropped1.slice(1);
-			if (textcropped1=="jade_dragon"){
-				textcropped1="Journey_JadeDragon";
-			}
+			//if (textcropped1=="jade_dragon"){
+				//textcropped1="Journey_JadeDragon";
+			//}
+			for(i=0;i<GameConfiguration.gameConfig["Visual - Products"].length;i++){
+				if(GameConfiguration.gameConfig["Visual - Products"][i].productId==textcropped1){
+					textcropped1=GameConfiguration.gameConfig["Visual - Products"][i].visualSource;
+					//textcropped1 = textcropped1.substring(0, textcropped1.indexOf('.'));
+					}
+			}	
+			for(i=0;i<GameConfiguration.gameConfig["Visual - Products"].length;i++){
+				if(GameConfiguration.gameConfig["Visual - Products"][i].productId==textcropped2){
+					textcropped2=GameConfiguration.gameConfig["Visual - Products"][i].visualSource;
+					//textcropped1 = textcropped1.substring(0, textcropped1.indexOf('.'));
+					}
+			}				
             //$(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v12/2168/' + textcropped1 + '.png")');
             setTimeout(function() {
                 if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal7") {
@@ -197,7 +211,10 @@ setTimeout(function() { populateSD();}, 1500);
                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/moonlight_wendigo.png ")');
                     $(".xpmt-money-stack").text("7000 C+ 800 DNA");
                 }
-				$(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v12/2168/' + textcropped1 + '.png")');
+				//$(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v12/2168/' + textcropped1 + '.png")');
+				
+				$(".xpmt-skins2").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v12/2168/' + textcropped2 + '")');
+				$(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v12/2168/' + textcropped1 + '")');
             }, 500);
         });	
 }
