@@ -36,9 +36,13 @@
     right: 0;
     bottom: 0;
     background-color: #f1ecfa;
-    background-image: url(https://jimboy3100.github.io/banners/iconsantorini.jpg);
+    background-image: url(https://jimboy3100.github.io/banners/agario1200x630.png);
     background-repeat: no-repeat;
-    background-size: auto;
+
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+
+	background-size: cover;	
     opacity: 1;
     transition: opacity 1s;
 }
