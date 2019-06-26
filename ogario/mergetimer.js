@@ -1,4 +1,4 @@
-//Time Merger v2.0
+//Time Merger v1.9
 window.ExternalScripts = true;
 var Intervalstatistics = setInterval(CellTimer, 1000);
 
@@ -11,7 +11,7 @@ function CellTimer() {
             if (window.playerCellsId && window.legendmod.playerCells[i] && window.legendmod.playerCells[i].id && window.playerCellsId[legendmod.playerCells[i].id] &&
                 window.playerCellsId[legendmod.playerCells[i].id].historyMass &&
                 window.playerCellsId[legendmod.playerCells[i].id].historyMass[window.legendmod2.fps] > window.playerCellsId[legendmod.playerCells[i].id].historyMass[0] * 1.4) {
-					console.log("Mass Merge Timer started with mass: " + window.playerCellsId[legendmod.playerCells[i].id].historyMass[window.legendmod2.fps]);
+					//console.log("Mass Merge Timer started with mass: " + window.playerCellsId[legendmod.playerCells[i].id].historyMass[window.legendmod2.fps]);
                 var j = i;
                 var x = 0;
 
@@ -37,13 +37,13 @@ function MergeCells(j, x) {
         if (window.playerCellsId[legendmod.playerCells[j].id].mergeTime > -20) {
             setTimeout(function() {
                 MergeCells(j, x);
-				console.log("Mass Merge: " + j, x, window.playerCellsId[legendmod.playerCells[j].id].historyMass[0]);
+				//console.log("Mass Merge: " + j, x, window.playerCellsId[legendmod.playerCells[j].id].historyMass[0]);
             }, 1000);
         }
 
     } 
 	else {
-		console.log("Mass Merge Timer ended: " + j, x);
+		//console.log("Mass Merge Timer ended: " + j, x);
                 if (window.playerCellsId && window.legendmod.playerCells[j] && window.legendmod.playerCells[j].id && window.playerCellsId[legendmod.playerCells[j].id] &&
                     window.playerCellsId[legendmod.playerCells[j].id].historyMass) {		
 						window.playerCellsId[legendmod.playerCells[j].id].mergeTime = null;
