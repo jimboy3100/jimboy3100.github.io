@@ -1,4 +1,4 @@
-//Time Merger v1.9
+//Time Merger v2.0
 window.ExternalScripts = true;
 var Intervalstatistics = setInterval(CellTimer, 1000);
 
