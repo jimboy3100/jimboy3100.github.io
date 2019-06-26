@@ -1,5 +1,5 @@
  //OLD DEALS
- 
+ //v1
  //for agarioUID, agarioID, look at the case 102: on this file https://jimboy3100.github.io/ogario/ogario.v4.js?v=32
  
  /* you will need this
@@ -92,8 +92,12 @@ setTimeout(function() { populateSD();}, 1500);
 
             var textcropped1 = $("#ss-select-purchases option:selected").text().split('1_skin_').pop();
             textcropped1 = textcropped1.substr(0, textcropped1.indexOf(' ')).replace(' ', '');
-            textcropped1 = textcropped1.charAt(0).toUpperCase() + textcropped1.slice(1);
-            $(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v12/2168/' + textcropped1 + '.png")');
+            //textcropped1 = textcropped1.charAt(0).toUpperCase() + textcropped1.slice(1);
+			textcropped1 = textcropped1.charAt(0) + textcropped1.slice(1);
+			if (textcropped1=="jade_dragon"){
+				textcropped1="Journey_JadeDragon";
+			}
+            //$(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v12/2168/' + textcropped1 + '.png")');
             setTimeout(function() {
                 if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal7") {
                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/Blueberry_Face.png ")');
@@ -193,6 +197,7 @@ setTimeout(function() { populateSD();}, 1500);
                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/moonlight_wendigo.png ")');
                     $(".xpmt-money-stack").text("7000 C+ 800 DNA");
                 }
+				$(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v12/2168/' + textcropped1 + '.png")');
             }, 500);
         });	
 }
