@@ -66,15 +66,15 @@ window.WebSocket = function(url, protocols) {
         } else if (buf[0] == 254) {
             console.log(`Protocol version:${buf[1]}`);
         } else {
-            buf = window.decryptPacket(buf) console.log(buf);
+            buf = window.decryptPacket(buf); console.log(buf);
         }
         return ws.send.call(ws, data);
     };
     this.close = function() {
         return ws.close.call(ws);
     };
-    t
-    his.onopen = function(event) {};
+    
+    this.onopen = function(event) {};
     this.onclose = function(event) {};
     this.onerror = function(event) {};
     this.onmessage = function(event) {};
