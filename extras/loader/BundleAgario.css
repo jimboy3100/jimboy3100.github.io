@@ -1,0 +1,130 @@
+@keyframes spinRight {
+    0% {
+        transform: rotate(0)
+    }
+
+    100% {
+        transform: rotate(360deg)
+    }
+}
+
+@keyframes spinLeft {
+    0% {
+        transform: rotate(0)
+    }
+
+    100% {
+        transform: rotate(-360deg)
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0
+    }
+
+    100% {
+        opacity: 1
+    }
+}
+
+#loading-screen {
+    z-index: 200;
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #f1ecfa;
+    background-image: url(https://jimboy3100.github.io/banners/agario1200x630.png);
+    background-repeat: no-repeat;
+    background-size: auto;
+    opacity: 1;
+    transition: opacity 1s;
+}
+
+#loading-screen .maou-circle-container {
+    width: 512px;
+    height: 512px;
+    position: fixed;
+    top: calc(50% - 256px);
+    left: calc(50% - 256px);
+    transform: scale(1);
+    transition: all .75s
+}
+
+#loading-screen .maou-circle-container:hover {
+    transform: scale(1.1)
+}
+
+#loading-screen .maou-circle-container .maou-circle {
+    width: 512px;
+    height: 512px;
+    position: absolute
+}
+
+#loading-screen .maou-circle-container .maou-circle.p1 {
+    background: url(https://jimboy3100.github.io/banners/drawCommander3.png);
+    animation: spinRight 32s linear infinite,fadeIn 6s;
+}
+
+#loading-screen .maou-circle-container .maou-circle.p2 {
+    background: url(https://jimboy3100.github.io/banners/drawCommander4.png);
+    animation: spinLeft 8s linear infinite,fadeIn 6s
+}
+
+#loading-screen .maou-circle-container .maou-circle.p3 {
+    background: url(https://jimboy3100.github.io/banners/drawCommander5.png);
+    animation: spinRight 16s linear infinite,fadeIn 6s
+}
+
+#loading-screen .message {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: raleway;
+    font-size: 25px;
+    color: #ffd8ea!important;
+    text-shadow: 0 0 9px #ff006c;
+    -webkit-font-smoothing: subpixel-antialiased;
+    text-align: center;
+    animation: fadeIn 1s;
+    opacity: 1;
+    transition: opacity 1s;
+}
+
+#loading-screen .product-key {
+    bottom: 40px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f05c5b;
+    border: none;
+    height: 30px;
+    width: 260px;
+    font-family: ubuntu;
+    color: #eaeaea;
+    text-align: center;
+    font-size: 16px;
+    border-radius: 2px;
+    outline: 0;
+    opacity: 0;
+    transition: opacity 1s
+}
+
+#loading-screen .product-key::placeholder {
+    color: #eaeaea
+}
+
+#loading-screen .info {
+    position: fixed;
+    bottom: 4px;
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+    color: #ffd8ea!important;
+    text-shadow: 0 0 9px #ff006c;
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+
