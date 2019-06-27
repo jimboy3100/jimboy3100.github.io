@@ -1,4 +1,4 @@
-//v8.0
+//v8.1
         var window = this;
         $.ajax("//agar.io/index.html", {
             error: function() {},
@@ -197,7 +197,7 @@ function legendmaster(self) {
                     if (optionMatch) {
                         var pluginName = optionMatch[1];
                         var data = window.parseClientVersion(pluginName);
-                        console.log("[Master] Current client version:", data, pluginName);
+//                        console.log("[Master] Current client version:", data, pluginName);
                         window.setClientVersion(data, pluginName);
                     }
                 },
@@ -208,7 +208,7 @@ function legendmaster(self) {
             });
         },
         setClientVersion: function(clientVersion, serverVersion) {
-            console.log("[Master] Your client version:", this.clientVersion, this.clientVersionString);
+//            console.log("[Master] Your client version:", this.clientVersion, this.clientVersionString);
             if (this.clientVersion != clientVersion) {
                 console.log("[Master] Changing client version...");
                 this.clientVersion = clientVersion;
@@ -472,7 +472,7 @@ function legendmaster(self) {
             $("#helloContainer").attr("data-party-state", value);
         },
         connect: function(body) {
-            console.log("[Master] Connect to:", body);
+//            console.log("[Master] Connect to:", body);
             this.ws = "wss://" + body;
             if (":party" === this.gameMode && this.partyToken) {
                 this.ws += "?party_id=" + self.encodeURIComponent(this.partyToken);
