@@ -93,6 +93,8 @@ else{
              }
          });
          $('#ss-select-purchases').on('change', function() {
+             $(".xpmt-skins2").css('background-image', '');
+             $(".xpmt-skins").css('background-image', '');				 
              console.log(this.value);
              findSDescription();
              $(".xpmt-skins2").remove();
@@ -122,6 +124,7 @@ else{
              }
              //$(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v12/2168/' + textcropped1 + '.png")');
              setTimeout(function() {
+			 
                  if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal7") {
                      $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/Blueberry_Face.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal15") {
@@ -220,8 +223,6 @@ else{
                      $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/moonlight_wendigo.png ")');
                      $(".xpmt-money-stack").text("7000 C+ 800 DNA");
                  }
-                 //$(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v12/2168/' + textcropped1 + '.png")');
-
                  $(".xpmt-skins2").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v12/2168/' + textcropped2 + '")');
                  $(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v12/2168/' + textcropped1 + '")');
              }, 500);
