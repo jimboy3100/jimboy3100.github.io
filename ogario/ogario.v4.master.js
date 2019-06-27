@@ -1,4 +1,24 @@
-//v5
+//v8.0
+        var window = this;
+        $.ajax("//agar.io/index.html", {
+            error: function() {},
+            success: function(sketchContents) {
+				var parsed = $.parseHTML(sketchContents);
+                window.EnvConfig = sketchContents.match(/EnvConfig = \{[^}]+}/);
+				var runEnvConfig = new Function (window.EnvConfig);
+				
+				runEnvConfig();
+				localStorage.setItem("EnvConfig.fb_app_id", window.EnvConfig.fb_app_id);	
+				localStorage.setItem("EnvConfig.google_client_id", window.EnvConfig.google_client_id);
+				localStorage.setItem("EnvConfig.EnvConfig.master_url", window.EnvConfig.master_url);
+				//legendmaster(window);	
+            },
+            dataType: "text",
+            method: "GET",
+            cache: false,
+            crossDomain: true
+        });
+
 legendmaster(window);
 function legendmaster(self) {
     function login() {
@@ -117,6 +137,25 @@ function legendmaster(self) {
             socialId: ""
         }
     };
+	
+	window.EnvConfig={};
+	window.EnvConfig.fb_app_id=self.localStorage.getItem("EnvConfig.fb_app_id");
+	window.EnvConfig.google_client_id=self.localStorage.getItem("EnvConfig.google_client_id");
+	window.EnvConfig.master_url=self.localStorage.getItem("EnvConfig.EnvConfig.master_url");
+	
+	if ( window.EnvConfig.fb_app_id && window.EnvConfig.google_client_id && window.EnvConfig.master_url ){
+		console.log("[Master] window.EnvConfig loaded from //agar.io/index.html from the previous time");
+    var headers = {
+		fb_app_id: window.EnvConfig.fb_app_id,
+        gplus_client_id: window.EnvConfig.google_client_id,
+		master_url: window.EnvConfig.master_url.replace("https://",""),
+        endpoint_version: "v4",
+        proto_version: "12.0.1",
+        client_version: 30406,
+        client_version_string: "3.4.6"
+    };
+	}
+	else{
     var headers = {
         fb_app_id: 677505792353827,
         gplus_client_id: "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com",
@@ -125,7 +164,8 @@ function legendmaster(self) {
         proto_version: "12.0.1",
         client_version: 30406,
         client_version_string: "3.4.6"
-    };
+    };		
+	}
     var l = false;
     var f = 0;
     var api = null;
