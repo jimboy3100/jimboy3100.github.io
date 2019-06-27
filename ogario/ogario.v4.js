@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
 // This is part of the Legend mod project
-// v1.891 MEGA TEST
+// v1.892 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5518,11 +5518,11 @@ var thelegendmodproject = function(t, e, i) {
                 this["sendMessage"](raw_basefont);
             },
             'sendFbToken': function(t) {
-                console.log("[Legend mod Express] Facebook token: " + t);
+//                console.log("[Legend mod Express] Facebook token: " + t);
                 this.sendAccessToken(t, 2);
             },
             'sendGplusToken': function(t) {
-                console.log("[Legend mod Express] Google Plus token: " + t);
+//                console.log("[Legend mod Express] Google Plus token: " + t);
                 //this.sendAccessToken(t, 3);
                 this.sendAccessToken(t, 4);
             },
@@ -5948,9 +5948,11 @@ var thelegendmodproject = function(t, e, i) {
                         case 241:
                             window.testobjectsOpcode241 = data;
                             this.protocolKey = data.getUint32(s, true);
+							//window.testobjectsOpcode241.getUint32(1, true);
                             console.log('[Legend mod Express] Received protocol key:', this.protocolKey);
                             var irenderfromagario = new Uint8Array(data['buffer'], s += 4);
                             this.clientKey = this['generateClientKey'](this.ws, irenderfromagario);
+							//legendmod.generateClientKey("wss://live-arena-19y1u3v.agar.io:443",new Uint8Array(window.testobjectsOpcode241['buffer'], 5))
                             if (window.master && window.master.login) {
                                 window.master.login();
                             }
