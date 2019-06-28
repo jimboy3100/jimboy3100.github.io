@@ -1,7 +1,7 @@
 // Open Source script
-// Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko
+// Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.913 MEGA TEST
+// v1.914 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -444,6 +444,14 @@ var thelegendmodproject = function(t, e, i) {
                     'teammatesIndColor': 'Wskaźnik gracza',
                     'cursorTrackingColor': 'Śledzenie kursora',
                     'splitRangeColor': 'Zasięg podziału',
+                    'qdsplitRange': 'Zasięg szybkiego podwójnego podziału', //Sonia2
+                    'sdsplitRange': 'Zasięg powolnego podwójnego podziału', //Sonia2
+                    'enemyBSTEDColor': 'Kolor W2STE wroga', //Sonia2
+                    'enemyBSTEColor': 'Kolor WSTE wroga', //Sonia2
+                    'enemyBColor': 'Kolor większego wroga', //Sonia2
+                    'enemySColor': 'Kolor mniejszego wroga', //Sonia2
+                    'enemySSTEColor': 'Kolor MSTE wroga', //Sonia2
+                    'enemySSTEDColor': 'Kolor M2STE wroga', //Sonia2
                     'safeAreaColor': 'Bezpieczna strefa',
                     'dangerAreaColor': 'Strefa zagrożenia',
                     'ghostCellsColor': 'Duchy kulek',
@@ -655,6 +663,8 @@ var thelegendmodproject = function(t, e, i) {
                     'oppRings': 'Opponents rings',
                     'virColors': 'Viruses colors',
                     'splitRange': 'Split range',
+                    'qdsplitRange': 'Quick double split range', //Sonia2
+                    'sdsplitRange': 'Slow double split range', //Sonia2
                     'virusesRange': 'Viruses range',
                     'textStroke': 'Names and mass stroke',
                     'namesStroke': 'Names stroke',
@@ -819,6 +829,12 @@ var thelegendmodproject = function(t, e, i) {
                     'teammatesIndColor': 'Teammate indicator',
                     'cursorTrackingColor': 'Cursor tracking',
                     'splitRangeColor': 'Split range',
+                    'enemyBSTEDColor': 'B2STE Enemy Color', //Sonia2
+                    'enemyBSTEColor': 'BSTE Enemy Color', //Sonia2
+                    'enemyBColor': 'Bigger Enemy Color', //Sonia2
+                    'enemySColor': 'Smaller Enemy Color', //Sonia2
+                    'enemySSTEColor': 'SSTE Enemy Color', //Sonia2
+                    'enemySSTEDColor': 'S2STE Enemy Color', //Sonia2
                     'safeAreaColor': 'Safe area',
                     'dangerAreaColor': 'Danger area',
                     'ghostCellsColor': 'Ghost cells',
@@ -1123,6 +1139,12 @@ var thelegendmodproject = function(t, e, i) {
                     'teammatesIndColor': '#ffffff',
                     'cursorTrackingColor': '#ffffff',
                     'splitRangeColor': '#ffffff',
+                    'enemyBSTEDColor': '#8000ff', //Sonia2
+                    'enemyBSTEColor': '#BE00FF', //Sonia2
+                    'enemyBColor': '#FF0A00', //Sonia2
+                    'enemySColor': '#00C8FF', //Sonia2
+                    'enemySSTEColor': '#64FF00', //Sonia2
+                    'enemySSTEDColor': '#0080ff', //Sonia2
                     'safeAreaColor': '#ffffff',
                     'dangerAreaColor': '#bf00aa',
                     'namesFont': 'ubuntu-bold',
@@ -1288,6 +1310,12 @@ var thelegendmodproject = function(t, e, i) {
                     'teammatesIndColor': '#ffffff',
                     'cursorTrackingColor': '#ffffff',
                     'splitRangeColor': '#ffffff',
+                    'enemyBSTEDColor': '#8000ff', //Sonia2
+                    'enemyBSTEColor': '#BE00FF', //Sonia2
+                    'enemyBColor': '#FF0A00', //Sonia2
+                    'enemySColor': '#00C8FF', //Sonia2
+                    'enemySSTEColor': '#64FF00', //Sonia2
+                    'enemySSTEDColor': '#0080ff', //Sonia2
                     'safeAreaColor': '#ffffff',
                     'dangerAreaColor': '#bf00aa',
                     'massScale': 4,
@@ -1537,6 +1565,12 @@ var thelegendmodproject = function(t, e, i) {
                 'teammatesIndColor': '#ffffff',
                 'cursorTrackingColor': '#ffffff',
                 'splitRangeColor': '#ffffff',
+                'enemyBSTEDColor': '#8000ff', //Sonia2
+                'enemyBSTEColor': '#BE00FF', //Sonia2
+                'enemyBColor': '#FF0A00', //Sonia2
+                'enemySColor': '#00C8FF', //Sonia2
+                'enemySSTEColor': '#64FF00', //Sonia2
+                'enemySSTEDColor': '#0080ff', //Sonia2
                 'ghostCellsColor': '#ffffff',
                 'safeAreaColor': '#ffffff',
                 'dangerAreaColor': '#bf00aa',
@@ -1803,8 +1837,14 @@ var thelegendmodproject = function(t, e, i) {
 					this.addColorBox('#theme-main', 'foodColor', 'setFoodColor'); 
 					this.addColorBox('#theme-main', 'teammatesIndColor', 'setIndicatorColor'); 
 					this.addColorBox('#theme-main', 'cursorTrackingColor');
-					this.addColorBox('#theme-main', 'splitRangeColor'); 
-					this.addColorBox('#theme-main', 'safeAreaColor');
+					this.addColorBox('#theme-main', 'splitRangeColor');
+                    this.addColorBox('#theme-main', 'enemyBSTEDColor'); //Sonia2
+                    this.addColorBox('#theme-main', 'enemyBSTEColor'); //Sonia2
+                    this.addColorBox('#theme-main', 'enemyBColor'); //Sonia2
+                    this.addColorBox('#theme-main', 'enemySColor'); //Sonia2
+                    this.addColorBox('#theme-main', 'enemySSTEColor'); //Sonia2
+                    this.addColorBox('#theme-main', 'enemySSTEDColor'); //Sonia2
+                    this.addColorBox('#theme-main', 'safeAreaColor');
 					this.addColorBox('#theme-main', 'dangerAreaColor'); 
 					this.addColorBox('#theme-main', 'ghostCellsColor'); 
 					this.addFontBox('#theme-main', 'namesFont'); 
@@ -2128,6 +2168,8 @@ var thelegendmodproject = function(t, e, i) {
                 'oppRings': true,
                 'virColors': false,
                 'splitRange': false,
+                'qdsplitRange': true, //Sonia2
+                'sdsplitRange': true, //Sonia2
                 'virusesRange': false,
                 'textStroke': false,
                 'namesStroke': true,
@@ -2545,7 +2587,7 @@ var thelegendmodproject = function(t, e, i) {
 						t += h.score + ': ' + i.playerScore
 						}						
 						if (v.showStatsSTE && i.STE){
-							t += ' | STE: ' + i.STE
+							t += ' | ◎◎➛◉: ' + i.BSTE + ' | ◎➛◉: ' + i.BMTE + ' | ◉➛◎: ' + i.MTE + ' | ◉◉➛◎: ' + i.STE + ' | ◉➚◉: ' + i.TTE + ' | ➚◎➘: ' + i.PTE//Sonia2
 						} 
 						if (v.showStatsN16 && i.playerSplitCells){
 							t += ' | ' + i.playerSplitCells + '/16'
@@ -3027,7 +3069,7 @@ var thelegendmodproject = function(t, e, i) {
 						this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup"),
 						this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox"], "chatGroup"),
 						this.addOptions(["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup"),
-						this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"),
+						this.addOptions(["oppColors", "oppRings", "virColors", "splitRange","qdsplitRange","sdsplitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"), //Sonia2
 						this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert"], "mouseGroup"),
 						this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop"], "hudGroup"),
 						this.addOptions(["showStats", "showStatsMass", "showStatsSTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"),
@@ -6443,7 +6485,13 @@ var thelegendmodproject = function(t, e, i) {
                 }
                 if (v.showStatsSTE) {
                     var i = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
-                    this.STE = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null;
+                    // this.STE = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null; //Sonia2
+                    this.STE = Math.floor(i*0.375); //Sonia2
+                    this.MTE = Math.floor(i*0.75); //Sonia2
+                    this.BMTE = Math.ceil(i*1.33); //Sonia2
+                    this.BSTE = Math.ceil(i*2.66); //Sonia2
+                    this.TTE = Math.ceil(i/6); //Sonia2
+                    this.PTE = Math.floor(i*0.66); //Sonia2
                 }
             },
             'compareCells': function() {
@@ -6528,8 +6576,9 @@ var thelegendmodproject = function(t, e, i) {
             },			
             'setCellOppColor': function(t, e, i) {
                 //return t ? ogarcopythelb.color : e > 11 ? '#FF008C' : e >= 2.5 ? '#BE00FF' : e >= 1.25 ? '#FF0A00' : e < 1.25 && e > 0.75 ? '#FFDC00' : e > i ? '#00C8FF' : '#64FF00';
-				return t ? ogarcopythelb.color : e > 11 ? '#8000ff' : e >= 5.32 ? '#BE00FF' : e >= 2.66 && e <= 5.32 ? '#BE00FF' : e >= 1.33 && e <= 2.66 ? '#FF0A00' : e < 1.33 && e > 0.75 ? '#FFDC00' : e < 0.75 && e > 0.375 ? '#0080ff' : e > i ? '#00C8FF' : '#64FF00'; //Sonia
-            },
+				//return t ? ogarcopythelb.color : e > 10.64 ? g.enemyBSTEDColor : e >= 5.32 ? g.enemyBSTEDColor : e >= 2.66 && e <= 5.32 ? g.enemyBSTEColor : e >= 1.33 && e <= 2.66 ? g.enemyBColor : e < 1.33 && e > 0.75 ? '#FFDC00' : e < 0.75 && e > 0.375 ? g.enemySSTEDColor : e > i ? '#00C8FF' : g.enemySSTEColor; //Sonia
+				 return t ? ogarcopythelb.color : e >= 10.64 ? g.enemyBSTEDColor : e >= 5.32 ? g.enemyBSTEDColor : e >= 2.66 ? g.enemyBSTEColor : e >= 1.33 ? g.enemyBColor : e > 0.75 ? '#FFDC00' : e > 0.375 ? g.enemySColor : e > 0.1875 ? g.enemySSTEColor : g.enemySSTEDColor; 
+		   },
             'getCursorPosition': function() {
                 this.cursorX = (this.clientX - this.canvasWidth / 2) / this.viewScale + this.viewX;
                 this.cursorY = (this.clientY - this.canvasHeight / 2) / this.viewScale + this.viewY;
@@ -7017,7 +7066,7 @@ var thelegendmodproject = function(t, e, i) {
                     }
                 },
                 'drawSplitRange': function(t, e, i, s, o) {
-                    if (this.drawCircles(t, e, 760, 4, 0.4, '#BE00FF'), i.length) {
+                    if (this.drawCircles(t, e, 760, 4, 0.4, g.enemyBSTEColor), i.length) { //Sonia2
 					//if (this.drawCircles(t, e, 760, 4, 0.4, '#ff0000'), i.length) { //Sonia	
                         var a = s ? i.length - 1 : 0;
                         t.lineWidth = 6, t.globalAlpha = g.darkTheme ? 0.7 : 0.35, 
@@ -7031,13 +7080,13 @@ var thelegendmodproject = function(t, e, i) {
                 },
                 'drawDoubleSplitRange': function(t, e, i, s, o) {
                     //if (this.drawCircles(t, e, 760, 4, 0.4, '#BE00FF'), i.length) {
-					if (this.draw2Circles(t, e, 760, 4, 0.4, '#8000ff'), i.length) { //Sonia
+					if (this.draw2Circles(t, e, 760, 4, 0.4, g.enemyBSTEDColor), i.length) { //Sonia2
 					//if (this.draw2Circles(t, e, 760, 4, 0.4, '#8000ff'), i.length) { //Sonia	
                         //this.drawSplitRange(this.ctx, M.biggerSTECellsCache, M.playerCells, M.selectBiggestCell);
 
                         var a = s ? i.length - 1 : 0;
                         //console.log(i[a].size);
-                        if (i[a].size >= 400) {
+                        if (i[a].size >= 400 && v.qdsplitRange) { //Sonia2
                             t.lineWidth = 6,
                                 t.globalAlpha = g.darkTheme ? 0.7 : 0.35,
                                 t.strokeStyle = g.splitRangeColor;
@@ -7057,12 +7106,12 @@ var thelegendmodproject = function(t, e, i) {
 					'drawOppRings': function(t, e, ip, i, s, o, a, ap, n) {
 				  var r = 14 + 2 / e;
                     var l = 12 + 1 / e;
-                    this.drawCircles(t, ip, r, l, 0.75, '#8000ff'); //Sonia					
-                    this.drawCircles(t, i, r, l, 0.75, '#BE00FF');
-                    this.drawCircles(t, s, r, l, 0.75, '#FF0A00');
-                    this.drawCircles(t, o, r, l, 0.75, '#00C8FF');
-                    this.drawCircles(t, a, r, l, 0.75, '#64FF00');
-                    this.drawCircles(t, ap, r, l, 0.75, '#0080ff'); //Sonia					
+                    this.drawCircles(t, ip, r, l, 0.75, g.enemyBSTEDColor); //Sonia2
+                    this.drawCircles(t, i, r, l, 0.75, g.enemyBSTEColor); //Sonia2
+                    this.drawCircles(t, s, r, l, 0.75, g.enemyBColor); //Sonia2
+                    this.drawCircles(t, o, r, l, 0.75, g.enemySColor); //Sonia2
+                    this.drawCircles(t, a, r, l, 0.75, g.enemySSTEColor); //Sonia2
+                    this.drawCircles(t, ap, r, l, 0.75, g.enemySSTEDColor); //Sonia2
                     if (n) {
                         i = []; 
 						s = [];
@@ -7086,7 +7135,14 @@ var thelegendmodproject = function(t, e, i) {
                 'draw2Circles': function(t, e, i, s, o, a) {
                     t.lineWidth = s, t.globalAlpha = o, t.strokeStyle = a;
                     //for (var n = 0; n < e.length; n++) t.beginPath(), t.arc(e[n].x, e[n].y, 1.5*e[n].size + 2*i, 0, this.pi2, false), t.closePath(), t.stroke();
-					for (var n = 0; n < e.length; n++) t.beginPath(), t.arc(e[n].x, e[n].y, 2 * e[n].size + i, 0, this.pi2, false), t.closePath(), t.stroke(); //760+2*cell.size is the correct
+                    if(v.qdsplitRange){ //Sonia2
+                        for (var n = 0; n < e.length; n++) t.beginPath(), t.arc(e[n].x, e[n].y, 2 * e[n].size + i, 0, this.pi2, false), t.closePath(), t.stroke(); //760+2*cell.size is the correct
+                    }//Sonia2
+                    if(v.sdsplitRange){ //Sonia2
+                        for (var n = 0; n < e.length; n++) t.setLineDash([20,30]),t.lineWidth = 2*s,t.beginPath(), t.arc(e[n].x, e[n].y, 1.5 * e[n].size + 2*i, 0, this.pi2, false), t.closePath(), t.stroke(); //Sonia2
+                        t.setLineDash([]); //Sonia2
+                        t.lineWidth = s; //Sonia2
+                    }//Sonia2
                     t.globalAlpha = 1;
                 },				
                 'drawDashedCircle': function(t, e, i, s, o, a, n) {
