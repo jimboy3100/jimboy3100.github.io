@@ -849,7 +849,6 @@ input.hide-url::selection,input.stream-mode::selection{
     display:none
 }
 #stats-hud{
-	top: 18px;
     left:10px;
     display:block
 }
