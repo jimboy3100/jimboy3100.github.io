@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.914 MEGA TEST
+// v1.916 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -310,7 +310,7 @@ var thelegendmodproject = function(t, e, i) {
                     'fpsAtTop': 'Statystyki na górze',
                     'showStats': 'Pokaż statystyki',
                     'showStatsMass': 'Statystyki: Masa',
-                    'showStatsSTE': 'Statystyki: STE',
+                    'showStatsSTE': 'Statystyki: Przedziały Masy',
                     'showStatsN16': 'Statystyki: n/16',
                     'showStatsFPS': 'Statystyki: FPS',
                     'blockPopups': 'Blokuj popupy (reklamy/sklep/zadanie)',
@@ -695,7 +695,7 @@ var thelegendmodproject = function(t, e, i) {
                     'fpsAtTop': 'Game stats at the top',
                     'showStats': 'Show game stats',
                     'showStatsMass': 'Game stats: Mass',
-                    'showStatsSTE': 'Game stats: STE',
+                    'showStatsSTE': 'Game stats: Mass Ranges',
                     'showStatsN16': 'Game stats: n/16',
                     'showStatsFPS': 'Game stats: FPS',
                     'blockPopups': 'Block popups (ads/shop/quest)',
@@ -2585,10 +2585,7 @@ var thelegendmodproject = function(t, e, i) {
 						} 
 						if (i.playerScore){
 						t += h.score + ': ' + i.playerScore
-						}						
-						if (v.showStatsSTE && i.STE){
-							t += ' | ◎◎➛◉: ' + i.BSTE + ' | ◎➛◉: ' + i.BMTE + ' | ◉➛◎: ' + i.MTE + ' | ◉◉➛◎: ' + i.STE + ' | ◉➚◉: ' + i.TTE + ' | ➚◎➘: ' + i.PTE//Sonia2
-						} 
+						}						 
 						if (v.showStatsN16 && i.playerSplitCells){
 							t += ' | ' + i.playerSplitCells + '/16'
 						}							
@@ -2599,6 +2596,9 @@ var thelegendmodproject = function(t, e, i) {
 					if (v.showStatsFPS){
 						t += 'FPS: ' + ogarfooddrawer.fps; 
 					}
+						if (v.showStatsSTE && i.STE){
+							t += ' | ◎◎➛◉: ' + i.BSTE + ' | ◎➛◉: ' + i.BMTE + ' | ◉➛◎: ' + i.MTE + ' | ◉◉➛◎: ' + i.STE + ' | ◉➚◉: ' + i.TTE + ' | ➚◎➘: ' + i.PTE//Sonia2
+						}					
 					this.statsHUD.textContent = t;
                     var e = this;
                     setTimeout(function() {
