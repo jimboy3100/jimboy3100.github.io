@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.916 MEGA TEST
+// v1.917 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2592,13 +2592,13 @@ var thelegendmodproject = function(t, e, i) {
 						if (v.showStatsFPS) {
 							t += ' | '
 						}
+					if (v.showStatsSTE && i.STE){
+							t += ' | ◎◎➛◉: ' + i.BSTE + ' | ◎➛◉: ' + i.BMTE + ' | ◉➛◎: ' + i.MTE + ' | ◉◉➛◎: ' + i.STE + ' | ◉➚◉: ' + i.TTE + ' | ➚◎➘: ' + i.PTE//Sonia2
+						}							
 					}						
 					if (v.showStatsFPS){
 						t += 'FPS: ' + ogarfooddrawer.fps; 
-					}
-						if (v.showStatsSTE && i.STE){
-							t += ' | ◎◎➛◉: ' + i.BSTE + ' | ◎➛◉: ' + i.BMTE + ' | ◉➛◎: ' + i.MTE + ' | ◉◉➛◎: ' + i.STE + ' | ◉➚◉: ' + i.TTE + ' | ➚◎➘: ' + i.PTE//Sonia2
-						}					
+					}					
 					this.statsHUD.textContent = t;
                     var e = this;
                     setTimeout(function() {
