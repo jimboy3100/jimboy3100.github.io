@@ -2195,7 +2195,7 @@ var thelegendmodproject = function(t, e, i) {
                 'fpsAtTop': true,
                 'showStats': true,
                 'showStatsMass': true,
-                'showStatsSTE': true,
+                'showStatsSTE': false,
                 'showStatsN16': true,
                 'showStatsFPS': true,
                 'blockPopups': false,
