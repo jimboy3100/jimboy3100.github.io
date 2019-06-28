@@ -1315,7 +1315,7 @@ var thelegendmodproject = function(t, e, i) {
                     'enemyBColor': '#FF0A00', //Sonia2
                     'enemySColor': '#00C8FF', //Sonia2
                     'enemySSTEColor': '#64FF00', //Sonia2
-                    'enemySSTEDColor': '#0080ff', //Sonia2
+                    'enemySSTEDColor': '#048245', //Sonia2
                     'safeAreaColor': '#ffffff',
                     'dangerAreaColor': '#bf00aa',
                     'massScale': 4,
@@ -1570,7 +1570,7 @@ var thelegendmodproject = function(t, e, i) {
                 'enemyBColor': '#FF0A00', //Sonia2
                 'enemySColor': '#00C8FF', //Sonia2
                 'enemySSTEColor': '#64FF00', //Sonia2
-                'enemySSTEDColor': '#0080ff', //Sonia2
+                'enemySSTEDColor': '#048245', //Sonia2
                 'ghostCellsColor': '#ffffff',
                 'safeAreaColor': '#ffffff',
                 'dangerAreaColor': '#bf00aa',
