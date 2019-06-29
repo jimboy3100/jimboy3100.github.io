@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.919 MEGA TEST
+// v1.922 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -116,6 +116,12 @@ function checkVideos3(o) {
 
 window.agarversion = "v12/2168/";
 //window.agarversion="v12/1922/";
+
+window.getLatestID = window.localStorage.getItem('getLatestID');
+window.getLatestconfigVersion = window.localStorage.getItem('EnvConfig.configVersion');
+//if ( window.getLatestID != null && window.getLatestconfigVersion != null ){
+//	window.agarversion = window.getLatestconfigVersion + "/" + window.getLatestID + "/";
+//}
 
 function pauseVideos() {
     setTimeout(function() {
