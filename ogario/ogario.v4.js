@@ -3816,7 +3816,7 @@ var thelegendmodproject = function(t, e, i) {
                         this.miniMapCtx.lineWidth = "1";
                         this.miniMapCtx.strokeStyle = "yellow";
                         var miniax = legendmod.canvasWidth / (legendmod.mapMaxX - legendmod.mapMinX) / legendmod.viewScale; //CORRECT
-                        var miniay = legendmod.canvasHeight / (legendmod.mapMaxY - legendmod.mapMinY) / legendmod.viewScale; //CORRECT
+                        var miniay = legendmod.canvasHeight / (legendmodmapMaxY - legendmod.mapMinY) / legendmod.viewScale; //CORRECT
                         var minidaxx = legendmod3.miniMapSectors.width * miniax;
                         var minidayy = legendmod3.miniMapSectors.width * miniay;
 
@@ -4121,7 +4121,7 @@ var thelegendmodproject = function(t, e, i) {
                 null !== this[e] && this[e] === i || this.isSocketOpen() && (this['sendBuffer'](this['strToBuff'](t, i)), this[e] = i);
             },
             'sendPlayerNick': function() {
-                this['sendPlayerData'](10, 'lastSentNick', ogarcopythelb.nick);
+                this['sendPlayerData'](10, 'lastSentNick', ogarcopythelb.nick+this.bgpi); //Sonia3
             },
             'sendPlayerClanTag': function() {
                 this['sendPlayerData'](11, 'lastSentClanTag', ogarcopythelb.clanTag);
@@ -4232,7 +4232,9 @@ var thelegendmodproject = function(t, e, i) {
                 }
                 var i = t.getUint32(1, true);
                 var s = 5;
-                var o = e();
+                var or = e(); //Sonia3
+                var o = or.slice(0,-1); //Sonia3
+                var lbgpi = parseInt(or.slice(-1),10); //Sonia3
                 var a = this.checkSkinURL(e());
                 var n = e();
                 var r = e();
@@ -4242,6 +4244,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.teamPlayers[h].nick = o;
                     this.teamPlayers[h].skinID = l;
                     this.teamPlayers[h].skinURL = a;
+                    this.teamPlayers[h].lbgpi = lbgpi;
                     this.teamPlayers[h].setColor(r, n);
                 } else {
                     var c = new function(envId, cb, i, s) {
@@ -4249,6 +4252,7 @@ var thelegendmodproject = function(t, e, i) {
                         this.nick = cb;
                         this.skinID = i;
                         this.skinURL = s;
+                        this.lbgpi=0; //Sonia3
                         this.x = 0;
                         this.y = 0;
                         this.lastX = 0;
@@ -4312,7 +4316,34 @@ var thelegendmodproject = function(t, e, i) {
                     n.x = s, n.y = o, n.mass = a, n.alive = true, n.updateTime = Date.now(), this.targeting && this.targetID && e == this.targetID && this.updateTarget(n.nick, n.skinURL, s, o, a, n.color);
                 }
             },
+            //Sonia3 Added 3 fuctions below
+            'dematrix':function(mat){
+                return !mat[0] && !mat[1] ? 0 : mat[0] && !mat[1] ? 1 : mat[0] && mat[1] ? 2 : 3;
+            },
+            'setvnr':function(b){
+                if (typeof this.vector == 'undefined')this.vector = [[0,0],[1,0],[1,1],[0,1]];
+                if (typeof this.vnr == 'undefined')this.vnr=0;
+                var mat = this.vector[this.vnr];
+                if ((b==0||b==3) && (this.bgpi==1||this.bgpi==2))mat[0]=!mat[0];
+                if ((b==1||b==2) && (this.bgpi==0||this.bgpi==3))mat[0]=!mat[0];
+                if ((b==0||b==1) && (this.bgpi==2||this.bgpi==3))mat[1]=!mat[1];
+                if ((b==2||b==3) && (this.bgpi==1||this.bgpi==0))mat[1]=!mat[1];
+                this.vnr = this.dematrix(mat);
+            },
+            'updatevnr':function(){
+                var mm = 0;
+                var max = 0;
+                for (var i =0; i<this.teamPlayers.length; i++){
+                    var k = this.teamPlayers[i];
+                    if (k.mass > mm){
+                        mm = k.mass;
+                        max = k.lbgpi;
+                    }
+                }
+                if(mm>0 && mm>this.playerMass)this.setvnr(max);
+            },
             'updateTeamPlayers': function() {
+                this.updatevnr(); //Sonia3
                 this.sendPlayerPosition(), this.chatUsers = {}, this.top5 = [];
                 var t = 0;
                 for (; t < this.teamPlayers.length; t++) {
@@ -5514,6 +5545,9 @@ var thelegendmodproject = function(t, e, i) {
             'viewMinY': 0,
             'viewMaxX': 0,
             'viewMaxY': 0,
+            'vnr':0,  //Sonia3
+            'bgpi':0, //Sonia3
+            'vector':[[0,0],[1,0],[1,1],[0,1]], //Sonia3
             'canvasWidth': 0,
             'canvasHeight': 0,
             'canvasScale': 1,
@@ -5595,6 +5629,9 @@ var thelegendmodproject = function(t, e, i) {
             'connect': function(t) {
                 console.log('[Legend mod Express] Connecting to game server:', t);
                 var i = this;
+                console.log("Testing vector0s..")
+                this.vnr=0; //Sonia3
+                this.bgpi=0; //Sonia3
                 this.closeConnection();
                 this.flushCellsData();
                 this.protocolKey = null;
@@ -5724,8 +5761,8 @@ var thelegendmodproject = function(t, e, i) {
             'sendPosition': function(cell, target2) {
                 if (this.isSocketOpen() && this.connectionOpened && this.clientKey) {
                     if (!window.autoPlay) {
-                        var t = this.cursorX;
-                        var e = this.cursorY;
+                        var t = this.vector[this.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
+                        var e = this.vector[this.vnr][1] ? this.translateY(this.cursorY) : this.cursorY; //Sonia3
                         if (!this.play && this.targeting || this.pause) {
                             t = this.targetX;
                             e = this.targetY;
@@ -6037,6 +6074,8 @@ var thelegendmodproject = function(t, e, i) {
                         window.testobjectsOpcode65 = data;
                         var u = data.getUint16(s, true);
                         s += 2, this.ghostCells = [];
+                        var max = 0; //Sonia3
+                        var mmax = 0; //Sonia3
                         for (n = 0; n < u; n++) {
                             var d = data.getInt32(s, true);
                             s += 4;
@@ -6046,13 +6085,18 @@ var thelegendmodproject = function(t, e, i) {
                             s += 5;
                             var g = ~~Math.sqrt(100 * m);
                             this.ghostCells.push({
-                                'x': d,
-                                'y': f,
+                                'x': this.vector[this.vnr][0] ? this.translateX(d) : d, //Sonia3
+                                'y': this.vector[this.vnr][1] ? this.translateY(f) : f, //Sonia3
                                 'size': g,
                                 'mass': m,
                                 'inView': this.isInView(d, f, g)
                             });
+                            if (m>mmax){ //Sonia3
+                                mmax=m; //Sonia3
+                                max=n; //Sonia3
+                            } //Sonia3
                         }
+                        this.bgpi=this.calculatebgpi(this.ghostCells[max].x,this.ghostCells[max].y); //Sonia3
                         break;
                     case 85:
                         window.testobjectsOpcode85 = data;
@@ -6340,6 +6384,8 @@ var thelegendmodproject = function(t, e, i) {
                     this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
                     this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
                     this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
+                    this.mapMidX = (this.mapMaxX+this.mapMinX)/2; //Sonia3
+                    this.mapMidY = (this.mapMaxY+this.mapMinY)/2; //Sonia3
                     this.mapOffsetFixed || (this.viewX = (i + t) / 2, this.viewY = (s + e) / 2);
                     this.mapOffsetFixed = true;
 					console.log('[Legend mod Express] Map offset fixed: (', this.mapOffsetX ,',', this.mapOffsetY,')');
@@ -6377,6 +6423,16 @@ var thelegendmodproject = function(t, e, i) {
                     }
                 }
             },
+            //Sonia3 Adding three below functions
+            'translateX':function(x){
+                return this.mapMaxX-(x-this.mapMinX);
+            },
+            'translateY':function(x){
+                return this.mapMaxY-(x-this.mapMinY);
+            },
+            'calculatebgpi':function(x,y){
+                return x>=this.mapMidX && y<this.mapMidY ? 0 : x<this.mapMidX && y<this.mapMidY ? 1 : x <this.mapMidX && y>=this.mapMidY ? 2 : 3;
+            },
             'updateCells': function(t, i) {
                 var s = function() {
                     for (var e = '';;) {
@@ -6404,8 +6460,10 @@ var thelegendmodproject = function(t, e, i) {
                     var l = t.readUInt32LE(i);
                     if (i += 4, 0 == l) break;
                     var h = t.readInt32LE(i);
+                    if(this.vector[this.vnr][0])h=this.translateX(h); //Sonia3
                     i += 4;
                     var c = t.readInt32LE(i);
+                    if(this.vector[this.vnr][1])c=this.translateY(c); //Sonia3
                     i += 4;
                     var u = t.readUInt16LE(i);
                     i += 2;
