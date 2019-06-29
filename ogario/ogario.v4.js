@@ -4121,7 +4121,7 @@ var thelegendmodproject = function(t, e, i) {
                 null !== this[e] && this[e] === i || this.isSocketOpen() && (this['sendBuffer'](this['strToBuff'](t, i)), this[e] = i);
             },
             'sendPlayerNick': function() {
-                var v=ogarcopythelb.nick+window.legendmod.bgpi;
+                var v=ogarcopythelb.nick;//+window.legendmod.bgpi;
                 console.log("sending datt", v);
                 this['sendPlayerData'](10, 'lastSentNick', v); //Sonia3
             },
@@ -4235,7 +4235,7 @@ var thelegendmodproject = function(t, e, i) {
                 var i = t.getUint32(1, true);
                 var s = 5;
                 var or = e(); //Sonia3
-                var o = or.slice(0,-1); //Sonia3
+                var o = or;//.slice(0,-1); //Sonia3
                 var lbgpi = parseInt(or.slice(-1),10); //Sonia3
                 console.log("Reading ED",lbgpi,or);
                 var a = this.checkSkinURL(e());
