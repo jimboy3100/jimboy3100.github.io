@@ -1,25 +1,45 @@
-//v8.1
-        var window = this;
-        $.ajax("//agar.io/index.html", {
-            error: function() {},
-            success: function(sketchContents) {
-				var parsed = $.parseHTML(sketchContents);
-                window.EnvConfig = sketchContents.match(/EnvConfig = \{[^}]+}/);
-				var runEnvConfig = new Function (window.EnvConfig);
-				
-				runEnvConfig();
-				localStorage.setItem("EnvConfig.fb_app_id", window.EnvConfig.fb_app_id);	
-				localStorage.setItem("EnvConfig.google_client_id", window.EnvConfig.google_client_id);
-				localStorage.setItem("EnvConfig.EnvConfig.master_url", window.EnvConfig.master_url);
-				//legendmaster(window);	
-            },
-            dataType: "text",
-            method: "GET",
-            cache: false,
-            crossDomain: true
-        });
+//v8.5
+window.EnvConfig = {};
+window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
+window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
+window.EnvConfig.master_url = self.localStorage.getItem("EnvConfig.master_url");
 
+var window = this;
+$.ajax("//agar.io/index.html", {
+    error: function() {},
+    success: function(sketchContents) {
+        var parsed = $.parseHTML(sketchContents);
+        window.EnvConfig = sketchContents.match(/EnvConfig = \{[^}]+}/);
+        var runEnvConfig = new Function(window.EnvConfig);
+
+        runEnvConfig();
+        localStorage.setItem("EnvConfig.fb_app_id", window.EnvConfig.fb_app_id);
+        localStorage.setItem("EnvConfig.google_client_id", window.EnvConfig.google_client_id);
+        localStorage.setItem("EnvConfig.master_url", window.EnvConfig.master_url);
+        localStorage.setItem("EnvConfig.configVersion", window.configVersion);
+        //legendmaster(window);	
+    },
+    dataType: "text",
+    method: "GET",
+    cache: false,
+    crossDomain: true
+});
+if (window.EnvConfig.master_url != null) {
+    $.ajax(window.EnvConfig.master_url + "/getLatestID", {
+        error: function() {},
+        success: function(sketchContents) {
+            var getLatestIDtemp = $.parseHTML(sketchContents);
+            window.getLatestID = getLatestIDtemp[0].textContent;
+            localStorage.setItem("getLatestID", window.getLatestID);
+        },
+        dataType: "text",
+        method: "GET",
+        cache: false,
+        crossDomain: true
+    });
+}
 legendmaster(window);
+
 function legendmaster(self) {
     function login() {
         if (l) {
@@ -137,35 +157,29 @@ function legendmaster(self) {
             socialId: ""
         }
     };
-	
-	window.EnvConfig={};
-	window.EnvConfig.fb_app_id=self.localStorage.getItem("EnvConfig.fb_app_id");
-	window.EnvConfig.google_client_id=self.localStorage.getItem("EnvConfig.google_client_id");
-	window.EnvConfig.master_url=self.localStorage.getItem("EnvConfig.EnvConfig.master_url");
-	
-	if ( window.EnvConfig.fb_app_id && window.EnvConfig.google_client_id && window.EnvConfig.master_url ){
-		console.log("[Master] window.EnvConfig loaded from //agar.io/index.html from the previous time");
-    var headers = {
-		fb_app_id: window.EnvConfig.fb_app_id,
-        gplus_client_id: window.EnvConfig.google_client_id,
-		master_url: window.EnvConfig.master_url.replace("https://",""),
-        endpoint_version: "v4",
-        proto_version: "12.0.1",
-        client_version: 30406,
-        client_version_string: "3.4.6"
-    };
-	}
-	else{
-    var headers = {
-        fb_app_id: 677505792353827,
-        gplus_client_id: "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com",
-        master_url: "webbouncer-live-v7-0.agario.miniclippt.com",
-        endpoint_version: "v4",
-        proto_version: "12.0.1",
-        client_version: 30406,
-        client_version_string: "3.4.6"
-    };		
-	}
+
+    if (window.EnvConfig.fb_app_id && window.EnvConfig.google_client_id && window.EnvConfig.master_url) {
+        console.log("[Master] window.EnvConfig loaded from //agar.io/index.html from the previous time");
+        var headers = {
+            fb_app_id: window.EnvConfig.fb_app_id,
+            gplus_client_id: window.EnvConfig.google_client_id,
+            master_url: window.EnvConfig.master_url.replace("https://", ""),
+            endpoint_version: "v4",
+            proto_version: "12.0.1",
+            client_version: 30406,
+            client_version_string: "3.4.6"
+        };
+    } else {
+        var headers = {
+            fb_app_id: 677505792353827,
+            gplus_client_id: "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com",
+            master_url: "webbouncer-live-v7-0.agario.miniclippt.com",
+            endpoint_version: "v4",
+            proto_version: "12.0.1",
+            client_version: 30406,
+            client_version_string: "3.4.6"
+        };
+    }
     var l = false;
     var f = 0;
     var api = null;
@@ -197,7 +211,7 @@ function legendmaster(self) {
                     if (optionMatch) {
                         var pluginName = optionMatch[1];
                         var data = window.parseClientVersion(pluginName);
-//                        console.log("[Master] Current client version:", data, pluginName);
+                        //                        console.log("[Master] Current client version:", data, pluginName);
                         window.setClientVersion(data, pluginName);
                     }
                 },
@@ -208,7 +222,7 @@ function legendmaster(self) {
             });
         },
         setClientVersion: function(clientVersion, serverVersion) {
-//            console.log("[Master] Your client version:", this.clientVersion, this.clientVersionString);
+            //            console.log("[Master] Your client version:", this.clientVersion, this.clientVersionString);
             if (this.clientVersion != clientVersion) {
                 console.log("[Master] Changing client version...");
                 this.clientVersion = clientVersion;
@@ -217,50 +231,53 @@ function legendmaster(self) {
                     self.core.setClientVersion(clientVersion, serverVersion);
                 }
                 self.localStorage.setItem("ogarioClientVersionString", serverVersion);
-				console.log("[Master] setClientVersiont called, reconnecting");
+                console.log("[Master] setClientVersiont called, reconnecting");
                 this.reconnect(true);
             }
         },
         parseClientVersion: function(styleValue) {
             return 1e4 * parseInt(styleValue.split(".")[0]) + 100 * parseInt(styleValue.split(".")[1]) + parseInt(styleValue.split(".")[2]);
         },
-/*        getRegionCode: function() {
-            var nextNodeLoc = self.localStorage.getItem("location");
+        /*        getRegionCode: function() {
+                    var nextNodeLoc = self.localStorage.getItem("location");
+                    if (nextNodeLoc) {
+                        return this.setRegion(nextNodeLoc, false), void(this.checkPartyHash() || this.reconnect());
+                    }
+                    var canvasLayersManager = this;
+                    $.get("//gc.agar.io", function(layoutSets) {
+                        var j = layoutSets.split(" ")[0];
+                        canvasLayersManager.setRegionCode(j);
+                    }, "text");
+                },*/
+        'getRegionCode': function() {
+            var nextNodeLoc = window.localStorage.getItem('location');
             if (nextNodeLoc) {
-                return this.setRegion(nextNodeLoc, false), void(this.checkPartyHash() || this.reconnect());
+                this.setRegion(nextNodeLoc, ![]);
+                if (!this.checkPartyHash()) {
+                    console.log("[Master] getRegionCode called, reconnecting");
+                    this.reconnect();
+                }
+                return;
             }
             var canvasLayersManager = this;
-            $.get("//gc.agar.io", function(layoutSets) {
-                var j = layoutSets.split(" ")[0];
-                canvasLayersManager.setRegionCode(j);
-            }, "text");
-        },*/
-		'getRegionCode': function() {
-			var nextNodeLoc = window.localStorage.getItem('location');
-			if(nextNodeLoc) {
-				this.setRegion(nextNodeLoc, ![]);
-				if(!this.checkPartyHash()) {
-					console.log("[Master] getRegionCode called, reconnecting");
-					this.reconnect();
-				}
-				return;
-			}
-			var canvasLayersManager = this;
-			/*$.get('//gc.agar.io', function(_0x4a6f91) {
-				var _0x4f6506 = _0x4a6f91.split(' ');
-				var _0x102283 = _0x4f6506[0x0];
-				canvasLayersManager.setRegionCode(_0x102283);
-			}, 'text'); */
-			userData=$.get("https://extreme-ip-lookup.com/json/", function (response) { $("#response").html(JSON.stringify(response, null, 4));
-				if (userData!=null) {localStorage.setItem("userData", JSON.stringify(userData));}
-				canvasLayersManager.setRegionCode(userData.responseJSON.countryCode);
-			}, "jsonp");
-		},			
+            /*$.get('//gc.agar.io', function(_0x4a6f91) {
+            	var _0x4f6506 = _0x4a6f91.split(' ');
+            	var _0x102283 = _0x4f6506[0x0];
+            	canvasLayersManager.setRegionCode(_0x102283);
+            }, 'text'); */
+            userData = $.get("https://extreme-ip-lookup.com/json/", function(response) {
+                $("#response").html(JSON.stringify(response, null, 4));
+                if (userData != null) {
+                    localStorage.setItem("userData", JSON.stringify(userData));
+                }
+                canvasLayersManager.setRegionCode(userData.responseJSON.countryCode);
+            }, "jsonp");
+        },
         setRegionCode: function(segment) {
             if (regionobj.hasOwnProperty(segment)) {
                 this.setRegion(regionobj[segment], false);
                 if (!this.checkPartyHash()) {
-					console.log("[Master] setRegionCode called, reconnecting");
+                    console.log("[Master] setRegionCode called, reconnecting");
                     this.reconnect();
                 }
             }
@@ -277,7 +294,7 @@ function legendmaster(self) {
                     $("#region").val(items);
                 }
                 if (left) {
-					console.log("[Master] setRegion called, left=null, reconnecting");
+                    console.log("[Master] setRegion called, left=null, reconnecting");
                     this.reconnect();
                 }
             }
@@ -327,7 +344,7 @@ function legendmaster(self) {
             this.applyGameMode(val);
             this.gameMode = val;
             if (opt_validate) {
-				console.log("[Master] setGameMode called, opt_validate!=null, reconnecting");
+                console.log("[Master] setGameMode called, opt_validate!=null, reconnecting");
                 this.reconnect();
             }
         },
@@ -357,7 +374,7 @@ function legendmaster(self) {
                     params = ":ffa";
                 } else {
                     //if (params === ":battleroyale") {
-                        //picKey = "findBattleRoyaleServer";
+                    //picKey = "findBattleRoyaleServer";
                     //}
                 }
                 var options = this;
@@ -472,7 +489,7 @@ function legendmaster(self) {
             $("#helloContainer").attr("data-party-state", value);
         },
         connect: function(body) {
-//            console.log("[Master] Connect to:", body);
+            //            console.log("[Master] Connect to:", body);
             this.ws = "wss://" + body;
             if (":party" === this.gameMode && this.partyToken) {
                 this.ws += "?party_id=" + self.encodeURIComponent(this.partyToken);
@@ -496,7 +513,7 @@ function legendmaster(self) {
             }
         },
         onDisconnect: function() {
-			console.log("[Master] onDisconnect called, reconnecting");
+            console.log("[Master] onDisconnect called, reconnecting");
             this.reconnect();
         },
         recaptchaRequested: function() {
@@ -568,9 +585,9 @@ function legendmaster(self) {
             }
         },
         logout: function() {
-              this.accessToken = null;
-			  console.log("[Master] logout called, not reconnecting");
-//            this.reconnect();
+            this.accessToken = null;
+            console.log("[Master] logout called, not reconnecting");
+            //            this.reconnect();
         },
         setUI: function() {
             var chat = this;
