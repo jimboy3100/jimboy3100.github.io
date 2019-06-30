@@ -4369,12 +4369,14 @@ var thelegendmodproject = function(t, e, i) {
             },
             'updatevnr':function(){
                 var mm = 0;
-                var max = 0;
+                var max = 4;
                 for (var i =0; i<this.teamPlayers.length; i++){
                     var k = this.teamPlayers[i];
                     if (k.mass > mm){
-                        mm = k.mass;
-                        max = k.lbgpi;
+                        if (k.lbgpi<=3){
+                            mm = k.mass;
+                            max = k.lbgpi;
+                        }
                     }
                 }
                 if(mm>0 && max<=3 && window.legendmod.bgpi<=3 && !window.legendmod.setrot){
