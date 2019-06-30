@@ -1,4 +1,4 @@
-//v8.6
+//v8.7
 window.EnvConfig = {};
 window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
 window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
@@ -158,7 +158,6 @@ function legendmaster(self) {
             socialId: ""
         }
     };
-
     if (window.EnvConfig.fb_app_id && window.EnvConfig.google_client_id && window.EnvConfig.master_url) {
         console.log("[Master] window.EnvConfig loaded from //agar.io/index.html from the previous time");
         var headers = {
@@ -181,6 +180,7 @@ function legendmaster(self) {
             client_version_string: "3.4.6"
         };
     }
+	window.LMagarioheaders=headers;
     var l = false;
     var f = 0;
     var api = null;
