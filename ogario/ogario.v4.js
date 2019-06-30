@@ -4184,7 +4184,6 @@ var thelegendmodproject = function(t, e, i) {
                     }
                     var e = 41;
                     var nk=ogarcopythelb.nick+this.nrchar(window.legendmod.bgpi); //Sonia3
-                    console.log("SEED:",nk);
                     e += 2 *nk.length, e += 2 * ogarcopythelb.skinURL.length;
                     var s = this.createView(e);
                     s.setUint8(0, 20), s.setUint32(1, this.playerID, true);
@@ -4263,12 +4262,12 @@ var thelegendmodproject = function(t, e, i) {
                 var i = t.getUint32(1, true);
                 var s = 5;
                 var or = e(); //Sonia3
-                console.log("RECEIVED RAS:", or)
+                //console.log("RECEIVED RAS:", or)
                 var cd = or.slice(-1);
                 var code=this.charnr(cd);
                 if (code>=0){
                     var o=or.slice(0,-1);
-                    console.log("RECEIVED CAS:", code)
+                    //console.log("RECEIVED CAS:", code)
                 }
                 else{
                     var o=or;
@@ -4382,7 +4381,7 @@ var thelegendmodproject = function(t, e, i) {
                 }
             },
             'updateTeamPlayers': function() {
-                this.sendPlayerPosition(),this.chatUsers = {}, this.top5 = [];
+                this.sendPlayerPosition(),this.sendPlayerUpdate(),this.chatUsers = {}, this.top5 = []; //Sonia3
                 this.updatevnr(); //Sonia3
                 var t = 0;
                 for (; t < this.teamPlayers.length; t++) {
@@ -5665,7 +5664,7 @@ var thelegendmodproject = function(t, e, i) {
             'connect': function(t) {
                 console.log('[Legend mod Express] Connecting to game server:', t);
                 var i = this;
-                console.log("Testing vector5S..")
+                console.log("Testing vectorFS..")
                 window.legendmod.vnr=0; //Sonia3
                 window.legendmod.bgpi=4; //Sonia3
                 window.legendmod.vector=[[0,0],[1,0],[1,1],[0,1]]; //Sonia3
