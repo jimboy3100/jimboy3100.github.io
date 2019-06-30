@@ -4375,7 +4375,7 @@ var thelegendmodproject = function(t, e, i) {
                         max = k.lbgpi;
                     }
                 }
-                if(mm>0 && mm>window.legendmod.playerMass && max<=3){
+                if(mm>0 && mm>window.legendmod.playerMass && max<=3 && window.legendmod.bgpi<=3){
                     console.log("VMR UPDATE:",window.legendmod.vnr,mm,window.legendmod.playerMass,max,window.legendmod.bgpi);
                     this.setvnr(max);
                 }
@@ -5664,7 +5664,7 @@ var thelegendmodproject = function(t, e, i) {
             'connect': function(t) {
                 console.log('[Legend mod Express] Connecting to game server:', t);
                 var i = this;
-                console.log("Testing vectorFS..")
+                console.log("Testing vectorFSX..")
                 window.legendmod.vnr=0; //Sonia3
                 window.legendmod.bgpi=4; //Sonia3
                 window.legendmod.vector=[[0,0],[1,0],[1,1],[0,1]]; //Sonia3
@@ -6469,7 +6469,7 @@ var thelegendmodproject = function(t, e, i) {
                 return this.mapMaxY-(x-this.mapMinY);
             },
             'calculatebgpi':function(x,y){
-                return x>=this.mapMidX && y<this.mapMidY ? 0 : x<this.mapMidX && y<this.mapMidY ? 1 : x <this.mapMidX && y>=this.mapMidY ? 2 : 3;
+                return (x<this.mapMidX+750 && x>this.mapMidX-750)||(y<this.mapMidY+750 && y>this.mapMidY-750)? 4 : x>=this.mapMidX && y<this.mapMidY ? 0 : x<this.mapMidX && y<this.mapMidY ? 1 : x <this.mapMidX && y>=this.mapMidY ? 2 : 3;
             },
             'updateCells': function(t, i) {
                 var s = function() {
