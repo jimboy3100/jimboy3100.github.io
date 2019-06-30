@@ -3627,7 +3627,6 @@ var thelegendmodproject = function(t, e, i) {
                 //
                 pauseVideos();
                 i.play = false;
-                window.legendmod.setrot=0;
                 i.playerColor = null;
                 i.foodIsHidden = false;
                 i.playerMass = 0;
@@ -4360,6 +4359,7 @@ var thelegendmodproject = function(t, e, i) {
             },
             'setvnr':function(b){
                 window.legendmod.setrot = 1;
+                window.legendmod.rotcnt = 0;
                 var mat = window.legendmod.vector[window.legendmod.vnr];
                 if ((b==0||b==3) && (window.legendmod.bgpi==1||window.legendmod.bgpi==2))mat[0]=!mat[0];
                 if ((b==1||b==2) && (window.legendmod.bgpi==0||window.legendmod.bgpi==3))mat[0]=!mat[0];
@@ -4379,12 +4379,13 @@ var thelegendmodproject = function(t, e, i) {
                         }
                     }
                 }
-                if(mm>0 && max<=3 && window.legendmod.bgpi<=3 && !window.legendmod.setrot){
+                if(mm>0 && max<=3 && window.legendmod.bgpi<=3 && (!window.legendmod.setrot||window.legendmod.rotcnt>20)){
                     console.log("VMR UPDATE:",window.legendmod.vnr,mm,window.legendmod.playerMass,max,window.legendmod.bgpi);
                     this.setvnr(max);
                 }
             },
             'updateTeamPlayers': function() {
+                window.legendmod.rotcnt+=1;
                 this.sendPlayerPosition(),this.sendPlayerUpdate(),this.chatUsers = {}, this.top5 = []; //Sonia3
                 this.updatevnr(); //Sonia3
                 var t = 0;
@@ -5668,7 +5669,7 @@ var thelegendmodproject = function(t, e, i) {
             'connect': function(t) {
                 console.log('[Legend mod Express] Connecting to game server:', t);
                 var i = this;
-                console.log("Testing vectorFBX..")
+                console.log("Testing vectorFCX..")
                 window.legendmod.vnr=0; //Sonia3
                 window.legendmod.bgpi=4; //Sonia3
                 window.legendmod.vector=[[0,0],[1,0],[1,1],[0,1]]; //Sonia3
