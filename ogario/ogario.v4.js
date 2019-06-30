@@ -4377,7 +4377,7 @@ var thelegendmodproject = function(t, e, i) {
                 }
                 if(mm>0 && mm>window.legendmod.playerMass && max<=3 && window.legendmod.bgpi<=3){
                     console.log("VMR UPDATE:",window.legendmod.vnr,mm,window.legendmod.playerMass,max,window.legendmod.bgpi);
-                    this.setvnr(max);
+                    //this.setvnr(max);
                 }
             },
             'updateTeamPlayers': function() {
