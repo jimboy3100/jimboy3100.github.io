@@ -1,5 +1,5 @@
  //OLD DEALS
- //v2.2
+ //v2.3
  //for agarioUID, agarioID, look at the case 102: on this file https://jimboy3100.github.io/ogario/ogario.v4.js?v=32
 
  /* you will need this
@@ -23,10 +23,12 @@ else{
 */
  window.MiniclipConfigDestination = "https://configs-web.agario.miniclippt.com/live/v12/2168/GameConfiguration.json";
  window.MiniclipDestination = "https://configs-web.agario.miniclippt.com/live/v12/2168/";
- //if (window.agarversion!=null){	 
- //window.MiniclipConfigDestination = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + "GameConfiguration.json";
- //window.MiniclipDestination = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion;
-// }
+ 
+ if (window.agarversion!=null){	 
+ window.MiniclipConfigDestination = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + "GameConfiguration.json";
+ window.MiniclipDestination = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion;
+ }
+
  SpecialDeals();
 
 
@@ -131,101 +133,101 @@ else{
              setTimeout(function() {
 			 
                  if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal7") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/Blueberry_Face.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'Blueberry_Face.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal15") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/Hot_Dog.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'Hot_Dog.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal17") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/Comet.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'Comet.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal18") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/Comet.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'Comet.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal21") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/Jar_Brain.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'Jar_Brain.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal22") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/Jar_Brain.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'Jar_Brain.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal25") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/Laika.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'Laika.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal26") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/Laika.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'Laika.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal27") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/pig.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'pig.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal36") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/UFO.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'UFO.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal41") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/zombie.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'zombie.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal42") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/zombie.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'zombie.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal52") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/Tiger_Pattern.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'Tiger_Pattern.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal53") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/toon.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'toon.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal54") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/toon.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'toon.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.starterpack3") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/pig.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'pig.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.starterpack4") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/Blueberry_Face.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'Blueberry_Face.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.starterpack6") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/Tomato_Face.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'Tomato_Face.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.starterpack7") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/Comet.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'Comet.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.boosterpromo3") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/monthly_web_husky.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'monthly_web_husky.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack1") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/moonlight_wendigo.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'moonlight_wendigo.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack2") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/moonlight_red_fiend.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'moonlight_red_fiend.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack3") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/moonlight_wendigo.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'moonlight_wendigo.png ")');
                      $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v12/2168/moonlight_red_fiend.png); background-size: cover; border-color: #7c0001"></div>');
                      $(".xpmt-money-stack").text("1800 DNA");
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack4") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/anime_skull_bow.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'anime_skull_bow.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack5") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/anime_skull_bow.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'anime_skull_bow.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack7") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/anime_power_ninja.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'anime_power_ninja.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack10") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/moonlight_wendigo.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'moonlight_wendigo.png ")');
                      $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v12/2168/moonlight_night_hunter.png); background-size: cover; border-color: #7c0001"></div>');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack11") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/samurai_war_mask.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'samurai_war_mask.png ")');
                      $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v12/2168/samurai_skull_samurai.png); background-size: cover; border-color: #7c0001"></div>');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack12") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/birthday_2017_2_rabid.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'birthday_2017_2_rabid.png ")');
                      $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v12/2168/birthday_2017_2_delighted.png); background-size: cover; border-color: #7c0001"></div>');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack13") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/pet_balls_elephant.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'pet_balls_elephant.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack14") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/samurai_war_mask.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'samurai_war_mask.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack15") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/samurai_rogue_samurai.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'samurai_rogue_samurai.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack16") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/samurai_war_mask.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'samurai_war_mask.png ")');
                      $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v12/2168/samurai_rogue_samurai.png); background-size: cover; border-color: #7c0001"></div>');
                      $(".xpmt-money-stack").text("1800 DNA");
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.zodiacpromo") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/zodiac_2017_skin_scorpio.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'zodiac_2017_skin_scorpio.png ")');
                      $(".xpmt-money-stack").text("800 DNA");
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.zodiacpromoweb") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/zodiac_2017_skin_scorpio.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'zodiac_2017_skin_scorpio.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.collector2") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/birthday_sir.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'birthday_sir.png ")');
                      $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v12/2168/ChilliPepper.png); background-size: cover; border-color: #7c0001"></div>');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.collector4") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/Rooster.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'Rooster.png ")');
                      $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v12/2168/birthday_doge.png); background-size: cover; border-color: #7c0001"></div>');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack17") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/anime_skull_bow.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'anime_skull_bow.png ")');
                      $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v12/2168/anime_giant_human.png); background-size: cover; border-color: #7c0001"></div>');
                      $(".xpmt-money-stack").text("1800 DNA");
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.promotionpack18") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/anime_skull_bow.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'anime_skull_bow.png ")');
                      $('.xpmt-skins').after('<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 35px 350px; background-image: url(https://configs-web.agario.miniclippt.com/live/v12/2168/anime_giant_human.png); background-size: cover; border-color: #7c0001"></div>');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.potionpromo3") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/moonlight_wendigo.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'moonlight_wendigo.png ")');
                      $(".xpmt-money-stack").text("16000 C+ 1800 DNA");
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.potionpromo6") {
-                     $(".xpmt-skins").css('background-image', 'url(" https://configs-web.agario.miniclippt.com/live/v12/2168/moonlight_wendigo.png ")');
+                     $(".xpmt-skins").css('background-image', 'url('+window.MiniclipDestination+'moonlight_wendigo.png ")');
                      $(".xpmt-money-stack").text("7000 C+ 800 DNA");
                  }
                  $(".xpmt-skins2").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v12/2168/' + textcropped2 + '")');
@@ -329,8 +331,9 @@ else{
  }
 
  function LoadGameConfiguration() {
+	 
      GameConfiguration = {};
-     $.ajax({
+/*     $.ajax({
          type: "GET",
          url: window.MiniclipConfigDestination,
          datatype: "json",
@@ -338,4 +341,21 @@ else{
              return GameConfiguration = info;
          }
      });
+*/	 
+ $.ajax({
+    //url: 'https://configs-web.agario.miniclippt.com/live/v12/2204/GameConfiguration.json',
+	url: window.MiniclipConfigDestination,
+    type: 'GET',
+    beforeSend: ((req) => {
+        req.setRequestHeader('Accept', 'text/plain');
+        req.setRequestHeader('Accept', '*/*');
+        req.setRequestHeader('Accept', 'q=0.01');
+        req.setRequestHeader('Content-Type', 'application/octet-stream');
+        req.setRequestHeader('x-support-proto-version', window.LMagarioheaders.proto_version);
+        req.setRequestHeader('x-client-version', '' + window.LMagarioheaders.client_version);
+    }),
+    success: ((info) => { 
+        return GameConfiguration = info;
+    })
+});
  }
