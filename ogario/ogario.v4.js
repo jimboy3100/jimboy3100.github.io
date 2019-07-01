@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.925 MEGA TEST
+// v1.926 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -1145,8 +1145,8 @@ var thelegendmodproject = function(t, e, i) {
                     'teammatesIndColor': '#ffffff',
                     'cursorTrackingColor': '#ffffff',
                     'splitRangeColor': '#ffffff',
-                    'enemyBSTEDColor': '#8000ff', //Sonia2
-                    'enemyBSTEColor': '#BE00FF', //Sonia2
+                    'enemyBSTEDColor': '#BE00FF', //Sonia2
+                    'enemyBSTEColor': '#8000ff', //Sonia2
                     'enemyBColor': '#FF0A00', //Sonia2
                     'enemySColor': '#00C8FF', //Sonia2
                     'enemySSTEColor': '#64FF00', //Sonia2
@@ -1316,12 +1316,6 @@ var thelegendmodproject = function(t, e, i) {
                     'teammatesIndColor': '#ffffff',
                     'cursorTrackingColor': '#ffffff',
                     'splitRangeColor': '#ffffff',
-                    'enemyBSTEDColor': '#8000ff', //Sonia2
-                    'enemyBSTEColor': '#BE00FF', //Sonia2
-                    'enemyBColor': '#FF0A00', //Sonia2
-                    'enemySColor': '#00C8FF', //Sonia2
-                    'enemySSTEColor': '#64FF00', //Sonia2
-                    'enemySSTEDColor': '#048245', //Sonia2
                     'safeAreaColor': '#ffffff',
                     'dangerAreaColor': '#bf00aa',
                     'massScale': 4,
@@ -1571,8 +1565,8 @@ var thelegendmodproject = function(t, e, i) {
                 'teammatesIndColor': '#ffffff',
                 'cursorTrackingColor': '#ffffff',
                 'splitRangeColor': '#ffffff',
-                'enemyBSTEDColor': '#8000ff', //Sonia2
-                'enemyBSTEColor': '#BE00FF', //Sonia2
+                'enemyBSTEDColor': '#BE00FF', //Sonia2 
+                'enemyBSTEColor': '#8000ff', //Sonia2
                 'enemyBColor': '#FF0A00', //Sonia2
                 'enemySColor': '#00C8FF', //Sonia2
                 'enemySSTEColor': '#64FF00', //Sonia2
@@ -2201,7 +2195,7 @@ var thelegendmodproject = function(t, e, i) {
                 'fpsAtTop': true,
                 'showStats': true,
                 'showStatsMass': true,
-                'showStatsSTE': true,
+                'showStatsSTE': false,
                 'showStatsN16': true,
                 'showStatsFPS': true,
                 'blockPopups': false,
