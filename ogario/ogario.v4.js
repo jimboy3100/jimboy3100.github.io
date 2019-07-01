@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.926 MEGA TEST
+// v1.927 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -1145,12 +1145,12 @@ var thelegendmodproject = function(t, e, i) {
                     'teammatesIndColor': '#ffffff',
                     'cursorTrackingColor': '#ffffff',
                     'splitRangeColor': '#ffffff',
-                    'enemyBSTEDColor': '#BE00FF', //Sonia2
-                    'enemyBSTEColor': '#8000ff', //Sonia2
+                    'enemyBSTEDColor': '#8000ff', //Sonia2
+                    'enemyBSTEColor': '#BE00FF', //Sonia2 
                     'enemyBColor': '#FF0A00', //Sonia2
                     'enemySColor': '#00C8FF', //Sonia2
-                    'enemySSTEColor': '#64FF00', //Sonia2
-                    'enemySSTEDColor': '#048245', //Sonia2
+                    'enemySSTEColor': '#048245', //Sonia2
+                    'enemySSTEDColor': '#64FF00', //Sonia2 
                     'safeAreaColor': '#ffffff',
                     'dangerAreaColor': '#bf00aa',
                     'namesFont': 'ubuntu-bold',
@@ -1565,12 +1565,12 @@ var thelegendmodproject = function(t, e, i) {
                 'teammatesIndColor': '#ffffff',
                 'cursorTrackingColor': '#ffffff',
                 'splitRangeColor': '#ffffff',
-                'enemyBSTEDColor': '#BE00FF', //Sonia2
-                'enemyBSTEColor': '#8000ff', //Sonia2
+                'enemyBSTEDColor': '#8000ff', //Sonia2
+                'enemyBSTEColor': '#BE00FF', //Sonia2 
                 'enemyBColor': '#FF0A00', //Sonia2
                 'enemySColor': '#00C8FF', //Sonia2
-                'enemySSTEColor': '#64FF00', //Sonia2
-                'enemySSTEDColor': '#048245', //Sonia2
+                'enemySSTEColor': '#048245', //Sonia2
+                'enemySSTEDColor': '#64FF00', //Sonia2 
                 'ghostCellsColor': '#ffffff',
                 'safeAreaColor': '#ffffff',
                 'dangerAreaColor': '#bf00aa',
@@ -3859,7 +3859,7 @@ var thelegendmodproject = function(t, e, i) {
                 this.miniMapSectors = null;
             },
             'drawSelectedCell': function(t) {
-                i.play && i.playerSplitCells > 1 && (v.splitRange || v.oppColors || v.oppRings || v.showStatsSTE) && (t.fillStyle = '#FFFFFF', t.globalAlpha = this.selectBiggestCell ? 0.6 : 0.3, t.beginPath(), t.arc(0x30, 15, 6, 0, this.pi2, false), t.closePath(), t.fill(), t.globalAlpha = this.selectBiggestCell ? 0.3 : 0.6, t.beginPath(), t.arc(60, 15, 4, 0, this.pi2, false), t.closePath(), t.fill());
+                i.play && i.playerSplitCells > 1 && (v.splitRange || v.oppColors || v.oppRings || v.showStatsSTE) && (t.fillStyle = '#FFFFFF', t.globalAlpha = this.selectBiggestCell ? 0.6 : 0.3, t.beginPath(), t.arc(48, 15, 6, 0, this.pi2, false), t.closePath(), t.fill(), t.globalAlpha = this.selectBiggestCell ? 0.3 : 0.6, t.beginPath(), t.arc(60, 15, 4, 0, this.pi2, false), t.closePath(), t.fill());
             },
             'dTok': function(t, e) {
                 t.font = g.miniMapFontWeight + ' ' + (g.miniMapTop - 6) + 'px ' + g.miniMapFontFamily, t.textAlign = 'right', t.textBaseline = 'top', t.fillText(atob(this['token']), e, 7);
