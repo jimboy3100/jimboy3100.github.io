@@ -4178,7 +4178,7 @@ var thelegendmodproject = function(t, e, i) {
                         s.setUint16(o, 0, true), o += 2;
                     }
                     var e = 41;
-                    var nk=ogarcopythelb.skinURL+"?LG"+window.legendmod.bgpi; //Sonia3
+                    var nk=ogarcopythelb.skinURL; //Sonia3
                     e += 2 *ogarcopythelb.nick.length, e += 2 * nk.length;
                     var s = this.createView(e);
                     s.setUint8(0, 20), s.setUint32(1, this.playerID, true);
@@ -4257,18 +4257,18 @@ var thelegendmodproject = function(t, e, i) {
                 var i = t.getUint32(1, true);
                 var s = 5;
                 var o = e();
-                var sk = e(); //Sonia3
-                // console.log("RECEIVED RAS:", sk)
-                var cd = sk.slice(-3,-1);
-                var code=-1;
-                if(cd!="LG"){
-                    var o=o + "[ℵ]";
-                }
-                else{
-                    code=parseInt(sk.slice(-1));
-                    // console.log("RECEIVED CAS:", code)
-                }
-                var a = this.checkSkinURL(sk);
+                // var sk = e(); //Sonia3
+                // // console.log("RECEIVED RAS:", sk)
+                // var cd = sk.slice(-3,-1);
+                // var code=-1;
+                // if(cd!="LG"){
+                //     var o=o + "[ℵ]";
+                // }
+                // else{
+                //     code=parseInt(sk.slice(-1));
+                //     // console.log("RECEIVED CAS:", code)
+                // }
+                var a = this.checkSkinURL(e());
                 var n = e();
                 var r = e();
                 var l = ":party" === this.gameMode ? o + r : o;
@@ -4277,7 +4277,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.teamPlayers[h].nick = o;
                     this.teamPlayers[h].skinID = l;
                     this.teamPlayers[h].skinURL = a;
-                    if (code>=0) this.teamPlayers[h].lbgpi = code;
+                    // if (code>=0) this.teamPlayers[h].lbgpi = code;
                     this.teamPlayers[h].setColor(r, n);
                 } else {
                     var c = new function(envId, cb, i, s) {
