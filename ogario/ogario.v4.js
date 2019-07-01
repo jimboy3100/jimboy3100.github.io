@@ -1565,7 +1565,7 @@ var thelegendmodproject = function(t, e, i) {
                 'teammatesIndColor': '#ffffff',
                 'cursorTrackingColor': '#ffffff',
                 'splitRangeColor': '#ffffff',
-                'enemyBSTEDColor': '#BE00FF', //Sonia2 
+                'enemyBSTEDColor': '#BE00FF', //Sonia2
                 'enemyBSTEColor': '#8000ff', //Sonia2
                 'enemyBColor': '#FF0A00', //Sonia2
                 'enemySColor': '#00C8FF', //Sonia2
@@ -4032,6 +4032,7 @@ var thelegendmodproject = function(t, e, i) {
                     if (this.isSocketOpen()) {
                         this["closeConnection"]();
                         toastr["error"]("Zamkni\u0119to po\u0142\u0105czenie z serwerem!");
+                        toastr["error"]("Zamkni\u0119to po\u0142\u0105czenie z serwerem!");
                     }
                     if (this["privateMode"]) {
                         toastr["info"]("Prze\u0142\u0105czono na serwer prywatny!");
@@ -4373,15 +4374,18 @@ var thelegendmodproject = function(t, e, i) {
                         }
                     }
                 }
-                if(mm>0 && max<=3 && window.legendmod.bgpi<=3 && (!window.legendmod.setrot||window.legendmod.rotcnt>20)){
+                if(mm>0 && (!window.legendmod.play||mm>window.legendmod.playerMass) && max<=3 && window.legendmod.bgpi<=3 && !window.legendmod.setrot){
                     console.log("VMR UPDATE:",window.legendmod.vnr,mm,window.legendmod.playerMass,max,window.legendmod.bgpi);
-                    //this.setvnr(max);
+                    this.setvnr(max);
                 }
             },
             'updateTeamPlayers': function() {
-                window.legendmod.rotcnt+=1;
                 this.sendPlayerPosition(),this.sendPlayerUpdate(),this.chatUsers = {}, this.top5 = []; //Sonia3
                 this.updatevnr(); //Sonia3
+                if(window.legendmod.delstate >=0){ //Sonia3
+                    window.legendmod.delstate+=1; //Sonia3
+                    if (window.legendmod.delstate>11)window.legendmod.delstate=-1; //Sonia3
+                } //Sonia3
                 var t = 0;
                 for (; t < this.teamPlayers.length; t++) {
                     var e = this.teamPlayers[t];
@@ -5663,11 +5667,13 @@ var thelegendmodproject = function(t, e, i) {
             'connect': function(t) {
                 console.log('[Legend mod Express] Connecting to game server:', t);
                 var i = this;
-                console.log("Testing vectorFCX..")
+                console.log("Testing vectorFDX..")
                 window.legendmod.vnr=0; //Sonia3
                 window.legendmod.bgpi=4; //Sonia3
+                window.legendmod.lbgpi=4
                 window.legendmod.vector=[[0,0],[1,0],[1,1],[0,1]]; //Sonia3
-                window.legendmod.setrot=0; //Sonia3
+                window.legendmod.setrot=false; //Sonia3
+                window.legendmod.delstate=-1; //Sonia3
                 this.closeConnection();
                 this.flushCellsData();
                 this.protocolKey = null;
@@ -6469,7 +6475,20 @@ var thelegendmodproject = function(t, e, i) {
                 return this.mapMaxY-(x-this.mapMinY);
             },
             'calculatebgpi':function(x,y){
-                return (x<this.mapMidX+750 && x>this.mapMidX-750)||(y<this.mapMidY+750 && y>this.mapMidY-750)? 4 : x>=this.mapMidX && y<this.mapMidY ? 0 : x<this.mapMidX && y<this.mapMidY ? 1 : x <this.mapMidX && y>=this.mapMidY ? 2 : 3;
+                var calc=(x<this.mapMidX+750 && x>this.mapMidX-750)||(y<this.mapMidY+750 && y>this.mapMidY-750)? 4 : x>=this.mapMidX && y<this.mapMidY ? 0 : x<this.mapMidX && y<this.mapMidY ? 1 : x <this.mapMidX && y>=this.mapMidY ? 2 : 3;
+                if ((window.legendmod.lbgpi==4 || calc==4 || window.legendmod.lbgpi==calc) && window.legendmod.delstate<0){
+                    window.legendmod.lbgpi=calc;
+                    return calc;
+                }
+                else if(window.legendmod.lbgpi!=calc){
+                    window.legendmod.delstate=0;
+                    window.legendmod.lbgpi=calc;
+                    return 4;
+                }
+                else{
+                    window.legendmod.lbgpi=calc;
+                    return 4;
+                }
             },
             'updateCells': function(t, i) {
                 var s = function() {
