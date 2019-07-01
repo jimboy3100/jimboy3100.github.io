@@ -4384,7 +4384,7 @@ var thelegendmodproject = function(t, e, i) {
                 this.updatevnr(); //Sonia3
                 if(window.legendmod.delstate >=0){ //Sonia3
                     window.legendmod.delstate+=1; //Sonia3
-                    if (window.legendmod.delstate>11)window.legendmod.delstate=-1; //Sonia3
+                    if (window.legendmod.delstate>5)window.legendmod.delstate=-1; //Sonia3
                 } //Sonia3
                 var t = 0;
                 for (; t < this.teamPlayers.length; t++) {
@@ -5667,7 +5667,7 @@ var thelegendmodproject = function(t, e, i) {
             'connect': function(t) {
                 console.log('[Legend mod Express] Connecting to game server:', t);
                 var i = this;
-                console.log("Testing vectorFEX..")
+                console.log("Testing vectorFFX..")
                 window.legendmod.vnr=0; //Sonia3
                 window.legendmod.bgpi=4; //Sonia3
                 window.legendmod.lbgpi=4
