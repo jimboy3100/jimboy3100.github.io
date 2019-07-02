@@ -4029,7 +4029,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.closeConnection();
                 this.flushData();
                 this.setParty();
-                console.log("Testing vectorT6..")
+                console.log("Testing vectorT7..")
                 console.log('[Legend mod Express] Connecting to server'),
                     this.privateMode && this.privateIP ? this.socket = new WebSocket(this.privateIP) : this.socket = new WebSocket(this.publicIP),
                     this.socket['ogarioWS'] = true,
@@ -6837,8 +6837,8 @@ var thelegendmodproject = function(t, e, i) {
                 window.targetDistance = this.targetDistance;
             },
             'resetTargetPosition': function() {
-                this.targetX = this.playerX;
-                this.targetY = this.playerY;
+                this.targetX = this.vector[this.vnr][0] ? this.translateX(this.playerX) : this.playerX;
+                this.targetY = this.vector[this.vnr][1] ? this.translateY(this.playerY) : this.playerY;
             },
             'setKeys': function() {
                 var t = this;
