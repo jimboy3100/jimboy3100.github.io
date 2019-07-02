@@ -3997,7 +3997,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.closeConnection();
                 this.flushData();
                 this.setParty();
-                console.log("Testing vectorT2..")
+                console.log("Testing vectorT2.1..")
                 console.log('[Legend mod Express] Connecting to server'),
                     this.privateMode && this.privateIP ? this.socket = new WebSocket(this.privateIP) : this.socket = new WebSocket(this.publicIP),
                     this.socket['ogarioWS'] = true,
@@ -4285,12 +4285,11 @@ var thelegendmodproject = function(t, e, i) {
                         s.setUint16(o, 0, true), o += 2;
                     }
                     var e = 41;
-                    var nk=ogarcopythelb.skinURL; //Sonia3
-                    e += 2 *ogarcopythelb.nick.length, e += 2 * nk.length;
+                    e += 2 *ogarcopythelb.nick.length, e += 2 * ogarcopythelb.skinURL.length;
                     var s = this.createView(e);
                     s.setUint8(0, 20), s.setUint32(1, this.playerID, true);
                     var o = 5;
-                    t(ogarcopythelb.nick), t(nk), t(ogarcopythelb.color), t(i.playerColor), this['sendBuffer'](s);
+                    t(ogarcopythelb.nick), t(ogarcopythelb.skinURL), t(ogarcopythelb.color), t(i.playerColor), this['sendBuffer'](s);
                 }
             },
             'sendPlayerPosition': function() {
