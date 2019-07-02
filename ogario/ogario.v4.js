@@ -208,57 +208,57 @@ function LowerCase(str) {
 var legendflags = ["argentina", "belarus", "cambodia", "isis", "jamaica", "mexico", "pakistan", "poland", "scotland", "somalia", "spain", "sweden", "switzerland", "thailand", "venezuela", "2ch", "4chan", "8ch", "9gag", "cameron", "irs", "receita-federal", "9gag", "agario-candle", "australia", "austria", "ayy-lmao", "bait", "bangladesh", "belgium", "berlusconi", "blatter", "boris", "bosnia", "botswana", "brazil", "bulgaria", "bush", "byzantium", "cambodia", "canada", "chavez", "chile", "china", "cia", "clinton", "confederate", "croatia", "cuba", "denmark", "dilma", "earth", "estonia", "european-union", "facebook", "facepunch", "feminism", "fidel", "finland", "france", "french-kingdom", "german-empire", "germany", "greece", "hillary", "hollande", "hungary", "imperial-japan", "india", "indiana", "iran", "iraq", "ireland", "italy", "jamaica", "japan", "kc", "kim-jong-un", "latvia", "lithuania", "luxembourg", "maldivas", "mars", "matriarchy", "merkel", "mexico", "nasa", "netherlands", "nigeria", "north-korea", "norway", "obama", "origin", "pakistan", "palin", "patriarchy", "peru", "pewdiepie", "piccolo", "pokerface", "portugal", "prodota", "prussia", "putin", "qing-dynasty", "quebec", "queen", "reddit", "romania"];
 
 var emoticonicons = {
-                ':)': 'smile.svg',
-                ';)': 'wink.svg',
-                '=)': 'smirk.svg',
-                ':D': 'grin.svg',
-                'X-D': 'xgrin.svg',
-                '=D': 'joy.svg',
-                ':(': 'sad.svg',
-                ';(': 'cry.svg',
-                ':P': 'tongue.svg',
-                ';P': 'tonguew.svg',
-                ':*': 'kiss.svg',
-                '$)': 'smileh.svg',
-                '<3': 'heart.svg',
-                '8=)': 'cool.svg',
-                ':o': 'astonished.svg',
-                '(:|': 'sweat.svg',
-                ':|': 'neutral.svg',
-                ':\\': 'unamused.svg',
-                ':@': 'pouting.svg',
-                '|-)': 'sleep.svg',
-                '^_^': 'relaxed.svg',
-                '-_-': 'expressionless.svg',
-                '$_$': 'money.svg',
-                'O:)': 'angel.svg',
-                '3:)': 'devil.svg',
-                '(poop)': 'poo.svg',
-                '(fuck)': 'finger.svg',
-                '(clap)': 'clap.svg',
-                '(ok)': 'ok.svg',
-                '(victory)': 'victory.svg',
-                '(y)': 'thumb.svg',
-                '(n)': 'thumbd.svg',
+    ':)': 'smile.svg',
+    ';)': 'wink.svg',
+    '=)': 'smirk.svg',
+    ':D': 'grin.svg',
+    'X-D': 'xgrin.svg',
+    '=D': 'joy.svg',
+    ':(': 'sad.svg',
+    ';(': 'cry.svg',
+    ':P': 'tongue.svg',
+    ';P': 'tonguew.svg',
+    ':*': 'kiss.svg',
+    '$)': 'smileh.svg',
+    '<3': 'heart.svg',
+    '8=)': 'cool.svg',
+    ':o': 'astonished.svg',
+    '(:|': 'sweat.svg',
+    ':|': 'neutral.svg',
+    ':\\': 'unamused.svg',
+    ':@': 'pouting.svg',
+    '|-)': 'sleep.svg',
+    '^_^': 'relaxed.svg',
+    '-_-': 'expressionless.svg',
+    '$_$': 'money.svg',
+    'O:)': 'angel.svg',
+    '3:)': 'devil.svg',
+    '(poop)': 'poo.svg',
+    '(fuck)': 'finger.svg',
+    '(clap)': 'clap.svg',
+    '(ok)': 'ok.svg',
+    '(victory)': 'victory.svg',
+    '(y)': 'thumb.svg',
+    '(n)': 'thumbd.svg',
 
-                '(angry)': 'newangry.svg',
-                '(clown)': 'newclown.svg',
-                '(crazy)': 'newcrazy.svg',
-                '(devil)': 'newdevil.svg',
-                '(devil2)': 'newdevil2.svg',
-                '(fb)': 'newfb.svg',
-                '(google)': 'newgplus.svg',
-                '(ghost)': 'newghost.svg',
-                '(heel)': 'newheel.svg',
-                '(kiss)': 'newkiss.svg',
-                '(lipstick)': 'newlipstick.svg',
-                //				'(rage)': 'newrage.svg',
-                '(teacher)': 'newteacher.svg',
-                '(together)': 'newtogether.svg',
-                '(toothy)': 'newtoothy.svg',
-                '(baby)': 'newbaby.svg',
-                '(wow)': 'newwow.svg'
-            }
+    '(angry)': 'newangry.svg',
+    '(clown)': 'newclown.svg',
+    '(crazy)': 'newcrazy.svg',
+    '(devil)': 'newdevil.svg',
+    '(devil2)': 'newdevil2.svg',
+    '(fb)': 'newfb.svg',
+    '(google)': 'newgplus.svg',
+    '(ghost)': 'newghost.svg',
+    '(heel)': 'newheel.svg',
+    '(kiss)': 'newkiss.svg',
+    '(lipstick)': 'newlipstick.svg',
+    //				'(rage)': 'newrage.svg',
+    '(teacher)': 'newteacher.svg',
+    '(together)': 'newtogether.svg',
+    '(toothy)': 'newtoothy.svg',
+    '(baby)': 'newbaby.svg',
+    '(wow)': 'newwow.svg'
+}
 var thelegendmodproject = function(t, e, i) {
     //here starts ogario
     (function(i) {
@@ -1146,11 +1146,11 @@ var thelegendmodproject = function(t, e, i) {
                     'cursorTrackingColor': '#ffffff',
                     'splitRangeColor': '#ffffff',
                     'enemyBSTEDColor': '#8000ff', //Sonia2
-                    'enemyBSTEColor': '#BE00FF', //Sonia2 
+                    'enemyBSTEColor': '#BE00FF', //Sonia2
                     'enemyBColor': '#FF0A00', //Sonia2
                     'enemySColor': '#00C8FF', //Sonia2
                     'enemySSTEColor': '#048245', //Sonia2
-                    'enemySSTEDColor': '#64FF00', //Sonia2 
+                    'enemySSTEDColor': '#64FF00', //Sonia2
                     'safeAreaColor': '#ffffff',
                     'dangerAreaColor': '#bf00aa',
                     'namesFont': 'ubuntu-bold',
@@ -1566,11 +1566,11 @@ var thelegendmodproject = function(t, e, i) {
                 'cursorTrackingColor': '#ffffff',
                 'splitRangeColor': '#ffffff',
                 'enemyBSTEDColor': '#8000ff', //Sonia2
-                'enemyBSTEColor': '#BE00FF', //Sonia2 
+                'enemyBSTEColor': '#BE00FF', //Sonia2
                 'enemyBColor': '#FF0A00', //Sonia2
                 'enemySColor': '#00C8FF', //Sonia2
                 'enemySSTEColor': '#048245', //Sonia2
-                'enemySSTEDColor': '#64FF00', //Sonia2 
+                'enemySSTEDColor': '#64FF00', //Sonia2
                 'ghostCellsColor': '#ffffff',
                 'safeAreaColor': '#ffffff',
                 'dangerAreaColor': '#bf00aa',
@@ -2936,10 +2936,10 @@ var thelegendmodproject = function(t, e, i) {
                             o = checktypeImgVid;
                         o.src = t;
                         // o = new Image();
-                        o.crossOrigin = 'anonymous', 
-						o.onload = function() {
-                            i.changeSkinPreview(o, e);
-                        };
+                        o.crossOrigin = 'anonymous',
+                            o.onload = function() {
+                                i.changeSkinPreview(o, e);
+                            };
                     }
                 }
             },
@@ -3667,19 +3667,19 @@ var thelegendmodproject = function(t, e, i) {
                     (i.cacheQueue.push(e),
                     1 == i.cacheQueue.length &&
                     i.cacheSkin(i.customSkinsCache));
-                }, 
-				t[e]['onerror'] = function() {
-					//console.log("error loading image: "+ e);
-					if (e.includes(window.EnvConfig.config_url)){
-						e= "https://jimboy3100.github.io/vanillaskins/" + e.split('/').pop(); //if CORS policy on miniclip images, use other source
-						//console.log("new destination is:" + e);
-						ogarminimapdrawer.customSkinsMap[window.lastusednameforskin] = e;
-						ogarminimapdrawer.loadSkin(t, e);
-						return e;
-						
-					}
-					};
-				t[e].src = e;
+                },
+                    t[e]['onerror'] = function() {
+                        //console.log("error loading image: "+ e);
+                        if (e.includes(window.EnvConfig.config_url)){
+                            e= "https://jimboy3100.github.io/vanillaskins/" + e.split('/').pop(); //if CORS policy on miniclip images, use other source
+                            //console.log("new destination is:" + e);
+                            ogarminimapdrawer.customSkinsMap[window.lastusednameforskin] = e;
+                            ogarminimapdrawer.loadSkin(t, e);
+                            return e;
+
+                        }
+                    };
+                t[e].src = e;
             },
             'cacheSkin': function(t) {
                 //console.log(t);  //////// return the image src
@@ -3997,10 +3997,15 @@ var thelegendmodproject = function(t, e, i) {
                     this.closeConnection();
                 this.flushData();
                 this.setParty();
+                console.log("Testing vectorS8..")
                 console.log('[Legend mod Express] Connecting to server'),
                     this.privateMode && this.privateIP ? this.socket = new WebSocket(this.privateIP) : this.socket = new WebSocket(this.publicIP),
                     this.socket['ogarioWS'] = true,
                     this.socket['binaryType'] = 'arraybuffer';
+                //Sonia4
+                console.log('[Legend mod Express] Connecting to SLG'),
+                    this.SLGsocket = new WebSocket("wss://connect.websocket.in/3Q-SoniaSLG_453dsV?room_id=6"),
+                    this.SLGsocket['binaryType'] = 'arraybuffer';
                 var t = this;
                 this.socket['onopen'] = function() {
                     console.log('[Legend mod Express] Socket open');
@@ -4010,17 +4015,42 @@ var thelegendmodproject = function(t, e, i) {
                     t['sendBuffer'](e);
                     t.sendPartyData();
                 }
+                //Sonia4
+                this.SLGsocket['onopen'] = function() {
+                    console.log('[Legend mod Express] SLG socket open');
+                    var e = t.createView(3);
+                    e.setUint8(0, 0);
+                    e.setUint16(1, 401, true);
+                    t['sendBuffer'](e);
+                    t.sendPartyData();
+                }
                 this.socket['onmessage'] = function(e) {
                     t['handleMessage'](e);
+                }
+                //Sonia4
+                this.SLGsocket['onmessage'] = function(e) {
+                    t['handleSLGMessage'](e);
                 }
                 this.socket['onclose'] = function(e) {
                     //t.flushData();
                     console.log('[Legend mod Express] Socket close', e);
                 }
+                //Sonia4
+                this.SLGsocket['onclose'] = function(e) {
+                    //t.flushData();
+                    console.log('[Legend mod Express] SLG socket close', e);
+                }
                 this.socket['onerror'] = function(e) {
                     //t.flushData();
                     console.log('[Legend mod Express] Socket error', e);
                     window.noOgarioSocket=true;
+                };
+                //Sonia4
+                this.SLGsocket['onerror'] = function(e) {
+                    //t.flushData();
+                    console.log('[Legend mod Express] SLG socket error', e);
+                    window.noOgarioSocket=true;
+                    window.noSLGSocket=true;
                 };
             },
             'closeConnection': function() {
@@ -4030,6 +4060,14 @@ var thelegendmodproject = function(t, e, i) {
                         this.socket['close']();
                     } catch (ogarcloseconlabel) {}
                     this.socket = null;
+                }
+                //Sonia4
+                if (this.SLGsocket) {
+                    this.SLGsocket['onmessage'] = null;
+                    try {
+                        this.SLGsocket['close']();
+                    } catch (ogarcloseconlabel) {}
+                    this.SLGsocket = null;
                 }
             },
             'reconnect': function() {
@@ -4064,6 +4102,10 @@ var thelegendmodproject = function(t, e, i) {
             'isSocketOpen': function() {
                 return null !== this.socket && this.socket['readyState'] === this.socket['OPEN'];
             },
+            //Sonia4 Below
+            'isSLGSocketOpen': function() {
+                return null !== this.SLGsocket && this.SLGsocket['readyState'] === this.SLGsocket['OPEN'];
+            },
             "writeUint32": function(data, value) {
                 for (; !![];) {
                     if ((value & -128) == 0) {
@@ -4087,8 +4129,17 @@ var thelegendmodproject = function(t, e, i) {
             'sendBuffer': function(t) {
                 this.socket['send'](t['buffer']);
             },
+            //Sonia4
+            'sendSLG': function(i,t) {
+                var s=this.packSLG(i);
+                if(s!=null)this.SLGsocket['send'](s+t);
+            },
             'handleMessage': function(t) {
                 this['readMessage'](new DataView(t['data']));
+            },
+            //Sonia4
+            'handleSLGMessage': function(t) {
+                this['SLGHandler'](t.data);
             },
             'readMessage': function(t) {
                 switch (t.getUint8(0)) {
@@ -4109,6 +4160,49 @@ var thelegendmodproject = function(t, e, i) {
                     case 100:
                         this['readChatMessage'](t);
                 }
+            },
+            //Sonia4
+            'SLGHandler': function(t) {
+                var s = this.unpackSLG(t);
+                if(s == null)return;
+                switch (t.charAt(0)) {
+                    case "R":
+                        this.getSuperLegendSDATA(s);
+                        break;
+                }
+            },
+            //Sonia4
+            'packSLG': function(t){
+                t+=("00" + ogarcopythelb.clanTag.length).slice(-2);
+                t+=ogarcopythelb.clanTag;
+                if(!window.legendmod.ws)return null;
+                t+=("00" + window.legendmod.ws.length).slice(-2);
+                t+=window.legendmod.ws;
+                t+=("000000" + this.playerID).slice(-6);
+                return t;
+            },
+            //Sonia4
+            'unpackSLG': function(t){
+                t=t.slice(1);
+                var len=parseInt(t.slice(0,2));
+                var tag=t.slice(2,2+len);
+                if(tag!=ogarcopythelb.clanTag)return null;
+                t=t.slice(2+len);
+                var len=parseInt(t.slice(0,2));
+                var ws=t.slice(2,2+len);
+                if(ws!=window.legendmod.ws)return null;
+                t=t.slice(2+len);
+                return t;
+            },
+            //Sonia4
+            'getSLGID': function(t){
+                t=t.slice(0,6);
+                return parseInt(t);
+            },
+            //Sonia4
+            'getSLGVal': function(t){
+                t=t.slice(6);
+                return t;
             },
             'sendPlayerState': function(t) {
                 if (this.isSocketOpen()) {
@@ -4198,6 +4292,10 @@ var thelegendmodproject = function(t, e, i) {
                     var o = 5;
                     t(ogarcopythelb.nick), t(nk), t(ogarcopythelb.color), t(i.playerColor), this['sendBuffer'](s);
                 }
+                if (this.isSLGSocketOpen()){
+                    this.sendSLG("A");
+                    this.sendSLG("B");
+                }
             },
             'sendPlayerPosition': function() {
                 if (this.isSocketOpen() && i.play && this.playerID) {
@@ -4214,33 +4312,23 @@ var thelegendmodproject = function(t, e, i) {
                     this["sendBuffer"](t);
                 }
             },
-            //Sonia3 4 below function
+            //Sonia4
             'sendSuperLegendSDATA': function() {
-                if (this.isSocketOpen() && i.play && this.playerID) {
-                    var t = this.createView(6);
-                    t.setUint8(0, 6);
-                    t.setUint32(1, this.playerID, true);
-                    t.setUint8(5, window.legendmod.bgpi);
-                    console.log("SENT INT: ", window.legendmod.bgpi);
-                    this["sendBuffer"](t);
+                if (this.isSLGSocketOpen() && i.play && this.playerID) {
+                    var s="";
+                    s+= window.legendmod.bgpi;
+                    this.sendSLG("R",s);
                 }
             },
+            //Sonia4
             'getSuperLegendSDATA': function(t) {
-                var ids = t.getUint32(1, true);
+                var ids = this.getSLGID(t);
                 var id =this.checkPlayerID(ids);
-                console.log("PREREV:",id,ids)
                 if (null!=id){
-                    fi=t.getUint8(5);
-                    console.log("RECEIVED INT: ", fi);
-                    this.teamPlayers[id].lbgpi=fi;
-
+                    var s=this.getSLGVal(t);
+                    var lbgpi=s.slice(0,1);
+                    this.teamPlayers[id].lbgpi=parseInt(lbgpi);
                 }
-            },
-            'charnr': function(c){
-                return c=='⌜' ? 1 : c=='⌝' ? 0 : c=='⌞' ? 2 : c=='⌟' ? 3 : c=='¨' ? 4 : -1;
-            },
-            'nrchar': function(n){
-                return n==1 ? '⌜': n==0 ? '⌝' : n==2 ? '⌞' : n==3 ? '⌟' : n==4 ? '¨' : -1;
             },
             'checkPlayerID': function(t) {
                 if (t)
@@ -4270,17 +4358,6 @@ var thelegendmodproject = function(t, e, i) {
                 var i = t.getUint32(1, true);
                 var s = 5;
                 var o = e();
-                // var sk = e(); //Sonia3
-                // // console.log("RECEIVED RAS:", sk)
-                // var cd = sk.slice(-3,-1);
-                // var code=-1;
-                // if(cd!="LG"){
-                //     var o=o + "[ℵ]";
-                // }
-                // else{
-                //     code=parseInt(sk.slice(-1));
-                //     // console.log("RECEIVED CAS:", code)
-                // }
                 var a = this.checkSkinURL(e());
                 var n = e();
                 var r = e();
@@ -4290,7 +4367,6 @@ var thelegendmodproject = function(t, e, i) {
                     this.teamPlayers[h].nick = o;
                     this.teamPlayers[h].skinID = l;
                     this.teamPlayers[h].skinURL = a;
-                    // if (code>=0) this.teamPlayers[h].lbgpi = code;
                     this.teamPlayers[h].setColor(r, n);
                 } else {
                     var c = new function(envId, cb, i, s) {
@@ -4394,7 +4470,7 @@ var thelegendmodproject = function(t, e, i) {
                 }
             },
             'updateTeamPlayers': function() {
-                this.sendPlayerPosition(),this.sendPlayerUpdate(),this.chatUsers = {}, this.top5 = []; //Sonia3
+                this.sendPlayerPosition(),this.sendSuperLegendSDATA(),this.chatUsers = {}, this.top5 = []; //Sonia3
                 this.updatevnr(); //Sonia3
                 if(window.legendmod.delstate >=0){ //Sonia3
                     window.legendmod.delstate+=1; //Sonia3
@@ -5681,7 +5757,6 @@ var thelegendmodproject = function(t, e, i) {
             'connect': function(t) {
                 console.log('[Legend mod Express] Connecting to game server:', t);
                 var i = this;
-                console.log("Testing vectorFGX..")
                 window.legendmod.vnr=0; //Sonia3
                 window.legendmod.bgpi=4; //Sonia3
                 window.legendmod.lbgpi=4; //Sonia3
@@ -6470,7 +6545,7 @@ var thelegendmodproject = function(t, e, i) {
                                                 console.log("[Legend mod Express] " + LowerCase(y) + " skin found. Skin registered");
                                                 core.registerSkin(y, null, "https://jimboy3100.github.io/agario/live/flags/" + LowerCase(y) + ".png", null);
                                             } else {
-												window.lastusednameforskin=y;
+                                                window.lastusednameforskin=y;
                                                 ogarminimapdrawer.customSkinsMap[y] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
                                                 ogarminimapdrawer.loadSkin(ogarminimapdrawer.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
                                             }
