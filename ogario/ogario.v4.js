@@ -369,6 +369,12 @@ var thelegendmodproject = function(t, e, i) {
                     'showStats': 'Pokaż statystyki',
                     'showStatsMass': 'Statystyki: Masa',
                     'showStatsSTE': 'Statystyki: Przedziały Masy',
+                    'showStatsESTE': 'Statystyki: STE wroga',
+                    'showStatsEMTE': 'Statystyki: MTE wroga',
+                    'showStatsMTE': 'Statystyki: Nasze MTE',
+                    'showStatsSTE': 'Statystyki: Nasze STE',
+                    'showStatsTTE': 'Statystyki: Minimalna masa mate\'a do tricksplitu',
+                    'showStatsPTE': 'Statystyki: Maksymalna masa wroga do presplitu',
                     'showStatsN16': 'Statystyki: n/16',
                     'showStatsFPS': 'Statystyki: FPS',
                     'blockPopups': 'Blokuj popupy (reklamy/sklep/zadanie)',
@@ -753,7 +759,12 @@ var thelegendmodproject = function(t, e, i) {
                     'fpsAtTop': 'Game stats at the top',
                     'showStats': 'Show game stats',
                     'showStatsMass': 'Game stats: Mass',
-                    'showStatsSTE': 'Game stats: Mass Ranges',
+                    'showStatsESTE': 'Game stats: Enemy\'s STE',
+                    'showStatsEMTE': 'Game stats: Enemy\'s MTE',
+                    'showStatsMTE': 'Game stats: Our MTE',
+                    'showStatsSTE': 'Game stats: Our STE',
+                    'showStatsTTE': 'Game stats: Minimal tricksplit teammate\'s mass',
+                    'showStatsPTE': 'Game stats: Maximal enemy\'s mass for presplit',
                     'showStatsN16': 'Game stats: n/16',
                     'showStatsFPS': 'Game stats: FPS',
                     'blockPopups': 'Block popups (ads/shop/quest)',
@@ -2195,6 +2206,12 @@ var thelegendmodproject = function(t, e, i) {
                 'fpsAtTop': true,
                 'showStats': true,
                 'showStatsMass': true,
+                'showStatsESTE': false,
+                'showStatsEMTE': false,
+                'showStatsMTE': false,
+                'showStatsSTE': false,
+                'showStatsTTE': false,
+                'showStatsPTE': false,
                 'showStatsSTE': false,
                 'showStatsN16': true,
                 'showStatsFPS': true,
@@ -2589,8 +2606,23 @@ var thelegendmodproject = function(t, e, i) {
                         if (v.showStatsN16 && i.playerSplitCells){
                             t += ' | ' + i.playerSplitCells + '/16'
                         }
+                        if (v.showStatsESTE && i.BSTE){
+                            t += ' | ◎◎➛◉: ' + i.BSTE //Sonia6
+                        }
+                        if (v.showStatsEMTE && i.BMTE){
+                            t += ' | ◎➛◉: ' + i.BMTE //Sonia6
+                        }
+                        if (v.showStatsMTE && i.MTE){
+                            t += ' | ◉➛◎: ' + i.MTE //Sonia6
+                        }
                         if (v.showStatsSTE && i.STE){
-                            t += ' | ◎◎➛◉: ' + i.BSTE + ' | ◎➛◉: ' + i.BMTE + ' | ◉➛◎: ' + i.MTE + ' | ◉◉➛◎: ' + i.STE + ' | ◉➚◉: ' + i.TTE + ' | ➚◎➘: ' + i.PTE//Sonia2
+                            t += ' | ◉◉➛◎: ' + i.STE //Sonia6
+                        }
+                        if (v.showStatsTTE && i.TTE){
+                            t += ' | ◉➚◉: ' + i.TTE //Sonia6
+                        }
+                        if (v.showStatsPTE && i.PTE){
+                            t += ' | ➚◎➘: ' + i.PTE //Sonia6
                         }
                         if (v.showStatsFPS) {
                             t += ' | '
@@ -3073,7 +3105,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.addOptions(["oppColors", "oppRings", "virColors", "splitRange","qdsplitRange","sdsplitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"), //Sonia2
                     this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert"], "mouseGroup"),
                     this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop"], "hudGroup"),
-                    this.addOptions(["showStats", "showStatsMass", "showStatsSTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"),
+                    this.addOptions(["showStats", "showStatsMass",  "showStatsESTE","showStatsEMTE","showStatsMTE","showStatsSTE","showStatsTTE","showStatsPTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"),
                 this.protocolMode || (this.addOptions(["blockPopups"], "extrasGroup"),
                     $("#noSkins, #noColors, #skipStats, #showQuest").addClass("js-switch-vanilla"),
                     $(".skinsGroup h5").after('<label class="noSkins">' + h.noSkins +" </label>"),
@@ -3997,7 +4029,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.closeConnection();
                 this.flushData();
                 this.setParty();
-                console.log("Testing vectorT5..")
+                console.log("Testing vectorT6..")
                 console.log('[Legend mod Express] Connecting to server'),
                     this.privateMode && this.privateIP ? this.socket = new WebSocket(this.privateIP) : this.socket = new WebSocket(this.publicIP),
                     this.socket['ogarioWS'] = true,
@@ -6691,7 +6723,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.playerMaxMass = ~~(t[e - 1].size * t[e - 1].size / 100);
                     this.playerSplitCells = e;
                 }
-                if (v.showStatsSTE) {
+                if (true) {
                     var i = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
                     // this.STE = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null; //Sonia2
                     this.STE = Math.floor(i*0.375); //Sonia2
