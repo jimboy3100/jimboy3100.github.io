@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.927 MEGA TEST
+// v1.941 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2936,7 +2936,8 @@ var thelegendmodproject = function(t, e, i) {
                             o = checktypeImgVid;
                         o.src = t;
                         // o = new Image();
-                        o.crossOrigin = 'anonymous', o.onload = function() {
+                        o.crossOrigin = 'anonymous', 
+						o.onload = function() {
                             i.changeSkinPreview(o, e);
                         };
                     }
@@ -3656,7 +3657,7 @@ var thelegendmodproject = function(t, e, i) {
                 } else {
                     t[e] = new Image();
                 }
-                t[e].crossOrigin = 'anonymous';
+                t[e].crossOrigin = 'Anonymous';
                 t[e]['onload'] = function() {
                     this.complete &&
                     this.width &&
@@ -3666,7 +3667,19 @@ var thelegendmodproject = function(t, e, i) {
                     (i.cacheQueue.push(e),
                     1 == i.cacheQueue.length &&
                     i.cacheSkin(i.customSkinsCache));
-                }, t[e].src = e;
+                }, 
+				t[e]['onerror'] = function() {
+					//console.log("error loading image: "+ e);
+					if (e.includes(window.EnvConfig.config_url)){
+						e= "https://jimboy3100.github.io/vanillaskins/" + e.split('/').pop(); //if CORS policy on miniclip images, use other source
+						//console.log("new destination is:" + e);
+						ogarminimapdrawer.customSkinsMap[window.lastusednameforskin] = e;
+						ogarminimapdrawer.loadSkin(t, e);
+						return e;
+						
+					}
+					};
+				t[e].src = e;
             },
             'cacheSkin': function(t) {
                 //console.log(t);  //////// return the image src
@@ -6457,6 +6470,7 @@ var thelegendmodproject = function(t, e, i) {
                                                 console.log("[Legend mod Express] " + LowerCase(y) + " skin found. Skin registered");
                                                 core.registerSkin(y, null, "https://jimboy3100.github.io/agario/live/flags/" + LowerCase(y) + ".png", null);
                                             } else {
+												window.lastusednameforskin=y;
                                                 ogarminimapdrawer.customSkinsMap[y] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
                                                 ogarminimapdrawer.loadSkin(ogarminimapdrawer.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
                                             }
