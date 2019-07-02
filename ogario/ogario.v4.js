@@ -3997,7 +3997,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.closeConnection();
                 this.flushData();
                 this.setParty();
-                console.log("Testing vectorS8..")
+                console.log("Testing vectorT2..")
                 console.log('[Legend mod Express] Connecting to server'),
                     this.privateMode && this.privateIP ? this.socket = new WebSocket(this.privateIP) : this.socket = new WebSocket(this.publicIP),
                     this.socket['ogarioWS'] = true,
@@ -4292,10 +4292,6 @@ var thelegendmodproject = function(t, e, i) {
                     var o = 5;
                     t(ogarcopythelb.nick), t(nk), t(ogarcopythelb.color), t(i.playerColor), this['sendBuffer'](s);
                 }
-                if (this.isSLGSocketOpen()){
-                    this.sendSLG("A");
-                    this.sendSLG("B");
-                }
             },
             'sendPlayerPosition': function() {
                 if (this.isSocketOpen() && i.play && this.playerID) {
@@ -4374,7 +4370,7 @@ var thelegendmodproject = function(t, e, i) {
                         this.nick = cb;
                         this.skinID = i;
                         this.skinURL = s;
-                        this.lbgpi=4; //Sonia3
+                        this.lbgpi=-1; //Sonia4
                         this.x = 0;
                         this.y = 0;
                         this.lastX = 0;
@@ -4458,7 +4454,7 @@ var thelegendmodproject = function(t, e, i) {
                 for (var i =0; i<this.teamPlayers.length; i++){
                     var k = this.teamPlayers[i];
                     if (k.mass > mm){
-                        if (k.lbgpi<=3){
+                        if (k.lbgpi<=3 && k.lbgpi>=0){
                             mm = k.mass;
                             max = k.lbgpi;
                         }
@@ -4485,10 +4481,12 @@ var thelegendmodproject = function(t, e, i) {
                             this.setTargetStatus(2);
                         }
                     }
+                    var namead="";
+                    if(e.lbgpi<0)namead+="[ℵ]";
                     if (e.alive) {
                         this.top5.push({
                             "id": e.id,
-                            "nick": e.nick,
+                            "nick": e.nick+namead,
                             "x": e.x,
                             "y": e.y,
                             "mass": e.mass,
