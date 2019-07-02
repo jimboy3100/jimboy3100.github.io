@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.941 MEGA TEST
+// v1.942 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -207,6 +207,58 @@ function LowerCase(str) {
 }
 var legendflags = ["argentina", "belarus", "cambodia", "isis", "jamaica", "mexico", "pakistan", "poland", "scotland", "somalia", "spain", "sweden", "switzerland", "thailand", "venezuela", "2ch", "4chan", "8ch", "9gag", "cameron", "irs", "receita-federal", "9gag", "agario-candle", "australia", "austria", "ayy-lmao", "bait", "bangladesh", "belgium", "berlusconi", "blatter", "boris", "bosnia", "botswana", "brazil", "bulgaria", "bush", "byzantium", "cambodia", "canada", "chavez", "chile", "china", "cia", "clinton", "confederate", "croatia", "cuba", "denmark", "dilma", "earth", "estonia", "european-union", "facebook", "facepunch", "feminism", "fidel", "finland", "france", "french-kingdom", "german-empire", "germany", "greece", "hillary", "hollande", "hungary", "imperial-japan", "india", "indiana", "iran", "iraq", "ireland", "italy", "jamaica", "japan", "kc", "kim-jong-un", "latvia", "lithuania", "luxembourg", "maldivas", "mars", "matriarchy", "merkel", "mexico", "nasa", "netherlands", "nigeria", "north-korea", "norway", "obama", "origin", "pakistan", "palin", "patriarchy", "peru", "pewdiepie", "piccolo", "pokerface", "portugal", "prodota", "prussia", "putin", "qing-dynasty", "quebec", "queen", "reddit", "romania"];
 
+var emoticonicons = {
+                ':)': 'smile.svg',
+                ';)': 'wink.svg',
+                '=)': 'smirk.svg',
+                ':D': 'grin.svg',
+                'X-D': 'xgrin.svg',
+                '=D': 'joy.svg',
+                ':(': 'sad.svg',
+                ';(': 'cry.svg',
+                ':P': 'tongue.svg',
+                ';P': 'tonguew.svg',
+                ':*': 'kiss.svg',
+                '$)': 'smileh.svg',
+                '<3': 'heart.svg',
+                '8=)': 'cool.svg',
+                ':o': 'astonished.svg',
+                '(:|': 'sweat.svg',
+                ':|': 'neutral.svg',
+                ':\\': 'unamused.svg',
+                ':@': 'pouting.svg',
+                '|-)': 'sleep.svg',
+                '^_^': 'relaxed.svg',
+                '-_-': 'expressionless.svg',
+                '$_$': 'money.svg',
+                'O:)': 'angel.svg',
+                '3:)': 'devil.svg',
+                '(poop)': 'poo.svg',
+                '(fuck)': 'finger.svg',
+                '(clap)': 'clap.svg',
+                '(ok)': 'ok.svg',
+                '(victory)': 'victory.svg',
+                '(y)': 'thumb.svg',
+                '(n)': 'thumbd.svg',
+
+                '(angry)': 'newangry.svg',
+                '(clown)': 'newclown.svg',
+                '(crazy)': 'newcrazy.svg',
+                '(devil)': 'newdevil.svg',
+                '(devil2)': 'newdevil2.svg',
+                '(fb)': 'newfb.svg',
+                '(google)': 'newgplus.svg',
+                '(ghost)': 'newghost.svg',
+                '(heel)': 'newheel.svg',
+                '(kiss)': 'newkiss.svg',
+                '(lipstick)': 'newlipstick.svg',
+                //				'(rage)': 'newrage.svg',
+                '(teacher)': 'newteacher.svg',
+                '(together)': 'newtogether.svg',
+                '(toothy)': 'newtoothy.svg',
+                '(baby)': 'newbaby.svg',
+                '(wow)': 'newwow.svg'
+            }
 var thelegendmodproject = function(t, e, i) {
     //here starts ogario
     (function(i) {
@@ -1051,58 +1103,6 @@ var thelegendmodproject = function(t, e, i) {
                 '"': '&quot;',
                 '\'': '&#39;',
                 '/': '&#x2F;'
-            },
-            d = {
-                ':)': 'smile.svg',
-                ';)': 'wink.svg',
-                '=)': 'smirk.svg',
-                ':D': 'grin.svg',
-                'X-D': 'xgrin.svg',
-                '=D': 'joy.svg',
-                ':(': 'sad.svg',
-                ';(': 'cry.svg',
-                ':P': 'tongue.svg',
-                ';P': 'tonguew.svg',
-                ':*': 'kiss.svg',
-                '$)': 'smileh.svg',
-                '<3': 'heart.svg',
-                '8=)': 'cool.svg',
-                ':o': 'astonished.svg',
-                '(:|': 'sweat.svg',
-                ':|': 'neutral.svg',
-                ':\\': 'unamused.svg',
-                ':@': 'pouting.svg',
-                '|-)': 'sleep.svg',
-                '^_^': 'relaxed.svg',
-                '-_-': 'expressionless.svg',
-                '$_$': 'money.svg',
-                'O:)': 'angel.svg',
-                '3:)': 'devil.svg',
-                '(poop)': 'poo.svg',
-                '(fuck)': 'finger.svg',
-                '(clap)': 'clap.svg',
-                '(ok)': 'ok.svg',
-                '(victory)': 'victory.svg',
-                '(y)': 'thumb.svg',
-                '(n)': 'thumbd.svg',
-
-                '(angry)': 'newangry.svg',
-                '(clown)': 'newclown.svg',
-                '(crazy)': 'newcrazy.svg',
-                '(devil)': 'newdevil.svg',
-                '(devil2)': 'newdevil2.svg',
-                '(fb)': 'newfb.svg',
-                '(google)': 'newgplus.svg',
-                '(ghost)': 'newghost.svg',
-                '(heel)': 'newheel.svg',
-                '(kiss)': 'newkiss.svg',
-                '(lipstick)': 'newlipstick.svg',
-                //				'(rage)': 'newrage.svg',
-                '(teacher)': 'newteacher.svg',
-                '(together)': 'newtogether.svg',
-                '(toothy)': 'newtoothy.svg',
-                '(baby)': 'newbaby.svg',
-                '(wow)': 'newwow.svg'
             },
             p = [{
                 name: "imgur.com",
@@ -3103,9 +3103,9 @@ var thelegendmodproject = function(t, e, i) {
                     $("body").append('<ul id="messages"></ul>'),
                     $("body").append('<div id="message-box"><div id="chat-emoticons"></div><div id="message-menu"><a href="#" class="chat-sound-notifications ogicon-volume-high"></a><a href="#" class="chat-active-users ogicon-user-check"></a><a href="#" class="chat-muted-users ogicon-user-minus"></a><a href="#" class="show-chat-emoticons ogicon-smile"></a></div><input type="text" id="message" class="form-control" placeholder="' +
                         h.enterChatMsg + '..." maxlength="80"></div>'),
-                    $("body").append('<div id="chat-box"></div>'), d){
-                    if (d.hasOwnProperty(t)) {
-                        $("#chat-emoticons").append('<img src="https://jimboy3100.github.io/banners/emoticons/' + d[t] + '" alt="' + t + '" class="emoticon">');
+                    $("body").append('<div id="chat-box"></div>'), emoticonicons){
+                    if (emoticonicons.hasOwnProperty(t)) {
+                        $("#chat-emoticons").append('<img src="https://jimboy3100.github.io/banners/emoticons/' + emoticonicons[t] + '" alt="' + t + '" class="emoticon">');
                     }
                 }
                 $("body").append('<div id="exp-imp"><div id="exp-imp-menu"><button id="close-exp-imp" class="btn btn-danger">' + h.close + '</button></div><div id="exp-imp-settings"></div></div>'),
@@ -4513,7 +4513,7 @@ var thelegendmodproject = function(t, e, i) {
                 //return String(t).replace(/\&lt\;3/g, '<3').replace(/℄/g, '℄ Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(t) {
                 return String(t).replace(/\&lt\;3/g, '<3').replace(/℄/g, '℄ Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(t) {
                     //console.log(d[t]);
-                    return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + d[t] + '\" alt=\"' + t + '\" class=\"emoticon\">';
+                    return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + emoticonicons[t] + '\" alt=\"' + t + '\" class=\"emoticon\">';
                 });
 
             },
