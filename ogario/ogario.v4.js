@@ -4029,7 +4029,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.closeConnection();
                 this.flushData();
                 this.setParty();
-                console.log("Testing vectorK7..")
+                console.log("Testing vectorK8..")
                 console.log('[Legend mod Express] Connecting to server'),
                     this.privateMode && this.privateIP ? this.socket = new WebSocket(this.privateIP) : this.socket = new WebSocket(this.publicIP),
                     this.socket['ogarioWS'] = true,
@@ -4175,7 +4175,7 @@ var thelegendmodproject = function(t, e, i) {
             'sendSLG': function(i,t) {
                 if (this.isSLGSocketOpen()){
                     if (ogarcopythelb.clanTag!=this.roomc){
-                        this.SLGconnect();
+                        this.SLGconnect(window.legendmod.ws);
                         return;
                     }
                     var s=this.packSLG(i);
@@ -8719,4 +8719,3 @@ var thelegendmodproject = function(t, e, i) {
         ogarhusettings();
     })(window.ogario);
 }
-    
