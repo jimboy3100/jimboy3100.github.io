@@ -3992,7 +3992,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.closeConnection();
                 this.flushData();
                 this.setParty();
-                console.log("[Legend mod Express] Testing vectorK97..")
+                console.log("[Legend mod Express] Testing vectorM2..")
                 console.log('[Legend mod Express] Connecting to server'),
                     this.privateMode && this.privateIP ? this.socket = new WebSocket(this.privateIP) : this.socket = new WebSocket(this.publicIP),
                     this.socket['ogarioWS'] = true,
@@ -4180,11 +4180,14 @@ var thelegendmodproject = function(t, e, i) {
                     case "R":
                         this.getSuperLegendSDATA(s);
                         break;
+                    case "Q":
+                        this.getSLGQinfo(t);
+                        break;
                 }
             },
             //Sonia4
             'packSLG': function(t) {
-                t += ("000000" + this.playerID).slice(-6);
+                t += this.packInt(this.playerID,4);
                 return t;
             },
             //Sonia4
@@ -4194,12 +4197,12 @@ var thelegendmodproject = function(t, e, i) {
             },
             //Sonia4
             'getSLGID': function(t) {
-                t = t.slice(0, 6);
-                return parseInt(t);
+                t = t.slice(0,2)
+                return this.unpackInt(t);
             },
             //Sonia4
             'getSLGVal': function(t) {
-                t = t.slice(6);
+                t = t.slice(2);
                 return t;
             },
             'sendPlayerState': function(t) {
@@ -4318,6 +4321,15 @@ var thelegendmodproject = function(t, e, i) {
                 }
                 return s;
             },
+            'packFloat': function(x,m) {
+                if (m==2){
+                    x=Math.floor(x*100000);
+                }
+                else{
+                    x=Math.floor(x*1000000000);
+                }
+                return this.packInt(x,m);
+            },
             'unpackInt': function(s) {
                 var x = 0;
                 if (s.length==1){
@@ -4329,10 +4341,93 @@ var thelegendmodproject = function(t, e, i) {
                 }
                 return x;
             },
+            'unpackFloat': function(s) {
+                var x = this.unpackInt(s);
+                if (s.length==1){
+                    x=x/100000;
+                }
+                else{
+                    x=x/1000000000;
+                }
+                return x;
+            },
+            'getrel': function(x,axis) {
+                var v = window.legendmod;
+                if(axis==0)return x/(v.mapMaxX-v.mapMinX);
+                else return x/(v.mapMaxY-v.mapMinY);
+            },
             'sendSLGQinfo': function() {
-                var c = window.legendmod.cells;
-                var v = window.legendmod.viruses;
-                var f = window.legendmod.food;
+                return ;
+                var msg = "";
+                var vlen = window.legendmod.viruses.length;
+                msg+=this.packInt(vlen,2);
+                for(var i=0;i<vlen;i++){
+                    var z = window.legendmod.viruses[i];
+                    msg+=this.packInt(z.id,4);
+                    msg+=this.packFloat(this.getrel(z.x,0),4);
+                    msg+=this.packFloat(this.getrel(z.y,1),4);
+                    msg+=this.packInt(z.mass,2);
+                }
+                var cmsg = "";
+                var clen = 0;
+                var cells = window.legendmod.cells;
+                for (var i=0;i<cells.length;i++){
+                    var z = cells[i];
+                    if (!z.isVirus){
+                        cmsg+=this.packInt(z.id,4);
+                        cmsg+=this.packFloat(this.getrel(z.x,0),4);
+                        cmsg+=this.packFloat(this.getrel(z.y,1),4);
+                        cmsg+=this.packInt(z.mass,2);
+                        clen++;
+                    }
+                }
+                msg+=this.packInt(clen,2);
+                msg+=cmsg;
+
+                //Here should be food part
+
+                this.sendSLG("Q",msg);
+            },
+            'getSLGQinfo': function(t) {
+                var ids = this.getSLGID(t);
+                var id = this.checkPlayerID(ids);
+                if (null == id) return;
+                var msg = this.getSLGVal(t);
+
+                //Get viruses
+                var vlen = this.unpackInt(msg.slice(0,1));
+                msg=msg.slice(1);
+                var temp = [];
+                for(var i=0;i<vlen;i++){
+                    var z = [];
+                    z.push(this.unpackInt(msg.slice(0,2)));
+                    z.push(this.unpackFloat(msg.slice(2,4)));
+                    z.push(this.unpackFloat(msg.slice(4,6)));
+                    z.push(this.unpackInt(msg.slice(6,7)));
+                    temp.push(z);
+                    msg=msg.slice(7);
+                }
+                this.teamPlayers[id].dvirs=temp;
+
+                //Get normal cells
+                var clen = this.unpackInt(msg.slice(0,1));
+                msg=msg.slice(1);
+                var temp = [];
+                var cells = window.legendmod.cells;
+                for (var i=0;i<clen;i++){
+                    var z = [];
+                    z.push(this.unpackInt(msg.slice(0,2)));
+                    z.push(this.unpackFloat(msg.slice(2,4)));
+                    z.push(this.unpackFloat(msg.slice(4,6)));
+                    z.push(this.unpackInt(msg.slice(6,7)));
+                    temp.push(z);
+                    msg=msg.slice(7);
+                }
+                this.teamPlayers[id].dcells=temp;
+
+                //Here should be food part
+
+                this.sendSLG("Q",msg);
             },
             //Sonia4
             'sendSuperLegendSDATA': function() {
@@ -4498,7 +4593,7 @@ var thelegendmodproject = function(t, e, i) {
                 this.updatevnr(); //Sonia3
                 if (window.legendmod.delstate >= 0) { //Sonia3
                     window.legendmod.delstate += 1; //Sonia3
-                    if (window.legendmod.delstate > 5) window.legendmod.delstate = -1; //Sonia3
+                    if (window.legendmod.delstate > 3) window.legendmod.delstate = -1; //Sonia3
                 } //Sonia3
                 var t = 0;
                 for (; t < this.teamPlayers.length; t++) {
@@ -6597,7 +6692,8 @@ break;
                 return this.mapMaxY - (x - this.mapMinY);
             },
             'calculatebgpi': function(x, y) {
-                var calc = (x < this.mapMidX + 750 && x > this.mapMidX - 750) || (y < this.mapMidY + 750 && y > this.mapMidY - 750) ? 4 : x >= this.mapMidX && y < this.mapMidY ? 0 : x < this.mapMidX && y < this.mapMidY ? 1 : x < this.mapMidX && y >= this.mapMidY ? 2 : 3;
+                var ofs = 150;
+                var calc = (x < this.mapMidX + ofs && x > this.mapMidX - ofs) || (y < this.mapMidY + ofs && y > this.mapMidY - ofs) ? 4 : x >= this.mapMidX && y < this.mapMidY ? 0 : x < this.mapMidX && y < this.mapMidY ? 1 : x < this.mapMidX && y >= this.mapMidY ? 2 : 3;
                 if ((window.legendmod.lbgpi == 4 || calc == 4 || window.legendmod.lbgpi == calc) && window.legendmod.delstate < 0) {
                     window.legendmod.lbgpi = calc;
                     return calc;
