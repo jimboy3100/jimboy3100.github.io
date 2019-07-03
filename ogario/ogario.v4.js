@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.945 MEGA TEST
+// v1.946 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4476,7 +4476,7 @@ var thelegendmodproject = function(t, e, i) {
                 window.legendmod.setrot = 1;
                 window.legendmod.rotcnt = 0;
                 var mat = window.legendmod.vector[window.legendmod.vnr];
-				window.legendmod.prevbgpi=window.legendmod.bgpi; //jimboy31001
+				window.legendmod.prevvnr=window.legendmod.vnr; //jimboy31001
                 if ((b==0||b==3) && (window.legendmod.bgpi==1||window.legendmod.bgpi==2))mat[0]=!mat[0];
                 if ((b==1||b==2) && (window.legendmod.bgpi==0||window.legendmod.bgpi==3))mat[0]=!mat[0];
                 if ((b==0||b==1) && (window.legendmod.bgpi==2||window.legendmod.bgpi==3))mat[1]=!mat[1];
@@ -6687,10 +6687,10 @@ var thelegendmodproject = function(t, e, i) {
                 this.removePlayerCell && !this.playerCells.length && (this.play = false, ogarminimapdrawer.onPlayerDeath(), ogarminimapdrawer.showMenu(300));
                 //window.counterCell=0;
                 if (window.autoPlay && legendmod.play) {
-                    if (window.legendmod.prevbgpi){
-						legendmod3.setvnr(window.legendmod.prevbgpi);
+                    if (window.legendmod.prevvnr){
+						window.legendmod.vnr=window.legendmod.prevvnr;
 						toastr.info('<b>[SERVER]:</b> Map reversed to the default');
-						window.legendmod.prevbgpi=null;
+						window.legendmod.prevvnr=null;
 					}
 					calcTarget();					
                 }
