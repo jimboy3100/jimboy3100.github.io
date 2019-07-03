@@ -650,7 +650,7 @@ function legendmaster(self) {
         $(".progress-bar-striped").width("0%");
         $("#login-facebook").attr("class", "menu-bar-button");
         $("#login-google").attr("class", "menu-bar-button");
-        toastr.warning("Logged out!");
+        toastr.info("<b>[SERVER]:</b> Logged out");
         master.logout();
     };
     self.facebookLogin = function() {
