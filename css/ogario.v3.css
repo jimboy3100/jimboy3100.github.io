@@ -853,7 +853,7 @@ input.hide-url::selection,input.stream-mode::selection{
     display:block
 }
 #top5-hud{
-    width:250px;
+    width:300px;
     font-size:100%;
     top:55px;
     left:10px;
