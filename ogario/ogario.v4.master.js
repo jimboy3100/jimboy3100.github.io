@@ -1,4 +1,4 @@
-//v8.7
+//v8.8
 window.EnvConfig = {};
 window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
 window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
@@ -86,7 +86,7 @@ function legendmaster(self) {
                 $(".progress-bar-striped").width("100%");
                 $("#login-google").attr("class", "menu-bar-button");
                 $("#login-facebook").attr("class", "menu-bar-button barf");
-                toastr.info("Logged in to Facebook!");
+                toastr.info("<b>[SERVER]:</b> Logged in to Facebook!");
             } else {
                 if (f < 3) {
                     f++;
@@ -138,7 +138,7 @@ function legendmaster(self) {
             $(".progress-bar-striped").width("100%");
             $("#login-facebook").attr("class", "menu-bar-button");
             $("#login-google").attr("class", "menu-bar-button barf");
-            toastr.info("Logged in to Google!");
+            toastr.info("<b>[SERVER]:</b> Logged in to Google!");
         }
     }
     var options = {
