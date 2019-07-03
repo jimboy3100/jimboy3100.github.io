@@ -3992,7 +3992,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.closeConnection();
                 this.flushData();
                 this.setParty();
-                console.log("[Legend mod Express] Testing vectorK9..")
+                console.log("[Legend mod Express] Testing vectorK97..")
                 console.log('[Legend mod Express] Connecting to server'),
                     this.privateMode && this.privateIP ? this.socket = new WebSocket(this.privateIP) : this.socket = new WebSocket(this.publicIP),
                     this.socket['ogarioWS'] = true,
@@ -4305,11 +4305,29 @@ var thelegendmodproject = function(t, e, i) {
                     this["sendBuffer"](t);
                 }
             },
-            'packInt': function(x) {
-
+            'packInt': function(x,m) {
+                var s = "";
+                if (m==2){
+                    s+=String.fromCharCode(x)
+                }
+                else{
+                    var p = x/Math.pow(2,16);
+                    var r = x % Math.pow(2,16);
+                    s+=String.fromCharCode(Math.floor(p));
+                    s+=String.fromCharCode(Math.floor(r));
+                }
+                return s;
             },
             'unpackInt': function(s) {
-
+                var x = 0;
+                if (s.length==1){
+                    x+=s.charCodeAt(0);
+                }
+                else{
+                    x+=s.charCodeAt(0)*Math.pow(2,16);
+                    x+=s.charCodeAt(1);
+                }
+                return x;
             },
             'sendSLGQinfo': function() {
                 var c = window.legendmod.cells;
@@ -4496,7 +4514,7 @@ var thelegendmodproject = function(t, e, i) {
                     if (e.alive) {
                         this.top5.push({
                             "id": e.id,
-                            "nick": e.nick + namead,
+                            "nick": namead+e.nick,
                             "x": e.x,
                             "y": e.y,
                             "mass": e.mass,
