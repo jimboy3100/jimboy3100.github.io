@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.944 MEGA TEST
+// v1.945 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -6687,7 +6687,12 @@ var thelegendmodproject = function(t, e, i) {
                 this.removePlayerCell && !this.playerCells.length && (this.play = false, ogarminimapdrawer.onPlayerDeath(), ogarminimapdrawer.showMenu(300));
                 //window.counterCell=0;
                 if (window.autoPlay && legendmod.play) {
-                    calcTarget();
+                    if (window.legendmod.prevbgpi){
+						legendmod3.setvnr(window.legendmod.prevbgpi);
+						toastr.info('<b>[SERVER]:</b> Map reversed to the default');
+						window.legendmod.prevbgpi=null;
+					}
+					calcTarget();					
                 }
                 //if (window.historystate && legendmod.play) {historystate();}
             },
