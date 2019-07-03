@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.942 MEGA TEST
+// v1.943 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -1810,10 +1810,10 @@ var thelegendmodproject = function(t, e, i) {
                     } else if (t.indexOf('oswald') == 0) {
                         tempFont = 'Oswald';
                     } else if (t.indexOf('shojumaru') == 0) {
-                        console.log('font: shojumaru');
+                        //console.log('font: shojumaru');
                         tempFont = 'Shojumaru';
                     } else if (t.indexOf('allura') == 0) {
-                        console.log('font: allura');
+                        //console.log('font: allura');
                         tempFont = 'Allura';
                     }
                     //					else (if t.indexOf('ubuntu')){
@@ -4029,7 +4029,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.closeConnection();
                 this.flushData();
                 this.setParty();
-                console.log("Testing vectorK8..")
+                console.log("[Legend mod Express] Testing vectorK8..")
                 console.log('[Legend mod Express] Connecting to server'),
                     this.privateMode && this.privateIP ? this.socket = new WebSocket(this.privateIP) : this.socket = new WebSocket(this.publicIP),
                     this.socket['ogarioWS'] = true,
@@ -4495,8 +4495,9 @@ var thelegendmodproject = function(t, e, i) {
                     }
                 }
                 if(mm>0 && (!window.legendmod.play||mm>window.legendmod.playerMass) && max<=3 && window.legendmod.bgpi<=3 && !window.legendmod.setrot){
-                    console.log("VMR UPDATE:",window.legendmod.vnr,mm,window.legendmod.playerMass,max,window.legendmod.bgpi);
+                    console.log("[Legend mod Express] VMR UPDATE:",window.legendmod.vnr,mm,window.legendmod.playerMass,max,window.legendmod.bgpi);
                     this.setvnr(max);
+					toastr['warning']('<b>[SERVER]:</b> Map fixed with LM players');
                 }
             },
             'updateTeamPlayers': function() {
@@ -4532,7 +4533,7 @@ var thelegendmodproject = function(t, e, i) {
                         }
                     }
                 }
-                this.top5["sort"](function(row, conf) {
+                this.top5.sort(function(row, conf) {
                     return conf.mass - row.mass;
                 }), this.displayTop5();
 
@@ -8693,7 +8694,7 @@ var thelegendmodproject = function(t, e, i) {
             },
             "proxyMobileData": function(arr = []) {
                 if (!Array.isArray(arr)) {
-                    console.log("ProxyMobileData ERROR: Array data required.");
+                    console.log("[Legend mod Express] ProxyMobileData ERROR: Array data required.");
                     return;
                 }
                 if (arr[0] == 8) {
