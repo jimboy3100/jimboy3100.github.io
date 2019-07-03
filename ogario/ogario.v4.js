@@ -4497,7 +4497,7 @@ var thelegendmodproject = function(t, e, i) {
                 if(mm>0 && (!window.legendmod.play||mm>window.legendmod.playerMass) && max<=3 && window.legendmod.bgpi<=3 && !window.legendmod.setrot){
                     console.log("[Legend mod Express] VMR UPDATE:",window.legendmod.vnr,mm,window.legendmod.playerMass,max,window.legendmod.bgpi);
                     this.setvnr(max);
-					toastr['warning']('<b>[SERVER]:</b> Map fixed with LM players');
+					toastr['info']('<b>[SERVER]:</b> Map fixed with LM players');
                 }
             },
             'updateTeamPlayers': function() {
