@@ -96,7 +96,7 @@ function checkvideoSkinPlayerflag2(a, b) {
 function checkVideos1(a) {
 
     if (!videoSkinPlayerflag[a]) {
-        console.log("video skins activated");
+        console.log("[Legend mod Express] Video skins activated");
         window.videoSkinPlayer[a] = document.createElement("video"); // create a video element
         window.videoSkinPlayer[a].crossOrigin = 'anonymous';
         window.videoSkinPlayer[a].src = a;
@@ -109,7 +109,7 @@ function checkVideos3(o) {
         var minutes = parseInt(o.duration / 60, 10);
         var seconds = o.duration % 60;
         if (minutes > 5) {
-            toastr["warning"]("<b>[SERVER]:</b> " + "Avoid using video skins bigger than 6 minutes");
+            toastr.warning("<b>[SERVER]:</b> " + "Avoid using video skins bigger than 6 minutes");
         }
     }
 }
@@ -2748,7 +2748,7 @@ var thelegendmodproject = function(t, e, i) {
                 $('#messages').empty(), t && (toastr['clear'](), v.showChatBox && ($('#chat-box .message').remove(), this.chatHistory.length = 0));
             },
             'displayChatInfo': function(t, e) {
-                t ? toastr['info'](h[e + 'A']) : toastr['error'](h[e + 'B']);
+                t ? toastr.info(h[e + 'A']) : toastr['error'](h[e + 'B']);
             },
             'setDisableChat': function() {
                 v.hideChat = v.disableChat;
@@ -4124,10 +4124,10 @@ var thelegendmodproject = function(t, e, i) {
                         toastr["error"]("Zamkni\u0119to po\u0142\u0105czenie z serwerem!");
                     }
                     if (this["privateMode"]) {
-                        toastr["info"]("Prze\u0142\u0105czono na serwer prywatny!");
+                        toastr.info("Prze\u0142\u0105czono na serwer prywatny!");
                         $(".party-panel").show();
                     } else {
-                        toastr["info"]("Prze\u0142\u0105czono na serwer publiczny!");
+                        toastr.info("Prze\u0142\u0105czono na serwer publiczny!");
                         $("#active-parties").empty();
                         $(".party-panel").hide();
                     }
@@ -4497,7 +4497,7 @@ var thelegendmodproject = function(t, e, i) {
                 if(mm>0 && (!window.legendmod.play||mm>window.legendmod.playerMass) && max<=3 && window.legendmod.bgpi<=3 && !window.legendmod.setrot){
                     console.log("[Legend mod Express] VMR UPDATE:",window.legendmod.vnr,mm,window.legendmod.playerMass,max,window.legendmod.bgpi);
                     this.setvnr(max);
-					toastr['info']('<b>[SERVER]:</b> Map fixed with LM players');
+					toastr.info('<b>[SERVER]:</b> Map fixed with LM players');
                 }
             },
             'updateTeamPlayers': function() {
@@ -4599,7 +4599,7 @@ var thelegendmodproject = function(t, e, i) {
                     var e = this.chatMutedUserIDs.indexOf(t);
                     if (-1 != e) {
                         this.chatMutedUserIDs.splice(e, 1);
-                        toastr["info"](h["userUnmuted"].replace("%user%", "<strong>" + this.escapeHTML(this.chatMutedUser[t]) + "</strong>"));
+                        toastr.info(h["userUnmuted"].replace("%user%", "<strong>" + this.escapeHTML(this.chatMutedUser[t]) + "</strong>"));
                         delete this.chatMutedUser[t];
                     }
                 }
@@ -4637,7 +4637,7 @@ var thelegendmodproject = function(t, e, i) {
                                 $('#chat-box').perfectScrollbar('update'), $('#chat-box').animate({
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
                             }, 500), void(v.chatSounds && this.playSound(this.messageSound));
-                            v.hideChat || (toastr['success']('<span class=\"message-nick\">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r), v.chatSounds && this.playSound(this.messageSound)), this.chatHistory.push({
+                            v.hideChat || (toastr.success('<span class=\"message-nick\">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r), v.chatSounds && this.playSound(this.messageSound)), this.chatHistory.push({
                                 'nick': a,
                                 'message': n
                             }), this.chatHistory.length > 15 && this.chatHistory.shift();
@@ -4646,7 +4646,7 @@ var thelegendmodproject = function(t, e, i) {
                                 $('#chat-box').perfectScrollbar('update'), $('#chat-box').animate({
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
                             }, 500), void(v.chatSounds && this.playSound(this.commandSound));
-                            v.hideChat || (toastr['warning']('<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r), v.chatSounds && this.playSound(this.commandSound));
+                            v.hideChat || (toastr.warning('<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r), v.chatSounds && this.playSound(this.commandSound));
                         } else $('#messages').append(o);
                     }
                 }
