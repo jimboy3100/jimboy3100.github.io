@@ -4510,7 +4510,7 @@ var thelegendmodproject = function(t, e, i) {
                         }
                     }
                     var namead = "";
-                    if (e.lbgpi < 0) namead += "[ℵ]";
+                    if (e.lbgpi < 0) namead += "[ℵ] ";
                     if (e.alive) {
                         this.top5.push({
                             "id": e.id,
