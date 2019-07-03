@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.943 MEGA TEST
+// v1.944 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4476,6 +4476,7 @@ var thelegendmodproject = function(t, e, i) {
                 window.legendmod.setrot = 1;
                 window.legendmod.rotcnt = 0;
                 var mat = window.legendmod.vector[window.legendmod.vnr];
+				window.legendmod.prevbgpi=window.legendmod.bgpi; //jimboy31001
                 if ((b==0||b==3) && (window.legendmod.bgpi==1||window.legendmod.bgpi==2))mat[0]=!mat[0];
                 if ((b==1||b==2) && (window.legendmod.bgpi==0||window.legendmod.bgpi==3))mat[0]=!mat[0];
                 if ((b==0||b==1) && (window.legendmod.bgpi==2||window.legendmod.bgpi==3))mat[1]=!mat[1];
