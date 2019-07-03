@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.947 MEGA TEST
+// v1.946 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -6687,7 +6687,7 @@ var thelegendmodproject = function(t, e, i) {
                 this.removePlayerCell && !this.playerCells.length && (this.play = false, ogarminimapdrawer.onPlayerDeath(), ogarminimapdrawer.showMenu(300));
                 //window.counterCell=0;
                 if (window.autoPlay && legendmod.play) {
-                    if (window.legendmod.prevvnr!=null && window.legendmod.prevvnr!=0){
+                    if (window.legendmod.prevvnr!=null || window.legendmod.prevvnr!=0){
 						window.legendmod.vnr=0;
 						toastr.info('<b>[SERVER]:</b> Map reversed to the default');
 						window.legendmod.prevvnr=null;
