@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.957 MEGA TEST
+// v1.959 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4646,7 +4646,7 @@ var thelegendmodproject = function(t, e, i) {
                 window.legendmod.setrot = 1;
                 window.legendmod.rotcnt = 0;
                 var mat = window.legendmod.vector[window.legendmod.vnr];
-                window.legendmod.prevvnr = window.legendmod.vnr; //jimboy31001
+                //window.legendmod.prevvnr = window.legendmod.vnr; //jimboy31001
                 if ((b == 0 || b == 3) && (window.legendmod.bgpi == 1 || window.legendmod.bgpi == 2)) mat[0] = !mat[0];
                 if ((b == 1 || b == 2) && (window.legendmod.bgpi == 0 || window.legendmod.bgpi == 3)) mat[0] = !mat[0];
                 if ((b == 0 || b == 1) && (window.legendmod.bgpi == 2 || window.legendmod.bgpi == 3)) mat[1] = !mat[1];
@@ -6115,11 +6115,15 @@ var thelegendmodproject = function(t, e, i) {
                     else {
                         //if (typeof cell != "undefined") { //when used, autoplay not working as expected
                         if (Object.keys(target2).length == 0) {
-                            var t = cell.x;
-                            var e = cell.y;
+                        var t = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(cell.x) : cell.x; //Sonia3
+                        var e = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(cell.y) : cell.y; //Sonia3							
+                           // var t = cell.x;
+                            //var e = cell.y;
                         } else {
-                            var t = target2.x;
-                            var e = target2.y;
+                        var t = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(target2.x) : target2.x; //Sonia3
+                        var e = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(target2.y) : target2.y; //Sonia3								
+                            //var t = target2.x;
+                            //var e = target2.y;
                         }
                         //}
                     }
@@ -6882,11 +6886,6 @@ break;
                 this.removePlayerCell && !this.playerCells.length && (this.play = false, ogarminimapdrawer.onPlayerDeath(), ogarminimapdrawer.showMenu(300));
                 //window.counterCell=0;
                 if (window.autoPlay && legendmod.play) {
-                    if (window.legendmod.prevvnr != null || window.legendmod.prevvnr != 0) {
-                        window.legendmod.vnr = 0;
-                        toastr.info('<b>[SERVER]:</b> Map reversed to the default');
-                        window.legendmod.prevvnr = null;
-                    }
                     calcTarget();
                 }
                 //if (window.historystate && legendmod.play) {historystate();}
