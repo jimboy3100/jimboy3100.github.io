@@ -14,6 +14,7 @@ else{
 	$("#LanguageAuthorPanel").text(Languageletter34+ ': ');
 	$("#LanguageAuthor").text(translator);	
 }
+
 $("#SHOSHOBtn").click();
 $("#SHOSHOBtn").click();
 $("#XPBtn").click();
@@ -75,10 +76,12 @@ $("#gifting").text(Languageletter22);
 $("#dailyQuests").text(Languageletter23);
 $("#openShopBtn").text(Languageletter20);
 $(".btn.btn-danger.btn-logout").attr('data-original-title',Languageletter31);
-
-
-$(".TimesUsedPanel").replaceWith('<div class="TimesUsedPanel" align="right" display:inline-block;><h6><i>' + Languageletter32+' '+timesopened+
-		'<br>'+ Languageletter33 + ' jimboy3100<br>' + Languageletter34 + ' ' + translator + '</i></h6></div>');
+/*
+$("#UserProfileName").replace('Name', Languageletter362);
+$("#UserProfileUID").replace('Social ID', Languageletter363);
+*/
+$("#TimesUsedPanel").replaceWith('<div id="TimesUsedPanel" align="left" style="display:inline-block; margin-top: -10px; margin-bottom: -10px; "><h6><i>' + Languageletter32+': '+timesopened+
+		'<br>'+ Languageletter33 + ': jimboy3100<br>' + Languageletter34 + ': ' + translator + '</i></h6></div>');
 
 $("#tcm>#tcm-header>p").text(Languageletter35);
 
@@ -466,10 +469,10 @@ $("#message").attr('placeholder', Languageletter295b);
 
 if($('#teambtext').val()==""){
 	$("#top5-hud > h5").each(function() { var text = $(this).html();
-   $(this).html(text.replace('Team top ', Languageletter298 + ' ')); 
+   $(this).html(text.replace('Team', Languageletter298 + ' ')); 
 });}
 if($('#leadbtext').val()==""){
-	$("#leaderboard-hud > h4").text(Languageletter299);
+	$("#leaderboard-hud > h5").text(Languageletter299);
 };
 $("#ChatBtn").attr("data-original-title", Languageletter300);
 $("#SendCommands").attr("data-original-title", Languageletter301);
