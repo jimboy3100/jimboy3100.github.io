@@ -434,6 +434,8 @@ $(".agario-panel.sounds-panel>h5").text(Languageletter286);
 $(".agario-panel.sounds-panel>div>span").eq(0).text(Languageletter287);
 $(".agario-panel.sounds-panel>div>span").eq(1).text(Languageletter288);
 
+//$(".agario-panel.sounds-panel>div>span").eq(2).text(Languageletter288a);
+
 $("#copySIPBtn").text(Languageletter291).attr('data-original-title',Languageletter289);
 $("#copySIPBtn").text(Languageletter291).attr('data-original-title',Languageletter289);
         $("#copySIPBtn").mouseenter(function() {
