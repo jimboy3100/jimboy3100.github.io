@@ -1,6 +1,6 @@
 //Language Pack Handler
 //Legend Mod By Jimboy3100
-//v1.2f
+//v1.2e
 
 //Legend Mod By Jimboy3100
 var Languagetimesused;
@@ -259,7 +259,21 @@ $("#theme-main>div>span").eq(14).text(Languageletter152);
 $("#theme-main>div>span").eq(15).text(Languageletter153);
 $("#theme-main>div>span").eq(16).text(Languageletter154);
 $("#theme-main>div>span").eq(17).text(Languageletter155 + ": ");
-
+/*
+$("#theme-main>div>span").eq(18).text(Languageletter152a);
+$("#theme-main>div>span").eq(19).text(Languageletter152b);
+$("#theme-main>div>span").eq(20).text(Languageletter152c);
+$("#theme-main>div>span").eq(21).text(Languageletter152d);
+$("#theme-main>div>span").eq(22).text(Languageletter152e);
+$("#theme-main>div>span").eq(23).text(Languageletter152f);
+$("#theme-main>div>span").eq(24).text(Languageletter152g);
+$("#theme-main>div>span").eq(25).text(Languageletter152h);
+$("#theme-main>div>span").eq(26).text(Languageletter152i);
+$("#theme-main>div>span").eq(27).text(Languageletter152j);
+$("#theme-main>div>span").eq(28).text(Languageletter152k);
+$("#theme-main>div>span").eq(29).text(Languageletter152l);
+$("#theme-main>div>span").eq(30).text(Languageletter152m);
+*/
 $("#theme-main>div>div>span:nth-child(1)").eq(0).text(Languageletter157 + ": ");
 $("#theme-main>div>div>span:nth-child(1)").eq(1).text(Languageletter158 + ": ");
 $("#theme-main>div>div>span:nth-child(1)").eq(2).text(Languageletter159 + ": ");
@@ -273,6 +287,9 @@ $("#theme-main>div>div>span:nth-child(1)").eq(9).text(Languageletter166 + ": ");
 $("#theme-main>div>div>span:nth-child(1)").eq(10).text(Languageletter167 + ": ");
 $("#theme-main>div>div>span:nth-child(1)").eq(11).text(Languageletter168 + ": ");
 $("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169 + ": ");
+//$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169a + ": ");
+//$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169b + ": ");
+//$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169c + ": ");
 
 $(".restore-settings>a").eq(1).text(Languageletter170);
 $(".btn.btn-block.btn-success.btn-save").text(Languageletter171);
@@ -389,12 +406,17 @@ $("#hotkeys-cfg>div>div:nth-child(1)").eq(39).text(Languageletter271 + " 2");
 $("#hotkeys-cfg>div>div:nth-child(1)").eq(40).text(Languageletter271 + " 3");
 $("#hotkeys-cfg>div>div:nth-child(1)").eq(41).text(Languageletter271 + " 4");
 $("#hotkeys-cfg>div>div:nth-child(1)").eq(42).text(Languageletter271 + " 5");
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(43).text(Languageletter272);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(44).text(Languageletter273);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(45).text(Languageletter274);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(46).text(Languageletter275);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(47).text(Languageletter276);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(48).text(Languageletter277);
+/*
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(43).text(Languageletter271a);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(44).text(Languageletter271b);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(45).text(Languageletter271c);
+*/
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(46).text(Languageletter272);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(47).text(Languageletter273);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(48).text(Languageletter274);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(49).text(Languageletter275);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(50).text(Languageletter276);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(51).text(Languageletter277);
 
 $("#hotkeys-inst").replaceWith('<div id="hotkeys-inst"><ul><li>' + Languageletter278 + '</li><li>' + Languageletter279 + '</li><li>' + Languageletter280 + '</li></ul></div>');
 
