@@ -49,6 +49,11 @@ var Languageletter38="Velocidad zoom:";		//Zoom speed:
 var Languageletter39="Respawn";			//Respawn
 var Languageletter40="Auto respawn";		//Auto respawn 
 var Languageletter41="Respawn rápido (tecla)";			//Quick respawn (hotkey) 
+var Languageletter41a="Comience con efectos especiales";			//Spawn special effects 
+var Languageletter41b="Combinar horas de descanso ";			//Merge timer off
+var Languageletter41c="Sugerido para ser habilitado para reducir Lag";			//Suggested to be enabled for Lag reduce
+var Languageletter41d="Sonido de disparo de virus";			//Virus shot sound
+
 var Languageletter42="Nicks";			//Names
 var Languageletter43="No nicks";		//No names 
 var Languageletter44="Nicks optimizados";		//Optimized names 
@@ -69,6 +74,10 @@ var Languageletter58="Skins";		//Skins
 var Languageletter59="No skins ";		//No skins 
 var Languageletter60="Skins customizadas";		//Custom skins 
 var Languageletter61="Vanilla skins";		//Vanilla skins 
+var Languageletter61a="Física de gelatina";		//Jelly physics 
+var Languageletter61b="Pieles de video";		//Video skins
+var Languageletter61c="Sonido de otras pieles de video cuando ambos C3";		//Sound from other\'s Video skins when both C3
+
 var Languageletter62="Comida optimizada";		//Optimized food 
 var Languageletter6a2="Comida";		//Food 
 var Languageletter63="Auto esconder comida (masa)";		//Auto hide food (mass) 
@@ -80,11 +89,16 @@ var Languageletter68="Mi color customizado";		//My custom color
 var Languageletter69="Mi skin transparente";		//My transparent skin 
 var Languageletter70="Skins transparentes";		//Transparent skins 
 var Languageletter71="Virus transparentes";		//Transparent viruses 
+var Languageletter71a="Brillo del virus";		//Virus Glow
+var Languageletter71b="Colores del arcoiris animados";		//Animated rainbow colors
+
 var Languageletter70a="Células transparentes";		//Transparent cells
 var Languageletter72="Cuadrícula / sectores";		//Grid / sectors
 var Languageletter73="Mostrar cuadrícula";		//Show grid 
 var Languageletter74="Mostrar sectores de fondo";		//Show background sectors 
 var Languageletter75="Mostrar bordes de mapa";		//Show map borders 
+var Languageletter75a="Resplandor de fronteras";		//Border Glow
+
 var Languageletter76="Chat";		//Chat
 var Languageletter77="Inhabilitar chat";		//Disable chat 
 var Languageletter78="Notificaciones de sonido";		//Sound notifications 
@@ -93,18 +107,26 @@ var Languageletter80="Mostrar imágenes en chat";		//Show images on chat
 var Languageletter81="Mostrar vídeos en chat";		//Show videos on chat 
 var Languageletter82="Caja de chat en vez de pop-ups";		//Chatbox instead of popups 
 var Languageletter82a="Minimapa";		//Minimap
-var Languageletter82b="Εμφάνιση μικρού χάρτη";		//Show minimap 
+var Languageletter82b="Mostrar mini mapa";		//Show minimap 
 var Languageletter82c="Mostrar minimapa";		//Show minimap grid 
 var Languageletter82d="Mostrar guías de minimapa";		//Show minimap guides 
 var Languageletter82e="Compañeros de un color";		//One-colored teammates 
+var Languageletter82f="Mostrar extra mini guías de mapas";		//Show extra minimap guides
+var Languageletter82g="Mostrar celulas fantasmas";		//Show ghost cells
+
 var Languageletter83="Ayudantes";		//Helpers
 var Languageletter84="Colores de los oponentes";		//Opponents colors
 var Languageletter85="Aros de los oponentes";		//Opponents rings 
 var Languageletter86="Colores de los virus";		//Viruses colors 
 var Languageletter87="Rango de división";		//Split range 
+var Languageletter87a="Rango de doble división rápida";		//Quick double split range
+var Languageletter87b="Rango de doble división lenta";		//Slow double split range
+
 var Languageletter88="Rango de los virus";		//Viruses range 
 var Languageletter89="Tracking del cursor";		//Cursor tracking 
 var Languageletter90="Indicadores de compañeros";		//Teammates indicators 
+var Languageletter90a="Celulas fantasma";		//Ghost cells
+
 var Languageletter91="Control por ratón";		//Mouse control
 var Languageletter92="LMB - División por mouse";		//LMB - Mouse split 
 var Languageletter93="RMB - Alimentar por mouse";		//RMB - Mouse feed 
@@ -112,8 +134,14 @@ var Languageletter94="Invertir botones del mouse";		//Invert mouse buttons
 var Languageletter94a="HUD";		// HUD
 var Languageletter95="Mostrar top 5 del equipo";		//Show team top 5 
 var Languageletter96="Mostrar rastreo";		//Show targeting 
+var Languageletter96a="Mostrar masa de clasificación";		//Show leaderboard mass
+
 var Languageletter97="Leaderboard centrada";		//Centered leaderboard 
+var Languageletter97a="Cabecera de la tabla de posiciones";		//\"Leaderboard\" header 
+
 var Languageletter98="Estadísticas de juego arriba";		//Game stats at the top 
+var Languageletter98a="Skins en tablero de equipo";		//Skins on teamboard
+
 var Languageletter99="Estadísticas";		//Stats
 var Languageletter100="Mostrar estadísticas de juego";		//Show game stats 
 var Languageletter101="Estadísticas: Masa";		//Game stats: Mass 
@@ -130,6 +158,8 @@ var Languageletter109="Bloquear pop-ups (anuncios/tienda/retos)";		//Block popup
 var Languageletter109a="VOZ"; //Voice
 var Languageletter109b="Prefijo de voz"; //Voice-Prefix
 var Languageletter109c="Lenguaje de voz"; //Voice-language
+var Languageletter109d="No hacer pausa"; //UnPause
+
 var Languageletter110="-- Calidad de gráficos --";		//-- Graphics Quality --
 var Languageletter111="Gráficos: Retina";		//Graphics: Retina
 var Languageletter112="Gráficos: Altos";		//Graphics: High
@@ -386,6 +416,8 @@ var Languageletter358="Por favor apoye el desarrollo de Legend mod";	//Please su
 var Languageletter359="Design Nickname Font";	//Design Nickname Font
 var Languageletter360="Marcar la piel de la falsa";	//Flag the Fake's Skin
 var Languageletter361="Más FPS";	//More FPS
+var Languageletter362="Nombre";	//Name
+var Languageletter363="社交ID";	//Social ID
 
 var Premadeletter0="Comunicación activada"; 		//Communication Activated
 var Premadeletter1="Error al abrir link de Youtube";		 //Cannot open this youtube URL
