@@ -59,6 +59,11 @@ var Languageletter38="Скороста на зуума:";		//Zoom speed:
 var Languageletter39="Въстановяване";			//Respawn
 var Languageletter40="Автоматично Въстановяване";		//Auto respawn 
 var Languageletter41="Бързо Въстановяване (Бърз Клавиш)";			//Quick respawn (hotkey) 
+var Languageletter41a="Започнете със специални ефекти";			//Spawn special effects 
+var Languageletter41b="Сливане на часове ";			//Merge timer off
+var Languageletter41c="Предложено да бъде активирано за намаляване на закъснението";			//Suggested to be enabled for Lag reduce
+var Languageletter41d="Звук от вирус";			//Virus shot sound
+
 var Languageletter42="Имена";			//Names
 var Languageletter43="Без имена";		//No names 
 var Languageletter44="Оптимизирани имена";		//Optimized names 
@@ -79,6 +84,10 @@ var Languageletter58="Скинове";		//Skins
 var Languageletter59="Без скинове ";		//No skins 
 var Languageletter60="Собствени скинове";		//Custom skins 
 var Languageletter61="Vаnnila скинове";		//Vanilla skins 
+var Languageletter61a="Физика от желе";		//Jelly physics 
+var Languageletter61b="Видеоклипове";		//Video skins
+var Languageletter61c="Звук от други видео кодове, когато и двете C3";		//Sound from other\'s Video skins when both C3
+
 var Languageletter62="Оптимизирана храна";		//Optimized food 
 var Languageletter6a2="Храна";		//Food 
 var Languageletter63="Автоматично скриване на храната (масса)";		//Auto hide food (mass) 
@@ -91,10 +100,15 @@ var Languageletter69="Mоя прозрачен скин";		//My transparent skin
 var Languageletter70="Прозрачни скинове";		//Transparent skins 
 var Languageletter70a="Прозрачни клетки";		//Transparent skins 
 var Languageletter71="Прозрачни вируси";		//Transparent viruses 
+var Languageletter71a="Вирусът блести";		//Virus Glow
+var Languageletter71b="Анимирани цветове на дъгата";		//Animated rainbow colors
+
 var Languageletter72="решетка / сектори";		//Grid / sectors
 var Languageletter73="Покажи решетка";		//Show grid 
 var Languageletter74="Покажи фона на секторите";		//Show background sectors 
 var Languageletter75="Покажи границите на мапа";		//Show map borders 
+var Languageletter75a="Светлина на границите";		//Border Glow
+
 var Languageletter76="Чат";		//Chat
 var Languageletter77="Деактивиране на чата";		//Disable chat 
 var Languageletter78="Звукови известия";		//Sound notifications 
@@ -107,14 +121,22 @@ var Languageletter82b="Показване на мини карта";
 var Languageletter82c="Показване на миниатюрната мрежа";
 var Languageletter82d="Показване на миниатюрните ръководства";
 var Languageletter82e="Едноцветни съотборници";		//One-colored teammates 
+var Languageletter82f="Показване на допълнителни мини упътвания за карти";		//Show extra minimap guides
+var Languageletter82g="Показване на клетки-призрак";		//Show ghost cells
+
 var Languageletter83="Помощници";		//Helpers
 var Languageletter84="Цветовете на опонента";		//Opponents colors
 var Languageletter85="Пръстените на опонентите";		//Opponents rings 
 var Languageletter86="Цветове на вирусите";		//Viruses colors 
 var Languageletter87="Разделен диапазон";		//Split range 
+var Languageletter87a="Бързо двойно разделен обхват";		//Quick double split range
+var Languageletter87b="Бавно двойно разделяне";		//Slow double split range
+
 var Languageletter88="Диапазон на вирусите";		//Viruses range 
 var Languageletter89="Проследяване на курсора";		//Cursor tracking 
 var Languageletter90="Индикатори на Съотборници";		//Teammates indicators 
+var Languageletter90a="Духови клетки";		//Ghost cells
+
 var Languageletter91="Контрол на мишка";		//Mouse control
 var Languageletter92="LMB - Разделяне чрез мишка";		//LMB - Mouse split 
 var Languageletter93="RMB - Хранене чрез мишка";		//RMB - Mouse feed 
@@ -122,8 +144,14 @@ var Languageletter94="Обърнете бутоните на мишката";		/
 var Languageletter94a="HUD";		// HUD
 var Languageletter95="Покажи топ 5 отбора";		//Show team top 5 
 var Languageletter96="Показване на насочването";		//Show targeting 
+var Languageletter96a="Показване на маса за класиране";		//Show leaderboard mass
+
 var Languageletter97="Централизирана класация";		//Centered leaderboard 
+var Languageletter97a="Заглавна част на класацията";		//\"Leaderboard\" header 
+
 var Languageletter98="Game stats at the top";		//Game stats at the top 
+var Languageletter98a="Кожи върху екип";		//Skins on teamboard
+
 var Languageletter99="Статистики";		//Stats
 var Languageletter100="Покажи статистиките от играта";		//Show game stats 
 var Languageletter101="Статистика: Mass";		//Game stats: Mass 
@@ -140,6 +168,8 @@ var Languageletter109="Блокиране на изскачащи прозорц
 var Languageletter109a="ГЛАС"; //Voice
 var Languageletter109b="Глас-Префикция"; //Voice-Prefix
 var Languageletter109c="Глас-език"; //Voice-language
+var Languageletter109d="Отмяна на паузата"; //UnPause
+
 var Languageletter110="-- Качество на графиката --";		//-- Graphics Quality --
 var Languageletter111="Графика: Ретина";		//Graphics: Retina
 var Languageletter112="Графика: Високо";		//Graphics: High
@@ -398,6 +428,8 @@ var Languageletter358="Моля, подкрепете разработванет
 var Languageletter359="Дизайн на псевдоним";	//Design Nickname Font
 var Languageletter360="Сигнализирай за фалшивата кожа";	//Flag the Fake's Skin
 var Languageletter361="Повече FPS";	//More FPS
+var Languageletter362="име";	//Name
+var Languageletter363="социален ID";	//Social ID
 
 var Premadeletter0="Активирана комуникация"; 		//Communication Activated
 var Premadeletter1="Не може да се отвори тази UR на YouTubeL";		 //Cannot open this youtube URL
