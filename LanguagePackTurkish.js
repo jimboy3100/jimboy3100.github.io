@@ -72,6 +72,11 @@ var Languageletter38="Yakınlaştırma hızı:";		//Zoom speed:
 var Languageletter39="Yeniden doğma";			//Respawn
 var Languageletter40="Oto-Yeniden doğuş";		//Auto respawn
 var Languageletter41="Hızlı yeniden doğuş ";			//Quick respawn
+var Languageletter41a="Özel efektlerle başla";			//Spawn special effects 
+var Languageletter41b="Kapalı saatleri birleştirme ";			//Merge timer off
+var Languageletter41c="Gecikme azaltma için etkinleştirilmesi önerildi";			//Suggested to be enabled for Lag reduce
+var Languageletter41d="Virüs atış ses";			//Virus shot sound
+
 var Languageletter42="İsimler";			//Names
 var Languageletter43="İsim yok";		//No names
 var Languageletter44="Optimize isim";		//Optimized names
@@ -92,6 +97,10 @@ var Languageletter58="Skinler";		//Skins
 var Languageletter59="Skin yok ";		//No skins
 var Languageletter60="Özel skin";		//Custom skins
 var Languageletter61="Orijinal skinler";		//Vanilla skins
+var Languageletter61a="Jöle fiziği";		//Jelly physics 
+var Languageletter61b="Video kaplamaları";		//Video skins
+var Languageletter61c="Her ikisi de C3 olduğunda diğer videolardan gelen sesler";		//Sound from other\'s Video skins when both C3
+
 var Languageletter62="Optimize yem";		//Optimized food
 var Languageletter6a2="Yem";		//Food
 var Languageletter63="Yemleri oto. gizle(mass)";		//Auto hide food (mass)
@@ -104,10 +113,15 @@ var Languageletter69="Kendi şeffaf skinim";		//My transparent skin
 var Languageletter70="Şeffaf skinler";		//Transparent skins
 var Languageletter70a="Şeffaf hücreler";		//Transparent cells
 var Languageletter71="Şeffaf virüsler";		//Transparent viruses
+var Languageletter71a="Virüs parlaması";		//Virus Glow
+var Languageletter71b="Animasyonlu gökkuşağı renkleri";		//Animated rainbow colors
+
 var Languageletter72="Izgara / Bölgeler";		//Grid / sectors
 var Languageletter73="Izgarayı göster";		//Show grid
 var Languageletter74="Arkaplan bölgelerini göster";		//Show background sectors
 var Languageletter75="Harita kenarlarını göster";		//Show map borders
+var Languageletter75a="Sınırların parlaması";		//Border Glow
+
 var Languageletter76="Sohbet";		//Chat
 var Languageletter77="Sohbeti kapat";		//Disable chat
 var Languageletter78="Sesli bildirimler";		//Sound notifications
@@ -120,14 +134,22 @@ var Languageletter82b="Haritayı göster";		//Show minimap
 var Languageletter82c="Harita ızgarasını göster";		//Show minimap grid
 var Languageletter82d="Harita rehberini göster";		//Show minimap guides
 var Languageletter82e="Tek renkli takım";		//One-colored teammates
+var Languageletter82f="Ekstra mini harita rehberlerini göster";		//Show extra minimap guides
+var Languageletter82g="Hayalet hücreleri göster";		//Show ghost cells
+
 var Languageletter83="Yardımcılar";		//Helpers
 var Languageletter84="Rakiplerin rengi";		//Opponents colors
 var Languageletter85="Rakip göstergesi";		//Opponents rings
 var Languageletter86="Virüslerin rengi";		//Viruses colors
 var Languageletter87="Bölünme uzaklığı";		//Split range
+var Languageletter87a="Hızlı çift ayrılma aralığı";		//Quick double split range
+var Languageletter87b="Yavaş çift ayırma aralığı";		//Slow double split range
+
 var Languageletter88="Virüs atış uzaklığı";		//Viruses range
 var Languageletter89="İmleç çizgileri";		//Cursor tracking
 var Languageletter90="Takım yardımcıları";		//Teammates indicators
+var Languageletter90a="Hayalet hücreler";		//Ghost cells
+
 var Languageletter91="Fare kontrolü";		//Mouse control
 var Languageletter92="Sol tık. - Fare ile bölün";		//LMB - Mouse split
 var Languageletter93="Sağ tık. - Fare ile besle";		//RMB - Mouse feed
@@ -135,8 +157,14 @@ var Languageletter94="Fare tuşlarını çevir";		//Invert mouse buttons
 var Languageletter94a="Göstergeler";		// HUD
 var Languageletter95="Takımdaki ilk 5'i göster";		//Show team top 5
 var Languageletter96="Hedeflemeyi göster";		//Show targeting
+var Languageletter96a="Büyük afiş kitlesini göster";		//Show leaderboard mass
+
 var Languageletter97="Ortalanmış sıralama";		//Centered leaderboard
+var Languageletter97a="Afiş başlığı ";		//\"Leaderboard\" header 
+
 var Languageletter98="Oyun bilgileri başta";		//Game stats at the top
+var Languageletter98a="Takım panosundaki derileri";		//Skins on teamboard
+
 var Languageletter99="Bilgiler";		//Stats
 var Languageletter100="Oyun bilgilerini göster";		//Show game stats
 var Languageletter101="Oyun bilgileri: Mass";		//Game stats: Mass
@@ -153,6 +181,8 @@ var Languageletter109="Popup'ları engelle (reklamlar/dükkan/görev)";		//Block
 var Languageletter109a="SES"; //Voice
 var Languageletter109b="Ses-Ön ek"; //Voice-Prefix
 var Languageletter109c="Ses-dili"; //Voice-language
+var Languageletter109d="anahtar kelimeleri devam ettirebilir"; //UnPause
+
 var Languageletter110="-- Grafik Kalitesi --";		//-- Graphics Quality --
 var Languageletter111="Grafikler: Retina";		//Graphics: Retina
 var Languageletter112="Grafikler: Yüksek";		//Graphics: High
@@ -410,6 +440,8 @@ var Languageletter358="Lütfen Legend mod'un geliştiricisini destekleyin";	//Pl
 var Languageletter359="Nick'in yazı tipini tasarla";	//Design Nickname Font
 var Languageletter360="Sahte Skini İşaretleyin";	//Flag the Fake Skin
 var Languageletter361="Daha fazla FPS";	//More FPS
+var Languageletter362="Isim";	//Name
+var Languageletter363="Social ID";	//Social ID
 
 var Premadeletter0="İletişim aktif"; 		//Communication Activated
 var Premadeletter1="Bu Youtube URL'si açılmıyor";		 //Cannot open this youtube URL
