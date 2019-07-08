@@ -143,7 +143,7 @@ var Languageletter92="LMB - Mouse split";		//LMB - Mouse split
 var Languageletter93="RMB - Mouse feed";		//RMB - Mouse feed 
 var Languageletter94="Invert mouse buttons";		//Invert mouse buttons 
 var Languageletter94a="HUD";		// HUD
-var Languageletter95="Show team top 5";		//Show team top 5 
+var Languageletter95="Team";		//Team
 var Languageletter96="Show targeting";		//Show targeting 
 var Languageletter96a="Show leaderboard mass";		//Show leaderboard mass
 
