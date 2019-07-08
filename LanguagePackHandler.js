@@ -1,6 +1,6 @@
 //Language Pack Handler
 //Legend Mod By Jimboy3100
-//v1.2f
+//v1.2e
 
 //Legend Mod By Jimboy3100
 var Languagetimesused;
@@ -94,7 +94,7 @@ $(".options-box.zoomGroup>DIV>DIV>SPAN:nth-child(1)").text(Languageletter38 + ":
 
 $(".options-box.leaderboard>h5").text(Languageletter320);
 $(".options-box.leaderboard>LABEL").replace('Leaderboard Players', Languageletter320 + " " + Languageletter313);
-$(".options-box.leaderboard>LABEL").replace('Team Players', Languageletter321 + " " +  Languageletter313);
+$(".options-box.leaderboard>LABEL").replace('Teamboard Players', Languageletter321 + " " +  Languageletter313);
 
 $(".options-box.respGroup>h5").text(Languageletter39);
 $(".options-box.respGroup>LABEL").replace('Quick respawn', Languageletter41);
