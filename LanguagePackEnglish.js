@@ -56,9 +56,15 @@ var Languageletter37="Animation delay";		//Animation delay
 var Languageletter37a="Auto zoom";		// Auto zoom
 var Languageletter37b="Zoom";		// Zoom
 var Languageletter38="Zoom speed:";		//Zoom speed: 
+
 var Languageletter39="Respawn";			//Respawn
 var Languageletter40="Auto respawn";		//Auto respawn 
 var Languageletter41="Quick respawn ";			//Quick respawn 
+var Languageletter41a="Spawn special effects ";			//Spawn special effects 
+var Languageletter41b="Merge timer off ";			//Merge timer BETA off
+var Languageletter41c="Suggested to be enabled for Lag reduce";			//Suggested to be enabled for Lag reduce
+var Languageletter41d="Virus shot sound";			//Virus shot sound
+
 var Languageletter42="Names";			//Names
 var Languageletter43="No names";		//No names 
 var Languageletter44="Optimized names";		//Optimized names 
@@ -79,6 +85,10 @@ var Languageletter58="Skins";		//Skins
 var Languageletter59="No skins ";		//No skins 
 var Languageletter60="Custom skins";		//Custom skins 
 var Languageletter61="Vanilla skins";		//Vanilla skins 
+var Languageletter61a="Jelly physics";		//Jelly physics 
+var Languageletter61b="Video skins";		//Video skins
+var Languageletter61c="Sound from other\'s Video skins when both C3";		//Sound from other\'s Video skins when both C3
+
 var Languageletter62="Optimized food";		//Optimized food 
 var Languageletter6a2="Food";		//Food 
 var Languageletter63="Auto hide food";		//Auto hide food (mass) 
@@ -91,10 +101,15 @@ var Languageletter69="My transparent skin";		//My transparent skin
 var Languageletter70="Transparent skins";		//Transparent skins 
 var Languageletter70a="Transparent cells";		//Transparent cells
 var Languageletter71="Transparent viruses";		//Transparent viruses 
+var Languageletter71a="Virus Glow";		//Virus Glow
+var Languageletter71b="Animated rainbow colors";		//Animated rainbow colors
+
 var Languageletter72="Grid / sectors";		//Grid / sectors
 var Languageletter73="Show grid";		//Show grid 
 var Languageletter74="Show background sectors";		//Show background sectors 
 var Languageletter75="Show map borders";		//Show map borders 
+var Languageletter75a="Border Glow";		//Border Glow
+
 var Languageletter76="Chat";		//Chat
 var Languageletter77="Disable chat";		//Disable chat 
 var Languageletter78="Sound notifications";		//Sound notifications 
@@ -107,14 +122,22 @@ var Languageletter82b="Show minimap";		//Show minimap
 var Languageletter82c="Show minimap grid";		//Show minimap grid 
 var Languageletter82d="Show minimap guides";		//Show minimap guides 
 var Languageletter82e="One-colored teammates";		//One-colored teammates 
+var Languageletter82f="Show extra minimap guides";		//Show extra minimap guides
+var Languageletter82g="Show ghost cells";		//Show ghost cells
+
 var Languageletter83="Helpers";		//Helpers
 var Languageletter84="Opponents colors";		//Opponents colors
 var Languageletter85="Opponents rings";		//Opponents rings 
 var Languageletter86="Viruses colors";		//Viruses colors 
 var Languageletter87="Split range";		//Split range 
+var Languageletter87a="Quick double split range";		//Quick double split range
+var Languageletter87b="Slow double split range";		//Slow double split range
+
 var Languageletter88="Viruses range";		//Viruses range 
 var Languageletter89="Cursor tracking";		//Cursor tracking 
 var Languageletter90="Teammates indicators";		//Teammates indicators 
+var Languageletter90a="Ghost cells";		//Ghost cells
+
 var Languageletter91="Mouse control";		//Mouse control
 var Languageletter92="LMB - Mouse split";		//LMB - Mouse split 
 var Languageletter93="RMB - Mouse feed";		//RMB - Mouse feed 
@@ -122,8 +145,14 @@ var Languageletter94="Invert mouse buttons";		//Invert mouse buttons
 var Languageletter94a="HUD";		// HUD
 var Languageletter95="Show team top 5";		//Show team top 5 
 var Languageletter96="Show targeting";		//Show targeting 
+var Languageletter96a="Show leaderboard mass";		//Show leaderboard mass
+
 var Languageletter97="Centered leaderboard";		//Centered leaderboard 
+var Languageletter97a="\"Leaderboard\" header ";		//\"Leaderboard\" header 
+
 var Languageletter98="Game stats at the top";		//Game stats at the top 
+var Languageletter98a="Skins on teamboard";		//Skins on teamboard
+
 var Languageletter99="Stats";		//Stats
 var Languageletter100="Show game stats";		//Show game stats 
 var Languageletter101="Game stats: Mass";		//Game stats: Mass 
@@ -140,6 +169,8 @@ var Languageletter109="Block popups (ads/shop/quest)";		//Block popups (ads/shop
 var Languageletter109a="VOICE"; //Voice
 var Languageletter109b="Voice-Prefix"; //Voice-Prefix
 var Languageletter109c="Voice-lang"; //Voice-language
+var Languageletter109d="UnPause"; //UnPause
+
 var Languageletter110="-- Graphics Quality --";		//-- Graphics Quality --
 var Languageletter111="Graphics: Retina";		//Graphics: Retina
 var Languageletter112="Graphics: High";		//Graphics: High
@@ -397,6 +428,8 @@ var Languageletter358="Please support the development of Legend mod";	//Please s
 var Languageletter359="Design Nickname Font";	//Design Nickname Font
 var Languageletter360="Flag the Fake Skin";	//Flag the Fake Skin
 var Languageletter361="More FPS";	//More FPS
+var Languageletter362="Name";	//Name
+var Languageletter363="Social ID";	//Social ID
 
 var Premadeletter0="Communication Activated"; 		//Communication Activated
 var Premadeletter1="Cannot open this youtube URL";		 //Cannot open this youtube URL
