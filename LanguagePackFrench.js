@@ -59,6 +59,11 @@ var Languageletter38="Vitesse du zoom :";		//Zoom speed:
 var Languageletter39="Respawn";			//Respawn
 var Languageletter40="Respawn automatique";		//Auto respawn 
 var Languageletter41="Respawn rapide";			//Quick respawn 
+var Languageletter41a="Commencez avec des effets spéciaux";			//Spawn special effects 
+var Languageletter41b="Fusionner le minuteur ";			//Merge timer off
+var Languageletter41c="Il est suggéré d’activer le lag reduction";			//Suggested to be enabled for Lag reduce
+var Languageletter41d="Son virus tiré";			//Virus shot sound
+
 var Languageletter42="Noms";			//Names
 var Languageletter43="Pas de noms";		//No names 
 var Languageletter44="Noms optimisés";		//Optimized names 
@@ -79,6 +84,10 @@ var Languageletter58="Skins";		//Skins
 var Languageletter59="Pas de skins ";		//No skins 
 var Languageletter60="Skins personnalisés";		//Custom skins 
 var Languageletter61="Vanilla skins";		//Vanilla skins 
+var Languageletter61a="Gelée physique";		//Jelly physics 
+var Languageletter61b="Skins vidéo";		//Video skins
+var Languageletter61c="Le son des skins des autres vidéos lorsque les deux C3";		//Sound from other\'s Video skins when both C3
+
 var Languageletter62="Nourriture optimisée";		//Optimized food 
 var Languageletter6a2="Nourriture";		//Food 
 var Languageletter63="Masquage automatique de la nourriture";		//Auto hide food (mass) 
@@ -91,10 +100,15 @@ var Languageletter69="Mon skin transparent";		//My transparent skin
 var Languageletter70="Skins transparents";		//Transparent skins 
 var Languageletter70a="Cellules transparentes";		//Transparent cells
 var Languageletter71="Virus transparents";		//Transparent viruses 
+var Languageletter71a="Brillance du virus";		//Virus Glow
+var Languageletter71b="Couleurs animées arc-en-ciel";		//Animated rainbow colors
+
 var Languageletter72="Grille et secteurs";		//Grid / sectors
 var Languageletter73="Afficher la grille";		//Show grid 
 var Languageletter74="Aficher les secteurs en fond";		//Show background sectors 
 var Languageletter75="Afficher les bords de la map";		//Show map borders 
+var Languageletter75a="Lueur des frontières";		//Border Glow
+
 var Languageletter76="Chat";		//Chat
 var Languageletter77="Désactiver le chat";		//Disable chat 
 var Languageletter78="Notifications sonoress";		//Sound notifications 
@@ -107,14 +121,23 @@ var Languageletter82b="Afficher la minimap";		//Show minimap
 var Languageletter82c="Afficher la grille sur la minimap";		//Show minimap grid 
 var Languageletter82d="Afficher les guides sur la minimap";		//Show minimap guides 
 var Languageletter82e="Les coéquipiers d'une seule couleur";		//One-colored teammates 
+var Languageletter82f="Afficher des mini guides de carte supplémentaires";		//Show extra minimap guides
+var Languageletter82g="Afficher les cellules fantômes";		//Show ghost cells
+
+
 var Languageletter83="Aides";		//Helpers
 var Languageletter84="Couleurs pour les adversaires";		//Opponents colors
 var Languageletter85="Anneaux pour les adversaires";		//Opponents rings 
 var Languageletter86="Couleur des virus";		//Viruses colors 
 var Languageletter87="Portée de split";		//Split range 
+var Languageletter87a="Gamme double split rapide";		//Quick double split range
+var Languageletter87b="Lente double split gamme";		//Slow double split range
+
 var Languageletter88="Portée des virus";		//Viruses range 
 var Languageletter89="Suivi du curseur";		//Cursor tracking 
 var Languageletter90="Indicateurs des coéquipiers";		//Teammates indicators 
+var Languageletter90a="Cellules fantômes";		//Ghost cells
+
 var Languageletter91="Contrôle de la souris";		//Mouse control
 var Languageletter92="Clic gauche - Mouse split";		//LMB - Mouse split 
 var Languageletter93="Clic droit - Mouse feed";		//RMB - Mouse feed 
@@ -122,8 +145,14 @@ var Languageletter94="Inverser les boutons de la souris";		//Invert mouse button
 var Languageletter94a="HUD";		// HUD
 var Languageletter95="Afficher l'équipe top 5";		//Show team top 5 
 var Languageletter96="Afficher le ciblage";		//Show targeting 
+var Languageletter96a="Montrer la masse du classement";		//Show leaderboard mass
+
 var Languageletter97="Centrer le classement";		//Centered leaderboard 
+var Languageletter97a="En-tête du classement";		//\"Leaderboard\" header 
+
 var Languageletter98="Statistiques du jeu en haut";		//Game stats at the top 
+var Languageletter98a="Skins sur le teamboard";		//Skins on teamboard
+
 var Languageletter99="Statistiques";		//Stats
 var Languageletter100="Afficher les statistiques de la partie";		//Show game stats 
 var Languageletter101="Statistiques de jeu : Masse";		//Game stats: Mass 
@@ -140,6 +169,8 @@ var Languageletter109="Bloquer les pop-ups (publicités/boutique/quête)";		//Bl
 var Languageletter109a="VOIX"; //Voice
 var Languageletter109b="Voix-Préfixe"; //Voice-Prefix
 var Languageletter109c="Voix-langue"; //Voice-language
+var Languageletter109d="UnPause"; //UnPause
+
 var Languageletter110="-- Qualité du graphisme --";		//-- Graphics Quality --
 var Languageletter111="Graphisme : Retina";		//Graphics: Retina
 var Languageletter112="Graphisme : Élevé";		//Graphics: High
@@ -398,6 +429,8 @@ var Languageletter358="S'il vous plaît soutenir le développement du mod Légen
 var Languageletter359="Design Nickname Police";	//Design Nickname Font
 var Languageletter360="Signaler la peau de la fausse";	//Flag the Fake's Skin
 var Languageletter361="Plus FPS";	//More FPS
+var Languageletter362="Nom";	//Name
+var Languageletter363="Identifiant social";	//Social ID
 
 var Premadeletter0="Communication Activée"; 		//Communication Activated
 var Premadeletter1="Impossible d'ouvrir cette URL Youtube";		 //Cannot open this youtube URL
