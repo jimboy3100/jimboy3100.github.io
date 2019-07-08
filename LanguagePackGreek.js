@@ -59,6 +59,11 @@ var Languageletter38="Ταχύτητα ζουμ";		//Zoom speed:
 var Languageletter39="Συνεχιση";			//Respawn
 var Languageletter40="Αυτόματη συνέχιση";		//Auto respawn 
 var Languageletter41="Γρήγορη συνέχιση ";			//Quick respawn 
+var Languageletter41a="Ξεκινήστε με ειδικά εφέ";			//Spawn special effects 
+var Languageletter41b="Συγχώνευση χρονοδιακόπτη ";			//Merge timer off
+var Languageletter41c="Προτείνεται να είναι ενεργοποιημένη η μείωση Lag";			//Suggested to be enabled for Lag reduce
+var Languageletter41d="Ήχος πυροβολισμού ιών";			//Virus shot sound
+
 var Languageletter42="Ονοματα";			//Names
 var Languageletter43="Χωρίς ονόματα";		//No names 
 var Languageletter44="Βέλτιστα ονόματα";		//Optimized names 
@@ -79,6 +84,10 @@ var Languageletter58="Εικονες (skin)";		//Skins
 var Languageletter59="Όχι skins ";		//No skins 
 var Languageletter60="Προσαρμοσμένη εικόνα";		//Custom skins 
 var Languageletter61="Εικόνες άνευ επέκτασης";		//Vanilla skins 
+var Languageletter61a="Φυσική ζελέ";		//Jelly physics 
+var Languageletter61b="Βίντεο δέρματα";		//Video skins
+var Languageletter61c="Ήχος από άλλα βίντεο δέρματα όταν και οι δύο C3";		//Sound from other\'s Video skins when both C3
+
 var Languageletter62="Βελτιστοποιημένο φαγητό";		//Optimized food 
 var Languageletter6a2="Φαγητο";		//Food 
 var Languageletter63="Αυτόματη απόκρυψη φαγητού";		//Auto hide food
@@ -91,10 +100,15 @@ var Languageletter69="Διαφάνια εικόνας μου ";		//My transparen
 var Languageletter70="Διαφανείς εικόνες";		//Transparent skins 
 var Languageletter70a="Διαφανείς κελιά";		//Transparent cells
 var Languageletter71="Διαφανείς εικόνες ιοί ";		//Transparent viruses 
+var Languageletter71a="Η λάμψη του ιού";		//Virus Glow
+var Languageletter71b="Ζωγραφισμένα χρώματα ουράνιου τόξου";		//Animated rainbow colors
+
 var Languageletter72="Πλεγμα / τομεις";		//Grid / sectors
 var Languageletter73="Εμφάνιση πλέγματος";		//Show grid 
 var Languageletter74="Εμφάνιση τομέων φόντου ";		//Show background sectors 
 var Languageletter75="Εμφάνιση περιθωρίων χάρτη ";		//Show map borders 
+var Languageletter75a="Λάμψη των συνόρων";		//Border Glow
+
 var Languageletter76="Συζητηση";		//Chat
 var Languageletter77="Απενεργοποιήση συζήτησης ";		//Disable chat 
 var Languageletter78="Ήχοι ειδοποιήσεων ";		//Sound notifications 
@@ -107,14 +121,22 @@ var Languageletter82b="Εμφάνιση μικρού χάρτη";		//Show minima
 var Languageletter82c="Εμφάνιση πλέγματος μικρού χάρτη";		//Show minimap grid 
 var Languageletter82d="Εμφάνιση οδηγιών μικρού χάρτη";		//Show minimap guides 
 var Languageletter82e="Συμπαίκτες σε ένα χρώμα";		//One-colored teammates 
+var Languageletter82f="Εμφάνιση επιπλέον οδηγοί μίνι χάρτη";		//Show extra minimap guides
+var Languageletter82g="Εμφάνιση κελιών φάντασμα";		//Show ghost cells
+
 var Languageletter83="Βοηθοι";		//Helpers
 var Languageletter84="Χρώματα αντιπάλων";		//Opponents colors
 var Languageletter85="Δαχτυλίδια αντιπάλων";		//Opponents rings 
 var Languageletter86="Χρώματα ιών";		//Viruses colors 
 var Languageletter87="Περιοχή διαχωρισμού";		//Split range 
+var Languageletter87a="Γρήγορη περιοχή διπλού διαχωρισμού";		//Quick double split range
+var Languageletter87b="Αργή περιοχή διπλού διαχωρισμού";		//Slow double split range
+
 var Languageletter88="Περιοχή διαχωρισμού ιών";		//Viruses range 
 var Languageletter89="Παρακολούθηση δρομέα ποντικιού ";		//Cursor tracking 
 var Languageletter90="Δείκτες συμπαίκτών";		//Teammates indicators 
+var Languageletter90a="Κύματα φάντασμα";		//Ghost cells 
+
 var Languageletter91="Ελεγχος ποντικιου";		//Mouse control
 var Languageletter92="Αριστερό κλίκ Ποντικιού - Διαχωρισμός";		//LMB - Mouse split 
 var Languageletter93="Δεξί κλίκ Ποντικιού - Τροφοδοσία";		//RMB - Mouse feed 
@@ -122,8 +144,14 @@ var Languageletter94="Αντιστροφή κουμπιών ποντικιού";
 var Languageletter94a="HUD";		// HUD
 var Languageletter95="Εμφάνιση κορυφαίων 5 της ομάδας";		//Show team top 5 
 var Languageletter96="Εμφάνιση στόχευσης";		//Show targeting 
+var Languageletter96a="Εμφάνιση μάζας leaderboard";		//Show leaderboard mass
+
 var Languageletter97="Κεντραρισμένος πίνακας ηγετών";		//Centered leaderboard 
+var Languageletter97a="Επικεφαλίδα του leaderboard";		//\"Leaderboard\" header 
+
 var Languageletter98="Στατιστικά παιχνιδιού στην κορυφή";		//Game stats at the top 
+var Languageletter98a="Skins στην ομάδα εργασίας";		//Skins on teamboard
+
 var Languageletter99="Στατιστικα";		//Stats
 var Languageletter100="Εμφάνιση στατιστικών παιχνιδιού";		//Show game stats 
 var Languageletter101="Στατιστικά παιχνιδιού: Μάζα";		//Game stats: Mass 
@@ -140,6 +168,8 @@ var Languageletter109="Αποκλεισμός αναδυόμενων παραθ�
 var Languageletter109a="ΦΩΝΗ"; //Voice
 var Languageletter109b="Πρόθεμα-φωνής"; //Voice-Prefix
 var Languageletter109c="Φωνητική-γλώσσα"; //Voice-language
+var Languageletter109d="Απενεργοποίηση"; //UnPause
+
 var Languageletter110="-- Ποιότητα γραφικών --";		//-- Graphics Quality --
 var Languageletter111="Γραφικά: Ρετίνα";		//Graphics: Retina
 var Languageletter112="Γραφικά: Καλά";		//Graphics: High
@@ -397,6 +427,8 @@ var Languageletter358="Υποστηρίξτε την ανάπτυξη του Mod
 var Languageletter359="Σχεδίαση γραμματοσειράς Ονόματος";	//Design Nickname Font
 var Languageletter360="Σηματοδοτήστε το skin των Fake's";	//Flag the Fake's Skin
 var Languageletter361="Περισσότερα FPS";	//More FPS
+var Languageletter362="Όνομα";	//Name
+var Languageletter363="Κοινονικό ID";	//Social ID
 
 var Premadeletter0="Η επικοινωνία ενεργοποιήθηκε"; 		//Communication Activated
 var Premadeletter1="Δεν είναι δυνατό να ανοίξει αυτή η διεύθυνση URL του YouTube";		 //Cannot open this youtube URL
