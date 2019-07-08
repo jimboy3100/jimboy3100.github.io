@@ -50,6 +50,11 @@ var Languageletter38="Скорость масштабирования:";		//Zoom
 var Languageletter39="респаун";			//Respawn 
 var Languageletter40="Автовоспроизведение";		//Auto respawn 
 var Languageletter41="Быстрое респаун ";			//Quick respawn 
+var Languageletter41a="Начните со спецэффектов";			//Spawn special effects 
+var Languageletter41b="Таймер слияния выключен ";			//Merge timer off
+var Languageletter41c="Предложено включить для уменьшения задержки";			//Suggested to be enabled for Lag reduce
+var Languageletter41d="Вирус выстрелил";			//Virus shot sound
+
 var Languageletter42="имена";			//Names 
 var Languageletter43="Нет имен";		//No names 
 var Languageletter44="Оптимизированные имена";		//Optimized names 
@@ -70,6 +75,10 @@ var Languageletter58="Скины";		//Skins
 var Languageletter59="Нет скинов ";		//No skins 
 var Languageletter60="Пользовательские скины";		//Custom skins 
 var Languageletter61="Ванильные шкуры";		//Vanilla skins 
+var Languageletter61a="Физика желе";		//Jelly physics 
+var Languageletter61b="Видео скины";		//Video skins
+var Languageletter61c="Звук из других видео скинов, когда оба C3";		//Sound from other\'s Video skins when both C3
+
 var Languageletter62="Оптимизированная пища";		//Optimized food 
 var Languageletter6a2="питание";		//Food 
 var Languageletter63="Авто скрыть еду";		//Auto hide food (mass) 
@@ -82,10 +91,15 @@ var Languageletter69="Моя прозрачная кожа";		//My transparent s
 var Languageletter70="Прозрачные шкуры";		//Transparent skins 
 var Languageletter70a="Прозрачные ячейки";		//Transparent cells 
 var Languageletter71="Прозрачные вирусы";		//Transparent viruses 
+var Languageletter71a="Вирусный блеск";		//Virus Glow
+var Languageletter71b="Анимированные цвета радуги";		//Animated rainbow colors
+
 var Languageletter72="Сетка / сектора";		//Grid / sectors 
 var Languageletter73="Показать сетку";		//Show grid 
 var Languageletter74="Показать фоновые сектора";		//Show background sectors 
 var Languageletter75="Показать границы карты";		//Show map borders
+var Languageletter75a="Свечение границ";		//Border Glow
+
 var Languageletter76="чат";		//Chat
 var Languageletter77="Отключить чат";		//Disable chat 
 var Languageletter78="Звуковые уведомления";		//Sound notifications 
@@ -98,14 +112,22 @@ var Languageletter82b="Показать мини-карту";		//Show minimap
 var Languageletter82c="Показать мини-карту";		//Show minimap grid
 var Languageletter82d="Показать мини-путеводы";		//Show minimap guides 
 var Languageletter82e="Одноцветные товарищи по команде";		//One-colored teammates 
+var Languageletter82f="Показать дополнительные мини-карты";		//Show extra minimap guides
+var Languageletter82g="Показать призрачные клетки";		//Show ghost cells
+
 var Languageletter83="Помощники";		//Helpers 
 var Languageletter84="Цвет оппонентов";		//Opponents colors
 var Languageletter85="Противники";		//Opponents rings 
 var Languageletter86="Цвет вирусов";		//Viruses colors 
 var Languageletter87="Сплит-диапазон";		//Split range 
+var Languageletter87a="Быстрый двойной сплит диапазон";		//Quick double split range
+var Languageletter87b="Медленный двойной сплит диапазон";		//Slow double split range
+
 var Languageletter88="Диапазон вирусов";		//Viruses range 
 var Languageletter89="Отслеживание курсора";		//Cursor tracking 
 var Languageletter90="Показатели игроков";		//Teammates indicators
+var Languageletter90a="Призрачные клетки";		//Ghost cells
+
 var Languageletter91="Управление мышью";		//Mouse control 
 var Languageletter92="LMB - разделение мыши";		//LMB - Mouse split 
 var Languageletter93="RMB - Подача мыши";		//RMB - Mouse feed 
@@ -113,8 +135,14 @@ var Languageletter94="Инвертировать кнопки мыши";		//Inve
 var Languageletter94a="HUD";		// HUD 
 var Languageletter95="Показать 5 лучших команд";		//Show team top 5
 var Languageletter96="Показать таргетинг";		//Show targeting 
+var Languageletter96a="Показать список лидеров массы";		//Show leaderboard mass
+
 var Languageletter97="Центрированная таблица лидеров";		//Centered leaderboard 
+var Languageletter97a="Заголовок таблицы лидеров";		//\"Leaderboard\" header 
+
 var Languageletter98="Статистика игры в верхней части";		//Game stats at the top 
+var Languageletter98a="Скины на доске";		//Skins on teamboard
+
 var Languageletter99="Статистика";		//Stats 
 var Languageletter100="Показать статистику игры";		//Show game stats 
 var Languageletter101="Статистика игры";		//Game stats: Mass 
@@ -131,6 +159,8 @@ var Languageletter109="Блокировать всплывающие окна (�
 var Languageletter109a="глас"; //Voice 
 var Languageletter109b="Голос Prefix"; //Voice-Prefix 
 var Languageletter109c="Голос языка"; //Voice-language 
+var Languageletter109d="Возобновить"; //UnPause
+
 var Languageletter110="-- Качество графики --";		//-- Graphics Quality -- 
 var Languageletter111="Графика: сетчатка";		//Graphics: Retina 
 var Languageletter112="Графика: высокая";		//Graphics: High 
@@ -385,6 +415,9 @@ var Languageletter358="Пожалуйста, поддержите разрабо
 var Languageletter359="Дизайн Псевдоним Шрифт";	//Design Nickname Font 
 var Languageletter360="Флаг поддельной кожи";	//Flag the Fake Skin 
 var Languageletter361="Больше FPS";	//More FPS 
+var Languageletter362="имя";	//Name
+var Languageletter363="ID Социальное";	//Social ID
+
 var Premadeletter0="Активация связи"; 		//Communication Activated 
 var Premadeletter1="Не удается открыть этот URL-адрес YouTube.";		 //Cannot open this youtube URL 
 var Premadeletter2="Вы не можете общаться, если имя игрока> 15 символов"; 		//[SERVER]: You cannot chat if player name > 15 chars 
