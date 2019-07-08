@@ -59,6 +59,11 @@ var Languageletter38="縮放速度:";		//Zoom speed:
 var Languageletter39="重生";			//Respawn
 var Languageletter40="自動重生";		//Auto respawn 
 var Languageletter41="快速重生 ";			//Quick respawn 
+var Languageletter41a="從特效開始";			//Spawn special effects 
+var Languageletter41b="合併時間";			//Merge timer off
+var Languageletter41c="建議啟用沒有滯後";			//Suggested to be enabled for Lag reduce
+var Languageletter41d="病毒拍攝聲音";			//Virus shot sound
+
 var Languageletter42="名稱";			//Names
 var Languageletter43="沒有名字";		//No names 
 var Languageletter44="最佳化名字";		//Optimized names 
@@ -79,6 +84,10 @@ var Languageletter58="皮膚";		//Skins
 var Languageletter59="沒皮膚";		//No skins 
 var Languageletter60="自訂皮膚";		//Custom skins 
 var Languageletter61="官方皮膚";		//Vanilla skins 
+var Languageletter61a="果凍物理學";		//Jelly physics 
+var Languageletter61b="視頻皮膚";		//Video skins
+var Languageletter61c="C3時，來自其他視頻皮膚的聲音";		//Sound from other\'s Video skins when both C3
+
 var Languageletter62="最佳化點點";		//Optimized food 
 var Languageletter6a2="點點";		//Food 
 var Languageletter63="自動隱藏點點(質量)";		//Auto hide food (mass) 
@@ -91,10 +100,15 @@ var Languageletter69="我的透明皮膚";		//My transparent skin
 var Languageletter70="透明皮膚";		//Transparent skins 
 var Languageletter70a="透明細胞";		//Transparent cells
 var Languageletter71="透明刺";		//Transparent viruses 
+var Languageletter71a="病毒大放異彩";		//Virus Glow
+var Languageletter71b="動畫的彩虹色";		//Animated rainbow colors
+
 var Languageletter72="格子 / 座標";		//Grid / sectors
 var Languageletter73="顯示格子";		//Show grid 
 var Languageletter74="顯示背景座標";		//Show background sectors 
 var Languageletter75="顯示地圖外框";		//Show map borders 
+var Languageletter75a="邊界的光輝";		//Border Glow
+
 var Languageletter76="聊天";		//Chat
 var Languageletter77="關閉聊天";		//Disable chat 
 var Languageletter78="聊天音效";		//Sound notifications 
@@ -107,14 +121,22 @@ var Languageletter82b="顯示小地圖";		//Show minimap
 var Languageletter82c="顯示小地圖格線";		//Show minimap grid 
 var Languageletter82d="顯示小地圖指引線";		//Show minimap guides 
 var Languageletter82e="以單色顯示隊友";		//One-colored teammates 
+var Languageletter82f="顯示額外的迷你地圖指南";		//Show extra minimap guides
+var Languageletter82g="顯示幽靈細胞";		//Show ghost cells
+
 var Languageletter83="幫助";		//Helpers
 var Languageletter84="對手顏色";		//Opponents colors
 var Languageletter85="敵人狀態指示框";		//Opponents rings 
 var Languageletter86="刺球顏色";		//Viruses colors 
 var Languageletter87="分裂距離";		//Split range 
+var Languageletter87a="快速雙分割範圍";		//Quick double split range
+var Languageletter87b="慢速雙分割範圍";		//Slow double split range
+
 var Languageletter88="刺球距離";		//Viruses range 
 var Languageletter89="游標追蹤";		//Cursor tracking 
 var Languageletter90="隊友顯示";		//Teammates indicators 
+var Languageletter90a="鬼細胞";		//Ghost cells
+
 var Languageletter91="滑鼠控制";		//Mouse control
 var Languageletter92="滑鼠左鍵 - 分裂";		//LMB - Mouse split 
 var Languageletter93="滑鼠右鍵 - 同W ";		//RMB - Mouse feed 
@@ -122,8 +144,14 @@ var Languageletter94="滑鼠按鍵左右互換";		//Invert mouse buttons
 var Languageletter94a="螢幕資訊";		// HUD
 var Languageletter95="顯示隊友前五名";		//Show team top 5 
 var Languageletter96="顯示目標";		//Show targeting 
+var Languageletter96a="顯示排行榜質量";		//Show leaderboard mass
+
 var Languageletter97="排行榜置中";		//Centered leaderboard 
+var Languageletter97a="排行榜標題";		//\"Leaderboard\" header 
+
 var Languageletter98="於最上方顯示遊戲狀態";		//Game stats at the top 
+var Languageletter98a="在茶棚上的皮膚";		//Skins on teamboard
+
 var Languageletter99="統計";		//Stats
 var Languageletter100="顯示遊戲資訊";		//Show game stats 
 var Languageletter101="遊戲資訊: 質量";		//Game stats: Mass 
@@ -140,6 +168,8 @@ var Languageletter109="屏蔽跳出視窗 (廣告/商店/任務)";		//Block popu
 var Languageletter109a="語音"; //Voice
 var Languageletter109b="語音前綴"; //Voice-Prefix
 var Languageletter109c="語音語言"; //Voice-language
+var Languageletter109d="取消暫停"; //UnPause
+
 var Languageletter110="-- 繪圖品質 --";		//-- Graphics Quality --
 var Languageletter111="繪圖品質: 最高";		//Graphics: Retina
 var Languageletter112="繪圖品質: 高";		//Graphics: High
@@ -398,6 +428,8 @@ var Languageletter358="請支持Legend mod的開發";	//Please support the devel
 var Languageletter359="設計暱稱字體";	//Design Nickname Font
 var Languageletter360="標記假皮膚";	//Flag the Fake's Skin
 var Languageletter361="更多FPS";	//More FPS
+var Languageletter362="名稱";	//Name
+var Languageletter363="社交ID";	//Social ID
 
 var Premadeletter0="通訊激活"; 		//Communication Activated
 var Premadeletter1="無法打開這個youtube網址";		 //Cannot open this youtube URL
