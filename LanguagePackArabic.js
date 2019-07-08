@@ -64,6 +64,11 @@ var Languageletter38="سُرعِة الزُوُوُم:";		//Zoom speed:
 var Languageletter39="إعَادة البَدء";			//Respawn
 var Languageletter40="بَدء تِلقَائِي";		//Auto respawn 
 var Languageletter41="زِر البَدء التِلقَائِي";			//Quick respawn (hotkey) 
+var Languageletter41a="تبدأ مع المؤثرات الخاصة";			//Spawn special effects 
+var Languageletter41b="دمج الموقت قبالة";			//Merge timer off
+var Languageletter41c="اقترح أن يكون ممكنا ل Lag يقلل";			//Suggested to be enabled for Lag reduce
+var Languageletter41d="صوت النار بالرصاص";			//Virus shot sound
+
 var Languageletter42="الأسَمَاء";			//Names
 var Languageletter43="بِدُوُن أَسمَاء";		//No names 
 var Languageletter44="تَحسِيِن الأسمَاء";		//Optimized names 
@@ -84,6 +89,10 @@ var Languageletter58="الاسكِنَات";		//Skins
 var Languageletter59="إخفاء الإسكِنات ";		//No skins 
 var Languageletter60="سكينات مُخصَصَة";		//Custom skins 
 var Languageletter61="سِكنِات الفانيليا ";		//Vanilla skins 
+var Languageletter61a="فيزياء جيلي";		//Jelly physics 
+var Languageletter61b="جلود الفيديو";		//Video skins
+var Languageletter61c="الصوت من جلود الفيديو الأخرى عند C3";		//Sound from other\'s Video skins when both C3
+
 var Languageletter62="تَحسِين نِقاط المَاس";		//Optimized food 
 var Languageletter6a2="نِقَاط المَاس ";		//Food 
 var Languageletter63="إخفَاء تِلقَائي لنِقَاط المَاس";		//Auto hide food (mass) 
@@ -96,10 +105,15 @@ var Languageletter69="الإسكنات الشَفَافَه الخَاصة بِ�
 var Languageletter70="شَفافِية الإسكنَات";		//Transparent skins 
 var Languageletter70a="خلايا شفافة"; //Transparent cells 
 var Languageletter71="شَفَافية الفَيرُسَات";		//Transparent viruses 
+var Languageletter71a="فيروس تألق";		//Virus Glow
+var Languageletter71b="ألوان قوس قزح متحركة";		//Animated rainbow colors
+
 var Languageletter72="الشَبَكة / القِطَاعَات";		//Grid / sectors
 var Languageletter73="أظهِر الخُطُوط الشَبَكيِة";		//Show grid 
 var Languageletter74="أظهِر ";		//Show background sectors 
 var Languageletter75="أظهِر حُدوُد الخَريطة";		//Show map borders 
+var Languageletter75a="توهج الحدود";		//Border Glow
+
 var Languageletter76="المُحَادثة";		//Chat
 var Languageletter77="عَدم تَفعِيل المُحَادثة";		//Disable chat 
 var Languageletter78="أصَواَت الِإخطَارات";		//Sound notifications 
@@ -112,14 +126,22 @@ var Languageletter82b="عرض الخريطة المصغرة"; //show minimap
 var Languageletter82c="عرض شبكة الخريطة المصغرة"; //show minimap grid
 var Languageletter82d="إظهار أدلة الخريطة المصغرة";		//Show minimap guides 
 var Languageletter82e="لو واحد للفريق";		//One-colored teammates 
+var Languageletter82f="عرض أدلة خرائط مصغرة إضافية";		//Show extra minimap guides
+var Languageletter82g="إظهار الخلايا الشبح";		//Show ghost cells
+
 var Languageletter83="أدَوَات مُسَاعدة";		//Helpers
 var Languageletter84="تغيِر دَرجِة لوُن سِكن الخِصم";		//Opponents colors
 var Languageletter85="دَوائِر حَولَ الخِصم";		//Opponents rings 
 var Languageletter86="ألوَان الفيرُسات";		//Viruses colors 
 var Languageletter87="نطاق الانِقسَام";		//Split range 
+var Languageletter87a="مجموعة انقسام مزدوجة سريعة";		//Quick double split range
+var Languageletter87b="مجموعة انقسام بطيئة مزدوجة";		//Slow double split range
+
 var Languageletter88="نِطَاق الفيرُوسَاَت";		//Viruses range 
 var Languageletter89="تَتَبُع مُؤشِر بالمَاوس";		//Cursor tracking 
 var Languageletter90="إِشَاَرَات لَأعَضَاء الفَريِق";		//Teammates indicators 
+var Languageletter90a="خلايا الأشباح";		//Ghost cells
+
 var Languageletter91="التحكُم بالمَاوِس";		//Mouse control
 var Languageletter92=" الإنِقسَام بالمَاوس";		//LMB - Mouse split 
 var Languageletter93="إِعطَاء المَاس بالمَاوس";		//RMB - Mouse feed 
@@ -127,8 +149,15 @@ var Languageletter94="تبديل أزرَار المَاوِس";		//Invert mouse
 var Languageletter94a="HUD";		// HUD
 var Languageletter95="إِظهَار أعَلَي 5 بِالفَريِق";		//Show team top 5 
 var Languageletter96="إظهار المُستهدف";		//Show targeting 
+var Languageletter96a="تظهر كتلة المتصدرين";		//Show leaderboard mass
+
 var Languageletter97="قَائِمَة الأوَائِل بالمُنتَصَف";		//Centered leaderboard 
+var Languageletter97a="رأس المتصدرين";		//\"Leaderboard\" header 
+
 var Languageletter98="إِحصَائيَات اللَعِبة بِالأَعلَي";		//Game stats at the top 
+var Languageletter98a="جلود على متن الفريق";		//Skins on teamboard
+
+
 var Languageletter99="الإحِصَائِيَات";		//Stats
 var Languageletter100="أظهِر إحِصَائيَات اللعِبة";		//Show game stats 
 var Languageletter101=" الماس- إحِصَائيَات اللعِبة ";		//Game stats: Mass 
@@ -145,6 +174,8 @@ var Languageletter109="حَظر النَوَافِذ المُزعِجَة";		//B
 var Languageletter109a="صوت"; //Voice
 var Languageletter109b="صوت البادئة"; //Voice-Prefix
 var Languageletter109c="صوت اللغة"; //Voice-language
+var Languageletter109d="إلغاء الإيقاف المؤقت"; //UnPause
+
 var Languageletter110="—جَودِة الجِرافِيِك--";		//-- Graphics Quality --
 var Languageletter111="جِرافِيك: Retina";		//Graphics: Retina
 var Languageletter112="جِرافِيك: عالي";		//Graphics: High
@@ -401,6 +432,9 @@ var Languageletter358="يرجى دعم تطوير مطوري ليجاند مُو
 var Languageletter359="تصميم اسم الخط";	//Design Nickname Font
 var Languageletter360="التنويه بوضع اسكن شخص مزور";	//Flag the Fake Skin
 var Languageletter361="المزيد من FPS";	//More FPS
+var Languageletter362="الصيت";	//Name
+var Languageletter363="الهوية الاجتماعية";	//Social ID
+
 
 var Premadeletter0="تَم تَفعِيِل الإتِصَالات"; 		//Communication Activated
 var Premadeletter1="لَا يُمكِن فَتح عِنوان اليُوتيُوب";		 //Cannot open this youtube URL
