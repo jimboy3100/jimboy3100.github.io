@@ -50,6 +50,11 @@ var Languageletter38="Szybkość zoom'a";		//Zoom speed:
 var Languageletter39="Odrodzenie";			//Respawn
 var Languageletter40="Automatyczne odrodzenie";		//Auto respawn
 var Languageletter41="Szybkie odrodzenie ";			//Quick respawn
+var Languageletter41a="Zacznij od efektów specjalnych";			//Spawn special effects 
+var Languageletter41b="Wyłącz licznik czasu ";			//Merge timer off
+var Languageletter41c="Sugerowane, aby włączyć dla opóźnienia zmniejszenia";			//Suggested to be enabled for Lag reduce
+var Languageletter41d="Dźwięk strzału wirusa";			//Virus shot sound
+
 var Languageletter42="Nazwy";			//Names
 var Languageletter43="Brak nazw";		//No names
 var Languageletter44="Zoptymalizowane nazwy";		//Optimized names
@@ -70,6 +75,10 @@ var Languageletter58="Skórki";		//Skins
 var Languageletter59="Ukryj skórki";		//No skins
 var Languageletter60="Niestandardowe skórki";		//Custom skins
 var Languageletter61="Skórki z Vanilla'i";		//Vanilla skins
+var Languageletter61a="Fizyka galaretki";		//Jelly physics 
+var Languageletter61b="Skórki wideo";		//Video skins
+var Languageletter61c="Dźwięk z innych skórek wideo, gdy oba C3";		//Sound from other\'s Video skins when both C3
+
 var Languageletter62="Zoptymalizowane jedzenie";		//Optimized food
 var Languageletter6a2="Jedzenie";		//Food
 var Languageletter63="Automatyczne ukrywanie jedzenia";		//Auto hide food (mass)
@@ -82,10 +91,15 @@ var Languageletter69="Moja przezroczysta skórka";		//My transparent skin
 var Languageletter70="Przezroczyste skórki";		//Transparent skins
 var Languageletter70a="Przezroczyste komórki";		//Transparent cells
 var Languageletter71="Przezroczyste wirusy";		//Transparent viruses
+var Languageletter71a="Błyszczący wirus";		//Virus Glow
+var Languageletter71b="Animowane kolory tęczy";		//Animated rainbow colors
+
 var Languageletter72="Siatka / sektory";		//Grid / sectors
 var Languageletter73="Pokaż siatkę";		//Show grid
 var Languageletter74="Pokaż sektory w tle";		//Show background sectors
 var Languageletter75="Pokaż granice mapy";		//Show map borders
+var Languageletter75a="Blask granic";		//Border Glow
+
 var Languageletter76="Czat";		//Chat
 var Languageletter77="Wyłącz czat";		//Disable chat
 var Languageletter78="Dźwięki powiadomień";		//Sound notifications
@@ -98,14 +112,22 @@ var Languageletter82b="Pokaż minimapę";		//Show minimap
 var Languageletter82c="Pokaż obrys minimapy";		//Show minimap grid
 var Languageletter82d="Pokaż wskazówki na minimapie";		//Show minimap guides
 var Languageletter82e="Jednokolorowi przyjaciele z drużyny";		//One-colored teammates
+var Languageletter82f="Pokaż dodatkowe mini przewodniki po mapach";		//Show extra minimap guides
+var Languageletter82g="Pokaż komórki widmowe";		//Show ghost cells
+
 var Languageletter83="Pomocnicy";		//Helpers
 var Languageletter84="Kolory przeciwników";		//Opponents colors
 var Languageletter85="Pierścienie przeciwników";		//Opponents rings
 var Languageletter86="Kolory wirusów";		//Viruses colors
 var Languageletter87="Zasięg rozdzielenia";		//Split range
+var Languageletter87a="Szybki podwójny zakres podziału";		//Quick double split range
+var Languageletter87b="Powolny podwójny zakres podziału";		//Slow double split range
+
 var Languageletter88="Zasięg wirusów";		//Viruses range
 var Languageletter89="Śledzenie kursora";		//Cursor tracking
 var Languageletter90="Wskaźniki członków drużyny";		//Teammates indicators
+var Languageletter90a="Komórki duchów";		//Ghost cells
+
 var Languageletter91="Sterowanie myszką";		//Mouse control
 var Languageletter92="LPM - Rozdzielanie myszką";		//LMB - Mouse split
 var Languageletter93="PPM - Karmienie myszką";		//RMB - Mouse feed
@@ -113,8 +135,14 @@ var Languageletter94="Odwróć przyciski myszy";		//Invert mouse buttons
 var Languageletter94a="HUD";		// HUD
 var Languageletter95="Pokaż top 5 zespołu";		//Show team top 5
 var Languageletter96="Pokaż kierowanie";		//Show targeting
+var Languageletter96a="Pokaż masę liderów";		//Show leaderboard mass
+
 var Languageletter97="Wyśrodkowana tablica wyników";		//Centered leaderboard
+var Languageletter97a="Nagłówek tablicy wyników";		//\"Leaderboard\" header 
+
 var Languageletter98="Statystyki gry na górze";		//Game stats at the top
+var Languageletter98a="Skórki na planszy zespołu";		//Skins on teamboard
+
 var Languageletter99="Statystyki";		//Stats
 var Languageletter100="Pokaż statystyki gry";		//Show game stats
 var Languageletter101="Satystyki gry: Masa";		//Game stats: Mass
@@ -131,6 +159,8 @@ var Languageletter109="Blokuj wyskakujące okienka (reklamy/sklep/zadanie)";		//
 var Languageletter109a="GŁOS"; //Voice
 var Languageletter109b="Prefiks Głosowy"; //Voice-Prefix
 var Languageletter109c="Język Głosu"; //Voice-language
+var Languageletter109d="UnPause"; //UnPause
+
 var Languageletter110="-- Jakość graficzna --";		//-- Graphics Quality --
 var Languageletter111="Grafika: Retina";		//Graphics: Retina
 var Languageletter112="Grafika: Wysoka";		//Graphics: High
@@ -389,6 +419,8 @@ var Languageletter358="Proszę wspierać rozwój Legendy";	//Please support the 
 var Languageletter359="Stwórz Kreatywną Nazwę";	//Design Nickname Font
 var Languageletter360="Oznacz Fałszywą Skórką";	//Flag the Fake Skin
 var Languageletter361="Więcej fps'ów";	//More FPS
+var Languageletter362="Imię";	//Name
+var Languageletter363="ID społeczny";	//Social ID
 
 var Premadeletter0="Komunikacja Aktywowana"; 		//Communication Activated
 var Premadeletter1="Nie można otworzyć tego adresu URL YouTube";		 //Cannot open this youtube URL
