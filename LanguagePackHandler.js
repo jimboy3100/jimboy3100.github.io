@@ -433,8 +433,7 @@ $("#musicUrl").attr('placeholder', Languageletter284a).attr('data-original-title
 $(".agario-panel.sounds-panel>h5").text(Languageletter286);
 $(".agario-panel.sounds-panel>div>span").eq(0).text(Languageletter287);
 $(".agario-panel.sounds-panel>div>span").eq(1).text(Languageletter288);
-
-//$(".agario-panel.sounds-panel>div>span").eq(2).text(Languageletter288a);
+$(".agario-panel.sounds-panel>div>span").eq(2).text(Languageletter41d);
 
 $("#copySIPBtn").text(Languageletter291).attr('data-original-title',Languageletter289);
 $("#copySIPBtn").text(Languageletter291).attr('data-original-title',Languageletter289);
@@ -583,7 +582,7 @@ $("#VoiceBtn").attr("data-original-title", Languageletter357);
 $("#donationbtn").attr("data-original-title", Languageletter358);
 $("#opennamechars").attr("data-original-title", Languageletter359);
 $("#openskinchanger").attr("data-original-title", Languageletter360);
-//$("#MorefpsText").text(Languageletter361);
+$("#MorefpsText").text(Languageletter361);
 
 $("#Infobtn11").text(Externalletter1);
 $("#TemplatesBtn").text(Externalletter2);
