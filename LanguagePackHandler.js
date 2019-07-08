@@ -459,7 +459,7 @@ $("#searchShortcut").attr('data-original-title', Languageletter292);
 $("#reconnectBtn").attr('data-original-title', Languageletter293);
 $("#logTitle").text(Languageletter294);
 $("#searchInput").attr('placeholder',Languageletter295);
-$("#closeBtn").attr("data-original-title", Languageletter283);
+$("#closeBtn").text(Languageletter283); 
 $("#notesclear").attr("data-original-title", Languageletter295a);
 $("#message").attr('placeholder', Languageletter295b);
 //$("#top5-total").each(function() { var text = $(this).html();
