@@ -1,6 +1,6 @@
 //Language Pack Handler
 //Legend Mod By Jimboy3100
-//v1.2e
+//v1.2f
 
 //Legend Mod By Jimboy3100
 var Languagetimesused;
@@ -76,10 +76,10 @@ $("#gifting").text(Languageletter22);
 $("#dailyQuests").text(Languageletter23);
 $("#openShopBtn").text(Languageletter20);
 $(".btn.btn-danger.btn-logout").attr('data-original-title',Languageletter31);
-/*
+
 $("#UserProfileName").replace('Name', Languageletter362);
 $("#UserProfileUID").replace('Social ID', Languageletter363);
-*/
+
 $("#TimesUsedPanel").replaceWith('<div id="TimesUsedPanel" align="left" style="display:inline-block; margin-top: -10px; margin-bottom: -10px; "><h6><i>' + Languageletter32+': '+timesopened+
 		'<br>'+ Languageletter33 + ': jimboy3100<br>' + Languageletter34 + ': ' + translator + '</i></h6></div>');
 
@@ -92,17 +92,17 @@ $(".options-box.zoomGroup>h5").text(Languageletter37b);
 $(".options-box.zoomGroup>LABEL").replace('Auto zoom', Languageletter37a);
 $(".options-box.zoomGroup>DIV>DIV>SPAN:nth-child(1)").text(Languageletter38 + ": ");
 
-//$(".options-box.leaderboard>h5").text(Languageletter38a);
-//$(".options-box.leaderboard>LABEL").replace('Leaderboard Players', Languageletter38b);
-//$(".options-box.leaderboard>LABEL").replace('Team Players', Languageletter38c);
+$(".options-box.leaderboard>h5").text(Languageletter320);
+$(".options-box.leaderboard>LABEL").replace('Leaderboard Players', Languageletter320 + " " + Languageletter313);
+$(".options-box.leaderboard>LABEL").replace('Team Players', Languageletter321 + " " +  Languageletter313);
 
 $(".options-box.respGroup>h5").text(Languageletter39);
 $(".options-box.respGroup>LABEL").replace('Quick respawn', Languageletter41);
 $(".options-box.respGroup>LABEL").replace('Auto respawn', Languageletter40);
-//$(".options-box.respGroup>LABEL").replace('Spawn special effects', Languageletter41a);
-//$(".options-box.massGroup>LABEL").replace('Merge timer BETA off', Languageletter41b);
-//$(".options-box.massGroup>LABEL").replace('Suggested to be enabled for Lag reduce', Languageletter41c);
-//$(".options-box.massGroup>LABEL").replace('Virus shot sound', Languageletter41d);
+$(".options-box.respGroup>LABEL").replace('Spawn special effects', Languageletter41a);
+$(".options-box.massGroup>LABEL").replace('Merge timer BETA off', Languageletter41b);
+$(".options-box.massGroup>LABEL").replace('Suggested to be enabled for Lag reduce', Languageletter41c);
+$(".options-box.massGroup>LABEL").replace('Virus shot sound', Languageletter41d);
 
 $(".options-box.namesGroup>h5").text(Languageletter42);
 $(".options-box.namesGroup>LABEL").replace('No names', Languageletter43);
@@ -124,9 +124,9 @@ $(".options-box.skinsGroup>h5").text(Languageletter58);
 $(".options-box.skinsGroup>LABEL").replace('No skins', Languageletter59);
 $(".options-box.skinsGroup>LABEL").replace('Custom skins', Languageletter60);
 $(".options-box.skinsGroup>LABEL").replace('Vanilla skins', Languageletter61);
-//$(".options-box.skinsGroup>LABEL").replace('Jelly physics', Languageletter61a);
-//$(".options-box.skinsGroup>LABEL").replace('Video skins', Languageletter61b);
-//$(".options-box.skinsGroup>LABEL").replace('Sound from other\'s Video skins when both C3', Languageletter61c);
+$(".options-box.skinsGroup>LABEL").replace('Jelly physics', Languageletter61a);
+$(".options-box.skinsGroup>LABEL").replace('Video skins', Languageletter61b);
+$(".options-box.skinsGroup>LABEL").replace('Sound from other\'s Video skins when both C3', Languageletter61c);
 
 $(".options-box.foodGroup>h5").text(Languageletter6a2);
 $(".options-box.foodGroup>LABEL").replace('Optimized food', Languageletter62);
@@ -143,14 +143,14 @@ $(".options-box.transparencyGroup>LABEL").replace('My transparent skin', Languag
 $(".options-box.transparencyGroup>LABEL").replace('Transparent skins', Languageletter70);
 $(".options-box.transparencyGroup>LABEL").replace('Transparent cells', Languageletter70a);
 $(".options-box.transparencyGroup>LABEL").replace('Transparent viruses', Languageletter71);
-//$(".options-box.transparencyGroup>LABEL").replace('Virus Glow', Languageletter71a);
-//$(".options-box.transparencyGroup>LABEL").replace('Animated rainbow colors', Languageletter71b);
+$(".options-box.transparencyGroup>LABEL").replace('Virus Glow', Languageletter71a);
+$(".options-box.transparencyGroup>LABEL").replace('Animated rainbow colors', Languageletter71b);
 
 $(".options-box.gridGroup>h5").text(Languageletter72);
 $(".options-box.gridGroup>LABEL").replace('Show grid', Languageletter73);
 $(".options-box.gridGroup>LABEL").replace('Show background sectors', Languageletter74);
 $(".options-box.gridGroup>LABEL").replace('Show map borders', Languageletter75);
-//$(".options-box.gridGroup>LABEL").replace('Border Glow', Languageletter75a);
+$(".options-box.gridGroup>LABEL").replace('Border Glow', Languageletter75a);
 
 $(".options-box.chatGroup>h5").text(Languageletter76);
 $(".options-box.chatGroup>LABEL").replace('Disable chat', Languageletter77);
@@ -163,21 +163,21 @@ $(".options-box.miniMapGroup>h5").text(Languageletter82a);
 $(".options-box.miniMapGroup>LABEL").replace('Show minimap', Languageletter82b);
 $(".options-box.miniMapGroup>LABEL").replace('Show minimap grid', Languageletter82c);
 $(".options-box.miniMapGroup>LABEL").replace('Show minimap guides', Languageletter82d);
-//$(".options-box.miniMapGroup>LABEL").replace('Show extra minimap guides', Languageletter82f);
-//$(".options-box.miniMapGroup>LABEL").replace('Show ghost cells', Languageletter82g);
+$(".options-box.miniMapGroup>LABEL").replace('Show extra minimap guides', Languageletter82f);
+$(".options-box.miniMapGroup>LABEL").replace('Show ghost cells', Languageletter82g);
 $(".options-box.miniMapGroup>LABEL").replace('One-colored teammates', Languageletter82e);
 $(".options-box.helpersGroup>h5").text(Languageletter83);
 $(".options-box.helpersGroup>LABEL").replace('Opponents colors', Languageletter84);
 $(".options-box.helpersGroup>LABEL").replace('Opponents rings', Languageletter85);
 $(".options-box.helpersGroup>LABEL").replace('Viruses colors', Languageletter86);
 $(".options-box.helpersGroup>LABEL").replace('Split range', Languageletter87);
-//$(".options-box.helpersGroup>LABEL").replace('Quick double split range', Languageletter87a);
-//$(".options-box.helpersGroup>LABEL").replace('Slow double split range', Languageletter87b);
+$(".options-box.helpersGroup>LABEL").replace('Quick double split range', Languageletter87a);
+$(".options-box.helpersGroup>LABEL").replace('Slow double split range', Languageletter87b);
 $(".options-box.helpersGroup>LABEL").replace('Viruses range', Languageletter88);
 $(".options-box.helpersGroup>LABEL").replace('Cursor tracking', Languageletter89);
 $(".options-box.helpersGroup>LABEL").replace('Teammates indicators', Languageletter90);
-//$(".options-box.helpersGroup>LABEL").replace('Ghost cells (fps drop)', Languageletter90a);
-//$(".options-box.helpersGroup>LABEL").replace('Ghost cells info (confusing)', Languageletter90b);
+$(".options-box.helpersGroup>LABEL").replace('Ghost cells (fps drop)', Languageletter90a);
+$(".options-box.helpersGroup>LABEL").replace('Ghost cells info (confusing)', Languageletter90a + " " + Externalletter1.toLowerCase());
 $(".options-box.mouseGroup>h5").text(Languageletter91);
 $(".options-box.mouseGroup>LABEL").replace('LMB - Mouse split', Languageletter92);
 $(".options-box.mouseGroup>LABEL").replace('RMB - Mouse feed', Languageletter93);
@@ -185,11 +185,11 @@ $(".options-box.mouseGroup>LABEL").replace('Invert mouse buttons', Languagelette
 $(".options-box.hudGroup>h5").text(Languageletter94a);
 $(".options-box.hudGroup>LABEL").replace('Show teamboard', Languageletter95);
 $(".options-box.hudGroup>LABEL").replace('Show targeting', Languageletter96);
-//$(".options-box.hudGroup>LABEL").replace('Show leaderboard mass', Languageletter96a);
+$(".options-box.hudGroup>LABEL").replace('Show leaderboard mass', Languageletter96a);
 $(".options-box.hudGroup>LABEL").replace('Centered leaderboard', Languageletter97);
-//$(".options-box.hudGroup>LABEL").replace('\"Leaderboard\" header ', Languageletter97a);
+$(".options-box.hudGroup>LABEL").replace('\"Leaderboard\" header ', Languageletter97a);
 $(".options-box.hudGroup>LABEL").replace('Game stats at the top', Languageletter98);
-//$(".options-box.hudGroup>LABEL").replace('Skins on teamboard', Languageletter98a);
+$(".options-box.hudGroup>LABEL").replace('Skins on teamboard', Languageletter98a);
 $(".options-box.statsGroup>h5").text(Languageletter99);
 $(".options-box.statsGroup>LABEL").replace('Show game stats', Languageletter100);
 $(".options-box.statsGroup>LABEL").replace('Game stats: Mass', Languageletter101);
@@ -206,7 +206,7 @@ $(".options-box.extrasGroup>LABEL").replace('Block popups', Languageletter109);
 $(".options-box.voiceGroup>.menu-main-color").text(Languageletter109a);
 $(".options-box.voiceGroup>LABEL").replace('Voice-Prefix', Languageletter109b);
 $(".options-box.voiceGroup>LABEL").replace('Voice-lang', Languageletter109c);
-//$(".options-box.voiceGroup>LABEL").replace('UnPause', Languageletter109d);
+$(".options-box.voiceGroup>LABEL").replace('UnPause', Languageletter109d);
 
 $('#quality>option:nth-child(1)').text(Languageletter110);
 $('#quality>option:nth-child(2)').text(Languageletter111);
