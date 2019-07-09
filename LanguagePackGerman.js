@@ -143,7 +143,7 @@ var Languageletter92="LMT - teilen";		//LMB - Mouse split
 var Languageletter93="RMT - teilen";		//RMB - Mouse feed 
 var Languageletter94="Maustasten invertieren";		//Invert mouse buttons 
 var Languageletter94a="HUD";		// HUD
-var Languageletter95="Top 5 Spieler anzeigen";		//Show team top 5 
+var Languageletter95="Team";		//Team
 var Languageletter96="Ziel anzeigen";		//Show targeting 
 var Languageletter96a="Zeige die Bestenliste";		//Show leaderboard mass
 
