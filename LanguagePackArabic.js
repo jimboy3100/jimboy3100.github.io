@@ -147,7 +147,7 @@ var Languageletter92=" الإنِقسَام بالمَاوس";		//LMB - Mouse sp
 var Languageletter93="إِعطَاء المَاس بالمَاوس";		//RMB - Mouse feed 
 var Languageletter94="تبديل أزرَار المَاوِس";		//Invert mouse buttons 
 var Languageletter94a="HUD";		// HUD
-var Languageletter95="إِظهَار أعَلَي 5 بِالفَريِق";		//Show team top 5 
+var Languageletter95="الفريق";		//Team
 var Languageletter96="إظهار المُستهدف";		//Show targeting 
 var Languageletter96a="تظهر كتلة المتصدرين";		//Show leaderboard mass
 
