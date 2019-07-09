@@ -142,7 +142,7 @@ var Languageletter92="LMB - Разделяне чрез мишка";		//LMB - Mo
 var Languageletter93="RMB - Хранене чрез мишка";		//RMB - Mouse feed 
 var Languageletter94="Обърнете бутоните на мишката";		//Invert mouse buttons 
 var Languageletter94a="HUD";		// HUD
-var Languageletter95="Покажи топ 5 отбора";		//Show team top 5 
+var Languageletter95="екип";		//Team
 var Languageletter96="Показване на насочването";		//Show targeting 
 var Languageletter96a="Показване на маса за класиране";		//Show leaderboard mass
 
