@@ -143,7 +143,7 @@ var Languageletter92="Clic gauche - Mouse split";		//LMB - Mouse split
 var Languageletter93="Clic droit - Mouse feed";		//RMB - Mouse feed 
 var Languageletter94="Inverser les boutons de la souris";		//Invert mouse buttons 
 var Languageletter94a="HUD";		// HUD
-var Languageletter95="Afficher l'équipe top 5";		//Show team top 5 
+var Languageletter95="Équipe";		//Team
 var Languageletter96="Afficher le ciblage";		//Show targeting 
 var Languageletter96a="Montrer la masse du classement";		//Show leaderboard mass
 
