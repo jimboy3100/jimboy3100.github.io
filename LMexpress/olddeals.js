@@ -56,7 +56,7 @@ else{
              '<div class="xpmt-skins" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: -120px 310px; background-image: url(""); background-size: cover; border-color: #7c0001"></div>' +
              '</div>' +
              '</div><select id="ss-select-purchases" class="form-control" required="" style="margin-bottom: 30px"></select><select id="BuyDealCurrency" class="form-control" required="" style="display:inline-block; width: 20%; margin-top: -30px;"><option value="USD" data-itr="">USD</option><option value="EU" data-itr="">EU</option></select><color="red" style="display:inline"> ' + Premadeletter112 + '</color>' +
-             '<select id="ss-select-agarVersionDestinations" class="form-control" required="" style="display:inline; width: 25%; margin-top: -30px;"></select><color="red" style="display:inline"> Library</color>' +
+             '<select id="ss-select-agarVersionDestinations" class="form-control" required="" style="display:inline; width: 25%; margin-top: -30px;"></select><color="red" style="display:inline">' + Premadeletter117 + '</color>' +
 
              '<input type="text" class="form-control" id="GameConfigurationUrl" value = ' + window.MiniclipConfigDestination + ' placeholder="*Search any GameConfiguration.json destination" style="width: 95%; display: inline-block">' +
              '<p class="alert-warning text-center">' + Premadeletter116 + '<br>UID:<span class="alert-success" id="exp-uid">' + window.agarioUID + '</span> <font color="red" onclick=copy(window.agarioUID);><b><u>' + Premadeletter114 + ' UID</u></b></font><br>ID: ' + window.agarioID + ' .*UID ' + Premadeletter115 + '</p>' +
