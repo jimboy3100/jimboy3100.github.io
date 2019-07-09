@@ -133,7 +133,7 @@ var Languageletter92="LPM - Rozdzielanie myszką";		//LMB - Mouse split
 var Languageletter93="PPM - Karmienie myszką";		//RMB - Mouse feed
 var Languageletter94="Odwróć przyciski myszy";		//Invert mouse buttons
 var Languageletter94a="HUD";		// HUD
-var Languageletter95="Pokaż top 5 zespołu";		//Show team top 5
+var Languageletter95="Zespół";		//Team
 var Languageletter96="Pokaż kierowanie";		//Show targeting
 var Languageletter96a="Pokaż masę liderów";		//Show leaderboard mass
 
@@ -348,7 +348,7 @@ var Languageletter295="Wpisz token przyjaciela, adres IP, tablicę wyników, naz
 var Languageletter295a="Czysta lista"; //Clear list
 var Languageletter295b="Wpisz wiadomość czatu ..."; //Enter chat message...
 
-var Languageletter298="Top zespołu ";		//Team top
+var Languageletter298="Zespół";		//Team
 var Languageletter299="Tabela liderów";		//Leaderbodard
 var Languageletter300="Communication";		//Communication
 var Languageletter301="Polecenia Skryptu Wiadomości";		//Message Script Commands
