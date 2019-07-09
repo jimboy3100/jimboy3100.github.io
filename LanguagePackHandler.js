@@ -127,7 +127,7 @@ $(".options-box.skinsGroup>LABEL").replace('Vanilla skins', Languageletter61);
 $(".options-box.skinsGroup>LABEL").replace('Jelly physics', Languageletter61a);
 $(".options-box.skinsGroup>LABEL").replace('Video skins', Languageletter61b);
 $(".options-box.skinsGroup>LABEL").replace('Sound from other\'s Video skins when both C3', Languageletter61c);
-
+$("#VideoSkinsQuick").attr("data-original-title", Languageletter354);
 $(".options-box.foodGroup>h5").text(Languageletter6a2);
 $(".options-box.foodGroup>LABEL").replace('Optimized food', Languageletter62);
 $(".options-box.foodGroup>LABEL").replace('Auto hide food', Languageletter63);
@@ -575,7 +575,7 @@ $("#SpecialDealsQuickBtn").attr("data-original-title", Languageletter351);
 $(".btn.btn-primary.btn-success.btn-leagues").text(Languageletter352); //Leaderboards
 
 //$("#LegGoogleForm").attr("data-original-title", Languageletter353);
-$("#VideoSkinsQuick").attr("data-original-title", Languageletter354);
+
 $("#MiniScripts").attr("data-original-title", Languageletter355);
 $("#OpenuserScripts").text(Languageletter356);
 $("#VoiceBtn").attr("data-original-title", Languageletter357);
