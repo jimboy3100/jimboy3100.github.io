@@ -176,8 +176,9 @@ $(".options-box.helpersGroup>LABEL").replace('Slow double split range', Language
 $(".options-box.helpersGroup>LABEL").replace('Viruses range', Languageletter88);
 $(".options-box.helpersGroup>LABEL").replace('Cursor tracking', Languageletter89);
 $(".options-box.helpersGroup>LABEL").replace('Teammates indicators', Languageletter90);
-$(".options-box.helpersGroup>LABEL").replace('Ghost cells (fps drop)', Languageletter90a);
-$(".options-box.helpersGroup>LABEL").replace('Ghost cells info (confusing)', Languageletter90a + " " + Externalletter1.toLowerCase());
+$(".options-box.helpersGroup>LABEL").replace('Ghost cells info', Languageletter90a + " " + Externalletter1.toLowerCase());
+$(".options-box.helpersGroup>LABEL").replace('Ghost cells', Languageletter90a);
+
 $(".options-box.mouseGroup>h5").text(Languageletter91);
 $(".options-box.mouseGroup>LABEL").replace('LMB - Mouse split', Languageletter92);
 $(".options-box.mouseGroup>LABEL").replace('RMB - Mouse feed', Languageletter93);
