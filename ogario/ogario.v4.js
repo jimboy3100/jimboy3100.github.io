@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.961 MEGA TEST
+// v1.962 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -298,8 +298,8 @@ var languagetexts = {
         'autoHideCellsInfo': 'Autoukrywanie nazw i masy',
         'autoHideNames': 'Autoukrywanie nazw',
         'autoHideMass': 'Autoukrywanie masy',
-        'autoHideFood': 'Autoukrywanie pokarmu (masa)',
-        'autoHideFoodOnZoom': 'Autoukrywanie pokarmu (zoom)',
+        'autoHideFood': 'Autoukrywanie pokarmu - masa',
+        'autoHideFoodOnZoom': 'Autoukrywanie pokarmu - zoom',
         'optimizedNames': 'Zoptymalizowane nazwy',
         'hideMyName': 'Ukryj własną nazwę',
         'hideTeammatesNames': 'Ukryj nazwy graczy teamu',
@@ -687,8 +687,8 @@ var languagetexts = {
         'autoHideCellsInfo': 'Auto hide names and mass',
         'autoHideNames': 'Auto hide names',
         'autoHideMass': 'Auto hide mass',
-        'autoHideFood': 'Auto hide food (mass)',
-        'autoHideFoodOnZoom': 'Auto hide food (zoom)',
+        'autoHideFood': 'Auto hide food - mass',
+        'autoHideFoodOnZoom': 'Auto hide food - zoom',
         'optimizedNames': 'Optimized names',
         'hideMyName': 'Hide my name',
         'hideTeammatesNames': 'Hide teammates names',
