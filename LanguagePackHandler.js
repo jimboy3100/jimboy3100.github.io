@@ -130,8 +130,8 @@ $(".options-box.skinsGroup>LABEL").replace('Sound from other\'s Video skins when
 $("#VideoSkinsQuick").attr("data-original-title", Languageletter354);
 $(".options-box.foodGroup>h5").text(Languageletter6a2);
 $(".options-box.foodGroup>LABEL").replace('Optimized food', Languageletter62);
-$(".options-box.foodGroup>LABEL").replace('Auto hide food (mass)', Languageletter63);
-$(".options-box.foodGroup>LABEL").replace('Auto hide food (zoom)', Languageletter64);
+$(".options-box.foodGroup>LABEL").replace('Auto hide food - mass', Languageletter63);
+$(".options-box.foodGroup>LABEL").replace('Auto hide food - zoom', Languageletter64);
 $(".options-box.foodGroup>LABEL").replace('Rainbow food', Languageletter65);
 //$(".options-box.foodGroup>LABEL").replace('mass', Languageletter49);
 //$(".options-box.foodGroup>LABEL").replace('zoom', Languageletter37b);
