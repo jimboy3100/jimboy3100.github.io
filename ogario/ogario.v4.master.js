@@ -323,7 +323,33 @@ function legendmaster(self) {
                 var i;
                 for (i in regions) {
                     if (regions.hasOwnProperty(i)) {
-                        $('#region option[value="' + i + '').text(that.regionNames[i] + " (" + regions[i].numPlayers + ")");
+						var tempRegion=that.regionNames[i];
+						if (that.regionNames[i] == "North America"){
+							tempRegion = Premadeletter134;
+						}
+						else if (that.regionNames[i] == "South America"){
+							tempRegion = Premadeletter135;
+						}
+						else if (that.regionNames[i] == "Europe"){
+							tempRegion = Premadeletter136;
+						}					
+						else if (that.regionNames[i] == "Russia"){
+							tempRegion = Premadeletter137;
+						}	
+						else if (that.regionNames[i] == "Turkey"){
+							tempRegion = Premadeletter138;
+						}	
+						else if (that.regionNames[i] == "East Asia"){
+							tempRegion = Premadeletter139;
+						}							
+						else if (that.regionNames[i] == "China"){
+							tempRegion = Premadeletter139a;
+						}	
+						else if (that.regionNames[i] == "Oceania"){
+							tempRegion = Premadeletter140;
+						}							
+						$('#region option[value="' + i + '').text(tempRegion + " (" + regions[i].numPlayers + ")");
+                        //$('#region option[value="' + i + '').text(that.regionNames[i] + " (" + regions[i].numPlayers + ")");
                     }
                 }
             });
