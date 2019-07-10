@@ -570,8 +570,8 @@ var Premadeletter107 = "كتم الصوت"; //mute audio
 var Premadeletter108 = "مشروع LM"; //The LM Project
 var Premadeletter109 = "رفع"; //Upload 
 var Premadeletter109a = "تحميل"; //Download
-var Premadeletter109b = "Load"; //Load
-var Premadeletter109c = "SERVER"; //SERVER
+var Premadeletter109b = "جار التحميل"; //Load
+
 var Premadeletter110 = "لا تدخل أي شيء هنا إلا إذا كنت تعرف ما هو";	//do not enter anything here unless you know what it is
 var Premadeletter111 = "انقر على أيقونة اللون البرتقالي للشراء"; //click on the orange icon to buy
 var Premadeletter112 = "لبعض طرق الدفع"; //For some payment methods
