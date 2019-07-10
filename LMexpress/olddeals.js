@@ -44,7 +44,7 @@ else{
              '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 500px;">' +
              '<div class="modal-content">' +
              '<div id="CloseSpecialDeals" class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-             '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">Special deals</h4>' +
+             '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + Languageletter351 + '</h4>' +
              '</div>' +
              '<div class="modal-body"><input type="text" class="form-control" id="agario_uid_input" placeholder="*UID (' + Premadeletter110 + ')" style="width: 85%; display: inline-block">' +
              '<div class="custom-checkbox" style="display: inline-block; margin-left: 10px; vertical-align: sub;"><input id="checkBoxLockUID" type="checkbox" disabled="disabled" style="width: 20px; height: 20px"><label for="cb1"></label></div>' +
