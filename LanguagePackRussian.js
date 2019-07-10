@@ -428,7 +428,10 @@ var Languageletter362="имя";	//Name
 var Languageletter363="ID Социальное";	//Social ID
 var Languageletter364="расширения";	//Expansions
 var Languageletter365 = "Yниверсальный";	//Universal
-var Languageletter366="Score";	//Score
+var Languageletter366="Гол";	//Score
+var Languageletter367="Расстояние";	//Distance
+var Languageletter368="Общая масса";	//Total Mass
+var Languageletter369="мертв";	//Dead
 
 var Premadeletter0="Активация связи"; 		//Communication Activated 
 var Premadeletter1="Не удается открыть этот URL-адрес YouTube.";		 //Cannot open this youtube URL 
