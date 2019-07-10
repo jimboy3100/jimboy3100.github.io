@@ -440,6 +440,8 @@ var Languageletter361="更多FPS";	//More FPS
 var Languageletter362="名稱";	//Name
 var Languageletter363="社交ID";	//Social ID
 var Languageletter364="展開";	//Expansions
+var Languageletter365 = "普遍";	//Universal
+var Languageletter366="Score";	//Score
 
 var Premadeletter0="通訊激活"; 		//Communication Activated
 var Premadeletter1="無法打開這個youtube網址";		 //Cannot open this youtube URL
@@ -584,7 +586,22 @@ var Premadeletter124 = "避免使用超過6分鐘的視頻皮膚"; //Avoid using
 var Premadeletter125 = "地圖已修復"; //Map fixed
 var Premadeletter126 = "登錄到"; //Logged in to
 var Premadeletter127 = "登出"; //Logged out
-
+var Premadeletter130 = "總"; //Total
+var Premadeletter131 = "新"; //NEW
+var Premadeletter132 = "加入吧"; //Join Back
+var Premadeletter133 = "連接到您播放的最後一個IP"; //Connect to last IP you played
+var Premadeletter134 = "北美"; //North America
+var Premadeletter135 = "南美洲"; //South America
+var Premadeletter136 = "歐洲"; //Europe
+var Premadeletter137 = "俄國"; //Russia
+var Premadeletter138 = "土耳其"; //Turkey
+var Premadeletter139 = "東亞"; //East Asia
+var Premadeletter140 = "大洋洲"; //Oceania
+var Premadeletter141 = "自由"; //FFA
+var Premadeletter142 = "戰斗羅伊爾"; //Battle Royale
+var Premadeletter143 = "小組"; //Teams
+var Premadeletter144 = "試驗"; //Experimental
+var Premadeletter145 = "黨"; //Party Mode
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter0a = "語言"; //LANGUAGES
