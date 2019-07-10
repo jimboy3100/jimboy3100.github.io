@@ -441,7 +441,10 @@ var Languageletter362="Name";	//Name
 var Languageletter363="Soziale ID";	//Social ID
 var Languageletter364="Erweiterungen";	//Expansions
 var Languageletter365="Universal";	//Universal
-var Languageletter366="Score";	//Score
+var Languageletter366="Ergebnis";	//Score
+var Languageletter367="Entfernung";	//Distance
+var Languageletter368="Totale Masse";	//Total Mass
+var Languageletter369="Tot";	//Dead
 
 var Premadeletter0="Kommunikation Aktiviert"; 		//Communication Activated
 var Premadeletter1="Kein Öffnen von Youtube URL möglich";		 //Cannot open this youtube URL
