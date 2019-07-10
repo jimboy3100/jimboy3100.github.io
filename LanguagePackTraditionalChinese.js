@@ -563,8 +563,8 @@ var Premadeletter107 = "靜音"; //mute audio
 var Premadeletter108 = "LM項目"; //The LM Project
 var Premadeletter109 = "上傳"; //Upload 
 var Premadeletter109a = "下載"; //Download
-var Premadeletter109b = "Load"; //Load
-var Premadeletter109c = "SERVER"; //SERVER
+var Premadeletter109b = "載入中"; //Load
+
 var Premadeletter110 = "除非你知道它是什麼，否則不要在這裡輸入任何內容";	//do not enter anything here unless you know what it is
 var Premadeletter111 = "點擊橙色圖標購買"; //click on the orange icon to buy
 var Premadeletter112 = "對於某些付款方式"; //For some payment methods
