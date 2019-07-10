@@ -565,8 +565,8 @@ var Premadeletter107 = "couper le son"; //mute audio
 var Premadeletter108 = "Le projet LM"; //The LM Project
 var Premadeletter109 = "Upload"; //Upload 
 var Premadeletter109a = "Download"; //Download
-var Premadeletter109b = "Load"; //Load
-var Premadeletter109c = "SERVER"; //SERVER
+var Premadeletter109b = "Chargement"; //Load
+
 var Premadeletter110 = "n'entrez rien ici sauf si vous savez ce que c'est";	//do not enter anything here unless you know what it is
 var Premadeletter111 = "cliquez sur l'icône orange pour acheter"; //click on the orange icon to buy
 var Premadeletter112 = "Pour certaines méthodes de paiement"; //For some payment methods
