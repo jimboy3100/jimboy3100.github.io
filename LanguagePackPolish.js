@@ -592,6 +592,7 @@ var Premadeletter138 = "Turcja"; //Turkey
 var Premadeletter139 = "Wschodnia Azja"; //East Asia
 var Premadeletter139a = "Chiny"; //China
 var Premadeletter140 = "Oceania"; //Oceania
+var Premadeletter140a = " -- Wybierz region -- "; // -- Select a Region -- 
 var Premadeletter141 = "Darmowy"; //FFA
 var Premadeletter142 = "Bitwa Royale"; //Battle Royale
 var Premadeletter143 = "Zespoły"; //Teams
