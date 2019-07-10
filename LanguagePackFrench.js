@@ -578,6 +578,15 @@ var Premadeletter119 = "Signaler comme faux (changer la peau)"; //Report as Fake
 var Premadeletter120 = "Entrez votre nom exact du joueur"; //Enter your EXACT name of the player
 var Premadeletter121 = "Abus des joueurs et utilisation inappropriée conduira UID de l'utilisateur"; //Abusing players and inappropriate use will lead UID of user
 var Premadeletter122 = "à l'interdiction permanente de l'utilisation de cette extension"; //to permanent ban from usage of this extension
+var Premadeletter128 = "Connexion utilisateur nécessaire"; //User login needed
+var Premadeletter129 = "Paramètres téléchargés avec succès"; //Settings successfully uploaded
+
+//These are for file: https://jimboy3100.github.io/ogario/ogario.v4.js and https://jimboy3100.github.io/ogario/ogario.v4.master.js
+var Premadeletter123 = "SERVEUR"; //SERVER
+var Premadeletter124 = "Évitez d'utiliser des skins vidéo de plus de 6 minutes"; //Avoid using video skins bigger than 6 minutes
+var Premadeletter125 = "Carte fixe"; //Map fixed
+var Premadeletter126 = "Connecté à"; //Logged in to
+var Premadeletter127 = "Déconnecté"; //Logged out
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter0a = "LANGUES"; //LANGUAGES
