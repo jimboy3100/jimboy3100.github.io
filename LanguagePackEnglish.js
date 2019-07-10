@@ -441,6 +441,7 @@ var Languageletter362="Name";	//Name
 var Languageletter363="Social ID";	//Social ID
 var Languageletter364="Expansions";	//Expansions
 
+
 var Premadeletter0="Communication Activated"; 		//Communication Activated
 var Premadeletter1="Cannot open this youtube URL";		 //Cannot open this youtube URL
 var Premadeletter2="You cannot chat if player name > 15 chars"; 		//[SERVER]: You cannot chat if player name > 15 chars
@@ -575,6 +576,15 @@ var Premadeletter119 = "Report as Fake (change Skin)"; //Report as Fake (change 
 var Premadeletter120 = "Enter your EXACT name of the player"; //Enter your EXACT name of the player
 var Premadeletter121 = "Abusing players and inappropriate use will lead UID of user"; //Abusing players and inappropriate use will lead UID of user
 var Premadeletter122 = "to permanent ban from usage of this extension"; //to permanent ban from usage of this extension
+var Premadeletter128 = "User login needed"; //User login needed
+var Premadeletter129 = "Settings successfully uploaded"; //Settings successfully uploaded
+//These are for file: https://jimboy3100.github.io/ogario/ogario.v4.js and https://jimboy3100.github.io/ogario/ogario.v4.master.js
+var Premadeletter123 = "SERVER"; //SERVER
+var Premadeletter124 = "Avoid using video skins bigger than 6 minutes"; //Avoid using video skins bigger than 6 minutes
+var Premadeletter125 = "Map fixed"; //Map fixed
+var Premadeletter126 = "Logged in to"; //Logged in to
+var Premadeletter127 = "Logged out"; //Logged out
+
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter0a = "LANGUAGES"; //LANGUAGES
