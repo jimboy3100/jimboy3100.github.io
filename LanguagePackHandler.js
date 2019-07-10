@@ -1,6 +1,6 @@
 //Language Pack Handler
 //Legend Mod By Jimboy3100
-//v1.2e
+//v1.3
 
 //Legend Mod By Jimboy3100
 var Languagetimesused;
@@ -28,6 +28,8 @@ $("#HideAllBthn").click();
 $("#TIMEcalBtn").click();
 $("#TIMEcalBtn").click();
 
+$('#region').replace("North America",Premadeletter134).replace("South America",Premadeletter135).replace("Europe",Premadeletter136).replace("Russia",Premadeletter137).replace("Turkey",Premadeletter138).replace("East Asia",Premadeletter139).replace("China",Premadeletter139a).replace("Oceania",Premadeletter140);
+$('#gamemode').replace("FFA",Premadeletter141).replace("Battle Royale",Premadeletter142).replace("Teams",Premadeletter143).replace("Experimental",Premadeletter144).replace("Party Mode",Premadeletter145);
 
 $(".ogicon-home").attr('data-original-title',Languageletter0);
 $(".ogicon-user").attr('data-original-title',Languageletter1);
