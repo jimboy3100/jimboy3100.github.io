@@ -562,8 +562,8 @@ var Premadeletter107 = "заглушаване на звука"; //mute audio
 var Premadeletter108 = "Проектът LM"; //The LM Project
 var Premadeletter109 = "Качи"; //Upload 
 var Premadeletter109a = "Изтегли"; //Download
-var Premadeletter109b = "Load"; //Load
-var Premadeletter109c = "SERVER"; //SERVER
+var Premadeletter109b = "Зареждане"; //Load
+
 var Premadeletter110 = "не влизайте тук, освен ако не знаете какво е то";	//do not enter anything here unless you know what it is
 var Premadeletter111 = "кликнете върху оранжевата икона, за да я купите"; //click on the orange icon to buy
 var Premadeletter112 = "За някои начини на плащане"; //For some payment methods
