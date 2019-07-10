@@ -199,7 +199,7 @@ $(".options-box.statsGroup>LABEL").replace('Game stats: Enemy\'s MTE', Languagel
 $(".options-box.statsGroup>LABEL").replace('Game stats: Our STE', Languageletter101 + ": " + Languageletter103 + "STE");
 $(".options-box.statsGroup>LABEL").replace('Game stats: Our MTE', Languageletter101 + ": " + Languageletter103 + "MTE");
 $(".options-box.statsGroup>LABEL").replace('Game stats: Minimal tricksplit teammate\'s mass ', Languageletter101 + ": " + Languageletter104);
-$(".options-box.statsGroup>LABEL").replace('Game stats: Maximal enemy\'s mass for presplit  ', Languageletter101 + ": " + Languageletter104a);
+$(".options-box.statsGroup>LABEL").replace('Game stats: Maximal enemy\'s mass for presplit', Languageletter101 + ": " + Languageletter104a);
 $(".options-box.statsGroup>LABEL").replace('Game stats: STE', Languageletter101 + ": " + "STE");
 $(".options-box.statsGroup>LABEL").replace('Game stats: n/16', Languageletter101 + ": " + "n/16");
 $(".options-box.statsGroup>LABEL").replace('Game stats: FPS', Languageletter101 + ": " + "FPS");
