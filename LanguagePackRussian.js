@@ -565,7 +565,7 @@ var Premadeletter129 = "Настройки успешно загружены"; /
 //These are for file: https://jimboy3100.github.io/ogario/ogario.v4.js and https://jimboy3100.github.io/ogario/ogario.v4.master.js
 var Premadeletter123 = "SERVER"; //SERVER
 var Premadeletter124 = "Избегайте использования видео-скинов больше 6 минут"; //Avoid using video skins bigger than 6 minutes
-vvar Premadeletter125 = "Карта исправлена"; //Map fixed
+var Premadeletter125 = "Карта исправлена"; //Map fixed
 var Premadeletter126 = "Войти в"; //Logged in to
 var Premadeletter127 = "Вышли из"; //Logged out
 var Premadeletter130 = "Всего"; //Total
