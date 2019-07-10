@@ -554,7 +554,16 @@ var Premadeletter118 = "посещение"; //visit
 var Premadeletter119 = "Сообщить как фальшивый (изменить Кожа)"; //Report as Fake (change Skin) 
 var Premadeletter120 = "Введите свое ТОЧНОЕ имя игрока"; //Enter your EXACT name of the player 
 var Premadeletter121 = "Злоупотребление игроками и неправильное использование приведет к UID пользователя"; //Abusing players and inappropriate use will lead UID of user 
-var Premadeletter122 = "к постоянному запрету использования этого расширения"; //to permanent ban from usage of this extension //These are for file: https://jimboy3100.github.io/legendhelper.js 
+var Premadeletter122 = "к постоянному запрету использования этого расширения"; //to permanent ban from usage of this extension 
+var Premadeletter128 = "Требуется логин"; //User login needed
+var Premadeletter129 = "Настройки успешно загружены"; //Settings successfully uploaded
+//These are for file: https://jimboy3100.github.io/ogario/ogario.v4.js and https://jimboy3100.github.io/ogario/ogario.v4.master.js
+var Premadeletter123 = "SERVER"; //SERVER
+var Premadeletter124 = "Избегайте использования видео-скинов больше 6 минут"; //Avoid using video skins bigger than 6 minutes
+vvar Premadeletter125 = "Карта исправлена"; //Map fixed
+var Premadeletter126 = "Войти в"; //Logged in to
+var Premadeletter127 = "Вышли из"; //Logged out
+
 var Externalletter0a = "ЯЗЫКИ"; //LANGUAGES 
 var Externalletter0b = "Выберите язык"; //Choose a language 
 var Externalletter0c = "Изменения будут выполнены полностью после перезапуска"; //Changes will take place completely after the restart 
