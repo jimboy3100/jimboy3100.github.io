@@ -609,6 +609,7 @@ var Premadeletter138 = "ديك رومي"; //Turkey
 var Premadeletter139 = "شرق اسيا"; //East Asia
 var Premadeletter139a = "الصين"; //China
 var Premadeletter140 = "أوقيانوسيا"; //Oceania
+var Premadeletter140a = " -- اختر المنطقة -- "; // -- Select a Region -- 
 var Premadeletter141 = "حر"; //FFA
 var Premadeletter142 = "معركة رويال"; //Battle Royale
 var Premadeletter143 = "فرق"; //Teams
