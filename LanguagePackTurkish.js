@@ -588,6 +588,15 @@ var Premadeletter119 = "Sahte olarak raporla (Skini değiştir)"; //Report as Fa
 var Premadeletter120 = "Oyuncunu TAM ismini girin"; //Enter your EXACT name of the player
 var Premadeletter121 = "Oyuncuları taciz etmek ve uygunsuz kullanım, kullanıcının UID'sine yol açacaktır"; //Abusing players and inappropriate use will lead UID of user
 var Premadeletter122 = "bu eklentinin kullanımının kalıcı olarak yasaklanması"; //to permanent ban from usage of this extension
+var Premadeletter128 = "Kullanıcı girişi gerekli"; //User login needed
+var Premadeletter129 = "Ayarlar başarıyla yüklendi"; //Settings successfully uploaded
+
+//These are for file: https://jimboy3100.github.io/ogario/ogario.v4.js and https://jimboy3100.github.io/ogario/ogario.v4.master.js
+var Premadeletter123 = "SUNUCU"; //SERVER
+var Premadeletter124 = "6 dakikadan daha büyük video derileri kullanmaktan kaçının"; //Avoid using video skins bigger than 6 minutes
+var Premadeletter125 = "Harita düzeltildi"; //Map fixed
+var Premadeletter126 = "İçin giriş yaptınız"; //Logged in to
+var Premadeletter127 = "Çıkış yapıldı"; //Logged out
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter0a = "DUUJJİL"; //LANGUAGES
