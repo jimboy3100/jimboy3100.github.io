@@ -444,6 +444,8 @@ var Languageletter361="المزيد من FPS";	//More FPS
 var Languageletter362="الصيت";	//Name
 var Languageletter363="الهوية الاجتماعية";	//Social ID
 var Languageletter364="التوسعات";	//Expansions
+var Languageletter365="عالمي";	//Universal
+var Languageletter366="Score";	//Score
 
 var Premadeletter0="تَم تَفعِيِل الإتِصَالات"; 		//Communication Activated
 var Premadeletter1="لَا يُمكِن فَتح عِنوان اليُوتيُوب";		 //Cannot open this youtube URL
@@ -585,13 +587,29 @@ var Premadeletter121 = "سيؤدي استغلال اللاعبين والاست�
 var Premadeletter122 = "لحظر دائم من استخدام هذا التمديد"; //to permanent ban from usage of this extension
 var Premadeletter128 = "تسجيل دخول المستخدم اللازمة"; //User login needed
 var Premadeletter129 = "تم تحميل الإعدادات بنجاح"; //Settings successfully uploaded
+
 //These are for file: https://jimboy3100.github.io/ogario/ogario.v4.js and https://jimboy3100.github.io/ogario/ogario.v4.master.js
 var Premadeletter123 = "الخادم"; //SERVER
 var Premadeletter124 = "تجنب استخدام مقاطع فيديو أكبر من 6 دقائق"; //Avoid using video skins bigger than 6 minutes
 var Premadeletter125 = "خريطة ثابتة"; //Map fixed
 var Premadeletter126 = "الدخول الى"; //Logged in to
 var Premadeletter127 = "تسجيل الخروج"; //Logged out
-
+var Premadeletter130 = "مجموع"; //Total
+var Premadeletter131 = "الجديد"; //NEW
+var Premadeletter132 = "الانضمام مرة أخرى"; //Join Back
+var Premadeletter133 = "الاتصال بآخر عنوان IP لعبته"; //Connect to last IP you played
+var Premadeletter134 = "شمال امريكا"; //North America
+var Premadeletter135 = "جنوب امريكا"; //South America
+var Premadeletter136 = "أوروبا"; //Europe
+var Premadeletter137 = "روسيا"; //Russia
+var Premadeletter138 = "ديك رومي"; //Turkey
+var Premadeletter139 = "شرق اسيا"; //East Asia
+var Premadeletter140 = "أوقيانوسيا"; //Oceania
+var Premadeletter141 = "حر"; //FFA
+var Premadeletter142 = "معركة رويال"; //Battle Royale
+var Premadeletter143 = "فرق"; //Teams
+var Premadeletter144 = "تجريبي"; //Experimental
+var Premadeletter145 = "حفلة"; //Party Mode
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter0a = "اللغات"; //LANGUAGES
