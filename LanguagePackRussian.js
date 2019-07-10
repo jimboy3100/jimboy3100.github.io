@@ -578,6 +578,7 @@ var Premadeletter136 = "Европа"; //Europe
 var Premadeletter137 = "Россия"; //Russia
 var Premadeletter138 = "Турция"; //Turkey
 var Premadeletter139 = "Восточная Азия"; //East Asia
+var Premadeletter139a = "Китай"; //China
 var Premadeletter140 = "Океания"; //Oceania
 var Premadeletter141 = "Свободно"; //FFA
 var Premadeletter142 = "Королевская битва"; //Battle Royale
