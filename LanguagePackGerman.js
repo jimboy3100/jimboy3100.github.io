@@ -563,8 +563,8 @@ var Premadeletter107 = "Ton aus"; //mute audio
 var Premadeletter108 = "Das LM Projekt"; //The LM Project
 var Premadeletter109 = "Hochladen"; //Upload 
 var Premadeletter109a = "Herunterladen"; //Download
-var Premadeletter109b = "Load"; //Load
-var Premadeletter109c = "SERVER"; //SERVER
+var Premadeletter109b = "Wird geladen"; //Load
+
 var Premadeletter110 = "Gib nichts hier ein, wenn du nicht weißt, was es ist";	//do not enter anything here unless you know what it is
 var Premadeletter111 = "Klicke auf das orange Symbol, um zu kaufen"; //click on the orange icon to buy
 var Premadeletter112 = "Für manche Zahlungsmethoden"; //For some payment methods
