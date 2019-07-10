@@ -426,11 +426,13 @@ var Languageletter359="Design Nickname Font";	//Design Nickname Font
 var Languageletter360="Marcar la piel de la falsa";	//Flag the Fake's Skin
 var Languageletter361="Más FPS";	//More FPS
 var Languageletter362="Nombre";	//Name
-var Languageletter363="社交ID";	//Social ID
+var Languageletter363="Social ID";	//Social ID
 var Languageletter364="Expansiones";	//Expansions
 var Languageletter365="Universal";	//Universal
-var Languageletter366="Score";	//Score
-
+var Languageletter366="Puntuación";	//Score
+var Languageletter367="Distancia";	//Distance
+var Languageletter368="Masa total";	//Total Mass
+var Languageletter369="Muerto";	//Dead
 
 var Premadeletter0="Comunicación activada"; 		//Communication Activated
 var Premadeletter1="Error al abrir link de Youtube";		 //Cannot open this youtube URL
