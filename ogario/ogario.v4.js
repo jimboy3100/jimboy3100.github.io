@@ -982,7 +982,7 @@ var languagetexts = {
         'targetNotSet': '',
         'targetDead': 'Dead',
         'targetDistance': 'Distance',
-        'targetMass': 'Mass altogether',
+        'targetMass': 'Total Mass',
         'totalPartyPlayers': '',
         'totalPartyMass': '',
         'exportImport': 'Export / import settings',
@@ -2564,10 +2564,12 @@ var thelegendmodproject = function(t, e, i) {
                     var t = '';
                     if (i.play) {
                         if (defaultmapsettings.showStatsMass && i.playerMass) {
-                            t += h.mass + ': ' + i.playerMass + ' | '
+                            //t += h.mass + ': ' + i.playerMass + ' | '
+							t += Languageletter366 + ': ' + i.playerMass + ' | '
                         }
                         if (i.playerScore) {
-                            t += h.score + ': ' + i.playerScore
+                            //t += h.score + ': ' + i.playerScore
+							t += Languageletter49 + ': ' + i.playerScore							
                         }
                         if (defaultmapsettings.showStatsN16 && i.playerSplitCells) {
                             t += ' | ' + i.playerSplitCells + '/16'
@@ -4839,13 +4841,30 @@ var thelegendmodproject = function(t, e, i) {
             'setTargetStatus': function(t) {
                 switch (t) {
                     case 0:
-                        this.targetStatus = 0, this.targetID = 0, this.targetNick = '', this.targetSkinURL = '', this.targeting = false, i.targeting = false, this.privateMiniMap = false, $('#target-skin, #target-nick, #target-summary').hide(), $("#target-hud").hide(), $('#target-status').show().text(h.targetNotSet), $('#target-panel-hud a').removeClass('active'); //$('#target-status').show().text('[' + h.targetNotSet + ']'), $('#target-panel-hud a').removeClass('active');
+                        this.targetStatus = 0, 
+						this.targetID = 0,
+						this.targetNick = '', 
+						this.targetSkinURL = '', 
+						this.targeting = false, 
+						i.targeting = false, 
+						this.privateMiniMap = false, 
+						$('#target-skin, #target-nick, #target-summary').hide(), 
+						$("#target-hud").hide(), 
+						$('#target-status').show().text(h.targetNotSet), 
+						$('#target-panel-hud a').removeClass('active'); //$('#target-status').show().text('[' + h.targetNotSet + ']'), $('#target-panel-hud a').removeClass('active');
                         break;
                     case 1:
-                        this.targetStatus = 1, this.targeting || (this.targeting = true, i.targeting = true, $("#target-hud").show(), this.setTargetingInfo()), $('#target-skin, #target-nick, #target-status, #target-summary').show();
+                        this.targetStatus = 1, 
+						this.targeting || (this.targeting = true, i.targeting = true, $("#target-hud").show(), this.setTargetingInfo()), 
+						$('#target-skin, #target-nick, #target-status, #target-summary').show();
                         break;
                     case 2:
-                        this.targetStatus = 2, $('#target-summary').hide(), $("#target-hud").show(), $('#target-status').show().text('[' + h.targetDead + ']'), i.resetTargetPosition();
+                        //this.targetStatus = 2, $('#target-summary').hide(), $("#target-hud").show(), $('#target-status').show().text('[' + h.targetDead + ']'), i.resetTargetPosition();
+						this.targetStatus = 2, 
+						$('#target-summary').hide(), 
+						$("#target-hud").show(), 
+						$('#target-status').show().text('[' + Languageletter369 + ']'), 
+						i.resetTargetPosition();
                 }
             },
             'changeTarget': function() {
@@ -4866,7 +4885,8 @@ var thelegendmodproject = function(t, e, i) {
             'updateTarget': function(t, e, o, a, n, r) {
                 i.setTargetPosition(o, a), this.targetNick !== t && (this.targetNick = t, $('#target-nick').html(this.escapeHTML(t))), $('#target-skin').css('background-color', r), e && this.targetSkinURL !== e && (this.customSkinsCache.hasOwnProperty(e + '_cached') ? ($('#target-skin img').attr('src', e), this.targetSkinURL = e) : $('#target-skin img').attr('src', 'https://jimboy3100.github.io/banners/static/img/blank.png')), $('#target-status').text('[' + this.shortMassFormat(n) + ']');
                 var l = this.calculateMapSector(o, a),
-                    c = h.targetDistance + ': <span class=\"hud-main-color\">' + i.targetDistance + ' [' + l + ']</span>';
+                    //c = h.targetDistance + ': <span class=\"hud-main-color\">' + i.targetDistance + ' [' + l + ']</span>';
+					c = Languageletter368 + ': <span class=\"hud-main-color\">' + i.targetDistance + ' [' + l + ']</span>';
                 i.play && (c += ' | ' + h['targetMass'] + ': <span class=\"hud-main-color\">' + this.shortMassFormat(n + i.playerMass) + '</span>'), $('#target-summary').html(c), 1 != this.targetStatus && this.setTargetStatus(1);
             },
             'updateQuest': function() {
@@ -6588,7 +6608,7 @@ var thelegendmodproject = function(t, e, i) {
                     'isPlayer' === this.leaderboard[i].id ? s = '<span class=\"me\">' : ogarcopythelb.clanTag.length && 0 != window.teammatenicks.includes(this.leaderboard[i].nick) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer.escapeHTML(this.leaderboard[i].nick) + '</span>';
                 }
                 if (this.playerPosition > window.leaderboardlimit && (t += '<span class=\"me\">' + this.playerPosition + '. ' + ogarminimapdrawer.escapeHTML(this.playerNick) + '</span>'), defaultmapsettings['showLbData']);
-                t += '<span class="me">Total: ' + this.leaderboard.length + '</span>';
+                t += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
                 for (var o = 0; o < this.ghostCells.length && o != i; o++) e += '<span class=\"lb-data\" id= "' + 'leaderboardtargeting' + o + '" style="pointer-events: auto;" onclick="window.legendmod.targetingLead(' + o + ');">', e += '<span class=\"top5-mass-color\">[' + ogarminimapdrawer.shortMassFormat(this.ghostCells[o].mass) + ']</span>', e += '<span class=\"hud-main-color\">[' + ogarminimapdrawer.calculateMapSector(this.ghostCells[o].x, this.ghostCells[o].y) + ']</span>', e += '</span>';
                 ogarminimapdrawer['displayLeaderboard'](t, e);
                 ///////////////// establish core.registerSkin
