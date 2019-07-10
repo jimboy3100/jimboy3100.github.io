@@ -601,6 +601,7 @@ var Premadeletter138 = "Τουρκία"; //Turkey
 var Premadeletter139 = "Ανατολική Ασία"; //East Asia
 var Premadeletter139a = "Κίνα"; //China
 var Premadeletter140 = "Ωκεανία"; //Oceania
+var Premadeletter140a = " -- Επιλέξτε μια περιοχή -- "; // -- Select a Region -- 
 var Premadeletter141 = "Ελεύθερο"; //FFA
 var Premadeletter142 = "Μάχη Royale"; //Battle Royale
 var Premadeletter143 = "Ομάδες"; //Teams
