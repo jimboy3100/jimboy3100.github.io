@@ -326,7 +326,7 @@ function legendmaster(self) {
 						var tempRegion=that.regionNames[i];
 						if (that.regionNames[i] == "North America"){
 							tempRegion = Premadeletter134;
-						}
+						}						
 						else if (that.regionNames[i] == "South America"){
 							tempRegion = Premadeletter135;
 						}
@@ -347,7 +347,10 @@ function legendmaster(self) {
 						}	
 						else if (that.regionNames[i] == "Oceania"){
 							tempRegion = Premadeletter140;
-						}							
+						}	
+						else if (that.regionNames[i] == " -- Select a Region -- "){
+							tempRegion = Premadeletter140a;
+						}						
 						$('#region option[value="' + i + '').text(tempRegion + " (" + regions[i].numPlayers + ")");
                         //$('#region option[value="' + i + '').text(that.regionNames[i] + " (" + regions[i].numPlayers + ")");
                     }
