@@ -563,8 +563,8 @@ var Premadeletter107 = "σίγαση ήχου"; //mute audio
 var Premadeletter108 = "Το έργο LM"; //The LM Project
 var Premadeletter109 = "Ανεβάστε"; //Upload 
 var Premadeletter109a = "Κατεβάστε"; //Download
-var Premadeletter109b = "Load"; //Load
-var Premadeletter109c = "SERVER"; //SERVER
+var Premadeletter109b = "Φόρτωση"; //Load
+
 var Premadeletter110 = "μην εισάγετε τίποτα εδώ αν δεν ξέρετε τι είναι";	//do not enter anything here unless you know what it is
 var Premadeletter111 = "κάντε κλικ στο πορτοκαλί εικονίδιο για να το αγοράσετε"; //click on the orange icon to buy
 var Premadeletter112 = "Για κάποιες μεθόδους πληρωμής"; //For some payment methods
