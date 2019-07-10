@@ -27,9 +27,12 @@ $("#HideAllBthn").click();
 $("#HideAllBthn").click();
 $("#TIMEcalBtn").click();
 $("#TIMEcalBtn").click();
-
+var languagemod;
+if (languagemod!=6){
 $('#region').replace("North America",Premadeletter134).replace("South America",Premadeletter135).replace("Europe",Premadeletter136).replace("Russia",Premadeletter137).replace("Turkey",Premadeletter138).replace("East Asia",Premadeletter139).replace("China",Premadeletter139a).replace("Oceania",Premadeletter140).replace(" -- Select a Region -- ",Premadeletter140a);
+}
 $('#gamemode').replace("FFA",Premadeletter141).replace("Battle Royale",Premadeletter142).replace("Teams",Premadeletter143).replace("Experimental",Premadeletter144).replace("Party Mode",Premadeletter145);
+//languagemod
 
 $(".ogicon-home").attr('data-original-title',Languageletter0);
 $(".ogicon-user").attr('data-original-title',Languageletter1);
