@@ -575,6 +575,14 @@ var Premadeletter119 = "Докладвайте като невярно (пром
 var Premadeletter120 = "Въведете вашето EXACT име на плейъра"; //Enter your EXACT name of the player
 var Premadeletter121 = "Злоупотребата с играчи и неподходящата употреба ще доведат до UID на потребителите"; //Abusing players and inappropriate use will lead UID of user
 var Premadeletter122 = "за постоянна забрана от използването на това разширение"; //to permanent ban from usage of this extension
+var Premadeletter128 = "Необходимо е потребителско влизане"; //User login needed
+var Premadeletter129 = "Настройките са качени успешно"; //Settings successfully uploaded
+//These are for file: https://jimboy3100.github.io/ogario/ogario.v4.js and https://jimboy3100.github.io/ogario/ogario.v4.master.js
+var Premadeletter123 = "СЪРВЪРА"; //SERVER
+var Premadeletter124 = "Избягвайте използването на видеоклипове по-големи от 6 минути"; //Avoid using video skins bigger than 6 minutes
+var Premadeletter125 = "Картата е фиксирана"; //Map fixed
+var Premadeletter126 = "Влезли сте в"; //Logged in to
+var Premadeletter127 = "Излезли"; //Logged out
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter0a = "ЕЗИЦИ"; //LANGUAGES
