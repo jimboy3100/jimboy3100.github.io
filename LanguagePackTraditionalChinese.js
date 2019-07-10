@@ -576,6 +576,15 @@ var Premadeletter119 = "報告為假（更換皮膚）"; //Report as Fake (chang
 var Premadeletter120 = "輸入您的玩家的真實姓名"; //Enter your EXACT name of the player
 var Premadeletter121 = "濫用玩家和不恰當的使用會導致用戶的UID"; //Abusing players and inappropriate use will lead UID of user
 var Premadeletter122 = "永久禁止使用此擴展程序"; //to permanent ban from usage of this extension
+var Premadeletter128 = "需要用戶登錄"; //User login needed
+var Premadeletter129 = "設置已成功上傳"; //Settings successfully uploaded
+//These are for file: https://jimboy3100.github.io/ogario/ogario.v4.js and https://jimboy3100.github.io/ogario/ogario.v4.master.js
+var Premadeletter123 = "服務器"; //SERVER
+var Premadeletter124 = "避免使用超過6分鐘的視頻皮膚"; //Avoid using video skins bigger than 6 minutes
+var Premadeletter125 = "地圖已修復"; //Map fixed
+var Premadeletter126 = "登錄到"; //Logged in to
+var Premadeletter127 = "登出"; //Logged out
+
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter0a = "語言"; //LANGUAGES
