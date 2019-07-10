@@ -441,6 +441,8 @@ var Languageletter361="Plus FPS";	//More FPS
 var Languageletter362="Nom";	//Name
 var Languageletter363="Identifiant social";	//Social ID
 var Languageletter364="Les expansions";	//Expansions
+var Languageletter365="Universel";	//Universal
+var Languageletter366="Score";	//Score
 
 var Premadeletter0="Communication Activée"; 		//Communication Activated
 var Premadeletter1="Impossible d'ouvrir cette URL Youtube";		 //Cannot open this youtube URL
@@ -587,6 +589,22 @@ var Premadeletter124 = "Évitez d'utiliser des skins vidéo de plus de 6 minutes
 var Premadeletter125 = "Carte fixe"; //Map fixed
 var Premadeletter126 = "Connecté à"; //Logged in to
 var Premadeletter127 = "Déconnecté"; //Logged out
+var Premadeletter130 = "Total"; //Total
+var Premadeletter131 = "NOUVEAU"; //NEW
+var Premadeletter132 = "Rejoindre"; //Join Back
+var Premadeletter133 = "Connectez-vous à la dernière adresse IP que vous avez jouée"; //Connect to last IP you played
+var Premadeletter134 = "Amérique du Nord"; //North America
+var Premadeletter135 = "Amérique du sud"; //South America
+var Premadeletter136 = "L'Europe"; //Europe
+var Premadeletter137 = "Russie"; //Russia
+var Premadeletter138 = "Turquie"; //Turkey
+var Premadeletter139 = "Asie de l'Est"; //East Asia
+var Premadeletter140 = "Océanie"; //Oceania
+var Premadeletter141 = "Libre"; //FFA
+var Premadeletter142 = "Bataille royale"; //Battle Royale
+var Premadeletter143 = "Les équipes"; //Teams
+var Premadeletter144 = "Expérimental"; //Experimental
+var Premadeletter145 = "La partie"; //Party Mode
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter0a = "LANGUES"; //LANGUAGES
