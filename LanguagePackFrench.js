@@ -604,6 +604,7 @@ var Premadeletter138 = "Turquie"; //Turkey
 var Premadeletter139 = "Asie de l'Est"; //East Asia
 var Premadeletter139a = "Chine"; //China
 var Premadeletter140 = "Océanie"; //Oceania
+var Premadeletter140a = " -- Sélectionnez une région -- "; // -- Select a Region -- 
 var Premadeletter141 = "Libre"; //FFA
 var Premadeletter142 = "Bataille royale"; //Battle Royale
 var Premadeletter143 = "Les équipes"; //Teams
