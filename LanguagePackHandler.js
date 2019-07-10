@@ -433,11 +433,11 @@ $("#hotkeys-cfg>div>div:nth-child(1)").eq(39).text(Languageletter271 + " 2");
 $("#hotkeys-cfg>div>div:nth-child(1)").eq(40).text(Languageletter271 + " 3");
 $("#hotkeys-cfg>div>div:nth-child(1)").eq(41).text(Languageletter271 + " 4");
 $("#hotkeys-cfg>div>div:nth-child(1)").eq(42).text(Languageletter271 + " 5");
-/*
+
 $("#hotkeys-cfg>div>div:nth-child(1)").eq(43).text(Languageletter271a);
 $("#hotkeys-cfg>div>div:nth-child(1)").eq(44).text(Languageletter271b);
 $("#hotkeys-cfg>div>div:nth-child(1)").eq(45).text(Languageletter271c);
-*/
+
 $("#hotkeys-cfg>div>div:nth-child(1)").eq(46).text(Languageletter272);
 $("#hotkeys-cfg>div>div:nth-child(1)").eq(47).text(Languageletter273);
 $("#hotkeys-cfg>div>div:nth-child(1)").eq(48).text(Languageletter274);
