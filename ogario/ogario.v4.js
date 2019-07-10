@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.962 MEGA TEST
+// v1.964 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -109,7 +109,8 @@ function checkVideos3(o) {
         var minutes = parseInt(o.duration / 60, 10);
         var seconds = o.duration % 60;
         if (minutes > 5) {
-            toastr.warning("<b>[SERVER]:</b> " + "Avoid using video skins bigger than 6 minutes");
+            //toastr.warning("<b>[SERVER]:</b> " + "Avoid using video skins bigger than 6 minutes");
+			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter124);
         }
     }
 }
@@ -4603,7 +4604,8 @@ var thelegendmodproject = function(t, e, i) {
                 if (mm > 0 && (!window.legendmod.play || mm > window.legendmod.playerMass) && max <= 3 && window.legendmod.bgpi <= 3 && !window.legendmod.setrot) {
                     console.log("[Legend mod Express] VMR UPDATE:", window.legendmod.vnr, mm, window.legendmod.playerMass, max, window.legendmod.bgpi);
                     this.setvnr(max);
-                    toastr.info('<b>[SERVER]:</b> Map fixed with LM players');
+                    //toastr.info('<b>[SERVER]:</b> Map fixed with LM players');
+					toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + Premadeletter125);
                 }
             },
             'updateTeamPlayers': function() {
