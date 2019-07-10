@@ -440,6 +440,8 @@ var Languageletter361="Повече FPS";	//More FPS
 var Languageletter362="име";	//Name
 var Languageletter363="социален ID";	//Social ID
 var Languageletter364="Разгъвания";	//Expansions
+var Languageletter365="Yниверсаленl";	//Universal
+var Languageletter366="Score";	//Score
 
 var Premadeletter0="Активирана комуникация"; 		//Communication Activated
 var Premadeletter1="Не може да се отвори тази UR на YouTubeL";		 //Cannot open this youtube URL
@@ -583,6 +585,22 @@ var Premadeletter124 = "Избягвайте използването на ви�
 var Premadeletter125 = "Картата е фиксирана"; //Map fixed
 var Premadeletter126 = "Влезли сте в"; //Logged in to
 var Premadeletter127 = "Излезли"; //Logged out
+var Premadeletter130 = "Oбщо"; //Total
+var Premadeletter131 = "NEW"; //NEW
+var Premadeletter132 = "Присъединете се обратно"; //Join Back
+var Premadeletter133 = "Свържете се с последния изигран IP"; //Connect to last IP you played
+var Premadeletter134 = "Северна Америка"; //North America
+var Premadeletter135 = "Южна Америка"; //South America
+var Premadeletter136 = "Европа"; //Europe
+var Premadeletter137 = "Русия"; //Russia
+var Premadeletter138 = "Турция"; //Turkey
+var Premadeletter139 = "източна Азия"; //East Asia
+var Premadeletter140 = "Океания"; //Oceania
+var Premadeletter141 = "Безплатно"; //FFA
+var Premadeletter142 = "Кралска битка"; //Battle Royale
+var Premadeletter143 = "Отбори"; //Teams
+var Premadeletter144 = "Eкспериментален"; //Experimental
+var Premadeletter145 = "партия"; //Party Mode
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter0a = "ЕЗИЦИ"; //LANGUAGES
