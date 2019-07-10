@@ -575,8 +575,8 @@ var Premadeletter107 = "sesi kapat"; //mute audio
 var Premadeletter108 = "The LM Projesi"; //The LM Project
 var Premadeletter109 = "Yükleme"; //Upload 
 var Premadeletter109a = "İndir"; //Download
-var Premadeletter109b = "Load"; //Load
-var Premadeletter109c = "SERVER"; //SERVER
+var Premadeletter109b = "Yükleniyor"; //Load
+
 var Premadeletter110 = "ne olduğunu bilmiyorsanız buraya hiçbir şey girmeyin";	//do not enter anything here unless you know what it is
 var Premadeletter111 = "satın almak için turuncu simgeye tıklayın"; //click on the orange icon to buy
 var Premadeletter112 = "Bazı ödeme yöntemleri için"; //For some payment methods
