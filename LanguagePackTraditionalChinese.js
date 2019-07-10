@@ -601,6 +601,7 @@ var Premadeletter138 = "土耳其"; //Turkey
 var Premadeletter139 = "東亞"; //East Asia
 var Premadeletter139a = "中國"; //China
 var Premadeletter140 = "大洋洲"; //Oceania
+var Premadeletter140a = " -- 選擇一個地區 -- "; // -- Select a Region -- 
 var Premadeletter141 = "自由"; //FFA
 var Premadeletter142 = "戰斗羅伊爾"; //Battle Royale
 var Premadeletter143 = "小組"; //Teams
