@@ -3229,8 +3229,8 @@ var thelegendmodproject = function(t, e, i) {
                     }
                 });
                 $(document).on("click", "#og-settings .restore-settings a", function(result) {
-                    result.preventDefault();
-                    t.restoreSettings();
+                    //result.preventDefault();
+                    hudsetter.restoreSettings();
                 });
                 $(document).on("click", "#og-settings .btn-export", function(result) {
                     result.preventDefault();
