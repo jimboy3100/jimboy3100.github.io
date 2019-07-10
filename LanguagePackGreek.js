@@ -602,8 +602,8 @@ var Premadeletter139 = "Ανατολική Ασία"; //East Asia
 var Premadeletter139a = "Κίνα"; //China
 var Premadeletter140 = "Ωκεανία"; //Oceania
 var Premadeletter141 = "Ελεύθερο"; //FFA
-var Premadeletter142 = "Ομάδες"; //Battle Royale
-var Premadeletter143 = "Teams"; //Teams
+var Premadeletter142 = "Μάχη Royale"; //Battle Royale
+var Premadeletter143 = "Ομάδες"; //Teams
 var Premadeletter144 = "Πειραματικό"; //Experimental
 var Premadeletter145 = "Πάρτι"; //Party Mode
 
