@@ -445,7 +445,10 @@ var Languageletter362="الصيت";	//Name
 var Languageletter363="الهوية الاجتماعية";	//Social ID
 var Languageletter364="التوسعات";	//Expansions
 var Languageletter365="عالمي";	//Universal
-var Languageletter366="Score";	//Score
+var Languageletter366="أحرز هدفا";	//Score
+var Languageletter367="مسافه: بعد";	//Distance
+var Languageletter368="الحجم الكلي";	//Total Mass
+var Languageletter369="ميت";	//Dead
 
 var Premadeletter0="تَم تَفعِيِل الإتِصَالات"; 		//Communication Activated
 var Premadeletter1="لَا يُمكِن فَتح عِنوان اليُوتيُوب";		 //Cannot open this youtube URL
