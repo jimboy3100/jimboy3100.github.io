@@ -441,7 +441,10 @@ var Languageletter362="名稱";	//Name
 var Languageletter363="社交ID";	//Social ID
 var Languageletter364="展開";	//Expansions
 var Languageletter365 = "普遍";	//Universal
-var Languageletter366="Score";	//Score
+var Languageletter366="得分了";	//Score
+var Languageletter367="距離";	//Distance
+var Languageletter368="總質量";	//Total Mass
+var Languageletter369="死";	//Dead
 
 var Premadeletter0="通訊激活"; 		//Communication Activated
 var Premadeletter1="無法打開這個youtube網址";		 //Cannot open this youtube URL
