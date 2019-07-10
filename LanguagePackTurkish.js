@@ -452,6 +452,8 @@ var Languageletter361="Daha fazla FPS";	//More FPS
 var Languageletter362="Isim";	//Name
 var Languageletter363="Social ID";	//Social ID
 var Languageletter364="Genişletme";	//Expansions
+var Languageletter365 = "Evrensel";	//Universal
+var Languageletter366="Score";	//Score
 
 var Premadeletter0="İletişim aktif"; 		//Communication Activated
 var Premadeletter1="Bu Youtube URL'si açılmıyor";		 //Cannot open this youtube URL
@@ -597,6 +599,22 @@ var Premadeletter124 = "6 dakikadan daha büyük video derileri kullanmaktan ka�
 var Premadeletter125 = "Harita düzeltildi"; //Map fixed
 var Premadeletter126 = "İçin giriş yaptınız"; //Logged in to
 var Premadeletter127 = "Çıkış yapıldı"; //Logged out
+var Premadeletter130 = "Tüm"; //Total
+var Premadeletter131 = "YENİ"; //NEW
+var Premadeletter132 = "Geri Katıl"; //Join Back
+var Premadeletter133 = "En son oynadığınız IP'ye bağlanın"; //Connect to last IP you played
+var Premadeletter134 = "Kuzey Amerika"; //North America
+var Premadeletter135 = "Güney Amerika"; //South America
+var Premadeletter136 = "Avrupa"; //Europe
+var Premadeletter137 = "Rusya"; //Russia
+var Premadeletter138 = "Türkiye"; //Turkey
+var Premadeletter139 = "Doğu Asya"; //East Asia
+var Premadeletter140 = "Okyanusya"; //Oceania
+var Premadeletter141 = "Ücretsiz"; //FFA
+var Premadeletter142 = "Savaş Royale"; //Battle Royale
+var Premadeletter143 = "Takımlar"; //Teams
+var Premadeletter144 = "Deneysel"; //Experimental
+var Premadeletter145 = "Parti"; //Party Mode
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter0a = "DUUJJİL"; //LANGUAGES
