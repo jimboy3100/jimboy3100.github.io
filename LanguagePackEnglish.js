@@ -440,7 +440,11 @@ var Languageletter361="More FPS";	//More FPS
 var Languageletter362="Name";	//Name
 var Languageletter363="Social ID";	//Social ID
 var Languageletter364="Expansions";	//Expansions
-
+var Languageletter365="Universal";	//Universal
+var Languageletter366="Score";	//Score
+var Languageletter367="Distance";	//Distance
+var Languageletter368="Total Mass";	//Total Mass
+var Languageletter369="Dead";	//Dead
 
 var Premadeletter0="Communication Activated"; 		//Communication Activated
 var Premadeletter1="Cannot open this youtube URL";		 //Cannot open this youtube URL
@@ -578,13 +582,29 @@ var Premadeletter121 = "Abusing players and inappropriate use will lead UID of u
 var Premadeletter122 = "to permanent ban from usage of this extension"; //to permanent ban from usage of this extension
 var Premadeletter128 = "User login needed"; //User login needed
 var Premadeletter129 = "Settings successfully uploaded"; //Settings successfully uploaded
+
 //These are for file: https://jimboy3100.github.io/ogario/ogario.v4.js and https://jimboy3100.github.io/ogario/ogario.v4.master.js
 var Premadeletter123 = "SERVER"; //SERVER
 var Premadeletter124 = "Avoid using video skins bigger than 6 minutes"; //Avoid using video skins bigger than 6 minutes
 var Premadeletter125 = "Map fixed"; //Map fixed
 var Premadeletter126 = "Logged in to"; //Logged in to
 var Premadeletter127 = "Logged out"; //Logged out
-
+var Premadeletter130 = "Total"; //Total
+var Premadeletter131 = "NEW"; //NEW
+var Premadeletter132 = "Join Back"; //Join Back
+var Premadeletter133 = "Connect to last IP you played"; //Connect to last IP you played
+var Premadeletter134 = "North America"; //North America
+var Premadeletter135 = "South America"; //South America
+var Premadeletter136 = "Europe"; //Europe
+var Premadeletter137 = "Russia"; //Russia
+var Premadeletter138 = "Turkey"; //Turkey
+var Premadeletter139 = "East Asia"; //East Asia
+var Premadeletter140 = "Oceania"; //Oceania
+var Premadeletter141 = "FFA"; //FFA
+var Premadeletter142 = "Battle Royale"; //Battle Royale
+var Premadeletter143 = "Teams"; //Teams
+var Premadeletter144 = "Experimental"; //Experimental
+var Premadeletter145 = "Party Mode"; //Party Mode
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter0a = "LANGUAGES"; //LANGUAGES
