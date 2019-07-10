@@ -583,6 +583,15 @@ var Premadeletter119 = "الإبلاغ عن خطأ (تغيير الجلد)"; //R
 var Premadeletter120 = "أدخل اسمك الخاص بالمشغل"; //Enter your EXACT name of the player
 var Premadeletter121 = "سيؤدي استغلال اللاعبين والاستخدام غير المناسب إلى UID للمستخدم"; //Abusing players and inappropriate use will lead UID of user
 var Premadeletter122 = "لحظر دائم من استخدام هذا التمديد"; //to permanent ban from usage of this extension
+var Premadeletter128 = "تسجيل دخول المستخدم اللازمة"; //User login needed
+var Premadeletter129 = "تم تحميل الإعدادات بنجاح"; //Settings successfully uploaded
+//These are for file: https://jimboy3100.github.io/ogario/ogario.v4.js and https://jimboy3100.github.io/ogario/ogario.v4.master.js
+var Premadeletter123 = "الخادم"; //SERVER
+var Premadeletter124 = "تجنب استخدام مقاطع فيديو أكبر من 6 دقائق"; //Avoid using video skins bigger than 6 minutes
+var Premadeletter125 = "خريطة ثابتة"; //Map fixed
+var Premadeletter126 = "الدخول الى"; //Logged in to
+var Premadeletter127 = "تسجيل الخروج"; //Logged out
+
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter0a = "اللغات"; //LANGUAGES
