@@ -600,6 +600,7 @@ var Premadeletter138 = "Турция"; //Turkey
 var Premadeletter139 = "източна Азия"; //East Asia
 var Premadeletter139a = "Китай"; //China
 var Premadeletter140 = "Океания"; //Oceania
+var Premadeletter140a = " -- Изберете регион -- "; // -- Select a Region -- 
 var Premadeletter141 = "Безплатно"; //FFA
 var Premadeletter142 = "Кралска битка"; //Battle Royale
 var Premadeletter143 = "Отбори"; //Teams
