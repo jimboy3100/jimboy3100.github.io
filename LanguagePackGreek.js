@@ -440,7 +440,10 @@ var Languageletter362="Όνομα";	//Name
 var Languageletter363="Κοινονικό ID";	//Social ID
 var Languageletter364="Επεκτάσεις";	//Expansions
 var Languageletter365="Παγκόσμιος";	//Universal
-var Languageletter366="Score";	//Score
+var Languageletter366="Σκορ";	//Score
+var Languageletter367="Απόσταση";	//Distance
+var Languageletter368="Συνολική μάζα";	//Total Mass
+var Languageletter369="Νεκρός";	//Dead
 
 var Premadeletter0="Η επικοινωνία ενεργοποιήθηκε"; 		//Communication Activated
 var Premadeletter1="Δεν είναι δυνατό να ανοίξει αυτή η διεύθυνση URL του YouTube";		 //Cannot open this youtube URL
