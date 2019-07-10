@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.964 MEGA TEST
+// v1.965 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2021,7 +2021,7 @@ var thelegendmodproject = function(t, e, i) {
                         e.preventDefault();
                         var i = $('img', this).attr('src');
                         defaultSettings.customCursor = i;
-                        t.setCustomCursor();
+                        this.setCustomCursor();
                         $('#customCursor').val(i);
                         $('#theme-images .cursor-box a').removeClass('active');
                         $(this).addClass('active');
@@ -2030,12 +2030,12 @@ var thelegendmodproject = function(t, e, i) {
                         $(document).on('click', '#theme .btn-save', function(e) {
                             e.preventDefault();
                             var i = $(this);
-                            i.text(h.saved), t.saveThemeSettings(), setTimeout(function() {
+                            i.text(h.saved), hudsetter.saveThemeSettings(), setTimeout(function() {
                                 i.text(h.saveSett);
                             }, 500);
                         }), $('#theme').append('<div class=\"restore-settings\"><a href=\"#\">' + h.restoreThemeSettings + '</a></div>'),
                         $(document).on('click', '#theme .restore-settings a', function(e) {
-                            e.preventDefault(), t.restoreThemeSettings();
+                            e.preventDefault(), hudsetter.restoreThemeSettings();
                         }), $('.skin').colorpicker({
                         'format': 'hex',
                         'input': '#color'
@@ -2741,7 +2741,7 @@ var thelegendmodproject = function(t, e, i) {
                     o.length ? (this['sendChatMessage'](101, o), i.play && (e.blur(), t.hide())) : (e.blur(), t.hide()), e.val('');
                 } else {
                     t.show();
-                    e['focus']();
+                    e.focus();
                     e.val('');
                 }
             },
