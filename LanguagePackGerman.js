@@ -601,6 +601,7 @@ var Premadeletter138 = "Truthahn"; //Turkey
 var Premadeletter139 = "Ostasien"; //East Asia
 var Premadeletter139a = "China"; //China
 var Premadeletter140 = "Ozeanien"; //Oceania
+var Premadeletter140a = " -- Wählen Sie eine Region aus -- "; // -- Select a Region -- 
 var Premadeletter141 = "Kostenlos"; //FFA
 var Premadeletter142 = "Battle Royale"; //Battle Royale
 var Premadeletter143 = "Mannschaften"; //Teams
