@@ -439,6 +439,8 @@ var Languageletter361="Περισσότερα FPS";	//More FPS
 var Languageletter362="Όνομα";	//Name
 var Languageletter363="Κοινονικό ID";	//Social ID
 var Languageletter364="Επεκτάσεις";	//Expansions
+var Languageletter365="Παγκόσμιος";	//Universal
+var Languageletter366="Score";	//Score
 
 var Premadeletter0="Η επικοινωνία ενεργοποιήθηκε"; 		//Communication Activated
 var Premadeletter1="Δεν είναι δυνατό να ανοίξει αυτή η διεύθυνση URL του YouTube";		 //Cannot open this youtube URL
@@ -584,7 +586,22 @@ var Premadeletter124 = "Αποφύγετε τη χρήση βίντεο skin μ�
 var Premadeletter125 = "Ο χάρτης έχει καθοριστεί"; //Map fixed
 var Premadeletter126 = "Συνδεθήκατε στο"; //Logged in to
 var Premadeletter127 = "Αποσυνδεθήκατε"; //Logged out
-
+var Premadeletter130 = "Σύνολο"; //Total
+var Premadeletter131 = "ΝΕΟ"; //NEW
+var Premadeletter132 = "Εγγραφείτε πίσω"; //Join Back
+var Premadeletter133 = "Συνδεθείτε στην τελευταία διεύθυνση IP που έχετε παίξει"; //Connect to last IP you played
+var Premadeletter134 = "Βόρεια Αμερική"; //North America
+var Premadeletter135 = "Νότια Αμερική"; //South America
+var Premadeletter136 = "Ευρώπη"; //Europe
+var Premadeletter137 = "Ρωσία"; //Russia
+var Premadeletter138 = "Τουρκία"; //Turkey
+var Premadeletter139 = "Ανατολική Ασία"; //East Asia
+var Premadeletter140 = "Ωκεανία"; //Oceania
+var Premadeletter141 = "Ελεύθερο"; //FFA
+var Premadeletter142 = "Ομάδες"; //Battle Royale
+var Premadeletter143 = "Teams"; //Teams
+var Premadeletter144 = "Πειραματικό"; //Experimental
+var Premadeletter145 = "Πάρτι"; //Party Mode
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter0a = "ΓΛΩΣΣΕΣ"; //LANGUAGES
