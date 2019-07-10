@@ -8,7 +8,7 @@ $("#menu-footer").after('<div id="legendchars" style="background-image: url('+le
     '<p>Your browser does not support iframes.</p>'+
 	'</iframe>'	+
 											'</div></div>'+
-											    '<button id= "Backtomenu" onclick="closecustomskinsIframe(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">CLOSE</button>');
+											    '<button id= "Backtomenu" onclick="closecustomskinsIframe(); return false" style="margin-left: 10px;" class="btn btn-danger"  data-original-title="" title="">' + Premadeletter113 + '</button>');
 
 
 									
