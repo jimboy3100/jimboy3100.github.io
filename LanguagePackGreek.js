@@ -576,6 +576,15 @@ var Premadeletter119 = "Αναφορά ως ψεύτικη (αλλαγή Skin)";
 var Premadeletter120 = "Εισαγάγετε το ακριβές όνομα τoυ παίκτη"; //Enter your EXACT name of the player
 var Premadeletter121 = "Η κατάχρηση παικτών και η ακατάλληλη χρήση θα οδηγήσει σε UID χρήστη"; //Abusing players and inappropriate use will lead UID of user
 var Premadeletter122 = "σε μόνιμη απαγόρευση της χρήσης αυτής της επέκτασης"; //to permanent ban from usage of this extension
+var Premadeletter128 = "Απαιτείται σύνδεση χρήστη"; //User login needed
+var Premadeletter129 = "Οι ρυθμίσεις έχουν μεταφορτωθεί με επιτυχία"; //Settings successfully uploaded
+//These are for file: https://jimboy3100.github.io/ogario/ogario.v4.js and https://jimboy3100.github.io/ogario/ogario.v4.master.js
+var Premadeletter123 = "ΥΠΗΡΕΤΗΣ"; //SERVER
+var Premadeletter124 = "Αποφύγετε τη χρήση βίντεο skin μεγαλύτερο από 6 λεπτά"; //Avoid using video skins bigger than 6 minutes
+var Premadeletter125 = "Ο χάρτης έχει καθοριστεί"; //Map fixed
+var Premadeletter126 = "Συνδεθήκατε στο"; //Logged in to
+var Premadeletter127 = "Αποσυνδεθήκατε"; //Logged out
+
 
 //These are for file: https://jimboy3100.github.io/legendhelper.js
 var Externalletter0a = "ΓΛΩΣΣΕΣ"; //LANGUAGES
