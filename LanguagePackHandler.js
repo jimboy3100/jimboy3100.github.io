@@ -1,6 +1,6 @@
 //Language Pack Handler
 //Legend Mod By Jimboy3100
-//v1.2e
+//v1.2f
 
 //Legend Mod By Jimboy3100
 var Languagetimesused;
@@ -193,10 +193,16 @@ $(".options-box.hudGroup>LABEL").replace('Game stats at the top', Languageletter
 $(".options-box.hudGroup>LABEL").replace('Skins on teamboard', Languageletter98a);
 $(".options-box.statsGroup>h5").text(Languageletter99);
 $(".options-box.statsGroup>LABEL").replace('Show game stats', Languageletter100);
-$(".options-box.statsGroup>LABEL").replace('Game stats: Mass', Languageletter101);
-$(".options-box.statsGroup>LABEL").replace('Game stats: STE', Languageletter102);
-$(".options-box.statsGroup>LABEL").replace('Game stats: n/16', Languageletter103);
-$(".options-box.statsGroup>LABEL").replace('Game stats: FPS', Languageletter104);
+$(".options-box.statsGroup>LABEL").replace('Game stats: Mass', Languageletter101 + ": " + Languageletter49);
+$(".options-box.statsGroup>LABEL").replace('Game stats: Enemy\'s STE', Languageletter101 + ": " + Languageletter102 + "STE");
+$(".options-box.statsGroup>LABEL").replace('Game stats: Enemy\'s MTE', Languageletter101 + ": " + Languageletter102 + "MTE");
+$(".options-box.statsGroup>LABEL").replace('Game stats: Our STE', Languageletter101 + ": " + Languageletter103 + "STE");
+$(".options-box.statsGroup>LABEL").replace('Game stats: Our MTE', Languageletter101 + ": " + Languageletter103 + "MTE");
+$(".options-box.statsGroup>LABEL").replace('Game stats: Minimal tricksplit teammate\'s mass ', Languageletter101 + ": " + Languageletter104);
+$(".options-box.statsGroup>LABEL").replace('Game stats: Maximal enemy\'s mass for presplit  ', Languageletter101 + ": " + Languageletter104a);
+$(".options-box.statsGroup>LABEL").replace('Game stats: STE', Languageletter101 + ": " + "STE");
+$(".options-box.statsGroup>LABEL").replace('Game stats: n/16', Languageletter101 + ": " + "n/16");
+$(".options-box.statsGroup>LABEL").replace('Game stats: FPS', Languageletter101 + ": " + "FPS");
 $(".options-box.statsGroup>LABEL").replace('Show current time', Languageletter105);
 $(".options-box.extrasGroup>h5").text(Languageletter106);
 $(".options-box.extrasGroup>LABEL").replace('Skip stats after death', Languageletter107);
@@ -246,23 +252,37 @@ $('#themePreset>option:nth-child(3)').text(Languageletter136);
 $('#themePreset>option:nth-child(4)').text(Languageletter137 + " 1");
 $('#themePreset>option:nth-child(5)').text(Languageletter137 + " 2");
 
-$("#theme-main>div>span").eq(1).text(Languageletter139);
-$("#theme-main>div>span").eq(2).text(Languageletter140);
-$("#theme-main>div>span").eq(3).text(Languageletter141);
-$("#theme-main>div>span").eq(4).text(Languageletter142);
-$("#theme-main>div>span").eq(5).text(Languageletter143);
-$("#theme-main>div>span").eq(6).text(Languageletter144);
-$("#theme-main>div>span").eq(7).text(Languageletter145);
-$("#theme-main>div>span").eq(8).text(Languageletter146);
-$("#theme-main>div>span").eq(9).text(Languageletter147);
-$("#theme-main>div>span").eq(10).text(Languageletter148);
-$("#theme-main>div>span").eq(11).text(Languageletter149);
-$("#theme-main>div>span").eq(12).text(Languageletter150);
-$("#theme-main>div>span").eq(13).text(Languageletter151);
-$("#theme-main>div>span").eq(14).text(Languageletter152);
-$("#theme-main>div>span").eq(15).text(Languageletter153);
-$("#theme-main>div>span").eq(16).text(Languageletter154);
-$("#theme-main>div>span").eq(17).text(Languageletter155 + ": ");
+$("#theme-main>div>span").eq(1).text(Languageletter139); //Background
+$("#theme-main>div>span").eq(2).text(Languageletter140); //Map borders
+$("#theme-main>div>span").eq(3).text(Languageletter75a); //Border Glow
+$("#theme-main>div>span").eq(4).text(Languageletter141); //Grid
+$("#theme-main>div>span").eq(5).text(Languageletter155); //Sectors font
+$("#theme-main>div>span").eq(6).text(Languageletter143); //Names
+$("#theme-main>div>span").eq(7).text(Languageletter145); //Names stroke
+$("#theme-main>div>span").eq(8).text(Languageletter145); //Mass
+$("#theme-main>div>span").eq(9).text(Languageletter146); //Mass stroke
+$("#theme-main>div>span").eq(10).text(Languageletter148); //Virus
+$("#theme-main>div>span").eq(11).text(Languageletter147); //Virus stroke
+$("#theme-main>div>span").eq(12).text(Languageletter148a); //Mothercell
+$("#theme-main>div>span").eq(13).text(Languageletter148b); //Mothercell stroke
+$("#theme-main>div>span").eq(14).text(Languageletter71a); //Virus Glow
+$("#theme-main>div>span").eq(15).text(Languageletter149); //Food
+$("#theme-main>div>span").eq(16).text(Languageletter150); //Teammate indicator
+$("#theme-main>div>span").eq(17).text(Languageletter151); //Cursor tracking
+$("#theme-main>div>span").eq(18).text(Languageletter152); //Split range
+$("#theme-main>div>span").eq(19).text("B2STE " + Languageletter102 + " " + Languageletter175); //B2STE Enemy Color
+$("#theme-main>div>span").eq(20).text("BSTE " + Languageletter102 + " " + Languageletter175); //BSTE Enemy Color
+$("#theme-main>div>span").eq(21).text(Languageletter154a + " " + Languageletter102 + " " + Languageletter175); //Bigger Enemy Color
+$("#theme-main>div>span").eq(22).text(Languageletter154b + " " + Languageletter102 + " " + Languageletter175); //Smaller Enemy Color
+$("#theme-main>div>span").eq(23).text("SSTE " + Languageletter102 + " " + Languageletter175); //SSTE Enemy Color
+$("#theme-main>div>span").eq(24).text("S2STE " + Languageletter102 + " " + Languageletter175); //S2STE Enemy Color
+$("#theme-main>div>span").eq(25).text(Languageletter154); //Safe area
+$("#theme-main>div>span").eq(26).text(Languageletter154); //Danger area
+$("#theme-main>div>span").eq(27).text(Languageletter90a); //Ghost cells
+
+$("#theme-main>div>span").eq(28).text(Languageletter153 + ": ");
+$("#theme-main>div>span").eq(29).text(Languageletter154 + ": ");
+$("#theme-main>div>span").eq(30).text(Languageletter155 + ": ");
 /*
 $("#theme-main>div>span").eq(18).text(Languageletter152a);
 $("#theme-main>div>span").eq(19).text(Languageletter152b);
@@ -286,11 +306,14 @@ $("#theme-main>div>div>span:nth-child(1)").eq(4).text(Languageletter161 + ": ");
 $("#theme-main>div>div>span:nth-child(1)").eq(5).text(Languageletter162 + ": ");
 $("#theme-main>div>div>span:nth-child(1)").eq(6).text(Languageletter163 + ": ");
 $("#theme-main>div>div>span:nth-child(1)").eq(7).text(Languageletter164 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(8).text(Languageletter165 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(9).text(Languageletter166 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(10).text(Languageletter167 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(11).text(Languageletter168 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(8).text(Languageletter75a + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(9).text(Languageletter71a + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(10).text(Languageletter165 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(11).text(Languageletter166 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter167 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(13).text(Languageletter168 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(14).text(Languageletter169 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(15).text(Languageletter90a +" "+ Languageletter174 + ": ");
 //$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169a + ": ");
 //$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169b + ": ");
 //$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169c + ": ");
@@ -319,7 +342,7 @@ $("#theme-menu>div>span").eq(14).text(Languageletter181 +" #4 (2)");
 $("#theme-menu>div>span").eq(15).text(Languageletter189);
 $("#menuBg").attr('placeholder', Languageletter190);
 
-$("#theme-hud>div>span").eq(0).text(Languageletter191);
+$("#theme-hud>div>span").eq(0).text(Languageletter175);
 $("#theme-hud>div>span").eq(1).text(Languageletter192);
 $("#theme-hud>div>span").eq(2).text(Languageletter193);
 $("#theme-hud>div>span").eq(3).text(Languageletter194);
@@ -497,6 +520,7 @@ $("#legendmanualback").text(Languageletter316 + ":  ");
 $("#legendmanualmess").text(Languageletter317 + ":  ");
 $("#chatbtntitle").text(Languageletter318 + ":  ");
 $("#legenddiscordwebh").text(Languageletter319 +"  ");
+$("#legendotherscripts").text(Languageletter364 +":");
 
 $('#backgroundPic>option:nth-child(1)').text(Languageletter133);
 $('#backgroundPic>option:nth-child(2)').text(Languageletter320);
