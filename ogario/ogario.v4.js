@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.965 MEGA TEST
+// v1.966 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -1617,7 +1617,7 @@ var skinUrlPatterns = [{
 var defaultmapsettings = {
     'isAlphaChanged': false,
     'jellyPhisycs': false,
-    'virusSound': true,
+    'virusSound': false,
     'quickResp': true,
     'autoResp': false,
     'autoZoom': false,
