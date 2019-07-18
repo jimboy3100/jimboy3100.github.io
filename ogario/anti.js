@@ -10,7 +10,7 @@ function CellTimerTrigger() {
 	if (CellTimerTriggerOnce){		
 		if (!window.legendmod5.optimizedMass && window.ExternalScripts && !this.mergeCanvas) {
 			CellTimer();
-		}, 1000);
+		}
 		return CellTimerTriggerOnce=false;
 	}
 }	
@@ -79,8 +79,9 @@ catch(e) {
 setTimeout(function() {
 	if (!window.legendmod5.optimizedMass && window.ExternalScripts && !this.mergeCanvas) {
 	CellTimer();
+	}
 	}, 1000);
-}
+
 }
 /*
 function StopIntervalstatistics() {
