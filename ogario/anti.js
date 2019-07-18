@@ -65,17 +65,21 @@ function celltimer() {
         if (mycellshistoryMasstop != 0 && mycellshistoryMasstop != mycellshistoryMassbottom) {
 
             if (mycellshistoryMassbottom < mycellshistoryMasstop && mycellshistoryMasstopi < mycellshistoryMassbottomi) {
+				
                 if (window.lastejected) {
                     window.lastejected = false;
                 } else if (1 - mycellshistoryMassbottom / mycellshistoryMasstop < 1000) {
-                    var tempshow = (1 - mycellshistoryMassbottom / mycellshistoryMasstop).tofixed(5) * 100;
-                    if (tempshow < 10 && tempshow > 0.1) {
-                        $('#pause-hud').text("pause! anti beat: " + (tempshow).tofixed(5) + "%");
+					console.log(mycellshistoryMassbottom, mycellshistoryMasstop);
+                    window.antiMatter = (1 - mycellshistoryMassbottom / mycellshistoryMasstop).tofixed(5) * 100;
+                    //if (tempshow < 10 && tempshow > 0.1) {
+						
+						console.log(window.antiMatter + "%");
+                        $('#pause-hud').text("pause! anti beat: " + window.antiMatter + "%");
                         setTimeout(function() {
                             $('#pause-hud').text("pause!");
                         }, 3000);
-                        console.log((tempshow).tofixed(5) + "%");
-                    }
+                        
+                    //}
                 }
             }
         }
