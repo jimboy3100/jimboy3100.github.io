@@ -1,74 +1,74 @@
-var myCells;
-var myCellsHistoryMass;
-var myBiggerCell = {}; //your biggest cell
-var mySmallerCell = {}; //your smallest cell
-    myBiggerCell.mass = 0;
-    mySmallerCell.mass = 25000;
-var CellTimerTriggerOnce=true;
+var mycells;
+var mycellshistorymass;
+var mybiggercell = {}; //your biggest cell
+var mysmallercell = {}; //your smallest cell
+    mybiggercell.mass = 0;
+    mysmallercell.mass = 25000;
+var celltimertriggeronce=true;
 
-function CellTimerTrigger() {
-	if (CellTimerTriggerOnce){		
-		if (!window.legendmod5.optimizedMass && window.ExternalScripts && !this.mergeCanvas) {
-			CellTimer();
+function celltimertrigger() {
+	if (celltimertriggeronce){		
+		if (!window.legendmod5.optimizedmass && window.externalscripts && !this.mergecanvas) {
+			celltimer();
 		}
-		return CellTimerTriggerOnce=false;
+		return celltimertriggeronce=false;
 	}
 }	
 
-function CellTimer() {
+function celltimer() {
 	//console.log("ding");
-	myCells = [];
-	myCellsHistoryMass=[];
-    for (var i = 0; i < window.legendmod.playerCells.length; i++) {
-		myCells.push(window.legendmod.playerCells[i]);
-		myCells[i].historyMass=window.playerCellsId[myCells[i].id].historyMass;
-        if (window.legendmod.playerCells[i].mass > myBiggerCell.mass) {
-            myBiggerCell = window.legendmod.playerCells[i];
+	mycells = [];
+	mycellshistorymass=[];
+    for (var i = 0; i < window.legendmod.playercells.length; i++) {
+		mycells.push(window.legendmod.playercells[i]);
+		mycells[i].historymass=window.playercellsid[mycells[i].id].historymass;
+        if (window.legendmod.playercells[i].mass > mybiggercell.mass) {
+            mybiggercell = window.legendmod.playercells[i];
         }
-        if (window.legendmod.playerCells[i].mass < mySmallerCell.mass) {
-            mySmallerCell = window.legendmod.playerCells[i];
+        if (window.legendmod.playercells[i].mass < mysmallercell.mass) {
+            mysmallercell = window.legendmod.playercells[i];
         }
     }
-	for (var i = 0; i < myCells.length; i++) {	
-		for (var j = 0; j < myCells[i].historyMass.length; j++) {
-			if (myCellsHistoryMass[j]==undefined){
-				myCellsHistoryMass[j]=0;
+	for (var i = 0; i < mycells.length; i++) {	
+		for (var j = 0; j < mycells[i].historymass.length; j++) {
+			if (mycellshistorymass[j]==undefined){
+				mycellshistorymass[j]=0;
 			}
-			myCellsHistoryMass[j] += myCells[i].historyMass[j];
+			mycellshistorymass[j] += mycells[i].historymass[j];
 	}
 	}
 
 	
 try{
-	var myCellsHistoryMassTop=0;
-	var myCellsHistoryMassBottom=25000;
-	var myCellsHistoryMassTopI=0;
-	var myCellsHistoryMassBottomI=0;
+	var mycellshistorymasstop=0;
+	var mycellshistorymassbottom=25000;
+	var mycellshistorymasstopi=0;
+	var mycellshistorymassbottomi=0;
 	for (var i = 0; i < window.legendmod2.fps-5; i++) {	//window.legendmod2.fps-5 is because for making bug in case of increased fps in case of an eject
-		if (myCellsHistoryMass[i]<myCellsHistoryMassBottom){
-			myCellsHistoryMassBottom=myCellsHistoryMass[i];
-			myCellsHistoryMassTopI=i;
+		if (mycellshistorymass[i]<mycellshistorymassbottom){
+			mycellshistorymassbottom=mycellshistorymass[i];
+			mycellshistorymasstopi=i;
 		}
-		if (myCellsHistoryMass[i]>myCellsHistoryMassTop){
-			myCellsHistoryMassTop=myCellsHistoryMass[i];
-			myCellsHistoryMassBottomI=i;
+		if (mycellshistorymass[i]>mycellshistorymasstop){
+			mycellshistorymasstop=mycellshistorymass[i];
+			mycellshistorymassbottomi=i;
 		}
 
 	}
-if 	(myCellsHistoryMassTop!=0 && myCellsHistoryMassTop!=myCellsHistoryMassBottom){
+if 	(mycellshistorymasstop!=0 && mycellshistorymasstop!=mycellshistorymassbottom){
 		
-	if (myCellsHistoryMassBottom < myCellsHistoryMassTop && myCellsHistoryMassTopI < myCellsHistoryMassBottomI) { 
+	if (mycellshistorymassbottom < mycellshistorymasstop && mycellshistorymasstopi < mycellshistorymassbottomi) { 
 		if (window.lastejected){
 			window.lastejected=false;
 		}
-		else if (1-myCellsHistoryMassBottom/myCellsHistoryMassTop<1000){
-			var tempshow=(1-myCellsHistoryMassBottom/myCellsHistoryMassTop).toFixed(5)*100;
+		else if (1-mycellshistorymassbottom/mycellshistorymasstop<1000){
+			var tempshow=(1-mycellshistorymassbottom/mycellshistorymasstop).tofixed(5)*100;
 			if (tempshow <10 && tempshow>0.1){
-				$('#pause-hud').text("PAUSE! ANTI beat: " + (tempshow).toFixed(5)+"%");
-				setTimeout(function() {
-				$('#pause-hud').text("PAUSE!");
+				$('#pause-hud').text("pause! anti beat: " + (tempshow).tofixed(5)+"%");
+				settimeout(function() {
+				$('#pause-hud').text("pause!");
 				}, 3000);
-	console.log((tempshow).toFixed(5)+"%");
+	console.log((tempshow).tofixed(5)+"%");
 			}
 		}
 	}
@@ -76,15 +76,15 @@ if 	(myCellsHistoryMassTop!=0 && myCellsHistoryMassTop!=myCellsHistoryMassBottom
 }
 catch(e) { 
 }
-setTimeout(function() {
-	if (!window.legendmod5.optimizedMass && window.ExternalScripts && !this.mergeCanvas) {
-	CellTimer();
+settimeout(function() {
+	if (!window.legendmod5.optimizedmass && window.externalscripts && !this.mergecanvas) {
+	celltimer();
 	}
 	}, 1000);
 
 }
 /*
-function StopIntervalstatistics() {
-  clearInterval(Intervalstatistics);
+function stopintervalstatistics() {
+  clearinterval(intervalstatistics);
 }
 */
