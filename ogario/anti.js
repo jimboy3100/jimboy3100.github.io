@@ -17,7 +17,7 @@ function celltimertrigger() {
 
 function celltimer() {
 	
-    console.log("ding");
+//    console.log("ding");
     setTimeout(function() {
         if (!window.legendmod5.optimizedmass) {
             celltimer();
@@ -70,10 +70,11 @@ function celltimer() {
                     window.lastejected = false;
                 } else if (1 - mycellshistoryMassbottom / mycellshistoryMasstop < 1000) {
 					console.log(mycellshistoryMassbottom, mycellshistoryMasstop);
-                    window.antiMatter = (1 - mycellshistoryMassbottom / mycellshistoryMasstop).tofixed(5) * 100;
+					var tempAnti=1 - mycellshistoryMassbottom / mycellshistoryMasstop;
+                    window.antiMatter = (tempAnti).toFixed(5) * 100;
                     //if (tempshow < 10 && tempshow > 0.1) {
 						
-						console.log(window.antiMatter + "%");
+						console.log(window.antiMatter);
                         $('#pause-hud').text("pause! anti beat: " + window.antiMatter + "%");
                         setTimeout(function() {
                             $('#pause-hud').text("pause!");
