@@ -75,9 +75,9 @@ function celltimer() {
                     //if (tempshow < 10 && tempshow > 0.1) {
 						
 						console.log(window.antiMatter);
-                        $('#pause-hud').text("pause! anti beat: " + window.antiMatter + "%");
+                        $('#pause-hud').text("PAUSE! Anti beat: " + window.antiMatter + "%");
                         setTimeout(function() {
-                            $('#pause-hud').text("pause!");
+                            $('#pause-hud').text("PAUSE!");
                         }, 3000);
                         
                     //}
