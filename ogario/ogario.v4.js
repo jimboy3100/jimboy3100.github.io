@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.966 MEGA TEST
+// v1.970 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -146,6 +146,8 @@ function LegendModSpawn() {};
 window.lastejected = false;
 
 function calcTarget() {};
+function CellTimerTrigger() {};
+
 //function historystate(){};
 var Lmagarversion = "";
 
@@ -5442,6 +5444,7 @@ var thelegendmodproject = function(t, e, i) {
 
 
                     if (window.ExternalScripts && !defaultmapsettings.optimizedMass && window.playerCellsId && this.isPlayerCell && !this.isVirus) {
+						CellTimerTrigger(); 
                         if (window.playerCellsId[this.id] == undefined) {
                             window.playerCellsId[this.id] = {};
                             window.playerCellsId[this.id].historyMass = [];
@@ -6405,7 +6408,15 @@ var thelegendmodproject = function(t, e, i) {
                         window.testobjectsOpcode85 = data;
                         console.log('[Legend mod Express] Captcha requested');
                         if (window.master && window.master.recaptchaRequested) {
+							if (window.smartbotslimited && legendmod5.autoResp){ //
+								core.connect(legendmod.ws);
+								setTimeout(function() {
+								 legendmod3.autoResp();
+								}, 2000);
+							}
+							else{
                             window.master.recaptchaRequested();
+							}							
                         }
                         break;
                     case 102:
@@ -6776,7 +6787,7 @@ var thelegendmodproject = function(t, e, i) {
                         m && (ogariocellssetts.color = m)) :
                         ((ogariocellssetts = new ogarbasicassembly(l, h, c, u, m, ogarioset1final, LM, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots)).time = this.time,
                             ogarioset1final ? this.food.push(ogariocellssetts) :
-                                (LM && defaultmapsettings['virusesRange'] && this.viruses.push(ogariocellssetts),
+                                (LM && defaultmapsettings.virusesRange && this.viruses.push(ogariocellssetts),
                                     this.cells.push(ogariocellssetts),
                                 -1 != this.playerCellIDs.indexOf(l) && -1 == this.playerCells.indexOf(ogariocellssetts) && (ogariocellssetts.isPlayerCell = true, this.playerColor = m, this.playerCells.push(ogariocellssetts))),
                             this.indexedCells[l] = ogariocellssetts),
@@ -7067,7 +7078,7 @@ var thelegendmodproject = function(t, e, i) {
                                         this['drawMapBorders'](this.ctx, LM.mapOffsetFixed, LM.mapMinX - t, LM.mapMinY - t, LM.mapMaxX + t, LM.mapMaxY + t, defaultSettings['bordersColor'], defaultSettings['bordersWidth']);
                                     }
                                     this.drawCommander();
-                                    defaultmapsettings['virusesRange'] && this['drawVirusesRange'](this.ctx, LM.viruses), this['drawFood'](), LM.play && (defaultmapsettings.splitRange && this['drawSplitRange'](this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell), defaultmapsettings.oppRings && this['drawOppRings'](this.ctx, this.scale, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache), defaultmapsettings['cursorTracking'] && this['drawCursorTracking'](this.ctx, LM.playerCells, LM.cursorX, LM.cursorY)), this['drawGhostCells']();
+                                    defaultmapsettings.virusesRange && this['drawVirusesRange'](this.ctx, LM.viruses), this['drawFood'](), LM.play && (defaultmapsettings.splitRange && this['drawSplitRange'](this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell), defaultmapsettings.oppRings && this['drawOppRings'](this.ctx, this.scale, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache), defaultmapsettings['cursorTracking'] && this['drawCursorTracking'](this.ctx, LM.playerCells, LM.cursorX, LM.cursorY)), this['drawGhostCells']();
                                     for (var e = 0; e < LM['removedCells'].length; e++) LM['removedCells'][e].draw(this.ctx, true);
                                     for (e = 0; e < LM.cells.length; e++) LM.cells[e].draw(this.ctx);
                                     this.ctx['restore'](), ':teams' === LM.gameMode && this.pieChart && this.pieChart.width && this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
@@ -8800,6 +8811,7 @@ var thelegendmodproject = function(t, e, i) {
                 LM.sendGplusToken(t);
             },
             'recaptchaResponse': function(t) {
+				window.lastRecaptchaResponseToken=t;
                 LM.sendRecaptcha(t);
             },
             'setClientVersion': function(t, e) {
