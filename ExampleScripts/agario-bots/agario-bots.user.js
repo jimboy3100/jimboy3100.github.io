@@ -2,7 +2,7 @@
 // @name         agario-bots
 // @version      1.0.0
 // @description  Free open source agar.io bots
-// @author       Nel#0001
+// @author       Nel#Jimboy3100
 // @run-at       document-start
 // @match        *://agar.io/*
 // ==/UserScript==
@@ -67,7 +67,7 @@ function modifyCoreJS(coreJS){
                 hideMapGrid: false,
                 showAllPlayersMass: false,
                 connection: {
-                    botsName: '#FreeAgarioBots',
+                    botsName: '#Jimboy3100Bots',
                     botsAmount: 50,
                     useRemote: false,
                     serverHost: 'localhost',
