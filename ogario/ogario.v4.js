@@ -6560,6 +6560,7 @@ var thelegendmodproject = function(t, e, i) {
                         this.protocolKey = data.getUint32(s, true);
                         //window.testobjectsOpcode241.getUint32(1, true);
                         console.log('[Legend mod Express] Received protocol key:', this.protocolKey);
+						window.generatedProtocolKey=this.protocolKey;
                         var irenderfromagario = new Uint8Array(data['buffer'], s += 4);
                         this.clientKey = this['generateClientKey'](this.ws, irenderfromagario);
                         //legendmod.generateClientKey("wss://live-arena-19y1u3v.agar.io:443",new Uint8Array(window.testobjectsOpcode241['buffer'], 5))
