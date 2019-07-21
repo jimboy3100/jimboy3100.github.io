@@ -132,7 +132,7 @@ class Writer {
 }
 $(".agario-panel.ogario-yt-panel").after('<div id="userPanel">' +
     '<h5 class="main-color">BOTS</h5>' +
-    '<div id="tabs">' +
+    '<div id="tabBots" class="title" style="text-align: center;">' +
     '<span id="tabInfo" style="font-weight: bold; cursor: pointer;">INFO</span>' +
     '<span> | </span>' +
     '<span id="tabKeys" style="font-weight: bold; cursor: pointer;">KEYS</span>' +
