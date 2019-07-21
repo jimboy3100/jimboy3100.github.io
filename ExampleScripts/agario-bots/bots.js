@@ -91,7 +91,7 @@ const UserBots = {
                 $('span#userStatusBots').text("Connected")
                 UserBots.isConnected = true
             } else {
-				toastr.warning("<b>[SERVER]:</b> " + "Find a new party to complete the handshake");
+                toastr.warning("<b>[SERVER]:</b> " + "Find a new party to complete the handshake");
                 this.ws.close()
             }
         },
@@ -221,7 +221,8 @@ for (const checkbox of checkboxBots) {
 //const inputBots = ['botsName', 'botsAmount', 'serverHost', 'serverPort', 'mouseWheelSpeed', 'startBotsKey', 'stopBotsKey', 'splitBotsKey', 'ejectBotsKey', 'aiBotsKey', 'macroFeedKey', 'doubleSplitKey', 'sixteenSplitKey', 'stopMovementKey']
 const inputBots = ['botsName', 'botsAmount', 'serverHost', 'serverPort', 'startBotsKey', 'stopBotsKey', 'splitBotsKey', 'ejectBotsKey', 'aiBotsKey']
 for (const input of inputBots) {
-    if (localStorage.getItem(input) !== null) {
+    if (localStorage.getItem(input) != null) {
+        //console.log(input)
         switch (input) {
             case 'botsName':
                 UserBots.connection.botsName = localStorage.getItem(input)
@@ -244,30 +245,31 @@ for (const input of inputBots) {
                 document.getElementById(input).value = UserBots[input]
         }
     }
-	//console.log(input)
-                    document.getElementById(input).addEventListener('inputBots', function(){
-                        switch(input){
-                            case 'botsName':
-                                User.connection.botsName = this.value
-                                localStorage.setItem(input, User.connection.botsName)
-                                break
-                            case 'botsAmount':
-                                User.connection.botsAmount = Number(this.value)
-                                localStorage.setItem(input, User.connection.botsAmount)
-                                break
-                            case 'serverHost':
-                                User.connection.serverHost = this.value
-                                localStorage.setItem(input, User.connection.serverHost)
-                                break
-                            case 'serverPort':
-                                User.connection.serverPort = Number(this.value)
-                                localStorage.setItem(input, User.connection.serverPort)
-                                break																																	
-                            default:
-                                User[input] = this.value
-                                localStorage.setItem(input, UserBots[input])
-                        }
-                    })	
+    console.log(input)
+    
+        $('input#' + input).on('change', function() {			
+		switch (input) {	
+            case 'botsName':
+                UserBots.connection.botsName = this.value
+                localStorage.setItem(input, UserBots.connection.botsName)
+                break
+            case 'botsAmount':
+                UserBots.connection.botsAmount = Number(this.value)
+                localStorage.setItem(input, UserBots.connection.botsAmount)
+                break
+            case 'serverHost':
+                UserBots.connection.serverHost = this.value
+                localStorage.setItem(input, UserBots.connection.serverHost)
+                break
+            case 'serverPort':
+                UserBots.connection.serverPort = Number(this.value)
+                localStorage.setItem(input, UserBots.connection.serverPort)
+                break
+            default:
+                UserBots[input] = this.value
+                localStorage.setItem(input, UserBots[input])
+        }
+    })
 }
 
 
@@ -275,67 +277,67 @@ UserBots.connection.connect();
 
 
 document.addEventListener('keydown', e => {
-//    if (!document.getElementById('overlays')) {
-        switch (e.key) {
-            case UserBots.startBotsKey:
-                //if(!UserBots.startedBots && UserBots.serverURL.includes('?party_id=')){
-                if (!UserBots.startedBots && window.legendmod.ws) {
-                    //UserBots.connection.sendMessage(UserBots.connection.messages.startBots(UserBots.connection.botsName, UserBots.connection.botsAmount, UserBots.isAlive, UserBots.serverURL, UserBots.serverKeyBytes))
-                    UserBots.connection.sendMessage(UserBots.connection.messages.startBots(UserBots.connection.botsName, UserBots.connection.botsAmount, legendmod.play, window.legendmod.ws, window.generatedClientKey))
-                    $('span#botsStatus').css('color', 'green')
-                    $('span#botsStatus').text("Started")
-                    //document.getElementById('botsStatus').style.color = 'green'
-                    //document.getElementById('botsStatus').innerText = 'Started'
-                    UserBots.startedBots = true
-                } 
-				else {
-					toastr.warning("<b>[SERVER]:</b> " + "You must be in party mode and have bots stopped in order to start them");
-				}
-                break
-            case UserBots.stopBotsKey:
-                if (UserBots.startedBots) {
-                    UserBots.connection.sendMessage(new Uint8Array([2]))
-                    $('span#botsStatus').css('color', 'red')
-                    $('span#botsStatus').text("Stopped")
-                    //document.getElementById('botsStatus').style.color = 'red'
-                    //document.getElementById('botsStatus').innerText = 'Stopped'
-                    UserBots.startedBots = false
-                } else{
-					toastr.warning("<b>[SERVER]:</b> " + "You must have bots started in order to stop them");
-				} 
-                break
-            case UserBots.splitBotsKey:
-                UserBots.connection.sendMessage(new Uint8Array([3]))
-                break
-            case UserBots.ejectBotsKey:
-                UserBots.connection.sendMessage(new Uint8Array([4]))
-                break
-            case UserBots.aiBotsKey:
-                UserBots.enabledBotsAI = !UserBots.enabledBotsAI
-                UserBots.connection.sendMessage(new Uint8Array([5, Number(UserBots.enabledBotsAI)]))
-                break
-        }
-//    }
+    //    if (!document.getElementById('overlays')) {
+    switch (e.key) {
+        case UserBots.startBotsKey:
+            //if(!UserBots.startedBots && UserBots.serverURL.includes('?party_id=')){
+            if (!UserBots.startedBots && window.legendmod.ws) {
+                //UserBots.connection.sendMessage(UserBots.connection.messages.startBots(UserBots.connection.botsName, UserBots.connection.botsAmount, UserBots.isAlive, UserBots.serverURL, UserBots.serverKeyBytes))
+                UserBots.connection.sendMessage(UserBots.connection.messages.startBots(UserBots.connection.botsName, UserBots.connection.botsAmount, legendmod.play, window.legendmod.ws, window.generatedClientKey))
+                $('span#botsStatus').css('color', 'green')
+                $('span#botsStatus').text("Started")
+                //document.getElementById('botsStatus').style.color = 'green'
+                //document.getElementById('botsStatus').innerText = 'Started'
+                UserBots.startedBots = true
+            } else {
+                toastr.warning("<b>[SERVER]:</b> " + "You must be in party mode and have bots stopped in order to start them");
+            }
+            break
+        case UserBots.stopBotsKey:
+            if (UserBots.startedBots) {
+                UserBots.connection.sendMessage(new Uint8Array([2]))
+                $('span#botsStatus').css('color', 'red')
+                $('span#botsStatus').text("Stopped")
+                //document.getElementById('botsStatus').style.color = 'red'
+                //document.getElementById('botsStatus').innerText = 'Stopped'
+                UserBots.startedBots = false
+            } else {
+                toastr.warning("<b>[SERVER]:</b> " + "You must have bots started in order to stop them");
+            }
+            break
+        case UserBots.splitBotsKey:
+            UserBots.connection.sendMessage(new Uint8Array([3]))
+            break
+        case UserBots.ejectBotsKey:
+            UserBots.connection.sendMessage(new Uint8Array([4]))
+            break
+        case UserBots.aiBotsKey:
+            UserBots.enabledBotsAI = !UserBots.enabledBotsAI
+            UserBots.connection.sendMessage(new Uint8Array([5, Number(UserBots.enabledBotsAI)]))
+            break
+    }
+    //    }
 })
 
 $("#server-ws").show();
 $("#server-connect").show();
 
 var sendPosBots;
+
 function LegendModSpawn() { //i have handlers for this...
-sendPosBots = setInterval(sendPosBots, 1000);
+    sendPosBots = setInterval(sendPosBots, 1000);
     UserBots.connection.sendMessage(new Uint8Array([6, Number(true)]))
-return sendPosBots;
+    return sendPosBots;
 };
 
 function LegendModDeath() { //i have handlers for this...
     //UserBots.connection.sendMessage(new Uint8Array([6, Number(UserBots.isAlive)]))
-	clearInterval(sendPosBots);
+    clearInterval(sendPosBots);
     UserBots.connection.sendMessage(new Uint8Array([6, Number(false)]))
-	
+
 };
 
-function sendPosBots(){
-//	console.log("ding");
-UserBots.connection.sendMessage(UserBots.connection.messages.mousePosition(legendmod.playerX, legendmod.playerY))
+function sendPosBots() {
+    //	console.log("ding");
+    UserBots.connection.sendMessage(UserBots.connection.messages.mousePosition(legendmod.playerX, legendmod.playerY))
 }
