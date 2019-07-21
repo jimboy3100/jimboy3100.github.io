@@ -292,13 +292,21 @@ document.addEventListener('keydown', e => {
 $("#server-ws").show();
 $("#server-connect").show();
 
-
+var sendPosBots
 function LegendModSpawn() { //i have handlers for this...
-    //User.connection.sendMessage(new Uint8Array([6, Number(User.isAlive)]))
+sendPosBots = setInterval(sendPosBots, 1000);
     User.connection.sendMessage(new Uint8Array([6, Number(true)]))
+return sendPosBots
 };
 
 function LegendModDeath() { //i have handlers for this...
     //User.connection.sendMessage(new Uint8Array([6, Number(User.isAlive)]))
+	clearInterval(sendPosBots);
     User.connection.sendMessage(new Uint8Array([6, Number(false)]))
+	
 };
+
+function sendPosBots(){
+	console.log("ding");
+User.connection.sendMessage(User.connection.messages.mousePosition(legendmod.playerX, legendmod.playerY))
+}
