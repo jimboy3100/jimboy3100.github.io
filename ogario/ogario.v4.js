@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.970 MEGA TEST
+// v1.971 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -138,9 +138,10 @@ function pauseVideos() {
 //functions for mods
 
 function LegendModSpawn() {};
+function LegendModDeath() {};
 //window.Bufferdata;
 //window.generatedClientKey;
-
+//window.generatedProtocolKey
 
 //window.disableIntegrity=false;
 window.lastejected = false;
@@ -6467,6 +6468,7 @@ var thelegendmodproject = function(t, e, i) {
                                     break;
                                 case 62:
                                     console.log("[Legend mod Express] 102 Game over");
+									LegendModDeath();
                                     //$('#pause-hud').text("PAUSE!");
                                     break;
                                 default:
