@@ -91,7 +91,7 @@ const User = {
                 $('span#userStatusBots').text("Connected")
                 User.isConnected = true
             } else {
-                alert('Find a new party to complete the handshake')
+				toastr.warning("<b>[SERVER]:</b> " + "Find a new party to complete the handshake");
                 this.ws.close()
             }
         },
@@ -160,7 +160,7 @@ $(".agario-panel.ogario-yt-panel").after('<div id="userPanel">' +
     '<span style="float: left;">Server Port: <input type="text" id="serverPort" style="color: #FFAD31; border: none; outline: none;" placeholder="0-65535" value="1337" maxlength="5" spellcheck="false"></span>' +
     '<br>' +
     '<br>' +
-    '<span>Developed by <a style="text-decoration: none;" target="_blank" href="https://github.com/nelthedev">Nel#0001</a></span>' +
+    '<span><i>Developed by <a style="text-decoration: none;" target="_blank" href="https://github.com/nelthedev">Nel#0001</a></i></span>' +
     '</section>' +
     '<section id="tabKeysPanel" style="display: none; margin-left: 15px; margin-right: 15px;">' +
     '<span style="float: left;">Start Bots: <input type="text" id="startBotsKey" style="color: #3FAAEF; border: none; outline: none;" placeholder="a-z0-9 (lowercase)" value="x" maxlength="1" spellcheck="false"></span>' +
@@ -263,7 +263,10 @@ document.addEventListener('keydown', e => {
                     //document.getElementById('botsStatus').style.color = 'green'
                     //document.getElementById('botsStatus').innerText = 'Started'
                     User.startedBots = true
-                } else alert('You must be in party mode and have bots stopped in order to start them')
+                } 
+				else {
+					toastr.warning("<b>[SERVER]:</b> " + "You must be in party mode and have bots stopped in order to start them");
+				}
                 break
             case User.stopBotsKey:
                 if (User.startedBots) {
@@ -273,7 +276,9 @@ document.addEventListener('keydown', e => {
                     //document.getElementById('botsStatus').style.color = 'red'
                     //document.getElementById('botsStatus').innerText = 'Stopped'
                     User.startedBots = false
-                } else alert('You must have bots started in order to stop them')
+                } else{
+					toastr.warning("<b>[SERVER]:</b> " + "You must have bots started in order to stop them");
+				} 
                 break
             case User.splitBotsKey:
                 User.connection.sendMessage(new Uint8Array([3]))
@@ -296,7 +301,7 @@ var sendPosBots;
 function LegendModSpawn() { //i have handlers for this...
 sendPosBots = setInterval(sendPosBots, 1000);
     User.connection.sendMessage(new Uint8Array([6, Number(true)]))
-return sendPosBots
+return sendPosBots;
 };
 
 function LegendModDeath() { //i have handlers for this...
@@ -307,6 +312,6 @@ function LegendModDeath() { //i have handlers for this...
 };
 
 function sendPosBots(){
-	console.log("ding");
+//	console.log("ding");
 User.connection.sendMessage(User.connection.messages.mousePosition(legendmod.playerX, legendmod.playerY))
 }
