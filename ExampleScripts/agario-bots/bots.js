@@ -131,7 +131,7 @@ class Writer {
     }
 }
 $(".agario-panel.ogario-yt-panel").after('<div id="userPanel">' +
-    '<br>' +
+    '<h5 class="main-color">BOTS</h5>' +
     '<div id="tabs">' +
     '<span id="tabInfo" style="font-weight: bold; cursor: pointer;">INFO</span>' +
     '<span> | </span>' +
@@ -292,7 +292,7 @@ document.addEventListener('keydown', e => {
 $("#server-ws").show();
 $("#server-connect").show();
 
-var sendPosBots
+var sendPosBots;
 function LegendModSpawn() { //i have handlers for this...
 sendPosBots = setInterval(sendPosBots, 1000);
     User.connection.sendMessage(new Uint8Array([6, Number(true)]))
