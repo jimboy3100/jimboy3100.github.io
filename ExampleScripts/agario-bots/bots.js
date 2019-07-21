@@ -222,7 +222,6 @@ for (const checkbox of checkboxBots) {
 const inputBots = ['botsName', 'botsAmount', 'serverHost', 'serverPort', 'startBotsKey', 'stopBotsKey', 'splitBotsKey', 'ejectBotsKey', 'aiBotsKey']
 for (const input of inputBots) {
     if (localStorage.getItem(input) != null) {
-        //console.log(input)
         switch (input) {
             case 'botsName':
                 UserBots.connection.botsName = localStorage.getItem(input);
@@ -245,8 +244,6 @@ for (const input of inputBots) {
                 $('input#' + input).val(UserBots[input]);
         }
     }
-    console.log(input)
-    
         $('input#' + input).on('change', function() {			
 		switch (input) {	
             case 'botsName':
