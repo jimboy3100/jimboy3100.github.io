@@ -202,7 +202,7 @@ for (const checkbox of checkboxBots) {
                 document.getElementById(checkbox).checked = UserBots.connection.useRemote
                 break
             default:
-                UserBots[checkbox] = JSON.parse(localStorage.getItem(checkbox))
+                UserBots[checkbox] = JSON.parse(localStorage.getItem(checkboxBots))
                 document.getElementById(checkbox).checked = UserBots[checkbox]
         }
     }
@@ -214,7 +214,7 @@ for (const checkbox of checkboxBots) {
                 break
             default:
                 UserBots[checkbox] = this.checked
-                localStorage.setItem(checkbox, UserBots[checkbox])
+                localStorage.setItem(checkboxBots, UserBots[checkbox])
         }
     })
 }
@@ -262,10 +262,10 @@ for (const input of inputBots) {
                             case 'serverPort':
                                 User.connection.serverPort = Number(this.value)
                                 localStorage.setItem(input, User.connection.serverPort)
-                                break
+                                break																																	
                             default:
                                 User[input] = this.value
-                                localStorage.setItem(input, User[input])
+                                localStorage.setItem(input, UserBots[input])
                         }
                     })	
 }
