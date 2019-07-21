@@ -84,7 +84,7 @@ const UserBots = {
             //if(UserBots.protocolVersion && UserBots.clientVersion){
             if (window.generatedClientKey && window.master.clientVersion) {
                 //this.sendMessage(this.messages.handshake(UserBots.protocolVersion, UserBots.clientVersion))
-                this.sendMessage(this.messages.handshake(EnvConfig.configVersion, window.master.clientVersion))
+                this.sendMessage(this.messages.handshake("21", window.master.clientVersion))
                 //document.getElementById('userStatusBots').style.color = 'green'							
                 //document.getElementById('userStatusBots').innerText = 'Connected'
                 $('span#userStatusBots').css('color', 'green')
