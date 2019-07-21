@@ -1,3 +1,4 @@
+window.LMBotsEnabled=true;
 const UserBots = {
     isConnected: false,
     startedBots: false,
@@ -316,8 +317,8 @@ document.addEventListener('keydown', e => {
     //    }
 })
 
-$("#server-ws").show();
-$("#server-connect").show();
+//$("#server-ws").show();
+//$("#server-connect").show();
 
 var sendPosBots;
 
@@ -337,4 +338,7 @@ function LegendModDeath() { //i have handlers for this...
 function sendPosBots() {
     //	console.log("ding");
     UserBots.connection.sendMessage(UserBots.connection.messages.mousePosition(legendmod.playerX, legendmod.playerY))
+}
+function LegendModServerConnect(){
+	UserBots.connection.onerror();
 }
