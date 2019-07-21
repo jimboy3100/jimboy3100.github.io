@@ -219,7 +219,7 @@ for (const checkbox of checkboxBots) {
     })
 }
 //const inputBots = ['botsName', 'botsAmount', 'serverHost', 'serverPort', 'mouseWheelSpeed', 'startBotsKey', 'stopBotsKey', 'splitBotsKey', 'ejectBotsKey', 'aiBotsKey', 'macroFeedKey', 'doubleSplitKey', 'sixteenSplitKey', 'stopMovementKey']
-const inputBots = ['botsName', 'botsAmount', 'serverHost', 'serverPort', 'mouseWheelSpeed', 'startBotsKey', 'stopBotsKey', 'splitBotsKey', 'ejectBotsKey', 'aiBotsKey']
+const inputBots = ['botsName', 'botsAmount', 'serverHost', 'serverPort', 'startBotsKey', 'stopBotsKey', 'splitBotsKey', 'ejectBotsKey', 'aiBotsKey']
 for (const input of inputBots) {
     if (localStorage.getItem(input) !== null) {
         switch (input) {
@@ -244,6 +244,30 @@ for (const input of inputBots) {
                 document.getElementById(input).value = UserBots[input]
         }
     }
+	//console.log(input)
+                    document.getElementById(input).addEventListener('inputBots', function(){
+                        switch(input){
+                            case 'botsName':
+                                User.connection.botsName = this.value
+                                localStorage.setItem(input, User.connection.botsName)
+                                break
+                            case 'botsAmount':
+                                User.connection.botsAmount = Number(this.value)
+                                localStorage.setItem(input, User.connection.botsAmount)
+                                break
+                            case 'serverHost':
+                                User.connection.serverHost = this.value
+                                localStorage.setItem(input, User.connection.serverHost)
+                                break
+                            case 'serverPort':
+                                User.connection.serverPort = Number(this.value)
+                                localStorage.setItem(input, User.connection.serverPort)
+                                break
+                            default:
+                                User[input] = this.value
+                                localStorage.setItem(input, User[input])
+                        }
+                    })	
 }
 
 
