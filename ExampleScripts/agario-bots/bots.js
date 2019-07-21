@@ -195,18 +195,18 @@ $('span#tabKeys').click(function() {
 //const checkboxBots = ['useRemote', 'extendedScale', 'hideMapGrid', 'showAllPlayersMass']
 const checkboxBots = ['useRemote']
 for (const checkbox of checkboxBots) {
-    if (localStorage.getItem(checkbox) !== null) {
+    if (localStorage.getItem(checkbox) != null) {
         switch (checkbox) {
             case 'useRemote':
                 UserBots.connection.useRemote = JSON.parse(localStorage.getItem(checkbox))
-                document.getElementById(checkbox).checked = UserBots.connection.useRemote
+                $('input#' + checkbox).checked = UserBots.connection.useRemote
                 break
             default:
                 UserBots[checkbox] = JSON.parse(localStorage.getItem(checkboxBots))
-                document.getElementById(checkbox).checked = UserBots[checkbox]
+                $('input#' + checkbox).checked = UserBots[checkbox]
         }
     }
-    document.getElementById(checkbox).addEventListener('click', function() {
+	$('input#' + checkbox).on('click', function() {
         switch (checkbox) {
             case 'useRemote':
                 UserBots.connection.useRemote = this.checked
@@ -225,24 +225,24 @@ for (const input of inputBots) {
         //console.log(input)
         switch (input) {
             case 'botsName':
-                UserBots.connection.botsName = localStorage.getItem(input)
-                document.getElementById(input).value = UserBots.connection.botsName
+                UserBots.connection.botsName = localStorage.getItem(input);
+                $('input#' + input).val(UserBots.connection.botsName);
                 break
             case 'botsAmount':
-                UserBots.connection.botsAmount = JSON.parse(localStorage.getItem(input))
-                document.getElementById(input).value = UserBots.connection.botsAmount
+                UserBots.connection.botsAmount = JSON.parse(localStorage.getItem(input));
+                $('input#' + input).val(UserBots.connection.botsAmount);
                 break
             case 'serverHost':
-                UserBots.connection.serverHost = localStorage.getItem(input)
-                document.getElementById(input).value = UserBots.connection.serverHost
+                UserBots.connection.serverHost = localStorage.getItem(input);
+                $('input#' + input).val(UserBots.connection.serverHost);
                 break
             case 'serverPort':
-                UserBots.connection.serverPort = JSON.parse(localStorage.getItem(input))
-                document.getElementById(input).value = UserBots.connection.serverPort
+                UserBots.connection.serverPort = JSON.parse(localStorage.getItem(input));
+                $('input#' + input).val(UserBots.connection.serverPort);
                 break
             default:
                 UserBots[input] = localStorage.getItem(input)
-                document.getElementById(input).value = UserBots[input]
+                $('input#' + input).val(UserBots[input]);
         }
     }
     console.log(input)
