@@ -251,7 +251,7 @@ User.connection.connect();
 
 
 document.addEventListener('keydown', e => {
-    if (!document.getElementById('overlays')) {
+//    if (!document.getElementById('overlays')) {
         switch (e.key) {
             case User.startBotsKey:
                 //if(!User.startedBots && User.serverURL.includes('?party_id=')){
@@ -286,7 +286,7 @@ document.addEventListener('keydown', e => {
                 User.connection.sendMessage(new Uint8Array([5, Number(User.enabledBotsAI)]))
                 break
         }
-    }
+//    }
 })
 
 $("#server-ws").show();
