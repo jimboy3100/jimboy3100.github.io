@@ -106,6 +106,9 @@ class Bot {
             case 85:
                 this.ws.onmessage = null
                 this.reset()
+				//
+				this.ws.close()
+				//
                 setTimeout(() => {
                     User.bots.push(new Bot(User.bots.length))
                 }, 2500)
@@ -352,7 +355,7 @@ User.server.on('connection', ws => {
                 User.isAlive = !!reader.readUint8()
                 User.serverURL = reader.readString()
                 User.serverKey = reader.readInt32()
-                if(User.botsAmount >= 50 && User.botsAmount <= 150){
+                if(User.botsAmount >= 10 && User.botsAmount <= 150){
                     let index = 0
                     let startBotsInterval = setInterval(() => {
                         if(index <= User.botsAmount){
@@ -362,7 +365,12 @@ User.server.on('connection', ws => {
                         else clearInterval(startBotsInterval)
                     }, 100)
                 }
-                else console.log('[SERVER] Max bot amount exceeded')
+                else if(User.botsAmount<10){ 
+				console.log('[SERVER] Max bot amount too low');
+				}
+                else if(User.botsAmount>150){ 
+				console.log('[SERVER] Max bot amount exceeded');
+				}				
                 console.log(`[SERVER] User started bots\n[SERVER] Server URL: ${User.serverURL}\n[SERVER] Server Key: ${User.serverKey}`)
                 break
             case 2:
