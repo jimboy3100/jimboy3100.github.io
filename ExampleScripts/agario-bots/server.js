@@ -7,6 +7,10 @@ const Messages = require('./messages')
 const Reader = require('./reader')
 const Entity = require('./entity')
 
+require('dns').lookup(require('os').hostname(), function (err, add, fam) {
+  console.log('[SERVER] Bot Server IP: '+add);
+})
+
 const User = {
     server: Config.useRemote 
     ? 
@@ -347,7 +351,9 @@ User.server.on('connection', ws => {
             case 0:
                 User.protocolVersion = reader.readUint32()
                 User.clientVersion = reader.readUint32()
+				//User.ScriptCountry = reader.readString()
                 console.log(`[SERVER] Protocol version: ${User.protocolVersion}\n[SERVER] Client Version: ${User.clientVersion}`)
+				//console.log(`[SERVER] User Script Contry: ${User.ScriptCountry}`)
                 break
             case 1:
                 User.botsName = reader.readString()
