@@ -69,9 +69,9 @@ const UserBots = {
         },
         getURL() {
 			if (this.useRemote){
-				if (this.useRemote.includes('ws:') == false && this.useRemote.includes('wss:') == false){
+				//if (this.useRemote.includes('ws:') == false && this.useRemote.includes('wss:') == false){
 				toastr.warning("Server must contain 'ws:\/\/' or 'wss:\/\/'");
-				}
+				//}
 				return this.serverHost + ":" + this.serverPort;
 			}
 			else{
