@@ -1,352 +1,446 @@
-window.LMBotsEnabled=true;
-const UserBots = {
-    isConnected: false,
-    startedBots: false,
-    //                protocolVersion: 0,
-    //                clientVersion: 0,
-    enabledBotsAI: false,
-    macroFeedInterval: null,
-    stopMovement: false,
-    isAlive: false,
-    serverURL: '',
-    serverKeyBytes: [],
-    mouseX: 0,
-    mouseY: 0,
-    mapOffsetX: 0,
-    mapOffsetY: 0,
-    startBotsKey: 'x',
-    stopBotsKey: 'y',
-    splitBotsKey: 't',
-    ejectBotsKey: 'a',
-    aiBotsKey: 'f',
-    macroFeedKey: 'e',
-    doubleSplitKey: 'q',
-    sixteenSplitKey: 'r',
-    stopMovementKey: 's',
-    extendedScale: false,
-    mouseWheelSpeed: 0.9,
-    hideMapGrid: false,
-    //                showAllPlayersMass: false,
-    server: legendmod.ws,
-    isAlive: legendmod.play,
-    connection: {
-        botsName: '#Jimboy3100Bots',
-        botsAmount: 50,
-        useRemote: false,
-        serverHost: 'localhost',
-        serverPort: 1337,
-        ws: null,
-        messages: {
-            handshake(protocolVersion, clientVersion) {
+const WebSocket = require('ws')
+const {createServer} = require('https')
+const {readFileSync} = require('fs')
+const Config = require('./config')
+const Algorithm = require('./algorithm')
+const Messages = require('./messages')
+const Reader = require('./reader')
+const Entity = require('./entity')
 
-                const writer = new Writer(9)
-                writer.writeUint8(0)
-                writer.writeUint32(protocolVersion)
-                writer.writeUint32(clientVersion)
-                return writer.message
-            },
-            //                        startBots(botsName, botsAmount, isAlive, serverURL, serverKeyBytes){
-            //                            const writer = new Writer(9 + serverURL.length + botsName.length)
-            startBots(botsName, botsAmount, isAlive, server, serverKeyBytes) {
-                const writer = new Writer(9 + server.length + botsName.length)
-                writer.writeUint8(1)
-                writer.writeString(botsName)
-                writer.writeUint8(Number(botsAmount))
-                writer.writeUint8(Number(isAlive))
-                writer.writeString(server)
-                //writer.writeString(serverURL)
-                writer.writeInt32(window.generatedClientKey)
-                //writer.writeInt32(new Int32Array(new Int8Array(serverKeyBytes).buffer)[0])
-                return writer.message
-            },
-            mousePosition(mouseX, mouseY) {
-                const writer = new Writer(9)
-                writer.writeUint8(7)
-                writer.writeInt32(mouseX)
-                writer.writeInt32(mouseY)
-                return writer.message
-            }
-        },
-        getURL() {
-			if (this.useRemote){
-				if (this.useRemote.includes('ws:') == false && this.useRemote.includes('wss:') == false){
-				toastr.warning("Server must contain 'ws:\/\/' or 'wss:\/\/'");
-				}
-				return this.serverHost + ":" + this.serverPort;
-			}
-			else{
-				return 'ws://localhost:1337';
-			}
-            /*return \`\${this.useRemote ? 'wss://' : 'ws://'}\${this.serverHost}:\${this.serverPort}\` */
-        },
-        connect() {
-            this.ws = new WebSocket(this.getURL())
-            this.ws.binaryType = 'arraybuffer'
-            this.ws.onopen = this.onopen.bind(this)
-            this.ws.onerror = this.onerror.bind(this)
-            this.ws.onclose = this.onclose.bind(this)
-        },
-        sendMessage(message) {
-            if (this.ws && this.ws.readyState === WebSocket.OPEN) this.ws.send(message.buffer)
-        },
-        onopen() {
-            //if(UserBots.protocolVersion && UserBots.clientVersion){
-            if (window.generatedClientKey && window.master.clientVersion) {
-                //this.sendMessage(this.messages.handshake(UserBots.protocolVersion, UserBots.clientVersion))
-                this.sendMessage(this.messages.handshake("21", window.master.clientVersion))
-                //document.getElementById('userStatusBots').style.color = 'green'							
-                //document.getElementById('userStatusBots').innerText = 'Connected'
-                $('span#userStatusBots').css('color', 'green')
-                $('span#userStatusBots').text("Connected")
-                UserBots.isConnected = true
-            } else {
-                toastr.warning("<b>[SERVER]:</b> " + "Find a new party to complete the handshake");
-                this.ws.close()
-            }
-        },
-        onerror() {
-            if (this.ws.readyState === WebSocket.CONNECTING || this.ws.readyState === WebSocket.OPEN) this.ws.close()
-        },
-        onclose() {
-            //document.getElementById('userStatusBots').style.color = 'red'
-            //document.getElementById('userStatusBots').innerText = 'Disconnected'
-            $('span#userStatusBots').css('color', 'red');
-            $('span#userStatusBots').text("Disconnected")
-            setTimeout(this.connect.bind(this), 1000)
-            UserBots.isConnected = false
-        }
-    }
-}
-
-class Writer {
-    constructor(size) {
-        this.message = new DataView(new ArrayBuffer(size))
-        this.byteOffset = 0
-    }
-    writeUint8(value) {
-        this.message.setUint8(this.byteOffset++, value)
-    }
-    writeInt32(value) {
-        this.message.setInt32(this.byteOffset, value, true)
-        this.byteOffset += 4
-    }
-    writeUint32(value) {
-        this.message.setUint32(this.byteOffset, value, true)
-        this.byteOffset += 4
-    }
-    writeString(string) {
-        for (let i = 0; i < string.length; i++) this.writeUint8(string.charCodeAt(i))
-        this.writeUint8(0)
-    }
-}
-$(".agario-panel.ogario-yt-panel").after('<div id="userPanel">' +
-    '<h5 class="main-color">BOTS</h5>' +
-    '<div id="tabBots" class="title" style="text-align: center;">' +
-    '<span id="tabInfo" style="font-weight: bold; cursor: pointer;">INFO</span>' +
-    '<span> | </span>' +
-    '<span id="tabKeys" style="font-weight: bold; cursor: pointer;">KEYS</span>' +
-    '</div>' +
-    '<br>' +
-    '<section id="tabInfoPanel" style="display: block; margin-left: 15px; margin-right: 15px;">' +
-    '<span style="float: left;">User Server Status: <span id="userStatusBots" style="font-weight: bold; color: red;">Disconnected</span></span>' +
-    '<br>' +
-    '<br>' +
-    '<span style="float: left;">Bots Status: <span id="botsStatus" style="font-weight: bold; color: red;">Stopped</span></span>' +
-    '<br>' +
-    '<br>' +
-    '<span style="float: left;">Use Remote Server: <input type="checkbox" id="useRemote"></span>' +
-    '<br>' +
-    '<br>' +
-    '<span style="float: left;">Bots Name: <input type="text" id="botsName" style="color: #31BAFF; border: none; outline: none;" placeholder="Bots Name" value="#Jimboy3100" maxlength="15" spellcheck="false"></span>' +
-    '<br>' +
-    '<br>' +
-    '<span style="float: left;">Bots Amount: <input type="text" id="botsAmount" style="color: #F82626; border: none; outline: none;" placeholder="Min=50/Max=150" value="50" maxlength="3" spellcheck="false"></span>' +
-    '<br>' +
-    '<br>' +
-    '<span style="float: left;">Server Host: <input type="text" id="serverHost" style="color: #31BAFF; border: none; outline: none;" placeholder="Hostname/IP" value="localhost" maxlength="50" spellcheck="false"></span>' +
-    '<br>' +
-    '<br>' +
-    '<span style="float: left;">Server Port: <input type="text" id="serverPort" style="color: #FFAD31; border: none; outline: none;" placeholder="0-65535" value="1337" maxlength="5" spellcheck="false"></span>' +
-    '<br>' +
-    '<br>' +
-    '<span><i>Developed by <a style="text-decoration: none;" target="_blank" href="https://github.com/nelthedev">Nel#0001</a></i></span>' +
-    '</section>' +
-    '<section id="tabKeysPanel" style="display: none; margin-left: 15px; margin-right: 15px;">' +
-    '<span style="float: left;">Start Bots: <input type="text" id="startBotsKey" style="color: #3FAAEF; border: none; outline: none;" placeholder="a-z0-9 (lowercase)" value="x" maxlength="1" spellcheck="false"></span>' +
-    '<br>' +
-    '<span style="float: left;">Stop Bots: <input type="text" id="stopBotsKey" style="color: #3FAAEF; border: none; outline: none;" placeholder="a-z0-9 (lowercase)" value="y" maxlength="1" spellcheck="false"></span>' +
-    '<br>' +
-    '<span style="float: left;">Split Bots: <input type="text" id="splitBotsKey" style="color: #3FAAEF; border: none; outline: none;" placeholder="a-z0-9 (lowercase)" value="t" maxlength="1" spellcheck="false"></span>' +
-    '<br>' +
-    '<span style="float: left;">Eject Bots: <input type="text" id="ejectBotsKey" style="color: #3FAAEF; border: none; outline: none;" placeholder="a-z0-9 (lowercase)" value="a" maxlength="1" spellcheck="false"></span>' +
-    '<br>' +
-    '<span style="float: left;">AI Bots: <input type="text" id="aiBotsKey" style="color: #3FAAEF; border: none; outline: none;" placeholder="a-z0-9 (lowercase)" value="f" maxlength="1" spellcheck="false"></span>' +
-    '</section>' +
-    '</div>');
-$('span#tabInfo').click(function() {
-    $('section#tabInfoPanel').show();
-    $('section#tabKeysPanel').hide();
-});
-$('span#tabKeys').click(function() {
-    $('section#tabInfoPanel').hide();
-    $('section#tabKeysPanel').show();
-});
-//const tabs = ['tabInfo', 'tabSettings', 'tabKeys']
-//for(const tab of tabs){
-//document.getElementById(tab).addEventListener('click', function(){
-
-//for(const t of tabs){
-//if(this !== document.getElementById(t)) document.getElementById('\${t}Panel').style.display = 'none'
-//else document.getElementById('\${t}Panel').style.display = 'block'
-// }
-//})
-//}
-//const checkboxBots = ['useRemote', 'extendedScale', 'hideMapGrid', 'showAllPlayersMass']
-const checkboxBots = ['useRemote']
-for (const checkbox of checkboxBots) {
-    if (localStorage.getItem(checkbox) != null) {
-        switch (checkbox) {
-            case 'useRemote':
-                UserBots.connection.useRemote = JSON.parse(localStorage.getItem(checkbox))
-                $('input#' + checkbox).checked = UserBots.connection.useRemote
-                break
-            default:
-                UserBots[checkbox] = JSON.parse(localStorage.getItem(checkboxBots))
-                $('input#' + checkbox).checked = UserBots[checkbox]
-        }
-    }
-	$('input#' + checkbox).on('click', function() {
-        switch (checkbox) {
-            case 'useRemote':
-                UserBots.connection.useRemote = this.checked
-                localStorage.setItem(checkbox, UserBots.connection.useRemote)
-                break
-            default:
-                UserBots[checkbox] = this.checked
-                localStorage.setItem(checkboxBots, UserBots[checkbox])
-        }
-    })
-}
-//const inputBots = ['botsName', 'botsAmount', 'serverHost', 'serverPort', 'mouseWheelSpeed', 'startBotsKey', 'stopBotsKey', 'splitBotsKey', 'ejectBotsKey', 'aiBotsKey', 'macroFeedKey', 'doubleSplitKey', 'sixteenSplitKey', 'stopMovementKey']
-const inputBots = ['botsName', 'botsAmount', 'serverHost', 'serverPort', 'startBotsKey', 'stopBotsKey', 'splitBotsKey', 'ejectBotsKey', 'aiBotsKey']
-for (const input of inputBots) {
-    if (localStorage.getItem(input) != null) {
-        switch (input) {
-            case 'botsName':
-                UserBots.connection.botsName = localStorage.getItem(input);
-                $('input#' + input).val(UserBots.connection.botsName);
-                break
-            case 'botsAmount':
-                UserBots.connection.botsAmount = JSON.parse(localStorage.getItem(input));
-                $('input#' + input).val(UserBots.connection.botsAmount);
-                break
-            case 'serverHost':
-                UserBots.connection.serverHost = localStorage.getItem(input);
-                $('input#' + input).val(UserBots.connection.serverHost);
-                break
-            case 'serverPort':
-                UserBots.connection.serverPort = JSON.parse(localStorage.getItem(input));
-                $('input#' + input).val(UserBots.connection.serverPort);
-                break
-            default:
-                UserBots[input] = localStorage.getItem(input)
-                $('input#' + input).val(UserBots[input]);
-        }
-    }
-        $('input#' + input).on('change', function() {			
-		switch (input) {	
-            case 'botsName':
-                UserBots.connection.botsName = this.value
-                localStorage.setItem(input, UserBots.connection.botsName)
-                break
-            case 'botsAmount':
-                UserBots.connection.botsAmount = Number(this.value)
-                localStorage.setItem(input, UserBots.connection.botsAmount)
-                break
-            case 'serverHost':
-                UserBots.connection.serverHost = this.value
-                localStorage.setItem(input, UserBots.connection.serverHost)
-                break
-            case 'serverPort':
-                UserBots.connection.serverPort = Number(this.value)
-                localStorage.setItem(input, UserBots.connection.serverPort)
-                break
-            default:
-                UserBots[input] = this.value
-                localStorage.setItem(input, UserBots[input])
-        }
-    })
-}
-
-
-UserBots.connection.connect();
-
-
-document.addEventListener('keydown', e => {
-    //    if (!document.getElementById('overlays')) {
-    switch (e.key) {
-        case UserBots.startBotsKey:
-            //if(!UserBots.startedBots && UserBots.serverURL.includes('?party_id=')){
-            if (!UserBots.startedBots && window.legendmod.ws) {
-                //UserBots.connection.sendMessage(UserBots.connection.messages.startBots(UserBots.connection.botsName, UserBots.connection.botsAmount, UserBots.isAlive, UserBots.serverURL, UserBots.serverKeyBytes))
-                UserBots.connection.sendMessage(UserBots.connection.messages.startBots(UserBots.connection.botsName, UserBots.connection.botsAmount, legendmod.play, window.legendmod.ws, window.generatedClientKey))
-                $('span#botsStatus').css('color', 'green')
-                $('span#botsStatus').text("Started")
-                //document.getElementById('botsStatus').style.color = 'green'
-                //document.getElementById('botsStatus').innerText = 'Started'
-                UserBots.startedBots = true
-            } else {
-                toastr.warning("<b>[SERVER]:</b> " + "You must be in party mode and have bots stopped in order to start them");
-            }
-            break
-        case UserBots.stopBotsKey:
-            if (UserBots.startedBots) {
-                UserBots.connection.sendMessage(new Uint8Array([2]))
-                $('span#botsStatus').css('color', 'red')
-                $('span#botsStatus').text("Stopped")
-                //document.getElementById('botsStatus').style.color = 'red'
-                //document.getElementById('botsStatus').innerText = 'Stopped'
-                UserBots.startedBots = false
-            } else {
-                toastr.warning("<b>[SERVER]:</b> " + "You must have bots started in order to stop them");
-            }
-            break
-        case UserBots.splitBotsKey:
-            UserBots.connection.sendMessage(new Uint8Array([3]))
-            break
-        case UserBots.ejectBotsKey:
-            UserBots.connection.sendMessage(new Uint8Array([4]))
-            break
-        case UserBots.aiBotsKey:
-            UserBots.enabledBotsAI = !UserBots.enabledBotsAI
-            UserBots.connection.sendMessage(new Uint8Array([5, Number(UserBots.enabledBotsAI)]))
-            break
-    }
-    //    }
+require('dns').lookup(require('os').hostname(), function (err, add, fam) {
+  console.log('[SERVER] Welcome to Free bot Server by Jimboy3100. Bots developed by Nel the developer');
+  console.log('[SERVER] Bot Server IP: '+add);
 })
 
-//$("#server-ws").show();
-//$("#server-connect").show();
-
-var sendPosBots;
-
-function LegendModSpawn() { //i have handlers for this...
-    sendPosBots = setInterval(sendPosBots, 1000);
-    UserBots.connection.sendMessage(new Uint8Array([6, Number(true)]))
-    return sendPosBots;
-};
-
-function LegendModDeath() { //i have handlers for this...
-    //UserBots.connection.sendMessage(new Uint8Array([6, Number(UserBots.isAlive)]))
-    clearInterval(sendPosBots);
-    UserBots.connection.sendMessage(new Uint8Array([6, Number(false)]))
-
-};
-
-function sendPosBots() {
-    //	console.log("ding");
-    UserBots.connection.sendMessage(UserBots.connection.messages.mousePosition(legendmod.playerX, legendmod.playerY))
+const User = {
+    server: Config.useRemote 
+    ? 
+        new WebSocket.Server({
+            server: createServer({
+                cert: readFileSync(Config.certPath),
+                key: readFileSync(Config.keyPath)
+            }).listen(Config.serverPort)
+        })
+    :
+        new WebSocket.Server({
+            port: Config.serverPort
+        })
+    ,
+    bots: [],
+    botsName: '',
+    botsAmount: 0,
+    stoppedBots: false,
+    protocolVersion: 0,
+    clientVersion: 0,
+    enabledBotsAI: false,
+    isAlive: false,
+    serverURL: '',
+    serverKey: 0,
+    mouseX: 0,
+    mouseY: 0
 }
-function LegendModServerConnect(){
-	UserBots.connection.onerror();
+
+class Bot {
+    constructor(index){
+        this.index = index
+        this.ws = null
+        this.encryptionKey = 0
+        this.decryptionKey = 0
+        this.mapOffsetX = 0
+        this.mapOffsetY = 0
+        this.isAlive = false
+        this.viewportEntities = {}
+        this.cellsIDs = []
+        this.connect()
+    }
+    reset(){
+        this.encryptionKey = 0
+        this.decryptionKey = 0
+        this.isAlive = false
+        this.viewportEntities = {}
+        this.cellsIDs = []
+    }
+    connect(){
+        this.reset()
+        this.ws = new WebSocket(User.serverURL, {
+            origin: 'https://agar.io',
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36'
+            }
+        })
+        this.ws.onopen = this.onopen.bind(this)
+        this.ws.onmessage = this.onmessage.bind(this)
+        this.ws.onerror = this.onerror.bind(this)
+        this.ws.onclose = this.onclose.bind(this)
+    }
+    sendMessage(message){
+        if(this.ws && this.ws.readyState === WebSocket.OPEN){
+            if(this.encryptionKey){
+                message = Algorithm.rotateMessageBytes(message, this.encryptionKey)
+                this.encryptionKey = Algorithm.rotateMessageKey(this.encryptionKey)
+            }
+            this.ws.send(message)
+        }
+    }
+    onopen(){
+        this.sendMessage(Messages.protocolVersion(User.protocolVersion))
+        this.sendMessage(Messages.clientVersion(User.clientVersion))
+        this.encryptionKey = User.serverKey
+        setTimeout(function(){
+            this.sendMessage(Messages.spawn(User.botsName))
+        }.bind(this), 50)
+    }
+    onmessage(message){
+        message = Buffer.from(message.data)
+        if(this.decryptionKey) message = Algorithm.rotateMessageBytes(message, this.decryptionKey ^ User.clientVersion)
+        this.handleMessage(message)
+    }
+    onerror(){
+        if(this.ws.readyState === WebSocket.CONNECTING || this.ws.readyState === WebSocket.OPEN) this.ws.close()
+    }
+    onclose(){
+        setTimeout(this.connect.bind(this), 250)
+    }
+    handleMessage(message){
+        const reader = new Reader(message)
+        switch(reader.readUint8()){
+            case 32:
+                this.cellsIDs.push(reader.readUint32())
+                if(!this.isAlive) this.isAlive = true
+                break
+            case 85:
+                this.ws.onmessage = null
+                this.reset()
+				//
+				//this.ws.close()
+				//
+                setTimeout(() => {
+                    User.bots.push(new Bot(User.bots.length))
+                }, 2500)
+                break
+            case 241:
+                this.decryptionKey = reader.readInt32()
+                break
+            case 255:
+                this.handleCompressedMessage(Algorithm.uncompressMessage(reader.message.slice(5), Buffer.allocUnsafe(reader.readUint32())))
+                break
+        }
+    }
+    handleCompressedMessage(message){
+        const reader = new Reader(message)
+        switch(reader.readUint8()){
+            case 16:
+                this.updateViewportEntities(reader)
+                break
+            case 64:
+                this.updateMap(reader)
+                break
+        }
+    }
+    updateViewportEntities(reader){
+        const eatRecordLength = reader.readUint16()
+        for(let i = 0; i < eatRecordLength; i++) reader.byteOffset += 8
+        while(true){
+            const id = reader.readUint32()
+            if(id === 0) break
+            const entity = new Entity()
+            entity.id = id
+            entity.x = reader.readInt32()
+            entity.y = reader.readInt32()
+            entity.size = reader.readUint16()
+            const flags = reader.readUint8()
+            const extendedFlags = flags & 128 ? reader.readUint8() : 0
+            if(flags & 1) entity.isVirus = true
+            if(flags & 2) reader.byteOffset += 3
+            if(flags & 4) reader.readString()
+            if(flags & 8) entity.name = decodeURIComponent(escape(reader.readString()))
+            if(flags & 32) entity.isOwnEjected = true
+            if(flags & 64) entity.isOtherEjected = true
+            if(extendedFlags & 1) entity.isPellet = true
+            if(extendedFlags & 4) reader.byteOffset += 4
+            this.viewportEntities[entity.id] = entity
+        }
+        const removeRecordLength = reader.readUint16()
+        for(let i = 0; i < removeRecordLength; i++){
+            const removedEntityID = reader.readUint32()
+            if(this.cellsIDs.includes(removedEntityID)) this.cellsIDs.splice(this.cellsIDs.indexOf(removedEntityID), 1)
+            if(this.viewportEntities[removedEntityID]) delete this.viewportEntities[removedEntityID]
+        }
+        if(this.isAlive && !this.cellsIDs.length){
+            this.isAlive = false
+            setTimeout(function(){
+                this.sendMessage(Messages.spawn(User.botsName))
+            }.bind(this), 50)
+        }
+    }
+    updateMap(reader){
+        const left = reader.readDouble()
+        const top = reader.readDouble()
+        const right = reader.readDouble()
+        const bottom = reader.readDouble()
+        if(~~(right - left) === 14142 && ~~(bottom - top) === 14142){
+            this.mapOffsetX = (left + right) / 2
+            this.mapOffsetY = (top + bottom) / 2
+        }
+    }
+    calculateDistance(botX, botY, targetX, targetY){
+        return Math.hypot(targetX - botX, targetY - botY)
+    }
+    getClosestSmallerVirus(botX, botY, botSize){
+        let closestDistance = Infinity
+        let closestVirus = null
+        for(const entity of Object.values(this.viewportEntities)){
+            if(entity.isVirus && !entity.isOwnEjected && !entity.isOtherEjected && !entity.isPellet && entity.size < botSize){
+                const distance = this.calculateDistance(botX, botY, entity.x, entity.y)
+                if(distance < closestDistance){
+                    closestDistance = distance
+                    closestVirus = entity
+                }
+            }
+        }
+        return {
+            distance: closestDistance,
+            virus: closestVirus
+        }
+    }
+    getClosestBiggerPlayer(botX, botY, botSize){
+        let closestDistance = Infinity
+        let closestPlayer = null
+        for(const entity of Object.values(this.viewportEntities)){
+            if(!entity.isVirus && !entity.isOwnEjected && !entity.isOtherEjected && !entity.isPellet && entity.size > botSize && entity.name !== User.botsName){
+                const distance = this.calculateDistance(botX, botY, entity.x, entity.y)
+                if(distance < closestDistance){
+                    closestDistance = distance
+                    closestPlayer = entity
+                }
+            }
+        }
+        return {
+            distance: closestDistance,
+            player: closestPlayer
+        }
+    }
+    getClosestSmallerPlayer(botX, botY, botSize){
+        let closestDistance = Infinity
+        let closestPlayer = null
+        for(const entity of Object.values(this.viewportEntities)){
+            if(!entity.isVirus && !entity.isOwnEjected && !entity.isOtherEjected && !entity.isPellet && entity.size < botSize && entity.name !== User.botsName){
+                const distance = this.calculateDistance(botX, botY, entity.x, entity.y)
+                if(distance < closestDistance){
+                    closestDistance = distance
+                    closestPlayer = entity
+                }
+            }
+        }
+        return {
+            distance: closestDistance,
+            player: closestPlayer
+        }
+    }
+    getClosestOwnEjected(botX, botY){
+        let closestDistance = Infinity
+        let closestEjected = null
+        for(const entity of Object.values(this.viewportEntities)){
+            if(!entity.isVirus && entity.isOwnEjected && !entity.isOtherEjected && !entity.isPellet){
+                const distance = this.calculateDistance(botX, botY, entity.x, entity.y)
+                if(distance < closestDistance){
+                    closestDistance = distance
+                    closestEjected = entity
+                }
+            }
+        }
+        return {
+            distance: closestDistance,
+            ejected: closestEjected
+        }
+    }
+    getClosestOtherEjected(botX, botY){
+        let closestDistance = Infinity
+        let closestEjected = null
+        for(const entity of Object.values(this.viewportEntities)){
+            if(!entity.isVirus && !entity.isOwnEjected && entity.isOtherEjected && !entity.isPellet){
+                const distance = this.calculateDistance(botX, botY, entity.x, entity.y)
+                if(distance < closestDistance){
+                    closestDistance = distance
+                    closestEjected = entity
+                }
+            }
+        }
+        return {
+            distance: closestDistance,
+            ejected: closestEjected
+        }
+    }
+    getClosestPellet(botX, botY){
+        let closestDistance = Infinity
+        let closestPellet = null
+        for(const entity of Object.values(this.viewportEntities)){
+            if(!entity.isVirus && !entity.isOwnEjected && !entity.isOtherEjected && entity.isPellet){
+                const distance = this.calculateDistance(botX, botY, entity.x, entity.y)
+                if(distance < closestDistance){
+                    closestDistance = distance
+                    closestPellet = entity
+                }
+            }
+        }
+        return {
+            distance: closestDistance,
+            pellet: closestPellet
+        }
+    }
+    move(){
+        const bot = {
+            x: 0,
+            y: 0,
+            size: 0
+        }
+        for(const id of this.cellsIDs){
+            const cell = this.viewportEntities[id]
+            if(cell){
+                bot.x += cell.x / this.cellsIDs.length
+                bot.y += cell.y / this.cellsIDs.length
+                bot.size += cell.size
+            }
+        }
+        const closestBiggerPlayer = this.getClosestBiggerPlayer(bot.x, bot.y, bot.size)
+        const closestSmallerVirus = this.getClosestSmallerVirus(bot.x, bot.y, bot.size)
+        const closestSmallerPlayer = this.getClosestSmallerPlayer(bot.x, bot.y, bot.size)
+        const closestOwnEjected = this.getClosestOwnEjected(bot.x, bot.y)
+        const closestOtherEjected = this.getClosestOtherEjected(bot.x, bot.y)
+        const closestPellet = this.getClosestPellet(bot.x, bot.y)
+        if(User.isAlive && !User.stoppedBots){
+            if(User.enabledBotsAI || bot.size < 60){
+                if(closestBiggerPlayer.player && closestBiggerPlayer.distance < 250){
+                    const angle = (Math.atan2(closestBiggerPlayer.player.y - bot.y, closestBiggerPlayer.player.x - bot.x) + Math.PI) % (Math.PI * 2)
+                    this.sendMessage(Messages.move(Math.cos(angle) * 14142, Math.sin(angle) * 14142, this.decryptionKey))
+                }
+                else if(closestSmallerVirus.virus && closestSmallerVirus.distance < 150){
+                    const angle = (Math.atan2(closestSmallerVirus.virus.y - bot.y, closestSmallerVirus.virus.x - bot.x) + Math.PI) % (Math.PI * 2)
+                    this.sendMessage(Messages.move(Math.cos(angle) * 14142, Math.sin(angle) * 14142, this.decryptionKey))
+                }
+                else if(closestSmallerPlayer.player && closestSmallerPlayer.distance < 250) this.sendMessage(Messages.move(closestSmallerPlayer.player.x, closestSmallerPlayer.player.y, this.decryptionKey))
+                else if(closestOwnEjected.ejected) this.sendMessage(Messages.move(closestOwnEjected.ejected.x, closestOwnEjected.ejected.y, this.decryptionKey))
+                else if(closestOtherEjected.ejected) this.sendMessage(Messages.move(closestOtherEjected.ejected.x, closestOtherEjected.ejected.y, this.decryptionKey))
+                else if(closestPellet.pellet) this.sendMessage(Messages.move(closestPellet.pellet.x, closestPellet.pellet.y, this.decryptionKey))
+                else if(!closestBiggerPlayer.player && !closestSmallerVirus.virus && !closestSmallerPlayer.player && !closestOwnEjected.ejected && !closestOtherEjected.ejected && !closestPellet.pellet) this.sendMessage(Messages.move(bot.x + ~~(Math.random() * 1000), bot.y + ~~(Math.random() * 1000), this.decryptionKey))
+            }
+            else this.sendMessage(Messages.move(User.mouseX + this.mapOffsetX, User.mouseY + this.mapOffsetY, this.decryptionKey))
+        }
+        else {
+            if(closestBiggerPlayer.player && closestBiggerPlayer.distance < 250){
+                const angle = (Math.atan2(closestBiggerPlayer.player.y - bot.y, closestBiggerPlayer.player.x - bot.x) + Math.PI) % (Math.PI * 2)
+                this.sendMessage(Messages.move(Math.cos(angle) * 14142, Math.sin(angle) * 14142, this.decryptionKey))
+            }
+            else if(closestSmallerVirus.virus && closestSmallerVirus.distance < 150){
+                const angle = (Math.atan2(closestSmallerVirus.virus.y - bot.y, closestSmallerVirus.virus.x - bot.x) + Math.PI) % (Math.PI * 2)
+                this.sendMessage(Messages.move(Math.cos(angle) * 14142, Math.sin(angle) * 14142, this.decryptionKey))
+            }
+            else if(closestSmallerPlayer.player && closestSmallerPlayer.distance < 250) this.sendMessage(Messages.move(closestSmallerPlayer.player.x, closestSmallerPlayer.player.y, this.decryptionKey))
+            else if(closestOwnEjected.ejected) this.sendMessage(Messages.move(closestOwnEjected.ejected.x, closestOwnEjected.ejected.y, this.decryptionKey))
+            else if(closestOtherEjected.ejected) this.sendMessage(Messages.move(closestOtherEjected.ejected.x, closestOtherEjected.ejected.y, this.decryptionKey))
+            else if(closestPellet.pellet) this.sendMessage(Messages.move(closestPellet.pellet.x, closestPellet.pellet.y, this.decryptionKey))
+            else if(!closestBiggerPlayer.player && !closestSmallerVirus.virus && !closestSmallerPlayer.player && !closestOwnEjected.ejected && !closestOtherEjected.ejected && !closestPellet.pellet) this.sendMessage(Messages.move(bot.x + ~~(Math.random() * 1000), bot.y + ~~(Math.random() * 1000), this.decryptionKey))
+        }
+    }
 }
+
+User.server.on('connection', ws => {
+    console.log('[SERVER] User connected')
+    ws.on('message', message => {
+        const reader = new Reader(message)
+        switch(reader.readUint8()){
+            case 0:
+                User.protocolVersion = reader.readUint32()
+                User.clientVersion = reader.readUint32()
+				//User.ScriptCountry = reader.readString()
+                console.log(`[SERVER] Protocol version: ${User.protocolVersion}\n[SERVER] Client Version: ${User.clientVersion}`)
+				//console.log(`[SERVER] User Script Contry: ${User.ScriptCountry}`)
+                break
+            case 1:
+                User.botsName = reader.readString()
+                User.botsAmount = reader.readUint8()
+                User.isAlive = !!reader.readUint8()
+                User.serverURL = reader.readString()
+                User.serverKey = reader.readInt32()
+                if(User.botsAmount >= 10 && User.botsAmount <= 150){
+                    let index = 0
+                    let startBotsInterval = setInterval(() => {
+                        if(index <= User.botsAmount){
+                            User.bots.push(new Bot(index))
+                            index++
+                        }
+                        else clearInterval(startBotsInterval)
+                    }, 100)
+                }
+                else if(User.botsAmount<10){ 
+				console.log('[SERVER] Max bot amount too low');
+				}
+                else if(User.botsAmount>150){ 
+				console.log('[SERVER] Max bot amount exceeded');
+				}				
+                console.log(`[SERVER] User started bots\n[SERVER] Server URL: ${User.serverURL}\n[SERVER] Server Key: ${User.serverKey}`)
+                break
+            case 2:
+                if(User.bots.length && !User.stoppedBots){
+                    User.stoppedBots = true
+                    let seconds = 0
+                    let secondsInterval = setInterval(() => {
+                        if(seconds < 120) console.log(`[SERVER] Avoiding captcha, please wait ${120 - seconds} seconds before doing anything`)
+                        else clearInterval(secondsInterval)
+                        seconds++
+                    }, 1000)
+                    setTimeout(() => {
+                        process.exit()
+                    }, 120000)
+                    console.log(`[SERVER] User stopped bots`)
+                }
+                break
+            case 3:
+                for(const bot of User.bots){
+                    if(bot.isAlive && !User.stoppedBots) bot.sendMessage(Buffer.from([17]))
+                }
+                break
+            case 4:
+                for(const bot of User.bots){
+                    if(bot.isAlive && !User.stoppedBots) bot.sendMessage(Buffer.from([21]))
+                }
+                break
+            case 5:
+                User.enabledBotsAI = !!reader.readUint8()
+                break
+            case 6:
+                User.isAlive = !!reader.readUint8()
+                break
+            case 7:
+                User.mouseX = reader.readInt32()
+                User.mouseY = reader.readInt32()
+                for(const bot of User.bots){
+                    if(bot.isAlive) bot.move()
+                }
+                break
+        }
+    })
+    ws.on('close', () => {
+        if(User.bots.length){
+            setInterval(() => {
+                for(const bot of User.bots){
+                    if(bot.isAlive) bot.move()
+                }
+            }, 40)
+            if(!User.stoppedBots){
+                User.stoppedBots = true
+                let seconds = 0
+                let secondsInterval = setInterval(() => {
+                    if(seconds < 120) console.log(`[SERVER] Avoiding captcha, please wait ${120 - seconds} seconds before doing anything`)
+                    else clearInterval(secondsInterval)
+                    seconds++
+                }, 1000)
+                setTimeout(() => {
+                    process.exit()
+                }, 120000)
+            }
+            console.log('[SERVER] User disconnected and bots stopped')
+        }
+        else console.log('[SERVER] User disconnected')
+    })
+})
