@@ -69,10 +69,19 @@ const UserBots = {
         },
         getURL() {
 			if (this.useRemote){
-				//if (this.useRemote.includes('ws:') == false && this.useRemote.includes('wss:') == false){
+				var temp = this.serverHost;
+				if (~temp.indexOf('ws:') == false && ~temp.indexOf('wss:') == false){
 				toastr.warning("Server must contain 'ws:\/\/' or 'wss:\/\/'");
-				//}
-				return this.serverHost + ":" + this.serverPort;
+				}								
+				if (this.serverPort==null || this.serverPort==0){
+					return this.serverHost;
+					//https://repl.it/@jimboy3100/agario-bots
+					//return "wss://agario-bots--jimboy3100.repl.co";
+				}
+				else{
+					return this.serverHost + ":" + this.serverPort;			
+				}
+				
 			}
 			else{
 				return 'ws://localhost:1337';
