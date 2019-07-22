@@ -163,7 +163,7 @@ $(".agario-panel.ogario-yt-panel").after('<div id="userPanel">' +
     '<span style="float: left;">Bots Amount: <input type="text" id="botsAmount" style="color: #F82626; border: none; outline: none;" placeholder="Min=50/Max=150" value="50" maxlength="3" spellcheck="false"></span>' +
     '<br>' +
     '<br>' +
-    '<span style="float: left;">Server Host: <input type="text" id="serverHost" style="color: #31BAFF; border: none; outline: none;" placeholder="Hostname/IP" value="localhost" maxlength="50" spellcheck="false"></span>' +
+    '<span style="float: left;">Server Host: <input type="text" id="serverHost" style="color: #31BAFF; border: none; outline: none;" placeholder="Hostname/IP" value="localhost" maxlength="150" spellcheck="false"></span>' +
     '<br>' +
     '<br>' +
     '<span style="float: left;">Server Port: <input type="text" id="serverPort" style="color: #FFAD31; border: none; outline: none;" placeholder="0-65535" value="1337" maxlength="5" spellcheck="false"></span>' +
