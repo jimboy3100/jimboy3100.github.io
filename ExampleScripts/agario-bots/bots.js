@@ -307,7 +307,7 @@ document.addEventListener('keydown', e => {
                 //document.getElementById('botsStatus').innerText = 'Started'
                 UserBots.startedBots = true
             } else {
-                toastr.warning("<b>[SERVER]:</b> " + "You must be in party mode and have bots stopped in order to start them");
+                toastr.warning("<b>[SERVER]:</b> " + "You must have stopped bots in order to start them");
             }
             break
         case UserBots.stopBotsKey:
