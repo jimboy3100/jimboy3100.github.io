@@ -17,7 +17,7 @@ function celltimertrigger() {
 
 function celltimer() {
 	
-//    console.log("ding");
+    console.log("ding");
     setTimeout(function() {
         if (!window.legendmod5.optimizedmass) {
             celltimer();
@@ -65,22 +65,18 @@ function celltimer() {
         if (mycellshistoryMasstop != 0 && mycellshistoryMasstop != mycellshistoryMassbottom) {
 
             if (mycellshistoryMassbottom < mycellshistoryMasstop && mycellshistoryMasstopi < mycellshistoryMassbottomi) {
-				
                 if (window.lastejected) {
                     window.lastejected = false;
                 } else if (1 - mycellshistoryMassbottom / mycellshistoryMasstop < 1000) {
-					console.log(mycellshistoryMassbottom, mycellshistoryMasstop);
-					var tempAnti=1 - mycellshistoryMassbottom / mycellshistoryMasstop;
-                    window.antiMatter = (tempAnti).toFixed(5) * 100;
-                    //if (tempshow < 10 && tempshow > 0.1) {
-						
-						console.log(window.antiMatter);
-                        $('#pause-hud').text("PAUSE! Anti beat: " + window.antiMatter + "%");
+					console.log((1 - mycellshistoryMassbottom / mycellshistoryMasstop)*100);
+                    var tempshow = (1 - mycellshistoryMassbottom / mycellshistoryMasstop).tofixed(5) * 100;
+                    if (tempshow < 10 && tempshow > 0.1) {
+                        $('#pause-hud').text("PAUSE! Anti beat:: " + (tempshow).tofixed(5) + "%");
                         setTimeout(function() {
                             $('#pause-hud').text("PAUSE!");
                         }, 3000);
-                        
-                    //}
+                        console.log((tempshow).tofixed(5) + "%");
+                    }
                 }
             }
         }
