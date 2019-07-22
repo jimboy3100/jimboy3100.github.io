@@ -215,13 +215,15 @@ const checkboxBots = ['useRemote']
 for (const checkbox of checkboxBots) {
     if (localStorage.getItem(checkbox) != null) {
         switch (checkbox) {
-            case 'useRemote':
+            case 'useRemote':				
                 UserBots.connection.useRemote = JSON.parse(localStorage.getItem(checkbox))
-                $('input#' + checkbox).checked = UserBots.connection.useRemote
+				if (UserBots.connection.useRemote){
+				$('input#' + checkbox).click();
+                }
                 break
             default:
                 UserBots[checkbox] = JSON.parse(localStorage.getItem(checkboxBots))
-                $('input#' + checkbox).checked = UserBots[checkbox]
+                //$('input#' + checkbox).checked = UserBots[checkbox]
         }
     }
 	$('input#' + checkbox).on('click', function() {
