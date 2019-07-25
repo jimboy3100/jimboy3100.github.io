@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.976 MEGA TEST
+// v1.979 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -6282,6 +6282,7 @@ var thelegendmodproject = function(t, e, i) {
                 //return t; //
                 //} //
             },		*/
+			//https://github.com/pierrec/node-lz4/blob/master/lib/binding.js
             'decompressMessage': function(t) {
                 var e = new o(t['buffer']);
                 var i = new o(e.readUInt32LE(1));
@@ -6724,6 +6725,7 @@ var thelegendmodproject = function(t, e, i) {
                     return 4;
                 }
             },
+			//https://github.com/NuclearC/agar.io-protocol
             'updateCells': function(t, i) {
                 var s = function() {
                     for (var e = '';;) {
@@ -6748,6 +6750,7 @@ var thelegendmodproject = function(t, e, i) {
                     }
                 }
                 for (a = 0;;) {
+					extendedFlags=false;
                     var l = t.readUInt32LE(i);
                     if (i += 4, 0 == l) break;
                     var h = t.readInt32LE(i);
@@ -6760,14 +6763,14 @@ var thelegendmodproject = function(t, e, i) {
                     i += 2;
                     var d = t.readUInt8(i++),
                         f = 0;
-                    128 & d && (f = t.readUInt8(i++));
+                    128 & d && (f = t.readUInt8(i++), extendedFlags = true);	
+					//128 & d && (f = t.readUInt8(i++));	
                     var m = null,
                         g = null,
                         y = '',
 						isAgitated=false,
 						isOwnEjected=false,
-						isOtherEjected=false,						
-						extendedFlags=false;						
+						isOtherEjected=false;						
                     if (2 & d) { //offset
                         var ogario1PlayerProfiles = t.readUInt8(i++),
                             ogarcopythelb = t.readUInt8(i++),
@@ -6788,20 +6791,14 @@ var thelegendmodproject = function(t, e, i) {
                     }
 					//Jimboy's
                     if (16 & d) {
-                        isAgitated=true;
-						
+                        isAgitated=true;						
                     }					
                     if (32 & d) {
                         isOwnEjected=true;
-						//console.log(y, g, s);
                     }
                     if (64 & d) {
                         isOtherEjected=true;
-                    }
-                    if (128 & d) {
-                        extendedFlags=true;
-						
-                    }					
+                    }				
 					//
                     //8 & d && (y = window.decodeURIComponent(escape(s())));
                     var LM = 1 & d,
@@ -6821,13 +6818,13 @@ var thelegendmodproject = function(t, e, i) {
                         ogariocellssetts.targetY = c,
                         ogariocellssetts.targetSize = u,
 //                        ogariocellssetts.targetSize = u,
-                        ogariocellssetts['isFood'] = ogarioset1final,
-                        ogariocellssetts['isVirus'] = LM,
+                        ogariocellssetts.isFood = ogarioset1final,
+                        ogariocellssetts.isVirus = LM,
 						//
-						ogariocellssetts['isOwnEjected'] = isOwnEjected,
-						ogariocellssetts['isOtherEjected'] = isOtherEjected,	
+						ogariocellssetts.isOwnEjected = isOwnEjected,
+						ogariocellssetts.isOtherEjected = isOtherEjected,	
 						//
-                    g && (ogariocellssetts['skin'] = g),
+                    g && (ogariocellssetts.skin = g),
                     4 & f && (t.readUInt32LE(i), i += 4);
                 }
                 for (o = t.readUInt16LE(i), i += 2, a = 0; a < o; a++) {
