@@ -2024,7 +2024,7 @@ var thelegendmodproject = function(t, e, i) {
                         e.preventDefault();
                         var i = $('img', this).attr('src');
                         defaultSettings.customCursor = i;
-                        this.setCustomCursor();
+                        hudsetter.setCustomCursor();
                         $('#customCursor').val(i);
                         $('#theme-images .cursor-box a').removeClass('active');
                         $(this).addClass('active');
