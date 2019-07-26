@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.979 MEGA TEST
+// v1.980 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4610,7 +4610,8 @@ var thelegendmodproject = function(t, e, i) {
                     console.log("[Legend mod Express] VMR UPDATE:", window.legendmod.vnr, mm, window.legendmod.playerMass, max, window.legendmod.bgpi);
                     this.setvnr(max);
                     //toastr.info('<b>[SERVER]:</b> Map fixed with LM players');
-					toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + Premadeletter125);
+					//toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + Premadeletter125);
+					console.log('[Legend mod Express] Map fixed with LM players ' + max);
                 }
             },
             'updateTeamPlayers': function() {
