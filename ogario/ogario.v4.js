@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.980 MEGA TEST
+// v1.981 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -183,6 +183,7 @@ setTimeout(function() {
     }
 }, 5000);
 
+window.predictedGhostCells=[];
 //set values outside ogario
 window.playerCellsId = [];
 //window.counterCell=0;
@@ -6639,6 +6640,15 @@ var thelegendmodproject = function(t, e, i) {
                         }
                     }
                 }
+                if ($("#ao2t-capture").length && $("#ao2t-capture").hasClass("connected")) { //if existed and connected and visible
+					for (var e = 0; e < legendmod.ghostCells.length; e++) {
+						window.predictedGhostCells[e]={};
+						window.predictedGhostCells[e] = legendmod.ghostCells[e];
+						window.predictedGhostCells[e].id= legendmod.leaderboard[e].id;
+						window.predictedGhostCells[e].nick= legendmod.leaderboard[e].nick;
+						window.predictedGhostCells[e].isFriend= legendmod.leaderboard[e].isFriend;	
+					}
+                }				
 
             },
             'targetingLead': function(o) {
