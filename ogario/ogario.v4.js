@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.981 MEGA TEST
+// v1.991 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2667,8 +2667,11 @@ var thelegendmodproject = function(t, e, i) {
                     if (defaultmapsettings.showTop5) {
                         //console.log(.top5.length);
                         //console.log(.teamPlayers.length);
-                        for (var t = '', e = 0, s = this.top5.length, o = 0; o < s; o++) e += this.top5[o].mass, o >= window.teamboardlimit || (t += '<li style=\"height: 16px;"\><span>' + (o + 1) + '. </span>', defaultmapsettings.showTargeting && (t += '<a href=\"#\" data-user-id=\"' + this.top5[o].id + '\" class=\"set-target ogicon-target\"></a> '),
-                            t += '<span class=\"hud-main-color\">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + ']</span>', t += '<span class=\"top5-mass-color\">[' + this.shortMassFormat(this.top5[o].mass) + ']</span> ' + this.escapeHTML(this.top5[o].nick) + '</li>');
+                        for (var t = '', e = 0, s = this.top5.length, o = 0; o < s; o++) e += this.top5[o].mass, o >= window.teamboardlimit || (t += '<li style=\"height: 16px;"\><span>' + (o + 1) + '. </span>', 
+						defaultmapsettings.showTargeting && (t += '<a href=\"#\" data-user-id=\"' + this.top5[o].id + '\" class=\"set-target ogicon-target\"></a> '),
+                            
+							t += '<span class=\"hud-main-color\">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + ']</span>',
+							t += '<span class=\"top5-mass-color\">[' + this.shortMassFormat(this.top5[o].mass) + ']</span> ' + this.escapeHTML(this.top5[o].nick) + '</li>');
                         this['top5pos'].innerHTML = t, i.play && i.playerMass && (e += i.playerMass, s++),
                             this.top5totalMass.textContent = this.shortMassFormat(e), this.top5totalPlayers.textContent = s;
                     }
@@ -2685,7 +2688,20 @@ var thelegendmodproject = function(t, e, i) {
                                 /* if (defaultmapsettings["showTargeting"]) {
                                   t = t + ('<a href="#" data-user-id="' + this.top5[o].id + '" class="set-target ogicon-target"></a> ');
                                 } */
-                                t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
+								var flag=false;
+                                for (var e = 0; e < legendmod.ghostCells.length; e++){ 
+								if (legendmod.leaderboard[e] && this.top5[o].nick==legendmod.leaderboard[e].nick){
+									flag=true;
+									t = t + ('<span class="hud-main-color">[' + window.legendmod3.calculateMapSector(window.predictedGhostCells[e].x, window.predictedGhostCells[e].y) + "]</span>");
+								}
+								}
+								if ( flag==false &&  this.top5[o].lbgpi >= 0){
+									t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
+								}	
+								else if ( flag==false && (this.calculateMapSector(this.top5[o].x, this.top5[o].y) == "C3" || legendmod.gameMode == ":party")){
+									t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
+								}
+								//t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
                                 t = t + ('<span class="top5-mass-color">[' + this.shortMassFormat(this.top5[o].mass) + "]</span> " + this.escapeHTML(this.top5[o].nick) + "</div></li>");
                             }
                         }
@@ -3784,7 +3800,8 @@ var thelegendmodproject = function(t, e, i) {
                         this.miniMapCtx.fillText(this.currentSector, 10, e),
                     this.miniMapSectors || this.drawMiniMapSectors(defaultSettings.sectorsX, defaultSettings.sectorsY, o, s, a),
                         this.miniMapCtx.save(),
-                        this.miniMapCtx.translate(9.5, a), ":battleroyale" === this.gameMode && ogarfooddrawer && ogarfooddrawer.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l), defaultmapsettings.showMiniMapGhostCells) {
+                        this.miniMapCtx.translate(9.5, a), ":battleroyale" === this.gameMode && ogarfooddrawer && ogarfooddrawer.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l), 
+						defaultmapsettings.showMiniMapGhostCells) {
                         var h = i.ghostCells;
                         this.miniMapCtx.beginPath();
                         var c = 0;
@@ -3840,7 +3857,16 @@ var thelegendmodproject = function(t, e, i) {
                         this.miniMapCtx.stroke();
 
                     }
-                    if (this.miniMapCtx.beginPath(), this.miniMapCtx.arc((i.playerX + r) * n, (i.playerY + l) * n, defaultSettings.miniMapMyCellSize, 0, this.pi2, false), this.miniMapCtx.closePath(), defaultSettings["miniMapMyCellStrokeSize"] > 0 && (this.miniMapCtx.lineWidth = defaultSettings["miniMapMyCellStrokeSize"], this.miniMapCtx.strokeStyle = defaultSettings["miniMapMyCellStrokeColor"], this.miniMapCtx.stroke()), this.miniMapCtx.fillStyle = defaultSettings["miniMapMyCellColor"], this.miniMapCtx.fill(), this.teamPlayers.length) {
+                    if (this.miniMapCtx.beginPath(), 
+					this.miniMapCtx.arc((i.playerX + r) * n, (i.playerY + l) * n, 
+					defaultSettings.miniMapMyCellSize, 0, this.pi2, false), 
+					this.miniMapCtx.closePath(), 
+					defaultSettings.miniMapMyCellStrokeSize > 0 && (this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize, 
+					this.miniMapCtx.strokeStyle = defaultSettings.miniMapMyCellStrokeColor, 
+					this.miniMapCtx.stroke()), 
+					this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor, 
+					this.miniMapCtx.fill(), 
+					this.teamPlayers.length) {
                         c = 0;
                         for (; c < this.teamPlayers.length; c++) {
                             this.teamPlayers[c].drawPosition(this.miniMapCtx, i.mapOffset, n, this.privateMiniMap, this.targetID, legendmod3.teamPlayers[c].color);
@@ -4466,6 +4492,10 @@ var thelegendmodproject = function(t, e, i) {
                     var s = this.getSLGVal(t);
                     var lbgpi = s.slice(0, 1);
                     this.teamPlayers[id].lbgpi = parseInt(lbgpi);
+					//if (this.top5[id]){
+					//this.top5[id].lbgpi = parseInt(lbgpi); //
+					//}
+					
                 }
             },
             'checkPlayerID': function(t) {
@@ -4577,7 +4607,12 @@ var thelegendmodproject = function(t, e, i) {
                         a = t.getUint32(13, true);
                     if (a > 360000) return;
                     var n = this.teamPlayers[i];
-                    n.x = s, n.y = o, n.mass = a, n.alive = true, n.updateTime = Date.now(), this.targeting && this.targetID && e == this.targetID && this.updateTarget(n.nick, n.skinURL, s, o, a, n.color);
+                    n.x = s, 
+					n.y = o, 
+					n.mass = a, 
+					n.alive = true, 
+					n.updateTime = Date.now(), 
+					this.targeting && this.targetID && e == this.targetID && this.updateTarget(n.nick, n.skinURL, s, o, a, n.color, n.lbgpi);
                 }
             },
             //Sonia3 Added 3 fuctions below
@@ -4612,7 +4647,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.setvnr(max);
                     //toastr.info('<b>[SERVER]:</b> Map fixed with LM players');
 					//toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + Premadeletter125);
-					console.log('[Legend mod Express] Map fixed with LM players ' + max);
+					console.log('[Legend mod Express] Map fixed with LM players. POS:', max);
                 }
             },
             'updateTeamPlayers': function() {
@@ -4639,7 +4674,8 @@ var thelegendmodproject = function(t, e, i) {
                             "y": e.y,
                             "mass": e.mass,
                             "color": e.color,
-                            "skin": e.skinURL
+                            "skin": e.skinURL,
+							"lbgpi": e.lbgpi							
                         });
                         if (!this.isChatUserMuted(e.id)) {
                             this.addChatUser(e.id, e.nick);
@@ -4827,7 +4863,10 @@ var thelegendmodproject = function(t, e, i) {
                 }
             },
             'setTargetingInfo': function() {
-                this.targeting ? ($('#set-targeting').addClass('active'), $('#target-status').show(), 2 != this.targetStatus && $('#target-summary').show()) : ($('#set-targeting').removeClass('active'), $('#target-summary, #target-status').hide());
+                this.targeting ? ($('#set-targeting').addClass('active'), 
+				$('#target-status').show(), 
+				2 != this.targetStatus && $('#target-summary').show()) : ($('#set-targeting').removeClass('active'), 
+				$('#target-summary, #target-status').hide());
             },
             'cancelTargeting': function() {
                 this.setTargetStatus(0);
@@ -4839,7 +4878,9 @@ var thelegendmodproject = function(t, e, i) {
                 var e = this.checkPlayerID(t);
                 if (null !== e) {
                     var i = this.teamPlayers[e];
-                    if (this.targetID = i.id, this.updateTarget(i.nick, i.skinURL, i.x, i.y, i.mass, i.color), !i.alive) return void this.setTargetStatus(2);
+                    if (this.targetID = i.id, this.updateTarget(i.nick, i.skinURL, i.x, i.y, i.mass, i.color, i.lbgpi), !i.alive){ 
+						return void this.setTargetStatus(2);
+					}
                     this.setTargetStatus(1);
                 } else this.setTargetStatus(0);
             },
@@ -4887,12 +4928,53 @@ var thelegendmodproject = function(t, e, i) {
                     }
                 null !== e && (t = e), null !== t ? this.setTarget(this.teamPlayers[t].id) : this.setTargetStatus(0);
             },
-            'updateTarget': function(t, e, o, a, n, r) {
-                i.setTargetPosition(o, a), this.targetNick !== t && (this.targetNick = t, $('#target-nick').html(this.escapeHTML(t))), $('#target-skin').css('background-color', r), e && this.targetSkinURL !== e && (this.customSkinsCache.hasOwnProperty(e + '_cached') ? ($('#target-skin img').attr('src', e), this.targetSkinURL = e) : $('#target-skin img').attr('src', 'https://jimboy3100.github.io/banners/static/img/blank.png')), $('#target-status').text('[' + this.shortMassFormat(n) + ']');
-                var l = this.calculateMapSector(o, a),
+            'updateTarget': function(t, e, o, a, n, r, f) {
+                i.setTargetPosition(o, a); 
+				if (this.targetNick !== t){
+					 this.targetNick = t; 
+					 $('#target-nick').html(this.escapeHTML(t))
+				}					 
+				$('#target-skin').css('background-color', r);
+				if (e){
+					if (this.targetSkinURL !== e){ 
+						if (this.customSkinsCache.hasOwnProperty(e + '_cached')){
+							$('#target-skin img').attr('src', e); 
+							this.targetSkinURL = e;
+						}
+						else{
+							$('#target-skin img').attr('src', 'https://jimboy3100.github.io/banners/static/img/blank.png')
+						}
+						
+					}					
+				}
+				$('#target-status').text('[' + this.shortMassFormat(n) + ']');
+                //var l = this.calculateMapSector(o, a);
+				var l;
                     //c = h.targetDistance + ': <span class=\"hud-main-color\">' + i.targetDistance + ' [' + l + ']</span>';
+								var flag=false;
+                                for (var j = 0; j < legendmod.ghostCells.length; j++){ 
+									if (legendmod.leaderboard[j] && this.targetNick==legendmod.leaderboard[j].nick){
+										flag=true;
+										l = window.legendmod3.calculateMapSector(window.predictedGhostCells[j].x, window.predictedGhostCells[j].y) 
+									}
+								};
+								if ( flag==false &&  f >= 0){
+									l = this.calculateMapSector(o, a);
+								}	
+								else if ( flag==false && (this.calculateMapSector(o, a) == "C3" || legendmod.gameMode == ":party")){
+									l = this.calculateMapSector(o, a);
+								}	
+								else if ( flag==false){
+									l = "Unknown";
+								};
 					c = Languageletter368 + ': <span class=\"hud-main-color\">' + i.targetDistance + ' [' + l + ']</span>';
-                i.play && (c += ' | ' + h['targetMass'] + ': <span class=\"hud-main-color\">' + this.shortMassFormat(n + i.playerMass) + '</span>'), $('#target-summary').html(c), 1 != this.targetStatus && this.setTargetStatus(1);
+                if (i.play){
+				c += ' | ' + h['targetMass'] + ': <span class=\"hud-main-color\">' + this.shortMassFormat(n + i.playerMass) + '</span>'
+				} 
+				$('#target-summary').html(c); 
+				if (1 != this.targetStatus){ 
+				this.setTargetStatus(1);
+				}
             },
             'updateQuest': function() {
                 this.showQuest && ':ffa' === this.gameMode && window.MC && window.MC.getQuestProgressLabel && (this.questHUD.textContent = window.MC.getQuestProgressLabel());
@@ -4903,7 +4985,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.setLang(),
                     this.setMenu(),
                     this.setUI(),
-                hudsetter && hudsetter.setTheme(),
+					hudsetter && hudsetter.setTheme(),
                     this.setShowQuickMenu(),
                     this.setShowSkinsPanel(),
                     this.setProfile(),
@@ -6640,7 +6722,7 @@ var thelegendmodproject = function(t, e, i) {
                         }
                     }
                 }
-                if ($("#ao2t-capture").length && $("#ao2t-capture").hasClass("connected")) { //if existed and connected and visible
+                //if ($("#ao2t-capture").length && $("#ao2t-capture").hasClass("connected")) { //if existed and connected and visible
 					for (var e = 0; e < legendmod.ghostCells.length; e++) {
 						window.predictedGhostCells[e]={};
 						window.predictedGhostCells[e] = legendmod.ghostCells[e];
@@ -6648,7 +6730,7 @@ var thelegendmodproject = function(t, e, i) {
 						window.predictedGhostCells[e].nick= legendmod.leaderboard[e].nick;
 						window.predictedGhostCells[e].isFriend= legendmod.leaderboard[e].isFriend;	
 					}
-                }				
+                //}				
 
             },
             'targetingLead': function(o) {
