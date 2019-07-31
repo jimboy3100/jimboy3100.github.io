@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.995 MEGA TEST
+// v1.997 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4397,83 +4397,83 @@ var thelegendmodproject = function(t, e, i) {
                 if (axis == 0) return x * (v.mapMaxX - v.mapMinX) + v.mapMinX;
                 else return x * (v.mapMaxY - v.mapMinY) + v.mapMinY;
             },
-            // 'sendSLGQinfo': function() {
-            //     return;
-            //     var msg = "";
-            //     var vlen = window.legendmod.viruses.length;
-            //     msg += this.packInt(vlen, 2);
-            //     for (var i = 0; i < vlen; i++) {
-            //         var z = window.legendmod.viruses[i];
-            //         msg += this.packInt(z.id, 4);
-            //         msg += this.packFloat(this.getrel(z.x, 0), 4);
-            //         msg += this.packFloat(this.getrel(z.y, 1), 4);
-            //         msg += this.packInt(~~(z.size), 2);
-            //     }
-            //     var cmsg = "";
-            //     var clen = 0;
-            //     var cells = window.legendmod.cells;
-            //     for (var i = 0; i < cells.length; i++) {
-            //         var z = cells[i];
-            //         if (!z.isVirus) {
-            //             cmsg += this.packInt(z.id, 4);
-            //             cmsg += this.packFloat(this.getrel(z.x, 0), 4);
-            //             cmsg += this.packFloat(this.getrel(z.y, 1), 4);
-            //             cmsg += this.packInt(~~(z.size), 2);
-            //             clen++;
-            //         }
-            //     }
-            //     msg += this.packInt(clen, 2);
-            //     msg += cmsg;
-            //
-            //     //Here should be food part
-            //
-            //     this.sendSLG("Q", msg);
+             'sendSLGQinfo': function() {
+                 //return;
+                 var msg = "";
+                 var vlen = window.legendmod.viruses.length;
+                 msg += this.packInt(vlen, 2);
+                 for (var i = 0; i < vlen; i++) {
+                     var z = window.legendmod.viruses[i];
+                     msg += this.packInt(z.id, 4);
+                     msg += this.packFloat(this.getrel(z.x, 0), 4);
+                     msg += this.packFloat(this.getrel(z.y, 1), 4);
+                     msg += this.packInt(~~(z.size), 2);
+                 }
+                 var cmsg = "";
+                 var clen = 0;
+                 var cells = window.legendmod.cells;
+                 for (var i = 0; i < cells.length; i++) {
+                     var z = cells[i];
+                     if (!z.isVirus) {
+                         cmsg += this.packInt(z.id, 4);
+                         cmsg += this.packFloat(this.getrel(z.x, 0), 4);
+                         cmsg += this.packFloat(this.getrel(z.y, 1), 4);
+                         cmsg += this.packInt(~~(z.size), 2);
+                         clen++;
+                     }
+                 }
+                 msg += this.packInt(clen, 2);
+                 msg += cmsg;
+            
+                 //Here should be food part
+            
+                 this.sendSLG("Q", msg);
 
-            // var today = new Date();
-            // var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()+ ":" + today.getMilliseconds();
-            // console.log("Package Sent:",time)
-            // },
+             var today = new Date();
+             var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()+ ":" + today.getMilliseconds();
+             //console.log("Package Sent:",time)
+             },
             'getSLGQinfo': function(t) {
-                return ;
-                // var ids = this.getSLGID(t);
-                // var id = this.checkPlayerID(ids);
-                // if (null == id) return;
-                // var msg = this.getSLGVal(t);
-                // //Get viruses
-                // var vlen = this.unpackInt(msg.slice(0, 1));
-                // msg = msg.slice(1);
-                // var temp = [];
-                // for (var i = 0; i < vlen; i++) {
-                //     var di = this.unpackInt(msg.slice(0, 2));
-                //     var fx = this.unpackFloat(msg.slice(2, 4));
-                //     var fy = this.unpackFloat(msg.slice(4, 6));
-                //     var ds = this.unpackInt(msg.slice(6, 7));
-                //     msg = msg.slice(7);
-                //     var x = this.getreal(fx, 0);
-                //     var y = this.getreal(fy, 1);
-                //     temp.push(new ogarbasicassembly(di, x, y, ds, null, false, true, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots))
-                // }
-                // this.teamPlayers[id].dvirs = temp;
-                //
-                // //Get normal cells
-                // var clen = this.unpackInt(msg.slice(0, 1));
-                // msg = msg.slice(1);
-                // var tempx = [];
-                // var cells = window.legendmod.cells;
-                // for (var i = 0; i < clen; i++) {
-                //     var di = this.unpackInt(msg.slice(0, 2));
-                //     var fx = this.unpackFloat(msg.slice(2, 4));
-                //     var fy = this.unpackFloat(msg.slice(4, 6));
-                //     var ds = this.unpackInt(msg.slice(6, 7));
-                //     msg = msg.slice(7);
-                //     var x = this.getreal(fx, 0);
-                //     var y = this.getreal(fy, 1);
-                //     tempx.push(new ogarbasicassembly(di, x, y, ds, null, false, false, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots))
-                // }
-                // this.teamPlayers[id].dcells = tempx;
-                // var today = new Date();
-                // var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + ":" + today.getMilliseconds();
-                // console.log("Package Received:", time)
+                //return ;
+                 var ids = this.getSLGID(t);
+                 var id = this.checkPlayerID(ids);
+                 if (null == id) return;
+                 var msg = this.getSLGVal(t);
+                 //Get viruses
+                 var vlen = this.unpackInt(msg.slice(0, 1));
+                 msg = msg.slice(1);
+                 var temp = [];
+                 for (var i = 0; i < vlen; i++) {
+                     var di = this.unpackInt(msg.slice(0, 2));
+                     var fx = this.unpackFloat(msg.slice(2, 4));
+                     var fy = this.unpackFloat(msg.slice(4, 6));
+                     var ds = this.unpackInt(msg.slice(6, 7));
+                     msg = msg.slice(7);
+                     var x = this.getreal(fx, 0);
+                     var y = this.getreal(fy, 1);
+                     temp.push(new ogarbasicassembly(di, x, y, ds, null, false, true, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots))
+                 }
+                 this.teamPlayers[id].dvirs = temp;
+                
+                 //Get normal cells
+                 var clen = this.unpackInt(msg.slice(0, 1));
+                 msg = msg.slice(1);
+                 var tempx = [];
+                 var cells = window.legendmod.cells;
+                 for (var i = 0; i < clen; i++) {
+                     var di = this.unpackInt(msg.slice(0, 2));
+                     var fx = this.unpackFloat(msg.slice(2, 4));
+                     var fy = this.unpackFloat(msg.slice(4, 6));
+                     var ds = this.unpackInt(msg.slice(6, 7));
+                     msg = msg.slice(7);
+                     var x = this.getreal(fx, 0);
+                     var y = this.getreal(fy, 1);
+                     tempx.push(new ogarbasicassembly(di, x, y, ds, null, false, false, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots))
+                 }
+                 this.teamPlayers[id].dcells = tempx;
+                 var today = new Date();
+                 var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + ":" + today.getMilliseconds();
+                 console.log("Package Received:", time)
 
                 //Here should be food part
             },
@@ -4672,7 +4672,11 @@ var thelegendmodproject = function(t, e, i) {
                 }
             },
             'updateTeamPlayers': function() {
-                this.sendPlayerPosition(), this.sendSuperLegendSDATA(), this.chatUsers = {}, this.top5 = []; //Sonia3
+                this.sendPlayerPosition(), 			
+				this.sendSuperLegendSDATA(),
+				this.sendSLGQinfo(),
+				this.chatUsers = {}, 
+				this.top5 = []; //Sonia3
                 this.updatevnr(); //Sonia3
                 if (window.legendmod.delstate >= 0) { //Sonia3
                     window.legendmod.delstate += 1; //Sonia3
@@ -4705,7 +4709,8 @@ var thelegendmodproject = function(t, e, i) {
                 }
                 this.top5.sort(function(row, conf) {
                     return conf.mass - row.mass;
-                }), this.displayTop5();
+                }), 
+				this.displayTop5();
 
             },
             'updateParties': function(t) {
