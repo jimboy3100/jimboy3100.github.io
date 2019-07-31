@@ -1,4 +1,4 @@
-//v8.9
+//v9.1
 window.EnvConfig = {};
 window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
 window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
@@ -166,8 +166,9 @@ function legendmaster(self) {
             master_url: window.EnvConfig.master_url.replace("https://", ""),
             endpoint_version: "v4",
             proto_version: "12.0.1",
-            client_version: 30406,
-            client_version_string: "3.4.6"
+            client_version: 30600,
+			//3.4.6
+            client_version_string: "3.6.0"
         };
     } else {
         var headers = {
@@ -176,8 +177,8 @@ function legendmaster(self) {
             master_url: "webbouncer-live-v7-0.agario.miniclippt.com",
             endpoint_version: "v4",
             proto_version: "12.0.1",
-            client_version: 30406,
-            client_version_string: "3.4.6"
+            client_version: 30600,
+            client_version_string: "3.6.0"
         };
     }
 	window.LMagarioheaders=headers;
