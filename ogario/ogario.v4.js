@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.991 MEGA TEST
+// v1.995 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2691,8 +2691,10 @@ var thelegendmodproject = function(t, e, i) {
 								var flag=false;
                                 for (var e = 0; e < legendmod.ghostCells.length; e++){ 
 								if (legendmod.leaderboard[e] && this.top5[o].nick==legendmod.leaderboard[e].nick){
-									flag=true;
-									t = t + ('<span class="hud-main-color">[' + window.legendmod3.calculateMapSector(window.predictedGhostCells[e].x, window.predictedGhostCells[e].y) + "]</span>");
+									if ( flag==false ){
+									t = t + ('<span class="hud-main-color">[' + window.legendmod3.calculateMapSector(window.predictedGhostCells[e].x, window.predictedGhostCells[e].y) + "]</span>");									
+									flag=true;	
+									}									
 								}
 								}
 								if ( flag==false &&  this.top5[o].lbgpi >= 0){
@@ -4563,8 +4565,26 @@ var thelegendmodproject = function(t, e, i) {
                         };
                         this.drawPosition = function(options, margin, mult, startcode, endcode, value) {
                             if (!(!this.alive || startcode && endcode && this.id != endcode)) {
+								/*
+								var isPositionOK=false;
+								var flag=false;
+								for (var e = 0; e < legendmod.ghostCells.length; e++){ 				
+									if (window.predictedGhostCells[e] && legendmod.leaderboard[e] && this.nick == legendmod.leaderboard[e].nick){
+										flag=true;	
+										this.lastX = window.predictedGhostCells[e].x;
+										this.lastY = window.predictedGhostCells[e].y;
+										isPositionOK = true;
+									}
+								}
+								if ( (flag==false && this.lbgpi >= 0) || legendmod.gameMode == ":party"){
+									isPositionOK = true;									
+								}	
+								
+								*/
                                 this.lastX = (29 * this.lastX + this.x) / 30;
                                 this.lastY = (29 * this.lastY + this.y) / 30;
+								
+								//if (isPositionOK){
                                 var w = (this.lastX + margin) * mult;
                                 var h = (this.lastY + margin) * mult;
                                 if (this.nick.length > 0) {
@@ -4590,6 +4610,7 @@ var thelegendmodproject = function(t, e, i) {
                                     options.fillStyle = value;
                                 }
                                 options.fill();
+								//}
                             }
                         };
                     }(i, o, l, a);
@@ -4954,8 +4975,11 @@ var thelegendmodproject = function(t, e, i) {
 								var flag=false;
                                 for (var j = 0; j < legendmod.ghostCells.length; j++){ 
 									if (legendmod.leaderboard[j] && this.targetNick==legendmod.leaderboard[j].nick){
-										flag=true;
+										
+										if ( flag==false ){
 										l = window.legendmod3.calculateMapSector(window.predictedGhostCells[j].x, window.predictedGhostCells[j].y) 
+										flag=true;
+										}
 									}
 								};
 								if ( flag==false &&  f >= 0){
