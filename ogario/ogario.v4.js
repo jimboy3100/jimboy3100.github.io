@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1003 MEGA TEST
+// v1.1005 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -269,7 +269,7 @@ var languagetexts = {
     'pl': {
         'start': 'Start',
         'settings': 'Ustawienia',
-        'restoreSettings': 'Przywróc ustawienia domy?lne',
+        'restoreSettings': 'Przywróc ustawienia domyślne',
         'animationGroup': 'Animacja',
         'zoomGroup': 'Zoom',
         'respGroup': 'Odrodzenie',
@@ -277,27 +277,27 @@ var languagetexts = {
         'massGroup': 'Masa',
         'skinsGroup': 'Skiny',
         'foodGroup': 'Pokarm',
-        'transparencyGroup': 'Przezroczysto?? / kolory',
+        'transparencyGroup': 'Przezroczystość / kolory',
         'gridGroup': 'Siatka / sektory',
         'miniMapGroup': 'Minimapa',
         'helpersGroup': 'Wspomagacze',
-        'mouseGroup': 'Sterowanie myszk?',
+        'mouseGroup': 'Sterowanie myszką',
         'hudGroup': 'HUD',
         'chatGroup': 'Czat',
         'statsGroup': 'Statystyki',
         'extrasGroup': 'Dodatkowe',
-        'noSkins': 'Wy??cz skiny',
-        'noNames': 'Wy??cz nazwy',
-        'noColors': 'Wy??cz kolory',
-        'showMass': 'Poka? mas?',
-        'skipStats': 'Pomi? statystyki po ?mierci',
-        'showQuest': 'Poka? zadanie (quest)',
+        'noSkins': 'Wyłącz skiny',
+        'noNames': 'Wyłącz nazwy',
+        'noColors': 'Wyłącz kolory',
+        'showMass': 'Pokaż masę',
+        'skipStats': 'Pomiń statystyki po śmierci',
+        'showQuest': 'Pokaż zadanie (quest)',
         'autoZoom': 'Auto zoom',
-        'animation': 'Opó?nienie animacji',
+        'animation': 'Opóźnienie animacji',
         'suckAnimation': 'Cell Eat [Sucking] Animation',
         'virusGlow': 'Virus Glow',
         'borderGlow': 'Border Glow',
-        'zoomSpeedValue2': 'Szybko?? zoomu',
+        'zoomSpeedValue2': 'Szybkość zoomu',
         'quickResp': 'Szybkie odrodzenie (klawisz)',
         'autoResp': 'Auto odrodzenie',
         'autoHideCellsInfo': 'Autoukrywanie nazw i masy',
@@ -306,19 +306,19 @@ var languagetexts = {
         'autoHideFood': 'Autoukrywanie pokarmu - masa',
         'autoHideFoodOnZoom': 'Autoukrywanie pokarmu - zoom',
         'optimizedNames': 'Zoptymalizowane nazwy',
-        'hideMyName': 'Ukryj w?asn? nazw?',
+        'hideMyName': 'Ukryj własną nazwę',
         'hideTeammatesNames': 'Ukryj nazwy graczy teamu',
         'optimizedMass': 'Optimized mass (+/-2%) & Merge timer BETA off\n Suggested to be enabled for Lag reduce',
         'shortMass': 'Skrócona masa (k)',
-        'virMassShots': 'Licznik strza?ów (wirusy)',
-        'hideMyMass': 'Ukryj w?asn? mas?',
-        'hideEnemiesMass': 'Ukryj mas? przeciwników',
+        'virMassShots': 'Licznik strzałów (wirusy)',
+        'hideMyMass': 'Ukryj własną masę',
+        'hideEnemiesMass': 'Ukryj masę przeciwników',
         'vanillaSkins': 'Podstawowe skiny',
-        'customSkins': 'W?asne skiny',
+        'customSkins': 'Własne skiny',
         'videoSkins': 'Video skins (.mp4 .webm .ogv)',
         'videoSkinsMusic': 'Sound from other\'s Video skins when both C3',
         'myTransparentSkin': 'Mój przezroczysty skin',
-        'myCustomColor': 'Mój w?asny kolor',
+        'myCustomColor': 'Mój własny kolor',
         'transparentCells': 'Przezroczyste kulki',
         'transparentViruses': 'Przezroczyste wirusy',
         'transparentSkins': 'Przezroczyste skiny',
@@ -327,49 +327,49 @@ var languagetexts = {
         'showMapBorders': 'Granice mapy',
         'showGhostCells': 'Duchy kulek (fps drop)',
         'showGhostCellsInfo': 'Ghost cells info (confusing)',
-        'showMiniMap': 'Poka? minimap?',
-        'showMiniMapGrid': 'Poka? siatk? minimapy',
-        'showMiniMapGuides': 'Poka? prowadnice na minimapie',
+        'showMiniMap': 'Pokaż minimapę',
+        'showMiniMapGrid': 'Pokaż siatkę minimapy',
+        'showMiniMapGuides': 'Pokaż prowadnice na minimapie',
         'showExtraMiniMapGuides': 'Show extra minimap guides',
-        'showMiniMapGhostCells': 'Poka? duchy kulek na minimapie',
+        'showMiniMapGhostCells': 'Pokaż duchy kulek na minimapie',
         'oneColoredTeammates': 'Jednokolorowi gracze',
         'optimizedFood': 'Zoptymalizowany pokarm',
         'rainbowFood': 'Kolorowy pokarm',
         'oppColors': 'Kolory przeciwników',
         'oppRings': 'Ringi przeciwników',
         'virColors': 'Kolory wirusów',
-        'splitRange': 'Zasi?g podzia?u',
-        'virusesRange': 'Zasi?g wirusów',
+        'splitRange': 'Zasięg podziału',
+        'virusesRange': 'Zasięg wirusów',
         'textStroke': 'Obwódki nazw i masy',
         'namesStroke': 'Obwódki nazw',
         'massStroke': 'Obwódki masy',
-        'cursorTracking': '?ledzenie kursora',
-        'teammatesInd': 'Wska?niki graczy teamu',
-        'mouseSplit': 'LPM - Split myszk?',
-        'mouseFeed': 'PPM - Feed myszk?',
-        'mouseInvert': 'Odwró? klawisze myszki',
-        'disableChat': 'Wy??cz czat',
+        'cursorTracking': 'Śledzenie kursora',
+        'teammatesInd': 'Wskaźniki graczy teamu',
+        'mouseSplit': 'LPM - Split myszką',
+        'mouseFeed': 'PPM - Feed myszką',
+        'mouseInvert': 'Odwróć klawisze myszki',
+        'disableChat': 'Wyłącz czat',
         'hideChat': 'Ukryj czat',
-        'chatSounds': 'Powiadomienia d?wi?kowe',
+        'chatSounds': 'Powiadomienia dźwiękowe',
         'chatEmoticons': 'Emotikony',
-        'showChatImages': 'Poka? obrazki na czacie',
-        'showChatVideos': 'Poka? filmiki na czacie',
-        'showChatBox': 'Czatbox zamiast wyskakuj?cych wiadomo?ci',
-        'messageSound': 'D?wi?k powiadomienia o wiadomo?ci',
-        'commandSound': 'D?wi?k powiadomienia o komendzie',
+        'showChatImages': 'Pokaż obrazki na czacie',
+        'showChatVideos': 'Pokaż filmiki na czacie',
+        'showChatBox': 'Czatbox zamiast wyskakujących wiadomości',
+        'messageSound': 'Dźwięk powiadomienia o wiadomości',
+        'commandSound': 'Dźwięk powiadomienia o komendzie',
         'virusSoundurl': 'Virus shot sound',
         'virusSound': 'Virus shot sound',
         'jellyPhisycs': 'Jelly physics',
-        'showTop5': 'Poka? top 5 teamu',
-        'showTargeting': 'Poka? namierzanie',
-        'showTime': 'Poka? aktualny czas',
-        'showLbData': 'Poka? mas? w topce',
-        'normalLb': 'Nag?ówek \"Topka\"',
-        'centeredLb': 'Wy?rodkowana topka',
+        'showTop5': 'Pokaż top 5 teamu',
+        'showTargeting': 'Pokaż namierzanie',
+        'showTime': 'Pokaż aktualny czas',
+        'showLbData': 'Pokaż masę w topce',
+        'normalLb': 'Nagłówek \"Topka\"',
+        'centeredLb': 'Wyśrodkowana topka',
         'fpsAtTop': 'Statystyki na górze',
-        'showStats': 'Poka? statystyki',
+        'showStats': 'Pokaż statystyki',
         'showStatsMass': 'Statystyki: Masa',
-        'showStatsSTE': 'Statystyki: Przedzia?y Masy',
+        'showStatsSTE': 'Statystyki: Przedziały Masy',
         'showStatsESTE': 'Statystyki: STE wroga',
         'showStatsEMTE': 'Statystyki: MTE wroga',
         'showStatsMTE': 'Statystyki: Nasze MTE',
@@ -380,73 +380,73 @@ var languagetexts = {
         'showStatsFPS': 'Statystyki: FPS',
         'blockPopups': 'Blokuj popupy (reklamy/sklep/zadanie)',
         'hotkeys': 'Skróty klawiszowe',
-        'hk-inst-assign': 'Aby ustawi? skrót klawiszowy kliknij na polu skrótu i naci?nij wybrany klawisz.',
-        'hk-inst-delete': 'Aby usun?? skrót klawiszowy kliknij na polu skrótu i naci?nij klawisz DELETE.',
-        'hk-inst-keys': 'Mo?liwe kombinacje skrótów klawiszowych z u?yciem klawiszy CTRL oraz ALT.',
+        'hk-inst-assign': 'Aby ustawić skrót klawiszowy kliknij na polu skrótu i naciśnij wybrany klawisz.',
+        'hk-inst-delete': 'Aby usunąć skrót klawiszowy kliknij na polu skrótu i naciśnij klawisz DELETE.',
+        'hk-inst-keys': 'Możliwe kombinacje skrótów klawiszowych z użyciem klawiszy CTRL oraz ALT.',
         'hk-feed': 'Feed',
         'hk-macroFeed': 'Szybki feed',
-        'hk-split': 'Podzia?',
-        'hk-doubleSplit': 'Podwójny podzia?',
-        'hk-split16': 'Podzia? na 16',
+        'hk-split': 'Podział',
+        'hk-doubleSplit': 'Podwójny podział',
+        'hk-split16': 'Podział na 16',
         'hk-pause': 'Pauza kulki',
-        'hk-showTop5': 'Poka?/ukryj top 5 teamu',
-        'hk-showTime': 'Poka?/ukryj aktualny czas',
-        'hk-showSplitRange': 'Poka?/ukryj zasi?g podzia?u',
-        'hk-showSplitInd': 'Poka?/ukryj zasi?g podzia?u z ringami',
-        'hk-showTeammatesInd': 'Poka?/ukryj wska?niki graczy teamu',
-        'hk-showOppColors': 'Poka?/ukryj kolory przeciwników',
-        'hk-toggleSkins': 'Prze??cz skiny (w?asne/standardowe)',
-        'hk-showSkins': 'Poka?/ukryj skiny',
-        'hk-transparentSkins': 'W??cz/wy??cz przezroczyste skiny',
-        'hk-showStats': 'Poka?/ukryj statystyki gry',
-        'hk-toggleCells': 'Prze??cz kulk? (najmniejsza/najwi?ksza)',
-        'hk-showFood': 'Poka?/ukryj pokarm',
-        'hk-showGrid': 'Poka?/ukryj siatk?',
-        'hk-showMiniMapGuides': 'Poka?/ukryj prowadnice na minimapie',
-        'hk-hideChat': 'Poka?/ukryj czat',
-        'hk-showHUD': 'Poka?/ukryj HUD',
-        'hk-copyLb': 'Kopiuj topk?',
-        'hk-showLb': 'Poka?/ukryj topk?',
-        'hk-toggleAutoZoom': 'W??cz/wy??cz auto zoom',
+        'hk-showTop5': 'Pokaż/ukryj top 5 teamu',
+        'hk-showTime': 'Pokaż/ukryj aktualny czas',
+        'hk-showSplitRange': 'Pokaż/ukryj zasięg podziału',
+        'hk-showSplitInd': 'Pokaż/ukryj zasięg podziału z ringami',
+        'hk-showTeammatesInd': 'Pokaż/ukryj wskaźniki graczy teamu',
+        'hk-showOppColors': 'Pokaż/ukryj kolory przeciwników',
+        'hk-toggleSkins': 'Przełącz skiny (własne/standardowe)',
+        'hk-showSkins': 'Pokaż/ukryj skiny',
+        'hk-transparentSkins': 'Włącz/wyłącz przezroczyste skiny',
+        'hk-showStats': 'Pokaż/ukryj statystyki gry',
+        'hk-toggleCells': 'Przełącz kulkę (najmniejsza/największa)',
+        'hk-showFood': 'Pokaż/ukryj pokarm',
+        'hk-showGrid': 'Pokaż/ukryj siatkę',
+        'hk-showMiniMapGuides': 'Pokaż/ukryj prowadnice na minimapie',
+        'hk-hideChat': 'Pokaż/ukryj czat',
+        'hk-showHUD': 'Pokaż/ukryj HUD',
+        'hk-copyLb': 'Kopiuj topkę',
+        'hk-showLb': 'Pokaż/ukryj topkę',
+        'hk-toggleAutoZoom': 'Włącz/wyłącz auto zoom',
         'hk-resetZoom': 'Reset zoomu',
         'hk-zoomLevel': 'Zoom - poziom',
-        'hk-toggleDeath': 'Prze??cz miejsce ?mierci',
-        'hk-clearChat': 'Poka? histori? czatu / Czy?? czat',
-        'hk-showBgSectors': 'Poka?/ukryj sektory w tle',
-        'hk-hideBots': 'Poka?/ukryj ma?e boty',
-        'hk-showNames': 'Poka?/ukryj nazwy',
-        'hk-hideTeammatesNames': 'Poka?/ukryj nazwy graczy teamu',
-        'hk-showMass': 'Poka?/ukryj mas?',
-        'hk-showMiniMap': 'Poka?/ukryj minimap?',
-        'hk-chatMessage': 'Napisz wiadomo?? na czacie',
+        'hk-toggleDeath': 'Przełącz miejsce śmierci',
+        'hk-clearChat': 'Pokaż historię czatu / Czyść czat',
+        'hk-showBgSectors': 'Pokaż/ukryj sektory w tle',
+        'hk-hideBots': 'Pokaż/ukryj małe boty',
+        'hk-showNames': 'Pokaż/ukryj nazwy',
+        'hk-hideTeammatesNames': 'Pokaż/ukryj nazwy graczy teamu',
+        'hk-showMass': 'Pokaż/ukryj masę',
+        'hk-showMiniMap': 'Pokaż/ukryj minimapę',
+        'hk-chatMessage': 'Napisz wiadomość na czacie',
         'hk-quickResp': 'Szybkie odrodzenie (respawn)',
-        'hk-autoResp': 'W??cz/wy?acz auto odrodzenie',
-        'hk-switchServerMode': 'Prze??cz serwer [publiczny/prywatny]',
-        'hk-showTargeting': 'Poka?/ukryj panel namierzania',
-        'hk-voiceChat': 'G?os do tekstu',
+        'hk-autoResp': 'Włącz/wyłacz auto odrodzenie',
+        'hk-switchServerMode': 'Przełącz serwer [publiczny/prywatny]',
+        'hk-showTargeting': 'Pokaż/ukryj panel namierzania',
+        'hk-voiceChat': 'Głos do tekstu',
         'hk-GhostCellsInfo': 'Show ghost cells information',
         'hk-Autoplay': 'Auto Play',
-        'hk-setTargeting': 'W??cz/wy??cz namierzanie (?ledzenie)',
+        'hk-setTargeting': 'Włącz/wyłącz namierzanie (śledzenie)',
         'hk-cancelTargeting': 'Zatrzymaj namierzanie',
-        'hk-changeTarget': 'Zmie? cel',
-        'hk-privateMiniMap': 'Poka? cel na minimapie',
-        'hk-showQuest': 'Poka?/ukryj zadanie',
+        'hk-changeTarget': 'Zmień cel',
+        'hk-privateMiniMap': 'Pokaż cel na minimapie',
+        'hk-showQuest': 'Pokaż/ukryj zadanie',
         'commands': 'Komendy',
         'comm1': 'Feeduj!',
-        'comm2': 'Dziel si?!',
+        'comm2': 'Dziel się!',
         'comm3': 'Pomocy na %currentSector%!',
         'comm4': 'Wróg na %currentSector%!',
         'comm5': 'Zabij pomocnika!',
         'comm6': 'Strzel z wirusa!',
         'comm7': 'Zjedz wirusa!',
-        'comm8': 'Zjeba?em, wybacz.',
-        'comm9': 'Ja pierdol?...',
-        'comm0': 'Kurwa ma?!',
+        'comm8': 'Zjebałem, wybacz.',
+        'comm9': 'Ja pierdolę...',
+        'comm0': 'Kurwa mać!',
         'comm10': 'Trick!',
         'comm11': 'Lewo!',
         'comm12': 'Góra!',
         'comm13': 'Prawo!',
-        'comm14': 'Dó?!',
+        'comm14': 'Dół!',
         'comm15': 'Fake Tricksplit',
         'comm16': 'Popsplit',
         'comm17': 'Double Popsplit',
@@ -464,15 +464,15 @@ var languagetexts = {
         'comm29': 'Presplit',
         'comm30': 'Party Run tricks',
         'saveComm': 'Zapisz komendy',
-        'theme': 'Wygl?d',
-        'restoreThemeSettings': 'Przywróc ustawienia domy?lne wygl?du',
+        'theme': 'Wygląd',
+        'restoreThemeSettings': 'Przywróc ustawienia domyślne wyglądu',
         'basicTheming': 'Podstawowy',
         'themePreset': 'Motyw',
         'themeType': 'Typ motywu',
         'darkTheme': 'Ciemny motyw',
         'lightTheme': 'Jasny motyw',
-        'mainColor': 'Kolor g?ówny',
-        'bgColor': 'T?o',
+        'mainColor': 'Kolor główny',
+        'bgColor': 'Tło',
         'bordersColor': 'Granice mapy',
         'gridColor': 'Siatka',
         'sectorsColor': 'Czcionka sektorów',
@@ -496,34 +496,34 @@ var languagetexts = {
         'massScale': 'Skala masy',
         'virMassScale': 'Skala masy wirusów',
         'strokeScale': 'Skala obwódek tekstu',
-        'foodSize': 'Wielko?? pokarmu',
-        'bordersWidth': 'Grubo?? granic mapy',
-        'sectorsWidth': 'Grubo?? siatki sektorów',
+        'foodSize': 'Wielkość pokarmu',
+        'bordersWidth': 'Grubość granic mapy',
+        'sectorsWidth': 'Grubość siatki sektorów',
         'sectorsFontSize': 'Rozmiar czcionki sektorów',
-        'cellsAlpha': 'Przezroczysto?? kulek',
-        'skinsAlpha': 'Przezroczysto?? skinów',
-        'virusAlpha': 'Przezroczysto?? wirusów',
-        'textAlpha': 'Przezroczysto?? nazw i masy',
-        'virusStrokeSize': 'Grubo?? obwódki wirusów',
+        'cellsAlpha': 'Przezroczystość kulek',
+        'skinsAlpha': 'Przezroczystość skinów',
+        'virusAlpha': 'Przezroczystość wirusów',
+        'textAlpha': 'Przezroczystość nazw i masy',
+        'virusStrokeSize': 'Grubość obwódki wirusów',
         "virusGlowSize": "Virus Glow Size",
-        'teammatesIndColor': 'Wska?nik gracza',
-        'cursorTrackingColor': '?ledzenie kursora',
-        'splitRangeColor': 'Zasi?g podzia?u',
-        'qdsplitRange': 'Zasi?g szybkiego podwójnego podzia?u', //Sonia2
-        'sdsplitRange': 'Zasi?g powolnego podwójnego podzia?u', //Sonia2
+        'teammatesIndColor': 'Wskaźnik gracza',
+        'cursorTrackingColor': 'Śledzenie kursora',
+        'splitRangeColor': 'Zasięg podziału',
+        'qdsplitRange': 'Zasięg szybkiego podwójnego podziału', //Sonia2
+        'sdsplitRange': 'Zasięg powolnego podwójnego podziału', //Sonia2
         'enemyBSTEDColor': 'Kolor W2STE wroga', //Sonia2
         'enemyBSTEColor': 'Kolor WSTE wroga', //Sonia2
-        'enemyBColor': 'Kolor wi?kszego wroga', //Sonia2
+        'enemyBColor': 'Kolor większego wroga', //Sonia2
         'enemySColor': 'Kolor mniejszego wroga', //Sonia2
         'enemySSTEColor': 'Kolor MSTE wroga', //Sonia2
         'enemySSTEDColor': 'Kolor M2STE wroga', //Sonia2
         'safeAreaColor': 'Bezpieczna strefa',
-        'dangerAreaColor': 'Strefa zagro?enia',
+        'dangerAreaColor': 'Strefa zagrożenia',
         'ghostCellsColor': 'Duchy kulek',
-        'ghostCellsAlpha': 'Przezroczysto?? duchów kulek',
+        'ghostCellsAlpha': 'Przezroczystość duchów kulek',
         'menuTheming': 'Menu',
         'menuPreset': 'Motyw menu',
-        'menuMainColor': 'Kolor g?ówny',
+        'menuMainColor': 'Kolor główny',
         'menuBtnTextColor': 'Tekst przycisku',
         'menuPanelColor': 'Panel',
         'menuPanelColor2': 'Panel (2)',
@@ -537,11 +537,11 @@ var languagetexts = {
         'btn3Color2': 'Przycisk #3 (2)',
         'btn4Color': 'Przycisk #4',
         'btn4Color2': 'Przycisk #4 (2)',
-        'menuBg': 'Grafika t?a panelu',
-        'menuOpacity': 'Przezroczysto??',
+        'menuBg': 'Grafika tła panelu',
+        'menuOpacity': 'Przezroczystość',
         'hudTheming': 'HUD',
-        'hudMainColor': 'Kolor g?ówny',
-        'hudColor': 'T?o',
+        'hudMainColor': 'Kolor główny',
+        'hudColor': 'Tło',
         'hudTextColor': 'Tekst',
         'statsHudColor': 'Statystyki',
         'timeHudColor': 'Czas',
@@ -551,15 +551,15 @@ var languagetexts = {
         'hudFont': 'Czcionka HUD',
         'hudScale': 'Skala HUD',
         'chatTheming': 'Czat',
-        'messageColor': 'T?o wiadomo?ci',
-        'messageTextColor': 'Tekst wiadomo?ci',
-        'messageTimeColor': 'Czas wiadomo?ci',
-        'messageNickColor': 'Nick wiadomo?ci',
-        'commandsColor': 'T?o komendy',
+        'messageColor': 'Tło wiadomości',
+        'messageTextColor': 'Tekst wiadomości',
+        'messageTimeColor': 'Czas wiadomości',
+        'messageNickColor': 'Nick wiadomości',
+        'commandsColor': 'Tło komendy',
         'commandsTextColor': 'Tekst komendy',
         'commandsTimeColor': 'Czas komendy',
         'commandsNickColor': 'Nick komendy',
-        'chatBoxColor': 'T?o czatboxu',
+        'chatBoxColor': 'Tło czatboxu',
         'chatScale': 'Skala czatu',
         'miniMapTheming': 'Minimapa',
         'miniMapSectorsColor': 'Sektory',
@@ -570,77 +570,77 @@ var languagetexts = {
         'miniMapMyCellColor': 'Moja kulka',
         'miniMapMyCellStrokeColor': 'Obwódka mojej kulki',
         'miniMapTeammatesColor': 'Gracze',
-        'miniMapDeathLocationColor': 'Miejsce ?mierci',
+        'miniMapDeathLocationColor': 'Miejsce śmierci',
         'miniMapFont': 'Czcionka minimapy',
         'miniMapNickFont': 'Czcionka nicku',
-        'miniMapWidth': 'Szeroko?? minimapy',
-        'miniMapSectorsOpacity': 'Przezroczysto?? sektorów',
+        'miniMapWidth': 'Szerokość minimapy',
+        'miniMapSectorsOpacity': 'Przezroczystość sektorów',
         'miniMapNickSize': 'Rozmiar nicku',
-        'miniMapNickStrokeSize': 'Grubo?? obwódki nicku',
-        'miniMapMyCellSize': 'Wielko?? mojej kulki',
-        'miniMapMyCellStrokeSize': 'Grubo?? obwódki mojej kulki',
-        'miniMapTeammatesSize': 'Wielko?? graczy',
+        'miniMapNickStrokeSize': 'Grubość obwódki nicku',
+        'miniMapMyCellSize': 'Wielkość mojej kulki',
+        'miniMapMyCellStrokeSize': 'Grubość obwódki mojej kulki',
+        'miniMapTeammatesSize': 'Wielkość graczy',
         'miniMapGhostCellsColor': 'Duchy kulek',
-        'miniMapGhostCellsAlpha': 'Przezroczysto?? duchów kulek',
+        'miniMapGhostCellsAlpha': 'Przezroczystość duchów kulek',
         'imagesTheming': 'Grafika / kursory',
-        'customBackground': 'Grafika t?a',
+        'customBackground': 'Grafika tła',
         'customCursor': 'Grafika kursora',
-        'hideChatMsgA': 'Czat zosta? w??czony!',
-        'hideChatMsgB': 'Czat zosta? ukryty!',
-        'showSkinsMsgA': 'Skiny zosta?y w??czone!',
-        'showSkinsMsgB': 'Skiny zosta?y ukryte!',
-        'hideSmallBotsMsgA': 'Ma?e boty sta?y si? widoczne!',
-        'hideSmallBotsMsgB': 'Ma?e boty zosta?y ukryte!',
-        'autoRespMsgA': 'Auto odrodzenie zosta?o w??czone!',
-        'autoRespMsgB': 'Auto odrodzenie zosta?o wy??czone!',
-        'autoZoomMsgA': 'Auto zoom zosta? w??czony!',
-        'autoZoomMsgB': 'Auto zoom zosta? wy??czony!',
+        'hideChatMsgA': 'Czat został włączony!',
+        'hideChatMsgB': 'Czat został ukryty!',
+        'showSkinsMsgA': 'Skiny zostały włączone!',
+        'showSkinsMsgB': 'Skiny zostały ukryte!',
+        'hideSmallBotsMsgA': 'Małe boty stały się widoczne!',
+        'hideSmallBotsMsgB': 'Małe boty zostały ukryte!',
+        'autoRespMsgA': 'Auto odrodzenie zostało włączone!',
+        'autoRespMsgB': 'Auto odrodzenie zostało wyłączone!',
+        'autoZoomMsgA': 'Auto zoom został włączony!',
+        'autoZoomMsgB': 'Auto zoom został wyłączony!',
         //                   'targetNotSet': 'Brak celu',
         'targetNotSet': '',
-        'targetDead': 'Nie ?yje',
+        'targetDead': 'Nie żyje',
         'targetDistance': 'Dystans',
         'targetMass': 'Masa razem',
         'totalPartyPlayers': '',
         'totalPartyMass': '',
-        'exportImport': 'Eksport / import ustawie?',
+        'exportImport': 'Eksport / import ustawień',
         'exportSettings': 'Eksportuj ustawienia',
-        'exportInfo': 'Aby wyeksportowa? wybrane ustawienia skopiuj poni?szy kod i zapisz go w pliku tekstowym z kodowaniem Unicode.',
+        'exportInfo': 'Aby wyeksportować wybrane ustawienia skopiuj poniższy kod i zapisz go w pliku tekstowym z kodowaniem Unicode.',
         'importSettings': 'Importuj ustawienia',
-        'importInfo': 'Aby zaimportowa? wybrane ustawienia wklej poni?ej wyeksportowany wcze?niej kod i naci?nij przycisk \"Importuj ustawienia\".',
+        'importInfo': 'Aby zaimportować wybrane ustawienia wklej poniżej wyeksportowany wcześniej kod i naciśnij przycisk \"Importuj ustawienia\".',
         'profile': 'Profil',
         'profiles': 'Profile',
         'skins': 'Skiny',
         'moreSkins': 'Dodaj skiny',
-        'thanks': 'Dzi?ki Awesome!',
+        'thanks': 'Dzięki Awesome!',
         'saveSett': 'Zapisz ustawienia',
         'saved': 'Zapisano!',
         'resetSett': 'Resetuj ustawienia',
         'close': 'Zamknij',
-        'enterChatMsg': 'Napisz wiadomo??',
+        'enterChatMsg': 'Napisz wiadomość',
         'activeParties': 'Aktywne party',
         'noActiveParties': 'Brak aktywnych party ;(',
         'playlist': 'Playlista',
         'pause': 'PAUZA!',
-        'visit': 'Odwied?',
-        'exit': 'Legend mod Express: Czy na pewno chcesz opu?cic gr??',
-        'blockWarn': 'UWAGA! Popupy zosta?y zablokowane w ustawieniach.',
+        'visit': 'Odwiedź',
+        'exit': 'Legend mod Express: Czy na pewno chcesz opuścic grę?',
+        'blockWarn': 'UWAGA! Popupy zostały zablokowane w ustawieniach.',
         'unblockPopups': 'Odblokuj tymczasowo',
         'mass': 'Masa',
         'score': 'Top',
         'leaderboard': 'Topka',
-        'user': 'U?ytkownik',
-        'userMuted': 'U?ytkownik %user% zosta? wyciszony.',
-        'userUnmuted': 'Wy??czono wyciszenie u?ytkownika %user%.',
+        'user': 'Użytkownik',
+        'userMuted': 'Użytkownik %user% został wyciszony.',
+        'userUnmuted': 'Wyłączono wyciszenie użytkownika %user%.',
         'mute': 'Wycisz',
-        'unmute': 'Wy??cz wyciszenie',
-        'mutedUsers': 'Wyciszeni u?ytkownicy',
-        'activeUsers': 'Aktywni u?ytkownicy',
-        'showActiveUsers': 'Poka? aktywnych u?ytkowników',
+        'unmute': 'Wyłącz wyciszenie',
+        'mutedUsers': 'Wyciszeni użytkownicy',
+        'activeUsers': 'Aktywni użytkownicy',
+        'showActiveUsers': 'Pokaż aktywnych użytkowników',
         'none': 'Brak',
-        'sounds': 'D?wi?ki',
-        'page_back_button': 'Wró?',
+        'sounds': 'Dźwięki',
+        'page_back_button': 'Wróć',
         'page_create_party': 'Stwórz party',
-        'page_join_party': 'Do??cz',
+        'page_join_party': 'Dołącz',
         'page_login_and_play': 'Zaloguj',
         'page_logout': 'Wyloguj',
         'page_menu_login_facebook': 'Zaloguj z Facebook',
@@ -648,9 +648,9 @@ var languagetexts = {
         'page_menu_main_free_coins': 'Darmowe Monety',
         'page_menu_main_gifts': 'Prezenty',
         'page_menu_main_dailyquests': 'Zadania',
-        'page_party_join_error': 'Nie mo?na do??czy? do tego party. Upewnij si?, ?e token jest prawid?owy lub stwórz nowy.',
+        'page_party_join_error': 'Nie można dołączyć do tego party. Upewnij się, że token jest prawidłowy lub stwórz nowy.',
         'page_play': 'Graj',
-        'page_play_as_guest': 'Graj jako go??',
+        'page_play_as_guest': 'Graj jako gość',
         'page_shop': 'Sklep',
         'page_spectate': 'Obserwuj',
         'page_stats': 'Statystyki'
@@ -1728,7 +1728,7 @@ var defaultmapsettings = {
 var ogario1PlayerProfiles = [];
 var ogarcopythelb = {
     'nick': 'I<3Legendmod',
-    'clanTag': '?',
+    'clanTag': 'Ⓜ',
     'skinURL': '',
     'color': defaultSettings.mainColor
 };
@@ -2579,22 +2579,22 @@ var thelegendmodproject = function(t, e, i) {
                             t += ' | ' + i.playerSplitCells + '/16'
                         }
                         if (defaultmapsettings.showStatsESTE && i.BSTE) {
-                            t += ' | ????: ' + i.BSTE //Sonia6
+                            t += ' | ◎◎➛◉: ' + i.BSTE //Sonia6
                         }
                         if (defaultmapsettings.showStatsEMTE && i.BMTE) {
-                            t += ' | ???: ' + i.BMTE //Sonia6
+                            t += ' | ◎➛◉: ' + i.BMTE //Sonia6
                         }
                         if (defaultmapsettings.showStatsMTE && i.MTE) {
-                            t += ' | ???: ' + i.MTE //Sonia6
+                            t += ' | ◉➛◎: ' + i.MTE //Sonia6
                         }
                         if (defaultmapsettings.showStatsSTE && i.STE) {
-                            t += ' | ????: ' + i.STE //Sonia6
+                            t += ' | ◉◉➛◎: ' + i.STE //Sonia6
                         }
                         if (defaultmapsettings.showStatsTTE && i.TTE) {
-                            t += ' | ???: ' + i.TTE //Sonia6
+                            t += ' | ◉➚◉: ' + i.TTE //Sonia6
                         }
                         if (defaultmapsettings.showStatsPTE && i.PTE) {
-                            t += ' | ???: ' + i.PTE //Sonia6
+                            t += ' | ➚◎➘: ' + i.PTE //Sonia6
                         }
                         if (defaultmapsettings.showStatsFPS) {
                             t += ' | '
@@ -4220,7 +4220,7 @@ var thelegendmodproject = function(t, e, i) {
                         this.getSuperLegendSDATA(s);
                         break;
                     case "Q":
-                        this.getSLGQinfo(s);
+                        //this.getSLGQinfo(s);
                         break;
                 }
             },
@@ -4604,7 +4604,7 @@ var thelegendmodproject = function(t, e, i) {
                                     options.font = defaultSettings.miniMapNickFontWeight + " " + defaultSettings.miniMapNickSize + "px " + defaultSettings.miniMapNickFontFamily;
                                     options.textAlign = "center";
                                     var namead = "";
-                                    if (this.lbgpi < 0) namead += " [?]";
+                                    if (this.lbgpi < 0) namead += " [ℵ]";
                                     if (defaultSettings.miniMapNickStrokeSize > 0) {
                                         options.lineWidth = defaultSettings.miniMapNickStrokeSize;
                                         options.strokeStyle = defaultSettings.miniMapNickStrokeColor;
@@ -4687,7 +4687,7 @@ var thelegendmodproject = function(t, e, i) {
             'updateTeamPlayers': function() {
                 this.sendPlayerPosition(), 			
 				this.sendSuperLegendSDATA(),
-				this.sendSLGQinfo(),
+				//this.sendSLGQinfo(),
 				this.chatUsers = {}, 
 				this.top5 = []; //Sonia3
                 this.updatevnr(); //Sonia3
@@ -4807,8 +4807,8 @@ var thelegendmodproject = function(t, e, i) {
                 /*return String(t).replace(/\&lt\;3/g, '<3').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\))/g, function(t) {
                     return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + d[t] + '\" alt=\"' + t + '\" class=\"emoticon\">';
                 });*/
-                //return String(t).replace(/\&lt\;3/g, '<3').replace(/?/g, '? Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(t) {
-                return String(t).replace(/\&lt\;3/g, '<3').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(t) {
+                //return String(t).replace(/\&lt\;3/g, '<3').replace(/℄/g, '℄ Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(t) {
+                return String(t).replace(/\&lt\;3/g, '<3').replace(/℄/g, '℄ Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(t) {
                     //console.log(d[t]);
                     return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + emoticonicons[t] + '\" alt=\"' + t + '\" class=\"emoticon\">';
                 });
@@ -5355,9 +5355,9 @@ var thelegendmodproject = function(t, e, i) {
                     curRl += this.pointsVel[i];
                     curRl = Math.max(curRl, 0);
 
-                    curRl = (9 * curRl + this.size) / 10; //??????
+                    curRl = (9 * curRl + this.size) / 10; //собака
 
-                    curP.rl = (prevRl + this.size + 8 * curRl) / 10; //??????
+                    curP.rl = (prevRl + this.size + 8 * curRl) / 10; //собака
 
                     //curP.rl = (prevRl + nextRl + 8 * curRl) / 10;
 
@@ -5828,7 +5828,7 @@ var thelegendmodproject = function(t, e, i) {
                                 try {
                                     style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y);
                                 } catch (e) {}
-                            } else if (this.targetNick.includes("???Jimboy3100") || this.targetNick.includes("Q??????   ?????") || this.targetNick.includes("???     ???????") || this.targetNick.includes("???????? ????")) {
+                            } else if (this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("Qᴜᴇᴛᴢᴀʟ   ᶜᵒᵃᵗˡ") || this.targetNick.includes("℄🌀     ᑕᖇᗩƵƳ😈") || this.targetNick.includes("℄🌀ᔕᕼᗴᖇᗴ ᛕᕼᗩᑎ")) {
                                 try {
                                     style.drawImage(cimg2, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y);
                                     //style.translate(this.x - y * 2, this.y - y * 2, this.y - y * 2);
@@ -5839,15 +5839,15 @@ var thelegendmodproject = function(t, e, i) {
                                 } catch (e) {}
                             }
                             //style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), s && (style.globalAlpha = value, s = false)),
-                            //(this.targetNick.includes("???JustWatchPro")) && (this.oldAlpha=style.globalAlpha, style.globalAlpha = 0.1, style.drawImage(cimg7, this.x - y * 4, this.y - y * 4, 8 * y, 8 * y), style.globalAlpha=this.oldAlpha), //cimg7
+                            //(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (this.oldAlpha=style.globalAlpha, style.globalAlpha = 0.1, style.drawImage(cimg7, this.x - y * 4, this.y - y * 4, 8 * y, 8 * y), style.globalAlpha=this.oldAlpha), //cimg7
                             //((defaultmapsettings.videoSkins && (node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) && checkVideos(node2.src, this.targetNick)),
                             //(node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) && style.drawImage(window.videoSkinPlayer[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) ),
                             //node2.src.includes(".mp4") && (style.drawImage(node2, this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y)),
                             //!node2.src.includes(".mp4") && !node2.src.includes(".webm") && !node2.src.includes(".ogv") && style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y),
-                            //(this.targetNick.includes("???JustWatchPro")) && (style.drawImage(cimg6, this.x - y, this.y - y, 2 * y, 2 * y)),
-                            //this.targetNick.includes("?") && (style.rotate(LM.cAngle1)) && (style.drawImage(cimg2, this.x - y * 1.5, this.y - y * 1.5, 3 * y, 3 * y)) &&
+                            //(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (style.drawImage(cimg6, this.x - y, this.y - y, 2 * y, 2 * y)),
+                            //this.targetNick.includes("℄") && (style.rotate(LM.cAngle1)) && (style.drawImage(cimg2, this.x - y * 1.5, this.y - y * 1.5, 3 * y, 3 * y)) &&
                             //(this.targetNick.includes("The Dying Light")) && (style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)),
-                            //(this.targetNick.includes("???Jimboy3100") || this.targetNick.includes("???     ???????") || this.targetNick.includes("???????? ????")) &&
+                            //(this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("℄🌀     ᑕᖇᗩƵƳ😈") || this.targetNick.includes("℄🌀ᔕᕼᗴᖇᗴ ᛕᕼᗩᑎ")) &&
 
                             //(LM.cAngle += .007), console.log(LM.cAngle),
                             //style.rotate(LM.cAngle1),
@@ -6870,8 +6870,7 @@ var thelegendmodproject = function(t, e, i) {
                     }
                     return e;
                 };
-                this.time = Date.now(), 
-				this.removePlayerCell = false;
+                this.time = Date.now(), this.removePlayerCell = false;
                 var o = t.readUInt16LE(i);
                 i += 2;
                 for (var a = 0; a < o; a++) {
