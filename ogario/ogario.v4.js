@@ -118,7 +118,8 @@ function checkVideos3(o) {
 window.agarversion = "v12/2168/";
 //window.agarversion="v12/1922/";
 
-window.getLatestID = window.localStorage.getItem('getLatestID');
+//window.getLatestID = window.localStorage.getItem('getLatestID');
+window.getLatestID = "2230";
 window.getLatestconfigVersion = window.localStorage.getItem('EnvConfig.configVersion');
 if (window.getLatestID != null && window.getLatestconfigVersion != null && window.getLatestID != undefined && window.getLatestconfigVersion != undefined) {
     window.agarversion = "v" + window.getLatestconfigVersion + "/" + window.getLatestID + "/";
