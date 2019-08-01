@@ -165,7 +165,7 @@ function legendmaster(self) {
             gplus_client_id: window.EnvConfig.google_client_id,
             master_url: window.EnvConfig.master_url.replace("https://", ""),
             endpoint_version: "v4",
-            proto_version: "12.0.1",
+            proto_version: "15.0.0",
             client_version: 30600,
 			//3.4.6
             client_version_string: "3.6.0"
@@ -176,7 +176,7 @@ function legendmaster(self) {
             gplus_client_id: "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com",
             master_url: "webbouncer-live-v7-0.agario.miniclippt.com",
             endpoint_version: "v4",
-            proto_version: "12.0.1",
+            proto_version: "15.0.0",
             client_version: 30600,
             client_version_string: "3.6.0"
         };
