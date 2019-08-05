@@ -4753,7 +4753,7 @@ var thelegendmodproject = function(t, e, i) {
                 this.sendPlayerPosition(); 			
 				this.sendSuperLegendSDATA();
 				
-				this.sendSLGQinfo(),
+				//this.sendSLGQinfo(),
 				this.chatUsers = {}; 
 				this.top5 = []; //Sonia3
                 this.updatevnr(); //Sonia3
