@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1034 MEGA TEST
+// v1.1036 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4502,11 +4502,17 @@ var thelegendmodproject = function(t, e, i) {
 					 var ogariocellssetts = new ogarbasicassembly(di, x, y, ds, null, false, true, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                      ogariocellssetts.time=this.time;
 					 ogariocellssetts.isVirus=true;
-					 temp.push(ogariocellssetts);					 
-					 //if (!legendmod.cells.hasOwnProperty(e)) {
-						 legendmod.cells.push(ogariocellssetts);						 
-					 //}
-					 ogariocellssetts.removeCell();
+					 temp.push(ogariocellssetts);	
+					 if (!ogariocellssetts.isInView()){					 
+					 if (legendmod.indexedCells.hasOwnProperty(e)) {						 
+						 ogariocellssetts = legendmod.indexedCells[e]
+						 //legendmod.cells.push(ogariocellssetts);													 
+						 }
+				     else{
+						legendmod.indexedCells.push(ogariocellssetts); 
+					 }
+					 }
+					 //ogariocellssetts.removeCell();
                  }
                  this.teamPlayers[id].dvirs = temp;
                 
@@ -4524,12 +4530,18 @@ var thelegendmodproject = function(t, e, i) {
                      var x = this.getreal(fx, 0);
                      var y = this.getreal(fy, 1);
                      var ogariocellssetts = new ogarbasicassembly(di, x, y, ds, null, false, true, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
-                     ogariocellssetts.isVirus=false;
+                     ogariocellssetts.isVirus=false;					 
 					 temp.push(ogariocellssetts);					 
-					 //if (!legendmod.cells.hasOwnProperty(e)) {
-						 legendmod.cells.push(ogariocellssetts);						 
-					 //}
-					 ogariocellssetts.removeCell();
+					 if (!ogariocellssetts.isInView()){					 
+					 if (legendmod.indexedCells.hasOwnProperty(e)) {						 
+						 ogariocellssetts = legendmod.indexedCells[e]
+						 //legendmod.cells.push(ogariocellssetts);													 
+						 }
+				     else{
+						legendmod.indexedCells.push(ogariocellssetts); 
+					 }
+					 }
+					 //ogariocellssetts.removeCell();
                  }
                  this.teamPlayers[id].dcells = tempx;
                  var today = new Date();
@@ -4741,7 +4753,7 @@ var thelegendmodproject = function(t, e, i) {
                 this.sendPlayerPosition(); 			
 				this.sendSuperLegendSDATA();
 				
-				//this.sendSLGQinfo(),
+				this.sendSLGQinfo(),
 				this.chatUsers = {}; 
 				this.top5 = []; //Sonia3
                 this.updatevnr(); //Sonia3
