@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1041 MEGA TEST
+// v1.1042 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4450,7 +4450,7 @@ var thelegendmodproject = function(t, e, i) {
 				 if (window.legendmod.play){
 				window.playerCellsSock=[];
 				if (legendmod.playerCells && legendmod.playerCells.length){
-					for (var i; i<legendmod.playerCells; i++){
+					for (var i=0; i<legendmod.playerCells; i++){
 						window.playerCellsSock[i]={};
 						window.playerCellsSock[i].id = legendmod.playerCells[i].id;
 						window.playerCellsSock[i].x = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(legendmod.playerCells[i].x) : legendmod.playerCells[i].x //Sonia3
