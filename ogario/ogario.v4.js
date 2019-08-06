@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1068 MEGA TEST
+// v1.1069 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4574,7 +4574,7 @@ var thelegendmodproject = function(t, e, i) {
             },
 			'sendSocket3Position': function() {
 				if (i.play && window.noOgarioSocket && Socket3){
-					if (window.noOgarioSocket && ogarcopythelb.clanTag!="" ogarcopythelb.nick.includes("℄")) { //server was going down, so i erase some users
+					if (window.noOgarioSocket && ogarcopythelb.clanTag!="" && ogarcopythelb.nick.includes("℄")) { //server was going down, so i erase some users
 					Socket3.send(JSON.stringify({ com: "pos", id: customLMID, x: legendmod3.getPlayerX(), y: legendmod3.getPlayerY(), mass: legendmod.playerMass}));
 					}
 				}
