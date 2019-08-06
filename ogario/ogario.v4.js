@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1045 MEGA TEST
+// v1.1046 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7064,6 +7064,13 @@ var thelegendmodproject = function(t, e, i) {
                 if (window.autoPlay && legendmod.play) {
                     calcTarget();
                 }
+				if (typeof Socket3updateTeamPlayerCells === 'function') {
+					for (x=0;x<legendmod.cells.length;x++){
+						if (legendmod.cells[x].fake == true){
+							legendmod.cells[x].removeCell(); 
+						}
+					}				
+				}
                 //if (window.historystate && legendmod.play) {historystate();}
             },
             'color2Hex': function(t) {
