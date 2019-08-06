@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1051 MEGA TEST
+// v1.1064 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4463,7 +4463,7 @@ var thelegendmodproject = function(t, e, i) {
 					}
 				}
 				if (Socket3 && Socket3.readyState==1&& legendmod3.playerID && window.playerCellsSock) {
-				Socket3.send(JSON.stringify({ com: "pcells", tid: legendmod3.playerID, playerCells: window.playerCellsSock}));		
+				//Socket3.send(JSON.stringify({ com: "pcells", tid: legendmod3.playerID, playerCells: window.playerCellsSock}));		
 				}
 			 }
 			 },
@@ -6979,15 +6979,40 @@ var thelegendmodproject = function(t, e, i) {
                 }
 //
 				legendmod3.sendJimboy3100info();
-				legendmod.cells.push(...cellsFake);
-				window.cellsFake=[];
+				for (y=0;y<legendmod.cells.length;y++){
+					legendmod.cells[y].fakeOK=true;
+				}
+				for (x=0;x<window.cellsFake.length;x++){
+					var ab=false;
+					var ac=false;
+					for (y=0;y<legendmod.cells.length;y++){
+
+						if (legendmod.cells[y].fake && legendmod.cells[y].id == window.cellsFake[x].id){
+							legendmod.cells[y].time = this.time;
+							legendmod.cells[y] = window.cellsFake[x];
+							ab=true;
+							legendmod.cells[y].fakeOK=false;
+						}
+					}
+					if ( ab == false ){
+						legendmod.cells.push(window.cellsFake[x]);
+					}
+				}
+				//legendmod.cells.push(...cellsFake);
+				for (y=0;y<legendmod.cells.length;y++){
+					if (legendmod.cells[y].fake && legendmod.cells[y].fakeOK==true){
+						legendmod.cells[y].removeCell(); 
+					}
+				}
 				
-				window.cellsFakeFlag++;
-				if (window.cellsFakeFlag == 4){
+				window.cellsFakeFlag++;				
+				if (window.cellsFakeFlag == 20){
+					console.log('removed');
 					window.cellsFakeFlag = 0;
 					if (typeof Socket3updateTeamPlayerCells === 'function') {
 						for (var x = 0 ; x < legendmod.cells.length ; x++){
 							if (legendmod.cells[x].fake == true){
+								window.cellsFake=[];
 								legendmod.cells[x].removeCell(); 
 							}
 						}				
