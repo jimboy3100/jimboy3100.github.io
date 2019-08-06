@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1036 MEGA TEST
+// v1.1041 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -35,6 +35,7 @@ $("#skin-popover").append('<video id="vid1" src = "https://jimboy3100.github.io/
 var Socket3;
 window.socket3Opened=false;
 var customLMID = Math.floor(Math.random()*100000);
+window.playerCellsSockReceived=[];
 
 window.videoSkinPlayerflag = {};
 window.videoSkinPlayerflag2 = {};
@@ -3596,9 +3597,9 @@ var thelegendmodproject = function(t, e, i) {
             'play': function() {
 				if (window.noOgarioSocket) {
 					console.log('New Socket 3 data sent');
-					//Socket3.send(JSON.stringify({ com: "sendPlayerSkinURL", nick: ogarcopythelb.nick, skin: ogarcopythelb.skinURL, color: ogarcopythelb.color, id: customLMID}));
+					if (window.noOgarioSocket) {
 					Socket3.send(JSON.stringify({ com: "sendPlayerSkinURL", nick: ogarcopythelb.nick, token: legendmod3.serverToken, tag: ogarcopythelb.clanTag, skin: ogarcopythelb.skinURL, color: ogarcopythelb.color, id: customLMID, x: legendmod3.getPlayerX(), y: legendmod3.getPlayerY(), mass: legendmod.playerMass}));
-
+				}
 				}
                 if (this.setPlayerSettings(), this.setParty(), this.isSocketOpen()) this.sendPartyData();
                 else {
@@ -4099,11 +4100,11 @@ var thelegendmodproject = function(t, e, i) {
 				
             },
 			'Socket3connect': function(srv) {
-				if (window.noOgarioSocket && typeof Socket3enabler !== 'undefined' && typeof Socket3enabler === 'function') {
+				//if (window.noOgarioSocket && typeof Socket3enabler !== 'undefined' && typeof Socket3enabler === 'function') {
 					setTimeout(function() {
 						Socket3enabler(window.legendmod.ws);
 					}, 1000);
-				}
+				//}
 			},
             //Sonia6			
             'SLGconnect': function(srv) {
@@ -4265,7 +4266,7 @@ var thelegendmodproject = function(t, e, i) {
                 if (s == null) return;
                 switch (t.charAt(0)) {
                     case "R":
-                        this.getSuperLegendSDATA(s);
+                        //this.getSuperLegendSDATA(s);
                         break;
                     case "Q":
                         //this.getSLGQinfo(s);
@@ -4445,6 +4446,23 @@ var thelegendmodproject = function(t, e, i) {
                 if (axis == 0) return x * (v.mapMaxX - v.mapMinX) + v.mapMinX;
                 else return x * (v.mapMaxY - v.mapMinY) + v.mapMinY;
             },
+			 'sendJimboy3100info': function() {
+				 if (window.legendmod.play){
+				window.playerCellsSock=[];
+				if (legendmod.playerCells && legendmod.playerCells.length){
+					for (var i; i<legendmod.playerCells; i++){
+						window.playerCellsSock[i]={};
+						window.playerCellsSock[i].id = legendmod.playerCells[i].id;
+						window.playerCellsSock[i].x = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(legendmod.playerCells[i].x) : legendmod.playerCells[i].x //Sonia3
+						window.playerCellsSock[i].y = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateY(legendmod.playerCells[i].y) : legendmod.playerCells[i].y; //Sonia3
+						window.playerCellsSock[i].size = legendmod.playerCells[i].size;						
+					}
+				}
+				if (Socket3 && Socket3.readyState==1&& legendmod3.playerID && window.playerCellsSock) {
+				Socket3.send(JSON.stringify({ com: "pcells", tid: legendmod3.playerID, playerCells: window.playerCellsSock}));		
+				}
+			 }
+			 },
              'sendSLGQinfo': function() {
                  //return;
                  var msg = "";
@@ -4552,8 +4570,9 @@ var thelegendmodproject = function(t, e, i) {
             },
 			'sendSocket3Position': function() {
 				if (i.play && window.noOgarioSocket && Socket3){
+					if (window.noOgarioSocket) {
 					Socket3.send(JSON.stringify({ com: "pos", id: customLMID, x: legendmod3.getPlayerX(), y: legendmod3.getPlayerY(), mass: legendmod.playerMass}));
-					//Socket3.send(JSON.stringify({ "command": "sendPlayerSkinURL", nick: ogarcopythelb.nick, token: legendmod3.serverToken, tag: ogarcopythelb.clanTag, skin: ogarcopythelb.skinURL, color: ogarcopythelb.color, id: customLMID}));
+					}
 				}
 			},
             //Sonia4
@@ -4754,6 +4773,7 @@ var thelegendmodproject = function(t, e, i) {
 				this.sendSuperLegendSDATA();
 				
 				//this.sendSLGQinfo(),
+				this.sendJimboy3100info(),
 				this.chatUsers = {}; 
 				this.top5 = []; //Sonia3
                 this.updatevnr(); //Sonia3
