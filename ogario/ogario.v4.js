@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1046 MEGA TEST
+// v1.1049 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -36,6 +36,7 @@ var Socket3;
 window.socket3Opened=false;
 var customLMID = Math.floor(Math.random()*100000);
 window.playerCellsSockReceived=[];
+window.cellsFake=[];
 
 window.videoSkinPlayerflag = {};
 window.videoSkinPlayerflag2 = {};
@@ -4453,8 +4454,8 @@ var thelegendmodproject = function(t, e, i) {
 					for (var i=0; i<legendmod.playerCells.length; i++){
 						window.playerCellsSock[i]={};
 						window.playerCellsSock[i].id = legendmod.playerCells[i].id;
-						window.playerCellsSock[i].x = legendmod.playerCells[i].x;
-						window.playerCellsSock[i].y = legendmod.playerCells[i].y;
+						window.playerCellsSock[i].x = legendmod.playerCells[i].x + legendmod.mapOffsetX;
+						window.playerCellsSock[i].y = legendmod.playerCells[i].y + legendmod.mapOffsetY;
 						//window.playerCellsSock[i].x = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(legendmod.playerCells[i].x) : legendmod.playerCells[i].x //Sonia3
 						//window.playerCellsSock[i].y = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateY(legendmod.playerCells[i].y) : legendmod.playerCells[i].y; //Sonia3
 						window.playerCellsSock[i].size = legendmod.playerCells[i].size;						
@@ -6974,6 +6975,18 @@ var thelegendmodproject = function(t, e, i) {
                         r.time = this.time;
                         r.removeCell();
                     }
+//
+				legendmod.cells.push(...cellsFake);
+				window.cellsFake=[];
+				if (typeof Socket3updateTeamPlayerCells === 'function') {
+					for (x=0;x<legendmod.cells.length;x++){
+						if (legendmod.cells[x].fake == true){
+							legendmod.cells[x].removeCell(); 
+						}
+					}				
+				}	
+				
+//				
                 }
                 for (a = 0;;) {
 					extendedFlags=false;
@@ -7064,13 +7077,6 @@ var thelegendmodproject = function(t, e, i) {
                 if (window.autoPlay && legendmod.play) {
                     calcTarget();
                 }
-				if (typeof Socket3updateTeamPlayerCells === 'function') {
-					for (x=0;x<legendmod.cells.length;x++){
-						if (legendmod.cells[x].fake == true){
-							legendmod.cells[x].removeCell(); 
-						}
-					}				
-				}
                 //if (window.historystate && legendmod.play) {historystate();}
             },
             'color2Hex': function(t) {
