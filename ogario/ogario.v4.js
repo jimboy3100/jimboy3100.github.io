@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1049 MEGA TEST
+// v1.1050 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4776,7 +4776,7 @@ var thelegendmodproject = function(t, e, i) {
 				this.sendSuperLegendSDATA();
 				
 				//this.sendSLGQinfo(),
-				this.sendJimboy3100info(),
+				//this.sendJimboy3100info(),
 				this.chatUsers = {}; 
 				this.top5 = []; //Sonia3
                 this.updatevnr(); //Sonia3
@@ -6974,8 +6974,10 @@ var thelegendmodproject = function(t, e, i) {
                         r.targetSize = r.size;
                         r.time = this.time;
                         r.removeCell();
-                    }
+                    }			
+                }
 //
+				legendmod3.sendJimboy3100info();
 				legendmod.cells.push(...cellsFake);
 				window.cellsFake=[];
 				if (typeof Socket3updateTeamPlayerCells === 'function') {
@@ -6986,8 +6988,7 @@ var thelegendmodproject = function(t, e, i) {
 					}				
 				}	
 				
-//				
-                }
+//					
                 for (a = 0;;) {
 					extendedFlags=false;
                     var l = t.readUInt32LE(i);
