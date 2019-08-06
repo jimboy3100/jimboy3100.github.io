@@ -7007,7 +7007,7 @@ var thelegendmodproject = function(t, e, i) {
 				
 				window.cellsFakeFlag++;				
 				if (window.cellsFakeFlag == 20){
-					console.log('removed');
+					//console.log('removed');
 					window.cellsFakeFlag = 0;
 					window.cellsFake=[];
 /*					if (typeof Socket3updateTeamPlayerCells === 'function') {
