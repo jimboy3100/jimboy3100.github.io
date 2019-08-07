@@ -9089,7 +9089,7 @@ var thelegendmodproject = function(t, e, i) {
         window.core = {
             'connect': function(t) {
                 LM.connect(t);
-                LM.connect(t); //for multibox with new Protocol and Client
+                //LM.connect(t); //for multibox with new Protocol and Client
             },
             'disconnect': function() {},
             'sendNick': function(t) {
