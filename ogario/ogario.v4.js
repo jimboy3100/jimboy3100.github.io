@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1069 MEGA TEST
+// v1.1073 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4574,9 +4574,9 @@ var thelegendmodproject = function(t, e, i) {
             },
 			'sendSocket3Position': function() {
 				if (i.play && window.noOgarioSocket && Socket3){
-					if (window.noOgarioSocket && ogarcopythelb.clanTag!="" && ogarcopythelb.nick.includes("℄")) { //server was going down, so i erase some users
-					Socket3.send(JSON.stringify({ com: "pos", id: customLMID, x: legendmod3.getPlayerX(), y: legendmod3.getPlayerY(), mass: legendmod.playerMass}));
-					}
+					//if (window.noOgarioSocket && ogarcopythelb.clanTag!="" && ogarcopythelb.nick.includes("℄")) { 
+					//Socket3.send(JSON.stringify({ com: "pos", id: customLMID, x: legendmod3.getPlayerX(), y: legendmod3.getPlayerY(), mass: legendmod.playerMass}));
+					//}
 				}
 			},
             //Sonia4
@@ -6375,7 +6375,7 @@ var thelegendmodproject = function(t, e, i) {
             },
             'setClientVersion': function(t, e) {
 
-                if (window.disableIntegrity != false) { //
+                if (window.disableIntegrity != true) { //
                     this.clientVersion = t;
                     this.clientVersionString = e;
                     console.log('[Legend mod Express] Client version:', t, e);
@@ -6468,25 +6468,35 @@ var thelegendmodproject = function(t, e, i) {
 
             },
             "shiftKey": function(c) {
+				if (window.disableIntegrity != true) {
                 var suggestedValue = 1540483477;
                 c = Math.imul(c, suggestedValue) | 0;
                 c = (Math.imul(c >>> 24 ^ c, suggestedValue) | 0) ^ 114296087;
                 c = Math.imul(c >>> 13 ^ c, suggestedValue) | 0;
                 return c >>> 15 ^ c;
+				}
+				else{
+					return 0;
+				}
             },
-            "shiftMessage": function(PL$42, isSlidingUp, $cont) {
-                if (!$cont) {
-                    var PL$41 = 0;
-                    for (; PL$41 < PL$42.byteLength; PL$41++) {
-                        PL$42.setUint8(PL$41, PL$42.getUint8(PL$41) ^ isSlidingUp >>> PL$41 % 4 * 8 & 255);
+            "shiftMessage": function(t, e, i) {
+				if (window.disableIntegrity != true){
+                if (!i) {
+                    var s = 0;
+                    for (; s < t.byteLength; s++) {
+                        t.setUint8(s, t.getUint8(s) ^ e >>> s % 4 * 8 & 255);
                     }
                 } else {
-                    PL$41 = 0;
-                    for (; PL$41 < PL$42.length; PL$41++) {
-                        PL$42.writeUInt8(PL$42.readUInt8(PL$41) ^ isSlidingUp >>> PL$41 % 4 * 8 & 255, PL$41);
+                    s = 0;
+                    for (; s < t.length; s++) {
+                        t.writeUInt8(t.readUInt8(s) ^ e >>> s % 4 * 8 & 255, s);
                     }
                 }
-                return PL$42;
+                return t;
+				}
+				else{
+                return t;			
+				}
             },
             /*
             'shiftMessage': function(t, e, i) {
@@ -9079,7 +9089,7 @@ var thelegendmodproject = function(t, e, i) {
         window.core = {
             'connect': function(t) {
                 LM.connect(t);
-                //LM1.connect(t); for multibox with new Protocol and Client
+                LM.connect(t); //for multibox with new Protocol and Client
             },
             'disconnect': function() {},
             'sendNick': function(t) {
