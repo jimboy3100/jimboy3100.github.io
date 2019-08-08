@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1089 MEGA TEST
+// v1.1090 MEGA TEST
 // Game Configurations
 //team view
 
@@ -4617,10 +4617,10 @@ var thelegendmodproject = function(t, e, i) {
             //Sonia4
             'getSuperLegendSDATA': function(t) {
 				
-				console.log('ids', ids);
-				console.log('t', t);
                 var ids = this.getSLGID(t);
                 var id = this.checkPlayerID(ids);
+				console.log('ids', ids);
+				console.log('t', t);				
                 if (null != id) {
                     var s = this.getSLGVal(t);
                     var lbgpi = s.slice(0, 1);
