@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1087 MEGA TEST
+// v1.1088 MEGA TEST
 // Game Configurations
 //team view
 
@@ -4610,6 +4610,7 @@ var thelegendmodproject = function(t, e, i) {
                 if (i.play && this.playerID) {
                     var s = "";
                     s += window.legendmod.bgpi;
+					console.log('sendSuperLegendSDATA', s);
                     this.sendSLG("R", s);
                 }
             },
