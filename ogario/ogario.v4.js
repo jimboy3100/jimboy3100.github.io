@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1090 MEGA TEST
+// v1.1091 MEGA TEST
 // Game Configurations
 //team view
 
@@ -4290,6 +4290,7 @@ var thelegendmodproject = function(t, e, i) {
                 switch (t.charAt(0)) {
                     case "R":
                         this.getSuperLegendSDATA(s);
+						console.log('this.getSuperLegendSDATA(s)',s)
                         break;
                     case "Q":
                         //this.getSLGQinfo(s);
