@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1094 MEGA TEST
+// v1.1093 MEGA TEST
 // Game Configurations
 //team view
 
@@ -4248,6 +4248,7 @@ var thelegendmodproject = function(t, e, i) {
 					var temp = s + t;
 					console.log(temp);
 					SLGsocket.send(JSON.stringify({ "toH": "legendmod2", "msg": temp}));
+					console.log("REC1",temp);
 					}
                 }
             },
@@ -4256,8 +4257,9 @@ var thelegendmodproject = function(t, e, i) {
             },
             //Sonia4
             'handleSLGMessage': function(t) {
-				//this['SLGHandler'](t.data);
-				var temp = t.data;				
+				
+				var temp = t.data;	
+				console.log("REC2",temp);				
 				if (temp.msg){
 					console.log(temp.msg)
 					console.log(t.data.msg.toString());
