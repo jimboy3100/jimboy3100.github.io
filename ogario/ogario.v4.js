@@ -1,8598 +1,9177 @@
-/**************
- * Legend express v0.074 by Jimboy3100   email:jimboy3100@hotmail.com
- *************/
-var semimodVersion = "66"; // the version 1.1-> 1.11
-//fix ffa
-/*
-setTimeout(function() {
-$('#gamemode>option:nth-child(1)').val(':ffa');	
-$('#gamemode').trigger('change');
-}, 1500);
-*/
+// Open Source script
+// Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
+// This is part of the Legend mod project
+// v1.1074 MEGA TEST
+// Game Configurations
 
-$("#toast-container").hide();
-setTimeout(function() {
-    $("#toast-container").show()
-}, 8000);
-appendLMhiFbPs();
-PreLcCelebration();
-loadericon();
-PremiumUsers();
-document.title = "LM express";
-//Authenticate Mod Script
-var accesstomod;
-getaccesstoken();
-
-/*
-var CutNameConflictwithMessage=false;
-(function(){
-    var _privateLog = console.log;
-    console.log = function (message) {
-		if (CutNameConflictwithMessage==false){
-		if (~message.indexOf("OGARio by szymy")){
-		console.log = _privateLog;
-		}
-		else{
-			_privateLog.apply(console, arguments);
-		}
-		}
-    };
-})();
-
-(function(){
-    var _privateLog = console.log;
-    console.log = function (message) {
-		if (~message.indexOf("OGARio by szymy")){
-		}
-		else{
-			_privateLog.apply(console, arguments);
-		}
-    };
-})();
-*/
-$("#gamemode").prop('disabled', false);
-$("#region").prop('disabled', false);
-var oldgamemode = $("#gamemode");
-//privateservutil();
-
-var currentIP = "0.0.0.0:0";
-var currentIPopened;
-var currentToken = "";
-var previousMode = localStorage.getItem("gamemode");
-
-var checkonlyonce = localStorage.getItem("checkonlyonce");
-var checkonlysixth = localStorage.getItem("checkonlysixth");
-var defaultMusicUrl = "https://www.youtube.com/watch?v=e7nkA7Ue5yg";
-var coinTimer;
-var musicPlayer;
-var originalDeath;
-var stateObj = {
-    foo: "bar"
-};
-var containermain;
-var closebutton1 = "0";
-var modebetter = "";
-var modbetter2 = "";
-var fullornot = "NO";
-var minimapbckimg = "";
-var leadbimg = "";
-var teambimg = "";
-var canvasbimg = "";
-var pic1urlimg = "https://i.imgur.com/RVBi3T1.gif";
-var pic2urlimg = "https://i.imgur.com/p2T29QE.gif";
-var pic3urlimg = "https://i.imgur.com/EucIfYY.gif";
-var pic4urlimg = "https://i.imgur.com/KOoBDaK.gif";
-var pic5urlimg = "https://i.imgur.com/CS03xWv.gif";
-var pic6urlimg = "https://i.imgur.com/tfMUu2J.gif";
-var pic1dataimg = "Bad Choice!";
-var pic2dataimg = "Why?";
-var pic3dataimg = "Yow!!";
-var pic4dataimg = "Death!";
-var pic5dataimg = "Relax!";
-var pic6dataimg = "Legend Mod!";
-var yt1url = "dQw4w9WgXcQ";
-var yt2url = "btPJPFnesV4";
-var yt3url = "UD-MkihnOXg";
-var yt4url = "vpoqWs6BuIY";
-var yt5url = "VUvfn5-BLM8";
-var yt6url = "CnIfNSpCf70";
-var yt1data = "Rick Astley - Never Gonna Give You Up";
-var yt2data = "Survivor - Eye Of The Tiger";
-var yt3data = "Lion king - The Lion Sleeps Tonight";
-var yt4data = "Agario - Jumbo Solo vs Teams";
-var yt5data = "Agario - Kill3r vs Teams";
-var yt6data = "Legend mod Promo";
-var lastIP = localStorage.getItem("lastIP");
-var previousnickname = localStorage.getItem("previousnickname");
-var minbtext = localStorage.getItem("minbtext");
-var leadbtext = localStorage.getItem("leadbtext");
-var teambtext = localStorage.getItem("teambtext");
-var imgUrl = localStorage.getItem("imgUrl");
-var imgHref = localStorage.getItem("imgHref");
-var showToken = localStorage.getItem("showTK");
-var showPlayer = localStorage.getItem("showPlayer");
-var SHOSHOBtn = localStorage.getItem("SHOSHOBtn");
-var XPBtn = localStorage.getItem("XPBtn");
-var MAINBTBtn = localStorage.getItem("MAINBTBtn");
-var AnimatedSkinBtn = localStorage.getItem("AnimatedSkinBtn");
-//var YoutubeAutoBtn = localStorage.getItem("YoutubeAutoBtn");
-var TIMEcalBtn = localStorage.getItem("TIMEcalBtn");
-var troll1Btn = localStorage.getItem("troll1Btn");
-var ComPosition = localStorage.getItem("ComPosition");
-var autoCoinBtn = localStorage.getItem("autoCoinBtn");
-var timesopened = localStorage.getItem("timesopened");
-var url = localStorage.getItem("url");
-var region = getParameterByName("r", url);
-var realmode = getParameterByName("m", url);
-var searchStr = getParameterByName("search", url);
-var searchSip = getParameterByName("sip", url);
-var privateSrv = getParameterByName("ip", url);
-var clanpass = getParameterByName("pass", url);
-var searchedplayer = getParameterByName("player", url);
-var autoplayplayer = getParameterByName("autoplayer", url);
-var realmode2 = "";
-var mode = ""; //just in case
-var token = "";
-var messageone = 1; //If legendmod is being used
-var hiddenfromclan = 0;
-var saveclanpassword = localStorage.getItem("saveclanpassword");
-var troll1;
-var seticon = "YES";
-var setmessagecom = "YES";
-var setyt = "YES";
-var searching;
-var timerId;
-T = {};
-var playerState = 0;
-var MSGCOMMANDS = "";
-var MSGCOMMANDS2;
-var MSGCOMMANDS;
-var MSGNICK;
-var playerMsg = "";
-var commandMsg = "";
-var otherMsg = "";
-var rotateminimap = 0;
-var rotateminimapfirst = 0;
-var openthecommunication = "NO";
-var clickedname = "NO";
-var oldteammode;
-var checkedGameNames = 0;
-var timesdisconnected = 0;
-var PanelImageSrc;
-var AdminClanSymbol;
-var AdminPassword;
-var AdminRights = 0;
-var LegendClanSymbol = "0";
-var legbgcolor = $("#menuPanelColor").val();
-var legbgpic = $("#menuBg").val();
-var legmaincolor = $("#hudMainColor ").val();
-var dyinglight1load = localStorage.getItem("dyinglight1load");
-var url2;
-var semiurl2;
-var PostedThings;
-var Ultimouseenabled = 0;
-var setscriptingcom = "YES";
-var usedonceSkin = 0;
-var toastrSkinNotice = 0;
-var detailed = "";
-var detailed1;
-var fromstart = "false";
-userData = {};
-userData = JSON.parse(localStorage.getItem("userData"));
-var userip = "0.0.0.0:0";
-var usercity = "NotFound";
-var usercountry = "NotFound";
-var userfirstname = localStorage.getItem("userfirstname");
-var userlastname = localStorage.getItem("userlastname");
-var usergender = localStorage.getItem("usergender");
-var userid = localStorage.getItem("userid");
-var fbresponse = {};
-var prevPrivateServer = localStorage.getItem("prevPrivateServer");
-var CopyTkPwLb2;
-var languagemod = localStorage.getItem("languagemod");
-//for MsgCommands
-var MSGCOMMANDS2a;
-var MSGCOMMANDSA;
-var MSGCOMMANDS2;
-var MSGCOMMANDS3;
-var Express = "True";
-var acceptServerBtnFlag = null;
-var animateSkinsStart;
-//for the LM JSON
-var LegendJSON;
-var LegendSettings = "true";
-var LegendSettingsfirstclicked = "false";
-var switcheryLegendSwitch, switcheryLegendSwitch2;
-var UniversalChatSaved = localStorage.getItem("UniversalChatSaved");
-var VanillaskinsSaved = localStorage.getItem("VanillaskinsSaved");
-var top5skinsSaved = localStorage.getItem("top5skinsSaved");
-var spawnspecialeffectsSaved = localStorage.getItem("spawnspecialeffectsSaved");
-var AnimatedRainbowColorSaved = localStorage.getItem("AnimatedRainbowColorSaved");
-if (localStorage.getItem("leaderboardlimit") != null) {
-    window.leaderboardlimit = localStorage.getItem("leaderboardlimit");
-}
-if (localStorage.getItem("teamboardlimit") != null) {
-    window.teamboardlimit = localStorage.getItem("teamboardlimit");
+//window.testobjects = {};
+function removeEmojis(string) {
+    var regex = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
+    return string.replace(regex, '');
 }
 
-
-
-var showonceusers3 = 0;
-var client2;
-var xhttp = new XMLHttpRequest();
-//var a= xhttp.response;
-
-
-//Animated Skins
-var animatedi;
-var animateda;
-var animatedkey;
-window.a = 0;
-var b, c;
-var animatedserverchanged = false;
-
-loadersetings();
-
-//
-function postSNEZ(server, username, password, data) {
-    xhttp.open("POST", server, false);
-    xhttp.setRequestHeader("username", username);
-    xhttp.setRequestHeader("password", password);
-    xhttp.send(data);
-}
-
-function getSNEZ(server, username, password) {
-    xhttp.open("GET", server, false);
-    xhttp.setRequestHeader("username", username);
-    xhttp.setRequestHeader("password", password);
-    xhttp.send();
-}
-
-var stylesLegendModConsole1 = [
-    'background: linear-gradient(#D33106, #571402)', 'border: 1px solid #3E0E02', 'color: #99c2ff', 'display: block', 'text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3)', 'box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 5px 3px -5px rgba(0, 0, 0, 0.5), 0 -13px 5px -10px rgba(255, 255, 255, 0.4) inset', 'line-height: 40px', 'text-align: center', 'font-weight: bold'
-].join(';');
-var stylesLegendModConsole2 = [
-    'background: linear-gradient(grey, black)', 'border: 1px solid #3E0E02', 'color: #FFFFFF', 'display: block', 'text-shadow: 0 1px 0 rgba(0, 0, 0, 0.3)', 'box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset, 0 5px 3px -5px rgba(0, 0, 0, 0.5), 0 -13px 5px -10px rgba(255, 255, 255, 0.4) inset'
-    //    , 'line-height: 40px'
-    , 'text-align: center'
-    //    , 'font-weight: bold'
-].join(';');
-
-//Animated color texts
-var tcm2 = {
-    prototypes: {
-        canvas: (CanvasRenderingContext2D.prototype),
-        old: {}
-    },
-    f: {
-        prototype_override: function(type, name, runat, callback) {
-            if (!(type in tcm2.prototypes.old)) tcm2.prototypes.old[type] = {};
-            if (!(name in tcm2.prototypes.old[type])) tcm2.prototypes.old[type][name] = tcm2.prototypes[type][name];
-            tcm2.prototypes[type][name] = function() {
-                (runat == 'before' && callback(this, arguments));
-                tcm2.prototypes.old[type][name].apply(this, arguments);
-                (runat == 'after' && callback(this, arguments));
-            };
-        },
-        gradient: function(a) {
-            var c = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#00ffff', '#ff00ff'];
-            var g = a.createLinearGradient(0, 0, a.canvas.width, 0);
-            g.addColorStop(0, c[Math.floor(Math.random() * c.length)]);
-            g.addColorStop(1, c[Math.floor(Math.random() * c.length)]);
-            return g;
-        },
-        override: function() {
-            tcm2.f.prototype_override('canvas', 'fillText', 'before', function(a, b) {
-                if (a.canvas.id != "minimap" && a.canvas.id != "minimap-sectors" && a.canvas.id != "ao2t-minimap") {
-                    //console.log(a.canvas.id);
-                    a.fillStyle = tcm2.f.gradient(a);
-                }
-            });
-        }
+Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
+    get: function() {
+        return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
     }
-};
-//tcm2.f.override();
+});
 
-
-var $head = $("head");
-var $headlinklast = $head.find("link[rel='stylesheet']:last");
-var linkElement = "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css' type='text/css' media='screen'>";
-if ($headlinklast.length) {
-    $headlinklast.after(linkElement);
-} else {
-    $head.append(linkElement);
-}
-
-if (realmode == "") {
-    modebetter2 = ":ffa";
-} else {
-    modebetter2 = realmode;
-}
-privateserverpassword();
-urlIpWhenOpened();
-var minbtext2 = minbtext;
-var minbtext3 = minbtext;
-if (minbtext == null || minbtext == "") {
-    minbtext = "Legend express"; //Legend express/Locked
-    minbtext2 = "Legend express";
-    minbtext3 = "Legend express/Private";
-}
-LMminimapTextAct();
-
-var datasent2;
-//fzogarOgarIframeListener();
-emphasischat();
-//specialeffecttargeting();
-function init(modVersion) {
-    // ANNOUNCEMENTS
-    //toastr["info"]('<b><font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://jimboy3100.github.io/banners/particles.gif);">'+'Legend mod </span></font> is back!<br><font color="red"></b>Enable Vanilla skins on Settings</font>').css("width", "350px");
-    if (modVersion != "1.6") {
-        toastr["info"]('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + Premadeletter16 + ' <font color="yellow"><b>v1.6</b></font>. <br>(Https Protocol)<br>visit: <a target="_blank" href="http://www.legendmod.ml"><font color="yellow"><b><u>www.legendmod.ml</u></b></font></a>');
+function Video(src, append) {
+    var v = document.createElement("video");
+    if (src != "") {
+        defaultmapsettings.src = src;
     }
-    $("#ogario-party").wrap('<div style="display: none;" id="hidendivtoken"></div>');
-    universalchat();
-    $('.options-box.chatGroup').append('<label><input type="checkbox" id="UniversalChat" class="js-switch" data-switchery="true" checked style="display: none;"> Agar Tool/Legend Mod</input></label>');
-    var elemLegendSwitch = document.querySelector('#UniversalChat');
-    var ogarioswitchbackcolor = $("input#export-ogarioThemeSettings.js-switch").next().css("background-color");
-    var UniversalChat = new Switchery(elemLegendSwitch, {
-        size: 'small',
-        color: ogarioswitchbackcolor,
-        jackColor: 'rgb(250, 250, 250)'
-    });
-
-    $("#UniversalChat").click(function() {
-        if (UniversalChat.isChecked()) {
-            $("#ao2t-hud").show();
-            localStorage.setItem("UniversalChatSaved", true);
-            if ($("#ao2t-capture").hasClass("disconnected")) {
-                $("#ao2t-capture").click();
-            }
-        } else {
-            $("#ao2t-hud").hide();
-            localStorage.setItem("UniversalChatSaved", false);
-            if ($("#ao2t-capture").hasClass("connected")) {
-                $("#ao2t-capture").click();
-            }
-        }
-    });
-    $('.options-box.skinsGroup').append('<label><input type="checkbox" id="Vanillaskins" class="js-switch" data-switchery="true" style="display: none;"> Vanilla skins</input></label>');
-    var elemLegendSwitch2 = document.querySelector('#Vanillaskins');
-    var ogarioswitchbackcolor = $("input#export-ogarioThemeSettings.js-switch").next().css("background-color");
-    var Vanillaskinsbtn = new Switchery(elemLegendSwitch2, {
-        size: 'small',
-        color: ogarioswitchbackcolor,
-        jackColor: 'rgb(250, 250, 250)'
-    });
-
-    $("#Vanillaskins").click(function() {
-        if (Vanillaskinsbtn.isChecked()) {
-            localStorage.setItem("VanillaskinsSaved", "true");
-            window.vanillaskins = true;
-            // Animated Skins
-            animateSkinsStart = setInterval(animateSkincheckTimer, 60000);
-            return animateSkinsStart;
-        } else {
-            localStorage.setItem("VanillaskinsSaved", "false");
-            legendmod3.flushSkinsMap();
-            window.vanillaskins = false;
-            // Animated Skins
-            animateSkinsStop();
-        }
-    });
-    $("#Vanillaskins").click(); //enabled by default
-    $('.options-box.hudGroup').append('<label><input type="checkbox" id="top5skins" class="js-switch" data-switchery="true" style="display: none;"> Skins on teamboard</input></label>');
-    var elemLegendSwitch3 = document.querySelector('#top5skins');
-    var ogarioswitchbackcolor = $("input#export-ogarioThemeSettings.js-switch").next().css("background-color");
-    var top5skinsbtn = new Switchery(elemLegendSwitch3, {
-        size: 'small',
-        color: ogarioswitchbackcolor,
-        jackColor: 'rgb(250, 250, 250)'
-    });
-
-    $("#top5skins").click(function() {
-        if (top5skinsbtn.isChecked()) {
-            localStorage.setItem("top5skinsSaved", "true");
-            window.top5skins = true;
-        } else {
-            localStorage.setItem("top5skinsSaved", "false");
-            window.top5skins = false;
-        }
-    });
-    $("#top5skins").click(); //enabled by default
-    $('.options-box.respGroup').append('<label><input type="checkbox" id="spawnspecialeffects" class="js-switch" data-switchery="true" style="display: none;"> Spawn special effects</input></label>');
-    var elemLegendSwitch4 = document.querySelector('#spawnspecialeffects');
-    var ogarioswitchbackcolor = $("input#export-ogarioThemeSettings.js-switch").next().css("background-color");
-    var spawnspecialeffectsbtn = new Switchery(elemLegendSwitch4, {
-        size: 'small',
-        color: ogarioswitchbackcolor,
-        jackColor: 'rgb(250, 250, 250)'
-    });
-
-    $("#spawnspecialeffects").click(function() {
-        if (spawnspecialeffectsbtn.isChecked()) {
-            localStorage.setItem("spawnspecialeffectsSaved", "true");
-            window.spawnspecialeffects = true;
-        } else {
-            localStorage.setItem("spawnspecialeffectsSaved", "false");
-            window.spawnspecialeffects = false;
-        }
-    });
-
-    $('.options-box.transparencyGroup').append('<label><input type="checkbox" id="AnimatedRainbowColor" class="js-switch" data-switchery="true" style="display: none;">Animated rainbow colors</input></label>');
-    var elemLegendSwitch2 = document.querySelector('#AnimatedRainbowColor');
-    var ogarioswitchbackcolor = $("input#export-ogarioThemeSettings.js-switch").next().css("background-color");
-    var AnimatedRainbowColorbtn = new Switchery(elemLegendSwitch2, {
-        size: 'small',
-        color: ogarioswitchbackcolor,
-        jackColor: 'rgb(250, 250, 250)'
-    });
-
-    $("#AnimatedRainbowColor").click(function() {
-        if (AnimatedRainbowColorbtn.isChecked()) {
-            localStorage.setItem("AnimatedRainbowColorSaved", "true");
-            tcm2.f.override();
-            // Animated Skins
-
-        } else {
-            localStorage.setItem("AnimatedRainbowColorSaved", "false");
-            toastr["info"]("Changes will fully be reflected after restart");
-        }
-    });
-
-    /*           if (UniversalChatSaved == "false") { //For Setting DoubleSplitRange
-                    $("#UniversalChat").click();
-    				setTimeout(function() {
-    				$("#ao2t-hud").hide();
-    				}, 1100);
-                }		
-    */
-
-    //var connectedbanner=0;
-    $("#gamemode").prop('disabled', false);
-    $("#region").prop('disabled', false);
-
-    if (timesopened != null) {
-        timesopened++;
-        localStorage.setItem("timesopened", timesopened);
-    } else if (timesopened == null) {
-        localStorage.setItem("timesopened", "0");
+    if (append == true) {
+        document.body.appendChild(v);
     }
-    pre_loopLM(modVersion);
+    return v;
 }
-
-
-function getEmbedUrl(url) {
-    url = url.trim();
-    var musicParams = "showinfo=0&controls=2&vq=tiny&enablejsapi=1";
-    //var musicParams = "showinfo=0&controls=2&vq=tiny&enablejsapi=1&autoplay=1";
-    var videoId = getParameterByName("v", url);
-    var listId = getParameterByName("list", url);
-    if (videoId != null && listId == null) {
-        return "https://www.youtube.com/embed/" + videoId + "?" + musicParams;
-    } else if (listId != null && videoId != null) {
-        return "https://www.youtube.com/embed/" + videoId + "?list=" + listId + "&" + musicParams;
-    } else if (url.startsWith("https://youtu.be/")) {
-        if (listId != null) {
-            return url.replace("https://youtu.be/", "https://www.youtube.com/embed/") + "&" + musicParams;
-        } else {
-            return url.replace("https://youtu.be/", "https://www.youtube.com/embed/") + "?" + musicParams;
-        }
-    } else {
-        return false;
-    }
-}
-
-function loadersetings() {
-    setTimeout(function() {
-        if (timesopened >= 3) {
-            if (checkonlyonce != "true") {
-                //if($("#SHOSHOBtn").attr('aria-pressed') == "false"){
-                if (SHOSHOBtn != "true") {
-                    toastr["error"](Premadeletter18 + '</br> <button id=enableshortcuts1 class="btn btn-sm btn-primary btn-play btn-enable-shortcuts" onclick="enableshortcuts();" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter19 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-play btn-enable-shortcuts" style="width: 100%;margin-top: 10px;">' + Premadeletter20 + '</button>', "", {
-                        timeOut: 15000,
-                        extendedTimeOut: 15000
-                    }).css("width", "300px");
-                    checkonlyonce = "true";
-                    localStorage.setItem("checkonlyonce", checkonlyonce);
-                }
-            }
-        }
-/*		
-        if (checkonlysixth != "true") {
-        //if($("#SHOSHOBtn").attr('aria-pressed') == "false"){
-		toastr["info"]('<b>Thanks to author of <span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://jimboy3100.github.io/banners/particles.gif);"> <a href="http://deltav4.glitch.me/" target="blank"><font color="yellow">http://deltav4.glitch.me/</font></a> </span> for fixing tokens.<br><font color="red"></b>LM updated!<font>').css("width", "350px");
-	
-        toastr["info"]('<center><b><font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://jimboy3100.github.io/banners/particles.gif);">'+
-		'✮✰𝑺𝒐𝒏𝒊𝒂✰✮</span></font> is the new co-developer of Legend Express. <br>'+
-		'New updates by ✮✰𝑺𝒐𝒏𝒊𝒂✰✮:<br>'+
-		'1. <font color="red">Huge Perfomance improvement</font></a> (test it yourself)<br>'+
-		'2. <font color="red">Map position fixed</font> with all LM users </i>(like party)<i><br>'+
-		'3. Opponent rings and colors improved<br>'+
-		'New updates by ℄🌀Jimboy3100:<br>'+
-		'1. Webbouncers, skin destinations autoupdate<br>'+
-		'2. Universal tool socket enabled if primary falls <br>'+
-		'<u><a target="_blank" href="http://www.legendmod.ml"><font color="blue">www.legendmod.ml</font></u></b></center>', '', {
-                    timeOut: 20000,
-                    extendedTimeOut: 20000
-                }).css("width", "450px");  
-				
-		checkonlysixth = "true";
-		localStorage.setItem("checkonlysixth", checkonlysixth);				
-       // }					
-		}
-*/
-        if (timesopened == 10 || timesopened == 100 || timesopened == 1000) {
-            //if($("#SHOSHOBtn").attr('aria-pressed') == "false"){
-            if (SHOSHOBtn != "true") {
-                toastr["error"](Premadeletter18 + '</br> <button id=enableshortcuts1 class="btn btn-sm btn-primary btn-play btn-enable-shortcuts" onclick="enableshortcuts();" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter19 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-play btn-enable-shortcuts" style="width: 100%;margin-top: 10px;">' + Premadeletter20 + '</button>', "", {
-                    timeOut: 15000,
-                    extendedTimeOut: 15000
-                }).css("width", "300px");
-                checkonlyonce = "true";
-                localStorage.setItem("checkonlyonce", checkonlyonce);
-            }
-        }
-
-    }, 3500);
-}
-
-function loadericon() {
-    //continue loadericon
-    //    setTimeout(function() {
-    setTimeout(function() {
-        $("#imagebig").fadeOut(1500);
-        setTimeout(function() {
-            $("#imagebig").remove();
-        }, 1600); //remove it
-    }, 1000);
-    //		}, 100);
-}
-
-function PremiumUsers() {
-    var ProLicenceUsersTableJS = document.createElement("script");
-    ProLicenceUsersTableJS.type = "text/javascript";
-    ProLicenceUsersTableJS.src = "https://jimboy3100.github.io/AjaxData/ProLicenceUsersTableJS.js";
-    $("body").append(ProLicenceUsersTableJS);
-}
-
-function getaccesstoken() {
-    $.ajax({
-        type: "GET",
-        url: "https://jimboy3100.github.io/AjaxData/accesstoken.html",
-        datatype: "json",
-        success: function(info) {
-            accesstomod = info[17];
-            //return accesstomod;
-            getaccesstoken2(accesstomod);
-        }
-    });
-}
-
-function getaccesstoken2(accesstomod) {
-    //    setTimeout(function() {
-    if (accesstomod != "a" && accesstomod != null) {
-        toastr["error"]('<b>[' + Premadeletter123 + ']:</b> ' + Premadeletter88 + ', <br>' + Premadeletter118 + ': <a target="_blank" href="https://jimboy3100.github.io/legendmod.user.js"><font color="yellow"><b><u>www.legendmod.ml</u></b></font></a><br>' + Premadeletter89).css("width", "300px");
-        setTimeout(function() {
-            document.documentElement.innerHTML = "";
-        }, 8000);
-    }
-    //   }, 10000);
-}
-
-function enableshortcuts() {
-    if ($("#IPBtn").attr('aria-pressed') == "false") {
-        $("#IPBtn").click();
-    }
-    if ($("#SHOSHOBtn").attr('aria-pressed') == "false") {
-        $("#SHOSHOBtn").click();
-    }
-    if ($("#MAINBTBtn").attr('aria-pressed') == "false") {
-        $("#MAINBTBtn").click();
-    }
-    if ($("#XPBtn").attr('aria-pressed') == "false") {
-        $("#XPBtn").click();
-    }
-
-
-}
-
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-}
-
-
-function appendLMhiFbPs() {
-    $("body").on('DOMNodeInserted', ".toast.toast-warning", function() {
-        MSGCOMMANDS2 = $(".toast.toast-warning").html();
-        if (MSGCOMMANDS2.includes("You are using an old version of OGARio by")) {
-            toastr["error"]("You are using a wrong version, visit: www.legendmod.ml");
-
-        } else if (MSGCOMMANDS2.includes("Welcome! You are connected to the OGARio")) {
-            $(".toast.toast-warning").remove();
-            $("#gamemode").prop('disabled', false);
-            $("#region").prop('disabled', false);
-            $(".toast.toast-warning").remove();
-            //		setTimeout(function () {
-            if (clanpass != null && clanpass != "") {
-                $("#clantag").val(clanpass);
-                $('#clantag').css('background-color', '#ff6347');
-            }
-            if (privateSrv != null) {
-                if ($('#clantag').val() == "") {
-                    if (privateSrv.includes("eu.fzogar.xyz:4000")) {
-                        $("#clantag").val("PS1");
-                    } else if (privateSrv.includes("eu.fzogar.xyz:4001")) {
-                        $("#clantag").val("PS2");
-                    } else if (privateSrv.includes("eu.fzogar.xyz:5001")) {
-                        $("#clantag").val("PS3");
-                    } else if (privateSrv.includes("eu.fzogar.xyz:5002")) {
-                        $("#clantag").val("PS4");
-                    } else if (privateSrv.includes("sg.fzogar.xyz:4000")) {
-                        $("#clantag").val("PS5");
-                    } else if (privateSrv.includes("sg.fzogar.xyz:4001")) {
-                        $("#clantag").val("PS6");
-                    } else if (privateSrv.includes("in.fzogar.xyz:443")) {
-                        $("#clantag").val("PS7");
-                    } else {
-                        $("#clantag").val("PS");
-                    }
-                }
-            }
-            $("#overlays").show();
-            $(".center-container.ogario-menu").show();
-            $(".side-container.right-container").show();
-            $(".side-container.left-container").show();
-            //		},200);
-            //		if($('#region>option:nth-child(1)').val()!=":PrS")	{
-            //		$('#region').prepend('<option value=":PrS" data-itr="PrS">Private Servers</option>');	
-            //		}
-
-
-            //userData=$.get("http://gd.geobytes.com/GetCityDetails", function (response) { $("#response").html(JSON.stringify(response, null, 4)); }, "jsonp");
-            userData = $.get("https://extreme-ip-lookup.com/json/", function(response) {
-                $("#response").html(JSON.stringify(response, null, 4));
-                if (userData != null) {
-                    localStorage.setItem("userData", JSON.stringify(userData));
-                }
-            }, "jsonp");
-            /*		setTimeout(function (){ 
-            		if (userData!=null) {localStorage.setItem("userData", JSON.stringify(userData));}
-            		},300); */
-        }
-
-
-    });
-
-
-    $("body").on('DOMSubtreeModified', "#chat-box", function() {
-        var MSGCOMMANDS3 = $(".command-text").text();
-        if (MSGCOMMANDS3.includes("You are using an old version of OGARio by")) {
-            $(".command-text").text('You are using a wrong version, visit: www.legendmod.ml');
-        } else if (MSGCOMMANDS3.includes("Welcome! You are connected to the OGARio by szymy server. Have a nice mass!")) {
-            $("#gamemode").prop('disabled', false);
-            $("#region").prop('disabled', false);
-            //	$(".toast.toast-warning").remove();
-            $(".command-text").text(Premadeletter0);
-            //		setTimeout(function () {
-            //spectate();
-            if (clanpass != null && clanpass != "") {
-                $("#clantag").val(clanpass);
-                $('#clantag').css('background-color', '#ff6347');
-            }
-            if (privateSrv != null) {
-                if ($('#clantag').val() == "") {
-                    if (privateSrv.includes("eu.fzogar.xyz:4000")) {
-                        $("#clantag").val("PS1");
-                    } else if (privateSrv.includes("eu.fzogar.xyz:4001")) {
-                        $("#clantag").val("PS2");
-                    } else if (privateSrv.includes("eu.fzogar.xyz:5001")) {
-                        $("#clantag").val("PS3");
-                    } else if (privateSrv.includes("eu.fzogar.xyz:5002")) {
-                        $("#clantag").val("PS4");
-                    } else if (privateSrv.includes("sg.fzogar.xyz:4000")) {
-                        $("#clantag").val("PS5");
-                    } else if (privateSrv.includes("sg.fzogar.xyz:4001")) {
-                        $("#clantag").val("PS6");
-                    } else if (privateSrv.includes("sg.fzogar.xyz:4002")) {
-                        $("#clantag").val("PS7");
-                    } else {
-                        $("#clantag").val("PS");
-                    }
-                }
-            }
-            $("#overlays").show();
-            $(".center-container.ogario-menu").show();
-            $(".side-container.right-container").show();
-            $(".side-container.left-container").show();
-            //		},200);
-
-            //		if($('#region>option:nth-child(1)').val()!=":PrS")	{
-            //		$('#region').prepend('<option value=":PrS" data-itr="PrS">Private Servers</option>');	
-            userData = $.get("https://extreme-ip-lookup.com/json/", function(response) {
-                $("#response").html(JSON.stringify(response, null, 4));
-                if (userData != null) {
-                    localStorage.setItem("userData", JSON.stringify(userData));
-                }
-            }, "jsonp");
-            /*		setTimeout(function (){ 
-            		if (userData!=null) {localStorage.setItem("userData", JSON.stringify(userData));}
-            		},300); */
-
-            //		}		
-        }
-
-    });
-
-    $("body").on('DOMNodeInserted', ".toast.toast-success", function() {
-        MSGCOMMANDS = $(".toast.toast-success").text();
-        MSGNICK = $(".message-nick").last().text().replace(": ", "");
-        MsgCommands1(MSGCOMMANDS, MSGNICK);
-
-    });
-    $("body").on('DOMSubtreeModified', "#chat-box", function() {
-        MSGCOMMANDS = $(".message-text").text();
-        MSGNICK = $(".message-nick").last().text().replace(": ", "");
-        MsgCommands1(MSGCOMMANDS, MSGNICK);
-
-    });
-}
-
-
 
 /*
-
-        $('#server-reconnect').click(function() {
-            adres();
-			setTimeout(function() {
-                $("#server").val(currentIP);
-            }, 2500);
-        });
-
-		$("#gamemode").change(function () {
-            adres();
-			setTimeout(function() {
-				if ($("#gamemode").val() != ":party") {				
-                $("#server").val(currentIP);
-				}
-            }, 2500);
-        });
-		$("#region").change(function () {
-            adres();
-			setTimeout(function() {
-                $("#server").val(currentIP);
-            }, 2500);
-        });		
+$("#skin-preview").removeClass("default").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<video src=\'' + t.src + "' width='500'>\"></a>");
+$("#skin-popover").append('<video id="vid1" src = "https://jimboy3100.github.io/banners/testvideomama.mp4" width="500"  controls></video>');
 */
 
-function adres(info, thismode, thisregion) {
-    var info, thismode, thisregion;
-    if (thismode == null || thisregion == null) {
-        joinSERVERfindinfo();
-    }
-    if ($("#gamemode").val() != ":party") {
-        setTimeout(function() {
-            currentIP = "live-arena-" + $("#server-token").val() + ".agar.io";
-            $("#server").val(currentIP);
-
-            if (privateSrv == null) {
-                if (realmode != ":party") {
-                    if (!thismode) {
-                        realmode = $("#gamemode").val();
-                    } else {
-                        realmode = thismode;
-                    }
-                    if (!thisregion) {
-                        region = $("#region").val();
-                    } else {
-                        region = thisregion;
-                    }
-                    if (currentIPopened == true) {
-                        history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + realmode);
-                        return currentIPopened = false;
-                    } else if (thismode != null && thisregion != null) {
-                        history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + realmode);
-                        //history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + realmode);
-                    } else {
-                        history.pushState(stateObj, "page 2", "?sip=" + currentIP);
-                        realmode = null;
-                        region = null;
-                        return realmode, region;
-                    }
-                } else if (realmode == ":party") {
-                    window.history.pushState(null, null, window.location.pathname);
-                    $("#server").val("#" + window.location.href.replace('https://agar.io/#', ''));
-                }
-            } else if (privateSrv != null) {
-                history.pushState(stateObj, "page 2", "?ip=" + privateSrv + "&?SERVER=PRIVATE");
-            }
-
-        }, 1800);
-    } else { //if party
-        setTimeout(function() {
-            //				if (info!="noinfo"){                     
-            //window.history.pushState(null, null, window.location.pathname);
-            $("#server").val("#" + window.location.href.replace('https://agar.io/#', ''));
-            //				}			
-        }, 2000);
-    }
-}
-
-function privateserverpassword() {
-    setTimeout(function() {
-        if (privateSrv != null) {
-            $(".btn-spectate").click();
-            prevPrivateServer = 1;
-            localStorage.setItem("prevPrivateServer", 1);
-            return prevPrivateServer = 1;
-        } else {
-            if (prevPrivateServer == "1") {
-                $("#clantag").val(saveclanpassword);
-                prevPrivateServer = 0;
-                localStorage.setItem("prevPrivateServer", 0);
-                return prevPrivateServer = 0;
-            }
-        }
-    }, 6000);
-}
-
-function LMserverbox() {
-
-
-    (function(a, c) {
-        function r(a, d) {
-            if (d) {
-                var f = new Date;
-                f.setTime(f.getTime() + 864E5 * d);
-                f = "; expires=" + f.toGMTString()
-            } else f = "";
-            document.cookie = "agario_redirect=" + a + f + "; path=/"
-        }
-        $(function() {
-            $("#gamemode").after('<input id="server" class="form-control" style="width: 74%;  display: none; margin-left: 0px; margin-top: 5px"><button type="submit" id="connect" class="btn btn-primary" style="width: 24%; display: none; margin-left: 6px; margin-top: -3px">Connect</button><button type="submit2" id="connect2" class="btn btn-primary btn " style="width: 24%; display: none; margin-left: 6px; margin-top: -3px">Connect</button>');
-            $("#connect2").tooltip({
-                title: "Connect to server, or restablish communication",
-                placement: "left"
-            });
-            $("#connect2").click(function() {
-                if ($("#server").val().includes("#") == false) {
-                    if ($("#server").val().includes(":80") == true) {
-                        $("#server").val($("#server").val().replace(":80", ""));
-                    } //fixing code for :80  
-                    var texture2, texture3;
-                    var texture2, texture3;
-                    texture3 = $("#server").val();
-                    texture2 = texture3.replace("live-arena-", "");
-                    texture2 = texture2.replace(".agar.io:80", "");
-                    texture2 = texture2.replace(".agar.io", "");
-                    $("#server-token").val(texture2);
-                    $("#server-join").click();
-                    /*                     setTimeout(function() {
-
-                    							if (fromstart==true){
-                    								realmode = getParameterByName("m", url);
-                    								returnfromstartfalse();
-                    							}
-                    							else{
-                                                realmode = $("#gamemode").val();
-                    							}
-                                                var tmz = $("#server").val();
-                                                currentIP = tmz;
-                                                if (realmode != ":party") {
-                                                    setTimeout(function() {
-                                                        history.pushState(stateObj, "page 2", "?sip=" + tmz);
-                                                    }, 1000);
-                                                    setTimeout(function() {
-                                                        history.pushState(stateObj, "page 2", "?sip=" + tmz);
-                                                    }, 2000);
-                                                    setTimeout(function() {
-                                                        history.pushState(stateObj, "page 2", "?sip=" + tmz);
-                                                    }, 3000);
-                                                }
-                                            }, 1000); */
-                } else {
-                    joinpartyfromconnect();
-                }
-
-            });
-        });
-        joinSIPonstart();
-        joinPLAYERonstart();
-
-    })(window, window.jQuery);
-
-
-}
-
-function urlIpWhenOpened() {
-
-    setTimeout(function() {
-            currentIP = "live-arena-" + $("#server-token").val() + ".agar.io";
-            if (searchSip != null && privateSrv == null) {
-                if (region == null) {
-                    history.pushState(stateObj, "page 2", "?sip=" + searchSip);
-                } else {
-                    history.pushState(stateObj, "page 2", "?sip=" + searchSip + "&?r=" + region + "&?m=" + realmode);
-                }
-            } else if (searchSip == null) {
-                history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + $('#gamemode').val());
-                region = $('#region').val();
-                realmode = $('#gamemode').val();
-                return region, realmode;
-            } else if (privateSrv == null) {
-                if (realmode != ":party") {
-                    history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + $('#region').val() + "&?m=" + realmode);
-                }
-            }
-
-        }, //5000
-        6000); //8000
-}
-
-function onhashchange() {
-    return false
-}
-
-function LMminimapTextAct() {
-    LMminimapText();
-    setTimeout(function() {
-        LMminimapText();
-    }, 2000);
-    setTimeout(function() {
-        LMminimapText();
-    }, 2500);
-    setTimeout(function() {
-        LMminimapText();
-    }, 3000);
-    setTimeout(function() {
-        LMminimapText();
-    }, 3500);
-    setTimeout(function() {
-        LMminimapText();
-    }, 4000);
-    setTimeout(function() {
-        LMminimapText();
-    }, 4500);
-    setTimeout(function() {
-        LMminimapText();
-    }, 5500);
-    setTimeout(function() {
-        LMminimapText();
-    }, 6000);
-    setTimeout(function() {
-        LMminimapText();
-    }, 6500);
-    setTimeout(function() {
-        LMminimapText();
-    }, 7000);
-    setTimeout(function() {
-        LMminimapText();
-    }, 7500);
-
-    setTimeout(function() {
-        LMminimapText();
-    }, 11000);
-    setTimeout(function() {
-        LMminimapText();
-    }, 12000);
-    setTimeout(function() {
-        LMminimapText();
-    }, 18000);
-    setTimeout(function() {
-        LMminimapText();
-    }, 22000);
-}
-
-function LMminimapText() {
-    var c = document.getElementById("minimap-sectors");
-    var ctx = c.getContext("2d");
-    ctx.clearRect(0, 0, c.width, c.height / 9);
-    ctx.font = "16px Georgia";
-    if (searchSip != null) {
-        ctx.fillText(minbtext, c.width / 2, 22)
-    } else if (privateSrv != null) {
-        ctx.fillText(minbtext3, c.width / 2, 22);
-    } else {
-        ctx.fillText(minbtext2, c.width / 2, 22);
-    }
-}
-
-function delay(time, func) {
-    setTimeout(function() {
-        func();
-    }, time);
-}
-
-function spectate() {
-    //    hideMenu();
-    $(".btn-spectate").click();
-}
-
-function play() {
-    $('*[data-itr="page_play"]').click();
-}
-
-function changeServer() {
-    $("#server-reconnect").click();
-    //    adres();
-    appendLog($("#leaderboard-positions").text());
-}
-
-
-
-function isValidIpAndPort(input) {
-    var parts = input.split(":");
-    var ip = parts[0].split(".");
-    var port = parts[1];
-    return validateNum(port, 1, 65535) &&
-        ip.length == 4 &&
-        ip.every(function(segment) {
-            return validateNum(segment, 0, 255);
-        });
-}
-
-function validateNum(input, min, max) {
-    var num = +input;
-    return num >= min && num <= max && input === num.toString();
-}
-
-function joinToken(token) {
-    //var lastMode = $("#gamemode").val();
-    appendLog($("#leaderboard-positions").text());
-    $("#joinPartyToken").val(token);
-    $("#join-party-btn").click();
-    $("#joinPartyToken").val("");
-    $("#gamemode").val("");
-    //setTimeout(function(){ $("#gamemode").val(lastMode); }, 1000);
-    currentToken = token;
-    if (localStorage.getItem("showTK") == "true") {
-        //        $("#cur-tk-hud").fadeTo('fast', 0.2).fadeTo('fast', 1.0);
-        //        $("#cur-tk-hud").text("TK: #" + currentToken).attr("style", "opacity: 0;");
-
-    }
-    $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-}
-
-function searchHandler(searchStr) {
-    searchStr = searchStr.trim();
-    if (searchIPHandler(searchStr)) { // is an IP      
-    } else if (searchTKHandler(searchStr)) { // is a token     
-    } else {
-        searchPlayer(searchStr);
-    }
-}
-
-function searchTKHandler(searchStr) {
-    searchStr = searchStr.trim();
-
-    if (searchStr.startsWith("https://agar.io/#")) {
-        joinpartyfromconnect(searchStr.replace("https://agar.io/#", ""));
-        realmodereturn();
-
-    } else if (searchStr.startsWith("agar.io/#")) {
-        joinToken(searchStr.replace("agar.io/#", ""));
-        realmodereturn();
-    } else {
-        return false;
-    }
-    $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-    return true;
-}
-
-function realmodereturn() {
-    region = $("#region").val();
-    realmode = $("#gamemode").val();
-    return realmode, region;
-}
-
-function realmodereturnfromStart() {
-    region = getParameterByName("r", url);
-    realmode = getParameterByName("m", url);
-    fromstart = true;
-    return fromstart, region, realmode, fromstart;
-}
-
-function returnfromstartfalse() {
-    return fromstart = false;
-}
-
-function searchIPHandler(searchStr) { //VERY WEIRD FUNCTION, MOD DOESNT LOAD IF CHANGED
-    //	if (messageone==0){toastr["info"]("Initializing Communication, please wait...").css("width", "250px");}
-    region = $("#regioncheck").val(); //...
-    realmode = $("#gamemodecheck").val(); //...
-    $("#Backtomenu").hide();
-    hideMenu();
-    showSearchHud();
-    //setTimeout(function () {
-    searchStr = searchStr.trim();
-    if (isValidIpAndPort(searchStr)) {
-        findIP(searchStr);
-    } else if (isValidIpAndPort(searchStr.replace("wss://", ""))) {
-        findIP(searchStr.replace("wss://", ""));
-    } else if (isValidIpAndPort(searchStr.replace("agar.io/?search=wss://", ""))) {
-        findIP(searchStr.replace("agar.io/?search=wss://", ""));
-    } else if (isValidIpAndPort(searchStr.replace("https://agar.io/?search=wss://", ""))) {
-        findIP(searchStr.replace("https://agar.io/?search=wss://", ""));
-    } else if (getParameterByName("search", searchStr)) {
-        if (region) {
-            $('#region option[value="' + region + '"]').prop('selected', 'selected').change();
-            getInfo();
-        }
-        //      MC.setGameMode(mode);                  //important
-        findIP(ip.replace("wss://", ""));
-    } else {
-        return false;
-    }
-    return true;
-    //}, 1000);
-}
-
-function findIP(searchIP) {
-    //   setTimeout(function() {
-    if (realmode == ":party") {
-        $('#gamemode option[value=":party"]').prop('selected', 'selected').change();
-    }
-    if (realmode == ":ffa") {
-        $('#gamemode option[value=""]').prop('selected', 'selected').change();
-    }
-    if (realmode == ":teams") {
-        $('#gamemode option[value=":teams"]').prop('selected', 'selected').change();
-    }
-    if (realmode == ":experimental") {
-        $('#gamemode option[value=":experimental"]').prop('selected', 'selected').change();
-    }
-    //   }, 1500); //weird
-    if (!searching) {
-        if ($.trim(searchIP) == '') {} else {
-            //            showCancelSearch();
-            searching = true;
-            var interval = 1800;
-            var maxTries = 8;
-            var numTries = 0;
-            var numAttempts = 0;
-            var maxAttempts = 2;
-            toastr["success"](Premadeletter21 + " \'wss://" + searchIP + "\'...").css("width", "210px");
-            numTries++;
-            if (currentIP == searchIP) {
-                $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-                searching = false;
-                //                hideCancelSearch();
-                //hideSearchHud();
-                toastr["info"](Premadeletter29 + '! </br> <button  class="btn btn-play btn-primary btn-needs-server" onclick=hideSearchHud();play(); style="margin-top: 10px;border-color: darkblue;">' + Premadeletter13 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-spectate-shortcut" onclick=hideSearchHud(); style="width: 100%;margin-top: 10px;">' + Premadeletter14 + '</button>', "", {
-                    timeOut: 20000,
-                    extendedTimeOut: 20000
-                }).css("width", "210px");
-                //    testmessage();
-                //MC.setQuality($('#quality').val());
-                //showMenu();
-            } else {
-                changeServer();
-                timerId = setInterval(function() {
-                    //                    if (MC.isConnecting() == false || numAttempts == maxAttempts) {
-                    if (numAttempts == maxAttempts) {
-                        numAttempts = 0;
-                        //console.log("MC.isConnecting(): " + MC.isConnecting());
-                        numTries++;
-                        toastr["success"](Premadeletter30 + ": " + numTries + "\/" + maxTries).css("width", "210px");
-                        if (numTries >= maxTries) {
-                            $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-                            clearInterval(timerId);
-                            searching = false;
-                            hideCancelSearch();
-                            toastr["error"](Premadeletter31).css("width", "210px");
-                        }
-                        if (currentIP == searchIP) {
-                            $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-                            clearInterval(timerId);
-                            searching = false;
-                            hideCancelSearch();
-                            //hideSearchHud();							
-                            toastr["info"](Premadeletter29 + '! </br> <button  class="btn btn-play btn-primary btn-needs-server" onclick=hideSearchHud();play(); style="margin-top: 10px;border-color: darkblue;">' + Premadeletter13 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-spectate-shortcut" onclick=hideSearchHud(); style="width: 100%;margin-top: 10px;">' + Premadeletter14 + '</button>', "", {
-                                timeOut: 20000,
-                                extendedTimeOut: 20000
-                            }).css("width", "210px");
-                            //       testmessage();
-                            //		$("#gamemode").val("nothing");
-                            //MC.setQuality($('#quality').val());
-                            //showMenu();
-                        } else {
-                            //console.log("MC.isConnecting(): " + MC.isConnecting());
-                            changeServer();
-                        }
-                    } else {
-                        numAttempts++;
-                        //console.log("numAttempts: " + numAttempts);
-                    }
-                }, interval);
-
-            }
-        }
-    } else {
-        $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-        clearInterval(timerId);
-        searching = false;
-        //        hideCancelSearch();
-        $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-        toastr["error"](Premadeletter32 + "!").css("width", "210px");
-    }
-}
-
-function searchPlayer(searchString) {
-    if (!searching) {
-        if ($.trim(searchString) == '') {} else {
-            //            showCancelSearch();
-            searching = true;
-            //var interval = 2500;
-            var interval = 1800;
-            var maxTries = 8;
-            var numTries = 0;
-            var minNamesFound = 3;
-            var numAttempts = 0;
-            var maxAttempts = 2;
-            toastr["success"](Premadeletter30 + " \'" + searchString + "\'...").css("width", "210px");
-            var leaderboard = $("#leaderboard-positions").text();
-            var names = searchString.split(/[1-9]\.\s|10\.\s/g).filter(function(el) {
-                return el.length != 0;
-            });
-            //console.log(leaderboard);
-
-            var numNames = names.length;
-            //console.log("Number of names: " + numNames);
-
-            var found = false;
-            numTries++;
-            toastr["success"](Premadeletter30 + ": " + numTries + "\/" + maxTries).css("width", "210px");
-            if (numNames == 1) {
-                found = foundName(leaderboard, searchString);
-            } else if (numNames > 1) {
-                found = foundNames(leaderboard, names, minNamesFound);
-            }
-
-            if (found) {
-                $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-                searching = false;
-                //                hideCancelSearch();
-                //hideSearchHud();
-                toastr["info"](Premadeletter29 + '! </br> <button  class="btn btn-play btn-primary btn-needs-server" onclick=hideSearchHud();play(); style="margin-top: 10px;border-color: darkblue;">' + Premadeletter13 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-spectate-shortcut" onclick=hideSearchHud(); style="width: 100%;margin-top: 10px;">' + Premadeletter14 + '</button>', "", {
-                    timeOut: 20000,
-                    extendedTimeOut: 20000
-                }).css("width", "210px");
-                //		testmessage();
-                $("#gamemode").val("nothing");
-                //MC.setQuality($('#quality').val());
-                //showMenu();
-            } else {
-                changeServer();
-
-                // start timer
-
-                timerId = setInterval(function() {
-
-                    //    if (MC.isConnecting() == false || numAttempts == maxAttempts) {
-                    if (numAttempts == maxAttempts) {
-
-                        numAttempts = 0;
-                        //console.log("MC.isConnecting(): " + MC.isConnecting());
-                        leaderboard = $("#leaderboard-positions").text();
-
-                        //console.log(leaderboard);
-                        //console.log("Number of names: " + numNames);
-
-                        if (numNames == 1) {
-                            found = foundName(leaderboard, searchString);
-                        } else if (numNames > 1) {
-                            found = foundNames(leaderboard, names, minNamesFound);
-                        }
-                        numTries++;
-                        toastr["success"](Premadeletter30 + ": " + numTries + "\/" + maxTries).css("width", "210px");
-                        if (numTries >= maxTries) {
-                            clearInterval(timerId);
-                            searching = false;
-                            //                            hideCancelSearch();
-                            toastr["error"](Premadeletter31).css("width", "210px");
-                        }
-                        if (found) {
-                            $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-                            clearInterval(timerId);
-                            searching = false;
-                            //                            hideCancelSearch();
-                            //hideSearchHud();
-                            toastr["info"](Premadeletter29 + '! </br> <button  class="btn btn-play btn-primary btn-needs-server" onclick=hideSearchHud();play(); style="margin-top: 10px;border-color: darkblue;">' + Premadeletter13 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-spectate-shortcut" onclick=hideSearchHud(); style="width: 100%;margin-top: 10px;">' + Premadeletter14 + '</button>', "", {
-                                timeOut: 20000,
-                                extendedTimeOut: 20000
-                            }).css("width", "210px");
-                            //			testmessage();
-                            //MC.setQuality($('#quality').val());
-                            //showMenu();
-                        } else {
-                            //console.log("MC.isConnecting(): " + MC.isConnecting());
-                            changeServer();
-                        }
-                    } else {
-                        numAttempts++;
-                        //console.log("numAttempts: " + numAttempts);
-                    }
-                }, interval);
-            }
-        }
-
-    } else {
-        clearInterval(timerId);
-        searching = false;
-        //        hideCancelSearch();
-        toastr["error"](Premadeletter32).css("width", "210px");
-    }
-}
-
-function copyToClipboard(element) {
-    var $temp = $("<textarea>");
-    $("body").append($temp);
-    var html = $(element).html();
-    html = html.replace(/<br>/g, "\n"); // or \r\n
-    console.log(html);
-    $temp.val(html).select();
-    document.execCommand("copy");
-    $temp.remove();
-}
-
-function copyToClipboardAll() {
-    $("#CopyTkPwLb").remove();
-    if ($("#top5-pos").text() != "") {
-        $("#connect2").after('<er id="CopyTkPwLb" style="display: none;">Server: ' + CopyTkPwLb2 + '<br>Leaderboard: ' + $("#leaderboard-positions").text() + '<br>Teamboard:' + $("#top5-pos").text() + '<br>My Game Name: ' + $("#nick").val() + '</er>');
-    } else {
-        $("#connect2").after('<er id="CopyTkPwLb" style="display: none;">Server: ' + CopyTkPwLb2 + '<br>Leaderboard: ' + $("#leaderboard-positions").text() + '<br>My Game Name: ' + $("#nick").val() + '</er>');
-    }
-    copyToClipboard('er#CopyTkPwLb');
-}
-
-function foundName(leaderboard, name) {
-    return leaderboard.includes(name);
-}
-
-function playYoutube() {
-    if (musicPlayer != undefined) {
-        var playerState = musicPlayer.getPlayerState();
-        if (playerState != 1) {
-            musicPlayer.playVideo();
-        } else {
-            musicPlayer.pauseVideo();
-        }
-    }
-}
-
-function foundNames(leaderboard, names, minNamesFound) {
-    var numNames = names.length;
-    var countFound = 0;
-    var found = false;
-
-    for (var i = 0; i < numNames; i++) {
-        found = foundName(leaderboard, names[i]);
-        if (found) {
-            countFound++;
-        }
-    }
-    //if (countFound >= minNamesFound) {alert(countFound);}
-    //console.log("found: " + countFound);
-    return (countFound >= minNamesFound) ? true : false;
-}
-
-function openhelper() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/legendhelper.js";
-    $("body").append(s);
-}
-
-function opennamechars() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/nicks/nicknamechars.js";
-    $("body").append(s);
-}
-
-function legendformIframe() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/legendformIframe.js";
-    $("body").append(s);
-}
-
-function joinpartyfromconnect(thismode) {
-    $("#party-token").val($("#server").val());
-    $("#join-party-btn-2").click();
-    return realmode = ":party";
-}
-
-function BeforeReportFakesSkin() {
-    if ($("#skin").val() != "https://jimboy3100.github.io/banners/iconfake1.png") {
-        toastr["info"](Premadeletter95 + ' <font color="red"><b>Ctrl+V</font></b>, ' + Premadeletter96).css("width", "350px"); // erase the 's		
-        copy("https://jimboy3100.github.io/banners/iconfake1.png");
-    } else {
-        ReportFakesSkin();
-    }
-}
-
-function ReportFakesSkin() {
-    var Temporaryletter1;
-    var Temporaryletter2;
-    var Languageletter320; //Leaderboard
-    var Languageletter321; //Teamboard
-    if (Languageletter320 != null) {
-        Temporaryletter2 = Languageletter320
-    } else {
-        Temporaryletter2 = "Leaderboard";
-    }
-    if (Languageletter321 != null) {
-        Temporaryletter1 = Languageletter321
-    } else {
-        Temporaryletter1 = "Teamboard";
-    }
-
-    $("#menu-footer").after('<div id="SkinChanger" style="display: none; background-image: url(' + legbgpic + '); background-color: ' + legbgcolor + '; border: 1px solid black; height: 540px; width: 500px; ";>' +
-        '<div id="SkinChangerhud" style="display:block; margin-left: 10px; margin-right: 10px;">' + //margin-left: 10px"
-        '<div id="SkinChangertoolshud1" align="middle"><h5 class="main-color"><b>' + Premadeletter119 + '</b></h5>' +
-        '<p style="color:white; font-size:12px; margin-bottom: -4px;" align="middle">' + Premadeletter120 +
-        '<br><font id= "Leadboardlet1" style="color:white; size:12px; margin-right: 70px;">' + Temporaryletter2 + '</font><font id= "Teamboardlet1" style="color:white; size:12px; margin-left: 70px;">' + Temporaryletter1 + '</font></p>' +
-        '<input id="LeaderboardInput1" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline; " " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        ' <input id="TeamboardInput1" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput2" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        ' <input id="TeamboardInput2" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput3" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        ' <input id="TeamboardInput3" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput4" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        ' <input id="TeamboardInput4" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput5" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        ' <input id="TeamboardInput5" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput6" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        ' <input id="TeamboardInput6" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput7" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        ' <input id="TeamboardInput7" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput8" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        ' <input id="TeamboardInput8" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput9" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        ' <input id="TeamboardInput9" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput10" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        ' <input id="TeamboardInput10" class="form-control" placeholder="Nickname" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '</div><p style="color:white; font-size:12px";" align="middle">' + Premadeletter121 + '<br>' + Premadeletter122 + '</u></p>' +
-        '</div></div>');
-    $('#LeaderboardInput1').copyCSS('#server-token').css('width', '40%');
-    $('#LeaderboardInput2').copyCSS('#server-token').css('width', '40%');
-    $('#LeaderboardInput3').copyCSS('#server-token').css('width', '40%');
-    $('#LeaderboardInput4').copyCSS('#server-token').css('width', '40%');
-    $('#LeaderboardInput5').copyCSS('#server-token').css('width', '40%');
-    $('#LeaderboardInput6').copyCSS('#server-token').css('width', '40%');
-    $('#LeaderboardInput7').copyCSS('#server-token').css('width', '40%');
-    $('#LeaderboardInput8').copyCSS('#server-token').css('width', '40%');
-    $('#LeaderboardInput9').copyCSS('#server-token').css('width', '40%');
-    $('#LeaderboardInput10').copyCSS('#server-token').css('width', '40%');
-    $('#TeamboardInput1').copyCSS('#server-token').css('width', '40%');
-    $('#TeamboardInput2').copyCSS('#server-token').css('width', '40%');
-    $('#TeamboardInput3').copyCSS('#server-token').css('width', '40%');
-    $('#TeamboardInput4').copyCSS('#server-token').css('width', '40%');
-    $('#TeamboardInput5').copyCSS('#server-token').css('width', '40%');
-    $('#TeamboardInput6').copyCSS('#server-token').css('width', '40%');
-    $('#TeamboardInput7').copyCSS('#server-token').css('width', '40%');
-    $('#TeamboardInput8').copyCSS('#server-token').css('width', '40%');
-    $('#TeamboardInput9').copyCSS('#server-token').css('width', '40%');
-    $('#TeamboardInput10').copyCSS('#server-token').css('width', '40%');
-
-    $("#SkinChangerhud").after('<button id="SkinBacktomenu" onclick="exitSkinChanger(); return false" class="btn btn-danger"  style="margin-left: 10px;" data-original-title="" title="">' + Premadeletter113 + '</button>');
-    OthersSkinChanger();
-    SkinBtnsPut();
-    OpenSkinChanger();
-}
-
-
-function OthersSkinChanger() {
-    //var leaderboardnames = [$("#leaderboard-positions").text().split('1. ').pop().split('2. ')[0], $("#leaderboard-positions").text().split('2. ').pop().split('3. ')[0], $("#leaderboard-positions").text().split('3. ').pop().split('4. ')[0], $("#leaderboard-positions").text().split('4. ').pop().split('5. ')[0], $("#leaderboard-positions").text().split('5. ').pop().split('6. ')[0], $("#leaderboard-positions").text().split('6. ').pop().split('7. ')[0], $("#leaderboard-positions").text().split('7. ').pop().split('8. ')[0], $("#leaderboard-positions").text().split('8. ').pop().split('9. ')[0], $("#leaderboard-positions").text().split('9. ').pop().split('10. ')[0], $("#leaderboard-positions").text().split('10. ').pop().split('11. ')[0]];
-    //$(".team-top-limit")[2].click();
-/*
-    var Top5b = {};
-    var Top5c = {};
-    var Top5d = {};
-    var Top5a = $("#top5-pos").text();
-    for (var n = 1; n <= 21; n++) {
-        Top5b[n] = Top5a.split('[')[n];
-        if (Top5b[n] != null) {
-            Top5c[n] = Top5b[n].split('] ')[1];
-            Top5d[n] = Top5c[n].slice(0, -1);
-        } else {
-            Top5d[n - 1] = Top5c[n - 1];
-            break;
-        }
-        console.log(Top5d[n]);
-    }
-
-
-    $("#LeaderboardInput1").val(leaderboardnames[0]);
-    $("#LeaderboardInput2").val(leaderboardnames[1]);
-    $("#LeaderboardInput3").val(leaderboardnames[2]);
-    $("#LeaderboardInput4").val(leaderboardnames[3]);
-    $("#LeaderboardInput5").val(leaderboardnames[4]);
-    $("#LeaderboardInput6").val(leaderboardnames[5]);
-    $("#LeaderboardInput7").val(leaderboardnames[6]);
-    $("#LeaderboardInput8").val(leaderboardnames[7]);
-    $("#LeaderboardInput9").val(leaderboardnames[8]);
-    $("#LeaderboardInput10").val(leaderboardnames[9]);
-/*
-    $("#TeamboardInput1").val(Top5d[1]);
-    $("#TeamboardInput2").val(Top5d[2]);
-    $("#TeamboardInput3").val(Top5d[3]);
-    $("#TeamboardInput4").val(Top5d[4]);
-    $("#TeamboardInput5").val(Top5d[5]);
-    $("#TeamboardInput6").val(Top5d[6]);
-    $("#TeamboardInput7").val(Top5d[7]);
-    $("#TeamboardInput8").val(Top5d[8]);
-    $("#TeamboardInput9").val(Top5d[9]);
-    $("#TeamboardInput10").val(Top5d[10]);
-*/
-for(var i=0;i<10;i++){
-	var x=i+1;
-	if (legendmod3.teamPlayers[i]){
-    $("#TeamboardInput"+x).val(legendmod3.teamPlayers[i].nick);
-	}
-	if (legendmod.leaderboard[i]){
-    $("#LeaderboardInput"+x).val(legendmod.leaderboard[i].nick);
-	}	
-}
-}
-
-function SkinBtnsPut() {
-    $("#LeaderboardInput1").after('<button id="LeaderboardIconFake1" class="btn btn-info" style="background-color: transparent;" onclick="Leader11();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#LeaderboardInput2").after('<button id="LeaderboardIconFake2" class="btn btn-info" style="background-color: transparent;" onclick="Leader12();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#LeaderboardInput3").after('<button id="LeaderboardIconFake3" class="btn btn-info" style="background-color: transparent;" onclick="Leader13();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#LeaderboardInput4").after('<button id="LeaderboardIconFake4" class="btn btn-info" style="background-color: transparent;" onclick="Leader14();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#LeaderboardInput5").after('<button id="LeaderboardIconFake5" class="btn btn-info" style="background-color: transparent;" onclick="Leader15();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#LeaderboardInput6").after('<button id="LeaderboardIconFake6" class="btn btn-info" style="background-color: transparent;" onclick="Leader16();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#LeaderboardInput7").after('<button id="LeaderboardIconFake7" class="btn btn-info" style="background-color: transparent;" onclick="Leader17();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#LeaderboardInput8").after('<button id="LeaderboardIconFake8" class="btn btn-info" style="background-color: transparent;" onclick="Leader18();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#LeaderboardInput9").after('<button id="LeaderboardIconFake9" class="btn btn-info" style="background-color: transparent;" onclick="Leader19();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#LeaderboardInput10").after('<button id="LeaderboardIconFake10" class="btn btn-info" style="background-color: transparent;" onclick="Leader20();return false;"><i class="fa fa-wpexplorer"></i></button>');
-
-
-    $("#TeamboardInput1").before('<button id="TeamboardIconFake1" class="btn btn-info" style="background-color: transparent;" onclick="Teamer11();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#TeamboardInput2").before('<button id="TeamboardIconFake2" class="btn btn-info" style="background-color: transparent;" onclick="Teamer12();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#TeamboardInput3").before('<button id="TeamboardIconFake3" class="btn btn-info" style="background-color: transparent;" onclick="Teamer13();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#TeamboardInput4").before('<button id="TeamboardIconFake4" class="btn btn-info" style="background-color: transparent;" onclick="Teamer14();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#TeamboardInput5").before('<button id="TeamboardIconFake5" class="btn btn-info" style="background-color: transparent;" onclick="Teamer15();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#TeamboardInput6").before('<button id="TeamboardIconFake6" class="btn btn-info" style="background-color: transparent;" onclick="Teamer16();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#TeamboardInput7").before('<button id="TeamboardIconFake7" class="btn btn-info" style="background-color: transparent;" onclick="Teamer17();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#TeamboardInput8").before('<button id="TeamboardIconFake8" class="btn btn-info" style="background-color: transparent;" onclick="Teamber18();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#TeamboardInput9").before('<button id="TeamboardIconFake9" class="btn btn-info" style="background-color: transparent;" onclick="Teamer19();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $("#TeamboardInput10").before('<button id="TeamboardIconFake10" class="btn btn-info" style="background-color: transparent;" onclick="Teamer20();return false;"><i class="fa fa-wpexplorer"></i></button>');
-
-}
-
-
-
-
-function exitSkinChanger() {
-    $("#main-menu").show();
-    $("#skins-panel").show();
-    $("#quick-menu").show();
-    $("#exp-bar").show();
-    $("#SkinChanger").remove();
-}
-
-function OpenSkinChanger() {
-    $("#main-menu").hide();
-    $("#skins-panel").hide();
-    $("#quick-menu").hide();
-    $("#exp-bar").hide();
-    $("#SkinChanger").show();
-}
-
-//function LeaderboardController(){core.registerSkin(otherMsg, null, 'https://jimboy3100.github.io/banners/iconfake1.png', 1, null);}
-function ProceedToChangeSkins() {
-    console.log("ProceedToChangeSkins function loaded");
-    $("#loaderIframeIcon1").show();
-    loadericon();
-    $("#SkinBacktomenu").click();
-    //    setTimeout(function() {
-    setTimeout(function() {
-        $('#server-join').click();
-    }, 1500);
-
-    setTimeout(function() {
-        $("#nick").val(previousnickname);
-    }, 4500);
-    $("#overlays").show();
-    $(".center-container.ogario-menu").show();
-    $(".side-container.right-container").show();
-    $(".side-container.left-container").show();
-    //    }, 4000);	
-}
-
-function BeforeChangingSkins() {
-    $(".btn.btn-play.btn-primary").click();
-    $("body").append('<div id="imagebig"><iframe id="loaderIframeIcon1" src="https://jimboy3100.github.io/extras/banneranimated2applyingskins.html" name="CodePen" allowfullscreen="true" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowtransparency="true" scrolling="no" frameBorder="0" class="result-iframe" style="display: none; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe></div>');
-    setTimeout(function() {
-        if ($("#captchaWindow").is(":visible") == false) {
-            console.log("No recapatcha");
-            ProceedToChangeSkins();
-        } else {
-            toastr["warning"](Premadeletter97 + '!' + '<button class="btn btn-sm btn-warning btn-spectate btn-noplay-finishedRecapatcha" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter98 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-noplay-youtube" style="width: 100%;margin-top: 10px;">' + Premadeletter99 + '</button>', "", {
-                timeOut: 40000,
-                extendedTimeOut: 40000
-            }).css("width", "300px");
-            $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click(function() {
-                ProceedToChangeSkins();
-            });
-            console.log("Recapatcha needed");
-            ogarioplayfalse();
+var Socket3;
+window.socket3Opened=false;
+var customLMID = Math.floor(Math.random()*100000);
+window.playerCellsSockReceived=[];
+window.cellsFake=[];
+window.cellsFakeFlag=0;
+
+window.videoSkinPlayerflag = {};
+window.videoSkinPlayerflag2 = {};
+//window.videoSkinPlayerflag=true;
+window.videoSkinPlayer = {};
+
+function checkVideos(a, b) {
+    checkVideos1(a);
+    //setTimeout(function() {
+    if (window.videoSkinPlayer[a].readyState == 4) {
+        if (!window.videoSkinPlayer[a].playing) {
+            window.videoSkinPlayer[a].play();
             setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 500);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 1000);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 1500);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
+                checkVideos2(a, b);
             }, 2000);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 2500);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 3000);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 3500);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 4000);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 4500);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 5000);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 5500);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 6000);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 6500);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 7000);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 7500);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 8000);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 8500);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 9000);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 9500);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 10000);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 10500);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 11000);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 11500);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 12000);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 12500);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 13000);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 13500);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 14000);
-            setTimeout(function() {
-                if ($("#captchaWindow").is(":visible") == false) {
-                    $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                    return false;
-                }
-            }, 14500);
+        };
 
+    }
+    //}, 2000);
+    return true;
+}
+
+function checkVideos2(a, b) {
+    //console.log("b is: "+ b);
+    for (i = 0; i < legendmod3.top5.length - 1; i++) {
+
+        if (i.nick == b) {
+            //legendmod3.setTarget(i.id);
+
+            if ($("#nick").val() != b) {
+                if (legendmod5.videoSkinsMusic == true) {
+                    window.videoSkinPlayerflag2[b] = false;
+                    if (legendmod3.calculateMapSector(legendmod3.top5[i].x, legendmod3.top5[i].y) == legendmod3.currentSector && legendmod3.currentSector == "C3") {
+                        //console.log("volume 0, stage 0");
+                        window.videoSkinPlayer[a].volume = 1;
+                        window.videoSkinPlayerflag2[b] = true;
+                    } else {
+                        //console.log("volume 0, stage 1");
+                        window.videoSkinPlayer[a].volume = 0;
+                    }
+                } else {
+                    //console.log("volume 0, stage 2");
+                    window.videoSkinPlayer[a].volume = 0;
+                }
+            }
         }
-    }, 2500);
+
+    }
+    if ($("#nick").val() != b) {
+        checkvideoSkinPlayerflag2(a, b);
+    }
 }
 
-function prevnamereturner() {
-    return previousnickname = $("#nick").val();
+function checkvideoSkinPlayerflag2(a, b) {
+
+    if (!window.videoSkinPlayerflag2[b]) {
+        //console.log("volume 0, stage 3");
+        window.videoSkinPlayer[a].volume = 0;
+    }
 }
 
-function ogarioplayfalse() {
-    return ogario.play = "false";
+function checkVideos1(a) {
+
+    if (!videoSkinPlayerflag[a]) {
+        console.log("[Legend mod Express] Video skins activated");
+        window.videoSkinPlayer[a] = document.createElement("video"); // create a video element
+        window.videoSkinPlayer[a].crossOrigin = 'anonymous';
+        window.videoSkinPlayer[a].src = a;
+        window.videoSkinPlayerflag[a] = true;
+    }
+};
+
+function checkVideos3(o) {
+    if (o.readyState > 0) {
+        var minutes = parseInt(o.duration / 60, 10);
+        var seconds = o.duration % 60;
+        if (minutes > 5) {
+            //toastr.warning("<b>[SERVER]:</b> " + "Avoid using video skins bigger than 6 minutes");
+			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter124);
+        }
+    }
 }
 
-function Leader11() {
-    prevnamereturner();
-    $("#nick").val($('#LeaderboardInput1').val());
-    BeforeChangingSkins();
+window.agarversion = "v12/2168/";
+//window.agarversion="v12/1922/";
+
+//window.getLatestID = window.localStorage.getItem('getLatestID');
+window.getLatestID = "2230";
+window.getLatestconfigVersion = window.localStorage.getItem('EnvConfig.configVersion');
+if (window.getLatestID != null && window.getLatestconfigVersion != null && window.getLatestID != undefined && window.getLatestconfigVersion != undefined) {
+    window.agarversion = "v" + window.getLatestconfigVersion + "/" + window.getLatestID + "/";
 }
 
-function Leader12() {
-    prevnamereturner();
-    $("#nick").val($('#LeaderboardInput2').val());
-    BeforeChangingSkins();
+function pauseVideos() {
+    setTimeout(function() {
+        Object.getOwnPropertyNames(window.videoSkinPlayer).forEach(function(element) {
+            if (window.videoSkinPlayer[element] && window.videoSkinPlayer[element].playing) {
+                window.videoSkinPlayer[element].pause();
+            }
+            //console.log(element);
+        });
+    }, 1000);
 }
 
-function Leader13() {
-    prevnamereturner();
-    $("#nick").val($('#LeaderboardInput3').val());
-    BeforeChangingSkins();
-}
+//functions for mods
 
-function Leader14() {
-    prevnamereturner();
-    $("#nick").val($('#LeaderboardInput4').val());
-    BeforeChangingSkins();
-}
+function LegendModSpawn() {};
+function LegendModDeath() {};
+//window.Bufferdata;
+//window.generatedClientKey;
+//window.generatedProtocolKey
 
-function Leader15() {
-    prevnamereturner();
-    $("#nick").val($('#LeaderboardInput5').val());
-    BeforeChangingSkins();
-}
+//window.disableIntegrity=false;
+window.lastejected = false;
 
-function Leader16() {
-    prevnamereturner();
-    $("#nick").val($('#LeaderboardInput6').val());
-    BeforeChangingSkins();
-}
+function calcTarget() {};
+function CellTimerTrigger() {};
 
-function Leader17() {
-    prevnamereturner();
-    $("#nick").val($('#LeaderboardInput7').val());
-    BeforeChangingSkins();
-}
+//function historystate(){};
+var Lmagarversion = "";
 
-function Leader18() {
-    prevnamereturner();
-    $("#nick").val($('#LeaderboardInput8').val());
-    BeforeChangingSkins();
-}
+window.LMGameConfiguration = $.ajax({
+    type: "GET",
+    url: "https://jimboy3100.github.io/agario/live/" + Lmagarversion + "GameConfiguration.json",
+    async: false,
+    datatype: "jsonp",
+    success: function(info) {
+        //var GameConfiguration = info;
+    }
+}).responseJSON;
+//weird but it works....
 
-function Leader19() {
-    prevnamereturner();
-    $("#nick").val($('#LeaderboardInput9').val());
-    BeforeChangingSkins();
-}
+setTimeout(function() {
+    if (window.LMGameConfiguration == undefined) {
+        window.LMGameConfiguration = $.ajax({
+            type: "GET",
+            url: "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + "GameConfiguration.json",
+            async: false,
+            datatype: "jsonp",
+            success: function(info) {
+                //var GameConfiguration = info;
+            }
+        }).responseJSON;
+    }
+}, 3000);
+setTimeout(function() {
+    if (window.LMGameConfiguration != undefined) {
+        window.LMAgarGameConfiguration = window.LMGameConfiguration;
+        window.EquippableSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Equippable Skins"];
+    }
+}, 5000);
 
-function Leader20() {
-    prevnamereturner();
-    $("#nick").val($('#LeaderboardInput10').val());
-    BeforeChangingSkins();
-}
+window.predictedGhostCells=[];
+//set values outside ogario
+window.playerCellsId = [];
+//window.counterCell=0;
+window.leaderboardlimit = 20;
+window.teamboardlimit = 20;
+window.vanillaskins = false; //to enable vanilla skins it must be true
+window.spawnspecialeffects = false;
+window.top5skins = false;
+//window.customskinsname;
+//window.customskinsurl;
 
-function Teamer11() {
-    prevnamereturner();
-    $("#nick").val($("#TeamboardInput1").val());
-    BeforeChangingSkins();
-}
-
-function Teamer12() {
-    prevnamereturner();
-    $("#nick").val($("#TeamboardInput2").val());
-    BeforeChangingSkins();
-}
-
-function Teamer13() {
-    prevnamereturner();
-    $("#nick").val($("#TeamboardInput3").val());
-    BeforeChangingSkins();
-}
-
-function Teamer14() {
-    prevnamereturner();
-    $("#nick").val($("#TeamboardInput4").val());
-    BeforeChangingSkins();
-}
-
-function Teamer15() {
-    prevnamereturner();
-    $("#nick").val($("#TeamboardInput5").val());
-    BeforeChangingSkins();
-}
-
-function Teamer16() {
-    prevnamereturner();
-    $("#nick").val($("#TeamboardInput6").val());
-    BeforeChangingSkins();
-}
-
-function Teamer17() {
-    prevnamereturner();
-    $("#nick").val($("#TeamboardInput7").val());
-    BeforeChangingSkins();
-}
-
-function Teamer18() {
-    prevnamereturner();
-    $("#nick").val($("#TeamboardInput8").val());
-    BeforeChangingSkins();
-}
-
-function Teamer19() {
-    prevnamereturner();
-    $("#nick").val($("#TeamboardInput9").val());
-    BeforeChangingSkins();
-}
-
-function Teamer20() {
-    prevnamereturner();
-    $("#nick").val($("#TeamboardInput10").val());
-    BeforeChangingSkins();
-}
-
-function copy(text) {
-    $("#tempCopy").val(text);
-    $("#tempCopy").show();
-    $("#tempCopy").select();
-    document.execCommand('copy');
-    $("#tempCopy").hide();
-    $("#tempCopy").val("");
-}
-/*
-function fzogarOgarSettings(datasent2){
-        setTimeout(function() {
-            $("#import-settings-btn").attr('class', 'btn btn-success');
-            document.getElementById("import-settings").value = datasent2;
-            window.history.pushState(null, null, window.location.pathname);
-            //$('#import-settings-btn').click();
-			$('#import-settings-btn2').click();
-        }, 100);
-}		
-
-function fzogarOgarIframe() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/AjaxData/fzogarOgarIframe.js";
-    $("body").append(s);
-}
-
-
-function fzogarOgarIframeListener(){
-///////////////////////////////////////////////////////////////////////////
-// Here "addEventListener" is for standards-compliant web browsers and "attachEvent" is for IE Browsers.
-var eventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
-var eventer = window[eventMethod];
-// Now...
-// if 
-//    "attachEvent", then we need to select "onmessage" as the event. 
-// if 
-//    "addEventListener", then we need to select "message" as the event
-var messageEvent = eventMethod == "attachEvent" ? "onmessage" : "message";
-// Listen to message from child IFrame window
-eventer(messageEvent, function (e) {
-       //alert(e.data);
-       // Do whatever you want to do with the data got from IFrame in Parent form.
-	   if (~e.data.indexOf("PostedOgarSettings1")){ 
-
-//		try{window.parent.postMessage("PostedOgarSettings2?datasent="+$('#export-settings').val(), "*"); 
-//        } catch (e) {}
-		//alert(e.data);
-		datasent2=e.data;
-		datasent2=datasent2.replace("PostedOgarSettings1?datasent=", "");
-		fzogarOgarSettings(datasent2);
-	//	var datasent = getParameterByName("datasent", datasent2);
-	//   alert(datasent);
-	   
-	   }
-		return datasent2;
-}, false);
-///////////////////////////////////////////////////////////////////////////
+/*core.registerSkin('fly', null, 'https://i.imgur.com/poFMdZd.png', 1, null)
+core.registerSkin = function(a, b, c, d, e){
+	window.customskinsname=a;
+	window.customskinsurl=c;
 }
 */
-function LegendSettingsfirst() {
-    $('#export-settings').before('<label><input type="checkbox" id="export-LegendSettings" class="js-switch" data-switchery="true" checked style="display: none;"> API</label>');
-    var elemLegendSwitch = document.querySelector('#export-LegendSettings');
-    var ogarioswitchbackcolor = $("input#export-ogarioThemeSettings.js-switch").next().css("background-color");
-    var switcheryLegendSwitch = new Switchery(elemLegendSwitch, {
-        size: 'small',
-        color: ogarioswitchbackcolor,
-        jackColor: 'rgb(250, 250, 250)'
-    });
-    $('#import-settings').before('<label><input type="checkbox" id="import-LegendSettings" class="js-switch" data-switchery="true" checked style="display: none;"> API</label>');
-    var elemLegendSwitch2 = document.querySelector('#import-LegendSettings');
-    var switcheryLegendSwitch2 = new Switchery(elemLegendSwitch2, {
-        size: 'small',
-        color: ogarioswitchbackcolor,
-        jackColor: 'rgb(250, 250, 250)'
-    });
+var dyinglight1load;
 
-    LegendJSON = JSON.parse(document.getElementById("export-settings").value);
-    LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch);
-    $("#export-settings-btn").click(function() {
-        LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch);
-        setTimeout(function() {
-            copy($("#export-settings").val());
-        }, 200);
-    });
-
-    $("#import-settings-btn").clone().insertAfter("#import-settings-btn").attr('id', 'import-settings-btn2');
-    $("#import-settings-btn2").css({
-        width: "676px",
-        margin: "12px"
-    });
-    $("#import-settings-btn").hide();
-    $("#import-settings-btn2").click(function() {
-        LegendSettingsImport(switcheryLegendSwitch2);
-        return switcheryLegendSwitch, switcheryLegendSwitch2;
-    });
-
+function UpperCase(str) {
+    return str.toUpperCase();
 }
 
-function LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch) {
-    setTimeout(function() {
-        if (switcheryLegendSwitch.isChecked()) {
-            LegendJSON = JSON.parse(document.getElementById("export-settings").value);
-            parseLegendJSONAPI(LegendJSON);
-            var LegendJSONnice = JSON.stringify(LegendJSON, null, 4);
-            document.getElementById("export-settings").value = LegendJSONnice;
-        } else {
-            LegendJSON = JSON.parse(document.getElementById("export-settings").value);
-            parseLegendJSONAPI(LegendJSON);
-            delete LegendJSON.legendSettings;
-            var LegendJSONnice = JSON.stringify(LegendJSON, null, 4);
-            document.getElementById("export-settings").value = LegendJSONnice;
-        }
-        return LegendJSON;
-    }, 100);
+function LowerCase(str) {
+    return str.toLowerCase();
+}
+var legendflags = ["argentina", "belarus", "cambodia", "isis", "jamaica", "mexico", "pakistan", "poland", "scotland", "somalia", "spain", "sweden", "switzerland", "thailand", "venezuela", "2ch", "4chan", "8ch", "9gag", "cameron", "irs", "receita-federal", "9gag", "agario-candle", "australia", "austria", "ayy-lmao", "bait", "bangladesh", "belgium", "berlusconi", "blatter", "boris", "bosnia", "botswana", "brazil", "bulgaria", "bush", "byzantium", "cambodia", "canada", "chavez", "chile", "china", "cia", "clinton", "confederate", "croatia", "cuba", "denmark", "dilma", "earth", "estonia", "european-union", "facebook", "facepunch", "feminism", "fidel", "finland", "france", "french-kingdom", "german-empire", "germany", "greece", "hillary", "hollande", "hungary", "imperial-japan", "india", "indiana", "iran", "iraq", "ireland", "italy", "jamaica", "japan", "kc", "kim-jong-un", "latvia", "lithuania", "luxembourg", "maldivas", "mars", "matriarchy", "merkel", "mexico", "nasa", "netherlands", "nigeria", "north-korea", "norway", "obama", "origin", "pakistan", "palin", "patriarchy", "peru", "pewdiepie", "piccolo", "pokerface", "portugal", "prodota", "prussia", "putin", "qing-dynasty", "quebec", "queen", "reddit", "romania"];
+
+var emoticonicons = {
+    ':)': 'smile.svg',
+    ';)': 'wink.svg',
+    '=)': 'smirk.svg',
+    ':D': 'grin.svg',
+    'X-D': 'xgrin.svg',
+    '=D': 'joy.svg',
+    ':(': 'sad.svg',
+    ';(': 'cry.svg',
+    ':P': 'tongue.svg',
+    ';P': 'tonguew.svg',
+    ':*': 'kiss.svg',
+    '$)': 'smileh.svg',
+    '<3': 'heart.svg',
+    '8=)': 'cool.svg',
+    ':o': 'astonished.svg',
+    '(:|': 'sweat.svg',
+    ':|': 'neutral.svg',
+    ':\\': 'unamused.svg',
+    ':@': 'pouting.svg',
+    '|-)': 'sleep.svg',
+    '^_^': 'relaxed.svg',
+    '-_-': 'expressionless.svg',
+    '$_$': 'money.svg',
+    'O:)': 'angel.svg',
+    '3:)': 'devil.svg',
+    '(poop)': 'poo.svg',
+    '(fuck)': 'finger.svg',
+    '(clap)': 'clap.svg',
+    '(ok)': 'ok.svg',
+    '(victory)': 'victory.svg',
+    '(y)': 'thumb.svg',
+    '(n)': 'thumbd.svg',
+
+    '(angry)': 'newangry.svg',
+    '(clown)': 'newclown.svg',
+    '(crazy)': 'newcrazy.svg',
+    '(devil)': 'newdevil.svg',
+    '(devil2)': 'newdevil2.svg',
+    '(fb)': 'newfb.svg',
+    '(google)': 'newgplus.svg',
+    '(ghost)': 'newghost.svg',
+    '(heel)': 'newheel.svg',
+    '(kiss)': 'newkiss.svg',
+    '(lipstick)': 'newlipstick.svg',
+    //				'(rage)': 'newrage.svg',
+    '(teacher)': 'newteacher.svg',
+    '(together)': 'newtogether.svg',
+    '(toothy)': 'newtoothy.svg',
+    '(baby)': 'newbaby.svg',
+    '(wow)': 'newwow.svg'
 }
 
-function parseLegendJSONAPI(LegendJSON) {
-
-    if (LegendJSON.ogarioCommands.comm15 == undefined) {
-        LegendJSON.ogarioCommands.comm15 = "Fake Tricksplit";
-        LegendJSON.ogarioCommands.comm16 = "Popsplit";
-        LegendJSON.ogarioCommands.comm17 = "Double Popsplit";
-        LegendJSON.ogarioCommands.comm18 = "Reversed Tricksplit";
-        LegendJSON.ogarioCommands.comm19 = "Canonsplit";
-        LegendJSON.ogarioCommands.comm20 = "Reversed Canonsplit";
-        LegendJSON.ogarioCommands.comm21 = "Bowlingsplit";
-        LegendJSON.ogarioCommands.comm22 = "Auto feed trick";
-        LegendJSON.ogarioCommands.comm23 = "Pause";
-        LegendJSON.ogarioCommands.comm24 = "ANTI alarm stage 1";
-        LegendJSON.ogarioCommands.comm25 = "ANTI alarm stage 2";
-        LegendJSON.ogarioCommands.comm26 = "ANTI alarm stage 3";
-        LegendJSON.ogarioCommands.comm27 = "ANTI alarm stage 4";
-        LegendJSON.ogarioCommands.comm28 = "ANTI alarm stage 5";
-        LegendJSON.ogarioCommands.comm29 = "Presplit";
-        LegendJSON.ogarioCommands.comm30 = "Party Run tricks";
+var languagetexts = {
+    'pl': {
+        'start': 'Start',
+        'settings': 'Ustawienia',
+        'restoreSettings': 'Przywróc ustawienia domyślne',
+        'animationGroup': 'Animacja',
+        'zoomGroup': 'Zoom',
+        'respGroup': 'Odrodzenie',
+        'namesGroup': 'Nazwy',
+        'massGroup': 'Masa',
+        'skinsGroup': 'Skiny',
+        'foodGroup': 'Pokarm',
+        'transparencyGroup': 'Przezroczystość / kolory',
+        'gridGroup': 'Siatka / sektory',
+        'miniMapGroup': 'Minimapa',
+        'helpersGroup': 'Wspomagacze',
+        'mouseGroup': 'Sterowanie myszką',
+        'hudGroup': 'HUD',
+        'chatGroup': 'Czat',
+        'statsGroup': 'Statystyki',
+        'extrasGroup': 'Dodatkowe',
+        'noSkins': 'Wyłącz skiny',
+        'noNames': 'Wyłącz nazwy',
+        'noColors': 'Wyłącz kolory',
+        'showMass': 'Pokaż masę',
+        'skipStats': 'Pomiń statystyki po śmierci',
+        'showQuest': 'Pokaż zadanie (quest)',
+        'autoZoom': 'Auto zoom',
+        'animation': 'Opóźnienie animacji',
+        'suckAnimation': 'Cell Eat [Sucking] Animation',
+        'virusGlow': 'Virus Glow',
+        'borderGlow': 'Border Glow',
+        'zoomSpeedValue2': 'Szybkość zoomu',
+        'quickResp': 'Szybkie odrodzenie (klawisz)',
+        'autoResp': 'Auto odrodzenie',
+        'autoHideCellsInfo': 'Autoukrywanie nazw i masy',
+        'autoHideNames': 'Autoukrywanie nazw',
+        'autoHideMass': 'Autoukrywanie masy',
+        'autoHideFood': 'Autoukrywanie pokarmu - masa',
+        'autoHideFoodOnZoom': 'Autoukrywanie pokarmu - zoom',
+        'optimizedNames': 'Zoptymalizowane nazwy',
+        'hideMyName': 'Ukryj własną nazwę',
+        'hideTeammatesNames': 'Ukryj nazwy graczy teamu',
+        'optimizedMass': 'Optimized mass (+/-2%) & Merge timer BETA off\n Suggested to be enabled for Lag reduce',
+        'shortMass': 'Skrócona masa (k)',
+        'virMassShots': 'Licznik strzałów (wirusy)',
+        'hideMyMass': 'Ukryj własną masę',
+        'hideEnemiesMass': 'Ukryj masę przeciwników',
+        'vanillaSkins': 'Podstawowe skiny',
+        'customSkins': 'Własne skiny',
+        'videoSkins': 'Video skins (.mp4 .webm .ogv)',
+        'videoSkinsMusic': 'Sound from other\'s Video skins when both C3',
+        'myTransparentSkin': 'Mój przezroczysty skin',
+        'myCustomColor': 'Mój własny kolor',
+        'transparentCells': 'Przezroczyste kulki',
+        'transparentViruses': 'Przezroczyste wirusy',
+        'transparentSkins': 'Przezroczyste skiny',
+        'showGrid': 'Siatka',
+        'showBgSectors': 'Sektory w tle',
+        'showMapBorders': 'Granice mapy',
+        'showGhostCells': 'Duchy kulek (fps drop)',
+        'showGhostCellsInfo': 'Ghost cells info (confusing)',
+        'showMiniMap': 'Pokaż minimapę',
+        'showMiniMapGrid': 'Pokaż siatkę minimapy',
+        'showMiniMapGuides': 'Pokaż prowadnice na minimapie',
+        'showExtraMiniMapGuides': 'Show extra minimap guides',
+        'showMiniMapGhostCells': 'Pokaż duchy kulek na minimapie',
+        'oneColoredTeammates': 'Jednokolorowi gracze',
+        'optimizedFood': 'Zoptymalizowany pokarm',
+        'rainbowFood': 'Kolorowy pokarm',
+        'oppColors': 'Kolory przeciwników',
+        'oppRings': 'Ringi przeciwników',
+        'virColors': 'Kolory wirusów',
+        'splitRange': 'Zasięg podziału',
+        'virusesRange': 'Zasięg wirusów',
+        'textStroke': 'Obwódki nazw i masy',
+        'namesStroke': 'Obwódki nazw',
+        'massStroke': 'Obwódki masy',
+        'cursorTracking': 'Śledzenie kursora',
+        'teammatesInd': 'Wskaźniki graczy teamu',
+        'mouseSplit': 'LPM - Split myszką',
+        'mouseFeed': 'PPM - Feed myszką',
+        'mouseInvert': 'Odwróć klawisze myszki',
+        'disableChat': 'Wyłącz czat',
+        'hideChat': 'Ukryj czat',
+        'chatSounds': 'Powiadomienia dźwiękowe',
+        'chatEmoticons': 'Emotikony',
+        'showChatImages': 'Pokaż obrazki na czacie',
+        'showChatVideos': 'Pokaż filmiki na czacie',
+        'showChatBox': 'Czatbox zamiast wyskakujących wiadomości',
+        'messageSound': 'Dźwięk powiadomienia o wiadomości',
+        'commandSound': 'Dźwięk powiadomienia o komendzie',
+        'virusSoundurl': 'Virus shot sound',
+        'virusSound': 'Virus shot sound',
+        'jellyPhisycs': 'Jelly physics',
+        'showTop5': 'Pokaż top 5 teamu',
+        'showTargeting': 'Pokaż namierzanie',
+        'showTime': 'Pokaż aktualny czas',
+        'showLbData': 'Pokaż masę w topce',
+        'normalLb': 'Nagłówek \"Topka\"',
+        'centeredLb': 'Wyśrodkowana topka',
+        'fpsAtTop': 'Statystyki na górze',
+        'showStats': 'Pokaż statystyki',
+        'showStatsMass': 'Statystyki: Masa',
+        'showStatsSTE': 'Statystyki: Przedziały Masy',
+        'showStatsESTE': 'Statystyki: STE wroga',
+        'showStatsEMTE': 'Statystyki: MTE wroga',
+        'showStatsMTE': 'Statystyki: Nasze MTE',
+        'showStatsSTE': 'Statystyki: Nasze STE',
+        'showStatsTTE': 'Statystyki: Minimalna masa mate\'a do tricksplitu',
+        'showStatsPTE': 'Statystyki: Maksymalna masa wroga do presplitu',
+        'showStatsN16': 'Statystyki: n/16',
+        'showStatsFPS': 'Statystyki: FPS',
+        'blockPopups': 'Blokuj popupy (reklamy/sklep/zadanie)',
+        'hotkeys': 'Skróty klawiszowe',
+        'hk-inst-assign': 'Aby ustawić skrót klawiszowy kliknij na polu skrótu i naciśnij wybrany klawisz.',
+        'hk-inst-delete': 'Aby usunąć skrót klawiszowy kliknij na polu skrótu i naciśnij klawisz DELETE.',
+        'hk-inst-keys': 'Możliwe kombinacje skrótów klawiszowych z użyciem klawiszy CTRL oraz ALT.',
+        'hk-feed': 'Feed',
+        'hk-macroFeed': 'Szybki feed',
+        'hk-split': 'Podział',
+        'hk-doubleSplit': 'Podwójny podział',
+        'hk-split16': 'Podział na 16',
+        'hk-pause': 'Pauza kulki',
+        'hk-showTop5': 'Pokaż/ukryj top 5 teamu',
+        'hk-showTime': 'Pokaż/ukryj aktualny czas',
+        'hk-showSplitRange': 'Pokaż/ukryj zasięg podziału',
+        'hk-showSplitInd': 'Pokaż/ukryj zasięg podziału z ringami',
+        'hk-showTeammatesInd': 'Pokaż/ukryj wskaźniki graczy teamu',
+        'hk-showOppColors': 'Pokaż/ukryj kolory przeciwników',
+        'hk-toggleSkins': 'Przełącz skiny (własne/standardowe)',
+        'hk-showSkins': 'Pokaż/ukryj skiny',
+        'hk-transparentSkins': 'Włącz/wyłącz przezroczyste skiny',
+        'hk-showStats': 'Pokaż/ukryj statystyki gry',
+        'hk-toggleCells': 'Przełącz kulkę (najmniejsza/największa)',
+        'hk-showFood': 'Pokaż/ukryj pokarm',
+        'hk-showGrid': 'Pokaż/ukryj siatkę',
+        'hk-showMiniMapGuides': 'Pokaż/ukryj prowadnice na minimapie',
+        'hk-hideChat': 'Pokaż/ukryj czat',
+        'hk-showHUD': 'Pokaż/ukryj HUD',
+        'hk-copyLb': 'Kopiuj topkę',
+        'hk-showLb': 'Pokaż/ukryj topkę',
+        'hk-toggleAutoZoom': 'Włącz/wyłącz auto zoom',
+        'hk-resetZoom': 'Reset zoomu',
+        'hk-zoomLevel': 'Zoom - poziom',
+        'hk-toggleDeath': 'Przełącz miejsce śmierci',
+        'hk-clearChat': 'Pokaż historię czatu / Czyść czat',
+        'hk-showBgSectors': 'Pokaż/ukryj sektory w tle',
+        'hk-hideBots': 'Pokaż/ukryj małe boty',
+        'hk-showNames': 'Pokaż/ukryj nazwy',
+        'hk-hideTeammatesNames': 'Pokaż/ukryj nazwy graczy teamu',
+        'hk-showMass': 'Pokaż/ukryj masę',
+        'hk-showMiniMap': 'Pokaż/ukryj minimapę',
+        'hk-chatMessage': 'Napisz wiadomość na czacie',
+        'hk-quickResp': 'Szybkie odrodzenie (respawn)',
+        'hk-autoResp': 'Włącz/wyłacz auto odrodzenie',
+        'hk-switchServerMode': 'Przełącz serwer [publiczny/prywatny]',
+        'hk-showTargeting': 'Pokaż/ukryj panel namierzania',
+        'hk-voiceChat': 'Głos do tekstu',
+        'hk-GhostCellsInfo': 'Show ghost cells information',
+        'hk-Autoplay': 'Auto Play',
+        'hk-setTargeting': 'Włącz/wyłącz namierzanie (śledzenie)',
+        'hk-cancelTargeting': 'Zatrzymaj namierzanie',
+        'hk-changeTarget': 'Zmień cel',
+        'hk-privateMiniMap': 'Pokaż cel na minimapie',
+        'hk-showQuest': 'Pokaż/ukryj zadanie',
+        'commands': 'Komendy',
+        'comm1': 'Feeduj!',
+        'comm2': 'Dziel się!',
+        'comm3': 'Pomocy na %currentSector%!',
+        'comm4': 'Wróg na %currentSector%!',
+        'comm5': 'Zabij pomocnika!',
+        'comm6': 'Strzel z wirusa!',
+        'comm7': 'Zjedz wirusa!',
+        'comm8': 'Zjebałem, wybacz.',
+        'comm9': 'Ja pierdolę...',
+        'comm0': 'Kurwa mać!',
+        'comm10': 'Trick!',
+        'comm11': 'Lewo!',
+        'comm12': 'Góra!',
+        'comm13': 'Prawo!',
+        'comm14': 'Dół!',
+        'comm15': 'Fake Tricksplit',
+        'comm16': 'Popsplit',
+        'comm17': 'Double Popsplit',
+        'comm18': 'Reversed Tricksplit',
+        'comm19': 'Canonsplit',
+        'comm20': 'Reversed Canonsplit',
+        'comm21': 'Bowlingsplit',
+        'comm22': 'Auto feed trick',
+        'comm23': 'Pause',
+        'comm24': 'ANTI alarm stage 1',
+        'comm25': 'ANTI alarm stage 2',
+        'comm26': 'ANTI alarm stage 3',
+        'comm27': 'ANTI alarm stage 4',
+        'comm28': 'ANTI alarm stage 5',
+        'comm29': 'Presplit',
+        'comm30': 'Party Run tricks',
+        'saveComm': 'Zapisz komendy',
+        'theme': 'Wygląd',
+        'restoreThemeSettings': 'Przywróc ustawienia domyślne wyglądu',
+        'basicTheming': 'Podstawowy',
+        'themePreset': 'Motyw',
+        'themeType': 'Typ motywu',
+        'darkTheme': 'Ciemny motyw',
+        'lightTheme': 'Jasny motyw',
+        'mainColor': 'Kolor główny',
+        'bgColor': 'Tło',
+        'bordersColor': 'Granice mapy',
+        'gridColor': 'Siatka',
+        'sectorsColor': 'Czcionka sektorów',
+        'namesColor': 'Nazwy',
+        'namesStrokeColor': 'Obwódki nazw',
+        'massColor': 'Masa',
+        'massStrokeColor': 'Obwódki masy',
+        'virusColor': 'Wirusy',
+        'virusStrokeColor': 'Obwódki wirusów',
+        'virusGlowColor': "Virus Glow",
+        "borderGlowColor": "Border Glow",
+        'mVirusColor': 'Mothercell',
+        'mVirusStrokeColor': 'Mothercell stroke',
+        'virusGlowSize': 'Virus Glow Size',
+        'borderGlowSize': 'Border Glow Size',
+        'foodColor': 'Pokarm',
+        'namesFont': 'Czcionka nazw',
+        'massFont': 'Czcionka masy',
+        'sectorsFont': 'Czcionka sektorów',
+        'namesScale': 'Skala nazw',
+        'massScale': 'Skala masy',
+        'virMassScale': 'Skala masy wirusów',
+        'strokeScale': 'Skala obwódek tekstu',
+        'foodSize': 'Wielkość pokarmu',
+        'bordersWidth': 'Grubość granic mapy',
+        'sectorsWidth': 'Grubość siatki sektorów',
+        'sectorsFontSize': 'Rozmiar czcionki sektorów',
+        'cellsAlpha': 'Przezroczystość kulek',
+        'skinsAlpha': 'Przezroczystość skinów',
+        'virusAlpha': 'Przezroczystość wirusów',
+        'textAlpha': 'Przezroczystość nazw i masy',
+        'virusStrokeSize': 'Grubość obwódki wirusów',
+        "virusGlowSize": "Virus Glow Size",
+        'teammatesIndColor': 'Wskaźnik gracza',
+        'cursorTrackingColor': 'Śledzenie kursora',
+        'splitRangeColor': 'Zasięg podziału',
+        'qdsplitRange': 'Zasięg szybkiego podwójnego podziału', //Sonia2
+        'sdsplitRange': 'Zasięg powolnego podwójnego podziału', //Sonia2
+        'enemyBSTEDColor': 'Kolor W2STE wroga', //Sonia2
+        'enemyBSTEColor': 'Kolor WSTE wroga', //Sonia2
+        'enemyBColor': 'Kolor większego wroga', //Sonia2
+        'enemySColor': 'Kolor mniejszego wroga', //Sonia2
+        'enemySSTEColor': 'Kolor MSTE wroga', //Sonia2
+        'enemySSTEDColor': 'Kolor M2STE wroga', //Sonia2
+        'safeAreaColor': 'Bezpieczna strefa',
+        'dangerAreaColor': 'Strefa zagrożenia',
+        'ghostCellsColor': 'Duchy kulek',
+        'ghostCellsAlpha': 'Przezroczystość duchów kulek',
+        'menuTheming': 'Menu',
+        'menuPreset': 'Motyw menu',
+        'menuMainColor': 'Kolor główny',
+        'menuBtnTextColor': 'Tekst przycisku',
+        'menuPanelColor': 'Panel',
+        'menuPanelColor2': 'Panel (2)',
+        'menuTextColor': 'Tekst panelu',
+        'menuTextColor2': 'Tekst panelu (2)',
+        'btn1Color': 'Przycisk #1',
+        'btn1Color2': 'Przycisk #1 (2)',
+        'btn2Color': 'Przycisk #2',
+        'btn2Color2': 'Przycisk #2 (2)',
+        'btn3Color': 'Przycisk #3',
+        'btn3Color2': 'Przycisk #3 (2)',
+        'btn4Color': 'Przycisk #4',
+        'btn4Color2': 'Przycisk #4 (2)',
+        'menuBg': 'Grafika tła panelu',
+        'menuOpacity': 'Przezroczystość',
+        'hudTheming': 'HUD',
+        'hudMainColor': 'Kolor główny',
+        'hudColor': 'Tło',
+        'hudTextColor': 'Tekst',
+        'statsHudColor': 'Statystyki',
+        'timeHudColor': 'Czas',
+        'top5MassColor': 'Masa',
+        'lbMeColor': 'Topka - ja',
+        'lbTeammateColor': 'Topka - team',
+        'hudFont': 'Czcionka HUD',
+        'hudScale': 'Skala HUD',
+        'chatTheming': 'Czat',
+        'messageColor': 'Tło wiadomości',
+        'messageTextColor': 'Tekst wiadomości',
+        'messageTimeColor': 'Czas wiadomości',
+        'messageNickColor': 'Nick wiadomości',
+        'commandsColor': 'Tło komendy',
+        'commandsTextColor': 'Tekst komendy',
+        'commandsTimeColor': 'Czas komendy',
+        'commandsNickColor': 'Nick komendy',
+        'chatBoxColor': 'Tło czatboxu',
+        'chatScale': 'Skala czatu',
+        'miniMapTheming': 'Minimapa',
+        'miniMapSectorsColor': 'Sektory',
+        'miniMapSectorColor': 'Aktualny sektor',
+        'miniMapGuidesColor': 'Prowadnice',
+        'miniMapNickColor': 'Nick',
+        'miniMapNickStrokeColor': 'Obwódka nicku',
+        'miniMapMyCellColor': 'Moja kulka',
+        'miniMapMyCellStrokeColor': 'Obwódka mojej kulki',
+        'miniMapTeammatesColor': 'Gracze',
+        'miniMapDeathLocationColor': 'Miejsce śmierci',
+        'miniMapFont': 'Czcionka minimapy',
+        'miniMapNickFont': 'Czcionka nicku',
+        'miniMapWidth': 'Szerokość minimapy',
+        'miniMapSectorsOpacity': 'Przezroczystość sektorów',
+        'miniMapNickSize': 'Rozmiar nicku',
+        'miniMapNickStrokeSize': 'Grubość obwódki nicku',
+        'miniMapMyCellSize': 'Wielkość mojej kulki',
+        'miniMapMyCellStrokeSize': 'Grubość obwódki mojej kulki',
+        'miniMapTeammatesSize': 'Wielkość graczy',
+        'miniMapGhostCellsColor': 'Duchy kulek',
+        'miniMapGhostCellsAlpha': 'Przezroczystość duchów kulek',
+        'imagesTheming': 'Grafika / kursory',
+        'customBackground': 'Grafika tła',
+        'customCursor': 'Grafika kursora',
+        'hideChatMsgA': 'Czat został włączony!',
+        'hideChatMsgB': 'Czat został ukryty!',
+        'showSkinsMsgA': 'Skiny zostały włączone!',
+        'showSkinsMsgB': 'Skiny zostały ukryte!',
+        'hideSmallBotsMsgA': 'Małe boty stały się widoczne!',
+        'hideSmallBotsMsgB': 'Małe boty zostały ukryte!',
+        'autoRespMsgA': 'Auto odrodzenie zostało włączone!',
+        'autoRespMsgB': 'Auto odrodzenie zostało wyłączone!',
+        'autoZoomMsgA': 'Auto zoom został włączony!',
+        'autoZoomMsgB': 'Auto zoom został wyłączony!',
+        //                   'targetNotSet': 'Brak celu',
+        'targetNotSet': '',
+        'targetDead': 'Nie żyje',
+        'targetDistance': 'Dystans',
+        'targetMass': 'Masa razem',
+        'totalPartyPlayers': '',
+        'totalPartyMass': '',
+        'exportImport': 'Eksport / import ustawień',
+        'exportSettings': 'Eksportuj ustawienia',
+        'exportInfo': 'Aby wyeksportować wybrane ustawienia skopiuj poniższy kod i zapisz go w pliku tekstowym z kodowaniem Unicode.',
+        'importSettings': 'Importuj ustawienia',
+        'importInfo': 'Aby zaimportować wybrane ustawienia wklej poniżej wyeksportowany wcześniej kod i naciśnij przycisk \"Importuj ustawienia\".',
+        'profile': 'Profil',
+        'profiles': 'Profile',
+        'skins': 'Skiny',
+        'moreSkins': 'Dodaj skiny',
+        'thanks': 'Dzięki Awesome!',
+        'saveSett': 'Zapisz ustawienia',
+        'saved': 'Zapisano!',
+        'resetSett': 'Resetuj ustawienia',
+        'close': 'Zamknij',
+        'enterChatMsg': 'Napisz wiadomość',
+        'activeParties': 'Aktywne party',
+        'noActiveParties': 'Brak aktywnych party ;(',
+        'playlist': 'Playlista',
+        'pause': 'PAUZA!',
+        'visit': 'Odwiedź',
+        'exit': 'Legend mod Express: Czy na pewno chcesz opuścic grę?',
+        'blockWarn': 'UWAGA! Popupy zostały zablokowane w ustawieniach.',
+        'unblockPopups': 'Odblokuj tymczasowo',
+        'mass': 'Masa',
+        'score': 'Top',
+        'leaderboard': 'Topka',
+        'user': 'Użytkownik',
+        'userMuted': 'Użytkownik %user% został wyciszony.',
+        'userUnmuted': 'Wyłączono wyciszenie użytkownika %user%.',
+        'mute': 'Wycisz',
+        'unmute': 'Wyłącz wyciszenie',
+        'mutedUsers': 'Wyciszeni użytkownicy',
+        'activeUsers': 'Aktywni użytkownicy',
+        'showActiveUsers': 'Pokaż aktywnych użytkowników',
+        'none': 'Brak',
+        'sounds': 'Dźwięki',
+        'page_back_button': 'Wróć',
+        'page_create_party': 'Stwórz party',
+        'page_join_party': 'Dołącz',
+        'page_login_and_play': 'Zaloguj',
+        'page_logout': 'Wyloguj',
+        'page_menu_login_facebook': 'Zaloguj z Facebook',
+        'page_menu_login_google': 'Zaloguj z Google',
+        'page_menu_main_free_coins': 'Darmowe Monety',
+        'page_menu_main_gifts': 'Prezenty',
+        'page_menu_main_dailyquests': 'Zadania',
+        'page_party_join_error': 'Nie można dołączyć do tego party. Upewnij się, że token jest prawidłowy lub stwórz nowy.',
+        'page_play': 'Graj',
+        'page_play_as_guest': 'Graj jako gość',
+        'page_shop': 'Sklep',
+        'page_spectate': 'Obserwuj',
+        'page_stats': 'Statystyki'
+    },
+    'en': {
+        'start': 'Home',
+        'settings': 'Settings',
+        'restoreSettings': 'Restore default settings',
+        'animationGroup': 'Animation',
+        'zoomGroup': 'Zoom',
+        'respGroup': 'Respawn',
+        'namesGroup': 'Names',
+        'massGroup': 'Mass',
+        'skinsGroup': 'Skins',
+        'foodGroup': 'Food',
+        'transparencyGroup': 'Transparency / colors',
+        'gridGroup': 'Grid / sectors',
+        'miniMapGroup': 'Minimap',
+        'helpersGroup': 'Helpers',
+        'mouseGroup': 'Mouse control',
+        'hudGroup': 'HUD',
+        'chatGroup': 'Chat',
+        'statsGroup': 'Stats',
+        'extrasGroup': 'Extras',
+        'noSkins': 'No skins',
+        'noNames': 'No names',
+        'noColors': 'No colors',
+        'showMass': 'Show mass',
+        'skipStats': 'Skip stats after death',
+        'showQuest': 'Show quest',
+        'autoZoom': 'Auto zoom',
+        'animation': 'Animation delay',
+        'suckAnimation': 'Cell Eat [Sucking] Animation',
+        'virusGlow': 'Virus Glow',
+        'borderGlow': 'Border Glow',
+        'zoomSpeedValue2': 'Zoom speed',
+        'quickResp': 'Quick respawn (hotkey)',
+        'autoResp': 'Auto respawn',
+        'autoHideCellsInfo': 'Auto hide names and mass',
+        'autoHideNames': 'Auto hide names',
+        'autoHideMass': 'Auto hide mass',
+        'autoHideFood': 'Auto hide food - mass',
+        'autoHideFoodOnZoom': 'Auto hide food - zoom',
+        'optimizedNames': 'Optimized names',
+        'hideMyName': 'Hide my name',
+        'hideTeammatesNames': 'Hide teammates names',
+        'optimizedMass': 'Optimized mass (+/-2%) & Merge timer BETA off\r\n Suggested to be enabled for Lag reduce',
+        'shortMass': 'Short mass (k)',
+        'virMassShots': 'Virus shots',
+        'hideMyMass': 'Hide my mass',
+        'hideEnemiesMass': 'Hide enemies mass',
+        'vanillaSkins': 'Vanilla skins',
+        'customSkins': 'Custom skins',
+        'videoSkins': 'Video skins (.mp4 .webm .ogv)',
+        'videoSkinsMusic': 'Sound from other\'s Video skins when both C3',
+        'myTransparentSkin': 'My transparent skin',
+        'myCustomColor': 'My custom color',
+        'transparentCells': 'Transparent cells',
+        'transparentViruses': 'Transparent viruses',
+        'transparentSkins': 'Transparent skins',
+        'showGrid': 'Show grid',
+        'showBgSectors': 'Show background sectors',
+        'showMapBorders': 'Show map borders',
+        'showGhostCells': 'Ghost cells (fps drop)',
+        'showGhostCellsInfo': 'Ghost cells info (confusing)',
+        'showMiniMap': 'Show minimap',
+        'showMiniMapGrid': 'Show minimap grid',
+        'showMiniMapGuides': 'Show minimap guides',
+        'showExtraMiniMapGuides': 'Show extra minimap guides',
+        'showMiniMapGhostCells': 'Show ghost cells',
+        'oneColoredTeammates': 'One-colored teammates',
+        'optimizedFood': 'Optimized food',
+        'rainbowFood': 'Rainbow food',
+        'oppColors': 'Opponents colors',
+        'oppRings': 'Opponents rings',
+        'virColors': 'Viruses colors',
+        'splitRange': 'Split range',
+        'qdsplitRange': 'Quick double split range', //Sonia2
+        'sdsplitRange': 'Slow double split range', //Sonia2
+        'virusesRange': 'Viruses range',
+        'textStroke': 'Names and mass stroke',
+        'namesStroke': 'Names stroke',
+        'massStroke': 'Mass stroke',
+        'cursorTracking': 'Cursor tracking',
+        'teammatesInd': 'Teammates indicators',
+        'mouseSplit': 'LMB - Mouse split',
+        'mouseFeed': 'RMB - Mouse feed',
+        'mouseInvert': 'Invert mouse buttons',
+        'disableChat': 'Disable chat',
+        'hideChat': 'Hide chat',
+        'chatSounds': 'Sound notifications',
+        'chatEmoticons': 'Emoticons',
+        'showChatImages': 'Show images on chat',
+        'showChatVideos': 'Show videos on chat',
+        'showChatBox': 'Chatbox instead of popups',
+        'messageSound': 'Message notification sound',
+        'commandSound': 'Command notification sound',
+        'virusSoundurl': 'Virus shot sound',
+        'virusSound': 'Virus shot sound',
+        'jellyPhisycs': 'Jelly physics',
+        'showTop5': 'Show teamboard',
+        'showTargeting': 'Show targeting',
+        'showTime': 'Show current time',
+        'showLbData': 'Show leaderboard mass',
+        'normalLb': '\"Leaderboard\" header',
+        'centeredLb': 'Centered leaderboard',
+        'fpsAtTop': 'Game stats at the top',
+        'showStats': 'Show game stats',
+        'showStatsMass': 'Game stats: Mass',
+        'showStatsESTE': 'Game stats: Enemy\'s STE',
+        'showStatsEMTE': 'Game stats: Enemy\'s MTE',
+        'showStatsMTE': 'Game stats: Our MTE',
+        'showStatsSTE': 'Game stats: Our STE',
+        'showStatsTTE': 'Game stats: Minimal tricksplit teammate\'s mass',
+        'showStatsPTE': 'Game stats: Maximal enemy\'s mass for presplit',
+        'showStatsN16': 'Game stats: n/16',
+        'showStatsFPS': 'Game stats: FPS',
+        'blockPopups': 'Block popups (ads/shop/quest)',
+        'hotkeys': 'Hotkeys',
+        'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
+        'hk-inst-delete': 'To delete a hotkey click on the input field and press the DELETE key.',
+        'hk-inst-keys': 'Possible key combinations with the CTRL and ALT keys.',
+        'hk-feed': 'Feed',
+        'hk-macroFeed': 'Macro feed',
+        'hk-split': 'Split',
+        'hk-doubleSplit': 'Double split',
+        'hk-split16': 'Split 16',
+        'hk-pause': 'Cell pause',
+        'hk-showTop5': 'Show/hide teamboard',
+        'hk-showTime': 'Show/hide current time',
+        'hk-showSplitRange': 'Show/hide split range',
+        'hk-showSplitInd': 'Show/hide split indicators',
+        'hk-showTeammatesInd': 'Show/hide teammates indicators',
+        'hk-showOppColors': 'Show/hide opponents colors',
+        'hk-toggleSkins': 'Toggle skins (custom/default)',
+        'hk-showSkins': 'Show/hide skins',
+        'hk-transparentSkins': 'Toggle transparent skins',
+        'hk-showStats': 'Show/hide game stats',
+        'hk-toggleCells': 'Toggle own cells (smallest/biggest)',
+        'hk-showFood': 'Show/hide food',
+        'hk-showGrid': 'Show/hide grid',
+        'hk-showMiniMapGuides': 'Show/hide minimap guides',
+        'hk-hideChat': 'Show/hide chat',
+        'hk-showHUD': 'Show/hide HUD',
+        'hk-copyLb': 'Copy leaderboard',
+        'hk-showLb': 'Show/hide leaderboard',
+        'hk-toggleAutoZoom': 'Toggle auto zoom',
+        'hk-resetZoom': 'Reset zoom',
+        'hk-zoomLevel': 'Zoom level',
+        'hk-toggleDeath': 'Toggle death location',
+        'hk-clearChat': 'Show chat history / Clear chat',
+        'hk-showBgSectors': 'Show/hide background sectors',
+        'hk-hideBots': 'Show/hide small bots',
+        'hk-showNames': 'Show/hide names',
+        'hk-hideTeammatesNames': 'Show/hide teammates names',
+        'hk-showMass': 'Show/hide mass',
+        'hk-showMiniMap': 'Show/hide minimap',
+        'hk-chatMessage': 'Enter chat message',
+        'hk-quickResp': 'Quick respawn',
+        'hk-autoResp': 'Toggle auto respawn',
+        'hk-switchServerMode': 'Switch server [public/private]',
+        'hk-showTargeting': 'Show/hide targeting panel',
+        'hk-voiceChat': 'Voice to text',
+        'hk-GhostCellsInfo': ' Show ghost cells information',
+        'hk-Autoplay': 'Auto Play',
+        'hk-setTargeting': 'Start/stop targeting (following)',
+        'hk-cancelTargeting': 'Cancel targeting',
+        'hk-changeTarget': 'Change target',
+        'hk-privateMiniMap': 'Show target on the minimap',
+        'hk-showQuest': 'Show/hide quest',
+        'commands': 'Commands',
+        'comm1': 'Feed me!',
+        'comm2': 'Split into me!',
+        'comm3': 'Need backup at %currentSector%!',
+        'comm4': 'Enemy spotted at %currentSector%!',
+        'comm5': 'Need a teammate!',
+        'comm6': 'Tank the virus!',
+        'comm7': 'Eat the virus!',
+        'comm8': 'Let\'s bait!',
+        'comm9': 'Fake tricksplit!',
+        'comm0': 'Fuck!',
+        'comm10': 'Tricksplit!',
+        'comm11': 'Left!',
+        'comm12': 'Up!',
+        'comm13': 'Right!',
+        'comm14': 'Bottom!',
+        'comm15': 'Fake Tricksplit',
+        'comm16': 'Popsplit',
+        'comm17': 'Double Popsplit',
+        'comm18': 'Reversed Tricksplit',
+        'comm19': 'Canonsplit',
+        'comm20': 'Reversed Canonsplit',
+        'comm21': 'Bowlingsplit',
+        'comm22': 'Auto feed trick',
+        'comm23': 'Pause',
+        'comm24': 'ANTI alarm stage 1',
+        'comm25': 'ANTI alarm stage 2',
+        'comm26': 'ANTI alarm stage 3',
+        'comm27': 'ANTI alarm stage 4',
+        'comm28': 'ANTI alarm stage 5',
+        'comm29': 'Presplit',
+        'comm30': 'Party Run tricks',
+        'saveComm': 'Save commands',
+        'theme': 'Theme',
+        'restoreThemeSettings': 'Restore theme default settings',
+        'basicTheming': 'Basic theming',
+        'themePreset': 'Theme preset',
+        'themeType': 'Theme type',
+        'darkTheme': 'Dark theme',
+        'lightTheme': 'Light theme',
+        'mainColor': 'Main color',
+        'bgColor': 'Background',
+        'bordersColor': 'Map borders',
+        'gridColor': 'Grid',
+        'sectorsColor': 'Sectors font',
+        'namesColor': 'Names',
+        'namesStrokeColor': 'Names stroke',
+        'massColor': 'Mass',
+        'massStrokeColor': 'Mass stroke',
+        'virusColor': 'Virus',
+        'virusStrokeColor': 'Virus stroke',
+        'virusGlowColor': "Virus Glow",
+        "borderGlowColor": "Border Glow",
+        'mVirusColor': 'Mothercell',
+        'mVirusStrokeColor': 'Mothercell stroke',
+        'virusGlowSize': 'Virus Glow Size',
+        'borderGlowSize': 'Border Glow Size',
+        'foodColor': 'Food',
+        'namesFont': 'Names font',
+        'massFont': 'Mass font',
+        'sectorsFont': 'Sectors font',
+        'namesScale': 'Names scale',
+        'massScale': 'Mass scale',
+        'virMassScale': 'Virus mass scale',
+        'strokeScale': 'Text stroke scale',
+        'foodSize': 'Food size',
+        'bordersWidth': 'Map borders width',
+        'sectorsWidth': 'Sectors grid width',
+        'sectorsFontSize': 'Sectors font size',
+        'cellsAlpha': 'Cells transparency',
+        'skinsAlpha': 'Skins transparency',
+        'virusAlpha': 'Virus transparency',
+        'textAlpha': 'Names & mass transparency',
+        'virusStrokeSize': 'Virus stroke size',
+        "virusGlowSize": "Virus Glow Size",
+        'teammatesIndColor': 'Teammate indicator',
+        'cursorTrackingColor': 'Cursor tracking',
+        'splitRangeColor': 'Split range',
+        'enemyBSTEDColor': 'B2STE Enemy Color', //Sonia2
+        'enemyBSTEColor': 'BSTE Enemy Color', //Sonia2
+        'enemyBColor': 'Bigger Enemy Color', //Sonia2
+        'enemySColor': 'Smaller Enemy Color', //Sonia2
+        'enemySSTEColor': 'SSTE Enemy Color', //Sonia2
+        'enemySSTEDColor': 'S2STE Enemy Color', //Sonia2
+        'safeAreaColor': 'Safe area',
+        'dangerAreaColor': 'Danger area',
+        'ghostCellsColor': 'Ghost cells',
+        'ghostCellsAlpha': 'Ghost cells transparency',
+        'menuTheming': 'Menu',
+        'menuPreset': 'Menu theme',
+        'menuMainColor': 'Main color',
+        'menuBtnTextColor': 'Button text',
+        'menuPanelColor': 'Panel',
+        'menuPanelColor2': 'Panel (2)',
+        'menuTextColor': 'Panel text',
+        'menuTextColor2': 'Panel text (2)',
+        'btn1Color': 'Button #1',
+        'btn1Color2': 'Button #1 (2)',
+        'btn2Color': 'Button #2',
+        'btn2Color2': 'Button #2 (2)',
+        'btn3Color': 'Button #3',
+        'btn3Color2': 'Button #3 (2)',
+        'btn4Color': 'Button #4',
+        'btn4Color2': 'Button #4 (2)',
+        'menuBg': 'Panel background image',
+        'menuOpacity': 'Transparency',
+        'hudTheming': 'HUD',
+        'hudMainColor': 'Main color',
+        'hudColor': 'Background',
+        'hudTextColor': 'Text',
+        'statsHudColor': 'Stats',
+        'timeHudColor': 'Time',
+        'top5MassColor': 'Mass',
+        'lbMeColor': 'Leaderboard - me',
+        'lbTeammateColor': 'Leaderboard - teammate',
+        'hudFont': 'HUD font',
+        'hudScale': 'HUD scale',
+        'chatTheming': 'Chat',
+        'messageColor': 'Message background',
+        'messageTextColor': 'Message text',
+        'messageTimeColor': 'Message time',
+        'messageNickColor': 'Message nick',
+        'commandsColor': 'Command background',
+        'commandsTextColor': 'Command text',
+        'commandsTimeColor': 'Command time',
+        'commandsNickColor': 'Command nick',
+        'chatBoxColor': 'Chatbox color',
+        'chatScale': 'Chat scale',
+        'miniMapTheming': 'Minimap',
+        'miniMapSectorsColor': 'Sectors',
+        'miniMapSectorColor': 'Current sector',
+        'miniMapGuidesColor': 'Guides',
+        'miniMapNickColor': 'Nick',
+        'miniMapNickStrokeColor': 'Nick stroke',
+        'miniMapMyCellColor': 'My cell',
+        'miniMapMyCellStrokeColor': 'My cell stroke',
+        'miniMapTeammatesColor': 'Teammates',
+        'miniMapDeathLocationColor': 'Death location',
+        'miniMapFont': 'Minimap font',
+        'miniMapNickFont': 'Nick font',
+        'miniMapWidth': 'Minimap width',
+        'miniMapSectorsOpacity': 'Sectors transparency',
+        'miniMapNickSize': 'Nick size',
+        'miniMapNickStrokeSize': 'Nick stroke size',
+        'miniMapMyCellSize': 'My cell size',
+        'miniMapMyCellStrokeSize': 'My cell stroke size',
+        'miniMapTeammatesSize': 'Teammates size',
+        'miniMapGhostCellsColor': 'Ghost cells',
+        'miniMapGhostCellsAlpha': 'Ghost cells transparency',
+        'imagesTheming': 'Graphics / cursors',
+        'customBackground': 'Custom background image',
+        'customCursor': 'Custom cursor image',
+        'hideChatMsgA': 'Chat is visible!',
+        'hideChatMsgB': 'Chat is hidden!',
+        'showSkinsMsgA': 'Skins are visible!',
+        'showSkinsMsgB': 'Skins are hidden!',
+        'hideSmallBotsMsgA': 'Small bots are visible!',
+        'hideSmallBotsMsgB': 'Small bots are hidden!',
+        'autoRespMsgA': 'Auto respawn is on!',
+        'autoRespMsgB': 'Auto respawn is off!',
+        'autoZoomMsgA': 'Auto zoom is on!',
+        'autoZoomMsgB': 'Auto zoom is off!',
+        'targetNotSet': '',
+        'targetDead': 'Dead',
+        'targetDistance': 'Distance',
+        'targetMass': 'Total Mass',
+        'totalPartyPlayers': '',
+        'totalPartyMass': '',
+        'exportImport': 'Export / import settings',
+        'exportSettings': 'Export settings',
+        'exportInfo': 'To export selected settings copy the code below and save it to a text file encoded in Unicode.',
+        'importSettings': 'Import settings',
+        'importInfo': 'To import selected settings paste an exported code below and press the \"Import settings\" button.',
+        'profile': 'Profile',
+        'profiles': 'Profiles',
+        'skins': 'Skins',
+        'moreSkins': 'Add skins',
+        'thanks': 'Thanks to Awesome!',
+        'saveSett': 'Save settings',
+        'saved': 'Saved!',
+        'resetSett': 'Reset to default',
+        'close': 'Close',
+        'enterChatMsg': 'Enter chat message',
+        'activeParties': 'Active parties',
+        'noActiveParties': 'No active parties ;(',
+        'playlist': 'Playlist',
+        'pause': 'PAUSE!',
+        'visit': 'Visit',
+        'exit': 'Legend mod Express: Are you sure you want to quit the game?',
+        'blockWarn': 'WARNING! Popups are blocked in the settings.',
+        'unblockPopups': 'Temporary unblock',
+        'mass': 'Mass',
+        'score': 'Score',
+        'leaderboard': 'Leaderboard',
+        'user': 'User',
+        'userMuted': 'User %user% has been muted.',
+        'userUnmuted': 'User %user% has been unmuted.',
+        'mute': 'Mute',
+        'unmute': 'Unmute',
+        'mutedUsers': 'Muted users',
+        'activeUsers': 'Active users',
+        'showActiveUsers': 'Show active users',
+        'none': 'None',
+        'sounds': 'Sounds',
+        'page_menu_main_free_coins': 'Free Coins',
+        'page_menu_main_gifts': 'Gifts',
+        'page_menu_main_dailyquests': 'Daily Quest',
+        'page_shop': 'Shop'
     }
-
-    LegendJSON.legendSettings = {};
-    LegendJSON.legendSettings.previousMode = localStorage.getItem("gamemode");
-    LegendJSON.legendSettings.checkonlyonce = localStorage.getItem("checkonlyonce");
-    LegendJSON.legendSettings.previousnickname = localStorage.getItem("previousnickname");
-    LegendJSON.legendSettings.showToken = localStorage.getItem("showTK");
-    LegendJSON.legendSettings.showPlayer = localStorage.getItem("showPlayer");
-    LegendJSON.legendSettings.SHOSHOBtn = localStorage.getItem("SHOSHOBtn");
-    LegendJSON.legendSettings.XPBtn = localStorage.getItem("XPBtn");
-    LegendJSON.legendSettings.MAINBTBtn = localStorage.getItem("MAINBTBtn");
-    LegendJSON.legendSettings.AnimatedSkinBtn = localStorage.getItem("AnimatedSkinBtn");
-    //    LegendJSON.legendSettings.YoutubeAutoBtn = localStorage.getItem("YoutubeAutoBtn");
-    LegendJSON.legendSettings.TIMEcalBtn = localStorage.getItem("TIMEcalBtn");
-    LegendJSON.legendSettings.troll1Btn = localStorage.getItem("troll1Btn ");
-    LegendJSON.legendSettings.ComPosition = localStorage.getItem("ComPosition");
-    LegendJSON.legendSettings.autoCoinBtn = localStorage.getItem("autoCoinBtn");
-    LegendJSON.legendSettings.timesopened = localStorage.getItem("timesopened");
-    LegendJSON.legendSettings.saveclanpassword = localStorage.getItem("saveclanpassword");
-    LegendJSON.legendSettings.dyinglight1load = localStorage.getItem("dyinglight1load");
-    LegendJSON.legendSettings.languagemod = localStorage.getItem("languagemod");
-    //    LegendJSON.legendSettings.userfirstname = localStorage.getItem("userfirstname");
-    //   LegendJSON.legendSettings.userlastname = localStorage.getItem("userlastname");
-    //    LegendJSON.legendSettings.usergender = localStorage.getItem("usergender");
-    LegendJSON.legendSettings.prevPrivateServer = localStorage.getItem("prevPrivateServer");
-    LegendJSON.legendSettings.initialMusicUrl = localStorage.getItem("musicUrl");
-
-    LegendJSON.legendSettings.VanillaskinsSaved = localStorage.getItem("VanillaskinsSaved");
-    LegendJSON.legendSettings.top5skinsSaved = localStorage.getItem("top5skinsSaved");
-    LegendJSON.legendSettings.spawnspecialeffectsSaved = localStorage.getItem("spawnspecialeffectsSaved");
-    if (localStorage.getItem("leaderboardlimit") != null) {
-        LegendJSON.legendSettings.leaderboardlimit = localStorage.getItem("leaderboardlimit");
-    }
-    if (localStorage.getItem("teamboardlimit") != null) {
-        LegendJSON.legendSettings.teamboardlimit = localStorage.getItem("teamboardlimit");
-    }
-    LegendJSON.legendSettings.AnimatedRainbowColorSaved = localStorage.getItem("AnimatedRainbowColorSaved");
-    if (localStorage.getItem("AnimatedRainbowColorSaved") != null) {
-        LegendJSON.legendSettings.AnimatedRainbowColorSaved = localStorage.getItem("AnimatedRainbowColorSaved");
-    }
-    if (LegendJSON.legendSettings.initialMusicUrl == "null" || LegendJSON.legendSettings.initialMusicUrl == null) {
-        LegendJSON.legendSettings.initialMusicUrl = defaultMusicUrl;
-    };
-    LegendJSON.legendSettings.lastIP = localStorage.getItem("lastIP");
-    if (LegendJSON.legendSettings.lastIP == "null" || LegendJSON.legendSettings.lastIP == null) {
-        LegendJSON.legendSettings.lastIP = "0.0.0.0:0"
-    };
-    LegendJSON.legendSettings.note1 = localStorage.getItem("note1");
-    if (LegendJSON.legendSettings.note1 == "null" || LegendJSON.legendSettings.note1 == null) {
-        LegendJSON.legendSettings.note1 = ""
-    };
-    LegendJSON.legendSettings.note2 = localStorage.getItem("note2");
-    if (LegendJSON.legendSettings.note2 == "null" || LegendJSON.legendSettings.note2 == null) {
-        LegendJSON.legendSettings.note2 = ""
-    };
-    LegendJSON.legendSettings.note3 = localStorage.getItem("note3");
-    if (LegendJSON.legendSettings.note3 == "null" || LegendJSON.legendSettings.note3 == null) {
-        LegendJSON.legendSettings.note3 = ""
-    };
-    LegendJSON.legendSettings.note4 = localStorage.getItem("note4");
-    if (LegendJSON.legendSettings.note4 == "null" || LegendJSON.legendSettings.note4 == null) {
-        LegendJSON.legendSettings.note4 = ""
-    };
-    LegendJSON.legendSettings.note5 = localStorage.getItem("note5");
-    if (LegendJSON.legendSettings.note5 == "null" || LegendJSON.legendSettings.note5 == null) {
-        LegendJSON.legendSettings.note5 = ""
-    };
-    LegendJSON.legendSettings.note6 = localStorage.getItem("note6");
-    if (LegendJSON.legendSettings.note6 == "null" || LegendJSON.legendSettings.note6 == null) {
-        LegendJSON.legendSettings.note6 = ""
-    };
-    LegendJSON.legendSettings.note7 = localStorage.getItem("note7");
-    if (LegendJSON.legendSettings.note7 == "null" || LegendJSON.legendSettings.note7 == null) {
-        LegendJSON.legendSettings.note7 = ""
-    };
-    LegendJSON.legendSettings.minimapbckimg = localStorage.getItem("minimapbckimg");
-    if (LegendJSON.legendSettings.minimapbckimg == "null" || LegendJSON.legendSettings.minimapbckimg == null) {
-        LegendJSON.legendSettings.minimapbckimg = ""
-    };
-    LegendJSON.legendSettings.teambimg = localStorage.getItem("teambimg");
-    if (LegendJSON.legendSettings.teambimg == "null" || LegendJSON.legendSettings.teambimg == null) {
-        LegendJSON.legendSettings.teambimg = ""
-    };
-    LegendJSON.legendSettings.canvasbimg = localStorage.getItem("canvasbimg");
-    if (LegendJSON.legendSettings.canvasbimg == "null" || LegendJSON.legendSettings.canvasbimg == null) {
-        LegendJSON.legendSettings.canvasbimg = ""
-    };
-    LegendJSON.legendSettings.leadbtext = localStorage.getItem("leadbtext");
-    if (LegendJSON.legendSettings.leadbtext == "null" || LegendJSON.legendSettings.leadbtext == null) {
-        LegendJSON.legendSettings.leadbtext = ""
-    };
-    LegendJSON.legendSettings.leadbimg = localStorage.getItem("leadbimg");
-    if (LegendJSON.legendSettings.leadbimg == "null" || LegendJSON.legendSettings.leadbimg == null) {
-        LegendJSON.legendSettings.leadbimg = ""
-    };
-    LegendJSON.legendSettings.teambtext = localStorage.getItem("teambtext");
-    if (LegendJSON.legendSettings.teambtext == "null" || LegendJSON.legendSettings.teambtext == null) {
-        LegendJSON.legendSettings.teambtext = ""
-    };
-    LegendJSON.legendSettings.imgUrl = localStorage.getItem("imgUrl");
-    if (LegendJSON.legendSettings.imgUrl == "null" || LegendJSON.legendSettings.imgUrl == null) {
-        LegendJSON.legendSettings.imgUrl = ""
-    };
-    LegendJSON.legendSettings.imgHref = localStorage.getItem("imgHref");
-    if (LegendJSON.legendSettings.imgHref == "null" || LegendJSON.legendSettings.imgHref == null) {
-        LegendJSON.legendSettings.imgHref = ""
-    };
-    LegendJSON.legendSettings.minbtext = localStorage.getItem("minbtext");
-    if (LegendJSON.legendSettings.minbtext == "null" || LegendJSON.legendSettings.minbtext == null) {
-        LegendJSON.legendSettings.minbtext = ""
-    };
-    LegendJSON.legendSettings.pic1urlimg = localStorage.getItem("pic1urlimg");
-    if (LegendJSON.legendSettings.pic1urlimg == "null" || LegendJSON.legendSettings.pic1urlimg == null) {
-        LegendJSON.legendSettings.pic1urlimg = ""
-    };
-    LegendJSON.legendSettings.pic2urlimg = localStorage.getItem("pic2urlimg");
-    if (LegendJSON.legendSettings.pic2urlimg == "null" || LegendJSON.legendSettings.pic2urlimg == null) {
-        LegendJSON.legendSettings.pic2urlimg = ""
-    };
-    LegendJSON.legendSettings.pic3urlimg = localStorage.getItem("pic3urlimg");
-    if (LegendJSON.legendSettings.pic3urlimg == "null" || LegendJSON.legendSettings.pic3urlimg == null) {
-        LegendJSON.legendSettings.pic3urlimg = ""
-    };
-    LegendJSON.legendSettings.pic4urlimg = localStorage.getItem("pic4urlimg");
-    if (LegendJSON.legendSettings.pic4urlimg == "null" || LegendJSON.legendSettings.pic4urlimg == null) {
-        LegendJSON.legendSettings.pic4urlimg = ""
-    };
-    LegendJSON.legendSettings.pic5urlimg = localStorage.getItem("pic5urlimg");
-    if (LegendJSON.legendSettings.pic5urlimg == "null" || LegendJSON.legendSettings.pic5urlimg == null) {
-        LegendJSON.legendSettings.pic5urlimg = ""
-    };
-    LegendJSON.legendSettings.pic6urlimg = localStorage.getItem("pic6urlimg");
-    if (LegendJSON.legendSettings.pic6urlimg == "null" || LegendJSON.legendSettings.pic6urlimg == null) {
-        LegendJSON.legendSettings.pic6urlimg = ""
-    };
-    LegendJSON.legendSettings.yt1urlimg = localStorage.getItem("yt1urlimg");
-    if (LegendJSON.legendSettings.yt1urlimg == "null" || LegendJSON.legendSettings.yt1urlimg == null) {
-        LegendJSON.legendSettings.yt1urlimg = ""
-    };
-    LegendJSON.legendSettings.yt2urlimg = localStorage.getItem("yt2urlimg");
-    if (LegendJSON.legendSettings.yt2urlimg == "null" || LegendJSON.legendSettings.yt2urlimg == null) {
-        LegendJSON.legendSettings.yt2urlimg = ""
-    };
-    LegendJSON.legendSettings.yt3urlimg = localStorage.getItem("yt3urlimg");
-    if (LegendJSON.legendSettings.yt3urlimg == "null" || LegendJSON.legendSettings.yt3urlimg == null) {
-        LegendJSON.legendSettings.yt3urlimg = ""
-    };
-    LegendJSON.legendSettings.yt4urlimg = localStorage.getItem("yt4urlimg");
-    if (LegendJSON.legendSettings.yt4urlimg == "null" || LegendJSON.legendSettings.yt4urlimg == null) {
-        LegendJSON.legendSettings.yt4urlimg = ""
-    };
-    LegendJSON.legendSettings.yt5urlimg = localStorage.getItem("yt5urlimg");
-    if (LegendJSON.legendSettings.yt5urlimg == "null" || LegendJSON.legendSettings.yt5urlimg == null) {
-        LegendJSON.legendSettings.yt5urlimg = ""
-    };
-    LegendJSON.legendSettings.yt6urlimg = localStorage.getItem("yt6urlimg");
-    if (LegendJSON.legendSettings.yt6urlimg == "null" || LegendJSON.legendSettings.yt6urlimg == null) {
-        LegendJSON.legendSettings.yt6urlimg = ""
-    };
-    LegendJSON.legendSettings.pic1dataimg = localStorage.getItem("pic1dataimg");
-    if (LegendJSON.legendSettings.pic1dataimg == "null" || LegendJSON.legendSettings.pic1dataimg == null) {
-        LegendJSON.legendSettings.pic1dataimg = ""
-    };
-    LegendJSON.legendSettings.pic2dataimg = localStorage.getItem("pic2dataimg");
-    if (LegendJSON.legendSettings.pic2dataimg == "null" || LegendJSON.legendSettings.pic2dataimg == null) {
-        LegendJSON.legendSettings.pic2dataimg = ""
-    };
-    LegendJSON.legendSettings.pic3dataimg = localStorage.getItem("pic3dataimg");
-    if (LegendJSON.legendSettings.pic3dataimg == "null" || LegendJSON.legendSettings.pic3dataimg == null) {
-        LegendJSON.legendSettings.pic3dataimg = ""
-    };
-    LegendJSON.legendSettings.pic4dataimg = localStorage.getItem("pic4dataimg");
-    if (LegendJSON.legendSettings.pic4dataimg == "null" || LegendJSON.legendSettings.pic4dataimg == null) {
-        LegendJSON.legendSettings.pic4dataimg = ""
-    };
-    LegendJSON.legendSettings.pic5dataimg = localStorage.getItem("pic5dataimg");
-    if (LegendJSON.legendSettings.pic5dataimg == "null" || LegendJSON.legendSettings.pic5dataimg == null) {
-        LegendJSON.legendSettings.pic5dataimg = ""
-    };
-    LegendJSON.legendSettings.pic6dataimg = localStorage.getItem("pic6dataimg");
-    if (LegendJSON.legendSettings.pic6dataimg == "null" || LegendJSON.legendSettings.pic6dataimg == null) {
-        LegendJSON.legendSettings.pic6dataimg = ""
-    };
-    LegendJSON.legendSettings.yt1dataimg = localStorage.getItem("yt1dataimg");
-    if (LegendJSON.legendSettings.yt1dataimg == "null" || LegendJSON.legendSettings.yt1dataimg == null) {
-        LegendJSON.legendSettings.yt1dataimg = ""
-    };
-    LegendJSON.legendSettings.yt2dataimg = localStorage.getItem("yt2dataimg");
-    if (LegendJSON.legendSettings.yt2dataimg == "null" || LegendJSON.legendSettings.yt2dataimg == null) {
-        LegendJSON.legendSettings.yt2dataimg = ""
-    };
-    LegendJSON.legendSettings.yt3dataimg = localStorage.getItem("yt3dataimg");
-    if (LegendJSON.legendSettings.yt3dataimg == "null" || LegendJSON.legendSettings.yt3dataimg == null) {
-        LegendJSON.legendSettings.yt3dataimg = ""
-    };
-    LegendJSON.legendSettings.yt4dataimg = localStorage.getItem("yt4dataimg");
-    if (LegendJSON.legendSettings.yt4dataimg == "null" || LegendJSON.legendSettings.yt4dataimg == null) {
-        LegendJSON.legendSettings.yt4dataimg = ""
-    };
-    LegendJSON.legendSettings.yt5dataimg = localStorage.getItem("yt5dataimg");
-    if (LegendJSON.legendSettings.yt5dataimg == "null" || LegendJSON.legendSettings.yt5dataimg == null) {
-        LegendJSON.legendSettings.yt5dataimg = ""
-    };
-    LegendJSON.legendSettings.yt6dataimg = localStorage.getItem("yt6dataimg");
-    if (LegendJSON.legendSettings.yt6dataimg == "null" || LegendJSON.legendSettings.yt6dataimg == null) {
-        LegendJSON.legendSettings.yt6dataimg = ""
-    };
-    LegendJSON.legendSettings.discwebhook1 = localStorage.getItem("discwebhook1");
-    if (LegendJSON.legendSettings.discwebhook1 == "null" || LegendJSON.legendSettings.discwebhook1 == null) {
-        LegendJSON.legendSettings.discwebhook1 = ""
-    };
-    LegendJSON.legendSettings.discwebhook2 = localStorage.getItem("discwebhook2");
-    if (LegendJSON.legendSettings.discwebhook2 == "null" || LegendJSON.legendSettings.discwebhook2 == null) {
-        LegendJSON.legendSettings.discwebhook2 = ""
-    };
-    LegendJSON.legendSettings.Userscript1 = localStorage.getItem("Userscript1");
-    if (LegendJSON.legendSettings.Userscript1 == "null" || LegendJSON.legendSettings.Userscript1 == null) {
-        LegendJSON.legendSettings.Userscript1 = ""
-    };
-    LegendJSON.legendSettings.Userscript2 = localStorage.getItem("Userscript2");
-    if (LegendJSON.legendSettings.Userscript2 == "null" || LegendJSON.legendSettings.Userscript2 == null) {
-        LegendJSON.legendSettings.Userscript2 = ""
-    };
-    LegendJSON.legendSettings.Userscript3 = localStorage.getItem("Userscript3");
-    if (LegendJSON.legendSettings.Userscript3 == "null" || LegendJSON.legendSettings.Userscript3 == null) {
-        LegendJSON.legendSettings.Userscript3 = ""
-    };
-    LegendJSON.legendSettings.Userscript4 = localStorage.getItem("Userscript4");
-    if (LegendJSON.legendSettings.Userscript4 == "null" || LegendJSON.legendSettings.Userscript4 == null) {
-        LegendJSON.legendSettings.Userscript4 = ""
-    };
-    LegendJSON.legendSettings.Userscript5 = localStorage.getItem("Userscript5");
-    if (LegendJSON.legendSettings.Userscript5 == "null" || LegendJSON.legendSettings.Userscript5 == null) {
-        LegendJSON.legendSettings.Userscript5 = ""
-    };
-    LegendJSON.legendSettings.Userscripttexture1 = localStorage.getItem("Userscripttexture1");
-    if (LegendJSON.legendSettings.Userscripttexture1 == "null" || LegendJSON.legendSettings.Userscripttexture1 == null) {
-        LegendJSON.legendSettings.Userscripttexture1 = ""
-    };
-    LegendJSON.legendSettings.Userscripttexture2 = localStorage.getItem("Userscripttexture2");
-    if (LegendJSON.legendSettings.Userscripttexture2 == "null" || LegendJSON.legendSettings.Userscripttexture2 == null) {
-        LegendJSON.legendSettings.Userscripttexture2 = ""
-    };
-    LegendJSON.legendSettings.Userscripttexture3 = localStorage.getItem("Userscripttexture3");
-    if (LegendJSON.legendSettings.Userscripttexture3 == "null" || LegendJSON.legendSettings.Userscripttexture3 == null) {
-        LegendJSON.legendSettings.Userscripttexture3 = ""
-    };
-    LegendJSON.legendSettings.Userscripttexture4 = localStorage.getItem("Userscripttexture4");
-    if (LegendJSON.legendSettings.Userscripttexture4 == "null" || LegendJSON.legendSettings.Userscripttexture4 == null) {
-        LegendJSON.legendSettings.Userscripttexture4 = ""
-    };
-    LegendJSON.legendSettings.Userscripttexture5 = localStorage.getItem("Userscripttexture5");
-    if (LegendJSON.legendSettings.Userscripttexture5 == "null" || LegendJSON.legendSettings.Userscripttexture5 == null) {
-        LegendJSON.legendSettings.Userscripttexture5 = ""
-    };
-    return LegendJSON;
 }
-
-function LegendSettingsImport(switcheryLegendSwitch2) {
-    if (switcheryLegendSwitch2.isChecked()) {
-        LegendJSON = JSON.parse(document.getElementById("import-settings").value);
-        //        parseLegendJSONAPI(LegendJSON);
-        saveLegendJSONAPI();
-        setTimeout(function() {
-            $("#import-settings-btn").click();
-        }, 100)
-    } else {
-        $("#import-settings-btn").click();
+var themePresets = {
+    'ogario-v3': {
+        'name': 'OGARio v3',
+        'darkTheme': true,
+        'mainColor': '#01d9cc',
+        'bgColor': '#000a11',
+        'bordersColor': '#01d9cc',
+        'gridColor': '#00243e',
+        'sectorsColor': '#00243e',
+        'namesColor': '#ffffff',
+        'namesStrokeColor': '#000000',
+        'massColor': '#ffffff',
+        'massStrokeColor': '#000000',
+        'virusColor': '#002f52',
+        'virusStrokeColor': '#00b9e8',
+        'virusGlowColor': '#fff',
+        'mVirusColor': '#ce6363',
+        'mVirusStrokeColor': '#b95959',
+        'foodColor': '#5000ff',
+        'teammatesIndColor': '#ffffff',
+        'cursorTrackingColor': '#ffffff',
+        'splitRangeColor': '#ffffff',
+        'enemyBSTEDColor': '#8000ff', //Sonia2
+        'enemyBSTEColor': '#BE00FF', //Sonia2
+        'enemyBColor': '#FF0A00', //Sonia2
+        'enemySColor': '#00C8FF', //Sonia2
+        'enemySSTEColor': '#048245', //Sonia2
+        'enemySSTEDColor': '#64FF00', //Sonia2
+        'safeAreaColor': '#ffffff',
+        'dangerAreaColor': '#bf00aa',
+        'namesFont': 'ubuntu-bold',
+        'massFont': 'ubuntu-bold',
+        'sectorsFont': 'ubuntu',
+        'namesScale': 1,
+        'massScale': 3,
+        'foodSize': 5,
+        'bordersWidth': 40,
+        'sectorsWidth': 40,
+        'sectorsFontSize': 1200,
+        'cellsAlpha': 0.99,
+        'skinsAlpha': 0.99,
+        'virusAlpha': 0.25,
+        'textAlpha': 1,
+        'virusStrokeSize': 20,
+        "virusGlowSize": "#fff",
+        "virusGlowSize": 14,
+        "borderGlowSize": 14,
+        'menuPreset': 'ogario-v3',
+        'menuMainColor': '#01d9cc',
+        'menuBtnTextColor': '#ffffff',
+        'menuPanelColor': '#00243e',
+        'menuPanelColor2': '#002f52',
+        'menuTextColor': '#ffffff',
+        'menuTextColor2': '#8096a7',
+        'btn1Color': '#018cf6',
+        'btn1Color2': '#0176ce',
+        'btn2Color': '#00b9e8',
+        'btn2Color2': '#0099c0',
+        'btn3Color': '#8d5fe6',
+        'btn3Color2': '#814ee3',
+        'btn4Color': '#bf00aa',
+        'btn4Color2': '#a80096',
+        'menuBg': 'https://jimboy3100.github.io/banners/static/img/pattern.png',
+        'menuOpacity': 0.96,
+        'hudMainColor': '#01d9cc',
+        'hudColor': 'rgba(0,0,0,0.4)',
+        'hudTextColor': '#ffffff',
+        'statsHudColor': '#ffffff',
+        'timeHudColor': '#01d9cc',
+        'top5MassColor': '#bf00aa',
+        'lbMeColor': '#bf00aa',
+        'lbTeammateColor': '#018cf6',
+        'hudFont': 'ubuntu-bold',
+        'hudScale': 1,
+        'messageColor': 'rgba(0,0,0,0.4)',
+        'messageTextColor': '#ffffff',
+        'messageTimeColor': '#018cf6',
+        'messageNickColor': '#01d9cc',
+        'commandsColor': 'rgba(191,0,170,0.9)',
+        'commandsTextColor': '#ffffff',
+        'commandsTimeColor': '#bf00aa',
+        'commandsNickColor': '#ffffff',
+        'chatBoxColor': 'rgba(0,0,0,0.4)',
+        'chatScale': 1,
+        'miniMapSectorsColor': '#ffffff',
+        'miniMapSectorColor': '#01d9cc',
+        'miniMapGuidesColor': '#bf00aa',
+        'miniMapNickColor': '#ffffff',
+        'miniMapNickStrokeColor': '#000000',
+        'miniMapMyCellColor': '#ffffff',
+        'miniMapMyCellStrokeColor': '#bf00aa',
+        'miniMapTeammatesColor': '#01d9cc',
+        'miniMapDeathLocationColor': '#bf00aa',
+        'miniMapFont': 'ubuntu-bold',
+        'miniMapNickFont': 'ubuntu-bold',
+        'miniMapWidth': 240,
+        'miniMapSectorsOpacity': 0.1,
+        'miniMapNickSize': 11,
+        'miniMapNickStrokeSize': 2,
+        'miniMapMyCellSize': 7.5,
+        'miniMapMyCellStrokeSize': 4,
+        'miniMapTeammatesSize': 5.5,
+        'customBackground': '',
+        'customCursor': 'https://jimboy3100.github.io/cursors/cursor_02.cur'
+    },
+    'ogario-orange': {
+        'name': 'OGARio v2',
+        'darkTheme': true,
+        'mainColor': '#ff7800',
+        'bgColor': '#111111',
+        'bordersColor': '#ff7800',
+        'gridColor': '#292929',
+        'sectorsColor': '#292929',
+        'namesColor': '#ffffff',
+        'namesStrokeColor': '#000000',
+        'massColor': '#ffffff',
+        'massStrokeColor': '#000000',
+        'virusColor': '#666666',
+        'virusStrokeColor': '#666666',
+        'mVirusColor': '#ce6363',
+        'mVirusStrokeColor': '#b95959',
+        'foodColor': '#e16400',
+        'hudMainColor': '#ff7800',
+        'statsHudColor': '#ff7800',
+        'top5MassColor': '#ff7800',
+        'timeHudColor': '#ff7800',
+        'messageNickColor': '#ff7800',
+        'commandsColor': 'rgba(255,120,0,0.9)',
+        'commandsTimeColor': '#ff7800',
+        'commandsTextColor': '#ffffff',
+        'miniMapSectorsColor': '#ffffff',
+        'miniMapSectorColor': '#ff7800',
+        'miniMapGuidesColor': '#ff7800',
+        'miniMapMyCellColor': '#ffffff',
+        'miniMapMyCellStrokeColor': '#ff7800',
+        'miniMapTeammatesColor': '#ff7800',
+        'miniMapDeathLocationColor': '#ff7800',
+        'miniMapSectorsOpacity': 0.1
+    },
+    'ogario-gold': {
+        'name': 'OGARio LE',
+        'darkTheme': true,
+        'mainColor': '#b5a642',
+        'bgColor': '#000000',
+        'bordersColor': '#b5a642',
+        'gridColor': '#111111',
+        'sectorsColor': '#111111',
+        'namesColor': '#ffffff',
+        'namesStrokeColor': '#000000',
+        'massColor': '#ffffff',
+        'massStrokeColor': '#000000',
+        'virusColor': '#666666',
+        'virusStrokeColor': '#666666',
+        'mVirusColor': '#ce6363',
+        'mVirusStrokeColor': '#b95959',
+        'foodColor': '#998c36',
+        'hudMainColor': '#b5a642',
+        'statsHudColor': '#b5a642',
+        'top5MassColor': '#b5a642',
+        'timeHudColor': '#b5a642',
+        'messageNickColor': '#b5a642',
+        'commandsColor': 'rgba(181,166,66,0.9)',
+        'commandsTimeColor': '#b5a642',
+        'commandsTextColor': '#ffffff',
+        'miniMapSectorsColor': '#ffffff',
+        'miniMapSectorColor': '#b5a642',
+        'miniMapGuidesColor': '#b5a642',
+        'miniMapMyCellColor': '#ffffff',
+        'miniMapMyCellStrokeColor': '#b5a642',
+        'miniMapTeammatesColor': '#b5a642',
+        'miniMapDeathLocationColor': '#b5a642',
+        'miniMapSectorsOpacity': 0.1
+    },
+    'sniikz-style': {
+        'name': 'SniiKz\'s Style',
+        'darkTheme': true,
+        'mainColor': '#01d9cc',
+        'bgColor': '#000000',
+        'bordersColor': '#ffffff',
+        'gridColor': '#00243e',
+        'sectorsColor': '#00243e',
+        'namesColor': '#ffffff',
+        'namesStrokeColor': '#000000',
+        'massColor': '#ffffff',
+        'massStrokeColor': '#000000',
+        'virusColor': '#3b3b3b',
+        'virusStrokeColor': '#ffffff',
+        'mVirusColor': '#ce6363',
+        'mVirusStrokeColor': '#b95959',
+        'foodColor': '#5000ff',
+        'teammatesIndColor': '#ffffff',
+        'cursorTrackingColor': '#ffffff',
+        'splitRangeColor': '#ffffff',
+        'safeAreaColor': '#ffffff',
+        'dangerAreaColor': '#bf00aa',
+        'massScale': 4,
+        'foodSize': 1,
+        'bordersWidth': 40,
+        'sectorsWidth': 40,
+        'sectorsFontSize': 1200,
+        'cellsAlpha': 0.99,
+        'skinsAlpha': 0.99,
+        'virusAlpha': 0.4,
+        'virusStrokeSize': 10,
+        "virusStrokeSize": 20,
+        "virusGlowSize": 14,
+        "borderGlowSize": 14,
+        'menuPreset': 'ogario-v3',
+        'menuMainColor': '#fc0079',
+        'menuBtnTextColor': '#ffffff',
+        'menuPanelColor': '#050008',
+        'menuPanelColor2': '#1d0526',
+        'menuTextColor': '#ffffff',
+        'menuTextColor2': '#65458f',
+        'btn1Color': '#4f0242',
+        'btn1Color2': '#3b0431',
+        'btn2Color': '#6b0036',
+        'btn2Color2': '#4d0227',
+        'btn3Color': '#aa084e',
+        'btn3Color2': '#80063b',
+        'btn4Color': '#aa084e',
+        'btn4Color2': '#8a063f',
+        'menuBg': 'https://jimboy3100.github.io/banners/static/img/pattern.png',
+        'menuOpacity': 1,
+        'hudMainColor': '#5974ff',
+        'hudColor': 'rgba(36,36,36,0.49)',
+        'hudTextColor': '#ffffff',
+        'statsHudColor': '#ffffff',
+        'timeHudColor': '#737373',
+        'top5MassColor': '#1fe000',
+        'lbMeColor': '#bf00aa',
+        'lbTeammateColor': '#018cf6',
+        'hudScale': 1.15,
+        'messageColor': 'rgba(0,0,0,0.4)',
+        'messageTextColor': '#e8e8e8',
+        'messageTimeColor': '#545454',
+        'messageNickColor': '#05ff00',
+        'commandsColor': 'rgba(36,36,36,0.9)',
+        'commandsTextColor': '#ffffff',
+        'commandsTimeColor': '#545454',
+        'commandsNickColor': '#ffffff',
+        'chatBoxColor': 'rgba(0,0,0,0.4)',
+        'chatScale': 1,
+        'miniMapSectorsColor': '#ffffff',
+        'miniMapSectorColor': '#000000',
+        'miniMapGuidesColor': '#ff00a8',
+        'miniMapNickColor': '#ffffff',
+        'miniMapNickStrokeColor': '#4d4d4d',
+        'miniMapMyCellColor': '#f0ff3d',
+        'miniMapMyCellStrokeColor': '#acba07',
+        'miniMapTeammatesColor': '#305eff',
+        'miniMapDeathLocationColor': '#2b2b2b',
+        'miniMapWidth': 250,
+        'miniMapSectorsOpacity': 0.1,
+        'miniMapNickSize': 9,
+        'miniMapNickStrokeSize': 0,
+        'miniMapMyCellSize': 5,
+        'miniMapMyCellStrokeSize': 0,
+        'miniMapTeammatesSize': 5,
+        'customBackground': '',
+        'customCursor': 'https://jimboy3100.github.io/cursors/cursor_01.cur'
+    },
+    'hkg-style': {
+        'name': 'HKG Style',
+        'darkTheme': true,
+        'mainColor': '#651fff',
+        'bgColor': '#000000',
+        'bordersColor': '#ffffff',
+        'gridColor': '#111111',
+        'sectorsColor': '#111111',
+        'namesColor': '#ffffff',
+        'namesStrokeColor': '#000000',
+        'massColor': '#ffffff',
+        'massStrokeColor': '#000000',
+        'virusColor': '#666666',
+        'virusStrokeColor': '#666666',
+        'mVirusColor': '#ce6363',
+        'mVirusStrokeColor': '#b95959',
+        'foodColor': '#651fff',
+        'hudMainColor': '#651fff',
+        'statsHudColor': '#651fff',
+        'top5MassColor': '#651fff',
+        'timeHudColor': '#651fff',
+        'messageNickColor': '#651fff',
+        'commandsColor': 'rgba(101,31,255,0.9)',
+        'commandsTimeColor': '#651fff',
+        'commandsTextColor': '#ffffff',
+        'miniMapSectorsColor': '#ffffff',
+        'miniMapSectorColor': '#651fff',
+        'miniMapGuidesColor': '#651fff',
+        'miniMapMyCellColor': '#ffffff',
+        'miniMapMyCellStrokeColor': '#651fff',
+        'miniMapTeammatesColor': '#651fff',
+        'miniMapDeathLocationColor': '#651fff',
+        'miniMapSectorsOpacity': 0.1
+    },
+    'agario-light': {
+        'name': 'Agar.io Light',
+        'darkTheme': false,
+        'mainColor': '#ffffff',
+        'bgColor': '#f2fbff',
+        'bordersColor': '#858a8c',
+        'gridColor': '#ced6d9',
+        'sectorsColor': '#ced6d9',
+        'namesColor': '#ffffff',
+        'namesStrokeColor': '#000000',
+        'massColor': '#ffffff',
+        'massStrokeColor': '#000000',
+        'virusColor': '#33ff33',
+        'virusStrokeColor': '#2de52d',
+        'mVirusColor': '#ce6363',
+        'mVirusStrokeColor': '#b95959',
+        'foodColor': '#2de52d',
+        'hudMainColor': '#ffffff',
+        'statsHudColor': '#ffffff',
+        'top5MassColor': '#ffffff',
+        'timeHudColor': '#ffffff',
+        'messageNickColor': '#ffffff',
+        'commandsColor': 'rgba(255,255,255,0.9)',
+        'commandsTimeColor': '#ffffff',
+        'commandsTextColor': '#000000',
+        'miniMapSectorsColor': '#ffffff',
+        'miniMapSectorColor': '#ffffff',
+        'miniMapGuidesColor': '#ffffff',
+        'miniMapMyCellColor': '#ffffff',
+        'miniMapMyCellStrokeColor': '#ffffff',
+        'miniMapTeammatesColor': '#ffffff',
+        'miniMapDeathLocationColor': '#ffffff',
+        'miniMapSectorsOpacity': 0.25
+    },
+    'agario-dark': {
+        'name': 'Agar.io Dark',
+        'darkTheme': true,
+        'mainColor': '#ffffff',
+        'bgColor': '#111111',
+        'bordersColor': '#999999',
+        'gridColor': '#333333',
+        'sectorsColor': '#333333',
+        'namesColor': '#ffffff',
+        'namesStrokeColor': '#000000',
+        'massColor': '#ffffff',
+        'massStrokeColor': '#000000',
+        'virusColor': '#33ff33',
+        'virusStrokeColor': '#2de52d',
+        'mVirusColor': '#ce6363',
+        'mVirusStrokeColor': '#b95959',
+        'foodColor': '#2de52d',
+        'hudMainColor': '#ffffff',
+        'statsHudColor': '#ffffff',
+        'top5MassColor': '#ffffff',
+        'timeHudColor': '#ffffff',
+        'messageNickColor': '#ffffff',
+        'commandsColor': 'rgba(255,255,255,0.9)',
+        'commandsTimeColor': '#ffffff',
+        'commandsTextColor': '#ffffff',
+        'miniMapSectorsColor': '#ffffff',
+        'miniMapSectorColor': '#ffffff',
+        'miniMapGuidesColor': '#ffffff',
+        'miniMapMyCellColor': '#ffffff',
+        'miniMapMyCellStrokeColor': '#ffffff',
+        'miniMapTeammatesColor': '#ffffff',
+        'miniMapDeathLocationColor': '#ffffff',
+        'miniMapSectorsOpacity': 0.1
     }
 }
-
-function saveLegendJSONAPI() {
-    if (LegendJSON.legendSettings != undefined) {
-
-        localStorage.setItem("gamemode", LegendJSON.legendSettings.previousMode);
-        localStorage.setItem("checkonlyonce", LegendJSON.legendSettings.checkonlyonce);
-        localStorage.setItem("previousnickname", LegendJSON.legendSettings.previousnickname);
-        localStorage.setItem("showTK", LegendJSON.legendSettings.showToken);
-        localStorage.setItem("showPlayer", LegendJSON.legendSettings.showPlayer);
-        localStorage.setItem("SHOSHOBtn", LegendJSON.legendSettings.SHOSHOBtn);
-        localStorage.setItem("XPBtn", LegendJSON.legendSettings.XPBtn);
-        localStorage.setItem("MAINBTBtn", LegendJSON.legendSettings.MAINBTBtn);
-        localStorage.setItem("AnimatedSkinBtn", LegendJSON.legendSettings.AnimatedSkinBtn);
-        //    localStorage.setItem("YoutubeAutoBtn", LegendJSON.legendSettings.YoutubeAutoBtn);
-        localStorage.setItem("TIMEcalBtn", LegendJSON.legendSettings.TIMEcalBtn);
-        localStorage.setItem("troll1Btn", LegendJSON.legendSettings.troll1Btn);
-        localStorage.setItem("ComPosition", LegendJSON.legendSettings.ComPosition);
-        localStorage.setItem("autoCoinBtn", LegendJSON.legendSettings.autoCoinBtn);
-        localStorage.setItem("timesopened", LegendJSON.legendSettings.timesopened);
-        localStorage.setItem("saveclanpassword", LegendJSON.legendSettings.saveclanpassword);
-        localStorage.setItem("dyinglight1load", LegendJSON.legendSettings.dyinglight1load);
-        localStorage.setItem("languagemod", LegendJSON.legendSettings.languagemod);
-
-        localStorage.setItem("VanillaskinsSaved", LegendJSON.legendSettings.VanillaskinsSaved);
-        localStorage.setItem("top5skinsSaved", LegendJSON.legendSettings.top5skinsSaved);
-        localStorage.setItem("spawnspecialeffectsSaved", LegendJSON.legendSettings.spawnspecialeffectsSaved);
-        if (LegendJSON.legendSettings.leaderboardlimit != null) {
-            localStorage.setItem("leaderboardlimit", LegendJSON.legendSettings.leaderboardlimit);
-        }
-        if (LegendJSON.legendSettings.teamboardlimit != null) {
-            localStorage.setItem("teamboardlimit", LegendJSON.legendSettings.teamboardlimit);
-        }
-        localStorage.setItem("AnimatedRainbowColorSaved", LegendJSON.legendSettings.AnimatedRainbowColorSaved);
-        if (LegendJSON.legendSettings.AnimatedRainbowColorSaved != null) {
-            localStorage.setItem("AnimatedRainbowColorSaved", LegendJSON.legendSettings.AnimatedRainbowColorSaved);
-        }
-        //    localStorage.setItem("userfirstname", LegendJSON.legendSettings.userfirstname);
-        //    localStorage.setItem("userlastname", LegendJSON.legendSettings.userlastname);
-        //    localStorage.setItem("usergender", LegendJSON.legendSettings.usergender);
-        localStorage.setItem("prevPrivateServer", LegendJSON.legendSettings.prevPrivateServer);
-        localStorage.setItem("musicUrl", LegendJSON.legendSettings.initialMusicUrl);
-        localStorage.setItem("lastIP", LegendJSON.legendSettings.lastIP);
-        localStorage.setItem("note1", LegendJSON.legendSettings.note1);
-        localStorage.setItem("note2", LegendJSON.legendSettings.note2);
-        localStorage.setItem("note3", LegendJSON.legendSettings.note3);
-        localStorage.setItem("note4", LegendJSON.legendSettings.note4);
-        localStorage.setItem("note5", LegendJSON.legendSettings.note5);
-        localStorage.setItem("note6", LegendJSON.legendSettings.note6);
-        localStorage.setItem("note7", LegendJSON.legendSettings.note7);
-        localStorage.setItem("minimapbckimg", LegendJSON.legendSettings.minimapbckimg);
-        localStorage.setItem("teambimg", LegendJSON.legendSettings.teambimg);
-        localStorage.setItem("canvasbimg", LegendJSON.legendSettings.canvasbimg);
-        localStorage.setItem("leadbtext", LegendJSON.legendSettings.leadbtext);
-        localStorage.setItem("leadbimg", LegendJSON.legendSettings.leadbimg);
-        localStorage.setItem("teambtext", LegendJSON.legendSettings.teambtext);
-        localStorage.setItem("imgUrl", LegendJSON.legendSettings.imgUrl);
-        localStorage.setItem("imgHref", LegendJSON.legendSettings.imgHref);
-        localStorage.setItem("minbtext", LegendJSON.legendSettings.minbtext);
-        localStorage.setItem("pic1urlimg", LegendJSON.legendSettings.pic1urlimg);
-        localStorage.setItem("pic2urlimg", LegendJSON.legendSettings.pic2urlimg);
-        localStorage.setItem("pic3urlimg", LegendJSON.legendSettings.pic3urlimg);
-        localStorage.setItem("pic4urlimg", LegendJSON.legendSettings.pic4urlimg);
-        localStorage.setItem("pic5urlimg", LegendJSON.legendSettings.pic5urlimg);
-        localStorage.setItem("pic6urlimg", LegendJSON.legendSettings.pic6urlimg);
-        localStorage.setItem("yt1urlimg", LegendJSON.legendSettings.yt1urlimg);
-        localStorage.setItem("yt2urlimg", LegendJSON.legendSettings.yt2urlimg);
-        localStorage.setItem("yt3urlimg", LegendJSON.legendSettings.yt3urlimg);
-        localStorage.setItem("yt4urlimg", LegendJSON.legendSettings.yt4urlimg);
-        localStorage.setItem("yt5urlimg", LegendJSON.legendSettings.yt5urlimg);
-        localStorage.setItem("yt6urlimg", LegendJSON.legendSettings.yt6urlimg);
-        localStorage.setItem("pic1dataimg", LegendJSON.legendSettings.pic1dataimg);
-        localStorage.setItem("pic2dataimg", LegendJSON.legendSettings.pic2dataimg);
-        localStorage.setItem("pic3dataimg", LegendJSON.legendSettings.pic3dataimg);
-        localStorage.setItem("pic4dataimg", LegendJSON.legendSettings.pic4dataimg);
-        localStorage.setItem("pic5dataimg", LegendJSON.legendSettings.pic5dataimg);
-        localStorage.setItem("pic6dataimg", LegendJSON.legendSettings.pic6dataimg);
-        localStorage.setItem("yt1dataimg", LegendJSON.legendSettings.yt1dataimg);
-        localStorage.setItem("yt2dataimg", LegendJSON.legendSettings.yt2dataimg);
-        localStorage.setItem("yt3dataimg", LegendJSON.legendSettings.yt3dataimg);
-        localStorage.setItem("yt4dataimg", LegendJSON.legendSettings.yt4dataimg);
-        localStorage.setItem("yt5dataimg", LegendJSON.legendSettings.yt5dataimg);
-        localStorage.setItem("yt6dataimg", LegendJSON.legendSettings.yt6dataimg);
-        localStorage.setItem("discwebhook1", LegendJSON.legendSettings.discwebhook1);
-        localStorage.setItem("discwebhook2", LegendJSON.legendSettings.discwebhook2);
-        localStorage.setItem("Userscript1", LegendJSON.legendSettings.Userscript1);
-        localStorage.setItem("Userscript2", LegendJSON.legendSettings.Userscript2);
-        localStorage.setItem("Userscript3", LegendJSON.legendSettings.Userscript3);
-        localStorage.setItem("Userscript4", LegendJSON.legendSettings.Userscript4);
-        localStorage.setItem("Userscript5", LegendJSON.legendSettings.Userscript5);
-        localStorage.setItem("Userscripttexture1", LegendJSON.legendSettings.Userscripttexture1);
-        localStorage.setItem("Userscripttexture2", LegendJSON.legendSettings.Userscripttexture2);
-        localStorage.setItem("Userscripttexture3", LegendJSON.legendSettings.Userscripttexture3);
-        localStorage.setItem("Userscripttexture4", LegendJSON.legendSettings.Userscripttexture4);
-        localStorage.setItem("Userscripttexture5", LegendJSON.legendSettings.Userscripttexture5);
+var themeMenus = {
+    'ogario-v3': {
+        'name': 'OGARio v3',
+        'menuMainColor': '#01d9cc',
+        'menuBtnTextColor': '#ffffff',
+        'menuPanelColor': '#00243e',
+        'menuPanelColor2': '#002f52',
+        'menuTextColor': '#ffffff',
+        'menuTextColor2': '#8096a7',
+        'btn1Color': '#018cf6',
+        'btn1Color2': '#0176ce',
+        'btn2Color': '#00b9e8',
+        'btn2Color2': '#0099c0',
+        'btn3Color': '#8d5fe6',
+        'btn3Color2': '#814ee3',
+        'btn4Color': '#f300d8',
+        'btn4Color2': '#df00c6',
+        'menuBg': 'https://jimboy3100.github.io/banners/static/img/pattern.png'
+    },
+    'ogario-v2': {
+        'name': 'OGARio v2',
+        'menuMainColor': '#ff7800',
+        'menuBtnTextColor': '#ffffff',
+        'menuPanelColor': '#222222',
+        'menuPanelColor2': '#333333',
+        'menuTextColor': '#bbbbbb',
+        'menuTextColor2': '#bbbbbb',
+        'btn1Color': '#428bca',
+        'btn1Color2': '#3071a9',
+        'btn2Color': '#5cb85c',
+        'btn2Color2': '#449d44',
+        'btn3Color': '#f0ad4e',
+        'btn3Color2': '#ec971f',
+        'btn4Color': '#d9534f',
+        'btn4Color2': '#c9302c',
+        'menuBg': ''
+    },
+    'agario': {
+        'name': 'Agar.io',
+        'menuMainColor': '#5bc0de',
+        'menuBtnTextColor': '#ffffff',
+        'menuPanelColor': '#ffffff',
+        'menuPanelColor2': '#cccccc',
+        'menuTextColor': '#333333',
+        'menuTextColor2': '#999999',
+        'btn1Color': '#428bca',
+        'btn1Color2': '#3071a9',
+        'btn2Color': '#5cb85c',
+        'btn2Color2': '#449d44',
+        'btn3Color': '#f0ad4e',
+        'btn3Color2': '#ec971f',
+        'btn4Color': '#d9534f',
+        'btn4Color2': '#c9302c',
+        'menuBg': ''
     }
 }
-
-function YoutubeEmbPlayer(pastedDataorNot) {
-    var finalUrl = getEmbedUrl(pastedDataorNot.trim());
-    if (finalUrl == false) {
-        toastr["error"](Premadeletter1).css("width", "210px");
-        //               setTimeout(function() {
-        if (localStorage.getItem("musicUrl") == null) {
-            $("#musicUrl").val(defaultMusicUrl);
-        } else {
-            $("#musicUrl").val(localStorage.getItem("musicUrl"));
-        }
-        //               }, 500);
-    } else {
-        $("#musicFrame").attr("src", finalUrl);
-        localStorage.setItem("musicUrl", pastedDataorNot.trim());
-    }
+var escapeHTMLs = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    '\'': '&#39;',
+    '/': '&#x2F;'
 }
+var defaultSettings = {
+    'preset': 'ogario-v3',
+    'darkTheme': true,
+    'mainColor': '#01d9cc',
+    'bgColor': '#000a11',
+    'bordersColor': '#d90101',
+    "borderGlowColor": "#ffffff",
+    'gridColor': '#00243e',
+    'sectorsColor': '#00243e',
+    'namesColor': '#ffffff',
+    'namesStrokeColor': '#000000',
+    'massColor': '#ffffff',
+    'massStrokeColor': '#000000',
+    'virusColor': '#327a19',
+    'virusStrokeColor': '#327a19',
+    'mVirusColor': '#ce6363',
+    'mVirusStrokeColor': '#b95959',
+    'foodColor': '#0057ff',
+    'teammatesIndColor': '#ffffff',
+    'cursorTrackingColor': '#ffffff',
+    'splitRangeColor': '#ffffff',
+    'enemyBSTEDColor': '#8000ff', //Sonia2
+    'enemyBSTEColor': '#BE00FF', //Sonia2
+    'enemyBColor': '#FF0A00', //Sonia2
+    'enemySColor': '#00C8FF', //Sonia2
+    'enemySSTEColor': '#048245', //Sonia2
+    'enemySSTEDColor': '#64FF00', //Sonia2
+    'ghostCellsColor': '#ffffff',
+    'safeAreaColor': '#ffffff',
+    'dangerAreaColor': '#bf00aa',
+    'namesFont': 'ubuntu-bold',
+    'namesFontFamily': 'Ubuntu',
+    'namesFontWeight': 700,
+    'massFont': 'ubuntu-bold',
+    'massFontFamily': 'Ubuntu',
+    'massFontWeight': 700,
+    'sectorsFont': 'ubuntu',
+    'sectorsFontFamily': 'Ubuntu',
+    'sectorsFontWeight': 400,
+    'sectorsX': 5,
+    'sectorsY': 5,
+    'namesScale': 1,
+    'massScale': 3,
+    'virMassScale': 3,
+    'strokeScale': 1,
+    'foodSize': 5,
+    'bordersWidth': 14,
+    'sectorsWidth': 40,
+    'sectorsFontSize': 1200,
+    'cellsAlpha': 0.99,
+    'skinsAlpha': 0.99,
+    'virusAlpha': 0.6,
+    'textAlpha': 1,
+    'virusGlowColor': '#fff',
+    'virusGlowSize': 14,
+    'borderGlowSize': 14,
+    'ghostCellsAlpha': 0.3,
+    'virusStrokeSize': 14,
+    'menuPreset': 'ogario-v3',
+    'menuMainColor': '#01d9cc',
+    'menuBtnTextColor': '#ffffff',
+    'menuPanelColor': '#00243e',
+    'menuPanelColor2': '#002f52',
+    'menuTextColor': '#ffffff',
+    'menuTextColor2': '#8096a7',
+    'btn1Color': '#018cf6',
+    'btn1Color2': '#0176ce',
+    'btn2Color': '#00b9e8',
+    'btn2Color2': '#0099c0',
+    'btn3Color': '#8d5fe6',
+    'btn3Color2': '#814ee3',
+    'btn4Color': '#bf00aa',
+    'btn4Color2': '#a80096',
+    'menuBg': 'https://jimboy3100.github.io/banners/static/img/pattern.png',
+    'menuOpacity': 0.96,
+    'hudMainColor': '#01d9cc',
+    'hudColor': 'rgba(0,0,0,0.4)',
+    'hudTextColor': '#ffffff',
+    'statsHudColor': '#ffffff',
+    'timeHudColor': '#01d9cc',
+    'top5MassColor': '#bf00aa',
+    'lbMeColor': '#bf00aa',
+    'lbTeammateColor': '#018cf6',
+    'hudFont': 'ubuntu-bold',
+    'hudFontFamily': 'Ubuntu',
+    'hudFontWeight': 700,
+    'hudScale': 1,
+    'messageColor': 'rgba(0,0,0,0.4)',
+    'messageTextColor': '#ffffff',
+    'messageTimeColor': '#018cf6',
+    'messageNickColor': '#01d9cc',
+    'commandsColor': 'rgba(191,0,170,0.9)',
+    'commandsTextColor': '#ffffff',
+    'commandsTimeColor': '#bf00aa',
+    'commandsNickColor': '#ffffff',
+    'chatBoxColor': 'rgba(0,0,0,0.4)',
+    'chatScale': 1,
+    'miniMapSectorsColor': '#ffffff',
+    'miniMapSectorColor': '#01d9cc',
+    'miniMapGuidesColor': '#bf00aa',
+    'miniMapNickColor': '#ffffff',
+    'miniMapNickStrokeColor': '#000000',
+    'miniMapMyCellColor': '#ffffff',
+    'miniMapMyCellStrokeColor': '#bf00aa',
+    'miniMapTeammatesColor': '#01d9cc',
+    'miniMapDeathLocationColor': '#bf00aa',
+    'miniMapGhostCellsColor': '#ffffff',
+    ////
+    "color": "#fff",
+    //"commanderImage" : "https://i.imgur.com/wQKUDB3.png",
+    "commanderImage": "https://jimboy3100.github.io/banners/drawCommander.png",
+    "commanderImage1": "https://jimboy3100.github.io/banners/drawCommander1.png",
+    "commanderImage2": "https://jimboy3100.github.io/banners/drawCommander2.png",
+    "commanderImage3": "https://jimboy3100.github.io/banners/drawCommander3.png",
+    "commanderImage4": "https://jimboy3100.github.io/banners/drawCommander4.png",
+    "commanderImage5": "https://jimboy3100.github.io/banners/drawCommander5.png",
+    "commanderImage6": "https://jimboy3100.github.io/banners/iconJustWatchPro.png",
+    "commanderImageDyingLight": "https://jimboy3100.github.io/banners/icondyinglightzombie.png",
+    "commanderImageDyingLightvirus": "https://jimboy3100.github.io/banners/icondyinglightvirus.png",
 
-function MsgCommands1(MSGCOMMANDS, MSGNICK) {
-
-    if (MSGCOMMANDS.includes("[url]")) {
-        if ($("#nick").val().includes("url") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
-        MSGCOMMANDS = MSGCOMMANDS.split("[url]").pop();
-        MSGCOMMANDS = MSGCOMMANDS.split('[/url]')[0];
-        if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTP://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
-            MSGCOMMANDS = "https://" + MSGCOMMANDS;
-        }
-        toastr["warning"](Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
-            timeOut: 20000,
-            extendedTimeOut: 20000
-        }).css("width", "250px");
-        $("#acceptURL").click(function() {
-            window.open(MSGCOMMANDS, '_blank');
-        });
-    } else if (MSGCOMMANDS.includes("[tag]")) {
-        if ($("#nick").val().includes("tag") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
-        MSGCOMMANDS = MSGCOMMANDS.split("[tag]").pop();
-        MSGCOMMANDS = MSGCOMMANDS.split('[/tag]')[0];
-        if (MSGCOMMANDS != "") {
-            toastr["warning"](Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63a + ': <i id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
-                timeOut: 20000,
-                extendedTimeOut: 20000
-            }).css("width", "250px");
-            $("#acceptURL").click(function() {
-                $("#clantag").val(MSGCOMMANDS);
-                $('#clantag').css('background-color', '#ff6347');
-                newsubmit();
-            });
-        } else {
-            toastr["warning"](Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63b + ': <i id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
-                timeOut: 20000,
-                extendedTimeOut: 20000
-            }).css("width", "250px");
-            $("#acceptURL").click(function() {
-                $("#clantag").val(MSGCOMMANDS);
-                $('#clantag').css('background-color', '#ff6347');
-                newsubmit();
-            });
-        }
-    } else if (MSGCOMMANDS.includes("[yut]")) {
-        if ($("#nick").val().includes("yut") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
-        MSGCOMMANDS = MSGCOMMANDS.split("[yut]").pop();
-        MSGCOMMANDS = MSGCOMMANDS.split('[/yut]')[0];
-        if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTPS://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
-            MSGCOMMANDS = "https://" + MSGCOMMANDS;
-        }
-        toastr["warning"](Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter64 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <iframe type="text/html" width="100%" height="auto" src="https://www.youtube.com/embed/' + getParameterByName("v", MSGCOMMANDS) + '?autoplay=1&amp;vq=tiny" frameborder="0"></iframe></br> <button id="acceptYoutubeEmb" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="margin-top: -10px; width: 100%">' + Premadeletter25 + '</button>', "", {
-            timeOut: 20000,
-            extendedTimeOut: 20000
-        }).css("width", "300px");
-        $("#acceptYoutubeEmb").click(function() {
-            YoutubeEmbPlayer(MSGCOMMANDS);
-            $("#musicUrl").val(MSGCOMMANDS);
-            //setTimeout(function() {
-            //$("#playerI").click();
-            playYoutube(); //it's different on LME
-            //}, 1000);
-        });
-    } else if (MSGCOMMANDS.includes("[skype]")) {
-        if ($("#nick").val().includes("skype") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
-        MSGCOMMANDS = MSGCOMMANDS.split("[skype]").pop();
-        MSGCOMMANDS = MSGCOMMANDS.split('[/skype]')[0];
-        if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTP://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
-            MSGCOMMANDS = "https://" + MSGCOMMANDS;
-        }
-        if (MSGCOMMANDS.includes("join.skype.com/")) {
-            toastr["warning"]('<img src="https://jimboy3100.github.io/banners/iconskype.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter65 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
-                timeOut: 10000,
-                extendedTimeOut: 10000
-            }).css("width", "300px");
-            $("#acceptURL").click(function() {
-                window.open(MSGCOMMANDS, '_blank');
-            });
-        }
-    } else if (MSGCOMMANDS.includes("[discord]")) {
-        if ($("#nick").val().includes("discord") == false) {
-            $(".message-text").remove();
-            $(".toast.toast-success").remove();
-        }
-        MSGCOMMANDS = MSGCOMMANDS.split("[discord]").pop();
-        MSGCOMMANDS = MSGCOMMANDS.split('[/discord]')[0];
-        if (MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("https://") == false && MSGCOMMANDS.includes("HTTPS://") == false && MSGCOMMANDS.includes("HTTPS://") == false) {
-            MSGCOMMANDS = "https://" + MSGCOMMANDS;
-        }
-        if (MSGCOMMANDS.includes("discordapp.com/invite") || MSGCOMMANDS.includes("discord.gg")) {
-            toastr["warning"]('<img src="https://jimboy3100.github.io/banners/icondiscord.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter66 + ': <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
-                timeOut: 20000,
-                extendedTimeOut: 20000
-            }).css("width", "300px");
-            $("#acceptURL").click(function() {
-                window.open(MSGCOMMANDS, '_blank');
-            });
-        }
-    } else if (MSGCOMMANDS.includes("[srv]")) {
-        if (MSGCOMMANDS.includes("sip=") || MSGCOMMANDS.includes("agar.io/#")) {
-            if ($("#nick").val().includes("srv") == false) {
-                $(".message-text").remove();
-                $(".toast.toast-success").remove();
-            } //split pop is included on functions above
-            MsgServCommandsreturner();
-            acceptServerBtn();
-        }
-    } else if (MSGCOMMANDS.includes("Legend.Mod")) {
-
-        playerMsg = getParameterByName("player", MSGCOMMANDS);
-        commandMsg = getParameterByName("com", MSGCOMMANDS);
-        otherMsg = getParameterByName("do", MSGCOMMANDS);
-        //		$( ".toast.toast-success" ).text("");
-        //		$(".message-text").text();.hide();
-        $(".message-text").remove();
-        $(".toast.toast-success").remove();
-        //without confirmation
-        if (commandMsg == "Team5") {
-            $("#top5-hud").css('background-image', 'url(" https://jimboy3100.github.io/banners/icogeneral.gif ")').css({
-                opacity: 0.8
-            });
-            setTimeout(function() {
-                $("#top5-hud").css('background-image', 'url(" ")').css({
-                    opacity: 1
-                });
-            }, 12000);
-        } else if (commandMsg == "Hello") {
-            if ($('#message-box').css('display') == 'none') {
-				if ($("#clantag").val()!=""){
-                var nickname = $("#nick").val();
-                $("#nick").val("Hello Team");
-                $("#helloContainer").show();
-                newsubmit();
-                setTimeout(function() {
-                    $("#nick").val(nickname);
-                    $("#helloContainer").show();
-                    newsubmit();
-                }, 5000);
-				}
-            }
-        }
-
-        //with confirmation
-        else if (commandMsg == "HideAll") {
-            toastr["warning"](Premadeletter22 + ' ' + playerMsg + ' ' + Premadeletter23 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-hideall" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
-                timeOut: 20000,
-                extendedTimeOut: 20000
-            }).css("width", "210px");
-            $(".btn.btn-sm.btn-primary.btn-play.btn-do-hideall").click(function() {
-                $("#HideAllBthn").click();
-            });
-        } else if (commandMsg == "NamePerm") {
-            toastr["warning"](Premadeletter22 + ' ' + playerMsg + ' ' + Premadeletter26 + ': ' + playerMsg + ' </br> <button class="btn btn-sm btn-primary btn-play btn-do-NamePerm" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-NamePerm" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
-                timeOut: 20000,
-                extendedTimeOut: 20000
-            }).css("width", "210px");
-            $(".btn.btn-sm.btn-primary.btn-play.btn-do-NamePerm").click(function() {
-                $("#nick").val(playerMsg);
-                $("#helloContainer").show();
-                newsubmit();
-            });
-        } else if (commandMsg == "dTroll2") {
-            toastr["warning"](Premadeletter22 + ' ' + playerMsg + ' ' + Premadeletter27 + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-troll" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-troll" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
-                timeOut: 20000,
-                extendedTimeOut: 20000
-            }).css("width", "210px");
-            $(".btn.btn-sm.btn-primary.btn-play.btn-do-troll").click(function() {
-                settrolling();
-            });
-        } else if (commandMsg == "Youtube") {
-            toastr["warning"](Premadeletter22 + ' ' + playerMsg + ' ' + Premadeletter28 + '<button class="btn btn-sm btn-primary btn-play btn-play-youtube" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-noplay-youtube" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
-                timeOut: 20000,
-                extendedTimeOut: 20000
-            }).css("width", "210px");
-            $(".btn.btn-sm.btn-primary.btn-play.btn-play-youtube").click(function() {
-                $("#playerBtn").click();
-                setTimeout(function() {
-                    $("#playerBtn").focusout();
-                }, 100);
-            });
-            //	$("#playerBtn").click();			
-        }
-
-    } else if (MSGCOMMANDS.includes("https://agar.io/sip=151.80.91.73:1511")) {
-        commandMsg = getParameterByName("com", MSGCOMMANDS);
-        otherMsg = getParameterByName("do", MSGCOMMANDS);
-        $(".message-text").remove();
-        $(".toast.toast-success").remove();
-        LegendClanSymbol = $("#nick").val();
-        console.log("Step1");
-        if (~LegendClanSymbol.indexOf("?") != -1) {
-            console.log("Step2");
-            if (commandMsg == "EU-London") {
-                setTimeout(function() {
-                    $("#server-join").click();
-                }, 60000);
-            } else if (commandMsg == "RU-Russia") {
-                setTimeout(function() {
-                    $("#server-join").click();
-                }, 1000);
-            } else {
-                //bug fix
-                setTimeout(function() {
-                    $("#server-join").click();
-                }, 1000);
-            }
-        }
-    }
+    ////
+    'miniMapFont': 'ubuntu-bold',
+    'miniMapFontFamily': 'Ubuntu',
+    'miniMapFontWeight': 700,
+    'miniMapNickFont': 'ubuntu-bold',
+    'miniMapNickFontFamily': 'Ubuntu',
+    'miniMapNickFontWeight': 700,
+    'miniMapWidth': 240,
+    'miniMapTop': 24,
+    'miniMapSectorsOpacity': 0.1,
+    'miniMapNickSize': 11,
+    'miniMapNickStrokeSize': 2,
+    'miniMapMyCellSize': 7.5,
+    'miniMapMyCellStrokeSize': 4,
+    'miniMapTeammatesSize': 5.5,
+    'miniMapGhostCellsAlpha': 0.15,
+    'customBackground': '',
+    'customCursor': 'https://jimboy3100.github.io/cursors/cursor_02.cur'
 }
-
-function isLegendExpress(Express) {
-    if (messageone != "0" && messageone != "1") {
-        return Express = "False";
-    } else {
-        return Express = "True";
+var skinUrlPatterns = [{
+    name: "imgur.com",
+    url: "https://imgur.com/",
+    example: "https://i.imgur.com/xdmUp5N.png",
+    pattern: "https?://w+.imgur.com/w{6,}.(?:%file_ext%)??d*"
+},
+    {
+        name: "put.re",
+        url: "https://put.re/",
+        example: "https://s.put.re/iYHAW65g.png",
+        pattern: "https?://w+.put.re/w{8,}.(?:%file_ext%)"
+    },
+    {
+        name: "postimages.org",
+        url: "https://postimages.org/",
+        example: "https://i.postimg.cc/zzK0sRPg/xdmUp5N.png",
+        pattern: "https?://w+.postimg.cc/w{8,}/w+.(?:%file_ext%)"
     }
-    //var Express;isLegendExpress(Express);
-}
+];
+var defaultmapsettings = {
+    'isAlphaChanged': false,
+    'jellyPhisycs': false,
+    'virusSound': false,
+    'quickResp': true,
+    'autoResp': false,
+    'autoZoom': false,
+    'autoHideNames': true,
+    'autoHideMass': true,
+    'autoHideFood': false,
+    'autoHideFoodOnZoom': false,
+    'noNames': false,
+    'optimizedNames': true,
+    'hideMyName': false,
+    'hideTeammatesNames': false,
+    'showMass': true,
+    'optimizedMass': true,
+    'shortMass': true,
+    'virMassShots': true,
+    'hideMyMass': false,
+    'hideEnemiesMass': false,
+    'vanillaSkins': false,
+    'customSkins': true,
+    'videoSkins': true,
+    'videoSkinsMusic': false,
+    'myTransparentSkin': false,
+    'myCustomColor': false,
+    'transparentCells': false,
+    'transparentViruses': true,
+    'transparentSkins': false,
+    'showGrid': true,
+    'showBgSectors': false,
+    'showMapBorders': true,
+    'showGhostCells': false,
+    'showGhostCellsInfo': false,
+    'showMiniMap': true,
+    'showMiniMapGrid': false,
+    'showMiniMapGuides': true,
+    'showExtraMiniMapGuides': true,
+    'showMiniMapGhostCells': true,
+    'oneColoredTeammates': false,
+    'optimizedFood': true,
+    'rainbowFood': true,
+    'oppColors': true,
+    'oppRings': true,
+    'virColors': false,
+    'splitRange': false,
+    'qdsplitRange': true, //Sonia2
+    'sdsplitRange': true, //Sonia2
+    'virusesRange': false,
+    'textStroke': false,
+    'namesStroke': true,
+    'massStroke': true,
+    'cursorTracking': false,
+    'teammatesInd': true,
+    'mouseSplit': false,
+    'mouseFeed': false,
+    'mouseInvert': false,
+    'disableChat': false,
+    'hideChat': false,
+    'chatSounds': true,
+    'chatEmoticons': true,
+    'showChatBox': false,
+    'showChatImages': true,
+    'showChatVideos': true,
+    'showTop5': true,
+    'showTargeting': true,
+    'showLbData': true,
+    'showTime': false,
+    'normalLb': true,
+    'centeredLb': true,
+    'fpsAtTop': true,
+    'showStats': true,
+    'showStatsMass': true,
+    'showStatsESTE': false,
+    'showStatsEMTE': false,
+    'showStatsMTE': false,
+    'showStatsSTE': false,
+    'showStatsTTE': false,
+    'showStatsPTE': false,
+    'showStatsSTE': false,
+    'showStatsN16': true,
+    'showStatsFPS': true,
+    'blockPopups': false,
+    'streamMode': false,
+    'hideSkinUrl': false,
+    'showQuickMenu': true,
+    'showSkinsPanel': true,
+    'animation': 140,
+    ////
+    "cameraSpeed": 7,
+    "commanderDelay": 1E3,
+    "suckAnimation": false,
+    "virusGlow": false,
+    "borderGlow": false,
+    "limLB": 10,
+    "limTP": 5,
+    ////
+    //'zoomSpeedValue': .87,
+    'zoomSpeedValue2': -0.13,
+    'messageSound': 'https://jimboy3100.github.io/sounds/notification_01.mp3',
+    //                'commandSound': 'https://jimboy3100.github.io/sounds/notification_02.mp3'
+    'commandSound': 'https://jimboy3100.github.io/sounds/chat-message.mp3',
+    'virusSoundurl': 'https://jimboy3100.github.io/sounds/sound-gunshot.mp3',
+    'soundSplit': 'https://www.myinstants.com/media/sounds/quack_5.mp3'
 
-function MsgServCommandsreturner2(MSGCOMMANDS2a) {
-    return MSGCOMMANDS2a;
-}
-
-function acceptServerBtn() {
-    if (acceptServerBtnFlag == null) {
-        $("#acceptServer").click(function() {
-
-
-            if (isLegendExpress(Express) == "True") { //if is Legend express
-                if (MSGCOMMANDS.includes("agar.io/#")) { //if sent server is Party mode
-                    console.log("1a - Legend express, Party mode");
-                    if (getParameterByName("pass", MSGCOMMANDS) != null) {
-                        $("#clantag").val(getParameterByName("pass", MSGCOMMANDS));
-                    };
-                    $('#server').val(MSGCOMMANDSA);
-                    $("#connect2").click();
-                } else if (MSGCOMMANDS3.includes("sip=")) { //if not Party mode
-                    console.log("1b - Legend express, Not Party mode");
-                    if (getParameterByName("pass", MSGCOMMANDS) != null) {
-                        $("#clantag").val(getParameterByName("pass", MSGCOMMANDS));
-                    };
-                    $("#server-token").val(getParameterByName("sip", MSGCOMMANDS3).replace("live-arena-", "").replace(".agar.io", ""));
-                    $("#server-join").click();
-                }
-            } else { //if is Legend mod
-                if (searchSip == null) { //if is not Locked
-                    if (MSGCOMMANDS.includes("agar.io/#")) { //if sent server is Party mode
-                        console.log("2a - Legend Mod, No Locked, Party Mode");
-                        if (getParameterByName("pass", MSGCOMMANDS) != null) {
-                            $("#clantag").val(getParameterByName("pass", MSGCOMMANDS));
-                        };
-                        $('#server').val(MSGCOMMANDSA);
-                        $("#connect2").click();
-                    } else if (MSGCOMMANDS3.includes("sip=")) { //if not Party	mode	
-                        console.log("2b - Legend Mod, Locked, No Party mode");
-                        if (getParameterByName("pass", MSGCOMMANDS) != null) {
-                            $("#clantag").val(getParameterByName("pass", MSGCOMMANDS));
-                        };
-                        $("#server-token").val(getParameterByName("sip", MSGCOMMANDS3).replace("live-arena-", "").replace(".agar.io", ""));
-                        $("#server-join").click();
-
-                    }
-                } else { //if Locked	
-                    console.log("2b - Legend Mod, Locked");
-                    MSGCOMMANDS = MSGCOMMANDS.split("[srv]").pop();
-                    MSGCOMMANDS = MSGCOMMANDS.split('[/srv]')[0];
-                    if (MSGCOMMANDS.length > 70) {
-                        MSGCOMMANDS = MSGCOMMANDS.split('[')[0];
-                    }
-                    location.replace(MSGCOMMANDS);
-                    //window.open(MSGCOMMANDS,'_blank');
-
-                }
-            }
-            // window.open(MSGCOMMANDS2a,'_blank');
-        });
-    }
-    //return acceptServerBtnFlag=1;
-}
-
-function MsgServCommandsreturner() {
-    MSGCOMMANDS2 = MSGCOMMANDS;
-    MSGCOMMANDS3 = MSGCOMMANDS;
-    MSGCOMMANDS2 = MSGCOMMANDS2.split("[srv]").pop();
-    MSGCOMMANDS2 = MSGCOMMANDS2.split('[/srv]')[0];
-    if (MSGCOMMANDS2.includes("https://") == false && MSGCOMMANDS2.includes("https://") == false && MSGCOMMANDS2.includes("HTTP://") == false && MSGCOMMANDS2.includes("HTTPS://") == false) {
-        MSGCOMMANDS2 = "https://" + MSGCOMMANDS2;
-    }
-    if (MSGCOMMANDS2.includes("agar.io/#")) { //if sent server is Party mode
-        MSGCOMMANDS2a = MSGCOMMANDS2;
-        MsgServCommandsreturner2(MSGCOMMANDS2a);
-        MSGCOMMANDSA = "#" + MSGCOMMANDS2a.split("#").pop();
-        toastr["warning"]('<div><img src="https://jimboy3100.github.io/banners/iconagario.png" style="float:left;width:100px;height:100px;"></img>' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter67 + '</font></a></br>Server (Party mode): ' + MSGCOMMANDSA + '<button id="acceptServer" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button></div>', "", {
-            timeOut: 10000,
-            extendedTimeOut: 10000
-        }).css("width", "300px");
-    } else if (getParameterByName("r", MSGCOMMANDS2a) != null) {
-        var modetosend, passtosend;
-
-        if (getParameterByName("pass", MSGCOMMANDS) == null) {
-            passtosend = "No Password Loaded";
-        } else {
-            passtosend = getParameterByName("pass", MSGCOMMANDS);
-        }
-        if (getParameterByName("mode", MSGCOMMANDS) == null) {
-            modetosend = "Unknown";
-        } else {
-            modetosend = getParameterByName("mode", MSGCOMMANDS);
-        }
-        toastr["warning"]('<div><img src="https://jimboy3100.github.io/banners/iconagario.png" style="float:left;width:100px;height:100px;"></img>' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter67 + '</font></a></br>Server: ' + getParameterByName("sip", MSGCOMMANDS).replace("live-arena-", "").replace(".agar.io", "") + '</br>Mode: ' + modetosend + '</br> Region: ' + getParameterByName("r", MSGCOMMANDS) + '</br> Password: ' + passtosend + '</br> <button id="acceptServer" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button></div>', "", {
-            timeOut: 10000,
-            extendedTimeOut: 10000
-        }).css("width", "300px");
-    } else {
-        var passtosend;
-
-        if (getParameterByName("pass", MSGCOMMANDS) == null) {
-            passtosend = "No Password Loaded";
-        } else {
-            passtosend = getParameterByName("pass", MSGCOMMANDS);
-        }
-        toastr["warning"]('<div><img src="https://jimboy3100.github.io/banners/iconagario.png" style="float:left;width:100px;height:100px;"></img>' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter67 + '</font></a></br>Server: ' + getParameterByName("sip", MSGCOMMANDS).replace("live-arena-", "").replace(".agar.io", "") + '</br> Password: ' + passtosend + '<button id="acceptServer" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button></div>', "", {
-            timeOut: 10000,
-            extendedTimeOut: 10000
-        }).css("width", "300px");
-    }
-    return MSGCOMMANDS, MSGCOMMANDS2, MSGCOMMANDS2a, MSGCOMMANDSA, MSGCOMMANDS3;
-}
-
-
-function universalchat() {
-    $("#overlays").css("z-index", 100);
-    fixservbtn();
-    setTimeout(function() {
-        fixservbtn2();
-    }, 2000);
-
-    var legbgpic = $("#menuBg").val();
-    var legbgcolor = $("#menuPanelColor").val();
-
-
-	window.authenticAgartoolId=[];
-    var global = window;
-    var my = {
-        "name": "<i class='fa fa-universal-access' aria-hidden='true'></i>",
-        //        "log": function(msg){ console.log(this.name + ":"+ msg); },
-        //		"log": function(msg){ toastr["success"](this.name + ":"+ msg); },		
-        "log": function(msg) {
-            if (($('#chat-box').is(":visible") == false)) {
-                //console.log(".....");
-                /*
-                window.teammatelegendmodnicks.forEach(function(a){
-                	if (~msg.indexOf(a)+":") {	
-                		msg="[Universal chat]:";
-                	}
-                	}); */
-                if (~msg.indexOf("Received a command with an unknown name")) {
-                    if (~msg.indexOf("Received a command with an unknown name: customSkins")) {} else {
-                        toastr["success"]('<div class="toast-message"><span class="message-nick">' + this.name + ': </span><span class="message-text">' + msg + '</span><a href="#" data-user-id="agar tool" class="mute-user ogicon-user-minus"></a> </div>');
-                    }
-                } else if (~msg.indexOf(Premadeletter109b + " socket.io")) {
-                    toastr["warning"]('<div class="toast-message"><span class="message-nick">' + this.name + ': </span><span class="message-text">' + msg + '</span><a href="#" data-user-id="agar tool" class="mute-user ogicon-user-minus"></a> </div>');
-                    //playSound($('#commandSound').val());
-                } else if (~msg.indexOf("minimap server")) {
-                    toastr["warning"]('<div class="toast-message"><span class="message-nick">' + this.name + ': </span><span class="message-text">' + msg + '</span><a href="#" data-user-id="agar tool" class="mute-user ogicon-user-minus"></a> </div>');
-                } else if (~msg.indexOf($('#nick').val() + ':')) {
-                    if (window.noOgarioSocket) {
-                        toastr["success"]('<div class="toast-message"><span class="message-nick">' + this.name + ': </span><span class="message-text">' + msg + '</span><a href="#" data-user-id="agar tool" class="mute-user ogicon-user-minus"></a> </div>');
-                        playSound($('#messageSound').val());
-                    } else {}
-                } else if (~msg.indexOf('[Universal chat]:')) {} else if (~msg.indexOf('@')) {
-                    msg.slice(1);
-                    toastr["warning"]('<div class="toast-message"><span class="message-nick">' + this.name + ': </span><span class="message-text">' + msg + '</span><a href="#" data-user-id="agar tool" class="mute-user ogicon-user-minus"></a> </div>');
-                    playSound($('#commandSound').val());
-                } else {
-                    toastr["success"]('<div class="toast-message"><span class="message-nick">' + this.name + ': </span><span class="message-text">' + msg + '</span><a href="#" data-user-id="agar tool" class="mute-user ogicon-user-minus"></a> </div>');
-                    playSound($('#messageSound').val());
-                }
-            }
-        },
-        //        "tool_symbol": "Send text Universaly"
-        "tool_symbol": ""
-    };
-    'use strict';
-    var stat = {
-        "AgarToolVersion": 5,
-        "AgarToolServer": "wss://minimap.agartool.io:9000",
-        minimapBalls: {},
-        "socketIoURL": "https://jimboy3100.github.io/ExampleScripts/socket-io.min.js",
-        "minimapNickFont": "700 11px Ubuntu",
-        "minimapNickColor": "#ffffff",
-        "minimapNickStrokeColor": "#000000",
-        "minimapNickStrokeSize": 2,
-        "minimapTop": 24,
-        "minimapTeammatesSize": 5.5,
-        "minimapOffsetX": 71,
-        "mapSize": 14142,
-        "mapOffset": 7071,
-        "pi2": 2 * Math.PI,
-        "messageBoxBottom": ["82px", "40%"],
-        "keyCodeEnter": 13,
-        "keyCodeA": 65,
-        "keyCodeR": 82
-    };
-    var cfg = {};
-    var cfg_org = {
-        "user_show": true,
-        "minimap_show": true,
-        "tgar_prefix": "O",
-        "tgar_color": "#8C81C7",
-        "update_interval": 1000,
-        "ogar_user": true,
-        "ogar_prefix": "L.M",
-        "lmsa_teamtop": false,
-        "lmsa_chat": false,
-        "chat_close": false,
-        "chat_unpause": true,
-        "chat_vcenter": false,
-        "chat_alt": true,
-        "chat_ctrlalt": true,
-        "chat_ctrl": true,
-        "skin_toggle_auto": false,
-        "skin_toggle_interval": 10000
-    };
-
-    function pre_loop() {
-        // At this point jQuery can not be used
-        if (!document.getElementById("top5-hud")) {
-            my.pre_loop_timeout = (my.pre_loop_timeout || 1000) + 1000;
-            setTimeout(pre_loop, my.pre_loop_timeout);
-            my.log("wait for Legend Mod load");
-            return;
-        }
-        // Just to be sure, another 1 sec wait
-        setTimeout(initialize, 1000);
-    }
-    pre_loop();
-
-    function initialize() {
-        //      $.extend(cfg, cfg_org, JSON.parse(GM_getValue("config", '{}')));
-        $.extend(cfg, cfg_org, JSON.parse(my.storage_getValue("config", '{}')));
-        global.ao2t = {
-            my: my,
-            stat: stat,
-            cfg: cfg
-        };
-        var local_style = '';
-        local_style += '#ao2t-hud {';
-        local_style += ' font-size: 80%; pointer-events: auto;';
-        local_style += '}';
-        local_style += '#ao2t-hud * {';
-        local_style += ' user-select: auto!important;';
-        local_style += '}';
-        local_style += '#ao2t-cfg-dlg {';
-        local_style += ' border-radius:0; font-size: 80%; padding: 2px 10px; position: fixed;';
-        local_style += ' pointer-events: auto; background-image: url(' + legbgpic + '); background-color: ' + legbgcolor + ' ; color: #ffffff;';
-        local_style += ' overflow: hidden;';
-        local_style += '}';
-        local_style += '#ao2t-cfg-dlg * {';
-        local_style += ' width: auto; user-select: auto!important; pointer-events: auto;';
-        local_style += ' position: relative; float: initial;';
-        //local_style +=     ' display: run-in;'; // NG
-        local_style += '}';
-        local_style += '#ao2t-cfg-dlg input {';
-        local_style += ' background-color: rgba(0,0,0,0.4); color: #ffffff;';
-        local_style += '}';
-        $("head").append('<style>\n' + local_style + '\n</style>');
-        $("#top5-hud").append('' +
-            '<div id="ao2t-hud"><span class="hud-main-color">Universal:' +
-            ' <span id="ao2t-capture"><i class="fa fa-universal-access" aria-hidden="true"></i></span>' +
-            ' <span id="ao2t-config"><i class="fa fa-wrench" aria-hidden="true"></i></span></span>' +
-            //                 '<div id="ao2t-top5" style="padding-left: 1em;"></div>'+
-            '<div id="ao2t-top5" style="font-size: 14px;"></div>' +
-            '</div>');
-        $("#ao2t-capture").click(function(event) {
-            //            my.log("capture_click");
-            stat.capture = !stat.capture;
-            if (stat.capture) {
-                if (global.ogario) {
-                    $("#ao2t-capture").removeClass("disconnected").addClass("connected");
-                    //$("#ao2t-capture").text('??');
-                    $("#ao2t-capture").html('<i class="fa fa-times" aria-hidden="true"></i>');
-                } else {
-                    $("#ao2t-capture").removeClass("disconnected").addClass("connected");
-                    $("#ao2t-capture").html('<i class="fa fa-times" aria-hidden="true"></i>');
-
-                }
-                my.capture_start();
-            } else {
-                $("#ao2t-capture").removeClass("connected").addClass("disconnected");
-                $("#ao2t-capture").html('<i class="fa fa-universal-access" aria-hidden="true"></i>');
-                my.capture_end();
-            }
-        });
-        $('#ao2t-capture').mouseenter(function() {
-            $('#ao2t-capture').css('color', $("#hudTextColor").val());
-            return clickedname = "YES";
-        }).mouseleave(function() {
-            $('#ao2t-capture').css('color', '');
-        });
-        $('#ao2t-config').mouseenter(function() {
-            $('#ao2t-config').css('color', $("#hudTextColor").val());
-            return clickedname = "YES";
-        }).mouseleave(function() {
-            $('#ao2t-config').css('color', '');
-        });
-
-        $("#ao2t-config").click(my.config);
-        // LMB-Mouse split correction (Do not separate by left click on button)
-        if (cfg.lmsa_teamtop) {
-            //$(".team-top-menu").mousedown(function(){return false;});
-            $("#top5-hud").mousedown(function() {
-                return false;
-            });
-        } else {
-            $("#ao2t-hud").mousedown(function(event) {
-                return false;
-            });
-        }
-        if (cfg.lmsa_chat) {
-            $("#message-box").mousedown(function() {
-                return false;
-            });
-        }
-        // --- chat close ---
-        if (cfg.chat_close) {
-            $("#message-menu").append('<a href="#" id="ao2t-chat-close" style="float:right;">X</a>');
-            $("#ao2t-chat-close").click(function() {
-                my.chatClose();
-            });
-        }
-        if (cfg.chat_vcenter) {
-            $("#message-box").css("bottom", stat.messageBoxBottom[1]);
-        }
-        $("#message").keydown(function(event) {
-            var modify = (event.altKey ? "a" : "") +
-                (event.ctrlKey ? "c" : "") +
-                (event.metaKey ? "m" : "") +
-                (event.shiftKey ? "s" : "");
-            if (event.keyCode === stat.keyCodeEnter) {
-                if (modify === "a" && cfg.chat_alt) {
-                    my.chatSend();
-                    return false;
-                } else if (modify === "ac" && cfg.chat_ctrlalt) {
-                    my.chatSend({
-                        "ogar": true
-                    });
-                    return false;
-                } else if (modify === "c" && cfg.chat_ctrl) {
-                    my.chatClose();
-                    return false;
-                }
-            }
-        });
-        // --- skin toggle ---
-        my.skinToggle_start();
-    }
-    my.capture_start = function() {
-        // If not, add chat submit button
-        if ($("#ao2t-message").length) {
-            $("#ao2t-message").show(); // .prop('disabled', false);
-            $("#ao2t-minimap").show();
-        } else {
-            my.capture_init();
-        }
-        // Connection
-        stat.tag = $('#clantag').val();
-        stat.nick = $('#nick').val();
-        stat.token = $('#server-token').val();
-        stat.ws = 'wss://live-arena-' + stat.token + '.agar.io:80';
-        my.connect();
-        stat.update_timerid = setInterval(my.update, cfg.update_interval);
-    };
-    my.capture_end = function() {
-        $("#ao2t-message").hide(); // .prop('disabled', true);
-        $('#ao2t-top5').html('');
-        $("#ao2t-minimap").hide();
-        my.disconnect();
-        clearInterval(stat.update_timerid);
-        stat.update_timerid = null;
-    };
-    my.capture_init = function() {
-        //        $("#message-menu").append('<a href="#" id="ao2t-message" style="float:right;">'+ my.tool_symbol +'</a>');
-        $("#message-menu").prepend('<a href="#" id="ao2t-message" style="float:left;">' + my.tool_symbol + '</a>');
-        //	  	$(".show-chat-emoticons.ogicon-smile").after('<a href="#" id="ao2t-message" style="float:right;">'+ my.tool_symbol +'</a>');
-
-        $("#ao2t-message").click(my.chatSend);
-        // minimap
-        var minimap = $("#minimap");
-        var minimapWidth = minimap.attr('width');
-        var minimapHeight = minimap.attr('height');
-        minimap.before('<canvas id="ao2t-minimap"' +
-            ' style="position: absolute;"' +
-            ' width="' + minimapWidth + '" height="' + minimapHeight + '">');
-        //stat.minimapOffsetX = stat.minimapOffsetY + minimapHeight - minimapWidth;
-    };
-    my.chatSend = function(flg_) {
-        var flg = flg_ || {};
-        if (!stat.connected) {
-            if ($("#ao2t-capture").hasClass("connected")) {
-                global.toastr.error("L.M:->A.T: not connected");
-                return;
-            }
-        }
-
-        var msg = '[Universal chat]:' + $("#message").val();
-        var msgLM = $("#message").val();
-        if (msgLM.indexOf('[url]') == -1 && msgLM.indexOf('[yut]') == -1 && msgLM.indexOf('[skype]') == -1 && msgLM.indexOf('[discord]') == -1 && msgLM.indexOf('[srv]') == -1 && msgLM.indexOf('[tag]') == -1 && msgLM.indexOf('Legend.Mod') == -1 && msgLM.indexOf('https://agar.io/sip=151.80.91.73:1511') == -1) {
-            if (msgLM.length) {
-                my.sendMinimapServerCommand({
-                    name: "chat",
-                    //                nick: "LM: " + stat.nick,
-                    //				nick: stat.nick,
-                    nick: $('#nick').val(),
-                    message: "LM:" + msg
-                });
-                if (flg.ogar) {
-                    $(document).trigger(jQuery.Event('keydown', {
-                        keyCode: stat.keyCodeEnter,
-                        which: stat.keyCodeEnter
-                    }));
-                } else {
-                    //               $("#message-box").hide();
-                }
-            }
-        } else {
-            console.log("Message included Script command, thus it is not sent to agar tool");
-        }
-    };
-    my.chatClose = function() {
-        $("#message-box").css("display", "none");
-        if (cfg.chat_unpause && $("#pause-hud").css("display") == "block") { // Release during PAUSE
-            $(document).trigger(jQuery.Event('keydown', {
-                keyCode: stat.keyCodeR,
-                which: stat.keyCodeR
-            }));
-            $(document).trigger(jQuery.Event('keyup', {
-                keyCode: stat.keyCodeR,
-                which: stat.keyCodeR
-            }));
-        }
-    };
-    my.update = function() {
-        var ogarAlive = my.ogarIsAlive();
-        if (ogarAlive != stat.alive) {
-            my.tgarAlive(ogarAlive);
-        }
-        if (stat.alive) {
-            my.tgarReposition();
-        }
-        my.ogarMinimapUpdate();
-    };
-
-    // -----  Configuration  -----
-    my.config = function() {
-        //        my.log("config_click2");
-        if (!($('#ao2t-cfg-dlg').length)) {
-            my.config_init();
-        }
-        my.cfg_load(cfg);
-        $("#ao2t-cfg-dlg").show();
-        $("#overlays").show();
-    };
-    my.config_init = function() {
-        $("#overlays").append('<div id="ao2t-cfg-dlg"' +
-            '  style="width:400px; height:480px; top:150px; left:300px; display: none;' +
-            '">' +
-            'Agar Tool/Legend Mod tools' +
-            '<div style="overflow: scroll; ' +
-            'position: relative; top:1.5em; left:0.5em; right:0.5em; bottom:1.5em;">' +
-            '<div id="ao2t-cfg-base">' +
-            '</div>' +
-            '</div><br><br>' +
-            '&nbsp;<span id="ao2t-cfg-default" class="btn btn-primary">' + Languageletter309.toUpperCase() + '</span>' +
-            '&nbsp;<span id="ao2t-cfg-ok" class="btn btn-success">' + Languageletter171 + '</span>' +
-            '&nbsp;<span id="ao2t-cfg-cancel" class="btn btn-danger">' + Languageletter283 + '</span>' +
-            '</div>');
-        $('#ao2t-cfg-base').append('' +
-            '&nbsp;&nbsp;&nbsp;Update frequency [milliseconds]:<input type="text" data-ao2t-config="update_interval" style="width:6em;"/>' +
-            '<br/>Agar Tool Obtained from' +
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="user_show"/>user list</label>' +
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="minimap_show"/>minimap</label>' +
-            '&nbsp;Prefix:<input type="text" data-ao2t-config="tgar_prefix" style="width:4em;"/>' +
-            '&nbsp;&nbsp;color:<input type="text" data-ao2t-config="tgar_color" style="width:6em;"/>' +
-            //    '<span class="input-group-addon"><i id="tgar_color" style="background-color: rgb(0, 0, 0);"></i></span>'+
-            '<br/>Send to Agar Tool' +
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="ogar_user"/>user info</label>' +
-            '&nbsp;Prefix:<input type="text" data-ao2t-config="ogar_prefix" style="width:4em;"/>' +
-            '<br/>LMB-Mouse split correction' +
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="lmsa_teamtop"/>Teamboard</label>' +
-            '&nbsp;<label><input type="checkbox" data-ao2t-config="lmsa_chat"/>chat</label>' +
-            '<br/>Chat option' +
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="chat_close"/>close</label>' +
-            '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_unpause"/>unpause</label>' +
-            '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_vcenter"/>vcenter</label>' +
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="chat_alt"/>Alt>T</label>' +
-            '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_ctrlalt"/>Ctrl+Alt>O+T</label>' +
-            '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_ctrl"/>Ctrl>Close</label>' +
-            '<br/>Other' +
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="skin_toggle_auto"/>skin auto toggle</label>' +
-            '&nbsp;&nbsp;&nbsp;Frequency [milliseconds]:<input type="text" data-ao2t-config="skin_toggle_interval" style="width:6em;"/>' +
-            '<br/>&nbsp;&nbsp;* Changes will be reflected after restart' +
-            '');
-        $("#ao2t-cfg-default").click(function() {
-            my.cfg_load(cfg_org);
-        });
-        $("#ao2t-cfg-ok").click(function() {
-            if ($("#helloContainer").is(":visible")) {
-                //			      setTimeout(function() {
-                showMenu2();
-                //				   }, 100);
-            }
-            cfg = my.cfg_save();
-            //            GM_setValue("config", JSON.stringify(cfg));
-            my.storage_setValue("config", JSON.stringify(cfg));
-            my.config_cancel();
-            $("#message-box").css("bottom", stat.messageBoxBottom[cfg.chat_vcenter ? 1 : 0]);
-            my.skinToggle_start();
-
-        });
-        $("#ao2t-cfg-cancel").click(function() {
-            if ($("#helloContainer").is(":visible")) {
-                //			      setTimeout(function() {
-                showMenu2();
-                //				   }, 100);
-            }
-            my.config_cancel();
-        });
-        my.config_cancel = function() {
-            $("#overlays").hide();
-            $("#ao2t-cfg-dlg").hide();
-        };
-        //$("#tgar_color").colorpicker({'format': 'hex'}).on('changeColor.colorpicker', function(event){
-        //    var id = event.target.id;
-        //    $('[data-ao2t-config="'+ id +'"]').val(event.color.toHex());
-        //    event.target.style.backgroundColor = event.color.toRGB();
-        //});
-    };
-    // -----  skin toggle  -----
-    my.skinToggle_start = function() {
-        if (stat.skinToggle_timerid) {
-            clearInterval(stat.skinToggle_timerid);
-            delete stat.skinToggle_timerid;
-        }
-        if (cfg.skin_toggle_auto && cfg.skin_toggle_interval > 0) {
-            stat.skinToggle_timerid = setInterval(my.skinToggle_update, cfg.skin_toggle_interval);
-        }
-    };
-    my.skinToggle_update = function() {
-        //my.log("skinToggle_update in");
-        // --- check Legend Mod.v3 mode ---
-        if (global.ogario && global.ogario.customSkins && global.ogario.vanillaSkins) {
-            //my.log("skinToggle_update hasBoth");
-            stat.skinToggle_hasBoth = true;
-        }
-        my.skinToggle_update_sub();
-        if (stat.skinToggle_hasBoth && global.ogario.customSkins && !global.ogario.vanillaSkins) {
-            //my.log("skinToggle_update retry");
-            my.skinToggle_update_sub();
-        }
-    };
-    my.skinToggle_update_sub = function() {
-        $(document).trigger(jQuery.Event('keydown', {
-            keyCode: stat.keyCodeA,
-            which: stat.keyCodeA
-        }));
-        $(document).trigger(jQuery.Event('keyup', {
-            keyCode: stat.keyCodeA,
-            which: stat.keyCodeA
-        }));
-    };
-    // =====  Agar Tool Communication processing / connection  =====
-    my.connect = function() {
-        my.disconnect();
-        if (!global.io) {
-            //my.log(Premadeletter109b + " socket.io");
-            return loadScript(stat.socketIoURL, my.connect);
-        }
-        var grab_opt = {
-            query: "version=" + encodeURIComponent(stat.AgarToolVersion) +
-                "&server=" + encodeURIComponent(stat.ws)
-        };
-        stat.grab_socket = io.connect(stat.AgarToolServer, grab_opt);
-        stat.grab_socket.on("info", function(minimap_info) {
-            stat.minimap_info = minimap_info;
-            my.minimap_connect();
-        });
-    };
-    my.disconnect = function() {
-        if (stat.connected && stat.alive) {
-            my.tgarAlive(false);
-        }
-        stat.connected = false;
-        stat.alive = false;
-        var save_grab_socket = stat.grab_socket;
-        var save_minimap_socket = stat.minimap_socket;
-        stat.grab_socket = null;
-        stat.minimap_socket = null;
-        if (save_grab_socket) {
-            save_grab_socket.disconnect();
-        }
-        if (save_minimap_socket) {
-            save_minimap_socket.disconnect();
-        }
-    };
-    my.minimap_connect = function() {
-        if ($("#ao2t-hud").hasClass("OnceUsed") == false) {
-            //		toastr["warning"]('<b>[SERVER]: </b>Legend Mod and Agar Tool successfully connected. <br>Use {Send Text Universaly} button on chat box to send to Agar.io Tool');
-            $("#ao2t-hud").addClass("OnceUsed");
-        }
-        my.log(Languageletter82a + " " + Premadeletter123.toLowerCase() + "=" + stat.minimap_info.minimapServer);
-        my.resetMinimap();
-        var minimap_opt = {
-            reconnection: !1,
-            query: "server=" + encodeURIComponent(stat.minimap_info.agarServer) +
-                "&tag=" + encodeURIComponent(stat.tag)
-        };
-        stat.minimap_socket = io.connect(stat.minimap_info.minimapServer, minimap_opt);
-        stat.minimap_socket.on("command", my.minimap_command);
-        stat.minimap_socket.on("connect", function() {
-            stat.connected = true;
-            //if(stat.alive){
-            //    my.sendMinimapServerCommand({
-            //        name: "alive",
-            //        playerName: stat.nick
-            //    });
-            //}
-        });
-        stat.minimap_socket.on("disconnect", function() {
-            stat.minimap_socket = null;
-            my.minimap_disconnect();
-        });
-        stat.minimap_socket.on("connect_error", function() {
-            stat.minimap_socket = null;
-            my.minimap_disconnect();
-        });
-    };
-    my.minimap_disconnect = function() {
-        stat.connected = false;
-        var save_grab_socket = stat.grab_socket;
-        var save_minimap_socket = stat.minimap_socket;
-        stat.grab_socket = null;
-        stat.minimap_socket = null;
-        if (save_grab_socket) {
-            save_grab_socket.disconnect();
-        }
-        if (save_minimap_socket) {
-            save_minimap_socket.disconnect();
-        }
-    };
-    // =====  Agar Tool Communication processing / processing  =====
-    my.minimap_command = function(cmd) {
-        if (void 0 === cmd.name) {
-            return;
-        }
-        //my.log("cmd="+ cmd.name);
-        switch (cmd.name) {
-            case "add":
-                if (!cmd.playerName) {
-                    cmd.playerName = "An unnamed cell";
-                }
-                my.addBallToMinimap(!1, cmd.socketID, cmd.playerName, cmd.x, cmd.y, cfg.tgar_color, !0);
-				//my.addBallToMinimap(!1, cmd.socketID, cmd.playerName, cmd.x, cmd.y, defaultSettings.miniMapTeammatesColor, !0);
-                break;
-            case "remove":
-                my.removeBallFromMinimap(cmd.socketID);
-                break;
-            case "position":
-                my.moveBallOnMinimap(cmd.socketID, cmd.x, cmd.y);
-                break;
-            case "customSkins":
-				if (!window.agtoolball || !isEquivalent(window.agtoolball, cmd.customs)){
-                    window.agtoolball = cmd.customs;
-                    if (legendmod.showCustomSkins) {
-                        Object.keys(window.agtoolball).forEach(function(key) {
-                            console.log("Custom skin from agar tool added: " + key.split("%")[0] + "  " + window.agtoolball[key]);
-                            if (key.split("%")[0] != 0) {
-                                core.registerSkin(key.split("%")[0], null, window.agtoolball[key], 1, null)
-                            }
-                        });
-                    }
-                }
-                break;
-            case "reset":
-                my.resetMinimap();
-                break;
-            case "chat":
-                //console.log(cmd);
-                if (!cmd.playerName) {
-                    cmd.playerName = "An unnamed cell";
-                }
-                //                my.log("chat:"+ cmd.playerName +":"+ cmd.message);
-                my.log("" + cmd.playerName + ": " + cmd.message);
-                my.ogarChatAdd(cmd.playerName, cmd.message);
-                break;
-            case "command":
-                //console.log(cmd);
-                if (!cmd.playerName) {
-                    cmd.playerName = "An unnamed cell";
-                }
-                //                my.log("chat:"+ cmd.playerName +":"+ cmd.message);
-                my.log("@" + cmd.playerName + ": " + cmd.message);
-                my.ogarChatAdd(cmd.playerName, cmd.message);
-                break;
-            case "ls":
-                console.log("Unknown command ls: " + cmd.message);
-                break;
-            case "hc":
-                console.log("Unknown command ls: " + cmd.message);
-                break;
-            default:
-                my.log("Received a command with an unknown name: " + cmd.name);
-        }
-    };
-    my.sendMinimapServerCommand = function(e) {
-        if (stat.minimap_socket && stat.minimap_socket.connected) {
-            stat.minimap_socket.emit("command", e);
-            return true;
-        }
-        return false;
-    };
-    my.resetMinimap = function() {
-        //$("#messageTableTemp").empty(), $("#messageTableComplete").empty();
-		window.authenticAgartoolId=[];
-        for (var e in stat.minimapBalls) {
-            if (!stat.minimapBalls[e].isDefault) {
-                delete stat.minimapBalls[e];
-            }
-        }
-        // test
-        //my.addBallToMinimap(true, "a", "0x0", 0, 0, "#FF0000", !0);
-        //my.addBallToMinimap(true, "b", "UL3000", -3000, -3000, "#FF0000", !0);
-        //my.addBallToMinimap(true, "c", "UR3000", -3000,  3000, "#FF0000", !0);
-        //my.addBallToMinimap(true, "d", "DR3000",  3000,  3000, "#FF0000", !0);
-        //my.addBallToMinimap(true, "e", "DL3000",  3000, -3000, "#FF0000", !0);
-        //my.addBallToMinimap(true, "f", "TL", -7000,  -7000, "#FF0000", !0);
-        //my.addBallToMinimap(true, "g", "BR",  7000,   7000, "#FF0000", !0);
-    };
-    my.addBallToMinimap = function(isDefault, id, name, x, y, color, visible) {
-        //if (stat.minimapBalls[id] == null){ //
-		window.authenticAgartoolId[id]=name;
-		stat.minimapBalls[id] = new MinimapBall(isDefault, name, x, y, color, visible);
-		//} //
-    };
-    my.removeBallFromMinimap = function(id) {
-		window.authenticAgartoolId[id]=null;
-        if (stat.minimapBalls[id]) {
-            delete stat.minimapBalls[id];
-        }
-    };
-    my.moveBallOnMinimap = function(id, x, y) {
-        if (stat.minimapBalls[id]) {
-            stat.minimapBalls[id].x = x;
-            stat.minimapBalls[id].y = y;
-        }
-    };
-
-    function MinimapBall(isDefault, name, x, y, color, visible) {
-        this.isDefault = isDefault;
-        this.name = name;
-        this.x = x;
-        this.y = y;
-        this.lastX = x;
-        this.lastY = y;
-        this.color = color;
-        this.visible = visible;
-    }
-    my.tgarAlive = function(alive) {
-        stat.alive = alive;
-        if (cfg.ogar_user) {
-            //my.log("alive -> "+ stat.alive +" name="+ cfg.ogar_prefix + stat.nick);
-            if (stat.alive) {
-                stat.alive = my.sendMinimapServerCommand({
-                    name: "alive",
-                    playerName: cfg.ogar_prefix + stat.nick,
-                    customSkins: $("#skin").val()
-                });
-                //my.log("alive >>"+ stat.alive);
-            } else {
-                my.sendMinimapServerCommand({
-                    name: "dead"
-                });
-            }
-        }
-    };
-    my.tgarReposition = function() {
-        if (cfg.ogar_user && global.ogario) {
-            my.sendMinimapServerCommand({
-                name: "position",
-                x: ogario.playerX + ogario.mapOffsetX,
-                y: ogario.playerY + ogario.mapOffsetY
-            });
-        }
-    };
-
-    // =====  Process Legend Mod  ======
-    my.ogarChatAdd = function(nick, msg) {
-        //if ((~msg.indexOf('LM:'))==false) {
-        //console.log("...")
-        var time_txt = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
-        var user_icon = my.tool_symbol;
-        var chat_html = '<div class="message">' +
-            '<span class="message-time">[' + time_txt + '] </span>' +
-            //user_icon +
-            //'<span class="message-nick">'+ escapeHtml(nick) +': </span>'+
-            //'<span style="color:' + cfg.tgar_color + '; font-weight:700;">' +
-			
-			'<span style="color:' + defaultSettings.messageTextColor + '; font-weight:700;">' +
-            user_icon + ' ' + escapeHtml(nick) + '</span>: ' +
-            '<span class="message-text">' + escapeHtml(msg) + '</span>' +
-            '</div>';
-        $("#chat-box").append(chat_html);
-        $("#chat-box").perfectScrollbar('update');
-        $('#chat-box').animate({
-            'scrollTop': $("#chat-box").prop("scrollHeight")
-        }, 	500);
-    }
-    //};
-    my.ogarMinimapUpdate = function() {
-        window.agartoolteammatenicks = [];
-        var minimap_elem = document.getElementById("ao2t-minimap");
-        var minimapWidth = minimap_elem.width;
-        var minimapHeight = minimap_elem.height;
-        var minimapMulti = (minimapWidth - 18) / my.ogarGetMapSize();
-        var mapOffset = my.ogarGetMapOffset();
-        //var mapOffsetX = ogario.mapOffset - ogario.mapOffsetX;
-        //var mapOffsetY = ogario.mapOffset - ogario.mapOffsetY;
-        stat.minimapOffsetX = 18 / 2;
-        stat.minimapOffsetY = stat.minimapOffsetX + (minimapHeight - minimapWidth);
-        var mapOffsetX = stat.minimapOffsetX;
-        var mapOffsetY = stat.minimapOffsetY;
-        var mapOffsetT = -(2 * stat.minimapTeammatesSize + 2);
-        var ctx = minimap_elem.getContext('2d');
-        ctx.clearRect(0, 0, minimapWidth, minimapHeight);
-        ctx.font = stat.minimapNickFont;
-        var user_txt = '';
-        //var sep = '1. ';
-		var sep=  "";
-		if (!window.top5skins){
-			sep = '1. ';
-		}
-        var keys = Object.keys(stat.minimapBalls).sort();
-		window.agartoolminimapBalls = stat.minimapBalls;
-		//
-		window.predictedGhostCellsArray=[];
-		for(var z = 0; z < window.predictedGhostCells.length; z++){         			
-			window.predictedGhostCellsArray[z]=window.predictedGhostCells[z].nick;
-		}
-		for(var i = 0; i < keys.length; i++){    
-			
-			for (var n = 1; n <= i; n++){
-				if (i - n >= 0 && stat.minimapBalls[keys[i]].name == stat.minimapBalls[keys[i-n]].name){
-					if (window.authenticAgartoolId[keys[i]]!=stat.minimapBalls[keys[i]].name){
-						//console.log(stat.minimapBalls[keys[i]].name, window.authenticAgartoolId[keys[i]]);
-						stat.minimapBalls[keys[i]].name = window.authenticAgartoolId[keys[i]];
-					}
-					else if (window.authenticAgartoolId[keys[i-n]]!=stat.minimapBalls[keys[i-n]].name){
-						stat.minimapBalls[keys[i-n]].name = window.authenticAgartoolId[keys[i-n]];
-						//console.log(stat.minimapBalls[keys[i-n]].name, window.authenticAgartoolId[keys[i-n]]);
-					}
-				}
-				
-		}
-		for (var e = 0; e < legendmod.leaderboard.length; e++) {
-		if (legendmod.leaderboard[e] && stat.minimapBalls[keys[i]] && escapeHtml(stat.minimapBalls[keys[i]].name) == legendmod.leaderboard[e].nick){
-			stat.minimapBalls[keys[i]].leaderboardpos=e;
-			
-			//for (var n = 1; n <= i; n++){
-				
-			if (i - 1 >= 0 && stat.minimapBalls[keys[i]].leaderboardpos < stat.minimapBalls[keys[i-1]].leaderboardpos){
-				var x=stat.minimapBalls[keys[i]];			
-				if (x!= stat.minimapBalls[keys[i-1]] && x!= stat.minimapBalls[keys[i-2]] && x!= stat.minimapBalls[keys[i-3]] && x!= stat.minimapBalls[keys[i-4]] && x!= stat.minimapBalls[keys[i-5]]
-					&& window.predictedGhostCellsArray.includes(stat.minimapBalls[keys[i]].name) && stat.minimapBalls[keys[i]].name != stat.minimapBalls[keys[i-1]].name && stat.minimapBalls[keys[i]] && stat.minimapBalls[keys[i-1]] ){
-				//console.log(stat.minimapBalls[keys[i]].name + ' ' + stat.minimapBalls[keys[i]].leaderboardpos + ' position changed with ' + stat.minimapBalls[keys[i-1]].name + ' ' + stat.minimapBalls[keys[i-1]].leaderboardpos )
-				var temp = stat.minimapBalls[keys[i]];		
-				
-				stat.minimapBalls[keys[i]] = stat.minimapBalls[keys[i-1]]
-				stat.minimapBalls[keys[i-1]] = temp;
-				}
-
-			}
-		
-			//}
-			
-		}
-		}
-		}
-		//var keys = Object.keys(stat.minimapBalls).sort(function(a, b){return a - b});
-		//
-        if (keys.length === 0) {
-            //user_txt = "No agar tool user";
-        }
-        var count = 2;
-		var count2 = 0;
-        for (var key;
-            (key = keys.shift());) {
-
-            var ball = stat.minimapBalls[key];
-
-            ///////Public Array for agar tool teammates 
-            window.agartoolteammatenicks.push(escapeHtml(ball.name));
-            //user_txt += sep + escapeHtml(ball.name);
-			
-			//
-			var flag=false;
-				if (window.top5skins){
-				sep = sep + ('<a href="#" id="pos-skin" class= "set-target" data-user-id="' + key + '"style="background-color: ' + ball.color + '; width: 30px; height:40px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" src = ' + (legendmod3.customSkinsMap[ball.name] ? legendmod3.customSkinsMap[ball.name] : "https://jimboy3100.github.io/banners/iconagariotool.png") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
-				}			
-			for (var e = 0; e < legendmod.ghostCells.length; e++){ 				
-			if (legendmod.leaderboard[e] && escapeHtml(ball.name)==legendmod.leaderboard[e].nick){
-				if ( flag==false ){
-				sep = sep + ('<span class="hud-main-color">[' + window.legendmod3.calculateMapSector(window.predictedGhostCells[e].x, window.predictedGhostCells[e].y) + "]</span>");
-				sep = sep + ('<span class="top5-mass-color">[' + window.legendmod3.shortMassFormat(window.predictedGhostCells[e].mass) + "]</span> ");	
-				flag=true;
-				}
-				}
-			}
-			if ( flag==false ){
-				if (window.legendmod3.calculateMapSector(ball.x, ball.y) == "C3" || legendmod.gameMode == ":party"){
-				sep = sep + ('<span class="hud-main-color">[' + window.legendmod3.calculateMapSector(ball.x, ball.y) + ']</span> ');
-				}
-			}
-			count2++;
-			
-			user_txt += sep + escapeHtml(ball.name);
-			sep = '</div>';
-			//
-           	//		user_txt += count + ": ";
-			if (!window.top5skins){
-            sep = '<br/>' + count + ". ";
-			count++;
-			}
-			//sep = '<br/> ';
-			
-            //			user_txt += count + ": ";
-            
-
-            if (cfg.minimap_show) {
-                var name = ball.name + '[' + cfg.tgar_prefix + ']';
-                var mapX = (ball.x + mapOffset) * minimapMulti + mapOffsetX;
-                var mapY = (ball.y + mapOffset) * minimapMulti + mapOffsetY;
-                ctx.textAlign = 'center';
-                ctx.lineWidth = stat.minimapNickStrokeSize;
-                ctx.strokeStyle = stat.minimapNickStrokeColor;
-                ctx.strokeText(name, mapX, mapY + mapOffsetT);
-                ctx.fillStyle = cfg.tgar_color; // stat.minimapNickColor
-				//ctx.fillStyle = defaultSettings.miniMapNickColor;
-				
-                ctx.fillText(name, mapX, mapY + mapOffsetT);
-                ctx.beginPath();
-                ctx.arc(mapX, mapY, stat.minimapTeammatesSize, 0, stat.pi2, !1);
-                ctx.closePath();
-                ctx.fillStyle = ball.color;
-                ctx.fill();
-            }
-        }
-        if (cfg.user_show) {
-			if (!window.top5skins){
-            user_txt += '<br/>';		
-			}			
-			user_txt += '</div><span style = "margin-top: 30px;" class="hud-main-color ogicon-users"></span> : <span id="top5-total-players" class="top5-mass-color">' + count2 + '</span>'; 
-            $('#ao2t-top5').html(user_txt);
-        }
-    };
-    // --- for Legend Mod Express ----
-    my.ogarIsAlive = function() {
-        return global.ogario ? global.ogario.play : false;
-    };
-    my.ogarGetMapSize = function() {
-        return global.ogario ? global.ogario.mapSize : stat.mapSize;
-    };
-    my.ogarGetMapOffset = function() {
-        return global.ogario ? global.ogario.mapOffset : stat.mapOffset;
-    };
-
-    // =====  Other processing ======
-    my.cfg_save = function() {
-        var cfg_new = {};
-        $('[data-ao2t-config]').each(function() {
-            var elem = $(this);
-            var type = elem.prop('type');
-            var name = elem.attr('data-ao2t-config');
-            var value;
-            if (type === "checkbox") {
-                value = elem.prop('checked');
-            } else {
-                value = $(this).val();
-            }
-            cfg_new[name] = value;
-        });
-        return cfg_new;
-    };
-    my.cfg_load = function(cfg_new) {
-        $('[data-ao2t-config]').each(function() {
-            var elem = $(this);
-            var type = elem.prop('type');
-            var name = elem.attr('data-ao2t-config');
-            if (cfg_new.hasOwnProperty(name)) {
-                var value = cfg_new[name];
-                if (type === "checkbox") {
-                    elem.prop('checked', value);
-                } else {
-                    $(this).val(value);
-                }
-            }
-        });
-    };
-    my.storage_getValue = function(name, defval_) {
-        return global.localStorage[my.name + "_" + name] || defval_;
-    };
-    my.storage_setValue = function(name, value) {
-        global.localStorage[my.name + "_" + name] = value;
-    };
-
-    function loadScript(url, callback) {
-        var script = document.createElement("script");
-        script.type = "text/javascript";
-        script.src = url;
-        if (typeof callback !== 'undefined') {
-            script.onload = callback;
-        }
-        document.head.appendChild(script);
-    }
-
-    function escapeHtml(e) {
-        return e.replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
-    }
-
-
-
-
-    setTimeout(function() {
-        //if (window.noOgarioSocket) {
-            //toastr["error"]("Master Socket is down, Connecting to Socket 3");
-            //$('#ao2t-capture').click();
-			setTimeout(function() {
-				Socket3enabler(window.legendmod.ws);
-			}, 1000);				
+};
+var ogario1PlayerProfiles = [];
+var ogarcopythelb = {
+    'nick': 'I<3Legendmod',
+    'clanTag': 'Ⓜ',
+    'skinURL': '',
+    'color': defaultSettings.mainColor
+};
+var thelegendmodproject = function(t, e, i) {
+    //here starts ogario
+    (function(i) {
+        var ogarminimapdrawer;
+        var o = null,
+            a = null,
+            r = 'en',
+            l = window.navigator.language || window.navigator.userLanguage;
+        l && languagetexts.hasOwnProperty(l) && (r = l);
+        var h = languagetexts[r];
+        //if (languagetexts[r].comm15 != undefined) {
+        //console.log(h.comm15);
         //}
-    }, 1000);
-
-    $('#message').keydown(function(e) {
-        if (e.keyCode === 13) { // If Enter key pressed
-
-            $('#ao2t-message').click();
-            //		$('#message').val("");		
-        }
-    });
-    //}, 500);	
-
-
-
-}
-
-function fixservbtn() {
-    $("#clantag").blur(function() {
-        Universalchatfix();
-    });
-    $("#server-connect").click(function() {
-        setTimeout(function() {
-            Universalchatfix();
-        }, 1000);
-    });
-    /*$("#server-reconnect").click(function() {
-            setTimeout(function() {
-    		Universalchatfix();
-    			}, 200);
-        });*/
-    $("#server-join").click(function() {
-        setTimeout(function() {
-            Universalchatfix();
-        }, 1000);
-    });
-    $('#tag').blur(function() {
-        setTimeout(function() {
-            Universalchatfix();
-        }, 1000);
-    });
-    $("#gamemode").change(function() {
-        setTimeout(function() {
-            Universalchatfix();
-        }, 1000);
-    });
-    $("#region").change(function() {
-        setTimeout(function() {
-            Universalchatfix();
-        }, 1000);
-    });
-    $("#join-party-btn-2").click(function() {
-        setTimeout(function() {
-            Universalchatfix();
-        }, 1000);
-    });
-    $("#create-party-btn-2").click(function() {
-        setTimeout(function() {
-            Universalchatfix();
-        }, 1000);
-    });
-}
-
-function fixservbtn2() {
-    $("#server-reconnect").click(function() {
-        setTimeout(function() {
-            Universalchatfix();
-        }, 1000);
-    });
-}
-
-function Universalchatfix() {	
-    if ($("#ao2t-capture").hasClass("connected")) {
-        $("#ao2t-capture").click();
-        $("#ao2t-capture").click();
-    }
-	if (window.LMBotsEnabled){
-		LegendModServerConnect();
-	}
-}
-
-function showMenu() {
-    $("#overlays").show();
-    //$("#overlays").css("right", "0em");
-
-    $('a[href="#main-panel"]').click();
-}
-
-function showMenu2() {
-    $("#overlays").show();
-    //$("#overlays").css("right", "-999em");
-    $('a[href="#main-panel"]').click();
-}
-
-function hideMenu() {
-    $("#overlays").hide();
-    //$("#overlays").css("left", "-999em");
-}
-
-function hideMenu2() {
-    $("#overlays").hide();
-}
-
-
-function showSearchHud() {
-    getInfo();
-    $("#backgroundFade").fadeIn();
-    $("#notes").fadeIn();
-    $("#statsInfo").fadeIn();
-    $("#searchHud").fadeIn();
-    $("#searchLog").fadeIn();
-}
-
-function hideSearchHud() {
-    $("#searchHud").fadeOut();
-    $("#backgroundFade").fadeOut();
-    $("#notes").fadeOut();
-    $("#statsInfo").fadeOut();
-    $("#searchLog").fadeOut();
-}
-
-function appendLog(message) {
-    //$("#logTitle").text("Leaderboard history");
-    var region = $("#region").val();
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-        '<span class="main-color">' + region.substring(0, 2) + '</span> &nbsp;' +
-        '<a href="javascript:void(0);" class="logEntry" data-token="' + currentToken + '" style="color: lightgrey; font-size: 14px;">' + message + '</a></p>');
-
-    $("#log p").first().show(100);
-    bumpLog();
-}
-
-/*
-function appendLog2(message, message2) {
-	$("#logTitle").text("Legend mod users (click and join)");
-    var region = $("#region").val();
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-        '<span class="main-color">' + region.substring(0, 2) + '</span> &nbsp;' +
-        '<a onclick="connectto(\`'+message2+'\`);return false;" class="logEntry" data-token="' + currentToken + '" style="color: lightgrey; font-size: 14px;">' + message + '</a></p>');
-
-    $("#log p").first().show(100);
-    bumpLog();
-}*/
-function appendLog2(message, message2) {
-    //$("#logTitle").text("Legend mod users (click and join)");
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-        //        '<span class="main-color">' + region.substring(0, 2) + '</span> &nbsp;' +
-        '<a onclick="connectto(\`' + message2 + '\`);return false;" class="logEntry" data-token="' + currentToken + '" style="color: lightgrey; font-size: 14px;">' + message + '</a></p>');
-
-    $("#log p").first().show(100);
-    bumpLog();
-}
-
-function appendLog3(message, message2, message3, message4) {
-    //$("#logTitle").text("Legend mod users (click and join)");
-    //	console.log(message3);
-    //	console.log(message4);
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-        //        '<span class="main-color">' + region.substring(0, 2) + '</span> &nbsp;' +
-        '<a onclick="connectto(\`' + message2 + '\`);connectto2(\`' + message3 + '\`);connectto3(\`' + message4 + '\`);return false;" class="logEntry" data-token="' + currentToken + '" style="color: lightgrey; font-size: 14px;">' + message + '</a></p>');
-    $("#log p").first().show(100);
-    bumpLog();
-}
-
-function appendLog4(message, message2) {
-    //$("#logTitle").text("Alive Servers");
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-        //        '<span class="main-color">' + region.substring(0, 2) + '</span> &nbsp;' +
-        '<a onclick="connectto1a(\`' + message2 + '\`);return false;" class="logEntry" data-token="' + currentToken + '" style="color: lightgrey; font-size: 14px;">' + message + '</a></p>');
-
-    $("#log p").first().show(100);
-    bumpLog();
-}
-
-function appendLogGraphql() {
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-        '<span class="main-color">Graphql</span> &nbsp;' +
-        '<a href="https://github.com/vbalien/agarlist/tree/master/server" target="_blank" class="logEntry" style="color: lightgrey; font-size: 14px;">by 엘련</a></p>');
-
-    $("#log p").first().show(100);
-    bumpLog();
-}
-
-function appendLogGraphMain() {
-    $("#log").prepend('<p style="display: none;white-space: nowrap;margin-bottom: 10px;">' +
-        '<span class="main-color">Main Graph</span> &nbsp;' +
-        '<a href="javascript:void(0);" target="_blank" class="logEntry" style="color: lightgrey; font-size: 14px;">by Snez</a></p>');
-
-    $("#log p").first().show(100);
-    bumpLog();
-}
-
-function connectto(message2) {
-    $('#server-token').val(message2);
-    $('#server-join').click();
-    setTimeout(function() {
-        if ($('#server-token').val() != $('#searchInput').val()) {
-            toastr["error"]("Server not available!");
-        }
-    }, 1500);
-}
-
-function connectto1a(message2) {
-    $('#server-ws').val("wss://" + message2);
-    $('#server-connect').click();
-    setTimeout(function() {
-        if ($('#server-token').val() != $('#searchInput').val()) {
-            toastr["error"]("Server not available!");
-        }
-    }, 1500);
-}
-
-function connectto2(message3) {
-    $('#region').val(message3);
-}
-
-function connectto3(message4) {
-    $("#gamemode").val(message4);
-}
-
-function bumpLog() {
-    $("#log").animate({
-        scrollTop: 0
-    }, "slow");
-}
-
-function PreLcCelebration() {
-    var checkonetimeLc = localStorage.getItem("checkonetimeLc");
-    if (checkonetimeLc == null) {
-        //   if ($("#nick").val().includes("?")) {
-        var checkdate;
-        Date.prototype.yyyymmdd = function() {
-            var yyyy = this.getFullYear().toString();
-            var mm = (this.getMonth() + 1).toString(); // getMonth() is zero-based
-            var dd = this.getDate().toString();
-            return yyyy + "/" + (mm[1] ? mm : "0" + mm[0]) + "/" + (dd[1] ? dd : "0" + dd[0]); // padding
-        };
-
-        var date = new Date();
-        checkdate = date.yyyymmdd();
-        if (checkdate == "2018/11/12") {
-            LcCelebration();
-        }
-        //    }
-    }
-}
-
-function getInfo() {
-    $.ajax({
-        type: "GET",
-        url: "https://webbouncer-live-v7-0.agario.miniclippt.com/info",
-        datatype: "json",
-        success: function(info) {
-            //$("#currentRegion").html($('#region').val());
-            var regions = info.regions;
-            var currentRegion;
-            for (var key in regions) {
-                if (key == $('#region').val()) {
-                    currentRegion = regions[key];
-                    break;
-                }
-            }
-            //console.log(info);
-            //console.log(currentRegion);
-            if (currentRegion != undefined) {
-                $("#numPlayers").html(kFormatter(currentRegion.numPlayers));
-                $("#numServers").html(currentRegion.numRealms);
-                $("#pps").html(Math.round(currentRegion.avgPlayersPerRealm));
-            }
-            $("#totalPlayers").html(kFormatter(info.totals.numPlayers));
-        }
-    });
-}
-
-function LcCelebration() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/extras/LcHistory/LcHistoryBanner.js";
-    $("body").append(s);
-    checkonetimeLc = 1;
-    localStorage.setItem("checkonetimeLc", checkonetimeLc);
-    return checkonetimeLc;
-}
-
-function SquareAgar() {
-    var headID = document.getElementsByTagName("head")[0];
-    $(headID).append('<style type="text/css" id="RNCN">.agario-panel, .center-container, .btn, .form-control, ' +
-        '.input-group-addon, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel{border-radius: 10px;}.menu-tabs,' +
-        '#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys{border-radius: 10px 10px 0 0;} #hotkeys {border-radius: 10px;} .skin, .input-group-btn, .input-group.nick {border-radius: 0 15px 15px 0;}  ' +
-        '.colorpicker-element .input-group-addon i, .colorpicker-element .add-on i{ border-radius: 50%; }.agario-profile-picture { border-radius: 32px;}' +
-        '#menu-footer { border-radius: 0 0 10px 10px; } #leaderboard-hud { border-radius: 15px;} #dropDown, #dropDown2 { border-radius: 15px;} #minimap-hud { border-radius: 0 0 15px 15px;}' +
-        //				'#menu-footer { border-radius: 0 0 10px 10px; } #leaderboard-hud { border-radius: 15px;} #dropDown, #dropDown2 { border-radius: 15px;} #minimap-hud { border-radius: 15px 15px 15px 15px;}'+
-        '#top5-hud{ border-radius: 15px; } #target-hud{ border-radius: 15px; } #legendAdImg, #stats-hud { border-radius: 10px; } ' +
-        '#time-hud { border-radius: 10px; } </style>');
-}
-
-
-function rotateminimapsectors() {
-    var c = document.getElementById("minimap");
-    var ctx = c.getContext("2d");
-    ctx.rotate(90 * Math.PI / 180);
-    var a = $("#minimap").height() - $("#minimap").width();
-    ctx.translate(a, -$("#minimap").height());
-    //		rotateminimap=rotateminimap+1;
-    //		if (rotateminimap==4){rotateminimap=0};
-    //	var s = document.createElement("script");s.type = "text/javascript";s.src = "https://jimboy3100.github.io/legendrotateminimap.js";$("body").append(s);
-    //		return rotateminimap;
-}
-
-function sendicon1() {
-    if ($('#message-box').css('display') == 'block') {
-        KeyEvent.simulate(13, 13);
-    }
-    KeyEvent.simulate(13, 13);
-    $("#message").val("[img]" + pic1urlimg + "[/img]");
-    setTimeout(function() {
-        KeyEvent.simulate(13, 13);
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-    }, 50);
-}
-
-function sendicon2() {
-    if ($('#message-box').css('display') == 'block') {
-        KeyEvent.simulate(13, 13);
-    }
-    KeyEvent.simulate(13, 13);
-    $("#message").val("[img]" + pic2urlimg + "[/img]");
-    setTimeout(function() {
-        KeyEvent.simulate(13, 13);
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-    }, 50);
-}
-
-function sendicon3() {
-    if ($('#message-box').css('display') == 'block') {
-        KeyEvent.simulate(13, 13);
-    }
-    KeyEvent.simulate(13, 13);
-    $("#message").val("[img]" + pic3urlimg + "[/img]");
-    setTimeout(function() {
-        KeyEvent.simulate(13, 13);
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-    }, 50);
-}
-
-function sendicon4() {
-    if ($('#message-box').css('display') == 'block') {
-        KeyEvent.simulate(13, 13);
-    }
-    KeyEvent.simulate(13, 13);
-    $("#message").val("[img]" + pic4urlimg + "[/img]");
-    setTimeout(function() {
-        KeyEvent.simulate(13, 13);
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-    }, 50);
-}
-
-function sendicon5() {
-    if ($('#message-box').css('display') == 'block') {
-        KeyEvent.simulate(13, 13);
-    }
-    KeyEvent.simulate(13, 13);
-    $("#message").val("[img]" + pic5urlimg + "[/img]");
-    setTimeout(function() {
-        KeyEvent.simulate(13, 13);
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-    }, 50);
-}
-
-function sendicon6() {
-    if ($('#message-box').css('display') == 'block') {
-        KeyEvent.simulate(13, 13);
-    }
-    KeyEvent.simulate(13, 13);
-    $("#message").val("[img]" + pic6urlimg + "[/img]");
-    setTimeout(function() {
-        KeyEvent.simulate(13, 13);
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-    }, 50);
-}
-
-function setpic1data() {
-    localStorage.setItem("pic1dataimg", $("#pic1data").val())
-    $("#sendicon1").attr("data-original-title", $("#pic1data").val());
-}
-
-function setpic2data() {
-    localStorage.setItem("pic2dataimg", $("#pic2data").val())
-    $("#sendicon2").attr("data-original-title", $("#pic2data").val());
-}
-
-function setpic3data() {
-    localStorage.setItem("pic3dataimg", $("#pic3data").val())
-    $("#sendicon3").attr("data-original-title", $("#pic3data").val());
-}
-
-function setpic4data() {
-    localStorage.setItem("pic4dataimg", $("#pic4data").val())
-    $("#sendicon4").attr("data-original-title", $("#pic4data").val());
-}
-
-function setpic5data() {
-    localStorage.setItem("pic5dataimg", $("#pic5data").val())
-    $("#sendicon5").attr("data-original-title", $("#pic5data").val());
-}
-
-function setpic6data() {
-    localStorage.setItem("pic6dataimg", $("#pic6data").val())
-    $("#sendicon6").attr("data-original-title", $("#pic6data").val());
-}
-
-
-function sendyt1() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-        KeyEvent.simulate(13, 13);
-        $("#message").val("[yt]" + yt1url + "[/yt]");
-        setTimeout(function() {
-            KeyEvent.simulate(13, 13);
-            if ($('#message-box').css('display') == 'block') {
-                KeyEvent.simulate(13, 13);
-            }
-        }, 50);
-    } else {
-        toastr["info"](Premadeletter39);
-    }
-}
-
-function sendyt2() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-        KeyEvent.simulate(13, 13);
-        $("#message").val("[yt]" + yt2url + "[/yt]");
-        setTimeout(function() {
-            KeyEvent.simulate(13, 13);
-            if ($('#message-box').css('display') == 'block') {
-                KeyEvent.simulate(13, 13);
-            }
-        }, 50);
-    } else {
-        toastr["info"](Premadeletter39);
-    }
-}
-
-function sendyt3() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-        KeyEvent.simulate(13, 13);
-        $("#message").val("[yt]" + yt3url + "[/yt]");
-        setTimeout(function() {
-            KeyEvent.simulate(13, 13);
-            if ($('#message-box').css('display') == 'block') {
-                KeyEvent.simulate(13, 13);
-            }
-        }, 50);
-    } else {
-        toastr["info"](Premadeletter39);
-    }
-}
-
-function sendyt4() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-        KeyEvent.simulate(13, 13);
-        $("#message").val("[yt]" + yt4url + "[/yt]");
-        setTimeout(function() {
-            KeyEvent.simulate(13, 13);
-            if ($('#message-box').css('display') == 'block') {
-                KeyEvent.simulate(13, 13);
-            }
-        }, 50);
-    } else {
-        toastr["info"](Premadeletter39);
-    }
-}
-
-function sendyt5() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-        KeyEvent.simulate(13, 13);
-        $("#message").val("[yt]" + yt5url + "[/yt]");
-        setTimeout(function() {
-            KeyEvent.simulate(13, 13);
-            if ($('#message-box').css('display') == 'block') {
-                KeyEvent.simulate(13, 13);
-            }
-        }, 50);
-    } else {
-        toastr["info"](Premadeletter39);
-    }
-}
-
-function sendyt6() {
-    if (($("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
-        if ($('#message-box').css('display') == 'block') {
-            KeyEvent.simulate(13, 13);
-        }
-        KeyEvent.simulate(13, 13);
-        $("#message").val("[yt]" + yt6url + "[/yt]");
-        setTimeout(function() {
-            KeyEvent.simulate(13, 13);
-            if ($('#message-box').css('display') == 'block') {
-                KeyEvent.simulate(13, 13);
-            }
-        }, 50);
-    } else {
-        toastr["info"](Premadeletter39);
-    }
-}
-
-function setyt1data() {
-    localStorage.setItem("yt1dataimg", $("#yt1data").val())
-    $("#sendyt1").attr("data-original-title", $("#yt1data").val());
-}
-
-function setyt2data() {
-    localStorage.setItem("yt2dataimg", $("#yt2data").val())
-    $("#sendyt2").attr("data-original-title", $("#yt2data").val());
-}
-
-function setyt3data() {
-    localStorage.setItem("yt3dataimg", $("#yt3data").val())
-    $("#sendyt3").attr("data-original-title", $("#yt3data").val());
-}
-
-function setyt4data() {
-    localStorage.setItem("yt4dataimg", $("#yt4data").val())
-    $("#sendyt4").attr("data-original-title", $("#yt4data").val());
-}
-
-function setyt5data() {
-    localStorage.setItem("yt5dataimg", $("#yt5data").val())
-    $("#sendyt5").attr("data-original-title", $("#yt5data").val());
-}
-
-function setyt6data() {
-    localStorage.setItem("yt6dataimg", $("#yt6data").val())
-    $("#sendyt6").attr("data-original-title", $("#yt6data").val());
-}
-
-function setyt1url() {
-    yt1url = $("#yt1url").val();
-    if (getParameterByName("v", yt1url) != null) {
-        yt1url = getParameterByName("v", yt1url);
-    }
-    localStorage.setItem("yt1urlimg", yt1url);
-    return yt1url;
-}
-
-function setyt2url() {
-    yt2url = $("#yt2url").val();
-    if (getParameterByName("v", yt2url) != null) {
-        yt2url = getParameterByName("v", yt2url);
-    }
-    localStorage.setItem("yt2urlimg", yt2url);
-    return yt2url;
-}
-
-function setyt3url() {
-    yt3url = $("#yt3url").val();
-    if (getParameterByName("v", yt3url) != null) {
-        yt3url = getParameterByName("v", yt3url);
-    }
-    localStorage.setItem("yt3urlimg", yt3url);
-    return yt3url;
-}
-
-function setyt4url() {
-    yt4url = $("#yt4url").val();
-    if (getParameterByName("v", yt4url) != null) {
-        yt4url = getParameterByName("v", yt4url);
-    }
-    localStorage.setItem("yt4urlimg", yt4url);
-    return yt4url;
-}
-
-function setyt5url() {
-    yt5url = $("#yt5url").val();
-    if (getParameterByName("v", yt5url) != null) {
-        yt5url = getParameterByName("v", yt5url);
-    }
-    localStorage.setItem("yt5urlimg", yt5url);
-    return yt5url;
-}
-
-function setyt6url() {
-    yt6url = $("#yt6url").val();
-    if (getParameterByName("v", yt6url) != null) {
-        yt6url = getParameterByName("v", yt6url);
-    }
-    localStorage.setItem("yt6urlimg", yt6url);
-    return yt6url;
-}
-
-function enableshortcuts() {
-    if ($("#IPBtn").attr('aria-pressed') == "false") {
-        $("#IPBtn").click();
-    }
-    if ($("#SHOSHOBtn").attr('aria-pressed') == "false") {
-        $("#SHOSHOBtn").click();
-    }
-    //	if($("#TIMEBtn").attr('aria-pressed') == "false"){
-    //	$("#TIMEBtn").click(); }
-    //	if($("#MAINBBtn").attr('aria-pressed') == "false"){
-    //	$("#MAINBBtn").click(); }
-    //	if($("#MAINBTBtn").attr('aria-pressed') == "false"){
-    //	$("#MAINBTBtn").click(); }
-    if ($("#MAINBTBtn").attr('aria-pressed') == "false") {
-        $("#MAINBTBtn").click();
-    }
-    //			if($("#AnimatedSkinBtn").attr('aria-pressed') == "false"){
-    //				$("#AnimatedSkinBtn").click(); }
-    if ($("#XPBtn").attr('aria-pressed') == "false") {
-        $("#XPBtn").click();
-    }
-    //	if($("#MANUIBtn").attr('aria-pressed') == "false"){
-    //	$("#MANUIBtn").click(); }
-}
-
-
-function seticonfunction() {
-    if (setmessagecom == "NO") {
-        YessetMsgComReturn();
-    }
-    if (setyt == "NO") {
-        YessetytReturn();
-    }
-    if (setscriptingcom == "NO") {
-        YessetScriptingComReturn();
-    }
-    if (seticon == "YES") {
-        NoseticonReturn();
-    } else if (seticon == "NO") {
-        YesseticonReturn();
-    }
-}
-
-function setmessagecomfunction() {
-    if (seticon == "NO") {
-        YesseticonReturn();
-    }
-    if (setyt == "NO") {
-        YessetytReturn();
-    }
-    if (setscriptingcom == "NO") {
-        YessetScriptingComReturn();
-    }
-    if (setmessagecom == "YES") {
-        NosetMsgComReturn();
-    } else if (setmessagecom == "NO") {
-        YessetMsgComReturn();
-    }
-}
-
-function setytfunction() {
-    if (setmessagecom == "NO") {
-        YessetMsgComReturn();
-    }
-    if (seticon == "NO") {
-        YesseticonReturn();
-    }
-    if (setscriptingcom == "NO") {
-        YessetScriptingComReturn();
-    }
-    if (setyt == "YES") {
-        NosetytReturn();
-    } else if (setyt == "NO") {
-        YessetytReturn();
-    }
-}
-
-function setscriptingfunction() {
-    if (seticon == "NO") {
-        YesseticonReturn();
-    }
-    if (setyt == "NO") {
-        YessetytReturn();
-    }
-    if (setmessagecom == "NO") {
-        YessetMsgComReturn();
-    }
-    if (setscriptingcom == "YES") {
-        NosetScriptingComReturn();
-    } else if (setscriptingcom == "NO") {
-        YessetScriptingComReturn();
-    }
-}
-
-function NoseticonReturn() {
-    $("#images-hud").show();
-    return seticon = "NO";
-}
-
-function YesseticonReturn() {
-    $("#images-hud").hide();
-    return seticon = "YES";
-}
-
-function NosetMsgComReturn() {
-    $("#msgcommands-hud").show();
-    return setmessagecom = "NO";
-}
-
-function YessetMsgComReturn() {
-    $("#msgcommands-hud").hide();
-    return setmessagecom = "YES";
-}
-
-function NosetytReturn() {
-    $("#yt-hud").show();
-    return setyt = "NO";
-}
-
-function YessetytReturn() {
-    $("#yt-hud").hide();
-    return setyt = "YES";
-}
-
-function NosetScriptingComReturn() {
-    $("#scripting-hud").show();
-    return setscriptingcom = "NO";
-}
-
-function YessetScriptingComReturn() {
-    $("#scripting-hud").hide();
-    return setscriptingcom = "YES";
-}
-
-
-function changePicFun() {
-    $("#minimapPicture").hide();
-    $("#leadbPicture").hide();
-    $("#teambPicture").hide();
-    $("#canvasPicture").hide();
-    $("#leadbtext").hide();
-    $("#teambtext").hide();
-    $("#imgUrl").hide();
-    $("#imgHref").hide();
-    $("#minbtext").hide();
-    if ($("#backgroundPic").val() == 1) {
-        $("#minimapPicture").show();
-        $("#minbtext").show();
-    }
-    if ($("#backgroundPic").val() == 2) {
-        $("#leadbPicture").show();
-        $("#leadbtext").show();
-    }
-    if ($("#backgroundPic").val() == 3) {
-        $("#teambPicture").show();
-        $("#teambtext").show();
-    }
-    if ($("#backgroundPic").val() == 4) {
-        $("#canvasPicture").show();
-    }
-    if ($("#backgroundPic").val() == 5) {
-        $("#imgUrl").show();
-        $("#imgHref").show();
-    }
-}
-
-function changePhotoFun() {
-    $("#pic1url").hide();
-    $("#pic2url").hide();
-    $("#pic3url").hide();
-    $("#pic4url").hide();
-    $("#pic5url").hide();
-    $("#pic6url").hide();
-    $("#yt1url").hide();
-    $("#yt2url").hide();
-    $("#yt3url").hide();
-    $("#yt4url").hide();
-    $("#yt5url").hide();
-    $("#yt6url").hide();
-
-    $("#pic1data").hide();
-    $("#pic2data").hide();
-    $("#pic3data").hide();
-    $("#pic4data").hide();
-    $("#pic5data").hide();
-    $("#pic6data").hide();
-    $("#yt1data").hide();
-    $("#yt2data").hide();
-    $("#yt3data").hide();
-    $("#yt4data").hide();
-    $("#yt5data").hide();
-    $("#yt6data").hide();
-
-    if ($("#changephotos").val() == 1) {
-        $("#pic1url").show();
-        $("#pic1data").show();
-    }
-    if ($("#changephotos").val() == 2) {
-        $("#pic2url").show();
-        $("#pic2data").show();
-    }
-    if ($("#changephotos").val() == 3) {
-        $("#pic3url").show();
-        $("#pic3data").show();
-    }
-    if ($("#changephotos").val() == 4) {
-        $("#pic4url").show();
-        $("#pic4data").show();
-    }
-    if ($("#changephotos").val() == 5) {
-        $("#pic5url").show();
-        $("#pic5data").show();
-    }
-    if ($("#changephotos").val() == 6) {
-        $("#pic6url").show();
-        $("#pic6data").show();
-    }
-    if ($("#changephotos").val() == 7) {
-        $("#yt1url").show();
-        $("#yt1data").show();
-    }
-    if ($("#changephotos").val() == 8) {
-        $("#yt2url").show();
-        $("#yt2data").show();
-    }
-    if ($("#changephotos").val() == 9) {
-        $("#yt3url").show();
-        $("#yt3data").show();
-    }
-    if ($("#changephotos").val() == 10) {
-        $("#yt4url").show();
-        $("#yt4data").show();
-    }
-    if ($("#changephotos").val() == 11) {
-        $("#yt5url").show();
-        $("#yt5data").show();
-    }
-    if ($("#changephotos").val() == 12) {
-        $("#yt6url").show();
-        $("#yt6data").show();
-    }
-
-}
-
-function toggleFullScreen(fullornot) {
-    if (fullornot == "NO") {
-        launchIntoFullscreen(document.documentElement);
-        return this.fullornot = "YES"
-    } else {
-        exitFullscreen();
-        return this.fullornot = "NO"
-    }
-}
-
-function launchIntoFullscreen(element) {
-    if (element.requestFullscreen) {
-        element.requestFullscreen();
-    } else if (element.mozRequestFullScreen) {
-        element.mozRequestFullScreen();
-    } else if (element.webkitRequestFullscreen) {
-        element.webkitRequestFullscreen();
-    } else if (element.msRequestFullscreen) {
-        element.msRequestFullscreen();
-    }
-}
-
-function exitFullscreen() {
-    if (document.exitFullscreen) {
-        document.exitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-    }
-}
-
-function Bino() {
-    //    if (MC.isInGame()) {
-    //        if (ogario.spectate) {
-    KeyEvent.simulate(81, 81)
-    //        } else {
-    //            toastr["info"](Premadeletter38);
-    //        }
-    //    }
-}
-
-
-function msgcommand1f() {
-	
-    commandMsg = "Hello";
-    otherMsg = "";
-    dosendmsgcommand();
-	
-}
-
-function msgcommand2f() {
-    commandMsg = "Team5";
-    otherMsg = "";
-    dosendmsgcommand();
-}
-
-function msgcommand3f() {
-    commandMsg = "NamePerm";
-    otherMsg = "";
-    dosendmsgcommand();
-
-}
-
-function msgcommand4f() {
-    commandMsg = "dTroll2";
-    otherMsg = "";
-    dosendmsgcommand();
-
-}
-
-function msgcommand5f() {
-    commandMsg = "Youtube";
-    otherMsg = "";
-    dosendmsgcommand();
-
-}
-
-function msgcommand6f() {
-    commandMsg = "HideAll";
-    otherMsg = "";
-    dosendmsgcommand();
-
-}
-
-function dosendmsgcommand() {
-    if (legendmod3.lastSentClanTag == "" || $("#clantag").val() == "") {
-        toastr["warning"]("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter39);
-    } else {
-        //    if ((MC.isInGame() && $("#clantag").val() != "") || document.getElementById("nick").value.includes("?")) {
-        if ($('#message-box').css('display') == 'none') {
-            KeyEvent.simulate(13, 13);
-        };
-        setTimeout(function() {
-            $("#message").val("Legend.Mod&?player=" + $("#nick").val() + "&?com=" + commandMsg + "&?do=" + otherMsg);
-            KeyEvent.simulate(13, 13);
-            if ($('#message').css('display') == 'block') {
-                KeyEvent.simulate(13, 13);
-            };
-            if ($('#message-box').css('display') == 'block') {
-                KeyEvent.simulate(13, 13);
-            }
-        }, 100);
-        //   } else {
-        //       toastr["info"](Premadeletter39);
-        //   }
-
-    }
-}
-
-function CutNameConflictwithMessageFunction() {
-    return CutNameConflictwithMessage = true;
-}
-
-function inject(type, code) {
-    switch (type) {
-        case 'javascript':
-            var inject = document.createElement('script');
-            inject.type = 'text/javascript';
-            inject.appendChild(document.createTextNode(code));
-            break;
-        case 'stylesheet':
-            var inject = document.createElement('style');
-            inject.type = 'text/css';
-            inject.appendChild(document.createTextNode(code));
-            break;
-    }
-    (document.head || document.documentElement).appendChild(inject);
-}
-
-function StartEditGameNames() {
-
-    inject('stylesheet', '#tcm,#tcm>#tcm-main>div>div{overflow-x:hidden;overflow-y:auto}#tcm>#tcm-header,#tcm>#tcm-main>div{text-align:center}@keyframes bounce-in{0%,100%,20%,40%,60%,80%{-webkit-transition-timing-function:cubic-bezier(.215,.61,.355,1);transition-timing-function:cubic-bezier(.215,.61,.355,1)}0%{opacity:0;-webkit-transform:scale3d(.3,.3,.3);transform:scale3d(.3,.3,.3)}20%{-webkit-transform:scale3d(1.1,1.1,1.1);transform:scale3d(1.1,1.1,1.1)}40%{-webkit-transform:scale3d(.9,.9,.9);transform:scale3d(.9,.9,.9)}60%{opacity:1;-webkit-transform:scale3d(1.03,1.03,1.03);transform:scale3d(1.03,1.03,1.03)}80%{-webkit-transform:scale3d(.97,.97,.97);transform:scale3d(.97,.97,.97)}100%{opacity:1;-webkit-transform:scale3d(1,1,1);transform:scale3d(1,1,1)}}@-webkit-keyframes bounce-in{0%,100%,20%,40%,60%,80%{-webkit-transition-timing-function:cubic-bezier(.215,.61,.355,1);transition-timing-function:cubic-bezier(.215,.61,.355,1)}0%{opacity:0;-webkit-transform:scale3d(.3,.3,.3);transform:scale3d(.3,.3,.3)}20%{-webkit-transform:scale3d(1.1,1.1,1.1);transform:scale3d(1.1,1.1,1.1)}40%{-webkit-transform:scale3d(.9,.9,.9);transform:scale3d(.9,.9,.9)}60%{opacity:1;-webkit-transform:scale3d(1.03,1.03,1.03);transform:scale3d(1.03,1.03,1.03)}80%{-webkit-transform:scale3d(.97,.97,.97);transform:scale3d(.97,.97,.97)}100%{opacity:1;-webkit-transform:scale3d(1,1,1);transform:scale3d(1,1,1)}}@-moz-keyframes bounce-in{0%,100%,20%,40%,60%,80%{-moz-transition-timing-function:cubic-bezier(.215,.61,.355,1);transition-timing-function:cubic-bezier(.215,.61,.355,1)}0%{opacity:0;-moz-transform:scale3d(.3,.3,.3);transform:scale3d(.3,.3,.3)}20%{-moz-transform:scale3d(1.1,1.1,1.1);transform:scale3d(1.1,1.1,1.1)}40%{-moz-transform:scale3d(.9,.9,.9);transform:scale3d(.9,.9,.9)}60%{opacity:1;-moz-transform:scale3d(1.03,1.03,1.03);transform:scale3d(1.03,1.03,1.03)}80%{-moz-transform:scale3d(.97,.97,.97);transform:scale3d(.97,.97,.97)}100%{opacity:1;-moz-transform:scale3d(1,1,1);transform:scale3d(1,1,1)}}#tcm{position:fixed;top:20%;left:1%;display:block;width:240px;max-height:96%;background:rgba(0,0,0,.8);border:1px solid #444;border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;z-index:999999999;animation:1s both bounce-in;-webkit-animation:1s both bounce-in;-moz-animation:1s both bounce-in}#tcm>#tcm-header,#tcm>#tcm-header>p,#tcm>#tcm-header>span{position:relative;display:block}#tcm :focus{outline:0}#tcm *{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}#tcm>#tcm-header{width:initial;background:rgba(255,255,255,.4);padding:8px}#tcm>#tcm-header>span{font-family:Pacifico,cursive;font-size:20px;color:#FFF;text-transform:capitalize;margin:0 0 8px}#tcm>#tcm-header>p{font-size:12px;color:#222;margin:0}#tcm>#tcm-main>div>div,#tcm>#tcm-main>div>span{margin:0 0 8px;position:relative;display:block}#tcm>#tcm-main,#tcm>#tcm-main>div{position:relative;display:block;width:initial}#tcm>#tcm-main{padding:8px}#tcm>#tcm-main>div>span{font-size:14px;color:#FFF;text-transform:capitalize}#tcm>#tcm-main>div>div{width:100%;max-height:160px;min-height:20px;background:#222;border:1px solid #444;border-radius:2px;-webkit-border-radius:2px;-moz-border-radius:2px}#tcm>#tcm-main>div>div>span{position:relative;display:block;width:100%;text-align:center;font-size:12px;color:#FFF;padding:4px 0;cursor:pointer}#tcm>#tcm-main>div>div>span:hover{background:rgba(0,0,0,.2)}');
-    inject('javascript', ! function e(o) {
-        if ("undefined" != typeof document.getElementsByTagName("head")[0] && "undefined" != typeof document.getElementsByTagName("body")[0]) {
-            var t = {
-                l: {
-                    score: 0,
-                    names: [],
-                    leaderboard: {},
-                    toggled: !0,
-                    prototypes: {
-                        canvas: CanvasRenderingContext2D.prototype,
-                        old: {}
-                    }
+        c = {
+            'comm0': h.comm0,
+            'comm1': h.comm1,
+            'comm2': h.comm2,
+            'comm3': h.comm3,
+            'comm4': h.comm4,
+            'comm5': h.comm5,
+            'comm6': h.comm6,
+            'comm7': h.comm7,
+            'comm8': h.comm8,
+            'comm9': h.comm9,
+            'comm10': h.comm10,
+            'comm11': h.comm11,
+            'comm12': h.comm12,
+            'comm13': h.comm13,
+            'comm14': h.comm14,
+            'comm15': h.comm15,
+            'comm16': h.comm16,
+            'comm17': h.comm17,
+            'comm18': h.comm18,
+            'comm19': h.comm19,
+            'comm20': h.comm20,
+            'comm21': h.comm21,
+            'comm22': h.comm22,
+            'comm23': h.comm23,
+            'comm24': h.comm24,
+            'comm25': h.comm25,
+            'comm26': h.comm26,
+            'comm27': h.comm27,
+            'comm28': h.comm28,
+            'comm29': h.comm29,
+            'comm30': h.comm30
+        },
+            hudsetter = {
+                'menuMainColorCSS': null,
+                'menuPanelColorCSS': null,
+                'menuTextlColorCSS': null,
+                'menuButtonsCSS': null,
+                'hudCSS': null,
+                'chatCSS': null,
+                'chatScaleCSS': null,
+                'cursorCSS': null,
+                'loadThemeSettings': function() {
+                    var t = null;
+                    for (var s in null !== window.localStorage.getItem('ogarioThemeSettings') && (t = JSON.parse(window.localStorage.getItem('ogarioThemeSettings'))), defaultSettings) defaultSettings.hasOwnProperty(s) && (t && t.hasOwnProperty(s) && (defaultSettings[s] = t[s]), i.hasOwnProperty(s) && (i[s] = defaultSettings[s]));
+                    //if (defaultmapsettings.zoomSpeedValue2 && defaultmapsettings.zoomSpeedValue2>0.99){defaultmapsettings.zoomSpeedValue2=defaultmapsettings.zoomSpeedValue2-1};
                 },
-                f: {
-                    prototype_override: function(e, o, s, a) {
-                        e in t.l.prototypes.old || (t.l.prototypes.old[e] = {}), o in t.l.prototypes.old[e] || (t.l.prototypes.old[e][o] = t.l.prototypes[e][o]), t.l.prototypes[e][o] = function() {
-                            "before" == s && a(this, arguments), t.l.prototypes.old[e][o].apply(this, arguments), "after" == s && a(this, arguments)
-                        }
-                    },
-                    filltext_override: function() {
-                        t.f.prototype_override("canvas", "fillText", "before", function(e, o) {
-                            var s = o[0];
-                            if (console.log(o), s.match(/^(1|2|3|4|5|6|7|8|9|10)\.(.+?)$/)) {
-                                var a = "",
-                                    n = s.split(/\.(.+)?/);
-                                t.l.leaderboard[n[0]] = n[1];
-                                for (k in t.l.leaderboard) a += t.u.span("leaderboard name #" + k, t.l.leaderboard[k]);
-                                document.getElementById("tcm-leaderboard").innerHTML = a
-                            } else s.match(/^score\:\s([0-9]+)$/i) ? (t.l.score = parseInt(s.split(/score:\s([0-9]+)?/i)[1]), document.getElementById("tcm-score").innerHTML = t.u.span("score", t.l.score)) : !("" !== s && s.length <= 15) || t.l.names.indexOf(s) > -1 || s.match(/(leaderboard|connect|loading|starting\smass|xp\sboost|open\sshop|([0-9]{2})m\s(([0-9]{2})h\s)?([0-9]{2})s)/i) || s.match(/^(free\scoins|\s?([0-9]+)\scoins|\s?with\soffers|collect\sin\:|hourly\scoins|come\sback\sin|to\searn\:|starter\spack|hourly\sbonus|level\s([0-9]+)|([0-9\.]+)|.([0-9\.]+)|([0-9\.]+)\%|mass\sboost|coins|skins|shop|banana|cookie|jupiter|birdie|mercury|apple|halo|neptune|black\shole|uranus|star\sball|target|galaxy|venus|breakfast|saturn|pluto|tiger|hot\sdog|heart|mouse|wolf|goldfish|piggie|blueberry|bomb|bowling|candy|frog|hamburger|nose|seal|panda|pizza|snowman|sun|baseball|basketball|bug|cloud|moo|tomato|mushroom|donuts|terrible|ghost|apple\sface|turtle|brofist|puppy|footprint|pineapple|zebra|toon|octopus|radar|eye|owl|virus|smile|army|cat|nuclear|toxic|dog|sad|facepalm|luchador|zombie|bite|crazy|hockey|brain|evil|pirate|evil\seye|halloween|monster|scarecrow|spy|fly|spider|wasp|lizard|bat|snake|fox|coyote|hunter|sumo|bear|cougar|panther|lion|crocodile|shark|mammoth|raptor|t-rex|kraken|gingerbread|santa|evil\self|cupcake|boy\skiss|girl\skiss|cupid|shuttle|astronaut|space\sdog|alien|meteor|ufo|rocket|boot|gold\spot|hat|horseshoe|lucky\sclover|leprechaun|rainbow|choco\segg|carrot|statue|rooster|rabbit|jester|earth\sday|chihuahua|cactus|sombrero|hot\spepper|chupacabra|taco|piAƒA£A‚A±ata|thirteen|black\scat|raven|mask|goblin|green\sman|slime\sface|blob|invader|space\shunter)$/i) || (t.l.names.push(s), document.getElementById("tcm-names").innerHTML = document.getElementById("tcm-names").innerHTML.concat(t.u.span("cell name", s)))
-                        })
-                    },
-                    hotkeys: function(e) {
-                        88 == e.keyCode && (document.getElementById("tcm").style.display = t.l.toggled ? "none" : "block", t.l.toggled = t.l.toggled ? !1 : !0)
-                    }
+                'saveThemeSettings': function() {
+                    window.localStorage.setItem('ogarioThemeSettings', JSON.stringify(defaultSettings));
                 },
-                u: {
-                    fonts: function() {
-                        return '<link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet" type="text/css" />'
-                    },
-                    html: function() {
-                        return '<div id="tcm" style="display:block;"><div id="tcm-header"><span>Copy Tools</span><p>Copy cell names (press x to show/hide)</p></div><div id="tcm-main"><div><span style="display: none;">leaderboard names</span><div id="tcm-leaderboard" style="display: none;"></div></div><div><span>cell names</span><div id="tcm-names"></div></div><div></div></div></div>'
-                    },
-                    span: function(e, o) {
-                        return "<span onclick=\"javascript:prompt('" + e + "', '" + o + "')\">" + o + "</span>"
-                    }
-                }
-            };
-            document.getElementsByTagName("head")[0].insertAdjacentHTML("beforeend", t.u.fonts()), document.getElementsByTagName("body")[0].insertAdjacentHTML("beforeend", t.u.html()), o.addEventListener("keydown", t.f.hotkeys), t.f.filltext_override()
-        } else o.setTimeout(function() {
-            e(o)
-        }, 100)
-    }(window));
-}
-
-function StopEditGameNames() {
-    $("#tcm").hide();
-}
-
-function ContinueEditGameNames() {
-    $("#tcm").show();
-}
-
-function Ultimouse() {
-    if (Ultimouseenabled == 0) {
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/auc/auc.user.js";
-        $("body").append(s);
-        return Ultimouseenabled = 1;
-    }
-}
-
-function chatfunction() {
-    //    if (MC.isInGame()) {
-    if ($("#helloContainer").is(":visible") == false) {
-        //        if (!ogario.spectate) {
-        //	if (messageone==1){
-        if (hiddenfromclan == 0) {
-            saveclanpassword = $("#clantag").val();
-            toastr["info"](Premadeletter33);
-            $("#ChatBtn1").attr('class', 'fa fa-comments-o');
-            $("#ChatBtn").attr("data-original-title", Premadeletter58);
-            $("#clantag").val("HIDDEN");
-            //	MC.onPlayerDeath=function(){ $("#clantag").val(saveclanpassword); }
-            $(".btn.btn-warning.btn-spectate.btn-needs-server").click();
-            hiddenfromclan = 1;
-            return saveclanpassword, hiddenfromclan;
-        } else if (hiddenfromclan == 1) {
-            toastr["info"](Premadeletter34);
-            $("#ChatBtn1").attr('class', 'fa fa-eye-slash');
-            $("#ChatBtn").attr("data-original-title", Premadeletter59);
-            $("#clantag").val(saveclanpassword);
-            $(".btn.btn-warning.btn-spectate.btn-needs-server").click();
-            hiddenfromclan = 0;
-            return hiddenfromclan;
-        }
-    }
-    /* else if (messageone==0){
-		var tempmode = getGameMode();
-		$("#ChatBtn1").attr('class', 'fa fa-eye-slash');
-		$("#ChatBtn").attr("data-original-title", "Chat is ON, hide/show up");
-	//	MC.onPlayerDeath=function(){ $("#clantag").val(saveclanpassword); }
-		$("#create-party-btn-2").click();
-		setTimeout(function () {
-		if(tempmode==":party"){$('#gamemode option[value=":party"]').prop('selected', 'selected').change();}
-		if(tempmode==""){$('#gamemode option[value=""]').prop('selected', 'selected').change();}
-		if(tempmode==":teams"){$('#gamemode option[value=":teams"]').prop('selected', 'selected').change();}
-		if(tempmode==":experimental"){$('#gamemode option[value=":experimental"]').prop('selected', 'selected').change();}
-		}, 6000);
-		setTimeout(function () {
-		MC.setQuality($('#quality').val());
-		}, 8000);
-	}
-	
-	
-    }   */
-    else {
-        toastr["info"](Premadeletter35 + "!").css("width", "210px");
-    }
-}
-
-function displayTimer() {
-    // initilized all local variables:
-    var minutes = '00',
-        seconds = '00',
-        time = '',
-        timeNow = new Date().getTime();
-
-    T.difference = timeNow - T.timerStarted;
-
-
-    // seconds
-    if (T.difference > 1000) {
-        seconds = Math.floor(T.difference / 1000);
-        if (seconds > 60) {
-            seconds = seconds % 60;
-        }
-        if (seconds < 10) {
-            seconds = '0' + String(seconds);
-        }
-    }
-
-    // minutes
-    if (T.difference > 60000) {
-        minutes = Math.floor(T.difference / 60000);
-        1
-        if (minutes > 60) {
-            minutes = minutes % 60;
-        }
-        if (minutes < 10) {
-            minutes = '0' + String(minutes);
-        }
-    }
-
-
-    time += minutes + ':'
-    time += seconds
-
-    T.timerDiv.innerHTML = time;
-}
-
-function startTimer() {
-    $("#playtimer").hide();
-    $("#stoptimer").show();
-    $("#cleartimer").show();
-    // save start time
-    T.timerStarted = new Date().getTime()
-    console.log('T.timerStarted: ' + T.timerStarted)
-
-    if (T.difference > 0) {
-        T.timerStarted = T.timerStarted - T.difference
-    }
-    // update timer periodically
-    T.timerInterval = setInterval(function() {
-        displayTimer()
-    }, 10);
-
-}
-
-function stopTimer() {
-    $("#playtimer").show();
-    $("#stoptimer").hide();
-    $("#cleartimer").show();
-    clearInterval(T.timerInterval); // stop updating the timer
-
-}
-
-function clearTimer() {
-    $("#playtimer").show();
-    $("#stoptimer").hide();
-    $("#cleartimer").hide();
-    clearInterval(T.timerInterval);
-    T.timerDiv.innerHTML = "00:00";
-    T.difference = 0;
-}
-
-
-function setminbgname() {
-    minimapbckimg = $("#minimapPicture").val();
-    localStorage.setItem("minimapbckimg", minimapbckimg);
-    $("#minimap-hud").css('background-image', 'url("' + minimapbckimg + '")').css({
-        opacity: 0.8
-    });
-}
-
-function setminbtext() {
-    var minbtext = $("#minbtext").val();
-    localStorage.setItem("minbtext", minbtext);
-    var c = document.getElementById("minimap-sectors");
-    var ctx = c.getContext("2d");
-    ctx.clearRect(0, 0, c.width, c.height / 9);
-    ctx.font = "16px Georgia";
-    ctx.fillText(minbtext, c.width / 2, 22);
-}
-
-function setleadbgname() {
-    leadbimg = $("#leadbPicture").val();
-    localStorage.setItem("leadbimg", leadbimg);
-    $("#leaderboard-hud").css('background-image', 'url("' + leadbimg + '")').css({
-        opacity: 0.8
-    });
-}
-
-function setteambgname() {
-    teambimg = $("#teambPicture").val();
-    localStorage.setItem("teambimg", teambimg);
-    $("#top5-hud").css('background-image', 'url("' + teambimg + '")').css({
-        opacity: 0.8
-    });
-}
-
-function setcanvasbgname() {
-    canvasbimg = $("#canvasPicture").val();
-    localStorage.setItem("canvasbimg", canvasbimg);
-    $("#canvas").css('background-image', 'url("' + canvasbimg + '")').css({
-        opacity: 1
-    });
-}
-
-function setleadbtext() {
-    leadbtext = $("#leadbtext").val();
-    localStorage.setItem("leadbtext", leadbtext);
-    $("#leaderboard-hud > h4").text(leadbtext);
-}
-
-function setteambtext() {
-    teambtext = $("#teambtext").val();
-    localStorage.setItem("teambtext", teambtext);
-    $("#top5-hud > h5").text(teambtext);
-}
-
-function setimgUrl() {
-    imgUrl = $("#imgUrl").val();
-    localStorage.setItem("imgUrl", imgUrl);
-}
-
-function setimgHref() {
-    imgHref = $("#imgHref").val();
-    localStorage.setItem("imgHref", imgHref);
-}
-
-
-function setpic1url() {
-    pic1urlimg = $("#pic1url").val();
-    localStorage.setItem("pic1urlimg", pic1urlimg);
-    return pic1urlimg;
-}
-
-function setpic2url() {
-    pic2urlimg = $("#pic2url").val();
-    localStorage.setItem("pic2urlimg", pic2urlimg);
-    return pic2urlimg;
-}
-
-function setpic3url() {
-    pic3urlimg = $("#pic3url").val();
-    localStorage.setItem("pic3urlimg", pic3urlimg);
-    return pic3urlimg;
-}
-
-function setpic4url() {
-    pic4urlimg = $("#pic4url").val();
-    localStorage.setItem("pic4urlimg", pic4urlimg);
-    return pic4urlimg;
-}
-
-function setpic5url() {
-    pic5urlimg = $("#pic5url").val();
-    localStorage.setItem("pic5urlimg", pic5urlimg);
-    return pic5urlimg;
-}
-
-function setpic6url() {
-    pic6urlimg = $("#pic6url").val();
-    localStorage.setItem("pic6urlimg", pic6urlimg);
-    return pic6urlimg;
-}
-
-function setdiscwebhook1() {
-    discwebhook1 = $("#discwebhook1").val();
-    var containsrealwebhook = $('#discwebhook1').val();
-
-    if (~containsrealwebhook.indexOf("discordapp.com/api/webhooks/")) {
-        localStorage.setItem("discwebhook1", discwebhook1);
-        //       setTimeout(function() {
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/DiscordSIP.user.js";
-        $("body").append(s);
-        //      }, 1000);
-    } else {
-        if (containsrealwebhook == "") {
-            localStorage.setItem("discwebhook1", discwebhook1);
-        } else {
-            toastr["error"](Premadeletter36).css("width", "210px");
-        }
-        //return discwebhook1;
-    }
-}
-
-function setdiscwebhook2() {
-    discwebhook2 = $("#discwebhook2").val();
-    var containsrealwebhook = $('#discwebhook2').val();
-    if (~containsrealwebhook.indexOf("discordapp.com/api/webhooks/")) {
-        localStorage.setItem("discwebhook2", discwebhook2);
-    } else {
-        if (containsrealwebhook == "") {
-            localStorage.setItem("discwebhook2", discwebhook2);
-        } else {
-            toastr["error"](Premadeletter36).css("width", "210px");
-        }
-        //return discwebhook2;
-    }
-}
-
-function openbleedmod() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/BleedingMod.js";
-    $("body").append(s);
-}
-
-function openrotatingmod() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/rotating500images.js";
-    $("body").append(s);
-}
-
-function languagemodfun() {
-    if (languagemod == 2) {
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackGreek.js";
-        $("body").append(s);
-        setTimeout(function() {
-            $('#legendlanguages').val("2");
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-        }, 800);
-    }
-    if (languagemod == 3) {
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackSpanish.js";
-        $("body").append(s);
-        setTimeout(function() {
-            $('#legendlanguages').val("3");
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-        }, 800);
-    }
-    if (languagemod == 4) {
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackBulgarian.js";
-        $("body").append(s);
-        setTimeout(function() {
-            $('#legendlanguages').val("4");
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-        }, 800);
-    }
-    if (languagemod == 5) {
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackFrench.js";
-        $("body").append(s);
-        setTimeout(function() {
-            $('#legendlanguages').val("5");
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-        }, 800);
-    }
-    if (languagemod == 6) {
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackArabic.js";
-        $("body").append(s);
-        setTimeout(function() {
-            $('#legendlanguages').val("6");
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-        }, 800);
-    }
-    if (languagemod == 7) {
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackTraditionalChinese.js";
-        $("body").append(s);
-        setTimeout(function() {
-            $('#legendlanguages').val("7");
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-        }, 800);
-    }
-    if (languagemod == 8) {
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackRussian.js";
-        $("body").append(s);
-        setTimeout(function() {
-            $('#legendlanguages').val("8");
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-        }, 800);
-    }
-    if (languagemod == 9) {
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackGerman.js";
-        $("body").append(s);
-        setTimeout(function() {
-            $('#legendlanguages').val("9");
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-        }, 800);
-    }
-    if (languagemod == 10) {
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackTurkish.js";
-        $("body").append(s);
-        setTimeout(function() {
-            $('#legendlanguages').val("10");
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-        }, 800);
-    }
-    if (languagemod == 11) {
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackPolish.js";
-        $("body").append(s);
-        setTimeout(function() {
-            $('#legendlanguages').val("11");
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-        }, 800);
-    }
-}
-
-function changeModLanguage() {
-    if ($("#legendlanguages").val() == 1) {
-        localStorage.setItem("languagemod", 1);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackEnglish.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages").val() == 2) {
-        localStorage.setItem("languagemod", 2);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackGreek.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages").val() == 3) {
-        localStorage.setItem("languagemod", 3);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackSpanish.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages").val() == 4) {
-        localStorage.setItem("languagemod", 4);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackBulgarian.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages").val() == 5) {
-        localStorage.setItem("languagemod", 5);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackFrench.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages").val() == 6) {
-        localStorage.setItem("languagemod", 6);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackArabic.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages").val() == 7) {
-        localStorage.setItem("languagemod", 7);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackTraditionalChinese.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages").val() == 8) {
-        localStorage.setItem("languagemod", 8);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackRussian.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages").val() == 9) {
-        localStorage.setItem("languagemod", 9);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackGerman.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages").val() == 10) {
-        localStorage.setItem("languagemod", 10);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackTurkish.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-    if ($("#legendlanguages").val() == 11) {
-        localStorage.setItem("languagemod", 11);
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.src = "https://jimboy3100.github.io/LanguagePackPolish.js";
-        $("body").append(s);
-        setTimeout(function() {
-            var s1 = document.createElement("script");
-            s1.type = "text/javascript";
-            s1.src = "https://jimboy3100.github.io/LanguagePackHandler.js";
-            $("body").append(s1);
-
-        }, 800);
-    }
-}
-
-function newsubmit() {
-    if (legendmod.play == true) {
-        $('*[data-itr="page_play"]').click();
-    }
-}
-
-function triggerLMbtns() {
-    $('#leaderboardlimit').val(window.leaderboardlimit);
-    $('#teamboardlimit').val(window.teamboardlimit);
-    $('.btn').css("text-transform", "capitalize");
-    PanelImageSrc = $("#menuBg").val();
-    if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://jimboy3100.github.io/pattern.png") {
-        $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
-    }
-    $("#copyLBBtn").blur(function() {
-        if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://jimboy3100.github.io/pattern.png") {
-            $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
-        }
-    });
-    $("#dropDown>#copyLBBtn").blur(function() {
-        if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://jimboy3100.github.io/pattern.png") {
-            $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
-        }
-    });
-    $("#copySIPandPass").blur(function() {
-        if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://jimboy3100.github.io/pattern.png") {
-            $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
-        }
-    });
-    $("#copySIPPassLB").blur(function() {
-        if (PanelImageSrc != "" || PanelImageSrc != "https://cdn.ogario.ovh/static/img/pattern.png" || PanelImageSrc != "https://jimboy3100.github.io/pattern.png") {
-            $('#legend').css('background-image', 'url(' + PanelImageSrc + ')');
-        }
-    });
-    //	if (autoRespawn == "true") { $("#autoRespawnBtn").click(); }
-    //	if (IPBtn  == "true") { $("#IPBtn").click(); }
-    if (SHOSHOBtn == "true") {
-        $("#SHOSHOBtn").click();
-    }
-    //	if (TIMEBtn == "true") { $("#TIMEBtn").click(); }
-    //	if (MAINBBtn == "true") { $("#MAINBBtn").click(); }
-    //	if (MAINBTBtn  == "true") { $("#MAINBTBtn").click(); }
-    //	if (MANUIBtn  == "true") { $("#MANUIBtn").click(); }
-    if (MAINBTBtn == "true") {
-        $("#MAINBTBtn").click();
-    }
-    if (AnimatedSkinBtn == "true") {
-        $("#AnimatedSkinBtn").click();
-    }
-    toastrSkinNotice = 1;
-    //	if (RotationBtn  == "true") { $("#RotationBtn").click(); }
-    //            if (YoutubeAutoBtn == "true") {
-    //                $("#YoutubeAutoBtn").click();
-    //            }
-    if (XPBtn == "true") {
-        $("#XPBtn").click();
-    }
-    if (TIMEcalBtn == "true") {
-        $("#TIMEcalBtn").click();
-    }
-    /*            if (troll1Btn == "true") {
-                    $("#troll1Btn").click();
-                }*/
-    if (ComPosition == 0) {
-        $("#topright").click();
-    }
-    if (ComPosition == 1) {
-        $("#topleft").click();
-    }
-    if (ComPosition == 2) {
-        $("#bottomright").click();
-    }
-    //           if (DoubleSplitRangeSaved == "true") { //For Setting DoubleSplitRange
-    //               $("#DoubleSplitRange").click();
-    //           }	
-    if (UniversalChatSaved == "false") {
-        $("#UniversalChat").click();
-    }
-    if (VanillaskinsSaved == "false") {
-        $("#Vanillaskins").click();
-    }
-    if (top5skinsSaved == "false") {
-        $("#top5skins").click();
-    }
-    if (spawnspecialeffectsSaved == "true") {
-        $("#spawnspecialeffects").click();
-    }
-    if (AnimatedRainbowColorSaved == "true") {
-        $("#AnimatedRainbowColor").click();
-    }
-    //	if (ComPosition  == 3) { $("#bottomleft").click(); }
-    /*            if (autoCoinBtn == "true") {
-                    setTimeout(function() {
-                        $("#autoCoinBtn").click();
-                    }, 5000); 
-                }*/
-    //	if (copyGameNames == "true") {
-    //		setTimeout(function () {$("#copyGameNames").click();}, 1000); }	
-
-    document.getElementById("minimapPicture").value = localStorage.getItem("minimapbckimg");
-    if ($('#minimapPicture').val() != "") {
-        setminbgname();
-    }
-    document.getElementById("leadbPicture").value = localStorage.getItem("leadbimg");
-    if ($('#leadbPicture').val() != "") {
-        setleadbgname();
-    }
-    document.getElementById("teambPicture").value = localStorage.getItem("teambimg");
-    if ($('#teambPicture').val() != "") {
-        setteambgname();
-    }
-    document.getElementById("canvasPicture").value = localStorage.getItem("canvasbimg");
-    if ($('#canvasPicture').val() != "") {
-        setcanvasbgname();
-    }
-    document.getElementById("leadbtext").value = localStorage.getItem("leadbtext");
-    if ($('#leadbtext').val() != "") {
-        setleadbtext();
-    }
-    document.getElementById("teambtext").value = localStorage.getItem("teambtext");
-    if ($('#teambtext').val() != "") {
-        setteambtext();
-    }
-    document.getElementById("imgUrl").value = localStorage.getItem("imgUrl");
-    if ($('#imgUrl').val() != "") {
-        setimgUrl();
-    }
-    document.getElementById("imgHref").value = localStorage.getItem("imgHref");
-    if ($('#imgHref').val() != "") {
-        setimgHref();
-    }
-    document.getElementById("minbtext").value = localStorage.getItem("minbtext");
-    if ($('minbtext').val() != "") {
-        setminbtext();
-    }
-
-    document.getElementById("pic1url").value = localStorage.getItem("pic1urlimg");
-    if ($('#pic1url').val() != "") {
-        setpic1url();
-    }
-    document.getElementById("pic2url").value = localStorage.getItem("pic2urlimg");
-    if ($('#pic2url').val() != "") {
-        setpic2url();
-    }
-    document.getElementById("pic3url").value = localStorage.getItem("pic3urlimg");
-    if ($('#pic3url').val() != "") {
-        setpic3url();
-    }
-    document.getElementById("pic4url").value = localStorage.getItem("pic4urlimg");
-    if ($('#pic4url').val() != "") {
-        setpic4url();
-    }
-    document.getElementById("pic5url").value = localStorage.getItem("pic5urlimg");
-    if ($('#pic5url').val() != "") {
-        setpic5url();
-    }
-    document.getElementById("pic6url").value = localStorage.getItem("pic6urlimg");
-    if ($('#pic6url').val() != "") {
-        setpic6url();
-    }
-    document.getElementById("yt1url").value = localStorage.getItem("yt1urlimg");
-    if ($('#yt1url').val() != "") {
-        setyt1url();
-    }
-    document.getElementById("yt2url").value = localStorage.getItem("yt2urlimg");
-    if ($('#yt2url').val() != "") {
-        setyt2url();
-    }
-    document.getElementById("yt3url").value = localStorage.getItem("yt3urlimg");
-    if ($('#yt3url').val() != "") {
-        setyt3url();
-    }
-    document.getElementById("yt4url").value = localStorage.getItem("yt4urlimg");
-    if ($('#yt4url').val() != "") {
-        setyt4url();
-    }
-    document.getElementById("yt5url").value = localStorage.getItem("yt5urlimg");
-    if ($('#yt5url').val() != "") {
-        setyt5url();
-    }
-    document.getElementById("yt6url").value = localStorage.getItem("yt6urlimg");
-    if ($('#yt6url').val() != "") {
-        setyt6url();
-    }
-    document.getElementById("pic1data").value = localStorage.getItem("pic1dataimg");
-    if ($('#pic1data').val() != "") {
-        setpic1data();
-    }
-    document.getElementById("pic2data").value = localStorage.getItem("pic2dataimg");
-    if ($('#pic2data').val() != "") {
-        setpic2data();
-    }
-    document.getElementById("pic3data").value = localStorage.getItem("pic3dataimg");
-    if ($('#pic3data').val() != "") {
-        setpic3data();
-    }
-    document.getElementById("pic4data").value = localStorage.getItem("pic4dataimg");
-    if ($('#pic4data').val() != "") {
-        setpic4data();
-    }
-    document.getElementById("pic5data").value = localStorage.getItem("pic5dataimg");
-    if ($('#pic5data').val() != "") {
-        setpic5data();
-    }
-    document.getElementById("pic6data").value = localStorage.getItem("pic6dataimg");
-    if ($('#pic6data').val() != "") {
-        setpic6data();
-    }
-    document.getElementById("yt1data").value = localStorage.getItem("yt1dataimg");
-    if ($('#yt1data').val() != "") {
-        setyt1data();
-    }
-    document.getElementById("yt2data").value = localStorage.getItem("yt2dataimg");
-    if ($('#yt2data').val() != "") {
-        setyt2data();
-    }
-    document.getElementById("yt3data").value = localStorage.getItem("yt3dataimg");
-    if ($('#yt3data').val() != "") {
-        setyt3data();
-    }
-    document.getElementById("yt4data").value = localStorage.getItem("yt4dataimg");
-    if ($('#yt4data').val() != "") {
-        setyt4data();
-    }
-    document.getElementById("yt5data").value = localStorage.getItem("yt5dataimg");
-    if ($('#yt5data').val() != "") {
-        setyt5data();
-    }
-    document.getElementById("yt6data").value = localStorage.getItem("yt6dataimg");
-    if ($('#yt6data').val() != "") {
-        setyt6data();
-    }
-
-    document.getElementById("discwebhook1").value = localStorage.getItem("discwebhook1");
-    if ($('#discwebhook1').val() != "" && $('#discwebhook1').val() != null) {
-        setdiscwebhook1();
-    }
-    document.getElementById("discwebhook2").value = localStorage.getItem("discwebhook2");
-    if ($('#discwebhook2').val() != "" && $('#discwebhook2').val() != null) {
-        setdiscwebhook2();
-    }
-
-    if (dyinglight1load == null || dyinglight1load == "null") {
-        $("#LEGENDAds2").load("https://jimboy3100.github.io/banners/bannerDyingLight");
-    } else if (dyinglight1load == "yes") {
-        opendyinglight();
-        $("#LEGENDAds2").load("https://jimboy3100.github.io/banners/bannerStopDyingLight");
-    }
-}
-
-function opendyinglight() {
-    //toastr["info"]("Function is not ready yet");	
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://jimboy3100.github.io/dyinglight.js";
-    $("body").append(s);
-
-}
-
-function bluebtns() {
-    var Top5MassColor = $("#top5MassColor").val();
-
-    //blue onmouseover-onmouseout buttons
-    $('#searchShortcut').mouseenter(function() {
-            $('#searchShortcut').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#searchShortcut').css('background-color', "transparent");
-        });
-    $('#dropDown3>#lastIPBtn').mouseenter(function() {
-            $('#dropDown3>#lastIPBtn').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#dropDown3>#lastIPBtn').css('background-color', "transparent");
-        });
-    $('#copySIPBtn').mouseenter(function() {
-            $('#copySIPBtn').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#copySIPBtn').css('background-color', "transparent");
-        });
-    $('#copyLBBtn').mouseenter(function() {
-            $('#copyLBBtn').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#copyLBBtn').css('background-color', "transparent");
-        });
-    $('#dropDown>#copyLBBtn').mouseenter(function() {
-            $('#dropDown>#copyLBBtn').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#dropDown>#copyLBBtn').css('background-color', "transparent");
-        });
-    $('#copySIPandPass').mouseenter(function() {
-            $('#copySIPandPass').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#copySIPandPass').css('background-color', "transparent");
-        });
-    $('#copySIPPassLB').mouseenter(function() {
-            $('#copySIPPassLB').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#copySIPPassLB').css('background-color', "transparent");
-        });
-    $('#reconnectBtn').mouseenter(function() {
-            $('#reconnectBtn').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#reconnectBtn').css('background-color', "transparent");
-        });
-
-    $('#VoiceBtn').mouseenter(function() {
-            $('#VoiceBtn').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#VoiceBtn').css('background-color', "transparent");
-        });
-    $('#ChatBtn').mouseenter(function() {
-            $('#ChatBtn').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#ChatBtn').css('background-color', "transparent");
-        });
-    $('#MiniScripts').mouseenter(function() {
-            $('#MiniScripts').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#MiniScripts').css('background-color', "transparent");
-        });
-    $('#SendCommands').mouseenter(function() {
-            $('#SendCommands').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#SendCommands').css('background-color', "transparent");
-        });
-    $('#shortcuts-hud>#Images').mouseenter(function() {
-            $('#shortcuts-hud>#Images').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#shortcuts-hud>#Images').css('background-color', "transparent");
-        });
-    $('#yout').mouseenter(function() {
-            $('#yout').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#yout').css('background-color', "transparent");
-        });
-    $('#Bino').mouseenter(function() {
-            $('#Bino').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#Bino').css('background-color', "transparent");
-        });
-    $('#playerBtn').mouseenter(function() {
-            $('#playerBtn').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#playerBtn').css('background-color', "transparent");
-        });
-    $('#fullscreenBtn').mouseenter(function() {
-            $('#fullscreenBtn').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#fullscreenBtn').css('background-color', "transparent");
-        });
-
-    $('#Cutnames').mouseenter(function() {
-            $('#Cutnames').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#Cutnames').css('background-color', "transparent");
-        });
-    $('#Ultimouse').mouseenter(function() {
-            $('#Ultimouse').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#Ultimouse').css('background-color', "transparent");
-        });
-
-    $('#msgcommand1').mouseenter(function() {
-            $('#msgcommand1').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#msgcommand1').css('background-color', "transparent");
-        });
-    $('#msgcommand2').mouseenter(function() {
-            $('#msgcommand2').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#msgcommand2').css('background-color', "transparent");
-        });
-    $('#msgcommand3').mouseenter(function() {
-            $('#msgcommand3').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#msgcommand3').css('background-color', "transparent");
-        });
-    $('#msgcommand4').mouseenter(function() {
-            $('#msgcommand4').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#msgcommand4').css('background-color', "transparent");
-        });
-    $('#msgcommand5').mouseenter(function() {
-            $('#msgcommand5').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#msgcommand5').css('background-color', "transparent");
-        });
-    $('#msgcommand6').mouseenter(function() {
-            $('#msgcommand6').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#msgcommand6').css('background-color', "transparent");
-        });
-
-    $('#sendicon1').mouseenter(function() {
-            $('#sendicon1').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#sendicon1').css('background-color', "transparent");
-        });
-    $('#sendicon2').mouseenter(function() {
-            $('#sendicon2').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#sendicon2').css('background-color', "transparent");
-        });
-    $('#sendicon3').mouseenter(function() {
-            $('#sendicon3').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#sendicon3').css('background-color', "transparent");
-        });
-    $('#sendicon4').mouseenter(function() {
-            $('#sendicon4').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#sendicon4').css('background-color', "transparent");
-        });
-    $('#sendicon5').mouseenter(function() {
-            $('#sendicon5').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#sendicon5').css('background-color', "transparent");
-        });
-    $('#sendicon6').mouseenter(function() {
-            $('#sendicon6').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#sendicon6').css('background-color', "transparent");
-        });
-
-    $('#sendyt1').mouseenter(function() {
-            $('#sendyt1').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#sendyt1').css('background-color', "transparent");
-        });
-    $('#sendyt2').mouseenter(function() {
-            $('#sendyt2').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#sendyt2').css('background-color', "transparent");
-        });
-    $('#sendyt3').mouseenter(function() {
-            $('#sendyt3').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#sendyt3').css('background-color', "transparent");
-        });
-    $('#sendyt4').mouseenter(function() {
-            $('#sendyt4').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#sendyt4').css('background-color', "transparent");
-        });
-    $('#sendyt5').mouseenter(function() {
-            $('#sendyt5').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#sendyt5').css('background-color', "transparent");
-        });
-    $('#sendyt6').mouseenter(function() {
-            $('#sendyt6').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#sendyt6').css('background-color', "transparent");
-        });
-
-    $('#RotateRight').mouseenter(function() {
-            $('#RotateRight').css('background-color', Top5MassColor);
-        })
-        .mouseleave(function() {
-            $('#RotateRight').css('background-color', "transparent");
-        });
-}
-
-function YoutubebackgroundEnable() {
-    inject('stylesheet', '*{-webkit-box-sizing: border-box;box-sizing: border-box}.video-background{background: #000;position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: -99}.video-foreground,.video-background iframe{position: absolute;top: 0;left: 0;width: 100%;height: 100%;pointer-events: none}#vidtop-content{top: 0;color: #fff}.vid-info{position: absolute;top: 0;right: 0;width: 33%;background: rgba(0,0,0,0.3);color: #fff;padding: 1rem;font-family: Avenir, Helvetica, sans-serif}.vid-info h1{font-size: 2rem;font-weight: 700;margin-top: 0;line-height: 1.2}.vid-info a{display: block;color: #fff;text-decoration: none;background: rgba(0,0,0,0.5);-webkit-transition: .6s background;transition: .6s background;border-bottom: none;margin: 1rem auto;text-align: center}@media (min-aspect-ratio: 16/9){.video-foreground{height: 300%;top: -100%}}@media (max-aspect-ratio: 16/9){.video-foreground{width: 300%;left: -100%}}@media all and (max-width: 600px){.vid-info{width: 50%;padding: .5rem}.vid-info h1{margin-bottom: .2rem}}@media all and (max-width: 500px){.vid-info .acronym{display: none}}');
-    $("body").append('<div class="video-background"><div class="video-foreground"><iframe frameborder="0" height="100%" width="100%" src="https://www.youtube.com/embed/' + getParameterByName("v", $("#musicUrl").val()) + '?controls=0&showinfo=0&rel=0&autoplay=1&loop=1&start_radio=1&playlist=' + getParameterByName("list", $("#musicUrl").val()) + '"></iframe></div></div></div>');
-}
-
-function YoutubebackgroundDisable() {
-    $('.video-background').remove();
-}
-
-function kFormatter(num) {
-    return num > 999 ? (num / 1000).toFixed(1) + "k" : num;
-}
-
-function settrolling() {
-
-    //afterdeathtonormalmode();
-    playSound("https://jimboy3100.github.io/banners/troll1.mp3");
-    $("#canvas").css('background-image', 'url(" https://media.giphy.com/media/eVy46EWyclTIA/giphy.gif ")').css({
-        opacity: 0.8
-    });
-    $("#minimap-hud").css('background-image', 'url(" https://jimboy3100.github.io/banners/icoeucid.gif ")').css({
-        opacity: 1
-    });
-    $("#leaderboard-hud").css('background-image', 'url(" https://media.giphy.com/media/VSuWfl1qCiRsk/giphy.gif ")').css({
-        opacity: 0.8
-    });
-    setTimeout(function() {
-        $("#canvas").css('background-image', 'url(" https://media.giphy.com/media/aw9WgvgNd1bQk/giphy.gif ")').css({
-            opacity: 0.8
-        });
-    }, 4000);
-    setTimeout(function() {
-        $("#canvas").css('background-image', 'url(" ")').css({
-            opacity: 1
-        });
-        $("#leaderboard-hud").css('background-image', 'url("' + leadbimg + '")').css({
-            opacity: 0.8
-        });
-    }, 8000);
-    setTimeout(function() {
-        $("#minimap-hud").css('background-image', 'url("' + minimapbckimg + '")').css({
-            opacity: 0.8
-        });
-    }, 27000);
-
-}
-
-function preventcanvasimagecrash() {
-    CanvasRenderingContext2D.prototype._drawImage = CanvasRenderingContext2D.prototype.drawImage;
-    CanvasRenderingContext2D.prototype.drawImage = function() {
-
-        const image = arguments[0];
-        //console.log(image.width);
-        if (!image || image.width < 1 || image.height < 1) return void console.log('Preventing canvas to crash from image width and height');
-        this._drawImage(...arguments);
-    }
-}
-
-function doGl() {
-    $("#UserProfilePic>img").attr('src', gapi.auth2.getAuthInstance().currentUser.Ab.w3.Paa);
-    $("#UserProfileName1").text(gapi.auth2.getAuthInstance().currentUser.Ab.w3.ofa);
-    $("#UserProfileUID1").text(gapi.auth2.getAuthInstance().currentUser.Ab.w3.Eea);
-
-    userfirstname = gapi.auth2.getAuthInstance().currentUser.Ab.w3.ofa;
-    userid = gapi.auth2.getAuthInstance().currentUser.Ab.w3.Eea;
-    userlastname = gapi.auth2.getAuthInstance().currentUser.Ab.w3.wea;
-    if (userfirstname != null) {
-        localStorage.setItem("userfirstname", userfirstname);
-    }
-    if (userlastname != null) {
-        localStorage.setItem("userlastname", userlastname);
-    }
-    if (userid != null) {
-        localStorage.setItem("userid", userid);
-    }
-    return userfirstname, userlastname, usergender, userid;
-
-}
-
-function doFB() {
-
-    FB.api('/me', {
-        fields: 'first_name, last_name, gender, id'
-    }, function(fbresponse) {
-        $("#UserProfilePic>img").attr('src', 'https://graph.facebook.com/' + fbresponse.id + '/picture?type=large');
-        //	setTimeout(function (){ 
-        $("#UserProfileName1").text(fbresponse[Object.keys(fbresponse)[0]]);
-        $("#UserProfileUID1").text(fbresponse[Object.keys(fbresponse)[2]]);
-        userfirstname = fbresponse[Object.keys(fbresponse)[0]];
-        if (userfirstname != null) {
-            localStorage.setItem("userfirstname", userfirstname);
-        }
-        userlastname = fbresponse[Object.keys(fbresponse)[1]];
-        if (userlastname != null) {
-            localStorage.setItem("userlastname", userlastname);
-        }
-        userid = fbresponse[Object.keys(fbresponse)[2]];
-        if (userid != null) {
-            localStorage.setItem("userid", userid);
-        }
-        usergender = fbresponse[Object.keys(fbresponse)[3]];
-        if (usergender != null) {
-            localStorage.setItem("usergender", usergender);
-        }
-        return userfirstname, userlastname, usergender, userid;
-        //	},250);
-    });
-}
-
-function doGl2() {
-    //				setTimeout(function() {	
-    if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
-        doGl();
-    }
-    //            }, 1000); 	
-}
-
-function doFB2() {
-    //				setTimeout(function() {	
-    FB.getLoginStatus(function(response) {
-        if (response.status === 'connected') {
-            doFB();
-        }
-    });
-    //            }, 1000); 	
-}
-
-function loginsfbGplstart() {
-    //				setTimeout(function() {	
-    if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
-        doGl();
-    } else {
-        FB.getLoginStatus(function(response) {
-            if (response.status === 'connected') {
-                doFB();
-            }
-        });
-    }
-    //            }, 1000);					
-}
-
-function loginsfbGpl() {
-    master._doLoginWithGPlus = master.doLoginWithGPlus;
-    //master.doLoginWithGPlus = joint([ master._doLoginWithGPlus, doGl2]);
-    master.doLoginWithGPlus = joint([doGl2, master._doLoginWithGPlus]);
-    master._doLoginWithFB = master.doLoginWithFB;
-    //master._doLoginWithFB = joint([ master._doLoginWithFB, doFB2]);
-    master._doLoginWithFB = joint([doFB2, master._doLoginWithFB]);
-    $("#logoutbtn").click(function() {
-        $("#UserProfileName1").text("Guest");
-        $("#UserProfileUID1").text("");
-        $("#UserProfilePic>img").attr('src', 'https://jimboy3100.github.io/banners/profilepic_guest.png');
-    });
-}
-
-function loginsfbGpl2() {
-    $("#logoutbtn").click(function() {
-        $("#UserProfileName1").text("Guest");
-        $("#UserProfileUID1").text("");
-        $("#UserProfilePic>img").attr('src', 'https://jimboy3100.github.io/banners/profilepic_guest.png');
-    });
-    $(".btn.btn-primary.btn-login.btn-fb").click(function() {
-        //toastr["warning"]("<b>[SERVER]:</b> Facebook login info will be reflected after restart");		
-        setTimeout(function() {
-            doFB2();
-        }, 5000);
-    });
-    $(".btn.btn-primary.btn-login.btn-gplus").click(function() {
-        setTimeout(function() {
-            doGl2();
-        }, 5000);
-    });
-}
-
-function joint(a) {
-    var b;
-    return b = a[a.length - 1], a.pop(), a = a.length > 1 ? joint(a) : a[0],
-        function() {
-            b.apply(new a)
-        }
-}
-
-function useProfilePhotoCustom() {
-    if ($("#UserProfilePic>img").attr('src') != "https://jimboy3100.github.io/banners/profilepic_guest.png" && $("#UserProfilePic>img").attr('src') != "https://jimboy3100.github.io/banners/profilepic_guest.png") {
-        copy($("#UserProfilePic>img").attr('src'));
-        toastr["info"](Premadeletter85 + ' <font color="red"><b>Ctrl+V</font></b>, ' + Premadeletter86).css("width", "350px");
-    } else {
-        toastr["info"](Premadeletter87).css("width", "350px");
-    }
-}
-
-function emphasischat() {
-    var global = window; // unsafeWindow;
-    var my = {
-        "name": "OChatBetter",
-        "log": function(msg) {
-            console.log(this.name + ":" + msg);
-        },
-    };
-    var stat = {};
-    var cfg = {},
-        cfg_org = {
-            "emphasis_bgcolor": "rgba(128,128,128,0.9)", // Historical emphasis background color
-            "emphasis_time": 5000, // Emphasis time [milliseconds]
-            "histhide_time": 10000, // Time to erase history [milliseconds]
-            "scroll_dulation": 200, // History scroll completion period [milliseconds]
-        };
-
-    function pre_loop() {
-        // At this point jQuery can not be used
-        if (!document.getElementById("top5-hud")) {
-            my.pre_loop_timeout = (my.pre_loop_timeout || 1000) + 1000;
-            setTimeout(pre_loop, my.pre_loop_timeout);
-            my.log("wait for OGARio load");
-            return;
-        }
-        // Just to be sure, another 1 wait
-        setTimeout(initialize, 1000);
-    }
-    pre_loop();
-
-    function initialize() {
-        //$.extend(cfg, cfg_org, JSON.parse(GM_getValue("config", '{}')));
-        cfg = cfg_org;
-        global[my.name] = {
-            my: my,
-            stat: stat,
-            cfg: cfg
-        };
-        stat.obs_hist = new MutationObserver((mutations) => {
-            //my.log("hist changed");
-            mutations.forEach((mutation) => {
-                my.hist_add(mutation.addedNodes);
-            });
-        });
-        stat.obs_hist.observe($("#chat-box").get(0), {
-            "childList": true
-        });
-        stat.obs_inpt = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.attributeName !== 'style') {
-                    return;
-                }
-                var displayValue = mutation.target.style.display;
-                //my.log("input changed display="+ displayValue);
-                if (displayValue === "block") {
-                    my.inpt_show();
-                } else if (displayValue === "none") {
-                    my.inpt_hide();
-                }
-            });
-        });
-        stat.obs_inpt.observe($("#message-box").get(0), {
-            "attributes": true
-        });
-    }
-
-    my.hist_add = function(nodes) {
-        my.hist_show(true);
-        nodes.forEach((node_elem) => {
-            var node = $(node_elem);
-            if (node.hasClass("message")) {
-                var bgOrg = node.css("background-color");
-                node.css("background-color", cfg.emphasis_bgcolor);
-                setTimeout(function() {
-                    node.css("background-color", bgOrg);
-                }, cfg.emphasis_time);
-            }
-        });
-        // Scroll adjustment
-        var chat_box = $("#chat-box");
-        chat_box.perfectScrollbar("update");
-        chat_box.animate({
-            "scrollTop": chat_box.prop("scrollHeight")
-        }, cfg.scroll_dulation);
-        //chat_box.prop("scrollTop", chat_box.prop("scrollHeight"));
-    };
-    my.hist_show = function(withTimer) {
-        // Stop the timer
-        if (stat.histhide_timeID) {
-            clearTimeout(stat.histhide_timeID);
-            stat.histhide_timeID = null;
-        }
-        var displayValue = $("#chat-box").css("display");
-        if (displayValue === "none") {
-            stat.histhide_enable = true;
-            //$("#chat-box").show();
-        }
-        if (stat.histhide_enable && withTimer) {
-            stat.histhide_timeID = setTimeout(function() {
-                //$("#chat-box").hide();
-                stat.histhide_enable = false;
-            }, cfg.histhide_time);
-        }
-    };
-    my.inpt_show = function() {
-        my.hist_show(false);
-    };
-    my.inpt_hide = function() {
-        //$("#chat-box").hide();
-    };
-}
-
-function SNEZOgarUpload() {
-    //$("#export-settings-btn").click();
-    //postSNEZ("https://lmsettings.snez.org/", "test", "test1234", "{ a: 1, b: 2, d: 4}");
-
-    if (userid == "" || userid == null) {
-        toastr["warning"]("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter128);
-    } else {
-        //postSNEZ("https://lmsettings.snez.org/", userid, "LMSettings", $('#export-settings').val());
-        postSNEZ("https://lmsettings.snez.org/", userid, "LMSettings", escape($('#export-settings').val()));
-        toastr["warning"]("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter129 + ". " + Languageletter363 + ": <font color='yellow'><b>" + userid + "</b></font>");
-    }
-}
-
-function SNEZOgarDownload() {
-    if (userid == "" || userid == null) {
-        toastr["warning"]("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter128);
-    } else {
-        getSNEZ("https://lmsettings.snez.org/", userid, "LMSettings");
-        var responseSNEZ = xhttp.response;
-        $('#import-settings').val(unescape(responseSNEZ));
-        //$('#import-settings').val(responseSNEZ);
-        $("#import-settings-btn2").click();
-    }
-}
-
-
-
-function SNEZServers() {
-    var onUILoaded = function(callback, params) {
-        var timerID = setInterval(function() {
-            //var elements = ["nick", "server", "clantag", "server-reconnect"];
-            var elements = ["nick", "server-token", "clantag", "server-reconnect"];
-            var loaded = true;
-            elements.forEach(function(elementId) {
-                if (!document.getElementById(elementId))
-                    loaded = false;
-            });
-
-            if (loaded) {
-                clearInterval(timerID);
-                callback(params);
-            }
-        }, 100);
-    }
-
-    // ---------------
-
-    var state = {
-        nickname: null,
-        server: null,
-        tag: null,
-        AID: null
-    };
-    var elements = {
-        nickname: "nick",
-        server: "server-token",
-        tag: "clantag",
-        reconnectButton: "server-reconnect"
-    };
-
-    var socket = {
-        //server: "wss://agar.snez.org:3051/",
-        server: "wss://agar.snez.org:63051/",
-        client: null,
-        connect: function() {
-            socket.client = new WebSocket(socket.server);
-            socket.client.onopen = socket.updateServerDetails;
-            socket.client.onclose = socket.reconnect;
-            socket.client.onmessage = socket.onMessage;
-        },
-        reconnect: function() {
-            console.log("Reconnecting in 5 seconds...");
-
-            setTimeout(function() {
-                socket.connect();
-            }, 5000);
-        },
-        updateServerDetails: function() {
-            //        console.log("Details have changed");
-            //        console.log(state);
-
-            socket.send({
-                id: getSessionID(),
-                type: "update_details",
-                data: state
-            });
-        },
-        updateDetails: function() {
-            var nick = document.getElementById(elements.nickname);
-            //		var server = $("#server-ws").val().replace("wss://", "").replace("ws://", "").replace(":80", "")+"&?r=" + $('#region').val() + "&?m=" + realmode;		
-            //        var server = document.getElementById(elements.server);
-            var servertemp;
-            if (realmode != null && region != null) {
-                servertemp = "live-arena-" + $('#server-token').val() + ".agar.io" + "&?r=" + $('#region').val() + "&?m=" + realmode;
-            } else {
-                servertemp = "live-arena-" + $('#server-token').val() + ".agar.io";
-            }
-            var tag = document.getElementById(elements.tag);
-            //var tag = "RespectPrivacy"; No1 not anymore 
-
-            //var nick = document.getElementById("nick");
-            //var server = document.getElementById("server");
-            //var server = document.getElementById("server-ws").value;
-            //var server = $("#server-ws").val().replace("wss://", "").replace("ws://", "").replace(":80", "");
-            //var tag = document.getElementById("clantag");
-
-            //state.nickname = nick.value;
-            //state.server = server;
-            //state.tag = tag.value;
-            if (state.nickname != nick.value ||
-                state.server != servertemp ||
-                state.tag != tag.value)
-
-            /*if (state.nickname != nick.value ||
-                state.server != servertemp)			no1: I stoped this*/
-
-            {
-                state.nickname = nick.value;
-                state.server = servertemp;
-                state.tag = tag.value;
-                state.AID = window.agarioID;
-                //state.tag="RespectPrivacy"; no2: I stoped this
-                socket.updateServerDetails();
-            }
-        },
-        send: function(msg) {
-            if (socket.client.readyState !== socket.client.OPEN)
-                return;
-
-            socket.client.send(JSON.stringify(msg));
-        },
-        onMessage: function(message) {
-            try {
-                var data = JSON.parse(message.data);
-                switch (data.type) {
-                    case "ping":
-                        socket.send({
-                            type: "pong"
+                'restoreThemeSettings': function() {
+                    null !== window.localStorage.getItem('ogarioThemeSettings') && (window.localStorage.removeItem('ogarioThemeSettings'), window.location.reload());
+                },
+                'addCustomCSS': function(t, e) {
+                    this[t] || (this[t] = $("<style type=\'text/css\'>").appendTo('head')), this[t].html(e);
+                },
+                'addPresetBox': function(t, e, i, o, a) {
+                    for (var n in $(t).append('<div class=\"preset-box\"><span class=\"title-box\">' + h[e] + '</span><div class=\"select-wrapper\"><select id=\"' + e + '\" class=\"form-control\"></select></div></div>'), i) i.hasOwnProperty(n) && $('#' + e).append('<option value=\"' + n + '\">' + i[n]['name'] + '</option>');
+                    $('#' + e).val(defaultSettings[o]);
+                    var r = this;
+                    $('#' + e).on('change', function() {
+                        var t = this.value;
+                        defaultSettings[o] = t, r[a](t);
+                    });
+                },
+                'addColorBox': function(t, e, o) {
+                    if ($(t).append('<div class=\"color-box\"><span class=\"title-box\">' + h[e] + '</span><div class=\"input-group ' + e + '-picker\"><input type=\"text\" value=\"' + defaultSettings[e] + '\" id=\"' + e + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>'), o) {
+                        var a = this;
+                        $(t + ' .' + e + '-picker')['colorpicker']({
+                            'format': 'hex'
+                        }).on('changeColor.colorpicker', function(t) {
+                            defaultSettings[e] = t.color.toHex(), i.hasOwnProperty(e) && (i[e] = defaultSettings[e]), a[o]();
                         });
+                    } else $(t + ' .' + e + '-picker').colorpicker({
+                        'format': 'hex'
+                    }).on('changeColor.colorpicker', function(t) {
+                        defaultSettings[e] = t.color.toHex(), i.hasOwnProperty(e) && (i[e] = defaultSettings[e]);
+                    });
+                },
+                'addRgbaColorBox': function(t, e, o) {
+                    if ($(t).append('<div class=\"color-box\"><span class=\"title-box\">' + h[e] + '</span><div class=\"input-group ' + e + '-picker\"><input type=\"text\" value=\"' + defaultSettings[e] + '\" id=\"' + e + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>'), o) {
+                        var a = this;
+                        $(t + ' .' + e + '-picker').colorpicker({
+                            'format': 'rgba'
+                        }).on('changeColor.colorpicker', function(t) {
+                            var s = t.color.toRGB();
+                            defaultSettings[e] = 'rgba(' + s['r'] + ',' + s['defaultSettings'] + ',' + s['b'] + ',' + s['a'] + ')', i.hasOwnProperty(e) && (i[e] = defaultSettings[e]), a[o]();
+                        });
+                    } else s(t + ' .' + e + '-picker').colorpicker({
+                        'format': 'rgba'
+                    }).on('changeColor.colorpicker', function(t) {
+                        var s = t.color.toRGB();
+                        defaultSettings[e] = 'rgba(' + s['r'] + ',' + s['defaultSettings'] + ',' + s['b'] + ',' + s['a'] + ')', i.hasOwnProperty(e) && (i[e] = defaultSettings[e]);
+                    });
+                },
+                'addSliderBox': function(t, e, o, a, n, r) {
+                    if ($(t).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">' + h[e] + ': </span><span id=\"' + e + '-value\" class=\"value\">' + defaultSettings[e] + '</span></div><input id=\"' + e + '-slider\" type=\"range\" min=\"' + o + '\" max=\"' + a + '\" step=\"' + n + '\" value=\"' + defaultSettings[e] + '\"></div>'), r) {
+                        var l = this;
+                        $('#' + e + '-slider').on('input', function() {
+                            var t = parseFloat($(this).val());
+                            $('#' + e + '-value').text(t), defaultSettings[e] = t, i.hasOwnProperty(e) && (i[e] = t), l[r]();
+                        });
+                    } else $('#' + e + '-slider').on('input', function() {
+                        var t = parseFloat($(this).val());
+                        $('#' + e + '-value').text(t), defaultSettings[e] = t, i.hasOwnProperty(e) && (i[e] = t);
+                    });
+                },
+                'addInputBox': function(t, e, i, o) {
+                    $(t).append('<div class=\"input-box\"><span class=\"title-box\">' + h[e] + '</span><input id=\"' + e + '\" class=\"form-control\" placeholder=\"' + i + '\" value=\"' + defaultSettings[e] + '\" /></div>');
+                    var a = this;
+                    $('#' + e).on('input', function() {
+                        defaultSettings[e] = this.value, a[o]();
+                    });
+                },
+                'addCursorBox': function(t, e) {
+                    e === defaultSettings.customCursor ? $(t).append('<div class=\"cursor-box\"><a href=\"#\" class=\"active\"><img src=\"' + e + '\"></a></div>') : $(t).append('<div class=\"cursor-box\"><a href=\"#\"><img src=\"' + e + '\"></a></div>');
+                },
+                'setFont': function(t, e) {
+                    defaultSettings[t] = e,
+                        defaultSettings[t + 'Family'] = this.setFontFamily(e),
+                        defaultSettings[t + 'Weight'] = this.setFontWeight(e),
+                    i.hasOwnProperty(t + 'Family') && (i[t + 'Family'] = defaultSettings[t + 'Family']),
+                    i.hasOwnProperty(t + 'Weight') && (i[t + 'Weight'] = defaultSettings[t + 'Weight']);
+                },
+                'addFontBox': function(t, e, i) {
+                    $(t).append('<div class=\"font-box\"><span class=\"title-box\">' + h[e] + '</span><div class=\"select-wrapper\"><select id=\"' + e + '\" class=\"form-control\"></select></div></div>');
+                    $('#' + e).append('<option value=\"ubuntu\">Ubuntu</option><option value=\"ubuntu-bold\">Ubuntu Bold</option>');
+                    $('#' + e).append('<option value=\"roboto\">Roboto</option><option value=\"roboto-bold\">Roboto Bold</option>');
+                    $('#' + e).append('<option value=\"oswald\">Oswald</option><option value=\"oswald-bold\">Oswald Bold</option>');
+                    $('#' + e).append('<option value=\"shojumaru\">Shojumaru</option><option value=\"shojumaru-bold\">Shojumaru Bold</option>');
+                    $('#' + e).append('<option value=\"allura\">Allura</option><option value=\"allura-bold\">Allura Bold</option>');
+
+                    $('#' + e).val(defaultSettings[e]);
+                    var o = this;
+                    i ? $('#' + e).on('change', function() {
+                        var t = this.value;
+                        o.setFont(e, t), o[i]();
+                    }) : $('#' + e).on('change', function() {
+                        var t = this.value;
+                        o.setFont(e, t);
+                    });
+                },
+                'setFontFamily': function(t) {
+                    var tempFont;
+                    if (t.indexOf('roboto') == 0) {
+                        tempFont = 'Roboto';
+                    } else if (t.indexOf('oswald') == 0) {
+                        tempFont = 'Oswald';
+                    } else if (t.indexOf('shojumaru') == 0) {
+                        //console.log('font: shojumaru');
+                        tempFont = 'Shojumaru';
+                    } else if (t.indexOf('allura') == 0) {
+                        //console.log('font: allura');
+                        tempFont = 'Allura';
+                    }
+                    //					else (if t.indexOf('ubuntu')){
+                    else {
+                        tempFont = 'Ubuntu';
+                    }
+
+                    return tempFont;
+                    //return -1 != t.indexOf('roboto') ? 'Roboto' : -1 != t.indexOf('oswald') ? 'Oswald' : 'Ubuntu';
+                },
+                'setFontWeight': function(t) {
+                    return -1 != t.indexOf('bold') ? 700 : 400;
+                },
+                'setThemeMenu': function() {
+                    var t = this;
+                    $('#theme').append('<ul class=\"submenu-tabs\"><li class=\"theme-main-tab active\"><a href=\"#theme-main\" class=\"active ogicon-paint-format\" data-toggle=\"tab-tooltip\" title=\"' + h.basicTheming + '\"></a></li><li class=\"theme-menu-tab\"><a href=\"#theme-menu\" class=\"ogicon-menu\" data-toggle=\"tab-tooltip\" title=\"' + h.menuTheming + '\"></a></li><li class=\"theme-hud-tab\"><a href=\"#theme-hud\" class=\"ogicon-display\" data-toggle=\"tab-tooltip\" title=\"' + h.hudTheming + '\"></a></li><li class=\"theme-chat-tab\"><a href=\"#theme-chat\" class=\"ogicon-bubbles\" data-toggle=\"tab-tooltip\" title=\"' + h.chatTheming + '\"></a></li><li class=\"theme-minimap-tab\"><a href=\"#theme-minimap\" class=\"ogicon-location2\" data-toggle=\"tab-tooltip\" title=\"' + h.miniMapTheming + '\"></a></li><li class=\"theme-images-tab\"><a href=\"#theme-images\" class=\"ogicon-compass\" data-toggle=\"tab-tooltip\" title=\"' + h.imagesTheming + '\"></a></li></ul><div id=\"theme-main\" class=\"submenu-panel\"></div><div id=\"theme-menu\" class=\"submenu-panel\"></div><div id=\"theme-hud\" class=\"submenu-panel\"></div><div id=\"theme-chat\" class=\"submenu-panel\"></div><div id=\"theme-minimap\" class=\"submenu-panel\"></div><div id=\"theme-images\" class=\"submenu-panel\"></div>');
+                    this.addPresetBox('#theme-main', 'themePreset', themePresets, 'preset', 'changeThemePreset');
+                    this.addColorBox('#theme-main', 'bgColor', 'setBgColor');
+                    this.addColorBox('#theme-main', 'bordersColor');
+                    this.addColorBox('#theme-main', 'borderGlowColor');
+                    this.addColorBox('#theme-main', 'gridColor');
+                    this.addColorBox('#theme-main', 'sectorsColor');
+                    this.addColorBox('#theme-main', 'namesColor');
+                    this.addColorBox('#theme-main', 'namesStrokeColor');
+                    this.addColorBox('#theme-main', 'massColor');
+                    this.addColorBox('#theme-main', 'massStrokeColor');
+                    this.addColorBox('#theme-main', 'virusColor');
+                    this.addColorBox('#theme-main', 'virusStrokeColor');
+                    this.addColorBox('#theme-main', 'mVirusColor');
+                    this.addColorBox('#theme-main', 'mVirusStrokeColor');
+                    this.addColorBox('#theme-main', 'virusGlowColor');
+                    this.addColorBox('#theme-main', 'foodColor', 'setFoodColor');
+                    this.addColorBox('#theme-main', 'teammatesIndColor', 'setIndicatorColor');
+                    this.addColorBox('#theme-main', 'cursorTrackingColor');
+                    this.addColorBox('#theme-main', 'splitRangeColor');
+                    this.addColorBox('#theme-main', 'enemyBSTEDColor'); //Sonia2
+                    this.addColorBox('#theme-main', 'enemyBSTEColor'); //Sonia2
+                    this.addColorBox('#theme-main', 'enemyBColor'); //Sonia2
+                    this.addColorBox('#theme-main', 'enemySColor'); //Sonia2
+                    this.addColorBox('#theme-main', 'enemySSTEColor'); //Sonia2
+                    this.addColorBox('#theme-main', 'enemySSTEDColor'); //Sonia2
+                    this.addColorBox('#theme-main', 'safeAreaColor');
+                    this.addColorBox('#theme-main', 'dangerAreaColor');
+                    this.addColorBox('#theme-main', 'ghostCellsColor');
+                    this.addFontBox('#theme-main', 'namesFont');
+                    this.addFontBox('#theme-main', 'massFont');
+                    this.addFontBox('#theme-main', 'sectorsFont');
+                    this.addSliderBox('#theme-main', 'sectorsFontSize', 200, 2000, 10);
+                    this.addSliderBox('#theme-main', 'namesScale', 0.5, 2, 0.1);
+                    this.addSliderBox('#theme-main', 'massScale', 1, 5, 1);
+                    this.addSliderBox('#theme-main', 'virMassScale', 1, 5, 1);
+                    this.addSliderBox('#theme-main', 'strokeScale', 1, 4, 0.1);
+                    this.addSliderBox('#theme-main', 'foodSize', 1, 50, 1, 'setFoodColor');
+                    this.addSliderBox('#theme-main', 'virusStrokeSize', 2, 40, 1);
+                    this.addSliderBox('#theme-main', 'bordersWidth', 2, 200, 2);
+                    this.addSliderBox('#theme-main', 'borderGlowSize', 0, 40, 1);
+                    this.addSliderBox('#theme-main', 'virusGlowSize', 0, 40, 1);
+                    this.addSliderBox('#theme-main', 'sectorsWidth', 2, 200, 2);
+                    this.addSliderBox('#theme-main', 'cellsAlpha', 0.01, 0.99, 0.01);
+                    this.addSliderBox('#theme-main', 'skinsAlpha', 0.01, 0.99, 0.01);
+                    this.addSliderBox('#theme-main', 'virusAlpha', 0, 1, 0.01);
+                    this.addSliderBox('#theme-main', 'textAlpha', 0.1, 1, 0.01);
+                    this.addSliderBox('#theme-main', 'ghostCellsAlpha', 0.01, 0.99, 0.01);
+                    this.addPresetBox('#theme-menu', 'menuPreset', themeMenus, 'menuPreset', 'changeMenuPreset');
+                    this.addSliderBox('#theme-menu', 'menuOpacity', 0.1, 1, 0.01, 'setMenuOpacity');
+                    this.addColorBox('#theme-menu', 'menuMainColor', 'setMenuMainColor');
+                    this.addColorBox('#theme-menu', 'menuBtnTextColor', 'setMenuButtons');
+                    this.addColorBox('#theme-menu', 'menuPanelColor', 'setMenuPanelColor');
+                    this.addColorBox('#theme-menu', 'menuPanelColor2', 'setMenuPanelColor');
+                    this.addColorBox('#theme-menu', 'menuTextColor', 'setMenuTextColor');
+                    this.addColorBox('#theme-menu', 'menuTextColor2', 'setMenuTextColor');
+                    this.addColorBox('#theme-menu', 'btn1Color', 'setMenuButtons');
+                    this.addColorBox('#theme-menu', 'btn1Color2', 'setMenuButtons');
+                    this.addColorBox('#theme-menu', 'btn2Color', 'setMenuButtons');
+                    this.addColorBox('#theme-menu', 'btn2Color2', 'setMenuButtons');
+                    this.addColorBox('#theme-menu', 'btn3Color', 'setMenuButtons');
+                    this.addColorBox('#theme-menu', 'btn3Color2', 'setMenuButtons');
+                    this.addColorBox('#theme-menu', 'btn4Color', 'setMenuButtons');
+                    this.addColorBox('#theme-menu', 'btn4Color2', 'setMenuButtons');
+                    this.addInputBox('#theme-menu', 'menuBg', 'Image URL', 'setMenuBg');
+                    this.addColorBox('#theme-hud', 'hudMainColor', 'setHudColors');
+                    this.addRgbaColorBox('#theme-hud', 'hudColor', 'setHudColors');
+                    this.addColorBox('#theme-hud', 'hudTextColor', 'setHudColors');
+                    this.addColorBox('#theme-hud', 'statsHudColor', 'setHudColors');
+                    this.addColorBox('#theme-hud', 'timeHudColor', 'setHudColors');
+                    this.addColorBox('#theme-hud', 'top5MassColor', 'setHudColors');
+                    this.addColorBox('#theme-hud', 'lbMeColor', 'setHudColors');
+                    this.addColorBox('#theme-hud', 'lbTeammateColor', 'setHudColors');
+                    this.addFontBox('#theme-hud', 'hudFont', 'setHudFont');
+                    this.addSliderBox('#theme-hud', 'hudScale', 1, 2, 0.01, 'setHudScale');
+                    this.addRgbaColorBox('#theme-chat', 'messageColor', 'setChatColors');
+                    this.addColorBox('#theme-chat', 'messageTextColor', 'setChatColors');
+                    this.addColorBox('#theme-chat', 'messageTimeColor', 'setChatColors');
+                    this.addColorBox('#theme-chat', 'messageNickColor', 'setChatColors');
+                    this.addRgbaColorBox('#theme-chat', 'commandsColor', 'setChatColors');
+                    this.addColorBox('#theme-chat', 'commandsTextColor', 'setChatColors');
+                    this.addColorBox('#theme-chat', 'commandsTimeColor', 'setChatColors');
+                    this.addColorBox('#theme-chat', 'commandsNickColor', 'setChatColors');
+                    this.addRgbaColorBox('#theme-chat', 'chatBoxColor', 'setChatColors');
+                    this.addSliderBox('#theme-chat', 'chatScale', 1, 2, 0.01, 'setChatScale');
+                    this.addColorBox('#theme-minimap', 'miniMapSectorsColor', 'setMiniMapSectorsColor');
+                    this.addColorBox('#theme-minimap', 'miniMapSectorColor');
+                    this.addColorBox('#theme-minimap', 'miniMapNickColor');
+                    this.addColorBox('#theme-minimap', 'miniMapNickStrokeColor');
+                    this.addColorBox('#theme-minimap', 'miniMapMyCellColor');
+                    this.addColorBox('#theme-minimap', 'miniMapMyCellStrokeColor');
+                    this.addColorBox('#theme-minimap', 'miniMapTeammatesColor');
+                    this.addColorBox('#theme-minimap', 'miniMapDeathLocationColor');
+                    this.addColorBox('#theme-minimap', 'miniMapGuidesColor');
+                    this.addColorBox('#theme-minimap', 'miniMapGhostCellsColor');
+                    this.addFontBox('#theme-minimap', 'miniMapFont', 'setMiniMapFont');
+                    this.addFontBox('#theme-minimap', 'miniMapNickFont');
+                    this.addSliderBox('#theme-minimap', 'miniMapWidth', 200, 400, 2, 'setMiniMapWidth');
+                    this.addSliderBox('#theme-minimap', 'miniMapSectorsOpacity', 0, 1, 0.01, 'setMiniMapSectorsOpacity');
+                    this.addSliderBox('#theme-minimap', 'miniMapNickSize', 8, 16, 1);
+                    this.addSliderBox('#theme-minimap', 'miniMapNickStrokeSize', 0, 6, 1);
+                    this.addSliderBox('#theme-minimap', 'miniMapMyCellSize', 4, 10, 0.5);
+                    this.addSliderBox('#theme-minimap', 'miniMapMyCellStrokeSize', 0, 10, 1);
+                    this.addSliderBox('#theme-minimap', 'miniMapTeammatesSize', 4, 10, 0.5);
+                    this.addSliderBox('#theme-minimap', 'miniMapGhostCellsAlpha', 0.01, 0.99, 0.01);
+                    this.addInputBox('#theme-images', 'customBackground', 'Image URL', 'setCustomBackground');
+                    this.addInputBox('#theme-images', 'customCursor', 'Cursor image URL', 'setCustomCursor');
+                    for (var e = 'https://jimboy3100.github.io/cursors/cursor_', i = 0; i < 35; i++) i < 9 ? this.addCursorBox('#theme-images', e + '0' + (i + 1) + '.cur') : this.addCursorBox('#theme-images', e + '' + (i + 1) + '.cur');
+                    $(document).on('click', '#theme-images .cursor-box a', function(e) {
+                        e.preventDefault();
+                        var i = $('img', this).attr('src');
+                        defaultSettings.customCursor = i;
+                        hudsetter.setCustomCursor();
+                        $('#customCursor').val(i);
+                        $('#theme-images .cursor-box a').removeClass('active');
+                        $(this).addClass('active');
+                    }),
+                        $('#theme').append('<button class=\"btn btn-block btn-success btn-save\"\">' + h.saveSett + '</button>'),
+                        $(document).on('click', '#theme .btn-save', function(e) {
+                            e.preventDefault();
+                            var i = $(this);
+                            i.text(h.saved), hudsetter.saveThemeSettings(), setTimeout(function() {
+                                i.text(h.saveSett);
+                            }, 500);
+                        }), $('#theme').append('<div class=\"restore-settings\"><a href=\"#\">' + h.restoreThemeSettings + '</a></div>'),
+                        $(document).on('click', '#theme .restore-settings a', function(e) {
+                            e.preventDefault(), hudsetter.restoreThemeSettings();
+                        }), $('.skin').colorpicker({
+                        'format': 'hex',
+                        'input': '#color'
+                    });
+                },
+                'changePreset': function(t, e) {
+                    if (e[t]) {
+                        defaultSettings[t] = t;
+                        t = e[t];
+                        for (var o in t) t.hasOwnProperty(o) && defaultSettings.hasOwnProperty(o) && (defaultSettings[o] = t[o], i.hasOwnProperty(o) && (i[o] = defaultSettings[o]), $('#theme .' + o + '-picker') && $('#theme .' + o + '-picker').colorpicker('setValue', defaultSettings[o]), $('#' + o + '-slider') && $('#' + o + '-slider').val(defaultSettings[o]).change(), ($('input[type=text]#' + o) || $('select#' + o)) && $('#' + o).val(defaultSettings[o]));
+                    }
+                },
+                'changeThemePreset': function(t) {
+                    this.changePreset(t, themePresets);
+                    this.setTheme();
+                },
+                'setFonts': function() {
+                    this.setFont('namesFont', defaultSettings.namesFont);
+                    this.setFont('massFont', defaultSettings.namesFont);
+                    this.setFont('sectorsFont', defaultSettings.sectorsFont);
+                },
+                'setBgColor': function() {
+                    $('body').css('background-color', defaultSettings.bgColor);
+                },
+                'setFoodColor': function() {
+                    defaultmapsettings.optimizedFood && ogarfooddrawer && ogarfooddrawer.preDrawPellet();
+                },
+                'setIndicatorColor': function() {
+                    if (ogarfooddrawer) {
+                        ogarfooddrawer.preDrawIndicator();
+                    }
+                },
+                'setCustomBackground': function() {
+                    defaultSettings.customBackground ? $('body').css('background-image', 'url(' + defaultSettings.customBackground + ')') : $('body').css('background-image', 'none');
+                },
+                'setCustomCursor': function() {
+                    if (defaultSettings.customCursor) var t = '*{cursor:url(' + defaultSettings.customCursor + '), auto !important}';
+                    else t = '*{cursor: auto}';
+                    this.addCustomCSS('cursorCSS', t);
+                },
+                'setMenu': function() {
+                    this.setMenuOpacity();
+                    this.setMenuMainColor();
+                    this.setMenuPanelColor();
+                    this.setMenuTextColor();
+                    this.setMenuButtons();
+                    this.setMenuBg();
+                },
+                'changeMenuPreset': function(t) {
+                    this.changePreset(t, themeMenus), this.setMenu();
+                },
+                'setMenuOpacity': function() {
+                    $('#helloContainer, #hotkeys, #exp-imp').css('opacity', defaultSettings.menuOpacity);
+                },
+                'setMenuMainColor': function() {
+                    var t = '::-moz-selection{background-color:' + defaultSettings.menuMainColor + '!important}::selection{background-color:' + defaultSettings.menuMainColor + '!important}.menu-main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:' + defaultSettings.menuMainColor + '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:' + defaultSettings.menuMainColor + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + defaultSettings.menuMainColor + '}.ps-scrollbar-y{background-color:' + defaultSettings.menuMainColor + '!important}';
+                    this.addCustomCSS('menuMainColorCSS', t);
+                },
+                'setMenuPanelColor': function() {
+                    var t = '#main-menu,.agario-side-panel,#hotkeys,#exp-imp{background-color: ' + defaultSettings.menuPanelColor + '}label:hover,.agario-panel input,.agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.nick .input-group-btn,.skin .input-group-btn,#stream-mode,#hide-url,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs,#exp-bar .progress,#quick-menu a:hover,.quick,.select-wrapper,#hotkeys-cfg div.row:hover,#hotkeys-cfg .command-in,#exp-imp-settings textarea,.restore-settings{background-color: ' + defaultSettings.menuPanelColor2 + '}.agario-panel h5,.agario-side-panel h5,#stats h2,.menu-tabs,.submenu-tabs,#skins a.default,#stats hr,#hotkeys-cfg div.row, #exp-imp h1{border-color: ' + defaultSettings.menuPanelColor2 + '}.quick:hover,#skins a,#profiles{color:' + defaultSettings.menuPanelColor2 + '}input.stream-mode,input.hide-url{color:' + defaultSettings.menuPanelColor2 + '!important}';
+                    this.addCustomCSS('menuPanelColorCSS', t);
+                },
+                'setMenuTextColor': function() {
+                    var t = '.agario-panel,.agario-side-panel,.agario-panel input,.agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.dark .yt-username,#stream-mode,#hide-url,.menu-tabs a,.submenu-tabs a,#skins a.default:hover,#quick-menu a,#prev-profile.default:hover,#next-profile.default:hover,#statsText,#hotkeys,#hotkeys-cfg .command-in,#exp-imp{color:' + defaultSettings['menuTextColor'] + '}#skins a.default:hover{border-color:' + defaultSettings['menuTextColor'] + '}::-webkit-input-placeholder{color:' + defaultSettings.menuTextColor2 + '!important}::-moz-placeholder{color:' + defaultSettings.menuTextColor2 + '!important}#user-id-tag, #version-tag,#statsSubtext,#hotkeys-inst,#exp-imp textarea,.restore-settings a,.restore-settings a:hover{color:' + defaultSettings.menuTextColor2 + '}#hotkeys-cfg .command-in,#theme .color-box{border-color:' + defaultSettings.menuTextColor2 + '}';
+                    this.addCustomCSS('menuTextColorCSS', t);
+                },
+                'setMenuButtons': function() {
+                    var t = 'a,a:hover{color:' + defaultSettings.btn1Color + '}.btn,#hotkeys-cfg .custom-key-in{color:' + defaultSettings.menuBtnTextColor + '}.btn-primary{background-color:' + defaultSettings.btn1Color + '!important}.btn-primary:active,.btn-primary:disabled,.btn-primary:focus,.btn-primary:hover{background-color:' + defaultSettings['btn1Color2'] + '!important}.btn-success{background-color:' + defaultSettings['btn2Color'] + '!important}.btn-success:active,.btn-success:disabled,.btn-success:focus,.btn-success:hover{background-color:' + defaultSettings['btn2Color2'] + '!important}.btn-warning{background-color:' + defaultSettings['btn3Color'] + '!important}.btn-warning:active,.btn-warning:disabled,.btn-warning:focus,.btn-warning:hover{background-color:' + defaultSettings.btn3Color2 + '!important}.btn-danger{background-color:' + defaultSettings.btn4Color + '!important}.btn-danger:active,.btn-danger:disabled,.btn-danger:focus,.btn-danger:hover{background-color:' + defaultSettings.btn4Color2 + '!important}#hotkeys-cfg .custom-key-in{background-color:' + defaultSettings.btn4Color2 + ';border-color:' + defaultSettings.btn4Color2 + '}';
+                    this.addCustomCSS('menuButtonsCSS', t);
+                },
+                'setMenuBg': function() {
+                    $('#menuBg').val(defaultSettings.menuBg), defaultSettings.menuBg ? $('.menu-panel, .agario-side-panel, #hotkeys, #exp-imp').css('background-image', 'url(' + defaultSettings.menuBg + ')') : $('.menu-panel, .agario-side-panel, #hotkeys, #exp-imp').css('background-image', 'none');
+                },
+                'setHud': function() {
+                    this.setHudColors();
+                    this.setHudFont();
+                    this.setHudScale();
+                },
+                'setHudColors': function() {
+                    var t = '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:' + defaultSettings.hudMainColor + '}.hud,.hud-b,#chat-emoticons{background-color:' + defaultSettings.hudColor + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + defaultSettings.hudTextColor + '}.stats-hud-color{color:' + defaultSettings.statsHudColor + '}.time-hud-color{color:' + defaultSettings.timeHudColor + '}.top5-mass-color{color:' + defaultSettings.top5MassColor + '}#leaderboard-positions .me{color:' + defaultSettings.lbMeColor + '}#leaderboard-positions .teammate{color:' + defaultSettings.lbTeammateColor + '}';
+                    this.addCustomCSS('hudCSS', t);
+                },
+                'setHudFont': function() {
+                    this.setFont('hudFont', defaultSettings.hudFont),
+                        $('#overlays-hud').css({
+                            'font-family': defaultSettings['hudFontFamily'],
+                            'font-weight': defaultSettings['hudFontWeight']
+                        });
+                },
+                'setHudScale': function() {
+                    var t = Math.round(20 * defaultSettings.hudScale),
+                        e = Math.round(200 * defaultSettings.hudScale),
+                        i = Math.floor(55 * defaultSettings.hudScale),
+                        o = Math.floor(6 * defaultSettings.hudScale),
+                        a = Math.floor(280 * defaultSettings.hudScale),
+                        n = Math.floor(85 * defaultSettings.hudScale),
+                        r = Math.floor(20 * defaultSettings.hudScale);
+                    $('#overlays-hud').css('font-size', t + 'px');
+                    $('#leaderboard-hud, #time-hud').width(e);
+                    $('#top5-hud').width(e + 30).css('top', i + 'px');
+                    $('#top5-pos').css('padding-left', o + 'px');
+                    $('#time-hud').css('top', a + 'px');
+                    $('#pause-hud').css('top', n + 'px');
+                    $('#target-hud').css('padding-top', r + 'px');
+                },
+                'setChat': function() {
+                    this['setChatColors'](), this.setChatScale();
+                },
+                'setChatColors': function() {
+                    var t = '#message,#messages li,.toast-success{background-color:' + defaultSettings.messageColor + '}#message,.message-text,.toast-success .message-text{color:' + defaultSettings.messageTextColor + '}.message-nick,.mute-user,.mute-user:hover,.toast-success .message-nick,.toast .mute-user,.toast .mute-user:hover{color:' + defaultSettings.messageNickColor + '}.message-time{color:' + defaultSettings.messageTimeColor + '}.toast-warning{background-color:' + defaultSettings.commandsColor + '}.command-text,.toast-warning .command-text{color:' + defaultSettings.commandsTextColor + '}.command-nick,.toast-warning .command-nick,.toast-warning .mute-user,.toast-warning .mute-user:hover{color:' + defaultSettings.commandsNickColor + '}.command-time{color:' + defaultSettings.commandsTimeColor + '}#chat-box{background-color:' + defaultSettings.chatBoxColor + '}';
+                    this.addCustomCSS('chatCSS', t);
+                },
+                'setChatScale': function() {
+                    var t = Math.round(14 * defaultSettings.chatScale);
+                    var e = Math.round(280 * defaultSettings.chatScale);
+                    var i = Math.round(350 * defaultSettings.chatScale);
+                    var o = Math.round(300 * defaultSettings.chatScale);
+                    var a = Math.floor(14 * defaultSettings.chatScale);
+                    $('#message-box, #messages, #toast-container, #chat-box').css('font-size', t + 'px');
+                    $('#messages, #toast-container, #chat-box').width(e);
+                    $('#message-box').width(i), $('#chat-box').height(o);
+                    $('.user-list').css('padding-left', a + 'px');
+                    var n = '#toast-container{width:' + e + 'px;font-size:' + t + 'px}';
+                    this.addCustomCSS('chatScaleCSS', n);
+                },
+                'setMiniMap': function() {
+                    this.setMiniMapFont();
+                    this.setMiniMapWidth();
+                    this.setMiniMapSectorsOpacity();
+                },
+                'setMiniMapFont': function() {
+                    this.setFont('miniMapFont', defaultSettings.miniMapFont);
+                    if (ogarminimapdrawer) {
+                        ogarminimapdrawer.resetMiniMapSectors();
+                    }
+                },
+                'setMiniMapWidth': function() {
+                    var t = defaultSettings.miniMapWidth / 200;
+                    defaultSettings.miniMapTop = Math.round(20 * t);
+                    $('#minimap-hud').css({
+                        'width': defaultSettings.miniMapWidth,
+                        'height': defaultSettings.miniMapWidth + defaultSettings.miniMapTop
+                    });
+                    if (ogarminimapdrawer) {
+                        ogarminimapdrawer.resetMiniMapSectors();
+                    }
+                },
+                'setMiniMapSectorsColor': function() {
+                    if (ogarminimapdrawer) {
+                        ogarminimapdrawer.resetMiniMapSectors();
+                    }
+                },
+                'setMiniMapSectorsOpacity': function() {
+                    $('#minimap-sectors').css('opacity', defaultSettings.miniMapSectorsOpacity);
+                },
+                'setTheme': function() {
+                    this.setFonts();
+                    this.setBgColor();
+                    this.setCustomBackground();
+                    this.setCustomCursor();
+                    this.setMenu();
+                    this.setHud();
+                    this.setChat();
+                    this.setMiniMap();
+                },
+                'init': function() {
+                    this.loadThemeSettings();
+                }
+            },
+
+            window.legendmod4 = c;
+        window.legendmod5 = defaultmapsettings;
+
+        ogarminimapdrawer = {
+            'name': 'LM express',
+            'version': 'v1',
+            'privateMode': false,
+            'protocolMode': true,
+            'publicIP': 'wss://srv.ogario.eu',
+            'privateIP': null,
+            'updateInterval': 1000,
+            'updateTick': 0,
+            'updateMaxTick': 2,
+            'currentSector': '',
+            'miniMap': null,
+            'miniMapCtx': null,
+            'miniMapSectors': null,
+            'pi2': 2 * Math.PI,
+            'socket': null,
+            'cells': {},
+            'teamPlayers': [],
+            'parties': [],
+            'chatHistory': [],
+            'chatUsers': {},
+            'chatMutedUsers': {},
+            'chatMutedUserIDs': [],
+            'customSkinsCache': {},
+            'customSkinsMap': {},
+            'cacheQueue': [],
+            'deathLocations': [],
+            'playerID': null,
+            'playerMass': 0,
+            'selectedProfile': 0,
+            'lastDeath': 0,
+            'skipServerData': false,
+            'gameMode': ':ffa',
+            'region': '',
+            'partyToken': '',
+            'ws': '',
+            'serverIP': '',
+            'serverArena': '',
+            'serverToken': '',
+            'lastSentNick': '',
+            'lastSentClanTag': null,
+            'lastSentSkinURL': '',
+            'lastSentCustomColor': '',
+            'lastSentPartyToken': '',
+            'lastSentServerToken': '',
+            'lastMessageSentTime': Date.now(),
+            'rFps': 0,
+            'renderedFrames': 0,
+            'fpsLastRequest': null,
+            'statsHUD': null,
+            'leaderboardPositionsHUD': null,
+            'leaderboardDataHUD': null,
+            'activeParties': null,
+            'top5pos': null,
+            'top5totalMass': null,
+            'top5totalPlayers': null,
+            'top5limit': 5,
+            'timeHUD': null,
+            'questHUD': null,
+            'retryResp': 0,
+            'token': 'b2dhcmlvLm92aA==',
+            'canvasScale': 1,
+            'selectBiggestCell': true,
+            'noColors': false,
+            'skipStats': false,
+            'showQuest': false,
+            'showSplitInd': false,
+            'pause': false,
+            'targetID': 0,
+            'targetStatus': 0,
+            'targetNick': '',
+            'targetSkinURL': '',
+            'targeting': false,
+            'privateMiniMap': false,
+            'messageSound': null,
+            'commandSound': null,
+            'virusSound': null,
+            'virusSoundurl': null,
+            'feedInterval': null,
+            'getPlayerX': function() {
+                return i.playerX + i.mapOffsetX;
+            },
+            'getPlayerY': function() {
+                return i.playerY + i.mapOffsetY;
+            },
+            'feed': function() {
+                if (window.core && window.core.eject) {
+                    window.core.eject();
+                }
+            },
+            'macroFeed': function(t) {
+                if (t) {
+                    if (this.feedInterval) return;
+                    var e = this;
+                    this.feed(), this.feedInterval = setInterval(function() {
+                        e.feed();
+                    }, 80);
+                } else if (this.feedInterval) {
+                    clearInterval(this.feedInterval);
+                    this.feedInterval = null
+                };
+            },
+            'split': function() {
+                window.core && window.core.split && window.core.split();
+            },
+            'doubleSplit': function() {
+                var t = this;
+                t.split();
+                setTimeout(function() {
+                    t.split();
+                }, 40);
+            },
+            'popSplit': function() {
+                var t = this;
+                t.split();
+                setTimeout(function() {
+                    t.split();
+                }, 200);
+            },
+            'split16': function() {
+                var t = this;
+                t.split();
+                setTimeout(function() {
+                    t.split();
+                }, 40);
+                setTimeout(function() {
+                    t.split();
+                }, 80);
+                setTimeout(function() {
+                    t.split();
+                }, 120);
+            },
+            'toggleSkins': function() {
+                i.vanillaSkins && i.customSkins ? i.vanillaSkins = false : !i.vanillaSkins && i.customSkins ? (i.vanillaSkins = true, i.customSkins = false) : (i.vanillaSkins = true, i.customSkins = true);
+            },
+            'toggleCells': function() {
+                this.selectBiggestCell = !this.selectBiggestCell,
+                    i.selectBiggestCell = this.selectBiggestCell;
+            },
+            'setShowTop5': function() {
+                defaultmapsettings.showTop5 = !defaultmapsettings.showTop5, this.setTop5();
+            },
+            'setTop5': function() {
+                defaultmapsettings.showTop5 ? $('#top5-hud').show() : $('#top5-hud').hide();
+            },
+            'setShowTargeting': function() {
+                defaultmapsettings.showTargeting = !defaultmapsettings.showTargeting, this.setTargetingHUD();
+            },
+            'setTargetingHUD': function() {
+                defaultmapsettings.showTargeting ? $('#target-hud, #target-panel-hud').show() : $('#target-hud, #target-panel-hud').hide();
+            },
+            'setShowTime': function() {
+                defaultmapsettings.showTime = !defaultmapsettings.showTime, defaultmapsettings.showTime ? ($('#time-hud').show(), this.displayTime()) : $('#time-hud').hide();
+            },
+            'setShowSplitRange': function() {
+                defaultmapsettings.splitRange = !defaultmapsettings.splitRange, i.splitRange = defaultmapsettings.splitRange;
+            },
+            'setShowGhostCellsInfo': function() {
+                if (defaultmapsettings.showGhostCells == false || defaultmapsettings.showGhostCellsInfo == false) {
+                    defaultmapsettings.showGhostCellsInfo = true;
+                    defaultmapsettings.showGhostCells = true;
+                } else {
+                    defaultmapsettings.showGhostCellsInfo = false;
+                    defaultmapsettings.showGhostCells = false;
+                }
+
+            },
+            'setAutoPlay': function() {
+                if (legendmod.pause) {
+                    ogarminimapdrawer && ogarminimapdrawer.setPause()
+                };
+                if (window.autoPlay == false) {
+                    window.autoPlay = true;
+                    $('#pause-hud').text("AI (Striker & Jimboy3100) SkyNet v0.06");
+                    $('#pause-hud').show();
+                } else {
+                    window.autoPlay = false;
+                    $('#pause-hud').text(h.pause);
+                    $('#pause-hud').hide();
+                }
+            },
+            'setShowSplitInd': function() {
+                this.showSplitInd = !this.showSplitInd,
+                    defaultmapsettings.splitRange = this.showSplitInd,
+                    defaultmapsettings.oppRings = this.showSplitInd,
+                    i.splitRange = defaultmapsettings.splitRange,
+                    i.oppRings = defaultmapsettings.oppRings;
+            },
+            'setShowTeammatesInd': function() {
+                defaultmapsettings.teammatesInd = !defaultmapsettings.teammatesInd;
+            },
+            'setShowOppColors': function() {
+                defaultmapsettings.oppColors = !defaultmapsettings.oppColors, i.oppColors = defaultmapsettings.oppColors;
+            },
+            'setShowSkins': function() {
+                this.noSkins = !this.noSkins,
+                window.core && window.core.setSkins && window.core.setSkins(!this.noSkins),
+                    i.showCustomSkins = !this.noSkins,
+                    this.displayChatInfo(!this.noSkins, 'showSkinsMsg');
+            },
+            'setTransparentSkins': function() {
+                defaultmapsettings.transparentSkins = !defaultmapsettings.transparentSkins,
+                    i.transparentSkins = defaultmapsettings.transparentSkins;
+            },
+            'setShowStats': function() {
+                $('#stats-hud').toggle();
+            },
+            'setShowFood': function() {
+                i.showFood = !i.showFood;
+            },
+            'setShowHUD': function() {
+                $('#overlays-hud').toggle();
+            },
+            'setShowGrid': function() {
+                defaultmapsettings.showGrid = !defaultmapsettings.showGrid;
+            },
+            'setShowMiniMapGuides': function() {
+                defaultmapsettings.showMiniMapGuides = !defaultmapsettings.showMiniMapGuides;
+            },
+            'setShowLb': function() {
+                ':teams' !== this.gameMode && $('#leaderboard-hud').toggle();
+            },
+            'setShowBgSectors': function() {
+                defaultmapsettings.showBgSectors = !defaultmapsettings.showBgSectors;
+            },
+            'setHideSmallBots': function() {
+                i.hideSmallBots = !i.hideSmallBots,
+                    this.displayChatInfo(!i.hideSmallBots, 'hideSmallBotsMsg');
+            },
+            'setShowNames': function() {
+                defaultmapsettings.noNames = !defaultmapsettings.noNames;
+            },
+            'setHideTeammatesNames': function() {
+                defaultmapsettings.hideTeammatesNames = !defaultmapsettings.hideTeammatesNames;
+            },
+            'setShowMass': function() {
+                defaultmapsettings.showMass = !defaultmapsettings.showMass;
+            },
+            'setShowMiniMap': function() {
+                defaultmapsettings.showMiniMap = !defaultmapsettings.showMiniMap, this.setMiniMap();
+            },
+            'setMiniMap': function() {
+                defaultmapsettings.showMiniMap ? $('#minimap-hud').show() : $('#minimap-hud').hide();
+            },
+            'setShowQuest': function() {
+                ':ffa' === this.gameMode && (this.showQuest = !this.showQuest, this.setQuest());
+            },
+            'setQuest': function() {
+                this.showQuest && ':ffa' === this.gameMode ? $('#quest-hud').show() : $('#quest-hud').hide();
+            },
+            'toggleAutoZoom': function() {
+                i.autoZoom = !i.autoZoom, this.displayChatInfo(i.autoZoom, 'autoZoomMsg');
+            },
+            'resetZoom': function(t) {
+                t ? (i.zoomResetValue = 1, i.zoomValue = 1) : i.zoomResetValue = 0;
+            },
+            'setZoom': function(t) {
+                i.zoomValue = t;
+            },
+            'toggleDeath': function() {
+                this.lastDeath--;
+                if (this.lastDeath < 0) {
+                    this.lastDeath = this.deathLocations.length - 1;
+                }
+            },
+            'tryResp': function() {
+                if (i.play || 20 == this.retryResp) this.retryResp = 0;
+                else {
+                    this.retryResp++;
+                    var t = this;
+                    setTimeout(function() {
+                        $('.btn-play-guest').is(':visible') ? $('.btn-play-guest').click() : $('.btn-play').click(), i.play || t.tryResp();
+                    }, 500);
+                }
+            },
+            'quickResp': function() {
+                if (defaultmapsettings.quickResp) {
+                    this.hideMenu();
+                    this['gameServerConnect'](this.ws);
+                    i.play = false;
+                    this.tryResp();
+                }
+            },
+            'autoResp': function() {
+                defaultmapsettings.autoResp && (this.setAutoResp(),
+                    $('#overlays').stop().hide(),
+                    $('.btn-play-guest').is(':visible') ? $('.btn-play-guest').click() : $('.btn-play').click());
+            },
+            'setAutoResp': function() {
+                defaultmapsettings.autoResp && ($('#skipStats').prop('checked') || ($('#skipStats').click(), this.skipStats = true));
+            },
+            'toggleAutoResp': function() {
+                defaultmapsettings.autoResp = !defaultmapsettings.autoResp, this.setAutoResp(), this.displayChatInfo(defaultmapsettings.autoResp, 'autoRespMsg');
+            },
+            'copyLb': function() {
+                var t = $('<input>');
+                $('body').append(t);
+                t.val($('#leaderboard-positions').text()).select();
+                try {
+                    document.execCommand('copy');
+                } catch (ogarcopierlbcather) {}
+                t.remove();
+            },
+            'setPause': function() {
+                if (window.autoPlay) {
+                    ogarminimapdrawer && ogarminimapdrawer.setAutoPlay()
+                };
+                this.pause = !this.pause, i.pause = this.pause, this.pause ? (i.resetTargetPosition(), $('#pause-hud').text(h.pause), $('#pause-hud').show()) : $('#pause-hud').hide();
+            },
+            'setCenteredLb': function() {
+                defaultmapsettings.centeredLb ? $('#leaderboard-hud').addClass('hud-text-center') : $('#leaderboard-hud').removeClass('hud-text-center');
+            },
+            'setNormalLb': function() {
+                defaultmapsettings.normalLb ? $('#leaderboard-hud h5').html(h.leaderboard) : $('#leaderboard-hud h5').html('legendmod');
+            },
+            'setFpsAtTop': function() {
+                defaultmapsettings.fpsAtTop ? $('#stats-hud').removeClass('hud-bottom').addClass('hud-top') : $('#stats-hud').removeClass('hud-top').addClass('hud-bottom');
+            },
+            'setBlockPopups': function() {
+                this.protocolMode ? $('#block-warn').hide() : defaultmapsettings["blockPopups"] ? this["blockPopups"]() : this.unblockPopups();
+            },
+            'blockPopups': function() {
+                $('#openfl-content, #openfl-overlay').hide();
+                $('#openfl-content, #openfl-overlay').addClass('block-popups');
+                $('#freeCoins, #gifting, #openShopBtn, #dailyQuests').prop('disabled', true);
+                $('#block-warn').show();
+            },
+            'unblockPopups': function() {
+                $('#openfl-overlay.disabler').click();
+                $('#openfl-content, #openfl-overlay').hide();
+                $('#openfl-content, #openfl-overlay').removeClass('block-popups');
+                $('#freeCoins, #gifting, #openShopBtn, #dailyQuests').prop('disabled', false);
+                $('#block-warn').hide();
+            },
+            'tempUnblockPopups': function() {
+                if (defaultmapsettings["blockPopups"]) {
+                    this.unblockPopups();
+                }
+            },
+            'displayLeaderboard': function(t, e = '') {
+                if (this.leaderboardPositionsHUD) {
+                    this.leaderboardPositionsHUD.innerHTML = t;
+                    if (defaultmapsettings.showLbData) {
+                        this.leaderboardDataHUD.innerHTML = e;
+                    } else {
+                        this.leaderboardDataHUD.innerHTML = '';
+                    }
+                }
+
+            },
+            'displayStats': function() {
+                if (defaultmapsettings.showStats) {
+                    var t = '';
+                    if (i.play) {
+                        if (defaultmapsettings.showStatsMass && i.playerMass) {
+                            //t += h.mass + ': ' + i.playerMass + ' | '
+							t += Languageletter366 + ': ' + i.playerMass + ' | '
+                        }
+                        if (i.playerScore) {
+                            //t += h.score + ': ' + i.playerScore
+							t += Languageletter49 + ': ' + i.playerScore							
+                        }
+                        if (defaultmapsettings.showStatsN16 && i.playerSplitCells) {
+                            t += ' | ' + i.playerSplitCells + '/16'
+                        }
+                        if (defaultmapsettings.showStatsESTE && i.BSTE) {
+                            t += ' | ◎◎➛◉: ' + i.BSTE //Sonia6
+                        }
+                        if (defaultmapsettings.showStatsEMTE && i.BMTE) {
+                            t += ' | ◎➛◉: ' + i.BMTE //Sonia6
+                        }
+                        if (defaultmapsettings.showStatsMTE && i.MTE) {
+                            t += ' | ◉➛◎: ' + i.MTE //Sonia6
+                        }
+                        if (defaultmapsettings.showStatsSTE && i.STE) {
+                            t += ' | ◉◉➛◎: ' + i.STE //Sonia6
+                        }
+                        if (defaultmapsettings.showStatsTTE && i.TTE) {
+                            t += ' | ◉➚◉: ' + i.TTE //Sonia6
+                        }
+                        if (defaultmapsettings.showStatsPTE && i.PTE) {
+                            t += ' | ➚◎➘: ' + i.PTE //Sonia6
+                        }
+                        if (defaultmapsettings.showStatsFPS) {
+                            t += ' | '
+                        }
+                    }
+                    if (defaultmapsettings.showStatsFPS) {
+                        t += 'FPS: ' + ogarfooddrawer.fps;
+                    }
+                    this.statsHUD.textContent = t;
+                    var e = this;
+                    setTimeout(function() {
+                        e.displayStats();
+                    }, 250);
+                } else $('#stats-hud').hide();
+            },
+            'displayTime': function() {
+                if (defaultmapsettings.showTime) {
+                    var t = new Date().toLocaleString();
+                    this.timeHUD.textContent = t;
+                    var e = this;
+                    setTimeout(function() {
+                        e.displayTime();
+                    }, 1000);
+                } else $('#time-hud').hide();
+            },
+            'displayParties': function() {
+                for (var t = '', e = 0; e < this.parties.length; e++) t += '<li><a href=\"https://agar.io/#' + this.parties[e] + '\" onclick=\"$(\'#party-token\').val(\'' + this.parties[e] + '\'); $(\'#join-party-btn-2\').click();\">https://agar.io/#' + this.parties[e] + '</a></li>';
+                this.activeParties.className = '' === t ? 'no-parties' : '',
+                    this.activeParties.innerHTML = t;
+            },
+            /*
+                        'displayTop5': function() {
+                            if (defaultmapsettings.showTop5) {
+            					//console.log(.top5.length);
+            					//console.log(.teamPlayers.length);
+                                for (var t = '', e = 0, s = this.top5.length, o = 0; o < s; o++) e += this.top5[o].mass, o >= this['top5limit'] || (t += '<li><span class=\"cell-counter\" style=\"background-color: ' + this.top5[o].color + '\">' + (o + 1) + '</span>', defaultmapsettings.showTargeting && (t += '<a href=\"#\" data-user-id=\"' + this.top5[o].id + '\" class=\"set-target ogicon-target\"></a> '), t += '<span class=\"hud-main-color\">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + ']</span>', t += 					'<span class=\"top5-mass-color\">[' + this.shortMassFormat(this.top5[o].mass) + ']</span> ' + this.escapeHTML(this.top5[o].nick) + '</li>');
+                                this['top5pos'].innerHTML = t, i.play && i.playerMass && (e += i.playerMass, s++), this.top5totalMass.textContent= this.shortMassFormat(e), this.top5totalPlayers.textContent= s;
+                            }
+                        },
+                        'setTop5limit': function(t) {
+                            t && (this['top5limit'] = t);
+                        },
+
+                    "displayTop5" : function() {
+                      if (defaultmapsettings.showTop5) {
+                        var pix_color = "";
+                        var bufferString = 0;
+                        var PL$29 = this.top5.length;
+                        var entityType = 0;
+                        for (; entityType < PL$29; entityType++) {
+                          bufferString = bufferString + this.top5[entityType].mass;
+                          if (!(entityType >= defaultmapsettings["limTP"])) {
+                            pix_color = pix_color + ('<li id="player"><span id="pos-skin" style="background-color: ' + this.top5[entityType].color + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this.top5[entityType]["skin"] ? this.top5[entityType]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + '" alt=""> ' +
+            				'<span class=\"top5-mass-color\">[' + this.shortMassFormat(this.top5[entityType].mass) + ']</span> ' + this.escapeHTML(this.top5[entityType].nick) + '</span><span class=\"hud-main-color\">[' + this.calculateMapSector(this.top5[entityType].x, this.top5[entityType].y) +']</span><span id= "top5mass" class=""> ' +
+                            this.shortMassFormat(this.top5[entityType].mass) + '</span></li>');
+                          }
+                        }
+                        this.top5pos.innerHTML = pix_color;
+                        if (i["play"] && i.playerMass) {
+                          bufferString = bufferString + i.playerMass;
+                          PL$29++;
+                        }
+                        this.top5totalMass.textContent= this.shortMassFormat(bufferString);
+                        this.top5totalPlayers.textContent= PL$29;
+                      }
+                    },
+            */
+            'displayTop5': function() {
+                if (window.top5skins != true) {
+                    if (defaultmapsettings.showTop5) {
+                        //console.log(.top5.length);
+                        //console.log(.teamPlayers.length);
+                        for (var t = '', e = 0, s = this.top5.length, o = 0; o < s; o++) e += this.top5[o].mass, o >= window.teamboardlimit || (t += '<li style=\"height: 16px;"\><span>' + (o + 1) + '. </span>', 
+						defaultmapsettings.showTargeting && (t += '<a href=\"#\" data-user-id=\"' + this.top5[o].id + '\" class=\"set-target ogicon-target\"></a> '),
+                            
+							t += '<span class=\"hud-main-color\">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + ']</span>',
+							t += '<span class=\"top5-mass-color\">[' + this.shortMassFormat(this.top5[o].mass) + ']</span> ' + this.escapeHTML(this.top5[o].nick) + '</li>');
+                        this['top5pos'].innerHTML = t, i.play && i.playerMass && (e += i.playerMass, s++),
+                            this.top5totalMass.textContent = this.shortMassFormat(e), this.top5totalPlayers.textContent = s;
+                    }
+                } else {
+                    if (defaultmapsettings.showTop5) {
+
+						
+						//temp
+						var tempTime = new Date().getTime();						
+						Object.getOwnPropertyNames(legendmod3.teamPlayers).forEach(function(element) {
+						if (legendmod3.teamPlayers && legendmod3.teamPlayers[element] && legendmod3.teamPlayers[element].lbgpi == -2 && legendmod3.teamPlayers[element].mass > 1 ) {
+							//console.log(legendmod3.teamPlayers[element].lastUpdatedTime, tempTime);
+							if (legendmod3.teamPlayers[element].lastUpdatedTime && ((legendmod3.teamPlayers[element].lastUpdatedTime) - tempTime < 6000)){
+								legendmod3.teamPlayers[element].mass=1;
+								legendmod3.teamPlayers[element].alive=false;
+								}
+							else{
+								
+								legendmod3.top5.push(legendmod3.teamPlayers[element]);	
+								}								
+							}
+						});
+						//
+                        var t = "";
+                        var e = 0;
+                        var s = this.top5.length;
+                        var o = 0;						
+                        for (; o < s; o++) {
+                            e = e + this.top5[o].mass;
+                            if (!(o >= window.teamboardlimit && this.top5[o].mass > 1)) {
+                                t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this.top5[o].id + '"style="background-color: ' + this.top5[o].color + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this.top5[o]["skin"] ? this.top5[o]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
+                                /* if (defaultmapsettings["showTargeting"]) {
+                                  t = t + ('<a href="#" data-user-id="' + this.top5[o].id + '" class="set-target ogicon-target"></a> ');
+                                } */
+								var flag=false;
+                                for (var e = 0; e < legendmod.ghostCells.length; e++){ 
+								if (legendmod.leaderboard[e] && this.top5[o].nick==legendmod.leaderboard[e].nick){
+									if ( flag==false ){
+									t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(window.predictedGhostCells[e].x, window.predictedGhostCells[e].y) + "]</span>");									
+									flag=true;	
+									}									
+								}
+								}
+								if ( flag==false &&  this.top5[o].lbgpi >= 0){
+									t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
+								}	
+								else if ( flag==false && (this.calculateMapSector(this.top5[o].x, this.top5[o].y) == "C3" || legendmod.gameMode == ":party")){
+									t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
+								}
+								//temporary socket 3
+								else if ( flag==false && this.top5[o].lbgpi==-2){
+									if (this.top5[o].temp == true){
+									t = t + ('<span class="hud-main-color">[' + 'Temp. Socket' + "]</span>");
+									}
+									else{
+									t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");	
+									}
+								}								
+								//t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
+                                t = t + ('<span class="top5-mass-color">[' + this.shortMassFormat(this.top5[o].mass) + "]</span> " + this.escapeHTML(this.top5[o].nick) + "</div></li>");
+                            }
+                        }
+                        this.top5pos.innerHTML = t;
+                        if (i.play && i.playerMass) {
+                            e = e + i.playerMass;
+                            s++;
+                        }
+                        this.top5totalMass.textContent = this.shortMassFormat(e);
+                        this.top5totalPlayers.textContent = s;
+                    }
+                }
+            },
+            /*
+                        'setTop5limit': function(t) {
+                            t && (this['top5limit'] = t);
+                        },
+                        "setTop5limit": function(canCreateDiscussions) {
+                            if (canCreateDiscussions) {
+                                this["top5limit"] = canCreateDiscussions;
+                            }
+                        }, */
+
+            'displayChatHistory': function(t) {
+                if (t) {
+                    this.clearChatHistory(!0);
+                    for (var e = 0; e < this.chatHistory.length; e++) $('#messages').append('<li><span class=\"message-nick\">' + this.chatHistory[e].nick + ': </span><span class=\"message-text\">' + this.chatHistory[e].message + '</span></li>');
+                } else this.clearChatHistory(!1);
+            },
+            'clearChatHistory': function(t) {
+                $('#messages').empty(), t && (toastr['clear'](), defaultmapsettings.showChatBox && ($('#chat-box .message').remove(), this.chatHistory.length = 0));
+            },
+            'displayChatInfo': function(t, e) {
+                t ? toastr.info(h[e + 'A']) : toastr.error(h[e + 'B']);
+            },
+            'setDisableChat': function() {
+                defaultmapsettings.hideChat = defaultmapsettings.disableChat;
+                this.setHideChat();
+            },
+            'hideChat': function() {
+                defaultmapsettings.hideChat = !defaultmapsettings.hideChat, this.setHideChat(), this.displayChatInfo(!defaultmapsettings.hideChat, 'hideChatMsg');
+            },
+            'setHideChat': function() {
+                if (defaultmapsettings.hideChat) {
+                    $('#message-box').hide();
+                }
+                this.setShowChatBox();
+            },
+            'setShowChatBox': function() {
+                !defaultmapsettings.hideChat && defaultmapsettings.showChatBox ? $('#chat-box').show() : $('#chat-box').hide();
+            },
+            'enterChatMessage': function() {
+                var t = $('#message-box');
+                var e = $('#message');
+                if (t.is(':visible')) {
+                    var o = e.val();
+                    o.length ? (this['sendChatMessage'](101, o), i.play && (e.blur(), t.hide())) : (e.blur(), t.hide()), e.val('');
+                } else {
+                    t.show();
+                    e.focus();
+                    e.val('');
+                }
+            },
+            'showMenu': function(t) {
+                if (window.MC && window.MC.showNickDialog) return $('.ogario-menu').show(), $('.menu-panel').hide(), i.play || this.skipStats ? $('#main-panel').show() : $('#stats').show(), window.MC.showNickDialog(300), $('#oferwallContainer').is(':visible') && window.closeOfferwall(), void($('#videoContainer').is(':visible') && window.closeVideoContainer());
+                t ? $('#overlays').fadeIn(t) : $('#overlays').show();
+            },
+            'hideMenu': function(t) {
+                window.MC && window.MC.showNickDialog ? $('.ogario-menu').hide() : t ? $('#overlays').fadeOut(t) : $('#overlays').hide();
+            },
+            'escapeHTML': function(t) {
+                return String(t).replace(/[&<>"'\/]/g, function(t) {
+                    return escapeHTMLs[t];
+                });
+            },
+            'checkSkinURL': function(t) {
+                //return /^https?:\/\/i\.(?:imgur|hizliresim)\.com\/\w{6,8}\.(?:jpg|jpeg|png)\??\d*$/i .test(t) ? t.replace('http:', 'https:') : '';
+                return t.replace('http:', 'https:');
+                //return /^https?:\/\/(i|s))\.(?:imgur|hizliresim|put)\.(com|re)\/\w{6,8}\.(?:jpg|jpeg|png)\??\d*$/i .test(t) ? t.replace('http:', 'https:') : '';
+            },
+            'loadSettings': function() {
+                var t = null;
+                for (var s in null !== window.localStorage.getItem('ogarioSettings') && (t = JSON.parse(window.localStorage.getItem('ogarioSettings'))), defaultmapsettings) defaultmapsettings.hasOwnProperty(s) && (t && t.hasOwnProperty(s) && (defaultmapsettings[s] = t[s]), i.hasOwnProperty(s) && (i[s] = defaultmapsettings[s]));
+
+            },
+            'saveSettings': function(t, i) {
+                window.localStorage.setItem(i, JSON.stringify(t));
+            },
+            'exportSettings': function() {
+                var t = {
+                    'ogarioCommands': c,
+                    'ogarioHotkeys': ogario1Hotkeys,
+                    'ogarioPlayerProfiles': ogario1PlayerProfiles,
+                    'ogarioSettings': defaultmapsettings,
+                    'ogarioThemeSettings': defaultSettings
+                };
+                for (var e in t) {
+                    if (t.hasOwnProperty(e)) $('#export-' + e).prop('checked') || delete t[e];
+                }
+                t = JSON.stringify(t), $('#export-settings').val(t), $('#import-settings').val(''), t = null;
+            },
+            'importSettings': function() {
+                $('#import-settings').blur();
+                var t = $('#import-settings').val();
+                if (t) {
+                    for (var i in t = JSON.parse(t))
+                        if (t.hasOwnProperty(i)) {
+                            if (!$('#import-' + i).prop('checked')) continue;
+                            window.localStorage.setItem(i, JSON.stringify(t[i]));
+                        }
+                    window.location.reload();
+                }
+            },
+            'restoreSettings': function() {
+                null !== window.localStorage.getItem('ogarioSettings') && (window.localStorage.removeItem('ogarioSettings'), window.location.reload());
+            },
+            'setSettings': function(t, e) {
+                if (defaultmapsettings.hasOwnProperty(t) && null !== e) {
+                    switch (defaultmapsettings[t] = e, i.hasOwnProperty(t) && (i[t] = e), t) {
+                        case 'autoResp':
+                            this.setAutoResp();
+                            break;
+                        case 'showMiniMap':
+                            this.setMiniMap();
+                            break;
+                        case 'showMiniMapGrid':
+                            this.resetMiniMapSectors();
+                            break;
+                        case 'disableChat':
+                            this.setDisableChat();
+                            break;
+                        case 'chatSounds':
+                            this.setChatSoundsBtn();
+                            break;
+                        case 'showChatBox':
+                            this.setShowChatBox();
+                            break;
+                        case 'showTop5':
+                            this.setTop5();
+                            break;
+                        case 'showTargeting':
+                            this.setTargetingHUD();
+                            break;
+                        case 'showTime':
+                            this.displayTime(), $('#time-hud').show();
+                            break;
+                        case 'centeredLb':
+                            this.setCenteredLb();
+                            break;
+                        case 'normalLb':
+                            this.setNormalLb();
+                            break;
+                        case 'fpsAtTop':
+                            this.setFpsAtTop();
+                            break;
+                        case 'showStats':
+                            this.displayStats(), $('#stats-hud').show();
+                            break;
+                        case 'blockPopups':
+                            this.setBlockPopups();
+                    }
+                    this.saveSettings(defaultmapsettings, 'ogarioSettings');
+                }
+            },
+            'loadProfiles': function() {
+                if (null !== window.localStorage.getItem('ogarioPlayerProfiles')) {
+                    ogario1PlayerProfiles = JSON.parse(window.localStorage.getItem('ogarioPlayerProfiles'))
+                    if (ogario1PlayerProfiles.length == 10) { //fix for old players
+                        for (var t = 10; t < 15; t++) ogario1PlayerProfiles.push({
+                            'nick': 'Profile #' + (t + 1),
+                            'clanTag': '',
+                            'skinURL': '',
+                            'color': defaultSettings.mainColor
+                        });
+                    }
+                } else {
+                    for (var t = 0; t < 15; t++) ogario1PlayerProfiles.push({
+                        'nick': 'Profile #' + (t + 1),
+                        'clanTag': '',
+                        'skinURL': '',
+                        'color': defaultSettings.mainColor
+                    });
+                }
+                if (null !== window.localStorage.getItem('ogarioSelectedProfile')) {
+                    this.selectedProfile = JSON.parse(window.localStorage.getItem('ogarioSelectedProfile'));
+                }
+                ogarcopythelb.nick = ogario1PlayerProfiles[this.selectedProfile].nick;
+                ogarcopythelb.clanTag = ogario1PlayerProfiles[this.selectedProfile].clanTag;
+                ogarcopythelb.skinURL = ogario1PlayerProfiles[this.selectedProfile].skinURL;
+                ogarcopythelb.color = ogario1PlayerProfiles[this.selectedProfile].color;
+            },
+            'changeSkinPreview': function(e, t) {
+                //console.log(e,t);
+                if (t && e) {
+                    if ("skin-preview" === t) { //or if ("skin-preview" === e)
+                        //console.log(e,e.src);
+
+                        if (e.src.includes(".mp4") || e.src.includes(".webm") || e.src.includes(".ogg")) { //console.log("stage 3a videos");
+                            $("#skin-preview").children().remove();
+                            $("#skin-preview").removeClass("default");
+                            $("#skin-preview").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<video src=\'' + e.src + "' width='350'>\"></a>");
+                            $("#skin-popover").append('<video id="videoskinpreview" src=\'' + e.src + "' width='350' controls>\"></video>");
+                            //						$("#skin-popover").popover();
+
+                            //$("#skin-preview").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<video src=\'' + t.src + "' width='500'>\"></a>");
+                        } else {
+                            //console.log("default settings for images on changeSkinPreview")
+                            $("#skin-preview").removeClass("default");
+                            $("#skin-preview").append('<a href="#" id="skin-popover" data-toggle="popover" title="" data-html="true" data-content="<img src=\'' + e.src + "' width='500'>\"></a>");
+                        }
+                        $("#skin-popover").append($(e).fadeIn(1000));
+                        $("#skin-popover").popover();
+                    } else {
+                        if (e.src.includes(".mp4") || e.src.includes(".webm") || e.src.includes(".ogg")) { //console.log("stage 3b videos");
+                            $("#" + t).removeClass("default");
+                            $("#" + t).append($(e).fadeIn(1000));
+
+                        } else {
+                            $("#" + t).removeClass("default");
+                            $("#" + t).append($(e).fadeIn(1000));
+                        }
+                    }
+                }
+            },
+            'setSkinPreview': function(t, e) {
+
+                if (t.includes(".mp4") || t.includes(".webm") || t.includes(".ogg")) {
+                    //console.log("stage 1 videos");
+
+                    if ($('#' + e).empty().addClass('default'), t && 0 != t.length) {
+                        //console.log("stage 1 images/videos: " + t);
+                        var i = this;
+                        o = new Video();
+                        o.src = t;
+                        // o = new Image();
+                        o.crossOrigin = 'anonymous';
+                        setTimeout(function() {
+                            //newo.onload = function() {
+                            i.changeSkinPreview(o, e);
+                            checkVideos3(o);
+                            //};
+                        }, 500);
+
+                    }
+                } else {
+                    checktypeImgVid = new Image();
+                    //console.log("stage 1 images");
+
+                    if ($('#' + e).empty().addClass('default'), t && 0 != t.length) {
+                        //console.log("stage 1 images/videos: " + t);
+                        var i = this,
+                            o = checktypeImgVid;
+                        o.src = t;
+                        // o = new Image();
+                        o.crossOrigin = 'anonymous',
+                            o.onload = function() {
+                                i.changeSkinPreview(o, e);
+                            };
+                    }
+                }
+            },
+            'setProfile': function() {
+                var t = (ogario1PlayerProfiles.length + this.selectedProfile - 1) % ogario1PlayerProfiles.length,
+                    e = (this.selectedProfile + 1) % ogario1PlayerProfiles.length;
+                //console.log(ogario1PlayerProfiles.length);
+                this.setSkinPreview(ogario1PlayerProfiles[t].skinURL, 'prev-profile');
+                this.setSkinPreview(ogario1PlayerProfiles[this.selectedProfile].skinURL, 'skin-preview');
+                this.setSkinPreview(ogario1PlayerProfiles[e].skinURL, 'next-profile');
+                this.saveSettings(this.selectedProfile, 'ogarioSelectedProfile');
+                $('#nick').val(ogario1PlayerProfiles[this.selectedProfile].nick);
+                $('#clantag').val(ogario1PlayerProfiles[this.selectedProfile].clanTag);
+                $('#skin').val(ogario1PlayerProfiles[this.selectedProfile].skinURL);
+                $('#color').val(ogario1PlayerProfiles[this.selectedProfile].color);
+                $('.skin')['colorpicker']('setValue', ogario1PlayerProfiles[this.selectedProfile].color);
+                $('#skins a').removeClass('selected');
+                $('#skins a[data-profile=\'' + this.selectedProfile + '\']').addClass('selected');
+            },
+            'prevProfile': function() {
+                this.setPlayerSettings(),
+                    this.selectedProfile = (ogario1PlayerProfiles.length + this.selectedProfile - 1) % ogario1PlayerProfiles.length, this.setProfile();
+            },
+            'nextProfile': function() {
+                this.setPlayerSettings(),
+                    this.selectedProfile = (this.selectedProfile + 1) % ogario1PlayerProfiles.length, this.setProfile();
+            },
+            'selectProfile': function(t) {
+                this.setPlayerSettings();
+                this.selectedProfile = parseInt(t);
+                this.setProfile();
+            },
+            'addOption': function(t, e, i, o) {
+                $(t).append('<label><input type=\"checkbox\" id=\"' + e + '\" class=\"js-switch\"> ' + i + '</label>');
+                $('#' + e).prop('checked', o);
+            },
+            'addOptions': function(t, e) {
+                if (t) {
+                    $('#og-options').append('<div class=\"options-box ' + e + '\"><h5 class=\"menu-main-color\">' + h[e] + '</h5></div>');
+                    for (var i = 0; i < t.length; i++) {
+                        var o = t[i];
+                        if (defaultmapsettings.hasOwnProperty(o)) {
+                            $('.' + e).append('<label>' + h[o] + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + o + '\"></label>');
+                            $('#' + o).prop('checked', defaultmapsettings[o]);
+                        }
+                    }
+                }
+            },
+            'addInputBox': function(t, e, i, o) {
+                $(t).append('<div class=\"input-box\"><span class=\"title-box\">' + h[e] + '</span><input id=\"' + e + '\" class=\"form-control\" placeholder=\"' + i + '\" value=\"' + defaultmapsettings[e] + '\" /></div>');
+                var a = this;
+                $('#' + e).on('input', function() {
+                    defaultmapsettings[e] = this.value, a[o](), a.saveSettings(defaultmapsettings, 'ogarioSettings');
+                });
+            },
+            'addSliderBox': function(t, e, o, a, n, r) {
+                $(t).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">' + h[e] + ': </span><span id=\"' + e + '-value\" class=\"value\">' + defaultmapsettings[e] + '</span></div><input id=\"' + e + '-slider\" type=\"range\" min=\"' + o + '\" max=\"' + a + '\" step=\"' + n + '\" value=\"' + defaultmapsettings[e] + '\"></div>');
+                var l = this;
+                r ? $('#' + e + '-slider').on('input', function() {
+                    var t = parseFloat($(this).val());
+                    $('#' + e + '-value').text(t), defaultmapsettings[e] = t, i.hasOwnProperty(e) && (i[e] = t), l[r](), l.saveSettings(defaultmapsettings, 'ogarioSettings');
+                }) : $('#' + e + '-slider').on('input', function() {
+                    var t = parseFloat($(this).val());
+                    $('#' + e + '-value').text(t), defaultmapsettings[e] = t, i.hasOwnProperty(e) && (i[e] = t), l.saveSettings(defaultmapsettings, 'ogarioSettings');
+                });
+            },
+            'setLang': function() {
+                if ('pl' === r && window.i18n_dict && window.i18n_dict.en)
+                    for (var t in window.i18n_dict.en) window.i18n_dict.en.hasOwnProperty(t) && h.hasOwnProperty(t) && (window.i18n_dict.en[t] = h[t]);
+            },
+            'setMenu': function() {
+                var t;
+                for (t in document.title = this.name,
+                    $("#mainPanel").before('<div id="exp-bar" class="agario-panel"><span class="ogicon-user"></span><div class="agario-exp-bar progress"><span class="progress-bar-text"></span><div class="progress-bar progress-bar-striped" style="width: 0%;"></div></div><div class="progress-bar-star"></div></div><div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
+                        h.start + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + h.profile + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + h.settings + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + h.theme + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
+                        h.hotkeys + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="Radio / ' + h.sounds + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>'),
+                    $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-skins ogicon-images"></a><div id="profiles"><div id="prev-profile"></div><div id="skin-preview"></div><div id="next-profile"></div></div>'),
+                    $("#mainPanel div[role=form]").appendTo($("#main-panel")), $("#main-panel div[role=form] .form-group:first").remove(),
+                    $("#nick").before('<input id="clantag" class="form-control" placeholder="Tag, e.g  \Lc" maxlength="10"><div class="input-group nick"></div>'),
+                    $("#nick").appendTo($(".nick")),
+                    $(".nick").append('<span class="input-group-btn"><button id="stream-mode" class="btn active ogicon-eye"></button></span>'),
+                    $(".nick").after('<div class="input-group skin"><input id="skin" class="form-control" placeholder="Skin URL (imgur.com direct link)" maxlength="40"><input type="hidden" id="color" value="' + ogarcopythelb.color + '" maxlength="7" /><span class="input-group-addon"><i></i></span><span class="input-group-btn"><button id="hide-url" class="btn active ogicon-eye"></button></span></div>'),
+                    $("#locationKnown, #locationUnknown").insertAfter($(".skin")),
+                    $("#region").before('<button class="btn btn-warning btn-server-info ogicon-cogs"></button>'),
+                    $(".btn-spectate, .btn-logout").appendTo("#agario-main-buttons"),
+                    $("#agario-main-buttons").addClass("clearfix").before('<div id="server-info" class="form-group clearfix"><input id="server-ws" class="form-control" placeholder="Server WS"><button id="server-connect" class="btn btn-success ogicon-power"></button><button id="server-reconnect" class="btn btn-primary ogicon-redo2"></button><input id="server-token" class="form-control" placeholder="Server token"><button id="server-join" class="btn btn-success" data-itr="page_join_party">Join</button></div>'),
+                    $("#helloContainer div[role=form]").after('<div id="ogario-party" class="clearfix"><input id="party-token" class="form-control" placeholder="Party token"></div>'),
+                    $("#ogario-party").append('<button id="join-party-btn-2" class="btn btn-success" data-itr="page_join_party">Join</button><button id="create-party-btn-2" class="btn btn-primary" data-itr="page_create_party">Create</button>'),
+                    $("#pre-join-party-btn:first, #join-party-btn:first, #create-party-btn:first, #leave-party-btn:first, #joinPartyToken:first, .party-icon-back:first").appendTo($("#ogario-party")),
+                    $("#settingsChoice, #options").appendTo($("#og-settings .submenu-panel")),
+                    $("#stats").appendTo($("#main-menu")).addClass("menu-panel"),
+                    $("#statsContinue").attr("id", "statsContinue2"),
+                    $("#mainPanel").empty().remove(),
+                    $(".center-container").addClass("ogario-menu"),
+                    $(".center-container").append('<div id="menu-footer" class="menu-main-color">' + h.visit + ' <a href="http://legendmod.ml" target="_blank">legendmod.ml</a> | ' + this.version + ' <a href="https://goo.gl/nRREoR" class="release ogicon-info" target="_blank"></a></div>'),
+                    $("#leftPanel, #rightPanel").addClass("ogario-menu").removeAttr("id"),
+                    $(".agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel").appendTo($("#profile")).removeClass("agario-side-panel"),
+                    $(".agario-profile-panel").after('<div id="block-warn">' + h.blockWarn + '<br><a href="#" id="unblock-popups">' + h.unblockPopups + "</a></div>"),
+                    $("#exp-bar").addClass("agario-profile-panel"), $(".left-container").empty(),
+                    $(".agario-shop-panel").after('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">The Legend Mod Project</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>'),
+                    $("#tags-container").appendTo($("#profile")),
+                    $(".btn-logout").appendTo($("#profile")),
+                    $(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://jimboy3100.github.io/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + h.skins + '"></a><a href="https://youtube.com/channel/UCoj-ZStcJ0jLMOSK7FOBTbA" class="quick-yt ogicon-youtube2" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="The Legend mod Project"></a></div>'),
+                this.protocolMode || $("#quick-menu").prepend('<a href="#" class="quick-shop ogicon-cart" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_shop + '"></a><a href="#" class="quick-free-coins ogicon-coin-dollar" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_menu_main_free_coins + '"></a><a href="#" class="quick-free-gifts ogicon-gift" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_menu_main_gifts + '"></a><a href="#" class="quick-quests ogicon-trophy" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_menu_main_dailyquests + '"></a>'),
+                    $(".party-dialog, .partymode-info").remove(),
+                    $(".agario-party-6").appendTo($(".center-container")),
+                    $(".right-container").empty(),
+                    $(".right-container").append('<div class="agario-party"></div>'),
+                    $(".agario-party-6").appendTo($(".agario-party")).addClass("agario-panel agario-side-panel"),
+                    $(".agario-party h4, #cancel-party-btn").remove(),
+                    $(".agario-party .btn").addClass("btn-sm"),
+                    $(".right-container").append('<div id="skins-panel" class="agario-panel agario-side-panel"><div id="skins"></div><a href="https://ogario.ovh/skins/" id="more-skins" class="btn btn-block btn-success" target="_blank">' + h.moreSkins + "</a></div>"),
+                    $(".btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr='page_option_dark_theme'], #options #darkTheme").remove(),
+                    $("#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom").css("display", "none"),
+                    $("#advertisement").removeClass("agario-panel"), $("#adsBottom").css({
+                    "z-index": "1",
+                    "opacity": "0",
+                    "bottom": "-100px"
+                }), $("#noNames, #showMass").remove(), $("#og-settings .submenu-panel").append('<div id="og-options"></div>'),
+                    this.addOptions([], "animationGroup"),
+                    this.addOptions(["autoZoom"], "zoomGroup"),
+                    this.addOptions(["quickResp", "autoResp"], "respGroup"),
+                    this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup"),
+                    this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound"], "massGroup"),
+                    this.protocolMode ? this.addOptions(["customSkins", "jellyPhisycs", "videoSkins", "videoSkinsMusic"], "skinsGroup") : this.addOptions(["customSkins", "vanillaSkins", "jellyPhisycs", "videoSkins", "videoSkinsMusic"], "skinsGroup"),
+                    this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup"),
+                    this.addOptions(["myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow"], "transparencyGroup"),
+                    this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup"),
+                    this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox"], "chatGroup"),
+                    this.addOptions(["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup"),
+                    this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"), //Sonia2
+                    this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert"], "mouseGroup"),
+                    this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop"], "hudGroup"),
+                    this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"),
+                this.protocolMode || (this.addOptions(["blockPopups"], "extrasGroup"),
+                    $("#noSkins, #noColors, #skipStats, #showQuest").addClass("js-switch-vanilla"),
+                    $(".skinsGroup h5").after('<label class="noSkins">' + h.noSkins + " </label>"),
+                    $("#noSkins").appendTo($(".noSkins")), $(".transparencyGroup h5").after('<label class="noColors">' + h.noColors + " </label>"),
+                    $("#noColors").appendTo($(".noColors")),
+                    $(".extrasGroup h5").after('<label class="skipStats">' + h.skipStats + " </label>"),
+                    $("#skipStats").appendTo($(".skipStats")),
+                    $(".skipStats").after('<label class="showQuest">' + h.showQuest + " </label>"),
+                    $("#showQuest").appendTo($(".showQuest")),
+                    $("#options").remove(),
+                    $("#settingsChoice").appendTo($(".extrasGroup")).addClass("select-wrapper")),
+                    this.addSliderBox(".animationGroup", "animation", 20, 200, 1),
+                    this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01),
+                    $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + h.exportImport + "</button>"),
+                    $("#og-settings").append('<div class="restore-settings"><a href="#">' + h.restoreSettings + "</a></div>"),
+                    $("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + h.thanks + ')</h5><audio src="" controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' + h.playlist + "</a></span></div>"),
+                    $("#music").append('<div class="agario-panel sounds-panel"><h5 class="menu-main-color">' + h.sounds + "</h5></div>"),
+                    $("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>'),
+                    this.addInputBox(".sounds-panel", "messageSound", "Sound URL", "setMessageSound"),
+                    this.addInputBox(".sounds-panel", "commandSound", "Sound URL", "setCommandSound"),
+                    this.addInputBox(".sounds-panel", "virusSoundurl", "Sound URL", "setvirusSound"),
+                    $("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color">Team<span class="team-top"></span></h5><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' + //<div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="10" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
+                        h.totalPartyPlayers + ': <span id="top5-total-players" class="top5-mass-color">0</span>   <span class="hud-main-color ogicon-pacman"></span> ' +
+                        h.totalPartyMass + ': <span id="top5-total-mass" class="top5-mass-color">0</span></div></div> <div id="time-hud" class="hud time-hud-color"></div> <div id="pause-hud" class="hud">' +
+                        h.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">legendmod.ml</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://jimboy3100.github.io/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
+                        h.targetNotSet + '</span></div><div id="target-summary"></div></div><div id="target-panel-hud" class="hud"><a href="#" id="set-targeting" class="ogicon-target"></a><a href="#" id="set-private-minimap" class="ogicon-location2"></a><a href="#" id="cancel-targeting" class="ogicon-cancel-circle"></a><a href="#" id="change-target" class="ogicon-arrow-right"></a></div> <div id="quest-hud" class="hud"></div> <div id="btl-hud" class="hud"></div></div>'),
+                    $("body").append('<ul id="messages"></ul>'),
+                    $("body").append('<div id="message-box"><div id="chat-emoticons"></div><div id="message-menu"><a href="#" class="chat-sound-notifications ogicon-volume-high"></a><a href="#" class="chat-active-users ogicon-user-check"></a><a href="#" class="chat-muted-users ogicon-user-minus"></a><a href="#" class="show-chat-emoticons ogicon-smile"></a></div><input type="text" id="message" class="form-control" placeholder="' +
+                        h.enterChatMsg + '..." maxlength="80"></div>'),
+                    $("body").append('<div id="chat-box"></div>'), emoticonicons) {
+                    if (emoticonicons.hasOwnProperty(t)) {
+                        $("#chat-emoticons").append('<img src="https://jimboy3100.github.io/banners/emoticons/' + emoticonicons[t] + '" alt="' + t + '" class="emoticon">');
+                    }
+                }
+                $("body").append('<div id="exp-imp"><div id="exp-imp-menu"><button id="close-exp-imp" class="btn btn-danger">' + h.close + '</button></div><div id="exp-imp-settings"></div></div>'),
+                    $("#exp-imp-settings").append("<h1>" + h.exportSettings + "</h1><h2>" + h.exportInfo + "</h2>"),
+                    this.addOption("#exp-imp-settings", "export-ogarioCommands", h.commands, true),
+                    this.addOption("#exp-imp-settings", "export-ogarioHotkeys", h.hotkeys, true),
+                    this.addOption("#exp-imp-settings", "export-ogarioPlayerProfiles",
+                        h.profiles, true), this.addOption("#exp-imp-settings", "export-ogarioSettings", h.settings, true),
+                    this.addOption("#exp-imp-settings", "export-ogarioThemeSettings", h.theme, true),
+                    $("#exp-imp-settings").append('<textarea id="export-settings" class="form-control" rows="14" cols="100" spellcheck="false" readonly /><button id="export-settings-btn" class="btn btn-block btn-success">' + h.exportSettings + "</button>"),
+                    $("#exp-imp-settings").append("<h1>" + h.importSettings + "</h1><h2>" +
+                        h.importInfo + "</h2>"), this.addOption("#exp-imp-settings", "import-ogarioCommands", h.commands, true),
+                    this.addOption("#exp-imp-settings", "import-ogarioHotkeys", h.hotkeys, true),
+                    this.addOption("#exp-imp-settings", "import-ogarioPlayerProfiles", h.profiles, true),
+                    this.addOption("#exp-imp-settings", "import-ogarioSettings", h.settings, true),
+                    this.addOption("#exp-imp-settings", "import-ogarioThemeSettings", h.theme, true),
+                    $("#exp-imp-settings").append('<textarea id="import-settings" class="form-control" rows="14" cols="100" spellcheck="false" /><button id="import-settings-btn" class="btn btn-block btn-success">' +
+                        h.importSettings + "</button>"), hudsetter && hudsetter.setThemeMenu();
+                /** @type {number} */
+                var e = 0;
+                for (; e < ogario1PlayerProfiles.length; e++) {
+                    $("#skins").append('<div class="skin-box"><a href="#profile-' + e + '" id="profile-' + e + '" data-profile="' + e + '"></a></div>');
+                    this.setSkinPreview(ogario1PlayerProfiles[e].skinURL, "profile-" + e);
+                    if (e == this.selectedProfile) {
+                        $("#profile-" + e).addClass("selected");
+                    }
+                }
+            },
+            'setUI': function() {
+                var t = this;
+                $(document).on("click", ".menu-tabs a", function(event) {
+                    event.preventDefault();
+                    t.switchMenuTabs($(this), "menu-panel");
+                });
+                $(document).on("click", ".submenu-tabs a", function(event) {
+                    event.preventDefault();
+                    t.switchMenuTabs($(this), "submenu-panel");
+                });
+                $(document).on("click", ".quick-menu", function(event) {
+                    event.preventDefault();
+                    defaultmapsettings.showQuickMenu = !defaultmapsettings.showQuickMenu;
+                    t.saveSettings(defaultmapsettings, "ogarioSettings");
+                    t.setShowQuickMenu();
+                });
+                $(document).on("click", ".quick-skins", function(event) {
+                    event.preventDefault();
+                    defaultmapsettings.showSkinsPanel = !defaultmapsettings.showSkinsPanel;
+                    t.saveSettings(defaultmapsettings, "ogarioSettings");
+                    t.setShowSkinsPanel();
+                });
+                $(document).on("change", "#region", function() {
+                    t.region = this.value;
+                });
+                $(document).on("change", "#gamemode", function() {
+                    var dummy = this.value;
+                    if (":party" !== dummy) {
+                        t.leaveParty();
+                    }
+                    t.gameMode = i.gameMode = dummy;
+                    t.setQuest();
+                });
+                $(document).on("change", "#quality", function() {
+                    t.getQuality(this.value);
+                    ogarhusettings();
+                });
+                $(document).on("input", "#skin", function() {
+                    var hexInputVal = this.value;
+                    t.setSkinPreview(hexInputVal, "skin-preview");
+                    t.setSkinPreview(hexInputVal, "profile-" + t.selectedProfile);
+                });
+                $(document).on("click", "#skins a", function(event) {
+                    event.preventDefault();
+                    t.selectProfile($(this).attr("data-profile"));
+                });
+                $(document).on("click", "#prev-profile", function() {
+                    t.prevProfile();
+                });
+                $(document).on("click", "#next-profile", function() {
+                    t.nextProfile();
+                });
+                $(document).on("click", "#stream-mode", function() {
+                    /** @type {boolean} */
+                    defaultmapsettings.streamMode = !defaultmapsettings.streamMode;
+                    t.saveSettings(defaultmapsettings, "ogarioSettings");
+                    t.setStreamMode();
+                });
+                $(document).on("click", "#hide-url", function() {
+                    /** @type {boolean} */
+                    defaultmapsettings.hideSkinUrl = !defaultmapsettings.hideSkinUrl;
+                    t.saveSettings(defaultmapsettings, "ogarioSettings");
+                    t.setHideSkinUrl();
+                });
+                $(document).on("click", ".btn-server-info", function() {
+                    $("#server-info").toggle();
+                });
+                $(document).on("click", "#server-connect", function() {
+                    t.gameServerConnect($("#server-ws").val());
+                });
+                $(document).on("click", "#server-reconnect", function() {
+                    t.gameServerReconnect();
+                });
+                $(document).on("click", "#server-join", function() {
+                    t.gameServerJoin($("#server-token").val());
+                });
+                $(document).on("change", "#og-options input[type='checkbox']", function() {
+                    var template = $(this);
+                    t.setSettings(template.attr("id"), template.prop("checked"));
+                });
+                $(document).on("change", ".js-switch-vanilla", function() {
+                    var template = $(this);
+                    var p = template.attr("id");
+                    if (void 0 !== t[p]) {
+                        t[p] = template.prop("checked");
+                        if ("noSkins" === p) {
+                            /** @type {boolean} */
+                            i.showCustomSkin = !t.noSkins;
+                        }
+                        if ("showQuest" === p) {
+                            t.setQuest();
+                        }
+                    }
+                });
+                $(document).on("click", "#og-settings .restore-settings a", function(result) {
+                    result.preventDefault();
+                    t.restoreSettings();
+                });
+                $(document).on("click", "#og-settings .btn-export", function(result) {
+                    result.preventDefault();
+                    t.exportSettings();
+                    $("#exp-imp").fadeIn(500);
+                    $("#exp-imp-settings, #export-settings").perfectScrollbar("update");
+                });
+                $(document).on("click", "#close-exp-imp", function(event) {
+                    event.preventDefault();
+                    $("#exp-imp").fadeOut(500);
+                });
+                $(document).on("focus", "#export-settings", function() {
+                    $(this).select();
+                }),
+                    $(document).on("click", "#export-settings-btn", function(event) {
+                        event.preventDefault();
+                        t.exportSettings();
+                    });
+                $(document).on("click", "#import-settings-btn", function(result) {
+                    result.preventDefault();
+                    t.importSettings();
+                });
+                $(document).on("click", "#unblock-popups", function(result) {
+                    result.preventDefault();
+                    t.unblockPopups();
+                });
+                $(document).on("click", "#openfl-overlay.disabler", function() {
+                    if (defaultmapsettings["blockPopups"]) {
+                        t["blockPopups"]();
+                    }
+                });
+                $(document).on("click", "#openfl-content", function() {
+                    if (defaultmapsettings["blockPopups"]) {
+                        var container = $(this);
+                        setTimeout(function() {
+                            if (!container.is(":visible")) {
+                                t["blockPopups"]();
+                            }
+                        }, 1000);
+                    }
+                });
+                $(document).on("click", ".quick-shop", function(event) {
+                    event.preventDefault();
+                    t.unblockPopups();
+                    if (window.MC && window.MC.openShop) {
+                        window.MC.openShop();
+                    }
+                });
+                $(document).on("click", ".quick-free-coins", function(event) {
+                    event.preventDefault();
+                    t.unblockPopups();
+                    if (window.MC && window.MC.showFreeCoins) {
+                        window.MC.showFreeCoins();
+                    }
+                });
+                $(document).on("click", ".quick-free-gifts", function(event) {
+                    event.preventDefault();
+                    t.unblockPopups();
+                    if (window.MC && window.MC.showGifting) {
+                        window.MC.showGifting();
+                    }
+                });
+                $(document).on("click", ".quick-quests", function(event) {
+                    event.preventDefault();
+                    t.unblockPopups();
+                    if (window.MC && window.MC.showQuests) {
+                        window.MC.showQuests();
+                    }
+                });
+                $(document).on("click", "#set-targeting", function(event) {
+                    event.preventDefault();
+                    t.setTargeting();
+                });
+                $(document).on("click", "#cancel-targeting", function(event) {
+                    event.preventDefault();
+                    t.cancelTargeting();
+                });
+                $(document).on("click", "#set-private-minimap", function(event) {
+                    event.preventDefault();
+                    t.setPrivateMiniMap();
+                });
+                $(document).on("click", "#change-target", function(result) {
+                    result.preventDefault();
+                    t.changeTarget();
+                });
+                $(document).on("click", ".team-top-limit", function(event) {
+                    event.preventDefault();
+                    var template = $(this);
+                    /** @type {number} */
+                    var param = parseInt(template.attr("data-limit"));
+                    if (param) {
+                        t.setTop5limit(param);
+                        t.displayTop5();
+                        $(".team-top").text(param);
+                        $(".team-top-limit").removeClass("active");
+                        template.addClass("active");
+                    }
+                });
+                $(document).on("click", "#top5-pos .set-target", function(event) {
+                    event.preventDefault();
+                    t.setTarget(parseInt($(this).attr("data-user-id")));
+                });
+                $(document).on("click", ".mute-user", function(event) {
+                    event.preventDefault();
+                    t.muteChatUser(parseInt($(this).attr("data-user-id")));
+                });
+                $(document).on("click", ".btn-mute-user", function() {
+                    var template = $(this);
+                    t.muteChatUser(parseInt(template.attr("data-user-id")));
+                    template.removeClass("btn-red btn-mute-user").addClass("btn-green btn-unmute-user").text(h.unmute);
+                });
+                $(document).on("click", ".btn-unmute-user", function() {
+                    var template = $(this);
+                    t.unmuteChatUser(parseInt(template.attr("data-user-id")));
+                    template.removeClass("btn-green btn-unmute-user").addClass("btn-red btn-mute-user").text(h.mute);
+                });
+                $(document).on("click", ".chat-sound-notifications", function(result) {
+                    result.preventDefault();
+                    /** @type {boolean} */
+                    defaultmapsettings.chatSounds = !defaultmapsettings.chatSounds;
+                    t.saveSettings(defaultmapsettings, "ogarioSettings");
+                    t.setChatSoundsBtn();
+                });
+                $(document).on("click", ".chat-active-users", function(event) {
+                    event.preventDefault();
+                    t.displayChatActiveUsers();
+                });
+                $(document).on("click", ".chat-muted-users", function(event) {
+                    event.preventDefault();
+                    t.displayChatMutedUsers();
+                });
+                $(document).on("click", ".show-chat-emoticons", function(result) {
+                    result.preventDefault();
+                    var template = $(this);
+                    var p = $("#chat-emoticons");
+                    p.toggle();
+                    if (p.is(":visible")) {
+                        template.addClass("active");
+                    } else {
+                        template.removeClass("active");
+                        $("#message").focus();
+                    }
+                });
+                $(document).on("click", "#chat-emoticons .emoticon", function() {
+                    var d = $(this).attr("alt");
+                    var e = $("#message");
+                    var n = e.val();
+                    if (n.length + d.length <= 80) {
+                        e.val(n + d);
+                    }
+                    e.focus();
+                });
+                this.statsHUD = document.getElementById("stats-hud");
+                this.activeParties = document.getElementById("active-parties");
+                this.top5pos = document.getElementById("top5-pos");
+                this.top5totalMass = document.getElementById("top5-total-mass");
+                this.top5totalPlayers = document.getElementById("top5-total-players");
+                this.leaderboardPositionsHUD = document.getElementById("leaderboard-positions");
+                this.leaderboardDataHUD = document.getElementById("leaderboard-data");
+                this.timeHUD = document.getElementById("time-hud"), this.questHUD = document.getElementById("quest-hud"), $("#canvas").bind("contextmenu", function() {
+                    return false;
+                });
+                $(document).on("mouseup", ".btn", function() {
+                    $(this).blur();
+                });
+                $("[data-toggle='tab-tooltip']").tooltip({
+                    "trigger": "hover"
+                });
+                $(".submenu-panel, #chat-box, #exp-imp-settings, #export-settings, #import-settings").perfectScrollbar({
+                    "suppressScrollX": true
+                });
+                Array.prototype.slice.call(document.querySelectorAll(".js-switch")).forEach(function(remove) {
+                    new Switchery(remove, {
+                        "color": defaultSettings["menuMainColor"],
+                        "size": "small"
+                    });
+                });
+                $("input[type='range']").rangeslider({
+                    "polyfill": false
+                });
+                toastr["options"] = {
+                    "newestOnTop": false,
+                    "positionClass": "toast-bottom-left",
+                    "timeOut": 15000
+                };
+
+            },
+            'switchMenuTabs': function(t, e) {
+                var i = t.parent();
+                if ('menu-panel' === e) {
+                    if (t.hasClass('hotkeys-link')) return;
+                    i.hasClass('profile-tab') && this.setBlockPopups();
+                }
+                t.addClass('active'), i.addClass('active'), i.siblings().removeClass('active'), i.siblings().find('a').removeClass('active');
+                var o = t.attr('href');
+                if ('submenu-panel' === e) {
+                    var a = $(o).parent().attr('id');
+                    $('#' + a + ' .submenu-panel').not(o).css('display', 'none');
+                } else $('.menu-panel').not(o).css('display', 'none');
+                $(o).fadeIn(1000), ogarhusettings(), $('.submenu-panel').perfectScrollbar('update');
+            },
+            'getDefaultSettings': function() {
+                if (this.noSkins = $("#noSkins").prop("checked"),
+                    this.noColors = $("#noColors").prop("checked"),
+                    this.skipStats = $("#skipStats").prop("checked"),
+                    this.showQuest = $("#showQuest").prop("checked"),
+                    i.showCustomSkin = !this.noSkins,
+                null !== window.localStorage.getItem("scale_setting")) {
+                    var t = JSON.parse(window.localStorage.getItem("scale_setting"));
+                    this.setCanvasScale(t);
+                } else {
+                    var o = $("#quality").val();
+                    this.getQuality(o);
+                }
+                null !== window.localStorage.getItem("location") ? (this.region = window.localStorage.getItem("location"),
+                    $("#region").val(this.region),
+                window.MC && window.MC.setRegion && window.MC.setRegion(this.region)) : this.region = $("#region").val(),
+                    this.setParty(), ":party" === this.gameMode && window.location.hash &&
+                $("#join-party-btn-2").click(),
+                    Array.prototype.slice.call(document.querySelectorAll(".js-switch-vanilla")).forEach(function(remove) {
+                        new Switchery(remove, {
+                            "color": defaultSettings["menuMainColor"],
+                            "size": "small"
+                        });
+                    }), $("#nick").val(ogarcopythelb.nick).blur(),
+                    $("#noNames").prop("checked", !defaultmapsettings.noNames),
+                    $("#showMass").prop("checked", defaultmapsettings.showMass),
+                    this.unlockButtons(),
+                    this.setAutoResp(),
+                    this.setQuest();
+            },
+            'getQuality': function(t) {
+                var i = 1;
+                switch ('devicePixelRatio' in window && (i = window.devicePixelRatio), t) {
+                    case 'High':
+                        this.setCanvasScale(1);
+                        break;
+                    case 'Medium':
+                        this.setCanvasScale(0.9);
+                        break;
+                    case 'Low':
+                        this.setCanvasScale(0.75);
+                        break;
+                    case 'VeryLow':
+                        this.setCanvasScale(0.5);
+                        break;
+                    default:
+                        this.setCanvasScale(i);
+                }
+            },
+            'setCanvasScale': function(t) {
+                this.canvasScale = t;
+                i.canvasScale = t;
+            },
+            'setStreamMode': function() {
+                if (defaultmapsettings.streamMode) {
+                    $("#stream-mode").addClass("ogicon-eye-blocked");
+                    $("#clantag, #nick, #party-token").addClass("stream-mode");
+                } else {
+                    $("#stream-mode").removeClass("ogicon-eye-blocked");
+                    $("#clantag, #nick, #party-token").removeClass("stream-mode");
+                }
+            },
+            'setHideSkinUrl': function() {
+                if (defaultmapsettings.hideSkinUrl) {
+                    $("#hide-url").addClass("ogicon-eye-blocked");
+                    $("#skin").addClass("hide-url");
+                } else {
+                    $("#hide-url").removeClass("ogicon-eye-blocked");
+                    $("#skin").removeClass("hide-url");
+                }
+            },
+            'setShowQuickMenu': function() {
+                if (defaultmapsettings.showQuickMenu) {
+                    $("#quick-menu").fadeIn(500);
+                } else {
+                    $("#quick-menu").fadeOut(500);
+                }
+            },
+            'setShowSkinsPanel': function() {
+                if (defaultmapsettings.showSkinsPanel) {
+                    $("#skins-panel").fadeIn(500);
+                } else {
+                    $("#skins-panel").fadeOut(500);
+                }
+            },
+            'unlockButtons': function() {
+                $('.btn-play, .btn-play-guest, .btn-login-play, .btn-spectate').prop('disabled', false);
+            },
+            'setMainButtons': function() {
+                var t = this;
+                $(document).on("click", ".btn-play, .btn-play-guest", function() {
+                    t.onPlay();
+                });
+                $(document).on("click", ".btn-spectate", function() {
+                    t.onSpectate();
+                });
+                $(document).on("click", "#create-party-btn-2", function() {
+                    t.onCreate();
+                });
+                $(document).on("click", "#join-party-btn-2", function() {
+                    t.skipServerData = true;
+                    t.joinParty();
+                    t.onJoin();
+                });
+                $(document).on("click", "#statsContinue2", function() {
+                    $("#stats, #main-panel").toggle();
+                });
+            },
+            'play': function() {
+				if (window.noOgarioSocket) {
+					console.log('New Socket 3 data sent');
+					if (window.noOgarioSocket) {
+					//Socket3.send(JSON.stringify({ com: "sendPlayerSkinURL", nick: ogarcopythelb.nick, token: legendmod3.serverToken, tag: ogarcopythelb.clanTag, skin: ogarcopythelb.skinURL, color: ogarcopythelb.color, id: customLMID, x: legendmod3.getPlayerX(), y: legendmod3.getPlayerY(), mass: legendmod.playerMass}));
+					var temp={ com: "sendPlayerSkinURL", nick: ogarcopythelb.nick, token: legendmod3.serverToken, tag: ogarcopythelb.clanTag, skin: ogarcopythelb.skinURL, color: ogarcopythelb.color, id: customLMID, x: legendmod3.getPlayerX(), y: legendmod3.getPlayerY(), mass: legendmod.playerMass};
+					Socket3.send(JSON.stringify({ "toH": "legendmod", "msg": temp}));
+
+					}
+				}
+                if (this.setPlayerSettings(), this.setParty(), this.isSocketOpen()) this.sendPartyData();
+                else {
+                    this.connect();
+                    var t = this;
+                    setTimeout(function() {
+                        t.sendPartyData();
+                    }, 1000);
+                }
+            },
+            'onPlay': function() {
+                //                this.play(), this.hideMenu(), window.addKeyListeners && window.addKeyListeners(), defaultmapsettings.autoHideFood && (i.showFood = true), window['ga'] && window['ga']('create', 'UA-92655864-7', 'auto', 'ogarioTracker'), window['ga'] && window['ga']('ogarioTracker.send', 'pageview');
+                this.play();
+                this.hideMenu();
+                if (window.addKeyListeners) {
+                    window.addKeyListeners();
+                }
+                if (defaultmapsettings.autoHideFood) {
+                    i.showFood = true
+                };
+            },
+            'onSpectate': function() {
+                this.onJoin();
+                this.sendPlayerJoin();
+                this.hideMenu();
+                if (window.addKeyListeners) {
+                    window.addKeyListeners();
+                }
+                if (defaultmapsettings.autoHideFood) {
+                    i.showFood = false;
+                }
+            },
+            'join': function() {
+                this.setParty();
+                this.setPlayerSettings();
+                this.sendPartyData();
+                this.sendPlayerDeath();
+            },
+            'onJoin': function() {
+                if (this.setParty(), this.isSocketOpen()) this.join();
+                else {
+                    this.connect();
+                    var t = this;
+                    setTimeout(function() {
+                        t.join();
+                        t.sendPlayerJoin();
+                    }, 1000);
+                }
+            },
+            'create': function() {
+                if (this.setParty(), this.partyToken) this.onJoin();
+                else {
+                    var t = this;
+                    setTimeout(function() {
+                        t.create();
+                    }, 100);
+                }
+            },
+            'onCreate': function() {
+                this.setParty(), ':party' === this.gameMode && this.partyToken ? this.gameServerReconnect() : this.createParty(), this.create();
+            },
+            'onPlayerSpawn': function() {
+                if (i.play = true, i.playerColor) return this.sendPlayerSpawn(), void this.cacheCustomSkin(ogarcopythelb.nick, i.playerColor, ogarcopythelb.skinURL);
+                var t = this;
+                setTimeout(function() {
+                    t.onPlayerSpawn();
+                }, 100);
+                if (window.spawnspecialeffects == true) {
+                    setTimeout(function() {
+                        ///////// trigger special effects
+                        //console.log('Special effects stage 1');
+                        i.spawnX = i.playerX;
+                        i.spawnY = i.playerY;
+                        LM.drawCommander = true;
+                    }, 110);
+                }
+                LegendModSpawn();
+            },
+            'onPlayerDeath': function() {
+                //
+                pauseVideos();
+                i.play = false;
+                i.playerColor = null;
+                i.foodIsHidden = false;
+                i.playerMass = 0;
+                i.playerScore = 0;
+                i.playerSplitCells = 0;
+                this.showMenu(300);
+                this.sendPlayerDeath();
+                this.updateDeathLocations(i.playerX, i.playerY);
+                this.unlockButtons(); 
+				ogarcommando1(); 
+				this.autoResp();
+				
+            },
+            'setPlayerSettings': function() {
+                var t = $('#nick').val(),
+                    e = $('#clantag').val(),
+                    o = $('#skin').val(),
+                    a = $('#color').val();
+                ogarcopythelb.nick = t,
+                    ogarcopythelb.clanTag = e.trim(),
+                    ogarcopythelb.skinURL = this['checkSkinURL'](o.trim()),
+                7 == a.length && (ogarcopythelb.color = a),
+                ogarcopythelb.clanTag.length > 0 && (i.clanTag = ogarcopythelb.clanTag),
+                    ogario1PlayerProfiles[this.selectedProfile].nick = ogarcopythelb.nick,
+                    ogario1PlayerProfiles[this.selectedProfile].clanTag = ogarcopythelb.clanTag,
+                    ogario1PlayerProfiles[this.selectedProfile].skinURL = ogarcopythelb.skinURL,
+                    ogario1PlayerProfiles[this.selectedProfile].color = ogarcopythelb.color,
+                    this.saveSettings(ogario1PlayerProfiles, 'ogarioPlayerProfiles');
+            },
+            'loadSkin': function(t, e) {
+                var i = this;
+                //console.log ("t:" + t + "e:" + e);
+                if (e.includes(".mp4") || e.includes(".webm") || e.includes(".ogv")) {
+                    t[e] = new Video();
+                    //console.log("stage 2 videos");
+                } else {
+                    t[e] = new Image();
+                }
+                t[e].crossOrigin = 'Anonymous';
+                t[e]['onload'] = function() {
+                    this.complete &&
+                    this.width &&
+                    this.height &&
+                    this.width <= 2000 &&
+                    this.height <= 2000 &&
+                    (i.cacheQueue.push(e),
+                    1 == i.cacheQueue.length &&
+                    i.cacheSkin(i.customSkinsCache));
+                },
+                    t[e]['onerror'] = function() {
+                        //console.log("error loading image: "+ e);
+                        if (e.includes(window.EnvConfig.config_url)) {
+                            e = "https://jimboy3100.github.io/vanillaskins/" + e.split('/').pop(); //if CORS policy on miniclip images, use other source
+                            //console.log("new destination is:" + e);
+                            ogarminimapdrawer.customSkinsMap[window.lastusednameforskin] = e;
+                            ogarminimapdrawer.loadSkin(t, e);
+                            return e;
+
+                        }
+                    };
+                t[e].src = e;
+            },
+            'cacheSkin': function(t) {
+                //console.log(t);  //////// return the image src
+                if (0 != this.cacheQueue.length) {
+                    var e = this.cacheQueue.shift();
+                    if (e) {
+                        var i = document.createElement("canvas");
+                        i.width = 512;
+                        i.height = 512;
+                        var $ = i.getContext("2d");
+                        $.beginPath();
+                        $.arc(256, 256, 256, 0, 2 * Math.PI, false);
+                        $.clip();
+                        try {
+                            $.drawImage(this.customSkinsCache[e], 0, 0, 512, 512);
+                        } catch (e) {}
+                        this.customSkinsCache[e + "_cached"] = new Image;
+                        this.customSkinsCache[e + "_cached"].src = i.toDataURL();
+                        i = null;
+                        this.cacheSkin(this.customSkinsCache);
+                    }
+                }
+            },
+            'getCachedSkin': function(t, e) {
+                return t[e + '_cached'] && t[e + '_cached'].complete && t[e + '_cached'].width ? t[e + '_cached'] : null;
+            },
+            'cacheCustomSkin': function(t, e, i) {
+                if (i) {
+                    var s = ':party' === this.gameMode ? t + e : t;
+                    //console.log("t= " + t);
+                    //console.log("e= " + e);
+                    if (s && (this.customSkinsMap[s] = i), this.customSkinsCache.hasOwnProperty(i)) return;
+                    this.loadSkin(this.customSkinsCache, i);
+                }
+            },
+            'checkSkinsMap': function(t, e) {
+                var i = ':party' === this.gameMode ? t + e : t;
+                //console.log(.customSkinsMap.hasOwnProperty(i));
+                return !!this.customSkinsMap.hasOwnProperty(i);
+            },
+            'getCustomSkin': function(t, e) {
+                if (!this.checkSkinsMap(t, e)) return null;
+                var i = ':party' === this.gameMode ? t + e : t;
+                return this.getCachedSkin(this.customSkinsCache, this.customSkinsMap[i]);
+            },
+            'calculateMapSector': function(t, e, s = false) {
+                if (!i.mapOffsetFixed) return '';
+                var o = s ? i.mapOffsetX + i.mapOffset : i.mapOffset,
+                    a = s ? i.mapOffsetY + i.mapOffset : i.mapOffset,
+                    n = Math.floor((e + a) / (i.mapSize / defaultSettings.sectorsY)),
+                    r = Math.floor((t + o) / (i.mapSize / defaultSettings.sectorsX));
+                window.calculateMapSector = n < 0 ? 0 : n >= defaultSettings.sectorsY ? defaultSettings.sectorsY - 1 : n, r = r < 0 ? 0 : r >= defaultSettings.sectorsX ? defaultSettings.sectorsX - 1 : r, String.fromCharCode(n + 65) + (r + 1);
+                return n = n < 0 ? 0 : n >= defaultSettings.sectorsY ? defaultSettings.sectorsY - 1 : n, r = r < 0 ? 0 : r >= defaultSettings.sectorsX ? defaultSettings.sectorsX - 1 : r, String.fromCharCode(n + 65) + (r + 1);
+            },
+            'shortMassFormat': function(t) {
+                return t < 1000 ? t : Math.round(t / 100) / 10 + 'k';
+            },
+            'updateDeathLocations': function(t, e) {
+                if (i.mapOffsetFixed) {
+                    this.deathLocations.push({
+                        "x": t + i.mapOffsetX,
+                        "y": e + i.mapOffsetY
+                    });
+                    if (6 == this.deathLocations.length) {
+                        this.deathLocations.shift();
+                    }
+                    this.lastDeath = this.deathLocations.length - 1;
+                }
+            },
+            'drawMiniMap': function() {
+                if (i.mapOffsetFixed) {
+                    var t = defaultSettings.miniMapWidth;
+                    var e = defaultSettings.miniMapTop;
+                    var s = t + e;
+                    var o = t - 18;
+                    var a = e + 9.5;
+                    if (this.miniMap) {
+                        this.miniMapCtx.clearRect(0, 0, t, s);
+                    } else {
+                        this.miniMap = document.getElementById("minimap");
+                        this.miniMapCtx = this.miniMap.getContext("2d");
+                        this.miniMapCtx.ogarioCtx = true;
+                        this.miniMap.width = t;
+                        this.miniMap.height = s;
+                    }
+                    if (this.miniMap.width != t) {
+                        this.miniMap.width = t;
+                        this.miniMap.height = s;
+                    }
+                    var n = o / i.mapSize;
+                    var r = i.mapOffsetX + i.mapOffset;
+                    var l = i.mapOffsetY + i.mapOffset;
+                    if (this.drawSelectedCell(this.miniMapCtx),
+                        this.currentSector = this.calculateMapSector(i.playerX, i.playerY, true),
+                        this.miniMapCtx.globalAlpha = 1,
+                        this.miniMapCtx.font = defaultSettings.miniMapFontWeight + " " + (e - 4) + "px " + defaultSettings.miniMapFontFamily,
+                        this.miniMapCtx.fillStyle = defaultSettings.miniMapSectorColor,
+                        this.miniMapCtx.fillText(this.currentSector, 10, e),
+                    this.miniMapSectors || this.drawMiniMapSectors(defaultSettings.sectorsX, defaultSettings.sectorsY, o, s, a),
+                        this.miniMapCtx.save(),
+                        this.miniMapCtx.translate(9.5, a), ":battleroyale" === this.gameMode && ogarfooddrawer && ogarfooddrawer.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l), 
+						defaultmapsettings.showMiniMapGhostCells) {
+                        var h = i.ghostCells;
+                        this.miniMapCtx.beginPath();
+                        var c = 0;
+                        for (; c < h.length; c++) {
+                            if (!h[c].inView) {
+                                var u = ~~((h[c].x + r) * n);
+                                var d = ~~((h[c].y + l) * n);
+                                this.miniMapCtx.moveTo(u, d);
+                                this.miniMapCtx.arc(u, d, ~~(h[c].size * n), 0, this.pi2, false);
+                            }
+                        }
+                        this.miniMapCtx.fillStyle = defaultSettings.miniMapGhostCellsColor;
+                        this.miniMapCtx.globalAlpha = defaultSettings.miniMapGhostCellsAlpha;
+                        this.miniMapCtx.shadowColor = defaultSettings.miniMapGhostCellsColor;
+                        this.miniMapCtx.shadowBlur = 10;
+                        this.miniMapCtx.shadowOffsetX = 0;
+                        this.miniMapCtx.shadowOffsetY = 0;
+                        this.miniMapCtx.fill();
+                        this.miniMapCtx.globalAlpha = 1;
+                        this.miniMapCtx.shadowBlur = 0;
+                    }
+                    if (defaultmapsettings.showMiniMapGuides) {
+                        u = Math.round((i.playerX + r) * n);
+                        d = Math.round((i.playerY + l) * n);
+                        this.miniMapCtx.lineWidth = 1;
+                        this.miniMapCtx.strokeStyle = defaultSettings.miniMapGuidesColor;
+                        this.miniMapCtx.beginPath();
+                        this.miniMapCtx.moveTo(u, 0);
+                        this.miniMapCtx.lineTo(u, o - 1);
+                        this.miniMapCtx.moveTo(0, d);
+                        this.miniMapCtx.lineTo(o - 1, d);
+                        this.miniMapCtx.stroke();
+                    }
+                    if (defaultmapsettings.showExtraMiniMapGuides) {
+                        u = Math.round((i.playerX + r) * n);
+                        d = Math.round((i.playerY + l) * n);
+
+                        //draw the yellow on minimap
+                        this.miniMapCtx.beginPath();
+                        this.miniMapCtx.lineWidth = "1";
+                        this.miniMapCtx.strokeStyle = "yellow";
+                        var miniax = legendmod.canvasWidth / (legendmod.mapMaxX - legendmod.mapMinX) / legendmod.viewScale; //CORRECT
+                        var miniay = legendmod.canvasHeight / (legendmod.mapMaxY - legendmod.mapMinY) / legendmod.viewScale; //CORRECT
+                        var minidaxx = legendmod3.miniMapSectors.width * miniax;
+                        var minidayy = legendmod3.miniMapSectors.width * miniay;
+
+                        var fixminidaxx = u - (minidaxx / 2);
+                        var fixminidayy = d - (minidayy / 2);
+
+                        //if (fixminidaxx<0){ fixminidaxx=0; }
+                        //if (fixminidayy<0){ fixminidayy=0; }
+                        this.miniMapCtx.rect(fixminidaxx, fixminidayy, minidaxx, minidayy);
+                        this.miniMapCtx.stroke();
+
+                    }
+                    if (this.miniMapCtx.beginPath(), 
+					this.miniMapCtx.arc((i.playerX + r) * n, (i.playerY + l) * n, 
+					defaultSettings.miniMapMyCellSize, 0, this.pi2, false), 
+					this.miniMapCtx.closePath(), 
+					defaultSettings.miniMapMyCellStrokeSize > 0 && (this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize, 
+					this.miniMapCtx.strokeStyle = defaultSettings.miniMapMyCellStrokeColor, 
+					this.miniMapCtx.stroke()), 
+					this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor, 
+					this.miniMapCtx.fill(), 
+					this.teamPlayers.length) {
+                        c = 0;
+                        for (; c < this.teamPlayers.length; c++) {
+                            this.teamPlayers[c].drawPosition(this.miniMapCtx, i.mapOffset, n, this.privateMiniMap, this.targetID, legendmod3.teamPlayers[c].color);
+                        }
+                    }
+                    if (this.deathLocations.length > 0) {
+                        u = Math.round((this.deathLocations[this.lastDeath].x + i.mapOffset) * n);
+                        d = Math.round((this.deathLocations[this.lastDeath].y + i.mapOffset) * n);
+                        var f = Math.max(defaultSettings.miniMapMyCellSize - 2, 4);
+                        this.miniMapCtx.lineWidth = 1;
+                        this.miniMapCtx.strokeStyle = this.deathLocations.length - 1 == this.lastDeath ? defaultSettings.miniMapDeathLocationColor : "#FFFFFF";
+                        this.miniMapCtx.beginPath();
+                        this.miniMapCtx.moveTo(u - f, d);
+                        this.miniMapCtx.lineTo(u + f, d);
+                        this.miniMapCtx.moveTo(u, d - f);
+                        this.miniMapCtx.lineTo(u, d + f);
+                        this.miniMapCtx.stroke();
+                    }
+                    this.miniMapCtx.restore();
+                }
+            },
+            'drawMiniMapSectors': function(t, e, s, o, a) {
+                this.miniMapSectors = document.getElementById('minimap-sectors');
+                var n = this.miniMapSectors.getContext('2d');
+                n.ogarioCtx = true;
+                this.miniMapSectors.width = s;
+                this.miniMapSectors.height = o;
+                n.fillStyle = '#FFFFFF';
+                this.dTok(n, s - 1);
+                ogarfooddrawer.drawSectors(n, i.mapOffsetFixed, t, e, 0.5, a, s - 0.5, o - 9.5, defaultSettings.miniMapSectorsColor, defaultSettings.miniMapSectorsColor, 1, false);
+            },
+            'resetMiniMapSectors': function() {
+                this.miniMapSectors = null;
+            },
+            'drawSelectedCell': function(t) {
+                i.play && i.playerSplitCells > 1 && (defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) && (t.fillStyle = '#FFFFFF', t.globalAlpha = this.selectBiggestCell ? 0.6 : 0.3, t.beginPath(), t.arc(48, 15, 6, 0, this.pi2, false), t.closePath(), t.fill(), t.globalAlpha = this.selectBiggestCell ? 0.3 : 0.6, t.beginPath(), t.arc(60, 15, 4, 0, this.pi2, false), t.closePath(), t.fill());
+            },
+            'dTok': function(t, e) {
+                t.font = defaultSettings.miniMapFontWeight + ' ' + (defaultSettings.miniMapTop - 6) + 'px ' + defaultSettings.miniMapFontFamily, t.textAlign = 'right', t.textBaseline = 'top', t.fillText(atob(this['token']), e, 7);
+            },
+            /*            'drawTeammatesInd': function(t, e, i, s) {
+                            this.indicator && t.drawImage(this.indicator, e - 45, i - s - 90);
+                        }, */
+            'drawCellInfo': function(t, e, s, o, a, n, r, l, h, c, u, d) {
+                //if (!n && !h && (t.globalAlpha = i.globalAlpha, defaultmapsettings.teammatesInd && d && !l && a <= 200 && this.drawTeammatesInd(t, s, o, a), !defaultmapsettings.noNames || defaultmapsettings.showMass)) {
+                if (!n && !h && (t.globalAlpha = i.globalAlpha, defaultmapsettings.teammatesInd && d && !l && a <= 200 && ogarfooddrawer.drawTeammatesInd(t, s, o, a), !defaultmapsettings.noNames || defaultmapsettings.showMass)) {
+                    var f = false;
+                    if (l || r || !(f = this.setAutoHideCellInfo(a)) || !defaultmapsettings.autoHideNames || !defaultmapsettings.autoHideMass) {
+                        var m = null;
+                        if (!this.cells.hasOwnProperty(e)) return (m = new ogarbasicassembly(s, o, r, l, defaultmapsettings.shortMass, defaultmapsettings.virMassShots)).setMass(a), m.setNick(c), void(this.cells[e] = m);
+                        (m = this.cells[e]).update(s, o, a, r, l, c),
+                            m.setDrawing(defaultmapsettings.optimizedNames, defaultmapsettings.optimizedMass, defaultmapsettings.shortMass, defaultmapsettings.virMassShots, defaultmapsettings.namesStroke, defaultmapsettings.massStroke),
+                            m.setDrawingScale(i.viewScale, defaultSettings.namesScale, defaultSettings.massScale, defaultSettings.virMassScale, defaultSettings.strokeScale),
+                            t.globalAlpha = defaultSettings.textAlpha, defaultmapsettings.noNames || f && defaultmapsettings.autoHideNames || l && defaultmapsettings.hideMyName || d && defaultmapsettings.hideTeammatesNames || m.drawNick(t, defaultSettings.namesColor, defaultSettings.namesFontFamily, defaultSettings.namesFontWeight, defaultSettings.namesStrokeColor),
+                        !defaultmapsettings.showMass || f && defaultmapsettings.autoHideMass || l && defaultmapsettings.hideMyMass || defaultmapsettings.hideEnemiesMass && !l && !r || m.drawMass(t, defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, defaultSettings.massStrokeColor) && (window.ExternalScripts && !window.legendmod5.optimizedMass && m.drawMerge(t, defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, defaultSettings.massStrokeColor));
+                    }
+                }
+            },
+            'setVirusColor': function(t) {
+                return Math.floor(t * t / 100) > 183 ? '#C80000' : defaultSettings.virusColor;
+            },
+            'setVirusStrokeColor': function(t) {
+                return i.play && 0 != i.playerMaxMass ? Math.floor(t * t / 100) / (this.selectBiggestCell ? i.playerMaxMass : i.playerMinMass) > 0.76 ? '#FFDC00' : '#C80000' : defaultSettings.virusStrokeColor;
+            },
+            'setAutoHideCellInfo': function(t) {
+                return t <= 40 || i.viewScale < 0.5 && t < 550 && t < 25 / i.viewScale;
+            },
+            'setParty': function() {
+                var t = $('#party-token').val();
+                if (this.gameMode = i.gameMode = $('#gamemode').val(), this.setQuest(), ':party' === this.gameMode && t) {
+                    var e = t; -
+                        1 != t.indexOf('#') && (e = (t = t.split('#'))[1]), this.partyToken !== e && (this.partyToken = e, this.flushSkinsMap(), this.flushChatData(), this.cancelTargeting());
+                }
+            },
+            'createParty': function() {
+                $('#create-party-btn').click();
+            },
+            'joinParty': function() {
+                var t = $('#party-token').val();
+                t && ($('#pre-join-party-btn').click(),
+                    $('.party-token').val(t),
+                    $('#join-party-btn').click());
+            },
+            'leaveParty': function() {
+                $('#party-token, .party-token').val('');
+                $('#leave-party-btn').click();
+            },
+            'closeParty': function() {
+                $('#party-token, .party-token').val('');
+                $('.party-icon-back').click();
+            },
+            'flushData': function() {
+                this.flushPartyData();
+                this.flushSkinsMap();
+                this.flushChatData();
+                this.cancelTargeting();
+                i.play = false;
+                i.playerColor = null;
+            },
+            'flushPartyData': function() {
+                this.teamPlayers = [];
+                this.parties = [];
+                this.lastSentNick = '';
+                this.lastSentClanTag = null;
+                this.lastSentSkinURL = '';
+                this.lastSentCustomColor = '';
+                this.lastSentPartyToken = '';
+                this.lastSentServerToken = '';
+            },
+            'flushCells': function() {
+                this.cells = {};
+            },
+            'flushSkinsMap': function() {
+                this.customSkinsMap = {};
+            },
+            'flushChatData': function() {
+                this.chatUsers = {};
+            },
+            'getWS': function(t) {
+                t && (this.ws = t, this.createServerToken(), this.updateServerInfo(), -1 == this.ws.indexOf('agar.io') && this.closeConnection());
+            },
+            'recreateWS': function(t) {
+                if (!t) return null;
+                var e = null;
+                if (/^[a-zA-Z0-9=+\/]{12,}$/.test(t)) {
+                    var i = atob(t);
+                    /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/.test(i) && (e = 'wss://ip-' + i.replace(/\./g, '-').replace(':', '.tech.agar.io:'));
+                }
+                return !e && /^[a-z0-9]{5,}$/.test(t) && (e = 'wss://live-arena-' + t + '.agar.io:443'), e;
+            },
+            'createServerToken': function() {
+                var t = this.ws.match(/ip-\d+/),
+                    i = this.ws.match(/live-arena-([\w\d]+)/),
+                    s = null;
+                t && ((t = this.ws.replace('.tech.agar.io', '').replace(/-/g, '.').match(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/)) && (this.serverIP = t[0], s = btoa(this.serverIP)));
+                if (!s && i && (this['serverArena'] = i[1], s = this['serverArena']), s) {
+                    this.serverToken !== s && (this.serverToken = s, this.flushData(), this.flushCells()), this.partyToken = '';
+                    var o = this.ws.match(/party_id=([A-Z0-9]{6})/);
+                    o && (this.partyToken = o[1], ogarjoiner('/#' + window.encodeURIComponent(this.partyToken)));
+                }
+            },
+            'updateServerInfo': function() {
+                $('#server-ws').val(this.ws),
+                    $('#server-token').val(this.serverToken),
+                    $('#party-token, .party-token').val(this.partyToken);
+            },
+            'gameServerConnect': function(t) {
+                t && (this.skipServerData = true, window.core && window.core.connect && window.core.connect(t));
+            },
+            'gameServerReconnect': function() {
+                window.MC && window.MC.reconnect ? window.MC.reconnect() : window.master && window.master.reconnect && window.master.reconnect();
+            },
+            'gameServerJoin': function(t) {
+                var e = this.recreateWS(t);
+                e && (this.skipServerData = true, this['gameServerConnect'](e));
+            },
+            'connect': function() {
+                pauseVideos(),
+                    this.closeConnection();
+                this.flushData();
+                this.setParty();
+                console.log("[Legend mod Express] Testing vectorM82..")
+                console.log('[Legend mod Express] Connecting to server'),
+                    this.privateMode && this.privateIP ? this.socket = new WebSocket(this.privateIP) : this.socket = new WebSocket(this.publicIP),
+                    this.socket['ogarioWS'] = true,
+                    this.socket['binaryType'] = 'arraybuffer';
+                var t = this;
+                this.socket['onopen'] = function() {
+                    console.log('[Legend mod Express] Socket open');
+                    var e = t.createView(3);
+                    e.setUint8(0, 0);
+                    e.setUint16(1, 401, true);
+                    t['sendBuffer'](e);
+                    t.sendPartyData();
+                }
+                this.socket['onmessage'] = function(e) {
+                    t['handleMessage'](e);
+                }
+                this.socket['onclose'] = function(e) {
+                    //t.flushData();
+                    console.log('[Legend mod Express] Socket close', e);
+                }
+                this.socket['onerror'] = function(e) {
+                    //t.flushData();
+                    console.log('[Legend mod Express] Socket error', e);
+                    window.noOgarioSocket = true;
+                };
+				
+            },
+			'Socket3connect': function(srv) {
+				//if (window.noOgarioSocket && typeof Socket3enabler !== 'undefined' && typeof Socket3enabler === 'function') {
+					setTimeout(function() {
+						Socket3enabler(window.legendmod.ws);
+					}, 1000);
+				//}
+			},
+            //Sonia6			
+            'SLGconnect': function(srv) {
+                this.closeSLGConnection();
+                this.room = ogarcopythelb.clanTag + "-" + srv.match("-([A-Za-z0-9]{6,7})\.")[1];
+                this.roomc = ogarcopythelb.clanTag;
+                console.log('[Legend mod Express] Connecting to SLG:', this.room);
+                this.SLGsocket = new WebSocket("wss://connect.websocket.in/3Q-SoniaSLG_453dsV?room_id=" + this.room);
+                this.SLGsocket['binaryType'] = 'arraybuffer';
+                t = this;
+                this.SLGsocket['onopen'] = function() {
+                    console.log('[Legend mod Express] SLG socket open');
+                }
+                this.SLGsocket['onmessage'] = function(e) {
+                    t.handleSLGMessage(e);
+                }
+                this.SLGsocket['onclose'] = function(e) {
+                    //t.flushData();
+                    console.log('[Legend mod Express] SLG socket close');
+                }
+                this.SLGsocket['onerror'] = function(e) {
+                    //t.flushData();
+                    console.log('[Legend mod Express] SLG socket error', e);
+                    window.noSLGSocket = true;
+                };
+            },
+            'closeConnection': function() {
+                if (this.socket) {
+                    this.socket['onmessage'] = null;
+                    try {
+                        this.socket['close']();
+                    } catch (ogarcloseconlabel) {}
+                    this.socket = null;
+                }
+                //Sonia4
+                if (this.SLGsocket) {
+                    this.SLGsocket['onmessage'] = null;
+                    try {
+                        this.SLGsocket['close']();
+                    } catch (ogarcloseconlabel) {}
+                    this.SLGsocket = null;
+                }
+            },
+            //Sonia6
+            'closeSLGConnection': function() {
+                if (this.SLGsocket) {
+                    this.SLGsocket['onmessage'] = null;
+                    try {
+                        this.SLGsocket['close']();
+                    } catch (ogarcloseconlabel) {}
+                    this.SLGsocket = null;
+                }
+            },
+            'reconnect': function() {
+                this.setParty();
+                var t = this;
+                setTimeout(function() {
+                    t.connect();
+                }, 1000);
+            },
+            'switchServerMode': function() {
+                if (this["privateIP"]) {
+                    this["privateMode"] = !this["privateMode"];
+                    if (this.isSocketOpen()) {
+                        this["closeConnection"]();
+                        toastr["error"]("Zamkni\u0119to po\u0142\u0105czenie z serwerem!");
+                        toastr["error"]("Zamkni\u0119to po\u0142\u0105czenie z serwerem!");
+                    }
+                    if (this["privateMode"]) {
+                        toastr.info("Prze\u0142\u0105czono na serwer prywatny!");
+                        $(".party-panel").show();
+                    } else {
+                        toastr.info("Prze\u0142\u0105czono na serwer publiczny!");
+                        $("#active-parties").empty();
+                        $(".party-panel").hide();
+                    }
+                    this.onJoin();
+                    if (i.play) {
+                        this["onPlayerSpawn"]();
+                    }
+                }
+            },
+            'isSocketOpen': function() {
+                return null !== this.socket && this.socket['readyState'] === this.socket['OPEN'];
+            },
+            //Sonia6 Below
+            'isSLGSocketOpen': function() {
+                var state = false;
+                if (this.SLGsocket) {
+                    state = this.SLGsocket['readyState'] === this.SLGsocket['OPEN'];
+                }
+                return state;
+            },
+            "writeUint32": function(data, value) {
+                for (; !![];) {
+                    if ((value & -128) == 0) {
+                        data.push(value);
+                        return;
+                    } else {
+                        data.push(value & 127 | 128);
+                        value = value >>> 7;
+                    }
+                }
+            },
+            'createView': function(t) {
+                return new DataView(new ArrayBuffer(t));
+            },
+            'strToBuff': function(t, e) {
+                var i = this.createView(1 + 2 * e.length);
+                i.setUint8(0, t);
+                for (var s = 0; s < e.length; s++) i.setUint16(1 + 2 * s, e.charCodeAt(s), true);
+                return i;
+            },
+            'sendBuffer': function(t) {
+                this.socket['send'](t['buffer']);
+            },
+            //Sonia4
+            'sendSLG': function(i, t) {
+                if (this.isSLGSocketOpen()) {
+                    if (ogarcopythelb.clanTag != this.roomc) {
+                        console.log("Sending failed. Reconnecting required..")
+                        this.SLGconnect(window.legendmod.ws);
+                        return;
+                    }
+                    var s = this.packSLG(i);
+                    if (s != null) this.SLGsocket['send'](s + t);
+                }
+            },
+            'handleMessage': function(t) {
+                this['readMessage'](new DataView(t['data']));
+            },
+            //Sonia4
+            'handleSLGMessage': function(t) {
+                this['SLGHandler'](t.data);
+            },
+            'readMessage': function(t) {
+                switch (t.getUint8(0)) {
+                    case 0:
+                        this.playerID = t.getUint32(1, true);
+                        break;
+                    case 1:
+                        this['sendPlayerUpdate']();
+                        break;
+                    case 20:
+                        this['updateTeamPlayer'](t);
+                        break;
+                    case 30:
+                        this['updateTeamPlayerPosition'](t);
+                        break;
+                    case 96:
+                        break;
+                    case 100:
+                        this['readChatMessage'](t);
+                }
+            },
+            //Sonia4
+            'SLGHandler': function(t) {
+                var s = this.unpackSLG(t);
+                if (s == null) return;
+                switch (t.charAt(0)) {
+                    case "R":
+                        this.getSuperLegendSDATA(s);
+                        break;
+                    case "Q":
+                        //this.getSLGQinfo(s);
                         break;
                 }
-            } catch (e) {
-                console.log(e);
-            }
-        }
-    };
-
-    var initLc = function() {
-        var nick = document.getElementById(elements.nickname);
-        var server = document.getElementById(elements.server);
-        var tag = document.getElementById(elements.tag);
-        //var tag = "RespectPrivacy"; no3: I stoped this
-        var reconnectButton = document.getElementById(elements.reconnectButton);
-
-        if (!nick) {
-            console.log("Could not initialize Info sending");
-            return;
-        }
-
-        nick.addEventListener("change", socket.updateDetails);
-        server.addEventListener("change", socket.updateDetails);
-        tag.addEventListener("change", socket.updateDetails); //no4: I stoped this
-
-        var reconnectTimer = null;
-
-        reconnectButton.addEventListener("click", function(e) {
-            clearTimeout(reconnectTimer);
-            reconnectTimer = setTimeout(socket.updateDetails, 5000);
-        });
-
-        socket.connect();
-
-        setInterval(socket.updateDetails, 5000);
-    };
-
-    function getSessionID() {
-        return getCookie("__cfduid");
-    }
-
-    function getCookie(cname) {
-        var name = cname + "=";
-        var decodedCookie = decodeURIComponent(document.cookie);
-        var ca = decodedCookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') {
-                c = c.substring(1);
-            }
-            if (c.indexOf(name) == 0) {
-                return c.substring(name.length, c.length);
-            }
-        }
-        return "";
-    }
-
-    onUILoaded(initLc, null);
-
-
-}
-
-function getSNEZServers(ifcalled) {
-    client2 = {
-
-        // Properties
-        //server: "wss://agar.snez.org:3051/",
-        server: "wss://agar.snez.org:63051/",
-        ws: null,
-        isOpen: false,
-        onOpenCallback: null,
-        onCloseCallback: null,
-        onMessageCallback: null,
-
-        // Methods
-        connect: function() {
-            client2.ws = new WebSocket(client2.server);
-            client2.ws.onopen = client2.onOpen;
-            client2.ws.onclose = client2.onClose;
-            client2.ws.onmessage = client2.onMessage;
-
-        },
-        disconnect: function() {
-            // Close the connection, if open.
-
-            client2.ws.close();
-
-        },
-        onOpen: function() {
-            console.log("[Legend mod Express] Snez socket open");
-            //       app.state = "Connected.";
-        },
-
-        onClose: function() {
-            //       console.log("Reconnecting in 5 seconds...");
-            //        setTimeout(client2.connect, 5000);
-        },
-
-        onMessage: function(evt) {
-            if (client2.isEmpty(evt))
-                return;
-
-            try {
-                var data = JSON.parse(evt.data);
-
-                if (client2.isEmpty(data) || client2.isEmpty(data.type))
-                    return;
-            } catch (e) {
-                console.log(e);
-                return;
-            }
-
-            switch (data.type) {
-                case "ping":
-                    client2.send({
-                        type: "pong"
-                    });
-                    break;
-                case "players_list":
-                    client2.updatePlayers(data.data);
-                    break;
-            }
-        },
-
-        isEmpty: function(obj) {
-            if (typeof obj == 'undefined')
-                return true;
-
-            // For arrays or empty strings
-            if (obj.length === 0)
-                return true;
-
-            // For objects
-            for (var key in obj)
-                if (obj.hasOwnProperty(key))
-                    return false;
-
-            return true;
-        },
-
-        updatePlayers: function(data) {
-            var showonceusers = 0;
-            var showonceusers2 = 0;
-            showonceusers3 = 0;
-            var showonceusers4 = 0;
-            data = JSON.parse(data); //...
-            //		for (var player in data) {
-            // 			if (data.hasOwnProperty(player)) {
-            for (var player = 0; player < data.length; player++) {
-                if (data[player].nickname) {
-                    if (data[player].nickname) {
-                        if (data[player].nickname.indexOf($("#searchInput").val()) >= 0) {
-                            if (showonceusers == 0) {
-                                showonceusers++;
-                                if (ifcalled == null) {
-                                    toastr["info"]("User Found. Revealing server...");
-                                }
-                            }
-                            var temporaryserver = JSON.stringify(data[player]);
-                            var temporaryserver2;
-                            var temporaryserver3;
-                            var temporaryserver1 = getParameterByName("r", temporaryserver);
-                            var temporaryserver1a = getParameterByName("m", temporaryserver);
-                            temporaryserver = temporaryserver.substring(0, temporaryserver.indexOf('.agar.io'));
-                            temporaryserver2 = temporaryserver.split('live-arena-').pop();
-                            temporaryserver3 = temporaryserver.split('nickname\"\:\"').pop();
-                            temporaryserver3 = temporaryserver3.substring(temporaryserver3, temporaryserver3.indexOf('\"\,\"server'));
-                            if (temporaryserver1a) {
-                                temporaryserver1a = temporaryserver1a.split('\"\,\"tag')[0];
-                                appendLog3("Region:<span id='regioninfo'>" + temporaryserver1 + "</span>, Mode<span id='modeinfo'>" + temporaryserver1a + "</span>. <span class='main-color'><span id='playerinfo'>" + temporaryserver3.trim() + "</span> <span data-toggle='popover' data-placement='left' title='' data-content='data-html='true' class='country-icon flag-icon flag-icon-" + data[player].extra.ip_info.country.toLowerCase() + "' data-original-title='Player Details'></span></span>" + " (<span id='tokeninfo'>" + temporaryserver2 + "</span>)", temporaryserver2, temporaryserver1, temporaryserver1a);
-                            } else {
-                                appendLog2("<span class='main-color'><span id='playerinfo'>" + temporaryserver3.trim() + "</span> <span data-toggle='popover' data-placement='left' title='' data-content='data-html='true' class='country-icon flag-icon flag-icon-" + data[player].extra.ip_info.country.toLowerCase() + "' data-original-title='Player Details'></span></span>" + " (<span id='tokeninfo'>" + temporaryserver2 + "</span>)", temporaryserver2);
-                            }
-                            showonceusers3++;
-                            showonceusers3returner(showonceusers3);
-                        } else if (data[player].server.indexOf($("#searchInput").val()) >= 0) {
-                            if ($("#searchInput").val().length >= 4) {
-                                if (showonceusers2 == 0) {
-                                    showonceusers2++;
-                                    if (ifcalled == null) {
-                                        toastr["info"]("Server Found. Revealing users...");
-                                    }
-                                }
-                                var temporaryserver = JSON.stringify(data[player]);
-                                var temporaryserver2;
-                                var temporaryserver3;
-                                var temporaryserver1 = getParameterByName("r", temporaryserver);
-                                var temporaryserver1a = getParameterByName("m", temporaryserver);
-                                temporaryserver = temporaryserver.substring(0, temporaryserver.indexOf('.agar.io'));
-                                temporaryserver2 = temporaryserver.split('live-arena-').pop();
-                                temporaryserver3 = temporaryserver.split('nickname\"\:\"').pop();
-                                temporaryserver3 = temporaryserver3.substring(temporaryserver3, temporaryserver3.indexOf('\"\,\"server'));
-                                if (temporaryserver1a) {
-                                    temporaryserver1a = temporaryserver1a.split('\"\,\"tag')[0];
-                                    appendLog3("Region:<span id='regioninfo'>" + temporaryserver1 + "</span>, Mode<span id='modeinfo'>" + temporaryserver1a + "</span>. <span id='playerinfo'>" + temporaryserver3.trim() + " <span data-toggle='popover' data-placement='left' title='' data-content='data-html='true' class='country-icon flag-icon flag-icon-" + data[player].extra.ip_info.country.toLowerCase() + "' data-original-title='Player Details'></span></span> (<span class='main-color'><span id='tokeninfo'>" + temporaryserver2 + "</span></span>)", temporaryserver2, temporaryserver1, temporaryserver1a);
-                                } else {
-                                    appendLog2("<span id='playerinfo'>" + temporaryserver3.trim() + " <span data-toggle='popover' data-placement='left' title='' data-content='data-html='true' class='country-icon flag-icon flag-icon-" + data[player].extra.ip_info.country.toLowerCase() + "' data-original-title='Player Details'></span></span> (<span class='main-color'><span id='tokeninfo'>" + temporaryserver2 + "</span></span>)", temporaryserver2);
-                                }
-                                showonceusers3++;
-                                showonceusers3returner(showonceusers3);
-                                //console.log(data[player]);	
-
-                            }
-                        }
-                    }
-
+            },
+            //Sonia4
+            'packSLG': function(t) {
+                t += this.packInt(this.playerID, 4);
+                return t;
+            },
+            //Sonia4
+            'unpackSLG': function(t) {
+                t = t.slice(1);
+                return t;
+            },
+            //Sonia4
+            'getSLGID': function(t) {
+                t = t.slice(0, 2)
+                return this.unpackInt(t);
+            },
+            //Sonia4
+            'getSLGVal': function(t) {
+                t = t.slice(2);
+                return t;
+            },
+            'sendPlayerState': function(t) {
+                if (this.isSocketOpen()) {
+                    var e = this.createView(1);
+                    e.setUint8(0, t), this['sendBuffer'](e);
                 }
-
-            }
-            client2.ws.close();
-            if (showonceusers3 == 0) {
-                showonceusers4++;
-                if (showonceusers4 == 1) {
-                    if (ifcalled == null) {
-                        toastr["warning"]('Server / Leaderboard, not found. Do you want the 1-by-1 manual search leaderboards of <font color="yellow">' + $("#region").val() + ' / ' + $("#gamemode").val() + '</font> ?' + '</br> <button id= "manualsearch" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-exit" style="width: 100%;margin-top: -20px;">' + Premadeletter25 + '</button>', "", {
-                            timeOut: 20000,
-                            extendedTimeOut: 20000
-                        }).css("width", "350px");
-                    }
-                    $("#manualsearch").click(function() {
-                        $("#searchSpan>i").removeClass("fa fa-search").addClass("fa fa-times");
-                        var searchString = $("#searchInput").val();
-                        searchHandler(searchString);
-                    });
-                }
-            }
-            return client2;
-        },
-        send: function(data) {
-            client2.ws.send(JSON.stringify(data));
-        }
-    };
-
-}
-
-function showonceusers3returner(showonceusers3) {
-    return showonceusers3;
-}
-
-function pre_loopLM(modVersion) {
-    if (!document.getElementById("message-box")) {
-        setTimeout(pre_loopLM, 200);
-        console.log("Ogario not loaded");
-        return;
-    }
-    return initializeLM(modVersion);
-}
-
-function initializeLM(modVersion) {
-
-    $("#server-ws").hide();
-    $("#server-connect").hide();
-    //$('#region').before($("#server-reconnect"));
-    $("#server-info").show();
-    //$(".btn.btn-warning.btn-server-info.ogicon-cogs").after($("#server-reconnect"));
-    $(".btn.btn-warning.btn-server-info.ogicon-cogs").hide();
-
-    $("#server-token").css("margin-top", "-10px");
-    $("#server-join").css("margin-top", "-10px");
-    $("#agario-main-buttons").css("margin-top", "-10px");
-    $("#gamemode").css("margin-left", "2px");
-    $("#server-reconnect").remove();
-    $(".btn.btn-warning.btn-server-info.ogicon-cogs").after('<button id="server-reconnect" class="btn btn-success" style="display: inline-block; float: left; margin-top: 6px; width: 11%; text-transform: capitalize;"><i class="fa fa-refresh"></i></button>');
-
-    $("#server-reconnect").css("display", "inline-block");
-    $("#server-reconnect").css("float", "left");
-    $("#server-reconnect").css("margin-top", "6px");
-    $("#server-reconnect").css("width", "11%");
-
-    //preventcanvasimagecrash();
-    //    setTimeout(function() {
-    //document.title = "Legend express v" + modVersion;
-    $("#leaderboard-hud > h4").text("Leaderboard");
-    $("button:contains('Spectate')").html('<span class="glyphicon glyphicon-globe"></span>').attr('data-toggle', "tooltip").prop('title', 'Spectate');
-    $("button:contains('Logout')").html('<span class="glyphicon glyphicon-off"></span>').attr('data-toggle', "tooltip").prop('title', 'Logout');
-    $("button:contains('Copy')").removeClass("btn-info").addClass("btn-link");
-
-    $("#create-party-btn-2").html('<span class="glyphicon glyphicon-plus"></span>');
-    $("#create-party-btn-2").attr('data-toggle', "tooltip").prop('title', "Create party");
-
-    $("#join-party-btn").html('<span class="glyphicon glyphicon-save"></span>').attr('data-toggle', "tooltip").prop('title', "Join party").attr("style", "width: 49% !important; float: right;");
-
-    //backgroud div
-    $("body").prepend('<div id="backgroundFade" style="width: 100%; height: 100%; position: absolute; background: black; z-index: 100; opacity: 0.6; display: none;"></div>');
-
-    $("#overlays").css("z-index", 100);
-
-    $("#overlays-hud").prepend('<div id="statsInfo" class="main-color" style="pointer-events: auto;display: none;font-size: 13px;margin-top: 3px;float: left;font-weight: 700;background-color: rgba(0, 0, 0, 0.2);padding: 3px;border-radius: 4px;width: 65%;height: 44px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 85px;position: fixed;pointer-events: auto;color: #ffffff;"><p id="regionmodecheck" style="float: left;margin-left: 10px;">' +
-        '<i class="fa fa-search retro" onclick="getInfo2(); return false;"></i>  ' +
-        '<select id="regioncheck" class="form-control main-color note" onchange="getInfo2();getInfo3();" style="display: inline-block; font-size: 13px; position: relative; width: 150px; height: 32px; pointer-events: auto;background:' + legbgcolor + '"; border: none; border-bottom: 1px solid; margin-left: 20px; text-align: center; border-color: darkgrey;">' +
-        '<option style="background:' + legbgcolor + '" value="US-Atlanta" data-itr="page_region_north_america">North America</option>' +
-        '<option style="background:' + legbgcolor + '" value="BR-Brazil" data-itr="page_region_south_america">South America</option>' +
-        '<option style="background:' + legbgcolor + '"  value="EU-London" data-itr="page_region_europe">Europe</option>' +
-        '<option style="background:' + legbgcolor + '"  value="RU-Russia" data-itr="page_region_russia">Russia</option>' +
-        '<option style="background:' + legbgcolor + '" value="TK-Turkey" data-itr="page_region_turkey">Turkey</option>' +
-        '<option style="background:' + legbgcolor + '"  value="JP-Tokyo" data-itr="page_region_east_asia">East Asia</option>' +
-        '<option style="background:' + legbgcolor + '"  value="CN-China" data-itr="page_region_china">China </option>' +
-        '<option style="background:' + legbgcolor + '"  value="SG-Singapore" data-itr="page_region_oceania">Oceania</option></select>' +
-
-        '<select id="gamemodecheck" class="form-control main-color note" onchange="getInfo2();" style="display: inline-block; font-size: 13px; position: relative; width: 150px; height: 32px; pointer-events: auto;background:' + legbgcolor + '"; border: none; border-bottom: 1px solid; margin-left: 10px; text-align: center; border-color: darkgrey;">' +
-        '<option style="background:' + legbgcolor + '" value=":ffa" data-itr="page_gamemode_ffa">FFA</option>' +
-        '<option style="background:' + legbgcolor + '" value=":battleroyale" data-itr="page_gamemode_battle_royale">Battle Royal</option>' +
-        '<option style="background:' + legbgcolor + '" value=":teams" data-itr="page_gamemode_teams">Teams</option>' +
-        '<option style="background:' + legbgcolor + '" value=":experimental" data-itr="page_gamemode_experimental">Experimental</option>' +
-        '<option style="background:' + legbgcolor + '" value=":party" data-itr="page_party">Party</option>' +
-        '</select>' +
-        '</p>' +
-
-        '<p style="float: right; margin-right: 10px;"><span id="notesServer">Servers: </span><span id="numServers"></span> (<span id="pps"></span> <span data-toggle="tooltip" data-placement="top" data-original-title="Players per server">PPS</span>)</p>' +
-        '<p style="float: right;margin-right: 100px;"><span id="notesPlayers">Players: </span><span id="numPlayers"></span> / <span id="totalPlayers"  data-toggle="tooltip" data-placement="top" data-original-title="Total players online"></span></p></div>' +
-        '<div id="searchHud" class="hud" style="width: 65%; height: 60px; z-index: 15; margin: auto; top: 0; right: 0; left: 0; bottom: 0; position: fixed;">' +
-        '<div id="" style="margin-top: 10px;">' +
-        '<input id="searchInput" class="form-control" title="" placeholder="Enter friend\'s token, IP, leaderboard, name or clan tag..." style="pointer-events: auto;margin-bottom: 10px;float: left;width: 80% !important;text-align: center;">' +
-        '<button id="searchBtn" class="btn btn-copy-token copy-party-token btn-primary" data-toggle="tooltip" data-placement="bottom" data-original-title="Cancel search" style="pointer-events: auto;margin-bottom:10px;width: 15%;"><span id="searchSpan"><i class="fa fa-search"></i></span></button>' +
-        //            '<button id="closeBtn" class="btn btn-copy-token copy-party-token" data-toggle="tooltip" style="pointer-events: auto;color: #ffffff;margin-bottom:10px;width: 10%; background-color: transparent;" data-placement="right" data-original-title="Close" title=""><i class="fa fa-window-close fa-2"></i></button>' +
-        '</div></div>'
-    );
-    $("#regionmodecheck").hide();
-    $("#leaderboard-hud").append('<input id="tempCopy" style="display: none;" value="">' +
-        '</div>');
-    $("#clantag").attr('placeholder', 'Password').tooltip({
-        title: "Leave it empty for Public, or insert password of Clan, or use it as Tag",
-        placement: "left"
-    });
-    $("#skin").attr('maxlength', 150).attr('placeholder', 'Manual direct skin URL').tooltip({
-        title: "Insert your manual skin weblink",
-        placement: "left"
-    });
-    $("#region").tooltip({
-        title: "The region to play",
-        placement: "left"
-    });
-    $("#gamemode").tooltip({
-        title: "The mode to play",
-        placement: "top"
-    });
-    $("#nick").attr('placeholder', 'Name').tooltip({
-        title: "Insert your in-game name",
-        placement: "bottom"
-    });
-    $("#statsInfo").before('<div id="notes" class="main-color" style="display:none;font-size: 13px;float: left;font-weight: 700;border-radius: 4px;width: 65%;height: 147px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 400px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;background-color: rgba(0, 0, 0, 0.2);"><h5 id="notesaveforlater" class="main-color text-center" style="margin-top: 0px;">Save for later</h5>' +
-        '<input id="note1" class="form-control main-color note" style="background: transparent;color: lightgrey;  width: 25%;float:left; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-right: 7px; text-align: center;">' +
-        '<input id="note2" class="form-control main-color note" style="background: transparent; color: lightgrey; width: 24%; float: left; border: none; border-bottom: 1px solid; margin-left: 0px; margin-right: 7px; text-align: center; border-color: darkgrey;">' +
-        '<input id="note3" class="form-control main-color note" style="background: transparent; width: 49%; border: none; border-bottom: 1px solid; margin-left: 10px; text-align: center; border-color: darkgrey;">' +
-        '<input id="note4" class="form-control main-color note" style="background: transparent; color: lightgrey; width: 25%; float: left; border: none; border-bottom: 1px solid; margin-right: 7px; text-align: center; border-color: darkgrey;">' +
-        '<input id="note5" class="form-control main-color note" style="background: transparent; color: lightgrey; width: 24%; float: left; border: none; border-bottom: 1px solid; margin-left: 0px; margin-right: 7px; text-align: center; border-color: darkgrey;">' +
-        '<input id="note6" class="form-control main-color note" style="background: transparent; color: lightgrey; width: 49%; border: none; border-bottom: 1px solid; margin-left: 10px; text-align: center; border-color: darkgrey;">' +
-        '<input id="note7" class="form-control main-color note" style="background: transparent; color: lightgrey; border: none; border-bottom: 1px solid; text-align: center; border-color: darkgrey;">' +
-        '</div>');
-    $("#notes").append('<button id="closeBtn" class="btn btn-danger" style="margin-top: 20px;" data-itr="page_login_and_play" data-original-title="" title="">Close</button>');
-    $('.glyphicon.glyphicon-globe').removeClass('glyphicon glyphicon-globe').addClass('fa fa-globe fa-lg');
-    $('.btn.btn-warning.btn-spectate.btn-needs-server').after('<button id="logoutbtn" onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout">Logout</button>');
-
-    $("#minimap-hud").prepend('<div id="timertools-hud" class="hud" align="center" style="width: 50%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -90px; display: block;">' +
-        '<button id="playtimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100% display: block;" onclick="startTimer();" data-toggle="tooltip" data-original-title="Start Timer"" ><i id="playtime" class="fa fa-play-circle" style="padding-left: 0px;"></i></button>' +
-        '<button id="stoptimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100% display: none;" onclick="stopTimer();" data-toggle="tooltip" data-original-title="Pause Timer""><i id="pausetime" class="fa fa-pause-circle" style="padding-left: 0px;"></i></button>' +
-        '<button id="cleartimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100% display: none;" onclick="clearTimer();" data-toggle="tooltip" data-original-title="Stop Timer"><i id="cleartime" class="fa fa-stop-circle" style="padding-left: 0px;"></i></button>' +
-        '<a id="timer" style="padding: 0px; color: #d6d3d3; width: 12%; height: 100% position: absolute; right: 0px;">00:00</a>');
-    $("#stoptimer").hide();
-    $("#cleartimer").hide();
-
-    //        $(".menu-tabs").children().attr("style", "width: 14.27%;");
-    $(".menu-tabs>:nth-child(2)").after('<li class="legend-tab" style="width: 16.66%; padding:12px;" data-toggle="tooltip" data-original-title="API" data-placement="top"><a style="margin-top: 2px; height: 100%; padding:12px;" onclick="$(\'#main-menu\').children(\'div\').hide(); $(\'.menu-tabs\').children(\'li\').removeClass(\'active\'); $(\'.menu-tabs\').children(\'li\').children(\'a\').removeClass(\'active\'); $(\'#legend\').fadeIn(); $(this).addClass(\'active\'); $(this).parent().addClass(\'active\');" href="javascript:void(0);" class="fa fa-puzzle-piece fa-lg"></a></li>');
-    $(".menu-tabs").children().attr("style", "width: 16.66%;");
-
-    $(".menu-tabs").children().attr("style", "width: 16.66%;");
-    $(".profile-tab").hide();
-    $("#main-menu>#profile").after('<div id="legend" class="menu-panel"><div class="agario-panel legend-panel">' + //<h5 class="menu-main-color">Main Tools</h5>
-        //											'<button id="IPBtn" type="button" class="btn btn-sm btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-trademark"></i>Show Connector</button>' +
-        '<div id="UserProfile" style="margin-bottom: 10px;">' +
-        '<div id="UserProfilePic" class="user-picture"><img align="right" src="https://jimboy3100.github.io/banners/profilepic_guest.png" style="width: 60px; display:inline-block;border-radius: 30px;"></img></div>' +
-        '<div style="display:inline-block; width: 70%;">' +
-        '<div id="UserProfileName">Name: <div id="UserProfileName1" class="user-name" style="display:inline-block" >Guest</div></div>' +
-        '<div id="UserProfileUID">Social ID: <div id="UserProfileUID1" class="user-name" style="display:inline-block" ></div></div>' +
-        '<div id="TimesUsedPanel" class="user-name" style="display:inline-block;">Times Used: <div id="TimesUsed" style="display:inline-block"></div></div><br>' +
-        '</div></div>' +
-        '<button id="SHOSHOBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-puzzle-piece"></i>' + Premadeletter42 + '</button>' +
-        '<button id="XPBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-gamepad"></i>' + Premadeletter44 + '</button>' +
-        //                                          '<button id="TIMEBtn" type="button" class="btn btn-sm btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-clock-o"></i>' + Premadeletter46 + '</button>' +
-        //											'<button id="MAINBBtn" type="button" class="btn btn-sm btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-bars"></i>Show Main Banner</button>' +
-        '<button id="MAINBTBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-minus"></i>' + Premadeletter45a + '</button>' +
-        '<button id="AnimatedSkinBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-grav"></i>' + Premadeletter46 + '</button>' +
-        //											'<button id="RotationBtn" type="button" class="btn btn-sm btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-repeat"></i>Show Rotation Btns</button>' +
-        '<button id="HideAllBthn" type="button" class="btn btn-sm btn-danger" data-toggle="button" aria-pressed="false" autocomplete="off" data-toggle="tooltip" data-placement="right" data-original-title="Temporarily Hide/Show Everything. Function for Youtubers" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-exclamation-triangle"></i>' + Premadeletter49 + '</button>' +
-        '<button id="TIMEcalBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-calculator"></i>' + Premadeletter50 + '</button>' +
-        //											'<button id="copyGameNames" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%; display: none;"><i class="fa fa-scissors"></i>' + Premadeletter52 + '</button>' +
-        /*           '<button id="autoCoinBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-clock-o"></i>' + Premadeletter53 + '</button>' +
-                   //											'<button id="autoRespawnBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" data-original-title="" title="" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-flash"></i> Auto respawn</button>' +
-                   '<button id="troll1Btn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" data-original-title="" title="" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-bath"></i>' + Premadeletter55 + '</button>' +
-                   //											'<button id="OpenInfo" type="button" class="btn btn-sm btn-danger" data-toggle="button" aria-pressed="false" autocomplete="off" data-toggle="tooltip" data-placement="right" data-original-title="Mod Information and choose Template" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-info-circle"></i>Information</button>' +
-        */
-        '<button id="OpenuserScripts" type="submit" class="btn btn-primary btn 2" style="margin-top: 2px; display: block; width: 100%; padding: 4px 0 6px 0;"><i class="fa fa-code"></i>User Scripts</button>' +
-        '<button id="SpecialDealsBtn" class="btn btn-primary btn" type="submit" onclick="BeforeSpecialDeals(); return false;" class="btn btn-primary btn-shop" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px;" data-itr="page_shop"><i class="fa fa-briefcase"></i>Special Deals</button>' +
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 2px; padding: 4px 0 0px 0;"><span id="legendmanualback" class="title" style="">Manual background:  </span>' +
-        '<select id="backgroundPic" class="form-control" onchange="changePicFun();" required="" data-original-title="" title="" style="display:inline; width: 40%" >' +
-        '<option value="1" data-itr="">Minimap</option>' +
-        '<option value="2" data-itr="">Leaderboard</option>' +
-        '<option value="3" data-itr="">Teamboard</option>' +
-        '<option value="4" data-itr="">Main Canvas</option>' +
-        '<option value="5" data-itr="">Main Banner</option>' +
-        '</select>' +
-
-        '<input id="minimapPicture" class="form-control" placeholder="Minimap Image URL" value="" style="margin-top: 2px; display: block;" onblur="setminbgname();" data-toggle="tooltip" data-placement="right" data-original-title="Url of image starting with https://... or https://..." >' +
-        '<input id="minbtext" class="form-control" placeholder="Minimap Text" value="" style="margin-top: 2px; display: block;" onblur="setminbtext();">' +
-        '<input id="leadbPicture" class="form-control" placeholder="Leaderboard Image URL" value="" style="margin-top: 2px; display: none;" onblur="setleadbgname();" data-toggle="tooltip" data-placement="right" data-original-title="Url of image starting with https://... or https://..." >' +
-        '<input id="leadbtext" class="form-control" placeholder="Leaderboard Logo Text" value="" style="margin-top: 2px; display: none; " onblur="setleadbtext();">' +
-        '<input id="teambPicture" class="form-control" placeholder="Teamboard Image URL" value="" style="margin-top: 2px; display: none;" onblur="setteambgname();" data-toggle="tooltip" data-placement="right"  data-original-title="Url of image starting with https://... or https://..." >' +
-        '<input id="teambtext" class="form-control" placeholder="Teamboard Logo Text" value="" style="margin-top: 2px; display: none; " onblur="setteambtext();">' +
-        '<input id="canvasPicture" class="form-control" placeholder="Main Canvas Image URL" value="" style="margin-top: 2px; display: none;" onblur="setcanvasbgname();" data-toggle="tooltip" data-placement="right" data-original-title="Url of image starting with https://... or https://..." >' +
-        '<input id="imgUrl" class="form-control" placeholder="Main Banner Icon URL" value="" style="margin-top: 2px; display: none; " onblur="setimgUrl();" data-toggle="tooltip" data-placement="right" data-original-title="Url of image starting with http://... or https://..." >' +
-        '<input id="imgHref" class="form-control" placeholder="Main Banner Link URL" value="" style="margin-top: 2px; display: none; " onblur="setimgHref();" data-toggle="tooltip" data-placement="right" data-original-title="Url of link to redirect" >' +
-        '</div>' +
-
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 4px 0 0px 0;"><span id="legendmanualmess" class="title" style="">Manual Message Icons&Youtube:  </span>' +
-        '<select id="changephotos" class="form-control" onchange="changePhotoFun();" required="" data-original-title="" title="" style="display:inline; width: 35%" >' +
-        '<option value="1" data-itr="">Icon 1</option>' +
-        '<option value="2" data-itr="">Icon 2</option>' +
-        '<option value="3" data-itr="">Icon 3</option>' +
-        '<option value="4" data-itr="">Icon 4</option>' +
-        '<option value="5" data-itr="">Icon 5</option>' +
-        '<option value="6" data-itr="">Icon 6</option>' +
-        '<option value="7" data-itr="">Youtube 1</option>' +
-        '<option value="8" data-itr="">Youtube 2</option>' +
-        '<option value="9" data-itr="">Youtube 3</option>' +
-        '<option value="10" data-itr="">Youtube 4</option>' +
-        '<option value="11" data-itr="">Youtube 5</option>' +
-        '<option value="12" data-itr="">Youtube 6</option>' +
-        '</select>' +
-
-        '<input id="pic1data" class="form-control" placeholder="Message Icon Text 1" value="" style="margin-top: 2px; display: block; " onblur="setpic1data();">' +
-        '<input id="pic2data" class="form-control" placeholder="Message Icon Text 2" value="" style="margin-top: 2px; display: none; " onblur="setpic2data();">' +
-        '<input id="pic3data" class="form-control" placeholder="Message Icon Text 3" value="" style="margin-top: 2px; display: none; " onblur="setpic3data();">' +
-        '<input id="pic4data" class="form-control" placeholder="Message Icon Text 4" value="" style="margin-top: 2px; display: none; " onblur="setpic4data();">' +
-        '<input id="pic5data" class="form-control" placeholder="Message Icon Text 5" value="" style="margin-top: 2px; display: none; " onblur="setpic5data();">' +
-        '<input id="pic6data" class="form-control" placeholder="Message Icon Text 6" value="" style="margin-top: 2px; display: none; " onblur="setpic6data();">' +
-        '<input id="yt1data" class="form-control" placeholder="Youtube Message Text 1" value="" style="margin-top: 2px; display: none; " onblur="setyt1data();">' +
-        '<input id="yt2data" class="form-control" placeholder="Youtube Message Text 2" value="" style="margin-top: 2px; display: none; " onblur="setyt2data();">' +
-        '<input id="yt3data" class="form-control" placeholder="Youtube Message Text 3" value="" style="margin-top: 2px; display: none; " onblur="setyt3data();">' +
-        '<input id="yt4data" class="form-control" placeholder="Youtube Message Text 4" value="" style="margin-top: 2px; display: none; " onblur="setyt4data();">' +
-        '<input id="yt5data" class="form-control" placeholder="Youtube Message Text 5" value="" style="margin-top: 2px; display: none; " onblur="setyt5data();">' +
-        '<input id="yt6data" class="form-control" placeholder="Youtube Message Text 6" value="" style="margin-top: 2px; display: none; " onblur="setyt6data();">' +
-
-        '<input id="pic1url" class="form-control" placeholder="Message Icon Imgur Url 1" value="" style="margin-top: 2px; display: block;" onblur="setpic1url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-        '<input id="pic2url" class="form-control" placeholder="Message Icon Imgur Url 2" value="" style="margin-top: 2px; display: none;" onblur="setpic2url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-        '<input id="pic3url" class="form-control" placeholder="Message Icon Imgur Url 3" value="" style="margin-top: 2px; display: none;" onblur="setpic3url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-        '<input id="pic4url" class="form-control" placeholder="Message Icon Imgur Url 4" value="" style="margin-top: 2px; display: none;" onblur="setpic4url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-        '<input id="pic5url" class="form-control" placeholder="Message Icon Imgur Url 5" value="" style="margin-top: 2px; display: none;" onblur="setpic5url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-        '<input id="pic6url" class="form-control" placeholder="Message Icon Imgur Url 6" value="" style="margin-top: 2px; display: none;" onblur="setpic6url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-        '<input id="yt1url" class="form-control" placeholder="Youtube Message Url 1" value="" style="margin-top: 2px; display: none;" onblur="setyt1url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-        '<input id="yt2url" class="form-control" placeholder="Youtube Message Url 2" value="" style="margin-top: 2px; display: none;" onblur="setyt2url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-        '<input id="yt3url" class="form-control" placeholder="Youtube Message Url 3" value="" style="margin-top: 2px; display: none;" onblur="setyt3url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-        '<input id="yt4url" class="form-control" placeholder="Youtube Message Url 4" value="" style="margin-top: 2px; display: none;" onblur="setyt4url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-        '<input id="yt5url" class="form-control" placeholder="Youtube Message Url 5" value="" style="margin-top: 2px; display: none;" onblur="setyt5url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-        '<input id="yt6url" class="form-control" placeholder="Youtube Message Url 6" value="" style="margin-top: 2px; display: none;" onblur="setyt6url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-        '</div></div>' +
-
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 0px 0 0px 0;"><span id="legendlanguagetext" class="title" style="" data-toggle="tooltip" data-placement="right" data-original-title="Visit https://jimboy3100.github.io/ LanguagePackEnglish.js to Upload a Language Pack">Choose Language:  </span>' +
-        '<select id="legendlanguages" class="form-control" onchange="changeModLanguage();" required="" data-original-title="" title="" style="display:inline; width: 50%" >' +
-        '<option value="1" data-itr="">English</option>' +
-        '<option value="6" data-itr="">Arabic</option>' +
-        '<option value="4" data-itr="">Bulgarian</option>' +
-        '<option value="5" data-itr="">French - Francais</option>' +
-        '<option value="9" data-itr="">German - Deutsch</option>' +
-        '<option value="2" data-itr="">Greek - Ελληνικά</option>' +
-        '<option value="11" data-itr="">Polish - Polskie</option>' +
-        '<option value="8" data-itr="">Russian</option>' +
-        '<option value="3" data-itr="">Spanish - Espanol</option>' +
-        '<option value="7" data-itr="">Trad. Chinese</option>' +
-        '<option value="10" data-itr="">Turkish - Türk</option>' +
-        '</select></div>' +
-
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 4px; padding: 0px 0 0px 0;"><span id= "chatbtntitle" class="title" style="">Chat Position:  </span><div class="btn-group">' +
-        '<button id="bottomleft" type="button" class="btn btn-primary">Default</button>' +
-        '<button id="bottomright" type="button" class="btn btn-primary"><i class="fa fa-arrow-down" aria-hidden="true"></i><i class="fa fa-arrow-right" aria-hidden="true"></i></button>' +
-        '<button id="topleft" type="button" class="btn btn-primary"><i class="fa fa-arrow-up" aria-hidden="true"></i><i class="fa fa-arrow-left" aria-hidden="true"></i></button>' +
-        '<button id="topright" type="button" class="btn btn-primary"><i class="fa fa-arrow-up" aria-hidden="true"></i><i class="fa fa-arrow-right" aria-hidden="true"></i></button>' +
-        '</div></div>' +
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 4px; padding: 0px 0 0px 0;"><span id="legenddiscordwebh" class="title" style="">Discord Webhook Url (for sending TOKEN)  </span>' +
-        '<input id="discwebhook1" class="form-control" placeholder="Discord Webhook 1 Url" value="" data-toggle="tooltip" data-placement="right" data-original-title="Must be filled for function to work. https://discordapp.com/api/webhooks/.../..." style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%; display: inline-block; " onblur="setdiscwebhook1();">' +
-        '<input id="discwebhook2" class="form-control" placeholder="Discord Webhook 2 Url" value="" data-toggle="tooltip" data-placement="right" data-original-title="Secondary Webhook(optional). https://discordapp.com/api/webhooks/.../..." style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%; display: inline-block;" onblur="setdiscwebhook2();">' +
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 4px; padding: 0px 0 0px 0;"><span id="legendotherscripts" class="title" style="">Expansions: </span>' +
-        '</div><div id="LEGENDAds2"></div><div id="LEGENDAds3"></div>' +
-        '</div></div>');
-    loginsfbGpl2();
-    //fix userprofile
-    $("#UserProfile").css("font-size", "12px");
-    $("#UserProfilePic").click(function() {
-        useProfilePhotoCustom();
-    });
-    //			loginsfbGpl();			
-    //		$("#exp-bar").hide();
-    //		$(".menu-tabs").children().attr("style", "width: 19.99%;");
-    //		$(".profile-tab").hide();
-
-    $("#time-hud").attr("style", "top: 290px !important;");
-
-    // fix leaderboard buttons
-    $("#leaderboard-menu").css("pointer-events", "auto");
-
-
-    // fix stats text size
-    $('[id="statsText"]').css("font-size", "medium");
-
-
-    // detect paste
-    /*
-        $(document).bind("paste", function(e) {
-            if (!searching && !($("input,textarea").is(":focus"))) {
-                var pastedData = e.originalEvent.clipboardData.getData('text');
-                hideMenu();
-                showSearchHud();
-                $("#searchInput").val(pastedData);
-                $("#searchInput").select();
-                //searchHandler(pastedData);
-				$("#searchBtn").click();
-            }
-        });
-*/
-    $("#searchInput").bind("paste", function(e) {
-        if (!searching) {
-            var pastedData = e.originalEvent.clipboardData.getData('text');
-            $("#searchInput").val(pastedData);
-            $("#searchInput").select();
-            //searchHandler(pastedData);
-            $("#searchBtn").click();
-        }
-    });
-
-    //load notes
-    $("#note1").val(localStorage.getItem('note1'));
-    $("#note2").val(localStorage.getItem('note2'));
-    $("#note3").val(localStorage.getItem('note3'));
-    $("#note4").val(localStorage.getItem('note4'));
-    $("#note5").val(localStorage.getItem('note5'));
-    $("#note6").val(localStorage.getItem('note6'));
-    $("#note7").val(localStorage.getItem('note7'));
-
-    $(".note").keyup(function(event) {
-        localStorage.setItem(event.target.id, $(event.target).val());
-    });
-    var initialMusicUrl = (localStorage.getItem("musicUrl") == null ? defaultMusicUrl : localStorage.getItem("musicUrl"));
-    //	var savemusic=$(".agario-panel.sounds-panel").html();
-    $('.agario-panel.radio-panel').after('<div id="youtubeplayer" style="margin-left: 0px;"><h5 class="main-color" style="margin-right: 15px;">Youtube player</h5>' +
-        '<iframe id="musicFrame" width="350" height="180" src="' + getEmbedUrl(initialMusicUrl) + '" frameborder="0" allowfullscreen=""></iframe></div>' +
-        '<div id="afteryoutubeplayer"><input id="musicUrl" onclick="$(this).select();" type="text" placeholder="Youtube Url" value="' + initialMusicUrl + '" class="form-control" data-toggle="tooltip" data-placement="right" data-original-title="Paste your video/playlist here">');
-    //            '<button id="YoutubeAutoBtn" type="button" class="btn btn-block btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px;"><i class="fa fa-youtube-play"></i>' + Premadeletter40 + '</button></div>'+
-    //			'<button id="YoutubeBackgroundBtn" type="button" class="btn btn-block btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px;"><i class="fa fa-youtube-play"></i>' + Premadeletter61 + '</button></div>' +
-
-    $('.agario-panel.radio-panel').hide();
-    $('.agario-panel.ogario-yt-panel').hide();
-
-    if ($('#menuBg').val() == "https://cdn.ogario.ovh/static/img/pattern.png") {
-        $('#menuBg').val("https://jimboy3100.github.io/pattern.png");
-    }
-    if ($('#messageSound').val() == "https://cdn.ogario.ovh/static/sounds/notification_01.mp3") {
-        $('#messageSound').val("https://jimboy3100.github.io/notification_01.mp3");
-    }
-    if ($('#commandSound').val() == "https://cdn.ogario.ovh/static/sounds/notification_02.mp3") {
-        $('#commandSound').val("https://jimboy3100.github.io/notification_02.mp3");
-    }
-    //    $("#music").replaceWith('<div id="music" class="menu-panel" style="display: none;"><div class="agario-panel"><h5 class="main-color">Youtube player</h5>' +
-    //                            '<iframe id="musicFrame" width="320" height="180" src="' + getEmbedUrl(initialMusicUrl) + '" frameborder="0" allowfullscreen=""></iframe>' +
-    //                            '<input id="musicUrl" onclick="$(this).select();" type="text" placeholder="Youtube Url" value="' + initialMusicUrl + '" class="form-control" data-toggle="tooltip" data-placement="right" data-original-title="Paste your video/playlist here">'+
-    //							'<button id="YoutubeAutoBtn" type="button" class="btn btn-block btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px;"><i class="fa fa-youtube-play"></i>Auto Youtube On</button></div>');
-    //	$('#music').append(savemusic+'</div>');						
-
-    ytFrame();
-
-    /*		 $("#YoutubeBackgroundBtn").click(function() {
-                var checked = !($(this).attr('aria-pressed') == "true");
-                if (checked) {               
-    				YoutubebackgroundEnable();
-                    $(this).html('<i class="fa fa-youtube-play"></i>' + Premadeletter62);
-                } else {
-    				YoutubebackgroundDisable();
-                    $(this).html('<i class="fa fa-youtube-play"></i>' + Premadeletter61);
-                }
-            });*/
-
-    //roller and other icons
-    $('#exp-bar > .icon-user').addClass('fa fa-cog fa-spin fa-3x fa-fw').removeClass('icon-user');
-    //$('.music-tab').children().addClass('quick-yt icon-youtube2').removeClass('icon-music').attr('data-original-title', 'Youtube & Sounds');
-    $('.music-tab').children().attr('data-original-title', 'Youtube & Sounds');
-    document.getElementsByClassName('quick-yt ogicon-youtube2')[0].setAttribute('id', 'legendid');
-
-    document.getElementsByClassName('quick-yt ogicon-youtube2')[0].href = "https://www.youtube.com/watch?v=CnIfNSpCf70";
-    document.getElementsByClassName('quick-yt ogicon-youtube2')[0].setAttribute('data-original-title', 'Legend Promo Video');
-    //       $('#legendid').addClass('fa fa-thumbs-o-up').removeClass('quick-yt icon-youtube2');
-    $("#more-skins").attr('href', 'https://jimboy3100.github.io/skins/');
-    $(".quick-more-skins.ogicon-grin").attr('href', 'https://jimboy3100.github.io/skins/');
-    $("#quick-menu").append('<a id= "oldSkinsBtn" class="fa fa-shopping-basket" data-toggle="tooltip" data-container="body" data-placement="left" title="" data-original-title="Old Skins/ MassX3 1h"></a>');
-    $(".quick-more-skins.ogicon-grin").after('<a id= "themesBtn" target="_blank" href="https://jimboy3100.github.io/themes/" class="fa fa-tint" data-toggle="tooltip" data-container="body" data-placement="left" title="" data-original-title="Themes"></a>' +
-        //		'<a id= "LMImplements" class="fa fa-eercast" data-toggle="tooltip" data-container="body" data-placement="left" title="" data-original-title="Implementations from Legend Mod"></a>'+
-        '<a id= "LegGoogleForm" class="fa fa-check-square-o" data-toggle="tooltip" data-container="body" data-placement="left" title="" data-original-title="New Ideas & Statistics Form" onclick="legendformIframe();return false;"></a>' +
-        '<a id= "ModInfoQuick" class="fa fa-info" data-toggle="tooltip" data-container="body" data-placement="left" title="" data-original-title="Mod Info & Templates" onclick="openhelper();return false;"></a>');
-    $("#LegGoogleForm").tooltip('show').tooltip('hide');
-    $("#oldSkinsBtn").tooltip('show').tooltip('hide');
-    $("#oldSkinsBtn").hide();
-    $("#ModInfoQuick").tooltip('show').tooltip('hide');
-    //		$("#LMImplements").tooltip('show').tooltip('hide');
-    // prevent edit
-    $("#musicUrl").on("input", function() {
-        $(this).attr("maxlength", "1000");
-    });
-    $("#musicUrl").bind("paste", function(e) {
-        $(this).attr("maxlength", "1000");
-        var pastedDataorNot = e.originalEvent.clipboardData.getData('text');
-        YoutubeEmbPlayer(pastedDataorNot);
-    });
-
-    // save notes
-
-    //fzogar Upload / Download Settings
-    $("#import-settings-btn").attr('class', 'btn btn-success');
-    //		$("#close-exp-imp").before('<button id="fzogarOgarBtn" onclick="fzogarOgarIframe(); return false" style="margin-right: 25px;" class="btn btn-success" data-original-title="" title="">Upload / Download</button>');
-
-    $("#searchHud").after('<div id="searchLog" class="main-color" style="font-size: 13px;float: left;font-weight: 700;border-radius: 4px;width: 65%;height: 270px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: -390px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;display: none;background-color: rgba(0, 0, 0, 0.2);"><h5 id="logTitle" class="main-color text-center" style="margin-top: 0px;">Results</h5>' +
-        '<div id="log" style="font-weight: normal; overflow-x: hidden; overflow-y: auto;height: 90%;">' +
-        '</div></div>');
-
-    //$("#minimap-hud").prepend('<div id="rotate-hud" class="" style="width: 11%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: 0px; display: block;">' +
-        //	'<button id="RotateLeft" class="btn-link" style="padding: 0px;color: #d6d3d3; width: 49%;height: 100%;" onclick="rotateminimapsectors2();" data-toggle="tooltip"  data-original-title="Rotate Left"><i class="fa fa-undo" style="padding-left: 0px;"></i></button>'+
-        //'<button id="RotateRight" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 100%; height: 100%;" onclick="rotateminimapsectors();" data-toggle="tooltip" data-original-title="Rotate"><i class="fa fa-repeat" style="padding-left: 0px;"></i></button></div>');
-
-    $("#minimap-hud").prepend('<div id="shortcuts-hud" class="hud" style="width: 100%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -30px; display: block;">' +
-        '<button id="VoiceBtn" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 11%; height: 100%;" data-toggle="tooltip" data-original-title="Voice & Camera Chat"><i id="VoiceBtn1" class="fa fa-microphone" style="padding-left: 0px;"></i></button>' +
-        '<button id="ChatBtn" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 11%; height: 100%;" data-toggle="tooltip" data-original-title=' + Premadeletter57 + '><i id="ChatBtn1" class="fa fa-comment-o" style="padding-left: 0px;"></i></button>' +
-        '<button id="MiniScripts" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 11%; height: 100%;" onclick="setscriptingfunction();" data-toggle="tooltip" data-original-title="Mini Scripts"><i id="MiniScripts1" class="fa fa-linode" style="padding-left: 0px;"></i></button>' +
-        '<button id="SendCommands" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 11%; height: 100%;" onclick="setmessagecomfunction();" data-toggle="tooltip" data-original-title="Message Script Commands"><i id="SendCommands1" class="fa fa-sitemap" style="padding-left: 0px;"></i></button>' +
-        '<button id="Images" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 11%; height: 100%;" onclick="seticonfunction();" data-toggle="tooltip" data-original-title="Message Imgur Icons"><i id="Images1" class="fa fa-picture-o" style="padding-left: 0px;"></i></button>' +
-        '<button id="yout" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 11%; height: 100%;" onclick="setytfunction();" data-toggle="tooltip" data-original-title="Message Youtube Videos"><i id="yout1" class="fa fa-youtube" style="padding-left: 0px;"></i></button>' +
-        '<button id="Bino" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 11%; height: 100%;" onclick="Bino();" data-toggle="tooltip" data-original-title="[Spectate Mode Only] Binoculars"><i id="BinoBtnI" class="fa fa-binoculars" style="padding-center: 0px;"></i></button>' +
-        '<button id="playerBtn" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 11%; height: 100%;" data-toggle="tooltip" data-original-title="Click play on youtube tab at first"><i id="playerI" class="fa fa-play-circle" style="padding-center: 0px;"></i></button>' +
-        '<button id="fullscreenBtn" class="btn-link" style="padding: 0px;color: #d6d3d3;width: 11%;height: 100%;" onclick="toggleFullScreen(fullornot);" data-toggle="tooltip" data-original-title="Fullscreen"><i class="fa fa-tv" style="padding-left: 0px;"></i></button></div>');
-
-
-    $("#minimap-hud").prepend('<div id="images-hud" class="hud" style="width: 70%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
-        '<button id="sendicon1" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon1();" data-toggle="tooltip" data-original-title="Bad Choice!"><i id="sendicon11" class="fa fa-exclamation-triangle" style="padding-left: 0px;"></i></button>' +
-        '<button id="sendicon2" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon2();" data-toggle="tooltip" data-original-title="Why?"><i id="sendicon21" class="fa fa-question-circle" style="padding-left: 0px;"></i></button>' +
-        '<button id="sendicon3" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon3();" data-toggle="tooltip" data-original-title="Yow!!"><i id="sendicon31" class="fa fa-wheelchair" style="padding-center: 0px;"></i></button>' +
-        '<button id="sendicon4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon4();" data-toggle="tooltip" data-original-title="Death!"><i id="sendicon41" class="fa fa-cutlery" style="padding-center: 0px;"></i></button>' +
-        '<button id="sendicon5" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon5();" data-toggle="tooltip" data-original-title="Relax!"><i id="sendicon51" class="fa fa-bed" style="padding-left: 0px;"></i></button>' +
-        '<button id="sendicon6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon6();" data-toggle="tooltip" data-original-title="Legend mod!"><i id="sendicon61" class="fa fa-telegram" style="padding-left: 0px;"></i></button></div>');
-
-    $("#minimap-hud").prepend('<div id="yt-hud" class="hud" style="width: 70%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
-        '<button id="sendyt1" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt1();" data-toggle="tooltip" data-original-title="Rick Astley - Never Gonna Give You Up"><i id="sendyt11" class="fa fa-music" style="padding-left: 0px;"></i></button>' +
-        '<button id="sendyt2" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt2();" data-toggle="tooltip" data-original-title="Survivor - Eye Of The Tiger"><i id="sendyt21" class="fa fa-music" style="padding-left: 0px;"></i></button>' +
-        '<button id="sendyt3" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt3();" data-toggle="tooltip" data-original-title="Lion king - The Lion Sleeps Tonight"><i id="sendyt31" class="fa fa-music" style="padding-center: 0px;"></i></button>' +
-        '<button id="sendyt4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt4();" data-toggle="tooltip" data-original-title="Agario - Jumbo Solo vs Teams"><i id="sendyt41" class="fa fa-video-camera" style="padding-center: 0px;"></i></button>' +
-        '<button id="sendyt5" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt5();" data-toggle="tooltip" data-original-title="Agario - Kill3r vs Teams"><i id="sendyt51" class="fa fa-video-camera" style="padding-left: 0px;"></i></button>' +
-        '<button id="sendyt6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt6();" data-toggle="tooltip" data-original-title="Promotional Video"><i id="sendyt61" class="fa fa-telegram" style="padding-left: 0px;"></i></button></div>');
-
-    $("#minimap-hud").prepend('<div id="msgcommands-hud" class="hud" style="width: 70%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
-        '<button id="msgcommand1" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand1f();" data-toggle="tooltip" data-original-title="Hello Team!"><i id="msgcommand11" class="fa fa-coffee" style="padding-left: 0px;"></i></button>' +
-        '<button id="msgcommand2" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand2f();" data-toggle="tooltip" data-original-title="Laugh to Team"><i id="msgcommand21" class="fa fa-smile-o" style="padding-left: 0px;"></i></button>' +
-        '<button id="msgcommand3" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand3f();" data-toggle="tooltip" data-original-title="Team Change Name to yours"><i id="msgcommand31" class="fa fa-magic" style="padding-center: 0px;"></i></button>' +
-        '<button id="msgcommand4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand4f();" data-toggle="tooltip" data-original-title="Troll Teammate"><i id="msgcommand41" class="fa fa-bath" style="padding-center: 0px;"></i></button>' +
-        '<button id="msgcommand5" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand5f();" data-toggle="tooltip" data-original-title="Open Youtube Music"><i id="msgcommand51" class="fa fa-youtube-play" style="padding-left: 0px;"></i></button>' +
-        '<button id="msgcommand6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand6f();" data-toggle="tooltip" data-original-title="Insane mode (Hide Everything)"><i id="msgcommand" class="fa fa-exclamation-triangle" style="padding-left: 0px;"></i></button></div>');
-
-    $("#minimap-hud").prepend('<div id="scripting-hud" class="hud" style="width: 25%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
-        '<button id="Cutnames" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 50%; height: 100%;" data-toggle="tooltip" data-original-title="Edit names"><i id="Cutnames1" class="fa fa-scissors" style="padding-left: 0px;"></i></button>' +
-        '<button id="Cutnames" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 50%; height: 100%;" onclick="Ultimouse();" data-toggle="tooltip" data-original-title="Ultimouse Control"><i id="Ultimouse1" class="fa fa-mouse-pointer" style="padding-left: 0px;"></i></button></div>');
-
-    $("#leaderboard-hud").append('<div id="leaderboard-menu" style="pointer-events: auto;">' +
-        '<a id="searchShortcut" class="btn btn-info" data-toggle="tooltip" data-placement="left" data-original-title="Join server (Backspace)" style="width: 33.3%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;border-top-color: rgb(141, 201, 64);border-bottom-style: none;border-left-style: none;border: none;margin-top: 0px; background-color: transparent;color: ' + legmaincolor + ' ; " data-toggle="tooltip" data-original-title="Search leaderboards" title=""><i class="fa fa-search fa-lg"></i></a>' +
-        '<a id="copySIPBtn" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: ' + legmaincolor + ' ; width: 33.3%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;/* border: none; */border-left-style: none;border-right-style: none;border-bottom-style: none;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Token/SIP">Copy</a>' +
-        '<a id="reconnectBtn" class="btn btn-info" title="" data-toggle="tooltip" data-placement="bottom" data-original-title="Change server (+)" style="' +
-        'background-color: transparent;color: ' + legmaincolor + ' ;width: 33.3%; text-shadow: 0.3px 0.3px #000000; font-size: small; margin-top: 0px; border: none;"><i class="fa fa-refresh fa-lg"></i></a>' +
-
-        '<div id="dropDown3" class="hud" style="position: absolute; pointer-events: auto; width: 33%; left: 0px; padding: 0px; border-radius: 0px;">' +
-        '<a id="lastIPBtn" data-disabled="true" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="width: 100%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;border-top-color: rgb(141, 201, 64);border-bottom-style: none;border-left-style: none;border: none;margin-top: 0px; background-color: transparent;color: ' + legmaincolor + ' ;" data-toggle="tooltip" data-html="true" data-placement="left" data-original-title="<p style=&quot;margin-top:3px; margin-bottom:0px; margin-right: 2px;&quot; align=&quot;center&quot;><span class=&quot;hud-main-color&quot; style=&quot;position:absolute; left: 15px;&quot;>NEW</span>Join back</p><hr style=&quot;margin-top:5px; margin-bottom:10px; border-color:darkslategray;&quot;/><p class=&quot;&quot; style=&quot;margin-bottom:3px; font-weight:normal;&quot; align=&quot;justify&quot;>Connect to last IP you played</p>"><i class="fa fa-arrow-circle-down fa-lg"></i></a>' +
-        '</div>' +
-        '<div id="dropDown2" class="hud" style="position: absolute; pointer-events: auto; width: 33%; height: 90px; left: 67px; padding: 0px; border-radius: 0px;">' +
-        '<a id="copySIPandPass" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: ' + legmaincolor + ' ; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Token/SIP&Password">TK&PW</a>' +
-        '<a id="copyLBBtn" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: ' + legmaincolor + ' ; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Leaderboard (L)">LB</a>' +
-        '<a id="copySIPPassLB" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: ' + legmaincolor + ' ; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Token/SIP, Password, Leaderboard...">TK&ALL</a>' +
-        '</div>' +
-        '<div id="dropDown" class="hud" style="position: absolute; pointer-events: auto; width: 33%; height: 30px; left: 67px; padding: -30px; border-radius: 0px;">' +
-        '<a id="copyLBBtn" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: ' + legmaincolor + ' ; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Leaderboard (L)">LB</a>' +
-        //            '<a id="copySIPPassLB" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Token/SIP&Leaderboard">TK&PW&L</a>' +
-        '</div>' +
-
-        '<input id="tempCopy" style="display: none;" value="">' +
-        '</div>');
-    // player shortcut			
-
-    $(".options-box.zoomGroup").after('<div class="options-box leaderboard">' +
-        '<h5 class="menu-main-color">Leaderboards</h5>' +
-        '<label>Leaderboard Players<input type="checkbox" class="js-switch" id="quickleaderbaord" data-switchery="true" style="display: none;">' +
-        '<span><select id="leaderboardlimit" class="form-control" onchange="changeleaderboardlimit();" required="" data-original-title="" title="" style="display:inline; position: absolute;margin-top: -10px; right: 10px; width: 80px" >' +
-        '<option selected value="10" data-itr="">10</option>' +
-        '<option value="15" data-itr="">15</option>' +
-        '<option value="20" data-itr="">20</option>' +
-        '<option value="25" data-itr="">25</option>' +
-        '<option value="30" data-itr="">30</option>' +
-        '</select></span></label><br><br>' +
-        '<label>Team Players<input type="checkbox" class="js-switch" id="quickteambaord" data-switchery="true" style="display: none;">' +
-        '<span><select id="teamboardlimit" class="form-control" onchange="changeteamboardlimit();" required="" data-original-title="" title="" style="display:inline; position: absolute;margin-top: -10px; right: 10px; width: 80px" >' +
-        '<option selected value="5" data-itr="">5</option>' +
-        '<option value="10" data-itr="">10</option>' +
-        '<option value="15" data-itr="">15</option>' +
-        '<option value="20" data-itr="">20</option>' +
-        '<option value="25" data-itr="">25</option>' +
-        '<option value="30" data-itr="">30</option>' +
-        '<option value="35" data-itr="">35</option>' +
-        '<option value="40" data-itr="">40</option>' +
-        '</select></span></label>' +
-        '</div>');
-
-    $("#playerBtn").click(function() {
-        if (playerState != 1) {
-            $('#musicFrame')[0].contentWindow.postMessage('{"event":"command","func":"' + 'playVideo' + '","args":""}', '*');
-            $("#playerI").removeClass("fa-play-circle").addClass("fa-pause-circle");
-            $(this).attr('data-original-title', Premadeletter60).tooltip('fixTitle').tooltip('show');
-            return playerState = 1;
-        } else {
-            $('#musicFrame')[0].contentWindow.postMessage('{"event":"command","func":"' + 'pauseVideo' + '","args":""}', '*');
-            $("#playerI").removeClass("fa-pause-circle").addClass("fa-play-circle");
-            $(this).attr('data-original-title', Premadeletter13).tooltip('fixTitle').tooltip('show');
-            return playerState = 0;
-        }
-
-    });
-    $("#copySIPBtn").mouseenter(function() {
-        $("#dropDown3").hide();
-        $("#copySIPBtn").text("Token");
-        if ($("#clantag").val() != "") {
-            $("#dropDown2").show(100);
-        } else {
-            $("#dropDown").show(100);
-        }
-    });
-    $("#leaderboard-menu").mouseleave(function() {
-        $("#dropDown").hide();
-        $("#dropDown2").hide();
-        $("#dropDown3").hide();
-        $("#copySIPBtn").text("Copy");
-    });
-
-    $("#logTitle").after('<a href="#" id="notesclear" style="color: lightgrey;float: right;position: absolute;right: 12px;top: 9px;" class="main-color" onclick="$(\'#log\').html(\'\');" data-toggle="" data-placement="left" data-original-title="Clear list"><i class="fa fa-trash fa-2"></i></a>');
-    $("#searchBtn").tooltip('disable');
-    $("#copyLBBtn").click(function() {
-        copy($("#leaderboard-positions").text());
-    });
-    $("#dropDown>#copyLBBtn").click(function() {
-        copy($("#leaderboard-positions").text());
-    });
-    $("#lastIPBtn").click(function() {
-        lastIP = localStorage.getItem("lastIP");
-        if (lastIP == "" || lastIP == null) {} else {
-            $('#server-token').val(lastIP);
-            $('#server-join').click();
-            setTimeout(function() {
-                if ($('#server-token').val() != lastIP) {
-                    toastr["error"](Premadeletter31).css("width", "210px");
-                }
-            }, 1000);
-        }
-    });
-
-    $("#copyIPBtn").click(function() {
-        if (searchSip != null) {
-            copy("https://agar.io/?r=" + region + "&m=" + realmode + "&search=wss://" + searchSip);
-        } else {
-            copy("https://agar.io/?r=" + $('#region').val() + "&m=" + realmode + "&search=wss://" + currentIP);
-        }
-    });
-
-    $("#copySIPBtn").click(function() {
-        if (realmode == ":party") {
-            CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val();
-            // CopyTkPwLb2="http://agar.io/"+"?&pass=" + $("#clantag").val() + $("#server").val();
-            copy(CopyTkPwLb2);
-        } else if (realmode != ":party") {
-            if (region != null && realmode != null) {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-                //CopyTkPwLb2="http://agar.io/?sip=" + searchSip + "&?pass=" + $("#clantag").val() + "&?r=" + region + "&m=" + realmode;	
-                copy(CopyTkPwLb2);
-            } else {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val();
-                copy(CopyTkPwLb2);
-            }
-        } else if (privateSrv == null) { //else if (searchSip != null && privateSrv==null)
-            if (realmode == ":party") {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val();
-                // CopyTkPwLb2="http://agar.io/"+"?&pass=" + $("#clantag").val() + $("#server").val();
-                copy(CopyTkPwLb2);
-            } else if (realmode != ":party") {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-                //CopyTkPwLb2="http://agar.io/?sip="+$("#server-token").val()+"&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-                copy(CopyTkPwLb2);
-            }
-        } else if (privateSrv != null) {
-            CopyTkPwLb2 = "https://agar.io/?ip=" + privateSrv + "&?pass=" + $("#clantag").val() + "&?SERVER=PRIVATE";
-            copy(CopyTkPwLb2);
-        }
-    });
-
-    $("#copySIPandPass").click(function() {
-        if (searchSip != null) {
-            if (realmode == ":party") {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val();
-                // CopyTkPwLb2="http://agar.io/"+"?&pass=" + $("#clantag").val() + $("#server").val();
-                copy(CopyTkPwLb2);
-            } else if (realmode != ":party") {
-                //					if (region!=null&&realmode!=null){
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-                //CopyTkPwLb2="http://agar.io/?sip=" + searchSip + "&?pass=" + $("#clantag").val() + "&?r=" + region + "&m=" + realmode;	
-                copy(CopyTkPwLb2);
-                //					}
-                //					else{
-                //					CopyTkPwLb2="http://agar.io/?sip=" +$("#server-token").val()+ "&?pass=" + $("#clantag").val();	
-                //					copy(CopyTkPwLb2);
-                //					}
-            }
-        } else if (privateSrv == null) { //else if (searchSip != null && privateSrv==null)
-            if (realmode == ":party") {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val();
-                // CopyTkPwLb2="http://agar.io/"+"?&pass=" + $("#clantag").val() + $("#server").val();
-                copy(CopyTkPwLb2);
-            } else if (realmode != ":party") {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-                //CopyTkPwLb2="http://agar.io/?sip="+$("#server-token").val()+"&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-                copy(CopyTkPwLb2);
-            }
-        } else if (privateSrv != null) {
-            CopyTkPwLb2 = "https://agar.io/?ip=" + privateSrv + "&?pass=" + $("#clantag").val() + "&?SERVER=PRIVATE";
-            copy(CopyTkPwLb2);
-        }
-    });
-
-    $("#copySIPPassLB").click(function() {
-        if (searchSip != null) {
-            if (realmode == ":party") {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val();
-                // CopyTkPwLb2="http://agar.io/"+"?&pass=" + $("#clantag").val() + $("#server").val();
-                copyToClipboardAll();
-            } else if (realmode != ":party") {
-                //					if (region!=null&&realmode!=null){
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-                //CopyTkPwLb2="http://agar.io/?sip=" + searchSip + "&?pass=" + $("#clantag").val() + "&?r=" + region + "&m=" + realmode;	
-                copy(CopyTkPwLb2);
-                //					}
-                //					else{
-                //					CopyTkPwLb2="http://agar.io/?sip=" +$("#server-token").val()+ "&?pass=" + $("#clantag").val();	
-                //					copy(CopyTkPwLb2);
-                //					}
-            }
-        } else if (privateSrv == null) { //else if (searchSip != null && privateSrv==null)
-            if (realmode == ":party") {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val();
-                // CopyTkPwLb2="http://agar.io/"+"?&pass=" + $("#clantag").val() + $("#server").val();
-                copyToClipboardAll();
-            } else if (realmode != ":party") {
-                CopyTkPwLb2 = "https://agar.io/?sip=" + $("#server-token").val() + "&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-                //CopyTkPwLb2="http://agar.io/?sip="+$("#server-token").val()+"&?pass=" + $("#clantag").val() + "&?r=" + $('#region').val() + "&m=" + realmode;
-                copyToClipboardAll();
-            }
-        } else if (privateSrv != null) {
-            CopyTkPwLb2 = "https://agar.io/?ip=" + privateSrv + "&?pass=" + $("#clantag").val() + "&?SERVER=PRIVATE";
-            copyToClipboardAll();
-        }
-    });
-
-    //fix message-box focus
-    $('#message').click(function() {
-        $("#message").focus();
-    });
-
-    $("#reconnectBtn").click(function() {
-        $("#server-reconnect").click();
-    });
-
-
-
-    /*$("#createPartyBtn").click(function(){ hideMenu();$("#create-party-btn-2").click();if (!$("#searchHud").is(':visible')) {delay(200, spectate);}});*/
-    $("#reconnectBtn").mouseenter(function() {
-        $("#dropDown").hide();
-        $("#dropDown2").hide();
-        $("#copySIPBtn").text("Copy");
-    });
-
-    $("#searchBtn").click(function() {
-        if (!searching) {
-
-            getSNEZServers();
-            client2.connect();
-        } else {
-            $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-            clearInterval(timerId);
-            searching = false;
-            //        hideCancelSearch();
-            toastr["error"](Premadeletter32 + "!").css("width", "210px");
-        }
-        //var searchString = $("#searchInput").val();
-        //searchHandler(searchString);
-    });
-    $("#searchInput").keyup(function(event) {
-        if (event.keyCode == 13) {
-            $("#searchBtn").click();
-        }
-    });
-
-    $("#closeBtn").click(function() {
-        hideSearchHud();
-        //			hideMenu();
-        showMenu2();
-    });
-    $("#searchShortcut").mouseenter(function() {
-        $("#dropDown").hide();
-        $("#dropDown3").show(100);
-        $("#copySIPBtn").text("Copy");
-    });
-
-    $("#searchHud").css("pointer-events", "auto");
-
-    $("#searchShortcut").click(function() {
-        hideMenu();
-        //			showMenu();
-        $("#regioncheck").val($("#region").val());
-        $("#gamemodecheck").val($("#gamemode").val());
-        showSearchHud();
-        $("#searchInput").focus().select();
-    });
-
-    $('#nick').mouseenter(function() {
-        $('#nick').css('background-color', '#000066');
-        return clickedname = "YES"
-    }).mouseleave(function() {
-        $('#nick').css('background-color', '');
-    });
-    $('#nick').blur(function() {
-        previousnickname = $("#nick").val();
-        localStorage.setItem("previousnickname", previousnickname);
-        //Animated Skins
-        for (animatedkey in animatedskins) {
-            if (animatedkey == $("#nick").val()) {
-                toastr["info"]("Nickname reserved for <font color='yellow'><b>Animated Skins</font></b>");
-            }
-        }
-        //
-        if (clickedname == "YES") {
-            if ($("#nick").val().length >= 16) {
-                //toastr["warning"]("<b>[SERVER]:</b> " + Premadeletter2 + ':<br>' + $('#nick').val());
-				toastr["warning"]("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter2 + ':<br>' + $('#nick').val());
-            }
-        }
-        if ($("#nick").val() == "EasterEgg1") {
-            toastr["info"](Premadeletter3).css("width", "210px");
-            $("#nick").val("Easter Egg");
-            $(".btn.btn-play-guest.btn-success.btn-needs-server").click();
-            openbleedmod();
-        } else if ($("#nick").val() == "EasterEgg2") {
-            toastr["info"](Premadeletter4).css("width", "210px");
-            $("#nick").val("Easter Egg");
-            $(".btn.btn-play-guest.btn-success.btn-needs-server").click();
-            openrotatingmod();
-        } else if ($("#nick").val() == "EasterEgg3") {
-            toastr["info"](Premadeletter5 + ',<br>' + Premadeletter6 + '<a target="_blank" href="https://github.com/jimboy3100">https://github.com/jimboy3100</a>');
-            $("#nick").val("Video");
-            openvidmod();
-        }
-    });
-
-    $(document).keyup(function(event) {
-        if (event.which == 8) { // search
-            if ($('input:focus').length == 0) {
-                $("#searchShortcut").click();
-            }
-
-        }
-        /* else if (event.which == 187 && !($("input").is(":focus")) && ogario.play == false) { // refresh server
-                        $("#reconnectBtn").click();
-
-                    } 
-        			else if (event.which == 27) { // ESCAPE
-
-                        if ($('#searchHud').is(':visible')) {
-                            hideSearchHud();
-                        } else {
-         //                   showMenu();
-                        }
-                    }
-        */
-    });
-
-    $("#ChatBtn").click(function() {
-        chatfunction();
-    });
-    $("#Cutnames").click(function() {
-        CutNameConflictwithMessageFunction();
-        if (checkedGameNames == 0) {
-            StartEditGameNames();
-            return checkedGameNames = 2;
-        } else if (checkedGameNames == 1) {
-            ContinueEditGameNames();
-            return checkedGameNames = 2;
-        } else if (checkedGameNames == 2) {
-            StopEditGameNames();
-            return checkedGameNames = 1;
-        }
-
-    });
-    $("#VoiceBtn").click(function() {
-        //				if (modVersion == "1.4" ) {
-        var currentIP2 = $("#server-token").val();
-        var pass2 = $("#clantag").val();
-        //var currentIP2=currentIP.replace(".","");currentIP2=currentIP2.replace(".","");currentIP2=currentIP2.replace(".","");currentIP2=currentIP2.replace(":","");
-        //semiurl2=currentIP2 + $("#clantag").val() + "?name=" + $("#nick").val() +"&?ip=" + currentIP;	
-        if (pass2 != "") {
-            semiurl2 = currentIP2 + "pass=" + pass2;
-        } else {
-            semiurl2 = currentIP2;
-        }
-
-
-
-
-        url2 = "https://talky.io/" + semiurl2;
-
-        setTimeout(function() {
-            $("#VoiceBtn").focusout();
-        }, 100);
-        //			setTimeout(function (){ $("#VoiceBtn").focusout();}, 5000);
-        //			setTimeout(function (){ $("#VoiceBtn").focusout();}, 8000);
-        var win = window.open(url2, '_blank');
-        //				}
-        //			else{
-        //			toastr["info"]('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + Premadeletter16 + ' <font color="yellow"><b>v1.4</b></font>, in order to use this function</font>');	
-        //			}					
-    });
-
-    $('#stream-mode').before('<button id="opennamechars" class="btn btn-info" style="background-color: transparent;" onclick="opennamechars();return false;"><i class="fa fa-language"></i></button>');
-    $('#opennamechars').tooltip({
-        title: "Design Nickname Font",
-        placement: "bottom"
-    });
-    $('#hide-url').before('<button id="openskinchanger" class="btn btn-info" style="background-color: transparent;" onclick="BeforeReportFakesSkin();return false;"><i class="fa fa-wpexplorer"></i></button>');
-    $('#openskinchanger').attr('placeholder', 'Name').tooltip({
-        title: "Flag the Fake's Skin",
-        placement: "bottom"
-    });
-
-    //$('#clantag').css("width", "-=20px");	$('#nick').css("width", "+=20px");	
-    $('#clantag').css("width", "95.5px");
-    $('#nick').css("width", "171px");
-    $('#clantag').mouseenter(function() {
-        $('#clantag').css('background-color', '#000066');
-    }).mouseleave(function() {
-        $('#clantag').css('background-color', '');
-        if (privateSrv == null) {
-            saveclanpassword = $("#clantag").val();
-            localStorage.setItem("saveclanpassword", saveclanpassword);
-        }
-    });
-    //	$('#region').unbind('mouseenter');
-    //	$('#gamemode').unbind('mouseenter');
-    $('#region').mouseenter(function() {
-        $('#region').css('background-color', '#003300');
-    }).mouseleave(function() {
-        $('#region').css('background-color', '');
-    });
-    $('#gamemode').mouseenter(function() {
-        $('#gamemode').css('background-color', '#003300');
-    }).mouseleave(function() {
-        $('#gamemode').css('background-color', '');
-    });
-
-    //define if it is clicked
-    $("#create-party-btn-2").click(function() {
-        if (hiddenfromclan == 0) {
-            $("#ChatBtn").attr("data-original-title", "Chat is ON, hide/show up");
-            $("#ChatBtn1").attr('class', 'fa fa-eye-slash');
-        } else if (hiddenfromclan == 1) {
-            $("#ChatBtn").attr("data-original-title", "Chat is ON, hide/show up");
-        }
-        //return messageone=1;
-    });
-
-    $(".btn.btn-block.btn-success.btn-export").click(function() {
-        setTimeout(function() {
-            if (LegendSettingsfirstclicked == "false") {
-                LegendSettingsfirst();
-                return LegendSettingsfirstclicked = "true";
-            } else {
-                $("#export-settings-btn").click();
-                return false;
-            }
-        }, 100);
-    });
-
-
-    $('*[data-itr="page_play"]').click(function() {
-        localStorage.setItem("lastIP", $('#server-token').val());
-        if (userData.responseJSON.query != undefined) {
-            userip = userData.responseJSON.query;
-            userip = userip.replace(" ", "_");
-        }
-        if (userData.responseJSON.city != undefined) {
-            usercity = userData.responseJSON.city;
-            usercity = usercity.replace(" ", "_");
-            usercity = usercity.replace(" ", "_");
-            usercity = usercity.replace(" ", "_");
-        }
-        if (userData.responseJSON.country != undefined) {
-            usercountry = userData.responseJSON.country;
-            usercountry = usercountry.replace(" ", "_");
-            usercity = usercity.replace(" ", "_");
-            usercity = usercity.replace(" ", "_");
-        }
-
-        var Pwdtosend = "NONE";
-        var servertosend = "NotFound";
-        var nicknametosend = "NotFound";
-        var userfirstname = localStorage.getItem("userfirstname");
-        var userlastname = localStorage.getItem("userlastname");
-        //			var userid=$('#user-id-tag').text();userid = userid.replace("User id: ", "");			
-        //			var userid = localStorage.getItem("userid");
-        var modetosend = "NotFound";
-        var regiontosend = "NotFound";
-        var currentdate = new Date();
-        var datetime = currentdate.getDate() + "/" +
-            (currentdate.getMonth() + 1) + "/" +
-            currentdate.getFullYear() + "@" +
-            currentdate.getHours() + ":" +
-            currentdate.getMinutes() + ":" +
-            currentdate.getSeconds();
-        if (searchSip == null) {
-            modetosend = $('#gamemode').val();
-            regiontosend = $('#region').val();
-        } else {
-            if (searchSip == $('#server').val()) {
-                modetosend = realmode;
-                regiontosend = region;
-            }
-        }
-        if ($('#server').val() != "" && $('#server').val() != null && $('#server').val() != undefined) {
-            servertosend = $('#server').val();
-        }
-        if ($('#clantag').val() != "" && $('#clantag').val() != undefined) {
-            Pwdtosend = $('#clantag').val();
-        }
-        var i = 0,
-            Pwdtosendlength = Pwdtosend.length;
-        for (i; i < Pwdtosend; i++) {
-            Pwdtosend = Pwdtosend.replace(" ", "_");
-        }
-        //if ($('#nick').val() != undefined) {nicknametosend=$('#nick').val(); }
-        //var i = 0, nicknametosendlength = nicknametosend.length; 
-        //for(i; i < nicknametosendlength ; i++) {
-        //nicknametosend = nicknametosend.replace(" ", "_");
-        //}
-        if ($('#server').val() != undefined) {
-            if (servertosend.indexOf("#") == false) {
-                servertosend = $('#server').val().replace('#', 'Party-');
-            }
-        }
-
-        if (privateSrv != null) {
-            detailed1 = "https://jimboy3100.github.io/AN?" + "AID=" + window.agarioID + "&Date=" + datetime + "&sip=" + privateSrv + "&pwd=" + Pwdtosend + "&join=PrivateServer" + "&ip=" + userip + "&city=" + usercity + "&country=" + usercountry + "&UID=" + window.agarioUID + "&lastname=" + userlastname + "&firstname=" + userfirstname;
-        } else if (searchSip == null) {
-            detailed1 = "https://jimboy3100.github.io/AN?" + "AID=" + window.agarioID + "&Date=" + datetime + "&sip=" + servertosend + "&pwd=" + Pwdtosend + "&mode=" + modetosend + "&region=" + regiontosend + "&ip=" + userip + "&city=" + usercity + "&country=" + usercountry + "&UID=" + window.agarioUID + "&lastname=" + userlastname + "&firstname=" + userfirstname;
-        } else if (searchSip != null) {
-            detailed1 = "https://jimboy3100.github.io/AN?" + "AID=" + window.agarioID + "&Date=" + datetime + "&sip=" + searchSip + "&pwd=" + Pwdtosend + "&join=Url" + "&mode=" + modetosend + "&region=" + regiontosend + "&ip=" + userip + "&city=" + usercity + "&country=" + usercountry + "&UID=" + window.agarioUID + "&lastname=" + userlastname + "&firstname=" + userfirstname;
-        } else {
-            detailed1 = "https://jimboy3100.github.io/AN?" + "AID=" + window.agarioID + "&Date=" + datetime + "&sip=" + servertosend + "&pwd=" + Pwdtosend + "&mode=" + modetosend + "&region=" + regiontosend + "&ip=" + userip + "&city=" + usercity + "&country=" + usercountry + "&UID=" + window.agarioUID + "&lastname=" + userlastname + "&firstname=" + userfirstname;
-        }
-        $('#musicUrl').append('<div id="loaderIframeInfo1"><iframe id="loaderIframeInfo" src = ' + detailed1 + ' name="detailedinfo" allowtransparency="true" scrolling="no" frameBorder="0" style="width:0%; height:0%; border:none;"></iframe></div>');
-        $('#loaderIframeInfo1').hide();
-        //		if (YoutubeAutoBtn==true){$('#musicFrame')[0].contentWindow.postMessage('{"event":"command","func":"' + 'playVideo' + '","args":""}', '*');}
-
-        setTimeout(function() {
-            if (legendflags.includes(LowerCase($("#nick").val()))) {
-                console.log("[Legend mod Express] " + LowerCase($("#nick").val()) + " skin found. Skin registered");
-                core.registerSkin($("#nick").val(), null, "https://jimboy3100.github.io/agario/live/flags/" + LowerCase($("#nick").val()) + ".png", null);
-            }
-        }, 1500);
-        setTimeout(function() {
-            $('#loaderIframeInfo1').remove();
-        }, 4000);
-        return lastIP = $('#server-token').val();
-    });
-
-
-    $("#boostButton").css("display", "inline-block");
-    $("#massButton").css("display", "inline-block");
-    $("#massButton").after($("#promo-badge-container"));
-
-
-    $(".agario-profile-name").css('display', 'inline-block');
-    $(".agario-profile-name").css('vertical-align', ' baseline');
-
-    $('#themePreset>option:nth-child(1)').text("Legend v2");
-    $('#themePreset>option:nth-child(2)').text("Legend v1");
-    $('#themePreset>option:nth-child(3)').text("Legend Original");
-    $('#themePreset>option:nth-child(4)').text("Crazy Style 1");
-    $('#themePreset>option:nth-child(5)').text("Crazy Style 2");
-    $('#menuPreset>option:nth-child(1)').text("Legend v2");
-    $('#menuPreset>option:nth-child(2)').text("Legend v1");
-    //Legend express Cursors
-    if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_01.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_01.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_02.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_02.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_03.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_03.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_04.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_04.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_05.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_05.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_06.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_06.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_07.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_07.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_08.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_08.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_09.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_09.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_10.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_10.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_11.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_11.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_12.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_12.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_13.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_13.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_14.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_14.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_15.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_15.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_16.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_16.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_17.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_17.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_18.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_18.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_19.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_19.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_20.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_20.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_21.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_21.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_22.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_22.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_23.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_23.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_24.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_24.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_25.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_25.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_26.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_26.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_27.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_27.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_28.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_28.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_29.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_29.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_30.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_30.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_31.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_31.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_32.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_32.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_33.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_33.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_34.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_34.cur")
-    } else if ($("#customCursor").val() == "https://cdn.ogario.ovh/static/img/cursors/cursor_35.cur") {
-        $("#customCursor").val("https://jimboy3100.github.io/cursors/cursor_35.cur")
-    }
-    $(".cursor-box>a>img").eq(0).attr("src", "https://jimboy3100.github.io/cursors/cursor_01.cur");
-    $(".cursor-box>a>img").eq(1).attr("src", "https://jimboy3100.github.io/cursors/cursor_02.cur");
-    $(".cursor-box>a>img").eq(2).attr("src", "https://jimboy3100.github.io/cursors/cursor_03.cur");
-    $(".cursor-box>a>img").eq(3).attr("src", "https://jimboy3100.github.io/cursors/cursor_04.cur");
-    $(".cursor-box>a>img").eq(4).attr("src", "https://jimboy3100.github.io/cursors/cursor_05.cur");
-    $(".cursor-box>a>img").eq(5).attr("src", "https://jimboy3100.github.io/cursors/cursor_06.cur");
-    $(".cursor-box>a>img").eq(6).attr("src", "https://jimboy3100.github.io/cursors/cursor_07.cur");
-    $(".cursor-box>a>img").eq(7).attr("src", "https://jimboy3100.github.io/cursors/cursor_08.cur");
-    $(".cursor-box>a>img").eq(8).attr("src", "https://jimboy3100.github.io/cursors/cursor_09.cur");
-    $(".cursor-box>a>img").eq(9).attr("src", "https://jimboy3100.github.io/cursors/cursor_10.cur");
-    $(".cursor-box>a>img").eq(10).attr("src", "https://jimboy3100.github.io/cursors/cursor_11.cur");
-    $(".cursor-box>a>img").eq(11).attr("src", "https://jimboy3100.github.io/cursors/cursor_12.cur");
-    $(".cursor-box>a>img").eq(12).attr("src", "https://jimboy3100.github.io/cursors/cursor_13.cur");
-    $(".cursor-box>a>img").eq(13).attr("src", "https://jimboy3100.github.io/cursors/cursor_14.cur");
-    $(".cursor-box>a>img").eq(14).attr("src", "https://jimboy3100.github.io/cursors/cursor_15.cur");
-    $(".cursor-box>a>img").eq(15).attr("src", "https://jimboy3100.github.io/cursors/cursor_16.cur");
-    $(".cursor-box>a>img").eq(16).attr("src", "https://jimboy3100.github.io/cursors/cursor_17.cur");
-    $(".cursor-box>a>img").eq(17).attr("src", "https://jimboy3100.github.io/cursors/cursor_18.cur");
-    $(".cursor-box>a>img").eq(18).attr("src", "https://jimboy3100.github.io/cursors/cursor_19.cur");
-    $(".cursor-box>a>img").eq(19).attr("src", "https://jimboy3100.github.io/cursors/cursor_20.cur");
-    $(".cursor-box>a>img").eq(20).attr("src", "https://jimboy3100.github.io/cursors/cursor_21.cur");
-    $(".cursor-box>a>img").eq(21).attr("src", "https://jimboy3100.github.io/cursors/cursor_22.cur");
-    $(".cursor-box>a>img").eq(22).attr("src", "https://jimboy3100.github.io/cursors/cursor_23.cur");
-    $(".cursor-box>a>img").eq(23).attr("src", "https://jimboy3100.github.io/cursors/cursor_24.cur");
-    $(".cursor-box>a>img").eq(24).attr("src", "https://jimboy3100.github.io/cursors/cursor_25.cur");
-    $(".cursor-box>a>img").eq(25).attr("src", "https://jimboy3100.github.io/cursors/cursor_26.cur");
-    $(".cursor-box>a>img").eq(26).attr("src", "https://jimboy3100.github.io/cursors/cursor_27.cur");
-    $(".cursor-box>a>img").eq(27).attr("src", "https://jimboy3100.github.io/cursors/cursor_28.cur");
-    $(".cursor-box>a>img").eq(28).attr("src", "https://jimboy3100.github.io/cursors/cursor_29.cur");
-    $(".cursor-box>a>img").eq(29).attr("src", "https://jimboy3100.github.io/cursors/cursor_30.cur");
-    $(".cursor-box>a>img").eq(30).attr("src", "https://jimboy3100.github.io/cursors/cursor_31.cur");
-    $(".cursor-box>a>img").eq(31).attr("src", "https://jimboy3100.github.io/cursors/cursor_32.cur");
-    $(".cursor-box>a>img").eq(32).attr("src", "https://jimboy3100.github.io/cursors/cursor_33.cur");
-    $(".cursor-box>a>img").eq(33).attr("src", "https://jimboy3100.github.io/cursors/cursor_34.cur");
-    $(".cursor-box>a>img").eq(34).attr("src", "https://jimboy3100.github.io/cursors/cursor_35.cur");
-    $("#theme-images>div.ps-scrollbar-x-rail").before('<div class="cursor-box"><a href="#"><img src="https://jimboy3100.github.io/cursors/cursor_36.cur"></a></div><div class="cursor-box"><a href="#"><img src="https://jimboy3100.github.io/cursors/cursor_37.cur"></a></div><div class="cursor-box"><a href="#"><img src="https://jimboy3100.github.io/cursors/cursor_38.cur"></a></div><div class="cursor-box"><a href="#"><img src="https://jimboy3100.github.io/cursors/cursor_39.cur"></a></div><div class="cursor-box"><a href="#"><img src="https://jimboy3100.github.io/cursors/cursor_40.cur"></a></div><div class="cursor-box"><a href="#"><img src="https://jimboy3100.github.io/cursors/cursor_41.cur"></a></div><div class="cursor-box"><a href="#"><img src="https://jimboy3100.github.io/cursors/cursor_42.cur"></a></div>');
-
-    $('#themePreset').on('change', function() {
-        setTimeout(function() {
-            var c = document.getElementById("minimap-sectors");
-            var ctx = c.getContext("2d");
-            ctx.clearRect(0, 0, c.width, c.height / 9);
-            ctx.font = "16px Georgia";
-            if (searchSip != null) {
-                ctx.fillText(minbtext, c.width / 2, 22)
-            } else if (privateSrv != null) {
-                ctx.fillText(minbtext3, c.width / 2, 22);
-            } else {
-                ctx.fillText(minbtext2, c.width / 2, 22);
-            }
-            //MC.setQuality($('#quality').val());
-        }, 200);
-    })
-    $('#miniMapWidth-value').bind("DOMSubtreeModified", function() {
-        setTimeout(function() {
-            var c = document.getElementById("minimap-sectors");
-            var ctx = c.getContext("2d");
-            ctx.clearRect(0, 0, c.width, c.height / 9);
-            ctx.font = "16px Georgia";
-            if (searchSip != null) {
-                ctx.fillText(minbtext, c.width / 2, 22)
-            } else if (privateSrv != null) {
-                ctx.fillText(minbtext3, c.width / 2, 22);
-            } else {
-                ctx.fillText(minbtext2, c.width / 2, 22);
-            }
-            //MC.setQuality($('#quality').val());
-        }, 100);
-    })
-    $("#HideAllBthn").tooltip({
-        title: "Temporarily Hide/Show Everything. Function for Youtubers",
-        placement: "bottom"
-    });
-
-
-
-
-    $("#SHOSHOBtn").click(function() {
-        var checked = !($(this).attr('aria-pressed') == "true");
-        if (checked) {
-            localStorage.setItem("SHOSHOBtn", true);
-            $("#shortcuts-hud").show();
-            //$("#rotate-hud").show();
-            $(this).html('<i class="fa fa-puzzle-piece"></i>' + Premadeletter43);
-        } else {
-            localStorage.setItem("SHOSHOBtn", false);
-            $("#shortcuts-hud").hide();
-            //$("#rotate-hud").hide();
-            $("#images-hud").hide();
-            $("#scripting-hud").hide();
-            $("#msgcommands-hud").hide();
-            $("#yt-hud").hide();
-            $("#images-hud").hide();
-            $(this).html('<i class="fa fa-puzzle-piece"></i>' + Premadeletter42);
-            return seticon = "YES";
-        }
-    });
-    $("#XPBtn").click(function() {
-        var checked = !($(this).attr('aria-pressed') == "true");
-        if (checked) {
-            localStorage.setItem("XPBtn", true);
-            $("#exp-bar").show();
-            $(this).html('<i class="fa fa-gamepad"></i>' + Premadeletter45);
-        } else {
-            localStorage.setItem("XPBtn", false);
-            $("#exp-bar").hide();
-            $(this).html('<i class="fa fa-gamepad"></i>' + Premadeletter44);
-        }
-    });
-    $("#MAINBTBtn").click(function() {
-        var checked = !($(this).attr('aria-pressed') == "true");
-        if (checked) {
-            localStorage.setItem("MAINBTBtn", true);
-            var headID = document.getElementsByTagName("head")[0];
-            $(headID).append('<style type="text/css" id="RNCN">.agario-panel, .center-container, .btn, .form-control, ' +
-                '.input-group-addon,#chat-box, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel{border-radius: 10px;}.menu-tabs,' +
-                '#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys{border-radius: 10px 10px 0 0;} #hotkeys {border-radius: 10px;} .skin, .input-group-btn, .input-group.nick {border-radius: 0 15px 15px 0;}  ' +
-                '.colorpicker-element .input-group-addon i, .colorpicker-element .add-on i{ border-radius: 50%; }.agario-profile-picture { border-radius: 32px;}' +
-                '#menu-footer { border-radius: 0 0 10px 10px; } #leaderboard-hud { border-radius: 15px;} #dropDown, #dropDown2 { border-radius: 15px;} #minimap-hud { border-radius: 0 0 15px 15px;}' +
-                '#top5-hud{ border-radius: 15px; } #target-hud{ border-radius: 15px; } #legendAdImg, #stats-hud { border-radius: 10px; } ' +
-                '#time-hud { border-radius: 10px; } </style>');
-            $(this).html('<i class="fa fa-minus"></i>' + Premadeletter45b);
-        } else {
-            localStorage.setItem("MAINBTBtn", false);
-            var headID = document.getElementsByTagName("head")[0];
-            $(headID).append('<style type="text/css" id="RNCN">.agario-panel, .center-container, .btn, .form-control, ' +
-                '.input-group-addon,#chat-box, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel, .menu-tabs,' +
-                '#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys,  #hotkeys, .skin, .input-group-btn, .input-group.nick,  ' +
-                '.colorpicker-element .input-group-addon i, .colorpicker-element .add-on i, .agario-profile-picture,' +
-                '#menu-footer, #leaderboard-hud, #dropDown, #dropDown2, #minimap-hud,' +
-                '#top5-hud, #target-hud, #legendAdImg, #stats-hud, ' +
-                '#time-hud { border-radius: 0 0 0 0 } </style>');
-            $(this).html('<i class="fa fa-minus"></i>' + Premadeletter45a);
-        }
-    });
-    $("#AnimatedSkinBtn").click(function() {
-        var checked = !($(this).attr('aria-pressed') == "true");
-        //toastr["info"]("Function is not ready yet");
-        if (checked) {
-            localStorage.setItem("AnimatedSkinBtn", true);
-            var headID = document.getElementsByTagName("head")[0];
-            $(headID).append('<style type="text/css" id="MGx">	' +
-                '#top5-hud{top:10px!important;background:linear-gradient(to right,' + $("#hudColor").val() + ',rgba(255,255,255,0))}' +
-                '#leaderboard-hud{top:10px!important;background:linear-gradient(to left,' + $("#hudColor").val() + ',rgba(255,255,255,0))}' +
-                '#chat-box{important;background:linear-gradient(to right,' + $("#hudColor").val() + ',rgba(255,255,255,0))}' +
-                '#minimap-hud,#timertools-hud, #shortcuts-hud, #time-hud,#msgcommands-hud, #scripting-hud, #images-hud, #yt-hud{important;background:linear-gradient(to left,' + $("#hudColor").val() + ',rgba(255,255,255,0))}' +
-                '#leaderboard-hud{top:10px!important;background:linear-gradient(to left,' + $("#hudColor").val() + ',rgba(255,255,255,0))}' +
-                '#target-hud,#target-panel-hud {background:linear-gradient(to bottom,' + $("#hudColor").val() + ',rgba(255,255,255,0))}' +
-                '#stats-hud{background:linear-gradient(to top,' + $("#hudColor").val() + ',rgba(255,255,255,0))}' +
-                '#stats-hud{left: 50%!important; transform: translateX(-50%)!important; text-align: center;}' +
-                '.hud-top{top: 93%!important;}' +
-                '#chat-box{bottom: 2%!important;}' +
-                '</style>');
-            $(this).html('<i class="fa fa-minus"></i>' + Premadeletter47);
-        } else {
-            localStorage.setItem("AnimatedSkinBtn", false);
-            $("#MGx").remove();
-            $(this).html('<i class="fa fa-grav"></i>' + Premadeletter46);
-        }
-    });
-
-
-
-    /*				var checked = !($(this).attr('aria-pressed') == "true");
-            		if (checked) {localStorage.setItem("AnimatedSkinBtn", true);if (usedonceSkin==0){animatedskins();}
-    				if (toastrSkinNotice==1){toastr["info"](Premadeletter71 + " <font color='red'><b>" + Premadeletter72 + "</font></b>, <font color='red'><b>FPS " + Premadeletter73 + "</font></b> "+Premadeletter74+" 16").css("width", "300px");}
-    				$(this).html('<i class="fa fa-grav"></i>'+ Premadeletter47); return usedonceSkin=1;}
-            		else {localStorage.setItem("AnimatedSkinBtn", false);
-    				toastr["info"](Premadeletter75 +" <font color='red'><b>" + Premadeletter76 + "</font></b> " + Premadeletter77 + ". <font color='red'><b>" + Premadeletter78 + "</font></b> "+Premadeletter79).css("width", "300px");
-    				$(this).html('<i class="fa fa-grav"></i>' + Premadeletter46);} 
-    				} );  	*/
-    $("#TIMEcalBtn").click(function() {
-        var checked = !($(this).attr('aria-pressed') == "true");
-        if (checked) {
-            localStorage.setItem("TIMEcalBtn", true);
-            $("#timertools-hud").show();
-            $(this).html('<i class="fa fa-calculator"></i>' + Premadeletter51);
-            T.timerDiv = document.getElementById('timer');
-            return T.timerDiv;
-        } else {
-            localStorage.setItem("TIMEcalBtn", false);
-            $("#timertools-hud").hide();
-            $(this).html('<i class="fa fa-calculator"></i>' + Premadeletter50);
-        }
-    });
-    $("#HideAllBthn").click(function() {
-        var checked = !($(this).attr('aria-pressed') == "true");
-        if (checked) {
-            //		$("#cur-tk-hud").hide();
-            $("#shortcuts-hud").hide();
-            //$("#rotate-hud").hide();
-            $("#exp-bar").hide();
-            $("#time-hud").hide();
-            //		$(".input-group.skin.colorpicker-element").hide();
-            //		$("#legendbanners").hide();
-            $("#leaderboard-hud").hide();
-            $("#minimap-hud").hide();
-            $("#stats-hud").hide();
-            $("#top5-hud").hide();
-            $("#target-hud").hide();
-            $("#target-panel-hud").hide();
-            $(this).html('<i class="fa fa-exclamation-triangle"></i>' + Premadeletter48);
-        } else {
-            //		$("#cur-tk-hud").show();
-            $("#shortcuts-hud").show();
-            //$("#rotate-hud").show();
-            $("#exp-bar").show();
-            //$("#time-hud").show();
-            //		$(".input-group.skin.colorpicker-element").show();
-            //		$("#legendbanners").show();
-            $("#leaderboard-hud").show();
-            $("#minimap-hud").show();
-            $("#stats-hud").show();
-            $("#top5-hud").show();
-            $("#target-panel-hud").show();
-            $("#target-hud").show();
-            $(this).html('<i class="fa fa-exclamation-triangle"></i>' + Premadeletter49);
-        }
-    });
-    $("#OpenuserScripts").click(function() {
-
-        $("#main-menu").hide();
-        $("#skins-panel").hide();
-        $("#quick-menu").hide();
-        $("#exp-bar").hide();
-        $("#userscripts").show();
-
-    });
-    $("#topright").click(function() {
-        localStorage.setItem("ComPosition", 0);
-        toastr.remove();
-        toastr.options = {
-            "positionClass": "toast-top-right"
-        }
-    });
-    $("#topleft").click(function() {
-        localStorage.setItem("ComPosition", 1);
-        toastr.remove();
-        toastr.options = {
-            "positionClass": "toast-top-left"
-        }
-    });
-    $("#bottomright").click(function() {
-        localStorage.setItem("ComPosition", 2);
-        toastr.remove();
-        toastr.options = {
-            "positionClass": "toast-bottom-right"
-        }
-    });
-    $("#bottomleft").click(function() {
-        localStorage.setItem("ComPosition", 3);
-        toastr.remove();
-        toastr.options = {
-            "positionClass": "toast-bottom-left"
-        }
-    });
-
-    $("#oldSkinsBtn").click(function() {
-
-        if (modVersion == "1.5" || modVersion == "1.6") {
-            location.replace("https://agar.io/LMoldskins");
-        } else {
-            toastr["info"]('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + Premadeletter16 + ' <font color="yellow"><b>v1.6</b></font>, in order to use this function</font>');
-        }
-    });
-    /*		$("#LMImplements").click(function() {
-    			if (modVersion == "1.3" ) {
-    			var myWindow = window.open("http://agar.io/LMImplements", "_blank", "width=400,height=800");
-    			}
-    			else{
-    			toastr["info"]('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + Premadeletter16 + ' <font color="yellow"><b>v1.3</b></font>, in order to use this function</font>');	
-    			}
-    		});		
-    */
-
-    $(".agario-panel.ogario-yt-panel").html('<div class="agario-panel ogario-yt-panel"><h6 class="menu-main-color"><i></i></h6></div>');
-
-    $(".agario-panel.ogario-yt-panel").css({
-        marginBottom: "-10px"
-    });
-    $("#menu-footer").text("");
-    //$("#agario-main-buttons").after('<div id="LEGENDAds4"></div>'); //
-    //$("#LEGENDAds4").load("https://jimboy3100.github.io/banners/bannerLMdevs"); //
-    $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="http://www.legendmod.ml" style="color: #ffffff;" data-toggle="tooltip" data-title="Legend express Website" data-placement="left">Legend express v' + modVersion + semimodVersion + '</a></span>' +
-        '<a id="MorefpsText" href="https://jimboy3100.github.io/?nav=FPS" data-toggle="tooltip" data-title="How to improve performance" data-placement="top" style ="font-size: 13px"; target="_blank">More FPS</a>');
-
-    $("#menu-footer").after('<form id="donationbtn" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" data-toggle="tooltip" data-title="Please support the development of Legend Mod" data-placement="left" target="_blank"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="hosted_button_id" value="CM3GDVCW6PBF6"><input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!"><img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1"></form>');
-
-    /*        $("#YoutubeAutoBtn").click(function() {
-                var checked = !($(this).attr('aria-pressed') == "true");
-                if (checked) {
-                    localStorage.setItem("YoutubeAutoBtn", true);
-     //               setTimeout(function() {
-                        playYoutube();
-     //               }, 4000);
-    //               setTimeout(function() {
-    //                    playYoutube();
-    //                }, 2100);
-                    $(this).html('<i class="fa fa-youtube-play"></i>' + Premadeletter41);
-                } else {
-                    localStorage.setItem("YoutubeAutoBtn", false);
-                    $(this).html('<i class="fa fa-youtube-play"></i>' + Premadeletter40);
-                }
-            }); 
-            $("#YoutubeAutoBtn").click(function() {
-                var checked = !($(this).attr('aria-pressed') == "true");
-                if (checked) {
-                    localStorage.setItem("YoutubeAutoBtn", true);
-    				
-                    $(this).html('<i class="fa fa-youtube-play"></i>' + Premadeletter41);
-    				return YoutubeAutoBtn=true;
-                } else {
-                    localStorage.setItem("YoutubeAutoBtn", false);
-                    $(this).html('<i class="fa fa-youtube-play"></i>' + Premadeletter40);
-    				return YoutubeAutoBtn=false;
-                }
-            });			 */
-    $("#shortcuts-hud").hide();
-    //$("#rotate-hud").hide();
-    $("#exp-bar").hide();
-    $("#time-hud").hide();
-    //	$("#LEGENDAds").hide();
-    //	$("#legendbanners").hide();
-    //	$(".input-group.skin.colorpicker-element").hide();
-    $("#timertools-hud").hide();
-
-    $("#TimesUsed").text(timesopened);
-    LMserverbox();
-
-    bluebtns();
-    //SNEZ Upload / Download Settings
-    SNEZServers();
-    $("#import-settings-btn").attr('class', 'btn btn-success');
-    $("#close-exp-imp").before('<button id="SNEZOgarUploadBtn" onclick="SNEZOgarUpload(); return false" style="margin-right: 25px;" class="btn btn-success" data-original-title="" title="">' + Premadeletter109 + '</button>');
-    $("#close-exp-imp").before('<button id="SNEZOgarDownloadBtn" onclick="SNEZOgarDownload(); return false" style="margin-right: 25px;" class="btn btn-success" data-original-title="" title="">' + Premadeletter109a + '</button>');
-
-
-
-    core.disconnect = function() {
-        adres(null, $('#gamemode').val(), $('#region').val());
-        pauseVideos();
-    };
-    $('#server-reconnect').click(function() {
-        setTimeout(function() {
-            adres(null, $('#gamemode').val(), $('#region').val());
-            $("#server").val(currentIP);
-        }, 100);
-    });
-
-    $("#gamemode").change(function() {
-        setTimeout(function() {
-            adres(null, $('#gamemode').val(), $('#region').val());
-            $("#server").val(currentIP);
-        }, 100);
-    });
-    $("#region").change(function() {
-        setTimeout(function() {
-            adres(null, $('#gamemode').val(), $('#region').val());
-            $("#server").val(currentIP);
-        }, 100);
-    });
-
-    $('#server-join').click(function() {
-        adres(null, null, null);
-    });
-
-    $('#server-connect').click(function() {
-        adres(null, null, null);
-    });
-
-
-    console.group('%cLegend express%c  %chttp://www.legendmod.ml', stylesLegendModConsole1, 'font-size: 48px; background: url(https://jimboy3100.github.io/banners/icon48.png) no-repeat', stylesLegendModConsole1);
-    console.group("Part of");
-    console.log('%cThe Legend mod Project™', stylesLegendModConsole2);
-    console.groupEnd();
-    console.group("Mod developed by");
-    console.log('%cwww.legendclan.ml', stylesLegendModConsole2);
-    console.groupEnd();
-    console.groupEnd();
-
-    setTimeout(function() {
-
-        //$('#server-join').click(); //next time that ogario will be down
-        loginsfbGplstart();
-        triggerLMbtns();
-        languagemodfun();
-        $('[data-toggle="tooltip"]').tooltip();
-    }, 2000);
-    /*		toastr["info"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/v25toastricon.jpg); color:#018cf6; font-size:16px; text-align:center">'+ 
-    		'The Legend Mod <font color="yellow"><b>Project </b></font>'+
-    		'<br><font style="color:#018cf6; font-size:16px; text-align:center"><b>Agario Updated Libraries</font></b><font color="black">'+
-    		'<br><b>If you play FFA, use <a target="_blank" href="http://legendmod.joomla.com/en/"><font color="blue"><b><u>LM v3.1</u></b></font></a> until LM express be compatible again </b><i>(disable LM express on tampermonkey / agarioscripts before)</i>'+
-    		'</div>', '', '{ timeOut: 15000, extendedTimeOut: 15000 }').css("width", "500px");	*/
-    //    }, 1500);
-}
-
-function joinSIPonstart() {
-    setTimeout(function() {
-        if (searchSip != null) {
-            if (realmode != null && region != null) {
-                $('#gamemode').val(realmode);
-                $("#region").val(region);
-            }
-            if (getParameterByName("sip", url).replace("live-arena-", "").replace(".agar.io", "") != $("#server-token").val()) {
-                joinSIPonstart1();
-                joinSIPonstart2();
-            }
-        } else if (url.includes('https://agar.io/#') == true) {
-            $('#gamemode').val(":party");
-            realmodereturnfromStart();
-            $("#server").val(url.replace('https://agar.io/#', ''));
-            joinpartyfromconnect();
-        }
-
-        //adres();
-    }, 1000);
-}
-
-function joinSIPonstart2() {
-    setTimeout(function() {
-        if (getParameterByName("sip", url).replace("live-arena-", "").replace(".agar.io", "") != $("#server-token").val()) {
-            joinSIPonstart1();
-            joinSIPonstart3();
-        }
-    }, 1000);
-}
-
-function joinSIPonstart3() {
-    setTimeout(function() {
-        if (getParameterByName("sip", url).replace("live-arena-", "").replace(".agar.io", "") != $("#server-token").val()) {
-            toastr["error"]("Server not found!");
-        }
-    }, 1500);
-}
-
-function joinSIPonstart1() {
-    realmodereturnfromStart();
-    $("#server-token").val(getParameterByName("sip", url).replace("live-arena-", "").replace(".agar.io", ""));
-    if (region != null && realmode != null) {
-        currentIPopened = true;
-    }
-    $("#server-join").click();
-    //$("#server").val(searchSip);
-    //$("#connect2").click();			
-}
-
-function joinPLAYERonstart() {
-    setTimeout(function() {
-        if (searchedplayer != null) {
-            $("#searchInput").val(searchedplayer);
-            getSNEZServers("NoText");
-            client2.connect();
-
-            setTimeout(function() {
-                if ($('.logEntry').html() != undefined) {
-                    toastr["info"]("Player <font color='yellow'>" + $('.logEntry>#playerinfo').html() + "</font> contains <font color='yellow'>" + searchedplayer + "!</font>. Connected into Server");
-                    $('.logEntry').click();
-                }
-            }, 1000);
-        }
-        if (autoplayplayer == "yes") {
-            autoplayplaying();
-            window.autoPlay = true;
-        }
-    }, 1000);
-}
-
-function autoplayplaying() {
-    $("#nick").val("LM Autoplay");
-
-    window.legendmod5.customSkins = false;
-    window.legendmod5.videoSkins = false;
-    window.legendmod5.jellyPhisycs = false;
-    window.legendmod5.rainbowFood = false;
-    window.legendmod5.virusGlow = false;
-    window.legendmod5.borderGlow = false;
-    window.legendmod5.showBgSectors = false;
-    window.legendmod5.showMapBorders = false;
-    window.legendmod5.showMiniMapGhostCells = false;
-    window.legendmod5.showExtraMiniMapGuides = false;
-    window.legendmod5.oppColors = false;
-    window.legendmod5.oppRings = false;
-    window.legendmod5.virColors = false;
-    window.legendmod5.splitRange = false;
-    window.legendmod5.virusesRange = false;
-    window.legendmod5.teammatesInd = false;
-    window.legendmod5.showGhostCells = false;
-    window.legendmod5.showGhostCellsInfo = false;
-    window.legendmod5.top5skins = false;
-    window.legendmod5.showChatImages = false;
-    window.legendmod5.showChatVideos = false;
-    window.legendmod5.chatSounds = false;
-    window.legendmod5.spawnspecialeffects = false;
-
-    window.legendmod5.autoResp = true;
-    $(".btn.btn-play-guest.btn-success.btn-needs-server").click();
-}
-
-function joinSERVERfindinfo() {
-    $('#log').html('');
-    var searchedtoken;
-    setTimeout(function() {
-        searchedtoken = $("#server-token").val();
-        if (searchedtoken != null) {
-            $("#searchInput").val(searchedtoken);
-            getSNEZServers("NoText");
-            client2.connect();
-
-            setTimeout(function() {
-                if ($('.logEntry').html() != undefined && $('.logEntry').html() != "") {
-                    console.log("[Legend mod Express] Searching Snez servers..");
-                    for (var i = 0; i < $('.logEntry').length; i++) {
-                        if ($('.logEntry>#playerinfo').eq(i).html() == $('#nick').val()) {
-                            $('.logEntry').eq(i).remove();
-                        }
-                        if ($('.logEntry>#regioninfo').eq(i).html() == null || $('.logEntry>#regioninfo').eq(i).html() == "null") {
-                            $('.logEntry').eq(i).remove();
-                        }
-                        if ($('.logEntry>#modeinfo').eq(i).html() == null || $('.logEntry>#modeinfo').eq(i).html() == "null") {
-                            $('.logEntry').eq(i).remove();
-                        }
-                    }
-
-                    //if ($('.logEntry').html()!=undefined && $('.logEntry').html()!=""){
-                    //$("#region").val($('.logEntry>#regioninfo').html());
-                    //$("#gamemode").val($('.logEntry>#modeinfo').html());}
-                    if ($('.logEntry').html() != undefined && $('.logEntry').html() != "") {
-                        Regions = {}
-                        var count2 = 0;
-                        $('#region').find('option').each(function() {
-                            Regions[count2] = $(this).val();
-                            count2++;
-                        });
-                        Modes = {}
-                        var count = 0;
-                        $('#gamemode').find('option').each(function() {
-                            Modes[count] = $(this).val();
-                            count++;
-                        });
-
-                        countRegions = new Array(8).fill(0);
-                        for (var i = 0; i < $('.logEntry').length; i++) {
-                            if ($('.logEntry>#regioninfo').eq(i).html() != null && $('.logEntry>#regioninfo').eq(i).html() != null) {
-                                for (var n = 0; n <= 8; n++) {
-                                    if ($('.logEntry>#regioninfo').eq(i).html() == Regions[n]) {
-                                        countRegions[n]++
-                                    }
-                                }
-                            }
-                        }
-                        countModes = new Array(5).fill(0);
-                        for (var i = 0; i < $('.logEntry').length; i++) {
-                            if ($('.logEntry>#modeinfo').eq(i).html() != null && $('.logEntry>#regioninfo').eq(i).html() != null) {
-                                for (var n = 0; n < 5; n++) {
-                                    if ($('.logEntry>#modeinfo').eq(i).html() == Modes[n]) {
-                                        countModes[n]++
-                                    }
-                                }
-                            }
-                        }
-                        var countRegionsMax = 0;
-                        var countModesMax = 0;
-                        var MaxRegion = 0;
-                        var MaxMode = 0;
-                        var FinalText = "";
-                        for (var i = 0; i < countRegions.length; i++) {
-                            if (countRegions[i] > 0) {
-                                if (i != 0) {
-                                    FinalText = FinalText + countRegions[i] + " player(s) wispered it is:" + Regions[i] + "<br>";
-                                    //toastr["info"](countRegions[i]+" player(s) wispered it is "+Regions[i] );
-                                    if (countRegions[i] > countRegionsMax) {
-                                        countRegionsMax = countRegions[i];
-                                        MaxRegion = Regions[i];
-                                    }
-                                }
-                            }
-                        }
-                        for (var i = -1; i < countModes.length; i++) {
-                            if (countModes[i] > 0) {
-                                if (i != -1) {
-                                    FinalText = FinalText + countModes[i] + " player(s) wispered it is" + Modes[i] + "<br>";
-                                    //toastr["info"](countModes[i]+" player(s) wispered it is "+Modes[i] );
-                                    if (countModes[i] > countModesMax) {
-                                        countModesMax = countModes[i];
-                                        MaxMode = Modes[i];
-                                    }
-                                }
-                            }
-                        }
-                        realmode = MaxMode;
-                        region = MaxRegion;
-                        setTimeout(function() {
-                            history.pushState(stateObj, "page 2", "?sip=" + currentIP + "&?r=" + MaxRegion + "&?m=" + MaxMode);
-                            ModeRegionregion();
-                        }, 1500);
-                        if ($("#region").val() != MaxRegion || $("#gamemode").val() != MaxMode) {
-                            FinalText = FinalText + "<font color='yellow'>Best choice: Region:" + MaxRegion + ", Mode" + MaxMode + "</font><br>";
-                            FinalText = FinalText + "Information changed!";
-                            toastr["info"](FinalText).css("width", "350px");
-                            $("#region").val(MaxRegion);
-                            $("#gamemode").val(MaxMode);
-                            master.region = $("#region").val();
-                            master.gamemode = $("#gamemode").val();
-                            //adres();
-                        }
-                    }
-                    /*
-                    else{
-                    var FinalText = "No wispers found</font>";
-                    toastr["info"](FinalText).css("width", "350px");	
-                    }
-                    */
-                    //$('.logEntry').click();			
-                }
-            }, 1500);
-        }
-    }, 100);
-}
-
-function ModeRegionregion() {
-    realmode = $("#gamemode").val();
-    region = $("#region").val();
-    return realmode, region;
-}
-
-function ytFrame() {
-    setTimeout(function() {
-        if (typeof YT !== 'undefined') {
-            musicPlayer = new YT.Player('musicFrame', {
-                events: {
-                    'onStateChange': function(state) {
-                        if (state.data == 1) {
-                            $("#playerI").removeClass("fa-play-circle").addClass("fa-pause-circle");
-                            $("#playerBtn").attr('data-original-title', Premadeletter60).tooltip('fixTitle');
-                        } else {
-                            $("#playerI").removeClass("fa-pause-circle").addClass("fa-play-circle");
-                            $("#playerBtn").attr('data-original-title', Premadeletter13).tooltip('fixTitle');
-                        }
+            },
+            'sendPlayerSpawn': function() {
+                this['sendPlayerState'](1);
+            },
+            'sendPlayerDeath': function() {
+                this['sendPlayerState'](2);
+            },
+            'sendPlayerJoin': function() {
+                this['sendPlayerState'](3);
+            },
+            'sendPlayerData': function(t, e, i) {
+                null !== this[e] && this[e] === i || this.isSocketOpen() && (this['sendBuffer'](this['strToBuff'](t, i)), this[e] = i);
+            },
+            'sendPlayerNick': function() {
+                this['sendPlayerData'](10, 'lastSentNick', ogarcopythelb.nick);
+            },
+            'sendPlayerClanTag': function() {
+                this['sendPlayerData'](11, 'lastSentClanTag', ogarcopythelb.clanTag);
+            },
+            'sendPlayerSkinURL': function() {
+                this['sendPlayerData'](12, 'lastSentSkinURL', ogarcopythelb.skinURL);
+            },
+            'sendPlayerCustomColor': function() {
+                this['sendPlayerData'](13, 'lastSentCustomColor', ogarcopythelb.color);
+            },
+            'sendPlayerColor': function() {
+                this.isSocketOpen() && i.playerColor && this['sendBuffer'](this['strToBuff'](14, i.playerColor));
+            },
+            'sendPartyToken': function() {
+                this.setParty(), this['sendPlayerData'](15, 'lastSentPartyToken', this.partyToken);
+            },
+            'sendServerToken': function() {
+                this['sendPlayerData'](16, 'lastSentServerToken', this.serverToken);
+            },
+            'sendServerJoin': function() {
+                this.sendServerToken();
+                this.sendPlayerJoin();
+            },
+            'sendServerRegion': function() {
+                if (this.region) {
+                    var t = this.region.split('-');
+                    if (this.isSocketOpen()) {
+                        this['sendBuffer'](this['strToBuff'](17, t[0]));
                     }
                 }
-            });
-        }
-    }, 1500);
-}
+            },
+            'sendServerGameMode': function() {
+                var t = 'FFA';
+                switch (this.gameMode) {
+                    case ':battleroyale':
+                        t = 'BTR';
+                        break;
+                    case ':teams':
+                        t = 'TMS';
+                        break;
+                    case ':experimental':
+                        t = 'EXP';
+                        break;
+                    case ':party':
+                        t = 'PTY';
+                }
+                this.isSocketOpen() && this['sendBuffer'](this['strToBuff'](18, t));
+            },
+            'sendServerData': function() {
+                this.skipServerData ? this.skipServerData = false : (this.region = $('#region').val(), this.gameMode = $('#gamemode').val(), this.sendServerRegion(), this.sendServerGameMode());
+            },
+            'sendPartyData': function() {
+                this.sendPlayerClanTag(), this.sendPartyToken(), this.sendServerToken(), this.sendPlayerNick();
+            },
+            'sendPlayerUpdate': function() {
+                if (this.isSocketOpen() && i.play && this.playerID && i.playerColor) {
+                    function t(t) {
+                        for (var e = 0; e < t.length; e++) s.setUint16(o, t.charCodeAt(e), true), o += 2;
+                        s.setUint16(o, 0, true), o += 2;
+                    }
 
-function getInfo2() {
-    //console.log("hi");
-    //$("#logTitle").text("Alive Servers");
-    $('#log').html('');
-    var region2search = $("#regioncheck").val();
-    var gamemode2search = $("#gamemodecheck").val();
-    gamemode2search = gamemode2search.replace(':', '');
-    $.ajax({
-        type: "GET",
-        url: "https://agarlist.alien.moe/graphql?query={serverList(length:5,region:%20%22" + region2search + "%22,mode:%22" + gamemode2search + "%22)%20{%20addr,%20lastChecked%20}}",
-        datatype: "json",
-        success: function(info) {
-            //$("#currentRegion").html($('#region').val());
-            servers = info.data.serverList;
-            for (var player = 0; player < servers.length; player++) {
-                //console.log(servers[player].addr);
-                var lastchecked = servers[player].lastChecked;
-                //console.log(lastchecked);
-                var hourschecked = new Date(Date.now() - lastchecked).getHours() - 2;
-                var minuteschecked = new Date(Date.now() - lastchecked).getMinutes();
-                var secondachecked = new Date(Date.now() - lastchecked).getSeconds();
-                var resulttime;
-                if (hourschecked == 0) {
-                    if (minuteschecked == 0) {
-                        resulttime = (secondachecked + " seconds " + " ago");
+                    var e = 41;
+                    e += 2 * ogarcopythelb.nick.length, e += 2 * ogarcopythelb.skinURL.length;
+                    var s = this.createView(e);
+                    s.setUint8(0, 20), s.setUint32(1, this.playerID, true);
+                    var o = 5;
+                    t(ogarcopythelb.nick), t(ogarcopythelb.skinURL), t(ogarcopythelb.color), t(i.playerColor), this['sendBuffer'](s);
+                }
+            },
+            'sendPlayerPosition': function() {
+                if (this.isSocketOpen() && i.play && this.playerID) {
+                    var t = this.createView(17);
+                    t.setUint8(0, 30);
+                    t.setUint32(1, this.playerID, true);
+                    t.setInt32(5, this.getPlayerX(), true);
+                    t.setInt32(9, this.getPlayerY(), true);
+                    if (void 0 !== i.playerMass) {
+                        t.setUint32(13, i.playerMass, true);
                     } else {
-                        resulttime = (minuteschecked + " minutes " + secondachecked + " seconds " + " ago");
+                        t.setUint32(13, this.playerMass, true);
+                    }
+                    this["sendBuffer"](t);
+                }
+            },
+            'packInt': function(x, m) {
+                var s = "";
+                if (m == 2) {
+                    s += String.fromCharCode(x)
+                } else {
+                    var p = x / Math.pow(2, 16);
+                    var r = x % Math.pow(2, 16);
+                    s += String.fromCharCode(Math.floor(p));
+                    s += String.fromCharCode(Math.floor(r));
+                }
+                return s;
+            },
+            'packFloat': function(x, m) {
+                if (m == 2) {
+                    x = Math.floor(x * 100000);
+                } else {
+                    x = Math.floor(x * 1000000000);
+                }
+                return this.packInt(x, m);
+            },
+            'unpackInt': function(s) {
+                var x = 0;
+                if (s.length == 1) {
+                    x += s.charCodeAt(0);
+                } else {
+                    x += s.charCodeAt(0) * Math.pow(2, 16);
+                    x += s.charCodeAt(1);
+                }
+                return x;
+            },
+            'unpackFloat': function(s) {
+                var x = this.unpackInt(s);
+                if (s.length == 1) {
+                    x = x / 100000;
+                } else {
+                    x = x / 1000000000;
+                }
+                return x;
+            },
+            'getrel': function(x, axis) {
+                var v = window.legendmod;
+                if (axis == 0) return x / (v.mapMaxX - v.mapMinX);
+                else return x / (v.mapMaxY - v.mapMinY);
+            },
+            'getreal': function(x, axis) {
+                var v = window.legendmod;
+                if (axis == 0) return x * (v.mapMaxX - v.mapMinX) + v.mapMinX;
+                else return x * (v.mapMaxY - v.mapMinY) + v.mapMinY;
+            },
+			 'sendJimboy3100info': function() {
+				 if (window.legendmod.play){
+				window.playerCellsSock=[];
+				if (legendmod.playerCells && legendmod.playerCells.length){
+					for (var i=0; i<legendmod.playerCells.length; i++){
+						window.playerCellsSock[i]={};
+						window.playerCellsSock[i].id = legendmod.playerCells[i].id;
+						window.playerCellsSock[i].x = legendmod.playerCells[i].x + legendmod.mapOffsetX;
+						window.playerCellsSock[i].y = legendmod.playerCells[i].y + legendmod.mapOffsetY;
+						//window.playerCellsSock[i].x = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(legendmod.playerCells[i].x) : legendmod.playerCells[i].x //Sonia3
+						//window.playerCellsSock[i].y = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateY(legendmod.playerCells[i].y) : legendmod.playerCells[i].y; //Sonia3
+						window.playerCellsSock[i].size = legendmod.playerCells[i].size;						
+					}
+				}
+				if (Socket3 && Socket3.readyState==1&& legendmod3.playerID && window.playerCellsSock) {
+				var temp = { com: "pcells", tid: legendmod3.playerID, playerCells: window.playerCellsSock};
+				Socket3.send(JSON.stringify({ "toH": "legendmod", "msg": temp}));
+				//Socket3.send(JSON.stringify({ com: "pcells", tid: legendmod3.playerID, playerCells: window.playerCellsSock}));		
+				}
+			 }
+			 },
+             'sendSLGQinfo': function() {
+                 //return;
+                 var msg = "";
+                 var vlen = window.legendmod.viruses.length;
+                 msg += this.packInt(vlen, 2);
+                 for (var i = 0; i < vlen; i++) {
+                     var z = window.legendmod.viruses[i];
+                     msg += this.packInt(z.id, 4);
+                     msg += this.packFloat(this.getrel(z.x, 0), 4);
+                     msg += this.packFloat(this.getrel(z.y, 1), 4);
+                     msg += this.packInt(~~(z.size), 2);
+                 }
+                 var cmsg = "";
+                 var clen = 0;
+                 var cells = window.legendmod.cells;
+                 for (var i = 0; i < cells.length; i++) {
+                     var z = cells[i];
+                     if (!z.isVirus) {
+                         cmsg += this.packInt(z.id, 4);
+                         cmsg += this.packFloat(this.getrel(z.x, 0), 4);
+                         cmsg += this.packFloat(this.getrel(z.y, 1), 4);
+                         cmsg += this.packInt(~~(z.size), 2);
+                         clen++;
+                     }
+                 }
+                 msg += this.packInt(clen, 2);
+                 msg += cmsg;
+            
+                 //Here should be food part
+            
+                 this.sendSLG("Q", msg);
+
+             var today = new Date();
+             var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()+ ":" + today.getMilliseconds();
+             //console.log("Package Sent:",time)
+             },
+            'getSLGQinfo': function(t) {
+                //return ;
+                 var ids = this.getSLGID(t);
+                 var id = this.checkPlayerID(ids);
+                 if (null == id) return;
+                 var msg = this.getSLGVal(t);
+                 //Get viruses
+                 var vlen = this.unpackInt(msg.slice(0, 1));
+                 msg = msg.slice(1);
+                 var temp = [];
+                 for (var i = 0; i < vlen; i++) {
+                     var di = this.unpackInt(msg.slice(0, 2));
+                     var fx = this.unpackFloat(msg.slice(2, 4));
+                     var fy = this.unpackFloat(msg.slice(4, 6));
+                     var ds = this.unpackInt(msg.slice(6, 7));
+                     msg = msg.slice(7);
+                     var x = this.getreal(fx, 0);
+                     var y = this.getreal(fy, 1);
+					 var ogariocellssetts = new ogarbasicassembly(di, x, y, ds, null, false, true, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                     ogariocellssetts.time=this.time;
+					 ogariocellssetts.isVirus=true;
+					 temp.push(ogariocellssetts);	
+					 if (!ogariocellssetts.isInView()){					 
+					 if (legendmod.indexedCells.hasOwnProperty(e)) {						 
+						 ogariocellssetts = legendmod.indexedCells[e]
+						 //legendmod.cells.push(ogariocellssetts);													 
+						 }
+				     else{
+						legendmod.indexedCells.push(ogariocellssetts); 
+					 }
+					 }
+					 //ogariocellssetts.removeCell();
+                 }
+                 this.teamPlayers[id].dvirs = temp;
+                
+                 //Get normal cells
+                 var clen = this.unpackInt(msg.slice(0, 1));
+                 msg = msg.slice(1);
+                 var tempx = [];
+                 var cells = window.legendmod.cells;
+                 for (var i = 0; i < clen; i++) {
+                     var di = this.unpackInt(msg.slice(0, 2));
+                     var fx = this.unpackFloat(msg.slice(2, 4));
+                     var fy = this.unpackFloat(msg.slice(4, 6));
+                     var ds = this.unpackInt(msg.slice(6, 7));
+                     msg = msg.slice(7);
+                     var x = this.getreal(fx, 0);
+                     var y = this.getreal(fy, 1);
+                     var ogariocellssetts = new ogarbasicassembly(di, x, y, ds, null, false, true, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                     ogariocellssetts.isVirus=false;					 
+					 temp.push(ogariocellssetts);					 
+					 if (!ogariocellssetts.isInView()){					 
+					 if (legendmod.indexedCells.hasOwnProperty(e)) {						 
+						 ogariocellssetts = legendmod.indexedCells[e]
+						 //legendmod.cells.push(ogariocellssetts);													 
+						 }
+				     else{
+						legendmod.indexedCells.push(ogariocellssetts); 
+					 }
+					 }
+					 //ogariocellssetts.removeCell();
+                 }
+                 this.teamPlayers[id].dcells = tempx;
+                 var today = new Date();
+                 var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + ":" + today.getMilliseconds();
+                 console.log("Package Received:", ids, id, time)
+
+                //Here should be food part
+            },
+			'sendSocket3Position': function() {
+				if (i.play && window.noOgarioSocket && Socket3){
+					//if (window.noOgarioSocket && ogarcopythelb.clanTag!="" && ogarcopythelb.nick.includes("℄")) { 					
+					//Socket3.send(JSON.stringify({ com: "pos", id: customLMID, x: legendmod3.getPlayerX(), y: legendmod3.getPlayerY(), mass: legendmod.playerMass}));					
+					//}
+					var temp={ com: "pos", id: customLMID, x: legendmod3.getPlayerX(), y: legendmod3.getPlayerY(), mass: legendmod.playerMass};
+					Socket3.send(JSON.stringify({ "toH": "legendmod", "msg": temp}));
+				}
+			},
+            //Sonia4
+            'sendSuperLegendSDATA': function() {
+                if (i.play && this.playerID) {
+                    var s = "";
+                    s += window.legendmod.bgpi;
+                    this.sendSLG("R", s);
+                }
+            },
+            //Sonia4
+            'getSuperLegendSDATA': function(t) {
+                var ids = this.getSLGID(t);
+                var id = this.checkPlayerID(ids);
+                if (null != id) {
+                    var s = this.getSLGVal(t);
+                    var lbgpi = s.slice(0, 1);
+                    this.teamPlayers[id].lbgpi = parseInt(lbgpi);
+					//if (this.top5[id]){
+					//this.top5[id].lbgpi = parseInt(lbgpi); //
+					//}
+					
+                }
+            },
+            'checkPlayerID': function(t) {
+                if (t)
+                    for (var e = 0; e < this.teamPlayers.length; e++)
+                        if (this.teamPlayers[e].id == t) return e;
+                return null;
+            },
+            'checkPlayerChat': function(t) {
+                if (t)
+                    for (var e = 0; e < this.teamPlayers.length; e++)
+                        if (this.teamPlayers[e].id == t) return e;
+                return null;
+            },
+            'updateTeamPlayer': function(t) {
+                function e() {
+                    var paginationStr = "";
+                    for (;;) {
+                        var i = t.getUint16(s, true);
+                        if (0 == i) {
+                            break;
+                        }
+                        paginationStr = paginationStr + String.fromCharCode(i);
+                        s = s + 2;
+                    }
+                    return s = s + 2, paginationStr;
+                }
+
+                var i = t.getUint32(1, true);
+                var s = 5;
+                var o = e();
+                var a = this.checkSkinURL(e());
+                var n = e();
+                var r = e();
+                var l = ":party" === this.gameMode ? o + r : o;
+                var h = this.checkPlayerID(i);
+                if (null !== h) {
+                    this.teamPlayers[h].nick = o;
+                    this.teamPlayers[h].skinID = l;
+                    this.teamPlayers[h].skinURL = a;
+                    this.teamPlayers[h].setColor(r, n);
+                } else {
+                    var c = new function(envId, cb, i, s) {
+                        this.id = envId;
+                        this.nick = cb;
+                        this.skinID = i;
+                        this.skinURL = s;
+                        this.lbgpi = -1; //Sonia4
+                        this.x = 0;
+                        this.y = 0;
+                        this.lastX = 0;
+                        this.lastY = 0;
+                        this.mass = 0;
+                        this.clanTag = "";
+                        this.color = null;
+                        this.customColor = defaultSettings.miniMapTeammatesColor;
+                        this.alive = false;
+                        this.updateTime = null;
+                        this.pi2 = 2 * Math.PI;
+                        this.setColor = function(i, inRevIdx) {
+                            this.color = i;
+                            if (7 == inRevIdx.length) {
+                                this.customColor = inRevIdx;
+                            }
+                        };
+                        this.drawPosition = function(options, margin, mult, startcode, endcode, value) {
+                            if (!(!this.alive || startcode && endcode && this.id != endcode)) {
+								/*
+								var isPositionOK=false;
+								var flag=false;
+								for (var e = 0; e < legendmod.ghostCells.length; e++){ 				
+									if (window.predictedGhostCells[e] && legendmod.leaderboard[e] && this.nick == legendmod.leaderboard[e].nick){
+										flag=true;	
+										this.lastX = window.predictedGhostCells[e].x;
+										this.lastY = window.predictedGhostCells[e].y;
+										isPositionOK = true;
+									}
+								}
+								if ( (flag==false && this.lbgpi >= 0) || legendmod.gameMode == ":party"){
+									isPositionOK = true;									
+								}	
+								
+								*/
+                                this.lastX = (29 * this.lastX + this.x) / 30;
+                                this.lastY = (29 * this.lastY + this.y) / 30;
+								
+								//if (isPositionOK){
+                                var w = (this.lastX + margin) * mult;
+                                var h = (this.lastY + margin) * mult;
+                                if (this.nick.length > 0) {
+                                    options.font = defaultSettings.miniMapNickFontWeight + " " + defaultSettings.miniMapNickSize + "px " + defaultSettings.miniMapNickFontFamily;
+                                    options.textAlign = "center";
+                                    var namead = "";
+                                    if (this.lbgpi < 0) namead += " [ℵ]";
+                                    if (defaultSettings.miniMapNickStrokeSize > 0) {
+                                        options.lineWidth = defaultSettings.miniMapNickStrokeSize;
+                                        options.strokeStyle = defaultSettings.miniMapNickStrokeColor;
+
+                                        options.strokeText(this.nick + namead, w, h - (2 * defaultSettings.miniMapTeammatesSize + 2));
+                                    }
+                                    options.fillStyle = defaultSettings.miniMapNickColor;
+                                    options.fillText(this.nick+namead, w, h - (2 * defaultSettings.miniMapTeammatesSize + 2));
+                                }
+                                options.beginPath();
+                                options.arc(w, h, defaultSettings.miniMapTeammatesSize, 0, this.pi2, false);
+                                options.closePath();
+                                if (defaultmapsettings.oneColoredTeammates) {
+                                    options.fillStyle = defaultSettings.miniMapTeammatesColor;
+                                } else {
+                                    options.fillStyle = value;
+                                }
+                                options.fill();
+								//}
+                            }
+                        };
+                    }(i, o, l, a);
+                    c.setColor(r, n);
+                    this.teamPlayers.push(c);
+                }
+                this.cacheCustomSkin(o, r, a);
+            },
+            'updateTeamPlayerPosition': function(t) {
+                var e = t.getUint32(1, true),
+                    i = this.checkPlayerID(e);
+                if (null !== i) {
+                    var s = t.getInt32(5, true),
+                        o = t.getInt32(9, true),
+                        a = t.getUint32(13, true);
+                    if (a > 360000) return;
+                    var n = this.teamPlayers[i];
+                    n.x = s, 
+					n.y = o, 
+					n.mass = a, 
+					n.alive = true, 
+					n.updateTime = Date.now(), 
+					this.targeting && this.targetID && e == this.targetID && this.updateTarget(n.nick, n.skinURL, s, o, a, n.color, n.lbgpi);
+                }
+            },
+            //Sonia3 Added 3 fuctions below
+            'dematrix': function(mat) {
+                return !mat[0] && !mat[1] ? 0 : mat[0] && !mat[1] ? 1 : mat[0] && mat[1] ? 2 : 3;
+            },
+            'setvnr': function(b) {
+                window.legendmod.setrot = 1;
+                window.legendmod.rotcnt = 0;
+                var mat = window.legendmod.vector[window.legendmod.vnr];
+                //window.legendmod.prevvnr = window.legendmod.vnr; //jimboy31001
+                if ((b == 0 || b == 3) && (window.legendmod.bgpi == 1 || window.legendmod.bgpi == 2)) mat[0] = !mat[0];
+                if ((b == 1 || b == 2) && (window.legendmod.bgpi == 0 || window.legendmod.bgpi == 3)) mat[0] = !mat[0];
+                if ((b == 0 || b == 1) && (window.legendmod.bgpi == 2 || window.legendmod.bgpi == 3)) mat[1] = !mat[1];
+                if ((b == 2 || b == 3) && (window.legendmod.bgpi == 1 || window.legendmod.bgpi == 0)) mat[1] = !mat[1];
+                window.legendmod.vnr = this.dematrix(mat);
+            },
+            'updatevnr': function() {
+                var mm = 0;
+                var max = 4;
+                for (var i = 0; i < this.teamPlayers.length; i++) {
+                    var k = this.teamPlayers[i];
+                    if (k.mass > mm) {
+                        if (k.lbgpi <= 3 && k.lbgpi >= 0) {
+                            mm = k.mass;
+                            max = k.lbgpi;
+                        }
+                    }
+                }
+                if (mm > 0 && (!window.legendmod.play || mm > window.legendmod.playerMass) && max <= 3 && window.legendmod.bgpi <= 3 && !window.legendmod.setrot) {
+                    console.log("[Legend mod Express] VMR UPDATE:", window.legendmod.vnr, mm, window.legendmod.playerMass, max, window.legendmod.bgpi);
+                    this.setvnr(max);
+                    //toastr.info('<b>[SERVER]:</b> Map fixed with LM players');
+					//toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + Premadeletter125);
+					console.log('[Legend mod Express] Map fixed with LM players. POS:', max);
+                }
+            },
+            'updateTeamPlayers': function() {
+                this.sendPlayerPosition(); 			
+				this.sendSuperLegendSDATA();
+				
+				//this.sendSLGQinfo(),
+				//this.sendJimboy3100info(),
+				this.chatUsers = {}; 
+				this.top5 = []; //Sonia3
+                this.updatevnr(); //Sonia3
+                if (window.legendmod.delstate >= 0) { //Sonia3
+                    window.legendmod.delstate += 1; //Sonia3
+                    if (window.legendmod.delstate > 3) window.legendmod.delstate = -1; //Sonia3
+                } //Sonia3
+                var t = 0;
+                for (; t < this.teamPlayers.length; t++) {
+                    var e = this.teamPlayers[t];
+                    if (e.alive && Date.now() - e.updateTime >= 2000 || 0 == e.mass) {
+                        e.alive = false;
+                        if (this.targeting && this.targetID && e.id == this.targetID) {
+                            this.setTargetStatus(2);
+                        }
+                    }
+                    if (e.alive) {
+                        this.top5.push({
+                            "id": e.id,
+                            "nick": e.nick,
+                            "x": e.x,
+                            "y": e.y,
+                            "mass": e.mass,
+                            "color": e.color,
+                            "skin": e.skinURL,
+							"lbgpi": e.lbgpi							
+                        });
+                        if (!this.isChatUserMuted(e.id)) {
+                            this.addChatUser(e.id, e.nick);
+                        }
+                    }
+                }
+                this.top5.sort(function(row, conf) {
+                    return conf.mass - row.mass;
+                }), 
+				this.displayTop5();
+
+            },
+            'updateParties': function(t) {
+                this.parties = [];
+                for (var e = t.getUint8(1), i = 2, s = 0; s < e; s++) {
+                    for (var o = '';;) {
+                        var a = t.getUint16(i, true);
+                        if (0 == a) break;
+                        o += String.fromCharCode(a), i += 2;
+                    }
+                    i += 2, this.parties.push(o);
+                }
+            },
+            'readChatMessage': function(t) {
+                if (!defaultmapsettings.disableChat) {
+                    var e = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1'),
+                        i = t.getUint8(1),
+                        s = t.getUint32(2, true),
+                        o = t.getUint32(6, true);
+                    if (!(this.isChatUserMuted(s) || 0 != o && o != this.playerID && s != this.playerID)) {
+                        for (var a = '', n = 10; n < t.byteLength; n += 2) {
+                            var r = t.getUint16(n, true);
+                            if (0 == r) break;
+                            a += String.fromCharCode(r);
+                        }
+                        this.displayChatMessage(e, i, s, a);
+                    }
+                }
+            },
+            'sendChatMessage': function(t, e) {
+                //console.log(t);console.log(e);
+                if (!(Date.now() - this.lastMessageSentTime < 500 || 0 == e.length || 0 == ogarcopythelb.nick.length) && this.isSocketOpen()) {
+                    e = ogarcopythelb.nick + ': ' + e;
+                    var i = this.createView(10 + 2 * e.length);
+                    i.setUint8(0, 100), i.setUint8(1, t), i.setUint32(2, this.playerID, true), i.setUint32(6, 0, true);
+                    for (var s = 0; s < e.length; s++) i.setUint16(10 + 2 * s, e.charCodeAt(s), true);
+                    this['sendBuffer'](i), this.lastMessageSentTime = Date.now();
+                }
+            },
+            'prepareCommand': function(t) {
+                return t.replace('%currentSector%', this.currentSector);
+            },
+            'sendCommand': function(t) {
+                var e = this['prepareCommand'](c['comm' + t]);
+                this['sendChatMessage'](102, e);
+            },
+            'addChatUser': function(t, e) {
+                this.chatUsers[t] = e;
+            },
+            'getChatUserNick': function(t) {
+                return this.chatUsers.hasOwnProperty(t) ? this.chatUsers[t] : '';
+            },
+            'muteChatUser': function(t) {
+                if (t && !this.isChatUserMuted(t)) {
+                    var e = this.getChatUserNick(t);
+                    this.chatMutedUsers[t] = e, this.chatMutedUserIDs.push(t), toastr.error(h.userMuted.replace('%user%', '<strong>' + this.escapeHTML(e) + '</strong>') + ' <button data-user-id=\"' + t + '\" class=\"btn btn-xs btn-green btn-unmute-user\">' + h.unmute + '</button>');
+                }
+            },
+            'unmuteChatUser': function(t) {
+                if (t) {
+                    var e = this.chatMutedUserIDs.indexOf(t);
+                    if (-1 != e) {
+                        this.chatMutedUserIDs.splice(e, 1);
+                        toastr.info(h["userUnmuted"].replace("%user%", "<strong>" + this.escapeHTML(this.chatMutedUser[t]) + "</strong>"));
+                        delete this.chatMutedUser[t];
+                    }
+                }
+            },
+            'isChatUserMuted': function(t) {
+                return -1 != this.chatMutedUserIDs.indexOf(t);
+            },
+            'parseMessage': function(t) {
+                var e = /\[img\](https?:\/\/i\.(?:imgur|hizliresim)\.com\/\w{6,8}\.(?:jpg|jpeg|png|gif)\??\d*)\[\/img\]/i;
+                if (e.test(t)) return defaultmapsettings.showChatImages ? '<img src=\"' + t.match(e)[1].replace('http:', 'https:') + '\" style=\"width:100%;border:none;\">' : '';
+                var i = /\[yt\]([\w-]{11})\[\/yt\]/i;
+                if (i.test(t)) return defaultmapsettings.showChatVideos ? '<iframe type=\"text/html\" width=\"100%\" height=\"auto\" src=\"https://www.youtube.com/embed/' + t.match(i)[1] + '?autoplay=1&amp;vq=tiny\" frameborder=\"0\" />' : '';
+                var s = this.escapeHTML(t);
+                return defaultmapsettings['chatEmoticons'] && (s = this.parseEmoticons(s)), s;
+            },
+            'parseEmoticons': function(t) {
+                /*return String(t).replace(/\&lt\;3/g, '<3').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\))/g, function(t) {
+                    return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + d[t] + '\" alt=\"' + t + '\" class=\"emoticon\">';
+                });*/
+                //return String(t).replace(/\&lt\;3/g, '<3').replace(/℄/g, '℄ Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(t) {
+                return String(t).replace(/\&lt\;3/g, '<3').replace(/℄/g, '℄ Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(t) {
+                    //console.log(d[t]);
+                    return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + emoticonicons[t] + '\" alt=\"' + t + '\" class=\"emoticon\">';
+                });
+
+            },
+            'displayChatMessage': function(t, e, i, o) {
+                if (0 != o.length) {
+					//console.log(o);
+                    var a = o.split(': ', 1).toString(),
+                        n = this.parseMessage(o.replace(a + ': ', ''));
+                    if (!(0 == a.length || a.length > 15 || 0 == n.length)) {
+                        var r = '';
+                        if (0 != i && i != this.playerID && (this.addChatUser(i, a), r = '<a href=\"#\" data-user-id=\"' + i + '\" class=\"mute-user ogicon-user-minus\"></a> '), a = this.escapeHTML(a), 101 == e) {
+                            if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message\"><span class=\"message-time\">[' + t + '] </span>' + r + '<span class=\"message-nick\">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'),
+                                $('#chat-box').perfectScrollbar('update'), $('#chat-box').animate({
+                                'scrollTop': $('#chat-box').prop('scrollHeight')
+                            }, 500), void(defaultmapsettings.chatSounds && this.playSound(this.messageSound));
+                            defaultmapsettings.hideChat || (toastr.success('<span class=\"message-nick\">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r), defaultmapsettings.chatSounds && this.playSound(this.messageSound)), this.chatHistory.push({
+                                'nick': a,
+                                'message': n
+                            }), this.chatHistory.length > 15 && this.chatHistory.shift();
+                        } else if (102 == e) {
+                            if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + t + '] </span>' + r + '<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'),
+                                $('#chat-box').perfectScrollbar('update'), $('#chat-box').animate({
+                                'scrollTop': $('#chat-box').prop('scrollHeight')
+                            }, 500), void(defaultmapsettings.chatSounds && this.playSound(this.commandSound));
+                            defaultmapsettings.hideChat || (toastr.warning('<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r), defaultmapsettings.chatSounds && this.playSound(this.commandSound));
+                        } else $('#messages').append(o);
+                    }
+                }
+            },
+            'displayUserList': function(t, e, i, s, o) {
+                var a = '';
+                if (Object['keys'](t).length) {
+                    for (var n in a += '<ol class=\"user-list\">', t) t.hasOwnProperty(n) && (a += '<li><strong>' + this.escapeHTML(t[n]) + '</strong> <button data-user-id=\"' + n + '\" class=\"btn btn-xs ' + i + '\">' + s + '</button></li>');
+                    a += '</ol>';
+                } else a += h.none;
+                toastr[o](a, e, {
+                    'closeButton': true,
+                    'tapToDismiss': false
+                });
+            },
+            'displayChatActiveUsers': function() {
+                this.displayUserList(this.chatUsers, h.activeUsers, 'btn-red btn-mute-user', h.mute, 'info');
+            },
+            'displayChatMutedUsers': function() {
+                this.displayUserList(this.chatMutedUsers, h.mutedUsers, 'btn-green btn-unmute-user', h.unmute, 'error');
+            },
+            'preloadChatSounds': function() {
+                this.setMessageSound(), this.setCommandSound(), this.setvirusSound();
+            },
+            'setChatSoundsBtn': function() {
+                defaultmapsettings.chatSounds ? $('.chat-sound-notifications').removeClass('ogicon-volume-mute2').addClass('ogicon-volume-high') : $('.chat-sound-notifications').removeClass('ogicon-volume-high').addClass('ogicon-volume-mute2');
+            },
+            'setMessageSound': function() {
+                this.messageSound = this.setSound(defaultmapsettings.messageSound);
+            },
+            'setCommandSound': function() {
+                this.commandSound = this.setSound(defaultmapsettings.commandSound);
+            },
+            'setvirusSound': function() {
+                this.virusSoundurl = this.setSound(defaultmapsettings.virusSoundurl);
+            },
+            'setSound': function(t) {
+                return t ? new Audio(t) : null;
+            },
+            /*            'playSound': function(t) {
+                            //t && t.play && (t.pause(), t.currentTime = 0, t.play());
+                            //t && t.play && t.play!==null && (t.pause(), t.currentTime = 0, t.play());
+                            t.pause();
+                            t.currentTime = 0;
+                            var nopromise = {
+                                catch: new Function()
+                            };
+                            (t.play() || nopromise).catch(function() {});
+                        },
+            */
+            'playSound': function(t) {
+                if (t && t.play) {
+                    t.pause();
+                    t.currentTime = 0;
+                    //t.play();
+                    var nopromise = {
+                        catch: new Function()
+                    };
+                    (t.play() || nopromise).catch(function() {});
+                }
+            },
+            'setTargeting': function() {
+                if (this.targetID) {
+                    this.targeting = !this.targeting, i.targeting = this.targeting, this.setTargetingInfo();
+                }
+            },
+            'setTargetingInfo': function() {
+                this.targeting ? ($('#set-targeting').addClass('active'), 
+				$('#target-status').show(), 
+				2 != this.targetStatus && $('#target-summary').show()) : ($('#set-targeting').removeClass('active'), 
+				$('#target-summary, #target-status').hide());
+            },
+            'cancelTargeting': function() {
+                this.setTargetStatus(0);
+            },
+            'setPrivateMiniMap': function() {
+                this.targetID && (this.privateMiniMap = !this.privateMiniMap, this.privateMiniMap ? $('#set-private-minimap').addClass('active') : $('#set-private-minimap').removeClass('active'));
+            },
+            'setTarget': function(t) {
+                var e = this.checkPlayerID(t);
+                if (null !== e) {
+                    var i = this.teamPlayers[e];
+                    if (this.targetID = i.id, this.updateTarget(i.nick, i.skinURL, i.x, i.y, i.mass, i.color, i.lbgpi), !i.alive){ 
+						return void this.setTargetStatus(2);
+					}
+                    this.setTargetStatus(1);
+                } else this.setTargetStatus(0);
+            },
+            'setTargetStatus': function(t) {
+                switch (t) {
+                    case 0:
+                        this.targetStatus = 0, 
+						this.targetID = 0,
+						this.targetNick = '', 
+						this.targetSkinURL = '', 
+						this.targeting = false, 
+						i.targeting = false, 
+						this.privateMiniMap = false, 
+						$('#target-skin, #target-nick, #target-summary').hide(), 
+						$("#target-hud").hide(), 
+						$('#target-status').show().text(h.targetNotSet), 
+						$('#target-panel-hud a').removeClass('active'); //$('#target-status').show().text('[' + h.targetNotSet + ']'), $('#target-panel-hud a').removeClass('active');
+                        break;
+                    case 1:
+                        this.targetStatus = 1, 
+						this.targeting || (this.targeting = true, i.targeting = true, $("#target-hud").show(), this.setTargetingInfo()), 
+						$('#target-skin, #target-nick, #target-status, #target-summary').show();
+                        break;
+                    case 2:
+                        //this.targetStatus = 2, $('#target-summary').hide(), $("#target-hud").show(), $('#target-status').show().text('[' + h.targetDead + ']'), i.resetTargetPosition();
+						this.targetStatus = 2, 
+						$('#target-summary').hide(), 
+						$("#target-hud").show(), 
+						$('#target-status').show().text('[' + Languageletter369 + ']'), 
+						i.resetTargetPosition();
+                }
+            },
+            'changeTarget': function() {
+                for (var t = this.checkPlayerID(this.targetID), e = null, i = 0; i < this.teamPlayers.length; i++)
+                    if (this.teamPlayers[i].alive) {
+                        if (null === t) {
+                            t = i;
+                            break;
+                        }
+                        if (i < t && null === e) e = i;
+                        else if (i > t) {
+                            e = i;
+                            break;
+                        }
+                    }
+                null !== e && (t = e), null !== t ? this.setTarget(this.teamPlayers[t].id) : this.setTargetStatus(0);
+            },
+            'updateTarget': function(t, e, o, a, n, r, f) {
+                i.setTargetPosition(o, a); 
+				if (this.targetNick !== t){
+					 this.targetNick = t; 
+					 $('#target-nick').html(this.escapeHTML(t))
+				}					 
+				$('#target-skin').css('background-color', r);
+				if (e){
+					if (this.targetSkinURL !== e){ 
+						if (this.customSkinsCache.hasOwnProperty(e + '_cached')){
+							$('#target-skin img').attr('src', e); 
+							this.targetSkinURL = e;
+						}
+						else{
+							$('#target-skin img').attr('src', 'https://jimboy3100.github.io/banners/static/img/blank.png')
+						}
+						
+					}					
+				}
+				$('#target-status').text('[' + this.shortMassFormat(n) + ']');
+                //var l = this.calculateMapSector(o, a);
+				var l;
+                    //c = h.targetDistance + ': <span class=\"hud-main-color\">' + i.targetDistance + ' [' + l + ']</span>';
+								var flag=false;
+                                for (var j = 0; j < legendmod.ghostCells.length; j++){ 
+									if (legendmod.leaderboard[j] && this.targetNick==legendmod.leaderboard[j].nick){
+										
+										if ( flag==false ){
+										l = window.legendmod3.calculateMapSector(window.predictedGhostCells[j].x, window.predictedGhostCells[j].y) 
+										flag=true;
+										}
+									}
+								};
+								if ( flag==false &&  f >= 0){
+									l = this.calculateMapSector(o, a);
+								}	
+								else if ( flag==false && (this.calculateMapSector(o, a) == "C3" || legendmod.gameMode == ":party")){
+									l = this.calculateMapSector(o, a);
+								}	
+								else if ( flag==false){
+									l = "Unknown";
+								};
+					c = Languageletter368 + ': <span class=\"hud-main-color\">' + i.targetDistance + ' [' + l + ']</span>';
+                if (i.play){
+				c += ' | ' + h['targetMass'] + ': <span class=\"hud-main-color\">' + this.shortMassFormat(n + i.playerMass) + '</span>'
+				} 
+				$('#target-summary').html(c); 
+				if (1 != this.targetStatus){ 
+				this.setTargetStatus(1);
+				}
+            },
+            'updateQuest': function() {
+                this.showQuest && ':ffa' === this.gameMode && window.MC && window.MC.getQuestProgressLabel && (this.questHUD.textContent = window.MC.getQuestProgressLabel());
+            },
+            'init': function() {
+                this.loadSettings(),
+                    this.loadProfiles(),
+                    this.setLang(),
+                    this.setMenu(),
+                    this.setUI(),
+					hudsetter && hudsetter.setTheme(),
+                    this.setShowQuickMenu(),
+                    this.setShowSkinsPanel(),
+                    this.setProfile(),
+                    this.setMainButtons(),
+                    this.setStreamMode(),
+                    this.setHideSkinUrl(),
+                    this.setMiniMap(),
+                    this.setAutoResp(),
+                    this.setDisableChat(),
+                    this.setShowChatBox(),
+                    this.setTop5(),
+                    this.setTargetingHUD(),
+                    this.setQuest(),
+                    this.displayTime(),
+                    this.setCenteredLb(),
+                    this.setNormalLb(),
+                    this.setFpsAtTop(),
+                    this.displayStats(),
+                    this.setBlockPopups(),
+                    this.preloadChatSounds(),
+                    this.setChatSoundsBtn();
+                var t = this;
+                setInterval(function() {
+                    t.drawMiniMap();
+                }, 33),
+                    setInterval(function() {
+                        t.updateTeamPlayers();
+						legendmod3.sendSocket3Position();
+                    }, this.updateInterval);
+            }
+        };
+
+        function irenderfromagario() {
+            this.txt = '',
+                this.txtCanvas = null,
+                this.txtCtx = null,
+                this.color = '#FFFFFF',
+                this.stroke = false,
+                this.strokeWidth = 2,
+                this.strokeColor = '#000000',
+                this.font = '700 16px Ubuntu',
+                this.fontFamily = 'Ubuntu',
+                this.fontWeight = 700,
+                this.fontSize = 16,
+                this.margin = 3,
+                this.scale = 1,
+                this.quality = 1,
+                this.measuredWidth = 0,
+                this.redraw = false,
+                this.remeasure = false,
+                this.setTxt = function(ogariosettxtsetter) {
+                    this.txt !== ogariosettxtsetter && (this.txt = ogariosettxtsetter,
+                        this.redraw = true,
+                        this.remeasure = true);
+                },
+                this.setColor = function(ogariocolorsetter) {
+                    this.color !== ogariocolorsetter && (this.color = ogariocolorsetter,
+                        this.redraw = true);
+                },
+                this.setStroke = function(ogariostrokesetter) {
+                    this.stroke !== ogariostrokesetter && (this.stroke = ogariostrokesetter,
+                        this.redraw = true);
+                },
+                this.setStrokeWidth = function(ogariostrokewidthsetter) {
+                    this.stroke && this.strokeWidth != ogariostrokewidthsetter && (this.strokeWidth = ogariostrokewidthsetter,
+                        this.redraw = true,
+                        this.remeasure = true);
+                },
+                this.setStrokeColor = function(ogariostrokecolorsetter) {
+                    this.stroke && this.strokeColor !== ogariostrokecolorsetter && (this.strokeColor = ogariostrokecolorsetter,
+                        this.redraw = true);
+                },
+                this.setFont = function() {
+                    this.font = this.fontWeight + ' ' + this.fontSize + 'px ' + this.fontFamily;
+                },
+                this.setFontFamily = function(ogariofontfamilysetter) {
+                    this.fontFamily !== ogariofontfamilysetter && (this.fontFamily = ogariofontfamilysetter,
+                        this.setFont(),
+                        this.redraw = true,
+                        this.remeasure = true);
+                },
+                this.setFontWeight = function(ogariofontweightsetter) {
+                    this.fontWeight != ogariofontweightsetter && (this.fontWeight = ogariofontweightsetter,
+                        this.setFont(),
+                        this.redraw = true,
+                        this.remeasure = true);
+                },
+                this.setFontSize = function(ogariofontsizesetter) {
+                    this.fontSize != ogariofontsizesetter && (this.fontSize = ogariofontsizesetter,
+                        this.margin = ~~(0.2 * ogariofontsizesetter),
+                        this.setFont(),
+                        this.redraw = true);
+                },
+                this.setScale = function(ogarioscalesetter) {
+                    this.scale != ogarioscalesetter && (this.scale = ogarioscalesetter,
+                        this.redraw = true);
+                },
+                this.createCanvas = function() {
+                    this.txtCanvas || (this.txtCanvas = document.createElement('canvas'),
+                        this.txtCtx = this.txtCanvas.getContext('2d'),
+                        this.txtCtx.ogarioCtx = true);
+                },
+                this.setDrawing = function(ogarsetDrawinglabel1, ogarsetDrawinglabel2, ogarsetDrawinglabel3, ogarsetDrawinglabel4, ogarsetDrawinglabel5, ogarsetDrawinglabel6) {
+                    this.setColor(ogarsetDrawinglabel1);
+                    this.setFontFamily(ogarsetDrawinglabel2);
+                    this.setFontWeight(ogarsetDrawinglabel3);
+                    this.setStroke(ogarsetDrawinglabel4);
+                    this.setStrokeWidth(ogarsetDrawinglabel5);
+                    this.setStrokeColor(ogarsetDrawinglabel6);
+                },
+                this.measureWidth = function() {
+                    return this.remeasure && (this.txtCtx.font = this.fontWeight + ' 10px ' + this.fontFamily,
+                        this.measuredWidth = this.txtCtx.measureText(this.txt).width,
+                        this.remeasure = false),
+                    ~~(this.fontSize / 10 * this.measuredWidth) + 2 * this.strokeWidth;
+                },
+                //
+                this.measureWidthCustom = function(customTxt) {
+                    return customTxt && this.remeasure && (this.txtCtx.font = this.fontWeight + ' 10px ' + this.fontFamily,
+                        this.measuredWidth = this.txtCtx.measureText(customTxt).width,
+                        this.remeasure = false),
+                    ~~(this.fontSize / 10 * this.measuredWidth) + 2 * this.strokeWidth;
+                },
+                //
+                this.drawTxt = function(customTxt) {
+                    return this.createCanvas(),
+                    this.redraw && (this.redraw = false,
+
+
+                        this.txtCanvas.width = this.measureWidthCustom(customTxt),
+                        this.txtCanvas.width = this.measureWidth(),
+                        this.txtCanvas.height = this.fontSize + this.margin * 2,
+                        this.txtCtx.font = this.font,
+                        this.txtCtx.globalAlpha = 1,
+                        this.txtCtx.lineWidth = this.strokeWidth,
+                        this.txtCtx.strokeStyle = this.strokeColor,
+                        this.txtCtx.fillStyle = this.color,
+                    customTxt && this.stroke && this.txtCtx.strokeText(customTxt, this.strokeWidth, ~~(this.fontSize - this.margin * 0.5)),
+                    !customTxt && this.stroke && this.txtCtx.strokeText(this.txt, this.strokeWidth, ~~(this.fontSize + this.margin * 0.5)),
+                    customTxt && this.txtCtx.fillText(customTxt, this.strokeWidth, ~~(this.fontSize - this.margin * 0.5)),
+                    !customTxt && this.txtCtx.fillText(this.txt, this.strokeWidth, ~~(this.fontSize + this.margin * 0.5))),
+                        this.txtCanvas;
+                };
+
+        }
+        window.legendmod3 = ogarminimapdrawer;
+
+        function ogarbasicassembly(t, e, s, o, a, n, r, l, h, c) {
+            cimg2 = new Image;
+            cimg2.src = defaultSettings.commanderImage2;
+            cimg5 = new Image;
+            cimg5.src = defaultSettings.commanderImage5;
+            cimg6 = new Image;
+            cimg6.src = defaultSettings.commanderImage6;
+            cimg7 = new Image;
+            cimg7.src = 'https://jimboy3100.github.io/banners/iconLcForCanvas.png';
+
+            if (dyinglight1load == "yes") {
+                cimgDyingLight = new Image;
+                cimgDyingLight.src = defaultSettings.commanderImageDyingLight;
+                cimgDyingLightvirus = new Image;
+                cimgDyingLightvirus.src = defaultSettings.commanderImageDyingLightvirus;
+
+
+                cimgDyingLight1 = new Image;
+                cimgDyingLight1.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie2.png';
+                cimgDyingLight2 = new Image;
+                cimgDyingLight2.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie3.png';
+                cimgDyingLight3 = new Image;
+                cimgDyingLight3.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie4.png';
+                cimgDyingLight4 = new Image;
+                cimgDyingLight4.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie5.png';
+                cimgDyingLight5 = new Image;
+                cimgDyingLight5.src = 'https://jimboy3100.github.io/banners/icondyinglightzombiebig.png';
+                cimgDyingLight6 = new Image;
+                cimgDyingLight6.src = 'https://jimboy3100.github.io/banners/icondyinglightvolaltile.png';
+            }
+
+            //lylko
+            this.points = []
+            this.pointsVel = []
+            this.maxPointRad = 0
+
+
+            this.oldAlpha = 0;
+            this.id = t;
+            this.x = e;
+            this.y = s;
+            this.targetX = e;
+            this.targetY = s;
+            this.color = a;
+            this.oppColor = null;
+            this.size = o;
+            this.targetSize = o;
+            this.alpha = 1;
+            this.nick = '';
+            this.targetNick = '';
+            this.nickCanvas = null;
+            this.mass = 0;
+            this.lastMass = 0;
+            //			this.historyMass = [];
+            //			this.historyX = [];
+            //			this.historyY = [];
+            this.kMass = 0;
+            this.massCanvas = null;
+            this.mergeCanvas = null;
+            this.massTxt = '';
+            this.margin = 0;
+            this.scale = 1;
+            this.nickScale = 1;
+            this.massScale = 1;
+            this.virMassScale = 3;
+            this.strokeScale = 1;
+            this.fontSize = 26;
+            this.nickSize = 26;
+            this.lastNickSize = 0;
+            this.massSize = 26;
+            this.virMassSize = 26;
+            this.nickStrokeSize = 3;
+            this.massStrokeSize = 3;
+            this.isFood = n;
+            this.isVirus = r;
+            this.isPlayerCell = l;
+            this.shortMass = h;
+            this.virMassShots = c;
+            this.rescale = false;
+            this.redrawNick = true;
+            this.redrawMass = true;
+            this.redrawMerge = true;
+            this.optimizedNames = false;
+            this.optimizedMass = false;
+            this.strokeNick = false;
+            this.strokeMass = false;
+            this.removed = false;
+            this.redrawed = 0;
+            this.time = 0;
+            this.skin = null;
+            this.pi2 = 2 * Math.PI;
+            this.virusColor = null;
+            this.virusStroke = null;
+            this.nHeight = 6;
+
+            this.updateNumPoints = function() {
+                //adjustment of the number of contacts
+                var numPoints = this.size * ogarfooddrawer.scale | 0;
+                numPoints = Math.max(numPoints, 5);
+                numPoints = Math.min(numPoints, 120);
+                if (this.isVirus) numPoints = 100;
+                while (this.points.length > numPoints) {
+                    var i = Math.random() * this.points.length | 0;
+                    this.points.splice(i, 1);
+                    this.pointsVel.splice(i, 1);
+                }
+                if (this.points.length == 0 && numPoints != 0) {
+                    this.points.push({
+                        x: this.x,
+                        y: this.y,
+                        rl: this.size,
+                        parent: this //?
+                    });
+                    this.pointsVel.push(Math.random() - 0.5);
+                }
+                while (this.points.length < numPoints) {
+                    var i = Math.random() * this.points.length | 0;
+                    var point = this.points[i];
+                    var vel = this.pointsVel[i];
+                    this.points.splice(i, 0, {
+                        x: point.x,
+                        y: point.y,
+                        rl: point.rl,
+                        parent: this
+                    });
+                    this.pointsVel.splice(i, 0, vel);
+                }
+            }
+            this.sqDist = function(a, b) {
+                return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+            }
+            this.movePoints = function() {
+                //console.log(this.id)
+                var pointsVel = this.pointsVel.slice();
+                var len = this.points.length;
+                for (var i = 0; i < len; ++i) {
+                    var prevVel = pointsVel[(i - 1 + len) % len];
+                    var nextVel = pointsVel[(i + 1) % len];
+                    var newVel = (this.pointsVel[i] + Math.random() - 0.5) * 0.7;
+                    newVel = Math.max(Math.min(newVel, 10), -10);
+                    this.pointsVel[i] = (prevVel + nextVel + 8 * newVel) / 10;
+                }
+                this.maxPointRad = 0
+                for (var i = 0; i < len; ++i) {
+                    var curP = this.points[i];
+                    var curRl = curP.rl;
+                    var prevRl = this.points[(i - 1 + len) % len].rl;
+                    var nextRl = this.points[(i + 1) % len].rl;
+                    var self = this;
+                    var affected = LM.quadtree.some({
+                        x: curP.x - 5,
+                        y: curP.y - 5,
+                        w: 10,
+                        h: 10
+                    }, function(item) {
+                        return item.parent != self && this.sqDist(item, curP) <= 25;
+                    }.bind(this));
+
+                    //this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY
+
+                    //(curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
+                    //curP.x > LM.mapMaxX || curP.y > LM.mapMinY))
+
+
+                    //(curP.x < LM.viewMinX || curP.y < LM.viewMaxY ||
+                    //curP.x > LM.viewMaxX || curP.y > LM.viewMinY))
+
+                    /*if (!affected &&
+                        (curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
+                        curP.x > LM.mapMaxX || curP.y > LM.mapMinY))
+                    {
+                        affected = true;
+                    }*/
+                    if (affected) {
+                        //console.log('affected!!!!!')
+                        this.pointsVel[i] = Math.min(this.pointsVel[i], 0);
+                        this.pointsVel[i] -= 1;
+                    }
+                    curRl += this.pointsVel[i];
+                    curRl = Math.max(curRl, 0);
+
+                    curRl = (9 * curRl + this.size) / 10; //собака
+
+                    curP.rl = (prevRl + this.size + 8 * curRl) / 10; //собака
+
+                    //curP.rl = (prevRl + nextRl + 8 * curRl) / 10;
+
+                    var angle = 2 * Math.PI * i / len;
+                    var rl = curP.rl;
+                    if (rl > this.maxPointRad) this.maxPointRad = rl
+                    if (this.isVirus && i % 2 == 0) {
+                        rl += 5;
+                    }
+
+                    curP.x = this.x + Math.cos(angle) * rl;
+                    curP.y = this.y + Math.sin(angle) * rl;
+                }
+            };
+
+            this.update = function(t, e, i, s, o, a) {
+                this.x = t;
+                this.y = e;
+                this.isVirus = s;
+                this.isPlayerCell = o;
+                this.setMass(i);
+                this.setNick(a);
+            };
+            this.removeCell = function() {
+                this.removed = true;
+                var t = LM.cells.indexOf(this);
+                if (t != -1) {
+                    LM.cells.splice(t, 1);
+                    if (defaultmapsettings.virusesRange) {
+                        t = LM.viruses.indexOf(this);
+                        if (t != -1) {
+                            LM.viruses.splice(t, 1);
+                        }
                     }
                 } else {
-                    resulttime = (hourschecked + " hours: " + minuteschecked + " minutes " + secondachecked + " seconds " + " ago");
-                }
-                if (hourschecked == 0) {
-                    if (servers[player].addr.indexOf("ip-") >= 0) { //if wss
-                        appendLog4("<span id='playerinfo'>" + resulttime + "</span> (<span class='main-color'><span id='tokeninfo'>" + servers[player].addr + "</span></span>)", servers[player].addr);
-                    } else { //if wss
-                        servers[player].addr = servers[player].addr.replace("live-arena-", "").replace(".agar.io", "").replace(":80", "");
-                        appendLog2("<span id='playerinfo'>" + resulttime + "</span> (<span class='main-color'><span id='tokeninfo'>" + servers[player].addr + "</span></span>)", servers[player].addr);
+                    t = LM.food.indexOf(this);
+                    if (t != -1) {
+                        LM.food.splice(t, 1);
                     }
                 }
-
-            }
-
-        }
-    });
-}
-
-function getInfo3() {
-    $.ajax({
-        type: "GET",
-        url: "https://webbouncer-live-v7-0.agario.miniclippt.com/info",
-        datatype: "json",
-        success: function(info) {
-            //$("#currentRegion").html($('#region').val());
-            var regions = info.regions;
-            var currentRegion;
-            for (var key in regions) {
-                if (key == $("#regioncheck").val()) {
-                    currentRegion = regions[key];
-                    break;
+                t = LM.playerCells.indexOf(this);
+                if (t != -1) {
+                    LM.removePlayerCell = true;
+                    LM.playerCells.splice(t, 1);
+                    t = LM.playerCellIDs.indexOf(this.id);
+                    if (t != -1) {
+                        LM.playerCellIDs.splice(t, 1);
+                    }
                 }
-            }
-            //console.log(info);
-            //console.log(currentRegion);
-            if (currentRegion != undefined) {
-                $("#numPlayers").html(kFormatter(currentRegion.numPlayers));
-                $("#numServers").html(currentRegion.numRealms);
-                $("#pps").html(Math.round(currentRegion.avgPlayersPerRealm));
-            }
-            $("#totalPlayers").html(kFormatter(info.totals.numPlayers));
-        }
-    });
-}
+                if (this.redrawed) {
+                    LM.removedCells.push(this);
+                }
+                delete LM.indexedCells[this.id];
+            };
+            this.moveCell = function() {
+                var t = LM.time - this.time;
+                var t1 = t / defaultmapsettings.animation;
+                t1 = t1 < 0 ? 0 : t1 > 1 ? 1 : t1;
+                this.x += (this.targetX - this.x) * t1;
+                this.y += (this.targetY - this.y) * t1;
+                this.size += (this.targetSize - this.size) * t1;
+                this.alpha = t1;
+                if (!this.removed) {
+                    this.time = LM.time;
+                    return;
+                }
+                if (t1 == 1) {
+                    var t2 = LM.removedCells.indexOf(this);
+                    if (t2 != -1) {
+                        LM.removedCells.splice(t2, 1);
+                    }
+                }
+            };
+            this.isInView = function() {
+                //console.log("hi");
+                return !(this.id <= 0) && !(this.x + this.size + 40 < LM.viewX - LM.canvasWidth / 2 / LM.scale || this.y + this.size + 40 < LM.viewY - LM.canvasHeight / 2 / LM.scale || this.x - this.size - 40 > LM.viewX + LM.canvasWidth / 2 / LM.scale || this.y - this.size - 40 > LM.viewY + LM.canvasHeight / 2 / LM.scale);
+            };
+            /*
+				this.setMass = function(t) {
+                    return this.size = t, !(t <= 40) && (this.massCanvas ? (this.mass = ~~(t * t / 100), this.redrawMass = true, this.isVirus ? (this.virMassShots && this.mass < 200 && (this.mass = ~~((200 - this.mass) / 14)), this.massTxt = this.mass.toString(), this.mass > 220 ? (this.virusColor = defaultSettings.mVirusColor, this.virusStroke = defaultSettings.mVirusStrokeColor) : (this.virusColor = defaultSettings.virusColor, this.virusStroke = defaultSettings.virusStrokeColor), true) : (this.massTxt = this.mass.toString(), this.mass <= 200 || (this.shortMass && this.mass >= 1000 ? (this.kMass = Math.round(this.mass / 100) / 10, this.massTxt = this.kMass + 'k', true) : (this.optimizedMass && (this.redrawMass = Math.abs((this.mass - this.lastMass) / this.mass) >= 0.02 || this.rescale), true)))) : (this.massCanvas = new irenderfromagario(), false));
+                };
+				*/
+            this.setMass = function(t) {
+                this.size = t;
+                if (t <= 40) {
+                    return false;
+                }
+                if (!this.massCanvas) {
+                    this.massCanvas = new irenderfromagario();
+                    return false;
+                }
+                if (!window.legendmod5.optimizedMass && window.ExternalScripts && !this.mergeCanvas) {
+                    this.mergeCanvas = new irenderfromagario();
+                    return false;
+                }
+                this.mass = ~~(t * t / 100);
+                this.redrawMass = true;
+                if (this.isVirus) {
+                    if (this.mass <= 200) {
+                        this.virusColor = defaultSettings.virusColor, this.virusStroke = defaultSettings.virusStrokeColor;
+                    } else if (this.mass > 220) {
+                        this.virusColor = defaultSettings.mVirusColor, this.virusStroke = defaultSettings.mVirusStrokeColor;
+                    }
+                    if (this.virMassShots) {
+                        this.mass = ~~((200 - this.mass) / 14);
+                    }
+                    if (defaultmapsettings.virusSound && this.lastMass && this.mass < this.lastMass) {
+                        void ogarminimapdrawer.playSound(ogarminimapdrawer.setSound(defaultmapsettings.virusSoundurl));
+                    }
+                    this.massTxt = this.mass.toString();
+                }
+                this.massTxt = this.mass.toString();
 
-function changeleaderboardlimit() {
-    window.leaderboardlimit = $("#leaderboardlimit").val();
-    localStorage.setItem("leaderboardlimit", window.leaderboardlimit);
-}
+                if (this.shortMass && this.mass >= 1000) {
+                    this.kMass = Math.round(this.mass / 100) / 10;
+                    this.massTxt = this.kMass + 'k';
+                    return true;
+                }
+                if (this.optimizedMass) {
+                    this.redrawMass = Math.abs((this.mass - this.lastMass) / this.mass) >= 0.02 || this.rescale;
+                }
+                return true;
+            };
 
-function changeteamboardlimit() {
-    window.teamboardlimit = $("#teamboardlimit").val();
-    localStorage.setItem("teamboardlimit", window.teamboardlimit);
-}
-//Animated Skins
-function animateSkincheckTimer() {
-    animateSkincheck();
-}
+            this.setNick = function(t) {
+                this.nick = t;
+                if (!t || this.isVirus) {
+                    return false;
+                }
+                if (!this.nickCanvas) {
+                    this.nickCanvas = new irenderfromagario();
+                    return false;
+                }
+                return true;
+            };
+            this.setScale = function(t, e, i, s, o) {
+                var t = Math.ceil(t * 10) / 10;
+                this.rescale = false;
+                if (this.scale != t) {
+                    this.scale = t;
+                    this.rescale = true;
+                }
+                this.nickScale = e;
+                this.massScale = i;
+                this.virMassScale = s;
+                this.strokeScale = o;
+            };
+            this.setFontSize = function() {
+                if (this.isVirus) {
+                    this.massSize = Math.ceil(this.virMassSize * this.scale * this.virMassScale);
+                    return;
+                }
+                this.fontSize = Math.max(this.size * 0.3, 26) * this.scale;
+                this.nickSize = ~~(this.fontSize * this.nickScale);
+                this.massSize = ~~(this.fontSize * 0.5 * this.massScale);
+                if (this.optimizedNames) {
+                    this.redrawNick = Math.abs((this.nickSize - this.lastNickSize) / this.nickSize) >= 0.3 || this.rescale;
+                    return;
+                }
+                this.redrawNick = true;
+            };
+            this.setStrokeSize = function() {
+                if (this.strokeNick && !this.isVirus) {
+                    this.nickStrokeSize = ~~(this.nickSize * 0.1 * this.strokeScale);
+                }
+                if (this.strokeMass) {
+                    this.massStrokeSize = ~~(this.massSize * 0.1 * this.strokeScale);
+                }
+            };
+            this.setDrawing = function() {
+                this.optimizedNames = defaultmapsettings.optimizedNames;
+                this.optimizedMass = defaultmapsettings.optimizedMass;
+                this.shortMass = defaultmapsettings.shortMass;
+                this.virMassShots = defaultmapsettings.virMassShots;
+                this.strokeNick = defaultmapsettings.namesStroke;
+                this.strokeMass = defaultmapsettings.massStroke;
+            };
+            this.setDrawingScale = function() {
+                this.setScale(i.viewScale, defaultSettings.namesScale, defaultSettings.massScale, defaultSettings.virMassScale, defaultSettings.strokeScale);
+                this.setFontSize();
+                this.setStrokeSize();
+                this.margin = 0;
+            };
+            this.drawNick = function(t) {
+                if (!this.nick || !this.nickCanvas || this.isVirus) {
+                    return;
+                }
+                var nickCanvas = this.nickCanvas;
+                nickCanvas.setDrawing(defaultSettings.namesColor, defaultSettings.namesFontFamily, defaultSettings.namesFontWeight, this.strokeNick, this.nickStrokeSize, defaultSettings.namesStrokeColor);
+                nickCanvas.setTxt(this.nick);
+                if (this.redrawNick) {
+                    nickCanvas.setFontSize(this.nickSize);
+                    this.lastNickSize = this.nickSize;
+                }
+                nickCanvas.setScale(this.scale);
+                var nickImg = nickCanvas.drawTxt();
+                var w = ~~(nickImg.width / this.scale);
+                var h = ~~(nickImg.height / this.scale);
+                this.margin = ~~(h / 2);
+                try {
+                    t.drawImage(nickImg, ~~this.x - ~~(w / 2), ~~this.y - this.margin, w, h);
+                } catch (e) {}
+            };
+            this.drawMerge = function(context) {
+                if (this.mergeCanvas && !(this.size <= 40)) {
+                    var mergeCanvas = this.mergeCanvas;
+                    mergeCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
 
-function animateSkinsStop() {
-    clearInterval(animateSkinsStart);
-}
+                    mergeCanvas.setFontSize(this.massSize);
+                    mergeCanvas.setScale(this.scale);
 
-function animateSkincheck() {
-    for (i = 0; i < 10; i++) {
-        for (animatedi = 0; animatedi < legendmod.leaderboard.length; animatedi++) {
-            for (animatedkey in animatedskins) {
-                if (animatedkey == legendmod.leaderboard[animatedi].nick) {
-                    //console.log(animatedkey);
-                    e = animatedskins[animatedkey].frames.length - 1;
-                    for (animateda = 0; animateda <= animatedskins[animatedkey].frames.length - 1; animateda++) {
-                        b = animateda;
-                        verifiednames = animatedkey;
-                        window.anual = window.anual + animatedskins[verifiednames].frames[b].delay * 1000;
-                        d = animatedi;
-                        animateSkin(window.anual, b, verifiednames, d, e, i);
+
+                    if (window.ExternalScripts && !defaultmapsettings.optimizedMass && window.playerCellsId && this.isPlayerCell && !this.isVirus) {
+						CellTimerTrigger(); 
+                        if (window.playerCellsId[this.id] == undefined) {
+                            window.playerCellsId[this.id] = {};
+                            window.playerCellsId[this.id].historyMass = [];
+                            window.playerCellsId[this.id].historyX = [];
+                            window.playerCellsId[this.id].historyY = [];
+                        } else {
+                            window.playerCellsId[this.id].historyMass.unshift(this.mass); //i test mass with size to find out the merging time
+                            if (window.playerCellsId[this.id].historyMass.length > 500) {
+                                window.playerCellsId[this.id].historyMass.pop();
+                            }
+                            window.playerCellsId[this.id].historyX.unshift(this.x);
+                            if (window.playerCellsId[this.id].historyX.length > 500) {
+                                window.playerCellsId[this.id].historyX.pop();
+                            }
+                            window.playerCellsId[this.id].historyY.unshift(this.y);
+                            if (window.playerCellsId[this.id].historyY.length > 500) {
+                                //this.historyY.pop();
+                                window.playerCellsId[this.id].historyY.pop();
+                            }
+                        }
+                        //if (this.mergeTime && this.mergeTime > 0) {
+                        if (window.legendmod.playerCells.length > 1 && window.playerCellsId[this.id].mergeTime && window.playerCellsId[this.id].mergeTime > 1) {
+                            var customTxt = Math.round(window.playerCellsId[this.id].mergeTime);
+
+                            if (this.redrawMerge) {
+                                mergeCanvas.setTxt(customTxt);
+                                //this.lastMass = this.mass;
+                            }
+
+                            var data = mergeCanvas.drawTxt(customTxt);
+                            var width = ~~(data.width / this.scale);
+                            //console.log(data.width, this.scale, width, this.x - width / 2);
+                            var height = ~~(data.height / this.scale);
+                            var textureY = this.margin === 0 ? ~~(this.y + height * 2) : ~~this.y - 4 * this.margin;
+                            if (width > 1 && height > 1) {
+                                try {
+                                    context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
+                                } catch (e) {}
+                            }
+
+                        }
+
+                    }
+                    ///
+
+
+                    //window.counterCell++;
+                }
+            };
+            this.drawMass = function(context) {
+                if (this.massCanvas && !(this.size <= 40)) {
+                    var massCanvas = this.massCanvas;
+                    massCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
+                    //
+                    if (this.redrawMass) {
+                        massCanvas.setTxt(this.massTxt);
+                        this.lastMass = this.mass;
+                    }
+                    massCanvas.setFontSize(this.massSize);
+                    massCanvas.setScale(this.scale);
+
+                    var data = massCanvas.drawTxt();
+                    var width = ~~(data.width / this.scale);
+                    //console.log("m:"+data.width, this.scale, width, this.x - width / 2);
+                    var height = ~~(data.height / this.scale)
+                    var textureY = this.margin === 0 ? ~~(this.y - height / 2) : ~~this.y + this.margin;
+                    if (width > 1 && height > 1) {
+                        try {
+                            context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
+                        } catch (e) {}
+                    }
+                }
+            };
+            this.createStrokeVirusPath = function(shadowXpos, shadowYpos, zeroSizeMax, pixelSizeTargetMax = 6) {
+                const nAngelsOfVirus = ~~(45 * zeroSizeMax / 98);
+                const GROUPSIZE = this.pi2 / nAngelsOfVirus;
+                const degreeStep = GROUPSIZE / 2;
+                const ctxfx = new Path2D;
+                const radiusX = zeroSizeMax - pixelSizeTargetMax;
+                const tileHeight = radiusX + this.nHeight;
+                const n = this.pi2 + GROUPSIZE;
+                for (let i = 0, j = degreeStep; i <= n; j = (i = i + GROUPSIZE) + degreeStep) {
+                    ctxfx.lineTo(~~(shadowXpos + radiusX * Math.sin(i)), ~~(shadowYpos + radiusX * Math.cos(i)));
+                    ctxfx.lineTo(~~(shadowXpos + tileHeight * Math.sin(j)), ~~(shadowYpos + tileHeight * Math.cos(j)));
+                }
+                return ctxfx;
+            };
+            this.draw = function(style, canCreateDiscussions) {
+                if (!(LM.hideSmallBots && this.size <= 36)) {
+                    style.save();
+                    this.redrawed++;
+                    if (canCreateDiscussions) {
+                        this.moveCell();
+                    }
+                    if (this.removed) {
+                        style.globalAlpha *= 1 - this.alpha;
+                    }
+                    var value = style.globalAlpha;
+                    var s = false;
+                    var y = this.isFood ? this.size + defaultSettings.foodSize : this.size;
+                    style.beginPath()
+
+
+                    if (defaultmapsettings.jellyPhisycs && this.points.length) {
+                        var point = this.points[0];
+                        style.moveTo(point.x, point.y);
+                        for (var i = 0; i < this.points.length; ++i) {
+                            var point = this.points[i];
+                            style.lineTo(point.x, point.y);
+                        }
+                    } else if (defaultmapsettings.jellyPhisycs && this.isVirus) {
+                        style.lineJoin = "miter"
+                        var pointCount = 120;
+                        var incremental = this.pi2 / pointCount;
+                        style.moveTo(this.x, this.y + this.size + 3);
+                        for (var i = 1; i < pointCount; i++) {
+                            var angle = i * incremental;
+                            var dist = this.size - 3 + (i % 2 === 0) * 6;
+                            style.lineTo(
+                                this.x + dist * Math.sin(angle),
+                                this.y + dist * Math.cos(angle)
+                            )
+                        }
+                        style.lineTo(this.x, this.y + this.size + 3);
+                    } else style.arc(this.x, this.y, y, 0, this.pi2, false);
+
+                    style.closePath();
+
+
+
+                    //if (style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
+                    //    return style.fillStyle = this.color, style.fill(), void style.restore();
+                    //}
+
+
+                    if (!defaultmapsettings.jellyPhisycs) {
+                        if (this.isVirus) {
+                            //console.log("is not jelly");
+                            if (dyinglight1load == "yes") {
+                                try {
+                                    style.drawImage(cimgDyingLightvirus, this.x - 0.8 * this.size, this.y - 0.8 * this.size, 1.6 * this.size, 1.6 * this.size);
+                                } catch (e) {}
+                            }
+                            return defaultmapsettings.transparentViruses && (style.globalAlpha *= defaultSettings.virusAlpha, s = true), defaultmapsettings.virColors && LM.play ? (style.fillStyle = ogarminimapdrawer.setVirusColor(y), style.strokeStyle = ogarminimapdrawer.setVirusStrokeColor(y)) : (style.fillStyle = this.virusColor, style.strokeStyle = this.virusStroke), style.fill(), s && (style.globalAlpha = value, s = false), style.lineWidth = defaultSettings.virusStrokeSize, defaultmapsettings.virusGlow ? (style.shadowBlur = defaultSettings.virusGlowSize, style.shadowColor =
+                                defaultSettings.virusGlowColor) : "yeet", style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), defaultmapsettings.showMass && (this.setDrawing(), this.setDrawingScale(), defaultmapsettings.virusGlow ? style.shadowBlur = 0 : "yote",
+                                this.setMass(this.size), this.drawMass(style), (window.ExternalScripts && !window.legendmod5.optimizedMass && this.drawMerge(style))), void style.restore();
+                        }
+                    } else {
+                        if (this.isVirus) {
+                            //console.log("is jelly");
+                            if (defaultmapsettings.transparentViruses) {
+                                style.globalAlpha *= defaultSettings.virusAlpha;
+                                defaultmapsettings.isAlphaChanged = true;
+                            }
+                            if (defaultmapsettings.virColors && LM.play) {
+                                style.fillStyle = ogarminimapdrawer.setVirusColor(y);
+                                style.strokeStyle = ogarminimapdrawer.setVirusStrokeColor(y);
+                            } else {
+                                style.fillStyle = defaultSettings.virusColor;
+                                style.strokeStyle = defaultSettings.virusStrokeColor;
+                            }
+                            style.fill();
+                            if (defaultmapsettings.isAlphaChanged) {
+                                style.globalAlpha = defaultSettings.cellsAlpha;
+                                defaultmapsettings.isAlphaChanged = false;
+                            }
+                            style.lineWidth = defaultSettings.virusStrokeSize;
+                            if (defaultmapsettings.virusGlow) {
+                                style.shadowBlur = defaultSettings.virusGlowSize;
+                                style.shadowColor = defaultSettings.virusGlowColor;
+                            }
+                            style.stroke();
+                            if (defaultmapsettings.showMass) {
+                                this.setDrawing();
+                                this.setDrawingScale();
+                                this.setMass(this.size);
+                                this.drawMass(style);
+                                if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
+                                    this.drawMerge(style);
+                                }
+                            }
+                            style.restore();
+                            return;
+                        }
+                    }
+                    if (defaultmapsettings.transparentCells) {
+                        style.globalAlpha *= defaultSettings.cellsAlpha;
+                        s = true;
+                    }
+                    var color = this.color;
+                    if (LM.play) {
+                        if (this.isPlayerCell) {
+                            if (defaultmapsettings.myCustomColor) {
+                                color = ogarcopythelb.color;
+                            }
+                        } else {
+                            if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings) {
+                                color = this.oppColor;
+                            }
+                        }
+                    }
+                    if (dyinglight1load != "yes" || this.targetNick.includes("The Dying Light")) {
+                        style.fillStyle = color;
+                        style.fill();
+                    }
+                    if (s) {
+                        style.globalAlpha = value;
+                        s = false;
+                    }
+                    /*if (dyinglight1load != "yes"){
+                            style.globalAlpha = 1;
+                            s = false;
+						}*/
+                    var node = null;
+                    var node2 = {}; //, node2.src = ogarminimapdrawer.customSkinsMap[this.targetNick]
+
+
+
+                    //lylko
+                    if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                        node = ogarminimapdrawer.getCustomSkin(this.targetNick, this.color);
+
+                        if (node) {
+                            if ((defaultmapsettings.transparentSkins || LM.play && defaultmapsettings.oppColors) && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin) {
+                                style.globalAlpha *= defaultSettings.skinsAlpha;
+                                s = true;
+                            }
+
+
+                            if (defaultmapsettings.jellyPhisycs) {
+                                var lineWidth = Math.max(~~(y / 50), 10);
+                                style.save();
+                                style.clip();
+                                this.maxPointRad && (y = this.maxPointRad);
+                                try {
+                                    style.drawImage(node, this.x - y - lineWidth, this.y - y - lineWidth, 2 * y + lineWidth * 2, 2 * y + lineWidth * 2);
+                                } catch (e) {}
+                                style.globalCompositeOperation = 'luminosity';
+
+                                style.lineWidth = lineWidth
+                                style.strokeStyle = color;
+                                style.stroke();
+                                style.globalCompositeOperation = '';
+                                style.restore();
+
+                            } else {
+                                try {
+                                    style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
+                                } catch (e) {}
+                            }
+
+                            //special animations
+                            if (this.targetNick.includes("The Dying Light")) {
+                                try {
+                                    style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y);
+                                } catch (e) {}
+                            } else if (this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("Qᴜᴇᴛᴢᴀʟ   ᶜᵒᵃᵗˡ") || this.targetNick.includes("℄🌀     ᑕᖇᗩƵƳ😈") || this.targetNick.includes("℄🌀ᔕᕼᗴᖇᗴ ᛕᕼᗩᑎ")) {
+                                try {
+                                    style.drawImage(cimg2, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y);
+                                    //style.translate(this.x - y * 2, this.y - y * 2, this.y - y * 2);
+                                    //style.rotate(LM.cAngle);
+                                    //style.drawImage(cimg2, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y);
+                                    //try
+                                    //LM.updateCommander();
+                                } catch (e) {}
+                            }
+                            //style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y), s && (style.globalAlpha = value, s = false)),
+                            //(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (this.oldAlpha=style.globalAlpha, style.globalAlpha = 0.1, style.drawImage(cimg7, this.x - y * 4, this.y - y * 4, 8 * y, 8 * y), style.globalAlpha=this.oldAlpha), //cimg7
+                            //((defaultmapsettings.videoSkins && (node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) && checkVideos(node2.src, this.targetNick)),
+                            //(node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) && style.drawImage(window.videoSkinPlayer[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y) ),
+                            //node2.src.includes(".mp4") && (style.drawImage(node2, this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y)),
+                            //!node2.src.includes(".mp4") && !node2.src.includes(".webm") && !node2.src.includes(".ogv") && style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y),
+                            //(this.targetNick.includes("℄🌀ＪｕｓｔＷａｔｃｈＰｒｏ")) && (style.drawImage(cimg6, this.x - y, this.y - y, 2 * y, 2 * y)),
+                            //this.targetNick.includes("℄") && (style.rotate(LM.cAngle1)) && (style.drawImage(cimg2, this.x - y * 1.5, this.y - y * 1.5, 3 * y, 3 * y)) &&
+                            //(this.targetNick.includes("The Dying Light")) && (style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y)),
+                            //(this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("℄🌀     ᑕᖇᗩƵƳ😈") || this.targetNick.includes("℄🌀ᔕᕼᗴᖇᗴ ᛕᕼᗩᑎ")) &&
+
+                            //(LM.cAngle += .007), console.log(LM.cAngle),
+                            //style.rotate(LM.cAngle1),
+                        }
+                    }
+                    if (s) {
+                        style.globalAlpha = value;
+                        s = false;
+                    }
+
+
+                    if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
+                        window.teammatenicks && this.targetNick!="" &&
+                        (window.teammatenicks.includes(this.targetNick))) {
+                        ogarfooddrawer.drawTeammatesInd(style, this.x, this.y, y)
+                    }
+
+                    if (defaultmapsettings.noNames && !defaultmapsettings.showMass || canCreateDiscussions) {
+
+                        //                            y <= 200 && (node || ogarminimapdrawer.checkSkinsMap(this.targetNick, this.color)) && ogarfooddrawer.drawTeammatesInd(style, this.x, this.y, y), defaultmapsettings.noNames && !defaultmapsettings.showMass || canCreateDiscussions) {
+
+                        style.restore();
+                        return;
+                    } else {
+                        if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                            node2.src = ogarminimapdrawer.customSkinsMap[this.targetNick];
+                            ogarminimapdrawer.customSkinsMap[this.targetNick];
+                            if (node2.src) {
+                                if (defaultmapsettings.videoSkins) {
+                                    if (node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) {
+                                        checkVideos(node2.src, this.targetNick);
+                                        try {
+                                            style.drawImage(window.videoSkinPlayer[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y);
+                                        } catch (e) {}
+                                    }
+                                }
+                            }
+                            if (dyinglight1load == "yes" && node == null && this.targetNick.includes("The Dying Light") == false) {
+                                try {
+                                    style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
+                                } catch (e) {}
+                            }
+
+                        }
+                        var recursive = false;
+                        if (!this.isPlayerCell && (recursive = ogarminimapdrawer.setAutoHideCellInfo(y)) && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass) {
+                            style.restore();
+                        } else {
+                            this.setDrawing();
+                            this.setDrawingScale();
+                            style.globalAlpha *= defaultSettings.textAlpha;
+                            if (!(defaultmapsettings.noNames || recursive && defaultmapsettings.autoHideNames || this.isPlayerCell && defaultmapsettings.hideMyName || node && defaultmapsettings.hideTeammatesNames)) {
+                                if (this.setNick(this.targetNick)) {
+                                    this.drawNick(style);
+                                }
+                            }
+                            if (!(!defaultmapsettings.showMass || recursive && defaultmapsettings.autoHideMass || this.isPlayerCell && defaultmapsettings.hideMyMass || defaultmapsettings.hideEnemiesMass && !this.isPlayerCell && !this.isVirus)) {
+                                if (this.setMass(this.size)) {
+
+                                    this.drawMass(style);
+                                    if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
+                                        this.drawMerge(style);
+                                    }
+                                }
+                            }
+                            style.restore();
+                        }
+
+
 
                     }
                 }
-            }
+            };
         }
-    }
-}
+        window.legendmod1 = ogarbasicassembly;
 
-function animateSkin(a, b, verifiednames, d, e, i) {
-    setTimeout(function() {
-        //if (verifiednames==legendmod.leaderboard[d].nick){
-        legendmod3.cacheCustomSkin(verifiednames, animatedskins[verifiednames].color, "https://i.imgur.com/" + animatedskins[verifiednames].frames[b].id + ".png");
-        //console.log(verifiednames, animatedskins[verifiednames].color, "https://i.imgur.com/" + animatedskins[verifiednames].frames[b].id + ".png");		
-        //console.log("https://i.imgur.com/" + animatedskins[verifiednames].frames[b].id + ".png");
-        //console.log(window.a);
-        if (b == e) {
-            //console.log("Animated Skins: End of cycle: " + i);
-            if (i == 9) {
-                window.anual = 0;
-                if (animatedserverchanged == false) {
-                    //animateSkincheck();
-                    //console.log("Animated Skins: End of total cycles");
+
+
+        var LM = {
+            'quadtree': null,
+            updateQuadtree: function(cells) {
+                var w = ogarfooddrawer.canvasWidth / ogarfooddrawer.scale;
+                var h = ogarfooddrawer.canvasHeight / ogarfooddrawer.scale;
+                var x = (LM.viewX - w / 2);
+                var y = (LM.viewY - h / 2);
+                this.quadtree = new PointQuadTree(x, y, w, h, 32);
+                for (var i = 0; i < cells.length; ++i) {
+                    var cell = cells[i];
+                    for (var n = 0; n < cell.points.length; ++n) {
+                        this.quadtree.insert(cell.points[n]);
+                    }
                 }
-            }
-            //animateSkincheck()
-        }
-        //}
-    }, window.anual);
-}
-
-/*				
-function specialeffecttargeting(){
-					document.getElementById("set-targeting").addEventListener('click',function ()
-					{
-					if ($("#target-nick").text()!=null && $("#target-nick").text()!=""){
-					for (var i=0; i< 20 && i < legendmod.leaderboard.length ;i++){
-						if (legendmod.leaderboard[i].nick==$("#target-nick").text()){
-							window.legendmod.targetingLead(i);
-						}
-					}
-					}
-					}  ); 		
-}
-*/
-function BeforeSpecialDeals() {
-    var SpecialDealsJS = document.createElement("script");
-    SpecialDealsJS.type = "text/javascript";
-    SpecialDealsJS.src = "https://jimboy3100.github.io/LMexpress/olddeals.js";
-    $("body").append(SpecialDealsJS);
-
-    window.open('https://jimboy3100.github.io/LMexpress/olddeals.html', '_blank');
-}
-
-
-function isEquivalent(a, b) {
-    // Create arrays of property names
-    var aProps = Object.getOwnPropertyNames(a);
-    var bProps = Object.getOwnPropertyNames(b);
-
-    // If number of properties is different,
-    // objects are not equivalent
-    if (aProps.length != bProps.length) {
-        return false;
-    }
-
-    for (var i = 0; i < aProps.length; i++) {
-        var propName = aProps[i];
-
-        // If values of same property are not equal,
-        // objects are not equivalent
-        if (a[propName] !== b[propName]) {
-            return false;
-        }
-    }
-
-    // If we made it this far, objects
-    // are considered equivalent
-    return true;
-}
-
-//Snez Agar Version Destinations
-function AgarVersionDestinations() {
-    window.agarversionDestinationFound = false;
-    window.agarversionDestinations = {};
-    window.agarversionDestinations[Object.keys(agarversionDestinations).length - 1] = window.agarversion;
-
-    //postSNEZ('https://lmsettings.snez.org/', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify({0: "v12/2204/", 1: "v12/2168/", 2: "v12/1922/"}));		 //default
-
-    getSNEZ("https://lmsettings.snez.org/", "LMConfigVersion", "LMConfigVersionPass");
-    var responseagarversionDestinations = JSON.parse(xhttp.response);
-    for (var i = 0; i < Object.keys(responseagarversionDestinations).length; i++) {
-        if (responseagarversionDestinations[i] == window.agarversion) {
-            window.agarversionDestinationFound = true;
-        }
-    }
-
-    if (window.agarversionDestinationFound == true) {
-        window.agarversionDestinations = responseagarversionDestinations;
-        window.agarversionDestinationFound = false;
-    } else if (window.agarversionDestinationFound == false && isObject(responseagarversionDestinations)) {
-        window.agarversionDestinations = responseagarversionDestinations;
-        window.agarversionDestinations[Object.keys(responseagarversionDestinations).length] = window.agarversion;
-        postSNEZ('https://lmsettings.snez.org/', 'LMConfigVersion', 'LMConfigVersionPass', JSON.stringify(window.agarversionDestinations));
-    }
-}
-
-function isObject(val) {
-    if (val === null) {
-        return false;
-    }
-    return ((typeof val === 'function') || (typeof val === 'object'));
-}
-
-function LegendModServerConnect(){};
-
-function HiddenBots() {
-    var hiddenBotsJS = document.createElement("script");
-    hiddenBotsJS.type = "text/javascript";
-    hiddenBotsJS.src = "https://jimboy3100.github.io/ExampleScripts/agario-bots/bots.js";
-    $("body").append(hiddenBotsJS);
-}
-
-// Socket3enabler(window.legendmod.ws);
-function Socket3enabler(srv) {
-
-    this.room = ogarcopythelb.clanTag + "-" + srv.match("-([A-Za-z0-9]{6,7})\.")[1];
-    if (Socket3) {
-        Socket3.close();
-    }
-    //Socket3 = new WebSocket("wss://connect.websocket.in/Jimboy3100_socket?room_id=" + this.room);
-	Socket3 = new WebSocket("wss://cloud.achex.ca/jimboy3100");
-    Socket3.onmessage = function(message) {
-        //console.log(message.data);
-        Socket3handler(message.data);
-    }
-    Socket3.onopen = function(e) {
-		Socket3.send(JSON.stringify({ "auth": customLMID, "password": "ILoveLegendClan"}));
-		Socket3.send(JSON.stringify({ "joinHub": "legendmod"}));		
-        console.log('[Legend mod Express] Socket 3 open');		
-        if (!window.socket3Opened && window.noOgarioSocket) {
-            $("#message").keydown(function(event) {
-                if (event.keyCode === 13) { //window.legendmod6.getPressedKey(13)
-                    enterChatMessage2();
+            },
+            'ws': null,
+            'socket': null,
+            'protocolKey': null,
+            'clientKey': null,
+            'connectionOpened': false,
+            'accessTokenSent': false,
+            'clientVersion': 30600,
+            'clientVersionString': '3.6.0',
+            'time': Date.now(),
+            'serverTime': 0,
+            'serverTimeDiff': 0,
+            'loggedInTime': 0,
+            'mapSize': 14142,
+            'mapOffset': 7071,
+            'mapOffsetX': 0,
+            'mapOffsetY': 0,
+            'mapOffsetFixed': false,
+            'mapMinX': -7071,
+            'mapMinY': -7071,
+            'mapMaxX': 7071,
+            'mapMaxY': 7071,
+            'viewMinX': 0,
+            'viewMinY': 0,
+            'viewMaxX': 0,
+            'viewMaxY': 0,
+            'canvasWidth': 0,
+            'canvasHeight': 0,
+            'canvasScale': 1,
+            'indexedCells': {},
+            'cells': [],
+            'removedCells': [],
+            'food': [],
+            'viruses': [],
+            'playerCells': [],
+            'playerCellIDs': [],
+            'ghostCells': [],
+            'playerX': 0,
+            'playerY': 0,
+            'playerSize': 0,
+            'playerMass': 0,
+            'playerMaxMass': 0,
+            'playerMinMass': 0,
+            'playerScore': 0,
+            'playerSplitCells': 0,
+            'playerColor': null,
+            'playerNick': '',
+            'playerPosition': 0,
+            'leaderboard': [],
+            'biggerSTEDCellsCache': [], //Sonia
+            'biggerSTECellsCache': [],
+            'biggerCellsCache': [],
+            'smallerCellsCache': [],
+            'STECellsCache': [],
+            'STEDCellsCache': [], //Sonia
+            'STE': 0,
+            'autoZoom': false,
+            'zoomValue': 0.1,
+            'viewX': 0,
+            'viewY': 0,
+            'scale': 1,
+            'viewScale': 1,
+            'clientX': 0,
+            'clientY': 0,
+            'cursorX': 0,
+            'cursorY': 0,
+            'targetX': 0,
+            'targetY': 0,
+            'targetDistance': 0,
+            ////
+            "cRadius": 10,
+            "cAngle": 4,
+            "cAngle1": 0,
+            "cAngle2": 0,
+            "cAlpha": 1,
+            "drawCommander": 0,
+            ////
+            'battleRoyale': {
+                'state': 0,
+                'players': 0,
+                'startTime': 0,
+                'shrinkTime': 0,
+                'timeLeft': 0,
+                'x': 0,
+                'y': 0,
+                'radius': 0,
+                'targetX': 0,
+                'targetY': 0,
+                'targetRadius': 0,
+                'maxRadius': 11313,
+                'rank': [],
+                'playerRank': 0,
+                'joined': false
+            },
+            'play': false,
+            'pause': false,
+            'targeting': false,
+            'removePlayerCell': false,
+            'showCustomSkins': true,
+            'showFood': true,
+            'foodIsHidden': false,
+            'selectBiggestCell': true,
+            'hideSmallBots': false,
+            'pressedKeys': {},
+            'connect': function(t) {
+                console.log('[Legend mod Express] Connecting to game server:', t);
+                var i = this;
+				window.legendmod3.Socket3connect(t);
+                window.legendmod3.SLGconnect(t);
+                window.legendmod.vnr = 0; //Sonia3
+                window.legendmod.bgpi = 4; //Sonia3
+                window.legendmod.lbgpi = 4; //Sonia3
+                window.legendmod.vector = [
+                    [0, 0],
+                    [1, 0],
+                    [1, 1],
+                    [0, 1]
+                ]; //Sonia3
+                window.legendmod.setrot = false; //Sonia3
+                window.legendmod.delstate = -1; //Sonia3
+                this.closeConnection();
+                this.flushCellsData();
+                this.protocolKey = null;
+                this.clientKey = null;
+                this.accessTokenSent = false;
+                this.connectionOpened = false;
+                this.mapOffsetFixed = false;
+                this.leaderboard = [];
+                this.ws = t;
+                this.socket = new WebSocket(t);
+                this.socket['binaryType'] = 'arraybuffer';
+                this.socket['onopen'] = function() {
+                    i['onOpen']();
+                };
+                this.socket['onmessage'] = function(t) {
+                    i['onMessage'](t);
+                };
+                this.socket['onerror'] = function(t) {
+                    i['onError'](t);
+                };
+                this.socket['onclose'] = function(t) {
+                    i['onClose'](t);
+                };
+                ogarminimapdrawer['getWS'](this.ws);
+                ogarminimapdrawer['sendServerJoin']();
+                ogarminimapdrawer['sendServerData']();
+                ogarminimapdrawer['displayLeaderboard']('');
+                if (window.master && window.master['onConnect']) {
+                    window.master['onConnect']();
                 }
-            });
-        }
-        window.socket3Opened = true;
-    }
-    Socket3.onerror = function(e) {
-        console.log('[Legend mod Express] Socket 3 error', e);
-    }
-    Socket3.onclose = function(e) {
-        console.log('[Legend mod Express] Socket 3 close', e);
-    }
-    return Socket3;
-}
+            },
+            'onOpen': function(t) {
+                console.log('[Legend mod Express] Game server socket open'),
+                    this.time = Date.now();
+                var e = this.createView(5);
+                e.setUint8(0, 254),
+                    e.setUint32(1, 21, true),
+                    this.sendMessage(e),
+                    (e = this.createView(5)).setUint8(0, 255),
+                    e.setUint32(1, this.clientVersion, true),
+                    this.sendMessage(e),
+                    this.connectionOpened = true;
+            },
+            'onMessage': function(t) {
+                t = new DataView(t['data']);
+                if (this.protocolKey) {
+                    t = this['shiftMessage'](t, this.protocolKey ^ this.clientVersion);
+                }
+                this['handleMessage'](t);
+            },
+            'onError': function(t) {
+                console.log('[Legend mod Express] Game server socket error');
+                this.flushCellsData();
+                if (window.master && window.master['onDisconnect']) {
+                    window.master['onDisconnect']();
+                }
+            },
+            'onClose': function(t) {
+                console.log('[Legend mod Express] Game server socket close');
+                this.flushCellsData();
+                if (window.master && window.master['onDisconnect']) {
+                    window.master['onDisconnect']();
+                }
+            },
+            'closeConnection': function() {
+                if (this.socket) {
+                    this.socket['onopen'] = null;
+                    this.socket['onmessage'] = null;
+                    this.socket['onerror'] = null;
+                    this.socket['onclose'] = null;
+                    try {
+                        this.socket['close']();
+                    } catch (ogarcloseconncloser) {}
+                    this.socket = null;
+                    this.ws = null;
+                }
+            },
+            'isSocketOpen': function() {
+                return null !== this.socket && this.socket['readyState'] === this.socket['OPEN'];
+            },
+            'createView': function(t) {
+                return new DataView(new ArrayBuffer(t));
+            },
+            'sendBuffer': function(t) {
+                this.socket['send'](t['buffer']);
+            },
+            'sendMessage': function(t) {
+                //console.log(t);
+                if (this.connectionOpened) {
+                    if (!this.clientKey) return;
+                    t = this['shiftMessage'](t, this.clientKey);
+                    this.clientKey = this.shiftKey(this.clientKey);
+                }
+                this['sendBuffer'](t);
+            },
+            'sendAction': function(t) {
+                if (this.isSocketOpen()) {
+                    var e = this.createView(1);
+                    e.setUint8(0, t);
+                    this.sendMessage(e);
+                }
+            },
+            'sendSpectate': function() {
+                this.sendAction(1);
+            },
+            'sendFreeSpectate': function() {
+                this.sendAction(18);
+            },
+            'sendEject': function() {
+                this.sendPosition();
+                this.sendAction(21);
+            },
+            'sendSplit': function() {
+                this.sendPosition();
+                this.sendAction(17);
 
-function Socket3handler(message) {
-	//
-    var Socket3data2 = JSON.parse(message);
-	var Socket3data = Socket3data2.msg;
-	//
-    if (Socket3data == null){
-		return;
-	}
-    else if (Socket3data.com == "chat") {
-        Socket3DisplaychatMsg(Socket3data.chattype, Socket3data.tid, Socket3data.nick, Socket3data.chat);
-    }
-    else if (Socket3data.com == "sendPlayerSkinURL") {
-        Socket3updateTeamPlayer(Socket3data);
-    }
-    else if (Socket3data.com == "pos") {
-        Socket3updateTeamPlayerPosition(Socket3data);
-    }
-    else if (Socket3data.com == "death") { //not used yet
-        Socket3updateTeamPlayerDeath(Socket3data);
-    }	
-    else if (Socket3data.com == "pcells") { 
-		Socket3updateTeamPlayerCells(Socket3data);
+            },
+            'sendNick': function(t) {
 
-		//}
-    }		
-}
+                this.playerNick = t, t = window.unescape(window.encodeURIComponent(t));
+                window.Bufferdata = t; //
+                var i = this.createView(1 + t.length);
+                i.setUint8(0, 0);
+                for (var s = 0; s < t.length; s++) i.setUint8(s + 1, t.charCodeAt(s));
+                this.sendMessage(i);
+            },
+            'sendPosition': function(cell, target2) {
+                if (this.isSocketOpen() && this.connectionOpened && this.clientKey) {
+                    if (!window.autoPlay) {
+                        var t = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
+                        var e = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.cursorY) : this.cursorY; //Sonia3
+                        if (!this.play && this.targeting || this.pause) {
+                            t = this.targetX;
+                            e = this.targetY;
+                        }
+                    }
+                    //autoplay handling
+                    else {
+                        //if (typeof cell != "undefined") { //when used, autoplay not working as expected
+                        if (Object.keys(target2).length == 0) {
+                            var t = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(cell.x) : cell.x; //Sonia3
+                            var e = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(cell.y) : cell.y; //Sonia3
+                            // var t = cell.x;
+                            //var e = cell.y;
+                        } else {
+                            var t = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(target2.x) : target2.x; //Sonia3
+                            var e = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(target2.y) : target2.y; //Sonia3
+                            //var t = target2.x;
+                            //var e = target2.y;
+                        }
+                        //}
+                    }
+                    //
 
-function Socket3updateTeamPlayer(Socket3data) {
-    var h = legendmod3.checkPlayerID(Socket3data.id);
-    if (!legendmod3.teamPlayers[h]) {
-        h = legendmod3.teamPlayers.length;
-        legendmod3.teamPlayers[h] = {}
-    }
-    legendmod3.teamPlayers[h].id = Socket3data.id;
-    legendmod3.teamPlayers[h].nick = Socket3data.nick;
-    legendmod3.teamPlayers[h].skinID = Socket3data.nick;
-    legendmod3.teamPlayers[h].skinURL = Socket3data.skin;
-    legendmod3.teamPlayers[h].color = Socket3data.color;
+                    var i = this.createView(13);
+                    i.setUint8(0, 16);
+                    i.setInt32(1, t, true);
+                    i.setInt32(5, e, true);
+                    i.setUint32(9, this.protocolKey, true);
+                    this.sendMessage(i);
+                }
+            },
+            /*            'sendAccessToken': function(t, e, i) {
+                            if (!this['accessTokenSent']) {
+                                i || (i = 102);
+                                for (var s = t.length, o = this.clientVersionString.length, a = [i, 8, 1, 18, s + o + 23, 1, 8, 10, 0x52, s + o + 18, 1, 8, e, 18, o + 8, 8, 5, 18, o], n = 0; n < o; n++) a.push(this.clientVersionString.charCodeAt(n));
+                                for (a.push(24, 0, 32, 0, 26, s + 3, 1, 10, s, 1), n = 0; n < s; n++) a.push(t.charCodeAt(n));
+                                a = new Uint8Array(a);
+                                var r = new DataView(a['buffer']);
+                                this.sendMessage(r);
+                            }
+                        }, */
+            "sendAccessToken": function(shapes, options, oW) {
+                if (LM["accessTokenSent"]) {
+                    return;
+                }
+                if (!oW) {
+                    oW = 102;
+                }
+                var curr = shapes.length;
+                var count = this.clientVersionString.length;
+                var data = [oW, 8, 1, 18];
+                //this.writeUint32(data, curr + count + 23);
+                ogarminimapdrawer.writeUint32(data, curr + count + 23);
+                data.push(8, 10, 82);
+                ogarminimapdrawer.writeUint32(data, curr + count + 18);
+                //this.writeUint32(data, curr + count + 18);
+                data.push(8, options, 18, count + 8, 8, 5, 18, count);
+                var prev = 0;
+                for (; prev < count; prev++) {
+                    data.push(this.clientVersionString.charCodeAt(prev));
+                }
+                data.push(24, 0, 32, 0, 26);
+                ogarminimapdrawer.writeUint32(data, curr + 3);
+                //this.writeUint32(data, curr + 3);
+                data.push(10);
+                ogarminimapdrawer.writeUint32(data, curr);
+                //this.writeUint32(data, curr);
+                prev = 0;
+                for (; prev < curr; prev++) {
+                    data.push(shapes.charCodeAt(prev));
+                }
+                data = new Uint8Array(data);
+                var raw_basefont = new DataView(data["buffer"]);
+                this["sendMessage"](raw_basefont);
+            },
+            'sendFbToken': function(t) {
+                //                console.log("[Legend mod Express] Facebook token: " + t);
+                this.sendAccessToken(t, 2);
+            },
+            'sendGplusToken': function(t) {
+                //                console.log("[Legend mod Express] Google Plus token: " + t);
+                //this.sendAccessToken(t, 3);
+                this.sendAccessToken(t, 4);
+            },
+            'sendRecaptcha': function(t) {
+                var e = this.createView(2 + t.length);
+                e.setUint8(0, 86);
+                for (var i = 0; i < t.length; i++) e.setUint8(1 + i, t.charCodeAt(i));
+                e.setUint8(t.length + 1, 0), this.sendMessage(e);
+            },
+            'setClientVersion': function(t, e) {
 
-    legendmod3.teamPlayers[h].lbgpi = -2;
-    legendmod3.teamPlayers[h].x = Socket3data.x;
-    legendmod3.teamPlayers[h].y = Socket3data.y;
-    legendmod3.teamPlayers[h].alive = true;
-    legendmod3.teamPlayers[h].mass = Socket3data.mass;
-    legendmod3.teamPlayers[h].temp = true;
-    legendmod3.teamPlayers[h].drawPosition = function() {};
-	var tempTime = new Date().getTime();
-	legendmod3.teamPlayers[h].lastUpdatedTime = tempTime;
-}
+                if (window.disableIntegrity != true) { //
+                    this.clientVersion = t;
+                    this.clientVersionString = e;
+                    console.log('[Legend mod Express] Client version:', t, e);
+                } //
+                else { //
+                    this.clientVersion = 0;
+                    this.clientVersionString = e;
+                    console.log('[Legend mod Express] Client version:', t, e); //
+                } //
+            },
+            /*
+            			'generateClientKey': function(t, e) {
+                            if (!t.length || !e.byteLength) return null;
+                            for (var i = null, s = 1540483477, o = t.match(/(ws+:\/\/)([^:]*)(:\d+)/)[2], a = o.length + e.byteLength, n = new Uint8Array(a), r = 0; r < o.length; r++) n[r] = o.charCodeAt(r);
+                            n.set(e, o.length);
+                            for (var l = new DataView(n['buffer']), h = a - 1, c = 4 + (h - 4 & -4) | 0, u = 255 ^ h, d = 0; h > 3;) i = 0 | Math.imul(l.getInt32(d, true), s), u = (0 | Math.imul(i >>> 24 ^ i, s)) ^ (0 | Math.imul(u, s)), h -= 4, d += 4;
+                            switch (h) {
+                                case 3:
+                                    u = n[c + 2] << 16 ^ u, u = n[c + 1] << 8 ^ u;
+                                    break;
+                                case 2:
+                                    u = n[c + 1] << 8 ^ u;
+                                    break;
+                                case 1:
+                                    break;
+                                default:
+                                    i = u;
+                            }
+                            return i != u && (i = 0 | Math.imul(n[c] ^ u, s)), i ^= u = i >>> 13, i = 0 | Math.imul(i, s), i ^= u = i >>> 15, console.log('[Legend mod Express] Generated client key:', i),window.generatedClientKey=i, i;
+                        },
+                        'shiftKey': function(t) {
+                            //if (window.disableIntegrity!=false){ //
+                            return t = 0 | Math.imul(t, 1540483477), t = 114296087 ^ (0 | Math.imul(t >>> 24 ^ t, 1540483477)), (t = 0 | Math.imul(t >>> 13 ^ t, 1540483477)) >>> 15 ^ t;
+                            //} //
+                            //else{ //
+                            //return 0; //
+                            //} //
+                        },
+            			*/
+            "generateClientKey": function(option, _relatedTarget) {
+                if (!option.length || !_relatedTarget.byteLength) {
+                    return null;
+                }
+                var j = null;
+                var suggestedValue = 1540483477;
+                var constraints = option.match(/(ws+:\/\/)([^:]*)(:\d+)/)[2];
+                var framesize = constraints.length + _relatedTarget.byteLength;
+                var data = new Uint8Array(framesize);
+                var value = 0;
+                for (; value < constraints.length; value++) {
+                    data[value] = constraints.charCodeAt(value);
+                }
+                data.set(_relatedTarget, constraints.length);
+                var dv = new DataView(data["buffer"]);
+                var maxTextureAvailableSpace = framesize - 1;
+                var k = (maxTextureAvailableSpace - 4 & -4) + 4 | 0;
+                var i = maxTextureAvailableSpace ^ 255;
+                var n = 0;
+                for (; maxTextureAvailableSpace > 3;) {
+                    j = Math.imul(dv['getInt32'](n, !![]), suggestedValue) | 0;
+                    i = (Math.imul(j >>> 24 ^ j, suggestedValue) | 0) ^ (Math.imul(i, suggestedValue) | 0);
+                    maxTextureAvailableSpace = maxTextureAvailableSpace - 4;
+                    n = n + 4;
+                }
+                switch (maxTextureAvailableSpace) {
+                    case 3:
+                        i = data[k + 2] << 16 ^ i;
+                        i = data[k + 1] << 8 ^ i;
+                        break;
+                    case 2:
+                        i = data[k + 1] << 8 ^ i;
+                        break;
+                    case 1:
+                        break;
+                    default:
+                        j = i;
+                        break;
+                }
+                if (j != i) {
+                    j = Math.imul(data[k] ^ i, suggestedValue) | 0;
+                }
+                i = j >>> 13;
+                j = i ^ j;
+                j = Math.imul(j, suggestedValue) | 0;
+                i = j >>> 15;
+                j = i ^ j;
+                console.log('[Legend mod Express] Generated client key:', j);
+                window.generatedClientKey = j;
+                return j;
 
-function Socket3updateTeamPlayerPosition(Socket3data) {
-    var h = legendmod3.checkPlayerID(Socket3data.id);
-    if (!legendmod3.teamPlayers[h]) {
-        return;
-    }
-    legendmod3.teamPlayers[h].x = Socket3data.x;
-    legendmod3.teamPlayers[h].y = Socket3data.y;
-    legendmod3.teamPlayers[h].mass = Socket3data.mass;
-	legendmod3.teamPlayers[h].alive = true;
-	var tempTime = new Date().getTime();	
-	legendmod3.teamPlayers[h].lastUpdatedTime = tempTime;
-}
-function Socket3updateTeamPlayerDeath(Socket3data) {
-	var h = legendmod3.checkPlayerID(Socket3data.id);	    
-	legendmod3.teamPlayers[h].alive = false;
-	legendmod3.teamPlayers[h].mass=1;	
-}
-function Socket3updateTeamPlayerCells(Socket3data) {
-        var temp = Socket3data.playerCells;
-		for (var i=0; i < legendmod3.teamPlayers.length; i++){
-			if (legendmod3.teamPlayers[i].id == Socket3data.tid){
-				for(var j=0; j< temp.length; j++){
-					var ogariocellssetts = new legendmod1(temp[j].id + 1000000000, temp[j].x - legendmod.mapOffsetX, temp[j].y - legendmod.mapOffsetY, temp[j].size, legendmod3.teamPlayers[i].color, false, true, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
-					ogariocellssetts.isVirus = false;	
-					ogariocellssetts.fake = true;
-					ogariocellssetts.targetNick = legendmod3.teamPlayers[i].nick;
-					ogariocellssetts.nick = legendmod3.teamPlayers[i].nick;
-					if (!ogariocellssetts.isInView()){
-					legendmod.indexedCells[temp[j].id + 1000000000] = ogariocellssetts;	
-					var ab=false;
-					for (x=0;x<window.cellsFake.length;x++){
-						if (window.cellsFake[x].id == ogariocellssetts.id){
-							//window.cellsFake[x] = ogariocellssetts;
-							window.cellsFake[x].targetX = temp[j].x - legendmod.mapOffsetX;
-							window.cellsFake[x].targetY = temp[j].y - legendmod.mapOffsetY;
-							window.cellsFake[x].mass = temp[j].mass;
-							ab = true;
-						}
-					}
-					if (ab == false){
-						window.cellsFake.push(ogariocellssetts);
-					}
-					//window.cellsFake.push(ogariocellssetts);
-					}			
+            },
+            "shiftKey": function(c) {
+				if (window.disableIntegrity != true) {
+                var suggestedValue = 1540483477;
+                c = Math.imul(c, suggestedValue) | 0;
+                c = (Math.imul(c >>> 24 ^ c, suggestedValue) | 0) ^ 114296087;
+                c = Math.imul(c >>> 13 ^ c, suggestedValue) | 0;
+                return c >>> 15 ^ c;
 				}
-			}
-		}
-}
-function timernow() {
-    var today = new Date();
-    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + ":" + today.getMilliseconds();
-    return time;
+				else{
+					return 0;
+				}
+            },
+            "shiftMessage": function(t, e, i) {
+				if (window.disableIntegrity != true){
+                if (!i) {
+                    var s = 0;
+                    for (; s < t.byteLength; s++) {
+                        t.setUint8(s, t.getUint8(s) ^ e >>> s % 4 * 8 & 255);
+                    }
+                } else {
+                    s = 0;
+                    for (; s < t.length; s++) {
+                        t.writeUInt8(t.readUInt8(s) ^ e >>> s % 4 * 8 & 255, s);
+                    }
+                }
+                return t;
+				}
+				else{
+                return t;			
+				}
+            },
+            /*
+            'shiftMessage': function(t, e, i) {
+                //if (window.disableIntegrity!=false){ //
+                if (i)
+                    for (s = 0; s < t.length; s++) t.writeUInt8(t.readUInt8(s) ^ e >>> s % 4 * 8 & 255, s);
+                else
+                    for (var s = 0; s < t.byteLength; s++) t.setUint8(s, t.getUint8(s) ^ e >>> s % 4 * 8 & 255);
+                return t;
+                //} //
+                //else{ //
+                //return t; //
+                //} //
+            },		*/
+			//https://github.com/pierrec/node-lz4/blob/master/lib/binding.js
+            'decompressMessage': function(t) {
+                var e = new o(t['buffer']);
+                var i = new o(e.readUInt32LE(1));
+                return a.decodeBlock(e.slice(5), i), i;
+            },
+            'handleMessage': function(data) {
+                var i = function() {
+                        for (var e = '';;) {
+                            var i = data.getUint8(s++);
+                            if (0 == i) break;
+                            e += String.fromCharCode(i);
+                        }
+                        return e;
+                    },
+                    s = 0,
+                    o = data.getUint8(s++);
+                switch (54 == o && (o = 53), o) {
+
+
+
+
+                    case 5:
+                        console.log('[Legend mod Express] opcode: ', data.getUint8(0));
+                        window.testobjectsOpcode5 = data;
+                        break;
+                    case 17:
+                        window.testobjectsOpcode17 = data;
+                        var x = data.getFloat32(s, true);
+                        this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
+                        s += 4;
+                        var y = data.getFloat32(s, true);
+                        this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
+                        s += 4;
+                        this.scale = data.getFloat32(s, true);
+                        break;
+                    case 18:
+                        window.testobjectsOpcode18 = data;
+                        if (this.protocolKey) {
+                            this.protocolKey = this.shiftKey(this.protocolKey);
+                        }
+                        this.flushCellsData();
+                        break;
+                    case 32:
+                        window.testobjectsOpcode32 = data;
+                        this.playerCellIDs.push(data.getUint32(s, true));
+                        this.play || (this.play = true, ogarminimapdrawer.hideMenu(),
+                            this.playerColor = null,
+                            ogarminimapdrawer.onPlayerSpawn());
+                        break;
+                    case 50:
+                        window.testobjectsOpcode50 = data;
+                        this.pieChart = [];
+                        var a = data.getUint32(s, true);
+                        s += 4;
+                        for (var n = 0; n < a; n++) this.pieChart.push(data.getFloat32(s, true)), s += 4;
+                        ogarfooddrawer.drawPieChart();
+                        break;
+                    case 53:
+                        window.testobjectsOpcode53 = data;
+                        if (this.leaderboard = [], this.playerPosition = 0, 54 == data.getUint8(0)) {
+                            data.getUint16(s, true);
+                            s += 2;
+                        }
+                        for (var r = 0; s < data.byteLength;) {
+                            var l = '';
+                            var h = 0;
+                            var c = false;
+                            r++;
+                            if (2 & (y = data.getUint8(s++))) {
+                                l = window.decodeURIComponent(escape(i()));
+                            }
+                            if (4 & y) {
+                                h = data.getUint32(s, true);
+                                s += 4;
+                            }
+                            if (8 & y) {
+                                l = this.playerNick;
+                                h = 'isPlayer';
+                                this.playerPosition = r
+                            }
+                            if (16 & y) {
+                                c = true;
+                            }
+                            this.leaderboard.push({
+                                'nick': l,
+                                'id': h,
+                                'isFriend': c
+                            });
+                        }
+                        this.handleLeaderboard();
+                        break;
+                    case 54:
+                        console.log('[Legend mod Express] opcode: ', data.getUint8(0));
+                        window.testobjectsOpcode54 = data;
+                        break;
+                    case 69:
+                        window.testobjectsOpcode65 = data;
+                        var u = data.getUint16(s, true);
+                        s += 2, this.ghostCells = [];
+                        var max = 0; //Sonia3
+                        var mmax = 0; //Sonia3
+                        for (n = 0; n < u; n++) {
+                            var d = data.getInt32(s, true);
+                            s += 4;
+                            var f = data.getInt32(s, true);
+                            s += 4;
+                            var m = data.getUint32(s, true);
+                            s += 5;
+                            var g = ~~Math.sqrt(100 * m);
+                            this.ghostCells.push({
+                                'x': window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(d) : d, //Sonia3
+                                'y': window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(f) : f, //Sonia3
+                                'size': g,
+                                'mass': m,
+                                'inView': this.isInView(d, f, g)
+                            });
+                            if (m > mmax) { //Sonia3
+                                mmax = m; //Sonia3
+                                max = n; //Sonia3
+                            } //Sonia3
+                        }
+                        window.legendmod.bgpi = this.calculatebgpi(this.ghostCells[max].x, this.ghostCells[max].y); //Sonia3
+                        break;
+                    case 85:
+                        window.testobjectsOpcode85 = data;
+                        console.log('[Legend mod Express] Captcha requested');
+                        if (window.master && window.master.recaptchaRequested) {
+							if (window.smartbotslimited && legendmod5.autoResp){ //
+								core.connect(legendmod.ws);
+								setTimeout(function() {
+								 legendmod3.autoResp();
+								}, 2000);
+							}
+							else{
+                            window.master.recaptchaRequested();
+							}							
+                        }
+                        break;
+                    case 102:
+                        if (data.byteLength < 20) {
+                            //this["loggedIn"] = ![];
+                            //if (window["logout"]) {
+                            //window["logout"]();
+                            //}
+                        }
+                        if (data.buffer.byteLength > 1000) {
+                            window.testobjects = data;
+                            var sampleBytes = new Uint8Array(window.testobjects.buffer);
+                            var enc = new TextDecoder();
+                            window.testobjects2 = enc.decode(sampleBytes);
+                            window.agarioUID = window.testobjects2.split('$')[1].substr(0, 36);
+                            window.agarioID = window.testobjects2.split('$')[1].split('')[1].split('')[0].replace(/\s/g, "");
+                            window.googlePic = "https" + window.testobjects2.split('https')[1].split('H')[0] + "H";
+
+                            if (window.agarioUID != undefined) {
+                                localStorage.setItem("agarioUID", window.agarioUID);
+                                localStorage.setItem("agarioID", window.agarioID);
+                            } else {
+                                window.agarioUID = localStorage.getItem("agarioUID");
+                                window.agarioID = localStorage.getItem("agarioID");
+                            }
+                        }
+
+
+
+                        window.ret = new Node(data, s);
+
+                        var key_or_value = window.ret.readFlag();
+                        if (key_or_value == 1) {
+                            window.ret.setContentType();
+                        }
+                        key_or_value = window.ret.readFlag();
+                        if (key_or_value == 2) {
+                            window.ret.setUncompressedSize();
+                        }
+                        key_or_value = window.ret.readFlag();
+                        if (key_or_value == 1) {
+                            var obj = window.ret.readUint32();
+                            var previousState = window.ret.readFlag();
+                            var artistTrack = window.ret.readUint32();
+                            switch (obj) {
+                                case 11:
+                                    console.log("[Legend mod Express] 102 Login response", window.ret.view.byteLength, window.ret.contentType, window.ret.uncompressedSize, obj, previousState, artistTrack);
+                                    break;
+                                case 62:
+                                    console.log("[Legend mod Express] 102 Game over");
+									LegendModDeath();
+                                    //$('#pause-hud').text("PAUSE!");
+                                    break;
+                                default:
+                                    console.log("[Legend mod Express] 102 Unknown", obj, previousState);
+                            }
+                        }
+
+
+                    case 103:
+                        window.testobjectsOpcode103 = data;
+                        LM["accessTokenSent"] = !![];
+                        break;
+                    case 112:
+                        console.log('[Legend mod Express] opcode: ', data.getUint8(0));
+                        window.testobjectsOpcode112 = data;
+                        break;
+                    case 114:
+                        console.log('[Legend mod Express] opcode: ', data.getUint8(0));
+                        window.testobjectsOpcode114 = data;
+                        break;
+                    case 161:
+                        //console.log('[Legend mod Express] opcode: ', data.getUint8(0));
+                        window.testobjectsOpcode161 = data;
+                        break;
+                    case 176:
+                        window.testobjectsOpcode176 = data;
+                        this.battleRoyale.startTime = data.getUint32(s, true);
+                        break;
+                    case 177:
+                        window.testobjectsOpcode177 = data;
+                        this.battleRoyale.joined = true;
+                        break;
+                    case 178:
+                        window.testobjectsOpcode178 = data;
+                        this.battleRoyale.players = data.getUint16(s, true),
+                            s += 2;
+                        var y = data.getUint16(s, true);
+                        s += 2,
+                        y || (this.battleRoyale.state = 0, this.battleRoyale.joined = false),
+                        3 & y && (this.battleRoyale.state = data.getUint8(s++),
+                            this.battleRoyale.x = data.getInt32(s, true),
+                            s += 4,
+                            this.battleRoyale.y = data.getInt32(s, true),
+                            s += 4,
+                            this.battleRoyale.radius = data.getUint32(s, true),
+                            s += 4,
+                            this.battleRoyale.shrinkTime = 1000 * data.getUint32(s, true),
+                            s += 4,
+                        this.battleRoyale.shrinkTime &&
+                        (this.battleRoyale.timeLeft = ~~((this.battleRoyale.shrinkTime - Date.now() + this.serverTimeDiff) / 1000),
+                        this.battleRoyale.timeLeft < 0 && (this.battleRoyale.timeLeft = 0))),
+                        2 & y && (this.battleRoyale.targetX = data.getInt32(s, true),
+                            s += 4,
+                            this.battleRoyale.targetY = data.getInt32(s, true),
+                            s += 4,
+                            this.battleRoyale.targetRadius = data.getUint32(s, true));
+                        break;
+                    case 179:
+                        window.testobjectsOpcode179 = data;
+                        y = data.getUint8(s);
+                        window.decodeURIComponent(escape(i()));
+                        y || window.decodeURIComponent(escape(i()));
+                        break;
+                    case 180:
+                        window.testobjectsOpcode181 = data;
+                        this.battleRoyale.joined = false;
+                        this.battleRoyale.rank = [];
+                        this.battleRoyale.playerRank = data.getUint32(s, true);
+                        s += 8;
+                        var ogario1PlayerProfiles = data.getUint16(s, true);
+                        s += 2;
+                        for (n = 0; n < ogario1PlayerProfiles; n++) {
+                            var ogarcopythelb = window.decodeURIComponent(escape(i())),
+                                v = data.getUint32(s, true);
+                            s += 4, this.battleRoyale.rank.push({
+                                'place': defaultmapsettings,
+                                'name': ogarcopythelb
+                            });
+                        }
+                        break;
+                    case 226:
+                        window.testobjectsOpcode226 = data;
+                        var extraOptions = data.getUint16(1, !![]);
+                        data = this["createView"](3);
+                        data.setUint8(0, 227);
+                        data.setUint16(1, extraOptions);
+                        this["sendMessage"](data);
+                        break;
+                    case 241:
+                        window.testobjectsOpcode241 = data;
+                        this.protocolKey = data.getUint32(s, true);
+                        //window.testobjectsOpcode241.getUint32(1, true);
+                        console.log('[Legend mod Express] Received protocol key:', this.protocolKey);
+						window.generatedProtocolKey=this.protocolKey;
+                        var irenderfromagario = new Uint8Array(data['buffer'], s += 4);
+                        this.clientKey = this['generateClientKey'](this.ws, irenderfromagario);
+                        //legendmod.generateClientKey("wss://live-arena-19y1u3v.agar.io:443",new Uint8Array(window.testobjectsOpcode241['buffer'], 5))
+                        if (window.master && window.master.login) {
+                            window.master.login();
+                        }
+                        break;
+                    case 242:
+                        window.testobjectsOpcode242 = data;
+                        this.serverTime = 1000 * data.getUint32(s, true);
+                        this.serverTimeDiff = Date.now() - this.serverTime;
+                        break;
+                    case 255:
+                        window.testobjectsOpcode255 = data;
+                        this['handleSubmessage'](data);
+                        break;
+                    default:
+                        console.log('[Legend mod Express] Unknown opcode:', data.getUint8(0));
+                }
+            },
+            'handleSubmessage': function(t) {
+                var e = 0;
+                switch ((t = this['decompressMessage'](t)).readUInt8(e++)) {
+                    case 16:
+                        this.updateCells(t, e);
+                        break;
+                    case 64:
+                        this.viewMinX = t.readDoubleLE(e);
+                        e += 8;
+                        this.viewMinY = t.readDoubleLE(e);
+                        e += 8;
+                        this.viewMaxX = t.readDoubleLE(e);
+                        e += 8;
+                        this.viewMaxY = t.readDoubleLE(e);
+                        this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
+                        break;
+                    default:
+                        console.log('[Legend mod Express] Unknown sub opcode:', t.readUInt8(0));
+                }
+            },
+            'handleLeaderboard': function() {
+                /*                for (var t = '', e = '', i = 0; i < this.leaderboard.length && window.leaderboardlimit != i; i++) {
+                                    var s = '<span>';
+                                    'isPlayer' === this.leaderboard[i].id ? s = '<span class=\"me\">' : ogarcopythelb.clanTag.length && 0 == this.leaderboard[i].nick.indexOf(ogarcopythelb.clanTag) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer.escapeHTML(this.leaderboard[i].nick) + '</span>';
+                                } */
+                window.teammatenicks = [];
+                window.teammatelegendmodnicks = [];
+                for (i = 0; i < legendmod3.top5.length; i++) {
+                    window.teammatelegendmodnicks.push(legendmod3.top5[i].nick);
+                }
+                window.teammatenicks = window.teammatelegendmodnicks;
+                if (window.agartoolteammatenicks != undefined) {
+                    window.teammatenicks = window.teammatenicks.concat(window.agartoolteammatenicks);
+                }
+                for (var t = '', e = '', i = 0; i < this.leaderboard.length && window.leaderboardlimit != i; i++) {
+                    var s = '<span>';
+                    'isPlayer' === this.leaderboard[i].id ? s = '<span class=\"me\">' : ogarcopythelb.clanTag.length && 0 != window.teammatenicks.includes(this.leaderboard[i].nick) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer.escapeHTML(this.leaderboard[i].nick) + '</span>';
+                }
+                if (this.playerPosition > window.leaderboardlimit && (t += '<span class=\"me\">' + this.playerPosition + '. ' + ogarminimapdrawer.escapeHTML(this.playerNick) + '</span>'), defaultmapsettings['showLbData']);
+                t += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
+                for (var o = 0; o < this.ghostCells.length && o != i; o++) e += '<span class=\"lb-data\" id= "' + 'leaderboardtargeting' + o + '" style="pointer-events: auto;" onclick="window.legendmod.targetingLead(' + o + ');">', e += '<span class=\"top5-mass-color\">[' + ogarminimapdrawer.shortMassFormat(this.ghostCells[o].mass) + ']</span>', e += '<span class=\"hud-main-color\">[' + ogarminimapdrawer.calculateMapSector(this.ghostCells[o].x, this.ghostCells[o].y) + ']</span>', e += '</span>';
+                ogarminimapdrawer['displayLeaderboard'](t, e);
+                ///////////////// establish core.registerSkin
+                if (window.vanillaskins == true) {
+                    if (window.customskinsname != null && window.customskinsname != undefined) {
+                        for (i = 0; i <= this.leaderboard.length - 1; i++) {
+                            if (this.leaderboard[i].nick == window.customskinsname) {
+                                ogarminimapdrawer.customSkinsMap[window.customskinsname] = window.customskinsurl;
+                                ogarminimapdrawer.loadSkin(ogarminimapdrawer.customSkinsCache, window.customskinsurl);
+                                window.customskinsname = undefined;
+                            }
+                        }
+                    }
+                }
+                //if ($("#ao2t-capture").length && $("#ao2t-capture").hasClass("connected")) { //if existed and connected and visible
+					for (var e = 0; e < legendmod.ghostCells.length; e++) {
+						window.predictedGhostCells[e]={};
+						window.predictedGhostCells[e] = legendmod.ghostCells[e];
+						window.predictedGhostCells[e].id= legendmod.leaderboard[e].id;
+						window.predictedGhostCells[e].nick= legendmod.leaderboard[e].nick;
+						window.predictedGhostCells[e].isFriend= legendmod.leaderboard[e].isFriend;	
+					}
+                //}				
+
+            },
+            'targetingLead': function(o) {
+                window.targetingLeadX = legendmod.ghostCells[o].x;
+                window.targetingLeadY = legendmod.ghostCells[o].y;
+                legendmod.drawCommander2 = true;
+            },
+            'flushCellsData': function() {
+                this.indexedCells = {},
+                    this.cells = [];
+                this.playerCells = [];
+                this.playerCellIDs = [];
+                this.ghostCells = [];
+                this.food = [];
+                this.viruses = [];
+            },
+            'setMapOffset': function(t, e, i, s) {
+                if (i - t > 14000 && s - e > 14000) {
+
+                    this.mapOffsetX = this.mapOffset - i;
+                    this.mapOffsetY = this.mapOffset - s;
+                    this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
+                    this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
+                    this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
+                    this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
+                    this.mapMidX = (this.mapMaxX + this.mapMinX) / 2; //Sonia3
+                    this.mapMidY = (this.mapMaxY + this.mapMinY) / 2; //Sonia3
+                    this.mapOffsetFixed || (this.viewX = (i + t) / 2, this.viewY = (s + e) / 2);
+                    this.mapOffsetFixed = true;
+                    console.log('[Legend mod Express] Map offset fixed: (', this.mapOffsetX, ',', this.mapOffsetY, ')');
+                }
+            },
+            'isInView': function(t, e, i) {
+                var s = this.canvasWidth / 2 / this.scale,
+                    o = this.canvasHeight / 2 / this.scale;
+                //console.log("t:" + t + " e:" + e + " i:" + i  + " result:" + !(t + i < this.viewX - s || e + i < this.viewY - o || t - i > this.viewX + s || e - i > this.viewY + o));
+                return !(t + i < this.viewX - s || e + i < this.viewY - o || t - i > this.viewX + s || e - i > this.viewY + o);
+            },
+            'vanillaskins': function(y, g) {
+                if (g != null) {
+                    if (window.vanillaskins == true) {
+                        var skin2search = g.replace('%', '');
+                        if (window.LMAgarGameConfiguration != undefined) {
+                            for (var player = 0; player < window.EquippableSkins.length; player++) {
+                                if (window.EquippableSkins[player].productId == "skin_" + skin2search) {
+                                    //console.log("Player: " + y + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);
+                                    if (ogarminimapdrawer.customSkinsMap[y] == undefined) {
+                                        if (window.EquippableSkins[player].image != "uses_spine") {
+
+                                            if (legendflags.includes(LowerCase(y))) {
+                                                console.log("[Legend mod Express] " + LowerCase(y) + " skin found. Skin registered");
+                                                core.registerSkin(y, null, "https://jimboy3100.github.io/agario/live/flags/" + LowerCase(y) + ".png", null);
+                                            } else {
+                                                window.lastusednameforskin = y;
+                                                ogarminimapdrawer.customSkinsMap[y] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
+                                                ogarminimapdrawer.loadSkin(ogarminimapdrawer.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            //Sonia3 Adding three below functions
+            'translateX': function(x) {
+                return this.mapMaxX - (x - this.mapMinX);
+            },
+            'translateY': function(x) {
+                return this.mapMaxY - (x - this.mapMinY);
+            },
+            'calculatebgpi': function(x, y) {
+                var ofs = 150;
+                var calc = (x < this.mapMidX + ofs && x > this.mapMidX - ofs) || (y < this.mapMidY + ofs && y > this.mapMidY - ofs) ? 4 : x >= this.mapMidX && y < this.mapMidY ? 0 : x < this.mapMidX && y < this.mapMidY ? 1 : x < this.mapMidX && y >= this.mapMidY ? 2 : 3;
+                if ((window.legendmod.lbgpi == 4 || calc == 4 || window.legendmod.lbgpi == calc) && window.legendmod.delstate < 0) {
+                    window.legendmod.lbgpi = calc;
+                    return calc;
+                } else if (window.legendmod.lbgpi != calc) {
+                    window.legendmod.delstate = 0;
+                    window.legendmod.lbgpi = calc;
+                    return 4;
+                } else {
+                    window.legendmod.lbgpi = calc;
+                    return 4;
+                }
+            },
+			//https://github.com/NuclearC/agar.io-protocol
+            'updateCells': function(t, i) {
+                var s = function() {
+                    for (var e = '';;) {
+                        var s = t.readUInt8(i++);
+                        if (0 == s) break;
+                        e += String.fromCharCode(s);
+                    }
+                    return e;
+                };
+                this.time = Date.now(), this.removePlayerCell = false;
+                var o = t.readUInt16LE(i);
+                i += 2;
+                for (var a = 0; a < o; a++) {
+                    var n = this.indexedCells[t.readUInt32LE(i)],
+                        r = this.indexedCells[t.readUInt32LE(i + 4)];
+                    if (i += 8, n && r) {
+                        r.targetX = n.x;
+                        r.targetY = n.y;
+                        r.targetSize = r.size;
+                        r.time = this.time;
+                        r.removeCell();
+                    }			
+                }
+//
+				legendmod3.sendJimboy3100info();
+				for (y=0;y<legendmod.cells.length;y++){
+					legendmod.cells[y].fakeOK=true;
+				}
+				for (x=0;x<window.cellsFake.length;x++){
+					var ab=false;
+					var ac=false;
+					for (y=0;y<legendmod.cells.length;y++){
+
+						if (legendmod.cells[y].fake && legendmod.cells[y].id == window.cellsFake[x].id){
+							legendmod.cells[y].time = this.time;
+							legendmod.cells[y] = window.cellsFake[x];
+							ab=true;
+							legendmod.cells[y].fakeOK=false;
+						}
+					}
+					if ( ab == false ){
+						legendmod.cells.push(window.cellsFake[x]);
+					}
+				}
+				//legendmod.cells.push(...cellsFake);
+				for (y=0;y<legendmod.cells.length;y++){
+					if (legendmod.cells[y].fake && legendmod.cells[y].fakeOK==true){
+						legendmod.cells[y].removeCell(); 
+					}
+				}
+				
+				window.cellsFakeFlag++;				
+				if (window.cellsFakeFlag == 20){
+					//console.log('removed');
+					window.cellsFakeFlag = 0;
+					window.cellsFake=[];
+/*					if (typeof Socket3updateTeamPlayerCells === 'function') {
+						for (var x = 0 ; x < legendmod.cells.length ; x++){
+							if (legendmod.cells[x].fake == true){
+								window.cellsFake=[];
+								legendmod.cells[x].removeCell(); 
+							}
+						}				
+					} */					
+				}
+							
+//					
+                for (a = 0;;) {
+					extendedFlags=false;
+                    var l = t.readUInt32LE(i);
+                    if (i += 4, 0 == l) break;
+                    var h = t.readInt32LE(i);
+                    if (window.legendmod.vector[window.legendmod.vnr][0]) h = this.translateX(h); //Sonia3
+                    i += 4;
+                    var c = t.readInt32LE(i);
+                    if (window.legendmod.vector[window.legendmod.vnr][1]) c = this.translateY(c); //Sonia3
+                    i += 4;
+                    var u = t.readUInt16LE(i);
+                    i += 2;
+                    var d = t.readUInt8(i++),
+                        f = 0;
+                    128 & d && (f = t.readUInt8(i++), extendedFlags = true);	
+					//128 & d && (f = t.readUInt8(i++));	
+                    var m = null,
+                        g = null,
+                        y = '',
+						isAgitated=false,
+						isOwnEjected=false,
+						isOtherEjected=false;						
+                    if (2 & d) { //offset
+                        var ogario1PlayerProfiles = t.readUInt8(i++),
+                            ogarcopythelb = t.readUInt8(i++),
+                            irenderfromagario = t.readUInt8(i++);
+                        m = this.rgb2Hex(~~(0.9 * ogario1PlayerProfiles), ~~(0.9 * ogarcopythelb), ~~(0.9 * irenderfromagario));
+                    }
+
+                    //4 & d && (g = s()),
+                    //8 & d && (y = window.decodeURIComponent(escape(s())));
+                    if (4 & d) {
+                        g = s();
+                        //						console.log('skin '+g);
+
+                    }
+                    if (8 & d) {
+                        y = window.decodeURIComponent(escape(s()));
+                        this.vanillaskins(y, g);
+                    }
+					//Jimboy's
+                    if (16 & d) {
+                        isAgitated=true;						
+                    }					
+                    if (32 & d) {
+                        isOwnEjected=true;
+                    }
+                    if (64 & d) {
+                        isOtherEjected=true;
+                    }				
+					//
+                    //8 & d && (y = window.decodeURIComponent(escape(s())));
+                    var LM = 1 & d,
+                        ogarioset1final = 1 & f,
+                        ogariocellssetts = null;
+                    this.indexedCells.hasOwnProperty(l) ? (ogariocellssetts = this.indexedCells[l],
+                        m && (ogariocellssetts.color = m)) :
+                        ((ogariocellssetts = new ogarbasicassembly(l, h, c, u, m, ogarioset1final, LM, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots)).time = this.time,
+                            ogarioset1final ? this.food.push(ogariocellssetts) :
+                                (LM && defaultmapsettings.virusesRange && this.viruses.push(ogariocellssetts),
+                                    this.cells.push(ogariocellssetts),
+                                -1 != this.playerCellIDs.indexOf(l) && -1 == this.playerCells.indexOf(ogariocellssetts) && (ogariocellssetts.isPlayerCell = true, 
+								this.playerColor = m, this.playerCells.push(ogariocellssetts))),
+                            this.indexedCells[l] = ogariocellssetts),
+                    ogariocellssetts.isPlayerCell && (y = this.playerNick),
+                    y && (ogariocellssetts.targetNick = y),
+                        ogariocellssetts.targetX = h,
+                        ogariocellssetts.targetY = c,
+                        ogariocellssetts.targetSize = u,
+//                        ogariocellssetts.targetSize = u,
+                        ogariocellssetts.isFood = ogarioset1final,
+                        ogariocellssetts.isVirus = LM,
+						//
+						ogariocellssetts.isOwnEjected = isOwnEjected,
+						ogariocellssetts.isOtherEjected = isOtherEjected,	
+						//
+                    g && (ogariocellssetts.skin = g),
+                    4 & f && (t.readUInt32LE(i), i += 4);
+                }
+                for (o = t.readUInt16LE(i), i += 2, a = 0; a < o; a++) {
+                    l = t.readUInt32LE(i);
+                    i += 4, (ogariocellssetts = this.indexedCells[l]) && ogariocellssetts.removeCell();
+                }
+                //Sonia7
+                this.removePlayerCell && !this.playerCells.length && (this.play = false, ogarminimapdrawer.onPlayerDeath(), ogarminimapdrawer.showMenu(300));
+                //window.counterCell=0;
+                if (window.autoPlay && legendmod.play) {
+                    calcTarget();
+                }
+                //if (window.historystate && legendmod.play) {historystate();}
+            },
+            'color2Hex': function(t) {
+                var e = t.toString(16);
+                return 1 == e.length ? '0' + e : e;
+            },
+            'rgb2Hex': function(t, e, i) {
+                return '#' + this.color2Hex(t) + this.color2Hex(e) + this.color2Hex(i);
+            },
+            'sortCells': function() {
+                this.cells.sort(function(t, e) {
+                    return t.size == e.size ? t.id - e.id : t.size - e.size;
+                });
+            },
+            'calculatePlayerMassAndPosition': function() {
+                for (var t = 0, e = 0, i = 0, s = 0, o = this.playerCells.length, a = 0; a < o; a++) {
+                    var n = this.playerCells[a];
+                    t += n.size;
+                    e += n.targetSize * n.targetSize;
+                    i += n.x / o;
+                    s += n.y / o;
+                }
+                this.viewX = i;
+                this.viewY = s;
+                this.playerSize = t;
+                this.playerMass = ~~(e / 100);
+                this.recalculatePlayerMass();
+            },
+            'recalculatePlayerMass': function() {
+                if (this.playerScore = Math.max(this.playerScore, this.playerMass),
+                defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
+                    var t = this.playerCells;
+                    var e = t.length;
+                    t.sort(function(t, e) {
+                        return t.size == e.size ? t.id - e.id : t.size - e.size;
+                    });
+                    this.playerMinMass = ~~(t[0].size * t[0].size / 100);
+                    this.playerMaxMass = ~~(t[e - 1].size * t[e - 1].size / 100);
+                    this.playerSplitCells = e;
+                }
+                if (true) {
+                    var i = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
+                    // this.STE = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null; //Sonia2
+                    this.STE = Math.floor(i * 0.375); //Sonia2
+                    this.MTE = Math.floor(i * 0.75); //Sonia2
+                    this.BMTE = Math.ceil(i * 1.33); //Sonia2
+                    this.BSTE = Math.ceil(i * 2.66); //Sonia2
+                    this.TTE = Math.ceil(i / 6); //Sonia2
+                    this.PTE = Math.floor(i * 0.66); //Sonia2
+                }
+            },
+            'compareCells': function() {
+                if (this.play && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
+                    if (defaultmapsettings.oppRings || defaultmapsettings.splitRange) {
+                        this.biggerSTECellsCache = [];
+                        this.biggerCellsCache = [];
+                        this.smallerCellsCache = [];
+                        this.STECellsCache = [];
+                        this.biggerSTEDCellsCache = []; //Sonia
+                        this.STEDCellsCache = []; //Sonia
+                    }
+                    var t = 0;
+                    for (; t < this.cells.length; t++) {
+                        var e = this.cells[t];
+                        if (!e.isVirus) {
+                            //console.log(i); i for food is 13
+                            var i = ~~(e.size * e.size / 100);
+                            if (i != 13) {
+                                var s = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
+                                var o = i / s;
+                                var a = s < 1000 ? 0.35 : 0.38;
+                                if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings) {
+
+                                    e.oppColor = this.setCellOppColor(e.isPlayerCell, o, a);
+
+                                }
+                                if (!(e.isPlayerCell || !defaultmapsettings.splitRange && !defaultmapsettings.oppRings)) {
+                                    this.cacheCells(e.x, e.y, e.size, o, a);
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            /*'cacheCells': function(t, e, i, s, o) {
+                return s >= 2.5 ? void this.biggerSTECellsCache.push({
+                    'x': t,
+                    'y': e,
+                    'size': i
+                }) : s >= 1.25 ? void this.biggerCellsCache.push({
+                    'x': t,
+                    'y': e,
+                    'size': i
+                }) : s < 1.25 && s > 0.75 ? void 0 : s > o ? void this.smallerCellsCache.push({
+                    'x': t,
+                    'y': e,
+                    'size': i
+                }) : void this.STECellsCache.push({
+                    'x': t,
+                    'y': e,
+                    'size': i
+                });
+            },*/
+            //Sonia (entire function updated) // this is great :D
+            'cacheCells': function(t, e, i, s, o) {
+                return s >= 5.32 ? void this.biggerSTEDCellsCache.push({
+                    'x': t,
+                    'y': e,
+                    'size': i
+                }) : s >= 2.66 ? void this.biggerSTECellsCache.push({
+                    'x': t,
+                    'y': e,
+                    'size': i
+                }) : s >= 1.33 ? void this.biggerCellsCache.push({
+                    'x': t,
+                    'y': e,
+                    'size': i
+                }) : s < 1.33 && s > 0.75 ? void 0 : s > 0.375 ? void this.smallerCellsCache.push({
+                    'x': t,
+                    'y': e,
+                    'size': i
+                }) : s > 0.1875 ? void this.STECellsCache.push({
+                    'x': t,
+                    'y': e,
+                    'size': i
+                }) : void this.STEDCellsCache.push({
+                    'x': t,
+                    'y': e,
+                    'size': i
+                });
+            },
+            'setCellOppColor': function(t, e, i) {
+                //return t ? ogarcopythelb.color : e > 11 ? '#FF008C' : e >= 2.5 ? '#BE00FF' : e >= 1.25 ? '#FF0A00' : e < 1.25 && e > 0.75 ? '#FFDC00' : e > i ? '#00C8FF' : '#64FF00';
+                //return t ? ogarcopythelb.color : e > 10.64 ? defaultSettings.enemyBSTEDColor : e >= 5.32 ? defaultSettings.enemyBSTEDColor : e >= 2.66 && e <= 5.32 ? defaultSettings.enemyBSTEColor : e >= 1.33 && e <= 2.66 ? defaultSettings.enemyBColor : e < 1.33 && e > 0.75 ? '#FFDC00' : e < 0.75 && e > 0.375 ? defaultSettings.enemySSTEDColor : e > i ? '#00C8FF' : defaultSettings.enemySSTEColor; //Sonia
+                return t ? ogarcopythelb.color : e >= 10.64 ? defaultSettings.enemyBSTEDColor : e >= 5.32 ? defaultSettings.enemyBSTEDColor : e >= 2.66 ? defaultSettings.enemyBSTEColor : e >= 1.33 ? defaultSettings.enemyBColor : e > 0.75 ? '#FFDC00' : e > 0.375 ? defaultSettings.enemySColor : e > 0.1875 ? defaultSettings.enemySSTEColor : defaultSettings.enemySSTEDColor;
+            },
+            'getCursorPosition': function() {
+                this.cursorX = (this.clientX - this.canvasWidth / 2) / this.viewScale + this.viewX;
+                this.cursorY = (this.clientY - this.canvasHeight / 2) / this.viewScale + this.viewY;
+            },
+            'setZoom': function(t) {
+                //t.preventDefault(), this.zoomValue *= Math.pow(defaultmapsettings.zoomSpeedValue2, t.wheelDelta / -120 || t.detail || 0), this.zoomValue > 4 / this.viewScale && (this.zoomValue = 4 / this.viewScale);
+                this.zoomValue *= Math.pow(defaultmapsettings.zoomSpeedValue2 + 1, t.wheelDelta / -120 || t.detail || 0);
+                if (this.zoomValue > 4 / this.viewScale) {
+                    this.zoomValue = 4 / this.viewScale;
+                }
+            },
+            'setTargetPosition': function(t, e) {
+                this.targetX = t - this.mapOffsetX;
+                this.targetY = e - this.mapOffsetY;
+                this.targetDistance = Math.round(Math.sqrt(Math.pow(this.playerX - this.targetX, 2) + Math.pow(this.playerY - this.targetY, 2)));
+                window.targetDistance = this.targetDistance;
+            },
+            'resetTargetPosition': function() {
+                this.targetX = this.vector[this.vnr][0] ? this.translateX(this.playerX) : this.playerX;
+                this.targetY = this.vector[this.vnr][1] ? this.translateY(this.playerY) : this.playerY;
+            },
+            'setKeys': function() {
+                var t = this;
+                document.onkeydown = function(e) {
+                    var i = e.keyCode;
+                    if (!t.pressedKeys[i]) switch (i) {
+                        case 13:
+                            t.sendNick('');
+                            break;
+                        case 32:
+                            t.sendSplit();
+                            break;
+                        case 81:
+                            t.sendFreeSpectate();
+                            break;
+                        case 83:
+                            t.sendSpectate();
+                            break;
+                        case 87:
+                            t.sendEject();
+                    }
+                }, document.onkeyup = function(e) {
+                    t.pressedKeys[e.keyCode] = false;
+                };
+            },
+            'init': function() {
+                var t = this;
+                /firefox/i.test(navigator.userAgent) ? document.addEventListener('DOMMouseScroll', function(e) {
+                    t.setZoom(e);
+                }, false) : document.body.onmousewheel = function(e) {
+                    t.setZoom(e);
+                }, setInterval(function() {
+                    t.sendPosition();
+                }, 40), window.master && window.master.clientVersion && this.setClientVersion(window.master.clientVersion, window.master.clientVersionString);
+            }
+        };
+        window.legendmod = LM; // look at this
+
+        window.sendAction = function(t) {
+            LM.sendAction(t);
+        };
+        var ogarfooddrawer = {
+                'canvas': null,
+                'ctx': null,
+                'canvasWidth': 0,
+                'canvasHeight': 0,
+                'camX': 0,
+                'camY': 0,
+                'scale': 1,
+                'fpsLastRequest': null,
+                'renderedFrames': 0,
+                'fps': 0,
+                'pi2': 2 * Math.PI,
+                'battleAreaMap': null,
+                'battleAreaMapCtx': null,
+                'pieChart': null,
+                'pellet': null,
+                'indicator': null,
+                'setCanvas': function() {
+                    this.canvas = document.getElementById('canvas');
+                    this.ctx = this.canvas.getContext('2d');
+                    this.canvas.onmousemove = function(t) {
+                        LM.clientX = t.clientX;
+                        LM.clientY = t.clientY;
+                        LM.getCursorPosition();
+                    };
+                },
+                'resizeCanvas': function() {
+                    this.canvasWidth = window.innerWidth;
+                    this.canvasHeight = window.innerHeight;
+                    this.canvas.width = this.canvasWidth;
+                    this.canvas.height = this.canvasHeight;
+                    LM.canvasWidth = this.canvasWidth;
+                    LM.canvasHeight = this.canvasHeight;
+                    this.renderFrame();
+                },
+                'setView': function() {
+                    this.setScale(),
+                        LM.playerCells.length ?
+                            (LM.calculatePlayerMassAndPosition(),
+                                //					this.camX += (LM.viewX - this.camX) / 2,
+                                //					this.camY += (LM.viewY - this.camY) / 2) :
+                                this.camX = (this.camX + LM.viewX) / 2,
+                                this.camY = (this.camY + LM.viewY) / 2) :
+                            (this.camX = (29 * this.camX + LM.viewX) / 30,
+                                this.camY = (29 * this.camY + LM.viewY) / 30),
+                        LM.playerX = this.camX, LM.playerY = this.camY;
+                },
+                'setScale': function() {
+                    if (!LM.autoZoom) return this.scale = (9 * this.scale + this.getZoom()) / 10, void(LM.viewScale = this.scale);
+                    LM.play ? this.scale = (9 * this.scale + Math.pow(Math.min(64 / LM.playerSize, 1), 0.4) * this.getZoom()) / 10 : this.scale = (9 * this.scale + LM.scale * this.getZoom()) / 10, LM.viewScale = this.scale;
+                },
+                'getZoom': function() {
+                    return Math.max(this.canvasWidth / 1080, this.canvasHeight / 1920) * LM.zoomValue;
+                },
+                //Sonia5
+                'sleep': function(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                },
+                /*                'renderFrame': function() {
+                                    //for (LM.time = Date.now(), e = 0; e < LM.cells.length; e++) LM.cells[e].moveCell();
+                				    LM.time = Date.now();
+                						for (i = 0; i < LM.cells.length; i++) {
+                							LM.cells[i].moveCell();
+                						}
+                                    if (this['setView'](), LM.getCursorPosition(), LM['sortCells'](), LM['compareCells'](), this.ctx['clearRect'](0, 0, this.canvasWidth, this.canvasHeight), defaultmapsettings.showGrid && this['drawGrid'](this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY), this.ctx['save'](), this.ctx['translate'](this.canvasWidth / 2, this.canvasHeight / 2), this.ctx.scale(this.scale, this.scale), this.ctx['translate'](-this.camX, -this.camY), defaultmapsettings.showBgSectors && this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings['gridColor'], defaultSettings['sectorsColor'], defaultSettings['sectorsWidth'], true), ':battleroyale' === LM.gameMode && this['drawBattleArea'](this.ctx), defaultmapsettings['showMapBorders']) {
+                                        var t = defaultSettings['bordersWidth'] / 2;
+                                        this['drawMapBorders'](this.ctx, LM.mapOffsetFixed, LM.mapMinX - t, LM.mapMinY - t, LM.mapMaxX + t, LM.mapMaxY + t, defaultSettings['bordersColor'], defaultSettings['bordersWidth']);
+                                    }
+                                    this.drawCommander();
+                                    defaultmapsettings.virusesRange && this['drawVirusesRange'](this.ctx, LM.viruses), this['drawFood'](), LM.play && (defaultmapsettings.splitRange && this['drawSplitRange'](this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell), defaultmapsettings.oppRings && this['drawOppRings'](this.ctx, this.scale, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache), defaultmapsettings['cursorTracking'] && this['drawCursorTracking'](this.ctx, LM.playerCells, LM.cursorX, LM.cursorY)), this['drawGhostCells']();
+                                    for (var e = 0; e < LM['removedCells'].length; e++) LM['removedCells'][e].draw(this.ctx, true);
+                                    for (e = 0; e < LM.cells.length; e++) LM.cells[e].draw(this.ctx);
+                                    this.ctx['restore'](), ':teams' === LM.gameMode && this.pieChart && this.pieChart.width && this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
+                                }, */
+                'renderFrame': async function() { //Sonia5
+                    //this.ctx.start2D();
+                    await this.sleep(4); //Sonia5
+                    LM.time = Date.now();
+                    for (i = 0; i < LM.cells.length; i++) {
+                        LM.cells[i].moveCell();
+                    }
+                    this.setView();
+                    LM.getCursorPosition();
+                    LM.sortCells();
+                    LM.compareCells();
+                    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+                    if (defaultmapsettings.showGrid) {
+                        this.drawGrid(this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
+                    }
+                    this.ctx.save();
+                    this.ctx.translate(this.canvasWidth / 2, this.canvasHeight / 2);
+                    this.ctx.scale(this.scale, this.scale);
+                    this.ctx.translate(-this.camX, -this.camY);
+                    if (defaultmapsettings.showBgSectors) {
+                        this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings.gridColor, defaultSettings.sectorsColor, defaultSettings.sectorsWidth, true);
+                    }
+                    if (LM.gameMode === ':battleroyale') {
+                        this.drawBattleArea(this.ctx);
+                    }
+                    if (defaultmapsettings.showMapBorders) {
+                        var tempborderwidthradius = defaultSettings.bordersWidth / 2;
+                        this.drawMapBorders(this.ctx, LM.mapOffsetFixed, LM.mapMinX - tempborderwidthradius, LM.mapMinY - tempborderwidthradius, LM.mapMaxX + tempborderwidthradius, LM.mapMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
+                    }
+                    this.drawCommander();
+                    this.drawCommander2();
+                    if (defaultmapsettings.virusesRange) {
+                        this.drawVirusesRange(this.ctx, LM.viruses);
+                    }
+                    this.drawFood();
+                    if (LM.play) {
+                        if (defaultmapsettings.splitRange) {
+                            this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell);
+                            this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell); //Sonia
+                            //this.drawDoubleSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell);
+                            this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell); //Sonia
+                        }
+                        if (defaultmapsettings.oppRings) {
+                            //this.drawOppRings(this.ctx, this.scale, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache);
+                            this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache); //Sonia
+                        }
+                        if (defaultmapsettings.cursorTracking) {
+                            this.drawCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
+                        }
+                    }
+
+                    this.drawGhostCells();
+
+                    for (var i = 0; i < LM.removedCells.length; i++) {
+                        LM.removedCells[i].draw(this.ctx, true);
+                    }
+
+                    //lylko
+                    defaultmapsettings.jellyPhisycs && LM.updateQuadtree(LM.cells); //
+
+                    for (i = 0; i < LM.cells.length; i++) {
+
+                        if (defaultmapsettings.jellyPhisycs) {
+                            LM.cells[i].updateNumPoints();
+                            LM.cells[i].movePoints();
+                        }
+
+                        LM.cells[i].draw(this.ctx);
+
+                        if (ogarfooddrawer.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, LM.cells[i].x, LM.cells[i].y, LM.cells[i].size)) {
+                            LM.selected = LM.cells[i].id
+                            //this.drawRing(this.ctx,LM.cells[i].x,LM.cells[i].y,LM.cells[i].size,0.75,'#ffffff')
+                        }
+                    }
+                    LM.indexedCells[LM.selected] && this.drawRing(this.ctx,
+                        LM.indexedCells[LM.selected].x,
+                        LM.indexedCells[LM.selected].y,
+                        LM.indexedCells[LM.selected].size,
+                        0.75, '#ffffff')
+
+                    if (ogarfooddrawer.RMB && LM.indexedCells[LM.selected] && LM.playerCellIDs.length) {
+                        var index = LM.selectBiggestCell ? LM.playerCells.length - 1 : 0;
+                        //ctx.arc(playerCells[index].x, playerCells[index].y, playerCells[index].size + 760, 0, this.pi2, false);
+                        if (LM.playerCells[index] == undefined) return;
+                        var xc = LM.playerCells[index].targetX //.x
+                        var yc = LM.playerCells[index].targetY //.y
+
+                        var x = LM.indexedCells[LM.selected].targetX //.x
+                        var y = LM.indexedCells[LM.selected].targetY //.y
+
+                        var a = xc - x
+                        var b = yc - y
+                        var distance = Math.sqrt(a * a + b * b) - (LM.indexedCells[LM.selected].size + LM.playerCells[index].size)
+
+                        var ang = Math.atan2(y - yc, x - xc);
+
+                        LM.cursorX = xc + (Math.cos(ang) * distance)
+                        LM.cursorY = yc + (Math.sin(ang) * distance)
+                        LM.sendPosition()
+                        //console.log(xc,yc,x,y,LM.cursorX,LM.cursorY)
+                        //Math.deg(ang)
+
+
+                        /*var xc = LM.playerCells[index].x,
+                            yc = LM.playerCells[index].y,*/
+                        //R = 100000000,
+                        /*ang = Math.atan2(LM.indexedCells[LM.selected].y - yc, LM.indexedCells[LM.selected].x - xc);
+                        LM.cursorX= Math.cos(ang)
+                        LM.cursorY= Math.sin(ang)*/
+                        //Math.deg(ang)
+
+                        //LM.cursorX = LM.indexedCells[LM.selected].x
+                        //LM.cursorY = LM.indexedCells[LM.selected].y
+                    }
+
+
+                    this.ctx.restore();
+                    if (LM.gameMode === ':teams') {
+                        if (this.pieChart && this.pieChart.width) {
+                            this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
+                        }
+                    }
+                    //this.ctx.finish2D();
+                },
+                pointInCircle: function(x, y, cx, cy, radius) {
+                    var distancesquared = (x - cx) * (x - cx) + (y - cy) * (y - cy);
+                    return distancesquared <= radius * radius;
+                },
+                drawRing: function(ctx, x, y, size, alpha, color) {
+                    ctx.lineWidth = 20;
+                    ctx.globalAlpha = alpha;
+                    ctx.strokeStyle = color;
+                    ctx.beginPath();
+                    ctx.arc(x, y, size - 10, 0, this.pi2, false);
+                    ctx.closePath();
+                    ctx.stroke();
+
+                    ctx.globalAlpha = 1;
+                },
+
+
+                'drawGrid': function(t, e, i, s, o, a) {
+                    var n = e / s;
+                    var r = i / s;
+                    var l = (n / 2 - o) % 50;
+                    var h = (r / 2 - a) % 50;
+                    t.strokeStyle = defaultSettings.gridColor, t.globalAlpha = 1 * s, t.beginPath();
+                    for (; l < n; l = l + 50) {
+                        t.moveTo(l * s - 0.5, 0);
+                        t.lineTo(l * s - 0.5, r * s);
+                    }
+                    for (; h < r; h = h + 50) {
+                        t.moveTo(0, h * s - 0.5);
+                        t.lineTo(n * s, h * s - 0.5);
+                    }
+                    t.stroke(), t.globalAlpha = 1;
+                },
+                'drawSectors': function(t, e, i, s, o, a, n, r, l, h, c, u) {
+                    if (e || !u) {
+                        var d = ~~((n - o) / i);
+                        var f = ~~((r - a) / s);
+                        var m = 0;
+                        var y = 0;
+                        if (t.strokeStyle = l, t.fillStyle = h, t.lineWidth = c, u || !u && defaultmapsettings["showMiniMapGrid"]) {
+                            t.beginPath();
+                            var ogario1PlayerProfiles = 0;
+                            for (; ogario1PlayerProfiles < i + 1; ogario1PlayerProfiles++) {
+                                m = o + d * ogario1PlayerProfiles;
+                                t.moveTo(ogario1PlayerProfiles == i ? n : m, a);
+                                t.lineTo(ogario1PlayerProfiles == i ? n : m, r);
+                            }
+                            ogario1PlayerProfiles = 0;
+                            for (; ogario1PlayerProfiles < s + 1; ogario1PlayerProfiles++) {
+                                y = a + f * ogario1PlayerProfiles;
+                                t.moveTo(o - c / 2, ogario1PlayerProfiles == s ? r : y);
+                                t.lineTo(n + c / 2, ogario1PlayerProfiles == s ? r : y);
+                            }
+                            t.stroke();
+                        } else {
+                            this.drawMapBorders(t, e, o, a, n, r, l, c);
+                        }
+                        t.font = u ? defaultSettings.sectorsFontWeight + " " + defaultSettings.sectorsFontSize + "px " + defaultSettings.sectorsFontFamily : defaultSettings.miniMapFontWeight + " " + ~~(0.4 * f) + "px " + defaultSettings.miniMapFontFamily;
+                        t.textAlign = "center";
+                        t.textBaseline = "middle";
+                        ogario1PlayerProfiles = 0;
+                        for (; ogario1PlayerProfiles < s; ogario1PlayerProfiles++) {
+                            var ogarcopythelb = 0;
+                            for (; ogarcopythelb < i; ogarcopythelb++) {
+                                var ogarminimapdrawer = String.fromCharCode(65 + ogario1PlayerProfiles) + (ogarcopythelb + 1);
+                                m = ~~(o + d / 2 + ogarcopythelb * d);
+                                y = ~~(a + f / 2 + ogario1PlayerProfiles * f);
+                                t.fillText(ogarminimapdrawer, m, y);
+                            }
+                        }
+                    }
+                },
+                "drawCommander": function() {
+                    //console.log('Special effects stage 2');
+                    if (LM.drawCommander) {
+                        var pickerAxes = this.ctx;
+                        cimg = new Image;
+                        cimg.src = defaultSettings.commanderImage;
+                        cimg1 = new Image;
+                        cimg1.src = defaultSettings.commanderImage1;
+                        cimg2 = new Image;
+                        cimg2.src = defaultSettings.commanderImage2;
+                        pickerAxes.save();
+                        pickerAxes.globalAlpha = LM.cAlpha;
+                        pickerAxes.translate(i.spawnX, i.spawnY);
+                        pickerAxes.rotate(LM.cAngle);
+                        pickerAxes.drawImage(cimg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                        pickerAxes.restore();
+                        pickerAxes.save();
+                        pickerAxes.globalAlpha = LM.cAlpha;
+                        pickerAxes.translate(i.spawnX, i.spawnY);
+                        pickerAxes.rotate(LM.cAngle1);
+                        pickerAxes.drawImage(cimg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                        pickerAxes.restore();
+                        pickerAxes.save();
+                        pickerAxes.globalAlpha = LM.cAlpha;
+                        pickerAxes.translate(i.spawnX, i.spawnY);
+                        pickerAxes.rotate(LM.cAngle2);
+                        pickerAxes.drawImage(cimg2, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                        pickerAxes.restore();
+                        pickerAxes.globalAlpha = 1;
+                        this.updateCommander();
+                    }
+                },
+                "drawCommander2": function() {
+                    //console.log('Special effects stage 2');
+                    if (LM.drawCommander2) {
+                        var pickerAxes = this.ctx;
+                        cimg = new Image;
+                        cimg.src = defaultSettings.commanderImage3;
+                        cimg1 = new Image;
+                        cimg1.src = defaultSettings.commanderImage4;
+                        cimg2 = new Image;
+                        cimg2.src = defaultSettings.commanderImage5;
+                        pickerAxes.save();
+                        pickerAxes.globalAlpha = LM.cAlpha;
+                        pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
+                        pickerAxes.rotate(LM.cAngle);
+                        pickerAxes.drawImage(cimg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                        pickerAxes.restore();
+                        pickerAxes.save();
+                        pickerAxes.globalAlpha = LM.cAlpha;
+                        pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
+                        pickerAxes.rotate(LM.cAngle1);
+                        pickerAxes.drawImage(cimg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                        pickerAxes.restore();
+                        pickerAxes.save();
+                        pickerAxes.globalAlpha = LM.cAlpha;
+                        pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
+                        pickerAxes.rotate(LM.cAngle2);
+                        pickerAxes.drawImage(cimg2, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                        pickerAxes.restore();
+                        pickerAxes.globalAlpha = 1;
+                        this.updateCommander();
+                    }
+                },
+                "updateCommander": function() {
+                    LM.cRadius += 7;
+                    LM.cAngle += .007;
+                    LM.cAngle1 -= .006;
+                    LM.cAngle2 += .003;
+                    if (2025 <= LM.cRadius) {
+                        LM.cAlpha *= .95;
+                    }
+                    if (1E-4 >= LM.cAlpha) {
+                        this.resetCommander();
+                    }
+                },
+                "resetCommander": function() {
+                    LM.cRadius = 10; //LM.clientX
+                    LM.cAngle = 4;
+                    LM.cAngle1 = 0;
+                    LM.cAngle2 = 0;
+                    LM.cAlpha = 1;
+                    LM.drawCommander = false;
+                    LM.drawCommander2 = false;
+                    i.spawnX = 0;
+                    i.spawnY = 0;
+                },
+                /*
+                'drawMapBorders': function(t, e, i, s, o, a, n, r) {
+                    e && (t.strokeStyle = n, t.lineWidth = r, t.beginPath(), t.moveTo(i, s), t.lineTo(o, s), t.lineTo(o, a), t.lineTo(i, a), t.closePath(), t.stroke());
+                },
+				*/
+                "drawMapBorders": function(ctx, macros, text, x1, x0, y0, radius, canvas) {
+                    if (macros) {
+                        ctx.strokeStyle = radius;
+                        ctx.lineWidth = canvas;
+                        ctx.beginPath();
+                        ctx.moveTo(text, x1);
+                        ctx.lineTo(x0, x1);
+                        ctx.lineTo(x0, y0);
+                        ctx.lineTo(text, y0);
+                        if (defaultmapsettings.borderGlow) {
+                            ctx.shadowBlur = defaultSettings.borderGlowSize;
+                            ctx.shadowColor = defaultSettings.borderGlowColor;
+                        } else {
+                            "skrrt";
+                        }
+                        ctx.closePath();
+                        ctx.stroke();
+                    }
+                    if (defaultmapsettings.borderGlow) {
+                        ctx.shadowBlur = 0;
+                    } else {
+                        "skrrt";
+                    }
+                },
+                'drawVirusesRange': function(t, e, i) {
+                    if (e.length) {
+                        t.beginPath();
+                        for (var s = 0; s < e.length; s++) {
+                            var o = e[s].x,
+                                a = e[s].y;
+                            t.moveTo(o, a),
+                                t.arc(o, a, e[s].size + 820, 0, this.pi2, false);
+                        }
+                        t.fillStyle = defaultSettings.virusColor,
+                            t.globalAlpha = 0.1, t.fill(),
+                            t.globalAlpha = 1, i && (e = []);
+                    }
+                },
+                'drawFood': function() {
+                    if (LM.showFood && !(defaultmapsettings.autoHideFoodOnZoom && this.scale < 0.2)) {
+                        if (defaultmapsettings.autoHideFood && !LM.foodIsHidden && LM.playerMass > 1000) return LM.showFood = false, void(LM.foodIsHidden = true);
+                        if (defaultmapsettings.rainbowFood)
+                            for (var t = 0; t < LM.food.length; t++) LM.food[t].moveCell(), LM.food[t].draw(this.ctx);
+                        else this.drawCachedFood(this.ctx, LM.food, this.scale);
+                    }
+                },
+                'drawCachedFood': function(t, e, i, s) {
+                    if (e.length) {
+                        if (defaultmapsettings.optimizedFood && this.pellet)
+                            for (var o = 0; o < e.length; o++) {
+                                var a = e[o].x - 10 - defaultSettings.foodSize,
+                                    n = e[o].y - 10 - defaultSettings.foodSize;
+                                t.drawImage(this.pellet, a, n);
+                            } else {
+                            t.beginPath();
+                            for (o = 0; o < e.length; o++) {
+                                a = e[o].x, n = e[o].y;
+                                if (t.moveTo(a, n), i < 0.16) {
+                                    var r = e[o].size + defaultSettings.foodSize;
+                                    t.rect(a - r, n - r, 2 * r, 2 * r);
+                                } else t.arc(a, n, e[o].size + defaultSettings.foodSize, 0, this.pi2, false);
+                            }
+                            t.fillStyle = defaultSettings.foodColor, t.globalAlpha = 1, t.fill();
+                        }
+                        s && (e = []);
+                    }
+                },
+                'drawSplitRange': function(t, e, i, s, o) {
+                    if (this.drawCircles(t, e, 760, 4, 0.4, defaultSettings.enemyBSTEColor), i.length) { //Sonia2
+                        //if (this.drawCircles(t, e, 760, 4, 0.4, '#ff0000'), i.length) { //Sonia
+                        var a = s ? i.length - 1 : 0;
+                        t.lineWidth = 6, t.globalAlpha = defaultSettings.darkTheme ? 0.7 : 0.35,
+                            t.strokeStyle = defaultSettings.splitRangeColor,
+                            t.beginPath(),
+                            t.arc(i[a].x, i[a].y, i[a].size + 760, 0, this.pi2, false),
+                            t.closePath(),
+                            t.stroke();
+                    }
+                    t.globalAlpha = 1, o && (e = []);
+                },
+                'drawDoubleSplitRange': function(t, e, i, s, o) {
+                    //if (this.drawCircles(t, e, 760, 4, 0.4, '#BE00FF'), i.length) {
+                    if (this.draw2Circles(t, e, 760, 4, 0.4, defaultSettings.enemyBSTEDColor), i.length) { //Sonia2
+                        //if (this.draw2Circles(t, e, 760, 4, 0.4, '#8000ff'), i.length) { //Sonia
+                        //this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell);
+
+                        var a = s ? i.length - 1 : 0;
+                        //console.log(i[a].size);
+                        if (i[a].size >= 400 && defaultmapsettings.qdsplitRange) { //Sonia2
+                            t.lineWidth = 6,
+                                t.globalAlpha = defaultSettings.darkTheme ? 0.7 : 0.35,
+                                t.strokeStyle = defaultSettings.splitRangeColor;
+                            t.beginPath();
+                            t.arc(i[a].x, i[a].y, 2 * i[a].size + 760, 0, this.pi2, false);
+                            t.closePath();
+                            t.stroke();
+                        }
+                    }
+                    t.globalAlpha = 1;
+                    if (o) {
+                        e = [];
+                    }
+                },
+                //Sonia (entire function update)
+                //'drawOppRings': function(t, e, i, s, o, a, n) {
+                'drawOppRings': function(t, e, ip, i, s, o, a, ap, n) {
+                    var r = 14 + 2 / e;
+                    var l = 12 + 1 / e;
+                    this.drawCircles(t, ip, r, l, 0.75, defaultSettings.enemyBSTEDColor); //Sonia2
+                    this.drawCircles(t, i, r, l, 0.75, defaultSettings.enemyBSTEColor); //Sonia2
+                    this.drawCircles(t, s, r, l, 0.75, defaultSettings.enemyBColor); //Sonia2
+                    this.drawCircles(t, o, r, l, 0.75, defaultSettings.enemySColor); //Sonia2
+                    this.drawCircles(t, a, r, l, 0.75, defaultSettings.enemySSTEColor); //Sonia2
+                    this.drawCircles(t, ap, r, l, 0.75, defaultSettings.enemySSTEDColor); //Sonia2
+                    if (n) {
+                        i = [];
+                        s = [];
+                        o = [];
+                        a = [];
+                        ip = [];
+                        ap = [];
+                    }
+                },
+                'drawCursorTracking': function(t, e, i, s) {
+                    t.lineWidth = 4, t.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35, t.strokeStyle = defaultSettings.cursorTrackingColor, t.beginPath();
+                    for (var o = 0; o < e.length; o++) t.moveTo(e[o].x, e[o].y), t.lineTo(i, s);
+                    t.stroke(), t.globalAlpha = 1;
+                },
+                'drawCircles': function(t, e, i, s, o, a) {
+                    t.lineWidth = s, t.globalAlpha = o, t.strokeStyle = a;
+                    for (var n = 0; n < e.length; n++) t.beginPath(), t.arc(e[n].x, e[n].y, e[n].size + i, 0, this.pi2, false), t.closePath(), t.stroke();
+                    t.globalAlpha = 1;
+                },
+                //Sonia (added entire function)
+                'draw2Circles': function(t, e, i, s, o, a) {
+                    t.lineWidth = s, t.globalAlpha = o, t.strokeStyle = a;
+                    //for (var n = 0; n < e.length; n++) t.beginPath(), t.arc(e[n].x, e[n].y, 1.5*e[n].size + 2*i, 0, this.pi2, false), t.closePath(), t.stroke();
+                    if (defaultmapsettings.qdsplitRange) { //Sonia2
+                        for (var n = 0; n < e.length; n++) t.beginPath(), t.arc(e[n].x, e[n].y, 2 * e[n].size + i, 0, this.pi2, false), t.closePath(), t.stroke(); //760+2*cell.size is the correct
+                    } //Sonia2
+                    if (defaultmapsettings.sdsplitRange) { //Sonia2
+                        for (var n = 0; n < e.length; n++) t.setLineDash([20, 30]), t.lineWidth = 2 * s, t.beginPath(), t.arc(e[n].x, e[n].y, 1.5 * e[n].size + 2 * i, 0, this.pi2, false), t.closePath(), t.stroke(); //Sonia2
+                        t.setLineDash([]); //Sonia2
+                        t.lineWidth = s; //Sonia2
+                    } //Sonia2
+                    t.globalAlpha = 1;
+                },
+                'drawDashedCircle': function(t, e, i, s, o, a, n) {
+                    var r = this.pi2 / o;
+                    t.lineWidth = a, t.strokeStyle = n;
+                    for (var l = 0; l < o; l += 2) t.beginPath(), t.arc(e, i, s - a / 2, l * r, (l + 1) * r, false), t.stroke();
+                },
+                'drawTeammatesInd': function(t, e, i, s) {
+                    //console.log("t:"+ t + " e:" + e + " i:" + i + "s:" + s);
+                    if (this.indicator) {
+                        t.drawImage(this.indicator, e - 45, i - s - 90);
+                    }
+                },
+                'drawPieChart': function() {
+                    this.pieChart || (this.pieChart = document.createElement('canvas'));
+                    var t = this.pieChart.getContext('2d'),
+                        e = Math.min(200, 0.3 * this.canvasWidth) / 200;
+                    this.pieChart.width = 200 * e, this.pieChart.height = 240 * e, t.scale(e, e);
+                    for (var i = ['#333333', '#FF3333', '#33FF33', '#3333FF'], s = 0, o = 0; o < LM.pieChart.length; o++) {
+                        var a = s + LM.pieChart[o] * this.pi2;
+                        t.fillStyle = i[o + 1], t.beginPath(), t.moveTo(100, 140), t.arc(100, 140, 80, s, a, false), t.fill(), s = a;
+                    }
+                },
+                'drawBattleArea': function(t) {
+                    if (LM.battleRoyale.state) {
+                        this.drawDangerArea(t, LM.battleRoyale.x, LM.battleRoyale.y, LM.battleRoyale.radius, LM.mapMinX, LM.mapMinY, LM.mapMaxX - LM.mapMinX, LM.mapMaxY - LM.mapMinY, defaultSettings.dangerAreaColor, 0.25);
+                        this.drawSafeArea(t, LM.battleRoyale.targetX, LM.battleRoyale.targetY, LM.battleRoyale.targetRadius, 40, defaultSettings.safeAreaColor);
+                    }
+                },
+                'drawBattleAreaOnMinimap': function(t, e, i, s, o, a) {
+                    if (LM.battleRoyale.state) {
+                        if (!this.battleAreaMap) {
+                            this.battleAreaMap = document.createElement("canvas");
+                            this.battleAreaMapCtx = this.battleAreaMap.getContext("2d");
+                        }
+                        if (this.battleAreaMap.width != e) {
+                            this.battleAreaMap.width = e;
+                            this.battleAreaMap.height = i;
+                        } else {
+                            this.battleAreaMapCtx.clearRect(0, 0, e, i);
+                        }
+                        var n = (LM.battleRoyale.x + o) * s;
+                        var r = (LM.battleRoyale.y + a) * s;
+                        var l = LM.battleRoyale.radius * s;
+                        this.drawDangerArea(this.battleAreaMapCtx, n, r, l, 0, 0, e, i, defaultSettings.dangerAreaColor, 0.25);
+                        n = ~~((LM.battleRoyale.targetX + o) * s);
+                        r = ~~((LM.battleRoyale.targetY + a) * s);
+                        l = ~~(LM.battleRoyale.targetRadius * s);
+                        this.drawSafeArea(this.battleAreaMapCtx, n, r, l, 2, defaultSettings.safeAreaColor);
+                        t.drawImage(this.battleAreaMap, 0, 0);
+                    }
+                },
+                'drawDangerArea': function(t, e, i, s, o, a, n, r, l, h) {
+                    if (!(LM.battleRoyale.radius == LM.battleRoyale.maxRadius || s <= 0)) {
+                        t.save();
+                        t.globalAlpha = h;
+                        t.fillStyle = l;
+                        t.fillRect(o, a, n, r);
+                        t.globalCompositeOperation = "destination-out";
+                        t.globalAlpha = 1;
+                        t.beginPath();
+                        t.arc(e, i, s, 0, this.pi2, false);
+                        t.fill();
+                        t.restore();
+                    }
+                },
+                'drawSafeArea': function(t, e, i, s, o, a) {
+                    if (!(LM.battleRoyale.state > 2 || s <= 0)) {
+                        this.drawDashedCircle(t, e, i, s, 60, o, a);
+                    }
+                },
+                'drawTextAlongArc': function(ctx, str, centerX, centerY, radius, angle) {
+                    var len = str.length,
+                        s;
+                    this.ctx.save();
+                    this.ctx.translate(centerX, centerY);
+                    this.ctx.rotate(-1 * angle / 2);
+                    this.ctx.rotate(-1 * (angle / len) / 2);
+                    for (var n = 0; n < len; n++) {
+                        this.ctx.rotate(angle / len);
+                        this.ctx.save();
+                        this.ctx.translate(0, -1 * radius);
+                        s = str[n];
+                        this.ctx.fillText(s, 0, 0);
+                        this.ctx.restore();
+                    }
+                    this.ctx.restore();
+                },
+                'drawGhostCells': function() {
+                    if (defaultmapsettings.showGhostCells) {
+                        var t = LM.ghostCells;
+                        this.ctx.beginPath();
+                        var e = 0;
+                        for (; e < t.length; e++) {
+                            if (!t[e].inView) {
+                                var i = t[e].x;
+                                var s = t[e].y;
+                                this.ctx.moveTo(i, s);
+                                this.ctx.arc(i, s, t[e].size, 0, this.pi2, false);
+                                //
+                                if (defaultmapsettings.showGhostCellsInfo) {
+                                    this.nickScale = 1;
+                                    this.fontSize = Math.max(t[e].size * 0.3, 26) * this.scale;
+                                    this.nickSize = ~~(this.fontSize * this.nickScale);
+                                    this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
+                                    this.ctx.textAlign = 'center';
+                                    this.ctx.fillStyle = defaultSettings.namesColor;
+                                    this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
+                                    this.ctx.lineWidth = 4;
+                                    angle = Math.PI * 0.8;
+
+                                    if (LM.leaderboard[e] != undefined) { //LM instead of legendmod for quicker response
+
+                                        this.ghostcellstext = removeEmojis(ogarminimapdrawer.escapeHTML(LM.leaderboard[e].nick)); //legendmod3.escapeHTML(legendmod.leaderboard[0].nick)
+                                    } else {
+                                        this.ghostcellstext = "Legend mod";
+                                    }
+                                    this.drawTextAlongArc(this.ctx, this.ghostcellstext, i, s, t[e].size * this.pi2 / 6, angle);
+                                    if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                                        if (LM.leaderboard[e] != undefined) {
+                                            node = ogarminimapdrawer.getCustomSkin(LM.leaderboard[e].nick, "#000000");
+                                            if (node) {
+                                                this.ctx.drawImage(node, i - t[e].size, s - t[e].size, t[e].size * 2, t[e].size * 2);
+                                            }
+                                        }
+                                    }
+                                }
+                                //
+                            }
+                        }
+                        this.ctx.fillStyle = defaultSettings.ghostCellsColor;
+                        this.ctx.globalAlpha = defaultSettings.ghostCellsAlpha;
+                        this.ctx.shadowColor = defaultSettings.ghostCellsColor;
+                        this.ctx.shadowBlur = 40;
+                        this.ctx.shadowOffsetX = 0;
+                        this.ctx.shadowOffsetY = 0;
+                        this.ctx.fill();
+                        this.ctx.globalAlpha = 1;
+                        this.ctx.shadowBlur = 0;
+                    }
+                },
+                'preDrawPellet': function() {
+                    this.pellet = null;
+                    var t = 10 + defaultSettings.foodSize,
+                        e = document.createElement('canvas');
+                    e.width = 2 * t, e.height = 2 * t;
+                    var i = e.getContext('2d');
+                    i.arc(t, t, t, 0, this.pi2, false), i.fillStyle = defaultSettings.foodColor, i.fill(), this.pellet = new Image(), this.pellet.src = e.toDataURL(), e = null;
+                },
+                'preDrawIndicator': function() {
+                    this.indicator = null;
+                    var t = document.createElement('canvas');
+                    t.width = 90, t.height = 50;
+                    var e = t.getContext('2d');
+                    e.lineWidth = 2;
+                    e.fillStyle = defaultSettings.teammatesIndColor;
+                    e.strokeStyle = '#000000';
+                    e.beginPath();
+                    e.moveTo(0, 0);
+                    e.lineTo(90, 0);
+                    e.lineTo(45, 50);
+                    e.closePath();
+                    e.fill();
+                    e.stroke();
+                    this.indicator = new Image();
+                    this.indicator.src = t.toDataURL();
+                    t = null;
+                },
+                'countFps': function() {
+                    if (defaultmapsettings.showStatsFPS) {
+                        var t = Date.now();
+                        if (!this.fpsLastRequest) {
+                            this.fpsLastRequest = t;
+                        }
+                        if (t - this.fpsLastRequest >= 1000) {
+                            this.fps = this.renderedFrames;
+                            this.renderedFrames = 0;
+                            this.fpsLastRequest = t;
+                        }
+                        this.renderedFrames++;
+                    }
+                },
+                'render': function() {
+                    ogarfooddrawer.countFps(), ogarfooddrawer.renderFrame(), window.requestAnimationFrame(ogarfooddrawer.render);
+                },
+                'init': function() {
+                    this.setCanvas();
+                    this.resizeCanvas();
+                    this.preDrawPellet();
+                    this.preDrawIndicator();
+                    window.requestAnimationFrame(ogarfooddrawer.render);
+                }
+
+            },
+            ogarioefaultHotkeys = {},
+            ogario1Hotkeys = {},
+            ogario11Hotkeys = {
+                'hk-feed': {
+                    'label': h['hk-feed'],
+                    'defaultKey': 'W',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.feed();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-macroFeed': {
+                    'label': h['hk-macroFeed'],
+                    'defaultKey': 'E',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.macroFeed(!0);
+                    },
+                    'keyUp': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.macroFeed(!1);
+                    },
+                    'type': 'normal'
+                },
+                'hk-split': {
+                    'label': h['hk-split'],
+                    'defaultKey': 'SPACE',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.split();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-doubleSplit': {
+                    'label': h['hk-doubleSplit'],
+                    'defaultKey': 'Q',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.doubleSplit();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-popSplit': {
+                    'label': 'Popsplit',
+                    'defaultKey': 'ALT+Q',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.popSplit();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-split16': {
+                    'label': h['hk-split16'],
+                    'defaultKey': 'SHIFT',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.split16();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-pause': {
+                    'label': h['hk-pause'],
+                    'defaultKey': 'R',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setPause();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showTop5': {
+                    'label': h['hk-showTop5'],
+                    'defaultKey': 'T',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowTop5();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showTime': {
+                    'label': h['hk-showTime'],
+                    'defaultKey': 'ALT+T',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowTime();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showSplitRange': {
+                    'label': h['hk-showSplitRange'],
+                    'defaultKey': 'U',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowSplitRange();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showSplitInd': {
+                    'label': h['hk-showSplitInd'],
+                    'defaultKey': 'I',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowSplitInd();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showTeammatesInd': {
+                    'label': h['hk-showTeammatesInd'],
+                    'defaultKey': 'ALT+I',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowTeammatesInd();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showOppColors': {
+                    'label': h['hk-showOppColors'],
+                    'defaultKey': 'O',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowOppColors();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-toggleSkins': {
+                    'label': h['hk-toggleSkins'],
+                    'defaultKey': 'A',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.toggleSkins();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-transparentSkins': {
+                    'label': h['hk-transparentSkins'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setTransparentSkins();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showSkins': {
+                    'label': h['hk-showSkins'],
+                    'defaultKey': 'S',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowSkins();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showStats': {
+                    'label': h['hk-showStats'],
+                    'defaultKey': 'ALT+S',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowStats();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-toggleCells': {
+                    'label': h['hk-toggleCells'],
+                    'defaultKey': 'D',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.toggleCells();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showFood': {
+                    'label': h['hk-showFood'],
+                    'defaultKey': 'F',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowFood();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showGrid': {
+                    'label': h['hk-showGrid'],
+                    'defaultKey': 'G',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowGrid();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showMiniMapGuides': {
+                    'label': h['hk-showMiniMapGuides'],
+                    'defaultKey': 'ALT+G',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowMiniMapGuides();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-hideChat': {
+                    'label': h['hk-hideChat'],
+                    'defaultKey': 'H',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.hideChat();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showHUD': {
+                    'label': h['hk-showHUD'],
+                    'defaultKey': 'ALT+H',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowHUD();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-copyLb': {
+                    'label': h['hk-copyLb'],
+                    'defaultKey': 'L',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.copyLb();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showLb': {
+                    'label': h['hk-showLb'],
+                    'defaultKey': 'ALT+L',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowLb();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-toggleAutoZoom': {
+                    'label': h['hk-toggleAutoZoom'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.toggleAutoZoom();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-resetZoom': {
+                    'label': h['hk-resetZoom'],
+                    'defaultKey': 'Z',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.resetZoom(!0);
+                    },
+                    'keyUp': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.resetZoom(!1);
+                    },
+                    'type': 'normal'
+                },
+                'hk-toggleDeath': {
+                    'label': h['hk-toggleDeath'],
+                    'defaultKey': 'X',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.toggleDeath();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-clearChat': {
+                    'label': h['hk-clearChat'],
+                    'defaultKey': 'C',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.displayChatHistory(!0);
+                    },
+                    'keyUp': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.displayChatHistory(!1);
+                    },
+                    'type': 'normal'
+                },
+                'hk-showBgSectors': {
+                    'label': h['hk-showBgSectors'],
+                    'defaultKey': 'B',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowBgSectors();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-hideBots': {
+                    'label': h['hk-hideBots'],
+                    'defaultKey': 'ALT+B',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setHideSmallBots();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showNames': {
+                    'label': h['hk-showNames'],
+                    'defaultKey': 'N',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowNames();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-hideTeammatesNames': {
+                    'label': h['hk-hideTeammatesNames'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setHideTeammatesNames();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showMass': {
+                    'label': h['hk-showMass'],
+                    'defaultKey': 'LM',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowMass();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showMiniMap': {
+                    'label': h['hk-showMiniMap'],
+                    'defaultKey': 'ALT+LM',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowMiniMap();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-chatMessage': {
+                    'label': h['hk-chatMessage'],
+                    'defaultKey': 'ENTER',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.enterChatMessage();
+                    },
+                    'keyUp': null,
+                    'type': 'special'
+                },
+                'hk-quickResp': {
+                    'label': h['hk-quickResp'],
+                    'defaultKey': 'TILDE',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.quickResp();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-autoResp': {
+                    'label': h['hk-autoResp'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.toggleAutoResp();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-zoom1': {
+                    'label': h['hk-zoomLevel'] + ' 1',
+                    'defaultKey': 'ALT+1',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setZoom(0.5);
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-zoom2': {
+                    'label': h['hk-zoomLevel'] + ' 2',
+                    'defaultKey': 'ALT+2',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setZoom(0.25);
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-zoom3': {
+                    'label': h['hk-zoomLevel'] + ' 3',
+                    'defaultKey': 'ALT+3',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setZoom(0.125);
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-zoom4': {
+                    'label': h['hk-zoomLevel'] + ' 4',
+                    'defaultKey': 'ALT+4',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setZoom(0.075);
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-zoom5': {
+                    'label': h['hk-zoomLevel'] + ' 5',
+                    'defaultKey': 'ALT+5',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setZoom(0.05);
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-voiceChat': {
+                    'label': h['hk-voiceChat'],
+                    'defaultKey': '=',
+                    'keyDown': function() {
+                        //ogarminimapdrawer && ogarminimapdrawer.enterChatMessage();
+                        //if ($('#message-box').css('display') == 'block') {
+                        $(".voice-start.icon-mic").click();
+                        //}
+                    },
+                    'keyUp': null,
+                    'type': 'special'
+                },
+                'hk-GhostCellsInfo': {
+                    'label': h['hk-GhostCellsInfo'],
+                    'defaultKey': 'K',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowGhostCellsInfo();
+                    },
+                    'keyUp': null,
+                    'type': 'special'
+                },
+                'hk-Autoplay': {
+                    'label': h['hk-Autoplay'],
+                    'defaultKey': 'J',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setAutoPlay();
+                    },
+                    'keyUp': null,
+                    'type': 'special'
+                },
+                'hk-switchServerMode': {
+                    'label': h['hk-switchServerMode'],
+                    'defaultKey': '-',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.switchServerMode();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showTargeting': {
+                    'label': h['hk-showTargeting'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowTargeting();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-setTargeting': {
+                    'label': h['hk-setTargeting'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setTargeting();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-cancelTargeting': {
+                    'label': h['hk-cancelTargeting'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.cancelTargeting();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-changeTarget': {
+                    'label': h['hk-changeTarget'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.changeTarget();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-privateMiniMap': {
+                    'label': h['hk-privateMiniMap'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setPrivateMiniMap();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-showQuest': {
+                    'label': h['hk-showQuest'],
+                    'defaultKey': '',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.setShowQuest();
+                    },
+                    'keyUp': null,
+                    'type': 'normal'
+                },
+                'hk-comm1': {
+                    'label': c['comm1'],
+                    'defaultKey': '1',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(1);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm2': {
+                    'label': c['comm2'],
+                    'defaultKey': '2',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(2);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm3': {
+                    'label': c['comm3'],
+                    'defaultKey': '3',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(3);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm4': {
+                    'label': c['comm4'],
+                    'defaultKey': '4',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(4);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm5': {
+                    'label': c['comm5'],
+                    'defaultKey': '5',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(5);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm6': {
+                    'label': c['comm6'],
+                    'defaultKey': '6',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(6);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm7': {
+                    'label': c['comm7'],
+                    'defaultKey': '7',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(7);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm8': {
+                    'label': c['comm8'],
+                    'defaultKey': '8',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(8);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm9': {
+                    'label': c['comm9'],
+                    'defaultKey': '9',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(9);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm0': {
+                    'label': c['comm0'],
+                    'defaultKey': '0',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(0);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm10': {
+                    'label': c['comm10'],
+                    'defaultKey': 'MOUSE WHEEL',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(10);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm11': {
+                    'label': c['comm11'],
+                    'defaultKey': 'LEFT',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(11);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm12': {
+                    'label': c['comm12'],
+                    'defaultKey': 'UP',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(12);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm13': {
+                    'label': c['comm13'],
+                    'defaultKey': 'RIGHT',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(13);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm14': {
+                    'label': c['comm14'],
+                    'defaultKey': 'DOWN',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(14);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm15': {
+                    'label': c['comm15'],
+                    'defaultKey': 'CTRL+1',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(15);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm16': {
+                    'label': c['comm16'],
+                    'defaultKey': 'CTRL+2',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(16);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm17': {
+                    'label': c['comm17'],
+                    'defaultKey': 'CTRL+3',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(17);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm18': {
+                    'label': c['comm18'],
+                    'defaultKey': 'CTRL+4',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(18);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm19': {
+                    'label': c['comm19'],
+                    'defaultKey': 'CTRL+5',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(19);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm20': {
+                    'label': c['comm20'],
+                    'defaultKey': 'CTRL+7',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(20);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm21': {
+                    'label': c['comm21'],
+                    'defaultKey': 'CTRL+8',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(21);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm22': {
+                    'label': c['comm22'],
+                    'defaultKey': 'CTRL+9',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(22);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm23': {
+                    'label': c['comm23'],
+                    'defaultKey': 'CTRL+0',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(23);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm24': {
+                    'label': c['comm24'],
+                    'defaultKey': 'CTRL+Z',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(24);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm25': {
+                    'label': c['comm25'],
+                    'defaultKey': 'CTRL+X',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(25);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm26': {
+                    'label': c['comm26'],
+                    'defaultKey': 'CTRL+Q',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(26);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm27': {
+                    'label': c['comm27'],
+                    'defaultKey': 'CTRL+LM',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(27);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm28': {
+                    'label': c['comm28'],
+                    'defaultKey': 'CTRL+B',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(28);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm29': {
+                    'label': c['comm29'],
+                    'defaultKey': 'CTRL+L',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(29);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                },
+                'hk-comm30': {
+                    'label': c['comm30'],
+                    'defaultKey': 'CTRL+D',
+                    'keyDown': function() {
+                        ogarminimapdrawer && ogarminimapdrawer.sendCommand(30);
+                    },
+                    'keyUp': null,
+                    'type': 'command'
+                }
+            },
+            lastkeys = {
+                'lastPressedKey': '',
+                'lastKeyId': '',
+                'defaultMessageKey': 'ENTER',
+                'inputClassName': 'custom-key-in form-control input-sm',
+                'loadDefaultHotkeys': function() {
+                    for (var t in ogario1Hotkeys = {}, ogario11Hotkeys) ogario11Hotkeys.hasOwnProperty(t) && (ogario1Hotkeys[ogario11Hotkeys[t].defaultKey] = t);
+                    ogario1Hotkeys['spec-messageKey'] = this.defaultMessageKey;
+                },
+                'loadHotkeys': function() {
+                    null !== window.localStorage.getItem('ogarioHotkeys') ? ogario1Hotkeys = JSON.parse(window.localStorage.getItem('ogarioHotkeys')) : this.loadDefaultHotkeys(), null !== window.localStorage.getItem('ogarioCommands') && (c = JSON.parse(window.localStorage.getItem('ogarioCommands')));
+                },
+                'saveHotkeys': function() {
+                    window.localStorage.setItem('ogarioHotkeys', JSON.stringify(ogario1Hotkeys)), this.saveCommands();
+                },
+                'saveCommands': function() {
+                    $('#hotkeys .command-in').each(function() {
+                        var t = $(this),
+                            e = t.attr('id');
+                        c.hasOwnProperty(e) && (c[e] = t.val());
+                    }), window.localStorage.setItem('ogarioCommands', JSON.stringify(c));
+                },
+                'resetHotkeys': function() {
+                    this.loadDefaultHotkeys(), $('#hotkeys-cfg .custom-key-in').each(function() {
+                        var t = $(this).attr('id');
+                        ogario11Hotkeys[t] && $(this).val(ogario11Hotkeys[t].defaultKey);
+                    });
+                },
+                'setHotkeysMenu': function() {
+                    var t = this;
+                    for (var e in $('body').append('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + h.restoreSettings + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">' + h.saveSett + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + h['close'] + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>' + h['hk-inst-assign'] + '</li><li>' + h['hk-inst-delete'] + '</li><li>' + h['hk-inst-keys'] + '</li></ul></div></div>'), ogario11Hotkeys)
+                        if (ogario11Hotkeys.hasOwnProperty(e)) {
+                            var i = ogario11Hotkeys[e],
+                                o = '';
+                            for (var a in ogario1Hotkeys)
+                                if (ogario1Hotkeys.hasOwnProperty(a) && ogario1Hotkeys[a] === e) {
+                                    o = a;
+                                    break;
+                                } if ('hk-switchServerMode' === e && ogarminimapdrawer && !ogarminimapdrawer.privateIP) continue;
+                            if ('command' === i.type) {
+                                var n = e.replace('hk-', '');
+                                $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + n + '\" class=\"command-in form-control input-sm\" value=\"' + c[n] + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + i.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + e + '\" class=\"custom-key-in form-control input-sm\" value=\"' + o + '\" /></div></div>');
+                            } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + i.label + '</div><div class=\"default-key\">' + i.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + e + '\" class=\"custom-key-in form-control input-sm\" value=\"' + o + '\" /></div></div>');
+                        }
+                    $(document).on('click', '#reset-hotkeys', function(t) {
+                        t.preventDefault();
+                        lastkeys.resetHotkeys();
+                    }),
+                        $(document).on('click', '#save-hotkeys', function(t) {
+                            t.preventDefault();
+                            lastkeys.saveHotkeys();
+                            $('#hotkeys').fadeOut(500);
+                        }),
+                        $(document).on('click', '#close-hotkeys', function(t) {
+                            t.preventDefault();
+                            $('#hotkeys').fadeOut(500);
+                        }),
+                        $(document).on('click', '.hotkeys-link', function(t) {
+                            $('#hotkeys').fadeIn(500);
+                            $('#hotkeys-cfg').perfectScrollbar('update');
+                            ogarcommando1();
+                        }),
+                        $('#hotkeys-cfg').perfectScrollbar(),
+                    hudsetter && hudsetter.setMenuBg();
+                },
+                'getPressedKey': function(t) {
+                    var e = '',
+                        i = '';
+                    switch (t['ctrlKey'] || 17 == t.keyCode ? e = 'CTRL' : (t.altKey || 18 == t.keyCode) && (e = 'ALT'), t.keyCode) {
+                        case 9:
+                            i = 'TAB';
+                            break;
+                        case 13:
+                            i = 'ENTER';
+                            break;
+                        case 16:
+                            i = 'SHIFT';
+                            break;
+                        case 17:
+                        case 18:
+                            break;
+                        case 27:
+                            i = 'ESC';
+                            break;
+                        case 32:
+                            i = 'SPACE';
+                            break;
+                        case 37:
+                            i = 'LEFT';
+                            break;
+                        case 38:
+                            i = 'UP';
+                            break;
+                        case 39:
+                            i = 'RIGHT';
+                            break;
+                        case 40:
+                            i = 'DOWN';
+                            break;
+                        case 46:
+                            i = 'DEL';
+                            break;
+                        case 61:
+                        case 187:
+                            i = '=';
+                            break;
+                        case 192:
+                            i = 'TILDE';
+                            break;
+                        default:
+                            i = String.fromCharCode(t.keyCode);
+                    }
+                    return '' !== e ? '' !== i ? e + '+' + i : e : i;
+                },
+                'deleteHotkey': function(t, e) {
+                    delete ogario1Hotkeys[t];
+                    $('#' + e).val('');
+                },
+                'setDefaultHotkey': function(t) {
+                    var e = false;
+                    return ogario11Hotkeys[t] && !ogario1Hotkeys.hasOwnProperty(ogario11Hotkeys[t].defaultKey) ? (e = ogario11Hotkeys[t].defaultKey, ogario1Hotkeys[e] = t, e) : e;
+                },
+                'setHotkey': function(t, e) {
+                    if (e && (this.lastPressedKey !== t || this.lastKeyId !== e)) {
+                        var i = $('#' + e).val();
+                        if (this.deleteHotkey(i, e), 'DEL' !== t) {
+                            if (ogario1Hotkeys[t] && ogario1Hotkeys[t] !== e) {
+                                var o = ogario1Hotkeys[t],
+                                    a = this.setDefaultHotkey(o);
+                                a ? (ogario1Hotkeys[a] = o, $('#' + o).val(a)) : this.deleteHotkey(t, o);
+                            }
+                            ogario1Hotkeys[t] = e,
+                                $('#' + e).val(t);
+                            if ('hk-chatMessage' === e) {
+                                ogario1Hotkeys['spec-messageKey'] = t
+                            }
+                            this.lastPressedKey = t;
+                            this.lastKeyId = e;
+                        }
+                    }
+                },
+                'init': function() {
+                    this.loadHotkeys();
+                    this.setHotkeysMenu();
+                }
+            };
+        window.legendmod2 = ogarfooddrawer; //look at this
+        window.legendmod6 = lastkeys;
+
+        function ogarjoiner(t) {
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState({}, window.document.title, t);
+            }
+        }
+
+        function ogarassembler() {
+            window.onkeydown = function(t) {
+                81 == t.keyCode && window.core.specialOn && window.core.specialOn();
+            }, window.onkeyup = function(t) {};
+        }
+
+        function ogarhusettings() {
+            var t = window.innerWidth;
+            var o = window.innerHeight;
+            var a = $("#helloContainer");
+            var n = a.innerHeight();
+            if (n > 0) {
+                i.menuHeight = n;
+            } else {
+                n = i.menuHeight || 618;
+            }
+            var r = Math.min(1, o / n);
+            var l = n * r;
+            var h = Math.round(o / 2 - 0.5 * l);
+            var c = "translate(-50%, 0%) scale(" + r + ")";
+            a.css("transform", c), a.css("-ms-transform", c), a.css("-webkit-transform", c), a.css("top", h + "px"), i.innerW = t, i.innerH = o;
+
+        }
+
+        function ogarcommando1() {
+            ogarminimapdrawer.protocolMode || (window.onkeydown = function(t) {});
+        }
+        document.onkeydown = function(t) {
+            var e = lastkeys.getPressedKey(t);
+            if (('INPUT' !== t.target.tagName || t.target.className === lastkeys.inputClassName || e === ogario1Hotkeys['spec-messageKey']) && '' !== e && !ogarioefaultHotkeys[e]) {
+                if (ogarioefaultHotkeys[e] = true, 'ESC' === e) return t.preventDefault(), void(ogarminimapdrawer && ogarminimapdrawer.showMenu());
+                if (t.target.className === lastkeys.inputClassName) return t.preventDefault(), void lastkeys.setHotkey(e, t.target.id);
+                if (ogario1Hotkeys[e]) {
+                    t.preventDefault();
+                    var i = ogario1Hotkeys[e];
+                    '' !== i && ogario11Hotkeys[i] && ogario11Hotkeys[i].keyDown && ogario11Hotkeys[i].keyDown();
+                }
+            }
+        }
+        document.onkeyup = function(t) {
+            var e = lastkeys.getPressedKey(t);
+            if ('' !== e) {
+                if (ogario1Hotkeys[e]) {
+                    var i = ogario1Hotkeys[e];
+                    '' !== i && ogario11Hotkeys[i] && ogario11Hotkeys[i].keyUp && ogario11Hotkeys[i].keyUp();
+                }
+                ogarioefaultHotkeys[e] = false;
+            }
+        }
+        window.onmousedown = function(t) {
+            if (!$("#overlays").is(":visible")) {
+                if (2 == t.which) {
+                    t.preventDefault();
+                    if (ogarminimapdrawer) {
+                        ogarminimapdrawer.sendCommand(10);
+                    }
+                } else {
+                    if (defaultmapsettings["mouseSplit"] && (1 == t.which && !defaultmapsettings.mouseInvert || 3 == t.which && defaultmapsettings.mouseInvert)) {
+                        t.preventDefault();
+                        if (ogarminimapdrawer) {
+                            ogarminimapdrawer.split();
+                        }
+                    }
+                    if (defaultmapsettings.mouseFeed && (3 == t.which && !defaultmapsettings.mouseInvert || 1 == t.which && defaultmapsettings.mouseInvert)) {
+                        t.preventDefault();
+                        if (ogarminimapdrawer) {
+                            ogarminimapdrawer.macroFeed(true);
+                        }
+                    }
+                }
+            }
+        }
+        window.onmouseup = function(t) {
+            if (defaultmapsettings.mouseFeed && (3 == t.which && !defaultmapsettings.mouseInvert || 1 == t.which && defaultmapsettings.mouseInvert) && ogarminimapdrawer) {
+                ogarminimapdrawer.macroFeed(false);
+            }
+        };
+        window.onbeforeunload = function(t) {
+            return i.play ? h.exit : void 0;
+        };
+        i = LM;
+        o = t('buffer')['Buffer'];
+        a = t('lz4');
+        if ('/ogario' === window.location.pathname) {
+            ogarjoiner('/' + window.location.hash);
+        }
+        window.onresize = function() {
+            ogarfooddrawer.resizeCanvas(), ogarhusettings();
+        };
+        ogarassembler();
+
+        function Node(lsb, msb) {
+            this.view = lsb;
+            this.offset = msb;
+            this.contentType = 1;
+            this.uncompressedSize = 0;
+            this.setContentType = function() {
+                this.contentType = this.readUint32();
+            };
+            this.setUncompressedSize = function() {
+                this.uncompressedSize = this.readUint32();
+            };
+            this.compareBytesGt = function(first, second) {
+                var stripTerrain = first < 0;
+                var coast = second < 0;
+                if (stripTerrain != coast) {
+                    return stripTerrain;
+                }
+                return first > second;
+            };
+            this.skipByte = function() {
+                var checkvarreadByte = this.readByte();
+                if (checkvarreadByte < 128) {
+                    return;
+                }
+                this.skipByte();
+            };
+            this.readByte = function() {
+                return this.view.getUint8(this.offset++);
+            };
+            this.readUint32 = function() {
+                var result = 0;
+                var shift = 0;
+                for (; !![];) {
+                    var digit = this.readByte();
+                    if (this.compareBytesGt(32, shift)) {
+                        if (digit >= 128) {
+                            result = result | (digit & 127) << shift;
+                        } else {
+                            result = result | digit << shift;
+                            break;
+                        }
+                    } else {
+                        this.skipByte();
+                        break;
+                    }
+                    shift = shift + 7;
+                }
+                return result;
+            };
+            this.readFlag = function() {
+                return this.readUint32() >>> 3;
+            }
+        }
+        window.core = {
+            'connect': function(t) {
+                LM.connect(t);
+                //LM.connect(t); //for multibox with new Protocol and Client
+            },
+            'disconnect': function() {},
+            'sendNick': function(t) {
+                LM.sendNick(t);
+            },
+            'sendSpectate': function() {
+                LM.sendSpectate();
+            },
+            'eject': function() {
+                LM.sendEject();
+                window.lastejected = true;
+            },
+            'split': function() {
+                LM.sendSplit();
+
+            },
+            'specialOn': function() {
+                LM.sendFreeSpectate();
+            },
+            'specialOff': function() {
+                LM.sendFreeSpectate();
+            },
+            'sendFbToken': function(t) {
+                LM.sendFbToken(t);
+            },
+            'sendGplusToken': function(t) {
+                LM.sendGplusToken(t);
+            },
+            'recaptchaResponse': function(t) {
+				window.lastRecaptchaResponseToken=t;
+                LM.sendRecaptcha(t);
+            },
+            'setClientVersion': function(t, e) {
+                LM.setClientVersion(t, e);
+            },
+            "proxyMobileData": function(arr = []) {
+                if (!Array.isArray(arr)) {
+                    console.log("[Legend mod Express] ProxyMobileData ERROR: Array data required.");
+                    return;
+                }
+                if (arr[0] == 8) {
+                    arr.unshift(102);
+                }
+                arr = new Uint8Array(arr);
+                LM["sendMessage"](new DataView(arr["buffer"]));
+            },
+            'registerSkin': function(a, b, c, d, e) {
+                window.customskinsname = a;
+                window.customskinsurl = c;
+            }
+        };
+        window.master.getClientVersion();
+        hudsetter.init();
+        ogarminimapdrawer.init();
+        ogarminimapdrawer.getDefaultSettings();
+        ogarminimapdrawer.connect();
+        lastkeys.init();
+        LM.init();
+        ogarfooddrawer.init();
+        window.master.init();
+        ogarhusettings();
+    })(window.ogario);
 }
 
-//Socket3.send(JSON.stringify({ com: "death", id: customLMID}));
-//Socket3.send(JSON.stringify({ com: "sendPlayerSkinURL", nick: ogarcopythelb.nick, token: legendmod3.serverToken, tag: ogarcopythelb.clanTag, skin: ogarcopythelb.skinURL, color: ogarcopythelb.color, id: customLMID, x: legendmod3.getPlayerX(), y: legendmod3.getPlayerY(), mass: legendmod.playerMass}));
-//Socket3.send(JSON.stringify({ com: "pos", id: customLMID, x: legendmod3.getPlayerX(), y: legendmod3.getPlayerY(), mass: legendmod.playerMass}));
+/*
+var snezSocketdata;
+var snezSocket = new WebSocket("wss://connect.websocket.in/3Q-SoniaSLG_453dsV?room_id=123");
 
-//sending commands
-function Socket3MessageChat(chattypemsg, chatreader) {
-    var temp={
-        com: "chat",
-        id: customLMID,
-        nick: ogarcopythelb.nick,
-        chat: chatreader,
-        chattype: chattypemsg
-    };
-    Socket3.send(JSON.stringify({ "toH": "legendmod", "msg": temp}));
-	
-    //wss://connect.websocket.in does not send commands to sender again
-    Socket3DisplaychatMsg(chattypemsg, customLMID, ogarcopythelb.nick, chatreader)
+snezSocket.onmessage = function(message) { 
+snezSocketdata = JSON.parse(message.data); 
+console.log(message.data);
 }
 
-function Socket3DisplaychatMsg(b, c, x, d) {
-    var time;
-    timernow();
-    legendmod3.displayChatMessage(time, b, c, x + ": " + d);
-}
 
-//enterChatMessage();					
-function enterChatMessage2() {
-    var t = $('#message-box');
-    var e = $('#message');
-    if (t.is(':visible')) {
-        var o = e.val();
-        o.length ? (Socket3MessageChat(101, o), legendmod.play && (e.blur(), t.hide())) : (e.blur(), t.hide()), e.val('');
-		setTimeout(function() {
-		t.hide();
-		}, 10);
-    } else {
-        t.show();
-        e.focus();
-        e.val('');
-    }
-}
+snezSocket.send(JSON.stringify({ "command": "sendPlayerSkinURL", nick: ogarcopythelb.nick, token: legendmod3.serverToken, tag: ogarcopythelb.clanTag, skin: ogarcopythelb.skinURL, color: ogarcopythelb.color}));
+
+
+*/
