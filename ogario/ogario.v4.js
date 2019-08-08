@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1083 MEGA TEST
+// v1.1084 MEGA TEST
 // Game Configurations
 //team view
 
@@ -4620,6 +4620,7 @@ var thelegendmodproject = function(t, e, i) {
                 if (null != id) {
                     var s = this.getSLGVal(t);
                     var lbgpi = s.slice(0, 1);
+					console.log(lbgpi);
                     this.teamPlayers[id].lbgpi = parseInt(lbgpi);
 					//if (this.top5[id]){
 					//this.top5[id].lbgpi = parseInt(lbgpi); //
