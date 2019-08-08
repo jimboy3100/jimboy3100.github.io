@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1094 MEGA TEST
+// v1.1095 MEGA TEST
 // Game Configurations
 //team view
 
@@ -4247,8 +4247,9 @@ var thelegendmodproject = function(t, e, i) {
 					//window.SLGsocket['send'](s + t);
 					var temp = s + t;
 					console.log(temp);
-					SLGsocket.send(JSON.stringify({ "toH": "legendmod2", "msg": temp}));
-					console.log("SEND",JSON.stringify({ "toH": "legendmod2", "msg": temp}))
+					//SLGsocket.send(JSON.stringify({ "toH": "legendmod2", "msg": temp}));
+					SLGsocket.send (         "{ \"toH\": \"legendmod2\", \"msg\": " +temp+"}"          );
+					//console.log("SEND",JSON.stringify({ "toH": "legendmod2", "msg": temp}))
 					}
                 }
             },
@@ -4262,8 +4263,8 @@ var thelegendmodproject = function(t, e, i) {
 				console.log("REC2",temp);				
 				if (temp.msg){
 					console.log(temp.msg)
-					console.log(t.data.msg.toString());
-				this['SLGHandler'](t.data.msg.toString());   			
+					console.log(t.data.msg);
+				this['SLGHandler'](t.data.msg);   			
 				}
             },
             'readMessage': function(t) {
