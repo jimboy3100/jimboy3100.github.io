@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1095 MEGA TEST
+// v1.1086 MEGA TEST
 // Game Configurations
 //team view
 
@@ -4247,24 +4247,21 @@ var thelegendmodproject = function(t, e, i) {
 					//window.SLGsocket['send'](s + t);
 					var temp = s + t;
 					console.log(temp);
-					//SLGsocket.send(JSON.stringify({ "toH": "legendmod2", "msg": temp}));
-					SLGsocket.send (         "{ \"toH\": \"legendmod2\", \"msg\": " +temp+"}"          );
-					//console.log("SEND",JSON.stringify({ "toH": "legendmod2", "msg": temp}))
+					SLGsocket.send(JSON.stringify({ "toH": "legendmod2", "msg": temp}));
 					}
                 }
-            },
+            },			
             'handleMessage': function(t) {
                 this['readMessage'](new DataView(t['data']));
             },
             //Sonia4
             'handleSLGMessage': function(t) {
-				
-				var temp = t.data;	
-				console.log("REC2",temp);				
+				//this['SLGHandler'](t.data);
+				var temp = t.data;
+				//console.log(t.data);
 				if (temp.msg){
-					console.log(temp.msg)
-					console.log(t.data.msg);
-				this['SLGHandler'](t.data.msg);   			
+				//this['SLGHandler'](temp.msg);     
+				this['SLGSimpleHandler'](temp.msg);    							
 				}
             },
             'readMessage': function(t) {
@@ -4289,20 +4286,36 @@ var thelegendmodproject = function(t, e, i) {
             },
             //Sonia4
             'SLGHandler': function(t) {
-				console.log("t",t);
                 var s = this.unpackSLG(t);
-				console.log("s",s);
                 if (s == null) return;
                 switch (t.charAt(0)) {
                     case "R":
                         this.getSuperLegendSDATA(s);
-						console.log('this.getSuperLegendSDATA(s)',s)
                         break;
                     case "Q":
                         //this.getSLGQinfo(s);
                         break;
                 }
             },
+            'SLGSimpleHandler': function(t) {
+				var Socket3data2 = JSON.parse(message.data);
+				var Socket3data = Socket3data2.msg;
+
+				if (Socket3data == null){
+					return;
+				}
+				else {
+					var ids = Socket3data.t;
+					var id = this.checkPlayerID(ids);			
+                if (null != id) {
+                    this.teamPlayers[id].lbgpi = parseInt(Socket3data.s);
+					//if (this.top5[id]){
+					//this.top5[id].lbgpi = parseInt(lbgpi); //
+					//}
+					
+                }					
+				}				
+            },			
             //Sonia4
             'packSLG': function(t) {
                 t += this.packInt(this.playerID, 4);
@@ -4537,7 +4550,7 @@ var thelegendmodproject = function(t, e, i) {
                 //return ;
                  var ids = this.getSLGID(t);
                  var id = this.checkPlayerID(ids);
-				 //console.log(t);
+				 console.log(t);
                  if (null == id) return;
                  var msg = this.getSLGVal(t);
                  //Get viruses
@@ -4617,29 +4630,40 @@ var thelegendmodproject = function(t, e, i) {
                 if (i.play && this.playerID) {
                     var s = "";
                     s += window.legendmod.bgpi;
-					console.log('sendSuperLegendSDATA', s);
                     this.sendSLG("R", s);
                 }
             },
+            'sendSimpleLegendSDATA': function() {
+                if (i.play && this.playerID) {
+					var t = this.playerID;
+                    var s = window.legendmod.bgpi;					
+                    if (this.isSLGSocketOpen()) {
+                    if (ogarcopythelb.clanTag != this.roomc) {
+                        console.log("Sending failed. Reconnecting required..")
+                        this.SLGconnect(window.legendmod.ws);
+                        return;
+                    }				
+                    if (s != null){ 
+					temp={"t":t, "s":s}
+					SLGsocket.send(JSON.stringify({ "toH": "legendmod2", "msg": temp}));
+					}
+                }
+                }
+            },			
             //Sonia4
             'getSuperLegendSDATA': function(t) {
-				
                 var ids = this.getSLGID(t);
                 var id = this.checkPlayerID(ids);
-				console.log('ids', ids);
-				console.log('t', t);				
                 if (null != id) {
                     var s = this.getSLGVal(t);
                     var lbgpi = s.slice(0, 1);
-					console.log('lbgpi', lbgpi);
                     this.teamPlayers[id].lbgpi = parseInt(lbgpi);
-					console.log('this.teamPlayers[id].lbgpi', this.teamPlayers[id].lbgpi);
 					//if (this.top5[id]){
 					//this.top5[id].lbgpi = parseInt(lbgpi); //
 					//}
 					
                 }
-            },
+            },			
             'checkPlayerID': function(t) {
                 if (t)
                     for (var e = 0; e < this.teamPlayers.length; e++)
@@ -4811,7 +4835,8 @@ var thelegendmodproject = function(t, e, i) {
             },
             'updateTeamPlayers': function() {
                 this.sendPlayerPosition(); 			
-				this.sendSuperLegendSDATA();
+				//this.sendSuperLegendSDATA();
+				this.sendSimpleLegendSDATA();
 				
 				//this.sendSLGQinfo(),
 				//this.sendJimboy3100info(),
