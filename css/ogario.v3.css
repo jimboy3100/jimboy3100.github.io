@@ -427,6 +427,10 @@ input.hide-url::selection,input.stream-mode::selection{
     height:40px;
     display:block
 }
+#quick-bots a,.quick{
+    height:40px;
+    display:block
+}
 #exp-bar .progress{
     background-color:#002f52;
     border-radius:0;
@@ -448,6 +452,10 @@ input.hide-url::selection,input.stream-mode::selection{
     background-color:#002f52;
     transition:all .2s linear
 }
+#quick-bots a:hover,.quick{
+    background-color:#002f52;
+    transition:all .2s linear
+}
 #exp-bar .progress-bar-text{
     color:#fff;
     font-size:11px;
@@ -462,6 +470,11 @@ input.hide-url::selection,input.stream-mode::selection{
     display:none;
     float:right
 }
+#quick-bots{
+    width:60px;
+    display:none;
+    float:right
+}
 #quick-menu a{
     width:100%;
     color:#fff;
@@ -470,7 +483,18 @@ input.hide-url::selection,input.stream-mode::selection{
     text-decoration:none;
     padding-top:8px
 }
+#quick-bots a{
+    width:100%;
+    color:#fff;
+    font-size:16px;
+    text-align:center;
+    text-decoration:none;
+    padding-top:8px
+}
 #quick-menu a:hover,.quick,.quick:focus{
+    color:#01d9cc
+}
+#quick-bots a:hover,.quick,.quick:focus{
     color:#01d9cc
 }
 .quick{
@@ -492,6 +516,9 @@ input.hide-url::selection,input.stream-mode::selection{
 }
 .quick-menu{
     left:15px
+}
+.quick-bots{
+    left:45px
 }
 .quick-skins{
     right:15px
