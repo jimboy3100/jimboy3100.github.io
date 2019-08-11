@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -287,8 +288,12 @@ document.getElementById("speed").value=parseInt(localStorage.getItem('speed'));
 }
 xmlhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
-        str = this.responseText.match(/\[(.*?)\]/gi)[27];
+        //str = this.responseText.match(/\[(.*?)\]/gi)[27];
+		str = this.responseText.match(/\[(.*?)\]/gi)[25];
 		console.log(str);
+        //str2 = this.responseText.match(/\[(.*?)\]/gi)[26];console.log(str2);			
+        //str2 = this.responseText.match(/\[(.*?)\]/gi)[30];console.log(str2);			
+		//str2 = this.responseText.match(/\[(.*?)\]/gi)[31];console.log(str2);	
 		mid = str.match(/productId\":\"(.*?)\"/g);
 		console.log(mid);
 		mimg = str.match(/image\":\"(.*?)\"/g);
