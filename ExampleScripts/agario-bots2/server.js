@@ -8,10 +8,6 @@ const Entity = require('./entity')
 
 let userWS = null
 
-let connectedBots = 0
-
-let userHasCaptcha = false
-
 let stoppingBots = false
 
 const userBots = []
@@ -43,12 +39,7 @@ const dataBot = {
     lastPlayersAmount: 0,
     connect(){
         this.ws = new WebSocket(game.url, {
-            origin: 'https://agar.io',
-            headers: {
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8,ca;q=0.7,pl;q=0.6',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'
-            }
+            origin: 'https://agar.io'
         })
         this.ws.onopen = this.onopen.bind(this)
         this.ws.onmessage = this.onmessage.bind(this)
@@ -60,6 +51,7 @@ const dataBot = {
     onopen(){
         this.send(buffers.protocolVersion(game.protocolVersion))
         this.send(buffers.clientVersion(game.clientVersion))
+        this.isConnected = true
     },
     onmessage(message){
         if(this.buffersKey) message.data = algorithm.rotateBufferBytes(message.data, this.buffersKey)
@@ -87,7 +79,6 @@ const dataBot = {
                 break
             case 241:
                 this.buffersKey = reader.readInt32() ^ game.clientVersion
-                this.isConnected = true
                 console.log('[SERVER] DataBot connected')
                 break
         }
@@ -129,12 +120,7 @@ class Bot {
     connect(){
         this.reset()
         this.ws = new WebSocket(game.url, {
-            origin: 'https://agar.io',
-            headers: {
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8,ca;q=0.7,pl;q=0.6',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'
-            }
+            origin: 'https://agar.io'
         })
         this.ws.onopen = this.onopen.bind(this)
         this.ws.onmessage = this.onmessage.bind(this)
@@ -153,6 +139,7 @@ class Bot {
     onopen(){
         this.send(buffers.protocolVersion(game.protocolVersion))
         this.send(buffers.clientVersion(game.clientVersion))
+        this.isConnected = true
     }
     onmessage(message){
         if(this.decryptionKey) message.data = algorithm.rotateBufferBytes(message.data, this.decryptionKey ^ game.clientVersion)
@@ -167,7 +154,6 @@ class Bot {
         if(this.isConnected){
             this.isConnected = false
             if(!this.gotCaptcha) this.connect()
-            connectedBots--
         }
     }
     handleBuffer(buffer){
@@ -195,8 +181,7 @@ class Bot {
                 }
                 break
             case 85:
-                if(!user.startedBots && !userHasCaptcha){
-                    userHasCaptcha = true
+                if(!user.startedBots){
                     userWS.send(Buffer.from([3]))
                     setTimeout(process.exit, 1000)
                 }
@@ -206,8 +191,6 @@ class Bot {
             case 241:
                 this.decryptionKey = reader.readInt32()
                 this.encryptionKey = murmur2(`${game.url.match(/(live-arena-\w+\.agar\.io)/)[1]}${reader.readString()}`, 255)
-                this.isConnected = true
-                connectedBots++
                 break
             case 242:
                 this.send(buffers.spawn(bots.name))
@@ -369,13 +352,14 @@ new WebSocket.Server({
                     bots.name = reader.readString()
                     bots.amount = reader.readUint8()
                     dataBot.connect()
+                    let index = 0
                     let startBotsInterval = setInterval(() => {
-                        if(dataBot.lastPlayersAmount < 200 && connectedBots < bots.amount) userBots.push(new Bot())
-                        else {
-                            clearInterval(startBotsInterval)
-                            console.log(`[SERVER] Connected bots: ${connectedBots}`)
+                        if(dataBot.lastPlayersAmount < 199 && index < bots.amount){
+                            userBots.push(new Bot())
+                            index++
                         }
-                    }, 300)
+                        else clearInterval(startBotsInterval)
+                    }, 500)
                     console.log('[SERVER] Starting bots...')
                 }
                 break
