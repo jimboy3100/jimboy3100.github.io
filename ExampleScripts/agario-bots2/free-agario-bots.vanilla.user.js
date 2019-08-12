@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Free Agar.io Bots (Vanilla Version)
-// @version      1.0.0
+// @version      1.0.1
 // @description  Free open source agar.io bots
 // @author       Nel
 // @grant        none
@@ -380,8 +380,8 @@ function setGUIEvents(){
     })
     document.getElementById('startBots').addEventListener('click', () => {
         if(window.game.url && window.game.protocolVersion && window.game.clientVersion && !window.user.startedBots){
-            if(window.bots.name && window.bots.amount) window.connection.send(window.buffers.startBots(window.game.url, window.game.protocolVersion, window.game.clientVersion, window.user.isAlive, window.bots.name, window.bots.amount))
-            else alert('Bots name and amount are required before starting the bots')
+            if(window.bots.name && window.bots.amount && !document.getElementById('socialLoginContainer')) window.connection.send(window.buffers.startBots(window.game.url, window.game.protocolVersion, window.game.clientVersion, window.user.isAlive, window.bots.name, window.bots.amount))
+            else alert('Bots name and amount are required before starting the bots, also you need to be logged in to your agar.io account in order to start the bots')
         }
     })
     document.getElementById('stopBots').addEventListener('click', () => {
