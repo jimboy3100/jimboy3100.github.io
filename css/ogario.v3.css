@@ -1455,7 +1455,7 @@ input.hide-url::selection,input.stream-mode::selection{
                 #userStatus, #botsAI {
                     color: #DA0A00;
                 }
-                #botsName, #botsAmount {
+                #botsNameLM, #botsAmount {
                     margin-top: 15px;
                     width: 144px;
                     border: 1px solid black;
@@ -1465,7 +1465,7 @@ input.hide-url::selection,input.stream-mode::selection{
                     outline: none;
                     margin-left: 60px;
                 }
-                #botsName:focus, #botsAmount:focus {
+                #botsNameLM:focus, #botsAmount:focus {
                     border-color: #7D7D7D;
                 }
                 #connectBots, #startBots, #stopBots {
