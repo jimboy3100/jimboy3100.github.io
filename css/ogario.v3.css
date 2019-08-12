@@ -471,7 +471,7 @@ input.hide-url::selection,input.stream-mode::selection{
     float:right
 }
 #quick-bots{
-    width:60px;
+    width:300px;
     display:none;
     float:right
 }
