@@ -9548,6 +9548,11 @@ var thelegendmodproject = function(t, e, i) {
         document.getElementById('botsAmount').addEventListener('keypress', e => {
             e.preventDefault()
         })
+			var storedbotsname = localStorage.getItem("localStoredBotsName");
+			if (storedbotsname==null || storedbotsname==""){
+				storedbotsname = "Legend mod"
+			}		
+			$('#botsNameLM').val(storedbotsname)
         document.getElementById('botsNameLM').addEventListener('change', function(){
             window.bots.nameLM = this.value
             localStorage.setItem('localStoredBotsName', window.bots.nameLM)
