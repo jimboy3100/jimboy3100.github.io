@@ -1446,7 +1446,6 @@ input.hide-url::selection,input.stream-mode::selection{
                 }
                 #botsAuthor {
                     margin-top: -15px;
-                    letter-spacing: 1px;
                 }
                 #statusTextBots, #aiTextBots {
                     font-weight: bold;
@@ -1475,10 +1474,10 @@ input.hide-url::selection,input.stream-mode::selection{
                     border-radius: 5px;
                     padding: 7px;
                     width: 160px;
-                    font-size: 18px;
+                    font-size: 14px;
+					font-weight: bold;
                     outline: none;
-                    margin-top: 15px;
-                    letter-spacing: 1px;
+                    margin-top: 6px;
                     margin-left: 50px;
                 }
                 #connectBots {
