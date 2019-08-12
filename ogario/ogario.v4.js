@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1168 MEGA TEST
+// v1.1175 MEGA TEST
 // Game Configurations
 //team view
 
@@ -179,7 +179,7 @@ function fakePlayers(){
 					for (y=0;y<legendmod.cells.length;y++){
 
 						if (legendmod.cells[y].fake && legendmod.cells[y].id == window.cellsFake[x].id){
-							console.log(legendmod.cells[y]);
+							//console.log(legendmod.cells[y]);
 							legendmod.cells[y].time = Date.now();
 							legendmod.cells[y].targetX = window.cellsFake[x].targetX;
 							legendmod.cells[y].targetY = window.cellsFake[x].targetY;
@@ -203,7 +203,7 @@ function fakePlayers(){
 				}
 				
 				window.cellsFakeFlag++;				
-				if (window.cellsFakeFlag == 1000){
+				if (window.cellsFakeFlag == 80){
 					console.log('removed');
 					window.cellsFakeFlag = 0;
 					window.cellsFake=[];
@@ -4787,6 +4787,7 @@ var thelegendmodproject = function(t, e, i) {
 				if (Socket3 && Socket3.readyState==1&& legendmod3.playerID && window.playerCellsSock) {
 				var temp = { com: "pcells", tid: legendmod3.playerID, playerCells: window.playerCellsSock};
 				Socket3.send(JSON.stringify({ "toH": "legendmod", "msg": temp}));
+				//if (temp.playerCells[0]) console.log(temp.playerCells[0].id, temp.playerCells[0].size, temp.playerCells[0].x, temp.playerCells[0].y);
 				//Socket3.send(JSON.stringify({ com: "pcells", tid: legendmod3.playerID, playerCells: window.playerCellsSock}));		
 				}
 			 }
@@ -5124,7 +5125,7 @@ var thelegendmodproject = function(t, e, i) {
 				this.sendSimpleLegendSDATA();
 				
 				//this.sendSLGQinfo(),
-				//this.sendJimboy3100info(),
+				//legendmod3.sendJimboy3100info();
 				this.chatUsers = {}; 
 				this.top5 = []; //Sonia3
                 this.updatevnr(); //Sonia3
@@ -7371,7 +7372,7 @@ var thelegendmodproject = function(t, e, i) {
                     }			
                 }
 //
-				legendmod3.sendJimboy3100info();
+				//legendmod3.sendJimboy3100info();
 				fakePlayers();
 //					
                 for (a = 0;;) {
