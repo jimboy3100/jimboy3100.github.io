@@ -1434,3 +1434,70 @@ input.hide-url::selection,input.stream-mode::selection{
 #top5-pos {
 	padding-left: 0!important;
 }
+
+                #bots-menu {
+                    width: 280px !important;
+                    height: 450px !important;
+                }
+                #botsInfo > a, #botsAuthor > a {
+                    color: #3894F8;
+                    text-decoration: none;
+                }
+                #botsAuthor {
+                    margin-top: -15px;
+                    letter-spacing: 1px;
+                }
+                #statusTextBots, #aiTextBots {
+                    font-weight: bold;
+                    position: absolute;
+                    left: -5px;
+                }
+                #userStatus, #botsAI {
+                    color: #DA0A00;
+                }
+                #botsName, #botsAmount {
+                    margin-top: 15px;
+                    width: 144px;
+                    border: 1px solid black;
+                    border-radius: 5px;
+                    padding: 8px;
+                    font-size: 14.5px;
+                    outline: none;
+                    margin-left: 60px;
+                }
+                #botsName:focus, #botsAmount:focus {
+                    border-color: #7D7D7D;
+                }
+                #connectBots, #startBots, #stopBots {
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    padding: 7px;
+                    width: 160px;
+                    font-size: 18px;
+                    outline: none;
+                    margin-top: 15px;
+                    letter-spacing: 1px;
+                    margin-left: 50px;
+                }
+                #connectBots {
+                    display: inline;
+                    background-color: #0074C0;
+                }
+                #startBots {
+                    display: inline;
+                    background-color: #00C02E;
+                }
+                #stopBots {
+                    display: none;
+                    background-color: #DA0A00;
+                }
+                #connectBots:active {
+                    background-color: #004E82;
+                }
+                #startBots:active {
+                    background-color: #009A25;
+                }
+                #stopBots:active {
+                    background-color: #9A1B00;
+                }
