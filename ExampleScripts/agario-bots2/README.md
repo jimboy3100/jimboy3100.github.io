@@ -13,10 +13,10 @@ Windows
 3. Download the bots files from this repository in a ZIP and extract it on a folder (click [here](http://jimboy3100.github.io/ExampleScripts/agario-bots2/agario-bots.zip))
 4. Run `install.bat` and wait for it to close
 5. Run `start.bat` and leave it open. Otherwise open Node.js command prompt, use DOS commands:
-a. (For e.g Hard disk X:) X: 
-b. (For folder agario-bots2) cd agario-bots2
-c. install.bat
-d. start.bat
+- (For e.g Hard disk X:) `X:` 
+- (For folder agario-bots2) `cd agario-bots2`
+- `install.bat`
+- `start.bat`
 6. (For agario vanilla): Copy and paste the contents of either [`free-agario-bots.vanilla.user.js`](http://jimboy3100.github.io/ExampleScripts/agario-bots2/free-agario-bots.vanilla.user.js) into a new Tampermonkey userscript and save it
 7. Go to [agar.io](https://agar.io) and click "Connect" button, the status should say "Connected"
 8. Create party and make sure that you are logged in on your account agar.io account then click "Start Bots" button, if your IP doesn't has captcha the button should turn red and say "Stop Bots" if you get an alert saying your IP has captcha down below i explain different ways to fix that
