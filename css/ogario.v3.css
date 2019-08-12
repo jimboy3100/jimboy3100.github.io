@@ -472,8 +472,9 @@ input.hide-url::selection,input.stream-mode::selection{
 }
 #quick-bots{
     width:300px;
+	height:500px;
     display:none;
-    float:right
+    float:right;
 }
 #quick-menu a{
     width:100%;
