@@ -1456,7 +1456,7 @@ input.hide-url::selection,input.stream-mode::selection{
                     color: #DA0A00;
                 }
                 #botsNameLM, #botsAmount {
-                    margin-top: 15px;
+                    margin-top: 6px;
                     width: 144px;
                     border: 1px solid black;
                     border-radius: 5px;
