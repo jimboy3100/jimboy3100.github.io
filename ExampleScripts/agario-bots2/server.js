@@ -8,6 +8,8 @@ const Entity = require('./entity')
 
 let userWS = null
 
+let connectedBots = 0
+
 let userHasCaptcha = false
 
 let stoppingBots = false
@@ -40,11 +42,14 @@ const dataBot = {
     playersAmount: 0,
     lastPlayersAmount: 0,
     connect(){
-        this.buffersKey = 0
-        this.isConnected = false
-        this.playersAmount = 0
-        this.lastPlayersAmount = 0
-        this.ws = new WebSocket(game.url)
+        this.ws = new WebSocket(game.url, {
+            origin: 'https://agar.io',
+            headers: {
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8,ca;q=0.7,pl;q=0.6',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'
+            }
+        })
         this.ws.onopen = this.onopen.bind(this)
         this.ws.onmessage = this.onmessage.bind(this)
         this.ws.onclose = this.onclose.bind(this)
@@ -63,7 +68,6 @@ const dataBot = {
     onclose(){
         if(this.isConnected){
             this.isConnected = false
-            this.connect()
             console.log('[SERVER] DataBot disconnected')
         }
     },
@@ -124,7 +128,14 @@ class Bot {
     }
     connect(){
         this.reset()
-        this.ws = new WebSocket(game.url)
+        this.ws = new WebSocket(game.url, {
+            origin: 'https://agar.io',
+            headers: {
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Accept-Language': 'es-ES,es;q=0.9,en;q=0.8,ca;q=0.7,pl;q=0.6',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.100 Safari/537.36'
+            }
+        })
         this.ws.onopen = this.onopen.bind(this)
         this.ws.onmessage = this.onmessage.bind(this)
         this.ws.onerror = this.onerror.bind(this)
@@ -156,6 +167,7 @@ class Bot {
         if(this.isConnected){
             this.isConnected = false
             if(!this.gotCaptcha) this.connect()
+            connectedBots--
         }
     }
     handleBuffer(buffer){
@@ -189,17 +201,13 @@ class Bot {
                     setTimeout(process.exit, 1000)
                 }
                 this.gotCaptcha = true
-                this.ws.onmessage = null
-                this.reset()
-                setTimeout(() => {
-                    userBots.push(new Bot())
-                    if(userBots.includes(this)) userBots.splice(userBots.indexOf(this), 1)
-                }, 2000)
+                this.ws.close()
                 break
             case 241:
                 this.decryptionKey = reader.readInt32()
                 this.encryptionKey = murmur2(`${game.url.match(/(live-arena-\w+\.agar\.io)/)[1]}${reader.readString()}`, 255)
                 this.isConnected = true
+                connectedBots++
                 break
             case 242:
                 this.send(buffers.spawn(bots.name))
@@ -248,7 +256,7 @@ class Bot {
             if(this.cellsIDs.includes(removedEntityID)) this.cellsIDs.splice(this.cellsIDs.indexOf(removedEntityID), 1)
             delete this.viewportEntities[removedEntityID]
         }
-        if(this.isAlive && !this.cellsIDs.length){
+        if(this.isAlive && this.cellsIDs.length === 0){
             this.isAlive = false
             if(this.followMouseTimeout){
                 clearTimeout(this.followMouseTimeout)
@@ -361,13 +369,12 @@ new WebSocket.Server({
                     bots.name = reader.readString()
                     bots.amount = reader.readUint8()
                     dataBot.connect()
-                    let index = 0
                     let startBotsInterval = setInterval(() => {
-                        if(dataBot.lastPlayersAmount < 200 && index < bots.amount){
-                            userBots.push(new Bot())
-                            index++
+                        if(dataBot.lastPlayersAmount < 200 && connectedBots < bots.amount) userBots.push(new Bot())
+                        else {
+                            clearInterval(startBotsInterval)
+                            console.log(`[SERVER] Connected bots: ${connectedBots}`)
                         }
-                        else clearInterval(startBotsInterval)
                     }, 300)
                     console.log('[SERVER] Starting bots...')
                 }
