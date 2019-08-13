@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1175 MEGA TEST
+// v1.1176 MEGA TEST
 // Game Configurations
 //team view
 
@@ -76,7 +76,7 @@ window.SERVER_PORT = 1337 // Port number used on the server where the bots are r
     window.connectionBots = {
         ws: null,
         connect(){
-            this.ws = new WebSocket(`ws://${window.SERVER_HOST}:${window.SERVER_PORT}`)
+            this.ws = new WebSocket(`wss://${window.SERVER_HOST}:${window.SERVER_PORT}`) //ws is needed for firefox
             this.ws.binaryType = 'arraybuffer'
             this.ws.onopen = this.onopen.bind(this)
             this.ws.onmessage = this.onmessage.bind(this)
