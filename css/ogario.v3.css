@@ -487,10 +487,7 @@ input.hide-url::selection,input.stream-mode::selection{
 #quick-bots a{
     width:100%;
     color:#fff;
-    font-size:16px;
     text-align:center;
-    text-decoration:none;
-    padding-top:8px
 }
 #quick-menu a:hover,.quick,.quick:focus{
     color:#01d9cc
@@ -1458,10 +1455,7 @@ input.hide-url::selection,input.stream-mode::selection{
                 #botsNameLM, #botsAmount {
                     margin-top: 6px;
                     width: 144px;
-                    border: 1px solid black;
-                    border-radius: 5px;
                     padding: 8px;
-                    font-size: 14.5px;
                     outline: none;
                     margin-left: 60px;
                 }
@@ -1471,7 +1465,6 @@ input.hide-url::selection,input.stream-mode::selection{
                 #connectBots, #startBots, #stopBots {
                     color: white;
                     border: none;
-                    border-radius: 5px;
                     padding: 7px;
                     width: 160px;
                     font-size: 14px;
