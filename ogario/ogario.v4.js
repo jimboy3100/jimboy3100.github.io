@@ -9551,7 +9551,8 @@ var thelegendmodproject = function(t, e, i) {
         })
 			var storedbotsname = localStorage.getItem("localStoredBotsName");
 			if (storedbotsname==null || storedbotsname==""){
-				storedbotsname = "Legend mod"
+				storedbotsname = "Legend mod";
+				window.bots.nameLM = storedbotsname;
 			}		
 			$('#botsNameLM').val(storedbotsname)
         document.getElementById('botsNameLM').addEventListener('change', function(){
