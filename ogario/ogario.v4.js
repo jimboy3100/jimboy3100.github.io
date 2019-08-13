@@ -76,7 +76,7 @@ window.SERVER_PORT = 1337 // Port number used on the server where the bots are r
     window.connectionBots = {
         ws: null,
         connect(){
-            this.ws = new WebSocket(`wss://${window.SERVER_HOST}:${window.SERVER_PORT}`) //ws is needed for firefox
+            this.ws = new WebSocket(`ws://${window.SERVER_HOST}:${window.SERVER_PORT}`) //ws is needed for firefox
             this.ws.binaryType = 'arraybuffer'
             this.ws.onopen = this.onopen.bind(this)
             this.ws.onmessage = this.onmessage.bind(this)
