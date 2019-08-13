@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1176 MEGA TEST
+// v1.1183 MEGA TEST
 // Game Configurations
 //team view
 
@@ -3320,17 +3320,17 @@ var thelegendmodproject = function(t, e, i) {
                     $(".btn-logout").appendTo($("#profile")),
                     $(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://jimboy3100.github.io/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + h.skins + '"></a><a href="https://youtube.com/channel/UCoj-ZStcJ0jLMOSK7FOBTbA" class="quick-yt ogicon-youtube2" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="The Legend mod Project"></a></div>'),
 					$(".left-container").append(`<div id="quick-bots" class="agario-panel agario-side-panel"><h2 id="botsInfo"></h2>									
-					<h5 id="botsAuthor">Party bots</h5>
+					<h5 id="botsAuthor" class="main-color">Party bots</h5>
 					<span id="statusTextBots">Status: <b id="userStatus">Disconnected</b></span>
 					<br>
 					<span id="aiTextBots">Bots AI: <b id="botsAI">Disabled</b></span>
 					<br>
 					<input type="text" id="botsNameLM" placeholder="Bots Name" maxlength="15" spellcheck="false">
 					<input type="number" id="botsAmount" placeholder="Bots Amount" min="10" max="199" spellcheck="false">
-					<button id="connectBots">Connect</button>
+					<button id="connectBots" class="btn btn-success">Connect</button>
 					<br>
-					<button id="startBots" disabled>Start Bots</button>
-					<button id="stopBots">Stop Bots</button><br>
+					<button id="startBots" class="btn btn-primary btn" disabled>Start Bots</button>
+					<button id="stopBots" class="btn btn-danger">Stop Bots</button><br>
 					<br><a href="https://github.com/jimboy3100/jimboy3100.github.io/tree/master/ExampleScripts/agario-bots2" target="_blank">How to use?</a>	
 					</div>`),
                 this.protocolMode || $("#quick-menu").prepend('<a href="#" class="quick-shop ogicon-cart" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_shop + '"></a><a href="#" class="quick-free-coins ogicon-coin-dollar" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_menu_main_free_coins + '"></a><a href="#" class="quick-free-gifts ogicon-gift" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_menu_main_gifts + '"></a><a href="#" class="quick-quests ogicon-trophy" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_menu_main_dailyquests + '"></a>'),
@@ -3820,7 +3820,7 @@ var thelegendmodproject = function(t, e, i) {
                 if (defaultmapsettings.showQuickBots) {
                     $("#quick-menu").hide();      
 				}  				
-            },			
+            },				
             'setShowSkinsPanel': function() {
                 if (defaultmapsettings.showSkinsPanel) {
                     $("#skins-panel").fadeIn(500);
