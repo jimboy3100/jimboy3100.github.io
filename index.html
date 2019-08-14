@@ -133,7 +133,7 @@ if (element) {
 </div>
 <h2 class="project-tagline">Step 2, Install Script
 <font size="3"><br>Disable other "main" Tampermonkey userscripts or Chrome Extensions</font></h2>
-<br><span style="color: black;"></span><a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="http://jimboy3100.github.io/LMexpress/LMexpress.user.js" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Legend Express v1.6</span></a> <span style="color: black;">(Smooth mod)</span> 
+<br><span style="color: black;"></span><a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" onclick="JoinLcPartyMode()" href="http://jimboy3100.github.io/LMexpress/LMexpress.user.js" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Legend Express v1.6</span></a> <span style="color: black;">(Smooth mod)</span> 
 <br>
 <br><span style="color: black;">Cannot install? </span><a href="https://www.youtube.com/watch?v=vuRK1qUnSKY" target="_blank"><b>Watch video</b></a>
 <br><span style="color: black;">Join the </span><a name="LmDevelopers" onclick="document.getElementsByName('Developers')[0].click();"><b>developer team</b></a> of Legend mod Project
@@ -418,6 +418,9 @@ var d=document,s=d.createElement('script'); s.src='https://jimboy3100.github.io/
 </div>
 	<script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script>
 	<script>
+	function JoinLcPartyMode() {
+	window.open('https://jimboy3100.github.io/Lc/LcPartyMode.html', '_blank',' scrollbars=yes,menubar=no,width=800,height=550, resizable=yes,toolbar=no,location=no,status=no');	
+	}
 	setTimeout(function(){
 	document.title = "legendmod.ml"; 
 	(function() {
