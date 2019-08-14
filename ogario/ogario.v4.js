@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1190 MEGA TEST
+// v1.1191 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -76,7 +76,7 @@ window.SERVER_HOST = 'ws://localhost:1337' // Hostname/IP of the server where th
         ws: null,
         connect(){
             //this.ws = new WebSocket(`ws://${window.SERVER_HOST}:${window.SERVER_PORT}`) //ws is needed for firefox
-			this.ws = new WebSocket(`ws://${window.SERVER_HOST}`)
+			this.ws = new WebSocket(`${window.SERVER_HOST}`)
 			//this.ws = new WebSocket(`ws://agario-bots--jimboy3100.repl.co`)
             this.ws.binaryType = 'arraybuffer'
             this.ws.onopen = this.onopen.bind(this)
