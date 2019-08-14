@@ -6551,7 +6551,7 @@ var thelegendmodproject = function(t, e, i) {
                 }
             },
             'onOpen': function(t) {
-                console.log('[Legend mod Express] Game server socket open');
+                //console.log('[Legend mod Express] Game server socket open');
                     this.time = Date.now();
 					var e = this.createView(5);
 					e.setUint8(0, 254);
@@ -7072,10 +7072,10 @@ var thelegendmodproject = function(t, e, i) {
                             var artistTrack = window.ret.readUint32();
                             switch (obj) {
                                 case 11:
-                                    console.log("[Legend mod Express] 102 Login response", window.ret.view.byteLength, window.ret.contentType, window.ret.uncompressedSize, obj, previousState, artistTrack);
+                                    //console.log("[Legend mod Express] 102 Login response", window.ret.view.byteLength, window.ret.contentType, window.ret.uncompressedSize, obj, previousState, artistTrack);
                                     break;
                                 case 62:
-                                    console.log("[Legend mod Express] 102 Game over");
+                                    //console.log("[Legend mod Express] 102 Game over");
 									LegendModDeath();
                                     //$('#pause-hud').text("PAUSE!");
                                     break;
