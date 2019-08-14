@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1189 MEGA TEST
+// v1.1190 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4425,7 +4425,7 @@ var thelegendmodproject = function(t, e, i) {
                 window.SLGsocket['onerror'] = function(e) {
                     //console.log('[Legend mod Express] SLG socket error', e);	
 					window.SLG3NumberTries++;
-					console.log('[Legend mod Express] SLG socket error');
+					//console.log('[Legend mod Express] SLG socket error');
                 };			
                 window.SLGsocket['closeAndOpen'] = function(e) {
 					window.SLGsocket['onclose'] = function(e) {
@@ -6551,7 +6551,7 @@ var thelegendmodproject = function(t, e, i) {
                 }
             },
             'onOpen': function(t) {
-                console.log('[Legend mod Express] Game server socket open'),
+                console.log('[Legend mod Express] Game server socket open');
                     this.time = Date.now();
 					var e = this.createView(5);
 					e.setUint8(0, 254);
@@ -7303,7 +7303,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.mapMidY = (this.mapMaxY + this.mapMinY) / 2; //Sonia3
                     this.mapOffsetFixed || (this.viewX = (i + t) / 2, this.viewY = (s + e) / 2);
                     this.mapOffsetFixed = true;
-                    console.log('[Legend mod Express] Map offset fixed: (', this.mapOffsetX, ',', this.mapOffsetY, ')');
+                    //console.log('[Legend mod Express] Map offset fixed: (', this.mapOffsetX, ',', this.mapOffsetY, ')');
                 }
             },
             'isInView': function(t, e, i) {
@@ -7324,7 +7324,7 @@ var thelegendmodproject = function(t, e, i) {
                                         if (window.EquippableSkins[player].image != "uses_spine") {
 
                                             if (legendflags.includes(LowerCase(y))) {
-                                                console.log("[Legend mod Express] " + LowerCase(y) + " skin found. Skin registered");
+                                                //console.log("[Legend mod Express] " + LowerCase(y) + " skin found. Skin registered");
                                                 core.registerSkin(y, null, "https://jimboy3100.github.io/agario/live/flags/" + LowerCase(y) + ".png", null);
                                             } else {
                                                 window.lastusednameforskin = y;
