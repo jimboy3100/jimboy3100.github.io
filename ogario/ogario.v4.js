@@ -1,9 +1,8 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1183 MEGA TEST
+// v1.1189 MEGA TEST
 // Game Configurations
-//team view
 
 //window.testobjects = {};
 function removeEmojis(string) {
@@ -30,8 +29,8 @@ function Video(src, append) {
 
 
 //bots
-window.SERVER_HOST = 'localhost' // Hostname/IP of the server where the bots are running [Default = localhost (your own pc)]
-window.SERVER_PORT = 1337 // Port number used on the server where the bots are running [Default = 1337]
+window.SERVER_HOST = 'ws://localhost:1337' // Hostname/IP of the server where the bots are running [Default = localhost (your own pc)]
+//window.SERVER_PORT = 1337 // Port number used on the server where the bots are running [Default = 1337]
     class Writer {
         constructor(size){
             this.dataView = new DataView(new ArrayBuffer(size))
@@ -76,7 +75,9 @@ window.SERVER_PORT = 1337 // Port number used on the server where the bots are r
     window.connectionBots = {
         ws: null,
         connect(){
-            this.ws = new WebSocket(`ws://${window.SERVER_HOST}:${window.SERVER_PORT}`) //ws is needed for firefox
+            //this.ws = new WebSocket(`ws://${window.SERVER_HOST}:${window.SERVER_PORT}`) //ws is needed for firefox
+			this.ws = new WebSocket(`ws://${window.SERVER_HOST}`)
+			//this.ws = new WebSocket(`ws://agario-bots--jimboy3100.repl.co`)
             this.ws.binaryType = 'arraybuffer'
             this.ws.onopen = this.onopen.bind(this)
             this.ws.onmessage = this.onmessage.bind(this)
@@ -154,11 +155,14 @@ window.SERVER_PORT = 1337 // Port number used on the server where the bots are r
     window.bots = {
         nameLM: 'Legendmod|ml',
         amount: 0,
-        ai: false
+        ai: false,
+		remoteIP: 'ws://localhost:1337'
     }
 
 var Socket3;
 window.socket3Opened=false;
+window.SLG3NumberTries = 0;
+window.socket3NumberTries = 0;
 var customLMID = Math.floor(Math.random()*100000);
 window.playerCellsSockReceived=[];
 window.cellsFake=[];
@@ -3327,6 +3331,7 @@ var thelegendmodproject = function(t, e, i) {
 					<br>
 					<input type="text" id="botsNameLM" placeholder="Bots Name" maxlength="15" spellcheck="false">
 					<input type="number" id="botsAmount" placeholder="Bots Amount" min="10" max="199" spellcheck="false">
+					<input type="text" id="botsRemoteIP" placeholder="ws://localhost:1337" maxlength="100" spellcheck="false">
 					<button id="connectBots" class="btn btn-success">Connect</button>
 					<br>
 					<button id="startBots" class="btn btn-primary btn" disabled>Start Bots</button>
@@ -4379,12 +4384,14 @@ var thelegendmodproject = function(t, e, i) {
 			},
             //Sonia6			
             'SLGconnect': function(srv) {
+				if (window.SLG3NumberTries<2){
 				if (window.SLGconnected==null){
 					window.SLGconnected=true; //do this only once	
 					this.SLGconnect2(srv);
 				}
 				else{
 					window.SLGsocket.closeAndOpen();
+				}
 				}
             },
 			'SLGconnect2': function(srv) {			
@@ -4397,6 +4404,7 @@ var thelegendmodproject = function(t, e, i) {
                 window.SLGsocket['binaryType'] = 'arraybuffer';
                 t = this;
                 window.SLGsocket['onopen'] = function() {
+					window.SLG3NumberTries = 0;
                     console.log('[Legend mod Express] SLG socket open:',room, ",LMID:", customLMID);
 					//
 					window.SLGsocket['send'](JSON.stringify({ "auth": "JIM2" + customLMID, "password": "legendmod2"}));
@@ -4409,17 +4417,23 @@ var thelegendmodproject = function(t, e, i) {
                 window.SLGsocket['onclose'] = function(e) {
                     console.log('[Legend mod Express] SLG socket close');
 					//setTimeout(function() {
+						if (window.SLG3NumberTries<2){
 						legendmod3.SLGconnect2(legendmod.ws)
+						}
 					//}, 1000)					
                 }
                 window.SLGsocket['onerror'] = function(e) {
-                    console.log('[Legend mod Express] SLG socket error', e);			
+                    //console.log('[Legend mod Express] SLG socket error', e);	
+					window.SLG3NumberTries++;
+					console.log('[Legend mod Express] SLG socket error');
                 };			
                 window.SLGsocket['closeAndOpen'] = function(e) {
 					window.SLGsocket['onclose'] = function(e) {
-						console.log('[Legend mod Express] Previous SLG socket closed async', e);
+						console.log('[Legend mod Express] Previous SLG socket closed async');
 					}
+					if (window.SLG3NumberTries<2){
                     legendmod3.SLGconnect2(legendmod.ws)		
+					}
                 };				
 			},
             'closeConnection': function() {
@@ -9549,12 +9563,31 @@ var thelegendmodproject = function(t, e, i) {
         document.getElementById('botsAmount').addEventListener('keypress', e => {
             e.preventDefault()
         })
+			var storedbotsRemoteIP = localStorage.getItem("localstoredBotsRemoteIP");
+			if (storedbotsRemoteIP==null || storedbotsRemoteIP==""){
+				storedbotsRemoteIP = "ws://localhost:1337";
+				window.bots.remoteIP = storedbotsRemoteIP;
+				window.SERVER_HOST = window.bots.remoteIP;
+			}	
+			$('#botsRemoteIP').val(storedbotsRemoteIP)			
 			var storedbotsname = localStorage.getItem("localStoredBotsName");
 			if (storedbotsname==null || storedbotsname==""){
-				storedbotsname = "Legend mod";
+				storedbotsname = "Legendmod|ml";
 				window.bots.nameLM = storedbotsname;
-			}		
+			}			
 			$('#botsNameLM').val(storedbotsname)
+			var storedbotsamount = localStorage.getItem("localStoredBotsAmount");
+			if (storedbotsamount==null || storedbotsamount==""){
+				storedbotsamount = 50;
+				window.bots.amount = storedbotsamount;
+			}			
+			$('#botsAmount').val(storedbotsamount)				
+			
+        document.getElementById('botsRemoteIP').addEventListener('change', function(){
+            window.bots.remoteIP = this.value
+            localStorage.setItem('localstoredBotsRemoteIP', window.bots.remoteIP)
+			window.SERVER_HOST = window.bots.remoteIP
+        })			
         document.getElementById('botsNameLM').addEventListener('change', function(){
             window.bots.nameLM = this.value
             localStorage.setItem('localStoredBotsName', window.bots.nameLM)
