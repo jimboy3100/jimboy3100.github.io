@@ -32,7 +32,7 @@ function inject(page) {
     var page = page.replace("</body>", "<script>init('" + modVersion + "');</script>" + "</body>");
     return page;
 }
-window.stop();
+//window.stop();
 document.documentElement.innerHTML = "";
 
 GM_xmlhttpRequest({
