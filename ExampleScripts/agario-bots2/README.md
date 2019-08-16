@@ -5,7 +5,7 @@ Free open source agar.io bots
 
 ## Usage
 [Video tutorial for Windows](https://www.youtube.com/watch?v=CROvbjyLmS0&feature=youtu.be)
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
+[![IMAGE ALT TEXT HERE](http://i3.ytimg.com/vi/CROvbjyLmS0/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)
 
 Windows
 -------
