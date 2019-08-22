@@ -2,22 +2,22 @@
 
 # Credits: Turbo - ターボ#2665 (https://github.com/TurboCheetah)
 
-NC='\e[0m'
 GREEN='\e[92m'
+NC='\e[0m'
 
-echo -e "${GREEN}[INFO] Updating apt repositories${NC}"
+echo -e "${GREEN}[INFO] Updating apt packages${NC}"
 sudo apt update
 
-echo -e "${GREEN}[INFO] Opening port 1337${NC}"
-sudo ufw enable
+echo -e "${GREEN}[INFO] Opening port${NC}"
+echo "y" | sudo ufw enable
 sudo ufw allow OpenSSH
-sudo ufw allow 1337
+sudo ufw allow 8083
 
-echo -e "${GREEN}INFO] Installing required packages${NC}"
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+echo -e "${GREEN}[INFO] Installing Node.js${NC}"
+curl -sL https://deb.nodesource.com/setup_11.x | sudo -E bash -
 sudo apt install -y nodejs
 
-echo -e "${GREEN}[INFO] Installing required packages for bots${NC}"
+echo -e "${GREEN}[INFO] Installing required NPM modules${NC}"
 npm i
 
-echo -e "${GREEN}Installation complete! Run [node server.js] to start the bots${NC}"
+echo -e "${GREEN}[INFO] Installation complete!${NC}"

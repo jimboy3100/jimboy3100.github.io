@@ -1,1 +1,1 @@
-npm install
+npm i
