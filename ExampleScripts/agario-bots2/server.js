@@ -22,7 +22,7 @@ if (config.server.update) {
 
         if (config.server.version < requesterConfig.server.version) {
             logger.warn(`[SERVER] A new update was found!`)
-            logger.warn(`[SERVER] Download -> https://jimboy3100.github.io/ExampleScripts/agario-bots2/`)
+            logger.warn(`[SERVER] Download -> https://github.com/xN3BULA/free-agario-bots`)
         } else {
             logger.good(`[SERVER] No updates found!`)
         }
@@ -330,6 +330,15 @@ class Bot {
             entity: closestEntity
         }
     }
+	sendPosition(posX, posY){
+		this.send(buffers.move(posX, user.mouseY + posY, this.decryptionKey))
+	}	
+	sendEject(){
+		this.send(Buffer.from([17]))
+	}
+	sendSplit(){
+		this.send(Buffer.from([21]))
+	}	
     move() {
         const bot = {
             x: 0,
@@ -347,31 +356,31 @@ class Bot {
         const closestBiggerPlayer = this.getClosestEntity('biggerPlayer', bot.x, bot.y, bot.size)
         const closestPellet = this.getClosestEntity('pellet', bot.x, bot.y, bot.size)
         if (user.isAlive) {
-            if (this.followMouse && !stoppingBots && !bots.ai) this.send(buffers.move(user.mouseX + this.offsetX, user.mouseY + this.offsetY, this.decryptionKey))
+            if (this.followMouse && !stoppingBots && !bots.ai) this.sendPosition(user.mouseX + this.offsetX, user.mouseY + this.offsetY)
             else {
                 if (closestBiggerPlayer.entity && closestBiggerPlayer.distance < 420) {
                     const angle = (Math.atan2(closestBiggerPlayer.entity.y - bot.y, closestBiggerPlayer.entity.x - bot.x) + Math.PI) % (2 * Math.PI)
-                    this.send(buffers.move(14142 * Math.cos(angle), 14142 * Math.sin(angle), this.decryptionKey))
-                } else if (closestPellet.entity) this.send(buffers.move(closestPellet.entity.x, closestPellet.entity.y, this.decryptionKey))
+                    this.sendPosition(14142 * Math.cos(angle), 14142 * Math.sin(angle))
+                } else if (closestPellet.entity) this.sendPosition(closestPellet.entity.x, closestPellet.entity.y)
                 else if (!closestBiggerPlayer.entity && !closestPellet.entity) {
                     const random = Math.random()
                     const randomX = ~~(1337 * Math.random())
                     const randomY = ~~(1337 * Math.random())
-                    if (random > 0.5) this.send(buffers.move(bot.x + randomX, bot.y - randomY, this.decryptionKey))
-                    else if (random < 0.5) this.send(buffers.move(bot.x - randomX, bot.y + randomY, this.decryptionKey))
+                    if (random > 0.5) this.sendPosition(bot.x + randomX, bot.y - randomY)
+                    else if (random < 0.5) this.sendPosition(bot.x - randomX, bot.y + randomY)
                 }
             }
         } else {
             if (closestBiggerPlayer.entity && closestBiggerPlayer.distance < 420) {
                 const angle = (Math.atan2(closestBiggerPlayer.entity.y - bot.y, closestBiggerPlayer.entity.x - bot.x) + Math.PI) % (2 * Math.PI)
-                this.send(buffers.move(14142 * Math.cos(angle), 14142 * Math.sin(angle), this.decryptionKey))
-            } else if (closestPellet.entity) this.send(buffers.move(closestPellet.entity.x, closestPellet.entity.y, this.decryptionKey))
+                this.sendPosition(14142 * Math.cos(angle), 14142 * Math.sin(angle))
+            } else if (closestPellet.entity) this.sendPosition(closestPellet.entity.x, closestPellet.entity.y)
             else if (!closestBiggerPlayer.entity && !closestPellet.entity) {
                 const random = Math.random()
                 const randomX = ~~(1337 * Math.random())
                 const randomY = ~~(1337 * Math.random())
-                if (random > 0.5) this.send(buffers.move(bot.x + randomX, bot.y - randomY, this.decryptionKey))
-                else if (random < 0.5) this.send(buffers.move(bot.x - randomX, bot.y + randomY, this.decryptionKey))
+                if (random > 0.5) this.sendPosition(bot.x + randomX, bot.y - randomY)
+                else if (random < 0.5) this.sendPosition(bot.x - randomX, bot.y + randomY)
             }
         }
     }
