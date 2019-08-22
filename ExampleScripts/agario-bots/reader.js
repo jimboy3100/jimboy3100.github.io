@@ -1,28 +1,28 @@
 module.exports = class {
-    constructor(message){
-        this.message = message
+    constructor(buffer){
+        this.buffer = buffer
         this.byteOffset = 0
     }
     readUint8(){
-        return this.message.readUInt8(this.byteOffset++)
+        return this.buffer.readUInt8(this.byteOffset++)
     }
     readUint16(){
-        const value = this.message.readUInt16LE(this.byteOffset)
+        const value = this.buffer.readUInt16LE(this.byteOffset)
         this.byteOffset += 2
         return value
     }
     readInt32(){
-        const value = this.message.readInt32LE(this.byteOffset)
+        const value = this.buffer.readInt32LE(this.byteOffset)
         this.byteOffset += 4
         return value
     }
     readUint32(){
-        const value = this.message.readUInt32LE(this.byteOffset)
+        const value = this.buffer.readUInt32LE(this.byteOffset)
         this.byteOffset += 4
         return value
     }
     readDouble(){
-        const value = this.message.readDoubleLE(this.byteOffset)
+        const value = this.buffer.readDoubleLE(this.byteOffset)
         this.byteOffset += 8
         return value
     }

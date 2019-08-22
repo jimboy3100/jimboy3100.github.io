@@ -1,1 +1,1 @@
-node process
+node server

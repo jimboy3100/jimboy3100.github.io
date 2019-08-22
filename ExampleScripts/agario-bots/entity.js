@@ -6,8 +6,6 @@ module.exports = class {
         this.size = 0
         this.name = ''
         this.isVirus = false
-        this.isOwnEjected = false
-        this.isOtherEjected = false
         this.isPellet = false
     }
 }

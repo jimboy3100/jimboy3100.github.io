@@ -1,17 +1,17 @@
 module.exports = class {
     constructor(size){
-        this.message = Buffer.allocUnsafe(size)
+        this.buffer = Buffer.allocUnsafe(size)
         this.byteOffset = 0
     }
     writeUint8(value){
-        this.message.writeUInt8(value, this.byteOffset++)
+        this.buffer.writeUInt8(value, this.byteOffset++)
     }
     writeInt32(value){
-        this.message.writeInt32LE(value, this.byteOffset)
+        this.buffer.writeInt32LE(value, this.byteOffset)
         this.byteOffset += 4
     }
     writeUint32(value){
-        this.message.writeUInt32LE(value, this.byteOffset)
+        this.buffer.writeUInt32LE(value, this.byteOffset)
         this.byteOffset += 4
     }
     writeString(string){

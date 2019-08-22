@@ -1,18 +1,18 @@
 module.exports = {
-    rotateMessageKey(key){
+    rotateEncryptionKey(key){
         key = Math.imul(key, 1540483477) | 0
         key = (Math.imul(key >>> 24 ^ key, 1540483477) | 0) ^ 114296087
         key = Math.imul(key >>> 13 ^ key, 1540483477) | 0
         return key >>> 15 ^ key
     },
-    rotateMessageBytes(message, key){
-        for(let i = 0; i < message.byteLength; i++) message.writeUInt8(message.readUInt8(i) ^ key >>> (i % 4 * 8) & 255, i)
-        return message
+    rotateBufferBytes(buffer, key){
+        for(let i = 0; i < buffer.byteLength; i++) buffer.writeUInt8(buffer.readUInt8(i) ^ key >>> (i % 4 * 8) & 255, i)
+        return buffer
     },
-    uncompressMessage(input, output){ // https://github.com/pierrec/node-lz4/blob/master/lib/binding.js
-        for(let i = 0, j = 0, n = input.length; i < n;){
-            const token = input[i++]
-            let literalsLength = token >> 4
+    uncompressBuffer(input, output){
+        for(let i = 0, j = 0; i < input.length;){
+            const byte = input[i++]
+            let literalsLength = byte >> 4
             if(literalsLength > 0){
                 let length = literalsLength + 240
                 while(length === 255){
@@ -21,11 +21,11 @@ module.exports = {
                 }
                 const end = i + literalsLength
                 while(i < end) output[j++] = input[i++]
-                if(i === n) return output
+                if(i === input.length) return output
             }
             const offset = input[i++] | (input[i++] << 8)
             if(offset === 0 || offset > j) return -(i - 2)
-            let matchLength = token & 15
+            let matchLength = byte & 15
             let length = matchLength + 240
             while(length === 255){
                 length = input[i++]

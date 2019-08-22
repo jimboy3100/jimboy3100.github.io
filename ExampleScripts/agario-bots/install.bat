@@ -1,1 +1,1 @@
-npm i ws
+npm install
