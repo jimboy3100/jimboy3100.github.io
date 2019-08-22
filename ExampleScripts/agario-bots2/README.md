@@ -44,17 +44,16 @@ VPS
 15. On Vanilla userscript you can modify keys/settings at the start of [it](http://jimboy3100.github.io/ExampleScripts/agario-bots2/free-agario-bots.vanilla.user.js#L11) you will have to refresh to save them
 16. On Legend mod userscript you can modify keys when you are in agar.io on the top of the hotkeys TAB
 17. Always make sure you wait the 30 seconds for process to close or you are gonna get captcha on the VPS ip
-18. If you wanna run it 24/7 on the VPS run sudo npm i -g pm2 command and then run sudo pm2 start process.js command
+18. If you wanna run it 24/7 on the VPS run `sudo npm i -g pm2` command and then run `sudo pm2 start process.js` command
 
 ## Captcha (only for Windows)
 If you get captcha alert you need to change your IP or get rid of captcha by playing with your IP. You can do so by:
 - Restarting your router (only if you have a dynamic IP)
-- Connecting to a VPN server like one from [ProtonVPN](https://protonvpn.com) or [UrbanVPN](https://www.urban-vpn.com/) , or another, which you make sure that doesn't has captcha
+- Connecting to a VPN server like one from [UrbanVPN](https://www.urban-vpn.com/) which you make sure that doesn't has captcha
 - Playing logged out of your agar.io account until captcha goes away
 
 ## Author
-[Nel](https://github.com/nelthedev/free-agario-bots)  (original creator) 
-[xN3BULA](https://github.com/xN3BULA/free-agario-bots)  (updater) 
+[Nel](https://github.com/nelthedev/free-agario-bots)
 
 ## Donate
 PayPal: nelthedeveloper@gmail.com
