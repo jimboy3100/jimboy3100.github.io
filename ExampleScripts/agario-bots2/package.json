@@ -1,8 +1,9 @@
 {
-    "name": "free-agario-bots",
+    "name": "LM agario bots",
     "version": "1.0.0",
     "description": "Free open source agar.io bots",
     "author": "Nel",
+    "main": "server.js",
     "dependencies": {
         "murmurhash-js": "^1.0.0",
         "ws": "^7.1.1",
