@@ -3,6 +3,11 @@
     "version": "1.0.0",
     "description": "Free open source agar.io bots",
     "author": "Nel",
+    "contributors": [
+    "Jimboy3100 <jimboy3100@hotmail.com> (http://legendmod.ml)"
+  ],
+    "bugs": "https://github.com/jimboy3100/jimboy3100.github.io/issues",
+    "homepage": "http://legendmod.ml",
     "main": "server.js",
     "dependencies": {
         "murmurhash-js": "^1.0.0",
