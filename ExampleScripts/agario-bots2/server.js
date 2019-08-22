@@ -45,6 +45,7 @@ const user = {
     startedBots: false,
     stoppingBots: false,
     isAlive: false,
+	botsMessage: false,
     mouseX: 0,
     mouseY: 0
 }
@@ -215,8 +216,11 @@ class Bot {
                 break
             case 85:
                 if (!user.startedBots) {
+					setTimeout(process.exit, 1000)
+					if (!user.botsMessage){
+						user.botsMessage = true
                     userWS.send(Buffer.from([3]))
-                    setTimeout(process.exit, 1000)
+					}			
                 }
                 this.gotCaptcha = true
                 this.ws.onmessage = null
@@ -419,11 +423,13 @@ new WebSocket.Server({
             case 2:
                 for (const bot of userBots) {
                     if (bot.isAlive && bot.followMouse && !stoppingBots && !bots.ai) bot.send(Buffer.from([17]))
+					//if(bot.isAlive && bot.followMouse && !stoppingBots && !bots.ai) bot.sendEject()
                 }
                 break
             case 3:
                 for (const bot of userBots) {
                     if (bot.isAlive && bot.followMouse && !stoppingBots && !bots.ai) bot.send(Buffer.from([21]))
+					//if(bot.isAlive && bot.followMouse && !stoppingBots && !bots.ai) bot.sendSplit()
                 }
                 break
             case 4:
