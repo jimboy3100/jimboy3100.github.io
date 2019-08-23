@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1197 MEGA TEST
+// v1.1200 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -475,6 +475,7 @@ var languagetexts = {
         'chatGroup': 'Czat',
         'statsGroup': 'Statystyki',
         'extrasGroup': 'Dodatkowe',
+		'macroGroup': 'Macros',
         'noSkins': 'Wyłącz skiny',
         'noNames': 'Wyłącz nazwy',
         'noColors': 'Wyłącz kolory',
@@ -483,6 +484,7 @@ var languagetexts = {
         'showQuest': 'Pokaż zadanie (quest)',
         'autoZoom': 'Auto zoom',
         'animation': 'Opóźnienie animacji',
+		'macroFeeding': 'Macro feed (ms)',
         'suckAnimation': 'Cell Eat [Sucking] Animation',
         'virusGlow': 'Virus Glow',
         'borderGlow': 'Border Glow',
@@ -867,6 +869,7 @@ var languagetexts = {
         'chatGroup': 'Chat',
         'statsGroup': 'Stats',
         'extrasGroup': 'Extras',
+		'macroGroup': 'Macros',
         'noSkins': 'No skins',
         'noNames': 'No names',
         'noColors': 'No colors',
@@ -875,6 +878,7 @@ var languagetexts = {
         'showQuest': 'Show quest',
         'autoZoom': 'Auto zoom',
         'animation': 'Animation delay',
+		'macroFeeding': 'Macro feed (ms)',
         'suckAnimation': 'Cell Eat [Sucking] Animation',
         'virusGlow': 'Virus Glow',
         'borderGlow': 'Border Glow',
@@ -1903,6 +1907,7 @@ var defaultmapsettings = {
 	'showQuickBots': false,
     'showSkinsPanel': true,
     'animation': 140,
+	'macroFeeding': 80,
     ////
     "cameraSpeed": 7,
     "commanderDelay": 1E3,
@@ -2514,7 +2519,7 @@ var thelegendmodproject = function(t, e, i) {
                     var e = this;
                     this.feed(), this.feedInterval = setInterval(function() {
                         e.feed();
-                    }, 80);
+                    }, defaultmapsettings.macroFeeding);
                 } else if (this.feedInterval) {
                     clearInterval(this.feedInterval);
                     this.feedInterval = null
@@ -3357,6 +3362,7 @@ var thelegendmodproject = function(t, e, i) {
                 }), $("#noNames, #showMass").remove(), $("#og-settings .submenu-panel").append('<div id="og-options"></div>'),
                     this.addOptions([], "animationGroup"),
                     this.addOptions(["autoZoom"], "zoomGroup"),
+					this.addOptions([], "macroGroup"),
                     this.addOptions(["quickResp", "autoResp"], "respGroup"),
                     this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup"),
                     this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound"], "massGroup"),
@@ -3369,7 +3375,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"), //Sonia2
                     this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert"], "mouseGroup"),
                     this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop"], "hudGroup"),
-                    this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"),
+                    this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"),					
                 this.protocolMode || (this.addOptions(["blockPopups"], "extrasGroup"),
                     $("#noSkins, #noColors, #skipStats, #showQuest").addClass("js-switch-vanilla"),
                     $(".skinsGroup h5").after('<label class="noSkins">' + h.noSkins + " </label>"),
@@ -3383,6 +3389,7 @@ var thelegendmodproject = function(t, e, i) {
                     $("#settingsChoice").appendTo($(".extrasGroup")).addClass("select-wrapper")),
                     this.addSliderBox(".animationGroup", "animation", 20, 200, 1),
                     this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01),
+					this.addSliderBox(".macroGroup", "macroFeeding", 1, 160, 1),
                     $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + h.exportImport + "</button>"),
                     $("#og-settings").append('<div class="restore-settings"><a href="#">' + h.restoreSettings + "</a></div>"),
                     $("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + h.thanks + ')</h5><audio src="" controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' + h.playlist + "</a></span></div>"),
