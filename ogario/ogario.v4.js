@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1196 MEGA TEST
+// v1.1197 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -3336,7 +3336,7 @@ var thelegendmodproject = function(t, e, i) {
 					<br>
 					<button id="startBots" class="btn btn-primary btn" disabled>Start Bots</button>
 					<button id="stopBots" class="btn btn-danger">Stop Bots</button>
-					<br><br><u><a href="https://github.com/jimboy3100/jimboy3100.github.io/tree/master/ExampleScripts/agario-bots2" target="_blank">Intallation</a></u>	
+					<br><br><u><a href="https://github.com/jimboy3100/jimboy3100.github.io/tree/master/ExampleScripts/agario-bots2" target="_blank">Installation</a></u>	
 					<u><a href="https://repl.it/@jimboy3100/agario-bots" target="_blank">repl.it VPS</a></u>
 					</div>`),
                 this.protocolMode || $("#quick-menu").prepend('<a href="#" class="quick-shop ogicon-cart" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_shop + '"></a><a href="#" class="quick-free-coins ogicon-coin-dollar" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_menu_main_free_coins + '"></a><a href="#" class="quick-free-gifts ogicon-gift" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_menu_main_gifts + '"></a><a href="#" class="quick-quests ogicon-trophy" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_menu_main_dailyquests + '"></a>'),
