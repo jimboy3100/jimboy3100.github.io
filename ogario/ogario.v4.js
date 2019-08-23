@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1194 MEGA TEST
+// v1.1195 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -3335,8 +3335,11 @@ var thelegendmodproject = function(t, e, i) {
 					<button id="connectBots" class="btn btn-success">Connect</button>
 					<br>
 					<button id="startBots" class="btn btn-primary btn" disabled>Start Bots</button>
-					<button id="stopBots" class="btn btn-danger">Stop Bots</button><br>
-					<br><a href="https://github.com/jimboy3100/jimboy3100.github.io/tree/master/ExampleScripts/agario-bots2" target="_blank">How to use?</a>	
+					<button id="stopBots" class="btn btn-danger">Stop Bots</button>
+					<br><u><a href="https://github.com/jimboy3100/jimboy3100.github.io/tree/master/ExampleScripts/agario-bots2" target="_blank">How to use?</a></u>	
+					* 2nd way: open: <a href="https://repl.it/@jimboy3100/agario-bots" target="_blank">https://repl.it/@jimboy3100/agario-bots</a> the websocket for that is:
+					<br>wss://agario-bots--jimboy3100.repl.co
+					<br>Please make your own repl.it after testing
 					</div>`),
                 this.protocolMode || $("#quick-menu").prepend('<a href="#" class="quick-shop ogicon-cart" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_shop + '"></a><a href="#" class="quick-free-coins ogicon-coin-dollar" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_menu_main_free_coins + '"></a><a href="#" class="quick-free-gifts ogicon-gift" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_menu_main_gifts + '"></a><a href="#" class="quick-quests ogicon-trophy" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_menu_main_dailyquests + '"></a>'),
                     $(".party-dialog, .partymode-info").remove(),
