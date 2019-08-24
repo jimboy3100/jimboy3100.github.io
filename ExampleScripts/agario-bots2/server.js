@@ -1,3 +1,4 @@
+
 const WebSocket = require('ws'),
     { murmur2 } = require('murmurhash-js'),
     buffers = require('./buffers'),
@@ -22,7 +23,7 @@ if (config.server.update) {
 
         if (config.server.version < requesterConfig.server.version) {
             logger.warn(`[SERVER] A new update was found!`)
-            logger.warn(`[SERVER] Download -> https://github.com/jimboy3100/jimboy3100.github.io/tree/master/ExampleScripts/agario-bots2`)
+            logger.warn(`[SERVER] Download -> https://jimboy3100.github.io/ExampleScripts/agario-bots2/`)
         } else {
             logger.good(`[SERVER] No updates found!`)
         }
@@ -45,7 +46,6 @@ const user = {
     startedBots: false,
     stoppingBots: false,
     isAlive: false,
-	botsMessage: false,
     mouseX: 0,
     mouseY: 0
 }
@@ -216,11 +216,8 @@ class Bot {
                 break
             case 85:
                 if (!user.startedBots) {
-					setTimeout(process.exit, 1000)
-					if (!user.botsMessage){
-						user.botsMessage = true
                     userWS.send(Buffer.from([3]))
-					}			
+                    setTimeout(process.exit, 1000)
                 }
                 this.gotCaptcha = true
                 this.ws.onmessage = null
@@ -330,15 +327,6 @@ class Bot {
             entity: closestEntity
         }
     }
-	sendPosition(posX, posY){
-		this.send(buffers.move(posX, user.mouseY + posY, this.decryptionKey))
-	}	
-	sendEject(){
-		this.send(Buffer.from([17]))
-	}
-	sendSplit(){
-		this.send(Buffer.from([21]))
-	}	
     move() {
         const bot = {
             x: 0,
@@ -356,31 +344,31 @@ class Bot {
         const closestBiggerPlayer = this.getClosestEntity('biggerPlayer', bot.x, bot.y, bot.size)
         const closestPellet = this.getClosestEntity('pellet', bot.x, bot.y, bot.size)
         if (user.isAlive) {
-            if (this.followMouse && !stoppingBots && !bots.ai) this.sendPosition(user.mouseX + this.offsetX, user.mouseY + this.offsetY)
+            if (this.followMouse && !stoppingBots && !bots.ai) this.send(buffers.move(user.mouseX + this.offsetX, user.mouseY + this.offsetY, this.decryptionKey))
             else {
                 if (closestBiggerPlayer.entity && closestBiggerPlayer.distance < 420) {
                     const angle = (Math.atan2(closestBiggerPlayer.entity.y - bot.y, closestBiggerPlayer.entity.x - bot.x) + Math.PI) % (2 * Math.PI)
-                    this.sendPosition(14142 * Math.cos(angle), 14142 * Math.sin(angle))
-                } else if (closestPellet.entity) this.sendPosition(closestPellet.entity.x, closestPellet.entity.y)
+                    this.send(buffers.move(14142 * Math.cos(angle), 14142 * Math.sin(angle), this.decryptionKey))
+                } else if (closestPellet.entity) this.send(buffers.move(closestPellet.entity.x, closestPellet.entity.y, this.decryptionKey))
                 else if (!closestBiggerPlayer.entity && !closestPellet.entity) {
                     const random = Math.random()
                     const randomX = ~~(1337 * Math.random())
                     const randomY = ~~(1337 * Math.random())
-                    if (random > 0.5) this.sendPosition(bot.x + randomX, bot.y - randomY)
-                    else if (random < 0.5) this.sendPosition(bot.x - randomX, bot.y + randomY)
+                    if (random > 0.5) this.send(buffers.move(bot.x + randomX, bot.y - randomY, this.decryptionKey))
+                    else if (random < 0.5) this.send(buffers.move(bot.x - randomX, bot.y + randomY, this.decryptionKey))
                 }
             }
         } else {
             if (closestBiggerPlayer.entity && closestBiggerPlayer.distance < 420) {
                 const angle = (Math.atan2(closestBiggerPlayer.entity.y - bot.y, closestBiggerPlayer.entity.x - bot.x) + Math.PI) % (2 * Math.PI)
-                this.sendPosition(14142 * Math.cos(angle), 14142 * Math.sin(angle))
-            } else if (closestPellet.entity) this.sendPosition(closestPellet.entity.x, closestPellet.entity.y)
+                this.send(buffers.move(14142 * Math.cos(angle), 14142 * Math.sin(angle), this.decryptionKey))
+            } else if (closestPellet.entity) this.send(buffers.move(closestPellet.entity.x, closestPellet.entity.y, this.decryptionKey))
             else if (!closestBiggerPlayer.entity && !closestPellet.entity) {
                 const random = Math.random()
                 const randomX = ~~(1337 * Math.random())
                 const randomY = ~~(1337 * Math.random())
-                if (random > 0.5) this.sendPosition(bot.x + randomX, bot.y - randomY)
-                else if (random < 0.5) this.sendPosition(bot.x - randomX, bot.y + randomY)
+                if (random > 0.5) this.send(buffers.move(bot.x + randomX, bot.y - randomY, this.decryptionKey))
+                else if (random < 0.5) this.send(buffers.move(bot.x - randomX, bot.y + randomY, this.decryptionKey))
             }
         }
     }
@@ -389,10 +377,12 @@ class Bot {
 new WebSocket.Server({
     port: config.server.port
 }).on('connection', ws => {
-    setInterval(() => {
-        userWS.send(Buffer.from([4, connectedBots, spawnedBots, serverPlayers]))
-    }, 1000);
     userWS = ws
+    setInterval(() => {
+        //userWS.send(Buffer.from([4, connectedBots, spawnedBots, serverPlayers]))
+        userWS.send(Buffer.from([4, connectedBots, spawnedBots]))
+        userWS.send(Buffer.from([5, serverPlayers]))		
+    }, 1000);	
     logger.good('[SERVER] User connected!')
     ws.on('message', buffer => {
         const reader = new Reader(buffer)
@@ -432,13 +422,11 @@ new WebSocket.Server({
             case 2:
                 for (const bot of userBots) {
                     if (bot.isAlive && bot.followMouse && !stoppingBots && !bots.ai) bot.send(Buffer.from([17]))
-					//if(bot.isAlive && bot.followMouse && !stoppingBots && !bots.ai) bot.sendEject()
                 }
                 break
             case 3:
                 for (const bot of userBots) {
                     if (bot.isAlive && bot.followMouse && !stoppingBots && !bots.ai) bot.send(Buffer.from([21]))
-					//if(bot.isAlive && bot.followMouse && !stoppingBots && !bots.ai) bot.sendSplit()
                 }
                 break
             case 4:
