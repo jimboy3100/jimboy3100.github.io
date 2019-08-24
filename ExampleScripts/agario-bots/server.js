@@ -1,22 +1,3 @@
-/* Url: https://repl.it/@jimboy3100/agario-bots
- Websocket: wss://agario-bots--jimboy3100.repl.co
-
-Make your own repl.it Websocket in the same way after testing 
-
-If you get captcha here, it will be because of the many testers
-You will not get captcha on your own VPS if you STOP bots properly 
-
-REMEMBER: BEFORE CHANGING SERVER, First stop BOTS and wait 30 seconds, then change server, run this server and connect to bots
-
-IF YOU GET RECAPTCHA, NO PROBLEM...
-Fork this script, and use names agario-bots1, agarbots2 etc...
-Example https://repl.it/@jimboy3100/agario-bots1
-Websocket: wss://agario-bots1--jimboy3100.repl.co
-
-Captcha's go away after some time. Use 10 websockets for your daily bot needs :D. 
-
-*/
-
 const WebSocket = require('ws'),
     { murmur2 } = require('murmurhash-js'),
     buffers = require('./buffers'),
