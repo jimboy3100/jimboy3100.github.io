@@ -1,18 +1,14 @@
 // ==UserScript==
-// @name         Free Agar.io Bots (Vanilla Version)
-// @version      1.0.8
-// @description  Free open source agar.io bots
-// @author       Nel, Nebula
+// @name         Free Agar.io Bots (Vanilla Version) - THESE BOTS ARE REAL
+// @namespace    Free and Real agario bots
+// @version      1.0.2
+// @description  Free and Real open source agario bots (tags: ogario, legend mod, vanilla, free bots, unlimited, hacks, infinity, agar.io, cheat, miniclip, agar)
+// @author       Nel, xN3BULA, Jimboy3100
 // @grant        none
 // @run-at       document-start
 // @match        *://agar.io/*
 // ==/UserScript==
 
-async function getversion() {
-await fetch("https://sonnybuchan.co.uk/version.txt").then(function(response) {
-    return response.text();
-  })
-}
 /* START OF USER SETTINGS */
 window.options = {
     settings: {
@@ -117,9 +113,7 @@ window.setUpOptions = () => {
     }
 }
 
-window.SERVER_HOST = 'localhost' // Hostname/IP of the server where the bots are running [Default = localhost (your own pc)]
-
-window.SERVER_PORT = 8083 // Port number used on the server where the bots are running [Default = 1337]
+window.SERVER_HOST = 'ws://localhost:8083' // Hostname/IP of the server where the bots are running [Default = localhost (your own pc)]
 
 window.ZOOM_SPEED = 0.85 // Numerical value that indicates the speed of the mouse wheel when zooming, value must be between 0.01-0.99 [Default = 0.85]
 
@@ -177,7 +171,7 @@ window.buffers = {
 window.connection = {
     ws: null,
     connect() {
-        this.ws = new WebSocket(`ws://${window.SERVER_HOST}:${window.SERVER_PORT}`)
+        this.ws = new WebSocket(`${window.SERVER_HOST}`)
         this.ws.binaryType = 'arraybuffer'
         this.ws.onopen = this.onopen.bind(this)
         this.ws.onmessage = this.onmessage.bind(this)
@@ -227,7 +221,10 @@ window.connection = {
                 //Spawned Bot count = getUint8(2)
                 //Server player amount = getUint8(3)
                 $('#botCount').html(`${dataView.getUint8(1)}/${dataView.getUint8(2)}/${window.bots.amount}`)
-                $('#slots').html(dataView.getUint8(3) + "/200")
+               // $('#slots').html(dataView.getUint8(3) + "/200")
+                break;
+            case 5:
+                $('#slots').html(dataView.getUint8(1) + "/200")
                 break;
         }
     },
@@ -370,7 +367,6 @@ function setGUI() {
             <div class="inputs-tab-bar">
 <span  id="settingsbutton"class="inputs-tab active" target="#settings"><i class="fa fa-keyboard-o"></i> <span>Settings</span></span>
                 <span id="hotkeysbutton" class="inputs-tab" target="#hotkeys"><i class="fa fa-keyboard-o"></i> <span>Hotkeys</span></span>
-
                 <span class="inputs-tab close" target="#close">X</span>
             </div>
             <div class="inputs-menu-container">
@@ -380,13 +376,13 @@ function setGUI() {
         </div>`
     $("#mainui-play").append(menuhtml);
     document.getElementById('advertisement').innerHTML = `
-
 <button id="botsPanel">Options</button>
-        <h2 id="botsInfo">
+        <h3 id="botsInfo">
             <a href="https://discord.gg/SDMNEcJ" target="_blank">Free Agar.io Bots</a>
-        </h2>
+        </h3>
         <h5 id="botsAuthor">
-            Developed by <a href="https://www.youtube.com/channel/UCZo9WmnFPWw38q65Llu5Lug" target="_blank">Nel</a>
+            Developed by <a href="https://www.youtube.com/channel/UCZo9WmnFPWw38q65Llu5Lug" target="_blank">Nel, </a><a href="https://github.com/xN3BULA" target="_blank">xN3BULA, </a><a href="http://legendmod.ml/" target="_blank">Jimboy3100</a>
+			<br><a href="https://www.youtube.com/watch?v=DhiBxedrnKY" target="_blank">VPS Bots</a>
         </h5>
         <span id="statusText">Status: <b id="userStatus">Disconnected</b></span>
         <br>
@@ -395,6 +391,7 @@ function setGUI() {
         <br>
         <input type="text" id="botsName" placeholder="Bots Name" maxlength="15" spellcheck="false">
         <input type="number" id="botsAmount" placeholder="Bots Amount" min="10" max="199" spellcheck="false">
+		<input type="text" id="botsRemoteIP" placeholder="ws://localhost:8083" maxlength="100" spellcheck="false">
         <button id="connect">Connect</button>
         <br>
         <button id="startBots" disabled>Start Bots</button>
@@ -408,7 +405,13 @@ function setGUI() {
         window.bots.amount = JSON.parse(localStorage.getItem('localStoredBotsAmount'))
         document.getElementById('botsAmount').value = String(window.bots.amount)
     }
-
+	var storedbotsRemoteIP = localStorage.getItem("localstoredBotsRemoteIP");
+	if (storedbotsRemoteIP==null || storedbotsRemoteIP==""){
+	storedbotsRemoteIP = "ws://localhost:8083";
+	}
+	window.bots.remoteIP = storedbotsRemoteIP;
+	window.SERVER_HOST = storedbotsRemoteIP;
+	$('#botsRemoteIP').val(storedbotsRemoteIP)
     window.setUpHotkeys();
     window.setUpOptions();
 }
@@ -421,20 +424,17 @@ function setGUIStyle() {
     border-radius: 5px;
     background: rgba(255, 255, 255, 0.95);
 }
-
 #hotkeys .row, #settings .row{
     padding: 10px;
     background: #f8f8f8;
     border-bottom: 1px solid #000;
 }
-
 #hotkeys .row .title,  #settings .row .title{
     font-family: Arial;
     text-transform: uppercase;
     font-weight: 600;
     font-size: 13px;
 }
-
 #hotkeys .row .key, #settings .row .key {
     float: right;
     margin-right: 6px;
@@ -462,7 +462,6 @@ function setGUIStyle() {
     font-weight: 700;
     cursor: pointer;
 }
-
 #inputs {
     display: none;
     width: 400px;
@@ -472,41 +471,34 @@ function setGUIStyle() {
     top: 50%;
     transform: translate(-50%, -50%);
 }
-
 .input-hidden {
     color: transparent !important;
 }
-
 .input-hidden::selection {
     background: #777 !important;
     color: transparent !important;
 }
-
 .inputs-tab {
     cursor: pointer;
     background: #fff;
     padding: 6px 10px;
     border-radius: 4px 4px 0px 0px;
 }
-
 .inputs-tab.active {
     background: #fff;
 }
-
 .inputs-tab-bar {
     color: #000;
     font-size: 14px;
     font-family: Arial;
     height: 22px;
 }
-
 .inputs-menu-container {
     width: 100%;
     height: 478px;
     background: rgba(51, 51, 51, 0.5);
     border-radius: 0px 0px 4px 4px;
 }
-
 .inputs-menu {
     width: 100%;
     position: absolute;
@@ -514,11 +506,9 @@ function setGUIStyle() {
     display: none;
     color: #000;
 }
-
 .inputs-menu.active {
     display: block;
 }
-
 .inputs-tab.close {
     float: right;
     margin-right: 5px;
@@ -542,8 +532,8 @@ function setGUIStyle() {
             #userStatus, #botsAI {
                 color: #DA0A00;
             }
-            #botsName, #botsAmount {
-                margin-top: 15px;
+            #botsName, #botsAmount, #botsRemoteIP {
+                margin-top: 5px;
                 width: 144px;
                 border: 1px solid black;
                 border-radius: 5px;
@@ -562,7 +552,7 @@ function setGUIStyle() {
                 width: 160px;
                 font-size: 18px;
                 outline: none;
-                margin-top: 15px;
+                margin-top: 5px;
                 letter-spacing: 1px;
             }
             #connect {
@@ -633,6 +623,11 @@ function setGUIEvents() {
     document.getElementById('stopBots').addEventListener('click', () => {
         if (window.user.startedBots) window.connection.send(new Uint8Array([1]).buffer)
     })
+        document.getElementById('botsRemoteIP').addEventListener('change', function(){
+            window.bots.remoteIP = this.value
+            localStorage.setItem('localstoredBotsRemoteIP', window.bots.remoteIP)
+			window.SERVER_HOST = window.bots.remoteIP
+        })
 }
 
 function loadUI(){
