@@ -622,7 +622,7 @@ function setGUIEvents() {
 				else alert('Bots name and amount are required before starting the bots, also you need to be logged in to your agar.io account in order to start the bots')
 			}
 			else{
-				else alert('Bots are designed for party')
+				alert('Bots are designed for party')
 			}
         }
     })
