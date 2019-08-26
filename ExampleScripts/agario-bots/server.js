@@ -22,7 +22,7 @@ if (config.server.update) {
 
         if (config.server.version < requesterConfig.server.version) {
             logger.warn(`[SERVER] A new update was found!`)
-            logger.warn(`[SERVER] Download -> https://jimboy3100.github.io/ExampleScripts/agario-bots2/`)
+            logger.warn(`[SERVER] Download -> https://github.com/xN3BULA/free-agario-bots`)
         } else {
             logger.good(`[SERVER] No updates found!`)
         }
@@ -376,12 +376,11 @@ class Bot {
 new WebSocket.Server({
     port: config.server.port
 }).on('connection', ws => {
-    userWS = ws
     setInterval(() => {
-        //userWS.send(Buffer.from([4, connectedBots, spawnedBots, serverPlayers]))
         userWS.send(Buffer.from([4, connectedBots, spawnedBots]))
-        userWS.send(Buffer.from([5, serverPlayers]))		
-    }, 1000);	
+        userWS.send(Buffer.from([5, serverPlayers]))
+    }, 1000);
+    userWS = ws
     logger.good('[SERVER] User connected!')
     ws.on('message', buffer => {
         const reader = new Reader(buffer)
@@ -392,7 +391,8 @@ new WebSocket.Server({
                     game.protocolVersion = reader.readUint32()
                     game.clientVersion = reader.readUint32()
                     user.isAlive = !!reader.readUint8()
-                    bots.name = reader.readString()
+                    //bots.name = decodeURIComponent(escape(reader.readString()))
+					bots.name = reader.readString()
                     bots.amount = reader.readUint8()
                     dataBot.connect()
                     let index = 0
