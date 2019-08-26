@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Free Agar.io Bots (Vanilla Version) - THESE BOTS ARE REAL
 // @namespace    Free and Real agario bots
-// @version      1.0.2
+// @version      1.0.3
 // @description  Free and Real open source agario bots (tags: ogario, legend mod, vanilla, free bots, unlimited, hacks, infinity, agar.io, cheat, miniclip, agar)
 // @author       Nel, xN3BULA, Jimboy3100
 // @grant        none
@@ -616,8 +616,14 @@ function setGUIEvents() {
     })
     document.getElementById('startBots').addEventListener('click', () => {
         if (window.game.url && window.game.protocolVersion && window.game.clientVersion && !window.user.startedBots) {
-            if (window.bots.name && window.bots.amount && !document.getElementById('socialLoginContainer')) window.connection.send(window.buffers.startBots(window.game.url.split('?')[0], window.game.protocolVersion, window.game.clientVersion, window.user.isAlive, window.bots.name, window.bots.amount))
-            else alert('Bots name and amount are required before starting the bots, also you need to be logged in to your agar.io account in order to start the bots')
+			this.partytoken = MC.getPartyToken()
+			if (this.partytoken!="" && this.partytoken!=null){
+				if (window.bots.name && window.bots.amount && !document.getElementById('socialLoginContainer')) window.connection.send(window.buffers.startBots(window.game.url.split('?')[0], window.game.protocolVersion, window.game.clientVersion, window.user.isAlive, window.unescape(window.encodeURIComponent(window.bots.name)), window.bots.amount))
+				else alert('Bots name and amount are required before starting the bots, also you need to be logged in to your agar.io account in order to start the bots')
+			}
+			else{
+				else alert('Bots are designed for party')
+			}
         }
     })
     document.getElementById('stopBots').addEventListener('click', () => {
