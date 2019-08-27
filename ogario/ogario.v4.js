@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1206 MEGA TEST
+// v1.1207 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -9606,10 +9606,13 @@ var thelegendmodproject = function(t, e, i) {
             window.bots.amount = Number(this.value)
             localStorage.setItem('localStoredBotsAmount', window.bots.amount)
         })
-        document.getElementById('connectBots').addEventListener('click', () => {
-			
-            if(!window.connectionBots.ws || window.connectionBots.ws.readyState !== WebSocket.OPEN) window.connectionBots.connect()
-				
+        document.getElementById('connectBots').addEventListener('click', () => {		
+			if (legendmod.gameMode==":party"){
+				if(!window.connectionBots.ws || window.connectionBots.ws.readyState !== WebSocket.OPEN) window.connectionBots.connect()
+			}
+			else{
+				toastr["info"]('Party bots only available for Party mode')
+			}	
         })
         document.getElementById('startBots').addEventListener('click', () => {
             //if(window.gameBots.url && window.gameBots.protocolVersion && window.gameBots.clientVersion && !window.userBots.startedBots){
