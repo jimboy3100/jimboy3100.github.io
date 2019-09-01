@@ -1,7 +1,7 @@
+//v2
 function init(window, ogario, JQuery) {
     window.server = {
-        host: 'localhost',
-        port: 8083
+        host: 'ws://localhost:8083'
     }
     class Writer {
         constructor(size){
@@ -47,7 +47,7 @@ function init(window, ogario, JQuery) {
     window.connection = {
         ws: null,
         connect(){
-            this.ws = new WebSocket(`ws://${window.server.host}:${window.server.port}`)
+            this.ws = new WebSocket(`${window.server.host}`)
             this.ws.binaryType = 'arraybuffer'
             this.ws.onopen = this.onopen.bind(this)
             this.ws.onmessage = this.onmessage.bind(this)
@@ -90,7 +90,7 @@ function init(window, ogario, JQuery) {
                     window.bots.ai = false
                     break
                 case 3:
-                    alert('Your IP has captcha and bots are unable to spawn, change your ip with a VPN or something to one that doesn\'t has captcha in order to use the bots')
+                    toastr.info('Your IP has captcha and bots are unable to spawn, change your ip with a VPN or something to one that doesn\'t has captcha in order to use the bots')
                     break
                 case 4:
                  //Connected Bot count = getUint8(1)
@@ -3051,53 +3051,18 @@ function init(window, ogario, JQuery) {
                 JQuery(`#${id}`).removeClass(`default`).append(JQuery(img).fadeIn(1000));
             }
         },
-        setSkinPreview(img, id) {
-            const skinID = id == `skin-preview`;
-            if (JQuery(`#${id}${` img`}`).attr('src') === img) {
-                return;
-            }
-            JQuery(`#${id}`).empty().addClass(`default`);
-            if (!img) {
-                skinID && JQuery(`#skin`).popover(`hide`);
-                return;
-            }
-            if (!this.checkSkinURL(img)) {
-                if (skinID) {
-                    let notValidText = '<p><strong>Submitted URL is not valid.</strong></p>';
-                    if (/hizliresim.com/ .test(img)) {
-                        notValidText += `<p>NOTICE: <strong>hizliresim.com</strong> is not supported anymore.</p>`;
-                    }
-                    notValidText += `<p>Check if URL:</p><ul><li>is supported by OGARio (see list below)</li><li>is no longer than 60 characters</li></ul>`;
-                    notValidText += '<p>Supported image hosting sites:</p>';
-                    notValidText += `<ol>`;
-                    for (let length = 0; length < SkinExplain.length; length++) {
-                        notValidText += `${`<li><strong><a href="` + SkinExplain[length].url}" rel="noreferrer noopener" target="_blank">${SkinExplain[length].name}</a></strong><span class="example-url">e.g. <a href="${SkinExplain[length].example}${`"  rel="noreferrer noopener" target="_blank">`}${SkinExplain[length].example}${`</a></span></li>`}`;
-                    }
-                    notValidText += `</ol>`;
-                    JQuery('#skin').attr(`data-content`, notValidText);
-                    JQuery(`#skin`).popover('show');
-                    JQuery(`#skin`).focus();
-                }
-                return;
-            }
-            const app = this;
-            const image = new Image();
-            image.crossOrigin = `Anonymous`;
-            image.onload = () => {
-                app.changeSkinPreview(image, id);
-                skinID && JQuery(`#skin`).popover(`hide`);
-            };
-            image.onerror = () => {
-                if (skinID) {
-                    let errorText = '<p><strong>Error while loading image.</strong></p>';
-                    errorText += `<p>Check if image URL is valid.</p>`;
-                    JQuery(`#skin`).attr(`data-content`, errorText);
-                    JQuery(`#skin`).popover('show');
-                    JQuery(`#skin`).focus();
-                }
-            };
-            image.src = img;
-        },
+		setSkinPreview(t, e) {		
+                    checktypeImgVid = new Image();
+                    if (JQuery('#' + e).empty().addClass('default'), t && 0 != t.length) {
+                        var i = this,
+                            o = checktypeImgVid;
+                        o.src = t;
+                        o.crossOrigin = 'anonymous',
+                            o.onload = function() {
+                                i.changeSkinPreview(o, e);
+                            };
+                    }		
+		},
         setProfile() {
             const prevProfile = (PlayerProfiles.length + this.selectedProfile - 1) % PlayerProfiles.length;
             const nextProfile = (this.selectedProfile + 1) % PlayerProfiles.length;
@@ -8121,8 +8086,7 @@ function init(window, ogario, JQuery) {
             <button id="stopBots" class="btn-warning">Stop Bots</button>
             <br>
             <br>
-            <input type="text" id="serverHost" placeholder="Server Host/IP" value="localhost" spellcheck="false">
-            <input type="text" id="serverPort" placeholder="Server Port" value="8083" maxlength="5" spellcheck="false">
+            <input type="text" id="serverHost" placeholder="ws://localhost:8083" value="localhost" spellcheck="false">
         `
         if(localStorage.getItem('localStoredBotsName') !== null){
             window.bots.name = localStorage.getItem('localStoredBotsName')
@@ -8133,12 +8097,11 @@ function init(window, ogario, JQuery) {
             document.getElementById('botsAmount').value = String(window.bots.amount)
         }
         if(localStorage.getItem('localStoredServerHost') !== null){
-            window.server.host = localStorage.getItem('localStoredServerHost')
+            
+			if (window.server.host !=null && window.server.host != "" && window.server.host=="localhost"){
+				window.server.host = localStorage.getItem('localStoredServerHost') 
+			}
             document.getElementById('serverHost').value = window.server.host
-        }
-        if(localStorage.getItem('localStoredServerPort') !== null){
-            window.server.port = JSON.parse(localStorage.getItem('localStoredServerPort'))
-            document.getElementById('serverPort').value = String(window.server.port)
         }
     }
 
@@ -8235,8 +8198,8 @@ function loadUI(){
         })
         document.getElementById('startBots').addEventListener('click', () => {
             if(window.game.url && window.game.protocolVersion && window.game.clientVersion && !window.user.startedBots){
-                if(window.bots.name && window.bots.amount && window.getComputedStyle(document.getElementsByClassName('btn-login-play')[0]).getPropertyValue('display') === 'none') window.connection.send(window.buffers.startBots(window.game.url, window.game.protocolVersion, window.game.clientVersion, window.user.isAlive, window.bots.name, window.bots.amount))
-                else alert('Bots name and amount are required before starting the bots, also you need to be logged in to your agar.io account in order to start the bots')
+                if(window.bots.name && window.bots.amount && window.getComputedStyle(document.getElementsByClassName('btn-login-play')[0]).getPropertyValue('display') === 'none') window.connection.send(window.buffers.startBots(window.game.url, window.game.protocolVersion, window.game.clientVersion, window.user.isAlive, window.unescape(window.encodeURIComponent(window.bots.name)), window.bots.amount))
+                else toastr.info('Bots name, amount and user login are required before starting the bots')
             }
         })
         document.getElementById('stopBots').addEventListener('click', () => {
@@ -8245,10 +8208,6 @@ function loadUI(){
         document.getElementById('serverHost').addEventListener('change', function(){
             window.server.host = this.value
             localStorage.setItem('localStoredServerHost', window.server.host)
-        })
-        document.getElementById('serverPort').addEventListener('change', function(){
-            window.server.port = Number(this.value)
-            localStorage.setItem('localStoredServerPort', window.server.port)
         })
     }
 
