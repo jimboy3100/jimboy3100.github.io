@@ -1,3 +1,4 @@
+//v1
 function init(window, ogario, JQuery) {
     window.server = {
         host: 'localhost',
@@ -5957,7 +5958,7 @@ function init(window, ogario, JQuery) {
             return view;
         },
         decompressMessage(message) {
-            const buffer = window.buffer.Buffer;
+            const buffer = window.buffers.Buffer;
             const messageBuffer = new buffer(message.buffer);
             const readMessage = new buffer(messageBuffer.readUInt32LE(1));
             LZ4.decodeBlock(messageBuffer.slice(5), readMessage);
