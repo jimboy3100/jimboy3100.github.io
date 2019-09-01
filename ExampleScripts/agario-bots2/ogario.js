@@ -1,4 +1,3 @@
-//v1
 function init(window, ogario, JQuery) {
     window.server = {
         host: 'localhost',
@@ -91,7 +90,7 @@ function init(window, ogario, JQuery) {
                     window.bots.ai = false
                     break
                 case 3:
-                    toastr["info"]('Your IP has captcha and bots are unable to spawn, change your ip with a VPN or something to one that doesn\'t has captcha in order to use the bots')
+                    alert('Your IP has captcha and bots are unable to spawn, change your ip with a VPN or something to one that doesn\'t has captcha in order to use the bots')
                     break
                 case 4:
                  //Connected Bot count = getUint8(1)
@@ -3052,7 +3051,7 @@ function init(window, ogario, JQuery) {
                 JQuery(`#${id}`).removeClass(`default`).append(JQuery(img).fadeIn(1000));
             }
         },
-/*        setSkinPreview(img, id) {
+        setSkinPreview(img, id) {
             const skinID = id == `skin-preview`;
             if (JQuery(`#${id}${` img`}`).attr('src') === img) {
                 return;
@@ -3099,19 +3098,6 @@ function init(window, ogario, JQuery) {
             };
             image.src = img;
         },
-		*/
-		setSkinPreview(t, e) {		
-                    checktypeImgVid = new Image();
-                    if ($('#' + e).empty().addClass('default'), t && 0 != t.length) {
-                        var i = this,
-                            o = checktypeImgVid;
-                        o.src = t;
-                        o.crossOrigin = 'anonymous',
-                            o.onload = function() {
-                                i.changeSkinPreview(o, e);
-                            };
-                    }		
-		},
         setProfile() {
             const prevProfile = (PlayerProfiles.length + this.selectedProfile - 1) % PlayerProfiles.length;
             const nextProfile = (this.selectedProfile + 1) % PlayerProfiles.length;
@@ -5958,7 +5944,7 @@ function init(window, ogario, JQuery) {
             return view;
         },
         decompressMessage(message) {
-            const buffer = window.buffers.Buffer;
+            const buffer = window.buffer.Buffer;
             const messageBuffer = new buffer(message.buffer);
             const readMessage = new buffer(messageBuffer.readUInt32LE(1));
             LZ4.decodeBlock(messageBuffer.slice(5), readMessage);
@@ -8245,23 +8231,12 @@ function loadUI(){
             localStorage.setItem('localStoredBotsAmount', window.bots.amount)
         })
         document.getElementById('connect').addEventListener('click', () => {
-			if (application.gameMode==":party"){
-				if(!window.connection.ws || window.connection.ws.readyState !== WebSocket.OPEN) window.connection.connect()
-			}
-			else{
-				toastr["info"]('Party bots only available for Party mode')
-			}	
+            if(!window.connection.ws || window.connection.ws.readyState !== WebSocket.OPEN) window.connection.connect()
         })
         document.getElementById('startBots').addEventListener('click', () => {
             if(window.game.url && window.game.protocolVersion && window.game.clientVersion && !window.user.startedBots){
-                //if(window.bots.name && window.bots.amount && window.getComputedStyle(document.getElementsByClassName('btn-login-play')[0]).getPropertyValue('display') === 'none') window.connection.send(window.buffers.startBots(window.game.url, window.game.protocolVersion, window.game.clientVersion, window.user.isAlive, window.bots.name, window.bots.amount))
-                if (application.gameMode==":party"){
-				if (window.bots.name && window.bots.amount && window.getComputedStyle(document.getElementsByClassName('btn-login-play')[0]).getPropertyValue('display') === 'none') window.connection.send(window.buffers.startBots(window.game.url, window.game.protocolVersion, window.game.clientVersion, window.user.isAlive, window.unescape(window.encodeURIComponent(window.bots.name)), window.bots.amount))
-				else toastr["info"]('Bots name and amount are required before starting the bots, also you need to be logged in to your agar.io account in order to start the bots')	
-			}
-			else{
-				toastr["info"]('Party bots only available for Party mode')
-			}					
+                if(window.bots.name && window.bots.amount && window.getComputedStyle(document.getElementsByClassName('btn-login-play')[0]).getPropertyValue('display') === 'none') window.connection.send(window.buffers.startBots(window.game.url, window.game.protocolVersion, window.game.clientVersion, window.user.isAlive, window.bots.name, window.bots.amount))
+                else alert('Bots name and amount are required before starting the bots, also you need to be logged in to your agar.io account in order to start the bots')
             }
         })
         document.getElementById('stopBots').addEventListener('click', () => {
