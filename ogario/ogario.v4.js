@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1209 MEGA TEST
+// v1.1210 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -546,6 +546,7 @@ var languagetexts = {
         'showChatImages': 'Pokaż obrazki na czacie',
         'showChatVideos': 'Pokaż filmiki na czacie',
         'showChatBox': 'Czatbox zamiast wyskakujących wiadomości',
+		'hidecountry': 'Hide my country',
         'messageSound': 'Dźwięk powiadomienia o wiadomości',
         'commandSound': 'Dźwięk powiadomienia o komendzie',
         'virusSoundurl': 'Virus shot sound',
@@ -942,6 +943,7 @@ var languagetexts = {
         'showChatImages': 'Show images on chat',
         'showChatVideos': 'Show videos on chat',
         'showChatBox': 'Chatbox instead of popups',
+		'hidecountry': 'Hide my country',
         'messageSound': 'Message notification sound',
         'commandSound': 'Command notification sound',
         'virusSoundurl': 'Virus shot sound',
@@ -1880,6 +1882,7 @@ var defaultmapsettings = {
     'chatSounds': true,
     'chatEmoticons': true,
     'showChatBox': false,
+	'hidecountry': false,
     'showChatImages': true,
     'showChatVideos': true,
     'showTop5': true,
@@ -3370,7 +3373,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup"),
                     this.addOptions(["myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow"], "transparencyGroup"),
                     this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup"),
-                    this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox"], "chatGroup"),
+                    this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "hidecountry"], "chatGroup"),
                     this.addOptions(["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup"),
                     this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"), //Sonia2
                     this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert"], "mouseGroup"),
