@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1210 MEGA TEST
+// v1.1211 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -122,6 +122,13 @@ window.SERVER_HOST = 'ws://localhost:1337' // Hostname/IP of the server where th
                 case 3:
                     toastr["info"]('Your IP has captcha and bots are unable to spawn, change your ip with a VPN or something to one that doesn\'t has captcha in order to use the bots')
                     break
+				case 4:	
+					$('#botCount').html(`${dataView.getUint8(1)}/${dataView.getUint8(2)}/${window.bots.amount}`)
+					break
+				case 5:
+					$('#slots').html(dataView.getUint8(1) + "/200")
+					break
+					
             }
         },
         onclose(){
@@ -3333,6 +3340,10 @@ var thelegendmodproject = function(t, e, i) {
                     $(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://jimboy3100.github.io/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + h.skins + '"></a><a href="https://youtube.com/channel/UCoj-ZStcJ0jLMOSK7FOBTbA" class="quick-yt ogicon-youtube2" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="The Legend mod Project"></a></div>'),
 					$(".left-container").append(`<div id="quick-bots" class="agario-panel agario-side-panel"><h2 id="botsInfo"></h2>									
 					<h5 id="botsAuthor" class="main-color">Party bots</h5>
+					<div id="botClient" style="margin-left:15px; margin-right:15px; font-family: Tahoma; color: rgb(255, 255, 255); z-index: 9999; border-radius: 5px; min-height: 16px; min-width: 200px; background-color: rgba(2, 0, 0, 0.4);">
+					<div><b>Bot Count</b>: <span id="botCount" class="label label-info pull-right">Waiting</span></div>
+					<b><div><b>ServerSlots</b>: <span id="slots" class="label label-info pull-right">Waiting</span></div>
+					</b></div>					
 					<span id="statusTextBots">Status: <b id="userStatus">Disconnected</b></span>
 					<br>
 					<span id="aiTextBots">Bots AI: <b id="botsAI">Disabled</b></span>
