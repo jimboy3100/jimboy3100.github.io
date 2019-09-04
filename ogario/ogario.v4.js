@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1216 MEGA TEST
+// v1.1217 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -120,7 +120,9 @@ window.SERVER_HOST = 'ws://localhost:1337' // Hostname/IP of the server where th
                     window.bots.ai = false
                     break
                 case 3:
-                    toastr["info"]('Your IP has captcha and bots are unable to spawn, change your ip with a VPN or something to one that doesn\'t has captcha in order to use the bots')
+                    //toastr["info"]('Your IP has captcha and bots are unable to spawn, change your ip with a VPN or something to one that doesn\'t has captcha in order to use the bots')
+					toastr["info"]('Solve the captcha for your bots')
+					window.botscaptcha=true;
                     break
 				case 4:	
 					$('#botCount').html(`${dataView.getUint8(1)}/${dataView.getUint8(2)}/${window.bots.amount}`)
