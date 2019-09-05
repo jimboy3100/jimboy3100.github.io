@@ -1478,12 +1478,12 @@
      color: white;
      border: none;
      padding: 7px;
-     width: 160px;
+     width: 94%
      font-size: 14px;
      font-weight: bold;
      outline: none;
      margin-top: 6px;
-     margin-left: 50px;
+     margin-left: 10px;
 }
  #connectBots {
      display: inline;
