@@ -36,13 +36,8 @@
     right: 0;
     bottom: 0;
     background-color: #f1ecfa;
-    background-image: url(https://jimboy3100.github.io/banners/iconsantorini2.jpg);
-    background-repeat: no-repeat;
-
-	-webkit-background-size: cover;
-	-moz-background-size: cover;
-
-	background-size: cover;	
+    background: url(https://jimboy3100.github.io/banners/iconretro.png) no-repeat center center fixed;
+    background-size: 100%;
     opacity: 1;
     transition: opacity 1s;
 }
