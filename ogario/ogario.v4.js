@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1289 MEGA TEST
+// v1.1290 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -9721,7 +9721,7 @@ function setGUIEvents() {
     })
     document.getElementById('connectBots').addEventListener('click', () => {
 		if ($('#pushCaptchaBots').is(':checked')){
-			window.connectionBots.send(window.buffers.captchabots('\"' +window.bots.amount'\"'))
+			window.connectionBots.send(window.buffers.captchabots('\"' +window.bots.amount +'\"'))
 			toastr["info"]('<b>[SERVER]:</b> When Bot looses, <font color="red">' + window.bots.amount + '</font> new bots will be spawn with captcha solving')
 		}
 		else{
