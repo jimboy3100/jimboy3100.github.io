@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1290 MEGA TEST
+// v1.1291 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -141,6 +141,9 @@ window.connectionBots = {
                     toastr["info"]('<b>[SERVER]:</b> Solve the captcha for your bots')
                     window.master.recaptchaRequested()
                 }
+				else{
+					toastr["info"]('Your IP has captcha and bots are unable to spawn, change your ip with a VPN or something to one that doesn\'t has captcha in order to use the bots')
+				}
                 break
             case 4:
                 $('#botCount').html(`${dataView.getUint8(1)}/${dataView.getUint8(2)}/${window.bots.amount}`)
