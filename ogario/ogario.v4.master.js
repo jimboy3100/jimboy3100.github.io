@@ -1,4 +1,4 @@
-//v9.1
+//v9.5
 window.EnvConfig = {};
 window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
 window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
@@ -552,8 +552,8 @@ function legendmaster(self) {
         },
         sendRecaptchaResponse: function(mmCoreSplitViewBlock) {
             if (self.core) {
-                self.core.recaptchaResponse(mmCoreSplitViewBlock);
-            }
+					self.core.recaptchaHandlerResponse(mmCoreSplitViewBlock);				
+			}
         },
         notifyToken: function(n) {
             this.sendRecaptchaResponse(n);
