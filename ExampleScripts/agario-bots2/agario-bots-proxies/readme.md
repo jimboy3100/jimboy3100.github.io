@@ -19,6 +19,9 @@ jimboy3100: http://legendmod.ml
 ### Collaborator of bots:
 xN3BULA: https://github.com/xN3BULA/free-agario-bots/
 
+### Mega thanks for explanation:
+Losbro
+
 ## Usage
 Fork this repo on your own repl.it
 
