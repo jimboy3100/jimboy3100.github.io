@@ -3,11 +3,21 @@
 agario proxies
 
 ## Authors
-### Author of script:
+
+### Author of bots:
+NEL: paypal: nelthedeveloper@gmail.com
+
+### Author of this script:
 Troxep: https://github.com/darkx-developer/agar.io
 
 ### Author of usage on Repl.it:
 Darkx ➙ Developer
+
+### Collaborator of bots:
+jimboy3100: http://legendmod.ml
+
+### Collaborator of bots:
+xN3BULA: https://github.com/xN3BULA/free-agario-bots/
 
 ## Usage
 Fork this repo on your own repl.it
