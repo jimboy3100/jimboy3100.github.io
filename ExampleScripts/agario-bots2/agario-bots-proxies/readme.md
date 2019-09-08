@@ -24,6 +24,7 @@ Losbro
 
 ## Usage
 
+click the icon
 [![Alt text](https://img.youtube.com/vi/k4PfQNZqEUs/0.jpg)](https://www.youtube.com/watch?v=k4PfQNZqEUs)
 
 Fork this repo on your own repl.it
