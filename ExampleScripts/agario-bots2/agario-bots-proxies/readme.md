@@ -28,7 +28,7 @@ websocket: wss://agario-bots-proxies--jimboy3100.repl.co
 
 (imagine how yours should be)
 
-Fork this repo:
+Download this:
 
 https://github.com/jimboy3100/jimboy3100.github.io/raw/master/ExampleScripts/agario-bots2/agario-bots-proxies/Gather_Proxy_9.0_Premium.zip
 
