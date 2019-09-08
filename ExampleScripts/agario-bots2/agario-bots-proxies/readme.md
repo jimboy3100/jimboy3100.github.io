@@ -23,6 +23,9 @@ xN3BULA: https://github.com/xN3BULA/free-agario-bots/
 Losbro
 
 ## Usage
+
+[![Alt text](https://img.youtube.com/vi/VID/0.jpg)](https://www.youtube.com/watch?v=VID)
+
 Fork this repo on your own repl.it
 
 https://repl.it/@jimboy3100/agario-bots-proxies
