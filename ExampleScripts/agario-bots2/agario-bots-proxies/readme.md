@@ -36,8 +36,11 @@ Download this:
 https://github.com/jimboy3100/jimboy3100.github.io/raw/master/ExampleScripts/agario-bots2/agario-bots-proxies/Gather_Proxy_9.0_Premium.zip
 
 The above program is for replacing proxies.txt
+
 USE ALWAYS VPN AND CONNECT ONLY TO SOCK5 SOCKETS (SAFEST)
+
 YOU ARE NOT SAFE IF USING SOCKETS AND I DO NOT KNOW HOW THIS THING WORKS
+
 YOU USE THIS PROGRAM ON YOUR OWN RISK, THEY TOLD ME IT IS DANGEROUS
 
 On Gather Proxy -> Proxy Checker -> Choose only SOCK5 (it takes 30 min)
