@@ -10,11 +10,15 @@ Darkx ➙ Developer
 
 ## Usage
 Fork this repo on your own repl.it
+
 https://repl.it/@jimboy3100/agario-bots-proxies
+
 websocket: wss://agario-bots-proxies--jimboy3100.repl.co
+
 (imagine how yours should be)
 
 Fork this repo
+
 https://github.com/jimboy3100/jimboy3100.github.io/raw/master/ExampleScripts/agario-bots2/agario-bots-proxies/Gather_Proxy_9.0_Premium.zip
 
 The above program is for replacing proxies.txt
