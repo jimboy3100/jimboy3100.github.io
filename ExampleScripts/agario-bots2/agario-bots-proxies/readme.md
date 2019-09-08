@@ -5,7 +5,7 @@ agario proxies
 ## Authors
 
 ### Author of bots:
-NEL: https://paypal.me/0x7d2 paypal: nelthedeveloper@gmail.com
+NEL: https://twitter.com/0x7d2 paypal: https://paypal.me/0x7d2
 
 ### Author of this script:
 Troxep: https://github.com/darkx-developer/agar.io
