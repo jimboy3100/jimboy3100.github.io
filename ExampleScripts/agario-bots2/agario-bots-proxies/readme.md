@@ -24,7 +24,7 @@ Losbro
 
 ## Usage
 
-*click the icon for watching the video
+* click the icon for watching the video
 
 [![Alt text](https://img.youtube.com/vi/k4PfQNZqEUs/0.jpg)](https://www.youtube.com/watch?v=k4PfQNZqEUs)
 
@@ -52,7 +52,7 @@ YOU USE THIS PROGRAM ON YOUR OWN RISK, THEY TOLD ME IT IS DANGEROUS
 On Gather Proxy -> Proxy Checker -> Choose only SOCK5 (it takes 30 min)
 Export at least 1000 ALIVE proxies (not less), see the generated file and replace everything on proxies.txt after # SOCKS5
 
-**If you use Repl.it, and it is connected to proxies, in theory users can be safe even with SOCK4, but they are recommended not to use other than SOCK5, also SOCK5 expire later and hide IP and countries.
+** If you use Repl.it, and it is connected to proxies, in theory users can be safe even with SOCK4, but they are recommended not to use other than SOCK5, also SOCK5 expire later and hide IP and countries.
 
 ### GOOD LUCK!
 
