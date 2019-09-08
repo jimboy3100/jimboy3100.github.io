@@ -22,6 +22,14 @@ xN3BULA: https://github.com/xN3BULA/free-agario-bots/
 ### Mega thanks for explanation:
 Losbro
 
+### Discord community of open source bots:
+
+https://discordapp.com/invite/SDMNEcJ
+
+### Discord community of great supporters, testers:
+
+https://discordapp.com/invite/UuRjzKv
+
 ## Usage
 
 * click the icon for watching the video
