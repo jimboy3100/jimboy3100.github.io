@@ -1,5 +1,5 @@
  //OLD DEALS
- //v2.5
+ //v2.6
  //for agarioUID, agarioID, look at the case 102: on this file https://jimboy3100.github.io/ogario/ogario.v4.js?v=32
 
  /* you will need this
