@@ -1,4 +1,5 @@
 # free-agario-bots
+## DO NOT AND FOR ANY REASON USE OTHER THAN SOCK5, ONLY SOCK5 USE
 agario proxies
 
 ## Authors
