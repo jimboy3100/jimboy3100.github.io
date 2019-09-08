@@ -1,5 +1,5 @@
 # free-agario-bots
-## DO NOT AND FOR ANY REASON USE OTHER THAN SOCK5, ONLY SOCK5 USE
+
 agario proxies
 
 ## Authors
@@ -41,7 +41,9 @@ YOU ARE NOT SAFE IF USING SOCKETS AND I DO NOT KNOW HOW THIS THING WORKS
 YOU USE THIS PROGRAM ON YOUR OWN RISK, THEY TOLD ME IT IS DANGEROUS
 
 On Gather Proxy -> Proxy Checker -> Choose only SOCK5 (it takes 30 min)
-Export least 1000 ALIVE proxies, see the generated file and replace everything on proxies.txt after # SOCKS5
+Export at least 1000 ALIVE proxies (not less), see the generated file and replace everything on proxies.txt after # SOCKS5
+
+*Repl.it is connected to proxies, so in theory users can be safe even with SOCK4, but they are recommended not to use, also SOCK5 expire later and hide IP and countries.
 
 ### GOOD LUCK!
 
