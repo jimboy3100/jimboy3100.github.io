@@ -1,4 +1,4 @@
-//v10.4
+//v10.5
 window.EnvConfig = {};
 window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
 window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
@@ -264,7 +264,7 @@ function legendmaster(self) {
             if (nextNodeLoc) {
                 this.setRegion(nextNodeLoc, ![]);
                 if (!this.checkPartyHash()) {
-                    console.log("[Master] getRegionCode called, reconnecting");
+                    //console.log("[Master] getRegionCode called, reconnecting");
                     this.reconnect();
                 }
                 return;
