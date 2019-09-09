@@ -159,7 +159,7 @@ function legendmaster(self) {
         }
     };
     if (window.EnvConfig.fb_app_id && window.EnvConfig.google_client_id && window.EnvConfig.master_url) {
-        console.log("[Master] window.EnvConfig loaded from //agar.io/index.html from the previous time");
+        //console.log("[Master] window.EnvConfig loaded from //agar.io/index.html from the previous time");
         var headers = {
             fb_app_id: window.EnvConfig.fb_app_id,
             gplus_client_id: window.EnvConfig.google_client_id,
