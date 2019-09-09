@@ -1,4 +1,4 @@
-//v9.5
+//v10.1
 window.EnvConfig = {};
 window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
 window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
@@ -166,7 +166,7 @@ function legendmaster(self) {
             master_url: window.EnvConfig.master_url.replace("https://", ""),
             endpoint_version: "v4",
             proto_version: "15.0.0",
-            client_version: 30600,
+            client_version: 30604,
 			//3.4.6
             client_version_string: "3.6.0"
         };
@@ -177,8 +177,8 @@ function legendmaster(self) {
             master_url: "webbouncer-live-v7-0.agario.miniclippt.com",
             endpoint_version: "v4",
             proto_version: "15.0.0",
-            client_version: 30600,
-            client_version_string: "3.6.0"
+            client_version: 30604,
+            client_version_string: "3.6.4"
         };
     }
 	window.LMagarioheaders=headers;
@@ -200,21 +200,28 @@ function legendmaster(self) {
         accessToken: null,
         clientVersion: headers.client_version,
         clientVersionString: headers.client_version_string,
+		protocolVersion: headers.proto_version,
         getClientVersion: function() {
             if (null !== self.localStorage.getItem("ogarioClientVersionString")) {
                 this.clientVersionString = self.localStorage.getItem("ogarioClientVersionString");
                 this.clientVersion = this.parseClientVersion(this.clientVersionString);
             }
+            if (null !== self.localStorage.getItem("ogarioProtocolVersion")) {
+                this.ProtocolVersion = self.localStorage.getItem("ogarioProtocolVersion");
+            }			
             var window = this;
             $.ajax("//agar.io/mc/agario.js", {
                 error: function() {},
                 success: function(sketchContents) {
                     var optionMatch = sketchContents.match(/versionString="(\d+\.\d+\.\d+)"/);
+					var optionMatch2 = sketchContents.match(/x-support-proto-version\","(\d+\.\d+\.\d+)"/);
                     if (optionMatch) {
                         var pluginName = optionMatch[1];
+						var pluginName2 = optionMatch2[1];
                         var data = window.parseClientVersion(pluginName);
                         //                        console.log("[Master] Current client version:", data, pluginName);
                         window.setClientVersion(data, pluginName);
+						window.setProtocolVersion(pluginName2);
                     }
                 },
                 dataType: "text",
@@ -223,7 +230,7 @@ function legendmaster(self) {
                 crossDomain: true
             });
         },
-        setClientVersion: function(clientVersion, serverVersion) {
+        setClientVersion: function(clientVersion, serverVersion) {			
             //            console.log("[Master] Your client version:", this.clientVersion, this.clientVersionString);
             if (this.clientVersion != clientVersion) {
                 console.log("[Master] Changing client version...");
@@ -233,24 +240,22 @@ function legendmaster(self) {
                     self.core.setClientVersion(clientVersion, serverVersion);
                 }
                 self.localStorage.setItem("ogarioClientVersionString", serverVersion);
-                console.log("[Master] setClientVersiont called, reconnecting");
+                console.log("[Master] setClientVersion called, reconnecting");
                 this.reconnect(true);
             }
         },
+        setProtocolVersion: function(serverVersion) {			
+            if (this.protocolVersion != serverVersion) {
+                console.log("[Master] Changing protocol version...");
+                this.protocolVersion = serverVersion;
+                self.localStorage.setItem("ogarioProtocolVersion", serverVersion);   
+                console.log("[Master] setProtocolVersion called, reconnecting");
+                this.reconnect(true);				
+            }
+        },		
         parseClientVersion: function(styleValue) {
             return 1e4 * parseInt(styleValue.split(".")[0]) + 100 * parseInt(styleValue.split(".")[1]) + parseInt(styleValue.split(".")[2]);
         },
-        /*        getRegionCode: function() {
-                    var nextNodeLoc = self.localStorage.getItem("location");
-                    if (nextNodeLoc) {
-                        return this.setRegion(nextNodeLoc, false), void(this.checkPartyHash() || this.reconnect());
-                    }
-                    var canvasLayersManager = this;
-                    $.get("//gc.agar.io", function(layoutSets) {
-                        var j = layoutSets.split(" ")[0];
-                        canvasLayersManager.setRegionCode(j);
-                    }, "text");
-                },*/
         'getRegionCode': function() {
             var nextNodeLoc = window.localStorage.getItem('location');
             if (nextNodeLoc) {
@@ -262,11 +267,6 @@ function legendmaster(self) {
                 return;
             }
             var canvasLayersManager = this;
-            /*$.get('//gc.agar.io', function(_0x4a6f91) {
-            	var _0x4f6506 = _0x4a6f91.split(' ');
-            	var _0x102283 = _0x4f6506[0x0];
-            	canvasLayersManager.setRegionCode(_0x102283);
-            }, 'text'); */
             userData = $.get("https://extreme-ip-lookup.com/json/", function(response) {
                 $("#response").html(JSON.stringify(response, null, 4));
                 if (userData != null) {
@@ -452,7 +452,7 @@ function legendmaster(self) {
             }
             $.ajax("https://" + headers.master_url + "/" + _wid_attr, {
                 beforeSend: function(xhr) {
-                    return xhr.setRequestHeader("Accept", "text/plain"), xhr.setRequestHeader("Accept", "*/*"), xhr.setRequestHeader("Accept", "q=0.01"), xhr.setRequestHeader("Content-Type", type), xhr.setRequestHeader("x-support-proto-version", headers.proto_version), xhr.setRequestHeader("x-client-version", header.clientVersion), true;
+                    return xhr.setRequestHeader("Accept", "text/plain"), xhr.setRequestHeader("Accept", "*/*"), xhr.setRequestHeader("Accept", "q=0.01"), xhr.setRequestHeader("Content-Type", type), xhr.setRequestHeader("x-support-proto-version", master.protocolVersion), xhr.setRequestHeader("x-client-version", master.clientVersion), true;
                 },
                 error: function() {
                     if (timeout_callback) {
@@ -474,7 +474,7 @@ function legendmaster(self) {
             var obj = this;
             $.ajax("https://" + headers.master_url + "/" + key, {
                 beforeSend: function(xhr) {
-                    return xhr.setRequestHeader("x-support-proto-version", headers.proto_version), xhr.setRequestHeader("x-client-version", obj.clientVersion), true;
+                    return xhr.setRequestHeader("x-support-proto-version", master.protocolVersion), xhr.setRequestHeader("x-client-version", master.clientVersion), true;
                 },
                 error: function() {
                     if (error) {
