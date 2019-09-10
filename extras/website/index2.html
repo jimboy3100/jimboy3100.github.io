@@ -133,7 +133,7 @@ if (element) {
 </div>
 <h2 class="project-tagline">Step 2, Install Script
 <font size="3"><br>Disable other "main" Tampermonkey userscripts or Chrome Extensions</font></h2>
-<br><span style="color: black;"></span><a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" href="http://jimboy3100.github.io/LMexpress/LMexpress.user.js" target="_blank"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Legend Express v1.6</span></a> <span style="color: black;">(Smooth mod)</span> 
+<br><span style="color: black;"></span><a style="max-width: 50%;min-width: 15%;border-color: black;" class="btn" onclick="JoinLcPartyMode()"><span style="left;position: relative;color: black;"><img title="Chrome" src="https://jimboy3100.github.io/banners/icon32croped.ico.gif" alt="LM" style="float: left; position: relative">Legend Express v1.6</span></a> <span style="color: black;">(Smooth mod)</span> 
 <br>
 <br><span style="color: black;">Cannot install? </span><a href="https://www.youtube.com/watch?v=vuRK1qUnSKY" target="_blank"><b>Watch video</b></a>
 <br><span style="color: black;">Join the </span><a name="LmDevelopers" onclick="document.getElementsByName('Developers')[0].click();"><b>developer team</b></a> of Legend mod Project
@@ -220,8 +220,6 @@ If you like, please support the mod with any donation
 <strong>LME is the biggest and quickest mod for agario</strong>
 <br>
 <br>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/t1aCrp0vyZc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-<br>
 <h2 class="project-tagline">Legend Mod Express Features</h2>
 Auto Updates
 <br><b>Unlimited FPS</b>&nbsp;unlocked (<i>quicker than Vanilla</i>)
@@ -294,13 +292,25 @@ Steps:
 <br>
 <h2 class="project-tagline">Updates</h2>
 <b>Legend Express</b>
-<br><i>New Functions will be announced...</i>
-<br>
+<br><i>Steps to have a helper on LM:</i>
+<br>1. install chrome recaptcha clicker:
+<br><a href="https://chrome.google.com/webstore/detail/im-not-robot-captcha-clic/ceipnlhmjohemhfpbjdgeigkababhmjc/related" target="_blank">https://chrome.google.com/webstore/detail/im-not-robot-captcha-clic/ceipnlhmjohemhfpbjdgeigkababhmjc/related</a>
+<br>2. use tag/password
+<br>3. logout from account
+<br>4. open a new tab and disable skins (button S)
+<br>5. press J (for old settings, you need to add it on hotkeys)
+<br>6. enable auto respawn and click play:D
+<br>7. login to your normal tab and play
+<br>* For even lag lag type this to the console of the second window: $("#canvas").hide();
+<br>** Prefer not using it when recapcha start icons
+
 <br><b>Universal tools</b>
-<br><i>New Functions will be announced...</i>
+<br><i>Custom skins of Agar tool are implemented. Users with same tag are implemented on functions of teamboard players</i>
 <br>
 <br><b>Legend mod Mobile</b>
-<br><i>New Functions will be announced...</i>
+<br><i>Updated and work again...</i>
+<br><b>Skin rotator (greatly used for minion mod)</b>
+<br><i>Updated and work again...</i>
 </section>
 </div>
 
@@ -332,6 +342,7 @@ Legend Mod has Unlimited FPS unlocked (quicker than Vanilla)
 Top performance killers which should be OFF on a low-end PC:
 <br>Ghost Cells
 <br>Skins
+<br>Jelly Physics
 <br>Skins on teamboard
 <br>Background sectors
 <br>Background grid
@@ -404,7 +415,14 @@ var d=document,s=d.createElement('script'); s.src='https://jimboy3100.github.io/
 </section>
 </div>
 	<script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script>
-	<script>
+	<script>	
+	function JoinLcPartyMode() { 
+	window.open('http://jimboy3100.github.io/LMexpress/LMexpress.user.js');	
+	setTimeout(function() {
+		window.location.href = "https://jimboy3100.github.io/Lc/LcPartyMode.html";
+       //window.open('https://jimboy3100.github.io/Lc/LcPartyMode.html', '_blank',' scrollbars=yes,menubar=no,width=800,height=550, resizable=yes,toolbar=no,location=no,status=no');	
+    }, 2000);
+	}
 	setTimeout(function(){
 	document.title = "legendmod.ml"; 
 	(function() {
