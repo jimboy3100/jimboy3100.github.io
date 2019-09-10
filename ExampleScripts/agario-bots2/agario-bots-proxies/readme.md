@@ -24,11 +24,7 @@ Losbro
 
 ### Discord community of open source bots:
 
-https://discordapp.com/invite/SDMNEcJ
-
-### Discord community of great supporters, testers:
-
-https://discordapp.com/invite/UuRjzKv
+https://discord.gg/YkyS8zd
 
 ## Usage
 
