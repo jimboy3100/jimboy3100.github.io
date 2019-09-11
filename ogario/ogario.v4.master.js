@@ -1,4 +1,4 @@
-//v11.5
+//v11.6
 window.EnvConfig = {};
 window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
 window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
@@ -171,7 +171,18 @@ function legendmaster(self) {
             client_version_string: "3.7.1",
 			protocolVersion: 21
         };
-    } else {
+    } else if (window.EnvConfig.master_url){
+        var headers = {
+            fb_app_id: 677505792353827,
+            gplus_client_id: "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com",
+            master_url: window.EnvConfig.master_url.replace("https://", ""),
+            endpoint_version: "v4",
+            proto_version: "15.0.1",
+            client_version: 30701,
+            client_version_string: "3.7.1",
+			protocolVersion: 21
+        };
+		} else {
         var headers = {
             fb_app_id: 677505792353827,
             gplus_client_id: "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com",
@@ -181,7 +192,7 @@ function legendmaster(self) {
             client_version: 30701,
             client_version_string: "3.7.1",
 			protocolVersion: 21
-        };
+        };		
     }
 	window.LMagarioheaders=headers;
     var l = false;
