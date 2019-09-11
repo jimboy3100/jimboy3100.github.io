@@ -1,4 +1,4 @@
-//v11.4
+//v11.5
 window.EnvConfig = {};
 window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
 window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
@@ -175,7 +175,7 @@ function legendmaster(self) {
         var headers = {
             fb_app_id: 677505792353827,
             gplus_client_id: "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com",
-            master_url: "webbouncer-live-v7-0.agario.miniclippt.com",
+            master_url: "webbouncer-live-v8-0.agario.miniclippt.com",
             endpoint_version: "v4",
             proto_version: "15.0.1",
             client_version: 30701,
