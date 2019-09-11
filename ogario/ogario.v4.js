@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1235 MEGA TEST
+// v1.1237 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7544,7 +7544,9 @@ var thelegendmodproject = function(t, e, i) {
                     }
                     if (8 & d) {
                         y = window.decodeURIComponent(escape(s()));
+						if (LM.gameMode && LM.gameMode != ":teams"){
                         this.vanillaskins(y, g);
+						}
                     }
                     //Jimboy's
                     if (16 & d) {
