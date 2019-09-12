@@ -1,4 +1,4 @@
-//v11.6
+//v11.7
 window.EnvConfig = {};
 window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
 window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
@@ -215,6 +215,7 @@ function legendmaster(self) {
         clientVersionString: headers.client_version_string,
 		xsupportprotoversion: headers.proto_version,
 		protocolVersion: headers.protocolVersion,
+		master_url_http: "https://" + headers.master_url,
         getClientVersion: function() {
             if (null !== self.localStorage.getItem("ogarioClientVersionString")) {
                 this.clientVersionString = self.localStorage.getItem("ogarioClientVersionString");
