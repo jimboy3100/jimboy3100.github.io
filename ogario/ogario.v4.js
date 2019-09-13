@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1243 MEGA TEST
+// v1.1244 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -391,7 +391,7 @@ var Lmagarversion = "";
 
 window.LMGameConfiguration = $.ajax({
     type: "GET",
-    url: "https://jimboy3100.github.io/agario/live/" + Lmagarversion + "GameConfiguration.json",
+    url: "https://legendmod.ml/agario/live/" + Lmagarversion + "GameConfiguration.json",
     async: false,
     datatype: "jsonp",
     success: function(info) {
@@ -1344,7 +1344,7 @@ var themePresets = {
         'btn3Color2': '#814ee3',
         'btn4Color': '#bf00aa',
         'btn4Color2': '#a80096',
-        'menuBg': 'https://jimboy3100.github.io/banners/static/img/pattern.png',
+        'menuBg': 'https://legendmod.ml/banners/static/img/pattern.png',
         'menuOpacity': 0.96,
         'hudMainColor': '#01d9cc',
         'hudColor': 'rgba(0,0,0,0.4)',
@@ -1385,7 +1385,7 @@ var themePresets = {
         'miniMapMyCellStrokeSize': 4,
         'miniMapTeammatesSize': 5.5,
         'customBackground': '',
-        'customCursor': 'https://jimboy3100.github.io/cursors/cursor_02.cur'
+        'customCursor': 'https://legendmod.ml/cursors/cursor_02.cur'
     },
     'ogario-orange': {
         'name': 'OGARio v2',
@@ -1504,7 +1504,7 @@ var themePresets = {
         'btn3Color2': '#80063b',
         'btn4Color': '#aa084e',
         'btn4Color2': '#8a063f',
-        'menuBg': 'https://jimboy3100.github.io/banners/static/img/pattern.png',
+        'menuBg': 'https://legendmod.ml/banners/static/img/pattern.png',
         'menuOpacity': 1,
         'hudMainColor': '#5974ff',
         'hudColor': 'rgba(36,36,36,0.49)',
@@ -1542,7 +1542,7 @@ var themePresets = {
         'miniMapMyCellStrokeSize': 0,
         'miniMapTeammatesSize': 5,
         'customBackground': '',
-        'customCursor': 'https://jimboy3100.github.io/cursors/cursor_01.cur'
+        'customCursor': 'https://legendmod.ml/cursors/cursor_01.cur'
     },
     'hkg-style': {
         'name': 'HKG Style',
@@ -1664,7 +1664,7 @@ var themeMenus = {
         'btn3Color2': '#814ee3',
         'btn4Color': '#f300d8',
         'btn4Color2': '#df00c6',
-        'menuBg': 'https://jimboy3100.github.io/banners/static/img/pattern.png'
+        'menuBg': 'https://legendmod.ml/banners/static/img/pattern.png'
     },
     'ogario-v2': {
         'name': 'OGARio v2',
@@ -1784,7 +1784,7 @@ var defaultSettings = {
     'btn3Color2': '#814ee3',
     'btn4Color': '#bf00aa',
     'btn4Color2': '#a80096',
-    'menuBg': 'https://jimboy3100.github.io/banners/static/img/pattern.png',
+    'menuBg': 'https://legendmod.ml/banners/static/img/pattern.png',
     'menuOpacity': 0.96,
     'hudMainColor': '#01d9cc',
     'hudColor': 'rgba(0,0,0,0.4)',
@@ -1821,15 +1821,15 @@ var defaultSettings = {
     ////
     "color": "#fff",
     //"commanderImage" : "https://i.imgur.com/wQKUDB3.png",
-    "commanderImage": "https://jimboy3100.github.io/banners/drawCommander.png",
-    "commanderImage1": "https://jimboy3100.github.io/banners/drawCommander1.png",
-    "commanderImage2": "https://jimboy3100.github.io/banners/drawCommander2.png",
-    "commanderImage3": "https://jimboy3100.github.io/banners/drawCommander3.png",
-    "commanderImage4": "https://jimboy3100.github.io/banners/drawCommander4.png",
-    "commanderImage5": "https://jimboy3100.github.io/banners/drawCommander5.png",
-    "commanderImage6": "https://jimboy3100.github.io/banners/iconJustWatchPro.png",
-    "commanderImageDyingLight": "https://jimboy3100.github.io/banners/icondyinglightzombie.png",
-    "commanderImageDyingLightvirus": "https://jimboy3100.github.io/banners/icondyinglightvirus.png",
+    "commanderImage": "https://legendmod.ml/banners/drawCommander.png",
+    "commanderImage1": "https://legendmod.ml/banners/drawCommander1.png",
+    "commanderImage2": "https://legendmod.ml/banners/drawCommander2.png",
+    "commanderImage3": "https://legendmod.ml/banners/drawCommander3.png",
+    "commanderImage4": "https://legendmod.ml/banners/drawCommander4.png",
+    "commanderImage5": "https://legendmod.ml/banners/drawCommander5.png",
+    "commanderImage6": "https://legendmod.ml/banners/iconJustWatchPro.png",
+    "commanderImageDyingLight": "https://legendmod.ml/banners/icondyinglightzombie.png",
+    "commanderImageDyingLightvirus": "https://legendmod.ml/banners/icondyinglightvirus.png",
 
     ////
     'miniMapFont': 'ubuntu-bold',
@@ -1848,7 +1848,7 @@ var defaultSettings = {
     'miniMapTeammatesSize': 5.5,
     'miniMapGhostCellsAlpha': 0.15,
     'customBackground': '',
-    'customCursor': 'https://jimboy3100.github.io/cursors/cursor_02.cur'
+    'customCursor': 'https://legendmod.ml/cursors/cursor_02.cur'
 }
 var skinUrlPatterns = [{
         name: "imgur.com",
@@ -1973,10 +1973,10 @@ var defaultmapsettings = {
     ////
     //'zoomSpeedValue': .87,
     'zoomSpeedValue2': -0.13,
-    'messageSound': 'https://jimboy3100.github.io/sounds/notification_01.mp3',
-    //                'commandSound': 'https://jimboy3100.github.io/sounds/notification_02.mp3'
-    'commandSound': 'https://jimboy3100.github.io/sounds/chat-message.mp3',
-    'virusSoundurl': 'https://jimboy3100.github.io/sounds/sound-gunshot.mp3',
+    'messageSound': 'https://legendmod.ml/sounds/notification_01.mp3',
+    //                'commandSound': 'https://legendmod.ml/sounds/notification_02.mp3'
+    'commandSound': 'https://legendmod.ml/sounds/chat-message.mp3',
+    'virusSoundurl': 'https://legendmod.ml/sounds/sound-gunshot.mp3',
     'soundSplit': 'https://www.myinstants.com/media/sounds/quack_5.mp3'
 
 };
@@ -2284,7 +2284,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.addSliderBox('#theme-minimap', 'miniMapGhostCellsAlpha', 0.01, 0.99, 0.01);
                     this.addInputBox('#theme-images', 'customBackground', 'Image URL', 'setCustomBackground');
                     this.addInputBox('#theme-images', 'customCursor', 'Cursor image URL', 'setCustomCursor');
-                    for (var e = 'https://jimboy3100.github.io/cursors/cursor_', i = 0; i < 35; i++) i < 9 ? this.addCursorBox('#theme-images', e + '0' + (i + 1) + '.cur') : this.addCursorBox('#theme-images', e + '' + (i + 1) + '.cur');
+                    for (var e = 'https://legendmod.ml/cursors/cursor_', i = 0; i < 35; i++) i < 9 ? this.addCursorBox('#theme-images', e + '0' + (i + 1) + '.cur') : this.addCursorBox('#theme-images', e + '' + (i + 1) + '.cur');
                     $(document).on('click', '#theme-images .cursor-box a', function(e) {
                             e.preventDefault();
                             var i = $('img', this).attr('src');
@@ -2911,7 +2911,7 @@ var thelegendmodproject = function(t, e, i) {
                         for (; entityType < PL$29; entityType++) {
                           bufferString = bufferString + this.top5[entityType].mass;
                           if (!(entityType >= defaultmapsettings["limTP"])) {
-                            pix_color = pix_color + ('<li id="player"><span id="pos-skin" style="background-color: ' + this.top5[entityType].color + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this.top5[entityType]["skin"] ? this.top5[entityType]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + '" alt=""> ' +
+                            pix_color = pix_color + ('<li id="player"><span id="pos-skin" style="background-color: ' + this.top5[entityType].color + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this.top5[entityType]["skin"] ? this.top5[entityType]["skin"] : "https://legendmod.ml/banners/icon32croped.ico.gif") + '" alt=""> ' +
             				'<span class=\"top5-mass-color\">[' + this.shortMassFormat(this.top5[entityType].mass) + ']</span> ' + this.escapeHTML(this.top5[entityType].nick) + '</span><span class=\"hud-main-color\">[' + this.calculateMapSector(this.top5[entityType].x, this.top5[entityType].y) +']</span><span id= "top5mass" class=""> ' +
                             this.shortMassFormat(this.top5[entityType].mass) + '</span></li>');
                           }
@@ -2980,7 +2980,7 @@ var thelegendmodproject = function(t, e, i) {
                         for (; o < s; o++) {
                             e = e + this.top5[o].mass;
                             if (!(o >= window.teamboardlimit && this.top5[o].mass > 1)) {
-                                t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this.top5[o].id + '"style="background-color: ' + this.top5[o].color + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this.top5[o]["skin"] ? this.top5[o]["skin"] : "https://jimboy3100.github.io/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
+                                t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this.top5[o].id + '"style="background-color: ' + this.top5[o].color + '; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' + (this.top5[o]["skin"] ? this.top5[o]["skin"] : "https://legendmod.ml/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');
                                 /* if (defaultmapsettings["showTargeting"]) {
                                   t = t + ('<a href="#" data-user-id="' + this.top5[o].id + '" class="set-target ogicon-target"></a> ');
                                 } */
@@ -3378,7 +3378,7 @@ var thelegendmodproject = function(t, e, i) {
                     $(".agario-shop-panel").after('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">The Legend Mod Project</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>'),
                     $("#tags-container").appendTo($("#profile")),
                     $(".btn-logout").appendTo($("#profile")),
-                    $(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://jimboy3100.github.io/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + h.skins + '"></a><a href="https://youtube.com/channel/UCoj-ZStcJ0jLMOSK7FOBTbA" class="quick-yt ogicon-youtube2" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="The Legend mod Project"></a></div>'),
+                    $(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://legendmod.ml/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + h.skins + '"></a><a href="https://youtube.com/channel/UCoj-ZStcJ0jLMOSK7FOBTbA" class="quick-yt ogicon-youtube2" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="The Legend mod Project"></a></div>'),
                     $(".left-container").append(`<div id="quick-bots" class="agario-panel agario-side-panel"><h2 id="botsInfo"></h2>									
 					<h5 id="botsAuthor" class="main-color">Party bots</h5>
 					<div id="botClient" style="margin-left:15px; margin-right:15px; font-family: Tahoma; color: rgb(255, 255, 255); z-index: 9999; border-radius: 5px; min-height: 16px; min-width: 200px; background-color: rgba(2, 0, 0, 0.4);">
@@ -3468,14 +3468,14 @@ var thelegendmodproject = function(t, e, i) {
                     $("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color">Team<span class="team-top"></span></h5><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' + //<div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="10" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
                         h.totalPartyPlayers + ': <span id="top5-total-players" class="top5-mass-color">0</span>   <span class="hud-main-color ogicon-pacman"></span> ' +
                         h.totalPartyMass + ': <span id="top5-total-mass" class="top5-mass-color">0</span></div></div> <div id="time-hud" class="hud time-hud-color"></div> <div id="pause-hud" class="hud">' +
-                        h.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">legendmod.ml</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://jimboy3100.github.io/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
+                        h.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">legendmod.ml</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://legendmod.ml/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
                         h.targetNotSet + '</span></div><div id="target-summary"></div></div><div id="target-panel-hud" class="hud"><a href="#" id="set-targeting" class="ogicon-target"></a><a href="#" id="set-private-minimap" class="ogicon-location2"></a><a href="#" id="cancel-targeting" class="ogicon-cancel-circle"></a><a href="#" id="change-target" class="ogicon-arrow-right"></a></div> <div id="quest-hud" class="hud"></div> <div id="btl-hud" class="hud"></div></div>'),
                     $("body").append('<ul id="messages"></ul>'),
                     $("body").append('<div id="message-box"><div id="chat-emoticons"></div><div id="message-menu"><a href="#" class="chat-sound-notifications ogicon-volume-high"></a><a href="#" class="chat-active-users ogicon-user-check"></a><a href="#" class="chat-muted-users ogicon-user-minus"></a><a href="#" class="show-chat-emoticons ogicon-smile"></a></div><input type="text" id="message" class="form-control" placeholder="' +
                         h.enterChatMsg + '..." maxlength="80"></div>'),
                     $("body").append('<div id="chat-box"></div>'), emoticonicons) {
                     if (emoticonicons.hasOwnProperty(t)) {
-                        $("#chat-emoticons").append('<img src="https://jimboy3100.github.io/banners/emoticons/' + emoticonicons[t] + '" alt="' + t + '" class="emoticon">');
+                        $("#chat-emoticons").append('<img src="https://legendmod.ml/banners/emoticons/' + emoticonicons[t] + '" alt="' + t + '" class="emoticon">');
                     }
                 }
                 $("body").append('<div id="exp-imp"><div id="exp-imp-menu"><button id="close-exp-imp" class="btn btn-danger">' + h.close + '</button></div><div id="exp-imp-settings"></div></div>'),
@@ -4088,7 +4088,7 @@ var thelegendmodproject = function(t, e, i) {
                     t[e]['onerror'] = function() {
                         //console.log("error loading image: "+ e);
                         if (e.includes(window.EnvConfig.config_url)) {
-                            e = "https://jimboy3100.github.io/vanillaskins/" + e.split('/').pop(); //if CORS policy on miniclip images, use other source
+                            e = "https://legendmod.ml/vanillaskins/" + e.split('/').pop(); //if CORS policy on miniclip images, use other source
                             //console.log("new destination is:" + e);
                             ogarminimapdrawer.customSkinsMap[window.lastusednameforskin] = e;
                             ogarminimapdrawer.loadSkin(t, e);
@@ -5375,12 +5375,12 @@ var thelegendmodproject = function(t, e, i) {
             },
             'parseEmoticons': function(t) {
                 /*return String(t).replace(/\&lt\;3/g, '<3').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\))/g, function(t) {
-                    return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + d[t] + '\" alt=\"' + t + '\" class=\"emoticon\">';
+                    return '<img src=\"https://legendmod.ml/banners/emoticons/' + d[t] + '\" alt=\"' + t + '\" class=\"emoticon\">';
                 });*/
                 //return String(t).replace(/\&lt\;3/g, '<3').replace(/℄/g, '℄ Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(t) {
                 return String(t).replace(/\&lt\;3/g, '<3').replace(/℄/g, '℄ Legend Clan').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\)|\(angry\)|\(clown\)|\(crazy\)|\(devil\)|\(devil2\)|\(fb\)|\(google\)|\(ghost\)|\(heel\)|\(kiss\)|\(lipstick\)|\(rage\)|\(teacher\)|\(together\)|\(toothy\)|\(evil\)|\(baby\)|\(wow\))/g, function(t) {
                     //console.log(d[t]);
-                    return '<img src=\"https://jimboy3100.github.io/banners/emoticons/' + emoticonicons[t] + '\" alt=\"' + t + '\" class=\"emoticon\">';
+                    return '<img src=\"https://legendmod.ml/banners/emoticons/' + emoticonicons[t] + '\" alt=\"' + t + '\" class=\"emoticon\">';
                 });
 
             },
@@ -5551,7 +5551,7 @@ var thelegendmodproject = function(t, e, i) {
                             $('#target-skin img').attr('src', e);
                             this.targetSkinURL = e;
                         } else {
-                            $('#target-skin img').attr('src', 'https://jimboy3100.github.io/banners/static/img/blank.png')
+                            $('#target-skin img').attr('src', 'https://legendmod.ml/banners/static/img/blank.png')
                         }
 
                     }
@@ -5751,7 +5751,7 @@ var thelegendmodproject = function(t, e, i) {
             cimg6 = new Image;
             cimg6.src = defaultSettings.commanderImage6;
             cimg7 = new Image;
-            cimg7.src = 'https://jimboy3100.github.io/banners/iconLcForCanvas.png';
+            cimg7.src = 'https://legendmod.ml/banners/iconLcForCanvas.png';
 
             if (dyinglight1load == "yes") {
                 cimgDyingLight = new Image;
@@ -5761,17 +5761,17 @@ var thelegendmodproject = function(t, e, i) {
 
 
                 cimgDyingLight1 = new Image;
-                cimgDyingLight1.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie2.png';
+                cimgDyingLight1.src = 'https://legendmod.ml/banners/icondyinglightzombie2.png';
                 cimgDyingLight2 = new Image;
-                cimgDyingLight2.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie3.png';
+                cimgDyingLight2.src = 'https://legendmod.ml/banners/icondyinglightzombie3.png';
                 cimgDyingLight3 = new Image;
-                cimgDyingLight3.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie4.png';
+                cimgDyingLight3.src = 'https://legendmod.ml/banners/icondyinglightzombie4.png';
                 cimgDyingLight4 = new Image;
-                cimgDyingLight4.src = 'https://jimboy3100.github.io/banners/icondyinglightzombie5.png';
+                cimgDyingLight4.src = 'https://legendmod.ml/banners/icondyinglightzombie5.png';
                 cimgDyingLight5 = new Image;
-                cimgDyingLight5.src = 'https://jimboy3100.github.io/banners/icondyinglightzombiebig.png';
+                cimgDyingLight5.src = 'https://legendmod.ml/banners/icondyinglightzombiebig.png';
                 cimgDyingLight6 = new Image;
-                cimgDyingLight6.src = 'https://jimboy3100.github.io/banners/icondyinglightvolaltile.png';
+                cimgDyingLight6.src = 'https://legendmod.ml/banners/icondyinglightvolaltile.png';
             }
 
             //lylko
@@ -7446,7 +7446,7 @@ var thelegendmodproject = function(t, e, i) {
 
                                             if (legendflags.includes(LowerCase(y))) {
                                                 //console.log("[Legend mod Express] " + LowerCase(y) + " skin found. Skin registered");
-                                                core.registerSkin(y, null, "https://jimboy3100.github.io/agario/live/flags/" + LowerCase(y) + ".png", null);
+                                                core.registerSkin(y, null, "https://legendmod.ml/agario/live/flags/" + LowerCase(y) + ".png", null);
                                             } else {
                                                 window.lastusednameforskin = y;
                                                 ogarminimapdrawer.customSkinsMap[y] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
