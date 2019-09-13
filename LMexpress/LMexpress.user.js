@@ -13,7 +13,7 @@
 // @updateURL    jimboy3100.github.io/LMexpress/LMexpress.user.js
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
-// @connect      jimboy3100.github.io
+// @connect      legendmod.ml
 // ==/UserScript==
 
 // Legend Mod by Jimboy3100
@@ -35,13 +35,16 @@ function inject(page) {
 //window.stop();
 document.documentElement.innerHTML = "";
 
-GM_xmlhttpRequest({
+var LMdetails = GM_xmlhttpRequest({
     method: "GET",
-    url: "http://legendmod.ml/LMexpress/LMexpress.html",
+    url: "https://legendmod.ml/LMexpress/LMexpress.html",
+	synchronous: false,
     onload: function(legend) {
         var doc = inject(legend.responseText);
         document.open();
-        document.write(doc);
+        //var script = document.createElement('script');
+		//document.appendChild(doc);
+       document.write(doc);
         setTimeout(function() {
             window.history.pushState(null, null, "/");
         }, 2000);
