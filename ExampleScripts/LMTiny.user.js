@@ -4,7 +4,7 @@
 // @description Autospawn + Autoclick Coin + Profiles + Macros + Name Copier + Server Reloader + Arrow Movement Keys + Spectate Mode + More!
 // @version     1
 // @author      Jimboy3100
-// @icon        https://jimboy3100.github.io/banners/CropedImage128.gif
+// @icon        https://legendmod.ml/banners/CropedImage128.gif
 // @include     http://agar.io/*
 // @include     https://agar.io/*
 // @grant       none
@@ -568,14 +568,14 @@ document.title = "Legend mod";
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.type = 'image/x-icon';
     link.rel = 'shortcut icon';
-    link.href = 'https://jimboy3100.github.io/banners/icon32croped.ico.gif';
+    link.href = 'https://legendmod.ml/banners/icon32croped.ico.gif';
     document.getElementsByTagName('head')[0].appendChild(link);
 })();
 
 }, 1300);
  
 setTimeout(function() {	
-        console.group('%cLegend Tiny OpenSource%c  %chttp://www.legendmod.ml',stylesLegendModConsole1, 'font-size: 48px; background: url(https://jimboy3100.github.io/banners/icon48.png) no-repeat' , stylesLegendModConsole1);
+        console.group('%cLegend Tiny OpenSource%c  %chttp://www.legendmod.ml',stylesLegendModConsole1, 'font-size: 48px; background: url(https://legendmod.ml/banners/icon48.png) no-repeat' , stylesLegendModConsole1);
     console.group("Part of");    		
 		console.log('%cThe Legend mod Project™', stylesLegendModConsole2);
     console.groupEnd();
