@@ -6,11 +6,11 @@
 // @homepage     http://www.legendmod.ml
 // @author       Jimboy3100
 // @license      MIT
-// @icon         https://jimboy3100.github.io/banners/CropedImage128.gif
+// @icon         https://legendmod.ml/banners/CropedImage128.gif
 // @match        https://agar.io/*
 // @match        https://play.google.com/*
-// @downloadURL  jimboy3100.github.io/LMexpress/LMexpress.user.js
-// @updateURL    jimboy3100.github.io/LMexpress/LMexpress.user.js
+// @downloadURL  https://legendmod.ml/LMexpress/LMexpress.user.js
+// @updateURL    https://legendmod.ml/LMexpress/LMexpress.user.js
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
 // @connect      legendmod.ml
