@@ -32,7 +32,6 @@ function inject(page) {
     var page = page.replace("</body>", "<script>init('" + modVersion + "');</script>" + "</body>");
     return page;
 }
-//window.stop();
 document.documentElement.innerHTML = "";
 
 var LMdetails = GM_xmlhttpRequest({
@@ -42,13 +41,10 @@ var LMdetails = GM_xmlhttpRequest({
     onload: function(legend) {
         var doc = inject(legend.responseText);
         document.open();
-        //var script = document.createElement('script');
-		//document.appendChild(doc);
        document.write(doc);
         setTimeout(function() {
             window.history.pushState(null, null, "/");
         }, 2000);
-
         document.close();
     }
 });
