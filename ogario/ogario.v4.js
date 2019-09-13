@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1239 MEGA TEST
+// v1.1242 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2537,7 +2537,7 @@ var thelegendmodproject = function(t, e, i) {
             'timeHUD': null,
             'questHUD': null,
             'retryResp': 0,
-            'token': 'b2dhcmlvLm92aA==',
+            'token': 'TGVnZW5kIGV4cHJlc3M=',
             'canvasScale': 1,
             'selectBiggestCell': true,
             'noColors': false,
@@ -4311,7 +4311,10 @@ var thelegendmodproject = function(t, e, i) {
                 i.play && i.playerSplitCells > 1 && (defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) && (t.fillStyle = '#FFFFFF', t.globalAlpha = this.selectBiggestCell ? 0.6 : 0.3, t.beginPath(), t.arc(48, 15, 6, 0, this.pi2, false), t.closePath(), t.fill(), t.globalAlpha = this.selectBiggestCell ? 0.3 : 0.6, t.beginPath(), t.arc(60, 15, 4, 0, this.pi2, false), t.closePath(), t.fill());
             },
             'dTok': function(t, e) {
-                t.font = defaultSettings.miniMapFontWeight + ' ' + (defaultSettings.miniMapTop - 6) + 'px ' + defaultSettings.miniMapFontFamily, t.textAlign = 'right', t.textBaseline = 'top', t.fillText(atob(this['token']), e, 7);
+                t.font = defaultSettings.miniMapFontWeight + ' ' + (defaultSettings.miniMapTop - 6) + 'px ' + defaultSettings.miniMapFontFamily; 
+				t.textAlign = 'right'; 
+				t.textBaseline = 'top';
+				t.fillText(atob(this.token), e, 7);
             },
             /*            'drawTeammatesInd': function(t, e, i, s) {
                             this.indicator && t.drawImage(this.indicator, e - 45, i - s - 90);
@@ -6953,7 +6956,7 @@ var thelegendmodproject = function(t, e, i) {
                 j = Math.imul(j, suggestedValue) | 0;
                 i = j >>> 15;
                 j = i ^ j;
-                console.log('[Legend mod Express] Generated client key:', j);
+                //console.log('[Legend mod Express] Generated client key:', j);
                 window.generatedClientKey = j;
                 return j;
 
@@ -7285,7 +7288,7 @@ var thelegendmodproject = function(t, e, i) {
                             window.testobjectsOpcode241 = data;
                             this.protocolKey = data.getUint32(s, true);
                             //window.testobjectsOpcode241.getUint32(1, true);
-                            console.log('[Legend mod Express] Received protocol key:', this.protocolKey);
+                            //console.log('[Legend mod Express] Received protocol key:', this.protocolKey);
                             window.generatedProtocolKey = this.protocolKey;
                             var irenderfromagario = new Uint8Array(data['buffer'], s += 4);
                             this.clientKey = this['generateClientKey'](this.ws, irenderfromagario);
