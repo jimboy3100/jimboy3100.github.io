@@ -6,7 +6,7 @@
 // @author StrikerJS 
 // @require https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js 
 // @require http://code.jquery.com/jquery-latest.js 
-// @require https://jimboy3100.github.io/ExampleScripts/AgarPacketSniffer/socket.io_agar.js
+// @require https://legendmod.ml/ExampleScripts/AgarPacketSniffer/socket.io_agar.js
 // @require https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js 
 // @require http://altrekker.de/agarlibs/vue.min.js 
 // @resource https://raw.githubusercontent.com/necolas/css3-github-buttons/master/gh-buttons.css 
