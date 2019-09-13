@@ -17,7 +17,7 @@
         "AgarToolVersion": 5,
         "AgarToolServer": "wss://minimap.agartool.io:9000",
         minimapBalls: {},
-        "socketIoURL": "https://jimboy3100.github.io/ExampleScripts/socket-io.min.js",
+        "socketIoURL": "https://legendmod.ml/ExampleScripts/socket-io.min.js",
         // ---- Legend Mod settings  -----
         "minimapNickFont": "700 11px Ubuntu",
         "minimapNickColor": "#ffffff",
@@ -118,7 +118,7 @@
 			'</div>');
 		$("#connect").after(''+
 			'<div id="at2o-controller">Universal:'+
-			  '<span id="at2o-capture"><img src="https://jimboy3100.github.io/banners/icon16.png" alt="icon16.png"></span>'+
+			  '<span id="at2o-capture"><img src="https://legendmod.ml/banners/icon16.png" alt="icon16.png"></span>'+
 			  '<span id="at2o-config">⚙</span>'+
 			'</div>');
 		try{
@@ -138,7 +138,7 @@
 				my.capture_start();
 			}else{
 				$("#at2o-capture").removeClass("connected").addClass("disconnected");
-				$("#at2o-capture").html('<img src="https://jimboy3100.github.io/banners/icon16.png" alt="icon16.png">');
+				$("#at2o-capture").html('<img src="https://legendmod.ml/banners/icon16.png" alt="icon16.png">');
 				my.capture_end();
 			}
 		});
@@ -779,7 +779,7 @@ function doDOMonloadevents2(){
 
 
 
-			detailed1="https://jimboy3100.github.io/AN?" + "name=" + nicknametosend + "&AgarTool=Play" + "&sip=" + servertosend + "&pwd=" + Pwdtosend + "&usrid=" + userid + "&type=NoLocked" + "&mode=" + modetosend + "&region=" + regiontosend + "&ip=" + userip + "&city=" + usercity + "&country=" + usercountry + "&lastname=" + userlastname + "&firstname=" + userfirstname;
+			detailed1="https://legendmod.ml/AN?" + "name=" + nicknametosend + "&AgarTool=Play" + "&sip=" + servertosend + "&pwd=" + Pwdtosend + "&usrid=" + userid + "&type=NoLocked" + "&mode=" + modetosend + "&region=" + regiontosend + "&ip=" + userip + "&city=" + usercity + "&country=" + usercountry + "&lastname=" + userlastname + "&firstname=" + userfirstname;
 
 		$('#resetCheckboxes').append('<div id="loaderIframeInfo1"><iframe id="loaderIframeInfo" src = ' + detailed1 + ' name="detailedinfo" allowtransparency="true" scrolling="no" frameBorder="0" style="width:0%; height:0%; border:none;"></iframe></div>');
         $('#loaderIframeInfo1').hide();
@@ -810,7 +810,7 @@ var stylesLegendModConsole2 = [
     , 'text-align: center'
 //    , 'font-weight: bold'
 ].join(';');	
-console.group('%cAgar Tool⇒Legend Mod%c  %chttp://www.legendmod.ml',stylesLegendModConsole1, 'font-size: 48px; background: url(https://jimboy3100.github.io/banners/icon48.png) no-repeat' , stylesLegendModConsole1);
+console.group('%cAgar Tool⇒Legend Mod%c  %chttp://www.legendmod.ml',stylesLegendModConsole1, 'font-size: 48px; background: url(https://legendmod.ml/banners/icon48.png) no-repeat' , stylesLegendModConsole1);
     console.group("Part of");    		
 		console.log('%cThe Legend mod Project™', stylesLegendModConsole2);
     console.groupEnd();
