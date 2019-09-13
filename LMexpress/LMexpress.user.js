@@ -3,7 +3,7 @@
 // @namespace    Legend Express Agario Mod
 // @version      1.7
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
-// @homepage     http://www.legendmod.ml
+// @homepage     https://www.legendmod.ml
 // @author       Jimboy3100
 // @license      MIT
 // @icon         https://legendmod.ml/banners/CropedImage128.gif
