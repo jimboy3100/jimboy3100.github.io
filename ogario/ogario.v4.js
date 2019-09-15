@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1247 MEGA TEST
+// v1.1248 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -231,7 +231,7 @@ function fakePlayers() {
 
                 if (legendmod.cells[y].fake && legendmod.cells[y].id == window.cellsFake[x].id) {
                     //console.log(legendmod.cells[y]);
-                    legendmod.cells[y].time = Date.now();
+                    legendmod.cells[y].time = performance.now();
                     legendmod.cells[y].targetX = window.cellsFake[x].targetX;
                     legendmod.cells[y].targetY = window.cellsFake[x].targetY;
                     legendmod.cells[y].size = window.cellsFake[x].size;
@@ -243,7 +243,7 @@ function fakePlayers() {
             if (ab == false) { //true or false?
                 legendmod.cells.push(window.cellsFake[x]);
                 legendmod.cells[legendmod.cells.length - 1].fakeOK = false;
-                legendmod.cells[legendmod.cells.length - 1].time = Date.now();
+                legendmod.cells[legendmod.cells.length - 1].time = performance.now();
             }
         }
         //legendmod.cells.push(...cellsFake);
@@ -2552,7 +2552,7 @@ var thelegendmodproject = function(t, e, i) {
             'lastSentCustomColor': '',
             'lastSentPartyToken': '',
             'lastSentServerToken': '',
-            'lastMessageSentTime': Date.now(),
+            'lastMessageSentTime': performance.now(),
             'rFps': 0,
             'renderedFrames': 0,
             'fpsLastRequest': null,
@@ -5244,7 +5244,7 @@ var thelegendmodproject = function(t, e, i) {
                         n.y = o,
                         n.mass = a,
                         n.alive = true,
-                        n.updateTime = Date.now(),
+                        n.updateTime = performance.now(),
                         this.targeting && this.targetID && e == this.targetID && this.updateTarget(n.nick, n.skinURL, s, o, a, n.color, n.lbgpi);
                 }
             },
@@ -5298,7 +5298,7 @@ var thelegendmodproject = function(t, e, i) {
                 var t = 0;
                 for (; t < this.teamPlayers.length; t++) {
                     var e = this.teamPlayers[t];
-                    if (e.alive && Date.now() - e.updateTime >= 2000 || 0 == e.mass) {
+                    if (e.alive && performance.now() - e.updateTime >= 2000 || 0 == e.mass) {
                         e.alive = false;
                         if (this.targeting && this.targetID && e.id == this.targetID) {
                             this.setTargetStatus(2);
@@ -5355,12 +5355,12 @@ var thelegendmodproject = function(t, e, i) {
             },
             'sendChatMessage': function(t, e) {
                 //console.log(t);console.log(e);
-                if (!(Date.now() - this.lastMessageSentTime < 500 || 0 == e.length || 0 == ogarcopythelb.nick.length) && this.isSocketOpen()) {
+                if (!(performance.now() - this.lastMessageSentTime < 500 || 0 == e.length || 0 == ogarcopythelb.nick.length) && this.isSocketOpen()) {
                     e = ogarcopythelb.nick + ': ' + e;
                     var i = this.createView(10 + 2 * e.length);
                     i.setUint8(0, 100), i.setUint8(1, t), i.setUint32(2, this.playerID, true), i.setUint32(6, 0, true);
                     for (var s = 0; s < e.length; s++) i.setUint16(10 + 2 * s, e.charCodeAt(s), true);
-                    this['sendBuffer'](i), this.lastMessageSentTime = Date.now();
+                    this['sendBuffer'](i), this.lastMessageSentTime = performance.now();
                 }
             },
             'prepareCommand': function(t) {
@@ -6505,7 +6505,7 @@ var thelegendmodproject = function(t, e, i) {
             //'clientVersionString': '3.6.4',
             'clientVersionString': master.clientVersionString,
             'xsupportprotoversion': master.xsupportprotoversion,
-            'time': Date.now(),
+            'time': performance.now(),
             'serverTime': 0,
             'serverTimeDiff': 0,
             'loggedInTime': 0,
@@ -6656,7 +6656,7 @@ var thelegendmodproject = function(t, e, i) {
             },
             'onOpen': function(t) {
                 //console.log('[Legend mod Express] Game server socket open');
-                this.time = Date.now();
+                this.time = performance.now();
                 var e = this.createView(5);
                 e.setUint8(0, 254);
                 if (!window.gameBots.protocolVersion) window.gameBots.protocolVersion = master.protocolVersion;
@@ -7228,7 +7228,7 @@ var thelegendmodproject = function(t, e, i) {
                                     this.battleRoyale.shrinkTime = 1000 * data.getUint32(s, true),
                                     s += 4,
                                     this.battleRoyale.shrinkTime &&
-                                    (this.battleRoyale.timeLeft = ~~((this.battleRoyale.shrinkTime - Date.now() + this.serverTimeDiff) / 1000),
+                                    (this.battleRoyale.timeLeft = ~~((this.battleRoyale.shrinkTime - performance.now() + this.serverTimeDiff) / 1000),
                                         this.battleRoyale.timeLeft < 0 && (this.battleRoyale.timeLeft = 0))),
                                 2 & y && (this.battleRoyale.targetX = data.getInt32(s, true),
                                     s += 4,
@@ -7283,7 +7283,7 @@ var thelegendmodproject = function(t, e, i) {
                         case 242:
                             window.testobjectsOpcode242 = data;
                             this.serverTime = 1000 * data.getUint32(s, true);
-                            this.serverTimeDiff = Date.now() - this.serverTime;
+                            this.serverTimeDiff = performance.now() - this.serverTime;
                             break;
                         case 255:
                             window.testobjectsOpcode255 = data;
@@ -7475,7 +7475,7 @@ var thelegendmodproject = function(t, e, i) {
                     }
                     return e;
                 };
-                this.time = Date.now(), this.removePlayerCell = false;
+                this.time = performance.now(), this.removePlayerCell = false;
                 var o = t.readUInt16LE(i);
                 i += 2;
                 for (var a = 0; a < o; a++) {
@@ -7846,8 +7846,8 @@ var thelegendmodproject = function(t, e, i) {
                     return new Promise(resolve => setTimeout(resolve, ms));
                 },
                 /*                'renderFrame': function() {
-                                    //for (LM.time = Date.now(), e = 0; e < LM.cells.length; e++) LM.cells[e].moveCell();
-                				    LM.time = Date.now();
+                                    //for (LM.time = performance.now(), e = 0; e < LM.cells.length; e++) LM.cells[e].moveCell();
+                				    LM.time = performance.now();
                 						for (i = 0; i < LM.cells.length; i++) {
                 							LM.cells[i].moveCell();
                 						}
@@ -7864,7 +7864,7 @@ var thelegendmodproject = function(t, e, i) {
                 'renderFrame': async function() { //Sonia5
                     //this.ctx.start2D();
                     await this.sleep(4); //Sonia5
-                    LM.time = Date.now();
+                    LM.time = performance.now();
                     for (i = 0; i < LM.cells.length; i++) {
                         LM.cells[i].moveCell();
                     }
@@ -8464,7 +8464,7 @@ var thelegendmodproject = function(t, e, i) {
                 },
                 'countFps': function() {
                     if (defaultmapsettings.showStatsFPS) {
-                        var t = Date.now();
+                        var t = performance.now();
                         if (!this.fpsLastRequest) {
                             this.fpsLastRequest = t;
                         }
