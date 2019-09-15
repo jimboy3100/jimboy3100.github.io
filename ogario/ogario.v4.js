@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1248 MEGA TEST
+// v1.1249 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -1990,7 +1990,7 @@ var defaultmapsettings = {
     'showQuickMenu': true,
     'showQuickBots': false,
     'showSkinsPanel': true,
-    'animation': 140,
+    'animation': 120,
     'macroFeeding': 80,
     ////
     "cameraSpeed": 7,
