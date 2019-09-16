@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1249 MEGA TEST
+// v1.1251 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2986,8 +2986,6 @@ var thelegendmodproject = function(t, e, i) {
                     }
                 } else {
                     if (defaultmapsettings.showTop5) {
-
-
                         //temp
                         var tempTime = new Date().getTime();
                         Object.getOwnPropertyNames(legendmod3.teamPlayers).forEach(function(element) {
@@ -7356,16 +7354,15 @@ var thelegendmodproject = function(t, e, i) {
                 }
                 ogarminimapdrawer['displayLeaderboard'](t, e);
                 ///////////////// establish core.registerSkin
-                if (window.vanillaskins == true) {
-                    if (window.customskinsname != null && window.customskinsname != undefined) {
+                if (window.vanillaskins == true && window.customskinsname != null && window.customskinsurl != null && ogarminimapdrawer.customSkinsMap[window.customskinsname] == null) {
                         for (i = 0; i <= this.leaderboard.length - 1; i++) {
                             if (this.leaderboard[i].nick == window.customskinsname) {
                                 ogarminimapdrawer.customSkinsMap[window.customskinsname] = window.customskinsurl;
                                 ogarminimapdrawer.loadSkin(ogarminimapdrawer.customSkinsCache, window.customskinsurl);
-                                window.customskinsname = undefined;
+                                window.customskinsname = null;
+								window.customskinsurl = null;
                             }
                         }
-                    }
                 }
                 //if ($("#ao2t-capture").length && $("#ao2t-capture").hasClass("connected")) { //if existed and connected and visible
                 for (var e = 0; e < legendmod.ghostCells.length; e++) {
@@ -7418,15 +7415,10 @@ var thelegendmodproject = function(t, e, i) {
             },
             'vanillaskins': function(y, g) {
                 if (g != null) {
-                    if (window.vanillaskins == true) {
-                        var skin2search = g.replace('%', '');
-                        if (window.LMAgarGameConfiguration != undefined) {
+						if (window.vanillaskins == true && window.LMAgarGameConfiguration != undefined && ogarminimapdrawer.customSkinsMap[y] == undefined) {
                             for (var player = 0; player < window.EquippableSkins.length; player++) {
-                                if (window.EquippableSkins[player].productId == "skin_" + skin2search) {
-                                    //console.log("Player: " + y + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);
-                                    if (ogarminimapdrawer.customSkinsMap[y] == undefined) {
-                                        if (window.EquippableSkins[player].image != "uses_spine") {
-
+                                if (window.EquippableSkins[player].productId == "skin_" + g.replace('%', '') && window.EquippableSkins[player].image != "uses_spine") {
+                                    //console.log("Player: " + y + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);                                
                                             if (legendflags.includes(LowerCase(y))) {
                                                 //console.log("[Legend mod Express] " + LowerCase(y) + " skin found. Skin registered");
                                                 core.registerSkin(y, null, "https://legendmod.ml/agario/live/flags/" + LowerCase(y) + ".png", null);
@@ -7435,12 +7427,9 @@ var thelegendmodproject = function(t, e, i) {
                                                 ogarminimapdrawer.customSkinsMap[y] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
                                                 ogarminimapdrawer.loadSkin(ogarminimapdrawer.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
                                             }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+										}
+								}
+						}
                 }
             },
             //Sonia3 Adding three below functions
