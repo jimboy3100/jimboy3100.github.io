@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1257 MEGA TEST
+// v1.1279 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -508,6 +508,7 @@ var languagetexts = {
         'settings': 'Ustawienia',
         'restoreSettings': 'Przywróc ustawienia domyślne',
         'animationGroup': 'Animacja',
+		'graphics': 'Graphics',
         'zoomGroup': 'Zoom',
         'respGroup': 'Odrodzenie',
         'namesGroup': 'Nazwy',
@@ -904,6 +905,7 @@ var languagetexts = {
         'settings': 'Settings',
         'restoreSettings': 'Restore default settings',
         'animationGroup': 'Animation',
+		'graphics': 'Graphics',
         'zoomGroup': 'Zoom',
         'respGroup': 'Respawn',
         'namesGroup': 'Names',
@@ -1330,6 +1332,7 @@ var themePresets = {
         "virusGlowSize": 14,
         "borderGlowSize": 14,
         'menuPreset': 'ogario-v3',
+		'graphics': 'high',
         'menuMainColor': '#01d9cc',
         'menuBtnTextColor': '#ffffff',
         'menuPanelColor': '#00243e',
@@ -1490,6 +1493,7 @@ var themePresets = {
         "virusGlowSize": 14,
         "borderGlowSize": 14,
         'menuPreset': 'ogario-v3',
+		'graphics': 'high',
         'menuMainColor': '#fc0079',
         'menuBtnTextColor': '#ffffff',
         'menuPanelColor': '#050008',
@@ -1703,6 +1707,20 @@ var themeMenus = {
         'menuBg': ''
     }
 }
+var graphicMenus = {
+	'high': {
+		'name': 'High'
+	},
+	'medium': {
+		'name': 'Medium'
+	},
+	'low': {
+		'name': 'Low'
+	},
+	'very_low': {
+		'name': 'Very Low'
+	}	
+}
 var escapeHTMLs = {
     '&': '&amp;',
     '<': '&lt;',
@@ -1770,6 +1788,7 @@ var defaultSettings = {
     'ghostCellsAlpha': 0.3,
     'virusStrokeSize': 14,
     'menuPreset': 'ogario-v3',
+	'graphics': 'high',
     'menuMainColor': '#01d9cc',
     'menuBtnTextColor': '#ffffff',
     'menuPanelColor': '#00243e',
@@ -2000,6 +2019,7 @@ var defaultmapsettings = {
     "borderGlow": false,
     "limLB": 10,
     "limTP": 5,
+	
     ////
     //'zoomSpeedValue': .87,
     'zoomSpeedValue2': -0.13,
@@ -2313,6 +2333,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.addSliderBox('#theme-minimap', 'miniMapTeammatesSize', 4, 10, 0.5);
                     this.addSliderBox('#theme-minimap', 'miniMapGhostCellsAlpha', 0.01, 0.99, 0.01);
                     this.addInputBox('#theme-images', 'customBackground', 'Image URL', 'setCustomBackground');
+					this.addPresetBox('#theme-images', 'graphics', graphicMenus, 'graphics', 'changeGraphics');
                     this.addInputBox('#theme-images', 'customCursor', 'Cursor image URL', 'setCustomCursor');
                     for (var e = 'https://legendmod.ml/cursors/cursor_', i = 0; i < 35; i++) i < 9 ? this.addCursorBox('#theme-images', e + '0' + (i + 1) + '.cur') : this.addCursorBox('#theme-images', e + '' + (i + 1) + '.cur');
                     $(document).on('click', '#theme-images .cursor-box a', function(e) {
@@ -2343,7 +2364,8 @@ var thelegendmodproject = function(t, e, i) {
                     if (e[t]) {
                         defaultSettings[t] = t;
                         t = e[t];
-                        for (var o in t) t.hasOwnProperty(o) && defaultSettings.hasOwnProperty(o) && (defaultSettings[o] = t[o], i.hasOwnProperty(o) && (i[o] = defaultSettings[o]), $('#theme .' + o + '-picker') && $('#theme .' + o + '-picker').colorpicker('setValue', defaultSettings[o]), $('#' + o + '-slider') && $('#' + o + '-slider').val(defaultSettings[o]).change(), ($('input[type=text]#' + o) || $('select#' + o)) && $('#' + o).val(defaultSettings[o]));
+                        for (var o in t) t.hasOwnProperty(o) && defaultSettings.hasOwnProperty(o) && 
+						(defaultSettings[o] = t[o], i.hasOwnProperty(o) && (i[o] = defaultSettings[o]), $('#theme .' + o + '-picker') && $('#theme .' + o + '-picker').colorpicker('setValue', defaultSettings[o]), $('#' + o + '-slider') && $('#' + o + '-slider').val(defaultSettings[o]).change(), ($('input[type=text]#' + o) || $('select#' + o)) && $('#' + o).val(defaultSettings[o]));
                     }
                 },
                 'changeThemePreset': function(t) {
@@ -2383,7 +2405,10 @@ var thelegendmodproject = function(t, e, i) {
                     this.setMenuBg();
                 },
                 'changeMenuPreset': function(t) {
-                    this.changePreset(t, themeMenus), this.setMenu();
+                    this.changePreset(t, themeMenus); 
+					this.setMenu();
+                },
+				'changeGraphics': function(t) {			
                 },
                 'setMenuOpacity': function() {
                     $('#helloContainer, #hotkeys, #exp-imp').css('opacity', defaultSettings.menuOpacity);
@@ -2533,6 +2558,7 @@ var thelegendmodproject = function(t, e, i) {
             'customSkinsCache': {},
             'customSkinsMap': {},
             'cacheQueue': [],
+			'cacheQueue2': [],
             'deathLocations': [],
             'playerID': null,
             'playerMass': 0,
@@ -3012,14 +3038,14 @@ var thelegendmodproject = function(t, e, i) {
                                 t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this.top5[o].id + '"style="background-color: ' + this.top5[o].color + 
 								'; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' 
 								+ (this.top5[o]["skin"] ? this.top5[o]["skin"] : "https://legendmod.ml/banners/icon32croped.ico.gif") + ' alt=""> ' + '</a><div style="margin-top: -30px; margin-left: 32px;">');*/
-								var teamboardskin = this.customSkinsCache[this.top5[o].skin+"_cached"];
+								var teamboardskin = this.customSkinsCache[this.top5[o].skin + "_cached2"];
 								if (teamboardskin == null){
 									teamboardskin = new Image();
 									teamboardskin.crossOrigin = 'anonymous';
 									teamboardskin.src = "https://legendmod.ml/banners/icon32croped.ico.gif";
 								}
                                 t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this.top5[o].id + '"style="background-color: ' + this.top5[o].color + 
-								'; width: 30px; height:30px; display: inline-block;"><span id = "' + this.top5[o].id + '" style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt="">' 
+								'; width: 30px; height:30px; display: inline-block;"><span style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;" alt="">' 
 								+ teamboardskin.outerHTML + '</span>' + '</a><div style="margin-top: -30px; margin-left: 32px;">');	
                                 /* if (defaultmapsettings["showTargeting"]) {
                                   t = t + ('<a href="#" data-user-id="' + this.top5[o].id + '" class="set-target ogicon-target"></a> ');
@@ -4121,9 +4147,12 @@ var thelegendmodproject = function(t, e, i) {
                             this.height &&
                             this.width <= 2000 &&
                             this.height <= 2000 &&
-                            (i.cacheQueue.push(e),
+                            ((i.cacheQueue.push(e),
                                 1 == i.cacheQueue.length &&
-                                i.cacheSkin(i.customSkinsCache));
+                                i.cacheSkin(i.customSkinsCache)),
+                            (i.cacheQueue2.push(e),
+                                1 == i.cacheQueue2.length &&
+                                i.cacheSkin2(i.customSkinsCache)));								
                     },
                     t[e]['onerror'] = function() {
                         //console.log("error loading image: "+ e);
@@ -4138,28 +4167,62 @@ var thelegendmodproject = function(t, e, i) {
                     };
                 t[e].src = e;
             },
+			'checkgraphics': function() {
+						if (defaultSettings.graphics == "high"){ ogarminimapdrawer.graphics = 1 }
+						else if (defaultSettings.graphics == "medium"){ ogarminimapdrawer.graphics = 2 }
+						else if (defaultSettings.graphics == "low"){ ogarminimapdrawer.graphics = 4 }
+						else if (defaultSettings.graphics == "very_low"){ ogarminimapdrawer.graphics = 8 }				
+			},
             'cacheSkin': function(t) {
                 //console.log(t);  //////// return the image src
                 if (0 != this.cacheQueue.length) {
                     var e = this.cacheQueue.shift();
                     if (e) {
+						var depth = 512;
+						this.checkgraphics();				
+						if (ogarminimapdrawer.graphics){
+							depth = depth / ogarminimapdrawer.graphics;
+						}
                         var i = document.createElement("canvas");
-                        i.width = 512;
-                        i.height = 512;
+                        i.width = depth;
+                        i.height = depth;
                         var $ = i.getContext("2d");
                         $.beginPath();
-                        $.arc(256, 256, 256, 0, 2 * Math.PI, false);
+                        $.arc(depth/2, depth/2, depth/2, 0, 2 * Math.PI, false);
                         $.clip();
                         try {
-                            $.drawImage(this.customSkinsCache[e], 0, 0, 512, 512);
-                        } catch (e) {}
+                            $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
+                        } catch (e) {}			
                         this.customSkinsCache[e + "_cached"] = new Image;
                         this.customSkinsCache[e + "_cached"].src = i.toDataURL();
                         i = null;
                         this.cacheSkin(this.customSkinsCache);
                     }
                 }
-            },
+            },			
+            'cacheSkin2': function(t) {
+                if (0 != this.cacheQueue2.length) {
+                    var e = this.cacheQueue2.shift();
+                    if (e) {
+						var depth = 32;
+                        var i = document.createElement("canvas");
+                        i.width = depth;
+                        i.height = depth;
+                        var $ = i.getContext("2d");
+                        $.beginPath();
+                        $.arc(depth/2, depth/2, depth/2, 0, 2 * Math.PI, false);
+                        $.clip();
+                        try {
+                            $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
+                        } catch (e) {}			
+                        this.customSkinsCache[e + "_cached2"] = new Image;
+                        this.customSkinsCache[e + "_cached2"].src = i.toDataURL();
+						//this.customSkinsCache[e + "_cached"].src = i.toDataURL('image/jpeg', 0.1);
+                        i = null;
+                        this.cacheSkin2(this.customSkinsCache);
+                    }
+                }
+            },					
             'getCachedSkin': function(t, e) {
                 return t[e + '_cached'] && t[e + '_cached'].complete && t[e + '_cached'].width ? t[e + '_cached'] : null;
             },
@@ -5468,7 +5531,9 @@ var thelegendmodproject = function(t, e, i) {
                 this.displayUserList(this.chatMutedUsers, h.mutedUsers, 'btn-green btn-unmute-user', h.unmute, 'error');
             },
             'preloadChatSounds': function() {
-                this.setMessageSound(), this.setCommandSound(), this.setvirusSound();
+                this.setMessageSound(), 
+				this.setCommandSound(), 
+				this.setvirusSound();
             },
             'setChatSoundsBtn': function() {
                 defaultmapsettings.chatSounds ? $('.chat-sound-notifications').removeClass('ogicon-volume-mute2').addClass('ogicon-volume-high') : $('.chat-sound-notifications').removeClass('ogicon-volume-high').addClass('ogicon-volume-mute2');
@@ -5481,7 +5546,7 @@ var thelegendmodproject = function(t, e, i) {
             },
             'setvirusSound': function() {
                 this.virusSoundurl = this.setSound(defaultmapsettings.virusSoundurl);
-            },
+            },			
             'setSound': function(t) {
                 return t ? new Audio(t) : null;
             },
@@ -6043,7 +6108,7 @@ var thelegendmodproject = function(t, e, i) {
                         this.mass = ~~((200 - this.mass) / 14);
                     }
                     if (defaultmapsettings.virusSound && this.lastMass && this.mass < this.lastMass) {
-                        void ogarminimapdrawer.playSound(ogarminimapdrawer.setSound(defaultmapsettings.virusSoundurl));
+						void legendmod3.playSound(legendmod3.virusSoundurl);
                     }
                     this.massTxt = this.mass.toString();
                 }
