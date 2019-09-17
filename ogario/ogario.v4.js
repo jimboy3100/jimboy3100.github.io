@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1279 MEGA TEST
+// v1.1281 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4204,7 +4204,7 @@ var thelegendmodproject = function(t, e, i) {
                 if (0 != this.cacheQueue2.length) {
                     var e = this.cacheQueue2.shift();
                     if (e) {
-						var depth = 32;
+						var depth = 64;
                         var i = document.createElement("canvas");
                         i.width = depth;
                         i.height = depth;
@@ -4599,7 +4599,7 @@ var thelegendmodproject = function(t, e, i) {
                 t = this;
                 window.SLGsocket['onopen'] = function() {
                     window.SLG3NumberTries = 0;
-                    console.log('[Legend mod Express] SLG socket open:', room, ",LMID:", customLMID);
+                    console.log('[Legend mod Express] SLG socket open:', room);
                     //
                     window.SLGsocket['send'](JSON.stringify({
                         "auth": "JIM2" + customLMID,
