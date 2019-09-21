@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1281 MEGA TEST
+// v1.1284 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -3309,7 +3309,8 @@ var thelegendmodproject = function(t, e, i) {
 
             },
             'setSkinPreview': function(t, e) {
-                if (t.includes(".mp4") || t.includes(".webm") || t.includes(".ogg")) {
+				if (t.includes && (t.includes(".mp4") || t.includes(".webm") || t.includes(".ogg"))) {
+                //if (t.includes(".mp4") || t.includes(".webm") || t.includes(".ogg")) {
                     //console.log("stage 1 videos");
 
                     if ($('#' + e).empty().addClass('default'), t && 0 != t.length) {
