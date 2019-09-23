@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1310 MEGA TEST
+// v1.1317 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4250,8 +4250,14 @@ var thelegendmodproject = function(t, e, i) {
                 return !!this.customSkinsMap.hasOwnProperty(i);
             },
             'getCustomSkin': function(t, e) {
-                if (!this.checkSkinsMap(t, e)) return null;
-                var i = ':party' === this.gameMode ? t + e : t;
+                //console.log("t= " + t);
+                //console.log("e= " + e);				               
+				if (':party' === this.gameMode && this.customSkinsMap[t + "#000000"] && this.customSkinsMap[t + "#000000"].includes("configs-web.agario.miniclippt.com/live/")){
+					//console.log('changed for',t)
+					e = "#000000";
+				}
+				if (!this.checkSkinsMap(t, e)) return null;
+                var i = ':party' === this.gameMode ? t + e : t;				
                 return this.getCachedSkin(this.customSkinsCache, this.customSkinsMap[i]);
             },
             'calculateMapSector': function(t, e, s = false) {
@@ -7501,6 +7507,9 @@ var thelegendmodproject = function(t, e, i) {
             },
             'vanillaskins': function(y, g) {
                 if (g != null) {
+						if (LM.gameMode == ":party"){
+							y = y + "#000000";
+						}
 						//console.log(g)
 						if (g.includes && g.includes("%custom_")){
 							var g1 = g.replace('%custom_', 'skin_custom_')
