@@ -150,6 +150,7 @@ function postToDiscord(discordUrl,isGeneralChannel) {
         a[0].append(r[0]);
         a[0].append($('<br/>')[0]);
         // menu function
+		var GM_registerMenuCommand;
         if (GM_registerMenuCommand) {
 			GM_registerMenuCommand('Post Agar Server IP to Discord', function() {
             postToDiscord(serverChannel,false);
