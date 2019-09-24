@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1317 MEGA TEST
+// v1.1346 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2562,6 +2562,7 @@ var thelegendmodproject = function(t, e, i) {
             'customSkinsMap': {},
             'cacheQueue': [],
 			'cacheQueue2': [],
+			'cacheQueue3': [],
             'deathLocations': [],
             'playerID': null,
             'playerMass': 0,
@@ -4156,7 +4157,11 @@ var thelegendmodproject = function(t, e, i) {
                                 i.cacheSkin(i.customSkinsCache, animated)),
                             (i.cacheQueue2.push(e),
                                 1 == i.cacheQueue2.length &&
-                                i.cacheSkin2(i.customSkinsCache, animated)));	
+                                i.cacheSkin2(i.customSkinsCache)),
+							(animated && i.cacheQueue3.push(e),
+                                1 == i.cacheQueue3.length &&
+                                i.cacheSkin3(i.customSkinsCache))	
+							);	
 					},							
                     t[e]['onerror'] = function() {
                         //console.log("error loading image: "+ e);
@@ -4198,14 +4203,15 @@ var thelegendmodproject = function(t, e, i) {
 							if (!animated){
 								$.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
 							}
-							else{
+							else{		
+								//console.log('was animated')
 								$.drawImage(this.customSkinsCache[e], 0, 0, this.customSkinsCache[e].width/2 , this.customSkinsCache[e].height, 0, 0, depth, depth);
 							}
                         } catch (e) {}			
                         this.customSkinsCache[e + "_cached"] = new Image;
                         this.customSkinsCache[e + "_cached"].src = i.toDataURL();
                         i = null;
-                        this.cacheSkin(this.customSkinsCache);
+                        this.cacheSkin(this.customSkinsCache, animated);
                     }
                 }
             },			
@@ -4231,9 +4237,46 @@ var thelegendmodproject = function(t, e, i) {
                         this.cacheSkin2(this.customSkinsCache);
                     }
                 }
-            },					
+            },		
+            'cacheSkin3': function(t) {
+                //console.log(t);  //////// return the image src
+                if (0 != this.cacheQueue3.length) {
+                    var e = this.cacheQueue3.shift();
+                    if (e) {
+						var depth = 512;
+						this.checkgraphics();				
+						if (ogarminimapdrawer.graphics){
+							depth = depth / ogarminimapdrawer.graphics;
+						}
+                        var i = document.createElement("canvas");
+                        i.width = depth;
+                        i.height = depth;
+                        var $ = i.getContext("2d");
+                        $.beginPath();
+                        $.arc(depth/2, depth/2, depth/2, 0, 2 * Math.PI, false);
+                        $.clip();
+                        try {
+								$.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width/2, 0, this.customSkinsCache[e].width/2 , this.customSkinsCache[e].height, 0, 0, depth, depth);							
+                        } catch (e) {}			
+                        this.customSkinsCache[e + "_cached3"] = new Image;
+                        this.customSkinsCache[e + "_cached3"].src = i.toDataURL();
+                        i = null;
+                        this.cacheSkin3(this.customSkinsCache);
+                    }
+                }
+            },				
             'getCachedSkin': function(t, e) {
+				if (t[e + '_cached3']){
+					var today = new Date();
+					if (today.getSeconds() % 2 == 0){ //vanilla animated skins
+						return t[e + '_cached'] && t[e + '_cached'].complete && t[e + '_cached'].width ? t[e + '_cached'] : null;
+					}
+					else if (today.getSeconds() % 2 == 1){
+						return t[e + '_cached3'] && t[e + '_cached3'].complete && t[e + '_cached3'].width ? t[e + '_cached3'] : null;
+					}
+				}				
                 return t[e + '_cached'] && t[e + '_cached'].complete && t[e + '_cached'].width ? t[e + '_cached'] : null;
+				
             },
             'cacheCustomSkin': function(t, e, i) {
                 if (i) {
@@ -7450,9 +7493,10 @@ var thelegendmodproject = function(t, e, i) {
                         for (i = 0; i <= this.leaderboard.length - 1; i++) {
                             if (this.leaderboard[i].nick == window.customskinsname) {
                                 ogarminimapdrawer.customSkinsMap[window.customskinsname] = window.customskinsurl;
-                                ogarminimapdrawer.loadSkin(ogarminimapdrawer.customSkinsCache, window.customskinsurl);
+                                ogarminimapdrawer.loadSkin(ogarminimapdrawer.customSkinsCache, window.customskinsurl, window.customskinanimated);
                                 window.customskinsname = null;
 								window.customskinsurl = null;
+								window.customskinanimated = null;
                             }
                         }
                 }
@@ -7520,10 +7564,8 @@ var thelegendmodproject = function(t, e, i) {
 							g1 = g1.replace('_level_1', '').replace('_level_2', '').replace('_level_3', '');
 							g1 = g1.charAt(0).toUpperCase() + g1.slice(1);
 							g1 = makeUpperCaseAfterUnderline(g1);
-							if (ogarminimapdrawer.customSkinsMap[g1] == undefined){
-							ogarminimapdrawer.customSkinsMap[g1] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + g1 + ".png";
-                            ogarminimapdrawer.loadSkin(ogarminimapdrawer.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + g1 + ".png", true);
-							}							
+							core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + g1 + ".png", null);		
+							window.customskinanimated = true;
 						}
 						else if (window.vanillaskins == true && window.LMAgarGameConfiguration != undefined && ogarminimapdrawer.customSkinsMap[y] == undefined) {						
                             for (var player = 0; player < window.EquippableSkins.length; player++) {
@@ -9761,9 +9803,9 @@ var thelegendmodproject = function(t, e, i) {
                 arr = new Uint8Array(arr);
                 LM["sendMessage"](new DataView(arr["buffer"]));
             },
-            'registerSkin': function(a, b, c, d, e) {
+            'registerSkin': function(a, b, c, d) {
                 window.customskinsname = a;
-                window.customskinsurl = c;
+				window.customskinsurl = c;				
             }
         };
         window.master.getClientVersion();
