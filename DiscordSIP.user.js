@@ -31,7 +31,7 @@ if (messageone=="0"||messageone=="1"){  //IF using Legend Mod
     $('body').append('<div id="serverDiscord" class="agario-panel" style="position:fixed;width:18%;height:10%;right:0;background-color: rgba(0,0,255,0.5);z-index:100;"><div style="float: center;color: white;"><h3>'+discText+'</h2></div></div>');
     setTimeout(function () {
         $('#serverDiscord').remove();
-    }, 3000);
+    }, 1000);
 	}
 }
 
@@ -158,7 +158,7 @@ function postToDiscord(discordUrl,isGeneralChannel) {
             displayDiscordNotification();
         }, 'r');
 		}
-    },5000);
+    },3000);
 
 })();
 
@@ -195,4 +195,4 @@ console.group('%cSAgar Notifies Webhooks №2%c  %chttp://www.legendmod.ml',styl
     console.groupEnd();
 	console.groupEnd();
 console.groupEnd();
-}, 4000);
+}, 2000);
