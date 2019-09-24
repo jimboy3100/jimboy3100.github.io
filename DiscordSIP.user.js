@@ -16,8 +16,8 @@
 //Written by σмg ι ℓσνє уσυ! (Joe Bigglesworth), published by Jimboy3100 on general form
 //Put your webhook for generalChannel and serverChannel (2nd webhook) for the script to work
 
-        var generalChannel="https://discordapp.com/api/webhooks/.../...";
-        var serverChannel="https://discordapp.com/api/webhooks/.../...";
+        var generalChannel="https://discordapp.com/api/webhooks/626167678046044160/k4H3fwT4vdH5QjrmCi4GM6DzJUfBOT-8FmIps54YAlZOshct6ODi6A6oVhByj6ycFknU";
+        var serverChannel="https://discordapp.com/api/webhooks/626167678046044160/k4H3fwT4vdH5QjrmCi4GM6DzJUfBOT-8FmIps54YAlZOshct6ODi6A6oVhByj6ycFknU";
 ///////////////////////////////////////////////////////////////////////////////////////////////		
 
 window.messageone;
@@ -48,24 +48,25 @@ function popAgarURL( fun ) {
             var c = /((?:[0-9]{1,3}(?:\.|\-)){1,3}[0-9]{1,3})(?:.*?)?(\:[0-9]{1,5})/,
                 d = c.exec(this.url);
          //ogario support
+		 var serverlinks
 		 if (window.messageone=="0"||window.messageone=="1"){  //IF using Legend Mod
-			var serverlinks= window.location.href +" :Agario Token";
+			serverlinks= window.location.href +" :Agario Token";
 		}
 		else if ($( "#connect" ).hasClass( "agartoolbtn")){ //IF using Agar Tools
-		var serverlinks="https://agar.io/?sip=" + "live-arena-" + $( "#server" ).val() + ".agar.io"; 
+		serverlinks="https://agar.io/?sip=" + "live-arena-" + $( "#server" ).val() + ".agar.io"; 
 		}
 		else if (vanilla!=null){ //IF using Vanilla
 		var maketheserver=$( "#btn-dc-input" ).val();
 		maketheserver=maketheserver.split('live', 2).pop();
 		maketheserver='live'+maketheserver;
 		maketheserver.replace(':80','');
-		var serverlinks= "https://agar.io/?sip=" +maketheserver;
+		serverlinks= "https://agar.io/?sip=" +maketheserver;
 		}
 		else if (~ogartest.indexOf("ogario")) {
-		var serverlinks= "https://agar.io/?sip=" + "live-arena-" + $( "#server-token" ).val() + ".agar.io"; 
+		serverlinks= "https://agar.io/?sip=" + "live-arena-" + $( "#server-token" ).val() + ".agar.io"; 
 		}
 		else{
-			var serverlinks="https://agar.io/?sip="+d[1].replace(/-/g,'.')+d[2]+" = regular"+"\r\n"+"https://agar.io/a?sip="+d[1].replace(/-/g,'.')+d[2]+" = ogario"+"\r\n";
+			serverlinks="https://agar.io/?sip="+d[1].replace(/-/g,'.')+d[2]+" = regular"+"\r\n"+"https://agar.io/a?sip="+d[1].replace(/-/g,'.')+d[2]+" = ogario"+"\r\n";
 		}  
 		//console.log(serverlinks);
         //ally support
@@ -204,4 +205,3 @@ console.group('%cAgar Notifies Webhooks №2%c  %chttp://www.legendmod.ml',style
 	console.groupEnd();
 console.groupEnd();
 }, 2000);
-
