@@ -16,8 +16,8 @@
 //Written by σмg ι ℓσνє уσυ! (Joe Bigglesworth), published by Jimboy3100 on general form
 //Put your webhook for generalChannel and serverChannel (2nd webhook) for the script to work
 
-        var generalChannel="https://discordapp.com/api/webhooks/626167678046044160/k4H3fwT4vdH5QjrmCi4GM6DzJUfBOT-8FmIps54YAlZOshct6ODi6A6oVhByj6ycFknU";
-        var serverChannel="https://discordapp.com/api/webhooks/626167678046044160/k4H3fwT4vdH5QjrmCi4GM6DzJUfBOT-8FmIps54YAlZOshct6ODi6A6oVhByj6ycFknU";
+        var generalChannel="https://discordapp.com/api/webhooks/.../...";
+        var serverChannel="https://discordapp.com/api/webhooks/.../...";
 ///////////////////////////////////////////////////////////////////////////////////////////////		
 
 window.messageone;
