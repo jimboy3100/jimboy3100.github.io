@@ -186,7 +186,7 @@ var stylesLegendModConsole2 = [
 //    , 'font-weight: bold'
 ].join(';');
 
-console.group('%cSAgar Notifies Webhooks №2%c  %chttp://www.legendmod.ml',stylesLegendModConsole1, 'font-size: 48px; background: url(https://jimboy3100.github.io/banners/icon48.png) no-repeat' , stylesLegendModConsole1);
+console.group('%cAgar Notifies Webhooks №2%c  %chttp://www.legendmod.ml',stylesLegendModConsole1, 'font-size: 48px; background: url(https://jimboy3100.github.io/banners/icon48.png) no-repeat' , stylesLegendModConsole1);
     console.group("Part of");
 		console.log('%cThe Legend mod Project™', stylesLegendModConsole2);
     console.groupEnd();
