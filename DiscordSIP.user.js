@@ -132,7 +132,8 @@ function postToDiscord(discordUrl,isGeneralChannel) {
 		generalChannel=localStorage.getItem("discwebhook1");
 		serverChannel=localStorage.getItem("discwebhook2");        
 		}
-
+		if (window.discordsip==null){
+		window.discordsip=true;
         var r = $('<button/>',
                   {
             text: 'Post Server IP to Discord',
@@ -149,6 +150,7 @@ function postToDiscord(discordUrl,isGeneralChannel) {
         a[0].append($('<br/>')[0]);
         a[0].append(r[0]);
         a[0].append($('<br/>')[0]);
+		}
         // menu function
 		var GM_registerMenuCommand;
         if (GM_registerMenuCommand) {
@@ -158,7 +160,7 @@ function postToDiscord(discordUrl,isGeneralChannel) {
             displayDiscordNotification();
         }, 'r');
 		}
-    },3000);
+    },4000);
 
 })();
 
