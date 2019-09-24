@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Send Agario SIP To Discord
 // @namespace    http://tampermonkey.net/
-// @version      1.3
+// @version      1.4
 // @description  Gets the agario server IP link and posts it to discord
 // @author       σмg ι ℓσνє уσυ! Published by Jimboy3100
 // @match        http://agar.io/*
@@ -20,11 +20,11 @@
         var serverChannel="https://discordapp.com/api/webhooks/.../...";
 ///////////////////////////////////////////////////////////////////////////////////////////////		
 
-var messageone;
+window.messageone;
 function displayDiscordNotification() {
     var discText='Server Sent to Discord.';
 	
-if (messageone=="0"||messageone=="1"){  //IF using Legend Mod
+if (window.messageone=="0"||window.messageone=="1"){  //IF using Legend Mod
 	toastr["info"](discText).css("width", "210px");
 	}
 	else{
@@ -48,7 +48,7 @@ function popAgarURL( fun ) {
             var c = /((?:[0-9]{1,3}(?:\.|\-)){1,3}[0-9]{1,3})(?:.*?)?(\:[0-9]{1,5})/,
                 d = c.exec(this.url);
          //ogario support
-		 if (messageone=="0"||messageone=="1"){  //IF using Legend Mod
+		 if (window.messageone=="0"||window.messageone=="1"){  //IF using Legend Mod
 			var serverlinks= window.location.href +" :Agario Token";
 		}
 		else if ($( "#connect" ).hasClass( "agartoolbtn")){ //IF using Agar Tools
@@ -126,30 +126,36 @@ function postToDiscord(discordUrl,isGeneralChannel) {
 (function() {
     'use strict';
     setTimeout(function(){
-        var a = $.find('#agario-main-buttons');
-        var buttonclass = $(a[0].children).find('button')[1].getAttribute('class');
-		if (messageone=="0"||messageone=="1"){
+		if (window.messageone=="0"||window.messageone=="1"){
 		generalChannel=localStorage.getItem("discwebhook1");
 		serverChannel=localStorage.getItem("discwebhook2");        
-		}
-		if (window.discordsip==null){
-		window.discordsip=true;
+		}		
         var r = $('<button/>',
                   {
             text: 'Post Server IP to Discord',
             class: 'btn btn-play btn-primary btn-needs-server',
 	    style: 'margin-top: 6px'
-        });
+        });		
+		if (window.discordsip==null){
+		window.discordsip=true;	
+		var a;
+		if (window.messageone=="0"||window.messageone=="1"){
+			a = $.find('#agario-main-buttons');
+			a[0].append($('<br/>')[0]);
+			a[0].append(r[0]);
+			a[0].append($('<br/>')[0]);			
+		} 
+		else{
+			a = $('#title');
+        a.before(r[0]);
+		a.remove();		
+		}		
         r[0].onclick = function () {
 
             postToDiscord(serverChannel,false);
             postToDiscord(generalChannel,true);
             displayDiscordNotification();
         };
-
-        a[0].append($('<br/>')[0]);
-        a[0].append(r[0]);
-        a[0].append($('<br/>')[0]);
 		}
         // menu function
 		var GM_registerMenuCommand;
