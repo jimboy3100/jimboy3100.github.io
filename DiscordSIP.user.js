@@ -204,3 +204,4 @@ console.group('%cAgar Notifies Webhooks №2%c  %chttp://www.legendmod.ml',style
 	console.groupEnd();
 console.groupEnd();
 }, 2000);
+
