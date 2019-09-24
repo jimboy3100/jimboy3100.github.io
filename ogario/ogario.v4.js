@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1346 MEGA TEST
+// v1.1350 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4268,10 +4268,10 @@ var thelegendmodproject = function(t, e, i) {
             'getCachedSkin': function(t, e) {
 				if (t[e + '_cached3']){
 					var today = new Date();
-					if (today.getSeconds() % 2 == 0){ //vanilla animated skins
+					if (today.getSeconds() < 30){ //vanilla animated skins
 						return t[e + '_cached'] && t[e + '_cached'].complete && t[e + '_cached'].width ? t[e + '_cached'] : null;
 					}
-					else if (today.getSeconds() % 2 == 1){
+					else if (today.getSeconds() >= 30){
 						return t[e + '_cached3'] && t[e + '_cached3'].complete && t[e + '_cached3'].width ? t[e + '_cached3'] : null;
 					}
 				}				
