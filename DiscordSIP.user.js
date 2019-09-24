@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Send Agario SIP To Discord
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      1.3
 // @description  Gets the agario server IP link and posts it to discord
 // @author       σмg ι ℓσνє уσυ! Published by Jimboy3100
 // @match        http://agar.io/*
@@ -26,8 +26,6 @@ function displayDiscordNotification() {
 	
 if (messageone=="0"||messageone=="1"){  //IF using Legend Mod
 	toastr["info"](discText).css("width", "210px");
-  generalChannel=localStorage.getItem("discwebhook1");
-  serverChannel=localStorage.getItem("discwebhook2");
 	}
 	else{
     $('body').append('<div id="serverDiscord" class="agario-panel" style="position:fixed;width:18%;height:10%;right:0;background-color: rgba(0,0,255,0.5);z-index:100;"><div style="float: center;color: white;"><h3>'+discText+'</h2></div></div>');
@@ -130,8 +128,10 @@ function postToDiscord(discordUrl,isGeneralChannel) {
     setTimeout(function(){
         var a = $.find('#agario-main-buttons');
         var buttonclass = $(a[0].children).find('button')[1].getAttribute('class');
-        
-
+		if (messageone=="0"||messageone=="1"){
+		generalChannel=localStorage.getItem("discwebhook1");
+		serverChannel=localStorage.getItem("discwebhook2");        
+		}
 
         var r = $('<button/>',
                   {
