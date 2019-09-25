@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1350 MEGA TEST
+// v1.1351 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7315,6 +7315,9 @@ var thelegendmodproject = function(t, e, i) {
                                     break;
                                 default:
                                     console.log("[Legend mod Express] 102 Unknown", obj, previousState);
+									if (obj==20 && previousState ==20){
+									toastr["error"]('<b>[SERVER]:</b> You have been disconnected because your User ID logged in from another place');	
+									}
                             }
                         }
 
