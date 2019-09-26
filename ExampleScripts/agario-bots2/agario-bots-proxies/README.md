@@ -30,15 +30,13 @@ https://discord.gg/YkyS8zd
 
 * click the icon for watching the video
 
-[![Alt text](https://img.youtube.com/vi/k4PfQNZqEUs/0.jpg)](https://www.youtube.com/watch?v=k4PfQNZqEUs)
+[![Alt text](https://img.youtube.com/vi/k4PfQNZqEUs/0.jpg)](https://www.youtube.com/watch?v=CROvbjyLmS0)
 
-Fork this repo on your own repl.it
+"My repl.it got banned for using proxies", the only way is node.js as explained:
+https://github.com/jimboy3100/jimboy3100.github.io/tree/master/ExampleScripts/agario-bots2
 
-https://repl.it/@jimboy3100/agario-bots-proxies
-
-websocket: wss://agario-bots-proxies--jimboy3100.repl.co
-
-(imagine how yours should be)
+Zip file for node.js
+http://jimboy3100.github.io/ExampleScripts/agario-bots2/agario-bots-proxies/agar-bot-proxies.zip
 
 ## Replacing proxies.txt
 Download this:
@@ -56,6 +54,6 @@ Export at least 1000 ALIVE proxies (not less), see the generated file and replac
 
 You can also find proxy bots IPs from https://discord.gg/YkyS8zd , room #free-bots-proxies-🔨
 
-** If you use Repl.it, and it is connected to proxies, in theory users can be safe even with SOCK4, but they are recommended not to use other than SOCK5, also SOCK5 expire later and hide IP and countries.
+** Recommended not to use other than SOCK5, also SOCK5 expire later and hide IP and countries.
 
 ### GOOD LUCK!
