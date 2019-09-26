@@ -1,5 +1,5 @@
  //OLD DEALS
- //v2.7
+ //v2.8
  //for agarioUID, agarioID, look at the case 102: on this file https://legendmod.ml/ogario/ogario.v4.js?v=32
 
  /* you will need this
@@ -38,6 +38,7 @@ else{
 
 
      if (window.agarioUID != null) {
+		 window.open('https://legendmod.ml/LMexpress/olddeals.html', '_blank');
          LoadGameConfiguration();
          $('#helloContainer').after('<div class="modal fade in" id="specialShopModal" aria-hidden="false" style="display: block;">' +
              '<div class="modal-backdrop fade in"></div>' +
@@ -244,7 +245,7 @@ else{
              }, 500);
          });
      } else {
-         toastr["warning"]('Play a bit in order current AgarioId to catched');
+         toastr["warning"]('<b>[SERVER]: </b>Play a bit in order current Agario Id to catched');
      }
  }
 
