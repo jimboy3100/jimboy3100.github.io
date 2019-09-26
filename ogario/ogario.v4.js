@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1357 MEGA TEST
+// v1.1358 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7555,11 +7555,11 @@ var thelegendmodproject = function(t, e, i) {
 							y = y + "#000000";
 						}
 						//console.log(g)
-						if (g.includes && g.includes("%custom_")){
+						if (g.includes && g.includes("%custom_") && !legendflags.includes(LowerCase(y))){
 							var g1 = g.replace('%custom_', 'skin_custom_')
 							core.registerSkin(y, null, "https://configs.agario.miniclippt.com/live/custom_skins/" + g1 + ".png", null);
 						}
-						else if (g.includes && g.includes("_level_")){
+						else if (g.includes && g.includes("_level_") && !legendflags.includes(LowerCase(y))){
 							var g1 = g.replace('%', '')
 							g1 = g1.replace('_level_1', '').replace('_level_2', '').replace('_level_3', '');
 							g1 = g1.charAt(0).toUpperCase() + g1.slice(1);
