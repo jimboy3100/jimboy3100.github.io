@@ -1,5 +1,5 @@
  //OLD DEALS
- //v2.6
+ //v2.7
  //for agarioUID, agarioID, look at the case 102: on this file https://legendmod.ml/ogario/ogario.v4.js?v=32
 
  /* you will need this
@@ -139,7 +139,7 @@ else{
              }
              //$(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v15/2230/' + textcropped1 + '.png")');
              setTimeout(function() {
-
+				/*
                  if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal7") {
                      $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'Blueberry_Face.png ")');
                  } else if ($('#ss-select-purchases').val() == "com.miniclip.agar.io.dailydeal15") {
@@ -238,6 +238,7 @@ else{
                      $(".xpmt-skins").css('background-image', 'url(' + window.MiniclipDestination + 'moonlight_wendigo.png ")');
                      $(".xpmt-money-stack").text("7000 C+ 800 DNA");
                  }
+				 */
                  $(".xpmt-skins2").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v15/2230/' + textcropped2 + '")');
                  $(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v15/2230/' + textcropped1 + '")');
              }, 500);
