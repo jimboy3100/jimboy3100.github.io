@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1361 MEGA TEST
+// v1.1367 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -421,6 +421,12 @@ setTimeout(function() {
     if (window.LMGameConfiguration != undefined) {
         window.LMAgarGameConfiguration = window.LMGameConfiguration;
         window.EquippableSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Equippable Skins"];
+
+		window.FreskinsMap=[];
+		window.FreeSkins = LMAgarGameConfiguration.gameConfig["Gameplay - Free Skins"];
+		for (var player = 0; player < window.FreeSkins.length; player++) {
+			window.FreskinsMap[player] = window.FreeSkins[player].id
+		}		
     }
 }, 5000);
 
@@ -7554,8 +7560,16 @@ var thelegendmodproject = function(t, e, i) {
 						if (LM.gameMode == ":party"){
 							y = y + "#000000";
 						}
-						//console.log(g)
-						if (g.includes && g.includes("%custom_") && !legendflags.includes(LowerCase(y))){
+						//console.log(g)					
+						if (window.FreskinsMap && window.FreskinsMap.includes(y)){
+							for (var player = 0; player < window.FreeSkins.length; player++) {
+								if (y == window.FreeSkins[player].id){	
+									core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image, null);
+									//console.log("https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image)
+								}
+							}														
+						}	
+						else if (g.includes && g.includes("%custom_") && !legendflags.includes(LowerCase(y))){
 							var g1 = g.replace('%custom_', 'skin_custom_')
 							core.registerSkin(y, null, "https://configs.agario.miniclippt.com/live/custom_skins/" + g1 + ".png", null);
 						}
@@ -7566,7 +7580,7 @@ var thelegendmodproject = function(t, e, i) {
 							g1 = makeUpperCaseAfterUnderline(g1);
 							core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + g1 + ".png", null);		
 							window.customskinanimated = true;
-						}
+						}							
 						else if (window.vanillaskins == true && window.LMAgarGameConfiguration != undefined) {						
                             for (var player = 0; player < window.EquippableSkins.length; player++) {
                                 if (window.EquippableSkins[player].productId == "skin_" + g.replace('%', '') && window.EquippableSkins[player].image != "uses_spine") {
@@ -7574,7 +7588,8 @@ var thelegendmodproject = function(t, e, i) {
                                             if (legendflags.includes(LowerCase(y))) {
                                                 //console.log("[Legend mod Express] " + LowerCase(y) + " skin found. Skin registered");
                                                 core.registerSkin(y, null, "https://legendmod.ml/agario/live/flags/" + LowerCase(y) + ".png", null);
-                                            } else {
+                                            } 
+											else {
                                                 window.lastusednameforskin = y;
 												//core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image, null);
                                                 ogarminimapdrawer.customSkinsMap[y] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
