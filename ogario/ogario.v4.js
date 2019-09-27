@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1368 MEGA TEST
+// v1.1369 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -456,7 +456,7 @@ function UpperCase(str) {
 function LowerCase(str) {
     return str.toLowerCase();
 }
-var legendflags = ["yugoslavia","virgil","vaseline","the hood","targaryen","tajikistan","slovakia","sherbert","scott","peter","pepsi","nose","nivea","legend mod","legend clan","kennedy","kayo","john","israel","illuminati","heisenberg","gordon","eye of sauron","dollar","coca cola","brian","bread","beavis","bart","baghdadi","alaska","alan","8 ball",
+var legendflags = ["author of agar.io", "author of lm", "yugoslavia","virgil","vaseline","the hood","targaryen","tajikistan","slovakia","sherbert","scott","peter","pepsi","nose","nivea","legend mod","legend clan","kennedy","kayo","john","israel","illuminati","heisenberg","gordon","eye of sauron","dollar","coca cola","brian","bread","beavis","bart","baghdadi","alaska","alan","8 ball",
 "zelda", "yoda", "west wood", "weed girl", "vendetta", "taco cat", "sonic", "scar anime", "real moon", "real mars", "morgana", "monster energy", "melting moon", "mario", "luigi", "hard panda", 
 "grey monster", "fantasy girl", "doraemon", "darth vader", "color pandas", "color pandas", "color lion", "chemical soldier", "cheating girl", "black sphere", "asiatic", "angry cat", "angry bear", 
 "america shield", "jesse pinkman", "walter white", "argentina", "belarus", "cambodia", "isis", "jamaica", "mexico", "pakistan", "poland", "scotland", "somalia", "spain", "sweden", "switzerland", "thailand", 
