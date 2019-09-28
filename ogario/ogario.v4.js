@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1370 MEGA TEST
+// v1.1372 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -353,8 +353,8 @@ function checkVideos3(o) {
     }
 }
 
-window.agarversion = "v12/2168/";
-window.getLatestID = "2230";
+window.agarversion = "v15/2334/";
+window.getLatestID = "2234";
 
 window.getLatestconfigVersion = window.localStorage.getItem('EnvConfig.configVersion');
 window.getLatestID = window.localStorage.getItem("getLatestID");
@@ -6999,7 +6999,7 @@ var thelegendmodproject = function(t, e, i) {
                 if (window.disableIntegrity != true) { //
                     this.clientVersion = t;
                     this.clientVersionString = e;
-                    console.log('[Legend mod Express] Versions: client:', t, e, "x-proto:", this.xsupportprotoversion, "protocol:", this.protocolVersion);
+                    console.log('[Legend mod Express] Versions: client:', t, e, "x-proto:", this.xsupportprotoversion, "protocol:", this.protocolVersion, "Config:", "v" + window.getLatestconfigVersion, "ConfigId:", window.getLatestID);
                 } //
                 else { //
                     this.clientVersion = 0;
