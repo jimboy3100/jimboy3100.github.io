@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1380 MEGA TEST
+// v1.1387 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4206,7 +4206,7 @@ var thelegendmodproject = function(t, e, i) {
                 //console.log(t);  //////// return the image src
                 if (0 != this.cacheQueue.length) {
                     var e = this.cacheQueue.shift();
-                    if (e) {
+                    if (e && !this.customSkinsCache[e + "_cached"]) {
 						var depth = 512;
 						this.checkgraphics();				
 						if (ogarminimapdrawer.graphics){
@@ -4227,18 +4227,20 @@ var thelegendmodproject = function(t, e, i) {
 								//console.log('was animated')
 								$.drawImage(this.customSkinsCache[e], 0, 0, this.customSkinsCache[e].width/2 , this.customSkinsCache[e].height, 0, 0, depth, depth);
 							}
-                        } catch (e) {}			
+                        } 
+						catch (error) {
+						}		
                         this.customSkinsCache[e + "_cached"] = new Image;
                         this.customSkinsCache[e + "_cached"].src = i.toDataURL();
                         i = null;
                         this.cacheSkin(this.customSkinsCache, animated);
-                    }
+                    }				
                 }
             },			
             'cacheSkin2': function(t) {
                 if (0 != this.cacheQueue2.length) {
                     var e = this.cacheQueue2.shift();
-                    if (e) {
+                    if (e && !this.customSkinsCache[e + "_cached2"]) {
 						var depth = 64;
                         var i = document.createElement("canvas");
                         i.width = depth;
@@ -4248,8 +4250,10 @@ var thelegendmodproject = function(t, e, i) {
                         $.arc(depth/2, depth/2, depth/2, 0, 2 * Math.PI, false);
                         $.clip();
                         try {
-								$.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
-                        } catch (e) {}			
+							$.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);								
+                        } 
+						catch (error) {						
+						}							
                         this.customSkinsCache[e + "_cached2"] = new Image;
                         this.customSkinsCache[e + "_cached2"].src = i.toDataURL();
 						//this.customSkinsCache[e + "_cached"].src = i.toDataURL('image/jpeg', 0.1);
@@ -4262,7 +4266,7 @@ var thelegendmodproject = function(t, e, i) {
                 //console.log(t);  //////// return the image src
                 if (0 != this.cacheQueue3.length) {
                     var e = this.cacheQueue3.shift();
-                    if (e) {
+                    if (e && !this.customSkinsCache[e + "_cached3"]) {
 						var depth = 512;
 						this.checkgraphics();				
 						if (ogarminimapdrawer.graphics){
@@ -4277,7 +4281,9 @@ var thelegendmodproject = function(t, e, i) {
                         $.clip();
                         try {
 								$.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width/2, 0, this.customSkinsCache[e].width/2 , this.customSkinsCache[e].height, 0, 0, depth, depth);							
-                        } catch (e) {}			
+                        }
+						catch (error) {						
+						}							
                         this.customSkinsCache[e + "_cached3"] = new Image;
                         this.customSkinsCache[e + "_cached3"].src = i.toDataURL();
                         i = null;
