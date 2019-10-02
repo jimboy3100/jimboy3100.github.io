@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1400 MEGA TEST
+// v1.1401 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4688,7 +4688,8 @@ var thelegendmodproject = function(t, e, i) {
             },
             'SLGconnect2': function(srv) {
                 this.closeSLGConnection();
-                var room = ogarcopythelb.clanTag + "-" + srv.match("-([A-Za-z0-9]{6,7})\.")[1];
+                //var room = ogarcopythelb.clanTag + "-" + srv.match("-([A-Za-z0-9]{6,7})\.")[1];
+				var room = $("#server-token").val();
                 this.roomc = ogarcopythelb.clanTag;
                 //console.log('[Legend mod Express] Connecting to SLG:', this.room);				
                 //window.SLGsocket = new WebSocket("wss://connect.websocket.in/3Q-SoniaSLG_453dsV?room_id=" + this.room);
@@ -4829,14 +4830,14 @@ var thelegendmodproject = function(t, e, i) {
             //Sonia4
             'sendSLG': function(i, t) {
                 if (this.isSLGSocketOpen()) {
-                    if (ogarcopythelb.clanTag != this.roomc) {
-                        console.log("Sending failed. Reconnecting required..")
+                    //if (ogarcopythelb.clanTag != this.roomc) {
+                        //console.log("Sending failed. Reconnecting required..")
                         //this.SLGconnect(window.legendmod.ws);
-                        if (window.SLGsocket) {
-                            window.SLGsocket.closeAndOpen();
-                        }
-                        return;
-                    }
+                        //if (window.SLGsocket) {
+                           //window.SLGsocket.closeAndOpen();
+                        //}
+                        //return;
+                    //}
                     var s = this.packSLG(i);
                     if (s != null) {
                         //window.SLGsocket['send'](s + t);
