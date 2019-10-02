@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1390 MEGA TEST
+// v1.1393 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4051,7 +4051,8 @@ var thelegendmodproject = function(t, e, i) {
                             mass: legendmod.playerMass
                         };
                         Socket3.send(JSON.stringify({
-                            "toH": "legendmod",
+                            //"toH": "legendmod",
+							"toH": $("#server-token").val()+"3",
                             "msg": temp
                         }));
 
@@ -4701,11 +4702,13 @@ var thelegendmodproject = function(t, e, i) {
                         "password": "legendmod2"
                     }));
                     window.SLGsocket['send'](JSON.stringify({
-                        "joinHub": "legendmod2"
+                        //"joinHub": "legendmod2"
+						"joinHub": $("#server-token").val()
                     }));
                     //					
                 }
                 window.SLGsocket['onmessage'] = function(e) {
+					//console.log(e)
                     t.handleSLGMessage(e);
                 }
                 window.SLGsocket['onclose'] = function(e) {
@@ -4837,7 +4840,8 @@ var thelegendmodproject = function(t, e, i) {
                         var temp = s + t;
                         console.log(temp);
                         SLGsocket.send(JSON.stringify({
-                            "toH": "legendmod2",
+                            //"toH": "legendmod2",
+							"toH": $("#server-token").val(),
                             "msg": temp
                         }));
                     }
@@ -5101,7 +5105,8 @@ var thelegendmodproject = function(t, e, i) {
                             playerCells: window.playerCellsSock
                         };
                         Socket3.send(JSON.stringify({
-                            "toH": "legendmod",
+                            //"toH": "legendmod",
+							"toH": $("#server-token").val()+"3",
                             "msg": temp
                         }));
                         //if (temp.playerCells[0]) console.log(temp.playerCells[0].id, temp.playerCells[0].size, temp.playerCells[0].x, temp.playerCells[0].y);
@@ -5226,7 +5231,8 @@ var thelegendmodproject = function(t, e, i) {
                         mass: legendmod.playerMass
                     };
                     Socket3.send(JSON.stringify({
-                        "toH": "legendmod",
+                        //"toH": "legendmod",
+						"toH": $("#server-token").val()+"3",
                         "msg": temp
                     }));
                 }
@@ -5259,7 +5265,8 @@ var thelegendmodproject = function(t, e, i) {
                             }
                             //console.log("send", temp)
                             SLGsocket.send(JSON.stringify({
-                                "toH": "legendmod2",
+                                //"toH": "legendmod2",
+								"toH": $("#server-token").val(),
                                 "msg": temp
                             }));
                         }
