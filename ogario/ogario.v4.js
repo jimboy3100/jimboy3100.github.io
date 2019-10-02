@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1387 MEGA TEST
+// v1.1390 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -3898,8 +3898,19 @@ var thelegendmodproject = function(t, e, i) {
                 if ('submenu-panel' === e) {
                     var a = $(o).parent().attr('id');
                     $('#' + a + ' .submenu-panel').not(o).css('display', 'none');
-                } else $('.menu-panel').not(o).css('display', 'none');
-                $(o).fadeIn(1000), ogarhusettings(), $('.submenu-panel').perfectScrollbar('update');
+                } 
+				else {
+                try {
+					$('.menu-panel').not(o).css('display', 'none');								
+                } 
+				catch (error) {}								
+				}
+				try {
+                $(o).fadeIn(1000);
+				}
+				catch (error) {}
+				ogarhusettings(); 
+				$('.submenu-panel').perfectScrollbar('update');
             },
             'getDefaultSettings': function() {
                 if (this.noSkins = $("#noSkins").prop("checked"),
@@ -9730,11 +9741,12 @@ var thelegendmodproject = function(t, e, i) {
         i = LM;
         LMbuffer = t('buffer')['Buffer'];
         a = t('lz4');
-        if ('/ogario' === window.location.pathname) {
+        if ('/legendmod' === window.location.pathname) {
             ogarjoiner('/' + window.location.hash);
         }
         window.onresize = function() {
-            ogarfooddrawer.resizeCanvas(), ogarhusettings();
+            ogarfooddrawer.resizeCanvas();
+			ogarhusettings();
         };
         ogarassembler();
 
