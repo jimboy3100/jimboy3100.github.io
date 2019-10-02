@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1393 MEGA TEST
+// v1.1396 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -213,7 +213,7 @@ var Socket3;
 window.socket3Opened = false;
 window.SLG3NumberTries = 0;
 window.socket3NumberTries = 0;
-var customLMID = Math.floor(Math.random() * 100000);
+//var customLMID = Math.floor(Math.random() * 100000);
 window.playerCellsSockReceived = [];
 window.cellsFake = [];
 window.cellsFakeFlag = 0;
@@ -4045,7 +4045,8 @@ var thelegendmodproject = function(t, e, i) {
                             tag: ogarcopythelb.clanTag,
                             skin: ogarcopythelb.skinURL,
                             color: ogarcopythelb.color,
-                            id: customLMID,
+                            //id: customLMID,
+							id: legendmod3.playerID,
                             x: legendmod3.getPlayerX(),
                             y: legendmod3.getPlayerY(),
                             mass: legendmod.playerMass
@@ -4182,8 +4183,8 @@ var thelegendmodproject = function(t, e, i) {
                         this.complete &&
                             this.width &&
                             this.height &&
-                            this.width <= 2000 &&
-                            this.height <= 2000 &&
+                            this.width <= 2000 && this.width > 0 &&
+                            this.height <= 2000 && this.height > 0 &&
                             ((i.cacheQueue.push(e),
                                 1 == i.cacheQueue.length &&
                                 i.cacheSkin(i.customSkinsCache, animated)),
@@ -4698,7 +4699,8 @@ var thelegendmodproject = function(t, e, i) {
                     console.log('[Legend mod Express] SLG socket open:', room);
                     //
                     window.SLGsocket['send'](JSON.stringify({
-                        "auth": "JIM2" + customLMID,
+                        //"auth": "JIM2" + customLMID,
+						"auth": "JIM2" + legendmod3.playerID,
                         "password": "legendmod2"
                     }));
                     window.SLGsocket['send'](JSON.stringify({
@@ -5225,7 +5227,8 @@ var thelegendmodproject = function(t, e, i) {
                     //}
                     var temp = {
                         com: "pos",
-                        id: customLMID,
+                        //id: customLMID,
+						id: legendmod3.playerID,
                         x: legendmod3.getPlayerX(),
                         y: legendmod3.getPlayerY(),
                         mass: legendmod.playerMass
