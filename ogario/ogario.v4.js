@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1419 MEGA TEST
+// v1.1423 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4420,10 +4420,14 @@ var thelegendmodproject = function(t, e, i) {
                         //						
                         //this.currentSector = this.calculateMapSector(i.playerX, i.playerY, true),
                         this.currentSector = this.calculateMapSector(this.w, this.u, true),
-                        this.miniMapCtx.globalAlpha = 1,
-                        this.miniMapCtx.font = defaultSettings.miniMapFontWeight + " " + (e - 4) + "px " + defaultSettings.miniMapFontFamily,
-                        this.miniMapCtx.fillStyle = defaultSettings.miniMapSectorColor,
-                        this.miniMapCtx.fillText(this.currentSector, 10, e),
+
+						this.miniMapCtx.font = defaultSettings.miniMapFontWeight + ' ' + (e - 6) + 'px ' + defaultSettings.miniMapFontFamily,
+						this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor,
+                        this.miniMapCtx.globalAlpha = 1,						
+						this.miniMapCtx.fillText(this.currentSector, defaultSettings.miniMapWidth-32, e),
+                        //this.miniMapCtx.font = defaultSettings.miniMapFontWeight + " " + (e - 4) + "px " + defaultSettings.miniMapFontFamily,
+                        //this.miniMapCtx.fillStyle = defaultSettings.miniMapSectorColor,
+                        //this.miniMapCtx.fillText(this.currentSector, 10, e),
                         this.miniMapSectors || this.drawMiniMapSectors(defaultSettings.sectorsX, defaultSettings.sectorsY, o, s, a),
                         this.miniMapCtx.save(),
                         this.miniMapCtx.translate(9.5, a), ":battleroyale" === this.gameMode && ogarfooddrawer && ogarfooddrawer.drawBattleAreaOnMinimap(this.miniMapCtx, o, o, n, r, l),
