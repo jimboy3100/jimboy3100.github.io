@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1448 MEGA TEST
+// v1.1450 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -240,7 +240,7 @@ window.videoSkinPlayerflag2 = {};
 window.videoSkinPlayer = {};
 
 function fakePlayers() {
-    if (window.JimboyTests == true) {
+    if (defaultmapsettings.teamView) {
         for (var y = 0; y < legendmod.cells.length; y++) {
             legendmod.cells[y].fakeOK = true;
         }
@@ -935,7 +935,8 @@ var languagetexts = {
         'page_play_as_guest': 'Graj jako gość',
         'page_shop': 'Sklep',
         'page_spectate': 'Obserwuj',
-        'page_stats': 'Statystyki'
+        'page_stats': 'Statystyki',
+		"teamView": 'Team view (BETA)'
     },
     'en': {
         'start': 'Home',
@@ -1321,7 +1322,8 @@ var languagetexts = {
         'page_menu_main_free_coins': 'Free Coins',
         'page_menu_main_gifts': 'Gifts',
         'page_menu_main_dailyquests': 'Daily Quest',
-        'page_shop': 'Shop'
+        'page_shop': 'Shop',
+		"teamView": 'Team view (BETA)'
     }
 }
 var themePresets = {
@@ -2060,7 +2062,7 @@ var defaultmapsettings = {
     "borderGlow": false,
     "limLB": 10,
     "limTP": 5,
-
+	"teamView": false,
     ////
     //'zoomSpeedValue': .87,
     'zoomSpeedValue2': -0.13,
@@ -3550,7 +3552,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup"),
                     this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "hidecountry"], "chatGroup"),
                     this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup"),
-                    this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"), //Sonia2
+                    this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots", "teamView"], "helpersGroup"), //Sonia2
                     this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert"], "mouseGroup"),
                     this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop"], "hudGroup"),
                     this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"),
