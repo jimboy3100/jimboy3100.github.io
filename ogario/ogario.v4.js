@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1430 MEGA TEST
+// v1.1446 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -35,7 +35,20 @@ function Video(src, append) {
     return v;
 }
 
+Array.prototype.stDev = function stDev() {
+   const average = data => data.reduce((sum, value) => sum + value) / data.length
+   return Math.sqrt(average(this.map(value => (value - average(this)) ** 2)))
+};
+/*
+const standardDeviation = (arr, usePopulation = false) => {
+  const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
+  return Math.sqrt(
+    arr.reduce((acc, val) => acc.concat((val - mean) ** 2), []).reduce((acc, val) => acc + val, 0) /
+      (arr.length - (usePopulation ? 0 : 1))
+  );
+};
 
+*/
 //bots
 window.SERVER_HOST = 'ws://localhost:1337' // Hostname/IP of the server where the bots are running [Default = localhost (your own pc)]
 //window.SERVER_PORT = 1337 // Port number used on the server where the bots are running [Default = 1337]
@@ -261,7 +274,7 @@ function fakePlayers() {
 
         window.cellsFakeFlag++;
         if (window.cellsFakeFlag == 80) {
-            console.log('removed');
+            //console.log('removed');
             window.cellsFakeFlag = 0;
             window.cellsFake = [];
             /*
@@ -5129,10 +5142,10 @@ var thelegendmodproject = function(t, e, i) {
                         for (var i = 0; i < legendmod.playerCells.length; i++) {
                             window.playerCellsSock[i] = {};
                             window.playerCellsSock[i].id = legendmod.playerCells[i].id;
-                            window.playerCellsSock[i].x = legendmod.playerCells[i].x + legendmod.mapOffsetX;
-                            window.playerCellsSock[i].y = legendmod.playerCells[i].y + legendmod.mapOffsetY;
-                            //window.playerCellsSock[i].x = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(legendmod.playerCells[i].x) : legendmod.playerCells[i].x //Sonia3
-                            //window.playerCellsSock[i].y = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateY(legendmod.playerCells[i].y) : legendmod.playerCells[i].y; //Sonia3
+                            //window.playerCellsSock[i].x = legendmod.playerCells[i].x + legendmod.mapOffsetX;
+                            //window.playerCellsSock[i].y = legendmod.playerCells[i].y + legendmod.mapOffsetY;
+                            window.playerCellsSock[i].x = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(legendmod.playerCells[i].x + legendmod.mapOffsetX) : legendmod.playerCells[i].x + legendmod.mapOffsetX //Sonia3
+                            window.playerCellsSock[i].y = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateY(legendmod.playerCells[i].y + legendmod.mapOffsetY) : legendmod.playerCells[i].y + legendmod.mapOffsetY //Sonia3
                             window.playerCellsSock[i].size = legendmod.playerCells[i].size;
                         }
                     }
@@ -7213,12 +7226,33 @@ var thelegendmodproject = function(t, e, i) {
                 //} //
             },		*/
             //https://github.com/pierrec/node-lz4/blob/master/lib/binding.js
+			'pingTimer': function(){
+				if (!this.pingUsed){
+					this.pingUsed = 0;
+				}
+				if (!this.pingArray){
+				this.pingArray = [];
+				}
+				if (this.pingTime){				
+				this.ping = performance.now() - this.pingTime
+				}
+				this.pingTime = performance.now();
+				this.pingUsed++;
+				this.pingArray.push(this.ping);
+				if (this.pingUsed==99){					
+					//console.log('standardDeviation - usePopulation', standardDeviation(this.pingArray, true));
+					console.log('standardDeviation', this.pingArray.stDev());
+					this.pingArray = [];
+					this.pingUsed = 0;
+				}				
+			},
             'decompressMessage': function(message) {
                 var buffer = new LMbuffer(message['buffer']);
                 var readMessage = new LMbuffer(buffer.readUInt32LE(1));
                 return a.decodeBlock(buffer.slice(5), readMessage), readMessage;
             },
             'handleMessage': function(data) {
+				//this.pingTimer();
                 var i = function() {
                         for (var e = '';;) {
                             var i = data.getUint8(s++);
@@ -7502,7 +7536,7 @@ var thelegendmodproject = function(t, e, i) {
                             }
                             break;
                         case 226:
-                            window.testobjectsOpcode226 = data;
+                            window.testobjectsOpcode226 = data;						
                             var extraOptions = data.getUint16(1, !![]);
                             data = this["createView"](3);
                             data.setUint8(0, 227);
@@ -8741,7 +8775,9 @@ var thelegendmodproject = function(t, e, i) {
                     }
                 },
                 'render': function() {
-                    ogarfooddrawer.countFps(), ogarfooddrawer.renderFrame(), window.requestAnimationFrame(ogarfooddrawer.render);
+                    ogarfooddrawer.countFps();
+					ogarfooddrawer.renderFrame();
+					window.requestAnimationFrame(ogarfooddrawer.render);
                 },
                 'init': function() {
                     this.setCanvas();
