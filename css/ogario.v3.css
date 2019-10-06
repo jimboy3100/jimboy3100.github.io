@@ -877,6 +877,7 @@
      display:block 
 }
  #top5-hud{
+	 transform-style: preserve-3d;
      width:300px;
      font-size:100%;
      top:55px;
@@ -942,6 +943,7 @@
      opacity:.1 
 }
  #leaderboard-hud{
+	 transform-style: preserve-3d;
      font-size:100%;
      white-space:nowrap;
      padding:0;
