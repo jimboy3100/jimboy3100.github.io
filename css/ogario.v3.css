@@ -730,6 +730,7 @@
 }
  #overlays-hud,#statsContinue2{
      position:absolute 
+	 
 }
  #theme .color-box{
      width:50%;
@@ -819,6 +820,7 @@
      font-family:Ubuntu;
      font-size:20px;
      z-index:100 
+	 transform-style: preserve-3d;
 }
  .hud,.hud-b,.hud-c{
      display:none;
@@ -877,7 +879,7 @@
      display:block 
 }
  #top5-hud{
-	 transform-style: preserve-3d;
+
      width:300px;
      font-size:100%;
      top:55px;
@@ -943,7 +945,7 @@
      opacity:.1 
 }
  #leaderboard-hud{
-	 transform-style: preserve-3d;
+
      font-size:100%;
      white-space:nowrap;
      padding:0;
