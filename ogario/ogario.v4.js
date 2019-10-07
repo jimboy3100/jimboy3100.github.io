@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1450 MEGA TEST
+// v1.1453 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -33,6 +33,28 @@ function Video(src, append) {
         document.body.appendChild(v);
     }
     return v;
+}
+function initTilt() {
+	//TweenMax.set([$pContent], { transformStyle: "preserve-3d" });
+	$('body').mousemove(function(e) {
+		var sxPos = e.pageX / $(canvas).width() * 100 - 100;
+		var syPos = e.pageY / $(canvas).height() * 100 - 100;
+		TweenMaxLM($('#leaderboard-hud'), sxPos, syPos)
+		TweenMaxLM($('#top5-hud'), sxPos, syPos)
+		TweenMaxLM($('#minimap-hud'), sxPos, syPos)
+		TweenMaxLM($('#time-hud'), sxPos, syPos)
+		TweenMaxLM($('#stats-hud'), sxPos, syPos)
+		//TweenMaxLM($('#minimap-sectors'), sxPos, syPos)
+		});	
+};
+function TweenMaxLM(Variable, sxPos, syPos){
+		TweenMax.to(Variable, 2, {
+			rotationY: 0.03 * sxPos,
+			rotationX: -0.03 * syPos,
+			transformPerspective: 500,
+			transformOrigin: "center center -400",
+			ease: Expo.easeOut
+		});	
 }
 
 Array.prototype.stDev = function stDev() {
@@ -644,6 +666,7 @@ var languagetexts = {
         'normalLb': 'Nagłówek \"Topka\"',
         'centeredLb': 'Wyśrodkowana topka',
         'fpsAtTop': 'Statystyki na górze',
+		'tweenMaxEffect': 'Tween max effect',
         'showStats': 'Pokaż statystyki',
         'showStatsMass': 'Statystyki: Masa',
         'showStatsSTE': 'Statystyki: Przedziały Masy',
@@ -1047,6 +1070,7 @@ var languagetexts = {
         'normalLb': '\"Leaderboard\" header',
         'centeredLb': 'Centered leaderboard',
         'fpsAtTop': 'Game stats at the top',
+		'tweenMaxEffect': 'Tween max effect',
         'showStats': 'Show game stats',
         'showStatsMass': 'Game stats: Mass',
         'showStatsESTE': 'Game stats: Enemy\'s STE',
@@ -2035,6 +2059,7 @@ var defaultmapsettings = {
     'normalLb': true,
     'centeredLb': true,
     'fpsAtTop': true,
+	'tweenMaxEffect': false,
     'showStats': true,
     'showStatsMass': true,
     'showStatsESTE': false,
@@ -2896,6 +2921,9 @@ var thelegendmodproject = function(t, e, i) {
             'setFpsAtTop': function() {
                 defaultmapsettings.fpsAtTop ? $('#stats-hud').removeClass('hud-bottom').addClass('hud-top') : $('#stats-hud').removeClass('hud-top').addClass('hud-bottom');
             },
+            'setTweenMaxEffect': function() {
+                defaultmapsettings.tweenMaxEffect ? initTilt() : console.log('[Legend mod Express] Restart needed...');
+            },			
             'setBlockPopups': function() {
                 this.protocolMode ? $('#block-warn').hide() : defaultmapsettings["blockPopups"] ? this["blockPopups"]() : this.unblockPopups();
             },
@@ -3289,8 +3317,12 @@ var thelegendmodproject = function(t, e, i) {
                         case 'fpsAtTop':
                             this.setFpsAtTop();
                             break;
+						case 'tweenMaxEffect':
+							this.setTweenMaxEffect();
+							break;
                         case 'showStats':
-                            this.displayStats(), $('#stats-hud').show();
+                            this.displayStats();
+							$('#stats-hud').show();
                             break;
                         case 'blockPopups':
                             this.setBlockPopups();
@@ -3554,7 +3586,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup"),
                     this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots", "teamView"], "helpersGroup"), //Sonia2
                     this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert"], "mouseGroup"),
-                    this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop"], "hudGroup"),
+                    this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
                     this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"),
                     this.addOptions([], "macroGroup"),
                     this.protocolMode || (this.addOptions(["blockPopups"], "extrasGroup"),
@@ -5883,6 +5915,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.setCenteredLb(),
                     this.setNormalLb(),
                     this.setFpsAtTop(),
+					this.setTweenMaxEffect(),
                     this.displayStats(),
                     this.setBlockPopups(),
                     this.preloadChatSounds(),
