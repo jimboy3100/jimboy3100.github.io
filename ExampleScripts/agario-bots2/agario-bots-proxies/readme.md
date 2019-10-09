@@ -32,13 +32,6 @@ https://discord.gg/YkyS8zd
 
 [![Alt text](https://img.youtube.com/vi/k4PfQNZqEUs/0.jpg)](https://www.youtube.com/watch?v=k4PfQNZqEUs)
 
-Fork this repo on your own repl.it
-
-https://repl.it/@jimboy3100/agario-bots-proxies
-
-websocket: wss://agario-bots-proxies--jimboy3100.repl.co
-
-(imagine how yours should be)
 
 ## Replacing proxies.txt
 Download this:
