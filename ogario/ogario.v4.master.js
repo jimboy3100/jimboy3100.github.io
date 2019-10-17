@@ -1,4 +1,4 @@
-//v12.8
+//v12.9
 window.EnvConfig = {};
 window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
 window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
@@ -726,7 +726,7 @@ function legendmaster(self) {
             this.checkRegion();
             setInterval(function() {
                 n.refreshRegionInfo();
-            }, 6372);
+            }, 18e4);
         }
     };
     self.getStorage = function() {
