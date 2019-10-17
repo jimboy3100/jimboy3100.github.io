@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1484 MEGA TEST
+// v1.1485 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5573,7 +5573,8 @@ var thelegendmodproject = function(t, e, i) {
                 this.updatevnr(); //Sonia3
                 if (window.legendmod.delstate >= 0) { //Sonia3
                     window.legendmod.delstate += 1; //Sonia3
-                    if (window.legendmod.delstate > 3) window.legendmod.delstate = -1; //Sonia3
+                    //if (window.legendmod.delstate > 3) window.legendmod.delstate = -1; //Sonia3
+					if (window.legendmod.delstate > 3) window.legendmod.delstate = -1; //Sonia3
                 } //Sonia3
                 var t = 0;
                 for (; t < this.teamPlayers.length; t++) {
@@ -7422,7 +7423,8 @@ var thelegendmodproject = function(t, e, i) {
                                 max = n; //Sonia3
                             } //Sonia3
                         }
-                        window.legendmod.bgpi = this.calculatebgpi(this.ghostCells[max].x, this.ghostCells[max].y); //Sonia3
+                        //window.legendmod.bgpi = this.calculatebgpi(this.ghostCells[max].x, this.ghostCells[max].y); //Sonia3
+						window.legendmod.bgpi = this.calculatebgpi(this.ghostCells[0].x, this.ghostCells[0].y); //Sonia3
                         break;
                     case 85:
                         window.testobjectsOpcode85 = data;
