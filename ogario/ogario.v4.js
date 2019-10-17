@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1481 MEGA TEST
+// v1.1482 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -6665,7 +6665,7 @@ var thelegendmodproject = function(t, e, i) {
                                 style.globalCompositeOperation = '';
                                 style.restore();
 
-                            } else {
+                            } else if ( legendmod.gameMode != ":teams"){
                                 try {
                                     style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
                                 } catch (e) {}
