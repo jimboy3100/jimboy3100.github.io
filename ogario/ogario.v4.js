@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1480 MEGA TEST
+// v1.1481 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7353,8 +7353,9 @@ var thelegendmodproject = function(t, e, i) {
                         window.testobjectsOpcode50 = data;
                         this.pieChart = [];
                         var a = data.getUint32(s, true);
-                        s += 4;
-                        for (var n = 0; n < a; n++) this.pieChart.push(data.getFloat32(s, true)), s += 4;
+                        s += 4; //5,12,19
+                        //for (var n = 0; n < a; n++) this.pieChart.push(data.getFloat32(s, true)), s += 4;
+						for (var n = 0; n < a; n++) this.pieChart.push(data.getFloat32(s, true)), s += 7;
                         ogarfooddrawer.drawPieChart();
                         break;
                     case 53:
@@ -7586,12 +7587,11 @@ var thelegendmodproject = function(t, e, i) {
                                     'name': ogarcopythelb
                                 });
                             }
-							var temp ='[<b>[SERVER]:</b> <font color="yellow"><b>Battle Royal Ranks:</b></font>';					
+							var temp ='[<b>[SERVER]:</b> <font color="yellow"><b>Battle Royal Ranks:</b></font>';	
 							for (var i=0;i< legendmod.battleRoyale.rank.length ; i++){
 								temp+= '<br>' + legendmod.battleRoyale.rank[i].place + ". "+ legendmod.battleRoyale.rank[i].name;
 							}
-							temp+='<br>' + 'Your rank: <font color="yellow"><b>' + legendmod.battleRoyale.playerRank + '</b></font>';
-						
+							temp+='<br>' + 'Your rank: <font color="yellow"><b>' + legendmod.battleRoyale.playerRank + '</b></font>';				
 							toastr["info"](temp);
                             break;
                         case 226:
@@ -8678,10 +8678,17 @@ var thelegendmodproject = function(t, e, i) {
                     this.pieChart || (this.pieChart = document.createElement('canvas'));
                     var t = this.pieChart.getContext('2d'),
                         e = Math.min(200, 0.3 * this.canvasWidth) / 200;
-                    this.pieChart.width = 200 * e, this.pieChart.height = 240 * e, t.scale(e, e);
+                    this.pieChart.width = 200 * e; 
+					this.pieChart.height = 240 * e;
+					t.scale(e, e);
                     for (var i = ['#333333', '#FF3333', '#33FF33', '#3333FF'], s = 0, o = 0; o < LM.pieChart.length; o++) {
                         var a = s + LM.pieChart[o] * this.pi2;
-                        t.fillStyle = i[o + 1], t.beginPath(), t.moveTo(100, 140), t.arc(100, 140, 80, s, a, false), t.fill(), s = a;
+                        t.fillStyle = i[o + 1]; 
+						t.beginPath(); 
+						t.moveTo(100, 140); 
+						t.arc(100, 140, 80, s, a, false); 
+						t.fill(); 
+						s = a;
                     }
                 },
                 'drawBattleArea': function(t) {
