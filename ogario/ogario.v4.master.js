@@ -1,4 +1,4 @@
-//v12.1
+//v12.8
 window.EnvConfig = {};
 window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
 window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
@@ -166,9 +166,9 @@ function legendmaster(self) {
             master_url: window.EnvConfig.master_url.replace("https://", ""),
             endpoint_version: "v4",
             proto_version: "15.0.1",
-            client_version: 30701,
+            client_version: 30706,
 			//3.4.6
-            client_version_string: "3.7.1",
+            client_version_string: "3.7.6",
 			protocolVersion: 21
         };
     } else if (window.EnvConfig.master_url){
@@ -178,8 +178,8 @@ function legendmaster(self) {
             master_url: window.EnvConfig.master_url.replace("https://", ""),
             endpoint_version: "v4",
             proto_version: "15.0.1",
-            client_version: 30701,
-            client_version_string: "3.7.1",
+            client_version: 30706,
+            client_version_string: "3.7.6",
 			protocolVersion: 21
         };
 		} else {
@@ -189,8 +189,8 @@ function legendmaster(self) {
             master_url: "webbouncer-live-v8-0.agario.miniclippt.com",
             endpoint_version: "v4",
             proto_version: "15.0.1",
-            client_version: 30701,
-            client_version_string: "3.7.1",
+            client_version: 30706,
+            client_version_string: "3.7.6",
 			protocolVersion: 21
         };		
     }
@@ -296,7 +296,7 @@ function legendmaster(self) {
             }
         },			
         parseClientVersion: function(styleValue) {
-            return 1e4 * parseInt(styleValue.split(".")[0]) + 100 * parseInt(styleValue.split(".")[1]) + parseInt(styleValue.split(".")[2]);
+            return 10000 * parseInt(styleValue.split(".")[0]) + 100 * parseInt(styleValue.split(".")[1]) + parseInt(styleValue.split(".")[2]);
         },
         'getRegionCode': function() {
             var nextNodeLoc = window.localStorage.getItem('location');
@@ -309,20 +309,37 @@ function legendmaster(self) {
                 return;
             }
             var canvasLayersManager = this;
-            userData = $.get("https://extreme-ip-lookup.com/json/", function(response) {
-                $("#response").html(JSON.stringify(response, null, 4));
+            window.userData = $.ajax(master.master_url_http + "/getCountry", {
+                beforeSend: function(xhr) {
+                    return xhr.setRequestHeader("Accept", "text/plain"), xhr.setRequestHeader("Accept", "*/*"), xhr.setRequestHeader("Accept", "q=0.01"), xhr.setRequestHeader("Content-Type", "application/octet-stream"), xhr.setRequestHeader("x-support-proto-version", master.xsupportprotoversion), xhr.setRequestHeader("x-client-version", master.clientVersion), true;
+                },
+                error: function() {
+                    if (timeout_callback) {
+                        timeout_callback();
+                    }
+                },
+                success: function(playlistCopy) {
+                $("#response").html(JSON.stringify(playlistCopy, null, 4));
                 if (userData != null) {
                     localStorage.setItem("userData", JSON.stringify(userData));
                 }
-				if (userData && userData.responseJSON){					
-                canvasLayersManager.setRegionCode(userData.responseJSON.countryCode);
+				//if (userData && userData.responseJSON){		
+				if (playlistCopy){			
+				console.log(playlistCopy.country)
+                canvasLayersManager.setRegionCode(playlistCopy.country);
 				}
-				else{
+				else if (userData){
 					setTimeout(function() {
-						canvasLayersManager.setRegionCode(userData.responseJSON.countryCode);
+						canvasLayersManager.setRegionCode(userData.responseJSON.country);
 					}, 2000);						
 				}
-            }, "jsonp");
+                },
+                dataType: "json",
+                method: "POST",
+                processData: false,
+                cache: false,
+                crossDomain: true
+            });
         },
         setRegionCode: function(segment) {
             if (regionobj.hasOwnProperty(segment)) {
@@ -709,7 +726,7 @@ function legendmaster(self) {
             this.checkRegion();
             setInterval(function() {
                 n.refreshRegionInfo();
-            }, 18e4);
+            }, 6372);
         }
     };
     self.getStorage = function() {
