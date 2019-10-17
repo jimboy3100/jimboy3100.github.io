@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1485 MEGA TEST
+// v1.1486 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7424,7 +7424,12 @@ var thelegendmodproject = function(t, e, i) {
                             } //Sonia3
                         }
                         //window.legendmod.bgpi = this.calculatebgpi(this.ghostCells[max].x, this.ghostCells[max].y); //Sonia3
-						window.legendmod.bgpi = this.calculatebgpi(this.ghostCells[0].x, this.ghostCells[0].y); //Sonia3
+						if (this.ghostCells[0]){
+							window.legendmod.bgpi = this.calculatebgpi(this.ghostCells[0].x, this.ghostCells[0].y); //Sonia3
+						}
+						else{
+							window.legendmod.bgpi=4;
+						}
                         break;
                     case 85:
                         window.testobjectsOpcode85 = data;
