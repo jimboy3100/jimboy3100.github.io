@@ -1,4 +1,4 @@
-//v12.9
+//v12.40
 window.EnvConfig = {};
 window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
 window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
@@ -165,7 +165,7 @@ function legendmaster(self) {
             gplus_client_id: window.EnvConfig.google_client_id,
             master_url: window.EnvConfig.master_url.replace("https://", ""),
             endpoint_version: "v4",
-            proto_version: "15.0.1",
+            proto_version: "15.0.2",
             client_version: 30706,
 			//3.4.6
             client_version_string: "3.7.6",
@@ -177,7 +177,7 @@ function legendmaster(self) {
             gplus_client_id: "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com",
             master_url: window.EnvConfig.master_url.replace("https://", ""),
             endpoint_version: "v4",
-            proto_version: "15.0.1",
+            proto_version: "15.0.2",
             client_version: 30706,
             client_version_string: "3.7.6",
 			protocolVersion: 21
@@ -188,7 +188,7 @@ function legendmaster(self) {
             gplus_client_id: "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com",
             master_url: "webbouncer-live-v8-0.agario.miniclippt.com",
             endpoint_version: "v4",
-            proto_version: "15.0.1",
+            proto_version: "15.0.2",
             client_version: 30706,
             client_version_string: "3.7.6",
 			protocolVersion: 21
@@ -463,19 +463,28 @@ function legendmaster(self) {
                     self.core.disconnect();
                 }
                 var picKey = "findServer";
+				//
                 if (null == id) {
                     id = "";
                 }
                 if (null == params) {
                     /** @type {string} */
-                    params = ":ffa";
+                    params = ":ffa";					
                 } else {
                     //if (params === ":battleroyale") {
                     //picKey = "findBattleRoyaleServer";
                     //}
                 }
+				var source2;
+				/*if (master && master.context && master.context == "facebook" && params === ":ffa" && window.friends){
+					picKey = "findServerWithFriends";	
+					params = params;
+					source2 = window.friends;
+				}*/				
                 var options = this;
-                var container = this.setRequestMsg(id, params);
+				//console.log("id", id, "params", params);
+                var container;
+				container= this.setRequestMsg(id, params, null, source2);
                 var defaultWarningTime = ++this.curValidFindServer;
                 this.findingServer = e;
                 this.makeMasterRequest(headers.endpoint_version + "/" + picKey, container, function(response) {
@@ -500,16 +509,36 @@ function legendmaster(self) {
                 });
             }
         },
-        setRequestMsg: function(args, object, source) {
-            var getOwnPropertyNames = function(data) {
+        setRequestMsg: function(args, object, source, source2) {
+            var output;
+			var output2 = 0;
+			if (source2){
+				output2= "" + friends;
+			}
+			if (!output2.length){
+				output2a=0;
+			}
+			else{
+				output2a=output2.length
+			}
+			output = [10, 4 + args.length + object.length + output2a, 10];
+			var getOwnPropertyNames = function(data) {
                 output.push(data.length);
                 var value = 0;
                 for (; value < data.length; value++) {
                     output.push(data.charCodeAt(value));
                 }
             };
-            var output = [10, 4 + args.length + object.length, 10];
-            return getOwnPropertyNames(args), output.push(18), getOwnPropertyNames(object), source && (output.push(26, 8, 10), getOwnPropertyNames(source)), new Uint8Array(output);
+            var getOwnPropertyNames2 = function(data) {
+					output.push(18);
+					output.push(184);
+					output.push(4);
+					data.forEach(function(element) {
+					output.push(18);	
+					getOwnPropertyNames(element);
+					});					
+            };			          
+            return getOwnPropertyNames(args), output.push(18), getOwnPropertyNames(object), source2 && getOwnPropertyNames2(source2), source && (output.push(26, 8, 10), getOwnPropertyNames(source)), new Uint8Array(output);
         },
         makeMasterRequest: function(_wid_attr, data, callback, timeout_callback, type) {
             var header = this;
@@ -518,7 +547,9 @@ function legendmaster(self) {
             }
             $.ajax("https://" + headers.master_url + "/" + _wid_attr, {
                 beforeSend: function(xhr) {
-                    return xhr.setRequestHeader("Accept", "text/plain"), xhr.setRequestHeader("Accept", "*/*"), xhr.setRequestHeader("Accept", "q=0.01"), xhr.setRequestHeader("Content-Type", type), xhr.setRequestHeader("x-support-proto-version", master.xsupportprotoversion), xhr.setRequestHeader("x-client-version", master.clientVersion), true;
+                    //return xhr.setRequestHeader("Accept", "text/plain"), xhr.setRequestHeader("Accept", "*/*"), xhr.setRequestHeader("Accept", "q=0.01"), xhr.setRequestHeader("Content-Type", type), xhr.setRequestHeader("x-support-proto-version", master.xsupportprotoversion), xhr.setRequestHeader("x-client-version", master.clientVersion), true;
+                    return xhr.setRequestHeader("Accept", "text/plain"), xhr.setRequestHeader("Accept", "*/*"), xhr.setRequestHeader("Accept", "text/plain, */*, q=0.01"), xhr.setRequestHeader("Content-Type", type), xhr.setRequestHeader("x-support-proto-version", master.xsupportprotoversion), xhr.setRequestHeader("x-client-version", master.clientVersion), true;
+
                 },
                 error: function() {
                     if (timeout_callback) {
@@ -537,7 +568,10 @@ function legendmaster(self) {
             });
         },
         makeMasterSimpleRequest: function(key, dataType, success, error) {
-            var obj = this;
+            //if (key){
+				//key = key = + "/";
+			//}
+			var obj = this;
             $.ajax("https://" + headers.master_url + "/" + key, {
                 beforeSend: function(xhr) {
                     return xhr.setRequestHeader("x-support-proto-version", master.xsupportprotoversion), xhr.setRequestHeader("x-client-version", master.clientVersion), true;
@@ -683,6 +717,7 @@ function legendmaster(self) {
         },
         logout: function() {
             this.accessToken = null;
+			this.context = "";
             console.log("[Master] logout called, not reconnecting");
             //            this.reconnect();
         },
@@ -727,7 +762,24 @@ function legendmaster(self) {
             setInterval(function() {
                 n.refreshRegionInfo();
             }, 18e4);
-        }
+        },
+		findFacebookFriends: function() {
+			FB.api("me/friends","GET",{
+                    fields: "id, name, picture"
+                    }, function(response) {
+						if (response != null && response.data != null) {
+							window.facebookFriends=response.data;							
+                            var _g = 0;
+							window.friends=[];
+                            while (_g < response.data.length) {
+                                window.friends.push(response.data[_g].id);
+                                ++_g;
+                            }							
+                        } else {
+                            console.log("Error calling: FP.api");
+                        }
+			});	
+		}		
     };
     self.getStorage = function() {
         if (null !== self.localStorage.getItem("storeObjectInfo")) {
