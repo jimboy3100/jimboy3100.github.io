@@ -1,5 +1,5 @@
  //OLD DEALS
- //v2.9
+ //v2.10
  //for agarioUID, agarioID, look at the case 102: on this file https://legendmod.ml/ogario/ogario.v4.js?v=32
 
  /* you will need this
@@ -118,27 +118,34 @@ else{
              console.log(this.value);
              findSDescription();
              //$(".xpmt-skins2").remove();
-             $(".xpmt-money-stack").text($("#ss-select-purchases option:selected").text().substr(0, $("#ss-select-purchases option:selected").text().indexOf('_')) + " C");
+			 if ($("#ss-select-purchases option:selected").text().includes('dna')){
+				$(".xpmt-money-stack").text($("#ss-select-purchases option:selected").text().substr(0, $("#ss-select-purchases option:selected").text().indexOf('_')) + " DNA"); 
+			 }
+			 else{
+				$(".xpmt-money-stack").text($("#ss-select-purchases option:selected").text().substr(0, $("#ss-select-purchases option:selected").text().indexOf('_')) + " C");
+			 }
              $("#dealcost").text($("#ss-select-purchases option:selected").text().split('=').pop());
 
              var textcropped1 = $("#ss-select-purchases option:selected").text().split('1_skin_').pop();
              textcropped2 = $("#ss-select-purchases option:selected").text();
-             textcropped2 = "skin_" + textcropped2.split('1_skin_', 2)[1].slice(0, -1);
+             if (textcropped2.split('1_skin_', 2)[1]){
+			 textcropped2 = "skin_" + textcropped2.split('1_skin_', 2)[1].slice(0, -1);
+			 }
              textcropped1 = "skin_" + textcropped1.substr(0, textcropped1.indexOf(' ')).replace(' ', '');
              //textcropped1 = textcropped1.charAt(0).toUpperCase() + textcropped1.slice(1);
              textcropped1 = textcropped1.charAt(0) + textcropped1.slice(1);
              //if (textcropped1=="jade_dragon"){
              //textcropped1="Journey_JadeDragon";
              //}
-             for (i = 0; i < GameConfiguration.gameConfig["Visual - Products"].length; i++) {
-                 if (GameConfiguration.gameConfig["Visual - Products"][i].productId == textcropped1) {
-                     textcropped1 = GameConfiguration.gameConfig["Visual - Products"][i].visualSource;
+             for (i = 0; i < GameConfiguration.gameConfig["Gameplay - Equippable Skins"].length; i++) {
+                 if (GameConfiguration.gameConfig["Gameplay - Equippable Skins"][i].productId == textcropped1) {
+                     textcropped1 = GameConfiguration.gameConfig["Gameplay - Equippable Skins"][i].image;
                      //textcropped1 = textcropped1.substring(0, textcropped1.indexOf('.'));
                  }
              }
-             for (i = 0; i < GameConfiguration.gameConfig["Visual - Products"].length; i++) {
-                 if (GameConfiguration.gameConfig["Visual - Products"][i].productId == textcropped2) {
-                     textcropped2 = GameConfiguration.gameConfig["Visual - Products"][i].visualSource;
+             for (i = 0; i < GameConfiguration.gameConfig["Gameplay - Equippable Skins"].length; i++) {
+                 if (GameConfiguration.gameConfig["Gameplay - Equippable Skins"][i].productId == textcropped2) {
+                     textcropped2 = GameConfiguration.gameConfig["Gameplay - Equippable Skins"][i].image;
                      //textcropped1 = textcropped1.substring(0, textcropped1.indexOf('.'));
                  }
              }
