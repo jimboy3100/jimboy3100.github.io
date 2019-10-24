@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1515 MEGA TEST
+// v1.1517 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4245,7 +4245,7 @@ var thelegendmodproject = function(t, e, i) {
 					//console.log('findOwnedVanillaSkin failed execution')
 					if (!window.EquippableSkins && !window.findOwnedVanillaSkinOnce){
 						window.findOwnedVanillaSkinOnce=true;
-						console.log('[Legend mod Express] findOwnedVanillaSkin window.EquippableSkins not loaded');	
+						console.log('[Legend mod Express] findOwnedVanillaSkin: window.EquippableSkins not loaded');	
 						setTimeout(function() {
 							legendmod3.findOwnedVanillaSkin();
 						}, 4000);					
@@ -7505,7 +7505,8 @@ var thelegendmodproject = function(t, e, i) {
 							try{
 							var temp = window.testobjects2.split('').pop().split('R')[0].replace('', "");
 							if (temp && temp.includes("Uskin_custom")){
-								window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1).charAt(0).toUpperCase() + temp.substring(1).slice(1) + '.png'
+								//window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1).charAt(0).toUpperCase() + temp.substring(1).slice(1) + '.png'
+								window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1) + '.png';
 							}
 							else if(temp){
 							temp = temp.replace('skin_', "").replace(/\W+/g, "")
