@@ -1,5 +1,5 @@
  //OLD DEALS
- //v2.8
+ //v2.9
  //for agarioUID, agarioID, look at the case 102: on this file https://legendmod.ml/ogario/ogario.v4.js?v=32
 
  /* you will need this
@@ -38,13 +38,13 @@ else{
 
 
      if (window.agarioUID != null) {
-		 window.open('https://legendmod.ml/LMexpress/olddeals.html', '_blank');
+		 
          LoadGameConfiguration();
          $('#helloContainer').after('<div class="modal fade in" id="specialShopModal" aria-hidden="false" style="display: block;">' +
              '<div class="modal-backdrop fade in"></div>' +
              '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 500px;">' +
              '<div class="modal-content">' +
-             '<div id="CloseSpecialDeals" class="modal-header"><button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+             '<div id="CloseSpecialDeals2" class="modal-header"><button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
              '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + Languageletter351 + '</h4>' +
              '</div>' +
              '<div class="modal-body"><input type="text" class="form-control" id="agario_uid_input" placeholder="*UID (' + Premadeletter110 + ')" style="width: 85%; display: inline-block">' +
@@ -55,7 +55,8 @@ else{
              '<div class="xpmt-buy-content" style="font-size: 13px; margin-top: -30px; float: left;font-weight: 700; background-color: rgba(0, 0, 0, 0.2); background-image: url(https://legendmod.ml/banners/icondeal2.png);padding: 3px; align: middle; border-radius: 4px;width: 100%;height: 150px;z-index: 15;margin: auto;">' +
              '<div class="xpmt-money-stack" style="display: inline-block; margin-left: 70px; margin-top: 115px;"><span class="coins" style=""><b>125000 C</b></span></div>' +
              '<div class="xpmt-skins" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: -120px 310px; background-image: url(""); background-size: cover; border-color: #7c0001"></div>' +
-             '</div>' +
+             '<div class="xpmt-skins2" style="width: 110px;height: 110px;background: no-repeat 50% 50%;background-size: 106px;border-radius: 50%; border: 3px solid #708090;margin: 1px 30px background-image: url(""); background-size: cover; border-color: #7c0001"></div>' +
+			 '</div>' +
              '</div><select id="ss-select-purchases" class="form-control" required="" style="margin-bottom: 30px"></select><select id="BuyDealCurrency" class="form-control" required="" style="display:inline-block; width: 20%; margin-top: -30px;"><option value="USD" data-itr="">USD</option><option value="EU" data-itr="">EU</option></select><color="red" style="display:inline"> ' + Premadeletter112 + '</color>' +
              '<select id="ss-select-agarVersionDestinations" class="form-control" required="" style="display:inline; width: 25%; margin-top: -30px;"></select><color="red" style="display:inline">' + Premadeletter117 + '</color>' +
 
@@ -88,6 +89,9 @@ else{
 
              $("#specialShopModal").remove();
          });
+         $("#FAQSpecialDeals").click(function() {
+             window.open('https://legendmod.ml/LMexpress/olddeals.html', '_blank');
+         });		 
          $(".xpmt-buy-content").click(function() {
              toastr["warning"]('<div id="tutorial" style="background-image: url(https://legendmod.ml/banners/v25toastricon.jpg); color:#018cf6; font-size:16px; text-align:center">' + Premadeletter90 + ' v0.5<br>' + 'This is a BETA function, it may not work and you may loose your money' + '<br><font color="red">' + Premadeletter91a + '</font>' + '</br> <button class="btn btn-sm btn-primary" style="width: 100%; margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button></div>', "", {
                  timeOut: 20000,
@@ -240,8 +244,8 @@ else{
                      $(".xpmt-money-stack").text("7000 C+ 800 DNA");
                  }
 				 */
-                 $(".xpmt-skins2").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v15/2230/' + textcropped2 + '")');
-                 $(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/v15/2230/' + textcropped1 + '")');
+                 $(".xpmt-skins2").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/' + window.agarversion + textcropped2 + '")');
+				 $(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/' + window.agarversion + textcropped1 + '")');
              }, 500);
          });
      } else {
