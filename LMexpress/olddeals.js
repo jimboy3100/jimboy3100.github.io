@@ -1,5 +1,5 @@
  //OLD DEALS
- //v2.10
+ //v2.11
  //for agarioUID, agarioID, look at the case 102: on this file https://legendmod.ml/ogario/ogario.v4.js?v=32
 
  /* you will need this
@@ -118,7 +118,7 @@ else{
              console.log(this.value);
              findSDescription();
              //$(".xpmt-skins2").remove();
-			 if ($("#ss-select-purchases option:selected").text().includes('dna')){
+			 if ($("#ss-select-purchases option:selected").text().includes('dna') && !$("#ss-select-purchases option:selected").text().includes('coins')){
 				$(".xpmt-money-stack").text($("#ss-select-purchases option:selected").text().substr(0, $("#ss-select-purchases option:selected").text().indexOf('_')) + " DNA"); 
 			 }
 			 else{
