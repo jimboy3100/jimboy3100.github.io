@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1487 MEGA TEST
+// v1.1515 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -3487,7 +3487,8 @@ var thelegendmodproject = function(t, e, i) {
                 $(t).append('<div class=\"input-box\"><span class=\"title-box\">' + h[e] + '</span><input id=\"' + e + '\" class=\"form-control\" placeholder=\"' + i + '\" value=\"' + defaultmapsettings[e] + '\" /></div>');
                 var a = this;
                 $('#' + e).on('input', function() {
-                    defaultmapsettings[e] = this.value, a[o](), a.saveSettings(defaultmapsettings, 'ogarioSettings');
+                    defaultmapsettings[e] = this.value, a[o](), 
+					a.saveSettings(defaultmapsettings, 'ogarioSettings');
                 });
             },
             'addSliderBox': function(t, e, o, a, n, r) {
@@ -3495,10 +3496,12 @@ var thelegendmodproject = function(t, e, i) {
                 var l = this;
                 r ? $('#' + e + '-slider').on('input', function() {
                     var t = parseFloat($(this).val());
-                    $('#' + e + '-value').text(t), defaultmapsettings[e] = t, i.hasOwnProperty(e) && (i[e] = t), l[r](), l.saveSettings(defaultmapsettings, 'ogarioSettings');
+                    $('#' + e + '-value').text(t), defaultmapsettings[e] = t, i.hasOwnProperty(e) && (i[e] = t), l[r](),
+					l.saveSettings(defaultmapsettings, 'ogarioSettings');
                 }) : $('#' + e + '-slider').on('input', function() {
                     var t = parseFloat($(this).val());
-                    $('#' + e + '-value').text(t), defaultmapsettings[e] = t, i.hasOwnProperty(e) && (i[e] = t), l.saveSettings(defaultmapsettings, 'ogarioSettings');
+                    $('#' + e + '-value').text(t), defaultmapsettings[e] = t, i.hasOwnProperty(e) && (i[e] = t),
+					l.saveSettings(defaultmapsettings, 'ogarioSettings');
                 });
             },
             'setLang': function() {
@@ -4216,6 +4219,39 @@ var thelegendmodproject = function(t, e, i) {
                 this.autoResp();
 
             },
+			'findOwnedVanillaSkin': function() {
+				if (!ogarcopythelb.skinURL && window.vanillaskins && window.UserVanillaSkin && window.EquippableSkins && !ogarminimapdrawer.customSkinsMap[ogarcopythelb.nick]){
+					//console.log("1. skin_" + window.UserVanillaSkin);
+					if (window.UserVanillaSkin.includes("skin_custom")){	
+						ogarminimapdrawer.customSkinsMap[ogarcopythelb.nick] = window.UserVanillaSkin;
+						ogarminimapdrawer.loadSkin(ogarminimapdrawer.customSkinsCache, window.UserVanillaSkin);						
+						//core.registerSkin(ogarcopythelb.nick, null, window.UserVanillaSkin, null);
+						//window.UserVanillaSkin=null;
+					}
+					else{
+                    for (var player = 0; player < window.EquippableSkins.length; player++) {
+                        if (window.EquippableSkins[player].productId == "skin_" + window.UserVanillaSkin && window.EquippableSkins[player].image != "uses_spine") {	
+							//console.log("2. " + window.EquippableSkins[player].image);	
+							window.lastusednameforskin = ogarcopythelb.nick;
+							ogarminimapdrawer.customSkinsMap[ogarcopythelb.nick] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
+							ogarminimapdrawer.loadSkin(ogarminimapdrawer.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);							
+                            //core.registerSkin(ogarcopythelb.nick, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image, null);   
+							//window.UserVanillaSkin=null;								
+							}
+						}	
+					}
+				}
+				else{
+					//console.log('findOwnedVanillaSkin failed execution')
+					if (!window.EquippableSkins && !window.findOwnedVanillaSkinOnce){
+						window.findOwnedVanillaSkinOnce=true;
+						console.log('[Legend mod Express] findOwnedVanillaSkin window.EquippableSkins not loaded');	
+						setTimeout(function() {
+							legendmod3.findOwnedVanillaSkin();
+						}, 4000);					
+						}
+					}
+			},
             'setPlayerSettings': function() {
                 var t = $('#nick').val(),
                     e = $('#clantag').val(),
@@ -4230,7 +4266,8 @@ var thelegendmodproject = function(t, e, i) {
                     ogario1PlayerProfiles[this.selectedProfile].clanTag = ogarcopythelb.clanTag,
                     ogario1PlayerProfiles[this.selectedProfile].skinURL = ogarcopythelb.skinURL,
                     ogario1PlayerProfiles[this.selectedProfile].color = ogarcopythelb.color,
-                    this.saveSettings(ogario1PlayerProfiles, 'ogarioPlayerProfiles');
+                    this.saveSettings(ogario1PlayerProfiles, 'ogarioPlayerProfiles'),
+					this.findOwnedVanillaSkin();									
             },
             'loadSkin': function(t, e, animated) {
                 var i = this;
@@ -4263,7 +4300,7 @@ var thelegendmodproject = function(t, e, i) {
                         //console.log("error loading image: "+ e);
                         if (e.includes(window.EnvConfig.config_url)) {
                             e = "https://legendmod.ml/vanillaskins/" + e.split('/').pop(); //if CORS policy on miniclip images, use other source
-                            //console.log("new destination is:" + e);
+                            //console.log("new destination is: " + e);
                             ogarminimapdrawer.customSkinsMap[window.lastusednameforskin] = e;
                             ogarminimapdrawer.loadSkin(t, e);
                             return e;
@@ -5112,7 +5149,11 @@ var thelegendmodproject = function(t, e, i) {
                     var s = this.createView(e);
                     s.setUint8(0, 20), s.setUint32(1, this.playerID, true);
                     var o = 5;
-                    t(ogarcopythelb.nick), t(ogarcopythelb.skinURL), t(ogarcopythelb.color), t(i.playerColor), this['sendBuffer'](s);
+                    t(ogarcopythelb.nick), 
+					t(ogarcopythelb.skinURL), 
+					t(ogarcopythelb.color), 
+					t(i.playerColor), 
+					this['sendBuffer'](s);
                 }
             },
             'sendPlayerPosition': function() {
@@ -7373,6 +7414,13 @@ var thelegendmodproject = function(t, e, i) {
                             if (2 & (y = data.getUint8(s++))) {
                                 l = window.decodeURIComponent(escape(i()));
                             }
+							//console.log(y) 4 or 6
+                            if (16 & y) {
+                                c = true;
+								console.log('16+y')
+								var temp = data.getUint32(s, true);
+								console.log(temp)
+                            }							
                             if (4 & y) {
                                 h = data.getUint32(s, true);
                                 s += 4;
@@ -7381,9 +7429,6 @@ var thelegendmodproject = function(t, e, i) {
                                 l = this.playerNick;
                                 h = 'isPlayer';
                                 this.playerPosition = r
-                            }
-                            if (16 & y) {
-                                c = true;
                             }
                             this.leaderboard.push({
                                 'nick': l,
@@ -7458,8 +7503,18 @@ var thelegendmodproject = function(t, e, i) {
                             var enc = new TextDecoder();
                             window.testobjects2 = enc.decode(sampleBytes);
 							try{
+							var temp = window.testobjects2.split('').pop().split('R')[0].replace('', "");
+							if (temp && temp.includes("Uskin_custom")){
+								window.UserVanillaSkin = EnvConfig.custom_skins_url + temp.substring(1).charAt(0).toUpperCase() + temp.substring(1).slice(1) + '.png'
+							}
+							else if(temp){
+							temp = temp.replace('skin_', "").replace(/\W+/g, "")
+							window.UserVanillaSkin = temp;
+							//window.UserVanillaSkin = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + temp.charAt(0).toUpperCase() + temp.slice(1) + '.png'
+							}	
                             window.agarioUID = window.testobjects2.split('$')[1].substr(0, 36);							
                             window.agarioID = window.testobjects2.split('$')[1].split('')[1].split('')[0].replace(/\s/g, "");
+							legendmod3.findOwnedVanillaSkin();
 							}
 							catch (error){					
 							}
@@ -7516,7 +7571,7 @@ var thelegendmodproject = function(t, e, i) {
                         case 104:
                             console.log('[Legend mod Express] Logout forced');
                             logout();
-                            window.testobjectsOpcode103 = data;
+                            window.testobjectsOpcode104 = data;
                             break;
                         case 112:
                             console.log('[Legend mod Express] opcode: ', data.getUint8(0));
