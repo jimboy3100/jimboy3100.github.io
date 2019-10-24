@@ -1,5 +1,5 @@
 //Legend mod Sniff2 by jimboy3100
-//v2.4
+//v2.5
 (function() {
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.type = 'image/x-icon';
