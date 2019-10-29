@@ -799,9 +799,9 @@ function legendmaster(self) {
         $("#login-facebook").attr("class", "menu-bar-button");
         $("#login-google").attr("class", "menu-bar-button");
         toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter127 + "!");
-		//if (resetLevelProgressBar){
-			//resetLevelProgressBar();
-		//}
+		
+		//window.agarioLEVEL=0;
+		
         master.logout();
     };
     self.facebookLogin = function() {
