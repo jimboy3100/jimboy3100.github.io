@@ -1,4 +1,4 @@
-//v12.40
+//v12.42
 window.EnvConfig = {};
 window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
 window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
@@ -83,7 +83,7 @@ function legendmaster(self) {
                     }
                 });
                 $("#helloContainer").attr("data-logged-in", "1");
-                $(".progress-bar-striped").width("100%");
+                //$(".progress-bar-striped").width("100%");
                 $("#login-google").attr("class", "menu-bar-button");
                 $("#login-facebook").attr("class", "menu-bar-button barf");
                 toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter126 + " Facebook!");
@@ -135,7 +135,7 @@ function legendmaster(self) {
                 $(".agario-profile-picture").attr("src", attrVal);
             }
             $("#helloContainer").attr("data-logged-in", "1");
-            $(".progress-bar-striped").width("100%");
+            //$(".progress-bar-striped").width("100%");
             $("#login-facebook").attr("class", "menu-bar-button");
             $("#login-google").attr("class", "menu-bar-button barf");
             toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter126 + " Google!");
@@ -799,6 +799,9 @@ function legendmaster(self) {
         $("#login-facebook").attr("class", "menu-bar-button");
         $("#login-google").attr("class", "menu-bar-button");
         toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter127 + "!");
+		//if (resetLevelProgressBar){
+			//resetLevelProgressBar();
+		//}
         master.logout();
     };
     self.facebookLogin = function() {
