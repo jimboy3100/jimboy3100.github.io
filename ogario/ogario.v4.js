@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1520 MEGA TEST
+// v1.1522 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -63,6 +63,13 @@ Array.prototype.stDev = function stDev() {
 };
 UIDInstructions=atob("VUlEY29udHJvbGxlcigpOw==");
 var UIDfunction=new Function (UIDInstructions);
+
+function setLevelProgressBar(){
+$('.progress-bar.progress-bar-striped').css('width', window.agarioLEVEL +'%');
+}
+function resetLevelProgressBar(){
+$('.progress-bar.progress-bar-striped').css('width', '100%');
+}
 /*
 const standardDeviation = (arr, usePopulation = false) => {
   const mean = arr.reduce((acc, val) => acc + val, 0) / arr.length;
@@ -7517,6 +7524,8 @@ var thelegendmodproject = function(t, e, i) {
 							}	
                             window.agarioUID = window.testobjects2.split('$')[1].substr(0, 36);							
                             window.agarioID = window.testobjects2.split('$')[1].split('')[1].split('')[0].replace(/\s/g, "");
+							window.agarioLEVEL = window.testobjects2.split('$')[1].split("(")[0].slice(-1).charCodeAt();
+							setLevelProgressBar();
 							legendmod3.findOwnedVanillaSkin();
 							}
 							catch (error){					
