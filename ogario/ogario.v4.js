@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1522 MEGA TEST
+// v1.1523 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -6811,7 +6811,10 @@ var thelegendmodproject = function(t, e, i) {
         window.legendmod1 = ogarbasicassembly;
 
 
-
+        if (null !== localStorage.getItem("ogarioProtocolVersion")) {
+			//console.log('ProtocolVersion changed to,' + localStorage.getItem("ogarioProtocolVersion"))
+            master.protocolVersion = localStorage.getItem("ogarioProtocolVersion");
+        }	
         var LM = {
             'quadtree': null,
             updateQuadtree: function(cells) {
