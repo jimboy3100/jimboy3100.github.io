@@ -1,4 +1,4 @@
-//v12.42
+//v12.47
 window.EnvConfig = {};
 window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
 window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
@@ -165,11 +165,12 @@ function legendmaster(self) {
             gplus_client_id: window.EnvConfig.google_client_id,
             master_url: window.EnvConfig.master_url.replace("https://", ""),
             endpoint_version: "v4",
-            proto_version: "15.0.2",
-            client_version: 30706,
+            proto_version: "15.0.3",
+            //client_version: 30706,
+			client_version: 31000,
 			//3.4.6
-            client_version_string: "3.7.6",
-			protocolVersion: 21
+            client_version_string: "3.10.0",
+			protocolVersion: 22
         };
     } else if (window.EnvConfig.master_url){
         var headers = {
@@ -177,10 +178,10 @@ function legendmaster(self) {
             gplus_client_id: "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com",
             master_url: window.EnvConfig.master_url.replace("https://", ""),
             endpoint_version: "v4",
-            proto_version: "15.0.2",
-            client_version: 30706,
-            client_version_string: "3.7.6",
-			protocolVersion: 21
+            proto_version: "15.0.3",
+            client_version: 31000,
+            client_version_string: "3.10.0",
+			protocolVersion: 22
         };
 		} else {
         var headers = {
@@ -188,10 +189,10 @@ function legendmaster(self) {
             gplus_client_id: "686981379285-oroivr8u2ag1dtm3ntcs6vi05i3cpv0j.apps.googleusercontent.com",
             master_url: "webbouncer-live-v8-0.agario.miniclippt.com",
             endpoint_version: "v4",
-            proto_version: "15.0.2",
-            client_version: 30706,
-            client_version_string: "3.7.6",
-			protocolVersion: 21
+            proto_version: "15.0.3",
+            client_version: 31000,
+            client_version_string: "3.10.0",
+			protocolVersion: 22
         };		
     }
 	window.LMagarioheaders=headers;
@@ -254,7 +255,7 @@ function legendmaster(self) {
                     var optionMatch = sketchContents.match(/\w\[\w\+\d+>>\d\]=\w;\w+\(\w,(\d+)\);/);
                     if (optionMatch) {
                         var pluginName = optionMatch[1];
-						//console.log("[Master] Current protocol version:", pluginName);
+						console.log("[Master] Current protocol version:", pluginName);
 						window.setProtocolVersion(pluginName);
                     }
                 },
