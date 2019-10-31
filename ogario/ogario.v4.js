@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1523 MEGA TEST
+// v1.1524 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -3146,12 +3146,12 @@ var thelegendmodproject = function(t, e, i) {
                                   t = t + ('<a href="#" data-user-id="' + this.top5[o].id + '" class="set-target ogicon-target"></a> ');
                                 } */
                                 var flag = false;
-                                for (var e = 0; e < legendmod.ghostCells.length; e++) {
-                                    if (legendmod.leaderboard[e] && this.top5[o].nick == legendmod.leaderboard[e].nick) {
-                                        if (flag == false && window.predictedGhostCells[e]) {
+                                for (var et = 0; et < legendmod.ghostCells.length; et++) {
+                                    if (legendmod.leaderboard[et] && this.top5[o].nick == legendmod.leaderboard[et].nick) {
+                                        if (flag == false && window.predictedGhostCells[et]) {
                                             //
-                                            var w = window.predictedGhostCells[e].x;
-                                            var u = window.predictedGhostCells[e].y;
+                                            var w = window.predictedGhostCells[et].x;
+                                            var u = window.predictedGhostCells[et].y;
                                             /*
                                             w = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(window.predictedGhostCells[e].x) : window.predictedGhostCells[e].x;
                                             u = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateY(window.predictedGhostCells[e].y) : window.predictedGhostCells[e].y;  		
