@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1529 MEGA TEST
+// v1.1530 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7084,6 +7084,7 @@ var thelegendmodproject = function(t, e, i) {
 			'sendNick': function(nick) {
             this.playerNick = nick;
             var self = this
+			if (typeof grecaptcha === "object"){
             grecaptcha.ready(function() {
 				//grecaptcha.Promise('6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY', {action: 'play'}).then(function(token) {   
                 grecaptcha.execute('6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY', {action: 'play'}).then(function(token) {  
@@ -7107,7 +7108,11 @@ var thelegendmodproject = function(t, e, i) {
 						legendmod.sendNick2(self.playerNick);
 					}
                 });		
-            });       
+            });  
+			}	
+			else{
+				legendmod.sendNick2(self.playerNick)
+			}			
             /*nick = window.unescape(window.encodeURIComponent(nick));
             const view = this.createView(2 + nick.length);
             for (let length = 0; length < nick.length; length++) {
@@ -7118,7 +7123,8 @@ var thelegendmodproject = function(t, e, i) {
             //this.sendMessage(view);
         },			
             'sendNick2': function(t) {
-                this.playerNick = t, t = window.unescape(window.encodeURIComponent(t));
+                this.playerNick = t, 
+				t = window.unescape(window.encodeURIComponent(t));
                 window.Bufferdata = t; //
                 var i = this.createView(1 + t.length);
                 i.setUint8(0, 0);
