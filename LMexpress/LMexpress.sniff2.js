@@ -1644,4 +1644,4 @@ $("#comm"+i).parent().parent().hide();
 }, 6000);
 
 //6. Banned Users
-var bannedUserUIDs=["1ad344c0-40c4-4ffe-b1b0-142f6918d439", "231321312312312123124eqeweq"];
+var bannedUserUIDs=[];
