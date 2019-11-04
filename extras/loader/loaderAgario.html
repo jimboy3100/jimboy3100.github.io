@@ -20,6 +20,7 @@
 <script>
 var messageLoaderLM = document.getElementById('messageLoaderLM');
 setTimeout(function() {
+	if (navigator){
     if((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf('OPR')) != -1 ) 
     {
         changeMessageLoaderLMOpera();
@@ -44,6 +45,7 @@ setTimeout(function() {
     {
        changeMessageLoaderLM();
     }
+	}
 }, 5000);
 
 function changeMessageLoaderLMChrome(){
