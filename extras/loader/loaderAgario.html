@@ -20,11 +20,51 @@
 <script>
 var messageLoaderLM = document.getElementById('messageLoaderLM');
 setTimeout(function() {
+    if((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf('OPR')) != -1 ) 
+    {
+        changeMessageLoaderLMOpera();
+    }
+    else if(navigator.userAgent.indexOf("Chrome") != -1 )
+    {
+        changeMessageLoaderLMChrome();
+    }
+    else if(navigator.userAgent.indexOf("Safari") != -1)
+    {
+        changeMessageLoaderLM();
+    }
+    else if(navigator.userAgent.indexOf("Firefox") != -1 ) 
+    {
+         changeMessageLoaderLM();
+    }
+    else if((navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true )) //IF IE > 10
+    {
+      changeMessageLoaderLM(); 
+    }  
+    else 
+    {
+       changeMessageLoaderLM();
+    }
+}, 5000);
+
+function changeMessageLoaderLMChrome(){
 	var messageLoaderLM = document.getElementById('messageLoaderLM'); 
 	if (messageLoaderLM){
 	messageLoaderLM.innerText="chrome://settings/clearBrowserData   -> If Legend mod is not loading, delete cookies"
 	}
-}, 5000);
+}
+function changeMessageLoaderLMOpera(){
+	var messageLoaderLM = document.getElementById('messageLoaderLM'); 
+	if (messageLoaderLM){
+	messageLoaderLM.innerText="opera://settings/clearBrowserData   -> If Legend mod is not loading, delete cookies"
+	}
+}
+function changeMessageLoaderLM(){
+	var messageLoaderLM = document.getElementById('messageLoaderLM'); 
+	if (messageLoaderLM){
+	messageLoaderLM.innerText="If Legend mod is not loading, delete cookies"
+	}
+}
+
 </script>
 </body>
 
