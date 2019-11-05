@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1535a MEGA TEST
+// v1.1536 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -34,6 +34,25 @@ function Video(src, append) {
     }
     return v;
 }
+
+
+function autocoins(slot) {
+    var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11, 104, 111, 117, 114, 108, 121, 66, 111, 110, 117, 115]
+    window.core.proxyMobileData(bytes);
+}
+
+function callEveryFullHourCoinDigger() {
+	autocoins();
+    var now = new Date();
+    var nextHour = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 1, 0, now.getSeconds() + 10, 0);
+    var difference = nextHour - now;
+    window.setTimeout(function(){
+        console.log("[Legend mod Express] Dig 20 coins")		
+        callEveryFullHour();
+    }, difference);
+
+}
+
 function initTilt() {
 	//TweenMax.set([$pContent], { transformStyle: "preserve-3d" });
 	$('body').mousemove(function(e) {
@@ -7579,6 +7598,10 @@ var thelegendmodproject = function(t, e, i) {
 							window.agarioLEVEL = window.testobjects2.split('$')[1].split("(")[0].slice(-1).charCodeAt();
 							setLevelProgressBar();
 							legendmod3.findOwnedVanillaSkin();
+							if (!window.callEveryFullHourCoinDig){
+							window.callEveryFullHourCoinDig=true;
+							callEveryFullHourCoinDigger();							
+							}
 							}
 							catch (error){					
 							}
