@@ -1,5 +1,5 @@
  //OLD DEALS
- //v2.11
+ //v2.12
  //for agarioUID, agarioID, look at the case 102: on this file https://legendmod.ml/ogario/ogario.v4.js?v=32
 
  /* you will need this
@@ -37,7 +37,7 @@ else{
  function SpecialDeals() {
 
 
-     if (window.agarioUID != null) {
+     if (window.agarioEncodedUID != null) {
 		 
          LoadGameConfiguration();
          $('#helloContainer').after('<div class="modal fade in" id="specialShopModal" aria-hidden="false" style="display: block;">' +
@@ -61,7 +61,7 @@ else{
              '<select id="ss-select-agarVersionDestinations" class="form-control" required="" style="display:inline; width: 25%; margin-top: -30px;"></select><color="red" style="display:inline">' + Premadeletter117 + '</color>' +
 
              '<input type="text" class="form-control" id="GameConfigurationUrl" value = ' + window.MiniclipConfigDestination + ' placeholder="*Search any GameConfiguration.json destination" style="width: 95%; display: inline-block">' +
-             '<p class="alert-warning text-center">' + Premadeletter116 + '<br>UID:<span class="alert-success" id="exp-uid">' + window.agarioUID + '</span> <font color="red" onclick=copy(window.agarioUID);><b><u>' + Premadeletter114 + ' UID</u></b></font><br>ID: ' + window.agarioID + ' .*UID ' + Premadeletter115 + '</p>' +
+             '<p class="alert-warning text-center">' + Premadeletter116 + '<br>UID:<span class="alert-success" id="exp-uid">' + window.agarioEncodedUID + '</span> <font color="red" onclick=copy(window.agarioEncodedUID);><b><u>' + Premadeletter114 + ' UID</u></b></font><br>ID: ' + window.agarioID + ' .*UID ' + Premadeletter115 + '</p>' +
              '</div>' +
              '</div>' +
              '</div>' +
@@ -109,7 +109,7 @@ else{
              } else {
                  document.getElementById("checkBoxLockUID").checked = false;
                  toastr["info"](Premadeletter93).css("width", "210px");
-                 $("#exp-uid").text(window.agarioUID);
+                 $("#exp-uid").text(window.agarioEncodedUID);
              }
          });
          $('#ss-select-purchases').on('change', function() {
