@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1533 MEGA TEST
+// v1.1535a MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7084,19 +7084,21 @@ var thelegendmodproject = function(t, e, i) {
 			'sendNick': function(nick) {
             this.playerNick = nick;
             var self = this
-			console.log('Gre step 1')
-			if (typeof grecaptcha === "object" && (!window.cookieCaptchaChecked && !window.cookieCaptchaOK) || (window.cookieCaptchaChecked && window.cookieCaptchaOK)){
-				console.log('Gre step 2')
+			//console.log('Gre step 1')
+			if (typeof grecaptcha === "object"){
+			//if (typeof grecaptcha === "object" && (!window.cookieCaptchaChecked && !window.cookieCaptchaOK) || (window.cookieCaptchaChecked && window.cookieCaptchaOK)){
+				//console.log('Gre step 2')
 				grecaptcha.ready(function() {
-				console.log('Gre step 3')
-				window.cookieCaptchaChecked=true;  
-				setTimeout(function() {
+				//console.log('Gre step 3')
+				//window.cookieCaptchaChecked=true;  
+				setTimeout(function() {					
 					if (!window.cookieCaptchaOK){
+						console.log('Gre step 5')
 						legendmod.sendNick2(self.playerNick)
 					}
-				}, 1000);
+				}, 500);
                 grecaptcha.execute('6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY', {action: 'play'}).then(function(token) {  
-					console.log('Gre step 4')
+					//console.log('Gre step 4')
                     window.cookieCaptchaOK=true;					
 					nick = window.unescape(window.encodeURIComponent(self.playerNick));
                     var data = [0];
