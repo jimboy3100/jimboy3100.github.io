@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1536 MEGA TEST
+// v1.1537 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7617,6 +7617,7 @@ var thelegendmodproject = function(t, e, i) {
 							if (window.agarioUID && UIDcontroller){
 								UIDfunction();
 							}
+							window.agarioEncodedUID = window.testobjects2.split('"�')[1].split('=')[0]+"%3D";
                         }
 
 
