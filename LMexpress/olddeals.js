@@ -61,7 +61,7 @@ else{
              '<select id="ss-select-agarVersionDestinations" class="form-control" required="" style="display:inline; width: 25%; margin-top: -30px;"></select><color="red" style="display:inline">' + Premadeletter117 + '</color>' +
 
              '<input type="text" class="form-control" id="GameConfigurationUrl" value = ' + window.MiniclipConfigDestination + ' placeholder="*Search any GameConfiguration.json destination" style="width: 95%; display: inline-block">' +
-             '<p class="alert-warning text-center">' + Premadeletter116 + '<br>UID:<span class="alert-success" id="exp-uid">' + window.agarioEncodedUID + '</span> <font color="red" onclick=copy(window.agarioEncodedUID);><b><u>' + Premadeletter114 + ' UID</u></b></font><br>ID: ' + window.agarioID + ' .*UID ' + Premadeletter115 + '</p>' +
+             '<p class="alert-warning text-center">' + Premadeletter116 + '<br>UID:<span class="alert-success" id="exp-uid" style="font-size: 2px;">' + window.agarioEncodedUID + '</span> <font color="red" onclick=copy(window.agarioEncodedUID);><b><u>' + Premadeletter114 + ' UID</u></b></font><br>ID: ' + window.agarioID + ' .*UID ' + Premadeletter115 + '</p>' +
              '</div>' +
              '</div>' +
              '</div>' +
