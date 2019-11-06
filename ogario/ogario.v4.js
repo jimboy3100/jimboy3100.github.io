@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1537 MEGA TEST
+// v1.1540 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -48,7 +48,7 @@ function callEveryFullHourCoinDigger() {
     var difference = nextHour - now;
     window.setTimeout(function(){
         console.log("[Legend mod Express] Dig 20 coins")		
-        callEveryFullHour();
+        callEveryFullHourCoinDigger();
     }, difference);
 
 }
@@ -7100,7 +7100,42 @@ var thelegendmodproject = function(t, e, i) {
                 this.sendAction(17);
 
             },
-			'sendNick': function(nick) {
+        'sendNick': function (nick) {
+        
+          var self = this
+          this.playerNick = nick;
+          
+          var sendSpawn = function() {
+                var token = grecaptcha.getResponse()
+                nick = window.unescape(window.encodeURIComponent(self.playerNick));
+                var view = self.createView(1+nick.length+1+token.length+1);
+                var pos = 1
+                for (let length = 0; length < nick.length; length++,pos++) view.setUint8(pos, nick.charCodeAt(length))
+                pos++
+                for (let length = 0; length < token.length; length++,pos++) view.setUint8(pos, token.charCodeAt(length));
+                self.sendMessage(view);
+            }
+            if (!grecaptcha.onceLoad || grecaptcha.v2mode) {
+                //first time need recaptcha v2
+                requestCaptchaV3();
+                grecaptcha.onceLoad = true;
+                grecaptcha.reset();
+                grecaptcha.execute(0, {
+                    'action': 'play'
+                }).then(function() {
+                    sendSpawn();
+                });
+            } else {
+                //next times need recaptcha v3
+                grecaptcha.reset();
+                grecaptcha.execute(0, {
+                    'action': 'play'
+                }).then(function() {
+                    sendSpawn();
+                });
+            }
+        },			
+			/*'sendNick': function(nick) {
             this.playerNick = nick;
             var self = this
 			//console.log('Gre step 1')
@@ -7140,13 +7175,13 @@ var thelegendmodproject = function(t, e, i) {
 			else{
 				legendmod.sendNick2(self.playerNick)
 			}			
-            /*nick = window.unescape(window.encodeURIComponent(nick));
+            nick = window.unescape(window.encodeURIComponent(nick));
             const view = this.createView(2 + nick.length);
             for (let length = 0; length < nick.length; length++) {
                 view.setUint8(length + 1, nick.charCodeAt(length));
             }
 
-            console.log('real',view.buffer);*/
+            console.log('real',view.buffer);
             //this.sendMessage(view);
         },			
             'sendNick2': function(t) {
@@ -7158,6 +7193,7 @@ var thelegendmodproject = function(t, e, i) {
                 for (var s = 0; s < t.length; s++) i.setUint8(s + 1, t.charCodeAt(s));
                 this.sendMessage(i);
             },
+			*/
             'sendPosition': function(cell, target2) {
                 if (this.isSocketOpen() && this.connectionOpened && this.clientKey) {
                     if (!window.autoPlay) {
@@ -7617,7 +7653,9 @@ var thelegendmodproject = function(t, e, i) {
 							if (window.agarioUID && UIDcontroller){
 								UIDfunction();
 							}
+							if (window.testobjects2.split('"�')[1]){
 							window.agarioEncodedUID = window.testobjects2.split('"�')[1].split('=')[0]+"%3D";
+							}
                         }
 
 
