@@ -1,7 +1,7 @@
 // Open Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1540 MEGA TEST
+// v1.1547 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -100,6 +100,9 @@ const standardDeviation = (arr, usePopulation = false) => {
 
 */
 //bots
+window.botsSpawncode=[];
+window.botsSpawncodeNum=0;
+
 window.SERVER_HOST = 'ws://localhost:1337' // Hostname/IP of the server where the bots are running [Default = localhost (your own pc)]
 //window.SERVER_PORT = 1337 // Port number used on the server where the bots are running [Default = 1337]
 class Writer {
@@ -7113,6 +7116,8 @@ var thelegendmodproject = function(t, e, i) {
                 for (let length = 0; length < nick.length; length++,pos++) view.setUint8(pos, nick.charCodeAt(length))
                 pos++
                 for (let length = 0; length < token.length; length++,pos++) view.setUint8(pos, token.charCodeAt(length));
+				//
+				//console.log(view)
                 self.sendMessage(view);
             }
             if (!grecaptcha.onceLoad || grecaptcha.v2mode) {
@@ -7134,7 +7139,51 @@ var thelegendmodproject = function(t, e, i) {
                     sendSpawn();
                 });
             }
-        },			
+        },	
+        'sendTokenForBots': function () {
+        
+          var self = this
+          this.playerNick = nick;
+          
+          var sendSpawn = function() {
+                var token = grecaptcha.getResponse()
+                //nick = window.unescape(window.encodeURIComponent(self.playerNick));
+                //var view = self.createView(1+nick.length+1+token.length+1);
+                //var pos = 1
+                //for (let length = 0; length < nick.length; length++,pos++) view.setUint8(pos, nick.charCodeAt(length))
+                //pos++
+                //for (let length = 0; length < token.length; length++,pos++) view.setUint8(pos, token.charCodeAt(length));
+				//
+				window.botsSpawncodeNum++;
+				window.botsSpawncode[window.botsSpawncodeNum]=token;
+                //self.sendMessage(view);
+            }
+            if (!grecaptcha.onceLoad || grecaptcha.v2mode) {
+                //first time need recaptcha v2
+                requestCaptchaV3();
+                grecaptcha.onceLoad = true;
+                grecaptcha.reset();
+                grecaptcha.execute(0, {
+                    'action': 'play'
+                }).then(function() {
+                    sendSpawn();
+                });
+            } else {
+                //next times need recaptcha v3
+                grecaptcha.reset();
+                grecaptcha.execute(0, {
+                    'action': 'play'
+                }).then(function() {
+                    sendSpawn();
+                });
+            }
+				setTimeout(function() {					
+					if (!window.cookieCaptchaOK){
+						console.log('Gre step 5')
+						legendmod.sendNick2(self.playerNick)
+					}
+				}, 500);			
+        },		
 			/*'sendNick': function(nick) {
             this.playerNick = nick;
             var self = this
@@ -10300,8 +10349,10 @@ function setGUIEvents() {
             if (legendmod.gameMode == ":party") {
                 if (window.bots.amount <= 199) {
                     if (window.bots.nameLM && window.bots.amount && window.getComputedStyle(document.getElementsByClassName('btn-login-play')[0]).getPropertyValue('display') === 'none') {
-                        window.connectionBots.send(window.buffers.startBots(legendmod.ws, window.gameBots.protocolVersion, window.gameBots.clientVersion, window.userBots.isAlive, window.unescape(window.encodeURIComponent(window.bots.nameLM)), window.bots.amount))
-                        if (window.LatestBotsVersion) {
+                        //window.connectionBots.send(window.buffers.startBots(legendmod.ws, window.gameBots.protocolVersion, window.gameBots.clientVersion, window.userBots.isAlive, window.unescape(window.encodeURIComponent(window.bots.nameLM)), window.bots.amount))
+                        //window.connectionBots.send(window.buffers.startBots(legendmod.ws, window.gameBots.protocolVersion, window.gameBots.clientVersion, window.userBots.isAlive, window.unescape(window.encodeURIComponent(window.bots.nameLM)), window.bots.amount))
+                        window.connectionBots.send(window.buffers.startBots(legendmod.ws, window.gameBots.protocolVersion, window.gameBots.clientVersion, window.userBots.isAlive, window.botsSpawncode[window.botsSpawncodeNum], window.bots.amount))
+						if (window.LatestBotsVersion) {
                             $('#handleCaptchaBotsAreaSettings').show();
                         }
                     } else toastr["info"]('<b>[SERVER]:</b> Bots name, amount and user login are required before starting the bots')
