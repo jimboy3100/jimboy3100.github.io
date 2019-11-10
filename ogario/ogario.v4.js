@@ -7139,6 +7139,11 @@ var thelegendmodproject = function(t, e, i) {
                     sendSpawn();
                 });
             }
+				setTimeout(function() {					
+					if (!window.cookieCaptchaOK){
+						legendmod.sendNick2(self.playerNick)
+					}
+				}, 500);			
         },	
         'sendTokenForBots': function () {
         
@@ -7176,12 +7181,7 @@ var thelegendmodproject = function(t, e, i) {
                 }).then(function() {
                     sendSpawn();
                 });
-            }
-				setTimeout(function() {					
-					if (!window.cookieCaptchaOK){
-						legendmod.sendNick2(self.playerNick)
-					}
-				}, 500);			
+            }			
         },		
 			/*'sendNick': function(nick) {
             this.playerNick = nick;
