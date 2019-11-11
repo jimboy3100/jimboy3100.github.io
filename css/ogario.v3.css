@@ -1477,7 +1477,7 @@
  #botsNameLM:focus, #botsAmount:focus, #botsRemoteIP:focus {
      border-color: #7D7D7D;
 }
- #connectBots, #startBots, #stopBots {
+ #connectBots, #startBots, #stopBots, #captchaBots {
      color: white;
      border: none;
      padding: 7px;
@@ -1492,7 +1492,7 @@
      display: inline;
      background-color: #0074C0;
 }
- #startBots {
+ #startBots, #captchaBots{
      display: inline;
      background-color: #00C02E;
 }
@@ -1504,6 +1504,9 @@
      background-color: #004E82;
 }
  #startBots:active {
+     background-color: #009A25;
+}
+ #captchaBots:active {
      background-color: #009A25;
 }
  #stopBots:active {
