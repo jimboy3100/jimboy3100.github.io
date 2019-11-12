@@ -1,10 +1,15 @@
 # free-agario-bots
-Free open source agar.io bots
+Free open source agar.io bots for Legend mod Express
 
-
+## About
+Discord Community for questions about bots, agar.io clans (room ∞┊𝔸𝔾𝔸ℝ𝕀𝕆-𝔹𝕆𝕋𝕊):
+https://discordapp.com/invite/mzEMdS9
+Legend mod: https://legendmod.ml/
+Repl.it repository: https://repl.it/@legendmod/party-bots
+Node.js library: https://github.com/jimboy3100/jimboy3100.github.io/tree/master/ExampleScripts/agario-bots2
 
 ## Usage
-[Video tutorial for Windows](https://www.youtube.com/watch?v=CROvbjyLmS0)
+[Video tutorial for Windows](https://www.youtube.com/watch?v=xIupgFR7ZTY)
 
 Windows
 -------
@@ -17,13 +22,10 @@ Windows
 - (For folder agario-bots2) `cd agario-bots2`
 - `install.bat`
 - `start.bat`
-6. (For agario vanilla): Copy and paste the contents of either [`free-agario-bots.vanilla.user.js`](http://jimboy3100.github.io/ExampleScripts/agario-bots2/free-agario-bots.vanilla.user.js) into a new Tampermonkey userscript and save it
-7. Go to [agar.io](https://agar.io) and click "Connect" button, the status should say "Connected"
-8. Create party and make sure that you are logged in on your account agar.io account then click "Start Bots" button, if your IP doesn't has captcha the button should turn red and say "Stop Bots" if you get an alert saying your IP has captcha down below i explain different ways to fix that
-9. To stop bots click the "Stop Bots" button and wait 30 seconds for the CMD to close you will see a countdown there
-10. To run the bots again just run `start.bat`, click "Connect" button and then click "Start Bots" button
-11. On Vanilla userscript you can modify keys/settings at the start of [it](http://jimboy3100.github.io/ExampleScripts/agario-bots2/free-agario-bots.vanilla.user.js#L11) you will have to refresh to save them
-12. On Legend mod userscript you can modify keys when you are in agar.io on the top of the hotkeys TAB
+6. Install and use Legend mod Express https://legendmod.ml , visit agar.io and enable party bots on settings->helpers->party bots and click the "triumph" oh main HUD area.
+7. CLick "Connect" button, the status should say "Connected"
+8. To stop bots click the "Stop Bots" button and wait 30 seconds for the CMD to close you will see a countdown there
+9. To run the bots again just run `start.bat`, click "Connect" button and then click "Start Bots" button
 
 VPS
 -------
@@ -46,14 +48,9 @@ VPS
 17. Always make sure you wait the 30 seconds for process to close or you are gonna get captcha on the VPS ip
 18. If you wanna run it 24/7 on the VPS run `sudo npm i -g pm2` command and then run `sudo pm2 start process.js` command
 
-## Captcha (only for Windows)
-If you get captcha alert you need to change your IP or get rid of captcha by playing with your IP. You can do so by:
-- Restarting your router (only if you have a dynamic IP)
-- Connecting to a VPN server like one from [UrbanVPN](https://www.urban-vpn.com/) which you make sure that doesn't has captcha
-- Playing logged out of your agar.io account until captcha goes away
-
 ## Author
 [Nel](https://github.com/nelthedev/free-agario-bots)
+[Jimboy3100](https://legendmod.ml)
 
 ## Donate
 PayPal: nelthedeveloper@gmail.com
