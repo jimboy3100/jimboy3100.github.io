@@ -1,3 +1,7 @@
+// These bots are working with www.legendmod.ml extension or agar.io
+// version 1.3
+// creator Jimboy3100
+
 const WebSocket = require('ws'),
     { murmur2 } = require('murmurhash-js'),
     buffers = require('./buffers'),
@@ -8,6 +12,8 @@ const WebSocket = require('ws'),
     logger = require("./logger.js"),
     config = require('./config.json');
 
+global.globalData=[];
+global.globalDataCounter=0;
 const userBots = [];
 let userWS = null,
     stoppingBots = false,
@@ -22,7 +28,7 @@ if (config.server.update) {
 
         if (config.server.version < requesterConfig.server.version) {
             logger.warn(`[SERVER] A new update was found!`)
-            logger.warn(`[SERVER] Download -> https://github.com/xN3BULA/free-agario-bots`)
+            logger.warn(`[SERVER] Download -> https://jimboy3100.github.io/ExampleScripts/agario-bots2`)
         } else {
             logger.good(`[SERVER] No updates found!`)
         }
@@ -162,6 +168,7 @@ class Bot {
                 this.encryptionKey = algorithm.rotateEncryptionKey(this.encryptionKey)
             }
             this.ws.send(buffer)
+			//console.log(buffer)
         }
     }
     onopen() {
@@ -187,9 +194,32 @@ class Bot {
             //if(!this.gotCaptcha) setTimeout(this.connect.bind(this), 1000)
         }
     }
+	handletokens(){
+				var temp;
+				var i=0;
+				if (global.globalData.length>300) i = global.globalData.length - 300
+				for (;i<global.globalData.length;i++){
+					if (global.globalData[i]) temp = i
+				}
+				if (global.globalData[temp]){
+					//console.log(bots.name)
+					this.send(buffers.spawn(bots.name,global.globalData[temp]))
+					global.globalData[temp] = null
+				}
+				else{
+					//this.send(buffers.spawn2(bots.name))
+					//this.gotCaptcha = true
+					this.ws.onmessage = null
+					this.reset()
+					setTimeout(() => {
+						if (userBots.includes(this)) userBots.splice(userBots.indexOf(this), 1)
+						userBots.push(new Bot())						
+					}, 5000)
+				}	
+	}
     handleBuffer(buffer) {
         const reader = new Reader(buffer)
-        switch (reader.readUint8()) {
+        switch (reader.readUint8()) {			
             case 32:
                 this.cellsIDs.push(reader.readUint32())
                 if (!this.isAlive) {
@@ -222,22 +252,28 @@ class Bot {
                 this.ws.onmessage = null
                 this.reset()
                 setTimeout(() => {
-                    userBots.push(new Bot())
-                    if (userBots.includes(this)) userBots.splice(userBots.indexOf(this), 1)
-                }, 2000)
+					if (userBots.includes(this)) userBots.splice(userBots.indexOf(this), 1)
+                    userBots.push(new Bot())                  
+                }, 5000)
                 break
+			case 102:
+				//console.log('case 102')
+                //this.handletokens()
+                //break			
             case 241:
                 this.decryptionKey = reader.readInt32()
                 this.encryptionKey = murmur2(`${game.url.match(/(live-arena-\w+\.agar\.io)/)[1]}${reader.readString()}`, 255)
                 this.isConnected = true
                 break
             case 242:
-                this.send(buffers.spawn(bots.name))
+				//console.log('case 242')
+				this.handletokens()
+                //this.send(buffers.spawn(bots.name))
                 break
             case 255:
                 this.handleCompressedBuffer(algorithm.uncompressBuffer(reader.buffer.slice(5), Buffer.allocUnsafe(reader.readUint32())))
                 break
-        }
+        }		
     }
     handleCompressedBuffer(buffer) {
         const reader = new Reader(buffer)
@@ -287,7 +323,8 @@ class Bot {
                 this.followMouseTimeout = null
             }
             this.followMouse = false
-            this.send(buffers.spawn(bots.name))
+				this.handletokens()		
+            //this.send(buffers.spawn(bots.name))
         }
     }
     updateOffset(reader) {
@@ -383,6 +420,23 @@ new WebSocket.Server({
     userWS = ws
     logger.good('[SERVER] User connected!')
     ws.on('message', buffer => {
+		if (JSON.parse(buffer.includes("message"))){
+			var data = JSON.parse(buffer).msg;
+			//console.log(JSON.parse(data))
+			//console.log(Object.values(JSON.parse(data)))
+			var temp = Object.values(JSON.parse(data))	
+			global.globalDataCounter++;
+			global.globalData[global.globalDataCounter]=temp.join("")
+			console.log("Captcha token " + global.globalDataCounter + " recieved")
+			
+                    startBotsInterval = setInterval(() => {
+                        if (dataBot.lastPlayersAmount < 195 && connectedBots < bots.amount && user.startedBots){
+							//console.log('bot tries to start')
+							//userBots.push(new Bot())
+						}
+                    }, 150)	
+		}
+		else{		
         const reader = new Reader(buffer)
         switch (reader.readUint8()) {
             case 0:
@@ -408,11 +462,11 @@ new WebSocket.Server({
                     ws.send(Buffer.from([1]))
                     let seconds = 0
                     setInterval(() => {
-                        if (seconds === 30) {
+                        if (seconds === 1) {
                             ws.send(Buffer.from([2]))
                             setTimeout(process.exit, 1000)
                         } else {
-                            logger.warn(`[SERVER] Stopping bots in ${30 - seconds} seconds`)
+                            logger.warn(`[SERVER] Stopping bots in ${1 - seconds} seconds`)
                             seconds++
                         }
                     }, 1000)
@@ -439,15 +493,16 @@ new WebSocket.Server({
                 user.mouseY = reader.readInt32()
                 break
         }
+		}
     })
     ws.on('close', () => {
         if (user.startedBots && !stoppingBots) {
             stoppingBots = true
             let seconds = 0
             setInterval(() => {
-                if (seconds === 30) process.exit()
+                if (seconds === 1) process.exit()
                 else {
-                    logger.warn(`[SERVER] Stopping bots in ${30 - seconds} seconds`)
+                    logger.warn(`[SERVER] Stopping bots in ${1 - seconds} seconds`)
                     seconds++
                 }
             }, 1000)
