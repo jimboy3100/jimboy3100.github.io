@@ -22,7 +22,7 @@ Windows
 - (For folder agario-bots2) `cd agario-bots2`
 - `install.bat`
 - `start.bat`
-6. Install and use Legend mod Express https://legendmod.ml , visit agar.io and enable party bots on settings->helpers->party bots and click the "triumph" oh main HUD area.
+6. Install and use Legend mod Express https://legendmod.ml , visit agar.io and enable party bots on settings->helpers->party bots and click the "triumph" of main HUD area.
 7. CLick "Connect" button, the status should say "Connected"
 8. To stop bots click the "Stop Bots" button and wait 30 seconds for the CMD to close you will see a countdown there
 9. To run the bots again just run `start.bat`, click "Connect" button and then click "Start Bots" button
