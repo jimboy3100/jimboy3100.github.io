@@ -57,7 +57,7 @@ VPS
 ## Repl.it VPS FAQ
 https://repl.it/@legendmod/party-bots (watch video tutorial from above)
 
-#### My repl.it seems loading for long time after I clicked install or after i enter, what should i do?
+#### My repl.it seems loading for long time after I clicked INSTALL or after I START, what should i do?
 
 Wait for 5-10 minutes, if nothing happens refresh your repo repl.it webpage. Do the same process until (3-4 if needed), it is installed and until you are able to start the websocket.
 If issue remains, fork another repository and do the same. YOU WILL FINALLY NOTICE THAT IT WORKS.
