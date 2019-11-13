@@ -13,7 +13,7 @@ Node.js library: https://github.com/jimboy3100/jimboy3100.github.io/tree/master/
 ## Usage
 [Video tutorial for Windows](https://www.youtube.com/watch?v=xIupgFR7ZTY)
 
-Windows
+Node.js run server from PC
 -------
 1. Install [Node.js](https://nodejs.org)
 2. Install [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) extension on your browser
