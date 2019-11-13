@@ -58,7 +58,7 @@ VPS
 #### My repl.it seems loading for long time after I clicked install or after i enter?
 
 Wait for 5-10 minutes, if nothing happens refresh your repo repl.it webpage. Do the same process until (3-4 if needed),it is installed and until you are able to start the websocket.
-If issue remains, fork another repository and do the same. YOU WILL SEE THAT IT WILL WORK AT THE END.
+If issue remains, fork another repository and do the same. YOU FINALLY NOTICE THAT IT WILL WORK.
 
 #### I did everything correct but Legend mod notifies me that I have captcha, when I start the bots, what should I do?
 
