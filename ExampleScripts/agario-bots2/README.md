@@ -54,7 +54,7 @@ VPS
 [Nel](https://github.com/nelthedev/free-agario-bots)
 [Jimboy3100](https://legendmod.ml)
 
-## Repl.it VPN FAQ
+## Repl.it VPS FAQ
 https://repl.it/@legendmod/party-bots (watch video tutorial from above)
 
 #### My repl.it seems loading for long time after I clicked install or after i enter?
