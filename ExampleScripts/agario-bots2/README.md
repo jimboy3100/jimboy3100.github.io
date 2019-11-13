@@ -2,10 +2,12 @@
 Free open source agar.io bots for Legend mod Express
 
 ## About
-Discord Community for questions about bots, agar.io clans (room ∞┊𝔸𝔾𝔸ℝ𝕀𝕆-𝔹𝕆𝕋𝕊):
-https://discordapp.com/invite/mzEMdS9
+Discord Community for questions about bots, agar.io clans (room ∞┊𝔸𝔾𝔸ℝ𝕀𝕆-𝔹𝕆𝕋𝕊): https://discordapp.com/invite/mzEMdS9
+
 Legend mod: https://legendmod.ml/
+
 Repl.it repository: https://repl.it/@legendmod/party-bots
+
 Node.js library: https://github.com/jimboy3100/jimboy3100.github.io/tree/master/ExampleScripts/agario-bots2
 
 ## Usage
