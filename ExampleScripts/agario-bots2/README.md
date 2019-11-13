@@ -54,26 +54,34 @@ VPS
 
 ## REPL.IT FAQ
 My repl.it seems loading for long time after I clicked install or after i enter?
+
 Wait for 5-10 minutes, if nothing happens refresh your repo repl.it webpage. Do the same process until (3-4 if needed),it is installed and until you are able to start the websocket.
 If issue remains, fork another repository and do the same. YOU WILL SEE THAT IT WILL WORK AT THE END.
 
 I did everything correct but Legend mod notifies me that I have captcha, when I start the bots, what should I do?
+
 Disable ad-blockers, antiviruses, firewalls. There was one (rare) case refered that captcha blocked bots, maybe rebooting router to change ip, or using a VPN could solve the issue, but I am not sure.
 
 Are these bots working?
+
 These bots are considered fully working, free, legit and finished project. They work only by using Legend mod for agar.io
 
 Do you use proxies, facebook tokens for bots?
+
 These bots don't need proxies, they use the captcha solver that Legend mod provides. Furthermore, bots do NOT use any facebook UID than could result on real player disconnection or facebook / google tokens, at all.
 
 My websocket is not correct. What is the correct?
+
 If your repo url is e.g: https://repl.it/@testeruser/bottester , then the websocket should be wss://bottester--testeruser.repl.co
 
 How can I ask for extra help?
+
 Enter https://discordapp.com/invite/mzEMdS9 , share your issues with others users. Please do not directly PM me although I will be glad to help on an unsolved issue on room ┇✪┇𝔸𝔾𝔸ℝ-𝕀𝕆-ℂℍ𝔸𝕋 . 
 
 How can I donate?
+
 Please visit https://www.paypal.com/donate/?token=cV-ycVkH9p76i7ZE7SeznzU4Am16MmP7tVpn_oBc5260qPUxEGAMGFoxaNqmZ3UTh_4Vy0 , donations for Legend mod are been used to support the servers fees, services, and my beers with my friends.
+
 Thank you for supporting the Legend mod project.
 
 ## Donate
