@@ -80,7 +80,7 @@ If your repo url is e.g: https://repl.it/@testeruser/bottester , then the websoc
 
 #### How can I ask for extra help?
 
-Enter https://discordapp.com/invite/mzEMdS9 , share your issues with others users. Please do not directly PM me although I will be glad to help on an unsolved issue on room ┇✪┇𝔸𝔾𝔸ℝ-𝕀𝕆-ℂℍ𝔸𝕋 . 
+Enter https://discordapp.com/invite/mzEMdS9 , share your issues with others users. Please do not directly PM me, although I will be glad to help on an unsolved issue on room ┇✪┇𝔸𝔾𝔸ℝ-𝕀𝕆-ℂℍ𝔸𝕋. 
 
 #### How can I donate?
 
