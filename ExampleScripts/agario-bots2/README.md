@@ -52,7 +52,7 @@ VPS
 [Nel](https://github.com/nelthedev/free-agario-bots)
 [Jimboy3100](https://legendmod.ml)
 
-## FAQ
+## REPL.IT FAQ
 My repl.it seems loading for long time after I clicked install or after i enter?
 Wait for 5-10 minutes, if nothing happens refresh your repo repl.it webpage. Do the same process until (3-4 if needed),it is installed and until you are able to start the websocket.
 If issue remains, fork another repository and do the same. YOU WILL SEE THAT IT WILL WORK AT THE END.
@@ -77,4 +77,4 @@ Please visit https://www.paypal.com/donate/?token=cV-ycVkH9p76i7ZE7SeznzU4Am16Mm
 Thank you for supporting the Legend mod project.
 
 ## Donate
-PayPal: nelthedeveloper@gmail.com
+PayPal: https://www.paypal.com/donate/?token=cV-ycVkH9p76i7ZE7SeznzU4Am16MmP7tVpn_oBc5260qPUxEGAMGFoxaNqmZ3UTh_4Vy0
