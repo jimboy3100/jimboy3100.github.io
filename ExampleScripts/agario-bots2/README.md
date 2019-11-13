@@ -55,6 +55,8 @@ VPS
 [Jimboy3100](https://legendmod.ml)
 
 ## Repl.it VPN FAQ
+https://repl.it/@legendmod/party-bots (watch video tutorial from above)
+
 #### My repl.it seems loading for long time after I clicked install or after i enter?
 
 Wait for 5-10 minutes, if nothing happens refresh your repo repl.it webpage. Do the same process until (3-4 if needed),it is installed and until you are able to start the websocket.
