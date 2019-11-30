@@ -1459,9 +1459,16 @@
      outline: none;
      margin-left: 10px;
 }
- #botsAmount, #captchaSpeed{
+ #botsAmount, {
      margin-top: 6px;
      width: 80px;
+     padding: 8px;
+     outline: none;
+     margin-left: 10px;
+}
+ #captchaSpeed{
+     margin-top: 6px;
+     width: 180px;
      padding: 8px;
      outline: none;
      margin-left: 10px;
