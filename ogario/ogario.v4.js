@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1606 MEGA TEST
+// v1.1611 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -187,6 +187,7 @@ window.connectionBots = {
 		legendmod.sendTokenForBots();	
 		if (!window.sendFirstTimeTokenBots){
 		window.sendFirstTimeTokenBots=true
+		window.sendTimeOutTokenBots=false;
 		legendmod.sendTimeOutTokenForBots();
 		}
     },
@@ -7163,13 +7164,15 @@ var thelegendmodproject = function(t, e, i) {
 				}, 1000);			
         },	
 		'sendTimeOutTokenForBots': function () {
-				window.sendTimeOutTokenBots=false;
+				//window.sendTimeOutTokenBots=false;
 				if (document.getElementById('userStatus').innerText == 'Connected' && window.RequestedTokens>1){
 				setTimeout(function() {	
 					legendmod.sendTimeOutTokenForBots();
+					//console.log('sendTimeOutTokenForBots triggered')
 					if (!window.sendTimeOutTokenBots){
 						//window.RequestedTokens=1000;
-						console.log('bots started again')
+						//this code is to inform me when a new loop process starts again
+						console.log('[Legend mod Express] bots started again')
 						legendmod.sendTokenForBots();	
 					}			
 				}, 10000 + window.tempol*1000);	
@@ -7191,7 +7194,7 @@ var thelegendmodproject = function(t, e, i) {
 					//setTimeout(function() {
 					legendmod.sendTokenForBots();
 					//}, 100);
-					window.sendTimeOutTokenBots	= true;			
+					//window.sendTimeOutTokenBots	= true;			
 				}
 				window.connectionBots.send(JSON.stringify({                            
                             "message": "botscode",
@@ -7203,10 +7206,8 @@ var thelegendmodproject = function(t, e, i) {
         'sendTokenForBots': function () {	  
           //var self = this
           //this.playerNick = nick;    
-		window.tempol = $("#captchaSpeed").val()		
-			if($("#captchaSpeed").val()==null || $("#captchaSpeed").val()==""){
-			window.tempol=0;
-		}		  
+	
+			window.sendTimeOutTokenBots=false;
             if (!grecaptcha.onceLoad || grecaptcha.v2mode) {
                 //first time need recaptcha v2
                 requestCaptchaV3();
@@ -7215,10 +7216,12 @@ var thelegendmodproject = function(t, e, i) {
                 grecaptcha.execute(0, {
                     'action': 'play'
                 }).then(function() {
+					/*
 					window.tempo2 = grecaptcha.getResponse()
 					setTimeout(function() {
                     legendmod.sendSpawn2(window.tempo2);
 					}, window.tempol*1000);
+					*/
                 });
             } else {
                 //next times need recaptcha v3
@@ -7228,10 +7231,12 @@ var thelegendmodproject = function(t, e, i) {
                 grecaptcha.execute(0, {
                     'action': 'play'
                 }).then(function() {
+					/*
 					window.tempo2 = grecaptcha.getResponse()
 					setTimeout(function() {
                     legendmod.sendSpawn2(window.tempo2);
 					}, window.tempol*1000);
+					*/
                 });
 			})
             }			
@@ -10446,11 +10451,18 @@ function setGUIEvents() {
 			window.SAO = function() {
 					window.cookieCaptchaOK=true;
 					if (legendmod.botscaptcha){
-					legendmod.botscaptcha=null;
-					//var temp = grecaptcha.getResponse()
-                    //legendmod.sendSpawn2(temp);	
+						legendmod.botscaptcha=null;
+						window.tempol = $("#captchaSpeed").val()		
+						if($("#captchaSpeed").val()==null || $("#captchaSpeed").val()==""){
+							window.tempol=0;
+					}						
+					window.tempo2 = grecaptcha.getResponse()
+					setTimeout(function() {
+						legendmod.sendSpawn2(window.tempo2);
+						}, window.tempol*1000);
 					}
 					console.log("[Legend mod Express] requestCaptcha bypass v2, v3 loaded");
+					window.sendTimeOutTokenBots = true;
 			}
 /*
 var snezSocketdata;
