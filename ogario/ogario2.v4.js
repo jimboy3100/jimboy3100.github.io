@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1606 MEGA TEST
+// v1.1607 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7169,6 +7169,7 @@ var thelegendmodproject = function(t, e, i) {
 					legendmod.sendTimeOutTokenForBots();
 					if (!window.sendTimeOutTokenBots){
 						//window.RequestedTokens=1000;
+						//this code is to inform me when a new loop process starts again
 						console.log('bots started again')
 						legendmod.sendTokenForBots();	
 					}			
@@ -7191,7 +7192,7 @@ var thelegendmodproject = function(t, e, i) {
 					//setTimeout(function() {
 					legendmod.sendTokenForBots();
 					//}, 100);
-					window.sendTimeOutTokenBots	= true;			
+					//window.sendTimeOutTokenBots	= true;			
 				}
 				window.connectionBots.send(JSON.stringify({                            
                             "message": "botscode",
@@ -10451,6 +10452,7 @@ function setGUIEvents() {
                     //legendmod.sendSpawn2(temp);	
 					}
 					console.log("[Legend mod Express] requestCaptcha bypass v2, v3 loaded");
+					window.sendTimeOutTokenBots = true;
 			}
 /*
 var snezSocketdata;
