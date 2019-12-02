@@ -1,19 +1,19 @@
 // ==UserScript==
-// @name         Legend Express Agar.io Extension WebGL
-// @namespace    Legend Express Agario Mod WebGL
-// @version      1.6
+// @name         Legend Express Agar.io Extension
+// @namespace    Legend Express Agario Mod
+// @version      1.7
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
-// @homepage     http://www.legendmod.ml
+// @homepage     https://www.legendmod.ml
 // @author       Jimboy3100
 // @license      MIT
-// @icon         https://jimboy3100.github.io/banners/CropedImage128.gif
+// @icon         https://legendmod.ml/banners/CropedImage128.gif
 // @match        https://agar.io/*
 // @match        https://play.google.com/*
-// @downloadURL  jimboy3100.github.io/LMexpress/LMexpress.user.js
-// @updateURL    jimboy3100.github.io/LMexpress/LMexpress.user.js
+// @downloadURL  https://legendmod.ml/LMexpress/LMexpress.user.js
+// @updateURL    https://legendmod.ml/LMexpress/LMexpress.user.js
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
-// @connect      jimboy3100.github.io
+// @connect      legendmod.ml
 // ==/UserScript==
 
 // Legend Mod by Jimboy3100
@@ -32,20 +32,19 @@ function inject(page) {
     var page = page.replace("</body>", "<script>init('" + modVersion + "');</script>" + "</body>");
     return page;
 }
-window.stop();
 document.documentElement.innerHTML = "";
 
-GM_xmlhttpRequest({
+var LMdetails = GM_xmlhttpRequest({
     method: "GET",
-    url: "https://jimboy3100.github.io/LMexpress/LMexpress2.html",
+    url: "https://legendmod.ml/LMexpress/LMexpress2.html",
+	synchronous: false,
     onload: function(legend) {
         var doc = inject(legend.responseText);
         document.open();
-        document.write(doc);
+       document.write(doc);
         setTimeout(function() {
             window.history.pushState(null, null, "/");
         }, 2000);
-
         document.close();
     }
 });
