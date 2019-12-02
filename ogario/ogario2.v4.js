@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1614 MEGA TEST
+// v1.1615 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -183,7 +183,7 @@ window.connectionBots = {
         document.getElementById('connectBots').innerText = 'Connect'
         document.getElementById('connectBots').style.color = 'white'
 		toastr["info"]('<b>[SERVER]:</b> 1000 captcha tokens requested, some lag from proccessing will be created. <br><b>If captcha tokens stop, create again tokens</b>');
-		window.RequestedTokens=1000;
+		window.RequestedTokens=100000;
 		legendmod.sendTokenForBots();	
 		if (!window.sendFirstTimeTokenBots){
 		window.sendFirstTimeTokenBots=true
@@ -10390,8 +10390,8 @@ function setGUIEvents() {
         }
     })
     document.getElementById('captchaBots').addEventListener('click', () => {
-		toastr["info"]('<b>[SERVER]:</b> 1000 captcha tokens requested, some lag from proccessing will be created. <br><b>If captcha tokens stop, create again tokens</b>');
-		window.RequestedTokens=1000;
+		toastr["info"]('<b>[SERVER]:</b> 100000 captcha tokens requested, some lag from proccessing will be created. <br><b>If captcha tokens stop, create again tokens</b>');
+		window.RequestedTokens=100000;
 		legendmod.sendTokenForBots();
 		//legendmod.sendTimeOutTokenForBots();
     })	
