@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1608 MEGA TEST
+// v1.1609 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -187,6 +187,7 @@ window.connectionBots = {
 		legendmod.sendTokenForBots();	
 		if (!window.sendFirstTimeTokenBots){
 		window.sendFirstTimeTokenBots=true
+		window.sendTimeOutTokenBots=false;
 		legendmod.sendTimeOutTokenForBots();
 		}
     },
@@ -7207,10 +7208,10 @@ var thelegendmodproject = function(t, e, i) {
 		window.tempol = $("#captchaSpeed").val()		
 			if($("#captchaSpeed").val()==null || $("#captchaSpeed").val()==""){
 			window.tempol=0;
-		}		  
+		}		
+			window.sendTimeOutTokenBots=false;
             if (!grecaptcha.onceLoad || grecaptcha.v2mode) {
                 //first time need recaptcha v2
-				window.sendTimeOutTokenBots=false;
                 requestCaptchaV3();
                 grecaptcha.onceLoad = true;
                 grecaptcha.reset();				
