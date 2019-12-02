@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1611 MEGA TEST
+// v1.1613 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -3615,8 +3615,9 @@ var thelegendmodproject = function(t, e, i) {
 					<input type="checkbox" id="pushCaptchaBots" disabled></input> <b>Push more bots</b>					
 					</span></div></div>					
 					<br><u><a href="https://github.com/jimboy3100/jimboy3100.github.io/tree/master/ExampleScripts/agario-bots2" target="_blank">Installation</a></u>	
-					<br><u><a href="https://repl.it/@legendmod/party-bots" target="_blank">Repl.it VPS</a></u>	
-					<br><u><a href="https://www.youtube.com/watch?v=xIupgFR7ZTY" target="_blank">Tutorial video for repl.it VPS</a></u>	
+					<u><a href="https://www.youtube.com/watch?v=rQMhxwIytro&feature=youtu.be" target="_blank">Tutorial video PC for node.js</a></u>	
+					<u><a href="https://repl.it/@legendmod/party-bots" target="_blank">Repl.it VPS</a></u>	
+					<u><a href="https://www.youtube.com/watch?v=xIupgFR7ZTY" target="_blank">Tutorial video for repl.it VPS</a></u>	
 					</div>`),
                     this.protocolMode || $("#quick-menu").prepend('<a href="#" class="quick-shop ogicon-cart" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_shop + '"></a><a href="#" class="quick-free-coins ogicon-coin-dollar" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_menu_main_free_coins + '"></a><a href="#" class="quick-free-gifts ogicon-gift" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_menu_main_gifts + '"></a><a href="#" class="quick-quests ogicon-trophy" data-toggle="tab-tooltip" data-placement="left" title="' + h.page_menu_main_dailyquests + '"></a>'),
                     $(".party-dialog, .partymode-info").remove(),
@@ -7776,8 +7777,12 @@ var thelegendmodproject = function(t, e, i) {
                             console.log('[Legend mod Express] opcode: ', data.getUint8(0));
                             window.testobjectsOpcode114 = data;
                             break;
+                        case 160:
+                            console.log('[Legend mod Express] opcode: ', data.getUint8(0));
+                            window.testobjectsOpcode160 = data;
+                            break;							
                         case 161:
-                            //console.log('[Legend mod Express] opcode: ', data.getUint8(0));
+                            console.log('[Legend mod Express] opcode: ', data.getUint8(0));
                             window.testobjectsOpcode161 = data;
                             break;
                         case 128:
