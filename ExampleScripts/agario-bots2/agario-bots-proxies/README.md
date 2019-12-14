@@ -24,7 +24,7 @@ Losbro
 
 ### Discord community of open source bots:
 
-https://discord.gg/mzEMdS9
+http://discord.gg/sK2Fkgw 
 
 ## Usage
 
@@ -52,7 +52,7 @@ YOU ARE NOT SAFE IF USING PROXIES AND I DO NOT KNOW HOW THIS THING WORKS
 On Gather Proxy -> Proxy Checker -> Choose only SOCK5 (it takes 30 min)
 Export at least 1000 ALIVE proxies (not less), see the generated file and replace everything on proxies.txt after # SOCKS5
 
-You can also find proxy bots IPs from https://discord.gg/YkyS8zd , room #ａｇａｒｉｏ-ｂｏｔｓ-ｉｎｆｏｒｍａｔｉｏｎ
+You can also find proxy bots IPs from http://discord.gg/sK2Fkgw  , room #CHAT
 
 ** Recommended not to use other than SOCK5, also SOCK5 expire later and hide IP and countries.
 
