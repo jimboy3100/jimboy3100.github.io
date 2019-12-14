@@ -2,7 +2,7 @@
 Free open source agar.io bots for Legend mod Express
 
 ## About
-Discord Community for questions about bots, agar.io clans (room ∞┊𝔸𝔾𝔸ℝ𝕀𝕆-𝔹𝕆𝕋𝕊): https://discordapp.com/invite/mzEMdS9
+℄🔥𝙻𝚎𝚐𝚎𝚗𝚍 𝙲𝚕𝚊𝚗 Discord Community for questions about bots: http://discord.gg/sK2Fkgw
 
 Legend mod: https://legendmod.ml/
 
@@ -80,7 +80,7 @@ If your repo url is e.g: https://repl.it/@testeruser/bottester , then the websoc
 
 #### How can I ask for extra help?
 
-Enter https://discordapp.com/invite/mzEMdS9 , share your issues with others users. Please do not directly PM me, although I will be glad to help on an unsolved issue on room ┇✪┇𝔸𝔾𝔸ℝ-𝕀𝕆-ℂℍ𝔸𝕋. 
+Enter http://discord.gg/sK2Fkgw , share your issues with others users. Please do not directly PM me, although I will be glad to help on an unsolved issue on room "Chat". 
 
 #### How can I donate?
 
