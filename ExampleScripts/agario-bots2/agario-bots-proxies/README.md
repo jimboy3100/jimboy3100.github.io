@@ -24,7 +24,7 @@ Losbro
 
 ### Discord community of open source bots:
 
-http://discord.gg/sK2Fkgw 
+https://discord.gg/vqy6b5U
 
 ## Usage
 
