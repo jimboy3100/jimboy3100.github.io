@@ -113,6 +113,7 @@ function postToDiscord(discordUrl,isGeneralChannel) {
             var discordMsg="\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\r\n"+"Poster: "+nick[0].value+"\r\n\r\n"+serverlinks;
             if (isGeneralChannel) {
                 //discordMsg+="\r\nAlso posted in #serverlinks";
+				discordMsg+="\r\n";
             }
 
             var data = JSON.stringify({"content":discordMsg});
