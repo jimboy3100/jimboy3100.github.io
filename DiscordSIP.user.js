@@ -112,7 +112,7 @@ function postToDiscord(discordUrl,isGeneralChannel) {
             //  console.log('nick: '+nick[0].value);
             var discordMsg="\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\r\n"+"Poster: "+nick[0].value+"\r\n\r\n"+serverlinks;
             if (isGeneralChannel) {
-				discordMsg+="\r\n@everyone";
+				//discordMsg+="\r\n@everyone";
                 //discordMsg+="\r\nAlso posted in #serverlinks";
 				discordMsg+="\r\n";
             }
