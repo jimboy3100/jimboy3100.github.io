@@ -21,7 +21,27 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
   <link rel="stylesheet" href="https://legendmod.ml/css/ogario.v3.css">
   <div id="imagebig"><iframe id="loaderIframeIcon1" src="https://legendmod.ml/extras/loader/loaderAgario.html" name="CodePen" allowfullscreen="true" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowtransparency="true" scrolling="no" frameBorder="0" class="result-iframe" style="position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe></div>	 
-  <script src="https://legendmod.ml/jquery.min.js"></script>	
+  
+	<script>
+	  var kk = 'dv4'
+		var u = 'https://deltav4.glitch.me/hook-server.js'
+		if (!localStorage[kk]) localStorage[kk] = 2
+			var xhr = new XMLHttpRequest();
+			if (localStorage[kk] > 0) {
+				--localStorage[kk]
+				console.log('try load №', localStorage[kk])
+				document.write('<script src="'+u+'"><\/script>')
+			} else {
+			xhr.open('GET', u, true);
+			xhr.timeout = 3000
+			xhr.send();
+			xhr.onload = function () {
+				if (xhr.status == 200) {localStorage[kk] = 2;}
+	    }
+	}
+	</script>	
+
+<script src="https://legendmod.ml/jquery.min.js"></script>	
    <script i="hope" u="gamer">
   </script>
   <!--script src="https://www.google.com/recaptcha/api.js?render=6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY"></script-->
