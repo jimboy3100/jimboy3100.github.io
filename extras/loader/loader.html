@@ -19,11 +19,14 @@
     </div>
 <script>
 
-var loc = window.location.href;
-var params = loc.split('?')[1];
-if (params){
-	console.log(params)
+var timesopened = localStorage.getItem("timesopened");
+if (timesopened != null) {
+   timesopened++;
+   localStorage.setItem("timesopened", timesopened);
+} else if (timesopened == null) {
+   localStorage.setItem("timesopened", "0");
 }
+	
 var messageLoaderLM = document.getElementById('messageLoaderLM');
 setTimeout(function() {
 	if (navigator){
