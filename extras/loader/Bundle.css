@@ -43,23 +43,17 @@
 }
 
 #loading-screen .maou-circle-container {
-    width: 64px;
-    height: 64px;
+    width: 512px;
+    height: 512px;
     position: fixed;
-    top: calc(50% - 32px);
-    left: calc(50% - 32px);
+    top: calc(50% - 256px);
+    left: calc(50% - 256px);
     transform: scale(1);
     transition: all .75s
 }
 
 #loading-screen .maou-circle-container:hover {
     transform: scale(1.1)
-}
-
-#loading-screen .maou-circle-container .maou-circle {
-    width: 64px;
-    height: 64px;
-    position: absolute
 }
 
 #loading-screen .maou-circle-container .maou-circle.p1 {
@@ -126,4 +120,3 @@
     text-shadow: 0 0 9px #ff006c;
     -webkit-font-smoothing: subpixel-antialiased;
 }
-
