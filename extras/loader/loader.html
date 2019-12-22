@@ -79,7 +79,7 @@ var iframeLoadereeventer = window[iframeLoadereventMethod];
 
 var messageEvent = iframeLoadereventMethod == "attachEvent" ? "onmessage" : "message";
 iframeLoadereeventer(messageEvent, function (e) {
-	   if (~e.data.indexOf("PostedOgarSettings1")){ 
+	   if (~e.data.indexOf("PostedOgarSettings1")){ 	   
 		iframeLoaderdata=e.data;
 		iframeLoaderdata=iframeLoaderdata.replace("PostedOgarSettings1?datasent=", "");
 		iframeLoaderResponse(iframeLoaderdata);   
@@ -88,9 +88,9 @@ iframeLoadereeventer(messageEvent, function (e) {
 }, false);
 
 function iframeLoaderResponse(iframeLoaderdata){
-        //setTimeout(function() {
-		console.log(iframeLoaderdata)
-        //}, 100);
+        setTimeout(function() {
+		alert(iframeLoaderdata)
+        }, 100);
 }		
 
 </script>
