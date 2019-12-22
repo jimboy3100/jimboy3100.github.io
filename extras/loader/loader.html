@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 
@@ -19,6 +18,12 @@
         <div id="messageLoaderLM" class="message">LOADING AGAR.IO PROTOCOLS...</div>
     </div>
 <script>
+
+var loc = window.location.href;
+var params = loc.split('?')[1];
+if (params && params='1'){
+	console.log('hi')
+}
 var messageLoaderLM = document.getElementById('messageLoaderLM');
 setTimeout(function() {
 	if (navigator){
@@ -67,31 +72,6 @@ function changeMessageLoaderLM(){
 	messageLoaderLM.innerText="If Legend mod is not loading, delete cookies"
 	}
 }
-
-
-var iframeLoaderdata;
-
-var iframeLoadereventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
-var iframeLoadereeventer = window[iframeLoadereventMethod];
-
-//fzogar Upload / Download Settings     
-
-
-var messageEvent = iframeLoadereventMethod == "attachEvent" ? "onmessage" : "message";
-iframeLoadereeventer(messageEvent, function (e) {
-	   if (~e.data.indexOf("PostedOgarSettings1")){ 	   
-		iframeLoaderdata=e.data;
-		iframeLoaderdata=iframeLoaderdata.replace("PostedOgarSettings1?datasent=", "");
-		iframeLoaderResponse(iframeLoaderdata);   
-	   }
-		return iframeLoaderdata;
-}, false);
-
-function iframeLoaderResponse(iframeLoaderdata){
-        setTimeout(function() {
-		alert(iframeLoaderdata)
-        }, 100);
-}		
 
 </script>
 </body>
