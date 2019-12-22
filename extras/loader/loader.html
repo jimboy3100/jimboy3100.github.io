@@ -69,10 +69,30 @@ function changeMessageLoaderLM(){
 }
 
 
-function receive(event) {
-    console.log("Received Message : " + event.data);
-}
-window.addEventListener('message', receive);
+var iframeLoaderdata;
+
+var iframeLoadereventMethod = window.addEventListener ? "addEventListener" : "attachEvent";
+var iframeLoadereeventer = window[iframeLoadereventMethod];
+
+//fzogar Upload / Download Settings     
+
+
+var messageEvent = iframeLoadereventMethod == "attachEvent" ? "onmessage" : "message";
+iframeLoadereeventer(messageEvent, function (e) {
+	   if (~e.data.indexOf("PostedOgarSettings1")){ 
+		iframeLoaderdata=e.data;
+		iframeLoaderdata=iframeLoaderdata.replace("PostedOgarSettings1?datasent=", "");
+		iframeLoaderResponse(iframeLoaderdata);   
+	   }
+		return iframeLoaderdata;
+}, false);
+
+function iframeLoaderResponse(iframeLoaderdata){
+        setTimeout(function() {
+		console.log(iframeLoaderdata)
+        }, 100);
+}		
+
 </script>
 </body>
 
