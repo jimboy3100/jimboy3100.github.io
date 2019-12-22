@@ -56,6 +56,12 @@
     transform: scale(1.1)
 }
 
+#loading-screen .maou-circle-container .maou-circle {
+    width: 512px;
+    height: 512px;
+    position: absolute
+}
+
 #loading-screen .maou-circle-container .maou-circle.p1 {
     background: url(https://jimboy3100.github.io/banners/drawCommander3.png);
     animation: spinRight 32s linear infinite,fadeIn 6s;
@@ -120,3 +126,4 @@
     text-shadow: 0 0 9px #ff006c;
     -webkit-font-smoothing: subpixel-antialiased;
 }
+
