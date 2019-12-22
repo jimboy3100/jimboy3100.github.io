@@ -37,7 +37,7 @@
     bottom: 0;
     background-color: #f1ecfa;
     background: url(https://legendmod.ml/banners/icongifLM.gif) no-repeat center center fixed;
-    background-size: 100%;
+    background-size: cover;
     opacity: 1;
     transition: opacity 1s;
 }
