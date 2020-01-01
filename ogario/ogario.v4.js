@@ -2650,7 +2650,7 @@ var thelegendmodproject = function(t, e, i) {
             'version': 'v1',
             'privateMode': false,
             'protocolMode': true,
-            'publicIP': 'wss://srv.ogario.eu',
+            'publicIP': 'wss://wss.ogario.eu:3443',//'wss://srv.ogario.eu',
             'privateIP': null,
             'updateInterval': 1000,
             'updateTick': 0,
