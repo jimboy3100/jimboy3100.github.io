@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Send Agario SIP To Discord
 // @namespace    http://tampermonkey.net/
-// @version      1.10 test
+// @version      1.9 test
 // @description  Gets the agario server IP link and posts it to discord
 // @author       σмg ι ℓσνє уσυ! Published by Jimboy3100
 // @match        http://agar.io/*
@@ -109,7 +109,6 @@ function postToDiscord(discordUrl,isGeneralChannel) {
                 }
             };
             var nick = $.find('#nick');
-			nick[0].value.replace(/,/g, '');
             //  console.log('nick: '+nick[0].value);
             var discordMsg="\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\\_\r\n"+"Poster: "+nick[0].value+"\r\n\r\n"+serverlinks;
             if (isGeneralChannel) {
@@ -123,7 +122,7 @@ if ( $( "#skin" ).length ) {
 }
 var discordtagtosend;
 if ( $( "#skin" ).length ) {
-    discordtagtosend = $( "#clantag" ).val().replace(/,/g, '');
+    discordtagtosend = $( "#clantag" ).val()
 }
 var discordregiontosend;
 var discordmodetosend;
@@ -135,11 +134,11 @@ if ( $( "#region" ).length && $( "#gamemode" ).length) {
 var discregmod = discordregiontosend + discordmodetosend;
 var discordtop;
 if (window.messageone=="0"||window.messageone=="1") {
-    discordtop = $("#leaderboard-positions").text().replace(/,/g, '');
+    discordtop = $("#leaderboard-positions").text()
 }
 var discordteam;
 if (window.teammatelegendmodnicks){
-discordteam = window.teammatelegendmodnicks.toString().replace(/,/g, '');
+discordteam = window.teammatelegendmodnicks.toString();
 }
 var discordimageuser;
 if ( $( "#UserProfilePic>img" ).length ) {
@@ -152,7 +151,7 @@ var discordcodetosend = {
   "embeds": [
     {
       "author": {
-        "name": nick[0],
+        "name": nick[0].value,
 		"url": serverlinks,
         "icon_url": discordimageuser
       },
@@ -174,11 +173,7 @@ var discordcodetosend = {
         {
 		  "name": "Leaderboard",
           "value": discordtop
-        },
-        {
-		  "name": "Teamboard",
-          "value": discordteam
-        }		
+        }
       ],
       "thumbnail": {
         "url": discordskintosend
