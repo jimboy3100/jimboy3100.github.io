@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Send Agario SIP To Discord
 // @namespace    http://tampermonkey.net/
-// @version      1.9 test
+// @version      1.8 test
 // @description  Gets the agario server IP link and posts it to discord
 // @author       σмg ι ℓσνє уσυ! Published by Jimboy3100
 // @match        http://agar.io/*
@@ -52,7 +52,7 @@ function popAgarURL( fun ) {
          //ogario support
 		 var serverlinks;
 		 if (window.messageone=="0"||window.messageone=="1"){  //IF using Legend Mod
-			serverlinks= window.location.href + "&?pass=" + $("#clantag").val() + ";
+			serverlinks= window.location.href + "&?pass=" + $("#clantag").val();
 		}
 		else if ($( "#connect" ).hasClass( "agartoolbtn")){ //IF using Agar Tools
 		serverlinks="https://agar.io/?sip=" + "live-arena-" + $( "#server" ).val() + ".agar.io"; 
