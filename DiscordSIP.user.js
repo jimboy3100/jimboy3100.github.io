@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Send Agario SIP To Discord
 // @namespace    http://tampermonkey.net/
-// @version      1.11 test
+// @version      1.12 test
 // @description  Gets the agario server IP link and posts it to discord
 // @author       σмg ι ℓσνє уσυ! Published by Jimboy3100
 // @match        http://agar.io/*
@@ -121,7 +121,7 @@ if ( $( "#skin" ).length ) {
     discordskintosend = $( "#skin" ).val()
 }
 var discordtagtosend = "No Tag";
-if ( $( "#discordtagtosend" ).length ) {
+if ( $( "#clantag" ).length ) {
     discordtagtosend = $( "#clantag" ).val()
 }
 var discordregiontosend;
