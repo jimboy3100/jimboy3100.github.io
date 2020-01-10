@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Send Agario SIP To Discord
 // @namespace    http://tampermonkey.net/
-// @version      1.8 test
+// @version      1.9 test
 // @description  Gets the agario server IP link and posts it to discord
 // @author       σмg ι ℓσνє уσυ! Published by Jimboy3100
 // @match        http://agar.io/*
@@ -128,11 +128,12 @@ var discordcodetosend = {
     {
       "author": {
         "name": nick[0].value,
+		"url": "https://legendmod.ml/",
         "icon_url": discordskintosend
       },
       "title": "Join my agario server",
       "url": "https://google.com/",
-      "description": "Text message. You can use Markdown here. *Italic* **bold** __underline__ ~~strikeout~~ [hyperlink]("+serverlinks+") `code`",
+      "description": "["+serverlinks+"]("+serverlinks+")",
       "color": 15258703,
       "fields": [
         {
@@ -146,22 +147,18 @@ var discordcodetosend = {
           "inline": true
         },
         {
-          "name": "Use `\"inline\": true` parameter, if you want to display fields in the same line.",
-          "value": "okay..."
-        },
-        {
-          "name": "Thanks!",
+          "name": "It is click and join link. :wink:!",
           "value": "You're welcome :wink:"
         }
       ],
       "thumbnail": {
-        "url": "https://upload.wikimedia.org/wikipedia/commons/3/38/4-Nature-Wallpapers-2014-1_ukaavUI.jpg"
+        "url": discordskintosend
       },
       "image": {
         "url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/A_picture_from_China_every_day_108.jpg"
       },
       "footer": {
-        "text": "Woah! So cool! :smirk:",
+        "text": "*Discord webhook by Legend mod for agario*",
         "icon_url": "https://i.imgur.com/fKL31aD.jpg"
       }
     }
