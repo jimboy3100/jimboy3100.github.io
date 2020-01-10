@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Send Agario SIP To Discord
 // @namespace    http://tampermonkey.net/
-// @version      1.12 test
+// @version      1.9 test
 // @description  Gets the agario server IP link and posts it to discord
 // @author       σмg ι ℓσνє уσυ! Published by Jimboy3100
 // @match        http://agar.io/*
@@ -137,7 +137,7 @@ if (window.messageone=="0"||window.messageone=="1") {
     discordtop = $("#leaderboard-positions").text()
 }
 var discordcodetosend = {
-  "username": "Legend Mod to Discord",
+  "username": "Agario to Discord Webhook",
   "avatar_url": "https://jimboy3100.github.io/banners/CropedImage128.gif",
   "content": discordMsg,
   "embeds": [
@@ -149,7 +149,7 @@ var discordcodetosend = {
       },
       "title": "Join my agario server",
       "url": serverlinks,
-      "description": "["+serverlinks+"]("+serverlinks+")",
+      "description": "[click here]("+serverlinks+")",
       "color": 15258703,
       "fields": [
         {
