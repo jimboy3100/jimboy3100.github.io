@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Send Agario SIP To Discord
 // @namespace    http://tampermonkey.net/
-// @version      1.9 test
+// @version      1.10 test
 // @description  Gets the agario server IP link and posts it to discord
 // @author       σмg ι ℓσνє уσυ! Published by Jimboy3100
 // @match        http://agar.io/*
@@ -120,6 +120,16 @@ var discordskintosend;
 if ( $( "#skin" ).length ) {
     discordskintosend = $( "#skin" ).val()
 }
+var discordtagtosend;
+if ( $( "#skin" ).length ) {
+    discordtagtosend = $( "#clantag" ).val()
+}
+var discordregiontosend;
+var discordmodetosend;
+if ( $( "#region" ).length && $( "#gamemode" ).length) {
+    discordregiontosend = $( "#region" ).val()
+	discordmodetosend = $( "#gamemode" ).val()
+}
 var discordcodetosend = {
   "username": "Legend Mod to Discord",
   "avatar_url": "https://jimboy3100.github.io/banners/CropedImage128.gif",
@@ -128,7 +138,7 @@ var discordcodetosend = {
     {
       "author": {
         "name": nick[0].value,
-		"url": "https://legendmod.ml/",
+		"url": serverlinks,
         "icon_url": discordskintosend
       },
       "title": "Join my agario server",
@@ -137,18 +147,17 @@ var discordcodetosend = {
       "color": 15258703,
       "fields": [
         {
-          "name": "Text",
-          "value": "More text",
+          "name": "Tag / Password",
+          "value": discordtagtosend,
           "inline": true
         },
         {
-          "name": "Even more text",
-          "value": "Yup",
+          "name": "Region / Mode",
+          "value": discordregiontosend + discordmodetosend,
           "inline": true
         },
         {
-          "name": "It is click and join link. :wink:!",
-          "value": "You're welcome :wink:"
+          "name": "It is click and join link. :wink:!"
         }
       ],
       "thumbnail": {
