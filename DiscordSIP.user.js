@@ -167,7 +167,7 @@ var discordcodetosend = {
           "inline": true
         },
         {
-		  "name": "Top players",
+		  "name": "Leaderboard",
           "value": discordtop
         }
       ],
