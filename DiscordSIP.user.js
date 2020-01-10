@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Send Agario SIP To Discord
 // @namespace    http://tampermonkey.net/
-// @version      1.10 test
+// @version      1.9 test
 // @description  Gets the agario server IP link and posts it to discord
 // @author       σмg ι ℓσνє уσυ! Published by Jimboy3100
 // @match        http://agar.io/*
@@ -153,7 +153,7 @@ var discordcodetosend = {
       },
       "title": "Join my agario server",
       "url": serverlinks,
-      "description": "[Click here]("+serverlinks+")",
+//      "description": "[Click here]("+serverlinks+")",
       "color": 15258703,
       "fields": [
         {
@@ -167,7 +167,7 @@ var discordcodetosend = {
           "inline": true
         },
         {
-		  "name": "Top Players",
+		  "name": "Top players",
           "value": discordtop
         }
       ],
