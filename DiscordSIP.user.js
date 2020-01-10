@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Send Agario SIP To Discord
 // @namespace    http://tampermonkey.net/
-// @version      1.14 test
+// @version      1.8 test
 // @description  Gets the agario server IP link and posts it to discord
 // @author       σмg ι ℓσνє уσυ! Published by Jimboy3100
 // @match        http://agar.io/*
@@ -144,7 +144,7 @@ var discordimageuser;
 if ( $( "#UserProfilePic>img" ).length ) {
 	discordimageuser = $( "#UserProfilePic>img" ).attr('src');
 }
-if (discordskintosend && discordskintosend!=""){
+if (discordtagtosend && discordtagtosend!=""){
 var discordcodetosend = {
   "username": "Agario to Discord Webhook",
   "avatar_url": "https://jimboy3100.github.io/banners/CropedImage128.gif",
