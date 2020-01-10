@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Send Agario SIP To Discord
 // @namespace    http://tampermonkey.net/
-// @version      1.9 test
+// @version      1.14 test
 // @description  Gets the agario server IP link and posts it to discord
 // @author       σмg ι ℓσνє уσυ! Published by Jimboy3100
 // @match        http://agar.io/*
@@ -120,7 +120,7 @@ var discordskintosend;
 if ( $( "#skin" ).length ) {
     discordskintosend = $( "#skin" ).val()
 }
-var discordtagtosend = "PUBLIC";
+var discordtagtosend;
 if ( $( "#clantag" ).length ) {
     discordtagtosend = $( "#clantag" ).val()
 }
@@ -144,6 +144,7 @@ var discordimageuser;
 if ( $( "#UserProfilePic>img" ).length ) {
 	discordimageuser = $( "#UserProfilePic>img" ).attr('src');
 }
+if (discordskintosend && discordskintosend!=""){
 var discordcodetosend = {
   "username": "Agario to Discord Webhook",
   "avatar_url": "https://jimboy3100.github.io/banners/CropedImage128.gif",
@@ -187,7 +188,46 @@ var discordcodetosend = {
     }
   ]
 }
-
+}
+else{
+var discordcodetosend = {
+  "username": "Agario to Discord Webhook",
+  "avatar_url": "https://jimboy3100.github.io/banners/CropedImage128.gif",
+//  "content": discordMsg,
+  "embeds": [
+    {
+      "author": {
+        "name": nick[0].value,
+		"url": serverlinks,
+        "icon_url": discordimageuser
+      },
+      "title": "Join my agario server",
+      "url": serverlinks,
+//      "description": "[Click here]("+serverlinks+")",
+      "color": 15258703,
+      "fields": [
+        {
+          "name": "Region / Mode",
+          "value": discregmod,
+        },
+        {
+		  "name": "Leaderboard",
+          "value": discordtop
+        }
+      ],
+      "thumbnail": {
+        "url": discordskintosend
+      },
+      "image": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/5/5a/A_picture_from_China_every_day_108.jpg"
+      },
+      "footer": {
+        "text": "* Discord webhook by Legend mod for agario",
+      }
+    }
+  ]
+}	
+}
 
             var data = JSON.stringify(discordcodetosend);
             //var data = JSON.stringify({"content":serverlinks});
