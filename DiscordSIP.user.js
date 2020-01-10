@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Send Agario SIP To Discord
 // @namespace    http://tampermonkey.net/
-// @version      1.8 test
+// @version      1.9 test
 // @description  Gets the agario server IP link and posts it to discord
 // @author       σмg ι ℓσνє уσυ! Published by Jimboy3100
 // @match        http://agar.io/*
@@ -52,7 +52,7 @@ function popAgarURL( fun ) {
          //ogario support
 		 var serverlinks;
 		 if (window.messageone=="0"||window.messageone=="1"){  //IF using Legend Mod
-			serverlinks= window.location.href + "&?pass=" + $("#clantag").val() + " :Agario Token";
+			serverlinks= window.location.href + "&?pass=" + $("#clantag").val() + ";
 		}
 		else if ($( "#connect" ).hasClass( "agartoolbtn")){ //IF using Agar Tools
 		serverlinks="https://agar.io/?sip=" + "live-arena-" + $( "#server" ).val() + ".agar.io"; 
@@ -116,22 +116,23 @@ function postToDiscord(discordUrl,isGeneralChannel) {
                 //discordMsg+="\r\nAlso posted in #serverlinks";
 				discordMsg+="\r\n";
             }
-
-
+var discordskintosend;
+if ( $( "#skin" ).length ) {
+    discordskintosend = $( "#skin" ).val()
+}
 var discordcodetosend = {
-  "username": "Webhook",
-  "avatar_url": "https://i.imgur.com/4M34hi2.png",
+  "username": "Legend Mod to Discord",
+  "avatar_url": "https://jimboy3100.github.io/banners/CropedImage128.gif",
   "content": discordMsg,
   "embeds": [
     {
       "author": {
-        "name": "Birdie♫",
-        "url": "https://www.reddit.com/r/cats/",
-        "icon_url": "https://i.imgur.com/R66g1Pe.jpg"
+        "name": nick[0].value,
+        "icon_url": discordskintosend
       },
-      "title": "Title",
+      "title": "Join my agario server",
       "url": "https://google.com/",
-      "description": "Text message. You can use Markdown here. *Italic* **bold** __underline__ ~~strikeout~~ [hyperlink](https://google.com) `code`",
+      "description": "Text message. You can use Markdown here. *Italic* **bold** __underline__ ~~strikeout~~ [hyperlink]("+serverlinks+") `code`",
       "color": 15258703,
       "fields": [
         {
