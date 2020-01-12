@@ -1,3 +1,4 @@
+
 <html lang="en" class=" js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths textstroke"><head>
 <meta charset="UTF-8">
 <link rel="apple-touch-icon" type="image/png" href="https://static.codepen.io/assets/favicon/apple-touch-icon-5ae1a0698dcc2402e9712f7d01ed509a57814f994c660df9f7a952f3060705ee.png">
@@ -2217,6 +2218,7 @@ body *, body *:before, body *:after {
 </div>
 <script src="https://static.codepen.io/assets/common/stopExecutionOnTimeout-de7e2ef6bfefd24b79a3f68b414b87b8db5b08439cac3f1012092b2290c719cd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+<iframe src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/161676/music.mp3" allow="autoplay" style="display:none" id="iframeAudio"></iframe> 
 <script id="rendered-js">
 // Real quick add another modernizr check foooor...
 Modernizr.addTest('textstroke', function () {
@@ -2249,7 +2251,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
   text.className += " intro-text--show";
-
+///////  
+start();
+//////
   if (bind) {
     const btns = document.querySelectorAll("[data-play]");
     for (let i = 0; i < btns.length; i++) {if (window.CP.shouldStopExecution(0)) break;if (window.CP.shouldStopExecution(0)) break;
