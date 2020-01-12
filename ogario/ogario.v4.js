@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1631 MEGA TEST
+// v1.1633 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7138,26 +7138,28 @@ var thelegendmodproject = function(t, e, i) {
                 //first time need recaptcha v2
                 requestCaptchaV3();
                 grecaptcha.onceLoad = true;
-                grecaptcha.reset();
+                //grecaptcha.reset();
                 grecaptcha.execute(0, {
                     'action': 'play'
                 }).then(function() {
                     sendSpawn();
+					grecaptcha.reset();
                 });
             } else {
                 //next times need recaptcha v3
-                grecaptcha.reset();
+                //grecaptcha.reset();
                 grecaptcha.execute(0, {
                     'action': 'play'
                 }).then(function() {
                     sendSpawn();
+					grecaptcha.reset();
                 });
             }
 				setTimeout(function() {					
 					if (!window.cookieCaptchaOK){
 						legendmod.sendNick2(self.playerNick)
 					}
-				}, 1000);			
+				}, 1800);			
         },	
 		'sendTimeOutTokenForBots': function () {
 				//window.sendTimeOutTokenBots=false;
@@ -7208,7 +7210,7 @@ var thelegendmodproject = function(t, e, i) {
                 //first time need recaptcha v2
                 requestCaptchaV3();
                 grecaptcha.onceLoad = true;
-                grecaptcha.reset();				
+                //grecaptcha.reset();				
                 grecaptcha.execute(0, {
                     'action': 'play'
                 }).then(function() {
@@ -7218,6 +7220,7 @@ var thelegendmodproject = function(t, e, i) {
                     legendmod.sendSpawn2(window.tempo2);
 					}, window.tempol*1000);
 					*/
+					grecaptcha.reset();
                 });
             } else {
                 //next times need recaptcha v3
