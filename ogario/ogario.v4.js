@@ -4768,9 +4768,10 @@ var thelegendmodproject = function(t, e, i) {
             'recreateWS': function(t) {
                 if (!t) return null;
                 var e = null;
-		if (!e && /^[a-z0-9]{5,}\.tech$/ .test(t)) {
+		//need fix chat
+		/*if (!e && /^[a-z0-9]{5,}\.tech$/ .test(t)) {
                    e = `wss://live-arena-` + t + `.agar.io:80`;
-                }
+                }*/
                 if (/^[a-zA-Z0-9=+\/]{12,}$/.test(t)) {
                     var i = atob(t);
                     /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/.test(i) && (e = 'wss://ip-' + i.replace(/\./g, '-').replace(':', '.tech.agar.io:'));
@@ -4804,14 +4805,14 @@ var thelegendmodproject = function(t, e, i) {
 			    text = btoa(this.serverIP);
 			}
 		    }
-		    if (matchNew2 && matchNew2[1]) {
+		    /*if (matchNew2 && matchNew2[1]) {
 			//wss://live-arena-19bre41.tech.agar.io:80
 			var replace = matchNew2[1]
 			console.log(replace)
 			    this.serverArena = replace
 			    text = this.serverArena;
 
-		    }
+		    }*/
 		    if (!text && matchNew) {
 			this.serverArena = matchNew[1];
 			text = this.serverArena;
