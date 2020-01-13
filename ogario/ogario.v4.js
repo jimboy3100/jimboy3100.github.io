@@ -4778,7 +4778,7 @@ var thelegendmodproject = function(t, e, i) {
                 }
                 return !e && /^[a-z0-9]{5,}$/.test(t) && (e = 'wss://live-arena-' + t + '.agar.io:443'), e;
             },
-            /*'createServerToken': function() {
+            'createServerToken': function() {
                 var t = this.ws.match(/ip-\d+/),
                     i = this.ws.match(/live-arena-([\w\d]+)/),
                     s = null;
@@ -4788,8 +4788,8 @@ var thelegendmodproject = function(t, e, i) {
                     var o = this.ws.match(/party_id=([A-Z0-9]{6})/);
                     o && (this.partyToken = o[1], ogarjoiner('/#' + window.encodeURIComponent(this.partyToken)));
                 }
-            },*/
-		        'createServerToken': function(callthecops) {
+            },
+		/*        'createServerToken': function(callthecops) {
 				
 		   //Failed to fix wss://live-arena-19bre41.tech.agar.io:80
 				
@@ -4805,14 +4805,16 @@ var thelegendmodproject = function(t, e, i) {
 			    text = btoa(this.serverIP);
 			}
 		    }
-		    /*if (matchNew2 && matchNew2[1]) {
+				
+				
+		    if (matchNew2 && matchNew2[1]) {
 			//wss://live-arena-19bre41.tech.agar.io:80
 			var replace = matchNew2[1]
 			console.log(replace)
 			    this.serverArena = replace
 			    text = this.serverArena;
 
-		    }*/
+		    }
 		    if (!text && matchNew) {
 			this.serverArena = matchNew[1];
 			text = this.serverArena;
@@ -4830,7 +4832,7 @@ var thelegendmodproject = function(t, e, i) {
 			    ogarjoiner(`/#${window.encodeURIComponent(this.partyToken)}`);
 			}
 		    }
-		},
+		},*/
             'updateServerInfo': function() {
                 $('#server-ws').val(this.ws),
                     $('#server-token').val(this.serverToken),
