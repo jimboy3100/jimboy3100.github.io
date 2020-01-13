@@ -4789,12 +4789,15 @@ var thelegendmodproject = function(t, e, i) {
                 }
             },*/
 		        'createServerToken': function(callthecops) {
-		    let matchOld = this.ws.match(/ip-\d+/);
-		    const matchNew = this.ws.match(/live-arena-([\w\d]+)/);
+				
+		   //Failed to fix wss://live-arena-19bre41.tech.agar.io:80
+				
+		    var matchOld = this.ws.match(/ip-\d+/);
+		    var matchNew = this.ws.match(/live-arena-([\w\d]+)/);
 		    var matchNew2 = this.ws.match(/live-arena-(.+\.tech)/);
-		    let text = null;
+		    var text = null;
 		    if (matchOld) {
-			const replace = this.ws.replace(`.tech.agar.io`, '').replace(/-/g, '.');
+			var replace = this.ws.replace(`.tech.agar.io`, '').replace(/-/g, '.');
 			matchOld = replace.match(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/);
 			if (matchOld) {
 			    this.serverIP = matchOld[0];
@@ -4803,7 +4806,7 @@ var thelegendmodproject = function(t, e, i) {
 		    }
 		    if (matchNew2 && matchNew2[1]) {
 			//wss://live-arena-19bre41.tech.agar.io:80
-			const replace = matchNew2[1]
+			var replace = matchNew2[1]
 			console.log(replace)
 			    this.serverArena = replace
 			    text = this.serverArena;
@@ -4820,7 +4823,7 @@ var thelegendmodproject = function(t, e, i) {
 			    this.flushCells();
 			}
 			this.partyToken = '';
-			const matchPartyId = this.ws.match(/party_id=([A-Z0-9]{6})/);
+			var matchPartyId = this.ws.match(/party_id=([A-Z0-9]{6})/);
 			if (matchPartyId) {
 			    this.partyToken = matchPartyId[1];
 			    ogarjoiner(`/#${window.encodeURIComponent(this.partyToken)}`);
