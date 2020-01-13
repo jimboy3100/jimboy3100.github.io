@@ -4768,13 +4768,16 @@ var thelegendmodproject = function(t, e, i) {
             'recreateWS': function(t) {
                 if (!t) return null;
                 var e = null;
+		if (!e && /^[a-z0-9]{5,}\.tech$/ .test(t)) {
+                   e = `wss://live-arena-` + t + `.agar.io:80`;
+                }
                 if (/^[a-zA-Z0-9=+\/]{12,}$/.test(t)) {
                     var i = atob(t);
                     /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/.test(i) && (e = 'wss://ip-' + i.replace(/\./g, '-').replace(':', '.tech.agar.io:'));
                 }
                 return !e && /^[a-z0-9]{5,}$/.test(t) && (e = 'wss://live-arena-' + t + '.agar.io:443'), e;
             },
-            'createServerToken': function() {
+            /*'createServerToken': function() {
                 var t = this.ws.match(/ip-\d+/),
                     i = this.ws.match(/live-arena-([\w\d]+)/),
                     s = null;
@@ -4784,7 +4787,46 @@ var thelegendmodproject = function(t, e, i) {
                     var o = this.ws.match(/party_id=([A-Z0-9]{6})/);
                     o && (this.partyToken = o[1], ogarjoiner('/#' + window.encodeURIComponent(this.partyToken)));
                 }
-            },
+            },*/
+		        'createServerToken': function(callthecops) {
+		    let matchOld = this.ws.match(/ip-\d+/);
+		    const matchNew = this.ws.match(/live-arena-([\w\d]+)/);
+		    var matchNew2 = this.ws.match(/live-arena-(.+\.tech)/);
+		    let text = null;
+		    if (matchOld) {
+			const replace = this.ws.replace(`.tech.agar.io`, '').replace(/-/g, '.');
+			matchOld = replace.match(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/);
+			if (matchOld) {
+			    this.serverIP = matchOld[0];
+			    text = btoa(this.serverIP);
+			}
+		    }
+		    if (matchNew2 && matchNew2[1]) {
+			//wss://live-arena-19bre41.tech.agar.io:80
+			const replace = matchNew2[1]
+			console.log(replace)
+			    this.serverArena = replace
+			    text = this.serverArena;
+
+		    }
+		    if (!text && matchNew) {
+			this.serverArena = matchNew[1];
+			text = this.serverArena;
+		    }
+		    if (text) {
+			if (this.serverToken !== text) {
+			    this.serverToken = text;
+			    this.flushData();
+			    this.flushCells();
+			}
+			this.partyToken = '';
+			const matchPartyId = this.ws.match(/party_id=([A-Z0-9]{6})/);
+			if (matchPartyId) {
+			    this.partyToken = matchPartyId[1];
+			    ogarjoiner(`/#${window.encodeURIComponent(this.partyToken)}`);
+			}
+		    }
+		},
             'updateServerInfo': function() {
                 $('#server-ws').val(this.ws),
                     $('#server-token').val(this.serverToken),
