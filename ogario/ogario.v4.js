@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1633 MEGA TEST
+// v1.1658 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4768,10 +4768,6 @@ var thelegendmodproject = function(t, e, i) {
             'recreateWS': function(t) {
                 if (!t) return null;
                 var e = null;
-		//need fix chat
-		/*if (!e && /^[a-z0-9]{5,}\.tech$/ .test(t)) {
-                   e = `wss://live-arena-` + t + `.agar.io:80`;
-                }*/
                 if (/^[a-zA-Z0-9=+\/]{12,}$/.test(t)) {
                     var i = atob(t);
                     /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/.test(i) && (e = 'wss://ip-' + i.replace(/\./g, '-').replace(':', '.tech.agar.io:'));
@@ -4789,50 +4785,6 @@ var thelegendmodproject = function(t, e, i) {
                     o && (this.partyToken = o[1], ogarjoiner('/#' + window.encodeURIComponent(this.partyToken)));
                 }
             },
-		/*        'createServerToken': function(callthecops) {
-				
-		   //Failed to fix wss://live-arena-19bre41.tech.agar.io:80
-				
-		    var matchOld = this.ws.match(/ip-\d+/);
-		    var matchNew = this.ws.match(/live-arena-([\w\d]+)/);
-		    var matchNew2 = this.ws.match(/live-arena-(.+\.tech)/);
-		    var text = null;
-		    if (matchOld) {
-			var replace = this.ws.replace(`.tech.agar.io`, '').replace(/-/g, '.');
-			matchOld = replace.match(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/);
-			if (matchOld) {
-			    this.serverIP = matchOld[0];
-			    text = btoa(this.serverIP);
-			}
-		    }
-				
-				
-		    if (matchNew2 && matchNew2[1]) {
-			//wss://live-arena-19bre41.tech.agar.io:80
-			var replace = matchNew2[1]
-			console.log(replace)
-			    this.serverArena = replace
-			    text = this.serverArena;
-
-		    }
-		    if (!text && matchNew) {
-			this.serverArena = matchNew[1];
-			text = this.serverArena;
-		    }
-		    if (text) {
-			if (this.serverToken !== text) {
-			    this.serverToken = text;
-			    this.flushData();
-			    this.flushCells();
-			}
-			this.partyToken = '';
-			var matchPartyId = this.ws.match(/party_id=([A-Z0-9]{6})/);
-			if (matchPartyId) {
-			    this.partyToken = matchPartyId[1];
-			    ogarjoiner(`/#${window.encodeURIComponent(this.partyToken)}`);
-			}
-		    }
-		},*/
             'updateServerInfo': function() {
                 $('#server-ws').val(this.ws),
                     $('#server-token').val(this.serverToken),
@@ -6813,13 +6765,46 @@ var thelegendmodproject = function(t, e, i) {
 
                             //special animations
                             if (this.targetNick.includes("The Dying Light")) {
+								
                                 try {
-                                    style.drawImage(cimg5, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y);
+                                    style.drawImage(cimg5, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
                                 } catch (e) {}
                             } else if (this.targetNick.includes("℄🌀Jimboy3100")) {
+								//style.drawImage(cimg2, this.x - y * 2, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
+								
+								var today = new Date();
                                 try { 
-                                    style.drawImage(cimg2, this.x - y * 2, this.y - y * 2, 4 * y, 4 * y);
-                                } catch (e) {}
+								if (!window.testAnimatCells){
+									if (!window.testAnimCell){
+									var ab = today.getTime()/1000 
+									if (!window.abam){
+										window.abam = ab
+									}
+									if (!window.abah){
+										window.abah = today.getHours()
+									}	
+									ab = ab - window.abam;
+									/*var ac;
+									if (ab>30) ab = ab - 30;
+									if (ab>=15) {
+										ac = ab - 15;
+										ab = 15 - ac;
+										}*/						                                 
+									if (today.getHours() == window.abah && ab < 5){
+											style.drawImage(cimg5, this.x - (1.5 + 2 * ab) * y , this.y - (1.5 + 2 * ab) * y, (1.5 + 2 * ab) * 2 * y, (1.5 + 2 * ab) * 2 * y);
+									}
+									else{
+										window.testAnimatCells=true;
+									}
+									}
+									}
+									else{
+										//if (ab<4){
+											style.drawImage(cimg2, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);												
+										//}
+									}									
+                                } catch (e) {}								
+
                             }
                         }
                     }
