@@ -1,13 +1,10 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1662 MEGA TEST
+// v1.1658 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
-var RECAPTCHA_V2_KEY = "6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl";
-var RECAPTCHA_V3_KEY = "6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY";
-
 var dyinglight1load = localStorage.getItem("dyinglight1load");
 
 function removeEmojis(string) {
@@ -10468,74 +10465,26 @@ function setGUIEvents() {
         }
     })
 }
-  var myCaptcha = new Recaptcha('captchaWindow','verifyUser');
-  var onloadCallback = function() {
-        myCaptcha.init();
-  };
-  function Recaptcha(curtinId, elemId) {
-    var self = this;
-    this.init = function() {
-        this.ready = true;
-    }
-    this.show = function() {
-        document.getElementById(this.curtin).style.display = 'block';
-    }
-    this.hide = function() {
-        document.getElementById(this.curtin).style.display = 'none';
-    }
-    this.reset = function() {
-        grecaptcha.reset();
-    }
-    this.onRender = function(response) {
-        master.notifyToken(response);
-        self.hide();
-        self.reset();
-    }
-    this.render = function() {
-       if (this.ready) {
-            this.show();
-            if (this.widget == null)
-            	this.widget = grecaptcha.render(this.id, {
-                    'sitekey' : RECAPTCHA_V2_KEY,
-                    'callback' : this.onRender,
-                });
-           	else{
-			this.reset();
-		}
-       }
-       return this.ready;
-    }
-    this.id = elemId;
-    this.curtin = curtinId;
-    this.widget = null;
-    this.ready = false;
-    this.hide();
-  }
-  function requestCaptcha() {
-    return myCaptcha.render();
-  }
 
-  
-  
-function requestCaptchaV2(aa) { 
+			window.requestCaptchaV2 = function(aa) {
 					grecaptcha.v2mode = true;
 					grecaptcha.render('recaptcha-screen', {
-							'sitekey': RECAPTCHA_V2_KEY,
+							'sitekey': '6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl',
 							'callback': SAO
-	});
-	//window.cookieCaptchaOK=true;
-}
-function requestCaptchaV3(bb) { 
+					});
+					//window.cookieCaptchaOK=true;
+			}
+			window.requestCaptchaV3 = function(bb) {
 				grecaptcha.v2mode = false;
 				grecaptcha.render('captchaWindowV3', {
-						'sitekey': RECAPTCHA_V3_KEY,
+						'sitekey': '6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY',
 						'badge': "inline",
 						'size': "invisible",
 						'callback': SAO						
-	});
-	//window.cookieCaptchaOK=true;
-}
-function SAO() { 
+				});
+				//window.cookieCaptchaOK=true;
+			}
+			window.SAO = function() {
 					window.cookieCaptchaOK=true;
 					if (legendmod.botscaptcha){
 						legendmod.botscaptcha=null;
@@ -10550,7 +10499,7 @@ function SAO() {
 					}
 					console.log("[Legend mod Express] requestCaptcha bypass v2, v3 loaded");
 					window.sendTimeOutTokenBots = true;
-}
+			}
 /*
 var snezSocketdata;
 var snezSocket = new WebSocket("wss://connect.websocket.in/3Q-SoniaSLG_453dsV?room_id=123");
