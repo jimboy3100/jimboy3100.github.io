@@ -1,10 +1,13 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1659 MEGA TEST
+// v1.1660 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
+var RECAPTCHA_V2_KEY = "6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl";
+var RECAPTCHA_V3_KEY = "6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY";
+
 var dyinglight1load = localStorage.getItem("dyinglight1load");
 
 function removeEmojis(string) {
@@ -10466,7 +10469,6 @@ function setGUIEvents() {
     })
 }
 
-
   function Recaptcha(curtinId, elemId) {
     var self = this;
     this.init = function() {
@@ -10491,7 +10493,7 @@ function setGUIEvents() {
             this.show();
             if (this.widget == null)
             	this.widget = grecaptcha.render(this.id, {
-                    'sitekey' : '6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl',
+                    'sitekey' : RECAPTCHA_V2_KEY,
                     'callback' : this.onRender,
                 });
            	else{
@@ -10516,11 +10518,11 @@ function setGUIEvents() {
   
   
   
-  
+
 			window.requestCaptchaV2 = function(aa) {
 					grecaptcha.v2mode = true;
 					grecaptcha.render('recaptcha-screen', {
-							'sitekey': '6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl',
+							'sitekey': RECAPTCHA_V2_KEY,
 							'callback': SAO
 					});
 					//window.cookieCaptchaOK=true;
@@ -10528,7 +10530,7 @@ function setGUIEvents() {
 			window.requestCaptchaV3 = function(bb) {
 				grecaptcha.v2mode = false;
 				grecaptcha.render('captchaWindowV3', {
-						'sitekey': '6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY',
+						'sitekey': RECAPTCHA_V3_KEY,
 						'badge': "inline",
 						'size': "invisible",
 						'callback': SAO						
