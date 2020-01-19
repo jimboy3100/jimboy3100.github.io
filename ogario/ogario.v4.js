@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1660 MEGA TEST
+// v1.1661 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -10517,27 +10517,25 @@ function setGUIEvents() {
   };
   
   
-  
-
-			window.requestCaptchaV2 = function(aa) {
+function requestCaptchaV2(aa) { 
 					grecaptcha.v2mode = true;
 					grecaptcha.render('recaptcha-screen', {
 							'sitekey': RECAPTCHA_V2_KEY,
 							'callback': SAO
-					});
-					//window.cookieCaptchaOK=true;
-			}
-			window.requestCaptchaV3 = function(bb) {
+	});
+	//window.cookieCaptchaOK=true;
+}
+function requestCaptchaV3(bb) { 
 				grecaptcha.v2mode = false;
 				grecaptcha.render('captchaWindowV3', {
 						'sitekey': RECAPTCHA_V3_KEY,
 						'badge': "inline",
 						'size': "invisible",
 						'callback': SAO						
-				});
-				//window.cookieCaptchaOK=true;
-			}
-			window.SAO = function() {
+	});
+	//window.cookieCaptchaOK=true;
+}
+function SAO() { 
 					window.cookieCaptchaOK=true;
 					if (legendmod.botscaptcha){
 						legendmod.botscaptcha=null;
@@ -10552,7 +10550,7 @@ function setGUIEvents() {
 					}
 					console.log("[Legend mod Express] requestCaptcha bypass v2, v3 loaded");
 					window.sendTimeOutTokenBots = true;
-			}
+}
 /*
 var snezSocketdata;
 var snezSocket = new WebSocket("wss://connect.websocket.in/3Q-SoniaSLG_453dsV?room_id=123");
