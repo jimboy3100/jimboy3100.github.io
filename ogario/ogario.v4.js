@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1661 MEGA TEST
+// v1.1662 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -10468,7 +10468,10 @@ function setGUIEvents() {
         }
     })
 }
-
+  var myCaptcha = new Recaptcha('captchaWindow','verifyUser');
+  var onloadCallback = function() {
+        myCaptcha.init();
+  };
   function Recaptcha(curtinId, elemId) {
     var self = this;
     this.init = function() {
@@ -10511,10 +10514,7 @@ function setGUIEvents() {
   function requestCaptcha() {
     return myCaptcha.render();
   }
-  var myCaptcha = new Recaptcha('captchaWindow','verifyUser');
-  var onloadCallback = function() {
-        myCaptcha.init();
-  };
+
   
   
 function requestCaptchaV2(aa) { 
