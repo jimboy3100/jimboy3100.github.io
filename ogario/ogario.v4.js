@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1658 MEGA TEST
+// v1.1659 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -10466,6 +10466,57 @@ function setGUIEvents() {
     })
 }
 
+
+  function Recaptcha(curtinId, elemId) {
+    var self = this;
+    this.init = function() {
+        this.ready = true;
+    }
+    this.show = function() {
+        document.getElementById(this.curtin).style.display = 'block';
+    }
+    this.hide = function() {
+        document.getElementById(this.curtin).style.display = 'none';
+    }
+    this.reset = function() {
+        grecaptcha.reset();
+    }
+    this.onRender = function(response) {
+        master.notifyToken(response);
+        self.hide();
+        self.reset();
+    }
+    this.render = function() {
+       if (this.ready) {
+            this.show();
+            if (this.widget == null)
+            	this.widget = grecaptcha.render(this.id, {
+                    'sitekey' : '6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl',
+                    'callback' : this.onRender,
+                });
+           	else{
+			this.reset();
+		}
+       }
+       return this.ready;
+    }
+    this.id = elemId;
+    this.curtin = curtinId;
+    this.widget = null;
+    this.ready = false;
+    this.hide();
+  }
+  function requestCaptcha() {
+    return myCaptcha.render();
+  }
+  var myCaptcha = new Recaptcha('captchaWindow','verifyUser');
+  var onloadCallback = function() {
+        myCaptcha.init();
+  };
+  
+  
+  
+  
 			window.requestCaptchaV2 = function(aa) {
 					grecaptcha.v2mode = true;
 					grecaptcha.render('recaptcha-screen', {
