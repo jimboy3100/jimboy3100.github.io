@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1658 MEGA TEST
+// v1.1659 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2078,7 +2078,7 @@ var defaultmapsettings = {
     'virColors': false,
     'splitRange': false,
     'qdsplitRange': true, //Sonia2
-    'sdsplitRange': true, //Sonia2
+    'sdsplitRange': false, //Sonia2
     'virusesRange': false,
     'textStroke': false,
     'namesStroke': true,
