@@ -1884,7 +1884,10 @@ $("#ogario-theme").click(function() {
 
 </div>
 <div id="themesubmission" style="display: none;">
-<div class="overlay"></div><div class="container"><div class="row"><div class="col-md-8 col-md-offset-2 text-center"><div class="display-t"><div class="display-tc animate-box fadeIn animated-fast" data-animate-effect="fadeIn"><br><br><br><br><br><br><br><h2><a href="http://fzogar.xyz/ogs/" class="btn btn-default btn-block" target="_blank">FZOGAR CLOUD FOR THEMES</a></h2></div></div></div></div></div>
+<div class="overlay"></div><div class="container"><div class="row"><div class="col-md-8 col-md-offset-2 text-center"><div class="display-t"><div class="display-tc animate-box fadeIn animated-fast" data-animate-effect="fadeIn"><br>
+<center><textarea id="import-settings" class="form-control ps-container ps-theme-default" rows="1" cols="100" spellcheck="false" data-ps-id="66a90a52-dad2-ac91-9a80-777c0af6bc73" placeholder="Social ID" style="text-align: center;"></textarea></center>
+<center><textarea id="export-settings" class="form-control ps-container ps-theme-default" rows="8" cols="100" spellcheck="false" data-ps-id="66a90a52-dad2-ac91-9a80-777c0af6bc73" placeholder="Social ID" style="text-align: center;" readonly=""></textarea></center>
+<br><a onclick="SNEZOgarDownload()" class="btn btn-default btn-block">Download Theme</a></h2></div></div></div></div></div>
 </div>
 </div></div>
 </div>
@@ -1912,7 +1915,25 @@ textarea { font-size:15px;border:0px;padding-right: 6px;padding-left: 6px;resize
 </div>
 </div>
 </div>
+<script>
+function SNEZOgarDownload() {
+	var userid = $('#import-settings').val();
+    if (userid == "" || userid == null) {
+        alert('Please use a valid Social ID')
+    } else {
+        getSNEZ("https://lmsettings.snez.org/", userid, "LMSettings");
+        var responseSNEZ = xhttp.response;
+        $('#export-settings').val(unescape(responseSNEZ));
+    }
+}
+function getSNEZ(server, username, password) {
+    xhttp.open("GET", server, false);
+    xhttp.setRequestHeader("username", username);
+    xhttp.setRequestHeader("password", password);
+    xhttp.send();
+}
 
+</script>
 
 <script src="https://legendmod.ml/themes/jquery.easing.1.3.js"></script>
 
