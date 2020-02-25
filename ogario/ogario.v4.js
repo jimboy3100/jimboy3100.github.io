@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1674 MEGA TEST
+// v1.1677 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -1959,6 +1959,7 @@ var defaultSettings = {
     ////
     "color": "#fff",
     //"commanderImage" : "https://i.imgur.com/wQKUDB3.png",
+	"customServerImage1": "https://legendmod.ml/banners/IconCustomServer1.png",
     "commanderImage": "https://legendmod.ml/banners/drawCommander.png",
     "commanderImage1": "https://legendmod.ml/banners/drawCommander1.png",
     "commanderImage2": "https://legendmod.ml/banners/drawCommander2.png",
@@ -8604,6 +8605,27 @@ var thelegendmodproject = function(t, e, i) {
                     if (defaultmapsettings.showBgSectors) {
                         this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings.gridColor, defaultSettings.sectorsColor, defaultSettings.sectorsWidth, true);
                     }
+
+            if(!legendmod.integrity){
+				if (!legendmod.customMidPic){
+				legendmod.customMidPic = new Image;
+				legendmod.customMidPic.src = defaultSettings.customServerImage1;
+				}
+				this.prevctxglobalAlpha = this.ctx.globalAlpha;
+				this.ctx.globalAlpha = '0.2'
+                var ofx = ((legendmod.mapMaxX-legendmod.mapMinX)/5)*2.2
+                var ofy = ((legendmod.mapMinY-legendmod.mapMaxY)/5)*2.2
+                this.ctx.drawImage(
+                    legendmod.customMidPic,  //2.1:5.9
+                    legendmod.mapMinX+ofx, 
+                    legendmod.mapMaxY+ofy, 
+                    (legendmod.mapMaxX-legendmod.mapMinX)/8.5, 
+                    (legendmod.mapMinY-legendmod.mapMaxY)/8.5
+                );
+                this.ctx.globalAlpha = this.prevctxglobalAlpha
+            }
+
+					
                     if (LM.gameMode === ':battleroyale') {
                         this.drawBattleArea(this.ctx);
                     }
