@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1678 MEGA TEST
+// v1.1680 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4775,26 +4775,57 @@ var thelegendmodproject = function(t, e, i) {
                 this.chatUsers = {};
             },
             'getWS': function(t) {
-                t && (this.ws = t, this.createServerToken(), this.updateServerInfo(), -1 == this.ws.indexOf('agar.io') && this.closeConnection());
+				if (t){
+					this.ws = t; 
+					this.createServerToken();
+					this.updateServerInfo();
+					if(-1 == this.ws.indexOf('agar.io')){
+						this.closeConnection();
+					}				
+				}
             },
-            'recreateWS': function(t) {
-                if (!t) return null;
-                var e = null;
-                if (/^[a-zA-Z0-9=+\/]{12,}$/.test(t)) {
-                    var i = atob(t);
-                    /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/.test(i) && (e = 'wss://ip-' + i.replace(/\./g, '-').replace(':', '.tech.agar.io:'));
+            'recreateWS': function(token) {
+                if (!token) return null;
+                var text = null;
+                if (/^[a-zA-Z0-9=+\/]{12,}$/.test(token)) {
+                    var i = atob(token);
+					if (/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/.test(i)){ 
+					text = 'wss://ip-' + i.replace(/\./g, '-').replace(':', '.tech.agar.io:');
+					}
                 }
-                return !e && /^[a-z0-9]{5,}$/.test(t) && (e = 'wss://live-arena-' + t + '.agar.io:443'), e;
+				if (!text && /^[a-z0-9]{5,}$/.test(token)){
+					text = 'wss://live-arena-' + token + '.agar.io:443'
+				}
+                return text;
             },
             'createServerToken': function() {
-                var t = this.ws.match(/ip-\d+/),
-                    i = this.ws.match(/live-arena-([\w\d]+)/),
-                    s = null;
-                t && ((t = this.ws.replace('.tech.agar.io', '').replace(/-/g, '.').match(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/)) && (this.serverIP = t[0], s = btoa(this.serverIP)));
-                if (!s && i && (this['serverArena'] = i[1], s = this['serverArena']), s) {
-                    this.serverToken !== s && (this.serverToken = s, this.flushData(), this.flushCells()), this.partyToken = '';
-                    var o = this.ws.match(/party_id=([A-Z0-9]{6})/);
-                    o && (this.partyToken = o[1], ogarjoiner('/#' + window.encodeURIComponent(this.partyToken)));
+                var matchOld = this.ws.match(/ip-\d+/);
+                var matchNew = this.ws.match(/live-arena-([\w\d]+)/);
+                var text = null;
+				if (matchOld) {
+					matchOld = this.ws.replace('.tech.agar.io', '').replace(/-/g, '.').match(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/);
+					if (matchOld){
+						this.serverIP = matchOld[0];
+						text = btoa(this.serverIP);
+					}
+				}					
+                
+				if (!text && matchNew){
+					this.serverArena = matchNew[1];
+					text = this.serverArena;
+				}
+				if (text){
+					if (this.serverToken !== text){
+						this.serverToken = text; 
+						this.flushData(); 
+						this.flushCells();
+				}
+				this.partyToken = '';
+                    var matchPartyId = this.ws.match(/party_id=([A-Z0-9]{6})/);
+                    if(matchPartyId){
+						this.partyToken = matchPartyId[1];
+						ogarjoiner('/#' + window.encodeURIComponent(this.partyToken));
+					}
                 }
             },
             'updateServerInfo': function() {
