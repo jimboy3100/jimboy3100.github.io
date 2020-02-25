@@ -145,8 +145,9 @@ var CutNameConflictwithMessage=false;
         </select>
        </div>
        <div id="locationUnknown">
-        <select id="region" class="form-control" onchange="master.setRegion($('#region').val());" required>
+        <select id="region" class="form-control" onchange="changeregion()" required>
          <option selected value="" data-itr="page_region_select"></option>
+	 <option value="Antarctic" data-itr="Antarctic">Antarctic</option>
          <option value="US-Atlanta" data-itr="page_region_north_america"></option>
          <option value="BR-Brazil" data-itr="page_region_south_america"></option>
          <option value="EU-London" data-itr="page_region_europe"></option>
