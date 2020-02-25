@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1680 MEGA TEST
+// v1.1681 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4787,15 +4787,26 @@ var thelegendmodproject = function(t, e, i) {
             'recreateWS': function(token) {
                 if (!token) return null;
                 var text = null;
+				
                 if (/^[a-zA-Z0-9=+\/]{12,}$/.test(token)) {
-                    var i = atob(token);
-					if (/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/.test(i)){ 
-					text = 'wss://ip-' + i.replace(/\./g, '-').replace(':', '.tech.agar.io:');
+                    var atobToken = atob(token);
+					
+					//ccse
+					if(!text && atobToken.search(/agar\.io/)==-1){
+						text = 'wss://'+atobToken;
+						return text
+					}
+				
+					if (/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/.test(atobToken)){ 
+					text = 'wss://ip-' + atobToken.replace(/\./g, '-').replace(':', '.tech.agar.io:');
 					}
                 }
+				
 				if (!text && /^[a-z0-9]{5,}$/.test(token)){
+					//text = `wss://live-arena-` + token + `.agar.io:80`;
 					text = 'wss://live-arena-' + token + '.agar.io:443'
 				}
+				
                 return text;
             },
             'createServerToken': function() {
@@ -4809,7 +4820,13 @@ var thelegendmodproject = function(t, e, i) {
 						text = btoa(this.serverIP);
 					}
 				}					
-                
+				//ccse
+				if(this.ws.search(/wss?:\/\//)>-1 && this.ws.search(/agar\.io/)==-1){
+					text = this.ws.match(/wss?:\/\/(.+)/)[1]
+					this.serverIP = text;
+					text = btoa(text)
+				}       
+				
 				if (!text && matchNew){
 					this.serverArena = matchNew[1];
 					text = this.serverArena;
