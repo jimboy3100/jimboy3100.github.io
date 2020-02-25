@@ -1,16 +1,18 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1677 MEGA TEST
+// v1.1678 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
 
 function changeregion(){
 	if ($('#region').val()=="Antarctic"){ 
-	core.connect('wss://delta-server.glitch.me')
+	core.connect('wss://delta-server.glitch.me');
+	$("#gamemode").hide();
 	}
 	else{ master.setRegion($('#region').val()); 
+	$("#gamemode").show();
 	}
 }
 
