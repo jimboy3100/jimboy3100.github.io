@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         gamepad by ɴᴇᴏ
-// @version      1.4
+// @version      1.5
 // @description  touch mobile extension
 // @author       ɴᴇᴏ
 // @match		*://*.agar.io/*
@@ -10,6 +10,10 @@
 // ==/UserScript==
 
 // © 2019 neosoft
+
+setTimeout(function() {
+if ($("#legendhelper")){closecustomskinsIframe2020()}
+}, 5000);
 
 function init() {
 
