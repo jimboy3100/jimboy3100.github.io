@@ -282,7 +282,7 @@ for(var i=0;Buttons.length>i;i++){
 }
 
 
-
+/*
 var wheelZoom = function(){
   var evt = document.createEvent('MouseEvents');
   evt.initEvent('mousewheel', true, true);
@@ -292,7 +292,15 @@ var wheelZoom = function(){
 
 document.getElementById('zoomOut').ontouchstart=wheelZoom.bind(-120)
 document.getElementById('zoomIn').ontouchstart=wheelZoom.bind(120)
-
+*/
+document.getElementById('zoomOut').ontouchstart=LMmobilezoomout()
+document.getElementById('zoomOut').ontouchstart=LMmobilezoomin()
+function LMmobilezoomout(){
+legendmod.zoomValue=legendmod.zoomValue/1.5;
+}
+function LMmobilezoomin(){
+legendmod.zoomValue=legendmod.zoomValue*1.5;
+}
 function toggleFullScreen() {
   if ((document.fullScreenElement && document.fullScreenElement !== null) ||
    (!document.mozFullScreen && !document.webkitIsFullScreen)) {
