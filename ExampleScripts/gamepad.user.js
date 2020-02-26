@@ -325,7 +325,7 @@ function toggleFullScreen() {
 };
 */
 //document.getElementById('toggleFullScreen').onclick=toggleFullScreen
-document.getElementById('toggleFullScreen').onclick=toggleFullScreen(fullornot);
+document.getElementById('toggleFullScreen').onclick=function(){toggleFullScreen(fullornot);}
 
 }
 
