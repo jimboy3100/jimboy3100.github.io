@@ -330,7 +330,7 @@ var t123 = setInterval(function() {
     } else {
         if(!--timeStep) {
             clearInterval(t123);
-            window.master != undefined && alert('OGARIO not responding')
+            window.master != undefined && alert('Legend mod not responding')
             window.nipplejs != undefined && alert('nipplejs not responding')
         }
     }
