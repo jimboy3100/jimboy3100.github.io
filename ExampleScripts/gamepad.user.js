@@ -183,23 +183,23 @@ document.body.appendChild(zone)
 var buttons = document.createElement('div')
 document.body.appendChild(buttons)
 buttons.innerHTML=`<div key="27" class="menu-ag wpk-btn">
-  <span class="icon-home"></span>
+  <span class="fa fa-sign-out"></span>
 </div>
 
 <div class="wpk-fullscreen wpk-btn" id="toggleFullScreen">
-  <span class="icon-enlarge2"></span>
+  <span class="fa fa-tv"></span>
 </div>
 
 <div class="ovh-chat wpk-btn" key="13">
-<span class="icon-bubble2"></span>
+<span class="fa fa-comment-o"></span>
 </div>
 
 <div class="wpk-zoomin wpk-btn" id="zoomIn">
-<span class="icon-zoom-in"></span>
+<span class="fa fa-plus"></span>
 </div>
 
 <div class="wpk-zoomout wpk-btn" id="zoomOut">
-<span class="icon-zoom-out"></span>
+<span class="fa fa-minus"></span>
 </div>
 
 <div class="wpk-container-buttons">
