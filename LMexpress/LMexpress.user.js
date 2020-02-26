@@ -44,9 +44,7 @@ var LMdetails = GM_xmlhttpRequest({
        document.write(doc);
         setTimeout(function() {
             window.history.pushState(null, null, "/");
-            if( /Android|webOS|iPhone|iPad|iPod|Opera Mini/i.test(navigator.userAgent) ) {
-                document.head.appendChild(document.createElement('script')).src = 'https://legendmod.ml/ExampleScripts/gamepad.user.js'
-            } 		
+            mobilefunction(getOS());		
         }, 2000);
         document.close();
     }
@@ -66,3 +64,30 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+function getOS() {
+  var userAgent = window.navigator.userAgent,
+      platform = window.navigator.platform,
+      macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+      windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+      iosPlatforms = ['iPhone', 'iPad', 'iPod'],
+      os = null;
+
+  if (macosPlatforms.indexOf(platform) !== -1) {
+    os = 'Mac OS';
+  } else if (iosPlatforms.indexOf(platform) !== -1) {
+    os = 'iOS';
+  } else if (windowsPlatforms.indexOf(platform) !== -1) {
+    os = 'Windows';
+  } else if (/Android/.test(userAgent)) {
+    os = 'Android';
+  } else if (!os && /Linux/.test(platform)) {
+    os = 'Linux';
+  }
+
+  return os;
+}
+function mobilefunction(os) {
+	if (os == 'Android' || os == 'iOS'){
+		document.head.appendChild(document.createElement('script')).src = 'https://legendmod.ml/ExampleScripts/gamepad.user.js'
+	}
+}
