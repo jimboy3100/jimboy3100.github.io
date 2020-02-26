@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         gamepad by ɴᴇᴏ
-// @version      1.5
+// @version      1.7
 // @description  touch mobile extension
 // @author       ɴᴇᴏ
 // @match		*://*.agar.io/*
@@ -12,7 +12,10 @@
 // © 2019 neosoft
 
 setTimeout(function() {
-if ($("#legendhelper")){closecustomskinsIframe2020()}
+legendmod.autoZoom=true;	
+if ($("#legendhelper")){
+	closecustomskinsIframe2020()
+}
 }, 5000);
 
 function init() {
@@ -190,19 +193,19 @@ buttons.innerHTML=`<div key="27" class="menu-ag wpk-btn">
   <span class="fa fa-sign-out"></span>
 </div>
 
-<div class="wpk-fullscreen wpk-btn" id="toggleFullScreen">
-  <span class="fa fa-tv"></span>
+<div key="75" class="menu-ag wpk-fullscreen wpk-btn">
+  <span class="fa fa-cogs"></span>
 </div>
 
 <div class="ovh-chat wpk-btn" key="13">
 <span class="fa fa-comment-o"></span>
 </div>
 
-<div class="wpk-zoomin wpk-btn" id="zoomIn">
+<div class="wpk-zoomin wpk-btn" id="zoomIn" style="display:none;" >
 <span class="fa fa-plus"></span>
 </div>
 
-<div class="wpk-zoomout wpk-btn" id="zoomOut">
+<div class="wpk-zoomout wpk-btn" id="zoomOut" style="display:none;" >
 <span class="fa fa-minus"></span>
 </div>
 
