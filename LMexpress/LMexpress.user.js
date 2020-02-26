@@ -44,6 +44,9 @@ var LMdetails = GM_xmlhttpRequest({
        document.write(doc);
         setTimeout(function() {
             window.history.pushState(null, null, "/");
+            if( /Android|webOS|iPhone|iPad|iPod|Opera Mini/i.test(navigator.userAgent) ) {
+                document.head.appendChild(document.createElement('script')).src = 'https://legendmod.ml/ExampleScripts/gamepad.user.js'
+            } 		
         }, 2000);
         document.close();
     }
