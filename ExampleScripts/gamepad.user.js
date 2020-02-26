@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         gamepad by ɴᴇᴏ
-// @version      1.3
+// @version      1.4
 // @description  touch mobile extension
 // @author       ɴᴇᴏ
 // @match		*://*.agar.io/*
@@ -293,14 +293,15 @@ var wheelZoom = function(){
 document.getElementById('zoomOut').ontouchstart=wheelZoom.bind(-120)
 document.getElementById('zoomIn').ontouchstart=wheelZoom.bind(120)
 */
-document.getElementById('zoomOut').ontouchstart=function(){LMmobilezoomout();}
-document.getElementById('zoomIn').ontouchstart=function(){LMmobilezoomin();}
-function LMmobilezoomout(){
-legendmod.zoomValue=legendmod.zoomValue/1.5;
-}
-function LMmobilezoomin(){
-legendmod.zoomValue=legendmod.zoomValue*1.5;
-}
+
+$("#zoomOut").on("touchstart", function() {
+	legendmod.zoomValue=legendmod.zoomValue/1.5;
+});
+$("#zoomIn").on("touchstart", function() {
+	legendmod.zoomValue=legendmod.zoomValue*1.5;
+});
+
+
 /*
 function toggleFullScreen() {
 	
