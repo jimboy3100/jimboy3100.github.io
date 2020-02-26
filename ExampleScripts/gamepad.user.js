@@ -333,7 +333,7 @@ function toggleFullScreen() {
 };
 */
 //document.getElementById('toggleFullScreen').onclick=toggleFullScreen
-document.getElementById('toggleFullScreen').ontouchstart=function(){toggleFullScreen(fullornot);}
+//document.getElementById('toggleFullScreen').ontouchstart=function(){toggleFullScreen(fullornot);}
 
 }
 
