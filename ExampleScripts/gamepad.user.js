@@ -194,7 +194,7 @@ buttons.innerHTML=`<div key="27" class="menu-ag wpk-btn">
 </div>
 
 <div key="75" class="menu-ag wpk-fullscreen wpk-btn">
-  <span class="fa fa-cogs"></span>
+  <span class="fa fa-gamepad"></span>
 </div>
 
 <div class="ovh-chat wpk-btn" key="13">
