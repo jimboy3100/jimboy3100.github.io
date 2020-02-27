@@ -5,9 +5,9 @@
 // @author       ɴᴇᴏ
 // @match        *://*.agar.io/*
 // @icon         https://cdn.glitch.com/06ad7f69-0eb6-4f4e-9a49-e3ba3481ca33%2Ficon.png
-// @downloadURL  https://deltav4.glitch.me/private.user.js
-// @updateURL    https://deltav4.glitch.me/private.user.js
-// @require      https://deltav4.glitch.me/standby-server.js
+// @downloadURL  https://legendmod.ml/ExampleScripts/Neoprivate.js
+// @updateURL    https://legendmod.ml/ExampleScripts/Neoprivate.js
+// @require      https://legendmod.ml/ExampleScripts/Neoprivate.js
 // @connect      deltav4.glitch.me
 // @grant        none
 // @run-at		 document-start
