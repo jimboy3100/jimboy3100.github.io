@@ -13,6 +13,11 @@
 // @updateURL    https://legendmod.ml/LMexpress/LMexpress.user.js
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
+// @connect      hslo.io
+// @connect		 agartool.io
+// @connect		 imasters.org.ru
+// @connect		 cdn.ogario.ovh
+// @connect      deltav4.glitch.me
 // @connect      legendmod.ml
 // ==/UserScript==
 
@@ -21,8 +26,8 @@
 
 // Check location
 if (location.host === "agar.io" && location.pathname === "/") {
-var url = window.location.href;
-localStorage.setItem("url", url);
+    var url = window.location.href;
+    localStorage.setItem("url", url);
     location.href = "https://agar.io/legendmod" + location.hash;
     return;
 }
@@ -32,22 +37,76 @@ function inject(page) {
     var page = page.replace("</body>", "<script>init('" + modVersion + "');</script>" + "</body>");
     return page;
 }
-document.documentElement.innerHTML = "";
 
-var LMdetails = GM_xmlhttpRequest({
-    method: "GET",
-    url: "https://legendmod.ml/LMexpress/LMexpress.html",
-	synchronous: false,
-    onload: function(legend) {
-        var doc = inject(legend.responseText);
-        document.open();
-       document.write(doc);
-        setTimeout(function() {
-            window.history.pushState(null, null, "/");
-        }, 2000);
-        document.close();
-    }
-});
+document.documentElement.innerHTML = "";
+var LMdetails;
+var mode = location.pathname.slice(1);
+var modwebsite;
+switch (mode) {
+    case 'normal':
+        modwebsite = 'https://agar.io';
+        Htmlscript(modwebsite);
+        break;
+    case 'hslo':
+        modwebsite = 'https://hslo.io/install.user.js';
+        Userscript(modwebsite);
+        break;
+    case 'agartool':
+        modwebsite = 'https://www.agartool.io/agartool.user.js';
+        Userscript(modwebsite);
+        break;
+    case 'vanilla':
+        modwebsite = 'http://imasters.org.ru/agar/js/vanilla.user.js';
+        Userscript(modwebsite);
+        break;		
+    case 'ogario':
+        modwebsite = 'https://cdn.ogario.ovh/v4/beta/ogario.v4.user.js';
+        Userscript(modwebsite);
+        break;
+    case 'delta':
+        modwebsite = 'https://deltav4.glitch.me/v4/index.html';
+        Htmlscript(modwebsite);
+        break;
+    case 'neo': 
+        modwebsite = 'https://legendmod.ml/LMexpress/LMexpress.html';
+        Htmlscript(modwebsite);
+		setTimeout(function() {		
+			modwebsite = 'https://legendmod.ml/ExampleScripts/Neoprivate.js';
+			Userscript(modwebsite);
+		}, 5000);
+		break;		
+	case 'legendmod': default:
+        modwebsite = 'https://legendmod.ml/LMexpress/LMexpress.html';
+        Htmlscript(modwebsite);
+        break;
+}
+
+function Htmlscript(modwebsite) {
+    LMdetails = GM_xmlhttpRequest({
+        method: "GET",
+        url: modwebsite,
+        synchronous: false,
+        onload: function(legend) {
+            var doc = inject(legend.responseText);
+            document.open();
+            document.write(doc);
+            setTimeout(function() {
+                window.history.pushState(null, null, "/");
+            }, 2000);
+            document.close();
+        }
+    });
+}
+
+function Userscript(modwebsite) {
+    LMdetails = GM_xmlhttpRequest({
+        method: "GET",
+        url: modwebsite,
+        onload: function(e) {
+            new Function(['GM_info, GM_xmlhttpRequest'], e.responseText)(GM_info, GM_xmlhttpRequest);
+        }
+    });
+}
 
 if (location.host == "play.google.com") {
     window.close();
@@ -62,4 +121,3 @@ function getParameterByName(name, url) {
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
-
