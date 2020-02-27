@@ -73,7 +73,7 @@ switch (mode) {
 			modwebsite = 'https://legendmod.ml/ExampleScripts/Neoprivate.js';
 			Userscript(modwebsite);
 		}, 5000);
-		break;	
+	break;	
     case 'mobile': 
         modwebsite = 'https://legendmod.ml/LMexpress/LMexpress.html';
         Htmlscript(modwebsite);
@@ -81,8 +81,8 @@ switch (mode) {
 			modwebsite = 'https://legendmod.ml/ExampleScripts/gamepad.user.js';
 			Userscript(modwebsite);
 		}, 5000);
-		break;			
-	case 'legendmod': default:
+	break;			
+    case 'legendmod': default:
         modwebsite = 'https://legendmod.ml/LMexpress/LMexpress.html';
         Htmlscript(modwebsite);
         break;
