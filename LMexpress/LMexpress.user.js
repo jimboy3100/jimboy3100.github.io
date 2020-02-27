@@ -14,9 +14,9 @@
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
 // @connect      hslo.io
-// @connect		 agartool.io
-// @connect		 imasters.org.ru
-// @connect		 cdn.ogario.ovh
+// @connect	 agartool.io
+// @connect	 imasters.org.ru
+// @connect	 cdn.ogario.ovh
 // @connect      deltav4.glitch.me
 // @connect      legendmod.ml
 // ==/UserScript==
