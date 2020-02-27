@@ -12,7 +12,7 @@
 // @grant        none
 // @run-at		 document-start
 // ==/UserScript==
-    window.scver = Number(GM.info.script.version)
+    window.scver = GM_info.script.version
     var global = window;
     var base = ['https://deltav4.glitch.me/sc/','.json'].join(localStorage.inviteKey||'ogar').slice(0,-2);
     var str = '';
