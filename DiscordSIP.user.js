@@ -156,7 +156,7 @@ var discordcodetosend = {
 		"url": serverlinks,
         "icon_url": discordimageuser
       },
-      "title": "Join my agario server",
+      "title": serverlinks,
       "url": serverlinks,
 //      "description": "[Click here]("+serverlinks+")",
       "color": 15258703,
