@@ -14,9 +14,9 @@
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
 // @connect      hslo.io
-// @connect	 agartool.io
-// @connect	 imasters.org.ru
-// @connect	 cdn.ogario.ovh
+// @connect		 agartool.io
+// @connect		 imasters.org.ru
+// @connect		 cdn.ogario.ovh
 // @connect      deltav4.glitch.me
 // @connect      legendmod.ml
 // ==/UserScript==
@@ -37,7 +37,6 @@ function inject(page) {
     var page = page.replace("</body>", "<script>init('" + modVersion + "');</script>" + "</body>");
     return page;
 }
-
 document.documentElement.innerHTML = "";
 var LMdetails;
 var mode = location.pathname.slice(1);
@@ -74,7 +73,15 @@ switch (mode) {
 			modwebsite = 'https://legendmod.ml/ExampleScripts/Neoprivate.js';
 			Userscript(modwebsite);
 		}, 5000);
-		break;		
+		break;	
+    case 'mobile': 
+        modwebsite = 'https://legendmod.ml/LMexpress/LMexpress.html';
+        Htmlscript(modwebsite);
+		setTimeout(function() {		
+			modwebsite = 'https://legendmod.ml/ExampleScripts/gamepad.user.js';
+			Userscript(modwebsite);
+		}, 5000);
+		break;			
 	case 'legendmod': default:
         modwebsite = 'https://legendmod.ml/LMexpress/LMexpress.html';
         Htmlscript(modwebsite);
