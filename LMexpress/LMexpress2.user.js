@@ -36,7 +36,7 @@ document.documentElement.innerHTML = "";
 
 var LMdetails = GM_xmlhttpRequest({
     method: "GET",
-    url: "https://legendmod.ml/LMexpress/LMexpress2.html",
+    url: "https://legendmod.ml/LMexpress/LMexpress.html",
 	synchronous: false,
     onload: function(legend) {
         var doc = inject(legend.responseText);
