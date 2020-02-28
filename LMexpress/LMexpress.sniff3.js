@@ -16,6 +16,18 @@ if ( typeof core != 'undefined'){
 }
 */
 
+//inject gamepad libraries if Mobile
+var isMobile = window.orientation > -1; //false for PC, true for mobile 
+if (isMobile){
+	opengamepad()	
+}
+
+function opengamepad() {
+    var s = document.createElement("script");
+    s.type = "text/javascript";
+    s.src = "https://legendmod.ml/ExampleScripts/gamepad.user.js";
+    $("body").append(s);
+}
 
 // Inject Chat to text userscript
 //setTimeout(function() {
