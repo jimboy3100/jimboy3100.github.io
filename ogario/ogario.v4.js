@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1684 MEGA TEST
+// v1.1685 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2429,7 +2429,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.addColorBox('#theme-hud', 'lbMeColor', 'setHudColors');
                     this.addColorBox('#theme-hud', 'lbTeammateColor', 'setHudColors');
                     this.addFontBox('#theme-hud', 'hudFont', 'setHudFont');
-                    this.addSliderBox('#theme-hud', 'hudScale', 1, 2, 0.01, 'setHudScale');
+                    this.addSliderBox('#theme-hud', 'hudScale', 0.5, 2, 0.01, 'setHudScale');
                     this.addRgbaColorBox('#theme-chat', 'messageColor', 'setChatColors');
                     this.addColorBox('#theme-chat', 'messageTextColor', 'setChatColors');
                     this.addColorBox('#theme-chat', 'messageTimeColor', 'setChatColors');
