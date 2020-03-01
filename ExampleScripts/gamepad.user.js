@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         gamepad by ɴᴇᴏ
-// @version      1.9
+// @version      2.0
 // @description  touch mobile extension
 // @author       ɴᴇᴏ
 // @match		*://*.agar.io/*
@@ -91,6 +91,10 @@ addStyleString(`@import "https://legendmod.ml/css/styles.css" all;
   top: 20px;
   left: 86px;
 }
+.wpk-fullscreen2 {
+    top: 20px;
+    left: 280px;
+}
 .menu-ag {
   top: 20px;
 }
@@ -103,7 +107,7 @@ addStyleString(`@import "https://legendmod.ml/css/styles.css" all;
 }
 .wpk-zoomout{
     top: 20px;
-      left: 150px;
+    left: 150px;
 }
 
 .wpk-btn:active {
@@ -209,7 +213,9 @@ buttons.innerHTML=`<div key="27" class="menu-ag wpk-btn">
 <div class="wpk-zoomout wpk-btn" id="zoomOut" style="display:block;" >
 <span class="fa fa-minus"></span>
 </div>
-
+<div class="menu-ag wpk-fullscreen2 wpk-btn" id="fullscrn">
+  <span class="fa fa-tv"></span>
+</div>
 <div class="wpk-container-buttons">
   <div class="wpk-button w-feed-auto" key="69"><img src="https://legendmod.ml/banners/iconMobileFeed.png" height="100px"></img></div>
   <div class="wpk-button split" key="32"><img src="https://legendmod.ml/banners/iconMobileSplit.png" height="100px"></img></div>
@@ -302,9 +308,10 @@ document.getElementById('zoomOut').ontouchstart=wheelZoom.bind(-120)
 document.getElementById('zoomIn').ontouchstart=wheelZoom.bind(120)
 */
 document.getElementById('zoomOut').addEventListener("touchstart", function(){legendmod.zoomValue=legendmod.zoomValue/1.5}, false)
-//document.getElementById('zoomOut').addEventListener("touchend", function(){legendmod.zoomValue=legendmod.zoomValue/1.5}, false)
 document.getElementById('zoomIn').addEventListener("touchstart", function(){legendmod.zoomValue=legendmod.zoomValue*1.5;}, false)
-//document.getElementById('zoomIn').addEventListener("touchend", function(){legendmod.zoomValue=legendmod.zoomValue*1.5;}, false)
+document.getElementById('fullscrn').addEventListener("touchstart", function(){toggleFullScreen(fullornot);}, false)
+
+
 	
 $("#zoomOut").on("touchstart", function() {
 	legendmod.zoomValue=legendmod.zoomValue/1.5;
