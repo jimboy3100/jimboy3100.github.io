@@ -2452,7 +2452,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.addColorBox('#theme-minimap', 'miniMapGhostCellsColor');
                     this.addFontBox('#theme-minimap', 'miniMapFont', 'setMiniMapFont');
                     this.addFontBox('#theme-minimap', 'miniMapNickFont');
-                    this.addSliderBox('#theme-minimap', 'miniMapWidth', 200, 400, 2, 'setMiniMapWidth');
+                    this.addSliderBox('#theme-minimap', 'miniMapWidth', 120, 400, 2, 'setMiniMapWidth');
                     this.addSliderBox('#theme-minimap', 'miniMapSectorsOpacity', 0, 1, 0.01, 'setMiniMapSectorsOpacity');
                     this.addSliderBox('#theme-minimap', 'miniMapNickSize', 8, 16, 1);
                     this.addSliderBox('#theme-minimap', 'miniMapNickStrokeSize', 0, 6, 1);
