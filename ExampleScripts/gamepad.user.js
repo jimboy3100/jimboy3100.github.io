@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         gamepad by ɴᴇᴏ
-// @version      1.8
+// @version      1.9
 // @description  touch mobile extension
 // @author       ɴᴇᴏ
 // @match		*://*.agar.io/*
@@ -202,11 +202,11 @@ buttons.innerHTML=`<div key="27" class="menu-ag wpk-btn">
 <span class="fa fa-comment-o"></span>
 </div>
 
-<div class="wpk-zoomin wpk-btn" id="zoomIn" style="display:none;" >
+<div class="wpk-zoomin wpk-btn" id="zoomIn" style="display:block;" >
 <span class="fa fa-plus"></span>
 </div>
 
-<div class="wpk-zoomout wpk-btn" id="zoomOut" style="display:none;" >
+<div class="wpk-zoomout wpk-btn" id="zoomOut" style="display:block;" >
 <span class="fa fa-minus"></span>
 </div>
 
@@ -301,7 +301,11 @@ var wheelZoom = function(){
 document.getElementById('zoomOut').ontouchstart=wheelZoom.bind(-120)
 document.getElementById('zoomIn').ontouchstart=wheelZoom.bind(120)
 */
-
+document.getElementById('zoomOut').addEventListener("touchstart", function(){legendmod.zoomValue=legendmod.zoomValue/1.5}, false)
+//document.getElementById('zoomOut').addEventListener("touchend", function(){legendmod.zoomValue=legendmod.zoomValue/1.5}, false)
+document.getElementById('zoomIn').addEventListener("touchstart", function(){legendmod.zoomValue=legendmod.zoomValue*1.5;}, false)
+//document.getElementById('zoomIn').addEventListener("touchend", function(){legendmod.zoomValue=legendmod.zoomValue*1.5;}, false)
+	
 $("#zoomOut").on("touchstart", function() {
 	legendmod.zoomValue=legendmod.zoomValue/1.5;
 });
