@@ -1,21 +1,47 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1685 MEGA TEST
+// v1.1686 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
 
 function changeregion(){
-	if ($('#region').val()=="Antarctic"){ 
-	core.connect('wss://delta-server.glitch.me');
-	$("#gamemode").hide();
-	
-	legendmod3.connect('wss://private1:443')
+	if ($('#region').val()=="Private"){ 
+		deleteGamemode();		 
 	}
-	else{ master.setRegion($('#region').val()); 
-	$("#gamemode").show();
+	else{ 
+		if(window.gamemodeBackup){
+			$('#gamemode').empty();
+			$("#gamemode").append(window.gamemodeBackup);	
+			window.gamemodeBackup=null;
+			$('#gamemode option[value=":ffa"]').prop('selected', 'selected').change();			
+		}
+		master.setRegion($('#region').val()); 
 	}
+}
+
+function deleteGamemode(){
+	var privateModOptions = [{ text: 'Antarctic', value: 6}, {text : 'Selffeed', value: 7}];
+	if (!window.gamemodeBackup){
+		window.gamemodeBackup=$("#gamemode").html();
+	}
+	$('#gamemode').empty();
+	$.each(privateModOptions, function(i, el) {    
+		$('#gamemode').append( new Option(el.text,el.value) );
+		}
+		);
+	$('#gamemode').change(function() {
+        if ($('#gamemode').val()==6){
+			core.connect('wss://delta-server.glitch.me');	
+			legendmod3.connect('wss://private1:443')
+		}
+        else if ($('#gamemode').val()==7){
+			core.connect('wss://delta-selffeed.glitch.me');	
+			legendmod3.connect('wss://private1:443')
+		}		
+    });
+	$('#gamemode option[value=6]').prop('selected', 'selected').change();	
 }
 
 var dyinglight1load = localStorage.getItem("dyinglight1load");
