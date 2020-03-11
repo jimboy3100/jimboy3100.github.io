@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1687 MEGA TEST
+// v1.1696 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -6718,7 +6718,7 @@ var thelegendmodproject = function(t, e, i) {
                             var point = this.points[i];
                             style.lineTo(point.x, point.y);
                         }
-                    } else if (defaultmapsettings.jellyPhisycs && this.isVirus) {
+                    } else if (defaultmapsettings.jellyPhisycs && this.isVirus && !window.testjellyPhisycsNoVirus) {
                         style.lineJoin = "miter"
                         var pointCount = 120;
                         var incremental = this.pi2 / pointCount;
@@ -7399,27 +7399,33 @@ var thelegendmodproject = function(t, e, i) {
                 this.sendMessage(i);
             },
 			
-            'sendPosition': function(cell, target2) {
+            'sendPosition': function(cell, target2, specialcommand) {
+				var t, e;
                 if (this.isSocketOpen() && this.connectionOpened && (this.clientKey || !legendmod.integrity)) {
-                    if (!window.autoPlay) {
-                        var t = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
-                        var e = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.cursorY) : this.cursorY; //Sonia3
+                    if (specialcommand){
+						console.log('hi')
+                        //t = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
+                        //e=9999;					
+					}
+					else if (!window.autoPlay) {
+                        t = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
+                        e = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.cursorY) : this.cursorY; //Sonia3
                         if (!this.play && this.targeting || this.pause) {
                             t = this.targetX;
                             e = this.targetY;
                         }
                     }
                     //autoplay handling
-                    else {
+                    else if (!specialcommand){
                         //if (typeof cell != "undefined") { //when used, autoplay not working as expected
                         if (Object.keys(target2).length == 0) {
-                            var t = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(cell.x) : cell.x; //Sonia3
-                            var e = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(cell.y) : cell.y; //Sonia3
+                            t = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(cell.x) : cell.x; //Sonia3
+                            e = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(cell.y) : cell.y; //Sonia3
                             // var t = cell.x;
                             //var e = cell.y;
                         } else {
-                            var t = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(target2.x) : target2.x; //Sonia3
-                            var e = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(target2.y) : target2.y; //Sonia3
+                            t = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(target2.x) : target2.x; //Sonia3
+                            e = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(target2.y) : target2.y; //Sonia3
                             //var t = target2.x;
                             //var e = target2.y;
                         }
@@ -7440,6 +7446,7 @@ var thelegendmodproject = function(t, e, i) {
 				window.connectionBots.send(window.buffers.mousePosition(window.userBots.mouseX, window.userBots.mouseY))				
 				}
 
+                
             },
             /*            'sendAccessToken': function(t, e, i) {
                             if (!this['accessTokenSent']) {
@@ -8003,7 +8010,7 @@ var thelegendmodproject = function(t, e, i) {
                                     'name': ogarcopythelb
                                 });
                             }
-							var temp ='[<b>[SERVER]:</b> <font color="yellow"><b>Battle Royal Ranks:</b></font>';	
+							var temp ='<b>[SERVER]:</b> <font color="yellow"><b>Battle Royal Ranks:</b></font>';	
 							for (var i=0;i< legendmod.battleRoyale.rank.length ; i++){
 								temp+= '<br>' + legendmod.battleRoyale.rank[i].place + ". "+ legendmod.battleRoyale.rank[i].name;
 							}
