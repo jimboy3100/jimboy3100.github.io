@@ -6718,7 +6718,7 @@ var thelegendmodproject = function(t, e, i) {
                             var point = this.points[i];
                             style.lineTo(point.x, point.y);
                         }
-                    } else if (defaultmapsettings.jellyPhisycs && this.isVirus && !window.testjellyPhisycsNoVirus) {
+                    } else if (defaultmapsettings.jellyPhisycs && this.isVirus) {
                         style.lineJoin = "miter"
                         var pointCount = 120;
                         var incremental = this.pi2 / pointCount;
