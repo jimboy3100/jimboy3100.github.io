@@ -29,11 +29,11 @@
 			if (localStorage[kk] > 0) {
 				--localStorage[kk]
 				console.log('try load №', localStorage[kk])
-				//document.write('<script src="'+u+'"><\/script>')
+				document.write('<script src="'+u+'"><\/script>')
 			} else {
 			xhr.open('GET', u, true);
 			xhr.timeout = 3000
-			//xhr.send();
+			xhr.send();
 			xhr.onload = function () {
 				if (xhr.status == 200) {localStorage[kk] = 2;}
 	    }
