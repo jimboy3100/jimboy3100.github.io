@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1701 MEGA TEST
+// v1.1703 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5713,7 +5713,8 @@ var thelegendmodproject = function(t, e, i) {
                     var s = t.getInt32(5, true),
                         o = t.getInt32(9, true),
                         a = t.getUint32(13, true);
-                    if (a > 360000) return;
+                    if (a > 249999) return; //to stop the spammer
+					//if (a > 360000) return;
                     var n = this.teamPlayers[i];
                     n.x = s,
                         n.y = o,
@@ -5819,13 +5820,18 @@ var thelegendmodproject = function(t, e, i) {
                     var caseof = t.getUint8(1); //caseof 101 or 102
                     var plId = t.getUint32(2, true);
                     var o = t.getUint32(6, true);
-                    if (!(this.isChatUserMuted(plId) || 0 != o && o != this.playerID && plId != this.playerID)) {
+                    if (!(this.isChatUserMuted(plId) || 0 != o && o != this.playerID && plId != this.playerID)) { //not for those
                         for (var msg = '', n = 10; n < t.byteLength; n += 2) {
                             var r = t.getUint16(n, true);
                             if (0 == r) break;
                             msg += String.fromCharCode(r);
                         }
-                        this.displayChatMessage(time, caseof, plId, msg);
+						if (!msg.includes("Senpa") && !msg.includes("senpa")){
+							this.displayChatMessage(time, caseof, plId, msg);
+						}
+						else{
+							console.log('Blocked: ' + msg)
+						}
                     }
                 }
             },
@@ -5893,7 +5899,7 @@ var thelegendmodproject = function(t, e, i) {
             'displayChatMessage': function(time, caseof, plId, msg) {
                 if (0 != msg.length) {
                     //console.log(msg);
-                    var a = msg.split(': ', 1).toString(),
+                    var a = msg.split(': ', 1).toString();
                         n = this.parseMessage(msg.replace(a + ': ', ''));
                     if (!(0 == a.length || a.length > 15 || 0 == n.length)) {
                         var r = '';
