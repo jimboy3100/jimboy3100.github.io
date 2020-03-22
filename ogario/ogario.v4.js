@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1696 MEGA TEST
+// v1.1697 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -3446,7 +3446,8 @@ var thelegendmodproject = function(t, e, i) {
                     this.selectedProfile = JSON.parse(window.localStorage.getItem('ogarioSelectedProfile'));
                 }
                 ogarcopythelb.nick = ogario1PlayerProfiles[this.selectedProfile].nick;
-                ogarcopythelb.clanTag = ogario1PlayerProfiles[this.selectedProfile].clanTag;
+				//changed
+                ogarcopythelb.clanTag = ogario1PlayerProfiles[this.selectedProfile].clanTag + "@";
                 ogarcopythelb.skinURL = ogario1PlayerProfiles[this.selectedProfile].skinURL;
                 ogarcopythelb.color = ogario1PlayerProfiles[this.selectedProfile].color;
             },
@@ -4348,7 +4349,8 @@ var thelegendmodproject = function(t, e, i) {
                     o = $('#skin').val(),
                     a = $('#color').val();
                 ogarcopythelb.nick = t,
-                    ogarcopythelb.clanTag = e.trim(),
+					//changed
+                    ogarcopythelb.clanTag = e.trim() + "@",
                     ogarcopythelb.skinURL = this['checkSkinURL'](o.trim()),
                     7 == a.length && (ogarcopythelb.color = a),
                     ogarcopythelb.clanTag.length > 0 && (i.clanTag = ogarcopythelb.clanTag),
