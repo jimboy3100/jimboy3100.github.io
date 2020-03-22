@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1699 MEGA TEST
+// v1.1701 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -3447,7 +3447,8 @@ var thelegendmodproject = function(t, e, i) {
                 }
                 ogarcopythelb.nick = ogario1PlayerProfiles[this.selectedProfile].nick;
 				//changed
-                ogarcopythelb.clanTag = ogario1PlayerProfiles[this.selectedProfile].clanTag + "@";
+				ogarcopythelb.clanTag = ogario1PlayerProfiles[this.selectedProfile].clanTag;
+                //ogarcopythelb.clanTag = ogario1PlayerProfiles[this.selectedProfile].clanTag + "@";
                 ogarcopythelb.skinURL = ogario1PlayerProfiles[this.selectedProfile].skinURL;
                 ogarcopythelb.color = ogario1PlayerProfiles[this.selectedProfile].color;
             },
@@ -5814,17 +5815,17 @@ var thelegendmodproject = function(t, e, i) {
             },
             'readChatMessage': function(t) {
                 if (!defaultmapsettings.disableChat) {
-                    var e = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1'),
-                        i = t.getUint8(1),
-                        s = t.getUint32(2, true),
-                        o = t.getUint32(6, true);
-                    if (!(this.isChatUserMuted(s) || 0 != o && o != this.playerID && s != this.playerID)) {
-                        for (var a = '', n = 10; n < t.byteLength; n += 2) {
+                    var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
+                    var caseof = t.getUint8(1); //caseof 101 or 102
+                    var plId = t.getUint32(2, true);
+                    var o = t.getUint32(6, true);
+                    if (!(this.isChatUserMuted(plId) || 0 != o && o != this.playerID && plId != this.playerID)) {
+                        for (var msg = '', n = 10; n < t.byteLength; n += 2) {
                             var r = t.getUint16(n, true);
                             if (0 == r) break;
-                            a += String.fromCharCode(r);
+                            msg += String.fromCharCode(r);
                         }
-                        this.displayChatMessage(e, i, s, a);
+                        this.displayChatMessage(time, caseof, plId, msg);
                     }
                 }
             },
@@ -5889,15 +5890,15 @@ var thelegendmodproject = function(t, e, i) {
                 });
 
             },
-            'displayChatMessage': function(t, e, i, o) {
-                if (0 != o.length) {
-                    //console.log(o);
-                    var a = o.split(': ', 1).toString(),
-                        n = this.parseMessage(o.replace(a + ': ', ''));
+            'displayChatMessage': function(time, caseof, plId, msg) {
+                if (0 != msg.length) {
+                    //console.log(msg);
+                    var a = msg.split(': ', 1).toString(),
+                        n = this.parseMessage(msg.replace(a + ': ', ''));
                     if (!(0 == a.length || a.length > 15 || 0 == n.length)) {
                         var r = '';
-                        if (0 != i && i != this.playerID && (this.addChatUser(i, a), r = '<a href=\"#\" data-user-id=\"' + i + '\" class=\"mute-user ogicon-user-minus\"></a> '), a = this.escapeHTML(a), 101 == e) {
-                            if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message\"><span class=\"message-time\">[' + t + '] </span>' + r + '<span class=\"message-nick\">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'),
+                        if (0 != plId && plId != this.playerID && (this.addChatUser(plId, a), r = '<a href=\"#\" data-user-id=\"' + plId + '\" class=\"mute-user ogicon-user-minus\"></a> '), a = this.escapeHTML(a), 101 == caseof) {
+                            if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message\"><span class=\"message-time\">[' + time + '] </span>' + r + '<span class=\"message-nick\">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'),
                                 $('#chat-box').perfectScrollbar('update'), $('#chat-box').animate({
                                     'scrollTop': $('#chat-box').prop('scrollHeight')
                                 }, 500), void(defaultmapsettings.chatSounds && this.playSound(this.messageSound));
@@ -5905,13 +5906,13 @@ var thelegendmodproject = function(t, e, i) {
                                 'nick': a,
                                 'message': n
                             }), this.chatHistory.length > 15 && this.chatHistory.shift();
-                        } else if (102 == e) {
-                            if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + t + '] </span>' + r + '<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'),
+                        } else if (102 == caseof) {
+                            if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + time + '] </span>' + r + '<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'),
                                 $('#chat-box').perfectScrollbar('update'), $('#chat-box').animate({
                                     'scrollTop': $('#chat-box').prop('scrollHeight')
                                 }, 500), void(defaultmapsettings.chatSounds && this.playSound(this.commandSound));
                             defaultmapsettings.hideChat || (toastr.warning('<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r), defaultmapsettings.chatSounds && this.playSound(this.commandSound));
-                        } else $('#messages').append(o);
+                        } else $('#messages').append(msg);
                     }
                 }
             },
