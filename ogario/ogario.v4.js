@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1697 MEGA TEST
+// v1.1699 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4344,21 +4344,26 @@ var thelegendmodproject = function(t, e, i) {
 					}
 			},
             'setPlayerSettings': function() {
-                var t = $('#nick').val(),
-                    e = $('#clantag').val(),
-                    o = $('#skin').val(),
-                    a = $('#color').val();
-                ogarcopythelb.nick = t,
+                var t = $('#nick').val();
+                var e = $('#clantag').val();
+                var o = $('#skin').val();
+                var a = $('#color').val();
+                ogarcopythelb.nick = t;
 					//changed
-                    ogarcopythelb.clanTag = e.trim() + "@",
-                    ogarcopythelb.skinURL = this['checkSkinURL'](o.trim()),
-                    7 == a.length && (ogarcopythelb.color = a),
-                    ogarcopythelb.clanTag.length > 0 && (i.clanTag = ogarcopythelb.clanTag),
-                    ogario1PlayerProfiles[this.selectedProfile].nick = ogarcopythelb.nick,
-                    ogario1PlayerProfiles[this.selectedProfile].clanTag = ogarcopythelb.clanTag,
-                    ogario1PlayerProfiles[this.selectedProfile].skinURL = ogarcopythelb.skinURL,
-                    ogario1PlayerProfiles[this.selectedProfile].color = ogarcopythelb.color,
-                    this.saveSettings(ogario1PlayerProfiles, 'ogarioPlayerProfiles'),
+					ogarcopythelb.clanTag = e.trim();
+                    //ogarcopythelb.clanTag = e.trim() + "@";
+                    ogarcopythelb.skinURL = this['checkSkinURL'](o.trim());
+                    if (7 == a.length) {
+						ogarcopythelb.color = a;
+						}
+                    if (ogarcopythelb.clanTag.length > 0){
+						i.clanTag = ogarcopythelb.clanTag;
+					}
+                    ogario1PlayerProfiles[this.selectedProfile].nick = ogarcopythelb.nick;
+                    ogario1PlayerProfiles[this.selectedProfile].clanTag = ogarcopythelb.clanTag;
+                    ogario1PlayerProfiles[this.selectedProfile].skinURL = ogarcopythelb.skinURL;
+                    ogario1PlayerProfiles[this.selectedProfile].color = ogarcopythelb.color;
+                    this.saveSettings(ogario1PlayerProfiles, 'ogarioPlayerProfiles');
 					this.findOwnedVanillaSkin();									
             },
             'loadSkin': function(t, e, animated) {
