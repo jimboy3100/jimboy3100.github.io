@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.1705 MEGA TEST
+// v1.171 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2879,7 +2879,8 @@ var thelegendmodproject = function(t, e, i) {
                 defaultmapsettings.teammatesInd = !defaultmapsettings.teammatesInd;
             },
             'setShowOppColors': function() {
-                defaultmapsettings.oppColors = !defaultmapsettings.oppColors, i.oppColors = defaultmapsettings.oppColors;
+                defaultmapsettings.oppColors = !defaultmapsettings.oppColors;
+				i.oppColors = defaultmapsettings.oppColors;
             },
             'setShowSkins': function() {
                 this.noSkins = !this.noSkins,
@@ -5833,7 +5834,7 @@ var thelegendmodproject = function(t, e, i) {
 							this.displayChatMessage(time, caseof, plId, msg);
 						}
 						else{
-							console.log('Blocked: ' + msg)
+							//console.log('Blocked: ' + msg)
 						}
                     }
                 }
@@ -6821,7 +6822,8 @@ var thelegendmodproject = function(t, e, i) {
                                 color = ogarcopythelb.color;
                             }
                         } else {
-                            if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings) {
+                            //if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings) {
+							if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood) {	
                                 color = this.oppColor;
                             }
                         }
