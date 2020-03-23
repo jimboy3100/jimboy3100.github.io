@@ -43,24 +43,12 @@
 <script src="https://legendmod.ml/jquery.min.js"></script>	
    <script i="hope" u="gamer">
   </script>
-  <!--script src="https://www.google.com/recaptcha/api.js?render=6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY"></script-->
-  		<!--script>
-			function onloadCallbackV3(){
-				Object.defineProperty(window, "grecaptchaV3", {
-					value: window.grecaptcha,
-					writable: !1,
-					configurable: !1,
-					enumerable: !1
-				});
-				var t = document.createElement("script");
-				t.setAttribute("src", "https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"),
-				document.head.appendChild(t)
-			}
-		</script-->
-	
-	 <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"></script>
-	 <style>.grecaptcha-badge{display:none}</style>
-	 <div id="captchaWindowV3" style="display:none;"></div>
+		<div id="captchaWindow" style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index:500">
+			<div id="verifyUser" style="position:absolute; top:50%; left:50%; margin-left:-152px; margin-top:-40px;"></div>
+		</div>
+
+
+		<div id="captchaWindowV3" style="display:none;"></div>	 
 	 
   <script src="https://legendmod.ml/bootstrap.min.js"></script>
   <script src="https://legendmod.ml/bootstrap-colorpicker.min.js"></script>
@@ -216,11 +204,10 @@ var CutNameConflictwithMessage=false;
  <script src="https://legendmod.ml/ogario/ogario.v4.static.js" charset="utf-8"></script>	
  <script src="https://legendmod.ml/LMexpress/LMexpress.js"></script>
  <script src="https://legendmod.ml/LMexpress/LMexpress.sniff3.js"></script>
- <div style="font-family:'Ubuntu'">&nbsp;</div>
- <div id="captchaWindow" style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index:500">
-  <div id="verifyUser" style="position:absolute; top:50%; left:50%; margin-left:-152px; margin-top:-40px;"></div>
- </div>
+ <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"></script>
+ <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallbackV3&render=explicit"></script>  
  <script src="//apis.google.com/js/client:platform.js?onload=gapiAsyncInit" async defer></script>
+ <div style="font-family:'Ubuntu'">&nbsp;</div>
  <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -230,54 +217,6 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)	
   ga('create', 'UA-92655864-6', 'auto');	
   ga('send', 'pageview');	
 
- </script>	
- <script>	
-  function Recaptcha(curtinId, elemId) {	
-    var self = this;	
-    this.init = function() {	
-        this.ready = true;	
-    }	
-    this.show = function() {	
-        document.getElementById(this.curtin).style.display = 'block';	
-    }	
-    this.hide = function() {	
-        document.getElementById(this.curtin).style.display = 'none';	
-    }	
-    this.reset = function() {	
-        grecaptcha.reset();	
-    }	
-    this.onRender = function(response) {	
-        master.notifyToken(response);	
-        self.hide();	
-        self.reset();	
-    }	
-    this.render = function() {	
-       if (this.ready) {	
-            this.show();	
-            if (this.widget == null)	
-            	this.widget = grecaptcha.render(this.id, {	
-                    'sitekey' : '6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl',	
-                    'callback' : this.onRender,	
-                });	
-           	else{	
-			this.reset();	
-		}	
-       }	
-       return this.ready;	
-    }	
-    this.id = elemId;	
-    this.curtin = curtinId;	
-    this.widget = null;	
-    this.ready = false;	
-    this.hide();	
-  }	
-  function requestCaptcha() {	
-    return myCaptcha.render();	
-  }	
-  var myCaptcha = new Recaptcha('captchaWindow','verifyUser');	
-  var onloadCallback = function() {	
-        myCaptcha.init();	
-  };	
  </script>	
  <!--script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script-->	
  </body>	
