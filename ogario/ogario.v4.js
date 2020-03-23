@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.180 MEGA TEST
+// v1.181 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7340,13 +7340,13 @@ var thelegendmodproject = function(t, e, i) {
 					grecaptcha.reset();
                 });
             }
-			
+*/			
 				setTimeout(function() {					
 					if (!window.cookieCaptchaOK){
 						legendmod.sendNick2(self.playerNick)
 					}
 				}, 1800);	
-*/				
+				
         },	
 		'sendTimeOutTokenForBots': function () {
 				//window.sendTimeOutTokenBots=false;
@@ -10791,6 +10791,7 @@ function setGUIEvents() {
         }
         function onloadCallback() {
             l.init()
+			window.cookieCaptchaOK=true
         }
         function onloadCallbackV3() {
             Object.defineProperty(window, "grecaptchaV3", {
@@ -10799,6 +10800,7 @@ function setGUIEvents() {
                 configurable: !1,
                 enumerable: !1
             });
+			window.cookieCaptchaOK=true
             //var t = document.createElement("script");
             //t.setAttribute("src", "https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"),
             //document.head.appendChild(t)
