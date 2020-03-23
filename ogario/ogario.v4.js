@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.181 MEGA TEST
+// v1.182 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5837,8 +5837,10 @@ var thelegendmodproject = function(t, e, i) {
                             if (0 == r) break;
                             msg += String.fromCharCode(r);
                         }
-						var pattern = /.*(s).*e.*n.*p.*a.*/i;
-						var pattern2 = /.*(m).*i.*s.*t.*i.*/i;
+						var pattern =  /.*s[^a-z]*e[^a-z]*n[^a-z]*p[^a-z]*a.*/i;
+						var pattern2 = /.*m[^a-z]*i[^a-z]*s[^a-z]*t[^a-z]*i.*/i;
+						//var pattern = /.*(s).*e.*n.*p.*a.*/i;
+						//var pattern2 = /.*(m).*i.*s.*t.*i.*/i;
 						//var pattern = /.*(s|5).*e.*n.*p.*a.*/i;
 						if (!pattern.test(msg) && !pattern2.test(msg)){
 							this.displayChatMessage(time, caseof, plId, msg);
