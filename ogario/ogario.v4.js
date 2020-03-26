@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.199 MEGA TEST
+// v1.200 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2709,7 +2709,7 @@ var thelegendmodproject = function(t, e, i) {
                 }
             },
 
-            window.legendmod4 = c;
+            window.legendmod4 = languagetexts;
         window.legendmod5 = defaultmapsettings;
 
         ogarminimapdrawer = {
