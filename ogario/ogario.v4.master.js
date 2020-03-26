@@ -1,4 +1,7 @@
-//v12.48
+//v12.49
+
+var consoleMsgLMMaster = "[Master] ";
+
 window.EnvConfig = {};
 window.EnvConfig.fb_app_id = self.localStorage.getItem("EnvConfig.fb_app_id");
 window.EnvConfig.google_client_id = self.localStorage.getItem("EnvConfig.google_client_id");
@@ -159,7 +162,7 @@ function legendmaster(self) {
         }
     };
     if (window.EnvConfig.fb_app_id && window.EnvConfig.google_client_id && window.EnvConfig.master_url) {
-        //console.log("[Master] window.EnvConfig loaded from //agar.io/index.html from the previous time");
+        //console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " window.EnvConfig loaded from //agar.io/index.html from the previous time");
         var headers = {
             fb_app_id: window.EnvConfig.fb_app_id,
             gplus_client_id: window.EnvConfig.google_client_id,
@@ -238,8 +241,8 @@ function legendmaster(self) {
                         var pluginName = optionMatch[1];
 						var pluginName2 = optionMatch2[1];
                         var data = window.parseClientVersion(pluginName);
-                        //console.log("[Master] Current client version:", data, pluginName);
-						//console.log("[Master] Current x-proto version:", pluginName2);
+                        //console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current client version:", data, pluginName);
+						//console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current x-proto version:", pluginName2);
                         window.setClientVersion(data, pluginName);
 						window.setxsupportprotoversion(pluginName2);
                     }
@@ -255,7 +258,7 @@ function legendmaster(self) {
                     var optionMatch = sketchContents.match(/\w\[\w\+\d+>>\d\]=\w;\w+\(\w,(\d+)\);/);
                     if (optionMatch) {
                         var pluginName = optionMatch[1];
-						console.log("[Master] Current protocol version:", pluginName);
+						console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current protocol version:", pluginName);
 						window.setProtocolVersion(pluginName);
                     }
                 },
@@ -267,32 +270,32 @@ function legendmaster(self) {
         },
         setClientVersion: function(clientVersion, serverVersion) {			           
             if (this.clientVersion != clientVersion) {
-                console.log("[Master] Changing client version...");
+                console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Changing client version...");
                 this.clientVersion = clientVersion;
                 this.clientVersionString = serverVersion;
                 if (self.core) {
                     self.core.setClientVersion(clientVersion, serverVersion);
                 }
                 self.localStorage.setItem("ogarioClientVersionString", serverVersion);
-                console.log("[Master] setClientVersion called, reconnecting");
+                console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " setClientVersion called, reconnecting");
                 this.reconnect(true);
             }
         },
         setxsupportprotoversion: function(serverVersion) {			
             if (this.xsupportprotoversion != serverVersion) {
-                console.log("[Master] Changing x-support version...");
+                console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Changing x-support version...");
                 this.xsupportprotoversion = serverVersion;
                 self.localStorage.setItem("ogarioXProtoVersion", serverVersion);   
-                console.log("[Master] setxsupportprotoversion called, reconnecting");
+                console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " setxsupportprotoversion called, reconnecting");
                 this.reconnect(true);				
             }
         },		
         setProtocolVersion: function(serverVersion) {			
             if (this.protocolVersion != serverVersion) {
-                console.log("[Master] Changing protocol version...");
+                console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Changing protocol version...");
                 this.protocolVersion = serverVersion;
                 self.localStorage.setItem("ogarioProtocolVersion", serverVersion);   
-                console.log("[Master] ProtocolVersion called, reconnecting");
+                console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " ProtocolVersion called, reconnecting");
                 this.reconnect(true);				
             }
         },			
@@ -304,7 +307,7 @@ function legendmaster(self) {
             if (nextNodeLoc) {
                 this.setRegion(nextNodeLoc, ![]);
                 if (!this.checkPartyHash()) {
-                    //console.log("[Master] getRegionCode called, reconnecting");
+                    //console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " getRegionCode called, reconnecting");
                     this.reconnect();
                 }
                 return;
@@ -346,7 +349,7 @@ function legendmaster(self) {
             if (regionobj.hasOwnProperty(segment)) {
                 this.setRegion(regionobj[segment], false);
                 if (!this.checkPartyHash()) {
-                    console.log("[Master] setRegionCode called, reconnecting");
+                    console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " setRegionCode called, reconnecting");
                     this.reconnect();
                 }
             }
@@ -363,7 +366,7 @@ function legendmaster(self) {
                     $("#region").val(items);
                 }
                 if (left) {
-                    console.log("[Master] setRegion called, left=null, reconnecting");
+                    console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " setRegion called, left=null, reconnecting");
                     this.reconnect();
                 }
             }
@@ -442,7 +445,7 @@ function legendmaster(self) {
             this.applyGameMode(val);
             this.gameMode = val;
             if (opt_validate) {
-                console.log("[Master] setGameMode called, opt_validate!=null, reconnecting");
+                console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " setGameMode called, opt_validate!=null, reconnecting");
                 this.reconnect();
             }
         },
@@ -621,7 +624,7 @@ function legendmaster(self) {
             $("#helloContainer").attr("data-party-state", value);
         },
         connect: function(body) {
-            //            console.log("[Master] Connect to:", body);
+            //            console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Connect to:", body);
             this.ws = "wss://" + body;
             if (":party" === this.gameMode && this.partyToken) {
                 this.ws += "?party_id=" + self.encodeURIComponent(this.partyToken);
@@ -645,7 +648,7 @@ function legendmaster(self) {
             }
         },
         onDisconnect: function() {
-            console.log("[Master] onDisconnect called, reconnecting");
+            console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " onDisconnect called, reconnecting");
             this.reconnect();
         },
         recaptchaRequested: function() {
@@ -719,7 +722,7 @@ function legendmaster(self) {
         logout: function() {
             this.accessToken = null;
 			this.context = "";
-            console.log("[Master] logout called, not reconnecting");
+            console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " logout called, not reconnecting");
             //            this.reconnect();
         },
         setUI: function() {
@@ -806,7 +809,7 @@ function legendmaster(self) {
         master.logout();
     };
     self.facebookLogin = function() {
-        alert("[Master] You seem to have something blocking Facebook on your browser, please check for any extensions");
+        alert("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " You seem to have something blocking Facebook on your browser, please check for any extensions");
     };
     self.fbAsyncInit = function() {
         self.FB.init({
