@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.197 MEGA TEST
+// v1.198 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2203,31 +2203,22 @@ var ogarcopythelb = {
     'skinURL': '',
     'color': defaultSettings.mainColor
 };
-
-var lang = 'en';
-userLanguage = window.navigator.language || window.navigator.userLanguage;
-if (userLanguage && languagetexts.hasOwnProperty(userLanguage)) {
-    lang = userLanguage;
-}
-var textLanguage = languagetexts[lang];
-
 var thelegendmodproject = function(t, e, i) {
     //here starts ogario
     (function(i) {
         var ogarminimapdrawer;
         var o = null,
-            a = null;
-        //a = null,
-        /*    lang = 'en',
+            a = null,
+            lang = 'en',
             userLanguage = window.navigator.language || window.navigator.userLanguage;
         if (userLanguage && languagetexts.hasOwnProperty(userLanguage)){
 			lang = userLanguage;
 		}
-        var textLanguage = languagetexts[lang];*/
+        var textLanguage = languagetexts[lang];
         //if (languagetexts[r].comm15 != undefined) {
         //console.log(textLanguage.comm15);
         //}
-        chatCommand = {
+        c = {
                 'comm0': textLanguage.comm0,
                 'comm1': textLanguage.comm1,
                 'comm2': textLanguage.comm2,
@@ -2514,8 +2505,8 @@ var thelegendmodproject = function(t, e, i) {
                     this.addInputBox('#theme-images', 'customBackground', 'Image URL', 'setCustomBackground');
                     this.addPresetBox('#theme-images', 'graphics', graphicMenus, 'graphics', 'changeGraphics');
                     this.addInputBox('#theme-images', 'customCursor', 'Cursor image URL', 'setCustomCursor');
-                    $(`#music`).append(`<div class="agario-panel facebook-panel"><h5 class="menu-main-color">` + 'Facebook' + `</h5></div>`);
-                    this.addInputBox('.facebook-panel', 'FacebookIDs', `e.g. 123456789012345:John K,543210987654321:Jimbo`, `setFBIDs`);
+					$(`#music`).append(`<div class="agario-panel facebook-panel"><h5 class="menu-main-color">` + 'Facebook' + `</h5></div>`);
+					this.addInputBox('.facebook-panel', 'FacebookIDs', `e.g. 123456789012345:John K,543210987654321:Jimbo`, `setFBIDs`);					
                     for (var e = 'https://legendmod.ml/cursors/cursor_', i = 0; i < 35; i++) i < 9 ? this.addCursorBox('#theme-images', e + '0' + (i + 1) + '.cur') : this.addCursorBox('#theme-images', e + '' + (i + 1) + '.cur');
                     $(document).on('click', '#theme-images .cursor-box a', function(e) {
                             e.preventDefault();
@@ -2709,7 +2700,7 @@ var thelegendmodproject = function(t, e, i) {
                 }
             },
 
-            window.legendmod4 = c;
+            //window.legendmod4 = c;
         window.legendmod5 = defaultmapsettings;
 
         ogarminimapdrawer = {
@@ -3370,7 +3361,7 @@ var thelegendmodproject = function(t, e, i) {
             },
             'exportSettings': function() {
                 var t = {
-                    'ogarioCommands': chatCommand,
+                    'ogarioCommands': c,
                     'ogarioHotkeys': ogario1Hotkeys,
                     'ogarioPlayerProfiles': ogario1PlayerProfiles,
                     'ogarioSettings': defaultmapsettings,
@@ -5879,7 +5870,7 @@ var thelegendmodproject = function(t, e, i) {
                 return t.replace('%currentSector%', this.currentSector);
             },
             'sendCommand': function(t) {
-                var e = this['prepareCommand'](chatCommand['comm' + t]);
+                var e = this['prepareCommand'](c['comm' + t]);
                 this['sendChatMessage'](102, e);
             },
             'addChatUser': function(t, e) {
@@ -6139,36 +6130,36 @@ var thelegendmodproject = function(t, e, i) {
             },
             'init': function() {
                 this.loadSettings();
-                this.loadProfiles();
-                this.setLang();
-                this.setMenu();
-                this.setUI();
-                if (hudsetter) {
-                    hudsetter.setTheme();
-                }
-                this.setShowQuickMenu();
-                this.setShowSkinsPanel();
-                this.setProfile();
-                this.setMainButtons();
-                this.setStreamMode();
-                this.setHideSkinUrl();
-                this.setMiniMap();
-                this.setAutoResp();
-                this.setDisableChat();
-                this.setShowChatBox();
-                this.setTop5();
-                this.setTargetingHUD();
-                this.setQuest();
-                this.displayTime();
-                this.setCenteredLb();
-                this.setNormalLb();
-                this.setFpsAtTop();
-                this.setTweenMaxEffect();
-                this.displayStats();
-                this.setBlockPopups();
-                this.preloadChatSounds();
-                this.setChatSoundsBtn();
-                this.setFBIDs();
+                    this.loadProfiles();
+                    this.setLang();
+                    this.setMenu();
+                    this.setUI();
+					if (hudsetter){
+						hudsetter.setTheme();
+					}
+                    this.setShowQuickMenu();
+                    this.setShowSkinsPanel();
+                    this.setProfile();
+                    this.setMainButtons();
+                    this.setStreamMode();
+                    this.setHideSkinUrl();
+                    this.setMiniMap();
+                    this.setAutoResp();
+                    this.setDisableChat();
+                    this.setShowChatBox();
+                    this.setTop5();
+                    this.setTargetingHUD();
+                    this.setQuest();
+                    this.displayTime();
+                    this.setCenteredLb();
+                    this.setNormalLb();
+                    this.setFpsAtTop();
+                    this.setTweenMaxEffect();
+                    this.displayStats();
+                    this.setBlockPopups();
+                    this.preloadChatSounds();
+                    this.setChatSoundsBtn();
+					this.setFBIDs();					
                 var app = this;
                 setInterval(function() {
                         app.drawMiniMap();
@@ -7772,13 +7763,13 @@ var thelegendmodproject = function(t, e, i) {
             'handleMessage': function(data) {
                 //this.pingTimer();
                 var encode = function() {
-                    for (var text = '';;) {
-                        var i = data.getUint8(s++);
-                        if (0 == i) break;
-                        text += String.fromCharCode(i);
-                    }
-                    return text;
-                };
+                        for (var text = '';;) {
+                            var i = data.getUint8(s++);
+                            if (0 == i) break;
+                            text += String.fromCharCode(i);
+                        }
+                        return text;
+                    };
                 var s = 0;
                 var opcode = data.getUint8(s++);
                 switch (54 == opcode && (opcode = 53), opcode) {
@@ -7786,7 +7777,7 @@ var thelegendmodproject = function(t, e, i) {
 
 
 
-                    case 5: //Yahnych
+                    case 5://Yahnych
                         window.testobjectsOpcode5 = data;
                         this.fbOnline = [];
 
@@ -8071,163 +8062,163 @@ var thelegendmodproject = function(t, e, i) {
                             }
                         }
 
-                        break;
-                    case 103:
-                        window.testobjectsOpcode103 = data;
-                        //LM["accessTokenSent"] = !![];
-                        this.accessTokenSent = true;
-                        if (window.master.context == 'facebook') { //Yahnych
-                            this.sendFBIDS(window.master.fbUsers);
-                        }
-                        break;
-                    case 104:
-                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Logout forced');
-                        logout();
-                        window.testobjectsOpcode104 = data;
-                        break;
-                    case 112:
-                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
-                        window.testobjectsOpcode112 = data;
-                        break;
-                    case 114:
-                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
-                        window.testobjectsOpcode114 = data;
-                        break;
-                    case 160:
-                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
-                        window.testobjectsOpcode160 = data;
-                        break;
-                    case 161:
-                        //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
-                        window.testobjectsOpcode161 = data;
-                        break;
-                    case 128:
-                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
-                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' client outdated');
-                        window.testobjectsOpcode128 = data;
-                        break;
-                    case 176:
-                        window.testobjectsOpcode176 = data;
-                        this.battleRoyale.startTime = data.getUint32(s, true);
-                        break;
-                    case 177:
-                        window.testobjectsOpcode177 = data;
-                        this.battleRoyale.joined = true;
-                        break;
-                    case 178:
-                        window.testobjectsOpcode178 = data;
-                        this.battleRoyale.players = data.getUint16(s, true);
-                        //$('#btl-players-count').text(this.battleRoyale.players),
-                        s += 2;
-                        var y = data.getUint16(s, true);
-                        s += 2,
-                            y || (this.battleRoyale.state = 0, this.battleRoyale.joined = false),
-                            3 & y && (this.battleRoyale.state = data.getUint8(s++),
-                                this.battleRoyale.x = data.getInt32(s, true),
-                                s += 4,
-                                this.battleRoyale.y = data.getInt32(s, true),
-                                s += 4,
-                                this.battleRoyale.radius = data.getUint32(s, true),
-                                s += 4,
-                                this.battleRoyale.shrinkTime = 1000 * data.getUint32(s, true),
-                                s += 4,
-                                this.battleRoyale.shrinkTime &&
-                                (this.battleRoyale.timeLeft = ~~((this.battleRoyale.shrinkTime - performance.now() + this.serverTimeDiff) / 1000),
-                                    this.battleRoyale.timeLeft < 0 && (this.battleRoyale.timeLeft = 0))),
-                            2 & y && (this.battleRoyale.targetX = data.getInt32(s, true),
-                                s += 4,
-                                this.battleRoyale.targetY = data.getInt32(s, true),
-                                s += 4,
-                                this.battleRoyale.targetRadius = data.getUint32(s, true));
-                        this.handleLeaderboard();
-                        break;
-                    case 179:
-                        window.testobjectsOpcode179 = data;
-                        y = data.getUint8(s);
-                        window.decodeURIComponent(escape(encode()));
-                        y || window.decodeURIComponent(escape(encode()));
-                        break;
-                    case 180:
-                        window.testobjectsOpcode181 = data;
-                        this.battleRoyale.joined = false;
-                        this.battleRoyale.rank = [];
-                        this.battleRoyale.playerRank = data.getUint32(s, true);
-                        s += 8;
-                        var ogario1PlayerProfiles = data.getUint16(s, true);
-                        s += 2;
-                        for (n = 0; n < ogario1PlayerProfiles; n++) {
-                            var ogarcopythelb = window.decodeURIComponent(escape(encode()));
-                            v = data.getUint32(s, true);
-                            s += 4;
-                            this.battleRoyale.rank.push({
-                                //'place': defaultmapsettings,
-                                'place': v,
-                                'name': ogarcopythelb
-                            });
-                        }
-                        var temp = '<b>[SERVER]:</b> <font color="yellow"><b>Battle Royal Ranks:</b></font>';
-                        for (var i = 0; i < legendmod.battleRoyale.rank.length; i++) {
-                            temp += '<br>' + legendmod.battleRoyale.rank[i].place + ". " + legendmod.battleRoyale.rank[i].name;
-                        }
-                        temp += '<br>' + 'Your rank: <font color="yellow"><b>' + legendmod.battleRoyale.playerRank + '</b></font>';
-                        toastr["info"](temp);
-                        break;
-                    case 226:
-                        window.testobjectsOpcode226 = data;
-                        var extraOptions = data.getUint16(1, !![]);
-                        data = this["createView"](3);
-                        data.setUint8(0, 227);
-                        data.setUint16(1, extraOptions);
-                        this["sendMessage"](data);
-                        break;
-                    case 241:
-                        window.testobjectsOpcode241 = data;
-                        this.protocolKey = data.getUint32(s, true);
-                        //window.testobjectsOpcode241.getUint32(1, true);
-                        //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received protocol key:', this.protocolKey);
-                        window.generatedProtocolKey = this.protocolKey;
-                        var irenderfromagario = new Uint8Array(data['buffer'], s += 4);
-                        this.clientKey = this['generateClientKey'](this.ws, irenderfromagario);
-                        //legendmod.generateClientKey("wss://live-arena-19y1u3v.agar.io:443",new Uint8Array(window.testobjectsOpcode241['buffer'], 5))
-                        if (window.master && window.master.login) {
-                            window.master.login();
-                        }
-                        break;
-                    case 242:
-                        window.testobjectsOpcode242 = data;
-                        this.serverTime = 1000 * data.getUint32(s, true);
-                        this.serverTimeDiff = Date.now() - this.serverTime;
-                        break;
-                    case 255:
-                        window.testobjectsOpcode255 = data;
-                        this['handleSubmessage'](data);
-                        break;
+						break;
+                        case 103:
+                            window.testobjectsOpcode103 = data;
+                            //LM["accessTokenSent"] = !![];
+                            this.accessTokenSent = true;
+                            if (window.master.context == 'facebook') { //Yahnych
+                                this.sendFBIDS(window.master.fbUsers);
+                            }
+                            break;
+                        case 104:
+                            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Logout forced');
+                            logout();
+                            window.testobjectsOpcode104 = data;
+                            break;
+                        case 112:
+                            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
+                            window.testobjectsOpcode112 = data;
+                            break;
+                        case 114:
+                            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
+                            window.testobjectsOpcode114 = data;
+                            break;
+                        case 160:
+                            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
+                            window.testobjectsOpcode160 = data;
+                            break;
+                        case 161:
+                            //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
+                            window.testobjectsOpcode161 = data;
+                            break;
+                        case 128:
+                            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
+                            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' client outdated');
+                            window.testobjectsOpcode128 = data;
+                            break;
+                        case 176:
+                            window.testobjectsOpcode176 = data;
+                            this.battleRoyale.startTime = data.getUint32(s, true);
+                            break;
+                        case 177:
+                            window.testobjectsOpcode177 = data;
+                            this.battleRoyale.joined = true;
+                            break;
+                        case 178:
+                            window.testobjectsOpcode178 = data;
+                            this.battleRoyale.players = data.getUint16(s, true);
+                            //$('#btl-players-count').text(this.battleRoyale.players),
+                            s += 2;
+                            var y = data.getUint16(s, true);
+                            s += 2,
+                                y || (this.battleRoyale.state = 0, this.battleRoyale.joined = false),
+                                3 & y && (this.battleRoyale.state = data.getUint8(s++),
+                                    this.battleRoyale.x = data.getInt32(s, true),
+                                    s += 4,
+                                    this.battleRoyale.y = data.getInt32(s, true),
+                                    s += 4,
+                                    this.battleRoyale.radius = data.getUint32(s, true),
+                                    s += 4,
+                                    this.battleRoyale.shrinkTime = 1000 * data.getUint32(s, true),
+                                    s += 4,
+                                    this.battleRoyale.shrinkTime &&
+                                    (this.battleRoyale.timeLeft = ~~((this.battleRoyale.shrinkTime - performance.now() + this.serverTimeDiff) / 1000),
+                                        this.battleRoyale.timeLeft < 0 && (this.battleRoyale.timeLeft = 0))),
+                                2 & y && (this.battleRoyale.targetX = data.getInt32(s, true),
+                                    s += 4,
+                                    this.battleRoyale.targetY = data.getInt32(s, true),
+                                    s += 4,
+                                    this.battleRoyale.targetRadius = data.getUint32(s, true));
+                            this.handleLeaderboard();
+                            break;
+                        case 179:
+                            window.testobjectsOpcode179 = data;
+                            y = data.getUint8(s);
+                            window.decodeURIComponent(escape(encode()));
+                            y || window.decodeURIComponent(escape(encode()));
+                            break;
+                        case 180:
+                            window.testobjectsOpcode181 = data;
+                            this.battleRoyale.joined = false;
+                            this.battleRoyale.rank = [];
+                            this.battleRoyale.playerRank = data.getUint32(s, true);
+                            s += 8;
+                            var ogario1PlayerProfiles = data.getUint16(s, true);
+                            s += 2;
+                            for (n = 0; n < ogario1PlayerProfiles; n++) {
+                                var ogarcopythelb = window.decodeURIComponent(escape(encode()));
+                                v = data.getUint32(s, true);
+                                s += 4;
+                                this.battleRoyale.rank.push({
+                                    //'place': defaultmapsettings,
+                                    'place': v,
+                                    'name': ogarcopythelb
+                                });
+                            }
+                            var temp = '<b>[SERVER]:</b> <font color="yellow"><b>Battle Royal Ranks:</b></font>';
+                            for (var i = 0; i < legendmod.battleRoyale.rank.length; i++) {
+                                temp += '<br>' + legendmod.battleRoyale.rank[i].place + ". " + legendmod.battleRoyale.rank[i].name;
+                            }
+                            temp += '<br>' + 'Your rank: <font color="yellow"><b>' + legendmod.battleRoyale.playerRank + '</b></font>';
+                            toastr["info"](temp);
+                            break;
+                        case 226:
+                            window.testobjectsOpcode226 = data;
+                            var extraOptions = data.getUint16(1, !![]);
+                            data = this["createView"](3);
+                            data.setUint8(0, 227);
+                            data.setUint16(1, extraOptions);
+                            this["sendMessage"](data);
+                            break;
+                        case 241:
+                            window.testobjectsOpcode241 = data;
+                            this.protocolKey = data.getUint32(s, true);
+                            //window.testobjectsOpcode241.getUint32(1, true);
+                            //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received protocol key:', this.protocolKey);
+                            window.generatedProtocolKey = this.protocolKey;
+                            var irenderfromagario = new Uint8Array(data['buffer'], s += 4);
+                            this.clientKey = this['generateClientKey'](this.ws, irenderfromagario);
+                            //legendmod.generateClientKey("wss://live-arena-19y1u3v.agar.io:443",new Uint8Array(window.testobjectsOpcode241['buffer'], 5))
+                            if (window.master && window.master.login) {
+                                window.master.login();
+                            }
+                            break;
+                        case 242:
+                            window.testobjectsOpcode242 = data;
+                            this.serverTime = 1000 * data.getUint32(s, true);
+                            this.serverTimeDiff = Date.now() - this.serverTime;
+                            break;
+                        case 255:
+                            window.testobjectsOpcode255 = data;
+                            this['handleSubmessage'](data);
+                            break;
 
-                        //2020 jimboy3100 specific private servers
-                    case 16:
-                        this.updateCells(new LMbuffer(data['buffer']), s);
-                        //this.countPps()
-                        break;
-                    case 64:
-                        var message = new LMbuffer(data['buffer'])
-                        this.viewMinX = message.readDoubleLE(s);
-                        s += 8;
-                        this.viewMinY = message.readDoubleLE(s);
-                        s += 8;
-                        this.viewMaxX = message.readDoubleLE(s);
-                        s += 8;
-                        this.viewMaxY = message.readDoubleLE(s);
-                        this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
+                            //2020 jimboy3100 specific private servers
+                        case 16:
+                            this.updateCells(new LMbuffer(data['buffer']), s);
+                            //this.countPps()
+                            break;
+                        case 64:
+                            var message = new LMbuffer(data['buffer'])
+                            this.viewMinX = message.readDoubleLE(s);
+                            s += 8;
+                            this.viewMinY = message.readDoubleLE(s);
+                            s += 8;
+                            this.viewMaxX = message.readDoubleLE(s);
+                            s += 8;
+                            this.viewMaxY = message.readDoubleLE(s);
+                            this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
 
-                        if (~~(this.viewMaxX - this.viewMinX) === LM.mapSize && ~~(this.viewMaxY - this.viewMinY) === LM.mapSize) {
-                            window.userBots.offsetX = (this.viewMinX + this.viewMaxX) / 2
-                            window.userBots.offsetY = (this.viewMinY + this.viewMaxY) / 2
-                        }
-                        break;
-                        //2020 jimboy3100
+                            if (~~(this.viewMaxX - this.viewMinX) === LM.mapSize && ~~(this.viewMaxY - this.viewMinY) === LM.mapSize) {
+                                window.userBots.offsetX = (this.viewMinX + this.viewMaxX) / 2
+                                window.userBots.offsetY = (this.viewMinY + this.viewMaxY) / 2
+                            }
+                            break;
+                            //2020 jimboy3100
 
-                    default:
-                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Unknown opcode:', data.getUint8(0));
+                        default:
+                            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Unknown opcode:', data.getUint8(0));
                 }
             },
             'handleSubmessage': function(message) {
@@ -8277,11 +8268,11 @@ var thelegendmodproject = function(t, e, i) {
                 }
                 if (this.playerPosition > window.leaderboardlimit && (t += '<span class=\"me\">' + this.playerPosition + '. ' + ogarminimapdrawer.escapeHTML(this.playerNick) + '</span>'), defaultmapsettings['showLbData']);
                 if (legendmod.gameMode != ":battleroyale") {
-                    t += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
-                    if (legendmod.friends && legendmod.friends > 0) {
-                        t += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
-                    }
-                    //t += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
+					t += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
+					if (legendmod.friends && legendmod.friends > 0){               
+						t += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';						
+					}
+					//t += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
                 } else if (legendmod.gameMode == ":battleroyale") {
                     var t = '<span>';
                     if (legendmod.battleRoyale.shrinkTime - Date.now() / 1000 > 0) {
@@ -10034,7 +10025,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'normal'
                 },
                 'hk-comm1': {
-                    'label': chatCommand['comm1'],
+                    'label': c['comm1'],
                     'defaultKey': '1',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(1);
@@ -10043,7 +10034,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm2': {
-                    'label': chatCommand['comm2'],
+                    'label': c['comm2'],
                     'defaultKey': '2',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(2);
@@ -10052,7 +10043,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm3': {
-                    'label': chatCommand['comm3'],
+                    'label': c['comm3'],
                     'defaultKey': '3',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(3);
@@ -10061,7 +10052,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm4': {
-                    'label': chatCommand['comm4'],
+                    'label': c['comm4'],
                     'defaultKey': '4',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(4);
@@ -10070,7 +10061,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm5': {
-                    'label': chatCommand['comm5'],
+                    'label': c['comm5'],
                     'defaultKey': '5',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(5);
@@ -10079,7 +10070,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm6': {
-                    'label': chatCommand['comm6'],
+                    'label': c['comm6'],
                     'defaultKey': '6',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(6);
@@ -10088,7 +10079,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm7': {
-                    'label': chatCommand['comm7'],
+                    'label': c['comm7'],
                     'defaultKey': '7',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(7);
@@ -10097,7 +10088,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm8': {
-                    'label': chatCommand['comm8'],
+                    'label': c['comm8'],
                     'defaultKey': '8',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(8);
@@ -10106,7 +10097,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm9': {
-                    'label': chatCommand['comm9'],
+                    'label': c['comm9'],
                     'defaultKey': '9',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(9);
@@ -10115,7 +10106,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm0': {
-                    'label': chatCommand['comm0'],
+                    'label': c['comm0'],
                     'defaultKey': '0',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(0);
@@ -10124,7 +10115,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm10': {
-                    'label': chatCommand['comm10'],
+                    'label': c['comm10'],
                     'defaultKey': 'MOUSE WHEEL',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(10);
@@ -10133,7 +10124,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm11': {
-                    'label': chatCommand['comm11'],
+                    'label': c['comm11'],
                     'defaultKey': 'LEFT',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(11);
@@ -10142,7 +10133,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm12': {
-                    'label': chatCommand['comm12'],
+                    'label': c['comm12'],
                     'defaultKey': 'UP',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(12);
@@ -10151,7 +10142,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm13': {
-                    'label': chatCommand['comm13'],
+                    'label': c['comm13'],
                     'defaultKey': 'RIGHT',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(13);
@@ -10160,7 +10151,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm14': {
-                    'label': chatCommand['comm14'],
+                    'label': c['comm14'],
                     'defaultKey': 'DOWN',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(14);
@@ -10169,7 +10160,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm15': {
-                    'label': chatCommand['comm15'],
+                    'label': c['comm15'],
                     'defaultKey': 'CTRL+1',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(15);
@@ -10178,7 +10169,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm16': {
-                    'label': chatCommand['comm16'],
+                    'label': c['comm16'],
                     'defaultKey': 'CTRL+2',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(16);
@@ -10187,7 +10178,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm17': {
-                    'label': chatCommand['comm17'],
+                    'label': c['comm17'],
                     'defaultKey': 'CTRL+3',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(17);
@@ -10196,7 +10187,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm18': {
-                    'label': chatCommand['comm18'],
+                    'label': c['comm18'],
                     'defaultKey': 'CTRL+4',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(18);
@@ -10205,7 +10196,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm19': {
-                    'label': chatCommand['comm19'],
+                    'label': c['comm19'],
                     'defaultKey': 'CTRL+5',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(19);
@@ -10214,7 +10205,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm20': {
-                    'label': chatCommand['comm20'],
+                    'label': c['comm20'],
                     'defaultKey': 'CTRL+7',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(20);
@@ -10223,7 +10214,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm21': {
-                    'label': chatCommand['comm21'],
+                    'label': c['comm21'],
                     'defaultKey': 'CTRL+8',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(21);
@@ -10232,7 +10223,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm22': {
-                    'label': chatCommand['comm22'],
+                    'label': c['comm22'],
                     'defaultKey': 'CTRL+9',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(22);
@@ -10241,7 +10232,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm23': {
-                    'label': chatCommand['comm23'],
+                    'label': c['comm23'],
                     'defaultKey': 'CTRL+0',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(23);
@@ -10250,7 +10241,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm24': {
-                    'label': chatCommand['comm24'],
+                    'label': c['comm24'],
                     'defaultKey': 'CTRL+Z',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(24);
@@ -10259,7 +10250,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm25': {
-                    'label': chatCommand['comm25'],
+                    'label': c['comm25'],
                     'defaultKey': 'CTRL+X',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(25);
@@ -10268,7 +10259,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm26': {
-                    'label': chatCommand['comm26'],
+                    'label': c['comm26'],
                     'defaultKey': 'CTRL+Q',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(26);
@@ -10277,7 +10268,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm27': {
-                    'label': chatCommand['comm27'],
+                    'label': c['comm27'],
                     'defaultKey': 'CTRL+LM',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(27);
@@ -10286,7 +10277,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm28': {
-                    'label': chatCommand['comm28'],
+                    'label': c['comm28'],
                     'defaultKey': 'CTRL+B',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(28);
@@ -10295,7 +10286,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm29': {
-                    'label': chatCommand['comm29'],
+                    'label': c['comm29'],
                     'defaultKey': 'CTRL+L',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(29);
@@ -10304,7 +10295,7 @@ var thelegendmodproject = function(t, e, i) {
                     'type': 'command'
                 },
                 'hk-comm30': {
-                    'label': chatCommand['comm30'],
+                    'label': c['comm30'],
                     'defaultKey': 'CTRL+D',
                     'keyDown': function() {
                         ogarminimapdrawer && ogarminimapdrawer.sendCommand(30);
@@ -10323,7 +10314,7 @@ var thelegendmodproject = function(t, e, i) {
                     ogario1Hotkeys['spec-messageKey'] = this.defaultMessageKey;
                 },
                 'loadHotkeys': function() {
-                    null !== window.localStorage.getItem('ogarioHotkeys') ? ogario1Hotkeys = JSON.parse(window.localStorage.getItem('ogarioHotkeys')) : this.loadDefaultHotkeys(), null !== window.localStorage.getItem('ogarioCommands') && (chatCommand = JSON.parse(window.localStorage.getItem('ogarioCommands')));
+                    null !== window.localStorage.getItem('ogarioHotkeys') ? ogario1Hotkeys = JSON.parse(window.localStorage.getItem('ogarioHotkeys')) : this.loadDefaultHotkeys(), null !== window.localStorage.getItem('ogarioCommands') && (c = JSON.parse(window.localStorage.getItem('ogarioCommands')));
                 },
                 'saveHotkeys': function() {
                     window.localStorage.setItem('ogarioHotkeys', JSON.stringify(ogario1Hotkeys)), this.saveCommands();
@@ -10332,8 +10323,8 @@ var thelegendmodproject = function(t, e, i) {
                     $('#hotkeys .command-in').each(function() {
                         var t = $(this),
                             e = t.attr('id');
-                        chatCommand.hasOwnProperty(e) && (chatCommand[e] = t.val());
-                    }), window.localStorage.setItem('ogarioCommands', JSON.stringify(chatCommand));
+                        c.hasOwnProperty(e) && (c[e] = t.val());
+                    }), window.localStorage.setItem('ogarioCommands', JSON.stringify(c));
                 },
                 'resetHotkeys': function() {
                     this.loadDefaultHotkeys(), $('#hotkeys-cfg .custom-key-in').each(function() {
@@ -10342,31 +10333,28 @@ var thelegendmodproject = function(t, e, i) {
                     });
                 },
                 'setHotkeysMenu': function() {
-                    //var t = this;
-                    const setup = this;
-                    for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + textLanguage.restoreSettings + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">' + textLanguage.saveSett + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + textLanguage['close'] + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>' + textLanguage['hk-inst-assign'] + '</li><li>' + textLanguage['hk-inst-delete'] + '</li><li>' + textLanguage['hk-inst-keys'] + '</li></ul></div></div>'), ogario11Hotkeys)
-                        if (ogario11Hotkeys.hasOwnProperty(command)) {
-                            var currentCommand = ogario11Hotkeys[command],
-                                text = '';
-                            for (var key in ogario1Hotkeys)
-                                if (ogario1Hotkeys.hasOwnProperty(key) && ogario1Hotkeys[key] === command) {
-                                    text = key;
+                    var t = this;
+                    for (var e in $('body').append('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + textLanguage.restoreSettings + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">' + textLanguage.saveSett + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + textLanguage['close'] + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>' + textLanguage['hk-inst-assign'] + '</li><li>' + textLanguage['hk-inst-delete'] + '</li><li>' + textLanguage['hk-inst-keys'] + '</li></ul></div></div>'), ogario11Hotkeys)
+                        if (ogario11Hotkeys.hasOwnProperty(e)) {
+                            var i = ogario11Hotkeys[e],
+                                o = '';
+                            for (var a in ogario1Hotkeys)
+                                if (ogario1Hotkeys.hasOwnProperty(a) && ogario1Hotkeys[a] === e) {
+                                    o = a;
                                     break;
-                                } if ('hk-switchServerMode' === command && ogarminimapdrawer && !ogarminimapdrawer.privateIP) continue;
-                            if ('command' === currentCommand.type) {
-                                var replaceHk = command.replace('hk-', '');
-                                $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + chatCommand[replaceHk] + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
-                            } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
+                                } if ('hk-switchServerMode' === e && ogarminimapdrawer && !ogarminimapdrawer.privateIP) continue;
+                            if ('command' === i.type) {
+                                var n = e.replace('hk-', '');
+                                $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + n + '\" class=\"command-in form-control input-sm\" value=\"' + c[n] + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + i.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + e + '\" class=\"custom-key-in form-control input-sm\" value=\"' + o + '\" /></div></div>');
+                            } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + i.label + '</div><div class=\"default-key\">' + i.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + e + '\" class=\"custom-key-in form-control input-sm\" value=\"' + o + '\" /></div></div>');
                         }
                     $(document).on('click', '#reset-hotkeys', function(t) {
                             t.preventDefault();
-                            //lastkeys.resetHotkeys();
-                            setup.resetHotkeys();
+                            lastkeys.resetHotkeys();
                         }),
                         $(document).on('click', '#save-hotkeys', function(t) {
                             t.preventDefault();
-                            //lastkeys.saveHotkeys();
-                            setup.resetHotkeys();
+                            lastkeys.saveHotkeys();
                             $('#hotkeys').fadeOut(500);
                         }),
                         $(document).on('click', '#close-hotkeys', function(t) {
