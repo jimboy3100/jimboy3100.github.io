@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.198 MEGA TEST
+// v1.199 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2206,8 +2206,8 @@ var ogarcopythelb = {
 
 var lang = 'en';
 userLanguage = window.navigator.language || window.navigator.userLanguage;
-if (userLanguage && languagetexts.hasOwnProperty(userLanguage)){
-	lang = userLanguage;
+if (userLanguage && languagetexts.hasOwnProperty(userLanguage)) {
+    lang = userLanguage;
 }
 var textLanguage = languagetexts[lang];
 
@@ -2217,7 +2217,7 @@ var thelegendmodproject = function(t, e, i) {
         var ogarminimapdrawer;
         var o = null,
             a = null;
-			//a = null,
+        //a = null,
         /*    lang = 'en',
             userLanguage = window.navigator.language || window.navigator.userLanguage;
         if (userLanguage && languagetexts.hasOwnProperty(userLanguage)){
@@ -2514,8 +2514,8 @@ var thelegendmodproject = function(t, e, i) {
                     this.addInputBox('#theme-images', 'customBackground', 'Image URL', 'setCustomBackground');
                     this.addPresetBox('#theme-images', 'graphics', graphicMenus, 'graphics', 'changeGraphics');
                     this.addInputBox('#theme-images', 'customCursor', 'Cursor image URL', 'setCustomCursor');
-					$(`#music`).append(`<div class="agario-panel facebook-panel"><h5 class="menu-main-color">` + 'Facebook' + `</h5></div>`);
-					this.addInputBox('.facebook-panel', 'FacebookIDs', `e.g. 123456789012345:John K,543210987654321:Jimbo`, `setFBIDs`);					
+                    $(`#music`).append(`<div class="agario-panel facebook-panel"><h5 class="menu-main-color">` + 'Facebook' + `</h5></div>`);
+                    this.addInputBox('.facebook-panel', 'FacebookIDs', `e.g. 123456789012345:John K,543210987654321:Jimbo`, `setFBIDs`);
                     for (var e = 'https://legendmod.ml/cursors/cursor_', i = 0; i < 35; i++) i < 9 ? this.addCursorBox('#theme-images', e + '0' + (i + 1) + '.cur') : this.addCursorBox('#theme-images', e + '' + (i + 1) + '.cur');
                     $(document).on('click', '#theme-images .cursor-box a', function(e) {
                             e.preventDefault();
@@ -2852,29 +2852,29 @@ var thelegendmodproject = function(t, e, i) {
             },
             'toggleCells': function() {
                 this.selectBiggestCell = !this.selectBiggestCell,
-                ogarProject.selectBiggestCell = this.selectBiggestCell;
+                    ogarProject.selectBiggestCell = this.selectBiggestCell;
             },
             'setShowTop5': function() {
-                defaultmapsettings.showTop5 = !defaultmapsettings.showTop5, 
-				this.setTop5();
+                defaultmapsettings.showTop5 = !defaultmapsettings.showTop5,
+                    this.setTop5();
             },
             'setTop5': function() {
                 defaultmapsettings.showTop5 ? $('#top5-hud').show() : $('#top5-hud').hide();
             },
             'setShowTargeting': function() {
-                defaultmapsettings.showTargeting = !defaultmapsettings.showTargeting, 
-				this.setTargetingHUD();
+                defaultmapsettings.showTargeting = !defaultmapsettings.showTargeting,
+                    this.setTargetingHUD();
             },
             'setTargetingHUD': function() {
                 defaultmapsettings.showTargeting ? $('#target-hud, #target-panel-hud').show() : $('#target-hud, #target-panel-hud').hide();
             },
             'setShowTime': function() {
-                defaultmapsettings.showTime = !defaultmapsettings.showTime, 
-				defaultmapsettings.showTime ? ($('#time-hud').show(), this.displayTime()) : $('#time-hud').hide();
+                defaultmapsettings.showTime = !defaultmapsettings.showTime,
+                    defaultmapsettings.showTime ? ($('#time-hud').show(), this.displayTime()) : $('#time-hud').hide();
             },
             'setShowSplitRange': function() {
-                defaultmapsettings.splitRange = !defaultmapsettings.splitRange, 
-				ogarProject.splitRange = defaultmapsettings.splitRange;
+                defaultmapsettings.splitRange = !defaultmapsettings.splitRange,
+                    ogarProject.splitRange = defaultmapsettings.splitRange;
             },
             'setShowGhostCellsInfo': function() {
                 if (defaultmapsettings.showGhostCells == false || defaultmapsettings.showGhostCellsInfo == false) {
@@ -3120,7 +3120,7 @@ var thelegendmodproject = function(t, e, i) {
                         }
                         if (defaultmapsettings.showStatsFPS) {
                             t += ' | '
-                        } 
+                        }
                     }
                     if (defaultmapsettings.showStatsFPS) {
                         t += 'FPS: ' + ogarfooddrawer.fps;
@@ -4085,10 +4085,10 @@ var thelegendmodproject = function(t, e, i) {
                     if (t.hasClass('hotkeys-link')) return;
                     i.hasClass('profile-tab') && this.setBlockPopups();
                 }
-                t.addClass('active'), 
-				i.addClass('active'), 
-				i.siblings().removeClass('active'), 
-				i.siblings().find('a').removeClass('active');
+                t.addClass('active'),
+                    i.addClass('active'),
+                    i.siblings().removeClass('active'),
+                    i.siblings().find('a').removeClass('active');
                 var o = t.attr('href');
                 if ('submenu-panel' === e) {
                     var a = $(o).parent().attr('id');
@@ -4796,11 +4796,11 @@ var thelegendmodproject = function(t, e, i) {
                 var t = $('#party-token').val();
                 if (this.gameMode = ogarProject.gameMode = $('#gamemode').val(), this.setQuest(), ':party' === this.gameMode && t) {
                     var e = t; -
-                    1 != t.indexOf('#') && (e = (t = t.split('#'))[1]), 
-					this.partyToken !== e && (this.partyToken = e, 
-					this.flushSkinsMap(), 
-					this.flushChatData(), 
-					this.cancelTargeting());
+                    1 != t.indexOf('#') && (e = (t = t.split('#'))[1]),
+                        this.partyToken !== e && (this.partyToken = e,
+                            this.flushSkinsMap(),
+                            this.flushChatData(),
+                            this.cancelTargeting());
                 }
             },
             'createParty': function() {
@@ -5326,10 +5326,10 @@ var thelegendmodproject = function(t, e, i) {
                 this.skipServerData ? this.skipServerData = false : (this.region = $('#region').val(), this.gameMode = $('#gamemode').val(), this.sendServerRegion(), this.sendServerGameMode());
             },
             'sendPartyData': function() {
-                this.sendPlayerClanTag(); 
-				this.sendPartyToken(); 
-				this.sendServerToken(); 
-				this.sendPlayerNick();
+                this.sendPlayerClanTag();
+                this.sendPartyToken();
+                this.sendServerToken();
+                this.sendPlayerNick();
             },
             'sendPlayerUpdate': function() {
                 if (this.isSocketOpen() && ogarProject.play && this.playerID && ogarProject.playerColor) {
@@ -5884,13 +5884,13 @@ var thelegendmodproject = function(t, e, i) {
                 if (!(performance.now() - this.lastMessageSentTime < 500 || 0 == e.length || 0 == ogarcopythelb.nick.length) && this.isSocketOpen()) {
                     e = ogarcopythelb.nick + ': ' + e;
                     var view = this.createView(10 + 2 * e.length);
-                    view.setUint8(0, 100), 
-					view.setUint8(1, t), 
-					view.setUint32(2, this.playerID, true), 
-					view.setUint32(6, 0, true);
+                    view.setUint8(0, 100),
+                        view.setUint8(1, t),
+                        view.setUint32(2, this.playerID, true),
+                        view.setUint32(6, 0, true);
                     for (var s = 0; s < e.length; s++) viewsetUint16(10 + 2 * s, e.charCodeAt(s), true);
-                    this['sendBuffer'](view), 
-					this.lastMessageSentTime = performance.now();
+                    this['sendBuffer'](view),
+                        this.lastMessageSentTime = performance.now();
                 }
             },
             'prepareCommand': function(t) {
@@ -6157,36 +6157,36 @@ var thelegendmodproject = function(t, e, i) {
             },
             'init': function() {
                 this.loadSettings();
-                    this.loadProfiles();
-                    this.setLang();
-                    this.setMenu();
-                    this.setUI();
-					if (hudsetter){
-						hudsetter.setTheme();
-					}
-                    this.setShowQuickMenu();
-                    this.setShowSkinsPanel();
-                    this.setProfile();
-                    this.setMainButtons();
-                    this.setStreamMode();
-                    this.setHideSkinUrl();
-                    this.setMiniMap();
-                    this.setAutoResp();
-                    this.setDisableChat();
-                    this.setShowChatBox();
-                    this.setTop5();
-                    this.setTargetingHUD();
-                    this.setQuest();
-                    this.displayTime();
-                    this.setCenteredLb();
-                    this.setNormalLb();
-                    this.setFpsAtTop();
-                    this.setTweenMaxEffect();
-                    this.displayStats();
-                    this.setBlockPopups();
-                    this.preloadChatSounds();
-                    this.setChatSoundsBtn();
-					this.setFBIDs();					
+                this.loadProfiles();
+                this.setLang();
+                this.setMenu();
+                this.setUI();
+                if (hudsetter) {
+                    hudsetter.setTheme();
+                }
+                this.setShowQuickMenu();
+                this.setShowSkinsPanel();
+                this.setProfile();
+                this.setMainButtons();
+                this.setStreamMode();
+                this.setHideSkinUrl();
+                this.setMiniMap();
+                this.setAutoResp();
+                this.setDisableChat();
+                this.setShowChatBox();
+                this.setTop5();
+                this.setTargetingHUD();
+                this.setQuest();
+                this.displayTime();
+                this.setCenteredLb();
+                this.setNormalLb();
+                this.setFpsAtTop();
+                this.setTweenMaxEffect();
+                this.displayStats();
+                this.setBlockPopups();
+                this.preloadChatSounds();
+                this.setChatSoundsBtn();
+                this.setFBIDs();
                 var app = this;
                 setInterval(function() {
                         app.drawMiniMap();
@@ -7790,13 +7790,13 @@ var thelegendmodproject = function(t, e, i) {
             'handleMessage': function(data) {
                 //this.pingTimer();
                 var encode = function() {
-                        for (var text = '';;) {
-                            var i = data.getUint8(s++);
-                            if (0 == i) break;
-                            text += String.fromCharCode(i);
-                        }
-                        return text;
-                    };
+                    for (var text = '';;) {
+                        var i = data.getUint8(s++);
+                        if (0 == i) break;
+                        text += String.fromCharCode(i);
+                    }
+                    return text;
+                };
                 var s = 0;
                 var opcode = data.getUint8(s++);
                 switch (54 == opcode && (opcode = 53), opcode) {
@@ -7804,7 +7804,7 @@ var thelegendmodproject = function(t, e, i) {
 
 
 
-                    case 5://Yahnych
+                    case 5: //Yahnych
                         window.testobjectsOpcode5 = data;
                         this.fbOnline = [];
 
@@ -8089,163 +8089,163 @@ var thelegendmodproject = function(t, e, i) {
                             }
                         }
 
-						break;
-                        case 103:
-                            window.testobjectsOpcode103 = data;
-                            //LM["accessTokenSent"] = !![];
-                            this.accessTokenSent = true;
-                            if (window.master.context == 'facebook') { //Yahnych
-                                this.sendFBIDS(window.master.fbUsers);
-                            }
-                            break;
-                        case 104:
-                            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Logout forced');
-                            logout();
-                            window.testobjectsOpcode104 = data;
-                            break;
-                        case 112:
-                            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
-                            window.testobjectsOpcode112 = data;
-                            break;
-                        case 114:
-                            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
-                            window.testobjectsOpcode114 = data;
-                            break;
-                        case 160:
-                            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
-                            window.testobjectsOpcode160 = data;
-                            break;
-                        case 161:
-                            //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
-                            window.testobjectsOpcode161 = data;
-                            break;
-                        case 128:
-                            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
-                            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' client outdated');
-                            window.testobjectsOpcode128 = data;
-                            break;
-                        case 176:
-                            window.testobjectsOpcode176 = data;
-                            this.battleRoyale.startTime = data.getUint32(s, true);
-                            break;
-                        case 177:
-                            window.testobjectsOpcode177 = data;
-                            this.battleRoyale.joined = true;
-                            break;
-                        case 178:
-                            window.testobjectsOpcode178 = data;
-                            this.battleRoyale.players = data.getUint16(s, true);
-                            //$('#btl-players-count').text(this.battleRoyale.players),
-                            s += 2;
-                            var y = data.getUint16(s, true);
-                            s += 2,
-                                y || (this.battleRoyale.state = 0, this.battleRoyale.joined = false),
-                                3 & y && (this.battleRoyale.state = data.getUint8(s++),
-                                    this.battleRoyale.x = data.getInt32(s, true),
-                                    s += 4,
-                                    this.battleRoyale.y = data.getInt32(s, true),
-                                    s += 4,
-                                    this.battleRoyale.radius = data.getUint32(s, true),
-                                    s += 4,
-                                    this.battleRoyale.shrinkTime = 1000 * data.getUint32(s, true),
-                                    s += 4,
-                                    this.battleRoyale.shrinkTime &&
-                                    (this.battleRoyale.timeLeft = ~~((this.battleRoyale.shrinkTime - performance.now() + this.serverTimeDiff) / 1000),
-                                        this.battleRoyale.timeLeft < 0 && (this.battleRoyale.timeLeft = 0))),
-                                2 & y && (this.battleRoyale.targetX = data.getInt32(s, true),
-                                    s += 4,
-                                    this.battleRoyale.targetY = data.getInt32(s, true),
-                                    s += 4,
-                                    this.battleRoyale.targetRadius = data.getUint32(s, true));
-                            this.handleLeaderboard();
-                            break;
-                        case 179:
-                            window.testobjectsOpcode179 = data;
-                            y = data.getUint8(s);
-                            window.decodeURIComponent(escape(encode()));
-                            y || window.decodeURIComponent(escape(encode()));
-                            break;
-                        case 180:
-                            window.testobjectsOpcode181 = data;
-                            this.battleRoyale.joined = false;
-                            this.battleRoyale.rank = [];
-                            this.battleRoyale.playerRank = data.getUint32(s, true);
-                            s += 8;
-                            var ogario1PlayerProfiles = data.getUint16(s, true);
-                            s += 2;
-                            for (n = 0; n < ogario1PlayerProfiles; n++) {
-                                var ogarcopythelb = window.decodeURIComponent(escape(encode()));
-                                v = data.getUint32(s, true);
-                                s += 4;
-                                this.battleRoyale.rank.push({
-                                    //'place': defaultmapsettings,
-                                    'place': v,
-                                    'name': ogarcopythelb
-                                });
-                            }
-                            var temp = '<b>[SERVER]:</b> <font color="yellow"><b>Battle Royal Ranks:</b></font>';
-                            for (var i = 0; i < legendmod.battleRoyale.rank.length; i++) {
-                                temp += '<br>' + legendmod.battleRoyale.rank[i].place + ". " + legendmod.battleRoyale.rank[i].name;
-                            }
-                            temp += '<br>' + 'Your rank: <font color="yellow"><b>' + legendmod.battleRoyale.playerRank + '</b></font>';
-                            toastr["info"](temp);
-                            break;
-                        case 226:
-                            window.testobjectsOpcode226 = data;
-                            var extraOptions = data.getUint16(1, !![]);
-                            data = this["createView"](3);
-                            data.setUint8(0, 227);
-                            data.setUint16(1, extraOptions);
-                            this["sendMessage"](data);
-                            break;
-                        case 241:
-                            window.testobjectsOpcode241 = data;
-                            this.protocolKey = data.getUint32(s, true);
-                            //window.testobjectsOpcode241.getUint32(1, true);
-                            //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received protocol key:', this.protocolKey);
-                            window.generatedProtocolKey = this.protocolKey;
-                            var irenderfromagario = new Uint8Array(data['buffer'], s += 4);
-                            this.clientKey = this['generateClientKey'](this.ws, irenderfromagario);
-                            //legendmod.generateClientKey("wss://live-arena-19y1u3v.agar.io:443",new Uint8Array(window.testobjectsOpcode241['buffer'], 5))
-                            if (window.master && window.master.login) {
-                                window.master.login();
-                            }
-                            break;
-                        case 242:
-                            window.testobjectsOpcode242 = data;
-                            this.serverTime = 1000 * data.getUint32(s, true);
-                            this.serverTimeDiff = Date.now() - this.serverTime;
-                            break;
-                        case 255:
-                            window.testobjectsOpcode255 = data;
-                            this['handleSubmessage'](data);
-                            break;
+                        break;
+                    case 103:
+                        window.testobjectsOpcode103 = data;
+                        //LM["accessTokenSent"] = !![];
+                        this.accessTokenSent = true;
+                        if (window.master.context == 'facebook') { //Yahnych
+                            this.sendFBIDS(window.master.fbUsers);
+                        }
+                        break;
+                    case 104:
+                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Logout forced');
+                        logout();
+                        window.testobjectsOpcode104 = data;
+                        break;
+                    case 112:
+                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
+                        window.testobjectsOpcode112 = data;
+                        break;
+                    case 114:
+                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
+                        window.testobjectsOpcode114 = data;
+                        break;
+                    case 160:
+                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
+                        window.testobjectsOpcode160 = data;
+                        break;
+                    case 161:
+                        //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
+                        window.testobjectsOpcode161 = data;
+                        break;
+                    case 128:
+                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
+                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' client outdated');
+                        window.testobjectsOpcode128 = data;
+                        break;
+                    case 176:
+                        window.testobjectsOpcode176 = data;
+                        this.battleRoyale.startTime = data.getUint32(s, true);
+                        break;
+                    case 177:
+                        window.testobjectsOpcode177 = data;
+                        this.battleRoyale.joined = true;
+                        break;
+                    case 178:
+                        window.testobjectsOpcode178 = data;
+                        this.battleRoyale.players = data.getUint16(s, true);
+                        //$('#btl-players-count').text(this.battleRoyale.players),
+                        s += 2;
+                        var y = data.getUint16(s, true);
+                        s += 2,
+                            y || (this.battleRoyale.state = 0, this.battleRoyale.joined = false),
+                            3 & y && (this.battleRoyale.state = data.getUint8(s++),
+                                this.battleRoyale.x = data.getInt32(s, true),
+                                s += 4,
+                                this.battleRoyale.y = data.getInt32(s, true),
+                                s += 4,
+                                this.battleRoyale.radius = data.getUint32(s, true),
+                                s += 4,
+                                this.battleRoyale.shrinkTime = 1000 * data.getUint32(s, true),
+                                s += 4,
+                                this.battleRoyale.shrinkTime &&
+                                (this.battleRoyale.timeLeft = ~~((this.battleRoyale.shrinkTime - performance.now() + this.serverTimeDiff) / 1000),
+                                    this.battleRoyale.timeLeft < 0 && (this.battleRoyale.timeLeft = 0))),
+                            2 & y && (this.battleRoyale.targetX = data.getInt32(s, true),
+                                s += 4,
+                                this.battleRoyale.targetY = data.getInt32(s, true),
+                                s += 4,
+                                this.battleRoyale.targetRadius = data.getUint32(s, true));
+                        this.handleLeaderboard();
+                        break;
+                    case 179:
+                        window.testobjectsOpcode179 = data;
+                        y = data.getUint8(s);
+                        window.decodeURIComponent(escape(encode()));
+                        y || window.decodeURIComponent(escape(encode()));
+                        break;
+                    case 180:
+                        window.testobjectsOpcode181 = data;
+                        this.battleRoyale.joined = false;
+                        this.battleRoyale.rank = [];
+                        this.battleRoyale.playerRank = data.getUint32(s, true);
+                        s += 8;
+                        var ogario1PlayerProfiles = data.getUint16(s, true);
+                        s += 2;
+                        for (n = 0; n < ogario1PlayerProfiles; n++) {
+                            var ogarcopythelb = window.decodeURIComponent(escape(encode()));
+                            v = data.getUint32(s, true);
+                            s += 4;
+                            this.battleRoyale.rank.push({
+                                //'place': defaultmapsettings,
+                                'place': v,
+                                'name': ogarcopythelb
+                            });
+                        }
+                        var temp = '<b>[SERVER]:</b> <font color="yellow"><b>Battle Royal Ranks:</b></font>';
+                        for (var i = 0; i < legendmod.battleRoyale.rank.length; i++) {
+                            temp += '<br>' + legendmod.battleRoyale.rank[i].place + ". " + legendmod.battleRoyale.rank[i].name;
+                        }
+                        temp += '<br>' + 'Your rank: <font color="yellow"><b>' + legendmod.battleRoyale.playerRank + '</b></font>';
+                        toastr["info"](temp);
+                        break;
+                    case 226:
+                        window.testobjectsOpcode226 = data;
+                        var extraOptions = data.getUint16(1, !![]);
+                        data = this["createView"](3);
+                        data.setUint8(0, 227);
+                        data.setUint16(1, extraOptions);
+                        this["sendMessage"](data);
+                        break;
+                    case 241:
+                        window.testobjectsOpcode241 = data;
+                        this.protocolKey = data.getUint32(s, true);
+                        //window.testobjectsOpcode241.getUint32(1, true);
+                        //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Received protocol key:', this.protocolKey);
+                        window.generatedProtocolKey = this.protocolKey;
+                        var irenderfromagario = new Uint8Array(data['buffer'], s += 4);
+                        this.clientKey = this['generateClientKey'](this.ws, irenderfromagario);
+                        //legendmod.generateClientKey("wss://live-arena-19y1u3v.agar.io:443",new Uint8Array(window.testobjectsOpcode241['buffer'], 5))
+                        if (window.master && window.master.login) {
+                            window.master.login();
+                        }
+                        break;
+                    case 242:
+                        window.testobjectsOpcode242 = data;
+                        this.serverTime = 1000 * data.getUint32(s, true);
+                        this.serverTimeDiff = Date.now() - this.serverTime;
+                        break;
+                    case 255:
+                        window.testobjectsOpcode255 = data;
+                        this['handleSubmessage'](data);
+                        break;
 
-                            //2020 jimboy3100 specific private servers
-                        case 16:
-                            this.updateCells(new LMbuffer(data['buffer']), s);
-                            //this.countPps()
-                            break;
-                        case 64:
-                            var message = new LMbuffer(data['buffer'])
-                            this.viewMinX = message.readDoubleLE(s);
-                            s += 8;
-                            this.viewMinY = message.readDoubleLE(s);
-                            s += 8;
-                            this.viewMaxX = message.readDoubleLE(s);
-                            s += 8;
-                            this.viewMaxY = message.readDoubleLE(s);
-                            this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
+                        //2020 jimboy3100 specific private servers
+                    case 16:
+                        this.updateCells(new LMbuffer(data['buffer']), s);
+                        //this.countPps()
+                        break;
+                    case 64:
+                        var message = new LMbuffer(data['buffer'])
+                        this.viewMinX = message.readDoubleLE(s);
+                        s += 8;
+                        this.viewMinY = message.readDoubleLE(s);
+                        s += 8;
+                        this.viewMaxX = message.readDoubleLE(s);
+                        s += 8;
+                        this.viewMaxY = message.readDoubleLE(s);
+                        this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
 
-                            if (~~(this.viewMaxX - this.viewMinX) === LM.mapSize && ~~(this.viewMaxY - this.viewMinY) === LM.mapSize) {
-                                window.userBots.offsetX = (this.viewMinX + this.viewMaxX) / 2
-                                window.userBots.offsetY = (this.viewMinY + this.viewMaxY) / 2
-                            }
-                            break;
-                            //2020 jimboy3100
+                        if (~~(this.viewMaxX - this.viewMinX) === LM.mapSize && ~~(this.viewMaxY - this.viewMinY) === LM.mapSize) {
+                            window.userBots.offsetX = (this.viewMinX + this.viewMaxX) / 2
+                            window.userBots.offsetY = (this.viewMinY + this.viewMaxY) / 2
+                        }
+                        break;
+                        //2020 jimboy3100
 
-                        default:
-                            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Unknown opcode:', data.getUint8(0));
+                    default:
+                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Unknown opcode:', data.getUint8(0));
                 }
             },
             'handleSubmessage': function(message) {
@@ -8295,11 +8295,11 @@ var thelegendmodproject = function(t, e, i) {
                 }
                 if (this.playerPosition > window.leaderboardlimit && (t += '<span class=\"me\">' + this.playerPosition + '. ' + ogarminimapdrawer.escapeHTML(this.playerNick) + '</span>'), defaultmapsettings['showLbData']);
                 if (legendmod.gameMode != ":battleroyale") {
-					t += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
-					if (legendmod.friends && legendmod.friends > 0){               
-						t += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';						
-					}
-					//t += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
+                    t += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
+                    if (legendmod.friends && legendmod.friends > 0) {
+                        t += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
+                    }
+                    //t += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
                 } else if (legendmod.gameMode == ":battleroyale") {
                     var t = '<span>';
                     if (legendmod.battleRoyale.shrinkTime - Date.now() / 1000 > 0) {
@@ -9471,15 +9471,15 @@ var thelegendmodproject = function(t, e, i) {
                 'preDrawPellet': function() {
                     this.pellet = null;
                     var t = 10 + defaultSettings.foodSize,
-                    e = document.createElement('canvas');
+                        e = document.createElement('canvas');
                     e.width = 2 * t, e.height = 2 * t;
                     var i = e.getContext('2d');
-                    i.arc(t, t, t, 0, this.pi2, false), 
-					i.fillStyle = defaultSettings.foodColor, 
-					i.fill(), 
-					this.pellet = new Image(), 
-					this.pellet.src = e.toDataURL(), 
-					e = null;
+                    i.arc(t, t, t, 0, this.pi2, false),
+                        i.fillStyle = defaultSettings.foodColor,
+                        i.fill(),
+                        this.pellet = new Image(),
+                        this.pellet.src = e.toDataURL(),
+                        e = null;
                 },
                 'preDrawIndicator': function() {
                     this.indicator = null;
@@ -10366,7 +10366,7 @@ var thelegendmodproject = function(t, e, i) {
                 },
                 'setHotkeysMenu': function() {
                     //var t = this;
-					const setup = this;
+                    const setup = this;
                     for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + textLanguage.restoreSettings + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">' + textLanguage.saveSett + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + textLanguage['close'] + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>' + textLanguage['hk-inst-assign'] + '</li><li>' + textLanguage['hk-inst-delete'] + '</li><li>' + textLanguage['hk-inst-keys'] + '</li></ul></div></div>'), ogario11Hotkeys)
                         if (ogario11Hotkeys.hasOwnProperty(command)) {
                             var currentCommand = ogario11Hotkeys[command],
@@ -10384,12 +10384,12 @@ var thelegendmodproject = function(t, e, i) {
                     $(document).on('click', '#reset-hotkeys', function(t) {
                             t.preventDefault();
                             //lastkeys.resetHotkeys();
-							setup.resetHotkeys();
+                            setup.resetHotkeys();
                         }),
                         $(document).on('click', '#save-hotkeys', function(t) {
                             t.preventDefault();
                             //lastkeys.saveHotkeys();
-							setup.resetHotkeys();
+                            setup.resetHotkeys();
                             $('#hotkeys').fadeOut(500);
                         }),
                         $(document).on('click', '#close-hotkeys', function(t) {
@@ -10514,12 +10514,12 @@ var thelegendmodproject = function(t, e, i) {
             var l = n * r;
             var h = Math.round(o / 2 - 0.5 * l);
             var c = "translate(-50%, 0%) scale(" + r + ")";
-            a.css("transform", c), 
-			a.css("-ms-transform", c), 
-			a.css("-webkit-transform", c), 
-			a.css("top", h + "px"), 
-			ogarProject.innerW = t, 
-			ogarProject.innerH = o;
+            a.css("transform", c),
+                a.css("-ms-transform", c),
+                a.css("-webkit-transform", c),
+                a.css("top", h + "px"),
+                ogarProject.innerW = t,
+                ogarProject.innerH = o;
 
         }
 
@@ -10579,15 +10579,16 @@ var thelegendmodproject = function(t, e, i) {
         window.onbeforeunload = function(t) {
             return ogarProject.play ? textLanguage.exit : void 0;
         };
-        window.changeHistory= function(value) {
-			if (window.history && window.history.replaceState) {
-				window.history.replaceState({}, window.document.title, value);
-        };		
-        window.changeUrl= function() {
-			if (window.location.pathname === `/ogario`) {
-				changeHistory(`/${window.location.hash}`);
-			};		
-		}		
+        window.changeHistory = function(value) {
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState({}, window.document.title, value);
+            };
+        }
+        window.changeUrl = function() {
+            if (window.location.pathname === `/ogario`) {
+                changeHistory(`/${window.location.hash}`);
+            };
+        }
         //i = LM;
         LMbuffer = t('buffer')['Buffer'];
         LZ4 = t('lz4');
