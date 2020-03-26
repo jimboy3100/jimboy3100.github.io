@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.210 MEGA TEST
+// v1.211 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5914,7 +5914,7 @@ var thelegendmodproject = function(t, e, i) {
                         view.setUint8(1, t),
                         view.setUint32(2, this.playerID, true),
                         view.setUint32(6, 0, true);
-                    for (var s = 0; s < e.length; s++) viewsetUint16(10 + 2 * s, e.charCodeAt(s), true);
+                    for (var s = 0; s < e.length; s++) view.setUint16(10 + 2 * s, e.charCodeAt(s), true);
                     this['sendBuffer'](view),
                         this.lastMessageSentTime = performance.now();
                 }
