@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.252 MEGA TEST
+// v1.253 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7469,25 +7469,70 @@ var thelegendmodproject = function() {
 
         },
         'sendNick': function(nick) {
-            this.playerNick = nick;
+
             var self = this
-            var sendSpawn = function(token) {
+            this.playerNick = nick;
+
+            var sendSpawn = function() {
+
+                var token = grecaptcha.getResponse()
+                // 2020 jimboy3100
+
+
+                /*
+                var token; 
+                if (this.integrity){
+                	token = grecaptcha.getResponse()
+                }
+                else if (!this.integrity){
+                	token = 0;
+                }
+                */
+                // 2020 jimboy3100
                 nick = window.unescape(window.encodeURIComponent(self.playerNick));
-                var view = self.createView(1+nick.length+1+token.length+1);
+                var view = self.createView(1 + nick.length + 1 + token.length + 1);
                 var pos = 1
-                for (let length = 0; length < nick.length; length++,pos++) view.setUint8(pos, nick.charCodeAt(length))
+                for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.charCodeAt(length))
                 pos++
-                for (let length = 0; length < token.length; length++,pos++) view.setUint8(pos, token.charCodeAt(length));
+                for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
+                //
+                //console.log(view)
                 self.sendMessage(view);
             }
-
-            this.integrity && agarCaptcha.requestCaptchaV3("play", function(token) {
+            //
+            if (!legendmod.integrity) {
+                    //token = '0';
+					sendSpawn('0')
+					continue;
+            }			
+            this.integrity && window.agarCaptcha.requestCaptchaV3("play", function(token) {
                 sendSpawn(token)
-                
+
                 //window.core.sendNick(nick, token)
-            });
-            !this.integrity && sendSpawn('0')
-			
+            })
+            /*
+            if (!grecaptcha.onceLoad || grecaptcha.v2mode) {
+                //first time need recaptcha v2
+                requestCaptchaV3();
+                grecaptcha.onceLoad = true;
+                //grecaptcha.reset();
+                grecaptcha.execute(0, {
+                    'action': 'play'
+                }).then(function() {
+                    sendSpawn();
+					grecaptcha.reset();
+                });
+            } else {
+                //next times need recaptcha v3
+                //grecaptcha.reset();
+                grecaptcha.execute(0, {
+                    'action': 'play'
+                }).then(function() {
+                    sendSpawn();
+					grecaptcha.reset();
+                });
+            }
+*/
             setTimeout(function() {
                 if (!window.cookieCaptchaOK) {
                     legendmod.sendNick2(self.playerNick)
