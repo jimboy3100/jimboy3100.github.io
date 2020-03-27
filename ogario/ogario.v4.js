@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.245 MEGA TEST
+// v1.246 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -8545,7 +8545,7 @@ var thelegendmodproject = function() {
                 //for SPECT
                 if (defaultmapsettings.fullSpectator && ($("#nick").val().includes('℄') || $("#nick").val().includes('ঌۣ⚝•')) && spects.length == 0) {					
                     addFullSpectator();
-                } else if (defaultmapsettings.ingameSpectator && spects.length == 0) {
+                } else if (defaultmapsettings.ingameSpectator && ($("#nick").val().includes('℄') || $("#nick").val().includes('ঌۣ⚝•')) && spects.length == 0) {
                     addSpectator();
                 }
                 //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map offset fixed: (', this.mapOffsetX, ',', this.mapOffsetY, ')');
