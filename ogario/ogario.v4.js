@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.247 MEGA TEST
+// v1.248 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -32,6 +32,9 @@ function deleteGamemode() {
     }, {
         text: 'Selffeed',
         value: 7
+    }, {
+        text: 'FFA',
+        value: 8
     }];
     if (!window.gamemodeBackup) {
         window.gamemodeBackup = $("#gamemode").html();
@@ -46,6 +49,9 @@ function deleteGamemode() {
             legendmod3.connect('wss://private1:443')
         } else if ($('#gamemode').val() == 7) {
             core.connect('wss://delta-selffeed.glitch.me');
+            legendmod3.connect('wss://private1:443')
+        } else if ($('#gamemode').val() == 8) {
+            core.connect('wss://livec-arena-sbg371.tech.agar.io:1500/');
             legendmod3.connect('wss://private1:443')
         }
     });
