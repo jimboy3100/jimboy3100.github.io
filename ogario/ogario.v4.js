@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.216 MEGA TEST
+// v1.232 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2797,6 +2797,7 @@ var thelegendmodproject = function() {
             'showQuest': false,
             'showSplitInd': false,
             'pause': false,
+			'spectatorFollow': false,			
             'targetID': 0,
             'targetStatus': 0,
             'targetNick': '',
@@ -2815,6 +2816,7 @@ var thelegendmodproject = function() {
             'getPlayerY': function() {
                 return ogario.playerY + ogario.mapOffsetY;
             },
+			//for SPECT
             'getghostX': function() {
                     if(legendmod.playerPosition == 1 || legendmod.ghostCells.length == 0) {//Yahnych координати призраков или игрока если он топ1
 						this.ghostX = legendmod.playerX + legendmod.mapOffsetX;
@@ -2832,7 +2834,8 @@ var thelegendmodproject = function() {
                         this.ghostY = legendmod.ghostCells[0].y + legendmod.mapOffsetY;
                      }
 					 return this.ghostY;
-            },			
+            },	
+			//
             'feed': function() {
                 if (window.core && window.core.eject) {
                     window.core.eject();
@@ -3056,6 +3059,15 @@ var thelegendmodproject = function() {
                 } catch (ogarcopierlbcather) {}
                 t.remove();
             },
+			'changeSpectatorMode': function() {
+				this.spectatorFollow = !this.spectatorFollow;
+				ogario.spectatorFollow = this.spectatorFollow;
+				if (this.spectatorFollow && spects.length>0 && spects[0].staticX==null && spects[0].isSpectateEnabled==true /*&& spects[0].isFreeSpectateEnabled==false*/) {
+					spects[0].sendFreeSpectate();
+				} else {
+					void(0);
+				}
+			},			
             'setPause': function() {
                 if (window.autoPlay) {
                     ogarminimapdrawer && ogarminimapdrawer.setAutoPlay()
@@ -4757,6 +4769,30 @@ var thelegendmodproject = function() {
                         this.miniMapCtx.stroke();
 
                     }
+					//
+            if (LM.arrowFB[0].visible) {//Yahnych
+                this.miniMapCtx.beginPath();
+                this.miniMapCtx.arc((LM.arrowFB[0].x  + resizeoffX) * newSize, (LM.arrowFB[0].y + resizeoffY) * newSize, defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
+                this.miniMapCtx.closePath();
+                    this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize;
+                    this.miniMapCtx.strokeStyle = 'white';
+                    this.miniMapCtx.stroke();
+                this.miniMapCtx.fillStyle = 'blue';
+                this.miniMapCtx.fill();      
+              //if (LM.arrowFB[0].nick.length > 0) {
+                  this.miniMapCtx.font = `${defaultSettings.miniMapNickFontWeight} ${defaultSettings.miniMapNickSize}px ${defaultSettings.miniMapNickFontFamily}`;
+                  this.miniMapCtx.textAlign = `center`;
+                  this.miniMapCtx.textBaseline = "bottom";
+                  if (defaultSettings.miniMapNickStrokeSize > 0) {
+                      this.miniMapCtx.lineWidth = defaultSettings.miniMapNickStrokeSize;
+                      this.miniMapCtx.strokeStyle = defaultSettings.miniMapNickStrokeColor;
+                      this.miniMapCtx.strokeText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x+ resizeoffX) * newSize, (LM.arrowFB[0].y + resizeoffY) * newSize - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                    }
+                    this.miniMapCtx.fillStyle = defaultSettings.miniMapNickColor;               
+                    this.miniMapCtx.fillText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x+ resizeoffX) * newSize, (LM.arrowFB[0].y + resizeoffY) * newSize - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                //}
+                }
+//				
                     if (this.miniMapCtx.beginPath(),
                         this.miniMapCtx.arc((ogario.playerX + r) * n, (ogario.playerY + l) * n,
                             defaultSettings.miniMapMyCellSize, 0, this.pi2, false),
@@ -6588,6 +6624,12 @@ var thelegendmodproject = function() {
             this.isInView = function() {
                 return !(this.id <= 0) && !(this.x + this.size + 40 < LM.viewX - LM.canvasWidth / 2 / LM.scale || this.y + this.size + 40 < LM.viewY - LM.canvasHeight / 2 / LM.scale || this.x - this.size - 40 > LM.viewX + LM.canvasWidth / 2 / LM.scale || this.y - this.size - 40 > LM.viewY + LM.canvasHeight / 2 / LM.scale);
             };
+			this.isInV = function() {
+				if (this.x + this.size < LM.camMinX || this.y + this.size < LM.camMinY || this.x - this.size > LM.camMaxX || this.y - this.size > LM.camMaxY) {
+				return false;
+				}
+			return true;
+			}			
             /*
 				this.setMass = function(t) {
                     return this.size = t, !(t <= 40) && (this.massCanvas ? (this.mass = ~~(t * t / 100), this.redrawMass = true, this.isVirus ? (this.virMassShots && this.mass < 200 && (this.mass = ~~((200 - this.mass) / 14)), this.massTxt = this.mass.toString(), this.mass > 220 ? (this.virusColor = defaultSettings.mVirusColor, this.virusStroke = defaultSettings.mVirusStrokeColor) : (this.virusColor = defaultSettings.virusColor, this.virusStroke = defaultSettings.virusStrokeColor), true) : (this.massTxt = this.mass.toString(), this.mass <= 200 || (this.shortMass && this.mass >= 1000 ? (this.kMass = Math.round(this.mass / 100) / 10, this.massTxt = this.kMass + 'k', true) : (this.optimizedMass && (this.redrawMass = Math.abs((this.mass - this.lastMass) / this.mass) >= 0.02 || this.rescale), true)))) : (this.massCanvas = new irenderfromagario(), false));
@@ -6810,7 +6852,15 @@ var thelegendmodproject = function() {
                 return ctxfx;
             };
             this.draw = function(style, canCreateDiscussions) {
-                if (!(LM.hideSmallBots && this.size <= 36)) {
+					if (LM.hideSmallBots && this.size <= 36) {
+						return;
+					}
+					// check this
+					if (this.spectator>0 && this.isInV()||this.invisible==true) {
+					//if (this.spectator>0 && this.invisible==true) {
+						return;
+					}
+					//					
                     style.save();
                     this.redrawed++;
                     if (canCreateDiscussions) {
@@ -7082,8 +7132,7 @@ var thelegendmodproject = function() {
 
 
 
-                    }
-                }
+                    }                
             };
         }
         window.legendmod1 = ogarbasicassembly;
@@ -7109,6 +7158,8 @@ var thelegendmodproject = function() {
                     }
                 }
             },
+			'isFreeSpectate':false,
+			'isSpectateEnabled':false,			
             'ws': null,
             'socket': null,
             'protocolKey': null,
@@ -7139,6 +7190,12 @@ var thelegendmodproject = function() {
             'viewMinY': 0,
             'viewMaxX': 0,
             'viewMaxY': 0,
+			//
+			'camMaxX':0,
+			'camMaxY':0,
+			'camMinX':0,
+			'camMinY':0,	
+			//
             'canvasWidth': 0,
             'canvasHeight': 0,
             'canvasScale': 1,
@@ -7351,9 +7408,11 @@ var thelegendmodproject = function() {
                 }
             },
             'sendSpectate': function() {
+				this.isSpectateEnabled = true;
                 this.sendAction(1);
             },
             'sendFreeSpectate': function() {
+				this.isFreeSpectate = !this.isFreeSpectate;
                 this.sendAction(18);
             },
             'sendEject': function() {
@@ -8163,10 +8222,43 @@ var thelegendmodproject = function() {
                         console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
                         window.testobjectsOpcode114 = data;
                         break;
-                    case 160:
-                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
-                        window.testobjectsOpcode160 = data;
-                        break;
+					case 160://Yahnych
+						console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
+                        window.testobjectsOpcode160 = data;				
+                    //this.arrowFB = [];
+                    let num =0
+                    let friendX = 0,
+                        friendY = 0,
+                        friendNick = null;
+                    for (; offset < data.byteLength;) {
+                      num++
+                                friendX = data.getUint16(offset, true);
+                      if (friendX > 32250) {
+                        friendX  -= 65500 ;
+                      }
+                                offset += 2;
+                                friendY = data.getUint16(offset, true);
+                      if (friendY > 32250) {
+                        friendY  -= 65500 ;
+                      }
+                                offset += 2;
+                    if (offset < data.byteLength) {
+                                friendNick = window.decodeURIComponent(window.escape(encode()));
+                    } else {
+                                friendNick = "";
+                    }
+                            //this.arrowFB.push({
+                            //    nick: friendNick,
+                            //    x: friendX,
+                            //    y: friendY
+                            //});   
+                      console.log(num)
+                      this.arrowFB[0].visible = true;
+                      this.arrowFB[0].x = friendX;
+                      this.arrowFB[0].y = friendY;
+                      this.arrowFB[0].nick = friendNick!=""?friendNick:this.arrowFB[0].nick;
+                }
+                        break;						
                     case 161:
                         //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
                         window.testobjectsOpcode161 = data;
@@ -8417,6 +8509,15 @@ var thelegendmodproject = function() {
                 this.ghostCells = [];
                 this.food = [];
                 this.viruses = [];
+
+			//for SPECT
+            //this.ghostCellsStep = 0;
+            this.isSpectateEnabled = false;
+            this.isFreeSpectate = false;
+			if (window.spects){
+				window.spects.forEach((spect)=>{spect.closeConnection()})
+				window.spects = [];			
+			}
             },
             'setMapOffset': function(left, top, right, bottom) {
                 //if (right - left > 14000 && bottom - top > 14000) {
@@ -8431,6 +8532,12 @@ var thelegendmodproject = function() {
                     this.mapMidY = (this.mapMaxY + this.mapMinY) / 2; //Sonia3 -> this.mapMidY = -legendmod.mapOffsetY				
                     this.mapOffsetFixed || (this.viewX = (right + left) / 2, this.viewY = (bottom + top) / 2);
                     this.mapOffsetFixed = true;
+					//for SPECT
+                if(defaultmapsettings.fullSpectator && spects.length==0) {
+                    addFullSpectator();
+                } else if(defaultmapsettings.ingameSpectator && spects.length==0) {
+                    addSpectator();
+                }					
                     //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map offset fixed: (', this.mapOffsetX, ',', this.mapOffsetY, ')');
                 }
             },
@@ -8596,10 +8703,19 @@ var thelegendmodproject = function() {
                     }
                     //
                     //8 & d && (y = window.decodeURIComponent(escape(s())));
-                    var isVirus = 1 & flags,
-                        isFood = 1 & extendedFlags,
-                        isFriend = extendedFlags & 2,
-                        cellUpdateCells = null;
+                    //var isVirus = 1 & flags,
+                    //    isFood = 1 & extendedFlags,
+                    //    isFriend = extendedFlags & 2,
+						
+					const isVirus = flags & 1;
+					const isFood = extendedFlags & 1;
+					const isFriend = extendedFlags & 2;
+					//const invisible = this.staticX!=null?this.isInView(x, y):false;
+					//id = this.newID(id),
+					//x = this.getX(x),
+					//y = this.getY(y);						
+                    cellUpdateCells = null;
+						
                     this.indexedCells.hasOwnProperty(id) ? (cellUpdateCells = this.indexedCells[id],
                             color && (cellUpdateCells.color = color)) :
                         ((cellUpdateCells = new ogarbasicassembly(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots)).time = this.time,
@@ -8632,12 +8748,23 @@ var thelegendmodproject = function() {
                         2 & extendedFlags && (cell.isFriend = isFriend,
                             console.log('FB friend cell in view', isFriend));
                 }
+				eatEventsLength = view.readUInt16LE(offset);
+				offset += 2;
+				for (length = 0; length < eatEventsLength; length++) {
+					var id = view.readUInt32LE(offset);
+					offset += 4;
+					cell = this.indexedCells[id];
+					if (cell) {
+						cell.removeCell();
+					}
+				}		
+/*				
                 for (eatEventsLength = view.readUInt16LE(offset), offset += 2, a = 0; a < eatEventsLength; a++) {
                     id = view.readUInt32LE(offset);
                     offset += 4,
                         (cellUpdateCells = this.indexedCells[id]) &&
                         cellUpdateCells.removeCell();
-                }
+                }*/
                 //Sonia7
                 if (this.removePlayerCell && !this.playerCells.length) {
                     this.play = false;
@@ -8702,7 +8829,10 @@ var thelegendmodproject = function() {
                 }
             },
             'compareCells': function() {
-                if (this.play && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
+				if (!this.play) {
+					return;
+				}				
+                if (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange) {
                     if (defaultmapsettings.oppRings || defaultmapsettings.splitRange) {
                         this.biggerSTECellsCache = [];
                         this.biggerCellsCache = [];
@@ -8711,7 +8841,24 @@ var thelegendmodproject = function() {
                         this.biggerSTEDCellsCache = []; //Sonia
                         this.STEDCellsCache = []; //Sonia
                     }
-                    var t = 0;
+					for (const cell of this.cells) {
+						if (cell.isVirus|| cell.spectator>0/*cell.invisible*/) {
+							continue;
+						}
+						const size = ~~(cell.size * cell.size / 100);
+						if (size != 13) {
+							const mass = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
+						const fixMass = size / mass;
+						const smallMass = mass < 1000 ? 0.35 : 0.38;
+						if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings) {
+							cell.oppColor = this.setCellOppColor(cell.isPlayerCell, fixMass, smallMass);
+							}
+						if (!cell.isPlayerCell && (defaultmapsettings.splitRange || defaultmapsettings.oppRings)) {
+							this.cacheCells(cell.x, cell.y, cell.targetX, cell.targetY, cell.size, fixMass, smallMass);
+						}
+					}
+                }					
+                    /*var t = 0;
                     for (; t < this.cells.length; t++) {
                         var e = this.cells[t];
                         if (!e.isVirus) {
@@ -8731,7 +8878,7 @@ var thelegendmodproject = function() {
                                 }
                             }
                         }
-                    }
+                    }*/
                 }
             },
             /*'cacheCells': function(t, e, i, s, o) {
@@ -8991,6 +9138,9 @@ var thelegendmodproject = function() {
                         if (defaultmapsettings.cursorTracking) {
                             this.drawCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
                         }
+                if (defaultmapsettings.FBTracking && LM.arrowFB[0].visible) {
+                    this.drawFBTracking(this.ctx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
+                }						
                     }
 
                     this.drawGhostCells();
@@ -9056,7 +9206,19 @@ var thelegendmodproject = function() {
                         //LM.cursorX = LM.indexedCells[LM.selected].x
                         //LM.cursorY = LM.indexedCells[LM.selected].y
                     }
+					//
+            if(defaultmapsettings.debug){
+                this.drawViewport(this.ctx, 'Viewport', LM.camMinX, LM.camMinY, LM.camMaxX, LM.camMaxY, defaultSettings.bordersColor, 15);
 
+                //this.newViewport( this.ctx, 'Client', LM.viewX, LM.viewY, LM.isSpectateEnabled, LM.isFreeSpectate, LM.leaderboard, LM.playerCells)
+                if(defaultmapsettings.fullSpectator){
+                    for (let i = 0; i<spects.length; i++) {
+                         this.newViewport( this.ctx, spects[i].number, spects[i].getX(spects[i].viewX), spects[i].getY(spects[i].viewY), spects[i].isSpectateEnabled, spects[i].isFreeSpectate, [], [])
+                    }
+
+                }
+            }					
+					//
 
                     this.ctx.restore();
                     if (LM.gameMode === ':teams') {
@@ -9065,7 +9227,109 @@ var thelegendmodproject = function() {
                         }
                     }
                     //this.ctx.finish2D();
+					
+            if(defaultmapsettings.debug){
+                this.ctx.fillStyle  = "white";
+                this.ctx.font = "15px sans-serif";
+                this.ctx.textAlign = "start";
+                var lw=(this.canvasHeight/2)
+                LM.camMaxX && this.ctx.fillText("isFreeSpectate: "+LM.isFreeSpectate, 50, lw+=25);
+                LM.camMaxX && this.ctx.fillText("isSpectateEnabled: "+LM.isSpectateEnabled, 50, lw+=25);
+                //LM.camMaxX && this.ctx.fillText("realQuadrant: "+LM.realQuadrant, 50, lw+=25);
+                //LM.camMaxX && this.ctx.fillText("lastQuadrant: "+LM.lastQuadrant, 50, lw+=25);
+                //LM.camMaxX && this.ctx.fillText("quadrant: "+LM.quadrant, 50, lw+=25);
+                //LM.camMaxX && this.ctx.fillText("cMaxX: "+LM.camMaxX, 50, lw+=30);
+                //LM.camMaxY && this.ctx.fillText("cMaxY: "+LM.camMaxY, 50, lw+=30);
+                //LM.camMinX && this.ctx.fillText("cMinX: "+LM.camMinX, 50, lw+=30);
+                //LM.camMinY && this.ctx.fillText("cMinY: "+LM.camMinY, 50, lw+=30);
+            }					
                 },
+        drawFBTracking(ctx, players, x, y) {//Yahnych
+            for (let length = 0; length < players.length; length++) {
+              let t = players[length];
+              let r = t.size/3;
+                                //distance to target
+              var dis = Math.sqrt((x - t.x) * (x - t.x) + (y - t.y) * (y - t.y));
+              //angle 
+              var angl = Math.round((Math.acos((t.y - y) / dis) / Math.PI) * 180);
+              //if target on left side
+          
+             if ((t.x - x > 0 && t.y - y < 0) || (t.x  - x > 0 && t.y - y > 0)) {
+                angl = 180 + (180 - angl);
+             }
+
+             // Store the current context state (i.e. rotation, translation etc..)
+             ctx.save()
+
+             //Convert degrees to radian 
+             var rad = angl * Math.PI / 180;
+
+             //Set the origin to the center of the image
+             ctx.translate(t.x, t.y);
+
+            //Rotate the canvas around the origin
+            ctx.rotate(rad);
+
+            //draw the image    
+            //ctx.drawImage(c, t.size * (-1),t.size * (-1),t.size*2,t.size*2);
+              let grad=ctx.createLinearGradient(0, -t.size, 0, r*2-t.size);//Yahnych
+              grad.addColorStop(0, defaultSettings.splitRangeColor);
+              grad.addColorStop(1, defaultSettings.splitRangeColor+"00");
+
+              
+              ctx.fillStyle = grad;
+              ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
+              ctx.beginPath();
+              ctx.arc(0, 0-(t.size-r), r, 0, Math.PI * 2, false)
+              ctx.fill();
+              ctx.globalAlpha = 1;
+              // Restore canvas state as saved from above
+              ctx.restore();
+            }          
+        },
+        newViewport(ctx, name, viewX, viewY, isSpectateEnabled = false, isFreeSpectate = false, leaderboard = [],  cells=[]){
+                var size = 0
+                var mtp = 1.985
+                
+                if(cells.length>0){
+                    for (var im = 0; cells.length > im; im++) 
+                        size += cells[im].size
+                }else if( isFreeSpectate==false && isSpectateEnabled==true ){
+                        for (var i = 0; leaderboard.length > i; i++) {
+                            for (var im = 0; cells.length > im; im++) 
+                                if (cells[im].nick == leaderboard[i].nick)
+                                    size += cells[im].size
+                            break
+                        }
+                }else{
+                    if(isFreeSpectate && isSpectateEnabled) mtp = 4.95
+                }
+                var s = Math.pow(Math.min(64 / size, 1), 0.4000);
+                var w = 1024/ s / 2 * mtp; //WSVGA
+                var h = 600 / s / 2 * mtp;
+                this.drawViewport(ctx, `Viewport# ${name}`, viewX - w, viewY - h, viewX + w, viewY + h, defaultSettings.bordersColor, 15);
+                //this.drawRing(this.ctx, LM.viewX, LM.viewY, 15, 1, '#ff00ff') 
+        },
+        drawViewport:function(ctx, text, minX, maxY, maxX, minY, stroke, width){
+
+            ctx.strokeStyle = stroke;
+            ctx.lineWidth = width;
+
+            ctx.fillStyle  = "white";
+            ctx.font = "100px sans-serif";
+            ctx.textAlign = "end";
+            ctx.textBaseline = "hanging"
+            ctx.fillText(text, maxX, maxY);
+
+            ctx.beginPath();
+            ctx.moveTo(minX, maxY);
+            ctx.lineTo(maxX, maxY);
+            ctx.lineTo(maxX, minY);
+            ctx.lineTo(minX, minY);
+            ctx.closePath();
+            ctx.stroke();
+
+        },							
                 pointInCircle: function(x, y, cx, cy, radius) {
                     var distancesquared = (x - cx) * (x - cx) + (y - cy) * (y - cy);
                     return distancesquared <= radius * radius;
@@ -9276,7 +9540,59 @@ var thelegendmodproject = function() {
                         else this.drawCachedFood(this.ctx, LM.food, this.scale);
                     }
                 },
-                'drawCachedFood': function(t, e, i, s) {
+        drawCachedFood(ctx, food, scale, reset) {
+            if (!food.length) {
+                return;
+            }
+
+            LM.camMaxX = LM.playerX
+            LM.camMaxY = LM.playerY
+            LM.camMinX = LM.playerX
+            LM.camMinY = LM.playerY
+ 
+            if (defaultmapsettings.optimizedFood && this.pellet) {
+                for (var length = 0; length < food.length; length++) {
+                    var x = food[length].x - 10 - defaultSettings.foodSize;
+                    var y = food[length].y - 10 - defaultSettings.foodSize;
+
+                    //if(defaultmapsettings.debug){
+                        if( x > LM.camMaxX ) LM.camMaxX = x        
+                        if( y > LM.camMaxY ) LM.camMaxY = y
+                        if( x < LM.camMinX ) LM.camMinX = x
+                        if( y < LM.camMinY ) LM.camMinY = y
+                    //}
+
+                    ctx.drawImage(this.pellet, x, y);
+                }
+            } else {
+                ctx.beginPath();
+                for (var length = 0; length < food.length; length++) {
+                    var x = food[length].x;
+                    var y = food[length].y;
+                    
+                    //if(defaultmapsettings.debug){
+                        if( x > LM.camMaxX ) LM.camMaxX = x
+                        if( y > LM.camMaxY ) LM.camMaxY = y
+                        if( x < LM.camMinX ) LM.camMinX = x
+                        if( y < LM.camMinY ) LM.camMinY = y
+                    //}
+                    ctx.moveTo(x, y);
+                    if (scale < 0.16) {
+                        const size = food[length].size + defaultSettings.foodSize;
+                        ctx.rect(x - size, y - size, 2 * size, 2 * size);
+                        continue;
+                    }
+                    ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
+                }
+                ctx.fillStyle = defaultSettings.foodColor;
+                ctx.globalAlpha = 1;
+                ctx.fill();
+            }
+            if (reset) {
+                food = [];
+            }
+        },				
+                /*'drawCachedFood': function(t, e, i, s) {
                     if (e.length) {
                         if (defaultmapsettings.optimizedFood && this.pellet)
                             for (var o = 0; o < e.length; o++) {
@@ -9296,7 +9612,7 @@ var thelegendmodproject = function() {
                             }
                         s && (e = []);
                     }
-                },
+                },*/
                 'drawSplitRange': function(t, e, i, s, o) {
                     if (this.drawCircles(t, e, 760, 4, 0.4, defaultSettings.enemyBSTEColor), i.length) { //Sonia2
                         //if (this.drawCircles(t, e, 760, 4, 0.4, '#ff0000'), i.length) { //Sonia
