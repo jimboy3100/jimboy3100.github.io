@@ -9138,9 +9138,9 @@ var thelegendmodproject = function() {
                         if (defaultmapsettings.cursorTracking) {
                             this.drawCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
                         }
-                if (defaultmapsettings.FBTracking && LM.arrowFB[0].visible) {
-                    this.drawFBTracking(this.ctx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
-                }						
+                //if (defaultmapsettings.FBTracking && LM.arrowFB[0].visible) {
+                    //this.drawFBTracking(this.ctx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
+                //}						
                     }
 
                     this.drawGhostCells();
@@ -9676,7 +9676,10 @@ var thelegendmodproject = function() {
                 },
                 'drawCircles': function(t, e, i, s, o, a) {
                     t.lineWidth = s, t.globalAlpha = o, t.strokeStyle = a;
-                    for (var n = 0; n < e.length; n++) t.beginPath(), t.arc(e[n].x, e[n].y, e[n].size + i, 0, this.pi2, false), t.closePath(), t.stroke();
+                    for (var n = 0; n < e.length; n++) t.beginPath(), 
+					t.arc(e[n].x, e[n].y, e[n].size + i, 0, this.pi2, false), 
+					t.closePath(), 
+					t.stroke();
                     t.globalAlpha = 1;
                 },
                 //Sonia (added entire function)
