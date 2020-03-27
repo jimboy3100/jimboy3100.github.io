@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.211 MEGA TEST
+// v1.212 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2529,7 +2529,7 @@ var thelegendmodproject = function(t, e, i) {
                     this.addInputBox('#theme-images', 'customBackground', 'Image URL', 'setCustomBackground');
                     this.addPresetBox('#theme-images', 'graphics', graphicMenus, 'graphics', 'changeGraphics');
                     this.addInputBox('#theme-images', 'customCursor', 'Cursor image URL', 'setCustomCursor');                   
-                    this.addInputBox('.facebook-panel', 'FacebookIDs', `e.g. 123456789012345:John K,543210987654321:Jimbo`, `setFBIDs`);
+                    /*this.addInputBox('.facebook-panel', 'FacebookIDs', `e.g. 123456789012345:John K,543210987654321:Jimbo`, `setFBIDs`);*/
                     for (var e = 'https://legendmod.ml/cursors/cursor_', i = 0; i < 35; i++) i < 9 ? this.addCursorBox('#theme-images', e + '0' + (i + 1) + '.cur') : this.addCursorBox('#theme-images', e + '' + (i + 1) + '.cur');
                     $(document).on('click', '#theme-images .cursor-box a', function(e) {
                             e.preventDefault();
@@ -3769,7 +3769,7 @@ var thelegendmodproject = function(t, e, i) {
                     $("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + textLanguage.thanks + ')</h5><audio src="" controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' + textLanguage.playlist + "</a></span></div>"),
                     $("#music").append('<div class="agario-panel sounds-panel"><h5 class="menu-main-color">' + textLanguage.sounds + "</h5></div>"),
                     $("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>'),
-                    $('#music').append('<div class="agario-panel facebook-panel"><h5 class="menu-main-color">' + 'Facebook' + '</h5></div>'),
+                    /*$('#music').append('<div class="agario-panel facebook-panel"><h5 class="menu-main-color">' + 'Facebook' + '</h5></div>'),*/
 					this.addInputBox(".sounds-panel", "messageSound", "Sound URL", "setMessageSound"),
                     this.addInputBox(".sounds-panel", "commandSound", "Sound URL", "setCommandSound"),
                     this.addInputBox(".sounds-panel", "virusSoundurl", "Sound URL", "setvirusSound"),
