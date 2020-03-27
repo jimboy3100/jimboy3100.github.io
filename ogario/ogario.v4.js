@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.212 MEGA TEST
+// v1.215 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2211,7 +2211,8 @@ if (userLanguage && languagetexts.hasOwnProperty(userLanguage)) {
 }
 var textLanguage = languagetexts[lang];
 
-var thelegendmodproject = function(t, e, i) {
+//var thelegendmodproject = function(t, e, i) {
+var thelegendmodproject = function() {	
     //here starts ogario
 //    (function(ogario) {
         var ogarminimapdrawer;
@@ -7809,9 +7810,16 @@ var thelegendmodproject = function(t, e, i) {
                 }
             },
             'decompressMessage': function(message) {
+				const buffer = window.buffer.Buffer;
+				const messageBuffer = new buffer(message.buffer);
+				const readMessage = new buffer(messageBuffer.readUInt32LE(1));
+				LZ4.decodeBlock(messageBuffer.slice(5), readMessage);
+				return readMessage;				
+				/*
                 var buffer = new LMbuffer(message['buffer']);
                 var readMessage = new LMbuffer(buffer.readUInt32LE(1));
                 return LZ4.decodeBlock(buffer.slice(5), readMessage), readMessage;
+				*/
             },
             'handleMessage': function(data) {
                 //this.pingTimer();
@@ -8249,11 +8257,14 @@ var thelegendmodproject = function(t, e, i) {
 
                         //2020 jimboy3100 specific private servers
                     case 16:
-                        this.updateCells(new LMbuffer(data['buffer']), s);
-                        //this.countPps()
+                        //this.updateCells(new LMbuffer(data['buffer']), s);
+						this.updateCells(new window.buffer.Buffer(data['buffer']), s);
+                        
+						//this.countPps()
                         break;
                     case 64:
-                        var message = new LMbuffer(data['buffer'])
+                        //var message = new LMbuffer(data['buffer'])						
+						var message = new window.buffer.Buffer(data['buffer'])
                         this.viewMinX = message.readDoubleLE(s);
                         s += 8;
                         this.viewMinY = message.readDoubleLE(s);
@@ -10618,8 +10629,10 @@ var thelegendmodproject = function(t, e, i) {
 		
         ogario = LM; 
 		
-        LMbuffer = t('buffer')['Buffer'];
-        LZ4 = t('lz4');
+        //LMbuffer = t('buffer')['Buffer'];
+		//window.LMbuffer=LMbuffer; //buffer 3
+        //LZ4 = t('lz4'); 
+		//window.LZ4=LZ4; //LZ4 18
         if ('/legendmod' === window.location.pathname) {
             ogarjoiner('/' + window.location.hash);
         }
