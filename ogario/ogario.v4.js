@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.248 MEGA TEST
+// v1.249 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7401,25 +7401,27 @@ var thelegendmodproject = function() {
         'createView': function(t) {
             return new DataView(new ArrayBuffer(t));
         },
-        'sendBuffer': function(t) {
-            this.socket['send'](t['buffer']);
+        'sendBuffer': function(data) {
+            this.socket.send(data.buffer);
         },
-        'sendMessage': function(t) {
-            //console.log(t);
-            //if (this.connectionOpened) {
-            if (this.connectionOpened && legendmod.integrity) {
-                if (!this.clientKey) return;
-                t = this['shiftMessage'](t, this.clientKey);
+        'sendMessage': function(message) {
+            if (this.connectionOpened && this.integrity) {
+                if (!this.clientKey) {
+                    return;
+                }
+                message = this.shiftMessage(message, this.clientKey);
                 this.clientKey = this.shiftKey(this.clientKey);
             }
-            this['sendBuffer'](t);
+            this.sendBuffer(message);
         },
-        'sendAction': function(t) {
-            if (this.isSocketOpen()) {
-                var e = this.createView(1);
-                e.setUint8(0, t);
-                this.sendMessage(e);
+        'sendAction': function(action) {
+
+            if (!this.isSocketOpen()) {
+                return;
             }
+            const view = this.createView(1);
+            view.setUint8(0, action);
+            this.sendMessage(view);
         },
         'sendSpectate': function() {
             this.isSpectateEnabled = true;
