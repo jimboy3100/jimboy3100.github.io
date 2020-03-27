@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.215 MEGA TEST
+// v1.216 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2815,6 +2815,24 @@ var thelegendmodproject = function() {
             'getPlayerY': function() {
                 return ogario.playerY + ogario.mapOffsetY;
             },
+            'getghostX': function() {
+                    if(legendmod.playerPosition == 1 || legendmod.ghostCells.length == 0) {//Yahnych координати призраков или игрока если он топ1
+						this.ghostX = legendmod.playerX + legendmod.mapOffsetX;
+                    } 
+					else {//Yahnych
+                        this.ghostX = legendmod.ghostCells[0].x + legendmod.mapOffsetX;
+                     }
+					 return this.ghostX;
+            },
+            'getghostY': function() {
+                    if(legendmod.playerPosition == 1 || legendmod.ghostCells.length == 0) {//Yahnych координати призраков или игрока если он топ1
+						this.ghostY = legendmod.playerY + legendmod.mapOffsetY;
+                    } 
+					else {//Yahnych
+                        this.ghostY = legendmod.ghostCells[0].y + legendmod.mapOffsetY;
+                     }
+					 return this.ghostY;
+            },			
             'feed': function() {
                 if (window.core && window.core.eject) {
                     window.core.eject();
