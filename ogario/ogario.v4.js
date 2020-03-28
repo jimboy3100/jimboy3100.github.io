@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.256 MEGA TEST
+// v1.257 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7474,11 +7474,12 @@ var thelegendmodproject = function() {
             this.playerNick = nick;
 
             var sendSpawn = function() {
-
-                var token;
-				if (this.integrity){
-					token = grecaptcha.getResponse();
-				}
+            if (!this.integrity) {
+                    //token = '0';
+					sendSpawn('0')
+					return;
+            }	
+                var token = grecaptcha.getResponse();
                 // 2020 jimboy3100
 
 
@@ -7503,10 +7504,7 @@ var thelegendmodproject = function() {
                 self.sendMessage(view);
             }
             //
-            if (!this.integrity) {
-                    //token = '0';
-					sendSpawn('0')
-            }			
+		
 			else if(this.integrity){
 				window.agarCaptcha.requestCaptchaV3("play", function(token) {
                 sendSpawn(token)
