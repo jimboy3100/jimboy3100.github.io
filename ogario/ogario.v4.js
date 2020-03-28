@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.260 MEGA TEST
+// v1.262 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -8244,19 +8244,19 @@ var thelegendmodproject = function() {
                     let friendX = 0,
                         friendY = 0,
                         friendNick = null;
-                    for (; offset < data.byteLength;) {
+                    for (; s < data.byteLength;) {
                         num++
-                        friendX = data.getUint16(offset, true);
+                        friendX = data.getUint16(s, true);
                         if (friendX > 32250) {
                             friendX -= 65500;
                         }
-                        offset += 2;
-                        friendY = data.getUint16(offset, true);
+                        s += 2;
+                        friendY = data.getUint16(s, true);
                         if (friendY > 32250) {
                             friendY -= 65500;
                         }
-                        offset += 2;
-                        if (offset < data.byteLength) {
+                        s += 2;
+                        if (s < data.byteLength) {
                             friendNick = window.decodeURIComponent(window.escape(encode()));
                         } else {
                             friendNick = "";
