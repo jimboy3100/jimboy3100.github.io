@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.259 MEGA TEST
+// v1.260 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7473,37 +7473,30 @@ var thelegendmodproject = function() {
             var self = this
             this.playerNick = nick;
 
-            var sendSpawn = function() {
-			
-                var token = grecaptcha.getResponse();
-                // 2020 jimboy3100
-
-
-                /*
-                var token; 
-                if (this.integrity){
-                	token = grecaptcha.getResponse()
-                }
-                else if (!this.integrity){
-                	token = 0;
-                }
-                */
-                // 2020 jimboy3100
+            var sendSpawn = function(token) {		
+                //var token = grecaptcha.getResponse();
                 nick = window.unescape(window.encodeURIComponent(self.playerNick));
                 var view = self.createView(1 + nick.length + 1 + token.length + 1);
                 var pos = 1
                 for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.charCodeAt(length))
                 pos++
                 for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
-                //
-                //console.log(view)
                 self.sendMessage(view);
             }
-            //
+            var sendSpawnPrivateServer = function() {		
+                var token = '0'
+                nick = window.unescape(window.encodeURIComponent(self.playerNick));
+                var view = self.createView(1 + nick.length + 1 + token.length + 1);
+                var pos = 1
+                for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.charCodeAt(length))
+                pos++
+                for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
+                self.sendMessage(view);
+            }
 		
             if (!LM.integrity) {
                     //token = '0';
-					sendSpawn('0')
+					sendSpawnPrivateServer()
 					return;
             }
 			else if (LM.integrity) {
