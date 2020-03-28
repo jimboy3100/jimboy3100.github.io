@@ -1,3 +1,5 @@
+//SPECS v1.1
+
 function addBox() {
   let spect = new Spect();
   spect.player = true;
@@ -385,14 +387,18 @@ class Spect {
                      
                 break;
             case 17:
-                this.viewX = view.getFloat32(offset, true);
+			
+                //this.viewX = view.getFloat32(offset, true);
+				var x=this.viewX = view.getFloat32(offset, true);
+				this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
                 offset += 4;
-                this.viewY = view.getFloat32(offset, true);
+				//this.viewY = view.getFloat32(offset, true);
+				var y=this.viewX = view.getFloat32(offset, true);
+				this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
                 offset += 4;
                 this.scale = view.getFloat32(offset, true);
 
-                //this.viewX = legendmod.mapOffsetX
-                //this.viewY = legendmod.mapOffsetY
+
 
                 break;
             case 18:
@@ -424,9 +430,9 @@ class Spect {
 
             case 69:
                 var length = view.getUint16(offset, true);
-                offset += 0x2;
+                offset += 2;
                 this.ghostCells = [];
-                for(let i = 0x0; i < length; i++) {
+                for(let i = 0; i < length; i++) {
                     var x = view.getInt32(offset, true);
                     offset += 4;
                     var y = view.getInt32(offset, true);
@@ -633,6 +639,18 @@ class Spect {
             console.log(`[SPECT] Map offset fixed (x, y):`, this.mapOffsetX, this.mapOffsetY);
         }
     }
+        translateX(x) {
+            return this.mapMaxX - (x - this.mapMinX);
+        }
+        translateY(x) {
+            return this.mapMaxY - (x - this.mapMinY);
+        }
+        untranslateX(x) {
+            return 0 - (x - this.mapMaxX + this.mapMinX);
+        }
+        untranslateY(x) {
+            return 0 - (x - this.mapMaxY + this.mapMinY);
+        }	
     updateCells(view, offset) {
         const encode = () => {
             for (var text = '';;) {
