@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.254 MEGA TEST
+// v1.255 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2150,7 +2150,7 @@ var defaultmapsettings = {
     'massStroke': true,
     'cursorTracking': false,
     'FBTracking': true,
-    'ingameSpectator': true,
+    'ingameSpectator': false,
     'fullSpectator': false,	
     'teammatesInd': true,
     'mouseSplit': false,
