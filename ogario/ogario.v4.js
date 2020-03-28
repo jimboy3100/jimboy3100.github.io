@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.263 MEGA TEST
+// v1.264 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4785,7 +4785,7 @@ var thelegendmodproject = function() {
                 //
                 if (LM.arrowFB[0].visible) { //Yahnych
                     this.miniMapCtx.beginPath();
-                    this.miniMapCtx.arc((LM.arrowFB[0].x + r) * newSize, (LM.arrowFB[0].y + l) * newSize, defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
+                    this.miniMapCtx.arc((LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n, defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
                     this.miniMapCtx.closePath();
                     this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize;
                     this.miniMapCtx.strokeStyle = 'white';
@@ -4799,10 +4799,10 @@ var thelegendmodproject = function() {
                     if (defaultSettings.miniMapNickStrokeSize > 0) {
                         this.miniMapCtx.lineWidth = defaultSettings.miniMapNickStrokeSize;
                         this.miniMapCtx.strokeStyle = defaultSettings.miniMapNickStrokeColor;
-                        this.miniMapCtx.strokeText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * newSize, (LM.arrowFB[0].y + l) * newSize - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                        this.miniMapCtx.strokeText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
                     }
                     this.miniMapCtx.fillStyle = defaultSettings.miniMapNickColor;
-                    this.miniMapCtx.fillText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * newSize, (LM.arrowFB[0].y + l) * newSize - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
+                    this.miniMapCtx.fillText('🔹' + LM.arrowFB[0].nick + '🔹', (LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n - (defaultSettings.miniMapTeammatesSize * 2 + 2.5));
                     //}
                 }
                 //				
