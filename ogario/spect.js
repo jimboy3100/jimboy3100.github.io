@@ -1,4 +1,4 @@
-//SPECS v1.1
+//SPECS v1.2
 
 function addBox() {
   let spect = new Spect();
@@ -717,7 +717,11 @@ class Spect {
                 skin = encode();
             }
             if (flags & 8) {
-                name = window.decodeURIComponent(window.escape(encode()));
+                //name = window.decodeURIComponent(window.escape(encode()));
+                    name = window.decodeURIComponent(escape(encode()));
+                    if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
+                        legendmod.vanillaskins(name, skin);
+                    }				
             }
             if (flags & 10) {
             }
