@@ -1,12 +1,10 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.265 MEGA TEST
+// v1.272 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
-var RECAPTCHA_V2_KEY = "6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl";
-var RECAPTCHA_V3_KEY = "6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY";
 
 var consoleMsgLM = "[Legend mod Express] ";
 
@@ -6407,7 +6405,7 @@ var thelegendmodproject = function() {
     }
     window.legendmod3 = ogarminimapdrawer;
 
-    function ogarbasicassembly(t, e, s, o, a, n, r, l, h, c) {
+    function ogarbasicassembly(id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots) {
         //lylko
         this.points = []
         this.pointsVel = []
@@ -6415,15 +6413,15 @@ var thelegendmodproject = function() {
 
 
         this.oldAlpha = 0;
-        this.id = t;
+        this.id = id;
         this.x = e;
         this.y = s;
         this.targetX = e;
         this.targetY = s;
-        this.color = a;
+        this.color = color;
         this.oppColor = null;
-        this.size = o;
-        this.targetSize = o;
+        this.size = size;
+        this.targetSize = size;
         this.alpha = 1;
         this.nick = '';
         this.targetNick = '';
@@ -6450,11 +6448,11 @@ var thelegendmodproject = function() {
         this.virMassSize = 26;
         this.nickStrokeSize = 3;
         this.massStrokeSize = 3;
-        this.isFood = n;
-        this.isVirus = r;
-        this.isPlayerCell = l;
-        this.shortMass = h;
-        this.virMassShots = c;
+        this.isFood = isFood;
+        this.isVirus = isVirus;
+        this.isPlayerCell = isPlayer;
+        this.shortMass = shortMass;
+        this.virMassShots = virusMassShots;
         this.rescale = false;
         this.redrawNick = true;
         this.redrawMass = true;
@@ -6576,38 +6574,38 @@ var thelegendmodproject = function() {
             }
         };
 
-        this.update = function(t, e, i, s, o, a) {
-            this.x = t;
-            this.y = e;
-            this.isVirus = s;
-            this.isPlayerCell = o;
-            this.setMass(i);
-            this.setNick(a);
+        this.update = function(x, y, mass, isVirus, isPlayer, nick) {
+            this.x = x;
+            this.y = y;
+            this.isVirus = isVirus;
+            this.isPlayerCell = isPlayer;
+            this.setMass(mass);
+            this.setNick(nick);
         };
         this.removeCell = function() {
             this.removed = true;
-            var t = LM.cells.indexOf(this);
-            if (t != -1) {
-                LM.cells.splice(t, 1);
+            var cells = LM.cells.indexOf(this);
+            if (cells != -1) {
+                LM.cells.splice(cells, 1);
                 if (defaultmapsettings.virusesRange) {
-                    t = LM.viruses.indexOf(this);
-                    if (t != -1) {
-                        LM.viruses.splice(t, 1);
+                    cells = LM.viruses.indexOf(this);
+                    if (cells != -1) {
+                        LM.viruses.splice(cells, 1);
                     }
                 }
             } else {
-                t = LM.food.indexOf(this);
-                if (t != -1) {
-                    LM.food.splice(t, 1);
+                cells = LM.food.indexOf(this);
+                if (cells != -1) {
+                    LM.food.splice(cells, 1);
                 }
             }
-            t = LM.playerCells.indexOf(this);
-            if (t != -1) {
+            cells = LM.playerCells.indexOf(this);
+            if (cells != -1) {
                 LM.removePlayerCell = true;
-                LM.playerCells.splice(t, 1);
-                t = LM.playerCellIDs.indexOf(this.id);
-                if (t != -1) {
-                    LM.playerCellIDs.splice(t, 1);
+                LM.playerCells.splice(cells, 1);
+                cells = LM.playerCellIDs.indexOf(this.id);
+                if (cells != -1) {
+                    LM.playerCellIDs.splice(cells, 1);
                 }
             }
             if (this.redrawed) {
@@ -6616,21 +6614,27 @@ var thelegendmodproject = function() {
             delete LM.indexedCells[this.id];
         };
         this.moveCell = function() {
-            var t = LM.time - this.time;
-            var t1 = t / defaultmapsettings.animation;
-            t1 = t1 < 0 ? 0 : t1 > 1 ? 1 : t1;
-            this.x += (this.targetX - this.x) * t1;
-            this.y += (this.targetY - this.y) * t1;
-            this.size += (this.targetSize - this.size) * t1;
-            this.alpha = t1;
+            var time = LM.time - this.time;
+            var delay = time / defaultmapsettings.animation;
+			if (delay<0){
+				delay=0
+			}
+			else if (delay>1){
+				delay=1
+			}				
+            //delay = delay < 0 ? 0 : delay > 1 ? 1 : delay;
+            this.x += (this.targetX - this.x) * delay;
+            this.y += (this.targetY - this.y) * delay;
+            this.size += (this.targetSize - this.size) * delay;
+            this.alpha = delay;
             if (!this.removed) {
                 this.time = LM.time;
                 return;
             }
-            if (t1 == 1) {
-                var t2 = LM.removedCells.indexOf(this);
-                if (t2 != -1) {
-                    LM.removedCells.splice(t2, 1);
+			if (delay == 1) {
+                var removedCells = LM.removedCells.indexOf(this);
+                if (removedCells != -1) {
+                    LM.removedCells.splice(removedCells, 1);
                 }
             }
         };
@@ -6648,9 +6652,9 @@ var thelegendmodproject = function() {
                     return this.size = t, !(t <= 40) && (this.massCanvas ? (this.mass = ~~(t * t / 100), this.redrawMass = true, this.isVirus ? (this.virMassShots && this.mass < 200 && (this.mass = ~~((200 - this.mass) / 14)), this.massTxt = this.mass.toString(), this.mass > 220 ? (this.virusColor = defaultSettings.mVirusColor, this.virusStroke = defaultSettings.mVirusStrokeColor) : (this.virusColor = defaultSettings.virusColor, this.virusStroke = defaultSettings.virusStrokeColor), true) : (this.massTxt = this.mass.toString(), this.mass <= 200 || (this.shortMass && this.mass >= 1000 ? (this.kMass = Math.round(this.mass / 100) / 10, this.massTxt = this.kMass + 'k', true) : (this.optimizedMass && (this.redrawMass = Math.abs((this.mass - this.lastMass) / this.mass) >= 0.02 || this.rescale), true)))) : (this.massCanvas = new irenderfromagario(), false));
                 };
 				*/
-        this.setMass = function(t) {
-            this.size = t;
-            if (t <= 40) {
+        this.setMass = function(mass) {
+            this.size = mass;
+            if (mass <= 40) {
                 return false;
             }
             if (!this.massCanvas) {
@@ -6661,7 +6665,7 @@ var thelegendmodproject = function() {
                 this.mergeCanvas = new irenderfromagario();
                 return false;
             }
-            this.mass = ~~(t * t / 100);
+            this.mass = ~~(mass * mass / 100);
             this.redrawMass = true;
             if (this.isVirus) {
                 if (this.mass <= 200) {
@@ -6690,9 +6694,9 @@ var thelegendmodproject = function() {
             return true;
         };
 
-        this.setNick = function(t) {
-            this.nick = t;
-            if (!t || this.isVirus) {
+        this.setNick = function(nick) {
+            this.nick = nick;
+            if (!nick || this.isVirus) {
                 return false;
             }
             if (!this.nickCanvas) {
@@ -6701,17 +6705,17 @@ var thelegendmodproject = function() {
             }
             return true;
         };
-        this.setScale = function(t, e, i, s, o) {
-            var t = Math.ceil(t * 10) / 10;
+        this.setScale = function(scale, nickScale, massScale, virusScale, strokeScale) {
+            var scale = Math.ceil(scale * 10) / 10;
             this.rescale = false;
-            if (this.scale != t) {
-                this.scale = t;
+            if (this.scale != scale) {
+                this.scale = scale;
                 this.rescale = true;
             }
-            this.nickScale = e;
-            this.massScale = i;
-            this.virMassScale = s;
-            this.strokeScale = o;
+            this.nickScale = nickScale;
+            this.massScale = massScale;
+            this.virMassScale = virusScale;
+            this.strokeScale = strokeScale;
         };
         this.setFontSize = function() {
             if (this.isVirus) {
@@ -6749,7 +6753,7 @@ var thelegendmodproject = function() {
             this.setStrokeSize();
             this.margin = 0;
         };
-        this.drawNick = function(t) {
+        this.drawNick = function(ctx) {
             if (!this.nick || !this.nickCanvas || this.isVirus) {
                 return;
             }
@@ -6766,7 +6770,7 @@ var thelegendmodproject = function() {
             var h = ~~(nickImg.height / this.scale);
             this.margin = ~~(h / 2);
             try {
-                t.drawImage(nickImg, ~~this.x - ~~(w / 2), ~~this.y - this.margin, w, h);
+                ctx.drawImage(nickImg, ~~this.x - ~~(w / 2), ~~this.y - this.margin, w, h);
             } catch (e) {}
         };
         this.drawMerge = function(context) {
@@ -8186,24 +8190,25 @@ var thelegendmodproject = function() {
 
 
 
-                    window.ret = new Node(data, s);
+                    const node = new Node(data, s);
 
-                    var key_or_value = window.ret.readFlag();
+                    var key_or_value = node.readFlag();
                     if (key_or_value == 1) {
-                        window.ret.setContentType();
+                        node.setContentType();
                     }
-                    key_or_value = window.ret.readFlag();
+                    key_or_value = node.readFlag();
                     if (key_or_value == 2) {
-                        window.ret.setUncompressedSize();
+                        node.setUncompressedSize();
                     }
-                    key_or_value = window.ret.readFlag();
+                    key_or_value = node.readFlag();
                     if (key_or_value == 1) {
-                        var obj = window.ret.readUint32();
-                        var previousState = window.ret.readFlag();
-                        var artistTrack = window.ret.readUint32();
-                        switch (obj) {
+                        var option = node.readUint32();
+                        var response = node.readFlag();
+                        var response_2 = node.readUint32();
+                        switch (option) {
                             case 11:
-                                //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Login response", window.ret.view.byteLength, window.ret.contentType, window.ret.uncompressedSize, obj, previousState, artistTrack);
+								console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Login response", node.contentType, node.uncompressedSize, option, response, response_2);
+                                //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Login response", window.ret.view.byteLength, window.ret.contentType, window.ret.uncompressedSize, option, response, response_2);
                                 break;
                             case 62:
                                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Game over");
@@ -8211,8 +8216,8 @@ var thelegendmodproject = function() {
                                 //$('#pause-hud').text("PAUSE!");
                                 break;
                             default:
-                                console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Unknown", obj, previousState);
-                                if (obj == 20 && previousState == 20) {
+                                console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Unknown", option, response);
+                                if (option == 20 && response == 20) {
                                     toastr["error"]('<b>[SERVER]:</b> You have been disconnected because your User ID logged in from another place');
                                 }
                         }
@@ -9409,7 +9414,9 @@ var thelegendmodproject = function() {
                 var r = i / s;
                 var l = (n / 2 - o) % 50;
                 var h = (r / 2 - a) % 50;
-                t.strokeStyle = defaultSettings.gridColor, t.globalAlpha = 1 * s, t.beginPath();
+                t.strokeStyle = defaultSettings.gridColor;
+				t.globalAlpha = 1 * s; 
+				t.beginPath();
                 for (; l < n; l = l + 50) {
                     t.moveTo(l * s - 0.5, 0);
                     t.lineTo(l * s - 0.5, r * s);
@@ -9678,40 +9685,44 @@ var thelegendmodproject = function() {
                     s && (e = []);
                 }
             },*/
-            'drawSplitRange': function(t, e, i, s, o) {
-                if (this.drawCircles(t, e, 760, 4, 0.4, defaultSettings.enemyBSTEColor), i.length) { //Sonia2
-                    //if (this.drawCircles(t, e, 760, 4, 0.4, '#ff0000'), i.length) { //Sonia
-                    var a = s ? i.length - 1 : 0;
-                    t.lineWidth = 6, t.globalAlpha = defaultSettings.darkTheme ? 0.7 : 0.35,
-                        t.strokeStyle = defaultSettings.splitRangeColor,
-                        t.beginPath(),
-                        t.arc(i[a].x, i[a].y, i[a].size + 760, 0, this.pi2, false),
-                        t.closePath(),
-                        t.stroke();
+            'drawSplitRange': function(ctx, biggestCell, players, currentBiggestCell, reset) {
+                if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, defaultSettings.enemyBSTEColor), players.length) { //Sonia2
+                    //if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, '#ff0000'), players.length) { //Sonia
+                    var a = currentBiggestCell ? players.length - 1 : 0;
+                    ctx.lineWidth = 6; 
+					ctx.globalAlpha = defaultSettings.darkTheme ? 0.7 : 0.35,
+                        ctx.strokeStyle = defaultSettings.splitRangeColor;
+                        ctx.beginPath();
+                        ctx.arc(players[a].x, players[a].y, players[a].size + 760, 0, this.pi2, false);
+                        ctx.closePath();
+                        ctx.stroke();
                 }
-                t.globalAlpha = 1, o && (e = []);
+                ctx.globalAlpha = 1;
+                if (reset) {
+                    biggestCell = [];
+                }
             },
-            'drawDoubleSplitRange': function(t, e, i, s, o) {
-                //if (this.drawCircles(t, e, 760, 4, 0.4, '#BE00FF'), i.length) {
-                if (this.draw2Circles(t, e, 760, 4, 0.4, defaultSettings.enemyBSTEDColor), i.length) { //Sonia2
-                    //if (this.draw2Circles(t, e, 760, 4, 0.4, '#8000ff'), i.length) { //Sonia
+            'drawDoubleSplitRange': function(ctx, biggestCell, players, currentBiggestCell, reset) {
+                //if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, '#BE00FF'), players.length) {
+                if (this.draw2Circles(ctx, biggestCell, 760, 4, 0.4, defaultSettings.enemyBSTEDColor), players.length) { //Sonia2
+                    //if (this.draw2Circles(ctx, biggestCell, 760, 4, 0.4, '#8000ff'), players.length) { //Sonia
                     //this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell);
 
-                    var a = s ? i.length - 1 : 0;
-                    //console.log(i[a].size);
-                    if (i[a].size >= 400 && defaultmapsettings.qdsplitRange) { //Sonia2
-                        t.lineWidth = 6,
-                            t.globalAlpha = defaultSettings.darkTheme ? 0.7 : 0.35,
-                            t.strokeStyle = defaultSettings.splitRangeColor;
-                        t.beginPath();
-                        t.arc(i[a].x, i[a].y, 2 * i[a].size + 760, 0, this.pi2, false);
-                        t.closePath();
-                        t.stroke();
+                    var a = currentBiggestCell ? players.length - 1 : 0;
+                    //console.log(currentBiggestCell[a].size);
+                    if (players[a].size >= 400 && defaultmapsettings.qdsplitRange) { //Sonia2
+                        ctx.lineWidth = 6;
+                            ctx.globalAlpha = defaultSettings.darkTheme ? 0.7 : 0.35,
+                            ctx.strokeStyle = defaultSettings.splitRangeColor;
+                        ctx.beginPath();
+                        ctx.arc(players[a].x, players[a].y, 2 * players[a].size + 760, 0, this.pi2, false);
+                        ctx.closePath();
+                        ctx.stroke();
                     }
                 }
-                t.globalAlpha = 1;
-                if (o) {
-                    e = [];
+                ctx.globalAlpha = 1;
+                if (reset) {
+                    biggestCell = [];
                 }
             },
             //Sonia (entire function update)
@@ -11044,9 +11055,9 @@ var thelegendmodproject = function() {
     };
     ogarassembler();
 
-    function Node(lsb, msb) {
-        this.view = lsb;
-        this.offset = msb;
+    function Node(view, offset) {
+        this.view = view;
+        this.offset = offset;
         this.contentType = 1;
         this.uncompressedSize = 0;
         this.setContentType = function() {
@@ -11055,17 +11066,17 @@ var thelegendmodproject = function() {
         this.setUncompressedSize = function() {
             this.uncompressedSize = this.readUint32();
         };
-        this.compareBytesGt = function(first, second) {
-            var stripTerrain = first < 0;
-            var coast = second < 0;
-            if (stripTerrain != coast) {
-                return stripTerrain;
+        this.compareBytesGt = (bytes1, bytes2) => {
+            const byte_1 = bytes1 < 0;
+            const byte_2 = bytes2 < 0;
+            if (byte_1 != byte_2) {
+                return byte_1;
             }
-            return first > second;
+            return bytes1 > bytes2;
         };
         this.skipByte = function() {
-            var checkvarreadByte = this.readByte();
-            if (checkvarreadByte < 128) {
+            const read = this.readByte();
+            if (read < 128) {
                 return;
             }
             this.skipByte();
@@ -11074,28 +11085,28 @@ var thelegendmodproject = function() {
             return this.view.getUint8(this.offset++);
         };
         this.readUint32 = function() {
-            var result = 0;
-            var shift = 0;
-            for (; !![];) {
-                var digit = this.readByte();
-                if (this.compareBytesGt(32, shift)) {
-                    if (digit >= 128) {
-                        result = result | (digit & 127) << shift;
+            let number = 0;
+            let mayor = 0;
+            while (true) {
+                const read = this.readByte();
+                if (this.compareBytesGt(32, mayor)) {
+                    if (read >= 128) {
+                        number |= (read & 127) << mayor;
                     } else {
-                        result = result | digit << shift;
+                        number |= read << mayor;
                         break;
                     }
                 } else {
                     this.skipByte();
                     break;
                 }
-                shift = shift + 7;
+                mayor += 7;
             }
-            return result;
+            return number;
         };
         this.readFlag = function() {
             return this.readUint32() >>> 3;
-        }
+        };
     }
     window.core = {
         'connect': function(t) {
