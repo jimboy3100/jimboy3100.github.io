@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.264 MEGA TEST
+// v1.265 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7034,11 +7034,15 @@ var thelegendmodproject = function() {
 
                     } else if (legendmod.gameMode != ":teams") {
                         try {
-                            style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y);
+                            style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y); //all skin drawing
                         } catch (e) {}
                     }
 
                     //special animations
+					//if (legendmod.friends){
+						//if (this.targetNick.includes())
+						
+					//}
                     if (this.targetNick.includes("The Dying Light")) {
 
                         try {
@@ -8457,7 +8461,7 @@ var thelegendmodproject = function() {
             if (this.playerPosition > window.leaderboardlimit && (t += '<span class=\"me\">' + this.playerPosition + '. ' + ogarminimapdrawer.escapeHTML(this.playerNick) + '</span>'), defaultmapsettings['showLbData']);
             if (legendmod.gameMode != ":battleroyale") {
                 t += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
-                if (legendmod.friends && legendmod.friends > 0) {
+                if (defaultmapsettings.FBTracking && legendmod.friends && legendmod.friends > 0) {
                     t += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
                 }
                 //t += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
@@ -8731,7 +8735,58 @@ var thelegendmodproject = function() {
                 //x = this.getX(x),
                 //y = this.getY(y);						
                 cellUpdateCells = null;
-
+				
+                if (this.indexedCells.hasOwnProperty(id)) {
+                    cellUpdateCells = this.indexedCells[id];
+                    if (color) {
+                        cellUpdateCells.color = color;
+                    }
+                }
+				else {
+                    cellUpdateCells = new ogarbasicassembly(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+                    cellUpdateCells.time = this.time;
+                    if (!isFood) {
+                        if (isVirus && defaultmapsettings.virusesRange) {
+                            this.viruses.push(cellUpdateCells);
+                        }
+                        this.cells.push(cellUpdateCells);
+                        if (this.playerCellIDs.indexOf(id) != -1 && this.playerCells.indexOf(cellUpdateCells) == -1) {
+                            cellUpdateCells.isPlayerCell = true;
+                            this.playerColor = color;
+                            this.playerCells.push(cellUpdateCells);
+                        }
+                    } else {
+                        this.food.push(cellUpdateCells);
+                    }
+                    this.indexedCells[id] = cellUpdateCells;
+                }
+                if (cellUpdateCells.isPlayerCell) {
+                    name = this.playerNick;
+                }
+                if (name) {
+                    cellUpdateCells.targetNick = name;
+                }
+                cellUpdateCells.targetX = x;
+                cellUpdateCells.targetY = y;
+                cellUpdateCells.targetSize = size;
+                cellUpdateCells.isFood = isFood;
+                cellUpdateCells.isVirus = isVirus;
+                if (skin) {
+                    cellUpdateCells.skin = skin;
+                }
+                if (extendedFlags & 4) {
+                    accountID = view.readUInt32LE(offset);
+                    offset += 4;
+                    cellUpdateCells.accID = accountID;
+                    let friend = LM.fbOnline.find(element => {return element.id == accountID});
+                    friend != undefined?cellUpdateCells.fbID = friend.fbId:void(0);
+                }
+                if (extendedFlags & 2) {
+                    cellUpdateCells.isFriend = isFriend;
+                    console.log('FB friend cell in view', isFriend)
+                }
+            }	
+			/*
                 this.indexedCells.hasOwnProperty(id) ? (cellUpdateCells = this.indexedCells[id],
                         color && (cellUpdateCells.color = color)) :
                     ((cellUpdateCells = new ogarbasicassembly(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots)).time = this.time,
@@ -8764,6 +8819,8 @@ var thelegendmodproject = function() {
                     2 & extendedFlags && (cell.isFriend = isFriend,
                         console.log('FB friend cell in view', isFriend));
             }
+			*/
+			
             eatEventsLength = view.readUInt16LE(offset);
             offset += 2;
             for (length = 0; length < eatEventsLength; length++) {
@@ -11239,184 +11296,6 @@ function setGUIEvents() {
     })
 }
 
-
-function Recaptcha(curtin, e, n) {
-    var i = this;
-    this.init = function() {
-        this.ready = true
-    }
-    this.show = function() {
-        i.sessionExpired = !1,
-            document.getElementById(this.curtin).style.display = "block"
-    }
-    this.hide = function() {
-        document.getElementById(this.curtin).style.display = "none"
-    }
-    this.reset = function() {
-        console.log('grecaptcha.reset()')
-        grecaptcha.reset()
-    }
-    this.onRender = function(t) {
-        window.cookieCaptchaOK = true;
-        if (legendmod.botscaptcha) {
-            legendmod.botscaptcha = null;
-            window.tempol = $("#captchaSpeed").val()
-            if ($("#captchaSpeed").val() == null || $("#captchaSpeed").val() == "") {
-                window.tempol = 0;
-            }
-            window.tempo2 = t;
-            //window.tempo2 = grecaptcha.getResponse()
-            setTimeout(function() {
-                legendmod.sendSpawn2(window.tempo2);
-            }, window.tempol * 1000);
-        }
-        console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " requestCaptcha bypass v2, v3 loaded");
-        window.sendTimeOutTokenBots = true;
-        /*if(window.core) {
-				window.core.recaptchaResponse(_0x196a5a);
-			}*/
-        /*t ? (window.core.recaptchaResponse(t),
-        setTimeout(function() {
-            //grecaptcha.reset(myCaptcha.widget)
-            i.reset()
-            i.hide()
-        }, 100)) : i.show()*/
-        window.core.recaptchaResponse(t)
-        i.hide();
-        i.reset();
-
-    }
-    this.validateExpire = function() {
-        console.log('i.sessionExpired && i.show()')
-        i.sessionExpired && i.show()
-    }
-    this.onExpire = function() {
-        console.log('EXPIRE')
-        //i.ready && i.widget && (window.core.playerHasCells() ? i.sessionExpired = !0 : i.show())
-    }
-    this.render = function() {
-        if (this.ready) {
-            this.show()
-            if (null == this.widget) {
-                this.widget = grecaptcha.render(this.id, {
-                    sitekey: RECAPTCHA_V2_KEY,
-                    callback: this.onRender.bind(this),
-                    "data-theme": 'dark',
-                    "expired-callback": this.onExpire.bind(this)
-                })
-            }
-        } else this.reset()
-        return this.ready
-    }
-    this.id = e,
-        this.curtin = curtin,
-        this.widget = null,
-        this.ready = !1,
-        window.recaptchaClientId = null,
-        this.hide()
-}
-
-
-function CaptchaRouter(arg) {
-    function load() {
-        //var t = document.createElement("script");
-        //t.setAttribute("src", "https://www.google.com/recaptcha/api.js?onload=onloadCallbackV3&render=explicit"),
-        //document.head.appendChild(t)
-    }
-
-    function requestCaptcha() {
-        return l.render()
-    }
-
-    function requestCaptchaV3(t, e) {
-        null === window.recaptchaClientId && (window.recaptchaClientId = window.grecaptchaV3.render("captchaWindowV3", {
-            sitekey: RECAPTCHA_V3_KEY,
-            badge: "inline",
-            size: "invisible"
-        }))
-        grecaptcha.reset(window.recaptchaClientId)
-        window.grecaptchaV3.execute(window.recaptchaClientId, {
-            action: t
-        }).then(function(t) {
-            e(t)
-        })
-    }
-
-    function onloadCallback() {
-        l.init()
-        window.cookieCaptchaOK = true
-    }
-
-    function onloadCallbackV3() {
-        Object.defineProperty(window, "grecaptchaV3", {
-            value: window.grecaptcha,
-            writable: !1,
-            configurable: !1,
-            enumerable: !1
-        });
-        window.cookieCaptchaOK = true
-        //var t = document.createElement("script");
-        //t.setAttribute("src", "https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"),
-        //document.head.appendChild(t)
-    }
-    var l = window.myCaptcha = new Recaptcha("captchaWindow", "verifyUser", arg);
-    window.onloadCallbackV3 = onloadCallbackV3
-    window.onloadCallback = onloadCallback
-    load()
-    return {
-        load: load,
-        validateExpire: l.validateExpire.bind(l),
-        requestCaptcha: requestCaptcha,
-        requestCaptchaV3: requestCaptchaV3,
-        onloadCallback: onloadCallback,
-        onloadCallbackV3: onloadCallbackV3
-    }
-
-
-
-
-}
-
-window.agarCaptcha = CaptchaRouter()
-/*Object.defineProperty(window, "agarCaptcha", {
-    value: CaptchaRouter()
-})*/
-/*	
-			window.requestCaptchaV2 = function(aa) {
-					grecaptcha.v2mode = true;
-					grecaptcha.render('recaptcha-screen', {
-							'sitekey': '6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl',
-							'callback': SAO
-					});
-					//window.cookieCaptchaOK=true;
-			}
-			window.requestCaptchaV3 = function(bb) {
-				grecaptcha.v2mode = false;
-				grecaptcha.render('captchaWindowV3', {
-						'sitekey': '6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY',
-						'badge': "inline",
-						'size': "invisible",
-						'callback': SAO						
-				});
-				//window.cookieCaptchaOK=true;
-			}
-			window.SAO = function() {
-					window.cookieCaptchaOK=true;
-					if (legendmod.botscaptcha){
-						legendmod.botscaptcha=null;
-						window.tempol = $("#captchaSpeed").val()		
-						if($("#captchaSpeed").val()==null || $("#captchaSpeed").val()==""){
-							window.tempol=0;
-					}						
-					window.tempo2 = grecaptcha.getResponse()
-					setTimeout(function() {
-						legendmod.sendSpawn2(window.tempo2);
-						}, window.tempol*1000);
-					}
-					console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " requestCaptcha bypass v2, v3 loaded");
-					window.sendTimeOutTokenBots = true;
-			}
-			*/
 /*
 var snezSocketdata;
 var snezSocket = new WebSocket("wss://connect.websocket.in/3Q-SoniaSLG_453dsV?room_id=123");
