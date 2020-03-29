@@ -1,4 +1,4 @@
-//SPECS v1.2
+//SPECS v1.3
 
 function addBox() {
   let spect = new Spect();
@@ -796,7 +796,7 @@ class Spect {
         }
     }
     newID(id) {
-      return id + this.number * 10000000000
+      return id + this.number + 10000000000
     }
 }
 
