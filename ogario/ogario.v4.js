@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.274 MEGA TEST
+// v1.275 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -8564,12 +8564,12 @@ var thelegendmodproject = function() {
                 //for SPECT
                 if (defaultmapsettings.fullSpectator && ($("#nick").val().includes('℄') || $("#nick").val().includes('ঌۣ⚝•') || $("#nick").val().includes('ⒸØⒸᗩⒾ𝓝Ⓔ⫸')) && spects.length == 0) {	
 					if(defaultmapsettings.rotateMap){
-						toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + textLanguage.fullSpectator + " disabled the rotation of Map");
+						toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Full Spectator" + " disabled the rotation of Map");
 					}
                     addFullSpectator();
                 } else if (defaultmapsettings.ingameSpectator && ($("#nick").val().includes('℄') || $("#nick").val().includes('ঌۣ⚝•')) && spects.length == 0) {
 					if(defaultmapsettings.rotateMap){
-						toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + textLanguage.ingameSpectator + " disabled the rotation of Map");
+						toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Ingame Spectator" + " disabled the rotation of Map");
 					}					
                     addSpectator();
 					
