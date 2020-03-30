@@ -1,4 +1,4 @@
-//SPECS v1.4
+//SPECS v1.4a
 
 function addBox() {
   let spect = new Spect();
@@ -751,11 +751,11 @@ class Spect {
             const isFood = extendedFlags & 1;
             const isFriend = extendedFlags & 2;
             const invisible = this.staticX!=null?this.isInView(x, y):false;
-                  id = this.newID(id),
+            const id = this.newID(id);
                   //snez
 				  //x = this.getX(x),
                   //y = this.getY(y);
-            var cell = null;
+            const cell = null;
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
                 cell.invisible = invisible;
