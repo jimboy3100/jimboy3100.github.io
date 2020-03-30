@@ -725,7 +725,8 @@ class Spect {
                 const g = view.readUInt8(offset++);
                 const b = view.readUInt8(offset++);
 			   //snez	
-				color = defaultSettings.miniMapGhostCellsColor;			  
+			    color = "#bbbbbb";
+				//color = defaultSettings.miniMapGhostCellsColor;			  
               /*if(defaultmapsettings.oneColoredSpectator) {
                 color = legendmod.rgb2Hex(255, 255, 255);
               } else {
