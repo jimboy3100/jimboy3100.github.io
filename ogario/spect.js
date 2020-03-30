@@ -1,4 +1,4 @@
-//SPECS v1.5a
+//SPECS v1.5b
 
 function addBox() {
   let spect = new Spect();
@@ -694,11 +694,9 @@ class Spect {
             offset += 4;
             let y = view.readInt32LE(offset);
             offset += 4;
-
 			//snez
             x = this.getX(x);
             y = this.getY(y);
-
             var a = x - legendmod.playerX;
             var b = y - legendmod.playerY;
             var distanceX = Math.round(Math.sqrt(a * a));
@@ -724,8 +722,7 @@ class Spect {
                 const g = view.readUInt8(offset++);
                 const b = view.readUInt8(offset++);
 			   //snez	
-				color = "#bbbbbb";
-			  
+				color = "#bbbbbb";			  
               /*if(defaultmapsettings.oneColoredSpectator) {
                 color = legendmod.rgb2Hex(255, 255, 255);
               } else {
@@ -736,8 +733,9 @@ class Spect {
                 skin = encode();
             }
             if (flags & 8) {
-                //name = window.decodeURIComponent(window.escape(encode()));
+                //name = window.decodeURIComponent(window.escape(encode()));				
                     name = window.decodeURIComponent(escape(encode()));
+					//jimboy3100
                     if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
                         legendmod.vanillaskins(name, skin);
                     }				
@@ -748,9 +746,10 @@ class Spect {
             const isFood = extendedFlags & 1;
             const isFriend = extendedFlags & 2;
             const invisible = this.staticX!=null?this.isInView(x, y):false;
-                  id = this.newID(id),
-                  x = this.getX(x),
-                  y = this.getY(y);
+                  id = this.newID(id);
+                  //snez
+				  //x = this.getX(x),
+                  //y = this.getY(y);
             var cell = null;
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
@@ -759,15 +758,14 @@ class Spect {
                 if (color) {
                     cell.color = color;
                 }
-
             } 		
 			else {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                 cell.time = this.time;
                 cell.spectator = this.number;
-                if (!isFood) {
+				//if (!isFood) {
+				if (!isFood && !remove) {
                     if (isVirus && defaultmapsettings.virusesRange) {
-
                         legendmod.viruses.push(cell);
                     }
                     legendmod.cells.push(cell);
