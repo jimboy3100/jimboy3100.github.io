@@ -1,4 +1,4 @@
-//SPECS v1.4c
+//SPECS v1.4d
 
 function addBox() {
   let spect = new Spect();
@@ -685,11 +685,11 @@ class Spect {
         var maxX = Math.round(mapX / legendmod.zoomValue / 10);
         var maxY = Math.round(mapY / legendmod.zoomValue / 12);
 		//
-		var id;
+		var ids;
         for (length = 0;;) {
-            id = view.readUInt32LE(offset);
+            ids = view.readUInt32LE(offset);
             offset += 4;
-            if (id == 0) {
+            if (ids == 0) {
                 break;
             }
             let x = view.readInt32LE(offset);
@@ -808,6 +808,7 @@ class Spect {
             }
         }
        // var rmaxedX=rmaxedY=rminedX=rminedY=0
+	   /*
        eatEventsLength = view.readUInt16LE(offset);
         offset += 2;
         for (length = 0; length < eatEventsLength; length++) {
@@ -819,6 +820,7 @@ class Spect {
                 cell.removeCell();
             }
         }
+		*/
     }
     newID(id) {
 	  //jimboy3100
