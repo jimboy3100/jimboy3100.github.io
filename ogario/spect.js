@@ -1,4 +1,4 @@
-//SPECS v1.3a
+//SPECS v1.4
 
 function addBox() {
   let spect = new Spect();
@@ -679,7 +679,13 @@ class Spect {
                 victimID.removeCell();
             }
         }
-
+		//snez
+        var mapX = legendmod.mapMaxX - legendmod.mapMinX;
+        var mapY = legendmod.mapMaxY - legendmod.mapMinY;
+        var maxX = Math.round(mapX / legendmod.zoomValue / 10);
+        var maxY = Math.round(mapY / legendmod.zoomValue / 12);
+		
+		
         for (length = 0;;) {
             var id = view.readUInt32LE(offset);
             offset += 4;
@@ -691,7 +697,19 @@ class Spect {
             let y = view.readInt32LE(offset);
             offset += 4;
 
+			//snez
+            x = this.getX(x);
+            y = this.getY(y);
 
+            var a = x - legendmod.playerX;
+            var b = y - legendmod.playerY;
+            var distanceX = Math.round(Math.sqrt(a * a));
+            var distanceY = Math.round(Math.sqrt(b * b));
+			var remove = false;
+            if (distanceX > maxX || distanceY > maxY)
+                remove = true;
+			//
+			
             const size = view.readUInt16LE(offset);
             offset += 2;
             const flags = view.readUInt8(offset++);
@@ -707,11 +725,14 @@ class Spect {
                 const r = view.readUInt8(offset++);
                 const g = view.readUInt8(offset++);
                 const b = view.readUInt8(offset++);
-              if(defaultmapsettings.oneColoredSpectator) {
+			   //snez	
+				color = "#bbbbbb";
+			  
+              /*if(defaultmapsettings.oneColoredSpectator) {
                 color = legendmod.rgb2Hex(255, 255, 255);
               } else {
                 color = legendmod.rgb2Hex(~~(r * 0.9), ~~(g * 0.9), ~~(b * 0.9));
-              }
+              }*/
             }
             if (flags & 4) {
                 skin = encode();
@@ -719,6 +740,7 @@ class Spect {
             if (flags & 8) {
                 //name = window.decodeURIComponent(window.escape(encode()));
                     name = window.decodeURIComponent(escape(encode()));
+					//jimboy3100
                     if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
                         legendmod.vanillaskins(name, skin);
                     }				
@@ -730,8 +752,9 @@ class Spect {
             const isFriend = extendedFlags & 2;
             const invisible = this.staticX!=null?this.isInView(x, y):false;
                   id = this.newID(id),
-                  x = this.getX(x),
-                  y = this.getY(y);
+                  //snez
+				  //x = this.getX(x),
+                  //y = this.getY(y);
             var cell = null;
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
@@ -746,7 +769,8 @@ class Spect {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                 cell.time = this.time;
                 cell.spectator = this.number;
-                if (!isFood) {
+                //if (!isFood) {
+				if (!isFood && !remove) {
                     if (isVirus && defaultmapsettings.virusesRange) {
 
                         legendmod.viruses.push(cell);
@@ -796,6 +820,7 @@ class Spect {
         }
     }
     newID(id) {
+	  //jimboy3100
       return id + this.number + 10000000000
     }
 }
