@@ -1,4 +1,4 @@
-//SPECS v1.4d
+//SPECS v1.4e
 
 function addBox() {
   let spect = new Spect();
@@ -750,8 +750,8 @@ class Spect {
             const isVirus = flags & 1;
             const isFood = extendedFlags & 1;
             const isFriend = extendedFlags & 2;
-            const invisible = this.staticX!=null?this.isInView(x, y):false;
-            const id = this.newID(id);
+            const invisible = this.staticX!=null?this.isInView(x, y):false,
+            id = this.newID(id);
                   //snez
 				  //x = this.getX(x),
                   //y = this.getY(y);
