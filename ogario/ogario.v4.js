@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.276 MEGA TEST
+// v1.279 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -836,6 +836,7 @@ var languagetexts = {
         'hk-changeTarget': 'Zmień cel',
         'hk-privateMiniMap': 'Pokaż cel na minimapie',
         'hk-showQuest': 'Pokaż/ukryj zadanie',
+		'hk-showSpectator': 'Show/hide Full Spectator',
         'commands': 'Komendy',
         'comm1': 'Feeduj!',
         'comm2': 'Dziel się!',
@@ -1243,6 +1244,7 @@ var languagetexts = {
         'hk-changeTarget': 'Change target',
         'hk-privateMiniMap': 'Show target on the minimap',
         'hk-showQuest': 'Show/hide quest',
+		'hk-showSpectator': 'Show/hide Full Spectator',
         'commands': 'Commands',
         'comm1': 'Feed me!',
         'comm2': 'Split into me!',
@@ -3006,14 +3008,25 @@ var thelegendmodproject = function() {
             defaultmapsettings.showMass = !defaultmapsettings.showMass;
         },
         'setShowMiniMap': function() {
-            defaultmapsettings.showMiniMap = !defaultmapsettings.showMiniMap, this.setMiniMap();
+            defaultmapsettings.showMiniMap = !defaultmapsettings.showMiniMap; 
+			this.setMiniMap();
         },
         'setMiniMap': function() {
             defaultmapsettings.showMiniMap ? $('#minimap-hud').show() : $('#minimap-hud').hide();
         },
         'setShowQuest': function() {
             ':ffa' === this.gameMode && (this.showQuest = !this.showQuest, this.setQuest());
-        },
+        },		
+        'setShowSpectator': function() {
+            if (defaultmapsettings.fullSpectator){				
+				defaultmapsettings.fullSpectator = false;
+				LM.flushSpecsData();				
+			}
+			else if(!defaultmapsettings.fullSpectator){
+				defaultmapsettings.fullSpectator = true;
+				LM.addSpect();				
+			}		
+        },		
         'setQuest': function() {
             this.showQuest && ':ffa' === this.gameMode ? $('#quest-hud').show() : $('#quest-hud').hide();
         },
@@ -8539,6 +8552,9 @@ var thelegendmodproject = function() {
 
             //for SPECT
             //this.ghostCellsStep = 0;
+            this.flushSpecsData();
+        },
+		'flushSpecsData': function() {
             this.isSpectateEnabled = false;
             this.isFreeSpectate = false;
             if (window.spects) {
@@ -8546,8 +8562,8 @@ var thelegendmodproject = function() {
                     spect.closeConnection()
                 })
                 window.spects = [];
-            }
-        },
+            }			
+		},
         'setMapOffset': function(left, top, right, bottom) {
             //if (right - left > 14000 && bottom - top > 14000) {
             if (!legendmod.integrity || (right - left) > 14000 && (bottom - top) > 14000) { //2020 jimboy3100
@@ -8562,6 +8578,11 @@ var thelegendmodproject = function() {
                 this.mapOffsetFixed || (this.viewX = (right + left) / 2, this.viewY = (bottom + top) / 2);
                 this.mapOffsetFixed = true;
                 //for SPECT
+				this.addSpect();
+                //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map offset fixed: (', this.mapOffsetX, ',', this.mapOffsetY, ')');
+            }
+        },
+		'addSpect': function() {
                 if (defaultmapsettings.fullSpectator && ($("#nick").val().includes('℄') || $("#nick").val().includes('ঌۣ⚝•') || $("#nick").val().includes('ⒸØⒸᗩⒾ𝓝Ⓔ⫸')) && spects.length == 0) {	
 					if(defaultmapsettings.rotateMap){
 						toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Full Spectator" + " disabled the rotation of Map");
@@ -8573,9 +8594,7 @@ var thelegendmodproject = function() {
 					}					
                     addSpectator();
 					
-                }
-                //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map offset fixed: (', this.mapOffsetX, ',', this.mapOffsetY, ')');
-            }
+                }            
         },
         'isInView': function(t, e, size) {
             var s = this.canvasWidth / 2 / this.scale,
@@ -8700,18 +8719,18 @@ var thelegendmodproject = function() {
                     extendedFlags = 0;
                 128 & flags && (extendedFlags = view.readUInt8(offset++));
                 //128 & d && (f = t.readUInt8(i++));	
-                var color = null,
-                    skin = null,
-                    name = '',
-                    accountID = null,
-                    isAgitated = false,
-                    isOwnEjected = false,
-                    isOtherEjected = false;
+                var color = null;
+                var skin = null;
+                var name = '';
+                var accountID = null;
+                var isAgitated = false;
+                var isOwnEjected = false;
+                var isOtherEjected = false;
                 if (2 & flags) { //offset
-                    var ogario1PlayerProfiles = view.readUInt8(offset++),
-                        ogarcopythelb = view.readUInt8(offset++),
-                        irenderfromagario = view.readUInt8(offset++);
-                    color = this.rgb2Hex(~~(0.9 * ogario1PlayerProfiles), ~~(0.9 * ogarcopythelb), ~~(0.9 * irenderfromagario));
+                    var r = view.readUInt8(offset++);
+                    var g = view.readUInt8(offset++);
+                    var b = view.readUInt8(offset++);
+                    color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
                 }
 
                 //4 & d && (g = s()),
@@ -10478,9 +10497,18 @@ var thelegendmodproject = function() {
                 'keyUp': null,
                 'type': 'normal'
             },
+            'hk-showSpectator': {
+                'label': textLanguage['hk-showSpectator'],
+                'defaultKey': 'V',
+                'keyDown': function() {
+                    ogarminimapdrawer && ogarminimapdrawer.setShowSpectator();
+                },
+                'keyUp': null,
+                'type': 'normal'
+            },			
             'hk-bots-split': {
                 'label': textLanguage['hk-bots-split'],
-                'defaultKey': ',',
+                'defaultKey': '',
                 'keyDown': function() {
                     if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([2]).buffer);
                 },
@@ -10489,7 +10517,7 @@ var thelegendmodproject = function() {
             },
             'hk-bots-feed': {
                 'label': textLanguage['hk-bots-feed'],
-                'defaultKey': '.',
+                'defaultKey': '',
                 'keyDown': function() {
                     if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
                 },
@@ -10498,7 +10526,7 @@ var thelegendmodproject = function() {
             },
             'hk-bots-ai': {
                 'label': textLanguage['hk-bots-ai'],
-                'defaultKey': '/',
+                'defaultKey': 'Y',
                 'keyDown': function() {
                     if (window.userBots.startedBots && window.userBots.isAlive) {
                         if (!window.bots.ai) {
