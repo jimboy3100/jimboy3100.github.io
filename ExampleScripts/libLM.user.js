@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         lib Legend Mod
-// @namespace    http://tampermonkey.net/
+// @namespace    Legend mod agar.io socket
 // @version      0.4
-// @description  try to take over the world!
+// @description  client side handler of communication socket
 // @author       You
-// @match        https://www.atmarkit.co.jp/d9KcsYjB
+// @match        https://legendmod.ml/ogario/
 // @grant        unsafeWindow
 // ==/UserScript==
 
@@ -26,7 +26,7 @@
 
 	// =====  Test driverー  =====
 
-	if(/atmarkit\.co\.jp\/d9KcsYjB/.test(location.href)){
+	if(/legendmod\.ml\/ogario/.test(location.href)){
 		//setTimeout(init_html, 100);
 		loadScript("https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js", init_html);
 	}
