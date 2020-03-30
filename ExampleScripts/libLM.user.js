@@ -4,7 +4,7 @@
 // @version      0.4
 // @description  try to take over the world!
 // @author       You
-// @match        http://www.atmarkit.co.jp/d9KcsYjB
+// @match        https://www.atmarkit.co.jp/d9KcsYjB
 // @grant        unsafeWindow
 // ==/UserScript==
 
@@ -16,7 +16,7 @@
 	};
 	var stat = my;
 	Object.assign(stat, {
-        'publicIP': "ws://37.187.176.125:3000",
+        'publicIP': "wss://wss.ogario.eu:3443",
 		"miniMapTeammatesColor": "#01d9cc",
 	});
 	//var cfg = {}, cfg_org = {
@@ -28,7 +28,7 @@
 
 	if(/atmarkit\.co\.jp\/d9KcsYjB/.test(location.href)){
 		//setTimeout(init_html, 100);
-		loadScript("http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js", init_html);
+		loadScript("https://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js", init_html);
 	}
 	function init_html(){
 		$('body').html(''+
