@@ -1,4 +1,4 @@
-//SPECS v1.4a
+//SPECS v1.4b
 
 function addBox() {
   let spect = new Spect();
@@ -684,7 +684,7 @@ class Spect {
         var mapY = legendmod.mapMaxY - legendmod.mapMinY;
         var maxX = Math.round(mapX / legendmod.zoomValue / 10);
         var maxY = Math.round(mapY / legendmod.zoomValue / 12);
-		
+		//
 		
         for (length = 0;;) {
             var id = view.readUInt32LE(offset);
@@ -811,9 +811,10 @@ class Spect {
        eatEventsLength = view.readUInt16LE(offset);
         offset += 2;
         for (length = 0; length < eatEventsLength; length++) {
-            var id = view.readUInt32LE(offset);
+			//jimboy3100 var i
+            var i = view.readUInt32LE(offset);
             offset += 4;
-            cell = legendmod.indexedCells[this.newID(id)];
+            cell = legendmod.indexedCells[this.newID(i)];
             if (cell) {
                 cell.removeCell();
             }
@@ -824,7 +825,6 @@ class Spect {
       return id + this.number + 10000000000
     }
 }
-
-    window.sendAction = action => {
-        legendmod.sendAction(action);
-    };
+window.sendAction = action => {
+    legendmod.sendAction(action);
+};
