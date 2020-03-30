@@ -1,4 +1,4 @@
-//SPECS v1.5d
+//SPECS v1.4f
 
 function addBox() {
   let spect = new Spect();
@@ -679,34 +679,41 @@ class Spect {
                 victimID.removeCell();
             }
         }
+		//snez
+		
         var mapX = legendmod.mapMaxX - legendmod.mapMinX;
         var mapY = legendmod.mapMaxY - legendmod.mapMinY;
         var maxX = Math.round(mapX / legendmod.zoomValue / 10);
-        var maxY = Math.round(mapY / legendmod.zoomValue / 12);
+        var maxY = Math.round(mapY / legendmod.zoomValue / 10); //or 12
 		
+        var miniax = legendmod.canvasWidth / (legendmod.mapMaxX - legendmod.mapMinX) / legendmod.viewScale; //CORRECT
+        var miniay = legendmod.canvasHeight / (legendmod.mapMaxY - legendmod.mapMinY) / legendmod.viewScale; //CORRECT		
+		//
+		var ids;
         for (length = 0;;) {
-            var id = view.readUInt32LE(offset);
+            ids = view.readUInt32LE(offset);
             offset += 4;
-            if (id == 0) {
+            if (ids == 0) {
                 break;
             }
             let x = view.readInt32LE(offset);
             offset += 4;
             let y = view.readInt32LE(offset);
             offset += 4;
+
 			//snez
-			const invisible = this.staticX!=null?this.isInView(x, y):false;
             x = this.getX(x);
             y = this.getY(y);
+
             var a = x - legendmod.playerX;
             var b = y - legendmod.playerY;
             var distanceX = Math.round(Math.sqrt(a * a));
             var distanceY = Math.round(Math.sqrt(b * b));
 			var remove = false;
-            if (distanceX > maxX || distanceY > maxY){
-				//remove = true;
-			}
+            if (distanceX > maxX || distanceY > maxY)
+                remove = true;
 			//
+			
             const size = view.readUInt16LE(offset);
             offset += 2;
             const flags = view.readUInt8(offset++);
@@ -723,7 +730,8 @@ class Spect {
                 const g = view.readUInt8(offset++);
                 const b = view.readUInt8(offset++);
 			   //snez	
-				color = "#bbbbbb";			  
+				color = "#bbbbbb";
+			  
               /*if(defaultmapsettings.oneColoredSpectator) {
                 color = legendmod.rgb2Hex(255, 255, 255);
               } else {
@@ -734,7 +742,7 @@ class Spect {
                 skin = encode();
             }
             if (flags & 8) {
-                //name = window.decodeURIComponent(window.escape(encode()));				
+                //name = window.decodeURIComponent(window.escape(encode()));
                     name = window.decodeURIComponent(escape(encode()));
 					//jimboy3100
                     if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
@@ -746,12 +754,12 @@ class Spect {
             const isVirus = flags & 1;
             const isFood = extendedFlags & 1;
             const isFriend = extendedFlags & 2;
-            //const invisible = this.staticX!=null?this.isInView(x, y):false;
-                  id = this.newID(id);
+            const invisible = this.staticX!=null?this.isInView(x, y):false,
+            id = this.newID(id);
                   //snez
 				  //x = this.getX(x),
                   //y = this.getY(y);
-            var cell = null;
+            const cell = null;
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
                 cell.invisible = invisible;
@@ -759,14 +767,16 @@ class Spect {
                 if (color) {
                     cell.color = color;
                 }
+
             } 		
 			else {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                 cell.time = this.time;
                 cell.spectator = this.number;
-				//if (!isFood) {
+                //if (!isFood) {
 				if (!isFood && !remove) {
                     if (isVirus && defaultmapsettings.virusesRange) {
+
                         legendmod.viruses.push(cell);
                     }
                     legendmod.cells.push(cell);
@@ -806,9 +816,10 @@ class Spect {
        eatEventsLength = view.readUInt16LE(offset);
         offset += 2;
         for (length = 0; length < eatEventsLength; length++) {
-            var id = view.readUInt32LE(offset);
+			//jimboy3100 var i
+            var i = view.readUInt32LE(offset);
             offset += 4;
-            cell = legendmod.indexedCells[this.newID(id)];
+            cell = legendmod.indexedCells[this.newID(i)];
             if (cell) {
                 cell.removeCell();
             }
@@ -816,10 +827,10 @@ class Spect {
 		
     }
     newID(id) {
+	  //jimboy3100
       return id + this.number + 10000000000
     }
 }
-
-    window.sendAction = action => {
-        legendmod.sendAction(action);
-    };
+window.sendAction = action => {
+    legendmod.sendAction(action);
+};
