@@ -1,4 +1,4 @@
-//SPECS v1.4b
+//SPECS v1.4c
 
 function addBox() {
   let spect = new Spect();
@@ -685,9 +685,9 @@ class Spect {
         var maxX = Math.round(mapX / legendmod.zoomValue / 10);
         var maxY = Math.round(mapY / legendmod.zoomValue / 12);
 		//
-		
+		var id;
         for (length = 0;;) {
-            var id = view.readUInt32LE(offset);
+            id = view.readUInt32LE(offset);
             offset += 4;
             if (id == 0) {
                 break;
