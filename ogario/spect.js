@@ -1,4 +1,4 @@
-//SPECS v1.5b
+//SPECS v1.5c
 
 function addBox() {
   let spect = new Spect();
@@ -703,7 +703,7 @@ class Spect {
             var distanceY = Math.round(Math.sqrt(b * b));
 			var remove = false;
             if (distanceX > maxX || distanceY > maxY){
-				remove = true;
+				//remove = true;
 			}
 			//
             const size = view.readUInt16LE(offset);
