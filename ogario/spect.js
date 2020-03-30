@@ -1,4 +1,4 @@
-//SPECS v1.5c
+//SPECS v1.5d
 
 function addBox() {
   let spect = new Spect();
@@ -695,6 +695,7 @@ class Spect {
             let y = view.readInt32LE(offset);
             offset += 4;
 			//snez
+			const invisible = this.staticX!=null?this.isInView(x, y):false;
             x = this.getX(x);
             y = this.getY(y);
             var a = x - legendmod.playerX;
@@ -745,7 +746,7 @@ class Spect {
             const isVirus = flags & 1;
             const isFood = extendedFlags & 1;
             const isFriend = extendedFlags & 2;
-            const invisible = this.staticX!=null?this.isInView(x, y):false;
+            //const invisible = this.staticX!=null?this.isInView(x, y):false;
                   id = this.newID(id);
                   //snez
 				  //x = this.getX(x),
