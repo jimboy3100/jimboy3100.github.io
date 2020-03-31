@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.303 MEGA TEST
+// v1.305 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -6041,10 +6041,11 @@ var thelegendmodproject = function() {
                             }
                             var pattern = /.*s[^a-z]*e[^a-z]*n[^a-z]*p[^a-z]*a.*/i;
                             var pattern2 = /.*m[^a-z]*i[^a-z]*s[^a-z]*t[^a-z]*i.*/i;
+							var pattern3 = "𝕊𝕖𝕟𝕡𝕒.𝕚𝕠";
                             //var pattern = /.*(s).*e.*n.*p.*a.*/i;
                             //var pattern2 = /.*(m).*i.*s.*t.*i.*/i;
                             //var pattern = /.*(s|5).*e.*n.*p.*a.*/i;
-                            if (!pattern.test(msg) && !pattern2.test(msg)) {
+                            if (!pattern.test(msg) && !pattern2.test(msg) && !msg.includes(pattern3)) {
                                 this.displayChatMessage(time, caseof, plId, msg);
                             } else {
                                 //console.log('Blocked: ' + msg)
