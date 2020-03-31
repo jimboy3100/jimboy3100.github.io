@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.282 MEGA TEST
+// v1.283 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -3017,7 +3017,7 @@ var thelegendmodproject = function() {
         'setShowQuest': function() {
             ':ffa' === this.gameMode && (this.showQuest = !this.showQuest, this.setQuest());
         },		
-        'setShowSpectator': function() {
+        'setShowFullSpectator': function() {
             if (defaultmapsettings.fullSpectator2){				
 				defaultmapsettings.fullSpectator2 = false;
 				LM.flushSpecsData();				
@@ -3836,6 +3836,7 @@ var thelegendmodproject = function() {
                     textLanguage.targetNotSet + '</span></div><div id="target-summary"></div></div><div id="target-panel-hud" class="hud">'+					
 					'<a href="#" id="set-debug" class="ogicon-location" style="display: none"></a>'+
 					'<a href="#" id="set-fullSpectator" class="ogicon-eye"  style="display: none"></a>'+
+					'<a href="#" id="set-ingameSpectator" class="ogicon-power"  style="display: none"></a>'+
 					'<a href="#" id="set-targeting" class="ogicon-target"></a>'+
 					'<a href="#" id="set-private-minimap" class="ogicon-location2"></a>'+
 					'<a href="#" id="cancel-targeting" class="ogicon-cancel-circle"></a>'+
@@ -4058,7 +4059,10 @@ var thelegendmodproject = function() {
                 event.preventDefault();
                 t.setFullSpectator();
             });
-			
+            $(document).on("click", "#set-ingameSpectator", function(event) {
+                event.preventDefault();
+                t.setIngameSpectator();
+            });			
             $(document).on("click", "#set-targeting", function(event) {
                 event.preventDefault();
                 t.setTargeting();
@@ -6173,6 +6177,16 @@ var thelegendmodproject = function() {
 				LM.addSpect()
 			}
         },		
+        'setIngameSpectator': function() {
+            if (defaultmapsettings.ingameSpectator2) {
+                defaultmapsettings.ingameSpectator2=false
+				LM.flushSpecsData()
+            }
+			else{
+				defaultmapsettings.ingameSpectator2=true
+				LM.addSpect()
+			}
+        },	
         'setTargeting': function() {
             if (this.targetID) {
                 this.targeting = !this.targeting; 
@@ -8622,7 +8636,8 @@ var thelegendmodproject = function() {
 		'addSpect': function() {
 			if ($("#nick").val().includes('℄') || $("#nick").val().includes('ঌۣ⚝•') || $("#nick").val().includes('ⒸØⒸᗩⒾ𝓝Ⓔ⫸')){
 				$('#set-debug').show();
-				$('#set-fullSpectator').show();				
+				$('#set-fullSpectator').show();		
+				$('#set-ingameSpectator').show();							
                 if (defaultmapsettings.fullSpectator2 && spects.length == 0) {	
 					if(defaultmapsettings.rotateMap){
 						toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Full Spectator" + " disabled the rotation of Map");
@@ -8638,6 +8653,7 @@ var thelegendmodproject = function() {
 			else{
 				$('#set-debug').hide();
 				$('#set-fullSpectator').hide();
+				$('#set-ingameSpectator').hide();
 			}
         },
         'isInView': function(t, e, size) {
@@ -10562,7 +10578,7 @@ var thelegendmodproject = function() {
                 'label': textLanguage['hk-showSpectator'],
                 'defaultKey': 'V',
                 'keyDown': function() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowSpectator();
+                    ogarminimapdrawer && ogarminimapdrawer.setShowFullSpectator();
                 },
                 'keyUp': null,
                 'type': 'normal'
