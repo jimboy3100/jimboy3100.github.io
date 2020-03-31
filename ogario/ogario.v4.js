@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.283 MEGA TEST
+// v1.284 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -7716,8 +7716,8 @@ var thelegendmodproject = function() {
                     //t = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
                     //e=9999;					
                 } else if (!window.autoPlay) {
-                    t = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
-                    e = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.cursorY) : this.cursorY; //Sonia3
+                    t = window.legendmod.vector[window.legendmod.vnr][0] && !defaultmapsettings.fullSpectator2 && !defaultmapsettings.ingameSpectator2 ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
+                    e = window.legendmod.vector[window.legendmod.vnr][1] && !defaultmapsettings.fullSpectator2 && !defaultmapsettings.ingameSpectator2 ? this.translateY(this.cursorY) : this.cursorY; //Sonia3
                     if (!this.play && this.targeting || this.pause) {
                         t = this.targetX;
                         e = this.targetY;
@@ -7727,13 +7727,13 @@ var thelegendmodproject = function() {
                 else if (!specialcommand) {
                     //if (typeof cell != "undefined") { //when used, autoplay not working as expected
                     if (Object.keys(target2).length == 0) {
-                        t = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(cell.x) : cell.x; //Sonia3
-                        e = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(cell.y) : cell.y; //Sonia3
+                        t = window.legendmod.vector[window.legendmod.vnr][0] && !defaultmapsettings.fullSpectator2 && !defaultmapsettings.ingameSpectator2? this.translateX(cell.x) : cell.x; //Sonia3
+                        e = window.legendmod.vector[window.legendmod.vnr][1] && !defaultmapsettings.fullSpectator2 && !defaultmapsettings.ingameSpectator2? this.translateY(cell.y) : cell.y; //Sonia3
                         // var t = cell.x;
                         //var e = cell.y;
                     } else {
-                        t = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(target2.x) : target2.x; //Sonia3
-                        e = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(target2.y) : target2.y; //Sonia3
+                        t = window.legendmod.vector[window.legendmod.vnr][0] && !defaultmapsettings.fullSpectator2 && !defaultmapsettings.ingameSpectator2? this.translateX(target2.x) : target2.x; //Sonia3
+                        e = window.legendmod.vector[window.legendmod.vnr][1] && !defaultmapsettings.fullSpectator2 && !defaultmapsettings.ingameSpectator2? this.translateY(target2.y) : target2.y; //Sonia3
                         //var t = target2.x;
                         //var e = target2.y;
                     }
@@ -8025,10 +8025,10 @@ var thelegendmodproject = function() {
                 case 17:
                     window.testobjectsOpcode17 = data;
                     var x = data.getFloat32(s, true);
-                    this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
+                    this.viewX = window.legendmod.vector[window.legendmod.vnr][0] && !defaultmapsettings.fullSpectator2 && !defaultmapsettings.ingameSpectator2 ? this.translateX(x) : x;
                     s += 4;
                     var y = data.getFloat32(s, true);
-                    this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
+                    this.viewY = window.legendmod.vector[window.legendmod.vnr][1] && !defaultmapsettings.fullSpectator2 && !defaultmapsettings.ingameSpectator2 ? this.translateY(y) : y;
                     s += 4;
                     this.scale = data.getFloat32(s, true);
                     break;
@@ -8174,8 +8174,8 @@ var thelegendmodproject = function() {
                         s += 5;
                         var g = ~~Math.sqrt(100 * m);
                         this.ghostCells.push({
-                            'x': window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(d) : d, //Sonia3
-                            'y': window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(f) : f, //Sonia3
+                            'x': window.legendmod.vector[window.legendmod.vnr][0] && !defaultmapsettings.fullSpectator2 && !defaultmapsettings.ingameSpectator2 ? this.translateX(d) : d, //Sonia3
+                            'y': window.legendmod.vector[window.legendmod.vnr][1] && !defaultmapsettings.fullSpectator2 && !defaultmapsettings.ingameSpectator2 ? this.translateY(f) : f, //Sonia3
                             'size': g,
                             'mass': m,
                             'inView': this.isInView(d, f, g)
@@ -8768,10 +8768,10 @@ var thelegendmodproject = function() {
                 var id = view.readUInt32LE(offset);
                 if (offset += 4, 0 == id) break;
                 var x = view.readInt32LE(offset);
-                if (window.legendmod.vector[window.legendmod.vnr][0]) x = this.translateX(x); //Sonia3
+                if (window.legendmod.vector[window.legendmod.vnr][0] && !defaultmapsettings.fullSpectator2 && !defaultmapsettings.ingameSpectator2) x = this.translateX(x); //Sonia3
                 offset += 4;
                 var y = view.readInt32LE(offset);
-                if (window.legendmod.vector[window.legendmod.vnr][1]) y = this.translateY(y); //Sonia3
+                if (window.legendmod.vector[window.legendmod.vnr][1] && !defaultmapsettings.fullSpectator2 && !defaultmapsettings.ingameSpectator2) y = this.translateY(y); //Sonia3
                 offset += 4;
                 var size = view.readUInt16LE(offset);
                 offset += 2;
