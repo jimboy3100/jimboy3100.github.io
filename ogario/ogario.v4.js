@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.284 MEGA TEST
+// v1.295 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -678,7 +678,7 @@ var languagetexts = {
         'chatGroup': 'Czat',
         'statsGroup': 'Statystyki',
         'extrasGroup': 'Dodatkowe',
-        'macroGroup': 'Macros',
+        'macroGroup': 'Macros',	
         'noSkins': 'Wyłącz skiny',
         'noNames': 'Wyłącz nazwy',
         'noColors': 'Wyłącz kolory',
@@ -688,6 +688,7 @@ var languagetexts = {
         'autoZoom': 'Auto zoom',
         'animation': 'Opóźnienie animacji',
         'macroFeeding': 'Macro feed (ms)',
+        'profileNumber': 'Profiles Number',				
         'suckAnimation': 'Cell Eat [Sucking] Animation',
         'virusGlow': 'Virus Glow',
         'borderGlow': 'Border Glow',
@@ -1085,7 +1086,7 @@ var languagetexts = {
         'chatGroup': 'Chat',
         'statsGroup': 'Stats',
         'extrasGroup': 'Extras',
-        'macroGroup': 'Macros',
+        'macroGroup': 'Macros',		
         'noSkins': 'No skins',
         'noNames': 'No names',
         'noColors': 'No colors',
@@ -1095,6 +1096,7 @@ var languagetexts = {
         'autoZoom': 'Auto zoom',
         'animation': 'Animation delay',
         'macroFeeding': 'Macro feed (ms)',
+        'profileNumber': 'Profiles Number',			
         'suckAnimation': 'Cell Eat [Sucking] Animation',
         'virusGlow': 'Virus Glow',
         'borderGlow': 'Border Glow',
@@ -2191,6 +2193,7 @@ var defaultmapsettings = {
     'showSkinsPanel': true,
     'animation': 120,
     'macroFeeding': 80,
+	'profileNumber': 15,
     ////
     "cameraSpeed": 7,
     "commanderDelay": 1E3,
@@ -3535,25 +3538,58 @@ var thelegendmodproject = function() {
                 this.saveSettings(defaultmapsettings, 'ogarioSettings');
             }
         },
+		'profiling': function() {
+			if (defaultmapsettings.profileNumber<15){
+				$('#skins-panel').css("width", "190px");
+			}
+			else if (defaultmapsettings.profileNumber<20){
+				$('#skins-panel').css("width", "280px");
+			}
+			else if (defaultmapsettings.profileNumber<30){
+				$('#skins-panel').css("width", "370px");
+			}
+			else if (defaultmapsettings.profileNumber<35){
+				$('#skins-panel').css("width", "460px");
+			}
+			else if (defaultmapsettings.profileNumber<55){
+				$('#skins-panel').css("width", "550px");
+			}	
+		ogarhusettings();			
+		},
         'loadProfiles': function() {
             if (null !== window.localStorage.getItem('ogarioPlayerProfiles')) {
                 ogario1PlayerProfiles = JSON.parse(window.localStorage.getItem('ogarioPlayerProfiles'))
-                if (ogario1PlayerProfiles.length == 10) { //fix for old players
-                    for (var t = 10; t < 15; t++) ogario1PlayerProfiles.push({
+                if (ogario1PlayerProfiles.length < defaultmapsettings.profileNumber) { //fix for old players
+					//for (var t = 10; t < 15; t++) ogario1PlayerProfiles.push({
+					for (var t = ogario1PlayerProfiles.length; t < defaultmapsettings.profileNumber; t++){ 
+					ogario1PlayerProfiles.push({
                         'nick': 'Profile #' + (t + 1),
                         'clanTag': '',
                         'skinURL': '',
                         'color': defaultSettings.mainColor
                     });
+					}
                 }
+                else if (ogario1PlayerProfiles.length > defaultmapsettings.profileNumber) { //fix for old players
+					//for (var t = 10; t < 15; t++) ogario1PlayerProfiles.push({
+					for (var t = defaultmapsettings.profileNumber; t < ogario1PlayerProfiles.length; t++){ 
+						ogario1PlayerProfiles.pop();
+					}
+                }				
             } else {
-                for (var t = 0; t < 15; t++) ogario1PlayerProfiles.push({
+                //for (var t = 0; t < 15; t++) ogario1PlayerProfiles.push({
+				for (var t = 0; t < defaultmapsettings.profileNumber; t++){
+					ogario1PlayerProfiles.push({
                     'nick': 'Profile #' + (t + 1),
                     'clanTag': '',
                     'skinURL': '',
                     'color': defaultSettings.mainColor
                 });
+				}
             }
+			setTimeout(function() {
+			ogarminimapdrawer.profiling();
+			}, 200)
             if (null !== window.localStorage.getItem('ogarioSelectedProfile')) {
                 this.selectedProfile = JSON.parse(window.localStorage.getItem('ogarioSelectedProfile'));
             }
@@ -3805,6 +3841,7 @@ var thelegendmodproject = function() {
                 this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
                 this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"),
                 this.addOptions([], "macroGroup"),
+				this.addOptions([], "profiles"),
                 this.protocolMode || (this.addOptions(["blockPopups"], "extrasGroup"),
                     $("#noSkins, #noColors, #skipStats, #showQuest").addClass("js-switch-vanilla"),
                     $(".skinsGroup h5").after('<label class="noSkins">' + textLanguage.noSkins + " </label>"),
@@ -3818,6 +3855,7 @@ var thelegendmodproject = function() {
                     $("#settingsChoice").appendTo($(".extrasGroup")).addClass("select-wrapper")),
                 this.addSliderBox(".animationGroup", "animation", 20, 200, 1),
                 this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01),
+				this.addSliderBox(".profiles", "profileNumber", 10, 54, 1),
                 this.addSliderBox(".macroGroup", "macroFeeding", 1, 160, 1),
                 $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + textLanguage.exportImport + "</button>"),
                 $("#og-settings").append('<div class="restore-settings"><a href="#">' + textLanguage.restoreSettings + "</a></div>"),
