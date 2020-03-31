@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.299 MEGA TEST
+// v1.303 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -3565,7 +3565,9 @@ var thelegendmodproject = function() {
                         }
                     } else if (ogario1PlayerProfiles.length > defaultmapsettings.profileNumber) {
                         //for (var t = 10; t < 15; t++) ogario1PlayerProfiles.push({
-                        for (var t = defaultmapsettings.profileNumber; t < ogario1PlayerProfiles.length; t++) {
+						var temp = ogario1PlayerProfiles.length; //case ogario1PlayerProfiles.length changes
+                        for (var t = 0; t < temp - defaultmapsettings.profileNumber; t++) {
+							console.log(t);
                             ogario1PlayerProfiles.pop();
                         }
 
@@ -3581,9 +3583,10 @@ var thelegendmodproject = function() {
                         });
                     }
                 }
+				ogarminimapdrawer.saveSettings(ogario1PlayerProfiles, 'ogarioPlayerProfiles');
                 setTimeout(function() {
                     ogarminimapdrawer.profiling();
-                    ogarminimapdrawer.saveSettings(ogario1PlayerProfiles, 'ogarioPlayerProfiles');
+                    
                 }, 200)
                 if (null !== window.localStorage.getItem('ogarioSelectedProfile')) {
                     this.selectedProfile = JSON.parse(window.localStorage.getItem('ogarioSelectedProfile'));
@@ -3673,15 +3676,22 @@ var thelegendmodproject = function() {
                     var t = (ogario1PlayerProfiles.length + this.selectedProfile - 1) % ogario1PlayerProfiles.length,
                         e = (this.selectedProfile + 1) % ogario1PlayerProfiles.length;
                     //console.log(ogario1PlayerProfiles.length);
+					
                     this.setSkinPreview(ogario1PlayerProfiles[t].skinURL, 'prev-profile');
+					if (ogario1PlayerProfiles[this.selectedProfile]){
                     this.setSkinPreview(ogario1PlayerProfiles[this.selectedProfile].skinURL, 'skin-preview');
+					}
                     this.setSkinPreview(ogario1PlayerProfiles[e].skinURL, 'next-profile');
+					
                     this.saveSettings(this.selectedProfile, 'ogarioSelectedProfile');
+					if (ogario1PlayerProfiles[this.selectedProfile]){
                     $('#nick').val(ogario1PlayerProfiles[this.selectedProfile].nick);
                     $('#clantag').val(ogario1PlayerProfiles[this.selectedProfile].clanTag);
                     $('#skin').val(ogario1PlayerProfiles[this.selectedProfile].skinURL);
                     $('#color').val(ogario1PlayerProfiles[this.selectedProfile].color);
                     $('.skin')['colorpicker']('setValue', ogario1PlayerProfiles[this.selectedProfile].color);
+					}
+					
                     $('#skins a').removeClass('selected');
                     $('#skins a[data-profile=\'' + this.selectedProfile + '\']').addClass('selected');
                 },
@@ -4530,10 +4540,12 @@ var thelegendmodproject = function() {
                     if (ogarcopythelb.clanTag.length > 0) {
                         ogario.clanTag = ogarcopythelb.clanTag;
                     }
+					if (ogario1PlayerProfiles[this.selectedProfile]) {
                     ogario1PlayerProfiles[this.selectedProfile].nick = ogarcopythelb.nick;
                     ogario1PlayerProfiles[this.selectedProfile].clanTag = ogarcopythelb.clanTag;
                     ogario1PlayerProfiles[this.selectedProfile].skinURL = ogarcopythelb.skinURL;
                     ogario1PlayerProfiles[this.selectedProfile].color = ogarcopythelb.color;
+					}
                     this.saveSettings(ogario1PlayerProfiles, 'ogarioPlayerProfiles');
                     this.findOwnedVanillaSkin();
                 },
