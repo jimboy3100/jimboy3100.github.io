@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.306 MEGA TEST
+// v1.307 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -3860,7 +3860,7 @@ var thelegendmodproject = function() {
                             $("#showQuest").appendTo($(".showQuest")),
                             $("#options").remove(),
                             $("#settingsChoice").appendTo($(".extrasGroup")).addClass("select-wrapper")),
-                        this.addSliderBox(".animationGroup", "animation", 20, 200, 1),
+                        this.addSliderBox(".animationGroup", "animation", 0, 200, 1),
                         this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01),
                         this.addSliderBox(".profiles", "profileNumber", 10, 54, 1),
                         this.addSliderBox(".macroGroup", "macroFeeding", 1, 160, 1),
