@@ -3860,7 +3860,7 @@ var thelegendmodproject = function() {
                             $("#showQuest").appendTo($(".showQuest")),
                             $("#options").remove(),
                             $("#settingsChoice").appendTo($(".extrasGroup")).addClass("select-wrapper")),
-                        this.addSliderBox(".animationGroup", "animation", 20, 200, 1),
+                        this.addSliderBox(".animationGroup", "animation", 5, 200, 1),
                         this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01),
                         this.addSliderBox(".profiles", "profileNumber", 10, 54, 1),
                         this.addSliderBox(".macroGroup", "macroFeeding", 1, 160, 1),
