@@ -1,12 +1,12 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.308 MEGA TEST
+// v1.317 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
-
+var agarTesterArena = "wss://livec-arena-12luq8l.tech.agar.io"
 
 function changeregion() {
     if ($('#region').val() == "Private") {
@@ -32,6 +32,18 @@ function deleteGamemode() {
     }, {
         text: 'FFA',
         value: 8
+    }, {
+        text: 'Battle Royal',
+        value: 9
+    }, {
+        text: 'Teams',
+        value: 10
+    }, {
+        text: 'Experimental',
+        value: 11
+    }, {
+        text: 'Party mode',
+        value: 12		
     }];
     if (!window.gamemodeBackup) {
         window.gamemodeBackup = $("#gamemode").html();
@@ -41,6 +53,23 @@ function deleteGamemode() {
         $('#gamemode').append(new Option(el.text, el.value));
     });
     $('#gamemode').change(function() {
+		if ($('#region').val() == "Private") {
+			var now = new Date();
+			var now2 = now.getUTCHours();
+			if (now2<18 && now2> 5){ //06:00-18:00 UTC closed 07:00-19:00 Germany time
+				for (var i=2;i<7;i++){
+					//document.getElementById("gamemode").options[i].disabled = true;
+					//document.getElementById("gamemode").options[i].title = "OPEN 18:00-6:00 UTC";
+				}
+			}
+			else{ //06:00-18:00 UTC closed 07:00-19:00 Germany time
+				for (var i=2;i<7;i++){
+					//document.getElementById("gamemode").options[i].disabled = false;					
+				}
+			}			
+		}
+		else{
+		}		
         if ($('#gamemode').val() == 6) {
             core.connect('wss://delta-server.glitch.me');
             legendmod3.connect('wss://private1:443')
@@ -48,11 +77,40 @@ function deleteGamemode() {
             core.connect('wss://delta-selffeed.glitch.me');
             legendmod3.connect('wss://private1:443')
         } else if ($('#gamemode').val() == 8) {
-            core.connect('wss://livec-arena-sbg371.tech.agar.io:1500/');
+			logoutPSArenas();
+			legendmod.gameMode=":ffa";
+            core.connect(agarTesterArena + ':1500/'); //ffa
             legendmod3.connect('wss://private1:443')
+        } else if ($('#gamemode').val() == 9) {
+			logoutPSArenas();
+			legendmod.gameMode=":battleroyale";
+            core.connect(agarTesterArena + ':1504/'); //battle royal			
+            legendmod3.connect('wss://private1:443')
+        } else if ($('#gamemode').val() == 10) {
+			logoutPSArenas();
+			legendmod.gameMode=":teams";
+            core.connect(agarTesterArena + ':1501/'); //teams
+            legendmod3.connect('wss://private1:443')
+        } else if ($('#gamemode').val() == 11) {
+			logoutPSArenas();
+			legendmod.gameMode=":experimental";
+            core.connect(agarTesterArena + ':1503/'); //experimental
+            legendmod3.connect('wss://private1:443')			
+		} else if ($('#gamemode').val() == 12) {
+			logoutPSArenas();
+			legendmod.gameMode=":party";
+            core.connect(agarTesterArena + ':1502/'); //party
+            legendmod3.connect('wss://private1:443')		
         }
     });
     $('#gamemode option[value=6]').prop('selected', 'selected').change();
+}
+
+function logoutPSArenas(){
+	if (master.accessToken){
+		logout();
+		toastr["warning"]("<b>[SERVER]:</b> Do not log in").css("width", "210px");
+	}	
 }
 
 var dyinglight1load = localStorage.getItem("dyinglight1load");
@@ -7305,7 +7363,7 @@ var thelegendmodproject = function() {
                 'time': Date.now(),
                 'serverTime': 0,
                 'serverTimeDiff': 0,
-                'loggedInTime': 0,
+                //'loggedInTime': 0,
                 'mapSize': 14142,
                 'mapOffset': 7071,
                 'mapOffsetX': 0,
