@@ -1,5 +1,5 @@
 // These bots are working with www.legendmod.ml extension or agar.io
-// version 1.3
+// version 1.3 version B
 // creator Jimboy3100
 
 const WebSocket = require('ws'),
@@ -21,6 +21,7 @@ let userWS = null,
     spawnedBots = 0,
     serverPlayers = 0;
 
+logger.warn(`[SERVER] If error occurs on port 1377 try 8083 on config.json and websocket`);
 if (config.server.update) {
     requester(config.server.link, (err, req, data) => {
         const requesterData = Buffer.from(data).toString()
@@ -211,10 +212,7 @@ class Bot {
 					//this.gotCaptcha = true
 					this.ws.onmessage = null
 					this.reset()
-					setTimeout(() => {
-						if (userBots.includes(this)) userBots.splice(userBots.indexOf(this), 1)
-						userBots.push(new Bot())						
-					}, 5000)
+					if (userBots.includes(this)) userBots.splice(userBots.indexOf(this), 1)
 				}	
 	}
     handleBuffer(buffer) {
@@ -429,12 +427,9 @@ new WebSocket.Server({
 			global.globalData[global.globalDataCounter]=temp.join("")
 			console.log("Captcha token " + global.globalDataCounter + " recieved")
 			
-                    startBotsInterval = setInterval(() => {
                         if (dataBot.lastPlayersAmount < 195 && connectedBots < bots.amount && user.startedBots){
-							//console.log('bot tries to start')
-							//userBots.push(new Bot())
+							userBots.push(new Bot())
 						}
-                    }, 150)	
 		}
 		else{		
         const reader = new Reader(buffer)
