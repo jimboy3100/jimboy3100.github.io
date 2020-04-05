@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.318 MEGA TEST
+// v1.321 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4449,11 +4449,13 @@ var thelegendmodproject = function() {
                                 y: legendmod3.getPlayerY(),
                                 mass: legendmod.playerMass
                             };
-                            Socket3.send(JSON.stringify({
+                            if (Socket3){
+								Socket3.send(JSON.stringify({
                                 //"toH": "legendmod",
                                 "toH": $("#server-token").val() + "3",
                                 "msg": temp
                             }));
+							}
 
                         }
                     }
@@ -7723,7 +7725,12 @@ var thelegendmodproject = function() {
                                 //this code is to inform me when a new loop process starts again
                                 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' bots started again')
                                 legendmod.sendTokenForBots();
-                                window.tempol = 1;
+                                if ($('#captchaSpeed').val()){
+									window.tempol = $('#captchaSpeed').val();
+								}
+								else{
+									window.tempol = 0.5;
+								}
                             }
                         }, 10000 + window.tempol * 1000);
                     } else {
@@ -7757,10 +7764,13 @@ var thelegendmodproject = function() {
                     //this.playerNick = nick;    
                     legendmod.botscaptcha = true;
                     window.sendTimeOutTokenBots = false;
+                    if ($('#captchaSpeed').val()){
+						window.tempol = $('#captchaSpeed').val();
+					}					
                     this.integrity && window.agarCaptcha.requestCaptchaV3("play", function(token) {
                         //sendSpawn(token)
                         setTimeout(function() {
-                            legendmod.sendSpawn2(token);
+                            legendmod.sendSpawn2(token);							
                         }, window.tempol * 1000);
                         //window.core.sendNick(nick, token)
                     })
