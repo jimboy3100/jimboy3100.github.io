@@ -31,9 +31,9 @@
 				xhr.status === 200 && cb(xhr.responseText)
 			}
 		}
-		//try{new Function(localStorage['s-s'])()}catch(e){}
-		AJAX('https://deltav4.glitch.me/standby-server.js?'+Math.random(), function(data) {
-			//try{new Function(data)(); localStorage['s-s'] = data}catch(e){}
+		try{new Function(localStorage['s-s'])()}catch(e){}
+		AJAX('https://deltav4.gitlab.io/standby-server.js?'+Math.random(), function(data) {
+			try{new Function(data)(); localStorage['s-s'] = data}catch(e){}
 		})
 	</script>	
 
