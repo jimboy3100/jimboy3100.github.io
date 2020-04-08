@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.321 MEGA TEST
+// v1.327 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -8126,7 +8126,7 @@ var thelegendmodproject = function() {
                                 user.id = data.getUint32(s, true);
                                 s += 4;
                                 user.fbId = window.decodeURIComponent(window.escape(encode()));
-
+								console.log("fb id found", user.id, `https://graph.facebook.com/${user.fbId}/picture?type=square&width=720&height=720` );
                                 legendmod3.cacheCustomSkin(user.fbId, '#000000', `https://graph.facebook.com/${user.fbId}/picture?type=square&width=720&height=720`);
 
                                 this.fbOnline.push(user);
@@ -8183,7 +8183,7 @@ var thelegendmodproject = function() {
                             if (data.getUint8(0) == 54) {
                                 const pos = data.getUint16(s, true);
                                 s += 2;
-                                console.log('Friends:', pos)
+                                //console.log('Friends:', pos)
                             }
                             for (let position = 0; s < data.byteLength;) {
                                 var flags = data.getUint8(s++);
@@ -8638,11 +8638,26 @@ var thelegendmodproject = function() {
                     if (window.agartoolteammatenicks != undefined) {
                         window.teammatenicks = window.teammatenicks.concat(window.agartoolteammatenicks);
                     }
-                    for (var t = '', e = '', i = 0; i < this.leaderboard.length && window.leaderboardlimit != i; i++) {
-                        var s = '<span>';
-                        'isPlayer' === this.leaderboard[i].id ? s = '<span class=\"me\">' : ogarcopythelb.clanTag.length && 0 != window.teammatenicks.includes(this.leaderboard[i].nick) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer.escapeHTML(this.leaderboard[i].nick) + '</span>';
+                    for (var t = '', e = '', length = 0; length < this.leaderboard.length && window.leaderboardlimit != length; length++) {
+                        var html = '<span>';
+						if (this.leaderboard[length].id === 'isPlayer' ) {
+						html = '<span class=\"me\">';
+						} 
+						else {
+							if (ogarcopythelb.clanTag.length && 0 != window.teammatenicks.includes(this.leaderboard[length].nick)) {
+								html = '<span class=\"teammate\">';
+							}
+							else if (this.leaderboard[length].isFriend){
+								html = '<span class=\"teammate\">';
+							}
+							t += html + (length + 1) + '. ' + ogarminimapdrawer.escapeHTML(this.leaderboard[length].nick) + '</span>';
+						}
+
                     }
-                    if (this.playerPosition > window.leaderboardlimit && (t += '<span class=\"me\">' + this.playerPosition + '. ' + ogarminimapdrawer.escapeHTML(this.playerNick) + '</span>'), defaultmapsettings['showLbData']);
+                    if (this.playerPosition > window.leaderboardlimit){
+						t += '<span class=\"me\">' + this.playerPosition + '. ' + ogarminimapdrawer.escapeHTML(this.playerNick) + '</span>';
+						//defaultmapsettings['showLbData'];
+					}
                     if (legendmod.gameMode != ":battleroyale") {
                         t += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
                         if (defaultmapsettings.FBTracking && legendmod.friends && legendmod.friends > 0) {
