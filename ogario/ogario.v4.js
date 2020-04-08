@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.327 MEGA TEST
+// v1.328 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -8650,9 +8650,9 @@ var thelegendmodproject = function() {
 							else if (this.leaderboard[length].isFriend){
 								html = '<span class=\"teammate\">';
 							}
-							t += html + (length + 1) + '. ' + ogarminimapdrawer.escapeHTML(this.leaderboard[length].nick) + '</span>';
+							
 						}
-
+						t += html + (length + 1) + '. ' + ogarminimapdrawer.escapeHTML(this.leaderboard[length].nick) + '</span>';
                     }
                     if (this.playerPosition > window.leaderboardlimit){
 						t += '<span class=\"me\">' + this.playerPosition + '. ' + ogarminimapdrawer.escapeHTML(this.playerNick) + '</span>';
