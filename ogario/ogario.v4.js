@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.328 MEGA TEST
+// v1.332 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -3202,16 +3202,12 @@ var thelegendmodproject = function() {
                     this.unblockPopups();
                 }
             },
-            'displayLeaderboard': function(t, e = '') {
-                if (this.leaderboardPositionsHUD) {
-                    this.leaderboardPositionsHUD.innerHTML = t;
-                    if (defaultmapsettings.showLbData) {
-                        this.leaderboardDataHUD.innerHTML = e;
-                    } else {
-                        this.leaderboardDataHUD.innerHTML = '';
-                    }
-                }
-
+            'displayLeaderboard': function(position, data = '') {
+				if (!this.leaderboardPositionsHUD) {
+					return;
+				}				
+				this.leaderboardPositionsHUD.innerHTML = position;
+				this.leaderboardDataHUD.innerHTML = data;
             },
             'displayStats': function() {
                 if (defaultmapsettings.showStats) {
@@ -8638,7 +8634,9 @@ var thelegendmodproject = function() {
                     if (window.agartoolteammatenicks != undefined) {
                         window.teammatenicks = window.teammatenicks.concat(window.agartoolteammatenicks);
                     }
-                    for (var t = '', e = '', length = 0; length < this.leaderboard.length && window.leaderboardlimit != length; length++) {
+					let text = '';
+					let teamText = '';
+                    for (length = 0; length < this.leaderboard.length && window.leaderboardlimit != length; length++) {
                         var html = '<span>';
 						if (this.leaderboard[length].id === 'isPlayer' ) {
 						html = '<span class=\"me\">';
@@ -8652,42 +8650,49 @@ var thelegendmodproject = function() {
 							}
 							
 						}
-						t += html + (length + 1) + '. ' + ogarminimapdrawer.escapeHTML(this.leaderboard[length].nick) + '</span>';
+						teamText += html + (length + 1) + '. ' + ogarminimapdrawer.escapeHTML(this.leaderboard[length].nick) + '</span>';
                     }
                     if (this.playerPosition > window.leaderboardlimit){
-						t += '<span class=\"me\">' + this.playerPosition + '. ' + ogarminimapdrawer.escapeHTML(this.playerNick) + '</span>';
+						teamText += '<span class=\"me\">' + this.playerPosition + '. ' + ogarminimapdrawer.escapeHTML(this.playerNick) + '</span>';
 						//defaultmapsettings['showLbData'];
 					}
                     if (legendmod.gameMode != ":battleroyale") {
-                        t += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
+                        teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
                         if (defaultmapsettings.FBTracking && legendmod.friends && legendmod.friends > 0) {
-                            t += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
+                            teamText += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
                         }
                         //t += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
-                    } else if (legendmod.gameMode == ":battleroyale") {
-                        var t = '<span>';
+                    } 
+					else if (legendmod.gameMode == ":battleroyale") {
+                        teamText = '<span>';
                         if (legendmod.battleRoyale.shrinkTime - Date.now() / 1000 > 0) {
-                            t += '<span>Shrink time: ' + legendmod.battleRoyale.timeLeft + '</span>';
+                            teamText += '<span>Shrink time: ' + legendmod.battleRoyale.timeLeft + '</span>';
                         }
-                        t += '<span class="me">' + 'Players: ' + legendmod.battleRoyale.players + '</span>';
-                        t += '</span>';
+                        teamText += '<span class="me">' + 'Players: ' + legendmod.battleRoyale.players + '</span>';
+                        teamText += '</span>';
                     }
-                    for (var o = 0; o < this.ghostCells.length && o != i; o++) {
+					if (defaultmapsettings.showLbData){
+                    for (var l2ngth = 0; l2ngth < this.ghostCells.length && l2ngth < window.leaderboardlimit; l2ngth++) {
                         //
-                        var w = this.ghostCells[o].x;
-                        var u = this.ghostCells[o].y;
+                        var w = this.ghostCells[l2ngth].x;
+                        var u = this.ghostCells[l2ngth].y;
                         /*
 					w = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(this.ghostCells[o].x) : this.ghostCells[o].x; 
                     u = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateY(this.ghostCells[o].y) : this.ghostCells[o].y; 
 					*/
                         //
-                        e += '<span class=\"lb-data\" id= "' + 'leaderboardtargeting' + o + '" style="pointer-events: auto;" onclick="window.legendmod.targetingLead(' + o + ');">';
-                        e += '<span class=\"top5-mass-color\">[' + ogarminimapdrawer.shortMassFormat(this.ghostCells[o].mass) + ']</span>';
+                        text += '<span class=\"lb-data\" id= "' + 'leaderboardtargeting' + l2ngth + '" style="pointer-events: auto;" onclick="window.legendmod.targetingLead(' + l2ngth + ');">';
+                        text += '<span class=\"top5-mass-color\">[' + ogarminimapdrawer.shortMassFormat(this.ghostCells[l2ngth].mass) + ']</span>';
                         //e += '<span class=\"hud-main-color\">[' + ogarminimapdrawer.calculateMapSector(this.ghostCells[o].x, this.ghostCells[o].y) + ']</span>', e += '</span>';
-                        e += '<span class=\"hud-main-color\">[' + ogarminimapdrawer.calculateMapSector(w + legendmod.mapOffsetX, u + legendmod.mapOffsetY) + ']</span>', e += '</span>';
+                        text += '<span class=\"hud-main-color\">[' + ogarminimapdrawer.calculateMapSector(w + legendmod.mapOffsetX, u + legendmod.mapOffsetY) + ']</span>', text += '</span>';
                     }
-                    ogarminimapdrawer['displayLeaderboard'](t, e);
+					}
+                    ogarminimapdrawer['displayLeaderboard'](teamText, text);
                     //ogarminimapdrawer['displayPartyBots']();
+					
+					
+					
+					
                     ///////////////// establish core.registerSkin
                     if (window.vanillaskins == true && window.customskinsname != null && window.customskinsurl != null && ogarminimapdrawer.customSkinsMap[window.customskinsname] == null) {
                         for (i = 0; i <= this.leaderboard.length - 1; i++) {
