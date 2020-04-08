@@ -210,9 +210,14 @@ class Bot {
 				else{
 					//this.send(buffers.spawn2(bots.name))
 					//this.gotCaptcha = true
+					if (userBots.includes(this)){
+						userBots.splice(userBots.indexOf(this), 1)
+						//userBots.push(new Bot()) 						
+					}
+					connectedBots--
 					this.ws.onmessage = null
 					this.reset()
-					if (userBots.includes(this)) userBots.splice(userBots.indexOf(this), 1)
+					
 				}	
 	}
     handleBuffer(buffer) {
@@ -242,17 +247,17 @@ class Bot {
                 }
                 break
             case 85:
-                if (!user.startedBots) {
+                /*if (!user.startedBots) {
                     userWS.send(Buffer.from([3]))
                     setTimeout(process.exit, 1000)
-                }
+                }*/
+				if (userBots.includes(this)){
+					userBots.splice(userBots.indexOf(this), 1)
+                    userBots.push(new Bot())     
+				}				
                 this.gotCaptcha = true
                 this.ws.onmessage = null
                 this.reset()
-                setTimeout(() => {
-					if (userBots.includes(this)) userBots.splice(userBots.indexOf(this), 1)
-                    userBots.push(new Bot())                  
-                }, 5000)
                 break
 			case 102:
 				//console.log('case 102')
@@ -425,7 +430,7 @@ new WebSocket.Server({
 			var temp = Object.values(JSON.parse(data))	
 			global.globalDataCounter++;
 			global.globalData[global.globalDataCounter]=temp.join("")
-			console.log("Captcha token " + global.globalDataCounter + " recieved")
+			//console.log("Captcha token " + global.globalDataCounter + " recieved")
 			
                         if (dataBot.lastPlayersAmount < 195 && connectedBots < bots.amount && user.startedBots){
 							userBots.push(new Bot())
