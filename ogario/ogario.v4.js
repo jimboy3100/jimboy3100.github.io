@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.368 MEGA TEST
+// v1.369 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5261,7 +5261,7 @@ var thelegendmodproject = function() {
             }
             return defaultSettings.virusColor;
         },
-        'setVirusStrokeColor': function(t) {
+        'setVirusStrokeColor': function(size) {
             if (ogario.play && ogario.playerMaxMass != 0) {
                 const floor = Math.floor(size * size / 100);
                 const biggestCell = floor / (this.selectBiggestCell ? ogario.playerMaxMass : ogario.playerMinMass);
