@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.396 MEGA TEST
+// v1.398 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -4959,8 +4959,8 @@ var thelegendmodproject = function() {
                 ogarminimapdrawer.graphics = 8
             }
         },
-        cacheSkin(t, animated) {
-            //console.log(t);  //////// return the image src
+        cacheSkin(skinCache, animated) {
+            //console.log(skinCache);  //////// return the image src
             if (0 != this.cacheQueue.length) {
                 var e = this.cacheQueue.shift();
                 if (e && !this.customSkinsCache[e + "_cached"]) {
@@ -4991,7 +4991,7 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        cacheSkin2(t) {
+        cacheSkin2(skinCache) {
             if (0 != this.cacheQueue2.length) {
                 var e = this.cacheQueue2.shift();
                 if (e && !this.customSkinsCache[e + "_cached2"]) {
@@ -5014,8 +5014,8 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        cacheSkin3(t) {
-            //console.log(t);  //////// return the image src
+        cacheSkin3(skinCache) {
+            //console.log(skinCache);  //////// return the image src
             if (0 != this.cacheQueue3.length) {
                 var e = this.cacheQueue3.shift();
                 if (e && !this.customSkinsCache[e + "_cached3"]) {
@@ -5041,42 +5041,42 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        getCachedSkin(t, e) {
-            if (t[e + '_cached3']) {
+        getCachedSkin(skinCache, skinMap) {
+            if (skinCache[skinMap + '_cached3']) {
                 var today = new Date();
                 if (today.getSeconds() < 30) { //vanilla animated skins
-                    return t[e + '_cached'] && t[e + '_cached'].complete && t[e + '_cached'].width ? t[e + '_cached'] : null;
+                    return skinCache[skinMap + '_cached'] && skinCache[skinMap + '_cached'].complete && skinCache[skinMap + '_cached'].width ? skinCache[skinMap + '_cached'] : null;
                 } else if (today.getSeconds() >= 30) {
-                    return t[e + '_cached3'] && t[e + '_cached3'].complete && t[e + '_cached3'].width ? t[e + '_cached3'] : null;
+                    return skinCache[skinMap + '_cached3'] && skinCache[skinMap + '_cached3'].complete && skinCache[skinMap + '_cached3'].width ? skinCache[skinMap + '_cached3'] : null;
                 }
             }
-            return t[e + '_cached'] && t[e + '_cached'].complete && t[e + '_cached'].width ? t[e + '_cached'] : null;
+            return skinCache[skinMap + '_cached'] && skinCache[skinMap + '_cached'].complete && skinCache[skinMap + '_cached'].width ? skinCache[skinMap + '_cached'] : null;
 
         },
-        cacheCustomSkin(t, e, i) {
-            if (i) {
-                var s = ':party' === this.gameMode ? t + e : t;
-                //console.log("t= " + t);
-                //console.log("e= " + e);
-                if (s && (this.customSkinsMap[s] = i), this.customSkinsCache.hasOwnProperty(i)) return;
-                this.loadSkin(this.customSkinsCache, i);
+        cacheCustomSkin(nick, color, skinUrl) {
+            if (skinUrl) {
+                var s = ':party' === this.gameMode ? nick + color : nick;
+                //console.log("nick= " + nick);
+                //console.log("color= " + color);
+                if (s && (this.customSkinsMap[s] = skinUrl), this.customSkinsCache.hasOwnProperty(skinUrl)) return;
+                this.loadSkin(this.customSkinsCache, skinUrl);
             }
         },
-        checkSkinsMap(t, e) {
-            var i = ':party' === this.gameMode ? t + e : t;
-            //console.log(.customSkinsMap.hasOwnProperty(i));
-            return !!this.customSkinsMap.hasOwnProperty(i);
+        checkSkinsMap(nick, color) {
+            var mode = ':party' === this.gameMode ? nick + color : nick;
+            //console.log(.customSkinsMap.hasOwnProperty(mode));
+            return !!this.customSkinsMap.hasOwnProperty(mode);
         },
-        getCustomSkin(t, e) {
-            //console.log("t= " + t);
-            //console.log("e= " + e);				               
-            if (':party' === this.gameMode && this.customSkinsMap[t + "#000000"] && this.customSkinsMap[t + "#000000"].includes("configs-web.agario.miniclippt.com/live/")) {
-                //console.log('changed for',t)
-                e = "#000000";
+        getCustomSkin(nick, color) {
+            //console.log("nick= " + nick);
+            //console.log("color= " + color);				               
+            if (':party' === this.gameMode && this.customSkinsMap[nick + "#000000"] && this.customSkinsMap[nick + "#000000"].includes("configs-web.agario.miniclippt.com/live/")) {
+                //console.log('changed for',nick)
+                color = "#000000";
             }
-            if (!this.checkSkinsMap(t, e)) return null;
-            var i = ':party' === this.gameMode ? t + e : t;
-            return this.getCachedSkin(this.customSkinsCache, this.customSkinsMap[i]);
+            if (!this.checkSkinsMap(nick, color)) return null;
+            var mode = ':party' === this.gameMode ? nick + color : nick;
+            return this.getCachedSkin(this.customSkinsCache, this.customSkinsMap[mode]);
         },
         calculateMapSector(t, xgh2, closeExpr = false) {
             if (!ogario.mapOffsetFixed) {
@@ -6375,7 +6375,7 @@ var thelegendmodproject = function() {
             }
             this.top5.sort(function(row, conf) {
                     return conf.mass - row.mass;
-                }),
+                });
                 this.displayTop5();
 
         },
@@ -11184,7 +11184,7 @@ var thelegendmodproject = function() {
             },
             'hk-bots-split': {
                 label: textLanguage['hk-bots-split'],
-                defaultKey: '',
+                defaultKey: 'M',
                 keyDown() {
                     if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([2]).buffer);
                 },
@@ -11193,7 +11193,7 @@ var thelegendmodproject = function() {
             },
             'hk-bots-feed': {
                 label: textLanguage['hk-bots-feed'],
-                defaultKey: '',
+                defaultKey: 'L',
                 keyDown() {
                     if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
                 },
@@ -11202,7 +11202,7 @@ var thelegendmodproject = function() {
             },
             'hk-bots-ai': {
                 label: textLanguage['hk-bots-ai'],
-                defaultKey: 'Y',
+                defaultKey: 'P',
                 keyDown() {
                     if (window.userBots.startedBots && window.userBots.isAlive) {
                         if (!window.bots.ai) {
