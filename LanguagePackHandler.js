@@ -1,6 +1,6 @@
 //Language Pack Handler
 //Legend Mod By Jimboy3100
-//v1.3a
+//v1.3b
 
 //Legend Mod By Jimboy3100
 var Languagetimesused;
@@ -649,7 +649,7 @@ $("#UserscriptE").attr('placeholder','User Script 5 .js URL ('+ Externalletter12
 }, 4000);
 
 setTimeout(function () {
-$("#ao2t-hud>span").replace('Universal', Languageletter365);	
+//$("#ao2t-hud>span").replace('Universal', Languageletter365);	
 $("#block-warn").replace('WARNING! Popups are blocked in the settings.', Languageletter347);
 $("#block-warn").replace('Temporary unblock', Languageletter348);
 }, 1500);
