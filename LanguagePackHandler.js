@@ -1,6 +1,6 @@
 //Language Pack Handler
 //Legend Mod By Jimboy3100
-//v1.3b
+//v1.3
 
 //Legend Mod By Jimboy3100
 var Languagetimesused;
@@ -97,7 +97,7 @@ $(".options-box.zoomGroup>h5").text(Languageletter37b);
 $(".options-box.zoomGroup>LABEL").replace('Auto zoom', Languageletter37a);
 $(".options-box.zoomGroup>DIV>DIV>SPAN:nth-child(1)").text(Languageletter38 + ": ");
 
-//$(".options-box.leaderboard>h5").text(Languageletter320);
+$(".options-box.leaderboard>h5").text(Languageletter320);
 $(".options-box.leaderboard>LABEL").replace('Leaderboard Players', Languageletter320 + " " + Languageletter313);
 $(".options-box.leaderboard>LABEL").replace('Team Players', Languageletter321 + " " +  Languageletter313);
 
@@ -193,7 +193,7 @@ $(".options-box.hudGroup>LABEL").replace('Show teamboard', Languageletter95);
 $(".options-box.hudGroup>LABEL").replace('Show targeting', Languageletter96);
 $(".options-box.hudGroup>LABEL").replace('Show leaderboard mass', Languageletter96a);
 $(".options-box.hudGroup>LABEL").replace('Centered leaderboard', Languageletter97);
-//$(".options-box.hudGroup>LABEL").replace('\"Leaderboard\" header ', Languageletter97a);
+$(".options-box.hudGroup>LABEL").replace('\"Leaderboard\" header ', Languageletter97a);
 $(".options-box.hudGroup>LABEL").replace('Game stats at the top', Languageletter98);
 $(".options-box.hudGroup>LABEL").replace('Skins on teamboard', Languageletter98a);
 $(".options-box.statsGroup>h5").text(Languageletter99);
@@ -497,13 +497,13 @@ $("#message").attr('placeholder', Languageletter295b);
 //  $(this).html(text.replace(' Total mass: ', ' ' + Languageletter297 + ': ')); 
 //});
 
-//if($('#teambtext').val()==""){
-	//$("#top5-hud > h5").each(function() { var text = $(this).html();
-   //$(this).html(text.replace('Team', Languageletter298 + ' ')); 
-//});}
-//if($('#leadbtext').val()==""){
-	//$("#leaderboard-hud > h5").text(Languageletter299);
-//};
+if($('#teambtext').val()==""){
+	$("#top5-hud > h5").each(function() { var text = $(this).html();
+   $(this).html(text.replace('Team', Languageletter298 + ' ')); 
+});}
+if($('#leadbtext').val()==""){
+	$("#leaderboard-hud > h5").text(Languageletter299);
+};
 $("#ChatBtn").attr("data-original-title", Languageletter300);
 $("#SendCommands").attr("data-original-title", Languageletter301);
 $("#Images").attr("data-original-title", Languageletter302);
@@ -649,7 +649,7 @@ $("#UserscriptE").attr('placeholder','User Script 5 .js URL ('+ Externalletter12
 }, 4000);
 
 setTimeout(function () {
-//$("#ao2t-hud>span").replace('Universal', Languageletter365);	
+$("#ao2t-hud>span").replace('Universal', Languageletter365);	
 $("#block-warn").replace('WARNING! Popups are blocked in the settings.', Languageletter347);
 $("#block-warn").replace('Temporary unblock', Languageletter348);
 }, 1500);
