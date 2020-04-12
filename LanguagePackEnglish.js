@@ -1,632 +1,660 @@
-/*         var Languageletter =         "hello you" <---  You tranlate this, keep the " "; as they are.       // <-Means notes, no need to change           */
+//Language Pack Handler
+//Legend Mod By Jimboy3100
+//v1.3b
 
-/* Example            var Languageletter0="Home";  //Home      ->    var Languageletter0="Maison";            //Home                                        */
+//Legend Mod By Jimboy3100
+var Languagetimesused;
+var Languagetimesused1;
 
-/* Don't make exact Translation, just translate the meaning. Don't make very long texts, because it might not fit. Keep the <b></b> and SPACES as is        */
+if($('#LanguageAuthorPanel').length==0){
+	$("#TimesUsed").after('<br><div id="LanguageAuthorPanel" class="user-name" style="display:inline-block;">'+Languageletter34+': </div><div id="LanguageAuthor" style="display:inline-block"></div><br>');
+	$("#LanguageAuthor").text(translator);
+	}
+else{
+	$("#LanguageAuthorPanel").text(Languageletter34+ ': ');
+	$("#LanguageAuthor").text(translator);	
+}
 
-/*                                                  Thank you for supporting Legend Agar.io mod                                                             */
+$("#SHOSHOBtn").click();
+$("#SHOSHOBtn").click();
+$("#XPBtn").click();
+$("#XPBtn").click();
+$("#MAINBTBtn").click();
+$("#MAINBTBtn").click();
+$("#AnimatedSkinBtn").click();
+$("#AnimatedSkinBtn").click();
+$("#HideAllBthn").click();
+$("#HideAllBthn").click();
+$("#TIMEcalBtn").click();
+$("#TIMEcalBtn").click();
+var languagemod;
+if (languagemod!=6){
+$('#region').replace("North America",Premadeletter134).replace("South America",Premadeletter135).replace("Europe",Premadeletter136).replace("Russia",Premadeletter137).replace("Turkey",Premadeletter138).replace("East Asia",Premadeletter139).replace("China",Premadeletter139a).replace("Oceania",Premadeletter140).replace(" -- Select a Region -- ",Premadeletter140a);
+}
+$('#gamemode').replace("FFA",Premadeletter141).replace("Battle Royale",Premadeletter142).replace("Teams",Premadeletter143).replace("Experimental",Premadeletter144).replace("Party Mode",Premadeletter145);
+//languagemod
+
+$(".ogicon-home").attr('data-original-title',Languageletter0);
+$(".ogicon-user").attr('data-original-title',Languageletter1);
+$(".ogicon-cog").attr('data-original-title',Languageletter2);
+$(".ogicon-droplet").attr('data-original-title',Languageletter3);
+$(".hotkeys-link.ogicon-keyboard").attr('data-original-title',Languageletter4);
+$(".ogicon-music").attr('data-original-title',Languageletter5);
+$(".legend-tab").attr('data-original-title',Languageletter6);
+
+$("#clantag").attr('placeholder',Languageletter7a).attr('data-original-title',Languageletter7);
+$("#nick").attr('placeholder',Languageletter8a).attr('data-original-title',Languageletter8);
+$("#skin").attr('placeholder',Languageletter9a).attr('data-original-title',Languageletter9);
+$("#region").attr('data-original-title',Languageletter10);
+$("#gamemode").attr('data-original-title',Languageletter11);
+$("#connect2").text(Languageletter12a).attr('data-original-title',Languageletter12);
+$("#server-join").text(Languageletter13);
+$(".btn.btn-play-guest.btn-success.btn-needs-server").text(Languageletter14);
+$(".btn.btn-play-guest.btn-success").text(Languageletter14);
+$(".btn.btn-warning.btn-login-play.btn-needs-server").text(Languageletter15);
+$(".btn.btn-warning.btn-login-play").text(Languageletter15);
+
+$(".btn.btn-warning.btn-spectate.btn-needs-server").tooltip({
+            title: Languageletter16,
+            placement: "top"
+        });
+$(".btn.btn-warning.btn-spectate.btn-needs-server").attr('data-original-title',Languageletter16);
+$(".btn.btn-primary.btn-login.btn-fb").children().last().text(Languageletter17);
+$(".btn.btn-primary.btn-login.btn-gplus").children().last().text(Languageletter18);
+$(".btn.btn-play.btn-primary.btn-needs-server").text(Languageletter19);
+
+$(".quick-shop.ogicon-cart").attr('data-original-title',Languageletter20);
+$(".quick-free-coins.ogicon-coin-dollar").attr('data-original-title',Languageletter21);
+$(".quick-free-gifts.ogicon-gift").attr('data-original-title',Languageletter22);
+$(".quick-quests.ogicon-trophy").attr('data-original-title',Languageletter23);
+$(".quick-more-skins.ogicon-grin").attr('data-original-title',Languageletter24);
+$(".quick-yt.ogicon-youtube2").attr('data-original-title',Languageletter25);
+$("#LegGoogleForm").attr('data-original-title',Languageletter25a);
+$("#themesBtn").attr('data-original-title',Languageletter126);
+$("#ModInfoQuick").attr('data-original-title',Languageletter25b);
+
+$("#more-skins").text(Languageletter26);
 
 
+$(".btn.btn-primary.btn-success.btn-freecoins").text(Languageletter21);
+$("#gifting").text(Languageletter22);
+$("#dailyQuests").text(Languageletter23);
+$("#openShopBtn").text(Languageletter20);
+$(".btn.btn-danger.btn-logout").attr('data-original-title',Languageletter31);
 
-var translator="Unknown";		//Put your nickname, in order to be reffered to mod, or use name "Unknown"
+$("#UserProfileName").replace('Name', Languageletter362);
+$("#UserProfileUID").replace('Social ID', Languageletter363);
+
+$("#TimesUsedPanel").replaceWith('<div id="TimesUsedPanel" align="left" style="display:inline-block; margin-top: -10px; margin-bottom: -10px; "><h6><i>' + Languageletter32+': '+timesopened+
+		'<br>'+ Languageletter33 + ': jimboy3100<br>' + Languageletter34 + ': ' + translator + '</i></h6></div>');
+
+$("#tcm>#tcm-header>p").text(Languageletter35);
 
 
-var Languageletter0="Home";		//Home
-var Languageletter1="User";		//User
-var Languageletter2="Settings";		//Settings
-var Languageletter3="Theme";		//Theme
-var Languageletter4="Hotkeys";		//Hotkeys
-var Languageletter5="Youtube & Sounds";		//Youtube & Sounds
-var Languageletter6="Tools";		//Tools
-var Languageletter7="Leave it empty for Public, or insert password of Clan, or use it as Tag";		//Password/Tag
-var Languageletter7a="Password/Tag"	;	//Password/Tag
-var Languageletter8="Insert your in-game name, 50 chars are visible on Mod users, 15 to other users";		//Insert your in-game name, 50 chars are visible on Mod users, 15 to other users
-var Languageletter8a="Name";		//Name
-var Languageletter9="Insert your manual skin weblink";		//Insert your manual skin weblink
-var Languageletter9a="Manual direct skin URL";		//Manual direct skin URL
-var Languageletter10="The region to play";		//The region to play
-var Languageletter11="The mode to play";		//The mode to play
-var Languageletter12="Connect to server, or restablish communication";		//Connect to server, or restablish communication
-var Languageletter12a="Connect";		//Connect
-var Languageletter13="Join";		//Join
-var Languageletter14="Play as guest";		//Play as guest
-var Languageletter15="Login and Play";		//Login and Play
-var Languageletter16="Spectate";		//Spectate
-var Languageletter17="Sign in with Facebook";		//Sign in with Facebook
-var Languageletter18="Sign in with Google";			//Sign in with Google
-var Languageletter19="Play";		//Play
-var Languageletter20="Shop"	;		//Shop
-var Languageletter21="Free Coins";		//Free Coins
-var Languageletter22="Gifts";		//Gifts
-var Languageletter23="Daily Quests";			//Daily Quests
-var Languageletter24="Skins";		//Skins
-var Languageletter25="Legend Promo Video";		//Legend Promo Video
-var Languageletter25a="New Ideas & Statistics Form";		//New Ideas & Statistics Form
-var Languageletter25b="Mod Info & Templates";		//Mod Info & Templates
-var Languageletter26="Add skins";		//Add skins
-var Languageletter26a="Copy Server, Password, Teamboard & Leaderboard"; //Copy Server, Password, Teamboard & Leaderboard
+$(".options-box.animationGroup>h5").text(Languageletter36);
+$(".options-box.animationGroup>DIV>DIV>SPAN:nth-child(1)").text(Languageletter37 + ": ");
+$(".options-box.zoomGroup>h5").text(Languageletter37b);
+$(".options-box.zoomGroup>LABEL").replace('Auto zoom', Languageletter37a);
+$(".options-box.zoomGroup>DIV>DIV>SPAN:nth-child(1)").text(Languageletter38 + ": ");
 
-var Languageletter31="Logout";		//Logout
-var Languageletter32="Times Used";		//Times Used
-var Languageletter33="Legend Mod by";		//Legend Mod by
-var Languageletter34="Translation by";		//Translation by
-var Languageletter35="copy leaderboard names and cell names. (press x to show/hide)";		//copy leaderboard names and cell names. (press x to show/hide)
-var Languageletter36="Animation";		//Animation
-var Languageletter37="Animation delay";		//Animation delay
-var Languageletter37a="Auto zoom";		// Auto zoom
-var Languageletter37b="Zoom";		// Zoom
-var Languageletter38="Zoom speed:";		//Zoom speed: 
+//$(".options-box.leaderboard>h5").text(Languageletter320);
+$(".options-box.leaderboard>LABEL").replace('Leaderboard Players', Languageletter320 + " " + Languageletter313);
+$(".options-box.leaderboard>LABEL").replace('Team Players', Languageletter321 + " " +  Languageletter313);
 
-var Languageletter39="Respawn";			//Respawn
-var Languageletter40="Auto respawn";		//Auto respawn 
-var Languageletter41="Quick respawn ";			//Quick respawn 
-var Languageletter41a="Spawn special effects ";			//Spawn special effects 
-var Languageletter41b="Merge timer off ";			//Merge timer BETA off
-var Languageletter41c="Suggested to be enabled for Lag reduce";			//Suggested to be enabled for Lag reduce
-var Languageletter41d="Virus shot sound";			//Virus shot sound
+$(".options-box.respGroup>h5").text(Languageletter39);
+$(".options-box.respGroup>LABEL").replace('Quick respawn', Languageletter41);
+$(".options-box.respGroup>LABEL").replace('Auto respawn', Languageletter40);
+$(".options-box.respGroup>LABEL").replace('Spawn special effects', Languageletter41a);
+$(".options-box.massGroup>LABEL").replace('Merge timer BETA off', Languageletter41b);
+$(".options-box.massGroup>LABEL").replace('Suggested to be enabled for Lag reduce', Languageletter41c);
+$(".options-box.massGroup>LABEL").replace('Virus shot sound', Languageletter41d);
 
-var Languageletter42="Names";			//Names
-var Languageletter43="No names";		//No names 
-var Languageletter44="Optimized names";		//Optimized names 
-var Languageletter45="Auto hide names";		//Auto hide names 
-var Languageletter46="Hide my name";		//Hide my name 
-var Languageletter47="Hide teammates names";		//Hide teammates names 
-var Languageletter48="Names stroke";		//Names stroke 
-var Languageletter49="Mass";		//Mass
-var Languageletter50="Show mass";		//Show mass 
-var Languageletter51="Optimized mass"	;	//Optimized mass 
-var Languageletter52="Auto hide mass";			//Auto hide mass 
-var Languageletter53="Hide my mass";		//Hide my mass 
-var Languageletter54="Hide enemies mass";		//Hide enemies mass 
-var Languageletter55="Short mass";		//Short mass
-var Languageletter56="Virus shots";		//Virus shots 
-var Languageletter57="Mass stroke";		//Mass stroke 
-var Languageletter58="Skins";		//Skins
-var Languageletter59="No skins ";		//No skins 
-var Languageletter60="Custom skins";		//Custom skins 
-var Languageletter61="Vanilla skins";		//Vanilla skins 
-var Languageletter61a="Jelly physics";		//Jelly physics 
-var Languageletter61b="Video skins";		//Video skins
-var Languageletter61c="Sound from other\'s Video skins when both C3";		//Sound from other\'s Video skins when both C3
+$(".options-box.namesGroup>h5").text(Languageletter42);
+$(".options-box.namesGroup>LABEL").replace('No names', Languageletter43);
+$(".options-box.namesGroup>LABEL").replace('Optimized names', Languageletter44);
+$(".options-box.namesGroup>LABEL").replace('Auto hide names', Languageletter45);
+$(".options-box.namesGroup>LABEL").replace('Hide my name', Languageletter46);
+$(".options-box.namesGroup>LABEL").replace('Hide teammates names', Languageletter47);
+$(".options-box.namesGroup>LABEL").replace('Names stroke', Languageletter48);
+$(".options-box.massGroup>h5").text(Languageletter49);
+$(".options-box.massGroup>LABEL").replace('Show mass', Languageletter50);
+$(".options-box.massGroup>LABEL").replace('Optimized mass',  Languageletter51);
+$(".options-box.massGroup>LABEL").replace('Auto hide mass', Languageletter52);
+$(".options-box.massGroup>LABEL").replace('Hide my mass', Languageletter53);
+$(".options-box.massGroup>LABEL").replace('Hide enemies mass', Languageletter54);
+$(".options-box.massGroup>LABEL").replace('Short mass', Languageletter55);
+$(".options-box.massGroup>LABEL").replace('Virus shots', Languageletter56);
+$(".options-box.massGroup>LABEL").replace('Mass stroke', Languageletter57);
+$(".options-box.skinsGroup>h5").text(Languageletter58);
+$(".options-box.skinsGroup>LABEL").replace('No skins', Languageletter59);
+$(".options-box.skinsGroup>LABEL").replace('Custom skins', Languageletter60);
+$(".options-box.skinsGroup>LABEL").replace('Vanilla skins', Languageletter61);
+$(".options-box.skinsGroup>LABEL").replace('Jelly physics', Languageletter61a);
+$(".options-box.skinsGroup>LABEL").replace('Sound from other\'s Video skins when both C3', Languageletter61c);
+$(".options-box.skinsGroup>LABEL").replace('Video skins', Languageletter61b);
 
-var Languageletter62="Optimized food";		//Optimized food 
-var Languageletter6a2="Food";		//Food 
-var Languageletter63="Auto hide food (mass)";		//Auto hide food (mass) 
-var Languageletter64="Auto hide food (zoom)";		//Auto hide food (zoom) 
-var Languageletter65="Rainbow food";		//Rainbow food 
-var Languageletter66="Transparency / colors";		//Transparency / colors
-var Languageletter67="No colors";		//No colors 
-var Languageletter68="My custom color";		//My custom color 
-var Languageletter69="My transparent skin";		//My transparent skin 
-var Languageletter70="Transparent skins";		//Transparent skins 
-var Languageletter70a="Transparent cells";		//Transparent cells
-var Languageletter71="Transparent viruses";		//Transparent viruses 
-var Languageletter71a="Virus Glow";		//Virus Glow
-var Languageletter71b="Animated rainbow colors";		//Animated rainbow colors
+$(".options-box.foodGroup>h5").text(Languageletter6a2);
+$(".options-box.foodGroup>LABEL").replace('Optimized food', Languageletter62);
+$(".options-box.foodGroup>LABEL").replace('Auto hide food - mass', Languageletter63);
+$(".options-box.foodGroup>LABEL").replace('Auto hide food - zoom', Languageletter64);
+$(".options-box.foodGroup>LABEL").replace('Rainbow food', Languageletter65);
+//$(".options-box.foodGroup>LABEL").replace('mass', Languageletter49);
+//$(".options-box.foodGroup>LABEL").replace('zoom', Languageletter37b);
 
-var Languageletter72="Grid / sectors";		//Grid / sectors
-var Languageletter73="Show grid";		//Show grid 
-var Languageletter74="Show background sectors";		//Show background sectors 
-var Languageletter75="Show map borders";		//Show map borders 
-var Languageletter75a="Border Glow";		//Border Glow
+$(".options-box.transparencyGroup>h5").text(Languageletter66);
+$(".options-box.transparencyGroup>LABEL").replace('No colors', Languageletter67);
+$(".options-box.transparencyGroup>LABEL").replace('My custom color', Languageletter68);
+$(".options-box.transparencyGroup>LABEL").replace('My transparent skin', Languageletter69);
+$(".options-box.transparencyGroup>LABEL").replace('Transparent skins', Languageletter70);
+$(".options-box.transparencyGroup>LABEL").replace('Transparent cells', Languageletter70a);
+$(".options-box.transparencyGroup>LABEL").replace('Transparent viruses', Languageletter71);
+$(".options-box.transparencyGroup>LABEL").replace('Virus Glow', Languageletter71a);
+$(".options-box.transparencyGroup>LABEL").replace('Animated rainbow colors', Languageletter71b);
 
-var Languageletter76="Chat";		//Chat
-var Languageletter77="Disable chat";		//Disable chat 
-var Languageletter78="Sound notifications";		//Sound notifications 
-var Languageletter79="Emoticons";		//Emoticons 
-var Languageletter80="Show images on chat";		//Show images on chat 
-var Languageletter81="Show videos on chat";		//Show videos on chat 
-var Languageletter82="Chatbox instead of popups";		//Chatbox instead of popups 
-var Languageletter82a="Minimap";		//Minimap
-var Languageletter82b="Show minimap";		//Show minimap 
-var Languageletter82c="Show minimap grid";		//Show minimap grid 
-var Languageletter82d="Show minimap guides";		//Show minimap guides 
-var Languageletter82e="One-colored teammates";		//One-colored teammates 
-var Languageletter82f="Show extra minimap guides";		//Show extra minimap guides
-var Languageletter82g="Show ghost cells";		//Show ghost cells
+$(".options-box.gridGroup>h5").text(Languageletter72);
+$(".options-box.gridGroup>LABEL").replace('Show grid', Languageletter73);
+$(".options-box.gridGroup>LABEL").replace('Show background sectors', Languageletter74);
+$(".options-box.gridGroup>LABEL").replace('Show map borders', Languageletter75);
+$(".options-box.gridGroup>LABEL").replace('Border Glow', Languageletter75a);
 
-var Languageletter83="Helpers";		//Helpers
-var Languageletter84="Opponents colors";		//Opponents colors
-var Languageletter85="Opponents rings";		//Opponents rings 
-var Languageletter86="Viruses colors";		//Viruses colors 
-var Languageletter87="Split range";		//Split range 
-var Languageletter87a="Quick double split range";		//Quick double split range
-var Languageletter87b="Slow double split range";		//Slow double split range
+$(".options-box.chatGroup>h5").text(Languageletter76);
+$(".options-box.chatGroup>LABEL").replace('Disable chat', Languageletter77);
+$(".options-box.chatGroup>LABEL").replace('Sound notifications', Languageletter78);
+$(".options-box.chatGroup>LABEL").replace('Emoticons', Languageletter79);
+$(".options-box.chatGroup>LABEL").replace('Show images on chat', Languageletter80);
+$(".options-box.chatGroup>LABEL").replace('Show videos on chat', Languageletter81);
+$(".options-box.chatGroup>LABEL").replace('Chatbox instead of popups', Languageletter82);
+$(".options-box.miniMapGroup>h5").text(Languageletter82a);
+$(".options-box.miniMapGroup>LABEL").replace('Show minimap', Languageletter82b);
+$(".options-box.miniMapGroup>LABEL").replace('Show minimap grid', Languageletter82c);
+$(".options-box.miniMapGroup>LABEL").replace('Show minimap guides', Languageletter82d);
+$(".options-box.miniMapGroup>LABEL").replace('Show extra minimap guides', Languageletter82f);
+$(".options-box.miniMapGroup>LABEL").replace('Show ghost cells', Languageletter82g);
+$(".options-box.miniMapGroup>LABEL").replace('One-colored teammates', Languageletter82e);
+$(".options-box.helpersGroup>h5").text(Languageletter83);
+$(".options-box.helpersGroup>LABEL").replace('Opponents colors', Languageletter84);
+$(".options-box.helpersGroup>LABEL").replace('Opponents rings', Languageletter85);
+$(".options-box.helpersGroup>LABEL").replace('Viruses colors', Languageletter86);
+$(".options-box.helpersGroup>LABEL").replace('Split range', Languageletter87);
+$(".options-box.helpersGroup>LABEL").replace('Quick double split range', Languageletter87a);
+$(".options-box.helpersGroup>LABEL").replace('Slow double split range', Languageletter87b);
+$(".options-box.helpersGroup>LABEL").replace('Viruses range', Languageletter88);
+$(".options-box.helpersGroup>LABEL").replace('Cursor tracking', Languageletter89);
+$(".options-box.helpersGroup>LABEL").replace('Teammates indicators', Languageletter90);
+$(".options-box.helpersGroup>LABEL").replace('Ghost cells info', Languageletter90a + " " + Externalletter1.toLowerCase());
+$(".options-box.helpersGroup>LABEL").replace('Ghost cells', Languageletter90a);
 
-var Languageletter88="Viruses range";		//Viruses range 
-var Languageletter89="Cursor tracking";		//Cursor tracking 
-var Languageletter90="Teammates indicators";		//Teammates indicators 
-var Languageletter90a="Ghost cells";		//Ghost cells
+$(".options-box.mouseGroup>h5").text(Languageletter91);
+$(".options-box.mouseGroup>LABEL").replace('LMB - Mouse split', Languageletter92);
+$(".options-box.mouseGroup>LABEL").replace('RMB - Mouse feed', Languageletter93);
+$(".options-box.mouseGroup>LABEL").replace('Invert mouse buttons', Languageletter94);
+$(".options-box.hudGroup>h5").text(Languageletter94a);
+$(".options-box.hudGroup>LABEL").replace('Show teamboard', Languageletter95);
+$(".options-box.hudGroup>LABEL").replace('Show targeting', Languageletter96);
+$(".options-box.hudGroup>LABEL").replace('Show leaderboard mass', Languageletter96a);
+$(".options-box.hudGroup>LABEL").replace('Centered leaderboard', Languageletter97);
+//$(".options-box.hudGroup>LABEL").replace('\"Leaderboard\" header ', Languageletter97a);
+$(".options-box.hudGroup>LABEL").replace('Game stats at the top', Languageletter98);
+$(".options-box.hudGroup>LABEL").replace('Skins on teamboard', Languageletter98a);
+$(".options-box.statsGroup>h5").text(Languageletter99);
+$(".options-box.statsGroup>LABEL").replace('Show game stats', Languageletter100);
+$(".options-box.statsGroup>LABEL").replace('Game stats: Mass', Languageletter101 + ": " + Languageletter49);
+$(".options-box.statsGroup>LABEL").replace('Game stats: Enemy\'s STE', Languageletter101 + ": " + Languageletter102 + " " + "STE");
+$(".options-box.statsGroup>LABEL").replace('Game stats: Enemy\'s MTE', Languageletter101 + ": " + Languageletter102 + " " + "MTE");
+$(".options-box.statsGroup>LABEL").replace('Game stats: Our STE', Languageletter101 + ": " + Languageletter103 + " " + "STE");
+$(".options-box.statsGroup>LABEL").replace('Game stats: Our MTE', Languageletter101 + ": " + Languageletter103 + " " + "MTE");
+$(".options-box.statsGroup>LABEL").replace('Game stats: Minimal tricksplit teammate\'s mass ', Languageletter101 + ": " + Languageletter104);
+$(".options-box.statsGroup>LABEL").replace('Game stats: Maximal enemy\'s mass for presplit', Languageletter101 + ": " + Languageletter104a);
+$(".options-box.statsGroup>LABEL").replace('Game stats: STE', Languageletter101 + ": " + "STE");
+$(".options-box.statsGroup>LABEL").replace('Game stats: n/16', Languageletter101 + ": " + "n/16");
+$(".options-box.statsGroup>LABEL").replace('Game stats: FPS', Languageletter101 + ": " + "FPS");
+$(".options-box.statsGroup>LABEL").replace('Show current time', Languageletter105);
+$(".options-box.extrasGroup>h5").text(Languageletter106);
+$(".options-box.extrasGroup>LABEL").replace('Skip stats after death', Languageletter107);
+$(".options-box.extrasGroup>LABEL").replace('Show quest', Languageletter108);
+$(".options-box.extrasGroup>LABEL").replace('Game sounds', Languageletter108a);
+$(".options-box.extrasGroup>LABEL").replace('Menu sounds', Languageletter108b);
+$(".options-box.extrasGroup>LABEL").replace('Block popups', Languageletter109);
+$(".options-box.voiceGroup>.menu-main-color").text(Languageletter109a);
+$(".options-box.voiceGroup>LABEL").replace('Voice-Prefix', Languageletter109b);
+$(".options-box.voiceGroup>LABEL").replace('Voice-lang', Languageletter109c);
+$(".options-box.voiceGroup>LABEL").replace('UnPause', Languageletter109d);
 
-var Languageletter91="Mouse control";		//Mouse control
-var Languageletter92="LMB - Mouse split";		//LMB - Mouse split 
-var Languageletter93="RMB - Mouse feed";		//RMB - Mouse feed 
-var Languageletter94="Invert mouse buttons";		//Invert mouse buttons 
-var Languageletter94a="HUD";		// HUD
-var Languageletter95="Team";		//Team
-var Languageletter96="Show targeting";		//Show targeting 
-var Languageletter96a="Show leaderboard mass";		//Show leaderboard mass
+$('#quality>option:nth-child(1)').text(Languageletter110);
+$('#quality>option:nth-child(2)').text(Languageletter111);
+$('#quality>option:nth-child(3)').text(Languageletter112);
+$('#quality>option:nth-child(4)').text(Languageletter113);
+$('#quality>option:nth-child(5)').text(Languageletter114);
+$('#quality>option:nth-child(6)').text(Languageletter115);
 
-var Languageletter97="Centered leaderboard";		//Centered leaderboard 
-var Languageletter97a="\"Leaderboard\" header ";		//\"Leaderboard\" header 
+$(".btn.btn-block.btn-success.btn-export").text(Languageletter116);
+$(".restore-settings>a").eq(0).text(Languageletter117);
 
-var Languageletter98="Game stats at the top";		//Game stats at the top 
-var Languageletter98a="Skins on teamboard";		//Skins on teamboard
+$("#exp-imp-settings>h1").eq(0).text(Languageletter118);
+$("#exp-imp-settings>h1").eq(1).text(Languageletter119);
+$("#exp-imp-settings>h2").eq(0).text(Languageletter120);
+$("#exp-imp-settings>h2").eq(1).text(Languageletter121);
 
-var Languageletter99="Stats";		//Stats
-var Languageletter100="Show game stats";		//Show game stats 
-var Languageletter101="Game stats";		//Game stats
-//the \' is needed
-var Languageletter102="Enemy\'s";		//Enemy\'s 		
-var Languageletter103="Our";		//Our
-var Languageletter104="Minimal tricksplit teammate\'s mass";		//Minimal tricksplit teammate\'s mass
-var Languageletter104a="Maximal enemy\'s mass for presplit";		//Maximal enemy\'s mass for presplit 
-var Languageletter105="Show current time";		//Show current time 
-var Languageletter106="Extras";		//Extras
-var Languageletter107="Skip stats after death";		//Skip stats after death 
-var Languageletter108="Show quesτ";		//Show quest 
-var Languageletter108a="Game sounds"; //Game Sounds
-var Languageletter108b="Menu sounds"; //Menu Sounds
-var Languageletter109="Block popups (ads/shop/quest)";		//Block popups (ads/shop/quest) 
-var Languageletter109a="VOICE"; //Voice
-var Languageletter109b="Voice-Prefix"; //Voice-Prefix
-var Languageletter109c="Voice-lang"; //Voice-language
-var Languageletter109d="UnPause"; //UnPause
+$("#exp-imp-settings>LABEL").replace('Commands', Languageletter122);
+$("#exp-imp-settings>LABEL").replace('Hotkeys', Languageletter123);
+$("#exp-imp-settings>LABEL").replace('Profiles', Languageletter124);
+$("#exp-imp-settings>LABEL").replace('Settings', Languageletter125);
+$("#exp-imp-settings>LABEL").replace('Theme', Languageletter126);
+$("#export-settings-btn").text(Languageletter127);
+$("#import-settings-btn").text(Languageletter128);
+$("#import-settings-btn2").text(Languageletter128);
 
-var Languageletter110="-- Graphics Quality --";		//-- Graphics Quality --
-var Languageletter111="Graphics: Retina";		//Graphics: Retina
-var Languageletter112="Graphics: High";		//Graphics: High
-var Languageletter113="Graphics: Medium";		//Graphics: Medium"
-var Languageletter114="Graphics: Low";		//Graphics: Low
-var Languageletter115="Graphics: Very Low";		//Graphics: Very Low
-var Languageletter116="Export / import settings";		//Export / import settings
-var Languageletter117="Restore default settings";		//Restore default settings
-var Languageletter118="Export settings";		//Export settings
-var Languageletter119="Import settings";		//Import settings
-var Languageletter120="To export selected settings copy the code below and save it to a text file encoded in Unicode.";		//To export selected settings copy the code below and save it to a text file encoded in Unicode.
-var Languageletter121="To import selected settings paste an exported code below and press the 'Import settings' button.";		//To import selected settings paste an exported code below and press the 'Import settings' button.
-var Languageletter122="Commands";		// Commands
-var Languageletter123="Hotkeys";		// Hotkeys
-var Languageletter124="Profiles";		// Profiles
-var Languageletter125="Settings";		// Settings
-var Languageletter126="Theme";		// Theme
-var Languageletter127="Export settings";		//Export settings
-var Languageletter128="Import settings";		//Import settings
-var Languageletter129="Basic theming";		//Basic theming
-var Languageletter130="Menu";		//Menu
-var Languageletter131="HUD";		//HUD
-var Languageletter132="Chat";		//Chat
-var Languageletter133="Minimap";		//Minimap
-var Languageletter134="Graphics / cursors";		//Graphics / cursors
-var Languageletter135="Theme preset";		//Theme preset
-var Languageletter136="Legend Original";		//Legend Original
-var Languageletter137="Crazy Style";		//Crazy Style 1
-var Languageletter139="Background";		//Background
-var Languageletter140="Map borders";		//Map borders
-var Languageletter141="Grid";		//Grid
-var Languageletter142="Sectors font";		//Sectors font
-var Languageletter143="Names";		//Names
-var Languageletter144="Names stroke";		//Names stroke
-var Languageletter145="Mass";		//Mass
-var Languageletter146="Mass stroke";		//Mass stroke
-var Languageletter147="Virus stroke";		//Virus stroke
-var Languageletter148="Virus";		//Virus
-var Languageletter148a="Mothercell";		//Mothercell
-var Languageletter148b="Mothercell stroke";		//Mothercell stroke
-var Languageletter149="Food";		//Food
-var Languageletter150="Teammate indicator";		//Teammate indicator
-var Languageletter151="Cursor tracking";		//Cursor tracking
-var Languageletter152="Split range";		//Split range
-var Languageletter153="Names font";		//Names font
-var Languageletter154="Mass font";		//Mass font
-var Languageletter154a="Bigger";		//Bigger
-var Languageletter154b="Smaller";		//Smaller
-var Languageletter155="Sectors font";		//Sectors font
-var Languageletter157="Sectors font size";		//Sectors font size
-var Languageletter158="Names scale";		//Names scale
-var Languageletter159="Mass scale";		//Mass scale
-var Languageletter160="Virus mass scale";		//Virus mass scale
-var Languageletter161="Text stroke scale";		//Text stroke scale
-var Languageletter162="Food size";		//Food size: 
-var Languageletter163="Virus stroke size";		//Virus stroke size
-var Languageletter164="Map borders width";		//Map borders width
-var Languageletter165="Sectors grid width";		//Sectors grid width
-var Languageletter166="Cells transparency";		//Cells transparency
-var Languageletter167="Skins transparency";		//Skins transparency
-var Languageletter168="Virus transparency";		//Virus transparency
-var Languageletter169="Names & mass transparency";		//Names & mass transparency
-var Languageletter170="Restore theme default settings";		//Restore theme default settings
-var Languageletter171="Save settings";		//Save settings
-var Languageletter172="Menu theme";		//Menu theme
-var Languageletter173="Background";		//Background
-var Languageletter174="Transparency";		//Transparency
-var Languageletter175="Main color";		//Main color
-var Languageletter176="Button text";		//Button text
-var Languageletter177="Panel";		//Panel
-var Languageletter179="Panel text";		//Panel text
-var Languageletter181="Button";		//Button
-var Languageletter189="Panel background image";		//Panel background image
-var Languageletter190="Image URL";		//Image URL
-//var Languageletter191="Main color";		//Main color
-var Languageletter192="Background";		//Background
-var Languageletter193="Text";		//Text
-var Languageletter194="Stats";		//Stats
-var Languageletter195="Time";		//Time
-var Languageletter196="Top 5 mass";		//Top 5 mass
-var Languageletter197="Leaderboard - me";		//Leaderboard - me
-var Languageletter198="Leaderboard - teammate";		//Leaderboard - teammate
-var Languageletter199="HUD font";		//HUD font
-var Languageletter200="HUD scale";		//HUD scale: 
-var Languageletter201="Message background";		//Message background
-var Languageletter202="Message text";		//Message text
-var Languageletter203="Message time";		//Message time
-var Languageletter204="Message nick";		//Message nick
-var Languageletter205="Command background";		//Command background
-var Languageletter206="Command text";		//Command text
-var Languageletter207="Command time";		//Command time
-var Languageletter208="Command nick";		//Command nick
-var Languageletter209="Chatbox color";		//Chatbox color
-var Languageletter210="Chat scale";		//Chat scale
-var Languageletter211="Sectors";		//Sectors
-var Languageletter212="Current sector";		//Current sector
-var Languageletter213="Nick";		//Nick
-var Languageletter214="Nick stroke";		//Nick stroke
-var Languageletter215="My cell";		//My cell
-var Languageletter216="My cell stroke";		//My cell stroke
-var Languageletter217="Teammates";		//Teammates
-var Languageletter218="Death location";		//Death location
-var Languageletter219="Guides";		//Guides
-var Languageletter220="Minimap font";		//Minimap font
-var Languageletter221="Nick font";		//Nick font
-var Languageletter222="Minimap width";		//Minimap width
-var Languageletter223="Sectors transparency";		//Sectors transparency
-var Languageletter224="Nick size";		//Nick size
-var Languageletter225="Nick stroke size";		//Nick stroke size
-var Languageletter226="My cell size";		//My cell size
-var Languageletter227="My cell stroke size";		//My cell stroke size
-var Languageletter228="Teammates size";		//Teammates size
-var Languageletter229="Custom background image";		//Custom background image
-var Languageletter230="Custom cursor image";		//Custom cursor image
-var Languageletter231="Image URL";		//Image URL
-var Languageletter232="Cursor image URL";		//Cursor image URL
-var Languageletter233="Feed";		//Feed
-var Languageletter234="Macro feed";		//Macro feed
-var Languageletter235="Split";		//Split
-var Languageletter236="Double split";		//Double split
-var Languageletter237="Popsplit";		//Popsplit
-var Languageletter238="Split 16";		//Split 16
-var Languageletter239="Cell pause";		//Cell pause
-var Languageletter240="Show/hide team top 5";		//Show/hide team top 5
-var Languageletter241="Show/hide current time";		//Show/hide current time
-var Languageletter242="Show/hide split range";		//Show/hide split range"
-var Languageletter243="Show/hide teammates indicators";		//Show/hide teammates indicators
-var Languageletter244="Show/hide split indicators";		//Show/hide split indicators
-var Languageletter245="Show/hide opponents colors";		//Show/hide opponents colors
-var Languageletter246="Toggle skins (custom/default)";		//Toggle skins (custom/default)
-var Languageletter247="Toggle transparent skins";		//Toggle transparent skins
-var Languageletter248="Show/hide skins";		//Show/hide skins
-var Languageletter249="Show/hide game stats";		//Show/hide game stats
-var Languageletter250="Toggle own cells (smallest/biggest)";		//Toggle own cells (smallest/biggest)
-var Languageletter251="Show/hide food";		//Show/hide food
-var Languageletter252="Show/hide grid";		//Show/hide grid
-var Languageletter253="Show/hide minimap guides";		//Show/hide minimap guides
-var Languageletter254="Show/hide chat";		//Show/hide chat
-var Languageletter255="Show/hide HUD";		//Show/hide HUD
-var Languageletter256="Copy leaderboard";		//Copy leaderboard
-var Languageletter257="Show/hide leaderboard";		//Show/hide leaderboard
-var Languageletter258="Toggle auto zoom";		//Toggle auto zoom
-var Languageletter259="Reset zoom";		//Reset zoom
-var Languageletter260="Toggle death location";		//Toggle death location
-var Languageletter261="Show chat history / Clear chat";		//Show chat history / Clear chat
-var Languageletter262="Show/hide background sectors";		//Show/hide background sectors
-var Languageletter263="Show/hide small bots";		//Show/hide small bots
-var Languageletter264="Show/hide names";		//Show/hide names
-var Languageletter265="Show/hide teammates names";		//Show/hide teammates names
-var Languageletter266="Show/hide mass";		//Show/hide mass
-var Languageletter267="Show/hide minimap";		//Show/hide minimap
-var Languageletter268="Enter chat message";		//Enter chat message
-var Languageletter269="Quick respawn";		//Quick respawn
-var Languageletter270="Toggle auto respawn";		//Toggle auto respawn
-var Languageletter271="Zoom level";		//Zoom level 
-var Languageletter271a="Voice to text";		//Voice to text
-var Languageletter271b="Show ghost cells information";		//Show ghost cells information
-var Languageletter271c="Auto Play";		//Auto Play
-var Languageletter272="Show/hide targeting panel";		//Show/hide targeting panel
-var Languageletter273="Start/stop targeting (following)";		//Start/stop targeting (following)
-var Languageletter274="Cancel targeting";		//Cancel targeting
-var Languageletter275="Change target";		//Change target
-var Languageletter276="Show target on the minimap";		//Show target on the minimap
-var Languageletter277="Show/hide quest";		//Show/hide quest
-var Languageletter278="To assign a hotkey click on the input field and press your chosen key.";		//To assign a hotkey click on the input field and press your chosen key.
-var Languageletter279="To delete a hotkey click on the input field and press the DELETE key.";		//To delete a hotkey click on the input field and press the DELETE key.
-var Languageletter280="Possible key combinations with the CTRL and ALT keys.";		//Possible key combinations with the CTRL and ALT keys.
-var Languageletter281="Restore default settings";		//Restore default settings
-var Languageletter282="Save settings";		//Save settings
-var Languageletter283="Close";		//Close
-var Languageletter284="Youtube player";		//Youtube player
-var Languageletter284a="Youtube Url";		// Youtube Url
-var Languageletter285="Paste your video/playlist here";		//Paste your video/playlist here
-var Languageletter286="Sounds";		//Sounds
-var Languageletter287="Message notification sound";		//Message notification sound
-var Languageletter288="Command notification sound";		//Command notification sound
-var Languageletter289="Copy Token/SIP";		//Copy Token/SIP
-//keep this small
-var Languageletter290="Token";		//Token
-var Languageletter290a="Board"; //Board
-var Languageletter290b="TK&PW";	//TK&PW (Token and Password)
-var Languageletter290c="TK&ALL"; //TK&ALL (Token and All)
-var Languageletter291="Copy";		//Copy
+$("#theme>ul>li>.ogicon-paint-format").attr('data-original-title', Languageletter129);
+$("#theme>ul>li>.ogicon-menu").attr('data-original-title', Languageletter130);
+$("#theme>ul>li>.ogicon-display").attr('data-original-title', Languageletter131);
+$("#theme>ul>li>.ogicon-bubbles").attr('data-original-title', Languageletter132);
+$("#theme>ul>li>.ogicon-location2").attr('data-original-title', Languageletter133);
+$("#theme>ul>li>.ogicon-compass").attr('data-original-title', Languageletter134);
 
-var Languageletter291a="Copy Leaderboard (L)";		//Copy Leaderboard (L)
-var Languageletter291b="Copy Token/SIP&Password"; 	//Copy Token/SIP&Password
-var Languageletter291c="Copy Token/SIP, Password, Leaderboard..."; //Copy Token/SIP, Password, Leaderboard...
-var Languageletter292="Join server (Backspace)";		//Join server (Backspace)
-var Languageletter293="Change server (+)";		//Change server (+)
-var Languageletter294="Leaderboard history";		//Leaderboard history
-var Languageletter295="Enter friend token, IP, leaderboard, name or clan tag...";		//Enter friend token, IP, leaderboard, name or clan tag...
-var Languageletter295a="Clear list"; //Clear list
-var Languageletter295b="Enter chat message..."; //Enter chat message...
-var Languageletter298="Team top ";		//Team top 
-var Languageletter299="Leaderbodard";		//Leaderbodard
-var Languageletter300="Communication";		//Communication
-var Languageletter301="Message Script Commands";		//Message Script Commands
-var Languageletter302="Message Imgur Icons";		//Message Imgur Icons
-var Languageletter303="Message Youtube Videos";		//Message Youtube Videos
-var Languageletter304="Edit names";		//Edit names
-var Languageletter305="[Spectate Mode Only] Binoculars";		//[Spectate Mode Only] Binoculars
-var Languageletter306="Play / Pause";		//Play / Pause
-var Languageletter307="Fullscreen";		//Fullscreen
-var Languageletter308="Rotate";		//Rotate
-var Languageletter309="Default";		//Default
-var Languageletter310="Back";		//Back
-var Languageletter311="Save for later";		//Save for later
-var Languageletter312="Region";		//Region
-var Languageletter313="Players";		//Players
-var Languageletter314="Servers";		//Servers
-var Languageletter315="[Target not set]";		//[Target not set]
-var Languageletter316="Manual background";		//Manual background
-var Languageletter317="Manual Message Icons&Youtube";		//Manual Message Icons&Youtube
-var Languageletter318="Chat Position";		//Chat Position
-var Languageletter319="Discord Webhook Url (for sending TOKEN)";		//Discord Webhook Url (for sending TOKEN)
-var Languageletter320="Leaderboard";		//Leaderboard
-var Languageletter321="Teamboard";		//Teamboard
-var Languageletter322="Main Canvas";		//Main Canvas
-var Languageletter323="Main Banner";		//Main Banner
-var Languageletter324="Hello Team!";		//Hello Team!
-var Languageletter325="Laugh to Team";		//Laugh to Team
-var Languageletter326="Team Change Name to yours";		//Team Change Name to yours
-var Languageletter327="Troll on Death";		//Troll on Death
-var Languageletter328="Open Youtube Music";		//Open Youtube Music
-var Languageletter329="Insane mode (Hide Everything)";		//Insane mode (Hide Everything)
-var Languageletter330="Url of image starting with http://... or https://...";		//Url of image starting with http://... or https://...
-var Languageletter331="Minimap Image URL";		//Minimap Image URL
-var Languageletter332="Minimap Text";		//Minimap Text
-var Languageletter333="Leaderboard Logo Text";		//Leaderboard Logo Text
-var Languageletter333a="Leaderboard Image URL";		// Leaderboard Image URL
-var Languageletter334="Teamboard Logo Text";		//Teamboard Logo Text
-var Languageletter334a="Teamboard Image URL";		// Teamboard Image URL
-var Languageletter335="Main Canvas Image URL";		//Main Canvas Image URL
-var Languageletter336="Main Banner Icon URL";		//Main Banner Icon URL
-var Languageletter337="Main Banner Link URL";		//Main Banner Link URL
-var Languageletter338="Icon";		//Icon
-var Languageletter339="e.g";		//e.g
-var Languageletter340="Url of youtube to be shown";		//Url of youtube to be shown
-var Languageletter341="Url of link to redirect";		//Url of link to redirect
-var Languageletter342="Discord Webhook Url";		//Discord Webhook Url
-var Languageletter342a="Message Icon Text";		//Message Icon Text
-var Languageletter342b="Youtube Message Text";		//Youtube Message Text
-var Languageletter342c="Message Icon Imgur Url";		//Message Icon Imgur Url
-var Languageletter342d="Youtube Message Url";		//Youtube Message Url
-var Languageletter343="Must be filled for function to work";		//Must be filled for function to work.
-var Languageletter344="Secondary Webhook(optional)";		//Secondary Webhook(optional)
-var Languageletter345="WARNING! Popups are blocked in the settings.";		//WARNING! Popups are blocked in the settings.
-var Languageletter346="Temporary unblock";		//Temporary unblock
-var Languageletter347="WARNING! Popups are blocked in the settings.";		//WARNING! Popups are blocked in the settings.
-var Languageletter348="Temporary unblock";		//Temporary unblock
+$(".preset-box>span").text(Languageletter135);
 
-var Languageletter349="Potions";	//Potions
-var Languageletter350="Old Skins";	//Old Skins
-var Languageletter351="Special Deals"; //Special Deals
-var Languageletter352="Leaderboards"; //Leaderboards
-var Languageletter353="New Ideas & Statistics Form"; //New Ideas & Statistics Form
-var Languageletter354="Video Skins"; //Video Skins
-var Languageletter355="Mini Scripts"; //Mini Scripts
-var Languageletter356="User Scripts"; //User Scripts
-var Languageletter357="Voice & Camera Chat";	//Voice & Camera Chat
-var Languageletter358="Please support the development of Legend mod";	//Please support the development of Legend mod
-var Languageletter359="Design Nickname Font";	//Design Nickname Font
-var Languageletter360="Flag the Fake Skin";	//Flag the Fake Skin
-var Languageletter361="More FPS";	//More FPS
-var Languageletter362="Name";	//Name
-var Languageletter363="Social ID";	//Social ID
-var Languageletter364="Expansions";	//Expansions
-var Languageletter365="Universal";	//Universal
-var Languageletter366="Score";	//Score
-var Languageletter367="Distance";	//Distance
-var Languageletter368="Total Mass";	//Total Mass
-var Languageletter369="Dead";	//Dead
+$('#themePreset>option:nth-child(3)').text(Languageletter136);
+$('#themePreset>option:nth-child(4)').text(Languageletter137 + " 1");
+$('#themePreset>option:nth-child(5)').text(Languageletter137 + " 2");
 
-var Premadeletter0="Communication Activated"; 		//Communication Activated
-var Premadeletter1="Cannot open this youtube URL";		 //Cannot open this youtube URL
-var Premadeletter2="You cannot chat if player name > 15 chars"; 		//[SERVER]: You cannot chat if player name > 15 chars
-var Premadeletter3="Easter Egg 1 Activated"; 		//Easter Egg 1 Activated
-var Premadeletter4="Easter Egg 2 Activated";		//Easter Egg 2 Activated
-var Premadeletter5="Easter Egg 3 Activated";		//Easter Egg 3 Activated
-var Premadeletter6="Video works better on vanilla, visit:";		//Video works better on vanilla, visit:
-var Premadeletter7="Notes:<b>Facebook</b> compatibility is better than <b>Google Plus</b>."; 		//Notes:<b>Facebook</b> compatibility is better than <b>Google Plus</b>.
-var Premadeletter8="Notes:Agar.io can only connect to <b>Google Plus</b> on onload events. If logout occurs, rejoin Agar.io or use <b>Facebook</b>.";		//Notes:Agar.io can only connect to <b>Google Plus</b> on onload events. If logout occurs, rejoin Agar.io or use <b>Facebook</b>.
-var Premadeletter9="If logout occurs on onload events, delete Chrome cookies from";		//If logout occurs on onload events, delete Chrome cookies from 
-var Premadeletter10="Disconnected from server :(";		//Disconnected from server :(
-var Premadeletter11="You were banned, restart your rooter!";		//You were banned, restart your rooter!
-var Premadeletter12="Connected!";		//Connected!
-var Premadeletter13="PLAY";		//PLAY
-var Premadeletter14="SPECTATE";		//SPECTATE
-var Premadeletter15="Invalid token or server has closed :(";		//Invalid token or server has closed :(
-var Premadeletter16="can be Updated to";		//can be Updated to
-var Premadeletter17="Welcome back";			//Welcome back
-var Premadeletter18="Your shortcut area and other areas (from last tab) are still disabled! We suggest you enable them.";		//Your shortcut area and other areas (from last tab) are still disabled! We suggest you enable them.
-var Premadeletter19="Enable Them";		//Enable Them
-var Premadeletter20="Keep Them Disabled";		//Keep Them Disabled
-var Premadeletter21="Searching IP";		//Searching IP
-var Premadeletter22="Your teammate";		//Your teammate
-var Premadeletter23="wants you to hide all (leaderboard and minimap)";		//wants you to hide all (leaderboard and minimap)
-var Premadeletter24="Accept";		//Accept
-var Premadeletter25="NO WAY!";		//NO WAY!
-var Premadeletter26="wants you to change your name to";		//wants you to change your name to
-var Premadeletter27="wants you to Enable Troll on death";		//wants you to hide Enable Troll on death
-var Premadeletter28="wants you to open Youtube Player";			//wants you to open Youtube Player
-var Premadeletter29="Leaderboard found";		//Leaderboard found
-var Premadeletter30="Search";		//Search
-var Premadeletter31="The leaderboard was not found. Keep trying...";		//The leaderboard was not found. Keep trying...
-var Premadeletter32="Search was canceled";		//Search was canceled
-var Premadeletter33="You are invisible to Team / Clan";		//You are invisible to Team / Clan
-var Premadeletter34="You are visible to Team / Clan";		//You are visible to Team / Clan
-var Premadeletter35="Hide/Show can be used only while playing";			//Hide/Show can be used only while playing
-var Premadeletter36="This is not valid Discord Webhook address";		//This is not valid Discord Webhook address
-var Premadeletter37="Server is locked";		//Server is locked
-var Premadeletter38="You must be on spectate mode";		//You must be on spectate mode
-var Premadeletter39="Due to spamming issues, you must be in game and use password";		//Due to spamming issues, you must be in game and use password
+$("#theme-main>div>span").eq(1).text(Languageletter139); //Background
+$("#theme-main>div>span").eq(2).text(Languageletter140); //Map borders
+$("#theme-main>div>span").eq(3).text(Languageletter75a); //Border Glow
+$("#theme-main>div>span").eq(4).text(Languageletter141); //Grid
+$("#theme-main>div>span").eq(5).text(Languageletter155); //Sectors font
+$("#theme-main>div>span").eq(6).text(Languageletter143); //Names
+$("#theme-main>div>span").eq(7).text(Languageletter145); //Names stroke
+$("#theme-main>div>span").eq(8).text(Languageletter145); //Mass
+$("#theme-main>div>span").eq(9).text(Languageletter146); //Mass stroke
+$("#theme-main>div>span").eq(10).text(Languageletter148); //Virus
+$("#theme-main>div>span").eq(11).text(Languageletter147); //Virus stroke
+$("#theme-main>div>span").eq(12).text(Languageletter148a); //Mothercell
+$("#theme-main>div>span").eq(13).text(Languageletter148b); //Mothercell stroke
+$("#theme-main>div>span").eq(14).text(Languageletter71a); //Virus Glow
+$("#theme-main>div>span").eq(15).text(Languageletter149); //Food
+$("#theme-main>div>span").eq(16).text(Languageletter150); //Teammate indicator
+$("#theme-main>div>span").eq(17).text(Languageletter151); //Cursor tracking
+$("#theme-main>div>span").eq(18).text(Languageletter152); //Split range
+$("#theme-main>div>span").eq(19).text("B2STE " + Languageletter102 + " " + Languageletter175); //B2STE Enemy Color
+$("#theme-main>div>span").eq(20).text("BSTE " + Languageletter102 + " " + Languageletter175); //BSTE Enemy Color
+$("#theme-main>div>span").eq(21).text(Languageletter154a + " " + Languageletter102 + " " + Languageletter175); //Bigger Enemy Color
+$("#theme-main>div>span").eq(22).text(Languageletter154b + " " + Languageletter102 + " " + Languageletter175); //Smaller Enemy Color
+$("#theme-main>div>span").eq(23).text("SSTE " + Languageletter102 + " " + Languageletter175); //SSTE Enemy Color
+$("#theme-main>div>span").eq(24).text("S2STE " + Languageletter102 + " " + Languageletter175); //S2STE Enemy Color
+$("#theme-main>div>span").eq(25).text(Languageletter154); //Safe area
+$("#theme-main>div>span").eq(26).text(Languageletter154); //Danger area
+$("#theme-main>div>span").eq(27).text(Languageletter90a); //Ghost cells
 
-//					These buttons must no be big in length
-var Premadeletter40="Auto Youtube On";		//Auto Youtube On
-var Premadeletter41="Auto Youtube Off";		//Auto Youtube Off
-var Premadeletter42="Show Shortcuts";		//Show Shortcuts
-var Premadeletter43="Hide Shortcuts";		//Hide Shortcuts
-var Premadeletter44="Show XP BAR";		//Show XP BAR
-var Premadeletter45="Hide XP BAR";		//Hide XP BAR
-var Premadeletter45a = "Rounded Hud"; //Rounded Hud
-var Premadeletter45b = "Square Hud"; //Square Hud
-var Premadeletter46 = "Lin. color Hud"; //Linear color Hud
-var Premadeletter47 = "Hide Anim. Skins"; //Bold color Hud
+$("#theme-main>div>span").eq(28).text(Languageletter153 + ": ");
+$("#theme-main>div>span").eq(29).text(Languageletter154 + ": ");
+$("#theme-main>div>span").eq(30).text(Languageletter155 + ": ");
+/*
+$("#theme-main>div>span").eq(18).text(Languageletter152a);
+$("#theme-main>div>span").eq(19).text(Languageletter152b);
+$("#theme-main>div>span").eq(20).text(Languageletter152c);
+$("#theme-main>div>span").eq(21).text(Languageletter152d);
+$("#theme-main>div>span").eq(22).text(Languageletter152e);
+$("#theme-main>div>span").eq(23).text(Languageletter152f);
+$("#theme-main>div>span").eq(24).text(Languageletter152g);
+$("#theme-main>div>span").eq(25).text(Languageletter152h);
+$("#theme-main>div>span").eq(26).text(Languageletter152i);
+$("#theme-main>div>span").eq(27).text(Languageletter152j);
+$("#theme-main>div>span").eq(28).text(Languageletter152k);
+$("#theme-main>div>span").eq(29).text(Languageletter152l);
+$("#theme-main>div>span").eq(30).text(Languageletter152m);
+*/
+$("#theme-main>div>div>span:nth-child(1)").eq(0).text(Languageletter157 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(1).text(Languageletter158 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(2).text(Languageletter159 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(3).text(Languageletter160 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(4).text(Languageletter161 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(5).text(Languageletter162 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(6).text(Languageletter163 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(7).text(Languageletter164 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(8).text(Languageletter75a + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(9).text(Languageletter71a + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(10).text(Languageletter165 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(11).text(Languageletter166 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter167 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(13).text(Languageletter168 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(14).text(Languageletter169 + ": ");
+$("#theme-main>div>div>span:nth-child(1)").eq(15).text(Languageletter90a +" "+ Languageletter174 + ": ");
+//$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169a + ": ");
+//$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169b + ": ");
+//$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169c + ": ");
 
-var Premadeletter48="Show Everything";		//Show Everything
-var Premadeletter49="Hide Everything";		//Hide Everything
-var Premadeletter50="Show Timer Calc.";		//Show Timer Calc.
-var Premadeletter51="Hide Timer Calc."		//Hide Timer Calc.
+$(".restore-settings>a").eq(1).text(Languageletter170);
+$(".btn.btn-block.btn-success.btn-save").text(Languageletter171);
 
-var Premadeletter53="Auto free coins";		//Auto free coins
-var Premadeletter54="Stop free coins";		//Stop free coins
-var Premadeletter55="Troll on Death";		//Troll on Death
-var Premadeletter56="No troll on Death";		//No troll on Death
+$(".preset-box>span").eq(1).text(Languageletter172);
+$(".preset-box>div>span").eq(1).text(Languageletter173);
 
-var Premadeletter57="Communication";		//Communication
-var Premadeletter58="Hidden";		//Hidden
-var Premadeletter59="Visible";		//Visible
-var Premadeletter60="Pause";		//Pause
+$("#theme-menu>div>div>span:nth-child(1)").eq(0).text(Languageletter174 + ": ");
+$("#theme-menu>div>span").eq(1).text(Languageletter175);
+$("#theme-menu>div>span").eq(2).text(Languageletter176);
+$("#theme-menu>div>span").eq(3).text(Languageletter177);
+$("#theme-menu>div>span").eq(4).text(Languageletter177 + " (2)");
+$("#theme-menu>div>span").eq(5).text(Languageletter179);
+$("#theme-menu>div>span").eq(6).text(Languageletter179 + " (2)");
+$("#theme-menu>div>span").eq(7).text(Languageletter181 +" #1");
+$("#theme-menu>div>span").eq(8).text(Languageletter181 +" #1 (2)");
+$("#theme-menu>div>span").eq(9).text(Languageletter181 +" #2");
+$("#theme-menu>div>span").eq(10).text(Languageletter181 +" #2 (2)");
+$("#theme-menu>div>span").eq(11).text(Languageletter181 +" #3");
+$("#theme-menu>div>span").eq(12).text(Languageletter181 +" #3 (2)");
+$("#theme-menu>div>span").eq(13).text(Languageletter181 +" #4");
+$("#theme-menu>div>span").eq(14).text(Languageletter181 +" #4 (2)");
+$("#theme-menu>div>span").eq(15).text(Languageletter189);
+$("#menuBg").attr('placeholder', Languageletter190);
 
-var Premadeletter61 = "Enable YT as background";	//Enable YT as background
-var Premadeletter62 = "Disable YT as background";	//Disable YT as background";
-var Premadeletter63 = "wants you to open the url";	//wants you to open the url
-var Premadeletter64 = "wants you to embed and play this youtube video";	//wants you to embed and play this youtube video
-var Premadeletter65 = "wants you to join the following Skype room";	//wants you to join the following Skype room
-var Premadeletter66 = "wants you to join the following Discord room";	//wants you to join the following Discord room
-var Premadeletter67 = "wants you to leave this server and join this new one";	//wants you to leave this server and join this new one
+$("#theme-hud>div>span").eq(0).text(Languageletter175);
+$("#theme-hud>div>span").eq(1).text(Languageletter192);
+$("#theme-hud>div>span").eq(2).text(Languageletter193);
+$("#theme-hud>div>span").eq(3).text(Languageletter194);
+$("#theme-hud>div>span").eq(4).text(Languageletter195);
+$("#theme-hud>div>span").eq(5).text(Languageletter196);
+$("#theme-hud>div>span").eq(6).text(Languageletter197);
+$("#theme-hud>div>span").eq(7).text(Languageletter198);
+$("#theme-hud>div>span").eq(8).text(Languageletter199);
+$("#theme-hud>div>div>span:nth-child(1)").eq(0).text(Languageletter200 + ": ");
 
-var Premadeletter68 = "You pressed"; //You pressed
-var Premadeletter69 = "restart if"; //restart if
-var Premadeletter70 = "drops"; //drops
-var Premadeletter71 = "Animated skins"; //Animated skins
-var Premadeletter72 = "enabled"; //enabled
-var Premadeletter73 = "drop"; //drop
-var Premadeletter74 = "when"; //when
-var Premadeletter75 = "Animated skins will be"; //Animated skins will be
-var Premadeletter76 = "disabled"; //disabled
-var Premadeletter77 = "after rejoin"; //after rejoin
-var Premadeletter78 = "Better FPS"; //Better FPS
-var Premadeletter79 = "performance when 16"; //performance when 16
-var Premadeletter80 = "When Dying Light Expansion is enabled, Troll on death cannot occur"; //When Dying Light Expansion is enabled, Troll on death cannot occur
-var Premadeletter81 = "Private Server"; //Private Server
-var Premadeletter82 = "Connect to any"; //Connect to any
-var Premadeletter83 = "server, or make your own"; //server, or make your own
-var Premadeletter84 = "Play agario-like games if you know the IP of servers"; //Play agario-like games if you know the IP of servers
-var Premadeletter85 = "Your image has been copied to clipboard. Paste it"; // Image of your has been copied to clipboard. Paste it
-var Premadeletter86 = "to custom skin Url area"; //to custom skin Url area
-var Premadeletter87 = "You must Login to use picture of your profile"; //You must Login to use picture of your profile
-var Premadeletter88 = "You are using a wrong version"; //You are using a wrong version
-var Premadeletter89 = "Game will terminate now"; //Game will terminate now
-var Premadeletter90 = "Special Deals"; //Special Deals
-var Premadeletter91 = "Agario may or may not give you the Skin, but only the coins"; //Agario may or may not give you the Skin, but only the coins
-var Premadeletter91a = "Use at your own risk"; //Use at your own risk
-var Premadeletter92 = "If UID of your friend is wrong, purchase will fail"; //If friend UID is wrong, purchase will fail
-var Premadeletter93 = "UID Factory Settings"; //UID Factory Settings
-var Premadeletter94 = "You must login to load Special Deals"; //You must login to load Special Deals
-var Premadeletter95 = "Fake image has been copied to clipboard. Paste it"; // Fake image has been copied to clipboard. Paste it
-var Premadeletter96 = "to custom skin Url area in order to activate the fake flag function"; // o custom skin Url area in order to activate the fake flag function
-var Premadeletter97 = "Inform me when you finish with Recapatcha"; //Inform me when you finish with Recapatcha
-var Premadeletter98 = "I have finished"; //I have finished
-var Premadeletter99 = "Never Mind"; //Never Mind
-var Premadeletter100 = "Calculating your XP, please wait..."; //Calculating your XP, please wait...
-var Premadeletter101 = "Do"; //Do
-var Premadeletter102 = "NOT"; //NOT
-var Premadeletter103 = "press"; //press
-var Premadeletter104 = "Erase custom skin URL"; //Erase custom skin URL
-var Premadeletter105 = "select video skin";	//select video skin
-var Premadeletter106 = "unselect video skin"; //unselect video skin
-var Premadeletter107 = "mute audio"; //mute audio
-var Premadeletter108 = "The LM Project"; //The LM Project
-var Premadeletter109 = "Upload"; //Upload 
-var Premadeletter109a = "Download"; //Download
-var Premadeletter109b = "Load"; //Load
-var Premadeletter110 = "do not enter anything here unless you know what it is";	//do not enter anything here unless you know what it is
-var Premadeletter111 = "click on the orange icon to buy"; //click on the orange icon to buy
-var Premadeletter112 = "For some payment methods"; //For some payment methods
-var Premadeletter113 = "Close";	//Close
-var Premadeletter114 = "COPY"; //COPY	
-var Premadeletter115 = "is used to buy offers for your friends"; //is used to buy offers for your friends
-var Premadeletter116 = "To make purchases, you must be logged in to your account…"; //To make purchases, you must be logged in to your account…
-var Premadeletter117 = "Library"; //Library
-var Premadeletter118 = "visit"; //visit
-var Premadeletter119 = "Report as Fake (change Skin)"; //Report as Fake (change Skin)
-var Premadeletter120 = "Enter your EXACT name of the player"; //Enter your EXACT name of the player
-var Premadeletter121 = "Abusing players and inappropriate use will lead UID of user"; //Abusing players and inappropriate use will lead UID of user
-var Premadeletter122 = "to permanent ban from usage of this extension"; //to permanent ban from usage of this extension
-var Premadeletter128 = "User login needed"; //User login needed
-var Premadeletter129 = "Settings successfully uploaded"; //Settings successfully uploaded
+$("#theme-chat>div>span").eq(0).text(Languageletter201);
+$("#theme-chat>div>span").eq(1).text(Languageletter202);
+$("#theme-chat>div>span").eq(2).text(Languageletter203);
+$("#theme-chat>div>span").eq(3).text(Languageletter204);
+$("#theme-chat>div>span").eq(4).text(Languageletter205);
+$("#theme-chat>div>span").eq(5).text(Languageletter206);
+$("#theme-chat>div>span").eq(6).text(Languageletter207);
+$("#theme-chat>div>span").eq(7).text(Languageletter208);
+$("#theme-chat>div>span").eq(8).text(Languageletter209);
+$("#theme-chat>div>div>span:nth-child(1)").eq(0).text(Languageletter210 + ": ");
 
-//These are for file: https://jimboy3100.github.io/ogario/ogario.v4.js and https://jimboy3100.github.io/ogario/ogario.v4.master.js
-var Premadeletter123 = "SERVER"; //SERVER
-var Premadeletter124 = "Avoid using video skins bigger than 6 minutes"; //Avoid using video skins bigger than 6 minutes
-var Premadeletter125 = "Map fixed"; //Map fixed
-var Premadeletter126 = "Logged in to"; //Logged in to
-var Premadeletter127 = "Logged out"; //Logged out
-var Premadeletter130 = "Total"; //Total
-var Premadeletter131 = "NEW"; //NEW
-var Premadeletter132 = "Join Back"; //Join Back
-var Premadeletter133 = "Connect to last IP you played"; //Connect to last IP you played
-var Premadeletter134 = "North America"; //North America
-var Premadeletter135 = "South America"; //South America
-var Premadeletter136 = "Europe"; //Europe
-var Premadeletter137 = "Russia"; //Russia
-var Premadeletter138 = "Turkey"; //Turkey
-var Premadeletter139 = "East Asia"; //East Asia
-var Premadeletter139a = "China"; //China
-var Premadeletter140 = "Oceania"; //Oceania
-var Premadeletter140a = " -- Select a Region -- "; // -- Select a Region -- 
-var Premadeletter141 = "FFA"; //FFA
-var Premadeletter142 = "Battle Royale"; //Battle Royale
-var Premadeletter143 = "Teams"; //Teams
-var Premadeletter144 = "Experimental"; //Experimental
-var Premadeletter145 = "Party Mode"; //Party Mode
+$("#theme-minimap>div>span").eq(0).text(Languageletter211);
+$("#theme-minimap>div>span").eq(1).text(Languageletter212);
+$("#theme-minimap>div>span").eq(2).text(Languageletter213);
+$("#theme-minimap>div>span").eq(3).text(Languageletter214);
+$("#theme-minimap>div>span").eq(4).text(Languageletter215);
+$("#theme-minimap>div>span").eq(5).text(Languageletter216);
+$("#theme-minimap>div>span").eq(6).text(Languageletter217);
+$("#theme-minimap>div>span").eq(7).text(Languageletter218);
+$("#theme-minimap>div>span").eq(8).text(Languageletter219);
+$("#theme-minimap>div>span").eq(9).text(Languageletter220);
+$("#theme-minimap>div>span").eq(9).text(Languageletter221);
 
-//These are for file: https://jimboy3100.github.io/legendhelper.js
-var Externalletter0a = "LANGUAGES"; //LANGUAGES
-var Externalletter0b = "Choose a language"; //Choose a language
-var Externalletter0c = "Changes will take place completely after the restart"; //Changes will take place completely after the restart
-var Externalletter1 = "INFORMATION"; //INFORMATION
-var Externalletter2 = "TEMPLATES"; //TEMPLATES
-var Externalletter3 = "MANUAL TEMPLATES"; //MANUAL TEMPLATES
-var Externalletter4 = "Choose your template"; //Choose your template
-var Externalletter5 = "Or choose an expansion"; //Or choose an expansion
+$("#theme-minimap>div>div>span:nth-child(1)").eq(0).text(Languageletter222 + ": ");
+$("#theme-minimap>div>div>span:nth-child(1)").eq(1).text(Languageletter223 + ": ");
+$("#theme-minimap>div>div>span:nth-child(1)").eq(2).text(Languageletter224 + ": ");
+$("#theme-minimap>div>div>span:nth-child(1)").eq(3).text(Languageletter225 + ": ");
+$("#theme-minimap>div>div>span:nth-child(1)").eq(4).text(Languageletter226 + ": ");
+$("#theme-minimap>div>div>span:nth-child(1)").eq(5).text(Languageletter227 + ": ");
+$("#theme-minimap>div>div>span:nth-child(1)").eq(6).text(Languageletter228 + ": ");
 
-//These are for file: https://jimboy3100.github.io/legendformIframe.js
-var Externalletter5a = "SEND CODE TO DEVELOPERS"; //SEND CODE TO DEVELOPERS
+$("#theme-images>div>span").eq(0).text(Languageletter229);
+$("#theme-images>div>span").eq(1).text(Languageletter230);
+$("#customBackground").attr('placeholder',Languageletter231);
+$("#customCursor").attr('placeholder',Languageletter232);
 
-//These are for file: https://jimboy3100.github.io/legend.sniff3.js
-var Externalletter6 = "Paste your Script in this Textarea, you can load multiple Scripts"; //Paste your Script in this Textarea, you can load multiple Scripts
-var Externalletter7 = "Load Script from Textarea"; //Load Script from Textarea
-var Externalletter8 = "Choose"; //Choose
-var Externalletter9 = "Erase Script"; //Erase Script
-var Externalletter10 = "Name"; //Name
-var Externalletter11 = "Url of Raw Github, or other Raw Script, starting with"; //Url of Raw Github, or other Raw Script, starting with
-var Externalletter12 = "Leave this empty if script not imported from URL"; //Leave this empty if script not imported from URL
-var Externalletter13 = "IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Scenario damages onload events, then DELETE COOKIES"; //IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Scenario damages onload events, then DELETE COOKIES
+
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(0).text(Languageletter233);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(1).text(Languageletter234);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(2).text(Languageletter235);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(3).text(Languageletter236);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(4).text(Languageletter237);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(5).text(Languageletter238);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(6).text(Languageletter239);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(7).text(Languageletter240);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(8).text(Languageletter241);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(9).text(Languageletter242);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(10).text(Languageletter243);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(11).text(Languageletter244);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(12).text(Languageletter245);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(13).text(Languageletter246);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(14).text(Languageletter247);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(15).text(Languageletter248);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(16).text(Languageletter249);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(17).text(Languageletter250);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(18).text(Languageletter251);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(19).text(Languageletter252);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(20).text(Languageletter253);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(21).text(Languageletter254);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(22).text(Languageletter255);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(23).text(Languageletter256);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(24).text(Languageletter257);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(25).text(Languageletter258);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(26).text(Languageletter259);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(27).text(Languageletter260);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(28).text(Languageletter261);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(29).text(Languageletter262);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(30).text(Languageletter263);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(31).text(Languageletter264);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(32).text(Languageletter265);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(33).text(Languageletter266);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(34).text(Languageletter267);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(35).text(Languageletter268);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(36).text(Languageletter269);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(37).text(Languageletter270);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(38).text(Languageletter271 + " 1");
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(39).text(Languageletter271 + " 2");
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(40).text(Languageletter271 + " 3");
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(41).text(Languageletter271 + " 4");
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(42).text(Languageletter271 + " 5");
+
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(43).text(Languageletter271a);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(44).text(Languageletter271b);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(45).text(Languageletter271c);
+
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(46).text(Languageletter272);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(47).text(Languageletter273);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(48).text(Languageletter274);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(49).text(Languageletter275);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(50).text(Languageletter276);
+$("#hotkeys-cfg>div>div:nth-child(1)").eq(51).text(Languageletter277);
+
+$("#hotkeys-inst").replaceWith('<div id="hotkeys-inst"><ul><li>' + Languageletter278 + '</li><li>' + Languageletter279 + '</li><li>' + Languageletter280 + '</li></ul></div>');
+
+$("#reset-hotkeys").text(Languageletter281);
+$("#save-hotkeys").text(Languageletter282);
+$("#close-hotkeys").text(Languageletter283);
+$("#close-exp-imp").text(Languageletter283);
+
+$("#youtubeplayer>h5").text(Languageletter284);
+$("#musicUrl").attr('placeholder', Languageletter284a).attr('data-original-title',Languageletter285);
+$(".agario-panel.sounds-panel>h5").text(Languageletter286);
+$(".agario-panel.sounds-panel>div>span").eq(0).text(Languageletter287);
+$(".agario-panel.sounds-panel>div>span").eq(1).text(Languageletter288);
+$(".agario-panel.sounds-panel>div>span").eq(2).text(Languageletter41d);
+
+$("#copySIPBtn").text(Languageletter291).attr('data-original-title',Languageletter289);
+$("#copySIPBtn").text(Languageletter291).attr('data-original-title',Languageletter289);
+        $("#copySIPBtn").mouseenter(function() {
+            $("#dropDown3").hide();
+            $("#copySIPBtn").text(Languageletter290);
+			if ($("#clantag").val()!=""){
+				$("#dropDown2").show(100);
+			}
+            else {
+				$("#dropDown").show(100);
+				}
+        });
+$("#leaderboard-menu").mouseleave(function () {$("#dropDown").hide();$("#dropDown3").hide();$("#copySIPBtn").text(Languageletter291);});
+$("#copyLBBtn").text(Languageletter290a).attr('data-original-title', Languageletter291a);
+$("#dropDown>#copyLBBtn").text(Languageletter290a).attr('data-original-title', Languageletter291a);
+$("#copySIPandPass").text(Languageletter290b).attr('data-original-title', Languageletter291b);
+$("#copySIPPassLB").text(Languageletter290c).attr('data-original-title', Languageletter291c);
+
+
+$("#searchShortcut").attr('data-original-title', Languageletter292);
+$("#reconnectBtn").attr('data-original-title', Languageletter293);
+$("#logTitle").text(Languageletter294);
+$("#searchInput").attr('placeholder',Languageletter295);
+$("#closeBtn").text(Languageletter283); 
+$("#notesclear").attr("data-original-title", Languageletter295a);
+$("#message").attr('placeholder', Languageletter295b);
+//$("#top5-total").each(function() { var text = $(this).html();
+//   $(this).html(text.replace(' Active players: ', ' ' + Languageletter296 + ': ')); 
+//});
+//$("#top5-total").each(function() { var text = $(this).html();
+//  $(this).html(text.replace(' Total mass: ', ' ' + Languageletter297 + ': ')); 
+//});
+
+//if($('#teambtext').val()==""){
+	//$("#top5-hud > h5").each(function() { var text = $(this).html();
+   //$(this).html(text.replace('Team', Languageletter298 + ' ')); 
+//});}
+//if($('#leadbtext').val()==""){
+	//$("#leaderboard-hud > h5").text(Languageletter299);
+//};
+$("#ChatBtn").attr("data-original-title", Languageletter300);
+$("#SendCommands").attr("data-original-title", Languageletter301);
+$("#Images").attr("data-original-title", Languageletter302);
+$("#yout").attr("data-original-title", Languageletter303);
+$("#Cutnames").attr("data-original-title", Languageletter304);
+$("#Bino").attr("data-original-title", Languageletter305);
+$("#playerBtn").attr("data-original-title", Languageletter306);
+$("#fullscreenBtn").attr("data-original-title", Languageletter307);
+$("#RotateRight").attr("data-original-title", Languageletter308);
+$("#bottomleft").text( Languageletter309);
+$("#Backtomenu").text( Languageletter283);
+$("#notesaveforlater").text(Languageletter311);
+$("#notesRegion").text(Languageletter312 + ": ");
+$("#notesPlayers").text(Languageletter313 + ": ");
+$("#notesServer").text(Languageletter314 + ": ");
+if($("#target-status").text()=="[Target not set]"){$("#target-status").text(Languageletter315)}
+
+$("#legendmanualback").text(Languageletter316 + ":  ");
+$("#legendmanualmess").text(Languageletter317 + ":  ");
+$("#chatbtntitle").text(Languageletter318 + ":  ");
+$("#legenddiscordwebh").text(Languageletter319 +"  ");
+$("#legendotherscripts").text(Languageletter364 +":");
+
+$('#backgroundPic>option:nth-child(1)').text(Languageletter133);
+$('#backgroundPic>option:nth-child(2)').text(Languageletter320);
+$('#backgroundPic>option:nth-child(3)').text(Languageletter321);
+$('#backgroundPic>option:nth-child(4)').text(Languageletter322);
+$('#backgroundPic>option:nth-child(5)').text(Languageletter323);
+
+$('#msgcommand1').attr("data-original-title", Languageletter324);
+$('#msgcommand2').attr("data-original-title", Languageletter325);
+$('#msgcommand3').attr("data-original-title", Languageletter326);
+$('#msgcommand4').attr("data-original-title", Languageletter327);
+$('#msgcommand5').attr("data-original-title", Languageletter328);
+$('#msgcommand6').attr("data-original-title", Languageletter329);
+
+
+$('#minimapPicture').attr('placeholder',Languageletter331).attr('data-original-title',Languageletter330);
+$('#minbtext').attr('placeholder',Languageletter332);
+$('#leadbPicture').attr('placeholder',Languageletter333a).attr('data-original-title',Languageletter330);
+$('#leadbtext').attr('placeholder',Languageletter334);
+$('#teambPicture').attr('placeholder',Languageletter334a).attr('data-original-title',Languageletter330);
+$('#leadbtext').attr('placeholder',Languageletter334);
+$('#canvasPicture').attr('placeholder',Languageletter335).attr('data-original-title',Languageletter330);
+$('#imgUrl').attr('placeholder',Languageletter336).attr('data-original-title',Languageletter330);
+$('#imgHref').attr('placeholder',Languageletter337).attr('data-original-title',Languageletter341);
+
+$('#changephotos>option:nth-child(1)').text(Languageletter338 + " 1");
+$('#changephotos>option:nth-child(2)').text(Languageletter338 + " 2");
+$('#changephotos>option:nth-child(3)').text(Languageletter338 + " 3");
+$('#changephotos>option:nth-child(4)').text(Languageletter338 + " 4");
+$('#changephotos>option:nth-child(5)').text(Languageletter338 + " 5");
+$('#changephotos>option:nth-child(6)').text(Languageletter338 + " 6");
+
+
+$('#pic1url').attr('placeholder',Languageletter342c + " 1").attr("data-original-title", Languageletter339 + " http://i.imgur.com/RVBi3T1.gif");
+$('#pic2url').attr('placeholder',Languageletter342c + " 2").attr("data-original-title", Languageletter339 + " http://i.imgur.com/RVBi3T1.gif");
+$('#pic3url').attr('placeholder',Languageletter342c + " 3").attr("data-original-title", Languageletter339 + " http://i.imgur.com/RVBi3T1.gif");
+$('#pic4url').attr('placeholder',Languageletter342c + " 4").attr("data-original-title", Languageletter339 + " http://i.imgur.com/RVBi3T1.gif");
+$('#pic5url').attr('placeholder',Languageletter342c + " 5").attr("data-original-title", Languageletter339 + " http://i.imgur.com/RVBi3T1.gif");
+$('#pic6url').attr('placeholder',Languageletter342c + " 6").attr("data-original-title", Languageletter339 + " http://i.imgur.com/RVBi3T1.gif");
+
+$('#yt1url').attr('placeholder',Languageletter342d + " 1").attr("data-original-title", Languageletter340);
+$('#yt2url').attr('placeholder',Languageletter342d + " 2").attr("data-original-title", Languageletter340);
+$('#yt3url').attr('placeholder',Languageletter342d + " 3").attr("data-original-title", Languageletter340);
+$('#yt4url').attr('placeholder',Languageletter342d + " 4").attr("data-original-title", Languageletter340);
+$('#yt5url').attr('placeholder',Languageletter342d + " 5").attr("data-original-title", Languageletter340);
+$('#yt6url').attr('placeholder',Languageletter342d + " 6").attr("data-original-title", Languageletter340);
+
+$('#pic1data').attr('placeholder',Languageletter342a + " 1");
+$('#pic2data').attr('placeholder',Languageletter342a + " 2");
+$('#pic3data').attr('placeholder',Languageletter342a + " 3");
+$('#pic4data').attr('placeholder',Languageletter342a + " 4");
+$('#pic5data').attr('placeholder',Languageletter342a + " 5");
+$('#pic6data').attr('placeholder',Languageletter342a + " 6");
+
+$('#yt1data').attr('placeholder',Languageletter342b + " 1");
+// $('#yt2data').attr('placeholder',Languageletter342b + " 2");
+$('#yt3data').attr('placeholder',Languageletter342b + " 3");
+$('#yt4data').attr('placeholder',Languageletter342b + " 4");
+$('#yt5data').attr('placeholder',Languageletter342b + " 5");
+$('#yt6data').attr('placeholder',Languageletter342b + " 6");
+
+
+$('#discwebhook1').attr('placeholder',Languageletter342 + ' 1').attr('data-original-title', Languageletter343 + '. https://discordapp.com/api/webhooks/.../...');
+$('#discwebhook2').attr('placeholder',Languageletter342 + ' 2').attr('data-original-title', Languageletter344 + '. https://discordapp.com/api/webhooks/.../...');
+
+$("#HideAllBthn").attr('data-original-title',Languageletter345);
+
+$("#logoutbtn").text(Languageletter31); //for LM Express
+$("#CopyAll").attr('data-original-title',Languageletter26a); //for LM Express
+//$("#legendlanguagetext").text(Languageletter346+ "  :");
+$(".btn.btn-play.btn-primary").text(Languageletter19); //may not work
+
+$("#potions").text(Languageletter349);
+//$("#oldSkinsBtn").text(Languageletter350);
+$("#SpecialDealsBtn").text(Languageletter351);
+$("#SpecialDealsQuickBtn").attr("data-original-title", Languageletter351);
+$(".btn.btn-primary.btn-success.btn-leagues").text(Languageletter352); //Leaderboards
+
+//$("#LegGoogleForm").attr("data-original-title", Languageletter353);
+$("#VideoSkinsQuick").attr("data-original-title", Languageletter354);
+$("#MiniScripts").attr("data-original-title", Languageletter355);
+$("#OpenuserScripts").text(Languageletter356);
+$("#VoiceBtn").attr("data-original-title", Languageletter357);
+$("#donationbtn").attr("data-original-title", Languageletter358);
+$("#opennamechars").attr("data-original-title", Languageletter359);
+$("#openskinchanger").attr("data-original-title", Languageletter360);
+$("#MorefpsText").text(Languageletter361);
+
+$("#Infobtn11").text(Externalletter1);
+$("#TemplatesBtn").text(Externalletter2);
+$("#ManualyTemplatesBtn").text(Externalletter3);
+$("#LanguagesTempBtn").text(Externalletter0a);
+$("#chooselangtext1").text(Externalletter0b);
+
+if (Languagetimesused=="1"){
+	Languagestimeusedplus1();
+	if (Languagetimesused1==1){
+toastr["info"](Externalletter0c, "", {
+    timeOut: 5000,
+    extendedTimeOut: 5000
+     }).css("width", "300px");
+	}
+}
+setTimeout(function () {
+$("#Backtomenu").text(Languageletter283);
+$("#userscripter1").text(Externalletter6);
+$("#userscripter2").text(Externalletter13);
+$("#userscriptBtn1").text(Externalletter7);
+$("#userscriptpages").text(Externalletter8);
+$("#EraseScripter").text(Externalletter9);
+$("#UserscripttextA").attr('placeholder','User Script 1 '+ Externalletter10);
+$("#UserscripttextB").attr('placeholder','User Script 2 '+ Externalletter10);
+$("#UserscripttextC").attr('placeholder','User Script 3 '+ Externalletter10);
+$("#UserscripttextD").attr('placeholder','User Script 4 '+ Externalletter10);
+$("#UserscripttextE").attr('placeholder','User Script 5 '+ Externalletter10);
+$("#UserscriptA").attr('placeholder','User Script 1 .js URL ('+ Externalletter12+')').attr("data-original-title", Externalletter11+" http://... or https://...");
+$("#UserscriptB").attr('placeholder','User Script 2 .js URL ('+ Externalletter12+')').attr("data-original-title", Externalletter11+" http://... or https://...");
+$("#UserscriptC").attr('placeholder','User Script 3 .js URL ('+ Externalletter12+')').attr("data-original-title", Externalletter11+" http://... or https://...");
+$("#UserscriptD").attr('placeholder','User Script 4 .js URL ('+ Externalletter12+')').attr("data-original-title", Externalletter11+" http://... or https://...");
+$("#UserscriptE").attr('placeholder','User Script 5 .js URL ('+ Externalletter12+')').attr("data-original-title", Externalletter11+" http://... or https://...");
+}, 4000);
+
+setTimeout(function () {
+//$("#ao2t-hud>span").replace('Universal', Languageletter365);	
+$("#block-warn").replace('WARNING! Popups are blocked in the settings.', Languageletter347);
+$("#block-warn").replace('Temporary unblock', Languageletter348);
+}, 1500);
+
+function Languagestimeusedplus1(){
+Languagetimesused1++;
+return Languagetimesused1;
+}
