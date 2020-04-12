@@ -24,6 +24,22 @@
 // Legend Mod by Jimboy3100
 /*MIT License*/
 
+function getVersion() {
+    var request = new XMLHttpRequest();
+    request.open('GET', 'https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/VERSION.txt', false);
+    request.send(null);
+
+    if (request.status === 200) {
+        return request.responseText.replace(/^\s+|\s+$/g, '');
+    }
+    else
+    {
+        return (new Date()).getTime();
+    }
+}
+
+var version = getVersion();
+
 // Check location
 if (location.host === "agar.io" && location.pathname === "/") {
     var url = window.location.href;
@@ -67,7 +83,7 @@ switch (mode) {
         Htmlscript(modwebsite);
         break;
     case 'neo': 
-        modwebsite = 'https://legendmod.ml/LMexpress/LMexpress.html';
+        modwebsite = 'https://legendmod.ml/LMexpress/LMexpress.html?' + version;
         Htmlscript(modwebsite);
 		setTimeout(function() {		
 			modwebsite = 'https://legendmod.ml/ExampleScripts/Neoprivate.js';
@@ -83,7 +99,7 @@ switch (mode) {
 		}, 5000);
 	break;			
     case 'legendmod': default:
-        modwebsite = 'https://legendmod.ml/LMexpress/LMexpress.html';
+        modwebsite = 'https://legendmod.ml/LMexpress/LMexpress.html?' + version;
         Htmlscript(modwebsite);
         break;
 }
