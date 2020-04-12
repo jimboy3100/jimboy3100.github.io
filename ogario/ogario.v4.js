@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.369 MEGA TEST
+// v1.395 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -712,131 +712,131 @@ var emoticonicons = {
 
 var languagetexts = {
     'pl': {
-        'start': 'Start',
-        'settings': 'Ustawienia',
-        'restoreSettings': 'Przywróc ustawienia domyślne',
-        'animationGroup': 'Animacja',
-        'graphics': 'Graphics',
-        'zoomGroup': 'Zoom',
-        'respGroup': 'Odrodzenie',
-        'namesGroup': 'Nazwy',
-        'massGroup': 'Masa',
-        'skinsGroup': 'Skiny',
-        'foodGroup': 'Pokarm',
-        'transparencyGroup': 'Przezroczystość / kolory',
-        'gridGroup': 'Siatka / sektory',
-        'miniMapGroup': 'Minimapa',
-        'helpersGroup': 'Wspomagacze',
-        'mouseGroup': 'Sterowanie myszką',
-        'hudGroup': 'HUD',
-        'chatGroup': 'Czat',
-        'statsGroup': 'Statystyki',
-        'extrasGroup': 'Dodatkowe',
-        'macroGroup': 'Macros',
-        'noSkins': 'Wyłącz skiny',
-        'noNames': 'Wyłącz nazwy',
-        'noColors': 'Wyłącz kolory',
-        'showMass': 'Pokaż masę',
-        'skipStats': 'Pomiń statystyki po śmierci',
-        'showQuest': 'Pokaż zadanie (quest)',
-        'autoZoom': 'Auto zoom',
-        'animation': 'Opóźnienie animacji',
-        'macroFeeding': 'Macro feed (ms)',
-        'profileNumber': 'Profiles Number',
-        'suckAnimation': 'Cell Eat [Sucking] Animation',
-        'virusGlow': 'Virus Glow',
-        'borderGlow': 'Border Glow',
-        'zoomSpeedValue2': 'Szybkość zoomu',
-        'quickResp': 'Szybkie odrodzenie (klawisz)',
-        'autoResp': 'Auto odrodzenie',
-        'autoHideCellsInfo': 'Autoukrywanie nazw i masy',
-        'autoHideNames': 'Autoukrywanie nazw',
-        'autoHideMass': 'Autoukrywanie masy',
-        'autoHideFood': 'Autoukrywanie pokarmu - masa',
-        'autoHideFoodOnZoom': 'Autoukrywanie pokarmu - zoom',
-        'optimizedNames': 'Zoptymalizowane nazwy',
-        'hideMyName': 'Ukryj własną nazwę',
-        'hideTeammatesNames': 'Ukryj nazwy graczy teamu',
-        'optimizedMass': 'Optimized mass (+/-2%) & Merge timer BETA off\n Suggested to be enabled for Lag reduce',
-        'shortMass': 'Skrócona masa (k)',
-        'virMassShots': 'Licznik strzałów (wirusy)',
-        'hideMyMass': 'Ukryj własną masę',
-        'hideEnemiesMass': 'Ukryj masę przeciwników',
-        'vanillaSkins': 'Podstawowe skiny',
-        'customSkins': 'Własne skiny',
-        'videoSkins': 'Video skins (.mp4 .webm .ogv)',
-        'videoSkinsMusic': 'Sound from other\'s Video skins when both C3',
-        'myTransparentSkin': 'Mój przezroczysty skin',
-        'myCustomColor': 'Mój własny kolor',
-        'transparentCells': 'Przezroczyste kulki',
-        'transparentViruses': 'Przezroczyste wirusy',
-        'transparentSkins': 'Przezroczyste skiny',
-        'showGrid': 'Siatka',
-        'showBgSectors': 'Sektory w tle',
-        'showMapBorders': 'Granice mapy',
-        'showGhostCells': 'Duchy kulek (fps drop)',
-        'showGhostCellsInfo': 'Ghost cells info (confusing)',
-        'showPartyBots': 'Party bots',
-        'rotateMap': 'Rotate Map',
-        'showMiniMap': 'Pokaż minimapę',
-        'showMiniMapGrid': 'Pokaż siatkę minimapy',
-        'showMiniMapGuides': 'Pokaż prowadnice na minimapie',
-        'showExtraMiniMapGuides': 'Show extra minimap guides',
-        'showMiniMapGhostCells': 'Pokaż duchy kulek na minimapie',
-        'oneColoredTeammates': 'Jednokolorowi gracze',
-        'optimizedFood': 'Zoptymalizowany pokarm',
-        'rainbowFood': 'Kolorowy pokarm',
-        'oppColors': 'Kolory przeciwników',
-        'oppRings': 'Ringi przeciwników',
-        'virColors': 'Kolory wirusów',
-        'splitRange': 'Zasięg podziału',
-        'virusesRange': 'Zasięg wirusów',
-        'textStroke': 'Obwódki nazw i masy',
-        'namesStroke': 'Obwódki nazw',
-        'massStroke': 'Obwódki masy',
-        'cursorTracking': 'Śledzenie kursora',
-        'teammatesInd': 'Wskaźniki graczy teamu',
-        'FBTracking': 'Facebook bubble tracker',
-        //        'ingameSpectator': 'Ingame spectator(LOCKED ℄)',
-        //        'fullSpectator': 'Full spectator(LOCKED ℄)',			
-        'mouseSplit': 'LPM - Split myszką',
-        'mouseFeed': 'PPM - Feed myszką',
-        'mouseInvert': 'Odwróć klawisze myszki',
-        'disableChat': 'Wyłącz czat',
-        'hideChat': 'Ukryj czat',
-        'chatSounds': 'Powiadomienia dźwiękowe',
-        'chatEmoticons': 'Emotikony',
-        'showChatImages': 'Pokaż obrazki na czacie',
-        'showChatVideos': 'Pokaż filmiki na czacie',
-        'showChatBox': 'Czatbox zamiast wyskakujących wiadomości',
-        'hidecountry': 'Hide my country',
-        'messageSound': 'Dźwięk powiadomienia o wiadomości',
-        'commandSound': 'Dźwięk powiadomienia o komendzie',
-        'virusSoundurl': 'Virus shot sound',
-        'virusSound': 'Virus shot sound',
-        'FacebookIDs': 'Facebook IDs',
-        'jellyPhisycs': 'Jelly physics',
-        'showTop5': 'Pokaż top 5 teamu',
-        'showTargeting': 'Pokaż namierzanie',
-        'showTime': 'Pokaż aktualny czas',
-        'showLbData': 'Pokaż masę w topce',
-        //'normalLb': 'Nagłówek \"Topka\"',
-        'centeredLb': 'Wyśrodkowana topka',
-        'fpsAtTop': 'Statystyki na górze',
-        'tweenMaxEffect': 'Tween max effect',
-        'showStats': 'Pokaż statystyki',
-        'showStatsMass': 'Statystyki: Masa',
-        'showStatsSTE': 'Statystyki: Przedziały Masy',
-        'showStatsESTE': 'Statystyki: STE wroga',
-        'showStatsEMTE': 'Statystyki: MTE wroga',
-        'showStatsMTE': 'Statystyki: Nasze MTE',
-        'showStatsSTE': 'Statystyki: Nasze STE',
-        'showStatsTTE': 'Statystyki: Minimalna masa mate\'a do tricksplitu',
-        'showStatsPTE': 'Statystyki: Maksymalna masa wroga do presplitu',
-        'showStatsN16': 'Statystyki: n/16',
-        'showStatsFPS': 'Statystyki: FPS',
-        'blockPopups': 'Blokuj popupy (reklamy/sklep/zadanie)',
-        'hotkeys': 'Skróty klawiszowe',
+        start: 'Start',
+        settings: 'Ustawienia',
+        restoreSettings: 'Przywróc ustawienia domyślne',
+        animationGroup: 'Animacja',
+        graphics: 'Graphics',
+        zoomGroup: 'Zoom',
+        respGroup: 'Odrodzenie',
+        namesGroup: 'Nazwy',
+        massGroup: 'Masa',
+        skinsGroup: 'Skiny',
+        foodGroup: 'Pokarm',
+        transparencyGroup: 'Przezroczystość / kolory',
+        gridGroup: 'Siatka / sektory',
+        miniMapGroup: 'Minimapa',
+        helpersGroup: 'Wspomagacze',
+        mouseGroup: 'Sterowanie myszką',
+        hudGroup: 'HUD',
+        chatGroup: 'Czat',
+        statsGroup: 'Statystyki',
+        extrasGroup: 'Dodatkowe',
+        macroGroup: 'Macros',
+        noSkins: 'Wyłącz skiny',
+        noNames: 'Wyłącz nazwy',
+        noColors: 'Wyłącz kolory',
+        showMass: 'Pokaż masę',
+        skipStats: 'Pomiń statystyki po śmierci',
+        showQuest: 'Pokaż zadanie (quest)',
+        autoZoom: 'Auto zoom',
+        animation: 'Opóźnienie animacji',
+        macroFeeding: 'Macro feed (ms)',
+        profileNumber: 'Profiles Number',
+        suckAnimation: 'Cell Eat [Sucking] Animation',
+        virusGlow: 'Virus Glow',
+        borderGlow: 'Border Glow',
+        zoomSpeedValue2: 'Szybkość zoomu',
+        quickResp: 'Szybkie odrodzenie (klawisz)',
+        autoResp: 'Auto odrodzenie',
+        autoHideCellsInfo: 'Autoukrywanie nazw i masy',
+        autoHideNames: 'Autoukrywanie nazw',
+        autoHideMass: 'Autoukrywanie masy',
+        autoHideFood: 'Autoukrywanie pokarmu - masa',
+        autoHideFoodOnZoom: 'Autoukrywanie pokarmu - zoom',
+        optimizedNames: 'Zoptymalizowane nazwy',
+        hideMyName: 'Ukryj własną nazwę',
+        hideTeammatesNames: 'Ukryj nazwy graczy teamu',
+        optimizedMass: 'Optimized mass (+/-2%) & Merge timer BETA off\n Suggested to be enabled for Lag reduce',
+        shortMass: 'Skrócona masa (k)',
+        virMassShots: 'Licznik strzałów (wirusy)',
+        hideMyMass: 'Ukryj własną masę',
+        hideEnemiesMass: 'Ukryj masę przeciwników',
+        vanillaSkins: 'Podstawowe skiny',
+        customSkins: 'Własne skiny',
+        videoSkins: 'Video skins (.mp4 .webm .ogv)',
+        videoSkinsMusic: 'Sound from other\'s Video skins when both C3',
+        myTransparentSkin: 'Mój przezroczysty skin',
+        myCustomColor: 'Mój własny kolor',
+        transparentCells: 'Przezroczyste kulki',
+        transparentViruses: 'Przezroczyste wirusy',
+        transparentSkins: 'Przezroczyste skiny',
+        showGrid: 'Siatka',
+        showBgSectors: 'Sektory w tle',
+        showMapBorders: 'Granice mapy',
+        showGhostCells: 'Duchy kulek (fps drop)',
+        showGhostCellsInfo: 'Ghost cells info (confusing)',
+        showPartyBots: 'Party bots',
+        rotateMap: 'Rotate Map',
+        showMiniMap: 'Pokaż minimapę',
+        showMiniMapGrid: 'Pokaż siatkę minimapy',
+        showMiniMapGuides: 'Pokaż prowadnice na minimapie',
+        showExtraMiniMapGuides: 'Show extra minimap guides',
+        showMiniMapGhostCells: 'Pokaż duchy kulek na minimapie',
+        oneColoredTeammates: 'Jednokolorowi gracze',
+        optimizedFood: 'Zoptymalizowany pokarm',
+        rainbowFood: 'Kolorowy pokarm',
+        oppColors: 'Kolory przeciwników',
+        oppRings: 'Ringi przeciwników',
+        virColors: 'Kolory wirusów',
+        splitRange: 'Zasięg podziału',
+        virusesRange: 'Zasięg wirusów',
+        textStroke: 'Obwódki nazw i masy',
+        namesStroke: 'Obwódki nazw',
+        massStroke: 'Obwódki masy',
+        cursorTracking: 'Śledzenie kursora',
+        teammatesInd: 'Wskaźniki graczy teamu',
+        FBTracking: 'Facebook bubble tracker',
+        //        ingameSpectator: 'Ingame spectator(LOCKED ℄)',
+        //        fullSpectator: 'Full spectator(LOCKED ℄)',			
+        mouseSplit: 'LPM - Split myszką',
+        mouseFeed: 'PPM - Feed myszką',
+        mouseInvert: 'Odwróć klawisze myszki',
+        disableChat: 'Wyłącz czat',
+        hideChat: 'Ukryj czat',
+        chatSounds: 'Powiadomienia dźwiękowe',
+        chatEmoticons: 'Emotikony',
+        showChatImages: 'Pokaż obrazki na czacie',
+        showChatVideos: 'Pokaż filmiki na czacie',
+        showChatBox: 'Czatbox zamiast wyskakujących wiadomości',
+        hidecountry: 'Hide my country',
+        messageSound: 'Dźwięk powiadomienia o wiadomości',
+        commandSound: 'Dźwięk powiadomienia o komendzie',
+        virusSoundurl: 'Virus shot sound',
+        virusSound: 'Virus shot sound',
+        FacebookIDs: 'Facebook IDs',
+        jellyPhisycs: 'Jelly physics',
+        showTop5: 'Pokaż top 5 teamu',
+        showTargeting: 'Pokaż namierzanie',
+        showTime: 'Pokaż aktualny czas',
+        showLbData: 'Pokaż masę w topce',
+        //normalLb: 'Nagłówek \"Topka\"',
+        centeredLb: 'Wyśrodkowana topka',
+        fpsAtTop: 'Statystyki na górze',
+        tweenMaxEffect: 'Tween max effect',
+        showStats: 'Pokaż statystyki',
+        showStatsMass: 'Statystyki: Masa',
+        showStatsSTE: 'Statystyki: Przedziały Masy',
+        showStatsESTE: 'Statystyki: STE wroga',
+        showStatsEMTE: 'Statystyki: MTE wroga',
+        showStatsMTE: 'Statystyki: Nasze MTE',
+        showStatsSTE: 'Statystyki: Nasze STE',
+        showStatsTTE: 'Statystyki: Minimalna masa mate\'a do tricksplitu',
+        showStatsPTE: 'Statystyki: Maksymalna masa wroga do presplitu',
+        showStatsN16: 'Statystyki: n/16',
+        showStatsFPS: 'Statystyki: FPS',
+        blockPopups: 'Blokuj popupy (reklamy/sklep/zadanie)',
+        hotkeys: 'Skróty klawiszowe',
         'hk-inst-assign': 'Aby ustawić skrót klawiszowy kliknij na polu skrótu i naciśnij wybrany klawisz.',
         'hk-inst-delete': 'Aby usunąć skrót klawiszowy kliknij na polu skrótu i naciśnij klawisz DELETE.',
         'hk-inst-keys': 'Możliwe kombinacje skrótów klawiszowych z użyciem klawiszy CTRL oraz ALT.',
@@ -892,360 +892,360 @@ var languagetexts = {
         'hk-privateMiniMap': 'Pokaż cel na minimapie',
         'hk-showQuest': 'Pokaż/ukryj zadanie',
         'hk-showSpectator': 'Show/hide Full Spectator',
-        'commands': 'Komendy',
-        'comm1': 'Feeduj!',
-        'comm2': 'Dziel się!',
-        'comm3': 'Pomocy na %currentSector%!',
-        'comm4': 'Wróg na %currentSector%!',
-        'comm5': 'Zabij pomocnika!',
-        'comm6': 'Strzel z wirusa!',
-        'comm7': 'Zjedz wirusa!',
-        'comm8': 'Zjebałem, wybacz.',
-        'comm9': 'Ja pierdolę...',
-        'comm0': 'Kurwa mać!',
-        'comm10': 'Trick!',
-        'comm11': 'Lewo!',
-        'comm12': 'Góra!',
-        'comm13': 'Prawo!',
-        'comm14': 'Dół!',
-        'comm15': 'Fake Tricksplit',
-        'comm16': 'Popsplit',
-        'comm17': 'Double Popsplit',
-        'comm18': 'Reversed Tricksplit',
-        'comm19': 'Canonsplit',
-        'comm20': 'Reversed Canonsplit',
-        'comm21': 'Bowlingsplit',
-        'comm22': 'Auto feed trick',
-        'comm23': 'Pause',
-        'comm24': 'ANTI alarm stage 1',
-        'comm25': 'ANTI alarm stage 2',
-        'comm26': 'ANTI alarm stage 3',
-        'comm27': 'ANTI alarm stage 4',
-        'comm28': 'ANTI alarm stage 5',
-        'comm29': 'Presplit',
-        'comm30': 'Party Run tricks',
-        'saveComm': 'Zapisz komendy',
-        'theme': 'Wygląd',
-        'restoreThemeSettings': 'Przywróc ustawienia domyślne wyglądu',
-        'basicTheming': 'Podstawowy',
-        'themePreset': 'Motyw',
-        'themeType': 'Typ motywu',
-        'darkTheme': 'Ciemny motyw',
-        'lightTheme': 'Jasny motyw',
-        'mainColor': 'Kolor główny',
-        'bgColor': 'Tło',
-        'bordersColor': 'Granice mapy',
-        'gridColor': 'Siatka',
-        'sectorsColor': 'Czcionka sektorów',
-        'namesColor': 'Nazwy',
-        'namesStrokeColor': 'Obwódki nazw',
-        'massColor': 'Masa',
-        'massStrokeColor': 'Obwódki masy',
-        'virusColor': 'Wirusy',
-        'virusStrokeColor': 'Obwódki wirusów',
-        'virusGlowColor': "Virus Glow",
-        "borderGlowColor": "Border Glow",
-        'mVirusColor': 'Mothercell',
-        'mVirusStrokeColor': 'Mothercell stroke',
-        'virusGlowSize': 'Virus Glow Size',
-        'borderGlowSize': 'Border Glow Size',
-        'foodColor': 'Pokarm',
-        'namesFont': 'Czcionka nazw',
-        'massFont': 'Czcionka masy',
-        'sectorsFont': 'Czcionka sektorów',
-        'namesScale': 'Skala nazw',
-        'massScale': 'Skala masy',
-        'virMassScale': 'Skala masy wirusów',
-        'strokeScale': 'Skala obwódek tekstu',
-        'foodSize': 'Wielkość pokarmu',
-        'bordersWidth': 'Grubość granic mapy',
-        'sectorsWidth': 'Grubość siatki sektorów',
-        'sectorsFontSize': 'Rozmiar czcionki sektorów',
-        'sectorsX': 'Sectors X',
-        'sectorsY': 'Sectors Y',
-        'cellsAlpha': 'Przezroczystość kulek',
-        'skinsAlpha': 'Przezroczystość skinów',
-        'virusAlpha': 'Przezroczystość wirusów',
-        'textAlpha': 'Przezroczystość nazw i masy',
-        'virusStrokeSize': 'Grubość obwódki wirusów',
-        "virusGlowSize": "Virus Glow Size",
-        'teammatesIndColor': 'Wskaźnik gracza',
-        'cursorTrackingColor': 'Śledzenie kursora',
-        'splitRangeColor': 'Zasięg podziału',
-        'qdsplitRange': 'Zasięg szybkiego podwójnego podziału', //Sonia2
-        'sdsplitRange': 'Zasięg powolnego podwójnego podziału', //Sonia2
-        'enemyBSTEDColor': 'Kolor W2STE wroga', //Sonia2
-        'enemyBSTEColor': 'Kolor WSTE wroga', //Sonia2
-        'enemyBColor': 'Kolor większego wroga', //Sonia2
-        'enemySColor': 'Kolor mniejszego wroga', //Sonia2
-        'enemySSTEColor': 'Kolor MSTE wroga', //Sonia2
-        'enemySSTEDColor': 'Kolor M2STE wroga', //Sonia2
-        'safeAreaColor': 'Bezpieczna strefa',
-        'dangerAreaColor': 'Strefa zagrożenia',
-        'ghostCellsColor': 'Duchy kulek',
-        'ghostCellsAlpha': 'Przezroczystość duchów kulek',
-        'menuTheming': 'Menu',
-        'menuPreset': 'Motyw menu',
-        'menuMainColor': 'Kolor główny',
-        'menuBtnTextColor': 'Tekst przycisku',
-        'menuPanelColor': 'Panel',
-        'menuPanelColor2': 'Panel (2)',
-        'menuTextColor': 'Tekst panelu',
-        'menuTextColor2': 'Tekst panelu (2)',
-        'btn1Color': 'Przycisk #1',
-        'btn1Color2': 'Przycisk #1 (2)',
-        'btn2Color': 'Przycisk #2',
-        'btn2Color2': 'Przycisk #2 (2)',
-        'btn3Color': 'Przycisk #3',
-        'btn3Color2': 'Przycisk #3 (2)',
-        'btn4Color': 'Przycisk #4',
-        'btn4Color2': 'Przycisk #4 (2)',
-        'menuBg': 'Grafika tła panelu',
-        'menuOpacity': 'Przezroczystość',
-        'hudTheming': 'HUD',
-        'hudMainColor': 'Kolor główny',
-        'hudColor': 'Tło',
-        'hudTextColor': 'Tekst',
-        'statsHudColor': 'Statystyki',
-        'timeHudColor': 'Czas',
-        'top5MassColor': 'Masa',
-        'lbMeColor': 'Topka - ja',
-        'lbTeammateColor': 'Topka - team',
-        'hudFont': 'Czcionka HUD',
-        'hudScale': 'Skala HUD',
-        'chatTheming': 'Czat',
-        'messageColor': 'Tło wiadomości',
-        'messageTextColor': 'Tekst wiadomości',
-        'messageTimeColor': 'Czas wiadomości',
-        'messageNickColor': 'Nick wiadomości',
-        'commandsColor': 'Tło komendy',
-        'commandsTextColor': 'Tekst komendy',
-        'commandsTimeColor': 'Czas komendy',
-        'commandsNickColor': 'Nick komendy',
-        'chatBoxColor': 'Tło czatboxu',
-        'chatScale': 'Skala czatu',
-        'miniMapTheming': 'Minimapa',
-        'miniMapSectorsColor': 'Sektory',
-        'miniMapSectorColor': 'Aktualny sektor',
-        'miniMapGuidesColor': 'Prowadnice',
-        'miniMapNickColor': 'Nick',
-        'miniMapNickStrokeColor': 'Obwódka nicku',
-        'miniMapMyCellColor': 'Moja kulka',
-        'miniMapMyCellStrokeColor': 'Obwódka mojej kulki',
-        'miniMapTeammatesColor': 'Gracze',
-        'miniMapDeathLocationColor': 'Miejsce śmierci',
-        'miniMapFont': 'Czcionka minimapy',
-        'miniMapNickFont': 'Czcionka nicku',
-        'miniMapWidth': 'Szerokość minimapy',
-        'miniMapSectorsOpacity': 'Przezroczystość sektorów',
-        'miniMapNickSize': 'Rozmiar nicku',
-        'miniMapNickStrokeSize': 'Grubość obwódki nicku',
-        'miniMapMyCellSize': 'Wielkość mojej kulki',
-        'miniMapMyCellStrokeSize': 'Grubość obwódki mojej kulki',
-        'miniMapTeammatesSize': 'Wielkość graczy',
-        'miniMapGhostCellsColor': 'Duchy kulek',
-        'miniMapGhostCellsAlpha': 'Przezroczystość duchów kulek',
-        'imagesTheming': 'Grafika / kursory',
-        'customBackground': 'Grafika tła',
-        'customCursor': 'Grafika kursora',
-        'hideChatMsgA': 'Czat został włączony!',
-        'hideChatMsgB': 'Czat został ukryty!',
-        'showSkinsMsgA': 'Skiny zostały włączone!',
-        'showSkinsMsgB': 'Skiny zostały ukryte!',
-        'hideSmallBotsMsgA': 'Małe boty stały się widoczne!',
-        'hideSmallBotsMsgB': 'Małe boty zostały ukryte!',
-        'autoRespMsgA': 'Auto odrodzenie zostało włączone!',
-        'autoRespMsgB': 'Auto odrodzenie zostało wyłączone!',
-        'autoZoomMsgA': 'Auto zoom został włączony!',
-        'autoZoomMsgB': 'Auto zoom został wyłączony!',
-        //                   'targetNotSet': 'Brak celu',
-        'targetNotSet': '',
-        'targetDead': 'Nie żyje',
-        'targetDistance': 'Dystans',
-        'targetMass': 'Masa razem',
-        'totalPartyPlayers': '',
-        'totalPartyMass': '',
-        'exportImport': 'Eksport / import ustawień',
-        'exportSettings': 'Eksportuj ustawienia',
-        'exportInfo': 'Aby wyeksportować wybrane ustawienia skopiuj poniższy kod i zapisz go w pliku tekstowym z kodowaniem Unicode.',
-        'importSettings': 'Importuj ustawienia',
-        'importInfo': 'Aby zaimportować wybrane ustawienia wklej poniżej wyeksportowany wcześniej kod i naciśnij przycisk \"Importuj ustawienia\".',
-        'profile': 'Profil',
-        'profiles': 'Profile',
-        'skins': 'Skiny',
-        'moreSkins': 'Dodaj skiny',
-        'thanks': 'Dzięki Awesome!',
-        'saveSett': 'Zapisz ustawienia',
-        'saved': 'Zapisano!',
-        'resetSett': 'Resetuj ustawienia',
-        'close': 'Zamknij',
-        'enterChatMsg': 'Napisz wiadomość',
-        'activeParties': 'Aktywne party',
-        'noActiveParties': 'Brak aktywnych party ;(',
-        'playlist': 'Playlista',
-        'pause': 'PAUZA!',
-        'visit': 'Odwiedź',
-        'exit': 'Legend mod Express: Czy na pewno chcesz opuścic grę?',
-        'blockWarn': 'UWAGA! Popupy zostały zablokowane w ustawieniach.',
-        'unblockPopups': 'Odblokuj tymczasowo',
-        'mass': 'Masa',
-        'score': 'Top',
-        'leaderboard': 'Topka',
-        'user': 'Użytkownik',
-        'userMuted': 'Użytkownik %user% został wyciszony.',
-        'userUnmuted': 'Wyłączono wyciszenie użytkownika %user%.',
-        'mute': 'Wycisz',
-        'unmute': 'Wyłącz wyciszenie',
-        'mutedUsers': 'Wyciszeni użytkownicy',
-        'activeUsers': 'Aktywni użytkownicy',
-        'showActiveUsers': 'Pokaż aktywnych użytkowników',
-        'none': 'Brak',
-        'sounds': 'Dźwięki',
-        'page_back_button': 'Wróć',
-        'page_create_party': 'Stwórz party',
-        'page_join_party': 'Dołącz',
-        'page_login_and_play': 'Zaloguj',
-        'page_logout': 'Wyloguj',
-        'page_menu_login_facebook': 'Zaloguj z Facebook',
-        'page_menu_login_google': 'Zaloguj z Google',
-        'page_menu_main_free_coins': 'Darmowe Monety',
-        'page_menu_main_gifts': 'Prezenty',
-        'page_menu_main_dailyquests': 'Zadania',
-        'page_party_join_error': 'Nie można dołączyć do tego party. Upewnij się, że token jest prawidłowy lub stwórz nowy.',
-        'page_play': 'Graj',
-        'page_play_as_guest': 'Graj jako gość',
-        'page_shop': 'Sklep',
-        'page_spectate': 'Obserwuj',
-        'page_stats': 'Statystyki',
-        "teamView": 'Team view (BETA)'
+        commands: 'Komendy',
+        comm1: 'Feeduj!',
+        comm2: 'Dziel się!',
+        comm3: 'Pomocy na %currentSector%!',
+        comm4: 'Wróg na %currentSector%!',
+        comm5: 'Zabij pomocnika!',
+        comm6: 'Strzel z wirusa!',
+        comm7: 'Zjedz wirusa!',
+        comm8: 'Zjebałem, wybacz.',
+        comm9: 'Ja pierdolę...',
+        comm0: 'Kurwa mać!',
+        comm10: 'Trick!',
+        comm11: 'Lewo!',
+        comm12: 'Góra!',
+        comm13: 'Prawo!',
+        comm14: 'Dół!',
+        comm15: 'Fake Tricksplit',
+        comm16: 'Popsplit',
+        comm17: 'Double Popsplit',
+        comm18: 'Reversed Tricksplit',
+        comm19: 'Canonsplit',
+        comm20: 'Reversed Canonsplit',
+        comm21: 'Bowlingsplit',
+        comm22: 'Auto feed trick',
+        comm23: 'Pause',
+        comm24: 'ANTI alarm stage 1',
+        comm25: 'ANTI alarm stage 2',
+        comm26: 'ANTI alarm stage 3',
+        comm27: 'ANTI alarm stage 4',
+        comm28: 'ANTI alarm stage 5',
+        comm29: 'Presplit',
+        comm30: 'Party Run tricks',
+        saveComm: 'Zapisz komendy',
+        theme: 'Wygląd',
+        restoreThemeSettings: 'Przywróc ustawienia domyślne wyglądu',
+        basicTheming: 'Podstawowy',
+        themePreset: 'Motyw',
+        themeType: 'Typ motywu',
+        darkTheme: 'Ciemny motyw',
+        lightTheme: 'Jasny motyw',
+        mainColor: 'Kolor główny',
+        bgColor: 'Tło',
+        bordersColor: 'Granice mapy',
+        gridColor: 'Siatka',
+        sectorsColor: 'Czcionka sektorów',
+        namesColor: 'Nazwy',
+        namesStrokeColor: 'Obwódki nazw',
+        massColor: 'Masa',
+        massStrokeColor: 'Obwódki masy',
+        virusColor: 'Wirusy',
+        virusStrokeColor: 'Obwódki wirusów',
+        virusGlowColor: "Virus Glow",
+        borderGlowColor: "Border Glow",
+        mVirusColor: 'Mothercell',
+        mVirusStrokeColor: 'Mothercell stroke',
+        virusGlowSize: 'Virus Glow Size',
+        borderGlowSize: 'Border Glow Size',
+        foodColor: 'Pokarm',
+        namesFont: 'Czcionka nazw',
+        massFont: 'Czcionka masy',
+        sectorsFont: 'Czcionka sektorów',
+        namesScale: 'Skala nazw',
+        massScale: 'Skala masy',
+        virMassScale: 'Skala masy wirusów',
+        strokeScale: 'Skala obwódek tekstu',
+        foodSize: 'Wielkość pokarmu',
+        bordersWidth: 'Grubość granic mapy',
+        sectorsWidth: 'Grubość siatki sektorów',
+        sectorsFontSize: 'Rozmiar czcionki sektorów',
+        sectorsX: 'Sectors X',
+        sectorsY: 'Sectors Y',
+        cellsAlpha: 'Przezroczystość kulek',
+        skinsAlpha: 'Przezroczystość skinów',
+        virusAlpha: 'Przezroczystość wirusów',
+        textAlpha: 'Przezroczystość nazw i masy',
+        virusStrokeSize: 'Grubość obwódki wirusów',
+        virusGlowSize: "Virus Glow Size",
+        teammatesIndColor: 'Wskaźnik gracza',
+        cursorTrackingColor: 'Śledzenie kursora',
+        splitRangeColor: 'Zasięg podziału',
+        qdsplitRange: 'Zasięg szybkiego podwójnego podziału', //Sonia2
+        sdsplitRange: 'Zasięg powolnego podwójnego podziału', //Sonia2
+        enemyBSTEDColor: 'Kolor W2STE wroga', //Sonia2
+        enemyBSTEColor: 'Kolor WSTE wroga', //Sonia2
+        enemyBColor: 'Kolor większego wroga', //Sonia2
+        enemySColor: 'Kolor mniejszego wroga', //Sonia2
+        enemySSTEColor: 'Kolor MSTE wroga', //Sonia2
+        enemySSTEDColor: 'Kolor M2STE wroga', //Sonia2
+        safeAreaColor: 'Bezpieczna strefa',
+        dangerAreaColor: 'Strefa zagrożenia',
+        ghostCellsColor: 'Duchy kulek',
+        ghostCellsAlpha: 'Przezroczystość duchów kulek',
+        menuTheming: 'Menu',
+        menuPreset: 'Motyw menu',
+        menuMainColor: 'Kolor główny',
+        menuBtnTextColor: 'Tekst przycisku',
+        menuPanelColor: 'Panel',
+        menuPanelColor2: 'Panel (2)',
+        menuTextColor: 'Tekst panelu',
+        menuTextColor2: 'Tekst panelu (2)',
+        btn1Color: 'Przycisk #1',
+        btn1Color2: 'Przycisk #1 (2)',
+        btn2Color: 'Przycisk #2',
+        btn2Color2: 'Przycisk #2 (2)',
+        btn3Color: 'Przycisk #3',
+        btn3Color2: 'Przycisk #3 (2)',
+        btn4Color: 'Przycisk #4',
+        btn4Color2: 'Przycisk #4 (2)',
+        menuBg: 'Grafika tła panelu',
+        menuOpacity: 'Przezroczystość',
+        hudTheming: 'HUD',
+        hudMainColor: 'Kolor główny',
+        hudColor: 'Tło',
+        hudTextColor: 'Tekst',
+        statsHudColor: 'Statystyki',
+        timeHudColor: 'Czas',
+        top5MassColor: 'Masa',
+        lbMeColor: 'Topka - ja',
+        lbTeammateColor: 'Topka - team',
+        hudFont: 'Czcionka HUD',
+        hudScale: 'Skala HUD',
+        chatTheming: 'Czat',
+        messageColor: 'Tło wiadomości',
+        messageTextColor: 'Tekst wiadomości',
+        messageTimeColor: 'Czas wiadomości',
+        messageNickColor: 'Nick wiadomości',
+        commandsColor: 'Tło komendy',
+        commandsTextColor: 'Tekst komendy',
+        commandsTimeColor: 'Czas komendy',
+        commandsNickColor: 'Nick komendy',
+        chatBoxColor: 'Tło czatboxu',
+        chatScale: 'Skala czatu',
+        miniMapTheming: 'Minimapa',
+        miniMapSectorsColor: 'Sektory',
+        miniMapSectorColor: 'Aktualny sektor',
+        miniMapGuidesColor: 'Prowadnice',
+        miniMapNickColor: 'Nick',
+        miniMapNickStrokeColor: 'Obwódka nicku',
+        miniMapMyCellColor: 'Moja kulka',
+        miniMapMyCellStrokeColor: 'Obwódka mojej kulki',
+        miniMapTeammatesColor: 'Gracze',
+        miniMapDeathLocationColor: 'Miejsce śmierci',
+        miniMapFont: 'Czcionka minimapy',
+        miniMapNickFont: 'Czcionka nicku',
+        miniMapWidth: 'Szerokość minimapy',
+        miniMapSectorsOpacity: 'Przezroczystość sektorów',
+        miniMapNickSize: 'Rozmiar nicku',
+        miniMapNickStrokeSize: 'Grubość obwódki nicku',
+        miniMapMyCellSize: 'Wielkość mojej kulki',
+        miniMapMyCellStrokeSize: 'Grubość obwódki mojej kulki',
+        miniMapTeammatesSize: 'Wielkość graczy',
+        miniMapGhostCellsColor: 'Duchy kulek',
+        miniMapGhostCellsAlpha: 'Przezroczystość duchów kulek',
+        imagesTheming: 'Grafika / kursory',
+        customBackground: 'Grafika tła',
+        customCursor: 'Grafika kursora',
+        hideChatMsgA: 'Czat został włączony!',
+        hideChatMsgB: 'Czat został ukryty!',
+        showSkinsMsgA: 'Skiny zostały włączone!',
+        showSkinsMsgB: 'Skiny zostały ukryte!',
+        hideSmallBotsMsgA: 'Małe boty stały się widoczne!',
+        hideSmallBotsMsgB: 'Małe boty zostały ukryte!',
+        autoRespMsgA: 'Auto odrodzenie zostało włączone!',
+        autoRespMsgB: 'Auto odrodzenie zostało wyłączone!',
+        autoZoomMsgA: 'Auto zoom został włączony!',
+        autoZoomMsgB: 'Auto zoom został wyłączony!',
+        //                   targetNotSet: 'Brak celu',
+        targetNotSet: '',
+        targetDead: 'Nie żyje',
+        targetDistance: 'Dystans',
+        targetMass: 'Masa razem',
+        totalPartyPlayers: '',
+        totalPartyMass: '',
+        exportImport: 'Eksport / import ustawień',
+        exportSettings: 'Eksportuj ustawienia',
+        exportInfo: 'Aby wyeksportować wybrane ustawienia skopiuj poniższy kod i zapisz go w pliku tekstowym z kodowaniem Unicode.',
+        importSettings: 'Importuj ustawienia',
+        importInfo: 'Aby zaimportować wybrane ustawienia wklej poniżej wyeksportowany wcześniej kod i naciśnij przycisk \"Importuj ustawienia\".',
+        profile: 'Profil',
+        profiles: 'Profile',
+        skins: 'Skiny',
+        moreSkins: 'Dodaj skiny',
+        thanks: 'Dzięki Awesome!',
+        saveSett: 'Zapisz ustawienia',
+        saved: 'Zapisano!',
+        resetSett: 'Resetuj ustawienia',
+        close: 'Zamknij',
+        enterChatMsg: 'Napisz wiadomość',
+        activeParties: 'Aktywne party',
+        noActiveParties: 'Brak aktywnych party ;(',
+        playlist: 'Playlista',
+        pause: 'PAUZA!',
+        visit: 'Odwiedź',
+        exit: 'Legend mod Express: Czy na pewno chcesz opuścic grę?',
+        blockWarn: 'UWAGA! Popupy zostały zablokowane w ustawieniach.',
+        unblockPopups: 'Odblokuj tymczasowo',
+        mass: 'Masa',
+        score: 'Top',
+        leaderboard: 'Topka',
+        user: 'Użytkownik',
+        userMuted: 'Użytkownik %user% został wyciszony.',
+        userUnmuted: 'Wyłączono wyciszenie użytkownika %user%.',
+        mute: 'Wycisz',
+        unmute: 'Wyłącz wyciszenie',
+        mutedUsers: 'Wyciszeni użytkownicy',
+        activeUsers: 'Aktywni użytkownicy',
+        showActiveUsers: 'Pokaż aktywnych użytkowników',
+        none: 'Brak',
+        sounds: 'Dźwięki',
+        page_back_button: 'Wróć',
+        page_create_party: 'Stwórz party',
+        page_join_party: 'Dołącz',
+        page_login_and_play: 'Zaloguj',
+        page_logout: 'Wyloguj',
+        page_menu_login_facebook: 'Zaloguj z Facebook',
+        page_menu_login_google: 'Zaloguj z Google',
+        page_menu_main_free_coins: 'Darmowe Monety',
+        page_menu_main_gifts: 'Prezenty',
+        page_menu_main_dailyquests: 'Zadania',
+        page_party_join_error: 'Nie można dołączyć do tego party. Upewnij się, że token jest prawidłowy lub stwórz nowy.',
+        page_play: 'Graj',
+        page_play_as_guest: 'Graj jako gość',
+        page_shop: 'Sklep',
+        page_spectate: 'Obserwuj',
+        page_stats: 'Statystyki',
+        teamView: 'Team view (BETA)'
     },
     'en': {
-        'start': 'Home',
-        'settings': 'Settings',
-        'restoreSettings': 'Restore default settings',
-        'animationGroup': 'Animation',
-        'graphics': 'Graphics',
-        'zoomGroup': 'Zoom',
-        'respGroup': 'Respawn',
-        'namesGroup': 'Names',
-        'massGroup': 'Mass',
-        'skinsGroup': 'Skins',
-        'foodGroup': 'Food',
-        'transparencyGroup': 'Transparency / colors',
-        'gridGroup': 'Grid / sectors',
-        'miniMapGroup': 'Minimap',
-        'helpersGroup': 'Helpers',
-        'mouseGroup': 'Mouse control',
-        'hudGroup': 'HUD',
-        'chatGroup': 'Chat',
-        'statsGroup': 'Stats',
-        'extrasGroup': 'Extras',
-        'macroGroup': 'Macros',
-        'noSkins': 'No skins',
-        'noNames': 'No names',
-        'noColors': 'No colors',
-        'showMass': 'Show mass',
-        'skipStats': 'Skip stats after death',
-        'showQuest': 'Show quest',
-        'autoZoom': 'Auto zoom',
-        'animation': 'Animation delay',
-        'macroFeeding': 'Macro feed (ms)',
-        'profileNumber': 'Profiles Number',
-        'suckAnimation': 'Cell Eat [Sucking] Animation',
-        'virusGlow': 'Virus Glow',
-        'borderGlow': 'Border Glow',
-        'zoomSpeedValue2': 'Zoom speed',
-        'quickResp': 'Quick respawn (hotkey)',
-        'autoResp': 'Auto respawn',
-        'autoHideCellsInfo': 'Auto hide names and mass',
-        'autoHideNames': 'Auto hide names',
-        'autoHideMass': 'Auto hide mass',
-        'autoHideFood': 'Auto hide food - mass',
-        'autoHideFoodOnZoom': 'Auto hide food - zoom',
-        'optimizedNames': 'Optimized names',
-        'hideMyName': 'Hide my name',
-        'hideTeammatesNames': 'Hide teammates names',
-        'optimizedMass': 'Optimized mass (+/-2%) & Merge timer BETA off\r\n Suggested to be enabled for Lag reduce',
-        'shortMass': 'Short mass (k)',
-        'virMassShots': 'Virus shots',
-        'hideMyMass': 'Hide my mass',
-        'hideEnemiesMass': 'Hide enemies mass',
-        'vanillaSkins': 'Vanilla skins',
-        'customSkins': 'Custom skins',
-        'videoSkins': 'Video skins (.mp4 .webm .ogv)',
-        'videoSkinsMusic': 'Sound from other\'s Video skins when both C3',
-        'myTransparentSkin': 'My transparent skin',
-        'myCustomColor': 'My custom color',
-        'transparentCells': 'Transparent cells',
-        'transparentViruses': 'Transparent viruses',
-        'transparentSkins': 'Transparent skins',
-        'showGrid': 'Show grid',
-        'showBgSectors': 'Show background sectors',
-        'showMapBorders': 'Show map borders',
-        'showGhostCells': 'Ghost cells (fps drop)',
-        'showGhostCellsInfo': 'Ghost cells info (confusing)',
-        'showPartyBots': 'Party bots',
-        'rotateMap': 'Rotate Map',
-        'showMiniMap': 'Show minimap',
-        'showMiniMapGrid': 'Show minimap grid',
-        'showMiniMapGuides': 'Show minimap guides',
-        'showExtraMiniMapGuides': 'Show extra minimap guides',
-        'showMiniMapGhostCells': 'Show ghost cells',
-        'oneColoredTeammates': 'One-colored teammates',
-        'optimizedFood': 'Optimized food',
-        'rainbowFood': 'Rainbow food',
-        'oppColors': 'Opponents colors',
-        'oppRings': 'Opponents rings',
-        'virColors': 'Viruses colors',
-        'splitRange': 'Split range',
-        'qdsplitRange': 'Quick double split range', //Sonia2
-        'sdsplitRange': 'Slow double split range', //Sonia2
-        'virusesRange': 'Viruses range',
-        'textStroke': 'Names and mass stroke',
-        'namesStroke': 'Names stroke',
-        'massStroke': 'Mass stroke',
-        'cursorTracking': 'Cursor tracking',
-        'teammatesInd': 'Teammates indicators',
-        'FBTracking': 'Facebook bubble tracker',
-        //        'ingameSpectator': 'Ingame spectator(LOCKED ℄)',
-        //        'fullSpectator': 'Full spectator(LOCKED ℄)',		
-        'mouseSplit': 'LMB - Mouse split',
-        'mouseFeed': 'RMB - Mouse feed',
-        'mouseInvert': 'Invert mouse buttons',
-        'disableChat': 'Disable chat',
-        'hideChat': 'Hide chat',
-        'chatSounds': 'Sound notifications',
-        'chatEmoticons': 'Emoticons',
-        'showChatImages': 'Show images on chat',
-        'showChatVideos': 'Show videos on chat',
-        'showChatBox': 'Chatbox instead of popups',
-        'hidecountry': 'Hide my country',
-        'messageSound': 'Message notification sound',
-        'commandSound': 'Command notification sound',
-        'virusSoundurl': 'Virus shot sound',
-        'virusSound': 'Virus shot sound',
-        'FacebookIDs': 'Facebook IDs',
-        'jellyPhisycs': 'Jelly physics',
-        'showTop5': 'Show teamboard',
-        'showTargeting': 'Show targeting',
-        'showTime': 'Show current time',
-        'showLbData': 'Show leaderboard mass',
-        //'normalLb': '\"Leaderboard\" header',
-        'centeredLb': 'Centered leaderboard',
-        'fpsAtTop': 'Game stats at the top',
-        'tweenMaxEffect': 'Tween max effect',
-        'showStats': 'Show game stats',
-        'showStatsMass': 'Game stats: Mass',
-        'showStatsESTE': 'Game stats: Enemy\'s STE',
-        'showStatsEMTE': 'Game stats: Enemy\'s MTE',
-        'showStatsMTE': 'Game stats: Our MTE',
-        'showStatsSTE': 'Game stats: Our STE',
-        'showStatsTTE': 'Game stats: Minimal tricksplit teammate\'s mass',
-        'showStatsPTE': 'Game stats: Maximal enemy\'s mass for presplit',
-        'showStatsN16': 'Game stats: n/16',
-        'showStatsFPS': 'Game stats: FPS',
-        'blockPopups': 'Block popups (ads/shop/quest)',
-        'hotkeys': 'Hotkeys',
+        start: 'Home',
+        settings: 'Settings',
+        restoreSettings: 'Restore default settings',
+        animationGroup: 'Animation',
+        graphics: 'Graphics',
+        zoomGroup: 'Zoom',
+        respGroup: 'Respawn',
+        namesGroup: 'Names',
+        massGroup: 'Mass',
+        skinsGroup: 'Skins',
+        foodGroup: 'Food',
+        transparencyGroup: 'Transparency / colors',
+        gridGroup: 'Grid / sectors',
+        miniMapGroup: 'Minimap',
+        helpersGroup: 'Helpers',
+        mouseGroup: 'Mouse control',
+        hudGroup: 'HUD',
+        chatGroup: 'Chat',
+        statsGroup: 'Stats',
+        extrasGroup: 'Extras',
+        macroGroup: 'Macros',
+        noSkins: 'No skins',
+        noNames: 'No names',
+        noColors: 'No colors',
+        showMass: 'Show mass',
+        skipStats: 'Skip stats after death',
+        showQuest: 'Show quest',
+        autoZoom: 'Auto zoom',
+        animation: 'Animation delay',
+        macroFeeding: 'Macro feed (ms)',
+        profileNumber: 'Profiles Number',
+        suckAnimation: 'Cell Eat [Sucking] Animation',
+        virusGlow: 'Virus Glow',
+        borderGlow: 'Border Glow',
+        zoomSpeedValue2: 'Zoom speed',
+        quickResp: 'Quick respawn (hotkey)',
+        autoResp: 'Auto respawn',
+        autoHideCellsInfo: 'Auto hide names and mass',
+        autoHideNames: 'Auto hide names',
+        autoHideMass: 'Auto hide mass',
+        autoHideFood: 'Auto hide food - mass',
+        autoHideFoodOnZoom: 'Auto hide food - zoom',
+        optimizedNames: 'Optimized names',
+        hideMyName: 'Hide my name',
+        hideTeammatesNames: 'Hide teammates names',
+        optimizedMass: 'Optimized mass (+/-2%) & Merge timer BETA off\r\n Suggested to be enabled for Lag reduce',
+        shortMass: 'Short mass (k)',
+        virMassShots: 'Virus shots',
+        hideMyMass: 'Hide my mass',
+        hideEnemiesMass: 'Hide enemies mass',
+        vanillaSkins: 'Vanilla skins',
+        customSkins: 'Custom skins',
+        videoSkins: 'Video skins (.mp4 .webm .ogv)',
+        videoSkinsMusic: 'Sound from other\'s Video skins when both C3',
+        myTransparentSkin: 'My transparent skin',
+        myCustomColor: 'My custom color',
+        transparentCells: 'Transparent cells',
+        transparentViruses: 'Transparent viruses',
+        transparentSkins: 'Transparent skins',
+        showGrid: 'Show grid',
+        showBgSectors: 'Show background sectors',
+        showMapBorders: 'Show map borders',
+        showGhostCells: 'Ghost cells (fps drop)',
+        showGhostCellsInfo: 'Ghost cells info (confusing)',
+        showPartyBots: 'Party bots',
+        rotateMap: 'Rotate Map',
+        showMiniMap: 'Show minimap',
+        showMiniMapGrid: 'Show minimap grid',
+        showMiniMapGuides: 'Show minimap guides',
+        showExtraMiniMapGuides: 'Show extra minimap guides',
+        showMiniMapGhostCells: 'Show ghost cells',
+        oneColoredTeammates: 'One-colored teammates',
+        optimizedFood: 'Optimized food',
+        rainbowFood: 'Rainbow food',
+        oppColors: 'Opponents colors',
+        oppRings: 'Opponents rings',
+        virColors: 'Viruses colors',
+        splitRange: 'Split range',
+        qdsplitRange: 'Quick double split range', //Sonia2
+        sdsplitRange: 'Slow double split range', //Sonia2
+        virusesRange: 'Viruses range',
+        textStroke: 'Names and mass stroke',
+        namesStroke: 'Names stroke',
+        massStroke: 'Mass stroke',
+        cursorTracking: 'Cursor tracking',
+        teammatesInd: 'Teammates indicators',
+        FBTracking: 'Facebook bubble tracker',
+        //        ingameSpectator: 'Ingame spectator(LOCKED ℄)',
+        //        fullSpectator: 'Full spectator(LOCKED ℄)',		
+        mouseSplit: 'LMB - Mouse split',
+        mouseFeed: 'RMB - Mouse feed',
+        mouseInvert: 'Invert mouse buttons',
+        disableChat: 'Disable chat',
+        hideChat: 'Hide chat',
+        chatSounds: 'Sound notifications',
+        chatEmoticons: 'Emoticons',
+        showChatImages: 'Show images on chat',
+        showChatVideos: 'Show videos on chat',
+        showChatBox: 'Chatbox instead of popups',
+        hidecountry: 'Hide my country',
+        messageSound: 'Message notification sound',
+        commandSound: 'Command notification sound',
+        virusSoundurl: 'Virus shot sound',
+        virusSound: 'Virus shot sound',
+        FacebookIDs: 'Facebook IDs',
+        jellyPhisycs: 'Jelly physics',
+        showTop5: 'Show teamboard',
+        showTargeting: 'Show targeting',
+        showTime: 'Show current time',
+        showLbData: 'Show leaderboard mass',
+        //normalLb: '\"Leaderboard\" header',
+        centeredLb: 'Centered leaderboard',
+        fpsAtTop: 'Game stats at the top',
+        tweenMaxEffect: 'Tween max effect',
+        showStats: 'Show game stats',
+        showStatsMass: 'Game stats: Mass',
+        showStatsESTE: 'Game stats: Enemy\'s STE',
+        showStatsEMTE: 'Game stats: Enemy\'s MTE',
+        showStatsMTE: 'Game stats: Our MTE',
+        showStatsSTE: 'Game stats: Our STE',
+        showStatsTTE: 'Game stats: Minimal tricksplit teammate\'s mass',
+        showStatsPTE: 'Game stats: Maximal enemy\'s mass for presplit',
+        showStatsN16: 'Game stats: n/16',
+        showStatsFPS: 'Game stats: FPS',
+        blockPopups: 'Block popups (ads/shop/quest)',
+        hotkeys: 'Hotkeys',
         'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
         'hk-inst-delete': 'To delete a hotkey click on the input field and press the DELETE key.',
         'hk-inst-keys': 'Possible key combinations with the CTRL and ALT keys.',
@@ -1301,654 +1301,654 @@ var languagetexts = {
         'hk-privateMiniMap': 'Show target on the minimap',
         'hk-showQuest': 'Show/hide quest',
         'hk-showSpectator': 'Show/hide Full Spectator',
-        'commands': 'Commands',
-        'comm1': 'Feed me!',
-        'comm2': 'Split into me!',
-        'comm3': 'Need backup at %currentSector%!',
-        'comm4': 'Enemy spotted at %currentSector%!',
-        'comm5': 'Need a teammate!',
-        'comm6': 'Tank the virus!',
-        'comm7': 'Eat the virus!',
-        'comm8': 'Let\'s bait!',
-        'comm9': 'Fake tricksplit!',
-        'comm0': 'Fuck!',
-        'comm10': 'Tricksplit!',
-        'comm11': 'Left!',
-        'comm12': 'Up!',
-        'comm13': 'Right!',
-        'comm14': 'Bottom!',
-        'comm15': 'Fake Tricksplit',
-        'comm16': 'Popsplit',
-        'comm17': 'Double Popsplit',
-        'comm18': 'Reversed Tricksplit',
-        'comm19': 'Canonsplit',
-        'comm20': 'Reversed Canonsplit',
-        'comm21': 'Bowlingsplit',
-        'comm22': 'Auto feed trick',
-        'comm23': 'Pause',
-        'comm24': 'ANTI alarm stage 1',
-        'comm25': 'ANTI alarm stage 2',
-        'comm26': 'ANTI alarm stage 3',
-        'comm27': 'ANTI alarm stage 4',
-        'comm28': 'ANTI alarm stage 5',
-        'comm29': 'Presplit',
-        'comm30': 'Party Run tricks',
-        'saveComm': 'Save commands',
-        'theme': 'Theme',
-        'restoreThemeSettings': 'Restore theme default settings',
-        'basicTheming': 'Basic theming',
-        'themePreset': 'Theme preset',
-        'themeType': 'Theme type',
-        'darkTheme': 'Dark theme',
-        'lightTheme': 'Light theme',
-        'mainColor': 'Main color',
-        'bgColor': 'Background',
-        'bordersColor': 'Map borders',
-        'gridColor': 'Grid',
-        'sectorsColor': 'Sectors font',
-        'namesColor': 'Names',
-        'namesStrokeColor': 'Names stroke',
-        'massColor': 'Mass',
-        'massStrokeColor': 'Mass stroke',
-        'virusColor': 'Virus',
-        'virusStrokeColor': 'Virus stroke',
-        'virusGlowColor': "Virus Glow",
-        "borderGlowColor": "Border Glow",
-        'mVirusColor': 'Mothercell',
-        'mVirusStrokeColor': 'Mothercell stroke',
-        'virusGlowSize': 'Virus Glow Size',
-        'borderGlowSize': 'Border Glow Size',
-        'foodColor': 'Food',
-        'namesFont': 'Names font',
-        'massFont': 'Mass font',
-        'sectorsFont': 'Sectors font',
-        'namesScale': 'Names scale',
-        'massScale': 'Mass scale',
-        'virMassScale': 'Virus mass scale',
-        'strokeScale': 'Text stroke scale',
-        'foodSize': 'Food size',
-        'bordersWidth': 'Map borders width',
-        'sectorsWidth': 'Sectors grid width',
-        'sectorsFontSize': 'Sectors font size',
-        'sectorsX': 'Sectors X',
-        'sectorsY': 'Sectors Y',
-        'cellsAlpha': 'Cells transparency',
-        'skinsAlpha': 'Skins transparency',
-        'virusAlpha': 'Virus transparency',
-        'textAlpha': 'Names & mass transparency',
-        'virusStrokeSize': 'Virus stroke size',
-        "virusGlowSize": "Virus Glow Size",
-        'teammatesIndColor': 'Teammate indicator',
-        'cursorTrackingColor': 'Cursor tracking',
-        'splitRangeColor': 'Split range',
-        'enemyBSTEDColor': 'B2STE Enemy Color', //Sonia2
-        'enemyBSTEColor': 'BSTE Enemy Color', //Sonia2
-        'enemyBColor': 'Bigger Enemy Color', //Sonia2
-        'enemySColor': 'Smaller Enemy Color', //Sonia2
-        'enemySSTEColor': 'SSTE Enemy Color', //Sonia2
-        'enemySSTEDColor': 'S2STE Enemy Color', //Sonia2
-        'safeAreaColor': 'Safe area',
-        'dangerAreaColor': 'Danger area',
-        'ghostCellsColor': 'Ghost cells',
-        'ghostCellsAlpha': 'Ghost cells transparency',
-        'menuTheming': 'Menu',
-        'menuPreset': 'Menu theme',
-        'menuMainColor': 'Main color',
-        'menuBtnTextColor': 'Button text',
-        'menuPanelColor': 'Panel',
-        'menuPanelColor2': 'Panel (2)',
-        'menuTextColor': 'Panel text',
-        'menuTextColor2': 'Panel text (2)',
-        'btn1Color': 'Button #1',
-        'btn1Color2': 'Button #1 (2)',
-        'btn2Color': 'Button #2',
-        'btn2Color2': 'Button #2 (2)',
-        'btn3Color': 'Button #3',
-        'btn3Color2': 'Button #3 (2)',
-        'btn4Color': 'Button #4',
-        'btn4Color2': 'Button #4 (2)',
-        'menuBg': 'Panel background image',
-        'menuOpacity': 'Transparency',
-        'hudTheming': 'HUD',
-        'hudMainColor': 'Main color',
-        'hudColor': 'Background',
-        'hudTextColor': 'Text',
-        'statsHudColor': 'Stats',
-        'timeHudColor': 'Time',
-        'top5MassColor': 'Mass',
-        'lbMeColor': 'Leaderboard - me',
-        'lbTeammateColor': 'Leaderboard - teammate',
-        'hudFont': 'HUD font',
-        'hudScale': 'HUD scale',
-        'chatTheming': 'Chat',
-        'messageColor': 'Message background',
-        'messageTextColor': 'Message text',
-        'messageTimeColor': 'Message time',
-        'messageNickColor': 'Message nick',
-        'commandsColor': 'Command background',
-        'commandsTextColor': 'Command text',
-        'commandsTimeColor': 'Command time',
-        'commandsNickColor': 'Command nick',
-        'chatBoxColor': 'Chatbox color',
-        'chatScale': 'Chat scale',
-        'miniMapTheming': 'Minimap',
-        'miniMapSectorsColor': 'Sectors',
-        'miniMapSectorColor': 'Current sector',
-        'miniMapGuidesColor': 'Guides',
-        'miniMapNickColor': 'Nick',
-        'miniMapNickStrokeColor': 'Nick stroke',
-        'miniMapMyCellColor': 'My cell',
-        'miniMapMyCellStrokeColor': 'My cell stroke',
-        'miniMapTeammatesColor': 'Teammates',
-        'miniMapDeathLocationColor': 'Death location',
-        'miniMapFont': 'Minimap font',
-        'miniMapNickFont': 'Nick font',
-        'miniMapWidth': 'Minimap width',
-        'miniMapSectorsOpacity': 'Sectors transparency',
-        'miniMapNickSize': 'Nick size',
-        'miniMapNickStrokeSize': 'Nick stroke size',
-        'miniMapMyCellSize': 'My cell size',
-        'miniMapMyCellStrokeSize': 'My cell stroke size',
-        'miniMapTeammatesSize': 'Teammates size',
-        'miniMapGhostCellsColor': 'Ghost cells',
-        'miniMapGhostCellsAlpha': 'Ghost cells transparency',
-        'imagesTheming': 'Graphics / cursors',
-        'customBackground': 'Custom background image',
-        'customCursor': 'Custom cursor image',
-        'hideChatMsgA': 'Chat is visible!',
-        'hideChatMsgB': 'Chat is hidden!',
-        'showSkinsMsgA': 'Skins are visible!',
-        'showSkinsMsgB': 'Skins are hidden!',
-        'hideSmallBotsMsgA': 'Small bots are visible!',
-        'hideSmallBotsMsgB': 'Small bots are hidden!',
-        'autoRespMsgA': 'Auto respawn is on!',
-        'autoRespMsgB': 'Auto respawn is off!',
-        'autoZoomMsgA': 'Auto zoom is on!',
-        'autoZoomMsgB': 'Auto zoom is off!',
-        'targetNotSet': '',
-        'targetDead': 'Dead',
-        'targetDistance': 'Distance',
-        'targetMass': 'Total Mass',
-        'totalPartyPlayers': '',
-        'totalPartyMass': '',
-        'exportImport': 'Export / import settings',
-        'exportSettings': 'Export settings',
-        'exportInfo': 'To export selected settings copy the code below and save it to a text file encoded in Unicode.',
-        'importSettings': 'Import settings',
-        'importInfo': 'To import selected settings paste an exported code below and press the \"Import settings\" button.',
-        'profile': 'Profile',
-        'profiles': 'Profiles',
-        'skins': 'Skins',
-        'moreSkins': 'Add skins',
-        'thanks': 'Thanks to Awesome!',
-        'saveSett': 'Save settings',
-        'saved': 'Saved!',
-        'resetSett': 'Reset to default',
-        'close': 'Close',
-        'enterChatMsg': 'Enter chat message',
-        'activeParties': 'Active parties',
-        'noActiveParties': 'No active parties ;(',
-        'playlist': 'Playlist',
-        'pause': 'PAUSE!',
-        'visit': 'Visit',
-        'exit': 'Legend mod Express: Are you sure you want to quit the game?',
-        'blockWarn': 'WARNING! Popups are blocked in the settings.',
-        'unblockPopups': 'Temporary unblock',
-        'mass': 'Mass',
-        'score': 'Score',
-        'leaderboard': 'Leaderboard',
-        'user': 'User',
-        'userMuted': 'User %user% has been muted.',
-        'userUnmuted': 'User %user% has been unmuted.',
-        'mute': 'Mute',
-        'unmute': 'Unmute',
-        'mutedUsers': 'Muted users',
-        'activeUsers': 'Active users',
-        'showActiveUsers': 'Show active users',
-        'none': 'None',
-        'sounds': 'Sounds',
-        'page_menu_main_free_coins': 'Free Coins',
-        'page_menu_main_gifts': 'Gifts',
-        'page_menu_main_dailyquests': 'Daily Quest',
-        'page_shop': 'Shop',
-        "teamView": 'Team view (BETA)'
+        commands: 'Commands',
+        comm1: 'Feed me!',
+        comm2: 'Split into me!',
+        comm3: 'Need backup at %currentSector%!',
+        comm4: 'Enemy spotted at %currentSector%!',
+        comm5: 'Need a teammate!',
+        comm6: 'Tank the virus!',
+        comm7: 'Eat the virus!',
+        comm8: 'Let\'s bait!',
+        comm9: 'Fake tricksplit!',
+        comm0: 'Fuck!',
+        comm10: 'Tricksplit!',
+        comm11: 'Left!',
+        comm12: 'Up!',
+        comm13: 'Right!',
+        comm14: 'Bottom!',
+        comm15: 'Fake Tricksplit',
+        comm16: 'Popsplit',
+        comm17: 'Double Popsplit',
+        comm18: 'Reversed Tricksplit',
+        comm19: 'Canonsplit',
+        comm20: 'Reversed Canonsplit',
+        comm21: 'Bowlingsplit',
+        comm22: 'Auto feed trick',
+        comm23: 'Pause',
+        comm24: 'ANTI alarm stage 1',
+        comm25: 'ANTI alarm stage 2',
+        comm26: 'ANTI alarm stage 3',
+        comm27: 'ANTI alarm stage 4',
+        comm28: 'ANTI alarm stage 5',
+        comm29: 'Presplit',
+        comm30: 'Party Run tricks',
+        saveComm: 'Save commands',
+        theme: 'Theme',
+        restoreThemeSettings: 'Restore theme default settings',
+        basicTheming: 'Basic theming',
+        themePreset: 'Theme preset',
+        themeType: 'Theme type',
+        darkTheme: 'Dark theme',
+        lightTheme: 'Light theme',
+        mainColor: 'Main color',
+        bgColor: 'Background',
+        bordersColor: 'Map borders',
+        gridColor: 'Grid',
+        sectorsColor: 'Sectors font',
+        namesColor: 'Names',
+        namesStrokeColor: 'Names stroke',
+        massColor: 'Mass',
+        massStrokeColor: 'Mass stroke',
+        virusColor: 'Virus',
+        virusStrokeColor: 'Virus stroke',
+        virusGlowColor: "Virus Glow",
+        borderGlowColor: "Border Glow",
+        mVirusColor: 'Mothercell',
+        mVirusStrokeColor: 'Mothercell stroke',
+        virusGlowSize: 'Virus Glow Size',
+        borderGlowSize: 'Border Glow Size',
+        foodColor: 'Food',
+        namesFont: 'Names font',
+        massFont: 'Mass font',
+        sectorsFont: 'Sectors font',
+        namesScale: 'Names scale',
+        massScale: 'Mass scale',
+        virMassScale: 'Virus mass scale',
+        strokeScale: 'Text stroke scale',
+        foodSize: 'Food size',
+        bordersWidth: 'Map borders width',
+        sectorsWidth: 'Sectors grid width',
+        sectorsFontSize: 'Sectors font size',
+        sectorsX: 'Sectors X',
+        sectorsY: 'Sectors Y',
+        cellsAlpha: 'Cells transparency',
+        skinsAlpha: 'Skins transparency',
+        virusAlpha: 'Virus transparency',
+        textAlpha: 'Names & mass transparency',
+        virusStrokeSize: 'Virus stroke size',
+        virusGlowSize: "Virus Glow Size",
+        teammatesIndColor: 'Teammate indicator',
+        cursorTrackingColor: 'Cursor tracking',
+        splitRangeColor: 'Split range',
+        enemyBSTEDColor: 'B2STE Enemy Color', //Sonia2
+        enemyBSTEColor: 'BSTE Enemy Color', //Sonia2
+        enemyBColor: 'Bigger Enemy Color', //Sonia2
+        enemySColor: 'Smaller Enemy Color', //Sonia2
+        enemySSTEColor: 'SSTE Enemy Color', //Sonia2
+        enemySSTEDColor: 'S2STE Enemy Color', //Sonia2
+        safeAreaColor: 'Safe area',
+        dangerAreaColor: 'Danger area',
+        ghostCellsColor: 'Ghost cells',
+        ghostCellsAlpha: 'Ghost cells transparency',
+        menuTheming: 'Menu',
+        menuPreset: 'Menu theme',
+        menuMainColor: 'Main color',
+        menuBtnTextColor: 'Button text',
+        menuPanelColor: 'Panel',
+        menuPanelColor2: 'Panel (2)',
+        menuTextColor: 'Panel text',
+        menuTextColor2: 'Panel text (2)',
+        btn1Color: 'Button #1',
+        btn1Color2: 'Button #1 (2)',
+        btn2Color: 'Button #2',
+        btn2Color2: 'Button #2 (2)',
+        btn3Color: 'Button #3',
+        btn3Color2: 'Button #3 (2)',
+        btn4Color: 'Button #4',
+        btn4Color2: 'Button #4 (2)',
+        menuBg: 'Panel background image',
+        menuOpacity: 'Transparency',
+        hudTheming: 'HUD',
+        hudMainColor: 'Main color',
+        hudColor: 'Background',
+        hudTextColor: 'Text',
+        statsHudColor: 'Stats',
+        timeHudColor: 'Time',
+        top5MassColor: 'Mass',
+        lbMeColor: 'Leaderboard - me',
+        lbTeammateColor: 'Leaderboard - teammate',
+        hudFont: 'HUD font',
+        hudScale: 'HUD scale',
+        chatTheming: 'Chat',
+        messageColor: 'Message background',
+        messageTextColor: 'Message text',
+        messageTimeColor: 'Message time',
+        messageNickColor: 'Message nick',
+        commandsColor: 'Command background',
+        commandsTextColor: 'Command text',
+        commandsTimeColor: 'Command time',
+        commandsNickColor: 'Command nick',
+        chatBoxColor: 'Chatbox color',
+        chatScale: 'Chat scale',
+        miniMapTheming: 'Minimap',
+        miniMapSectorsColor: 'Sectors',
+        miniMapSectorColor: 'Current sector',
+        miniMapGuidesColor: 'Guides',
+        miniMapNickColor: 'Nick',
+        miniMapNickStrokeColor: 'Nick stroke',
+        miniMapMyCellColor: 'My cell',
+        miniMapMyCellStrokeColor: 'My cell stroke',
+        miniMapTeammatesColor: 'Teammates',
+        miniMapDeathLocationColor: 'Death location',
+        miniMapFont: 'Minimap font',
+        miniMapNickFont: 'Nick font',
+        miniMapWidth: 'Minimap width',
+        miniMapSectorsOpacity: 'Sectors transparency',
+        miniMapNickSize: 'Nick size',
+        miniMapNickStrokeSize: 'Nick stroke size',
+        miniMapMyCellSize: 'My cell size',
+        miniMapMyCellStrokeSize: 'My cell stroke size',
+        miniMapTeammatesSize: 'Teammates size',
+        miniMapGhostCellsColor: 'Ghost cells',
+        miniMapGhostCellsAlpha: 'Ghost cells transparency',
+        imagesTheming: 'Graphics / cursors',
+        customBackground: 'Custom background image',
+        customCursor: 'Custom cursor image',
+        hideChatMsgA: 'Chat is visible!',
+        hideChatMsgB: 'Chat is hidden!',
+        showSkinsMsgA: 'Skins are visible!',
+        showSkinsMsgB: 'Skins are hidden!',
+        hideSmallBotsMsgA: 'Small bots are visible!',
+        hideSmallBotsMsgB: 'Small bots are hidden!',
+        autoRespMsgA: 'Auto respawn is on!',
+        autoRespMsgB: 'Auto respawn is off!',
+        autoZoomMsgA: 'Auto zoom is on!',
+        autoZoomMsgB: 'Auto zoom is off!',
+        targetNotSet: '',
+        targetDead: 'Dead',
+        targetDistance: 'Distance',
+        targetMass: 'Total Mass',
+        totalPartyPlayers: '',
+        totalPartyMass: '',
+        exportImport: 'Export / import settings',
+        exportSettings: 'Export settings',
+        exportInfo: 'To export selected settings copy the code below and save it to a text file encoded in Unicode.',
+        importSettings: 'Import settings',
+        importInfo: 'To import selected settings paste an exported code below and press the \"Import settings\" button.',
+        profile: 'Profile',
+        profiles: 'Profiles',
+        skins: 'Skins',
+        moreSkins: 'Add skins',
+        thanks: 'Thanks to Awesome!',
+        saveSett: 'Save settings',
+        saved: 'Saved!',
+        resetSett: 'Reset to default',
+        close: 'Close',
+        enterChatMsg: 'Enter chat message',
+        activeParties: 'Active parties',
+        noActiveParties: 'No active parties ;(',
+        playlist: 'Playlist',
+        pause: 'PAUSE!',
+        visit: 'Visit',
+        exit: 'Legend mod Express: Are you sure you want to quit the game?',
+        blockWarn: 'WARNING! Popups are blocked in the settings.',
+        unblockPopups: 'Temporary unblock',
+        mass: 'Mass',
+        score: 'Score',
+        leaderboard: 'Leaderboard',
+        user: 'User',
+        userMuted: 'User %user% has been muted.',
+        userUnmuted: 'User %user% has been unmuted.',
+        mute: 'Mute',
+        unmute: 'Unmute',
+        mutedUsers: 'Muted users',
+        activeUsers: 'Active users',
+        showActiveUsers: 'Show active users',
+        none: 'None',
+        sounds: 'Sounds',
+        page_menu_main_free_coins: 'Free Coins',
+        page_menu_main_gifts: 'Gifts',
+        page_menu_main_dailyquests: 'Daily Quest',
+        page_shop: 'Shop',
+        teamView: 'Team view (BETA)'
     }
 }
 var themePresets = {
     'ogario-v3': {
-        'name': 'OGARio v3',
-        'darkTheme': true,
-        'mainColor': '#01d9cc',
-        'bgColor': '#000a11',
-        'bordersColor': '#01d9cc',
-        'gridColor': '#00243e',
-        'sectorsColor': '#00243e',
-        'namesColor': '#ffffff',
-        'namesStrokeColor': '#000000',
-        'massColor': '#ffffff',
-        'massStrokeColor': '#000000',
-        'virusColor': '#002f52',
-        'virusStrokeColor': '#00b9e8',
-        'virusGlowColor': '#fff',
-        'mVirusColor': '#ce6363',
-        'mVirusStrokeColor': '#b95959',
-        'foodColor': '#5000ff',
-        'teammatesIndColor': '#ffffff',
-        'cursorTrackingColor': '#ffffff',
-        'splitRangeColor': '#ffffff',
-        'enemyBSTEDColor': '#8000ff', //Sonia2
-        'enemyBSTEColor': '#BE00FF', //Sonia2
-        'enemyBColor': '#FF0A00', //Sonia2
-        'enemySColor': '#00C8FF', //Sonia2
-        'enemySSTEColor': '#048245', //Sonia2
-        'enemySSTEDColor': '#64FF00', //Sonia2
-        'safeAreaColor': '#ffffff',
-        'dangerAreaColor': '#bf00aa',
-        'namesFont': 'ubuntu-bold',
-        'massFont': 'ubuntu-bold',
-        'sectorsFont': 'ubuntu',
-        'namesScale': 1,
-        'massScale': 3,
-        'foodSize': 5,
-        'bordersWidth': 40,
-        'sectorsWidth': 40,
-        'sectorsFontSize': 1200,
-        'cellsAlpha': 0.99,
-        'skinsAlpha': 0.99,
-        'virusAlpha': 0.25,
-        'textAlpha': 1,
-        'virusStrokeSize': 20,
-        "virusGlowSize": "#fff",
-        "virusGlowSize": 14,
-        "borderGlowSize": 14,
-        'menuPreset': 'ogario-v3',
-        'graphics': 'high',
-        'menuMainColor': '#01d9cc',
-        'menuBtnTextColor': '#ffffff',
-        'menuPanelColor': '#00243e',
-        'menuPanelColor2': '#002f52',
-        'menuTextColor': '#ffffff',
-        'menuTextColor2': '#8096a7',
-        'btn1Color': '#018cf6',
-        'btn1Color2': '#0176ce',
-        'btn2Color': '#00b9e8',
-        'btn2Color2': '#0099c0',
-        'btn3Color': '#8d5fe6',
-        'btn3Color2': '#814ee3',
-        'btn4Color': '#bf00aa',
-        'btn4Color2': '#a80096',
-        'menuBg': 'https://legendmod.ml/banners/static/img/pattern.png',
-        'menuOpacity': 0.96,
-        'hudMainColor': '#01d9cc',
-        'hudColor': 'rgba(0,0,0,0.4)',
-        'hudTextColor': '#ffffff',
-        'statsHudColor': '#ffffff',
-        'timeHudColor': '#01d9cc',
-        'top5MassColor': '#bf00aa',
-        'lbMeColor': '#bf00aa',
-        'lbTeammateColor': '#018cf6',
-        'hudFont': 'ubuntu-bold',
-        'hudScale': 1,
-        'messageColor': 'rgba(0,0,0,0.4)',
-        'messageTextColor': '#ffffff',
-        'messageTimeColor': '#018cf6',
-        'messageNickColor': '#01d9cc',
-        'commandsColor': 'rgba(191,0,170,0.9)',
-        'commandsTextColor': '#ffffff',
-        'commandsTimeColor': '#bf00aa',
-        'commandsNickColor': '#ffffff',
-        'chatBoxColor': 'rgba(0,0,0,0.4)',
-        'chatScale': 1,
-        'miniMapSectorsColor': '#ffffff',
-        'miniMapSectorColor': '#01d9cc',
-        'miniMapGuidesColor': '#bf00aa',
-        'miniMapNickColor': '#ffffff',
-        'miniMapNickStrokeColor': '#000000',
-        'miniMapMyCellColor': '#ffffff',
-        'miniMapMyCellStrokeColor': '#bf00aa',
-        'miniMapTeammatesColor': '#01d9cc',
-        'miniMapDeathLocationColor': '#bf00aa',
-        'miniMapFont': 'ubuntu-bold',
-        'miniMapNickFont': 'ubuntu-bold',
-        'miniMapWidth': 240,
-        'miniMapSectorsOpacity': 0.1,
-        'miniMapNickSize': 11,
-        'miniMapNickStrokeSize': 2,
-        'miniMapMyCellSize': 7.5,
-        'miniMapMyCellStrokeSize': 4,
-        'miniMapTeammatesSize': 5.5,
-        'customBackground': '',
-        'customCursor': 'https://legendmod.ml/cursors/cursor_02.cur'
+        name: 'OGARio v3',
+        darkTheme: true,
+        mainColor: '#01d9cc',
+        bgColor: '#000a11',
+        bordersColor: '#01d9cc',
+        gridColor: '#00243e',
+        sectorsColor: '#00243e',
+        namesColor: '#ffffff',
+        namesStrokeColor: '#000000',
+        massColor: '#ffffff',
+        massStrokeColor: '#000000',
+        virusColor: '#002f52',
+        virusStrokeColor: '#00b9e8',
+        virusGlowColor: '#fff',
+        mVirusColor: '#ce6363',
+        mVirusStrokeColor: '#b95959',
+        foodColor: '#5000ff',
+        teammatesIndColor: '#ffffff',
+        cursorTrackingColor: '#ffffff',
+        splitRangeColor: '#ffffff',
+        enemyBSTEDColor: '#8000ff', //Sonia2
+        enemyBSTEColor: '#BE00FF', //Sonia2
+        enemyBColor: '#FF0A00', //Sonia2
+        enemySColor: '#00C8FF', //Sonia2
+        enemySSTEColor: '#048245', //Sonia2
+        enemySSTEDColor: '#64FF00', //Sonia2
+        safeAreaColor: '#ffffff',
+        dangerAreaColor: '#bf00aa',
+        namesFont: 'ubuntu-bold',
+        massFont: 'ubuntu-bold',
+        sectorsFont: 'ubuntu',
+        namesScale: 1,
+        massScale: 3,
+        foodSize: 5,
+        bordersWidth: 40,
+        sectorsWidth: 40,
+        sectorsFontSize: 1200,
+        cellsAlpha: 0.99,
+        skinsAlpha: 0.99,
+        virusAlpha: 0.25,
+        textAlpha: 1,
+        virusStrokeSize: 20,
+        virusGlowSize: "#fff",
+        virusGlowSize: 14,
+        borderGlowSize: 14,
+        menuPreset: 'ogario-v3',
+        graphics: 'high',
+        menuMainColor: '#01d9cc',
+        menuBtnTextColor: '#ffffff',
+        menuPanelColor: '#00243e',
+        menuPanelColor2: '#002f52',
+        menuTextColor: '#ffffff',
+        menuTextColor2: '#8096a7',
+        btn1Color: '#018cf6',
+        btn1Color2: '#0176ce',
+        btn2Color: '#00b9e8',
+        btn2Color2: '#0099c0',
+        btn3Color: '#8d5fe6',
+        btn3Color2: '#814ee3',
+        btn4Color: '#bf00aa',
+        btn4Color2: '#a80096',
+        menuBg: 'https://legendmod.ml/banners/static/img/pattern.png',
+        menuOpacity: 0.96,
+        hudMainColor: '#01d9cc',
+        hudColor: 'rgba(0,0,0,0.4)',
+        hudTextColor: '#ffffff',
+        statsHudColor: '#ffffff',
+        timeHudColor: '#01d9cc',
+        top5MassColor: '#bf00aa',
+        lbMeColor: '#bf00aa',
+        lbTeammateColor: '#018cf6',
+        hudFont: 'ubuntu-bold',
+        hudScale: 1,
+        messageColor: 'rgba(0,0,0,0.4)',
+        messageTextColor: '#ffffff',
+        messageTimeColor: '#018cf6',
+        messageNickColor: '#01d9cc',
+        commandsColor: 'rgba(191,0,170,0.9)',
+        commandsTextColor: '#ffffff',
+        commandsTimeColor: '#bf00aa',
+        commandsNickColor: '#ffffff',
+        chatBoxColor: 'rgba(0,0,0,0.4)',
+        chatScale: 1,
+        miniMapSectorsColor: '#ffffff',
+        miniMapSectorColor: '#01d9cc',
+        miniMapGuidesColor: '#bf00aa',
+        miniMapNickColor: '#ffffff',
+        miniMapNickStrokeColor: '#000000',
+        miniMapMyCellColor: '#ffffff',
+        miniMapMyCellStrokeColor: '#bf00aa',
+        miniMapTeammatesColor: '#01d9cc',
+        miniMapDeathLocationColor: '#bf00aa',
+        miniMapFont: 'ubuntu-bold',
+        miniMapNickFont: 'ubuntu-bold',
+        miniMapWidth: 240,
+        miniMapSectorsOpacity: 0.1,
+        miniMapNickSize: 11,
+        miniMapNickStrokeSize: 2,
+        miniMapMyCellSize: 7.5,
+        miniMapMyCellStrokeSize: 4,
+        miniMapTeammatesSize: 5.5,
+        customBackground: '',
+        customCursor: 'https://legendmod.ml/cursors/cursor_02.cur'
     },
     'ogario-orange': {
-        'name': 'OGARio v2',
-        'darkTheme': true,
-        'mainColor': '#ff7800',
-        'bgColor': '#111111',
-        'bordersColor': '#ff7800',
-        'gridColor': '#292929',
-        'sectorsColor': '#292929',
-        'namesColor': '#ffffff',
-        'namesStrokeColor': '#000000',
-        'massColor': '#ffffff',
-        'massStrokeColor': '#000000',
-        'virusColor': '#666666',
-        'virusStrokeColor': '#666666',
-        'mVirusColor': '#ce6363',
-        'mVirusStrokeColor': '#b95959',
-        'foodColor': '#e16400',
-        'hudMainColor': '#ff7800',
-        'statsHudColor': '#ff7800',
-        'top5MassColor': '#ff7800',
-        'timeHudColor': '#ff7800',
-        'messageNickColor': '#ff7800',
-        'commandsColor': 'rgba(255,120,0,0.9)',
-        'commandsTimeColor': '#ff7800',
-        'commandsTextColor': '#ffffff',
-        'miniMapSectorsColor': '#ffffff',
-        'miniMapSectorColor': '#ff7800',
-        'miniMapGuidesColor': '#ff7800',
-        'miniMapMyCellColor': '#ffffff',
-        'miniMapMyCellStrokeColor': '#ff7800',
-        'miniMapTeammatesColor': '#ff7800',
-        'miniMapDeathLocationColor': '#ff7800',
-        'miniMapSectorsOpacity': 0.1
+        name: 'OGARio v2',
+        darkTheme: true,
+        mainColor: '#ff7800',
+        bgColor: '#111111',
+        bordersColor: '#ff7800',
+        gridColor: '#292929',
+        sectorsColor: '#292929',
+        namesColor: '#ffffff',
+        namesStrokeColor: '#000000',
+        massColor: '#ffffff',
+        massStrokeColor: '#000000',
+        virusColor: '#666666',
+        virusStrokeColor: '#666666',
+        mVirusColor: '#ce6363',
+        mVirusStrokeColor: '#b95959',
+        foodColor: '#e16400',
+        hudMainColor: '#ff7800',
+        statsHudColor: '#ff7800',
+        top5MassColor: '#ff7800',
+        timeHudColor: '#ff7800',
+        messageNickColor: '#ff7800',
+        commandsColor: 'rgba(255,120,0,0.9)',
+        commandsTimeColor: '#ff7800',
+        commandsTextColor: '#ffffff',
+        miniMapSectorsColor: '#ffffff',
+        miniMapSectorColor: '#ff7800',
+        miniMapGuidesColor: '#ff7800',
+        miniMapMyCellColor: '#ffffff',
+        miniMapMyCellStrokeColor: '#ff7800',
+        miniMapTeammatesColor: '#ff7800',
+        miniMapDeathLocationColor: '#ff7800',
+        miniMapSectorsOpacity: 0.1
     },
     'ogario-gold': {
-        'name': 'OGARio LE',
-        'darkTheme': true,
-        'mainColor': '#b5a642',
-        'bgColor': '#000000',
-        'bordersColor': '#b5a642',
-        'gridColor': '#111111',
-        'sectorsColor': '#111111',
-        'namesColor': '#ffffff',
-        'namesStrokeColor': '#000000',
-        'massColor': '#ffffff',
-        'massStrokeColor': '#000000',
-        'virusColor': '#666666',
-        'virusStrokeColor': '#666666',
-        'mVirusColor': '#ce6363',
-        'mVirusStrokeColor': '#b95959',
-        'foodColor': '#998c36',
-        'hudMainColor': '#b5a642',
-        'statsHudColor': '#b5a642',
-        'top5MassColor': '#b5a642',
-        'timeHudColor': '#b5a642',
-        'messageNickColor': '#b5a642',
-        'commandsColor': 'rgba(181,166,66,0.9)',
-        'commandsTimeColor': '#b5a642',
-        'commandsTextColor': '#ffffff',
-        'miniMapSectorsColor': '#ffffff',
-        'miniMapSectorColor': '#b5a642',
-        'miniMapGuidesColor': '#b5a642',
-        'miniMapMyCellColor': '#ffffff',
-        'miniMapMyCellStrokeColor': '#b5a642',
-        'miniMapTeammatesColor': '#b5a642',
-        'miniMapDeathLocationColor': '#b5a642',
-        'miniMapSectorsOpacity': 0.1
+        name: 'OGARio LE',
+        darkTheme: true,
+        mainColor: '#b5a642',
+        bgColor: '#000000',
+        bordersColor: '#b5a642',
+        gridColor: '#111111',
+        sectorsColor: '#111111',
+        namesColor: '#ffffff',
+        namesStrokeColor: '#000000',
+        massColor: '#ffffff',
+        massStrokeColor: '#000000',
+        virusColor: '#666666',
+        virusStrokeColor: '#666666',
+        mVirusColor: '#ce6363',
+        mVirusStrokeColor: '#b95959',
+        foodColor: '#998c36',
+        hudMainColor: '#b5a642',
+        statsHudColor: '#b5a642',
+        top5MassColor: '#b5a642',
+        timeHudColor: '#b5a642',
+        messageNickColor: '#b5a642',
+        commandsColor: 'rgba(181,166,66,0.9)',
+        commandsTimeColor: '#b5a642',
+        commandsTextColor: '#ffffff',
+        miniMapSectorsColor: '#ffffff',
+        miniMapSectorColor: '#b5a642',
+        miniMapGuidesColor: '#b5a642',
+        miniMapMyCellColor: '#ffffff',
+        miniMapMyCellStrokeColor: '#b5a642',
+        miniMapTeammatesColor: '#b5a642',
+        miniMapDeathLocationColor: '#b5a642',
+        miniMapSectorsOpacity: 0.1
     },
     'sniikz-style': {
-        'name': 'SniiKz\'s Style',
-        'darkTheme': true,
-        'mainColor': '#01d9cc',
-        'bgColor': '#000000',
-        'bordersColor': '#ffffff',
-        'gridColor': '#00243e',
-        'sectorsColor': '#00243e',
-        'namesColor': '#ffffff',
-        'namesStrokeColor': '#000000',
-        'massColor': '#ffffff',
-        'massStrokeColor': '#000000',
-        'virusColor': '#3b3b3b',
-        'virusStrokeColor': '#ffffff',
-        'mVirusColor': '#ce6363',
-        'mVirusStrokeColor': '#b95959',
-        'foodColor': '#5000ff',
-        'teammatesIndColor': '#ffffff',
-        'cursorTrackingColor': '#ffffff',
-        'splitRangeColor': '#ffffff',
-        'safeAreaColor': '#ffffff',
-        'dangerAreaColor': '#bf00aa',
-        'massScale': 4,
-        'foodSize': 1,
-        'bordersWidth': 40,
-        'sectorsWidth': 40,
-        'sectorsFontSize': 1200,
-        'cellsAlpha': 0.99,
-        'skinsAlpha': 0.99,
-        'virusAlpha': 0.4,
-        'virusStrokeSize': 10,
-        "virusStrokeSize": 20,
-        "virusGlowSize": 14,
-        "borderGlowSize": 14,
-        'menuPreset': 'ogario-v3',
-        'graphics': 'high',
-        'menuMainColor': '#fc0079',
-        'menuBtnTextColor': '#ffffff',
-        'menuPanelColor': '#050008',
-        'menuPanelColor2': '#1d0526',
-        'menuTextColor': '#ffffff',
-        'menuTextColor2': '#65458f',
-        'btn1Color': '#4f0242',
-        'btn1Color2': '#3b0431',
-        'btn2Color': '#6b0036',
-        'btn2Color2': '#4d0227',
-        'btn3Color': '#aa084e',
-        'btn3Color2': '#80063b',
-        'btn4Color': '#aa084e',
-        'btn4Color2': '#8a063f',
-        'menuBg': 'https://legendmod.ml/banners/static/img/pattern.png',
-        'menuOpacity': 1,
-        'hudMainColor': '#5974ff',
-        'hudColor': 'rgba(36,36,36,0.49)',
-        'hudTextColor': '#ffffff',
-        'statsHudColor': '#ffffff',
-        'timeHudColor': '#737373',
-        'top5MassColor': '#1fe000',
-        'lbMeColor': '#bf00aa',
-        'lbTeammateColor': '#018cf6',
-        'hudScale': 1.15,
-        'messageColor': 'rgba(0,0,0,0.4)',
-        'messageTextColor': '#e8e8e8',
-        'messageTimeColor': '#545454',
-        'messageNickColor': '#05ff00',
-        'commandsColor': 'rgba(36,36,36,0.9)',
-        'commandsTextColor': '#ffffff',
-        'commandsTimeColor': '#545454',
-        'commandsNickColor': '#ffffff',
-        'chatBoxColor': 'rgba(0,0,0,0.4)',
-        'chatScale': 1,
-        'miniMapSectorsColor': '#ffffff',
-        'miniMapSectorColor': '#000000',
-        'miniMapGuidesColor': '#ff00a8',
-        'miniMapNickColor': '#ffffff',
-        'miniMapNickStrokeColor': '#4d4d4d',
-        'miniMapMyCellColor': '#f0ff3d',
-        'miniMapMyCellStrokeColor': '#acba07',
-        'miniMapTeammatesColor': '#305eff',
-        'miniMapDeathLocationColor': '#2b2b2b',
-        'miniMapWidth': 250,
-        'miniMapSectorsOpacity': 0.1,
-        'miniMapNickSize': 9,
-        'miniMapNickStrokeSize': 0,
-        'miniMapMyCellSize': 5,
-        'miniMapMyCellStrokeSize': 0,
-        'miniMapTeammatesSize': 5,
-        'customBackground': '',
-        'customCursor': 'https://legendmod.ml/cursors/cursor_01.cur'
+        name: 'SniiKz\'s Style',
+        darkTheme: true,
+        mainColor: '#01d9cc',
+        bgColor: '#000000',
+        bordersColor: '#ffffff',
+        gridColor: '#00243e',
+        sectorsColor: '#00243e',
+        namesColor: '#ffffff',
+        namesStrokeColor: '#000000',
+        massColor: '#ffffff',
+        massStrokeColor: '#000000',
+        virusColor: '#3b3b3b',
+        virusStrokeColor: '#ffffff',
+        mVirusColor: '#ce6363',
+        mVirusStrokeColor: '#b95959',
+        foodColor: '#5000ff',
+        teammatesIndColor: '#ffffff',
+        cursorTrackingColor: '#ffffff',
+        splitRangeColor: '#ffffff',
+        safeAreaColor: '#ffffff',
+        dangerAreaColor: '#bf00aa',
+        massScale: 4,
+        foodSize: 1,
+        bordersWidth: 40,
+        sectorsWidth: 40,
+        sectorsFontSize: 1200,
+        cellsAlpha: 0.99,
+        skinsAlpha: 0.99,
+        virusAlpha: 0.4,
+        virusStrokeSize: 10,
+        virusStrokeSize: 20,
+        virusGlowSize: 14,
+        borderGlowSize: 14,
+        menuPreset: 'ogario-v3',
+        graphics: 'high',
+        menuMainColor: '#fc0079',
+        menuBtnTextColor: '#ffffff',
+        menuPanelColor: '#050008',
+        menuPanelColor2: '#1d0526',
+        menuTextColor: '#ffffff',
+        menuTextColor2: '#65458f',
+        btn1Color: '#4f0242',
+        btn1Color2: '#3b0431',
+        btn2Color: '#6b0036',
+        btn2Color2: '#4d0227',
+        btn3Color: '#aa084e',
+        btn3Color2: '#80063b',
+        btn4Color: '#aa084e',
+        btn4Color2: '#8a063f',
+        menuBg: 'https://legendmod.ml/banners/static/img/pattern.png',
+        menuOpacity: 1,
+        hudMainColor: '#5974ff',
+        hudColor: 'rgba(36,36,36,0.49)',
+        hudTextColor: '#ffffff',
+        statsHudColor: '#ffffff',
+        timeHudColor: '#737373',
+        top5MassColor: '#1fe000',
+        lbMeColor: '#bf00aa',
+        lbTeammateColor: '#018cf6',
+        hudScale: 1.15,
+        messageColor: 'rgba(0,0,0,0.4)',
+        messageTextColor: '#e8e8e8',
+        messageTimeColor: '#545454',
+        messageNickColor: '#05ff00',
+        commandsColor: 'rgba(36,36,36,0.9)',
+        commandsTextColor: '#ffffff',
+        commandsTimeColor: '#545454',
+        commandsNickColor: '#ffffff',
+        chatBoxColor: 'rgba(0,0,0,0.4)',
+        chatScale: 1,
+        miniMapSectorsColor: '#ffffff',
+        miniMapSectorColor: '#000000',
+        miniMapGuidesColor: '#ff00a8',
+        miniMapNickColor: '#ffffff',
+        miniMapNickStrokeColor: '#4d4d4d',
+        miniMapMyCellColor: '#f0ff3d',
+        miniMapMyCellStrokeColor: '#acba07',
+        miniMapTeammatesColor: '#305eff',
+        miniMapDeathLocationColor: '#2b2b2b',
+        miniMapWidth: 250,
+        miniMapSectorsOpacity: 0.1,
+        miniMapNickSize: 9,
+        miniMapNickStrokeSize: 0,
+        miniMapMyCellSize: 5,
+        miniMapMyCellStrokeSize: 0,
+        miniMapTeammatesSize: 5,
+        customBackground: '',
+        customCursor: 'https://legendmod.ml/cursors/cursor_01.cur'
     },
     'hkg-style': {
-        'name': 'HKG Style',
-        'darkTheme': true,
-        'mainColor': '#651fff',
-        'bgColor': '#000000',
-        'bordersColor': '#ffffff',
-        'gridColor': '#111111',
-        'sectorsColor': '#111111',
-        'namesColor': '#ffffff',
-        'namesStrokeColor': '#000000',
-        'massColor': '#ffffff',
-        'massStrokeColor': '#000000',
-        'virusColor': '#666666',
-        'virusStrokeColor': '#666666',
-        'mVirusColor': '#ce6363',
-        'mVirusStrokeColor': '#b95959',
-        'foodColor': '#651fff',
-        'hudMainColor': '#651fff',
-        'statsHudColor': '#651fff',
-        'top5MassColor': '#651fff',
-        'timeHudColor': '#651fff',
-        'messageNickColor': '#651fff',
-        'commandsColor': 'rgba(101,31,255,0.9)',
-        'commandsTimeColor': '#651fff',
-        'commandsTextColor': '#ffffff',
-        'miniMapSectorsColor': '#ffffff',
-        'miniMapSectorColor': '#651fff',
-        'miniMapGuidesColor': '#651fff',
-        'miniMapMyCellColor': '#ffffff',
-        'miniMapMyCellStrokeColor': '#651fff',
-        'miniMapTeammatesColor': '#651fff',
-        'miniMapDeathLocationColor': '#651fff',
-        'miniMapSectorsOpacity': 0.1
+        name: 'HKG Style',
+        darkTheme: true,
+        mainColor: '#651fff',
+        bgColor: '#000000',
+        bordersColor: '#ffffff',
+        gridColor: '#111111',
+        sectorsColor: '#111111',
+        namesColor: '#ffffff',
+        namesStrokeColor: '#000000',
+        massColor: '#ffffff',
+        massStrokeColor: '#000000',
+        virusColor: '#666666',
+        virusStrokeColor: '#666666',
+        mVirusColor: '#ce6363',
+        mVirusStrokeColor: '#b95959',
+        foodColor: '#651fff',
+        hudMainColor: '#651fff',
+        statsHudColor: '#651fff',
+        top5MassColor: '#651fff',
+        timeHudColor: '#651fff',
+        messageNickColor: '#651fff',
+        commandsColor: 'rgba(101,31,255,0.9)',
+        commandsTimeColor: '#651fff',
+        commandsTextColor: '#ffffff',
+        miniMapSectorsColor: '#ffffff',
+        miniMapSectorColor: '#651fff',
+        miniMapGuidesColor: '#651fff',
+        miniMapMyCellColor: '#ffffff',
+        miniMapMyCellStrokeColor: '#651fff',
+        miniMapTeammatesColor: '#651fff',
+        miniMapDeathLocationColor: '#651fff',
+        miniMapSectorsOpacity: 0.1
     },
     'agario-light': {
-        'name': 'Agar.io Light',
-        'darkTheme': false,
-        'mainColor': '#ffffff',
-        'bgColor': '#f2fbff',
-        'bordersColor': '#858a8c',
-        'gridColor': '#ced6d9',
-        'sectorsColor': '#ced6d9',
-        'namesColor': '#ffffff',
-        'namesStrokeColor': '#000000',
-        'massColor': '#ffffff',
-        'massStrokeColor': '#000000',
-        'virusColor': '#33ff33',
-        'virusStrokeColor': '#2de52d',
-        'mVirusColor': '#ce6363',
-        'mVirusStrokeColor': '#b95959',
-        'foodColor': '#2de52d',
-        'hudMainColor': '#ffffff',
-        'statsHudColor': '#ffffff',
-        'top5MassColor': '#ffffff',
-        'timeHudColor': '#ffffff',
-        'messageNickColor': '#ffffff',
-        'commandsColor': 'rgba(255,255,255,0.9)',
-        'commandsTimeColor': '#ffffff',
-        'commandsTextColor': '#000000',
-        'miniMapSectorsColor': '#ffffff',
-        'miniMapSectorColor': '#ffffff',
-        'miniMapGuidesColor': '#ffffff',
-        'miniMapMyCellColor': '#ffffff',
-        'miniMapMyCellStrokeColor': '#ffffff',
-        'miniMapTeammatesColor': '#ffffff',
-        'miniMapDeathLocationColor': '#ffffff',
-        'miniMapSectorsOpacity': 0.25
+        name: 'Agar.io Light',
+        darkTheme: false,
+        mainColor: '#ffffff',
+        bgColor: '#f2fbff',
+        bordersColor: '#858a8c',
+        gridColor: '#ced6d9',
+        sectorsColor: '#ced6d9',
+        namesColor: '#ffffff',
+        namesStrokeColor: '#000000',
+        massColor: '#ffffff',
+        massStrokeColor: '#000000',
+        virusColor: '#33ff33',
+        virusStrokeColor: '#2de52d',
+        mVirusColor: '#ce6363',
+        mVirusStrokeColor: '#b95959',
+        foodColor: '#2de52d',
+        hudMainColor: '#ffffff',
+        statsHudColor: '#ffffff',
+        top5MassColor: '#ffffff',
+        timeHudColor: '#ffffff',
+        messageNickColor: '#ffffff',
+        commandsColor: 'rgba(255,255,255,0.9)',
+        commandsTimeColor: '#ffffff',
+        commandsTextColor: '#000000',
+        miniMapSectorsColor: '#ffffff',
+        miniMapSectorColor: '#ffffff',
+        miniMapGuidesColor: '#ffffff',
+        miniMapMyCellColor: '#ffffff',
+        miniMapMyCellStrokeColor: '#ffffff',
+        miniMapTeammatesColor: '#ffffff',
+        miniMapDeathLocationColor: '#ffffff',
+        miniMapSectorsOpacity: 0.25
     },
     'agario-dark': {
-        'name': 'Agar.io Dark',
-        'darkTheme': true,
-        'mainColor': '#ffffff',
-        'bgColor': '#111111',
-        'bordersColor': '#999999',
-        'gridColor': '#333333',
-        'sectorsColor': '#333333',
-        'namesColor': '#ffffff',
-        'namesStrokeColor': '#000000',
-        'massColor': '#ffffff',
-        'massStrokeColor': '#000000',
-        'virusColor': '#33ff33',
-        'virusStrokeColor': '#2de52d',
-        'mVirusColor': '#ce6363',
-        'mVirusStrokeColor': '#b95959',
-        'foodColor': '#2de52d',
-        'hudMainColor': '#ffffff',
-        'statsHudColor': '#ffffff',
-        'top5MassColor': '#ffffff',
-        'timeHudColor': '#ffffff',
-        'messageNickColor': '#ffffff',
-        'commandsColor': 'rgba(255,255,255,0.9)',
-        'commandsTimeColor': '#ffffff',
-        'commandsTextColor': '#ffffff',
-        'miniMapSectorsColor': '#ffffff',
-        'miniMapSectorColor': '#ffffff',
-        'miniMapGuidesColor': '#ffffff',
-        'miniMapMyCellColor': '#ffffff',
-        'miniMapMyCellStrokeColor': '#ffffff',
-        'miniMapTeammatesColor': '#ffffff',
-        'miniMapDeathLocationColor': '#ffffff',
-        'miniMapSectorsOpacity': 0.1
+        name: 'Agar.io Dark',
+        darkTheme: true,
+        mainColor: '#ffffff',
+        bgColor: '#111111',
+        bordersColor: '#999999',
+        gridColor: '#333333',
+        sectorsColor: '#333333',
+        namesColor: '#ffffff',
+        namesStrokeColor: '#000000',
+        massColor: '#ffffff',
+        massStrokeColor: '#000000',
+        virusColor: '#33ff33',
+        virusStrokeColor: '#2de52d',
+        mVirusColor: '#ce6363',
+        mVirusStrokeColor: '#b95959',
+        foodColor: '#2de52d',
+        hudMainColor: '#ffffff',
+        statsHudColor: '#ffffff',
+        top5MassColor: '#ffffff',
+        timeHudColor: '#ffffff',
+        messageNickColor: '#ffffff',
+        commandsColor: 'rgba(255,255,255,0.9)',
+        commandsTimeColor: '#ffffff',
+        commandsTextColor: '#ffffff',
+        miniMapSectorsColor: '#ffffff',
+        miniMapSectorColor: '#ffffff',
+        miniMapGuidesColor: '#ffffff',
+        miniMapMyCellColor: '#ffffff',
+        miniMapMyCellStrokeColor: '#ffffff',
+        miniMapTeammatesColor: '#ffffff',
+        miniMapDeathLocationColor: '#ffffff',
+        miniMapSectorsOpacity: 0.1
     }
 }
 var themeMenus = {
     'ogario-v3': {
-        'name': 'OGARio v3',
-        'menuMainColor': '#01d9cc',
-        'menuBtnTextColor': '#ffffff',
-        'menuPanelColor': '#00243e',
-        'menuPanelColor2': '#002f52',
-        'menuTextColor': '#ffffff',
-        'menuTextColor2': '#8096a7',
-        'btn1Color': '#018cf6',
-        'btn1Color2': '#0176ce',
-        'btn2Color': '#00b9e8',
-        'btn2Color2': '#0099c0',
-        'btn3Color': '#8d5fe6',
-        'btn3Color2': '#814ee3',
-        'btn4Color': '#f300d8',
-        'btn4Color2': '#df00c6',
-        'menuBg': 'https://legendmod.ml/banners/static/img/pattern.png'
+        name: 'OGARio v3',
+        menuMainColor: '#01d9cc',
+        menuBtnTextColor: '#ffffff',
+        menuPanelColor: '#00243e',
+        menuPanelColor2: '#002f52',
+        menuTextColor: '#ffffff',
+        menuTextColor2: '#8096a7',
+        btn1Color: '#018cf6',
+        btn1Color2: '#0176ce',
+        btn2Color: '#00b9e8',
+        btn2Color2: '#0099c0',
+        btn3Color: '#8d5fe6',
+        btn3Color2: '#814ee3',
+        btn4Color: '#f300d8',
+        btn4Color2: '#df00c6',
+        menuBg: 'https://legendmod.ml/banners/static/img/pattern.png'
     },
     'ogario-v2': {
-        'name': 'OGARio v2',
-        'menuMainColor': '#ff7800',
-        'menuBtnTextColor': '#ffffff',
-        'menuPanelColor': '#222222',
-        'menuPanelColor2': '#333333',
-        'menuTextColor': '#bbbbbb',
-        'menuTextColor2': '#bbbbbb',
-        'btn1Color': '#428bca',
-        'btn1Color2': '#3071a9',
-        'btn2Color': '#5cb85c',
-        'btn2Color2': '#449d44',
-        'btn3Color': '#f0ad4e',
-        'btn3Color2': '#ec971f',
-        'btn4Color': '#d9534f',
-        'btn4Color2': '#c9302c',
-        'menuBg': ''
+        name: 'OGARio v2',
+        menuMainColor: '#ff7800',
+        menuBtnTextColor: '#ffffff',
+        menuPanelColor: '#222222',
+        menuPanelColor2: '#333333',
+        menuTextColor: '#bbbbbb',
+        menuTextColor2: '#bbbbbb',
+        btn1Color: '#428bca',
+        btn1Color2: '#3071a9',
+        btn2Color: '#5cb85c',
+        btn2Color2: '#449d44',
+        btn3Color: '#f0ad4e',
+        btn3Color2: '#ec971f',
+        btn4Color: '#d9534f',
+        btn4Color2: '#c9302c',
+        menuBg: ''
     },
-    'agario': {
-        'name': 'Agar.io',
-        'menuMainColor': '#5bc0de',
-        'menuBtnTextColor': '#ffffff',
-        'menuPanelColor': '#ffffff',
-        'menuPanelColor2': '#cccccc',
-        'menuTextColor': '#333333',
-        'menuTextColor2': '#999999',
-        'btn1Color': '#428bca',
-        'btn1Color2': '#3071a9',
-        'btn2Color': '#5cb85c',
-        'btn2Color2': '#449d44',
-        'btn3Color': '#f0ad4e',
-        'btn3Color2': '#ec971f',
-        'btn4Color': '#d9534f',
-        'btn4Color2': '#c9302c',
-        'menuBg': ''
+    agario: {
+        name: 'Agar.io',
+        menuMainColor: '#5bc0de',
+        menuBtnTextColor: '#ffffff',
+        menuPanelColor: '#ffffff',
+        menuPanelColor2: '#cccccc',
+        menuTextColor: '#333333',
+        menuTextColor2: '#999999',
+        btn1Color: '#428bca',
+        btn1Color2: '#3071a9',
+        btn2Color: '#5cb85c',
+        btn2Color2: '#449d44',
+        btn3Color: '#f0ad4e',
+        btn3Color2: '#ec971f',
+        btn4Color: '#d9534f',
+        btn4Color2: '#c9302c',
+        menuBg: ''
     }
 }
 var graphicMenus = {
-    'high': {
-        'name': 'High'
+    high: {
+        name: 'High'
     },
-    'medium': {
-        'name': 'Medium'
+    medium: {
+        name: 'Medium'
     },
-    'low': {
-        'name': 'Low'
+    low: {
+        name: 'Low'
     },
-    'very_low': {
-        'name': 'Very Low'
+    very_low: {
+        name: 'Very Low'
     }
 }
 var escapeHTMLs = {
@@ -1960,145 +1960,145 @@ var escapeHTMLs = {
     '/': '&#x2F;'
 }
 var defaultSettings = {
-    'preset': 'ogario-v3',
-    'darkTheme': true,
-    'mainColor': '#01d9cc',
-    'bgColor': '#000a11',
-    'bordersColor': '#d90101',
-    "borderGlowColor": "#ffffff",
-    'gridColor': '#00243e',
-    'sectorsColor': '#00243e',
-    'namesColor': '#ffffff',
-    'namesStrokeColor': '#000000',
-    'massColor': '#ffffff',
-    'massStrokeColor': '#000000',
-    'virusColor': '#327a19',
-    'virusStrokeColor': '#327a19',
-    'mVirusColor': '#ce6363',
-    'mVirusStrokeColor': '#b95959',
-    'foodColor': '#0057ff',
-    'teammatesIndColor': '#ffffff',
-    'cursorTrackingColor': '#ffffff',
-    'splitRangeColor': '#ffffff',
-    'enemyBSTEDColor': '#8000ff', //Sonia2
-    'enemyBSTEColor': '#BE00FF', //Sonia2
-    'enemyBColor': '#FF0A00', //Sonia2
-    'enemySColor': '#00C8FF', //Sonia2
-    'enemySSTEColor': '#048245', //Sonia2
-    'enemySSTEDColor': '#64FF00', //Sonia2
-    'ghostCellsColor': '#ffffff',
-    'safeAreaColor': '#ffffff',
-    'dangerAreaColor': '#bf00aa',
-    'namesFont': 'ubuntu-bold',
-    'namesFontFamily': 'Ubuntu',
-    'namesFontWeight': 700,
-    'massFont': 'ubuntu-bold',
-    'massFontFamily': 'Ubuntu',
-    'massFontWeight': 700,
-    'sectorsFont': 'ubuntu',
-    'sectorsFontFamily': 'Ubuntu',
-    'sectorsFontWeight': 400,
-    'sectorsX': 5,
-    'sectorsY': 5,
-    'namesScale': 1,
-    'massScale': 3,
-    'virMassScale': 3,
-    'strokeScale': 1,
-    'foodSize': 5,
-    'bordersWidth': 14,
-    'sectorsWidth': 40,
-    'sectorsFontSize': 1200,
-    'cellsAlpha': 0.99,
-    'skinsAlpha': 0.99,
-    'virusAlpha': 0.6,
-    'textAlpha': 1,
-    'virusGlowColor': '#fff',
-    'virusGlowSize': 14,
-    'borderGlowSize': 14,
-    'ghostCellsAlpha': 0.3,
-    'virusStrokeSize': 14,
-    'menuPreset': 'ogario-v3',
-    'graphics': 'high',
-    'menuMainColor': '#01d9cc',
-    'menuBtnTextColor': '#ffffff',
-    'menuPanelColor': '#00243e',
-    'menuPanelColor2': '#002f52',
-    'menuTextColor': '#ffffff',
-    'menuTextColor2': '#8096a7',
-    'btn1Color': '#018cf6',
-    'btn1Color2': '#0176ce',
-    'btn2Color': '#00b9e8',
-    'btn2Color2': '#0099c0',
-    'btn3Color': '#8d5fe6',
-    'btn3Color2': '#814ee3',
-    'btn4Color': '#bf00aa',
-    'btn4Color2': '#a80096',
-    'menuBg': 'https://legendmod.ml/banners/static/img/pattern.png',
-    'menuOpacity': 0.96,
-    'hudMainColor': '#01d9cc',
-    'hudColor': 'rgba(0,0,0,0.4)',
-    'hudTextColor': '#ffffff',
-    'statsHudColor': '#ffffff',
-    'timeHudColor': '#01d9cc',
-    'top5MassColor': '#bf00aa',
-    'lbMeColor': '#bf00aa',
-    'lbTeammateColor': '#018cf6',
-    'hudFont': 'ubuntu-bold',
-    'hudFontFamily': 'Ubuntu',
-    'hudFontWeight': 700,
-    'hudScale': 1,
-    'messageColor': 'rgba(0,0,0,0.4)',
-    'messageTextColor': '#ffffff',
-    'messageTimeColor': '#018cf6',
-    'messageNickColor': '#01d9cc',
-    'commandsColor': 'rgba(191,0,170,0.9)',
-    'commandsTextColor': '#ffffff',
-    'commandsTimeColor': '#bf00aa',
-    'commandsNickColor': '#ffffff',
-    'chatBoxColor': 'rgba(0,0,0,0.4)',
-    'chatScale': 1,
-    'miniMapSectorsColor': '#ffffff',
-    'miniMapSectorColor': '#01d9cc',
-    'miniMapGuidesColor': '#bf00aa',
-    'miniMapNickColor': '#ffffff',
-    'miniMapNickStrokeColor': '#000000',
-    'miniMapMyCellColor': '#ffffff',
-    'miniMapMyCellStrokeColor': '#bf00aa',
-    'miniMapTeammatesColor': '#01d9cc',
-    'miniMapDeathLocationColor': '#bf00aa',
-    'miniMapGhostCellsColor': '#ffffff',
+    preset: 'ogario-v3',
+    darkTheme: true,
+    mainColor: '#01d9cc',
+    bgColor: '#000a11',
+    bordersColor: '#d90101',
+    borderGlowColor: "#ffffff",
+    gridColor: '#00243e',
+    sectorsColor: '#00243e',
+    namesColor: '#ffffff',
+    namesStrokeColor: '#000000',
+    massColor: '#ffffff',
+    massStrokeColor: '#000000',
+    virusColor: '#327a19',
+    virusStrokeColor: '#327a19',
+    mVirusColor: '#ce6363',
+    mVirusStrokeColor: '#b95959',
+    foodColor: '#0057ff',
+    teammatesIndColor: '#ffffff',
+    cursorTrackingColor: '#ffffff',
+    splitRangeColor: '#ffffff',
+    enemyBSTEDColor: '#8000ff', //Sonia2
+    enemyBSTEColor: '#BE00FF', //Sonia2
+    enemyBColor: '#FF0A00', //Sonia2
+    enemySColor: '#00C8FF', //Sonia2
+    enemySSTEColor: '#048245', //Sonia2
+    enemySSTEDColor: '#64FF00', //Sonia2
+    ghostCellsColor: '#ffffff',
+    safeAreaColor: '#ffffff',
+    dangerAreaColor: '#bf00aa',
+    namesFont: 'ubuntu-bold',
+    namesFontFamily: 'Ubuntu',
+    namesFontWeight: 700,
+    massFont: 'ubuntu-bold',
+    massFontFamily: 'Ubuntu',
+    massFontWeight: 700,
+    sectorsFont: 'ubuntu',
+    sectorsFontFamily: 'Ubuntu',
+    sectorsFontWeight: 400,
+    sectorsX: 5,
+    sectorsY: 5,
+    namesScale: 1,
+    massScale: 3,
+    virMassScale: 3,
+    strokeScale: 1,
+    foodSize: 5,
+    bordersWidth: 14,
+    sectorsWidth: 40,
+    sectorsFontSize: 1200,
+    cellsAlpha: 0.99,
+    skinsAlpha: 0.99,
+    virusAlpha: 0.6,
+    textAlpha: 1,
+    virusGlowColor: '#fff',
+    virusGlowSize: 14,
+    borderGlowSize: 14,
+    ghostCellsAlpha: 0.3,
+    virusStrokeSize: 14,
+    menuPreset: 'ogario-v3',
+    graphics: 'high',
+    menuMainColor: '#01d9cc',
+    menuBtnTextColor: '#ffffff',
+    menuPanelColor: '#00243e',
+    menuPanelColor2: '#002f52',
+    menuTextColor: '#ffffff',
+    menuTextColor2: '#8096a7',
+    btn1Color: '#018cf6',
+    btn1Color2: '#0176ce',
+    btn2Color: '#00b9e8',
+    btn2Color2: '#0099c0',
+    btn3Color: '#8d5fe6',
+    btn3Color2: '#814ee3',
+    btn4Color: '#bf00aa',
+    btn4Color2: '#a80096',
+    menuBg: 'https://legendmod.ml/banners/static/img/pattern.png',
+    menuOpacity: 0.96,
+    hudMainColor: '#01d9cc',
+    hudColor: 'rgba(0,0,0,0.4)',
+    hudTextColor: '#ffffff',
+    statsHudColor: '#ffffff',
+    timeHudColor: '#01d9cc',
+    top5MassColor: '#bf00aa',
+    lbMeColor: '#bf00aa',
+    lbTeammateColor: '#018cf6',
+    hudFont: 'ubuntu-bold',
+    hudFontFamily: 'Ubuntu',
+    hudFontWeight: 700,
+    hudScale: 1,
+    messageColor: 'rgba(0,0,0,0.4)',
+    messageTextColor: '#ffffff',
+    messageTimeColor: '#018cf6',
+    messageNickColor: '#01d9cc',
+    commandsColor: 'rgba(191,0,170,0.9)',
+    commandsTextColor: '#ffffff',
+    commandsTimeColor: '#bf00aa',
+    commandsNickColor: '#ffffff',
+    chatBoxColor: 'rgba(0,0,0,0.4)',
+    chatScale: 1,
+    miniMapSectorsColor: '#ffffff',
+    miniMapSectorColor: '#01d9cc',
+    miniMapGuidesColor: '#bf00aa',
+    miniMapNickColor: '#ffffff',
+    miniMapNickStrokeColor: '#000000',
+    miniMapMyCellColor: '#ffffff',
+    miniMapMyCellStrokeColor: '#bf00aa',
+    miniMapTeammatesColor: '#01d9cc',
+    miniMapDeathLocationColor: '#bf00aa',
+    miniMapGhostCellsColor: '#ffffff',
     ////
-    "color": "#fff",
-    //"commanderImage" : "https://i.imgur.com/wQKUDB3.png",
-    "customServerImage1": "https://legendmod.ml/banners/IconCustomServer1.png",
-    "commanderImage": "https://legendmod.ml/banners/drawCommander.png",
-    "commanderImage1": "https://legendmod.ml/banners/drawCommander1.png",
-    "commanderImage2": "https://legendmod.ml/banners/drawCommander2.png",
-    "commanderImage3": "https://legendmod.ml/banners/drawCommander3.png",
-    "commanderImage4": "https://legendmod.ml/banners/drawCommander4.png",
-    "commanderImage5": "https://legendmod.ml/banners/drawCommander5.png",
-    "commanderImage6": "https://legendmod.ml/banners/iconJustWatchPro.png",
-    "commanderImageDyingLight": "https://legendmod.ml/banners/icondyinglightzombie.png",
-    "commanderImageDyingLightvirus": "https://legendmod.ml/banners/icondyinglightvirus.png",
+    color: "#fff",
+    //commanderImage : "https://i.imgur.com/wQKUDB3.png",
+    customServerImage1: "https://legendmod.ml/banners/IconCustomServer1.png",
+    commanderImage: "https://legendmod.ml/banners/drawCommander.png",
+    commanderImage1: "https://legendmod.ml/banners/drawCommander1.png",
+    commanderImage2: "https://legendmod.ml/banners/drawCommander2.png",
+    commanderImage3: "https://legendmod.ml/banners/drawCommander3.png",
+    commanderImage4: "https://legendmod.ml/banners/drawCommander4.png",
+    commanderImage5: "https://legendmod.ml/banners/drawCommander5.png",
+    commanderImage6: "https://legendmod.ml/banners/iconJustWatchPro.png",
+    commanderImageDyingLight: "https://legendmod.ml/banners/icondyinglightzombie.png",
+    commanderImageDyingLightvirus: "https://legendmod.ml/banners/icondyinglightvirus.png",
 
     ////
-    'miniMapFont': 'ubuntu-bold',
-    'miniMapFontFamily': 'Ubuntu',
-    'miniMapFontWeight': 700,
-    'miniMapNickFont': 'ubuntu-bold',
-    'miniMapNickFontFamily': 'Ubuntu',
-    'miniMapNickFontWeight': 700,
-    'miniMapWidth': 240,
-    'miniMapTop': 24,
-    'miniMapSectorsOpacity': 0.1,
-    'miniMapNickSize': 11,
-    'miniMapNickStrokeSize': 2,
-    'miniMapMyCellSize': 7.5,
-    'miniMapMyCellStrokeSize': 4,
-    'miniMapTeammatesSize': 5.5,
-    'miniMapGhostCellsAlpha': 0.15,
-    'customBackground': '',
-    'customCursor': 'https://legendmod.ml/cursors/cursor_02.cur'
+    miniMapFont: 'ubuntu-bold',
+    miniMapFontFamily: 'Ubuntu',
+    miniMapFontWeight: 700,
+    miniMapNickFont: 'ubuntu-bold',
+    miniMapNickFontFamily: 'Ubuntu',
+    miniMapNickFontWeight: 700,
+    miniMapWidth: 240,
+    miniMapTop: 24,
+    miniMapSectorsOpacity: 0.1,
+    miniMapNickSize: 11,
+    miniMapNickStrokeSize: 2,
+    miniMapMyCellSize: 7.5,
+    miniMapMyCellStrokeSize: 4,
+    miniMapTeammatesSize: 5.5,
+    miniMapGhostCellsAlpha: 0.15,
+    customBackground: '',
+    customCursor: 'https://legendmod.ml/cursors/cursor_02.cur'
 }
 cimg2 = new Image;
 cimg2.src = defaultSettings.commanderImage2;
@@ -2150,131 +2150,131 @@ var skinUrlPatterns = [{
     }
 ];
 var defaultmapsettings = {
-    'isAlphaChanged': false,
-    'jellyPhisycs': false,
-    'virusSound': false,
-    'quickResp': true,
-    'autoResp': false,
-    'autoZoom': false,
-    'autoHideNames': true,
-    'autoHideMass': true,
-    'autoHideFood': false,
-    'autoHideFoodOnZoom': false,
-    'noNames': false,
-    'optimizedNames': true,
-    'hideMyName': false,
-    'hideTeammatesNames': false,
-    'showMass': true,
-    'optimizedMass': true,
-    'shortMass': true,
-    'virMassShots': true,
-    'hideMyMass': false,
-    'hideEnemiesMass': false,
-    'vanillaSkins': false,
-    'customSkins': true,
-    'videoSkins': true,
-    'videoSkinsMusic': false,
-    'myTransparentSkin': false,
-    'myCustomColor': false,
-    'transparentCells': false,
-    'transparentViruses': true,
-    'transparentSkins': false,
-    'showGrid': true,
-    'showBgSectors': false,
-    'showMapBorders': true,
-    'showGhostCells': false,
-    'showGhostCellsInfo': false,
-    'showPartyBots': false,
-    'showMiniMap': true,
-    'rotateMap': true,
-    'showMiniMapGrid': false,
-    'showMiniMapGuides': true,
-    'showExtraMiniMapGuides': true,
-    'showMiniMapGhostCells': true,
-    'oneColoredTeammates': false,
-    'optimizedFood': true,
-    'rainbowFood': true,
-    'oppColors': true,
-    'oppRings': true,
-    'virColors': false,
-    'splitRange': false,
-    'qdsplitRange': true, //Sonia2
-    'sdsplitRange': false, //Sonia2
-    'virusesRange': false,
-    'textStroke': false,
-    'namesStroke': true,
-    'massStroke': true,
-    'cursorTracking': false,
-    'FBTracking': true,
-    //'ingameSpectator2': false,
-    //'fullSpectator2': false,	
-    'teammatesInd': true,
-    'mouseSplit': false,
-    'mouseFeed': false,
-    'mouseInvert': false,
-    'disableChat': false,
-    'coloredNicks': false,
-    'hideChat': false,
-    'chatSounds': true,
-    'chatEmoticons': true,
-    'showChatBox': false,
-    'hidecountry': false,
-    'showChatImages': true,
-    'showChatVideos': true,
-    'showTop5': true,
-    'showTargeting': true,
-    'showLbData': true,
-    'showTime': false,
-    //'normalLb': true,
-    'centeredLb': true,
-    'fpsAtTop': true,
-    'tweenMaxEffect': false,
-    'showStats': true,
-    'showStatsMass': true,
-    'showStatsESTE': false,
-    'showStatsEMTE': false,
-    'showStatsMTE': false,
-    'showStatsSTE': false,
-    'showStatsTTE': false,
-    'showStatsPTE': false,
-    'showStatsSTE': false,
-    'showStatsN16': true,
-    'showStatsFPS': true,
-    'blockPopups': false,
-    'streamMode': false,
-    'hideSkinUrl': false,
-    'showQuickMenu': true,
-    'showQuickBots': false,
-    'showSkinsPanel': true,
-    'animation': 120,
-    'macroFeeding': 80,
-    'profileNumber': 15,
+    isAlphaChanged: false,
+    jellyPhisycs: false,
+    virusSound: false,
+    quickResp: true,
+    autoResp: false,
+    autoZoom: false,
+    autoHideNames: true,
+    autoHideMass: true,
+    autoHideFood: false,
+    autoHideFoodOnZoom: false,
+    noNames: false,
+    optimizedNames: true,
+    hideMyName: false,
+    hideTeammatesNames: false,
+    showMass: true,
+    optimizedMass: true,
+    shortMass: true,
+    virMassShots: true,
+    hideMyMass: false,
+    hideEnemiesMass: false,
+    vanillaSkins: false,
+    customSkins: true,
+    videoSkins: true,
+    videoSkinsMusic: false,
+    myTransparentSkin: false,
+    myCustomColor: false,
+    transparentCells: false,
+    transparentViruses: true,
+    transparentSkins: false,
+    showGrid: true,
+    showBgSectors: false,
+    showMapBorders: true,
+    showGhostCells: false,
+    showGhostCellsInfo: false,
+    showPartyBots: false,
+    showMiniMap: true,
+    rotateMap: true,
+    showMiniMapGrid: false,
+    showMiniMapGuides: true,
+    showExtraMiniMapGuides: true,
+    showMiniMapGhostCells: true,
+    oneColoredTeammates: false,
+    optimizedFood: true,
+    rainbowFood: true,
+    oppColors: true,
+    oppRings: true,
+    virColors: false,
+    splitRange: false,
+    qdsplitRange: true, //Sonia2
+    sdsplitRange: false, //Sonia2
+    virusesRange: false,
+    textStroke: false,
+    namesStroke: true,
+    massStroke: true,
+    cursorTracking: false,
+    FBTracking: true,
+    //ingameSpectator2: false,
+    //fullSpectator2: false,	
+    teammatesInd: true,
+    mouseSplit: false,
+    mouseFeed: false,
+    mouseInvert: false,
+    disableChat: false,
+    coloredNicks: false,
+    hideChat: false,
+    chatSounds: true,
+    chatEmoticons: true,
+    showChatBox: false,
+    hidecountry: false,
+    showChatImages: true,
+    showChatVideos: true,
+    showTop5: true,
+    showTargeting: true,
+    showLbData: true,
+    showTime: false,
+    //normalLb: true,
+    centeredLb: true,
+    fpsAtTop: true,
+    tweenMaxEffect: false,
+    showStats: true,
+    showStatsMass: true,
+    showStatsESTE: false,
+    showStatsEMTE: false,
+    showStatsMTE: false,
+    showStatsSTE: false,
+    showStatsTTE: false,
+    showStatsPTE: false,
+    showStatsSTE: false,
+    showStatsN16: true,
+    showStatsFPS: true,
+    blockPopups: false,
+    streamMode: false,
+    hideSkinUrl: false,
+    showQuickMenu: true,
+    showQuickBots: false,
+    showSkinsPanel: true,
+    animation: 120,
+    macroFeeding: 80,
+    profileNumber: 15,
     ////
-    "cameraSpeed": 7,
-    "commanderDelay": 1E3,
-    "suckAnimation": false,
-    "virusGlow": false,
-    "borderGlow": false,
-    "limLB": 10,
-    "limTP": 5,
-    "teamView": false,
+    cameraSpeed: 7,
+    commanderDelay: 1E3,
+    suckAnimation: false,
+    virusGlow: false,
+    borderGlow: false,
+    limLB: 10,
+    limTP: 5,
+    teamView: false,
     ////
-    //'zoomSpeedValue': .87,
-    'zoomSpeedValue2': -0.13,
-    'messageSound': 'https://legendmod.ml/sounds/notification_01.mp3',
-    //                'commandSound': 'https://legendmod.ml/sounds/notification_02.mp3'
-    'commandSound': 'https://legendmod.ml/sounds/chat-message.mp3',
-    'virusSoundurl': 'https://legendmod.ml/sounds/sound-gunshot.mp3',
-    'soundSplit': 'https://www.myinstants.com/media/sounds/quack_5.mp3',
-    'FacebookIDs': ''
+    //'zoomSpeedValue: .87,
+    zoomSpeedValue2: -0.13,
+    messageSound: 'https://legendmod.ml/sounds/notification_01.mp3',
+    //                commandSound: 'https://legendmod.ml/sounds/notification_02.mp3'
+    commandSound: 'https://legendmod.ml/sounds/chat-message.mp3',
+    virusSoundurl: 'https://legendmod.ml/sounds/sound-gunshot.mp3',
+    soundSplit: 'https://www.myinstants.com/media/sounds/quack_5.mp3',
+    FacebookIDs: ''
 
 };
 var ogario1PlayerProfiles = [];
 var ogarcopythelb = {
-    'nick': 'I<3Legendmod',
-    'clanTag': 'Ⓜ',
-    'skinURL': '',
-    'color': defaultSettings.mainColor
+    nick: 'I<3Legendmod',
+    clanTag: 'Ⓜ',
+    skinURL: '',
+    color: defaultSettings.mainColor
 };
 
 var lang = 'en';
@@ -2300,48 +2300,48 @@ var thelegendmodproject = function() {
     //console.log(textLanguage.comm15);
     //}
     chatCommand = {
-        'comm0': textLanguage.comm0,
-        'comm1': textLanguage.comm1,
-        'comm2': textLanguage.comm2,
-        'comm3': textLanguage.comm3,
-        'comm4': textLanguage.comm4,
-        'comm5': textLanguage.comm5,
-        'comm6': textLanguage.comm6,
-        'comm7': textLanguage.comm7,
-        'comm8': textLanguage.comm8,
-        'comm9': textLanguage.comm9,
-        'comm10': textLanguage.comm10,
-        'comm11': textLanguage.comm11,
-        'comm12': textLanguage.comm12,
-        'comm13': textLanguage.comm13,
-        'comm14': textLanguage.comm14,
-        'comm15': textLanguage.comm15,
-        'comm16': textLanguage.comm16,
-        'comm17': textLanguage.comm17,
-        'comm18': textLanguage.comm18,
-        'comm19': textLanguage.comm19,
-        'comm20': textLanguage.comm20,
-        'comm21': textLanguage.comm21,
-        'comm22': textLanguage.comm22,
-        'comm23': textLanguage.comm23,
-        'comm24': textLanguage.comm24,
-        'comm25': textLanguage.comm25,
-        'comm26': textLanguage.comm26,
-        'comm27': textLanguage.comm27,
-        'comm28': textLanguage.comm28,
-        'comm29': textLanguage.comm29,
-        'comm30': textLanguage.comm30
+        comm0: textLanguage.comm0,
+        comm1: textLanguage.comm1,
+        comm2: textLanguage.comm2,
+        comm3: textLanguage.comm3,
+        comm4: textLanguage.comm4,
+        comm5: textLanguage.comm5,
+        comm6: textLanguage.comm6,
+        comm7: textLanguage.comm7,
+        comm8: textLanguage.comm8,
+        comm9: textLanguage.comm9,
+        comm10: textLanguage.comm10,
+        comm11: textLanguage.comm11,
+        comm12: textLanguage.comm12,
+        comm13: textLanguage.comm13,
+        comm14: textLanguage.comm14,
+        comm15: textLanguage.comm15,
+        comm16: textLanguage.comm16,
+        comm17: textLanguage.comm17,
+        comm18: textLanguage.comm18,
+        comm19: textLanguage.comm19,
+        comm20: textLanguage.comm20,
+        comm21: textLanguage.comm21,
+        comm22: textLanguage.comm22,
+        comm23: textLanguage.comm23,
+        comm24: textLanguage.comm24,
+        comm25: textLanguage.comm25,
+        comm26: textLanguage.comm26,
+        comm27: textLanguage.comm27,
+        comm28: textLanguage.comm28,
+        comm29: textLanguage.comm29,
+        comm30: textLanguage.comm30
     }
     hudsetter = {
-        'menuMainColorCSS': null,
-        'menuPanelColorCSS': null,
-        'menuTextlColorCSS': null,
-        'menuButtonsCSS': null,
-        'hudCSS': null,
-        'chatCSS': null,
-        'chatScaleCSS': null,
-        'cursorCSS': null,
-        'loadThemeSettings': function() {
+        menuMainColorCSS: null,
+        menuPanelColorCSS: null,
+        menuTextlColorCSS: null,
+        menuButtonsCSS: null,
+        hudCSS: null,
+        chatCSS: null,
+        chatScaleCSS: null,
+        cursorCSS: null,
+		loadThemeSettings() {
             let storage = null;
             if (window.localStorage.getItem('ogarioThemeSettings') !== null) {
                 storage = JSON.parse(window.localStorage.getItem('ogarioThemeSettings'));
@@ -2357,22 +2357,22 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'saveThemeSettings': function() {
+        saveThemeSettings() {
             window.localStorage.setItem('ogarioThemeSettings', JSON.stringify(defaultSettings));
         },
-        'restoreThemeSettings': function() {
+        restoreThemeSettings() {
             if (window.localStorage.getItem('ogarioThemeSettings') !== null) {
                 window.localStorage.removeItem('ogarioThemeSettings');
                 window.location.reload();
             }
         },
-        'addCustomCSS': function(name, css) {
+        addCustomCSS(name, css) {
             if (!this[name]) {
                 this[name] = $("<style type='text/css'>").appendTo('head');
             }
             this[name].html(css);
         },
-        'addPresetBox': function(id, name, options, value, callback) {
+        addPresetBox(id, name, options, value, callback) {
             for (var option in $(id).append('<div class=\"preset-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"select-wrapper\"><select id=\"' + name + '\" class=\"form-control\"></select></div></div>'), options) {
                 options.hasOwnProperty(option) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['name'] + '</option>');
             }
@@ -2384,7 +2384,7 @@ var thelegendmodproject = function() {
                 app[callback](id);
             });
         },
-        'addColorBox': function(id, name, callback) {
+        addColorBox(id, name, callback) {
             $(id).append('<div class=\"color-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"input-group ' + name + '-picker\"><input type=\"text\" value=\"' + defaultSettings[name] + '\" id=\"' + name + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>');
             if (callback) {
                 var app = this;
@@ -2398,11 +2398,13 @@ var thelegendmodproject = function() {
             } else $(id + ' .' + name + '-picker').colorpicker({
                 'format': 'hex'
             }).on('changeColor.colorpicker', function(id) {
-                defaultSettings[name] = id.color.toHex(),
-                    ogario.hasOwnProperty(name) && (ogario[name] = defaultSettings[name]);
+                defaultSettings[name] = id.color.toHex();
+                    if (ogario.hasOwnProperty(name)){
+						ogario[name] = defaultSettings[name];
+					}
             });
         },
-        'addRgbaColorBox': function(id, name, callback) {
+        addRgbaColorBox(id, name, callback) {
             $(id).append('<div class=\"color-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"input-group ' + name + '-picker\"><input type=\"text\" value=\"' + defaultSettings[name] + '\" id=\"' + name + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>');
             if (callback) {
                 var app = this;
@@ -2410,8 +2412,10 @@ var thelegendmodproject = function() {
                     'format': 'rgba'
                 }).on('changeColor.colorpicker', function(ids) {
                     var color = ids.color.toRGB();
-                    defaultSettings[name] = 'rgba(' + color['r'] + ',' + color['g'] + ',' + color['b'] + ',' + color['a'] + ')',
-                        ogario.hasOwnProperty(name) && (ogario[name] = defaultSettings[name]),
+                    defaultSettings[name] = 'rgba(' + color['r'] + ',' + color['g'] + ',' + color['b'] + ',' + color['a'] + ')';
+                        if (ogario.hasOwnProperty(name)){ 
+							ogario[name] = defaultSettings[name];
+						}
                         app[callback]();
                 });
             } else {
@@ -2419,12 +2423,12 @@ var thelegendmodproject = function() {
                     'format': 'rgba'
                 }).on('changeColor.colorpicker', function(ids) {
                     var color = ids.color.toRGB();
-                    defaultSettings[name] = 'rgba(' + color['r'] + ',' + color['g'] + ',' + color['b'] + ',' + color['a'] + ')',
+                    defaultSettings[name] = 'rgba(' + color['r'] + ',' + color['g'] + ',' + color['b'] + ',' + color['a'] + ')';
                         ogario.hasOwnProperty(name) && (ogario[name] = defaultSettings[name]);
                 });
             }
         },
-        'addSliderBox': function(id, name, min, max, step, callback) {
+        addSliderBox(id, name, min, max, step, callback) {
             $(id).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">' + textLanguage[name] + ': </span><span id=\"' + name + '-value\" class=\"value\">' + defaultSettings[name] + '</span></div><input id=\"' + name + '-slider\" type=\"range\" min=\"' + min + '\" max=\"' + max + '\" step=\"' + step + '\" value=\"' + defaultSettings[name] + '\"></div>');
             if (callback) {
                 var app = this;
@@ -2446,7 +2450,7 @@ var thelegendmodproject = function() {
                 }
             });
         },
-        'addInputBox': function(id, name, holder, callback) {
+        addInputBox(id, name, holder, callback) {
             $(id).append('<div class=\"input-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><input id=\"' + name + '\" class=\"form-control\" placeholder=\"' + holder + '\" value=\"' + defaultSettings[name] + '\" /></div>');
             var app = this;
             $('#' + name).on('input', function() {
@@ -2454,21 +2458,21 @@ var thelegendmodproject = function() {
                 app[callback]();
             });
         },
-        'addCursorBox': function(id, url) {
+        addCursorBox(id, url) {
             if (url === defaultSettings.customCursor) {
                 $(id).append('<div class=\"cursor-box\"><a href=\"#\" class=\"active\"><img src=\"' + url + '\"></a></div>');
             } else {
                 $(id).append('<div class=\"cursor-box\"><a href=\"#\"><img src=\"' + url + '\"></a></div>');
             }
         },
-        'setFont': function(id, fontFamily) {
-            defaultSettings[id] = fontFamily,
-                defaultSettings[id + 'Family'] = this.setFontFamily(fontFamily),
-                defaultSettings[id + 'Weight'] = this.setFontWeight(fontFamily),
-                ogario.hasOwnProperty(id + 'Family') && (ogario[id + 'Family'] = defaultSettings[id + 'Family']),
-                ogario.hasOwnProperty(id + 'Weight') && (ogario[id + 'Weight'] = defaultSettings[id + 'Weight']);
+        setFont(id, fontFamily) {
+            defaultSettings[id] = fontFamily;
+                defaultSettings[id + 'Family'] = this.setFontFamily(fontFamily);
+                defaultSettings[id + 'Weight'] = this.setFontWeight(fontFamily);
+                if (ogario.hasOwnProperty(id + 'Family')) ogario[id + 'Family'] = defaultSettings[id + 'Family'];
+                if (ogario.hasOwnProperty(id + 'Weight')) ogario[id + 'Weight'] = defaultSettings[id + 'Weight'];
         },
-        'addFontBox': function(id, name, callback) {
+        addFontBox(id, name, callback) {
             $(id).append('<div class=\"font-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"select-wrapper\"><select id=\"' + name + '\" class=\"form-control\"></select></div></div>');
             $('#' + name).append('<option value=\"ubuntu\">Ubuntu</option><option value=\"ubuntu-bold\">Ubuntu Bold</option>');
             $('#' + name).append('<option value=\"roboto\">Roboto</option><option value=\"roboto-bold\">Roboto Bold</option>');
@@ -2477,16 +2481,17 @@ var thelegendmodproject = function() {
             $('#' + name).append('<option value=\"allura\">Allura</option><option value=\"allura-bold\">Allura Bold</option>');
 
             $('#' + name).val(defaultSettings[name]);
-            var o = this;
+            var app = this;
             callback ? $('#' + name).on('change', function() {
                 var app = this.value;
-                o.setFont(name, app), o[callback]();
+                app.setFont(name, app);
+				app[callback]();
             }) : $('#' + name).on('change', function() {
                 var app = this.value;
-                o.setFont(name, app);
+                app.setFont(name, app);
             });
         },
-        'setFontFamily': function(name) {
+        setFontFamily(name) {
             var tempFont;
             if (name.indexOf('roboto') == 0) {
                 tempFont = 'Roboto';
@@ -2507,13 +2512,13 @@ var thelegendmodproject = function() {
             return tempFont;
             //return -1 != t.indexOf('roboto') ? 'Roboto' : -1 != t.indexOf('oswald') ? 'Oswald' : 'Ubuntu';
         },
-        'setFontWeight': function(name) {
+        setFontWeight(name) {
             if (name.indexOf('bold') != -1) {
                 return 700;
             }
             return 400;
         },
-        'setThemeMenu': function() {
+        setThemeMenu() {
             //var t = this;
             $('#theme').append('<ul class=\"submenu-tabs\"><li class=\"theme-main-tab active\"><a href=\"#theme-main\" class=\"active ogicon-paint-format\" data-toggle=\"tab-tooltip\" title=\"' + textLanguage.basicTheming +
                 '\"></a></li><li class=\"theme-menu-tab\"><a href=\"#theme-menu\" class=\"ogicon-menu\" data-toggle=\"tab-tooltip\" title=\"' + textLanguage.menuTheming +
@@ -2649,10 +2654,13 @@ var thelegendmodproject = function() {
                 $(document).on('click', '#theme .btn-save', function(e) {
                     e.preventDefault();
                     var i = $(this);
-                    i.text(textLanguage.saved), hudsetter.saveThemeSettings(), setTimeout(function() {
+                    i.text(textLanguage.saved); 
+					hudsetter.saveThemeSettings(); 
+					setTimeout(function() {
                         i.text(textLanguage.saveSett);
                     }, 500);
-                }), $('#theme').append('<div class=\"restore-settings\"><a href=\"#\">' + textLanguage.restoreThemeSettings + '</a></div>'),
+                });
+				$('#theme').append('<div class=\"restore-settings\"><a href=\"#\">' + textLanguage.restoreThemeSettings + '</a></div>'),
                 $(document).on('click', '#theme .restore-settings a', function(e) {
                     e.preventDefault(), hudsetter.restoreThemeSettings();
                 }), $('.skin').colorpicker({
@@ -2660,7 +2668,7 @@ var thelegendmodproject = function() {
                     'input': '#color'
                 });
         },
-        'changePreset': function(names, theme) {
+        changePreset(names, theme) {
             if (theme[names]) {
                 defaultSettings[names] = names;
                 var names = theme[names];
@@ -2686,41 +2694,41 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'changeThemePreset': function(name) {
+        changeThemePreset(name) {
             this.changePreset(name, themePresets);
             this.setTheme();
         },
-        'setFonts': function() {
+        setFonts() {
             this.setFont('namesFont', defaultSettings.namesFont);
             this.setFont('massFont', defaultSettings.namesFont);
             this.setFont('sectorsFont', defaultSettings.sectorsFont);
         },
-        'setBgColor': function() {
+        setBgColor() {
             $('body').css('background-color', defaultSettings.bgColor);
         },
-        'setFoodColor': function() {
+        setFoodColor() {
             if (defaultmapsettings.optimizedFood && ogarfooddrawer) {
                 ogarfooddrawer.preDrawPellet();
             }
         },
-        'setIndicatorColor': function() {
+        setIndicatorColor() {
             if (ogarfooddrawer) {
                 ogarfooddrawer.preDrawIndicator();
             }
         },
-        'setCustomBackground': function() {
+        setCustomBackground() {
             if (defaultSettings.customBackground) {
                 $('body').css('background-image', 'url(' + defaultSettings.customBackground + ')')
             } else {
                 $('body').css('background-image', 'none');
             }
         },
-        'setCustomCursor': function() {
+        setCustomCursor() {
             if (defaultSettings.customCursor) var css = '*{cursor:url(' + defaultSettings.customCursor + '), auto !important}';
             else css = '*{cursor: auto}';
             this.addCustomCSS('cursorCSS', css);
         },
-        'setMenu': function() {
+        setMenu() {
             this.setMenuOpacity();
             this.setMenuMainColor();
             this.setMenuPanelColor();
@@ -2728,31 +2736,31 @@ var thelegendmodproject = function() {
             this.setMenuButtons();
             this.setMenuBg();
         },
-        'changeMenuPreset': function(name) {
+        changeMenuPreset(name) {
             this.changePreset(name, themeMenus);
             this.setMenu();
         },
-        'changeGraphics': function(value) {},
-        'setMenuOpacity': function() {
+        changeGraphics(value) {},
+        setMenuOpacity() {
             $('#helloContainer, #hotkeys, #exp-imp').css('opacity', defaultSettings.menuOpacity);
         },
-        'setMenuMainColor': function() {
+        setMenuMainColor() {
             var css = '::-moz-selection{background-color:' + defaultSettings.menuMainColor + '!important}::selection{background-color:' + defaultSettings.menuMainColor + '!important}.menu-main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:' + defaultSettings.menuMainColor + '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:' + defaultSettings.menuMainColor + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + defaultSettings.menuMainColor + '}.ps-scrollbar-y{background-color:' + defaultSettings.menuMainColor + '!important}';
             this.addCustomCSS('menuMainColorCSS', css);
         },
-        'setMenuPanelColor': function() {
+        setMenuPanelColor() {
             var css = '#main-menu,.agario-side-panel,#hotkeys,#exp-imp{background-color: ' + defaultSettings.menuPanelColor + '}label:hover,.agario-panel input,.agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.nick .input-group-btn,.skin .input-group-btn,#stream-mode,#hide-url,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs,#exp-bar .progress,#quick-menu a:hover,.quick,.select-wrapper,#hotkeys-cfg div.row:hover,#hotkeys-cfg .command-in,#exp-imp-settings textarea,.restore-settings{background-color: ' + defaultSettings.menuPanelColor2 + '}.agario-panel h5,.agario-side-panel h5,#stats h2,.menu-tabs,.submenu-tabs,#skins a.default,#stats hr,#hotkeys-cfg div.row, #exp-imp h1{border-color: ' + defaultSettings.menuPanelColor2 + '}.quick:hover,#skins a,#profiles{color:' + defaultSettings.menuPanelColor2 + '}input.stream-mode,input.hide-url{color:' + defaultSettings.menuPanelColor2 + '!important}';
             this.addCustomCSS('menuPanelColorCSS', css);
         },
-        'setMenuTextColor': function() {
+        setMenuTextColor() {
             var css = '.agario-panel,.agario-side-panel,.agario-panel input,.agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.dark .yt-username,#stream-mode,#hide-url,.menu-tabs a,.submenu-tabs a,#skins a.default:hover,#quick-menu a,#prev-profile.default:hover,#next-profile.default:hover,#statsText,#hotkeys,#hotkeys-cfg .command-in,#exp-imp{color:' + defaultSettings.menuTextColor + '}#skins a.default:hover{border-color:' + defaultSettings.menuTextColor + '}::-webkit-input-placeholder{color:' + defaultSettings.menuTextColor2 + '!important}::-moz-placeholder{color:' + defaultSettings.menuTextColor2 + '!important}#user-id-tag, #version-tag,#statsSubtext,#hotkeys-inst,#exp-imp textarea,.restore-settings a,.restore-settings a:hover{color:' + defaultSettings.menuTextColor2 + '}#hotkeys-cfg .command-in,#theme .color-box{border-color:' + defaultSettings.menuTextColor2 + '}';
             this.addCustomCSS('menuTextColorCSS', css);
         },
-        'setMenuButtons': function() {
+        setMenuButtons() {
             var css = 'a,a:hover{color:' + defaultSettings.btn1Color + '}.btn,#hotkeys-cfg .custom-key-in{color:' + defaultSettings.menuBtnTextColor + '}.btn-primary{background-color:' + defaultSettings.btn1Color + '!important}.btn-primary:active,.btn-primary:disabled,.btn-primary:focus,.btn-primary:hover{background-color:' + defaultSettings.btn1Color2 + '!important}.btn-success{background-color:' + defaultSettings.btn2Color + '!important}.btn-success:active,.btn-success:disabled,.btn-success:focus,.btn-success:hover{background-color:' + defaultSettings.btn2Color2 + '!important}.btn-warning{background-color:' + defaultSettings.btn3Color + '!important}.btn-warning:active,.btn-warning:disabled,.btn-warning:focus,.btn-warning:hover{background-color:' + defaultSettings.btn3Color2 + '!important}.btn-danger{background-color:' + defaultSettings.btn4Color + '!important}.btn-danger:active,.btn-danger:disabled,.btn-danger:focus,.btn-danger:hover{background-color:' + defaultSettings.btn4Color2 + '!important}#hotkeys-cfg .custom-key-in{background-color:' + defaultSettings.btn4Color2 + ';border-color:' + defaultSettings.btn4Color2 + '}';
             this.addCustomCSS('menuButtonsCSS', css);
         },
-        'setMenuBg': function() {
+        setMenuBg() {
             $('#menuBg').val(defaultSettings.menuBg);
             if (defaultSettings.menuBg) {
                 $('.menu-panel, .agario-side-panel, #hotkeys, #exp-imp').css('background-image', 'url(' + defaultSettings.menuBg + ')');
@@ -2760,30 +2768,30 @@ var thelegendmodproject = function() {
                 $('.menu-panel, .agario-side-panel, #hotkeys, #exp-imp').css('background-image', 'none');
             }
         },
-        'setHud': function() {
+        setHud() {
             this.setHudColors();
             this.setHudFont();
             this.setHudScale();
         },
-        'setHudColors': function() {
+        setHudColors() {
             var css = '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:' + defaultSettings.hudMainColor + '}.hud,.hud-b,#chat-emoticons{background-color:' + defaultSettings.hudColor + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + defaultSettings.hudTextColor + '}.stats-hud-color{color:' + defaultSettings.statsHudColor + '}.time-hud-color{color:' + defaultSettings.timeHudColor + '}.top5-mass-color{color:' + defaultSettings.top5MassColor + '}#leaderboard-positions .me{color:' + defaultSettings.lbMeColor + '}#leaderboard-positions .teammate{color:' + defaultSettings.lbTeammateColor + '}';
             this.addCustomCSS('hudCSS', css);
         },
-        'setHudFont': function() {
+        setHudFont() {
             this.setFont('hudFont', defaultSettings.hudFont);
             $('#overlays-hud').css({
                 'font-family': defaultSettings.hudFontFamily,
                 'font-weight': defaultSettings.hudFontWeight
             });
         },
-        'setHudScale': function() {
-            var t = Math.round(20 * defaultSettings.hudScale),
-                e = Math.round(200 * defaultSettings.hudScale),
-                i = Math.floor(55 * defaultSettings.hudScale),
-                o = Math.floor(6 * defaultSettings.hudScale),
-                a = Math.floor(280 * defaultSettings.hudScale),
-                n = Math.floor(85 * defaultSettings.hudScale),
-                r = Math.floor(20 * defaultSettings.hudScale);
+        setHudScale() {
+            var t = Math.round(20 * defaultSettings.hudScale);
+            var e = Math.round(200 * defaultSettings.hudScale);
+            var i = Math.floor(55 * defaultSettings.hudScale);
+            var o = Math.floor(6 * defaultSettings.hudScale);
+            var a = Math.floor(280 * defaultSettings.hudScale);
+            var n = Math.floor(85 * defaultSettings.hudScale);
+            var r = Math.floor(20 * defaultSettings.hudScale);
             $('#overlays-hud').css('font-size', t + 'px');
             $('#leaderboard-hud, #time-hud').width(e);
             $('#top5-hud').width(e + 30).css('top', i + 'px');
@@ -2792,15 +2800,15 @@ var thelegendmodproject = function() {
             $('#pause-hud').css('top', n + 'px');
             $('#target-hud').css('padding-top', r + 'px');
         },
-        'setChat': function() {
+        setChat() {
             this.setChatColors();
             this.setChatScale();
         },
-        'setChatColors': function() {
+        setChatColors() {
             var css = '#message,#messages li,.toast-success{background-color:' + defaultSettings.messageColor + '}#message,.message-text,.toast-success .message-text{color:' + defaultSettings.messageTextColor + '}.message-nick,.mute-user,.mute-user:hover,.toast-success .message-nick,.toast .mute-user,.toast .mute-user:hover{color:' + defaultSettings.messageNickColor + '}.message-time{color:' + defaultSettings.messageTimeColor + '}.toast-warning{background-color:' + defaultSettings.commandsColor + '}.command-text,.toast-warning .command-text{color:' + defaultSettings.commandsTextColor + '}.command-nick,.toast-warning .command-nick,.toast-warning .mute-user,.toast-warning .mute-user:hover{color:' + defaultSettings.commandsNickColor + '}.command-time{color:' + defaultSettings.commandsTimeColor + '}#chat-box{background-color:' + defaultSettings.chatBoxColor + '}';
             this.addCustomCSS('chatCSS', css);
         },
-        'setChatScale': function() {
+        setChatScale() {
             var message = Math.round(14 * defaultSettings.chatScale);
             var toastContainer = Math.round(280 * defaultSettings.chatScale);
             var messageBox = Math.round(350 * defaultSettings.chatScale);
@@ -2814,18 +2822,18 @@ var thelegendmodproject = function() {
             var css = '#toast-container{width:' + toastContainer + 'px;font-size:' + message + 'px}';
             this.addCustomCSS('chatScaleCSS', css);
         },
-        'setMiniMap': function() {
+        setMiniMap() {
             this.setMiniMapFont();
             this.setMiniMapWidth();
             this.setMiniMapSectorsOpacity();
         },
-        'setMiniMapFont': function() {
+        setMiniMapFont() {
             this.setFont('miniMapFont', defaultSettings.miniMapFont);
             if (ogarminimapdrawer) {
                 ogarminimapdrawer.resetMiniMapSectors();
             }
         },
-        'setMiniMapWidth': function() {
+        setMiniMapWidth() {
             var t = defaultSettings.miniMapWidth / 200;
             defaultSettings.miniMapTop = Math.round(20 * t);
             $('#minimap-hud').css({
@@ -2836,15 +2844,15 @@ var thelegendmodproject = function() {
                 ogarminimapdrawer.resetMiniMapSectors();
             }
         },
-        'setMiniMapSectorsColor': function() {
+        setMiniMapSectorsColor() {
             if (ogarminimapdrawer) {
                 ogarminimapdrawer.resetMiniMapSectors();
             }
         },
-        'setMiniMapSectorsOpacity': function() {
+        setMiniMapSectorsOpacity() {
             $('#minimap-sectors').css('opacity', defaultSettings.miniMapSectorsOpacity);
         },
-        'setTheme': function() {
+        setTheme() {
             this.setFonts();
             this.setBgColor();
             this.setCustomBackground();
@@ -2854,7 +2862,7 @@ var thelegendmodproject = function() {
             this.setChat();
             this.setMiniMap();
         },
-        'init': function() {
+        init() {
             this.loadThemeSettings();
         }
     }
@@ -2863,96 +2871,96 @@ var thelegendmodproject = function() {
     window.legendmod5 = defaultmapsettings;
 
     ogarminimapdrawer = {
-        'name': 'LM express',
-        'version': 'v1',
-        'privateMode': false,
-        'protocolMode': true,
-        'publicIP': 'wss://wss.ogario.eu:3443',
-        'privateIP': null,
-        'updateInterval': 1000,
-        'updateTick': 0,
-        'updateMaxTick': 2,
-        'currentSector': '',
-        'miniMap': null,
-        'miniMapCtx': null,
-        'miniMapSectors': null,
-        'pi2': 2 * Math.PI,
-        'socket': null,
-        'cells': {},
-        'teamPlayers': [],
-        'parties': [],
-        'chatHistory': [],
-        'chatUsers': {},
-        'chatMutedUsers': {},
-        'chatMutedUserIDs': [],
-        'customSkinsCache': {},
-        'customSkinsMap': {},
-        'cacheQueue': [],
-        'cacheQueue2': [],
-        'cacheQueue3': [],
-        'deathLocations': [],
-        'playerID': null,
-        'playerMass': 0,
-        'selectedProfile': 0,
-        'lastDeath': 0,
-        'skipServerData': false,
-        'gameMode': ':ffa',
-        'region': '',
-        'partyToken': '',
-        'ws': '',
-        'serverIP': '',
-        'serverArena': '',
-        'serverToken': '',
-        'lastSentNick': '',
-        'lastSentClanTag': null,
-        'lastSentSkinURL': '',
-        'lastSentCustomColor': '',
-        'lastSentPartyToken': '',
-        'lastSentServerToken': '',
-        'lastMessageSentTime': Date.now(),
-        'rFps': 0,
-        'renderedFrames': 0,
-        'fpsLastRequest': null,
-        'statsHUD': null,
-        'leaderboardPositionsHUD': null,
-        'leaderboardDataHUD': null,
-        'activeParties': null,
-        'top5pos': null,
-        'top5totalMass': null,
-        'top5totalPlayers': null,
-        'top5limit': 5,
-        'timeHUD': null,
-        'questHUD': null,
-        'retryResp': 0,
-        'token': 'TGVnZW5kIGV4cHJlc3M=',
-        'canvasScale': 1,
-        'selectBiggestCell': true,
-        'noColors': false,
-        'skipStats': false,
-        'showQuest': false,
-        'showSplitInd': false,
-        'pause': false,
-        'spectatorFollow': false,
-        'targetID': 0,
-        'targetStatus': 0,
-        'targetNick': '',
-        'targetSkinURL': '',
-        'targeting': false,
-        'privateMiniMap': false,
-        'messageSound': null,
-        'commandSound': null,
-        'virusSound': null,
-        'virusSoundurl': null,
-        'FacebookIDs': null,
-        'feedInterval': null,
-        'getPlayerX': function() {
+        name: 'LM express',
+        version: 'v1',
+        privateMode: false,
+        protocolMode: true,
+        publicIP: 'wss://wss.ogario.eu:3443',
+        privateIP: null,
+        updateInterval: 1000,
+        updateTick: 0,
+        updateMaxTick: 2,
+        currentSector: '',
+        miniMap: null,
+        miniMapCtx: null,
+        miniMapSectors: null,
+        pi2: 2 * Math.PI,
+        socket: null,
+        cells: {},
+        teamPlayers: [],
+        parties: [],
+        chatHistory: [],
+        chatUsers: {},
+        chatMutedUsers: {},
+        chatMutedUserIDs: [],
+        customSkinsCache: {},
+        customSkinsMap: {},
+        cacheQueue: [],
+        cacheQueue2: [],
+        cacheQueue3: [],
+        deathLocations: [],
+        playerID: null,
+        playerMass: 0,
+        selectedProfile: 0,
+        lastDeath: 0,
+        skipServerData: false,
+        gameMode: ':ffa',
+        region: '',
+        partyToken: '',
+        ws: '',
+        serverIP: '',
+        serverArena: '',
+        serverToken: '',
+        lastSentNick: '',
+        lastSentClanTag: null,
+        lastSentSkinURL: '',
+        lastSentCustomColor: '',
+        lastSentPartyToken: '',
+        lastSentServerToken: '',
+        lastMessageSentTime: Date.now(),
+        rFps: 0,
+        renderedFrames: 0,
+        fpsLastRequest: null,
+        statsHUD: null,
+        leaderboardPositionsHUD: null,
+        leaderboardDataHUD: null,
+        activeParties: null,
+        top5pos: null,
+        top5totalMass: null,
+        top5totalPlayers: null,
+        top5limit: 5,
+        timeHUD: null,
+        questHUD: null,
+        retryResp: 0,
+        token: 'TGVnZW5kIGV4cHJlc3M=',
+        canvasScale: 1,
+        selectBiggestCell: true,
+        noColors: false,
+        skipStats: false,
+        showQuest: false,
+        showSplitInd: false,
+        pause: false,
+        spectatorFollow: false,
+        targetID: 0,
+        targetStatus: 0,
+        targetNick: '',
+        targetSkinURL: '',
+        targeting: false,
+        privateMiniMap: false,
+        messageSound: null,
+        commandSound: null,
+        virusSound: null,
+        virusSoundurl: null,
+        FacebookIDs: null,
+        feedInterval: null,
+        getPlayerX() {
             return ogario.playerX + ogario.mapOffsetX;
         },
-        'getPlayerY': function() {
+        getPlayerY() {
             return ogario.playerY + ogario.mapOffsetY;
         },
         //for SPECT
-        'getghostX': function() {
+        getghostX() {
             if (legendmod.playerPosition == 1 || legendmod.ghostCells.length == 0) { //Yahnych координати призраков или игрока если он топ1
                 this.ghostX = legendmod.playerX + legendmod.mapOffsetX;
             } else { //Yahnych
@@ -2960,7 +2968,7 @@ var thelegendmodproject = function() {
             }
             return this.ghostX;
         },
-        'getghostY': function() {
+        getghostY() {
             if (legendmod.playerPosition == 1 || legendmod.ghostCells.length == 0) { //Yahnych координати призраков или игрока если он топ1
                 this.ghostY = legendmod.playerY + legendmod.mapOffsetY;
             } else { //Yahnych
@@ -2969,42 +2977,42 @@ var thelegendmodproject = function() {
             return this.ghostY;
         },
         //
-        'feed': function() {
+        feed() {
             if (window.core && window.core.eject) {
                 window.core.eject();
             }
         },
-        'macroFeed': function(on) {
+        macroFeed(on) {
             if (on) {
                 if (this.feedInterval) return;
-                var e = this;
-                this.feed(),
+                var app = this;
+                this.feed();
                     this.feedInterval = setInterval(function() {
-                        e.feed();
+                        app.feed();
                     }, defaultmapsettings.macroFeeding);
             } else if (this.feedInterval) {
                 clearInterval(this.feedInterval);
                 this.feedInterval = null
             };
         },
-        'split': function() {
-            window.core && window.core.split && window.core.split();
+        split() {
+            if (window.core && window.core.split) window.core.split();
         },
-        'doubleSplit': function() {
+        doubleSplit() {
             var app = this;
             app.split();
             setTimeout(function() {
                 app.split();
             }, 40);
         },
-        'popSplit': function() {
+        popSplit() {
             var app = this;
             app.split();
             setTimeout(function() {
                 app.split();
             }, 200);
         },
-        'split16': function() {
+        split16() {
             var app = this;
             app.split();
             setTimeout(function() {
@@ -3017,7 +3025,7 @@ var thelegendmodproject = function() {
                 app.split();
             }, 120);
         },
-        'toggleSkins': function() {
+        toggleSkins() {
             if (ogario.vanillaSkins && ogario.customSkins) {
                 ogario.vanillaSkins = false;
             } else if (!ogario.vannillaSkins && ogario.customSkins) {
@@ -3028,33 +3036,33 @@ var thelegendmodproject = function() {
                 ogario.customSkins = true;
             }
         },
-        'toggleCells': function() {
+        toggleCells() {
             this.selectBiggestCell = !this.selectBiggestCell;
             ogario.selectBiggestCell = this.selectBiggestCell;
         },
-        'setShowTop5': function() {
+        setShowTop5() {
             defaultmapsettings.showTop5 = !defaultmapsettings.showTop5;
             this.setTop5();
         },
-        'setTop5': function() {
+        setTop5() {
             if (defaultmapsettings.showTop5) {
                 $('#top5-hud').show()
             } else {
                 $('#top5-hud').hide();
             }
         },
-        'setShowTargeting': function() {
+        setShowTargeting() {
             defaultmapsettings.showTargeting = !defaultmapsettings.showTargeting;
             this.setTargetingHUD();
         },
-        'setTargetingHUD': function() {
+        setTargetingHUD() {
             if (defaultmapsettings.showTargeting) {
                 $('#target-hud, #target-panel-hud').show();
             } else {
                 $('#target-hud, #target-panel-hud').hide();
             }
         },
-        'setShowTime': function() {
+        setShowTime() {
             defaultmapsettings.showTime = !defaultmapsettings.showTime;
             if (defaultmapsettings.showTime) {
                 $('#time-hud').show();
@@ -3063,11 +3071,11 @@ var thelegendmodproject = function() {
                 $('#time-hud').hide();
             }
         },
-        'setShowSplitRange': function() {
+        setShowSplitRange() {
             defaultmapsettings.splitRange = !defaultmapsettings.splitRange;
             ogario.splitRange = defaultmapsettings.splitRange;
         },
-        'setShowGhostCellsInfo': function() {
+        setShowGhostCellsInfo() {
             if (defaultmapsettings.showGhostCells == false || defaultmapsettings.showGhostCellsInfo == false) {
                 defaultmapsettings.showGhostCellsInfo = true;
                 defaultmapsettings.showGhostCells = true;
@@ -3077,7 +3085,7 @@ var thelegendmodproject = function() {
             }
 
         },
-        'setAutoPlay': function() {
+        setAutoPlay() {
             if (legendmod.pause) {
                 ogarminimapdrawer && ogarminimapdrawer.setPause()
             };
@@ -3091,21 +3099,21 @@ var thelegendmodproject = function() {
                 $('#pause-hud').hide();
             }
         },
-        'setShowSplitInd': function() {
+        setShowSplitInd() {
             this.showSplitInd = !this.showSplitInd;
             defaultmapsettings.splitRange = this.showSplitInd;
             defaultmapsettings.oppRings = this.showSplitInd;
             ogario.splitRange = defaultmapsettings.splitRange;
             ogario.oppRings = defaultmapsettings.oppRings;
         },
-        'setShowTeammatesInd': function() {
+        setShowTeammatesInd() {
             defaultmapsettings.teammatesInd = !defaultmapsettings.teammatesInd;
         },
-        'setShowOppColors': function() {
+        setShowOppColors() {
             defaultmapsettings.oppColors = !defaultmapsettings.oppColors;
             ogario.oppColors = defaultmapsettings.oppColors;
         },
-        'setShowSkins': function() {
+        setShowSkins() {
             this.noSkins = !this.noSkins;
             if (window.core && window.core.setSkins) {
                 window.core.setSkins(!this.noSkins)
@@ -3113,65 +3121,65 @@ var thelegendmodproject = function() {
             ogario.showCustomSkins = !this.noSkins;
             this.displayChatInfo(!this.noSkins, 'showSkinsMsg');
         },
-        'setTransparentSkins': function() {
+        setTransparentSkins() {
             defaultmapsettings.transparentSkins = !defaultmapsettings.transparentSkins;
             ogario.transparentSkins = defaultmapsettings.transparentSkins;
         },
-        'setShowStats': function() {
+        setShowStats() {
             $('#stats-hud').toggle();
         },
-        'setShowFood': function() {
+        setShowFood() {
             ogario.showFood = !ogario.showFood;
         },
-        'setShowHUD': function() {
+        setShowHUD() {
             $('#overlays-hud').toggle();
         },
-        'setShowGrid': function() {
+        setShowGrid() {
             defaultmapsettings.showGrid = !defaultmapsettings.showGrid;
         },
-        'setShowMiniMapGuides': function() {
+        setShowMiniMapGuides() {
             defaultmapsettings.showMiniMapGuides = !defaultmapsettings.showMiniMapGuides;
         },
-        'setShowLb': function() {
+        setShowLb() {
             if (this.gameMode === ':teams') {
                 return;
             }
             $('#leaderboard-hud').toggle();
         },
-        'setShowBgSectors': function() {
+        setShowBgSectors() {
             defaultmapsettings.showBgSectors = !defaultmapsettings.showBgSectors;
         },
-        'setHideSmallBots': function() {
+        setHideSmallBots() {
             ogario.hideSmallBots = !ogario.hideSmallBots;
             this.displayChatInfo(!ogario.hideSmallBots, 'hideSmallBotsMsg');
         },
-        'setShowNames': function() {
+        setShowNames() {
             defaultmapsettings.noNames = !defaultmapsettings.noNames;
         },
-        'setHideTeammatesNames': function() {
+        setHideTeammatesNames() {
             defaultmapsettings.hideTeammatesNames = !defaultmapsettings.hideTeammatesNames;
         },
-        'setShowMass': function() {
+        setShowMass() {
             defaultmapsettings.showMass = !defaultmapsettings.showMass;
         },
-        'setShowMiniMap': function() {
+        setShowMiniMap() {
             defaultmapsettings.showMiniMap = !defaultmapsettings.showMiniMap;
             this.setMiniMap();
         },
-        'setMiniMap': function() {
+        setMiniMap() {
             if (defaultmapsettings.showMiniMap) {
                 $('#minimap-hud').show()
             } else {
                 $('#minimap-hud').hide();
             }
         },
-        'setShowQuest': function() {
+        setShowQuest() {
             if (':ffa' === this.gameMode) {
                 this.showQuest = !this.showQuest;
                 this.setQuest();
             }
         },
-        'setShowFullSpectator': function() {
+        setShowFullSpectator() {
             if (window.fullSpectator) {
                 window.fullSpectator = false;
                 LM.flushSpecsData();
@@ -3180,18 +3188,18 @@ var thelegendmodproject = function() {
                 LM.addSpect();
             }
         },
-        'setQuest': function() {
+        setQuest() {
             if (this.showQuest && ':ffa' === this.gameMode) {
                 $('#quest-hud').show();
             } else {
                 $('#quest-hud').hide();
             }
         },
-        'toggleAutoZoom': function() {
+        toggleAutoZoom() {
             ogario.autoZoom = !ogario.autoZoom;
             this.displayChatInfo(ogario.autoZoom, 'autoZoomMsg');
         },
-        'resetZoom': function(on) {
+        resetZoom(on) {
             if (on) {
                 ogario.zoomResetValue = 1;
                 ogario.zoomValue = 1;
@@ -3199,16 +3207,16 @@ var thelegendmodproject = function() {
                 ogario.zoomResetValue = 0;
             }
         },
-        'setZoom': function(value) {
+        setZoom(value) {
             ogario.zoomValue = value;
         },
-        'toggleDeath': function() {
+        toggleDeath() {
             this.lastDeath--;
             if (this.lastDeath < 0) {
                 this.lastDeath = this.deathLocations.length - 1;
             }
         },
-        'tryResp': function() {
+        tryResp() {
             if (ogario.play || this.retryResp == 20) {
                 this.retryResp = 0;
                 return;
@@ -3226,7 +3234,7 @@ var thelegendmodproject = function() {
                 }
             }, 500);
         },
-        'quickResp': function() {
+        quickResp() {
             if (defaultmapsettings.quickResp) {
                 this.hideMenu();
                 this.gameServerConnect(this.ws);
@@ -3234,7 +3242,7 @@ var thelegendmodproject = function() {
                 this.tryResp();
             }
         },
-        'autoResp': function() {
+        autoResp() {
             if (!defaultmapsettings.autoResp) {
                 return;
             }
@@ -3246,7 +3254,7 @@ var thelegendmodproject = function() {
             }
             $('.btn-play').click();
         },
-        'setAutoResp': function() {
+        setAutoResp() {
             if (defaultmapsettings.autoResp) {
                 if (!$('#skipStats').prop('checked')) {
                     $('#skipStats').click();
@@ -3254,12 +3262,12 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'toggleAutoResp': function() {
+        toggleAutoResp() {
             defaultmapsettings.autoResp = !defaultmapsettings.autoResp;
             this.setAutoResp();
             this.displayChatInfo(defaultmapsettings.autoResp, 'autoRespMsg');
         },
-        'copyLb': function() {
+        copyLb() {
             var input = $('<input>');
             $('body').append(input);
             input.val($('#leaderboard-positions').text()).select();
@@ -3268,7 +3276,7 @@ var thelegendmodproject = function() {
             } catch (ogarcopierlbcather) {}
             input.remove();
         },
-        'changeSpectatorMode': function() {
+        changeSpectatorMode() {
             this.spectatorFollow = !this.spectatorFollow;
             ogario.spectatorFollow = this.spectatorFollow;
             if (this.spectatorFollow && spects.length > 0 && spects[0].staticX == null && spects[0].isSpectateEnabled == true /*&& spects[0].isFreeSpectateEnabled==false*/ ) {
@@ -3277,9 +3285,9 @@ var thelegendmodproject = function() {
                 void(0);
             }
         },
-        'setPause': function() {
+        setPause() {
             if (window.autoPlay) {
-                ogarminimapdrawer && ogarminimapdrawer.setAutoPlay()
+                if (ogarminimapdrawer) ogarminimapdrawer.setAutoPlay()
             };
             this.pause = !this.pause;
             ogario.pause = this.pause;
@@ -3290,17 +3298,17 @@ var thelegendmodproject = function() {
                 $('#pause-hud').hide();
             }
         },
-        'setCenteredLb': function() {
+        setCenteredLb() {
             if (defaultmapsettings.centeredLb) {
                 $('#leaderboard-hud').addClass('hud-text-center');
             } else {
                 $('#leaderboard-hud').removeClass('hud-text-center');
             }
         },
-        //'setNormalLb': function() {
+        //setNormalLb() {
         //defaultmapsettings.normalLb ? $('#leaderboard-hud h5').html(textLanguage.leaderboard) : $('#leaderboard-hud h5').html('legendmod');
         //},
-        'setFpsAtTop': function() {
+        setFpsAtTop() {
             //defaultmapsettings.fpsAtTop ? $('#stats-hud').removeClass('hud-bottom').addClass('hud-top') : $('#stats-hud').removeClass('hud-top').addClass('hud-bottom');
             if (defaultmapsettings.fpsAtTop) {
                 $('#stats-hud').removeClass('hud-bottom').addClass('hud-top');
@@ -3308,11 +3316,11 @@ var thelegendmodproject = function() {
                 $('#stats-hud').removeClass('hud-top').addClass('hud-bottom');
             }
         },
-        'setTweenMaxEffect': function() {
+        setTweenMaxEffect() {
             if (defaultmapsettings.tweenMaxEffect) initTilt()
             //defaultmapsettings.tweenMaxEffect ? initTilt() : console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Restart needed...');
         },
-        'displayPartyBots': function() {
+        displayPartyBots() {
             setTimeout(function() {
                 if (defaultmapsettings.showPartyBots) {
                     //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Party bots displayed');
@@ -3323,35 +3331,43 @@ var thelegendmodproject = function() {
                 }
             }, 50);
         },
-        'setBlockPopups': function() {
-            this.protocolMode ? $('#block-warn').hide() : defaultmapsettings.blockPopups ? this.blockPopups() : this.unblockPopups();
+        setBlockPopups() {
+            if (this.protocolMode) {
+                $('#block-warn').hide();
+                return;
+            }
+            if (defaultmapsettings.blockPopups) {
+                this.blockPopups();
+            } else {
+                this.unblockPopups();
+            }			
         },
-        'blockPopups': function() {
+        blockPopups() {
             $('#openfl-content, #openfl-overlay').hide();
             $('#openfl-content, #openfl-overlay').addClass('block-popups');
             $('#freeCoins, #gifting, #openShopBtn, #dailyQuests').prop('disabled', true);
             $('#block-warn').show();
         },
-        'unblockPopups': function() {
+        unblockPopups() {
             $('#openfl-overlay.disabler').click();
             $('#openfl-content, #openfl-overlay').hide();
             $('#openfl-content, #openfl-overlay').removeClass('block-popups');
             $('#freeCoins, #gifting, #openShopBtn, #dailyQuests').prop('disabled', false);
             $('#block-warn').hide();
         },
-        'tempUnblockPopups': function() {
+        tempUnblockPopups() {
             if (defaultmapsettings.blockPopups) {
                 this.unblockPopups();
             }
         },
-        'displayLeaderboard': function(position, data = '') {
+        displayLeaderboard(position, data = '') {
             if (!this.leaderboardPositionsHUD) {
                 return;
             }
             this.leaderboardPositionsHUD.innerHTML = position;
             this.leaderboardDataHUD.innerHTML = data;
         },
-        'displayStats': function() {
+        displayStats() {
             if (defaultmapsettings.showStats) {
                 var t = '';
                 if (ogario.play) {
@@ -3392,13 +3408,13 @@ var thelegendmodproject = function() {
                     t += 'FPS: ' + ogarfooddrawer.fps;
                 }
                 this.statsHUD.textContent = t;
-                var e = this;
+                var app = this;
                 setTimeout(function() {
-                    e.displayStats();
+                    app.displayStats();
                 }, 250);
             } else $('#stats-hud').hide();
         },
-        'displayTime': function() {
+        displayTime() {
             if (defaultmapsettings.showTime) {
                 var time = new Date().toLocaleString();
                 this.timeHUD.textContent = time;
@@ -3408,7 +3424,7 @@ var thelegendmodproject = function() {
                 }, 1000);
             } else $('#time-hud').hide();
         },
-        'displayParties': function() {
+        displayParties() {
             let text = '';
             for (let length = 0; length < this.parties.length; length++) {
                 text += '<li><a href=\"https://agar.io/#' + this.parties[e] + '\" onclick=\"$(\'#party-token\').val(\'' + this.parties[e] + '\'); $(\'#join-party-btn-2\').click();\">https://agar.io/#' + this.parties[e] + '</a></li>';
@@ -3421,7 +3437,7 @@ var thelegendmodproject = function() {
             this.activeParties.innerHTML = text;
         },
         /*
-                    'displayTop5': function() {
+                    displayTop5() {
                         if (defaultmapsettings.showTop5) {
         					//console.log(.top5.length);
         					//console.log(.teamPlayers.length);
@@ -3429,11 +3445,11 @@ var thelegendmodproject = function() {
                             this['top5pos'].innerHTML = t, i.play && i.playerMass && (e += i.playerMass, s++), this.top5totalMass.textContent= this.shortMassFormat(e), this.top5totalPlayers.textContent= s;
                         }
                     },
-                    'setTop5limit': function(t) {
+                    setTop5limit(t) {
                         t && (this['top5limit'] = t);
                     },
 
-                "displayTop5" : function() {
+                displayTop5() {
                   if (defaultmapsettings.showTop5) {
                     var pix_color = "";
                     var bufferString = 0;
@@ -3457,7 +3473,7 @@ var thelegendmodproject = function() {
                   }
                 },
         */
-        'displayTop5': function() {
+        displayTop5() {
             if (window.top5skins != true) {
                 if (defaultmapsettings.showTop5) {
                     //console.log(.top5.length);
@@ -3571,16 +3587,16 @@ var thelegendmodproject = function() {
             }
         },
         /*
-                    'setTop5limit': function(t) {
+                    setTop5limit(t) {
                         t && (this['top5limit'] = t);
                     },
-                    "setTop5limit": function(canCreateDiscussions) {
+                    setTop5limit(canCreateDiscussions) {
                         if (canCreateDiscussions) {
                             this["top5limit"] = canCreateDiscussions;
                         }
                     }, */
 
-        'displayChatHistory': function(on) {
+        displayChatHistory(on) {
             if (on) {
                 this.clearChatHistory(true);
                 for (let length = 0; length < this.chatHistory.length; length++) {
@@ -3590,7 +3606,7 @@ var thelegendmodproject = function() {
             }
             this.clearChatHistory(false);
         },
-        'clearChatHistory': function(on) {
+        clearChatHistory(on) {
             $('#messages').empty();
             if (on) {
                 toastr.clear();
@@ -3600,36 +3616,36 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'displayChatInfo': function(on, info) {
+        displayChatInfo(on, info) {
             if (on) {
                 toastr.info(textLanguage[info + 'A']);
             } else {
                 toastr.error(textLanguage[info + 'B']);
             }
         },
-        'setDisableChat': function() {
+        setDisableChat() {
             defaultmapsettings.hideChat = defaultmapsettings.disableChat;
             this.setHideChat();
         },
-        'hideChat': function() {
+        hideChat() {
             defaultmapsettings.hideChat = !defaultmapsettings.hideChat;
             this.setHideChat();
             this.displayChatInfo(!defaultmapsettings.hideChat, 'hideChatMsg');
         },
-        'setHideChat': function() {
+        setHideChat() {
             if (defaultmapsettings.hideChat) {
                 $('#message-box').hide();
             }
             this.setShowChatBox();
         },
-        'setShowChatBox': function() {
+        setShowChatBox() {
             if (!defaultmapsettings.hideChat && defaultmapsettings.showChatBox) {
                 $('#chat-box').show();
             } else {
                 $('#chat-box').hide();
             }
         },
-        'enterChatMessage': function() {
+        enterChatMessage() {
             var messageBox = $('#message-box');
             var message = $('#message');
             if (messageBox.is(':visible')) {
@@ -3651,7 +3667,7 @@ var thelegendmodproject = function() {
                 message.val('');
             }
         },
-        'showMenu': function(value) {
+        showMenu(value) {
             if (window.MC && window.MC.showNickDialog) {
                 $('.ogario-menu').show();
                 $('.menu-panel').hide();
@@ -3661,8 +3677,8 @@ var thelegendmodproject = function() {
                     $('#main-panel').show();
                 }
                 window.MC.showNickDialog(300);
-                $('#oferwallContainer').is(':visible') && window.closeOfferwall();
-                $('#videoContainer').is(':visible') && window.closeVideoContainer();
+                if($('#oferwallContainer').is(':visible')) window.closeOfferwall();
+                if($('#videoContainer').is(':visible')) window.closeVideoContainer();
                 return;
             }
             if (value) {
@@ -3671,7 +3687,7 @@ var thelegendmodproject = function() {
                 $('#overlays').show();
             }
         },
-        'hideMenu': function(value) {
+        hideMenu(value) {
             if (window.MC && window.MC.showNickDialog) {
                 $('.ogario-menu').hide();
                 return;
@@ -3682,17 +3698,17 @@ var thelegendmodproject = function() {
                 $('#overlays').hide();
             }
         },
-        'escapeHTML': function(string) {
+        escapeHTML(string) {
             return String(string).replace(/[&<>"'\/]/g, function(event) {
                 return escapeHTMLs[event];
             });
         },
-        'checkSkinURL': function(url) {
+        checkSkinURL(url) {
             //return /^https?:\/\/i\.(?:imgur|hizliresim)\.com\/\w{6,8}\.(?:jpg|jpeg|png)\??\d*$/i .test(t) ? t.replace('http:', 'https:') : '';
             return url.replace('http:', 'https:');
             //return /^https?:\/\/(i|s))\.(?:imgur|hizliresim|put)\.(com|re)\/\w{6,8}\.(?:jpg|jpeg|png)\??\d*$/i .test(t) ? t.replace('http:', 'https:') : '';
         },
-        'loadSettings': function() {
+        loadSettings() {
             let settings = null;
             if (window.localStorage.getItem('ogarioSettings') !== null) {
                 settings = JSON.parse(window.localStorage.getItem('ogarioSettings'));
@@ -3708,10 +3724,10 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'saveSettings': function(option, name) {
+        saveSettings(option, name) {
             window.localStorage.setItem(name, JSON.stringify(option));
         },
-        'exportSettings': function() {
+        exportSettings() {
             let options = {
                 ogarioCommands: chatCommand,
                 ogarioHotkeys: ogario1Hotkeys,
@@ -3733,7 +3749,7 @@ var thelegendmodproject = function() {
             $('#import-settings').val('');
             options = null;
         },
-        'importSettings': function() {
+        importSettings() {
             $('#import-settings').blur();
             let importValue = $('#import-settings').val();
             if (importValue) {
@@ -3750,13 +3766,13 @@ var thelegendmodproject = function() {
                 window.location.reload();
             }
         },
-        'restoreSettings': function() {
+        restoreSettings() {
             if (window.localStorage.getItem('ogarioSettings') !== null) {
                 window.localStorage.removeItem('ogarioSettings');
                 window.location.reload();
             }
         },
-        'setSettings': function(id, checked) {
+        setSettings(id, checked) {
             if (defaultmapsettings.hasOwnProperty(id) && null !== checked) {
                 //switch (defaultmapsettings[id] = checked, ogario.hasOwnProperty(id) && (ogario[id] = checked), id) {
                 defaultmapsettings[id] = checked;
@@ -3816,7 +3832,7 @@ var thelegendmodproject = function() {
                 this.saveSettings(defaultmapsettings, 'ogarioSettings');
             }
         },
-        'profiling': function() {
+        profiling() {
             if (defaultmapsettings.profileNumber < 15) {
                 $('#skins-panel').css("width", "190px");
             } else if (defaultmapsettings.profileNumber < 20) {
@@ -3830,7 +3846,7 @@ var thelegendmodproject = function() {
             }
             ogarhusettings();
         },
-        'loadProfiles': function() {
+        loadProfiles() {
             if (null !== window.localStorage.getItem('ogarioPlayerProfiles')) {
                 ogario1PlayerProfiles = JSON.parse(window.localStorage.getItem('ogarioPlayerProfiles'))
                 if (ogario1PlayerProfiles.length < defaultmapsettings.profileNumber) { //fix for old players
@@ -3880,7 +3896,7 @@ var thelegendmodproject = function() {
                 ogarcopythelb.color = ogario1PlayerProfiles[this.selectedProfile].color;
             }
         },
-        'changeSkinPreview': function(e, t) {
+        changeSkinPreview(e, t) {
             //console.log(e,t);
             if (!t || !e) {
                 return;
@@ -3915,21 +3931,21 @@ var thelegendmodproject = function() {
             }
 
         },
-        'setSkinPreview': function(t, e) {
+        setSkinPreview(t, e) {
             if (t.includes && (t.includes(".mp4") || t.includes(".webm") || t.includes(".ogg"))) {
                 //if (t.includes(".mp4") || t.includes(".webm") || t.includes(".ogg")) {
                 //console.log("stage 1 videos");
 
                 if ($('#' + e).empty().addClass('default'), t && 0 != t.length) {
                     //console.log("stage 1 images/videos: " + t);
-                    var i = this;
+                    var app = this;
                     o = new Video();
                     o.src = t;
                     // o = new Image();
                     o.crossOrigin = 'anonymous';
                     setTimeout(function() {
                         //newo.onload = function() {
-                        i.changeSkinPreview(o, e);
+                        app.changeSkinPreview(o, e);
                         checkVideos3(o);
                         //};
                     }, 500);
@@ -3941,18 +3957,18 @@ var thelegendmodproject = function() {
 
                 if ($('#' + e).empty().addClass('default'), t && 0 != t.length) {
                     //console.log("stage 1 images/videos: " + t);
-                    var i = this,
+                    var app = this,
                         o = checktypeImgVid;
                     o.src = t;
                     // o = new Image();
                     o.crossOrigin = 'anonymous',
                         o.onload = function() {
-                            i.changeSkinPreview(o, e);
+                            app.changeSkinPreview(o, e);
                         };
                 }
             }
         },
-        'setProfile': function() {
+        setProfile() {
             var t = (ogario1PlayerProfiles.length + this.selectedProfile - 1) % ogario1PlayerProfiles.length,
                 e = (this.selectedProfile + 1) % ogario1PlayerProfiles.length;
             //console.log(ogario1PlayerProfiles.length);
@@ -3975,94 +3991,107 @@ var thelegendmodproject = function() {
             $('#skins a').removeClass('selected');
             $('#skins a[data-profile=\'' + this.selectedProfile + '\']').addClass('selected');
         },
-        'prevProfile': function() {
+        prevProfile() {
             this.setPlayerSettings(),
                 this.selectedProfile = (ogario1PlayerProfiles.length + this.selectedProfile - 1) % ogario1PlayerProfiles.length, this.setProfile();
         },
-        'nextProfile': function() {
-            this.setPlayerSettings(),
+        nextProfile() {
+            this.setPlayerSettings();
                 this.selectedProfile = (this.selectedProfile + 1) % ogario1PlayerProfiles.length, this.setProfile();
         },
-        'selectProfile': function(t) {
+        selectProfile(value) {
             this.setPlayerSettings();
-            this.selectedProfile = parseInt(t);
+            this.selectedProfile = parseInt(value);
             this.setProfile();
         },
-        'addOption': function(t, e, i, o) {
-            $(t).append('<label><input type=\"checkbox\" id=\"' + e + '\" class=\"js-switch\"> ' + i + '</label>');
-            $('#' + e).prop('checked', o);
+        addOption(id, name, text, checked) {
+            $(id).append('<label><input type=\"checkbox\" id=\"' + name + '\" class=\"js-switch\"> ' + text + '</label>');
+            $('#' + name).prop('checked', checked);
         },
-        'addOptions': function(t, e) {
-            if (t) {
-                $('#og-options').append('<div class=\"options-box ' + e + '\"><h5 class=\"menu-main-color\">' + textLanguage[e] + '</h5></div>');
-                for (var i = 0; i < t.length; i++) {
-                    var o = t[i];
-                    if (defaultmapsettings.hasOwnProperty(o)) {
-                        $('.' + e).append('<label>' + textLanguage[o] + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + o + '\"></label>');
-                        $('#' + o).prop('checked', defaultmapsettings[o]);
+        addOptions(options, section) {
+            if (options) {
+                $('#og-options').append('<div class=\"options-box ' + section + '\"><h5 class=\"menu-main-color\">' + textLanguage[section] + '</h5></div>');
+                for (var i = 0; i < options.length; i++) {
+                    var option = options[i];
+                    if (defaultmapsettings.hasOwnProperty(option)) {
+                        $('.' + section).append('<label>' + textLanguage[option] + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + option + '\"></label>');
+                        $('#' + option).prop('checked', defaultmapsettings[option]);
                     }
                 }
             }
         },
-        'addInputBox': function(t, e, i, o) {
-            $(t).append('<div class=\"input-box\"><span class=\"title-box\">' + textLanguage[e] + '</span><input id=\"' + e + '\" class=\"form-control\" placeholder=\"' + i + '\" value=\"' + defaultmapsettings[e] + '\" /></div>');
-            var a = this;
-            $('#' + e).on('input', function() {
-                defaultmapsettings[e] = this.value, a[o](),
-                    a.saveSettings(defaultmapsettings, 'ogarioSettings');
+        addInputBox(id, name, holder, callback) {
+            $(id).append('<div class=\"input-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><input id=\"' + name + '\" class=\"form-control\" placeholder=\"' + holder + '\" value=\"' + defaultmapsettings[name] + '\" /></div>');
+            var app = this;
+            $('#' + name).on('input', function() {
+                defaultmapsettings[name] = this.value, app[callback](),
+                    app.saveSettings(defaultmapsettings, 'ogarioSettings');
             });
         },
-        'addSliderBox': function(t, e, o, a, n, r) {
-            $(t).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">' + textLanguage[e] + ': </span><span id=\"' + e + '-value\" class=\"value\">' + defaultmapsettings[e] + '</span></div><input id=\"' + e + '-slider\" type=\"range\" min=\"' + o + '\" max=\"' + a + '\" step=\"' + n + '\" value=\"' + defaultmapsettings[e] + '\"></div>');
-            var l = this;
-            r ? $('#' + e + '-slider').on('input', function() {
+        addSliderBox(id, name, min, max, step, callback) {
+            $(id).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">' + textLanguage[name] + ': </span><span id=\"' + name + '-value\" class=\"value\">' + defaultmapsettings[name] + '</span></div><input id=\"' + name + '-slider\" type=\"range\" min=\"' + min + '\" max=\"' + max + '\" step=\"' + step + '\" value=\"' + defaultmapsettings[name] + '\"></div>');
+            var app = this;
+            callback ? $('#' + name + '-slider').on('input', function() {
                 var t = parseFloat($(this).val());
-                $('#' + e + '-value').text(t), defaultmapsettings[e] = t, ogario.hasOwnProperty(e) && (ogario[e] = t), l[r](),
-                    l.saveSettings(defaultmapsettings, 'ogarioSettings');
-            }) : $('#' + e + '-slider').on('input', function() {
+                $('#' + name + '-value').text(t); 
+				defaultmapsettings[name] = t; 
+				if(ogario.hasOwnProperty(name)) ogario[name] = t;
+				app[callback]();
+                app.saveSettings(defaultmapsettings, 'ogarioSettings');
+            }) : $('#' + name + '-slider').on('input', function() {
                 var t = parseFloat($(this).val());
-                $('#' + e + '-value').text(t), defaultmapsettings[e] = t, ogario.hasOwnProperty(e) && (ogario[e] = t),
-                    l.saveSettings(defaultmapsettings, 'ogarioSettings');
+                $('#' + name + '-value').text(t); 
+				defaultmapsettings[name] = t; 
+				if(ogario.hasOwnProperty(name)) ogario[name] = t;
+                app.saveSettings(defaultmapsettings, 'ogarioSettings');
             });
         },
-        'setLang': function() {
-            if ('pl' === lang && window.i18n_dict && window.i18n_dict.en)
-                for (var t in window.i18n_dict.en) window.i18n_dict.en.hasOwnProperty(t) && textLanguage.hasOwnProperty(t) && (window.i18n_dict.en[t] = textLanguage[t]);
+        setLang() {
+            if (lang !== 'pl') {
+                return;
+            }
+            if (window.i18n_dict && window.i18n_dict.en) {
+                for (var lang in window.i18n_dict.en) {
+                    if (window.i18n_dict.en.hasOwnProperty(lang) && textLanguage.hasOwnProperty(lang)) {
+                        window.i18n_dict.en[lang] = textLanguage[lang];
+                    }
+                }
+            }      			
         },
-        'setMenu': function() {
-            var t;
-            for (t in document.title = this.name,
+        setMenu() {
+				const app = this;
+				document.title = this.name;
                 $("#mainPanel").before('<div id="exp-bar" class="agario-panel"><span class="ogicon-user"></span><div class="agario-exp-bar progress"><span class="progress-bar-text"></span><div class="progress-bar progress-bar-striped" style="width: 0%;"></div></div><div class="progress-bar-star"></div></div><div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
                     textLanguage.start + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + textLanguage.profile + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + textLanguage.settings + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + textLanguage.theme + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
-                    textLanguage.hotkeys + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="Radio / ' + textLanguage.sounds + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>'),
-                $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a><a href="#" class="quick quick-skins ogicon-images"></a><div id="profiles"><div id="prev-profile"></div><div id="skin-preview"></div><div id="next-profile"></div></div>'),
-                $("#mainPanel div[role=form]").appendTo($("#main-panel")),
-                $("#main-panel div[role=form] .form-group:first").remove(),
-                $("#nick").before('<input id="clantag" class="form-control" placeholder="Tag, e.g  \Lc" maxlength="10"><div class="input-group nick"></div>'),
-                $("#nick").appendTo($(".nick")),
-                $(".nick").append('<span class="input-group-btn"><button id="stream-mode" class="btn active ogicon-eye"></button></span>'),
-                $(".nick").after('<div class="input-group skin"><input id="skin" class="form-control" placeholder="Skin URL (imgur.com direct link)" maxlength="40"><input type="hidden" id="color" value="' + ogarcopythelb.color + '" maxlength="7" /><span class="input-group-addon"><i></i></span><span class="input-group-btn"><button id="hide-url" class="btn active ogicon-eye"></button></span></div>'),
-                $("#locationKnown, #locationUnknown").insertAfter($(".skin")),
-                $("#region").before('<button class="btn btn-warning btn-server-info ogicon-cogs"></button>'),
-                $(".btn-spectate, .btn-logout").appendTo("#agario-main-buttons"),
-                $("#agario-main-buttons").addClass("clearfix").before('<div id="server-info" class="form-group clearfix"><input id="server-ws" class="form-control" placeholder="Server WS"><button id="server-connect" class="btn btn-success ogicon-power"></button><button id="server-reconnect" class="btn btn-primary ogicon-redo2"></button><input id="server-token" class="form-control" placeholder="Server token"><button id="server-join" class="btn btn-success" data-itr="page_join_party">Join</button></div>'),
-                $("#helloContainer div[role=form]").after('<div id="ogario-party" class="clearfix"><input id="party-token" class="form-control" placeholder="Party token"></div>'),
-                $("#ogario-party").append('<button id="join-party-btn-2" class="btn btn-success" data-itr="page_join_party">Join</button><button id="create-party-btn-2" class="btn btn-primary" data-itr="page_create_party">Create</button>'),
-                $("#pre-join-party-btn:first, #join-party-btn:first, #create-party-btn:first, #leave-party-btn:first, #joinPartyToken:first, .party-icon-back:first").appendTo($("#ogario-party")),
-                $("#settingsChoice, #options").appendTo($("#og-settings .submenu-panel")),
-                $("#stats").appendTo($("#main-menu")).addClass("menu-panel"),
-                $("#statsContinue").attr("id", "statsContinue2"),
-                $("#mainPanel").empty().remove(),
-                $(".center-container").addClass("ogario-menu"),
-                $(".center-container").append('<div id="menu-footer" class="menu-main-color">' + textLanguage.visit + ' <a href="http://legendmod.ml" target="_blank">legendmod.ml</a> | ' + this.version + ' <a href="https://goo.gl/nRREoR" class="release ogicon-info" target="_blank"></a></div>'),
-                $("#leftPanel, #rightPanel").addClass("ogario-menu").removeAttr("id"),
-                $(".agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel").appendTo($("#profile")).removeClass("agario-side-panel"),
-                $(".agario-profile-panel").after('<div id="block-warn">' + textLanguage.blockWarn + '<br><a href="#" id="unblock-popups">' + textLanguage.unblockPopups + "</a></div>"),
-                $("#exp-bar").addClass("agario-profile-panel"), $(".left-container").empty(),
-                $(".agario-shop-panel").after('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">The Legend Mod Project</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>'),
-                $("#tags-container").appendTo($("#profile")),
-                $(".btn-logout").appendTo($("#profile")),
-                $(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://legendmod.ml/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.skins + '"></a><a href="https://youtube.com/channel/UCoj-ZStcJ0jLMOSK7FOBTbA" class="quick-yt ogicon-youtube2" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="The Legend mod Project"></a></div>'),
+                    textLanguage.hotkeys + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="Radio / ' + textLanguage.sounds + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>');
+                $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a><a href="#" class="quick quick-skins ogicon-images"></a><div id="profiles"><div id="prev-profile"></div><div id="skin-preview"></div><div id="next-profile"></div></div>');
+                $("#mainPanel div[role=form]").appendTo($("#main-panel"));
+                $("#main-panel div[role=form] .form-group:first").remove();
+                $("#nick").before('<input id="clantag" class="form-control" placeholder="Tag, e.g  \Lc" maxlength="10"><div class="input-group nick"></div>');
+                $("#nick").appendTo($(".nick"));
+                $(".nick").append('<span class="input-group-btn"><button id="stream-mode" class="btn active ogicon-eye"></button></span>');
+                $(".nick").after('<div class="input-group skin"><input id="skin" class="form-control" placeholder="Skin URL (imgur.com direct link)" maxlength="40"><input type="hidden" id="color" value="' + ogarcopythelb.color + '" maxlength="7" /><span class="input-group-addon"><i></i></span><span class="input-group-btn"><button id="hide-url" class="btn active ogicon-eye"></button></span></div>');
+                $("#locationKnown, #locationUnknown").insertAfter($(".skin"));
+                $("#region").before('<button class="btn btn-warning btn-server-info ogicon-cogs"></button>');
+                $(".btn-spectate, .btn-logout").appendTo("#agario-main-buttons");
+                $("#agario-main-buttons").addClass("clearfix").before('<div id="server-info" class="form-group clearfix"><input id="server-ws" class="form-control" placeholder="Server WS"><button id="server-connect" class="btn btn-success ogicon-power"></button><button id="server-reconnect" class="btn btn-primary ogicon-redo2"></button><input id="server-token" class="form-control" placeholder="Server token"><button id="server-join" class="btn btn-success" data-itr="page_join_party">Join</button></div>');
+                $("#helloContainer div[role=form]").after('<div id="ogario-party" class="clearfix"><input id="party-token" class="form-control" placeholder="Party token"></div>');
+                $("#ogario-party").append('<button id="join-party-btn-2" class="btn btn-success" data-itr="page_join_party">Join</button><button id="create-party-btn-2" class="btn btn-primary" data-itr="page_create_party">Create</button>');
+                $("#pre-join-party-btn:first, #join-party-btn:first, #create-party-btn:first, #leave-party-btn:first, #joinPartyToken:first, .party-icon-back:first").appendTo($("#ogario-party"));
+                $("#settingsChoice, #options").appendTo($("#og-settings .submenu-panel"));
+                $("#stats").appendTo($("#main-menu")).addClass("menu-panel");
+                $("#statsContinue").attr("id", "statsContinue2");
+                $("#mainPanel").empty().remove();
+                $(".center-container").addClass("ogario-menu");
+                $(".center-container").append('<div id="menu-footer" class="menu-main-color">' + textLanguage.visit + ' <a href="http://legendmod.ml" target="_blank">legendmod.ml</a> | ' + this.version + ' <a href="https://goo.gl/nRREoR" class="release ogicon-info" target="_blank"></a></div>');
+                $("#leftPanel, #rightPanel").addClass("ogario-menu").removeAttr("id");
+                $(".agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel").appendTo($("#profile")).removeClass("agario-side-panel");
+                $(".agario-profile-panel").after('<div id="block-warn">' + textLanguage.blockWarn + '<br><a href="#" id="unblock-popups">' + textLanguage.unblockPopups + "</a></div>");
+                $("#exp-bar").addClass("agario-profile-panel"), $(".left-container").empty();
+                $(".agario-shop-panel").after('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">The Legend Mod Project</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>');
+                $("#tags-container").appendTo($("#profile"));
+                $(".btn-logout").appendTo($("#profile"));
+                $(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://legendmod.ml/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.skins + '"></a><a href="https://youtube.com/channel/UCoj-ZStcJ0jLMOSK7FOBTbA" class="quick-yt ogicon-youtube2" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="The Legend mod Project"></a></div>');
                 $(".left-container").append(`<div id="quick-bots" class="agario-panel agario-side-panel"><h2 id="botsInfo"></h2>									
 					<h5 id="botsAuthor" class="main-color">Party bots</h5>
 					<div id="botClient" style="margin-left:15px; margin-right:15px; font-family: Tahoma; color: rgb(255, 255, 255); z-index: 9999; border-radius: 5px; min-height: 16px; min-width: 200px; background-color: rgba(2, 0, 0, 0.4);">
@@ -4095,65 +4124,77 @@ var thelegendmodproject = function() {
 					<u><a href="https://www.youtube.com/watch?v=rQMhxwIytro&feature=youtu.be" target="_blank">Tutorial video for PC node.js</a></u>	
 					<u><a href="https://repl.it/@legendmod/party-bots" target="_blank">Repl.it VPS</a></u>	
 					<u><a href="https://www.youtube.com/watch?v=xIupgFR7ZTY" target="_blank">Tutorial video for repl.it VPS</a></u>	
-					</div>`),
-                this.protocolMode || $("#quick-menu").prepend('<a href="#" class="quick-shop ogicon-cart" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.page_shop + '"></a><a href="#" class="quick-free-coins ogicon-coin-dollar" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.page_menu_main_free_coins + '"></a><a href="#" class="quick-free-gifts ogicon-gift" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.page_menu_main_gifts + '"></a><a href="#" class="quick-quests ogicon-trophy" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.page_menu_main_dailyquests + '"></a>'),
-                $(".party-dialog, .partymode-info").remove(),
-                $(".agario-party-6").appendTo($(".center-container")),
-                $(".right-container").empty(),
-                $(".right-container").append('<div class="agario-party"></div>'),
-                $(".agario-party-6").appendTo($(".agario-party")).addClass("agario-panel agario-side-panel"),
-                $(".agario-party h4, #cancel-party-btn").remove(),
-                $(".agario-party .btn").addClass("btn-sm"),
-                $(".right-container").append('<div id="skins-panel" class="agario-panel agario-side-panel"><div id="skins"></div><a href="https://ogario.ovh/skins/" id="more-skins" class="btn btn-block btn-success" target="_blank">' + textLanguage.moreSkins + "</a></div>"),
-                $(".btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr='page_option_dark_theme'], #options #darkTheme").remove(),
-                $("#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom").css("display", "none"),
+					</div>`);
+					if (!this.protocolMode) $("#quick-menu").prepend('<a href="#" class="quick-shop ogicon-cart" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.page_shop + '"></a><a href="#" class="quick-free-coins ogicon-coin-dollar" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.page_menu_main_free_coins + '"></a><a href="#" class="quick-free-gifts ogicon-gift" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.page_menu_main_gifts + '"></a><a href="#" class="quick-quests ogicon-trophy" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.page_menu_main_dailyquests + '"></a>');
+                $(".party-dialog, .partymode-info").remove();
+                $(".agario-party-6").appendTo($(".center-container"));
+                $(".right-container").empty();
+                $(".right-container").append('<div class="agario-party"></div>');
+                $(".agario-party-6").appendTo($(".agario-party")).addClass("agario-panel agario-side-panel");
+                $(".agario-party h4, #cancel-party-btn").remove();
+                $(".agario-party .btn").addClass("btn-sm");
+                $(".right-container").append('<div id="skins-panel" class="agario-panel agario-side-panel"><div id="skins"></div><a href="https://ogario.ovh/skins/" id="more-skins" class="btn btn-block btn-success" target="_blank">' + textLanguage.moreSkins + "</a></div>");
+                $(".btn-settings, .text-muted, .tosBox, .agario-promo, #agario-web-incentive, span[data-itr='page_option_dark_theme'], #options #darkTheme").remove();
+                $("#advertisement, #adbg, #a320x250, #g320x250, #s320x250, #adsBottom").css("display", "none");
                 $("#advertisement").removeClass("agario-panel"), $("#adsBottom").css({
                     "z-index": "1",
                     "opacity": "0",
                     "bottom": "-100px"
-                }), $("#noNames, #showMass").remove(), $("#og-settings .submenu-panel").append('<div id="og-options"></div>'),
-                this.addOptions([], "animationGroup"),
-                this.addOptions(["autoZoom"], "zoomGroup"),
-                this.addOptions(["quickResp", "autoResp"], "respGroup"),
-                this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup"),
-                this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound"], "massGroup"),
-                this.protocolMode ? this.addOptions(["customSkins", "jellyPhisycs", "videoSkins", "videoSkinsMusic"], "skinsGroup") : this.addOptions(["customSkins", "vanillaSkins", "jellyPhisycs", "videoSkins", "videoSkinsMusic"], "skinsGroup"),
-                this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup"),
-                this.addOptions(["myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow"], "transparencyGroup"),
-                this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup"),
-                this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "hidecountry"], "chatGroup"),
-                this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup"),
-                this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots", "teamView"], "helpersGroup"), //Sonia2
-                this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert"], "mouseGroup"),
+                }); 
+				$("#noNames, #showMass").remove();
+				$("#og-settings .submenu-panel").append('<div id="og-options"></div>');
+                this.addOptions([], "animationGroup");
+                this.addOptions(["autoZoom"], "zoomGroup");
+                this.addOptions(["quickResp", "autoResp"], "respGroup");
+                this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
+                this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound"], "massGroup");
+                if (this.protocolMode){
+					this.addOptions(["customSkins", "jellyPhisycs", "videoSkins", "videoSkinsMusic"], "skinsGroup")
+				}
+				else{
+					this.addOptions(["customSkins", "vanillaSkins", "jellyPhisycs", "videoSkins", "videoSkinsMusic"], "skinsGroup");
+				}
+                this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
+                this.addOptions(["myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow"], "transparencyGroup");
+                this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup");
+                this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "hidecountry"], "chatGroup");
+                this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup");
+                this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots", "teamView"], "helpersGroup"); //Sonia2
+                this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert"], "mouseGroup");
                 //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-                this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-                this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup"),
-                this.addOptions([], "macroGroup"),
-                this.addOptions([], "profiles"),
-                this.protocolMode || (this.addOptions(["blockPopups"], "extrasGroup"),
-                    $("#noSkins, #noColors, #skipStats, #showQuest").addClass("js-switch-vanilla"),
-                    $(".skinsGroup h5").after('<label class="noSkins">' + textLanguage.noSkins + " </label>"),
-                    $("#noSkins").appendTo($(".noSkins")), $(".transparencyGroup h5").after('<label class="noColors">' + textLanguage.noColors + " </label>"),
-                    $("#noColors").appendTo($(".noColors")),
-                    $(".extrasGroup h5").after('<label class="skipStats">' + textLanguage.skipStats + " </label>"),
-                    $("#skipStats").appendTo($(".skipStats")),
-                    $(".skipStats").after('<label class="showQuest">' + textLanguage.showQuest + " </label>"),
-                    $("#showQuest").appendTo($(".showQuest")),
-                    $("#options").remove(),
-                    $("#settingsChoice").appendTo($(".extrasGroup")).addClass("select-wrapper")),
-                this.addSliderBox(".animationGroup", "animation", 5, 200, 1),
-                this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01),
-                this.addSliderBox(".profiles", "profileNumber", 10, 54, 1),
-                this.addSliderBox(".macroGroup", "macroFeeding", 1, 160, 1),
-                $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + textLanguage.exportImport + "</button>"),
-                $("#og-settings").append('<div class="restore-settings"><a href="#">' + textLanguage.restoreSettings + "</a></div>"),
-                $("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + textLanguage.thanks + ')</h5><audio src="" controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' + textLanguage.playlist + "</a></span></div>"),
-                $("#music").append('<div class="agario-panel sounds-panel"><h5 class="menu-main-color">' + textLanguage.sounds + "</h5></div>"),
-                $("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>'),
+                this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup");
+                this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup");
+                this.addOptions([], "macroGroup");
+                this.addOptions([], "profiles");
+				if (!this.protocolMode) {
+					this.addOptions(["blockPopups"], "extrasGroup");
+				}
+				else{
+                    $("#noSkins, #noColors, #skipStats, #showQuest").addClass("js-switch-vanilla");
+                    $(".skinsGroup h5").after('<label class="noSkins">' + textLanguage.noSkins + " </label>");
+                    $("#noSkins").appendTo($(".noSkins")), 
+					$(".transparencyGroup h5").after('<label class="noColors">' + textLanguage.noColors + " </label>");
+                    $("#noColors").appendTo($(".noColors"));
+                    $(".extrasGroup h5").after('<label class="skipStats">' + textLanguage.skipStats + " </label>");
+                    $("#skipStats").appendTo($(".skipStats"));
+                    $(".skipStats").after('<label class="showQuest">' + textLanguage.showQuest + " </label>");
+                    $("#showQuest").appendTo($(".showQuest"));
+                    $("#options").remove();
+                    $("#settingsChoice").appendTo($(".extrasGroup")).addClass("select-wrapper");
+				}	
+                this.addSliderBox(".animationGroup", "animation", 5, 200, 1);
+                this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01);
+                this.addSliderBox(".profiles", "profileNumber", 10, 54, 1);
+                this.addSliderBox(".macroGroup", "macroFeeding", 1, 160, 1);
+                $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + textLanguage.exportImport + "</button>");
+                $("#og-settings").append('<div class="restore-settings"><a href="#">' + textLanguage.restoreSettings + "</a></div>");
+                $("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">Radio (' + textLanguage.thanks + ')</h5><audio src="" controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' + textLanguage.playlist + "</a></span></div>");
+                $("#music").append('<div class="agario-panel sounds-panel"><h5 class="menu-main-color">' + textLanguage.sounds + "</h5></div>");
+                $("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>');
                 /*$('#music').append('<div class="agario-panel facebook-panel"><h5 class="menu-main-color">' + 'Facebook' + '</h5></div>'),*/
-                this.addInputBox(".sounds-panel", "messageSound", "Sound URL", "setMessageSound"),
-                this.addInputBox(".sounds-panel", "commandSound", "Sound URL", "setCommandSound"),
-                this.addInputBox(".sounds-panel", "virusSoundurl", "Sound URL", "setvirusSound"),
+                this.addInputBox(".sounds-panel", "messageSound", "Sound URL", "setMessageSound");
+                this.addInputBox(".sounds-panel", "commandSound", "Sound URL", "setCommandSound");
+                this.addInputBox(".sounds-panel", "virusSoundurl", "Sound URL", "setvirusSound");
                 $("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color">Team<span class="team-top"></span></h5><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' + //<div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="10" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
                     textLanguage.totalPartyPlayers + ': <span id="top5-total-players" class="top5-mass-color">0</span>   <span class="hud-main-color ogicon-pacman"></span> ' +
                     textLanguage.totalPartyMass + ': <span id="top5-total-mass" class="top5-mass-color">0</span></div></div> <div id="time-hud" class="hud time-hud-color"></div> <div id="pause-hud" class="hud">' +
@@ -4167,32 +4208,33 @@ var thelegendmodproject = function() {
                     '<a href="#" id="set-private-minimap" class="ogicon-location2"></a>' +
                     '<a href="#" id="cancel-targeting" class="ogicon-cancel-circle"></a>' +
                     '<a href="#" id="change-target" class="ogicon-arrow-right"></a></div>' +
-                    '<div id="quest-hud" class="hud"></div> <div id="btl-hud" class="hud"></div></div>'),
-                $("body").append('<ul id="messages"></ul>'),
+                    '<div id="quest-hud" class="hud"></div> <div id="btl-hud" class="hud"></div></div>');
+                $("body").append('<ul id="messages"></ul>');
                 $("body").append('<div id="message-box"><div id="chat-emoticons"></div><div id="message-menu"><a href="#" class="chat-sound-notifications ogicon-volume-high"></a><a href="#" class="chat-active-users ogicon-user-check"></a><a href="#" class="chat-muted-users ogicon-user-minus"></a><a href="#" class="show-chat-emoticons ogicon-smile"></a></div><input type="text" id="message" class="form-control" placeholder="' +
-                    textLanguage.enterChatMsg + '..." maxlength="80"></div>'),
-                $("body").append('<div id="chat-box"></div>'), emoticonicons) {
-                if (emoticonicons.hasOwnProperty(t)) {
-                    $("#chat-emoticons").append('<img src="https://legendmod.ml/banners/emoticons/' + emoticonicons[t] + '" alt="' + t + '" class="emoticon">');
-                }
-            }
-            $("body").append('<div id="exp-imp"><div id="exp-imp-menu"><button id="close-exp-imp" class="btn btn-danger">' + textLanguage.close + '</button></div><div id="exp-imp-settings"></div></div>'),
-                $("#exp-imp-settings").append("<h1>" + textLanguage.exportSettings + "</h1><h2>" + textLanguage.exportInfo + "</h2>"),
-                this.addOption("#exp-imp-settings", "export-ogarioCommands", textLanguage.commands, true),
-                this.addOption("#exp-imp-settings", "export-ogarioHotkeys", textLanguage.hotkeys, true),
+                    textLanguage.enterChatMsg + '..." maxlength="80"></div>');
+                $("body").append('<div id="chat-box"></div>'); 
+				for (const emoji in emoticonicons) {
+					if (emoticonicons.hasOwnProperty(emoji)) {
+						$("#chat-emoticons").append('<img src="https://legendmod.ml/banners/emoticons/' + emoticonicons[emoji] + '" alt="' + emoji + '" class="emoticon">');
+					}
+				}
+            $("body").append('<div id="exp-imp"><div id="exp-imp-menu"><button id="close-exp-imp" class="btn btn-danger">' + textLanguage.close + '</button></div><div id="exp-imp-settings"></div></div>');
+                $("#exp-imp-settings").append("<h1>" + textLanguage.exportSettings + "</h1><h2>" + textLanguage.exportInfo + "</h2>");
+                this.addOption("#exp-imp-settings", "export-ogarioCommands", textLanguage.commands, true);
+                this.addOption("#exp-imp-settings", "export-ogarioHotkeys", textLanguage.hotkeys, true);
                 this.addOption("#exp-imp-settings", "export-ogarioPlayerProfiles",
-                    textLanguage.profiles, true), this.addOption("#exp-imp-settings", "export-ogarioSettings", textLanguage.settings, true),
-                this.addOption("#exp-imp-settings", "export-ogarioThemeSettings", textLanguage.theme, true),
-                $("#exp-imp-settings").append('<textarea id="export-settings" class="form-control" rows="14" cols="100" spellcheck="false" readonly /><button id="export-settings-btn" class="btn btn-block btn-success">' + textLanguage.exportSettings + "</button>"),
+                    textLanguage.profiles, true), this.addOption("#exp-imp-settings", "export-ogarioSettings", textLanguage.settings, true);
+                this.addOption("#exp-imp-settings", "export-ogarioThemeSettings", textLanguage.theme, true);
+                $("#exp-imp-settings").append('<textarea id="export-settings" class="form-control" rows="14" cols="100" spellcheck="false" readonly /><button id="export-settings-btn" class="btn btn-block btn-success">' + textLanguage.exportSettings + "</button>");
                 $("#exp-imp-settings").append("<h1>" + textLanguage.importSettings + "</h1><h2>" +
-                    textLanguage.importInfo + "</h2>"), this.addOption("#exp-imp-settings", "import-ogarioCommands", textLanguage.commands, true),
-                this.addOption("#exp-imp-settings", "import-ogarioHotkeys", textLanguage.hotkeys, true),
-                this.addOption("#exp-imp-settings", "import-ogarioPlayerProfiles", textLanguage.profiles, true),
-                this.addOption("#exp-imp-settings", "import-ogarioSettings", textLanguage.settings, true),
-                this.addOption("#exp-imp-settings", "import-ogarioThemeSettings", textLanguage.theme, true),
+                    textLanguage.importInfo + "</h2>"), this.addOption("#exp-imp-settings", "import-ogarioCommands", textLanguage.commands, true);
+                this.addOption("#exp-imp-settings", "import-ogarioHotkeys", textLanguage.hotkeys, true);
+                this.addOption("#exp-imp-settings", "import-ogarioPlayerProfiles", textLanguage.profiles, true);
+                this.addOption("#exp-imp-settings", "import-ogarioSettings", textLanguage.settings, true);
+                this.addOption("#exp-imp-settings", "import-ogarioThemeSettings", textLanguage.theme, true);
                 $("#exp-imp-settings").append('<textarea id="import-settings" class="form-control" rows="14" cols="100" spellcheck="false" /><button id="import-settings-btn" class="btn btn-block btn-success">' +
                     textLanguage.importSettings + "</button>");
-            hudsetter && hudsetter.setThemeMenu();
+            if (hudsetter) hudsetter.setThemeMenu();
             /** @type {number} */
             var e = 0;
             for (; e < ogario1PlayerProfiles.length; e++) {
@@ -4203,115 +4245,115 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'setUI': function() {
-            var t = this;
+        setUI() {
+            var app = this;
             $(document).on("click", ".menu-tabs a", function(event) {
                 event.preventDefault();
-                t.switchMenuTabs($(this), "menu-panel");
+                app.switchMenuTabs($(this), "menu-panel");
             });
             $(document).on("click", ".submenu-tabs a", function(event) {
                 event.preventDefault();
-                t.switchMenuTabs($(this), "submenu-panel");
+                app.switchMenuTabs($(this), "submenu-panel");
             });
             $(document).on("click", ".quick-menu", function(event) {
                 event.preventDefault();
                 defaultmapsettings.showQuickMenu = !defaultmapsettings.showQuickMenu;
                 //defaultmapsettings.showQuickBots=false;
-                t.saveSettings(defaultmapsettings, "ogarioSettings");
-                t.setShowQuickMenu();
+                app.saveSettings(defaultmapsettings, "ogarioSettings");
+                app.setShowQuickMenu();
             });
             $(document).on("click", ".quick-bots", function(event) {
                 event.preventDefault();
                 defaultmapsettings.showQuickBots = !defaultmapsettings.showQuickBots;
                 //defaultmapsettings.showQuickMenu=false;
-                t.saveSettings(defaultmapsettings, "ogarioSettings");
-                t.setShowQuickBots();
+                app.saveSettings(defaultmapsettings, "ogarioSettings");
+                app.setShowQuickBots();
             });
             $(document).on("click", ".quick-skins", function(event) {
                 event.preventDefault();
                 defaultmapsettings.showSkinsPanel = !defaultmapsettings.showSkinsPanel;
-                t.saveSettings(defaultmapsettings, "ogarioSettings");
-                t.setShowSkinsPanel();
+                app.saveSettings(defaultmapsettings, "ogarioSettings");
+                app.setShowSkinsPanel();
             });
             $(document).on("change", "#region", function() {
-                t.region = this.value;
+                app.region = this.value;
             });
             $(document).on("change", "#gamemode", function() {
                 var dummy = this.value;
                 if (":party" !== dummy) {
-                    t.leaveParty();
+                    app.leaveParty();
                 }
-                t.gameMode = ogario.gameMode = dummy;
-                t.setQuest();
+                app.gameMode = ogario.gameMode = dummy;
+                app.setQuest();
             });
             $(document).on("change", "#quality", function() {
-                t.getQuality(this.value);
+                app.getQuality(this.value);
                 ogarhusettings();
             });
             $(document).on("input", "#skin", function() {
                 var hexInputVal = this.value;
-                t.setSkinPreview(hexInputVal, "skin-preview");
-                t.setSkinPreview(hexInputVal, "profile-" + t.selectedProfile);
+                app.setSkinPreview(hexInputVal, "skin-preview");
+                app.setSkinPreview(hexInputVal, "profile-" + app.selectedProfile);
             });
             $(document).on("click", "#skins a", function(event) {
                 event.preventDefault();
-                t.selectProfile($(this).attr("data-profile"));
+                app.selectProfile($(this).attr("data-profile"));
             });
             $(document).on("click", "#prev-profile", function() {
-                t.prevProfile();
+                app.prevProfile();
             });
             $(document).on("click", "#next-profile", function() {
-                t.nextProfile();
+                app.nextProfile();
             });
             $(document).on("click", "#stream-mode", function() {
                 /** @type {boolean} */
                 defaultmapsettings.streamMode = !defaultmapsettings.streamMode;
-                t.saveSettings(defaultmapsettings, "ogarioSettings");
-                t.setStreamMode();
+                app.saveSettings(defaultmapsettings, "ogarioSettings");
+                app.setStreamMode();
             });
             $(document).on("click", "#hide-url", function() {
                 /** @type {boolean} */
                 defaultmapsettings.hideSkinUrl = !defaultmapsettings.hideSkinUrl;
-                t.saveSettings(defaultmapsettings, "ogarioSettings");
-                t.setHideSkinUrl();
+                app.saveSettings(defaultmapsettings, "ogarioSettings");
+                app.setHideSkinUrl();
             });
             $(document).on("click", ".btn-server-info", function() {
                 $("#server-info").toggle();
             });
             $(document).on("click", "#server-connect", function() {
-                t.gameServerConnect($("#server-ws").val());
+                app.gameServerConnect($("#server-ws").val());
             });
             $(document).on("click", "#server-reconnect", function() {
-                t.gameServerReconnect();
+                app.gameServerReconnect();
             });
             $(document).on("click", "#server-join", function() {
-                t.gameServerJoin($("#server-token").val());
+                app.gameServerJoin($("#server-token").val());
             });
             $(document).on("change", "#og-options input[type='checkbox']", function() {
                 var template = $(this);
-                t.setSettings(template.attr("id"), template.prop("checked"));
+                app.setSettings(template.attr("id"), template.prop("checked"));
             });
             $(document).on("change", ".js-switch-vanilla", function() {
                 var template = $(this);
                 var p = template.attr("id");
-                if (void 0 !== t[p]) {
-                    t[p] = template.prop("checked");
+                if (void 0 !== app[p]) {
+                    app[p] = template.prop("checked");
                     if ("noSkins" === p) {
                         /** @type {boolean} */
-                        ogario.showCustomSkin = !t.noSkins;
+                        ogario.showCustomSkin = !app.noSkins;
                     }
                     if ("showQuest" === p) {
-                        t.setQuest();
+                        app.setQuest();
                     }
                 }
             });
             $(document).on("click", "#og-settings .restore-settings a", function(result) {
                 result.preventDefault();
-                t.restoreSettings();
+                app.restoreSettings();
             });
             $(document).on("click", "#og-settings .btn-export", function(result) {
                 result.preventDefault();
-                t.exportSettings();
+                app.exportSettings();
                 $("#exp-imp").fadeIn(500);
                 $("#exp-imp-settings, #export-settings").perfectScrollbar("update");
             });
@@ -4324,19 +4366,19 @@ var thelegendmodproject = function() {
                 }),
                 $(document).on("click", "#export-settings-btn", function(event) {
                     event.preventDefault();
-                    t.exportSettings();
+                    app.exportSettings();
                 });
             $(document).on("click", "#import-settings-btn", function(result) {
                 result.preventDefault();
-                t.importSettings();
+                app.importSettings();
             });
             $(document).on("click", "#unblock-popups", function(result) {
                 result.preventDefault();
-                t.unblockPopups();
+                app.unblockPopups();
             });
             $(document).on("click", "#openfl-overlay.disabler", function() {
                 if (defaultmapsettings.blockPopups) {
-                    t.blockPopups();
+                    app.blockPopups();
                 }
             });
             $(document).on("click", "#openfl-content", function() {
@@ -4344,35 +4386,35 @@ var thelegendmodproject = function() {
                     var container = $(this);
                     setTimeout(function() {
                         if (!container.is(":visible")) {
-                            t.blockPopups();
+                            app.blockPopups();
                         }
                     }, 1000);
                 }
             });
             $(document).on("click", ".quick-shop", function(event) {
                 event.preventDefault();
-                t.unblockPopups();
+                app.unblockPopups();
                 if (window.MC && window.MC.openShop) {
                     window.MC.openShop();
                 }
             });
             $(document).on("click", ".quick-free-coins", function(event) {
                 event.preventDefault();
-                t.unblockPopups();
+                app.unblockPopups();
                 if (window.MC && window.MC.showFreeCoins) {
                     window.MC.showFreeCoins();
                 }
             });
             $(document).on("click", ".quick-free-gifts", function(event) {
                 event.preventDefault();
-                t.unblockPopups();
+                app.unblockPopups();
                 if (window.MC && window.MC.showGifting) {
                     window.MC.showGifting();
                 }
             });
             $(document).on("click", ".quick-quests", function(event) {
                 event.preventDefault();
-                t.unblockPopups();
+                app.unblockPopups();
                 if (window.MC && window.MC.showQuests) {
                     window.MC.showQuests();
                 }
@@ -4380,31 +4422,31 @@ var thelegendmodproject = function() {
 
             $(document).on("click", "#set-debug", function(event) {
                 event.preventDefault();
-                t.setDebug();
+                app.setDebug();
             });
             $(document).on("click", "#set-fullSpectator", function(event) {
                 event.preventDefault();
-                t.setFullSpectator();
+                app.setFullSpectator();
             });
             $(document).on("click", "#set-ingameSpectator", function(event) {
                 event.preventDefault();
-                t.setIngameSpectator();
+                app.setIngameSpectator();
             });
             $(document).on("click", "#set-targeting", function(event) {
                 event.preventDefault();
-                t.setTargeting();
+                app.setTargeting();
             });
             $(document).on("click", "#cancel-targeting", function(event) {
                 event.preventDefault();
-                t.cancelTargeting();
+                app.cancelTargeting();
             });
             $(document).on("click", "#set-private-minimap", function(event) {
                 event.preventDefault();
-                t.setPrivateMiniMap();
+                app.setPrivateMiniMap();
             });
             $(document).on("click", "#change-target", function(result) {
                 result.preventDefault();
-                t.changeTarget();
+                app.changeTarget();
             });
             $(document).on("click", ".team-top-limit", function(event) {
                 event.preventDefault();
@@ -4412,8 +4454,8 @@ var thelegendmodproject = function() {
                 /** @type {number} */
                 var param = parseInt(template.attr("data-limit"));
                 if (param) {
-                    t.setTop5limit(param);
-                    t.displayTop5();
+                    app.setTop5limit(param);
+                    app.displayTop5();
                     $(".team-top").text(param);
                     $(".team-top-limit").removeClass("active");
                     template.addClass("active");
@@ -4421,36 +4463,36 @@ var thelegendmodproject = function() {
             });
             $(document).on("click", "#top5-pos .set-target", function(event) {
                 event.preventDefault();
-                t.setTarget(parseInt($(this).attr("data-user-id")));
+                app.setTarget(parseInt($(this).attr("data-user-id")));
             });
             $(document).on("click", ".mute-user", function(event) {
                 event.preventDefault();
-                t.muteChatUser(parseInt($(this).attr("data-user-id")));
+                app.muteChatUser(parseInt($(this).attr("data-user-id")));
             });
             $(document).on("click", ".btn-mute-user", function() {
                 var template = $(this);
-                t.muteChatUser(parseInt(template.attr("data-user-id")));
+                app.muteChatUser(parseInt(template.attr("data-user-id")));
                 template.removeClass("btn-red btn-mute-user").addClass("btn-green btn-unmute-user").text(textLanguage.unmute);
             });
             $(document).on("click", ".btn-unmute-user", function() {
                 var template = $(this);
-                t.unmuteChatUser(parseInt(template.attr("data-user-id")));
+                app.unmuteChatUser(parseInt(template.attr("data-user-id")));
                 template.removeClass("btn-green btn-unmute-user").addClass("btn-red btn-mute-user").text(textLanguage.mute);
             });
             $(document).on("click", ".chat-sound-notifications", function(result) {
                 result.preventDefault();
                 /** @type {boolean} */
                 defaultmapsettings.chatSounds = !defaultmapsettings.chatSounds;
-                t.saveSettings(defaultmapsettings, "ogarioSettings");
-                t.setChatSoundsBtn();
+                app.saveSettings(defaultmapsettings, "ogarioSettings");
+                app.setChatSoundsBtn();
             });
             $(document).on("click", ".chat-active-users", function(event) {
                 event.preventDefault();
-                t.displayChatActiveUsers();
+                app.displayChatActiveUsers();
             });
             $(document).on("click", ".chat-muted-users", function(event) {
                 event.preventDefault();
-                t.displayChatMutedUsers();
+                app.displayChatMutedUsers();
             });
             $(document).on("click", ".show-chat-emoticons", function(result) {
                 result.preventDefault();
@@ -4510,7 +4552,7 @@ var thelegendmodproject = function() {
             };
 
         },
-        'switchMenuTabs': function(t, e) {
+        switchMenuTabs(t, e) {
             var i = t.parent();
             if ('menu-panel' === e) {
                 if (t.hasClass('hotkeys-link')) return;
@@ -4535,39 +4577,50 @@ var thelegendmodproject = function() {
             ogarhusettings();
             $('.submenu-panel').perfectScrollbar('update');
         },
-        'getDefaultSettings': function() {
-            if (this.noSkins = $("#noSkins").prop("checked"),
-                this.noColors = $("#noColors").prop("checked"),
-                this.skipStats = $("#skipStats").prop("checked"),
-                this.showQuest = $("#showQuest").prop("checked"),
-                ogario.showCustomSkin = !this.noSkins,
-                null !== window.localStorage.getItem("scale_setting")) {
-                var t = JSON.parse(window.localStorage.getItem("scale_setting"));
-                this.setCanvasScale(t);
-            } else {
-                var o = $("#quality").val();
-                this.getQuality(o);
+        getDefaultSettings() {
+            this.noSkins = $("#noSkins").prop("checked");
+                this.noColors = $("#noColors").prop("checked");
+                this.skipStats = $("#skipStats").prop("checked");
+                this.showQuest = $("#showQuest").prop("checked");
+				ogario.showCustomSkin = !this.noSkins;
+			if (null !== window.localStorage.getItem("scale_setting")) {
+                var parseScaleSettings = JSON.parse(window.localStorage.getItem("scale_setting"));
+                this.setCanvasScale(parseScaleSettings);
+            } 
+			else {
+                var quality = $("#quality").val();
+                this.getQuality(quality);
             }
-            null !== window.localStorage.getItem("location") ? (this.region = window.localStorage.getItem("location"),
-                    $("#region").val(this.region),
-                    window.MC && window.MC.setRegion && window.MC.setRegion(this.region)) : this.region = $("#region").val(),
-                this.setParty(), ":party" === this.gameMode && window.location.hash &&
-                $("#join-party-btn-2").click(),
+            if (null !== window.localStorage.getItem("location")){
+				this.region = window.localStorage.getItem("location");
+                $("#region").val(this.region);
+                if (window.MC && window.MC.setRegion) window.MC.setRegion(this.region)
+			}
+			else{
+				this.region = $("#region").val()
+			}
+                this.setParty();
+				if (":party" === this.gameMode && window.location.hash) $("#join-party-btn-2").click();			
                 Array.prototype.slice.call(document.querySelectorAll(".js-switch-vanilla")).forEach(function(remove) {
                     new Switchery(remove, {
                         "color": defaultSettings.menuMainColor,
                         "size": "small"
                     });
-                }), $("#nick").val(ogarcopythelb.nick).blur(),
-                $("#noNames").prop("checked", !defaultmapsettings.noNames),
-                $("#showMass").prop("checked", defaultmapsettings.showMass),
-                this.unlockButtons(),
-                this.setAutoResp(),
+                }); 
+				$("#nick").val(ogarcopythelb.nick).blur();
+                $("#noNames").prop("checked", !defaultmapsettings.noNames);
+                $("#showMass").prop("checked", defaultmapsettings.showMass);
+                this.unlockButtons();
+                this.setAutoResp();
                 this.setQuest();
         },
-        'getQuality': function(t) {
-            var i = 1;
-            switch ('devicePixelRatio' in window && (i = window.devicePixelRatio), t) {
+        getQuality(value) {
+			const ration = 'devicePixelRatio' in window;
+            var defaultValue = 1;
+			if (ration){
+				defaultValue = window.devicePixelRatio;
+			}
+            switch (value) {
                 case 'High':
                     this.setCanvasScale(1);
                     break;
@@ -4581,14 +4634,14 @@ var thelegendmodproject = function() {
                     this.setCanvasScale(0.5);
                     break;
                 default:
-                    this.setCanvasScale(i);
+                    this.setCanvasScale(defaultValue);
             }
         },
-        'setCanvasScale': function(t) {
-            this.canvasScale = t;
-            ogario.canvasScale = t;
+        setCanvasScale(value) {
+            this.canvasScale = value;
+            ogario.canvasScale = value;
         },
-        'setStreamMode': function() {
+        setStreamMode() {
             if (defaultmapsettings.streamMode) {
                 $("#stream-mode").addClass("ogicon-eye-blocked");
                 $("#clantag, #nick, #party-token").addClass("stream-mode");
@@ -4597,7 +4650,7 @@ var thelegendmodproject = function() {
                 $("#clantag, #nick, #party-token").removeClass("stream-mode");
             }
         },
-        'setHideSkinUrl': function() {
+        setHideSkinUrl() {
             if (defaultmapsettings.hideSkinUrl) {
                 $("#hide-url").addClass("ogicon-eye-blocked");
                 $("#skin").addClass("hide-url");
@@ -4606,7 +4659,7 @@ var thelegendmodproject = function() {
                 $("#skin").removeClass("hide-url");
             }
         },
-        'setShowQuickMenu': function() {
+        setShowQuickMenu() {
             if (defaultmapsettings.showQuickMenu) {
                 $("#quick-menu").fadeIn(500);
             } else {
@@ -4616,7 +4669,7 @@ var thelegendmodproject = function() {
                 $("#quick-bots").hide();
             }
         },
-        'setShowQuickBots': function() {
+        setShowQuickBots() {
             if (defaultmapsettings.showQuickBots) {
                 $("#quick-bots").fadeIn(500);
             } else {
@@ -4626,37 +4679,37 @@ var thelegendmodproject = function() {
                 $("#quick-menu").hide();
             }
         },
-        'setShowSkinsPanel': function() {
+        setShowSkinsPanel() {
             if (defaultmapsettings.showSkinsPanel) {
                 $("#skins-panel").fadeIn(500);
             } else {
                 $("#skins-panel").fadeOut(500);
             }
         },
-        'unlockButtons': function() {
+        unlockButtons() {
             $('.btn-play, .btn-play-guest, .btn-login-play, .btn-spectate').prop('disabled', false);
         },
-        'setMainButtons': function() {
-            var t = this;
+        setMainButtons() {
+            var app = this;
             $(document).on("click", ".btn-play, .btn-play-guest", function() {
-                t.onPlay();
+                app.onPlay();
             });
             $(document).on("click", ".btn-spectate", function() {
-                t.onSpectate();
+                app.onSpectate();
             });
             $(document).on("click", "#create-party-btn-2", function() {
-                t.onCreate();
+                app.onCreate();
             });
             $(document).on("click", "#join-party-btn-2", function() {
-                t.skipServerData = true;
-                t.joinParty();
-                t.onJoin();
+                app.skipServerData = true;
+                app.joinParty();
+                app.onJoin();
             });
             $(document).on("click", "#statsContinue2", function() {
                 $("#stats, #main-panel").toggle();
             });
         },
-        'play': function() {
+        play() {
             if (window.noOgarioSocket) {
                 console.log('New Socket 3 data sent');
                 if (window.noOgarioSocket) {
@@ -4685,16 +4738,18 @@ var thelegendmodproject = function() {
 
                 }
             }
-            if (this.setPlayerSettings(), this.setParty(), this.isSocketOpen()) this.sendPartyData();
+            this.setPlayerSettings();
+            this.setParty();			
+            if (this.isSocketOpen()) this.sendPartyData();
             else {
                 this.connect();
-                var t = this;
+                var app = this;
                 setTimeout(function() {
-                    t.sendPartyData();
+                    app.sendPartyData();
                 }, 1000);
             }
         },
-        'onPlay': function() {
+        onPlay() {
             //                this.play(), this.hideMenu(), window.addKeyListeners && window.addKeyListeners(), defaultmapsettings.autoHideFood && (i.showFood = true), window['ga'] && window['ga']('create', 'UA-92655864-7', 'auto', 'ogarioTracker'), window['ga'] && window['ga']('ogarioTracker.send', 'pageview');
             this.play();
             this.hideMenu();
@@ -4705,7 +4760,7 @@ var thelegendmodproject = function() {
                 ogario.showFood = true
             };
         },
-        'onSpectate': function() {
+        onSpectate() {
             this.onJoin();
             this.sendPlayerJoin();
             this.hideMenu();
@@ -4716,41 +4771,56 @@ var thelegendmodproject = function() {
                 ogario.showFood = false;
             }
         },
-        'join': function() {
+        join() {
             this.setParty();
             this.setPlayerSettings();
             this.sendPartyData();
             this.sendPlayerDeath();
         },
-        'onJoin': function() {
-            if (this.setParty(), this.isSocketOpen()) this.join();
+        onJoin() {
+			this.setParty();
+            if (this.isSocketOpen()) this.join();
             else {
                 this.connect();
-                var t = this;
+                var app = this;
                 setTimeout(function() {
-                    t.join();
-                    t.sendPlayerJoin();
+                    app.join();
+                    app.sendPlayerJoin();
                 }, 1000);
             }
         },
-        'create': function() {
-            if (this.setParty(), this.partyToken) this.onJoin();
+        create() {
+			this.setParty()
+            if (this.partyToken) this.onJoin();
             else {
-                var t = this;
+                var app = this;
                 setTimeout(function() {
-                    t.create();
+                    app.create();
                 }, 100);
             }
         },
-        'onCreate': function() {
-            this.setParty(), ':party' === this.gameMode && this.partyToken ? this.gameServerReconnect() : this.createParty(), this.create();
-        },
-        'onPlayerSpawn': function() {
-            if (ogario.play = true, ogario.playerColor) return this.sendPlayerSpawn(), void this.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor, ogarcopythelb.skinURL);
-            var t = this;
-            setTimeout(function() {
-                t.onPlayerSpawn();
+        onCreate() {
+            this.setParty();
+            if (this.partyToken) {
+                this.onJoin();
+                return;
+            }
+            const app = this;
+            setTimeout(() => {
+                app.create();
             }, 100);
+        },
+        onPlayerSpawn() {
+			ogario.play = true;
+            if (ogario.playerColor) {
+                this.sendPlayerSpawn();
+                this.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor, ogarcopythelb.skinURL);
+                return;
+            }
+            const app = this;
+            setTimeout(() => {
+                app.onPlayerSpawn();
+            }, 100);			
             if (window.spawnspecialeffects == true) {
                 setTimeout(function() {
                     ///////// trigger special effects
@@ -4762,7 +4832,7 @@ var thelegendmodproject = function() {
             }
             LegendModSpawn();
         },
-        'onPlayerDeath': function() {
+        onPlayerDeath() {
             //
             pauseVideos();
             ogario.play = false;
@@ -4779,7 +4849,7 @@ var thelegendmodproject = function() {
             this.autoResp();
 
         },
-        'findOwnedVanillaSkin': function() {
+        findOwnedVanillaSkin() {
             if (!ogarcopythelb.skinURL && window.vanillaskins && window.UserVanillaSkin && window.EquippableSkins && !ogarminimapdrawer.customSkinsMap[ogarcopythelb.nick]) {
                 //console.log("1. skin_" + window.UserVanillaSkin);
                 if (window.UserVanillaSkin.includes("skin_custom")) {
@@ -4810,18 +4880,18 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'setPlayerSettings': function() {
-            var t = $('#nick').val();
-            var e = $('#clantag').val();
-            var o = $('#skin').val();
-            var a = $('#color').val();
-            ogarcopythelb.nick = t;
+        setPlayerSettings() {
+            var nick = $('#nick').val();
+            var tag = $('#clantag').val();
+            var skin = $('#skin').val();
+            var color = $('#color').val();
+            ogarcopythelb.nick = nick;
             //changed
-            ogarcopythelb.clanTag = e.trim();
-            //ogarcopythelb.clanTag = e.trim() + "@";
-            ogarcopythelb.skinURL = this.checkSkinURL(o.trim());
-            if (7 == a.length) {
-                ogarcopythelb.color = a;
+            ogarcopythelb.clanTag = tag.trim();
+            //ogarcopythelb.clanTag = tag.trim() + "@";
+            ogarcopythelb.skinURL = this.checkSkinURL(skin.trim());
+            if (7 == color.length) {
+                ogarcopythelb.color = color;
             }
             if (ogarcopythelb.clanTag.length > 0) {
                 ogario.clanTag = ogarcopythelb.clanTag;
@@ -4835,58 +4905,61 @@ var thelegendmodproject = function() {
             this.saveSettings(ogario1PlayerProfiles, 'ogarioPlayerProfiles');
             this.findOwnedVanillaSkin();
         },
-        'loadSkin': function(t, e, animated) {
-            var i = this;
-            //console.log ("t:" + t + "e:" + e);
-            if (e && e.includes && (e.includes(".mp4") || e.includes(".webm") || e.includes(".ogv"))) {
-                t[e] = new Video();
+        loadSkin(img, url, animated) {
+            var app = this;
+            //console.log ("img:" + img + "url:" + url);
+            if (url && url.includes && (url.includes(".mp4") || url.includes(".webm") || url.includes(".ogv"))) {
+                img[url] = new Video();
                 //console.log("stage 2 videos");
             } else {
-                t[e] = new Image();
+                img[url] = new Image();
             }
-            t[e].crossOrigin = 'Anonymous';
-            t[e].onload = function() {
+            img[url].crossOrigin = 'Anonymous';
+            img[url].onload = function() {
                     this.complete &&
                         this.width &&
                         this.height &&
                         this.width <= 2000 && this.width > 0 &&
                         this.height <= 2000 && this.height > 0 &&
-                        ((i.cacheQueue.push(e),
-                                1 == i.cacheQueue.length &&
-                                i.cacheSkin(i.customSkinsCache, animated)),
-                            (i.cacheQueue2.push(e),
-                                1 == i.cacheQueue2.length &&
-                                i.cacheSkin2(i.customSkinsCache)),
-                            (animated && i.cacheQueue3.push(e),
-                                1 == i.cacheQueue3.length &&
-                                i.cacheSkin3(i.customSkinsCache))
+                        ((app.cacheQueue.push(url),
+                                1 == app.cacheQueue.length &&
+                                app.cacheSkin(app.customSkinsCache, animated)),
+                            (app.cacheQueue2.push(url),
+                                1 == app.cacheQueue2.length &&
+                                app.cacheSkin2(app.customSkinsCache)),
+                            (animated && app.cacheQueue3.push(url),
+                                1 == app.cacheQueue3.length &&
+                                app.cacheSkin3(app.customSkinsCache))
                         );
                 },
-                t[e].onerror = function() {
-                    //console.log("error loading image: "+ e);
-                    if (e && e.includes(window.EnvConfig.config_url)) {
-                        e = "https://legendmod.ml/vanillaskins/" + e.split('/').pop(); //if CORS policy on miniclip images, use other source
-                        //console.log("new destination is: " + e);
-                        ogarminimapdrawer.customSkinsMap[window.lastusednameforskin] = e;
-                        ogarminimapdrawer.loadSkin(t, e);
-                        return e;
+                img[url].onerror = function() {
+                    //console.log("error loading image: "+ url);
+                    if (url && url.includes(window.EnvConfig.config_url)) {
+                        url = "https://legendmod.ml/vanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
+                        //console.log("new destination is: " + url);
+                        ogarminimapdrawer.customSkinsMap[window.lastusednameforskin] = url;
+                        ogarminimapdrawer.loadSkin(img, url);
+                        return url;
 
                     }
                 };
-            t[e].src = e;
+            img[url].src = url;
         },
-        'checkgraphics': function() {
+        checkgraphics() {
             if (defaultSettings.graphics == "high") {
                 ogarminimapdrawer.graphics = 1
-            } else if (defaultSettings.graphics == "medium") {
+            } 
+			else if (defaultSettings.graphics == "medium") {
                 ogarminimapdrawer.graphics = 2
-            } else if (defaultSettings.graphics == "low") {
+            } 
+			else if (defaultSettings.graphics == "low") {
                 ogarminimapdrawer.graphics = 4
-            } else if (defaultSettings.graphics == "very_low") {
+            } 
+			else if (defaultSettings.graphics == "very_low") {
                 ogarminimapdrawer.graphics = 8
             }
         },
-        'cacheSkin': function(t, animated) {
+        cacheSkin(t, animated) {
             //console.log(t);  //////// return the image src
             if (0 != this.cacheQueue.length) {
                 var e = this.cacheQueue.shift();
@@ -4918,7 +4991,7 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'cacheSkin2': function(t) {
+        cacheSkin2(t) {
             if (0 != this.cacheQueue2.length) {
                 var e = this.cacheQueue2.shift();
                 if (e && !this.customSkinsCache[e + "_cached2"]) {
@@ -4941,7 +5014,7 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'cacheSkin3': function(t) {
+        cacheSkin3(t) {
             //console.log(t);  //////// return the image src
             if (0 != this.cacheQueue3.length) {
                 var e = this.cacheQueue3.shift();
@@ -4968,7 +5041,7 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'getCachedSkin': function(t, e) {
+        getCachedSkin(t, e) {
             if (t[e + '_cached3']) {
                 var today = new Date();
                 if (today.getSeconds() < 30) { //vanilla animated skins
@@ -4980,7 +5053,7 @@ var thelegendmodproject = function() {
             return t[e + '_cached'] && t[e + '_cached'].complete && t[e + '_cached'].width ? t[e + '_cached'] : null;
 
         },
-        'cacheCustomSkin': function(t, e, i) {
+        cacheCustomSkin(t, e, i) {
             if (i) {
                 var s = ':party' === this.gameMode ? t + e : t;
                 //console.log("t= " + t);
@@ -4989,12 +5062,12 @@ var thelegendmodproject = function() {
                 this.loadSkin(this.customSkinsCache, i);
             }
         },
-        'checkSkinsMap': function(t, e) {
+        checkSkinsMap(t, e) {
             var i = ':party' === this.gameMode ? t + e : t;
             //console.log(.customSkinsMap.hasOwnProperty(i));
             return !!this.customSkinsMap.hasOwnProperty(i);
         },
-        'getCustomSkin': function(t, e) {
+        getCustomSkin(t, e) {
             //console.log("t= " + t);
             //console.log("e= " + e);				               
             if (':party' === this.gameMode && this.customSkinsMap[t + "#000000"] && this.customSkinsMap[t + "#000000"].includes("configs-web.agario.miniclippt.com/live/")) {
@@ -5005,7 +5078,7 @@ var thelegendmodproject = function() {
             var i = ':party' === this.gameMode ? t + e : t;
             return this.getCachedSkin(this.customSkinsCache, this.customSkinsMap[i]);
         },
-        'calculateMapSector': function(t, xgh2, closeExpr = false) {
+        calculateMapSector(t, xgh2, closeExpr = false) {
             if (!ogario.mapOffsetFixed) {
                 return "";
             }
@@ -5031,10 +5104,10 @@ var thelegendmodproject = function() {
             String.fromCharCode(n + 65) + (r + 1);
             return n = n < 0 ? 0 : n >= defaultSettings.sectorsY ? defaultSettings.sectorsY - 1 : n, r = r < 0 ? 0 : r >= defaultSettings.sectorsX ? defaultSettings.sectorsX - 1 : r, String.fromCharCode(n + 65) + (r + 1);
         },
-        'shortMassFormat': function(t) {
-            return t < 1000 ? t : Math.round(t / 100) / 10 + 'k';
+        shortMassFormat(value) {
+            return value < 1000 ? value : Math.round(value / 100) / 10 + 'k';
         },
-        'updateDeathLocations': function(t, e) {
+        updateDeathLocations(t, e) {
             if (ogario.mapOffsetFixed) {
                 this.deathLocations.push({
                     "x": t + ogario.mapOffsetX,
@@ -5046,7 +5119,7 @@ var thelegendmodproject = function() {
                 this.lastDeath = this.deathLocations.length - 1;
             }
         },
-        'drawMiniMap': function() {
+        drawMiniMap() {
             if (ogario.mapOffsetFixed) {
                 var t = defaultSettings.miniMapWidth;
                 var e = defaultSettings.miniMapTop;
@@ -5212,10 +5285,10 @@ var thelegendmodproject = function() {
             this.dTok(ctx, size - 1);
             ogarfooddrawer.drawSectors(ctx, ogario.mapOffsetFixed, x, y, 0.5, scale, size - 0.5, height - 9.5, defaultSettings.miniMapSectorsColor, defaultSettings.miniMapSectorsColor, 1, false);
         },
-        'resetMiniMapSectors': function() {
+        resetMiniMapSectors() {
             this.miniMapSectors = null;
         },
-        'drawSelectedCell': function(ctx) {
+        drawSelectedCell(ctx) {
             if (ogario.play && ogario.playerSplitCells > 1 && (defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE)) {
                 ctx.fillStyle = '#FFFFFF';
                 ctx.globalAlpha = this.selectBiggestCell ? 0.6 : 0.3;
@@ -5230,16 +5303,16 @@ var thelegendmodproject = function() {
                 ctx.fill();
             }
         },
-        'dTok': function(ctx, size) {
+        dTok(ctx, size) {
             ctx.font = defaultSettings.miniMapFontWeight + ' ' + (defaultSettings.miniMapTop - 6) + 'px ' + defaultSettings.miniMapFontFamily;
             ctx.textAlign = 'right';
             ctx.textBaseline = 'top';
             //ctx.fillText(atob(this.token), size, 7);
         },
-        /*            'drawTeammatesInd': function(ctx, e, i, s) {
+        /*            drawTeammatesInd(ctx, e, i, s) {
                         this.indicator && ctx.drawImage(this.indicator, e - 45, i - s - 90);
                     }, 
-        'drawCellInfo': function(ctx, e, s, o, a, n, r, l, h, c, u, d) {
+        drawCellInfo(ctx, e, s, o, a, n, r, l, h, c, u, d) {
             //if (!n && !h && (ctx.globalAlpha = i.globalAlpha, defaultmapsettings.teammatesInd && d && !l && a <= 200 && this.drawTeammatesInd(ctx, s, o, a), !defaultmapsettings.noNames || defaultmapsettings.showMass)) {
             if (!n && !h && (ctx.globalAlpha = ogario.globalAlpha, defaultmapsettings.teammatesInd && d && !l && a <= 200 && ogarfooddrawer.drawTeammatesInd(ctx, s, o, a), !defaultmapsettings.noNames || defaultmapsettings.showMass)) {
                 var f = false;
@@ -5254,14 +5327,14 @@ var thelegendmodproject = function() {
                 }
             }
         },*/
-        'setVirusColor': function(size) {
+        setVirusColor(size) {
             const floor = Math.floor(size * size / 100);
             if (floor > 183) {
                 return '#C80000';
             }
             return defaultSettings.virusColor;
         },
-        'setVirusStrokeColor': function(size) {
+        setVirusStrokeColor(size) {
             if (ogario.play && ogario.playerMaxMass != 0) {
                 const floor = Math.floor(size * size / 100);
                 const biggestCell = floor / (this.selectBiggestCell ? ogario.playerMaxMass : ogario.playerMinMass);
@@ -5272,10 +5345,10 @@ var thelegendmodproject = function() {
             }
             return defaultSettings.virusStrokeColor;
         },
-        'setAutoHideCellInfo': function(t) {
+        setAutoHideCellInfo(t) {
             return t <= 40 || ogario.viewScale < 0.5 && t < 550 && t < 25 / ogario.viewScale;
         },
-        'setParty': function() {
+        setParty() {
             let value = $('#party-token').val();
             this.gameMode = ogario.gameMode = $(`#gamemode`).val();
             this.setQuest();
@@ -5294,10 +5367,10 @@ var thelegendmodproject = function() {
                 this.cancelTargeting();
             }
         },
-        'createParty': function() {
+        createParty() {
             $('#create-party-btn').click();
         },
-        'joinParty': function() {
+        joinParty() {
             const value = $('#party-token').val();
             if (!value) {
                 return;
@@ -5306,15 +5379,15 @@ var thelegendmodproject = function() {
             $('.party-token').val(value);
             $('#join-party-btn').click();
         },
-        'leaveParty': function() {
+        leaveParty() {
             $('#party-token, .party-token').val('');
             $('#leave-party-btn').click();
         },
-        'closeParty': function() {
+        closeParty() {
             $('#party-token, .party-token').val('');
             $('.party-icon-back').click();
         },
-        'flushData': function() {
+        flushData() {
             this.flushPartyData();
             this.flushSkinsMap();
             this.flushChatData();
@@ -5322,7 +5395,7 @@ var thelegendmodproject = function() {
             ogario.play = false;
             ogario.playerColor = null;
         },
-        'flushPartyData': function() {
+        flushPartyData() {
             this.teamPlayers = [];
             this.parties = [];
             this.lastSentNick = '';
@@ -5332,18 +5405,18 @@ var thelegendmodproject = function() {
             this.lastSentPartyToken = '';
             this.lastSentServerToken = '';
         },
-        'flushCells': function() {
+        flushCells() {
             this.cells = {};
         },
-        'flushSkinsMap': function() {
+        flushSkinsMap() {
             this.customSkinsMap = {};
         },
-        'flushChatData': function() {
+        flushChatData() {
             this.chatUsers = {};
         },
-        'getWS': function(t) {
-            if (t) {
-                this.ws = t;
+        getWS(ws) {
+            if (ws) {
+                this.ws = ws;
                 this.createServerToken();
                 this.updateServerInfo();
                 if (-1 == this.ws.indexOf('agar.io')) {
@@ -5351,7 +5424,7 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'recreateWS': function(token) {
+        recreateWS(token) {
             if (!token) return null;
             var text = null;
 
@@ -5379,7 +5452,7 @@ var thelegendmodproject = function() {
 
             return text;
         },
-        'createServerToken': function() {
+        createServerToken() {
             var matchOld = this.ws.match(/ip-\d+/);
             var matchNew = this.ws.match(/live-arena-([\w\d]+)/);
             var text = null;
@@ -5418,29 +5491,33 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'updateServerInfo': function() {
+        updateServerInfo() {
             $('#server-ws').val(this.ws),
                 $('#server-token').val(this.serverToken),
                 $('#party-token, .party-token').val(this.partyToken);
         },
-        'gameServerConnect': function(t) {
-            t && (this.skipServerData = true, window.core && window.core.connect && window.core.connect(t));
+        gameServerConnect(ws) {
+            if (!ws) {
+                return;
+            }
+			this.skipServerData = true
+			window.core && window.core.connect && window.core.connect(ws);
         },
-        'gameServerReconnect': function() {
+        gameServerReconnect() {
             if (window.MC && window.MC.reconnect) {
                 window.MC.reconnect();
                 return;
             }
-            window.master && window.master.reconnect && window.master.reconnect();
+            if (window.master && window.master.reconnect) window.master.reconnect();
         },
-        'gameServerJoin': function(token) {
+        gameServerJoin(token) {
             const ws = this.recreateWS(token);
             if (ws) {
                 this.skipServerData = true;
                 this.gameServerConnect(ws);
             }
         },
-        'connect': function() {
+        connect() {
             pauseVideos();
             this.closeConnection();
             this.flushData();
@@ -5476,7 +5553,7 @@ var thelegendmodproject = function() {
             };
 
         },
-        'Socket3connect': function(srv) {
+        Socket3connect(srv) {
             //if (window.noOgarioSocket && typeof Socket3enabler !== 'undefined' && typeof Socket3enabler === 'function') {
             //setTimeout(function() {
             //Socket3enabler(window.legendmod.ws);
@@ -5487,7 +5564,7 @@ var thelegendmodproject = function() {
             //}
         },
         //Sonia6			
-        'SLGconnect': function(srv) {
+        SLGconnect(srv) {
             if (window.SLG3NumberTries < 2) {
                 if (window.SLGconnected == null) {
                     window.SLGconnected = true; //do this only once	
@@ -5499,7 +5576,7 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'SLGconnect2': function(srv) {
+        SLGconnect2(srv) {
             this.closeSLGConnection();
             //var room = ogarcopythelb.clanTag + "-" + srv.match("-([A-Za-z0-9]{6,7})\.")[1];
             var room = $("#server-token").val();
@@ -5508,7 +5585,7 @@ var thelegendmodproject = function() {
             //window.SLGsocket = new WebSocket("wss://connect.websocket.in/3Q-SoniaSLG_453dsV?room_id=" + this.room);
             window.SLGsocket = new WebSocket("wss://cloud.achex.ca/JIMBOY3200" + room);
             window.SLGsocket.binaryType = 'arraybuffer';
-            t = this;
+            app = this;
             window.SLGsocket.onopen = function() {
                 window.SLG3NumberTries = 0;
                 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' SLG socket open:', room);
@@ -5526,7 +5603,7 @@ var thelegendmodproject = function() {
             }
             window.SLGsocket.onmessage = function(e) {
                 //console.log(e)
-                t.handleSLGMessage(e);
+                app.handleSLGMessage(e);
             }
             window.SLGsocket.onclose = function(e) {
                 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' SLG socket close');
@@ -5550,11 +5627,11 @@ var thelegendmodproject = function() {
                 }
             };
         },
-        'closeConnection': function() {
+        closeConnection() {
             if (this.socket) {
-                this.socket['onmessage'] = null;
+                this.socket.onmessage = null;
                 try {
-                    this.socket['close']();
+                    this.socket.close();
                 } catch (ogarcloseconlabel) {}
                 this.socket = null;
             }
@@ -5575,7 +5652,7 @@ var thelegendmodproject = function() {
             }
         },
         //Sonia6
-        'closeSLGConnection': function() {
+        closeSLGConnection() {
             if (window.SLGsocket) {
                 window.SLGsocket.onmessage = null;
                 try {
@@ -5584,14 +5661,14 @@ var thelegendmodproject = function() {
                 window.SLGsocket = null;
             }
         },
-        'reconnect': function() {
+        reconnect() {
             this.setParty();
-            var t = this;
+            var app = this;
             setTimeout(function() {
-                t.connect();
+                app.connect();
             }, 1000);
         },
-        'switchServerMode': function() {
+        switchServerMode() {
             if (this.privateIP) {
                 this.privateMode = !this.privateMode;
                 if (this.isSocketOpen()) {
@@ -5612,18 +5689,18 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'isSocketOpen': function() {
+        isSocketOpen() {
             return null !== this.socket && this.socket.readyState === this.socket.OPEN;
         },
         //Sonia6 Below
-        'isSLGSocketOpen': function() {
+        isSLGSocketOpen() {
             var state = false;
             if (window.SLGsocket) {
                 state = window.SLGsocket.readyState === window.SLGsocket.OPEN;
             }
             return state;
         },
-        "writeUint32": function(data, value) {
+        writeUint32(data, value) {
             for (; !![];) {
                 if ((value & -128) == 0) {
                     data.push(value);
@@ -5634,20 +5711,20 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'createView': function(value) {
+        createView(value) {
             return new DataView(new ArrayBuffer(value));
         },
-        'strToBuff': function(offset, str) {
+        strToBuff(offset, str) {
             var view = this.createView(1 + 2 * str.length);
             view.setUint8(0, offset);
             for (var length = 0; length < str.length; length++) view.setUint16(1 + 2 * length, str.charCodeAt(length), true);
             return view;
         },
-        'sendBuffer': function(value) {
+        sendBuffer(value) {
             this.socket.send(value.buffer);
         },
         //Sonia4
-        'sendSLG': function(i, t) {
+        sendSLG(i, t) {
             if (this.isSLGSocketOpen()) {
                 //if (ogarcopythelb.clanTag != this.roomc) {
                 //console.log("Sending failed. Reconnecting required..")
@@ -5670,11 +5747,11 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'handleMessage': function(message) {
+        handleMessage(message) {
             this.readMessage(new DataView(message.data));
         },
         //Sonia4
-        'handleSLGMessage': function(message) {
+        handleSLGMessage(message) {
             //this['SLGHandler'](t.data);
             var temp = message.data;
             //console.log(message.data);
@@ -5684,7 +5761,7 @@ var thelegendmodproject = function() {
             this.SLGSimpleHandler(temp.msg);
             //}
         },
-        'readMessage': function(message) {
+        readMessage(message) {
             switch (message.getUint8(0)) {
                 case 0:
                     this.playerID = message.getUint32(1, true);
@@ -5706,7 +5783,7 @@ var thelegendmodproject = function() {
             }
         },
         //Sonia4
-        'SLGHandler': function(message) {
+        SLGHandler(message) {
             var packet = this.unpackSLG(message);
             if (packet == null) return;
             switch (message.charAt(0)) {
@@ -5718,7 +5795,7 @@ var thelegendmodproject = function() {
                     break;
             }
         },
-        'SLGSimpleHandler': function(message) {
+        SLGSimpleHandler(message) {
             var Socket3data = message;
             //console.log("recieve", message);
             if (Socket3data == null) {
@@ -5739,42 +5816,42 @@ var thelegendmodproject = function() {
             }
         },
         //Sonia4
-        'packSLG': function(message) {
+        packSLG(message) {
             message += this.packInt(this.playerID, 4);
             return message;
         },
         //Sonia4
-        'unpackSLG': function(message) {
+        unpackSLG(message) {
             message = message.slice(1);
             return message;
         },
         //Sonia4
-        'getSLGID': function(message) {
+        getSLGID(message) {
             message = message.slice(0, 2)
             return this.unpackInt(message);
         },
         //Sonia4
-        'getSLGVal': function(message) {
+        getSLGVal(message) {
             message = message.slice(2);
             return message;
         },
-        'sendPlayerState': function(state) {
+        sendPlayerState(state) {
             if (this.isSocketOpen()) {
                 var view = this.createView(1);
                 view.setUint8(0, state);
                 this.sendBuffer(view);
             }
         },
-        'sendPlayerSpawn': function() {
+        sendPlayerSpawn() {
             this.sendPlayerState(1);
         },
-        'sendPlayerDeath': function() {
+        sendPlayerDeath() {
             this.sendPlayerState(2);
         },
-        'sendPlayerJoin': function() {
+        sendPlayerJoin() {
             this.sendPlayerState(3);
         },
-        'sendPlayerData': function(offset, name, str) {
+        sendPlayerData(offset, name, str) {
             if (this[name] !== null && this[name] === str) {
                 return;
             }
@@ -5783,35 +5860,35 @@ var thelegendmodproject = function() {
                 this[name] = str;
             }
         },
-        'sendPlayerNick': function() {
+        sendPlayerNick() {
             this.sendPlayerData(10, 'lastSentNick', ogarcopythelb.nick);
         },
-        'sendPlayerClanTag': function() {
+        sendPlayerClanTag() {
             this.sendPlayerData(11, 'lastSentClanTag', ogarcopythelb.clanTag);
         },
-        'sendPlayerSkinURL': function() {
+        sendPlayerSkinURL() {
             this.sendPlayerData(12, 'lastSentSkinURL', ogarcopythelb.skinURL);
         },
-        'sendPlayerCustomColor': function() {
+        sendPlayerCustomColorn() {
             this.sendPlayerData(13, 'lastSentCustomColor', ogarcopythelb.color);
         },
-        'sendPlayerColor': function() {
+        sendPlayerColor() {
             if (this.isSocketOpen() && ogario.playerColor) {
                 this.sendBuffer(this.strToBuff(14, ogario.playerColor));
             }
         },
-        'sendPartyToken': function() {
+        sendPartyToken() {
             this.setParty();
             this.sendPlayerData(15, 'lastSentPartyToken', this.partyToken);
         },
-        'sendServerToken': function() {
+        sendServerToken() {
             this.sendPlayerData(16, 'lastSentServerToken', this.serverToken);
         },
-        'sendServerJoin': function() {
+        sendServerJoin() {
             this.sendServerToken();
             this.sendPlayerJoin();
         },
-        'sendServerRegion': function() {
+        sendServerRegion() {
             if (this.region) {
                 var region = this.region.split('-');
                 if (this.isSocketOpen()) {
@@ -5819,7 +5896,7 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'sendServerGameMode': function() {
+        sendServerGameMode() {
             var gamemode = 'FFA';
             switch (this.gameMode) {
                 case ':battleroyale':
@@ -5838,7 +5915,7 @@ var thelegendmodproject = function() {
                 this.sendBuffer(this.strToBuff(18, gamemode));
             }
         },
-        'sendServerData': function() {
+        sendServerData() {
             if (this.skipServerData) {
                 this.skipServerData = false;
                 return;
@@ -5848,13 +5925,13 @@ var thelegendmodproject = function() {
             this.sendServerRegion();
             this.sendServerGameMode();
         },
-        'sendPartyData': function() {
+        sendPartyData() {
             this.sendPlayerClanTag();
             this.sendPartyToken();
             this.sendServerToken();
             this.sendPlayerNick();
         },
-        'sendPlayerUpdate': function() {
+        sendPlayerUpdate() {
             if (this.isSocketOpen() && ogario.play && this.playerID && ogario.playerColor) {
                 function encode(str) {
                     for (let length = 0; length < str.length; length++) {
@@ -5878,7 +5955,7 @@ var thelegendmodproject = function() {
                 this.sendBuffer(view);
             }
         },
-        'sendPlayerPosition': function() {
+        sendPlayerPosition() {
             if (this.isSocketOpen() && ogario.play && this.playerID) {
                 const view = this.createView(17);
                 view.setUint8(0, 30);
@@ -5893,7 +5970,7 @@ var thelegendmodproject = function() {
                 this.sendBuffer(view);
             }
         },
-        'packInt': function(x, m) {
+        packInt(x, m) {
             var s = "";
             if (m == 2) {
                 s += String.fromCharCode(x)
@@ -5905,7 +5982,7 @@ var thelegendmodproject = function() {
             }
             return s;
         },
-        'packFloat': function(x, m) {
+        packFloat(x, m) {
             if (m == 2) {
                 x = Math.floor(x * 100000);
             } else {
@@ -5913,7 +5990,7 @@ var thelegendmodproject = function() {
             }
             return this.packInt(x, m);
         },
-        'unpackInt': function(s) {
+        unpackInt(s) {
             var x = 0;
             if (s.length == 1) {
                 x += s.charCodeAt(0);
@@ -5923,7 +6000,7 @@ var thelegendmodproject = function() {
             }
             return x;
         },
-        'unpackFloat': function(s) {
+        unpackFloat(s) {
             var x = this.unpackInt(s);
             if (s.length == 1) {
                 x = x / 100000;
@@ -5932,17 +6009,17 @@ var thelegendmodproject = function() {
             }
             return x;
         },
-        'getrel': function(x, axis) {
+        getrel(x, axis) {
             var v = window.legendmod;
             if (axis == 0) return x / (v.mapMaxX - v.mapMinX);
             else return x / (v.mapMaxY - v.mapMinY);
         },
-        'getreal': function(x, axis) {
+        getreal(x, axis) {
             var v = window.legendmod;
             if (axis == 0) return x * (v.mapMaxX - v.mapMinX) + v.mapMinX;
             else return x * (v.mapMaxY - v.mapMinY) + v.mapMinY;
         },
-        'sendJimboy3100info': function() {
+        sendJimboy3100info() {
             if (window.legendmod.play) {
                 window.playerCellsSock = [];
                 if (legendmod.playerCells && legendmod.playerCells.length) {
@@ -5973,7 +6050,7 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'sendSLGQinfo': function() {
+        sendSLGQinfo() {
             //return;
             var msg = "";
             var vlen = window.legendmod.viruses.length;
@@ -6009,7 +6086,7 @@ var thelegendmodproject = function() {
             var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + ":" + today.getMilliseconds();
             //console.log("Package Sent:",time)
         },
-        'getSLGQinfo': function(t) {
+        getSLGQinfo(t) {
             //return ;
             var ids = this.getSLGID(t);
             var id = this.checkPlayerID(ids);
@@ -6077,7 +6154,7 @@ var thelegendmodproject = function() {
 
             //Here should be food part
         },
-        'sendSocket3Position': function() {
+        sendSocket3Position() {
             if (ogario.play && window.noOgarioSocket && Socket3) {
                 //if (window.noOgarioSocket && ogarcopythelb.clanTag!="" && ogarcopythelb.nick.includes("℄")) { 					
                 //Socket3.send(JSON.stringify({ com: "pos", id: customLMID, x: legendmod3.getPlayerX(), y: legendmod3.getPlayerY(), mass: legendmod.playerMass}));					
@@ -6099,14 +6176,14 @@ var thelegendmodproject = function() {
             }
         },
         //Sonia4
-        'sendSuperLegendSDATA': function() {
+        sendSuperLegendSDATA() {
             if (ogario.play && this.playerID) {
                 var s = "";
                 s += window.legendmod.bgpi;
                 this.sendSLG("R", s);
             }
         },
-        'sendSimpleLegendSDATA': function() {
+        sendSimpleLegendSDATA() {
             if (ogario.play && this.playerID) {
                 //var t = this.playerID;
                 var t = window.unescape(window.encodeURIComponent(legendmod3.lastSentNick));
@@ -6136,7 +6213,7 @@ var thelegendmodproject = function() {
             }
         },
         //Sonia4
-        'getSuperLegendSDATA': function(t) {
+        getSuperLegendSDATA(t) {
             var ids = this.getSLGID(t);
             var id = this.checkPlayerID(ids);
             if (null != id) {
@@ -6149,7 +6226,7 @@ var thelegendmodproject = function() {
 
             }
         },
-        'checkPlayerID': function(id) {
+        checkPlayerID(id) {
             if (id) {
                 for (let length = 0; length < this.teamPlayers.length; length++) {
                     if (this.teamPlayers[length].id == id) {
@@ -6159,19 +6236,19 @@ var thelegendmodproject = function() {
             }
             return null;
         },
-        'checkPlayerNick': function(nick) {
+        checkPlayerNick(nick) {
             if (nick)
                 for (var length = 0; length < this.teamPlayers.length; length++)
                     if (this.teamPlayers[length].nick == nick) return length;
             return null;
         },
-        'checkPlayerChat': function(message) {
+        checkPlayerChat(message) {
             if (message)
                 for (var length = 0; length < this.teamPlayers.length; length++)
                     if (this.teamPlayers[length].id == message) return length;
             return null;
         },
-        'updateTeamPlayer': function(message) {
+        updateTeamPlayer(message) {
             function encode() {
                 var text = "";
                 for (;;) {
@@ -6205,7 +6282,7 @@ var thelegendmodproject = function() {
             }
             this.cacheCustomSkin(nick, defaultColor, skinUrl);
         },
-        'updateTeamPlayerPosition': function(message) {
+        updateTeamPlayerPosition(message) {
             var e = message.getUint32(1, true),
                 i = this.checkPlayerID(e);
             if (null !== i) {
@@ -6224,10 +6301,10 @@ var thelegendmodproject = function() {
             }
         },
         //Sonia3 Added 3 fuctions below
-        'dematrix': function(mat) {
+        dematrix(mat) {
             return !mat[0] && !mat[1] ? 0 : mat[0] && !mat[1] ? 1 : mat[0] && mat[1] ? 2 : 3;
         },
-        'setvnr': function(b) {
+        setvnr(b) {
             window.legendmod.setrot = 1;
             window.legendmod.rotcnt = 0;
             var mat = window.legendmod.vector[window.legendmod.vnr];
@@ -6238,7 +6315,7 @@ var thelegendmodproject = function() {
             if ((b == 2 || b == 3) && (window.legendmod.bgpi == 1 || window.legendmod.bgpi == 0)) mat[1] = !mat[1];
             window.legendmod.vnr = this.dematrix(mat);
         },
-        'updatevnr': function() {
+        updatevnr() {
             var mm = 0;
             var max = 4;
             for (var i = 0; i < this.teamPlayers.length; i++) {
@@ -6256,7 +6333,7 @@ var thelegendmodproject = function() {
                 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map fixed with LM players. POS:', max);
             }
         },
-        'updateTeamPlayers': function() {
+        updateTeamPlayers() {
             this.sendPlayerPosition();
             //this.sendSuperLegendSDATA();
             this.sendSimpleLegendSDATA();
@@ -6302,7 +6379,7 @@ var thelegendmodproject = function() {
                 this.displayTop5();
 
         },
-        'updateParties': function(t) {
+        updateParties(t) {
             this.parties = [];
             for (var e = t.getUint8(1), i = 2, s = 0; s < e; s++) {
                 for (var o = '';;) {
@@ -6313,7 +6390,7 @@ var thelegendmodproject = function() {
                 i += 2, this.parties.push(o);
             }
         },
-        'readChatMessage': function(t) {
+        readChatMessage(t) {
             if (!defaultmapsettings.disableChat) {
                 var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
                 var caseof = t.getUint8(1); //caseof 101 or 102
@@ -6339,7 +6416,7 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'sendChatMessage': function(type, message) {
+        sendChatMessage(type, message) {
             //console.log(type);console.log(message);
             if (!(Date.now() - this.lastMessageSentTime < 500 || 0 == message.length || 0 == ogarcopythelb.nick.length) && this.isSocketOpen()) {
                 message = ogarcopythelb.nick + ': ' + message;
@@ -6353,23 +6430,23 @@ var thelegendmodproject = function() {
                     this.lastMessageSentTime = Date.now();
             }
         },
-        'prepareCommand': function(command) {
+        prepareCommand(command) {
             return command.replace('%currentSector%', this.currentSector);
         },
-        'sendCommand': function(command) {
+        sendCommand(command) {
             var prepareCommand = this.prepareCommand(chatCommand['comm' + command]);
             this.sendChatMessage(102, prepareCommand);
         },
-        'addChatUser': function(id, name) {
+        addChatUser(id, name) {
             this.chatUsers[id] = name;
         },
-        'getChatUserNick': function(id) {
+        getChatUserNick(id) {
             if (this.chatUsers.hasOwnProperty(id)) {
                 return this.chatUsers[id];
             }
             return '';
         },
-        'muteChatUser': function(id) {
+        muteChatUser(id) {
             if (id && !this.isChatUserMuted(id)) {
                 var User = this.getChatUserNick(id);
                 this.chatMutedUsers[id] = User;
@@ -6377,7 +6454,7 @@ var thelegendmodproject = function() {
                 toastr.error(textLanguage.userMuted.replace('%user%', '<strong>' + this.escapeHTML(User) + '</strong>') + ' <button data-user-id=\"' + id + '\" class=\"btn btn-xs btn-green btn-unmute-user\">' + textLanguage.unmute + '</button>');
             }
         },
-        'unmuteChatUser': function(id) {
+        unmuteChatUser(id) {
             if (id) {
                 var User = this.chatMutedUserIDs.indexOf(id);
                 if (-1 != User) {
@@ -6387,13 +6464,13 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'isChatUserMuted': function(id) {
+        isChatUserMuted(id) {
             if (this.chatMutedUserIDs.indexOf(id) != -1) {
                 return true;
             }
             return false;
         },
-        'parseMessage': function(string) {
+        parseMessage(string) {
             var isImage = /\[img\](https?:\/\/i\.(?:imgur|hizliresim)\.com\/\w{6,8}\.(?:jpg|jpeg|png|gif)\??\d*)\[\/img\]/i;
             if (isImage.test(string)) return defaultmapsettings.showChatImages ? '<img src=\"' + string.match(isImage)[1].replace('http:', 'https:') + '\" style=\"width:100%;border:none;\">' : '';
             var url = /\[yt\]([\w-]{11})\[\/yt\]/i;
@@ -6404,7 +6481,7 @@ var thelegendmodproject = function() {
             }
             return escapedHtml;
         },
-        'parseEmoticons': function(string) {
+        parseEmoticons(string) {
             /*return String(string).replace(/\&lt\;3/g, '<3').replace(/(O\:\)|3\:\)|8\=\)|\:\)|\;\)|\=\)|\:D|X\-D|\=D|\:\(|\;\(|\:P|\;P|\:\*|\$\)|\<3|\:o|\(\:\||\:\||\:\\|\:\@|\|\-\)|\^\_\^|\-\_\-|\$\_\$|\(poop\)|\(fuck\)|\(clap\)|\(ok\)|\(victory\)|\(y\)|\(n\))/g, function(string) {
                 return '<img src=\"https://legendmod.ml/banners/emoticons/' + d[string] + '\" alt=\"' + string + '\" class=\"emoticon\">';
             });*/
@@ -6415,7 +6492,7 @@ var thelegendmodproject = function() {
             });
 
         },
-        'displayChatMessage': function(time, caseof, plId, msg) {
+        displayChatMessage(time, caseof, plId, msg) {
             if (0 != msg.length) {
                 //console.log(msg);
                 var a = msg.split(': ', 1).toString();
@@ -6441,7 +6518,7 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'displayUserList': function(users, activeUser, html, isMute, o) {
+        displayUserList(users, activeUser, html, isMute, o) {
             var text = '';
             if (Object.keys(users).length) {
                 for (var user in text += '<ol class=\"user-list\">', users) users.hasOwnProperty(user) && (text += '<li><strong>' + this.escapeHTML(users[user]) + '</strong> <button data-user-id=\"' + user + '\" class=\"btn btn-xs ' + html + '\">' + isMute + '</button></li>');
@@ -6452,37 +6529,40 @@ var thelegendmodproject = function() {
                 'tapToDismiss': false
             });
         },
-        'displayChatActiveUsers': function() {
+        displayChatActiveUsers() {
             this.displayUserList(this.chatUsers, textLanguage.activeUsers, 'btn-red btn-mute-user', textLanguage.mute, 'info');
         },
-        'displayChatMutedUsers': function() {
+        displayChatMutedUsers() {
             this.displayUserList(this.chatMutedUsers, textLanguage.mutedUsers, 'btn-green btn-unmute-user', textLanguage.unmute, 'error');
         },
-        'preloadChatSounds': function() {
+        preloadChatSounds() {
             this.setMessageSound();
             this.setCommandSound();
             this.setvirusSound();
         },
-        'setChatSoundsBtn': function() {
+        setChatSoundsBtn() {
             if (defaultmapsettings.chatSounds) {
-                $('.chat-sound-notifications').removeClass('ogicon-volume-mute2').addClass('ogicon-volume-high')
+                $('.chat-sound-notifications').removeClass('ogicon-volume-mute2').addClass('ogicon-volume-high');
             } else {
                 $('.chat-sound-notifications').removeClass('ogicon-volume-high').addClass('ogicon-volume-mute2');
             }
         },
-        'setMessageSound': function() {
+        setMessageSound() {
             this.messageSound = this.setSound(defaultmapsettings.messageSound);
         },
-        'setCommandSound': function() {
+        setCommandSound() {
             this.commandSound = this.setSound(defaultmapsettings.commandSound);
         },
-        'setvirusSound': function() {
+        setvirusSound() {
             this.virusSoundurl = this.setSound(defaultmapsettings.virusSoundurl);
         },
-        'setSound': function(audio) {
-            return audio ? new Audio(audio) : null;
+        setSound(audio) {
+            if (!audio) {
+                return null;
+            }
+            return new Audio(audio);
         },
-        /*            'playSound': function(audio) {
+        /*            playSound(audio) {
                         //audio && audio.play && (audio.pause(), audio.currentTime = 0, audio.play());
                         //audio && audio.play && audio.play!==null && (audio.pause(), audio.currentTime = 0, audio.play());
                         audio.pause();
@@ -6493,7 +6573,7 @@ var thelegendmodproject = function() {
                         (audio.play() || nopromise).catch(function() {});
                     },
         */
-        'playSound': function(audio) {
+        playSound(audio) {
             if (audio && audio.play) {
                 audio.pause();
                 audio.currentTime = 0;
@@ -6504,18 +6584,18 @@ var thelegendmodproject = function() {
                 (audio.play() || nopromise).catch(function() {});
             }
         },
-        'setFBIDs': function() {
+        setFBIDs() {
             this.FacebookIDs = defaultmapsettings.FacebookIDs;
             return this.FacebookIDs;
         },
-        'setDebug': function() {
+        setDebug() {
             if (defaultmapsettings.debug) {
                 defaultmapsettings.debug = false
             } else {
                 defaultmapsettings.debug = true
             }
         },
-        'setFullSpectator': function() {
+        setFullSpectator() {
             if (window.fullSpectator) {
                 window.fullSpectator = false
                 LM.flushSpecsData()
@@ -6524,7 +6604,7 @@ var thelegendmodproject = function() {
                 LM.addSpect()
             }
         },
-        'setIngameSpectator': function() {
+        setIngameSpectator() {
             if (window.ingameSpectator) {
                 window.ingameSpectator = false
                 LM.flushSpecsData()
@@ -6533,14 +6613,14 @@ var thelegendmodproject = function() {
                 LM.addSpect()
             }
         },
-        'setTargeting': function() {
+        setTargeting() {
             if (this.targetID) {
                 this.targeting = !this.targeting;
                 ogario.targeting = this.targeting;
                 this.setTargetingInfo();
             }
         },
-        'setTargetingInfo': function() {
+        setTargetingInfo() {
             if (this.targeting) {
                 $('#set-targeting').addClass('active');
                 $('#target-status').show();
@@ -6552,10 +6632,10 @@ var thelegendmodproject = function() {
                 $('#target-summary, #target-status').hide();
             }
         },
-        'cancelTargeting': function() {
+        cancelTargeting() {
             this.setTargetStatus(0);
         },
-        'setPrivateMiniMap()': function() {
+        setPrivateMiniMap() {
             if (!this.targetID) {
                 return;
             }
@@ -6566,7 +6646,7 @@ var thelegendmodproject = function() {
                 $('#set-private-minimap').removeClass('active');
             }
         },
-        'setTarget': function(id) {
+        setTarget(id) {
             const userId = this.checkPlayerID(id);
             if (userId !== null) {
                 const teamPlayer = this.teamPlayers[userId];
@@ -6581,7 +6661,7 @@ var thelegendmodproject = function() {
                 this.setTargetStatus(0);
             }
         },
-        'setTargetStatus': function(type) {
+        setTargetStatus(type) {
             switch (type) {
                 case 0:
                     this.targetStatus = 0;
@@ -6615,7 +6695,7 @@ var thelegendmodproject = function() {
                     ogario.resetTargetPosition();
             }
         },
-        'changeTarget': function() {
+        changeTarget() {
             var targetId = this.checkPlayerID(this.targetID);
             for (target = null, length = 0; length < this.teamPlayers.length; length++)
                 if (this.teamPlayers[length].alive) {
@@ -6638,7 +6718,7 @@ var thelegendmodproject = function() {
                 this.setTargetStatus(0);
             }
         },
-        'updateTarget': function(nick, skinUrl, x, y, mass, color, f) {
+        updateTarget(nick, skinUrl, x, y, mass, color, f) {
             ogario.setTargetPosition(x, y);
             if (this.targetNick !== nick) {
                 this.targetNick = nick;
@@ -6686,7 +6766,7 @@ var thelegendmodproject = function() {
                 this.setTargetStatus(1);
             }
         },
-        'updateQuest': function() {
+        updateQuest() {
             if (!this.showQuest || this.gameMode !== ':ffa') {
                 return;
             }
@@ -6694,7 +6774,7 @@ var thelegendmodproject = function() {
                 this.questHUD.textContent = window.MC.getQuestProgressLabel();
             }
         },
-        'init': function() {
+        init() {
             this.loadSettings();
             this.loadProfiles();
             this.setLang();
@@ -7620,8 +7700,8 @@ var thelegendmodproject = function() {
         master.protocolVersion = localStorage.getItem("ogarioProtocolVersion");
     }
     var LM = {
-        'integrity': true,
-        'quadtree': null,
+        integrity: true,
+        quadtree: null,
         updateQuadtree: function(cells) {
             var w = ogarfooddrawer.canvasWidth / ogarfooddrawer.scale;
             var h = ogarfooddrawer.canvasHeight / ogarfooddrawer.scale;
@@ -7635,126 +7715,126 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        'isFreeSpectate': false,
-        'isSpectateEnabled': false,
-        'ws': null,
-        'socket': null,
-        'protocolKey': null,
-        'clientKey': null,
-        'connectionOpened': false,
-        'accessTokenSent': false,
-        //'clientVersion': 30604,
-        'clientVersion': master.clientVersion,
-        'protocolVersion': master.protocolVersion,
-        //'clientVersionString': '3.6.4',
-        'clientVersionString': master.clientVersionString,
-        'xsupportprotoversion': master.xsupportprotoversion,
-        'time': Date.now(),
-        'serverTime': 0,
-        'serverTimeDiff': 0,
-        //'loggedInTime': 0,
-        'mapSize': 14142,
-        'mapOffset': 7071,
-        'mapOffsetX': 0,
-        'mapOffsetY': 0,
-        'mapOffsetFixed': false,
+        isFreeSpectate: false,
+        isSpectateEnabled: false,
+        ws: null,
+        socket: null,
+        protocolKey: null,
+        clientKey: null,
+        connectionOpened: false,
+        accessTokenSent: false,
+        //clientVersion: 30604,
+        clientVersion: master.clientVersion,
+        protocolVersion: master.protocolVersion,
+        //clientVersionString: '3.6.4',
+        clientVersionString: master.clientVersionString,
+        xsupportprotoversion: master.xsupportprotoversion,
+        time: Date.now(),
+        serverTime: 0,
+        serverTimeDiff: 0,
+        //loggedInTime: 0,
+        mapSize: 14142,
+        mapOffset: 7071,
+        mapOffsetX: 0,
+        mapOffsetY: 0,
+        mapOffsetFixed: false,
 
-        'mapMinX': -7071,
-        'mapMinY': -7071,
-        'mapMaxX': 7071,
-        'mapMaxY': 7071,
-        'viewMinX': 0,
-        'viewMinY': 0,
-        'viewMaxX': 0,
-        'viewMaxY': 0,
+        mapMinX: -7071,
+        mapMinY: -7071,
+        mapMaxX: 7071,
+        mapMaxY: 7071,
+        viewMinX: 0,
+        viewMinY: 0,
+        viewMaxX: 0,
+        viewMaxY: 0,
         //
-        'camMaxX': 0,
-        'camMaxY': 0,
-        'camMinX': 0,
-        'camMinY': 0,
+        camMaxX: 0,
+        camMaxY: 0,
+        camMinX: 0,
+        camMinY: 0,
         //
-        'canvasWidth': 0,
-        'canvasHeight': 0,
-        'canvasScale': 1,
-        'indexedCells': {},
-        'cells': [],
-        'removedCells': [],
-        'food': [],
-        'viruses': [],
-        'playerCells': [],
-        'playerCellIDs': [],
-        'fbOnline': [],
-        'arrowFB': [{}],
-        'ghostCells': [],
-        'playerX': 0,
-        'playerY': 0,
-        'playerSize': 0,
-        'playerMass': 0,
-        'playerMaxMass': 0,
-        'playerMinMass': 0,
-        'playerScore': 0,
-        'playerSplitCells': 0,
-        'playerColor': null,
-        'playerNick': '',
-        'playerPosition': 0,
-        'leaderboard': [],
-        'biggerSTEDCellsCache': [], //Sonia
-        'biggerSTECellsCache': [],
-        'biggerCellsCache': [],
-        'smallerCellsCache': [],
-        'STECellsCache': [],
-        'STEDCellsCache': [], //Sonia
-        //'SSCellsCache': [], 
-        'STE': 0,
-        'autoZoom': false,
-        'zoomValue': 0.1,
-        'viewX': 0,
-        'viewY': 0,
-        'scale': 1,
-        'viewScale': 1,
-        'clientX': 0,
-        'clientY': 0,
-        'cursorX': 0,
-        'cursorY': 0,
-        'targetX': 0,
-        'targetY': 0,
-        'targetDistance': 0,
+        canvasWidth: 0,
+        canvasHeight: 0,
+        canvasScale: 1,
+        indexedCells: {},
+        cells: [],
+        removedCells: [],
+        food: [],
+        viruses: [],
+        playerCells: [],
+        playerCellIDs: [],
+        fbOnline: [],
+        arrowFB: [{}],
+        ghostCells: [],
+        playerX: 0,
+        playerY: 0,
+        playerSize: 0,
+        playerMass: 0,
+        playerMaxMass: 0,
+        playerMinMass: 0,
+        playerScore: 0,
+        playerSplitCells: 0,
+        playerColor: null,
+        playerNick: '',
+        playerPosition: 0,
+        leaderboard: [],
+        biggerSTEDCellsCache: [], //Sonia
+        biggerSTECellsCache: [],
+        biggerCellsCache: [],
+        smallerCellsCache: [],
+        STECellsCache: [],
+        STEDCellsCache: [], //Sonia
+        //SSCellsCache: [], 
+        STE: 0,
+        autoZoom: false,
+        zoomValue: 0.1,
+        viewX: 0,
+        viewY: 0,
+        scale: 1,
+        viewScale: 1,
+        clientX: 0,
+        clientY: 0,
+        cursorX: 0,
+        cursorY: 0,
+        targetX: 0,
+        targetY: 0,
+        targetDistance: 0,
         ////
-        "cRadius": 10,
-        "cAngle": 4,
-        "cAngle1": 0,
-        "cAngle2": 0,
-        "cAlpha": 1,
-        "drawCommander": 0,
+        cRadius: 10,
+        cAngle: 4,
+        cAngle1: 0,
+        cAngle2: 0,
+        cAlpha: 1,
+        drawCommander: 0,
         ////
-        'battleRoyale': {
-            'state': 0,
-            'players': 0,
-            'startTime': 0,
-            'shrinkTime': 0,
-            'timeLeft': 0,
-            'x': 0,
-            'y': 0,
-            'radius': 0,
-            'targetX': 0,
-            'targetY': 0,
-            'targetRadius': 0,
-            'maxRadius': 11313,
-            'rank': [],
-            'playerRank': 0,
-            'joined': false
+        battleRoyale: {
+            state: 0,
+            players: 0,
+            startTime: 0,
+            shrinkTime: 0,
+            timeLeft: 0,
+            x: 0,
+            y: 0,
+            radius: 0,
+            targetX: 0,
+            targetY: 0,
+            targetRadius: 0,
+            maxRadius: 11313,
+            rank: [],
+            playerRank: 0,
+            joined: false
         },
-        'play': false,
-        'pause': false,
-        'targeting': false,
-        'removePlayerCell': false,
-        'showCustomSkins': true,
-        'showFood': true,
-        'foodIsHidden': false,
-        'selectBiggestCell': true,
-        'hideSmallBots': false,
-        'pressedKeys': {},
-        'connect': function(t) {
+        play: false,
+        pause: false,
+        targeting: false,
+        removePlayerCell: false,
+        showCustomSkins: true,
+        showFood: true,
+        foodIsHidden: false,
+        selectBiggestCell: true,
+        hideSmallBots: false,
+        pressedKeys: {},
+        connect(t) {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to game server:', t);
             var app = this;
             setTimeout(function() {
@@ -7814,7 +7894,7 @@ var thelegendmodproject = function() {
                 window.master.onConnect();
             }
         },
-        'onOpen': function() {
+        onOpen() {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket open');
             this.time = Date.now();
             var view = this.createView(5);
@@ -7829,28 +7909,28 @@ var thelegendmodproject = function() {
             this.sendMessage(view);
             this.connectionOpened = true;
         },
-        'onMessage': function(message) {
+        onMessage(message) {
             message = new DataView(message.data);
             if (this.protocolKey) {
                 message = this.shiftMessage(message, this.protocolKey ^ this.clientVersion);
             }
             this.handleMessage(message);
         },
-        'onError': function(t) {
+        onError(t) {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket error');
             this.flushCellsData();
             if (window.master && window.master.onDisconnect) {
                 window.master.onDisconnect();
             }
         },
-        'onClose': function(t) {
+        onClose(t) {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket close');
             this.flushCellsData();
             if (window.master && window.master.onDisconnect) {
                 window.master.onDisconnect();
             }
         },
-        'closeConnection': function() {
+        closeConnection() {
             if (this.socket) {
                 this.socket.onopen = null;
                 this.socket.onmessage = null;
@@ -7863,16 +7943,16 @@ var thelegendmodproject = function() {
                 this.ws = null;
             }
         },
-        'isSocketOpen': function() {
+        isSocketOpen() {
             return this.socket !== null && this.socket.readyState === this.socket.OPEN;
         },
-        'createView': function(t) {
+        createView(t) {
             return new DataView(new ArrayBuffer(t));
         },
-        'sendBuffer': function(data) {
+        sendBuffer(data) {
             this.socket.send(data.buffer);
         },
-        'sendMessage': function(message) {
+        sendMessage(message) {
             if (this.connectionOpened && this.integrity) {
                 if (!this.clientKey) {
                     return;
@@ -7882,7 +7962,7 @@ var thelegendmodproject = function() {
             }
             this.sendBuffer(message);
         },
-        'sendAction': function(action) {
+        sendAction(action) {
 
             if (!this.isSocketOpen()) {
                 return;
@@ -7891,19 +7971,19 @@ var thelegendmodproject = function() {
             view.setUint8(0, action);
             this.sendMessage(view);
         },
-        'sendSpectate': function() {
+        sendSpectate() {
             this.isSpectateEnabled = true;
             this.sendAction(1);
         },
-        'sendFreeSpectate': function() {
+        sendFreeSpectate() {
             this.isFreeSpectate = !this.isFreeSpectate;
             this.sendAction(18);
         },
-        'sendEject': function() {
+        sendEject() {
             this.sendPosition();
             this.sendAction(21);
         },
-        'sendSplit': function() {
+        sendSplit() {
             this.sendPosition();
             this.sendAction(17);
 
@@ -7936,7 +8016,7 @@ var thelegendmodproject = function() {
             this.sendMessage(view);
 
         },
-        'sendNick': function(nick) {
+        sendNick(nick) {
 
             var self = this
             this.playerNick = nick;
@@ -8002,7 +8082,7 @@ var thelegendmodproject = function() {
             }, 1800);
 
         },
-        'sendTimeOutTokenForBots': function() {
+        sendTimeOutTokenForBots() {
             //window.sendTimeOutTokenBots=false;
             if (document.getElementById('userStatus').innerText == 'Connected' && window.RequestedTokens > 1) {
                 setTimeout(function() {
@@ -8026,7 +8106,7 @@ var thelegendmodproject = function() {
                 //}, 100);
             }
         },
-        'sendSpawn2': function(temp) {
+        sendSpawn2(temp) {
             var token = temp
             window.botsSpawncodeNum++;
             window.botsSpawncode[window.botsSpawncodeNum] = token;
@@ -8046,7 +8126,7 @@ var thelegendmodproject = function() {
             }));
             //self.sendMessage(view);			
         },
-        'sendTokenForBots': function() {
+        sendTokenForBots() {
             //var self = this
             //this.playerNick = nick;    
             legendmod.botscaptcha = true;
@@ -8096,7 +8176,7 @@ var thelegendmodproject = function() {
                         }	
             */
         },
-        'sendNick2': function(nick) {
+        sendNick2(nick) {
             this.playerNick = nick,
                 nick = window.unescape(window.encodeURIComponent(nick));
             window.Bufferdata = nick; //
@@ -8106,7 +8186,7 @@ var thelegendmodproject = function() {
             this.sendMessage(view);
         },
 
-        'sendPosition': function(cell, target2, specialcommand) {
+        sendPosition(cell, target2, specialcommand) {
             var cursorX, cursorY;
             if (this.isSocketOpen() && this.connectionOpened && (this.clientKey || !legendmod.integrity)) {
                 if (specialcommand) {
@@ -8154,7 +8234,7 @@ var thelegendmodproject = function() {
 
 
         },
-        /*            'sendAccessToken': function(t, e, i) {
+        /*            sendAccessToken(t, e, i) {
                         if (!this['accessTokenSent']) {
                             i || (i = 102);
                             for (var s = t.length, o = this.clientVersionString.length, a = [i, 8, 1, 18, s + o + 23, 1, 8, 10, 0x52, s + o + 18, 1, 8, e, 18, o + 8, 8, 5, 18, o], n = 0; n < o; n++) a.push(this.clientVersionString.charCodeAt(n));
@@ -8164,7 +8244,7 @@ var thelegendmodproject = function() {
                             this.sendMessage(r);
                         }
                     }, */
-        "sendAccessToken": function(shapes, options, oW) {
+        sendAccessToken(shapes, options, oW) {
             if (!legendmod.integrity) {
                 return
             }
@@ -8201,23 +8281,23 @@ var thelegendmodproject = function() {
             var raw_basefont = new DataView(data.buffer);
             this.sendMessage(raw_basefont);
         },
-        'sendFbToken': function(token) {
+        sendFbToken(token) {
             //                console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " Facebook token: " + token);
             this.sendAccessToken(token, 2);
         },
-        'sendGplusToken': function(token) {
+        sendGplusToken(token) {
             //                console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " Google Plus token: " + token);
             //this.sendAccessToken(token, 3);
             this.sendAccessToken(token, 4);
         },
-        'sendRecaptcha': function(token) {
+        sendRecaptcha(token) {
             var view = this.createView(2 + token.length);
             view.setUint8(0, 86);
             for (var length = 0; length < token.length; length++) view.setUint8(1 + length, token.charCodeAt(length));
             view.setUint8(token.length + 1, 0);
             this.sendMessage(view);
         },
-        'setClientVersion': function(version, string) {
+        setClientVersion(version, string) {
 
             if (window.disableIntegrity != true) { //
                 this.clientVersion = version;
@@ -8231,7 +8311,7 @@ var thelegendmodproject = function() {
             } //
         },
         /*
-        			'generateClientKey': function(t, e) {
+        			generateClientKey(t, e) {
                         if (!t.length || !e.byteLength) return null;
                         for (var i = null, s = 1540483477, o = t.match(/(ws+:\/\/)([^:]*)(:\d+)/)[2], a = o.length + e.byteLength, n = new Uint8Array(a), r = 0; r < o.length; r++) n[r] = o.charCodeAt(r);
                         n.set(e, o.length);
@@ -8250,7 +8330,7 @@ var thelegendmodproject = function() {
                         }
                         return i != u && (i = 0 | Math.imul(n[c] ^ u, s)), i ^= u = i >>> 13, i = 0 | Math.imul(i, s), i ^= u = i >>> 15, console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Generated client key:', i),window.generatedClientKey=i, i;
                     },
-                    'shiftKey': function(t) {
+                    shiftKey(t) {
                         //if (window.disableIntegrity!=false){ //
                         return t = 0 | Math.imul(t, 1540483477), t = 114296087 ^ (0 | Math.imul(t >>> 24 ^ t, 1540483477)), (t = 0 | Math.imul(t >>> 13 ^ t, 1540483477)) >>> 15 ^ t;
                         //} //
@@ -8259,7 +8339,7 @@ var thelegendmodproject = function() {
                         //} //
                     },
         			*/
-        "generateClientKey": function(ip, options) {
+        generateClientKey(ip, options) {
             if (!ip.length || !options.byteLength) {
                 return null;
             }
@@ -8340,7 +8420,7 @@ var thelegendmodproject = function() {
             }
         },
         /*
-        'shiftMessage': function(t, e, i) {
+        shiftMessage(t, e, i) {
             //if (window.disableIntegrity!=false){ //
             if (i)
                 for (s = 0; s < t.length; s++) t.writeUInt8(t.readUInt8(s) ^ e >>> s % 4 * 8 & 255, s);
@@ -8353,7 +8433,7 @@ var thelegendmodproject = function() {
             //} //
         },		*/
         //https://github.com/pierrec/node-lz4/blob/master/lib/binding.js
-        'pingTimer': function() {
+        pingTimer() {
             if (!this.pingUsed) {
                 this.pingUsed = 0;
             }
@@ -8373,7 +8453,7 @@ var thelegendmodproject = function() {
                 this.pingUsed = 0;
             }
         },
-        'decompressMessage': function(message) {
+        decompressMessage(message) {
             const buffer = window.buffer.Buffer;
             const messageBuffer = new buffer(message.buffer);
             const readMessage = new buffer(messageBuffer.readUInt32LE(1));
@@ -8385,7 +8465,7 @@ var thelegendmodproject = function() {
                 return LZ4.decodeBlock(buffer.slice(5), readMessage), readMessage;
 				*/
         },
-        'handleMessage': function(data) {
+        handleMessage(data) {
             //this.pingTimer();
             var encode = function() {
                 for (var text = '';;) {
@@ -8883,7 +8963,7 @@ var thelegendmodproject = function() {
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Unknown opcode:', data.getUint8(0));
             }
         },
-        'handleSubmessage': function(message) {
+        handleSubmessage(message) {
             var e = 0;
             switch ((message = this.decompressMessage(message)).readUInt8(e++)) {
                 case 16:
@@ -8908,7 +8988,7 @@ var thelegendmodproject = function() {
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Unknown sub opcode:', message.readUInt8(0));
             }
         },
-        'handleLeaderboard': function() {
+        handleLeaderboard() {
             /*                for (var t = '', e = '', i = 0; i < this.leaderboard.length && window.leaderboardlimit != i; i++) {
                                 var s = '<span>';
                                 'isPlayer' === this.leaderboard[i].id ? s = '<span class=\"me\">' : ogarcopythelb.clanTag.length && 0 == this.leaderboard[i].nick.indexOf(ogarcopythelb.clanTag) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + ogarminimapdrawer.escapeHTML(this.leaderboard[i].nick) + '</span>';
@@ -9005,12 +9085,12 @@ var thelegendmodproject = function() {
 
             //}				
         },
-        'targetingLead': function(o) {
+        targetingLead(o) {
             window.targetingLeadX = legendmod.ghostCells[o].x;
             window.targetingLeadY = legendmod.ghostCells[o].y;
             legendmod.drawCommander2 = true;
         },
-        'flushCellsData': function() {
+        flushCellsData() {
             this.indexedCells = {};
             this.cells = [];
             this.playerCells = [];
@@ -9023,7 +9103,7 @@ var thelegendmodproject = function() {
             //this.ghostCellsStep = 0;
             this.flushSpecsData();
         },
-        'flushSpecsData': function() {
+        flushSpecsData() {
             this.isSpectateEnabled = false;
             this.isFreeSpectate = false;
             if (window.spects) {
@@ -9033,7 +9113,7 @@ var thelegendmodproject = function() {
                 window.spects = [];
             }
         },
-        'setMapOffset': function(left, top, right, bottom) {
+        setMapOffset(left, top, right, bottom) {
             //if (right - left > 14000 && bottom - top > 14000) {
             if (!legendmod.integrity || (right - left) > 14000 && (bottom - top) > 14000) { //2020 jimboy3100
                 this.mapOffsetX = this.mapOffset - right;
@@ -9051,7 +9131,7 @@ var thelegendmodproject = function() {
                 //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map offset fixed: (', this.mapOffsetX, ',', this.mapOffsetY, ')');
             }
         },
-        'addSpect': function() {
+        addSpect() {
             if ($("#nick").val().includes('℄') || $("#nick").val().includes('ঌۣ⚝•') || $("#nick").val().includes('ⒸØⒸᗩⒾ𝓝Ⓔ⫸')) {
                 $('#set-debug').show();
                 $('#set-fullSpectator').show();
@@ -9073,7 +9153,7 @@ var thelegendmodproject = function() {
                 $('#set-ingameSpectator').hide();
             }
         },
-        'isInView': function(x, y, size) {
+        isInView(x, y, size) {
             var x2s = this.canvasWidth / 2 / this.scale;
             var y2s = this.canvasHeight / 2 / this.scale;
             //console.log("x:" + x + " y:" + y + " i:" + i  + " result:" + !(x + i < this.viewX - s || y + i < this.viewY - o || x - i > this.viewX + s || y - i > this.viewY + o));
@@ -9084,7 +9164,7 @@ var thelegendmodproject = function() {
             }
             //return !(x + size < this.viewX - x2s || y + size < this.viewY - y2s || x - size > this.viewX + x2s || y - size > this.viewY + y2s);
         },
-        'vanillaskins': function(y, g) {
+        vanillaskins(y, g) {
             if (g != null && ogarminimapdrawer.customSkinsMap[y] == undefined) {
                 if (LM.gameMode == ":party") {
                     y = y + "#000000";
@@ -9127,19 +9207,19 @@ var thelegendmodproject = function() {
             }
         },
         //Sonia3 Adding three below functions
-        'translateX': function(x) {
+        translateX(x) {
             return this.mapMaxX - (x - this.mapMinX);
         },
-        'translateY': function(x) {
+        translateY(x) {
             return this.mapMaxY - (x - this.mapMinY);
         },
-        'untranslateX': function(x) {
+        untranslateX(x) {
             return 0 - (x - this.mapMaxX + this.mapMinX);
         },
-        'untranslateY': function(x) {
+        untranslateY(x) {
             return 0 - (x - this.mapMaxY + this.mapMinY);
         },
-        'calculatebgpi': function(x, y) {
+        calculatebgpi(x, y) {
             var ofs = 150;
             //var ofs = 1;
             var calc = (x < this.mapMidX + ofs && x > this.mapMidX - ofs) || (y < this.mapMidY + ofs && y > this.mapMidY - ofs) ? 4 : x >= this.mapMidX && y < this.mapMidY ? 0 : x < this.mapMidX && y < this.mapMidY ? 1 : x < this.mapMidX && y >= this.mapMidY ? 2 : 3;
@@ -9157,7 +9237,7 @@ var thelegendmodproject = function() {
             }
         },
         //https://github.com/NuclearC/agar.io-protocol
-        'updateCells': function(view, offset) {
+        updateCells(view, offset) {
             var encode = function() {
                 for (var text = '';;) {
                     var string = view.readUInt8(offset++);
@@ -9370,19 +9450,19 @@ var thelegendmodproject = function() {
             }
             //if (window.historystate && legendmod.play) {historystate();}
         },
-        'color2Hex': function(number) {
+        color2Hex(number) {
             var color = number.toString(16);
             return 1 == color.length ? '0' + color : color;
         },
-        'rgb2Hex': function(r, g, b) {
+        rgb2Hex(r, g, b) {
             return '#' + this.color2Hex(r) + this.color2Hex(g) + this.color2Hex(b);
         },
-        'sortCells': function() {
+        sortCells() {
             this.cells.sort(function(row, conf) {
                 return row.size == conf.size ? row.id - conf.id : row.size - conf.size;
             });
         },
-        'calculatePlayerMassAndPosition': function() {
+        calculatePlayerMassAndPosition() {
             var size = 0;
             var targetSize = 0;
             var x = 0;
@@ -9401,7 +9481,7 @@ var thelegendmodproject = function() {
             this.playerMass = ~~(targetSize / 100);
             this.recalculatePlayerMass();
         },
-        'recalculatePlayerMass': function() {
+        recalculatePlayerMass() {
             if (this.playerScore = Math.max(this.playerScore, this.playerMass),
                 defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
                 var cells = this.playerCells;
@@ -9424,7 +9504,7 @@ var thelegendmodproject = function() {
                 this.PTE = Math.floor(mass * 0.66); //Sonia2
             }
         },
-        'compareCells': function() {
+        compareCells() {
             if (this.play && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
                 if (defaultmapsettings.oppRings || defaultmapsettings.splitRange) {
                     this.biggerSTECellsCache = [];
@@ -9463,7 +9543,7 @@ var thelegendmodproject = function() {
                 }
             }
         },
-        /*'cacheCells': function(t, e, i, s, o) {
+        /*cacheCells(t, e, i, s, o) {
                     return s >= 2.5 ? void this.biggerSTECellsCache.push({
                         'x': t,
                         'y': e,
@@ -9482,7 +9562,7 @@ var thelegendmodproject = function() {
                         'size': i
                     });
                 },
-            'cacheCells': function(x, y, targetX, targetY, size, mass, smallMass) {
+            cacheCells(x, y, targetX, targetY, size, mass, smallMass) {
 					return mass >= 5.32 ? void this.biggerSTEDCellsCache.push({
 						x: x,
 						y: y,
@@ -9529,7 +9609,7 @@ var thelegendmodproject = function() {
 				},*/
 
         //Sonia (entire function updated) // this is great :D
-        'cacheCells': function(x, y, size, mass) {
+        cacheCells(x, y, size, mass) {
             return mass >= 5.32 ? void this.biggerSTEDCellsCache.push({
                 'x': x,
                 'y': y,
@@ -9556,8 +9636,8 @@ var thelegendmodproject = function() {
                 'size': size
             });
         },
-        //'setCellOppColor': function(t, mass, i) {
-        'setCellOppColor': function(isPlayer, mass) {
+        //setCellOppColor(t, mass, i) {
+        setCellOppColor(isPlayer, mass) {
             //return t ? ogarcopythelb.color : mass > 11 ? '#FF008C' : mass >= 2.5 ? '#BE00FF' : mass >= 1.25 ? '#FF0A00' : mass < 1.25 && mass > 0.75 ? '#FFDC00' : mass > i ? '#00C8FF' : '#64FF00';
             //return t ? ogarcopythelb.color : mass > 10.64 ? defaultSettings.enemyBSTEDColor : mass >= 5.32 ? defaultSettings.enemyBSTEDColor : mass >= 2.66 && mass <= 5.32 ? defaultSettings.enemyBSTEColor : mass >= 1.33 && mass <= 2.66 ? defaultSettings.enemyBColor : mass < 1.33 && mass > 0.75 ? '#FFDC00' : mass < 0.75 && mass > 0.375 ? defaultSettings.enemySSTEDColor : mass > i ? '#00C8FF' : defaultSettings.enemySSTEColor; //Sonia
             //return isPlayer ? ogarcopythelb.color : mass >= 10.64 ? defaultSettings.enemyBSTEDColor : mass >= 5.32 ? defaultSettings.enemyBSTEDColor : mass >= 2.66 ? defaultSettings.enemyBSTEColor : mass >= 1.33 ? defaultSettings.enemyBColor : mass > 0.75 ? '#FFDC00' : mass > 0.375 ? defaultSettings.enemySColor : mass > 0.1875 ? defaultSettings.enemySSTEColor : defaultSettings.enemySSTEDColor;
@@ -9574,94 +9654,94 @@ var thelegendmodproject = function() {
                 else return defaultSettings.enemySSTEDColor
             }
         },
-        'getCursorPosition': function() {
+        getCursorPosition() {
             this.cursorX = (this.clientX - this.canvasWidth / 2) / this.viewScale + this.viewX;
             this.cursorY = (this.clientY - this.canvasHeight / 2) / this.viewScale + this.viewY;
         },
-        'setZoom': function(t) {
+        setZoom(t) {
             //t.preventDefault(), this.zoomValue *= Math.pow(defaultmapsettings.zoomSpeedValue2, t.wheelDelta / -120 || t.detail || 0), this.zoomValue > 4 / this.viewScale && (this.zoomValue = 4 / this.viewScale);
             this.zoomValue *= Math.pow(defaultmapsettings.zoomSpeedValue2 + 1, t.wheelDelta / -120 || t.detail || 0);
             if (this.zoomValue > 4 / this.viewScale) {
                 this.zoomValue = 4 / this.viewScale;
             }
         },
-        'setTargetPosition': function(t, e) {
+        setTargetPosition(t, e) {
             this.targetX = t - this.mapOffsetX;
             this.targetY = e - this.mapOffsetY;
             this.targetDistance = Math.round(Math.sqrt(Math.pow(this.playerX - this.targetX, 2) + Math.pow(this.playerY - this.targetY, 2)));
             window.targetDistance = this.targetDistance;
         },
-        'resetTargetPosition': function() {
+        resetTargetPosition() {
             this.targetX = this.vector[this.vnr][0] ? this.translateX(this.playerX) : this.playerX;
             this.targetY = this.vector[this.vnr][1] ? this.translateY(this.playerY) : this.playerY;
         },
-        'setKeys': function() {
-            var t = this;
+        setKeys() {
+            var app = this;
             document.onkeydown = function(e) {
                 var i = e.keyCode;
-                if (!t.pressedKeys[i]) switch (i) {
+                if (!app.pressedKeys[i]) switch (i) {
                     case 13:
-                        t.sendNick('');
+                        app.sendNick('');
                         break;
                     case 32:
-                        t.sendSplit();
+                        app.sendSplit();
                         break;
                     case 81:
-                        t.sendFreeSpectate();
+                        app.sendFreeSpectate();
                         break;
                     case 83:
-                        t.sendSpectate();
+                        app.sendSpectate();
                         break;
                     case 87:
-                        t.sendEject();
+                        app.sendEject();
                 }
             }, document.onkeyup = function(e) {
-                t.pressedKeys[e.keyCode] = false;
+                app.pressedKeys[e.keyCode] = false;
             };
         },
-        'init': function() {
-            var t = this;
+        init() {
+            var app = this;
             /firefox/i.test(navigator.userAgent) ? document.addEventListener('DOMMouseScroll', function(e) {
-                t.setZoom(e);
+                app.setZoom(e);
             }, false) : document.body.onmousewheel = function(e) {
-                t.setZoom(e);
+                app.setZoom(e);
             }, setInterval(function() {
-                t.sendPosition();
+                app.sendPosition();
             }, 40), window.master && window.master.clientVersion && this.setClientVersion(window.master.clientVersion, window.master.clientVersionString);
         }
     };
     window.legendmod = LM; // look at this
 
-    window.sendAction = function(t) {
-        LM.sendAction(t);
+    window.sendAction = function(action) {
+        LM.sendAction(action);
     };
     var ogarfooddrawer = {
-            'canvas': null,
-            'ctx': null,
-            'canvasWidth': 0,
-            'canvasHeight': 0,
-            'camX': 0,
-            'camY': 0,
-            'scale': 1,
-            'fpsLastRequest': null,
-            'renderedFrames': 0,
-            'fps': 0,
-            'pi2': 2 * Math.PI,
-            'battleAreaMap': null,
-            'battleAreaMapCtx': null,
-            'pieChart': null,
-            'pellet': null,
-            'indicator': null,
-            'setCanvas': function() {
+            canvas: null,
+            ctx: null,
+            canvasWidth: 0,
+            canvasHeight: 0,
+            camX: 0,
+            camY: 0,
+            scale: 1,
+            fpsLastRequest: null,
+            renderedFrames: 0,
+            fps: 0,
+            pi2: 2 * Math.PI,
+            battleAreaMap: null,
+            battleAreaMapCtx: null,
+            pieChart: null,
+            pellet: null,
+            indicator: null,
+            setCanvas() {
                 this.canvas = document.getElementById('canvas');
                 this.ctx = this.canvas.getContext('2d');
-                this.canvas.onmousemove = function(t) {
-                    LM.clientX = t.clientX;
-                    LM.clientY = t.clientY;
+                this.canvas.onmousemove = function(event) {
+                    LM.clientX = event.clientX;
+                    LM.clientY = event.clientY;
                     LM.getCursorPosition();
                 };
             },
-            'resizeCanvas': function() {
+            resizeCanvas() {
                 this.canvasWidth = window.innerWidth;
                 this.canvasHeight = window.innerHeight;
                 this.canvas.width = this.canvasWidth;
@@ -9670,10 +9750,9 @@ var thelegendmodproject = function() {
                 LM.canvasHeight = this.canvasHeight;
                 this.renderFrame();
             },
-            'setView': function() {
+            setView() {
                 this.setScale();
-                this.setScale();
-                var speed = 30
+                var speed = 30;
                 if (LM.playerCells.length) {
                     LM.calculatePlayerMassAndPosition();
                     this.camX = (this.camX + LM.viewX) / 2;
@@ -9687,7 +9766,7 @@ var thelegendmodproject = function() {
                 LM.playerX = this.camX;
                 LM.playerY = this.camY;
             },
-            'setScale': function() {
+            setScale() {
                 if (!LM.autoZoom) {
                     this.scale = (9 * this.scale + this.getZoom()) / 10;
                     LM.viewScale = this.scale;
@@ -9700,11 +9779,11 @@ var thelegendmodproject = function() {
                 }
                 LM.viewScale = this.scale;
             },
-            'getZoom': function() {
+            getZoom() {
                 return Math.max(this.canvasWidth / 1080, this.canvasHeight / 1920) * LM.zoomValue;
             },
             //Sonia5
-            'sleep': function(ms) {
+            sleep(ms) {
                 return new Promise(resolve => setTimeout(resolve, ms));
             },
             /*                'renderFrame': function() {
@@ -10024,7 +10103,7 @@ var thelegendmodproject = function() {
                 ctx.stroke();
                 ctx.globalAlpha = 1;
             },
-            'drawSectors': function(ctx, mapOffset, x, y, minX, minY, maxX, maxY, stroke, color, width, type) {
+            drawSectors(ctx, mapOffset, x, y, minX, minY, maxX, maxY, stroke, color, width, type) {
                 if (mapOffset || !type) {
                     var posX = ~~((maxX - minX) / x);
                     var posY = ~~((maxY - minY) / y);
@@ -10063,7 +10142,7 @@ var thelegendmodproject = function() {
                     }
                 }
             },
-            "drawCommander": function() {
+            drawCommander() {
                 //console.log('Special effects stage 2');
                 if (LM.drawCommander) {
                     var pickerAxes = this.ctx;
@@ -10095,7 +10174,7 @@ var thelegendmodproject = function() {
                     this.updateCommander();
                 }
             },
-            "drawCommander2": function() {
+            drawCommander2() {
                 //console.log('Special effects stage 2');
                 if (LM.drawCommander2) {
                     var pickerAxes = this.ctx;
@@ -10127,7 +10206,7 @@ var thelegendmodproject = function() {
                     this.updateCommander();
                 }
             },
-            "updateCommander": function() {
+            updateCommander() {
                 LM.cRadius += 7;
                 LM.cAngle += .007;
                 LM.cAngle1 -= .006;
@@ -10139,7 +10218,7 @@ var thelegendmodproject = function() {
                     this.resetCommander();
                 }
             },
-            "resetCommander": function() {
+            resetCommander() {
                 LM.cRadius = 10; //LM.clientX
                 LM.cAngle = 4;
                 LM.cAngle1 = 0;
@@ -10151,11 +10230,11 @@ var thelegendmodproject = function() {
                 ogario.spawnY = 0;
             },
             /*
-                'drawMapBorders': function(t, e, i, s, o, a, n, r) {
+                drawMapBorders(t, e, i, s, o, a, n, r) {
                     e && (t.strokeStyle = n, t.lineWidth = r, t.beginPath(), t.moveTo(i, s), t.lineTo(o, s), t.lineTo(o, a), t.lineTo(i, a), t.closePath(), t.stroke());
                 },
 				*/
-            "drawMapBorders": function(ctx, macros, text, x1, x0, y0, radius, canvas) {
+            drawMapBorders(ctx, macros, text, x1, x0, y0, radius, canvas) {
                 if (macros) {
                     ctx.strokeStyle = radius;
                     ctx.lineWidth = canvas;
@@ -10179,7 +10258,7 @@ var thelegendmodproject = function() {
                     "skrrt";
                 }
             },
-            'drawVirusesRange': function(t, e, i) {
+            drawVirusesRange(t, e, i) {
                 if (e.length) {
                     t.beginPath();
                     for (var s = 0; s < e.length; s++) {
@@ -10193,7 +10272,7 @@ var thelegendmodproject = function() {
                         t.globalAlpha = 1, i && (e = []);
                 }
             },
-            'calMinMax': function() {
+            calMinMax() {
                 LM.camMaxX = LM.playerX
                 LM.camMaxY = LM.playerY
                 LM.camMinX = LM.playerX
@@ -10207,7 +10286,7 @@ var thelegendmodproject = function() {
                     if (y < LM.camMinY) LM.camMinY = y
                 }
             },
-            'drawFood': function() {
+            drawFood() {
 
                 if (!LM.showFood) {
                     return;
@@ -10260,7 +10339,7 @@ var thelegendmodproject = function() {
                     food = [];
                 }
             },
-            /*'drawCachedFood': function(t, e, i, s) {
+            /*drawCachedFood(t, e, i, s) {
                 if (e.length) {
                     if (defaultmapsettings.optimizedFood && this.pellet)
                         for (var o = 0; o < e.length; o++) {
@@ -10281,7 +10360,7 @@ var thelegendmodproject = function() {
                     s && (e = []);
                 }
             },*/
-            'drawSplitRange': function(ctx, biggestCell, players, currentBiggestCell, reset) {
+            drawSplitRange(ctx, biggestCell, players, currentBiggestCell, reset) {
                 if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, defaultSettings.enemyBSTEColor), players.length) { //Sonia2
                     //if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, '#ff0000'), players.length) { //Sonia
                     var current = currentBiggestCell ? players.length - 1 : 0;
@@ -10298,7 +10377,7 @@ var thelegendmodproject = function() {
                     biggestCell = [];
                 }
             },
-            'drawDoubleSplitRange': function(ctx, biggestCell, players, currentBiggestCell, reset) {
+            drawDoubleSplitRange(ctx, biggestCell, players, currentBiggestCell, reset) {
                 //if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, '#BE00FF'), players.length) {
                 if (this.draw2Circles(ctx, biggestCell, 760, 4, 0.4, defaultSettings.enemyBSTEDColor), players.length) { //Sonia2
                     //if (this.draw2Circles(ctx, biggestCell, 760, 4, 0.4, '#8000ff'), players.length) { //Sonia
@@ -10322,8 +10401,8 @@ var thelegendmodproject = function() {
                 }
             },
             //Sonia (entire function update)
-            //'drawOppRings': function(ctx, scale, ip, biggerSte, biggetCell, smallerCell, smallSte, ap, ss, reset) {
-            'drawOppRings': function(ctx, scale, ip, biggerSte, biggetCell, smallerCell, smallSte, ap, reset) {
+            //drawOppRings(ctx, scale, ip, biggerSte, biggetCell, smallerCell, smallSte, ap, ss, reset) {
+            drawOppRings(ctx, scale, ip, biggerSte, biggetCell, smallerCell, smallSte, ap, reset) {
                 var width = 14 + 2 / scale;
                 var alpha = 12 + 1 / scale;
                 this.drawCircles(ctx, ip, width, alpha, 0.75, defaultSettings.enemyBSTEDColor); //Sonia2
@@ -10343,7 +10422,7 @@ var thelegendmodproject = function() {
                     //ss = [];
                 }
             },
-            'drawCursorTracking': function(ctx, players, cursorX, cursorY) {
+            drawCursorTracking(ctx, players, cursorX, cursorY) {
                 ctx.lineWidth = 4,
                     ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
                 ctx.strokeStyle = defaultSettings.cursorTrackingColor;
@@ -10352,7 +10431,7 @@ var thelegendmodproject = function() {
                 ctx.stroke();
                 ctx.globalAlpha = 1;
             },
-            'drawCircles': function(ctx, players, scale, width, alpha, stroke) {
+            drawCircles(ctx, players, scale, width, alpha, stroke) {
                 ctx.lineWidth = width;
                 ctx.globalAlpha = alpha;
                 ctx.strokeStyle = stroke;
@@ -10365,7 +10444,7 @@ var thelegendmodproject = function() {
                 ctx.globalAlpha = 1;
             },
             //Sonia (added entire function)
-            'draw2Circles': function(ctx, players, scale, width, alpha, color) {
+            draw2Circles(ctx, players, scale, width, alpha, color) {
                 ctx.lineWidth = width;
                 ctx.globalAlpha = alpha;
                 ctx.strokeStyle = color;
@@ -10392,7 +10471,7 @@ var thelegendmodproject = function() {
                 } //Sonia2
                 ctx.globalAlpha = 1;
             },
-            'drawDashedCircle': function(ctx, x, y, radius, times, width, color) {
+            drawDashedCircle(ctx, x, y, radius, times, width, color) {
                 var pi2 = this.pi2 / times;
                 ctx.lineWidth = width;
                 ctx.strokeStyle = color;
@@ -10402,13 +10481,13 @@ var thelegendmodproject = function() {
                     ctx.stroke();
                 }
             },
-            'drawTeammatesInd': function(ctx, x, y, size) {
+            drawTeammatesInd(ctx, x, y, size) {
                 //console.log("t:"+ t + " e:" + e + " i:" + i + "s:" + s);
                 if (this.indicator) {
                     ctx.drawImage(this.indicator, x - 45, y - size - 90);
                 }
             },
-            'drawPieChart': function() {
+            drawPieChart() {
                 this.pieChart || (this.pieChart = document.createElement('canvas'));
                 var ctx = this.pieChart.getContext('2d'),
                     mincanvasWidth = Math.min(200, 0.3 * this.canvasWidth) / 200;
@@ -10425,13 +10504,13 @@ var thelegendmodproject = function() {
                     time = currentPie;
                 }
             },
-            'drawBattleArea': function(ctx) {
+            drawBattleArea(ctx) {
                 if (LM.battleRoyale.state) {
                     this.drawDangerArea(ctx, LM.battleRoyale.x, LM.battleRoyale.y, LM.battleRoyale.radius, LM.mapMinX, LM.mapMinY, LM.mapMaxX - LM.mapMinX, LM.mapMaxY - LM.mapMinY, defaultSettings.dangerAreaColor, 0.25);
                     this.drawSafeArea(ctx, LM.battleRoyale.targetX, LM.battleRoyale.targetY, LM.battleRoyale.targetRadius, 40, defaultSettings.safeAreaColor);
                 }
             },
-            'drawBattleAreaOnMinimap': function(ctx, width, heigth, newWidth, offsetX, offsetY) {
+            drawBattleAreaOnMinimap(ctx, width, heigth, newWidth, offsetX, offsetY) {
                 if (LM.battleRoyale.state) {
                     if (!this.battleAreaMap) {
                         this.battleAreaMap = document.createElement("canvas");
@@ -10454,7 +10533,7 @@ var thelegendmodproject = function() {
                     ctx.drawImage(this.battleAreaMap, 0, 0);
                 }
             },
-            'drawDangerArea': function(ctx, x, y, radius, minX, minY, maxX, maxY, color, aplha) {
+            drawDangerArea(ctx, x, y, radius, minX, minY, maxX, maxY, color, aplha) {
                 if (!(LM.battleRoyale.radius == LM.battleRoyale.maxRadius || radius <= 0)) {
                     ctx.save();
                     ctx.globalAlpha = aplha;
@@ -10468,12 +10547,12 @@ var thelegendmodproject = function() {
                     ctx.restore();
                 }
             },
-            'drawSafeArea': function(ctx, targetX, targetY, radius, width, color) {
+            drawSafeArea(ctx, targetX, targetY, radius, width, color) {
                 if (!(LM.battleRoyale.state > 2 || radius <= 0)) {
                     this.drawDashedCircle(ctx, targetX, targetY, radius, 60, width, color);
                 }
             },
-            'drawTextAlongArc': function(ctx, str, centerX, centerY, radius, angle) {
+            drawTextAlongArc(ctx, str, centerX, centerY, radius, angle) {
                 var len = str.length,
                     s;
                 this.ctx.save();
@@ -10490,7 +10569,7 @@ var thelegendmodproject = function() {
                 }
                 this.ctx.restore();
             },
-            'drawGhostCells': function() {
+            drawGhostCells() {
                 if (defaultmapsettings.showGhostCells) {
                     var ghostsCells = LM.ghostCells;
                     this.ctx.beginPath();
@@ -10543,7 +10622,7 @@ var thelegendmodproject = function() {
                     this.ctx.shadowBlur = 0;
                 }
             },
-            'preDrawPellet': function() {
+            preDrawPellet() {
                 this.pellet = null;
                 var size = 10 + defaultSettings.foodSize;
                 var canvas = document.createElement('canvas');
@@ -10557,7 +10636,7 @@ var thelegendmodproject = function() {
                 this.pellet.src = canvas.toDataURL();
                 canvas = null;
             },
-            'preDrawIndicator': function() {
+            preDrawIndicator() {
                 this.indicator = null;
                 var canvas = document.createElement('canvas');
                 canvas.width = 90;
@@ -10577,7 +10656,7 @@ var thelegendmodproject = function() {
                 this.indicator.src = canvas.toDataURL();
                 canvas = null;
             },
-            'countFps': function() {
+            countFps() {
                 if (defaultmapsettings.showStatsFPS) {
                     var Time = Date.now();
                     if (!this.fpsLastRequest) {
@@ -10591,12 +10670,12 @@ var thelegendmodproject = function() {
                     this.renderedFrames++;
                 }
             },
-            'render': function() {
+            render() {
                 ogarfooddrawer.countFps();
                 ogarfooddrawer.renderFrame();
                 window.requestAnimationFrame(ogarfooddrawer.render);
             },
-            'init': function() {
+            init() {
                 this.setCanvas();
                 this.resizeCanvas();
                 this.preDrawPellet();
@@ -10609,522 +10688,522 @@ var thelegendmodproject = function() {
         ogario1Hotkeys = {},
         ogario11Hotkeys = {
             'hk-feed': {
-                'label': textLanguage['hk-feed'],
-                'defaultKey': 'W',
-                'keyDown': function() {
+                label: textLanguage['hk-feed'],
+                defaultKey: 'W',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.feed();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-macroFeed': {
-                'label': textLanguage['hk-macroFeed'],
-                'defaultKey': 'E',
-                'keyDown': function() {
+                label: textLanguage['hk-macroFeed'],
+                defaultKey: 'E',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.macroFeed(!0);
                 },
-                'keyUp': function() {
+                keyUp() {
                     ogarminimapdrawer && ogarminimapdrawer.macroFeed(!1);
                 },
-                'type': 'normal'
+                type: 'normal'
             },
             'hk-split': {
-                'label': textLanguage['hk-split'],
-                'defaultKey': 'SPACE',
-                'keyDown': function() {
+                label: textLanguage['hk-split'],
+                defaultKey: 'SPACE',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.split();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-doubleSplit': {
-                'label': textLanguage['hk-doubleSplit'],
-                'defaultKey': 'Q',
-                'keyDown': function() {
+                label: textLanguage['hk-doubleSplit'],
+                defaultKey: 'Q',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.doubleSplit();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-popSplit': {
-                'label': 'Popsplit',
-                'defaultKey': 'ALT+Q',
-                'keyDown': function() {
+                label: 'Popsplit',
+                defaultKey: 'ALT+Q',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.popSplit();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-split16': {
-                'label': textLanguage['hk-split16'],
-                'defaultKey': 'SHIFT',
-                'keyDown': function() {
+                label: textLanguage['hk-split16'],
+                defaultKey: 'SHIFT',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.split16();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-pause': {
-                'label': textLanguage['hk-pause'],
-                'defaultKey': 'R',
-                'keyDown': function() {
+                label: textLanguage['hk-pause'],
+                defaultKey: 'R',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setPause();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showTop5': {
-                'label': textLanguage['hk-showTop5'],
-                'defaultKey': 'T',
-                'keyDown': function() {
+                label: textLanguage['hk-showTop5'],
+                defaultKey: 'T',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowTop5();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showTime': {
-                'label': textLanguage['hk-showTime'],
-                'defaultKey': 'ALT+T',
-                'keyDown': function() {
+                label: textLanguage['hk-showTime'],
+                defaultKey: 'ALT+T',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowTime();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showSplitRange': {
-                'label': textLanguage['hk-showSplitRange'],
-                'defaultKey': 'U',
-                'keyDown': function() {
+                label: textLanguage['hk-showSplitRange'],
+                defaultKey: 'U',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowSplitRange();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showSplitInd': {
-                'label': textLanguage['hk-showSplitInd'],
-                'defaultKey': 'I',
-                'keyDown': function() {
+                label: textLanguage['hk-showSplitInd'],
+                defaultKey: 'I',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowSplitInd();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showTeammatesInd': {
-                'label': textLanguage['hk-showTeammatesInd'],
-                'defaultKey': 'ALT+I',
-                'keyDown': function() {
+                label: textLanguage['hk-showTeammatesInd'],
+                defaultKey: 'ALT+I',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowTeammatesInd();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showOppColors': {
-                'label': textLanguage['hk-showOppColors'],
-                'defaultKey': 'O',
-                'keyDown': function() {
+                label: textLanguage['hk-showOppColors'],
+                defaultKey: 'O',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowOppColors();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-toggleSkins': {
-                'label': textLanguage['hk-toggleSkins'],
-                'defaultKey': 'A',
-                'keyDown': function() {
+                label: textLanguage['hk-toggleSkins'],
+                defaultKey: 'A',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.toggleSkins();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-transparentSkins': {
-                'label': textLanguage['hk-transparentSkins'],
-                'defaultKey': '',
-                'keyDown': function() {
+                label: textLanguage['hk-transparentSkins'],
+                defaultKey: '',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setTransparentSkins();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showSkins': {
-                'label': textLanguage['hk-showSkins'],
-                'defaultKey': 'S',
-                'keyDown': function() {
+                label: textLanguage['hk-showSkins'],
+                defaultKey: 'S',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowSkins();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showStats': {
-                'label': textLanguage['hk-showStats'],
-                'defaultKey': 'ALT+S',
-                'keyDown': function() {
+                label: textLanguage['hk-showStats'],
+                defaultKey: 'ALT+S',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowStats();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-toggleCells': {
-                'label': textLanguage['hk-toggleCells'],
-                'defaultKey': 'D',
-                'keyDown': function() {
+                label: textLanguage['hk-toggleCells'],
+                defaultKey: 'D',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.toggleCells();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showFood': {
-                'label': textLanguage['hk-showFood'],
-                'defaultKey': 'F',
-                'keyDown': function() {
+                label: textLanguage['hk-showFood'],
+                defaultKey: 'F',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowFood();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showGrid': {
-                'label': textLanguage['hk-showGrid'],
-                'defaultKey': 'G',
-                'keyDown': function() {
+                label: textLanguage['hk-showGrid'],
+                defaultKey: 'G',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowGrid();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showMiniMapGuides': {
-                'label': textLanguage['hk-showMiniMapGuides'],
-                'defaultKey': 'ALT+G',
-                'keyDown': function() {
+                label: textLanguage['hk-showMiniMapGuides'],
+                defaultKey: 'ALT+G',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowMiniMapGuides();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-hideChat': {
-                'label': textLanguage['hk-hideChat'],
-                'defaultKey': 'H',
-                'keyDown': function() {
+                label: textLanguage['hk-hideChat'],
+                defaultKey: 'H',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.hideChat();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showHUD': {
-                'label': textLanguage['hk-showHUD'],
-                'defaultKey': 'ALT+H',
-                'keyDown': function() {
+                label: textLanguage['hk-showHUD'],
+                defaultKey: 'ALT+H',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowHUD();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-copyLb': {
-                'label': textLanguage['hk-copyLb'],
-                'defaultKey': 'L',
-                'keyDown': function() {
+                label: textLanguage['hk-copyLb'],
+                defaultKey: 'L',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.copyLb();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showLb': {
-                'label': textLanguage['hk-showLb'],
-                'defaultKey': 'ALT+L',
-                'keyDown': function() {
+                label: textLanguage['hk-showLb'],
+                defaultKey: 'ALT+L',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowLb();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-toggleAutoZoom': {
-                'label': textLanguage['hk-toggleAutoZoom'],
-                'defaultKey': '',
-                'keyDown': function() {
+                label: textLanguage['hk-toggleAutoZoom'],
+                defaultKey: '',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.toggleAutoZoom();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-resetZoom': {
-                'label': textLanguage['hk-resetZoom'],
-                'defaultKey': 'Z',
-                'keyDown': function() {
+                label: textLanguage['hk-resetZoom'],
+                defaultKey: 'Z',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.resetZoom(!0);
                 },
-                'keyUp': function() {
+                keyUp() {
                     ogarminimapdrawer && ogarminimapdrawer.resetZoom(!1);
                 },
-                'type': 'normal'
+                type: 'normal'
             },
             'hk-toggleDeath': {
-                'label': textLanguage['hk-toggleDeath'],
-                'defaultKey': 'X',
-                'keyDown': function() {
+                label: textLanguage['hk-toggleDeath'],
+                defaultKey: 'X',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.toggleDeath();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-clearChat': {
-                'label': textLanguage['hk-clearChat'],
-                'defaultKey': 'C',
-                'keyDown': function() {
+                label: textLanguage['hk-clearChat'],
+                defaultKey: 'C',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.displayChatHistory(!0);
                 },
-                'keyUp': function() {
+                keyUp() {
                     ogarminimapdrawer && ogarminimapdrawer.displayChatHistory(!1);
                 },
-                'type': 'normal'
+                type: 'normal'
             },
             'hk-showBgSectors': {
-                'label': textLanguage['hk-showBgSectors'],
-                'defaultKey': 'B',
-                'keyDown': function() {
+                label: textLanguage['hk-showBgSectors'],
+                defaultKey: 'B',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowBgSectors();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-hideBots': {
-                'label': textLanguage['hk-hideBots'],
-                'defaultKey': 'ALT+B',
-                'keyDown': function() {
+                label: textLanguage['hk-hideBots'],
+                defaultKey: 'ALT+B',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setHideSmallBots();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showNames': {
-                'label': textLanguage['hk-showNames'],
-                'defaultKey': 'N',
-                'keyDown': function() {
+                label: textLanguage['hk-showNames'],
+                defaultKey: 'N',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowNames();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-hideTeammatesNames': {
-                'label': textLanguage['hk-hideTeammatesNames'],
-                'defaultKey': '',
-                'keyDown': function() {
+                label: textLanguage['hk-hideTeammatesNames'],
+                defaultKey: '',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setHideTeammatesNames();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showMass': {
-                'label': textLanguage['hk-showMass'],
-                'defaultKey': 'M',
-                'keyDown': function() {
+                label: textLanguage['hk-showMass'],
+                defaultKey: 'M',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowMass();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showMiniMap': {
-                'label': textLanguage['hk-showMiniMap'],
-                'defaultKey': 'ALT+M',
-                'keyDown': function() {
+                label: textLanguage['hk-showMiniMap'],
+                defaultKey: 'ALT+M',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowMiniMap();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-chatMessage': {
-                'label': textLanguage['hk-chatMessage'],
-                'defaultKey': 'ENTER',
-                'keyDown': function() {
+                label: textLanguage['hk-chatMessage'],
+                defaultKey: 'ENTER',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.enterChatMessage();
                 },
-                'keyUp': null,
-                'type': 'special'
+                keyUp: null,
+                type: 'special'
             },
             'hk-quickResp': {
-                'label': textLanguage['hk-quickResp'],
-                'defaultKey': 'TILDE',
-                'keyDown': function() {
+                label: textLanguage['hk-quickResp'],
+                defaultKey: 'TILDE',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.quickResp();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-autoResp': {
-                'label': textLanguage['hk-autoResp'],
-                'defaultKey': '',
-                'keyDown': function() {
+                label: textLanguage['hk-autoResp'],
+                defaultKey: '',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.toggleAutoResp();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-zoom1': {
-                'label': textLanguage['hk-zoomLevel'] + ' 1',
-                'defaultKey': 'ALT+1',
-                'keyDown': function() {
+                label: textLanguage['hk-zoomLevel'] + ' 1',
+                defaultKey: 'ALT+1',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setZoom(0.5);
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-zoom2': {
-                'label': textLanguage['hk-zoomLevel'] + ' 2',
-                'defaultKey': 'ALT+2',
-                'keyDown': function() {
+                label: textLanguage['hk-zoomLevel'] + ' 2',
+                defaultKey: 'ALT+2',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setZoom(0.25);
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-zoom3': {
-                'label': textLanguage['hk-zoomLevel'] + ' 3',
-                'defaultKey': 'ALT+3',
-                'keyDown': function() {
+                label: textLanguage['hk-zoomLevel'] + ' 3',
+                defaultKey: 'ALT+3',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setZoom(0.125);
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-zoom4': {
-                'label': textLanguage['hk-zoomLevel'] + ' 4',
-                'defaultKey': 'ALT+4',
-                'keyDown': function() {
+                label: textLanguage['hk-zoomLevel'] + ' 4',
+                defaultKey: 'ALT+4',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setZoom(0.075);
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-zoom5': {
-                'label': textLanguage['hk-zoomLevel'] + ' 5',
-                'defaultKey': 'ALT+5',
-                'keyDown': function() {
+                label: textLanguage['hk-zoomLevel'] + ' 5',
+                defaultKey: 'ALT+5',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setZoom(0.05);
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-voiceChat': {
-                'label': textLanguage['hk-voiceChat'],
-                'defaultKey': '=',
-                'keyDown': function() {
+                label: textLanguage['hk-voiceChat'],
+                defaultKey: '=',
+                keyDown() {
                     //ogarminimapdrawer && ogarminimapdrawer.enterChatMessage();
                     //if ($('#message-box').css('display') == 'block') {
                     $(".voice-start.icon-mic").click();
                     //}
                 },
-                'keyUp': null,
-                'type': 'special'
+                keyUp: null,
+                type: 'special'
             },
             'hk-GhostCellsInfo': {
-                'label': textLanguage['hk-GhostCellsInfo'],
-                'defaultKey': 'K',
-                'keyDown': function() {
+                label: textLanguage['hk-GhostCellsInfo'],
+                defaultKey: 'K',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowGhostCellsInfo();
                 },
-                'keyUp': null,
-                'type': 'special'
+                keyUp: null,
+                type: 'special'
             },
             'hk-Autoplay': {
-                'label': textLanguage['hk-Autoplay'],
-                'defaultKey': 'J',
-                'keyDown': function() {
+                label: textLanguage['hk-Autoplay'],
+                defaultKey: 'J',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setAutoPlay();
                 },
-                'keyUp': null,
-                'type': 'special'
+                keyUp: null,
+                type: 'special'
             },
             'hk-switchServerMode': {
-                'label': textLanguage['hk-switchServerMode'],
-                'defaultKey': '-',
-                'keyDown': function() {
+                label: textLanguage['hk-switchServerMode'],
+                defaultKey: '-',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.switchServerMode();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showTargeting': {
-                'label': textLanguage['hk-showTargeting'],
-                'defaultKey': '',
-                'keyDown': function() {
+                label: textLanguage['hk-showTargeting'],
+                defaultKey: '',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowTargeting();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-setTargeting': {
-                'label': textLanguage['hk-setTargeting'],
-                'defaultKey': '',
-                'keyDown': function() {
+                label: textLanguage['hk-setTargeting'],
+                defaultKey: '',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setTargeting();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-cancelTargeting': {
-                'label': textLanguage['hk-cancelTargeting'],
-                'defaultKey': '',
-                'keyDown': function() {
+                label: textLanguage['hk-cancelTargeting'],
+                defaultKey: '',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.cancelTargeting();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-changeTarget': {
-                'label': textLanguage['hk-changeTarget'],
-                'defaultKey': '',
-                'keyDown': function() {
+                label: textLanguage['hk-changeTarget'],
+                defaultKey: '',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.changeTarget();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-privateMiniMap': {
-                'label': textLanguage['hk-privateMiniMap'],
-                'defaultKey': '',
-                'keyDown': function() {
+                label: textLanguage['hk-privateMiniMap'],
+                defaultKey: '',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setPrivateMiniMap();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showQuest': {
-                'label': textLanguage['hk-showQuest'],
-                'defaultKey': '',
-                'keyDown': function() {
+                label: textLanguage['hk-showQuest'],
+                defaultKey: '',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowQuest();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-showSpectator': {
-                'label': textLanguage['hk-showSpectator'],
-                'defaultKey': 'V',
-                'keyDown': function() {
+                label: textLanguage['hk-showSpectator'],
+                defaultKey: 'V',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.setShowFullSpectator();
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-bots-split': {
-                'label': textLanguage['hk-bots-split'],
-                'defaultKey': '',
-                'keyDown': function() {
+                label: textLanguage['hk-bots-split'],
+                defaultKey: '',
+                keyDown() {
                     if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([2]).buffer);
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-bots-feed': {
-                'label': textLanguage['hk-bots-feed'],
-                'defaultKey': '',
-                'keyDown': function() {
+                label: textLanguage['hk-bots-feed'],
+                defaultKey: '',
+                keyDown() {
                     if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-bots-ai': {
-                'label': textLanguage['hk-bots-ai'],
-                'defaultKey': 'Y',
-                'keyDown': function() {
+                label: textLanguage['hk-bots-ai'],
+                defaultKey: 'Y',
+                keyDown() {
                     if (window.userBots.startedBots && window.userBots.isAlive) {
                         if (!window.bots.ai) {
                             document.getElementById('botsAI').style.color = '#00C02E'
@@ -11139,295 +11218,295 @@ var thelegendmodproject = function() {
                         }
                     }
                 },
-                'keyUp': null,
-                'type': 'normal'
+                keyUp: null,
+                type: 'normal'
             },
             'hk-comm1': {
-                'label': chatCommand['comm1'],
-                'defaultKey': '1',
-                'keyDown': function() {
+                label: chatCommand['comm1'],
+                defaultKey: '1',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(1);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm2': {
-                'label': chatCommand['comm2'],
-                'defaultKey': '2',
-                'keyDown': function() {
+                label: chatCommand['comm2'],
+                defaultKey: '2',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(2);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm3': {
-                'label': chatCommand['comm3'],
-                'defaultKey': '3',
-                'keyDown': function() {
+                label: chatCommand['comm3'],
+                defaultKey: '3',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(3);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm4': {
-                'label': chatCommand['comm4'],
-                'defaultKey': '4',
-                'keyDown': function() {
+                label: chatCommand['comm4'],
+                defaultKey: '4',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(4);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm5': {
-                'label': chatCommand['comm5'],
-                'defaultKey': '5',
-                'keyDown': function() {
+                label: chatCommand['comm5'],
+                defaultKey: '5',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(5);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm6': {
-                'label': chatCommand['comm6'],
-                'defaultKey': '6',
-                'keyDown': function() {
+                label: chatCommand['comm6'],
+                defaultKey: '6',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(6);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm7': {
-                'label': chatCommand['comm7'],
-                'defaultKey': '7',
-                'keyDown': function() {
+                label: chatCommand['comm7'],
+                defaultKey: '7',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(7);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm8': {
-                'label': chatCommand['comm8'],
-                'defaultKey': '8',
-                'keyDown': function() {
+                label: chatCommand['comm8'],
+                defaultKey: '8',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(8);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm9': {
-                'label': chatCommand['comm9'],
-                'defaultKey': '9',
-                'keyDown': function() {
+                label: chatCommand['comm9'],
+                defaultKey: '9',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(9);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm0': {
-                'label': chatCommand['comm0'],
-                'defaultKey': '0',
-                'keyDown': function() {
+                label: chatCommand['comm0'],
+                defaultKey: '0',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(0);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm10': {
-                'label': chatCommand['comm10'],
-                'defaultKey': 'MOUSE WHEEL',
-                'keyDown': function() {
+                label: chatCommand['comm10'],
+                defaultKey: 'MOUSE WHEEL',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(10);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm11': {
-                'label': chatCommand['comm11'],
-                'defaultKey': 'LEFT',
-                'keyDown': function() {
+                label: chatCommand['comm11'],
+                defaultKey: 'LEFT',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(11);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm12': {
-                'label': chatCommand['comm12'],
-                'defaultKey': 'UP',
-                'keyDown': function() {
+                label: chatCommand['comm12'],
+                defaultKey: 'UP',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(12);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm13': {
-                'label': chatCommand['comm13'],
-                'defaultKey': 'RIGHT',
-                'keyDown': function() {
+                label: chatCommand['comm13'],
+                defaultKey: 'RIGHT',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(13);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm14': {
-                'label': chatCommand['comm14'],
-                'defaultKey': 'DOWN',
-                'keyDown': function() {
+                label: chatCommand['comm14'],
+                defaultKey: 'DOWN',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(14);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm15': {
-                'label': chatCommand['comm15'],
-                'defaultKey': 'CTRL+1',
-                'keyDown': function() {
+                label: chatCommand['comm15'],
+                defaultKey: 'CTRL+1',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(15);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm16': {
-                'label': chatCommand['comm16'],
-                'defaultKey': 'CTRL+2',
-                'keyDown': function() {
+                label: chatCommand['comm16'],
+                defaultKey: 'CTRL+2',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(16);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm17': {
-                'label': chatCommand['comm17'],
-                'defaultKey': 'CTRL+3',
-                'keyDown': function() {
+                label: chatCommand['comm17'],
+                defaultKey: 'CTRL+3',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(17);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm18': {
-                'label': chatCommand['comm18'],
-                'defaultKey': 'CTRL+4',
-                'keyDown': function() {
+                label: chatCommand['comm18'],
+                defaultKey: 'CTRL+4',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(18);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm19': {
-                'label': chatCommand['comm19'],
-                'defaultKey': 'CTRL+5',
-                'keyDown': function() {
+                label: chatCommand['comm19'],
+                defaultKey: 'CTRL+5',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(19);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm20': {
-                'label': chatCommand['comm20'],
-                'defaultKey': 'CTRL+7',
-                'keyDown': function() {
+                label: chatCommand['comm20'],
+                defaultKey: 'CTRL+7',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(20);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm21': {
-                'label': chatCommand['comm21'],
-                'defaultKey': 'CTRL+8',
-                'keyDown': function() {
+                label: chatCommand['comm21'],
+                defaultKey: 'CTRL+8',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(21);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm22': {
-                'label': chatCommand['comm22'],
-                'defaultKey': 'CTRL+9',
-                'keyDown': function() {
+                label: chatCommand['comm22'],
+                defaultKey: 'CTRL+9',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(22);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm23': {
-                'label': chatCommand['comm23'],
-                'defaultKey': 'CTRL+0',
-                'keyDown': function() {
+                label: chatCommand['comm23'],
+                defaultKey: 'CTRL+0',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(23);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm24': {
-                'label': chatCommand['comm24'],
-                'defaultKey': 'CTRL+Z',
-                'keyDown': function() {
+                label: chatCommand['comm24'],
+                defaultKey: 'CTRL+Z',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(24);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm25': {
-                'label': chatCommand['comm25'],
-                'defaultKey': 'CTRL+X',
-                'keyDown': function() {
+                label: chatCommand['comm25'],
+                defaultKey: 'CTRL+X',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(25);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm26': {
-                'label': chatCommand['comm26'],
-                'defaultKey': 'CTRL+Q',
-                'keyDown': function() {
+                label: chatCommand['comm26'],
+                defaultKey: 'CTRL+Q',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(26);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm27': {
-                'label': chatCommand['comm27'],
-                'defaultKey': 'CTRL+LM',
-                'keyDown': function() {
+                label: chatCommand['comm27'],
+                defaultKey: 'CTRL+LM',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(27);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm28': {
-                'label': chatCommand['comm28'],
-                'defaultKey': 'CTRL+B',
-                'keyDown': function() {
+                label: chatCommand['comm28'],
+                defaultKey: 'CTRL+B',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(28);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm29': {
-                'label': chatCommand['comm29'],
-                'defaultKey': 'CTRL+L',
-                'keyDown': function() {
+                label: chatCommand['comm29'],
+                defaultKey: 'CTRL+L',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(29);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             },
             'hk-comm30': {
-                'label': chatCommand['comm30'],
-                'defaultKey': 'CTRL+D',
-                'keyDown': function() {
+                label: chatCommand['comm30'],
+                defaultKey: 'CTRL+D',
+                keyDown() {
                     ogarminimapdrawer && ogarminimapdrawer.sendCommand(30);
                 },
-                'keyUp': null,
-                'type': 'command'
+                keyUp: null,
+                type: 'command'
             }
         },
         hotkeysSetup = {
-            'lastPressedKey': '',
-            'lastKeyId': '',
-            'defaultMessageKey': 'ENTER',
-            'inputClassName': 'custom-key-in form-control input-sm',
-            'loadDefaultHotkeys': function() {
+            lastPressedKey: '',
+            lastKeyId: '',
+            defaultMessageKey: 'ENTER',
+            inputClassName: 'custom-key-in form-control input-sm',
+            loadDefaultHotkeys() {
                 ogario1Hotkeys = {};
                 for (const command in ogario11Hotkeys) {
                     if (ogario11Hotkeys.hasOwnProperty(command)) {
@@ -11438,7 +11517,7 @@ var thelegendmodproject = function() {
                 /*for (var t in ogario1Hotkeys = {}, ogario11Hotkeys) ogario11Hotkeys.hasOwnProperty(t) && (ogario1Hotkeys[ogario11Hotkeys[t].defaultKey] = t);
                 ogario1Hotkeys['spec-messageKey'] = this.defaultMessageKey;*/
             },
-            'loadHotkeys': function() {
+            loadHotkeys() {
                 if (null !== window.localStorage.getItem('ogarioHotkeys')) {
                     ogario1Hotkeys = JSON.parse(window.localStorage.getItem('ogarioHotkeys'))
                 } else {
@@ -11448,11 +11527,11 @@ var thelegendmodproject = function() {
                     chatCommand = JSON.parse(window.localStorage.getItem('ogarioCommands'));
                 }
             },
-            'saveHotkeys': function() {
+            saveHotkeys() {
                 window.localStorage.setItem('ogarioHotkeys', JSON.stringify(ogario1Hotkeys));
                 this.saveCommands();
             },
-            'saveCommands': function() {
+            saveCommands() {
                 $('#hotkeys .command-in').each(function() {
                     var element = $(this);
                     var id = element.attr('id');
@@ -11462,14 +11541,14 @@ var thelegendmodproject = function() {
                 });
                 window.localStorage.setItem('ogarioCommands', JSON.stringify(chatCommand));
             },
-            'resetHotkeys': function() {
+            resetHotkeys() {
                 this.loadDefaultHotkeys();
                 $('#hotkeys-cfg .custom-key-in').each(function() {
                     var t = $(this).attr('id');
                     ogario11Hotkeys[t] && $(this).val(ogario11Hotkeys[t].defaultKey);
                 });
             },
-            'setHotkeysMenu': function() {
+            setHotkeysMenu() {
                 //var t = this;
                 const setup = this;
                 for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + textLanguage.restoreSettings + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">' + textLanguage.saveSett + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + textLanguage['close'] + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>' + textLanguage['hk-inst-assign'] + '</li><li>' + textLanguage['hk-inst-delete'] + '</li><li>' + textLanguage['hk-inst-keys'] + '</li></ul></div></div>'), ogario11Hotkeys)
@@ -11509,7 +11588,7 @@ var thelegendmodproject = function() {
                     $('#hotkeys-cfg').perfectScrollbar(),
                     hudsetter && hudsetter.setMenuBg();
             },
-            'getPressedKey': function(key) {
+            getPressedKey(key) {
                 var specialKey = '';
                 var normalKey = '';
                 if (key.ctrlKey || key.keyCode == 17) {
@@ -11571,11 +11650,11 @@ var thelegendmodproject = function() {
                 return normalKey;
                 //return '' !== specialKey ? '' !== normalKey ? specialKey + '+' + normalKey : specialKey : normalKey;
             },
-            'deleteHotkey': function(name, id) {
+            deleteHotkey(name, id) {
                 delete ogario1Hotkeys[name];
                 $('#' + id).val('');
             },
-            'setDefaultHotkey': function(id) {
+            setDefaultHotkey(id) {
                 var key = false;
                 if (ogario11Hotkeys[id] && !ogario1Hotkeys.hasOwnProperty(ogario11Hotkeys[id].defaultKey)) {
                     key = ogario11Hotkeys[id].defaultKey;
@@ -11583,7 +11662,7 @@ var thelegendmodproject = function() {
                 }
                 return key;
             },
-            'setHotkey': function(key, id) {
+            setHotkey(key, id) {
                 if (id && (this.lastPressedKey !== key || this.lastKeyId !== id)) {
                     var value = $('#' + id).val();
                     if (this.deleteHotkey(value, id), 'DEL' !== key) {
@@ -11607,7 +11686,7 @@ var thelegendmodproject = function() {
                     }
                 }
             },
-            'init': function() {
+            init() {
                 this.loadHotkeys();
                 this.setHotkeysMenu();
             }
@@ -11793,38 +11872,39 @@ var thelegendmodproject = function() {
         };
     }
     window.core = {
-        'connect': function(url) {
+        //'connect': function(url) {
+		connect(url) {	
             LM.connect(url);
             //LM.connect(url); //for multibox with new Protocol and Client
         },
-        'disconnect': function() {},
-        'sendNick': function(nick) {
+        disconnect() {},
+        sendNick(nick) {
             LM.sendNick(nick);
         },
-        'sendSpectate': function() {
+        sendSpectate() {
             LM.sendSpectate();
         },
-        'eject': function() {
+        eject() {
             LM.sendEject();
             window.lastejected = true;
         },
-        'split': function() {
+        split() {
             LM.sendSplit();
 
         },
-        'specialOn': function() {
+        specialOn() {
             LM.sendFreeSpectate();
         },
-        'specialOff': function() {
+        specialOff() {
             LM.sendFreeSpectate();
         },
-        'sendFbToken': function(token) {
+        sendFbToken(token) {
             LM.sendFbToken(token);
         },
-        'sendGplusToken': function(token) {
+        sendGplusToken(token) {
             LM.sendGplusToken(token);
         },
-        'recaptchaHandlerResponse': function(token) {
+        recaptchaHandlerResponse(token) {
             if (window.botscaptcha == true) {
                 setTimeout(function() {
                     core.recaptchaBotResponse(token);
@@ -11833,21 +11913,21 @@ var thelegendmodproject = function() {
                 core.recaptchaResponse(token);
             }
         },
-        'recaptchaResponse': function(token) {
+        recaptchaResponse(token) {
             window.lastRecaptchaResponseToken = token;
             LM.sendRecaptcha(token);
         },
-        'recaptchaBotResponse': function(token) {
+        recaptchaBotResponse(token) {
             window.lastRecaptchaResponseToken = token;
             window.botscaptcha = false;
             //toastr.info('Captcha token sent to node.js', token)
             toastr.info('<b>[SERVER]:</b> Thank you for solving Captcha for bots')
             window.connectionBots.send(window.buffers.captchatoken(token))
         },
-        'setClientVersion': function(version, strVersion) {
+        setClientVersion(version, strVersion) {
             LM.setClientVersion(version, strVersion);
         },
-        "proxyMobileData": function(arr = []) {
+        proxyMobileData(arr = []) {
             if (!Array.isArray(arr)) {
                 console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " ProxyMobileData ERROR: Array data required.");
                 return;
@@ -11858,16 +11938,16 @@ var thelegendmodproject = function() {
             arr = new Uint8Array(arr);
             LM.sendMessage(new DataView(arr.buffer));
         },
-        'registerSkin': function(a, b, c, d) {
+        registerSkin(a, b, c, d) {
             window.customskinsname = a;
             window.customskinsurl = c;
         },
         //lulko
-        'playerHasCells': function() {
+        playerHasCells() {
             return Connection.playerCells.length > 0
         },
         //lulko
-        'proxy': function(data) {
+        proxy(data) {
             if (!Array.isArray(data)) {
                 console.log('Proxy ERROR: Array data required.');
                 return;
