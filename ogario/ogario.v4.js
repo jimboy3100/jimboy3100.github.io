@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.401 MEGA TEST
+// v1.402 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -5429,8 +5429,9 @@ var thelegendmodproject = function() {
             var text = null;
 
             if (/^[a-zA-Z0-9=+\/]{12,}$/.test(token)) {
-                var atobToken = atob(token);
-
+                //var atobToken = atob(token);
+				var atobToken = token;
+				
                 //ccse
                 if (!text && atobToken.search(/agar\.io/) == -1) {
                     text = 'wss://' + atobToken;
@@ -5460,15 +5461,16 @@ var thelegendmodproject = function() {
                 matchOld = this.ws.replace('.tech.agar.io', '').replace(/-/g, '.').match(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/);
                 if (matchOld) {
                     this.serverIP = matchOld[0];
-                    text = btoa(this.serverIP);
+                    text = this.serverIP;
+					//text = btoa(this.serverIP);
                 }
             }
             //ccse
             if (this.ws.search(/wss?:\/\//) > -1 && this.ws.search(/agar\.io/) == -1) {
 
                 text = this.ws.match(/wss?:\/\/(.+)/)[1]
-                this.serverIP = text;
-                text = btoa(text);
+                this.serverIP = text;				
+                //text = btoa(text);
                 //console.log("createServerToken case 1:" + text);
             }
 
