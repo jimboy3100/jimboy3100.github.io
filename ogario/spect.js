@@ -1,4 +1,4 @@
-//SPECS v1.5f
+//SPECS v1.5g
 
 function addBox() {
   let spect = new Spect();
@@ -97,7 +97,7 @@ class Spect {
         this.socket.onclose = this.onclose.bind(this)
     }
     onopen() {
-            console.log(`[SPECT] Game server socket open`)
+            console.log('[SPECT] Game server socket open')
       
             this.clientVersion = window.master.clientVersion
             this.protocolVersion = window.master.protocolVersion
@@ -335,7 +335,7 @@ class Spect {
         x = Math.imul(x, Length) | 0;
         newValue = x >>> 15;
         x = newValue ^ x;
-        console.log(`[SPECT] Generated client key:`, x);
+        console.log('[SPECT] Generated client key:', x);
         return x;
     }
     shiftKey(key) {
@@ -555,17 +555,16 @@ class Spect {
                 break;
             case 16:
 
-              console.log('case 16');
+              console.log('[SPECT] case 16');
 
                 break;
             case 64:
 
-              console.log('case 64');
+              console.log('[SPECT] case 64');
 
                 break;
             default:
-                
-                console.log(`[OGARio by szymy] Unknown opcode:`, view.getUint8(0));
+                console.log('[SPECT] Unknown opcode:', view.getUint8(0));
                 break;
         }
     }
@@ -600,18 +599,10 @@ class Spect {
 
                 break;
             default:
-                console.log(`[OGARio by szymy] Unknown sub opcode:`, message.readUInt8(0));
+                console.log('[SPECT] Unknown sub opcode:', message.readUInt8(0));
                 break;
         }
     }
-    /*isInView(x, y, size) {
-        var x2s = legendmod.canvasWidth / 2 / legendmod.scale;
-        var y2s = legendmod.canvasHeight / 2 / legendmod.scale;
-        if (x + size < legendmod.viewX - x2s || y + size < legendmod.viewY - y2s || x - size > legendmod.viewX + x2s || y - size > legendmod.viewY + y2s) {
-            return false;
-        }
-        return true;
-    }*/
     isInView(x, y) {
         let mtp = 4.95,
             w = 1024/2*mtp,
@@ -636,10 +627,10 @@ class Spect {
                 this.viewY = (bottom + top) / 2;
             }
             this.mapOffsetFixed = true;
-            console.log(`[SPECT] Map offset fixed (x, y):`, this.mapOffsetX, this.mapOffsetY);
+            console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
         }
     }
-        translateX(x) {
+        /*translateX(x) {
             return this.mapMaxX - (x - this.mapMinX);
         }
         translateY(x) {
@@ -650,7 +641,7 @@ class Spect {
         }
         untranslateY(x) {
             return 0 - (x - this.mapMaxY + this.mapMinY);
-        }	
+        }	*/
     updateCells(view, offset) {
         const encode = () => {
             for (var text = '';;) {
@@ -801,7 +792,7 @@ class Spect {
             }
             if (extendedFlags & 2) {
                 cell.isFriend = isFriend;
-                console.log('FB friend cell in view', isFriend)
+                //console.log('FB friend cell in view', isFriend)
             }
         }
        // var rmaxedX=rmaxedY=rminedX=rminedY=0
