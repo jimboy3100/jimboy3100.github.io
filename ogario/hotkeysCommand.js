@@ -5,7 +5,7 @@
                 label: textLanguage['hk-feed'],
                 defaultKey: 'W',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.feed();
+                    application && application.feed();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -14,10 +14,10 @@
                 label: textLanguage['hk-macroFeed'],
                 defaultKey: 'E',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.macroFeed(!0);
+                    application && application.macroFeed(!0);
                 },
                 keyUp() {
-                    ogarminimapdrawer && ogarminimapdrawer.macroFeed(!1);
+                    application && application.macroFeed(!1);
                 },
                 type: 'normal'
             },
@@ -25,7 +25,7 @@
                 label: textLanguage['hk-split'],
                 defaultKey: 'SPACE',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.split();
+                    application && application.split();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -34,7 +34,7 @@
                 label: textLanguage['hk-doubleSplit'],
                 defaultKey: 'Q',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.doubleSplit();
+                    application && application.doubleSplit();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -43,7 +43,7 @@
                 label: 'Popsplit',
                 defaultKey: 'ALT+Q',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.popSplit();
+                    application && application.popSplit();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -52,7 +52,7 @@
                 label: textLanguage['hk-split16'],
                 defaultKey: 'SHIFT',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.split16();
+                    application && application.split16();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -61,7 +61,7 @@
                 label: textLanguage['hk-pause'],
                 defaultKey: 'R',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setPause();
+                    application && application.setPause();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -70,7 +70,7 @@
                 label: textLanguage['hk-showTop5'],
                 defaultKey: 'T',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowTop5();
+                    application && application.setShowTop5();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -79,7 +79,7 @@
                 label: textLanguage['hk-showTime'],
                 defaultKey: 'ALT+T',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowTime();
+                    application && application.setShowTime();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -88,7 +88,7 @@
                 label: textLanguage['hk-showSplitRange'],
                 defaultKey: 'U',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowSplitRange();
+                    application && application.setShowSplitRange();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -97,7 +97,7 @@
                 label: textLanguage['hk-showSplitInd'],
                 defaultKey: 'I',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowSplitInd();
+                    application && application.setShowSplitInd();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -106,7 +106,7 @@
                 label: textLanguage['hk-showTeammatesInd'],
                 defaultKey: 'ALT+I',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowTeammatesInd();
+                    application && application.setShowTeammatesInd();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -115,7 +115,7 @@
                 label: textLanguage['hk-showOppColors'],
                 defaultKey: 'O',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowOppColors();
+                    application && application.setShowOppColors();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -124,7 +124,7 @@
                 label: textLanguage['hk-toggleSkins'],
                 defaultKey: 'A',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.toggleSkins();
+                    application && application.toggleSkins();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -133,7 +133,7 @@
                 label: textLanguage['hk-transparentSkins'],
                 defaultKey: '',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setTransparentSkins();
+                    application && application.setTransparentSkins();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -142,7 +142,7 @@
                 label: textLanguage['hk-showSkins'],
                 defaultKey: 'S',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowSkins();
+                    application && application.setShowSkins();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -151,7 +151,7 @@
                 label: textLanguage['hk-showStats'],
                 defaultKey: 'ALT+S',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowStats();
+                    application && application.setShowStats();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -160,7 +160,7 @@
                 label: textLanguage['hk-toggleCells'],
                 defaultKey: 'D',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.toggleCells();
+                    application && application.toggleCells();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -169,7 +169,7 @@
                 label: textLanguage['hk-showFood'],
                 defaultKey: 'F',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowFood();
+                    application && application.setShowFood();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -178,7 +178,7 @@
                 label: textLanguage['hk-showGrid'],
                 defaultKey: 'G',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowGrid();
+                    application && application.setShowGrid();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -187,7 +187,7 @@
                 label: textLanguage['hk-showMiniMapGuides'],
                 defaultKey: 'ALT+G',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowMiniMapGuides();
+                    application && application.setShowMiniMapGuides();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -196,7 +196,7 @@
                 label: textLanguage['hk-hideChat'],
                 defaultKey: 'H',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.hideChat();
+                    application && application.hideChat();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -205,7 +205,7 @@
                 label: textLanguage['hk-showHUD'],
                 defaultKey: 'ALT+H',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowHUD();
+                    application && application.setShowHUD();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -214,7 +214,7 @@
                 label: textLanguage['hk-copyLb'],
                 defaultKey: 'L',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.copyLb();
+                    application && application.copyLb();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -223,7 +223,7 @@
                 label: textLanguage['hk-showLb'],
                 defaultKey: 'ALT+L',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowLb();
+                    application && application.setShowLb();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -232,7 +232,7 @@
                 label: textLanguage['hk-toggleAutoZoom'],
                 defaultKey: '',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.toggleAutoZoom();
+                    application && application.toggleAutoZoom();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -241,10 +241,10 @@
                 label: textLanguage['hk-resetZoom'],
                 defaultKey: 'Z',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.resetZoom(!0);
+                    application && application.resetZoom(!0);
                 },
                 keyUp() {
-                    ogarminimapdrawer && ogarminimapdrawer.resetZoom(!1);
+                    application && application.resetZoom(!1);
                 },
                 type: 'normal'
             },
@@ -252,7 +252,7 @@
                 label: textLanguage['hk-toggleDeath'],
                 defaultKey: 'X',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.toggleDeath();
+                    application && application.toggleDeath();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -261,10 +261,10 @@
                 label: textLanguage['hk-clearChat'],
                 defaultKey: 'C',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.displayChatHistory(!0);
+                    application && application.displayChatHistory(!0);
                 },
                 keyUp() {
-                    ogarminimapdrawer && ogarminimapdrawer.displayChatHistory(!1);
+                    application && application.displayChatHistory(!1);
                 },
                 type: 'normal'
             },
@@ -272,7 +272,7 @@
                 label: textLanguage['hk-showBgSectors'],
                 defaultKey: 'B',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowBgSectors();
+                    application && application.setShowBgSectors();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -281,7 +281,7 @@
                 label: textLanguage['hk-hideBots'],
                 defaultKey: 'ALT+B',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setHideSmallBots();
+                    application && application.setHideSmallBots();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -290,7 +290,7 @@
                 label: textLanguage['hk-showNames'],
                 defaultKey: 'N',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowNames();
+                    application && application.setShowNames();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -299,7 +299,7 @@
                 label: textLanguage['hk-hideTeammatesNames'],
                 defaultKey: '',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setHideTeammatesNames();
+                    application && application.setHideTeammatesNames();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -308,7 +308,7 @@
                 label: textLanguage['hk-showMass'],
                 defaultKey: 'M',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowMass();
+                    application && application.setShowMass();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -317,7 +317,7 @@
                 label: textLanguage['hk-showMiniMap'],
                 defaultKey: 'ALT+M',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowMiniMap();
+                    application && application.setShowMiniMap();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -326,7 +326,7 @@
                 label: textLanguage['hk-chatMessage'],
                 defaultKey: 'ENTER',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.enterChatMessage();
+                    application && application.enterChatMessage();
                 },
                 keyUp: null,
                 type: 'special'
@@ -335,7 +335,7 @@
                 label: textLanguage['hk-quickResp'],
                 defaultKey: 'TILDE',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.quickResp();
+                    application && application.quickResp();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -344,7 +344,7 @@
                 label: textLanguage['hk-autoResp'],
                 defaultKey: '',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.toggleAutoResp();
+                    application && application.toggleAutoResp();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -353,7 +353,7 @@
                 label: textLanguage['hk-zoomLevel'] + ' 1',
                 defaultKey: 'ALT+1',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setZoom(0.5);
+                    application && application.setZoom(0.5);
                 },
                 keyUp: null,
                 type: 'normal'
@@ -362,7 +362,7 @@
                 label: textLanguage['hk-zoomLevel'] + ' 2',
                 defaultKey: 'ALT+2',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setZoom(0.25);
+                    application && application.setZoom(0.25);
                 },
                 keyUp: null,
                 type: 'normal'
@@ -371,7 +371,7 @@
                 label: textLanguage['hk-zoomLevel'] + ' 3',
                 defaultKey: 'ALT+3',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setZoom(0.125);
+                    application && application.setZoom(0.125);
                 },
                 keyUp: null,
                 type: 'normal'
@@ -380,7 +380,7 @@
                 label: textLanguage['hk-zoomLevel'] + ' 4',
                 defaultKey: 'ALT+4',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setZoom(0.075);
+                    application && application.setZoom(0.075);
                 },
                 keyUp: null,
                 type: 'normal'
@@ -389,7 +389,7 @@
                 label: textLanguage['hk-zoomLevel'] + ' 5',
                 defaultKey: 'ALT+5',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setZoom(0.05);
+                    application && application.setZoom(0.05);
                 },
                 keyUp: null,
                 type: 'normal'
@@ -398,7 +398,7 @@
                 label: textLanguage['hk-voiceChat'],
                 defaultKey: '=',
                 keyDown() {
-                    //ogarminimapdrawer && ogarminimapdrawer.enterChatMessage();
+                    //application && application.enterChatMessage();
                     //if ($('#message-box').css('display') == 'block') {
                     $(".voice-start.icon-mic").click();
                     //}
@@ -410,7 +410,7 @@
                 label: textLanguage['hk-GhostCellsInfo'],
                 defaultKey: 'K',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowGhostCellsInfo();
+                    application && application.setShowGhostCellsInfo();
                 },
                 keyUp: null,
                 type: 'special'
@@ -419,7 +419,7 @@
                 label: textLanguage['hk-Autoplay'],
                 defaultKey: 'J',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setAutoPlay();
+                    application && application.setAutoPlay();
                 },
                 keyUp: null,
                 type: 'special'
@@ -428,7 +428,7 @@
                 label: textLanguage['hk-switchServerMode'],
                 defaultKey: '-',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.switchServerMode();
+                    application && application.switchServerMode();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -437,7 +437,7 @@
                 label: textLanguage['hk-showTargeting'],
                 defaultKey: '',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowTargeting();
+                    application && application.setShowTargeting();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -446,7 +446,7 @@
                 label: textLanguage['hk-setTargeting'],
                 defaultKey: '',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setTargeting();
+                    application && application.setTargeting();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -455,7 +455,7 @@
                 label: textLanguage['hk-cancelTargeting'],
                 defaultKey: '',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.cancelTargeting();
+                    application && application.cancelTargeting();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -464,7 +464,7 @@
                 label: textLanguage['hk-changeTarget'],
                 defaultKey: '',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.changeTarget();
+                    application && application.changeTarget();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -473,7 +473,7 @@
                 label: textLanguage['hk-privateMiniMap'],
                 defaultKey: '',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setPrivateMiniMap();
+                    application && application.setPrivateMiniMap();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -482,7 +482,7 @@
                 label: textLanguage['hk-showQuest'],
                 defaultKey: '',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowQuest();
+                    application && application.setShowQuest();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -491,7 +491,7 @@
                 label: textLanguage['hk-showSpectator'],
                 defaultKey: 'V',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.setShowFullSpectator();
+                    application && application.setShowFullSpectator();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -539,7 +539,7 @@
                 label: chatCommand['comm1'],
                 defaultKey: '1',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(1);
+                    application && application.sendCommand(1);
                 },
                 keyUp: null,
                 type: 'command'
@@ -548,7 +548,7 @@
                 label: chatCommand['comm2'],
                 defaultKey: '2',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(2);
+                    application && application.sendCommand(2);
                 },
                 keyUp: null,
                 type: 'command'
@@ -557,7 +557,7 @@
                 label: chatCommand['comm3'],
                 defaultKey: '3',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(3);
+                    application && application.sendCommand(3);
                 },
                 keyUp: null,
                 type: 'command'
@@ -566,7 +566,7 @@
                 label: chatCommand['comm4'],
                 defaultKey: '4',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(4);
+                    application && application.sendCommand(4);
                 },
                 keyUp: null,
                 type: 'command'
@@ -575,7 +575,7 @@
                 label: chatCommand['comm5'],
                 defaultKey: '5',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(5);
+                    application && application.sendCommand(5);
                 },
                 keyUp: null,
                 type: 'command'
@@ -584,7 +584,7 @@
                 label: chatCommand['comm6'],
                 defaultKey: '6',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(6);
+                    application && application.sendCommand(6);
                 },
                 keyUp: null,
                 type: 'command'
@@ -593,7 +593,7 @@
                 label: chatCommand['comm7'],
                 defaultKey: '7',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(7);
+                    application && application.sendCommand(7);
                 },
                 keyUp: null,
                 type: 'command'
@@ -602,7 +602,7 @@
                 label: chatCommand['comm8'],
                 defaultKey: '8',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(8);
+                    application && application.sendCommand(8);
                 },
                 keyUp: null,
                 type: 'command'
@@ -611,7 +611,7 @@
                 label: chatCommand['comm9'],
                 defaultKey: '9',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(9);
+                    application && application.sendCommand(9);
                 },
                 keyUp: null,
                 type: 'command'
@@ -620,7 +620,7 @@
                 label: chatCommand['comm0'],
                 defaultKey: '0',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(0);
+                    application && application.sendCommand(0);
                 },
                 keyUp: null,
                 type: 'command'
@@ -629,7 +629,7 @@
                 label: chatCommand['comm10'],
                 defaultKey: 'MOUSE WHEEL',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(10);
+                    application && application.sendCommand(10);
                 },
                 keyUp: null,
                 type: 'command'
@@ -638,7 +638,7 @@
                 label: chatCommand['comm11'],
                 defaultKey: 'LEFT',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(11);
+                    application && application.sendCommand(11);
                 },
                 keyUp: null,
                 type: 'command'
@@ -647,7 +647,7 @@
                 label: chatCommand['comm12'],
                 defaultKey: 'UP',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(12);
+                    application && application.sendCommand(12);
                 },
                 keyUp: null,
                 type: 'command'
@@ -656,7 +656,7 @@
                 label: chatCommand['comm13'],
                 defaultKey: 'RIGHT',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(13);
+                    application && application.sendCommand(13);
                 },
                 keyUp: null,
                 type: 'command'
@@ -665,7 +665,7 @@
                 label: chatCommand['comm14'],
                 defaultKey: 'DOWN',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(14);
+                    application && application.sendCommand(14);
                 },
                 keyUp: null,
                 type: 'command'
@@ -674,7 +674,7 @@
                 label: chatCommand['comm15'],
                 defaultKey: 'CTRL+1',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(15);
+                    application && application.sendCommand(15);
                 },
                 keyUp: null,
                 type: 'command'
@@ -683,7 +683,7 @@
                 label: chatCommand['comm16'],
                 defaultKey: 'CTRL+2',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(16);
+                    application && application.sendCommand(16);
                 },
                 keyUp: null,
                 type: 'command'
@@ -692,7 +692,7 @@
                 label: chatCommand['comm17'],
                 defaultKey: 'CTRL+3',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(17);
+                    application && application.sendCommand(17);
                 },
                 keyUp: null,
                 type: 'command'
@@ -701,7 +701,7 @@
                 label: chatCommand['comm18'],
                 defaultKey: 'CTRL+4',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(18);
+                    application && application.sendCommand(18);
                 },
                 keyUp: null,
                 type: 'command'
@@ -710,7 +710,7 @@
                 label: chatCommand['comm19'],
                 defaultKey: 'CTRL+5',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(19);
+                    application && application.sendCommand(19);
                 },
                 keyUp: null,
                 type: 'command'
@@ -719,7 +719,7 @@
                 label: chatCommand['comm20'],
                 defaultKey: 'CTRL+7',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(20);
+                    application && application.sendCommand(20);
                 },
                 keyUp: null,
                 type: 'command'
@@ -728,7 +728,7 @@
                 label: chatCommand['comm21'],
                 defaultKey: 'CTRL+8',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(21);
+                    application && application.sendCommand(21);
                 },
                 keyUp: null,
                 type: 'command'
@@ -737,7 +737,7 @@
                 label: chatCommand['comm22'],
                 defaultKey: 'CTRL+9',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(22);
+                    application && application.sendCommand(22);
                 },
                 keyUp: null,
                 type: 'command'
@@ -746,7 +746,7 @@
                 label: chatCommand['comm23'],
                 defaultKey: 'CTRL+0',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(23);
+                    application && application.sendCommand(23);
                 },
                 keyUp: null,
                 type: 'command'
@@ -755,7 +755,7 @@
                 label: chatCommand['comm24'],
                 defaultKey: 'CTRL+Z',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(24);
+                    application && application.sendCommand(24);
                 },
                 keyUp: null,
                 type: 'command'
@@ -764,7 +764,7 @@
                 label: chatCommand['comm25'],
                 defaultKey: 'CTRL+X',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(25);
+                    application && application.sendCommand(25);
                 },
                 keyUp: null,
                 type: 'command'
@@ -773,7 +773,7 @@
                 label: chatCommand['comm26'],
                 defaultKey: 'CTRL+Q',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(26);
+                    application && application.sendCommand(26);
                 },
                 keyUp: null,
                 type: 'command'
@@ -782,7 +782,7 @@
                 label: chatCommand['comm27'],
                 defaultKey: 'CTRL+LM',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(27);
+                    application && application.sendCommand(27);
                 },
                 keyUp: null,
                 type: 'command'
@@ -791,7 +791,7 @@
                 label: chatCommand['comm28'],
                 defaultKey: 'CTRL+B',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(28);
+                    application && application.sendCommand(28);
                 },
                 keyUp: null,
                 type: 'command'
@@ -800,7 +800,7 @@
                 label: chatCommand['comm29'],
                 defaultKey: 'CTRL+L',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(29);
+                    application && application.sendCommand(29);
                 },
                 keyUp: null,
                 type: 'command'
@@ -809,7 +809,7 @@
                 label: chatCommand['comm30'],
                 defaultKey: 'CTRL+D',
                 keyDown() {
-                    ogarminimapdrawer && ogarminimapdrawer.sendCommand(30);
+                    application && application.sendCommand(30);
                 },
                 keyUp: null,
                 type: 'command'
