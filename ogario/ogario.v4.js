@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.400 MEGA TEST
+// v1.401 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -403,7 +403,7 @@ var Socket3;
 window.socket3Opened = false;
 window.SLG3NumberTries = 0;
 window.socket3NumberTries = 0;
-//var customLMID = Math.floor(Math.random() * 100000);
+var customLMID = Math.floor(Math.random() * 100000);
 window.playerCellsSockReceived = [];
 window.cellsFake = [];
 window.cellsFakeFlag = 0;
@@ -5591,8 +5591,8 @@ var thelegendmodproject = function() {
                 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' SLG socket open:', room);
                 //
                 window.SLGsocket.send(JSON.stringify({
-                    //"auth": "JIM2" + customLMID,
-                    "auth": "JIM2" + legendmod3.playerID,
+                    "auth": "JIM2" + customLMID,
+                    //"auth": "JIM2" + legendmod3.playerID,
                     "password": "legendmod2"
                 }));
                 window.SLGsocket.send(JSON.stringify({
@@ -5931,7 +5931,7 @@ var thelegendmodproject = function() {
             this.sendServerToken();
             this.sendPlayerNick();
         },
-		sendPlayerUpdate(fakeNick) {	
+        sendPlayerUpdate() {
             if (this.isSocketOpen() && ogario.play && this.playerID && ogario.playerColor) {
                 function encode(str) {
                     for (let length = 0; length < str.length; length++) {
@@ -5948,14 +5948,8 @@ var thelegendmodproject = function() {
                 view.setUint8(0, 20);
                 view.setUint32(1, this.playerID, true);
                 var offset = 5;
-				if (fakeNick){
-					encode(fakeNick);
-					encode("https://legendmod.ml/banners/iconfake1.png");
-				}
-				else{
-					encode(ogarcopythelb.nick);
-					encode(ogarcopythelb.skinURL);
-				}
+                encode(ogarcopythelb.nick);
+                encode(ogarcopythelb.skinURL);
                 encode(ogarcopythelb.color);
                 encode(ogario.playerColor);
                 this.sendBuffer(view);
