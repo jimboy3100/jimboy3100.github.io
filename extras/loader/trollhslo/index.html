@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>LOOOOOL</title>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="https://jimboy3100.github.io/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Oswald:300,400|Raleway:300,400,500|Ubuntu:400,500,700" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/loader/Bundle.css">
+
+<body>
+    <div id="loading-screen">
+        <div class="maou-circle-container" style="">
+            <div class="maou-circle p1"></div>
+            <div class="maou-circle p2"></div>
+            <div class="maou-circle p3"></div>
+        </div>
+        <div id="messageLoaderLM" class="message">INJECTING FAKE HSLO PIXI.JS</div>
+    </div>
+<script>
+
+var timesopened = localStorage.getItem("timesopened");
+if (timesopened != null) {
+   timesopened++;
+   localStorage.setItem("timesopened", timesopened);
+} else if (timesopened == null) {
+   timesopened=0;
+   localStorage.setItem("timesopened", "0");
+}
+	
+var messageLoaderLM = document.getElementById('messageLoaderLM');
+setTimeout(function() {
+	if (navigator){
+    if((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf('OPR')) != -1 ) 
+    {
+        changeMessageLoaderLMOpera();
+    }
+    else if(navigator.userAgent.indexOf("Chrome") != -1 )
+    {
+        changeMessageLoaderLMChrome();
+    }
+    else if(navigator.userAgent.indexOf("Safari") != -1)
+    {
+        changeMessageLoaderLM();
+    }
+    else if(navigator.userAgent.indexOf("Firefox") != -1 ) 
+    {
+         changeMessageLoaderLM();
+    }
+    else if((navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true )) //IF IE > 10
+    {
+      changeMessageLoaderLM(); 
+    }  
+    else 
+    {
+       changeMessageLoaderLM();
+    }
+	}
+}, 5000);
+
+function changeMessageLoaderLMChrome(){
+	var messageLoaderLM = document.getElementById('messageLoaderLM'); 
+	if (messageLoaderLM){
+	messageLoaderLM.innerText="HSLO.IO   -> Noobest mod ever"
+	}
+}
+function changeMessageLoaderLMOpera(){
+	var messageLoaderLM = document.getElementById('messageLoaderLM'); 
+	if (messageLoaderLM){
+	messageLoaderLM.innerText="HSLO.IO   -> Noobest mod ever"
+	}
+}
+function changeMessageLoaderLM(){
+	var messageLoaderLM = document.getElementById('messageLoaderLM'); 
+	if (messageLoaderLM){
+	messageLoaderLM.innerText="Noobest mod ever"
+	}
+}
+
+</script>
+</body>
+
+</html>
