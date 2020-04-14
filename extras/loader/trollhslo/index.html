@@ -15,8 +15,11 @@
             <div class="maou-circle p2"></div>
             <div class="maou-circle p3"></div>
         </div>
-        <div id="messageLoaderLM" class="message">INJECTING FAKE HSLO PIXI.JS</div>
+        <div id="messageLoaderLM" class="message">Injecting fake pixi.js</div>
     </div>
+<audio id="trollsound" controls autoplay>
+     <source src="https://legendmod.ml/banners/troll1.mp3" />     
+ </audio>	
 <script>
 
 var timesopened = localStorage.getItem("timesopened");
@@ -61,22 +64,64 @@ setTimeout(function() {
 function changeMessageLoaderLMChrome(){
 	var messageLoaderLM = document.getElementById('messageLoaderLM'); 
 	if (messageLoaderLM){
-	messageLoaderLM.innerText="HSLO.IO   -> Noobest mod ever"
+	messageLoaderLM.innerText="Click anywhere to start mod"
 	}
 }
 function changeMessageLoaderLMOpera(){
 	var messageLoaderLM = document.getElementById('messageLoaderLM'); 
 	if (messageLoaderLM){
-	messageLoaderLM.innerText="HSLO.IO   -> Noobest mod ever"
+	messageLoaderLM.innerText="Click anywhere to start mod"
 	}
 }
 function changeMessageLoaderLM(){
 	var messageLoaderLM = document.getElementById('messageLoaderLM'); 
 	if (messageLoaderLM){
-	messageLoaderLM.innerText="Noobest mod ever"
+	messageLoaderLM.innerText="Click anywhere to start mod"
 	}
 }
-
+function changeMessageLoaderLM2(){
+	var messageLoaderLM = document.getElementById('messageLoaderLM'); 
+	if (messageLoaderLM){
+	messageLoaderLM.innerText="Loading more PIXI.JS"
+	}
+}
+function changeMessageLoaderLM3(){
+	var messageLoaderLM = document.getElementById('messageLoaderLM'); 
+	if (messageLoaderLM){
+	messageLoaderLM.innerText="Redirecting... please wait..."
+	}
+}
+function changeMessageLoaderLM4(){
+	var messageLoaderLM = document.getElementById('messageLoaderLM'); 
+	if (messageLoaderLM){
+	messageLoaderLM.innerText="Thank you for using our mod..."
+	}
+}
+function trololo(){
+setTimeout(function() {
+document.getElementById("trollsound").play()
+changeMessageLoaderLM2()
+trololo2()
+}, 2000);
+}
+function trololo2(){
+setTimeout(function() {
+changeMessageLoaderLM3()
+trololo3()
+}, 7000);
+}
+function trololo3(){
+setTimeout(function() {
+changeMessageLoaderLM4()
+trololo4()
+}, 7000);
+}
+function trololo4(){
+setTimeout(function() {
+window.location.replace("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+}, 7000);
+}
+document.body.addEventListener('click', trololo, true); 
 </script>
 </body>
 
