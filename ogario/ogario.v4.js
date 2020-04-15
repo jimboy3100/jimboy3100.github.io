@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.410 MEGA TEST
+// v1.411 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -710,7 +710,7 @@ var emoticonicons = {
     '(wow)': 'newwow.svg'
 }
 
-var languagetexts = {
+var displayText = {
     'pl': {
         start: 'Start',
         settings: 'Ustawienia',
@@ -1951,7 +1951,7 @@ var graphicMenus = {
         name: 'Very Low'
     }
 }
-var escapeHTMLs = {
+var escapeChar = {
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
@@ -2130,7 +2130,7 @@ if (dyinglight1load == "yes") {
 				*/
 
 
-var skinUrlPatterns = [{
+var SkinExplain = [{
         name: "imgur.com",
         url: "https://imgur.com/",
         example: "https://i.imgur.com/xdmUp5N.png",
@@ -2280,10 +2280,10 @@ var ogarcopythelb = {
 	
 var lang = 'en';
 userLanguage = window.navigator.language || window.navigator.userLanguage;
-if (userLanguage && languagetexts.hasOwnProperty(userLanguage)) {
+if (userLanguage && displayText.hasOwnProperty(userLanguage)) {
     lang = userLanguage;
 }
-var textLanguage = languagetexts[lang];
+var textLanguage = displayText[lang];
 
 
     chatCommand = {
@@ -2328,11 +2328,11 @@ function thelegendmodproject() {
     //a = null,
     /*    lang = 'en',
             userLanguage = window.navigator.language || window.navigator.userLanguage;
-        if (userLanguage && languagetexts.hasOwnProperty(userLanguage)){
+        if (userLanguage && displayText.hasOwnProperty(userLanguage)){
 			lang = userLanguage;
 		}
-        var textLanguage = languagetexts[lang];*/
-    //if (languagetexts[r].comm15 != undefined) {
+        var textLanguage = displayText[lang];*/
+    //if (displayText[r].comm15 != undefined) {
     //console.log(textLanguage.comm15);
     //}
 
@@ -2871,7 +2871,7 @@ function thelegendmodproject() {
         }
     }
 
-    window.legendmod4 = languagetexts;
+    //window.legendmod4 = languagetexts;
     window.legendmod5 = defaultmapsettings;
 
     var application = window.application = {
@@ -3704,7 +3704,7 @@ function thelegendmodproject() {
         },
         escapeHTML(string) {
             return String(string).replace(/[&<>"'\/]/g, function(event) {
-                return escapeHTMLs[event];
+                return escapeChar[event];
             });
         },
         checkSkinURL(url) {
