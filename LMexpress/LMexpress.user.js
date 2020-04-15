@@ -25,17 +25,17 @@
 /*MIT License*/
 
 function getVersion() {
-    var request = new XMLHttpRequest();
-    request.open('GET', 'https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/VERSION.txt', false);
-    request.send(null);
-
-    if (request.status === 200) {
-        return request.responseText.replace(/^\s+|\s+$/g, '');
-    }
-    else
+    try
     {
-        return (new Date()).getTime();
-    }
+        var request = new XMLHttpRequest();
+        request.open('GET', 'https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/VERSION.txt', false);
+        request.send(null);
+
+        if (request.status === 200)
+            return request.responseText.replace(/^\s+|\s+$/g, '');
+    } catch (e) {}
+
+    return (new Date()).getTime();
 }
 
 var version = getVersion();
