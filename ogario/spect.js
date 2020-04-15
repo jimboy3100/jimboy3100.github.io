@@ -1,4 +1,4 @@
-//SPECS v1.5g
+//SPECS v1.6
 
 function addBox() {
   let spect = new Spect();
@@ -452,9 +452,9 @@ class Spect {
                     });
                 }
 
-                if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(legendmod3.getghostX())>1000 && Math.abs(legendmod3.getghostY()) >1000) {
-                  this.fixX = /*Math.round*/(legendmod3.getghostX()/(this.ghostCells[0].x+this.mapOffsetX))<0?-1:1;
-                  this.fixY = /*Math.round*/(legendmod3.getghostY()/(this.ghostCells[0].y+this.mapOffsetY))<0?-1:1;
+                if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>1000 && Math.abs(application.getghostY()) >1000) {
+                  this.fixX = /*Math.round*/(application.getghostX()/(this.ghostCells[0].x+this.mapOffsetX))<0?-1:1;
+                  this.fixY = /*Math.round*/(application.getghostY()/(this.ghostCells[0].y+this.mapOffsetY))<0?-1:1;
                   this.ghostFixed = true
                 }
                 break;
