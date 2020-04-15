@@ -1,4 +1,4 @@
-//v7.3
+//v7.4
 window.autoteammatenicks = [];
 window.targetFood = null;
 window.autoPlay = false;
@@ -118,7 +118,7 @@ function calcTarget() {
                     } else {
                         target2.y = legendmod.mapMaxY;
                     }
-                } else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 760 && window.teammatenicks.includes(PlayerCell.nick) && legendmod3.lastSentClanTag != "") { //feed teammates on tag
+                } else if (distancePlayerCell < PlayerCell.size + window.legendmod.playerSize + 760 && window.teammatenicks.includes(PlayerCell.nick) && application.lastSentClanTag != "") { //feed teammates on tag
                     //if (!window.autoteammatenicks.includes(PlayerCell.name)) {
                     console.log("feed!");
                     window.autoteammatenicks[PlayerCell.name] = true;
@@ -276,7 +276,7 @@ function DefineVirusshootCaseAndShoot(target2, doFeed, VirusCellDontDoTheRest) {
         for (var i = 0; i < window.FlagVirusCells.length; i++) {
             for (var j = 0; j < window.FlagDangerCells.length; j++) {
                 if (Math.abs(window.VirusDistanceX[window.FlagVirusCells[i]]) < 700 && Math.abs(window.VirusDistanceX[window.FlagVirusCells[i]]) > 20 && Math.abs(window.BadCellsDistanceX[window.FlagDangerCells[j]]) < 760) {
-                    if (legendmod3.lastSentClanTag != "" || !window.teammatenicks.includes(window.BadCellsDistanceName[window.FlagDangerCells[j]])) {
+                    if (application.lastSentClanTag != "" || !window.teammatenicks.includes(window.BadCellsDistanceName[window.FlagDangerCells[j]])) {
                         if (Math.abs(window.VirusDistanceX[window.FlagVirusCells[i]]) < Math.abs(window.BadCellsDistanceX[window.FlagDangerCells[j]]) && Math.abs(window.VirusDistanceY[window.FlagVirusCells[i]]) < Math.abs(window.BadCellsDistanceY[window.FlagDangerCells[j]])) {
                             if (window.VirusDistanceX[window.FlagVirusCells[i]] > 0 && window.BadCellsDistanceX[window.FlagDangerCells[j]] > 0 && window.VirusDistanceY[window.FlagVirusCells[i]] > 0 && window.BadCellsDistanceY[window.FlagDangerCells[j]] > 0) {
                                 AnnounceBadCellShooting(window.VirusDistanceX[window.FlagVirusCells[i]], window.VirusDistanceY[window.FlagVirusCells[i]], window.BadCellsDistanceName[window.FlagDangerCells[j]], window.BadCellsDistanceX[window.FlagDangerCells[j]], window.BadCellsDistanceY[window.FlagDangerCells[j]]);
