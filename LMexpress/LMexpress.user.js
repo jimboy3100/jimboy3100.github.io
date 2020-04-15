@@ -28,7 +28,7 @@ function getVersion() {
     try
     {
         var request = new XMLHttpRequest();
-        request.open('GET', 'https://raw.githubusercontent.com/jimboy3100/jimboy3100.github.io/master/VERSION.txt', false);
+        request.open('GET', 'https://legendmod.ml/VERSION.txt', false);
         request.send(null);
 
         if (request.status === 200)
