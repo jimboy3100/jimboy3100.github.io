@@ -22,7 +22,7 @@
 
 window.messageone;
 function displayDiscordNotification() {
-    var discText='Server Sent to Discord.';
+    var discText='[SERVER]: Server Sent to Discord.';
 	
 if (window.messageone=="0"||window.messageone=="1"){  //IF using Legend Mod
 	toastr["info"](discText).css("width", "210px");
