@@ -1,4 +1,4 @@
-//SPECS v1.6a
+//SPECS v1.6b
 
 function addBox() {
   let spect = new Spect();
@@ -765,8 +765,10 @@ class Spect {
                     }
                     legendmod.cells.push(cell);
 
-                } else if (isFood && !remove) {
-                    //legendmod.food.push(cell);
+                } 
+				//else {
+				else if (isFood && !remove) {
+                    legendmod.food.push(cell);
                 }
                 legendmod.indexedCells[id] = cell;
             }
