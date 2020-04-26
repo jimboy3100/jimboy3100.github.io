@@ -1,4 +1,4 @@
-//SPECS v1.7a
+//SPECS v1.6
 
 function addBox() {
   let spect = new Spect();
@@ -802,8 +802,7 @@ class Spect {
         for (length = 0; length < eatEventsLength; length++) {
             var id = view.readUInt32LE(offset);
             offset += 4;
-            cell = legendmod.indexedCells[id];
-			//cell = legendmod.indexedCells[this.newID(id)];
+            cell = legendmod.indexedCells[this.newID(id)];
             if (cell) {
                 cell.removeCell();
             }
