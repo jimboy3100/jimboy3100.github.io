@@ -1,4 +1,4 @@
-//SPECS v1.6c
+//SPECS v1.6d
 
 function addBox() {
   let spect = new Spect();
@@ -762,13 +762,14 @@ class Spect {
 				//if (!isFood && !remove) {
                     if (isVirus && defaultmapsettings.virusesRange) {
                         legendmod.viruses.push(cell);
-                    }
+					}
+					if (isFood) {
+						legendmod.food.push(cell);
+					}					
                     legendmod.cells.push(cell);
                 } 
 				//else {
-				if (isFood && !remove) {
-                    legendmod.food.push(cell);
-                }
+
                 legendmod.indexedCells[id] = cell;
             }
             
