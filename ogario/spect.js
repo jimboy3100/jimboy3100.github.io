@@ -1,4 +1,4 @@
-//SPECS v1.6d
+//SPECS v1.6e
 
 function addBox() {
   let spect = new Spect();
@@ -758,8 +758,8 @@ class Spect {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                 cell.time = this.time;
                 cell.spectator = this.number;
-				if (!remove) {
-				//if (!isFood && !remove) {
+				//if (!remove) {
+				if (!isFood && !remove) {
                     if (isVirus && defaultmapsettings.virusesRange) {
                         legendmod.viruses.push(cell);
 					}
