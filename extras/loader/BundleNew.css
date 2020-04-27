@@ -1,110 +1,128 @@
+@keyframes spinRight {
+    0% {
+        transform: rotate(0)
+    }
 
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>LOOOOOL</title>
-    <meta charset="UTF-8">
-    <script type="text/javascript" src="https://jimboy3100.github.io/jquery.min.js"></script>
-    <link href="https://fonts.googleapis.com/css?family=Oswald:300,400|Raleway:300,400,500|Ubuntu:400,500,700" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://legendmod.ml/extras/loader/trollhslo/Bundle.css">
-  <style>
-  #loading-screen {
-    background: none;
+    100% {
+        transform: rotate(360deg)
+    }
 }
-    .fullscreen-bg {
+
+@keyframes spinLeft {
+    0% {
+        transform: rotate(0)
+    }
+
+    100% {
+        transform: rotate(-360deg)
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0
+    }
+
+    100% {
+        opacity: 1
+    }
+}
+
+#loading-screen {
+    z-index: 200;
     position: fixed;
+    left: 0;
     top: 0;
     right: 0;
     bottom: 0;
-    left: 0;
-    overflow: hidden;
-    z-index: 100;
+    background-color: #f1ecfa;
+    background: url(https://legendmod.ml/extras/loader/trollhslo/Hlsoisfraud.png) no-repeat center center fixed;
+    background-size: cover;
+    opacity: 1;
+    transition: opacity 1s;
 }
 
-.fullscreen-bg__video {
+#loading-screen .maou-circle-container {
+    width: 512px;
+    height: 512px;
+    position: fixed;
+    top: calc(50% - 256px);
+    left: calc(50% - 256px);
+    transform: scale(1);
+    transition: all .75s
+}
+
+#loading-screen .maou-circle-container:hover {
+    transform: scale(1.1)
+}
+
+#loading-screen .maou-circle-container .maou-circle {
+    width: 512px;
+    height: 512px;
+    position: absolute
+}
+
+#loading-screen .maou-circle-container .maou-circle.p1 {
+    background: url(https://jimboy3100.github.io/banners/drawCommander3.png);
+    animation: spinRight 32s linear infinite,fadeIn 6s;
+}
+
+#loading-screen .maou-circle-container .maou-circle.p2 {
+    background: url(https://jimboy3100.github.io/banners/drawCommander4.png);
+    animation: spinLeft 8s linear infinite,fadeIn 6s
+}
+
+#loading-screen .maou-circle-container .maou-circle.p3 {
+    background: url(https://jimboy3100.github.io/banners/drawCommanderLegendMod.png);
+    animation: spinRight 16s linear infinite,fadeIn 6s
+}
+
+#loading-screen .message {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: raleway;
+    font-size: 25px;
+    color: #ffd8ea!important;
+    text-shadow: 0 0 9px #ff006c;
+    -webkit-font-smoothing: subpixel-antialiased;
+    text-align: center;
+    animation: fadeIn 1s;
+    opacity: 1;
+    transition: opacity 1s;
+}
+
+#loading-screen .product-key {
+    bottom: 40px;
     position: absolute;
-    top: 0;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f05c5b;
+    border: none;
+    height: 30px;
+    width: 260px;
+    font-family: ubuntu;
+    color: #eaeaea;
+    text-align: center;
+    font-size: 16px;
+    border-radius: 2px;
+    outline: 0;
+    opacity: 0;
+    transition: opacity 1s
+}
+
+#loading-screen .product-key::placeholder {
+    color: #eaeaea
+}
+
+#loading-screen .info {
+    position: fixed;
+    bottom: 4px;
     width: 100%;
-    height: 100%;
+    text-align: center;
+    font-size: 16px;
+    color: #ffd8ea!important;
+    text-shadow: 0 0 9px #ff006c;
+    -webkit-font-smoothing: subpixel-antialiased;
 }
-    
-    @media (min-aspect-ratio: 16/9) {
-  .fullscreen-bg__video {
-    height: 300%;
-    top: -100%;
-  }
-}
-
-@media (max-aspect-ratio: 16/9) {
-  .fullscreen-bg__video {
-    width: 300%;
-    left: -100%;
-  }
-}
-  </style>
-<body>
-  
-  <div class="fullscreen-bg">
-    <video loop muted autoplay poster="img/videoframe.jpg" class="fullscreen-bg__video">
-        <source src="https://i.imgur.com/PqYbm2d.mp4" type="video/mp4">
-    </video>
-</div>
-  
-    <div id="loading-screen">
-        <div class="maou-circle-container" style="">
-            <div class="maou-circle p1"></div>
-            <div class="maou-circle p2"></div>
-            <div class="maou-circle p3"></div>
-        </div>
-        <div id="messageLoaderLM" class="message">Injecting fake pixi.js</div>
-    </div>
-<iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/218644490&color=%23f5f4f5&auto_play=true&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe>
-<script>
-
-var timesopened = localStorage.getItem("timesopened");
-if (timesopened != null) {
-   timesopened++;
-   localStorage.setItem("timesopened", timesopened);
-} else if (timesopened == null) {
-   timesopened=0;
-   localStorage.setItem("timesopened", "0");
-}
-	
-var messageLoaderLM = document.getElementById('messageLoaderLM');
-setTimeout(function() {
-	if (navigator){
-    if((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf('OPR')) != -1 ) 
-    {
-        changeMessageLoaderLMOpera();
-    }
-    else if(navigator.userAgent.indexOf("Chrome") != -1 )
-    {
-        changeMessageLoaderLMChrome();
-    }
-    else if(navigator.userAgent.indexOf("Safari") != -1)
-    {
-        changeMessageLoaderLM();
-    }
-    else if(navigator.userAgent.indexOf("Firefox") != -1 ) 
-    {
-         changeMessageLoaderLM();
-    }
-    else if((navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true )) //IF IE > 10
-    {
-      changeMessageLoaderLM(); 
-    }  
-    else 
-    {
-       changeMessageLoaderLM();
-    }
-	}
-}, 5000);
-
-
-
-</script>
-</body>
-
-</html>
