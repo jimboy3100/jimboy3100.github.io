@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>LOOOOOL</title>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="https://jimboy3100.github.io/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Oswald:300,400|Raleway:300,400,500|Ubuntu:400,500,700" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://legendmod.ml/extras/loader/trollhslo/Bundle.css">
+  <style>
+  #loading-screen {
+    background: none;
+}
+    .fullscreen-bg {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: 100;
+}
+
+.fullscreen-bg__video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+    
+    @media (min-aspect-ratio: 16/9) {
+  .fullscreen-bg__video {
+    height: 300%;
+    top: -100%;
+  }
+}
+
+@media (max-aspect-ratio: 16/9) {
+  .fullscreen-bg__video {
+    width: 300%;
+    left: -100%;
+  }
+}
+  </style>
+<body>
+  
+  <div class="fullscreen-bg">
+    <video loop muted autoplay poster="img/videoframe.jpg" class="fullscreen-bg__video">
+        <source src="https://i.imgur.com/PqYbm2d.mp4" type="video/mp4">
+    </video>
+</div>
+  
+    <div id="loading-screen">
+        <div class="maou-circle-container" style="">
+            <div class="maou-circle p1"></div>
+            <div class="maou-circle p2"></div>
+            <div class="maou-circle p3"></div>
+        </div>
+        <div id="messageLoaderLM" class="message">Injecting fake pixi.js</div>
+    </div>
+<iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/218644490&color=%23f5f4f5&auto_play=true&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe>
+<script>
+
+var timesopened = localStorage.getItem("timesopened");
+if (timesopened != null) {
+   timesopened++;
+   localStorage.setItem("timesopened", timesopened);
+} else if (timesopened == null) {
+   timesopened=0;
+   localStorage.setItem("timesopened", "0");
+}
+	
+var messageLoaderLM = document.getElementById('messageLoaderLM');
+setTimeout(function() {
+	if (navigator){
+    if((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf('OPR')) != -1 ) 
+    {
+        changeMessageLoaderLMOpera();
+    }
+    else if(navigator.userAgent.indexOf("Chrome") != -1 )
+    {
+        changeMessageLoaderLMChrome();
+    }
+    else if(navigator.userAgent.indexOf("Safari") != -1)
+    {
+        changeMessageLoaderLM();
+    }
+    else if(navigator.userAgent.indexOf("Firefox") != -1 ) 
+    {
+         changeMessageLoaderLM();
+    }
+    else if((navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true )) //IF IE > 10
+    {
+      changeMessageLoaderLM(); 
+    }  
+    else 
+    {
+       changeMessageLoaderLM();
+    }
+	}
+}, 5000);
+
+
+
+</script>
+</body>
+
+</html>
