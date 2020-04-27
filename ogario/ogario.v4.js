@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.411 MEGA TEST
+// v1.413 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2269,7 +2269,7 @@ var defaultmapsettings = {
     FacebookIDs: ''
 
 };
-var ogario1PlayerProfiles = [];
+var profiles = [];
 var ogarcopythelb = {
     nick: 'I<3Legendmod',
     clanTag: '℄',
@@ -3735,7 +3735,7 @@ function thelegendmodproject() {
             let options = {
                 ogarioCommands: chatCommand,
                 ogarioHotkeys: hotkeys,
-                ogarioPlayerProfiles: ogario1PlayerProfiles,
+                ogarioPlayerProfiles: profiles,
                 ogarioSettings: defaultmapsettings,
                 ogarioThemeSettings: defaultSettings
 
@@ -3852,30 +3852,30 @@ function thelegendmodproject() {
         },
         loadProfiles() {
             if (null !== window.localStorage.getItem('ogarioPlayerProfiles')) {
-                ogario1PlayerProfiles = JSON.parse(window.localStorage.getItem('ogarioPlayerProfiles'))
-                if (ogario1PlayerProfiles.length < defaultmapsettings.profileNumber) { //fix for old players
-                    //for (var t = 10; t < 15; t++) ogario1PlayerProfiles.push({
-                    for (var t = ogario1PlayerProfiles.length; t < defaultmapsettings.profileNumber; t++) {
-                        ogario1PlayerProfiles.push({
+                profiles = JSON.parse(window.localStorage.getItem('ogarioPlayerProfiles'))
+                if (profiles.length < defaultmapsettings.profileNumber) { //fix for old players
+                    //for (var t = 10; t < 15; t++) profiles.push({
+                    for (var t = profiles.length; t < defaultmapsettings.profileNumber; t++) {
+                        profiles.push({
                             'nick': 'Profile #' + (t + 1),
                             'clanTag': '',
                             'skinURL': '',
                             'color': defaultSettings.mainColor
                         });
                     }
-                } else if (ogario1PlayerProfiles.length > defaultmapsettings.profileNumber) {
-                    //for (var t = 10; t < 15; t++) ogario1PlayerProfiles.push({
-                    var temp = ogario1PlayerProfiles.length; //case ogario1PlayerProfiles.length changes
+                } else if (profiles.length > defaultmapsettings.profileNumber) {
+                    //for (var t = 10; t < 15; t++) profiles.push({
+                    var temp = profiles.length; //case profiles.length changes
                     for (var t = 0; t < temp - defaultmapsettings.profileNumber; t++) {
                         console.log(t);
-                        ogario1PlayerProfiles.pop();
+                        profiles.pop();
                     }
 
                 }
             } else {
-                //for (var t = 0; t < 15; t++) ogario1PlayerProfiles.push({
+                //for (var t = 0; t < 15; t++) profiles.push({
                 for (var t = 0; t < defaultmapsettings.profileNumber; t++) {
-                    ogario1PlayerProfiles.push({
+                    profiles.push({
                         'nick': 'Profile #' + (t + 1),
                         'clanTag': '',
                         'skinURL': '',
@@ -3883,7 +3883,7 @@ function thelegendmodproject() {
                     });
                 }
             }
-            application.saveSettings(ogario1PlayerProfiles, 'ogarioPlayerProfiles');
+            application.saveSettings(profiles, 'ogarioPlayerProfiles');
             setTimeout(function() {
                 application.profiling();
 
@@ -3891,13 +3891,13 @@ function thelegendmodproject() {
             if (null !== window.localStorage.getItem('ogarioSelectedProfile')) {
                 this.selectedProfile = JSON.parse(window.localStorage.getItem('ogarioSelectedProfile'));
             }
-            if (ogario1PlayerProfiles[this.selectedProfile]) {
-                ogarcopythelb.nick = ogario1PlayerProfiles[this.selectedProfile].nick;
+            if (profiles[this.selectedProfile]) {
+                ogarcopythelb.nick = profiles[this.selectedProfile].nick;
                 //changed
-                ogarcopythelb.clanTag = ogario1PlayerProfiles[this.selectedProfile].clanTag;
-                //ogarcopythelb.clanTag = ogario1PlayerProfiles[this.selectedProfile].clanTag + "@";
-                ogarcopythelb.skinURL = ogario1PlayerProfiles[this.selectedProfile].skinURL;
-                ogarcopythelb.color = ogario1PlayerProfiles[this.selectedProfile].color;
+                ogarcopythelb.clanTag = profiles[this.selectedProfile].clanTag;
+                //ogarcopythelb.clanTag = profiles[this.selectedProfile].clanTag + "@";
+                ogarcopythelb.skinURL = profiles[this.selectedProfile].skinURL;
+                ogarcopythelb.color = profiles[this.selectedProfile].color;
             }
         },
         changeSkinPreview(e, t) {
@@ -3973,23 +3973,23 @@ function thelegendmodproject() {
             }
         },
         setProfile() {
-            var t = (ogario1PlayerProfiles.length + this.selectedProfile - 1) % ogario1PlayerProfiles.length,
-                e = (this.selectedProfile + 1) % ogario1PlayerProfiles.length;
-            //console.log(ogario1PlayerProfiles.length);
+            var t = (profiles.length + this.selectedProfile - 1) % profiles.length,
+                e = (this.selectedProfile + 1) % profiles.length;
+            //console.log(profiles.length);
 
-            this.setSkinPreview(ogario1PlayerProfiles[t].skinURL, 'prev-profile');
-            if (ogario1PlayerProfiles[this.selectedProfile]) {
-                this.setSkinPreview(ogario1PlayerProfiles[this.selectedProfile].skinURL, 'skin-preview');
+            this.setSkinPreview(profiles[t].skinURL, 'prev-profile');
+            if (profiles[this.selectedProfile]) {
+                this.setSkinPreview(profiles[this.selectedProfile].skinURL, 'skin-preview');
             }
-            this.setSkinPreview(ogario1PlayerProfiles[e].skinURL, 'next-profile');
+            this.setSkinPreview(profiles[e].skinURL, 'next-profile');
 
             this.saveSettings(this.selectedProfile, 'ogarioSelectedProfile');
-            if (ogario1PlayerProfiles[this.selectedProfile]) {
-                $('#nick').val(ogario1PlayerProfiles[this.selectedProfile].nick);
-                $('#clantag').val(ogario1PlayerProfiles[this.selectedProfile].clanTag);
-                $('#skin').val(ogario1PlayerProfiles[this.selectedProfile].skinURL);
-                $('#color').val(ogario1PlayerProfiles[this.selectedProfile].color);
-                $('.skin').colorpicker('setValue', ogario1PlayerProfiles[this.selectedProfile].color);
+            if (profiles[this.selectedProfile]) {
+                $('#nick').val(profiles[this.selectedProfile].nick);
+                $('#clantag').val(profiles[this.selectedProfile].clanTag);
+                $('#skin').val(profiles[this.selectedProfile].skinURL);
+                $('#color').val(profiles[this.selectedProfile].color);
+                $('.skin').colorpicker('setValue', profiles[this.selectedProfile].color);
             }
 
             $('#skins a').removeClass('selected');
@@ -3997,11 +3997,11 @@ function thelegendmodproject() {
         },
         prevProfile() {
             this.setPlayerSettings(),
-                this.selectedProfile = (ogario1PlayerProfiles.length + this.selectedProfile - 1) % ogario1PlayerProfiles.length, this.setProfile();
+                this.selectedProfile = (profiles.length + this.selectedProfile - 1) % profiles.length, this.setProfile();
         },
         nextProfile() {
             this.setPlayerSettings();
-                this.selectedProfile = (this.selectedProfile + 1) % ogario1PlayerProfiles.length, this.setProfile();
+                this.selectedProfile = (this.selectedProfile + 1) % profiles.length, this.setProfile();
         },
         selectProfile(value) {
             this.setPlayerSettings();
@@ -4241,9 +4241,9 @@ function thelegendmodproject() {
             if (Settings) Settings.setThemeMenu();
             /** @type {number} */
             var e = 0;
-            for (; e < ogario1PlayerProfiles.length; e++) {
+            for (; e < profiles.length; e++) {
                 $("#skins").append('<div class="skin-box"><a href="#profile-' + e + '" id="profile-' + e + '" data-profile="' + e + '"></a></div>');
-                this.setSkinPreview(ogario1PlayerProfiles[e].skinURL, "profile-" + e);
+                this.setSkinPreview(profiles[e].skinURL, "profile-" + e);
                 if (e == this.selectedProfile) {
                     $("#profile-" + e).addClass("selected");
                 }
@@ -4900,13 +4900,13 @@ function thelegendmodproject() {
             if (ogarcopythelb.clanTag.length > 0) {
                 ogario.clanTag = ogarcopythelb.clanTag;
             }
-            if (ogario1PlayerProfiles[this.selectedProfile]) {
-                ogario1PlayerProfiles[this.selectedProfile].nick = ogarcopythelb.nick;
-                ogario1PlayerProfiles[this.selectedProfile].clanTag = ogarcopythelb.clanTag;
-                ogario1PlayerProfiles[this.selectedProfile].skinURL = ogarcopythelb.skinURL;
-                ogario1PlayerProfiles[this.selectedProfile].color = ogarcopythelb.color;
+            if (profiles[this.selectedProfile]) {
+                profiles[this.selectedProfile].nick = ogarcopythelb.nick;
+                profiles[this.selectedProfile].clanTag = ogarcopythelb.clanTag;
+                profiles[this.selectedProfile].skinURL = ogarcopythelb.skinURL;
+                profiles[this.selectedProfile].color = ogarcopythelb.color;
             }
-            this.saveSettings(ogario1PlayerProfiles, 'ogarioPlayerProfiles');
+            this.saveSettings(profiles, 'ogarioPlayerProfiles');
             this.findOwnedVanillaSkin();
         },
         loadSkin(img, url, animated) {
@@ -7596,7 +7596,7 @@ function thelegendmodproject() {
                         try {
                             style.drawImage(cimg5, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
                         } catch (e) {}
-                    } else if (this.targetNick.includes("℄🌀Jimboy3100")) {
+                    } else if (this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("Z𒅒B -")) {
                         //style.drawImage(cimg2, this.x - y * 2, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
 
                         var today = new Date();
@@ -8892,9 +8892,9 @@ function thelegendmodproject() {
                     this.battleRoyale.rank = [];
                     this.battleRoyale.playerRank = data.getUint32(s, true);
                     s += 8;
-                    var ogario1PlayerProfiles = data.getUint16(s, true);
+                    var profiles = data.getUint16(s, true);
                     s += 2;
-                    for (n = 0; n < ogario1PlayerProfiles; n++) {
+                    for (n = 0; n < profiles; n++) {
                         var ogarcopythelb = window.decodeURIComponent(escape(encode()));
                         v = data.getUint32(s, true);
                         s += 4;
@@ -11368,4 +11368,3 @@ snezSocket.send(JSON.stringify({ "command": "sendPlayerSkinURL", nick: ogarcopyt
 
 
 */
-
