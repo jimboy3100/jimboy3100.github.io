@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.452 MEGA TEST
+// v1.456 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -144,7 +144,54 @@ function Video(src, append) {
 function autocoins(slot) {
     var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11, 104, 111, 117, 114, 108, 121, 66, 111, 110, 117, 115]
     window.core.proxyMobileData(bytes);
+	/*for facebook:
+	[76, 59, 253, 221, 56, 59, 146, 61, 44, 62, 246, 196, 66, 92, 137, 189, 70, 74, 190, 160, 68, 70, 143]
+	*/
 }
+function massx21hour(slot) {
+    var bytes = [8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]
+	          //[8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]
+    window.core.proxyMobileData(bytes);
+	/*for facebook:
+	[86, 189, 114, 154, 41, 189, 53, 58, 52, 161, 121, 154, 1, 234, 30, 233, 67, 198, 44, 234, 95, 218, 0, 252, 111, 135, 11, 215, 1, 221]
+	[57, 13, 110, 60, 72, 13, 31, 172, 88, 23, 101, 62, 50, 100, 28, 93, 0, 103, 0, 65, 44, 113, 48, 28, 39, 90, 94, 70]
+    [207, 163, 145, 239, 190, 163, 224, 127, 174, 185, 154, 237, 196, 202, 227, 142, 246, 201, 255, 146, 218, 223, 207, 207, 209, 244, 161, 149]
+	*/
+	
+}
+function massx224hour(slot) {
+    var bytes = [8, 1, 18, 26, 8, 70, 178, 4, 21, 10, 19, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]
+	          //[8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]
+    window.core.proxyMobileData(bytes);
+	/*for facebook:
+	[8, 251, 54, 242, 116, 251, 113, 82, 106, 230, 61, 243, 95, 172, 90, 129, 29, 128, 104, 130, 1, 156, 68, 148, 49, 193, 79, 191, 92, 199, 95]
+	[128, 10, 99, 124, 254, 10, 18, 236, 225, 17, 104, 127, 139, 99, 17, 29, 185, 96, 13, 1, 149, 118, 61, 92, 158, 93, 80, 90, 142]
+    [131, 215, 22, 21, 253, 215, 103, 133, 226, 204, 29, 22, 136, 190, 100, 116, 186, 189, 120, 104, 150, 171, 72, 53, 157, 128, 37, 51, 141]
+	*/	
+}
+
+
+function massx31hour(slot) {
+    var bytes = [8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]
+	          //[8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]
+    window.core.proxyMobileData(bytes);
+	/*for facebook:
+	[166, 214, 58, 158, 217, 214, 125, 62, 196, 202, 49, 158, 241, 129, 86, 237, 179, 173, 100, 238, 175, 177, 72, 248, 159, 237, 67, 211, 241, 182]
+	[85, 64, 63, 53, 36, 64, 78, 165, 52, 90, 52, 55, 94, 41, 77, 84, 108, 42, 81, 72, 64, 60, 97, 20, 75, 23, 15, 79]
+    [217, 130, 131, 120, 168, 130, 242, 232, 184, 152, 136, 122, 210, 235, 241, 25, 224, 232, 237, 5, 204, 254, 221, 89, 199, 213, 179, 2]
+	*/		
+}
+function massx324hour(slot) {
+    var bytes = [8, 1, 18, 26, 8, 70, 178, 4, 21, 10, 19, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]
+	          //[8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]
+    window.core.proxyMobileData(bytes);
+	/*for facebook:
+	[148, 241, 122, 215, 232, 241, 61, 119, 246, 236, 113, 214, 195, 166, 22, 164, 129, 138, 36, 167, 157, 150, 8, 177, 173, 202, 3, 154, 192, 205, 19]
+	[156, 46, 242, 109, 226, 46, 131, 253, 253, 53, 249, 110, 151, 71, 128, 12, 165, 68, 156, 16, 137, 82, 172, 76, 130, 121, 193, 75, 146]
+    [147, 59, 2, 159, 237, 59, 115, 15, 242, 32, 9, 156, 152, 82, 112, 254, 170, 81, 108, 226, 134, 71, 92, 190, 141, 108, 49, 185, 157]
+	*/		
+}
+
 
 function callEveryFullHourCoinDigger() {
     autocoins();
@@ -5497,14 +5544,15 @@ function thelegendmodproject() {
                 }
 
                 if (/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/.test(atobToken)) {
-                    text = 'wss://ip-' + atobToken.replace(/\./g, '-').replace(':', '.tech.agar.io:');
+					text = 'wss://ip-' + atobToken.replace(/\./g, '-').replace(':', '.tech.agar.io:');
                     //console.log("recreateWS case 2:" + text);
                 }
             }
             else if (!text && /^[a-z0-9]{5,}$/.test(token)) {
                 //console.log("recreateWS case 3:" + text);
+				text = `wss://live-arena-` + token + `.tech.agar.io:80`;
                 //text = `wss://live-arena-` + token + `.agar.io:80`;
-                text = 'wss://live-arena-' + token + '.agar.io:443'
+                //text = 'wss://live-arena-' + token + '.agar.io:443'
             }
 			else if (!token.includes("s://")){
 				text = 'wss://' + token; //private servers
@@ -8041,7 +8089,7 @@ function thelegendmodproject() {
             }
 			//jimboy3100
 			//if (window.LMdebug && message[0]=="102") console.log(message)
-			if (window.LMdebug && message[0]=="102") console.log(message)
+			if (window.LMdebug && message[0]==102) console.log(message)
             this.sendBuffer(message);
         },
         sendAction(action) {
@@ -8847,16 +8895,21 @@ function thelegendmodproject() {
                                 console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Login response", node.contentType, node.uncompressedSize, option, response, response_2);
                                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Login response", window.ret.view.byteLength, window.ret.contentType, window.ret.uncompressedSize, option, response, response_2);
                                 break;
+                            case 20:
+                                if (response == 20){
+									toastr.error('<b>[SERVER]:</b> You have been disconnected because your User ID logged in from another place');
+								}
+                                break;	
                             case 62:
                                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Game over");
                                 LegendModDeath();
                                 //$('#pause-hud').text("PAUSE!");
-                                break;
+                                break;		
+                            case 111:
+                                console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Server denied", option, response);
+                                break;									
                             default:
                                 console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Unknown", option, response);
-                                if (option == 20 && response == 20) {
-                                    toastr.error('<b>[SERVER]:</b> You have been disconnected because your User ID logged in from another place');
-                                }
                         }
                     }
 
