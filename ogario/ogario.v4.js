@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.413 MEGA TEST
+// v1.452 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -2108,6 +2108,13 @@ cimg6 = new Image;
 cimg6.src = defaultSettings.commanderImage6;
 cimg7 = new Image;
 cimg7.src = 'https://legendmod.ml/banners/iconLcForCanvas.png';
+cimgSpecialSkinEffectsCrown = new Image;
+cimgSpecialSkinEffectsCrown.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsCrown.png';
+cimgSpecialSkinEffectsMask = new Image;
+cimgSpecialSkinEffectsMask.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsMask.png';
+cimgSpecialSkinEffectsHat3 = new Image;
+cimgSpecialSkinEffectsHat3.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsHat3.png';
+
 if (dyinglight1load == "yes") {
     cimgDyingLight = new Image;
     cimgDyingLight.src = defaultSettings.commanderImageDyingLight;
@@ -2902,6 +2909,7 @@ function thelegendmodproject() {
         cacheQueue: [],
         cacheQueue2: [],
         cacheQueue3: [],
+		cacheQueue4: [],
         deathLocations: [],
         playerID: null,
         playerMass: 0,
@@ -4920,21 +4928,40 @@ function thelegendmodproject() {
             }
             img[url].crossOrigin = 'Anonymous';
             img[url].onload = function() {
-                    this.complete &&
+                    if (this.complete &&
                         this.width &&
                         this.height &&
                         this.width <= 2000 && this.width > 0 &&
-                        this.height <= 2000 && this.height > 0 &&
-                        ((app.cacheQueue.push(url),
+                        this.height <= 2000 && this.height > 0){
+                        
+						if (animated != "fbSkin"){
+							app.cacheQueue.push(url);
+							if (1 == app.cacheQueue.length) app.cacheSkin(app.customSkinsCache, animated)
+							app.cacheQueue2.push(url) 
+							if (1 == app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache)
+							if (animated == true) app.cacheQueue3.push(url)
+							if (1 == app.cacheQueue3.length) app.cacheSkin3(app.customSkinsCache)
+						}
+						else if (animated == "fbSkin"){
+							app.cacheQueue4.push(url)
+							if (1 == app.cacheQueue4.length) app.cacheSkin4(app.customSkinsCache)	
+						}
+						
+						/*
+						((app.cacheQueue.push(url),
                                 1 == app.cacheQueue.length &&
                                 app.cacheSkin(app.customSkinsCache, animated)),
                             (app.cacheQueue2.push(url),
                                 1 == app.cacheQueue2.length &&
                                 app.cacheSkin2(app.customSkinsCache)),
-                            (animated && app.cacheQueue3.push(url),
+                            (animated == true  && app.cacheQueue3.push(url),
                                 1 == app.cacheQueue3.length &&
                                 app.cacheSkin3(app.customSkinsCache))
-                        );
+                            (animated == "fbSkin" && app.cacheQueue4.push(url),
+                                1 == app.cacheQueue4.length &&
+                                app.cacheSkin4(app.customSkinsCache))								
+                        );*/
+						}
                 },
                 img[url].onerror = function() {
                     //console.log("error loading image: "+ url);
@@ -5045,6 +5072,33 @@ function thelegendmodproject() {
                 }
             }
         },
+        cacheSkin4(skinCache) {
+            //console.log(skinCache);  //////// return the image src
+            if (0 != this.cacheQueue4.length) {
+                var e = this.cacheQueue4.shift();
+                if (e && !this.customSkinsCache[e + "_cached4"]) {
+                    var depth = 512;
+                    this.checkgraphics();
+                    if (application.graphics) {
+                        depth = depth / application.graphics;
+                    }
+                    var i = document.createElement("canvas");
+                    i.width = depth;
+                    i.height = depth;
+                    var $ = i.getContext("2d");
+                    $.beginPath();
+                    $.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
+                    $.clip();
+                    try {
+                        $.drawImage(this.customSkinsCache[e], this.customSkinsCache[e].width / 2, 0, this.customSkinsCache[e].width / 2, this.customSkinsCache[e].height, 0, 0, depth, depth);
+                    } catch (error) {}
+                    this.customSkinsCache[e + "_cached4"] = new Image;
+                    this.customSkinsCache[e + "_cached4"].src = i.toDataURL();
+                    i = null;
+                    this.cacheSkin4(this.customSkinsCache);
+                }
+            }
+        },		
         getCachedSkin(skinCache, skinMap) {
             if (skinCache[skinMap + '_cached3']) {
                 var today = new Date();
@@ -7591,12 +7645,36 @@ function thelegendmodproject() {
                     //if (this.targetNick.includes())
 
                     //}
+					
+					var nodeFb = application.customSkinsMap[this.targetNick + "facebookskin"];
+					if (defaultmapsettings.FBTracking && nodeFb && application.customSkinsCache[nodeFb + "_cached4"]){
+						var temp = nodeFb + "_cached4";
+						var nodeFB = application.customSkinsCache[temp];
+						//console.log("found fb name: " + this.targetNick + " src: " + temp);
+                        try {
+							style.drawImage(nodeFB, this.x - 1/2 * y, this.y - y, y, y); 
+                        } catch (e) {}						
+					}
+					
+					if (this.targetNick.includes("Hat")){ 		
+					//style.drawImage(cimgSpecialSkinEffectsHat3, this.x - 1/4 * y, this.y - 5/4 * y, y/2, y/2); 					
+					style.drawImage(cimgSpecialSkinEffectsHat3, this.x - 1/2 * y, this.y - 3/2 * y, y, y); 
+					//style.drawImage(cimg7, this.x - 1/2 * y, this.y - 1/2 * y, y, y); //center 1/2 size 
+					//style.drawImage(cimgSpecialSkinEffectsHat3, this.x - 1/2 * y, this.y - y, y, y); //top middle 1/2 size 
+					}						
+					else if (this.targetNick.includes("King")){ 								
+					//style.drawImage(cimgSpecialSkinEffectsCrown	, this.x - 1/4 * y, this.y - 5/4 * y, y/2, y/2); 		
+					style.drawImage(cimgSpecialSkinEffectsCrown	, this.x - 1/4 * y, this.y - 5.3/4 * y, y/2, y/2); 					
+					}			
+					if (this.targetNick.includes("Mask")){ 					
+					style.drawImage(cimgSpecialSkinEffectsMask, this.x - 1/2 * y, this.y + 1/4 * y, y, y);
+					}			
                     if (this.targetNick.includes("The Dying Light")) {
-
                         try {
                             style.drawImage(cimg5, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
                         } catch (e) {}
-                    } else if (this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("Z𒅒B -")) {
+                    } 					
+					else if (this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("Z𒅒B -")) {
                         //style.drawImage(cimg2, this.x - y * 2, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
 
                         var today = new Date();
@@ -7611,12 +7689,6 @@ function thelegendmodproject() {
                                         window.abah = today.getHours()
                                     }
                                     ab = ab - window.abam;
-                                    /*var ac;
-                                    if (ab>30) ab = ab - 30;
-                                    if (ab>=15) {
-                                    	ac = ab - 15;
-                                    	ab = 15 - ac;
-                                    	}*/
                                     if (today.getHours() == window.abah && ab < 5) {
                                         style.drawImage(cimg5, this.x - (1.5 + 2 * ab) * y, this.y - (1.5 + 2 * ab) * y, (1.5 + 2 * ab) * 2 * y, (1.5 + 2 * ab) * 2 * y);
                                     } else {
@@ -7624,12 +7696,10 @@ function thelegendmodproject() {
                                     }
                                 }
                             } else {
-                                //if (ab<4){
                                 style.drawImage(cimg2, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
-                                //}
                             }
                         } catch (e) {}
-
+					
                     }
                 }
             }
@@ -7969,6 +8039,9 @@ function thelegendmodproject() {
                 message = this.shiftMessage(message, this.clientKey);
                 this.clientKey = this.shiftKey(this.clientKey);
             }
+			//jimboy3100
+			//if (window.LMdebug && message[0]=="102") console.log(message)
+			if (window.LMdebug && message[0]=="102") console.log(message)
             this.sendBuffer(message);
         },
         sendAction(action) {
@@ -8501,8 +8574,18 @@ function thelegendmodproject() {
                         user.id = data.getUint32(s, true);
                         s += 4;
                         user.fbId = window.decodeURIComponent(window.escape(encode()));
-                        console.log("fb id found", user.id, `https://graph.facebook.com/${user.fbId}/picture?type=square&width=720&height=720`);
-                        application.cacheCustomSkin(user.fbId, '#000000', `https://graph.facebook.com/${user.fbId}/picture?type=square&width=720&height=720`);
+
+						for (i = 0; i <= this.leaderboard.length - 1; i++) {
+							if (this.leaderboard[i].id== user.id) {							
+							user.nick = this.leaderboard[i].nick	
+							}
+						}
+						if (!application.customSkinsMap[user.nick + "facebookskin"]){
+                        application.customSkinsMap[user.nick + "facebookskin"] = `https://graph.facebook.com/${user.fbId}/picture?type=square&width=720&height=720`;
+                        application.loadSkin(application.customSkinsCache, `https://graph.facebook.com/${user.fbId}/picture?type=square&width=720&height=720`, "fbSkin");	
+						console.log("fb id found", user.id, user.nick, `https://graph.facebook.com/${user.fbId}/picture?type=square&width=720&height=720`);
+						}
+                        //application.cacheCustomSkin(user.fbId, '#000000', `https://graph.facebook.com/${user.fbId}/picture?type=square&width=720&height=720`);
 
                         this.fbOnline.push(user);
                     }
