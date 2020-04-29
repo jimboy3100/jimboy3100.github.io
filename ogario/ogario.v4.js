@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.463 MEGA TEST
+// v1.464 MEGA TEST
 // Game Configurations
 
 //window.testobjects = {};
@@ -6874,7 +6874,7 @@ function thelegendmodproject() {
             } else if (flag == false) {
                 text = "Unknown";
             };
-            html = Languageletter368 + ': <span class=\"hud-main-color\">' + ogario.targetDistance + ' [' + l + ']</span>';
+            html = Languageletter368 + ': <span class=\"hud-main-color\">' + ogario.targetDistance + ' [' + text + ']</span>';
             if (ogario.play) {
                 html += ' | ' + textLanguage.targetMass + ': <span class=\"hud-main-color\">' + this.shortMassFormat(mass + ogario.playerMass) + '</span>'
             }
