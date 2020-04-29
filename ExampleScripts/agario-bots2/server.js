@@ -266,8 +266,9 @@ class Bot {
                 //break			
             case 241:
                 this.decryptionKey = reader.readInt32()
+				this.encryptionKey = murmur2(`${game.url.match(/(live-arena-([\w\d]+(\.tech)?)\.agar\.io)/)[1]}${reader.readString()}`, 255) 
                 //this.encryptionKey = murmur2(`${game.url.match(/(live-arena-\w+\.agar\.io)/)[1]}${reader.readString()}`, 255) //original
-				this.encryptionKey = murmur2(`${game.url.match(/(live-arena-\w+\.tech+\.agar\.io)/)[1]}${reader.readString()}`, 255)		
+				//this.encryptionKey = murmur2(`${game.url.match(/(live-arena-\w+\.tech+\.agar\.io)/)[1]}${reader.readString()}`, 255)				
                 this.isConnected = true
                 break
             case 242:
