@@ -2,6 +2,7 @@
 // version 1.3 version B
 // creator Jimboy3100
 
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
 const WebSocket = require('ws'),
     { murmur2 } = require('murmurhash-js'),
     buffers = require('./buffers'),
@@ -18,8 +19,7 @@ const userBots = [];
 let userWS = null,
     stoppingBots = false,
     connectedBots = 0,
-    spawnedBots = 0,
-    serverPlayers = 0;
+    spawnedBots = 0;
 
 logger.warn(`[SERVER] If error occurs on port 1377 try 8083 on config.json and websocket`);
 if (config.server.update) {
@@ -101,14 +101,12 @@ const dataBot = {
         switch (reader.readUint8()) {
             case 54:
                 this.playersAmount = 0
-                serverPlayers = 0;
                 reader.byteOffset += 2
                 while (reader.byteOffset < reader.buffer.byteLength) {
                     const flags = reader.readUint8()
                     if (flags & 2) reader.readString()
                     if (flags & 4) reader.byteOffset += 4
                     this.playersAmount++
-                        serverPlayers++
                 }
                 this.lastPlayersAmount = this.playersAmount
 
@@ -253,7 +251,9 @@ class Bot {
                 }*/
 				if (userBots.includes(this)){
 					userBots.splice(userBots.indexOf(this), 1)
-                    userBots.push(new Bot())     
+					if (dataBot.lastPlayersAmount < 195 && connectedBots <= bots.amount && user.startedBots){
+						userBots.push(new Bot())     
+					}
 				}				
                 this.gotCaptcha = true
                 this.ws.onmessage = null
@@ -265,7 +265,8 @@ class Bot {
                 //break			
             case 241:
                 this.decryptionKey = reader.readInt32()
-                this.encryptionKey = murmur2(`${game.url.match(/(live-arena-\w+\.agar\.io)/)[1]}${reader.readString()}`, 255)
+                //this.encryptionKey = murmur2(`${game.url.match(/(live-arena-\w+\.agar\.io)/)[1]}${reader.readString()}`, 255) //original
+				this.encryptionKey = murmur2(`${game.url.match(/(live-arena-\w+\.tech+\.agar\.io)/)[1]}${reader.readString()}`, 255)		
                 this.isConnected = true
                 break
             case 242:
@@ -418,7 +419,7 @@ new WebSocket.Server({
 }).on('connection', ws => {
     setInterval(() => {
         userWS.send(Buffer.from([4, connectedBots, spawnedBots]))
-        userWS.send(Buffer.from([5, serverPlayers]))
+        userWS.send(Buffer.from([5, dataBot.lastPlayersAmount]))
     }, 1000);
     userWS = ws
     logger.good('[SERVER] User connected!')
@@ -432,7 +433,7 @@ new WebSocket.Server({
 			global.globalData[global.globalDataCounter]=temp.join("")
 			//console.log("Captcha token " + global.globalDataCounter + " recieved")
 			
-                        if (dataBot.lastPlayersAmount < 195 && connectedBots < bots.amount && user.startedBots){
+                        if (dataBot.lastPlayersAmount < 195 && connectedBots <= bots.amount && user.startedBots){
 							userBots.push(new Bot())
 						}
 		}
@@ -451,7 +452,7 @@ new WebSocket.Server({
                     dataBot.connect()
                     let index = 0
                     startBotsInterval = setInterval(() => {
-                        if (dataBot.lastPlayersAmount < 195 && connectedBots < bots.amount && !stoppingBots) userBots.push(new Bot())
+                        if (dataBot.lastPlayersAmount < 195 && connectedBots <= bots.amount && !stoppingBots) userBots.push(new Bot())
                     }, 150)
                     logger.good('[SERVER] Starting bots...')
                 }
