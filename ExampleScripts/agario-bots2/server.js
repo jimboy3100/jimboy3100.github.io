@@ -13,6 +13,7 @@ const WebSocket = require('ws'),
     logger = require("./logger.js"),
     config = require('./config.json');
 
+
 global.globalData=[];
 global.globalDataCounter=0;
 const userBots = [];
