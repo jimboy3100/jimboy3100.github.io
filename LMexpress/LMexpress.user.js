@@ -19,10 +19,22 @@
 // @connect	 cdn.ogario.ovh
 // @connect      deltav4.glitch.me
 // @connect      legendmod.ml
+// @grant        GM_registerMenuCommand
+
 // ==/UserScript==
 
 // Legend Mod by Jimboy3100
 /*MIT License*/
+
+GM_registerMenuCommand('Legend Mod Website', function() {
+    window.open("http://legendmod.ml");
+}, 'r');
+GM_registerMenuCommand('LM Library', function() {
+    window.open("https://github.com/jimboy3100/jimboy3100.github.io/");
+}, 'r');
+GM_registerMenuCommand('Donate for Legend Mod', function() {
+    window.open("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CM3GDVCW6PBF6");
+}, 'r');
 
 function getVersion() {
     try
