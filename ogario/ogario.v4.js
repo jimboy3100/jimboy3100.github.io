@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.465 MEGA TEST
+// v1.470 MEGA TEST jimtest
 // Game Configurations
 
 //window.testobjects = {};
@@ -11300,6 +11300,10 @@ function thelegendmodproject() {
     window.master.init();
     ogarhusettings();
     setGUIEvents();
+	
+	window.canvasElem = document.querySelector("canvas"); 
+	window.canvasElem.addEventListener('contextmenu', openContextMenu, false);
+	
     //    })(ogario);
 }
 
@@ -11492,6 +11496,51 @@ function minimapCell(envId, cb, i, s) {
         }
     };
 }
+
+const menuLeft = new ContextMenu({
+      'theme': 'default', // or 'blue'
+      'items': [
+        {'icon': 'download', 'name': 'Attack',  action: () => {leftClickAttack()}  },
+        {'icon': 'question', 'name': 'Fight',  action: () =>  {leftClickFight()} },
+        {'icon': 'exclamation-triangle', 'name': 'Run', action: () => {leftClickRun()} },
+      ]
+});
+
+function leftClickAttack(){
+	var temp = application.getPlayerX() + legendmod.cursorX
+	var temp2 = application.getPlayerY() + legendmod.cursorY
+	application.sendChatMessage(101,"[PosAttack]" + temp + "," + temp2 + "[/PosAttack]")
+	//console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
+	hideContextMenu()
+}
+function leftClickFight(){
+	var temp = application.getPlayerX() + legendmod.cursorX
+	var temp2 = application.getPlayerY() + legendmod.cursorY	
+	application.sendChatMessage(101,"[PosFight]" + temp + "," + temp2 + "[/PosFight]")	
+	//console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
+	hideContextMenu()
+}
+function leftClickRun(){
+	var temp = application.getPlayerX() + legendmod.cursorX
+	var temp2 = application.getPlayerY() + legendmod.cursorY		
+	application.sendChatMessage(101,"[PosRun]" + temp + "," + temp2 + "[/PosRun]")
+	//console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
+	hideContextMenu()
+}
+function openContextMenu(evt){
+	if(legendmod.play && !$("#overlays:hover").length && !defaultmapsettings.mouseSplit && !defaultmapsettings.mouseFeed && legendmod.gameMode == ":party"){	
+		evt.preventDefault();
+		const time = menuLeft.isOpen() ? 100 : 0;
+		menuLeft.hide();
+		setTimeout(() => { menuLeft.show(evt.pageX, evt.pageY) }, time);
+		window.canvasElem.addEventListener('click', hideContextMenu, false);
+	} 
+}
+function hideContextMenu(evt){
+  menuLeft.hide();
+  window.canvasElem.removeEventListener('click', hideContextMenu); 
+}
+
 /*
 var snezSocketdata;
 var snezSocket = new WebSocket("wss://connect.websocket.in/3Q-SoniaSLG_453dsV?room_id=123");
@@ -11503,6 +11552,7 @@ console.log(message.data);
 
 
 snezSocket.send(JSON.stringify({ "command": "sendPlayerSkinURL", nick: ogarcopythelb.nick, token: application.serverToken, tag: ogarcopythelb.clanTag, skin: ogarcopythelb.skinURL, color: ogarcopythelb.color}));
+
 
 
 */
