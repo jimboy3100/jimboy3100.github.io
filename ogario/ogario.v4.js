@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.470 MEGA TEST jimtest
+// v1.470a MEGA TEST jimtest
 // Game Configurations
 
 //window.testobjects = {};
@@ -11507,22 +11507,22 @@ const menuLeft = new ContextMenu({
 });
 
 function leftClickAttack(){
-	var temp = application.getPlayerX() + legendmod.cursorX
-	var temp2 = application.getPlayerY() + legendmod.cursorY
+	var temp = legendmod.cursorX + legendmod.mapOffsetX
+	var temp2 = legendmod.cursorY + legendmod.mapOffsetY
 	application.sendChatMessage(101,"[PosAttack]" + temp + "," + temp2 + "[/PosAttack]")
 	//console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
 	hideContextMenu()
 }
 function leftClickFight(){
-	var temp = application.getPlayerX() + legendmod.cursorX
-	var temp2 = application.getPlayerY() + legendmod.cursorY	
+	var temp = legendmod.cursorX + legendmod.mapOffsetX
+	var temp2 = legendmod.cursorY + legendmod.mapOffsetY	
 	application.sendChatMessage(101,"[PosFight]" + temp + "," + temp2 + "[/PosFight]")	
 	//console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
 	hideContextMenu()
 }
 function leftClickRun(){
-	var temp = application.getPlayerX() + legendmod.cursorX
-	var temp2 = application.getPlayerY() + legendmod.cursorY		
+	var temp = legendmod.cursorX + legendmod.mapOffsetX
+	var temp2 = legendmod.cursorY + legendmod.mapOffsetY		
 	application.sendChatMessage(101,"[PosRun]" + temp + "," + temp2 + "[/PosRun]")
 	//console.log(application.getPlayerX() + legendmod.cursorX, application.getPlayerY() + legendmod.cursorY)
 	hideContextMenu()
