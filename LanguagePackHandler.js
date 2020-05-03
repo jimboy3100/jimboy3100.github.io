@@ -49,6 +49,7 @@ $("#region").attr('data-original-title',Languageletter10);
 $("#gamemode").attr('data-original-title',Languageletter11);
 $("#connect2").text(Languageletter12a).attr('data-original-title',Languageletter12);
 $("#server-join").text(Languageletter13);
+$("#join-party-btn-2").text(Languageletter13);
 $(".btn.btn-play-guest.btn-success.btn-needs-server").text(Languageletter14);
 $(".btn.btn-play-guest.btn-success").text(Languageletter14);
 $(".btn.btn-warning.btn-login-play.btn-needs-server").text(Languageletter15);
