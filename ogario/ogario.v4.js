@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.495
+// v1.501
 
 
 //window.testobjects = {};
@@ -2178,8 +2178,8 @@ cimgSpecialSkinEffectsHat3.src = 'https://legendmod.ml/banners/iconSpecialSkinEf
 if (dyinglight1load == "yes") {
     cimgDyingLight = new Image;
     cimgDyingLight.src = defaultSettings.commanderImageDyingLight;
-    cimgDyingLightvirus = new Image;
-    cimgDyingLightvirus.src = defaultSettings.commanderImageDyingLightvirus;
+    //cimgDyingLightvirus = new Image;
+    //cimgDyingLightvirus.src = defaultSettings.commanderImageDyingLightvirus;
 }
 /*
                 cimgDyingLight1 = new Image;
@@ -7615,11 +7615,11 @@ function thelegendmodproject() {
             if (!defaultmapsettings.jellyPhisycs) {
                 if (this.isVirus) {
                     //console.log("is not jelly");
-                    if (dyinglight1load == "yes") {
+                    /*if (dyinglight1load == "yes") {
                         try {
                             style.drawImage(cimgDyingLightvirus, this.x - 0.8 * this.size, this.y - 0.8 * this.size, 1.6 * this.size, 1.6 * this.size);
                         } catch (e) {}
-                    }
+                    }*/
                     return defaultmapsettings.transparentViruses && (style.globalAlpha *= defaultSettings.virusAlpha, s = true), defaultmapsettings.virColors && LM.play ? (style.fillStyle = application.setVirusColor(y), style.strokeStyle = application.setVirusStrokeColor(y)) : (style.fillStyle = this.virusColor, style.strokeStyle = this.virusStroke), style.fill(), s && (style.globalAlpha = value, s = false), style.lineWidth = defaultSettings.virusStrokeSize, defaultmapsettings.virusGlow ? (style.shadowBlur = defaultSettings.virusGlowSize, style.shadowColor =
                         defaultSettings.virusGlowColor) : "yeet", style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), defaultmapsettings.showMass && (this.setDrawing(), this.setDrawingScale(), defaultmapsettings.virusGlow ? style.shadowBlur = 0 : "yote",
                         this.setMass(this.size), this.drawMass(style), (window.ExternalScripts && !window.legendmod5.optimizedMass && this.drawMerge(style))), void style.restore();
@@ -7679,10 +7679,10 @@ function thelegendmodproject() {
                     }
                 }
             }
-            if (dyinglight1load != "yes" || this.targetNick.includes("The Dying Light")) {
+            //if (dyinglight1load != "yes" || this.targetNick.includes("The Dying Light") || this.isFood) {
                 style.fillStyle = color;
                 style.fill();
-            }
+            //}
             if (s) {
                 style.globalAlpha = value;
                 s = false;
@@ -7759,8 +7759,8 @@ function thelegendmodproject() {
 					style.drawImage(cimgSpecialSkinEffectsMask, this.x - 1/2 * y, this.y + 1/4 * y, y, y);
 					}			
                     if (this.targetNick.includes("The Dying Light")) {
-                        try {
-                            style.drawImage(cimg5, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
+                        try {						
+                            style.drawImage(cimg5, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);					
                         } catch (e) {}
                     } 					
 					else if (this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("Z𒅒B -")) {
@@ -7824,9 +7824,9 @@ function thelegendmodproject() {
                             }
                         }
                     }
-                    if (dyinglight1load == "yes" && node == null && this.targetNick.includes("The Dying Light") == false) {
-                        try {
-                            style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
+                    if (dyinglight1load == "yes" && node == null && this.targetNick.includes(legendmod.playerNick) == false && !this.isFood && this.mass>12) {
+                        try {					
+                            style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);						
                         } catch (e) {}
                     }
 
