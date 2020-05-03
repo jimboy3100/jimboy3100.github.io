@@ -240,7 +240,7 @@ function btnmgs() {
 		toastr["error"]('<div id="tutorial" style="background-image: url(https://legendmod.ml/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>The creation of ones own rules, <font color="red">THAT</font> is what makes a man!<br> Do you live by your own rules Krane? <br>Or are you merely someone elses puppet??? </b> </div>').css("width", "400px");	
 		usedonce=1;
 		}});
-	$("#connect2").click(function () {
+	$("#server-join").click(function () {
 		if(usedonce==0){
 		playSound("https://legendmod.ml/banners/dyinglightsong10.mp3");			
 		toastr["error"]('<div id="tutorial" style="background-image: url(https://legendmod.ml/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>The creation of ones own rules, <font color="red">THAT</font> is what makes a man!<br> Do you live by your own rules Krane? <br>Or are you merely someone elses puppet??? </b> </div>').css("width", "400px");	
