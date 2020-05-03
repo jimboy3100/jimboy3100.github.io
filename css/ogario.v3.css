@@ -317,14 +317,26 @@
  #server-info{
      display:none 
 }
- #create-party-btn,#create-party-btn-2,#join-party-btn,#join-party-btn-2,#party-token{
+ #create-party-btn,#create-party-btn-2{
      width:49%!important;
      height:35px;
      margin-top:6px;
      float:left!important 
 }
+ #party-token{
+     width:65%!important;
+     height:35px;
+     margin-top:6px;
+     float:left!important 
+}
  #join-party-btn,#join-party-btn-2{
-     margin-top:0;
+     width:33%!important;
+     height:35px;
+     margin-top:6px;
+     float:left!important 
+} 
+ #join-party-btn,#join-party-btn-2{
+     /*margin-top:0;*/
      float:right!important 
 }
  #create-party-btn,#create-party-btn-2{
@@ -334,7 +346,7 @@
      display:none!important 
 }
  #party-token{
-     margin:0 
+     /*margin:0*/
 }
  #join-party-btn{
      border-radius:0!important;
