@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.509
+// v1.511
 
 
 //window.testobjects = {};
@@ -4174,8 +4174,9 @@ function thelegendmodproject() {
                 $("#region").before('<button class="btn btn-warning btn-server-info ogicon-cogs"></button>');
                 $(".btn-spectate, .btn-logout").appendTo("#agario-main-buttons");
                 $("#agario-main-buttons").addClass("clearfix").before('<div id="server-info" class="form-group clearfix"><input id="server-ws" class="form-control" placeholder="Server WS"><button id="server-connect" class="btn btn-success ogicon-power"></button><button id="server-reconnect" class="btn btn-primary ogicon-redo2"></button><input id="server-token" class="form-control" placeholder="Server token"><button id="server-join" class="btn btn-success" data-itr="page_join_party">Join</button></div>');
-                $("#helloContainer div[role=form]").after('<div id="ogario-party" class="clearfix"><input id="party-token" class="form-control" placeholder="Party token"></div>');
-                $("#ogario-party").append('<button id="join-party-btn-2" class="btn btn-success" data-itr="page_join_party">Join</button><button id="create-party-btn-2" class="btn btn-primary" data-itr="page_create_party">Create</button>');
+                //$("#helloContainer div[role=form]").after('<div id="ogario-party" class="clearfix"><input id="party-token" class="form-control" placeholder="Party token"></div>');
+				$("#server-join").after('<div id="ogario-party" class="clearfix"><input id="party-token" class="form-control" placeholder="Party token"></div>');
+                $("#ogario-party").append('<button id="join-party-btn-2" class="btn btn-success" data-itr="page_join_party">Join</button><button id="create-party-btn-2" class="btn btn-primary" data-itr="page_create_party" style="display: none;">Create</button>');
                 $("#pre-join-party-btn:first, #join-party-btn:first, #create-party-btn:first, #leave-party-btn:first, #joinPartyToken:first, .party-icon-back:first").appendTo($("#ogario-party"));
                 $("#settingsChoice, #options").appendTo($("#og-settings .submenu-panel"));
                 $("#stats").appendTo($("#main-menu")).addClass("menu-panel");
@@ -5493,7 +5494,7 @@ function thelegendmodproject() {
         },
         setParty() {
             let value = $('#party-token').val();
-            this.gameMode = ogario.gameMode = $(`#gamemode`).val();
+            this.gameMode = ogario.gameMode = $('#gamemode').val();
             this.setQuest();
             if (this.gameMode !== ':party' || !value) {
                 return;
