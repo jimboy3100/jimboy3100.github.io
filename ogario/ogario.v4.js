@@ -1,8 +1,8 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.470A MEGA TEST jimtest
-// Game Configurations
+// v1.495
+
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -671,11 +671,8 @@ window.predictedGhostCells = [];
 //set values outside ogario
 window.playerCellsId = [];
 //window.counterCell=0;
-window.leaderboardlimit = 20;
-window.teamboardlimit = 20;
-window.vanillaskins = false; //to enable vanilla skins it must be true
 window.spawnspecialeffects = false;
-window.top5skins = false;
+
 //window.customskinsname;
 //window.customskinsurl;
 
@@ -758,13 +755,14 @@ var emoticonicons = {
 }
 
 var displayText = {
-    'pl': {
+    pl: {
         start: 'Start',
         settings: 'Ustawienia',
         restoreSettings: 'Przywróc ustawienia domyślne',
         animationGroup: 'Animacja',
         graphics: 'Graphics',
         zoomGroup: 'Zoom',
+		boardGroup: 'Boards',
         respGroup: 'Odrodzenie',
         namesGroup: 'Nazwy',
         massGroup: 'Masa',
@@ -794,6 +792,8 @@ var displayText = {
         virusGlow: 'Virus Glow',
         borderGlow: 'Border Glow',
         zoomSpeedValue2: 'Szybkość zoomu',
+		leaderboardlimit: 'Leaderboard Players',
+		teamboardlimit: 'Team Players',	
         quickResp: 'Szybkie odrodzenie (klawisz)',
         autoResp: 'Auto odrodzenie',
         autoHideCellsInfo: 'Autoukrywanie nazw i masy',
@@ -810,6 +810,7 @@ var displayText = {
         hideMyMass: 'Ukryj własną masę',
         hideEnemiesMass: 'Ukryj masę przeciwników',
         vanillaSkins: 'Podstawowe skiny',
+		universalChat: 'Universal chat',
         customSkins: 'Własne skiny',
         videoSkins: 'Video skins (.mp4 .webm .ogv)',
         videoSkinsMusic: 'Sound from other\'s Video skins when both C3',
@@ -871,6 +872,7 @@ var displayText = {
         centeredLb: 'Wyśrodkowana topka',
         fpsAtTop: 'Statystyki na górze',
         tweenMaxEffect: 'Tween max effect',
+		top5skins: 'Skins on teamboard',
         showStats: 'Pokaż statystyki',
         showStatsMass: 'Statystyki: Masa',
         showStatsSTE: 'Statystyki: Przedziały Masy',
@@ -1014,6 +1016,7 @@ var displayText = {
         skinsAlpha: 'Przezroczystość skinów',
         virusAlpha: 'Przezroczystość wirusów',
         textAlpha: 'Przezroczystość nazw i masy',
+		backgroundAlpha: 'Przezroczystość background',
         virusStrokeSize: 'Grubość obwódki wirusów',
         virusGlowSize: "Virus Glow Size",
         teammatesIndColor: 'Wskaźnik gracza',
@@ -1166,13 +1169,14 @@ var displayText = {
         page_stats: 'Statystyki',
         teamView: 'Team view (BETA)'
     },
-    'en': {
+    en: {
         start: 'Home',
         settings: 'Settings',
         restoreSettings: 'Restore default settings',
         animationGroup: 'Animation',
         graphics: 'Graphics',
         zoomGroup: 'Zoom',
+		boardGroup: 'Boards',
         respGroup: 'Respawn',
         namesGroup: 'Names',
         massGroup: 'Mass',
@@ -1202,6 +1206,8 @@ var displayText = {
         virusGlow: 'Virus Glow',
         borderGlow: 'Border Glow',
         zoomSpeedValue2: 'Zoom speed',
+		leaderboardlimit: 'Leaderboard Players',
+		teamboardlimit: 'Team Players',	
         quickResp: 'Quick respawn (hotkey)',
         autoResp: 'Auto respawn',
         autoHideCellsInfo: 'Auto hide names and mass',
@@ -1218,6 +1224,7 @@ var displayText = {
         hideMyMass: 'Hide my mass',
         hideEnemiesMass: 'Hide enemies mass',
         vanillaSkins: 'Vanilla skins',
+		universalChat: 'Universal chat',
         customSkins: 'Custom skins',
         videoSkins: 'Video skins (.mp4 .webm .ogv)',
         videoSkinsMusic: 'Sound from other\'s Video skins when both C3',
@@ -1281,6 +1288,7 @@ var displayText = {
         centeredLb: 'Centered leaderboard',
         fpsAtTop: 'Game stats at the top',
         tweenMaxEffect: 'Tween max effect',
+		top5skins: 'Skins on teamboard',
         showStats: 'Show game stats',
         showStatsMass: 'Game stats: Mass',
         showStatsESTE: 'Game stats: Enemy\'s STE',
@@ -1423,6 +1431,7 @@ var displayText = {
         skinsAlpha: 'Skins transparency',
         virusAlpha: 'Virus transparency',
         textAlpha: 'Names & mass transparency',
+		backgroundAlpha: 'Background transparency',
         virusStrokeSize: 'Virus stroke size',
         virusGlowSize: "Virus Glow Size",
         teammatesIndColor: 'Teammate indicator',
@@ -1562,8 +1571,8 @@ var displayText = {
     }
 }
 var themePresets = {
-    'ogario-v3': {
-        name: 'OGARio v3',
+    legendv2: {
+        name: 'Legend v2',
         darkTheme: true,
         mainColor: '#01d9cc',
         bgColor: '#000a11',
@@ -1604,11 +1613,12 @@ var themePresets = {
         skinsAlpha: 0.99,
         virusAlpha: 0.25,
         textAlpha: 1,
+		backgroundAlpha: 0.6,
         virusStrokeSize: 20,
         virusGlowSize: "#fff",
         virusGlowSize: 14,
         borderGlowSize: 14,
-        menuPreset: 'ogario-v3',
+        menuPreset: 'legendv2',
         graphics: 'high',
         menuMainColor: '#01d9cc',
         menuBtnTextColor: '#ffffff',
@@ -1667,8 +1677,8 @@ var themePresets = {
         customBackground: '',
         customCursor: 'https://legendmod.ml/cursors/cursor_02.cur'
     },
-    'ogario-orange': {
-        name: 'OGARio v2',
+    legendv1: {
+        name: 'Legend v1',
         darkTheme: true,
         mainColor: '#ff7800',
         bgColor: '#111111',
@@ -1701,8 +1711,8 @@ var themePresets = {
         miniMapDeathLocationColor: '#ff7800',
         miniMapSectorsOpacity: 0.1
     },
-    'ogario-gold': {
-        name: 'OGARio LE',
+    legendoriginal: {
+        name: 'Legend Original',
         darkTheme: true,
         mainColor: '#b5a642',
         bgColor: '#000000',
@@ -1735,8 +1745,8 @@ var themePresets = {
         miniMapDeathLocationColor: '#b5a642',
         miniMapSectorsOpacity: 0.1
     },
-    'sniikz-style': {
-        name: 'SniiKz\'s Style',
+    crazystyle2: {
+        name: 'Crazy Style 2',
         darkTheme: true,
         mainColor: '#01d9cc',
         bgColor: '#000000',
@@ -1765,11 +1775,13 @@ var themePresets = {
         cellsAlpha: 0.99,
         skinsAlpha: 0.99,
         virusAlpha: 0.4,
+        textAlpha: 1,
+		backgroundAlpha: 0.6,		
         virusStrokeSize: 10,
         virusStrokeSize: 20,
         virusGlowSize: 14,
         borderGlowSize: 14,
-        menuPreset: 'ogario-v3',
+        menuPreset: 'legendv2',
         graphics: 'high',
         menuMainColor: '#fc0079',
         menuBtnTextColor: '#ffffff',
@@ -1825,8 +1837,8 @@ var themePresets = {
         customBackground: '',
         customCursor: 'https://legendmod.ml/cursors/cursor_01.cur'
     },
-    'hkg-style': {
-        name: 'HKG Style',
+    crazystyle: {
+        name: 'Crazy Style 1',
         darkTheme: true,
         mainColor: '#651fff',
         bgColor: '#000000',
@@ -1859,7 +1871,7 @@ var themePresets = {
         miniMapDeathLocationColor: '#651fff',
         miniMapSectorsOpacity: 0.1
     },
-    'agario-light': {
+    agariolight: {
         name: 'Agar.io Light',
         darkTheme: false,
         mainColor: '#ffffff',
@@ -1893,7 +1905,7 @@ var themePresets = {
         miniMapDeathLocationColor: '#ffffff',
         miniMapSectorsOpacity: 0.25
     },
-    'agario-dark': {
+    agariodark: {
         name: 'Agar.io Dark',
         darkTheme: true,
         mainColor: '#ffffff',
@@ -1929,8 +1941,8 @@ var themePresets = {
     }
 }
 var themeMenus = {
-    'ogario-v3': {
-        name: 'OGARio v3',
+    legendv2: {
+        name: 'Legend v2',
         menuMainColor: '#01d9cc',
         menuBtnTextColor: '#ffffff',
         menuPanelColor: '#00243e',
@@ -1947,8 +1959,8 @@ var themeMenus = {
         btn4Color2: '#df00c6',
         menuBg: 'https://legendmod.ml/banners/static/img/pattern.png'
     },
-    'ogario-v2': {
-        name: 'OGARio v2',
+    legendv1: {
+        name: 'Legend v1',
         menuMainColor: '#ff7800',
         menuBtnTextColor: '#ffffff',
         menuPanelColor: '#222222',
@@ -2007,7 +2019,7 @@ var escapeChar = {
     '/': '&#x2F;'
 }
 var defaultSettings = {
-    preset: 'ogario-v3',
+    preset: 'legendv2',
     darkTheme: true,
     mainColor: '#01d9cc',
     bgColor: '#000a11',
@@ -2059,12 +2071,13 @@ var defaultSettings = {
     skinsAlpha: 0.99,
     virusAlpha: 0.6,
     textAlpha: 1,
+	backgroundAlpha: 0.6,
     virusGlowColor: '#fff',
     virusGlowSize: 14,
     borderGlowSize: 14,
     ghostCellsAlpha: 0.3,
     virusStrokeSize: 14,
-    menuPreset: 'ogario-v3',
+    menuPreset: 'legendv2',
     graphics: 'high',
     menuMainColor: '#01d9cc',
     menuBtnTextColor: '#ffffff',
@@ -2224,7 +2237,8 @@ var defaultmapsettings = {
     virMassShots: true,
     hideMyMass: false,
     hideEnemiesMass: false,
-    vanillaSkins: false,
+    vanillaSkins: true,
+	universalChat: true,
     customSkins: true,
     videoSkins: true,
     videoSkinsMusic: false,
@@ -2283,6 +2297,7 @@ var defaultmapsettings = {
     centeredLb: true,
     fpsAtTop: true,
     tweenMaxEffect: false,
+	top5skins: true,
     showStats: true,
     showStatsMass: true,
     showStatsESTE: false,
@@ -2315,6 +2330,8 @@ var defaultmapsettings = {
     ////
     //'zoomSpeedValue: .87,
     zoomSpeedValue2: -0.13,
+	leaderboardlimit: 20,
+	teamboardlimit: 20,	
     messageSound: 'https://legendmod.ml/sounds/notification_01.mp3',
     //                commandSound: 'https://legendmod.ml/sounds/notification_02.mp3'
     commandSound: 'https://legendmod.ml/sounds/chat-message.mp3',
@@ -2541,12 +2558,12 @@ function thelegendmodproject() {
             $('#' + name).val(defaultSettings[name]);
             var app = this;
             callback ? $('#' + name).on('change', function() {
-                var app = this.value;
-                app.setFont(name, app);
+                var appi = this.value;
+                app.setFont(name, appi);
 				app[callback]();
             }) : $('#' + name).on('change', function() {
-                var app = this.value;
-                app.setFont(name, app);
+                var appi = this.value;
+                app.setFont(name, appi);
             });
         },
         setFontFamily(name) {
@@ -2695,10 +2712,11 @@ function thelegendmodproject() {
             this.addSliderBox('#theme-minimap', 'miniMapTeammatesSize', 4, 10, 0.5);
             this.addSliderBox('#theme-minimap', 'miniMapGhostCellsAlpha', 0.01, 0.99, 0.01);
             this.addInputBox('#theme-images', 'customBackground', 'Image URL', 'setCustomBackground');
+			this.addSliderBox('#theme-images', 'backgroundAlpha', 0, 1, 0.01);
             this.addPresetBox('#theme-images', 'graphics', graphicMenus, 'graphics', 'changeGraphics');
             this.addInputBox('#theme-images', 'customCursor', 'Cursor image URL', 'setCustomCursor');
             /*this.addInputBox('.facebook-panel', 'FacebookIDs', `e.g. 123456789012345:John K,543210987654321:Jimbo`, `setFBIDs`);*/
-            for (var e = 'https://legendmod.ml/cursors/cursor_', i = 0; i < 35; i++) i < 9 ? this.addCursorBox('#theme-images', e + '0' + (i + 1) + '.cur') : this.addCursorBox('#theme-images', e + '' + (i + 1) + '.cur');
+            for (var e = 'https://legendmod.ml/cursors/cursor_', i = 0; i < 42; i++) i < 9 ? this.addCursorBox('#theme-images', e + '0' + (i + 1) + '.cur') : this.addCursorBox('#theme-images', e + '' + (i + 1) + '.cur');
             $(document).on('click', '#theme-images .cursor-box a', function(e) {
                     e.preventDefault();
                     var i = $('img', this).attr('src');
@@ -2776,9 +2794,9 @@ function thelegendmodproject() {
         },
         setCustomBackground() {
             if (defaultSettings.customBackground) {
-                $('body').css('background-image', 'url(' + defaultSettings.customBackground + ')')
+                //$('body').css('background-image', 'url(' + defaultSettings.customBackground + ')')
             } else {
-                $('body').css('background-image', 'none');
+                //$('body').css('background-image', 'none');
             }
         },
         setCustomCursor() {
@@ -3364,6 +3382,21 @@ function thelegendmodproject() {
                 $('#leaderboard-hud').removeClass('hud-text-center');
             }
         },
+		setVanillaSkins(){
+            if (defaultmapsettings.vanillaSkins) {
+                defaultmapsettings.animateSkinsStart = setInterval(animateSkincheck, 60000);
+            } else {
+                application.flushSkinsMap();
+				animateSkinsStop();
+            }			
+		},
+		setUniversalChat(){
+            if (defaultmapsettings.universalChat && $("#ao2t-hud").length ) {
+                $("#ao2t-hud").show();
+            } else {
+				$("#ao2t-hud").hide();
+            }			
+		},
         //setNormalLb() {
         //defaultmapsettings.normalLb ? $('#leaderboard-hud h5').html(textLanguage.leaderboard) : $('#leaderboard-hud h5').html('legendmod');
         //},
@@ -3533,13 +3566,13 @@ function thelegendmodproject() {
                 },
         */
         displayTop5() {
-            if (window.top5skins != true) {
+            if (defaultmapsettings.top5skins != true) {
                 if (defaultmapsettings.showTop5) {
                     //console.log(.top5.length);
                     //console.log(.teamPlayers.length);
                     for (var t = '', e = 0, s = this.top5.length, o = 0; o < s; o++) {
                         e += this.top5[o].mass;
-                        if (!(o >= window.teamboardlimit && this.top5[o].mass > 1)) {
+                        if (!(o >= defaultmapsettings.teamboardlimit && this.top5[o].mass > 1)) {
                             t = t + '<li style=\"height: 16px;"\><span>' + (o + 1) + '. </span>';
                             defaultmapsettings.showTargeting && (t += '<a href=\"#\" data-user-id=\"' + this.top5[o].id + '\" class=\"set-target ogicon-target\"></a> ');
                             //
@@ -3583,7 +3616,7 @@ function thelegendmodproject() {
                     var o = 0;
                     for (; o < s; o++) {
                         e = e + this.top5[o].mass;
-                        if (!(o >= window.teamboardlimit && this.top5[o].mass > 1)) {
+                        if (!(o >= defaultmapsettings.teamboardlimit && this.top5[o].mass > 1)) {
                             /*
                                 t = t + ('<li><a href="#" id="pos-skin" class= "set-target" data-user-id="' + this.top5[o].id + '"style="background-color: ' + this.top5[o].color + 
 								'; width: 30px; height:30px; display: inline-block;"><img style="position: absolute; margin-left: 2px; margin-top: 2px; width: 26px; height:26px; display: inline-block;"  src = ' 
@@ -3864,11 +3897,18 @@ function thelegendmodproject() {
                         this.setTargetingHUD();
                         break;
                     case 'showTime':
-                        this.displayTime(), $('#time-hud').show();
+                        this.displayTime(); 
+						$('#time-hud').show();
                         break;
                     case 'centeredLb':
                         this.setCenteredLb();
                         break;
+                    case 'vanillaSkins':
+                        this.setVanillaSkins();
+                        break;			
+                    case 'universalChat':
+                        this.setUniversalChat();
+                        break;								
                         //case 'normalLb':
                         //this.setNormalLb();
                         //break;
@@ -4204,24 +4244,20 @@ function thelegendmodproject() {
 				$("#og-settings .submenu-panel").append('<div id="og-options"></div>');
                 this.addOptions([], "animationGroup");
                 this.addOptions(["autoZoom"], "zoomGroup");
+				this.addOptions([], "boardGroup");			
                 this.addOptions(["quickResp", "autoResp"], "respGroup");
                 this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
                 this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound"], "massGroup");
-                if (this.protocolMode){
-					this.addOptions(["customSkins", "jellyPhisycs", "videoSkins", "videoSkinsMusic"], "skinsGroup")
-				}
-				else{
-					this.addOptions(["customSkins", "vanillaSkins", "jellyPhisycs", "videoSkins", "videoSkinsMusic"], "skinsGroup");
-				}
+				this.addOptions(["noSkins","customSkins", "vanillaSkins", "jellyPhisycs", "videoSkins", "videoSkinsMusic"], "skinsGroup");
                 this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
-                this.addOptions(["myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow"], "transparencyGroup");
+                this.addOptions(["noColors","myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow"], "transparencyGroup");
                 this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup");
-                this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "hidecountry"], "chatGroup");
+                this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "hidecountry", "universalChat"], "chatGroup");
                 this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup");
                 this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots", "teamView"], "helpersGroup"); //Sonia2
                 this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert"], "mouseGroup");
                 //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-                this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup");
+                this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
                 this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup");
                 this.addOptions([], "macroGroup");
                 this.addOptions([], "profiles");
@@ -4230,10 +4266,10 @@ function thelegendmodproject() {
 				}
 				else{
                     $("#noSkins, #noColors, #skipStats, #showQuest").addClass("js-switch-vanilla");
-                    $(".skinsGroup h5").after('<label class="noSkins">' + textLanguage.noSkins + " </label>");
-                    $("#noSkins").appendTo($(".noSkins")), 
-					$(".transparencyGroup h5").after('<label class="noColors">' + textLanguage.noColors + " </label>");
-                    $("#noColors").appendTo($(".noColors"));
+                    //$(".skinsGroup h5").after('<label class="noSkins">' + textLanguage.noSkins + " </label>");
+                    //$("#noSkins").appendTo($(".noSkins")); 
+					//$(".transparencyGroup h5").after('<label class="noColors">' + textLanguage.noColors + " </label>");
+                    //$("#noColors").appendTo($(".noColors"));
                     $(".extrasGroup h5").after('<label class="skipStats">' + textLanguage.skipStats + " </label>");
                     $("#skipStats").appendTo($(".skipStats"));
                     $(".skipStats").after('<label class="showQuest">' + textLanguage.showQuest + " </label>");
@@ -4243,6 +4279,9 @@ function thelegendmodproject() {
 				}	
                 this.addSliderBox(".animationGroup", "animation", 5, 200, 1);
                 this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01);
+				this.addSliderBox(".boardGroup", "leaderboardlimit", 10, 30, 5);
+				this.addSliderBox(".boardGroup", "teamboardlimit", 5, 40, 5);
+				
                 this.addSliderBox(".profiles", "profileNumber", 10, 54, 1);
                 this.addSliderBox(".macroGroup", "macroFeeding", 1, 160, 1);
                 $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + textLanguage.exportImport + "</button>");
@@ -4397,13 +4436,12 @@ function thelegendmodproject() {
                 var p = template.attr("id");
                 if (void 0 !== app[p]) {
                     app[p] = template.prop("checked");
-                    if ("noSkins" === p) {
-                        /** @type {boolean} */
-                        ogario.showCustomSkin = !app.noSkins;
-                    }
-                    if ("showQuest" === p) {
-                        app.setQuest();
-                    }
+                    //if ("noSkins" === p) {
+                        //ogario.showCustomSkin = !app.noSkins;
+                    //}
+                    //if ("showQuest" === p) {
+                        //app.setQuest();
+                    //}
                 }
             });
             $(document).on("click", "#og-settings .restore-settings a", function(result) {
@@ -4637,11 +4675,11 @@ function thelegendmodproject() {
             $('.submenu-panel').perfectScrollbar('update');
         },
         getDefaultSettings() {
-            this.noSkins = $("#noSkins").prop("checked");
-                this.noColors = $("#noColors").prop("checked");
-                this.skipStats = $("#skipStats").prop("checked");
-                this.showQuest = $("#showQuest").prop("checked");
-				ogario.showCustomSkin = !this.noSkins;
+            //this.noSkins = $("#noSkins").prop("checked");
+            //this.noColors = $("#noColors").prop("checked");
+            this.skipStats = $("#skipStats").prop("checked");
+            this.showQuest = $("#showQuest").prop("checked");
+			ogario.showCustomSkin = !defaultmapsettings.noSkins;
 			if (null !== window.localStorage.getItem("scale_setting")) {
                 var parseScaleSettings = JSON.parse(window.localStorage.getItem("scale_setting"));
                 this.setCanvasScale(parseScaleSettings);
@@ -4909,7 +4947,7 @@ function thelegendmodproject() {
 
         },
         findOwnedVanillaSkin() {
-            if (!ogarcopythelb.skinURL && window.vanillaskins && window.UserVanillaSkin && window.EquippableSkins && !application.customSkinsMap[ogarcopythelb.nick]) {
+            if (!ogarcopythelb.skinURL && defaultmapsettings.vanillaSkins && window.UserVanillaSkin && window.EquippableSkins && !application.customSkinsMap[ogarcopythelb.nick]) {
                 //console.log("1. skin_" + window.UserVanillaSkin);
                 if (window.UserVanillaSkin.includes("skin_custom")) {
                     application.customSkinsMap[ogarcopythelb.nick] = window.UserVanillaSkin;
@@ -6912,6 +6950,7 @@ function thelegendmodproject() {
             this.displayTime();
             this.setCenteredLb();
             //this.setNormalLb();
+			this.setVanillaSkins
             this.setFpsAtTop();
             this.setTweenMaxEffect();
             this.displayStats();
@@ -7975,6 +8014,9 @@ function thelegendmodproject() {
                     (($("#nick").val().includes('℄') || $("#nick").val().includes('ঌۣ⚝•') || $("#nick").val().includes('ⒸØⒸᗩⒾ𝓝Ⓔ⫸')))) {
                     application.SLGconnect(t);
                 }
+				if (typeof Universalchatfix === 'function') { 
+					Universalchatfix() 
+				}
             }, 100);
             window.legendmod.vnr = 0; //Sonia3
             window.legendmod.bgpi = 4; //Sonia3
@@ -8019,6 +8061,7 @@ function thelegendmodproject() {
             application.sendServerData();
             application.displayLeaderboard('');
             application.displayPartyBots();
+			application.setUniversalChat();			
             if (window.master && window.master.onConnect) {
                 window.master.onConnect();
             }
@@ -9136,7 +9179,7 @@ function thelegendmodproject() {
             }
         },
         handleLeaderboard() {
-            /*                for (var t = '', e = '', i = 0; i < this.leaderboard.length && window.leaderboardlimit != i; i++) {
+            /*                for (var t = '', e = '', i = 0; i < this.leaderboard.length && defaultmapsettings.leaderboardlimit != i; i++) {
                                 var s = '<span>';
                                 'isPlayer' === this.leaderboard[i].id ? s = '<span class=\"me\">' : ogarcopythelb.clanTag.length && 0 == this.leaderboard[i].nick.indexOf(ogarcopythelb.clanTag) && (s = '<span class=\"teammate\">'), t += s + (i + 1) + '. ' + application.escapeHTML(this.leaderboard[i].nick) + '</span>';
                             } */
@@ -9153,7 +9196,7 @@ function thelegendmodproject() {
             }
             let text = '';
             let teamText = '';
-            for (length = 0; length < this.leaderboard.length && window.leaderboardlimit != length; length++) {
+            for (length = 0; length < this.leaderboard.length && defaultmapsettings.leaderboardlimit != length; length++) {
                 var html = '<span>';
                 if (this.leaderboard[length].id === 'isPlayer') {
                     html = '<span class=\"me\">';
@@ -9167,7 +9210,7 @@ function thelegendmodproject() {
                 }
                 teamText += html + (length + 1) + '. ' + application.escapeHTML(this.leaderboard[length].nick) + '</span>';
             }
-            if (this.playerPosition > window.leaderboardlimit) {
+            if (this.playerPosition > defaultmapsettings.leaderboardlimit) {
                 teamText += '<span class=\"me\">' + this.playerPosition + '. ' + application.escapeHTML(this.playerNick) + '</span>';
                 //defaultmapsettings['showLbData'];
             }
@@ -9186,7 +9229,7 @@ function thelegendmodproject() {
                 teamText += '</span>';
             }
             if (defaultmapsettings.showLbData) {
-                for (var l2ngth = 0; l2ngth < this.ghostCells.length && l2ngth < window.leaderboardlimit; l2ngth++) {
+                for (var l2ngth = 0; l2ngth < this.ghostCells.length && l2ngth < defaultmapsettings.leaderboardlimit; l2ngth++) {
                     //
                     var w = this.ghostCells[l2ngth].x;
                     var u = this.ghostCells[l2ngth].y;
@@ -9208,7 +9251,7 @@ function thelegendmodproject() {
 
 
             ///////////////// establish core.registerSkin
-            if (window.vanillaskins == true && window.customskinsname != null && window.customskinsurl != null && application.customSkinsMap[window.customskinsname] == null) {
+            if (defaultmapsettings.vanillaSkins == true && window.customskinsname != null && window.customskinsurl != null && application.customSkinsMap[window.customskinsname] == null) {
                 for (i = 0; i <= this.leaderboard.length - 1; i++) {
                     if (this.leaderboard[i].nick == window.customskinsname) {
                         application.customSkinsMap[window.customskinsname] = window.customskinsurl;
@@ -9335,7 +9378,7 @@ function thelegendmodproject() {
                     g1 = makeUpperCaseAfterUnderline(g1);
                     core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + g1 + ".png", null);
                     window.customskinanimated = true;
-                } else if (window.vanillaskins == true && window.LMAgarGameConfiguration != undefined) {
+                } else if (defaultmapsettings.vanillaSkins == true && window.LMAgarGameConfiguration != undefined) {
                     for (var player = 0; player < window.EquippableSkins.length; player++) {
                         if (window.EquippableSkins[player].productId == "skin_" + g.replace('%', '') && window.EquippableSkins[player].image != "uses_spine") {
                             //console.log("Player: " + y + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);                                
@@ -9971,14 +10014,33 @@ function thelegendmodproject() {
                 if (defaultmapsettings.showBgSectors) {
                     this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings.gridColor, defaultSettings.sectorsColor, defaultSettings.sectorsWidth, true);
                 }
-
-                if (!legendmod.integrity) {
-                    if (!legendmod.customMidPic) {
-                        legendmod.customMidPic = new Image;
-                        legendmod.customMidPic.src = defaultSettings.customServerImage1;
-                    }
+                if (!legendmod.integrity || defaultSettings.customBackground) {
+   					if (!legendmod.customMidPic) {
+						if (defaultSettings.customBackground) {
+							legendmod.customMidPic = new Image;
+							legendmod.customMidPic.src = defaultSettings.customBackground;					
+						}                 
+						else{
+							legendmod.customMidPic = new Image;
+							legendmod.customMidPic.src = defaultSettings.customServerImage1;
+						}
+					}
+					if (defaultSettings.customBackground) {
                     this.prevctxglobalAlpha = this.ctx.globalAlpha;
-                    this.ctx.globalAlpha = '0.2'
+                    this.ctx.globalAlpha = defaultSettings.backgroundAlpha
+                    this.ctx.drawImage(
+						legendmod.customMidPic, 
+	
+                        legendmod.mapMinX,
+                        legendmod.mapMinY,					
+                        legendmod.mapMaxX - legendmod.mapMinX,
+                        legendmod.mapMaxY - legendmod.mapMinY
+                    );
+                    this.ctx.globalAlpha = this.prevctxglobalAlpha						
+					}
+					else{
+                    this.prevctxglobalAlpha = this.ctx.globalAlpha;
+                    this.ctx.globalAlpha = defaultSettings.backgroundAlpha
                     var ofx = ((legendmod.mapMaxX - legendmod.mapMinX) / 5) * 2.2
                     var ofy = ((legendmod.mapMinY - legendmod.mapMaxY) / 5) * 2.2
                     this.ctx.drawImage(
@@ -9989,6 +10051,7 @@ function thelegendmodproject() {
                         (legendmod.mapMinY - legendmod.mapMaxY) / 8.5
                     );
                     this.ctx.globalAlpha = this.prevctxglobalAlpha
+					}
                 }
 
 
@@ -11541,6 +11604,44 @@ function hideContextMenu(evt){
   window.canvasElem.removeEventListener('click', hideContextMenu); 
 }
 
+//Animated Skins
+function animateSkincheck() {
+    for (i = 0; i < 10; i++) {
+        for (animatedi = 0; animatedi < legendmod.leaderboard.length; animatedi++) {
+            for (animatedkey in animatedskins) {
+                if (animatedkey == legendmod.leaderboard[animatedi].nick) {
+                    //console.log(animatedkey);
+                    e = animatedskins[animatedkey].frames.length - 1;
+                    for (animateda = 0; animateda <= animatedskins[animatedkey].frames.length - 1; animateda++) {
+                        b = animateda;
+                        verifiednames = animatedkey;
+                        window.anual = window.anual + animatedskins[verifiednames].frames[b].delay * 1000;
+                        d = animatedi;
+                        animateSkin(window.anual, b, verifiednames, d, e, i);
+
+                    }
+                }
+            }
+        }
+    }
+}
+
+function animateSkin(a, b, verifiednames, d, e, i) {
+    setTimeout(function() {
+        //if (verifiednames==legendmod.leaderboard[d].nick){
+        application.cacheCustomSkin(verifiednames, animatedskins[verifiednames].color, "https://i.imgur.com/" + animatedskins[verifiednames].frames[b].id + ".png");
+        if (b == e) {
+            if (i == 9) {
+                window.anual = 0;
+                if (animatedserverchanged == false) {
+                }
+            }
+        }
+    }, window.anual);
+}
+function animateSkinsStop() {
+    clearInterval(defaultmapsettings.animateSkinsStart);
+}
 /*
 var snezSocketdata;
 var snezSocket = new WebSocket("wss://connect.websocket.in/3Q-SoniaSLG_453dsV?room_id=123");
