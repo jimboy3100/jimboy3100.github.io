@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.501
+// v1.502
 
 
 //window.testobjects = {};
@@ -10024,6 +10024,10 @@ function thelegendmodproject() {
 							legendmod.customMidPic = new Image;
 							legendmod.customMidPic.src = defaultSettings.customServerImage1;
 						}
+					}
+					else if(legendmod.customMidPic && defaultSettings.customBackground && legendmod.customMidPic.src!=defaultSettings.customBackground){
+							legendmod.customMidPic = new Image;
+							legendmod.customMidPic.src = defaultSettings.customBackground;								
 					}
 					if (defaultSettings.customBackground) {
                     this.prevctxglobalAlpha = this.ctx.globalAlpha;
