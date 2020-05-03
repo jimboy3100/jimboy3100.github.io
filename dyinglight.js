@@ -1,6 +1,6 @@
 //Dying Light Extension For Legend Mod
 //By Jimboy3100
-//v1.94
+//v1.95
 var timeslost=0;
 var usedonce=0;
 var usedonce1=1;
@@ -8,8 +8,8 @@ var usedonce2=0;
 var usedonce3=1;
 
 if(dyinglight1load==null||dyinglight1load=="null"){
-toastr["warning"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightbanner.jpg); color:#018cf6; font-size:16px; text-align:center">Are you sure you want to load Dying Light Template?<br>Save your Settings on a file, because they will be lost.<br>' + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-DyingLight" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">'+ Premadeletter25 + '</button></div>', "", { timeOut: 20000, extendedTimeOut: 20000 }).css("width", "300px");	
-playSound("https://jimboy3100.github.io/banners/dyinglingsong5.mp3");
+toastr["warning"]('<div id="tutorial" style="background-image: url(https://legendmod.ml/banners/dyinglightbanner.jpg); color:#018cf6; font-size:16px; text-align:center">Are you sure you want to load Dying Light Template?<br>Save your Settings on a file, because they will be lost.<br>' + '</br> <button class="btn btn-sm btn-primary btn-play btn-do-DyingLight" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">'+ Premadeletter25 + '</button></div>', "", { timeOut: 20000, extendedTimeOut: 20000 }).css("width", "300px");	
+playSound("https://legendmod.ml/banners/dyinglingsong5.mp3");
 $(".btn.btn-sm.btn-primary.btn-play.btn-do-DyingLight").click(function () { acceptedDying(); });	
 }
 
@@ -29,7 +29,7 @@ $("#leadbtext").val("The Most Dead");
 $("#leadbtext").blur();
 $("#teambtext").val("The Alive");
 $("#teambtext").blur();
-$("#imgUrl").val("https://jimboy3100.github.io/banners/dyinglightbanner2.jpg");
+$("#imgUrl").val("https://legendmod.ml/banners/dyinglightbanner2.jpg");
 $("#imgUrl").blur();
 $("#imgHref").val("http://dyinglightgame.com/buy/?mainsite");
 $("#imgHref").blur();
@@ -82,72 +82,71 @@ setTimeout(function () {$("#playerBtn").focusout();}, 2100);
 
 toastr["error"]('To disable Dying Light, click the icon "Dying light" on the <b><font color="blue">API</font></b> tab!').css("width", "350px");
 
-$("#minimap-sectors").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightbabyteamboard.png)');	
-$("#log").css('background-image', 'url(" https://jimboy3100.github.io/banners/dyinglightother1.jpg ")');
-$("#openfl-content").css('background-image', 'url("https://jimboy3100.github.io/banners/dyinglightother2.jpg")');
-$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback0.jpg)');	
+$("#minimap-sectors").css('background-image', 'url(https://legendmod.ml/banners/dyinglightbabyteamboard.png)');	
+$("#log").css('background-image', 'url(" https://legendmod.ml/banners/dyinglightother1.jpg ")');
+$("#openfl-content").css('background-image', 'url("https://legendmod.ml/banners/dyinglightother2.jpg")');
+defaultSettings.customBackground="https://legendmod.ml/banners/dyinglightback0.jpg";
 aab();
 }	
 function aab(){
 setTimeout(function () {
-$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback0.jpg)');	
+defaultSettings.customBackground="https://legendmod.ml/banners/dyinglightback0.jpg";		
 aab2();
 }, 30000);}
 function aab2(){
 setTimeout(function () {
-$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback1.jpg)');	
+defaultSettings.customBackground="https://legendmod.ml/banners/dyinglightback1.jpg";
 aab3();
 }, 30000);}
 function aab3(){
 setTimeout(function () {
-$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback2.jpg)');	
+defaultSettings.customBackground="https://legendmod.ml/banners/dyinglightback2.jpg";
 aab4();
 }, 60000);}
 function aab4(){
 setTimeout(function () {
-$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback3.jpg)');	
+defaultSettings.customBackground="https://legendmod.ml/banners/dyinglightback3.jpg";
 aab5();
 }, 60000);}
 function aab5(){
 setTimeout(function () {
-$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback4.jpg)');	
+defaultSettings.customBackground="https://legendmod.ml/banners/dyinglightback4.jpg";
 aab6();
 }, 60000);}
 function aab6(){
 setTimeout(function () {
-$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback5.jpg)');	
+defaultSettings.customBackground="https://legendmod.ml/banners/dyinglightback5.jpg";
 aab7();
 }, 60000);}
-
 function aab7(){
 setTimeout(function () {
-$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback6.jpg)');
+defaultSettings.customBackground="https://legendmod.ml/banners/dyinglightback6.jpg";
 aab8();
 }, 60000);}
 function aab8(){
 setTimeout(function () {
-$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback7.jpg)');	
+defaultSettings.customBackground="https://legendmod.ml/banners/dyinglightback7.jpg";
 aab9();
 }, 60000);}
 function aab9(){
 setTimeout(function () {
-$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback8.jpg)');	
+defaultSettings.customBackground="https://legendmod.ml/banners/dyinglightback8.jpg";
 aab10();
 }, 60000);}
 function aab10(){
 setTimeout(function () {
-$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback9.jpg)');	
+defaultSettings.customBackground="https://legendmod.ml/banners/dyinglightback9.jpg";
 aab11();
 }, 60000);}
 function aab11(){
 setTimeout(function () {
-$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback10.jpg)');	
+defaultSettings.customBackground="https://legendmod.ml/banners/dyinglightback10.jpg";
 aab();
 }, 60000);}
 /*
 function aab12(){
 setTimeout(function () {
-$("#canvas").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightback11.jpg)');	
+$("#canvas").css('background-image', 'url(https://legendmod.ml/banners/dyinglightback11.jpg)');	
 aab();
 }, 60000);}
 */
@@ -185,16 +184,16 @@ function stopdyinglight(){
 function olddeath2() {
 $("#minimap-sectors").css('background-image', 'url(https://i.imgur.com/5jIjJVc.gif)');		
 setTimeout(function () {
-$("#minimap-sectors").css('background-image', 'url(https://jimboy3100.github.io/banners/dyinglightbabyteamboard.png)');		
+$("#minimap-sectors").css('background-image', 'url(https://legendmod.ml/banners/dyinglightbabyteamboard.png)');		
 }, 20000);
-if(timeslost==0){playSound("https://jimboy3100.github.io/banners/dyinglingsong3.mp3");
+if(timeslost==0){playSound("https://legendmod.ml/banners/dyinglingsong3.mp3");
 toastr["error"](" !!!").css("width", "200px");	
 }
 if(timeslost==1){
-playSound("https://jimboy3100.github.io/banners/dyinglingsong4.mp3");
+playSound("https://legendmod.ml/banners/dyinglingsong4.mp3");
 toastr["error"]("This is IO speaking, get to the nearest safe house and wait until dawn. Good night, and good luck!").css("width", "400px");	
 }
-if(timeslost==2){playSound("https://jimboy3100.github.io/banners/dyinglingsong6.mp3");
+if(timeslost==2){playSound("https://legendmod.ml/banners/dyinglingsong6.mp3");
 toastr["error"](" You get antozine when I say you get it, not one second before!").css("width", "400px");	
 }
 
@@ -207,9 +206,9 @@ if(timeslost==3){timeslost=0;}
 
 function olddisconnect() {	
 		
-		playSound("https://jimboy3100.github.io/banners/dyinglingsong7.mp3");
+		playSound("https://legendmod.ml/banners/dyinglingsong7.mp3");
 //		toastr["error"]("Disconnected :(");
-		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>Well, you not only did the job Karim, must of you, but you made it back in one piece.<br> Bravo!<br> Did you think I would be satisfied so easily? Is still plenty to prove!<br><font color="yellow">Server Changed </font></b> </div>').css("width", "400px");		   
+		toastr["error"]('<div id="tutorial" style="background-image: url(https://legendmod.ml/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>Well, you not only did the job Karim, must of you, but you made it back in one piece.<br> Bravo!<br> Did you think I would be satisfied so easily? Is still plenty to prove!<br><font color="yellow">Server Changed </font></b> </div>').css("width", "400px");		   
 };
 	
 //MC.__onDisconnect = MC.onDisconnect;
@@ -230,27 +229,27 @@ core.disconnect= function () {
 
 //	$(".agario-profile-picture").click(function () {
 //		if(usedonce1==0){
-//	playSound("https://jimboy3100.github.io/banners/dyinglighsong8.mp3");	
-//	toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother4.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>Kurnell Tanner and the ministry of defence have lied to you!</b> </div>').css("width", "300px");
+//	playSound("https://legendmod.ml/banners/dyinglighsong8.mp3");	
+//	toastr["error"]('<div id="tutorial" style="background-image: url(https://legendmod.ml/banners/dyinglightother4.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>Kurnell Tanner and the ministry of defence have lied to you!</b> </div>').css("width", "300px");
 //		usedonce1=1;
 //		}});
 function btnmgs() {	
 	$("#copySIPBtn").click(function () {
 		if(usedonce==0){
-		playSound("https://jimboy3100.github.io/banners/dyinglightsong10.mp3");			
-		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>The creation of ones own rules, <font color="red">THAT</font> is what makes a man!<br> Do you live by your own rules Krane? <br>Or are you merely someone elses puppet??? </b> </div>').css("width", "400px");	
+		playSound("https://legendmod.ml/banners/dyinglightsong10.mp3");			
+		toastr["error"]('<div id="tutorial" style="background-image: url(https://legendmod.ml/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>The creation of ones own rules, <font color="red">THAT</font> is what makes a man!<br> Do you live by your own rules Krane? <br>Or are you merely someone elses puppet??? </b> </div>').css("width", "400px");	
 		usedonce=1;
 		}});
 	$("#connect2").click(function () {
 		if(usedonce==0){
-		playSound("https://jimboy3100.github.io/banners/dyinglightsong10.mp3");			
-		toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>The creation of ones own rules, <font color="red">THAT</font> is what makes a man!<br> Do you live by your own rules Krane? <br>Or are you merely someone elses puppet??? </b> </div>').css("width", "400px");	
+		playSound("https://legendmod.ml/banners/dyinglightsong10.mp3");			
+		toastr["error"]('<div id="tutorial" style="background-image: url(https://legendmod.ml/banners/dyinglightother8.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>The creation of ones own rules, <font color="red">THAT</font> is what makes a man!<br> Do you live by your own rules Krane? <br>Or are you merely someone elses puppet??? </b> </div>').css("width", "400px");	
 		usedonce=1;
 		}});	
 	$('*[data-itr="page_spectate"]').click(function () {
 		if(usedonce2==0){
-		playSound("https://jimboy3100.github.io/banners/dyinglightsong9.mp3");	
-toastr["error"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/dyinglightother7.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>I am researching traces of the prophecy about the god of the sun in the relics of local culture. It seems like a matter of life and death to the mother, and I am in no position to ask why</b> </div>').css("width", "400px");			usedonce2=1;
+		playSound("https://legendmod.ml/banners/dyinglightsong9.mp3");	
+toastr["error"]('<div id="tutorial" style="background-image: url(https://legendmod.ml/banners/dyinglightother7.jpg); color:#018cf6; font-size:16px; text-align:center"><br><b>I am researching traces of the prophecy about the god of the sun in the relics of local culture. It seems like a matter of life and death to the mother, and I am in no position to ask why</b> </div>').css("width", "400px");			usedonce2=1;
 		}});
 }		
 //toastr["error"](" Well, you not only did the job Karim, must of you, but you made it back in one piece. Bravo! Did you think I would be satisfied so easily? Is still plenty to prove!").css("width", "400px");		
