@@ -81,6 +81,7 @@ setTimeout(function () {$("#playerBtn").focusout();}, 2100);
 	
 
 toastr["error"]('To disable Dying Light, click the icon "Dying light" on the <b><font color="blue">API</font></b> tab!').css("width", "350px");
+toastr["error"]('Suggested to PLAY song of the <b><font color="blue">(YOUTUBE) last </font></b> tab!').css("width", "350px");
 
 $("#minimap-sectors").css('background-image', 'url(https://legendmod.ml/banners/dyinglightbabyteamboard.png)');	
 $("#log").css('background-image', 'url(" https://legendmod.ml/banners/dyinglightother1.jpg ")');
