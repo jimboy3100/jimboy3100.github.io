@@ -272,6 +272,9 @@
  #server-token,#server-ws,.nick{
      width:65% 
 }
+ #server-token,#server-join,#agario-main-buttons{
+     margin-top :-10px
+}
  #locationKnown #region,#locationUnknown #region{
      width:54% 
 }
@@ -291,8 +294,11 @@
      display:block;
      margin-bottom:0 
 }
- #gamemode,#server-join,#server-token,.btn-server-info,.skin{
+ #server-token,.btn-server-info,.skin{
      margin-top:6px 
+}
+ #gamemode{
+     margin-top:2px 
 }
  #region,.btn-logout,.btn-spectate{
      margin:6px 0 0 
@@ -832,6 +838,9 @@
      font-family:Ubuntu;
      font-size:20px;
      z-index:100 
+}
+ #overlays{
+	 z-index:100 
 }
  .hud,.hud-b,.hud-c{
      display:none;
