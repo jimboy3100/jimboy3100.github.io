@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.546
+// v1.547
 
 
 //window.testobjects = {};
@@ -9384,19 +9384,13 @@ function thelegendmodproject() {
             }
         },
         addSpect() {
-            if ($("#nick").val().includes('℄') || $("#nick").val().includes('ঌۣ⚝•') || $("#nick").val().includes('ⒸØⒸᗩⒾ𝓝Ⓔ⫸')) {
+            if ($("#nick").val().includes('℄')) {
                 $('#set-debug').show();
                 $('#set-fullSpectator').show();
                 $('#set-ingameSpectator').show();
                 if (window.fullSpectator && spects.length == 0) {
-                    if (defaultmapsettings.rotateMap) {
-                        toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + "Full Spectator" + " disabled the rotation of Map");
-                    }
                     addFullSpectator();
                 } else if (window.ingameSpectator && spects.length == 0) {
-                    if (defaultmapsettings.rotateMap) {
-                        toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + "Ingame Spectator" + " disabled the rotation of Map");
-                    }
                     addSpectator();
                 }
             } else {
