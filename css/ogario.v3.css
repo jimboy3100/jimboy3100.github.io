@@ -295,7 +295,7 @@
      margin-bottom:0 
 }
  #server-token,.btn-server-info,.skin,#gamemode{
-     margin-top:6px 
+      margin-top:6px; 
 }
  #region,.btn-logout,.btn-spectate{
      margin:6px 0 0 
@@ -312,7 +312,7 @@
      margin-left:0 
 }
  #clantag,#region,#server-connect,#server-token,#server-ws,.btn-server-info,.btn-spectate,.skin{
-     float:left 
+     float:left;
 }
  #server-join,#server-reconnect,.btn-login-play,.nick{
      float:right 
