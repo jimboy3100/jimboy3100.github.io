@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.511
+// v1.517
 
 
 //window.testobjects = {};
@@ -671,7 +671,6 @@ window.predictedGhostCells = [];
 //set values outside ogario
 window.playerCellsId = [];
 //window.counterCell=0;
-window.spawnspecialeffects = false;
 
 //window.customskinsname;
 //window.customskinsurl;
@@ -796,6 +795,8 @@ var displayText = {
 		teamboardlimit: 'Team Players',	
         quickResp: 'Szybkie odrodzenie (klawisz)',
         autoResp: 'Auto odrodzenie',
+		spawnSpecialEffects: 'Spawn special effects',
+		animatedRainbowColor: 'Animated rainbow colors',
         autoHideCellsInfo: 'Autoukrywanie nazw i masy',
         autoHideNames: 'Autoukrywanie nazw',
         autoHideMass: 'Autoukrywanie masy',
@@ -978,6 +979,7 @@ var displayText = {
         restoreThemeSettings: 'Przywróc ustawienia domyślne wyglądu',
         basicTheming: 'Podstawowy',
         themePreset: 'Motyw',
+		chatPosition: 'Chat Position',
         themeType: 'Typ motywu',
         darkTheme: 'Ciemny motyw',
         lightTheme: 'Jasny motyw',
@@ -1210,6 +1212,8 @@ var displayText = {
 		teamboardlimit: 'Team Players',	
         quickResp: 'Quick respawn (hotkey)',
         autoResp: 'Auto respawn',
+		spawnSpecialEffects: 'Spawn special effects',
+		animatedRainbowColor: 'Animated rainbow colors',
         autoHideCellsInfo: 'Auto hide names and mass',
         autoHideNames: 'Auto hide names',
         autoHideMass: 'Auto hide mass',
@@ -1393,6 +1397,7 @@ var displayText = {
         restoreThemeSettings: 'Restore theme default settings',
         basicTheming: 'Basic theming',
         themePreset: 'Theme preset',
+		chatPosition: 'Chat Position',
         themeType: 'Theme type',
         darkTheme: 'Dark theme',
         lightTheme: 'Light theme',
@@ -1570,6 +1575,24 @@ var displayText = {
         teamView: 'Team view (BETA)'
     }
 }
+var chatPositions = {
+	bottomleft: {
+		name: 'Default',
+		positionClass: "toast-bottom-left"	
+	},
+	bottomright: {
+		name: 'Bottom Right',
+		positionClass: "toast-bottom-right"	
+	},	
+	topleft: {
+		name: 'Top Left',
+		positionClass: "toast-top-left"	
+	},		
+	topright: {
+		name: 'Top Right',
+		positionClass: "toast-top-right"	
+	}		
+}
 var themePresets = {
     legendv2: {
         name: 'Legend v2',
@@ -1646,6 +1669,7 @@ var themePresets = {
         lbTeammateColor: '#018cf6',
         hudFont: 'ubuntu-bold',
         hudScale: 1,
+		
         messageColor: 'rgba(0,0,0,0.4)',
         messageTextColor: '#ffffff',
         messageTimeColor: '#018cf6',
@@ -2019,6 +2043,7 @@ var escapeChar = {
     '/': '&#x2F;'
 }
 var defaultSettings = {
+	chatPos: 'bottomleft',
     preset: 'legendv2',
     darkTheme: true,
     mainColor: '#01d9cc',
@@ -2217,11 +2242,14 @@ var SkinExplain = [{
     }
 ];
 var defaultmapsettings = {
+	positionClass: "toast-bottom-left",	
     isAlphaChanged: false,
     jellyPhisycs: false,
     virusSound: false,
     quickResp: true,
     autoResp: false,
+	spawnSpecialEffects: false,
+	animatedRainbowColor: false,
     autoZoom: false,
     autoHideNames: true,
     autoHideMass: true,
@@ -2690,7 +2718,8 @@ function thelegendmodproject() {
             this.addColorBox('#theme-chat', 'commandsTimeColor', 'setChatColors');
             this.addColorBox('#theme-chat', 'commandsNickColor', 'setChatColors');
             this.addRgbaColorBox('#theme-chat', 'chatBoxColor', 'setChatColors');
-            this.addSliderBox('#theme-chat', 'chatScale', 1, 2, 0.01, 'setChatScale');
+			this.addPresetBox('#theme-chat', 'chatPosition', chatPositions, 'chatPos', 'changeChatThemePosition');
+            this.addSliderBox('#theme-chat', 'chatScale', 1, 2, 0.01, 'setChatScale');			
             this.addColorBox('#theme-minimap', 'miniMapSectorsColor', 'setMiniMapSectorsColor');
             this.addColorBox('#theme-minimap', 'miniMapSectorColor');
             this.addColorBox('#theme-minimap', 'miniMapNickColor');
@@ -2774,6 +2803,10 @@ function thelegendmodproject() {
             this.changePreset(name, themePresets);
             this.setTheme();
         },
+		changeChatThemePosition(name) {
+            this.changePreset(name, chatPositions);
+            this.setChatPosition();
+        },		
         setFonts() {
             this.setFont('namesFont', defaultSettings.namesFont);
             this.setFont('massFont', defaultSettings.namesFont);
@@ -2938,6 +2971,12 @@ function thelegendmodproject() {
             this.setChat();
             this.setMiniMap();
         },
+		setChatPosition(){
+		if (defaultSettings.chatPos){
+			toastr.remove();		
+			toastr.options.positionClass = chatPositions[defaultSettings.chatPos].positionClass;
+		}
+		},
         init() {
             this.loadThemeSettings();
         }
@@ -3395,6 +3434,13 @@ function thelegendmodproject() {
                 $("#ao2t-hud").show();
             } else {
 				$("#ao2t-hud").hide();
+            }			
+		},
+		setAnimatedRainbowColor(){			
+			if (defaultmapsettings.animatedRainbowColor && tcm2 && tcm2.f && typeof tcm2.f.override === 'function') {
+				tcm2.f.override();
+			} else {
+				//toastr.info("Changes will fully be reflected after restart");
             }			
 		},
         //setNormalLb() {
@@ -3908,7 +3954,10 @@ function thelegendmodproject() {
                         break;			
                     case 'universalChat':
                         this.setUniversalChat();
-                        break;								
+                        break;			
+                    case 'animatedRainbowColor':
+                        this.setAnimatedRainbowColor();
+                        break;							
                         //case 'normalLb':
                         //this.setNormalLb();
                         //break;
@@ -3927,6 +3976,7 @@ function thelegendmodproject() {
                         break;
                     case 'blockPopups':
                         this.setBlockPopups();
+						 break;
                 }
                 this.saveSettings(defaultmapsettings, 'ogarioSettings');
             }
@@ -4246,12 +4296,12 @@ function thelegendmodproject() {
                 this.addOptions([], "animationGroup");
                 this.addOptions(["autoZoom"], "zoomGroup");
 				this.addOptions([], "boardGroup");			
-                this.addOptions(["quickResp", "autoResp"], "respGroup");
+                this.addOptions(["quickResp", "autoResp","spawnSpecialEffects"], "respGroup");
                 this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
                 this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound"], "massGroup");
 				this.addOptions(["noSkins","customSkins", "vanillaSkins", "jellyPhisycs", "videoSkins", "videoSkinsMusic"], "skinsGroup");
                 this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
-                this.addOptions(["noColors","myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow"], "transparencyGroup");
+                this.addOptions(["noColors","myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", "animatedRainbowColor"], "transparencyGroup");
                 this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup");
                 this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "hidecountry", "universalChat"], "chatGroup");
                 this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup");
@@ -4919,7 +4969,7 @@ function thelegendmodproject() {
             setTimeout(() => {
                 app.onPlayerSpawn();
             }, 100);			
-            if (window.spawnspecialeffects == true) {
+            if (defaultmapsettings.spawnSpecialEffects) {
                 setTimeout(function() {
                     ///////// trigger special effects
                     //console.log('Special effects stage 1');
@@ -6934,6 +6984,7 @@ function thelegendmodproject() {
             this.setUI();
             if (Settings) {
                 Settings.setTheme();
+				Settings.setChatPosition();
             }
             this.setShowQuickMenu();
             this.setShowSkinsPanel();
@@ -8063,6 +8114,7 @@ function thelegendmodproject() {
             application.displayLeaderboard('');
             application.displayPartyBots();
 			application.setUniversalChat();			
+			application.setAnimatedRainbowColor();			
             if (window.master && window.master.onConnect) {
                 window.master.onConnect();
             }
