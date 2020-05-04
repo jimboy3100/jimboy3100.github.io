@@ -251,7 +251,7 @@ var discordcodetosend = {
                   {
             text: 'Post Server IP to Discord',
             class: 'btn btn-primary btn',
-	    style: 'width: 100%;margin-top: 6px'
+	    style: 'width: 100%;margin-top: 0px'
         });		
 		if (window.discordsip==null){
 		window.discordsip=true;	
