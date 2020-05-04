@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.532
+// v1.539
 
 
 //window.testobjects = {};
@@ -2829,6 +2829,7 @@ function thelegendmodproject() {
         setCustomBackground() {
             if (defaultSettings.customBackground) {
                 //$('body').css('background-image', 'url(' + defaultSettings.customBackground + ')')
+				//$("#canvas").css('background-size', 'cover'); 
             } else {
                 //$('body').css('background-image', 'none');
             }
@@ -3049,7 +3050,7 @@ function thelegendmodproject() {
         timeHUD: null,
         questHUD: null,
         retryResp: 0,
-        token: 'TGVnZW5kIGV4cHJlc3M=',
+        minimapText: '',
         canvasScale: 1,
         selectBiggestCell: true,
         noColors: false,
@@ -5361,7 +5362,8 @@ function thelegendmodproject() {
                     this.miniMapCtx.font = defaultSettings.miniMapFontWeight + ' ' + (e - 6) + 'px ' + defaultSettings.miniMapFontFamily,
                     this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor,
                     this.miniMapCtx.globalAlpha = 1,
-                    this.miniMapCtx.fillText(this.currentSector, defaultSettings.miniMapWidth - 32, e),
+					this.miniMapCtx.fillStyle = defaultSettings.miniMapSectorColor,
+                    this.miniMapCtx.fillText(this.currentSector, defaultSettings.miniMapWidth - 32, e),			
                     //this.miniMapCtx.font = defaultSettings.miniMapFontWeight + " " + (e - 4) + "px " + defaultSettings.miniMapFontFamily,
                     //this.miniMapCtx.fillStyle = defaultSettings.miniMapSectorColor,
                     //this.miniMapCtx.fillText(this.currentSector, 10, e),
@@ -5409,7 +5411,7 @@ function thelegendmodproject() {
                     //draw the yellow on minimap
                     this.miniMapCtx.beginPath();
                     this.miniMapCtx.lineWidth = "1";
-                    this.miniMapCtx.strokeStyle = "yellow";
+                    this.miniMapCtx.strokeStyle = defaultSettings.miniMapSectorColor;
                     var miniax = legendmod.canvasWidth / (legendmod.mapMaxX - legendmod.mapMinX) / legendmod.viewScale; //CORRECT
                     var miniay = legendmod.canvasHeight / (legendmod.mapMaxY - legendmod.mapMinY) / legendmod.viewScale; //CORRECT
                     var minidaxx = application.miniMapSectors.width * miniax;
@@ -5436,7 +5438,7 @@ function thelegendmodproject() {
                     this.miniMapCtx.fill();
                     //if (LM.arrowFB[0].nick.length > 0) {
                     this.miniMapCtx.font = `${defaultSettings.miniMapNickFontWeight} ${defaultSettings.miniMapNickSize}px ${defaultSettings.miniMapNickFontFamily}`;
-                    this.miniMapCtx.textAlign = `center`;
+                    this.miniMapCtx.textAlign = 'center';
                     this.miniMapCtx.textBaseline = "bottom";
                     if (defaultSettings.miniMapNickStrokeSize > 0) {
                         this.miniMapCtx.lineWidth = defaultSettings.miniMapNickStrokeSize;
@@ -5511,7 +5513,7 @@ function thelegendmodproject() {
             ctx.font = defaultSettings.miniMapFontWeight + ' ' + (defaultSettings.miniMapTop - 6) + 'px ' + defaultSettings.miniMapFontFamily;
             ctx.textAlign = 'right';
             ctx.textBaseline = 'top';
-            //ctx.fillText(atob(this.token), size, 7);
+            //ctx.fillText(minimapText, size, 7);
         },
         /*            drawTeammatesInd(ctx, e, i, s) {
                         this.indicator && ctx.drawImage(this.indicator, e - 45, i - s - 90);
@@ -8068,11 +8070,7 @@ function thelegendmodproject() {
             var app = this;
             setTimeout(function() {
                 application.Socket3connect(t);
-                if (defaultmapsettings.rotateMap &&
-                    (!window.fullSpectator &&
-                        ($("#nick").val().includes('℄') || $("#nick").val().includes('ঌۣ⚝•') || $("#nick").val().includes('ⒸØⒸᗩⒾ𝓝Ⓔ⫸'))) &&
-                    !window.ingameSpectator &&
-                    (($("#nick").val().includes('℄') || $("#nick").val().includes('ঌۣ⚝•') || $("#nick").val().includes('ⒸØⒸᗩⒾ𝓝Ⓔ⫸')))) {
+                if (defaultmapsettings.rotateMap && !window.fullSpectator && !window.ingameSpectator){
                     application.SLGconnect(t);
                 }
 				if (typeof Universalchatfix === 'function') { 				
@@ -11617,7 +11615,7 @@ function minimapCell(envId, cb, i, s) {
                 options.font = defaultSettings.miniMapNickFontWeight + " " + defaultSettings.miniMapNickSize + "px " + defaultSettings.miniMapNickFontFamily;
                 options.textAlign = "center";
                 var namead = "";
-                if (this.lbgpi < 0) namead += " [ℵ]";
+                //if (this.lbgpi < 0) namead += " [N]";
                 if (defaultSettings.miniMapNickStrokeSize > 0) {
                     options.lineWidth = defaultSettings.miniMapNickStrokeSize;
                     options.strokeStyle = defaultSettings.miniMapNickStrokeColor;
