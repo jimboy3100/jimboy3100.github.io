@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.547
+// v1.548
 
 
 //window.testobjects = {};
@@ -10496,7 +10496,7 @@ function thelegendmodproject() {
                 if (2025 <= LM.cRadius) {
                     LM.cAlpha *= .95;
                 }
-                if (1E-4 >= LM.cAlpha) {
+                if (0.1 >= LM.cAlpha) {
                     this.resetCommander();
                 }
             },
