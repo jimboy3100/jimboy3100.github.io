@@ -10496,7 +10496,7 @@ function thelegendmodproject() {
                 if (2025 <= LM.cRadius) {
                     LM.cAlpha *= .95;
                 }
-                if (0.1 >= LM.cAlpha) {
+                if (0.05 >= LM.cAlpha) {
                     this.resetCommander();
                 }
             },
