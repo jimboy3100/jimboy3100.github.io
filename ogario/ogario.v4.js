@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.539
+// v1.545
 
 
 //window.testobjects = {};
@@ -6009,18 +6009,17 @@ function thelegendmodproject() {
             }
         },
         SLGSimpleHandler(message) {
-            var Socket3data = message;
             //console.log("recieve", message);
-            if (Socket3data == null) {
+            if (message == null) {
                 return;
             } else {
-                //var ids = Socket3data.message;
-                var ids = window.decodeURIComponent(escape(Socket3data.message));
+                var ids = window.decodeURIComponent(escape(message.t));
+				//console.log(ids)
                 //var id = this.checkPlayerID(ids);
                 var id = this.checkPlayerNick(ids);
                 if (null != id) {
-                    //console.log("id found", id);
-                    this.teamPlayers[id].lbgpi = parseInt(Socket3data.s);
+                    //console.log("id found", id, s) ;
+                    this.teamPlayers[id].lbgpi = parseInt(message.s);
                     //if (this.top5[id]){
                     //this.top5[id].lbgpi = parseInt(lbgpi); //
                     //}
