@@ -272,9 +272,7 @@
  #server-token,#server-ws,.nick{
      width:65% 
 }
- #server-token,#server-join,#agario-main-buttons{
-     margin-top :-10px
-}
+
  #locationKnown #region,#locationUnknown #region{
      width:54% 
 }
@@ -294,12 +292,10 @@
      display:block;
      margin-bottom:0 
 }
- #server-token,.btn-server-info,.skin,#gamemode{
+ #server-token,.btn-server-info,.skin,#gamemode,#server-reconnect,#region,.btn-logout,.btn-spectate{
       margin-top:6px; 
 }
- #region,.btn-logout,.btn-spectate{
-     margin:6px 0 0 
-}
+
  #server-ws{
      margin-right:2% 
 }
@@ -329,13 +325,13 @@
  #party-token{
      width:65%!important;
      height:35px;
-     margin-top:6px;
+     /*margin-top:6px;*/
      float:left!important 
 }
  #join-party-btn,#join-party-btn-2{
      width:33%!important;
      height:35px;
-     margin-top:6px;
+     /*margin-top:6px;*/
      float:left!important 
 } 
  #join-party-btn,#join-party-btn-2{
