@@ -299,7 +299,7 @@
  #server-token,#server-join,#agario-main-buttons{
      margin-top :-10px;
 }
- #logoutbtn,.btn.btn-primary.btn{
+ #logoutbtn{
      margin-top :0px;
 }
  #server-ws{
