@@ -1,4 +1,4 @@
-/*v0.03*/
+/*v0.04*/
  @import url(https://legendmod.ml/css/ogicomoon.css);
  @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
  @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
@@ -299,7 +299,7 @@
  #server-token,#server-join,#agario-main-buttons{
      margin-top :-10px;
 }
- #logoutbtn{
+ #logoutbtn,.btn.btn-primary.btn{
      margin-top :0px;
 }
  #server-ws{
