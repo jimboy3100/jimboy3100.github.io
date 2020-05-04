@@ -1,4 +1,4 @@
-/*v0.01*/
+/*v0.02*/
  @import url(https://legendmod.ml/css/ogicomoon.css);
  @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
  @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
@@ -293,7 +293,7 @@
      display:block;
      margin-bottom:0 
 }
- #server-token,.btn-server-info,.skin,#gamemode,#server-reconnect,#region,.btn-logout,.btn-spectate,#server-reconnect,#party-token,#join-party-btn,#join-party-btn-2{
+ #server-token,.btn-server-info,.skin,#gamemode,#server-reconnect,#region,.btn-logout,.btn-spectate,#server-reconnect,#party-token,#join-party-btn,#join-party-btn-2,#logoutbtn,btn.btn-primary.btn{
       margin-top:6px; 
 }
  #server-token,#server-join,#agario-main-buttons{
@@ -307,7 +307,7 @@
      width:49%;
      margin-left:0 
 }
- .btn-play{
+ .btn-play,.btn-spectate,#logoutbtn{
      width:100%;
      margin-left:0 
 }
@@ -347,9 +347,6 @@
 }
  #create-party-btn,#join-party-btn,#leave-party-btn,#pre-join-party-btn,.party-icon-back,.party-token{
      display:none!important 
-}
- #party-token{
-     /*margin:0*/
 }
  #join-party-btn{
      border-radius:0!important;
