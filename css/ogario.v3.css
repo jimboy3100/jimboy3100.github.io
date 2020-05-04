@@ -294,11 +294,8 @@
      display:block;
      margin-bottom:0 
 }
- #server-token,.btn-server-info,.skin{
+ #server-token,.btn-server-info,.skin,#gamemode{
      margin-top:6px 
-}
- #gamemode{
-     margin-top:2px 
 }
  #region,.btn-logout,.btn-spectate{
      margin:6px 0 0 
