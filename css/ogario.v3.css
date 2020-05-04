@@ -1,4 +1,5 @@
-@import url(https://legendmod.ml/css/ogicomoon.css);
+/*v0.01*/
+ @import url(https://legendmod.ml/css/ogicomoon.css);
  @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
  @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
  @import url(https:///fonts.googleapis.com/css?family=Shojumaru:400,700&subset=latin-ext);
@@ -292,7 +293,7 @@
      display:block;
      margin-bottom:0 
 }
- #server-token,.btn-server-info,.skin,#gamemode,#server-reconnect,#region,.btn-logout,.btn-spectate,#server-reconnect{
+ #server-token,.btn-server-info,.skin,#gamemode,#server-reconnect,#region,.btn-logout,.btn-spectate,#server-reconnect,#party-token,#join-party-btn,#join-party-btn-2{
       margin-top:6px; 
 }
  #server-token,#server-join,#agario-main-buttons{
