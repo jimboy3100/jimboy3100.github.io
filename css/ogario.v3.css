@@ -292,7 +292,7 @@
      display:block;
      margin-bottom:0 
 }
- #server-token,.btn-server-info,.skin,#gamemode,#server-reconnect,#region,.btn-logout,.btn-spectate{
+ #server-token,.btn-server-info,.skin,#gamemode,#server-reconnect,#region,.btn-logout,.btn-spectate,#server-reconnect{
       margin-top:6px; 
 }
  #server-token,#server-join,#agario-main-buttons{
