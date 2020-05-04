@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.545
+// v1.546
 
 
 //window.testobjects = {};
@@ -6019,6 +6019,7 @@ function thelegendmodproject() {
                 var id = this.checkPlayerNick(ids);
                 if (null != id) {
                     //console.log("id found", id, s) ;
+					
                     this.teamPlayers[id].lbgpi = parseInt(message.s);
                     //if (this.top5[id]){
                     //this.top5[id].lbgpi = parseInt(lbgpi); //
@@ -8069,7 +8070,8 @@ function thelegendmodproject() {
             var app = this;
             setTimeout(function() {
                 application.Socket3connect(t);
-                if (defaultmapsettings.rotateMap && !window.fullSpectator && !window.ingameSpectator){
+                //if (defaultmapsettings.rotateMap && !window.fullSpectator && !window.ingameSpectator){
+				if (defaultmapsettings.rotateMap){	
                     application.SLGconnect(t);
                 }
 				if (typeof Universalchatfix === 'function') { 				
