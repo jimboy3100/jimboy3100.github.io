@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.552
+// v1.553
 
 
 //window.testobjects = {};
@@ -8438,8 +8438,8 @@ function thelegendmodproject() {
                     //cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
                     //cursorY=9999;					
                 } else if (!window.autoPlay) {
-                    cursorX = window.legendmod.vector[window.legendmod.vnr][0] && !window.fullSpectator && !window.ingameSpectator ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
-                    cursorY = window.legendmod.vector[window.legendmod.vnr][0] && !window.fullSpectator && !window.ingameSpectator ? this.translateY(this.cursorY) : this.cursorY; //Sonia3
+                    cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
+                    cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.cursorY) : this.cursorY; //Sonia3
                     if (!this.play && this.targeting || this.pause) {
                         cursorX = this.targetX;
                         cursorY = this.targetY;
@@ -8449,13 +8449,13 @@ function thelegendmodproject() {
                 else if (!specialcommand) {
                     //if (typeof cell != "undefined") { //when used, autoplay not working as expected
                     if (Object.keys(target2).length == 0) {
-                        cursorX = window.legendmod.vector[window.legendmod.vnr][0] && !window.fullSpectator && !window.ingameSpectator ? this.translateX(cell.x) : cell.x; //Sonia3
-                        cursorY = window.legendmod.vector[window.legendmod.vnr][1] && !window.fullSpectator && !window.ingameSpectator ? this.translateY(cell.y) : cell.y; //Sonia3
+                        cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(cell.x) : cell.x; //Sonia3
+                        cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(cell.y) : cell.y; //Sonia3
                         // var cursorX = cell.x;
                         //var cursorY = cell.y;
                     } else {
-                        cursorX = window.legendmod.vector[window.legendmod.vnr][0] && !window.fullSpectator && !window.ingameSpectator ? this.translateX(target2.x) : target2.x; //Sonia3
-                        cursorY = window.legendmod.vector[window.legendmod.vnr][1] && !window.fullSpectator && !window.ingameSpectator ? this.translateY(target2.y) : target2.y; //Sonia3
+                        cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(target2.x) : target2.x; //Sonia3
+                        cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(target2.y) : target2.y; //Sonia3
                         //var cursorX = target2.x;
                         //var cursorY = target2.y;
                     }
@@ -8756,10 +8756,10 @@ function thelegendmodproject() {
                 case 17:
                     window.testobjectsOpcode17 = data;
                     var x = data.getFloat32(s, true);
-                    this.viewX = window.legendmod.vector[window.legendmod.vnr][0] && !window.fullSpectator && !window.ingameSpectator ? this.translateX(x) : x;
+                    this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
                     s += 4;
                     var y = data.getFloat32(s, true);
-                    this.viewY = window.legendmod.vector[window.legendmod.vnr][1] && !window.fullSpectator && !window.ingameSpectator ? this.translateY(y) : y;
+                    this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
                     s += 4;
                     this.scale = data.getFloat32(s, true);
                     break;
@@ -8905,8 +8905,8 @@ function thelegendmodproject() {
                         s += 5;
                         var g = ~~Math.sqrt(100 * m);
                         this.ghostCells.push({
-                            'x': window.legendmod.vector[window.legendmod.vnr][0] && !window.fullSpectator && !window.ingameSpectator ? this.translateX(d) : d, //Sonia3
-                            'y': window.legendmod.vector[window.legendmod.vnr][1] && !window.fullSpectator && !window.ingameSpectator ? this.translateY(f) : f, //Sonia3
+                            'x': window.legendmod.vector[window.legendmod.vnr][0] && ? this.translateX(d) : d, //Sonia3
+                            'y': window.legendmod.vector[window.legendmod.vnr][1] && ? this.translateY(f) : f, //Sonia3
                             'size': g,
                             'mass': m,
                             'inView': this.isInView(d, f, g)
@@ -9523,10 +9523,10 @@ function thelegendmodproject() {
                 var id = view.readUInt32LE(offset);
                 if (offset += 4, 0 == id) break;
                 var x = view.readInt32LE(offset);
-                if (window.legendmod.vector[window.legendmod.vnr][0] && !window.fullSpectator && !window.ingameSpectator) x = this.translateX(x); //Sonia3
+                if (window.legendmod.vector[window.legendmod.vnr][0]) x = this.translateX(x); //Sonia3
                 offset += 4;
                 var y = view.readInt32LE(offset);
-                if (window.legendmod.vector[window.legendmod.vnr][1] && !window.fullSpectator && !window.ingameSpectator) y = this.translateY(y); //Sonia3
+                if (window.legendmod.vector[window.legendmod.vnr][1]) y = this.translateY(y); //Sonia3
                 offset += 4;
                 var size = view.readUInt16LE(offset);
                 offset += 2;
@@ -11448,6 +11448,7 @@ function thelegendmodproject() {
 	PreLcCelebration();
 	consoleNotice();
 	$("#overlays").css("z-index", "100")
+	Socket3enabler(window.legendmod.ws)
     //    })(ogario);
 }
 
@@ -11641,6 +11642,22 @@ function minimapCell(envId, cb, i, s) {
     };
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const menuLeft = new ContextMenu({
       'theme': 'default', // or 'blue'
       'items': [
@@ -11765,6 +11782,230 @@ function consoleNotice(){
     console.log('%cwww.legendclan.ml', stylesLegendModConsole2);
     console.groupEnd();
     console.groupEnd();
+}
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+function kFormatter(num) {
+    return num > 999 ? (num / 1000).toFixed(1) + "k" : num;
+}
+function timernow() {
+    var today = new Date();
+    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + ":" + today.getMilliseconds();
+    return time;
+}
+function Socket3enabler(srv) {
+	if (srv && srv.match("-([A-Za-z0-9]{6,7})\.")){
+    var room = ogarcopythelb.clanTag + "-" + srv.match("-([A-Za-z0-9]{6,7})\.")[1];
+    //Socket3 = new WebSocket("wss://connect.websocket.in/Jimboy3100_socket?room_id=" + this.room);
+    Socket3 = new WebSocket("wss://cloud.achex.ca/JIMBOY3100"+room);	
+	Socket3.onmessage = function(message) { 
+	Socket3handler(message.data);
+	}
+    Socket3.onopen = function(e) {
+		window.socket3NumberTries = 0;
+		Socket3.send(JSON.stringify({ "auth": "JIM" + customLMID, "password": "legendmod"}));
+		//Socket3.send(JSON.stringify({ "auth": "JIM" + application.playerID, "password": "legendmod"}));
+		//Socket3.send(JSON.stringify({ "joinHub": "legendmod"}));	
+		Socket3.send(JSON.stringify({ "joinHub": $("#server-token").val()+"3"}));			
+		console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket 3 open:',room);
+        if (!window.socket3Opened && window.noOgarioSocket) {
+            $("#message").keydown(function(event) {
+                if (event.keyCode === 13) { //window.legendmod6.getPressedKey(13)
+                    enterChatMessage2();
+                }
+            });
+        }
+        window.socket3Opened = true;
+    }
+    Socket3.onerror = function(e) {
+		window.socket3NumberTries++;
+        //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket 3 error');		
+    }
+    Socket3.onclose = function(e) {
+        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket 3 close');
+		//setTimeout(function() {
+			window.socket3NumberTries++;
+		if (window.socket3NumberTries < 2){	
+		//Socket3enabler(window.legendmod.ws)
+		}
+    }
+	Socket3.closeAndOpen = function(e) {
+		Socket3.onclose = function(e) {
+			 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Previous Socket 3 closed async');
+		}
+		
+                if (window.Socket3) {
+                    window.Socket3['onmessage'] = null;
+                    try {
+                        window.Socket3['close']();
+                    } catch (ogarcloseconlabel) {}
+                    window.Socket3 = null;
+                }	
+				
+		if (window.socket3NumberTries < 2){	
+		Socket3enabler(window.legendmod.ws);
+		}
+	}
+    return Socket3;
+	}
+}
+
+function Socket3handler(message) {
+    var Socket3data2 = JSON.parse(message);
+	var Socket3data = Socket3data2.msg;
+	//console.log(Socket3data);
+	//
+    if (Socket3data == null){
+		return;
+	}
+    else if (Socket3data.com == "chat") {
+        Socket3DisplaychatMsg(Socket3data.chattype, Socket3data.tid, Socket3data.nick, Socket3data.chat);
+    }
+    else if (Socket3data.com == "sendPlayerSkinURL") {
+        Socket3updateTeamPlayer(Socket3data);
+    }
+    else if (Socket3data.com == "pos") {
+        Socket3updateTeamPlayerPosition(Socket3data);
+    }
+    else if (Socket3data.com == "death") { //not used yet
+        Socket3updateTeamPlayerDeath(Socket3data);
+    }	
+    else if (Socket3data.com == "pcells") { 
+		Socket3updateTeamPlayerCells(Socket3data);
+    }		
+}
+
+function Socket3updateTeamPlayer(Socket3data) {
+    var h = window.decodeURIComponent(escape(application.checkPlayerNick(Socket3data.id)));	  
+    if (!application.teamPlayers[h]) {
+        h = application.teamPlayers.length;
+        application.teamPlayers[h] = {}
+    }
+    application.teamPlayers[h].id = Socket3data.id;
+    application.teamPlayers[h].nick = Socket3data.nick;
+    application.teamPlayers[h].skinID = Socket3data.nick;
+    application.teamPlayers[h].skinURL = Socket3data.skin;
+    application.teamPlayers[h].color = Socket3data.color;
+
+    application.teamPlayers[h].lbgpi = -2;
+	//application.teamPlayers[h].x = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(Socket3data.x + legendmod.mapOffsetX) : Socket3data.x + legendmod.mapOffsetX //Sonia3
+	//application.teamPlayers[h].y = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateX(Socket3data.y + legendmod.mapOffsetY) : Socket3data.y + legendmod.mapOffsetY //Sonia3	
+    application.teamPlayers[h].x = Socket3data.x;
+    application.teamPlayers[h].y = Socket3data.y;
+    application.teamPlayers[h].alive = true;
+    application.teamPlayers[h].mass = Socket3data.mass;
+    application.teamPlayers[h].temp = true;
+    application.teamPlayers[h].drawPosition = function() {};
+	var tempTime = new Date().getTime();
+	application.teamPlayers[h].lastUpdatedTime = tempTime;
+}
+
+function Socket3updateTeamPlayerPosition(Socket3data) {
+    var h = window.decodeURIComponent(escape(application.checkPlayerNick(Socket3data.id)));	  
+    if (!application.teamPlayers[h]) {
+        return;
+    }
+    application.teamPlayers[h].x = Socket3data.x;
+    application.teamPlayers[h].y = Socket3data.y;
+    application.teamPlayers[h].mass = Socket3data.mass;
+	application.teamPlayers[h].alive = true;
+	var tempTime = new Date().getTime();	
+	application.teamPlayers[h].lastUpdatedTime = tempTime;
+}
+function Socket3updateTeamPlayerDeath(Socket3data) {
+	//var h = application.checkPlayerNick(Socket3data.id);	
+	var h = window.decodeURIComponent(escape(application.checkPlayerNick(Socket3data.id)));	        
+	application.teamPlayers[h].alive = false;
+	application.teamPlayers[h].mass=1;	
+}
+function Socket3updateTeamPlayerCells(Socket3data) {
+		//console.log(window.decodeURIComponent(escape(Socket3data.tid)))
+        var temp = Socket3data.playerCells;
+		for (var i=0; i < application.teamPlayers.length; i++){
+			//if (application.teamPlayers[i].nick == window.decodeURIComponent(escape(Socket3data.tid)) && application.teamPlayers[i].lbgpi>-1 && application.teamPlayers[i].lbgpi==legendmod.lbgpi){
+			if (application.teamPlayers[i].nick == window.decodeURIComponent(escape(Socket3data.tid)) && application.teamPlayers[i].lbgpi>-1 && legendmod.lbgpi>-1){	
+				for(var j=0; j< temp.length; j++){
+					var ogariocellssetts = new legendmod1(temp[j].id + 1000000000, temp[j].x - legendmod.mapOffsetX, temp[j].y - legendmod.mapOffsetY, temp[j].size, application.teamPlayers[i].color, false, true, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
+					ogariocellssetts.isVirus = false;	
+					ogariocellssetts.fake = true;
+					ogariocellssetts.targetNick = application.teamPlayers[i].nick;
+					ogariocellssetts.nick = application.teamPlayers[i].nick;
+					if (!ogariocellssetts.isInView()){
+					legendmod.indexedCells[temp[j].id + 1000000000] = ogariocellssetts;	
+					var ab=false;
+					//console.log('3')
+					for (x=0;x<window.cellsFake.length;x++){
+						if (window.cellsFake[x].id == ogariocellssetts.id){
+							window.cellsFake[x] = ogariocellssetts;
+							window.cellsFake[x].targetX = temp[j].x - legendmod.mapOffsetX;
+							window.cellsFake[x].targetY = temp[j].y - legendmod.mapOffsetY;
+							//window.cellsFake[x].x = temp[j].x - legendmod.mapOffsetX;
+							//window.cellsFake[x].y = temp[j].y - legendmod.mapOffsetY;							
+							window.cellsFake[x].size = temp[j].size;
+							ab = true;
+						}
+					}
+					if (ab == false){
+						window.cellsFake.push(ogariocellssetts);
+					}
+					//window.cellsFake.push(ogariocellssetts);
+					}			
+				}
+			}
+		}
+}
+
+
+//Socket3.send(JSON.stringify({ com: "death", id: customLMID}));
+//Socket3.send(JSON.stringify({ com: "sendPlayerSkinURL", nick: ogarcopythelb.nick, token: application.serverToken, tag: ogarcopythelb.clanTag, skin: ogarcopythelb.skinURL, color: ogarcopythelb.color, id: customLMID, x: application.getPlayerX(), y: application.getPlayerY(), mass: legendmod.playerMass}));
+//Socket3.send(JSON.stringify({ com: "pos", id: customLMID, x: application.getPlayerX(), y: application.getPlayerY(), mass: legendmod.playerMass}));
+
+//sending commands
+function Socket3MessageChat(chattypemsg, chatreader) {
+    var temp={
+        com: "chat",
+        //id: customLMID,
+		//id: application.playerID,
+		id: window.unescape(window.encodeURIComponent(application.lastSentNick)),
+        nick: ogarcopythelb.nick,
+        chat: chatreader,
+        chattype: chattypemsg
+    };
+    //Socket3.send(JSON.stringify({ "toH": "legendmod", "msg": temp}));
+	Socket3.send(JSON.stringify({ "toH": $("#server-token").val()+"3", "msg": temp}));
+    //wss://connect.websocket.in does not send commands to sender again
+    Socket3DisplaychatMsg(chattypemsg, customLMID, ogarcopythelb.nick, chatreader)
+	//Socket3DisplaychatMsg(chattypemsg, application.playerID, ogarcopythelb.nick, chatreader)
+}
+
+function Socket3DisplaychatMsg(b, c, x, d) {
+    var time;
+    timernow();
+    application.displayChatMessage(time, b, c, x + ": " + d);
+}
+
+//enterChatMessage();					
+function enterChatMessage2() {
+    var t = $('#message-box');
+    var e = $('#message');
+    if (t.is(':visible')) {
+        var o = e.val();
+        o.length ? (Socket3MessageChat(101, o), legendmod.play && (e.blur(), t.hide())) : (e.blur(), t.hide()), e.val('');
+		setTimeout(function() {
+		t.hide();
+		}, 10);
+    } else {
+        t.show();
+        e.focus();
+        e.val('');
+    }
 }
 
 /*
