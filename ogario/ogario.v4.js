@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.549
+// v1.550
 
 
 //window.testobjects = {};
@@ -6528,6 +6528,12 @@ function thelegendmodproject() {
             if ((b == 2 || b == 3) && (window.legendmod.bgpi == 1 || window.legendmod.bgpi == 0)) mat[1] = !mat[1];
             window.legendmod.vnr = this.dematrix(mat);
         },
+        settechvnr(b) { //jimboy3100's 5/5/2020
+			if (b==0){ window.legendmod.vector[window.legendmod.vnr][1]=0;window.legendmod.vector[window.legendmod.vnr][0]=0;}
+			if (b==1){ window.legendmod.vector[window.legendmod.vnr][1]=0;window.legendmod.vector[window.legendmod.vnr][0]=1;}
+			if (b==2){ window.legendmod.vector[window.legendmod.vnr][1]=1;window.legendmod.vector[window.legendmod.vnr][0]=0;}
+			if (b==0){ window.legendmod.vector[window.legendmod.vnr][1]=1;window.legendmod.vector[window.legendmod.vnr][0]=1;}
+        },		
         updatevnr() {
             var mm = 0;
             var max = 4;
@@ -8432,7 +8438,7 @@ function thelegendmodproject() {
                     //cursorY=9999;					
                 } else if (!window.autoPlay) {
                     cursorX = window.legendmod.vector[window.legendmod.vnr][0] && !window.fullSpectator && !window.ingameSpectator ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
-                    cursorY = window.legendmod.vector[window.legendmod.vnr][1] && !window.fullSpectator && !window.ingameSpectator ? this.translateY(this.cursorY) : this.cursorY; //Sonia3
+                    cursorY = window.legendmod.vector[window.legendmod.vnr][0] && !window.fullSpectator && !window.ingameSpectator ? this.translateY(this.cursorY) : this.cursorY; //Sonia3
                     if (!this.play && this.targeting || this.pause) {
                         cursorX = this.targetX;
                         cursorY = this.targetY;
