@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.554
+// v1.570
 
 
 //window.testobjects = {};
@@ -445,6 +445,8 @@ window.bots = {
     ai: false,
     remoteIP: 'ws://localhost:1337'
 }
+
+SpecialEffectPlayers = [];
 
 var Socket3;
 window.socket3Opened = false;
@@ -2200,6 +2202,22 @@ cimgSpecialSkinEffectsMask = new Image;
 cimgSpecialSkinEffectsMask.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsMask.png';
 cimgSpecialSkinEffectsHat3 = new Image;
 cimgSpecialSkinEffectsHat3.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsHat3.png';
+cimgSpecialSkinEffectsVip = new Image;
+cimgSpecialSkinEffectsVip.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsVip.png';
+cimgSpecialSkinEffectsYoutube = new Image;
+cimgSpecialSkinEffectsYoutube.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsYoutube.png';
+cimgSpecialSkinEffectsJellyFish = new Image;
+cimgSpecialSkinEffectsJellyFish.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsJellyFish.png';
+cimgSpecialSkinEffectsLight = new Image;
+cimgSpecialSkinEffectsLight.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsLight.png';
+cimgSpecialSkinEffectsUSA = new Image;
+cimgSpecialSkinEffectsUSA.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsUSA.png';
+cimgSpecialSkinEffectsHeart = new Image;
+cimgSpecialSkinEffectsHeart.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsHeart.png';
+cimgSpecialSkinEffectsSword = new Image;
+cimgSpecialSkinEffectsSword.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsSword.png';
+cimgSpecialSkinEffectsSmoke = new Image;
+cimgSpecialSkinEffectsSmoke.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsSmoke.png';
 
 if (dyinglight1load == "yes") {
     cimgDyingLight = new Image;
@@ -5774,6 +5792,9 @@ function thelegendmodproject() {
             if (Socket3) {
                 Socket3.closeAndOpen();
             }
+			else{
+				Socket3enabler(window.legendmod.ws);
+			}
             //}, 1000);
             //}
         },
@@ -6368,11 +6389,22 @@ function thelegendmodproject() {
 
             //Here should be food part
         },
+        sendSocket3Info(type, message) {
+            if (Socket3) {
+                var temp = {
+                    com: "info",
+					com2: type,
+                    id: window.unescape(window.encodeURIComponent(application.lastSentNick)),
+                    x: message,
+                };
+                Socket3.send(JSON.stringify({
+                    "toH": $("#server-token").val() + "3",
+                    "msg": temp
+                }));
+            }
+        },		
         sendSocket3Position() {
             if (ogario.play && window.noOgarioSocket && Socket3) {
-                //if (window.noOgarioSocket && ogarcopythelb.clanTag!="" && ogarcopythelb.nick.includes("℄")) { 					
-                //Socket3.send(JSON.stringify({ com: "pos", id: customLMID, x: application.getPlayerX(), y: application.getPlayerY(), mass: legendmod.playerMass}));					
-                //}
                 var temp = {
                     com: "pos",
                     //id: customLMID,
@@ -6556,10 +6588,10 @@ function thelegendmodproject() {
         updateTeamPlayers() {
             this.sendPlayerPosition();
             //this.sendSuperLegendSDATA();
-            this.sendSimpleLegendSDATA();
+            this.sendSimpleLegendSDATA(); //SEND ROTATION INFO
 
             //this.sendSLGQinfo(),
-            application.sendJimboy3100info();
+            //application.sendJimboy3100info(); // DO NOT SEND TEAM VIEW INFO
             this.chatUsers = {};
             this.top5 = []; //Sonia3
             this.updatevnr(); //Sonia3
@@ -7034,7 +7066,7 @@ function thelegendmodproject() {
                 }, 33),
                 setInterval(function() {
                     app.updateTeamPlayers();
-                    application.sendSocket3Position();
+                    //application.sendSocket3Position(); // DO NOT SEND SECONDARY SOCKET POSITION
                 }, this.updateInterval);
         }
     };
@@ -7814,26 +7846,58 @@ function thelegendmodproject() {
 							style.drawImage(nodeFB, this.x - 1/2 * y, this.y - y, y, y); 
                         } catch (e) {}						
 					}
-					
-					if (this.targetNick.includes("Hat")){ 		
+					if (SpecialEffectPlayers[this.targetNick]){
+						
+						this.SpecialEffect = SpecialEffectPlayers[this.targetNick];
+						if (!window.eud){
+							console.log('draw',this.targetNick,this.SpecialEffect)
+							window.eud=true
+						}
+						
+					}
+					if (this.targetNick.includes("Hat") || this.SpecialEffect == "Hat"){ 		
 					//style.drawImage(cimgSpecialSkinEffectsHat3, this.x - 1/4 * y, this.y - 5/4 * y, y/2, y/2); 					
 					style.drawImage(cimgSpecialSkinEffectsHat3, this.x - 1/2 * y, this.y - 3/2 * y, y, y); 
 					//style.drawImage(cimg7, this.x - 1/2 * y, this.y - 1/2 * y, y, y); //center 1/2 size 
 					//style.drawImage(cimgSpecialSkinEffectsHat3, this.x - 1/2 * y, this.y - y, y, y); //top middle 1/2 size 
-					}						
-					else if (this.targetNick.includes("King")){ 								
+					}	
+					else if (this.targetNick.includes("JellyFish") || this.SpecialEffect == "JellyFish"){ 							
+					style.drawImage(cimgSpecialSkinEffectsJellyFish	, this.x - 1/2 * y, this.y - 3/2 * y, y, y); 
+					}							
+					else if (this.targetNick.includes("King" || this.SpecialEffect == "King")){ 								
 					//style.drawImage(cimgSpecialSkinEffectsCrown	, this.x - 1/4 * y, this.y - 5/4 * y, y/2, y/2); 		
 					style.drawImage(cimgSpecialSkinEffectsCrown	, this.x - 1/4 * y, this.y - 5.3/4 * y, y/2, y/2); 					
-					}			
-					if (this.targetNick.includes("Mask")){ 					
+					}
+					if (this.targetNick.includes("Smoke" || this.SpecialEffect == "Smoke")){ 	
+					style.drawImage(cimgSpecialSkinEffectsSmoke, this.x - 1/2 * y, this.y - 1/2 * y, y, y); //center 1/2 size 									
+					}	
+					else if (this.targetNick.includes("USA" || this.SpecialEffect == "USA")){ 	
+					style.drawImage(cimgSpecialSkinEffectsUSA, this.x - 1/2 * y, this.y - 1/2 * y, y, y); //center 1/2 size 									
+					}	
+					else if (this.targetNick.includes("Light" || this.SpecialEffect == "Light")){ 	
+					style.drawImage(cimgSpecialSkinEffectsLight, this.x - 1/2 * y, this.y - 1/2 * y, y, y); //center 1/2 size 									
+					}						
+					else if (this.targetNick.includes("Sword" || this.SpecialEffect == "Sword")){ 	
+					style.drawImage(cimgSpecialSkinEffectsSword, this.x - 1/2 * y, this.y - 1/2 * y, y, y); //center 1/2 size 									
+					}							
+					if (this.targetNick.includes("Mask" || this.SpecialEffect == "Mask")){ 					
 					style.drawImage(cimgSpecialSkinEffectsMask, this.x - 1/2 * y, this.y + 1/4 * y, y, y);
-					}			
-                    if (this.targetNick.includes("The Dying Light")) {
+					}	
+					else if (this.targetNick.includes("Heart" || this.SpecialEffect == "Heart")){ 					
+					style.drawImage(cimgSpecialSkinEffectsHeart, this.x - 1/2 * y, this.y + 1/4 * y, y, y);
+					}											
+					if (this.targetNick.includes("Vip" || this.SpecialEffect == "Vip")){ 	
+					style.drawImage(cimgSpecialSkinEffectsVip, this.x - 1/8 * y, this.y - 5.3/4 * y, y/5, y/5); 
+					}						
+					else if (this.targetNick.includes("Youtube" || this.SpecialEffect == "Youtube")){ 														
+					style.drawImage(cimgSpecialSkinEffectsYoutube, this.x - 1/2 * y, this.y - 3/2 * y, y, y); 
+					}											
+                    if (this.targetNick.includes("The Dying Light" || this.SpecialEffect == "RedArrow")) {
                         try {						
                             style.drawImage(cimg5, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);					
                         } catch (e) {}
                     } 					
-					else if (this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("Z𒅒B -")) {
+					else if (this.targetNick.includes("℄🌀Jimboy3100") || this.targetNick.includes("Z𒅒B -") || this.SpecialEffect == "WhiteArrow") {
                         //style.drawImage(cimg2, this.x - y * 2, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
 
                         var today = new Date();
@@ -9514,8 +9578,6 @@ function thelegendmodproject() {
                     victimID.removeCell();
                 }
             }
-            //
-            //application.sendJimboy3100info();
             fakePlayers();
             //					
             for (length = 0;;) {
@@ -11447,8 +11509,7 @@ function thelegendmodproject() {
 	window.canvasElem.addEventListener('contextmenu', openContextMenu, false);
 	PreLcCelebration();
 	consoleNotice();
-	$("#overlays").css("z-index", "100")
-	Socket3enabler(window.legendmod.ws)
+	$("#overlays").css("z-index", "100")	
     //    })(ogario);
 }
 
@@ -11879,7 +11940,20 @@ function Socket3handler(message) {
     }	
     else if (Socket3data.com == "pcells") { 
 		Socket3updateTeamPlayerCells(Socket3data);
-    }		
+    }	
+    else if (Socket3data.com == "info") {
+		if (Socket3data.com2 = "spfc"){
+        Socket3updateTeamPlayerSpfc(Socket3data);
+		}
+    }	
+}
+
+
+function Socket3updateTeamPlayerSpfc(Socket3data) {
+	var h = window.decodeURIComponent(escape(Socket3data.id));	
+	var message = Socket3data.x;
+	console.log(h, message)
+	if (h && message) SpecialEffectPlayers[h] = message;
 }
 
 function Socket3updateTeamPlayer(Socket3data) {
@@ -11919,6 +11993,7 @@ function Socket3updateTeamPlayerPosition(Socket3data) {
 	var tempTime = new Date().getTime();	
 	application.teamPlayers[h].lastUpdatedTime = tempTime;
 }
+
 function Socket3updateTeamPlayerDeath(Socket3data) {
 	//var h = application.checkPlayerNick(Socket3data.id);	
 	var h = window.decodeURIComponent(escape(application.checkPlayerNick(Socket3data.id)));	        
