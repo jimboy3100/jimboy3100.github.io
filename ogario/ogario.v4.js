@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.553
+// v1.554
 
 
 //window.testobjects = {};
@@ -8905,8 +8905,8 @@ function thelegendmodproject() {
                         s += 5;
                         var g = ~~Math.sqrt(100 * m);
                         this.ghostCells.push({
-                            'x': window.legendmod.vector[window.legendmod.vnr][0] && ? this.translateX(d) : d, //Sonia3
-                            'y': window.legendmod.vector[window.legendmod.vnr][1] && ? this.translateY(f) : f, //Sonia3
+                            'x': window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(d) : d, //Sonia3
+                            'y': window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(f) : f, //Sonia3
                             'size': g,
                             'mass': m,
                             'inView': this.isInView(d, f, g)
