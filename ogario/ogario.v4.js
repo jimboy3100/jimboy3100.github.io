@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.548
+// v1.549
 
 
 //window.testobjects = {};
@@ -8070,13 +8070,13 @@ function thelegendmodproject() {
             var app = this;
             setTimeout(function() {
                 application.Socket3connect(t);
-                //if (defaultmapsettings.rotateMap && !window.fullSpectator && !window.ingameSpectator){
 				if (defaultmapsettings.rotateMap){	
                     application.SLGconnect(t);
                 }
+				pauseVideos()
 				if (typeof Universalchatfix === 'function') { 				
-					Universalchatfix() 
-					pauseVideos()
+					Universalchatfix() 					
+					preEmbPassword()
 				}
             }, 100);
             window.legendmod.vnr = 0; //Sonia3
