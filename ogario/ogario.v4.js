@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.551
+// v1.552
 
 
 //window.testobjects = {};
@@ -4364,7 +4364,8 @@ function thelegendmodproject() {
                     '<a href="#" id="set-debug" class="ogicon-location" style="display: none"></a>' +
                     '<a href="#" id="set-fullSpectator" class="ogicon-eye"  style="display: none"></a>' +
                     '<a href="#" id="set-ingameSpectator" class="ogicon-power"  style="display: none"></a>' +
-                    '<a href="#" id="set-targeting" class="ogicon-target"></a>' +
+                    '<a href="#" id="RotateLeft" onclick="rotateminimapsectors();"  class="ogicon-loop2"></a>' +
+					'<a href="#" id="set-targeting" class="ogicon-target"></a>' +
                     '<a href="#" id="set-private-minimap" class="ogicon-location2"></a>' +
                     '<a href="#" id="cancel-targeting" class="ogicon-cancel-circle"></a>' +
                     '<a href="#" id="change-target" class="ogicon-arrow-right"></a></div>' +
