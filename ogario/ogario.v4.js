@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.550
+// v1.551
 
 
 //window.testobjects = {};
@@ -6532,7 +6532,7 @@ function thelegendmodproject() {
 			if (b==0){ window.legendmod.vector[window.legendmod.vnr][1]=0;window.legendmod.vector[window.legendmod.vnr][0]=0;}
 			if (b==1){ window.legendmod.vector[window.legendmod.vnr][1]=0;window.legendmod.vector[window.legendmod.vnr][0]=1;}
 			if (b==2){ window.legendmod.vector[window.legendmod.vnr][1]=1;window.legendmod.vector[window.legendmod.vnr][0]=0;}
-			if (b==0){ window.legendmod.vector[window.legendmod.vnr][1]=1;window.legendmod.vector[window.legendmod.vnr][0]=1;}
+			if (b==3){ window.legendmod.vector[window.legendmod.vnr][1]=1;window.legendmod.vector[window.legendmod.vnr][0]=1;}
         },		
         updatevnr() {
             var mm = 0;
