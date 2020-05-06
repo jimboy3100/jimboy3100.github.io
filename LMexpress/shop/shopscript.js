@@ -1,4 +1,4 @@
-//v0.6
+//v0.7
 $(document).ready(function() {
 	setTimeout(function() {
     $("#imgur img.lazy").lazyload({
@@ -59,8 +59,14 @@ $(document).ready(function() {
 				if ($(".skins-wrapper")[i].style.display != "none"){
 					for (var j = 0; j < document.getElementsByClassName("skins-wrapper")[i].children.length; j++)
 						if (document.getElementsByClassName("skins-wrapper")[i].children[j].children[0].name ==$("#skin-url").val()){ 
-							if (document.getElementsByClassName("skins-wrapper")[2].children[0]) document.getElementsByClassName("skins-wrapper")[0].append(document.getElementsByClassName("skins-wrapper")[2].children[0])
+							if (document.getElementsByClassName("skins-wrapper")[2].children[0]){
+								document.getElementsByClassName("skins-wrapper")[0].append(document.getElementsByClassName("skins-wrapper")[2].children[0])
+							}
 							document.getElementsByClassName("skins-wrapper")[2].append(document.getElementsByClassName("skins-wrapper")[i].children[j])
+							application.lastSentNick = $("#nick").val()
+							SpecialEffectPlayers[application.lastSentNick]=$("#skin-url").val()
+							window.isActualUsingSpecialEffectsSkin=$("#skin-url").val()
+							window.application.sendSocket3Info("spfc", $("#skin-url").val())								
 						} 
 						else if (document.getElementsByClassName("skins-wrapper")[i].children[j].children[2].name ==$("#skin-url").val()){ 
 							SpecialEffectPlayers[application.lastSentNick]=null
@@ -69,12 +75,7 @@ $(document).ready(function() {
 							toastr.info("<b>[SERVER]:</b> Special Effect " + $("#skin-url").val() + " de-activated");
 						}
 				}			
-			}	
-			application.lastSentNick = $("#nick").val()
-			SpecialEffectPlayers[application.lastSentNick]=$("#skin-url").val()
-			window.isActualUsingSpecialEffectsSkin=$("#skin-url").val()
-			window.application.sendSocket3Info("spfc", $("#skin-url").val())	
-		
+			}		
 			} catch (e) {}
 		}
 		else{
@@ -84,5 +85,5 @@ $(document).ready(function() {
 	setTimeout(function() {
 		$("#nav a")[0].click();
 	}, 100);
-	}, 100);
+	}, 50);
 });
