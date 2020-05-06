@@ -256,7 +256,7 @@ else{
              }, 500);
          });
      } else {
-         toastr["warning"]('<b>[SERVER]: </b>Play a bit in order current Agario Id to catched');
+         toastr["warning"]('<b>[SERVER]: </b>Please play the game before you can use that feature');
      }
  }
 
