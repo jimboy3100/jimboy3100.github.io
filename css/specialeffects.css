@@ -1,11 +1,3 @@
-body {
-	width: 100%;
-	font-size: 1em;
-	font-weight: normal;
-	margin: 0;
-	padding: 0;
-}
-
 * {
    box-sizing: border-box;
 }
@@ -21,7 +13,9 @@ body {
 }
 
 #nav {
-	overflow: hidden;
+	 font-size: 1em; 
+	 font-weight: normal; 	
+	/* overflow: hidden; */
 }
 
 #nav ul {
@@ -46,7 +40,7 @@ body {
 	border-radius: 8px;
     text-decoration: none;
 	padding: 8px 8px;
-    margin-top: 18px;
+    margin-top: 14px;
 }
 
 #nav a:hover, #nav .active {
