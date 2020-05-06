@@ -1,4 +1,4 @@
-//v0.3
+//v0.4
 $(document).ready(function() {
     $("#imgur img.lazy").lazyload({
         effect : "fadeIn",
@@ -20,17 +20,19 @@ $(document).ready(function() {
 	
     $("img.lazy").on("click", function(e) {
         e.preventDefault();
-        var url = $(this).attr("src");
+		var url = $(this).attr("name");
+		
+        //var url = $(this).attr("src");
         $("#skin-url").val(url).select();
         try {
-            document.execCommand("copy");
+            //document.execCommand("copy");
         } catch (e) {}
     });
     
     $("#skin-url").on("click", function(e) {
         $(this).select();
         try {
-            document.execCommand("copy");
+            //document.execCommand("copy");
         } catch (e) {}
     });
 
@@ -48,9 +50,10 @@ $(document).ready(function() {
         return false;
     });
     $("#UseEffect").on("click", function(e) {
-        try {
+        try {	
         //    window.parent.postMessage("CustomSkins&?skin="+$("#skin-url").val(), "*"); 
 		toastr.info("Special Effect is in Use");
+		window.application.sendSocket3Info("spfc", $("#skin-url").val())
         } catch (e) {}
     });
 	setTimeout(function() {
