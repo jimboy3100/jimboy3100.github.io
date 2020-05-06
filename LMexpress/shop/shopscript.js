@@ -53,4 +53,5 @@ $(document).ready(function() {
 		toastr.info("Special Effect is in Use");
         } catch (e) {}
     });
+	$("#nav a")[0].click();
 });
