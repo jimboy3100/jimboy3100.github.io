@@ -45,7 +45,7 @@ body {
 	border-radius: 8px;
     text-decoration: none;
 	padding: 8px 8px;
-    margin-top: 18px;
+    margin-top: 25px;
 }
 
 #nav a:hover, #nav .active {
@@ -69,7 +69,7 @@ body {
     font-size: 1em;
     border-radius: 8px;
     border: 2px solid #d1d1d1;
-    margin-top: 18px;
+    margin-top: 25px;
     padding: 10px;
 }
 
