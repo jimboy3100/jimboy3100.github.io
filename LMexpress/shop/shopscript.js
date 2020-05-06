@@ -1,4 +1,4 @@
-//v0.4a
+//v0.4b
 $(document).ready(function() {
 	setTimeout(function() {
     $("#imgur img.lazy").lazyload({
@@ -58,7 +58,7 @@ $(document).ready(function() {
 		if (document.getElementsByClassName("skins-wrapper")[2].children[0]) document.getElementsByClassName("skins-wrapper")[2].children[0].remove()
 			SpecialEffectPlayers[application.lastSentNick]=null
 			window.isActualUsingSpecialEffectsSkin=null
-			window.application.sendSocket3Info("spfc", null))		
+			window.application.sendSocket3Info("spfc", null)		
     });	
 	setTimeout(function() {
 		$("#nav a")[0].click();
