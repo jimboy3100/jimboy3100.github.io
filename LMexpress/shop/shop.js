@@ -19,6 +19,7 @@
 				'<li><a href="#vanillaskins">In Use</a></li>' +			  		
                 '<li><input type="text" id="skin-url" placeholder="Special Skin Effect" readonly></li>' +
 		'<li><a id="UseEffect" class="link">Use</a></li>' +
+		'<li><a id="UseEffect2" class="link">Stop</a></li>' +
 		    '</ul>' +
         '</div>' +
     '</div>' +
