@@ -1,4 +1,4 @@
-//v0.4
+//v0.1
 $(document).ready(function() {
     $("#imgur img.lazy").lazyload({
         effect : "fadeIn",
@@ -52,11 +52,11 @@ $(document).ready(function() {
     $("#UseEffect").on("click", function(e) {
         try {	
         //    window.parent.postMessage("CustomSkins&?skin="+$("#skin-url").val(), "*"); 
-		toastr.info("Special Effect is in Use");
+		toastr.info("<b>[SERVER]:</b> Special Effect activated");
 		window.application.sendSocket3Info("spfc", $("#skin-url").val())
         } catch (e) {}
     });
 	setTimeout(function() {
 		$("#nav a")[0].click();
-	}, 1000);
+	}, 100);
 });
