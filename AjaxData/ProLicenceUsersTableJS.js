@@ -13,9 +13,9 @@ ProLicenceUsersTable = {
             "reason": "℄🌀βurNouT",
             "notes": "℄🌀"
         },
-        "960e1b2a-58b2-42ca-aa74-2645da3c6ccb": {
-            "reason": "✵ΕΛ✵Gio",
-            "notes": "✵ΕΛ✵"
+        "e18af28b-d1de-4645-967f-9b95736e8817": {
+            "reason": "Hendrik Schönfelder",
+            "notes": "Youtuber"
         },
         "f3057c2d-9cb0-49c2-af90-afd5eb652f6c": {
             "reason": "ƘıŋǥҜƦƉ",
