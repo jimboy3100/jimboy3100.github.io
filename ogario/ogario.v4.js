@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.581
+// v1.584
 
 
 //window.testobjects = {};
@@ -2208,8 +2208,8 @@ cimgSpecialSkinEffectsYoutube = new Image;
 cimgSpecialSkinEffectsYoutube.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsYoutube.png';
 cimgSpecialSkinEffectsJellyFish = new Image;
 cimgSpecialSkinEffectsJellyFish.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsJellyFish.png';
-cimgSpecialSkinEffectsLight = new Image;
-cimgSpecialSkinEffectsLight.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsLight.png';
+cimgSpecialSkinEffectsModerator = new Image;
+cimgSpecialSkinEffectsModerator.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsModerator.png';
 cimgSpecialSkinEffectsUSA = new Image;
 cimgSpecialSkinEffectsUSA.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsUSA.png';
 cimgSpecialSkinEffectsHeart = new Image;
@@ -7856,42 +7856,42 @@ function thelegendmodproject() {
 						}
 						
 					}
-			if (this.targetNick.includes("Hat") || this.SpecialEffect == "Hat" || this.SpecialEffect2 == "Hat"){ 		
+					if (this.SpecialEffect == "Hat" || this.SpecialEffect2 == "Hat"){ 		
 					//style.drawImage(cimgSpecialSkinEffectsHat3, this.x - 1/4 * y, this.y - 5/4 * y, y/2, y/2); 					
 					style.drawImage(cimgSpecialSkinEffectsHat3, this.x - 1/2 * y, this.y - 3/2 * y, y, y); 
 					//style.drawImage(cimg7, this.x - 1/2 * y, this.y - 1/2 * y, y, y); //center 1/2 size 
 					//style.drawImage(cimgSpecialSkinEffectsHat3, this.x - 1/2 * y, this.y - y, y, y); //top middle 1/2 size 
 					// the bigger the -y, the upper it draws
 					}	
-					else if (this.targetNick.includes("JellyFish") || this.SpecialEffect == "JellyFish" || this.SpecialEffect2 == "JellyFish"){ 							
+					else if (this.SpecialEffect == "JellyFish" || this.SpecialEffect2 == "JellyFish"){ 							
 					style.drawImage(cimgSpecialSkinEffectsJellyFish	, this.x - 1/3 * y, this.y - 3/2 * y, y, y); 
 					}							
-					else if (this.targetNick.includes("King" || this.SpecialEffect == "King" || this.SpecialEffect2 == "King")){ 								
+					else if (this.SpecialEffect == "King" || this.SpecialEffect2 == "King"){ 								
 					//style.drawImage(cimgSpecialSkinEffectsCrown	, this.x - 1/4 * y, this.y - 5/4 * y, y/2, y/2); 		
 					style.drawImage(cimgSpecialSkinEffectsCrown	, this.x - 1/4 * y, this.y - 5.3/4 * y, y/2, y/2); 					
 					}
-					if (this.targetNick.includes("Smoke" || this.SpecialEffect == "Smoke" || this.SpecialEffect2 == "Smoke")){ 
+					if (this.SpecialEffect == "Smoke" || this.SpecialEffect2 == "Smoke"){ 
 					style.drawImage(cimgSpecialSkinEffectsSmoke, this.x - 2/3 * y, this.y - 4/3 * y, y, y);									
 					}	
-					else if (this.targetNick.includes("USA" || this.SpecialEffect == "USA" || this.SpecialEffect2 == "USA")){ 	
+					else if (this.SpecialEffect == "USA" || this.SpecialEffect2 == "USA"){ 	
 					style.drawImage(cimgSpecialSkinEffectsUSA, this.x - 5/7 * y, this.y - 1/2 * y, y * 2, y * 2);  									
 					}	
-					else if (this.targetNick.includes("Light" || this.SpecialEffect == "Light" || this.SpecialEffect2 == "Light")){ 	
-					style.drawImage(cimgSpecialSkinEffectsLight, this.x - y, this.y - y, y * 2, y * 2);  									
+					else if (this.SpecialEffect == "Moderator" || this.SpecialEffect2 == "Moderator"){ 	
+					style.drawImage(cimgSpecialSkinEffectsModerator, this.x - y, this.y - y, y * 2, y * 2);  									
 					}						
-					else if (this.targetNick.includes("Sword" || this.SpecialEffect == "Sword" || this.SpecialEffect2 == "Sword")){ 	
+					else if (this.SpecialEffect == "Sword" || this.SpecialEffect2 == "Sword"){ 	
 					style.drawImage(cimgSpecialSkinEffectsSword, this.x - 0.8 * y, this.y - 3/5 * y, y * 1.6, y * 1.6);  									
 					}							
-					if (this.targetNick.includes("Mask" || this.SpecialEffect == "Mask" || this.SpecialEffect2 == "Mask")){ 					
+					if (this.SpecialEffect == "Mask" || this.SpecialEffect2 == "Mask"){ 					
 					style.drawImage(cimgSpecialSkinEffectsMask, this.x - 1/2 * y, this.y + 1/4 * y, y, y);
 					}	
-					else if (this.targetNick.includes("Heart" || this.SpecialEffect == "Heart" || this.SpecialEffect2 == "Heart")){ 					
+					else if (this.SpecialEffect == "Heart" || this.SpecialEffect2 == "Heart"){ 					
 					style.drawImage(cimgSpecialSkinEffectsHeart, this.x - 1/2 * y, this.y + 1/3 * y, y, y);
 					}											
-					if (this.targetNick.includes("Vip" || this.SpecialEffect == "Vip" || this.SpecialEffect2 == "Vip")){ 	
+					if (this.SpecialEffect == "Vip" || this.SpecialEffect2 == "Vip"){ 	
 					style.drawImage(cimgSpecialSkinEffectsVip, this.x - 1/8 * y, this.y - 5.3/4 * y, y/5, y/5); 
 					}						
-					else if (this.targetNick.includes("Youtube" || this.SpecialEffect == "Youtube" || this.SpecialEffect2 == "Youtube")){ 	
+					else if (this.SpecialEffect == "Youtube" || this.SpecialEffect2 == "Youtube"){ 	
 					style.drawImage(cimgSpecialSkinEffectsYoutube, this.x - 1/6 * y, this.y - 5.3/4 * y, y/3, y/3);
 					//style.drawImage(cimgSpecialSkinEffectsYoutube, this.x - 1/2 * y, this.y - 3/2 * y, y, y); 
 					}											
