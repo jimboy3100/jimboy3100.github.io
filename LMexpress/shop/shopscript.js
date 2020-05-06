@@ -1,4 +1,5 @@
-//v0.4d test
+//v0.4e test
+startSpecialEffectSkin();
 $(document).ready(function() {
 	setTimeout(function() {
     $("#imgur img.lazy").lazyload({
@@ -57,8 +58,7 @@ $(document).ready(function() {
 			window.application.sendSocket3Info("spfc", null)		
     });	
 	setTimeout(function() {
-		$("#nav a")[0].click();
-		startSpecialEffectSkin();
+		$("#nav a")[0].click();		
 	}, 950);
 	}, 900);
 });
