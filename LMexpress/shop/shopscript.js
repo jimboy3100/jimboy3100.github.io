@@ -1,4 +1,4 @@
-//v0.3
+//v0.4
 $(document).ready(function() {
     $("#imgur img.lazy").lazyload({
         effect : "fadeIn",
@@ -50,23 +50,28 @@ $(document).ready(function() {
         return false;
     });
     $("#UseEffect").on("click", function(e) {
-        try {	
-        //    window.parent.postMessage("CustomSkins&?skin="+$("#skin-url").val(), "*"); 
-		toastr.info("<b>[SERVER]:</b> Special Effect activated");
-		for (var i = 0; i < $(".skins-wrapper").length; i++){
-			if ($(".skins-wrapper")[i].style.display != "none"){
-				for (var j = 0; j < document.getElementsByClassName("skins-wrapper")[i].children.length; j++)
-					if (document.getElementsByClassName("skins-wrapper")[i].children[j].children[0].name ==$("#skin-url").val()){ 
-						if (document.getElementsByClassName("skins-wrapper")[2].children[0]) document.getElementsByClassName("skins-wrapper")[2].children[0].remove()
-						document.getElementsByClassName("skins-wrapper")[2].append(document.getElementsByClassName("skins-wrapper")[i].children[j])
-					} 
-			}			
-		}	
-		application.lastSentNick = $("#nick").val()
-		SpecialEffectPlayers[application.lastSentNick]=$("#skin-url").val()
-		window.application.sendSocket3Info("spfc", $("#skin-url").val())	
+		if ($("#nick").val().includes('℄') || window.proLicenceUID){
+			try {	
+			//    window.parent.postMessage("CustomSkins&?skin="+$("#skin-url").val(), "*"); 
+			toastr.info("<b>[SERVER]:</b> Special Effect " + $("#skin-url").val() + " activated");
+			for (var i = 0; i < $(".skins-wrapper").length; i++){
+				if ($(".skins-wrapper")[i].style.display != "none"){
+					for (var j = 0; j < document.getElementsByClassName("skins-wrapper")[i].children.length; j++)
+						if (document.getElementsByClassName("skins-wrapper")[i].children[j].children[0].name ==$("#skin-url").val()){ 
+							if (document.getElementsByClassName("skins-wrapper")[2].children[0]) document.getElementsByClassName("skins-wrapper")[2].children[0].remove()
+							document.getElementsByClassName("skins-wrapper")[2].append(document.getElementsByClassName("skins-wrapper")[i].children[j])
+						} 
+				}			
+			}	
+			application.lastSentNick = $("#nick").val()
+			SpecialEffectPlayers[application.lastSentNick]=$("#skin-url").val()
+			window.application.sendSocket3Info("spfc", $("#skin-url").val())	
 		
-        } catch (e) {}
+			} catch (e) {}
+		}
+		else{
+			toastr.warning("<b>[SERVER]:</b> Not Premium account found. If you donated in the past, please refer it to Legend mod discord.<br>Thank you for using Legend mod!").css("width", "350px");
+		}
     });
 	setTimeout(function() {
 		$("#nav a")[0].click();
