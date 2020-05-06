@@ -1,5 +1,6 @@
-//v0.5
+//v0.6
 $(document).ready(function() {
+	setTimeout(function() {
     $("#imgur img.lazy").lazyload({
         effect : "fadeIn",
         skip_invisible : true
@@ -82,5 +83,6 @@ $(document).ready(function() {
     });
 	setTimeout(function() {
 		$("#nav a")[0].click();
+	}, 100);
 	}, 100);
 });
