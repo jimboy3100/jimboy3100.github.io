@@ -1,4 +1,4 @@
-//v0.7
+//v0.8
 $(document).ready(function() {
 	setTimeout(function() {
     $("#imgur img.lazy").lazyload({
@@ -54,21 +54,23 @@ $(document).ready(function() {
 		if ($("#nick").val().includes('℄') || window.proLicenceUID){
 			try {	
 			//    window.parent.postMessage("CustomSkins&?skin="+$("#skin-url").val(), "*"); 
-			toastr.info("<b>[SERVER]:</b> Special Effect " + $("#skin-url").val() + " activated");
+			
 			for (var i = 0; i < $(".skins-wrapper").length; i++){
 				if ($(".skins-wrapper")[i].style.display != "none"){
 					for (var j = 0; j < document.getElementsByClassName("skins-wrapper")[i].children.length; j++)
 						if (document.getElementsByClassName("skins-wrapper")[i].children[j].children[0].name ==$("#skin-url").val()){ 
-							if (document.getElementsByClassName("skins-wrapper")[2].children[0]){
-								document.getElementsByClassName("skins-wrapper")[0].append(document.getElementsByClassName("skins-wrapper")[2].children[0])
-							}
 							document.getElementsByClassName("skins-wrapper")[2].append(document.getElementsByClassName("skins-wrapper")[i].children[j])
+							toastr.info("<b>[SERVER]:</b> Special Effect " + $("#skin-url").val() + " activated");
 							application.lastSentNick = $("#nick").val()
 							SpecialEffectPlayers[application.lastSentNick]=$("#skin-url").val()
 							window.isActualUsingSpecialEffectsSkin=$("#skin-url").val()
-							window.application.sendSocket3Info("spfc", $("#skin-url").val())								
+							window.application.sendSocket3Info("spfc", $("#skin-url").val())	
+							
+							if (document.getElementsByClassName("skins-wrapper")[2].children[0]){
+								document.getElementsByClassName("skins-wrapper")[0].append(document.getElementsByClassName("skins-wrapper")[2].children[0])
+							}							
 						} 
-						else if (document.getElementsByClassName("skins-wrapper")[i].children[j].children[2].name ==$("#skin-url").val()){ 
+						else if (document.getElementsByClassName("skins-wrapper")[2].children[0] && document.getElementsByClassName("skins-wrapper")[2].children[0].children[0].name ==$("#skin-url").val()){ 
 							SpecialEffectPlayers[application.lastSentNick]=null
 							window.isActualUsingSpecialEffectsSkin=null
 							window.application.sendSocket3Info("spfc", null)
