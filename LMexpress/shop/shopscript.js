@@ -1,4 +1,4 @@
-//v0.4
+//v0.5
 $(document).ready(function() {
     $("#imgur img.lazy").lazyload({
         effect : "fadeIn",
@@ -58,9 +58,15 @@ $(document).ready(function() {
 				if ($(".skins-wrapper")[i].style.display != "none"){
 					for (var j = 0; j < document.getElementsByClassName("skins-wrapper")[i].children.length; j++)
 						if (document.getElementsByClassName("skins-wrapper")[i].children[j].children[0].name ==$("#skin-url").val()){ 
-							if (document.getElementsByClassName("skins-wrapper")[2].children[0]) document.getElementsByClassName("skins-wrapper")[2].children[0].remove()
+							if (document.getElementsByClassName("skins-wrapper")[2].children[0]) document.getElementsByClassName("skins-wrapper")[0].append(document.getElementsByClassName("skins-wrapper")[2].children[0])
 							document.getElementsByClassName("skins-wrapper")[2].append(document.getElementsByClassName("skins-wrapper")[i].children[j])
 						} 
+						else if (document.getElementsByClassName("skins-wrapper")[i].children[j].children[2].name ==$("#skin-url").val()){ 
+							SpecialEffectPlayers[application.lastSentNick]=null
+							window.isActualUsingSpecialEffectsSkin=null
+							window.application.sendSocket3Info("spfc", null)
+							toastr.info("<b>[SERVER]:</b> Special Effect " + $("#skin-url").val() + " de-activated");
+						}
 				}			
 			}	
 			application.lastSentNick = $("#nick").val()
