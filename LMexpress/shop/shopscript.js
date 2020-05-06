@@ -1,4 +1,4 @@
-//v0.1
+//v0.2
 $(document).ready(function() {
     $("#imgur img.lazy").lazyload({
         effect : "fadeIn",
@@ -53,5 +53,7 @@ $(document).ready(function() {
 		toastr.info("Special Effect is in Use");
         } catch (e) {}
     });
-	$("#nav a")[0].click();
+	setTimeout(function() {
+		$("#nav a")[0].click();
+	}, 100);
 });
