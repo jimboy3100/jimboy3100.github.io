@@ -62,8 +62,8 @@ $(document).ready(function() {
     });	
 	setTimeout(function() {
 		$("#nav a")[0].click();
-	}, 150);
-	}, 100);
+	}, 350);
+	}, 300);
 });
 
 function loadSpecialEffectSkin(e){
