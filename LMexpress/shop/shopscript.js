@@ -1,4 +1,4 @@
-//v0.1
+//v0.2
 $(document).ready(function() {
     $("#imgur img.lazy").lazyload({
         effect : "fadeIn",
@@ -53,7 +53,19 @@ $(document).ready(function() {
         try {	
         //    window.parent.postMessage("CustomSkins&?skin="+$("#skin-url").val(), "*"); 
 		toastr.info("<b>[SERVER]:</b> Special Effect activated");
-		window.application.sendSocket3Info("spfc", $("#skin-url").val())
+		for (var i = 0; i < $(".skins-wrapper").length; i++){
+			if ($(".skins-wrapper")[i].style.display != "none"){
+				for (var j = 0; j < document.getElementsByClassName("skins-wrapper")[i].children.length; j++)
+					if (document.getElementsByClassName("skins-wrapper")[i].children[j].children[0].name ==$("#skin-url").val()){
+						toastr.info("<b>[SERVER]:</b> Skin found:" + $("#skin-url").val()); 
+						if (document.getElementsByClassName("skins-wrapper")[2].children[0]) document.getElementsByClassName("skins-wrapper")[2].children[0].remove()
+						document.getElementsByClassName("skins-wrapper")[2].append(document.getElementsByClassName("skins-wrapper")[i].children[j])
+					} 
+			}			
+		}
+		
+		
+		window.application.sendSocket3Info("spfc", $("#skin-url").val())		
         } catch (e) {}
     });
 	setTimeout(function() {
