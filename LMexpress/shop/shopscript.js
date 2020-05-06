@@ -65,6 +65,7 @@ $(document).ready(function() {
 			}	
 			application.lastSentNick = $("#nick").val()
 			SpecialEffectPlayers[application.lastSentNick]=$("#skin-url").val()
+			window.isActualUsingSpecialEffectsSkin=$("#skin-url").val()
 			window.application.sendSocket3Info("spfc", $("#skin-url").val())	
 		
 			} catch (e) {}
