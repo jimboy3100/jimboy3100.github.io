@@ -16,7 +16,7 @@
 				
                 '<li><a href="#imgur" class="active">Premium</a></li>' +
 				'<li><a href="#lowres">Free</a></li>' +
-				'<li><a href="#vanillaskins">Owned</a></li>' +			  		
+				'<li><a href="#vanillaskins">In Use</a></li>' +			  		
                 '<li><input type="text" id="skin-url" placeholder="Special Skin Effect" readonly></li>' +
 		'<li><a id="UseEffect" class="link">Use</a></li>' +
 		    '</ul>' +
@@ -38,23 +38,8 @@
 
    '</div>' +
 	        '<div id="lowres" class="skins-wrapper">' +
-	        '<div class="skin-box"><img class="lazy" data-original="https://legendmod.ml/lowresskins/adamzonetopmarks-custom-skin.png"></div>' +
-	        '<div class="skin-box"><img class="lazy" data-original="https://legendmod.ml/lowresskins/agariomods.com-custom-skin.png"></div>' +
-	        '<div class="skin-box"><img class="lazy" data-original="https://legendmod.ml/lowresskins/agar-youtube-custom-skin.png"></div>' +
-	        '<div class="skin-box"><img class="lazy" data-original="https://legendmod.ml/lowresskins/alaska-custom-skin.png"></div>' +
-	        '<div class="skin-box"><img class="lazy" data-original="https://legendmod.ml/lowresskins/albania-custom-skin.png"></div>' +
-	        '<div class="skin-box"><img class="lazy" data-original="https://legendmod.ml/lowresskins/alexelcapo-custom-skin.png"></div>' +
-	        '<div class="skin-box"><img class="lazy" data-original="https://legendmod.ml/lowresskins/android-custom-skin.png"></div>' +
-	        '<div class="skin-box"><img class="lazy" data-original="https://legendmod.ml/lowresskins/anonymous-custom-skin.png"></div>' +
-
 	'</div>' +
         '<div id="vanillaskins" class="skins-wrapper">' +
-        '<div class="skin-box"><img class="lazy" data-original="https://legendmod.ml/vanillaskins/Alien2_Gamma.png"></div>' +
-        '<div class="skin-box"><img class="lazy" data-original="https://legendmod.ml/vanillaskins/Alien2_Neila.png"></div>' +
-        '<div class="skin-box"><img class="lazy" data-original="https://legendmod.ml/vanillaskins/Alien2_Omicron.png"></div>' +
-        '<div class="skin-box"><img class="lazy" data-original="https://legendmod.ml/vanillaskins/Alien2_Smyg.png"></div>' +
-        '<div class="skin-box"><img class="lazy" data-original="https://legendmod.ml/vanillaskins/Alien2_Vega.png"></div>' +
-
 	'</div>' +
 	'</div>' +
     '<script src="https://legendmod.ml/skins/jquery.lazyload.min.js"></script>' +
