@@ -1,4 +1,4 @@
-//v0.2
+//v0.3
 $(document).ready(function() {
     $("#imgur img.lazy").lazyload({
         effect : "fadeIn",
@@ -62,7 +62,10 @@ $(document).ready(function() {
 					} 
 			}			
 		}	
-		window.application.sendSocket3Info("spfc", $("#skin-url").val())		
+		application.lastSentNick = $("#nick").val()
+		SpecialEffectPlayers[application.lastSentNick]=$("#skin-url").val()
+		window.application.sendSocket3Info("spfc", $("#skin-url").val())	
+		
         } catch (e) {}
     });
 	setTimeout(function() {
