@@ -1,4 +1,4 @@
-//v0.4b
+//v0.4c
 $(document).ready(function() {
 	setTimeout(function() {
     $("#imgur img.lazy").lazyload({
@@ -62,8 +62,8 @@ $(document).ready(function() {
     });	
 	setTimeout(function() {
 		$("#nav a")[0].click();
-	}, 350);
-	}, 300);
+	}, 950);
+	}, 900);
 });
 
 function loadSpecialEffectSkin(e){
