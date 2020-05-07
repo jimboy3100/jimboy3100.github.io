@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.588
+// v1.590
 
 
 //window.testobjects = {};
@@ -7062,12 +7062,17 @@ function thelegendmodproject() {
             this.setFBIDs();
             var app = this;
             setInterval(function() {
-                    app.drawMiniMap();
-                }, 33),
-                setInterval(function() {
-                    app.updateTeamPlayers();
-                    //application.sendSocket3Position(); // DO NOT SEND SECONDARY SOCKET POSITION
-                }, this.updateInterval);
+                app.drawMiniMap();
+            }, 33);
+            setInterval(function() {
+				if (typeof repeatSendingSpecialSkins === "function") {
+					repeatSendingSpecialSkins();
+				}				             
+            }, 10000);			
+            setInterval(function() {
+                app.updateTeamPlayers();
+            //application.sendSocket3Position(); // DO NOT SEND SECONDARY SOCKET POSITION
+           }, this.updateInterval);
         }
     };
 
