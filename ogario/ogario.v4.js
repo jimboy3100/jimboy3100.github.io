@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.590
+// v1.591
 
 
 //window.testobjects = {};
@@ -12097,6 +12097,13 @@ function enterChatMessage2() {
     }
 }
 
+function repeatSendingSpecialSkins(){
+	if (localStorage.getItem("isActualUsingSpecialEffectsSkin")){
+			if (application.lastSentNick == "") application.lastSentNick = $("#nick").val()
+			SpecialEffectPlayers[application.lastSentNick]=localStorage.getItem("isActualUsingSpecialEffectsSkin")
+			window.application.sendSocket3Info("spfc", localStorage.getItem("isActualUsingSpecialEffectsSkin"))			
+	}
+}
 /*
 var snezSocketdata;
 var snezSocket = new WebSocket("wss://connect.websocket.in/3Q-SoniaSLG_453dsV?room_id=123");
