@@ -1,3 +1,8 @@
+		window.tempModeratorSkin=""
+		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "LMauthor" || ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Moderator"){
+			window.tempModeratorSkin = '<div class="skin-box"><img class="lazy" name="Light" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsModerator.png"></div>'
+		}
+		
             $('#helloContainer').after('<div class="modal fade in" id="LMShop" aria-hidden="false" style="display: block;">' +
 				'<link rel="stylesheet" type="text/css" href="https://legendmod.ml/css/specialeffects.css">' +
 				'<div class="modal-backdrop fade in"></div>' +
@@ -30,7 +35,7 @@
         '<div class="skin-box"><img class="lazy" name="King" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsCrown.png"></div>' +
 		'<div class="skin-box"><img class="lazy" name="Smoke" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSmoke.png"></div>' +
 		'<div class="skin-box"><img class="lazy" name="USA" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsUSA.png"></div>' +
-        '<div class="skin-box"><img class="lazy" name="Light" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsModerator.png"></div>' +
+		window.tempModeratorSkin +
         '<div class="skin-box"><img class="lazy" name="Sword" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSword.png"></div>' +
         '<div class="skin-box"><img class="lazy" name="Mask" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMask.png"></div>' +
 		'<div class="skin-box"><img class="lazy" name="Heart" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHeart.png"></div>' +
