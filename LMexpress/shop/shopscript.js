@@ -83,14 +83,6 @@ function startSpecialEffectSkin(){
 	}
 }
 
-function repeatSendingSpecialSkins(){
-	if (localStorage.getItem("isActualUsingSpecialEffectsSkin")){
-			if (application.lastSentNick == "") application.lastSentNick = $("#nick").val()
-			SpecialEffectPlayers[application.lastSentNick]=localStorage.getItem("isActualUsingSpecialEffectsSkin")
-			window.application.sendSocket3Info("spfc", localStorage.getItem("isActualUsingSpecialEffectsSkin"))			
-	}
-}
-
 function loadSpecialEffectSkin(e){
 		if ($("#nick").val().includes('℄') || window.proLicenceUID){
 			try {	
