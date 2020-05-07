@@ -75,12 +75,19 @@ function startSpecialEffectSkin(){
 						} 
 				}			
 			}	
-			application.lastSentNick = $("#nick").val()
+			if (application.lastSentNick == "") application.lastSentNick = $("#nick").val()
 			SpecialEffectPlayers[application.lastSentNick]=localStorage.getItem("isActualUsingSpecialEffectsSkin")
-			//localStorage.setItem("isActualUsingSpecialEffectsSkin", $("#skin-url").val());
 			window.application.sendSocket3Info("spfc", localStorage.getItem("isActualUsingSpecialEffectsSkin"))	
 		
 			} catch (e) {}	
+	}
+}
+
+function repeatSendingSpecialSkins(){
+	if (localStorage.getItem("isActualUsingSpecialEffectsSkin")){
+			if (application.lastSentNick == "") application.lastSentNick = $("#nick").val()
+			SpecialEffectPlayers[application.lastSentNick]=localStorage.getItem("isActualUsingSpecialEffectsSkin")
+			window.application.sendSocket3Info("spfc", localStorage.getItem("isActualUsingSpecialEffectsSkin"))			
 	}
 }
 
@@ -97,9 +104,10 @@ function loadSpecialEffectSkin(e){
 						} 
 				}			
 			}	
-			application.lastSentNick = $("#nick").val()
-			SpecialEffectPlayers[application.lastSentNick]=$("#skin-url").val()
 			localStorage.setItem("isActualUsingSpecialEffectsSkin", $("#skin-url").val());
+			
+			application.lastSentNick = $("#nick").val()
+			SpecialEffectPlayers[application.lastSentNick]=$("#skin-url").val()		
 			window.application.sendSocket3Info("spfc", $("#skin-url").val())	
 		
 			} catch (e) {}
