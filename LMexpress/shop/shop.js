@@ -1,4 +1,5 @@
-		window.tempModeratorSkin=""
+	window.tempModeratorSkin=""
+	if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]){
 		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "LMauthor" || ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Moderator"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Moderator" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsModerator.png"></div>'
 		}
@@ -6,7 +7,7 @@
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="RedArrow" data-original="https://legendmod.ml/banners/drawCommander5.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="WhiteArrow" data-original="https://legendmod.ml/banners/drawCommander5.png"></div>'
 		}		
-		
+	}
 		
 		
             $('#helloContainer').after('<div class="modal fade in" id="LMShop" aria-hidden="false" style="display: block;">' +
