@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.584
+// v1.588
 
 
 //window.testobjects = {};
@@ -7900,7 +7900,7 @@ function thelegendmodproject() {
                             style.drawImage(cimg5, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);					
                         } catch (e) {}
                     } 					
-					else if (this.targetNick.includes("℄🌀Jimboy3100") || this.SpecialEffect == "WhiteArrow" || this.SpecialEffect2 == "WhiteArrow") {
+					else if (this.SpecialEffect == "WhiteArrow" || this.SpecialEffect2 == "WhiteArrow") {
                         //style.drawImage(cimg2, this.x - y * 2, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
 
                         var today = new Date();
@@ -9332,19 +9332,19 @@ function thelegendmodproject() {
             }
             let text = '';
             let teamText = '';
-            for (length = 0; length < this.leaderboard.length && defaultmapsettings.leaderboardlimit != length; length++) {
+            for (var temp = 0; temp < this.leaderboard.length && defaultmapsettings.leaderboardlimit != temp; temp++) {
                 var html = '<span>';
-                if (this.leaderboard[length].id === 'isPlayer') {
+                if (this.leaderboard[temp].id === 'isPlayer') {
                     html = '<span class=\"me\">';
                 } else {
-                    if (ogarcopythelb.clanTag.length && 0 != window.teammatenicks.includes(this.leaderboard[length].nick)) {
+                    if (ogarcopythelb.clanTag.length && 0 != window.teammatenicks.includes(this.leaderboard[temp].nick)) {
                         html = '<span class=\"teammate\">';
-                    } else if (this.leaderboard[length].isFriend) {
+                    } else if (this.leaderboard[temp].isFriend) {
                         html = '<span class=\"teammate\">';
                     }
 
                 }
-                teamText += html + (length + 1) + '. ' + application.escapeHTML(this.leaderboard[length].nick) + '</span>';
+                teamText += html + (temp + 1) + '. ' + application.escapeHTML(this.leaderboard[temp].nick) + '</span>';
             }
             if (this.playerPosition > defaultmapsettings.leaderboardlimit) {
                 teamText += '<span class=\"me\">' + this.playerPosition + '. ' + application.escapeHTML(this.playerNick) + '</span>';
@@ -11880,9 +11880,10 @@ function Socket3enabler(srv) {
 		//Socket3.send(JSON.stringify({ "joinHub": "legendmod"}));	
 		Socket3.send(JSON.stringify({ "joinHub": $("#server-token").val()+"3"}));			
 		console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket 3 open:',room);
-		if(window.isActualUsingSpecialEffectsSkin){
-			SpecialEffectPlayers[application.lastSentNick] = window.isActualUsingSpecialEffectsSkin
-			window.application.sendSocket3Info("spfc", window.isActualUsingSpecialEffectsSkin)	
+		
+		if(localStorage.getItem("isActualUsingSpecialEffectsSkin")){
+			SpecialEffectPlayers[application.lastSentNick] = localStorage.getItem("isActualUsingSpecialEffectsSkin");
+			window.application.sendSocket3Info("spfc", localStorage.getItem("isActualUsingSpecialEffectsSkin"))	
 		}
         if (!window.socket3Opened && window.noOgarioSocket) {
             $("#message").keydown(function(event) {
