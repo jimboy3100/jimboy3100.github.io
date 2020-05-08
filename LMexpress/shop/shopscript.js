@@ -75,9 +75,9 @@ function startSpecialEffectSkin(){
 						} 
 				}			
 			}	
-			if (application.lastSentNick == "") application.lastSentNick = $("#nick").val()
-			SpecialEffectPlayers[application.lastSentNick]=localStorage.getItem("isActualUsingSpecialEffectsSkin")
-			window.application.sendSocket3Info("spfc", localStorage.getItem("isActualUsingSpecialEffectsSkin"))	
+			//if (application.lastSentNick == "") application.lastSentNick = $("#nick").val()
+			//SpecialEffectPlayers[application.lastSentNick]=localStorage.getItem("isActualUsingSpecialEffectsSkin")
+			//window.application.sendSocket3Info("spfc", localStorage.getItem("isActualUsingSpecialEffectsSkin"))	
 		
 			} catch (e) {}	
 	}
@@ -96,8 +96,9 @@ function loadSpecialEffectSkin(e){
 						} 
 				}			
 			}	
-			localStorage.setItem("isActualUsingSpecialEffectsSkin", $("#skin-url").val());
-			
+			if (window.proLicenceUID){
+				localStorage.setItem("isActualUsingSpecialEffectsSkin", $("#skin-url").val());
+			}
 			application.lastSentNick = $("#nick").val()
 			SpecialEffectPlayers[application.lastSentNick]=$("#skin-url").val()		
 			window.application.sendSocket3Info("spfc", $("#skin-url").val())	
