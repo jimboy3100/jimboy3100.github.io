@@ -46,7 +46,8 @@
         '<div class="skin-box"><img class="lazy" name="Mask" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMask.png"></div>' +
 		'<div class="skin-box"><img class="lazy" name="Heart" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHeart.png"></div>' +
 	    '<div class="skin-box"><img class="lazy" name="Vip" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsVip.png"></div>' +
-	    '<div class="skin-box"><img class="lazy" name="Youtube" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsYoutube.png"></div>' +		
+	    '<div class="skin-box"><img class="lazy" name="Youtube" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsYoutube.png"></div>' +
+		'<div class="skin-box"><img class="lazy" name="Particles" data-original="https://legendmod.ml/banners/particles.gif"></div>' +		
 		window.tempModeratorSkin +
    '</div>' +
 	        '<div id="lowres" class="skins-wrapper">' +
