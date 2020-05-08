@@ -1,4 +1,4 @@
-//v0.4d test
+//v0.4e
 $(document).ready(function() {
 	setTimeout(function() {
     $("#imgur img.lazy").lazyload({
@@ -96,12 +96,12 @@ function loadSpecialEffectSkin(e){
 						} 
 				}			
 			}	
-			if (window.proLicenceUID){
+			//if (window.proLicenceUID){
 				localStorage.setItem("isActualUsingSpecialEffectsSkin", $("#skin-url").val());
-			}
-			application.lastSentNick = $("#nick").val()
-			SpecialEffectPlayers[application.lastSentNick]=$("#skin-url").val()		
-			window.application.sendSocket3Info("spfc", $("#skin-url").val())	
+			//}
+			//application.lastSentNick = $("#nick").val()
+			//SpecialEffectPlayers[application.lastSentNick]=$("#skin-url").val()		
+			//window.application.sendSocket3Info("spfc", $("#skin-url").val())	
 		
 			} catch (e) {}
 		}
