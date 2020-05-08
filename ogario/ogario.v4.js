@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.591
+// v1.592
 
 
 //window.testobjects = {};
@@ -4906,7 +4906,7 @@ function thelegendmodproject() {
                         y: application.getPlayerY(),
                         mass: legendmod.playerMass
                     };
-                    if (Socket3) {
+                    if (Socket3 && Socket3.readyState==1) {
                         Socket3.send(JSON.stringify({
                             //"toH": "legendmod",
                             "toH": $("#server-token").val() + "3",
@@ -6390,21 +6390,21 @@ function thelegendmodproject() {
             //Here should be food part
         },
         sendSocket3Info(type, message) {
-            if (Socket3) {
+            if (Socket3 && Socket3.readyState==1) {
                 var temp = {
                     com: "info",
 					com2: type,
                     id: window.unescape(window.encodeURIComponent(application.lastSentNick)),
                     x: message,
                 };
-                Socket3.send(JSON.stringify({
+				Socket3.send(JSON.stringify({
                     "toH": $("#server-token").val() + "3",
                     "msg": temp
-                }));
+                }));			
             }
         },		
         sendSocket3Position() {
-            if (ogario.play && window.noOgarioSocket && Socket3) {
+            if (ogario.play && window.noOgarioSocket && Socket3 && Socket3.readyState==1) {
                 var temp = {
                     com: "pos",
                     //id: customLMID,
@@ -6449,11 +6449,13 @@ function thelegendmodproject() {
                             "s": s
                         }
                         //console.log("send", temp)
+						if (SLGsocket && SLGsocket.readyState==1){
                         SLGsocket.send(JSON.stringify({
                             //"toH": "legendmod2",
                             "toH": $("#server-token").val(),
                             "msg": temp
                         }));
+						}
                     }
                 }
             }
