@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.601
+// v1.608
 
 
 //window.testobjects = {};
@@ -150,6 +150,7 @@ function autocoins(slot) {
 }
 function massx21hour(slot) {
     var bytes = [8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]
+				//[8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]
 	          //[8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]
     window.core.proxyMobileData(bytes);
 	/*for facebook:
@@ -8295,9 +8296,14 @@ function thelegendmodproject() {
                 message = this.shiftMessage(message, this.clientKey);
                 this.clientKey = this.shiftKey(this.clientKey);
             }
-			//jimboy3100
-			//if (window.LMdebug && message[0]=="102") console.log(message)
-			if (window.LMdebug && message[0]==102) console.log(message)
+			/*jimboy3100
+			if (window.LMdebug){
+				window.tempoo = new window.buffer.Buffer(message.buffer)
+				if (window.tempoo[0]==102){ 
+					window.tempoo2 = new window.buffer.Buffer(window.tempoo.buffer)	
+					console.log(window.tempoo2)
+				}					
+			}*/
             this.sendBuffer(message);
         },
         sendAction(action) {
@@ -11988,7 +11994,7 @@ function Socket3handler(message) {
 function Socket3updateTeamPlayerSpfc(Socket3data) {
 	var h = window.decodeURIComponent(escape(Socket3data.id));	
 	var message = Socket3data.x;
-	console.log(h, message)
+	console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Player ', h, 'uses Special Effect ', message);
 	if (h && message) SpecialEffectPlayers[h] = message;
 }
 
@@ -12120,7 +12126,7 @@ function enterChatMessage2() {
 }
 
 function repeatSendingSpecialSkins(){
-	if (localStorage.getItem("isActualUsingSpecialEffectsSkin") || $("#nick").val().includes('℄')){
+	if (localStorage.getItem("isActualUsingSpecialEffectsSkin") && ($("#nick").val().includes('℄')) || window.proLicenceUID){
 			if (application.lastSentNick == "") application.lastSentNick = $("#nick").val()
 				SpecialEffectPlayers[application.lastSentNick]=localStorage.getItem("isActualUsingSpecialEffectsSkin")
 				window.application.sendSocket3Info("spfc", localStorage.getItem("isActualUsingSpecialEffectsSkin"))										
