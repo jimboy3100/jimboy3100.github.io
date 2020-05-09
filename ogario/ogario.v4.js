@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.611
+// v1.613
 
 
 //window.testobjects = {};
@@ -104,9 +104,9 @@ function deleteGamemode() {
 }
 
 function logoutPSArenas() {
-    if (master.accessToken) {
+    if (master.context) {
         logout();
-        toastr.warning("<b>[SERVER]:</b> Do not log in").css("width", "210px");
+        toastr.warning("<b>[SERVER]:</b> Facebook login NOT allowed on this private server!").css("width", "250px");
     }
 }
 
