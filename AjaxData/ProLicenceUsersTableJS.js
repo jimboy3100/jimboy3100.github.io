@@ -5,9 +5,9 @@ ProLicenceUsersTable = {
             "reason": "LMauthor",
             "notes": "Jimboy3100"
         },
-        "da4499e5-17a7-4159-8ca5-e80e4d87065f": {
-            "reason": "Aus Taipan",
-            "notes": "Greek australian girl"
+        "b4c70ce6-602a-4fb6-9196-01d890c66d0e": {
+            "reason": "ddevilOWO",
+            "notes": "helper"
         },
         "7bea1cb9-7e14-4e14-824c-c2682036b0a6": {
             "reason": "℄🌀βurNouT",
