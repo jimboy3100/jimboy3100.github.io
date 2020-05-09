@@ -25,7 +25,7 @@ function displayDiscordNotification() {
     var discText='<b>[SERVER]</b>: Server Sent to Discord.';
 	
 if (window.messageone=="0"||window.messageone=="1"){  //IF using Legend Mod
-	toastr["info"](discText).css("width", "210px");
+	toastr["info"](discText).css("width", "300px");
 	}
 	else{
     $('body').append('<div id="serverDiscord" class="agario-panel" style="position:fixed;width:18%;height:10%;right:0;background-color: rgba(0,0,255,0.5);z-index:100;"><div style="float: center;color: white;"><h3>'+discText+'</h2></div></div>');
