@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.608
+// v1.611
 
 
 //window.testobjects = {};
@@ -5691,6 +5691,7 @@ function thelegendmodproject() {
             var matchOld = this.ws.match(/ip-\d+/);
             //var matchNew = this.ws.match(/live-arena-([\w\d]+)/);
 			var matchNew = this.ws.match(/live-arena-([\w\d]+(\.tech)?)\.agar\.io/);
+			var matchNew2 = this.ws.match(/livec-arena-([\w\d]+(\.tech)?)\.agar\.io\:[\w\d]+/); //original private servers
             var text = null;
             if (matchOld) {
 				  matchOld = this.ws.replace('.agar.io', '').replace(/-/g, '.').match(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{1,4}/);
@@ -5703,7 +5704,6 @@ function thelegendmodproject() {
             }
             //ccse
             if (this.ws.search(/wss?:\/\//) > -1 && this.ws.search(/agar\.io/) == -1) {
-
                 text = this.ws.match(/wss?:\/\/(.+)/)[1]
                 this.serverIP = text;				
                 //text = btoa(text);
@@ -5715,6 +5715,11 @@ function thelegendmodproject() {
                 text = this.serverArena;
                 //console.log("createServerToken case 2:" + text);
             }
+            if (!text && matchNew2) {
+                this.serverArena = matchNew2[0];
+                text = this.serverArena;
+                //console.log("createServerToken case 2:" + text);
+            }			
             if (text) {
                 if (this.serverToken !== text) {
                     this.serverToken = text;
