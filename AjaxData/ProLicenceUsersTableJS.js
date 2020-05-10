@@ -6,8 +6,8 @@ ProLicenceUsersTable = {
             "notes": "Jimboy3100"
         },
         "b4c70ce6-602a-4fb6-9196-01d890c66d0e": {
-            "reason": "ddevilOWO",
-            "notes": "Moderator"
+            "reason": "Moderator",
+            "notes": "ddevilOWO"
         },
         "7bea1cb9-7e14-4e14-824c-c2682036b0a6": {
             "reason": "℄🌀βurNouT",
