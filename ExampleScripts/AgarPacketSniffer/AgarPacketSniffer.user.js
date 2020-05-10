@@ -66,7 +66,8 @@ window.WebSocket = function(url, protocols) {
         } else if (buf[0] == 254) {
             console.log(`Protocol version:${buf[1]}`);
         } else {
-            buf = window.decryptPacket(buf); console.log(buf);
+            buf = window.decryptPacket(buf); console.log("Buffer sent:",buf);
+			if (buf.length>3) console.log(String.fromCharCode.apply(String, buf));
         }
         return ws.send.call(ws, data);
     };
