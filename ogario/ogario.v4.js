@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.619
+// v1.620
 
 
 //window.testobjects = {};
@@ -7906,7 +7906,8 @@ function thelegendmodproject() {
 					if (!window.xx2) window.xx2 = 1.325
 					if (!window.xx3) window.xx3 = 1.5
 					if (!window.xx4) window.xx4 = 6					
-					}*/						
+					*/	
+					}					
 					else if (this.SpecialEffect == "Sword" || this.SpecialEffect2 == "Sword"){ 	
 					style.drawImage(cimgSpecialSkinEffectsSword, this.x - 0.8 * y, this.y - 3/5 * y, y * 1.6, y * 1.6);  									
 					}							
