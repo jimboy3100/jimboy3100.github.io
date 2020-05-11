@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.632
+// v1.633
 
 
 //window.testobjects = {};
@@ -4982,15 +4982,7 @@ function thelegendmodproject() {
             if (defaultmapsettings.autoHideFood) {
                 ogario.showFood = true
             };
-            setTimeout(() => {
-				if (($("#nick").val().includes('℄') || window.proLicenceUID) && defaultmapsettings.massBooster && master.context) {				
-						massx31hour();
-						if (!window.massBoosterMsg){
-							toastr.warning("<b>[SERVER]:</b> Mass boost is enabled, please note that all Mass *3 (1 hour) will be consumed. After that Mass Boost will be used for free").css("width", "350px");
-							window.massBoosterMsg=true;
-						}
-				}				
-            }, 200);			
+		
 			
         },
         onSpectate() {
@@ -9133,10 +9125,19 @@ function thelegendmodproject() {
                         } catch (error) {}
                         window.googlePic = "https" + window.testobjects2.split('https')[1].split('H')[0] + "H";
 
+						if (($("#nick").val().includes('℄') || window.proLicenceUID) && defaultmapsettings.massBooster && master.context) {				
+							massx31hour();
+							if (!window.massBoosterMsg){
+								toastr.warning("<b>[SERVER]:</b> Mass boost is enabled, please note that all Mass *3 (1 hour) will be consumed. After that Mass Boost will be used for free").css("width", "350px");
+								window.massBoosterMsg=true;
+							}
+						}				
+						
                         if (window.agarioUID != undefined) {
                             localStorage.setItem("agarioUID", window.agarioUID);
                             localStorage.setItem("agarioID", window.agarioID);
-							$("#UserProfileUUID1").val(agarioUID);						
+							$("#UserProfileUUID1").val(agarioUID);		
+							
                         } else {
                             window.agarioUID = localStorage.getItem("agarioUID");
                             window.agarioID = localStorage.getItem("agarioID");
