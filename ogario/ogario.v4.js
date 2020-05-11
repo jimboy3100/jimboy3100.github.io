@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.629
+// v1.630
 
 
 //window.testobjects = {};
@@ -887,7 +887,7 @@ var displayText = {
         commandSound: 'Dźwięk powiadomienia o komendzie',
         virusSoundurl: 'Virus shot sound',
         virusSound: 'Virus shot sound',
-		massBooster: 'Mass *3 booster',
+		massBooster: 'Mass *3 booster (PREMIUM USERS)',
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
         showTop5: 'Pokaż top 5 teamu',
@@ -1307,7 +1307,7 @@ var displayText = {
         commandSound: 'Command notification sound',
         virusSoundurl: 'Virus shot sound',
         virusSound: 'Virus shot sound',
-		massBooster: 'Mass *3 booster',
+		massBooster: 'Mass *3 booster (PREMIUM USERS)',
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
         showTop5: 'Show teamboard',
