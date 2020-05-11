@@ -1,4 +1,4 @@
-
+//v0.01
 if (window.agarioEncodedUID != null) {
 	userLeaguesInfoRequest();
 }
