@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.630
+// v1.632
 
 
 //window.testobjects = {};
@@ -9136,6 +9136,7 @@ function thelegendmodproject() {
                         if (window.agarioUID != undefined) {
                             localStorage.setItem("agarioUID", window.agarioUID);
                             localStorage.setItem("agarioID", window.agarioID);
+							$("#UserProfileUUID1").val(agarioUID);						
                         } else {
                             window.agarioUID = localStorage.getItem("agarioUID");
                             window.agarioID = localStorage.getItem("agarioID");
