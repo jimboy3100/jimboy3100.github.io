@@ -21,9 +21,9 @@ ProLicenceUsersTable = {
             "reason": "Moderator",
             "notes": "Snez"
         },        
-        "797c0547-40b3-4d8c-86ac-2b1082156bd6": {
-            "reason": "BadSfah",
-            "notes": ""
+        "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
+            "reason": "Donator",
+            "notes": "Lizzie"
         }		
     },
     "versionsInfo": ["v-0.3", "LM-v2.5"]
