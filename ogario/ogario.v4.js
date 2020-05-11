@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.624
+// v1.629
 
 
 //window.testobjects = {};
@@ -887,6 +887,7 @@ var displayText = {
         commandSound: 'Dźwięk powiadomienia o komendzie',
         virusSoundurl: 'Virus shot sound',
         virusSound: 'Virus shot sound',
+		massBooster: 'Mass *3 booster',
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
         showTop5: 'Pokaż top 5 teamu',
@@ -1306,6 +1307,7 @@ var displayText = {
         commandSound: 'Command notification sound',
         virusSoundurl: 'Virus shot sound',
         virusSound: 'Virus shot sound',
+		massBooster: 'Mass *3 booster',
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
         showTop5: 'Show teamboard',
@@ -2291,6 +2293,7 @@ var defaultmapsettings = {
     isAlphaChanged: false,
     jellyPhisycs: false,
     virusSound: false,
+	massBooster: false,
     quickResp: true,
     autoResp: false,
 	spawnSpecialEffects: false,
@@ -3482,6 +3485,19 @@ function thelegendmodproject() {
 				$("#ao2t-hud").hide();
             }			
 		},
+		setMassBooster(){
+			if (defaultmapsettings.massBooster && ($("#nick").val().includes('℄') || window.proLicenceUID)) {
+				if (defaultmapsettings.massBooster){
+					toastr.warning("<b>[SERVER]:</b> Mass boost is enabled, please note that all Mass *3 (1 hour) will be consumed. After that Mass Boost will be used for free").css("width", "350px");
+				}
+			}					
+			else if (!defaultmapsettings.massBooster){
+					toastr.warning("<b>[SERVER]:</b> Mass boost is disabled").css("width", "350px");
+				}
+			else if (!($("#nick").val().includes('℄') || window.proLicenceUID)){
+					toastr.warning("<b>[SERVER]:</b> Mass boost is for Premium users").css("width", "350px");
+			}				           			
+		},
 		setAnimatedRainbowColor(){			
 			if (defaultmapsettings.animatedRainbowColor && tcm2 && tcm2.f && typeof tcm2.f.override === 'function') {
 				tcm2.f.override();
@@ -4000,7 +4016,10 @@ function thelegendmodproject() {
                         break;			
                     case 'universalChat':
                         this.setUniversalChat();
-                        break;			
+                        break;		
+                    /*case 'massBooster':
+                        this.setMassBooster();
+                        break;	*/						
                     case 'animatedRainbowColor':
                         this.setAnimatedRainbowColor();
                         break;							
@@ -4353,7 +4372,7 @@ function thelegendmodproject() {
 				this.addOptions([], "boardGroup");			
                 this.addOptions(["quickResp", "autoResp","spawnSpecialEffects"], "respGroup");
                 this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
-                this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound"], "massGroup");
+                this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound", "massBooster"], "massGroup");
 				this.addOptions(["noSkins","customSkins", "vanillaSkins", "jellyPhisycs", "videoSkins", "videoSkinsMusic"], "skinsGroup");
                 this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
                 this.addOptions(["noColors","myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", "animatedRainbowColor"], "transparencyGroup");
@@ -4963,6 +4982,16 @@ function thelegendmodproject() {
             if (defaultmapsettings.autoHideFood) {
                 ogario.showFood = true
             };
+            setTimeout(() => {
+				if (($("#nick").val().includes('℄') || window.proLicenceUID) && defaultmapsettings.massBooster && master.context) {				
+						massx31hour();
+						if (!window.massBoosterMsg){
+							toastr.warning("<b>[SERVER]:</b> Mass boost is enabled, please note that all Mass *3 (1 hour) will be consumed. After that Mass Boost will be used for free").css("width", "350px");
+							window.massBoosterMsg=true;
+						}
+				}				
+            }, 200);			
+			
         },
         onSpectate() {
             this.onJoin();
@@ -9381,7 +9410,12 @@ function thelegendmodproject() {
                             case 113:
 								window.testobjects102113=node;
                                 console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Activate Boost Response", option, response);
-                                break;	
+								//mass 2x1h yes [102, 8, 1, 18, 67, 8, 113, 138, 7, 62, 10, 21, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104, 16, 144, 28, 18, 37, 8, 5, 18, 22, 8, 2, 18, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104, 24, 1, 24, 255, 255, 255, 255, 255, 255, 255, 255, 255, 1]
+                                //mass 2x1h no  [102, 8, 1, 18, 58, 8, 113, 138, 7, 53, 10, 21, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104, 16, 149, 25, 18, 28, 8, 5, 18, 22, 8, 2, 18, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104, 24, 1, 24, 0]
+								
+								//mass 3x1h no [102, 8, 1, 18, 58, 8, 113, 138, 7, 53, 10, 21, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104, 16, 200, 23, 18, 28, 8, 5, 18, 22, 8, 2, 18, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104, 24, 2, 24, 0]
+								
+								break;	
                             case 114:
 								window.testobjects102114=node;
                                 console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Activate Quest Request", option, response);
@@ -12543,6 +12577,13 @@ function repeatSendingSpecialSkins(){
 				SpecialEffectPlayers[application.lastSentNick]=localStorage.getItem("isActualUsingSpecialEffectsSkin")
 				window.application.sendSocket3Info("spfc", localStorage.getItem("isActualUsingSpecialEffectsSkin"))										
 	}
+}
+
+function preUserLeaguesInfoRequest(){
+    var s = document.createElement("script");
+    s.type = "text/javascript";
+    s.src = "https://legendmod.ml/LMexpress/userLeaguesInfoRequest.js";
+    $("body").append(s);
 }
 /*
 var snezSocketdata;
