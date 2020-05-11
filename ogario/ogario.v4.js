@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.633
+// v1.634
 
 
 //window.testobjects = {};
@@ -9598,7 +9598,7 @@ function thelegendmodproject() {
                     window.testobjectsOpcode114 = data;
                     break;
                 case 160: //Yahnych
-                    console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
+                    //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' opcode: ', data.getUint8(0));
                     window.testobjectsOpcode160 = data;
                     //this.arrowFB = [];
                     let num = 0
@@ -9627,7 +9627,7 @@ function thelegendmodproject() {
                         //    x: friendX,
                         //    y: friendY
                         //});   
-                        console.log(num)
+                        //console.log(num)
                         this.arrowFB[0].visible = true;
                         this.arrowFB[0].x = friendX;
                         this.arrowFB[0].y = friendY;
