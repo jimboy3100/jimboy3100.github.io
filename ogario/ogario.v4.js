@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.634
+// v1.635
 
 
 //window.testobjects = {};
@@ -170,48 +170,43 @@ function PotionDrinkerRare(slot) {
 	var bytes = [8, 1, 18, 7, 8, 122, 210, 7, 2, 8, slot] 
     window.core.proxyMobileData(bytes); //PotionDrinkerRare(2) rare
 }
+
 function massx21hour(slot) {
-    //var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104] //WORKED
-				//[8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104]  
-//[81, 49, 231, 210, 32, 49, 150, 66, 48, 43, 236, 208, 90, 88, 149, 179, 104, 91, 137, 175, 68, 77, 185, 242, 79, 102, 215, 168]				
+    var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104] //WORKED
+	/*
 	var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16]
 	let massBoostName = "mass_boost_2x_1h"; 
 	for (let i = 0; i < massBoostName.length; i++) { 
 	bytes.push(massBoostName.charCodeAt(i));
-	}
-	//for (let i = 0; i < 1000; i++) {
+	}*/	
 		window.core.proxyMobileData(bytes);
-	//}
 }
 
 function massx224hour(slot) {
-    //var bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]
-				//[8, 1, 18, 26, 8, 70, 178, 4, 21, 10, 19, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]
-	var bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17]
+    var bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]
+	/*var bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17]
 	let massBoostName = "mass_boost_2x_24h"; 
 	for (let i = 0; i < massBoostName.length; i++) { 
 	bytes.push(massBoostName.charCodeAt(i));
-	}	
+	}*/	
 	window.core.proxyMobileData(bytes);	          
 }
 function massx31hour(slot) {
-    //var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104] //WORKED
-				//[8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]
-	var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16]
+    var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104] //WORKED
+	/*var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16]
 	let massBoostName = "mass_boost_3x_1h"; 
 	for (let i = 0; i < massBoostName.length; i++) { 
 	bytes.push(massBoostName.charCodeAt(i));
-	}	
+	}*/	
 	window.core.proxyMobileData(bytes);
 }
 function massx324hour(slot) {
-    //var bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]
-			    //[8, 1, 18, 26, 8, 70, 178, 4, 21, 10, 19, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]
-	var bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17]
+    var bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]
+	/*var bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17]
 	let massBoostName = "mass_boost_3x_24h"; 
 	for (let i = 0; i < massBoostName.length; i++) { 
 	bytes.push(massBoostName.charCodeAt(i));
-	}	
+	}*/		
 	window.core.proxyMobileData(bytes);	
 }
 
