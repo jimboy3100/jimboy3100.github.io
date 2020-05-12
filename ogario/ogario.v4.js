@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.639
+// v1.641
 
 
 //window.testobjects = {};
@@ -162,7 +162,7 @@ function autoRandomPotionDigger() {
 		if (window.autoRandomPotion==2) PotionDrinker(2)	
 		if (window.autoRandomPotion==3) PotionDrinker(3)	
 		if (window.autoRandomPotion==4) PotionDrinkerIDK(1)
-		if (window.autoRandomPotion==4) PotionDrinkerIDK(2)
+		if (window.autoRandomPotion==5) PotionDrinkerIDK(2)
 		if (window.autoRandomPotion==6) PotionDrinkerIDK(3)	
 		if (window.autoRandomPotion<=6){
 			autoRandomPotionDigger()
@@ -184,8 +184,13 @@ function PotionDrinker(slot) {
 }
 function PotionDrinkerIDK(slot) {
 	var bytes = [8, 1, 18, 7, 8, 122, 210, 7, 2, 8, slot] 
+    window.core.proxyMobileData(bytes); //PotionDrinkerRare(1) rare
+}
+function PotionDrinkerIDK(slot) {
+	var bytes = [8, 1, 18, 7, 8, 122, 210, 7, 2, 8, slot] 
     window.core.proxyMobileData(bytes); //PotionDrinkerRare(2) rare
 }
+
 
 function massx21hour(slot) {
     var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104] //WORKED				
@@ -201,7 +206,7 @@ function massx21hour(slot) {
     }, 100); 		
 }
 function QuestActivation24h(slot) {
-	var bytes = [102, 8, 1, 18, 27, 8, 114, 146, 7, 22, 10, 20, 113, 117, 101, 115, 116, 95, 97, 99, 116, 105, 118, 97, 116, 105, 111, 110, 95, 50, 52, 104]
+	var bytes = [8, 1, 18, 27, 8, 114, 146, 7, 22, 10, 20, 113, 117, 101, 115, 116, 95, 97, 99, 116, 105, 118, 97, 116, 105, 111, 110, 95, 50, 52, 104]
 	window.core.proxyMobileData(bytes);
 }
 function massx224hour(slot) {
@@ -5506,7 +5511,12 @@ function thelegendmodproject() {
 
                 }
                 //
-                if (LM.arrowFB[0].visible) { //Yahnych
+				for (var temp = 0; temp < application.top5.length; temp++) {
+					if (application.top5[temp].nick == LM.arrowFB[0].nick) {
+						LM.arrowFB[0].isIncluded = true
+					}
+				}
+                if (LM.arrowFB[0].visible && !LM.arrowFB[0].isIncluded) { //Yahnych
                     this.miniMapCtx.beginPath();
                     this.miniMapCtx.arc((LM.arrowFB[0].x + r) * n, (LM.arrowFB[0].y + l) * n, defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
                     this.miniMapCtx.closePath();
@@ -9425,10 +9435,10 @@ function thelegendmodproject() {
                             case 113:
 								window.testobjects102113=node;
                                 console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Activate Boost Response", option, response);
-								//mass 2x1h yes [102, 8, 1, 18, 67, 8, 113, 138, 7, 62, 10, 21, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104, 16, 144, 28, 18, 37, 8, 5, 18, 22, 8, 2, 18, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104, 24, 1, 24, 255, 255, 255, 255, 255, 255, 255, 255, 255, 1]
-                                //mass 2x1h no  [102, 8, 1, 18, 58, 8, 113, 138, 7, 53, 10, 21, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104, 16, 149, 25, 18, 28, 8, 5, 18, 22, 8, 2, 18, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104, 24, 1, 24, 0]
+								//mass 2x1h yes [8, 1, 18, 67, 8, 113, 138, 7, 62, 10, 21, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104, 16, 144, 28, 18, 37, 8, 5, 18, 22, 8, 2, 18, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104, 24, 1, 24, 255, 255, 255, 255, 255, 255, 255, 255, 255, 1]
+                                //mass 2x1h no  [8, 1, 18, 58, 8, 113, 138, 7, 53, 10, 21, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104, 16, 149, 25, 18, 28, 8, 5, 18, 22, 8, 2, 18, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104, 24, 1, 24, 0]
 								
-								//mass 3x1h no [102, 8, 1, 18, 58, 8, 113, 138, 7, 53, 10, 21, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104, 16, 200, 23, 18, 28, 8, 5, 18, 22, 8, 2, 18, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104, 24, 2, 24, 0]
+								//mass 3x1h no [8, 1, 18, 58, 8, 113, 138, 7, 53, 10, 21, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104, 16, 200, 23, 18, 28, 8, 5, 18, 22, 8, 2, 18, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104, 24, 2, 24, 0]
 								
 								break;	
                             case 114:
@@ -9458,7 +9468,7 @@ function thelegendmodproject() {
                             case 121:
 								window.testobjects102121=node;
                                 console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Open Potion For Product Response", option, response);
-								var bytes = [102, 8, 1, 18, 21, 8, 110, 242, 6, 16, 10, 14, 112, 111, 116, 105, 111, 110, 83, 107, 105, 112, 66, 114, 101, 119]
+								var bytes = [8, 1, 18, 21, 8, 110, 242, 6, 16, 10, 14, 112, 111, 116, 105, 111, 110, 83, 107, 105, 112, 66, 114, 101, 119]
 								window.core.proxyMobileData(bytes); //Confirm Brew of any potions
                                 break;			
                             case 122:
@@ -12589,10 +12599,11 @@ function enterChatMessage2() {
 }
 
 function repeatSendingSpecialSkins(){
-	if ((localStorage.getItem("isActualUsingSpecialEffectsSkin") && localStorage.getItem("isActualUsingSpecialEffectsSkin") != "null" && $("#nick").val().includes('℄')) || window.proLicenceUID){
+	temp = localStorage.getItem("isActualUsingSpecialEffectsSkin")
+	if (temp && temp != "null" && ($("#nick").val().includes('℄') || window.proLicenceUID)){
 			if (application.lastSentNick == "") application.lastSentNick = $("#nick").val()
-				SpecialEffectPlayers[application.lastSentNick]=localStorage.getItem("isActualUsingSpecialEffectsSkin")
-				window.application.sendSocket3Info("spfc", localStorage.getItem("isActualUsingSpecialEffectsSkin"))										
+				SpecialEffectPlayers[application.lastSentNick]=temp
+				window.application.sendSocket3Info("spfc", temp)					
 	}
 }
 
