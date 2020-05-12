@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.635
+// v1.639
 
 
 //window.testobjects = {};
@@ -149,9 +149,26 @@ function autocoins(slot) {
 	bytes.push(massBoostName.charCodeAt(i));
 	}	
 	window.core.proxyMobileData(bytes);
+	autoRandomPotionDigger();
 //console.log(String.fromCharCode.apply(String, bytes));
 }
- 
+
+window.autoRandomPotion=0;
+function autoRandomPotionDigger() {
+    setTimeout(function() {
+		window.autoRandomPotion++;
+		//if (window.autoRandomPotion==7) window.autoRandomPotion=1
+		if (window.autoRandomPotion==1) PotionDrinker(1)
+		if (window.autoRandomPotion==2) PotionDrinker(2)	
+		if (window.autoRandomPotion==3) PotionDrinker(3)	
+		if (window.autoRandomPotion==4) PotionDrinkerIDK(1)
+		if (window.autoRandomPotion==4) PotionDrinkerIDK(2)
+		if (window.autoRandomPotion==6) PotionDrinkerIDK(3)	
+		if (window.autoRandomPotion<=6){
+			autoRandomPotionDigger()
+		}
+    }, 5000); 	
+}
 function userLeaguesInfoRequest(slot) {
     var bytes = [8, 1, 18, 8, 8, 130, 1, 146, 8, 2, 8, 1];
     window.core.proxyMobileData(bytes); //response 131	
@@ -161,35 +178,44 @@ function genericVideoAdRewardTokenRequest(slot) {
     window.core.proxyMobileData(bytes); //response 186
 }
 
-
 function PotionDrinker(slot) {
     var bytes = [8, 1, 18, 7, 8, 124, 226, 7, 2, 8, slot];
-    window.core.proxyMobileData(bytes); //PotionDrinker(1) 1,2,3
+    window.core.proxyMobileData(bytes); //PotionDrinker(1) 1 2 3 common rare mystical
 }
-function PotionDrinkerRare(slot) {
+function PotionDrinkerIDK(slot) {
 	var bytes = [8, 1, 18, 7, 8, 122, 210, 7, 2, 8, slot] 
     window.core.proxyMobileData(bytes); //PotionDrinkerRare(2) rare
 }
 
 function massx21hour(slot) {
-    var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104] //WORKED
-	/*
-	var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16]
+    var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104] //WORKED				
+	/*var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16]
 	let massBoostName = "mass_boost_2x_1h"; 
 	for (let i = 0; i < massBoostName.length; i++) { 
 	bytes.push(massBoostName.charCodeAt(i));
-	}*/	
+	}*/
+	window.core.proxyMobileData(bytes);
+    setTimeout(function() {
+        var bytes = [8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 49, 104] 
 		window.core.proxyMobileData(bytes);
+    }, 100); 		
 }
-
+function QuestActivation24h(slot) {
+	var bytes = [102, 8, 1, 18, 27, 8, 114, 146, 7, 22, 10, 20, 113, 117, 101, 115, 116, 95, 97, 99, 116, 105, 118, 97, 116, 105, 111, 110, 95, 50, 52, 104]
+	window.core.proxyMobileData(bytes);
+}
 function massx224hour(slot) {
     var bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]
 	/*var bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17]
 	let massBoostName = "mass_boost_2x_24h"; 
 	for (let i = 0; i < massBoostName.length; i++) { 
 	bytes.push(massBoostName.charCodeAt(i));
-	}*/	
-	window.core.proxyMobileData(bytes);	          
+	}*/
+	window.core.proxyMobileData(bytes);	
+    setTimeout(function() {
+        var bytes = [8, 1, 18, 26, 8, 70, 178, 4, 21, 10, 19, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 50, 120, 95, 50, 52, 104]
+		window.core.proxyMobileData(bytes);
+    }, 100); 		
 }
 function massx31hour(slot) {
     var bytes = [8, 1, 18, 23, 8, 112, 130, 7, 18, 10, 16, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104] //WORKED
@@ -199,6 +225,10 @@ function massx31hour(slot) {
 	bytes.push(massBoostName.charCodeAt(i));
 	}*/	
 	window.core.proxyMobileData(bytes);
+    setTimeout(function() {
+        var bytes = [8, 1, 18, 25, 8, 70, 178, 4, 20, 10, 18, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 49, 104]
+		window.core.proxyMobileData(bytes);
+    }, 100); 	
 }
 function massx324hour(slot) {
     var bytes = [8, 1, 18, 24, 8, 112, 130, 7, 19, 10, 17, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]
@@ -206,8 +236,12 @@ function massx324hour(slot) {
 	let massBoostName = "mass_boost_3x_24h"; 
 	for (let i = 0; i < massBoostName.length; i++) { 
 	bytes.push(massBoostName.charCodeAt(i));
-	}*/		
+	}*/	
 	window.core.proxyMobileData(bytes);	
+    setTimeout(function() {
+        var bytes = [8, 1, 18, 26, 8, 70, 178, 4, 21, 10, 19, 49, 95, 109, 97, 115, 115, 95, 98, 111, 111, 115, 116, 95, 51, 120, 95, 50, 52, 104]
+		window.core.proxyMobileData(bytes);
+    }, 100); 		
 }
 
 function callEveryFullHourCoinDigger() {
@@ -882,7 +916,7 @@ var displayText = {
         commandSound: 'Dźwięk powiadomienia o komendzie',
         virusSoundurl: 'Virus shot sound',
         virusSound: 'Virus shot sound',
-		massBooster: 'Mass *3 booster (PREMIUM USERS)',
+		massBooster: 'Mass *2 booster-> *3 booster',
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
         showTop5: 'Pokaż top 5 teamu',
@@ -1302,7 +1336,7 @@ var displayText = {
         commandSound: 'Command notification sound',
         virusSoundurl: 'Virus shot sound',
         virusSound: 'Virus shot sound',
-		massBooster: 'Mass *3 booster (PREMIUM USERS)',
+		massBooster: 'Mass *2 booster-> *3 booster',
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
         showTop5: 'Show teamboard',
@@ -3480,19 +3514,6 @@ function thelegendmodproject() {
 				$("#ao2t-hud").hide();
             }			
 		},
-		setMassBooster(){
-			if (defaultmapsettings.massBooster && ($("#nick").val().includes('℄') || window.proLicenceUID)) {
-				if (defaultmapsettings.massBooster){
-					toastr.warning("<b>[SERVER]:</b> Mass boost is enabled, please note that all Mass *3 (1 hour) will be consumed. After that Mass Boost will be used for free").css("width", "350px");
-				}
-			}					
-			else if (!defaultmapsettings.massBooster){
-					toastr.warning("<b>[SERVER]:</b> Mass boost is disabled").css("width", "350px");
-				}
-			else if (!($("#nick").val().includes('℄') || window.proLicenceUID)){
-					toastr.warning("<b>[SERVER]:</b> Mass boost is for Premium users").css("width", "350px");
-			}				           			
-		},
 		setAnimatedRainbowColor(){			
 			if (defaultmapsettings.animatedRainbowColor && tcm2 && tcm2.f && typeof tcm2.f.override === 'function') {
 				tcm2.f.override();
@@ -4011,10 +4032,7 @@ function thelegendmodproject() {
                         break;			
                     case 'universalChat':
                         this.setUniversalChat();
-                        break;		
-                    /*case 'massBooster':
-                        this.setMassBooster();
-                        break;	*/						
+                        break;							
                     case 'animatedRainbowColor':
                         this.setAnimatedRainbowColor();
                         break;							
@@ -9120,10 +9138,10 @@ function thelegendmodproject() {
                         } catch (error) {}
                         window.googlePic = "https" + window.testobjects2.split('https')[1].split('H')[0] + "H";
 
-						if (($("#nick").val().includes('℄') || window.proLicenceUID) && defaultmapsettings.massBooster && master.context) {				
+						if (defaultmapsettings.massBooster && master.context) {				
 							massx31hour();
 							if (!window.massBoosterMsg){
-								toastr.warning("<b>[SERVER]:</b> Mass boost is enabled, please note that all Mass *3 (1 hour) will be consumed. After that Mass Boost will be used for free").css("width", "350px");
+								toastr.warning("<b>[SERVER]:</b> Mass *2 booster -> *3 booster is enabled, this upgrades your boost to *3 for FREE if you have enabled Mass boost *2 on agar.io.<br><font color='blue'>Otherwise disable it, cause it will consume your boosts.</font>").css("width", "350px");
 								window.massBoosterMsg=true;
 							}
 						}				
@@ -9440,6 +9458,8 @@ function thelegendmodproject() {
                             case 121:
 								window.testobjects102121=node;
                                 console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 Open Potion For Product Response", option, response);
+								var bytes = [102, 8, 1, 18, 21, 8, 110, 242, 6, 16, 10, 14, 112, 111, 116, 105, 111, 110, 83, 107, 105, 112, 66, 114, 101, 119]
+								window.core.proxyMobileData(bytes); //Confirm Brew of any potions
                                 break;			
                             case 122:
 								window.testobjects102122=node;
