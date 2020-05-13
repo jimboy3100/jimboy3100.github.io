@@ -20,7 +20,15 @@ ProLicenceUsersTable = {
         "a3742f28-059a-4ea1-abf7-566e69ec97f4": {
             "reason": "Moderator",
             "notes": "Snez"
-        },   
+        }, 
+        "5b26499a-ccd0-4cdb-9c0e-9375b9d7cd4c": {
+            "reason": "Shiro",
+            "notes": "Advertiser-Japan-Fb"
+        }, 
+        "81831afa-0a11-4fce-82b3-81067f6cc9bc": {
+            "reason": "Shiro",
+            "notes": "Advertiser-Japan-Google"
+        }, 		
         "4220bddd-7bd6-4f93-89cf-579903eff2bc": {
             "reason": "Donate",
             "notes": "Cla"
