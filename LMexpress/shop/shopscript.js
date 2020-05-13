@@ -1,6 +1,8 @@
-//v0.4e
+//v0.4f
 
-$(document).ready(function() {
+//$(document).ready(function() {
+jQuery(function($) {
+
 	setTimeout(function() {
 		
     $("#imgur img.lazy").lazyload({
