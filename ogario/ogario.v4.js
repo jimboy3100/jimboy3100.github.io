@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.641
+// v1.644
 
 
 //window.testobjects = {};
@@ -2280,6 +2280,8 @@ cimgSpecialSkinEffectsLegendHeroes = new Image;
 cimgSpecialSkinEffectsLegendHeroes.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png';
 cimgSpecialSkinEffectsLegendHeroes2 = new Image;
 cimgSpecialSkinEffectsLegendHeroes2.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan2.png';
+cimgSpecialSkinEffectsShiro = new Image;
+cimgSpecialSkinEffectsShiro.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsShiro.png';
 
 if (dyinglight1load == "yes") {
     cimgDyingLight = new Image;
@@ -7966,6 +7968,9 @@ function thelegendmodproject() {
 					if (!window.xx3) window.xx3 = 1.5
 					if (!window.xx4) window.xx4 = 6					
 					*/	
+					}	
+					else if (this.SpecialEffect == "Shiro" || this.SpecialEffect2 == "Shiro"){ 	
+					style.drawImage(cimgSpecialSkinEffectsShiro, this.x + 0.05 * y, this.y - 1.2 * y, y, y);										
 					}					
 					else if (this.SpecialEffect == "Sword" || this.SpecialEffect2 == "Sword"){ 	
 					style.drawImage(cimgSpecialSkinEffectsSword, this.x - 0.8 * y, this.y - 3/5 * y, y * 1.6, y * 1.6);  									
