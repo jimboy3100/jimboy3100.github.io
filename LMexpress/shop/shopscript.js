@@ -1,7 +1,8 @@
-//v0.4f
-/*
+//v0.4e
+
 $(document).ready(function() {
 	setTimeout(function() {
+		
     $("#imgur img.lazy").lazyload({
         effect : "fadeIn",
         skip_invisible : true
@@ -19,7 +20,7 @@ $(document).ready(function() {
         effect : "fadeIn",
         skip_invisible : true
     });
-*/
+
     $("img.lazy").on("click", function(e) {
         e.preventDefault();
 		var url = $(this).attr("name");
