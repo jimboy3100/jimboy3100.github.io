@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.646
+// v1.649
 
 
 //window.testobjects = {};
@@ -4457,7 +4457,9 @@ function thelegendmodproject() {
                     '<a href="#" id="set-debug" class="ogicon-location" style="display: none"></a>' +
                     '<a href="#" id="set-fullSpectator" class="ogicon-eye"  style="display: none"></a>' +
                     '<a href="#" id="set-ingameSpectator" class="ogicon-power"  style="display: none"></a>' +
+					'<a href="#" id="fullscreenBtn" onclick="toggleFullScreen();"  class="ogicon-display"></a>' +
                     '<a href="#" id="RotateLeft" onclick="rotateminimapsectors();"  class="ogicon-loop2"></a>' +
+					'<a href="#" id="Bino" onclick="legendmod.sendFreeSpectate()"  class="ogicon-pacman"></a>' +
 					'<a href="#" id="set-targeting" class="ogicon-target"></a>' +
                     '<a href="#" id="set-private-minimap" class="ogicon-location2"></a>' +
                     '<a href="#" id="cancel-targeting" class="ogicon-cancel-circle"></a>' +
@@ -12662,7 +12664,37 @@ function rotateminimapsectors() {
 	console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map rotated.Tech POS:', window.manualRotation);
 	application.settechvnr(window.manualRotation)		
 }
+function toggleFullScreen(fullornot) {
+    if (!window.fullornot) {
+        launchIntoFullscreen(document.documentElement);
+        window.fullornot = true
+    } else {
+        exitFullscreen();
+        window.fullornot = false
+    }
+}
 
+function launchIntoFullscreen(element) {
+    if (element.requestFullscreen) {
+        element.requestFullscreen();
+    } else if (element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+    } else if (element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen();
+    } else if (element.msRequestFullscreen) {
+        element.msRequestFullscreen();
+    }
+}
+
+function exitFullscreen() {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    }
+}
 
 
 
