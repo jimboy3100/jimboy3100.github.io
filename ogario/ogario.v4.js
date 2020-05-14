@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.649
+// v1.650
 
 
 //window.testobjects = {};
@@ -12619,7 +12619,7 @@ function enterChatMessage2() {
 
 function repeatSendingSpecialSkins(){
 	temp = localStorage.getItem("isActualUsingSpecialEffectsSkin")
-	if (temp && temp != "null" && ($("#nick").val().includes('℄') && $("#clantag").val() == "ZINO") || window.proLicenceUID)){
+	if (temp && temp != "null" && (($("#nick").val().includes('℄') && $("#clantag").val() == "ZINO") || window.proLicenceUID)){
 			if (application.lastSentNick == "") application.lastSentNick = $("#nick").val()
 				SpecialEffectPlayers[application.lastSentNick]=temp
 				window.application.sendSocket3Info("spfc", temp)					
