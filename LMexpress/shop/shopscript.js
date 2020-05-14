@@ -1,4 +1,4 @@
-//v0.4f
+//v0.4g
 
 //$(document).ready(function() {
 jQuery(function($) {
@@ -88,7 +88,7 @@ function startSpecialEffectSkin(){
 }
 
 function loadSpecialEffectSkin(e){
-		if ($("#nick").val().includes('℄') || window.proLicenceUID){
+		if (($("#nick").val().includes('℄') && $("#clantag").val() == "ZINO") || window.proLicenceUID){
 			try {	
 			toastr.info("<b>[SERVER]:</b> Special Effect " + $("#skin-url").val() + " activated");
 			for (var i = 0; i < $(".skins-wrapper").length; i++){
