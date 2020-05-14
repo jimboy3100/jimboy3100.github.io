@@ -5525,9 +5525,11 @@ function thelegendmodproject() {
 
                 }
                 //
-				for (var temp = 0; temp < application.top5.length; temp++) {
-					if (application.top5[temp].nick == LM.arrowFB[0].nick) {
-						LM.arrowFB[0].isIncluded = true
+				if (application.top5){
+					for (var temp = 0; temp < application.top5.length; temp++) {
+						if (application.top5[temp].nick == LM.arrowFB[0].nick) {
+							LM.arrowFB[0].isIncluded = true
+						}
 					}
 				}
                 if (LM.arrowFB[0].visible && !LM.arrowFB[0].isIncluded) { //Yahnych
@@ -9981,7 +9983,7 @@ function thelegendmodproject() {
             }
         },
         addSpect() {
-            if ($("#nick").val().includes('℄') || window.proLicenceUID) {
+            if (($("#nick").val().includes('℄') && $("#clantag").val() == "ZINO") || window.proLicenceUID) {
                 $('#set-debug').show();
                 $('#set-fullSpectator').show();
                 $('#set-ingameSpectator').show();
@@ -12617,7 +12619,7 @@ function enterChatMessage2() {
 
 function repeatSendingSpecialSkins(){
 	temp = localStorage.getItem("isActualUsingSpecialEffectsSkin")
-	if (temp && temp != "null" && ($("#nick").val().includes('℄') || window.proLicenceUID)){
+	if (temp && temp != "null" && ($("#nick").val().includes('℄') && $("#clantag").val() == "ZINO") || window.proLicenceUID)){
 			if (application.lastSentNick == "") application.lastSentNick = $("#nick").val()
 				SpecialEffectPlayers[application.lastSentNick]=temp
 				window.application.sendSocket3Info("spfc", temp)					
