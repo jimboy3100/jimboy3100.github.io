@@ -185,6 +185,9 @@
      padding:0 0 6px;
      text-align:center 
 }
+ .ogario-yt-panel{
+	marginBottom:-10px
+}
  .dark .yt-username{
      color:#fff 
 }
@@ -218,7 +221,8 @@
 }
  .btn{
      border:none;
-     text-transform:uppercase 
+     text-transform:uppercase;
+	 text-transform: capitalize
 }
  .btn-primary{
      background-color:#018cf6!important 
@@ -816,7 +820,8 @@
      bottom:0 
 }
  #statsText{
-     color:#fff 
+     color:#fff;
+	 font-size:medium
 }
  #stats hr{
      border-top:1px solid #002f52 
@@ -835,6 +840,7 @@
      font-size:20px;
      z-index:100 
 }
+
  #overlays{
 	 z-index:100 
 }
@@ -1375,7 +1381,7 @@
      -moz-user-select:auto!important;
      user-select:auto!important 
 }
- #export-settings-btn,#import-settings-btn{
+ #export-settings-btn,#import-settings-btn,#import-settings-btn2{
      width:676px;
      margin:12px 
 }
