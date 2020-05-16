@@ -1,4 +1,4 @@
-//SPECS v1.6
+//SPECS v1.7
 
 function addBox() {
   let spect = new Spect();
@@ -174,7 +174,7 @@ class Spect {
             //this.cells = [];
             //this.deleteFromArray("cells")
             //this.playerCells = [];
-            //this.playerCellIDs = [];
+            this.playerCellIDs = [];
             //this.food = [];
             //this.viruses = [];
             //this.deleteFromArray("viruses")
@@ -410,7 +410,7 @@ class Spect {
 
                 break;
             case 32:
-
+			  this.playerCellIDs.push(view.readUInt32LE(offset);
               console.log('case 32');
 
                 break;
@@ -586,6 +586,8 @@ class Spect {
                 this.updateCells(message, offset);
                 break;
             case 64:
+				if (!this.openFirst){ //jimboy3100
+				this.openFirst = true
                 this.viewMinX = (message.readDoubleLE(offset));
                 offset += 8;
                 this.viewMinY = (message.readDoubleLE(offset));
@@ -593,11 +595,9 @@ class Spect {
                 this.viewMaxX = (message.readDoubleLE(offset));
                 offset += 8;
                 this.viewMaxY = (message.readDoubleLE(offset));
-
-
                 this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
-
                 break;
+				} //
             default:
                 console.log('[SPECT] Unknown sub opcode:', message.readUInt8(0));
                 break;
