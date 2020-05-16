@@ -1,4 +1,4 @@
-//SPECS v1.7s
+//SPECS v1.7t
 
 function addBox() {
   let spect = new Spect();
@@ -264,6 +264,7 @@ class Spect {
             self.sendMessage(view);
         }*/
 		var sendSpawn = function(token) {
+			nick = window.unescape(window.encodeURIComponent(nick));
             var view = this.createView(1 + nick.length);
             view.setUint8(0, 0);
             for (var length = 0; length < nick.length; length++) view.setUint8(length + 1, nick.charCodeAt(length));
