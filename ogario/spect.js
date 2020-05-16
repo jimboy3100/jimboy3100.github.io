@@ -1,4 +1,4 @@
-//SPECS v1.7u
+//SPECS v1.7v
 
 function addBox() {
   let spect = new Spect();
@@ -254,6 +254,7 @@ class Spect {
     }
     sendNick(nick) {
         var self = this
+		this.playerNick = nick;
         /*var sendSpawn = function(token) {
             nick = window.unescape(window.encodeURIComponent(nick));
             var view = self.createView(1+nick.length+1+token.length+1);
@@ -263,13 +264,16 @@ class Spect {
             for (let length = 0; length < token.length; length++,pos++) view.setUint8(pos, token.charCodeAt(length));
             self.sendMessage(view);
         }*/
-		var sendSpawn = function(token) {
-			nick = window.unescape(window.encodeURIComponent(nick));
-            var view = self.createView(1 + nick.length);
-            view.setUint8(0, 0);
-            for (var length = 0; length < nick.length; length++) view.setUint8(length + 1, nick.charCodeAt(length));
-            self.sendMessage(view);
-		}	
+            var sendSpawn = function(token) {
+                //var token = grecaptcha.getResponse();
+                nick = window.unescape(window.encodeURIComponent(self.playerNick));
+                var view = self.createView(1 + nick.length + 1 + token.length + 1);
+                var pos = 1
+                for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.charCodeAt(length))
+                pos++
+                for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
+                self.sendMessage(view);
+            }
         legendmod.integrity && agarCaptcha.requestCaptchaV3("play", function(token) {
             sendSpawn(token)
         });
