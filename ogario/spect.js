@@ -1,4 +1,4 @@
-//SPECS v1.7h
+//SPECS v1.7i
 
 function addBox() {
   let spect = new Spect();
@@ -588,7 +588,9 @@ class Spect {
 				//jimboy3100
 				if (this.timer && performance.now()-this.timer>3000){
 						console.log('[SPECT] Multibox Player lost');	
-				}					
+						spects[this.number].closeConnection()
+						spects[this.number]={}
+				}				
                 break;			
             case 64:
 				if (!this.openFirst){ //jimboy3100
