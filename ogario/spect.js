@@ -1,4 +1,4 @@
-//SPECS v1.7p
+//SPECS v1.7q
 
 function addBox() {
   let spect = new Spect();
@@ -586,7 +586,7 @@ class Spect {
             case 16:
                 this.updateCells(message, offset);
 				//jimboy3100
-				if (this.timer && performance.now()-this.timer>3000){
+				if (this.player && this.timer && performance.now()-this.timer>3000){
 						console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
 						
 						spects[this.number-1].closeConnection()
@@ -595,7 +595,7 @@ class Spect {
 				}				
                 break;			
             case 64:
-				if (!this.openFirst || !this.player){ //jimboy3100
+				if (!this.openFirst){ //jimboy3100
 				this.openFirst = true
                 this.viewMinX = (message.readDoubleLE(offset));
                 offset += 8;
