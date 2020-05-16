@@ -1,4 +1,4 @@
-//SPECS v1.7v
+//SPECS v1.7w
 
 function addBox() {
   let spect = new Spect();
@@ -400,10 +400,12 @@ class Spect {
             case 17:
 			
                 this.viewX = view.getFloat32(offset, true);
+				legendmod.viewX = this.viewX 
 				//var x=this.viewX = view.getFloat32(offset, true);
 				//this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
                 offset += 4;
 				this.viewY = view.getFloat32(offset, true);
+				legendmod.viewY = this.viewY 
 				//var y=this.viewX = view.getFloat32(offset, true);
 				//this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
                 offset += 4;
