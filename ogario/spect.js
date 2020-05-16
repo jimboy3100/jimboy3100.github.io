@@ -1,4 +1,4 @@
-//SPECS v1.7m
+//SPECS v1.7n
 
 function addBox() {
   let spect = new Spect();
@@ -253,7 +253,7 @@ class Spect {
         this.sendAction(17);
     }
     sendNick(nick) {
-        legendmod.playerNick = nick;
+        //legendmod.playerNick = nick;
         var self = this
         var sendSpawn = function(token) {
             nick = window.unescape(window.encodeURIComponent(self.playerNick));
@@ -540,7 +540,7 @@ class Spect {
                 if(this.player==true){
                   this.active = true
                   this.sendCursor()
-                  this.sendNick()
+                  this.sendNick($("#nick").val())
                 } else {
                   this.sendSpectate();
                 }
