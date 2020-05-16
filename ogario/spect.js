@@ -1,4 +1,4 @@
-//SPECS v1.7k
+//SPECS v1.7l
 
 function addBox() {
   let spect = new Spect();
@@ -591,7 +591,8 @@ class Spect {
 						console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
 						
 						spects[this.number].closeConnection()
-						spects[this.number]={}
+						spects = spects.slice(this.number+1);
+						
 				}				
                 break;			
             case 64:
