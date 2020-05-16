@@ -1,4 +1,4 @@
-//SPECS v1.7t
+//SPECS v1.7u
 
 function addBox() {
   let spect = new Spect();
@@ -265,10 +265,10 @@ class Spect {
         }*/
 		var sendSpawn = function(token) {
 			nick = window.unescape(window.encodeURIComponent(nick));
-            var view = this.createView(1 + nick.length);
+            var view = self.createView(1 + nick.length);
             view.setUint8(0, 0);
             for (var length = 0; length < nick.length; length++) view.setUint8(length + 1, nick.charCodeAt(length));
-            this.sendMessage(view);
+            self.sendMessage(view);
 		}	
         legendmod.integrity && agarCaptcha.requestCaptchaV3("play", function(token) {
             sendSpawn(token)
