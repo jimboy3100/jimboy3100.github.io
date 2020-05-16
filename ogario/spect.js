@@ -1,4 +1,4 @@
-//SPECS v1.7j
+//SPECS v1.7k
 
 function addBox() {
   let spect = new Spect();
@@ -45,7 +45,8 @@ function addFullSpectator() {
 var spects = [];
 class Spect {
     constructor() {
-        this.number = spects.length + 1
+        //this.number = spects.length + 1
+		this.number = spects.length
         this.ws = null
         this.socket = null
         this.protocolKey = null
