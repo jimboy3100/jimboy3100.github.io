@@ -1,4 +1,4 @@
-//SPECS v1.7
+//SPECS v1.7a
 
 function addBox() {
   let spect = new Spect();
@@ -410,7 +410,7 @@ class Spect {
 
                 break;
             case 32:
-			  this.playerCellIDs.push(view.readUInt32LE(offset);
+			  this.playerCellIDs.push(view.readUInt32LE(offset));
               console.log('case 32');
 
                 break;
