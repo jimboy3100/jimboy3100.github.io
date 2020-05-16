@@ -1,4 +1,4 @@
-//v12.51
+//v12.54
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -85,6 +85,7 @@ function legendmaster(self) {
                         self.updateStorage();
                     }
                 });
+				doFB()
                 $("#helloContainer").attr("data-logged-in", "1");
                 //$(".progress-bar-striped").width("100%");
                 $("#login-google").attr("class", "menu-bar-button");
@@ -137,6 +138,7 @@ function legendmaster(self) {
                 self.updateStorage();
                 $(".agario-profile-picture").attr("src", attrVal);
             }
+			doGl()
             $("#helloContainer").attr("data-logged-in", "1");
             //$(".progress-bar-striped").width("100%");
             $("#login-facebook").attr("class", "menu-bar-button");
@@ -802,11 +804,9 @@ function legendmaster(self) {
         $(".progress-bar-striped").width("0%");
         $("#login-facebook").attr("class", "menu-bar-button");
         $("#login-google").attr("class", "menu-bar-button");
-        toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter127 + "!");
-		
-		//window.agarioLEVEL=0;
-		
+        toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter127 + "!");		
         master.logout();
+		continuelogout();
     };
     self.facebookLogin = function() {
         alert("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " You seem to have something blocking Facebook on your browser, please check for any extensions");
@@ -827,4 +827,129 @@ function legendmaster(self) {
         setup();
     };
 };
+function continuelogout(){
+        $("#UserProfileName1").text("Guest");
+        $("#UserProfileUID1").text("");
+		$("#UserProfileUUID1").val("");	
+        $("#UserProfilePic>img").attr('src', 'https://legendmod.ml/banners/profilepic_guest.png');
+}
+function doFB() {
+
+    FB.api('/me', {
+        fields: 'first_name, last_name, gender, id'
+    }, function(fbresponse) {
+        $("#UserProfilePic>img").attr('src', 'https://graph.facebook.com/' + fbresponse.id + '/picture?type=large');
+
+        $("#UserProfileName1").text(fbresponse[Object.keys(fbresponse)[0]]);
+        $("#UserProfileUID1").text(fbresponse[Object.keys(fbresponse)[2]]);
+
+		if (userid == fbresponse[Object.keys(fbresponse)[2]]){
+			setLevelProgressBar();
+		}		
+        userfirstname = fbresponse[Object.keys(fbresponse)[0]];
+        if (userfirstname != null) {
+            localStorage.setItem("userfirstname", userfirstname);
+        }
+        userlastname = fbresponse[Object.keys(fbresponse)[1]];
+        if (userlastname != null) {
+            localStorage.setItem("userlastname", userlastname);
+        }
+        userid = fbresponse[Object.keys(fbresponse)[2]];
+        if (userid != null) {
+            localStorage.setItem("userid", userid);
+        }
+        usergender = fbresponse[Object.keys(fbresponse)[3]];
+        if (usergender != null) {
+            localStorage.setItem("usergender", usergender);
+        }
+        return userfirstname, userlastname, usergender, userid;
+
+    });
+
+	FB.api('/me/friends', function(response){
+		window.master.fbUsers = response.data;
+	}, {scope: 'user_friends'});	
+}
+function doGl() {
+	var GgImg = window.gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getImageUrl();
+	var GgProfileName = window.gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getGivenName(); //First Name
+	var GgProfileSurName = window.gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getFamilyName(); //Last Name
+	var GgUID = window.gapi.auth2.getAuthInstance().currentUser.get().getId();
+
+	$("#UserProfilePic>img").attr('src', GgImg);	
+	$("#UserProfileName1").text(GgProfileName);
+	$("#UserProfileUID1").text(GgUID);
+	
+	if (userid == GgUID){
+		setLevelProgressBar();
+	}
+    userfirstname = GgProfileName;
+    userid = GgUID;
+    userlastname = GgProfileName;
+    if (userfirstname != null) {
+        localStorage.setItem("userfirstname", userfirstname);
+    }
+    if (userlastname != null) {
+        localStorage.setItem("userlastname", userlastname);
+    }
+    if (userid != null) {
+        localStorage.setItem("userid", userid);
+    }
+    return userfirstname, userlastname, usergender, userid;
+
+}
 window.master.fbUsers=[];
+
+var Lmagarversion = "";
+
+window.LMGameConfiguration = $.ajax({
+    type: "GET",
+    url: "https://legendmod.ml/agario/live/" + Lmagarversion + "GameConfiguration.json",
+    async: false,
+    datatype: "jsonp",
+    success: function(info) {
+        //var GameConfiguration = info;
+    }
+}).responseJSON;
+//weird but it works....
+
+setTimeout(function() {
+    if (window.LMGameConfiguration == undefined) {
+        window.LMGameConfiguration = $.ajax({
+            type: "GET",
+            url: "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + "GameConfiguration.json",
+            async: false,
+            datatype: "jsonp",
+            success: function(info) {
+                //var GameConfiguration = info;
+            }
+        }).responseJSON;
+    }
+}, 3000);
+
+function getInfo() {
+    $.ajax({
+        type: "GET",
+        url: master.master_url_http + "/info",
+        datatype: "json",
+        success: function(info) {
+            //$("#currentRegion").html($('#region').val());
+            var regions = info.regions;
+            var currentRegion;
+            for (var key in regions) {
+                if (key == $('#region').val()) {
+                    currentRegion = regions[key];
+                    break;
+                }
+            }
+            //console.log(info);
+            //console.log(currentRegion);
+            if (currentRegion != undefined) {
+                $("#numPlayers").html(kFormatter(currentRegion.numPlayers));
+                $("#numServers").html(currentRegion.numRealms);
+                $("#pps").html(Math.round(currentRegion.avgPlayersPerRealm));
+            }
+            $("#totalPlayers").html(kFormatter(info.totals.numPlayers));
+        }
+    });
+}
