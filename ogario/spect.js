@@ -1,4 +1,4 @@
-//SPECS v1.7l
+//SPECS v1.7m
 
 function addBox() {
   let spect = new Spect();
@@ -45,8 +45,8 @@ function addFullSpectator() {
 var spects = [];
 class Spect {
     constructor() {
-        //this.number = spects.length + 1
-		this.number = spects.length
+        this.number = spects.length + 1
+		//this.number = spects.length
         this.ws = null
         this.socket = null
         this.protocolKey = null
@@ -590,8 +590,8 @@ class Spect {
 				if (this.timer && performance.now()-this.timer>3000){
 						console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
 						
-						spects[this.number].closeConnection()
-						spects = spects.slice(this.number+1);
+						spects[this.number-1].closeConnection()
+						spects = spects.slice(this.number);
 						
 				}				
                 break;			
