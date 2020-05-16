@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.650
+// v1.651
 
 
 //window.testobjects = {};
@@ -169,6 +169,7 @@ function autoRandomPotionDigger() {
 		}
     }, 5000); 	
 }
+
 function userLeaguesInfoRequest(slot) {
     var bytes = [8, 1, 18, 8, 8, 130, 1, 146, 8, 2, 8, 1];
     window.core.proxyMobileData(bytes); //response 131	
@@ -182,10 +183,7 @@ function PotionDrinker(slot) {
     var bytes = [8, 1, 18, 7, 8, 124, 226, 7, 2, 8, slot];
     window.core.proxyMobileData(bytes); //PotionDrinker(1) 1 2 3 common rare mystical
 }
-function PotionDrinkerIDK(slot) {
-	var bytes = [8, 1, 18, 7, 8, 122, 210, 7, 2, 8, slot] 
-    window.core.proxyMobileData(bytes); //PotionDrinkerRare(1) rare
-}
+
 function PotionDrinkerIDK(slot) {
 	var bytes = [8, 1, 18, 7, 8, 122, 210, 7, 2, 8, slot] 
     window.core.proxyMobileData(bytes); //PotionDrinkerRare(2) rare
@@ -685,32 +683,7 @@ function calcTarget() {};
 function CellTimerTrigger() {};
 
 //function historystate(){};
-var Lmagarversion = "";
 
-window.LMGameConfiguration = $.ajax({
-    type: "GET",
-    url: "https://legendmod.ml/agario/live/" + Lmagarversion + "GameConfiguration.json",
-    async: false,
-    datatype: "jsonp",
-    success: function(info) {
-        //var GameConfiguration = info;
-    }
-}).responseJSON;
-//weird but it works....
-
-setTimeout(function() {
-    if (window.LMGameConfiguration == undefined) {
-        window.LMGameConfiguration = $.ajax({
-            type: "GET",
-            url: "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + "GameConfiguration.json",
-            async: false,
-            datatype: "jsonp",
-            success: function(info) {
-                //var GameConfiguration = info;
-            }
-        }).responseJSON;
-    }
-}, 3000);
 setTimeout(function() {
     if (window.LMGameConfiguration != undefined) {
         window.LMAgarGameConfiguration = window.LMGameConfiguration;
@@ -12698,7 +12671,19 @@ function exitFullscreen() {
     }
 }
 
+function preEmbPassword(){
+            if (!window.preEmbPass) {
+                window.preEmbPass=true
+                embPassword()
+            }
+}
 
+function embPassword(){
+            if (clanpass != null && clanpass != "") {
+                $("#clantag").val(clanpass);
+                $('#clantag').css('background-color', '#ff6347');
+            }
+}
 
 
 /*
