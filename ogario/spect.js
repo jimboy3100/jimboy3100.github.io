@@ -1,4 +1,4 @@
-//SPECS v1.7f
+//SPECS v1.7g
 
 function addBox() {
   let spect = new Spect();
@@ -601,7 +601,9 @@ class Spect {
 				else if (this.timer && performance.now()-this.timer>3000){
 						console.log('[SPECT] Multibox Player lost');	
 				}	
+				console.log(performance.now()-this.timer)
 				this.timer=performance.now();
+				
 				break;
             default:
                 console.log('[SPECT] Unknown sub opcode:', message.readUInt8(0));
