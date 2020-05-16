@@ -595,7 +595,7 @@ class Spect {
 				}				
                 break;			
             case 64:
-				if (!this.openFirst){ //jimboy3100
+				if (!this.openFirst || !this.player){ //jimboy3100
 				this.openFirst = true
                 this.viewMinX = (message.readDoubleLE(offset));
                 offset += 8;
