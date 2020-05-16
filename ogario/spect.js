@@ -1,4 +1,4 @@
-//SPECS v1.7o
+//SPECS v1.7p
 
 function addBox() {
   let spect = new Spect();
@@ -253,10 +253,9 @@ class Spect {
         this.sendAction(17);
     }
     sendNick(nick) {
-        this.playerNick = nick;
         var self = this
         var sendSpawn = function(token) {
-            nick = window.unescape(window.encodeURIComponent(this.playerNick));
+            nick = window.unescape(window.encodeURIComponent(nick));
             var view = self.createView(1+nick.length+1+token.length+1);
             var pos = 1
             for (let length = 0; length < nick.length; length++,pos++) view.setUint8(pos, nick.charCodeAt(length))
