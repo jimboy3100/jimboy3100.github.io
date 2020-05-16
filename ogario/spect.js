@@ -1,4 +1,4 @@
-//SPECS v1.7i
+//SPECS v1.7j
 
 function addBox() {
   let spect = new Spect();
@@ -587,7 +587,8 @@ class Spect {
                 this.updateCells(message, offset);
 				//jimboy3100
 				if (this.timer && performance.now()-this.timer>3000){
-						console.log('[SPECT] Multibox Player lost');	
+						console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
+						
 						spects[this.number].closeConnection()
 						spects[this.number]={}
 				}				
