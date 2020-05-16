@@ -1,4 +1,4 @@
-//SPECS v1.7e
+//SPECS v1.7f
 
 function addBox() {
   let spect = new Spect();
@@ -598,10 +598,8 @@ class Spect {
                 this.viewMaxY = (message.readDoubleLE(offset));
                 this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
 				} //
-				else if (this.timer){
-					if (performance.now()-this.timer>3000){
-						console.log('[SPECT] Multibox Player lost');
-					}	
+				else if (this.timer && performance.now()-this.timer>3000){
+						console.log('[SPECT] Multibox Player lost');	
 				}	
 				this.timer=performance.now();
 				break;
