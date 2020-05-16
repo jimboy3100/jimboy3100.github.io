@@ -1,4 +1,4 @@
-//SPECS v1.7d
+//SPECS v1.7e
 
 function addBox() {
   let spect = new Spect();
@@ -597,18 +597,14 @@ class Spect {
                 offset += 8;
                 this.viewMaxY = (message.readDoubleLE(offset));
                 this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
-                break;
 				} //
-				else{
-					if (!this.timer){
-						this.timer=performance.now();
-					}
-					else{
-						if (performance.now()-this.timer>3000){
-							console.log('[SPECT] Multibox Player lost');
-						}
-					}					
-				}
+				else if (this.timer){
+					if (performance.now()-this.timer>3000){
+						console.log('[SPECT] Multibox Player lost');
+					}	
+				}	
+				this.timer=performance.now();
+				break;
             default:
                 console.log('[SPECT] Unknown sub opcode:', message.readUInt8(0));
                 break;
