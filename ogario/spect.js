@@ -1,4 +1,4 @@
-//SPECS v1.8f
+//SPECS v1.8g
 
 function addBox() {
   let spect = new Spect();
@@ -826,11 +826,11 @@ class Spect {
             const isVirus = flags & 1;
             const isFood = extendedFlags & 1;
             const isFriend = extendedFlags & 2;
-            //const invisible = this.staticX!=null?this.isInView(x, y):false;
+
                   id = this.newID(id);
                   //snez
 				  //x = this.getX(x),
-                  //y = this.getY(y);
+                  //y = this.getY(y);							  
             var cell = null;
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
@@ -850,7 +850,11 @@ class Spect {
                         legendmod.viruses.push(cell);
                     }
                     legendmod.cells.push(cell);
-
+                        if (this.playerCellIDs.indexOf(id) != -1 && this.playerCells.indexOf(cell) == -1) {
+                            cell.isPlayerCell = true;
+                            this.playerColor = color;
+                            this.playerCells.push(cell);
+                        }	
                 } else {
                     //legendmod.food.push(cell);
                 }
