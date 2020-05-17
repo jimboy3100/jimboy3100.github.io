@@ -1,4 +1,4 @@
-//SPECS v1.9b
+//SPECS v1.9c
 
 function addBox() {
   let spect = new Spect();
@@ -750,7 +750,7 @@ class Spect {
 				this.playerCellIDs.splice(this.playerCellIDs.indexOf(victimID), 1) 
 				this.playerCells.splice(cells, 1);
 			}
-			if (this.active = true && this.playerCellIDs.length === 0) {
+			if (this.active == true && this.playerCellIDs.length === 0) {
 				this.active = false
 						console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
 						window.multiboxPlayerEnabled = null
