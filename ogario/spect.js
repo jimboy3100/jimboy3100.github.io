@@ -1,4 +1,4 @@
-//SPECS v1.8k
+//SPECS v1.8l
 
 function addBox() {
   let spect = new Spect();
@@ -228,11 +228,11 @@ class Spect {
     } 
 	//spects[0].sendGplusToken(master.accessToken)
 	getTheOppositeSocialToken(){
-		if (master.context = "facebook" && localStorage.getItem("accessTokenGPlus")){
+		if (master.context == "facebook" && localStorage.getItem("accessTokenGPlus")){
 			this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
 			console.log('[SPECT] Login Tokens - Main: Facebook, Multi: Google')
 		}
-		else if (master.context = "google" && localStorage.getItem("accessTokenFB")){
+		else if (master.context == "google" && localStorage.getItem("accessTokenFB")){
 			this.sendFbToken(localStorage.getItem("accessTokenFB"))
 			console.log('[SPECT] Login Tokens - Main: Google, Multi: Facebook')
 		}
