@@ -1,4 +1,4 @@
-//SPECS v1.9e
+//SPECS v1.9c
 
 function addBox() {
   let spect = new Spect();
@@ -481,9 +481,9 @@ class Spect {
 
                 break;
             case 32:	
-			  this.active = true
 			  var temp = view.getUint32(offset, true)			  
 			  this.playerCellIDs.push(this.newID(temp));
+			  this.active = true
               console.log('case 32');
 				if (!this.openSecond){ //jimboy3100
 					this.openSecond = true			  
@@ -611,8 +611,8 @@ class Spect {
                 this.serverTimeDiff = Date.now() - this.serverTime;
                 
                 if(this.player==true){
-                  //this.active = true
-                  this.sendCursor()
+					this.active = true
+                    this.sendCursor()
                   this.sendNick($("#nick").val())
                 } else {
                   this.sendSpectate();
@@ -750,8 +750,11 @@ class Spect {
 				this.playerCellIDs.splice(this.playerCellIDs.indexOf(victimID), 1) 
 				this.playerCells.splice(cells, 1);
 			}
-			if (this.active = true && this.playerCellIDs.length === 0) {
-				//this.active = false
+			if (this.playerCellIDs.length!=0){
+				this.activatedcells = true
+			}
+			if (this.active = true && this.activatedcells && this.playerCellIDs.length === 0) {
+				this.active = false
 						console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
 						window.multiboxPlayerEnabled = null
 						var temp = this.number-1
