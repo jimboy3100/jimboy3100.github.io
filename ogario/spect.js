@@ -1,4 +1,4 @@
-//SPECS v1.8p
+//SPECS v1.8q
 
 function addBox() {
   let spect = new Spect();
@@ -480,8 +480,9 @@ class Spect {
               console.log('case 18');
 
                 break;
-            case 32:		
-			  this.playerCellIDs.push(view.getUint32(offset, true));
+            case 32:	
+			  temp = view.getUint32(offset, true)			  
+			  this.playerCellIDs.push(this.newID(temp));
 			  this.active = true
               console.log('case 32');
 				if (!this.openSecond){ //jimboy3100
@@ -746,7 +747,10 @@ class Spect {
         for (var length = 0; length < eatEventsLength; length++) {
             const eaterID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset))];
             const victimID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset + 4))];
-			if (this.playerCellIDs.includes(victimID)) this.playerCellIDs.splice(this.playerCellIDs.indexOf(victimID), 1) //remove user cell id if victim was his cell
+			if (this.playerCellIDs.includes(victimID)){
+				this.playerCellIDs.splice(this.playerCellIDs.indexOf(victimID), 1) 
+				this.playerCells.splice(cells, 1);
+			}//remove user cell id if victim was his cell
 			//delete legendmod.indexedCells[victimID] //don't even wait for Legend mod, delete eaten cells here
             //console.log('victim isFood',victimID.isFood)
             offset += 8;
