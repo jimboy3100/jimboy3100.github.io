@@ -45,6 +45,10 @@ ProLicenceUsersTable = {
             "reason": "Donate",
             "notes": "Siah"
         }, 	
+        "87b8a4f8-0cb4-448d-bedc-358a3010c7e6": {
+            "reason": "Donate",
+            "notes": "Fiku"
+        },		
         "7aa2d964-ac82-497c-aa34-25cc342299bd": {
             "reason": "Donate",
             "notes": "CentralAsia"
