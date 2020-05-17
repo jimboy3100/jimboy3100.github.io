@@ -1,4 +1,4 @@
-//SPECS v1.8o
+//SPECS v1.8p
 
 function addBox() {
   let spect = new Spect();
@@ -69,7 +69,7 @@ class Spect {
         this.targetX = null
         this.targetY = null
 		this.playerCellIDs = []
-		this.playerCells = [
+		this.playerCells = []
         this.connect()
     }
     reset() {
@@ -90,7 +90,7 @@ class Spect {
         this.targetX = null
         this.targetY = null
 		this.playerCellIDs = []
-		this.playerCells = [
+		this.playerCells = []
 
     }
     connect() {
