@@ -1,4 +1,4 @@
-//SPECS v1.8u
+//SPECS v1.8v
 
 function addBox() {
   let spect = new Spect();
@@ -780,14 +780,14 @@ class Spect {
             offset += 4;
             let y = view.readInt32LE(offset);
             offset += 4;
-			/*snez
+			
 			var invisible;
 			if (!this.player){
 				invisible = this.staticX!=null?this.isInView(x, y):false;
 			}
 			else{
-				legendmod.isInView(x,y,mass)
-			}*/
+				//legendmod.isInView(x,y,mass) show all
+			}
             x = this.getX(x);
             y = this.getY(y);
             var a = x - legendmod.playerX;
@@ -800,20 +800,7 @@ class Spect {
 			}
 			//
             const size = view.readUInt16LE(offset);
-            offset += 2;
-			
-			//try
-			var invisible;
-			if (!this.player){
-				invisible = this.staticX!=null?this.isInView(x, y):false;
-			}
-			else{
-				if (legendmod.isInView(x,y,size)){
-					invisible =true 
-				}
-			}			
-			//
-			
+            offset += 2;			
             const flags = view.readUInt8(offset++);
             let extendedFlags = 0;
             if (flags & 128) {
