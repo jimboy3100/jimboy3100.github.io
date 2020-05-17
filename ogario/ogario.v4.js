@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.653
+// v1.655
 
 
 //window.testobjects = {};
@@ -7735,7 +7735,7 @@ function thelegendmodproject() {
             // check this
             //if (this.spectator>0 && this.isInV()||this.invisible==true) {
             //if (this.spectator>0 && this.isInV() || this.invisible==true || this.spectator>0 && this.isInView()) {
-            if (this.invisible == true || this.spectator > 0 && this.isInV()) {
+            if (this.invisible == true || (this.spectator > 0 && this.isInV() && !window.multiboxPlayerEnabled)) {
                 return;
             }
             //					
@@ -8924,10 +8924,14 @@ function thelegendmodproject() {
                 case 17:
                     window.testobjectsOpcode17 = data;
                     var x = data.getFloat32(s, true);
+					if (!window.multiboxPlayerEnabled){
                     this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
+					}
                     s += 4;
                     var y = data.getFloat32(s, true);
+					if (!window.multiboxPlayerEnabled){
                     this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
+					}
                     s += 4;
                     this.scale = data.getFloat32(s, true);
                     break;
