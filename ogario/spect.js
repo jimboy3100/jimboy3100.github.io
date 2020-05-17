@@ -1,4 +1,4 @@
-//SPECS v1.8b
+//SPECS v1.8c
 
 function addBox() {
   let spect = new Spect();
@@ -228,18 +228,22 @@ class Spect {
 	getTheOppositeSocialToken(){
 		if (master.context = "facebook" && localStorage.getItem("accessTokenGPlus")){
 			this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
+			toastr.info('[SPECT] Login Tokens - Main: Facebook, Multi: Google')
 		}
 		else if (master.context = "google" && localStorage.getItem("accessTokenFB")){
 			this.sendFbToken(localStorage.getItem("accessTokenFB"))
+			toastr.info('[SPECT] Login Tokens - Main: Google, Multi: Facebook')
 		}
 		else if (!master.context && localStorage.getItem("accessTokenGPlus")){
 			this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
+			toastr.info('[SPECT] Login Tokens - Main: No, Multi: Google')
 		}	
 		else if (!master.context && localStorage.getItem("accessTokenFB")){
 			this.sendFbToken(localStorage.getItem("accessTokenFB"))
+			toastr.info('[SPECT] Login Tokens - Main: No, Multi: Facebook')
 		}		
 		else {
-			toastr.info('<b>[SERVER]:</b> No Login token stored for multi player')
+			toastr.info('[SPECT] Login Tokens - Main: No, Multi: No')
 		}			
 	}	
         sendFbToken(token) {
