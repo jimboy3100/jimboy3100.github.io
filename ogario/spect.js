@@ -1,4 +1,4 @@
-//SPECS v1.8r
+//SPECS v1.8s
 
 function addBox() {
   let spect = new Spect();
@@ -481,7 +481,7 @@ class Spect {
 
                 break;
             case 32:	
-			  temp = view.getUint32(offset, true)			  
+			  var temp = view.getUint32(offset, true)			  
 			  this.playerCellIDs.push(this.newID(temp));
 			  this.active = true
               console.log('case 32');
