@@ -1,4 +1,4 @@
-//v12.55
+//v12.55a
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -714,8 +714,8 @@ function legendmaster(self) {
             this.context = "google";
             this.accessToken = value;	
 			//jimboy3100
-			this.accessTokenGPlus = session;
-			self.localStorage.setItem("accessTokenGPlus", session); 
+			this.accessTokenGPlus = value;
+			self.localStorage.setItem("accessTokenGPlus", value); 
         },
         login() {
             if (this.accessToken) {
