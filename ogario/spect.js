@@ -1,4 +1,4 @@
-//SPECS v1.8s
+//SPECS v1.8r
 
 function addBox() {
   let spect = new Spect();
@@ -458,19 +458,18 @@ class Spect {
             case 17:
 			
                 this.viewX = view.getFloat32(offset, true);
-				offset += 4;
 				//legendmod.viewX = this.viewX 
 				
 				//var x=this.viewX = view.getFloat32(offset, true);
 				//this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
-                
+                offset += 4;
 				this.viewY = view.getFloat32(offset, true);
-				offset += 4;
+				
 				//legendmod.viewY = this.viewY 
 				
 				//var y=this.viewX = view.getFloat32(offset, true);
 				//this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
-                
+                offset += 4;
                 this.scale = view.getFloat32(offset, true);
                 break;
             case 18:
@@ -482,7 +481,7 @@ class Spect {
 
                 break;
             case 32:	
-			  var temp = view.getUint32(offset, true)			  
+			  temp = view.getUint32(offset, true)			  
 			  this.playerCellIDs.push(this.newID(temp));
 			  this.active = true
               console.log('case 32');
@@ -876,7 +875,7 @@ class Spect {
             cell.targetSize = size;
             cell.isFood = isFood;
             cell.isVirus = isVirus;
-
+            //cell.invisible = invisible;
             if (skin) {
                 cell.skin = skin;
             }
