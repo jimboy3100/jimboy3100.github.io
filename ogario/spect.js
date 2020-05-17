@@ -1,4 +1,4 @@
-//SPECS v1.8v
+//SPECS v1.8s
 
 function addBox() {
   let spect = new Spect();
@@ -780,14 +780,8 @@ class Spect {
             offset += 4;
             let y = view.readInt32LE(offset);
             offset += 4;
-			
-			var invisible;
-			if (!this.player){
-				invisible = this.staticX!=null?this.isInView(x, y):false;
-			}
-			else{
-				//legendmod.isInView(x,y,mass) show all
-			}
+			//snez
+			const invisible = this.staticX!=null?this.isInView(x, y):false;
             x = this.getX(x);
             y = this.getY(y);
             var a = x - legendmod.playerX;
@@ -800,7 +794,7 @@ class Spect {
 			}
 			//
             const size = view.readUInt16LE(offset);
-            offset += 2;			
+            offset += 2;
             const flags = view.readUInt8(offset++);
             let extendedFlags = 0;
             if (flags & 128) {
@@ -882,6 +876,7 @@ class Spect {
             cell.targetSize = size;
             cell.isFood = isFood;
             cell.isVirus = isVirus;
+
             if (skin) {
                 cell.skin = skin;
             }
