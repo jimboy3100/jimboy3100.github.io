@@ -1,4 +1,4 @@
-//SPECS v1.9
+//SPECS v1.9a
 
 function addBox() {
   let spect = new Spect();
@@ -927,9 +927,18 @@ class Spect {
                 y += n.y / playersLength;
             }
             legendmod.viewX = x;
-            legendmod.viewY = y;
+            legendmod.viewY = y;			
+			
+			
 			this.playerX = x;
 			this.playerY = y;
+			
+			if (!this.openThird){ 
+				this.openThird = true	
+				window.targetingLeadX = this.playerX
+				window.targetingLeadY = this.playerY
+				legendmod.drawCommander2 = true;			
+			}
             this.playerSize = size;
             this.playerMass = ~~(targetSize / 100);
 	}	
