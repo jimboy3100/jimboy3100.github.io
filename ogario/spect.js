@@ -1,4 +1,4 @@
-//SPECS v1.9c
+//SPECS v1.9d
 
 function addBox() {
   let spect = new Spect();
@@ -230,20 +230,23 @@ class Spect {
     } 
 	//spects[0].sendGplusToken(master.accessToken)
 	getTheOppositeSocialToken(){
-		if (master.context == "facebook" && localStorage.getItem("accessTokenGPlus")){
+		if (master.context == "facebook" && !legendmod.play){
+			this.sendFbToken(localStorage.getItem("accessTokenFB"))
+			document.getElementById("gplusLogin").click()
+			console.log('[SPECT] Login Tokens - Main: Google, Multi: Facebook')
+			
+		}
+		else if (master.context == "google" && !legendmod.play){
 			this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
+			master.facebookLogin()
 			console.log('[SPECT] Login Tokens - Main: Facebook, Multi: Google')
 		}
-		else if (master.context == "google" && localStorage.getItem("accessTokenFB")){
-			this.sendFbToken(localStorage.getItem("accessTokenFB"))
-			console.log('[SPECT] Login Tokens - Main: Google, Multi: Facebook')
-		}
-		else if (!master.context && localStorage.getItem("accessTokenGPlus")){
-			this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
+		else if (master.context == "facebook" && legendmod.play){
+			//this.sendFbToken(localStorage.getItem("accessTokenFB"))
 			console.log('[SPECT] Login Tokens - Main: No, Multi: Google')
 		}	
-		else if (!master.context && localStorage.getItem("accessTokenFB")){
-			this.sendFbToken(localStorage.getItem("accessTokenFB"))
+		else if (!master.context && legendmod.play){
+			//this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
 			console.log('[SPECT] Login Tokens - Main: No, Multi: Facebook')
 		}		
 		else {
