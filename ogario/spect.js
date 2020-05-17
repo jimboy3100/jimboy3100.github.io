@@ -1,4 +1,4 @@
-//SPECS v1.8g
+//SPECS v1.8h
 
 function addBox() {
   let spect = new Spect();
@@ -856,7 +856,7 @@ class Spect {
                             this.playerCells.push(cell);
                         }	
                 } else {
-                    //legendmod.food.push(cell);
+                    legendmod.food.push(cell);
                 }
                 legendmod.indexedCells[id] = cell;
             }
