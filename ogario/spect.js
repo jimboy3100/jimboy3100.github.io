@@ -895,9 +895,12 @@ class Spect {
 
 
         if (this.playerCells.length) {
+			window.multiboxPlayerEnabled = true
             this.calculatePlayerMassAndPosition();
 		}
-	   
+	    else{
+			window.multiboxPlayerEnabled = false
+		}
        eatEventsLength = view.readUInt16LE(offset);
         offset += 2;
         for (length = 0; length < eatEventsLength; length++) {
@@ -926,9 +929,8 @@ class Spect {
                 x += n.x / playersLength;
                 y += n.y / playersLength;
             }
-            legendmod.viewX = x;
-            legendmod.viewY = y;			
-			
+				legendmod.viewX = x;
+				legendmod.viewY = y;			
 			
 			this.playerX = x;
 			this.playerY = y;
