@@ -1,4 +1,4 @@
-//v12.54
+//v12.55
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -705,11 +705,17 @@ function legendmaster(self) {
         },
         doLoginWithFB(session) {
             this.context = "facebook";
-            this.accessToken = session;
+            this.accessToken = session;		
+			//jimboy3100
+			this.accessTokenFB = session;
+			self.localStorage.setItem("accessTokenFB", session); 
         },
         doLoginWithGPlus(value) {
             this.context = "google";
-            this.accessToken = value;
+            this.accessToken = value;	
+			//jimboy3100
+			this.accessTokenGPlus = session;
+			self.localStorage.setItem("accessTokenGPlus", session); 
         },
         login() {
             if (this.accessToken) {
