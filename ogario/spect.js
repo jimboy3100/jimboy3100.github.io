@@ -1,4 +1,4 @@
-//SPECS v1.7y
+//SPECS v1.7z
 
 function addBox() {
   let spect = new Spect();
@@ -224,6 +224,7 @@ class Spect {
     convertY(y) {
         return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY)
     } 
+	//spects[0].sendGplusToken(master.accessToken)
         sendFbToken(token) {
             this.sendAccessToken(token, 2);
         }
@@ -243,19 +244,19 @@ class Spect {
             var curr = shapes.length;
             var count = legendmod.clientVersionString.length;
             var data = [oW, 8, 1, 18];
-            spect.writeUint32(data, curr + count + 23);
+            this.writeUint32(data, curr + count + 23);
             data.push(8, 10, 82);
-            spect.writeUint32(data, curr + count + 18);
+            this.writeUint32(data, curr + count + 18);
             data.push(8, options, 18, count + 8, 8, 5, 18, count);
             var prev = 0;
             for (; prev < count; prev++) {
                 data.push(legendmod.clientVersionString.charCodeAt(prev));
             }
             data.push(24, 0, 32, 0, 26);
-            spect.writeUint32(data, curr + 3);
+            this.writeUint32(data, curr + 3);
             //this.writeUint32(data, curr + 3);
             data.push(10);
-            spect.writeUint32(data, curr);
+            this.writeUint32(data, curr);
             //this.writeUint32(data, curr);
             prev = 0;
             for (; prev < curr; prev++) {
