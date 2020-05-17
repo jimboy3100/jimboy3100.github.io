@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.651
+// v1.652
 
 
 //window.testobjects = {};
@@ -10799,7 +10799,7 @@ function thelegendmodproject() {
                     this.drawViewport(this.ctx, 'Viewport', LM.camMinX, LM.camMinY, LM.camMaxX, LM.camMaxY, defaultSettings.bordersColor, 15);
 
                     //this.newViewport( this.ctx, 'Client', LM.viewX, LM.viewY, LM.isSpectateEnabled, LM.isFreeSpectate, LM.leaderboard, LM.playerCells)
-                    if (window.fullSpectator) {
+                    if (window.fullSpectator || window.ingameSpectator) {
                         for (let i = 0; i < spects.length; i++) {
                             this.newViewport(this.ctx, spects[i].number, spects[i].getX(spects[i].viewX), spects[i].getY(spects[i].viewY), spects[i].isSpectateEnabled, spects[i].isFreeSpectate, [], [])
                         }
