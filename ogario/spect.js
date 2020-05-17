@@ -1,4 +1,4 @@
-//SPECS v1.8n
+//SPECS v1.8o
 
 function addBox() {
   let spect = new Spect();
@@ -69,6 +69,7 @@ class Spect {
         this.targetX = null
         this.targetY = null
 		this.playerCellIDs = []
+		this.playerCells = [
         this.connect()
     }
     reset() {
@@ -89,6 +90,7 @@ class Spect {
         this.targetX = null
         this.targetY = null
 		this.playerCellIDs = []
+		this.playerCells = [
 
     }
     connect() {
@@ -178,7 +180,7 @@ class Spect {
             //this.deletefromObject("indexedCells")
             //this.cells = [];
             //this.deleteFromArray("cells")
-            //this.playerCells = [];
+            this.playerCells = [];
             this.playerCellIDs = [];
             //this.food = [];
             //this.viruses = [];
