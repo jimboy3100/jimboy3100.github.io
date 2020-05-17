@@ -1,4 +1,4 @@
-//SPECS v1.8e
+//SPECS v1.8f
 
 function addBox() {
   let spect = new Spect();
@@ -68,6 +68,7 @@ class Spect {
         this.active = false
         this.targetX = null
         this.targetY = null
+		this.playerCellIDs = []
         this.connect()
     }
     reset() {
@@ -87,6 +88,7 @@ class Spect {
         this.active = false
         this.targetX = null
         this.targetY = null
+		this.playerCellIDs = []
 
     }
     connect() {
@@ -228,22 +230,22 @@ class Spect {
 	getTheOppositeSocialToken(){
 		if (master.context = "facebook" && localStorage.getItem("accessTokenGPlus")){
 			this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
-			toastr.info('[SPECT] Login Tokens - Main: Facebook, Multi: Google')
+			console.log('[SPECT] Login Tokens - Main: Facebook, Multi: Google')
 		}
 		else if (master.context = "google" && localStorage.getItem("accessTokenFB")){
 			this.sendFbToken(localStorage.getItem("accessTokenFB"))
-			toastr.info('[SPECT] Login Tokens - Main: Google, Multi: Facebook')
+			console.log('[SPECT] Login Tokens - Main: Google, Multi: Facebook')
 		}
 		else if (!master.context && localStorage.getItem("accessTokenGPlus")){
 			this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
-			toastr.info('[SPECT] Login Tokens - Main: No, Multi: Google')
+			console.log('[SPECT] Login Tokens - Main: No, Multi: Google')
 		}	
 		else if (!master.context && localStorage.getItem("accessTokenFB")){
 			this.sendFbToken(localStorage.getItem("accessTokenFB"))
-			toastr.info('[SPECT] Login Tokens - Main: No, Multi: Facebook')
+			console.log('[SPECT] Login Tokens - Main: No, Multi: Facebook')
 		}		
 		else {
-			toastr.info('[SPECT] Login Tokens - Main: No, Multi: No')
+			console.log('[SPECT] Login Tokens - Main: No, Multi: No')
 		}			
 	}	
         sendFbToken(token) {
@@ -460,6 +462,7 @@ class Spect {
 				//this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
                 offset += 4;
 				this.viewY = view.getFloat32(offset, true);
+				
 				//legendmod.viewY = this.viewY 
 				
 				//var y=this.viewX = view.getFloat32(offset, true);
@@ -475,11 +478,14 @@ class Spect {
               console.log('case 18');
 
                 break;
-            case 32:
-			  //this.playerCellIDs.push(view.getUint32(offset, true));
+            case 32:		
+			  this.playerCellIDs.push(view.getUint32(offset, true));
 			  this.active = true
               console.log('case 32');
-			  this.getTheOppositeSocialToken()
+				if (!this.openSecond){ //jimboy3100
+					this.openSecond = true			  
+					this.getTheOppositeSocialToken()
+				}
                 break;
             case 50:
               console.log('case 50');
@@ -738,6 +744,8 @@ class Spect {
         for (var length = 0; length < eatEventsLength; length++) {
             const eaterID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset))];
             const victimID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset + 4))];
+			if (this.playerCellIDs.includes(victimID)) this.playerCellIDs.splice(this.playerCellIDs.indexOf(victimID), 1) //remove user cell id if victim was his cell
+			delete legendmod.indexedCells[victimID] //don't even wait for Legend mod, delete eaten cells here
             //console.log('victim isFood',victimID.isFood)
             offset += 8;
             if (eaterID && victimID) {
