@@ -1,4 +1,4 @@
-//SPECS v1.8a
+//SPECS v1.8b
 
 function addBox() {
   let spect = new Spect();
@@ -475,6 +475,7 @@ class Spect {
 			  //this.playerCellIDs.push(view.getUint32(offset, true));
 			  this.active = true
               console.log('case 32');
+			  
 
                 break;
             case 50:
@@ -535,6 +536,7 @@ class Spect {
             case 103:
 			  this.accessTokenSent = true
               console.log('case 103');
+			  this.getTheOppositeSocialToken()
                 break;
             case 104:
               console.log('case 104');
