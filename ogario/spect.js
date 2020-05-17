@@ -1,4 +1,4 @@
-//SPECS v1.8c
+//SPECS v1.8d
 
 function addBox() {
   let spect = new Spect();
@@ -655,9 +655,11 @@ class Spect {
 				//jimboy3100
 				if (this.player && this.timer && performance.now()-this.timer>3000){
 						console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
-						
-						spects[this.number-1].closeConnection()
-						spects = spects.slice(this.number);
+						var temp = this.number-1
+						if (spects[temp]){
+							spects[temp].closeConnection()
+							spects = spects.slice(temp+1);
+						}
 						
 				}				
                 break;			
