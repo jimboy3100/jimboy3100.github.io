@@ -1,4 +1,4 @@
-//SPECS v1.8
+//SPECS v1.8a
 
 function addBox() {
   let spect = new Spect();
@@ -225,6 +225,23 @@ class Spect {
         return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY)
     } 
 	//spects[0].sendGplusToken(master.accessToken)
+	getTheOppositeSocialToken(){
+		if (master.context = "facebook" && localStorage.getItem("accessTokenGPlus")){
+			this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
+		}
+		else if (master.context = "google" && localStorage.getItem("accessTokenFB")){
+			this.sendFbToken(localStorage.getItem("accessTokenFB"))
+		}
+		else if (!master.context && localStorage.getItem("accessTokenGPlus")){
+			this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
+		}	
+		else if (!master.context && localStorage.getItem("accessTokenFB")){
+			this.sendFbToken(localStorage.getItem("accessTokenFB"))
+		}		
+		else {
+			toastr.info('<b>[SERVER]:</b> No Login token stored for multi player')
+		}			
+	}	
         sendFbToken(token) {
             this.sendAccessToken(token, 2);
         }
@@ -518,7 +535,6 @@ class Spect {
             case 103:
 			  this.accessTokenSent = true
               console.log('case 103');
-
                 break;
             case 104:
               console.log('case 104');
@@ -685,6 +701,7 @@ class Spect {
             console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
         }
     }
+
         /*translateX(x) {
             return this.mapMaxX - (x - this.mapMinX);
         }
