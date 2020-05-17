@@ -1,4 +1,4 @@
-//SPECS v1.8s
+//SPECS v1.8t
 
 function addBox() {
   let spect = new Spect();
@@ -458,18 +458,19 @@ class Spect {
             case 17:
 			
                 this.viewX = view.getFloat32(offset, true);
+				offset += 4;
 				//legendmod.viewX = this.viewX 
 				
 				//var x=this.viewX = view.getFloat32(offset, true);
 				//this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
-                offset += 4;
+                
 				this.viewY = view.getFloat32(offset, true);
-				
+				offset += 4;
 				//legendmod.viewY = this.viewY 
 				
 				//var y=this.viewX = view.getFloat32(offset, true);
 				//this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
-                offset += 4;
+                
                 this.scale = view.getFloat32(offset, true);
                 break;
             case 18:
@@ -779,8 +780,14 @@ class Spect {
             offset += 4;
             let y = view.readInt32LE(offset);
             offset += 4;
-			//snez
-			const invisible = this.staticX!=null?this.isInView(x, y):false;
+			/*snez
+			const invisible;
+			if (!this.player){
+				invisible = this.staticX!=null?this.isInView(x, y):false;
+			}
+			else{
+				legendmod.isInView(x,y,mass)
+			}*/
             x = this.getX(x);
             y = this.getY(y);
             var a = x - legendmod.playerX;
@@ -794,6 +801,19 @@ class Spect {
 			//
             const size = view.readUInt16LE(offset);
             offset += 2;
+			
+			//try
+			const invisible;
+			if (!this.player){
+				invisible = this.staticX!=null?this.isInView(x, y):false;
+			}
+			else{
+				if (legendmod.isInView(x,y,size)){
+					invisible =true 
+				}
+			}			
+			//
+			
             const flags = view.readUInt8(offset++);
             let extendedFlags = 0;
             if (flags & 128) {
@@ -875,7 +895,6 @@ class Spect {
             cell.targetSize = size;
             cell.isFood = isFood;
             cell.isVirus = isVirus;
-            //cell.invisible = invisible;
             if (skin) {
                 cell.skin = skin;
             }
