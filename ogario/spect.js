@@ -1,4 +1,4 @@
-//SPECS v1.9b
+//SPECS v1.9c
 
 function addBox() {
   let spect = new Spect();
@@ -782,7 +782,13 @@ class Spect {
             let y = view.readInt32LE(offset);
             offset += 4;
 			//snez
-			const invisible = this.staticX!=null?this.isInView(x, y):false;
+			var invisible;
+			if (this.player){
+				
+			}
+			else{
+				invisible = this.staticX!=null?this.isInView(x, y):false;
+			}
             x = this.getX(x);
             y = this.getY(y);
             var a = x - legendmod.playerX;
