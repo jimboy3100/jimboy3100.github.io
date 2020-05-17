@@ -1,4 +1,4 @@
-//SPECS v1.8l
+//SPECS v1.8n
 
 function addBox() {
   let spect = new Spect();
@@ -886,6 +886,11 @@ class Spect {
             }
         }
        // var rmaxedX=rmaxedY=rminedX=rminedY=0
+
+
+        if (this.playerCells.length) {
+            this.calculatePlayerMassAndPosition();
+		}
 	   
        eatEventsLength = view.readUInt16LE(offset);
         offset += 2;
@@ -902,6 +907,26 @@ class Spect {
     newID(id) {
       return id + this.number + 10000000000
     }
+	calculatePlayerMassAndPosition(){
+            var size = 0;
+            var targetSize = 0;
+            var x = 0;
+            var y = 0;
+            playersLength = this.playerCells.length;
+            for (let length = 0; length < playersLength; length++) {
+                var n = this.playerCells[length];
+                size += n.size;
+                targetSize += n.targetSize * n.targetSize;
+                x += n.x / playersLength;
+                y += n.y / playersLength;
+            }
+            legendmod.viewX = x;
+            legendmod.viewY = y;
+			this.playerX = x;
+			this.playerY = y;
+            this.playerSize = size;
+            this.playerMass = ~~(targetSize / 100);
+	}	
 }
 
     window.sendAction = action => {
