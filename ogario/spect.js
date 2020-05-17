@@ -1,4 +1,4 @@
-//SPECS v1.7w
+//SPECS v1.7x
 
 function addBox() {
   let spect = new Spect();
@@ -48,6 +48,7 @@ class Spect {
         this.number = spects.length + 1
 		//this.number = spects.length
         this.ws = null
+		this.accessTokenSent = false
         this.socket = null
         this.protocolKey = null
         this.clientKey = null
@@ -71,6 +72,7 @@ class Spect {
     }
     reset() {
         this.ws = null
+		this.accessTokenSent = false
         //this.socket = null
         this.protocolKey = null
         this.clientKey = null
@@ -221,7 +223,42 @@ class Spect {
     }    
     convertY(y) {
         return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY)
-    }  
+    } 
+        sendAccessToken(shapes, options, oW) {
+            if (!legendmod.integrity) {
+                return
+            }
+            if (this.accessTokenSent) {
+                return;
+            }
+            if (!oW) {
+                oW = 102;
+            }
+            var curr = shapes.length;
+            var count = legendmod.clientVersionString.length;
+            var data = [oW, 8, 1, 18];
+            spect.writeUint32(data, curr + count + 23);
+            data.push(8, 10, 82);
+            spect.writeUint32(data, curr + count + 18);
+            data.push(8, options, 18, count + 8, 8, 5, 18, count);
+            var prev = 0;
+            for (; prev < count; prev++) {
+                data.push(legendmod.clientVersionString.charCodeAt(prev));
+            }
+            data.push(24, 0, 32, 0, 26);
+            spect.writeUint32(data, curr + 3);
+            //this.writeUint32(data, curr + 3);
+            data.push(10);
+            spect.writeUint32(data, curr);
+            //this.writeUint32(data, curr);
+            prev = 0;
+            for (; prev < curr; prev++) {
+                data.push(shapes.charCodeAt(prev));
+            }
+            data = new Uint8Array(data);
+            var raw_basefont = new DataView(data.buffer);
+            this.sendMessage(raw_basefont);
+        }	
     sendCursor() {
             this.positionController = setInterval(() => {
                 this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
@@ -255,15 +292,6 @@ class Spect {
     sendNick(nick) {
         var self = this
 		this.playerNick = nick;
-        /*var sendSpawn = function(token) {
-            nick = window.unescape(window.encodeURIComponent(nick));
-            var view = self.createView(1+nick.length+1+token.length+1);
-            var pos = 1
-            for (let length = 0; length < nick.length; length++,pos++) view.setUint8(pos, nick.charCodeAt(length))
-            pos++
-            for (let length = 0; length < token.length; length++,pos++) view.setUint8(pos, token.charCodeAt(length));
-            self.sendMessage(view);
-        }*/
             var sendSpawn = function(token) {
                 //var token = grecaptcha.getResponse();
                 nick = window.unescape(window.encodeURIComponent(self.playerNick));
@@ -484,7 +512,7 @@ class Spect {
 
                 break;
             case 103:
-
+			  this.accessTokenSent = true
               console.log('case 103');
 
                 break;
