@@ -1,4 +1,4 @@
-//SPECS v1.8q
+//SPECS v1.8r
 
 function addBox() {
   let spect = new Spect();
@@ -918,7 +918,7 @@ class Spect {
             var targetSize = 0;
             var x = 0;
             var y = 0;
-            playersLength = this.playerCells.length;
+            var playersLength = this.playerCells.length;
             for (let length = 0; length < playersLength; length++) {
                 var n = this.playerCells[length];
                 size += n.size;
