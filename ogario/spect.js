@@ -1,4 +1,4 @@
-//SPECS v1.9a
+//SPECS v1.9b
 
 function addBox() {
   let spect = new Spect();
@@ -660,7 +660,7 @@ class Spect {
             case 16:
                 this.updateCells(message, offset);
 				//jimboy3100
-				if (this.player && this.timer && performance.now()-this.timer>2000){
+				if (this.player && this.timer && performance.now()-this.timer>3000){
 						console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
 						window.multiboxPlayerEnabled = null
 						var temp = this.number-1
@@ -751,9 +751,6 @@ class Spect {
 			if (this.playerCellIDs.includes(victimID)){
 				this.playerCellIDs.splice(this.playerCellIDs.indexOf(victimID), 1) 
 				this.playerCells.splice(cells, 1);
-			}
-			if (this.active = true && this.playerCellIDs.length === 0) {
-				this.active = false
 			}
 			//remove user cell id if victim was his cell
 			//delete legendmod.indexedCells[victimID] //don't even wait for Legend mod, delete eaten cells here
