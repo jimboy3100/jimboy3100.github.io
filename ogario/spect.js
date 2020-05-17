@@ -1,4 +1,4 @@
-//SPECS v1.9a
+//SPECS v1.9b
 
 function addBox() {
   let spect = new Spect();
@@ -659,16 +659,15 @@ class Spect {
         switch (message.readUInt8(offset++)) {
             case 16:
                 this.updateCells(message, offset);
-				//jimboy3100
-				if (this.player && this.timer && performance.now()-this.timer>3000){
+				/*if (this.player && this.timer && performance.now()-this.timer>3000){
 						console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
+						window.multiboxPlayerEnabled = null
 						var temp = this.number-1
 						if (spects[temp]){
 							spects[temp].closeConnection()
 							spects = spects.slice(temp+1);
 						}
-						
-				}				
+				}	*/			
                 break;			
             case 64:
 				if (!this.openFirst){ //jimboy3100
@@ -682,7 +681,7 @@ class Spect {
                 this.viewMaxY = (message.readDoubleLE(offset));
                 this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
 				} //
-				this.timer=performance.now();			
+				//this.timer=performance.now();			
 				break;
             default:
                 console.log('[SPECT] Unknown sub opcode:', message.readUInt8(0));
@@ -750,7 +749,18 @@ class Spect {
 			if (this.playerCellIDs.includes(victimID)){
 				this.playerCellIDs.splice(this.playerCellIDs.indexOf(victimID), 1) 
 				this.playerCells.splice(cells, 1);
-			}//remove user cell id if victim was his cell
+			}
+			if (this.active = true && this.playerCellIDs.length === 0) {
+				this.active = false
+						console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
+						window.multiboxPlayerEnabled = null
+						var temp = this.number-1
+						if (spects[temp]){
+							spects[temp].closeConnection()
+							spects = spects.slice(temp+1);
+						}				
+			}
+			//remove user cell id if victim was his cell
 			//delete legendmod.indexedCells[victimID] //don't even wait for Legend mod, delete eaten cells here
             //console.log('victim isFood',victimID.isFood)
             offset += 8;
@@ -899,7 +909,7 @@ class Spect {
             this.calculatePlayerMassAndPosition();
 		}
 	    else{
-			window.multiboxPlayerEnabled = false
+			window.multiboxPlayerEnabled = null
 		}
        eatEventsLength = view.readUInt16LE(offset);
         offset += 2;
