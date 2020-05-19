@@ -1,4 +1,4 @@
-//SPECS v1.9o
+//SPECS v1.9p
 
 function addBox() {
   let spect = new Spect();
@@ -756,7 +756,10 @@ class Spect {
             const eaterID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset))];
             const victimID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset + 4))];
 			if (this.playerCellIDs.includes(victimID)){
+				console.log('cell ids', this.playerCellIDs)
+				console.log('erase cell id', victimID)
 				this.playerCellIDs.splice(this.playerCellIDs.indexOf(victimID), 1) 
+				console.log('cells after erase', this.playerCellIDs)
 				this.playerCells.splice(cells, 1);
 			}
 			//remove user cell id if victim was his cell
@@ -875,8 +878,10 @@ class Spect {
                             cell.isPlayerCell = true;
                             this.playerColor = color;
                             this.playerCells.push(cell);
-							console.log('cell is active')
-							this.active = true
+							if (spects[0].playerCells==1){
+								console.log('player cell is active')
+								this.active = true
+							}
                         }	
                 } else {
                     //legendmod.food.push(cell); //this causes problems
