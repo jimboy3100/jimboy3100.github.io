@@ -1,4 +1,4 @@
-//SPECS v1.9p
+//SPECS v1.9q
 
 function addBox() {
   let spect = new Spect();
@@ -878,7 +878,7 @@ class Spect {
                             cell.isPlayerCell = true;
                             this.playerColor = color;
                             this.playerCells.push(cell);
-							if (spects[0].playerCells==1){
+							if (this.playerCells.length==1){
 								console.log('player cell is active')
 								this.active = true
 							}
