@@ -1,4 +1,4 @@
-//SPECS v2.0a
+//SPECS v2.0b
 
 function addBox() {
   let spect = new Spect();
@@ -891,7 +891,7 @@ class Spect {
                 legendmod.indexedCells[id] = cell;
             }
 			else{
-				console.log("id",id,"x",x,"y",y)
+				console.log("id",id,"x",x,"y",y,"size",size)
 			}
             if (cell){
             if (name) {
