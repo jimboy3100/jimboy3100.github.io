@@ -1,4 +1,4 @@
-//SPECS v1.9d
+//SPECS v1.9e
 
 function addBox() {
   let spect = new Spect();
@@ -230,22 +230,17 @@ class Spect {
     } 
 	//spects[0].sendGplusToken(master.accessToken)
 	getTheOppositeSocialToken(){
-		if (master.context == "facebook" && !legendmod.play){
-			this.sendFbToken(localStorage.getItem("accessTokenFB"))
-			document.getElementById("gplusLogin").click()
-			console.log('[SPECT] Login Tokens - Main: Google, Multi: Facebook')
-			
+		if (master.context == "facebook"){		
+			window.MultiPending=this
+			document.getElementById("gplusLogin").click()			
+			console.log('[SPECT] Login Tokens - Main: Google, Multi: Facebook')		
 		}
-		else if (master.context == "google" && !legendmod.play){
-			this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
-			master.facebookLogin()
+		else if (master.context == "google"){
+			window.MultiPending=this
+			master.facebookLogin()					
 			console.log('[SPECT] Login Tokens - Main: Facebook, Multi: Google')
-		}
-		else if (master.context == "facebook" && legendmod.play){
-			//this.sendFbToken(localStorage.getItem("accessTokenFB"))
-			console.log('[SPECT] Login Tokens - Main: No, Multi: Google')
 		}	
-		else if (!master.context && legendmod.play){
+		else if (!master.context){
 			//this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
 			console.log('[SPECT] Login Tokens - Main: No, Multi: Facebook')
 		}		
@@ -924,6 +919,7 @@ class Spect {
         }
 		
     }
+
     newID(id) {
       return id + this.number + 10000000000
     }
@@ -960,3 +956,11 @@ class Spect {
     window.sendAction = action => {
         legendmod.sendAction(action);
     };
+function MultiTokenReady(spector){
+	if (master.accessTokenFB){
+		spector.sendFbToken(master.accessTokenFB)
+	}
+	else if (master.accessTokenGPlus){
+		spector.sendGplusToken(master.accessTokenGPlus)
+	}
+}	
