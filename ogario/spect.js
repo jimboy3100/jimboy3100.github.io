@@ -1,4 +1,4 @@
-//SPECS v1.9r
+//SPECS v1.9s
 
 function addBox() {
   let spect = new Spect();
@@ -341,13 +341,7 @@ class Spect {
         }
         const view = this.createView(13);
         view.setUint8(0, 16);
-      if(this.player==true&&!this.active==true) { 
-        
-        view.setInt32(1, this.targetX, true);
-        view.setInt32(5, this.targetY, true);
-        console.log(this.targetX, this.targetY)
-      } else {
-
+      if(this.player==true&&this.active) { 
         view.setInt32(1, x, true);
         view.setInt32(5, y, true);
         this.targetX = x;
