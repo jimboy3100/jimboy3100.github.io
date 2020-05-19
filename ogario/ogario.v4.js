@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.656
+// v1.657
 
 
 //window.testobjects = {};
@@ -10321,10 +10321,10 @@ function thelegendmodproject() {
             if (true) {
                 var mass = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
                 // this.STE = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null; //Sonia2
-                this.STE = Math.floor(mass * 0.375); //Sonia2
-                this.MTE = Math.floor(mass * 0.75); //Sonia2
-                this.BMTE = Math.ceil(mass * 1.33); //Sonia2
-                this.BSTE = Math.ceil(mass * 2.66); //Sonia2
+                this.STE = Math.floor(mass * Math.pow(1.15, 2)/4); //Sonia2
+                this.MTE = Math.floor(mass * Math.pow(1.15, 2)/2); //Sonia2
+                this.BMTE = Math.ceil(mass * Math.pow(1.15, 2)); //Sonia2
+                this.BSTE = Math.ceil(mass * Math.pow(1.15, 2)*2); //Sonia2
                 this.TTE = Math.ceil(mass / 6); //Sonia2
                 this.PTE = Math.floor(mass * 0.66); //Sonia2
             }
@@ -10433,25 +10433,25 @@ function thelegendmodproject() {
 					});
 				},*/
 
-        //Sonia (entire function updated) // this is great :D
+        //Sonia (entire function updated) // this is great :D Math.pow(1.15, 2)
         cacheCells(x, y, size, mass) {
-            return mass >= 5.32 ? void this.biggerSTEDCellsCache.push({
+            return mass >= Math.pow(1.15, 2) * 4 ? void this.biggerSTEDCellsCache.push({
                 'x': x,
                 'y': y,
                 'size': size
-            }) : mass >= 2.66 ? void this.biggerSTECellsCache.push({
+            }) : mass >= Math.pow(1.15, 2) * 2 ? void this.biggerSTECellsCache.push({
                 'x': x,
                 'y': y,
                 'size': size
-            }) : mass >= 1.33 ? void this.biggerCellsCache.push({
+            }) : mass >= Math.pow(1.15, 2) ? void this.biggerCellsCache.push({
                 'x': x,
                 'y': y,
                 'size': size
-            }) : mass < 1.33 && mass > 0.75 ? void 0 : mass > 0.375 ? void this.smallerCellsCache.push({
+            }) : mass < Math.pow(1.15, 2) && mass > Math.pow(1.15, 2) / 2 ? void 0 : mass > Math.pow(1.15, 2) / 4 ? void this.smallerCellsCache.push({
                 'x': x,
                 'y': y,
                 'size': size
-            }) : mass > 0.1875 ? void this.STECellsCache.push({
+            }) : mass > Math.pow(1.15, 2) / 8 ? void this.STECellsCache.push({
                 'x': x,
                 'y': y,
                 'size': size
@@ -10469,13 +10469,13 @@ function thelegendmodproject() {
             if (isPlayer) {
                 return ogarcopythelb.color
             } else {
-                if (mass >= 10.64) return defaultSettings.enemyBSTEDColor
-                else if (mass >= 5.32) return defaultSettings.enemyBSTEDColor
-                else if (mass >= 2.66) return defaultSettings.enemyBSTEColor
-                else if (mass >= 1.33) return defaultSettings.enemyBColor
-                else if (mass >= 0.75) return '#FFDC00'
-                else if (mass >= 0.375) return defaultSettings.enemySColor
-                else if (mass >= 0.1875) return defaultSettings.enemySSTEColor
+                if (mass >= Math.pow(1.15, 2)*8) return defaultSettings.enemyBSTEDColor
+                else if (mass >= Math.pow(1.15, 2)*4) return defaultSettings.enemyBSTEDColor
+                else if (mass >= Math.pow(1.15, 2)*2) return defaultSettings.enemyBSTEColor
+                else if (mass >= Math.pow(1.15, 2)) return defaultSettings.enemyBColor
+                else if (mass >= Math.pow(1.15, 2)/2) return '#FFDC00'
+                else if (mass >= Math.pow(1.15, 2)/4) return defaultSettings.enemySColor
+                else if (mass >= Math.pow(1.15, 2)/8) return defaultSettings.enemySSTEColor
                 else return defaultSettings.enemySSTEDColor
             }
         },
@@ -10509,8 +10509,8 @@ function thelegendmodproject() {
                         app.sendNick('');
                         break;
                     case 32:
-						if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled]){
-							spects[window.multiboxPlayerEnabled].sendSplit()
+						if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1]){
+							spects[window.multiboxPlayerEnabled-1].sendSplit()
 						}
 						else{
 							app.sendSplit();
@@ -10523,12 +10523,13 @@ function thelegendmodproject() {
                         app.sendSpectate();
                         break;
                     case 87:
-						if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled]){
-							spects[window.multiboxPlayerEnabled].sendEject()
+						if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1]){
+							spects[window.multiboxPlayerEnabled-1].sendEject()
 						}
 						else{
 							app.sendEject();
 						}
+						break;
                 }
             }, document.onkeyup = function(e) {
                 app.pressedKeys[e.keyCode] = false;
