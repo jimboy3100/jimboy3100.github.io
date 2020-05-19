@@ -1,4 +1,4 @@
-//SPECS v1.9w
+//SPECS v1.9x
 
 function addBox() {
   let spect = new Spect();
@@ -821,10 +821,10 @@ class Spect {
             if (flags & 128) {
                 extendedFlags = view.readUInt8(offset++);
             }
-            let color = null,
-                skin = null,
-                name = '',
-                accountID = null;
+            let color = "#bbbbbb";
+            let skin = null;
+            let name = '';
+            let accountID = null;
             if (flags & 2) {
                 const r = view.readUInt8(offset++);
                 const g = view.readUInt8(offset++);
@@ -866,7 +866,7 @@ class Spect {
                     cell.color = color;
                 }
             } 		
-			else {
+			else if (id && x && y && size) {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                 cell.time = this.time;
                 cell.spectator = this.number;
