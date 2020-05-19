@@ -1,4 +1,4 @@
-//SPECS v1.9e
+//SPECS v1.9f
 
 function addBox() {
   let spect = new Spect();
@@ -483,10 +483,10 @@ class Spect {
 			  this.playerCellIDs.push(this.newID(temp));
 			  this.active = true
               console.log('case 32');
-				if (!this.openSecond){ //jimboy3100
+				/*if (!this.openSecond){ 
 					this.openSecond = true			  
 					this.getTheOppositeSocialToken()
-				}
+				}*/
                 break;
             case 50:
               console.log('case 50');
@@ -609,6 +609,10 @@ class Spect {
                 this.serverTimeDiff = Date.now() - this.serverTime;
                 
                 if(this.player==true){
+					if (!window.MultiWS || window.MultiWS!=this.ws){ 
+						window.MultiWS = this.ws			  
+						this.getTheOppositeSocialToken()
+				}
                   this.active = true
                   this.sendCursor()
                   this.sendNick($("#nick").val())
@@ -957,6 +961,7 @@ class Spect {
         legendmod.sendAction(action);
     };
 function MultiTokenReady(spector){
+	console.log(spector)
 	if (master.accessTokenFB){
 		spector.sendFbToken(master.accessTokenFB)
 	}
