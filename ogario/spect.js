@@ -1,4 +1,4 @@
-//SPECS v1.9m
+//SPECS v1.9n
 
 function addBox() {
   let spect = new Spect();
@@ -666,7 +666,8 @@ class Spect {
             case 16:
                 this.updateCells(message, offset);
 				//jimboy3100
-				if (this.player && this.playerCells.length==0 && this.timer && performance.now()-this.timer>3000){
+				//if (this.player && this.active && this.playerCells.length==0 && this.timer && performance.now()-this.timer>3000){
+				if (this.player && this.active && this.playerCells.length==0 && this.timer){
 						this.active = false;
 						console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
 						window.multiboxPlayerEnabled = null
@@ -689,7 +690,7 @@ class Spect {
                 this.viewMaxY = (message.readDoubleLE(offset));
                 this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
 				} //
-				this.timer=performance.now();			
+				//this.timer=performance.now();			
 				break;
             default:
                 console.log('[SPECT] Unknown sub opcode:', message.readUInt8(0));
