@@ -1,4 +1,4 @@
-//SPECS v1.9i
+//SPECS v1.9j
 
 function addBox() {
   let spect = new Spect();
@@ -541,6 +541,7 @@ class Spect {
             case 102:
 						this.active = true
 						this.sendCursor()
+						console.log("SendNick with")
 						this.sendNick($("#nick").val())
               console.log('case 102');
 
@@ -613,8 +614,9 @@ class Spect {
 					if (!window.MultiWS || window.MultiWS!=this.ws){ 
 						window.MultiWS = this.ws			  
 						this.getTheOppositeSocialToken()
-				}
+					}
 					else{
+						console.log("SendNick without")
 						this.active = true
 						this.sendCursor()
 						this.sendNick($("#nick").val())
