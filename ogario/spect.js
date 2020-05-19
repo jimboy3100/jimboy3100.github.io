@@ -1,4 +1,4 @@
-//SPECS v1.9x
+//SPECS v1.9y
 
 function addBox() {
   let spect = new Spect();
@@ -890,7 +890,7 @@ class Spect {
                 }
                 legendmod.indexedCells[id] = cell;
             }
-            
+            if (cell){
             if (name) {
                 cell.targetNick = name;
             }
@@ -914,6 +914,7 @@ class Spect {
                 cell.isFriend = isFriend;
                 //console.log('FB friend cell in view', isFriend)
             }
+			}
         }
        // var rmaxedX=rmaxedY=rminedX=rminedY=0
 
