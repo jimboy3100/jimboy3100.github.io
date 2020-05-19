@@ -1,4 +1,4 @@
-//SPECS v1.9l
+//SPECS v1.9m
 
 function addBox() {
   let spect = new Spect();
@@ -617,7 +617,6 @@ class Spect {
 					}
 					else{
 						console.log("SendNick without")
-						this.active = true
 						this.sendCursor()
 						this.sendNick($("#nick").val())
 					}
@@ -875,6 +874,7 @@ class Spect {
                             cell.isPlayerCell = true;
                             this.playerColor = color;
                             this.playerCells.push(cell);
+							console.log('cell is active')
 							this.active = true
                         }	
                 } else {
