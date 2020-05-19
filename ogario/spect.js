@@ -1,4 +1,4 @@
-//SPECS v1.9s
+//SPECS v1.9t
 
 function addBox() {
   let spect = new Spect();
@@ -289,7 +289,9 @@ class Spect {
         }	
     sendCursor() {
             this.positionController = setInterval(() => {
-                this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
+				if (window.multiboxPlayerEnabled || this.isFreeSpectate){
+					this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
+				}
             }, 50);
             //this.sendSpectate()
             //this.sendFreeSpectate()
@@ -915,7 +917,7 @@ class Spect {
 
 
         if (this.playerCells.length) {
-			window.multiboxPlayerEnabled = true
+			window.multiboxPlayerEnabled = this.number
             this.calculatePlayerMassAndPosition();
 		}
 	    else{
