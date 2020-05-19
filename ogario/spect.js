@@ -1,4 +1,4 @@
-//SPECS v1.9k
+//SPECS v1.9l
 
 function addBox() {
   let spect = new Spect();
@@ -539,7 +539,7 @@ class Spect {
                 
                 break;
             case 102:
-						this.active = true
+						//this.active = true
 						this.sendCursor()
 						console.log("SendNick with")
 						this.sendNick($("#nick").val())
