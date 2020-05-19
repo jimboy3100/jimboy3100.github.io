@@ -1,4 +1,4 @@
-//v12.55a
+//v12.55e
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -77,20 +77,27 @@ function legendmaster(self) {
         if (response.status === "connected") {
             var accessToken = response.authResponse.accessToken;
             if (accessToken) {
-                master.doLoginWithFB(accessToken);
-                self.FB.api("/me/picture?width=180&height=180", function(images) {
-                    if (images.data && images.data.url) {
-                        options.userInfo.picture = images.data.url;
-                        $(".agario-profile-picture").attr("src", images.data.url);
-                        self.updateStorage();
-                    }
-                });
-				doFB()
-                $("#helloContainer").attr("data-logged-in", "1");
-                //$(".progress-bar-striped").width("100%");
-                $("#login-google").attr("class", "menu-bar-button");
-                $("#login-facebook").attr("class", "menu-bar-button barf");
-                toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter126 + " Facebook!");
+				if (window.MultiPending){				
+					master.accessTokenFB = accessToken;				
+					MultiTokenReady(window.MultiPending);
+					window.MultiPending = null;
+				}	
+				else{
+					master.doLoginWithFB(accessToken);
+					self.FB.api("/me/picture?width=180&height=180", function(images) {
+						if (images.data && images.data.url) {
+							options.userInfo.picture = images.data.url;
+							$(".agario-profile-picture").attr("src", images.data.url);
+							self.updateStorage();
+						}
+					});
+					doFB()
+					$("#helloContainer").attr("data-logged-in", "1");
+					//$(".progress-bar-striped").width("100%");
+					$("#login-google").attr("class", "menu-bar-button");
+					$("#login-facebook").attr("class", "menu-bar-button barf");
+					toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter126 + " Facebook!");
+				}
             } else {
                 if (f < 3) {
                     f++;
@@ -130,20 +137,27 @@ function legendmaster(self) {
 
     function transform(event) {
         if (event && api && "1" === options.loginIntent && options.context === "google" && api.isSignedIn.get()) {
-            var idToken = event.getAuthResponse().id_token;
-            var attrVal = event.getBasicProfile().getImageUrl();
-            master.doLoginWithGPlus(idToken);
-            if (attrVal) {
-                options.userInfo.picture = attrVal;
-                self.updateStorage();
-                $(".agario-profile-picture").attr("src", attrVal);
-            }
-			doGl()
-            $("#helloContainer").attr("data-logged-in", "1");
-            //$(".progress-bar-striped").width("100%");
-            $("#login-facebook").attr("class", "menu-bar-button");
-            $("#login-google").attr("class", "menu-bar-button barf");
-            toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter126 + " Google!");
+			if (window.MultiPending){				
+				master.accessTokenGPlus = event.getAuthResponse().id_token;
+				MultiTokenReady(window.MultiPending);
+				window.MultiPending = null;
+			}
+			else{
+				var idToken = event.getAuthResponse().id_token;
+				var attrVal = event.getBasicProfile().getImageUrl();
+				master.doLoginWithGPlus(idToken);
+				if (attrVal) {
+					options.userInfo.picture = attrVal;
+					self.updateStorage();
+					$(".agario-profile-picture").attr("src", attrVal);
+				}
+				doGl()
+				$("#helloContainer").attr("data-logged-in", "1");
+				//$(".progress-bar-striped").width("100%");
+				$("#login-facebook").attr("class", "menu-bar-button");
+				$("#login-google").attr("class", "menu-bar-button barf");
+				toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter126 + " Google!");
+			}
         }
     }
     var options = {
@@ -706,16 +720,10 @@ function legendmaster(self) {
         doLoginWithFB(session) {
             this.context = "facebook";
             this.accessToken = session;		
-			//jimboy3100
-			this.accessTokenFB = session;
-			self.localStorage.setItem("accessTokenFB", session); 
         },
         doLoginWithGPlus(value) {
             this.context = "google";
             this.accessToken = value;	
-			//jimboy3100
-			this.accessTokenGPlus = value;
-			self.localStorage.setItem("accessTokenGPlus", value); 
         },
         login() {
             if (this.accessToken) {
