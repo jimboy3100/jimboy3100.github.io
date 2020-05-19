@@ -68,7 +68,7 @@
             },
             'hk-multiboxswap': {
                 label: textLanguage['hk-multiboxswap'],
-                defaultKey: 'Tab',
+                defaultKey: 'TAB',
                 keyDown() {
                     application && application.multiboxswap();
                 },
