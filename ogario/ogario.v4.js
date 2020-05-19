@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.657
+// v1.661
 
 
 //window.testobjects = {};
@@ -934,6 +934,7 @@ var displayText = {
         'hk-doubleSplit': 'Podwójny podział',
         'hk-split16': 'Podział na 16',
         'hk-pause': 'Pauza kulki',
+		'hk-multiboxswap': 'Multibox Swap',		
         'hk-showTop5': 'Pokaż/ukryj top 5 teamu',
         'hk-showTime': 'Pokaż/ukryj aktualny czas',
         'hk-showSplitRange': 'Pokaż/ukryj zasięg podziału',
@@ -1354,6 +1355,7 @@ var displayText = {
         'hk-doubleSplit': 'Double split',
         'hk-split16': 'Split 16',
         'hk-pause': 'Cell pause',
+		'hk-multiboxswap': 'Multibox Swap',
         'hk-showTop5': 'Show/hide teamboard',
         'hk-showTime': 'Show/hide current time',
         'hk-showSplitRange': 'Show/hide split range',
@@ -3477,6 +3479,20 @@ function thelegendmodproject() {
                 $('#pause-hud').hide();
             }
         },
+        multiboxswap() {
+			if (spects.length){
+				addBox();
+				 toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Version 0.000001 of Multibox");
+			}
+			else if (!window.multiboxPlayerEnabledSaved){
+				window.multiboxPlayerEnabledSaved = window.multiboxPlayerEnabled
+				window.multiboxPlayerEnabled = null
+			}
+			else{
+				window.multiboxPlayerEnabled = window.multiboxPlayerEnabledSaved
+				window.multiboxPlayerEnabledSaved = null
+			}
+        },		
         setCenteredLb() {
             if (defaultmapsettings.centeredLb) {
                 $('#leaderboard-hud').addClass('hud-text-center');
@@ -10321,10 +10337,11 @@ function thelegendmodproject() {
             if (true) {
                 var mass = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
                 // this.STE = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null; //Sonia2
-                this.STE = Math.floor(mass * Math.pow(1.15, 2)/4); //Sonia2
-                this.MTE = Math.floor(mass * Math.pow(1.15, 2)/2); //Sonia2
-                this.BMTE = Math.ceil(mass * Math.pow(1.15, 2)); //Sonia2
-                this.BSTE = Math.ceil(mass * Math.pow(1.15, 2)*2); //Sonia2
+                //this.STE = Math.floor(mass * Math.pow(1.15, 2)/4); //Sonia2
+				this.STE = Math.floor(mass * 1.3333/4); //Sonia2
+                this.MTE = Math.floor(mass * 1.3333/2); //Sonia2
+                this.BMTE = Math.ceil(mass * 1.3333); //Sonia2
+                this.BSTE = Math.ceil(mass * 1.3333*2); //Sonia2
                 this.TTE = Math.ceil(mass / 6); //Sonia2
                 this.PTE = Math.floor(mass * 0.66); //Sonia2
             }
@@ -10433,25 +10450,25 @@ function thelegendmodproject() {
 					});
 				},*/
 
-        //Sonia (entire function updated) // this is great :D Math.pow(1.15, 2)
+        //Sonia (entire function updated) // this is great :D 
         cacheCells(x, y, size, mass) {
-            return mass >= Math.pow(1.15, 2) * 4 ? void this.biggerSTEDCellsCache.push({
+            return mass >= 1.3333 * 4 ? void this.biggerSTEDCellsCache.push({
                 'x': x,
                 'y': y,
                 'size': size
-            }) : mass >= Math.pow(1.15, 2) * 2 ? void this.biggerSTECellsCache.push({
+            }) : mass >= 1.3333 * 2 ? void this.biggerSTECellsCache.push({
                 'x': x,
                 'y': y,
                 'size': size
-            }) : mass >= Math.pow(1.15, 2) ? void this.biggerCellsCache.push({
+            }) : mass >= 1.3333 ? void this.biggerCellsCache.push({
                 'x': x,
                 'y': y,
                 'size': size
-            }) : mass < Math.pow(1.15, 2) && mass > Math.pow(1.15, 2) / 2 ? void 0 : mass > Math.pow(1.15, 2) / 4 ? void this.smallerCellsCache.push({
+            }) : mass < 1.3333 && mass > 1.3333 / 2 ? void 0 : mass > 1.3333 / 4 ? void this.smallerCellsCache.push({
                 'x': x,
                 'y': y,
                 'size': size
-            }) : mass > Math.pow(1.15, 2) / 8 ? void this.STECellsCache.push({
+            }) : mass > 1.3333 / 8 ? void this.STECellsCache.push({
                 'x': x,
                 'y': y,
                 'size': size
@@ -10469,13 +10486,13 @@ function thelegendmodproject() {
             if (isPlayer) {
                 return ogarcopythelb.color
             } else {
-                if (mass >= Math.pow(1.15, 2)*8) return defaultSettings.enemyBSTEDColor
-                else if (mass >= Math.pow(1.15, 2)*4) return defaultSettings.enemyBSTEDColor
-                else if (mass >= Math.pow(1.15, 2)*2) return defaultSettings.enemyBSTEColor
-                else if (mass >= Math.pow(1.15, 2)) return defaultSettings.enemyBColor
-                else if (mass >= Math.pow(1.15, 2)/2) return '#FFDC00'
-                else if (mass >= Math.pow(1.15, 2)/4) return defaultSettings.enemySColor
-                else if (mass >= Math.pow(1.15, 2)/8) return defaultSettings.enemySSTEColor
+                if (mass >= 1.3333*8) return defaultSettings.enemyBSTEDColor
+                else if (mass >= 1.3333*4) return defaultSettings.enemyBSTEDColor
+                else if (mass >= 1.3333*2) return defaultSettings.enemyBSTEColor
+                else if (mass >= 1.3333) return defaultSettings.enemyBColor
+                else if (mass >= 1.3333/2) return '#FFDC00'
+                else if (mass >= 1.3333/4) return defaultSettings.enemySColor
+                else if (mass >= 1.3333/8) return defaultSettings.enemySSTEColor
                 else return defaultSettings.enemySSTEDColor
             }
         },
@@ -10509,12 +10526,7 @@ function thelegendmodproject() {
                         app.sendNick('');
                         break;
                     case 32:
-						if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1]){
-							spects[window.multiboxPlayerEnabled-1].sendSplit()
-						}
-						else{
-							app.sendSplit();
-						}
+						app.sendSplit();
                         break;
                     case 81:
                         app.sendFreeSpectate();
@@ -10523,12 +10535,7 @@ function thelegendmodproject() {
                         app.sendSpectate();
                         break;
                     case 87:
-						if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1]){
-							spects[window.multiboxPlayerEnabled-1].sendEject()
-						}
-						else{
-							app.sendEject();
-						}
+						app.sendEject();
 						break;
                 }
             }, document.onkeyup = function(e) {
@@ -11940,12 +11947,21 @@ function thelegendmodproject() {
             LM.sendSpectate();
         },
         eject() {
-            LM.sendEject();
-            window.lastejected = true;
+			if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1]){
+				spects[window.multiboxPlayerEnabled-1].sendEject()
+			}
+			else{
+				LM.sendEject();
+			}			    
+            window.lastejected = true;			
         },
         split() {
-            LM.sendSplit();
-
+			if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1]){
+				spects[window.multiboxPlayerEnabled-1].sendSplit()
+			}
+			else{
+				LM.sendSplit();
+			}			     
         },
         specialOn() {
             LM.sendFreeSpectate();
