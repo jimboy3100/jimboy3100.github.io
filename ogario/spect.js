@@ -1,4 +1,4 @@
-//SPECS v1.9t
+//SPECS v1.9u
 
 function addBox() {
   let spect = new Spect();
@@ -917,7 +917,10 @@ class Spect {
 
 
         if (this.playerCells.length) {
-			window.multiboxPlayerEnabled = this.number
+			if (!this.openSecond){
+				this.openSecond = true;
+				window.multiboxPlayerEnabled = this.number
+			}
             this.calculatePlayerMassAndPosition();
 		}
 	    else{
@@ -974,11 +977,9 @@ class Spect {
     };
 function MultiTokenReady(spector){
 	if (spector && master.accessTokenFB){
-		console.log('fb')
 		spector.sendFbToken(master.accessTokenFB)
 	}
 	else if (spector && master.accessTokenGPlus){
-		console.log('gl')
 		spector.sendGplusToken(master.accessTokenGPlus)
 	}
 }	
