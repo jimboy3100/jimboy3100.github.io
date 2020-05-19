@@ -1,4 +1,4 @@
-//SPECS v1.9g
+//SPECS v1.9h
 
 function addBox() {
   let spect = new Spect();
@@ -603,7 +603,6 @@ class Spect {
                 console.log('[SPECT] Received protocol key:', this.protocolKey);
                 const agarioReader = new Uint8Array(view.buffer, offset += 4);
                 this.clientKey = this.generateClientKey(this.ws, agarioReader);
-
                 break;
             case 242:
                 console.log('242')
@@ -965,11 +964,10 @@ class Spect {
         legendmod.sendAction(action);
     };
 function MultiTokenReady(spector){
-	console.log(spector)
-	if (master.accessTokenFB){
+	if (spector && master.accessTokenFB){
 		spector.sendFbToken(master.accessTokenFB)
 	}
-	else if (master.accessTokenGPlus){
+	else if (spector && master.accessTokenGPlus){
 		spector.sendGplusToken(master.accessTokenGPlus)
 	}
 }	
