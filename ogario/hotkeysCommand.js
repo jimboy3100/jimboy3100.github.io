@@ -66,6 +66,15 @@
                 keyUp: null,
                 type: 'normal'
             },
+            'hk-multiboxswap': {
+                label: textLanguage['hk-multiboxswap'],
+                defaultKey: 'Tab',
+                keyDown() {
+                    application && application.multiboxswap();
+                },
+                keyUp: null,
+                type: 'normal'
+            },			
             'hk-showTop5': {
                 label: textLanguage['hk-showTop5'],
                 defaultKey: 'T',
