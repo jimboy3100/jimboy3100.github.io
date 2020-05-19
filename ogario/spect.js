@@ -1,4 +1,4 @@
-//SPECS v1.9v
+//SPECS v1.9w
 
 function addBox() {
   let spect = new Spect();
@@ -111,12 +111,10 @@ class Spect {
       
             let view = this.createView(5);
             view.setUint8(0, 254);
-            //if(!window.game.protocolVersion) window.game.protocolVersion = 22
             view.setUint32(1, this.protocolVersion, true);
             this.sendMessage(view);
             view = this.createView(5);
             view.setUint8(0, 255);
-            //if(!window.game.clientVersion) window.game.clientVersion = this.clientVersion
             view.setUint32(1, this.clientVersion, true);
             this.sendMessage(view);
             this.connectionOpened = true;
@@ -190,6 +188,12 @@ class Spect {
                 cell.removeCell();
               }
             }
+            for(let cell of Object.values(legendmod.cells)) {
+              if(cell.spectator == this.number) {
+                cell.removeCell();
+              }
+            }			
+			
     }
     isSocketOpen() {
         return this.socket !== null && this.socket.readyState === this.socket.OPEN;
@@ -837,10 +841,8 @@ class Spect {
             if (flags & 4) {
                 skin = encode();
             }
-            if (flags & 8) {
-                //name = window.decodeURIComponent(window.escape(encode()));				
+            if (flags & 8) {				
                     name = window.decodeURIComponent(escape(encode()));
-					//jimboy3100
                     if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
                         legendmod.vanillaskins(name, skin);
                     }				
