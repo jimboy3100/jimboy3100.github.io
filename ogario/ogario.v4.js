@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.655
+// v1.656
 
 
 //window.testobjects = {};
@@ -149,7 +149,9 @@ function autocoins(slot) {
 	bytes.push(massBoostName.charCodeAt(i));
 	}	
 	window.core.proxyMobileData(bytes);
-	autoRandomPotionDigger();
+	if (defaultmapsettings.potionsDrinker){
+		autoRandomPotionDigger();
+	}
 //console.log(String.fromCharCode.apply(String, bytes));
 }
 
@@ -894,7 +896,8 @@ var displayText = {
         commandSound: 'Dźwięk powiadomienia o komendzie',
         virusSoundurl: 'Virus shot sound',
         virusSound: 'Virus shot sound',
-		massBooster: 'Mass *2 booster-> *3 booster',
+		potionsDrinker: 'Randomly drink Potions',	
+		massBooster: 'Mass *2 booster-> *3 booster',		
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
         showTop5: 'Pokaż top 5 teamu',
@@ -1314,6 +1317,7 @@ var displayText = {
         commandSound: 'Command notification sound',
         virusSoundurl: 'Virus shot sound',
         virusSound: 'Virus shot sound',
+		potionsDrinker: 'Randomly drink Potions',
 		massBooster: 'Mass *2 booster-> *3 booster',
         FacebookIDs: 'Facebook IDs',
         jellyPhisycs: 'Jelly physics',
@@ -2302,6 +2306,7 @@ var defaultmapsettings = {
     isAlphaChanged: false,
     jellyPhisycs: false,
     virusSound: false,
+	potionsDrinker: true,
 	massBooster: false,
     quickResp: true,
     autoResp: false,
@@ -4375,7 +4380,7 @@ function thelegendmodproject() {
 				this.addOptions([], "boardGroup");			
                 this.addOptions(["quickResp", "autoResp","spawnSpecialEffects"], "respGroup");
                 this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
-                this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound", "massBooster"], "massGroup");
+                this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virMassShots", "massStroke", "virusSound", "potionsDrinker", "massBooster"], "massGroup");
 				this.addOptions(["noSkins","customSkins", "vanillaSkins", "jellyPhisycs", "videoSkins", "videoSkinsMusic"], "skinsGroup");
                 this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
                 this.addOptions(["noColors","myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", "animatedRainbowColor"], "transparencyGroup");
@@ -10504,7 +10509,12 @@ function thelegendmodproject() {
                         app.sendNick('');
                         break;
                     case 32:
-                        app.sendSplit();
+						if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled]){
+							spects[window.multiboxPlayerEnabled].sendSplit()
+						}
+						else{
+							app.sendSplit();
+						}
                         break;
                     case 81:
                         app.sendFreeSpectate();
@@ -10513,7 +10523,12 @@ function thelegendmodproject() {
                         app.sendSpectate();
                         break;
                     case 87:
-                        app.sendEject();
+						if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled]){
+							spects[window.multiboxPlayerEnabled].sendEject()
+						}
+						else{
+							app.sendEject();
+						}
                 }
             }, document.onkeyup = function(e) {
                 app.pressedKeys[e.keyCode] = false;
