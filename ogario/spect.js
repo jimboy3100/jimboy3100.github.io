@@ -1,4 +1,4 @@
-//SPECS v1.9h
+//SPECS v1.9i
 
 function addBox() {
   let spect = new Spect();
@@ -665,15 +665,15 @@ class Spect {
             case 16:
                 this.updateCells(message, offset);
 				//jimboy3100
-				if (this.player && this.timer && performance.now()-this.timer>3000){
+				if (this.player && this.playerCells.length==0 && this.timer && performance.now()-this.timer>3000){
+						this.active = false;
 						console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
 						window.multiboxPlayerEnabled = null
 						var temp = this.number-1
 						if (spects[temp]){
 							spects[temp].closeConnection()
 							spects = spects.slice(temp+1);
-						}
-						
+						}					
 				}				
                 break;			
             case 64:
@@ -965,9 +965,11 @@ class Spect {
     };
 function MultiTokenReady(spector){
 	if (spector && master.accessTokenFB){
+		console.log('fb')
 		spector.sendFbToken(master.accessTokenFB)
 	}
 	else if (spector && master.accessTokenGPlus){
+		console.log('gl')
 		spector.sendGplusToken(master.accessTokenGPlus)
 	}
 }	
