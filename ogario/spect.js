@@ -1,4 +1,4 @@
-//SPECS v1.9u
+//SPECS v1.9v
 
 function addBox() {
   let spect = new Spect();
@@ -955,9 +955,10 @@ class Spect {
                 x += n.x / playersLength;
                 y += n.y / playersLength;
             }
-				legendmod.viewX = x;
-				legendmod.viewY = y;			
-			
+				if (window.multiboxPlayerEnabled){
+					legendmod.viewX = x;
+					legendmod.viewY = y;			
+				}
 			this.playerX = x;
 			this.playerY = y;
 			
