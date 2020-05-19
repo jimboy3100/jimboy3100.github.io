@@ -1,4 +1,4 @@
-//SPECS v1.9j
+//SPECS v1.9k
 
 function addBox() {
   let spect = new Spect();
@@ -481,7 +481,7 @@ class Spect {
             case 32:	
 			  var temp = view.getUint32(offset, true)			  
 			  this.playerCellIDs.push(this.newID(temp));
-			  this.active = true
+			  //this.active = true
               console.log('case 32');
 				/*if (!this.openSecond){ 
 					this.openSecond = true			  
@@ -875,6 +875,7 @@ class Spect {
                             cell.isPlayerCell = true;
                             this.playerColor = color;
                             this.playerCells.push(cell);
+							this.active = true
                         }	
                 } else {
                     //legendmod.food.push(cell); //this causes problems
