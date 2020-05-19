@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.661
+// v1.662
 
 
 //window.testobjects = {};
@@ -3480,7 +3480,7 @@ function thelegendmodproject() {
             }
         },
         multiboxswap() {
-			if (spects.length){
+			if (!spects.length){
 				addBox();
 				 toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Version 0.000001 of Multibox");
 			}
