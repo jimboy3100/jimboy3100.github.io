@@ -1,4 +1,4 @@
-//SPECS v1.9z
+//SPECS v2.0a
 
 function addBox() {
   let spect = new Spect();
@@ -892,6 +892,7 @@ class Spect {
             }
 			else{
 				console.log("id",id,"x",x,"y",y)
+			}
             if (cell){
             if (name) {
                 cell.targetNick = name;
