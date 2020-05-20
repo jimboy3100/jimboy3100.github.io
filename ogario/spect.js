@@ -1,4 +1,4 @@
-//SPECS v3.2d WORKS UNTIL HERE
+//SPECS v3.2e WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -873,8 +873,7 @@ class Spect {
                 const r = view.readUInt8(offset++);
                 const g = view.readUInt8(offset++);
                 const b = view.readUInt8(offset++);
-			   //snez	
-				color = defaultSettings.miniMapGhostCellsColor;			  
+			   //snez			  
               if(defaultmapsettings.oneColoredSpectator) {
                 color = legendmod.rgb2Hex(255, 255, 255);
               } else {
@@ -899,7 +898,11 @@ class Spect {
                   id = this.newID(id);
                   //snez
 				  //x = this.getX(x),
-                  //y = this.getY(y);					  
+                  //y = this.getY(y);
+			if (isFood && !defaultmapsettings.rainbowFood){
+				color = defaultSettings.foodColor
+			}
+			
             var cell = null;
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
