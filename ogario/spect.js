@@ -1,4 +1,4 @@
-//SPECS v3.1o WORKS UNTIL HERE
+//SPECS v3.1p WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -917,6 +917,9 @@ class Spect {
             if (name) {
                 cell.targetNick = name;
             }
+			if (cell.isPlayerCell){
+				cell.targetNick = $("#nick").val();
+			}
             cell.targetX = x;
             cell.targetY = y;
             cell.targetSize = size;
