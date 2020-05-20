@@ -1,4 +1,4 @@
-//SPECS v3.1h WORKS UNTIL HERE
+//SPECS v3.1i WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -966,7 +966,8 @@ class Spect {
     }
 
     newID(id) {
-      return id + this.number + 10000000000
+      return id
+	  //return id + this.number + 10000000000
     }
 	calculatePlayerMassAndPosition(){
             var size = 0;
