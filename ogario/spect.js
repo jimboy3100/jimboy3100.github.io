@@ -1,4 +1,4 @@
-//SPECS v1.9p
+//SPECS v3.0a WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -111,12 +111,10 @@ class Spect {
       
             let view = this.createView(5);
             view.setUint8(0, 254);
-            //if(!window.game.protocolVersion) window.game.protocolVersion = 22
             view.setUint32(1, this.protocolVersion, true);
             this.sendMessage(view);
             view = this.createView(5);
             view.setUint8(0, 255);
-            //if(!window.game.clientVersion) window.game.clientVersion = this.clientVersion
             view.setUint32(1, this.clientVersion, true);
             this.sendMessage(view);
             this.connectionOpened = true;
@@ -190,6 +188,11 @@ class Spect {
                 cell.removeCell();
               }
             }
+            for(let cell of Object.values(legendmod.cells)) {
+              if(cell.spectator == this.number) {
+                cell.removeCell();
+              }
+            }				
     }
     isSocketOpen() {
         return this.socket !== null && this.socket.readyState === this.socket.OPEN;
@@ -289,7 +292,9 @@ class Spect {
         }	
     sendCursor() {
             this.positionController = setInterval(() => {
-                this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
+				if (window.multiboxPlayerEnabled || this.isFreeSpectate){
+					this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
+				}
             }, 50);
             //this.sendSpectate()
             //this.sendFreeSpectate()
@@ -649,6 +654,15 @@ class Spect {
                 break;
         }
     }
+	terminate(){
+		this.active = false;		
+		window.multiboxPlayerEnabled = null
+		var temp = this.number-1
+		if (spects[temp]){
+			spects[temp].closeConnection()
+			spects = spects.slice(temp+1);
+		}				
+	}	
     getX(x) {
       if(this.ghostFixed && this.mapOffsetFixed) {
         return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
@@ -668,14 +682,8 @@ class Spect {
 				//jimboy3100
 				//if (this.player && this.active && this.playerCells.length==0 && this.timer && performance.now()-this.timer>3000){
 				if (this.player && this.active && this.playerCells.length==0){
-						this.active = false;
-						console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
-						window.multiboxPlayerEnabled = null
-						var temp = this.number-1
-						if (spects[temp]){
-							spects[temp].closeConnection()
-							spects = spects.slice(temp+1);
-						}					
+					console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
+					this.terminate()			
 				}				
                 break;			
             case 64:
