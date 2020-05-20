@@ -1,4 +1,4 @@
-//SPECS v3.2q WORKS UNTIL HERE
+//SPECS v3.2r WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -942,7 +942,7 @@ class Spect {
 								this.active = true
 							}
                         }	
-                } else {
+                } else if (isFood){
                     legendmod.foodMulti.push(cell); //this causes problems
                 }
 				legendmod.cells.push(cell);
