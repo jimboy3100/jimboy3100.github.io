@@ -1,4 +1,4 @@
-//SPECS v3.2h WORKS UNTIL HERE
+//SPECS v3.2i WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -549,9 +549,8 @@ class Spect {
                 break;
             case 103:
 			  this.accessTokenSent = true
-              console.log('case 103');	
-			  application.onJoin();
-			  application.onPlayerSpawn()
+              console.log('case 103');
+			  application.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor, ogarcopythelb.skinURL);
                 break;
             case 104:
               console.log('case 104');
