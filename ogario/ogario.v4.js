@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.665
+// v1.666
 
 
 //window.testobjects = {};
@@ -6670,9 +6670,15 @@ function thelegendmodproject() {
                 }
             }
             if (window.legendmod.gameMode != ":party" && mm > 0 && (!window.legendmod.play || mm > window.legendmod.playerMass) && max <= 3 && window.legendmod.bgpi <= 3 && !window.legendmod.setrot) {
-                console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " VMR UPDATE:", window.legendmod.vnr, mm, window.legendmod.playerMass, max, window.legendmod.bgpi);
+                if (!spects.length){
+				console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " VMR UPDATE:", window.legendmod.vnr, mm, window.legendmod.playerMass, max, window.legendmod.bgpi);
                 this.setvnr(max);
                 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map fixed with LM players. POS:', max);
+				}
+				else if (!window.announceSpectNotifOnce){
+					window.announceSpectNotifOnce= true;
+					toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Rotation can work only before the creation of Multi-Viewports");
+				}
             }
         },
         updateTeamPlayers() {
@@ -12678,13 +12684,19 @@ function legendformIframe() {
     $("body").append(s);
 }
 function rotateminimapsectors() {
-	if (!window.manualRotation) window.manualRotation = window.legendmod.bgpi
-	window.manualRotation--
-	if (window.manualRotation<0){
-		window.manualRotation=3
+	if (!spects.length){
+		if (!window.manualRotation) window.manualRotation = window.legendmod.bgpi
+			window.manualRotation--
+		if (window.manualRotation<0){
+			window.manualRotation=3
+		}
+		console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map rotated.Tech POS:', window.manualRotation);
+		application.settechvnr(window.manualRotation)	
 	}
-	console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map rotated.Tech POS:', window.manualRotation);
-	application.settechvnr(window.manualRotation)		
+	else if (!window.announceSpectNotifOnce){
+		window.announceSpectNotifOnce= true;
+		toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Rotation can work only before the creation of Multi-Viewports");
+	}	
 }
 function toggleFullScreen(fullornot) {
     if (!window.fullornot) {
