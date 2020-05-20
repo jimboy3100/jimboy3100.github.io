@@ -1,4 +1,4 @@
-//SPECS v3.2c WORKS UNTIL HERE
+//SPECS v3.2d WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -69,7 +69,7 @@ class Spect {
         this.targetX = null
         this.targetY = null
 		this.playerCellIDs = []
-		this.playerCells = []
+		legendmod.playerCellsMulti = []
         this.connect()
     }
     reset() {
@@ -90,7 +90,7 @@ class Spect {
         this.targetX = null
         this.targetY = null
 		this.playerCellIDs = []
-		this.playerCells = []
+		legendmod.playerCellsMulti = []
 
     }
     connect() {
@@ -178,7 +178,7 @@ class Spect {
             //this.deletefromObject("indexedCells")
             //this.cells = [];
             //this.deleteFromArray("cells")
-            this.playerCells = [];
+            legendmod.playerCellsMulti = [];
             this.playerCellIDs = [];
             //this.food = [];
             //this.viruses = [];
@@ -687,8 +687,8 @@ class Spect {
             case 16:
                 this.updateCells(message, offset);
 				//jimboy3100
-				//if (this.player && this.active && this.playerCells.length==0 && this.timer && performance.now()-this.timer>3000){
-				if (this.player && this.active && this.playerCells.length==0){
+				//if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && performance.now()-this.timer>3000){
+				if (this.player && this.active && legendmod.playerCellsMulti.length==0){
 					console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
 					this.terminate()			
 				}				
@@ -785,9 +785,9 @@ class Spect {
         for (var length = 0; length < eatEventsLength; length++) {
             const eaterID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset))];
             const victimID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset + 4))];
-			if (this.playerCells.includes(victimID)){
+			if (legendmod.playerCellsMulti.includes(victimID)){
 				this.removePlayerCell = true;
-				this.playerCells.splice(this.playerCells.indexOf(victimID), 1) 
+				legendmod.playerCellsMulti.splice(legendmod.playerCellsMulti.indexOf(victimID), 1) 
 				if (this.playerCellIDs.includes(victimID)){
 					console.log('cell ids', this.playerCellIDs)
 					console.log('erase cell id', victimID)
@@ -918,11 +918,11 @@ class Spect {
                         legendmod.viruses.push(cell);
                     }
                     //legendmod.cells.push(cell);
-                        if (this.playerCellIDs.indexOf(id) != -1 && this.playerCells.indexOf(cell) == -1) {
+                        if (this.playerCellIDs.indexOf(id) != -1 && legendmod.playerCellsMulti.indexOf(cell) == -1) {
                             cell.isPlayerCell = true;
                             this.playerColor = color;
-                            this.playerCells.push(cell);
-							if (this.playerCells.length==1){
+                            legendmod.playerCellsMulti.push(cell);
+							if (legendmod.playerCellsMulti.length==1){
 								console.log('player cell is active')
 								this.active = true
 							}
@@ -964,7 +964,7 @@ class Spect {
        // var rmaxedX=rmaxedY=rminedX=rminedY=0
 
 
-        if (this.playerCells.length) {
+        if (legendmod.playerCellsMulti.length) {
 			if (!this.openSecond){
 				this.openSecond = true;
 				window.multiboxPlayerEnabled = this.number
@@ -996,9 +996,9 @@ class Spect {
             var targetSize = 0;
             var x = 0;
             var y = 0;
-            var playersLength = this.playerCells.length;
+            var playersLength = legendmod.playerCellsMulti.length;
             for (let length = 0; length < playersLength; length++) {
-                var n = this.playerCells[length];
+                var n = legendmod.playerCellsMulti[length];
                 size += n.size;
                 targetSize += n.targetSize * n.targetSize;
                 x += n.x / playersLength;
