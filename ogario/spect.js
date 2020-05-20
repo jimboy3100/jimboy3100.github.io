@@ -1,4 +1,4 @@
-//SPECS v3.0e WORKS UNTIL HERE
+//SPECS v3.0f WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -104,7 +104,7 @@ class Spect {
         this.socket.onclose = this.onclose.bind(this)
     }
     onopen() {
-            console.log('[SPECT] Game server socket open')
+            console.log('[SPECT] Game server socket' + this.number + 'open')
       
             this.clientVersion = window.master.clientVersion
             this.protocolVersion = window.master.protocolVersion
@@ -408,7 +408,7 @@ class Spect {
         x = Math.imul(x, Length) | 0;
         newValue = x >>> 15;
         x = newValue ^ x;
-        console.log('[SPECT] Generated client key:', x);
+        //console.log('[SPECT] Generated client key:', x);
         return x;
     }
     shiftKey(key) {
@@ -602,7 +602,7 @@ class Spect {
                 break;
             case 241:
                 this.protocolKey = view.getUint32(offset, true);
-                console.log('[SPECT] Received protocol key:', this.protocolKey);
+                //console.log('[SPECT] Received protocol key:', this.protocolKey);
                 const agarioReader = new Uint8Array(view.buffer, offset += 4);
                 this.clientKey = this.generateClientKey(this.ws, agarioReader);
                 break;
