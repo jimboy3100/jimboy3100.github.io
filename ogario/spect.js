@@ -1,4 +1,4 @@
-//SPECS v3.1p WORKS UNTIL HERE
+//SPECS v3.1q WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -721,6 +721,15 @@ class Spect {
         }
         return false;
     }
+    isInViewCustom(x, y, size) {
+        var x2s = legendmod.canvasWidth / 2 / legendmod.scale;
+        var y2s = legendmod.canvasHeight / 2 / legendmod.scale;
+        if (x + size < legendmod.viewXTrue - x2s || y + size < legendmod.this.viewYTrue - y2s || x - size > legendmod.viewXTrue + x2s || y - size > legendmod.this.viewYTrue + y2s) {
+            return false;
+        } else {
+            return true;
+        }
+    }	
     setMapOffset(left, top, right, bottom) {
         if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
             this.mapOffsetX = (this.mapOffset) - right;
@@ -810,6 +819,8 @@ class Spect {
             offset += 4;
             let y = view.readInt32LE(offset);
             offset += 4;
+            const size = view.readUInt16LE(offset);
+            offset += 2;			
 			//snez
 			var invisible;
 
@@ -817,6 +828,9 @@ class Spect {
 			if (!this.player){
 				invisible = this.staticX!=null?this.isInView(x, y):false;
 			}	
+			if (this.player){				
+				invisible = this.isInViewCustom(x, y, size)				
+			}			
 			//test
 			if (this.getX(x)){
 				x = this.getX(x)				
@@ -837,13 +851,12 @@ class Spect {
 				remove = true;
 			}
 			//
-            const size = view.readUInt16LE(offset);
-            offset += 2;
+
             const flags = view.readUInt8(offset++);
             let extendedFlags = 0;
             if (flags & 128) {
                 extendedFlags = view.readUInt8(offset++);
-            }
+            }						
             //let color = "#bbbbbb";
 			let color = null
             let skin = null;
