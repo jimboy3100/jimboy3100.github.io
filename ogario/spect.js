@@ -1,4 +1,4 @@
-//SPECS v3.2o WORKS UNTIL HERE
+//SPECS v3.2p WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -735,7 +735,17 @@ class Spect {
 			y + distance < legendmod.viewYTrue - y2s || //<legendmod.camMinY
 			x - distance > legendmod.viewXTrue + x2s || //>legendmod.camMaxX
 			y - distance > legendmod.viewYTrue + y2s) //>legendmod.camMaxY*/
-    };	
+    }
+    isInViewCustom2 (id, x , y, size) {
+			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
+			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
+			var randomNum = 40 // randomNum=40
+			var distance = size + randomNum
+			return !(x + distance < legendmod.viewXTrue - x2s || //<legendmod.camMinX
+			y + distance < legendmod.viewYTrue - y2s || //<legendmod.camMinY
+			x - distance > legendmod.viewXTrue + x2s || //>legendmod.camMaxX
+			y - distance > legendmod.viewYTrue + y2s) //>legendmod.camMaxY
+    }	
     setMapOffset(left, top, right, bottom) {
         if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
             this.mapOffsetX = (this.mapOffset) - right;
@@ -896,10 +906,10 @@ class Spect {
                   id = this.newID(id);
 
 			if (this.player){				
-				invisible = this.isInViewCustom(id, x , y, size)				
+				invisible = this.isInViewCustom2(id, x , y, size)				
 			}	
 			if (!this.player){				
-				invisible = this.isInViewCustom(id, x , y, size)				
+				if (!invisible) invisible = this.isInViewCustom(id, x , y, size)				
 			}
 			if (isFood && !defaultmapsettings.rainbowFood){
 				color = defaultSettings.foodColor
