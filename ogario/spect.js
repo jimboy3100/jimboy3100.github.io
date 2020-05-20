@@ -1,4 +1,4 @@
-//SPECS v3.1 WORKS UNTIL HERE
+//SPECS v3.1a WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -815,8 +815,15 @@ class Spect {
 				invisible = this.staticX!=null?this.isInView(x, y):false;
 			}
 			//test
-			if (this.getX(x)) x = this.getX(x)
-			if (this.getY(y)) y = this.getY(y)
+			if (this.getX(x)){
+				x = this.getX(x)				
+			}
+			else {
+				console.log("Error","ghostFixed",this.ghostFixed)
+			}			
+			if (this.getY(y)){ 
+				y = this.getY(y)
+			}
 			//
             //x = this.getX(x);
             //y = this.getY(y);
@@ -871,10 +878,7 @@ class Spect {
                   id = this.newID(id);
                   //snez
 				  //x = this.getX(x),
-                  //y = this.getY(y);	
-			if (!id || !x || !y || !size) {
-				console.log("Error","id",id,"x",x,"y",y,"size",size,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed)
-			}				  
+                  //y = this.getY(y);					  
             var cell = null;
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
