@@ -830,9 +830,7 @@ class Spect {
 			if (!this.player){
 				invisible = this.staticX!=null?this.isInView(x, y):false;
 			}	
-			if (!this.player){				
-				invisible = this.isInViewCustom(id, x , y, size)				
-			}				
+				
 			//test
 			if (this.getX(x)){
 				x = this.getX(x)				
@@ -896,7 +894,9 @@ class Spect {
 			if (this.player){				
 				invisible = this.isInViewCustom(id, x , y, size)				
 			}	
-
+			if (!this.player){				
+				invisible = this.isInViewCustom(id, x , y, size)				
+			}
 			if (isFood && !defaultmapsettings.rainbowFood){
 				color = defaultSettings.foodColor
 			}
