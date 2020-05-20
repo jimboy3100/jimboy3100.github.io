@@ -1,4 +1,4 @@
-//SPECS v3.0f WORKS UNTIL HERE
+//SPECS v3.1 WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -104,7 +104,7 @@ class Spect {
         this.socket.onclose = this.onclose.bind(this)
     }
     onopen() {
-            console.log('[SPECT] Game server socket' + this.number + 'open')
+            console.log('[SPECT] Game server socket ' + this.number + ' open')
       
             this.clientVersion = window.master.clientVersion
             this.protocolVersion = window.master.protocolVersion
@@ -607,7 +607,7 @@ class Spect {
                 this.clientKey = this.generateClientKey(this.ws, agarioReader);
                 break;
             case 242:
-                console.log('242')
+                console.log('case 242')
                 this.serverTime = view.getUint32(offset, true) * 1000;
                 this.serverTimeDiff = Date.now() - this.serverTime;
                 
@@ -814,8 +814,12 @@ class Spect {
 			else{
 				invisible = this.staticX!=null?this.isInView(x, y):false;
 			}
-            x = this.getX(x);
-            y = this.getY(y);
+			//test
+			if (this.getX(x)) x = this.getX(x)
+			if (this.getY(y)) y = this.getY(y)
+			//
+            //x = this.getX(x);
+            //y = this.getY(y);
             var a = x - legendmod.playerX;
             var b = y - legendmod.playerY;
             var distanceX = Math.round(Math.sqrt(a * a));
@@ -867,7 +871,10 @@ class Spect {
                   id = this.newID(id);
                   //snez
 				  //x = this.getX(x),
-                  //y = this.getY(y);							  
+                  //y = this.getY(y);	
+			if (!id || !x || !y || !size) {
+				console.log("Error","id",id,"x",x,"y",y,"size",size,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed)
+			}				  
             var cell = null;
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
