@@ -1,4 +1,4 @@
-//SPECS v3.0a WORKS UNTIL HERE
+//SPECS v3.0b WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -886,7 +886,7 @@ class Spect {
                             cell.isPlayerCell = true;
                             this.playerColor = color;
                             this.playerCells.push(cell);
-							if (spects[0].playerCells==1){
+							if (this.playerCells.length==1){
 								console.log('player cell is active')
 								this.active = true
 							}
@@ -925,7 +925,10 @@ class Spect {
 
 
         if (this.playerCells.length) {
-			window.multiboxPlayerEnabled = true
+			if (!this.openSecond){
+				this.openSecond = true;
+				window.multiboxPlayerEnabled = this.number
+			}
             this.calculatePlayerMassAndPosition();
 		}
 	    else{
@@ -960,9 +963,10 @@ class Spect {
                 x += n.x / playersLength;
                 y += n.y / playersLength;
             }
+			if (window.multiboxPlayerEnabled){
 				legendmod.viewX = x;
 				legendmod.viewY = y;			
-			
+			}
 			this.playerX = x;
 			this.playerY = y;
 			
