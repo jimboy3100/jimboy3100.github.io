@@ -1,4 +1,4 @@
-//SPECS v3.1w WORKS UNTIL HERE
+//SPECS v3.1x WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -730,8 +730,8 @@ class Spect {
             return true;
         }
     }	
-    isInViewCustom2 () {
-            return !(this.id <= 0) && !(this.x + this.size + 40 < legendmod.viewXTrue - legendmod.canvasWidth / 2 / legendmod.scale || this.y + this.size + 40 < legendmod.viewYTrue - legendmod.canvasHeight / 2 / legendmod.scale || this.x - this.size - 40 > legendmod.viewXTrue + legendmod.canvasWidth / 2 / legendmod.scale || this.y - this.size - 40 > legendmod.viewYTrue + legendmod.canvasHeight / 2 / legendmod.scale);
+    isInViewCustom2 (id, x , y, size) {
+            return !(id <= 0) && !(x + size + 40 < legendmod.viewXTrue - legendmod.canvasWidth / 2 / legendmod.scale || y + size + 40 < legendmod.viewYTrue - legendmod.canvasHeight / 2 / legendmod.scale || x - size - 40 > legendmod.viewXTrue + legendmod.canvasWidth / 2 / legendmod.scale || y - size - 40 > legendmod.viewYTrue + legendmod.canvasHeight / 2 / legendmod.scale);
     };	
     setMapOffset(left, top, right, bottom) {
         if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
@@ -831,9 +831,7 @@ class Spect {
 			if (!this.player){
 				invisible = this.staticX!=null?this.isInView(x, y):false;
 			}	
-			if (this.player){				
-				invisible = !this.isInViewCustom2()				
-			}				
+			
 			//test
 			if (this.getX(x)){
 				x = this.getX(x)				
@@ -841,7 +839,9 @@ class Spect {
 			if (this.getY(y)){ 
 				y = this.getY(y)
 			}	
-				
+			if (this.player){				
+				invisible = this.isInViewCustom2(id, x , y, size)				
+			}					
 			/*else {
 				console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed,"x",x,"mapOffsetX",this.mapOffsetX,"LM mapOffsetX",legendmod.mapOffsetX,"fixX",this.fixX)
 			}*/			
