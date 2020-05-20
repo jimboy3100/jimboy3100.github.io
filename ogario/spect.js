@@ -1,4 +1,4 @@
-//SPECS v3.1g WORKS UNTIL HERE
+//SPECS v3.1h WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -822,9 +822,9 @@ class Spect {
 			if (this.getX(x)){
 				x = this.getX(x)				
 			}
-			else {
+			/*else {
 				console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed,"x",x,"mapOffsetX",this.mapOffsetX,"LM mapOffsetX",legendmod.mapOffsetX,"fixX",this.fixX)
-			}			
+			}*/			
 			if (this.getY(y)){ 
 				y = this.getY(y)
 			}
@@ -898,7 +898,7 @@ class Spect {
                     if (isVirus && defaultmapsettings.virusesRange) {
                         legendmod.viruses.push(cell);
                     }
-                    legendmod.cells.push(cell);
+                    //legendmod.cells.push(cell);
                         if (this.playerCellIDs.indexOf(id) != -1 && this.playerCells.indexOf(cell) == -1) {
                             cell.isPlayerCell = true;
                             this.playerColor = color;
@@ -911,6 +911,7 @@ class Spect {
                 } else {
                     //legendmod.food.push(cell); //this causes problems
                 }
+				legendmod.cells.push(cell);
                 legendmod.indexedCells[id] = cell;
             }
             
