@@ -1,4 +1,4 @@
-//SPECS v3.1k WORKS UNTIL HERE
+//SPECS v3.1l WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -812,16 +812,14 @@ class Spect {
             offset += 4;
 			//snez
 			var invisible;
-			if (this.player){
-				invisible = this.staticX!=null?this.isInView(x, y):false;
-			}
-			else{
-				invisible = this.staticX!=null?this.isInView(x, y):false;
-			}
+
 			//test
 			if (this.getX(x)){
 				x = this.getX(x)				
 			}
+			if (!this.player){
+				invisible = this.staticX!=null?this.isInView(x, y):false;
+			}			
 			/*else {
 				console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed,"x",x,"mapOffsetX",this.mapOffsetX,"LM mapOffsetX",legendmod.mapOffsetX,"fixX",this.fixX)
 			}*/			
@@ -884,7 +882,6 @@ class Spect {
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
                 cell.invisible = invisible;
-
                 if (color) {
                     cell.color = color;
                 }
