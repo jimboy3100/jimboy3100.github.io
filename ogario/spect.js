@@ -1,4 +1,4 @@
-//SPECS v3.1s WORKS UNTIL HERE
+//SPECS v3.1t WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -730,6 +730,9 @@ class Spect {
             return true;
         }
     }	
+    isInViewCustom2 () {
+            return !(this.id <= 0) && !(this.x + this.size + 40 < legendmod.viewXTrue - legendmod.canvasWidth / 2 / legendmod.scale || this.y + this.size + 40 < legendmod.viewYTrue - legendmod.canvasHeight / 2 / legendmod.scale || this.x - this.size - 40 > legendmod.viewXTrue + legendmod.canvasWidth / 2 / legendmod.scale || this.y - this.size - 40 > legendmod.viewYTrue + legendmod.canvasHeight / 2 / legendmod.scale);
+    };	
     setMapOffset(left, top, right, bottom) {
         if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
             this.mapOffsetX = (this.mapOffset) - right;
@@ -838,7 +841,7 @@ class Spect {
 			}	
 			
 			if (this.player){				
-				invisible = this.isInViewCustom(x, y, size)				
+				invisible = this.isInViewCustom2(x, y, size)				
 			}			
 			/*else {
 				console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed,"x",x,"mapOffsetX",this.mapOffsetX,"LM mapOffsetX",legendmod.mapOffsetX,"fixX",this.fixX)
