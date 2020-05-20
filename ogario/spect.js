@@ -1,4 +1,4 @@
-//SPECS v3.0d WORKS UNTIL HERE
+//SPECS v3.0e WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -832,16 +832,16 @@ class Spect {
             if (flags & 128) {
                 extendedFlags = view.readUInt8(offset++);
             }
-            let color = null,
-                skin = null,
-                name = '',
-                accountID = null;
+            let color = "#bbbbbb";
+			//let color = null
+            let skin = null;
+            let name = '';
+            let accountID = null;
             if (flags & 2) {
                 const r = view.readUInt8(offset++);
                 const g = view.readUInt8(offset++);
                 const b = view.readUInt8(offset++);
 			   //snez	
-			    color = "#bbbbbb";
 				//color = defaultSettings.miniMapGhostCellsColor;			  
               /*if(defaultmapsettings.oneColoredSpectator) {
                 color = legendmod.rgb2Hex(255, 255, 255);
