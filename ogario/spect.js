@@ -1,4 +1,4 @@
-//SPECS v3.2p WORKS UNTIL HERE
+//SPECS v3.2q WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -943,7 +943,7 @@ class Spect {
 							}
                         }	
                 } else {
-                    //legendmod.food.push(cell); //this causes problems
+                    legendmod.foodMulti.push(cell); //this causes problems
                 }
 				legendmod.cells.push(cell);
                 legendmod.indexedCells[id] = cell;
