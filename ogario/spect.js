@@ -1,4 +1,4 @@
-//SPECS v3.1e WORKS UNTIL HERE
+//SPECS v3.1f WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -821,14 +821,11 @@ class Spect {
 				x = this.getX(x)				
 			}
 			else {
-				console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed,"x",x)
+				console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed,"x",x,"mapOffsetX",this.mapOffsetX,"LM mapOffsetX",legendmod.mapOffsetX,"fixX",this.fixX)
 			}			
 			if (this.getY(y)){ 
 				y = this.getY(y)
 			}
-			//
-            //x = this.getX(x);
-            //y = this.getY(y);
             var a = x - legendmod.playerX;
             var b = y - legendmod.playerY;
             var distanceX = Math.round(Math.sqrt(a * a));
