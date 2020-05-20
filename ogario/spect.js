@@ -1,4 +1,4 @@
-//SPECS v3.1j WORKS UNTIL HERE
+//SPECS v3.1k WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -813,7 +813,7 @@ class Spect {
 			//snez
 			var invisible;
 			if (this.player){
-				
+				invisible = this.staticX!=null?this.isInView(x, y):false;
 			}
 			else{
 				invisible = this.staticX!=null?this.isInView(x, y):false;
