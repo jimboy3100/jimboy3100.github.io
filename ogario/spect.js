@@ -1,4 +1,4 @@
-//SPECS v3.1x WORKS UNTIL HERE
+//SPECS v3.1y WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -731,7 +731,10 @@ class Spect {
         }
     }	
     isInViewCustom2 (id, x , y, size) {
-            return !(id <= 0) && !(x + size + 40 < legendmod.viewXTrue - legendmod.canvasWidth / 2 / legendmod.scale || y + size + 40 < legendmod.viewYTrue - legendmod.canvasHeight / 2 / legendmod.scale || x - size - 40 > legendmod.viewXTrue + legendmod.canvasWidth / 2 / legendmod.scale || y - size - 40 > legendmod.viewYTrue + legendmod.canvasHeight / 2 / legendmod.scale);
+			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
+			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
+			var randomNum = 0 // randomNum=40
+            return !(id <= 0) && !(x + size + randomNum < legendmod.viewXTrue - x2s || y + size + randomNum < legendmod.viewYTrue - y2s || x - size - randomNum > legendmod.viewXTrue + x2s || y - size - randomNum > legendmod.viewYTrue + y2s);
     };	
     setMapOffset(left, top, right, bottom) {
         if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
@@ -935,7 +938,7 @@ class Spect {
                 cell.targetNick = name;
             }
 			if (cell.isPlayerCell){
-				cell.targetNick = $("#nick").val();
+				//cell.targetNick = $("#nick").val();
 			}
             cell.targetX = x;
             cell.targetY = y;
