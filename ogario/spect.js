@@ -1,4 +1,4 @@
-//SPECS v3.2e WORKS UNTIL HERE
+//SPECS v3.2f WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -906,10 +906,10 @@ class Spect {
             var cell = null;
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
-                cell.invisible = invisible;
-                if (color) {
-                    cell.color = color;
-                }
+                //cell.invisible = invisible;
+                //if (color) {
+                    //cell.color = color;
+                //}
             } 		
 			else {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
@@ -946,6 +946,7 @@ class Spect {
             cell.targetX = x;
             cell.targetY = y;
             cell.targetSize = size;
+			cell.size = size;
             cell.isFood = isFood;
             cell.isVirus = isVirus;
             cell.invisible = invisible;
