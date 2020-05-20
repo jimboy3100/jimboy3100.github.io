@@ -1,4 +1,4 @@
-//SPECS v3.2j WORKS UNTIL HERE
+//SPECS v3.2k WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -722,16 +722,7 @@ class Spect {
         }
         return false;
     }
-    isInViewCustom(x, y, size) {
-        var x2s = legendmod.canvasWidth / 2 / legendmod.scale;
-        var y2s = legendmod.canvasHeight / 2 / legendmod.scale;
-        if (x + size < legendmod.viewXTrue - x2s || y + size < legendmod.viewYTrue - y2s || x - size > legendmod.viewXTrue + x2s || y - size > legendmod.viewYTrue + y2s) {
-            return false;
-        } else {
-            return true;
-        }
-    }	
-    isInViewCustom2 (id, x , y, size) {
+    isInViewCustom (id, x , y, size) {
 			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
 			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
 			var randomNum = 80 // randomNum=40
@@ -847,9 +838,7 @@ class Spect {
 			if (this.getY(y)){ 
 				y = this.getY(y)
 			}	
-			if (this.player){				
-				invisible = this.isInViewCustom2(id, x , y, size)				
-			}					
+		
 			/*else {
 				console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed,"x",x,"mapOffsetX",this.mapOffsetX,"LM mapOffsetX",legendmod.mapOffsetX,"fixX",this.fixX)
 			}*/			
@@ -901,9 +890,14 @@ class Spect {
             const isFriend = extendedFlags & 2;
 
                   id = this.newID(id);
-                  //snez
-				  //x = this.getX(x),
-                  //y = this.getY(y);
+
+			if (this.player){				
+				invisible = this.isInViewCustom(id, x , y, size)				
+			}	
+			if (!this.player && this.isFood){				
+				invisible = this.isInViewCustom(id, x , y, size)				
+			}	
+
 			if (isFood && !defaultmapsettings.rainbowFood){
 				color = defaultSettings.foodColor
 			}
