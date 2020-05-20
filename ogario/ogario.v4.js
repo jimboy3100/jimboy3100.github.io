@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.667
+// v1.683
 
 
 //window.testobjects = {};
@@ -878,9 +878,7 @@ var displayText = {
         massStroke: 'Obwódki masy',
         cursorTracking: 'Śledzenie kursora',
         teammatesInd: 'Wskaźniki graczy teamu',
-        FBTracking: 'Facebook bubble tracker',
-        //        ingameSpectator: 'Ingame spectator(LOCKED ℄)',
-        //        fullSpectator: 'Full spectator(LOCKED ℄)',			
+        FBTracking: 'Facebook bubble tracker',		
         mouseSplit: 'LPM - Split myszką',
         mouseFeed: 'PPM - Feed myszką',
         mouseInvert: 'Odwróć klawisze myszki',
@@ -1300,9 +1298,7 @@ var displayText = {
         massStroke: 'Mass stroke',
         cursorTracking: 'Cursor tracking',
         teammatesInd: 'Teammates indicators',
-        FBTracking: 'Facebook bubble tracker',
-        //        ingameSpectator: 'Ingame spectator(LOCKED ℄)',
-        //        fullSpectator: 'Full spectator(LOCKED ℄)',		
+        FBTracking: 'Facebook bubble tracker',	
         mouseSplit: 'LMB - Mouse split',
         mouseFeed: 'RMB - Mouse feed',
         mouseInvert: 'Invert mouse buttons',
@@ -7490,10 +7486,12 @@ function thelegendmodproject() {
                     LM.food.splice(cells, 1);
                 }
             }
-            cells = LM.playerCells.indexOf(this);
+            //cells = LM.playerCellsMulti.indexOf(this);
+		    cells = LM.playerCells.indexOf(this);
             if (cells != -1) {
                 LM.removePlayerCell = true;
                 LM.playerCells.splice(cells, 1);
+				//LM.playerCellsMulti.splice(cells, 1);
                 cells = LM.playerCellIDs.indexOf(this.id);
                 if (cells != -1) {
                     LM.playerCellIDs.splice(cells, 1);
@@ -7765,7 +7763,8 @@ function thelegendmodproject() {
             // check this
             //if (this.spectator>0 && this.isInV()||this.invisible==true) {
             //if (this.spectator>0 && this.isInV() || this.invisible==true || this.spectator>0 && this.isInView()) {
-            if (this.invisible == true || (this.spectator > 0 && this.isInV() && !window.multiboxPlayerEnabled)) {
+            //if (this.invisible == true || (this.spectator > 0 && this.isInV() && !window.multiboxPlayerEnabled)) {
+			if (this.invisible == true) {	
                 return;
             }
             //					
@@ -7870,8 +7869,8 @@ function thelegendmodproject() {
                 s = true;
             }
             var color = this.color;
-            if (LM.play) {
-                if (this.isPlayerCell) {
+            if (LM.play || LM.playerCellsMulti.length) {
+                if (this.isPlayerCell || this.playerCellsMulti) {
                     if (defaultmapsettings.myCustomColor) {
                         color = ogarcopythelb.color;
                     }
@@ -8194,6 +8193,7 @@ function thelegendmodproject() {
         viruses: [],
         playerCells: [],
         playerCellIDs: [],
+		playerCellsMulti: [],
         fbOnline: [],
         arrowFB: [{}],
         ghostCells: [],
@@ -8960,11 +8960,14 @@ function thelegendmodproject() {
 					if (!window.multiboxPlayerEnabled){
                     this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
 					}
+					this.viewXTrue = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
+						
                     s += 4;
                     var y = data.getFloat32(s, true);
 					if (!window.multiboxPlayerEnabled){
                     this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
 					}
+					this.viewYTrue = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
                     s += 4;
                     this.scale = data.getFloat32(s, true);
                     break;
@@ -9955,6 +9958,7 @@ function thelegendmodproject() {
             this.indexedCells = {};
             this.cells = [];
             this.playerCells = [];
+			this.playerCellsMulti = []; //for multi fix
             this.playerCellIDs = [];
             this.ghostCells = [];
             this.food = [];
@@ -10203,6 +10207,7 @@ function thelegendmodproject() {
                             cellUpdateCells.isPlayerCell = true;
                             this.playerColor = color;
                             this.playerCells.push(cellUpdateCells);
+							//this.playerCellsMulti.push(cellUpdateCells);
                         }
                     } else {
                         this.food.push(cellUpdateCells);
@@ -10237,41 +10242,6 @@ function thelegendmodproject() {
                     console.log('FB friend cell in view', isFriend)
                 }
             }
-            /*
-                this.indexedCells.hasOwnProperty(id) ? (cellUpdateCells = this.indexedCells[id],
-                        color && (cellUpdateCells.color = color)) :
-                    ((cellUpdateCells = new ogarbasicassembly(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots)).time = this.time,
-                        isFood ? this.food.push(cellUpdateCells) :
-                        (isVirus && defaultmapsettings.virusesRange && this.viruses.push(cellUpdateCells),
-                            this.cells.push(cellUpdateCells),
-                            -1 != this.playerCellIDs.indexOf(id) && -1 == this.playerCells.indexOf(cellUpdateCells) && (cellUpdateCells.isPlayerCell = true,
-                                this.playerColor = color, this.playerCells.push(cellUpdateCells))),
-                        this.indexedCells[id] = cellUpdateCells),
-                    cellUpdateCells.isPlayerCell && (name = this.playerNick),
-                    name && (cellUpdateCells.targetNick = name),
-                    cellUpdateCells.targetX = x,
-                    cellUpdateCells.targetY = y,
-                    cellUpdateCells.targetSize = size,
-                    //                        cellUpdateCells.targetSize = u,
-                    cellUpdateCells.isFood = isFood,
-                    cellUpdateCells.isVirus = isVirus,
-                    //
-                    cellUpdateCells.isOwnEjected = isOwnEjected,
-                    cellUpdateCells.isOtherEjected = isOtherEjected,
-                    //
-                    skin && (cellUpdateCells.skin = skin),
-                    4 & extendedFlags && (accountID = view.readUInt32LE(offset),
-                        cellUpdateCells.accID = accountID,
-                        offset += 4,
-                        friend = LM.fbOnline.find(element => {
-                            return element.id == accountID
-                        }),
-                        friend != undefined ? cellUpdateCells.fbID = friend.fbId : void(0)),
-                    2 & extendedFlags && (cell.isFriend = isFriend,
-                        console.log('FB friend cell in view', isFriend));
-            }
-			*/
-
             eatEventsLength = view.readUInt16LE(offset);
             offset += 2;
             for (length = 0; length < eatEventsLength; length++) {
@@ -10335,6 +10305,8 @@ function thelegendmodproject() {
 				this.viewX = x;
 				this.viewY = y;
 			}
+				this.viewXTrue = x;
+				this.viewYTrue = y;			
             this.playerSize = size;
             this.playerMass = ~~(targetSize / 100);
             this.recalculatePlayerMass();
@@ -10364,7 +10336,7 @@ function thelegendmodproject() {
             }
         },
         compareCells() {
-            if (this.play && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
+		if ((this.play || LM.playerCellsMulti) && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
                 if (defaultmapsettings.oppRings || defaultmapsettings.splitRange) {
                     this.biggerSTECellsCache = [];
                     this.biggerCellsCache = [];
@@ -10377,97 +10349,27 @@ function thelegendmodproject() {
                 var t = 0;
                 for (; t < this.cells.length; t++) {
                     var cell = this.cells[t];
-                    if (cell.isVirus || cell.spectator > 0) {
+                    //if (cell.isVirus || cell.spectator > 0) {
+					if (cell.isVirus || cell.invisible) {	
                         continue;
                     }
-                    //else{
                     //console.log(i); i for food is 13
                     var size = ~~(cell.size * cell.size / 100);
                     if (size != 13) {
+					if (size > 13) {	
                         var mass = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
                         var fixMass = size / mass;
                         var smallMass = mass < 1000 ? 0.35 : 0.38;
                         if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings) {
-                            //cell.oppColor = this.setCellOppColor(cell.isPlayerCell, fixMass, smallMass);
                             cell.oppColor = this.setCellOppColor(cell.isPlayerCell, fixMass);
                         }
-                        //if (!(cell.isPlayerCell || !defaultmapsettings.splitRange && !defaultmapsettings.oppRings)) {
                         if (!cell.isPlayerCell && (defaultmapsettings.splitRange || defaultmapsettings.oppRings)) {
                             this.cacheCells(cell.x, cell.y, cell.size, fixMass);
-                            //this.cacheCells(cell.x, cell.y, cell.size, fixMass, smallMass);
-                            //this.cacheCells(cell.x, cell.y, cell.targetX, cell.targetY, cell.size, fixMass, smallMass);
                         }
                     }
-                    //}
                 }
-            }
+			}}
         },
-        /*cacheCells(t, e, i, s, o) {
-                    return s >= 2.5 ? void this.biggerSTECellsCache.push({
-                        'x': t,
-                        'y': e,
-                        'size': i
-                    }) : s >= 1.25 ? void this.biggerCellsCache.push({
-                        'x': t,
-                        'y': e,
-                        'size': i
-                    }) : s < 1.25 && s > 0.75 ? void 0 : s > o ? void this.smallerCellsCache.push({
-                        'x': t,
-                        'y': e,
-                        'size': i
-                    }) : void this.STECellsCache.push({
-                        'x': t,
-                        'y': e,
-                        'size': i
-                    });
-                },
-            cacheCells(x, y, targetX, targetY, size, mass, smallMass) {
-					return mass >= 5.32 ? void this.biggerSTEDCellsCache.push({
-						x: x,
-						y: y,
-						targetX: targetX,
-						targetY: targetY,
-						size: size
-					}) : mass >= 2.66 ? void this.biggerSTECellsCache.push({
-						x: x,
-						y: y,
-						targetX: targetX,
-						targetY: targetY,
-						size: size
-					}) : mass >= 1.33 ? void this.biggerCellsCache.push({
-						x: x,
-						y: y,
-						targetX: targetX,
-						targetY: targetY,
-						size: size
-					}) : mass < 1.33 && mass > 0.75 ? void this.SSCellsCache.push({
-						x: x,
-						y: y,
-						targetX: targetX,
-						targetY: targetY,
-						size: size
-					}) : mass > 0.375 ? void this.smallerCellsCache.push({
-						x: x,
-						y: y,
-						targetX: targetX,
-						targetY: targetY,
-						size: size
-					}) : mass > 0.1875 ? void this.STECellsCache.push({
-						x: x,
-						y: y,
-						targetX: targetX,
-						targetY: targetY,
-						size: size
-					}) : void this.STEDCellsCache.push({
-						x: x,
-						y: y,
-						targetX: targetX,
-						targetY: targetY,
-						size: size
-					});
-				},*/
-
-        //Sonia (entire function updated) // this is great :D 
         cacheCells(x, y, size, mass) {
             return mass >= 1.3333 * 4 ? void this.biggerSTEDCellsCache.push({
                 'x': x,
@@ -10495,11 +10397,7 @@ function thelegendmodproject() {
                 'size': size
             });
         },
-        //setCellOppColor(t, mass, i) {
         setCellOppColor(isPlayer, mass) {
-            //return t ? ogarcopythelb.color : mass > 11 ? '#FF008C' : mass >= 2.5 ? '#BE00FF' : mass >= 1.25 ? '#FF0A00' : mass < 1.25 && mass > 0.75 ? '#FFDC00' : mass > i ? '#00C8FF' : '#64FF00';
-            //return t ? ogarcopythelb.color : mass > 10.64 ? defaultSettings.enemyBSTEDColor : mass >= 5.32 ? defaultSettings.enemyBSTEDColor : mass >= 2.66 && mass <= 5.32 ? defaultSettings.enemyBSTEColor : mass >= 1.33 && mass <= 2.66 ? defaultSettings.enemyBColor : mass < 1.33 && mass > 0.75 ? '#FFDC00' : mass < 0.75 && mass > 0.375 ? defaultSettings.enemySSTEDColor : mass > i ? '#00C8FF' : defaultSettings.enemySSTEColor; //Sonia
-            //return isPlayer ? ogarcopythelb.color : mass >= 10.64 ? defaultSettings.enemyBSTEDColor : mass >= 5.32 ? defaultSettings.enemyBSTEDColor : mass >= 2.66 ? defaultSettings.enemyBSTEColor : mass >= 1.33 ? defaultSettings.enemyBColor : mass > 0.75 ? '#FFDC00' : mass > 0.375 ? defaultSettings.enemySColor : mass > 0.1875 ? defaultSettings.enemySSTEColor : defaultSettings.enemySSTEDColor;
             if (isPlayer) {
                 return ogarcopythelb.color
             } else {
@@ -10613,7 +10511,8 @@ function thelegendmodproject() {
             setView() {
                 this.setScale();
                 var speed = 30;
-                if (LM.playerCells.length) {
+                //if (LM.playerCellsMulti.length) {
+				if (LM.playerCells.length) {	
                     LM.calculatePlayerMassAndPosition();
                     this.camX = (this.camX + LM.viewX) / 2;
                     this.camY = (this.camY + LM.viewY) / 2;
@@ -10755,17 +10654,18 @@ function thelegendmodproject() {
                 }
                 this.drawFood();
                 this.calMinMax();
-                if (LM.play) {
+				if (LM.play || LM.playerCellsMulti.length) {
                     if (defaultmapsettings.splitRange) {
                         this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell);
                         this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell); //Sonia
-                        //this.drawDoubleSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell);
                         this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell); //Sonia
+                        //
+						this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCellsMulti, LM.selectBiggestCell);
+                        this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCellsMulti, LM.selectBiggestCell); //Sonia
+                        this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCellsMulti, LM.selectBiggestCell); //Sonia						
                     }
                     if (defaultmapsettings.oppRings) {
-                        //this.drawOppRings(this.ctx, this.scale, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache);
                         this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache); //Sonia
-                        //this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache, LM.SSCellsCache); 
                     }
                     if (defaultmapsettings.cursorTracking) {
                         this.drawCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
@@ -10823,20 +10723,6 @@ function thelegendmodproject() {
                     LM.cursorX = xc + (Math.cos(ang) * distance)
                     LM.cursorY = yc + (Math.sin(ang) * distance)
                     LM.sendPosition()
-                    //console.log(xc,yc,x,y,LM.cursorX,LM.cursorY)
-                    //Math.deg(ang)
-
-
-                    /*var xc = LM.playerCells[index].x,
-                        yc = LM.playerCells[index].y,*/
-                    //R = 100000000,
-                    /*ang = Math.atan2(LM.indexedCells[LM.selected].y - yc, LM.indexedCells[LM.selected].x - xc);
-                    LM.cursorX= Math.cos(ang)
-                    LM.cursorY= Math.sin(ang)*/
-                    //Math.deg(ang)
-
-                    //LM.cursorX = LM.indexedCells[LM.selected].x
-                    //LM.cursorY = LM.indexedCells[LM.selected].y
                 }
                 //
                 if (defaultmapsettings.debug) {
