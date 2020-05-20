@@ -1,4 +1,4 @@
-//SPECS v3.1a WORKS UNTIL HERE
+//SPECS v3.1b WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -619,6 +619,7 @@ class Spect {
 					else{
 						console.log("SendNick without")
 						this.sendCursor()
+						MultiTokenReady(this)
 						this.sendNick($("#nick").val())
 					}
                 } else {
