@@ -1,4 +1,4 @@
-//SPECS v3.1i WORKS UNTIL HERE
+//SPECS v3.1j WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -844,8 +844,8 @@ class Spect {
             if (flags & 128) {
                 extendedFlags = view.readUInt8(offset++);
             }
-            let color = "#bbbbbb";
-			//let color = null
+            //let color = "#bbbbbb";
+			let color = null
             let skin = null;
             let name = '';
             let accountID = null;
@@ -854,12 +854,12 @@ class Spect {
                 const g = view.readUInt8(offset++);
                 const b = view.readUInt8(offset++);
 			   //snez	
-				//color = defaultSettings.miniMapGhostCellsColor;			  
-              /*if(defaultmapsettings.oneColoredSpectator) {
+				color = defaultSettings.miniMapGhostCellsColor;			  
+              if(defaultmapsettings.oneColoredSpectator) {
                 color = legendmod.rgb2Hex(255, 255, 255);
               } else {
                 color = legendmod.rgb2Hex(~~(r * 0.9), ~~(g * 0.9), ~~(b * 0.9));
-              }*/
+              }
             }
             if (flags & 4) {
                 skin = encode();
