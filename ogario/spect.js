@@ -1,4 +1,4 @@
-//SPECS v3.1d WORKS UNTIL HERE
+//SPECS v3.1e WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -653,7 +653,7 @@ class Spect {
     }
 	GhostFix(){
 		//if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>1000 && Math.abs(application.getghostY()) >1000) {
-		if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>300 && Math.abs(application.getghostY()) >300) {
+		if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>100 && Math.abs(application.getghostY()) >100) {
 			this.fixX = /*Math.round*/(application.getghostX()/(this.ghostCells[0].x+this.mapOffsetX))<0?-1:1;
             this.fixY = /*Math.round*/(application.getghostY()/(this.ghostCells[0].y+this.mapOffsetY))<0?-1:1;
 			this.ghostFixed = true
@@ -821,7 +821,7 @@ class Spect {
 				x = this.getX(x)				
 			}
 			else {
-				console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed)
+				console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed,"x",x)
 			}			
 			if (this.getY(y)){ 
 				y = this.getY(y)
