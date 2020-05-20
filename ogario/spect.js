@@ -1,4 +1,4 @@
-//SPECS v3.1u WORKS UNTIL HERE
+//SPECS v3.1v WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -831,7 +831,9 @@ class Spect {
 			if (!this.player){
 				invisible = this.staticX!=null?this.isInView(x, y):false;
 			}	
-			
+			if (this.player){				
+				invisible = this.isInViewCustom2()				
+			}				
 			//test
 			if (this.getX(x)){
 				x = this.getX(x)				
@@ -839,10 +841,7 @@ class Spect {
 			if (this.getY(y)){ 
 				y = this.getY(y)
 			}	
-			
-			if (this.player){				
-				invisible = !this.isInViewCustom2()				
-			}			
+				
 			/*else {
 				console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed,"x",x,"mapOffsetX",this.mapOffsetX,"LM mapOffsetX",legendmod.mapOffsetX,"fixX",this.fixX)
 			}*/			
