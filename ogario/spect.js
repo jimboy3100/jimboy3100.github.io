@@ -1,4 +1,4 @@
-//SPECS v2.0f
+//SPECS v2.0h
 
 function addBox() {
   let spect = new Spect();
@@ -811,12 +811,12 @@ class Spect {
             x = this.getX(x);
             y = this.getY(y);
 			
-			if ((!x || !y) && !this.ghostFixed){
+			/*if ((!x || !y) && !this.ghostFixed){
 				this.GhostFix()
 				x = this.getX(x);
 				y = this.getY(y);	
 				console.log('tried ghost Fix')
-			}
+			}*/
 		
             var a = x - legendmod.playerX;
             var b = y - legendmod.playerY;
@@ -879,7 +879,7 @@ class Spect {
                     cell.color = color;
                 }
             } 		
-			else if (id && x && y && size) {
+			//else if (id && x && y && size) {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                 cell.time = this.time;
                 cell.spectator = this.number;
@@ -926,12 +926,12 @@ class Spect {
                 cell.isFriend = isFriend;
                 //console.log('FB friend cell in view', isFriend)
             }
-            }
+            /*}
 			else{
 				console.log("id",id,"x",x,"y",y,"size",size,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed)
 				toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Error occured, multibox terminated");
 				this.terminate()
-			}
+			}*/
 
 			
         }
