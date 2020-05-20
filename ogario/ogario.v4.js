@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.664
+// v1.665
 
 
 //window.testobjects = {};
@@ -3485,6 +3485,9 @@ function thelegendmodproject() {
 				 toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Version 0.000001 of Multibox");
 			}
 			else if (!window.multiboxPlayerEnabledSaved){
+				if (!legendmod.play){
+					play()
+				}				
 				window.multiboxPlayerEnabledSaved = window.multiboxPlayerEnabled
 				window.multiboxPlayerEnabled = null
 			}
@@ -5092,7 +5095,7 @@ function thelegendmodproject() {
             ogario.playerMass = 0;
             ogario.playerScore = 0;
             ogario.playerSplitCells = 0;
-            this.showMenu(300);
+            //this.showMenu(300);
             this.sendPlayerDeath();
             this.updateDeathLocations(ogario.playerX, ogario.playerY);
             this.unlockButtons();
@@ -10283,8 +10286,11 @@ function thelegendmodproject() {
             //Sonia7
             if (this.removePlayerCell && !this.playerCells.length) {
                 this.play = false;
+				
                 application.onPlayerDeath();
-                application.showMenu(300)
+				if (!window.multiboxPlayerEnabled){					
+					application.showMenu(300)
+				}
                 window.userBots.isAlive = false
                 if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer)
             }
