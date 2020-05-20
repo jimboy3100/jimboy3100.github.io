@@ -1,4 +1,4 @@
-//SPECS v3.0c WORKS UNTIL HERE
+//SPECS v3.0d WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -766,13 +766,17 @@ class Spect {
         for (var length = 0; length < eatEventsLength; length++) {
             const eaterID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset))];
             const victimID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset + 4))];
-			if (this.playerCellIDs.includes(victimID)){
-				console.log('cell ids', this.playerCellIDs)
-				console.log('erase cell id', victimID)
-				this.playerCellIDs.splice(this.playerCellIDs.indexOf(victimID), 1) 
-				console.log('cells after erase', this.playerCellIDs)
-				this.playerCells.splice(cells, 1);
+			if (this.playerCells.includes(victimID)){
+				this.removePlayerCell = true;
+				this.playerCells.splice(this.playerCells.indexOf(victimID), 1) 
+				if (this.playerCellIDs.includes(victimID)){
+					console.log('cell ids', this.playerCellIDs)
+					console.log('erase cell id', victimID)
+					this.playerCellIDs.splice(this.playerCellIDs.indexOf(victimID), 1) 
+					console.log('cells after erase', this.playerCellIDs)
+				}				
 			}
+			
 			//remove user cell id if victim was his cell
 			//delete legendmod.indexedCells[victimID] //don't even wait for Legend mod, delete eaten cells here
             //console.log('victim isFood',victimID.isFood)
@@ -848,10 +852,8 @@ class Spect {
             if (flags & 4) {
                 skin = encode();
             }
-            if (flags & 8) {
-                //name = window.decodeURIComponent(window.escape(encode()));				
-                    name = window.decodeURIComponent(escape(encode()));
-					//jimboy3100
+            if (flags & 8) {			
+                    name = window.decodeURIComponent(escape(encode()));					
                     if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
                         legendmod.vanillaskins(name, skin);
                     }				
