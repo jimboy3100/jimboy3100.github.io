@@ -1,9 +1,9 @@
-//SPECS v3.2f WORKS UNTIL HERE
+//SPECS v3.2g WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
   spect.player = true;
-  spects.unshift(spect);
+  spects.unshift(spect);  
 }
 function addSpectator() {
   let spect = new Spect();
@@ -549,7 +549,9 @@ class Spect {
                 break;
             case 103:
 			  this.accessTokenSent = true
-              console.log('case 103');			  
+              console.log('case 103');	
+			  application.onJoin();
+			  application.onPlayerSpawn()
                 break;
             case 104:
               console.log('case 104');
