@@ -1,4 +1,4 @@
-//SPECS v3.1f WORKS UNTIL HERE
+//SPECS v3.1g WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -661,12 +661,14 @@ class Spect {
 	}	
     getX(x) {
       if(this.ghostFixed && this.mapOffsetFixed) {
-        return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
+        return ((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
+		//return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
       }
     }
     getY(y) {
       if(this.ghostFixed && this.mapOffsetFixed) {
-        return ~~((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY)
+		return ((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY)
+        //return ~~((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY)
       }
     }
 	terminate(){
