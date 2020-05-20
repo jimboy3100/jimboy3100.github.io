@@ -1,4 +1,4 @@
-//SPECS v2.0c
+//SPECS v1.9p
 
 function addBox() {
   let spect = new Spect();
@@ -111,10 +111,12 @@ class Spect {
       
             let view = this.createView(5);
             view.setUint8(0, 254);
+            //if(!window.game.protocolVersion) window.game.protocolVersion = 22
             view.setUint32(1, this.protocolVersion, true);
             this.sendMessage(view);
             view = this.createView(5);
             view.setUint8(0, 255);
+            //if(!window.game.clientVersion) window.game.clientVersion = this.clientVersion
             view.setUint32(1, this.clientVersion, true);
             this.sendMessage(view);
             this.connectionOpened = true;
@@ -188,12 +190,6 @@ class Spect {
                 cell.removeCell();
               }
             }
-            for(let cell of Object.values(legendmod.cells)) {
-              if(cell.spectator == this.number) {
-                cell.removeCell();
-              }
-            }			
-			
     }
     isSocketOpen() {
         return this.socket !== null && this.socket.readyState === this.socket.OPEN;
@@ -293,9 +289,7 @@ class Spect {
         }	
     sendCursor() {
             this.positionController = setInterval(() => {
-				if (window.multiboxPlayerEnabled || this.isFreeSpectate){
-					this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
-				}
+                this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
             }, 50);
             //this.sendSpectate()
             //this.sendFreeSpectate()
@@ -347,7 +341,13 @@ class Spect {
         }
         const view = this.createView(13);
         view.setUint8(0, 16);
-      if(this.player==true&&this.active) { 
+      if(this.player==true&&!this.active==true) { 
+        
+        view.setInt32(1, this.targetX, true);
+        view.setInt32(5, this.targetY, true);
+        console.log(this.targetX, this.targetY)
+      } else {
+
         view.setInt32(1, x, true);
         view.setInt32(5, y, true);
         this.targetX = x;
@@ -755,17 +755,13 @@ class Spect {
         for (var length = 0; length < eatEventsLength; length++) {
             const eaterID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset))];
             const victimID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset + 4))];
-			if (this.playerCells.includes(victimID)){
-				this.removePlayerCell = true;
-				this.playerCells.splice(this.playerCells.indexOf(victimID), 1) 
-				if (this.playerCellIDs.includes(victimID)){
-					console.log('cell ids', this.playerCellIDs)
-					console.log('erase cell id', victimID)
-					this.playerCellIDs.splice(this.playerCellIDs.indexOf(victimID), 1) 
-					console.log('cells after erase', this.playerCellIDs)
-				}				
+			if (this.playerCellIDs.includes(victimID)){
+				console.log('cell ids', this.playerCellIDs)
+				console.log('erase cell id', victimID)
+				this.playerCellIDs.splice(this.playerCellIDs.indexOf(victimID), 1) 
+				console.log('cells after erase', this.playerCellIDs)
+				this.playerCells.splice(cells, 1);
 			}
-
 			//remove user cell id if victim was his cell
 			//delete legendmod.indexedCells[victimID] //don't even wait for Legend mod, delete eaten cells here
             //console.log('victim isFood',victimID.isFood)
@@ -821,10 +817,10 @@ class Spect {
             if (flags & 128) {
                 extendedFlags = view.readUInt8(offset++);
             }
-            let color = "#bbbbbb";
-            let skin = null;
-            let name = '';
-            let accountID = null;
+            let color = null,
+                skin = null,
+                name = '',
+                accountID = null;
             if (flags & 2) {
                 const r = view.readUInt8(offset++);
                 const g = view.readUInt8(offset++);
@@ -841,8 +837,10 @@ class Spect {
             if (flags & 4) {
                 skin = encode();
             }
-            if (flags & 8) {				
+            if (flags & 8) {
+                //name = window.decodeURIComponent(window.escape(encode()));				
                     name = window.decodeURIComponent(escape(encode()));
+					//jimboy3100
                     if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
                         legendmod.vanillaskins(name, skin);
                     }				
@@ -866,7 +864,7 @@ class Spect {
                     cell.color = color;
                 }
             } 		
-			else if (id && x && y && size) {
+			else {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                 cell.time = this.time;
                 cell.spectator = this.number;
@@ -880,7 +878,7 @@ class Spect {
                             cell.isPlayerCell = true;
                             this.playerColor = color;
                             this.playerCells.push(cell);
-							if (this.playerCells.length==1){
+							if (spects[0].playerCells==1){
 								console.log('player cell is active')
 								this.active = true
 							}
@@ -890,10 +888,7 @@ class Spect {
                 }
                 legendmod.indexedCells[id] = cell;
             }
-			else{
-				console.log("id",id,"x",x,"y",y,"size",size,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed)
-			}
-            if (cell){
+            
             if (name) {
                 cell.targetNick = name;
             }
@@ -917,16 +912,12 @@ class Spect {
                 cell.isFriend = isFriend;
                 //console.log('FB friend cell in view', isFriend)
             }
-			}
         }
        // var rmaxedX=rmaxedY=rminedX=rminedY=0
 
 
         if (this.playerCells.length) {
-			if (!this.openSecond){
-				this.openSecond = true;
-				window.multiboxPlayerEnabled = this.number
-			}
+			window.multiboxPlayerEnabled = true
             this.calculatePlayerMassAndPosition();
 		}
 	    else{
@@ -961,10 +952,9 @@ class Spect {
                 x += n.x / playersLength;
                 y += n.y / playersLength;
             }
-				if (window.multiboxPlayerEnabled){
-					legendmod.viewX = x;
-					legendmod.viewY = y;			
-				}
+				legendmod.viewX = x;
+				legendmod.viewY = y;			
+			
 			this.playerX = x;
 			this.playerY = y;
 			
@@ -984,9 +974,11 @@ class Spect {
     };
 function MultiTokenReady(spector){
 	if (spector && master.accessTokenFB){
+		console.log('fb')
 		spector.sendFbToken(master.accessTokenFB)
 	}
 	else if (spector && master.accessTokenGPlus){
+		console.log('gl')
 		spector.sendGplusToken(master.accessTokenGPlus)
 	}
 }	
