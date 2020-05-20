@@ -1,4 +1,4 @@
-//SPECS v1.9p WORKS UNTIL HERE
+//SPECS v3.0d WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -111,12 +111,10 @@ class Spect {
       
             let view = this.createView(5);
             view.setUint8(0, 254);
-            //if(!window.game.protocolVersion) window.game.protocolVersion = 22
             view.setUint32(1, this.protocolVersion, true);
             this.sendMessage(view);
             view = this.createView(5);
             view.setUint8(0, 255);
-            //if(!window.game.clientVersion) window.game.clientVersion = this.clientVersion
             view.setUint32(1, this.clientVersion, true);
             this.sendMessage(view);
             this.connectionOpened = true;
@@ -190,6 +188,12 @@ class Spect {
                 cell.removeCell();
               }
             }
+            for(let cell of Object.values(legendmod.cells)) {
+              if(cell.spectator == this.number) {
+                cell.removeCell();
+              }
+            }				
+
     }
     isSocketOpen() {
         return this.socket !== null && this.socket.readyState === this.socket.OPEN;
@@ -289,7 +293,9 @@ class Spect {
         }	
     sendCursor() {
             this.positionController = setInterval(() => {
-                this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
+				if (window.multiboxPlayerEnabled || this.isFreeSpectate){
+					this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
+				}
             }, 50);
             //this.sendSpectate()
             //this.sendFreeSpectate()
@@ -525,12 +531,7 @@ class Spect {
                         'inView': this.isInView(x, y, size)
                     });
                 }
-
-                if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>1000 && Math.abs(application.getghostY()) >1000) {
-                  this.fixX = /*Math.round*/(application.getghostX()/(this.ghostCells[0].x+this.mapOffsetX))<0?-1:1;
-                  this.fixY = /*Math.round*/(application.getghostY()/(this.ghostCells[0].y+this.mapOffsetY))<0?-1:1;
-                  this.ghostFixed = true
-                }
+				this.GhostFix()
                 break;
             case 85:
 
@@ -649,6 +650,13 @@ class Spect {
                 break;
         }
     }
+	GhostFix(){
+		if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>1000 && Math.abs(application.getghostY()) >1000) {
+            this.fixX = /*Math.round*/(application.getghostX()/(this.ghostCells[0].x+this.mapOffsetX))<0?-1:1;
+            this.fixY = /*Math.round*/(application.getghostY()/(this.ghostCells[0].y+this.mapOffsetY))<0?-1:1;
+			this.ghostFixed = true
+        }					
+	}	
     getX(x) {
       if(this.ghostFixed && this.mapOffsetFixed) {
         return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
@@ -659,6 +667,15 @@ class Spect {
         return ~~((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY)
       }
     }
+	terminate(){
+		this.active = false;		
+		window.multiboxPlayerEnabled = null
+		var temp = this.number-1
+		if (spects[temp]){
+			spects[temp].closeConnection()
+			spects = spects.slice(temp+1);
+		}				
+	}	
     handleSubmessage(message) {
         message = this.decompressMessage(message);
         let offset = 0;
@@ -668,14 +685,8 @@ class Spect {
 				//jimboy3100
 				//if (this.player && this.active && this.playerCells.length==0 && this.timer && performance.now()-this.timer>3000){
 				if (this.player && this.active && this.playerCells.length==0){
-						this.active = false;
-						console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
-						window.multiboxPlayerEnabled = null
-						var temp = this.number-1
-						if (spects[temp]){
-							spects[temp].closeConnection()
-							spects = spects.slice(temp+1);
-						}					
+					console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
+					this.terminate()			
 				}				
                 break;			
             case 64:
@@ -755,13 +766,17 @@ class Spect {
         for (var length = 0; length < eatEventsLength; length++) {
             const eaterID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset))];
             const victimID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset + 4))];
-			if (this.playerCellIDs.includes(victimID)){
-				console.log('cell ids', this.playerCellIDs)
-				console.log('erase cell id', victimID)
-				this.playerCellIDs.splice(this.playerCellIDs.indexOf(victimID), 1) 
-				console.log('cells after erase', this.playerCellIDs)
-				this.playerCells.splice(cells, 1);
+			if (this.playerCells.includes(victimID)){
+				this.removePlayerCell = true;
+				this.playerCells.splice(this.playerCells.indexOf(victimID), 1) 
+				if (this.playerCellIDs.includes(victimID)){
+					console.log('cell ids', this.playerCellIDs)
+					console.log('erase cell id', victimID)
+					this.playerCellIDs.splice(this.playerCellIDs.indexOf(victimID), 1) 
+					console.log('cells after erase', this.playerCellIDs)
+				}				
 			}
+			
 			//remove user cell id if victim was his cell
 			//delete legendmod.indexedCells[victimID] //don't even wait for Legend mod, delete eaten cells here
             //console.log('victim isFood',victimID.isFood)
@@ -837,10 +852,8 @@ class Spect {
             if (flags & 4) {
                 skin = encode();
             }
-            if (flags & 8) {
-                //name = window.decodeURIComponent(window.escape(encode()));				
-                    name = window.decodeURIComponent(escape(encode()));
-					//jimboy3100
+            if (flags & 8) {			
+                    name = window.decodeURIComponent(escape(encode()));					
                     if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
                         legendmod.vanillaskins(name, skin);
                     }				
@@ -878,7 +891,7 @@ class Spect {
                             cell.isPlayerCell = true;
                             this.playerColor = color;
                             this.playerCells.push(cell);
-							if (spects[0].playerCells==1){
+							if (this.playerCells.length==1){
 								console.log('player cell is active')
 								this.active = true
 							}
@@ -917,7 +930,10 @@ class Spect {
 
 
         if (this.playerCells.length) {
-			window.multiboxPlayerEnabled = true
+			if (!this.openSecond){
+				this.openSecond = true;
+				window.multiboxPlayerEnabled = this.number
+			}
             this.calculatePlayerMassAndPosition();
 		}
 	    else{
@@ -952,9 +968,10 @@ class Spect {
                 x += n.x / playersLength;
                 y += n.y / playersLength;
             }
+			if (window.multiboxPlayerEnabled){
 				legendmod.viewX = x;
 				legendmod.viewY = y;			
-			
+			}
 			this.playerX = x;
 			this.playerY = y;
 			
@@ -974,11 +991,9 @@ class Spect {
     };
 function MultiTokenReady(spector){
 	if (spector && master.accessTokenFB){
-		console.log('fb')
 		spector.sendFbToken(master.accessTokenFB)
 	}
 	else if (spector && master.accessTokenGPlus){
-		console.log('gl')
 		spector.sendGplusToken(master.accessTokenGPlus)
 	}
 }	
