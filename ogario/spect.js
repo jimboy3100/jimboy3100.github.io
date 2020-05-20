@@ -1,4 +1,4 @@
-//SPECS v2.0c
+//SPECS v2.0e
 
 function addBox() {
   let spect = new Spect();
@@ -525,12 +525,7 @@ class Spect {
                         'inView': this.isInView(x, y, size)
                     });
                 }
-
-                if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>1000 && Math.abs(application.getghostY()) >1000) {
-                  this.fixX = /*Math.round*/(application.getghostX()/(this.ghostCells[0].x+this.mapOffsetX))<0?-1:1;
-                  this.fixY = /*Math.round*/(application.getghostY()/(this.ghostCells[0].y+this.mapOffsetY))<0?-1:1;
-                  this.ghostFixed = true
-                }
+				this.GhostFix()
                 break;
             case 85:
 
@@ -649,6 +644,13 @@ class Spect {
                 break;
         }
     }
+	GhostFix(){
+		if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>1000 && Math.abs(application.getghostY()) >1000) {
+            this.fixX = /*Math.round*/(application.getghostX()/(this.ghostCells[0].x+this.mapOffsetX))<0?-1:1;
+            this.fixY = /*Math.round*/(application.getghostY()/(this.ghostCells[0].y+this.mapOffsetY))<0?-1:1;
+			this.ghostFixed = true
+        }					
+	}
     getX(x) {
       if(this.ghostFixed && this.mapOffsetFixed) {
         return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
@@ -659,6 +661,15 @@ class Spect {
         return ~~((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY)
       }
     }
+	terminate(){
+		this.active = false;		
+		window.multiboxPlayerEnabled = null
+		var temp = this.number-1
+		if (spects[temp]){
+			spects[temp].closeConnection()
+			spects = spects.slice(temp+1);
+		}				
+	}
     handleSubmessage(message) {
         message = this.decompressMessage(message);
         let offset = 0;
@@ -668,14 +679,8 @@ class Spect {
 				//jimboy3100
 				//if (this.player && this.active && this.playerCells.length==0 && this.timer && performance.now()-this.timer>3000){
 				if (this.player && this.active && this.playerCells.length==0){
-						this.active = false;
-						console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
-						window.multiboxPlayerEnabled = null
-						var temp = this.number-1
-						if (spects[temp]){
-							spects[temp].closeConnection()
-							spects = spects.slice(temp+1);
-						}					
+					console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
+					terminate()			
 				}				
                 break;			
             case 64:
@@ -805,6 +810,14 @@ class Spect {
 			}
             x = this.getX(x);
             y = this.getY(y);
+			
+			if ((!x || !y) && this.ghostFixed){
+				GhostFix()
+				x = this.getX(x);
+				y = this.getY(y);	
+				console.log('tried ghost Fix')
+			}
+		
             var a = x - legendmod.playerX;
             var b = y - legendmod.playerY;
             var distanceX = Math.round(Math.sqrt(a * a));
@@ -892,6 +905,8 @@ class Spect {
             }
 			else{
 				console.log("id",id,"x",x,"y",y,"size",size,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed)
+				toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Error occured, multibox terminated");
+				this.terminate()
 			}
             if (cell){
             if (name) {
