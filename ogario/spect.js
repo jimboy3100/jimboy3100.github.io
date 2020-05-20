@@ -1,4 +1,4 @@
-//SPECS v3.1q WORKS UNTIL HERE
+//SPECS v3.1r WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -724,7 +724,7 @@ class Spect {
     isInViewCustom(x, y, size) {
         var x2s = legendmod.canvasWidth / 2 / legendmod.scale;
         var y2s = legendmod.canvasHeight / 2 / legendmod.scale;
-        if (x + size < legendmod.viewXTrue - x2s || y + size < legendmod.this.viewYTrue - y2s || x - size > legendmod.viewXTrue + x2s || y - size > legendmod.this.viewYTrue + y2s) {
+        if (x + size < legendmod.viewXTrue - x2s || y + size < legendmod.viewYTrue - y2s || x - size > legendmod.viewXTrue + x2s || y - size > legendmod.viewYTrue + y2s) {
             return false;
         } else {
             return true;
