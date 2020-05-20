@@ -1,4 +1,4 @@
-//SPECS v3.2a WORKS UNTIL HERE
+//SPECS v3.2b WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -945,7 +945,7 @@ class Spect {
             cell.targetSize = size;
             cell.isFood = isFood;
             cell.isVirus = isVirus;
-            //cell.invisible = invisible;
+            cell.invisible = invisible;
             if (skin) {
                 cell.skin = skin;
             }
