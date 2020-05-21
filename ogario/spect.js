@@ -1,4 +1,4 @@
-//SPECS v3.2w WORKS UNTIL HERE
+//SPECS v3.2x WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -722,7 +722,7 @@ class Spect {
         }
         return false;
     }
-    isInViewCustom (id, x , y, size) {
+    isInViewCustom (x , y, size) {
 			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
 			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
 			var randomNum = 0 // randomNum=40
@@ -736,7 +736,7 @@ class Spect {
 			x - distance > legendmod.viewXTrue + x2s || //>legendmod.camMaxX
 			y - distance > legendmod.viewYTrue + y2s) //>legendmod.camMaxY*/
     }
-    isInViewCustom2 (id, x , y, size) {
+    isInViewCustom2 (x , y, size) {
 			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
 			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
 			var randomNum = 40 // randomNum=40
@@ -746,15 +746,15 @@ class Spect {
 			x - distance > legendmod.viewXTrue + x2s || //>legendmod.camMaxX
 			y - distance > legendmod.viewYTrue + y2s) //>legendmod.camMaxY
     }	
-    isInViewCustom3 (id, x , y, size) {
+    isInViewCustom3 (x , y, size) {
 			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
 			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
 			var randomNum = 0 // randomNum=40
 			var distance = size + randomNum
-            return !(x + distance < legendmod.camMinMultiX ||
-			y + distance < legendmod.camMinMultiY ||
-			x - distance > legendmod.camMaxMultiX || 
-			y - distance > legendmod.camMaxMultiY) 			
+            return !(x + distance < legendmod.camMinMultiX - x2s ||
+			y + distance < legendmod.camMinMultiY - y2s ||
+			x - distance > legendmod.camMaxMultiX + x2s || 
+			y - distance > legendmod.camMaxMultiY + y2s) 			
     }	
     setMapOffset(left, top, right, bottom) {
         if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
@@ -854,9 +854,7 @@ class Spect {
 			if (!this.player){
 				invisible = this.staticX!=null?this.isInView(x, y):false;
 			}	
-			if (this.player){				
-				invisible = this.isInViewCustom3(id, x , y, size)	
-			}					
+				
 			//test
 			if (this.getX(x)){
 				x = this.getX(x)				
@@ -919,8 +917,11 @@ class Spect {
 
 
 			if (!this.player){				
-				if (!invisible) invisible = this.isInViewCustom(id, x , y, size)				
+				if (!invisible) invisible = this.isInViewCustom(x , y, size)				
 			}
+			if (this.player){				
+				invisible = this.isInViewCustom3(x , y, size)	
+			}			
 			if (isFood && !defaultmapsettings.rainbowFood){
 				color = defaultSettings.foodColor
 			}
