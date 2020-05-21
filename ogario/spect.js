@@ -1,4 +1,4 @@
-//SPECS v3.2t WORKS UNTIL HERE
+//SPECS v3.2u WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -916,7 +916,7 @@ class Spect {
                   id = this.newID(id);
 
 			if (this.player){				
-				invisible = this.isInViewCustom3(id, x , y, size)				
+				!invisible = this.isInViewCustom3(id, x , y, size)				
 			}	
 			if (!this.player){				
 				if (!invisible) invisible = this.isInViewCustom(id, x , y, size)				
