@@ -1,4 +1,4 @@
-//SPECS v3.2y WORKS UNTIL HERE
+//SPECS v3.2z WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -919,9 +919,9 @@ class Spect {
 			if (!this.player){				
 				if (!invisible) invisible = this.isInViewCustom(x , y, size)				
 			}
-			if (this.player){				
-				invisible = this.isInViewCustom2(x , y, size)	
-			}			
+			//if (this.player){				
+				//invisible = this.isInViewCustom2(x , y, size)	
+			//}			
 			if (isFood && !defaultmapsettings.rainbowFood){
 				color = defaultSettings.foodColor
 			}
