@@ -1,4 +1,4 @@
-//SPECS v3.2r WORKS UNTIL HERE
+//SPECS v3.2s WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -746,6 +746,16 @@ class Spect {
 			x - distance > legendmod.viewXTrue + x2s || //>legendmod.camMaxX
 			y - distance > legendmod.viewYTrue + y2s) //>legendmod.camMaxY
     }	
+    isInViewCustom3 (id, x , y, size) {
+			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
+			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
+			var randomNum = 0 // randomNum=40
+			var distance = size + randomNum
+            return !(x + distance < legendmod.camMaxMultiX ||
+			y + distance < legendmod.camMaxMultiY ||
+			x - distance > legendmod.camMinMultiX || 
+			y - distance > legendmod.camMinMultiY) 			
+    }	
     setMapOffset(left, top, right, bottom) {
         if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
             this.mapOffsetX = (this.mapOffset) - right;
@@ -906,7 +916,7 @@ class Spect {
                   id = this.newID(id);
 
 			if (this.player){				
-				invisible = this.isInViewCustom2(id, x , y, size)				
+				invisible = this.isInViewCustom3(id, x , y, size)				
 			}	
 			if (!this.player){				
 				if (!invisible) invisible = this.isInViewCustom(id, x , y, size)				
