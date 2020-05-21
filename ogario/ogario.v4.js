@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.692
+// v1.693
 
 
 //window.testobjects = {};
@@ -7776,7 +7776,8 @@ function thelegendmodproject() {
             //if (this.spectator>0 && this.isInV()||this.invisible==true) {
             //if (this.spectator>0 && this.isInV() || this.invisible==true || this.spectator>0 && this.isInView()) {
             //if (this.invisible == true || (this.spectator > 0 && this.isInV() && !window.multiboxPlayerEnabled)) {
-			if (this.spectator>0 && this.isInV() || this.invisible == true) {	
+			//if (this.spectator>0 && this.isInV() || this.invisible == true) {	
+			if (this.invisible == true) {
                 return;
             }
             //					
@@ -10110,6 +10111,16 @@ function thelegendmodproject() {
                 return 4;
             }
         },
+		isInViewCustom3 (x , y, size) {
+			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
+			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
+			var randomNum = 0 // randomNum=40
+			var distance = size + randomNum
+            return !(x + distance < legendmod.camMinMultiX ||
+			y + distance < legendmod.camMinMultiY ||
+			x - distance > legendmod.camMaxMultiX || 
+			y - distance > legendmod.camMaxMultiY) 
+		},		
         //https://github.com/NuclearC/agar.io-protocol
         updateCells(view, offset) {
             var encode = function() {
@@ -10202,7 +10213,13 @@ function thelegendmodproject() {
                 //const invisible = this.staticX!=null?this.isInView(x, y):false;
                 //id = this.newID(id),
                 //x = this.getX(x),
-                //y = this.getY(y);						
+                //y = this.getY(y);	
+				var invisible;
+				if (LM.playerCellsMulti.length && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1]){
+					if (spects[window.multiboxPlayerEnabled-1].player){				
+						invisible = this.isInViewCustom3(x , y, size)	
+					}
+				}
                 cellUpdateCells = null;
 
                 if (this.indexedCells.hasOwnProperty(id)) {
@@ -10229,6 +10246,7 @@ function thelegendmodproject() {
                     }
                     this.indexedCells[id] = cellUpdateCells;
                 }
+				cellUpdateCells.invisible = invisible;
                 if (cellUpdateCells.isPlayerCell) {
                     name = this.playerNick;
                 }
