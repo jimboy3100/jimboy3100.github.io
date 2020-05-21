@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.685
+// v1.692
 
 
 //window.testobjects = {};
@@ -7487,13 +7487,18 @@ function thelegendmodproject() {
                         LM.viruses.splice(cells, 1);
                     }
                 }
-            } else {
+            } 
+			else {
                 cells = LM.food.indexOf(this);
                 if (cells != -1) {
                     LM.food.splice(cells, 1);
                 }
             }
             //cells = LM.playerCellsMulti.indexOf(this);
+			cells = LM.foodMulti.indexOf(this);
+                if (cells != -1) {
+                    LM.foodMulti.splice(cells, 1);
+                }			
 		    cells = LM.playerCells.indexOf(this);
             if (cells != -1) {
                 LM.removePlayerCell = true;
@@ -7771,7 +7776,7 @@ function thelegendmodproject() {
             //if (this.spectator>0 && this.isInV()||this.invisible==true) {
             //if (this.spectator>0 && this.isInV() || this.invisible==true || this.spectator>0 && this.isInView()) {
             //if (this.invisible == true || (this.spectator > 0 && this.isInV() && !window.multiboxPlayerEnabled)) {
-			if (this.invisible == true) {	
+			if (this.spectator>0 && this.isInV() || this.invisible == true) {	
                 return;
             }
             //					
@@ -8206,6 +8211,8 @@ function thelegendmodproject() {
         ghostCells: [],
         playerX: 0,
         playerY: 0,
+        playerXMulti: 0,
+        playerYMulti: 0,		
         playerSize: 0,
         playerMass: 0,
         playerMaxMass: 0,
@@ -9969,6 +9976,7 @@ function thelegendmodproject() {
             this.playerCellIDs = [];
             this.ghostCells = [];
             this.food = [];
+			this.foodMulti = []; //for multi fix
             this.viruses = [];
 
             //for SPECT
@@ -10487,6 +10495,8 @@ function thelegendmodproject() {
             canvasHeight: 0,
             camX: 0,
             camY: 0,
+            camXMulti: 0,
+            camYMulti: 0,			
             scale: 1,
             fpsLastRequest: null,
             renderedFrames: 0,
@@ -10516,30 +10526,37 @@ function thelegendmodproject() {
                 this.renderFrame();
             },
             setView() {
-                this.setScale();
+                this.setScale(LM.playerSize);
                 var speed = 30;
                 //if (LM.playerCellsMulti.length) {
+				if (window.multiboxPlayerEnabled) {
+                    this.camXMulti = (this.camXMulti + LM.viewX) / 2;
+                    this.camYMulti = (this.camYMulti + LM.viewY) / 2;							
+				} 
 				if (LM.playerCells.length) {	
                     LM.calculatePlayerMassAndPosition();
                     this.camX = (this.camX + LM.viewX) / 2;
-                    this.camY = (this.camY + LM.viewY) / 2;
+                    this.camY = (this.camY + LM.viewY) / 2;					
                 } else {
                     this.camX = (29 * this.camX + LM.viewX) / 30;
                     this.camY = (29 * this.camY + LM.viewY) / 30;
                 }
                 //this.camX=LM.viewX
                 //this.camY=LM.viewY
+                LM.playerXMulti= this.camXMulti;
+                LM.playerYMulti = this.camYMulti;				
                 LM.playerX = this.camX;
                 LM.playerY = this.camY;
+
             },
-            setScale() {
+            setScale(size) {
                 if (!LM.autoZoom) {
                     this.scale = (9 * this.scale + this.getZoom()) / 10;
                     LM.viewScale = this.scale;
                     return;
                 }
                 if (LM.play) {
-                    this.scale = (9 * this.scale + Math.min(64 / LM.playerSize, 1) ** 0.4 * this.getZoom()) / 10;
+                    this.scale = (9 * this.scale + Math.min(64 / size, 1) ** 0.4 * this.getZoom()) / 10;
                 } else {
                     this.scale = (9 * this.scale + LM.scale * this.getZoom()) / 10;
                 }
@@ -10660,6 +10677,9 @@ function thelegendmodproject() {
                     this.drawVirusesRange(this.ctx, LM.viruses);
                 }
                 this.drawFood();
+				if (LM.playerCellsMulti.length){
+					this.calMinMaxMulti();
+				}
                 this.calMinMax();
 				if (LM.play || LM.playerCellsMulti.length) {
                     if (defaultmapsettings.splitRange) {
@@ -10733,8 +10753,12 @@ function thelegendmodproject() {
                 }
                 //
                 if (defaultmapsettings.debug) {
-                    this.drawViewport(this.ctx, 'Viewport', LM.camMinX, LM.camMinY, LM.camMaxX, LM.camMaxY, defaultSettings.bordersColor, 15);
-
+					if (!window.multiboxPlayerEnabled){
+						this.drawViewport(this.ctx, 'Viewport', LM.camMinX, LM.camMinY, LM.camMaxX, LM.camMaxY, defaultSettings.bordersColor, 15);
+					}
+					else if (LM.camMinMultiX && LM.camMinMultiY && LM.camMaxMultiX && LM.camMaxMultiY){
+						this.drawViewport(this.ctx, 'Multi', LM.camMinMultiX, LM.camMinMultiY, LM.camMaxMultiX, LM.camMaxMultiY, defaultSettings.bordersColor, 15);
+					}
                     //this.newViewport( this.ctx, 'Client', LM.viewX, LM.viewY, LM.isSpectateEnabled, LM.isFreeSpectate, LM.leaderboard, LM.playerCells)
                     if (window.fullSpectator) {
                         for (let i = 0; i < spects.length; i++) {
@@ -11061,6 +11085,22 @@ function thelegendmodproject() {
                         t.globalAlpha = 1, i && (e = []);
                 }
             },
+            calMinMaxMulti() {
+				if (window.multiboxPlayerEnabled && LM.foodMulti.length){
+					LM.camMaxMultiX = LM.playerXMulti
+					LM.camMaxMultiY = LM.playerYMulti
+					LM.camMinMultiX = LM.playerXMulti
+					LM.camMinMultiY = LM.playerYMulti
+					for (var length = 0; length < LM.foodMulti.length; length++) {
+						var x = LM.foodMulti[length].x - 10 - defaultSettings.foodSize;
+						var y = LM.foodMulti[length].y - 10 - defaultSettings.foodSize;
+						if (x > LM.camMaxMultiX) LM.camMaxMultiX = x
+						if (y > LM.camMaxMultiY) LM.camMaxMultiY = y
+						if (x < LM.camMinMultiX) LM.camMinMultiX = x
+						if (y < LM.camMinMultiY) LM.camMinMultiY = y
+					}
+				}
+            },			
             calMinMax() {
                 LM.camMaxX = LM.playerX
                 LM.camMaxY = LM.playerY
