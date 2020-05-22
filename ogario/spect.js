@@ -1,4 +1,4 @@
-//SPECS v3.2z WORKS UNTIL HERE
+//SPECS v3.3a WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -760,10 +760,10 @@ class Spect {
         if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
             this.mapOffsetX = (this.mapOffset) - right;
             this.mapOffsetY = (this.mapOffset) - bottom;
-            this.mapMinX = ~~((-this.mapOffset) - this.mapOffsetX);
-            this.mapMinY = ~~((-this.mapOffset) - this.mapOffsetY);
-            this.mapMaxX = ~~((this.mapOffset) - this.mapOffsetX);
-            this.mapMaxY = ~~((this.mapOffset) - this.mapOffsetY);
+            this.mapMinX = ((-this.mapOffset) - this.mapOffsetX);
+            this.mapMinY = ((-this.mapOffset) - this.mapOffsetY);
+            this.mapMaxX = ((this.mapOffset) - this.mapOffsetX);
+            this.mapMaxY = ((this.mapOffset) - this.mapOffsetY);
             this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
             this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
             if (!this.mapOffsetFixed) {
