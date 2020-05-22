@@ -56,7 +56,11 @@ ProLicenceUsersTable = {
         "7aa2d964-ac82-497c-aa34-25cc342299bd": {
             "reason": "Donate",
             "notes": "CentralAsia"
-        }, 			
+        }, 	
+        "84cfb97a-03ef-4625-a6cb-913b23d9dc69": {
+            "reason": "Give@24052020",
+            "notes": "testJimboy"
+        },		
         "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
             "reason": "Donate",
             "notes": "Lizzie"
