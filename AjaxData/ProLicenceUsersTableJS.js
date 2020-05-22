@@ -68,3 +68,4 @@ ProLicenceUsersTable = {
     },
     "versionsInfo": ["v-0.3", "LM-v2.5"]
 };
+
