@@ -2,6 +2,7 @@
 	if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]){
 		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Moderator"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Moderator" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsModerator.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Ddev" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsDdev.png"></div>'
 		}
 		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "LMauthor"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="RedArrow" data-original="https://legendmod.ml/banners/drawCommander5.png"></div>'
