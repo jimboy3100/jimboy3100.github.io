@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.693
+// v1.698
 
 
 //window.testobjects = {};
@@ -2237,6 +2237,8 @@ cimgSpecialSkinEffectsHat3 = new Image;
 cimgSpecialSkinEffectsHat3.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsHat3.png';
 cimgSpecialSkinEffectsVip = new Image;
 cimgSpecialSkinEffectsVip.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsVip.png';
+cimgSpecialSkinEffectsDdev = new Image;
+cimgSpecialSkinEffectsDdev.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsDdev.png';
 cimgSpecialSkinEffectsYoutube = new Image;
 cimgSpecialSkinEffectsYoutube.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsYoutube.png';
 cimgSpecialSkinEffectsJellyFish = new Image;
@@ -8012,7 +8014,15 @@ function thelegendmodproject() {
 					}											
 					if (this.SpecialEffect == "Vip" || this.SpecialEffect2 == "Vip"){ 	
 					style.drawImage(cimgSpecialSkinEffectsVip, this.x - 1/8 * y, this.y - 5.3/4 * y, y/5, y/5); 
-					}						
+					}	
+					else if (this.SpecialEffect == "Ddev" || this.SpecialEffect2 == "Ddev"){ 	
+					//style.drawImage(cimgSpecialSkinEffectsDdev, this.x - 1/8 * y, this.y - 5.3/4 * y, y/5, y/5); 
+					style.drawImage(cimgSpecialSkinEffectsDdev, this.x - window.xx1 * y, this.y - window.xx2 * y, y/window.xx3, y/window.xx4);	
+					if (!window.xx1) window.xx1 = 1/8
+					if (!window.xx2) window.xx2 = 5.3/4
+					if (!window.xx3) window.xx3 = 5
+					if (!window.xx4) window.xx4 = 5
+					}					
 					else if (this.SpecialEffect == "Youtube" || this.SpecialEffect2 == "Youtube"){ 	
 					style.drawImage(cimgSpecialSkinEffectsYoutube, this.x - 1/6 * y, this.y - 5.3/4 * y, y/3, y/3);
 					//style.drawImage(cimgSpecialSkinEffectsYoutube, this.x - 1/2 * y, this.y - 3/2 * y, y, y); 
@@ -10114,7 +10124,7 @@ function thelegendmodproject() {
 		isInViewCustom3 (x , y, size) {
 			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
 			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
-			var randomNum = 0 // randomNum=40
+			var randomNum = 10 // randomNum=40
 			var distance = size + randomNum
             return !(x + distance < legendmod.camMinMultiX ||
 			y + distance < legendmod.camMinMultiY ||
@@ -10396,7 +10406,7 @@ function thelegendmodproject() {
                         if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings) {
                             cell.oppColor = this.setCellOppColor(cell.isPlayerCell, fixMass);
                         }
-                        if (!cell.isPlayerCell && (defaultmapsettings.splitRange || defaultmapsettings.oppRings)) {
+						if (!cell.isPlayerCell && (defaultmapsettings.splitRange || defaultmapsettings.oppRings)) {
                             this.cacheCells(cell.x, cell.y, cell.size, fixMass);
                         }
                     }
@@ -12317,7 +12327,6 @@ function PreLcCelebration() {
 			//return yyyy + "/" + (mm[1] ? mm : "0" + mm[0]) + "/" + (dd[1] ? dd : "0" + dd[0]); // padding
             return (mm[1] ? mm : "0" + mm[0]) + "/" + (dd[1] ? dd : "0" + dd[0]); // padding
         };
-
         var date = new Date();
         checkdate = date.yyyymmdd();
         if (checkdate == "11/12") {
