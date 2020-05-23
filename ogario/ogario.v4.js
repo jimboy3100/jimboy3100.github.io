@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.700
+// v1.701
 
 
 //window.testobjects = {};
@@ -385,7 +385,7 @@ window.connectionBots = {
     onopen() {
         document.getElementById('userStatus').style.color = '#00C02E'
         document.getElementById('userStatus').innerText = 'Connected'
-        document.getElementById('connect').disabled = true
+        //document.getElementById('connect').disabled = true
         document.getElementById('startBots').disabled = false
         document.getElementById('captchaBots').disabled = false
         document.getElementById('stopBots').disabled = false
@@ -461,7 +461,7 @@ window.connectionBots = {
         document.getElementById('userStatus').innerText = 'Disconnected'
         document.getElementById('botsAI').style.color = '#DA0A00'
         document.getElementById('botsAI').innerText = 'Disabled'
-        document.getElementById('connect').disabled = false
+        //document.getElementById('connect').disabled = false
         document.getElementById('startBots').disabled = true
         document.getElementById('captchaBots').disabled = true
         document.getElementById('stopBots').disabled = true
