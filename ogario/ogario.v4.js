@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.704
+// v1.705
 
 
 //window.testobjects = {};
@@ -2409,6 +2409,7 @@ var defaultmapsettings = {
     showSkinsPanel: true,
     animation: 120,
     macroFeeding: 80,
+	dominationRate: 1.33,
     profileNumber: 15,
     ////
     cameraSpeed: 7,
@@ -10371,10 +10372,10 @@ function thelegendmodproject() {
                 var mass = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
                 // this.STE = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null; //Sonia2
                 //this.STE = Math.floor(mass * Math.pow(1.15, 2)/4); //Sonia2
-				this.STE = Math.floor(mass * 1.3333/4); //Sonia2
-                this.MTE = Math.floor(mass * 1.3333/2); //Sonia2
-                this.BMTE = Math.ceil(mass * 1.3333); //Sonia2
-                this.BSTE = Math.ceil(mass * 1.3333*2); //Sonia2
+				this.STE = Math.floor(mass * defaultmapsettings.dominationRate/4); //Sonia2
+                this.MTE = Math.floor(mass * defaultmapsettings.dominationRate/2); //Sonia2
+                this.BMTE = Math.ceil(mass * defaultmapsettings.dominationRate); //Sonia2
+                this.BSTE = Math.ceil(mass * defaultmapsettings.dominationRate*2); //Sonia2
                 this.TTE = Math.ceil(mass / 6); //Sonia2
                 this.PTE = Math.floor(mass * 0.66); //Sonia2
             }
@@ -10415,23 +10416,23 @@ function thelegendmodproject() {
 			}}
         },
         cacheCells(x, y, size, mass) {
-            return mass >= 1.3333 * 4 ? void this.biggerSTEDCellsCache.push({
+            return mass >= defaultmapsettings.dominationRate * 4 ? void this.biggerSTEDCellsCache.push({
                 'x': x,
                 'y': y,
                 'size': size
-            }) : mass >= 1.3333 * 2 ? void this.biggerSTECellsCache.push({
+            }) : mass >= defaultmapsettings.dominationRate * 2 ? void this.biggerSTECellsCache.push({
                 'x': x,
                 'y': y,
                 'size': size
-            }) : mass >= 1.3333 ? void this.biggerCellsCache.push({
+            }) : mass >= defaultmapsettings.dominationRate ? void this.biggerCellsCache.push({
                 'x': x,
                 'y': y,
                 'size': size
-            }) : mass < 1.3333 && mass > 1.3333 / 2 ? void 0 : mass > 1.3333 / 4 ? void this.smallerCellsCache.push({
+            }) : mass < defaultmapsettings.dominationRate && mass > defaultmapsettings.dominationRate / 2 ? void 0 : mass > defaultmapsettings.dominationRate / 4 ? void this.smallerCellsCache.push({
                 'x': x,
                 'y': y,
                 'size': size
-            }) : mass > 1.3333 / 8 ? void this.STECellsCache.push({
+            }) : mass > defaultmapsettings.dominationRate / 8 ? void this.STECellsCache.push({
                 'x': x,
                 'y': y,
                 'size': size
@@ -10445,13 +10446,13 @@ function thelegendmodproject() {
             if (isPlayer) {
                 return ogarcopythelb.color
             } else {
-                if (mass >= 1.3333*8) return defaultSettings.enemyBSTEDColor
-                else if (mass >= 1.3333*4) return defaultSettings.enemyBSTEDColor
-                else if (mass >= 1.3333*2) return defaultSettings.enemyBSTEColor
-                else if (mass >= 1.3333) return defaultSettings.enemyBColor
-                else if (mass >= 1.3333/2) return '#FFDC00'
-                else if (mass >= 1.3333/4) return defaultSettings.enemySColor
-                else if (mass >= 1.3333/8) return defaultSettings.enemySSTEColor
+                if (mass >= defaultmapsettings.dominationRate*8) return defaultSettings.enemyBSTEDColor
+                else if (mass >= defaultmapsettings.dominationRate*4) return defaultSettings.enemyBSTEDColor
+                else if (mass >= defaultmapsettings.dominationRate*2) return defaultSettings.enemyBSTEColor
+                else if (mass >= defaultmapsettings.dominationRate) return defaultSettings.enemyBColor
+                else if (mass >= defaultmapsettings.dominationRate/2) return '#FFDC00'
+                else if (mass >= defaultmapsettings.dominationRate/4) return defaultSettings.enemySColor
+                else if (mass >= defaultmapsettings.dominationRate/8) return defaultSettings.enemySSTEColor
                 else return defaultSettings.enemySSTEDColor
             }
         },
