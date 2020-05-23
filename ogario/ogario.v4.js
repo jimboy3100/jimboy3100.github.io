@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.698
+// v1.700
 
 
 //window.testobjects = {};
@@ -2238,7 +2238,9 @@ cimgSpecialSkinEffectsHat3.src = 'https://legendmod.ml/banners/iconSpecialSkinEf
 cimgSpecialSkinEffectsVip = new Image;
 cimgSpecialSkinEffectsVip.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsVip.png';
 cimgSpecialSkinEffectsDdev = new Image;
-cimgSpecialSkinEffectsDdev.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsDdev.png';
+cimgSpecialSkinEffectsDdev.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsSunGlasses.png';
+cimgSpecialSkinEffectsSunGlasses = new Image;
+cimgSpecialSkinEffectsSunGlasses.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsSunGlasses.png';
 cimgSpecialSkinEffectsYoutube = new Image;
 cimgSpecialSkinEffectsYoutube.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsYoutube.png';
 cimgSpecialSkinEffectsJellyFish = new Image;
@@ -7991,6 +7993,10 @@ function thelegendmodproject() {
 					else if (this.SpecialEffect == "USA" || this.SpecialEffect2 == "USA"){ 	
 					style.drawImage(cimgSpecialSkinEffectsUSA, this.x - 5/7 * y, this.y - 1/2 * y, y * 2, y * 2);  									
 					}	
+					else if (this.SpecialEffect == "SunGlasses" || this.SpecialEffect2 == "SunGlasses"){ 	
+					style.drawImage(cimgSpecialSkinEffectsSunGlasses, this.x -  1 * y, this.y - 1.1 * y, y * 1.7, y * 1.4);  		
+					}						
+					
 					else if (this.SpecialEffect == "Moderator" || this.SpecialEffect2 == "Moderator"){ 	
 					style.drawImage(cimgSpecialSkinEffectsModerator, this.x - 0.333 * y, this.y - 1.325 * y, y / 1.5, y / 6);  	
 					/*style.drawImage(cimgSpecialSkinEffectsModerator, this.x - window.xx1 * y, this.y - window.xx2 * y, y/window.xx3, y/window.xx4);	
@@ -8016,11 +8022,11 @@ function thelegendmodproject() {
 					style.drawImage(cimgSpecialSkinEffectsVip, this.x - 1/8 * y, this.y - 5.3/4 * y, y/5, y/5); 
 					}	
 					else if (this.SpecialEffect == "Ddev" || this.SpecialEffect2 == "Ddev"){ 	
-					//style.drawImage(cimgSpecialSkinEffectsDdev, this.x - 1/8 * y, this.y - 5.3/4 * y, y/5, y/5); 
+					style.drawImage(cimgSpecialSkinEffectsDdev, this.x - 1/8 * y, this.y - 4.6/4 * y, y/3, y/5); 
 					style.drawImage(cimgSpecialSkinEffectsDdev, this.x - window.xx1 * y, this.y - window.xx2 * y, y/window.xx3, y/window.xx4);	
 					if (!window.xx1) window.xx1 = 1/8
-					if (!window.xx2) window.xx2 = 5.3/4
-					if (!window.xx3) window.xx3 = 5
+					if (!window.xx2) window.xx2 = 4.6/4
+					if (!window.xx3) window.xx3 = 3
 					if (!window.xx4) window.xx4 = 5
 					}					
 					else if (this.SpecialEffect == "Youtube" || this.SpecialEffect2 == "Youtube"){ 	
