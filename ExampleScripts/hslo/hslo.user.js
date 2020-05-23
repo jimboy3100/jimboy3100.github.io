@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         Legend Box Agar.io Extension
-// @description  Legend Box Party Multibox
+// @description  Legend Box Party Multibox Open Source
 // @version      1.0
 // @author       Jimboy3100 | HSLO project
 // @match        http://agar.io/*
 // @match        https://agar.io/*
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
-// @connect      jimboy3100.github.io
+// @connect      legendmod.ml
 // ==/UserScript==
 if (location.protocol == 'http:') {
  location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
@@ -15,7 +15,7 @@ if (location.protocol == 'http:') {
        const LegendBox = new class {
      constructor() {
        this.method = `GET`;
-       this.URL = `https://jimboy3100.github.io/ExampleScripts/hslo/index.html?v=`+ Math.random();
+       this.URL = `https://legendmod.ml/ExampleScripts/hslo/index.html`;
      }
      load() {
        window.stop();
