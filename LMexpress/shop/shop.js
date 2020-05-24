@@ -56,7 +56,7 @@
 	    '<div class="skin-box"><img class="lazy" name="Vip" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsVip.png"></div>' +
 	    '<div class="skin-box"><img class="lazy" name="Youtube" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsYoutube.png"></div>' +
 	    '<div class="skin-box"><img class="lazy" name="SunGlasses" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSunGlasses.png"></div>' +
-	    '<div class="skin-box"><img class="lazy" name="Sparrow" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSparrow.png"></div>' +
+	    '<div class="skin-box"><img class="lazy" name="Sparrow" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsBird.png"></div>' +
 	    '<div class="skin-box"><img class="lazy" name="Butterfly" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsButterfly.png"></div>' +
 	    '<div class="skin-box"><img class="lazy" name="Mouse" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMouse.png"></div>' +
 		window.tempModeratorSkin +
