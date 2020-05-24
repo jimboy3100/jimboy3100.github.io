@@ -8,7 +8,7 @@
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="RedArrow" data-original="https://legendmod.ml/banners/drawCommander5.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="WhiteArrow" data-original="https://legendmod.ml/banners/drawCommander5.png"></div>'
 		}
-		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "LMauthor" || ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Shiro"){
+		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Shiro"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Shiro" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsShiro.png"></div>'
 		}		
 		if ($("#nick").val().includes('℄') || ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Admin"){
@@ -56,6 +56,9 @@
 	    '<div class="skin-box"><img class="lazy" name="Vip" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsVip.png"></div>' +
 	    '<div class="skin-box"><img class="lazy" name="Youtube" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsYoutube.png"></div>' +
 	    '<div class="skin-box"><img class="lazy" name="SunGlasses" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSunGlasses.png"></div>' +
+	    '<div class="skin-box"><img class="lazy" name="Sparrow" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSparrow.png"></div>' +
+	    '<div class="skin-box"><img class="lazy" name="Butterfly" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsButterfly.png"></div>' +
+	    '<div class="skin-box"><img class="lazy" name="Mouse" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMouse.png"></div>' +
 		window.tempModeratorSkin +
    '</div>' +
 	        '<div id="lowres" class="skins-wrapper">' +
