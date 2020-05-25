@@ -1,4 +1,4 @@
-//SPECS v3.3b WORKS UNTIL HERE
+//SPECS v3.3c WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -957,8 +957,8 @@ class Spect {
                 } else if (isFood){
                     legendmod.foodMulti.push(cell); //this causes problems
                 }
-				if(defaultmapsettings.oneColoredSpectator && !isFood && !remove) {
-					legendmod.cells.push(cell);
+				if(defaultmapsettings.oneColoredSpectator) {
+					if (!isFood && !remove) legendmod.cells.push(cell);				
 				}
 				else{
 					legendmod.cells.push(cell);
