@@ -1,13 +1,15 @@
-//SPECS v3.3j WORKS UNTIL HERE
+//SPECS v3.3k WORKS UNTIL HERE
 
-function addBox() {
+function loadMultiCellSkin(){
+  if (profiles[application.selectedOldProfile].nick && !application.customSkinsMap[profiles[application.selectedOldProfile].nick]){
+	 core.registerSkin(profiles[application.selectedOldProfile].nick , null, profiles[application.selectedOldProfile].skinURL , null); 
+  }
+}
+function addBox() {  
   let spect = new Spect();
   spect.player = true;
   legendmod.multiBoxPlayerExists = spect.player
   spects.unshift(spect); 
-  if (profiles[application.selectedOldProfile].nick && !application.customSkinsMap[profiles[application.selectedOldProfile].nick]){
-	 core.registerSkin(profiles[application.selectedOldProfile].nick , null, profiles[application.selectedOldProfile].skinURL , null); 
-  }
 }
 function addSpectator() {
   let spect = new Spect();
@@ -655,6 +657,7 @@ class Spect {
                     }, 200);
                    this.sendFreeSpectate()
                 }
+				loadMultiCellSkin()
                 break;
             case 255:
                 this.handleSubmessage(view);
