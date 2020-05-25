@@ -1,4 +1,4 @@
-//SPECS v3.3c WORKS UNTIL HERE
+//SPECS v3.3e WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -892,7 +892,7 @@ class Spect {
                 const g = view.readUInt8(offset++);
                 const b = view.readUInt8(offset++);
 			   //snez			  
-              if(defaultmapsettings.oneColoredSpectator) {
+			if(defaultmapsettings.oneColoredSpectator) {
                 //color = legendmod.rgb2Hex(255, 255, 255);
 				color = defaultSettings.foodColor
               } else {
@@ -957,7 +957,7 @@ class Spect {
                 } else if (isFood){
                     legendmod.foodMulti.push(cell); //this causes problems
                 }
-				if(defaultmapsettings.oneColoredSpectator) {
+				if(defaultmapsettings.oneColoredSpectator && !this.player) {
 					if (!isFood && !remove) legendmod.cells.push(cell);				
 				}
 				else{
