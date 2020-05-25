@@ -1,10 +1,13 @@
-//SPECS v3.3h WORKS UNTIL HERE
+//SPECS v3.3i WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
   spect.player = true;
   legendmod.multiBoxPlayerExists = spect.player
-  spects.unshift(spect);  
+  spects.unshift(spect); 
+  if (profiles[application.selectedOldProfile].nick && application.customSkinsMap[profiles[application.selectedOldProfile].nick]){
+	 core.registerSkin(profiles[application.selectedOldProfile].nick , null, profiles[application.selectedOldProfile].skinURL , null); 
+  }
 }
 function addSpectator() {
   let spect = new Spect();
