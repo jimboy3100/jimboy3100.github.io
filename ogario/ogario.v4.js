@@ -510,66 +510,13 @@ window.socket3Opened = false;
 window.SLG3NumberTries = 0;
 window.socket3NumberTries = 0;
 var customLMID = Math.floor(Math.random() * 100000);
-window.playerCellsSockReceived = [];
-window.cellsFake = [];
-window.cellsFakeFlag = 0;
+
 
 window.videoSkinPlayerflag = {};
 window.videoSkinPlayerflag2 = {};
 //window.videoSkinPlayerflag=true;
 window.videoSkinPlayer = {};
 
-function fakePlayers() {
-    if (defaultmapsettings.teamView) {
-        for (var y = 0; y < legendmod.cells.length; y++) {
-            legendmod.cells[y].fakeOK = true;
-        }
-        for (var x = 0; x < window.cellsFake.length; x++) {
-            var ab = false;
-            for (y = 0; y < legendmod.cells.length; y++) {
-
-                if (legendmod.cells[y].fake && legendmod.cells[y].id == window.cellsFake[x].id) {
-                    //console.log(legendmod.cells[y]);
-                    legendmod.cells[y].time = Date.now();
-                    legendmod.cells[y].targetX = window.cellsFake[x].targetX;
-                    legendmod.cells[y].targetY = window.cellsFake[x].targetY;
-                    legendmod.cells[y].size = window.cellsFake[x].size;
-                    //legendmod.cells[y] = window.cellsFake[x];
-                    ab = true;
-                    legendmod.cells[y].fakeOK = false;
-                }
-            }
-            if (ab == false) { //true or false?
-                legendmod.cells.push(window.cellsFake[x]);
-                legendmod.cells[legendmod.cells.length - 1].fakeOK = false;
-                legendmod.cells[legendmod.cells.length - 1].time = Date.now();
-            }
-        }
-        //legendmod.cells.push(...cellsFake);
-        for (var y = 0; y < legendmod.cells.length; y++) {
-            if (legendmod.cells[y].fake && legendmod.cells[y].fakeOK == true) {
-                legendmod.cells[y].removeCell();
-            }
-        }
-
-        window.cellsFakeFlag++;
-        if (window.cellsFakeFlag == 80) {
-            //console.log('removed');
-            window.cellsFakeFlag = 0;
-            window.cellsFake = [];
-            /*
-					if (typeof Socket3updateTeamPlayerCells === 'function') {
-						for (var x = 0 ; x < legendmod.cells.length ; x++){
-							if (legendmod.cells[x].fake == true){
-								//window.cellsFake=[];
-								legendmod.cells[x].removeCell(); 
-							}
-						}				
-					} 	
-*/
-        }
-    }
-}
 
 
 function checkVideos(a, b) {
@@ -1206,8 +1153,7 @@ var displayText = {
         page_play_as_guest: 'Graj jako gość',
         page_shop: 'Sklep',
         page_spectate: 'Obserwuj',
-        page_stats: 'Statystyki',
-        teamView: 'Team view (BETA)'
+        page_stats: 'Statystyki'
     },
     en: {
         start: 'Home',
@@ -1612,8 +1558,7 @@ var displayText = {
         page_menu_main_free_coins: 'Free Coins',
         page_menu_main_gifts: 'Gifts',
         page_menu_main_dailyquests: 'Daily Quest',
-        page_shop: 'Shop',
-        teamView: 'Team view (BETA)'
+        page_shop: 'Shop'
     }
 }
 var chatPositions = {
@@ -2432,7 +2377,6 @@ var defaultmapsettings = {
     borderGlow: false,
     limLB: 10,
     limTP: 5,
-    teamView: false,
     ////
     //'zoomSpeedValue: .87,
     zoomSpeedValue2: -0.13,
@@ -4425,7 +4369,7 @@ function thelegendmodproject() {
                 this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup");
                 this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "hidecountry", "universalChat"], "chatGroup");
                 this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup");
-                this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots", "teamView"], "helpersGroup"); //Sonia2
+                this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
                 this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert"], "mouseGroup");
                 //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
                 this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
@@ -6364,37 +6308,6 @@ function thelegendmodproject() {
             if (axis == 0) return x * (v.mapMaxX - v.mapMinX) + v.mapMinX;
             else return x * (v.mapMaxY - v.mapMinY) + v.mapMinY;
         },
-        sendJimboy3100info() {
-            if (window.legendmod.play) {
-                window.playerCellsSock = [];
-                if (legendmod.playerCells && legendmod.playerCells.length) {
-                    for (var i = 0; i < legendmod.playerCells.length; i++) {
-                        window.playerCellsSock[i] = {};
-                        window.playerCellsSock[i].id = legendmod.playerCells[i].id;
-                        window.playerCellsSock[i].x = legendmod.playerCells[i].x + legendmod.mapOffsetX;
-                        window.playerCellsSock[i].y = legendmod.playerCells[i].y + legendmod.mapOffsetY;
-                        //window.playerCellsSock[i].x = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(legendmod.playerCells[i].x) : legendmod.playerCells[i].x //Sonia3
-                        //window.playerCellsSock[i].y = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateY(legendmod.playerCells[i].y) : legendmod.playerCells[i].y //Sonia3
-                        window.playerCellsSock[i].size = legendmod.playerCells[i].size;
-                    }
-                }
-                if (Socket3 && Socket3.readyState == 1 && application.playerID && window.playerCellsSock) {
-                    var temp = {
-                        com: "pcells",
-                        //tid: application.playerID,
-                        tid: window.unescape(window.encodeURIComponent(application.lastSentNick)),
-                        playerCells: window.playerCellsSock
-                    };
-                    Socket3.send(JSON.stringify({
-                        //"toH": "legendmod",
-                        "toH": $("#server-token").val() + "3",
-                        "msg": temp
-                    }));
-                    //if (temp.playerCells[0]) console.log(temp.playerCells[0].id, temp.playerCells[0].size, temp.playerCells[0].x, temp.playerCells[0].y);
-                    //Socket3.send(JSON.stringify({ com: "pcells", tid: application.playerID, playerCells: window.playerCellsSock}));		
-                }
-            }
-        },
         sendSLGQinfo() {
             //return;
             var msg = "";
@@ -6709,7 +6622,7 @@ function thelegendmodproject() {
             this.sendSimpleLegendSDATA(); //SEND ROTATION INFO
 
             //this.sendSLGQinfo(),
-            //application.sendJimboy3100info(); // DO NOT SEND TEAM VIEW INFO
+
             this.chatUsers = {};
             this.top5 = []; //Sonia3
             this.updatevnr(); //Sonia3
@@ -10185,8 +10098,7 @@ function thelegendmodproject() {
                     victimID.removeCell();
                 }
             }
-            fakePlayers();
-            //					
+	
             for (length = 0;;) {
                 //extendedFlags = false;
                 var id = view.readUInt32LE(offset);
@@ -10217,8 +10129,6 @@ function thelegendmodproject() {
                     color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
                 }
 
-                //4 & d && (g = s()),
-                //8 & d && (y = window.decodeURIComponent(escape(s())));
                 if (4 & flags) {
                     skin = encode();
                     //						console.log('skin '+g);
@@ -12478,10 +12388,7 @@ function Socket3handler(message) {
     }
     else if (Socket3data.com == "death") { //not used yet
         Socket3updateTeamPlayerDeath(Socket3data);
-    }	
-    else if (Socket3data.com == "pcells") { 
-		Socket3updateTeamPlayerCells(Socket3data);
-    }	
+    }		
     else if (Socket3data.com == "info") {
 		if (Socket3data.com2 = "spfc"){
         Socket3updateTeamPlayerSpfc(Socket3data);
@@ -12541,42 +12448,7 @@ function Socket3updateTeamPlayerDeath(Socket3data) {
 	application.teamPlayers[h].alive = false;
 	application.teamPlayers[h].mass=1;	
 }
-function Socket3updateTeamPlayerCells(Socket3data) {
-		//console.log(window.decodeURIComponent(escape(Socket3data.tid)))
-        var temp = Socket3data.playerCells;
-		for (var i=0; i < application.teamPlayers.length; i++){
-			//if (application.teamPlayers[i].nick == window.decodeURIComponent(escape(Socket3data.tid)) && application.teamPlayers[i].lbgpi>-1 && application.teamPlayers[i].lbgpi==legendmod.lbgpi){
-			if (application.teamPlayers[i].nick == window.decodeURIComponent(escape(Socket3data.tid)) && application.teamPlayers[i].lbgpi>-1 && legendmod.lbgpi>-1){	
-				for(var j=0; j< temp.length; j++){
-					var ogariocellssetts = new legendmod1(temp[j].id + 1000000000, temp[j].x - legendmod.mapOffsetX, temp[j].y - legendmod.mapOffsetY, temp[j].size, application.teamPlayers[i].color, false, true, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
-					ogariocellssetts.isVirus = false;	
-					ogariocellssetts.fake = true;
-					ogariocellssetts.targetNick = application.teamPlayers[i].nick;
-					ogariocellssetts.nick = application.teamPlayers[i].nick;
-					if (!ogariocellssetts.isInView()){
-					legendmod.indexedCells[temp[j].id + 1000000000] = ogariocellssetts;	
-					var ab=false;
-					//console.log('3')
-					for (x=0;x<window.cellsFake.length;x++){
-						if (window.cellsFake[x].id == ogariocellssetts.id){
-							window.cellsFake[x] = ogariocellssetts;
-							window.cellsFake[x].targetX = temp[j].x - legendmod.mapOffsetX;
-							window.cellsFake[x].targetY = temp[j].y - legendmod.mapOffsetY;
-							//window.cellsFake[x].x = temp[j].x - legendmod.mapOffsetX;
-							//window.cellsFake[x].y = temp[j].y - legendmod.mapOffsetY;							
-							window.cellsFake[x].size = temp[j].size;
-							ab = true;
-						}
-					}
-					if (ab == false){
-						window.cellsFake.push(ogariocellssetts);
-					}
-					//window.cellsFake.push(ogariocellssetts);
-					}			
-				}
-			}
-		}
-}
+
 
 
 //Socket3.send(JSON.stringify({ com: "death", id: customLMID}));
