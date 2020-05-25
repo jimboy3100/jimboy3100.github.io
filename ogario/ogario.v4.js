@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.722
+// v1.732
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -765,6 +765,7 @@ var displayText = {
         noColors: 'Wyłącz kolory',
         showMass: 'Pokaż masę',
 		oneColoredSpectator: 'Multibox less render cells',
+		multiBoxShadow: 'Player 1 & 2',
         skipStats: 'Pomiń statystyki po śmierci',
         showQuest: 'Pokaż zadanie (quest)',
         autoZoom: 'Auto zoom',
@@ -1184,6 +1185,7 @@ var displayText = {
         noColors: 'No colors',
         showMass: 'Show mass',
 		oneColoredSpectator: 'MultiBox less render cells',		
+		multiBoxShadow: 'Player 1 & 2',
         skipStats: 'Skip stats after death',
         showQuest: 'Show quest',
         autoZoom: 'Auto zoom',
@@ -2282,6 +2284,7 @@ var defaultmapsettings = {
     hideTeammatesNames: false,
     showMass: true,
 	oneColoredSpectator: false,
+	multiBoxShadow: false,
     optimizedMass: true,
     shortMass: true,
     virMassShots: true,
@@ -3041,6 +3044,7 @@ function thelegendmodproject() {
         playerID: null,
         playerMass: 0,
         selectedProfile: 0,
+		selectedOldProfile: 0,
         lastDeath: 0,
         skipServerData: false,
         gameMode: ':ffa',
@@ -4081,6 +4085,9 @@ function thelegendmodproject() {
             if (null !== window.localStorage.getItem('ogarioSelectedProfile')) {
                 this.selectedProfile = JSON.parse(window.localStorage.getItem('ogarioSelectedProfile'));
             }
+            if (null !== window.localStorage.getItem('ogarioSelectedOldProfile')) {
+                this.selectedOldProfile = JSON.parse(window.localStorage.getItem('ogarioSelectedOldProfile'));
+            }			
             if (profiles[this.selectedProfile]) {
                 ogarcopythelb.nick = profiles[this.selectedProfile].nick;
                 //changed
@@ -4174,6 +4181,7 @@ function thelegendmodproject() {
             this.setSkinPreview(profiles[e].skinURL, 'next-profile');
 
             this.saveSettings(this.selectedProfile, 'ogarioSelectedProfile');
+			 this.saveSettings(this.selectedOldProfile, 'ogarioSelectedOldProfile');
             if (profiles[this.selectedProfile]) {
                 $('#nick').val(profiles[this.selectedProfile].nick);
                 $('#clantag').val(profiles[this.selectedProfile].clanTag);
@@ -4185,18 +4193,32 @@ function thelegendmodproject() {
             $('#skins a').removeClass('selected');
             $('#skins a[data-profile=\'' + this.selectedProfile + '\']').addClass('selected');
         },
+		setProfileboxShadow(){
+			for (i=0;i<profiles.length;i++){
+				$("#profile-" + i).css('box-shadow', '');
+			}
+			$("#profile-" + this.selectedProfile).css('box-shadow', '0px 0px 20px' + profiles[this.selectedProfile].color);
+			$("#profile-" + this.selectedOldProfile).css('box-shadow', '0px 0px 20px' + profiles[this.selectedOldProfile].color);
+			
+		},
         prevProfile() {
-            this.setPlayerSettings(),
-                this.selectedProfile = (profiles.length + this.selectedProfile - 1) % profiles.length, this.setProfile();
+			this.selectedOldProfile = this.selectedProfile;
+            this.setPlayerSettings();
+            this.selectedProfile = (profiles.length + this.selectedProfile - 1) % profiles.length, this.setProfile();
+			if (defaultmapsettings.multiBoxShadow)	this.setProfileboxShadow()						
         },
         nextProfile() {
+			this.selectedOldProfile = this.selectedProfile;
             this.setPlayerSettings();
-                this.selectedProfile = (this.selectedProfile + 1) % profiles.length, this.setProfile();
+            this.selectedProfile = (this.selectedProfile + 1) % profiles.length, this.setProfile();
+			if (defaultmapsettings.multiBoxShadow)	this.setProfileboxShadow()						
         },
         selectProfile(value) {
+			this.selectedOldProfile = this.selectedProfile;
             this.setPlayerSettings();
             this.selectedProfile = parseInt(value);
             this.setProfile();
+			if (defaultmapsettings.multiBoxShadow)	this.setProfileboxShadow()						
         },
         addOption(id, name, text, checked) {
             $(id).append('<label><input type=\"checkbox\" id=\"' + name + '\" class=\"js-switch\"> ' + text + '</label>');
@@ -4374,7 +4396,7 @@ function thelegendmodproject() {
                 //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
                 this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
                 this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup");
-                this.addOptions(["oneColoredSpectator"], "multiBox");
+                this.addOptions(["oneColoredSpectator", "multiBoxShadow"], "multiBox");
 				this.addOptions([], "macroGroup");
                 this.addOptions([], "profiles");
 				if (!this.protocolMode) {
@@ -7840,10 +7862,24 @@ function thelegendmodproject() {
 						}*/
             var node = null;
             var node2 = {}; //, node2.src = application.customSkinsMap[this.targetNick]
+            
+			//if (defaultmapsettings.multiBoxShadow && this.isPlayerCell && LM.playerCellsMulti){
+			if (defaultmapsettings.multiBoxShadow && LM.playerCellsMulti){	
+				this.Multi=false;
+				for (var i = 0; i < LM.playerCellsMulti.length; i++){
+					if (LM.playerCellsMulti[i].id == this.id){
+						style.shadowBlur = 40;
+						style.shadowColor = profiles[application.selectedOldProfile].color;
+						this.Multi=true
+					}
+				}
+				if (this.Multi==false){
+					style.shadowBlur = 40;
+					style.shadowColor = profiles[application.selectedProfile].color;				
+				}
+			}
 
-
-
-            //lylko
+			//lylko
             if (defaultmapsettings.customSkins && LM.showCustomSkins) {
                 node = application.getCustomSkin(this.targetNick, this.color);
 
