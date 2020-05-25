@@ -1,4 +1,4 @@
-//v0.4g
+//v0.4h
 
 //$(document).ready(function() {
 jQuery(function($) {
@@ -88,7 +88,7 @@ function startSpecialEffectSkin(){
 }
 
 function loadSpecialEffectSkin(e){
-		if (($("#nick").val().includes('℄') && $("#clantag").val() == "ZINO") || window.proLicenceUID){
+		if (($("#nick").val().includes('℄') && $("#clantag").val() == window.atob(defaultmapsettings.clanTagLc)) || window.proLicenceUID){
 			try {	
 			toastr.info("<b>[SERVER]:</b> Special Effect " + $("#skin-url").val() + " activated");
 			for (var i = 0; i < $(".skins-wrapper").length; i++){
