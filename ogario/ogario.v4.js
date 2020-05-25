@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.715
+// v1.716
 
 
 //window.testobjects = {};
@@ -104,18 +104,7 @@ function deleteGamemode() {
 }
 
 
-    $("body").on('DOMNodeInserted', ".toast.toast-success", function() {
-        MSGCOMMANDS = $(".toast.toast-success").text();
-        MSGNICK = $(".message-nick").last().text().replace(": ", "");
-        MsgCommands1(MSGCOMMANDS, MSGNICK);
 
-    });
-    $("body").on('DOMSubtreeModified', "#chat-box", function() {
-        MSGCOMMANDS = $(".message-text").text();
-        MSGNICK = $(".message-nick").last().text().replace(": ", "");
-        MsgCommands1(MSGCOMMANDS, MSGNICK);
-
-    });
 	
 function logoutPSArenas() {
     if (master.context=="facebook") {
@@ -12318,7 +12307,7 @@ function openContextMenu(evt){
 }
 function hideContextMenu(evt){
   menuLeft.hide();
-  window.canvasElem.removeEventListener('click', hideContextMenu); 
+  window.canvasElem.removeEventListener('click', hideContextMenuhideContextMenu); 
 }
 
 //Animated Skins
