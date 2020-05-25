@@ -1,4 +1,4 @@
-//SPECS v3.3g WORKS UNTIL HERE
+//SPECS v3.3e WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -757,8 +757,7 @@ class Spect {
 			y - distance > legendmod.camMaxMultiY) 			
     }	
     setMapOffset(left, top, right, bottom) {
-		if (!this.integrity||(right - left) > legendmod.mapsize && (bottom - top) > legendmod.mapsize) {
-        //if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
+        if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
             this.mapOffsetX = (this.mapOffset) - right;
             this.mapOffsetY = (this.mapOffset) - bottom;
             //this.mapMinX = ~~((-this.mapOffset) - this.mapOffsetX);
