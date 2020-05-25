@@ -1,8 +1,9 @@
-//SPECS v3.3d WORKS UNTIL HERE
+//SPECS v3.3e WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
   spect.player = true;
+  legendmod.multiBoxPlayerExists = spect.player
   spects.unshift(spect);  
 }
 function addSpectator() {
@@ -70,6 +71,7 @@ class Spect {
         this.targetY = null
 		this.playerCellIDs = []
 		legendmod.playerCellsMulti = []
+		legendmod.multiBoxPlayerExists = null
         this.connect()
     }
     reset() {
@@ -91,6 +93,7 @@ class Spect {
         this.targetY = null
 		this.playerCellIDs = []
 		legendmod.playerCellsMulti = []
+		legendmod.multiBoxPlayerExists = null
 
     }
     connect() {
@@ -746,6 +749,7 @@ class Spect {
 			x - distance > legendmod.viewXTrue + x2s || //>legendmod.camMaxX
 			y - distance > legendmod.viewYTrue + y2s) //>legendmod.camMaxY
     }	
+	/*
     isInViewCustom3 (x , y, size) {
 			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
 			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
@@ -756,6 +760,7 @@ class Spect {
 			x - distance > legendmod.camMaxMultiX || 
 			y - distance > legendmod.camMaxMultiY) 			
     }	
+	*/
     setMapOffset(left, top, right, bottom) {
         if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
             this.mapOffsetX = (this.mapOffset) - right;
@@ -931,9 +936,6 @@ class Spect {
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
                 //cell.invisible = invisible;
-                //if (color) {
-                    //cell.color = color;
-                //}
             } 		
 			else {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
