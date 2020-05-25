@@ -1,4 +1,4 @@
-//SPECS v3.3g WORKS UNTIL HERE
+//SPECS v3.3h WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -49,6 +49,7 @@ class Spect {
         this.number = spects.length + 1
 		//this.number = spects.length
         this.ws = null
+		this.nick = null
 		this.accessTokenSent = false
         this.socket = null
         this.protocolKey = null
@@ -76,6 +77,7 @@ class Spect {
     }
     reset() {
         this.ws = null
+		this.nick = null
 		this.accessTokenSent = false
         //this.socket = null
         this.protocolKey = null
@@ -545,8 +547,15 @@ class Spect {
             case 102:
 						//this.active = true
 						this.sendCursor()
-						console.log("SendNick with")
-						this.sendNick($("#nick").val())
+						console.log("SendNick with")						
+						if (profiles[application.selectedOldProfile] && profiles[application.selectedOldProfile].nick && defaultmapsettings.multiBoxShadow){
+							this.sendNick(profiles[application.selectedOldProfile].nick)
+							this.nick=profiles[application.selectedOldProfile].nick
+						}
+						else{
+							this.sendNick($("#nick").val())
+							this.nick=$("#nick").val()
+						}
               console.log('case 102');
 
                 break;
@@ -624,7 +633,15 @@ class Spect {
 						console.log("SendNick without")
 						this.sendCursor()
 						MultiTokenReady(this)
-						this.sendNick($("#nick").val())
+						
+						if (profiles[application.selectedOldProfile] && profiles[application.selectedOldProfile].nick && defaultmapsettings.multiBoxShadow){
+							this.sendNick(profiles[application.selectedOldProfile].nick)
+							this.nick=profiles[application.selectedOldProfile].nick
+						}
+						else{
+							this.sendNick($("#nick").val())
+							this.nick=$("#nick").val()
+						}
 					}
                 } else {
                   this.sendSpectate();
@@ -968,7 +985,7 @@ class Spect {
                 cell.targetNick = name;
             }
 			if (cell.isPlayerCell){
-				cell.targetNick = $("#nick").val();
+				cell.targetNick = this.nick
 				cell.isPlayerCellMulti=true
 			}
             cell.targetX = x;
