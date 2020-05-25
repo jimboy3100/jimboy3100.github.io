@@ -757,7 +757,7 @@ class Spect {
 			y - distance > legendmod.camMaxMultiY) 			
     }	
     setMapOffset(left, top, right, bottom) {
-        if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
+        if (!this.integrity||(right - left) > 14141 && (bottom - top) > 14141) {
             this.mapOffsetX = (this.mapOffset) - right;
             this.mapOffsetY = (this.mapOffset) - bottom;
             //this.mapMinX = ~~((-this.mapOffset) - this.mapOffsetX);
