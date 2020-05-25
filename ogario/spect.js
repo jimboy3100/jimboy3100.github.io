@@ -1,4 +1,4 @@
-//SPECS v3.2z WORKS UNTIL HERE
+//SPECS v3.3a WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -945,7 +945,7 @@ class Spect {
                     }
                     //legendmod.cells.push(cell);
                         if (this.playerCellIDs.indexOf(id) != -1 && legendmod.playerCellsMulti.indexOf(cell) == -1) {
-                            cell.isPlayerCell = true;
+                            //cell.isPlayerCell = true;
                             this.playerColor = color;
                             legendmod.playerCellsMulti.push(cell);
 							if (legendmod.playerCellsMulti.length==1){
