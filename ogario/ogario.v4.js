@@ -10153,7 +10153,7 @@ function thelegendmodproject() {
 		isInViewCustom3 (x , y, size) {
 			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
 			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
-			var randomNum = 10 // randomNum=40
+			var randomNum = 40 // randomNum=40
 			var distance = size + randomNum
             return !(x + distance < legendmod.camMinMultiX ||
 			y + distance < legendmod.camMinMultiY ||
@@ -12248,21 +12248,6 @@ function minimapCell(envId, cb, i, s) {
         }
     };
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 const menuLeft = new ContextMenu({
