@@ -1,4 +1,4 @@
-//SPECS v3.3c WORKS UNTIL HERE
+//SPECS v3.3d WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -961,7 +961,7 @@ class Spect {
 					if (!isFood && !remove) legendmod.cells.push(cell);				
 				}
 				else{
-					legendmod.cells.push(cell);
+					if (!remove) legendmod.cells.push(cell);
 				}
                 legendmod.indexedCells[id] = cell;
             }
