@@ -1,40 +1,32 @@
-// ==UserScript==
-// @name         Legend Box Agar.io Extension
-// @description  Legend Box Party Multibox Open Source
-// @version      1.0
-// @author       Jimboy3100 | HSLO project
-// @match        http://agar.io/*
+ // ==UserScript==
+// @name         HSLO v6 - By Easy Peasy
+// @description  HSLO multibox edition
+// @version      5.3.6
+// @author       xs
+// @match        http://agar.io/
 // @match        https://agar.io/*
 // @run-at       document-start
 // @grant        GM_xmlhttpRequest
-// @connect      legendmod.ml
+// @connect      mgxe.ml
+// @connect      netclouds.ga
+
 // ==/UserScript==
-if (location.protocol == 'http:') {
- location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
-} else {
-       const LegendBox = new class {
-     constructor() {
-       this.method = `GET`;
-       this.URL = `https://legendmod.ml/ExampleScripts/hslo/index.html`;
-     }
-     load() {
-       window.stop();
-       this.fetch();
-     }
-     fetch() {
-         GM_xmlhttpRequest({
-             method: this.method,
-             url: this.URL,
-             onload: function(e) {
-                 LegendBox.write(e.responseText);
-             }
-         });
-     }
-     write(Html) {
-       document.open();
-       document.write(Html);
-       document.close();
-     }
-   }
-   LegendBox.load();
+
+if (location.host === "agar.io" && location.href !== "https://agar.io/hslo") {
+    location.href = "https://agar.io/hslo";
+    return;
+
+
+};
+
+GM_xmlhttpRequest({
+    method: 'GET',
+    url: 'https://netclouds.ga/hslov5new/index.html?v=' + Math.random(),
+    onload: function(data) {
+        document.open();
+        document.write(data.responseText);
+        document.close();
 }
+
+
+}); 
