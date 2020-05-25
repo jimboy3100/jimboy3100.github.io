@@ -71,8 +71,12 @@ ProLicenceUsersTable = {
         },	
         "d7385406-7a71-498d-a613-3faf090f6ccb": {
             "reason": "Give@20200612",
-            "notes": "VictoriaAiroFb"
-        },				
+            "notes": "VictoriaAiroFbGoogleaccount"
+        },		
+        "40252edd-4ec4-41a0-865f-aa9d967a3706": {
+            "reason": "Give@20200612",
+            "notes": "VictoriaAiroFbFacebookaccount"
+        },	      
         "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
             "reason": "Donate",
             "notes": "Lizzie"
