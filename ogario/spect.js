@@ -1,4 +1,4 @@
-//SPECS v3.3f WORKS UNTIL HERE
+//SPECS v3.3g WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -969,6 +969,7 @@ class Spect {
             }
 			if (cell.isPlayerCell){
 				cell.targetNick = $("#nick").val();
+				cell.isPlayerCellMulti=true
 			}
             cell.targetX = x;
             cell.targetY = y;
