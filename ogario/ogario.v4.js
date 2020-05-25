@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.714
+// v1.715
 
 
 //window.testobjects = {};
@@ -103,6 +103,20 @@ function deleteGamemode() {
     $('#gamemode option[value=6]').prop('selected', 'selected').change();
 }
 
+
+    $("body").on('DOMNodeInserted', ".toast.toast-success", function() {
+        MSGCOMMANDS = $(".toast.toast-success").text();
+        MSGNICK = $(".message-nick").last().text().replace(": ", "");
+        MsgCommands1(MSGCOMMANDS, MSGNICK);
+
+    });
+    $("body").on('DOMSubtreeModified', "#chat-box", function() {
+        MSGCOMMANDS = $(".message-text").text();
+        MSGNICK = $(".message-nick").last().text().replace(": ", "");
+        MsgCommands1(MSGCOMMANDS, MSGNICK);
+
+    });
+	
 function logoutPSArenas() {
     if (master.context=="facebook") {
         logout();
