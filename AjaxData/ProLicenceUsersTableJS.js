@@ -61,6 +61,18 @@ ProLicenceUsersTable = {
             "reason": "Give@20200521",
             "notes": "testJimboy"
         },		
+        "3361c3f4-3d94-49d2-b19c-c1b8241d4574": {
+            "reason": "Give@20200612",
+            "notes": "AngelDeltaServer"
+        },		
+        "e8a49e32-7f71-4449-b1ae-1bf2fe4dc3b": {
+            "reason": "Give@20200612",
+            "notes": "MaximumDeltaServer"
+        },	
+        "d7385406-7a71-498d-a613-3faf090f6ccb": {
+            "reason": "Give@20200612",
+            "notes": "VictoriaAiroFb"
+        },				
         "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
             "reason": "Donate",
             "notes": "Lizzie"
@@ -68,4 +80,3 @@ ProLicenceUsersTable = {
     },
     "versionsInfo": ["v-0.3", "LM-v2.5"]
 };
-
