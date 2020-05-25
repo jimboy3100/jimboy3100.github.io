@@ -1,4 +1,4 @@
-//SPECS v3.3a WORKS UNTIL HERE
+//SPECS v3.3b WORKS UNTIL HERE
 
 function addBox() {
   let spect = new Spect();
@@ -893,7 +893,8 @@ class Spect {
                 const b = view.readUInt8(offset++);
 			   //snez			  
               if(defaultmapsettings.oneColoredSpectator) {
-                color = legendmod.rgb2Hex(255, 255, 255);
+                //color = legendmod.rgb2Hex(255, 255, 255);
+				color = defaultSettings.foodColor
               } else {
                 color = legendmod.rgb2Hex(~~(r * 0.9), ~~(g * 0.9), ~~(b * 0.9));
               }
@@ -945,7 +946,7 @@ class Spect {
                     }
                     //legendmod.cells.push(cell);
                         if (this.playerCellIDs.indexOf(id) != -1 && legendmod.playerCellsMulti.indexOf(cell) == -1) {
-                            //cell.isPlayerCell = true;
+                            cell.isPlayerCell = true;
                             this.playerColor = color;
                             legendmod.playerCellsMulti.push(cell);
 							if (legendmod.playerCellsMulti.length==1){
@@ -956,7 +957,12 @@ class Spect {
                 } else if (isFood){
                     legendmod.foodMulti.push(cell); //this causes problems
                 }
-				legendmod.cells.push(cell);
+				if(defaultmapsettings.oneColoredSpectator && !isFood && !remove) {
+					legendmod.cells.push(cell);
+				}
+				else{
+					legendmod.cells.push(cell);
+				}
                 legendmod.indexedCells[id] = cell;
             }
             
