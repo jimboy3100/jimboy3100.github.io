@@ -789,7 +789,7 @@
             },
             'hk-comm27': {
                 label: chatCommand['comm27'],
-                defaultKey: 'CTRL+LM',
+                defaultKey: 'CTRL+M',
                 keyDown() {
                     application && application.sendCommand(27);
                 },
