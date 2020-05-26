@@ -1,8 +1,11 @@
-//SPECS v3.3k WORKS UNTIL HERE
+//SPECS v3.3l WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
+	
   if (profiles[application.selectedOldProfile].nick && !application.customSkinsMap[profiles[application.selectedOldProfile].nick]){
-	 core.registerSkin(profiles[application.selectedOldProfile].nick , null, profiles[application.selectedOldProfile].skinURL , null); 
+	 setTimeout(function() {
+		core.registerSkin(profiles[application.selectedOldProfile].nick , null, profiles[application.selectedOldProfile].skinURL , null); 
+	 }, 5000); 
   }
 }
 function addBox() {  
