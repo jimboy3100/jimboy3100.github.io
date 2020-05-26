@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.736
+// v1.738
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -886,6 +886,7 @@ var displayText = {
         'hk-split16': 'Podział na 16',
         'hk-pause': 'Pauza kulki',
 		'hk-multiboxswap': 'Multibox Swap',		
+		'hk-multiboxFollowMouse': 'Multibox toggle follow mouse',	
         'hk-showTop5': 'Pokaż/ukryj top 5 teamu',
         'hk-showTime': 'Pokaż/ukryj aktualny czas',
         'hk-showSplitRange': 'Pokaż/ukryj zasięg podziału',
@@ -1308,6 +1309,7 @@ var displayText = {
         'hk-split16': 'Split 16',
         'hk-pause': 'Cell pause',
 		'hk-multiboxswap': 'Multibox Swap',
+		'hk-multiboxFollowMouse': 'Multibox toggle follow mouse',	
         'hk-showTop5': 'Show/hide teamboard',
         'hk-showTime': 'Show/hide current time',
         'hk-showSplitRange': 'Show/hide split range',
@@ -3466,6 +3468,14 @@ function thelegendmodproject() {
 				window.multiboxPlayerEnabledSaved = null
 			}
         },		
+		multiboxFollowMouse(){
+			if (!window.multiboxFollowMouse){
+				window.multiboxFollowMouse=true
+			}
+			else{
+				window.multiboxFollowMouse=null
+			}
+		},
         setCenteredLb() {
             if (defaultmapsettings.centeredLb) {
                 $('#leaderboard-hud').addClass('hud-text-center');
@@ -7868,13 +7878,15 @@ function thelegendmodproject() {
             
 
 			if (defaultmapsettings.multiBoxShadow && this.targetNick!=null && (this.targetNick == profiles[application.selectedOldProfile].nick || this.targetNick == profiles[application.selectedProfile].nick ) && LM.playerCellsMulti){	
-				if ( this.targetNick == profiles[application.selectedOldProfile].nick ){
-					style.shadowBlur = 40;
-					style.shadowColor = profiles[application.selectedOldProfile].color;					
-				}
-				else if ( this.targetNick == profiles[application.selectedProfile].nick ){
-					style.shadowBlur = 40;
-					style.shadowColor = profiles[application.selectedProfile].color;							
+				if (legendmod.play && window.multiboxPlayerEnabled){
+					if ( this.targetNick == profiles[application.selectedOldProfile].nick ){
+						style.shadowBlur = 40;
+						style.shadowColor = profiles[application.selectedOldProfile].color;					
+					}
+					else if ( this.targetNick == profiles[application.selectedProfile].nick ){
+						style.shadowBlur = 40;
+						style.shadowColor = profiles[application.selectedProfile].color;							
+					}
 				}
 			}
 
