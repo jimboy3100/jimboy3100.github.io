@@ -1,4 +1,4 @@
-//SPECS v3.3m WORKS UNTIL HERE
+//SPECS v3.3n WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -306,7 +306,7 @@ class Spect {
         }	
     sendCursor() {
             this.positionController = setInterval(() => {
-				if (window.multiboxPlayerEnabled || this.isFreeSpectate){
+			if (window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse){
 					this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
 				}
             }, 50);
@@ -355,8 +355,8 @@ class Spect {
         !legendmod.integrity && sendSpawn('0')
     }
     sendPosition(x, y) {
-        if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && this.integrity)) {
-            return;
+        if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && this.integrity)) {          
+			return;
         }
         const view = this.createView(13);
         view.setUint8(0, 16);
