@@ -84,6 +84,14 @@ ProLicenceUsersTable = {
         "3361c3f4-3d94-49d2-b19c-c1b8241d4574": {
             "reason": "Give@20200612",
             "notes": "GioBartolo"
+        },		
+        "3caec878-4009-4349-9bb8-9ce16cebbe98": {
+            "reason": "Give@20200612",
+            "notes": "ZainMohammed"
+        },	
+        "ba288e41-27b2-4da6-b97c-56409e073894": {
+            "reason": "Give@20200612",
+            "notes": "RavagerCanos"
         },			
         "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
             "reason": "Donate",
