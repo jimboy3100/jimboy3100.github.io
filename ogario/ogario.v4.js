@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.735
+// v1.736
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -2316,7 +2316,7 @@ var defaultmapsettings = {
     showMiniMapGhostCells: true,
     oneColoredTeammates: false,
     optimizedFood: true,
-    rainbowFood: true,
+    rainbowFood: false,
     oppColors: true,
     oppRings: true,
     virColors: false,
