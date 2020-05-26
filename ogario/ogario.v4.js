@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.738
+// v1.739
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -8660,7 +8660,7 @@ function thelegendmodproject() {
 
         sendPosition(cell, target2, specialcommand) {
             var cursorX, cursorY;
-			if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1]){
+			if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1] && !window.multiboxFollowMouse){
 				//handled by spects.js
 			}
             else if (this.isSocketOpen() && this.connectionOpened && (this.clientKey || !legendmod.integrity)) {
