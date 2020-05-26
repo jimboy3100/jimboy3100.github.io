@@ -74,7 +74,16 @@
                 },
                 keyUp: null,
                 type: 'normal'
-            },			
+            },	
+            'hk-multiboxFollowMouse': {
+                label: textLanguage['hk-multiboxFollowMouse'],
+                defaultKey: 'Y',
+                keyDown() {
+                    application && application.multiboxFollowMouse();
+                },
+                keyUp: null,
+                type: 'normal'
+            },				
             'hk-showTop5': {
                 label: textLanguage['hk-showTop5'],
                 defaultKey: 'T',
