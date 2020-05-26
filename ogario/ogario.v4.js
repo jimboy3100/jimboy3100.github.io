@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.734
+// v1.735
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -833,6 +833,7 @@ var displayText = {
         FBTracking: 'Facebook bubble tracker',		
         mouseSplit: 'LPM - Split myszką',
         mouseFeed: 'PPM - Feed myszką',
+		mouseWheelClick: 'Mouse wheel click - Multibox Swap',
         mouseInvert: 'Odwróć klawisze myszki',
         disableChat: 'Wyłącz czat',
         hideChat: 'Ukryj czat',
@@ -1255,6 +1256,7 @@ var displayText = {
         FBTracking: 'Facebook bubble tracker',	
         mouseSplit: 'LMB - Mouse split',
         mouseFeed: 'RMB - Mouse feed',
+		mouseWheelClick: 'Mouse wheel click - Multibox Swap',
         mouseInvert: 'Invert mouse buttons',
         disableChat: 'Disable chat',
         hideChat: 'Hide chat',
@@ -2332,6 +2334,7 @@ var defaultmapsettings = {
     teammatesInd: true,
     mouseSplit: false,
     mouseFeed: false,
+	mouseWheelClick: false,
     mouseInvert: false,
     disableChat: false,
     coloredNicks: false,
@@ -4392,7 +4395,7 @@ function thelegendmodproject() {
                 this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "hidecountry", "universalChat"], "chatGroup");
                 this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup");
                 this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
-                this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert"], "mouseGroup");
+                this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
                 //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
                 this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
                 this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup");
@@ -11792,9 +11795,15 @@ function thelegendmodproject() {
         if (!$("#overlays").is(":visible")) {
             if (2 == event.which) {
                 event.preventDefault();
-                if (application) {
-                    application.sendCommand(10);
+				if (application) {
+					if (defaultmapsettings.mouseWheelClick){
+						application.multiboxswap()
+					}
+					else{
+						application.sendCommand(10);
+					}
                 }
+				
             } 
 			else {
                 if (defaultmapsettings.mouseSplit && (1 == event.which && !defaultmapsettings.mouseInvert || 3 == event.which && defaultmapsettings.mouseInvert)) {
