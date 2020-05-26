@@ -1,11 +1,11 @@
-//SPECS v3.3l WORKS UNTIL HERE
+//SPECS v3.3m WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
   if (profiles[application.selectedOldProfile].nick && !application.customSkinsMap[profiles[application.selectedOldProfile].nick]){
 	 setTimeout(function() {
 		core.registerSkin(profiles[application.selectedOldProfile].nick , null, profiles[application.selectedOldProfile].skinURL , null); 
-	 }, 5000); 
+	 }, 100); 
   }
 }
 function addBox() {  
@@ -659,8 +659,7 @@ class Spect {
                         this.sendPosition(this.convertX(this.staticX), this.convertY(this.staticY));
                     }, 200);
                    this.sendFreeSpectate()
-                }
-				loadMultiCellSkin()
+                }				
                 break;
             case 255:
                 this.handleSubmessage(view);
@@ -975,6 +974,7 @@ class Spect {
                             legendmod.playerCellsMulti.push(cell);
 							if (legendmod.playerCellsMulti.length==1){
 								console.log('player cell is active')
+								loadMultiCellSkin()
 								this.active = true
 							}
                         }	
