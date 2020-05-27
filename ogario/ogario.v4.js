@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.740
+// v1.743
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -766,6 +766,7 @@ var displayText = {
         showMass: 'Pokaż masę',
 		oneColoredSpectator: 'Multibox less render cells',
 		multiBoxShadow: 'Player 1 & 2',
+		multiKeepMoving: 'Inactive keep moving',
         skipStats: 'Pomiń statystyki po śmierci',
         showQuest: 'Pokaż zadanie (quest)',
         autoZoom: 'Auto zoom',
@@ -1188,6 +1189,7 @@ var displayText = {
         showMass: 'Show mass',
 		oneColoredSpectator: 'MultiBox less render cells',		
 		multiBoxShadow: 'Player 1 & 2',
+		multiKeepMoving: 'Inactive keep moving',
         skipStats: 'Skip stats after death',
         showQuest: 'Show quest',
         autoZoom: 'Auto zoom',
@@ -2289,6 +2291,7 @@ var defaultmapsettings = {
     showMass: true,
 	oneColoredSpectator: false,
 	multiBoxShadow: false,
+	multiKeepMoving: true,
     optimizedMass: true,
     shortMass: true,
     virMassShots: true,
@@ -4409,7 +4412,7 @@ function thelegendmodproject() {
                 //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
                 this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
                 this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showTime"], "statsGroup");
-                this.addOptions(["oneColoredSpectator", "multiBoxShadow"], "multiBox");
+                this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving"], "multiBox");
 				this.addOptions([], "macroGroup");
                 this.addOptions([], "profiles");
 				if (!this.protocolMode) {
@@ -8660,10 +8663,11 @@ function thelegendmodproject() {
 
         sendPosition(cell, target2, specialcommand) {
             var cursorX, cursorY;
-			if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1] && !window.multiboxFollowMouse){
-				//handled by spects.js
+			if ((window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1] && !window.multiboxFollowMouse) && defaultmapsettings.multiKeepMoving){
+				cursorX = this.playerX + this.distX;
+				cursorY = this.playerY + this.distY;
 			}
-            else if (this.isSocketOpen() && this.connectionOpened && (this.clientKey || !legendmod.integrity)) {
+            else if (this.isSocketOpen() && this.connectionOpened && (this.clientKey || !legendmod.integrity)) {								
                 if (specialcommand) {
                     //console.log('hi')
                     //cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
@@ -8700,14 +8704,16 @@ function thelegendmodproject() {
                 view.setInt32(5, cursorY, true);
                 view.setUint32(9, this.protocolKey, true);
                 this.sendMessage(view);
+				
+				//for multi
+				this.distX  = cursorX - this.playerX	
+				this.distY  = legendmod.cursorY - this.playerY					
             }
             if (window.userBots.startedBots && window.userBots.isAlive) {
                 window.userBots.mouseX = this.cursorX - window.userBots.offsetX;
                 window.userBots.mouseY = this.cursorY - window.userBots.offsetY;
                 window.connectionBots.send(window.buffers.mousePosition(window.userBots.mouseX, window.userBots.mouseY))
             }
-
-
         },
         /*            sendAccessToken(t, e, i) {
                         if (!this['accessTokenSent']) {
@@ -10726,7 +10732,19 @@ function thelegendmodproject() {
                         this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache); //Sonia
                     }
                     if (defaultmapsettings.cursorTracking) {
-                        this.drawCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
+						if (!window.multiboxFollowMouse){
+							if (!window.multiboxPlayerEnabled){
+								this.drawCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
+							}
+							else if(window.multiboxPlayerEnabled){
+								this.drawCursorTracking(this.ctx, LM.playerCellsMulti, LM.cursorX, LM.cursorY);
+							}
+						}
+						else{
+							this.drawCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
+							this.drawCursorTracking(this.ctx, LM.playerCellsMulti, LM.cursorX, LM.cursorY);
+						}
+						
                     }
                     if (defaultmapsettings.FBTracking && LM.arrowFB[0].visible) {
                         this.drawFBTracking(this.ctx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
