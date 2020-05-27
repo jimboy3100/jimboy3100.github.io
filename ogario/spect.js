@@ -1,4 +1,4 @@
-//SPECS v3.4c WORKS UNTIL HERE
+//SPECS v3.4d WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -774,8 +774,6 @@ class Spect {
     }	
 	
     isInViewCustom3 (x , y, size) {
-			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
-			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
 			var randomNum = 0 // randomNum=40
 			var distance = size + randomNum
             return !(x + distance < legendmod.camMinMultiX ||
@@ -958,7 +956,7 @@ class Spect {
             var cell = null;
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
-                //cell.invisible = invisible;
+                cell.spectator = this.number;
             } 		
 			else {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
@@ -985,13 +983,15 @@ class Spect {
 				else if (isFood){
                     legendmod.foodMulti.push(cell); //this causes problems
                 }
-				if(defaultmapsettings.oneColoredSpectator && !this.player) {
+				if (defaultmapsettings.oneColoredSpectator && !this.player) {
 					if (!isFood && !remove) legendmod.cells.push(cell);				
 				}
 				else{
-					if (!remove) legendmod.cells.push(cell);
+					if (!remove){
+							legendmod.cells.push(cell);
+					}
 				}
-                if (!remove) legendmod.indexedCells[id] = cell;
+                legendmod.indexedCells[id] = cell;
             }
             
             if (name) {
