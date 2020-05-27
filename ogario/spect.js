@@ -1,4 +1,4 @@
-//SPECS v3.3t WORKS UNTIL HERE
+//SPECS v3.3u WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -727,6 +727,7 @@ class Spect {
 				}				
                 break;			
             case 64:
+				console.log('case64')
 				if (!this.openFirst){ //jimboy3100
 				this.openFirst = true
                 this.viewMinX = (message.readDoubleLE(offset));
