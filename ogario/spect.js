@@ -1,4 +1,4 @@
-//SPECS v3.3x WORKS UNTIL HERE
+//SPECS v3.3y WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -718,8 +718,7 @@ class Spect {
 				}				
                 break;			
             case 64:
-				console.log('case64')
-				if (!this.openFirst){ //jimboy3100
+				//if (!this.openFirst){ //jimboy3100
 				this.openFirst = true
                 this.viewMinX = (message.readDoubleLE(offset));
                 offset += 8;
@@ -729,7 +728,7 @@ class Spect {
                 offset += 8;
                 this.viewMaxY = (message.readDoubleLE(offset));
                 this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
-				} //
+				//} 
 				//this.timer=performance.now();			
 				break;
             default:
@@ -958,7 +957,7 @@ class Spect {
                             legendmod.playerCellsMulti.push(cell);
 							if (legendmod.playerCellsMulti.length==1){
 								console.log('player cell is active')
-								this.sendCursor()
+								//this.sendCursor()
 								loadMultiCellSkin()
 								this.active = true
 							}
