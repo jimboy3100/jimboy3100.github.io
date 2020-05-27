@@ -1,4 +1,4 @@
-//SPECS v3.4b WORKS UNTIL HERE
+//SPECS v3.4c WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -708,7 +708,7 @@ class Spect {
 				}				
                 break;			
             case 64:
-				if ((!this.player && !this.openFirst) || (this.player && !this.openFirst && this.active)){ //jimboy3100
+				if (!this.openFirst){ //jimboy3100
 				this.openFirst = true
                 this.viewMinX = (message.readDoubleLE(offset));
                 offset += 8;
@@ -719,6 +719,10 @@ class Spect {
                 this.viewMaxY = (message.readDoubleLE(offset));
                 this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
 				} 
+				if (this.player && !this.openFir && this.active){
+					this.openFir = true
+					this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
+				}
 				//this.timer=performance.now();			
 				break;
             default:
