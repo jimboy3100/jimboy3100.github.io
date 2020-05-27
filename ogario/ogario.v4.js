@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.743
+// v1.746
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -7961,11 +7961,10 @@ function thelegendmodproject() {
 						if (!this.SpecialEffect) this.SpecialEffect = SpecialEffectPlayers[this.targetNick];
 						else if (this.SpecialEffect != SpecialEffectPlayers[this.targetNick]) this.SpecialEffect2 = SpecialEffectPlayers[this.targetNick];
 						
-						if (!window.eud){
+						/*if (!window.eud){
 							console.log('draw',this.targetNick,this.SpecialEffect)
 							window.eud=true
-						}
-						
+						}*/					
 					}
 					if (this.SpecialEffect == "Hat" || this.SpecialEffect2 == "Hat"){ 		
 					//style.drawImage(cimgSpecialSkinEffectsHat3, this.x - 1/4 * y, this.y - 5/4 * y, y/2, y/2); 					
@@ -10606,25 +10605,11 @@ function thelegendmodproject() {
             sleep(ms) {
                 return new Promise(resolve => setTimeout(resolve, ms));
             },
-            /*                'renderFrame': function() {
-                                //for (LM.time = Date.now(), e = 0; e < LM.cells.length; e++) LM.cells[e].moveCell();
-            				    LM.time = Date.now();
-            						for (i = 0; i < LM.cells.length; i++) {
-            							LM.cells[i].moveCell();
-            						}
-                                if (this['setView'](), LM.getCursorPosition(), LM['sortCells'](), LM['compareCells'](), this.ctx['clearRect'](0, 0, this.canvasWidth, this.canvasHeight), defaultmapsettings.showGrid && this['drawGrid'](this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY), this.ctx['save'](), this.ctx['translate'](this.canvasWidth / 2, this.canvasHeight / 2), this.ctx.scale(this.scale, this.scale), this.ctx['translate'](-this.camX, -this.camY), defaultmapsettings.showBgSectors && this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings['gridColor'], defaultSettings['sectorsColor'], defaultSettings['sectorsWidth'], true), ':battleroyale' === LM.gameMode && this['drawBattleArea'](this.ctx), defaultmapsettings['showMapBorders']) {
-                                    var t = defaultSettings['bordersWidth'] / 2;
-                                    this['drawMapBorders'](this.ctx, LM.mapOffsetFixed, LM.mapMinX - t, LM.mapMinY - t, LM.mapMaxX + t, LM.mapMaxY + t, defaultSettings['bordersColor'], defaultSettings['bordersWidth']);
-                                }
-                                this.drawCommander();
-                                defaultmapsettings.virusesRange && this['drawVirusesRange'](this.ctx, LM.viruses), this['drawFood'](), LM.play && (defaultmapsettings.splitRange && this['drawSplitRange'](this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell), defaultmapsettings.oppRings && this['drawOppRings'](this.ctx, this.scale, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache), defaultmapsettings['cursorTracking'] && this['drawCursorTracking'](this.ctx, LM.playerCells, LM.cursorX, LM.cursorY)), this['drawGhostCells']();
-                                for (var e = 0; e < LM['removedCells'].length; e++) LM['removedCells'][e].draw(this.ctx, true);
-                                for (e = 0; e < LM.cells.length; e++) LM.cells[e].draw(this.ctx);
-                                this.ctx['restore'](), ':teams' === LM.gameMode && this.pieChart && this.pieChart.width && this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
-                            }, */
+			//renderFrame() { 
             'renderFrame': async function() { //Sonia5
+				await this.sleep(4); //Sonia5			
                 //this.ctx.start2D();
-                await this.sleep(4); //Sonia5
+                
                 LM.time = Date.now();
                 for (i = 0; i < LM.cells.length; i++) {
                     LM.cells[i].moveCell();
