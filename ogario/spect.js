@@ -1,4 +1,4 @@
-//SPECS v3.3y WORKS UNTIL HERE
+//SPECS v3.4a WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -650,16 +650,6 @@ class Spect {
                 this.handleSubmessage(view);
 
                 break;
-            case 16:
-
-              console.log('[SPECT] case 16');
-
-                break;
-            case 64:
-
-              console.log('[SPECT] case 64');
-
-                break;
             default:
                 console.log('[SPECT] Unknown opcode:', view.getUint8(0));
                 break;
@@ -718,7 +708,7 @@ class Spect {
 				}				
                 break;			
             case 64:
-				//if (!this.openFirst){ //jimboy3100
+				if ((!this.player && !this.openFirst) || (this.player && !this.openFirst && this.active)){ //jimboy3100
 				this.openFirst = true
                 this.viewMinX = (message.readDoubleLE(offset));
                 offset += 8;
@@ -728,7 +718,7 @@ class Spect {
                 offset += 8;
                 this.viewMaxY = (message.readDoubleLE(offset));
                 this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
-				//} 
+				} 
 				//this.timer=performance.now();			
 				break;
             default:
@@ -791,7 +781,8 @@ class Spect {
             this.mapMaxY = ~~((this.mapOffset) - this.mapOffsetY);
             //this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
             //this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
-			console.log('this.mapMaxX',this.mapMaxX,'legendmod.mapMaxX',legendmod.mapMaxX)
+			//console.log('this.mapMaxX',this.mapMaxX,'legendmod.mapMaxX',legendmod.mapMaxX)
+
             if (!this.mapOffsetFixed) {
                 this.viewX = (right + left) / 2;
                 this.viewY = (bottom + top) / 2;
