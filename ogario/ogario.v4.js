@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.750
+// v1.753
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -7133,6 +7133,9 @@ function thelegendmodproject() {
             this.preloadChatSounds();
             this.setChatSoundsBtn();
             this.setFBIDs();
+			if (defaultmapsettings.multiBoxShadow){	
+				this.setProfileboxShadow()	
+			}
             var app = this;
             setInterval(function() {
                 app.drawMiniMap();
