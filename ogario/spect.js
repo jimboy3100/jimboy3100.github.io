@@ -1,4 +1,4 @@
-//SPECS v3.3y WORKS UNTIL HERE
+//SPECS v3.3x WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -943,12 +943,12 @@ class Spect {
 				if (!invisible) invisible = this.isInViewCustom(x , y, size)				
 			}
 			
-			/*if (this.player){		
-				if (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size)){					
-					if (!invisible) invisible = true
-					console.log('inv')
+			if (this.player){		
+				if (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size) && (isVirus || isFood)){					
+					invisible = true
+					console.log('d')
 				}
-			}*/		
+			}		
 			if (isFood && !defaultmapsettings.rainbowFood){
 				color = defaultSettings.foodColor
 			}
@@ -963,7 +963,7 @@ class Spect {
 			else {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                 cell.time = this.time;
-                //cell.spectator = this.number;
+                cell.spectator = this.number;
 				//if (!isFood) {
 				if (!isFood && !remove) {
                     if (isVirus && defaultmapsettings.virusesRange) {
@@ -1007,7 +1007,6 @@ class Spect {
             cell.isFood = isFood;
             cell.isVirus = isVirus;		
             cell.invisible = invisible;
-			cell.spectator = this.number;
             if (skin) {
                 cell.skin = skin;
             }
