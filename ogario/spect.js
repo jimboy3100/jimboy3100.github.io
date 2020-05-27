@@ -1,4 +1,4 @@
-//SPECS v3.3s WORKS UNTIL HERE
+//SPECS v3.3n WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -259,12 +259,10 @@ class Spect {
 		}	
 		else if (!master.context){
 			//this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
-			console.log('[SPECT] Login Tokens - Main: No, Multi: No')
-			this.handleSendNick()
+			console.log('[SPECT] Login Tokens - Main: No, Multi: Facebook')
 		}		
 		else {
 			console.log('[SPECT] Login Tokens - Main: No, Multi: No')
-			this.handleSendNick()
 		}			
 	}	
         sendFbToken(token) {
@@ -308,18 +306,9 @@ class Spect {
         }	
     sendCursor() {
             this.positionController = setInterval(() => {
-
 			if (window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse){
 					this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
-					
-					this.distX  = this.convertX(legendmod.cursorX) - this.playerX	
-					this.distY  = this.convertY(legendmod.cursorY) - this.playerY					
 				}
-			else if (!window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse){
-					if (defaultmapsettings.multiKeepMoving){
-						this.sendPosition(this.playerX + this.distX, this.playerY + this.distY);
-					}
-				}				
             }, 50);
             //this.sendSpectate()
             //this.sendFreeSpectate()
@@ -480,7 +469,7 @@ class Spect {
         switch (opCode) {
             case 5:
 
-              console.log('[SPECT] case 5');
+              console.log('case 5');
                      
                 break;
             case 17:
@@ -505,21 +494,21 @@ class Spect {
                     this.protocolKey = this.shiftKey(this.protocolKey);
                 }
                 this.flushCellsData();
-              console.log('[SPECT] case 18');
+              console.log('case 18');
 
                 break;
             case 32:	
 			  var temp = view.getUint32(offset, true)			  
 			  this.playerCellIDs.push(this.newID(temp));
 			  //this.active = true
-              console.log('[SPECT] case 32');
+              console.log('case 32');
 				/*if (!this.openSecond){ 
 					this.openSecond = true			  
 					this.getTheOppositeSocialToken()
 				}*/
                 break;
             case 50:
-              console.log('[SPECT] case 50');
+              console.log('case 50');
 
                 break;
             case 53:
@@ -529,7 +518,7 @@ class Spect {
                 break;
             case 54:
 
-              console.log('[SPECT] case 54');
+              console.log('case 54');
                 break;
 
             case 69:
@@ -559,33 +548,42 @@ class Spect {
                 break;
             case 85:
 
-              console.log('[SPECT] case 85');
+              console.log('case 85');
 
                 
                 break;
             case 102:
-						//this.sendCursor()
-						console.log("[SPECT] SendNick with")						
-						this.handleSendNick()
-              console.log('[SPECT] case 102');
+						//this.active = true
+						this.sendCursor()
+						console.log("SendNick with")						
+						if (profiles[application.selectedOldProfile] && profiles[application.selectedOldProfile].nick && defaultmapsettings.multiBoxShadow){
+							this.sendNick(profiles[application.selectedOldProfile].nick)
+							this.nick=profiles[application.selectedOldProfile].nick
+						}
+						else{
+							this.sendNick($("#nick").val())
+							this.nick=$("#nick").val()
+						}
+              console.log('case 102');
+
                 break;
             case 103:
 			  this.accessTokenSent = true
-              console.log('[SPECT] case 103');
+              console.log('case 103');
 			  application.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor, ogarcopythelb.skinURL);
                 break;
             case 104:
-              console.log('[SPECT] case 104');
+              console.log('case 104');
 
                 break;
             case 114:
                 console.error('[Agario] Spectate mode is full')
-              console.log('[SPECT] case 114');
+              console.log('case 114');
 
                 break;
             case 160:
 
-              console.log('[SPECT] case 160');
+              console.log('case 160');
 
                     break;
             case 161:
@@ -593,26 +591,26 @@ class Spect {
 
                 break;
             case 176:
-              console.log('[SPECT] case 176');
+              console.log('case 176');
 
                 break;
             case 177:
-              console.log('[SPECT] case 177');
+              console.log('case 177');
 
                 break;
             case 178:
 
-              console.log('[SPECT] case 178');
+              console.log('case 178');
 
                 break;
             case 179:
 
-              console.log('[SPECT] case 179');
+              console.log('case 179');
 
                 break;
             case 180:
 
-              console.log('[SPECT] case 180');
+              console.log('case 180');
 
                 break;
             case 226:
@@ -630,7 +628,7 @@ class Spect {
                 this.clientKey = this.generateClientKey(this.ws, agarioReader);
                 break;
             case 242:
-                console.log('[SPECT] case 242')
+                console.log('case 242')
                 this.serverTime = view.getUint32(offset, true) * 1000;
                 this.serverTimeDiff = Date.now() - this.serverTime;
                 
@@ -640,10 +638,18 @@ class Spect {
 						this.getTheOppositeSocialToken()
 					}
 					else{
-						console.log("[SPECT] SendNick without")
-						//this.sendCursor()
+						console.log("SendNick without")
+						this.sendCursor()
 						MultiTokenReady(this)
-						this.handleSendNick();
+						
+						if (profiles[application.selectedOldProfile] && profiles[application.selectedOldProfile].nick && defaultmapsettings.multiBoxShadow){
+							this.sendNick(profiles[application.selectedOldProfile].nick)
+							this.nick=profiles[application.selectedOldProfile].nick
+						}
+						else{
+							this.sendNick($("#nick").val())
+							this.nick=$("#nick").val()
+						}
 					}
                 } else {
                   this.sendSpectate();
@@ -674,16 +680,6 @@ class Spect {
                 break;
         }
     }
-	handleSendNick(){
-		if (profiles[application.selectedOldProfile] && profiles[application.selectedOldProfile].nick && defaultmapsettings.multiBoxShadow){
-			this.sendNick(profiles[application.selectedOldProfile].nick)
-			this.nick=profiles[application.selectedOldProfile].nick
-		}
-		else{
-			this.sendNick($("#nick").val())
-			this.nick=$("#nick").val()
-		}	
-	}	
 	GhostFix(){
 		//if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>1000 && Math.abs(application.getghostY()) >1000) {
 		if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>100 && Math.abs(application.getghostY()) >100) {
@@ -978,7 +974,6 @@ class Spect {
                             legendmod.playerCellsMulti.push(cell);
 							if (legendmod.playerCellsMulti.length==1){
 								console.log('player cell is active')
-								this.sendCursor()
 								loadMultiCellSkin()
 								this.active = true
 							}
