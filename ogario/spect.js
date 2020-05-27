@@ -1,4 +1,4 @@
-//SPECS v3.3v WORKS UNTIL HERE
+//SPECS v3.3w WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -728,7 +728,7 @@ class Spect {
                 break;			
             case 64:
 				console.log('case64')
-				if (!this.openFirst){ //jimboy3100
+				//if (!this.openFirst){ //jimboy3100
 				this.openFirst = true
                 this.viewMinX = (message.readDoubleLE(offset));
                 offset += 8;
@@ -738,7 +738,7 @@ class Spect {
                 offset += 8;
                 this.viewMaxY = (message.readDoubleLE(offset));
                 this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
-				} //
+				//} //
 				//this.timer=performance.now();			
 				break;
             default:
@@ -810,19 +810,6 @@ class Spect {
             console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
         }
     }
-
-        /*translateX(x) {
-            return this.mapMaxX - (x - this.mapMinX);
-        }
-        translateY(x) {
-            return this.mapMaxY - (x - this.mapMinY);
-        }
-        untranslateX(x) {
-            return 0 - (x - this.mapMaxX + this.mapMinX);
-        }
-        untranslateY(x) {
-            return 0 - (x - this.mapMaxY + this.mapMinY);
-        }	*/
     updateCells(view, offset) {
         const encode = () => {
             for (var text = '';;) {
