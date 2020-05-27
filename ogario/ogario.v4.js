@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.753
+// v1.754
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -4213,32 +4213,39 @@ function thelegendmodproject() {
             $('#skins a').removeClass('selected');
             $('#skins a[data-profile=\'' + this.selectedProfile + '\']').addClass('selected');
         },
+		eraseProfileboxShadow(){
+			for (i=0;i<profiles.length;i++){
+				$("#profile-" + i).css('box-shadow', '');
+			}			
+		},
 		setProfileboxShadow(){
 			for (i=0;i<profiles.length;i++){
 				$("#profile-" + i).css('box-shadow', '');
 			}
 			$("#profile-" + this.selectedProfile).css('box-shadow', '0px 0px 20px' + profiles[this.selectedProfile].color);
-			$("#profile-" + this.selectedOldProfile).css('box-shadow', '0px 0px 20px' + profiles[this.selectedOldProfile].color);
-			
+			$("#profile-" + this.selectedOldProfile).css('box-shadow', '0px 0px 20px' + profiles[this.selectedOldProfile].color);			
 		},
         prevProfile() {
 			this.selectedOldProfile = this.selectedProfile;
             this.setPlayerSettings();
             this.selectedProfile = (profiles.length + this.selectedProfile - 1) % profiles.length, this.setProfile();
-			if (defaultmapsettings.multiBoxShadow)	this.setProfileboxShadow()						
+			if (defaultmapsettings.multiBoxShadow){	this.setProfileboxShadow()}
+			else {this.eraseProfileboxShadow()}
         },
         nextProfile() {
 			this.selectedOldProfile = this.selectedProfile;
             this.setPlayerSettings();
             this.selectedProfile = (this.selectedProfile + 1) % profiles.length, this.setProfile();
-			if (defaultmapsettings.multiBoxShadow)	this.setProfileboxShadow()						
+			if (defaultmapsettings.multiBoxShadow){	this.setProfileboxShadow()}	
+			else {this.eraseProfileboxShadow()}
         },
         selectProfile(value) {
 			this.selectedOldProfile = this.selectedProfile;
             this.setPlayerSettings();
             this.selectedProfile = parseInt(value);
             this.setProfile();
-			if (defaultmapsettings.multiBoxShadow)	this.setProfileboxShadow()						
+			if (defaultmapsettings.multiBoxShadow){	this.setProfileboxShadow()}
+			else {this.eraseProfileboxShadow()}			
         },
         addOption(id, name, text, checked) {
             $(id).append('<label><input type=\"checkbox\" id=\"' + name + '\" class=\"js-switch\"> ' + text + '</label>');
