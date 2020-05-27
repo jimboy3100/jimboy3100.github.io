@@ -943,12 +943,12 @@ class Spect {
 				if (!invisible) invisible = this.isInViewCustom(x , y, size)				
 			}
 			
-			if (this.player){		
+			/*if (this.player){		
 				if (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size)){					
-					invisible = true
+					if (!invisible) invisible = true
 					console.log('inv')
 				}
-			}		
+			}*/		
 			if (isFood && !defaultmapsettings.rainbowFood){
 				color = defaultSettings.foodColor
 			}
