@@ -1,4 +1,4 @@
-//SPECS v3.3o WORKS UNTIL HERE
+//SPECS v3.3p WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -313,7 +313,7 @@ class Spect {
 					this.distX  = this.convertX(legendmod.cursorX) - this.playerX	
 					this.distY  = this.convertY(legendmod.cursorY) - this.playerY					
 				}
-			else if (!window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse){
+			else if ((!window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse) && defaultmapsettings.multiKeepMoving){
 					this.sendPosition(this.playerX + this.distX, this.playerY + this.distY);
 				}				
             }, 50);
