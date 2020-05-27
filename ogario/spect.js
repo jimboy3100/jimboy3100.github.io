@@ -1,4 +1,4 @@
-//SPECS v3.4d WORKS UNTIL HERE
+//SPECS v3.4e WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -776,13 +776,13 @@ class Spect {
     }	
 	*/
     setMapOffset(left, top, right, bottom) {
-        if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
+		//if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
             this.mapOffsetX = (this.mapOffset) - right;
             this.mapOffsetY = (this.mapOffset) - bottom;
-            this.mapMinX = ~~((-this.mapOffset) - this.mapOffsetX);
-            this.mapMinY = ~~((-this.mapOffset) - this.mapOffsetY);
-            this.mapMaxX = ~~((this.mapOffset) - this.mapOffsetX);
-            this.mapMaxY = ~~((this.mapOffset) - this.mapOffsetY);
+            //this.mapMinX = ~~((-this.mapOffset) - this.mapOffsetX);
+            //this.mapMinY = ~~((-this.mapOffset) - this.mapOffsetY);
+            //this.mapMaxX = ~~((this.mapOffset) - this.mapOffsetX);
+            //this.mapMaxY = ~~((this.mapOffset) - this.mapOffsetY);
             //this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
             //this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
 			//console.log('this.mapMaxX',this.mapMaxX,'legendmod.mapMaxX',legendmod.mapMaxX)
@@ -793,7 +793,7 @@ class Spect {
             //}
             this.mapOffsetFixed = true;
             console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
-        }
+        //}
     }
     updateCells(view, offset) {
         const encode = () => {
