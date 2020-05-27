@@ -557,7 +557,7 @@ class Spect {
                 break;
             case 85:
 
-              console.log('case 85');
+              console.log('[SPECT] case 85');
 
                 
                 break;
@@ -569,7 +569,7 @@ class Spect {
                 break;
             case 103:
 			  this.accessTokenSent = true
-              console.log('case 103');
+              console.log('[SPECT] case 103');
 			  application.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor, ogarcopythelb.skinURL);
                 break;
             case 104:
