@@ -1,4 +1,4 @@
-//SPECS v3.3x WORKS UNTIL HERE
+//SPECS v3.3y WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -963,7 +963,7 @@ class Spect {
 			else {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                 cell.time = this.time;
-                cell.spectator = this.number;
+                //cell.spectator = this.number;
 				//if (!isFood) {
 				if (!isFood && !remove) {
                     if (isVirus && defaultmapsettings.virusesRange) {
@@ -1007,6 +1007,7 @@ class Spect {
             cell.isFood = isFood;
             cell.isVirus = isVirus;		
             cell.invisible = invisible;
+			cell.spectator = this.number;
             if (skin) {
                 cell.skin = skin;
             }
