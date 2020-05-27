@@ -1,11 +1,11 @@
-//SPECS v3.3w WORKS UNTIL HERE
+//SPECS v3.3x WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
   if (profiles[application.selectedOldProfile].nick && !application.customSkinsMap[profiles[application.selectedOldProfile].nick]){
 	 setTimeout(function() {
 		core.registerSkin(profiles[application.selectedOldProfile].nick , null, profiles[application.selectedOldProfile].skinURL , null); 
-	 }, 100); 
+	 }, 300); 
   }
 }
 function addBox() {  
@@ -486,17 +486,8 @@ class Spect {
             case 17:
 			
                 this.viewX = view.getFloat32(offset, true);
-				//legendmod.viewX = this.viewX 
-				
-				//var x=this.viewX = view.getFloat32(offset, true);
-				//this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
                 offset += 4;
 				this.viewY = view.getFloat32(offset, true);
-				
-				//legendmod.viewY = this.viewY 
-				
-				//var y=this.viewX = view.getFloat32(offset, true);
-				//this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
                 offset += 4;
                 this.scale = view.getFloat32(offset, true);
                 break;
@@ -728,7 +719,7 @@ class Spect {
                 break;			
             case 64:
 				console.log('case64')
-				//if (!this.openFirst){ //jimboy3100
+				if (!this.openFirst){ //jimboy3100
 				this.openFirst = true
                 this.viewMinX = (message.readDoubleLE(offset));
                 offset += 8;
@@ -738,7 +729,7 @@ class Spect {
                 offset += 8;
                 this.viewMaxY = (message.readDoubleLE(offset));
                 this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
-				//} //
+				} //
 				//this.timer=performance.now();			
 				break;
             default:
@@ -799,8 +790,8 @@ class Spect {
             this.mapMinY = ~~((-this.mapOffset) - this.mapOffsetY);
             this.mapMaxX = ~~((this.mapOffset) - this.mapOffsetX);
             this.mapMaxY = ~~((this.mapOffset) - this.mapOffsetY);
-            this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
-            this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
+            //this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
+            //this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
 			console.log('this.mapMaxX',this.mapMaxX,'legendmod.mapMaxX',legendmod.mapMaxX)
             if (!this.mapOffsetFixed) {
                 this.viewX = (right + left) / 2;
