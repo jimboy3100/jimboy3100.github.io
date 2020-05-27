@@ -1,4 +1,4 @@
-//SPECS v3.4b WORKS UNTIL HERE
+//SPECS v3.4c WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -943,12 +943,12 @@ class Spect {
 				if (!invisible) invisible = this.isInViewCustom(x , y, size)				
 			}
 			
-			if (this.player && isVirus){		
+			/*if (this.player && (isVirus || isFood)){		
 				if (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size)){					
 					invisible = true
-					//console.log('d')
+
 				}
-			}		
+			}	*/	
 			if (isFood && !defaultmapsettings.rainbowFood){
 				color = defaultSettings.foodColor
 			}
@@ -981,7 +981,8 @@ class Spect {
 								this.active = true
 							}
                         }	
-                } else if (isFood){
+                } 
+				else if (isFood){
                     legendmod.foodMulti.push(cell); //this causes problems
                 }
 				if(defaultmapsettings.oneColoredSpectator && !this.player) {
@@ -990,7 +991,7 @@ class Spect {
 				else{
 					if (!remove) legendmod.cells.push(cell);
 				}
-                legendmod.indexedCells[id] = cell;
+                if (!remove) legendmod.indexedCells[id] = cell;
             }
             
             if (name) {
