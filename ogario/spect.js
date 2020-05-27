@@ -1,4 +1,4 @@
-//SPECS v3.3w WORKS UNTIL HERE
+//SPECS v3.3x WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -755,18 +755,12 @@ class Spect {
         return false;
     }
     isInViewCustom (x , y, size) {
-			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
-			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
 			var randomNum = 0 // randomNum=40
 			var distance = size + randomNum
             return !(x + distance < legendmod.camMinX ||
 			y + distance < legendmod.camMinY ||
 			x - distance > legendmod.camMaxX || 
 			y - distance > legendmod.camMaxY) 			
-            /*return !(x + distance < legendmod.viewXTrue - x2s || //<legendmod.camMinX
-			y + distance < legendmod.viewYTrue - y2s || //<legendmod.camMinY
-			x - distance > legendmod.viewXTrue + x2s || //>legendmod.camMaxX
-			y - distance > legendmod.viewYTrue + y2s) //>legendmod.camMaxY*/
     }
     isInViewCustom2 (x , y, size) {
 			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
@@ -778,7 +772,7 @@ class Spect {
 			x - distance > legendmod.viewXTrue + x2s || //>legendmod.camMaxX
 			y - distance > legendmod.viewYTrue + y2s) //>legendmod.camMaxY
     }	
-	/*
+	
     isInViewCustom3 (x , y, size) {
 			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
 			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
@@ -789,7 +783,7 @@ class Spect {
 			x - distance > legendmod.camMaxMultiX || 
 			y - distance > legendmod.camMaxMultiY) 			
     }	
-	*/
+	
     setMapOffset(left, top, right, bottom) {
         if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
             this.mapOffsetX = (this.mapOffset) - right;
@@ -948,10 +942,13 @@ class Spect {
 			if (!this.player){				
 				if (!invisible) invisible = this.isInViewCustom(x , y, size)				
 			}
-			/*
-			if (this.player && cell.spectator){				
-				invisible = this.isInViewCustom2(x , y, size)	
-			}	*/		
+			
+			if (this.player){		
+				if (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size)){					
+					invisible = true
+					console.log('inv')
+				}
+			}		
 			if (isFood && !defaultmapsettings.rainbowFood){
 				color = defaultSettings.foodColor
 			}
