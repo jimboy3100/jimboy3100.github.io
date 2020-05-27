@@ -1,4 +1,4 @@
-//SPECS v3.4e WORKS UNTIL HERE
+//SPECS v3.4f WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -719,10 +719,10 @@ class Spect {
                 this.viewMaxY = (message.readDoubleLE(offset));
                 this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
 				} 
-				if (this.player && !this.openFir && this.active){
+				/*if (this.player && !this.openFir && this.active){
 					this.openFir = true
 					this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
-				}
+				}*/
 				//this.timer=performance.now();			
 				break;
             default:
@@ -756,7 +756,7 @@ class Spect {
     isInViewCustom2 (x , y, size) {
 			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
 			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
-			var randomNum = 20 // randomNum=40
+			var randomNum = 40 // randomNum=40
 			var distance = size + randomNum
 			return !(x + distance < legendmod.viewXTrue - x2s || //<legendmod.camMinX
 			y + distance < legendmod.viewYTrue - y2s || //<legendmod.camMinY
