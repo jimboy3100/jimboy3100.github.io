@@ -1,4 +1,4 @@
-//SPECS v3.4c WORKS UNTIL HERE
+//SPECS v3.4d WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -787,10 +787,10 @@ class Spect {
             //this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
 			//console.log('this.mapMaxX',this.mapMaxX,'legendmod.mapMaxX',legendmod.mapMaxX)
 
-            if (!this.mapOffsetFixed) {
+            //if (!this.mapOffsetFixed) {
                 this.viewX = (right + left) / 2;
                 this.viewY = (bottom + top) / 2;
-            }
+            //}
             this.mapOffsetFixed = true;
             console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
         }
