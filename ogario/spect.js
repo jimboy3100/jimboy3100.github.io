@@ -1,11 +1,11 @@
-//SPECS v3.4g WORKS UNTIL HERE
+//SPECS v3.3s WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
   if (profiles[application.selectedOldProfile].nick && !application.customSkinsMap[profiles[application.selectedOldProfile].nick]){
 	 setTimeout(function() {
 		core.registerSkin(profiles[application.selectedOldProfile].nick , null, profiles[application.selectedOldProfile].skinURL , null); 
-	 }, 300); 
+	 }, 100); 
   }
 }
 function addBox() {  
@@ -486,8 +486,17 @@ class Spect {
             case 17:
 			
                 this.viewX = view.getFloat32(offset, true);
+				//legendmod.viewX = this.viewX 
+				
+				//var x=this.viewX = view.getFloat32(offset, true);
+				//this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
                 offset += 4;
 				this.viewY = view.getFloat32(offset, true);
+				
+				//legendmod.viewY = this.viewY 
+				
+				//var y=this.viewX = view.getFloat32(offset, true);
+				//this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
                 offset += 4;
                 this.scale = view.getFloat32(offset, true);
                 break;
@@ -650,6 +659,16 @@ class Spect {
                 this.handleSubmessage(view);
 
                 break;
+            case 16:
+
+              console.log('[SPECT] case 16');
+
+                break;
+            case 64:
+
+              console.log('[SPECT] case 64');
+
+                break;
             default:
                 console.log('[SPECT] Unknown opcode:', view.getUint8(0));
                 break;
@@ -718,11 +737,7 @@ class Spect {
                 offset += 8;
                 this.viewMaxY = (message.readDoubleLE(offset));
                 this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
-				} 
-				/*if (this.player && !this.openFir && this.active){
-					this.openFir = true
-					this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
-				}*/
+				} //
 				//this.timer=performance.now();			
 				break;
             default:
@@ -742,7 +757,7 @@ class Spect {
     isInViewCustom (x , y, size) {
 			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
 			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
-			var randomNum = 40 // randomNum=40
+			var randomNum = 0 // randomNum=40
 			var distance = size + randomNum
             return !(x + distance < legendmod.camMinX ||
 			y + distance < legendmod.camMinY ||
@@ -776,25 +791,36 @@ class Spect {
     }	
 	*/
     setMapOffset(left, top, right, bottom) {
-		//if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
+        if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
             this.mapOffsetX = (this.mapOffset) - right;
             this.mapOffsetY = (this.mapOffset) - bottom;
-            //this.mapMinX = ~~((-this.mapOffset) - this.mapOffsetX);
-            //this.mapMinY = ~~((-this.mapOffset) - this.mapOffsetY);
-            //this.mapMaxX = ~~((this.mapOffset) - this.mapOffsetX);
-            //this.mapMaxY = ~~((this.mapOffset) - this.mapOffsetY);
-            //this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
-            //this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
-			//console.log('this.mapMaxX',this.mapMaxX,'legendmod.mapMaxX',legendmod.mapMaxX)
-
-            //if (!this.mapOffsetFixed) {
+            this.mapMinX = ~~((-this.mapOffset) - this.mapOffsetX);
+            this.mapMinY = ~~((-this.mapOffset) - this.mapOffsetY);
+            this.mapMaxX = ~~((this.mapOffset) - this.mapOffsetX);
+            this.mapMaxY = ~~((this.mapOffset) - this.mapOffsetY);
+            this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
+            this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
+            if (!this.mapOffsetFixed) {
                 this.viewX = (right + left) / 2;
                 this.viewY = (bottom + top) / 2;
-            //}
+            }
             this.mapOffsetFixed = true;
             console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
-        //}
+        }
     }
+
+        /*translateX(x) {
+            return this.mapMaxX - (x - this.mapMinX);
+        }
+        translateY(x) {
+            return this.mapMaxY - (x - this.mapMinY);
+        }
+        untranslateX(x) {
+            return 0 - (x - this.mapMaxX + this.mapMinX);
+        }
+        untranslateY(x) {
+            return 0 - (x - this.mapMaxY + this.mapMinY);
+        }	*/
     updateCells(view, offset) {
         const encode = () => {
             for (var text = '';;) {
