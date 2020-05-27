@@ -1,4 +1,4 @@
-//SPECS v3.3p WORKS UNTIL HERE
+//SPECS v3.3q WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -259,10 +259,12 @@ class Spect {
 		}	
 		else if (!master.context){
 			//this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
-			console.log('[SPECT] Login Tokens - Main: No, Multi: Facebook')
+			console.log('[SPECT] Login Tokens - Main: No, Multi: No')
+			this.handleSendNick()
 		}		
 		else {
 			console.log('[SPECT] Login Tokens - Main: No, Multi: No')
+			this.handleSendNick()
 		}			
 	}	
         sendFbToken(token) {
@@ -563,14 +565,7 @@ class Spect {
 						//this.active = true
 						this.sendCursor()
 						console.log("SendNick with")						
-						if (profiles[application.selectedOldProfile] && profiles[application.selectedOldProfile].nick && defaultmapsettings.multiBoxShadow){
-							this.sendNick(profiles[application.selectedOldProfile].nick)
-							this.nick=profiles[application.selectedOldProfile].nick
-						}
-						else{
-							this.sendNick($("#nick").val())
-							this.nick=$("#nick").val()
-						}
+						this.handleSendNick()
               console.log('case 102');
 
                 break;
@@ -648,15 +643,7 @@ class Spect {
 						console.log("SendNick without")
 						this.sendCursor()
 						MultiTokenReady(this)
-						
-						if (profiles[application.selectedOldProfile] && profiles[application.selectedOldProfile].nick && defaultmapsettings.multiBoxShadow){
-							this.sendNick(profiles[application.selectedOldProfile].nick)
-							this.nick=profiles[application.selectedOldProfile].nick
-						}
-						else{
-							this.sendNick($("#nick").val())
-							this.nick=$("#nick").val()
-						}
+						this.handleSendNick();
 					}
                 } else {
                   this.sendSpectate();
@@ -687,6 +674,16 @@ class Spect {
                 break;
         }
     }
+	handleSendNick(){
+		if (profiles[application.selectedOldProfile] && profiles[application.selectedOldProfile].nick && defaultmapsettings.multiBoxShadow){
+			this.sendNick(profiles[application.selectedOldProfile].nick)
+			this.nick=profiles[application.selectedOldProfile].nick
+		}
+		else{
+			this.sendNick($("#nick").val())
+			this.nick=$("#nick").val()
+		}	
+	}	
 	GhostFix(){
 		//if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>1000 && Math.abs(application.getghostY()) >1000) {
 		if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>100 && Math.abs(application.getghostY()) >100) {
