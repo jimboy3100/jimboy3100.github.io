@@ -1,4 +1,4 @@
-//SPECS v3.4t WORKS UNTIL HERE
+//SPECS v3.4r WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -18,11 +18,7 @@ function addSpectator() {
   let spect = new Spect();
   spects.push(spect)
 }
-function newMultiBox(){
-	legendmod.sendAction(1);
-	addFullSpectator(true)
-}
-function addFullSpectator(multi) {
+function addFullSpectator() {
         let mtp = 4.95,
             w = ~~(1024*mtp),
             h = ~~(600*mtp);
@@ -48,9 +44,6 @@ function addFullSpectator(multi) {
         break 
       }
       let spect = new Spect();
-	  if (multi){
-		spects.multi = true;
-	  }
       spect.staticX = x;
       spect.staticY = y;
       spects.push(spect)
@@ -59,7 +52,7 @@ function addFullSpectator(multi) {
   }
 }
 var spects = [];
-class Spect {
+var Spect = {
     constructor() {
         this.number = spects.length + 1
 		//this.number = spects.length
@@ -902,7 +895,7 @@ class Spect {
 			/*else {
 				console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed,"x",x,"mapOffsetX",this.mapOffsetX,"LM mapOffsetX",legendmod.mapOffsetX,"fixX",this.fixX)
 			}*/			
-
+			/*
             var a = x - legendmod.playerX;
             var b = y - legendmod.playerY;
             var distanceX = Math.round(Math.sqrt(a * a));
@@ -911,7 +904,7 @@ class Spect {
             if (distanceX > maxX || distanceY > maxY){
 				remove = true;
 			}
-			//
+			*/
 
             const flags = view.readUInt8(offset++);
             let extendedFlags = 0;
@@ -946,7 +939,7 @@ class Spect {
 
                   id = this.newID(id);
 
-			if (!this.player && !this.multi){				
+			if (!this.player){				
 				if (!invisible) invisible = this.isInViewCustom(x , y, size)				
 			}			
 			if (isFood && !defaultmapsettings.rainbowFood){
