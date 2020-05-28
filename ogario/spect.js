@@ -1,4 +1,4 @@
-//SPECS v3.4m WORKS UNTIL HERE
+//SPECS v3.4n WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -938,11 +938,7 @@ class Spect {
 
 			if (!this.player){				
 				if (!invisible) invisible = this.isInViewCustom(x , y, size)				
-			}	
-			if (this.player){				
-				if (!invisible) invisible = this.isInViewCustom2(x , y, size)				
 			}			
-			
 			if (isFood && !defaultmapsettings.rainbowFood){
 				color = defaultSettings.foodColor
 			}
