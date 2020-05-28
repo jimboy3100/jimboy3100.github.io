@@ -1,4 +1,4 @@
-//SPECS v3.4f WORKS UNTIL HERE
+//SPECS v3.4g WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -897,9 +897,9 @@ class Spect {
             var b = y - legendmod.playerY;
             var distanceX = Math.round(Math.sqrt(a * a));
             var distanceY = Math.round(Math.sqrt(b * b));
-			var remove = false;
+			var remove = null;
             if (distanceX > maxX || distanceY > maxY){
-				remove = true;
+				//remove = true;
 			}
 			//
 
