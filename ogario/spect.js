@@ -1,4 +1,4 @@
-//SPECS v3.4q WORKS UNTIL HERE
+//SPECS v3.4r WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -52,7 +52,7 @@ function addFullSpectator() {
   }
 }
 var spects = [];
-var Spect = {
+function Spect() = {
     //constructor() {
         this.number = spects.length + 1
 		//this.number = spects.length
