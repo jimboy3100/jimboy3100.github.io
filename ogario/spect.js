@@ -1,4 +1,4 @@
-//SPECS v3.4r WORKS UNTIL HERE
+//SPECS v3.4s WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -18,7 +18,10 @@ function addSpectator() {
   let spect = new Spect();
   spects.push(spect)
 }
-
+function newMultiBox(){
+	legendmod.sendAction(1);
+	addFullSpectator(true)
+}
 function addFullSpectator(multi) {
         let mtp = 4.95,
             w = ~~(1024*mtp),
@@ -943,7 +946,7 @@ class Spect {
 
                   id = this.newID(id);
 
-			if (!this.player){				
+			if (!this.player && !spect.multi){				
 				if (!invisible) invisible = this.isInViewCustom(x , y, size)				
 			}			
 			if (isFood && !defaultmapsettings.rainbowFood){
