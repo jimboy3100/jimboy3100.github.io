@@ -52,7 +52,7 @@ function addFullSpectator() {
   }
 }
 var spects = [];
-var Spect {
+var Spect = {
     constructor() {
         this.number = spects.length + 1
 		//this.number = spects.length
