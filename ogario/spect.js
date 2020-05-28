@@ -1,4 +1,4 @@
-//SPECS v3.4o WORKS UNTIL HERE
+//SPECS v3.4p WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -561,9 +561,9 @@ class Spect {
 				this.GhostFix()
                 break;
             case 85:
-
+			  toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Agr.io asked Captcha from Multibox. Multibox closed");
               console.log('[SPECT] case 85');
-
+			  this.terminate()
                 
                 break;
             case 102:
