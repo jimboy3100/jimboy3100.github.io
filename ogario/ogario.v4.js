@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.754
+// v1.766
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -4464,7 +4464,7 @@ function thelegendmodproject() {
                     //textLanguage.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">legendmod.ml</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://legendmod.ml/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
                     textLanguage.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">' + textLanguage.leaderboard + '</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://legendmod.ml/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
                     textLanguage.targetNotSet + '</span></div><div id="target-summary"></div></div><div id="target-panel-hud" class="hud">' +
-                    '<a href="#" id="set-debug" class="ogicon-location" style="display: none"></a>' +
+                    '<a href="#" id="set-debug" class="ogicon-location"></a>' +
                     '<a href="#" id="set-fullSpectator" class="ogicon-eye"  style="display: none"></a>' +
                     '<a href="#" id="set-ingameSpectator" class="ogicon-power"  style="display: none"></a>' +
 					'<a href="#" id="fullscreenBtn" onclick="toggleFullScreen();"  class="ogicon-display"></a>' +
@@ -10050,7 +10050,6 @@ function thelegendmodproject() {
         },
         addSpect() {
             if (($("#nick").val().includes('℄') && $("#clantag").val() == window.atob(defaultmapsettings.clanTagLc)) || window.proLicenceUID) {
-                $('#set-debug').show();
                 $('#set-fullSpectator').show();
                 $('#set-ingameSpectator').show();
                 if (window.fullSpectator && spects.length == 0) {
@@ -10059,7 +10058,6 @@ function thelegendmodproject() {
                     addSpectator();
                 }
             } else {
-                $('#set-debug').hide();
                 $('#set-fullSpectator').hide();
                 $('#set-ingameSpectator').hide();
             }
@@ -10148,8 +10146,6 @@ function thelegendmodproject() {
             }
         },
 		isInViewCustom3 (x , y, size) {
-			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
-			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
 			var randomNum = 40 // randomNum=40
 			var distance = size + randomNum
             return !(x + distance < legendmod.camMinMultiX ||
@@ -10251,19 +10247,18 @@ function thelegendmodproject() {
 				//if (LM.playerCellsMulti.length && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1]){
 					
 				
-				if (LM.playerCellsMulti.length && legendmod.multiBoxPlayerExists){	
+				if (LM.playerCellsMulti.length && LM.multiBoxPlayerExists){	
 						invisible = this.isInViewCustom3(x , y, size)					
 				}
                 cellUpdateCells = null;
 
                 if (this.indexedCells.hasOwnProperty(id)) {
-                    cellUpdateCells = this.indexedCells[id];
-                    if (color) {
-                        cellUpdateCells.color = color;
-                    }
-                } else {
+                    cellUpdateCells = this.indexedCells[id];					
+                } 
+				else {
                     cellUpdateCells = new ogarbasicassembly(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                     cellUpdateCells.time = this.time;
+					cellUpdateCells.spectator = false;
                     if (!isFood) {
                         if (isVirus && defaultmapsettings.virusesRange) {
                             this.viruses.push(cellUpdateCells);
@@ -10275,7 +10270,8 @@ function thelegendmodproject() {
                             this.playerCells.push(cellUpdateCells);
 							//this.playerCellsMulti.push(cellUpdateCells);
                         }
-                    } else {
+                    } 
+					else {
                         this.food.push(cellUpdateCells);
                     }
                     this.indexedCells[id] = cellUpdateCells;
@@ -10803,10 +10799,10 @@ function thelegendmodproject() {
                 }
                 //
                 if (defaultmapsettings.debug) {
-					if (!window.multiboxPlayerEnabled){
+					//if (!window.multiboxPlayerEnabled){
 						this.drawViewport(this.ctx, 'Viewport', LM.camMinX, LM.camMinY, LM.camMaxX, LM.camMaxY, defaultSettings.bordersColor, 15);
-					}
-					else if (LM.camMinMultiX && LM.camMinMultiY && LM.camMaxMultiX && LM.camMaxMultiY){
+					//}
+					if (legendmod.multiBoxPlayerExists && LM.camMinMultiX && LM.camMinMultiY && LM.camMaxMultiX && LM.camMaxMultiY){
 						this.drawViewport(this.ctx, 'Multi', LM.camMinMultiX, LM.camMinMultiY, LM.camMaxMultiX, LM.camMaxMultiY, defaultSettings.bordersColor, 15);
 					}
                     //this.newViewport( this.ctx, 'Client', LM.viewX, LM.viewY, LM.isSpectateEnabled, LM.isFreeSpectate, LM.leaderboard, LM.playerCells)
@@ -11136,7 +11132,7 @@ function thelegendmodproject() {
                 }
             },
             calMinMaxMulti() {
-				if (window.multiboxPlayerEnabled && LM.foodMulti.length){
+				if (legendmod.multiBoxPlayerExists && LM.foodMulti.length){
 					LM.camMaxMultiX = LM.playerXMulti
 					LM.camMaxMultiY = LM.playerYMulti
 					LM.camMinMultiX = LM.playerXMulti
@@ -11152,17 +11148,23 @@ function thelegendmodproject() {
 				}
             },			
             calMinMax() {
-                LM.camMaxX = LM.playerX
-                LM.camMaxY = LM.playerY
-                LM.camMinX = LM.playerX
-                LM.camMinY = LM.playerY
+				var tempX, tempY
+				tempX = legendmod.viewXTrue
+				tempY = legendmod.viewYTrue
+				
+                LM.camMaxX = tempX
+                LM.camMaxY = tempY
+                LM.camMinX = tempX
+                LM.camMinY = tempY
                 for (var length = 0; length < LM.food.length; length++) {
-                    var x = LM.food[length].x - 10 - defaultSettings.foodSize;
-                    var y = LM.food[length].y - 10 - defaultSettings.foodSize;
-                    if (x > LM.camMaxX) LM.camMaxX = x
-                    if (y > LM.camMaxY) LM.camMaxY = y
-                    if (x < LM.camMinX) LM.camMinX = x
-                    if (y < LM.camMinY) LM.camMinY = y
+					if (LM.food[length].spectator==false){
+						var x = LM.food[length].x - 10 - defaultSettings.foodSize;
+						var y = LM.food[length].y - 10 - defaultSettings.foodSize;
+						if (x > LM.camMaxX) LM.camMaxX = x
+						if (y > LM.camMaxY) LM.camMaxY = y
+						if (x < LM.camMinX) LM.camMinX = x
+						if (y < LM.camMinY) LM.camMinY = y
+					}
                 }
             },
             drawFood() {
