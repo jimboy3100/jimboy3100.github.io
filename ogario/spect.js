@@ -1,4 +1,4 @@
-//SPECS v3.4q WORKS UNTIL HERE
+//SPECS v3.4r WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -895,15 +895,16 @@ class Spect {
 			/*else {
 				console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed,"x",x,"mapOffsetX",this.mapOffsetX,"LM mapOffsetX",legendmod.mapOffsetX,"fixX",this.fixX)
 			}*/			
-
+			var remove = false;
+			/*
             var a = x - legendmod.playerX;
             var b = y - legendmod.playerY;
             var distanceX = Math.round(Math.sqrt(a * a));
-            var distanceY = Math.round(Math.sqrt(b * b));
-			var remove = false;
+            var distanceY = Math.round(Math.sqrt(b * b));		
             if (distanceX > maxX || distanceY > maxY){
 				remove = true;
 			}
+			*/
 			//
 
             const flags = view.readUInt8(offset++);
