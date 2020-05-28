@@ -1,4 +1,4 @@
-//SPECS v3.4q WORKS UNTIL HERE
+//SPECS v3.4r WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -18,7 +18,8 @@ function addSpectator() {
   let spect = new Spect();
   spects.push(spect)
 }
-function addFullSpectator() {
+
+function addFullSpectator(multi) {
         let mtp = 4.95,
             w = ~~(1024*mtp),
             h = ~~(600*mtp);
@@ -44,6 +45,9 @@ function addFullSpectator() {
         break 
       }
       let spect = new Spect();
+	  if (multi){
+		spect.multi = true;
+	  }
       spect.staticX = x;
       spect.staticY = y;
       spects.push(spect)
