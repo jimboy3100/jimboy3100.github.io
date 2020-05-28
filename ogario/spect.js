@@ -1,4 +1,4 @@
-//SPECS v3.4r WORKS UNTIL HERE
+//SPECS v3.4q WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -52,8 +52,8 @@ function addFullSpectator() {
   }
 }
 var spects = [];
-function Spect() = {
-    //constructor() {
+class Spect {
+    constructor() {
         this.number = spects.length + 1
 		//this.number = spects.length
         this.ws = null
@@ -82,7 +82,7 @@ function Spect() = {
 		legendmod.playerCellsMulti = []
 		legendmod.multiBoxPlayerExists = null
         this.connect()
-    //}
+    }
     reset() {
         this.ws = null
 		this.nick = null
