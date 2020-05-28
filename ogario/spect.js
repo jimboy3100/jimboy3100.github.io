@@ -1,4 +1,4 @@
-//SPECS v3.4i WORKS UNTIL HERE
+//SPECS v3.4j WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -937,15 +937,13 @@ class Spect {
                   id = this.newID(id);
 
 
-			if (!this.player){				
+			/*if (!this.player){				
 				if (!invisible) invisible = this.isInViewCustom(x , y, size)				
-			}
-			
-			if (this.player && (isVirus || isFood)){	
-				if (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size)){					
-					remove = true
-				}
+			}*/
+			if (!this.player || (isVirus || isFood)){				
+				if (!invisible) invisible = this.isInViewCustom(x , y, size)				
 			}		
+		
 			if (isFood && !defaultmapsettings.rainbowFood){
 				color = defaultSettings.foodColor
 			}
