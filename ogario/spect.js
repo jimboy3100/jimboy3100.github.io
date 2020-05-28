@@ -1,4 +1,4 @@
-//SPECS v3.4r WORKS UNTIL HERE
+//SPECS v3.4s WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -774,8 +774,7 @@ class Spect {
 			y + distance < legendmod.viewYTrue - y2s || //<legendmod.camMinY
 			x - distance > legendmod.viewXTrue + x2s || //>legendmod.camMaxX
 			y - distance > legendmod.viewYTrue + y2s) //>legendmod.camMaxY
-    }	
-	
+    }		
     isInViewCustom3 (x , y, size) {
 			var randomNum = 0 // randomNum=40
 			var distance = size + randomNum
@@ -784,7 +783,9 @@ class Spect {
 			x - distance > legendmod.camMaxMultiX || 
 			y - distance > legendmod.camMaxMultiY) 			
     }	
-	
+	//isMultiInView(x , y, size){
+		//x + size < 
+	//}
     setMapOffset(left, top, right, bottom) {
         if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
             this.mapOffsetX = (this.mapOffset) - right;
@@ -803,19 +804,6 @@ class Spect {
             console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
         }
     }
-
-        /*translateX(x) {
-            return this.mapMaxX - (x - this.mapMinX);
-        }
-        translateY(x) {
-            return this.mapMaxY - (x - this.mapMinY);
-        }
-        untranslateX(x) {
-            return 0 - (x - this.mapMaxX + this.mapMinX);
-        }
-        untranslateY(x) {
-            return 0 - (x - this.mapMaxY + this.mapMinY);
-        }	*/
     updateCells(view, offset) {
         const encode = () => {
             for (var text = '';;) {
@@ -895,8 +883,7 @@ class Spect {
 			/*else {
 				console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed,"x",x,"mapOffsetX",this.mapOffsetX,"LM mapOffsetX",legendmod.mapOffsetX,"fixX",this.fixX)
 			}*/			
-			var remove = false;
-			/*
+			var remove = false;		
             var a = x - legendmod.playerX;
             var b = y - legendmod.playerY;
             var distanceX = Math.round(Math.sqrt(a * a));
@@ -904,7 +891,7 @@ class Spect {
             if (distanceX > maxX || distanceY > maxY){
 				remove = true;
 			}
-			*/
+			
 			//
 
             const flags = view.readUInt8(offset++);
@@ -941,6 +928,9 @@ class Spect {
                   id = this.newID(id);
 
 			if (!this.player){				
+				if (!invisible) invisible = this.isInViewCustom(x , y, size)				
+			}			
+			if (this.player){				
 				if (!invisible) invisible = this.isInViewCustom(x , y, size)				
 			}			
 			if (isFood && !defaultmapsettings.rainbowFood){
