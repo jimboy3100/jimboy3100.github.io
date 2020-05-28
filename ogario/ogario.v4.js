@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.769
+// v1.770
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -108,7 +108,7 @@ function deleteGamemode() {
 function logoutPSArenas() {
     if (master.context=="facebook") {
         logout();
-        toastr.warning("<b>[SERVER]:</b> Facebook login NOT allowed on this private server!").css("width", "250px");
+        toastr.warning("<b>[" + Premadeletter123 + "]:</b> Facebook login NOT allowed on this private server!").css("width", "250px");
     }
 }
 
@@ -392,9 +392,9 @@ window.connectionBots = {
         document.getElementById('captchaBots').disabled = false
         document.getElementById('stopBots').disabled = false
         document.getElementById('connectBots').innerText = 'Connect'
-        document.getElementById('connectBots').style.color = 'white'
-        toastr.info('<b>[SERVER]:</b> 100000 captcha tokens requested, some lag from proccessing will be created. <br><b>If captcha tokens stop, create again tokens</b>');
+        document.getElementById('connectBots').style.color = 'white'       
         window.RequestedTokens = 100000;
+		toastr.info("<b>[" + Premadeletter123 + "]:</b> " + window.RequestedTokens + " captcha tokens requested, some lag from proccessing will be created. <br><b>If captcha tokens stop, create again tokens</b>");
         legendmod.sendTokenForBots();
         if (!window.sendFirstTimeTokenBots) {
             window.sendFirstTimeTokenBots = true
@@ -435,7 +435,7 @@ window.connectionBots = {
                 //toastr.info('Your IP has captcha and bots are unable to spawn, change your ip with a VPN or something to one that doesn\'t has captcha in order to use the bots')
                 window.botscaptcha = true;
                 if (!legendmod.play && window.LatestBotsVersion && $('#handleCaptchaBots').is(':checked')) {
-                    toastr.info('<b>[SERVER]:</b> Solve the captcha for your bots')
+                    toastr.info('<b>[' + Premadeletter123 + ']:</b> Solve the captcha for your bots')
                     window.agarCaptcha.requestCaptcha()
                     //window.master.recaptchaRequested()
                 } else {
@@ -9234,7 +9234,7 @@ function thelegendmodproject() {
 						if (defaultmapsettings.massBooster && master.context) {				
 							massx31hour();
 							if (!window.massBoosterMsg){
-								toastr.warning("<b>[SERVER]:</b> Mass *2 booster -> *3 booster is enabled, this upgrades your boost to *3 for FREE if you have enabled Mass boost *2 on agar.io.<br><font color='blue'>Otherwise disable it, cause it will consume your boosts.</font>").css("width", "350px");
+								toastr.warning("<b>[" + Premadeletter123 + "]:</b> Mass *2 booster -> *3 booster is enabled, this upgrades your boost to *3 for FREE if you have enabled Mass boost *2 on agar.io.<br><font color='blue'>Otherwise disable it, cause it will consume your boosts.</font>").css("width", "350px");
 								window.massBoosterMsg=true;
 							}
 						}				
