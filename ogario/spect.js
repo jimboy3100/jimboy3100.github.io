@@ -1,4 +1,4 @@
-//SPECS v3.6b WORKS UNTIL HERE
+//SPECS v3.6c WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -711,6 +711,9 @@ class Spect {
 	terminate(){
 		this.active = false;		
 		window.multiboxPlayerEnabled = null
+		if (!legendmod.play){
+			application.showMenu()
+		}	
 		var temp = this.number-1
 		if (spects[temp]){
 			spects[temp].closeConnection()
