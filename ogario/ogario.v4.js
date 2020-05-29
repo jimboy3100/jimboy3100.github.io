@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.777
+// v1.781
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -8713,13 +8713,14 @@ function thelegendmodproject() {
 
         sendPosition(cell, target2, specialcommand) {
             var cursorX, cursorY;
+			if (this.isSocketOpen() && this.connectionOpened && (this.clientKey || !legendmod.integrity)){
 			if (window.multiboxPlayerEnabled && !window.multiboxFollowMouse && !window.autoPlay){
 				if (defaultmapsettings.multiKeepMoving){
 					cursorX = this.playerX + this.distX;
 					cursorY = this.playerY + this.distY;
 				}
 			}
-            else if (this.isSocketOpen() && this.connectionOpened && (this.clientKey || !legendmod.integrity)) {								
+            else {								
                 if (specialcommand) {
                     //console.log('hi')
                     //cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
@@ -8747,20 +8748,18 @@ function thelegendmodproject() {
                         //var cursorY = target2.y;
                     }
                     //}
-                }
-                //
-
+                }				
+				//for multi
+				this.distX  = this.cursorX - this.playerX	
+				this.distY  = this.cursorY - this.playerY					
+            }
                 var view = this.createView(13);
                 view.setUint8(0, 16);
                 view.setInt32(1, cursorX, true);
                 view.setInt32(5, cursorY, true);
                 view.setUint32(9, this.protocolKey, true);
-                this.sendMessage(view);
-				
-				//for multi
-				this.distX  = cursorX - this.playerX	
-				this.distY  = legendmod.cursorY - this.playerY					
-            }
+                this.sendMessage(view);	
+		}				
             if (window.userBots.startedBots && window.userBots.isAlive) {
                 window.userBots.mouseX = this.cursorX - window.userBots.offsetX;
                 window.userBots.mouseY = this.cursorY - window.userBots.offsetY;
