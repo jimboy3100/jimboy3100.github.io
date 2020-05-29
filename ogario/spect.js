@@ -1,4 +1,4 @@
-//SPECS v3.5g WORKS UNTIL HERE
+//SPECS v3.6a WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -81,6 +81,7 @@ class Spect {
 		this.playerCellIDs = []
 		legendmod.playerCellsMulti = []
 		legendmod.multiBoxPlayerExists = null
+		this.playerScore = 0
         this.connect()
     }
     reset() {
@@ -104,7 +105,7 @@ class Spect {
 		this.playerCellIDs = []
 		legendmod.playerCellsMulti = []
 		legendmod.multiBoxPlayerExists = null
-
+		this.playerScore = 0
     }
     connect() {
         this.reset()
