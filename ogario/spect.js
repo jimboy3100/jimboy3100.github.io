@@ -1,4 +1,4 @@
-//SPECS v3.5d WORKS UNTIL HERE
+//SPECS v3.5c WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -82,9 +82,6 @@ class Spect {
 		legendmod.playerCellsMulti = []
 		legendmod.multiBoxPlayerExists = null
         this.connect()
-		setInterval(function() {
-			this.beforecalculation();
-        }, 1000/legendmod2.fps);
     }
     reset() {
         this.ws = null
@@ -561,8 +558,7 @@ class Spect {
                         'inView': this.isInView(x, y, size)
                     });
                 }
-				this.GhostFix()
-				this.beforecalculation() //render calculations i put them here to avoid another interval
+				this.GhostFix()				
                 break;
             case 85:
 			  toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Agr.io requested Captcha from Multibox. Multibox closed");
@@ -664,7 +660,7 @@ class Spect {
                 break;
             case 255:
                 this.handleSubmessage(view);
-
+				this.beforecalculation() //render calculations i put them here to avoid another interval
                 break;
             case 16:
 
