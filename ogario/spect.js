@@ -1,4 +1,4 @@
-//SPECS v3.4z WORKS UNTIL HERE
+//SPECS v3.5a WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -932,7 +932,7 @@ class Spect {
 			}			
 			//if (this.player && isVirus && !isFood && !invisible){
 			if (this.player && (isVirus || isFood) && !remove){
-				remove = this.isInViewCustom(x , y, size)
+				remove = this.isInViewCustom(x , y, size) //CAUSES BLINKING
 				//if (!invisible) invisible = (this.isInViewCustom(x , y, size) && this.isInViewCustom3(x , y, size))				
 			}			
 			if (isFood && !defaultmapsettings.rainbowFood){
