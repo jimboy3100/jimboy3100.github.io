@@ -1,4 +1,4 @@
-//SPECS v3.5d WORKS UNTIL HERE
+//SPECS v3.5e WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1074,7 +1074,7 @@ class Spect {
     recalculatePlayerMass() {
             if (this.playerScore = Math.max(this.playerScore, this.playerMass),
                 defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
-                var cells = this.playerCells;
+                var cells = legendmod.playerCellsMulti;
                 var CellLength = cells.length;
                 cells.sort(function(cells, CellLength) {
                     return cells.size == CellLength.size ? cells.id - CellLength.id : cells.size - CellLength.size;
