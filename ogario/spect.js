@@ -1,4 +1,4 @@
-//SPECS v3.5c WORKS UNTIL HERE
+//SPECS v3.5d WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1069,7 +1069,69 @@ class Spect {
 			}
             this.playerSize = size;
             this.playerMass = ~~(targetSize / 100);
+			this.recalculatePlayerMass();
 	}	
+    recalculatePlayerMass() {
+            if (this.playerScore = Math.max(this.playerScore, this.playerMass),
+                defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
+                var cells = this.playerCells;
+                var CellLength = cells.length;
+                cells.sort(function(cells, CellLength) {
+                    return cells.size == CellLength.size ? cells.id - CellLength.id : cells.size - CellLength.size;
+                });
+                this.playerMinMass = ~~(cells[0].size * cells[0].size / 100);
+                this.playerMaxMass = ~~(cells[CellLength - 1].size * cells[CellLength - 1].size / 100);
+                this.playerSplitCells = CellLength;
+            }
+            if (true) {
+                var mass = legendmod.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
+                // this.STE = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null; //Sonia2
+                //this.STE = Math.floor(mass * Math.pow(1.15, 2)/4); //Sonia2
+				this.STE = Math.floor(mass * defaultmapsettings.dominationRate/4); //Sonia2
+                this.MTE = Math.floor(mass * defaultmapsettings.dominationRate/2); //Sonia2
+                this.BMTE = Math.ceil(mass * defaultmapsettings.dominationRate); //Sonia2
+                this.BSTE = Math.ceil(mass * defaultmapsettings.dominationRate*2); //Sonia2
+                this.TTE = Math.ceil(mass / 6); //Sonia2
+                this.PTE = Math.floor(mass * 0.66); //Sonia2
+            }
+			this.compareCells()
+        }	
+    compareCells() {
+		if ((legendmod.playerCellsMulti) && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
+                if (defaultmapsettings.oppRings || defaultmapsettings.splitRange) {
+                    this.biggerSTECellsCache = [];
+                    this.biggerCellsCache = [];
+                    this.smallerCellsCache = [];
+                    this.STECellsCache = [];
+                    this.biggerSTEDCellsCache = []; //Sonia
+                    this.STEDCellsCache = []; //Sonia
+                    //this.SSCellsCache = [];
+                }
+                var t = 0;
+                for (; t < this.cells.length; t++) {
+                    var cell = this.cells[t];
+                    //if (cell.isVirus || cell.spectator > 0) {
+					if (cell.isVirus || cell.invisible) {	
+                        continue;
+                    }
+                    //console.log(i); i for food is 13
+                    var size = ~~(cell.size * cell.size / 100);
+
+					if (size > 13) {	
+                        var mass = legendmod.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
+                        var fixMass = size / mass;
+                        var smallMass = mass < 1000 ? 0.35 : 0.38;
+                        if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings) {
+                            cell.oppColor = this.setCellOppColor(cell.isPlayerCell, fixMass);
+                        }
+						if (!cell.isPlayerCell && (defaultmapsettings.splitRange || defaultmapsettings.oppRings)) {
+                            this.cacheCells(cell.x, cell.y, cell.size, fixMass);
+                        }
+                    }
+                
+			}
+		}
+    }	
 }
 
     window.sendAction = action => {
