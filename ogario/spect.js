@@ -1,4 +1,4 @@
-//SPECS v3.5j WORKS UNTIL HERE
+//SPECS v3.5k WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -889,7 +889,7 @@ class Spect {
             var distanceX = Math.round(Math.sqrt(a * a));
             var distanceY = Math.round(Math.sqrt(b * b));		
             if (distanceX > maxX || distanceY > maxY){
-				if (!this.player) remove = true;
+				remove = true;
 			}
 			
 			//
@@ -927,7 +927,7 @@ class Spect {
 
                   id = this.newID(id);
 
-			if (!this.player){				
+			if (!this.player && (isVirus || isFood)){				
 				if (!invisible) invisible = this.isInViewCustom(x , y, size)				
 			}			
 			//if (this.player && isVirus && !isFood && !invisible){
