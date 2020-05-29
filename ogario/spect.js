@@ -1,4 +1,4 @@
-//SPECS v3.5e WORKS UNTIL HERE
+//SPECS v3.5f WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1093,45 +1093,8 @@ class Spect {
                 this.BSTE = Math.ceil(mass * defaultmapsettings.dominationRate*2); //Sonia2
                 this.TTE = Math.ceil(mass / 6); //Sonia2
                 this.PTE = Math.floor(mass * 0.66); //Sonia2
-            }
-			this.compareCells()
+            }			
         }	
-    compareCells() {
-		if ((legendmod.playerCellsMulti) && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
-                if (defaultmapsettings.oppRings || defaultmapsettings.splitRange) {
-                    this.biggerSTECellsCache = [];
-                    this.biggerCellsCache = [];
-                    this.smallerCellsCache = [];
-                    this.STECellsCache = [];
-                    this.biggerSTEDCellsCache = []; //Sonia
-                    this.STEDCellsCache = []; //Sonia
-                    //this.SSCellsCache = [];
-                }
-                var t = 0;
-                for (; t < this.cells.length; t++) {
-                    var cell = this.cells[t];
-                    //if (cell.isVirus || cell.spectator > 0) {
-					if (cell.isVirus || cell.invisible) {	
-                        continue;
-                    }
-                    //console.log(i); i for food is 13
-                    var size = ~~(cell.size * cell.size / 100);
-
-					if (size > 13) {	
-                        var mass = legendmod.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
-                        var fixMass = size / mass;
-                        var smallMass = mass < 1000 ? 0.35 : 0.38;
-                        if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings) {
-                            cell.oppColor = this.setCellOppColor(cell.isPlayerCell, fixMass);
-                        }
-						if (!cell.isPlayerCell && (defaultmapsettings.splitRange || defaultmapsettings.oppRings)) {
-                            this.cacheCells(cell.x, cell.y, cell.size, fixMass);
-                        }
-                    }
-                
-			}
-		}
-    }	
 }
 
     window.sendAction = action => {
