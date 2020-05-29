@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.773
+// v1.777
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -3580,7 +3580,41 @@ function thelegendmodproject() {
         displayStats() {
             if (defaultmapsettings.showStats) {
                 var t = '';
-                if (ogario.play) {
+				if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1]){
+                    if (defaultmapsettings.showStatsMass && spects[window.multiboxPlayerEnabled-1].playerMass) {
+                        //t += textLanguage.mass + ': ' + i.playerMass + ' | '
+                        t += Languageletter49 + ': ' + spects[window.multiboxPlayerEnabled-1].playerMass + ' | '
+                    }
+                    if (spects[window.multiboxPlayerEnabled-1].playerScore) {
+                        //t += textLanguage.score + ': ' + i.playerScore
+                        t += Languageletter366 + ': ' + spects[window.multiboxPlayerEnabled-1].playerScore
+                    }
+                    if (defaultmapsettings.showStatsN16 && spects[window.multiboxPlayerEnabled-1].playerSplitCells) {
+                        t += ' | ' + spects[window.multiboxPlayerEnabled-1].playerSplitCells + '/16'
+                    }
+                    if (defaultmapsettings.showStatsESTE && spects[window.multiboxPlayerEnabled-1].BSTE) {
+                        t += ' | ◎◎➛◉: ' + spects[window.multiboxPlayerEnabled-1].BSTE //Sonia6
+                    }
+                    if (defaultmapsettings.showStatsEMTE && spects[window.multiboxPlayerEnabled-1].BMTE) {
+                        t += ' | ◎➛◉: ' + spects[window.multiboxPlayerEnabled-1].BMTE //Sonia6
+                    }
+                    if (defaultmapsettings.showStatsMTE && spects[window.multiboxPlayerEnabled-1].MTE) {
+                        t += ' | ◉➛◎: ' + spects[window.multiboxPlayerEnabled-1].MTE //Sonia6
+                    }
+                    if (defaultmapsettings.showStatsSTE && spects[window.multiboxPlayerEnabled-1].STE) {
+                        t += ' | ◉◉➛◎: ' + spects[window.multiboxPlayerEnabled-1].STE //Sonia6
+                    }
+                    if (defaultmapsettings.showStatsTTE && spects[window.multiboxPlayerEnabled-1].TTE) {
+                        t += ' | ◉➚◉: ' + spects[window.multiboxPlayerEnabled-1].TTE //Sonia6
+                    }
+                    if (defaultmapsettings.showStatsPTE && spects[window.multiboxPlayerEnabled-1].PTE) {
+                        t += ' | ➚◎➘: ' + spects[window.multiboxPlayerEnabled-1].PTE //Sonia6
+                    }
+                    if (defaultmapsettings.showStatsFPS) {
+                        t += ' | '
+                    }							
+				}				
+                else if (ogario.play) {
                     if (defaultmapsettings.showStatsMass && ogario.playerMass) {
                         //t += textLanguage.mass + ': ' + i.playerMass + ' | '
                         t += Languageletter49 + ': ' + ogario.playerMass + ' | '
@@ -10392,17 +10426,21 @@ function thelegendmodproject() {
                 this.playerMaxMass = ~~(cells[CellLength - 1].size * cells[CellLength - 1].size / 100);
                 this.playerSplitCells = CellLength;
             }
-            if (true) {
-                var mass = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
+			var mass
+			if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1]){
+                mass = this.selectBiggestCell ? spects[window.multiboxPlayerEnabled-1].playerMaxMass : spects[window.multiboxPlayerEnabled-1].playerMinMass;					
+			}
+            else {
+                mass = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
+            }
                 // this.STE = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null; //Sonia2
-                //this.STE = Math.floor(mass * Math.pow(1.15, 2)/4); //Sonia2
+                //this.STE = Math.floor(mass * Math.pow(1.15, 2)/4); //Sonia2			
 				this.STE = Math.floor(mass * defaultmapsettings.dominationRate/4); //Sonia2
                 this.MTE = Math.floor(mass * defaultmapsettings.dominationRate/2); //Sonia2
                 this.BMTE = Math.ceil(mass * defaultmapsettings.dominationRate); //Sonia2
                 this.BSTE = Math.ceil(mass * defaultmapsettings.dominationRate*2); //Sonia2
                 this.TTE = Math.ceil(mass / 6); //Sonia2
-                this.PTE = Math.floor(mass * 0.66); //Sonia2
-            }
+                this.PTE = Math.floor(mass * 0.66); //Sonia2			
         },
         compareCells() {
 		if ((this.play || LM.playerCellsMulti) && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
@@ -10424,9 +10462,15 @@ function thelegendmodproject() {
                     }
                     //console.log(i); i for food is 13
                     var size = ~~(cell.size * cell.size / 100);
-                    if (size != 13) {
+
 					if (size > 13) {	
-                        var mass = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
+						var mass
+						if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1]){
+							mass = this.selectBiggestCell ? spects[window.multiboxPlayerEnabled-1].playerMaxMass : spects[window.multiboxPlayerEnabled-1].playerMinMass;					
+						}
+						else {
+							mass = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
+						}
                         var fixMass = size / mass;
                         var smallMass = mass < 1000 ? 0.35 : 0.38;
                         if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings) {
@@ -10436,7 +10480,7 @@ function thelegendmodproject() {
                             this.cacheCells(cell.x, cell.y, cell.size, fixMass);
                         }
                     }
-                }
+                
 			}}
         },
         cacheCells(x, y, size, mass) {
