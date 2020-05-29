@@ -1,4 +1,4 @@
-//SPECS v3.5a WORKS UNTIL HERE
+//SPECS v3.5b WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -559,6 +559,7 @@ class Spect {
                     });
                 }
 				this.GhostFix()
+				beforecalculation() //render calculations i put them here to avoid another interval
                 break;
             case 85:
 			  toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Agr.io requested Captcha from Multibox. Multibox closed");
