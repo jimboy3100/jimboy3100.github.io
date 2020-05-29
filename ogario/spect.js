@@ -1,4 +1,4 @@
-//SPECS v3.5g WORKS UNTIL HERE
+//SPECS v3.5h WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -889,7 +889,7 @@ class Spect {
             var distanceX = Math.round(Math.sqrt(a * a));
             var distanceY = Math.round(Math.sqrt(b * b));		
             if (distanceX > maxX || distanceY > maxY){
-				remove = true;
+				//remove = true;
 			}
 			
 			//
