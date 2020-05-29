@@ -1,4 +1,4 @@
-//SPECS v3.5f WORKS UNTIL HERE
+//SPECS v3.5g WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -961,7 +961,7 @@ class Spect {
                             this.playerColor = color;
                             legendmod.playerCellsMulti.push(cell);
 							if (legendmod.playerCellsMulti.length==1){
-								console.log('player cell is active')
+								console.log('[SPECT] Player cell is active')
 								this.sendCursor()
 								loadMultiCellSkin()
 								this.active = true
