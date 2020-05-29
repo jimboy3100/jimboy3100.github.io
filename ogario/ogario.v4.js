@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.783
+// v1.791
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -3456,9 +3456,10 @@ function thelegendmodproject() {
             }
         },
         multiboxswap() {
+			this.hideMenu()
 			if (!spects.length){
 			//if (!legendmod.multiBoxPlayerExists){					
-				addBox();
+				addBox()			
 			}
 			else if (!window.multiboxPlayerEnabledSaved){
 				if (!legendmod.play){
@@ -10370,8 +10371,21 @@ function thelegendmodproject() {
 				if (!LM.multiBoxPlayerExists){					
 					application.showMenu(300)
 				}
-				else{
-					application.multiboxswap()
+				else{		
+					if (!window.multiboxPlayerEnabled){
+						application.multiboxswap()
+					}
+					else{
+						if (!window.multiboxPlayerEnabledSaved){			
+							window.multiboxPlayerEnabledSaved = window.multiboxPlayerEnabled
+							window.multiboxPlayerEnabled = null
+						}
+						else{
+							window.multiboxPlayerEnabled = window.multiboxPlayerEnabledSaved
+							window.multiboxPlayerEnabledSaved = null
+						}
+						application.multiboxswap()
+					}
 				}
                 window.userBots.isAlive = false
                 if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer)
