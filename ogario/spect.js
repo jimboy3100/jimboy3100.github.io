@@ -562,7 +562,7 @@ class Spect {
 				this.GhostFix()				
                 break;
             case 85:
-			  toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Agr.io requested Captcha from Multibox. Multibox closed");
+			  toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Captcha requested from Multibox client. Multibox closed");
               console.log('[SPECT] case 85');
 			  this.terminate()
                 
