@@ -5779,7 +5779,8 @@ function thelegendmodproject() {
                 this.createServerToken();
                 this.updateServerInfo();
                 if (-1 == this.ws.indexOf('agar.io')) {
-                    this.closeConnection();
+	            // fix disconnect?
+                    //this.closeConnection();
                 }
             }
         },
