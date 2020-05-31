@@ -71,32 +71,32 @@ function deleteGamemode() {
             //application.connect('wss://private1:443')
         } else if ($('#gamemode').val() == 7) {
             core.connect('wss://delta-selffeed.glitch.me');
-            application.connect('wss://private1:443')
+            //application.connect('wss://private1:443')
         } else if ($('#gamemode').val() == 8) {
             logoutPSArenas();
             legendmod.gameMode = ":ffa";
             core.connect(agarTesterArena + ':1500/'); //ffa
-            application.connect('wss://private1:443')
+            //application.connect('wss://private1:443')
         } else if ($('#gamemode').val() == 9) {
             logoutPSArenas();
             legendmod.gameMode = ":battleroyale";
             core.connect(agarTesterArena + ':1504/'); //battle royal			
-            application.connect('wss://private1:443')
+            //application.connect('wss://private1:443')
         } else if ($('#gamemode').val() == 10) {
             logoutPSArenas();
             legendmod.gameMode = ":teams";
             core.connect(agarTesterArena + ':1501/'); //teams
-            application.connect('wss://private1:443')
+            //application.connect('wss://private1:443')
         } else if ($('#gamemode').val() == 11) {
             logoutPSArenas();
             legendmod.gameMode = ":experimental";
             core.connect(agarTesterArena + ':1503/'); //experimental
-            application.connect('wss://private1:443')
+            //application.connect('wss://private1:443')
         } else if ($('#gamemode').val() == 12) {
             logoutPSArenas();
             legendmod.gameMode = ":party";
             core.connect(agarTesterArena + ':1502/'); //party
-            application.connect('wss://private1:443')
+            //application.connect('wss://private1:443')
         }
     });
     $('#gamemode option[value=6]').prop('selected', 'selected').change();
