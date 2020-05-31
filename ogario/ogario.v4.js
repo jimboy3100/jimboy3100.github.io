@@ -5787,7 +5787,7 @@ function thelegendmodproject() {
         },
         recreateWS(token) {
             if (!token) return null;
-	    this.tokenNeedToBtoa = true
+	    this.tokenNeedToBtoa = false
             var text = null;
             if (/^[a-zA-Z0-9=+\/]{12,}$/.test(token)) {
                 //var atobToken = atob(token);
