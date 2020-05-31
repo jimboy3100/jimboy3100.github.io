@@ -68,7 +68,7 @@ function deleteGamemode() {
         } else {}
         if ($('#gamemode').val() == 6) {
             core.connect('wss://delta-server.glitch.me');
-            application.connect('wss://private1:443')
+            //application.connect('wss://private1:443')
         } else if ($('#gamemode').val() == 7) {
             core.connect('wss://delta-selffeed.glitch.me');
             application.connect('wss://private1:443')
