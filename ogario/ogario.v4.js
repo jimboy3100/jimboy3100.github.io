@@ -5839,6 +5839,7 @@ function thelegendmodproject() {
             //ccse
             if (this.ws.search(/wss?:\/\//) > -1 && this.ws.search(/agar\.io/) == -1) {
                 text = this.ws.match(/wss?:\/\/(.+)/)[1]
+		this.tokenNeedToBtoa = true
                 this.serverIP = text;				
                 //text = btoa(text);
                 //console.log("createServerToken case 1:" + text);
