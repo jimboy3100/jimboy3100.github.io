@@ -5822,6 +5822,7 @@ function thelegendmodproject() {
             return text;
         },
         createServerToken() {
+	    this.tokenNeedToBtoa = false
             var matchOld = this.ws.match(/ip-\d+/);
             //var matchNew = this.ws.match(/live-arena-([\w\d]+)/);
 			var matchNew = this.ws.match(/live-arena-([\w\d]+(\.tech)?)\.agar\.io/);
