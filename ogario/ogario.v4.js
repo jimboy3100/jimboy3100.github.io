@@ -3061,6 +3061,7 @@ function thelegendmodproject() {
         ws: '',
         serverIP: '',
         serverArena: '',
+	tokenNeedToBtoa:false,
         serverToken: '',
         lastSentNick: '',
         lastSentClanTag: null,
@@ -5786,6 +5787,7 @@ function thelegendmodproject() {
         },
         recreateWS(token) {
             if (!token) return null;
+	    this.tokenNeedToBtoa = true
             var text = null;
             if (/^[a-zA-Z0-9=+\/]{12,}$/.test(token)) {
                 //var atobToken = atob(token);
@@ -5810,9 +5812,11 @@ function thelegendmodproject() {
                 text = 'wss://live-arena-' + token + '.agar.io:443'
             }		
 			else if (!token.includes("s://")){
+				this.tokenNeedToBtoa = true
 				text = 'wss://' + token; //private servers
 			}
 			else{
+				this.tokenNeedToBtoa = true
 				text = token; //private servers
 			}			
             return text;
@@ -6257,7 +6261,8 @@ function thelegendmodproject() {
             this.sendPlayerData(15, 'lastSentPartyToken', this.partyToken);
         },
         sendServerToken() {
-            this.sendPlayerData(16, 'lastSentServerToken', this.serverToken);
+	    var serverToken = this.tokenNeedToBtoa?btoa(this.serverToken):this.serverToken
+            this.sendPlayerData(16, 'lastSentServerToken', serverToken);
         },
         sendServerJoin() {
             this.sendServerToken();
