@@ -1,829 +1,548 @@
-//SPECS v1.7p
+// These bots are working with www.legendmod.ml extension or agar.io
+// version 1.3 version B
+// creator Jimboy3100
 
-function addBox() {
-  let spect = new Spect();
-  spect.player = true;
-  spects.unshift(spect);
+// Url https://repl.it/@legendmod/party-bots
+// Websocket wss://party-bots--legendmod.repl.co
+
+// By comparing Url and Websocket, imagine how your websocket should below
+// If repl.it not loading, wait or make a new repo. Sometimes repl.it bugs
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+const WebSocket = require('ws'),
+    { murmur2 } = require('murmurhash-js'),
+    buffers = require('./buffers'),
+    algorithm = require('./algorithm'),
+    Reader = require('./reader'),
+    Entity = require('./entity'),
+	//requester = require("request-promise"),
+    requester = require("request-promise").defaults({
+    strictSSL: false,
+    rejectUnauthorized: false
+ }),
+    logger = require("./logger.js"),
+    config = require('./config.json');
+
+global.globalData=[];
+global.globalDataCounter=0;
+const userBots = [];
+let userWS = null,
+    stoppingBots = false,
+    connectedBots = 0,
+    spawnedBots = 0,
+    serverPlayers = 0;
+
+logger.warn('[SERVER]: If error occurs on port 1377 try 8083 on config.json and websocket');
+if (config.server.update) {
+    requester(config.server.link, (err, req, data) => {
+        const requesterData = Buffer.from(data).toString()
+        requesterConfig = JSON.parse(requesterData)
+
+        if (config.server.version < requesterConfig.server.version) {
+            logger.warn('[SERVER]: A new update was found!')
+            logger.warn('[SERVER]: Download -> https://legendmod.ml/ExampleScripts/agario-bots2')
+        } else {
+            logger.good('[SERVER]: No updates found!')
+        }
+    })
+} else {
+    logger.error('[SERVER]: Update is false!')
 }
-function addSpectator() {
-  let spect = new Spect();
-  spects.push(spect)
+
+logger.good(`[SERVER]: Running version ${config.server.version} on port ${config.server.port}`)
+
+const game = {
+    url: '',
+    protocolVersion: 0,
+    clientVersion: 0
 }
-function addFullSpectator() {
-        let mtp = 4.95,
-            w = ~~(1024*mtp),
-            h = ~~(600*mtp);
-  let stop = 0,
-      x = 0,
-      y = 0;
-  for (;stop<30;stop++){
-    if(stop == 0) {
-      let spect = new Spect();
-      x = legendmod.mapMinX + 2400;
-      y = legendmod.mapMinY + 1000;
-      spect.staticX = x;
-      spect.staticY = y;
-      spects.push(spect)
-      stop++
-    } else {
-      if(x > legendmod.mapMaxX - 2400){
-        x = legendmod.mapMinX + 2400;
-        y = y+h;
-      } else {x = x + w;}
-      if (y>legendmod.mapMaxY-1000) { 
-        stop = 100;
-        break 
-      }
-      let spect = new Spect();
-      spect.staticX = x;
-      spect.staticY = y;
-      spects.push(spect)
-      stop++
+
+const user = {
+    ws: null,
+    bots: [],
+    startedBots: false,
+    stoppingBots: false,
+    isAlive: false,
+    mouseX: 0,
+    mouseY: 0
+}
+
+const bots = {
+    name: '',
+    amount: 0,
+    ai: false
+}
+const dataBot = {
+    ws: null,
+    buffersKey: 0,
+    isConnected: false,
+    playersAmount: 0,
+    lastPlayersAmount: 0,
+    connect() {
+        this.buffersKey = 0
+        this.isConnected = false
+        this.playersAmount = 0
+        this.lastPlayersAmount = 0
+        this.ws = new WebSocket(game.url)
+		//this.ws.binaryType = 'arraybuffer';
+        this.ws.onopen = this.onopen.bind(this)
+        this.ws.onmessage = this.onmessage.bind(this)
+        this.ws.onclose = this.onclose.bind(this)
+    },
+    send(buffer) {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) this.ws.send(buffer)
+    },
+    onopen() {
+        this.send(buffers.protocolVersion(game.protocolVersion))
+        this.send(buffers.clientVersion(game.clientVersion))
+
+    },
+    onmessage(message) {
+        if (this.buffersKey) message.data = algorithm.rotateBufferBytes(message.data, this.buffersKey)
+        this.handleBuffer(message.data)
+    },
+    onclose() {
+        if (this.isConnected) {
+            this.isConnected = false
+            this.connect()
+            logger.error('[SERVER]: DataBot disconnected!')
+        }
+    },
+    handleBuffer(buffer) {
+        const reader = new Reader(buffer)
+        switch (reader.readUint8()) {
+            case 54:
+                this.playersAmount = 0
+                serverPlayers = 0;
+                reader.byteOffset += 2
+                while (reader.byteOffset < reader.buffer.byteLength) {
+                    const flags = reader.readUint8()
+                    if (flags & 2) reader.readString()
+                    if (flags & 4) reader.byteOffset += 4
+                    this.playersAmount++
+                        serverPlayers++
+                }
+                this.lastPlayersAmount = this.playersAmount
+
+                break
+            case 241:
+                this.buffersKey = reader.readInt32() ^ game.clientVersion
+                this.isConnected = true
+                logger.good('[SERVER]: DataBot connected!')
+                break
+        }
     }
-  }
 }
-var spects = [];
-class Spect {
+
+function calculateDistance(botX, botY, targetX, targetY) {
+    return Math.hypot(targetX - botX, targetY - botY)
+}
+
+class Bot {
     constructor() {
-        this.number = spects.length + 1
-		//this.number = spects.length
         this.ws = null
-        this.socket = null
-        this.protocolKey = null
-        this.clientKey = null
-        this.clientVersion = null
-        this.connectionOpened = false
-        this.mapOffset = 7071
-        this.mapOffsetX = 0
-        this.mapOffsetY = 0
-        this.fixX = 1
-        this.fixY = 1
-        this.staticX = null
-        this.staticY = null
-        this.ghostsFixed = false
-        this.closedByUser = false
-        this.positionController = null
-        this.player = false
-        this.active = false
-        this.targetX = null
-        this.targetY = null
+        this.encryptionKey = 0
+        this.decryptionKey = 0
+        this.isConnected = false
+        this.cellsIDs = []
+        this.isAlive = false
+        this.followMouseTimeout = null
+        this.followMouse = false
+        this.gotCaptcha = false
+        this.viewportEntities = {}
+        this.offsetX = 0
+        this.offsetY = 0
         this.connect()
     }
     reset() {
-        this.ws = null
-        //this.socket = null
-        this.protocolKey = null
-        this.clientKey = null
-        this.clientVersion = null
-        this.connectionOpened = false
-        this.mapOffsetX = 0
-        this.mapOffsetY = 0
-        this.ghostsFixed = false
-        this.closedByUser = false
-        this.positionController = null
-        this.player = false
-        this.active = false
-        this.targetX = null
-        this.targetY = null
-
+        this.encryptionKey = 0
+        this.decryptionKey = 0
+        this.isConnected = false
+        this.cellsIDs = []
+        this.isAlive = false
+        this.followMouseTimeout = null
+        this.followMouse = false
+        this.viewportEntities = {}
+        this.offsetX = 0
+        this.offsetY = 0
     }
     connect() {
         this.reset()
-        this.ws = legendmod.ws
-        this.socket = new WebSocket(legendmod.ws)
-        this.socket.binaryType = 'arraybuffer'
-        this.socket.onopen = this.onopen.bind(this)
-        this.socket.onmessage = this.onmessage.bind(this)
-        this.socket.onerror = this.onerror.bind(this)
-        this.socket.onclose = this.onclose.bind(this)
+        this.ws = new WebSocket(game.url)
+		//this.ws.binaryType = 'arraybuffer';
+        this.ws.onopen = this.onopen.bind(this)
+        this.ws.onmessage = this.onmessage.bind(this)
+        this.ws.onerror = this.onerror.bind(this)
+        this.ws.onclose = this.onclose.bind(this)
+    }
+    send(buffer) {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            if (this.encryptionKey) {
+                buffer = algorithm.rotateBufferBytes(buffer, this.encryptionKey)
+                this.encryptionKey = algorithm.rotateEncryptionKey(this.encryptionKey)
+            }
+            this.ws.send(buffer)
+			//console.log(buffer)
+        }
     }
     onopen() {
-            console.log('[SPECT] Game server socket open')
-      
-            this.clientVersion = window.master.clientVersion
-            this.protocolVersion = window.master.protocolVersion
-      
-            let view = this.createView(5);
-            view.setUint8(0, 254);
-            //if(!window.game.protocolVersion) window.game.protocolVersion = 22
-            view.setUint32(1, this.protocolVersion, true);
-            this.sendMessage(view);
-            view = this.createView(5);
-            view.setUint8(0, 255);
-            //if(!window.game.clientVersion) window.game.clientVersion = this.clientVersion
-            view.setUint32(1, this.clientVersion, true);
-            this.sendMessage(view);
-            this.connectionOpened = true;
-      
-
-        }
+        this.send(buffers.protocolVersion(game.protocolVersion))
+        this.send(buffers.clientVersion(game.clientVersion))
+        this.isConnected = true
+        connectedBots++
+    }
     onmessage(message) {
-        message = new DataView(message.data);
-        //if (this.buffersKey) message.data = algorithm.rotateBufferBytes(message.data, this.buffersKey)
-
-        if (this.protocolKey) {
-            message = this.shiftMessage(message, this.protocolKey ^ this.clientVersion);
-        }
-        this.handleMessage(message);
+        if (this.decryptionKey) message.data = algorithm.rotateBufferBytes(message.data, this.decryptionKey ^ game.clientVersion)
+        this.handleBuffer(message.data)
     }
     onerror() {
         setTimeout(() => {
-            if (this.socket.readyState === WebSocket.CONNECTING || this.socket.readyState === WebSocket.OPEN) this.socket.close()
+            if (this.ws.readyState === WebSocket.CONNECTING || this.ws.readyState === WebSocket.OPEN) this.ws.close()
         }, 1000)
-      console.log('error')
     }
     onclose() {
-        if (this.connectionOpened) {
-            this.connectionOpened = false
-          
-            this.flushCellsData() 
-          
-            this.reset()
-          console.log('closed')
-        if(!this.closedByUser) {
-          this.connect()
-        }
-
+        if (this.isConnected) {
+            this.isConnected = false
+            connectedBots--
+            //userWS.send(Buffer.from([4, connectedBots, spawnedBots, serverPlayers]))
+            //if(!this.gotCaptcha) setTimeout(this.connect.bind(this), 1000)
         }
     }
-    closeConnection() {
-        if (this.socket) {
-            this.socket.onopen = null;
-            this.socket.onmessage = null;
-            this.socket.onerror = null;
-            this.socket.onclose = null;
-            try {
-                this.socket.close();
-            } catch (error) {}
-            this.socket = null;
-            this.ws = null;
-          
-            this.flushCellsData() 
-          
-            this.reset() 
-
-            this.closedByUser = true
-
-        }
-    }
-    flushCellsData() {
-            this.isSpectateEnabled = false
-            this.isFreeSpectate = false;
-            this.ghostCells = [];
-            //this.indexedCells = {};
-            //this.deletefromObject("indexedCells")
-            //this.cells = [];
-            //this.deleteFromArray("cells")
-            //this.playerCells = [];
-            this.playerCellIDs = [];
-            //this.food = [];
-            //this.viruses = [];
-            //this.deleteFromArray("viruses")
-            for(let cell of Object.values(legendmod.indexedCells)) {
-              if(cell.spectator == this.number) {
-                cell.removeCell();
-              }
-            }
-    }
-    isSocketOpen() {
-        return this.socket !== null && this.socket.readyState === this.socket.OPEN;
-    }
-    createView(value) {
-            return new DataView(new ArrayBuffer(value));
-
-
-    }
-    sendBuffer(data) {
-            this.socket.send(data.buffer);
-    }
-    sendMessage(message) {
-            if (this.connectionOpened /*&& this.integrity*/) {
-                if (!this.clientKey) {
-                    return;
-                }
-                message = this.shiftMessage(message, this.clientKey);
-                this.clientKey = this.shiftKey(this.clientKey);
-            }
-            this.sendBuffer(message);
-
-    }
-    sendAction(action) {
-        if (!this.isSocketOpen()) {
-            return;
-        }
-        const view = this.createView(1);
-        view.setUint8(0, action);
-        this.sendMessage(view);
-
-    }
-    convertX(x) {
-        return ~~((x + legendmod.mapOffsetX)*this.fixX - this.mapOffsetX)
-    }    
-    convertY(y) {
-        return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY)
-    }  
-    sendCursor() {
-            this.positionController = setInterval(() => {
-                this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
-            }, 50);
-            //this.sendSpectate()
-            //this.sendFreeSpectate()
-    }
-    sendSpectate() {
-        this.isSpectateEnabled = true
-        this.sendAction(1);
-    }
-    sendFreeSpectate() {
-        this.isFreeSpectate = !this.isFreeSpectate
-        if(this.staticX==0) {
-         if(this.isFreeSpectate) {
-          this.sendCursor()
-         } else {
-          clearInterval(this.positionController)
-         }
-        }
-        this.sendAction(18);
-    }
-    sendEject() {
-        this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
-        this.sendAction(21);
-    }
-    sendSplit() {
-        this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
-        this.sendAction(17);
-    }
-    sendNick(nick) {
-        var self = this
-        var sendSpawn = function(token) {
-            nick = window.unescape(window.encodeURIComponent(nick));
-            var view = self.createView(1+nick.length+1+token.length+1);
-            var pos = 1
-            for (let length = 0; length < nick.length; length++,pos++) view.setUint8(pos, nick.charCodeAt(length))
-            pos++
-            for (let length = 0; length < token.length; length++,pos++) view.setUint8(pos, token.charCodeAt(length));
-            self.sendMessage(view);
-        }
-        legendmod.integrity && agarCaptcha.requestCaptchaV3("play", function(token) {
-            sendSpawn(token)
-        });
-        !legendmod.integrity && sendSpawn('0')
-    }
-    sendPosition(x, y) {
-        if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && this.integrity)) {
-            return;
-        }
-        const view = this.createView(13);
-        view.setUint8(0, 16);
-      if(this.player==true&&!this.active==true) { 
-        
-        view.setInt32(1, this.targetX, true);
-        view.setInt32(5, this.targetY, true);
-        console.log(this.targetX, this.targetY)
-      } else {
-
-        view.setInt32(1, x, true);
-        view.setInt32(5, y, true);
-        this.targetX = x;
-        this.targetY = y;
-      }
-        view.setUint32(9, this.protocolKey, true);
-        this.sendMessage(view);
-    }
-    generateClientKey(ip, options) {
-        if (!ip.length || !options.byteLength) {
-            return null;
-        }
-        let x = null;
-        const Length = 1540483477;
-        const ipCheck = ip.match(/(ws+:\/\/)([^:]*)(:\d+)/)[2];
-        const newLength = ipCheck.length + options.byteLength;
-        const uint8Arr = new Uint8Array(newLength);
-        for (let length = 0; length < ipCheck.length; length++) {
-            uint8Arr[length] = ipCheck.charCodeAt(length);
-        }
-        uint8Arr.set(options, ipCheck.length);
-        const dataview = new DataView(uint8Arr.buffer);
-        let type = newLength - 1;
-        const value = (type - 4 & -4) + 4 | 0;
-        let newValue = type ^ 255;
-        let offset = 0;
-        while (type > 3) {
-            x = Math.imul(dataview.getInt32(offset, true), Length) | 0;
-            newValue = (Math.imul(x >>> 24 ^ x, Length) | 0) ^ (Math.imul(newValue, Length) | 0);
-            type -= 4;
-            offset += 4;
-        }
-        switch (type) {
-            case 3:
-                newValue = uint8Arr[value + 2] << 16 ^ newValue;
-                newValue = uint8Arr[value + 1] << 8 ^ newValue;
-                break;
-            case 2:
-                newValue = uint8Arr[value + 1] << 8 ^ newValue;
-                break;
-            case 1:
-                break;
-            default:
-                x = newValue;
-                break;
-        }
-        if (x != newValue) {
-            x = Math.imul(uint8Arr[value] ^ newValue, Length) | 0;
-        }
-        newValue = x >>> 13;
-        x = newValue ^ x;
-        x = Math.imul(x, Length) | 0;
-        newValue = x >>> 15;
-        x = newValue ^ x;
-        console.log('[SPECT] Generated client key:', x);
-        return x;
-    }
-    shiftKey(key) {
-        const value = 1540483477;
-        key = Math.imul(key, value) | 0;
-        key = (Math.imul(key >>> 24 ^ key, value) | 0) ^ 114296087;
-        key = Math.imul(key >>> 13 ^ key, value) | 0;
-        return key >>> 15 ^ key;
-    }
-    shiftMessage(view, key, write) {
-        if (!write) {
-            for (var length = 0; length < view.byteLength; length++) {
-                view.setUint8(length, view.getUint8(length) ^ key >>> length % 4 * 8 & 255);
-            }
-        } else {
-            for (var length = 0; length < view.length; length++) {
-                view.writeUInt8(view.readUInt8(length) ^ key >>> length % 4 * 8 & 255, length);
-            }
-        }
-        return view;
-    }
-    decompressMessage(message) {
-        const buffer = window.buffer.Buffer;
-        const messageBuffer = new buffer(message.buffer);
-        const readMessage = new buffer(messageBuffer.readUInt32LE(1));
-        LZ4.decodeBlock(messageBuffer.slice(5), readMessage);
-        return readMessage;
-    }
-    handleMessage(view) {
-        const encode = () => {
-            for (var text = '';;) {
-                const string = view.getUint8(offset++);
-                if (string == 0) {
-                    break;
-                }
-                text += String.fromCharCode(string);
-            }
-            return text;
-        };
-        var offset = 0;
-        let opCode = view.getUint8(offset++);
-        if (opCode == 54) {
-            opCode = 53;
-        }
-        switch (opCode) {
-            case 5:
-
-              console.log('case 5');
-                     
-                break;
-            case 17:
-			
-                this.viewX = view.getFloat32(offset, true);
-				//var x=this.viewX = view.getFloat32(offset, true);
-				//this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
-                offset += 4;
-				this.viewY = view.getFloat32(offset, true);
-				//var y=this.viewX = view.getFloat32(offset, true);
-				//this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
-                offset += 4;
-                this.scale = view.getFloat32(offset, true);
-
-
-
-                break;
-            case 18:
-                if (this.protocolKey) {
-                    this.protocolKey = this.shiftKey(this.protocolKey);
-                }
-                this.flushCellsData();
-              console.log('case 18');
-
-                break;
+	handletokens(){
+				var temp;
+				var i=0;
+				if (global.globalData.length>300) i = global.globalData.length - 300
+				for (;i<global.globalData.length;i++){
+					if (global.globalData[i]) temp = i
+				}
+				if (global.globalData[temp]){
+					//console.log(bots.name)
+					this.send(buffers.spawn(bots.name,global.globalData[temp]))
+					global.globalData[temp] = null
+				}
+				else{
+					//this.send(buffers.spawn2(bots.name))
+					//this.gotCaptcha = true
+					if (userBots.includes(this)){
+						userBots.splice(userBots.indexOf(this), 1)
+						//userBots.push(new Bot()) 						
+					}
+					connectedBots--
+					this.ws.onmessage = null
+					this.reset()
+					
+				}	
+	}
+    handleBuffer(buffer) {
+        const reader = new Reader(buffer)
+        switch (reader.readUint8()) {			
             case 32:
-			  //this.playerCellIDs.push(view.getUint32(offset, true));
-			  this.active = true
-              console.log('case 32');
-
-                break;
-            case 50:
-              console.log('case 50');
-
-                break;
-            case 53:
-
-              //console.log('case 53');
-
-                break;
-            case 54:
-
-              console.log('case 54');
-                break;
-
-            case 69:
-                var length = view.getUint16(offset, true);
-                offset += 2;
-                this.ghostCells = [];
-                for(let i = 0; i < length; i++) {
-                    var x = view.getInt32(offset, true);
-                    offset += 4;
-                    var y = view.getInt32(offset, true);
-                    offset += 4;
-                    var mass = view.getUint32(offset, true);
-                    offset += 4;
-                    //false&&console.log(view.getUint8(offset))
-                    offset += 1
-
-                    var size = ~~Math.sqrt(100 * mass);
-                    this.ghostCells.push({
-                        'x': x,
-                        'y': y,
-                        'size': size,
-                        'mass': mass,
-                        'inView': this.isInView(x, y, size)
-                    });
-                }
-
-                if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>1000 && Math.abs(application.getghostY()) >1000) {
-                  this.fixX = /*Math.round*/(application.getghostX()/(this.ghostCells[0].x+this.mapOffsetX))<0?-1:1;
-                  this.fixY = /*Math.round*/(application.getghostY()/(this.ghostCells[0].y+this.mapOffsetY))<0?-1:1;
-                  this.ghostFixed = true
-                }
-                break;
-            case 85:
-
-              console.log('case 85');
-
-                
-                break;
-            case 102:
-
-              console.log('case 102');
-
-                break;
-            case 103:
-
-              console.log('case 103');
-
-                break;
-            case 104:
-              console.log('case 104');
-
-                break;
-            case 114:
-                console.error('[Agario] Spectate mode is full')
-              console.log('case 114');
-
-                break;
-            case 160:
-
-              console.log('case 160');
-
-                    break;
-            case 161:
-              //console.log('case 161');
-
-                break;
-            case 176:
-              console.log('case 176');
-
-                break;
-            case 177:
-              console.log('case 177');
-
-                break;
-            case 178:
-
-              console.log('case 178');
-
-                break;
-            case 179:
-
-              console.log('case 179');
-
-                break;
-            case 180:
-
-              console.log('case 180');
-
-                break;
-            case 226:
-                const ping = view.getUint16(1, true);
-                view = this.createView(3);
-                view.setUint8(0, 227);
-                view.setUint16(1, ping);
-                this.sendMessage(view);
-
-                break;
-            case 241:
-                this.protocolKey = view.getUint32(offset, true);
-                console.log('[SPECT] Received protocol key:', this.protocolKey);
-                const agarioReader = new Uint8Array(view.buffer, offset += 4);
-                this.clientKey = this.generateClientKey(this.ws, agarioReader);
-
-                break;
-            case 242:
-                console.log('242')
-                this.serverTime = view.getUint32(offset, true) * 1000;
-                this.serverTimeDiff = Date.now() - this.serverTime;
-                
-                if(this.player==true){
-                  this.active = true
-                  this.sendCursor()
-                  this.sendNick($("#nick").val())
-                } else {
-                  this.sendSpectate();
-                }
-                if(this.staticX!=null&&this.staticY!=null) {
-                    setInterval(() => {
-                        this.sendPosition(this.convertX(this.staticX), this.convertY(this.staticY));
-                    }, 200);
-                   this.sendFreeSpectate()
-                }
-                break;
-            case 255:
-                this.handleSubmessage(view);
-
-                break;
-            case 16:
-
-              console.log('[SPECT] case 16');
-
-                break;
-            case 64:
-
-              console.log('[SPECT] case 64');
-
-                break;
-            default:
-                console.log('[SPECT] Unknown opcode:', view.getUint8(0));
-                break;
-        }
-    }
-    getX(x) {
-      if(this.ghostFixed && this.mapOffsetFixed) {
-        return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
-      }
-    }
-    getY(y) {
-      if(this.ghostFixed && this.mapOffsetFixed) {
-        return ~~((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY)
-      }
-    }
-    handleSubmessage(message) {
-        message = this.decompressMessage(message);
-        let offset = 0;
-        switch (message.readUInt8(offset++)) {
-            case 16:
-                this.updateCells(message, offset);
-				//jimboy3100
-				if (this.player && this.timer && performance.now()-this.timer>3000){
-						console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
-						
-						spects[this.number-1].closeConnection()
-						spects = spects.slice(this.number);
-						
-				}				
-                break;			
-            case 64:
-				if (!this.openFirst){ //jimboy3100
-				this.openFirst = true
-                this.viewMinX = (message.readDoubleLE(offset));
-                offset += 8;
-                this.viewMinY = (message.readDoubleLE(offset));
-                offset += 8;
-                this.viewMaxX = (message.readDoubleLE(offset));
-                offset += 8;
-                this.viewMaxY = (message.readDoubleLE(offset));
-                this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
-				} //
-				this.timer=performance.now();			
-				break;
-            default:
-                console.log('[SPECT] Unknown sub opcode:', message.readUInt8(0));
-                break;
-        }
-    }
-    isInView(x, y) {
-        let mtp = 4.95,
-            w = 1024/2*mtp,
-            h = 600/2*mtp;
-        if (x  < this.viewX-w || y  < this.viewY-h || x > this.viewX + w || y  > this.viewY + h) {
-            return true;
-        }
-        return false;
-    }
-    setMapOffset(left, top, right, bottom) {
-        if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
-            this.mapOffsetX = (this.mapOffset) - right;
-            this.mapOffsetY = (this.mapOffset) - bottom;
-            this.mapMinX = ~~((-this.mapOffset) - this.mapOffsetX);
-            this.mapMinY = ~~((-this.mapOffset) - this.mapOffsetY);
-            this.mapMaxX = ~~((this.mapOffset) - this.mapOffsetX);
-            this.mapMaxY = ~~((this.mapOffset) - this.mapOffsetY);
-            this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
-            this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
-            if (!this.mapOffsetFixed) {
-                this.viewX = (right + left) / 2;
-                this.viewY = (bottom + top) / 2;
-            }
-            this.mapOffsetFixed = true;
-            console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
-        }
-    }
-        /*translateX(x) {
-            return this.mapMaxX - (x - this.mapMinX);
-        }
-        translateY(x) {
-            return this.mapMaxY - (x - this.mapMinY);
-        }
-        untranslateX(x) {
-            return 0 - (x - this.mapMaxX + this.mapMinX);
-        }
-        untranslateY(x) {
-            return 0 - (x - this.mapMaxY + this.mapMinY);
-        }	*/
-    updateCells(view, offset) {
-        const encode = () => {
-            for (var text = '';;) {
-                const string = view.readUInt8(offset++);
-                if (string == 0) {
-                    break;
-                }
-                text += String.fromCharCode(string);
-            }
-            return text;
-        };
-        this.time = Date.now();
-        this.removePlayerCell = false;
-        let eatEventsLength = view.readUInt16LE(offset);
-        offset += 2;
-        for (var length = 0; length < eatEventsLength; length++) {
-            const eaterID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset))];
-            const victimID = legendmod.indexedCells[this.newID(view.readUInt32LE(offset + 4))];
-            //console.log('victim isFood',victimID.isFood)
-            offset += 8;
-            if (eaterID && victimID) {
-                victimID.targetX = eaterID.x;
-                victimID.targetY = eaterID.y;
-                victimID.targetSize = victimID.size;
-                victimID.time = this.time;
-                victimID.removeCell();
-            }
-        }
-		
-		//snez
-        var mapX = legendmod.mapMaxX - legendmod.mapMinX;
-        var mapY = legendmod.mapMaxY - legendmod.mapMinY;
-        var maxX = Math.round(mapX / legendmod.zoomValue / 10);
-        var maxY = Math.round(mapY / legendmod.zoomValue / 10); //or 1
-		
-        for (length = 0;;) {
-            var id = view.readUInt32LE(offset);
-            offset += 4;
-            if (id == 0) {
-                break;
-            }
-            let x = view.readInt32LE(offset);
-            offset += 4;
-            let y = view.readInt32LE(offset);
-            offset += 4;
-			//snez
-			const invisible = this.staticX!=null?this.isInView(x, y):false;
-            x = this.getX(x);
-            y = this.getY(y);
-            var a = x - legendmod.playerX;
-            var b = y - legendmod.playerY;
-            var distanceX = Math.round(Math.sqrt(a * a));
-            var distanceY = Math.round(Math.sqrt(b * b));
-			var remove = false;
-            if (distanceX > maxX || distanceY > maxY){
-				remove = true;
-			}
-			//
-            const size = view.readUInt16LE(offset);
-            offset += 2;
-            const flags = view.readUInt8(offset++);
-            let extendedFlags = 0;
-            if (flags & 128) {
-                extendedFlags = view.readUInt8(offset++);
-            }
-            let color = null,
-                skin = null,
-                name = '',
-                accountID = null;
-            if (flags & 2) {
-                const r = view.readUInt8(offset++);
-                const g = view.readUInt8(offset++);
-                const b = view.readUInt8(offset++);
-			   //snez	
-			    color = "#bbbbbb";
-				//color = defaultSettings.miniMapGhostCellsColor;			  
-              /*if(defaultmapsettings.oneColoredSpectator) {
-                color = legendmod.rgb2Hex(255, 255, 255);
-              } else {
-                color = legendmod.rgb2Hex(~~(r * 0.9), ~~(g * 0.9), ~~(b * 0.9));
-              }*/
-            }
-            if (flags & 4) {
-                skin = encode();
-            }
-            if (flags & 8) {
-                //name = window.decodeURIComponent(window.escape(encode()));				
-                    name = window.decodeURIComponent(escape(encode()));
-					//jimboy3100
-                    if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
-                        legendmod.vanillaskins(name, skin);
-                    }				
-            }
-            if (flags & 10) {
-            }
-            const isVirus = flags & 1;
-            const isFood = extendedFlags & 1;
-            const isFriend = extendedFlags & 2;
-            //const invisible = this.staticX!=null?this.isInView(x, y):false;
-                  id = this.newID(id);
-                  //snez
-				  //x = this.getX(x),
-                  //y = this.getY(y);
-            var cell = null;
-            if (legendmod.indexedCells.hasOwnProperty(id)) {
-                cell = legendmod.indexedCells[id];
-                cell.invisible = invisible;
-
-                if (color) {
-                    cell.color = color;
-                }
-            } 		
-			else {
-                cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
-                cell.time = this.time;
-                cell.spectator = this.number;
-				//if (!isFood) {
-				if (!isFood && !remove) {
-                    if (isVirus && defaultmapsettings.virusesRange) {
-                        legendmod.viruses.push(cell);
+                this.cellsIDs.push(reader.readUint32())
+                if (!this.isAlive) {
+                    this.isAlive = true
+                    spawnedBots++
+                    //userWS.send(Buffer.from([6, spawnedBots]))
+                    if (!user.startedBots) {
+                        setInterval(() => {
+                            for (const bot of userBots) {
+                                if (bot.isAlive) bot.move()
+                            }
+                        }, 40)
+                        userWS.send(Buffer.from([0]))
+                        user.startedBots = true
+                        logger.good('[SERVER]: Bots started!')
                     }
-                    legendmod.cells.push(cell);
-
-                } else {
-                    //legendmod.food.push(cell);
+                    if (!this.followMouseTimeout) {
+                        this.followMouseTimeout = setTimeout(() => {
+                            if (this.isAlive) this.followMouse = true
+                        }, 18000)
+                    }
                 }
-                legendmod.indexedCells[id] = cell;
-            }
-            
-            if (name) {
-                cell.targetNick = name;
-            }
-            cell.targetX = x;
-            cell.targetY = y;
-            cell.targetSize = size;
-            cell.isFood = isFood;
-            cell.isVirus = isVirus;
-            //cell.invisible = invisible;
-            if (skin) {
-                cell.skin = skin;
-            }
-            if (extendedFlags & 4) {
-                accountID = view.readUInt32LE(offset);
-                offset += 4;
-                cell.accID = accountID;
-                let friend = legendmod.fbOnline.find(element => {return element.id == accountID});
-                friend != undefined?cell.fbID = friend.fbId:void(0);
-            }
-            if (extendedFlags & 2) {
-                cell.isFriend = isFriend;
-                //console.log('FB friend cell in view', isFriend)
-            }
-        }
-       // var rmaxedX=rmaxedY=rminedX=rminedY=0
-	   
-       eatEventsLength = view.readUInt16LE(offset);
-        offset += 2;
-        for (length = 0; length < eatEventsLength; length++) {
-            var id = view.readUInt32LE(offset);
-            offset += 4;
-            cell = legendmod.indexedCells[this.newID(id)];
-            if (cell) {
-                cell.removeCell();
-            }
-        }
-		
+                break
+            case 85:
+                /*if (!user.startedBots) {
+                    userWS.send(Buffer.from([3]))
+                    setTimeout(process.exit, 1000)
+                }*/
+				if (userBots.includes(this)){
+					userBots.splice(userBots.indexOf(this), 1)
+                    userBots.push(new Bot())     
+				}				
+                this.gotCaptcha = true
+                this.ws.onmessage = null
+                this.reset()
+                break
+			case 102:
+				//console.log('case 102')
+                //this.handletokens()
+                //break			
+            case 241:
+                this.decryptionKey = reader.readInt32()
+				this.encryptionKey = murmur2(`${game.url.match(/(live-arena-([\w\d]+(\.tech)?)\.agar\.io)/)[1]}${reader.readString()}`, 255) 
+                //this.encryptionKey = murmur2(`${game.url.match(/(live-arena-\w+\.agar\.io)/)[1]}${reader.readString()}`, 255) //original
+				//this.encryptionKey = murmur2(`${game.url.match(/(live-arena-\w+\.tech+\.agar\.io)/)[1]}${reader.readString()}`, 255)		
+                this.isConnected = true
+                break
+            case 242:
+				//console.log('case 242')
+				this.handletokens()
+                //this.send(buffers.spawn(bots.name))
+                break
+            case 255:
+                this.handleCompressedBuffer(algorithm.uncompressBuffer(reader.buffer.slice(5), Buffer.allocUnsafe(reader.readUint32())))
+                break
+        }		
     }
-    newID(id) {
-      return id + this.number + 10000000000
+    handleCompressedBuffer(buffer) {
+        const reader = new Reader(buffer)
+        switch (reader.readUint8()) {
+            case 16:
+                this.updateViewportEntities(reader)
+                break
+            case 64:
+                this.updateOffset(reader)
+                break
+        }
+    }
+    updateViewportEntities(reader) {
+        const eatRecordLength = reader.readUint16()
+        for (let i = 0; i < eatRecordLength; i++) reader.byteOffset += 8
+        while (true) {
+            const id = reader.readUint32()
+            if (id === 0) break
+            const entity = new Entity()
+            entity.id = id
+            entity.x = reader.readInt32()
+            entity.y = reader.readInt32()
+            entity.size = reader.readUint16()
+            const flags = reader.readUint8()
+            const extendedFlags = flags & 128 ? reader.readUint8() : 0
+            if (flags & 1) entity.isVirus = true
+            if (flags & 2) reader.byteOffset += 3
+            if (flags & 4) reader.readString()
+            if (flags & 8) entity.name = decodeURIComponent(escape(reader.readString()))
+            if (extendedFlags & 1) entity.isPellet = true
+            if (extendedFlags & 4) reader.byteOffset += 4
+            if (this.viewportEntities[entity.id] && this.viewportEntities[entity.id].name && entity.name) entity.name = this.viewportEntities[entity.id].name
+            this.viewportEntities[entity.id] = entity
+        }
+        const removeRecordLength = reader.readUint16()
+        for (let i = 0; i < removeRecordLength; i++) {
+            const removedEntityID = reader.readUint32()
+            if (this.cellsIDs.includes(removedEntityID)) this.cellsIDs.splice(this.cellsIDs.indexOf(removedEntityID), 1)
+            delete this.viewportEntities[removedEntityID]
+        }
+        if (this.isAlive && this.cellsIDs.length === 0) {
+            this.isAlive = false
+            spawnedBots--
+            //	userWS.send(Buffer.from([6, spawnedBots]))
+            if (this.followMouseTimeout) {
+                clearTimeout(this.followMouseTimeout)
+                this.followMouseTimeout = null
+            }
+            this.followMouse = false
+				this.handletokens()		
+            //this.send(buffers.spawn(bots.name))
+        }
+    }
+    updateOffset(reader) {
+        const left = reader.readDouble()
+        const top = reader.readDouble()
+        const right = reader.readDouble()
+        const bottom = reader.readDouble()
+        if (~~(right - left) === 14142 && ~~(bottom - top) === 14142) {
+            this.offsetX = (left + right) / 2
+            this.offsetY = (top + bottom) / 2
+        }
+    }
+    getClosestEntity(type, bot) {
+        let closestDistance = Infinity
+        let closestEntity = null
+        for (const entity of Object.values(this.viewportEntities)) {
+            let isConditionMet = false
+            switch (type) {
+				case 'virus':
+					entity.isVirus && entity.size > 115 && this.cellsIDs.length != 16
+                case 'biggerPlayer':
+					isConditionMet = (!entity.isVirus && !entity.isPellet && entity.size > bot.size * 1.15 && entity.name !== bots.name)
+                    break
+                case 'pellet':
+                    isConditionMet = !entity.isVirus && entity.isPellet
+                    break					
+				case 'upperhand':
+					isConditionMet = !entity.isVirus && !entity.isPellet && entity.size < bot.smallestCellsize * 1.4 && entity.size > bot.size / 10 && bot.size > 120 && this.cellsIDs.length == 1
+					break
+            }
+            if (isConditionMet) {
+                var distance = calculateDistance(bot.x, bot.y, entity.x, entity.y)
+                //add sizes CLEVER BOTS
+				distance = distance - bot.size - entity.size //assume that distance is getting smaller with bigger cells
+				
+				if (distance < closestDistance) {	
+                    closestDistance = distance
+                    closestEntity = entity
+                }
+            }
+        }
+        return {
+            distance: closestDistance,
+            entity: closestEntity
+        }
+    }
+	sendPosition(x, y){
+		this.send(buffers.move(x, y, this.decryptionKey));
+	}
+    move() {
+        const bot = {
+            x: 0,
+            y: 0,
+            size: 0,
+			biggestCellsize: 0,
+			smallestCellsize: 12000
+			
+        }
+        for (const id of this.cellsIDs) {
+            const cell = this.viewportEntities[id]
+            if (cell) {
+                bot.x += cell.x / this.cellsIDs.length
+                bot.y += cell.y / this.cellsIDs.length
+                bot.size += cell.size
+            
+			if (cell.size > bot.biggestCellsize) bot.biggestCellsize = cell.size
+			if (cell.size < bot.smallestCellsize) bot.smallestCellsize = cell.size
+			}	
+        }
+		const closestVirus = this.getClosestEntity('virus', bot)
+        const closestBiggerPlayer = this.getClosestEntity('biggerPlayer', bot)
+        const closestPellet = this.getClosestEntity('pellet', bot)
+		const closestVictimPlayer = this.getClosestEntity('upperhand', bot)
+        if (user.isAlive && this.followMouse && !stoppingBots && !bots.ai) {
+            this.sendPosition(user.mouseX + this.offsetX, user.mouseY + this.offsetY)
+        } else {
+            //if (closestBiggerPlayer.entity && closestBiggerPlayer.distance < 420) {
+			//AI Handling
+			if (closestVirus.entity && closestVirus.distance < 125){
+                const angle = (Math.atan2(closestVirus.entity.y - bot.y, closestVirus.entity.x - bot.x) + Math.PI) % (2 * Math.PI)
+                this.sendPosition(14142 * Math.cos(angle), 14142 * Math.sin(angle))				
+			}
+			else if (closestBiggerPlayer.entity && closestBiggerPlayer.distance < 760) {		
+                const angle = (Math.atan2(closestBiggerPlayer.entity.y - bot.y, closestBiggerPlayer.entity.x - bot.x) + Math.PI) % (2 * Math.PI)
+                this.sendPosition(14142 * Math.cos(angle), 14142 * Math.sin(angle))
+            } 
+			else if (closestVictimPlayer.entity && closestVictimPlayer.distance < 320){
+				if (!this.isSplited){
+					this.isSplited = true
+					this.sendPosition(closestVictimPlayer.entity.x, closestVictimPlayer.entity.y)
+					this.send(Buffer.from([17]))
+                }
+				else if (this.isSplited){ this.isSplited = false}												
+			}// End of AI Handling
+			else if (closestPellet.entity) this.sendPosition(closestPellet.entity.x, closestPellet.entity.y)
+            else if (!closestBiggerPlayer.entity && !closestPellet.entity) {
+                const random = Math.random()
+                const randomX = ~~(1337 * Math.random())
+                const randomY = ~~(1337 * Math.random())
+                if (random > 0.5) this.sendPosition(bot.x + randomX, bot.y - randomY)
+                else if (random < 0.5) this.sendPosition(bot.x - randomX, bot.y + randomY)
+            }
+        }
     }
 }
 
-    window.sendAction = action => {
-        legendmod.sendAction(action);
-    };
+new WebSocket.Server({
+    port: config.server.port
+}).on('connection', ws => {
+    setInterval(() => {
+        userWS.send(Buffer.from([4, connectedBots, spawnedBots]))
+        userWS.send(Buffer.from([5, serverPlayers]))
+    }, 1000);
+    userWS = ws
+    logger.good('[SERVER]: User connected!')
+    ws.on('message', buffer => {
+		if (JSON.parse(buffer.includes("message"))){
+			var data = JSON.parse(buffer).msg;
+			//console.log(JSON.parse(data))
+			//console.log(Object.values(JSON.parse(data)))
+			var temp = Object.values(JSON.parse(data))	
+			global.globalDataCounter++;
+			global.globalData[global.globalDataCounter]=temp.join("")
+			//console.log("Captcha token " + global.globalDataCounter + " recieved")
+			
+                        if (dataBot.lastPlayersAmount < 195 && connectedBots < bots.amount && user.startedBots){
+							userBots.push(new Bot())
+						}
+		}
+		else{		
+        const reader = new Reader(buffer)
+        switch (reader.readUint8()) {
+            case 0:
+                if (!user.startedBots) {
+                    game.url = reader.readString()
+                    game.protocolVersion = reader.readUint32()
+                    game.clientVersion = reader.readUint32()
+					logger.good('[SERVER]: Server:', game.url, ' protocol version:', game.protocolVersion, ' client version: ', game.clientVersion)
+                    user.isAlive = !!reader.readUint8()
+                    //bots.name = decodeURIComponent(escape(reader.readString()))
+					bots.name = reader.readString()
+                    bots.amount = reader.readUint8()
+                    dataBot.connect()
+                    let index = 0
+                    startBotsInterval = setInterval(() => {
+                        if (dataBot.lastPlayersAmount < 195 && connectedBots < bots.amount && !stoppingBots) userBots.push(new Bot())
+                    }, 150)
+                    logger.good('[SERVER]: Starting bots...')
+                }
+                break
+            case 1:
+                if (user.startedBots && !stoppingBots) {
+                    stoppingBots = true
+                    ws.send(Buffer.from([1]))
+                    let seconds = 0
+                    setInterval(() => {
+                        if (seconds === 1) {
+                            ws.send(Buffer.from([2]))
+                            setTimeout(process.exit, 1000)
+                        } else {
+                            logger.warn(`[SERVER]: Stopping bots in ${1 - seconds} seconds`)
+                            seconds++
+                        }
+                    }, 1000)
+                }
+                break
+            case 2:
+                for (const bot of userBots) {
+                    if (bot.isAlive && bot.followMouse && !stoppingBots && !bots.ai) bot.send(Buffer.from([17])) //sendSplit
+                }
+                break
+            case 3:
+                for (const bot of userBots) {
+                    if (bot.isAlive && bot.followMouse && !stoppingBots && !bots.ai) bot.send(Buffer.from([21])) //sendEject
+                }
+                break
+            case 4:
+                bots.ai = !!reader.readUint8()
+                break
+            case 5:
+                user.isAlive = !!reader.readUint8()
+                break
+            case 6:
+                user.mouseX = reader.readInt32()
+                user.mouseY = reader.readInt32()
+                break
+        }
+		}
+    })
+    ws.on('close', () => {
+        if (user.startedBots && !stoppingBots) {
+            stoppingBots = true
+            let seconds = 0
+            setInterval(() => {
+                if (seconds === 1) process.exit()
+                else {
+                    logger.warn(`[SERVER]: Stopping bots in ${1 - seconds} seconds`)
+                    seconds++
+                }
+            }, 1000)
+        }
+        logger.error('[SERVER]: User disconnected!')
+    })
+})
