@@ -1,4 +1,4 @@
-//SPECS v3.6l WORKS UNTIL HERE
+//SPECS v3.6m WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -933,7 +933,7 @@ class Spect {
 
 				//FOR COLOR
 				var color2
-				if (!isVirus && !isFood){
+				if (!isVirus && !isFood && name!=""){
 					if (legendmod.cellcolors[name]){ 
 						color = legendmod.cellcolors[name]
 					}
