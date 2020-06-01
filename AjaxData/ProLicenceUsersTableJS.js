@@ -120,6 +120,10 @@ ProLicenceUsersTable = {
         "8ba00967-ef20-4314-b451-d802e4817eb7": {
             "reason": "Give@20200612",
             "Chosenbyddevilowo": "綾辻芙月渚"
+        },   
+        "204c1426-c4c9-46af-b29d-5fa9d4d8704a": {
+            "reason": "Give@20200612",
+            "Chosenbyddevilowo": "LCilyes"
         },				
         "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
             "reason": "Donate",
