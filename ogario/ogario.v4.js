@@ -5906,7 +5906,7 @@ function thelegendmodproject() {
                 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Ogario socket open:', application.publicIP);
                 var buf = app.createView(3);
                 buf.setUint8(0, 0);
-                buf.setUint16(1, 401, true);
+                buf.setUint16(1, 404, true);
                 app.sendBuffer(buf);
                 app.sendPartyData();
             }
