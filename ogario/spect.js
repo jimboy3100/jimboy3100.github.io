@@ -1,4 +1,4 @@
-//SPECS v3.6c WORKS UNTIL HERE
+//SPECS v3.6d WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -780,7 +780,7 @@ class Spect {
 			y - distance > legendmod.viewYTrue + y2s) //>legendmod.camMaxY
     }		
     isInViewCustom3 (x , y, size) {
-			var randomNum = 0 // randomNum=40
+			var randomNum = -50 // randomNum=40
 			var distance = size + randomNum
             return !(x + distance < legendmod.camMinMultiX ||
 			y + distance < legendmod.camMinMultiY ||
@@ -936,7 +936,8 @@ class Spect {
 			}			
 			//if (this.player && isVirus && !isFood && !invisible){
 			if (this.player && (isVirus || isFood) && !remove){
-				remove = this.isInViewCustom(x , y, size) //CAUSES BLINKING
+				//remove = this.isInViewCustom(x , y, size) 
+				remove = (this.isInViewCustom(x , y, size) && this.isInViewCustom3(x , y, size))
 				//if (!invisible) invisible = (this.isInViewCustom(x , y, size) && this.isInViewCustom3(x , y, size))				
 			}			
 			if (isFood && !defaultmapsettings.rainbowFood){
