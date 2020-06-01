@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.791
+// v1.805
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -8281,6 +8281,7 @@ function thelegendmodproject() {
         removedCells: [],
         food: [],
         viruses: [],
+		cellcolors: [],
         playerCells: [],
         playerCellIDs: [],
 		playerCellsMulti: [],
@@ -10292,6 +10293,26 @@ function thelegendmodproject() {
                 //id = this.newID(id),
                 //x = this.getX(x),
                 //y = this.getY(y);	
+				//FOR COLOR
+				if (!isVirus && !isFood && name!=""){
+					if (LM.cellcolors[name]){ 
+						color = LM.cellcolors[name]
+					}
+					else{	
+                        if (this.playerCellIDs.indexOf(id) != -1) {
+							color = profiles[application.selectedProfile].color
+                        }									
+						else{
+							application.teamPlayers.forEach((found) => {
+								if (found.nick == name){ 
+									color = found.color		
+								} 
+							})		
+						}						
+					}
+					if (!LM.cellcolors[name]) LM.cellcolors[name]= color
+				}
+				//				
 				var invisible;
 				//if (LM.playerCellsMulti.length && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1]){
 					
@@ -10315,7 +10336,9 @@ function thelegendmodproject() {
                         this.cells.push(cellUpdateCells);
                         if (this.playerCellIDs.indexOf(id) != -1 && this.playerCells.indexOf(cellUpdateCells) == -1) {
                             cellUpdateCells.isPlayerCell = true;
-                            this.playerColor = color;
+                            //this.playerColor = color;
+							this.playerColor = profiles[application.selectedProfile].color;
+							cellUpdateCells.color = profiles[application.selectedProfile].color;							
                             this.playerCells.push(cellUpdateCells);
 							//this.playerCellsMulti.push(cellUpdateCells);
                         }
