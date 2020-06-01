@@ -104,6 +104,10 @@ ProLicenceUsersTable = {
         "b4dc260f-f14d-479b-a373-63beb131a122": {
             "reason": "Give@20200612",
             "notes": "LamPhạm"
+        },   
+        "5dc487ab-f8bb-4834-a311-fff3fc924948": {
+            "reason": "Give@20200612",
+            "Chosenbyddevil": "抹茶"
         },				
         "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
             "reason": "Donate",
