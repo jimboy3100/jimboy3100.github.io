@@ -1,4 +1,4 @@
-//SPECS v3.6j WORKS UNTIL HERE
+//SPECS v3.6k WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -931,6 +931,28 @@ class Spect {
 
                   id = this.newID(id);
 
+				//FOR COLOR
+				var color2
+				if (!isVirus && !isFood){
+					if (LM.cellcolors[name]){ 
+						color = LM.cellcolors[name]
+					}
+					else{	
+                        if (this.playerCellIDs.indexOf(id) != -1) {
+							color2 = profiles[application.selectedProfile].color
+                        }									
+						else{
+							application.teamPlayers.forEach((found) => {
+								if (found.nick == name){ 
+									color2 = found.color		
+								} 
+							})		
+						}						
+					}
+					if (!LM.cellcolors[name] && color2) LM.cellcolors[name]= color2
+				}
+				//
+				
 			if (!this.player){				
 				if (!invisible) invisible = this.isInViewCustom(x , y, size)				
 			}			
@@ -964,7 +986,10 @@ class Spect {
                     //legendmod.cells.push(cell);
                         if (this.playerCellIDs.indexOf(id) != -1 && legendmod.playerCellsMulti.indexOf(cell) == -1) {
                             cell.isPlayerCell = true;
-                            this.playerColor = color;
+                            //this.playerColor = color;
+							this.playerColor = profiles[application.selectedOldProfile].color;
+							cell.color = profiles[application.selectedOldProfile].color;		
+							
                             legendmod.playerCellsMulti.push(cell);
 							if (legendmod.playerCellsMulti.length==1){
 								console.log('[SPECT] Player cell is active')
