@@ -1,4 +1,4 @@
-//SPECS v3.6k WORKS UNTIL HERE
+//SPECS v3.6l WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -934,8 +934,8 @@ class Spect {
 				//FOR COLOR
 				var color2
 				if (!isVirus && !isFood){
-					if (LM.cellcolors[name]){ 
-						color = LM.cellcolors[name]
+					if (legendmod.cellcolors[name]){ 
+						color = legendmod.cellcolors[name]
 					}
 					else{	
                         if (this.playerCellIDs.indexOf(id) != -1) {
@@ -949,7 +949,7 @@ class Spect {
 							})		
 						}						
 					}
-					if (!LM.cellcolors[name] && color2) LM.cellcolors[name]= color2
+					if (!legendmod.cellcolors[name] && color2) legendmod.cellcolors[name]= color2
 				}
 				//
 				
