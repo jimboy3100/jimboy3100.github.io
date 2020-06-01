@@ -1,4 +1,4 @@
-//SPECS v3.6i WORKS UNTIL HERE
+//SPECS v3.6j WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -936,9 +936,9 @@ class Spect {
 			}			
 			//if (this.player && isVirus && !isFood && !invisible){
 			if (this.player && (isVirus || isFood) && !remove){
-				//if (isFood) remove = this.isInViewCustom(x , y, size)
+				remove = this.isInViewCustom(x , y, size)
 				//if (isVirus) 
-					remove = (this.isInViewCustom(x , y, size) && this.isInViewCustom3(x , y, size))
+					//remove = (this.isInViewCustom(x , y, size) && this.isInViewCustom3(x , y, size))
 				//if (!invisible) invisible = (this.isInViewCustom(x , y, size) && this.isInViewCustom3(x , y, size))				
 			}			
 			if (isFood && !defaultmapsettings.rainbowFood){
