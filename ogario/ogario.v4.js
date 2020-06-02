@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.807
+// v1.808
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -68,34 +68,36 @@ function deleteGamemode() {
         } else {}
         if ($('#gamemode').val() == 6) {
             core.connect('wss://delta-server.glitch.me');
+			legendmod.gameMode = ":ffa";
             //application.connect('wss://private1:443')
         } else if ($('#gamemode').val() == 7) {
             core.connect('wss://delta-selffeed.glitch.me');
+			legendmod.gameMode = ":ffa";
             //application.connect('wss://private1:443')
         } else if ($('#gamemode').val() == 8) {
-            logoutPSArenas();
-            legendmod.gameMode = ":ffa";
+            logoutPSArenas();   
             core.connect(agarTesterArena + ':1500/'); //ffa
+			legendmod.gameMode = ":ffa";
             //application.connect('wss://private1:443')
         } else if ($('#gamemode').val() == 9) {
-            logoutPSArenas();
-            legendmod.gameMode = ":battleroyale";
+            logoutPSArenas();         
             core.connect(agarTesterArena + ':1504/'); //battle royal			
+			legendmod.gameMode = ":battleroyale";
             //application.connect('wss://private1:443')
         } else if ($('#gamemode').val() == 10) {
-            logoutPSArenas();
-            legendmod.gameMode = ":teams";
+            logoutPSArenas();       
             core.connect(agarTesterArena + ':1501/'); //teams
+			legendmod.gameMode = ":teams";
             //application.connect('wss://private1:443')
         } else if ($('#gamemode').val() == 11) {
-            logoutPSArenas();
-            legendmod.gameMode = ":experimental";
+            logoutPSArenas();      
             core.connect(agarTesterArena + ':1503/'); //experimental
+			legendmod.gameMode = ":experimental";
             //application.connect('wss://private1:443')
         } else if ($('#gamemode').val() == 12) {
-            logoutPSArenas();
-            legendmod.gameMode = ":party";
+            logoutPSArenas();      
             core.connect(agarTesterArena + ':1502/'); //party
+			legendmod.gameMode = ":party";
             //application.connect('wss://private1:443')
         }
     });
@@ -10297,7 +10299,7 @@ function thelegendmodproject() {
                 //x = this.getX(x),
                 //y = this.getY(y);	
 				//FOR COLOR
-				if (!isVirus && !isFood && name!=""){
+				if (!isVirus && !isFood && name!="" && this.gameMode != ":teams"){
 					if (LM.cellcolors[name]){ 
 						color = LM.cellcolors[name]
 					}
@@ -10339,9 +10341,13 @@ function thelegendmodproject() {
                         this.cells.push(cellUpdateCells);
                         if (this.playerCellIDs.indexOf(id) != -1 && this.playerCells.indexOf(cellUpdateCells) == -1) {
                             cellUpdateCells.isPlayerCell = true;
-                            //this.playerColor = color;
-							this.playerColor = profiles[application.selectedProfile].color;
-							cellUpdateCells.color = profiles[application.selectedProfile].color;							
+                            if (this.gameMode == ":teams"){
+								this.playerColor = color;
+							}
+							else{
+								this.playerColor = profiles[application.selectedProfile].color;
+								cellUpdateCells.color = profiles[application.selectedProfile].color;		
+							}							
                             this.playerCells.push(cellUpdateCells);
 							//this.playerCellsMulti.push(cellUpdateCells);
                         }
