@@ -1,12 +1,12 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.809
+// v1.810
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
 var agarTesterArena = "wss://livec-arena-12luq8l.tech.agar.io"
-
+appendLMhiFbPs()
 function changeregion() {
     if ($('#region').val() == "Private") {
         deleteGamemode();
@@ -12796,7 +12796,33 @@ function embPassword(){
             }
 }
 
+function appendLMhiFbPs() {
+    $("body").on('DOMNodeInserted', ".toast.toast-warning", function() {
+        MSGCOMMANDS2 = $(".toast.toast-warning").html();
+        if (MSGCOMMANDS2.includes("You are using an old version of OGARio by")) {
+            toastr.error(Premadeletter0);
+        } else if (MSGCOMMANDS2.includes("Welcome! You are connected to the OGARio")) {
+            $(".toast.toast-warning").remove();         
+        }
+    });
+    $("body").on('DOMSubtreeModified', "#chat-box", function() {
+        var MSGCOMMANDS3 = $(".command-text").text();
+        if (MSGCOMMANDS3.includes("You are using an old version of OGARio by")) {
+            $(".command-text").text(Premadeletter0);
+        } else if (MSGCOMMANDS3.includes("Welcome! You are connected to the OGARio by szymy server. Have a nice mass!")) {        
+            $(".command-text").text(Premadeletter0);
+        }
+    });
 
+    $("body").on('DOMNodeInserted', ".toast.toast-success", function() {
+        MSGCOMMANDS = $(".toast.toast-success").text();
+        MSGNICK = $(".message-nick").last().text().replace(": ", "");      
+    });
+    $("body").on('DOMSubtreeModified', "#chat-box", function() {
+        MSGCOMMANDS = $(".message-text").text();
+        MSGNICK = $(".message-nick").last().text().replace(": ", "");       
+    });
+}
 /*
 var snezSocketdata;
 var snezSocket = new WebSocket("wss://connect.websocket.in/3Q-SoniaSLG_453dsV?room_id=123");
