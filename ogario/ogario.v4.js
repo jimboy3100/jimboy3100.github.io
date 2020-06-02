@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.808
+// v1.809
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -87,7 +87,9 @@ function deleteGamemode() {
         } else if ($('#gamemode').val() == 10) {
             logoutPSArenas();       
             core.connect(agarTesterArena + ':1501/'); //teams
+			setTimeout(function() {
 			legendmod.gameMode = ":teams";
+			}, 500); 
             //application.connect('wss://private1:443')
         } else if ($('#gamemode').val() == 11) {
             logoutPSArenas();      
