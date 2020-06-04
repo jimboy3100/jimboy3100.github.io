@@ -1,4 +1,4 @@
-//SPECS v3.6y WORKS UNTIL HERE
+//SPECS v3.7a WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -664,7 +664,7 @@ class Spect {
                 }				
                 break;
             case 255:
-				//this.constantrecalculation()
+				this.constantrecalculation2()
                 this.handleSubmessage(view);
 				this.beforecalculation() //render calculations i put them here to avoid another interval
                 break;
@@ -855,14 +855,7 @@ class Spect {
                 victimID.time = this.time;
                 victimID.removeCell();
             }
-        }
-		
-		//snez
-        var mapX = legendmod.mapMaxX - legendmod.mapMinX;
-        var mapY = legendmod.mapMaxY - legendmod.mapMinY;
-        var maxX = Math.round(mapX / legendmod.zoomValue / 10);
-        var maxY = Math.round(mapY / legendmod.zoomValue / 10); //or 1
-		
+        }				
         for (length = 0;;) {
             var id = view.readUInt32LE(offset);
             offset += 4;
@@ -902,7 +895,7 @@ class Spect {
             var b = y - legendmod.playerY;
             var distanceX = Math.round(Math.sqrt(a * a));
             var distanceY = Math.round(Math.sqrt(b * b));		
-            if (distanceX > maxX || distanceY > maxY){
+            if (distanceX > this.maxX || distanceY > this.maxY){
 				remove = true;
 			}
 			
@@ -1075,6 +1068,13 @@ class Spect {
 			//this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)		
 		}
 	}
+	constantrecalculation2(){
+		//snez
+        var mapX = legendmod.mapMaxX - legendmod.mapMinX;
+        var mapY = legendmod.mapMaxY - legendmod.mapMinY;
+        this.maxX = Math.round(mapX / legendmod.zoomValue / 10);
+        this.maxY = Math.round(mapY / legendmod.zoomValue / 10); //or 1
+	}	
 	beforecalculation(){
         if (legendmod.playerCellsMulti.length) {
 			if (!this.openSecond){
