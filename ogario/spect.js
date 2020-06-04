@@ -1,4 +1,4 @@
-//SPECS v3.6v WORKS UNTIL HERE
+//SPECS v3.6w WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -785,7 +785,7 @@ class Spect {
 			y - distance > legendmod.viewYTrue + y2s) //>legendmod.camMaxY
     }		
     isInViewCustom3 (x , y, size) {
-			var randomNum = -20 // randomNum=40
+			var randomNum = 0 // randomNum=40
 			var distance = size + randomNum
             return !(x + distance < legendmod.camMinMultiX ||
 			y + distance < legendmod.camMinMultiY ||
@@ -803,8 +803,10 @@ class Spect {
             this.mapMinY = ~~((-this.mapOffset) - this.mapOffsetY);
             this.mapMaxX = ~~((this.mapOffset) - this.mapOffsetX);
             this.mapMaxY = ~~((this.mapOffset) - this.mapOffsetY);
+			/*
             this.mapMidX = (this.mapMaxX + this.mapMinX) / 2;
             this.mapMidY = (this.mapMaxY + this.mapMinY) / 2;
+			*/
             if (!this.mapOffsetFixed) {
                 this.viewX = (right + left) / 2;
                 this.viewY = (bottom + top) / 2;
@@ -882,8 +884,7 @@ class Spect {
 			}	
 				
 			//test
-			this.constantrecalculation()
-			
+			this.constantrecalculation()			
 			if (this.getX(x)){
 				//x = this.getX(x)	
 				x = this.getX(x)+this.fix3x
@@ -1067,9 +1068,12 @@ class Spect {
     }
 	constantrecalculation(){
 			//3rd fix - excess processing
-		if (this.ghostCells[0] && this.player){
-			this.fix3x = legendmod.ghostCells[0].x - this.getX(this.ghostCells[0].x)
-			this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)		
+		if (this.ghostCells && this.ghostCells[0] && this.player){
+
+			this.fix3x = this.ghostCells[0].x - this.convertX(legendmod.ghostCells[0].x))
+			this.fix3y = this.ghostCells[0].y - this.convertX(legendmod.ghostCells[0].y)					
+			//this.fix3x = legendmod.ghostCells[0].x - this.getX(this.ghostCells[0].x)
+			//this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)		
 		}
 	}
 	beforecalculation(){
