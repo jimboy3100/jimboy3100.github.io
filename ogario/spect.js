@@ -1,4 +1,4 @@
-//SPECS v3.7g WORKS UNTIL HERE
+//SPECS v3.7h WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -885,7 +885,7 @@ class Spect {
 			}	
 				
 			//test
-			this.constantrecalculation()			
+			//this.constantrecalculation()			
 			if (this.getX(x)){
 				x = this.getX(x)	
 				//x = this.getX(x)+this.fix3x
@@ -973,7 +973,7 @@ class Spect {
 			if (this.player && (isVirus || isFood)){
 				//remove = this.isInViewCustom(x , y, size)
 				if (isFood) remove = this.isInViewCustom(x , y, size)
-				if (isVirus) remove = (this.isInViewCustom(x , y, size) && (!this.isInViewCustom3(x , y, size) || this.isInViewCustom4(x , y, size)))
+				if (isVirus) remove = (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size))
 					//remove = (this.isInViewCustom(x , y, size) && this.isInViewCustom3(x , y, size))
 				//if (!invisible) invisible = (this.isInViewCustom(x , y, size) && this.isInViewCustom3(x , y, size))				
 			}			
@@ -1033,6 +1033,9 @@ class Spect {
 			if (cell.isPlayerCell){
 				cell.targetNick = this.nick
 				cell.isPlayerCellMulti=true
+			}
+			if (!cell.isPlayerCell && cell.targetNick == profiles[application.selectedOldProfile].skinURL && cell.targetNick!=""){
+				console.log('found cell',cell.x,cell.y,legendmod.playerX,legendmod.playerY)
 			}
             cell.targetX = x;
             cell.targetY = y;
