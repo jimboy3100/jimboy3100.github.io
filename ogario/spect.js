@@ -1,4 +1,4 @@
-//SPECS v3.7m WORKS UNTIL HERE
+//SPECS v3.7n WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -885,7 +885,7 @@ class Spect {
 			}	
 				
 			//test
-			this.constantrecalculation()			
+			//this.constantrecalculation()			
 			if (this.getX(x)){
 				x = this.getX(x)	
 				//x = this.getX(x)+this.fix3x
@@ -1033,13 +1033,11 @@ class Spect {
 			if (cell.isPlayerCell){
 				cell.targetNick = this.nick
 				cell.isPlayerCellMulti=true
-			}/*
+			}
 			if (!cell.isPlayerCell && cell.targetNick == profiles[application.selectedOldProfile].nick && cell.targetNick!="" && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
 				this.openFourth = true				
-				this.fix3x = legendmod.playerCells[0].x - cell.x
-				this.fix3y = legendmod.playerCells[0].y - cell.y
-				console.log('found cell',cell.x,cell.y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
-			}*/
+				this.constantrecalculation3()
+			}
             cell.targetX = x;
             cell.targetY = y;
             cell.targetSize = size;
@@ -1092,6 +1090,11 @@ class Spect {
         this.maxX = Math.round(mapX / legendmod.zoomValue / 10);
         this.maxY = Math.round(mapY / legendmod.zoomValue / 10); //or 1
 	}	
+	constantrecalculation3(){
+		this.fix3x = legendmod.playerCells[0].x - cell.x
+		this.fix3y = legendmod.playerCells[0].y - cell.y
+		console.log('found user cell',this.fix3x,this.fix3y)
+	}
 	beforecalculation(){
         if (legendmod.playerCellsMulti.length) {
 			if (!this.openSecond){
