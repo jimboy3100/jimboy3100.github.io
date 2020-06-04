@@ -1,4 +1,4 @@
-//SPECS v3.6w WORKS UNTIL HERE
+//SPECS v3.6x WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1070,7 +1070,7 @@ class Spect {
 			//3rd fix - excess processing
 		if (this.ghostCells && this.ghostCells[0] && this.player){
 
-			this.fix3x = this.ghostCells[0].x - this.convertX(legendmod.ghostCells[0].x))
+			this.fix3x = this.ghostCells[0].x - this.convertX(legendmod.ghostCells[0].x)
 			this.fix3y = this.ghostCells[0].y - this.convertX(legendmod.ghostCells[0].y)					
 			//this.fix3x = legendmod.ghostCells[0].x - this.getX(this.ghostCells[0].x)
 			//this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)		
