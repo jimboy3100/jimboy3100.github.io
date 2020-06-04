@@ -1,4 +1,4 @@
-//SPECS v3.7l WORKS UNTIL HERE
+//SPECS v3.7m WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -885,7 +885,7 @@ class Spect {
 			}	
 				
 			//test
-			//this.constantrecalculation()			
+			this.constantrecalculation()			
 			if (this.getX(x)){
 				x = this.getX(x)	
 				//x = this.getX(x)+this.fix3x
@@ -1033,10 +1033,13 @@ class Spect {
 			if (cell.isPlayerCell){
 				cell.targetNick = this.nick
 				cell.isPlayerCellMulti=true
-			}
-			if (!cell.isPlayerCell && cell.targetNick == profiles[application.selectedOldProfile].nick && cell.targetNick!="" && ~~legendmod.playerCells[0].size == ~~cell.size){
+			}/*
+			if (!cell.isPlayerCell && cell.targetNick == profiles[application.selectedOldProfile].nick && cell.targetNick!="" && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
+				this.openFourth = true				
+				this.fix3x = legendmod.playerCells[0].x - cell.x
+				this.fix3y = legendmod.playerCells[0].y - cell.y
 				console.log('found cell',cell.x,cell.y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
-			}
+			}*/
             cell.targetX = x;
             cell.targetY = y;
             cell.targetSize = size;
@@ -1077,7 +1080,7 @@ class Spect {
 			//3rd fix - excess processing
 		if (this.ghostCells && this.ghostCells[0] && this.player){
 			this.fix3x = this.convertX(legendmod.ghostCells[0].x) - this.ghostCells[0].x
-			this.fix3x = this.convertY(legendmod.ghostCells[0].y) - this.ghostCells[0].y				
+			this.fix3y = this.convertY(legendmod.ghostCells[0].y) - this.ghostCells[0].y				
 			//this.fix3x = legendmod.ghostCells[0].x - this.getX(this.ghostCells[0].x)
 			//this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)		
 		}
