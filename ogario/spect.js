@@ -1,4 +1,4 @@
-//SPECS v3.6s WORKS UNTIL HERE
+//SPECS v3.6t WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -82,6 +82,8 @@ class Spect {
 		legendmod.playerCellsMulti = []
 		legendmod.multiBoxPlayerExists = null
 		this.playerScore = 0
+		this.fix3x = 0
+		this.fix3y = 0		
         this.connect()
     }
     reset() {
@@ -106,6 +108,8 @@ class Spect {
 		legendmod.playerCellsMulti = []
 		legendmod.multiBoxPlayerExists = null
 		this.playerScore = 0
+		this.fix3x = 0
+		this.fix3y = 0
     }
     connect() {
         this.reset()
@@ -660,6 +664,7 @@ class Spect {
                 }				
                 break;
             case 255:
+				this.constantrecalculation()
                 this.handleSubmessage(view);
 				this.beforecalculation() //render calculations i put them here to avoid another interval
                 break;
@@ -693,10 +698,7 @@ class Spect {
 		if(!this.ghostFixed && this.mapOffsetFixed && this.ghostCells.length!=0 && Math.abs(application.getghostX())>100 && Math.abs(application.getghostY()) >100) {
 			this.fixX = /*Math.round*/(application.getghostX()/(this.ghostCells[0].x+this.mapOffsetX))<0?-1:1;
             this.fixY = /*Math.round*/(application.getghostY()/(this.ghostCells[0].y+this.mapOffsetY))<0?-1:1;
-			this.ghostFixed = true
-			//3rd fix
-			this.fix3x = legendmod.ghostCells[0].x - this.getX(this.ghostCells[0].x)
-			this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)			
+			this.ghostFixed = true			
         }					
 	}	
     getX(x) {
@@ -1061,6 +1063,11 @@ class Spect {
         }
 		
     }
+	constantrecalculation(){
+			//3rd fix
+		this.fix3x = legendmod.ghostCells[0].x - this.getX(this.ghostCells[0].x)
+		this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)		
+	}
 	beforecalculation(){
         if (legendmod.playerCellsMulti.length) {
 			if (!this.openSecond){
