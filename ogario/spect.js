@@ -1,4 +1,4 @@
-//SPECS v3.6u WORKS UNTIL HERE
+//SPECS v3.6v WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -777,7 +777,7 @@ class Spect {
     isInViewCustom2 (x , y, size) {
 			var x2s = legendmod.canvasWidth / 2 / legendmod.scale
 			var y2s = legendmod.canvasHeight / 2 / legendmod.scale
-			var randomNum = 40 // randomNum=40
+			var randomNum = 0 // randomNum=40
 			var distance = size + randomNum
 			return !(x + distance < legendmod.viewXTrue - x2s || //<legendmod.camMinX
 			y + distance < legendmod.viewYTrue - y2s || //<legendmod.camMinY
@@ -1066,8 +1066,8 @@ class Spect {
 		
     }
 	constantrecalculation(){
-			//3rd fix
-		if (this.ghostCells[0]){
+			//3rd fix - excess processing
+		if (this.ghostCells[0] && this.player){
 			this.fix3x = legendmod.ghostCells[0].x - this.getX(this.ghostCells[0].x)
 			this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)		
 		}
