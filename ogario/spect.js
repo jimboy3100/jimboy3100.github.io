@@ -1,4 +1,4 @@
-//SPECS v3.7w WORKS UNTIL HERE
+//SPECS v3.7x WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1036,10 +1036,10 @@ class Spect {
 				cell.targetNick = this.nick
 				cell.isPlayerCellMulti=true
 			}
-			/*if (!cell.isPlayerCell && cell.targetNick == profiles[application.selectedOldProfile].nick && cell.targetNick!="" && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
+			if (!cell.isPlayerCell && cell.targetNick == profiles[application.selectedOldProfile].nick && cell.targetNick!="" && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
 				this.openFourth = true				
 				this.constantrecalculation3(cell.x, cell.y)
-			}*/
+			}
             cell.targetX = x;
             cell.targetY = y;
             cell.targetSize = size;
