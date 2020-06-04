@@ -1,4 +1,4 @@
-//SPECS v3.6r WORKS UNTIL HERE
+//SPECS v3.6s WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -696,10 +696,7 @@ class Spect {
 			this.ghostFixed = true
 			//3rd fix
 			this.fix3x = legendmod.ghostCells[0].x - this.getX(this.ghostCells[0].x)
-			this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)
-			this.mapOffsetX += this.fix3x
-			this.mapOffsetY += this.fix3y
-			
+			this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)			
         }					
 	}	
     getX(x) {
@@ -884,10 +881,12 @@ class Spect {
 				
 			//test
 			if (this.getX(x)){
-				x = this.getX(x)				
+				//x = this.getX(x)	
+				x = this.getX(x)+this.fix3x
 			}
 			if (this.getY(y)){ 
-				y = this.getY(y)
+				//y = this.getY(y)
+				y = this.getY(y)+this.fix3y
 			}	
 		
 			/*else {
