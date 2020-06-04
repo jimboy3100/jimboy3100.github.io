@@ -1,4 +1,4 @@
-//SPECS v3.6t WORKS UNTIL HERE
+//SPECS v3.6u WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -664,7 +664,7 @@ class Spect {
                 }				
                 break;
             case 255:
-				this.constantrecalculation()
+				//this.constantrecalculation()
                 this.handleSubmessage(view);
 				this.beforecalculation() //render calculations i put them here to avoid another interval
                 break;
@@ -882,6 +882,8 @@ class Spect {
 			}	
 				
 			//test
+			this.constantrecalculation()
+			
 			if (this.getX(x)){
 				//x = this.getX(x)	
 				x = this.getX(x)+this.fix3x
@@ -1065,8 +1067,10 @@ class Spect {
     }
 	constantrecalculation(){
 			//3rd fix
-		this.fix3x = legendmod.ghostCells[0].x - this.getX(this.ghostCells[0].x)
-		this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)		
+		if (this.ghostCells[0]){
+			this.fix3x = legendmod.ghostCells[0].x - this.getX(this.ghostCells[0].x)
+			this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)		
+		}
 	}
 	beforecalculation(){
         if (legendmod.playerCellsMulti.length) {
