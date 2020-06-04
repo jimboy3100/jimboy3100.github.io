@@ -1,4 +1,4 @@
-//SPECS v3.7a WORKS UNTIL HERE
+//SPECS v3.7b WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -880,11 +880,11 @@ class Spect {
 			this.constantrecalculation()			
 			if (this.getX(x)){
 				//x = this.getX(x)	
-				x = this.getX(x)+this.fix3x
+				x = this.getX(x)-this.fix3x
 			}
 			if (this.getY(y)){ 
 				//y = this.getY(y)
-				y = this.getY(y)+this.fix3y
+				y = this.getY(y)-this.fix3y
 			}	
 		
 			/*else {
