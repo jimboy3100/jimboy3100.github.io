@@ -1,4 +1,4 @@
-//SPECS v3.7h WORKS UNTIL HERE
+//SPECS v3.7i WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1034,7 +1034,7 @@ class Spect {
 				cell.targetNick = this.nick
 				cell.isPlayerCellMulti=true
 			}
-			if (!cell.isPlayerCell && cell.targetNick == profiles[application.selectedOldProfile].skinURL && cell.targetNick!=""){
+			if (!cell.isPlayerCell && cell.targetNick == profiles[application.selectedOldProfile].nick && cell.targetNick!=""){
 				console.log('found cell',cell.x,cell.y,legendmod.playerX,legendmod.playerY)
 			}
             cell.targetX = x;
