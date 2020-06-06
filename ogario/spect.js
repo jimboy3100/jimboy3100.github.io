@@ -1,4 +1,4 @@
-//SPECS v3.8f WORKS UNTIL HERE
+//SPECS v3.8g WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -990,13 +990,14 @@ class Spect {
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
                 cell.spectator = this.number;
+				
             } 		
 			else {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                 cell.time = this.time;
                 cell.spectator = this.number;
 				//if (!isFood) {
-				if (!isFood && !remove && !invisible) {
+				if (!isFood && !remove) {
                     if (isVirus && defaultmapsettings.virusesRange) {
                         legendmod.viruses.push(cell);
                     }
@@ -1023,8 +1024,8 @@ class Spect {
 					if (!isFood && !remove) legendmod.cells.push(cell);				
 				}
 				else{
-					if (!remove){
-							legendmod.cells.push(cell);
+					if (!remove && !invisible){
+						legendmod.cells.push(cell);
 					}
 				}
                 legendmod.indexedCells[id] = cell;
