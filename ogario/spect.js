@@ -1,4 +1,4 @@
-//SPECS v3.8i WORKS UNTIL HERE
+//SPECS v3.8j WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1024,8 +1024,8 @@ class Spect {
 					if (!isFood && !remove) legendmod.cells.push(cell);				
 				}
 				else{
-					//if (!remove || (!invisible && isVirus)){
-					if (!remove || (!isVirus)){	
+					//if (!remove && (!invisible && isVirus)){
+					if (!remove && !isVirus){	
 					//if (!remove){	
 						legendmod.cells.push(cell);
 					}
