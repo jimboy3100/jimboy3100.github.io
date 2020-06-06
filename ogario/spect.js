@@ -1,4 +1,4 @@
-//SPECS v3.8k WORKS UNTIL HERE
+//SPECS v3.8l WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -972,7 +972,7 @@ class Spect {
 			//if (this.player && isVirus && !isFood && !invisible){
 			if (this.player && (isVirus || isFood)){
 				//remove = this.isInViewCustom(x , y, size)
-				if (isFood) invisible = this.isInViewCustom(x , y, size)
+				if (isFood) remove = this.isInViewCustom(x , y, size)
 				//if (isVirus) invisible = (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size))
 				if (isVirus) invisible = this.isInViewCustom(x , y, size)
 				if (isVirus) remove = this.isInViewCustom(x , y, size)	
