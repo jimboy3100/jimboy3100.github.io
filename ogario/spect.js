@@ -1,4 +1,4 @@
-//SPECS v3.8n WORKS UNTIL HERE
+//SPECS v3.8o WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -975,11 +975,10 @@ class Spect {
 				if (isFood) remove = this.isInViewCustom(x , y, size)
 				//if (isVirus) invisible = (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size))
 				//if (isVirus) invisible = this.isInViewCustom(x , y, size)
-				if (isVirus) invisible = this.isInViewCustom(x , y, size)	
+				if (isVirus) invisible = (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size))
 				//if (isFood) remove = this.isInViewCustom(x , y, size)
 				//if (isVirus) remove = (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size) && this.isInViewCustom4(x , y, size))
-					//remove = (this.isInViewCustom(x , y, size) && this.isInViewCustom3(x , y, size))
-				//if (!invisible) invisible = (this.isInViewCustom(x , y, size) && this.isInViewCustom3(x , y, size))				
+					//remove = (this.isInViewCustom(x , y, size) && this.isInViewCustom3(x , y, size))			
 			}			
 			if (isFood && !defaultmapsettings.rainbowFood){
 				color = defaultSettings.foodColor
