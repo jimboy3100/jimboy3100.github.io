@@ -1,4 +1,4 @@
-//SPECS v3.8h WORKS UNTIL HERE
+//SPECS v3.8i WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -999,7 +999,7 @@ class Spect {
 				//if (!isFood) {
 				if (!isFood && !remove) {
                     if (isVirus && defaultmapsettings.virusesRange) {
-                        //legendmod.viruses.push(cell);
+                        legendmod.viruses.push(cell);
                     }
                     //legendmod.cells.push(cell);
                         if (this.playerCellIDs.indexOf(id) != -1 && legendmod.playerCellsMulti.indexOf(cell) == -1) {
@@ -1024,8 +1024,9 @@ class Spect {
 					if (!isFood && !remove) legendmod.cells.push(cell);				
 				}
 				else{
-					//if (!remove && (!invisible && isVirus)){
-					if (!remove){	
+					//if (!remove || (!invisible && isVirus)){
+					if (!remove || (!isVirus)){	
+					//if (!remove){	
 						legendmod.cells.push(cell);
 					}
 				}
