@@ -1,4 +1,4 @@
-//SPECS v3.8e WORKS UNTIL HERE
+//SPECS v3.8f WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -974,7 +974,7 @@ class Spect {
 				//remove = this.isInViewCustom(x , y, size)
 				if (isFood) invisible = this.isInViewCustom(x , y, size)
 				//if (isVirus) invisible = (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size))
-				if (isVirus) invisible = this.isInViewCustom2(x , y, size)
+				if (isVirus) invisible = this.isInViewCustom(x , y, size)
 				//if (isFood) remove = this.isInViewCustom(x , y, size)
 				//if (isVirus) remove = (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size) && this.isInViewCustom4(x , y, size))
 					//remove = (this.isInViewCustom(x , y, size) && this.isInViewCustom3(x , y, size))
@@ -996,7 +996,7 @@ class Spect {
                 cell.time = this.time;
                 cell.spectator = this.number;
 				//if (!isFood) {
-				if (!isFood && !remove) {
+				if (!isFood && !remove && !invisible) {
                     if (isVirus && defaultmapsettings.virusesRange) {
                         legendmod.viruses.push(cell);
                     }
@@ -1017,7 +1017,7 @@ class Spect {
                         }	
                 } 
 				else if (isFood){
-                    legendmod.foodMulti.push(cell); //this causes problems
+                    legendmod.foodMulti.push(cell); //this causes problems					
                 }
 				if (defaultmapsettings.oneColoredSpectator && !this.player) {
 					if (!isFood && !remove) legendmod.cells.push(cell);				
