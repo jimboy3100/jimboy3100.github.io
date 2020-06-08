@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.820
+// v1.822
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -29,6 +29,9 @@ function deleteGamemode() {
         text: 'Selffeed',
         value: 7
     }, {
+        text: 'FPS Test',
+        value: 13
+    }, {		
         text: 'FFA',
         value: 8
     }, {
@@ -74,6 +77,9 @@ function deleteGamemode() {
             core.connect('wss://delta-selffeed.glitch.me');
 			legendmod.gameMode = ":ffa";
             //application.connect('wss://private1:443')
+		} else if ($('#gamemode').val() == 13) {	
+			core.connect('wss://d-srv.glitch.me');		
+			legendmod.gameMode = ":ffa";
         } else if ($('#gamemode').val() == 8) {
             logoutPSArenas();   
             core.connect(agarTesterArena + ':1500/'); //ffa
@@ -2311,7 +2317,7 @@ var defaultmapsettings = {
     videoSkins: true,
     videoSkinsMusic: false,
     myTransparentSkin: false,
-    myCustomColor: false,
+    myCustomColor: true,
     transparentCells: false,
     transparentViruses: true,
     transparentSkins: false,
@@ -10315,7 +10321,9 @@ function thelegendmodproject() {
 					}
 					else{	
                         if (this.playerCellIDs.indexOf(id) != -1) {
-							color = profiles[application.selectedProfile].color
+							if (defaultmapsettings.myCustomColor) {
+								color = profiles[application.selectedProfile].color
+							}
                         }									
 						else{
 							application.teamPlayers.forEach((found) => {
