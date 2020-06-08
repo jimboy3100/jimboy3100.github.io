@@ -1,4 +1,4 @@
-//SPECS v3.8o WORKS UNTIL HERE
+//SPECS v3.8p WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -952,7 +952,9 @@ class Spect {
 					}
 					else{	
                         if (this.playerCellIDs.indexOf(id) != -1) {
-							color = profiles[application.selectedProfile].color
+							if (defaultmapsettings.myCustomColor) {
+								color = profiles[application.selectedProfile].color
+							}
                         }									
 						else{
 							application.teamPlayers.forEach((found) => {
