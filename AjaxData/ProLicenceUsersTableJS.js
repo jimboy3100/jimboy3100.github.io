@@ -130,8 +130,12 @@ ProLicenceUsersTable = {
             "Chosenbyddevilowo": "ALI cicineLC"
         },   
         "84fda50e-63c4-41d7-9ba3-e6750cb0d94e": {
-            "reason": "Give@20200620",
+            "reason": "Give@20200720",
             "Chosenbyddevilowo": "tawis"
+        }, 
+        "3a13f17c-0c9b-4c1c-92a5-a66854621986": {
+            "reason": "Give@20200720",
+            "Chosenbyddevilowo": "maco420"
         },				
         "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
             "reason": "Donate",
