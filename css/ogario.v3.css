@@ -1,4 +1,4 @@
-/*v0.08*/
+/*v0.07*/
  @import url(https://legendmod.ml/css/ogicomoon.css);
  @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
  @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
@@ -1579,6 +1579,12 @@
 	border-radius: 5px;
 	border: 2px solid #CCC;
 	margin-right: 6px
+}
+#potions {
+    width: 160px;
+	height: 80px;
+	margin: auto;
+	margin-top: 10px;
 }
 .potion {
   text-align:center;
