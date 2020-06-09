@@ -1,4 +1,4 @@
-/*v0.06*/
+/*v0.07*/
  @import url(https://legendmod.ml/css/ogicomoon.css);
  @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
  @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
@@ -190,6 +190,35 @@
 }
  .dark .yt-username{
      color:#fff 
+}
+.agario-profile-panel .agario-profile-picture {
+	cursor: pointer;
+	float: left;
+	display: block;
+	width: 64px;
+	height: 64px;
+	border-radius: 5px;
+	border: 2px solid #CCC;
+	margin-right: 6px
+}
+
+
+.agario-profile-panel .agario-profile-name-container {
+	float: left;
+	display: table;
+	width: 180px;
+	height: 64px;
+	position: relative
+}
+
+.agario-profile-panel .agario-profile-name {
+	vertical-align: middle;
+	margin-top: 10px;
+	text-align: center;
+	font-weight: 700;
+	position: relative;
+	overflow: hidden;
+	bottom: 8px
 }
  .agario-party{
      width:190px;
