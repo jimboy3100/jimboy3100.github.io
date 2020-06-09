@@ -67,7 +67,7 @@
                 type: 'normal'
             },
 			'hk-dance': {
-				label: textLanguage[`hk-dance`],
+				label: textLanguage['hk-dance'],
 				defaultKey: 'ALT+D',
 				keyDown() {
 				application && application.dance(true);
@@ -75,7 +75,7 @@
 				keyUp() {
 				application && application.dance(false);
 				},
-				type: `normal`
+				type: 'normal'
 			},			
             'hk-multiboxswap': {
                 label: textLanguage['hk-multiboxswap'],
