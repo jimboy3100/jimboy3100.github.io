@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych
 // This is part of the Legend mod project
-// v1.867
+// v1.875
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -977,6 +977,7 @@ var displayText = {
 		mouseWheelClick: 'Mouse wheel click - Multibox Swap',
         mouseInvert: 'Odwróć klawisze myszki',
         disableChat: 'Wyłącz czat',
+		coloredNicks: 'Colored nicknames',
         hideChat: 'Ukryj czat',
         chatSounds: 'Powiadomienia dźwiękowe',
         chatEmoticons: 'Emotikony',
@@ -1412,6 +1413,7 @@ var displayText = {
 		mouseWheelClick: 'Mouse wheel click - Multibox Swap',
         mouseInvert: 'Invert mouse buttons',
         disableChat: 'Disable chat',
+		coloredNicks: 'Colored nicknames',
         hideChat: 'Hide chat',
         chatSounds: 'Sound notifications',
         chatEmoticons: 'Emoticons',
@@ -4656,7 +4658,7 @@ function thelegendmodproject() {
                 this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
                 this.addOptions(["noColors","myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "animatedRainbowColor"], "transparencyGroup");
                 this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup");
-                this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChatTranslation", "hidecountry", "universalChat"], "chatGroup");
+                this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChatTranslation", "coloredNicks", "hidecountry", "universalChat"], "chatGroup");
                 this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup");
                 this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo","reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
                 this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
@@ -7154,27 +7156,51 @@ function thelegendmodproject() {
 
         },
         displayChatMessage(time, caseof, plId, msg) {
+			var mcolor = ""
+			
+			//mcolor = "blue";
             if (0 != msg.length) {
                 //console.log(msg);
                 var a = msg.split(': ', 1).toString();
                 n = this.parseMessage(msg.replace(a + ': ', ''));
+				//coloredNicks
+				if (defaultmapsettings.coloredNicks){
+					if (legendmod.cellcolors[a]){
+						mcolor = legendmod.cellcolors[a]
+					}
+					else{
+					application.teamPlayers.forEach((found) => {
+					if (found.nick == a){ 
+						mcolor = found.color		
+						} 
+					})					
+					}
+				}
+				//
                 if (!(0 == a.length || a.length > 15 || 0 == n.length)) {
                     var r = '';
                     if (0 != plId && plId != this.playerID && (this.addChatUser(plId, a), r = '<a href=\"#\" data-user-id=\"' + plId + '\" class=\"mute-user ogicon-user-minus\"></a> '), a = this.escapeHTML(a), 101 == caseof) {
-                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message\"><span class=\"message-time\">[' + time + '] </span>' + r + '<span class=\"message-nick\">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'),
-                            $('#chat-box').perfectScrollbar('update'), $('#chat-box').animate({
+                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message\"><span class=\"message-time\">[' + time + '] </span>' + r + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'),
+                            $('#chat-box').perfectScrollbar('update'), 
+							$('#chat-box').animate({
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
                             }, 500), void(defaultmapsettings.chatSounds && this.playSound(this.messageSound));
-                        defaultmapsettings.hideChat || (toastr.success('<span class=\"message-nick\">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r), defaultmapsettings.chatSounds && this.playSound(this.messageSound)), this.chatHistory.push({
+                        defaultmapsettings.hideChat || (toastr.success('<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r), 
+						defaultmapsettings.chatSounds && this.playSound(this.messageSound)), 
+						this.chatHistory.push({
                             'nick': a,
                             'message': n
-                        }), this.chatHistory.length > 15 && this.chatHistory.shift();
+                        }), 
+						this.chatHistory.length > 15 && this.chatHistory.shift();
                     } else if (102 == caseof) {
-                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + time + '] </span>' + r + '<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'),
-                            $('#chat-box').perfectScrollbar('update'), $('#chat-box').animate({
+                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + time + '] </span>' + r + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'),
+                            $('#chat-box').perfectScrollbar('update'), 
+							$('#chat-box').animate({
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
-                            }, 500), void(defaultmapsettings.chatSounds && this.playSound(this.commandSound));
-                        defaultmapsettings.hideChat || (toastr.warning('<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r), defaultmapsettings.chatSounds && this.playSound(this.commandSound));
+                            }, 500), 
+							void(defaultmapsettings.chatSounds && this.playSound(this.commandSound));
+                        defaultmapsettings.hideChat || (toastr.warning('<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\" style = "color:' + mcolor + '">' + n + '</span>' + r), 
+						defaultmapsettings.chatSounds && this.playSound(this.commandSound));
                     } else $('#messages').append(msg);
                 }
             }
