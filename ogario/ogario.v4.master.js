@@ -1,4 +1,4 @@
-//v12.55e
+//v12.55g
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -845,14 +845,25 @@ function continuelogout(){
         $("#UserProfileName1").text("Guest");
         $("#UserProfileUID1").text("");
 		$("#UserProfileUUID1").val("");	
-        $("#UserProfilePic>img").attr('src', 'https://legendmod.ml/banners/profilepic_guest.png');
+        $(".agario-profile-picture").attr('src', 'https://legendmod.ml/banners/profilepic_guest.png');
+		$("#stats-content").html("");
+		$("#user-info").html("");	
+		$(".vanilla-skin-preview").attr('src', 'https://legendmod.ml/banners/profilepic_guest.png');
+		$('.progress-bar-star').text("");
+		$(".agario-profile-name-container").html('<div class="agario-profile-name"></div>'+
+                                        '<div id="coins" style="display: inline-block;">💰000</div>'+
+                                        '<div id="dna" style="display: inline-block;">🧬000</div>'+
+                                        '<div id="trophy" style="display: inline-block;">🏆000</div>')
+		$("#quest-active").html('')
+		$("#player-skins").html('');
+		
 }
 function doFB() {
 
     FB.api('/me', {
         fields: 'first_name, last_name, gender, id'
     }, function(fbresponse) {
-        $("#UserProfilePic>img").attr('src', 'https://graph.facebook.com/' + fbresponse.id + '/picture?type=large');
+        $(".agario-profile-picture").attr('src', 'https://graph.facebook.com/' + fbresponse.id + '/picture?type=large');
 
         $("#UserProfileName1").text(fbresponse[Object.keys(fbresponse)[0]]);
         $("#UserProfileUID1").text(fbresponse[Object.keys(fbresponse)[2]]);
@@ -890,7 +901,7 @@ function doGl() {
 	var GgProfileSurName = window.gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile().getFamilyName(); //Last Name
 	var GgUID = window.gapi.auth2.getAuthInstance().currentUser.get().getId();
 
-	$("#UserProfilePic>img").attr('src', GgImg);	
+	$(".agario-profile-picture").attr('src', GgImg);	
 	$("#UserProfileName1").text(GgProfileName);
 	$("#UserProfileUID1").text(GgUID);
 	
