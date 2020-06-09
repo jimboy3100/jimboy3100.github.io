@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych
 // This is part of the Legend mod project
-// v1.879
+// v1.880
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -875,8 +875,8 @@ var displayText = {
         restoreSettings: 'Przywróc ustawienia domyślne',
         animationGroup: 'Animacja',
         graphics: 'Graphics',
-		reverseTrick: 'Reverse trick',
-		onlineStatus: 'Show me online(Facebook)',
+		reverseTrick: 'Reverse trick (On development)',
+		onlineStatus: 'Show me online (Facebook)',
         zoomGroup: 'Zoom',
 		boardGroup: 'Boards',
         respGroup: 'Odrodzenie',
@@ -1309,8 +1309,8 @@ var displayText = {
         restoreSettings: 'Restore default settings',
         animationGroup: 'Animation',
         graphics: 'Graphics',
-		reverseTrick: 'Reverse trick',
-		onlineStatus: 'Show me online(Facebook)',
+		reverseTrick: 'Reverse trick (On development)',
+		onlineStatus: 'Show me online (Facebook)',
         zoomGroup: 'Zoom',
 		boardGroup: 'Boards',
         respGroup: 'Respawn',
@@ -10306,12 +10306,12 @@ function thelegendmodproject() {
 			}
 			this.totalPackets++;
 		},*/
-		onMobileData: function (msg) {
+		onMobileData: function (msg) { 
             if (msg == null) {
                 return
             }
             const response = window.decodeMobileData(msg);
-            console.log(response);
+            console.log(response); //ALL LOGIN AND PROFILE RESPONSE INFO
             this.unpackageMessage(response);
 		},
     unpackageMessage: function (r) {
