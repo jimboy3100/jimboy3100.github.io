@@ -1,4 +1,4 @@
-//v12.55g
+//v12.55h
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -818,7 +818,8 @@ function legendmaster(self) {
         $(".progress-bar-striped").width("0%");
         $("#login-facebook").attr("class", "menu-bar-button");
         $("#login-google").attr("class", "menu-bar-button");
-        toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter127 + "!");		
+        toastr.info("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter127 + "!");	
+		potionsLogout();
         master.logout();
 		continuelogout();
     };
@@ -977,4 +978,18 @@ function getInfo() {
             $("#totalPlayers").html(kFormatter(info.totals.numPlayers));
         }
     });
+}
+function potionsLogout(){
+$("#potions").html('<div id="potion1" class="potion">'+
+                                        '<img src="https://dead-mod.github.io/img/potion_empty.png" />'+
+                                        '<div>empty</div>'+
+                                    '</div>'+
+                                    '<div id="potion2" class="potion">'+
+                                        '<img src="https://dead-mod.github.io/img/potion_empty.png" />'+
+                                        '<div>empty</div>'+
+                                    '</div>'+
+                                   '<div id="potion3" class="potion">'+
+                                        '<img src="https://dead-mod.github.io/img/potion_empty.png" />'+
+                                        '<div>empty</div>'+
+                                    '</div>')
 }
