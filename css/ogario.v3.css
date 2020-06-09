@@ -1,4 +1,4 @@
-/*v0.05*/
+/*v0.06*/
  @import url(https://legendmod.ml/css/ogicomoon.css);
  @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
  @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
@@ -1540,6 +1540,45 @@
  #stopBots:active {
      background-color: #9A1B00;
 }
+
+.agario-profile-panel .vanilla-skin-preview {
+	cursor: pointer;
+	float: right;
+	display: block;
+	width: 64px;
+	height: 64px;
+	border-radius: 5px;
+	border: 2px solid #CCC;
+	margin-right: 6px
+}
+.potion {
+  text-align:center;
+  display:inline-block;
+  width:32%;
+  height:120px 
+}
+  
+.potion img{
+  width:100px;
+  height:100px;
+  border-radius: 5px;
+  border-color: #CCC;
+  border-width: 3px;
+  border-style: solid
+}
+  
+.potion div{
+  display:block;
+  width:100%;
+  height:30px;
+  border-radius: 5px;
+  border-color: #CCC;
+  border-width: 3px;
+  border-style: solid
+}
+
+
+
  #skins2 {
      -border: 1px solid;
      height: 180px;
