@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych
 // This is part of the Legend mod project
-// v1.866
+// v1.867
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -1032,6 +1032,7 @@ var displayText = {
 		'hk-multiboxswap': 'Multibox Swap',		
 		'hk-multiboxFollowMouse': 'Multibox toggle follow mouse',	
         'hk-showTop5': 'Pokaż/ukryj top 5 teamu',
+		'hk-dance': 'Dance',
         'hk-showTime': 'Pokaż/ukryj aktualny czas',
         'hk-showSplitRange': 'Pokaż/ukryj zasięg podziału',
         'hk-showSplitInd': 'Pokaż/ukryj zasięg podziału z ringami',
@@ -1465,6 +1466,7 @@ var displayText = {
 		'hk-multiboxswap': 'Multibox Swap',
 		'hk-multiboxFollowMouse': 'Multibox toggle follow mouse',	
         'hk-showTop5': 'Show/hide teamboard',
+		'hk-dance': 'Dance',
         'hk-showTime': 'Show/hide current time',
         'hk-showSplitRange': 'Show/hide split range',
         'hk-showSplitInd': 'Show/hide split indicators',
@@ -3337,6 +3339,13 @@ function thelegendmodproject() {
                 this.feedInterval = null
             };
         },
+		dance(on) {
+			if (on) {
+				LM.dance=true;
+			} else {
+				LM.dance=false;
+			}
+		},		
         split() {
             if (window.core && window.core.split) window.core.split();
         },
@@ -8640,6 +8649,7 @@ function thelegendmodproject() {
         selectBiggestCell: true,
         hideSmallBots: false,
         pressedKeys: {},
+		dance: false,
         connect(t) {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to game server:', t);
             var app = this;
@@ -9013,6 +9023,47 @@ function thelegendmodproject() {
 					cursorX = this.viewXTrue + this.distX;
 					cursorY = this.viewYTrue + this.distY;					
 				}
+			}
+			else if(LM.dance){
+				let d = ~~((Date.now()/40)%8),
+					distance = 50000;
+				switch (d) {
+				case 7:
+					cursorX = this.playerX-distance;
+					cursorY = this.playerY-distance;
+					break;
+				case 6:
+					cursorX = this.playerX-distance;
+					cursorY = this.playerY;
+					break;
+				case 5:
+					cursorX = this.playerX-distance;
+					cursorY = this.playerY+distance;
+					break;
+				case 4:
+					cursorX = this.playerX;
+					cursorY = this.playerY+distance;
+					break;
+				case 3:
+					cursorX = this.playerX+distance;
+					cursorY = this.playerY+distance;
+					break;
+				case 2:
+					cursorX = this.playerX+distance;
+					cursorY = this.playerY;
+					break;
+				case 1:
+					cursorX = this.playerX+distance;
+					cursorY = this.playerY-distance;
+					break;
+				case 0:
+					cursorX = this.playerX;
+					cursorY = this.playerY-distance;
+					break;
+				default:
+					console.log(d);
+					break;
+				}				
 			}
             else {								
                 if (specialcommand) {
