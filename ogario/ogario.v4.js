@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych
 // This is part of the Legend mod project
-// v1.864
+// v1.865
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -1013,7 +1013,7 @@ var displayText = {
         showStatsPTE: 'Statystyki: Maksymalna masa wroga do presplitu',
         showStatsN16: 'Statystyki: n/16',
         showStatsFPS: 'Statystyki: FPS',
-		showStatsPPS: 'Statystyki: PPS',
+		//showStatsPPS: 'Statystyki: PPS',
         blockPopups: 'Blokuj popupy (reklamy/sklep/zadanie)',
 		gameOverStats: 'Game over stats',
         hotkeys: 'Skróty klawiszowe',
@@ -1446,7 +1446,7 @@ var displayText = {
         showStatsPTE: 'Game stats: Maximal enemy\'s mass for presplit',
         showStatsN16: 'Game stats: n/16',
         showStatsFPS: 'Game stats: FPS',
-		showStatsPPS: 'Game stats: PPS',
+		//showStatsPPS: 'Game stats: PPS',
         blockPopups: 'Block popups (ads/shop/quest)',
 		gameOverStats: 'Game over stats',
         hotkeys: 'Hotkeys',
@@ -2527,7 +2527,7 @@ var defaultmapsettings = {
     showStatsSTE: false,
     showStatsN16: true,
     showStatsFPS: true,
-	showStatsPPS: true,
+	//showStatsPPS: true,
     blockPopups: false,
 	gameOverStats: true,
     streamMode: false,
@@ -3837,13 +3837,13 @@ function thelegendmodproject() {
                 if (defaultmapsettings.showStatsFPS) {
                     t += 'FPS: ' + drawRender.fps;
                 }
-				if (defaultmapsettings.showStatsPPS) {
+				/*if (defaultmapsettings.showStatsPPS) {
 					if (defaultmapsettings.showStatsFPS || ogario.play ) t += ` | `;
 					var color = ''
 					if(LM.pps<23 || LM.pps>29) color = 'color:#ff4c4c'
 					if(LM.pps<20 || LM.pps>32) color = 'color:red'
 					t += 'PPS: <span style=' + color + '>'+LM.pps+'</span>';
-				}	
+				}	*/
 				this.statsHUD.innerHTML = t;			
                 //this.statsHUD.textContent = t;
                 var app = this;
@@ -10190,7 +10190,7 @@ function thelegendmodproject() {
                 case 16:
                     //this.updateCells(new LMbuffer(data['buffer']), s);
                     this.updateCells(new window.buffer.Buffer(data.buffer), s);
-					this.countPps()
+					//this.countPps()
                     break;
                 case 64:
                     //var message = new LMbuffer(data['buffer'])						
@@ -10215,7 +10215,7 @@ function thelegendmodproject() {
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Unknown opcode:', data.getUint8(0));
             }
         },
-		countPps() {
+		/*countPps() {
 			if (!defaultmapsettings.showStatsPPS) {
 				return;
 			}
@@ -10229,7 +10229,7 @@ function thelegendmodproject() {
 				this.ppsLastRequest = Time;
 			}
 			this.totalPackets++;
-		},
+		},*/
 		onMobileData: function (msg) {
             if (msg == null) {
                 return
@@ -10693,9 +10693,11 @@ Viruses eaten: ${u.virusesEaten}`)
          var key = s[i].key;
          switch (key) {
             case 1:
-                   var skin = this.getLink(s[i].valueString),
-                       url = this.urlReplaces.hasOwnProperty(skin[0])?this.urlReplaces[skin[0]]:skin[0];
-                   $('.vanilla-skin-preview').attr('src', url);
+                   var skin = this.getLink(s[i].valueString);
+						if (skin && skin[0]){
+							url = this.urlReplaces.hasOwnProperty(skin[0])?this.urlReplaces[skin[0]]:skin[0];
+							$('.vanilla-skin-preview').attr('src', url);
+						}
                 break;
             case 2:
                    //stop moving on relise (1,0)
@@ -10882,7 +10884,7 @@ Game name     : ${i.displayName}<br/>
             switch ((message = this.decompressMessage(message)).readUInt8(e++)) {
                 case 16:
                     this.updateCells(message, e);
-					this.countPps()
+					//this.countPps()
                     break;
                 case 64:
                     this.viewMinX = message.readDoubleLE(e);
