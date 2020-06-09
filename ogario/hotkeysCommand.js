@@ -68,7 +68,7 @@
             },
 			'hk-dance': {
 				label: textLanguage['hk-dance'],
-				defaultKey: 'ALT+D',
+				defaultKey: 'ALT+R',
 				keyDown() {
 				application && application.dance(true);
 				},
