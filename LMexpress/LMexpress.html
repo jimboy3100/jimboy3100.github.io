@@ -94,17 +94,33 @@ var CutNameConflictwithMessage=false;
    js = d.createElement(s); js.id = id;
    js.src = "//connect.facebook.net/en_US/sdk.js";
    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
+  }(document, 'script', 'facebook-jssdk')); 
  </script>
  <div id="overlays" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 200;">
   <div id="helloContainer" data-logged-in="0" data-has-account-data="0" data-party-state="0" data-results-state="0" data-gamemode="">
    <div id="leftPanel" class="side-container left-container">
     <div class="agario-panel agario-side-panel agario-profile-panel">
      <div class="clearfix" style="margin-bottom: 16px;">
-      <img class="agario-profile-picture" src=""/>
-      <div class="agario-profile-name-container">
-       <div class="agario-profile-name"></div>
-      </div>
+      <img class="agario-profile-picture" src="https://legendmod.ml/banners/profilepic_guest.png"/>
+                                   <div class="agario-profile-name-container">
+                                        <div class="agario-profile-name"></div>
+                                        <div id="coins" style="display: inline-block;">💰000</div>
+                                        <div id="dna" style="display: inline-block;">🧬000</div>
+                                        <div id="trophy" style="display: inline-block;">🏆000</div>
+                                    </div>
+                                    <img class="vanilla-skin-preview" src="https://legendmod.ml/banners/profilepic_guest.png" />
+                                    <div id="user-stats" class="clearfix" style="position: relative; top: 10px; width: 100%; display: none;">
+                                        <div id="close-stats" style="float: right;">X</div>
+                                        <br />
+                                        <div id="stats-content" style="float: right; width: 50%; display: inline-block; font-size: 12px;"></div>
+                                        <div id="user-info" style="font-size: 12px;"></div>
+										<div style="font-size: 12px;">
+										<div id="UserProfileName">Name: <div id="UserProfileName1" class="user-name" style="display:inline-block" >Guest</div></div>
+										<div id="UserProfileUUID">UID: <input id="UserProfileUUID1" class="user-name" style="display:inline-block; width: 180px; font-size: 9px;"></div>
+										<div id="UserProfileUID">Social ID: <div id="UserProfileUID1" class="user-name" style="display:inline-block" ></div></div>
+										<div id="TimesUsedPanel" class="user-name" style="display:inline-block;">Times Used: <div id="TimesUsed" style="display:inline-block"></div></div>
+										</div>
+                                    </div>
      </div>
      <div style="position: relative;" class="clearfix">
       <div class="agario-exp-bar progress">
@@ -115,8 +131,43 @@ var CutNameConflictwithMessage=false;
       <div class="progress-bar-star"></div>
      </div>
      <br clear="both"/>
+                                <div style="width: 100%;">
+                                    <select id="s-boost" class="form-control" onchange="" required="" style="float: left; width: 60%;">
+                                        <option selected="" value="" data-itr="--Select boost--"></option>
+                                        <option value="mass_boost_3x_24h" data-itr="mass_boost_3x_24h(990):"></option>
+                                        <option value="mass_boost_3x_1h" data-itr="mass_boost_3x_1h(490):"></option>
+                                        <option value="mass_boost_2x_24h" data-itr="mass_boost_2x_24h(790):"></option>
+                                        <option value="mass_boost_2x_1h" data-itr="mass_boost_2x_1h(290):"></option>
+                                        <option value="xp_boost_3x_24h" data-itr="xp_boost_3x_24h(990):"></option>
+                                        <option value="xp_boost_3x_1h" data-itr="xp_boost_3x_1h(490):"></option>
+                                        <option value="xp_boost_2x_24h" data-itr="xp_boost_2x_24h(790):"></option>
+                                        <option value="xp_boost_2x_1h" data-itr="xp_boost_2x_1h(290):"></option>
+                                    </select>
+                                    <button id="buy-boost" class="btn btn-primary" style="float: left; width: 20%;">BUY</button>
+                                    <button id="use-boost" class="btn btn-success" style="float: left; width: 20%;">USE</button>
+                                </div>
+                                <br clear="both" />
+                                <div id="xp-active" style="width: 100%;"></div>
+                                <div id="mass-active" style="width: 100%;"></div>
+                                <div id="quest-active" style="width: 100%;"></div>
+                                <div id="player-skins" class="submenu-panel" style="display: none; width: 100%; height: 250px;"></div>
+
+                                <div id="potions" class="clearfix">
+                                    <div id="potion1" class="potion">
+                                        <img src="https://dead-mod.github.io/img/potion_empty.png" />
+                                        <div>empty</div>
+                                    </div>
+                                    <div id="potion2" class="potion">
+                                        <img src="https://dead-mod.github.io/img/potion_empty.png" />
+                                        <div>empty</div>
+                                    </div>
+                                    <div id="potion3" class="potion">
+                                        <img src="https://dead-mod.github.io/img/potion_empty.png" />
+                                        <div>empty</div>
+                                    </div>
+                                </div>
+                                <br clear="both" />
     </div>
-   </div>
    <div class="center-container">
     <div id="mainPanel" class="agario-panel">
      <div role="form" novalidate>
