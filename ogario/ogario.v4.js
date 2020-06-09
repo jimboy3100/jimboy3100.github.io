@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia
 // This is part of the Legend mod project
-// v1.822
+// v1.832
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -152,6 +152,13 @@ function Video(src, append) {
     return v;
 }
 
+window.changeOnline = function(option) {
+  console.log("online switcher")
+
+                //8, 1, 18, 13, 8, 80, 130, 5, 8, 10, 6, 8, 2, 16, 13, 32, 0
+    var bytes = [8, 1, 18, 13, 8, 80, 130, 5, 8, 10, 6, 8, 2, 16, 13, 32, option];
+    window.core.proxyMobileData(bytes);
+}
 
 function autocoins(slot) {
     //var bytes = [8, 1, 18, 18, 8, 110, 242, 6, 13, 10, 11, 104, 111, 117, 114, 108, 121, 66, 111, 110, 117, 115]
@@ -747,11 +754,12 @@ var emoticonicons = {
 
 var displayText = {
     pl: {
-        start: 'Start',
+        start: 'Start',		
         settings: 'Ustawienia',
         restoreSettings: 'Przywróc ustawienia domyślne',
         animationGroup: 'Animacja',
         graphics: 'Graphics',
+		onlineStatus: 'Show me online(Facebook)',
         zoomGroup: 'Zoom',
 		boardGroup: 'Boards',
         respGroup: 'Odrodzenie',
@@ -884,6 +892,7 @@ var displayText = {
         showStatsPTE: 'Statystyki: Maksymalna masa wroga do presplitu',
         showStatsN16: 'Statystyki: n/16',
         showStatsFPS: 'Statystyki: FPS',
+		showStatsPPS: 'Statystyki: PPS',
         blockPopups: 'Blokuj popupy (reklamy/sklep/zadanie)',
         hotkeys: 'Skróty klawiszowe',
         'hk-inst-assign': 'Aby ustawić skrót klawiszowy kliknij na polu skrótu i naciśnij wybrany klawisz.',
@@ -1177,6 +1186,7 @@ var displayText = {
         restoreSettings: 'Restore default settings',
         animationGroup: 'Animation',
         graphics: 'Graphics',
+		onlineStatus: 'Show me online(Facebook)',
         zoomGroup: 'Zoom',
 		boardGroup: 'Boards',
         respGroup: 'Respawn',
@@ -1310,6 +1320,7 @@ var displayText = {
         showStatsPTE: 'Game stats: Maximal enemy\'s mass for presplit',
         showStatsN16: 'Game stats: n/16',
         showStatsFPS: 'Game stats: FPS',
+		showStatsPPS: 'Game stats: PPS',
         blockPopups: 'Block popups (ads/shop/quest)',
         hotkeys: 'Hotkeys',
         'hk-inst-assign': 'To assign a hotkey click on the input field and press your chosen key.',
@@ -2287,6 +2298,7 @@ var defaultmapsettings = {
     isAlphaChanged: false,
     jellyPhisycs: false,
     virusSound: false,
+	onlineStatus: true,
 	potionsDrinker: true,
 	massBooster: false,
     quickResp: true,
@@ -2385,6 +2397,7 @@ var defaultmapsettings = {
     showStatsSTE: false,
     showStatsN16: true,
     showStatsFPS: true,
+	showStatsPPS: true,
     blockPopups: false,
     streamMode: false,
     hideSkinUrl: false,
@@ -2986,6 +2999,13 @@ function thelegendmodproject() {
             this.setMiniMapWidth();
             this.setMiniMapSectorsOpacity();
         },
+		switchOnlineStatus() {
+			if (defaultmapsettings.onlineStatus==true) {
+			window.changeOnline(1);
+			} else {
+			window.changeOnline(0);
+			}
+		},		
         setMiniMapFont() {
             this.setFont('miniMapFont', defaultSettings.miniMapFont);
             if (application) {
@@ -3121,6 +3141,22 @@ function thelegendmodproject() {
         virusSoundurl: null,
         FacebookIDs: null,
         feedInterval: null,
+		blacklist: ['Senpa','Admin','xAzz','obobemnai'],
+		brokenSkins: {'https://raw.githubusercontent.com/Yahnych/vanilla_skins/master/agar/Guitarist.png':1,
+                 'https://raw.githubusercontent.com/Yahnych/vanilla_skins/master/agar/Dancer.png':1},
+		boostsInfo:{
+                "mass_boost_3x_24h":{price:990,name:"Mass 3X/24H"},
+                "mass_boost_3x_1h":{price:490,name:"Mass 3X/1H"},
+                "mass_boost_2x_24h":{price:790,name:"Mass 2X/24H"},
+                "mass_boost_2x_1h":{price:290,name:"Mass 2X/1H"},
+                "xp_boost_3x_24h":{price:990,name:"XP 3X/24H"},
+                "xp_boost_3x_1h":{price:490,name:"XP 3X/1H"},
+                "xp_boost_2x_24h":{price:790,name:"XP 2X/24H"},
+                "xp_boost_2x_1h":{price:290,name:"XP 2X/1H"}
+		},
+		replayData: [],
+		replays: {r:[]},
+		replayMode: false,		
         getPlayerX() {
 			
             return ogario.playerX + ogario.mapOffsetX;
@@ -3664,11 +3700,18 @@ function thelegendmodproject() {
                     }
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
-                    }
+                    }					
                 }
                 if (defaultmapsettings.showStatsFPS) {
                     t += 'FPS: ' + drawRender.fps;
                 }
+				if (defaultmapsettings.showStatsPPS) {
+					if (defaultmapsettings.showStatsFPS || ogario.play ) t += ` | `;
+					var color = ''
+					if(LM.pps<23 || LM.pps>29) color = 'color:#ff4c4c'
+					if(LM.pps<20 || LM.pps>32) color = 'color:red'
+					t += 'PPS: <span style="'+color+'">'+LM.pps+'</span>';
+				}				
                 this.statsHUD.textContent = t;
                 var app = this;
                 setTimeout(function() {
@@ -4400,6 +4443,7 @@ function thelegendmodproject() {
                 $(".agario-profile-panel").after('<div id="block-warn">' + textLanguage.blockWarn + '<br><a href="#" id="unblock-popups">' + textLanguage.unblockPopups + "</a></div>");
                 $("#exp-bar").addClass("agario-profile-panel"), $(".left-container").empty();
                 $(".agario-shop-panel").after('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">The Legend Mod Project</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>');
+				
                 $("#tags-container").appendTo($("#profile"));
                 //$('.btn.btn-warning.btn-spectate.btn-needs-server').after('<button id="logoutbtn" onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout">Logout</button>');
 				//$(".btn-logout").appendTo($("#profile"));
@@ -4472,7 +4516,7 @@ function thelegendmodproject() {
                 this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup");
                 this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChatTranslation", "hidecountry", "universalChat"], "chatGroup");
                 this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup");
-                this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
+                this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
                 this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
                 //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
                 this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
@@ -4596,6 +4640,9 @@ function thelegendmodproject() {
                 app.saveSettings(defaultmapsettings, "ogarioSettings");
                 app.setShowSkinsPanel();
             });
+			$(document).on("click", "#onlineStatus", event => {
+				setTimeout(()=>{Settings.switchOnlineStatus()},500);
+			});			
             $(document).on("change", "#region", function() {
                 app.region = this.value;
             });
@@ -4611,6 +4658,43 @@ function thelegendmodproject() {
                 app.getQuality(this.value);
                 ogarhusettings();
             });
+        $(`#skin`).popover({
+            html: true,
+            placement: `bottom`,
+            trigger: 'manual',
+            animation: false
+        });
+        $(document).on(`input click`, `#skin`, function() {
+            const value = this.value;
+            app.setSkinPreview(value, `skin-preview`);
+            app.setSkinPreview(value, `profile-` + app.selectedProfile);
+        });
+        $(document).on(`click`, '.skin .example-url a', function(event) {
+            event.preventDefault();
+            $(`#skin`).val(this.href).click();
+        });
+        $(document).on(`click`, `#overlays`, () => {
+            if (!$(`.skin:hover`).length && !$('.skin-switch:hover').length) {
+                $(`#skin`).popover(`hide`);
+            }
+        });
+        $(document).on(`click`, `.vanilla-skin-preview`, () => {
+            if ($("#player-skins").is(":visible")) {
+                $("#player-skins").hide();
+            } else {
+                $('#player-skins').show();
+            }
+        });
+        $(document).on(`click`, `.agario-profile-picture`, () => {
+            if ($("#user-stats").is(":visible")) {
+                $("#user-stats").hide();
+            } else {
+                $('#user-stats').show();
+            }
+        });
+        $(document).on(`click`, `#close-stats`, () => {
+                $("#user-stats").hide();
+        });			
             $(document).on("input", "#skin", function() {
                 var hexInputVal = this.value;
                 app.setSkinPreview(hexInputVal, "skin-preview");
@@ -9253,6 +9337,7 @@ function thelegendmodproject() {
                         window.legendmod.bgpi = 4;
                     }
                     break;
+					
                 case 85:
                     window.testobjectsOpcode85 = data;
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Captcha requested');
@@ -9269,6 +9354,8 @@ function thelegendmodproject() {
                     //}
                     break;
                 case 102:
+
+					//break;				
                     if (data.byteLength < 20) {
                         //this["loggedIn"] = ![];
                         //if (window["logout"]) {
@@ -9276,6 +9363,10 @@ function thelegendmodproject() {
                         //}
                     }
                     if (data.buffer.byteLength > 1000) {
+						var msg = new buffer.Buffer(data.buffer.slice(1));
+						this.onMobileData(msg);		
+						
+						//
                         window.testobjects = data;
                         var sampleBytes = new Uint8Array(window.testobjects.buffer);
                         var enc = new TextDecoder();
@@ -9923,8 +10014,7 @@ function thelegendmodproject() {
                 case 16:
                     //this.updateCells(new LMbuffer(data['buffer']), s);
                     this.updateCells(new window.buffer.Buffer(data.buffer), s);
-
-                    //this.countPps()
+					this.countPps()
                     break;
                 case 64:
                     //var message = new LMbuffer(data['buffer'])						
@@ -9949,11 +10039,673 @@ function thelegendmodproject() {
                     console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Unknown opcode:', data.getUint8(0));
             }
         },
+		countPps() {
+			if (!defaultmapsettings.showStatsPPS) {
+				return;
+			}
+			const Time = Date.now();
+			if (!this.ppsLastRequest) {
+				this.ppsLastRequest = Time;
+			}
+			if (Time - this.ppsLastRequest >= 1000) {
+				this.pps = this.totalPackets;
+				this.totalPackets = 0;
+				this.ppsLastRequest = Time;
+			}
+			this.totalPackets++;
+		},
+		onMobileData: function (msg) {
+            if (msg == null) {
+                return
+            }
+            const response = window.decodeMobileData(msg);
+            console.log(response);
+            this.unpackageMessage(response);
+		},
+    unpackageMessage: function (r) {
+            //var returnMessage = r;
+
+            var type = r.uncompressedData.type;
+            switch (type) {
+            case 71:
+                console.log("returnMessage = r.get_softPurchaseResponseField();");
+                break;
+            case 74:
+                console.log("returnMessage = r.get_inappPurchaseResponseField();");
+                break;
+            case 20:
+                var u = r.uncompressedData.disconnectField;
+                    this.disconnectMessage(u.reason);
+
+                    this.loggedIn = false;
+                    window.logout && window.logout();
+
+                break;
+            case 113:
+                var u = r.uncompressedData.activateBoostResponseField;
+                this.updateWalletInfo([u.productUpdates[0].userWalletItem]);
+                this.displayActiveBoosts([u.userBoostItem]);
+                break;
+            case 11:
+                this.user = {coins:0,
+                             dna:0,
+                             trophy:0,
+                             boosts:{},
+                             rushBoosts:{},
+                             skins:{},
+                             skinPieces:{},
+                             potions:{},
+                             potionsStatus:{},
+                             skipBrew:{}};
+                var u = r.uncompressedData.loginResponseField;
+                
+                if(window.coinsTimer) clearTimeout(window.coinsTimer);
+                window.coinsTimer = setTimeout(()=>{window.autocoins()},3000);
+                
+                window.localStorage.setItem("getLatestID", u.latestConfiguration);
+                
+                this.updateWalletInfo(u.userWallet);
+                
+                this.displayActiveBoosts(u.userBoosts);
+                
+                this.user.stats = u.userStats;
+                this.displayStats(u.userStats);
+                
+                this.updateEvents(u.userTimedEvents)
+                
+                this.displayActiveQuests(u.userActiveQuests);//FIX IT
+                
+                this.createSkinsHTML();
+                
+                this.updateUserSettings(u.userSettings)
+                
+                this.updateUserInfo(u.userInfo)
+
+                this.updatePotions(u.userPotions)
+                break;
+            case 81:
+                var u = r.uncompressedData.updateUserSettingsResponseField;
+                this.updateUserSettings(u.updatedUserSettings)
+                break;
+            case 111:
+                var u = r.uncompressedData.activateTimedEventResponseField;
+                this.updateProducts(u.productUpdates);
+                this.updateEvents([u.userTimedEvent])
+                break;
+            case 76:
+                console.log("returnMessage = r.get_purchaseWalletUpdatesField();");
+                break;
+            case 62:
+                var u = r.uncompressedData.gameOverField;
+                this.displayStats(u.userStats);
+                var exp = 100,
+                    i = u.xpLevelUpdates[0];
+                if(i.finalLevel!=100) exp = ~~(i.finalXpForLevel*100/this.agarExp(i.finalLevel));
+                $('.progress-bar-striped').width(exp + '%');
+                $('.progress-bar-star').text(i.finalLevel);
+                this.updateProducts(u.productUpdates);
+                if(u.potionInfo&&u.potionInfo.newUserPotion){
+                  this.newPotion(u.potionInfo.newUserPotion);
+                };
+                this.showSessionStats(u.gameSessionStats);
+                break;
+            case 75:
+                console.log("returnMessage = r.get_walletUpdatesField();");
+                break;
+            case 116:
+                console.log("returnMessage = r.get_userTimedEventUpdatesField();");
+                break;
+            case 33:
+                console.log("returnMessage = r.get_configurationChangeField();");
+                break;
+            case 101:
+                console.log("returnMessage = r.get_claimGiftsResponseField();");
+                break;
+            case 115:
+                var u = r.uncompressedData.activateQuestResponseField;
+                this.updateProducts(u.productUpdates);
+                this.displayActiveQuests([u.userQuest])
+                break;
+            case 78:
+                console.log("returnMessage = r.get_offerBundleResponseField();");
+                break;
+            case 123:
+                var u = r.uncompressedData.brewPotionForSlotResponseField;
+                this.updatePotions(u.userPotions)
+                break;
+            case 121:
+                console.log("returnMessage = r.get_openPotionForProductResponseField();");
+                break;
+            case 125:
+                var u = r.uncompressedData.openPotionForSlotResponseField;
+                this.updateProducts(u.productUpdates);
+                this.updatePotions(u.userPotions)
+                break;
+            case 131:
+                console.log("returnMessage = r.get_userLeaguesInfoResponseField();");
+                break;
+            case 132:
+                console.log("returnMessage = r.get_userLeaguesPassUpdateField();");
+                break;
+            case 83:
+                console.log("returnMessage = r.get_userStatsResponseField();");
+                break;
+            case 105:
+                console.log("returnMessage = r.get_facebookInvitationRewardUpdatesField();");
+                break;
+            case 22:
+                console.log("returnMessage = r.get_noProperResponseField();");
+                break;
+            case 184:
+                console.log("returnMessage = r.get_activateRewardLinkResponseField();");
+                break;
+            case 186:
+                console.log("returnMessage = r.get_genericVideoAdRewardTokenResponseField();");
+                break;
+            case 151:
+                console.log("returnMessage = r.get_userSkinsCreateResponseField();");
+                break;
+            case 170:
+                var u = r.uncompressedData.actionCountersUpdateField,
+                    prev = this.user.actionCounters;
+                if(u.potionsObtained>prev.potionsObtained)  toastr.info(`New potion`);
+                if(u.questsCompleted>prev.questsCompleted)  toastr.info(`Quest completed`);
+                if(u.skinsCreated>prev.skinsCreated)  toastr.info(`Skin created`);
+                break;
+            default:
+                //null
+                console.log("unknown type",type)            
+            }
+            //return returnMessage
+        },
+    disconnectMessage(type) {
+        switch (type) {
+            case 1:
+                toastr.error('User disconnected. Incompatible client')
+                break;
+            case 2:
+                toastr.error('User disconnected. Packet not authorized')
+                break;
+            case 3:
+                toastr.error('User disconnected. Login elsewhere')
+                break;
+            case 4:
+                toastr.error('User disconnected. Server offline')
+                break;
+            case 5:
+                toastr.error('User disconnected. User banned')
+                break;
+            case 6:
+                toastr.error('User disconnected. Ping error')
+                break;
+            case 7:
+                toastr.error('User disconnected. Unknown game type')
+                break;
+            case 8:
+                toastr.error('User disconnected. Too many operations')
+                break;
+            case 9:
+                toastr.error('User disconnected. Unreachable realm')
+                break;
+            case 10:
+                toastr.error('User disconnected. User deleted')
+                break;
+            case 11:
+                toastr.error('User disconnected. Not authorized by realm')
+                break;
+            case 12:
+                toastr.error('User disconnected. Bad request')
+                break;
+            case 13:
+                toastr.error('User disconnected. Reset by peer')
+                break;
+            case 14:
+                toastr.error('User disconnected. Invalid token')
+                break;
+            case 15:
+                toastr.error('User disconnected. Expired token')
+                break;
+            case 16:
+                toastr.error('User disconnected. State transfer error')
+                break;
+            default:
+                toastr.error('User disconnected. Unknown error: ' + type)
+        }
+    },
+    updateProducts(prod){
+      for(var i=0;i<prod.length;i++){
+        this.updateWalletInfo([prod[i].userWalletItem])
+      }
+    },
+    updateWalletInfo(items){
+      for(var i=0; i<items.length; i++){
+         var type = items[i].type;
+         switch (type) {
+            case 1:
+                        var name = items[i].productId;
+                        switch (name) {
+                                case "coin":
+                                              this.user.coins = items[i].amount;
+                                              $("#coins").html(`💰`+this.user.coins);
+                                              break;
+                                case "dna":
+                                              this.user.dna = items[i].amount;
+                                              $("#dna").html(`🧬`+this.user.dna);
+                                              break;
+                                case "create_skin_token_for_vip_weekly":
+                                              //this.user.skinCreateVIPTokens = items[i].amount;
+                                              break;
+                                default:
+                                              console.log("unknown item",items[i])   
+                        }
+                break;
+            case 2:
+                        this.user.boosts[items[i].productId] = items[i].amount;
+						            $('#s-boost option[value=\"' + items[i].productId + '\"]').text(' (' + items[i].amount + ') '+ ' ['+ application.boostsInfo[items[i].productId].price + ']  ' + application.boostsInfo[items[i].productId].name);
+                break;
+            case 3:
+                        /*var name = items[i].productId;
+                        if (name.includes && name.includes("_level_")) {
+                          var level = name[name.length-1],
+                              s = name.slice(0,name.length-1);
+                          console.log(s, level)
+                          if(level == "1") {
+                            if(this.user.skins.hasOwnProperty(s+"2")) {break;}
+                            if(this.user.skins.hasOwnProperty(s+"3")) {break;}
+                          } else if(level == "2") {
+                            if(this.user.skins.hasOwnProperty(s+"1")) {
+                              //this.user.skins[name+"1"].disabled = true;
+                              delete this.user.skins[s+"1"];}
+                            if(this.user.skins.hasOwnProperty(s+"3")) {break;}
+                          } else if(level == "3") {
+                            if(this.user.skins.hasOwnProperty(s+"1")) {
+                              //this.user.skins[name+"2"].disabled = true;
+                              delete this.user.skins[s+"1"];}
+                            if(this.user.skins.hasOwnProperty(s+"2")) {
+                              //this.user.skins[name+"2"].disabled = true;
+                              delete this.user.skins[s+"2"];}
+                          }
+                        }*/
+                        var skin = this.getLink(items[i].productId);
+                        if(skin){
+                        var url = this.urlReplaces.hasOwnProperty(skin[0])?this.urlReplaces[skin[0]]:skin[0],
+                            pID = items[i].productId;
+                        if(pID.includes("_level_") && this.user.skins.hasOwnProperty(skin[0])){
+                          if(Number(pID[pID.length-1])<Number(this.user.skins[skin[0]].productId[pID.length-1])){
+                            pID = this.user.skins[skin[0]].productId;
+                          }
+                        } 
+                        this.user.skins[skin[0]] = {amount:items[i].amount,type:skin[1],url:url, productId: pID};
+                        } else {console.log("undefined skin", items[i].productId, skin ) };
+                break;
+            case 4:
+                        if(items[i].amount>0) window.activateQuest();
+                break;
+            case 5:
+                        this.user.rushBoosts[items[i].productId] = items[i].amount;
+                break;
+            case 6:
+                        this.user.potions[items[i].productId] = items[i].amount;
+                break;
+            case 7:
+                        this.user.trophy = items[i].amount;
+                        $("#trophy").html(`🏆`+this.user.trophy);
+                break;
+            case 8:
+                        this.user.skinPieces[items[i].productId] = items[i].amount;
+                break;
+            case 9:
+                        this.user.skipBrew[items[i].productId] = items[i].amount;
+                break;
+            case 10:
+                        //this.user.skinCreateTokens = items[i].amount;
+                break;
+            case 11:
+                        var skin = this.getLink(items[i].productId),
+                            url = this.urlReplaces.hasOwnProperty(skin[0])?this.urlReplaces[skin[0]]:skin[0];
+                        if(skin) this.user.skins[skin[0]] = {amount:items[i].amount,type:skin[1],url:url, productId: items[i].productId};
+                break;
+            case 12:
+                        //this.user.gameContinueToken = items[i].amount;
+                break;
+            case 13:
+                        var name = items[i].productId;
+                        switch (name) {
+                                case "arena_event_token":
+                                              //this.user.arenaEventToken = items[i].amount;
+                                              break;
+                                case "season_token":
+                                              //this.user.seasonToken = items[i].amount;
+                                              break;
+                                default:
+                                              console.log("unknown item",items[i])   
+                        }
+                break;
+            case 14:
+                        //this.user.videoRewards = items[i].amount;
+                break;
+            default:
+                console.log("unknown item",items[i])            
+         }
+      }
+    },
+    showSessionStats(u){
+      toastr.info(`
+Final mass: ${u.finalMass}<br>
+Final position: ${u.finalPosition}<br>
+Food eaten: ${u.foodEaten}<br>
+Highest mass: ${u.highestMass}<br>
+Longest time alive: ${u.longestTimeAlive}<br>
+Mass consumed: ${u.massConsumed}<br>
+Normal cells eaten: ${u.normalCellsEaten}<br>
+Players eaten: ${u.playersEaten}<br>
+Time in leaderboard: ${u.timeInLeaderboard}<br>
+Total time: ${u.timeTotal}<br>
+Top position: ${u.topPosition}<br>
+Viruses eaten: ${u.virusesEaten}`)
+    },
+    updateEvents(event){
+      if(event.length==0) window.questActivationReq()
+      for(var i=0; i<event.length; i++){
+        var e = event[i],
+            type = e.eventId,
+            timer = e.nextAvailableInSeconds*1000;
+        switch (type) {
+            case "dailyQuest":
+                 if(window.dailyQuestTimer) clearTimeout(window.dailyQuestTimer);
+                 window.dailyQuestTimer = setTimeout(()=>{window.questActivationReq()},timer);
+                break;
+            case "hourlyBonus":
+                 if(window.coinsTimer) clearTimeout(window.coinsTimer);
+                 window.coinsTimer = setTimeout(()=>{window.autocoins()},timer);
+                break;
+            case "potionSkipBrew"://maybe it help to autobrewing
+                 console.log("can open after", timer/60000)
+                 //if(window.coinsTimer) clearTimeout(window.coinsTimer);
+                 //window.coinsTimer = setTimeout(()=>{window.activateQuest()},timer);
+                break;
+            default:
+                  console.log("unknown event", e)
+        }
+      }
+    },
+    newPotion(s) {
+      if(window.autobrewTimer) clearTimeout(window.autobrewTimer);
+      window.autobrewTimer = setTimeout(()=>{LM.autobrew()},3000);
+          var t = s.productId,
+              r = s.secondsRemaining,
+              potion = "potion"+s.slot,
+              time = new Date(Date.now()+r*1000),
+              expire = time.toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
+        this.user.potionsStatus[potion]={type:t,status: s.status, expires: time,slot:s.slot};
+        $(`#${potion} img`).attr('src', `https://blooming-tulip.glitch.me/dead/img/${t}.png`);
+        if(s.status==1) {
+          if(defaultmapsettings.autobrewing&&this.user.brewingEnd<Date.now()) window.brewPotion(s.slot);
+          $(`#${potion} img`).css("border-color", "red");
+          $(`#${potion} div`).css("border-color", "red");
+          $(`#${potion} div`).text('brew');
+        } ;
+      
+      this.user.emptySlots -= 1;
+    },
+    updatePotions(slots){
+      var empty = ["potion1","potion2","potion3"];
+      this.user.brewedSlots = 0;
+      if(window.autobrewTimer) clearTimeout(window.autobrewTimer);
+      window.autobrewTimer = setTimeout(()=>{LM.autobrew()},3000);
+      for(var i=0;i<slots.length;i++){
+        var s = slots[i],
+              t = s.productId,
+              r = s.secondsRemaining,
+              potion = "potion"+s.slot,
+              time = new Date(Date.now()+r*1000),
+              expire = time.toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1'),
+              index = empty.indexOf(potion);
+        if(index>-1) empty.splice(index, 1);
+        this.user.potionsStatus[potion]={type:t,status: s.status, expires: time,slot:s.slot};
+        $(`#${potion} img`).attr('src', `https://blooming-tulip.glitch.me/dead/img/${t}.png`);
+        if(s.status==1) {
+          $(`#${potion} img`).css("border-color", "red");
+          $(`#${potion} div`).css("border-color", "red");
+          $(`#${potion} div`).text('brew');
+        } else if(s.status==2) {
+          this.user.brewingEnd = time;
+          if(window.autobrewTimer) clearTimeout(window.autobrewTimer);
+          window.autobrewTimer = setTimeout(()=>{LM.autobrew()},r*1000);
+          $(`#${potion} img`).css("border-color", "yellow");
+          $(`#${potion} div`).css("border-color", "yellow");
+          $(`#${potion} div`).text(expire);
+        } else if(s.status==3) {
+          this.user.brewedSlots ++;
+          $(`#${potion} img`).css("border-color", "green");
+          $(`#${potion} div`).css("border-color", "green");
+          $(`#${potion} div`).text('open');
+        };
+      }
+      this.user.emptySlots = empty.length;
+      empty.forEach((potion)=>{
+          $(`#${potion} img`).attr('src', `https://blooming-tulip.glitch.me/dead/img/potion_empty.png`);
+          $(`#${potion} img`).css("border-color", "grey");
+          $(`#${potion} div`).css("border-color", "grey");
+          $(`#${potion} div`).text('empty');
+      })
+    },	
+    autobrew(){
+      if(defaultmapsettings.autobrewing&&(window.master.context=="facebook"||window.master.context=="google")){
+        for(var potion of Object.values(LM.user.potionsStatus)){
+          if(potion.status==1){
+            window.brewPotion(potion.slot);
+            break;
+          }
+        };
+      }
+    },
+    getPotionForOpen(){
+      if((window.master.context=="facebook"||window.master.context=="google")){
+        for(var potion of Object.values(LM.user.potionsStatus)){
+          if(potion.status==3||(potion.status==2&&this.user.brewingEnd<Date.now())){
+            window.openPotion(potion.slot);
+            break;
+          }
+        };
+      }
+    },
+    updateUserSettings(s) {
+      for(var i=0; i<s.length; i++){
+         var key = s[i].key;
+         switch (key) {
+            case 1:
+                   var skin = this.getLink(s[i].valueString),
+                       url = this.urlReplaces.hasOwnProperty(skin[0])?this.urlReplaces[skin[0]]:skin[0];
+                   $('.vanilla-skin-preview').attr('src', url);
+                break;
+            case 2:
+                   //stop moving on relise (1,0)
+                break;
+            case 3:
+                   //direction on touch (1,0)
+                break;
+            case 4:
+                   //touch button position (string)
+                break;
+            case 5:
+                   //show mass (1,0)
+                break;
+            case 6:
+                   //show arrow(to cursor) (1,0)
+                break;
+            case 7:
+                   //dark theme (1,0)
+                break;
+            case 8:
+                   //show level (1,0)
+                break;
+            case 9:
+                   //language (string)
+                break;
+            case 10:
+                   //game sounds (1,0)
+                break;
+            case 11:
+                   //menu sounds (1,0)
+                break;
+            case 12:
+                   //show quest (1,0)
+                break;
+            case 13:
+                   //show quest (1,0)
+                   this.user.showOnline = s[i].valueInt32;//FIX IT
+                break;
+            default:
+                console.log("unknown settings",s[i])            
+         }
+      }
+    },
+    urlReplaces: {},
+    getImg(url, name, callback) {
+        const app = this;
+        var img = new Image();
+        img.crossOrigin = `Anonymous`;
+        img.setAttribute("alt",name);
+        img.onload = function() {
+            if (this.complete && this.width && this.height) {
+                callback(img);
+            }
+        };
+        img.onerror = function() {
+            console.log("error loading image: "+ url);
+            if (url.includes('configs-web.agario.miniclippt')) {
+                var newURL = "https://raw.githubusercontent.com/Yahnych/vanilla_skins/master/agar/" + url.split('/').pop();
+                app.urlReplaces[url] = newURL;
+                console.log("new destination is: " + newURL);
+                app.user.skins[url].url = newURL;
+                app.getImg(newURL, name, callback);
+                return newURL;
+
+            } else if (url.includes('vanilla_skins/master/agar')) {
+                if(!application.brokenSkins.hasOwnProperty(url)){
+                   application.brokenSkins[url] = 1;
+                   application.messageToDiscord('Unknown skin: ', url);
+                }
+                return url;
+            }
+        };
+        img.src = url;
+    },
+    getLink(link) {
+      var type = "premium";
+            if (link != null) {
+
+                if (link.includes && link.includes("custom_")) {
+                    type = "custom";
+                    return ["https://configs.agario.miniclippt.com/live/custom_skins/" + link + ".png",type];
+                } else if (link.includes && link.includes("_level_")) {
+                    type = "potion";
+                    var link1 = link.replace('skin_', '')
+                    link1 = link1.replace('_level_1', '').replace('_level_2', '').replace('_level_3', '');
+                    link1 = link1.charAt(0).toUpperCase() + link1.slice(1);
+                    link1 = makeUpperCaseAfterUnderline(link1);
+                    return ["https://configs-web.agario.miniclippt.com/live/" + window.agarversion + link1 + ".png", type];
+                } else if (window.LMAgarGameConfiguration != undefined) {
+                    for (var player = 0; player < window.EquippableSkins.length; player++) {
+                        if (window.EquippableSkins[player].productId == link && window.EquippableSkins[player].image != "uses_spine") {
+                            return ["https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image, type];
+                        }
+                    }
+                }
+            }
+    },
+    createSkinsHTML() {
+      const s = this.user.skins;
+      $("#player-skins").html(``);
+      var callback = function(img){
+         img.style = "display:inline-block;width:100px;height:100px;border-radius: 50px;";
+         $("#player-skins").append(img);
+      };
+      for(var [key,value] of Object.entries(s)){
+        //if(value.hasOwnProperty('disabled')) return;
+        this.getImg(value.url, value.productId, callback);
+      }
+    },
+    displayActiveBoosts(items){
+      for(var i=0; i<items.length; i++){
+        var item = items[i];
+                if(item.productId[0]=="x") {
+                  $("#xp-active").html(`${application.boostsInfo[item.productId].name} expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                } else if(item.productId[0]=="m") {
+                  $("#mass-active").html(`${application.boostsInfo[item.productId].name} expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                }
+      }
+    },
+    displayActiveQuests(items){
+      if(items.length==0) window.questActivationReq()
+      for(var i=0; i<items.length; i++){
+        var item = items[i],
+            type = item.type;
+        switch (type) {
+            case "normal_cells_eaten":
+                  $("#quest-active").html(`Eat ${item.goal} cells. Expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                break;
+            case "viruses_eaten":
+                  $("#quest-active").html(`Eat ${item.goal} viruses. Expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                break;
+            case "food_eaten":
+                  $("#quest-active").html(`Eat ${item.goal} dots. Expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                break;
+            case "highest_mass":
+                  $("#quest-active").html(`Reach ${item.goal} mass. Expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                break;
+            case "top_position":
+                  $("#quest-active").html(`Reach TOP-${item.goal} position. Expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                break;
+            case "time_total":
+                  $("#quest-active").html(`Survive ${item.goal/60} minutes. Expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+                break;
+            default:
+                  $("#quest-active").html(`${type} : ${item.goal}. Expires at ${new Date(Date.now()+item.expiresInSeconds*1000).toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1')}`)
+        }
+      }
+    },
+    displayStats(s){
+      $("#stats-content").html(`
+All time score     : ${s.allTimeScore}<br/>
+Games played      : ${s.gamesPlayed}<br/>
+Highest mass      : ${s.highestMass}<br/>
+Longest time alive : ${(s.longestTimeAlive/3600).toFixed(3)} H<br/>
+Mass consumed     : ${s.massConsumed}<br/>
+Most cells eaten   : ${s.mostCellsEaten}
+      `)
+    },
+    updateUserInfo(i) {
+      var exp = 100;
+      if(i.level!=100) exp = ~~(i.xp*100/this.agarExp(i.level));
+      $('.progress-bar-striped').width(exp + '%');
+      $('.progress-bar-star').text(i.level);
+      this.user.actionCounters = i.actionCounters;
+      $("#user-info").html(`
+Account age     : ${~~(i.accountAge/3600/24)}D<br/>
+Potions obtained : ${i.actionCounters.potionsObtained}<br/>
+Quests completed      : ${i.actionCounters.questsCompleted}<br/>
+Skins created : ${i.actionCounters.skinsCreated}<br/>
+Country     : ${i.latestCountryCode}<br/>
+Game name     : ${i.displayName}<br/>
+Game Id   : ${i.userId}
+      `)
+    },
+    agarExp(q) {
+      var s = {};
+      var i = 0, exp = 0;
+      for(i = 1; i <= q; i++) { exp += i * 100; }
+      exp -= 500;
+      if(q <= 4) { exp = q == 1 ? 50 : q == 2 ? 125 : q == 3 ? 250 : 500; }
+      return exp
+    },	
         handleSubmessage(message) {
             var e = 0;
             switch ((message = this.decompressMessage(message)).readUInt8(e++)) {
                 case 16:
                     this.updateCells(message, e);
+					this.countPps()
                     break;
                 case 64:
                     this.viewMinX = message.readDoubleLE(e);
@@ -12156,7 +12908,7 @@ function thelegendmodproject() {
         },
         //lulko
         playerHasCells() {
-            return Connection.playerCells.length > 0
+            return LM.playerCells.length > 0
         },
         //lulko
         proxy(data) {
