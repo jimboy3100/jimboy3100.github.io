@@ -1,4 +1,4 @@
-/*v0.04*/
+/*v0.05*/
  @import url(https://legendmod.ml/css/ogicomoon.css);
  @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
  @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
@@ -186,7 +186,7 @@
      text-align:center 
 }
  .ogario-yt-panel{
-	marginBottom:-10px
+     marginBottom:-10px 
 }
  .dark .yt-username{
      color:#fff 
@@ -222,7 +222,7 @@
  .btn{
      border:none;
      text-transform:uppercase;
-	 text-transform: capitalize
+     text-transform: capitalize 
 }
  .btn-primary{
      background-color:#018cf6!important 
@@ -277,7 +277,6 @@
  #server-token,#server-ws,.nick{
      width:65% 
 }
-
  #locationKnown #region,#locationUnknown #region{
      width:54% 
 }
@@ -298,7 +297,7 @@
      margin-bottom:0 
 }
  #server-token,.btn-server-info,.skin,#gamemode,#server-reconnect,#region,.btn-logout,.btn-spectate,#server-reconnect,#party-token,#join-party-btn,#join-party-btn-2{
-      margin-top:6px; 
+     margin-top:6px;
 }
  #server-token,#server-join,#agario-main-buttons{
      margin-top :-10px;
@@ -335,17 +334,20 @@
  #party-token{
      width:65%!important;
      height:35px;
-     /*margin-top:6px;*/
+    /*margin-top:6px;
+    */
      float:left!important 
 }
  #join-party-btn,#join-party-btn-2{
      width:33%!important;
      height:35px;
-     /*margin-top:6px;*/
+    /*margin-top:6px;
+    */
      float:left!important 
-} 
+}
  #join-party-btn,#join-party-btn-2{
-     /*margin-top:0;*/
+    /*margin-top:0;
+    */
      float:right!important 
 }
  #create-party-btn,#create-party-btn-2{
@@ -748,7 +750,6 @@
 }
  #overlays-hud,#statsContinue2{
      position:absolute 
-	 
 }
  #theme .color-box{
      width:50%;
@@ -821,7 +822,7 @@
 }
  #statsText{
      color:#fff;
-	 font-size:medium
+     font-size:medium 
 }
  #stats hr{
      border-top:1px solid #002f52 
@@ -840,9 +841,8 @@
      font-size:20px;
      z-index:100 
 }
-
  #overlays{
-	 z-index:100 
+     z-index:100 
 }
  .hud,.hud-b,.hud-c{
      display:none;
@@ -901,7 +901,6 @@
      display:block 
 }
  #top5-hud{
-
      width:300px;
      font-size:100%;
      top:55px;
@@ -967,7 +966,6 @@
      opacity:.1 
 }
  #leaderboard-hud{
-
      font-size:100%;
      white-space:nowrap;
      padding:0;
@@ -1502,7 +1500,7 @@
      padding: 8px;
      outline: none;
      margin-left: 10px;
-	 margin-right: 10px;
+     margin-right: 10px;
 }
  #botsNameLM:focus, #botsAmount:focus, #botsRemoteIP:focus, #captchaSpeed:focus {
      border-color: #7D7D7D;
@@ -1542,3 +1540,51 @@
  #stopBots:active {
      background-color: #9A1B00;
 }
+ #skins2 {
+     -border: 1px solid;
+     height: 180px;
+     width: 180px;
+     position: relative;
+     transform: translateX(-50%);
+     left: 50%;
+}
+ #skin-preview2 {
+     z-index: 1;
+     width: 100%;
+     height: 100%;
+     border-radius: 50%;
+     top: 50%;
+     left: 50%;
+     transform: translate(-50%, -50%);
+     position: absolute;
+     overflow: hidden;
+}
+ #skins > #skin-preview2 {
+     z-index: 100;
+     width: 200px;
+     height: 200px;
+}
+ .thumb {
+     vertical-align: bottom;
+     text-align: center;
+     background: rgba(255, 255, 255, 0.078);
+     -border: 0.5px solid;
+     width: 40px;
+     height: 40px;
+     border-radius: 50%;
+     top: 50%;
+     left: 50%;
+     transform: translate(-50%, -50%);
+     position: absolute;
+     transition: transform 100ms;
+     overflow: hidden;
+}
+ .thumb:hover {
+     z-index: 300 !important;
+     box-shadow: 0 0 0 1px red;
+}
+ img {
+     height: 100%;
+     width: 100%;
+}
+ 
