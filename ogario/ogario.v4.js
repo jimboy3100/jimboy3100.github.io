@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych
 // This is part of the Legend mod project
-// v1.875
+// v1.876
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -967,7 +967,7 @@ var displayText = {
         textStroke: 'Obwódki nazw i masy',
         namesStroke: 'Obwódki nazw',
         massStroke: 'Obwódki masy',
-		bubbleCursorTracker: 'Bubble tracker (disables cursos tracking)',
+		bubbleCursorTracker: 'Bubble tracker (disables cursor tracking)',
 		bubbleInd: 'Bubble indicators (disables opponent rings)',
         cursorTracking: 'Śledzenie kursora',
         teammatesInd: 'Wskaźniki graczy teamu',
@@ -1403,7 +1403,7 @@ var displayText = {
         textStroke: 'Names and mass stroke',
         namesStroke: 'Names stroke',
         massStroke: 'Mass stroke',
-		bubbleCursorTracker: 'Bubble tracker (disables cursos tracking)',
+		bubbleCursorTracker: 'Bubble tracker (disables cursor tracking)',
 		bubbleInd: 'Bubble indicators (disables opponent rings)',
         cursorTracking: 'Cursor tracking',
         teammatesInd: 'Teammates indicators',
@@ -10840,7 +10840,7 @@ Viruses eaten: ${u.virusesEaten}`)
                 app.getImg(newURL, name, callback);
                 return newURL;
 
-            } else if (url.includes('vanilla_skins/master/agar')) {
+            } else if (url.includes('legendmod.ml/vanillaskins/"')) {
                 if(!application.brokenSkins.hasOwnProperty(url)){
                    application.brokenSkins[url] = 1;
                    application.messageToDiscord('Unknown skin: ', url);
