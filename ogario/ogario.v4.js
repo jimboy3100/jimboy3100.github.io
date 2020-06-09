@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych
 // This is part of the Legend mod project
-// v1.878
+// v1.879
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -153,8 +153,7 @@ function Video(src, append) {
 }
 
 window.changeOnline = function(option) {
-  console.log("online switcher")
-
+  //console.log("online switcher")
                 //8, 1, 18, 13, 8, 80, 130, 5, 8, 10, 6, 8, 2, 16, 13, 32, 0
     var bytes = [8, 1, 18, 13, 8, 80, 130, 5, 8, 10, 6, 8, 2, 16, 13, 32, option];
     window.core.proxyMobileData(bytes);
@@ -205,31 +204,31 @@ function genericVideoAdRewardTokenRequest(slot) {
 }
 
 window.openPotion = function(slot) {
-  console.log("open pot", slot)
+  //console.log("open pot", slot)
                 //8, 1, 18, 7, 8, 124, 226, 7, 2, 8, 1
     var bytes = [8, 1, 18, 7, 8, 124, 226, 7, 2, 8, slot];
     window.core.proxyMobileData(bytes);
 }
 
 window.brewPotion = function(slot) {
-	console.log("drew pot", slot)
+	//console.log("drew pot", slot)
 	var bytes = [8, 1, 18, 7, 8, 122, 210, 7, 2, 8, slot] 
     window.core.proxyMobileData(bytes); //PotionDrinkerRare(2) rare
 }
 window.questActivationReq = function() {
-  console.log("quest req")
+  //console.log("quest req")
     var bytes = [8, 1, 18, 17, 8, 110, 242, 6, 12, 10, 10, 100, 97, 105, 108, 121, 81, 117, 101, 115, 116];//agario_proto_Activate_$timed_$event_$request {eventId: "dailyQuest"}
                //8, 1, 18, 17, 8, 110, 242, 6, 12, 10, 10, 100, 97, 105, 108, 121, 81, 117, 101, 115, 116
     window.core.proxyMobileData(bytes);
 }
 window.activateQuest = function() {
-  console.log("quest act")
+  //console.log("quest act")
     var bytes = [8, 1, 18, 27, 8, 114, 146, 7, 22, 10, 20, 113, 117, 101, 115, 116, 95, 97, 99, 116, 105, 118, 97, 116, 105, 111, 110, 95, 50, 52, 104];//agario_proto_Activate_$quest_$request {productId: "quest_activation_24h"}
                //8, 1, 18, 27, 8, 114, 146, 7, 22, 10, 20, 113, 117, 101, 115, 116, 95, 97, 99, 116, 105, 118, 97, 116, 105, 111, 110, 95, 50, 52, 104
     window.core.proxyMobileData(bytes);
 }
 window.changeSkin = function(productID) {
-  console.log("quchange skin", productID)
+  //console.log("quchange skin", productID)
 
   if(productID==null) return
     //agario_proto_User_$setting {hasField__0: 0, type: 1, key: 1, valueString: "skin_empty"}
