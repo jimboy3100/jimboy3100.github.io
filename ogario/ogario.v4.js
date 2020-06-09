@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych
 // This is part of the Legend mod project
-// v1.865
+// v1.866
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -967,8 +967,8 @@ var displayText = {
         textStroke: 'Obwódki nazw i masy',
         namesStroke: 'Obwódki nazw',
         massStroke: 'Obwódki masy',
-		bubbleCursorTracker: 'Bubble tracker',
-		bubbleInd: 'Bubble indicators',
+		bubbleCursorTracker: 'Bubble tracker (disables cursos tracking)',
+		bubbleInd: 'Bubble indicators (disables opponent rings)',
         cursorTracking: 'Śledzenie kursora',
         teammatesInd: 'Wskaźniki graczy teamu',
         FBTracking: 'Facebook bubble tracker',		
@@ -983,7 +983,7 @@ var displayText = {
         showChatImages: 'Pokaż obrazki na czacie',
         showChatVideos: 'Pokaż filmiki na czacie',
         showChatBox: 'Czatbox zamiast wyskakujących wiadomości',
-		showChatTranslation: 'Translate chatbox',
+		showChatTranslation: 'Translate chatbox (Scroll bug)',
         hidecountry: 'Hide my country',
         messageSound: 'Dźwięk powiadomienia o wiadomości',
         commandSound: 'Dźwięk powiadomienia o komendzie',
@@ -1401,8 +1401,8 @@ var displayText = {
         textStroke: 'Names and mass stroke',
         namesStroke: 'Names stroke',
         massStroke: 'Mass stroke',
-		bubbleCursorTracker: 'Bubble tracker',
-		bubbleInd: 'Bubble indicators',
+		bubbleCursorTracker: 'Bubble tracker (disables cursos tracking)',
+		bubbleInd: 'Bubble indicators (disables opponent rings)',
         cursorTracking: 'Cursor tracking',
         teammatesInd: 'Teammates indicators',
         FBTracking: 'Facebook bubble tracker',	
@@ -1417,7 +1417,7 @@ var displayText = {
         showChatImages: 'Show images on chat',
         showChatVideos: 'Show videos on chat',
         showChatBox: 'Chatbox instead of popups',
-		showChatTranslation: 'Translate chatbox',
+		showChatTranslation: 'Translate chatbox (Scroll bug)',
         hidecountry: 'Hide my country',
         messageSound: 'Message notification sound',
         commandSound: 'Command notification sound',
@@ -10514,7 +10514,8 @@ function thelegendmodproject() {
                           }
                         } 
                         this.user.skins[skin[0]] = {amount:items[i].amount,type:skin[1],url:url, productId: pID};
-                        } else {console.log("undefined skin", items[i].productId, skin ) };
+                        } else {//console.log("undefined skin", items[i].productId, skin ) 
+						};
                 break;
             case 4:
                         if(items[i].amount>0) window.activateQuest();
