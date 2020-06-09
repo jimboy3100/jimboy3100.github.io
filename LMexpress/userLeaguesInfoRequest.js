@@ -27,7 +27,7 @@ for (var i=1;i<window.RecordPlayers.length;i++){
             $('#helloContainer').after('<div class="modal fade in" id="LMShop" aria-hidden="false" style="display: block;">' +
 				'<link rel="stylesheet" type="text/css" href="https://legendmod.ml/css/specialeffects.css">' +
 				'<div class="modal-backdrop fade in"></div>' +
-                '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 1000px; height:500px;">' +
+                '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 990px; height:500px;">' +
                 '<div class="modal-content">' +
                 '<div id="CloseLMShop2" class="modal-header"><button id="CloseLMShop" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMShop" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
                 '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'User Leagues Info' + '</h4>' +
