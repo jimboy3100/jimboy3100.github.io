@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych
 // This is part of the Legend mod project
-// v1.876
+// v1.877
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -248,7 +248,7 @@ window.changeSkin = function(productID) {
 			};
 			var bytes = [8, 1, 18, productID.length + 13, 8, 80, 130, 5, productID.length + 8, 10, productID.length + 6, 8, 1, 16, 1, 26];
 			encode(productID);
-      console.log(productID)
+      //console.log(productID)
 	  //core.registerSkin(profiles[application.selectedProfile].nick, null, legendmod.getLink(productID)[0], null);
       application.customSkinsMap[profiles[application.selectedProfile].nick] = legendmod.getLink(productID)[0];
       application.loadSkin(application.customSkinsCache, legendmod.getLink(productID)[0]);
@@ -7199,7 +7199,7 @@ function thelegendmodproject() {
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
                             }, 500), 
 							void(defaultmapsettings.chatSounds && this.playSound(this.commandSound));
-                        defaultmapsettings.hideChat || (toastr.warning('<span class=\"command-nick\">' + a + ': </span><span class=\"command-text\" style = "color:' + mcolor + '">' + n + '</span>' + r), 
+                        defaultmapsettings.hideChat || (toastr.warning('<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r), 
 						defaultmapsettings.chatSounds && this.playSound(this.commandSound));
                     } else $('#messages').append(msg);
                 }
