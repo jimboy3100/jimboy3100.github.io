@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych
 // This is part of the Legend mod project
-// v1.881
+// v1.885
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -2563,7 +2563,7 @@ var defaultmapsettings = {
     virusSoundurl: 'https://legendmod.ml/sounds/sound-gunshot.mp3',
     soundSplit: 'https://www.myinstants.com/media/sounds/quack_5.mp3',
     FacebookIDs: '',
-	clanTagLc: 'QVNJQQ=='
+	clanTagLc: 'RkFC'
 };
 var profiles = [];
 var ogarcopythelb = {
@@ -9988,7 +9988,7 @@ function thelegendmodproject() {
 								window.testobjects102130=node;
                                 console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 User Leagues Info Request", option, response);
                                 break;								
-							case 131:
+							case 131:								
 								window.testobjects102131=node;
 								console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " 102 User Leagues Info Response", option, response);
 								var sampleBytes = new Uint8Array(window.testobjects102131.view.buffer);
@@ -10005,8 +10005,8 @@ function thelegendmodproject() {
 									if (matchNew[i].split("")[1] && matchNew[i].split("")[1].split('')[1]) window.RecordPlayers[i].level=matchNew[i].split("")[1].split('')[1].split('\"')[0] //level
 									if (matchNew[i].split("")[1] && matchNew[i].split("")[1].split('\"')[1]) window.RecordPlayers[i].country=matchNew[i].split("")[1].split('\"')[1].split('\(')[0].replace('', ""); //country
 									if (matchNew[i].split("")[1]) window.RecordPlayers[i].socialid=matchNew[i].split("")[1].split('')[0] //social id						
-									if (matchNew[i].split("�")[1]) window.RecordPlayers[i].icon=matchNew[i].split("�")[1].split('')[0].split('%')[0]  //icon	
-									else if (matchNew[i].split("")[1]) window.RecordPlayers[i].icon=matchNew[i].split("")[1].split('')[0].substr(1);																	
+									if (matchNew[i].split("�")[1]) window.RecordPlayers[i].icon=matchNew[i].split("�")[1].split('')[0].split('%')[0].split('"')[0]  //icon	
+									else if (matchNew[i].split("")[1]) window.RecordPlayers[i].icon=matchNew[i].split("")[1].split('')[0].substr(1).split('"')[0];																	
 								}
 								userLeaguesInfoResponse();
 								break;	
@@ -10436,8 +10436,9 @@ function thelegendmodproject() {
                 this.updateProducts(u.productUpdates);
                 this.updatePotions(u.userPotions)
                 break;
-            case 131:
+            case 131:		
                 console.log("returnMessage = r.get_userLeaguesInfoResponseField();");
+				//window.returnMessage = r.get_userLeaguesInfoResponseField()
                 break;
             case 132:
                 console.log("returnMessage = r.get_userLeaguesPassUpdateField();");
