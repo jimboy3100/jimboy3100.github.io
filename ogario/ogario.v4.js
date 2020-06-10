@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych
 // This is part of the Legend mod project
-// v1.880
+// v1.881
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -8603,6 +8603,7 @@ function thelegendmodproject() {
 		playerCellsMulti: [],
         fbOnline: [],
         arrowFB: [{}],
+		Waves: [],
         ghostCells: [],
         playerX: 0,
         playerY: 0,
@@ -11868,6 +11869,9 @@ Game name     : ${i.displayName}<br/>
                 if (defaultmapsettings.virusesRange) {
                     this.drawVirusesRange(this.ctx, LM.viruses);
                 }
+				//if (defaultmapsettings.waves) {
+					//this.drawWaves();
+				//}				
                 this.drawFood();
 				if (LM.playerCellsMulti.length){
 					this.calMinMaxMulti();
@@ -12014,6 +12018,47 @@ Game name     : ${i.displayName}<br/>
                     }
                 }			
 			},
+			drawWaves(){
+				let waves = LM.Waves
+
+				this.ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
+				for (let length = waves.length-1; length >0; length--) {
+
+					let r = (Date.now()-waves[length].time)/2
+            
+
+					let gradient = this.ctx.createRadialGradient(waves[length].x, waves[length].y, r-r/4, waves[length].x, waves[length].y, r);
+
+					gradient.addColorStop(0, waves[length].color+"00");
+					gradient.addColorStop(1, waves[length].color);
+          
+					this.ctx.strokeStyle = gradient;
+					this.ctx.lineWidth = r/4;
+					this.ctx.beginPath();
+					this.ctx.arc(waves[length].x, waves[length].y, r-r/8, 0, this.pi2, false);
+					this.ctx.closePath();
+					this.ctx.stroke();
+					this.ctx.beginPath();
+					this.ctx.strokeStyle = defaultSettings.splitRangeColor;
+					this.ctx.lineWidth = 5;
+					this.ctx.beginPath();
+					this.ctx.arc(waves[length].x, waves[length].y, r, 0, this.pi2, false);
+					this.ctx.closePath();
+					this.ctx.stroke();
+				if(r>500){
+					LM.Waves.splice(length, 1);
+			}
+        }
+        this.ctx.globalAlpha = 1;
+		/*
+            var wave = {
+              x: LM.cursorX,//window.user.mouseX,
+              y: LM.cursorY,//window.user.mouseY,
+              color: ogario.playerColor
+            }
+            wave.time = Date.now();
+            LM.Waves.push(wave)		  		*/
+    },			
             drawFBTracking(ctx, players, x, y) { //Yahnych
                 for (let length = 0; length < players.length; length++) {
                     let t = players[length];
