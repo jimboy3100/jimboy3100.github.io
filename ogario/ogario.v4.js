@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych
 // This is part of the Legend mod project
-// v1.885
+// v1.886
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -8223,11 +8223,9 @@ function thelegendmodproject() {
                 s = true;
             }
             var color = this.color;
-            if (LM.play || LM.playerCellsMulti.length) {
-                if (this.isPlayerCell || this.playerCellsMulti) {
-                    if (defaultmapsettings.myCustomColor) {
+            if ((LM.play || LM.playerCellsMulti.length) && ogarcopythelb.color) {
+                if ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myCustomColor) {
                         color = ogarcopythelb.color;
-                    }
                 } else {
                     //if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings) {
                     if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood) {
@@ -8240,7 +8238,8 @@ function thelegendmodproject() {
         style.lineWidth = 20; ///
         style.strokeStyle = this.color;///
         style.stroke();///
-        } else {
+        } 
+		else {
         style.fillStyle = color;
         style.fill();
         }
