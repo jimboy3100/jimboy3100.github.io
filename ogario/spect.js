@@ -1,4 +1,4 @@
-//SPECS v3.8q WORKS UNTIL HERE
+//SPECS v3.8r WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -767,7 +767,7 @@ class Spect {
         return false;
     }
     isInViewCustom (x , y, size) {
-			var randomNum = 20 // randomNum=40
+			var randomNum = 0 // randomNum=40
 			var distance = size + randomNum
             return !(x + distance < legendmod.camMinX ||
 			y + distance < legendmod.camMinY ||
@@ -969,6 +969,7 @@ class Spect {
 				//
 				
 			if (!this.player){				
+				if (isFood) remove = this.isInViewCustom(x , y, size)
 				if (!invisible) invisible = this.isInViewCustom(x , y, size)				
 			}			
 			//if (this.player && isVirus && !isFood && !invisible){
