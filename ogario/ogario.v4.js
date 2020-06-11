@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych
 // This is part of the Legend mod project
-// v1.886
+// v1.891
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -8225,7 +8225,7 @@ function thelegendmodproject() {
             var color = this.color;
             if (LM.play || LM.playerCellsMulti.length) {
                 if (this.isPlayerCell || this.playerCellsMulti) {
-                    if (defaultmapsettings.myCustomColor) {
+                    if (defaultmapsettings.myCustomColor && ogarcopythelb.color) {
                         color = ogarcopythelb.color;
                     }
                 } else {
@@ -11330,25 +11330,16 @@ Game name     : ${i.displayName}<br/>
 						color = LM.cellcolors[name]
 					}
 					else{	
-                        if (this.playerCellIDs.indexOf(id) != -1) {
-							if (defaultmapsettings.myCustomColor) {
-								color = profiles[application.selectedProfile].color
-							}
-                        }									
-						else{
 							application.teamPlayers.forEach((found) => {
-								if (found.nick == name){ 
+								if (found.nick == name && found.nick != profiles[application.selectedProfile].nick){ 
 									color = found.color		
 								} 
-							})		
-						}						
+							})							
 					}
 					if (!LM.cellcolors[name] && color) LM.cellcolors[name]= color
 				}
 				//				
-				var invisible;
-				//if (LM.playerCellsMulti.length && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1]){
-					
+				var invisible;				
 				
 				if (LM.playerCellsMulti.length && LM.multiBoxPlayerExists){	
 						invisible = this.isInViewCustom3(x , y, size)					
@@ -11357,9 +11348,9 @@ Game name     : ${i.displayName}<br/>
 
                 if (this.indexedCells.hasOwnProperty(id)) {
                     cellUpdateCells = this.indexedCells[id];	
-                    if (color && !LM.playerCellsMulti.length) {
-                        cellUpdateCells.color = color;
-                    }					
+                    //if (color && !LM.playerCellsMulti.length) {
+                        //cellUpdateCells.color = color;
+                    //}					
                 } 
 				else {
                     cellUpdateCells = new ogarbasicassembly(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
@@ -11376,11 +11367,11 @@ Game name     : ${i.displayName}<br/>
 								this.playerColor = color;
 							}
 							else{
-								if (profiles[application.selectedProfile].color){
+								if (profiles[application.selectedProfile].color && defaultmapsettings.myCustomColor && profiles[application.selectedProfile].color){
 									color = profiles[application.selectedProfile].color
 								}
-									this.playerColor = color;
-									cellUpdateCells.color = color;		
+								this.playerColor = color;
+								cellUpdateCells.color = color;		
 							}							
                             this.playerCells.push(cellUpdateCells);
 							//this.playerCellsMulti.push(cellUpdateCells);
