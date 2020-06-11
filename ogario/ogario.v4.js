@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych
 // This is part of the Legend mod project
-// v1.906
+// v1.907
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -2569,7 +2569,7 @@ var defaultmapsettings = {
     virusSoundurl: 'https://legendmod.ml/sounds/sound-gunshot.mp3',
     soundSplit: 'https://www.myinstants.com/media/sounds/quack_5.mp3',
     FacebookIDs: '',
-    clanTagLc: 'RkFC'
+    clanTagLc: "U1VC"
 };
 var profiles = [];
 var ogarcopythelb = {
