@@ -1,4 +1,4 @@
-//SPECS v3.8r WORKS UNTIL HERE
+//SPECS v3.8s WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -767,7 +767,7 @@ class Spect {
         return false;
     }
     isInViewCustom (x , y, size) {
-			var randomNum = 0 // randomNum=40
+			var randomNum = 20 // randomNum=40
 			var distance = size + randomNum
             return !(x + distance < legendmod.camMinX ||
 			y + distance < legendmod.camMinY ||
