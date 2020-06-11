@@ -8223,9 +8223,11 @@ function thelegendmodproject() {
                 s = true;
             }
             var color = this.color;
-            if ((LM.play || LM.playerCellsMulti.length) && ogarcopythelb.color) {
-                if ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myCustomColor) {
+            if (LM.play || LM.playerCellsMulti.length) {
+                if (this.isPlayerCell || this.playerCellsMulti) {
+                    if (defaultmapsettings.myCustomColor) {
                         color = ogarcopythelb.color;
+                    }
                 } else {
                     //if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings) {
                     if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood) {
@@ -8238,8 +8240,7 @@ function thelegendmodproject() {
         style.lineWidth = 20; ///
         style.strokeStyle = this.color;///
         style.stroke();///
-        } 
-		else {
+        } else {
         style.fillStyle = color;
         style.fill();
         }
@@ -11342,7 +11343,7 @@ Game name     : ${i.displayName}<br/>
 							})		
 						}						
 					}
-					if (!LM.cellcolors[name]) LM.cellcolors[name]= color
+					if (!LM.cellcolors[name] && color) LM.cellcolors[name]= color
 				}
 				//				
 				var invisible;
@@ -11355,7 +11356,10 @@ Game name     : ${i.displayName}<br/>
                 cellUpdateCells = null;
 
                 if (this.indexedCells.hasOwnProperty(id)) {
-                    cellUpdateCells = this.indexedCells[id];					
+                    cellUpdateCells = this.indexedCells[id];	
+                    if (color && !LM.playerCellsMulti.length) {
+                        cellUpdateCells.color = color;
+                    }					
                 } 
 				else {
                     cellUpdateCells = new ogarbasicassembly(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
