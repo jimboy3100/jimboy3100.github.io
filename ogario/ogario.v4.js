@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych
 // This is part of the Legend mod project
-// v1.891
+// v1.897
 
 //window.testobjects = {};
 var consoleMsgLM = "[Legend mod Express] ";
@@ -2532,7 +2532,7 @@ var defaultmapsettings = {
     showStatsFPS: true,
 	//showStatsPPS: true,
     blockPopups: false,
-	gameOverStats: true,
+	gameOverStats: false,
     streamMode: false,
     hideSkinUrl: false,
     showQuickMenu: true,
@@ -11352,7 +11352,7 @@ Game name     : ${i.displayName}<br/>
                         //cellUpdateCells.color = color;
                     //}					
                 } 
-				else {
+				else {					
                     cellUpdateCells = new ogarbasicassembly(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                     cellUpdateCells.time = this.time;
 					cellUpdateCells.spectator = false;
@@ -11360,7 +11360,8 @@ Game name     : ${i.displayName}<br/>
                         if (isVirus && defaultmapsettings.virusesRange) {
                             this.viruses.push(cellUpdateCells);
                         }
-                        this.cells.push(cellUpdateCells);
+						//this.cells.push(cellUpdateCells);
+						this.cells.push(cellUpdateCells);	                    				
                         if (this.playerCellIDs.indexOf(id) != -1 && this.playerCells.indexOf(cellUpdateCells) == -1) {
                             cellUpdateCells.isPlayerCell = true;
                             if (this.gameMode == ":teams"){
@@ -11377,7 +11378,7 @@ Game name     : ${i.displayName}<br/>
 							//this.playerCellsMulti.push(cellUpdateCells);
                         }
                     } 
-					else {
+					else if (isFood) {
                         this.food.push(cellUpdateCells);
                     }
                     this.indexedCells[id] = cellUpdateCells;
@@ -12401,8 +12402,11 @@ Game name     : ${i.displayName}<br/>
                     return;
                 }
                 for (let length = 0; length < LM.food.length; length++) {
-                    LM.food[length].moveCell();		
-					if (!LM.food[length].invisible) LM.food[length].draw(this.ctx);                  					
+                    LM.food[length].moveCell();
+					if (!LM.food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) LM.food[length].invisible = true			
+					if (!LM.food[length].invisible){						
+						LM.food[length].draw(this.ctx);       
+					}						
                 }
             },
             drawCachedFood(ctx, food, scale, reset) {
