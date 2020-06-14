@@ -17,6 +17,14 @@ ProLicenceUsersTable = {
             "reason": "℄🌀βurNouT",
             "notes": "℄🌀"
         },
+        "204c1426-c4c9-46af-b29d-5fa9d4d8704a": {
+            "reason": "℄🌀ilyes",
+            "Chosenbyddevilowo": "℄🌀"
+        }, 		
+        "c8c0f123-2758-410b-a952-e4c4898319e5": {
+            "reason": "℄🌀ahmad",
+            "Chosenbyddevilowo": "℄🌀"
+        }, 			
         "e18af28b-d1de-4645-967f-9b95736e8817": {
             "reason": "Hendrik Schönfelder",
             "notes": "Youtuber"
@@ -120,11 +128,7 @@ ProLicenceUsersTable = {
         "8ba00967-ef20-4314-b451-d802e4817eb7": {
             "reason": "Give@20200612",
             "Chosenbyddevilowo": "綾辻芙月渚"
-        },   
-        "204c1426-c4c9-46af-b29d-5fa9d4d8704a": {
-            "reason": "Give@20200612",
-            "Chosenbyddevilowo": "LCilyes"
-        },   
+        },     
         "f27c8c1a-77d4-4641-9160-cf0d6f7281da": {
             "reason": "Give@20200620",
             "Chosenbyddevilowo": "ALI cicineLC"
