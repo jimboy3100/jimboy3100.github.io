@@ -1,4 +1,4 @@
-//v12.55j
+//v12.55k
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -980,7 +980,7 @@ function getInfo() {
     });
 }
 function potionsLogout(){
-$("#potions").html('<div id="potion1" class="potion">'+
+$("#potions").html('<div id="potion1" class="potion" style="display: none">'+
                                         '<img src="https://legendmod.ml/banners/potion_empty.png" />'+
                                         '<div>empty</div>'+
                                     '</div>'+
