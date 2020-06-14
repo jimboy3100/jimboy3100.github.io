@@ -1,4 +1,4 @@
-//v12.55h
+//v12.55j
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -853,7 +853,7 @@ function continuelogout(){
 		$('.progress-bar-star').text("");
 		$(".agario-profile-name-container").html('<div class="agario-profile-name"></div>'+
                                         '<div id="coins" style="display: inline-block;">💰000</div>'+
-                                        '<div id="dna" style="display: inline-block;">🧬000</div>'+
+                                        '<div id="dna" style="display: inline-block;">💊000</div>'+
                                         '<div id="trophy" style="display: inline-block;">🏆000</div>')
 		$("#quest-active").html('')
 		$("#player-skins").html('');
@@ -981,15 +981,15 @@ function getInfo() {
 }
 function potionsLogout(){
 $("#potions").html('<div id="potion1" class="potion">'+
-                                        '<img src="https://dead-mod.github.io/img/potion_empty.png" />'+
+                                        '<img src="https://legendmod.ml/banners/potion_empty.png" />'+
                                         '<div>empty</div>'+
                                     '</div>'+
                                     '<div id="potion2" class="potion">'+
-                                        '<img src="https://dead-mod.github.io/img/potion_empty.png" />'+
+                                        '<img src="https://legendmod.ml/banners/potion_empty.png" />'+
                                         '<div>empty</div>'+
                                     '</div>'+
                                    '<div id="potion3" class="potion">'+
-                                        '<img src="https://dead-mod.github.io/img/potion_empty.png" />'+
+                                        '<img src="https://legendmod.ml/banners/potion_empty.png" />'+
                                         '<div>empty</div>'+
                                     '</div>')
 }
