@@ -980,7 +980,7 @@ function getInfo() {
     });
 }
 function potionsLogout(){
-$("#potions").html('<div id="potion1" class="potion" style="display: none">'+
+$("#potions").html('<div id="potion1" class="potion">'+
                                         '<img src="https://legendmod.ml/banners/potion_empty.png" />'+
                                         '<div>empty</div>'+
                                     '</div>'+
@@ -992,4 +992,5 @@ $("#potions").html('<div id="potion1" class="potion" style="display: none">'+
                                         '<img src="https://legendmod.ml/banners/potion_empty.png" />'+
                                         '<div>empty</div>'+
                                     '</div>')
+$("#potions").hide()									
 }
