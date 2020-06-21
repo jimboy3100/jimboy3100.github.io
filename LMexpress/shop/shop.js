@@ -17,7 +17,7 @@
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="AbsolutVodka" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsAbsolutVodka.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Chemistry" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsChemistry.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Japan" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsJapan.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Japan2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsJapan.png2"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Japan2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsJapan2.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Kebab" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsKebab.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Meditation" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMeditation.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Splash" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSplash.png"></div>'
