@@ -1,4 +1,15 @@
 	window.tempModeratorSkin=""
+		if ($("#nick").val().includes('℄')){
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="LegendClan" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan2.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="AbsolutVodka" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsAbsolutVodka.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Chemistry" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsChemistry.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Japan" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsJapan.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Japan2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsJapan2.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Kebab" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsKebab.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Meditation" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMeditation.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Splash" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSplash.png"></div>'		
+	}		
 	if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]){
 		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Moderator"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Moderator" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsModerator.png"></div>'
@@ -10,19 +21,7 @@
 		}
 		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Shiro"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Shiro" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsShiro.png"></div>'
-		}		
-		if ($("#nick").val().includes('℄') || ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Admin"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="LegendClan" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan2.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="AbsolutVodka" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsAbsolutVodka.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Chemistry" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsChemistry.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Japan" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsJapan.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Japan2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsJapan2.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Kebab" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsKebab.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Meditation" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMeditation.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Splash" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSplash.png"></div>'
-			
-		}			
+		}				
 	}
 		
 		
