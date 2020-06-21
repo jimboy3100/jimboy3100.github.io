@@ -1,4 +1,4 @@
-//v0.4i
+//v0.4j
 
 //$(document).ready(function() {
 jQuery(function($) {
@@ -18,6 +18,10 @@ jQuery(function($) {
         effect : "fadeIn",
         skip_invisible : true
     });	
+     $("#free img.lazy").lazyload({
+        effect : "fadeIn",
+        skip_invisible : true
+    });		
      $("#vanillaskins img.lazy").lazyload({
         effect : "fadeIn",
         skip_invisible : true
@@ -88,7 +92,7 @@ function startSpecialEffectSkin(){
 }
 
 function loadSpecialEffectSkin(e){
-		if (($("#nick").val().includes('℄') && $("#clantag").val() == window.atob(window.clanTagLc)) || window.proLicenceUID){
+		if (($("#nick").val().includes('℄') && $("#clantag").val() == window.atob(window.clanTagLc)) || window.proLicenceUID || $("#skin-url").val() == "Byzantium"){
 			try {	
 			toastr.info("<b>[SERVER]:</b> Special Effect " + $("#skin-url").val() + " activated");
 			for (var i = 0; i < $(".skins-wrapper").length; i++){
