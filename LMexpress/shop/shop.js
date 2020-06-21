@@ -76,9 +76,9 @@
 			'<div class="skin-box"><img class="lazy" name="Earth" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsEarth.png"></div>' +
 			'<div class="skin-box"><img class="lazy" name="FootStep" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsFootStep.png"></div>' +
 			'<div class="skin-box"><img class="lazy" name="Forward" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsForward.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="FriendsForever" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="FriendsForever2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever2.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="FriendsForever3" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever3.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Forever" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Forever2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever2.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Forever3" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever3.png"></div>' +
 			'<div class="skin-box"><img class="lazy" name="Police" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsPolice.png"></div>' +
 			'<div class="skin-box"><img class="lazy" name="Police2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsPolice2.png"></div>' +
 			'<div class="skin-box"><img class="lazy" name="Unrest" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsUnrest.png"></div>' +
