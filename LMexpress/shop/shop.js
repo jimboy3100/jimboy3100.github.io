@@ -43,7 +43,7 @@
             '<ul>' +
 				
                 '<li><a href="#imgur" class="active">Premium</a></li>' +
-				'<li><a href="#lowres">Free</a></li>' +
+				'<li><a href="#lowres">WaterMarks</a></li>' +
 				'<li><a href="#vanillaskins">In Use</a></li>' +			  		
                 '<li><input type="text" id="skin-url" placeholder="Special Skin Effect" readonly></li>' +
 		'<li><a id="UseEffect" class="link">Use</a></li>' +
@@ -71,6 +71,22 @@
 		window.tempModeratorSkin +
    '</div>' +
 	        '<div id="lowres" class="skins-wrapper">' +
+			'<div class="skin-box"><img class="lazy" name="Byzantium" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsByzantium.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Close" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsClose.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Earth" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsEarth.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="FootStep" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsFootStep.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Forward" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsForward.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="FriendsForever" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="FriendsForever2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever2.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="FriendsForever3" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever3.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Police" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsPolice.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Police2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsPolice2.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Unrest" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsUnrest.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Eagle" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsEagle.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="BobMarley" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsBobMarley.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="Einstein" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsEinstein.png"></div>' +
+			'<div class="skin-box"><img class="lazy" name="DeadTable" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsDeadTable.png"></div>' +			
+			
 	'</div>' +
         '<div id="vanillaskins" class="skins-wrapper">' +
 	'</div>' +
