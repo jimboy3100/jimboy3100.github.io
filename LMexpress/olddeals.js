@@ -253,6 +253,8 @@ else{
 				 */
                  $(".xpmt-skins").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/' + window.agarversion + textcropped2 + '")');
 				 $(".xpmt-skins2").css('background-image', 'url("https://configs-web.agario.miniclippt.com/live/' + window.agarversion + textcropped1 + '")');
+				 
+				 $(".modal-dialog").draggable()
              }, 500);
          });
      } else {
