@@ -107,3 +107,4 @@
             $("#FAQLMShop").click(function() {
 				window.open('https://legendmod.ml/', '_blank');
             });	
+$(".modal-dialog").draggable()
