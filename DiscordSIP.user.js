@@ -142,7 +142,7 @@ discordteam = window.teammatelegendmodnicks.toString();
 }
 var discordimageuser;
 if ( $( "#UserProfilePic>img" ).length ) {
-	discordimageuser = $( "#UserProfilePic>img" ).attr('src');
+	discordimageuser = $( ".agario-profile-picture" ).attr('src');
 }
 if (discordtagtosend && discordtagtosend!=""){
 var discordcodetosend = {
