@@ -1,4 +1,4 @@
-//v12.55k
+//v12.56
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -844,7 +844,7 @@ function legendmaster(self) {
 };
 function continuelogout(){
         $("#UserProfileName1").text("Guest");
-        $("#UserProfileUID1").text("");
+        $("#UserProfileUID1").val("");
 		$("#UserProfileUUID1").val("");	
         $(".agario-profile-picture").attr('src', 'https://legendmod.ml/banners/profilepic_guest.png');
 		$("#stats-content").html("");
@@ -867,7 +867,7 @@ function doFB() {
         $(".agario-profile-picture").attr('src', 'https://graph.facebook.com/' + fbresponse.id + '/picture?type=large');
 
         $("#UserProfileName1").text(fbresponse[Object.keys(fbresponse)[0]]);
-        $("#UserProfileUID1").text(fbresponse[Object.keys(fbresponse)[2]]);
+        $("#UserProfileUID1").val(fbresponse[Object.keys(fbresponse)[2]]);
 
 		if (userid == fbresponse[Object.keys(fbresponse)[2]]){
 			setLevelProgressBar();
@@ -904,7 +904,7 @@ function doGl() {
 
 	$(".agario-profile-picture").attr('src', GgImg);	
 	$("#UserProfileName1").text(GgProfileName);
-	$("#UserProfileUID1").text(GgUID);
+	$("#UserProfileUID1").val(GgUID);
 	
 	if (userid == GgUID){
 		setLevelProgressBar();
