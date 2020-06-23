@@ -88,7 +88,7 @@
             },	
             'hk-multiboxFollowMouse': {
                 label: textLanguage['hk-multiboxFollowMouse'],
-                defaultKey: 'Y',
+                defaultKey: 'TILDE',
                 keyDown() {
                     application && application.multiboxFollowMouse();
                 },
@@ -362,7 +362,7 @@
             },
             'hk-quickResp': {
                 label: textLanguage['hk-quickResp'],
-                defaultKey: 'TILDE',
+                defaultKey: 'Y',
                 keyDown() {
                     application && application.quickResp();
                 },
