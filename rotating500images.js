@@ -2,9 +2,9 @@ var image = new Image;
 image.src = $(".agario-profile-picture").attr("src");
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
-canvas.style.position = "absolute";
-canvas.style.top = "0px";
-canvas.style.left = "0px";
+//canvas.style.position = "absolute";
+//canvas.style.top = "0px";
+//canvas.style.left = "0px";
 document.body.appendChild(canvas);
 var w,h;
 function resize(){ w = canvas.width = innerWidth; h = canvas.height = innerHeight;}
