@@ -4,6 +4,7 @@
 // @version      0.1
 // @description  Legend mod - Mass Bar Addon
 // @author       DAVI すべての最強!
+// @icon         https://legendmod.ml/banners/CropedImage128.gif
 // @match        https://agar.io/*
 // ==/UserScript==
 
