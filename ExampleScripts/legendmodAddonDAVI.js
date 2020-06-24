@@ -95,4 +95,4 @@ observer.observe(elementObserved, analysis)
     massBar.bringPlayersMass()
     massBar.setPercentage()
 }) 
-, 5000);
+}, 5000);
