@@ -32,7 +32,7 @@ SOFTWARE.
           script.src = 'https://legendmod.ml/ExampleScripts/legendmodAddonDAVI.js';
           document.head.appendChild(script);
           elem.appendChild(script);
-  }, 5000);
+  }, 100);
 
 
   
