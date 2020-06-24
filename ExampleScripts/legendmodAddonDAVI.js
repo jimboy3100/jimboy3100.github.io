@@ -1,5 +1,6 @@
 //by DAVI すべての最強!
 window.externalScriptMassBarTemp=0
+var defaultSettings;
 class MassBar {
     constructor() {
         this.querys()
