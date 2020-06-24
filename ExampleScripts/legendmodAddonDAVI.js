@@ -37,8 +37,13 @@ class MassBar {
         this.massBar          = document.createElement('div')
     }
 
-    setStyleToElements() {
-        this.massBarContainer.setAttribute('style', 'background-color: #202020; display: block; position: relative; margin-bottom: 3px;')
+    setStyleToElements() {		
+		if (defaultSettings && defaultSettings.top5MassColor){ 
+			this.massBarContainer.setAttribute('style', 'background-color: ' + defaultSettings.top5MassColor + '; display: block; position: relative; margin-bottom: 3px;')
+		}
+        else{
+			this.massBarContainer.setAttribute('style', 'background-color: #202020; display: block; position: relative; margin-bottom: 3px;')
+		}
         this.massBar.setAttribute('style', 'background-color: #01d9cc; width: 0%; height: 100%; max-width: 190px; left: 0px; top: 0px; position: absolute;')
     }
 
