@@ -86,7 +86,7 @@ let analysis = {
     childList: true
 }
 
-//setTimeout(function() {
+setTimeout(function() {
 let elementObserved = document.getElementById('top5-total-mass')
 observer.observe(elementObserved, analysis)
 
@@ -95,4 +95,4 @@ observer.observe(elementObserved, analysis)
     massBar.bringPlayersMass()
     massBar.setPercentage()
 }) 
-//, 3000);
+, 5000);
