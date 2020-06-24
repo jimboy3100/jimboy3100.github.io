@@ -6,7 +6,7 @@
 // @description  LegendMod-chat with voice
 // @description:ja    LegendMod のチャットを音声入力で行えるようにします
 // @author       tannichi
-// @match        http://agar.io/*
+// @match        https://agar.io/*
 // @grant GM_setValue
 // @grant GM_getValue
 // @grant GM_deleteValue
