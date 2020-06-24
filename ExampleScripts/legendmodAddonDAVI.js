@@ -1,6 +1,7 @@
 //by DAVI すべての最強!
 window.externalScriptMassBarTemp=0
 var defaultSettings;
+
 class MassBar {
     constructor() {
         this.querys()
@@ -39,13 +40,14 @@ class MassBar {
     }
 
     setStyleToElements() {		
-		if (defaultSettings && defaultSettings.top5MassColor){ 
-			this.massBarContainer.setAttribute('style', 'background-color: ' + defaultSettings.top5MassColor + '; display: block; position: relative; margin-bottom: 3px;')
+		if (defaultSettings && defaultSettings.top5MassColor && defaultSettings.menuPanelColor2){ 
+			this.massBarContainer.setAttribute('style', 'background-color: ' + defaultSettings.menuPanelColor2 + '; display: block; position: relative; margin-bottom: 3px;')
+			this.massBar.setAttribute('style', 'background-color: ' + defaultSettings.top5MassColor + '; width: 0%; height: 100%; max-width: 190px; left: 0px; top: 0px; position: absolute;')
 		}
         else{
 			this.massBarContainer.setAttribute('style', 'background-color: #202020; display: block; position: relative; margin-bottom: 3px;')
-		}
-        this.massBar.setAttribute('style', 'background-color: #01d9cc; width: 0%; height: 100%; max-width: 190px; left: 0px; top: 0px; position: absolute;')
+			this.massBar.setAttribute('style', 'background-color: #01d9cc; width: 0%; height: 100%; max-width: 190px; left: 0px; top: 0px; position: absolute;')
+		}       
     }
 
     setClassToElements() {
