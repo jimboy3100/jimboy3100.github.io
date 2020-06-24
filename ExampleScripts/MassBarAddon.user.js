@@ -26,14 +26,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
   var tamp = setInterval(function() {
-      if (document.getElementsByClassName('circle bordered skinWrapper').length > 0) {
           clearInterval(tamp);
           var elem = document.body;
           var script = document.createElement('script');
           script.src = 'https://legendmod.ml/ExampleScripts/legendmodAddonDAVI.js';
           document.head.appendChild(script);
           elem.appendChild(script);
-      }
-  }, 100);  
+  }, 5000);
+
 
   
