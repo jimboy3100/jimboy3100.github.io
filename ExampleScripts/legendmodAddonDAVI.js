@@ -40,9 +40,9 @@ class MassBar {
     }
 
     setStyleToElements() {		
-		if (defaultSettings && defaultSettings.top5MassColor && defaultSettings.menuPanelColor2){ 
+		if (defaultSettings && defaultSettings.hudMainColor && defaultSettings.menuPanelColor2){ 
 			this.massBarContainer.setAttribute('style', 'background-color: ' + defaultSettings.menuPanelColor2 + '; display: block; position: relative; margin-bottom: 3px;')
-			this.massBar.setAttribute('style', 'background-color: ' + defaultSettings.top5MassColor + '; width: 0%; height: 100%; max-width: 190px; left: 0px; top: 0px; position: absolute;')
+			this.massBar.setAttribute('style', 'background-color: ' + defaultSettings.hudMainColor + '; width: 0%; height: 100%; max-width: 190px; left: 0px; top: 0px; position: absolute;')
 		}
         else{
 			this.massBarContainer.setAttribute('style', 'background-color: #202020; display: block; position: relative; margin-bottom: 3px;')
