@@ -19,12 +19,16 @@ ProLicenceUsersTable = {
         },
         "204c1426-c4c9-46af-b29d-5fa9d4d8704a": {
             "reason": "℄🌀ilyes",
-            "Chosenbyddevilowo": "℄🌀"
+            "notes": "Chosenbyddevilowo"
         }, 		
         "c8c0f123-2758-410b-a952-e4c4898319e5": {
             "reason": "℄🌀ahmad",
-            "Chosenbyddevilowo": "℄🌀"
+            "notes": "Chosenbyddevilowo"
         }, 			
+        "a21f4130-3474-4331-add1-bd02155e607c": {
+            "reason": "Sonia",
+            "notesr": "Moderator"
+        }, 		       
         "e18af28b-d1de-4645-967f-9b95736e8817": {
             "reason": "Hendrik Schönfelder",
             "notes": "Youtuber"
@@ -107,55 +111,55 @@ ProLicenceUsersTable = {
         },		
         "693edb8d-427c-4453-a92d-2d8bd6254750": {
             "reason": "Give@20200612",
-            "notes": "イイヅカマユミ"
+			"notes": "Chosenbyddevilowo-イイヅカマユミ"	
         },	
         "b4dc260f-f14d-479b-a373-63beb131a122": {
             "reason": "Give@20200612",
-            "notes": "LamPhạm"
+			"notes": "Chosenbyddevilowo-LamPhạm"	
         },   
         "5dc487ab-f8bb-4834-a311-fff3fc924948": {
             "reason": "Give@20200612",
-            "Chosenbyddevil": "抹茶"
+			"notes": "Chosenbyddevilowo-抹茶"	
         },   
         "a9d42b13-df83-4a4d-b175-ec9dedaaaf33": {
             "reason": "Give@20200612",
-            "Chosenbyddevilowo": "wenlong"
+			"notes": "Chosenbyddevilowo-wenlong"	
         },  
         "7f350142-5c90-473f-8eff-9352680ba8e6": {
             "reason": "Give@20200612",
-            "Chosenbyddevilowo": "kaizen"
+			"notes": "Chosenbyddevilowo-kaizen"	
         },   
         "8ba00967-ef20-4314-b451-d802e4817eb7": {
             "reason": "Give@20200612",
-            "Chosenbyddevilowo": "綾辻芙月渚"
+			 "notes": "Chosenbyddevilowo-綾辻芙月渚"	
         },     
           "8edf92ef-1fed-4022-948c-a1308cfa3adf": {
             "reason": "Give@20200926",
-            "Chosenbyddevilowo": "Judah"
+            "notes": "ChosenbyJimboy-Judah"	
         },       
         "f27c8c1a-77d4-4641-9160-cf0d6f7281da": {
             "reason": "Give@20200620",
-            "Chosenbyddevilowo": "ALI cicineLC"
+            "notes": "Chosenbyddevilowo-ALI-cicineLC"			
         },   
         "84fda50e-63c4-41d7-9ba3-e6750cb0d94e": {
             "reason": "Give@20200720",
-            "Chosenbyddevilowo": "tawis"
+            "notes": "Chosenbyddevilowo-tawis"
         }, 
         "3a13f17c-0c9b-4c1c-92a5-a66854621986": {
             "reason": "Give@20200720",
-            "Chosenbyddevilowo": "maco420"
+            "notes": "Chosenbyddevilowo-mako420"
         },   
         "a21f4130-3474-4331-add1-bd02155e607c": {
             "reason": "Donate",
-            "Chosenbyddevilowo": "sondick"
+            "notes": "Chosenbyddevilowo-sondick"
         },   
         "8edf92ef-1fed-4022-948c-a1308cfa3adf": {
             "reason": "Give@20200720",
-            "Chosenbyddevilowo": "haine"
+            "notes": "Chosenbyddevilowo-haine"
         },		
         "e0c362ab-c4f8-4ba3-8deb-fb7651fdb818": {
             "reason": "Give@20200726",
-            "Chosenbyddevilowo": "friendofJudah"
+            "notes": "friendofJudah"
         },           
         "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
             "reason": "Donate",
