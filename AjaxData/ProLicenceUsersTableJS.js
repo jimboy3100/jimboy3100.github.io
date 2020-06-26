@@ -129,6 +129,10 @@ ProLicenceUsersTable = {
             "reason": "Give@20200612",
             "Chosenbyddevilowo": "綾辻芙月渚"
         },     
+          "e0c362ab-c4f8-4ba3-8deb-fb7651fdb818": {
+            "reason": "Give@20200926",
+            "Chosenbyddevilowo": "Judah"
+        },       
         "f27c8c1a-77d4-4641-9160-cf0d6f7281da": {
             "reason": "Give@20200620",
             "Chosenbyddevilowo": "ALI cicineLC"
