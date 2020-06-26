@@ -152,7 +152,11 @@ ProLicenceUsersTable = {
         "8edf92ef-1fed-4022-948c-a1308cfa3adf": {
             "reason": "Give@20200720",
             "Chosenbyddevilowo": "haine"
-        },				
+        },		
+        "e0c362ab-c4f8-4ba3-8deb-fb7651fdb818": {
+            "reason": "Give@20200726",
+            "Chosenbyddevilowo": "friendofJudah"
+        },           
         "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
             "reason": "Donate",
             "notes": "Lizzie"
