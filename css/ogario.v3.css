@@ -1,4 +1,4 @@
-/*v0.08*/
+/*v0.09*/
 @import url(https://legendmod.ml/css/ogicomoon.css);
 @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
 @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
@@ -648,10 +648,16 @@ input.hide-url::selection,input.stream-mode::selection{
     vertical-align:bottom 
 }
 #skin-preview img{
+    -webkit-transition: -webkit-transform .8s ease-in-out;
+    transition:         transform .8s ease-in-out;
     width:180px;
     height:180px;
     border:0;
-    border-radius:50% 
+    border-radius:50%;
+}
+#skin-preview img:hover {
+  -webkit-transform: rotate(360deg);
+          transform: rotate(360deg);    
 }
 #skin-preview .popover{
     max-width:500px;
