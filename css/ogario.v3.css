@@ -1368,6 +1368,7 @@ input.hide-url::selection,input.stream-mode::selection{
 }
 #exp-imp{
     width:700px;
+	height: 880px;
     display:none;
     background-color:#00243e;
     color:#fff;
