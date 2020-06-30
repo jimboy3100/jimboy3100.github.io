@@ -1,4 +1,4 @@
-/*v0.07a*/
+/*v0.07*/
 @import url(https://legendmod.ml/css/ogicomoon.css);
 @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
 @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
@@ -1541,13 +1541,6 @@ input.hide-url::selection,input.stream-mode::selection{
     outline: none;
     margin-left: 10px;
 }
-#otherBots {
-    margin-top: 6px;
-    width: 80px;
-    padding: 8px;
-    outline: none;
-    margin-left: 10px;
-}
 #captchaSpeed{
     margin-top: 6px;
     width: 186px;
@@ -1563,7 +1556,7 @@ input.hide-url::selection,input.stream-mode::selection{
     margin-left: 10px;
     margin-right: 10px;
 }
-#botsNameLM:focus, #otherBots:focus, #botsAmount:focus, #botsRemoteIP:focus, #captchaSpeed:focus {
+#botsNameLM:focus, #botsAmount:focus, #botsRemoteIP:focus, #captchaSpeed:focus {
     border-color: #7D7D7D;
 }
 #connectBots, #startBots, #stopBots, #captchaBots {
