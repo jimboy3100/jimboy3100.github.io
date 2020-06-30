@@ -70,7 +70,7 @@ label:hover{
 .block-popups{
     display:none!important;
     opacity:0!important 
-}   
+}
 #next-profile:hover,#prev-profile:hover,.close{
     opacity:1 
 }
@@ -88,8 +88,6 @@ label:hover{
     display:inline-block 
 }
 #helloContainer{
-    position: fixed;
-    top: 400px;
     width:920px;
     opacity:.96 
 }
@@ -650,10 +648,16 @@ input.hide-url::selection,input.stream-mode::selection{
     vertical-align:bottom 
 }
 #skin-preview img{
+    -webkit-transition: -webkit-transform .8s ease-in-out;
+    transition:         transform .8s ease-in-out;
     width:180px;
     height:180px;
     border:0;
-    border-radius:50% 
+    border-radius:50%;
+}
+#skin-preview img:hover {
+  -webkit-transform: rotate(360deg);
+          transform: rotate(360deg);    
 }
 #skin-preview .popover{
     max-width:500px;
@@ -973,7 +977,7 @@ input.hide-url::selection,input.stream-mode::selection{
 #top5-pos{
     font-size:70%;
     list-style:none;
-    padding-left:6px1 
+    padding-left:6px 
 }
 #top5-pos .cell-counter{
     width:1em;
@@ -1682,4 +1686,3 @@ img {
     height: 100%;
     width: 100%;
 }
-
