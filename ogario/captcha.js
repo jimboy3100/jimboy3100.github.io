@@ -1,3 +1,4 @@
+//
 var RECAPTCHA_V2_KEY = "6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl";
 var RECAPTCHA_V3_KEY = "6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY";
 
@@ -115,7 +116,7 @@ function Recaptcha(curtin, e, n) {
         if (this.ready) {
             this.show()
             if (null == this.widget) {
-                this.widget = grecaptcha.render(this.id, {
+                window.captchawidget = this.widget = grecaptcha.render(this.id, {
                     sitekey: RECAPTCHA_V2_KEY,
                     callback: this.onRender.bind(this),
                     "data-theme": 'dark',
