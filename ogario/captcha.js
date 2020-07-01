@@ -71,8 +71,9 @@ function Recaptcha(curtin, e, n) {
         document.getElementById(this.curtin).style.display = "none"
     }
     this.reset = function() {
+		grecaptcha.reset(window.captchawidget)
         console.log('grecaptcha.reset()')
-        grecaptcha.reset()
+        //grecaptcha.reset()		
     }
     this.onRender = function(t) {
         window.cookieCaptchaOK = true;
