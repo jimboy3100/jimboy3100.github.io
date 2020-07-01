@@ -72,65 +72,61 @@ ProLicenceUsersTable = {
         "7aa2d964-ac82-497c-aa34-25cc342299bd": {
             "reason": "Donate",
             "notes": "CentralAsia"
-        }, 	
-        "84cfb97a-03ef-4625-a6cb-913b23d9dc69": {
-            "reason": "Give@20200521",
-            "notes": "testJimboy"
-        },		
+        }, 		
         "3361c3f4-3d94-49d2-b19c-c1b8241d4574": {
-            "reason": "Give@20200612",
+            "reason": "Give@20200910",
             "notes": "AngelDeltaServer"
         },		
         "e8a49e32-7f71-4449-b1ae-1bf2fe4dc3b": {
-            "reason": "Give@20200612",
+            "reason": "Give@20200910",
             "notes": "MaximumDeltaServer"
         },	
         "d7385406-7a71-498d-a613-3faf090f6ccb": {
-            "reason": "Give@20200612",
+            "reason": "Give@20200910",
             "notes": "VictoriaAiroFbGoogleaccount"
         },		
         "40252edd-4ec4-41a0-865f-aa9d967a3706": {
-            "reason": "Give@20200612",
+            "reason": "Give@20200910",
             "notes": "VictoriaAiroFbFacebookaccount"
         },	 
         "cfff71aa-efa6-45c2-bcaa-4e68ce796a58": {
-            "reason": "Give@20200612",
+            "reason": "Give@20200910",
             "notes": "MuhAdits"
         },	
         "3361c3f4-3d94-49d2-b19c-c1b8241d4574": {
-            "reason": "Give@20200612",
+            "reason": "Give@20200910",
             "notes": "GioBartolo"
         },		
         "3caec878-4009-4349-9bb8-9ce16cebbe98": {
-            "reason": "Give@20200612",
+            "reason": "Give@20200910",
             "notes": "ZainMohammed"
         },	
         "ba288e41-27b2-4da6-b97c-56409e073894": {
-            "reason": "Give@20200612",
+            "reason": "Give@20200910",
             "notes": "RavagerCanos"
         },		
         "693edb8d-427c-4453-a92d-2d8bd6254750": {
-            "reason": "Give@20200612",
+            "reason": "Give@20200910",
 			"notes": "Chosenbyddevilowo-イイヅカマユミ"	
         },	
         "b4dc260f-f14d-479b-a373-63beb131a122": {
-            "reason": "Give@20200612",
+            "reason": "Give@20200910",
 			"notes": "Chosenbyddevilowo-LamPhạm"	
         },   
         "5dc487ab-f8bb-4834-a311-fff3fc924948": {
-            "reason": "Give@20200612",
+            "reason": "Give@20200910",
 			"notes": "Chosenbyddevilowo-抹茶"	
         },   
         "a9d42b13-df83-4a4d-b175-ec9dedaaaf33": {
-            "reason": "Give@20200612",
+            "reason": "Give@20200910",
 			"notes": "Chosenbyddevilowo-wenlong"	
         },  
         "7f350142-5c90-473f-8eff-9352680ba8e6": {
-            "reason": "Give@20200612",
+            "reason": "Give@20200910",
 			"notes": "Chosenbyddevilowo-kaizen"	
         },   
         "8ba00967-ef20-4314-b451-d802e4817eb7": {
-            "reason": "Give@20200612",
+            "reason": "Give@20200910",
 			 "notes": "Chosenbyddevilowo-綾辻芙月渚"	
         },     
           "8edf92ef-1fed-4022-948c-a1308cfa3adf": {
@@ -138,29 +134,53 @@ ProLicenceUsersTable = {
             "notes": "ChosenbyJimboy-Judah"	
         },       
         "f27c8c1a-77d4-4641-9160-cf0d6f7281da": {
-            "reason": "Give@20200620",
+            "reason": "Give@20200910",
             "notes": "Chosenbyddevilowo-ALI-cicineLC"			
         },   
         "84fda50e-63c4-41d7-9ba3-e6750cb0d94e": {
-            "reason": "Give@20200720",
+            "reason": "Give@20200910",
             "notes": "Chosenbyddevilowo-tawis"
         }, 
         "3a13f17c-0c9b-4c1c-92a5-a66854621986": {
-            "reason": "Give@20200720",
+            "reason": "Give@20200910",
             "notes": "Chosenbyddevilowo-mako420"
         },   
         "a21f4130-3474-4331-add1-bd02155e607c": {
-            "reason": "Donate",
+            "reason": "Give@20200910",
             "notes": "Chosenbyddevilowo-sondick"
         },   
         "8edf92ef-1fed-4022-948c-a1308cfa3adf": {
-            "reason": "Give@20200720",
+            "reason": "Give@20200910",
             "notes": "Chosenbyddevilowo-haine"
         },		
         "e0c362ab-c4f8-4ba3-8deb-fb7651fdb818": {
-            "reason": "Give@20200726",
-            "notes": "friendofJudah"
-        },           
+            "reason": "Give@20200910",
+            "notes": "RewardDay-IamAlb"
+        }, 
+        "7ce1ef8e-54de-43b0-888f-c17a946ff8f": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-LcAuto"
+        },  
+        "ca82d506-8cdc-4794-805a-df282f9bb98d": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-DiegoSouza"
+        }, 
+        "8b40dce8-a7a1-420b-a30d-bb03c5a4d61a": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-AbdUllah"
+        }, 
+        "ff5cd59d-ab25-456c-987f-fb4ae3a0de2b": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-AlexisGalarza"
+        }, 		
+        "2ab3c1b6-3e83-41aa-aea8-7f2fc29536e0": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-HaseebSultan"
+        }, 
+        "02279fd0-ce99-444e-9f94-788ca4674509": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-ChristhopherBrandhon"
+        }, 					
         "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
             "reason": "Donate",
             "notes": "Lizzie"
