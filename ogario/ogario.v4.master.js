@@ -668,7 +668,7 @@ function legendmaster(self) {
             this.reconnect();
         },
         recaptchaRequested() {
-            requestCaptcha(true);
+            window.agarCaptcha.requestCaptcha(true);
         },
         sendRecaptchaResponse(mmCoreSplitViewBlock) {
             if (self.core) {
