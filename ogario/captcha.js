@@ -1,4 +1,4 @@
-//v1.2
+//v1.3
 var RECAPTCHA_V2_KEY = "6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl";
 var RECAPTCHA_V3_KEY = "6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY";
 
@@ -75,7 +75,10 @@ function Recaptcha(curtin, e, n) {
         document.getElementById(this.curtin).style.display = "none"
     }
     this.reset = function() {
-		grecaptcha.reset(window.captchawidget)
+		if (window.captchawidget){
+			grecaptcha.reset(window.captchawidget);
+			window.captchawidget=null;
+		}
         console.log('grecaptcha.reset()')
         //grecaptcha.reset()		
     }
