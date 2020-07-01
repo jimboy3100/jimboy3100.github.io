@@ -1,4 +1,4 @@
-//
+//v1.2
 var RECAPTCHA_V2_KEY = "6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl";
 var RECAPTCHA_V3_KEY = "6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY";
 
@@ -44,6 +44,10 @@ function CaptchaRouter(arg) {
         //t.setAttribute("src", "https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"),
         //document.head.appendChild(t)
     }
+	if (window.captchawidget){
+		grecaptcha.reset(window.captchawidget);
+		window.captchawidget=null;
+	}
     var l = window.myCaptcha = new Recaptcha("captchaWindow", "verifyUser", arg);
     window.onloadCallbackV3 = onloadCallbackV3
     window.onloadCallback = onloadCallback
