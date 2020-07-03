@@ -62,10 +62,16 @@
                 //var element = document.getElementById("animate");
                 //element.parentNode.removeChild(element);
                 console.log("a=" + a);
+                if (sessionStorage.getItem('presetationloaded') == 'true') {
+                    $("#jim").remove();
+                    document.getElementsByTagName('body')[0].style.overflow = "auto"
+                }
+
                 if (a == 6) {
                     //var element = document.getElementById("animate");
                     //element.parentNode.removeChild(element);
                     $("#jim").remove();
+                    sessionStorage.setItem('presentationLoaded', 'true')
                     document.getElementsByTagName('body')[0].style.overflow = "auto"
                 }
                 return a++;
