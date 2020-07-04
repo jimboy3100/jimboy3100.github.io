@@ -66,6 +66,15 @@
                 keyUp: null,
                 type: 'normal'
             },
+            'hk-crazyDoubleSplit': {
+                label: textLanguage['hk-crazyDoubleSplit'],
+                defaultKey: '',
+                keyDown() {
+                    application && application.crazyDoubleSplit();
+                },
+                keyUp: null,
+                type: 'normal'
+            },			
             'hk-pause': {
                 label: textLanguage['hk-pause'],
                 defaultKey: 'R',
