@@ -29,7 +29,7 @@
                 },
                 keyUp: null,
                 type: 'normal'
-            },
+            },		
             'hk-doubleSplit': {
                 label: textLanguage['hk-doubleSplit'],
                 defaultKey: 'Q',
@@ -39,6 +39,15 @@
                 keyUp: null,
                 type: 'normal'
             },
+            'hk-tripleSplit': {
+                label: textLanguage['hk-tripleSplit'],
+                defaultKey: '',
+                keyDown() {
+                    application && application.tripleSplit();
+                },
+                keyUp: null,
+                type: 'normal'
+            },			
             'hk-popSplit': {
                 label: 'Popsplit',
                 defaultKey: 'ALT+Q',
