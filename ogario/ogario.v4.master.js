@@ -1,4 +1,4 @@
-//v12.56
+//v12.58
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -681,13 +681,29 @@ function legendmaster(self) {
         setNick() {
             this.login();
             var result = $("#nick").val();
-            if (result && result.length > 15) {
-                result = result.substring(0, 15);
+            //if (result && result.length > 15) {
+			if (result && fancyCount2(result) > 15) {
+				while (fancyCount2(result) > 15) {
+					result= result.slice(0,-1)
+				}
+                //result = result.substring(0, 15);
             }
             if (self.core) {
                 self.core.sendNick(result);
             }
         },
+/*		
+        setNick() {
+            this.login();
+            var result = $("#nick").val();
+            if (result && result.length > 15) {	
+                result = result.substring(0, 15);
+            }
+            if (self.core) {
+                self.core.sendNick(result);
+            }
+        },	
+*/		
         spectate() {
             if (self.core) {
                 self.core.sendSpectate();
@@ -993,4 +1009,19 @@ $("#potions").html('<div id="potion1" class="potion">'+
                                         '<div>empty</div>'+
                                     '</div>')
 $("#potions").hide()									
+}
+
+function fancyCount2(str){
+  const joiner = "\u{200D}";
+  const split = str.split(joiner);
+  let count = 0;
+
+  for(const s of split){
+    //removing the variation selectors
+    const num = Array.from(s.split(/[\ufe00-\ufe0f]/).join("")).length;
+    count += num;
+  }
+
+  //assuming the joiners are used appropriately
+  return count / split.length;
 }
