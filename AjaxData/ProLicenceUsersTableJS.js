@@ -173,6 +173,10 @@ ProLicenceUsersTable = {
             "reason": "Give@20200910",
             "notes": "RewardDay-AbdUllah"
         }, 
+        "a20599a0-eb0c-428c-8fc1-17feed9b0ce6": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-AbdUllah2"
+        }, 		
         "ff5cd59d-ab25-456c-987f-fb4ae3a0de2b": {
             "reason": "Give@20200910",
             "notes": "RewardDay-AlexisGalarza"
@@ -184,7 +188,15 @@ ProLicenceUsersTable = {
         "02279fd0-ce99-444e-9f94-788ca4674509": {
             "reason": "Give@20200910",
             "notes": "RewardDay-ChristhopherBrandhon"
-        }, 					
+        }, 	
+        "d0816c5a-bad6-492f-8ad5-ab5a95e87426": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-Aditya_1"
+        }, 	
+        "4fefe166-87e5-4981-b5ea-8d0032f88b7d": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-Arejaytee"
+        }, 			
         "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
             "reason": "Donate",
             "notes": "Lizzie"
