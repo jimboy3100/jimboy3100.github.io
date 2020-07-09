@@ -89,6 +89,7 @@ label:hover{
 }
 #helloContainer{
     width:920px;
+    bottom: -80%;
     opacity:.96 
 }
 .center-container{
