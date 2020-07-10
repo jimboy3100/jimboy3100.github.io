@@ -69,6 +69,10 @@ ProLicenceUsersTable = {
             "reason": "Donate",
             "notes": "Fiku"
         },	
+        "2bb8b084-d1e0-4ce9-936b-e10d82f0b937": {
+            "reason": "Donate",
+            "notes": "ChristianDíaz"
+        },		
         "83df7615-1c6a-4a9d-9d86-1eba11d9589c": {
             "reason": "BeggerJapan",
             "notes": "padelsendpie"
@@ -85,6 +89,14 @@ ProLicenceUsersTable = {
             "reason": "Give@20200910",
             "notes": "MaximumDeltaServer"
         },	
+        "7c8b2a0f-d4a7-4eff-bfao-d892921e5d48": {
+            "reason": "Give@20200910",
+            "notes": "DevaRei"
+        },
+        "f63d05cd-3322-4ed7-b8f5-795e2feb3dbb": {
+            "reason": "Give@20200910",
+            "notes": "PotatoGirl"
+        },		
         "d7385406-7a71-498d-a613-3faf090f6ccb": {
             "reason": "Give@20200910",
             "notes": "VictoriaAiroFbGoogleaccount"
