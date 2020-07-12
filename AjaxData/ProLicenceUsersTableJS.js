@@ -212,6 +212,18 @@ ProLicenceUsersTable = {
         "7c8b2a0f-d4a7-4eff-bfao-d892921e5d48": {
             "reason": "Give@20200910",
             "notes": "RewardDay-Reis"
+        }, 	
+        "6436daae-4e01-9022-d422e8ea4efe": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-Dorian"
+        }, 	
+        "4fefe166-87e5-4981-b5ea-8d0032f88b7d": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-Thomas"
+        }, 	
+        "d8996a83-40c6-4aa5-b2e5-8658f7e3ad0c": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-AlexAlex"
         }, 			
         "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
             "reason": "Donate",
