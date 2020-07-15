@@ -1,4 +1,4 @@
-/*v0.07*/
+/*v0.08*/
 @import url(https://legendmod.ml/css/ogicomoon.css);
 @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
 @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
@@ -907,6 +907,7 @@ input.hide-url::selection,input.stream-mode::selection{
     bottom:10px 
 }
 .hud-main-color,.time-hud-color{
+    font-size: 17px;
     color:#01d9cc 
 }
 .stats-hud-color{
@@ -919,12 +920,11 @@ input.hide-url::selection,input.stream-mode::selection{
    position: relative;
    display: flex;
    background-color: #171717;
-   width: 80%;
+   width: 100%;
    height: 3px;
 }
 .top5-mass-bar-container .top5-mass-bar{
    position: absolute;
-   background-color: #01d9cc;
    height: 100%;
    width: 0%;
    transition: width 1s;
@@ -959,7 +959,9 @@ input.hide-url::selection,input.stream-mode::selection{
     font-size:100%;
     top:55px;
     left:10px;
-    white-space:nowrap 
+    min-width: 220px;
+    transform-origin: top left;
+    white-space:nowrap;
 }
 #top5-hud h5{
     font-size:80%;
@@ -975,7 +977,7 @@ input.hide-url::selection,input.stream-mode::selection{
     color:#fff 
 }
 #top5-pos{
-    font-size:70%;
+    font-size: 15px;
     list-style:none;
     padding-left:6px 
 }
@@ -1007,7 +1009,7 @@ input.hide-url::selection,input.stream-mode::selection{
     background-color:rgba(0,0,0,.4) 
 }
 #top5-total{
-    font-size:65%;
+    font-size:15px;
     padding:0 0 10px 5px 
 }
 #minimap-hud{
@@ -1023,17 +1025,18 @@ input.hide-url::selection,input.stream-mode::selection{
     font-size:100%;
     white-space:nowrap;
     padding:0;
-    top:10px 
+    transform-origin: top right;
+    top:10px;
 }
 #leaderboard-hud h5{
-    font-size:95%;
+    font-size:20px;
     font-weight:inherit;
     text-transform:capitalize;
     margin:6px;
     font-weight: bold 
 }
 #leaderboard-positions{
-    font-size:70%;
+    font-size:17px;
     padding:0 10px 6px 
 }
 #leaderboard-positions .me{
@@ -1043,7 +1046,7 @@ input.hide-url::selection,input.stream-mode::selection{
     color:#018cf6 
 }
 #leaderboard-data{
-    font-size:70%;
+    font-size:17px;
     text-align:right;
     left:-5px;
     transform:translate(-100%,0) 
