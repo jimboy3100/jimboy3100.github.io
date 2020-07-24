@@ -1,5 +1,6 @@
 //Legend mod Sniff2 by jimboy3100
 //v2.6
+/*
 (function() {
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.type = 'image/x-icon';
@@ -8,7 +9,7 @@
     document.getElementsByTagName('head')[0].appendChild(link);
 })();
 
-/*
+
 document.title = "LM express";   
 setTimeout(function () {
 document.title = "LM express";   
