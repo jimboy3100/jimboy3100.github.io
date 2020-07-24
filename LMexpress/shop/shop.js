@@ -1,4 +1,4 @@
-//v0.4
+//v0.5
 	window.tempModeratorSkin=""
 		if ($("#nick").val().includes('℄')){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png"></div>'
@@ -23,12 +23,12 @@
 		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Shiro"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Shiro" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsShiro.png"></div>'
 		}				
-	}
-	
+	}	
 	window.tempAnimatedCool=""
 	if (animatedskins){
 		Object.keys(animatedskins).forEach(function(key) {			
 			window.tempAnimatedCool += '<div class="skin-box"><img class="lazy" name="' + animatedskins[key].id + '" data-original="https://i.imgur.com/' + animatedskins[key].frames[0].id + '.png"></div>'
+			window.tempAnimatedCoolArray.push(key)
 		});
 	}
 		
@@ -49,11 +49,10 @@
     '<div id="navbar">' +
         '<div id="nav">' +
             '<ul>' +
-				
+				'<li><a href="#animatedLikeGif">Animated</a></li>' +
                 '<li><a href="#imgur" class="active">Premium</a></li>' +
 				'<li><a href="#lowres">WaterMarks</a></li>' +
-				'<li><a href="#free">Free</a></li>' +
-				'<li><a href="#animatedLikeGif">Animated</a></li>' +			
+				'<li><a href="#free">Free</a></li>' +						
 				'<li><a href="#vanillaskins">In Use</a></li>' +			  		
                 '<li><input type="text" id="skin-url" placeholder="Special Skin Effect" readonly></li>' +
 		'<li><a id="UseEffect" class="link">Use</a></li>' +
