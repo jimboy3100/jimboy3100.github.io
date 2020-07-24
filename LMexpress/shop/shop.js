@@ -1,4 +1,4 @@
-//v0.6
+//v0.7
 	window.tempModeratorSkin=""
 		if ($("#nick").val().includes('℄')){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png"></div>'
@@ -26,7 +26,8 @@
 	}	
 	window.tempAnimatedCool=""
 	if (animatedskins){
-		Object.keys(animatedskins).forEach(function(key) {			
+		Object.keys(animatedskins).forEach(function(key) {	
+			if (animatedskins[key] && animatedskins[key].id && animatedskins[key].frames[0] && animatedskins[key].frames[0].id)
 			window.tempAnimatedCool += '<div class="skin-box"><img class="lazy" name="' + animatedskins[key].id + '" data-original="https://i.imgur.com/' + animatedskins[key].frames[0].id + '.png"></div>'
 			window.tempAnimatedCoolArray.push(key)
 		});
