@@ -1,4 +1,4 @@
-//v0.3
+//v0.4
 	window.tempModeratorSkin=""
 		if ($("#nick").val().includes('℄')){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png"></div>'
@@ -27,9 +27,9 @@
 	
 	window.tempAnimatedCool=""
 	if (animatedskins){
-		Object.keys(animatedskins).forEach(function(key) {
+		Object.keys(animatedskins).forEach(function(key) {			
 			window.tempAnimatedCool += '<div class="skin-box"><img class="lazy" name="' + animatedskins[key].id + '" data-original="https://i.imgur.com/' + animatedskins[key].frames[0].id + '.png"></div>'
-		});	
+		});
 	}
 		
 		
@@ -37,7 +37,7 @@
 				'<link rel="stylesheet" type="text/css" href="https://legendmod.ml/css/specialeffects.css">' +
 				'<div class="modal-backdrop fade in"></div>' +
                 //'<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 780px; height:500">' +
-				'<div class="modal-dialog" style="top: calc(50vh - 400px); width: 900px; height:500">' +
+				'<div class="modal-dialog" style="top: calc(50vh - 400px); width: 900px; height:500px">' +
                 '<div class="modal-content">' +
                 '<div id="CloseLMShop2" class="modal-header"><button id="CloseLMShop" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMShop" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
                 '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Shop' + '</h4>' +
@@ -112,6 +112,7 @@
                 '</div>' +
                 '</div>' +
                 '</div>');
+			$("#animatedLikeGif").children().css("width", "55px");	
 
             $("#CloseLMShop").click(function() {
                 $("#LMShop").remove();
