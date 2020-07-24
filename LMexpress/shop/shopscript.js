@@ -1,4 +1,4 @@
-//v0.4j
+//v0.4k
 
 //$(document).ready(function() {
 jQuery(function($) {
@@ -61,6 +61,9 @@ jQuery(function($) {
 		toastr.info("<b>[SERVER]:</b> Special Effect erased");
 		if (document.getElementsByClassName("skins-wrapper")[2].children[0]) document.getElementsByClassName("skins-wrapper")[2].children[0].remove()
 			SpecialEffectPlayers[application.lastSentNick]=null
+			//
+			animatedskins[application.lastSentNick] = null
+			//
 			localStorage.setItem("isActualUsingSpecialEffectsSkin", null);
 			window.application.sendSocket3Info("spfc", null)		
     });	
@@ -114,6 +117,6 @@ function loadSpecialEffectSkin(e){
 			} catch (e) {}
 		}
 		else{
-			toastr.warning("<b>[SERVER]:</b> Not Premium account found. If you donated in the past, please refer it to Legend mod discord.<br>Thank you for using our scripts!").css("width", "350px");
+			toastr.warning("<b>[SERVER]:</b> Not Premium account found. If you donated in the past, please refer it to Legend mod discord.<br>Thank you for using Legend mod!").css("width", "350px");
 		}	
 }
