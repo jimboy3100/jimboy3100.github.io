@@ -1,4 +1,4 @@
-//v0.4p
+//v0.4q
 
 //$(document).ready(function() {
 jQuery(function($) {
@@ -78,22 +78,26 @@ jQuery(function($) {
 	}, 900);
 });
 
+
 function startSpecialEffectSkin(){
 	if (localStorage.getItem("isActualUsingSpecialEffectsSkin")){
 			try {	
 			for (var i = 0; i < $(".skins-wrapper").length; i++){
 				if ($(".skins-wrapper")[i].style.display != "none"){
-					
-					for (var j = 0; j < document.getElementsByClassName("skins-wrapper")[i].children.length; j++){
+					for (var j = 0; j < document.getElementsByClassName("skins-wrapper")[i].children.length; j++)
 						if (document.getElementsByClassName("skins-wrapper")[i].children[j].children[0].name ==localStorage.getItem("isActualUsingSpecialEffectsSkin")){ 
 							if (document.getElementsByClassName("skins-wrapper")[4].children[0]) document.getElementsByClassName("skins-wrapper")[4].children[0].remove()
 							document.getElementsByClassName("skins-wrapper")[4].append(document.getElementsByClassName("skins-wrapper")[i].children[j])
 						} 
 				}			
-			}			
-		} catch (e) {}	
+			}	
+			//if (application.lastSentNick == "") application.lastSentNick = $("#nick").val()
+			//SpecialEffectPlayers[application.lastSentNick]=localStorage.getItem("isActualUsingSpecialEffectsSkin")
+			//window.application.sendSocket3Info("spfc", localStorage.getItem("isActualUsingSpecialEffectsSkin"))	
+		
+			} catch (e) {}	
+	}
 }
-
 
 function loadSpecialEffectSkin(e){
 		if (($("#nick").val().includes('℄') && $("#clantag").val() == window.atob(window.clanTagLc)) || window.proLicenceUID || $("#skin-url").val() == "Byzantium" || window.tempAnimatedCoolArray.includes($("#skin-url").val())){
