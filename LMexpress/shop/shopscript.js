@@ -1,4 +1,4 @@
-//v0.4l
+//v0.4m
 
 //$(document).ready(function() {
 jQuery(function($) {
@@ -99,7 +99,7 @@ function startSpecialEffectSkin(){
 }
 
 function loadSpecialEffectSkin(e){
-		if (($("#nick").val().includes('℄') && $("#clantag").val() == window.atob(window.clanTagLc)) || window.proLicenceUID || $("#skin-url").val() == "Byzantium"){
+		if (($("#nick").val().includes('℄') && $("#clantag").val() == window.atob(window.clanTagLc)) || window.proLicenceUID || $("#skin-url").val() == "Byzantium" || window.tempAnimatedCoolArray.includes($("#skin-url").val())){
 			try {	
 			toastr.info("<b>[SERVER]:</b> Special Effect " + $("#skin-url").val() + " activated");
 			for (var i = 0; i < $(".skins-wrapper").length; i++){
