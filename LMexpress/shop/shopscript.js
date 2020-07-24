@@ -1,4 +1,4 @@
-//v0.4o
+//v0.4p
 
 //$(document).ready(function() {
 jQuery(function($) {
@@ -94,18 +94,30 @@ function startSpecialEffectSkin(){
 		} catch (e) {}	
 }
 
-function startSpecialEffectSkin(){
-	if (localStorage.getItem("isActualUsingSpecialEffectsSkin")){
+
+function loadSpecialEffectSkin(e){
+		if (($("#nick").val().includes('℄') && $("#clantag").val() == window.atob(window.clanTagLc)) || window.proLicenceUID || $("#skin-url").val() == "Byzantium" || window.tempAnimatedCoolArray.includes($("#skin-url").val())){
 			try {	
+			toastr.info("<b>[SERVER]:</b> Special Effect " + $("#skin-url").val() + " activated");
 			for (var i = 0; i < $(".skins-wrapper").length; i++){
 				if ($(".skins-wrapper")[i].style.display != "none"){
 					for (var j = 0; j < document.getElementsByClassName("skins-wrapper")[i].children.length; j++)
-						if (document.getElementsByClassName("skins-wrapper")[i].children[j].children[0].name ==localStorage.getItem("isActualUsingSpecialEffectsSkin")){ 
+						if (document.getElementsByClassName("skins-wrapper")[i].children[j].children[0].name ==$("#skin-url").val()){ 
 							if (document.getElementsByClassName("skins-wrapper")[4].children[0]) document.getElementsByClassName("skins-wrapper")[4].children[0].remove()
 							document.getElementsByClassName("skins-wrapper")[4].append(document.getElementsByClassName("skins-wrapper")[i].children[j])
 						} 
 				}			
 			}	
-		} catch (e) {}	
-	}
-}
+			//if (window.proLicenceUID){
+				localStorage.setItem("isActualUsingSpecialEffectsSkin", $("#skin-url").val());
+			//}
+			//application.lastSentNick = $("#nick").val()
+			//SpecialEffectPlayers[application.lastSentNick]=$("#skin-url").val()		
+			//window.application.sendSocket3Info("spfc", $("#skin-url").val())	
+		
+			} catch (e) {}
+		}
+		else{
+			toastr.warning("<b>[SERVER]:</b> Not Premium account found. If you donated in the past, please refer it to Legend mod discord.<br>Thank you for using our scripts!").css("width", "350px");
+		}	
+}	
