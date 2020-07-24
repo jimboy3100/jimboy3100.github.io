@@ -1,4 +1,4 @@
-//v0.7
+//v0.8
 	window.tempModeratorSkin=""
 		if ($("#nick").val().includes('℄')){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png"></div>'
@@ -114,7 +114,7 @@
                 '</div>' +
                 '</div>');
 			$("#animatedLikeGif").children().css("width", "55px");	
-
+			$("#animatedLikeGif").css("padding-right", "100px");
             $("#CloseLMShop").click(function() {
                 $("#LMShop").remove();
             });
