@@ -1,4 +1,4 @@
-//v0.4k
+//v0.4l
 
 //$(document).ready(function() {
 jQuery(function($) {
@@ -26,6 +26,10 @@ jQuery(function($) {
         effect : "fadeIn",
         skip_invisible : true
     });
+     $("#animatedLikeGif img.lazy").lazyload({
+        effect : "fadeIn",
+        skip_invisible : true
+    });	
 
     $("img.lazy").on("click", function(e) {
         e.preventDefault();
