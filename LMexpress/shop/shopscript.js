@@ -114,6 +114,6 @@ function loadSpecialEffectSkin(e){
 			} catch (e) {}
 		}
 		else{
-			toastr.warning("<b>[SERVER]:</b> Not Premium account found. If you donated in the past, please refer it to Legend mod discord.<br>Thank you for using Legend mod!").css("width", "350px");
+			toastr.warning("<b>[SERVER]:</b> Not Premium account found. If you donated in the past, please refer it to Legend mod discord.<br>Thank you for using our scripts!").css("width", "350px");
 		}	
 }
