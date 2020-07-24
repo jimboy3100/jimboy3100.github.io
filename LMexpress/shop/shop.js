@@ -23,6 +23,13 @@
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Shiro" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsShiro.png"></div>'
 		}				
 	}
+	
+	window.tempAnimatedCool=""
+	if (animatedskins){
+		Object.keys(animatedskins).forEach(function(key) {
+			window.tempAnimatedCool += '<div class="skin-box"><img class="lazy" name=' + animatedskins[key].id + ' data-original=' + animatedskins[keys].frames[0] + '></div>'
+		});	
+	}
 		
 		
             $('#helloContainer').after('<div class="modal fade in" id="LMShop" aria-hidden="false" style="display: block;">' +
@@ -45,6 +52,7 @@
                 '<li><a href="#imgur" class="active">Premium</a></li>' +
 				'<li><a href="#lowres">WaterMarks</a></li>' +
 				'<li><a href="#free">Free</a></li>' +
+				'<li><a href="#animatedLikeGif">Animated</a></li>' +			
 				'<li><a href="#vanillaskins">In Use</a></li>' +			  		
                 '<li><input type="text" id="skin-url" placeholder="Special Skin Effect" readonly></li>' +
 		'<li><a id="UseEffect" class="link">Use</a></li>' +
@@ -88,6 +96,9 @@
 			'<div class="skin-box"><img class="lazy" name="Einstein" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsEinstein.png"></div>' +
 			'<div class="skin-box"><img class="lazy" name="DeadTable" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsDeadTable.png"></div>' +						
 	'</div>' +
+	        '<div id="animatedLikeGif" class="skins-wrapper">' +
+			window.tempAnimatedCool	+			
+	'</div>' +	
 	        '<div id="free" class="skins-wrapper">' +
 			'<div class="skin-box"><img class="lazy" name="Byzantium" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsByzantium.png"></div>' +			
 	'</div>' +	
