@@ -1,4 +1,4 @@
-//v0.5
+//v0.6
 	window.tempModeratorSkin=""
 		if ($("#nick").val().includes('℄')){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png"></div>'
@@ -49,9 +49,10 @@
     '<div id="navbar">' +
         '<div id="nav">' +
             '<ul>' +
-				'<li><a href="#animatedLikeGif">Animated</a></li>' +
+				
                 '<li><a href="#imgur" class="active">Premium</a></li>' +
 				'<li><a href="#lowres">WaterMarks</a></li>' +
+				'<li><a href="#animatedLikeGif">Animated-Free</a></li>' +
 				'<li><a href="#free">Free</a></li>' +						
 				'<li><a href="#vanillaskins">In Use</a></li>' +			  		
                 '<li><input type="text" id="skin-url" placeholder="Special Skin Effect" readonly></li>' +
