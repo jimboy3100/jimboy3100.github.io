@@ -8,6 +8,7 @@
     document.getElementsByTagName('head')[0].appendChild(link);
 })();
 
+/*
 document.title = "LM express";   
 setTimeout(function () {
 document.title = "LM express";   
@@ -18,7 +19,7 @@ document.title = "LM express";
 setTimeout(function () {
 document.title = "LM express";   
 }, 1500);
-
+*/
 setTimeout(function () {
 $(".agario-profile-name").css('vertical-align', '');
 }, 6000);
