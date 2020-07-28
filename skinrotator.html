@@ -485,12 +485,12 @@ var cn="pagenum";
 if(i==p){cn="pagenumActive";}
 document.getElementsByClassName('page')[0].innerHTML+="<a class='"+cn+"' href='javascript:void(0)' onclick='loadPage("+st+","+i+")'>"+parseInt(i+1)+"</a>";
 }
-document.getElementsByClassName('page')[0].innerHTML+="<a href='https://fancytext.blogspot.com'><img height='45' src=''></a>";
+document.getElementsByClassName('page')[0].innerHTML+="<a href='https://legendmod.ml'><img height='45' src=''></a>";
 document.getElementsByClassName('page')[1].innerHTML=document.getElementsByClassName('page')[0].innerHTML;
 document.getElementById('result').innerHTML="";
   for (var i = s-1; i >= s-100 && i>0; i--) {
     simg[i]=mimg[i].replace(/\"/g, "").replace(/image:/, "");
-    document.getElementById('result').innerHTML += "<div onclick='getCode(" + i + ");' class='div' id='div"+i+"'><img alt='"+sid[i].replace(/\_/gi," ")+"' title='"+sid[i].replace(/\_/gi," ")+"' class='img' id='" + i + "' width='100' src='https://configs-web.agario.miniclippt.com/live/"+version+"/" + simg[i] + "'></div>";
+    document.getElementById('result').innerHTML += "<div onclick='getCode(" + i + ");' class='div' id='div"+i+"'><img onerror='imgLoadedEvent(" + i + ");' alt='"+sid[i].replace(/\_/gi," ")+"' title='"+sid[i].replace(/\_/gi," ")+"' class='img' id='" + i + "' width='100' src='https://configs-web.agario.miniclippt.com/live/"+version+"/" + simg[i] + "'></div>";
 if(skin_arr.length>0 && skin_arr.indexOf(i.toString())!=-1){
 document.getElementById(i).setAttribute("style","-webkit-filter:grayscale(100%)");
 document.getElementById("div"+i).style.background = "rgb(0, 255, 0)";
@@ -543,6 +543,15 @@ if(p==0){console.log(ns.substr(0,ns.length-1)+'];var version="'+version+'";');}
 	  showCode();
     }
   }
+function imgLoaded(imgElement) {
+  return imgElement.complete && imgElement.naturalHeight !== 0;
+}
+function imgLoadedEvent(i) {
+setTimeout(function() {
+document.getElementById(i).src= 'https://jimboy3100.github.io/banners/iconImageNotFound.png'
+console.log(imgLoaded(document.getElementById(i)),i);
+}, 10);
+}
 </script>
 <center>
 
