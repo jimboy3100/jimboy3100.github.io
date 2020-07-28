@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -325,7 +324,7 @@ function AgarVersionDestinations2() {
         }
     }
         window.agarversionDestinations = responseagarversionDestinations;
-		version=window.agarversionDestinations[0]
+		version=window.agarversionDestinations[Object.keys(window.agarversionDestinations).length-1];
 		version=version.slice(0, -1)
 		window.urlVersion = "https://configs-web.agario.miniclippt.com/live/"+version+"/GameConfiguration.json";
 		startProject()   
