@@ -352,7 +352,7 @@ function AgarVersionDestinations2(custom) {
 		
 		startProject()   
 		window.started = true
-		document.getElementById("knownIssues2").before("Destination: " + window.urlVersion)
+		document.getElementById("knownIssues2").outerHTML='<div id="knownIssues2"> Destination: <a href='+window.urlVersion+' target="_blank">' + window.urlVersion + '<br></div>'
 }
 		
 function isObject(val) {
@@ -369,7 +369,7 @@ setTimeout(function() {
 		window.urlVersion = "https://configs-web.agario.miniclippt.com/live/"+version+"/GameConfiguration.json";
 
 		startProject()    
-		document.getElementById("knownIssues2").before("Destination: " + window.urlVersion)
+		document.getElementById("knownIssues2").outerHTML='<div id="knownIssues2"> Destination: <a href='+window.urlVersion+' target="_blank">' + window.urlVersion + '<br></div>'
    }
 }, 5000);
 
@@ -585,8 +585,8 @@ document.getElementById(i).src= 'https://jimboy3100.github.io/banners/iconImageN
 <center>
 
 <br>
-  <img style="display:none" src="http://whos.amung.us/widget/agarskins.png" width="1" height="1" border="0"  style="display:none" />
-  <a id="knownIssues2"</a><br>
+  <img id="hello" style="display:none" src="http://whos.amung.us/widget/agarskins.png" width="1" height="1" border="0"  style="display:none" />
+  <div id="knownIssues2"<br></div>
   <a id="knownIssues" target="_blank" href="https://jimboy3100.github.io/skins/skinrotator.txt">-Known issues-</a>
   <br>© copyright <year></year> <a target="_blank" href="http://legendmod.ml">The Legend Mod Project</a> - all rights reserved -</center>
 <script>
