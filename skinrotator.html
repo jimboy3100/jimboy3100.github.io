@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -269,7 +270,8 @@ var loading=document.getElementById('preview').src;
   var ss="";
   var a=0; 
   //v9/1129
-  var version='v15/3032';
+  var version;
+  //var version='v15/3032';
   var str = '';
   var mid;
   var mimg;
@@ -277,9 +279,76 @@ var loading=document.getElementById('preview').src;
   var sc="";
   var ec="";
 var xmlhttp = new XMLHttpRequest();
-var url = "https://configs-web.agario.miniclippt.com/live/"+version+"/GameConfiguration.json";
+var xhttp = new XMLHttpRequest();
+//window.urlVersion = "https://configs-web.agario.miniclippt.com/live/"+version+"/GameConfiguration.json";
 var myArr=[];
 var nc=6;
+
+//
+
+
+AgarVersionDestinations()
+
+function getSNEZ(server, username, password) {
+    xhttp.open("GET", server, true);
+	xhttp.onerror = function () {
+		console.log("** An error occurred during the transaction");
+	};		
+    xhttp.setRequestHeader("username", username);
+    xhttp.setRequestHeader("password", password);
+    xhttp.send();
+xhttp.onreadystatechange = function () {
+  // In local files, status is 0 upon success in Mozilla Firefox
+  if(xhttp.readyState === XMLHttpRequest.DONE) {
+    var status = xhttp.status;
+    if (status === 0 || (status >= 200 && status < 400)) {
+      AgarVersionDestinations2()
+    } else {
+      // Oh no! There has been an error with the request!
+    }
+  }
+};	
+	
+}
+function AgarVersionDestinations() {
+
+    window.agarversionDestinations = {};
+    window.agarversionDestinations[Object.keys(agarversionDestinations).length - 1] = version;
+    getSNEZ("https://lmsettings.snez.org/", "LMConfigVersion", "LMConfigVersionPass");
+}
+
+function AgarVersionDestinations2() {
+    var responseagarversionDestinations = JSON.parse(xhttp.response);
+    for (var i = 0; i < Object.keys(responseagarversionDestinations).length; i++) {
+        if (responseagarversionDestinations[i] == version) {
+            window.agarversionDestinationFound = true;
+        }
+    }
+        window.agarversionDestinations = responseagarversionDestinations;
+		version=window.agarversionDestinations[0]
+		version=version.slice(0, -1)
+		window.urlVersion = "https://configs-web.agario.miniclippt.com/live/"+version+"/GameConfiguration.json";
+		startProject()   
+		window.started = true
+}
+		
+function isObject(val) {
+    if (val === null) {
+        return false;
+    }
+    return ((typeof val === 'function') || (typeof val === 'object'));
+}
+//
+
+setTimeout(function() {
+   if (!window.started){
+		version='v15/3032';
+		window.urlVersion = "https://configs-web.agario.miniclippt.com/live/"+version+"/GameConfiguration.json";
+		startProject()      
+   }
+}, 5000);
+
+function startProject(){
 if (typeof(Storage) !== "undefined" && localStorage.getItem("ss") !== null) {
 skin_arr=localStorage.getItem('ss').split(",");
 if(skin_arr[0].length==0){skin_arr=[];}
@@ -306,7 +375,7 @@ xmlhttp.onreadystatechange = function() {
 loadPage(mimg.length,0);
     }
 };
-xmlhttp.open("GET", url, true);
+xmlhttp.open("GET", window.urlVersion, true);
 xmlhttp.send();
 function loadPage(s,p){
 document.getElementsByClassName('page')[0].innerHTML="<a href=''><img height='45' src=''></a>";
@@ -460,47 +529,15 @@ if(this.className="tab"){sc="";ec="";this.className="tabActive";document.getElem
 });
 document.getElementById("tm").addEventListener("click", function(){
 if(this.className="tab"){this.className="tabActive";document.getElementById("wc").className="tab";
-sc="// ==UserScript==\n // @name AgarSkin by Jimboy3100\n // @namespace http://legendmod.ml // @version 0.1\n // @description Get all skins for free!\n // @author Jimboy3100\n // @match https://agar.io/*\n // @run-at document-end\n // @grant none\n // ==/UserScript==\n var tamp=setInterval(function(){ if(document.getElementsByClassName('circle bordered skinWrapper').length>0){ clearInterval(tamp); var elem = document.body; var script = document.createElement('script'); script.innerHTML ='";
+sc="// ==UserScript==\n // @name AgarSkin\n // @namespace https://legendmod.ml // @version 0.1\n // @description Get all skins for free!\n // @author Jimboy3100\n // @match https://agar.io/*\n // @run-at document-end\n // @grant none\n // ==/UserScript==\n var tamp=setInterval(function(){ if(document.getElementsByClassName('circle bordered skinWrapper').length>0){ clearInterval(tamp); var elem = document.body; var script = document.createElement('script'); script.innerHTML ='";
 ec="'; elem.appendChild(script); } }, 100);";showCode();
 }
 });
+}
 </script>
 <center>
- <div id="player"></div>
-<script>
-/*var vid="T7csdctIhSE";
-if(window.location.hash.length>1){
- vid=window.location.hash.substr(1);
-}
 
-      var tag = document.createElement('script');
-      tag.src = "https://www.youtube.com/iframe_api";
-      var firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-      var player;
-      function onYouTubeIframeAPIReady() {
-        player = new YT.Player('player', {
-          height: '460',
-          width: '730',
-          videoId: vid,
-          events: {
-            'onReady': onPlayerReady,
-            'onStateChange': onPlayerStateChange
-          }
-        });
-      }
-      function onPlayerReady(event) {
-           event.target.setVolume(0);
-       event.target.playVideo();
-      }
-      var done = false;
-      function onPlayerStateChange(event) {
-        if (event.data == YT.PlayerState.PLAYING && !done) {
-                  done = true;
-        }
-           event.target.setVolume(0);
-      }*/
-    </script><br>
+<br>
   <img style="display:none" src="http://whos.amung.us/widget/agarskins.png" width="1" height="1" border="0"  style="display:none" />
   <a target="_blank" href="https://jimboy3100.github.io/skins/skinrotator.txt">-Known issues-</a>
   <br> © copyright <year></year> <a target="_blank" href="http://legendmod.ml">The Legend Mod Project</a> - all rights reserved -</center>
