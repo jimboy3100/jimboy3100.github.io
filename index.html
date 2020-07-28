@@ -461,10 +461,15 @@
     </div>
     <div id="FPS" class="skins-wrapper" style="display: none;">
         <section height="10%" style="background-image: url();background-size: 100%; color: black;text-align: center;">
-            <strong>LME on it's best</strong>
+            <color style="color:red"><strong>READ AND APPLY! THESE ARE IMPORTANT</strong></color>
             <br>
-            <h2 class="project-tagline">Improving Performance</h2>
-            Legend Mod has Unlimited FPS unlocked (quicker than Vanilla)
+            <h2 class="project-tagline">Best Performance values</h2>
+            <strong>Settings -> Frames per seconds -> Limited Rate + 4ms delay (suggested)</strong>
+			<br>More FPS do not always mean better rendering. 
+			<br>Limited FPS delay is suggestred from the Video "<i>window.requestAnimationFrame(drawRender.render)</i>"		
+			<br>Unlimited FPS delay 1-15ms (average 4.5ms on Chromium) "<i>setTimeout(function() {drawRender.render()}, 0)</i>" - <a href="https://johnresig.com/blog/analyzing-timer-performance" target="_blank">read more</a>
+			<br>Slow PC need "Limited Rate + 8ms delay" (Reason: Javascript runs some functions asynchronously)
+			
             <h3 class="project-tagline">The Preliminary:</h3>
             <b>Reducing Graphics.</br> Themes -> Graphics/Cursors -> Graphics significantly change the performance
                 <br><b>Ethernet</b> cable internet has the most important role on connection Ping, prefer Ethernet than WIFI
@@ -496,7 +501,6 @@
             <br>Rainbow food
             <br>Names (<i>disable names or use “Auto hide name” option</i>)
             <h3 class="project-tagline">Some tips to get more stable FPS:</h3>
-            Prefer joining locked Servers by typing tokens directly to address bar e.g "http://agar.io/?sip=151.80.98.61:1526&?r=EU-London&?m="
             <br>Use “Optimized names” and “Optimized mass” option
             <br>Use “Auto hide mass” option
             <br>Use “Short mass” option
