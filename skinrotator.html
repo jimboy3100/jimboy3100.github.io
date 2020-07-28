@@ -241,6 +241,7 @@ cursor:pointer;
 </div>
 </center>
 <div id="tab" style="width:100%">
+<color="red" style="display:inline; font-size: 25px;">Version: <select id="ss-select-agarVersionDestinations" onchange="changeFunction()" class="form-control" required="" style="display:inline; width: 160px; margin-top: -30px;font-size: 25px;"></select></color>
 <a class="tabActive" id="wc" href="javascript:void(0);">&nbsp;Web console [F12]&nbsp;</a>
 <a class="tab" id="tm" href="javascript:void(0);">&nbsp; Tampermonkey | Greasemonkey&nbsp;</a>
 </div>
@@ -250,6 +251,7 @@ cursor:pointer;
 <textarea id="textarea" onclick="sA('textarea')" readonly></textarea><br>
 <div class="page"></div>
 <div id="result"><a target="_blank" href="http://legendmod.ml"><font size="5" color="#FF0000"><b>[NEW VERSION HERE]</font><b></a></div>
+
 <div class="page"></div>
 <script>
 //if(!document.URL.match(/https:\/\/agario\-freeskins\.github\.io/)){window.location.href='https://agario-freeskins.github.io';}
@@ -318,7 +320,7 @@ function AgarVersionDestinations() {
     getSNEZ("https://lmsettings.snez.org/", "LMConfigVersion", "LMConfigVersionPass");
 }
 
-function AgarVersionDestinations2() {
+function AgarVersionDestinations2(custom) {
     var responseagarversionDestinations = JSON.parse(xhttp.response);
     for (var i = 0; i < Object.keys(responseagarversionDestinations).length; i++) {
         if (responseagarversionDestinations[i] == version) {
@@ -326,8 +328,26 @@ function AgarVersionDestinations2() {
         }
     }
         window.agarversionDestinations = responseagarversionDestinations;
+		if (!window.populated){
+			populateLibConfig()
+			window.populated=true
+		}
+		if (custom!=null){
+		localStorage.setItem('si',null);
+		localStorage.setItem('sa',null);
+		localStorage.setItem('ss',null);
+		localStorage.setItem('speed',null);
+		console.log(custom)
+		console.log(window.agarversionDestinations[custom])
+		version=window.agarversionDestinations[custom];
+		
+		}
+		else{
+		document.getElementById('ss-select-agarVersionDestinations').selectedIndex=Object.keys(window.agarversionDestinations).length-1
+		
 		version=window.agarversionDestinations[Object.keys(window.agarversionDestinations).length-1];
-		version=version.slice(0, -1)
+		}
+		version=version.slice(0, -1)		
 		window.urlVersion = "https://configs-web.agario.miniclippt.com/live/"+version+"/GameConfiguration.json";
 		
 		startProject()   
@@ -354,7 +374,7 @@ setTimeout(function() {
 }, 5000);
 
 function startProject(){
-if (typeof(Storage) !== "undefined" && localStorage.getItem("ss") !== null) {
+if (typeof(Storage) !== "undefined" && localStorage.getItem("ss") !== null && localStorage.getItem("ss") !== "null" ) {
 skin_arr=localStorage.getItem('ss').split(",");
 if(skin_arr[0].length==0){skin_arr=[];}
 document.getElementById("speed").value=parseInt(localStorage.getItem('speed'));
@@ -552,6 +572,15 @@ document.getElementById(i).src= 'https://jimboy3100.github.io/banners/iconImageN
 //console.log(imgLoaded(document.getElementById(i)),i);
 }, 10);
 }
+ function populateLibConfig() {
+     var select = document.getElementById("ss-select-agarVersionDestinations");
+     for (i = 0; i < Object.keys(window.agarversionDestinations).length; i++) {
+         select.options[select.options.length] = new Option(window.agarversionDestinations[i])
+     }
+ }
+ function changeFunction(){
+	AgarVersionDestinations2(document.getElementById('ss-select-agarVersionDestinations').selectedIndex)
+ }
 </script>
 <center>
 
