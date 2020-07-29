@@ -227,6 +227,13 @@ background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIIAAAAeCAYAAADgp8
 margin-top:-45px;
 cursor:pointer;
 }
+.topright {
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  font-size: 18px;
+}
+
 </style>
 <script src="https://apis.google.com/js/platform.js"></script>
 <center>
@@ -240,6 +247,8 @@ cursor:pointer;
   <input style="width:250px" value="500" id="speed" type="range" min="10" max="1000">
 </div>
 </center>
+ <div class="topright">*For vanilla game (visible to actual user)
+ <br>**For <a target="_blank" href="https://chrome.google.com/webstore/detail/raga-minions/dbcocnmfmbpgfgffogfckoljdjcefgko"><font color="#FF0000"><b>Raga</font><b></a> mod (visible to all Raga users)</div>
 <div id="tab" style="width:100%">
 <color="red" style="display:inline; font-size: 25px;">Version: <select id="ss-select-agarVersionDestinations" onchange="changeFunction()" class="form-control" required="" style="display:inline; width: 160px; margin-top: -30px;font-size: 25px;"></select></color>
 <a class="tabActive" id="wc" href="javascript:void(0);">&nbsp;Web console [F12]&nbsp;</a>
@@ -352,7 +361,7 @@ function AgarVersionDestinations2(custom) {
 		
 		startProject()   
 		window.started = true
-		document.getElementById("knownIssues2").outerHTML='<div id="knownIssues2"> Destination: <a href='+window.urlVersion+' target="_blank">' + window.urlVersion + '<br></div>'
+		document.getElementById("knownIssues2").outerHTML='<div id="knownIssues2"> <a href='+window.urlVersion+' target="_blank">' + 'Destination' + '<br></div>'
 }
 		
 function isObject(val) {
@@ -369,7 +378,7 @@ setTimeout(function() {
 		window.urlVersion = "https://configs-web.agario.miniclippt.com/live/"+version+"/GameConfiguration.json";
 
 		startProject()    
-		document.getElementById("knownIssues2").outerHTML='<div id="knownIssues2"> Destination: <a href='+window.urlVersion+' target="_blank">' + window.urlVersion + '<br></div>'
+		document.getElementById("knownIssues2").outerHTML='<div id="knownIssues2"> <a href='+window.urlVersion+' target="_blank">' + 'Destination' + '<br></div>'
    }
 }, 5000);
 
