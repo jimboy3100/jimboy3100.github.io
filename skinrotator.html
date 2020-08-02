@@ -1,4 +1,7 @@
 
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -519,8 +522,8 @@ var init = setInterval(function() {
         i = 0;
       }
       window.core.loadSkin("%" + skins[i]);
-	  document.getElementsByClassName("circle bordered skinWrapper")[0].innerHTML = "<img src='https://configs-web.agario.miniclippt.com/live/" + version + "/" + images[i].replace(/\.png/gi, "_low.png") + "' crossorigin='anonymous' style='width: " + document.getElementsByClassName("circle bordered skinWrapper")[0].children[0].style.width + "; height: " + document.getElementsByClassName("circle bordered skinWrapper")[0].children[0].style.height + ";'>";
-      //document.getElementsByClassName("circle bordered skinWrapper")[0].innerHTML = "<img src='https://configs-web.agario.miniclippt.com/live/" + version + "/" + images[i].replace(/\.png/gi, "_low.png") + "' crossorigin='anonymous' style='width: 45px; height: 45px;'>";	 
+      document.getElementsByClassName("circle bordered skinWrapper")[0].innerHTML = "<img src='https://configs-web.agario.miniclippt.com/live/" + version + "/" + images[i].replace(/\.png/gi, "_low.png") + "' crossorigin='anonymous' style='width: 46px; height: 46px;'>";
+	  document.getElementsByClassName("circle bordered skinWrapper")[0].children[0].style.width
       i++;
     }, speed);
   }
@@ -565,8 +568,7 @@ var init = setInterval(function() {
     });
     /** @type {number} */
     var chat_retry = setInterval(function() {
-	  document.getElementsByClassName("circle bordered skinWrapper")[0].innerHTML = "<img src='https://configs-web.agario.miniclippt.com/live/" + version + "/" + image.replace(/\.png/gi, "_low.png") + "' crossorigin='anonymous' style='width: " + document.getElementsByClassName("circle bordered skinWrapper")[0].children[0].style.width + "; height: " + document.getElementsByClassName("circle bordered skinWrapper")[0].children[0].style.height + ";'>";
-      //document.getElementsByClassName("circle bordered skinWrapper")[0].innerHTML = "<img src='https://configs-web.agario.miniclippt.com/live/" + version + "/" + image.replace(/\.png/gi, "_low.png") + "' crossorigin='anonymous' style='width: 45px; height: 45px;'>";
+      document.getElementsByClassName("circle bordered skinWrapper")[0].innerHTML = "<img src='https://configs-web.agario.miniclippt.com/live/" + version + "/" + image.replace(/\.png/gi, "_low.png") + "' crossorigin='anonymous' style='width: 46px; height: 46px;'>";
     }, 100);
   }
 }, 100);
