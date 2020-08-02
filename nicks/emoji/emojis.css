@@ -6,16 +6,36 @@
 
 img {
     display: block;
+  
+}
+#title{
+    transform: translate(-50%, -50%);
+    margin-right:50%;
+    margin-left:50%;  
+    width: 190px;  
+    margin-top:10px;
+}
+#jim{
+    transform: translate(-50%, -50%);
+    display: block;
+    width: 400px;
+    height: 50px;
+    font-size: 18pt;
+    margin-right:50%;
+    margin-left:50%;
+    margin-top:-300px;
 }
 
-
 .emoji-picker {
+    transform: translate(-50%, -50%);
+    margin-right:50%;  
+    margin-left:50%; 
     background-color: #303841;
     width: 400px;
-    margin: 50px;
     border-radius: 5px;
     height: 400px;
     display: flex;
+    margin-top:200px;
 }
 
 .emoji-selectables {
