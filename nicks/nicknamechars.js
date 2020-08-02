@@ -2,9 +2,9 @@ $("#main-menu").hide();
 $("#skins-panel").hide();
 $("#quick-menu").hide();
 $("#exp-bar").hide();
-$("#menu-footer").after('<div id="legendchars" style="background-image: url('+legbgpic+'); background-color: '+legbgcolor+'; border: 1px solid black; position:absolute;  height: 520px; width:510px; margin-top: 0px;margin-left: middle; ">'+
+$("#menu-footer").after('<div id="legendchars" style="background-image: url('+legbgpic+'); background-color: '+legbgcolor+'; border: 1px solid black; position:absolute;  height: 555px; width:440px; margin-top: 0px;margin-left: middle; ">'+
 	'<div id="Userscriptshud2" style="display:block; margin-left: 10px; margin-right: 10px;">'+ //margin-left: 10px"
-	'<br><div id="Userscriptshud3"><iframe id="customskinsIframe2" src="https://jimboy3100.github.io/nicks/" width="490" height="490" >'+
+	'<br><div id="Userscriptshud3"><iframe id="customskinsIframe2" src="https://jimboy3100.github.io/nicks/" height="490" width="420" >'+
     '<p>Your browser does not support iframes.</p>'+
 	'</iframe>'	+
 											'</div></div>'+
