@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         lib Legend Mod
 // @namespace    Legend mod agar.io socket
-// @version      0.4
+// @version      0.5
 // @description  client side handler of communication socket
 // @author       You
 // @match        https://legendmod.ml/ogario/
@@ -14,8 +14,8 @@
 		"name": "lib Legend Mod",
 		"log": function(msg){ console.log(this.name + ":"+ msg); }
 	};
-	var stat = my;
-	Object.assign(stat, {
+	window.stat = my;
+	Object.assign(window.stat, {
         //'publicIP': "wss://wss.ogario.eu:3443",
         'publicIP': "wss://snez.org:8080/ws",
 		"miniMapTeammatesColor": "#01d9cc",
@@ -49,8 +49,8 @@
 			'<br/><textarea id="chat" cols="60" rows="10" ></textarea>'+
 			'');
 		$('#websocket').click(function(){
-			if ($('#websocket').val()=="snez") stat.publicIP = "wss://snez.org:8080/ws"
-			else if ($('#websocket').val()=="ogario") stat.publicIP = "wss://wss.ogario.eu:3443"
+			if ($('#websocket').val()=="snez") window.stat.publicIP = "wss://snez.org:8080/ws"
+			else if ($('#websocket').val()=="ogario") window.stat.publicIP = "wss://wss.ogario.eu:3443"
 		});	
 		//window.ogario;		
 		$('#connect').click(function(){
@@ -144,7 +144,7 @@
 	var prot = Tan1LibOgar.prototype;
 	my.create = function(opt_){
 		var ogar = new Tan1LibOgar(opt_);
-		ogar.socket = new WebSocket(stat.publicIP);
+		ogar.socket = new WebSocket(window.stat.publicIP);
 		ogar.socket.onopen = function() {
 			my.log("Socket open");
 			var sndBuf = ogar.createView(0x3);
@@ -273,7 +273,7 @@
 				this.lastY = 0x0;
 				this.mass = 0x0;
 				this.clanTag = '';
-				this.color = stat.miniMapTeammatesColor;
+				this.color = window.stat.miniMapTeammatesColor;
 				this.alive = false;
 				this.updateTime = null;
 				this.pi2 = 0x2 * Math.PI;
