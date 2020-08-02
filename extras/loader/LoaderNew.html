@@ -19,8 +19,38 @@
         <div id="messageLoaderLM" class="message">There is something in the New York air that makes sleep useless. – Simone de Beauvoir</div>
     </div>
 <script>
-//document.getElementById('loading-screen').background="https://legendmod.ml/banners/icongifLM.gif" 
+var timesopened2 = localStorage.getItem("timesopened2");
+
+
+
+if (timesopened2 != null) {
+   timesopened2++;
+   localStorage.setItem("timesopened2", timesopened2);
+} 
+else if (timesopened2 == null) {
+   localStorage.setItem("timesopened2", "0");
+}
+
+if (timesopened2%6==0){
 document.getElementById('loading-screen').style.backgroundImage = "url('https://media0.giphy.com/media/41xs3jQy8HpZXTH7ky/giphy.gif?cid=ecf05e47db2bbe0cdf5f464200004df8eb1b96857fb29e64&rid=giphy.gi')";
+}
+else if (timesopened2%6==1){
+document.getElementById('loading-screen').style.backgroundImage = "url('https://media0.giphy.com/media/8pwwx7jdy3lkI/giphy.gif?cid=ecf05e47l56nci43j4gyls4jg3fxxyaxdau3b2m5kik1u1nv&rid=giphy.gif')";
+}
+else if (timesopened2%6==2){
+document.getElementById('loading-screen').style.backgroundImage = "url('https://media1.giphy.com/media/fLymsvsj0WHwEJK7cl/giphy.gif?cid=ecf05e47d15f7dd633d2e46075a80cf26b61d7f18946ac14&rid=giphy.gif')";
+}
+else if (timesopened2%6==3){
+document.getElementById('loading-screen').style.backgroundImage = "url('https://media2.giphy.com/media/3orif8Y2cZqIdpn5E4/giphy.gif?cid=ecf05e479abff6458e52b7413c75acc6c9267c5400973319&rid=giphy.gif')";
+}
+else if (timesopened2%6==4){
+document.getElementById('loading-screen').style.backgroundImage = "url('https://media2.giphy.com/media/M9lKiRIYrOoFWbXMxw/giphy.gif?cid=ecf05e47845d9599cedfbb1facf5be28b65a0c7f9ad87672&rid=giphy.gif')";
+}
+else if (timesopened2%6==5){
+document.getElementById('loading-screen').style.backgroundImage = "url('https://media3.giphy.com/media/e7QhjI2TV6zKjUmNaq/giphy.gif?cid=ecf05e47b653963bdc4f4f67e5ca0c43fc1fef698fb26755&rid=giphy.gif')";
+}
+
+
 var messageLoaderLM = document.getElementById('messageLoaderLM');
 setTimeout(function() {
 	if (navigator){
