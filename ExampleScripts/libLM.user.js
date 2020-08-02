@@ -16,7 +16,8 @@
 	};
 	var stat = my;
 	Object.assign(stat, {
-        'publicIP': "wss://wss.ogario.eu:3443",
+        //'publicIP': "wss://wss.ogario.eu:3443",
+        'publicIP': "wss://snez.org:8080/ws",
 		"miniMapTeammatesColor": "#01d9cc",
 	});
 	//var cfg = {}, cfg_org = {
@@ -35,6 +36,10 @@
 			'<input type="text" id="tag" placeholder="Tag" style="width:5em;" />'+
 			'<input type="text" id="nick" placeholder="Nick" style="width:15em;" autofocus="" />'+
 			'<input type="text" id="token" placeholder="server token" style="width:10em;" />'+
+			'<select name="socket" id="websocket">'+
+			'<option value="snez">snez</option>'+
+			'<option value="ogario">ogario</option>'+
+			'</select>'+
 			'<button id="connect" type="submit" onclick="">Connect</button>'+
 			'<button id="close" type="submit" onclick="">Close</button>'+
 			'<br/><input type="text" id="message" placeholder="chat message" style="width:30em;" />'+
@@ -43,7 +48,11 @@
 			'<div id="user_list"></div>'+
 			'<br/><textarea id="chat" cols="60" rows="10" ></textarea>'+
 			'');
-		var ogar;
+		$('#websocket').click(function(){
+			if ($('#websocket').val()=="snez") stat.publicIP = "wss://snez.org:8080/ws"
+			else if ($('#websocket').val()=="ogario") stat.publicIP = "wss://wss.ogario.eu:3443"
+		});	
+		//window.ogario;		
 		$('#connect').click(function(){
 			var opt = {
 				"tag": $('#tag').val(),
@@ -51,8 +60,8 @@
 				"serverToken": $('#token').val(),
 			};
 			opt.ws = 'ws://live-arena-'+ opt.token +'.agar.io:80';
-			ogar = lib_ogar.create(opt);
-			ogar.onchat = function(ev){
+			window.ogario = lib_ogar.create(opt);
+			window.ogario.onchat = function(ev){
 				var chatElem = $('#chat').get(0);
 				var sep = ((chatElem.value == "") ? "" : "\n");
 				//chatElem.value += sep + (escapeHtml(ev.nick) +": "+ escapeHtml(ev.message));
@@ -63,19 +72,19 @@
 			};
 		});
 		$('#close').click(function(){
-			ogar.disconnect();
-			ogar = null;
+			window.ogario.disconnect();
+			window.ogario = null;
 		});
 		$('#send').click(function(){
 			var message = $('#message').val();
-			if(ogar){
-				ogar.chatSend(message);
+			if(window.ogario){
+				window.ogario.chatSend(message);
 			}
 		});
         $('#users').click(function(){
-			if(! ogar){ return; }
+			if(! window.ogario){ return; }
 			var user_txt = "";
-			ogar.getPlayerList().forEach(function(player){
+			window.ogario.getPlayerList().forEach(function(player){
 				user_txt += '<br/>'+ player.mass +" "+ escapeHtml(player.nick);
 			});
 			$('#user_list').html(user_txt);
@@ -528,7 +537,7 @@
 	};
 	prot.sendBuffer = function(buf){
 		if(! this.isConnected()){
-			my.log("soket is not open");
+			my.log("socket is not open");
 			return false;
 		}
 		this.socket.send(buf.buffer);
