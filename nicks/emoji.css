@@ -36,6 +36,7 @@ img {
     height: 262px;
     display: flex;
     margin-top:140px;
+    margin-bottom:-130px;
 }
 
 .emoji-selectables {
