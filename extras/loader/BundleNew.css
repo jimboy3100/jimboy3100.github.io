@@ -36,7 +36,7 @@
     right: 0;
     bottom: 0;
     background-color: #f1ecfa;
-    background: url(https://media0.giphy.com/media/41xs3jQy8HpZXTH7ky/giphy.gif?cid=ecf05e47db2bbe0cdf5f464200004df8eb1b96857fb29e64&rid=giphy.gif) no-repeat center center fixed;
+    background: no-repeat center center fixed;
     background-size: cover;
     opacity: 1;
     transition: opacity 1s;
