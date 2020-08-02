@@ -44,11 +44,11 @@
 
 #loading-screen .maou-circle-container {
     width: middle;
-    height: 120%;
+    height: 100%;
     position: fixed;
-    top: calc(50% - 128px);
-    left: calc(50% - 128px);
-    transform: scale(0.5);
+    top: calc(50% - 64px);
+    left: calc(50% - 64px);
+    transform: scale(0.25);
     transition: all .75s
 }
 
