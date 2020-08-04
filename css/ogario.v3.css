@@ -1547,7 +1547,7 @@ input.hide-url::selection,input.stream-mode::selection{
 }
 #captchaSpeed{
     margin-top: 6px;
-    width: 80px;
+    width: 165px;
     padding: 8px;
     outline: none;
     margin-left: 10px;
