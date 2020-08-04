@@ -1543,10 +1543,17 @@ input.hide-url::selection,input.stream-mode::selection{
     padding: 8px;
     outline: none;
     margin-left: 10px;
+
 }
 #captchaSpeed{
     margin-top: 6px;
-    width: 186px;
+    width: 80px;
+    padding: 8px;
+    outline: none;
+    margin-left: 10px;
+}
+#captchaErrors{
+    margin-top: 6px;
     padding: 8px;
     outline: none;
     margin-left: 10px;
@@ -1685,4 +1692,3 @@ input.hide-url::selection,input.stream-mode::selection{
     z-index: 300 !important;
     box-shadow: 0 0 0 1px red;
 }
-
