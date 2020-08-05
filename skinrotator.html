@@ -1,7 +1,3 @@
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -287,8 +283,15 @@ var loading=document.getElementById('preview').src;
   var version;
   //var version='v15/3032';
   var str = '';
+  var str2 = '';
   var mid;
+  
   var mimg;
+  var simg;
+  
+  var tmp1;
+  var tmp1mg;
+  
   var nbPage;
   var sc="";
   var ec="";
@@ -401,14 +404,30 @@ xmlhttp.onreadystatechange = function() {
 		mid = str.match(/productId\":\"(.*?)\"/g);
 		//console.log(mid);
 		mimg = str.match(/image\":\"(.*?)\"/g);
+		
+		str2=this.responseText.match(/\[(.*?)\]/gi)[26];
+		tmp1 = str2.match(/id\":\"(.*?)\"/g)
+		tmp1mg = str2.match(/image\":\"(.*?)\"/g);
+		
+		mid = tmp1.concat(mid);
+		mimg = tmp1mg.concat(mimg);
+		
 		//console.log(mimg);
 		for (var i = mimg.length-1; i > 0; i--) {
 		if(mimg[i].match(/uses\_spine/)){mimg.splice(i, 1);mid.splice(i, 1);}
+		
 		}
 		for (var i = mid.length-1; i > 0; i--) {
-    sid[i]=mid[i].replace(/\"/g, "").replace(/productId:/, "").replace(/skin\_/, "");
-  }
+		sid[i]=mid[i].replace(/\"/g, "").replace(/productId:/, "").replace(/skin\_/, "").replace(/id:/, "");	
+		}
+		//var j=0;	
+		//for (var i = mid.length ; i < mid.length + tmp1.length -1; i++) {	
+
+		//sid[i]=tmp1mg[j].replace(/\"/g, "").replace(/productId:/, "").replace(/skin\_/, "");	
+		//j++
+		//}		
 loadPage(mimg.length,0);
+//loadPage(sid.length,0);
     }
 };
 xmlhttp.open("GET", window.urlVersion, true);
@@ -683,3 +702,15 @@ function year(){var d=new Date();var y=d.getFullYear();if(document.getElementsBy
 </script>
 </body>
 </html>
+© 2020 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
