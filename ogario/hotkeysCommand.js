@@ -543,6 +543,15 @@
                 keyUp: null,
                 type: 'normal'
             },
+            'hk-showIngameSpectator': {
+                label: textLanguage['hk-showIngameSpectator'],
+                defaultKey: '',
+                keyDown() {
+                    application && application.setShowIngameSpectator();
+                },
+                keyUp: null,
+                type: 'normal'
+            },			
             'hk-bots-split': {
                 label: textLanguage['hk-bots-split'],
                 defaultKey: 'M',
