@@ -58,6 +58,12 @@ $(document).ready(function() {
     });
 	$("#PosttoNonIframe").hide();	
 	$(".lazy2").parent().click(function() {
-        $("#skin-url").val($(this).children().attr("src")).select();
+		var hello=this;
+		$("video").each(function() {
+			if ($(hello).children().attr("src")!=$(this).get(0).firstElementChild.src){
+				$(this).get(0).pause();
+			}
+		});		
+        $("#skin-url").val($(hello).children().attr("src")).select();
     });
 });
