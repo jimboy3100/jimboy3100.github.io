@@ -57,4 +57,7 @@ $(document).ready(function() {
         } catch (e) {}
     });
 	$("#PosttoNonIframe").hide();	
+	$(".lazy2").parent().click(function() {
+        $("#skin-url").val($(this).attr("data-original")).select();
+    });	
 });
