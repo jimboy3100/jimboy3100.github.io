@@ -102,6 +102,9 @@ body {
     margin-top: 18px;
     padding: 10px;
 }
+.VideoInfo{
+	font-family: "Comic Sans MS", cursive, sans-serif
+}
 
 #hizliresim {
     display: none;
