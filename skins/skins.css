@@ -15,7 +15,10 @@ body {
 * {
    box-sizing: border-box;
 }
-
+.video-circle {
+border-radius: 50%;
+object-fit: cover;
+}
 ::-webkit-input-placeholder { 
     color: #d1d1d1 !important; 
 }
