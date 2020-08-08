@@ -1,3 +1,5 @@
+//v0.1
+
 $(document).ready(function() {
     $("#imgur img.lazy").lazyload({
         effect : "fadeIn",
@@ -57,15 +59,15 @@ $(document).ready(function() {
         } catch (e) {}
     });
 	$("#PosttoNonIframe").hide();	
-	/*$(".lazy2").parent().click(function() {
+	$(".lazy2").parent().click(function() {
 		var hello=this;
-		$("video").each(function() {
+		/*$("video").each(function() {
 			if ($(hello).children().attr("src")!=$(this).get(0).firstElementChild.src){
 				$(this).get(0).pause();
 			}
-		});		
+		});*/		
         $("#skin-url").val($(hello).children().attr("src")).select();
-    });*/
+    });
 	$(".lazy2").parent().mouseenter(function() {
 		var hello=this;
 		$("video").each(function() {
@@ -78,13 +80,13 @@ $(document).ready(function() {
 				}
 			}
 		});		
-        $("#skin-url").val($(hello).children().attr("src")).select();
+        //$("#skin-url").val($(hello).children().attr("src")).select();
     }).mouseleave(function() {
 		var hello=this;
 		$("video").each(function() {
 				$(this).get(0).pause();
 			
 		});		
-        $("#skin-url").val($(hello).children().attr("src")).select();
+        //$("#skin-url").val($(hello).children().attr("src")).select();
     });	
 });
