@@ -11,8 +11,15 @@
 <div id="captchaWindowV3" style="display:none;"></div>	 
 </div>
 <script>
-
-//v1.4
+function ProcessParentMessage(message) {
+	if (message=="doCaptcha"){
+        window.agarCaptcha.requestCaptchaV3("play", function(token) {
+            window.lasttoken=token
+            window.opener.postMessage(token, "*"); //
+        })	
+	}
+}
+//v1.5
 function init(){}
 var RECAPTCHA_V2_KEY = "6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl";
 var RECAPTCHA_V3_KEY = "6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY";
@@ -34,7 +41,7 @@ function CaptchaRouter(arg) {
         grecaptcha.reset(window.recaptchaClientId)
         window.grecaptchaV3.execute(window.recaptchaClientId, {
             action: t
-        }).then(function(t) {
+        }).then(function(t) {						
             e(t)
         })
     }
