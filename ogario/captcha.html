@@ -1,0 +1,140 @@
+<html>
+<head>
+ <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"></script>
+ <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallbackV3&render=explicit"></script>
+</head>
+<body> 
+<div id="captchaWindow" style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index:500">
+<div id="verifyUser" style="position:absolute; top:50%; left:50%; margin-left:-152px; margin-top:-40px;"></div>
+<div id="captchaWindowV3" style="display:none;"></div>	 
+</div>
+<script>
+
+//v1.4
+var RECAPTCHA_V2_KEY = "6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl";
+var RECAPTCHA_V3_KEY = "6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY";
+
+function CaptchaRouter(arg) {
+    function load() {
+    }
+
+    function requestCaptcha() {
+        return l.render()
+    }
+
+    function requestCaptchaV3(t, e) {
+        null === window.recaptchaClientId && (window.recaptchaClientId = window.grecaptchaV3.render("captchaWindowV3", {
+            sitekey: RECAPTCHA_V3_KEY,
+            badge: "inline",
+            size: "invisible"
+        }))
+        grecaptcha.reset(window.recaptchaClientId)
+        window.grecaptchaV3.execute(window.recaptchaClientId, {
+            action: t
+        }).then(function(t) {
+            e(t)
+        })
+    }
+
+    function onloadCallback() {
+        l.init()
+        window.cookieCaptchaOK = true
+    }
+
+    function onloadCallbackV3() {
+        Object.defineProperty(window, "grecaptchaV3", {
+            value: window.grecaptcha,
+            writable: !1,
+            configurable: !1,
+            enumerable: !1
+        });
+        window.cookieCaptchaOK = true
+    }
+    var l = window.myCaptcha = new Recaptcha("captchaWindow", "verifyUser", arg);
+    window.onloadCallbackV3 = onloadCallbackV3
+    window.onloadCallback = onloadCallback
+    load()
+    return {
+        load: load,
+        validateExpire: l.validateExpire.bind(l),
+        requestCaptcha: requestCaptcha,
+        requestCaptchaV3: requestCaptchaV3,
+        onloadCallback: onloadCallback,
+        onloadCallbackV3: onloadCallbackV3
+    }
+}
+
+function Recaptcha(curtin, e, n) {
+    var i = this;
+    this.init = function() {
+        this.ready = true
+    }
+    this.show = function() {
+        i.sessionExpired = !1,
+            document.getElementById(this.curtin).style.display = "block"
+    }
+    this.hide = function() {
+        document.getElementById(this.curtin).style.display = "none"
+    }
+    this.reset = function() {
+
+        console.log('grecaptcha.reset()')
+	
+    }
+    this.onRender = function(t) {
+        window.cookieCaptchaOK = true;
+        if (legendmod.botscaptcha) {
+            legendmod.botscaptcha = null;
+            window.tempol = $("#captchaSpeed").val()
+            if ($("#captchaSpeed").val() == null || $("#captchaSpeed").val() == "") {
+                window.tempol = 0;
+            }
+            window.tempo2 = t;
+
+            setTimeout(function() {
+                legendmod.sendSpawn2(window.tempo2);
+            }, window.tempol * 1000);
+        }
+        console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " requestCaptcha bypass v2, v3 loaded");
+        window.sendTimeOutTokenBots = true;
+
+        window.core.recaptchaResponse(t)
+        i.hide();
+        i.reset();
+
+    }
+    this.validateExpire = function() {
+        console.log('i.sessionExpired && i.show()')
+        i.sessionExpired && i.show()
+    }
+    this.onExpire = function() {
+        console.log('EXPIRE')
+
+    }
+    this.render = function() {
+        if (this.ready) {
+            this.show()
+            if (null == this.widget) {
+                window.captchawidget = this.widget = grecaptcha.render(this.id, {
+                    sitekey: RECAPTCHA_V2_KEY,
+                    callback: this.onRender.bind(this),
+                    "data-theme": 'dark',
+                    "expired-callback": this.onExpire.bind(this)
+                })
+            }
+        } else this.reset()
+        return this.ready
+    }
+    this.id = e,
+        this.curtin = curtin,
+        this.widget = null,
+        this.ready = !1,
+        window.recaptchaClientId = null,
+        this.hide()
+}
+
+window.agarCaptcha = CaptchaRouter()
+
+</script>
+</body>	
+</html>
