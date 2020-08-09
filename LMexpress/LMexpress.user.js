@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Legend Express Agar.io Extension
 // @namespace    Legend Express Agario Mod
-// @version      1.7
+// @version      1.8
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
 // @homepage     https://www.legendmod.ml
 // @author       Jimboy3100
@@ -89,7 +89,7 @@ switch (mode) {
     case 'ogario':
         modwebsite = 'https://cdn.ogario.ovh/v4/beta/ogario.v4.user.js';
         Userscript(modwebsite);
-        break;
+        break;		
     case 'delta':
         modwebsite = 'https://deltav4.glitch.me/v4/index.html';
         Htmlscript(modwebsite);
@@ -109,9 +109,13 @@ switch (mode) {
 			modwebsite = 'https://legendmod.ml/ExampleScripts/gamepad.user.js';
 			Userscript(modwebsite);
 		}, 5000);
-	break;			
+	break;		
+    case 'captcha':
+        modwebsite = 'https://legendmod.ml/ogario/captcha.html'
+        Htmlscript(modwebsite);
+        break;	
     case 'legendmod': default:
-        modwebsite = 'https://legendmod.ml/LMexpress/LMexpress.html?' + version;
+        modwebsite = 'https://legendmod.ml/LMexpress/LMexpress.html'
         Htmlscript(modwebsite);
         break;
 }
