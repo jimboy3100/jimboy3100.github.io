@@ -16,11 +16,12 @@ function ProcessParentMessage(message) {
 	if (message=="doCaptcha"){
         window.agarCaptcha.requestCaptchaV3("play", function(token) {
             window.lasttoken=token
+			console.log("captcha-"+token)
             window.opener.postMessage("captcha-"+token, "*"); //
         })	
 	}
 }
-//v1.6
+//v1.7
 function init(){}
 var RECAPTCHA_V2_KEY = "6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl";
 var RECAPTCHA_V3_KEY = "6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY";
@@ -51,6 +52,7 @@ function CaptchaRouter(arg) {
         l.init()
         window.cookieCaptchaOK = true
 		window.opener.postMessage("cookieCaptchaOK-true", "*");
+		console.log("cookieCaptchaOK-true")
     }
 
     function onloadCallbackV3() {
@@ -62,6 +64,7 @@ function CaptchaRouter(arg) {
         });
         window.cookieCaptchaOK = true
 		window.opener.postMessage("cookieCaptchaOK-true", "*");
+		console.log("cookieCaptchaOK-true")
     }
     var l = window.myCaptcha = new Recaptcha("captchaWindow", "verifyUser", arg);
     window.onloadCallbackV3 = onloadCallbackV3
@@ -97,6 +100,7 @@ function Recaptcha(curtin, e, n) {
     this.onRender = function(t) {
         window.cookieCaptchaOK = true;
 		window.opener.postMessage("cookieCaptchaOK-true", "*");
+		console.log("cookieCaptchaOK-true")
         if (legendmod.botscaptcha) {
             legendmod.botscaptcha = null;
             window.tempol = $("#captchaSpeed").val()
@@ -112,6 +116,7 @@ function Recaptcha(curtin, e, n) {
         console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " requestCaptcha bypass v2, v3 loaded");
         window.sendTimeOutTokenBots = true;
 		window.opener.postMessage("sendTimeOutTokenBots-true", "*");
+		console.log("sendTimeOutTokenBots-true")
         window.core.recaptchaResponse(t)
         i.hide();
         i.reset();
