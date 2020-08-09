@@ -97,6 +97,10 @@ ProLicenceUsersTable = {
             "reason": "Give@20200910",
             "notes": "MaximumDeltaServer"
         },	
+        "b5fe71bf-73ed-4c49-82bf-b5688f9e574b": {
+            "reason": "Give@20200910",
+            "notes": "Ledena"
+        },	
 		"0dfc5abc-68d1-40b4-a2b1-4791999aa464": {
             "reason": "Give@20200910",
             "notes": "Mahir Abdurahiman"
