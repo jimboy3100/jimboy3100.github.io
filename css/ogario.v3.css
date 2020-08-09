@@ -1,4 +1,4 @@
-/*v0.09*/
+/*v0.10*/
 @import url(https://legendmod.ml/css/ogicomoon.css);
 @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
 @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
@@ -99,7 +99,7 @@ label:hover{
     width:280px;
     margin:0;
     padding-top:42px;
-    pointer-events:auto 
+    pointer-events:auto;
 }
 .right-container{
     width:280px;
@@ -1522,10 +1522,17 @@ input.hide-url::selection,input.stream-mode::selection{
 #botsAuthor {
     margin-top: -15px;
 }
-#statusTextBots, #aiTextBots, #handleCaptchaBotsArea {
+#statusTextBots, #handleCaptchaBotsArea {
     font-weight: bold;
-    position: absolute;
-    left: -5px;
+    position: relative;
+    left: 10px;
+    display: inline;
+}
+#aiTextBots{
+    font-weight: bold;
+    position: relative;
+    right: -30px;
+    display: inline;	
 }
 #userStatus, #botsAI {
     color: #DA0A00;
