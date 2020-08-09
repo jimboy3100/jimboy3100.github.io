@@ -6,7 +6,7 @@
 <body> 
 <img alt="reCAPTCHA" class="n3VNCb" src="https://www.google.com/recaptcha/about/images/reCAPTCHA-logo@2x.png" data-noaft="1" jsname="HiaYvf" jsaction="load:XAeZkd,gvK6lb;" style="width: 408px; height: 464px; margin: 0px;">
 <br><br>Creating Captcha tokens for bots...
-<span id="captchaErrors" style="display:inline-block;">Errors: <span id="captchaErrors1">0</span></span>
+<br>Don't close this window as long as you use bots
 <div id="captchaWindow" style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index:500">
 <div id="verifyUser" style="position:absolute; top:50%; left:50%; margin-left:-152px; margin-top:-40px;"></div>
 <div id="captchaWindowV3" style="display:none;"></div>	 
@@ -17,11 +17,12 @@ function ProcessParentMessage(message) {
         window.agarCaptcha.requestCaptchaV3("play", function(token) {
             window.lasttoken=token
 			console.log("captcha-"+token)
-            window.opener.postMessage("captcha-"+token, "*"); //
+			window.opener.postMessage(token, "*");
+            //window.opener.postMessage("captcha-"+token, "*"); //
         })	
 	}
 }
-//v1.7
+//v1.8
 function init(){}
 var RECAPTCHA_V2_KEY = "6LfjUBcUAAAAAF6y2yIZHgHIOO5Y3cU5osS2gbMl";
 var RECAPTCHA_V3_KEY = "6LcEt74UAAAAAIc_T6dWpsRufGCvvau5Fd7_G1tY";
@@ -51,7 +52,7 @@ function CaptchaRouter(arg) {
     function onloadCallback() {
         l.init()
         window.cookieCaptchaOK = true
-		window.opener.postMessage("cookieCaptchaOK-true", "*");
+		//window.opener.postMessage("cookieCaptchaOK-true", "*");
 		console.log("cookieCaptchaOK-true")
     }
 
@@ -63,7 +64,7 @@ function CaptchaRouter(arg) {
             enumerable: !1
         });
         window.cookieCaptchaOK = true
-		window.opener.postMessage("cookieCaptchaOK-true", "*");
+		//window.opener.postMessage("cookieCaptchaOK-true", "*");
 		console.log("cookieCaptchaOK-true")
     }
     var l = window.myCaptcha = new Recaptcha("captchaWindow", "verifyUser", arg);
@@ -99,7 +100,7 @@ function Recaptcha(curtin, e, n) {
     }
     this.onRender = function(t) {
         window.cookieCaptchaOK = true;
-		window.opener.postMessage("cookieCaptchaOK-true", "*");
+		//window.opener.postMessage("cookieCaptchaOK-true", "*");
 		console.log("cookieCaptchaOK-true")
         if (legendmod.botscaptcha) {
             legendmod.botscaptcha = null;
@@ -115,7 +116,7 @@ function Recaptcha(curtin, e, n) {
         }
         console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " requestCaptcha bypass v2, v3 loaded");
         window.sendTimeOutTokenBots = true;
-		window.opener.postMessage("sendTimeOutTokenBots-true", "*");
+		//window.opener.postMessage("sendTimeOutTokenBots-true", "*");
 		console.log("sendTimeOutTokenBots-true")
         window.core.recaptchaResponse(t)
         i.hide();
