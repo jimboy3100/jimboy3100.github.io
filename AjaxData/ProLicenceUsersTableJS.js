@@ -197,10 +197,6 @@ ProLicenceUsersTable = {
             "reason": "Give@20200910",
             "notes": "RewardDay-LcAuto"
         },  
-        "ca82d506-8cdc-4794-805a-df282f9bb98d": {
-            "reason": "Give@20200910",
-            "notes": "RewardDay-DiegoSouza"
-        }, 
         "8b40dce8-a7a1-420b-a30d-bb03c5a4d61a": {
             "reason": "Give@20200910",
             "notes": "RewardDay-AbdUllah"
@@ -218,9 +214,21 @@ ProLicenceUsersTable = {
             "notes": "RewardDay-HaseebSultan"
         }, 
         "02279fd0-ce99-444e-9f94-788ca4674509": {
-            "reason": "Give@20200910",
-            "notes": "RewardDay-ChristhopherBrandhon"
+            "reason": "WinnerPrizeQuestsCompleted",
+            "notes": "WinnerPrize-ChristhopherBrandhon"
         }, 	
+        "8a6280fb-1cbb-4ee0-9bc4-8f4218e422b2": {
+            "reason": "WinnerPrizeAccountAge",
+            "notes": "WinnerPrize-ChristhopherBrandhon"
+        },	
+        "ca82d506-8cdc-4794-805a-df282f9bb98d": {
+            "reason": "LongestTimeAlive",
+            "notes": "WinnerPrize-DiegoSouza"
+        },
+        "d8996a83-40c6-4aa5-b2e5-8658f7e3ad0c": {
+            "reason": "WinnerPrizeMassConsumedMassCellsEaten",
+            "notes": "WinnerPrize-AlexAlex"
+        }, 		
         "d0816c5a-bad6-492f-8ad5-ab5a95e87426": {
             "reason": "Give@20200910",
             "notes": "RewardDay-Aditya_1"
@@ -240,11 +248,7 @@ ProLicenceUsersTable = {
         "1f8d6b11-3247-47b7-8e6f-03b43a0b4464": {
             "reason": "Give@20200910",
             "notes": "RewardDay-ChristianDolot"
-        }, 				
-        "d8996a83-40c6-4aa5-b2e5-8658f7e3ad0c": {
-            "reason": "Give@20200910",
-            "notes": "RewardDay-AlexAlex"
-        }, 			
+        }, 				 			
         "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
             "reason": "Donate",
             "notes": "Lizzie"
