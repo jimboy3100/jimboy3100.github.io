@@ -1,4 +1,8 @@
-//v0.9
+//v0.10
+if (localStorage.getItem("ProLicenceUsersreason")!=null && localStorage.getItem("ProLicenceUsersreason")!="null" && localStorage.getItem("ProLicenceUsersreason")!="" && !ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]){
+	ProLicenceUsersTable.ProLicenceUsers[window.agarioUID] = localStorage.getItem("ProLicenceUsersreason")
+}
+
 	window.tempModeratorSkin=""
 		if ($("#nick").val().includes('℄')){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png"></div>'
@@ -12,6 +16,7 @@
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Splash" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSplash.png"></div>'		
 	}		
 	if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]){
+		localStorage.setItem("ProLicenceUsersreason", ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]);
 		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Moderator"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Moderator" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsModerator.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Ddev" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsDdev.png"></div>'
