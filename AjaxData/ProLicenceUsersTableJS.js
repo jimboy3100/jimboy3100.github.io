@@ -100,8 +100,12 @@ ProLicenceUsersTable = {
         "b5fe71bf-73ed-4c49-82bf-b5688f9e574b": {
             "reason": "Give@20200910",
             "notes": "Ledena"
-        },	
-		"0dfc5abc-68d1-40b4-a2b1-4791999aa464": {
+        },
+       "360554d8-ed4b-4dca-bf86-6f928fc429d8": {
+            "reason": "Give@20200910",
+            "notes": "だてんし るしふぁ"
+        },
+	"0dfc5abc-68d1-40b4-a2b1-4791999aa464": {
             "reason": "Give@20200910",
             "notes": "Mahir Abdurahiman"
         },
