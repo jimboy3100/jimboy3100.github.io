@@ -45,6 +45,22 @@ ProLicenceUsersTable = {
             "reason": "Shiro",
             "notes": "Advertiser-Japan-Fb"
         }, 
+        "46eab069-2e6a-449b-ba20-494dbd6e312a": {
+            "reason": "Hano",
+            "notes": "Admin"
+        }, 	
+        "ad800ce0-8612-4fab-af1d-715f024c24e5": {
+            "reason": "Hano",
+            "notes": "Admin"
+        }, 	
+        "1704daba-4f74-436f-9b17-a2f69a9e910b": {
+            "reason": "Hano",
+            "notes": "Admin",
+        }, 	
+        "0c8e1929-d2ce-4738-84d5-3c7f7d10f4c6": {
+            "reason": "Junky",
+            "notes": "Admin"
+        }, 	
         "81831afa-0a11-4fce-82b3-81067f6cc9bc": {
             "reason": "Shiro",
             "notes": "Advertiser-Japan-Google"
