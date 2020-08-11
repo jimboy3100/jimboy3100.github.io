@@ -1,4 +1,5 @@
-//v0.12
+//v0.12a
+
 	if (!window.agarioUID){
 		 window.agarioUID = localStorage.getItem("agarioUID");
 	}
@@ -21,7 +22,7 @@
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Moderator" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsModerator.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Ddev" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsDdev.png"></div>'
 		}
-		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "LMauthor"){
+		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "LMauthor"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="RedArrow" data-original="https://legendmod.ml/banners/drawCommander5.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="WhiteArrow" data-original="https://legendmod.ml/banners/drawCommander5.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="BabyBoss" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsBabyBoss.png"></div>'
@@ -35,19 +36,31 @@
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Survivor" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSurvivor.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Tiger" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsTiger.png"></div>'						
 		}
-		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Shiro"){
+		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Hano"){
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="BabyBoss" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsBabyBoss.png"></div>'
+		}			
+		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Junky"){
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Survivor" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSurvivor.png"></div>'
+		}		
+		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Hilde"){
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="PeaceMaker" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsPeaceMaker.png"></div>'
+		}		
+		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Danous"){
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Tiger" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsTiger.png"></div>'
+		}				
+		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Shiro"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Shiro" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsShiro.png"></div>'
 		}	
-		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeAccountAge"){
+		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeAccountAge"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="MetalOfHonor" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMetalOfHonor.png"></div>'
 		}	
-		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeQuestsCompleted"){
+		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeQuestsCompleted"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Key" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsKey.png"></div>'
 		}			
-		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeLongestTimeAlive"){
+		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeLongestTimeAlive"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero.png"></div>'
 		}	
-		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeMassConsumedMassCellsEaten"){
+		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeMassConsumedMassCellsEaten"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero1" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero1.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero2.png"></div>'
 		}				
