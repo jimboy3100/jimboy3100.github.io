@@ -53,6 +53,10 @@ ProLicenceUsersTable = {
             "reason": "Donate",
             "notes": "Cla"
         }, 	
+        "c930db58-ff74-429b-a05b-099388031f50": {
+            "reason": "Donate",
+            "notes": "SkyOmer"
+        }, 	
         "b4c56d29-869b-4d08-a572-44f547440e95": {
             "reason": "Donate",
             "notes": "TheGem"
