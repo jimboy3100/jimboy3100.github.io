@@ -19,11 +19,15 @@ ProLicenceUsersTable = {
         },
         "204c1426-c4c9-46af-b29d-5fa9d4d8704a": {
             "reason": "℄🌀ilyes",
-            "notes": "Chosenbyddevilowo"
+            "notes": "℄🌀"
         }, 		
+        "a8829a04-9191-47aa-b29e-c3ee1e23a102": {
+            "reason": "℄🌀alicicine",
+            "notes": "℄🌀"
+        }, 			
         "c8c0f123-2758-410b-a952-e4c4898319e5": {
             "reason": "℄🌀ahmad",
-            "notes": "Chosenbyddevilowo"
+            "notes": "℄🌀"
         }, 			
         "a21f4130-3474-4331-add1-bd02155e607c": {
             "reason": "Sonia",
