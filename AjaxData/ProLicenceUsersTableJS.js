@@ -57,6 +57,14 @@ ProLicenceUsersTable = {
             "reason": "Hano",
             "notes": "Admin",
         }, 	
+        "396023b0-fc28-4638-b4e4-f836620ba746": {
+            "reason": "Hilde",
+            "notes": "Admin",
+        }, 
+        "b74efc8b-4e87-4c39-a7ac-a289e78eb012": {
+            "reason": "Hilde",
+            "notes": "Admin",
+        }, 	    
         "0c8e1929-d2ce-4738-84d5-3c7f7d10f4c6": {
             "reason": "Junky",
             "notes": "Admin"
