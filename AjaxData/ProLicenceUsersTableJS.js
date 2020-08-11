@@ -105,7 +105,7 @@ ProLicenceUsersTable = {
             "reason": "Give@20200910",
             "notes": "だてんし るしふぁ"
         },
-	"0dfc5abc-68d1-40b4-a2b1-4791999aa464": {
+		"0dfc5abc-68d1-40b4-a2b1-4791999aa464": {
             "reason": "Give@20200910",
             "notes": "Mahir Abdurahiman"
         },
@@ -222,7 +222,7 @@ ProLicenceUsersTable = {
             "notes": "WinnerPrize-ChristhopherBrandhon"
         },	
         "ca82d506-8cdc-4794-805a-df282f9bb98d": {
-            "reason": "LongestTimeAlive",
+            "reason": "WinnerPrizeLongestTimeAlive",
             "notes": "WinnerPrize-DiegoSouza"
         },
         "d8996a83-40c6-4aa5-b2e5-8658f7e3ad0c": {
