@@ -1,4 +1,4 @@
-//v0.11
+//v0.11a
 if (localStorage.getItem("ProLicenceUsersreason")!=null && localStorage.getItem("ProLicenceUsersreason")!="null" && localStorage.getItem("ProLicenceUsersreason")!="" && !ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]){
 	ProLicenceUsersTable.ProLicenceUsers[window.agarioUID] = localStorage.getItem("ProLicenceUsersreason")
 }
@@ -42,7 +42,7 @@ if (localStorage.getItem("ProLicenceUsersreason")!=null && localStorage.getItem(
 		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeAccountAge"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="MetalOfHonor" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMetalOfHonor.png"></div>'
 		}	
-		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeQuestsCompleted""){
+		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeQuestsCompleted"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Key" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsKey.png"></div>'
 		}			
 		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeLongestTimeAlive"){
