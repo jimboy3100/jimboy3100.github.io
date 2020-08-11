@@ -1,4 +1,4 @@
-//v0.12a
+//v0.12b
 
 	if (!window.agarioUID){
 		 window.agarioUID = localStorage.getItem("agarioUID");
@@ -52,7 +52,7 @@
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Shiro" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsShiro.png"></div>'
 		}	
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeAccountAge"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="MetalOfHonor" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMetalOfHonor.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero1" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero1.png"></div>'			
 		}	
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeQuestsCompleted"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Key" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsKey.png"></div>'
@@ -61,7 +61,7 @@
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero.png"></div>'
 		}	
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeMassConsumedMassCellsEaten"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero1" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero1.png"></div>'
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="MetalOfHonor" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMetalOfHonor.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero2.png"></div>'
 		}				
 	}	
