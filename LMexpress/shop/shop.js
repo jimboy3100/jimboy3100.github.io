@@ -1,4 +1,4 @@
-//v0.11a
+//v0.11b
 if (localStorage.getItem("ProLicenceUsersreason")!=null && localStorage.getItem("ProLicenceUsersreason")!="null" && localStorage.getItem("ProLicenceUsersreason")!="" && !ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]){
 	ProLicenceUsersTable.ProLicenceUsers[window.agarioUID] = localStorage.getItem("ProLicenceUsersreason")
 }
@@ -29,7 +29,7 @@ if (localStorage.getItem("ProLicenceUsersreason")!=null && localStorage.getItem(
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Gladiator" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsGladiator.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero1" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero1.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero1" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero2.png"></div>'	
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero2.png"></div>'	
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Key" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsKey.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="MetalOfHonor" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMetalOfHonor.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="PeaceMaker" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsPeaceMaker.png"></div>'
