@@ -1,140 +1,258 @@
-//v0.10
-if (localStorage.getItem("ProLicenceUsersreason")!=null && localStorage.getItem("ProLicenceUsersreason")!="null" && localStorage.getItem("ProLicenceUsersreason")!="" && !ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]){
-	ProLicenceUsersTable.ProLicenceUsers[window.agarioUID] = localStorage.getItem("ProLicenceUsersreason")
-}
-
-	window.tempModeratorSkin=""
-		if ($("#nick").val().includes('℄')){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="LegendClan" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan2.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="AbsolutVodka" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsAbsolutVodka.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Chemistry" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsChemistry.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Japan" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsJapan.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Japan2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsJapan2.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Kebab" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsKebab.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Meditation" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMeditation.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Splash" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSplash.png"></div>'		
-	}		
-	if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]){
-		localStorage.setItem("ProLicenceUsersreason", ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]);
-		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Moderator"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Moderator" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsModerator.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Ddev" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsDdev.png"></div>'
-		}
-		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "LMauthor"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="RedArrow" data-original="https://legendmod.ml/banners/drawCommander5.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="WhiteArrow" data-original="https://legendmod.ml/banners/drawCommander5.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="BabyBoss" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsBabyBoss.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="BabyBoss1" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsBabyBoss1.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Gladiator" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsGladiator.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero1" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero1.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Key" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsKey.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="MetalOfHonor" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMetalOfHonor.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="PeaceMaker" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsPeaceMaker.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Survivor" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSurvivor.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Tiger" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsTiger.png"></div>'
-			
-		}
-		if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Shiro"){
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Shiro" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsShiro.png"></div>'
-		}				
-	}	
-	window.tempAnimatedCool=""
-	if (animatedskins){
-		Object.keys(animatedskins).forEach(function(key) {	
-			if (animatedskins[key] && animatedskins[key].id && animatedskins[key].frames[0] && animatedskins[key].frames[0].id)
-			window.tempAnimatedCool += '<div class="skin-box"><img class="lazy" name="' + animatedskins[key].id + '" data-original="https://i.imgur.com/' + animatedskins[key].frames[0].id + '.png"></div>'
-			window.tempAnimatedCoolArray.push(key)
-		});
-	}
-		
-		
-            $('#helloContainer').after('<div class="modal fade in" id="LMShop" aria-hidden="false" style="display: block;">' +
-				'<link rel="stylesheet" type="text/css" href="https://legendmod.ml/css/specialeffects.css">' +
-				'<div class="modal-backdrop fade in"></div>' +
-                //'<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 780px; height:500">' +
-				'<div class="modal-dialog" style="top: calc(50vh - 400px); width: 900px; height:500px">' +
-                '<div class="modal-content">' +
-                '<div id="CloseLMShop2" class="modal-header"><button id="CloseLMShop" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMShop" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-                '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Shop' + '</h4>' +
-                '</div>' +
-				
-				'<div id="LMShop3">' +
-				
-        '<div id="customskins">' +
-    '<div id="navbar">' +
-        '<div id="nav">' +
-            '<ul>' +
-				
-                '<li><a href="#imgur" class="active">Premium</a></li>' +
-				'<li><a href="#lowres">WaterMarks</a></li>' +
-				'<li><a href="#animatedLikeGif">Animated-Free</a></li>' +
-				'<li><a href="#free">Free</a></li>' +						
-				'<li><a href="#vanillaskins">In Use</a></li>' +			  		
-                '<li><input type="text" id="skin-url" placeholder="Special Skin Effect" readonly></li>' +
-		'<li><a id="UseEffect" class="link">Use</a></li>' +
-		'<li><a id="UseEffect2" class="link">Stop</a></li>' +
-		    '</ul>' +
-        '</div>' +
-    '</div>' +
-
-    '<div id="imgur" class="skins-wrapper">' +
-		'<div class="skin-box"><img class="lazy" name="Hat" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHat3.png"></div>' +
-        '<div class="skin-box"><img class="lazy" name="JellyFish" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsJellyFish.png"></div>' +
-        '<div class="skin-box"><img class="lazy" name="King" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsCrown.png"></div>' +
-		'<div class="skin-box"><img class="lazy" name="Smoke" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSmoke.png"></div>' +
-		'<div class="skin-box"><img class="lazy" name="USA" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsUSA.png"></div>' +	
-        '<div class="skin-box"><img class="lazy" name="Sword" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSword.png"></div>' +
-        '<div class="skin-box"><img class="lazy" name="Mask" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMask.png"></div>' +
-		'<div class="skin-box"><img class="lazy" name="Heart" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHeart.png"></div>' +
-	    '<div class="skin-box"><img class="lazy" name="Vip" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsVip.png"></div>' +
-	    '<div class="skin-box"><img class="lazy" name="Youtube" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsYoutube.png"></div>' +
-	    '<div class="skin-box"><img class="lazy" name="SunGlasses" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSunGlasses.png"></div>' +
-	    '<div class="skin-box"><img class="lazy" name="Bird" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsBird.png"></div>' +
-	    '<div class="skin-box"><img class="lazy" name="Butterfly" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsButterfly.png"></div>' +
-	    '<div class="skin-box"><img class="lazy" name="Mouse" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMouse.png"></div>' +
-		'<div class="skin-box"><img class="lazy" name="Turtle" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsTurtle.png"></div>' +
-		window.tempModeratorSkin +
-   '</div>' +
-	        '<div id="lowres" class="skins-wrapper">' +
-			//'<div class="skin-box"><img class="lazy" name="Byzantium" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsByzantium.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Close" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsClose.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Earth" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsEarth.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="FootStep" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsFootStep.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Forward" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsForward.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Forever" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Forever2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever2.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Forever3" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsFriendsForever3.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Police" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsPolice.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Police2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsPolice2.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Unrest" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsUnrest.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Eagle" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsEagle.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="BobMarley" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsBobMarley.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="Einstein" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsEinstein.png"></div>' +
-			'<div class="skin-box"><img class="lazy" name="DeadTable" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsDeadTable.png"></div>' +						
-	'</div>' +
-	        '<div id="animatedLikeGif" class="skins-wrapper">' +
-			window.tempAnimatedCool	+			
-	'</div>' +	
-	        '<div id="free" class="skins-wrapper">' +
-			'<div class="skin-box"><img class="lazy" name="Byzantium" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsByzantium.png"></div>' +			
-	'</div>' +	
-        '<div id="vanillaskins" class="skins-wrapper">' +
-	'</div>' +
-	'</div>' +
-    '<script src="https://legendmod.ml/skins/jquery.lazyload.min.js"></script>' +
-    '<script src="https://legendmod.ml/LMexpress/shop/shopscript.js"></script>' +				
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '</div>');
-			$("#animatedLikeGif").children().css("width", "55px");	
-			$("#animatedLikeGif").css("padding-right", "100px");
-            $("#CloseLMShop").click(function() {
-                $("#LMShop").remove();
-            });
-            $("#FAQLMShop").click(function() {
-				window.open('https://legendmod.ml/', '_blank');
-            });	
-$(".modal-dialog").draggable()
+ProLicenceUsersTable = {};
+ProLicenceUsersTable = {
+    "ProLicenceUsers": {
+        "1ad344c0-40c4-4ffe-b1b0-142f6918d437": {
+            "reason": "LMauthor",
+            "notes": "Jimboy3100"
+        },
+        "b4c70ce6-602a-4fb6-9196-01d890c66d0e": {
+            "reason": "Moderator",
+            "notes": "ddevilOWO"
+        },
+        "32254495-c62d-4d0c-b66e-3d81010d401d": {
+            "reason": "℄🌀idris",
+            "notes": "℄🌀"
+        },        
+        "7bea1cb9-7e14-4e14-824c-c2682036b0a6": {
+            "reason": "℄🌀βurNouT",
+            "notes": "℄🌀"
+        },
+        "204c1426-c4c9-46af-b29d-5fa9d4d8704a": {
+            "reason": "℄🌀ilyes",
+            "notes": "Chosenbyddevilowo"
+        }, 		
+        "c8c0f123-2758-410b-a952-e4c4898319e5": {
+            "reason": "℄🌀ahmad",
+            "notes": "Chosenbyddevilowo"
+        }, 			
+        "a21f4130-3474-4331-add1-bd02155e607c": {
+            "reason": "Sonia",
+            "notesr": "Moderator"
+        }, 		       
+        "e18af28b-d1de-4645-967f-9b95736e8817": {
+            "reason": "Hendrik Schönfelder",
+            "notes": "Youtuber"
+        },
+        "a3742f28-059a-4ea1-abf7-566e69ec97f4": {
+            "reason": "Moderator",
+            "notes": "Snez"
+        }, 
+        "5b26499a-ccd0-4cdb-9c0e-9375b9d7cd4c": {
+            "reason": "Shiro",
+            "notes": "Advertiser-Japan-Fb"
+        }, 
+        "81831afa-0a11-4fce-82b3-81067f6cc9bc": {
+            "reason": "Shiro",
+            "notes": "Advertiser-Japan-Google"
+        }, 		
+        "4220bddd-7bd6-4f93-89cf-579903eff2bc": {
+            "reason": "Donate",
+            "notes": "Cla"
+        }, 	
+        "b4c56d29-869b-4d08-a572-44f547440e95": {
+            "reason": "Donate",
+            "notes": "TheGem"
+        }, 	
+        "0998828c-a1a4-46b3-bc54-b8647042d5a4": {
+            "reason": "Donate",
+            "notes": "TheGem2"
+        }, 	
+        "77cd1c7f-a602-457f-b192-8c8b55b1fc46": {
+            "reason": "Donate",
+            "notes": "Alphamenzo"
+        },		
+        "17914d3b-6b8f-468a-bb6b-4d91d3c3f670": {
+            "reason": "GoodWillForSon",
+            "notes": "jebak"
+        }, 	
+        "bbf24317-be3f-4dac-a4d8-f1770434ace5": {
+            "reason": "Donate",
+            "notes": "Meelis"
+        }, 			
+        "84222701-39e7-454e-9e41-bc8fd4f468d2": {
+            "reason": "Donate",
+            "notes": "Siah"
+        }, 	
+        "87b8a4f8-0cb4-448d-bedc-358a3010c7e6": {
+            "reason": "Donate",
+            "notes": "Fiku"
+        },	
+        "2bb8b084-d1e0-4ce9-936b-e10d82f0b937": {
+            "reason": "Donate",
+            "notes": "ChristianDíaz"
+        },		
+        "83df7615-1c6a-4a9d-9d86-1eba11d9589c": {
+            "reason": "BeggerJapan",
+            "notes": "padelsendpie"
+        }, 			
+        "7aa2d964-ac82-497c-aa34-25cc342299bd": {
+            "reason": "Donate",
+            "notes": "CentralAsia"
+        }, 		
+        "3361c3f4-3d94-49d2-b19c-c1b8241d4574": {
+            "reason": "Give@20200910",
+            "notes": "AngelDeltaServer"
+        },		
+        "e8a49e32-7f71-4449-b1ae-1bf2fe4dc3b": {
+            "reason": "Give@20200910",
+            "notes": "MaximumDeltaServer"
+        },	
+        "b5fe71bf-73ed-4c49-82bf-b5688f9e574b": {
+            "reason": "Give@20200910",
+            "notes": "Ledena"
+        },
+       "360554d8-ed4b-4dca-bf86-6f928fc429d8": {
+            "reason": "Give@20200910",
+            "notes": "だてんし るしふぁ"
+        },
+	"0dfc5abc-68d1-40b4-a2b1-4791999aa464": {
+            "reason": "Give@20200910",
+            "notes": "Mahir Abdurahiman"
+        },
+        "7c8b2a0f-d4a7-4eff-bfao-d892921e5d48": {
+            "reason": "Give@20200910",
+            "notes": "DevaRei"
+        },
+        "f63d05cd-3322-4ed7-b8f5-795e2feb3dbb": {
+            "reason": "Give@20200910",
+            "notes": "PotatoGirl"
+        },		
+        "d7385406-7a71-498d-a613-3faf090f6ccb": {
+            "reason": "Give@20200910",
+            "notes": "VictoriaAiroFbGoogleaccount"
+        },		
+        "40252edd-4ec4-41a0-865f-aa9d967a3706": {
+            "reason": "Give@20200910",
+            "notes": "VictoriaAiroFbFacebookaccount"
+        },	 
+        "cfff71aa-efa6-45c2-bcaa-4e68ce796a58": {
+            "reason": "Give@20200910",
+            "notes": "MuhAdits"
+        },	
+        "3361c3f4-3d94-49d2-b19c-c1b8241d4574": {
+            "reason": "Give@20200910",
+            "notes": "GioBartolo"
+        },		
+        "3caec878-4009-4349-9bb8-9ce16cebbe98": {
+            "reason": "Give@20200910",
+            "notes": "ZainMohammed"
+        },	
+        "ba288e41-27b2-4da6-b97c-56409e073894": {
+            "reason": "Give@20200910",
+            "notes": "RavagerCanos"
+        },		
+        "693edb8d-427c-4453-a92d-2d8bd6254750": {
+            "reason": "Give@20200910",
+			"notes": "Chosenbyddevilowo-イイヅカマユミ"	
+        },	
+        "b4dc260f-f14d-479b-a373-63beb131a122": {
+            "reason": "Give@20200910",
+			"notes": "Chosenbyddevilowo-LamPhạm"	
+        },   
+        "5dc487ab-f8bb-4834-a311-fff3fc924948": {
+            "reason": "Give@20200910",
+			"notes": "Chosenbyddevilowo-抹茶"	
+        },   
+        "a9d42b13-df83-4a4d-b175-ec9dedaaaf33": {
+            "reason": "Give@20200910",
+			"notes": "Chosenbyddevilowo-wenlong"	
+        },  
+        "7f350142-5c90-473f-8eff-9352680ba8e6": {
+            "reason": "Give@20200910",
+			"notes": "Chosenbyddevilowo-kaizen"	
+        },   
+        "8ba00967-ef20-4314-b451-d802e4817eb7": {
+            "reason": "Give@20200910",
+			 "notes": "Chosenbyddevilowo-綾辻芙月渚"	
+        },     
+          "8edf92ef-1fed-4022-948c-a1308cfa3adf": {
+            "reason": "Give@20200926",
+            "notes": "ChosenbyJimboy-Judah"	
+        },       
+        "f27c8c1a-77d4-4641-9160-cf0d6f7281da": {
+            "reason": "Give@20200910",
+            "notes": "Chosenbyddevilowo-ALI-cicineLC"			
+        },   
+        "84fda50e-63c4-41d7-9ba3-e6750cb0d94e": {
+            "reason": "Give@20200910",
+            "notes": "Chosenbyddevilowo-tawis"
+        }, 
+        "3a13f17c-0c9b-4c1c-92a5-a66854621986": {
+            "reason": "Give@20200910",
+            "notes": "Chosenbyddevilowo-mako420"
+        },   
+        "a21f4130-3474-4331-add1-bd02155e607c": {
+            "reason": "Give@20200910",
+            "notes": "Chosenbyddevilowo-sondick"
+        },   
+        "8edf92ef-1fed-4022-948c-a1308cfa3adf": {
+            "reason": "Give@20200910",
+            "notes": "Chosenbyddevilowo-haine"
+        },		
+        "e0c362ab-c4f8-4ba3-8deb-fb7651fdb818": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-IamAlb"
+        }, 
+        "7ce1ef8e-54de-43b0-888f-c17a946ff8f": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-LcAuto"
+        },  
+        "8b40dce8-a7a1-420b-a30d-bb03c5a4d61a": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-AbdUllah"
+        }, 
+        "a20599a0-eb0c-428c-8fc1-17feed9b0ce6": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-AbdUllah2"
+        }, 		
+        "ff5cd59d-ab25-456c-987f-fb4ae3a0de2b": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-AlexisGalarza"
+        }, 		
+        "2ab3c1b6-3e83-41aa-aea8-7f2fc29536e0": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-HaseebSultan"
+        }, 
+        "02279fd0-ce99-444e-9f94-788ca4674509": {
+            "reason": "WinnerPrizeQuestsCompleted",
+            "notes": "WinnerPrize-ChristhopherBrandhon"
+        }, 	
+        "8a6280fb-1cbb-4ee0-9bc4-8f4218e422b2": {
+            "reason": "WinnerPrizeAccountAge",
+            "notes": "WinnerPrize-ChristhopherBrandhon"
+        },	
+        "ca82d506-8cdc-4794-805a-df282f9bb98d": {
+            "reason": "WinnerPrizeLongestTimeAlive",
+            "notes": "WinnerPrize-DiegoSouza"
+        },
+        "d8996a83-40c6-4aa5-b2e5-8658f7e3ad0c": {
+            "reason": "WinnerPrizeMassConsumedMassCellsEaten",
+            "notes": "WinnerPrize-AlexAlex"
+        }, 		
+        "d0816c5a-bad6-492f-8ad5-ab5a95e87426": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-Aditya_1"
+        }, 	
+        "4fefe166-87e5-4981-b5ea-8d0032f88b7d": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-Arejaytee"
+        }, 		
+        "7c8b2a0f-d4a7-4eff-bfao-d892921e5d48": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-Reis"
+        }, 	
+        "6436daae-7834-4e01-9022-d422e8ea4efe": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-Dorian"
+        }, 	
+        "1f8d6b11-3247-47b7-8e6f-03b43a0b4464": {
+            "reason": "Give@20200910",
+            "notes": "RewardDay-ChristianDolot"
+        }, 				 			
+        "4e50ef3d-626e-4bf6-a376-2a0fc0629864": {
+            "reason": "Donate",
+            "notes": "Lizzie"
+        }		
+    },
+    "versionsInfo": ["v-0.3", "LM-v2.5"]
+};
