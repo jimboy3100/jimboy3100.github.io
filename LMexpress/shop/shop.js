@@ -25,7 +25,6 @@
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="RedArrow" data-original="https://legendmod.ml/banners/drawCommander5.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="WhiteArrow" data-original="https://legendmod.ml/banners/drawCommander5.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="BabyBoss" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsBabyBoss.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="BabyBoss1" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsBabyBoss1.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Gladiator" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsGladiator.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero1" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero1.png"></div>'
