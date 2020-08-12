@@ -60,10 +60,12 @@
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeLongestTimeAlive"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero.png"></div>'
 		}	
+		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeMassDisputeOverPrizes"){
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero2.png"></div>'
+		}
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "WinnerPrizeMassConsumedMassCellsEaten"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="MetalOfHonor" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMetalOfHonor.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Hero2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHero2.png"></div>'
-		}				
+		}		
 	}	
 	window.tempAnimatedCool=""
 	if (animatedskins){
