@@ -266,8 +266,8 @@ ProLicenceUsersTable = {
             "notes": "RewardDay-Aditya_1"
         }, 	
         "4fefe166-87e5-4981-b5ea-8d0032f88b7d": {
-            "reason": "DisputeOverWinnerPrizes",
-            "notes": "Arejaytee"
+            "reason": "WinnerPrizeMassDisputeOverPrizes",
+            "notes": "WinnerPrize-Arejaytee"
         }, 		
         "7c8b2a0f-d4a7-4eff-bfao-d892921e5d48": {
             "reason": "Give@20200910",
