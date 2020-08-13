@@ -1,4 +1,4 @@
-//SPECS v3.8u WORKS UNTIL HERE
+//SPECS v3.9 MEGA TEST
 
 function loadMultiCellSkin(){
 	
@@ -1066,7 +1066,7 @@ class Spect {
             }
             if (extendedFlags & 2) {
                 cell.isFriend = isFriend;
-                //console.log('FB friend cell in view', isFriend)
+
             }
         }
        // var rmaxedX=rmaxedY=rminedX=rminedY=0
@@ -1164,14 +1164,13 @@ class Spect {
             }
             if (true) {
                 var mass = legendmod.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
-                // this.STE = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null; //Sonia2
-                //this.STE = Math.floor(mass * Math.pow(1.15, 2)/4); //Sonia2
-				this.STE = Math.floor(mass * defaultmapsettings.dominationRate/4); //Sonia2
-                this.MTE = Math.floor(mass * defaultmapsettings.dominationRate/2); //Sonia2
-                this.BMTE = Math.ceil(mass * defaultmapsettings.dominationRate); //Sonia2
-                this.BSTE = Math.ceil(mass * defaultmapsettings.dominationRate*2); //Sonia2
-                this.TTE = Math.ceil(mass / 6); //Sonia2
-                this.PTE = Math.floor(mass * 0.66); //Sonia2
+
+				this.STE = Math.floor(mass * defaultmapsettings.dominationRate/4); 
+                this.MTE = Math.floor(mass * defaultmapsettings.dominationRate/2); 
+                this.BMTE = Math.ceil(mass * defaultmapsettings.dominationRate); 
+                this.BSTE = Math.ceil(mass * defaultmapsettings.dominationRate*2); 
+                this.TTE = Math.ceil(mass / 6); 
+                this.PTE = Math.floor(mass * 0.66); 
             }			
         }	
 }
