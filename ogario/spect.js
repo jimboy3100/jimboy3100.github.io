@@ -1,4 +1,4 @@
-//SPECS v3.8z WORKS UNTIL HERE
+//SPECS v3.9a WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -837,6 +837,9 @@ class Spect {
             }
             return text;
         };
+		//
+		if (this.time) this.timerDifference = Date.now() - this.time
+		//
         this.time = Date.now();
         this.removePlayerCell = false;
         let eatEventsLength = view.readUInt16LE(offset);
@@ -1108,11 +1111,13 @@ class Spect {
 		console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
 	}
 	beforecalculation(){
+
+		
         if (legendmod.playerCellsMulti.length) {
 			if (!this.openSecond){
 				this.openSecond = true;
 				window.multiboxPlayerEnabled = this.number
-			}
+			}			
             this.calculatePlayerMassAndPosition();
 		}
 	    else{
@@ -1124,6 +1129,7 @@ class Spect {
 	  return id + this.number * 1000000000
     }
 	calculatePlayerMassAndPosition(){
+	
             var size = 0;
             var targetSize = 0;
             var x = 0;
@@ -1139,8 +1145,8 @@ class Spect {
 			if (window.multiboxPlayerEnabled){
 				legendmod.viewX = x;
 				legendmod.viewY = y;		
-				this.viewX = x
-				this.viewY = y
+				//this.viewX = x
+				//this.viewY = y
 			}
 			this.playerX = x;
 			this.playerY = y;
@@ -1154,6 +1160,13 @@ class Spect {
             this.playerSize = size;
             this.playerMass = ~~(targetSize / 100);
 			this.recalculatePlayerMass();
+			
+			if (this.timerDifference > 60){
+				setTimeout(function() {
+					this.timerDifference = this.timerDifference - 60
+					if (window.multiboxPlayerEnabled) spects[window.multiboxPlayerEnabled-1].calculatePlayerMassAndPosition()
+				}, 60); 
+			}
 	}	
     recalculatePlayerMass() {
             if (this.playerScore = Math.max(this.playerScore, this.playerMass),
