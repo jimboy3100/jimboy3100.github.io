@@ -1,4 +1,4 @@
-//SPECS v3.9 MEGA TEST 1
+//SPECS v4.0 MEGA TEST 1
 
 function loadMultiCellSkin(){
 	
@@ -666,7 +666,7 @@ class Spect {
             case 255:
 				this.constantrecalculation2()
                 this.handleSubmessage(view);
-				this.beforecalculation() //render calculations i put them here to avoid another interval
+				//this.beforecalculation() //render calculations i put them here to avoid another interval
                 break;
             case 16:
 
@@ -1032,6 +1032,7 @@ class Spect {
 								this.sendCursor()
 								loadMultiCellSkin()
 								this.active = true
+								this.beforecalculation() //render calculations i put them here to avoid another interval
 							}
                         }	
                 } 
@@ -1120,10 +1121,10 @@ class Spect {
 	}
 	beforecalculation(){
         if (legendmod.playerCellsMulti.length) {
-			if (!this.openSecond){
-				this.openSecond = true;
+			/*if (!this.openSecond){
+				this.openSecond = true;*/
 				window.multiboxPlayerEnabled = this.number
-			}
+			//}
             this.calculatePlayerMassAndPosition();
 		}
 	    else{
