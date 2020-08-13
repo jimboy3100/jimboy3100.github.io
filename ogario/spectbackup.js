@@ -1,4 +1,4 @@
-//SPECS v3.8u WORKS UNTIL HERE
+//SPECS v3.8w WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -254,13 +254,15 @@ class Spect {
 	getTheOppositeSocialToken(){
 		if (master.context == "facebook"){		
 			window.MultiPending=this
-			document.getElementById("gplusLogin").click()			
+			document.getElementById("gplusLogin").click()	
+			//this.handleSendNick()			
 			console.log('[SPECT] Login Tokens - Main: Google, Multi: Facebook')		
 		}
 		else if (master.context == "google"){
 			window.MultiPending=this
 			master.facebookLogin()					
 			console.log('[SPECT] Login Tokens - Main: Facebook, Multi: Google')
+			//this.handleSendNick()
 		}	
 		else if (!master.context){
 			//this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
@@ -573,14 +575,15 @@ class Spect {
                 break;
             case 102:
 						//this.sendCursor()
-						console.log("[SPECT] SendNick with")						
-						this.handleSendNick()
+						//console.log("[SPECT] SendNick with")						
+						//this.handleSendNick()
               console.log('[SPECT] case 102');
                 break;
             case 103:
 			  this.accessTokenSent = true
               console.log('[SPECT] case 103');
 			  application.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor, ogarcopythelb.skinURL);
+			  this.handleSendNick();			  
                 break;
             case 104:
               console.log('[SPECT] case 104');
@@ -651,7 +654,7 @@ class Spect {
 						console.log("[SPECT] SendNick without")
 						//this.sendCursor()
 						MultiTokenReady(this)
-						this.handleSendNick();
+						//this.handleSendNick();
 					}
                 } else {
                   this.sendSpectate();
