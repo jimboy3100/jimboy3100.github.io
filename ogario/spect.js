@@ -1,4 +1,4 @@
-//SPECS v3.9 MEGA TEST
+//SPECS v3.9 MEGA TEST 1
 
 function loadMultiCellSkin(){
 	
@@ -725,6 +725,18 @@ class Spect {
 			spects = spects.slice(temp+1);
 		}				
 	}	
+	pauseForLater(){
+		this.active = false;		
+		window.multiboxPlayerEnabled = null
+		if (!legendmod.play){
+			application.showMenu()
+		}	
+		/*var temp = this.number-1
+		if (spects[temp]){
+			spects[temp].closeConnection()
+			spects = spects.slice(temp+1);
+		}*/				
+	}		
     handleSubmessage(message) {
         message = this.decompressMessage(message);
         let offset = 0;
@@ -735,7 +747,8 @@ class Spect {
 				//if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && performance.now()-this.timer>3000){
 				if (this.player && this.active && legendmod.playerCellsMulti.length==0){
 					console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
-					this.terminate()			
+					this.pauseForLater();
+					//this.terminate()			
 				}				
                 break;			
             case 64:
@@ -1015,6 +1028,7 @@ class Spect {
                             legendmod.playerCellsMulti.push(cell);
 							if (legendmod.playerCellsMulti.length==1){
 								console.log('[SPECT] Player cell is active')
+								window.multiBoxPlayerStarted=true;
 								this.sendCursor()
 								loadMultiCellSkin()
 								this.active = true
