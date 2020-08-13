@@ -1,4 +1,4 @@
-//SPECS v4.0 MEGA TEST 1
+//SPECS v4.1 MEGA TEST 1
 
 function loadMultiCellSkin(){
 	
@@ -1149,8 +1149,11 @@ class Spect {
                 y += n.y / playersLength;
             }
 			if (window.multiboxPlayerEnabled){
-				legendmod.viewX = x;
-				legendmod.viewY = y;			
+				this.viewXX=x;
+				this.viewYY=y;
+				//legendmod.viewX = x;
+				//legendmod.viewY = y;
+				
 			}
 			this.playerX = x;
 			this.playerY = y;
