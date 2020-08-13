@@ -1,4 +1,4 @@
-//SPECS v3.8y WORKS UNTIL HERE
+//SPECS v3.8z WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
