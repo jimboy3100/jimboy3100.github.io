@@ -1136,12 +1136,12 @@ class Spect {
                 x += n.x / playersLength;
                 y += n.y / playersLength;
             }
-			/*if (window.multiboxPlayerEnabled){
-				//legendmod.viewX = x;
-				//legendmod.viewY = y;		
-				this.viewXX = x
-				this.viewYY = y
-			}*/
+			if (window.multiboxPlayerEnabled){
+				legendmod.viewX = x;
+				legendmod.viewY = y;		
+				this.viewX = x
+				this.viewY = y
+			}
 			this.playerX = x;
 			this.playerY = y;
 			
