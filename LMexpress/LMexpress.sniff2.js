@@ -290,6 +290,36 @@ function erasescripter(){
 //4 Animated Skins
 
             animatedskins =      {
+               'legend clan': {
+                  cached:    false,
+                  ready:     false,
+                  current:   0,
+                  timestamp: 0,
+                  id:        'legend_clan',
+                  color:     '000000',
+                  frames:    [
+                     {id: 'Jblhf6u', delay: '0.05'},
+                     {id: 'MKWMUGH', delay: '0.05'},
+                     {id: 'sqgLdwx', delay: '0.05'},
+                     {id: 'hISPoCr', delay: '0.05'},
+                     {id: '7KMHyrJ', delay: '0.05'},
+                     {id: 'vXOvVrK', delay: '0.05'},
+                     {id: 'YYJso45', delay: '0.05'},
+                     {id: 'eZwxF0H', delay: '0.05'},
+                     {id: 'i9OpvGV', delay: '0.05'},
+                     {id: 'yMYGhYm', delay: '0.05'},
+                     {id: 'C83DFlA', delay: '0.05'},
+                     {id: 'C0ycMls', delay: '0.05'},
+                     {id: 'HqrzUO6', delay: '0.05'},
+                     {id: '5LplzG6', delay: '0.05'},
+                     {id: 'taTPZGJ', delay: '0.05'},
+                     {id: 'Lhqwoag', delay: '0.05'},
+                     {id: 'qge7WG7', delay: '0.05'},
+                     {id: 'YRxATuG', delay: '0.05'},
+                     {id: 'OvUi7j9', delay: '0.05'},
+                     {id: 'ZK1C8gV', delay: '0.05'}
+                  ]
+               },			    
                'bomb': {
                   cached:    false,
                   ready:     false,
