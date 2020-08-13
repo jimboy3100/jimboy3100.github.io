@@ -1,4 +1,4 @@
-//SPECS v3.8v WORKS UNTIL HERE
+//SPECS v3.8w WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -255,14 +255,14 @@ class Spect {
 		if (master.context == "facebook"){		
 			window.MultiPending=this
 			document.getElementById("gplusLogin").click()	
-			this.handleSendNick()			
+			//this.handleSendNick()			
 			console.log('[SPECT] Login Tokens - Main: Google, Multi: Facebook')		
 		}
 		else if (master.context == "google"){
 			window.MultiPending=this
 			master.facebookLogin()					
 			console.log('[SPECT] Login Tokens - Main: Facebook, Multi: Google')
-			this.handleSendNick()
+			//this.handleSendNick()
 		}	
 		else if (!master.context){
 			//this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
@@ -583,7 +583,7 @@ class Spect {
 			  this.accessTokenSent = true
               console.log('[SPECT] case 103');
 			  application.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor, ogarcopythelb.skinURL);
-			  
+			  this.handleSendNick();			  
                 break;
             case 104:
               console.log('[SPECT] case 104');
