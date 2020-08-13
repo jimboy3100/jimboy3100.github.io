@@ -1,4 +1,4 @@
-//SPECS v4.1 MEGA TEST 1
+//SPECS v3.8u WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -666,7 +666,7 @@ class Spect {
             case 255:
 				this.constantrecalculation2()
                 this.handleSubmessage(view);
-				//this.beforecalculation() //render calculations i put them here to avoid another interval
+				this.beforecalculation() //render calculations i put them here to avoid another interval
                 break;
             case 16:
 
@@ -725,18 +725,6 @@ class Spect {
 			spects = spects.slice(temp+1);
 		}				
 	}	
-	pauseForLater(){
-		this.active = false;		
-		window.multiboxPlayerEnabled = null
-		if (!legendmod.play){
-			application.showMenu()
-		}	
-		/*var temp = this.number-1
-		if (spects[temp]){
-			spects[temp].closeConnection()
-			spects = spects.slice(temp+1);
-		}*/				
-	}		
     handleSubmessage(message) {
         message = this.decompressMessage(message);
         let offset = 0;
@@ -747,8 +735,7 @@ class Spect {
 				//if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && performance.now()-this.timer>3000){
 				if (this.player && this.active && legendmod.playerCellsMulti.length==0){
 					console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
-					this.pauseForLater();
-					//this.terminate()			
+					this.terminate()			
 				}				
                 break;			
             case 64:
@@ -1028,11 +1015,9 @@ class Spect {
                             legendmod.playerCellsMulti.push(cell);
 							if (legendmod.playerCellsMulti.length==1){
 								console.log('[SPECT] Player cell is active')
-								window.multiBoxPlayerStarted=true;
 								this.sendCursor()
 								loadMultiCellSkin()
 								this.active = true
-								this.beforecalculation() //render calculations i put them here to avoid another interval
 							}
                         }	
                 } 
@@ -1081,7 +1066,7 @@ class Spect {
             }
             if (extendedFlags & 2) {
                 cell.isFriend = isFriend;
-
+                //console.log('FB friend cell in view', isFriend)
             }
         }
        // var rmaxedX=rmaxedY=rminedX=rminedY=0
@@ -1121,10 +1106,10 @@ class Spect {
 	}
 	beforecalculation(){
         if (legendmod.playerCellsMulti.length) {
-			/*if (!this.openSecond){
-				this.openSecond = true;*/
+			if (!this.openSecond){
+				this.openSecond = true;
 				window.multiboxPlayerEnabled = this.number
-			//}
+			}
             this.calculatePlayerMassAndPosition();
 		}
 	    else{
@@ -1149,11 +1134,8 @@ class Spect {
                 y += n.y / playersLength;
             }
 			if (window.multiboxPlayerEnabled){
-				this.viewXX=x;
-				this.viewYY=y;
-				//legendmod.viewX = x;
-				//legendmod.viewY = y;
-				
+				legendmod.viewX = x;
+				legendmod.viewY = y;			
 			}
 			this.playerX = x;
 			this.playerY = y;
@@ -1182,13 +1164,14 @@ class Spect {
             }
             if (true) {
                 var mass = legendmod.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
-
-				this.STE = Math.floor(mass * defaultmapsettings.dominationRate/4); 
-                this.MTE = Math.floor(mass * defaultmapsettings.dominationRate/2); 
-                this.BMTE = Math.ceil(mass * defaultmapsettings.dominationRate); 
-                this.BSTE = Math.ceil(mass * defaultmapsettings.dominationRate*2); 
-                this.TTE = Math.ceil(mass / 6); 
-                this.PTE = Math.floor(mass * 0.66); 
+                // this.STE = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null; //Sonia2
+                //this.STE = Math.floor(mass * Math.pow(1.15, 2)/4); //Sonia2
+				this.STE = Math.floor(mass * defaultmapsettings.dominationRate/4); //Sonia2
+                this.MTE = Math.floor(mass * defaultmapsettings.dominationRate/2); //Sonia2
+                this.BMTE = Math.ceil(mass * defaultmapsettings.dominationRate); //Sonia2
+                this.BSTE = Math.ceil(mass * defaultmapsettings.dominationRate*2); //Sonia2
+                this.TTE = Math.ceil(mass / 6); //Sonia2
+                this.PTE = Math.floor(mass * 0.66); //Sonia2
             }			
         }	
 }
