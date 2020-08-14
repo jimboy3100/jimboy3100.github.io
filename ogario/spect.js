@@ -1,4 +1,4 @@
-//SPECS v3.9t WORKS UNTIL HERE
+//SPECS v3.9u WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -710,24 +710,46 @@ class Spect {
 	}	
     getX(x) {
       if(this.ghostFixed && this.mapOffsetFixed) {
-        return ((x + this.mapOffsetX + this.fix3x)*this.fixX - legendmod.mapOffsetX)		
+		 return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX - this.fix3x)
+        //return ((x + this.mapOffsetX + this.fix3x)*this.fixX - legendmod.mapOffsetX) The reason why this is wrong is because map is rotated already when cells meet for the first time			
 		//return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
       }
     }
     getY(y) {
       if(this.ghostFixed && this.mapOffsetFixed) {
-		return ((y + this.mapOffsetY + this.fix3y)*this.fixY - legendmod.mapOffsetY)
+		return ((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY - this.fix3y)
         //return ~~((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY)
       }
     }
-    convertX(x) {
-		return ~~((x + legendmod.mapOffsetX + this.fix3x)*this.fixX - this.mapOffsetX)
+    convertX(x) { //is used only for SendPosition
+		return ~~((x + legendmod.mapOffsetX)*this.fixX - this.mapOffsetX + this.fix3x)
         //return ~~((x + legendmod.mapOffsetX)*this.fixX - this.mapOffsetX)
     }    
     convertY(y) {
-		return ~~((y + legendmod.mapOffsetY + this.fix3x)*this.fixY - this.mapOffsetY)
+		return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY + this.fix3y)
         //return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY)
     } 	
+	constantrecalculation2(){
+		//snez
+        var mapX = legendmod.mapMaxX - legendmod.mapMinX;
+        var mapY = legendmod.mapMaxY - legendmod.mapMinY;
+        this.maxX = Math.round(mapX / legendmod.zoomValue / 10);
+        this.maxY = Math.round(mapY / legendmod.zoomValue / 10); //or 1
+	}	
+	constantrecalculation3(x,y){	
+		this.fix3x = legendmod.playerCells[0].x - x
+		this.fix3y = legendmod.playerCells[0].y - y
+		console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
+	}	
+	/*constantrecalculation(){
+			//3rd fix - excess processing
+		if (this.ghostCells && this.ghostCells[0] && this.player){
+			this.fix3x = this.convertX(legendmod.ghostCells[0].x) - this.ghostCells[0].x
+			this.fix3y = this.convertY(legendmod.ghostCells[0].y) - this.ghostCells[0].y				
+			//this.fix3x = legendmod.ghostCells[0].x - this.getX(this.ghostCells[0].x)
+			//this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)		
+		}
+	}*/	
 	terminate(){
 		this.active = null;		
 		window.multiboxPlayerEnabled = null
@@ -1114,27 +1136,7 @@ class Spect {
         }
 		
     }
-	constantrecalculation(){
-			//3rd fix - excess processing
-		if (this.ghostCells && this.ghostCells[0] && this.player){
-			this.fix3x = this.convertX(legendmod.ghostCells[0].x) - this.ghostCells[0].x
-			this.fix3y = this.convertY(legendmod.ghostCells[0].y) - this.ghostCells[0].y				
-			//this.fix3x = legendmod.ghostCells[0].x - this.getX(this.ghostCells[0].x)
-			//this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)		
-		}
-	}
-	constantrecalculation2(){
-		//snez
-        var mapX = legendmod.mapMaxX - legendmod.mapMinX;
-        var mapY = legendmod.mapMaxY - legendmod.mapMinY;
-        this.maxX = Math.round(mapX / legendmod.zoomValue / 10);
-        this.maxY = Math.round(mapY / legendmod.zoomValue / 10); //or 1
-	}	
-	constantrecalculation3(x,y){	
-		this.fix3x = legendmod.playerCells[0].x - x
-		this.fix3y = legendmod.playerCells[0].y - y
-		console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
-	}
+
 	beforecalculation(){
 
 		
