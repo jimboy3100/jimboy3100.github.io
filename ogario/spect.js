@@ -1,4 +1,4 @@
-//SPECS v3.9j WORKS UNTIL HERE
+//SPECS v3.9k WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -75,7 +75,7 @@ class Spect {
         this.closedByUser = false
         this.positionController = null
         this.player = false
-        this.active = false
+        this.active = null
         this.targetX = null
         this.targetY = null
 		this.playerCellIDs = []
@@ -101,7 +101,7 @@ class Spect {
         this.closedByUser = false
         this.positionController = null
         this.player = false
-        this.active = false
+        this.active = null
         this.targetX = null
         this.targetY = null
 		this.playerCellIDs = []
