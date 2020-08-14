@@ -1,4 +1,4 @@
-//SPECS v3.9g WORKS UNTIL HERE
+//SPECS v3.9h WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -577,7 +577,7 @@ class Spect {
             case 102:
 						//this.sendCursor()
 						//console.log("[SPECT] SendNick with")						
-						//this.handleSendNick()
+						this.handleSendNick()
               console.log('[SPECT] case 102');
                 break;
             case 103:
