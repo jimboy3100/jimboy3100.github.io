@@ -1,4 +1,4 @@
-//SPECS v3.9p WORKS UNTIL HERE
+//SPECS v3.9q WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -721,11 +721,11 @@ class Spect {
       }
     }
     convertX(x) {
-		return ~~((x + legendmod.mapOffsetX)*this.fixX - this.mapOffsetX + this.fix3x)
+		return ~~((x + legendmod.mapOffsetX)*this.fixX - this.mapOffsetX - this.fix3x)
         //return ~~((x + legendmod.mapOffsetX)*this.fixX - this.mapOffsetX)
     }    
     convertY(y) {
-		return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY + this.fix3y)
+		return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY - this.fix3y)
         //return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY)
     } 	
 	terminate(){
