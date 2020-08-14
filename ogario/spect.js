@@ -1,4 +1,4 @@
-//SPECS v3.9k WORKS UNTIL HERE
+//SPECS v3.9l WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -582,8 +582,9 @@ class Spect {
 						//console.log("[SPECT] SendNick with")						
 						this.handleSendNick()
               console.log('[SPECT] case 102');
-			  if (Date.now - this.timeStarted > 10000 && this.player && !this.active){
+			  if (Date.now - this.timeStarted > 4000 && this.player && !this.active && !this.annoucementTold){
 				  this.timeStarted = Date.now()
+				  this.annoucementTold = true
 				   toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Seems there is an excessive delay for Multibox to start. Please hold the line...");
 			  }
                 break;
