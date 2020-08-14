@@ -1,4 +1,4 @@
-//SPECS v3.9i WORKS UNTIL HERE
+//SPECS v3.9j WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -113,6 +113,7 @@ class Spect {
     }
     connect() {
         this.reset()
+		this.timeStarted = Date.now()
         this.ws = legendmod.ws
         this.socket = new WebSocket(legendmod.ws)
         this.socket.binaryType = 'arraybuffer'
@@ -358,7 +359,7 @@ class Spect {
         this.sendAction(17);
     }
     sendNick(nick) {
-		if (!this.active){
+		if (!this.active){ //if cell didn't start
         var self = this
 		this.playerNick = nick;
             var sendSpawn = function(token) {
@@ -581,6 +582,10 @@ class Spect {
 						//console.log("[SPECT] SendNick with")						
 						this.handleSendNick()
               console.log('[SPECT] case 102');
+			  if (Date.now - this.timeStarted > 10000 && this.player && !this.active){
+				  this.timeStarted = Date.now()
+				   toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Seems there is an excessive delay for Multibox to start. Please hold the line...");
+			  }
                 break;
             case 103:
 			  this.accessTokenSent = true
@@ -654,7 +659,7 @@ class Spect {
 						this.getTheOppositeSocialToken()
 					}
 					else{
-						console.log("[SPECT] SendNick without")
+						//console.log("[SPECT] SendNick without")
 						//this.sendCursor()
 						MultiTokenReady(this)
 						//this.handleSendNick();
