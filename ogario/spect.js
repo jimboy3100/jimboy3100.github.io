@@ -1,4 +1,4 @@
-//SPECS v3.9w WORKS UNTIL HERE
+//SPECS v3.9x WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -671,7 +671,7 @@ class Spect {
                 }				
                 break;
             case 255:
-				this.constantrecalculation2()
+				//this.constantrecalculation2()
                 this.handleSubmessage(view);
 				this.beforecalculation() //render calculations i put them here to avoid another interval
                 break;
@@ -1156,7 +1156,7 @@ class Spect {
 	  return id + this.number * 1000000000
     }
 	calculatePlayerMassAndPosition(){
-	
+			
             var size = 0;
             var targetSize = 0;
             var x = 0;
@@ -1188,6 +1188,7 @@ class Spect {
             this.playerMass = ~~(targetSize / 100);
 			this.recalculatePlayerMass();
 			
+			this.constantrecalculation2()
 			if (this.timerDifference > 10){
 				setTimeout(function() {
 					this.timerDifference = this.timerDifference - 10
