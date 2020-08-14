@@ -1,4 +1,4 @@
-//SPECS v3.9f WORKS UNTIL HERE
+//SPECS v3.9g WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -950,6 +950,9 @@ class Spect {
             const isFood = extendedFlags & 1;
             const isFriend = extendedFlags & 2;
 
+			if (this.player && !this.active && !legendmod.playerCellsMulti.includes(id)){
+				invisible = true
+			}
                   id = this.newID(id);
 
 				//FOR COLOR
@@ -991,9 +994,7 @@ class Spect {
 				if (isVirus) invisible = (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size))
 
 			}	
-			if (this.player && !this.active){
-				invisible = true
-			}
+
 			if (isFood && !defaultmapsettings.rainbowFood){
 				color = defaultSettings.foodColor
 			}
