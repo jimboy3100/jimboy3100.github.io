@@ -1,4 +1,4 @@
-//SPECS v3.8w WORKS UNTIL HERE
+//SPECS v3.9o WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -75,7 +75,7 @@ class Spect {
         this.closedByUser = false
         this.positionController = null
         this.player = false
-        this.active = false
+        this.active = null
         this.targetX = null
         this.targetY = null
 		this.playerCellIDs = []
@@ -101,7 +101,7 @@ class Spect {
         this.closedByUser = false
         this.positionController = null
         this.player = false
-        this.active = false
+        this.active = null
         this.targetX = null
         this.targetY = null
 		this.playerCellIDs = []
@@ -113,6 +113,7 @@ class Spect {
     }
     connect() {
         this.reset()
+		this.timeStarted = Date.now()
         this.ws = legendmod.ws
         this.socket = new WebSocket(legendmod.ws)
         this.socket.binaryType = 'arraybuffer'
@@ -358,6 +359,7 @@ class Spect {
         this.sendAction(17);
     }
     sendNick(nick) {
+		if (!this.active){ //if cell didn't start
         var self = this
 		this.playerNick = nick;
             var sendSpawn = function(token) {
@@ -374,6 +376,7 @@ class Spect {
             sendSpawn(token)
         });
         !legendmod.integrity && sendSpawn('0')
+		}
     }
     sendPosition(x, y) {
         if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && this.integrity)) {          
@@ -495,16 +498,17 @@ class Spect {
                 break;
             case 17:
 			
-                this.viewX = view.getFloat32(offset, true);
-				//legendmod.viewX = this.viewX 
-				
+                this.viewX = view.getFloat32(offset, true);	
+				if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {				
+					legendmod.viewX = this.viewX 
+				}
 				//var x=this.viewX = view.getFloat32(offset, true);
 				//this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
                 offset += 4;
-				this.viewY = view.getFloat32(offset, true);
-				
-				//legendmod.viewY = this.viewY 
-				
+				this.viewY = view.getFloat32(offset, true);	
+				if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
+					legendmod.viewY = this.viewY 
+				}
 				//var y=this.viewX = view.getFloat32(offset, true);
 				//this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
                 offset += 4;
@@ -576,8 +580,13 @@ class Spect {
             case 102:
 						//this.sendCursor()
 						//console.log("[SPECT] SendNick with")						
-						//this.handleSendNick()
+						this.handleSendNick()
               console.log('[SPECT] case 102');
+			  console.log(Date.now() - this.timeStarted, this.player, this.active, this.annoucementTold)
+			  if (Date.now() - this.timeStarted > 4000 && this.player && !this.active && !this.annoucementTold){
+				  this.annoucementTold = true
+				   toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Seems there is an excessive delay for Multibox to start. Please hold the line...");
+			  }
                 break;
             case 103:
 			  this.accessTokenSent = true
@@ -651,7 +660,7 @@ class Spect {
 						this.getTheOppositeSocialToken()
 					}
 					else{
-						console.log("[SPECT] SendNick without")
+						//console.log("[SPECT] SendNick without")
 						//this.sendCursor()
 						MultiTokenReady(this)
 						//this.handleSendNick();
@@ -717,7 +726,7 @@ class Spect {
       }
     }
 	terminate(){
-		this.active = false;		
+		this.active = null;		
 		window.multiboxPlayerEnabled = null
 		if (!legendmod.play){
 			application.showMenu()
@@ -837,6 +846,9 @@ class Spect {
             }
             return text;
         };
+		//
+		if (this.time) this.timerDifference = Date.now() - this.time
+		//
         this.time = Date.now();
         this.removePlayerCell = false;
         let eatEventsLength = view.readUInt16LE(offset);
@@ -946,6 +958,9 @@ class Spect {
             const isFood = extendedFlags & 1;
             const isFriend = extendedFlags & 2;
 
+			if (this.player && !this.active && !legendmod.playerCellsMulti.includes(id)){
+				invisible = true
+			}
                   id = this.newID(id);
 
 				//FOR COLOR
@@ -985,8 +1000,12 @@ class Spect {
 			if (this.player && (isVirus || isFood)){
 				if (isFood) remove = this.isInViewCustom(x , y, size)
 				if (isVirus) invisible = (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size))
+				
+				if (!this.active){
+					invisible = true
+				}
+			}	
 
-			}			
 			if (isFood && !defaultmapsettings.rainbowFood){
 				color = defaultSettings.foodColor
 			}
@@ -1108,11 +1127,13 @@ class Spect {
 		console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
 	}
 	beforecalculation(){
+
+		
         if (legendmod.playerCellsMulti.length) {
 			if (!this.openSecond){
 				this.openSecond = true;
 				window.multiboxPlayerEnabled = this.number
-			}
+			}			
             this.calculatePlayerMassAndPosition();
 		}
 	    else{
@@ -1124,6 +1145,7 @@ class Spect {
 	  return id + this.number * 1000000000
     }
 	calculatePlayerMassAndPosition(){
+	
             var size = 0;
             var targetSize = 0;
             var x = 0;
@@ -1138,7 +1160,9 @@ class Spect {
             }
 			if (window.multiboxPlayerEnabled){
 				legendmod.viewX = x;
-				legendmod.viewY = y;			
+				legendmod.viewY = y;		
+				//this.viewX = x
+				//this.viewY = y
 			}
 			this.playerX = x;
 			this.playerY = y;
@@ -1152,6 +1176,13 @@ class Spect {
             this.playerSize = size;
             this.playerMass = ~~(targetSize / 100);
 			this.recalculatePlayerMass();
+			
+			if (this.timerDifference > 10){
+				setTimeout(function() {
+					this.timerDifference = this.timerDifference - 10
+					if (window.multiboxPlayerEnabled) spects[window.multiboxPlayerEnabled-1].calculatePlayerMassAndPosition()
+				}, 10); 
+			}
 	}	
     recalculatePlayerMass() {
             if (this.playerScore = Math.max(this.playerScore, this.playerMass),
