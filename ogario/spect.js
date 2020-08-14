@@ -1,4 +1,4 @@
-//SPECS v3.9o WORKS UNTIL HERE
+//SPECS v3.9p WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -245,12 +245,6 @@ class Spect {
         this.sendMessage(view);
 
     }
-    convertX(x) {
-        return ~~((x + legendmod.mapOffsetX)*this.fixX - this.mapOffsetX)
-    }    
-    convertY(y) {
-        return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY)
-    } 
 	//spects[0].sendGplusToken(master.accessToken)
 	getTheOppositeSocialToken(){
 		if (master.context == "facebook"){		
@@ -389,7 +383,8 @@ class Spect {
         view.setInt32(1, this.targetX, true);
         view.setInt32(5, this.targetY, true);
         console.log(this.targetX, this.targetY)
-      } else {
+      } 
+	  else {
 
         view.setInt32(1, x, true);
         view.setInt32(5, y, true);
@@ -725,6 +720,14 @@ class Spect {
         //return ~~((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY)
       }
     }
+    convertX(x) {
+		return ~~((x + legendmod.mapOffsetX)*this.fixX - this.mapOffsetX + this.fix3x)
+        //return ~~((x + legendmod.mapOffsetX)*this.fixX - this.mapOffsetX)
+    }    
+    convertY(y) {
+		return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY + this.fix3y)
+        //return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY)
+    } 	
 	terminate(){
 		this.active = null;		
 		window.multiboxPlayerEnabled = null
@@ -961,6 +964,10 @@ class Spect {
 			if (this.player && !this.active && !legendmod.playerCellsMulti.includes(id)){
 				invisible = true
 			}
+			else if  (this.player && this.active && legendmod.playerCellsMulti.includes(id)){
+				invisible = false
+			}
+			
                   id = this.newID(id);
 
 				//FOR COLOR
@@ -999,8 +1006,10 @@ class Spect {
 			//if (this.player && isVirus && !isFood && !invisible){
 			if (this.player && (isVirus || isFood)){
 				if (isFood) remove = this.isInViewCustom(x , y, size)
-				if (isVirus) invisible = (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size))
+				if (isVirus) invisible = (this.isInViewCustom(x , y, size) && !this.isInViewCustom3(x , y, size)) //THIS IS THE MAIN PROBLEM CAUSING VIRUSES TO DUPLICATE OR HIDE
 				
+			
+			
 				if (!this.active){
 					invisible = true
 				}
