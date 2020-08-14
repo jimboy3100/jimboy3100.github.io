@@ -1,4 +1,4 @@
-//SPECS v3.9x WORKS UNTIL HERE
+//SPECS v3.9y WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -750,50 +750,6 @@ class Spect {
 			//this.fix3y = legendmod.ghostCells[0].y - this.getY(this.ghostCells[0].y)		
 		}
 	}*/	
-	terminate(){
-		this.active = null;		
-		window.multiboxPlayerEnabled = null
-		if (!legendmod.play){
-			application.showMenu()
-		}	
-		var temp = this.number-1
-		if (spects[temp]){
-			spects[temp].closeConnection()
-			spects = spects.slice(temp+1);
-		}				
-	}	
-    handleSubmessage(message) {
-        message = this.decompressMessage(message);
-        let offset = 0;
-        switch (message.readUInt8(offset++)) {
-            case 16:
-                this.updateCells(message, offset);
-				//jimboy3100
-				//if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && performance.now()-this.timer>3000){
-				if (this.player && this.active && legendmod.playerCellsMulti.length==0){
-					console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
-					this.terminate()			
-				}				
-                break;			
-            case 64:
-				if (!this.openFirst){ //jimboy3100
-				this.openFirst = true
-                this.viewMinX = (message.readDoubleLE(offset));
-                offset += 8;
-                this.viewMinY = (message.readDoubleLE(offset));
-                offset += 8;
-                this.viewMaxX = (message.readDoubleLE(offset));
-                offset += 8;
-                this.viewMaxY = (message.readDoubleLE(offset));
-                this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
-				} //
-				//this.timer=performance.now();			
-				break;
-            default:
-                console.log('[SPECT] Unknown sub opcode:', message.readUInt8(0));
-                break;
-        }
-    }
     isInView(x, y) {
         let mtp = 4.95,
             w = 1024/2*mtp,
@@ -858,6 +814,50 @@ class Spect {
             }
             this.mapOffsetFixed = true;
             console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
+        }
+    }	
+	terminate(){
+		this.active = null;		
+		window.multiboxPlayerEnabled = null
+		if (!legendmod.play){
+			application.showMenu()
+		}	
+		var temp = this.number-1
+		if (spects[temp]){
+			spects[temp].closeConnection()
+			spects = spects.slice(temp+1);
+		}				
+	}	
+    handleSubmessage(message) {
+        message = this.decompressMessage(message);
+        let offset = 0;
+        switch (message.readUInt8(offset++)) {
+            case 16:
+                this.updateCells(message, offset);
+				//jimboy3100
+				//if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && performance.now()-this.timer>3000){
+				if (this.player && this.active && legendmod.playerCellsMulti.length==0){
+					console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
+					this.terminate()			
+				}				
+                break;			
+            case 64:
+				if (!this.openFirst){ //jimboy3100
+				this.openFirst = true
+                this.viewMinX = (message.readDoubleLE(offset));
+                offset += 8;
+                this.viewMinY = (message.readDoubleLE(offset));
+                offset += 8;
+                this.viewMaxX = (message.readDoubleLE(offset));
+                offset += 8;
+                this.viewMaxY = (message.readDoubleLE(offset));
+                this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
+				} //
+				//this.timer=performance.now();			
+				break;
+            default:
+                console.log('[SPECT] Unknown sub opcode:', message.readUInt8(0));
+                break;
         }
     }
     updateCells(view, offset) {
@@ -1096,7 +1096,7 @@ class Spect {
 				cell.targetNick = this.nick
 				cell.isPlayerCellMulti=true
 			}
-			if (!cell.isPlayerCell && cell.targetNick == profiles[application.selectedOldProfile].nick && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
+			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[ogarioSelectedProfile].nick) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
 				this.openFourth = true				
 				this.constantrecalculation3(cell.x, cell.y)
 			}
