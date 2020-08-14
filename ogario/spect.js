@@ -1,4 +1,4 @@
-//SPECS v3.9h WORKS UNTIL HERE
+//SPECS v3.9i WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -358,6 +358,7 @@ class Spect {
         this.sendAction(17);
     }
     sendNick(nick) {
+		if (!this.active){
         var self = this
 		this.playerNick = nick;
             var sendSpawn = function(token) {
@@ -374,6 +375,7 @@ class Spect {
             sendSpawn(token)
         });
         !legendmod.integrity && sendSpawn('0')
+		}
     }
     sendPosition(x, y) {
         if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && this.integrity)) {          
@@ -718,7 +720,7 @@ class Spect {
       }
     }
 	terminate(){
-		this.active = false;		
+		this.active = null;		
 		window.multiboxPlayerEnabled = null
 		if (!legendmod.play){
 			application.showMenu()
