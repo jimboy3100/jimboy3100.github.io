@@ -1,4 +1,4 @@
-//SPECS v4.1c WORKS UNTIL HERE
+//SPECS v4.1d WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -722,12 +722,12 @@ class Spect {
       }
     }
     convertX(x) { //is used only for SendPosition
-		//return ~~((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX + this.fix3x)
-        return ~~((x + legendmod.mapOffsetX)*this.fixX - this.mapOffsetX)
+		return ~~((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX - this.fix3x)
+        //return ~~((x + legendmod.mapOffsetX)*this.fixX - this.mapOffsetX)
     }    
     convertY(y) {
-		//return ~~((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY + this.fix3y)
-        return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY)
+		return ~~((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY - this.fix3y)
+        //return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY)
     } 	
 	constantrecalculation2(){
 		//snez
