@@ -70,9 +70,18 @@
 	window.tempAnimatedCool=""
 	if (animatedskins){
 		Object.keys(animatedskins).forEach(function(key) {	
-			if (animatedskins[key] && animatedskins[key].id && animatedskins[key].frames[0] && animatedskins[key].frames[0].id)
-			window.tempAnimatedCool += '<div class="skin-box"><img class="lazy" name="' + animatedskins[key].id + '" data-original="https://i.imgur.com/' + animatedskins[key].frames[0].id + '.png"></div>'
-			window.tempAnimatedCoolArray.push(key)
+			if (animatedskins[key] && animatedskins[key].id && animatedskins[key].frames[0] && animatedskins[key].frames[0].id){
+				if ((animatedskins[key].id=="Only_For_Shiro" || animatedskins[key].id=="Only_For_Shiro_1" || animatedskins[key].id=="Only_For_Shiro_2") && ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Shiro"){
+					window.tempAnimatedCool += '<div class="skin-box"><img class="lazy" name="' + animatedskins[key].id + '" data-original="https://i.imgur.com/' + animatedskins[key].frames[0].id + '.png"></div>'					
+				}	
+				else if (animatedskins[key].id=="Just_Watch_Pro" && ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "LMauthor"){
+					window.tempAnimatedCool += '<div class="skin-box"><img class="lazy" name="' + animatedskins[key].id + '" data-original="https://i.imgur.com/' + animatedskins[key].frames[0].id + '.png"></div>'					
+				}				
+				else{
+					window.tempAnimatedCool += '<div class="skin-box"><img class="lazy" name="' + animatedskins[key].id + '" data-original="https://i.imgur.com/' + animatedskins[key].frames[0].id + '.png"></div>'
+					window.tempAnimatedCoolArray.push(key)
+				}
+			}
 		});
 	}
 		
