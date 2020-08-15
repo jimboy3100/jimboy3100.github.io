@@ -1,4 +1,4 @@
-//SPECS v4.1a WORKS UNTIL HERE
+//SPECS v4.1b WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -737,8 +737,8 @@ class Spect {
         this.maxY = Math.round(mapY / legendmod.zoomValue / 10); //or 1
 	}	
 	constantrecalculation3(x,y){	
-		this.fix3x = (legendmod.playerCells[0].x - x) * this.fixX
-		this.fix3y = (legendmod.playerCells[0].y - y) * this.fixY
+		this.fix3x = -(legendmod.playerCells[0].x - x) * this.fixX
+		this.fix3y = -(legendmod.playerCells[0].y - y) * this.fixY
 		console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
 	}	
 	/*constantrecalculation(){
