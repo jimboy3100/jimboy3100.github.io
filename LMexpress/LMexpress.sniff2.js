@@ -1,5 +1,5 @@
 //Legend mod Sniff2 by jimboy3100
-//v2.6a
+//v2.6b
 /*
 (function() {
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
@@ -455,12 +455,12 @@ function erasescripter(){
 					{id: 'tkIlXxd', delay: '0.05'}
 				]
                },	
-               'legend clan': {
+               '℄🌀JustWatchPro': {
                   cached:    false,
                   ready:     false,
                   current:   0,
                   timestamp: 0,
-                  id:        'legend_clan',
+                  id:        'Just Watch Pro',
                   color:     '000000',
 				frames:    [
 					{id: '8wnf4ad', delay: '0.05'},
