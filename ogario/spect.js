@@ -1,4 +1,4 @@
-//SPECS v4.1d WORKS UNTIL HERE
+//SPECS v4.1e WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -312,7 +312,8 @@ class Spect {
             this.positionController = setInterval(() => {
 
 			if (legendmod.pause){
-				this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
+				//this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
+				this.sendPosition(this.convert2X(this.playerX), this.convert2Y(this.playerY));
 			}
 			else if (window.multiboxPlayerEnabled || this.isFreeSpectate || window.multiboxFollowMouse){
 					this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
@@ -722,11 +723,19 @@ class Spect {
       }
     }
     convertX(x) { //is used only for SendPosition
-		return ~~((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX - this.fix3x)
+		return ~~((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX + this.fix3x)
         //return ~~((x + legendmod.mapOffsetX)*this.fixX - this.mapOffsetX)
     }    
     convertY(y) {
-		return ~~((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY - this.fix3y)
+		return ~~((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY + this.fix3y)
+        //return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY)
+    } 	
+    convert2X(x) { //is used only for SendPosition
+		return ~~((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX)
+        //return ~~((x + legendmod.mapOffsetX)*this.fixX - this.mapOffsetX)
+    }    
+    convert2Y(y) {
+		return ~~((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY)
         //return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY)
     } 	
 	constantrecalculation2(){
