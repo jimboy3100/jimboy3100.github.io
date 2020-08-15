@@ -1,5 +1,5 @@
 //Legend mod Sniff2 by jimboy3100
-//v2.6b
+//v2.6c
 /*
 (function() {
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
@@ -344,7 +344,7 @@ function erasescripter(){
 					{id: 'rcVCCaj', delay: '0.2'},
 					{id: 'Q3v6jOj', delay: '0.2'}	
                   ]
-               },	
+               },		
                'Only For Shiro 1': {
                   cached:    false,
                   ready:     false,
@@ -376,31 +376,6 @@ function erasescripter(){
                   current:   0,
                   timestamp: 0,
                   id:        'Only_For_Shiro_2',
-                  color:     '000000',
-                  frames:    [
-					{id: 'y5929jj', delay: '0.2'},
-					{id: 'CUi6Wkg', delay: '0.2'},
-					{id: 'JBKSWEE', delay: '0.2'},
-					{id: 'raeqwRS', delay: '0.2'},
-					{id: '0ZJHfQN', delay: '0.2'},
-					{id: 'y5929jj', delay: '0.2'},
-					{id: 'CUi6Wkg', delay: '0.2'},
-					{id: 'JBKSWEE', delay: '0.2'},
-					{id: 'raeqwRS', delay: '0.2'},
-					{id: '0ZJHfQN', delay: '0.2'},
-					{id: 'y5929jj', delay: '0.2'},
-					{id: 'CUi6Wkg', delay: '0.2'},
-					{id: 'JBKSWEE', delay: '0.2'},
-					{id: 'raeqwRS', delay: '0.2'},
-					{id: '0ZJHfQN', delay: '0.2'}
-                  ]
-               },	
-               'legend clan': {
-                  cached:    false,
-                  ready:     false,
-                  current:   0,
-                  timestamp: 0,
-                  id:        'legend_clan',
                   color:     '000000',
 				frames:    [
 					{id: 'YIFZ3fz', delay: '0.05'},
