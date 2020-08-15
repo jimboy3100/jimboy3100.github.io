@@ -1,4 +1,4 @@
-//SPECS v3.9z WORKS UNTIL HERE
+//SPECS v4.0 WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -835,7 +835,7 @@ class Spect {
             case 16:
                 this.updateCells(message, offset);
 				//jimboy3100
-				//if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && performance.now()-this.timer>3000){
+				//if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && Date.now()-this.timer>3000){
 				if (this.player && this.active && legendmod.playerCellsMulti.length==0){
 					console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
 					this.terminate()			
@@ -853,7 +853,7 @@ class Spect {
                 this.viewMaxY = (message.readDoubleLE(offset));
                 this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
 				} //
-				//this.timer=performance.now();			
+				//this.timer=Date.now();			
 				break;
             default:
                 console.log('[SPECT] Unknown sub opcode:', message.readUInt8(0));
@@ -1096,7 +1096,7 @@ class Spect {
 				cell.targetNick = this.nick
 				cell.isPlayerCellMulti=true
 			}
-			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
+			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && (Date.now() - legendmod.playerCells[0].time < 10) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
 				this.openFourth = true				
 				this.constantrecalculation3(cell.x, cell.y)
 			}
