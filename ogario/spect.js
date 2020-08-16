@@ -1,4 +1,4 @@
-//SPECS v4.1m WORKS UNTIL HERE
+//SPECS v4.1n WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -809,10 +809,10 @@ class Spect {
 									legendmod.indexedCells[found.id].x += this.fix3x
 									legendmod.indexedCells[found.id].y += this.fix3x
 									legendmod.indexedCells[found.id].targetX += this.fix3x
-									legendmod.indexedCells[found.id].targetY += this.fix3x									
-									
+									legendmod.indexedCells[found.id].targetY += this.fix3x																		
 								} 
 		})
+	}
     setMapOffset(left, top, right, bottom) {
         if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
             this.mapOffsetX = (this.mapOffset) - right;
