@@ -1,4 +1,4 @@
-//SPECS v4.2h WORKS UNTIL HERE
+//SPECS v4.2i WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -767,7 +767,13 @@ class Spect {
 		this.moveExistedCells()
 		if (this.player){
 			console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
-			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Multibox offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px" );
+			var result;
+			var temp = Math.round(this.fix3x) + Math.round(this.fix3y)
+			if (temp<15) result="<font color='Green'><b>Good</b></font>"
+			else if	(temp >= 15 && temp < 30) result="<font color='Yellow'><b>Fair</b></font>"
+			else if	(temp >= 30 && temp < 40) result="<font color='Orange'><b>Medium</b></font>"
+			else if	(temp >= 50) result="<font color='Red'><b>Bad</b></font>"
+			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px.<br> Multibox under development. Result:" + result);
 		}
 	}
 	/*constantrecalculation(){
