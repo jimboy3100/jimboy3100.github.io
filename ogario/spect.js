@@ -1,4 +1,4 @@
-//SPECS v4.1e WORKS UNTIL HERE
+//SPECS v4.1f WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -739,6 +739,7 @@ class Spect {
 	constantrecalculation3(x,y){	
 		this.fix3x = -(legendmod.playerCells[0].x - x) * this.fixX
 		this.fix3y = -(legendmod.playerCells[0].y - y) * this.fixY
+		moveExistedCells()
 		if (this.player){
 			console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
 			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Multibox offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px" );
@@ -799,6 +800,14 @@ class Spect {
 	//isMultiInView(x , y, size){
 		//x + size < 
 	//}
+	moveExistedCells(){
+		legendmod.cells.forEach((found) => {
+								if ((found.isVirus || found.isFood) && found.spectator){ 
+									found.x = found.x + this.fix3x
+									found.y = found.y + this.fix3y
+								} 
+		})		
+	}
     setMapOffset(left, top, right, bottom) {
         if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
             this.mapOffsetX = (this.mapOffset) - right;
@@ -819,6 +828,7 @@ class Spect {
             console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
         }
     }	
+	
 	terminate(){
 		this.active = null;		
 		window.multiboxPlayerEnabled = null
