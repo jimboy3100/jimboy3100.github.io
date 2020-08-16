@@ -1004,7 +1004,7 @@ class Spect {
 			if (this.player && !this.active && !legendmod.playerCellsMulti.includes(id)){
 				invisible = true
 			}
-			else if  (this.player && this.active && legendmod.playerCellsMulti.includes(id)){
+			else if  (this.player && this.active){
 				invisible = false
 			}
 			
