@@ -1,4 +1,4 @@
-//SPECS v4.1i WORKS UNTIL HERE
+//SPECS v4.1j WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -808,12 +808,13 @@ class Spect {
 									found.y = found.y + this.fix3y
 								} 
 		})
-		legendmod.indexedCells.forEach((found) => {
-								if ((found.isVirus || found.isFood) && found.spectator){ 
-									found.x = found.x + this.fix3x
-									found.y = found.y + this.fix3y
-								} 
-		})				
+		for (var i = 0; i < Object.keys(legendmod.indexedCells).length; i++){
+			var temp = legendmod.indexedCells[Object.keys(legendmod.indexedCells)[i]]
+			if ((temp.isVirus || temp.isFood) && temp.spectator){ 
+				temp.x = temp.x + this.fix3x
+				temp.y = temp.y + this.fix3y
+			}
+		}			
 	}
     setMapOffset(left, top, right, bottom) {
         if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
