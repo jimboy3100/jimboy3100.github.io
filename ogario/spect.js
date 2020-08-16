@@ -1,4 +1,4 @@
-//SPECS v4.2j WORKS UNTIL HERE
+//SPECS v4.2k WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -773,7 +773,7 @@ class Spect {
 			else if	(temp >= 15 && temp < 30) result="<font color='Yellow'><b>Fair</b></font>"
 			else if	(temp >= 30 && temp < 40) result="<font color='Orange'><b>Medium</b></font>"
 			else if	(temp >= 50) result="<font color='Red'><b>Bad</b></font>"
-			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px.<br> Multibox under development. Result:" + result);
+			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px. Result:" + result + "<br> Multibox under development");
 		}
 	}
 	/*constantrecalculation(){
