@@ -1,4 +1,4 @@
-//SPECS v4.2d WORKS UNTIL HERE
+//SPECS v4.2e WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1212,16 +1212,16 @@ class Spect {
                 x += n.x / playersLength;
                 y += n.y / playersLength;
             }
-			if (window.multiboxPlayerEnabled){
-				//legendmod.viewX = x;
-				//legendmod.viewY = y;		
-				legendmod.viewX = x + this.fix3x;
-				legendmod.viewY = y + this.fix3y;				
-			}
 			else if (defaultmapsettings.middleMultiView){
 				legendmod.viewX = (legendmod.viewXTrue + x + this.fix3x) / 2;
 				legendmod.viewY = (legendmod.viewYTrue + y + this.fix3y) / 2;	
 			}
+			else if (window.multiboxPlayerEnabled){
+				//legendmod.viewX = x;
+				//legendmod.viewY = y;		
+				legendmod.viewX = x + this.fix3x;
+				legendmod.viewY = y + this.fix3y;				
+			}			
 			this.playerX = x;
 			this.playerY = y;
 			
