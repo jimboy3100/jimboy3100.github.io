@@ -1,4 +1,4 @@
-//SPECS v4.1u WORKS UNTIL HERE
+//SPECS v4.1v WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1205,8 +1205,8 @@ class Spect {
 			if (window.multiboxPlayerEnabled){
 				//legendmod.viewX = x;
 				//legendmod.viewY = y;		
-				legendmod.viewX = x + this.fix3x;
-				legendmod.viewY = y + this.fix3y;				
+				legendmod.viewX = x - this.fix3x;
+				legendmod.viewY = y - this.fix3y;				
 			}
 			this.playerX = x;
 			this.playerY = y;
