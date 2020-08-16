@@ -1,4 +1,4 @@
-//SPECS v4.1j WORKS UNTIL HERE
+//SPECS v4.1k WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -803,14 +803,14 @@ class Spect {
 	//}
 	moveExistedCells(){
 		legendmod.cells.forEach((found) => {
-								if ((found.isVirus || found.isFood) && found.spectator){ 
+								if ((found.isVirus || found.isFood) && found.spectator == this.number){ 
 									found.x = found.x + this.fix3x
 									found.y = found.y + this.fix3y
 								} 
 		})
 		for (var i = 0; i < Object.keys(legendmod.indexedCells).length; i++){
 			var temp = legendmod.indexedCells[Object.keys(legendmod.indexedCells)[i]]
-			if ((temp.isVirus || temp.isFood) && temp.spectator){ 
+			if ((temp.isVirus || temp.isFood) && temp.spectator == this.number){ 
 				temp.x = temp.x + this.fix3x
 				temp.y = temp.y + this.fix3y
 			}
