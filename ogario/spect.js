@@ -1,4 +1,4 @@
-//SPECS v4.2i WORKS UNTIL HERE
+//SPECS v4.2j WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -768,7 +768,7 @@ class Spect {
 		if (this.player){
 			console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
 			var result;
-			var temp = Math.round(this.fix3x) + Math.round(this.fix3y)
+			var temp = Math.abs(Math.round(this.fix3x)) + Math.abs(Math.round(this.fix3y))
 			if (temp<15) result="<font color='Green'><b>Good</b></font>"
 			else if	(temp >= 15 && temp < 30) result="<font color='Yellow'><b>Fair</b></font>"
 			else if	(temp >= 30 && temp < 40) result="<font color='Orange'><b>Medium</b></font>"
