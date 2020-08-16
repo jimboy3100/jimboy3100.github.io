@@ -1,4 +1,4 @@
-//SPECS v4.2b WORKS UNTIL HERE
+//SPECS v4.2c WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -755,14 +755,14 @@ class Spect {
 	constantrecalculation3(x,y){	
 		this.fix3x = (legendmod.playerCells[0].x - x) * this.fixX
 		this.fix3y = (legendmod.playerCells[0].y - y) * this.fixY
-		toastr.warning(this.number +  " px: " + legendmod.playerCells[0].x + " x: " + x + " py: " +  legendmod.playerCells[0].y + " y: " + y);
-		toastr.warning(this.number +  " fixX: " + this.fixX + " fixY: " + this.fixY);
+		//toastr.warning(this.number +  " px: " + legendmod.playerCells[0].x + " x: " + x + " py: " +  legendmod.playerCells[0].y + " y: " + y);
+		//toastr.warning(this.number +  " fixX: " + this.fixX + " fixY: " + this.fixY);
 		
 		this.moveExistedCells()
-		//if (this.player){
+		if (this.player){
 			console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
 			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Multibox offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px" );
-		//}
+		}
 	}
 	/*constantrecalculation(){
 			//3rd fix - excess processing
@@ -1211,6 +1211,10 @@ class Spect {
 				//legendmod.viewY = y;		
 				legendmod.viewX = x + this.fix3x;
 				legendmod.viewY = y + this.fix3y;				
+			}
+			else if (defaultmapsettings.middleMultiView){
+				legendmod.viewX = (legendmod.viewXTrue + x + this.fix3x) / 2;
+				legendmod.viewY = (legendmod.viewYTrue + y + this.fix3y) / 2;	
 			}
 			this.playerX = x;
 			this.playerY = y;
