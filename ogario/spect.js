@@ -740,10 +740,10 @@ class Spect {
 		this.fix3x = -(legendmod.playerCells[0].x - x) * this.fixX
 		this.fix3y = -(legendmod.playerCells[0].y - y) * this.fixY
 		moveExistedCells()
-		if (this.player){
+		//if (this.player){
 			console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
 			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Multibox offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px" );
-		}
+		//}
 	}	
 	/*constantrecalculation(){
 			//3rd fix - excess processing
