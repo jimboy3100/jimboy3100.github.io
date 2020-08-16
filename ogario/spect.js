@@ -1,4 +1,4 @@
-//SPECS v4.1o WORKS UNTIL HERE
+//SPECS v4.1p WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -711,23 +711,23 @@ class Spect {
 	}	
     getX(x) {
       if(this.ghostFixed && this.mapOffsetFixed) {
-		 return ~~((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
+		 return ~~((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX - this.fix3x)
         //return ((x + this.mapOffsetX + this.fix3x)*this.fixX - legendmod.mapOffsetX) The reason why this is wrong is because map is rotated already when cells meet for the first time			
 		//return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
       }
     }
     getY(y) {
       if(this.ghostFixed && this.mapOffsetFixed) {
-		return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y)
+		return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY - this.fix3y)
         //return ~~((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY)
       }
     }
     convertX(x) { //is used only for SendPosition
-		return ~~((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX + this.fix3x)
+		return ~~((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX - this.fix3x)
         //return ~~((x + legendmod.mapOffsetX)*this.fixX - this.mapOffsetX)
     }    
     convertY(y) {
-		return ~~((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY + this.fix3y)
+		return ~~((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY - this.fix3y)
         //return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY)
     } 	
 	constantrecalculation2(){
@@ -737,6 +737,7 @@ class Spect {
         this.maxX = Math.round(mapX / legendmod.zoomValue / 10);
         this.maxY = Math.round(mapY / legendmod.zoomValue / 10); //or 1
 	}	
+	/*
 	constantrecalculation3(x,y){	
 		this.fix3x = -(legendmod.playerCells[0].x - x) * this.fixX
 		this.fix3y = -(legendmod.playerCells[0].y - y) * this.fixY
@@ -745,7 +746,17 @@ class Spect {
 			console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
 			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Multibox offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px" );
 		//}
-	}	
+	}
+*/	
+	constantrecalculation3(x,y){	
+		this.fix3x = (legendmod.playerCells[0].x - x) //* this.fixX
+		this.fix3y = (legendmod.playerCells[0].y - y) //* this.fixY
+		this.moveExistedCells()
+		//if (this.player){
+			console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
+			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Multibox offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px" );
+		//}
+	}
 	/*constantrecalculation(){
 			//3rd fix - excess processing
 		if (this.ghostCells && this.ghostCells[0] && this.player){
@@ -804,8 +815,8 @@ class Spect {
 	moveExistedCells(){
 		legendmod.cells.forEach((found) => {
 								if ((found.isVirus || found.isFood) && found.spectator == this.number){ 
-									found.x = found.x + this.fix3x
-									found.y = found.y + this.fix3y
+									found.x = found.x - this.fix3x
+									found.y = found.y - this.fix3y
 									legendmod.indexedCells[found.id].x -= this.fix3x
 									legendmod.indexedCells[found.id].y -= this.fix3x
 									legendmod.indexedCells[found.id].targetX -= this.fix3x
@@ -1004,7 +1015,7 @@ class Spect {
 			if (this.player && !this.active && !legendmod.playerCellsMulti.includes(id)){
 				invisible = true
 			}
-			else if  (this.player && this.active && legendmod.playerCellsMulti.includes(id)){
+			else if  (this.player && this.active){
 				invisible = false
 			}
 			
