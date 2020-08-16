@@ -1,4 +1,4 @@
-//SPECS v4.1q WORKS UNTIL HERE
+//SPECS v4.1r WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -753,6 +753,10 @@ class Spect {
 		//this.fix3y = (legendmod.playerCells[0].y - y) //* this.fixY
 		this.fix3x = (legendmod.playerCells[0].targetX - x) //* this.fixX
 		this.fix3Y = (legendmod.playerCells[0].targetY - y) //* this.fixX
+		toastr.warning(this.number, " targetX: " + legendmod.playerCells[0].targetX," x: " + x," targetY: " +  legendmod.playerCells[0].targetY," y: " + y);
+		toastr.warning(this.number, " px: " + legendmod.playerCells[0].x," x: " + x," py: " +  legendmod.playerCells[0].y," y: " + y);
+		toastr.warning(this.number, " fixX: " + this.fixX," fixY: " + this.fixY);
+		
 		this.moveExistedCells()
 		//if (this.player){
 			console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
