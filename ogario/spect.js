@@ -1,4 +1,4 @@
-//SPECS v4.1k WORKS UNTIL HERE
+//SPECS v4.1l WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -809,10 +809,12 @@ class Spect {
 								} 
 		})
 		for (var i = 0; i < Object.keys(legendmod.indexedCells).length; i++){
-			var temp = legendmod.indexedCells[Object.keys(legendmod.indexedCells)[i]]
-			if ((temp.isVirus || temp.isFood) && temp.spectator == this.number){ 
-				temp.x = temp.x + this.fix3x
-				temp.y = temp.y + this.fix3y
+			if ((legendmod.indexedCells[Object.keys(legendmod.indexedCells)[i]].isVirus || legendmod.indexedCells[Object.keys(legendmod.indexedCells)[i]].isFood) && legendmod.indexedCells[Object.keys(legendmod.indexedCells)[i]].spectator == this.number){ 
+				legendmod.indexedCells[Object.keys(legendmod.indexedCells)[i]].x = legendmod.indexedCells[Object.keys(legendmod.indexedCells)[i]].x + this.fix3x
+				legendmod.indexedCells[Object.keys(legendmod.indexedCells)[i]].y = legendmod.indexedCells[Object.keys(legendmod.indexedCells)[i]].y + this.fix3y
+				
+				legendmod.indexedCells[Object.keys(legendmod.indexedCells)[i]].targetX = legendmod.indexedCells[Object.keys(legendmod.indexedCells)[i]].targetX + this.fix3x
+				legendmod.indexedCells[Object.keys(legendmod.indexedCells)[i]].targetY = legendmod.indexedCells[Object.keys(legendmod.indexedCells)[i]].targetY + this.fix3y				
 			}
 		}			
 	}
