@@ -1,4 +1,4 @@
-//SPECS v4.2c WORKS UNTIL HERE
+//SPECS v4.2d WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -494,14 +494,20 @@ class Spect {
             case 17:
 			
                 this.viewX = view.getFloat32(offset, true);	
-				if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {				
+				if (defaultmapsettings.middleMultiView){
+					legendmod.viewX = (legendmod.viewXTrue + this.viewX) / 2;	
+				}	
+				else if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {				
 					legendmod.viewX = this.viewX 
-				}
+				}				
 				//var x=this.viewX = view.getFloat32(offset, true);
 				//this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
                 offset += 4;
 				this.viewY = view.getFloat32(offset, true);	
-				if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
+				if (defaultmapsettings.middleMultiView){				
+					legendmod.viewY = (legendmod.viewYTrue + this.viewY) / 2;
+				}				
+				else if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
 					legendmod.viewY = this.viewY 
 				}
 				//var y=this.viewX = view.getFloat32(offset, true);
