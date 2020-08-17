@@ -46,10 +46,10 @@
     width: middle;
     height: 100%;
     position: fixed;
-    top: calc(50% - 64px);
+    top: calc(50% - 128px);
     left: calc(50% - 64px);
-    transform: scale(0.25);
-    transition: all .75s
+    transform: scale(0.20);
+    transition: all .75s;
 }
 
 #loading-screen .maou-circle-container:hover {
@@ -59,7 +59,7 @@
 #loading-screen .maou-circle-container .maou-circle {
     width: 512px;
     height: 512px;
-    position: absolute
+    position: absolute;
 }
 
 #loading-screen .maou-circle-container .maou-circle.p1 {
@@ -126,4 +126,3 @@
     text-shadow: 0 0 9px #ff006c;
     -webkit-font-smoothing: subpixel-antialiased;
 }
-
