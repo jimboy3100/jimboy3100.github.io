@@ -1,4 +1,4 @@
-//SPECS v4.1o WORKS UNTIL HERE
+//SPECS v4.2o WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -494,14 +494,20 @@ class Spect {
             case 17:
 			
                 this.viewX = view.getFloat32(offset, true);	
-				if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {				
+				if (defaultmapsettings.middleMultiView && legendmod.play){
+					legendmod.viewX = (legendmod.viewXTrue + this.viewX) / 2;	
+				}	
+				else if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {				
 					legendmod.viewX = this.viewX 
-				}
+				}				
 				//var x=this.viewX = view.getFloat32(offset, true);
 				//this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
                 offset += 4;
 				this.viewY = view.getFloat32(offset, true);	
-				if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
+				if (defaultmapsettings.middleMultiView && legendmod.play){				
+					legendmod.viewY = (legendmod.viewYTrue + this.viewY) / 2;
+				}				
+				else if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
 					legendmod.viewY = this.viewY 
 				}
 				//var y=this.viewX = view.getFloat32(offset, true);
@@ -532,7 +538,38 @@ class Spect {
 
                 break;
             case 53:
-
+				this.leaderboard = [];
+                    for (let position = 0; offset <view.byteLength;) {
+                        var flags = view.getUint8(offset++);
+                        let nick = '';
+                        let id = 0;
+                        let isFriend = false;
+                        let isFBFriend = false;
+                        position++;
+                        if (flags & 2) {
+                            nick = window.decodeURIComponent(window.escape(encode()));
+                        }
+                        if (flags & 4) {
+                            id = view.getUint32(offset, true);
+                            offset += 4;
+                        }
+                        if (flags & 8) {
+                            nick = this.playerNick;
+                            id = 'isPlayer';
+                            this.playerPosition = position;
+							
+                        }
+                        if (flags & 16) {
+                            isFriend = true;
+                            this.friends++;
+                        }
+                        this.leaderboard.push({
+                            nick: nick,
+                            id: id,
+                            isFriend: isFriend,
+                            isFBFriend: isFBFriend
+                        });
+                    }				
               //console.log('case 53');
 
                 break;
@@ -711,24 +748,28 @@ class Spect {
 	}	
     getX(x) {
       if(this.ghostFixed && this.mapOffsetFixed) {
-		 return ~~((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
+		  if (!window.multifixOffset) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
+		  else if (window.multifixOffset==0) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX - this.fix3x)
+		  else if (window.multifixOffset==1) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX)	
         //return ((x + this.mapOffsetX + this.fix3x)*this.fixX - legendmod.mapOffsetX) The reason why this is wrong is because map is rotated already when cells meet for the first time			
 		//return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
       }
     }
     getY(y) {
       if(this.ghostFixed && this.mapOffsetFixed) {
-		return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y)
+		 if (!window.multifixOffset) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y)
+		 else if (window.multifixOffset==0) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY - this.fix3y)
+		 else if (window.multifixOffset==1) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY)
         //return ~~((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY)
       }
     }
     convertX(x) { //is used only for SendPosition
-		return ~~((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX + this.fix3x)
-        //return ~~((x + legendmod.mapOffsetX)*this.fixX - this.mapOffsetX)
+		return ~~((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX - this.fix3x)
+        //return ((x + legendmod.mapOffsetX) * this.fixX - this.mapOffsetX)
     }    
     convertY(y) {
-		return ~~((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY + this.fix3y)
-        //return ~~((y + legendmod.mapOffsetY)*this.fixY - this.mapOffsetY)
+		//return ((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY)
+        return ~~((y + legendmod.mapOffsetY) * this.fixY - this.mapOffsetY - this.fix3y)
     } 	
 	constantrecalculation2(){
 		//snez
@@ -737,6 +778,7 @@ class Spect {
         this.maxX = Math.round(mapX / legendmod.zoomValue / 10);
         this.maxY = Math.round(mapY / legendmod.zoomValue / 10); //or 1
 	}	
+	/*
 	constantrecalculation3(x,y){	
 		this.fix3x = -(legendmod.playerCells[0].x - x) * this.fixX
 		this.fix3y = -(legendmod.playerCells[0].y - y) * this.fixY
@@ -745,7 +787,27 @@ class Spect {
 			console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
 			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Multibox offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px" );
 		//}
-	}	
+	}
+*/	
+	constantrecalculation3(x,y){	
+		this.fix3x = (legendmod.playerCells[0].x - x) * this.fixX
+		this.fix3y = (legendmod.playerCells[0].y - y) * this.fixY
+		//toastr.warning(this.number +  " px: " + legendmod.playerCells[0].x + " x: " + x + " py: " +  legendmod.playerCells[0].y + " y: " + y);
+		//toastr.warning(this.number +  " fixX: " + this.fixX + " fixY: " + this.fixY);
+		
+		this.moveExistedCells()
+		if (this.player){
+			console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
+			var result;
+			var temp = Math.abs(Math.round(this.fix3x)) + Math.abs(Math.round(this.fix3y))
+			if (temp<15) result="<font color='Green'><b>Good</b></font>"
+			else if	(temp >= 15 && temp < 30) result="<font color='Yellow'><b>Fair</b></font>"
+			else if	(temp >= 30 && temp < 40) result="<font color='Orange'><b>Medium</b></font>"
+			else if	(temp >= 40 && temp < 60) result="<font color='Red'><b>Bad</b></font>"
+			else if	(temp >= 60) result="<font color='Red'><b>Very bad</b></font>"
+			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px. Result: " + result + "<br> Multibox under development");
+		}
+	}
 	/*constantrecalculation(){
 			//3rd fix - excess processing
 		if (this.ghostCells && this.ghostCells[0] && this.player){
@@ -804,12 +866,12 @@ class Spect {
 	moveExistedCells(){
 		legendmod.cells.forEach((found) => {
 								if ((found.isVirus || found.isFood) && found.spectator == this.number){ 
-									found.x = found.x - this.fix3x
-									found.y = found.y - this.fix3y
-									legendmod.indexedCells[found.id].x -= this.fix3x
-									legendmod.indexedCells[found.id].y -= this.fix3x
-									legendmod.indexedCells[found.id].targetX -= this.fix3x
-									legendmod.indexedCells[found.id].targetY -= this.fix3x																		
+									//found.x = found.x + this.fix3x
+									//found.y = found.y + this.fix3y
+									legendmod.indexedCells[found.id].x += this.fix3x
+									legendmod.indexedCells[found.id].y += this.fix3x
+									legendmod.indexedCells[found.id].targetX += this.fix3x
+									legendmod.indexedCells[found.id].targetY += this.fix3x																		
 								} 
 		})
 	}
@@ -1188,12 +1250,16 @@ class Spect {
                 x += n.x / playersLength;
                 y += n.y / playersLength;
             }
-			if (window.multiboxPlayerEnabled){
-				legendmod.viewX = x;
-				legendmod.viewY = y;		
-				//this.viewX = x
-				//this.viewY = y
+			if (defaultmapsettings.middleMultiView && legendmod.play){
+				legendmod.viewX = (legendmod.viewXTrue + x + this.fix3x) / 2;
+				legendmod.viewY = (legendmod.viewYTrue + y + this.fix3y) / 2;	
 			}
+			else if (window.multiboxPlayerEnabled){
+				//legendmod.viewX = x;
+				//legendmod.viewY = y;		
+				legendmod.viewX = x + this.fix3x;
+				legendmod.viewY = y + this.fix3y;				
+			}			
 			this.playerX = x;
 			this.playerY = y;
 			
@@ -1211,7 +1277,7 @@ class Spect {
 			if (this.timerDifference > 10){
 				setTimeout(function() {
 					this.timerDifference = this.timerDifference - 10
-					if (window.multiboxPlayerEnabled) spects[window.multiboxPlayerEnabled-1].calculatePlayerMassAndPosition()
+					if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1]) spects[window.multiboxPlayerEnabled-1].calculatePlayerMassAndPosition()
 				}, 10); 
 			}
 	}	
