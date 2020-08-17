@@ -37,8 +37,7 @@ body {
     //z-index: 1000;	
 }	
 
-#nav {	
-    width: 550px;	
+#nav {		
     overflow: hidden;	
 }	
 
@@ -59,7 +58,7 @@ body {
     display: block;	
     font-family: "OpenSans-Semibold", sans-serif;	
     font-weight: normal;	
-    font-size: 1em;	
+    font-size: 0.8em;	
     color: #969696;	
     border: 2px solid #969696;	
     border-radius: 8px;	
