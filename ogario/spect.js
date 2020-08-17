@@ -1,4 +1,4 @@
-//SPECS v4.2n WORKS UNTIL HERE
+//SPECS v4.2o WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1277,7 +1277,7 @@ class Spect {
 			if (this.timerDifference > 10){
 				setTimeout(function() {
 					this.timerDifference = this.timerDifference - 10
-					if (window.multiboxPlayerEnabled) spects[window.multiboxPlayerEnabled-1].calculatePlayerMassAndPosition()
+					if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled-1]) spects[window.multiboxPlayerEnabled-1].calculatePlayerMassAndPosition()
 				}, 10); 
 			}
 	}	
