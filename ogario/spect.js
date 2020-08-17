@@ -1,4 +1,4 @@
-//SPECS v4.2k WORKS UNTIL HERE
+//SPECS v4.2l WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -538,7 +538,37 @@ class Spect {
 
                 break;
             case 53:
-
+				this.leaderboard = [];
+                    for (let position = 0; s <view.byteLength;) {
+                        var flags = view.getUint8(s++);
+                        let nick = '';
+                        let id = 0;
+                        let isFriend = false;
+                        let isFBFriend = false;
+                        position++;
+                        if (flags & 2) {
+                            nick = window.decodeURIComponent(window.escape(encode()));
+                        }
+                        if (flags & 4) {
+                            id = view.getUint32(s, true);
+                            s += 4;
+                        }
+                        if (flags & 8) {
+                            nick = this.playerNick;
+                            id = 'isPlayer';
+                            this.playerPosition = position;
+                        }
+                        if (flags & 16) {
+                            isFriend = true;
+                            this.friends++;
+                        }
+                        this.leaderboard.push({
+                            nick: nick,
+                            id: id,
+                            isFriend: isFriend,
+                            isFBFriend: isFBFriend
+                        });
+                    }				
               //console.log('case 53');
 
                 break;
