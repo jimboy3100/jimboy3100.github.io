@@ -1,129 +1,106 @@
-@keyframes spinRight {
-    0% {
-        transform: rotate(0)
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>LM Express</title>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="https://jimboy3100.github.io/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Oswald:300,400|Raleway:300,400,500|Ubuntu:400,500,700" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://jimboy3100.github.io/extras/loader/BundleNew.css">
+
+<body>
+    <div id="loading-screen">
+        <div class="maou-circle-container">
+            <div class="maou-circle p1"></div>
+            <div class="maou-circle p2"></div>
+            <div class="maou-circle p3"></div>
+        </div>
+        <div id="messageLoaderLM" class="message">There is something in the New York air that makes sleep useless. – Simone de Beauvoir</div>
+    </div>
+<script>
+var timesopened2 = localStorage.getItem("timesopened2");
+
+
+
+if (timesopened2 != null) {
+   timesopened2++;
+   localStorage.setItem("timesopened2", timesopened2);
+} 
+else if (timesopened2 == null) {
+   localStorage.setItem("timesopened2", "0");
+}
+
+if (timesopened2%6==0){
+document.getElementById('loading-screen').style.backgroundImage = "url('https://media0.giphy.com/media/41xs3jQy8HpZXTH7ky/giphy.gif?cid=ecf05e47db2bbe0cdf5f464200004df8eb1b96857fb29e64&rid=giphy.gi')";
+}
+else if (timesopened2%6==1){
+document.getElementById('loading-screen').style.backgroundImage = "url('https://media0.giphy.com/media/8pwwx7jdy3lkI/giphy.gif?cid=ecf05e47l56nci43j4gyls4jg3fxxyaxdau3b2m5kik1u1nv&rid=giphy.gif')";
+}
+else if (timesopened2%6==2){
+document.getElementById('loading-screen').style.backgroundImage = "url('https://media1.giphy.com/media/fLymsvsj0WHwEJK7cl/giphy.gif?cid=ecf05e47d15f7dd633d2e46075a80cf26b61d7f18946ac14&rid=giphy.gif')";
+}
+else if (timesopened2%6==3){
+document.getElementById('loading-screen').style.backgroundImage = "url('https://media2.giphy.com/media/3orif8Y2cZqIdpn5E4/giphy.gif?cid=ecf05e479abff6458e52b7413c75acc6c9267c5400973319&rid=giphy.gif')";
+}
+else if (timesopened2%6==4){
+document.getElementById('loading-screen').style.backgroundImage = "url('https://media2.giphy.com/media/M9lKiRIYrOoFWbXMxw/giphy.gif?cid=ecf05e47845d9599cedfbb1facf5be28b65a0c7f9ad87672&rid=giphy.gif')";
+}
+else if (timesopened2%6==5){
+document.getElementById('loading-screen').style.backgroundImage = "url('https://media3.giphy.com/media/e7QhjI2TV6zKjUmNaq/giphy.gif?cid=ecf05e47b653963bdc4f4f67e5ca0c43fc1fef698fb26755&rid=giphy.gif')";
+}
+
+
+var messageLoaderLM = document.getElementById('messageLoaderLM');
+setTimeout(function() {
+	if (navigator){
+    if((navigator.userAgent.indexOf("Opera") || navigator.userAgent.indexOf('OPR')) != -1 ) 
+    {
+        changeMessageLoaderLMOpera();
     }
-
-    100% {
-        transform: rotate(360deg)
+    else if(navigator.userAgent.indexOf("Chrome") != -1 )
+    {
+        changeMessageLoaderLMChrome();
     }
-}
-
-@keyframes spinLeft {
-    0% {
-        transform: rotate(0)
+    else if(navigator.userAgent.indexOf("Safari") != -1)
+    {
+        changeMessageLoaderLM();
     }
-
-    100% {
-        transform: rotate(-360deg)
+    else if(navigator.userAgent.indexOf("Firefox") != -1 ) 
+    {
+         changeMessageLoaderLM();
     }
-}
-
-@keyframes fadeIn {
-    0% {
-        opacity: 0
+    else if((navigator.userAgent.indexOf("MSIE") != -1 ) || (!!document.documentMode == true )) //IF IE > 10
+    {
+      changeMessageLoaderLM(); 
+    }  
+    else 
+    {
+       changeMessageLoaderLM();
     }
+	}
+}, 5000);
 
-    100% {
-        opacity: 1
-    }
+function changeMessageLoaderLMChrome(){
+	var messageLoaderLM = document.getElementById('messageLoaderLM'); 
+	if (messageLoaderLM){
+	messageLoaderLM.innerText="chrome://settings/clearBrowserData   -> If Legend mod is not loading, delete cookies"
+	}
+}
+function changeMessageLoaderLMOpera(){
+	var messageLoaderLM = document.getElementById('messageLoaderLM'); 
+	if (messageLoaderLM){
+	messageLoaderLM.innerText="opera://settings/clearBrowserData   -> If Legend mod is not loading, delete cookies"
+	}
+}
+function changeMessageLoaderLM(){
+	var messageLoaderLM = document.getElementById('messageLoaderLM'); 
+	if (messageLoaderLM){
+	messageLoaderLM.innerText="If Legend mod is not loading, delete cookies"
+	}
 }
 
-#loading-screen {
-    z-index: 200;
-    position: fixed;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #f1ecfa;
-    background: no-repeat center center fixed;
-    background-size: cover;
-    opacity: 1;
-    transition: opacity 1s;
-}
+</script>
+</body>
 
-#loading-screen .maou-circle-container {
-    width: middle;
-    height: 100%;
-    position: fixed;
-    top: calc(50% - 128px);
-    left: calc(50% - 64px);
-    transform: scale(0.20);
-    transition: all .75s;
-}
-
-#loading-screen .maou-circle-container:hover {
-    transform: scale(1.1)
-}
-
-#loading-screen .maou-circle-container .maou-circle {
-    width: 512px;
-    height: 512px;
-    position: absolute;
-}
-
-#loading-screen .maou-circle-container .maou-circle.p1 {
-    background: url(https://jimboy3100.github.io/banners/drawCommander3.png);
-    animation: spinRight 32s linear infinite,fadeIn 6s;
-}
-
-#loading-screen .maou-circle-container .maou-circle.p2 {
-    background: url(https://jimboy3100.github.io/banners/drawCommander4.png);
-    animation: spinLeft 8s linear infinite,fadeIn 6s
-}
-
-#loading-screen .maou-circle-container .maou-circle.p3 {
-    background: url(https://jimboy3100.github.io/banners/drawCommander5.png);
-    animation: spinRight 16s linear infinite,fadeIn 6s
-}
-
-#loading-screen .message {
-    position: fixed;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-family: raleway;
-    font-size: 25px;
-    color: #ffd8ea!important;
-    text-shadow: 0 0 9px #ff006c;
-    -webkit-font-smoothing: subpixel-antialiased;
-    text-align: center;
-    animation: fadeIn 1s;
-    opacity: 1;
-    transition: opacity 1s;
-}
-
-#loading-screen .product-key {
-    bottom: 40px;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #f05c5b;
-    border: none;
-    height: 30px;
-    width: 260px;
-    font-family: ubuntu;
-    color: #eaeaea;
-    text-align: center;
-    font-size: 16px;
-    border-radius: 2px;
-    outline: 0;
-    opacity: 0;
-    transition: opacity 1s
-}
-
-#loading-screen .product-key::placeholder {
-    color: #eaeaea
-}
-
-#loading-screen .info {
-    position: fixed;
-    bottom: 4px;
-    width: 100%;
-    text-align: center;
-    font-size: 16px;
-    color: #ffd8ea!important;
-    text-shadow: 0 0 9px #ff006c;
-    -webkit-font-smoothing: subpixel-antialiased;
-}
-
+</html>
