@@ -805,7 +805,7 @@ class Spect {
 			else if	(temp >= 30 && temp < 40) result="<font color='Orange'><b>Medium</b></font>"
 			else if	(temp >= 40 && temp < 60) result="<font color='Red'><b>Bad</b></font>"
 			else if	(temp >= 60) result="<font color='Red'><b>Very bad</b></font>"
-			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px. Result:" + result + "<br> Multibox under development");
+			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px. Result: " + result + "<br> Multibox under development");
 		}
 	}
 	/*constantrecalculation(){
