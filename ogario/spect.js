@@ -1,4 +1,4 @@
-//SPECS v4.2s WORKS UNTIL HERE
+//SPECS v4.2t WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -125,6 +125,7 @@ class Spect {
     onopen() {
             console.log('[SPECT] Game server socket ' + this.number + ' open')
       
+	  
             this.clientVersion = window.master.clientVersion
             this.protocolVersion = window.master.protocolVersion
       
@@ -226,7 +227,7 @@ class Spect {
             this.socket.send(data.buffer);
     }
     sendMessage(message) {
-            if (this.connectionOpened /*&& this.integrity*/) {
+            if (this.connectionOpened && legendmod.integrity) {
                 if (!this.clientKey) {
                     return;
                 }
