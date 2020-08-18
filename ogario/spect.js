@@ -1,4 +1,4 @@
-//SPECS v4.2r WORKS UNTIL HERE
+//SPECS v4.2s WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -736,7 +736,7 @@ class Spect {
                     this.viewMaxY = message.readDoubleLE(offset);
                     this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
 
-                    if (~~(this.viewMaxX - this.viewMinX) === LM.mapSize && ~~(this.viewMaxY - this.viewMinY) === LM.mapSize) {
+                    if (~~(this.viewMaxX - this.viewMinX) === legendmod.mapSize && ~~(this.viewMaxY - this.viewMinY) === legendmod.mapSize) {
                         window.userBots.offsetX = (this.viewMinX + this.viewMaxX) / 2
                         window.userBots.offsetY = (this.viewMinY + this.viewMaxY) / 2
                     }
