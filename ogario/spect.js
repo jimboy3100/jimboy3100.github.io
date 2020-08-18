@@ -1,4 +1,4 @@
-//SPECS v4.3a WORKS UNTIL HERE
+//SPECS v4.3b WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -500,6 +500,7 @@ class Spect {
 					legendmod.viewX = (legendmod.viewXTrue + this.viewX) / 2;	
 				}	
 				else if (defaultmapsettings.middleMultiViewWhenClose && legendmod.play && checkIfPlayerIsInView(this.nick)){
+					legendmod.middleMultiViewWhenCloseFlag = true
 					legendmod.viewX = (legendmod.viewXTrue + this.viewX) / 2;	
 				}				
 				else if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {				
@@ -509,10 +510,11 @@ class Spect {
 				//this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
                 offset += 4;
 				this.viewY = view.getFloat32(offset, true);	
+				window.defaultmapsettings.middleMultiViewFlag = defaultmapsettings.middleMultiViewWhenClose && legendmod.play && checkIfPlayerIsInView(this.nick)
 				if (defaultmapsettings.middleMultiView && legendmod.play){				
 					legendmod.viewY = (legendmod.viewYTrue + this.viewY) / 2;
 				}	
-				else if (defaultmapsettings.middleMultiViewWhenClose && legendmod.play && checkIfPlayerIsInView(this.nick)){
+				else if (window.defaultmapsettings.middleMultiViewFlag){
 					legendmod.viewY = (legendmod.viewYTrue + this.viewY) / 2;	
 				}				
 				else if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
@@ -1284,11 +1286,12 @@ class Spect {
                 x += n.x / playersLength;
                 y += n.y / playersLength;
             }
+			window.defaultmapsettings.middleMultiViewFlag = defaultmapsettings.middleMultiViewWhenClose && legendmod.play && checkIfPlayerIsInView(this.nick)
 			if (defaultmapsettings.middleMultiView && legendmod.play){
 				legendmod.viewX = (legendmod.viewXTrue + x + this.fix3x) / 2;
 				legendmod.viewY = (legendmod.viewYTrue + y + this.fix3y) / 2;	
 			}
-			else if (defaultmapsettings.middleMultiViewWhenClose && legendmod.play && checkIfPlayerIsInView(this.nick)){
+			else if (window.defaultmapsettings.middleMultiViewFlag){
 				legendmod.viewX = (legendmod.viewXTrue + x + this.fix3x) / 2;
 				legendmod.viewY = (legendmod.viewYTrue + y + this.fix3y) / 2;					
 			}
