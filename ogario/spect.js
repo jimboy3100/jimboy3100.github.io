@@ -1,4 +1,4 @@
-//SPECS v4.2x WORKS UNTIL HERE
+//SPECS v4.2z WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -725,10 +725,12 @@ class Spect {
 				if (this.player && this.active && legendmod.playerCellsMulti.length==0){
 					console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
 					this.terminate()			
-				}				
+				}	
+				this.beforecalculation()				
                 break;	
             case 64: //specific private servers
-                    //var message = new LMbuffer(data['buffer'])						
+				if (!this.openFirst){ //jimboy3100
+					this.openFirst = true					
                     var message = new window.buffer.Buffer(view.buffer)
                     this.viewMinX = message.readDoubleLE(offset);
                     offset += 8;
@@ -738,11 +740,11 @@ class Spect {
                     offset += 8;
                     this.viewMaxY = message.readDoubleLE(offset);
                     this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
-
-                    if (~~(this.viewMaxX - this.viewMinX) === legendmod.mapSize && ~~(this.viewMaxY - this.viewMinY) === legendmod.mapSize) {
+					}
+                    /*if (~~(this.viewMaxX - this.viewMinX) === legendmod.mapSize && ~~(this.viewMaxY - this.viewMinY) === legendmod.mapSize) {
                         window.userBots.offsetX = (this.viewMinX + this.viewMaxX) / 2
                         window.userBots.offsetY = (this.viewMinY + this.viewMaxY) / 2
-                    }
+                    }*/
                     break;
               //console.log('[SPECT] case 64');
 
