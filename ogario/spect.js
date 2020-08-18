@@ -1,4 +1,4 @@
-//SPECS v4.2q WORKS UNTIL HERE
+//SPECS v4.2r WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -727,13 +727,13 @@ class Spect {
             case 64:
                     //var message = new LMbuffer(data['buffer'])						
                     var message = new window.buffer.Buffer(view.buffer)
-                    this.viewMinX = message.readDoubleLE(s);
-                    s += 8;
-                    this.viewMinY = message.readDoubleLE(s);
-                    s += 8;
-                    this.viewMaxX = message.readDoubleLE(s);
-                    s += 8;
-                    this.viewMaxY = message.readDoubleLE(s);
+                    this.viewMinX = message.readDoubleLE(offset);
+                    offset += 8;
+                    this.viewMinY = message.readDoubleLE(offset);
+                    offset += 8;
+                    this.viewMaxX = message.readDoubleLE(offset);
+                    offset += 8;
+                    this.viewMaxY = message.readDoubleLE(offset);
                     this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
 
                     if (~~(this.viewMaxX - this.viewMinX) === LM.mapSize && ~~(this.viewMaxY - this.viewMinY) === LM.mapSize) {
