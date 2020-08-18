@@ -1,4 +1,4 @@
-//SPECS v4.2z WORKS UNTIL HERE
+//SPECS v4.3 WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -374,7 +374,7 @@ class Spect {
 		}
     }
     sendPosition(x, y) {
-        if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && !legendmod.integrity)) {          
+        if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && legendmod.integrity)) {          
 			return;
         }
         const view = this.createView(13);
@@ -1248,9 +1248,7 @@ class Spect {
 		
     }
 
-	beforecalculation(){
-
-		
+	beforecalculation(){	
         if (legendmod.playerCellsMulti.length) {
 			if (!this.openSecond){
 				this.openSecond = true;
