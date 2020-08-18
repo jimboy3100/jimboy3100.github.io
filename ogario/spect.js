@@ -1,4 +1,4 @@
-//SPECS v4.2o WORKS UNTIL HERE
+//SPECS v4.2p WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -491,6 +491,7 @@ class Spect {
               console.log('[SPECT] case 5');
                      
                 break;
+				
             case 17:
 			
                 this.viewX = view.getFloat32(offset, true);	
@@ -715,8 +716,15 @@ class Spect {
                 break;
             case 16:
 
-              console.log('[SPECT] case 16');
-
+              //console.log('[SPECT] case 16');
+			  this.updateCells(view, offset); //specific private servers
+				//jimboy3100
+				//if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && Date.now()-this.timer>3000){
+				if (this.player && this.active && legendmod.playerCellsMulti.length==0){
+					console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
+					this.terminate()			
+				}				
+                break;	
                 break;
             case 64:
 
