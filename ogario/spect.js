@@ -1,4 +1,4 @@
-//SPECS v4.2u WORKS UNTIL HERE
+//SPECS v4.2v WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -374,7 +374,7 @@ class Spect {
 		}
     }
     sendPosition(x, y) {
-        if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && legendmod.integrity)) {          
+        if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && !legendmod.integrity)) {          
 			return;
         }
         const view = this.createView(13);
