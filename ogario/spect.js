@@ -1,4 +1,4 @@
-//SPECS v4.2t WORKS UNTIL HERE
+//SPECS v4.2u WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -374,7 +374,7 @@ class Spect {
 		}
     }
     sendPosition(x, y) {
-        if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && this.integrity)) {          
+        if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && legendmod.integrity)) {          
 			return;
         }
         const view = this.createView(13);
@@ -898,7 +898,7 @@ class Spect {
 		})
 	}
     setMapOffset(left, top, right, bottom) {
-        if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
+		if (!legendmod.integrity || (right - left) > 14000 && (bottom - top) > 14000) { //2020 jimboy3100	
             this.mapOffsetX = (this.mapOffset) - right;
             this.mapOffsetY = (this.mapOffset) - bottom;
             this.mapMinX = ~~((-this.mapOffset) - this.mapOffsetX);
@@ -915,7 +915,11 @@ class Spect {
             }
             this.mapOffsetFixed = true;
             console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
+			
         }
+		if (!legendmod.integrity){
+			this.handleSendNick()
+		}
     }	
 	
 	terminate(){
