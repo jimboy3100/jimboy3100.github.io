@@ -1,4 +1,4 @@
-//SPECS v4.2w WORKS UNTIL HERE
+//SPECS v4.2x WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -717,9 +717,9 @@ class Spect {
                 this.handleSubmessage(view);
 				this.beforecalculation() //render calculations i put them here to avoid another interval
                 break;
-            case 16:
+            case 16: //specific private servers
               //console.log('[SPECT] case 16');
-			  this.updateCells(new window.buffer.Buffer(view.buffer), offset); //specific private servers
+			  this.updateCells(new window.buffer.Buffer(view.buffer), offset);
 				//jimboy3100
 				//if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && Date.now()-this.timer>3000){
 				if (this.player && this.active && legendmod.playerCellsMulti.length==0){
@@ -727,7 +727,7 @@ class Spect {
 					this.terminate()			
 				}				
                 break;	
-            case 64:
+            case 64: //specific private servers
                     //var message = new LMbuffer(data['buffer'])						
                     var message = new window.buffer.Buffer(view.buffer)
                     this.viewMinX = message.readDoubleLE(offset);
@@ -1093,10 +1093,10 @@ class Spect {
 
 			/*if (this.player && !this.active && !legendmod.playerCellsMulti.includes(id)){
 				invisible = true
-			}*/
+			}
 			else if  (this.player && this.active){
 				invisible = false
-			}
+			}*/
 			
                   id = this.newID(id);
 
