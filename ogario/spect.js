@@ -1,4 +1,4 @@
-//SPECS v4.2p WORKS UNTIL HERE
+//SPECS v4.2q WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -715,9 +715,8 @@ class Spect {
 				this.beforecalculation() //render calculations i put them here to avoid another interval
                 break;
             case 16:
-
               //console.log('[SPECT] case 16');
-			  this.updateCells(view, offset); //specific private servers
+			  this.updateCells(new window.buffer.Buffer(view.buffer), offset); //specific private servers
 				//jimboy3100
 				//if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && Date.now()-this.timer>3000){
 				if (this.player && this.active && legendmod.playerCellsMulti.length==0){
@@ -725,10 +724,24 @@ class Spect {
 					this.terminate()			
 				}				
                 break;	
-                break;
             case 64:
+                    //var message = new LMbuffer(data['buffer'])						
+                    var message = new window.buffer.Buffer(view.buffer)
+                    this.viewMinX = message.readDoubleLE(s);
+                    s += 8;
+                    this.viewMinY = message.readDoubleLE(s);
+                    s += 8;
+                    this.viewMaxX = message.readDoubleLE(s);
+                    s += 8;
+                    this.viewMaxY = message.readDoubleLE(s);
+                    this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
 
-              console.log('[SPECT] case 64');
+                    if (~~(this.viewMaxX - this.viewMinX) === LM.mapSize && ~~(this.viewMaxY - this.viewMinY) === LM.mapSize) {
+                        window.userBots.offsetX = (this.viewMinX + this.viewMaxX) / 2
+                        window.userBots.offsetY = (this.viewMinY + this.viewMaxY) / 2
+                    }
+                    break;
+              //console.log('[SPECT] case 64');
 
                 break;
             default:
