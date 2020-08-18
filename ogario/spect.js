@@ -1,4 +1,4 @@
-//SPECS v4.2v WORKS UNTIL HERE
+//SPECS v4.2w WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -707,7 +707,9 @@ class Spect {
                     setInterval(() => {
                         this.sendPosition(this.convertX(this.staticX), this.convertY(this.staticY));
                     }, 50);
-                   this.sendFreeSpectate()
+					if (this.player){
+						this.sendFreeSpectate()
+					}
                 }				
                 break;
             case 255:
@@ -918,7 +920,7 @@ class Spect {
 			
         }
 		if (!legendmod.integrity){
-			this.handleSendNick()
+			this.handleSendNick()			
 		}
     }	
 	
@@ -1089,9 +1091,9 @@ class Spect {
             const isFood = extendedFlags & 1;
             const isFriend = extendedFlags & 2;
 
-			if (this.player && !this.active && !legendmod.playerCellsMulti.includes(id)){
+			/*if (this.player && !this.active && !legendmod.playerCellsMulti.includes(id)){
 				invisible = true
-			}
+			}*/
 			else if  (this.player && this.active){
 				invisible = false
 			}
