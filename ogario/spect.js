@@ -1,4 +1,4 @@
-//SPECS v4.3 WORKS UNTIL HERE
+//SPECS v4.3a WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -499,6 +499,9 @@ class Spect {
 				if (defaultmapsettings.middleMultiView && legendmod.play){
 					legendmod.viewX = (legendmod.viewXTrue + this.viewX) / 2;	
 				}	
+				else if (defaultmapsettings.middleMultiViewWhenClose && legendmod.play && checkIfPlayerIsInView(this.nick)){
+					legendmod.viewX = (legendmod.viewXTrue + this.viewX) / 2;	
+				}				
 				else if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {				
 					legendmod.viewX = this.viewX 
 				}				
@@ -508,6 +511,9 @@ class Spect {
 				this.viewY = view.getFloat32(offset, true);	
 				if (defaultmapsettings.middleMultiView && legendmod.play){				
 					legendmod.viewY = (legendmod.viewYTrue + this.viewY) / 2;
+				}	
+				else if (defaultmapsettings.middleMultiViewWhenClose && legendmod.play && checkIfPlayerIsInView(this.nick)){
+					legendmod.viewY = (legendmod.viewYTrue + this.viewY) / 2;	
 				}				
 				else if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
 					legendmod.viewY = this.viewY 
@@ -1281,6 +1287,10 @@ class Spect {
 			if (defaultmapsettings.middleMultiView && legendmod.play){
 				legendmod.viewX = (legendmod.viewXTrue + x + this.fix3x) / 2;
 				legendmod.viewY = (legendmod.viewYTrue + y + this.fix3y) / 2;	
+			}
+			else if (defaultmapsettings.middleMultiViewWhenClose && legendmod.play && checkIfPlayerIsInView(this.nick)){
+				legendmod.viewX = (legendmod.viewXTrue + x + this.fix3x) / 2;
+				legendmod.viewY = (legendmod.viewYTrue + y + this.fix3y) / 2;					
 			}
 			else if (window.multiboxPlayerEnabled){
 				//legendmod.viewX = x;
