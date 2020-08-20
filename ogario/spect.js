@@ -1,4 +1,4 @@
-//SPECS v4.3l WORKS UNTIL HERE
+//SPECS v4.3m WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -83,7 +83,8 @@ class Spect {
 		legendmod.multiBoxPlayerExists = null
 		this.playerScore = 0
 		this.fix3x = 0
-		this.fix3y = 0		
+		this.fix3y = 0	
+		this.playerSize	= 0
         this.connect()
     }
     reset() {
@@ -110,6 +111,7 @@ class Spect {
 		this.playerScore = 0
 		this.fix3x = 0
 		this.fix3y = 0
+		this.playerSize	= 0
     }
     connect() {
         this.reset()
@@ -867,7 +869,7 @@ class Spect {
     }
     isInViewCustom (x , y, size) {
 			var randomNum = 0 // randomNum=40
-			var distance = size + randomNum
+			var distance = size + randomNum + this.playerSize
             return !(x + distance < legendmod.camMinX ||
 			y + distance < legendmod.camMinY ||
 			x - distance > legendmod.camMaxX || 
@@ -885,7 +887,7 @@ class Spect {
     }		
     isInViewCustom3 (x , y, size) {
 			var randomNum = 0 // randomNum=-20
-			var distance = size + randomNum
+			var distance = size + randomNum + this.playerSize
             return !(x + distance < legendmod.camMinMultiX ||
 			y + distance < legendmod.camMinMultiY ||
 			x - distance > legendmod.camMaxMultiX || 
