@@ -1,4 +1,4 @@
-//SPECS v4.3k WORKS UNTIL HERE
+//SPECS v4.3l WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -825,7 +825,7 @@ class Spect {
 			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Multibox offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px" );
 		//}
 	}
-*/	
+
 	constantrecalculation3(x,y){	
 		this.fix3x = (legendmod.playerCells[0].x - x)
 		this.fix3y = (legendmod.playerCells[0].y - y)
@@ -847,7 +847,7 @@ class Spect {
 			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px. Result: " + result + "<br> Multibox under development");
 		}
 	}
-	/*constantrecalculation(){
+	constantrecalculation(){
 			//3rd fix - excess processing
 		if (this.ghostCells && this.ghostCells[0] && this.player){
 			this.fix3x = this.convertX(legendmod.ghostCells[0].x) - this.ghostCells[0].x
@@ -1224,12 +1224,10 @@ class Spect {
 				this.openFourth = true				
 				this.constantrecalculation3(cell.x, cell.y)
 			}*/
-			
-			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size){							
+			//Unfortunately it needs constant fixing 
+			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.gameMode!=":party" && legendmod.playerCells.length==1 && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size){							
 				this.fix3x = legendmod.playerCells[0].x - cell.x
-				this.fix3y = legendmod.playerCells[0].y - cell.y
-				console.log(window.tempx, cell.x, window.tempy , cell.y, this.fixX, this.fixY)
-				
+				this.fix3y = legendmod.playerCells[0].y - cell.y							
 				//this.fix3x, this.fix3y
 			}			
             cell.targetX = x;
