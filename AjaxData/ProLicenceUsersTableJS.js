@@ -104,11 +104,7 @@ ProLicenceUsersTable = {
         "84222701-39e7-454e-9e41-bc8fd4f468d2": {
             "reason": "Donate",
             "notes": "Siah"
-        }, 
-        "e9acd8c6-382d-45fb-8208-fb8ad8ac5b38": {
-            "reason": "Donate",
-            "notes": "Fast"
-        }, 	    
+        },     
         "87b8a4f8-0cb4-448d-bedc-358a3010c7e6": {
             "reason": "Donate",
             "notes": "Fiku"
