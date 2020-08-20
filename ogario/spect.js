@@ -1,4 +1,4 @@
-//SPECS v4.3j WORKS UNTIL HERE
+//SPECS v4.3k WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1220,14 +1220,14 @@ class Spect {
 				cell.isPlayerCellMulti=true
 			}
 			//if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && (Date.now() - legendmod.playerCells[0].time < 10) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
-			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
+			/*if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
 				this.openFourth = true				
 				this.constantrecalculation3(cell.x, cell.y)
-			}
+			}*/
 			
 			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size){							
-				window.tempx = legendmod.playerCells[0].x - cell.x
-				window.tempy = legendmod.playerCells[0].y - cell.y
+				this.fix3x = legendmod.playerCells[0].x - cell.x
+				this.fix3y = legendmod.playerCells[0].y - cell.y
 				console.log(window.tempx, cell.x, window.tempy , cell.y, this.fixX, this.fixY)
 				
 				//this.fix3x, this.fix3y
