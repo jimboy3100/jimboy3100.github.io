@@ -1,6 +1,7 @@
-//SPECS v4.3e WORKS UNTIL HERE
+//SPECS v4.3f WORKS UNTIL HERE
 
-function loadMultiCellSkin(){	
+function loadMultiCellSkin(){
+	
   if (profiles[application.selectedOldProfile].nick && !application.customSkinsMap[profiles[application.selectedOldProfile].nick]){
 	 setTimeout(function() {
 		core.registerSkin(profiles[application.selectedOldProfile].nick , null, profiles[application.selectedOldProfile].skinURL , null); 
@@ -1046,12 +1047,12 @@ class Spect {
 				
 			//test
 			//this.constantrecalculation()			
-			if (this.getX(x)){
+			if (this.getX){
 				x = this.getX(x)
 				
 				//x = this.getX(x)+this.fix3x
 			}
-			if (this.getY(y)){ 
+			if (this.getY){ 
 				y = this.getY(y)
 				//y = this.getY(y)+this.fix3y
 			}	
