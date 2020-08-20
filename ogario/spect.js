@@ -1,5 +1,4 @@
-//SPECS v4.3c WORKS UNTIL HERE
-
+//SPECS v4.3d WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -782,18 +781,22 @@ class Spect {
 	}	
     getX(x) {
       if(this.ghostFixed && this.mapOffsetFixed) {
-		  if (!window.multifixOffset) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
+		  return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
+		  
+		  /*if (!window.multifixOffset) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
 		  else if (window.multifixOffset==0) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX - this.fix3x)
-		  else if (window.multifixOffset==1) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX)	
+		  else if (window.multifixOffset==1) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX)	*//
         //return ((x + this.mapOffsetX + this.fix3x)*this.fixX - legendmod.mapOffsetX) The reason why this is wrong is because map is rotated already when cells meet for the first time			
 		//return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
       }
     }
     getY(y) {
       if(this.ghostFixed && this.mapOffsetFixed) {
-		 if (!window.multifixOffset) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y)
+		 return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y)
+		 
+		 /*if (!window.multifixOffset) 
 		 else if (window.multifixOffset==0) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY - this.fix3y)
-		 else if (window.multifixOffset==1) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY)
+		 else if (window.multifixOffset==1) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY)*/
         //return ~~((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY)
       }
     }
@@ -1045,7 +1048,8 @@ class Spect {
 			//test
 			//this.constantrecalculation()			
 			if (this.getX(x)){
-				x = this.getX(x)	
+				x = this.getX(x)
+				
 				//x = this.getX(x)+this.fix3x
 			}
 			if (this.getY(y)){ 
