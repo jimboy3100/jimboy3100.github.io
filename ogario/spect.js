@@ -869,6 +869,7 @@ class Spect {
     }
     isInViewCustom (x , y, size) {
 			var randomNum = 0 // randomNum=40
+			//var distance = size + randomNum
 			var distance = size + randomNum + this.playerSize
             return !(x + distance < legendmod.camMinX ||
 			y + distance < legendmod.camMinY ||
