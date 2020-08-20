@@ -1,4 +1,4 @@
-//SPECS v4.3i WORKS UNTIL HERE
+//SPECS v4.3j WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -827,10 +827,10 @@ class Spect {
 	}
 */	
 	constantrecalculation3(x,y){	
-		//this.fix3x = (legendmod.playerCells[0].x - x)
-		//this.fix3y = (legendmod.playerCells[0].y - y)
-		this.fix3x = (legendmod.playerCells[0].x - x) * this.fixX
-		this.fix3y = (legendmod.playerCells[0].y - y) * this.fixY
+		this.fix3x = (legendmod.playerCells[0].x - x)
+		this.fix3y = (legendmod.playerCells[0].y - y)
+		//this.fix3x = (legendmod.playerCells[0].x - x) * this.fixX
+		//this.fix3y = (legendmod.playerCells[0].y - y) * this.fixY
 		//toastr.warning(this.number +  " px: " + legendmod.playerCells[0].x + " x: " + x + " py: " +  legendmod.playerCells[0].y + " y: " + y);
 		//toastr.warning(this.number +  " fixX: " + this.fixX + " fixY: " + this.fixY);
 		
@@ -1226,8 +1226,8 @@ class Spect {
 			}
 			
 			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size){							
-				window.tempx = (legendmod.playerCells[0].x - cell.x) * this.fixX
-				window.tempy = (legendmod.playerCells[0].y - cell.y) * this.fixY
+				window.tempx = legendmod.playerCells[0].x - cell.x
+				window.tempy = legendmod.playerCells[0].y - cell.y
 				console.log(window.tempx, cell.x, window.tempy , cell.y, this.fixX, this.fixY)
 				
 				//this.fix3x, this.fix3y
