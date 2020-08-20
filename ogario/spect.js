@@ -1,7 +1,6 @@
 //SPECS v4.3e WORKS UNTIL HERE
 
-function loadMultiCellSkin(){
-	
+function loadMultiCellSkin(){	
   if (profiles[application.selectedOldProfile].nick && !application.customSkinsMap[profiles[application.selectedOldProfile].nick]){
 	 setTimeout(function() {
 		core.registerSkin(profiles[application.selectedOldProfile].nick , null, profiles[application.selectedOldProfile].skinURL , null); 
