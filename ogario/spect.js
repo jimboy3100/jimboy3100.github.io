@@ -1,4 +1,4 @@
-//SPECS v4.3d WORKS UNTIL HERE
+//SPECS v4.3e WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -785,7 +785,7 @@ class Spect {
 		  
 		  /*if (!window.multifixOffset) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
 		  else if (window.multifixOffset==0) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX - this.fix3x)
-		  else if (window.multifixOffset==1) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX)	*//
+		  else if (window.multifixOffset==1) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX)	*/
         //return ((x + this.mapOffsetX + this.fix3x)*this.fixX - legendmod.mapOffsetX) The reason why this is wrong is because map is rotated already when cells meet for the first time			
 		//return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
       }
