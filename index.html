@@ -636,7 +636,8 @@
         $.ajax({
             type: "GET",
             //url: "https://map-srv.fly.dev/stats",
-            url: "https://map-server.glitch.me/stats",
+            //url: "https://map-server.glitch.me/stats",
+			url: "//snez.org:8080/stats",
             datatype: "json",
             success: function(info) {
                 window.modusers = JSON.parse(info)
@@ -644,6 +645,7 @@
                     ' <img width="16" height="16" src="https://legendmod.ml/banners/icontinyDelta.png">: ' + window.modusers.dl +
                     ' <img width="16" height="16" src="https://legendmod.ml/banners/icontinyUnknown.png">: ' + window.modusers.og +
                     ' <img width="16" height="16" src="https://legendmod.ml/banners/icontinyAddon.png">: ' + window.modusers.sc +
+		    ' <img width="16" height="16" src="https://legendmod.ml/banners/icontinyUsers.png">: ' + window.modusers.t +					
                     '</div>')
             }
         });
