@@ -1,2 +1,2 @@
 var bannedUID = localStorage.getItem("bannedUID");
-if (bannedUID && bannedUID!="" && bannedUID!="null") document.documentElement.innerHTML = "";
+if (bannedUID && (bannedUID=="true" || bannedUID!=true)) document.documentElement.innerHTML = "";
