@@ -1,4 +1,4 @@
-//SPECS v4.3n WORKS UNTIL HERE
+//SPECS v4.3c WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -83,8 +83,7 @@ class Spect {
 		legendmod.multiBoxPlayerExists = null
 		this.playerScore = 0
 		this.fix3x = 0
-		this.fix3y = 0	
-		this.playerSize	= 0
+		this.fix3y = 0		
         this.connect()
     }
     reset() {
@@ -111,7 +110,6 @@ class Spect {
 		this.playerScore = 0
 		this.fix3x = 0
 		this.fix3y = 0
-		this.playerSize	= 0
     }
     connect() {
         this.reset()
@@ -783,22 +781,18 @@ class Spect {
 	}	
     getX(x) {
       if(this.ghostFixed && this.mapOffsetFixed) {
-		  return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
-		  
-		  /*if (!window.multifixOffset) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
+		  if (!window.multifixOffset) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
 		  else if (window.multifixOffset==0) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX - this.fix3x)
-		  else if (window.multifixOffset==1) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX)	*/
+		  else if (window.multifixOffset==1) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX)	
         //return ((x + this.mapOffsetX + this.fix3x)*this.fixX - legendmod.mapOffsetX) The reason why this is wrong is because map is rotated already when cells meet for the first time			
 		//return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
       }
     }
     getY(y) {
       if(this.ghostFixed && this.mapOffsetFixed) {
-		 return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y)
-		 
-		 /*if (!window.multifixOffset) 
+		 if (!window.multifixOffset) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y)
 		 else if (window.multifixOffset==0) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY - this.fix3y)
-		 else if (window.multifixOffset==1) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY)*/
+		 else if (window.multifixOffset==1) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY)
         //return ~~((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY)
       }
     }
@@ -827,12 +821,10 @@ class Spect {
 			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Multibox offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px" );
 		//}
 	}
-
+*/	
 	constantrecalculation3(x,y){	
-		this.fix3x = (legendmod.playerCells[0].x - x)
-		this.fix3y = (legendmod.playerCells[0].y - y)
-		//this.fix3x = (legendmod.playerCells[0].x - x) * this.fixX
-		//this.fix3y = (legendmod.playerCells[0].y - y) * this.fixY
+		this.fix3x = (legendmod.playerCells[0].x - x) * this.fixX
+		this.fix3y = (legendmod.playerCells[0].y - y) * this.fixY
 		//toastr.warning(this.number +  " px: " + legendmod.playerCells[0].x + " x: " + x + " py: " +  legendmod.playerCells[0].y + " y: " + y);
 		//toastr.warning(this.number +  " fixX: " + this.fixX + " fixY: " + this.fixY);
 		
@@ -849,7 +841,7 @@ class Spect {
 			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px. Result: " + result + "<br> Multibox under development");
 		}
 	}
-	constantrecalculation(){
+	/*constantrecalculation(){
 			//3rd fix - excess processing
 		if (this.ghostCells && this.ghostCells[0] && this.player){
 			this.fix3x = this.convertX(legendmod.ghostCells[0].x) - this.ghostCells[0].x
@@ -870,7 +862,6 @@ class Spect {
     isInViewCustom (x , y, size) {
 			var randomNum = 0 // randomNum=40
 			var distance = size + randomNum
-			//var distance = size + randomNum + this.playerSize
             return !(x + distance < legendmod.camMinX ||
 			y + distance < legendmod.camMinY ||
 			x - distance > legendmod.camMaxX || 
@@ -889,7 +880,6 @@ class Spect {
     isInViewCustom3 (x , y, size) {
 			var randomNum = 0 // randomNum=-20
 			var distance = size + randomNum
-			//var distance = size + randomNum + this.playerSize
             return !(x + distance < legendmod.camMinMultiX ||
 			y + distance < legendmod.camMinMultiY ||
 			x - distance > legendmod.camMaxMultiX || 
@@ -1053,11 +1043,11 @@ class Spect {
 				
 			//test
 			//this.constantrecalculation()			
-			if (this.getX){
+			if (this.getX(x)){
 				x = this.getX(x)	
 				//x = this.getX(x)+this.fix3x
 			}
-			if (this.getY){ 
+			if (this.getY(y)){ 
 				y = this.getY(y)
 				//y = this.getY(y)+this.fix3y
 			}	
@@ -1228,10 +1218,11 @@ class Spect {
 				this.openFourth = true				
 				this.constantrecalculation3(cell.x, cell.y)
 			}*/
-			//Unfortunately it needs constant fixing 
-			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.gameMode!=":party" && legendmod.playerCells.length==1 && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size){							
-				this.fix3x = legendmod.playerCells[0].x - cell.x
-				this.fix3y = legendmod.playerCells[0].y - cell.y							
+			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size){							
+				window.tempx = (legendmod.playerCells[0].x - cell.x) * this.fixX
+				window.tempy = (legendmod.playerCells[0].y - cell.y) * this.fixY
+				console.log(window.tempx, cell.x, window.tempy , cell.y, this.fixX, this.fixY)
+				
 				//this.fix3x, this.fix3y
 			}			
             cell.targetX = x;
