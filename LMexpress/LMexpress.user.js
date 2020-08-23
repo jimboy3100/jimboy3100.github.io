@@ -95,7 +95,7 @@ switch (mode) {
         Htmlscript(modwebsite);
         break;
     case 'neo': 
-        modwebsite = 'https://legendmod.ml/start.html?' + version;
+        modwebsite = 'https://legendmod.ml/play.html?' + version;
         Htmlscript(modwebsite);
 		setTimeout(function() {		
 			modwebsite = 'https://legendmod.ml/ExampleScripts/Neoprivate.js';
@@ -103,7 +103,7 @@ switch (mode) {
 		}, 5000);
 	break;	
     case 'mobile': 
-        modwebsite = 'https://legendmod.ml/LMexpress/start.html';
+        modwebsite = 'https://legendmod.ml/play.html';
         Htmlscript(modwebsite);
 		setTimeout(function() {		
 			modwebsite = 'https://legendmod.ml/ExampleScripts/gamepad.user.js';
@@ -115,7 +115,7 @@ switch (mode) {
         Htmlscript(modwebsite);
         break;	
     case 'legendmod': default:
-        modwebsite = 'https://legendmod.ml/LMexpress/start.html'
+        modwebsite = 'https://legendmod.ml/play.html'
         Htmlscript(modwebsite);
         break;
 }
