@@ -1,4 +1,4 @@
-//SPECS v4.2p WORKS UNTIL HERE
+//SPECS v4.3o WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -83,7 +83,8 @@ class Spect {
 		legendmod.multiBoxPlayerExists = null
 		this.playerScore = 0
 		this.fix3x = 0
-		this.fix3y = 0		
+		this.fix3y = 0	
+		this.playerSize	= 0
         this.connect()
     }
     reset() {
@@ -110,6 +111,7 @@ class Spect {
 		this.playerScore = 0
 		this.fix3x = 0
 		this.fix3y = 0
+		this.playerSize	= 0
     }
     connect() {
         this.reset()
@@ -125,6 +127,7 @@ class Spect {
     onopen() {
             console.log('[SPECT] Game server socket ' + this.number + ' open')
       
+	  
             this.clientVersion = window.master.clientVersion
             this.protocolVersion = window.master.protocolVersion
       
@@ -226,7 +229,7 @@ class Spect {
             this.socket.send(data.buffer);
     }
     sendMessage(message) {
-            if (this.connectionOpened /*&& this.integrity*/) {
+            if (this.connectionOpened && legendmod.integrity) {
                 if (!this.clientKey) {
                     return;
                 }
@@ -373,7 +376,7 @@ class Spect {
 		}
     }
     sendPosition(x, y) {
-        if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && this.integrity)) {          
+        if (!this.isSocketOpen() || !this.connectionOpened || (!this.clientKey && legendmod.integrity)) {          
 			return;
         }
         const view = this.createView(13);
@@ -495,9 +498,13 @@ class Spect {
             case 17:
 			
                 this.viewX = view.getFloat32(offset, true);	
+				window.middleMultiViewFlag = defaultmapsettings.middleMultiViewWhenClose && legendmod.play && profiles[application.selectedOldProfile] && checkIfPlayerIsInView(profiles[application.selectedProfile].nick)
 				if (defaultmapsettings.middleMultiView && legendmod.play){
 					legendmod.viewX = (legendmod.viewXTrue + this.viewX) / 2;	
 				}	
+				else if (window.middleMultiViewFlag){					
+					legendmod.viewX = (legendmod.viewXTrue + this.viewX) / 2;	
+				}				
 				else if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {				
 					legendmod.viewX = this.viewX 
 				}				
@@ -507,6 +514,9 @@ class Spect {
 				this.viewY = view.getFloat32(offset, true);	
 				if (defaultmapsettings.middleMultiView && legendmod.play){				
 					legendmod.viewY = (legendmod.viewYTrue + this.viewY) / 2;
+				}	
+				else if (window.middleMultiViewFlag){
+					legendmod.viewY = (legendmod.viewYTrue + this.viewY) / 2;	
 				}				
 				else if (this.player && window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
 					legendmod.viewY = this.viewY 
@@ -706,7 +716,9 @@ class Spect {
                     setInterval(() => {
                         this.sendPosition(this.convertX(this.staticX), this.convertY(this.staticY));
                     }, 50);
-                   this.sendFreeSpectate()
+					if (!this.player){
+						this.sendFreeSpectate()
+					}
                 }				
                 break;
             case 255:
@@ -714,21 +726,36 @@ class Spect {
                 this.handleSubmessage(view);
 				this.beforecalculation() //render calculations i put them here to avoid another interval
                 break;
-            case 16:
-
+            case 16: //specific private servers
               //console.log('[SPECT] case 16');
-			  this.updateCells(view, offset); //specific private servers
+			  this.updateCells(new window.buffer.Buffer(view.buffer), offset);
 				//jimboy3100
 				//if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && Date.now()-this.timer>3000){
 				if (this.player && this.active && legendmod.playerCellsMulti.length==0){
 					console.log('[SPECT] Multibox Player ' + this.number + ' lost');	
 					this.terminate()			
-				}				
+				}	
+				this.beforecalculation()				
                 break;	
-                break;
-            case 64:
-
-              console.log('[SPECT] case 64');
+            case 64: //specific private servers
+				if (!this.openFirst){ //jimboy3100
+					this.openFirst = true					
+                    var message = new window.buffer.Buffer(view.buffer)
+                    this.viewMinX = message.readDoubleLE(offset);
+                    offset += 8;
+                    this.viewMinY = message.readDoubleLE(offset);
+                    offset += 8;
+                    this.viewMaxX = message.readDoubleLE(offset);
+                    offset += 8;
+                    this.viewMaxY = message.readDoubleLE(offset);
+                    this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
+					}
+                    /*if (~~(this.viewMaxX - this.viewMinX) === legendmod.mapSize && ~~(this.viewMaxY - this.viewMinY) === legendmod.mapSize) {
+                        window.userBots.offsetX = (this.viewMinX + this.viewMaxX) / 2
+                        window.userBots.offsetY = (this.viewMinY + this.viewMaxY) / 2
+                    }*/
+                    break;
+              //console.log('[SPECT] case 64');
 
                 break;
             default:
@@ -756,18 +783,22 @@ class Spect {
 	}	
     getX(x) {
       if(this.ghostFixed && this.mapOffsetFixed) {
-		  if (!window.multifixOffset) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
+		  return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
+		  
+		  /*if (!window.multifixOffset) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
 		  else if (window.multifixOffset==0) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX - this.fix3x)
-		  else if (window.multifixOffset==1) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX)	
+		  else if (window.multifixOffset==1) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX)	*/
         //return ((x + this.mapOffsetX + this.fix3x)*this.fixX - legendmod.mapOffsetX) The reason why this is wrong is because map is rotated already when cells meet for the first time			
 		//return ~~((x + this.mapOffsetX)*this.fixX - legendmod.mapOffsetX)
       }
     }
     getY(y) {
       if(this.ghostFixed && this.mapOffsetFixed) {
-		 if (!window.multifixOffset) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y)
+		 return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y)
+		 
+		 /*if (!window.multifixOffset) 
 		 else if (window.multifixOffset==0) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY - this.fix3y)
-		 else if (window.multifixOffset==1) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY)
+		 else if (window.multifixOffset==1) return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY)*/
         //return ~~((y + this.mapOffsetY)*this.fixY - legendmod.mapOffsetY)
       }
     }
@@ -796,10 +827,12 @@ class Spect {
 			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Multibox offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px" );
 		//}
 	}
-*/	
+
 	constantrecalculation3(x,y){	
-		this.fix3x = (legendmod.playerCells[0].x - x) * this.fixX
-		this.fix3y = (legendmod.playerCells[0].y - y) * this.fixY
+		this.fix3x = (legendmod.playerCells[0].x - x)
+		this.fix3y = (legendmod.playerCells[0].y - y)
+		//this.fix3x = (legendmod.playerCells[0].x - x) * this.fixX
+		//this.fix3y = (legendmod.playerCells[0].y - y) * this.fixY
 		//toastr.warning(this.number +  " px: " + legendmod.playerCells[0].x + " x: " + x + " py: " +  legendmod.playerCells[0].y + " y: " + y);
 		//toastr.warning(this.number +  " fixX: " + this.fixX + " fixY: " + this.fixY);
 		
@@ -816,7 +849,7 @@ class Spect {
 			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px. Result: " + result + "<br> Multibox under development");
 		}
 	}
-	/*constantrecalculation(){
+	constantrecalculation(){
 			//3rd fix - excess processing
 		if (this.ghostCells && this.ghostCells[0] && this.player){
 			this.fix3x = this.convertX(legendmod.ghostCells[0].x) - this.ghostCells[0].x
@@ -837,6 +870,7 @@ class Spect {
     isInViewCustom (x , y, size) {
 			var randomNum = 0 // randomNum=40
 			var distance = size + randomNum
+			//var distance = size + randomNum + this.playerSize
             return !(x + distance < legendmod.camMinX ||
 			y + distance < legendmod.camMinY ||
 			x - distance > legendmod.camMaxX || 
@@ -855,6 +889,7 @@ class Spect {
     isInViewCustom3 (x , y, size) {
 			var randomNum = 0 // randomNum=-20
 			var distance = size + randomNum
+			//var distance = size + randomNum + this.playerSize
             return !(x + distance < legendmod.camMinMultiX ||
 			y + distance < legendmod.camMinMultiY ||
 			x - distance > legendmod.camMaxMultiX || 
@@ -884,7 +919,7 @@ class Spect {
 		})
 	}
     setMapOffset(left, top, right, bottom) {
-        if (!this.integrity||(right - left) > 14000 && (bottom - top) > 14000) {
+		if (!legendmod.integrity || (right - left) > 14000 && (bottom - top) > 14000) { //2020 jimboy3100	
             this.mapOffsetX = (this.mapOffset) - right;
             this.mapOffsetY = (this.mapOffset) - bottom;
             this.mapMinX = ~~((-this.mapOffset) - this.mapOffsetX);
@@ -901,7 +936,11 @@ class Spect {
             }
             this.mapOffsetFixed = true;
             console.log('[SPECT] Map offset fixed (x, y):', this.mapOffsetX, this.mapOffsetY);
+			
         }
+		if (!legendmod.integrity){
+			this.handleSendNick()			
+		}
     }	
 	
 	terminate(){
@@ -1014,11 +1053,11 @@ class Spect {
 				
 			//test
 			//this.constantrecalculation()			
-			if (this.getX(x)){
+			if (this.getX){
 				x = this.getX(x)	
 				//x = this.getX(x)+this.fix3x
 			}
-			if (this.getY(y)){ 
+			if (this.getY){ 
 				y = this.getY(y)
 				//y = this.getY(y)+this.fix3y
 			}	
@@ -1071,12 +1110,12 @@ class Spect {
             const isFood = extendedFlags & 1;
             const isFriend = extendedFlags & 2;
 
-			if (this.player && !this.active && !legendmod.playerCellsMulti.includes(id)){
+			/*if (this.player && !this.active && !legendmod.playerCellsMulti.includes(id)){
 				invisible = true
 			}
 			else if  (this.player && this.active){
 				invisible = false
-			}
+			}*/
 			
                   id = this.newID(id);
 
@@ -1185,10 +1224,16 @@ class Spect {
 				cell.isPlayerCellMulti=true
 			}
 			//if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && (Date.now() - legendmod.playerCells[0].time < 10) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
-			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
+			/*if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
 				this.openFourth = true				
 				this.constantrecalculation3(cell.x, cell.y)
-			}
+			}*/
+			//Unfortunately it needs constant fixing 
+			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.gameMode!=":party" && legendmod.playerCells.length==1 && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size){							
+				this.fix3x = legendmod.playerCells[0].x - cell.x
+				this.fix3y = legendmod.playerCells[0].y - cell.y							
+				//this.fix3x, this.fix3y
+			}			
             cell.targetX = x;
             cell.targetY = y;
             cell.targetSize = size;
@@ -1226,9 +1271,7 @@ class Spect {
 		
     }
 
-	beforecalculation(){
-
-		
+	beforecalculation(){	
         if (legendmod.playerCellsMulti.length) {
 			if (!this.openSecond){
 				this.openSecond = true;
@@ -1258,9 +1301,14 @@ class Spect {
                 x += n.x / playersLength;
                 y += n.y / playersLength;
             }
+			window.middleMultiViewFlag = defaultmapsettings.middleMultiViewWhenClose && legendmod.play && profiles[application.selectedOldProfile] && checkIfPlayerIsInView(profiles[application.selectedProfile].nick)
 			if (defaultmapsettings.middleMultiView && legendmod.play){
 				legendmod.viewX = (legendmod.viewXTrue + x + this.fix3x) / 2;
 				legendmod.viewY = (legendmod.viewYTrue + y + this.fix3y) / 2;	
+			}
+			else if (window.middleMultiViewFlag){
+				legendmod.viewX = (legendmod.viewXTrue + x + this.fix3x) / 2;
+				legendmod.viewY = (legendmod.viewYTrue + y + this.fix3y) / 2;					
 			}
 			else if (window.multiboxPlayerEnabled){
 				//legendmod.viewX = x;
@@ -1326,3 +1374,11 @@ function MultiTokenReady(spector){
 		spector.sendGplusToken(master.accessTokenGPlus)
 	}
 }	
+function checkIfMultiPlayerIsInView(b){
+	for (var i=0;i<legendmod.cells.length;i++){	
+		if (b!="" && legendmod.cells[i].nick == b && !legendmod.cells[i].isPlayerCell){
+			return true		
+		}
+	}
+	return false
+}
