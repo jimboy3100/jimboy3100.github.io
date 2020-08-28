@@ -1,4 +1,4 @@
-//SPECS v4.3u WORKS UNTIL HERE
+//SPECS v4.3v WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1150,11 +1150,13 @@ class Spect {
 				if (!isFood){
 					if (!invisible) invisible = this.isInViewCustom(x , y, size)	
 				}
-				else if (isFood){				
-					if (!window.fullSpectator && !window.ingameSpectator){	
+				else if (isFood){	
+					if (window.ingameSpectator && legendmod.isSpectateEnabled){
+						invisible = true
+					}				
+					else if (!window.fullSpectator){	
 						if (!invisible) invisible = this.isInViewCustom(x , y, size)	
-					}	
-				
+					}				
 				}			
 			}			
 			//if (this.player && isVirus && !isFood && !invisible){
