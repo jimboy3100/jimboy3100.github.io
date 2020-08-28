@@ -1,4 +1,5 @@
-        keyBlind = {};
+
+	keyBlind = {};
         hotkeys = {};
         hotkeysCommand = {
             'hk-feed': {
