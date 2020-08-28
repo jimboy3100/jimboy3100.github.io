@@ -557,21 +557,11 @@
                 defaultKey: 'M',
                 keyDown() {
                     if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([2]).buffer);
-					else if (legend.ws.includes("imsolo.pro")) legendmod.sendAction(22);
+					else if (legend.ws.includes("imsolo.pro") && application) application.Botseject();
                 },
                 keyUp: null,
                 type: 'normal'
-            },
-            'hk-bots-feed': {
-                label: textLanguage['hk-bots-feed'],
-                defaultKey: 'L',
-                keyDown() {
-                    if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
-					else if (legend.ws.includes("imsolo.pro")) legendmod.sendAction(23);
-                },
-                keyUp: null,
-                type: 'normal'
-            },
+            },			
             'hk-bots-ai': {
                 label: textLanguage['hk-bots-ai'],
                 defaultKey: 'P',
@@ -593,6 +583,43 @@
                 keyUp: null,
                 type: 'normal'
             },
+            'hk-bots-feed': {
+                label: textLanguage['hk-bots-feed'],
+                defaultKey: 'L',
+                keyDown() {
+                    if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
+					else if (legend.ws.includes("imsolo.pro") && application) application.Botsfeed();
+                },
+                keyUp: null,
+                type: 'normal'
+            },		
+            'hk-doubleBotSplit': {
+                label: textLanguage['hk-doubleBotSplit'],
+                defaultKey: '',
+                keyDown() {
+                    if (legend.ws.includes("imsolo.pro") && application) && application.doubleBotSplit();
+                },
+                keyUp: null,
+                type: 'normal'
+            },		
+            'hk-popBotSplit': {
+                label: 'Bot Popsplit',
+                defaultKey: '',
+                keyDown() {
+                    if (legend.ws.includes("imsolo.pro") && application) && application.popBotSplit();
+                },
+                keyUp: null,
+                type: 'normal'
+            },
+            'hk-splitBot16': {
+                label: textLanguage['hk-splitBot16'],
+                defaultKey: '',
+                keyDown() {
+                    if (legend.ws.includes("imsolo.pro") && application) && application.splitBot16();
+                },
+                keyUp: null,
+                type: 'normal'
+            },			
             'hk-comm1': {
                 label: chatCommand['comm1'],
                 defaultKey: '1',
