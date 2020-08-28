@@ -557,6 +557,7 @@
                 defaultKey: 'M',
                 keyDown() {
                     if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([2]).buffer);
+					else if (legend.ws.includes("imsolo.pro")) legendmod.sendAction(22);
                 },
                 keyUp: null,
                 type: 'normal'
@@ -566,6 +567,7 @@
                 defaultKey: 'L',
                 keyDown() {
                     if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
+					else if (legend.ws.includes("imsolo.pro")) legendmod.sendAction(23);
                 },
                 keyUp: null,
                 type: 'normal'
