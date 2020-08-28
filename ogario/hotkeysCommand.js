@@ -1,4 +1,4 @@
-
+//v1.1
 	keyBlind = {};
         hotkeys = {};
         hotkeysCommand = {
