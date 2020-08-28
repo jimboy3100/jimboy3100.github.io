@@ -1,4 +1,4 @@
-//SPECS v4.3t WORKS UNTIL HERE
+//SPECS v4.3u WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1151,7 +1151,7 @@ class Spect {
 					if (!invisible) invisible = this.isInViewCustom(x , y, size)	
 				}
 				else if (isFood){				
-					if (!window.fullSpectator){	
+					if (!window.fullSpectator && !window.ingameSpectator){	
 						if (!invisible) invisible = this.isInViewCustom(x , y, size)	
 					}	
 				
