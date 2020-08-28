@@ -1,4 +1,4 @@
-//SPECS v4.3p WORKS UNTIL HERE
+//SPECS v4.3q WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1142,7 +1142,7 @@ class Spect {
 				}
 				//
 				
-			if (!this.player){				
+			if (!this.player && this.ghostFixed){				
 				if (!isFood){
 					if (!invisible) invisible = this.isInViewCustom(x , y, size)	
 				}
