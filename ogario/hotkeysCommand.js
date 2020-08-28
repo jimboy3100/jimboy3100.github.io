@@ -597,7 +597,7 @@
                 label: textLanguage['hk-doubleBotSplit'],
                 defaultKey: '',
                 keyDown() {
-                    if (legend.ws.includes("imsolo.pro") && application) && application.doubleBotSplit();
+                    if (legend.ws.includes("imsolo.pro") && application) application.doubleBotSplit();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -606,7 +606,7 @@
                 label: 'Bot Popsplit',
                 defaultKey: '',
                 keyDown() {
-                    if (legend.ws.includes("imsolo.pro") && application) && application.popBotSplit();
+                    if (legend.ws.includes("imsolo.pro") && application) application.popBotSplit();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -615,7 +615,7 @@
                 label: textLanguage['hk-splitBot16'],
                 defaultKey: '',
                 keyDown() {
-                    if (legend.ws.includes("imsolo.pro") && application) && application.splitBot16();
+                    if (legend.ws.includes("imsolo.pro") && application) application.splitBot16();
                 },
                 keyUp: null,
                 type: 'normal'
