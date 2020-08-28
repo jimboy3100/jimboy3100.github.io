@@ -1,4 +1,4 @@
-//v1.3
+//v1.3a
         keyBlind = {};
         hotkeys = {};
         hotkeysCommand = {
@@ -552,17 +552,7 @@
                 },
                 keyUp: null,
                 type: 'normal'
-            },			
-            'hk-bots-split': {
-                label: textLanguage['hk-bots-split'],
-                defaultKey: 'M',
-                keyDown() {
-                    if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([2]).buffer);
-					else if (legendmod.ws.includes("imsolo.pro") && application) application.Botseject();
-                },
-                keyUp: null,
-                type: 'normal'
-            },			
+            },	
             'hk-bots-ai': {
                 label: textLanguage['hk-bots-ai'],
                 defaultKey: 'P',
@@ -583,7 +573,7 @@
                 },
                 keyUp: null,
                 type: 'normal'
-            },
+            },			
             'hk-bots-feed': {
                 label: textLanguage['hk-bots-feed'],
                 defaultKey: 'L',
@@ -593,7 +583,17 @@
                 },
                 keyUp: null,
                 type: 'normal'
-            },		
+            },			
+            'hk-bots-split': {
+                label: textLanguage['hk-bots-split'],
+                defaultKey: 'M',
+                keyDown() {
+                    if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([2]).buffer);
+					else if (legendmod.ws.includes("imsolo.pro") && application) application.Botseject();
+                },
+                keyUp: null,
+                type: 'normal'
+            },					
             'hk-doubleBotSplit': {
                 label: textLanguage['hk-doubleBotSplit'],
                 defaultKey: '',
