@@ -1,5 +1,5 @@
-//v1.1
-	keyBlind = {};
+//v1.2
+        keyBlind = {};
         hotkeys = {};
         hotkeysCommand = {
             'hk-feed': {
@@ -558,7 +558,7 @@
                 defaultKey: 'M',
                 keyDown() {
                     if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([2]).buffer);
-					else if (legend.ws.includes("imsolo.pro") && application) application.Botseject();
+					else if (legendmod.ws.includes("imsolo.pro") && application) application.Botseject();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -589,7 +589,7 @@
                 defaultKey: 'L',
                 keyDown() {
                     if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
-					else if (legend.ws.includes("imsolo.pro") && application) application.Botsfeed();
+					else if (legendmod.ws.includes("imsolo.pro") && application) application.Botsfeed();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -598,7 +598,7 @@
                 label: textLanguage['hk-doubleBotSplit'],
                 defaultKey: '',
                 keyDown() {
-                    if (legend.ws.includes("imsolo.pro") && application) application.doubleBotSplit();
+                    if (legendmod.ws.includes("imsolo.pro") && application) application.doubleBotSplit();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -607,7 +607,7 @@
                 label: 'Bot Popsplit',
                 defaultKey: '',
                 keyDown() {
-                    if (legend.ws.includes("imsolo.pro") && application) application.popBotSplit();
+                    if (legendmod.ws.includes("imsolo.pro") && application) application.popBotSplit();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -616,7 +616,7 @@
                 label: textLanguage['hk-splitBot16'],
                 defaultKey: '',
                 keyDown() {
-                    if (legend.ws.includes("imsolo.pro") && application) application.splitBot16();
+                    if (legendmod.ws.includes("imsolo.pro") && application) application.splitBot16();
                 },
                 keyUp: null,
                 type: 'normal'
