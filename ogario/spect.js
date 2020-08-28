@@ -1,4 +1,4 @@
-//SPECS v4.3s WORKS UNTIL HERE
+//SPECS v4.3t WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -537,6 +537,9 @@ class Spect {
             case 32:	
 			  var temp = view.getUint32(offset, true)			  
 			  this.playerCellIDs.push(this.newID(temp));
+			  
+			    this.isSpectateEnabled = false
+			  
 			  //this.active = true
               console.log('[SPECT] case 32');
 				/*if (!this.openSecond){ 
