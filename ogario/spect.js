@@ -1,4 +1,4 @@
-//SPECS v4.3v WORKS UNTIL HERE
+//SPECS v4.3w WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -347,6 +347,12 @@ class Spect {
         }
         this.sendAction(18);
     }
+	sendBotEject(){ //specific private servers
+		this.sendAction(23);
+	}	
+    sendBotSplit() { //specific private servers
+        this.sendAction(22);
+    }	
     sendEject() {
         this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
         this.sendAction(21);
