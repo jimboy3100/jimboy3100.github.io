@@ -1147,7 +1147,7 @@ class Spect {
 					if (!invisible) invisible = this.isInViewCustom(x , y, size)	
 				}
 				else if (isFood){				
-					if (!window.fullSpectator %% !window.ingameSpectator){	
+					if (!window.fullSpectator && !window.ingameSpectator){	
 						if (!invisible) invisible = this.isInViewCustom(x , y, size)	
 					}					
 				}			
