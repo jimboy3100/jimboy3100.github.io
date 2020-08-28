@@ -1,4 +1,4 @@
-//v1.2
+//v1.3
         keyBlind = {};
         hotkeys = {};
         hotkeysCommand = {
@@ -604,7 +604,7 @@
                 type: 'normal'
             },		
             'hk-popBotSplit': {
-                label: 'Bot Popsplit',
+                label: 'Bots Popsplit (IMSOLO.PRO)',
                 defaultKey: '',
                 keyDown() {
                     if (legendmod.ws.includes("imsolo.pro") && application) application.popBotSplit();
