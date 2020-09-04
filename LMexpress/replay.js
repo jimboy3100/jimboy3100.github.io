@@ -1,4 +1,3 @@
-
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
     '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 500px;">' +
@@ -159,6 +158,7 @@ var temp4=tempo2[tempo2.length-1][3]
 		var tempGameMode = " Mode" + temp3
 		var tempGameNick = " Nick:" + temp4
 		var dateThen2 = dateThen.getDate() + "/" + monthErrorFix + "/" + dateThen.getFullYear() + " " + dateThen.getHours() + ":" + dateThen.getMinutes() + ":" + dateThen.getSeconds() + tempRegion + tempGameMode + tempGameNick
+		window.RecordedArenasSpecifications[$("#savedArenas").val()]=tempo2[tempo2.length-1]
 		$("#arenaReplaySpecifications").val(dateThen2)
 		$("#arenaReplaySpecifications").blur();
 		} catch (e) {}
