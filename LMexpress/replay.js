@@ -3,7 +3,7 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 500px;">' +
     '<div class="modal-content">' +
     '<div id="CloseReplay2" class="modal-header"><button id="CloseReplay" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQReplay type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-    '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Game Replay' + '</h4>' +
+    '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Replay' + '</h4>' +
     '</div>' +
     '<div class="modal-body">' +
     '<select id="savedArenas" class="form-control" required="" style="margin-bottom: 30px"></select><color="red" style="display:inline">' +
@@ -12,7 +12,7 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     '<br>' +
     '<color="red" style="display:inline"> Speed: </color><input id="arenaReplaySpeed" value="15" type="number" min="1" max="100" step="1" class="form-control" required="" style="display:inline; width: 20%; margin-top: -30px;">' +	
 	'<color="red"> PPS: </color><div id="arenaReplayPPS"  style="display:inline;width: 20%;"></div>' +
-    '<button id="watchReplaybtn" style="display:inline; margin-left: 80px;" type="button" data-dismiss="modal">Watch Replay</button>' +	
+    '<button id="watchReplaybtn" style="display:inline; margin-left: 80px;" type="button" data-dismiss="modal">Watch</button>' +	
     '<br>' +
 	'<br>' +
 `<table>       
