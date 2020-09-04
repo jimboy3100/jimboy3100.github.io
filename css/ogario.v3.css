@@ -1,4 +1,4 @@
-/*v0.09*/
+/*v0.10*/
 @import url(https://legendmod.ml/css/ogicomoon.css);
 @import url(https:///fonts.googleapis.com/css?family=Ubuntu:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext);
 @import url(https:///fonts.googleapis.com/css?family=Roboto:400,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese);
@@ -572,6 +572,10 @@ input.hide-url::selection,input.stream-mode::selection{
 }
 .quick-bots{
     left:60px 
+}
+
+.quick-replay {
+    right: 60px;
 }
 .quick-skins{
     right:15px 
