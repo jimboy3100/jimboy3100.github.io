@@ -132,6 +132,8 @@ var x = document.getElementById("savedArenas");
 var option = document.createElement("option");
 option.text = fileToLoad.name;
 x.add(option);
+x.options[x.length-1].selected = true;
+
 for (var i=0; i<tempo2.length;i++){
 	window.RecordedProtocol[fileToLoad.name][i]=[]
 	//window.RecordedProtocol['saved'][i] = new DataView(tempo2[i])
