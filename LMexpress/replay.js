@@ -6,13 +6,14 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Replay' + '</h4>' +
     '</div>' +
     '<div class="modal-body">' +
-    '<select id="savedArenas" class="form-control" required="" style="margin-bottom: 30px"></select><color="red" style="display:inline">' +
+    '<select id="savedArenas" class="form-control" required="" style="display:inline; margin-bottom: 10px; width: 81%"></select>' +
+	'<button id="watchReplaybtn" style="display:inline; margin-left: 10px;" type="button" data-dismiss="modal">Watch</button>' +
     '<input type="text" class="form-control" id="arenaReplaySpecifications" placeholder="Predicted values" style="width: 95%; display: inline-block">' +
     '<br>' +
     '<br>' +
     '<color="red" style="display:inline"> Speed: </color><input id="arenaReplaySpeed" value="15" type="number" min="1" max="100" step="1" class="form-control" required="" style="display:inline; width: 20%; margin-top: -30px;">' +	
 	'<color="red"> PPS: </color><div id="arenaReplayPPS"  style="display:inline;width: 20%;"></div>' +
-    '<button id="watchReplaybtn" style="display:inline; margin-left: 80px;" type="button" data-dismiss="modal">Watch</button>' +	
+    	
     '<br>' +
 	'<br>' +
 `<table>       
