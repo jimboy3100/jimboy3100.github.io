@@ -20,8 +20,7 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
 	<tr>
 		<td><button onclick="saveTextAsFile()">Save</button></td>
 		</tr>
-        <td><input type="file" id="fileToLoad"></td>
-        <td><button onclick="loadFileAsText()">Load</button><td>
+        <td><input type="file" id="fileToLoad" onchange="loadFileAsText()"></td>   
     </tr>
 </table>`+	
 	'</div>' +
