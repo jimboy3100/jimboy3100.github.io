@@ -7,7 +7,7 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     '</div>' +
     '<div class="modal-body">' +
     '<select id="savedArenas" class="form-control" required="" style="margin-bottom: 30px"></select><color="red" style="display:inline">' +
-    '<input type="text" class="form-control" id="arenaReplaySpecifications" value = "Predicted values" placeholder="*Search any GameConfiguration.json destination" style="width: 95%; display: inline-block">' +
+    '<input type="text" class="form-control" id="arenaReplaySpecifications" placeholder="Predicted values" style="width: 95%; display: inline-block">' +
     '<br>' +
     '<br>' +
     '<color="red" style="display:inline"> Speed: </color><input id="arenaReplaySpeed" value="15" type="number" min="1" max="100" step="1" class="form-control" required="" style="display:inline; width: 20%; margin-top: -30px;">' +	
