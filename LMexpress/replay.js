@@ -10,8 +10,9 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     '<input type="text" class="form-control" id="arenaReplaySpecifications" value = "Predicted values" placeholder="*Search any GameConfiguration.json destination" style="width: 95%; display: inline-block">' +
     '<br>' +
     '<br>' +
-    '<color="red" style="display:inline"> Speed: </color><input id="arenaReplaySpeed" value="40" type="number" min="1" max="100" step="1" class="form-control" required="" style="display:inline; width: 25%; margin-top: -30px;">' +
-    '<button id="watchReplaybtn" style="margin-left: 180px;" type="button" data-dismiss="modal"><span aria-hidden="true">Watch Replay</span>' +
+    '<color="red" style="display:inline"> Speed: </color><input id="arenaReplaySpeed" value="15" type="number" min="1" max="100" step="1" class="form-control" required="" style="display:inline; width: 20%; margin-top: -30px;">' +	
+	'<color="red"> PPS: </color><div id="arenaReplayPPS"  style="display:inline;width: 20%;"></div>' +
+    '<button id="watchReplaybtn" style="display:inline; margin-left: 80px;" type="button" data-dismiss="modal"><span aria-hidden="true">Watch Replay</span></button>' +	
     '</div>' +
     '</div>' +
     '</div>' +
@@ -26,6 +27,7 @@ $("#FAQReplay").click(function() {
     window.open('https://legendmod.ml/', '_blank');
 });
 $("#arenaReplaySpeed").val(window.replayTiming)
+$("#arenaReplayPPS").text((1000/window.replayTiming).toFixed(2))
 PopulateArenas();
 fillArenasSpecifications()
 
@@ -55,6 +57,7 @@ $("#savedArenas").change(function() {
 });
 $("#arenaReplaySpeed").change(function() {
     window.replayTiming = $("#arenaReplaySpeed").val()
+	$("#arenaReplayPPS").text((1000/window.replayTiming).toFixed(2))
 });
 $("#watchReplaybtn").click(function() {
     $("#server-token").val("replay^" + $("#savedArenas").val())
