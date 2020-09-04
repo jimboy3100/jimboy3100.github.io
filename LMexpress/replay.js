@@ -147,8 +147,8 @@ for (var i=0; i<tempo2.length-1;i++){
 	
 }
 var temp1=tempo2[tempo2.length-1][0]
-var temp2=tempo2[tempo2.length-1][1]
-var temp3=tempo2[tempo2.length-1][2]
+var temp2=tempo2[tempo2.length-1][2]
+var temp3=tempo2[tempo2.length-1][1]
 var temp4=tempo2[tempo2.length-1][3]
 
 		try{
