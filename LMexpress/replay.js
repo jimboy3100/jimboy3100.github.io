@@ -37,6 +37,9 @@ $("#CloseReplay").click(function() {
 $("#FAQReplay").click(function() {
     window.open('https://legendmod.ml/', '_blank');
 });
+if (localStorage.getItem("replayTiming") && localStorage.getItem("replayTiming")!=""){
+	window.replayTiming = localStorage.getItem("replayTiming")
+}
 $("#arenaReplaySpeed").val(window.replayTiming)
 $("#arenaReplayPPS").text((1000/window.replayTiming).toFixed(2))
 PopulateArenas();
@@ -46,6 +49,7 @@ $("#savedArenas").change(function() {
 });
 $("#arenaReplaySpeed").change(function() {
     window.replayTiming = $("#arenaReplaySpeed").val()
+	localStorage.setItem("replayTiming", window.replayTiming);
 	$("#arenaReplayPPS").text((1000/window.replayTiming).toFixed(2))
 });
 /*
