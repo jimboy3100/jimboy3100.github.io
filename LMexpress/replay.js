@@ -15,15 +15,11 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     '<button id="watchReplaybtn" style="display:inline; margin-left: 80px;" type="button" data-dismiss="modal">Watch Replay</button>' +	
     '<br>' +
 	'<br>' +
-`<table>
-
+`<table>       
     <tr>
-        <td>Save As:</td>
-        <td><input id="inputFileNameToSaveAs"></input></td>
-        <td><button onclick="saveTextAsFile()">Save</button></td>
-    </tr>
-    <tr>
-        <td>Load:</td>
+	<tr>
+		<td><button onclick="saveTextAsFile()">Save</button></td>
+		</tr>
         <td><input type="file" id="fileToLoad"></td>
         <td><button onclick="loadFileAsText()">Load</button><td>
     </tr>
@@ -100,7 +96,7 @@ var tempo = JSON.stringify(savedBuffedReplayProtocol);
     var textToSave = tempo;
     var textToSaveAsBlob = new Blob([textToSave], {type:"text/plain"});
     var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
-    var fileNameToSaveAs = document.getElementById("inputFileNameToSaveAs").value;
+    var fileNameToSaveAs = "replay.txt";
  
     var downloadLink = document.createElement("a");
     downloadLink.download = fileNameToSaveAs;
