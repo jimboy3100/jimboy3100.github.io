@@ -238,7 +238,8 @@ function fillArenasSpecifications() {
 		var monthErrorFix = dateThen.getMonth() + 1
 		var tempRegion = " Region" + window.RecordedArenasSpecifications[$("#savedArenas").val()][2]
 		var tempGameMode = " Mode:" + window.RecordedArenasSpecifications[$("#savedArenas").val()][1]
-		var dateThen2 = dateThen.getDate() + "/" + monthErrorFix + "/" + dateThen.getFullYear() + " " + dateThen.getHours() + ":" + dateThen.getMinutes() + ":" + dateThen.getSeconds() + tempRegion + tempGameMode
+		var tempNick = " Nick:" + window.RecordedArenasSpecifications[$("#savedArenas").val()][3]
+		var dateThen2 = dateThen.getDate() + "/" + monthErrorFix + "/" + dateThen.getFullYear() + " " + dateThen.getHours() + ":" + dateThen.getMinutes() + ":" + dateThen.getSeconds() + tempRegion + tempGameMode + tempNick
 		$("#arenaReplaySpecifications").val(dateThen2)
 		$("#arenaReplaySpecifications").blur();
 		} catch (e) {}
@@ -309,12 +310,14 @@ for (var i=0; i<tempo2.length-1;i++){
 var temp1=tempo2[tempo2.length-1][0]
 var temp2=tempo2[tempo2.length-1][1]
 var temp3=tempo2[tempo2.length-1][2]
+var temp4=tempo2[tempo2.length-1][3]
 
 		try{
         var dateThen = new Date(temp1)
 		var monthErrorFix = dateThen.getMonth() + 1
 		var tempRegion = " Region:" + temp2
 		var tempGameMode = " Mode" + temp3
+		var tempNick = " Nick:" + temp4
 		var dateThen2 = dateThen.getDate() + "/" + monthErrorFix + "/" + dateThen.getFullYear() + " " + dateThen.getHours() + ":" + dateThen.getMinutes() + ":" + dateThen.getSeconds() + tempRegion + tempGameMode
 		$("#arenaReplaySpecifications").val(dateThen2)
 		$("#arenaReplaySpecifications").blur();
@@ -421,7 +424,8 @@ function fillArenasSpecifications() {
 		var monthErrorFix = dateThen.getMonth() + 1
 		var tempRegion = " Region" + window.RecordedArenasSpecifications[$("#savedArenas").val()][2]
 		var tempGameMode = " Mode:" + window.RecordedArenasSpecifications[$("#savedArenas").val()][1]
-		var dateThen2 = dateThen.getDate() + "/" + monthErrorFix + "/" + dateThen.getFullYear() + " " + dateThen.getHours() + ":" + dateThen.getMinutes() + ":" + dateThen.getSeconds() + tempRegion + tempGameMode
+		
+		var dateThen2 = dateThen.getDate() + "/" + monthErrorFix + "/" + dateThen.getFullYear() + " " + dateThen.getHours() + ":" + dateThen.getMinutes() + ":" + dateThen.getSeconds() + tempRegion + tempGameMode + tempNick
 		$("#arenaReplaySpecifications").val(dateThen2)
 		$("#arenaReplaySpecifications").blur();
 		} catch (e) {}
