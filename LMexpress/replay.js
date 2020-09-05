@@ -98,7 +98,8 @@ var tempo = JSON.stringify(savedBuffedReplayProtocol);
     var textToSave = tempo;
     var textToSaveAsBlob = new Blob([textToSave], {type:"text/plain"});
     var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
-    var fileNameToSaveAs = "replay.lm";
+	var savedfileName = $("#savedArenas").val().replace(".lm", "");
+    var fileNameToSaveAs = savedfileName+".lm";
  
     var downloadLink = document.createElement("a");
     downloadLink.download = fileNameToSaveAs;
@@ -180,6 +181,7 @@ function str2ab(str) {
 return buf;
 	//return bufView;
 }
+
 
 
 
