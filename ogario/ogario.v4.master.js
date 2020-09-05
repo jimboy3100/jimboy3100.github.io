@@ -1,4 +1,4 @@
-//v12.60
+//v12.59
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -861,7 +861,7 @@ function legendmaster(self) {
 function continuelogout(){
         $("#UserProfileName1").text("Guest");
 		
-        $("#UserProfileUID1").val("");
+        //$("#UserProfileUID1").val("");
 		$("#replayuid").val("")
 		
 		$("#UserProfileUUID1").val("");	
@@ -886,7 +886,7 @@ function doFB() {
         $(".agario-profile-picture").attr('src', 'https://graph.facebook.com/' + fbresponse.id + '/picture?type=large');
 
         $("#UserProfileName1").text(fbresponse[Object.keys(fbresponse)[0]]);
-        $("#UserProfileUID1").val(fbresponse[Object.keys(fbresponse)[2]]);
+        //$("#UserProfileUID1").val(fbresponse[Object.keys(fbresponse)[2]]);
 		$("#replayuid").val(fbresponse[Object.keys(fbresponse)[2]])
 		
 		if (userid == fbresponse[Object.keys(fbresponse)[2]]){
@@ -925,7 +925,7 @@ function doGl() {
 	$(".agario-profile-picture").attr('src', GgImg);	
 	$("#UserProfileName1").text(GgProfileName);
 	
-	$("#UserProfileUID1").val(GgUID);
+	//$("#UserProfileUID1").val(GgUID);
 	$("#replayuid").val(GgUID)
 	
 	if (userid == GgUID){
