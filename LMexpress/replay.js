@@ -6,24 +6,17 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Replay' + '</h4>' +
     '</div>' +
     '<div class="modal-body">' +
-    '<select id="savedArenas" class="form-control" required="" style="display:inline; margin-bottom: 10px; width: 81%"></select>' +
-	'<button id="watchReplaybtn" style="display:inline; margin-left: 10px;" type="button" data-dismiss="modal">Watch</button>' +
+    '<select id="savedArenas" class="form-control" required="" style="display:inline; margin-bottom: 10px; width: 61%"></select>' +	
+	'<button id="watchReplaybtn" style="display:inline; margin-left: 4px;" type="button" data-dismiss="modal">Watch</button>' +
+	'<button onclick="saveTextAsFile()" "display:inline; margin-left: 4px;">Save</button>' +
     '<input type="text" class="form-control" id="arenaReplaySpecifications" placeholder="Predicted values" style="width: 95%; display: inline-block">' +
     '<br>' +
     '<br>' +
-    '<color="red" style="display:inline"> Speed: </color><input id="arenaReplaySpeed" value="15" type="number" min="1" max="100" step="1" class="form-control" required="" style="display:inline; width: 20%; margin-top: -30px;">' +	
-	'<color="red"> PPS: </color><div id="arenaReplayPPS"  style="display:inline;width: 20%;"></div>' +
+    '<color="red" style="display:inline"> Speed:</color><input id="arenaReplaySpeed" value="15" type="number" min="1" max="100" step="1" class="form-control" required="" style="display:inline; width: 15%; margin-top: -30px;">' +	
+	'<color="red" style="display:inline;"> PPS:</color><div id="arenaReplayPPS" style="display:inline;width: 10%;"></div><input type="file" id="fileToLoad" style="display:inline;" onchange="loadFileAsText()">' +
     	
     '<br>' +
-	'<br>' +
-`<table>       
-    <tr>
-	<tr>
-		<td><button onclick="saveTextAsFile()">Save</button></td>
-		</tr>
-        <td><input type="file" id="fileToLoad" onchange="loadFileAsText()"></td>   
-    </tr>
-</table>`+	
+	'<br>' +	
 	'</div>' +
     '</div>' +
     '</div>' +
@@ -42,7 +35,7 @@ if (localStorage.getItem("replayTiming") && localStorage.getItem("replayTiming")
 	window.replayTiming = localStorage.getItem("replayTiming")
 }
 $("#arenaReplaySpeed").val(window.replayTiming)
-$("#arenaReplayPPS").text((1000/window.replayTiming).toFixed(2))
+$("#arenaReplayPPS").text((1000/window.replayTiming).toFixed(0))
 PopulateArenas();
 fillArenasSpecifications()
 $("#savedArenas").change(function() {
@@ -51,7 +44,7 @@ $("#savedArenas").change(function() {
 $("#arenaReplaySpeed").change(function() {
     window.replayTiming = $("#arenaReplaySpeed").val()
 	localStorage.setItem("replayTiming", window.replayTiming);
-	$("#arenaReplayPPS").text((1000/window.replayTiming).toFixed(2))
+	$("#arenaReplayPPS").text((1000/window.replayTiming).toFixed(0))
 });
 /*
 $(document).on('click', '#watchReplaybtn', function() { 
