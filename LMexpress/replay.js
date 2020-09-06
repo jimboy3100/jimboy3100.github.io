@@ -21,7 +21,7 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
 	'<br>' +
 	'Start:<input type="number" class="form-control" id="startReplayTime" placeholder="" style="width: 19%; display: inline-block">' +
 	' End:<input type="number" class="form-control" id="endReplayTime" placeholder="" style="width: 19%; display: inline-block">' +
-	' Packets:<input type="text" class="form-control" id="totalReplayPackets" placeholder="" style="width: 19%; display: inline-block" disabled>' +
+	' Current:<input type="text" class="form-control" id="totalReplayPackets" placeholder="" style="width: 19%; display: inline-block" disabled>' +
 	'<button id="stopReplaybtn" style="display:inline; margin-left: 12px;" type="button" data-dismiss="modal">Stop</button>' +
 	'<br>' +
 	'<br>' +
@@ -34,7 +34,7 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     '</div>' +
     '</div>' +
     '</div>');
-
+$("#stopReplaybtn").prop('disabled', true);
 if (window.replayGreyScale){
 	$("#greyScale").click()
 }
@@ -108,7 +108,8 @@ $("#stopReplaybtn").click(function() {
 });
 function revealReplayTotal(){		
 	if ($("#savedArenas").val()!=null && $("#savedArenas").val()!="" && window.RecordedProtocol[$("#savedArenas").val()]){
-		$("#totalReplayPackets").val(window.RecordedProtocol[$("#savedArenas").val()].length-1)
+		window.RecordedProtocolPackets=window.RecordedProtocol[$("#savedArenas").val()].length-1
+		$("#totalReplayPackets").val("0/" +window.RecordedProtocolPackets)
 		$("#startReplayTime").val(0)
 		$("#endReplayTime").val(window.RecordedProtocol[$("#savedArenas").val()].length-1)
 	}
