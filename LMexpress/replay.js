@@ -16,6 +16,15 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
 	'<color="red" style="display:inline;"> PPS:</color><div id="arenaReplayPPS" style="display:inline;width: 10%;"></div><input type="file" id="fileToLoad" style="display:inline;" onchange="loadFileAsText()">' +
     	
     '<br>' +
+	'<br>' +
+	'Start:<input type="text" class="form-control" id="startReplayTime" placeholder="" style="width: 19%; display: inline-block">' +
+	' End:<input type="text" class="form-control" id="endReplayTime" placeholder="" style="width: 19%; display: inline-block">' +
+	' Packets:<input type="text" class="form-control" id="totalReplayPackets" placeholder="" style="width: 19%; display: inline-block" disabled>' +
+	'<br>' +
+	'<br>' +
+	'Greyscale: <input type="checkbox" id="greyscale">' +
+	' Sepia: <input type="checkbox" id="sepia">' +
+	' Hue-rotate: <input type="checkbox" id="hueRotate">' +
 	'<br>' +	
 	'</div>' +
     '</div>' +
@@ -38,8 +47,10 @@ $("#arenaReplaySpeed").val(window.replayTiming)
 $("#arenaReplayPPS").text((1000/window.replayTiming).toFixed(0))
 PopulateArenas();
 fillArenasSpecifications()
+revealReplayTotal()
 $("#savedArenas").change(function() {
     fillArenasSpecifications()
+	revealReplayTotal()
 });
 $("#arenaReplaySpeed").change(function() {
     window.replayTiming = $("#arenaReplaySpeed").val()
@@ -56,7 +67,11 @@ $("#watchReplaybtn").click(function() {
     $("#server-token").val("replay^" + $("#savedArenas").val())
     $("#server-join").click()
 });
-
+function revealReplayTotal(){		
+	if ($("#savedArenas").val()!=null && $("#savedArenas").val()!="" && window.RecordedProtocol[$("#savedArenas").val()]){
+		$("#totalReplayPackets").val(window.RecordedProtocol[$("#savedArenas").val()].length-1)
+	}
+}
 function PopulateArenas() {
     var select = document.getElementById("savedArenas");
     if (window.RecordedProtocolArenas && window.RecordedProtocolArenas.length) {
@@ -181,7 +196,6 @@ function str2ab(str) {
 return buf;
 	//return bufView;
 }
-
 
 
 
