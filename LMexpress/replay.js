@@ -1,4 +1,4 @@
-//v0.1
+//v0.1a
 
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
@@ -33,8 +33,34 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     '</div>' +
     '</div>');
 
+if (window.replayGreyScale){
+	$("#greyScale").click()
+}
+else if (window.replaySepia){
+	$("#sepia").click()
+}
+else if (window.replayHueRotate){
+	$("#hueRotate").click()
+}
 
-
+$("#greyScale").change(function() {
+	if (document.getElementById("greyScale").checked){
+		document.getElementById("sepia").checked = false
+		document.getElementById("hueRotate").checked =false
+	}
+});
+$("#sepia").change(function() {
+	if (document.getElementById("sepia").checked){
+		document.getElementById("greyScale").checked = false
+		document.getElementById("hueRotate").checked =false
+	}
+});
+$("#hueRotate").change(function() {
+	if (document.getElementById("hueRotate").checked){
+		document.getElementById("greyScale").checked = false
+		document.getElementById("sepia").checked =false
+	}
+});
 $("#CloseReplay").click(function() {
 
     $("#replayModal").remove();
@@ -50,6 +76,7 @@ $("#arenaReplayPPS").text((1000/window.replayTiming).toFixed(0))
 PopulateArenas();
 fillArenasSpecifications()
 revealReplayTotal()
+
 $("#savedArenas").change(function() {
     fillArenasSpecifications()
 	revealReplayTotal()
