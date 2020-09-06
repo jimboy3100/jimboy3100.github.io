@@ -22,7 +22,7 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
 	' Packets:<input type="text" class="form-control" id="totalReplayPackets" placeholder="" style="width: 19%; display: inline-block" disabled>' +
 	'<br>' +
 	'<br>' +
-	'Greyscale: <input type="checkbox" id="greyscale">' +
+	'Greyscale: <input type="checkbox" id="greyScale">' +
 	' Sepia: <input type="checkbox" id="sepia">' +
 	' Hue-rotate: <input type="checkbox" id="hueRotate">' +
 	'<br>' +	
@@ -64,6 +64,9 @@ $(document).on('click', '#watchReplaybtn', function() {
 });
 */
 $("#watchReplaybtn").click(function() {
+	window.replayGreyScale = document.getElementById("greyScale").checked
+	window.replaySepia = document.getElementById("sepia").checked
+	window.replayHueRotate = document.getElementById("Hue-rotate").checked
     $("#server-token").val("replay^" + $("#savedArenas").val())
     $("#server-join").click()
 });
