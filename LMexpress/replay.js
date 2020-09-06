@@ -17,8 +17,8 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     	
     '<br>' +
 	'<br>' +
-	'Start:<input type="text" class="form-control" id="startReplayTime" placeholder="" style="width: 19%; display: inline-block">' +
-	' End:<input type="text" class="form-control" id="endReplayTime" placeholder="" style="width: 19%; display: inline-block">' +
+	'Start:<input type="number" class="form-control" id="startReplayTime" placeholder="" style="width: 19%; display: inline-block">' +
+	' End:<input type="number" class="form-control" id="endReplayTime" placeholder="" style="width: 19%; display: inline-block">' +
 	' Packets:<input type="text" class="form-control" id="totalReplayPackets" placeholder="" style="width: 19%; display: inline-block" disabled>' +
 	'<br>' +
 	'<br>' +
@@ -70,6 +70,8 @@ $("#watchReplaybtn").click(function() {
 function revealReplayTotal(){		
 	if ($("#savedArenas").val()!=null && $("#savedArenas").val()!="" && window.RecordedProtocol[$("#savedArenas").val()]){
 		$("#totalReplayPackets").val(window.RecordedProtocol[$("#savedArenas").val()].length-1)
+		$("#startReplayTime").val(0)
+		$("#endReplayTime").val(window.RecordedProtocol[$("#savedArenas").val()].length-1)
 	}
 }
 function PopulateArenas() {
