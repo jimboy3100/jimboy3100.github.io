@@ -1,4 +1,4 @@
-//v0.1a
+//v0.1b
 
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
@@ -22,11 +22,13 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
 	'Start:<input type="number" class="form-control" id="startReplayTime" placeholder="" style="width: 19%; display: inline-block">' +
 	' End:<input type="number" class="form-control" id="endReplayTime" placeholder="" style="width: 19%; display: inline-block">' +
 	' Packets:<input type="text" class="form-control" id="totalReplayPackets" placeholder="" style="width: 19%; display: inline-block" disabled>' +
+	'<button id="stopReplaybtn" style="display:inline; margin-left: 12px;" type="button" data-dismiss="modal">Stop</button>' +
 	'<br>' +
 	'<br>' +
 	'Greyscale: <input type="checkbox" id="greyScale">' +
 	' Sepia: <input type="checkbox" id="sepia">' +
 	' Hue-rotate: <input type="checkbox" id="hueRotate">' +
+	
 	'<br>' +	
 	'</div>' +
     '</div>' +
@@ -98,6 +100,9 @@ $("#watchReplaybtn").click(function() {
 	window.replayHueRotate = document.getElementById("hueRotate").checked
     $("#server-token").val("replay^" + $("#savedArenas").val())
     $("#server-join").click()
+});
+$("#stopReplaybtn").click(function() {
+	clearTimeout(window.replayTimeOuts)
 });
 function revealReplayTotal(){		
 	if ($("#savedArenas").val()!=null && $("#savedArenas").val()!="" && window.RecordedProtocol[$("#savedArenas").val()]){
