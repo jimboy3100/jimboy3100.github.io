@@ -1,4 +1,4 @@
-//v0.1b
+//v0.1c
 
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
@@ -14,7 +14,7 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     '<input type="text" class="form-control" id="arenaReplaySpecifications" placeholder="Predicted values" style="width: 95%; display: inline-block">' +
     '<br>' +
     '<br>' +
-    '<color="red" style="display:inline"> Speed:</color><input id="arenaReplaySpeed" value="15" type="number" min="1" max="100" step="1" class="form-control" required="" style="display:inline; width: 15%; margin-top: -30px;">' +	
+    '<color="red" style="display:inline"> Speed:</color><input id="arenaReplaySpeed" value="20" type="number" min="1" max="100" step="1" class="form-control" required="" style="display:inline; width: 15%; margin-top: -30px;">' +	
 	'<color="red" style="display:inline;"> PPS:</color><div id="arenaReplayPPS" style="display:inline;width: 10%;"></div><input type="file" id="fileToLoad" style="display:inline;" onchange="loadFileAsText()">' +
     	
     '<br>' +
