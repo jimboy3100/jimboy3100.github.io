@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.433
+// v2.434
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -15660,8 +15660,11 @@ function playReplayLM(temp){
 		
 		legendmod.playingReplayRecord=0
 		
-		legendmod.playingReplayServer=temp	
-		if (parseInt(window.replayTiming)<0) legendmod.playingReplayRecord = window.RecordedProtocol[legendmod.playingReplayServer].length-1
+		legendmod.playingReplayServer=temp
+		legendmod.playingReplayRewind=false
+		legendmod.playingReplayRewindNow=false
+		if (parseInt(window.replayTiming)<0) legendmod.playingReplayRewind=true
+		//if (parseInt(window.replayTiming)<0) legendmod.playingReplayRecord = window.RecordedProtocol[legendmod.playingReplayServer].length-1
 		//start
 		window.playrecord = 0
 		intervalPlayingRecord()	
@@ -15692,9 +15695,8 @@ function intervalPlayingRecord(){
 		window.replayTiming2 = parseInt(window.replayTiming)
 		
 	}
-	else{
-		
-		if (window.replayTiming2!=0){
+	else{		
+		if (window.replayTiming2!=0 || (legendmod.playingReplayRewind && !legendmod.playingReplayRewindNow)){
 			window.replayTiming2= 0
 			$('#pause-hud').text("View review...");
 			$('#pause-hud').show()
@@ -15709,7 +15711,7 @@ function intervalPlayingRecord(){
 					if (legendmod.playingReplayRecord<window.RecordedProtocol[legendmod.playingReplayServer].length-1 && legendmod.playingReplayRecord>=0){
 						$("#totalReplayPackets").val(legendmod.playingReplayRecord + "/" +window.RecordedProtocolPackets)
 						intervalPlayingRecord();
-						if (parseInt(window.replayTiming)>=0){
+						if (parseInt(window.replayTiming)>=0 || !legendmod.playingReplayRewindNow){
 							legendmod.playingReplayRecord++
 						}
 						else{
@@ -15717,6 +15719,10 @@ function intervalPlayingRecord(){
 						}
 					}
 					else{
+						if (legendmod.playingReplayRecord>=0){
+							legendmod.playingReplayRewindNow=true
+							intervalPlayingRecord();
+						}
 						$("#stopReplaybtn").prop('disabled', true);
 						$('#pause-hud').text(textLanguage.pause);
 						$('#pause-hud').hide()						
