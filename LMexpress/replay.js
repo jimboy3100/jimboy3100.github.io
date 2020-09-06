@@ -1,3 +1,5 @@
+//v0.1
+
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
     '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 500px;">' +
@@ -66,7 +68,7 @@ $(document).on('click', '#watchReplaybtn', function() {
 $("#watchReplaybtn").click(function() {
 	window.replayGreyScale = document.getElementById("greyScale").checked
 	window.replaySepia = document.getElementById("sepia").checked
-	window.replayHueRotate = document.getElementById("Hue-rotate").checked
+	window.replayHueRotate = document.getElementById("hueRotate").checked
     $("#server-token").val("replay^" + $("#savedArenas").val())
     $("#server-join").click()
 });
