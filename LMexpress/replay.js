@@ -103,6 +103,7 @@ $("#watchReplaybtn").click(function() {
 });
 $("#stopReplaybtn").click(function() {
 	clearTimeout(window.replayTimeOuts)
+	$('#pause-hud').text(textLanguage.pause);
 });
 function revealReplayTotal(){		
 	if ($("#savedArenas").val()!=null && $("#savedArenas").val()!="" && window.RecordedProtocol[$("#savedArenas").val()]){
