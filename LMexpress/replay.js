@@ -114,7 +114,7 @@ function revealReplayTotal(){
 		window.RecordedProtocolPackets=window.RecordedProtocol[$("#savedArenas").val()].length-2
 		$("#totalReplayPackets").val("0/" +window.RecordedProtocolPackets)
 		$("#startReplayTime").val(0)
-		$("#endReplayTime").val(window.RecordedProtocol[$("#savedArenas").val()].length-1)
+		$("#endReplayTime").val(window.RecordedProtocol[$("#savedArenas").val()].length-2)
 	}
 }
 function PopulateArenas() {
@@ -177,9 +177,14 @@ function destroyClickedElement(event)
     document.body.removeChild(event.target);
 }
  
-function loadFileAsText()
+function loadFileAsText(file)
 {
-    var fileToLoad = document.getElementById("fileToLoad").files[0];
+	if (!file){
+		var fileToLoad = document.getElementById("fileToLoad").files[0];
+	}
+	else if(file){
+		var fileToLoad = file
+	}
 	//console.log(fileToLoad.name)
     var fileReader = new FileReader();
     fileReader.onload = function(fileLoadedEvent) 
