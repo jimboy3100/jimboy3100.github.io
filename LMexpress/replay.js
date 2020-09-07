@@ -1,4 +1,4 @@
-//v0.1c
+//v0.1d
 
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
@@ -11,7 +11,7 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     '<select id="savedArenas" class="form-control" required="" style="display:inline; margin-bottom: 10px; width: 70%"></select>' +	
 	'<button id="watchReplaybtn" style="display:inline; margin-left: 12px;" type="button" data-dismiss="modal">Watch</button>' +
 	'<button onclick="saveTextAsFile()" "display:inline;">Save</button>' +
-    '<input type="text" class="form-control" id="arenaReplaySpecifications" placeholder="Predicted values" style="width: 95%; display: inline-block">' +
+    '<input type="text" class="form-control" id="arenaReplaySpecifications" placeholder="Predicted values" style="width: 95%; display: inline-block" disabled>' +
     '<br>' +
     '<br>' +
     '<color="red" style="display:inline"> Speed:</color><input id="arenaReplaySpeed" value="20" type="number" min="1" max="100" step="1" class="form-control" required="" style="display:inline; width: 15%; margin-top: -30px;">' +	
