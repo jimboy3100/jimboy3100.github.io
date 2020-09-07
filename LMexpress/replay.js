@@ -82,6 +82,7 @@ revealReplayTotal()
 $("#savedArenas").change(function() {
     fillArenasSpecifications()
 	revealReplayTotal()
+	console.log('a')
 });
 $("#arenaReplaySpeed").change(function() {
     window.replayTiming = $("#arenaReplaySpeed").val()
@@ -216,6 +217,7 @@ var temp4=tempo2[tempo2.length-1][3]
 		window.RecordedArenasSpecifications[$("#savedArenas").val()]=tempo2[tempo2.length-1]
 		$("#arenaReplaySpecifications").val(dateThen2)
 		$("#arenaReplaySpecifications").blur();
+		revealReplayTotal()
 		} catch (e) {}
 		
 	
