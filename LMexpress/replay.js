@@ -110,7 +110,7 @@ $("#stopReplaybtn").click(function() {
 });
 function revealReplayTotal(){		
 	if ($("#savedArenas").val()!=null && $("#savedArenas").val()!="" && window.RecordedProtocol[$("#savedArenas").val()]){
-		window.RecordedProtocolPackets=window.RecordedProtocol[$("#savedArenas").val()].length-1
+		window.RecordedProtocolPackets=window.RecordedProtocol[$("#savedArenas").val()].length-2
 		$("#totalReplayPackets").val("0/" +window.RecordedProtocolPackets)
 		$("#startReplayTime").val(0)
 		$("#endReplayTime").val(window.RecordedProtocol[$("#savedArenas").val()].length-1)
