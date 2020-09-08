@@ -20,9 +20,11 @@ if ($("#legendhelper")){
 }, 5000);
 
 function init() {
-defaultSettings.hudScale=0.84
+defaultSettings.hudScale=0.54
 $(".ogicon-home").click()
-
+defaultSettings.miniMapWidth=160
+$(".btn.btn-block.btn-success.btn-save").click()
+	
 function addStyleString(str) {
     var node = document.createElement('style');
     node.innerHTML = str;
