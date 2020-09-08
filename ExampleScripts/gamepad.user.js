@@ -21,7 +21,7 @@ if ($("#legendhelper")){
 
 function init() {
 defaultSettings.hudScale=0.84
-
+$(".ogicon-home").click()
 
 function addStyleString(str) {
     var node = document.createElement('style');
