@@ -200,11 +200,6 @@ document.body.appendChild(buttons)
 buttons.innerHTML=`<div key="27" class="menu-ag wpk-btn">
   <span class="fa fa-sign-out"></span>
 </div>
-
-<div key="75" class="menu-ag wpk-fullscreen wpk-btn">
-  <span class="fa fa-gamepad"></span>
-</div>
-
 <div class="ovh-chat wpk-btn" key="13">
 <span class="fa fa-comment-o"></span>
 </div>
@@ -224,6 +219,9 @@ buttons.innerHTML=`<div key="27" class="menu-ag wpk-btn">
   <div class="wpk-button infinity-cursor" key="82">R</img></div>
   <div class="wpk-button sixteen-split" key="16">Shift</div>`
 /*
+<div key="75" class="menu-ag wpk-fullscreen wpk-btn">
+  <span class="fa fa-gamepad"></span>
+</div>
 <div class="menu-ag wpk-fullscreen2 wpk-btn" id="fullscrn">
   <span class="fa fa-tv"></span>
 </div>
