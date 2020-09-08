@@ -22,7 +22,7 @@ if ($("#legendhelper")){
 function init() {
 defaultSettings.hudScale=0.70
 $(".ogicon-home").click()
-defaultSettings.miniMapWidth=120
+defaultSettings.miniMapWidth=90
 $(".btn.btn-block.btn-success.btn-save").click()
 	
 function addStyleString(str) {
