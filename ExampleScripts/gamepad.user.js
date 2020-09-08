@@ -15,7 +15,7 @@
 setTimeout(function() {
 legendmod.autoZoom=true;	
 if ($("#legendhelper")){
-	closecustomskinsIframe2020()
+	//closecustomskinsIframe2020()
 }
 }, 5000);
 
