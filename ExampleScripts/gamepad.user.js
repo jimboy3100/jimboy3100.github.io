@@ -164,7 +164,7 @@ addStyleString(`@import "https://legendmod.ml/css/styles.css" all;
   line-height:55px;
   width: 55px;
   height: 55px;
-  bottom: 145px;
+  bottom: 75px;
   left: 0px;
 }
 .wpk-button.sixteen-split {
