@@ -141,7 +141,7 @@ addStyleString(`@import "https://legendmod.ml/css/styles.css" all;
   width: 50px;
   height: 50px;
   bottom: 30px;
-  left: -200px;
+  left: -100px;
 }
 .wpk-button.split {
   background-color: #607d8b;
@@ -149,7 +149,7 @@ addStyleString(`@import "https://legendmod.ml/css/styles.css" all;
   width: 50px;
   height: 50px;
   bottom: 130px;
-  left: -150px;
+  left: -50px;
 }
 .wpk-button.double-split {
   background-color: #8bc34a;
@@ -157,7 +157,7 @@ addStyleString(`@import "https://legendmod.ml/css/styles.css" all;
   width: 55px;
   height: 55px;
   bottom: 85px;
-  left: -40px;
+  left: 0px;
 }
 .wpk-button.infinity-cursor {
   background-color: #9c27b0;
@@ -165,7 +165,7 @@ addStyleString(`@import "https://legendmod.ml/css/styles.css" all;
   width: 55px;
   height: 55px;
   bottom: 145px;
-  left: -40px;
+  left: 0px;
 }
 .wpk-button.sixteen-split {
   background-color: #F44336;
@@ -173,7 +173,7 @@ addStyleString(`@import "https://legendmod.ml/css/styles.css" all;
   width: 55px;
   height: 55px;
   bottom: 25px;
-  left: -40px;
+  left: 0px;
 }`)
 
 
