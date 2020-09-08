@@ -11,6 +11,7 @@
 
 // © 2019 neosoft
 
+
 setTimeout(function() {
 legendmod.autoZoom=true;	
 if ($("#legendhelper")){
@@ -19,7 +20,7 @@ if ($("#legendhelper")){
 }, 5000);
 
 function init() {
-
+defaultSettings.hudScale=0.84
 
 
 function addStyleString(str) {
