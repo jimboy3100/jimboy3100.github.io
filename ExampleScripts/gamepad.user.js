@@ -1,4 +1,4 @@
-// ==UserScript==
+ // ==UserScript==
 // @name         gamepad by ɴᴇᴏ
 // @version      2.0
 // @description  touch mobile extension
@@ -137,17 +137,17 @@ addStyleString(`@import "https://legendmod.ml/css/styles.css" all;
 }
 .wpk-button.w-feed-auto {
   background-color: #607d8b;
-  line-height:80px;
-  width: 100px;
-  height: 100px;
+
+  width: 50px;
+  height: 50px;
   bottom: 30px;
   left: -200px;
 }
 .wpk-button.split {
   background-color: #607d8b;
-  line-height:70px;
-  width: 100px;
-  height: 100px;
+
+  width: 50px;
+  height: 50px;
   bottom: 130px;
   left: -150px;
 }
@@ -220,8 +220,8 @@ buttons.innerHTML=`<div key="27" class="menu-ag wpk-btn">
   <span class="fa fa-tv"></span>
 </div>
 <div class="wpk-container-buttons">
-  <div class="wpk-button w-feed-auto" key="69"><img src="https://legendmod.ml/banners/iconMobileFeed.png" height="100px"></img></div>
-  <div class="wpk-button split" key="32"><img src="https://legendmod.ml/banners/iconMobileSplit.png" height="100px"></img></div>
+  <div class="wpk-button w-feed-auto" key="69"><img src="https://legendmod.ml/banners/iconMobileFeed.png" height="50px"></img></div>
+  <div class="wpk-button split" key="32"><img src="https://legendmod.ml/banners/iconMobileSplit.png" height="50px"></img></div>
   <div class="wpk-button double-split" key="81">Q</div>
   <div class="wpk-button infinity-cursor" key="82">R</img></div>
   <div class="wpk-button sixteen-split" key="16">Shift</div>`
