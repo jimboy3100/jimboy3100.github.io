@@ -1,6 +1,6 @@
  // ==UserScript==
 // @name         gamepad by ɴᴇᴏ
-// @version      2.1
+// @version      2.0
 // @description  touch mobile extension
 // @author       ɴᴇᴏ
 // @match		*://*.agar.io/*
@@ -22,7 +22,7 @@ if ($("#legendhelper")){
 function init() {
 defaultSettings.hudScale=0.70
 $(".ogicon-home").click()
-defaultSettings.miniMapWidth=160
+defaultSettings.miniMapWidth=120
 $(".btn.btn-block.btn-success.btn-save").click()
 	
 function addStyleString(str) {
@@ -216,16 +216,18 @@ buttons.innerHTML=`<div key="27" class="menu-ag wpk-btn">
 <div class="wpk-zoomout wpk-btn" id="zoomOut" style="display:block;" >
 <span class="fa fa-minus"></span>
 </div>
-<div class="menu-ag wpk-fullscreen2 wpk-btn" id="fullscrn">
-  <span class="fa fa-tv"></span>
-</div>
+
 <div class="wpk-container-buttons">
   <div class="wpk-button w-feed-auto" key="69"><img src="https://legendmod.ml/banners/iconMobileFeed.png" height="50px"></img></div>
   <div class="wpk-button split" key="32"><img src="https://legendmod.ml/banners/iconMobileSplit.png" height="50px"></img></div>
   <div class="wpk-button double-split" key="81">Q</div>
   <div class="wpk-button infinity-cursor" key="82">R</img></div>
   <div class="wpk-button sixteen-split" key="16">Shift</div>`
-
+/*
+<div class="menu-ag wpk-fullscreen2 wpk-btn" id="fullscrn">
+  <span class="fa fa-tv"></span>
+</div>
+*/
 
 
 var options = {
