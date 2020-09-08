@@ -1,6 +1,6 @@
  // ==UserScript==
 // @name         gamepad by ɴᴇᴏ
-// @version      2.0
+// @version      2.1
 // @description  touch mobile extension
 // @author       ɴᴇᴏ
 // @match		*://*.agar.io/*
@@ -20,7 +20,7 @@ if ($("#legendhelper")){
 }, 5000);
 
 function init() {
-defaultSettings.hudScale=0.54
+defaultSettings.hudScale=0.70
 $(".ogicon-home").click()
 defaultSettings.miniMapWidth=160
 $(".btn.btn-block.btn-success.btn-save").click()
@@ -148,7 +148,7 @@ addStyleString(`@import "https://legendmod.ml/css/styles.css" all;
 
   width: 50px;
   height: 50px;
-  bottom: 130px;
+  bottom: 75px;
   left: -50px;
 }
 .wpk-button.double-split {
@@ -164,7 +164,7 @@ addStyleString(`@import "https://legendmod.ml/css/styles.css" all;
   line-height:55px;
   width: 55px;
   height: 55px;
-  bottom: 75px;
+  bottom: 145px;
   left: 0px;
 }
 .wpk-button.sixteen-split {
