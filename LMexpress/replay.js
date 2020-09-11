@@ -1,4 +1,4 @@
-//v0.1h
+//v0.1i
 
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
@@ -267,8 +267,10 @@ function loadReplayFromWeb(temp2){
 				var replayWebLoaded = new Blob([sketchContents], {type:"text/plain"});
 				replayWebLoaded.name = temp2 
 				loadFileAsText(replayWebLoaded)
-				$("#watchReplaybtn").click()
-				application.onSpectate()				
+				setTimeout(function() {
+					$("#watchReplaybtn").click()
+					application.onSpectate()	
+				}, 1000);				
 			}
 			else{
 				toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Requested file is not .lm");
