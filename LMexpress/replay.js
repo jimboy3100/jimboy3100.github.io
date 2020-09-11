@@ -1,4 +1,4 @@
-//v0.1g
+//v0.1h
 
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
@@ -71,6 +71,12 @@ $("#CloseReplay").click(function() {
 $("#FAQReplay").click(function() {
     window.open('https://legendmod.ml/', '_blank');
 });
+
+
+
+
+
+
 if (localStorage.getItem("replayTiming") && localStorage.getItem("replayTiming")!=""){
 	window.replayTiming = localStorage.getItem("replayTiming")
 }
@@ -90,6 +96,11 @@ $("#arenaReplaySpeed").change(function() {
 	localStorage.setItem("replayTiming", window.replayTiming);
 	//$("#arenaReplayPPS").text((1000/window.replayTiming).toFixed(0))
 });
+
+
+
+
+
 /*
 $(document).on('click', '#watchReplaybtn', function() { 
     $("#server-token").val("replay^" + $("#savedArenas").val())
@@ -256,6 +267,8 @@ function loadReplayFromWeb(temp2){
 				var replayWebLoaded = new Blob([sketchContents], {type:"text/plain"});
 				replayWebLoaded.name = temp2 
 				loadFileAsText(replayWebLoaded)
+				$("#watchReplaybtn").click()
+				application.onSpectate()				
 			}
 			else{
 				toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Requested file is not .lm");
