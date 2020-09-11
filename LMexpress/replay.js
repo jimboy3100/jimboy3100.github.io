@@ -1,4 +1,4 @@
-//v0.1d
+//v0.1e
 
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
@@ -15,8 +15,8 @@ $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hid
     '<br>' +
     '<br>' +
     '<color="red" style="display:inline"> Speed:</color><input id="arenaReplaySpeed" value="20" type="number" min="1" max="100" step="1" class="form-control" required="" style="display:inline; width: 15%; margin-top: -30px;">' +	
-	'<color="red" style="display:inline;"> PPS:</color><div id="arenaReplayPPS" style="display:inline;width: 10%;"></div><input type="file" id="fileToLoad" style="display:inline;" onchange="loadFileAsText()">' +
-    	
+	//'<color="red" style="display:inline;"> PPS:</color><div id="arenaReplayPPS" style="display:inline;width: 10%;"></div><input type="file" id="fileToLoad" style="display:inline;" onchange="loadFileAsText()">' +
+    '<color="red" style="display:inline;"> </div><input type="file" id="fileToLoad" style="display:inline;" onchange="loadFileAsText()">' +	
     '<br>' +
 	'<br>' +
 	'Start:<input type="number" class="form-control" id="startReplayTime" placeholder="" style="width: 19%; display: inline-block">' +
@@ -75,7 +75,7 @@ if (localStorage.getItem("replayTiming") && localStorage.getItem("replayTiming")
 	window.replayTiming = localStorage.getItem("replayTiming")
 }
 $("#arenaReplaySpeed").val(window.replayTiming)
-$("#arenaReplayPPS").text((1000/window.replayTiming).toFixed(0))
+//$("#arenaReplayPPS").text((1000/window.replayTiming).toFixed(0))
 PopulateArenas();
 fillArenasSpecifications()
 revealReplayTotal()
@@ -88,7 +88,7 @@ $("#savedArenas").change(function() {
 $("#arenaReplaySpeed").change(function() {
     window.replayTiming = $("#arenaReplaySpeed").val()
 	localStorage.setItem("replayTiming", window.replayTiming);
-	$("#arenaReplayPPS").text((1000/window.replayTiming).toFixed(0))
+	//$("#arenaReplayPPS").text((1000/window.replayTiming).toFixed(0))
 });
 /*
 $(document).on('click', '#watchReplaybtn', function() { 
@@ -247,5 +247,4 @@ function str2ab(str) {
 return buf;
 	//return bufView;
 }
-
 
