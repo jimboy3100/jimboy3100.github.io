@@ -28,6 +28,7 @@
     <link rel="stylesheet" type="text/css" href="https://legendmod.ml/extras/website/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="https://legendmod.ml/extras/website/github-light.css" media="screen">
     <link rel="stylesheet" type="text/css" href="https://legendmod.ml/css/styles.css" media="all">
+	<script src="https://legendmod.ml/skins/jquery.min.js"></script>
     <!-- Fav Icon -->
     <link type="image/x-icon" rel="shortcut icon" href="https://legendmod.ml/banners/icon32croped.ico.gif">
     <!-- Because cssFiles and jsFiles are relative urls -->
@@ -448,7 +449,16 @@
                 allowfullscreen="allowfullscreen"></iframe>			
             <h2 class="project-tagline">Updates</h2>
             <b>Legend Express</b>
-           
+            <br>
+			<br>
+			Making replay iframes:
+			<br>Save your replay and upload it as file or as raw .lm on the web 
+			<br>(If you want to use github see this repo: https://github.com/dkyriak/dkyriak.github.io)
+			<br>Use <i>https://legendmod.ml/play?replay=</i> and then your file
+			<br>Example:
+			<br>
+			<br><textarea rows="1" cols="80">https://legendmod.ml/play?replay=https://legendmod.ml/old/1eqy0ec.lm</textarea>	
+			<br><button id="LMiframeBtn" class="btn-link" data-toggle="tooltip" data-original-title="Click to start iframe">Start iframe</button>						
         </section>
     </div>
     <div id="FPS" class="skins-wrapper" style="display: none;">
@@ -568,6 +578,11 @@
     </div>
     <script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script>
     <script>
+	$("#LMiframeBtn").click(function() {
+        $("#LMiframeBtn").after('<br><iframe id="LMFrame" width="50%" height="50%" src="https://legendmod.ml/play?replay=https://legendmod.ml/old/1eqy0ec.lm" frameborder="0" allowfullscreen=""></iframe></div>')
+		$("#LMiframeBtn").hide();
+		});
+	
         function JoinLcPartyMode() {
             window.open('https://legendmod.ml/LMexpress/LMexpress.user.js');
             //setTimeout(function() {
@@ -612,7 +627,7 @@
 
         gtag('config', 'UA-92655864-2');
     </script>
-    <script src="https://legendmod.ml/skins/jquery.min.js"></script>
+    
     <script src="https://legendmod.ml/skins/jquery.lazyload.min.js"></script>
     <script src="https://legendmod.ml/skins/skins.js"></script>
     <script>
