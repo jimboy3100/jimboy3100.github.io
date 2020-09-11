@@ -1,4 +1,4 @@
-//v0.1f
+//v0.1g
 
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
@@ -247,4 +247,22 @@ function str2ab(str) {
 return buf;
 	//return bufView;
 }
-
+function loadReplayFromWeb(temp2){
+	$.ajax(temp2, {
+        error() {},
+        success(sketchContents) {
+			if (temp2.includes(".lm")){
+				temp2 = temp2.split("/").pop();
+				var replayWebLoaded = new Blob([sketchContents], {type:"text/plain"});
+				replayWebLoaded.name = temp2 
+				loadFileAsText(replayWebLoaded)
+			}
+			else{
+				toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Requested file is not .lm");
+			}
+        },
+        method: "GET",
+        cache: false,
+        crossDomain: true
+    });
+}
