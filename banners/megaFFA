@@ -3,7 +3,8 @@
 </a>
 <script>
 function startMegaFFAserver(){
-  $('#gamemode option[value=34]').prop('selected', 'selected').change();
+  //$('#gamemode option[value=34]').prop('selected', 'selected').change();
+  $('#region option[value="Private"]').prop('selected', 'selected').change();
 }
   var imgUrl = "https://legendmod.ml/banners/iconMegaFFA.png";
   var $img = $('<img id="legendAdImg" height="70px" src="'+ imgUrl +'" style="width: 100%">');
