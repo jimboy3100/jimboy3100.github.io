@@ -1,4 +1,4 @@
-//SPECS v4.4h WORKS UNTIL HERE
+//SPECS v4.4i WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -366,7 +366,7 @@ class Spect {
     sendNick(nick) {
 		if (!this.active){ //if cell didn't start
 		console.log(nick)
-		this.sendNickOnce=true
+		//this.sendNickOnce=true
         var self = this
 		this.playerNick = nick;
             var sendSpawn = function(token) {
@@ -677,7 +677,7 @@ class Spect {
 			  this.accessTokenSent = true
               console.log('[SPECT] case 103');
 			  application.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor, ogarcopythelb.skinURL);
-			  this.handleSendNick();			  
+			  this.getTheOppositeSocialToken();			  
                 break;
             case 104:
               console.log('[SPECT] case 104');
@@ -748,7 +748,7 @@ class Spect {
 						//console.log("[SPECT] SendNick without")
 						//this.sendCursor()
 						MultiTokenReady(this)
-						//this.handleSendNick();
+						this.getTheOppositeSocialToken()
 					}
                 } 
 				else {
