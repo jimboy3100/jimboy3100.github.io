@@ -1,4 +1,4 @@
-//SPECS v4.4c WORKS UNTIL HERE
+//SPECS v4.4d WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -560,41 +560,35 @@ class Spect {
 
                 break;
 			case 49: //leaderboard for specific private servers
-					
-					this.leaderboard = [];
-					for (let position = 0; offset <view.byteLength;) {
-                        var flags = view.getUint8(offset++);
-                        let nick = '';
-                        let id = 0;
-                        //let isFriend = false;
-                        //let isFBFriend = false;
-                        position++;
-                        if (flags & 2) {
-                            nick = window.decodeURIComponent(window.escape(encode()));
-                        }
-                        if (flags & 4) {
-                            id = view.getUint32(offset, true);
-                            offset += 4;
-                        }
-                        if (flags & 8) {
-                            nick = this.playerNick;
-                            id = 'isPlayer';
-                            this.playerPosition = position;
-						}
+				window.testobjectsOpcode49 = data;
+				this.leaderboard = [];
+				var count = data.getUint32(offset, true);
+				offset += 4;
+				for (i = 0; i < count; ++i) {
+					var isMe = !!data.getUint32(offset, true);
+					offset += 4;
+					if (isMe){ 
+						isMe = 'isPlayer'
+					}
+					let nick = window.decodeURIComponent(window.escape(encode())); //data.getStringUTF8();
+					var temp;
 						
-						if (!application.customSkinsMap[nick] && temp){
-							core.registerSkin(nick, null, "https://dkyriak.github.io/imsolo/" + temp + ".png", null);
-							application.customSkinsMap[nick + "\'s imsolo.pro bot"]= "https://dkyriak.github.io/imsolo/" + temp + ".png"
+					if (nick.includes('}')){
+						temp = nick.split('}')[0].split('{')[1]
+						nick = nick.split('}')[1]
+					}	
+					if (!application.customSkinsMap[nick] && temp){
+						core.registerSkin(nick, null, "https://dkyriak.github.io/imsolo/" + temp + ".png", null);
+						application.customSkinsMap[nick + "\'s imsolo.pro bot"]= "https://dkyriak.github.io/imsolo/" + temp + ".png"
 							//core.registerSkin(nick, null, "https://imsolo.pro/web/skins/" + temp + ".png", null);
-						}
+					}
 						
 						this.leaderboard.push({
-						id: id,
+						id: isMe,
 						nick: nick
 						});
 					}
-									
-					break;				
+					//this.handleLeaderboard();				
             case 53:
 				this.leaderboard = [];
                     for (let position = 0; offset <view.byteLength;) {
