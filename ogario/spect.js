@@ -1,4 +1,4 @@
-//SPECS v4.4f WORKS UNTIL HERE
+//SPECS v4.4e WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -822,7 +822,7 @@ class Spect {
         }					
 	}	
     getX(x) {
-      if((this.ghostFixed || !legendmod.integrity) && this.mapOffsetFixed) {
+      if(this.ghostFixed && this.mapOffsetFixed) {
 		  return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
 		  
 		  /*if (!window.multifixOffset) return ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x)
@@ -833,7 +833,7 @@ class Spect {
       }
     }
     getY(y) {
-      if((this.ghostFixed || !legendmod.integrity) && this.mapOffsetFixed) {
+      if(this.ghostFixed && this.mapOffsetFixed) {
 		 return ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y)
 		 
 		 /*if (!window.multifixOffset) 
@@ -1109,7 +1109,7 @@ class Spect {
 			var invisible;
 
 		
-			if (!this.player && (this.ghostFixed || !legendmod.integrity) ){
+			if (!this.player && this.ghostFixed){
 				invisible = this.staticX!=null?this.isInView(x, y):false;
 			}	
 				
@@ -1130,7 +1130,7 @@ class Spect {
 			var remove = false;		
 			//!this.player
 			//if (!this.player){
-			if (this.ghostFixed || !legendmod.integrity){	
+			if (this.ghostFixed){	
 				var a = x - legendmod.playerX;
 				var b = y - legendmod.playerY;
 				var distanceX = Math.round(Math.sqrt(a * a));
@@ -1205,7 +1205,7 @@ class Spect {
 				}
 				//
 				
-			if (!this.player && (this.ghostFixed || !legendmod.integrity)){				
+			if (!this.player && this.ghostFixed){				
 				if (!isFood){
 					if (!invisible) invisible = this.isInViewCustom(x , y, size)	
 				}
