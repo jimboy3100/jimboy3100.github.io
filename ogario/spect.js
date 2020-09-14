@@ -133,11 +133,15 @@ class Spect {
       
             let view = this.createView(5);
             view.setUint8(0, 254);
-            view.setUint32(1, this.protocolVersion, true);
+			if (!legendmod.integrity){ view.setUint32(1, 6, true); }
+			else{ view.setUint32(1, this.protocolVersion, true);  } //	
+            //view.setUint32(1, this.protocolVersion, true);
             this.sendMessage(view);
             view = this.createView(5);
             view.setUint8(0, 255);
-            view.setUint32(1, this.clientVersion, true);
+			if (!legendmod.integrity){ view.setUint32(1, 1, true); } //protocol 6 and 5
+			else{ view.setUint32(1, this.clientVersion, true); }//			
+            //view.setUint32(1, this.clientVersion, true);
             this.sendMessage(view);
             this.connectionOpened = true;
       
