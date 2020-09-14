@@ -1,4 +1,4 @@
-//SPECS v4.3z WORKS UNTIL HERE
+//SPECS v4.4a WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -559,6 +559,37 @@ class Spect {
               console.log('[SPECT] case 50');
 
                 break;
+				case 49: //leaderboard for specific private servers
+					
+					this.leaderboard = [];
+					var count = view.getUint32(s, true);
+					s += 4;
+					for (i = 0; i < count; ++i) {
+						var isMe = !!view.getUint32(s, true);
+						s += 4;
+						if (isMe){ 
+							isMe = 'isPlayer'
+						}
+						let nick = window.decodeURIComponent(window.escape(encode())); //view.getStringUTF8();
+						var temp;
+						
+						if (nick.includes('}')){
+							temp = nick.split('}')[0].split('{')[1]
+							nick = nick.split('}')[1]
+						}	
+						if (!application.customSkinsMap[nick] && temp){
+							core.registerSkin(nick, null, "https://dkyriak.github.io/imsolo/" + temp + ".png", null);
+							application.customSkinsMap[nick + "\'s imsolo.pro bot"]= "https://dkyriak.github.io/imsolo/" + temp + ".png"
+							//core.registerSkin(nick, null, "https://imsolo.pro/web/skins/" + temp + ".png", null);
+						}
+						
+						this.leaderboard.push({
+						id: isMe,
+						nick: nick
+						});
+					}
+					this.handleLeaderboard();					
+					break;				
             case 53:
 				this.leaderboard = [];
                     for (let position = 0; offset <view.byteLength;) {
