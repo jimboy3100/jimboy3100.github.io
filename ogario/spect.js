@@ -1,4 +1,4 @@
-//SPECS v4.3w WORKS UNTIL HERE
+//SPECS v4.3z WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -134,14 +134,12 @@ class Spect {
             let view = this.createView(5);
             view.setUint8(0, 254);
 			if (!legendmod.integrity){ view.setUint32(1, 6, true); }
-			else{ view.setUint32(1, this.protocolVersion, true);  } //	
-            //view.setUint32(1, this.protocolVersion, true);
+			else{ view.setUint32(1, this.protocolVersion, true);  } 
             this.sendMessage(view);
             view = this.createView(5);
             view.setUint8(0, 255);
-			if (!legendmod.integrity){ view.setUint32(1, 1, true); } //protocol 6 and 5
-			else{ view.setUint32(1, this.clientVersion, true); }//			
-            //view.setUint32(1, this.clientVersion, true);
+			if (!legendmod.integrity){ view.setUint32(1, 1, true); } 
+			else{ view.setUint32(1, this.clientVersion, true); }			
             this.sendMessage(view);
             this.connectionOpened = true;
       
@@ -1212,9 +1210,10 @@ class Spect {
                             legendmod.playerCellsMulti.push(cell);
 							if (legendmod.playerCellsMulti.length==1){
 								console.log('[SPECT] Player cell is active')
+								this.active = true
 								this.sendCursor()
 								loadMultiCellSkin()
-								this.active = true
+								
 							}
                         }	
                 } 
