@@ -1,4 +1,4 @@
-//SPECS v4.4d WORKS UNTIL HERE
+//SPECS v4.4e WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -560,17 +560,16 @@ class Spect {
 
                 break;
 			case 49: //leaderboard for specific private servers
-				window.testobjectsOpcode49 = data;
 				this.leaderboard = [];
-				var count = data.getUint32(offset, true);
+				var count = view.getUint32(offset, true);
 				offset += 4;
 				for (i = 0; i < count; ++i) {
-					var isMe = !!data.getUint32(offset, true);
+					var isMe = !!view.getUint32(offset, true);
 					offset += 4;
 					if (isMe){ 
 						isMe = 'isPlayer'
 					}
-					let nick = window.decodeURIComponent(window.escape(encode())); //data.getStringUTF8();
+					let nick = window.decodeURIComponent(window.escape(encode())); //view.getStringUTF8();
 					var temp;
 						
 					if (nick.includes('}')){
