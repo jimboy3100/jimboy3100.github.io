@@ -1,4 +1,4 @@
-//SPECS v4.4i WORKS UNTIL HERE
+//SPECS v4.4j WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -748,7 +748,7 @@ class Spect {
 						//console.log("[SPECT] SendNick without")
 						//this.sendCursor()
 						MultiTokenReady(this)
-						this.getTheOppositeSocialToken()
+						this.handleSendNick()
 					}
                 } 
 				else {
