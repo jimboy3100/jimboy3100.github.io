@@ -1,4 +1,4 @@
-<a id="legendAdAnchor" onclick="ga('send', 'event', 'Ad', 'click', 'euWebsite');" target="_blank" onclick="startMegaFFAserver();">
+<a id="legendAdAnchor" target="_blank" onclick="startMegaFFAserver();">
 
 </a>
 <script>
