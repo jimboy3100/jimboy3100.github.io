@@ -1,4 +1,4 @@
-//SPECS v4.4b WORKS UNTIL HERE
+//SPECS v4.4c WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -559,24 +559,29 @@ class Spect {
               console.log('[SPECT] case 50');
 
                 break;
-				case 49: //leaderboard for specific private servers
+			case 49: //leaderboard for specific private servers
 					
 					this.leaderboard = [];
-					var count = view.getUint32(s, true);
-					s += 4;
-					for (i = 0; i < count; ++i) {
-						var isMe = !!view.getUint32(s, true);
-						s += 4;
-						if (isMe){ 
-							isMe = 'isPlayer'
+					for (let position = 0; offset <view.byteLength;) {
+                        var flags = view.getUint8(offset++);
+                        let nick = '';
+                        let id = 0;
+                        //let isFriend = false;
+                        //let isFBFriend = false;
+                        position++;
+                        if (flags & 2) {
+                            nick = window.decodeURIComponent(window.escape(encode()));
+                        }
+                        if (flags & 4) {
+                            id = view.getUint32(offset, true);
+                            offset += 4;
+                        }
+                        if (flags & 8) {
+                            nick = this.playerNick;
+                            id = 'isPlayer';
+                            this.playerPosition = position;
 						}
-						let nick = window.decodeURIComponent(window.escape(encode())); //view.getStringUTF8();
-						var temp;
 						
-						if (nick.includes('}')){
-							temp = nick.split('}')[0].split('{')[1]
-							nick = nick.split('}')[1]
-						}	
 						if (!application.customSkinsMap[nick] && temp){
 							core.registerSkin(nick, null, "https://dkyriak.github.io/imsolo/" + temp + ".png", null);
 							application.customSkinsMap[nick + "\'s imsolo.pro bot"]= "https://dkyriak.github.io/imsolo/" + temp + ".png"
@@ -584,11 +589,11 @@ class Spect {
 						}
 						
 						this.leaderboard.push({
-						id: isMe,
+						id: id,
 						nick: nick
 						});
 					}
-					this.handleLeaderboard();					
+									
 					break;				
             case 53:
 				this.leaderboard = [];
