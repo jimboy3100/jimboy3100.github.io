@@ -16,10 +16,10 @@ if ( typeof core != 'undefined'){
 }
 */
 
-//inject gamepad libraries if Mobile
-var isMobile = window.orientation > -1; //false for PC, true for mobile 
+
 if (isMobile){
 	opengamepad()	
+	
 }
 
 function opengamepad() {
