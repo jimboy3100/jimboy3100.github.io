@@ -1,4 +1,4 @@
-//SPECS v4.4l WORKS UNTIL HERE
+//SPECS v4.4m WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -365,7 +365,7 @@ class Spect {
     }
     sendNick(nick) {
 		if (!this.active){ //if cell didn't start
-		console.log(nick)
+		//console.log(nick)
 		//this.sendNickOnce=true
         var self = this
 		this.playerNick = nick;
@@ -1003,7 +1003,7 @@ class Spect {
 			
 			
         }
-		if (!legendmod.integrity){
+		if (!legendmod.integrity && spect.player){
 			this.handleSendNick()			
 		}
     }	
