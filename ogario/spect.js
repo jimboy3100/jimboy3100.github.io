@@ -1,4 +1,4 @@
-//SPECS v4.4r WORKS UNTIL HERE
+//SPECS v4.4s WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -27,8 +27,9 @@ function addFullSpectator() {
       x = 0,
       y = 0;
 	  
-  var times = parseInt(Math.sqrt(legendmod.mapSize)/3.96)
+  var times = parseInt(legendmod.mapSize/471.4)
   //for (;stop<30;stop++){
+  if (times<80){
   for (;stop<times;stop++){
 	  
     if(stop == 0) {
@@ -57,6 +58,11 @@ function addFullSpectator() {
       spects.push(spect)
       stop++
     }
+  }
+  }
+  else{
+	  toastr.error("Too many spects needed: " + times/2 + "<br> Attempt canceled")
+	  
   }
 }
 var spects = [];
@@ -1016,7 +1022,8 @@ class Spect {
 			if (this.player){
 				this.handleSendNick()			
 			}
-			else if (!this.player && !window.fullSpectator){
+			//else if (!this.player && !window.fullSpectator){
+			else if (!this.player){	
 				console.log(this.number)
 				this.sendSpectate();
 			}
