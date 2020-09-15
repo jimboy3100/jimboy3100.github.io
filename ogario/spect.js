@@ -1,4 +1,4 @@
-//SPECS v4.4j WORKS UNTIL HERE
+//SPECS v4.4k WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1173,9 +1173,12 @@ class Spect {
             if (flags & 10) {
             }
             const isVirus = flags & 1;
-            const isFood = extendedFlags & 1;
+            var isFood = extendedFlags & 1;
             const isFriend = extendedFlags & 2;
 
+			if (!LM.integrity){ //fix of food for private servers
+				if (size<21) isFood = 1
+			}
 			/*if (this.player && !this.active && !legendmod.playerCellsMulti.includes(id)){
 				invisible = true
 			}
