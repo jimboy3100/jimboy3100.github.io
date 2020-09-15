@@ -1,4 +1,4 @@
-//SPECS v4.4q WORKS UNTIL HERE
+//SPECS v4.4r WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -767,6 +767,7 @@ class Spect {
                         this.sendPosition(this.convertX(this.staticX), this.convertY(this.staticY));
                     }, 50);
 					if (!this.player){
+						
 						this.sendFreeSpectate()
 					}
                 }				
@@ -1016,6 +1017,7 @@ class Spect {
 				this.handleSendNick()			
 			}
 			else if (!this.player && !window.fullSpectator){
+				console.log(this.number)
 				this.sendSpectate();
 			}
 			if(this.staticX!=null&&this.staticY!=null) {
