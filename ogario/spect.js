@@ -62,7 +62,7 @@ function addFullSpectator() {
   }
   else{
 	  toastr.error("Too many spects needed: " + times/2 + "<br> Attempt canceled")
-	  
+	  window.fullSpectator=false
   }
 }
 var spects = [];
