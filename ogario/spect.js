@@ -1,4 +1,4 @@
-//SPECS v4.4p WORKS UNTIL HERE
+//SPECS v4.4q WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -18,6 +18,7 @@ function addSpectator() {
   let spect = new Spect();
   spects.push(spect)
 }
+
 function addFullSpectator() {
         let mtp = 4.95,
             w = ~~(1024*mtp),
@@ -25,7 +26,11 @@ function addFullSpectator() {
   let stop = 0,
       x = 0,
       y = 0;
-  for (;stop<30;stop++){
+	  
+  var times = parseInt(Math.sqrt(legendmod.mapSize)/3.96)
+  //for (;stop<30;stop++){
+  for (;stop<times;stop++){
+	  
     if(stop == 0) {
       let spect = new Spect();
       x = legendmod.mapMinX + 2400;
@@ -34,13 +39,16 @@ function addFullSpectator() {
       spect.staticY = y;
       spects.push(spect)
       stop++
-    } else {
+    } 
+	else {
       if(x > legendmod.mapMaxX - 2400){
         x = legendmod.mapMinX + 2400;
         y = y+h;
-      } else {x = x + w;}
+      } 
+	  else {x = x + w;}
       if (y>legendmod.mapMaxY-1000) { 
-        stop = 100;
+        //stop = 100;
+		stop = 10000;
         break 
       }
       let spect = new Spect();
@@ -1007,7 +1015,7 @@ class Spect {
 			if (this.player){
 				this.handleSendNick()			
 			}
-			else if (!this.player){
+			else if (!this.player && !window.fullSpectator){
 				this.sendSpectate();
 			}
 			if(this.staticX!=null&&this.staticY!=null) {
