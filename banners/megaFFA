@@ -2,9 +2,20 @@
 
 </a>
 <script>
+function megaFFAAnnouncement(){			
+	MSGCOMMANDS = "https://discord.com/invite/5gXJaJQ"
+	toastr.warning('<img src="https://legendmod.ml/banners/icondiscord.png" style="float:left;width:100px;height:100px;"> Settle your clan fights worldwide here. Suggestions and bug reports: <a id="visiturl" href=' + MSGCOMMANDS + ' target="_blank"><font color="blue">' + MSGCOMMANDS + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+        timeOut: 20000,
+        extendedTimeOut: 20000
+        }).css("width", "300px");
+    $("#acceptURL").click(function() {
+        window.open(MSGCOMMANDS, '_blank');
+	});
+}
 function startMegaFFAserver(){
   //$('#gamemode option[value=34]').prop('selected', 'selected').change();
   $('#region option[value="Private"]').prop('selected', 'selected').change();
+  megaFFAAnnouncement();
 }
   var imgUrl = "https://legendmod.ml/banners/iconMegaFFA.png";
   var $img = $('<img id="legendAdImg" height="70px" src="'+ imgUrl +'" style="width: 100%">');
