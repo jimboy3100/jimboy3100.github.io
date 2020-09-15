@@ -29,7 +29,8 @@ function addFullSpectator() {
 	  
   var times = parseInt(legendmod.mapSize/471.4)
   //for (;stop<30;stop++){
-  if (times<80){
+
+  if (!legendmod.integrity || times<80){
   for (;stop<times;stop++){
 	  
     if(stop == 0) {
@@ -61,7 +62,8 @@ function addFullSpectator() {
   }
   }
   else{
-	  toastr.error("Too many spects needed: " + times/2 + "<br> Attempt canceled")
+	  toastr.error("Full spectator does not work for Private servers. <br>There is not such thing as <i>FreeSpectate</i> on Private Servers")
+	  //toastr.error("Too many spects needed: " + times/2 + "<br> Attempt canceled")
 	  window.fullSpectator=false
   }
 }
@@ -1024,7 +1026,7 @@ class Spect {
 			}
 			//else if (!this.player && !window.fullSpectator){
 			else if (!this.player){	
-				console.log(this.number)
+				//console.log(this.number)
 				this.sendSpectate();
 			}
 			if(this.staticX!=null&&this.staticY!=null) {
