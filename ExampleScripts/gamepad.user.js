@@ -19,11 +19,14 @@ if ($("#legendhelper")){
 }
 }, 5000);
 
+var isMobile;
 function init() {
-defaultSettings.hudScale=0.70
-$(".ogicon-home").click()
-defaultSettings.miniMapWidth=90
-$(".btn.btn-block.btn-success.btn-save").click()
+if (isMobile){
+	defaultSettings.hudScale=0.70
+	$(".ogicon-home").click()
+	defaultSettings.miniMapWidth=90
+	$(".btn.btn-block.btn-success.btn-save").click()
+}
 	
 function addStyleString(str) {
     var node = document.createElement('style');
@@ -106,11 +109,11 @@ addStyleString(`@import "https://legendmod.ml/css/styles.css" all;
 }
 .wpk-zoomin{
     top: 20px;
-    left: 215px;
+    left: 150px;
 }
 .wpk-zoomout{
     top: 20px;
-    left: 150px;
+    left: 85px;
 }
 
 .wpk-btn:active {
