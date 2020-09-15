@@ -1,4 +1,4 @@
-//SPECS v4.4k WORKS UNTIL HERE
+//SPECS v4.4l WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1176,7 +1176,7 @@ class Spect {
             var isFood = extendedFlags & 1;
             const isFriend = extendedFlags & 2;
 
-			if (!LM.integrity){ //fix of food for private servers
+			if (!legendmod.integrity){ //fix of food for private servers
 				if (size<21) isFood = 1
 			}
 			/*if (this.player && !this.active && !legendmod.playerCellsMulti.includes(id)){
