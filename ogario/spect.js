@@ -1,4 +1,4 @@
-//SPECS v4.4m WORKS UNTIL HERE
+//SPECS v4.4n WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1003,7 +1003,7 @@ class Spect {
 			
 			
         }
-		if (!legendmod.integrity && spect.player){
+		if (!legendmod.integrity && this.player){
 			this.handleSendNick()			
 		}
     }	
