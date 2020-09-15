@@ -1,4 +1,4 @@
-//SPECS v4.4n WORKS UNTIL HERE
+//SPECS v4.4o WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1006,6 +1006,17 @@ class Spect {
 		if (!legendmod.integrity && this.player){
 			this.handleSendNick()			
 		}
+		else if (!legendmod.integrity && !this.player){
+            this.sendSpectate();
+        }
+        if(this.staticX!=null&&this.staticY!=null) {
+            setInterval(() => {
+                this.sendPosition(this.convertX(this.staticX), this.convertY(this.staticY));
+            }, 50);
+			if (!this.player){
+				this.sendFreeSpectate()
+			}
+        }		
     }	
 	
 	terminate(){
