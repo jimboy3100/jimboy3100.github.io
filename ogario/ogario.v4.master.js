@@ -1,4 +1,4 @@
-//v12.66
+//v12.67
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -94,7 +94,9 @@ function legendmaster(self) {
 							self.updateStorage();
 						}
 					});
+					
 					doFB()
+					
 					$("#helloContainer").attr("data-logged-in", "1");
 					//$(".progress-bar-striped").width("100%");
 					$("#login-google").attr("class", "menu-bar-button");
@@ -154,7 +156,9 @@ function legendmaster(self) {
 					self.updateStorage();
 					$(".agario-profile-picture").attr("src", attrVal);
 				}
+				
 				doGl()
+				
 				$("#helloContainer").attr("data-logged-in", "1");
 				//$(".progress-bar-striped").width("100%");
 				$("#login-facebook").attr("class", "menu-bar-button");
@@ -853,6 +857,8 @@ function legendmaster(self) {
     self.facebookLogin = function() {
         alert("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " You seem to have something blocking Facebook on your browser, please check for any extensions");
     };
+	
+	if (!(document.URL && document.URL.includes('legendmod.ml'))){
     self.fbAsyncInit = function() {
         self.FB.init({
             appId: headers.fb_app_id,
@@ -868,6 +874,8 @@ function legendmaster(self) {
         self.getStorage();
         setup();
     };
+	}
+	
 };
 function continuelogout(){
         $("#UserProfileName1").text("Guest");
