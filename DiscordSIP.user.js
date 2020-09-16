@@ -287,6 +287,7 @@ var discordcodetosend = {
 
 })();
 
+/*
 setTimeout(function() {
 var stylesLegendModConsole1 = [
     'background: linear-gradient(#D33106, #571402)'
@@ -321,3 +322,4 @@ console.group('%cAgar Notifies Webhooks №2%c  %chttp://www.legendmod.ml',style
 	console.groupEnd();
 console.groupEnd();
 }, 2000);
+*/
