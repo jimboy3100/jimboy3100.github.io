@@ -1,4 +1,4 @@
-//v12.61
+//v12.62
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -251,6 +251,8 @@ function legendmaster(self) {
                 this.protocolVersion = self.localStorage.getItem("ogarioProtocolVersion");
             }					
             var window = this;
+			var url;
+			if (url && !url.includes('legendmod.ml')){			
             $.ajax("//agar.io/mc/agario.js", {
                 error() {},
                 success(sketchContents) {
@@ -285,7 +287,9 @@ function legendmaster(self) {
                 method: "GET",
                 cache: false,
                 crossDomain: true
-            });			
+            });	
+		}
+			
         },
         setClientVersion(clientVersion, serverVersion) {			           
             if (this.clientVersion != clientVersion) {
