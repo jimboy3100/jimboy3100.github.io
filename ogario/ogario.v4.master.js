@@ -1,4 +1,4 @@
-//v12.59
+//v12.60
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -334,9 +334,9 @@ function legendmaster(self) {
                     return xhr.setRequestHeader("Accept", "text/plain"), xhr.setRequestHeader("Accept", "*/*"), xhr.setRequestHeader("Accept", "q=0.01"), xhr.setRequestHeader("Content-Type", "application/octet-stream"), xhr.setRequestHeader("x-support-proto-version", master.xsupportprotoversion), xhr.setRequestHeader("x-client-version", master.clientVersion), true;
                 },
                 error() {
-                    if (timeout_callback) {
+                    /*if (timeout_callback) {
                         timeout_callback();
-                    }
+                    }*/
                 },
                 success(playlistCopy) {
                 $("#response").html(JSON.stringify(playlistCopy, null, 4));
@@ -521,7 +521,8 @@ function legendmaster(self) {
                             options.findServer(id, params);
                         }
                     }
-                }, function() {
+                }, 
+				function() {
                     options.backoffPeriod *= 2;
                     setTimeout(function() {
                         options.findServer(id, params);
@@ -654,7 +655,10 @@ function legendmaster(self) {
                 if (table && this.serverIP) {
                     this.connect(this.serverIP);
                 } else {
-                    this.findServer(this.region, this.gameMode);
+					var url;
+					if (url && !url.includes('legendmod.ml')){
+						this.findServer(this.region, this.gameMode);
+					}
                 }
             }
         },
