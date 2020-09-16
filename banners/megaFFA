@@ -1,4 +1,4 @@
-<a id="legendAdAnchor" target="_blank" onclick="startMegaFFAserver();">
+<center><a id="legendAdAnchor" target="_blank" onclick="startMegaFFAserver();"></center>
 
 </a>
 <script>
@@ -18,7 +18,7 @@ function startMegaFFAserver(){
   megaFFAAnnouncement();
 }
   var imgUrl = "https://legendmod.ml/banners/iconMegaFFA.png";
-  var $img = $('<img id="legendAdImg" height="70px" src="'+ imgUrl +'" style="width: 100%">');
+  var $img = $('<img id="legendAdImg" height="10%" src="'+ imgUrl +'" style="width: 60%">');
 
   $img.on('load', function() { ga('send', 'event', 'Ad', 'load', 'euWebsite'); });
   
