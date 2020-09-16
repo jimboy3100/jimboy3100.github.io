@@ -1,4 +1,4 @@
-//v0.12c
+//v0.12d
 
 	if (!window.agarioUID){
 		 window.agarioUID = localStorage.getItem("agarioUID");
@@ -45,7 +45,7 @@
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Hilde"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="PeaceMaker" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsPeaceMaker.png"></div>'
 		}		
-		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Danous"){
+		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Dabous"){
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Tiger" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsTiger.png"></div>'
 		}				
 		else if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Shiro"){
@@ -72,12 +72,12 @@
 		Object.keys(animatedskins).forEach(function(key) {	
 			if (animatedskins[key] && animatedskins[key].id && animatedskins[key].frames[0] && animatedskins[key].frames[0].id){
 				if (animatedskins[key].id=="Only_For_Shiro" || animatedskins[key].id=="Only_For_Shiro_1" || animatedskins[key].id=="Only_For_Shiro_2"){
-					if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Shiro"){
+					if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID] && ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "Shiro"){
 						window.tempAnimatedCool += '<div class="skin-box"><img class="lazy" name="' + animatedskins[key].id + '" data-original="https://i.imgur.com/' + animatedskins[key].frames[0].id + '.png"></div>'	
 					}					 
 				}	
 				else if (animatedskins[key].id=="Just_Watch_Pro"){
-					if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "LMauthor"){
+					if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID] && ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason == "LMauthor"){
 						window.tempAnimatedCool += '<div class="skin-box"><img class="lazy" name="' + animatedskins[key].id + '" data-original="https://i.imgur.com/' + animatedskins[key].frames[0].id + '.png"></div>'
 					}					
 				}				
