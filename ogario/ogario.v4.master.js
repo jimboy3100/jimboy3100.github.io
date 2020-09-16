@@ -1,4 +1,4 @@
-//v12.65
+//v12.66
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -800,15 +800,15 @@ function legendmaster(self) {
             var n = this;
             this.setUI();
             this.getRegionNames();
-            this.refreshRegionInfo();
-            this.checkHash();
 			if (!(document.URL && document.URL.includes('legendmod.ml'))){
-				this.getRegionCode()
-			}			
-            this.checkRegion();
+            this.refreshRegionInfo();
+			this.checkHash();
+			this.getRegionCode()
+			this.checkRegion();
             setInterval(function() {
                 n.refreshRegionInfo();
-            }, 18e4);
+            }, 18e4);			
+			}
         },
 		findFacebookFriends() {
 			FB.api("me/friends","GET",{
