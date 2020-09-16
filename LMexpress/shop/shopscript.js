@@ -72,7 +72,9 @@ jQuery(function($) {
 			window.application.sendSocket3Info("spfc", null)		
     });	
 	setTimeout(function() {
-		$("#nav a")[0].click();
+		if ($("#nav a")[0]){
+			$("#nav a")[0].click();
+		}
 		startSpecialEffectSkin();
 	}, 950);
 	}, 900);
