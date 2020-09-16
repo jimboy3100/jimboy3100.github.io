@@ -375,7 +375,7 @@ function legendmaster(self) {
             if (regionobj.hasOwnProperty(segment)) {
                 this.setRegion(regionobj[segment], false);
                 if (!this.checkPartyHash()) {
-                    console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " setRegionCode called, reconnecting");
+                    //console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " setRegionCode called, reconnecting");
                     this.reconnect();
                 }
             }
@@ -392,7 +392,7 @@ function legendmaster(self) {
                     $("#region").val(items);
                 }
                 if (left) {
-                    console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " setRegion called, left=null, reconnecting");
+                    //console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " setRegion called, left=null, reconnecting");
                     this.reconnect();
                 }
             }
