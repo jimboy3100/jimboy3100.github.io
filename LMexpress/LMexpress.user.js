@@ -50,8 +50,7 @@ function getVersion() {
     return (new Date()).getTime();
 }
 
-//var version = getVersion();
-var version = 2
+var version = getVersion();
 
 // Check location
 if (location.host === "agar.io" && location.pathname === "/") {
