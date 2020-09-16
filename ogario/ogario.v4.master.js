@@ -1,4 +1,4 @@
-//v12.67
+//v12.68
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -282,7 +282,7 @@ function legendmaster(self) {
                     var optionMatch = sketchContents.match(/\w\[\w\+\d+>>\d\]=\w;\w+\(\w,(\d+)\);/);
                     if (optionMatch) {
                         var pluginName = optionMatch[1];
-						console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current protocol version:", pluginName);
+						//console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " Current protocol version:", pluginName);
 						window.setProtocolVersion(pluginName);
                     }
                 },
@@ -471,7 +471,7 @@ function legendmaster(self) {
             this.applyGameMode(val);
             this.gameMode = val;
             if (opt_validate) {
-                console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " setGameMode called, opt_validate!=null, reconnecting");
+                //console.log("\x1b[31m%s\x1b[34m%s\x1b[0m", consoleMsgLMMaster, " setGameMode called, opt_validate!=null, reconnecting");
                 this.reconnect();
             }
         },
