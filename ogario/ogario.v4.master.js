@@ -1,4 +1,4 @@
-//v12.63
+//v12.64
 
 var consoleMsgLMMaster = "[Master] ";
 
@@ -10,7 +10,7 @@ window.EnvConfig.configVersion = self.localStorage.getItem("EnvConfig.configVers
 
 var window = this;
 
-if (window.location.href.includes('legendmod.ml')){
+if (!window.location.href.includes('legendmod.ml')){
 $.ajax("//agar.io/index.html", {
     error() {},
     success(sketchContents) {
@@ -251,7 +251,7 @@ function legendmaster(self) {
                 this.protocolVersion = self.localStorage.getItem("ogarioProtocolVersion");
             }					
             var window = this;
-			if (window.location.href.includes('legendmod.ml')){			
+			if (!window.location.href.includes('legendmod.ml')){			
             $.ajax("//agar.io/mc/agario.js", {
                 error() {},
                 success(sketchContents) {
@@ -661,7 +661,7 @@ function legendmaster(self) {
                 if (table && this.serverIP) {
                     this.connect(this.serverIP);
                 } else {
-					if (window.location.href.includes('legendmod.ml')){
+					if (!window.location.href.includes('legendmod.ml')){
 						this.findServer(this.region, this.gameMode);
 					}
                 }
@@ -802,7 +802,7 @@ function legendmaster(self) {
             this.getRegionNames();
             this.refreshRegionInfo();
             this.checkHash();
-			if (window.location.href.includes('legendmod.ml')){
+			if (!window.location.href.includes('legendmod.ml')){
 				this.getRegionCode()
 			}			
             this.checkRegion();
