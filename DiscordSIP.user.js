@@ -258,9 +258,9 @@ var discordcodetosend = {
 		var a;
 		if (window.messageone=="0"||window.messageone=="1"){
 			a = $.find('#agario-main-buttons');
-			a[0].append($('<br/>')[0]);
+			//a[0].append($('<br/>')[0]);
 			a[0].append(r[0]);
-			a[0].append($('<br/>')[0]);			
+			//a[0].append($('<br/>')[0]);			
 		} 
 		else{
 			a = $('#title');
