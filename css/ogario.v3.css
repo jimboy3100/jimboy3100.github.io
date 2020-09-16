@@ -328,8 +328,12 @@ label:hover{
 #server-token,.btn-server-info,.skin,#gamemode,#server-reconnect,#region,.btn-logout,.btn-spectate,#server-reconnect,#party-token,#join-party-btn,#join-party-btn-2{
     margin-top:6px;
 }
-#server-token,#server-join,#agario-main-buttons{
-    margin-top :-10px;
+#server-token,#server-join{
+    margin-top :-10px;  
+}
+#agario-main-buttons{
+    margin-top :-10px; 
+    margin-bottom: 0px 
 }
 #logoutbtn{
     margin-top :0px;
