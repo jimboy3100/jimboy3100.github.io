@@ -1,4 +1,4 @@
-//v0.1o
+//v0.1p
 
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
@@ -89,7 +89,7 @@ revealReplayTotal()
 $("#savedArenas").change(function() {
     fillArenasSpecifications()
 	revealReplayTotal()
-	console.log('a')
+	
 });
 $("#arenaReplaySpeed").change(function() {
     window.replayTiming = $("#arenaReplaySpeed").val()
@@ -271,7 +271,9 @@ function loadReplayFromWeb(temp2){
 					var replayStart, replayEnd;
 					replayStart = parseInt(replayStart)
 					replayEnd = parseInt(replayEnd)
+					console.log(replayStart)
 					if (replayStart && replayStart <= window.RecordedProtocolPackets && replayStart >= 0){
+						console.log(replayStart+"a")
 						$("#startReplayTime").val(replayStart)
 					}
 					if (replayEnd && replayEnd <= window.RecordedProtocolPackets && replayEnd >= 0){
