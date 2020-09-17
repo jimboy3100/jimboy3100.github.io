@@ -1,5 +1,4 @@
-//v0.1r
-
+//v0.1s
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
     '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 500px;">' +
@@ -271,9 +270,9 @@ function loadReplayFromWeb(temp2){
 
 					window.replayStart = parseInt(window.replayStart)
 					window.replayEnd = parseInt(window.replayEnd)
-					console.log(window.replayStart)
+					
 					if (window.replayStart && window.replayStart <= window.RecordedProtocolPackets && window.replayStart >= 0){
-						console.log(window.replayStart+"a")
+						
 						$("#startReplayTime").val(window.replayStart)
 					}
 					if (window.replayEnd && window.replayEnd <= window.RecordedProtocolPackets && window.replayEnd >= 0){
