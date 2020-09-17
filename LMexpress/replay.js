@@ -1,4 +1,4 @@
-//v0.1q
+//v0.1r
 
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
@@ -268,16 +268,16 @@ function loadReplayFromWeb(temp2){
 				replayWebLoaded.name = temp2 
 				loadFileAsText(replayWebLoaded)
 				setTimeout(function() {
-					var replayStart, replayEnd;
-					//replayStart = parseInt(replayStart)
-					//replayEnd = parseInt(replayEnd)
-					console.log(replayStart)
-					if (replayStart && replayStart <= window.RecordedProtocolPackets && replayStart >= 0){
-						console.log(replayStart+"a")
-						$("#startReplayTime").val(replayStart)
+
+					window.replayStart = parseInt(window.replayStart)
+					window.replayEnd = parseInt(window.replayEnd)
+					console.log(window.replayStart)
+					if (window.replayStart && window.replayStart <= window.RecordedProtocolPackets && window.replayStart >= 0){
+						console.log(window.replayStart+"a")
+						$("#startReplayTime").val(window.replayStart)
 					}
-					if (replayEnd && replayEnd <= window.RecordedProtocolPackets && replayEnd >= 0){
-						$("#endReplayTime").val(replayEnd)
+					if (window.replayEnd && window.replayEnd <= window.RecordedProtocolPackets && window.replayEnd >= 0){
+						$("#endReplayTime").val(window.replayEnd)
 					}
 					$("#watchReplaybtn").click()
 					application.onSpectate()	
