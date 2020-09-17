@@ -1,4 +1,4 @@
-//v0.1i
+//v0.1j
 
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
@@ -268,6 +268,12 @@ function loadReplayFromWeb(temp2){
 				replayWebLoaded.name = temp2 
 				loadFileAsText(replayWebLoaded)
 				setTimeout(function() {
+					if (replayStart && isNaN(replayStart)){
+						$("#startReplayTime").val()
+					}
+					if (replayEnd && isNaN(replayEnd){
+						$("#endReplayTime").val()
+					}
 					$("#watchReplaybtn").click()
 					application.onSpectate()	
 				}, 1000);				
