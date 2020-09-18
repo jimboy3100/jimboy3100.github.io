@@ -430,7 +430,7 @@ function erasescripter(){
 					{id: 'tkIlXxd', delay: '0.05'}
 				]
                },	
-               '℄🌀JustWatchPro': {
+               '℄🌀JustWatchProAnimation': {
                   cached:    false,
                   ready:     false,
                   current:   0,
