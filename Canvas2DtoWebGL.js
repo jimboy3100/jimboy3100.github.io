@@ -45,17 +45,13 @@ function enableWebGLCanvas( canvas, options )
 	ctx.WebGLCanvas = {};
 	var white = vec4.fromValues(1,1,1,1);
 
-	//some generic shaders
-	var	flat_shader = new GL.Shader( GL.Shader.QUAD_VERTEX_SHADER, GL.Shader.FLAT_FRAGMENT_SHADER );
-	var	texture_shader = new GL.Shader( GL.Shader.QUAD_VERTEX_SHADER, GL.Shader.SCREEN_COLORED_FRAGMENT_SHADER );
-	var circle = GL.Mesh.circle({size:1});
-
 	//reusing same buffer
 	var global_index = 0;
 	var global_vertices = new Float32Array( max_points * 3 );
 	var global_mesh = new GL.Mesh();
 	var global_buffer = global_mesh.createVertexBuffer("vertices", null, null, global_vertices, gl.STREAM_DRAW );
 	var quad_mesh = GL.Mesh.getScreenQuad();
+	var circle_mesh = GL.Mesh.circle({size:1});
 	var extra_projection = mat4.create();
 	var stencil_enabled = false;
 	var anisotropic = options.anisotropic !== undefined ? options.anisotropic : 2;
@@ -69,94 +65,239 @@ function enableWebGLCanvas( canvas, options )
 		extra_macros.EXTRA_PROJECTION = "";
 
 	//used to store font atlas textures (images are not stored here)
-	var textures = {};
+	var textures = gl.WebGLCanvas.textures_atlas = {};
+	gl.WebGLCanvas.clearAtlas = function()
+	{
+		textures = gl.WebGLCanvas.textures_atlas = {};
+	}
 
-	var vertex_shader = "\n\
+	var vertex_shader = null;
+	var	flat_shader = null;
+	var	texture_shader = null;
+	var flat_primitive_shader = null;
+	var textured_transform_shader = null;
+	var textured_primitive_shader = null;
+	var gradient_primitive_shader = null;
+	var	point_text_shader = null;
+
+	gl.WebGLCanvas.set3DMatrix = function(matrix)
+	{
+		if(!matrix)
+			mat4.identity( extra_projection );
+		else
+			extra_projection.set( matrix );
+		if(extra_macros.EXTRA_PROJECTION == null)
+		{
+			extra_macros.EXTRA_PROJECTION = "";
+			compileShaders();
+			uniforms.u_projection = extra_projection;
+		}
+		uniforms.u_projection_enabled = !!matrix;
+	}
+
+	compileShaders();
+
+	function compileShaders()
+	{
+		vertex_shader = "\n\
+				precision highp float;\n\
+				attribute vec3 a_vertex;\n\
+				uniform vec2 u_viewport;\n\
+				uniform mat3 u_transform;\n\
+				#ifdef EXTRA_PROJECTION\n\
+					uniform bool u_projection_enabled;\n\
+					uniform mat4 u_projection;\n\
+				#endif\n\
+				varying float v_visible;\n\
+				void main() { \n\
+					vec3 pos = a_vertex;\n\
+					v_visible = pos.z;\n\
+					pos = u_transform * vec3(pos.xy,1.0);\n\
+					pos.z = 0.0;\n\
+					#ifdef EXTRA_PROJECTION\n\
+						if(u_projection_enabled)\n\
+						{\n\
+							gl_Position = u_projection * vec4(pos.xy,0.0,1.0);\n\
+							return;\n\
+						}\n\
+					#endif\n\
+					//normalize\n\
+					pos.x = (2.0 * pos.x / u_viewport.x) - 1.0;\n\
+					pos.y = -((2.0 * pos.y / u_viewport.y) - 1.0);\n\
+					gl_Position = vec4(pos, 1.0); \n\
+				}\n\
+				";
+
+		vertex_shader2 = "\n\
 			precision highp float;\n\
 			attribute vec3 a_vertex;\n\
+			attribute vec2 a_coord;\n\
+			varying vec2 v_coord;\n\
+			uniform vec2 u_position;\n\
+			uniform vec2 u_size;\n\
 			uniform vec2 u_viewport;\n\
 			uniform mat3 u_transform;\n\
 			#ifdef EXTRA_PROJECTION\n\
+				uniform bool u_projection_enabled;\n\
 				uniform mat4 u_projection;\n\
 			#endif\n\
-			varying float v_visible;\n\
 			void main() { \n\
-				vec3 pos = a_vertex;\n\
-				v_visible = pos.z;\n\
-				pos = u_transform * vec3(pos.xy,1.0);\n\
+				vec3 pos = vec3(u_position + vec2(a_coord.x,1.0 - a_coord.y)  * u_size, 1.0);\n\
+				v_coord = a_coord; \n\
+				pos = u_transform * pos;\n\
 				pos.z = 0.0;\n\
+				#ifdef EXTRA_PROJECTION\n\
+					if(u_projection_enabled)\n\
+					{\n\
+						gl_Position = u_projection * vec4(pos.xy,0.0,1.0);\n\
+						return;\n\
+					}\n\
+				#endif\n\
 				//normalize\n\
 				pos.x = (2.0 * pos.x / u_viewport.x) - 1.0;\n\
 				pos.y = -((2.0 * pos.y / u_viewport.y) - 1.0);\n\
-				#ifdef EXTRA_PROJECTION\n\
-					pos = (u_projection * mat4(pos,1.0)).xz;\n\
-				#endif\n\
 				gl_Position = vec4(pos, 1.0); \n\
+			}\n\
+		";
+
+		//flat_shader = new GL.Shader( GL.Shader.QUAD_VERTEX_SHADER, GL.Shader.FLAT_FRAGMENT_SHADER );
+		//texture_shader = new GL.Shader( GL.Shader.QUAD_VERTEX_SHADER, GL.Shader.SCREEN_COLORED_FRAGMENT_SHADER );
+
+		flat_shader = new GL.Shader(vertex_shader2,"\n\
+				precision highp float;\n\
+				uniform vec4 u_color;\n\
+				void main() {\n\
+					gl_FragColor = u_color;\n\
+				}\n\
+			", extra_macros );
+
+		texture_shader = new GL.Shader(vertex_shader2,"\n\
+				precision highp float;\n\
+				varying vec2 v_coord;\n\
+				uniform vec4 u_color;\n\
+				uniform sampler2D u_texture;\n\
+				void main() {\n\
+					gl_FragColor = u_color * texture2D( u_texture, v_coord );\n\
+				}\n\
+			", extra_macros );
+
+
+		flat_primitive_shader = new GL.Shader(vertex_shader,"\n\
+				precision highp float;\n\
+				varying float v_visible;\n\
+				uniform vec4 u_color;\n\
+				void main() {\n\
+					if (v_visible == 0.0)\n\
+						discard;\n\
+					gl_FragColor = u_color;\n\
+				}\n\
+			", extra_macros );
+
+		textured_transform_shader = new GL.Shader(GL.Shader.QUAD_VERTEX_SHADER,"\n\
+				precision highp float;\n\
+				uniform sampler2D u_texture;\n\
+				uniform vec4 u_color;\n\
+				uniform vec4 u_texture_transform;\n\
+				varying vec2 v_coord;\n\
+				void main() {\n\
+					vec2 uv = v_coord * u_texture_transform.zw + vec2(u_texture_transform.x,0.0);\n\
+					uv.y = uv.y - u_texture_transform.y + (1.0 - u_texture_transform.w);\n\
+					uv = clamp(uv,vec2(0.0),vec2(1.0));\n\
+					gl_FragColor = u_color * texture2D(u_texture, uv);\n\
+				}\n\
+			", extra_macros );
+
+		textured_primitive_shader = new GL.Shader(vertex_shader,"\n\
+				precision highp float;\n\
+				varying float v_visible;\n\
+				uniform vec4 u_color;\n\
+				uniform sampler2D u_texture;\n\
+				uniform vec4 u_texture_transform;\n\
+				uniform vec2 u_viewport;\n\
+				uniform mat3 u_itransform;\n\
+				void main() {\n\
+					vec2 pos = (u_itransform * vec3( gl_FragCoord.s, u_viewport.y - gl_FragCoord.t,1.0)).xy;\n\
+					pos *= vec2( (u_viewport.x * u_texture_transform.z), (u_viewport.y * u_texture_transform.w) );\n\
+					vec2 uv = fract(pos / u_viewport) + u_texture_transform.xy;\n\
+					uv.y = 1.0 - uv.y;\n\
+					gl_FragColor = u_color * texture2D( u_texture, uv);\n\
+				}\n\
+			", extra_macros );
+
+		gradient_primitive_shader = new GL.Shader(vertex_shader,"\n\
+				precision highp float;\n\
+				varying float v_visible;\n\
+				uniform vec4 u_color;\n\
+				uniform sampler2D u_texture;\n\
+				uniform vec4 u_gradient;\n\
+				uniform vec2 u_viewport;\n\
+				uniform mat3 u_itransform;\n\
+				void main() {\n\
+					vec2 pos = (u_itransform * vec3( gl_FragCoord.s, u_viewport.y - gl_FragCoord.t,1.0)).xy;\n\
+					//vec2 pos = vec2( gl_FragCoord.s, u_viewport.y - gl_FragCoord.t);\n\
+					vec2 AP = pos - u_gradient.xy;\n\
+					vec2 AB = u_gradient.zw - u_gradient.xy;\n\
+					float dotAPAB = dot(AP,AB);\n\
+					float dotABAB = dot(AB,AB);\n\
+					float x = dotAPAB / dotABAB;\n\
+					vec2 uv = vec2( x, 0.0 );\n\
+					gl_FragColor = u_color * texture2D( u_texture, uv );\n\
+				}\n\
+			", extra_macros );
+
+		//used for text
+		var POINT_TEXT_VERTEX_SHADER = "\n\
+			precision highp float;\n\
+			attribute vec3 a_vertex;\n\
+			attribute vec2 a_coord;\n\
+			varying vec2 v_coord;\n\
+			uniform vec2 u_viewport;\n\
+			uniform mat3 u_transform;\n\
+			#ifdef EXTRA_PROJECTION\n\
+				uniform bool u_projection_enabled;\n\
+				uniform mat4 u_projection;\n\
+			#endif\n\
+			uniform float u_pointSize;\n\
+			void main() { \n\
+				vec3 pos = a_vertex;\n\
+				pos = u_transform * pos;\n\
+				pos.z = 0.0;\n\
+				#ifdef EXTRA_PROJECTION\n\
+					if(u_projection_enabled)\n\
+					{\n\
+						gl_Position = u_projection * vec4(pos.xy,0.0,1.0);\n\
+						return;\n\
+					}\n\
+				#endif\n\
+				//normalize\n\
+				pos.x = (2.0 * pos.x / u_viewport.x) - 1.0;\n\
+				pos.y = -((2.0 * pos.y / u_viewport.y) - 1.0);\n\
+				gl_Position = vec4(pos, 1.0); \n\
+				gl_PointSize = ceil(u_pointSize);\n\
+				v_coord = a_coord;\n\
 			}\n\
 			";
 
-	var	flat_primitive_shader = new GL.Shader(vertex_shader,"\n\
-			precision highp float;\n\
-			varying float v_visible;\n\
-			uniform vec4 u_color;\n\
-			void main() {\n\
-				if (v_visible == 0.0)\n\
-					discard;\n\
-				gl_FragColor = u_color;\n\
-			}\n\
-		", extra_macros );
-
-	var	textured_transform_shader = new GL.Shader(GL.Shader.QUAD_VERTEX_SHADER,"\n\
+		var POINT_TEXT_FRAGMENT_SHADER = "\n\
 			precision highp float;\n\
 			uniform sampler2D u_texture;\n\
+			uniform float u_iCharSize;\n\
 			uniform vec4 u_color;\n\
-			uniform vec4 u_texture_transform;\n\
+			uniform float u_pointSize;\n\
+			uniform vec2 u_viewport;\n\
+			uniform vec2 u_angle_sincos;\n\
 			varying vec2 v_coord;\n\
 			void main() {\n\
-				vec2 uv = v_coord * u_texture_transform.zw + vec2(u_texture_transform.x,0.0);\n\
-				uv.y = uv.y - u_texture_transform.y + (1.0 - u_texture_transform.w);\n\
-				uv = clamp(uv,vec2(0.0),vec2(1.0));\n\
-				gl_FragColor = u_color * texture2D(u_texture, uv);\n\
-			}\n\
-		", extra_macros );
-
-	var	textured_primitive_shader = new GL.Shader(vertex_shader,"\n\
-			precision highp float;\n\
-			varying float v_visible;\n\
-			uniform vec4 u_color;\n\
-			uniform sampler2D u_texture;\n\
-			uniform vec4 u_texture_transform;\n\
-			uniform vec2 u_viewport;\n\
-			uniform mat3 u_itransform;\n\
-			void main() {\n\
-				vec2 pos = (u_itransform * vec3( gl_FragCoord.s, u_viewport.y - gl_FragCoord.t,1.0)).xy;\n\
-				pos *= vec2( (u_viewport.x * u_texture_transform.z), (u_viewport.y * u_texture_transform.w) );\n\
-				vec2 uv = fract(pos / u_viewport) + u_texture_transform.xy;\n\
+				vec2 uv = vec2(1.0 - gl_PointCoord.s, gl_PointCoord.t);\n\
+				uv = vec2( ((uv.y - 0.5) * u_angle_sincos.y - (uv.x - 0.5) * u_angle_sincos.x) + 0.5, ((uv.x - 0.5) * u_angle_sincos.y + (uv.y - 0.5) * u_angle_sincos.x) + 0.5);\n\
+				uv = v_coord - uv * u_iCharSize + vec2(u_iCharSize*0.5);\n\
 				uv.y = 1.0 - uv.y;\n\
-				gl_FragColor = u_color * texture2D( u_texture, uv);\n\
+				gl_FragColor = vec4(u_color.xyz, u_color.a * texture2D(u_texture, uv, -1.0  ).a);\n\
 			}\n\
-		", extra_macros );
+			";
 
-	var	gradient_primitive_shader = new GL.Shader(vertex_shader,"\n\
-			precision highp float;\n\
-			varying float v_visible;\n\
-			uniform vec4 u_color;\n\
-			uniform sampler2D u_texture;\n\
-			uniform vec4 u_gradient;\n\
-			uniform vec2 u_viewport;\n\
-			uniform mat3 u_itransform;\n\
-			void main() {\n\
-				vec2 pos = (u_itransform * vec3( gl_FragCoord.s, u_viewport.y - gl_FragCoord.t,1.0)).xy;\n\
-				//vec2 pos = vec2( gl_FragCoord.s, u_viewport.y - gl_FragCoord.t);\n\
-				vec2 AP = pos - u_gradient.xy;\n\
-				vec2 AB = u_gradient.zw - u_gradient.xy;\n\
-				float dotAPAB = dot(AP,AB);\n\
-				float dotABAB = dot(AB,AB);\n\
-				float x = dotAPAB / dotABAB;\n\
-				vec2 uv = vec2( x, 0.0 );\n\
-				gl_FragColor = u_color * texture2D( u_texture, uv );\n\
-			}\n\
-		", extra_macros );
+		point_text_shader = new GL.Shader( POINT_TEXT_VERTEX_SHADER, POINT_TEXT_FRAGMENT_SHADER, extra_macros );
+	};
 
 	ctx.createImageShader = function(code)
 	{
@@ -190,6 +331,7 @@ function enableWebGLCanvas( canvas, options )
 	var tmp_vec4b = vec4.create();
 	var tmp_vec2b = vec2.create();
 	ctx._stack = [];
+	ctx._stack_size = 0;
 	var global_angle = 0;
 	var viewport = ctx.viewport_data.subarray(2,4);
 
@@ -217,22 +359,70 @@ function enableWebGLCanvas( canvas, options )
 	ctx.resetTransform = function()
 	{
 		//reset transform
-		gl._stack.length = 0;
+		gl._stack_size = 0;
 		this._matrix.set([1,0,0, 0,1,0, 0,0,1]);
 		global_angle = 0;
 	}
 
 	ctx.save = function() {
-		if(this._stack.length < 32)
-			this._stack.push( mat3.clone( this._matrix ) );
+		if(this._stack_size >= 32)
+			return;
+		var current_level = null;
+		if(this._stack_size == this._stack.length)
+		{
+			current_level = this._stack[ this._stack_size ] = {
+				matrix: mat3.create(),
+				fillColor: vec4.create(),
+				strokeColor: vec4.create(),
+				shadowColor: vec4.create(),
+				globalAlpha: 1,
+				font: "",
+				fontFamily: "",
+				fontSize: 14,
+				fontMode: "",
+				textAlign: ""
+			};
+		}
+		else
+			current_level = this._stack[ this._stack_size ];
+		this._stack_size++;
+
+		current_level.matrix.set( this._matrix );
+		current_level.fillColor.set( this._fillcolor );
+		current_level.strokeColor.set( this._strokecolor );
+		current_level.shadowColor.set( this._shadowcolor );
+		current_level.globalAlpha = this._globalAlpha;
+		current_level.font = this._font;
+		current_level.fontFamily = this._font_family;
+		current_level.fontSize = this._font_size;
+		current_level.fontMode = this._font_mode;
+		current_level.textAlign = this.textAlign;
 	}
 
 	ctx.restore = function() {
-		if(this._stack.length)
-			this._matrix.set( this._stack.pop() );
-		else
+		if(this._stack_size == 0)
+		{
 			mat3.identity( this._matrix );
+			global_angle = 0;
+			return;
+		}
+		
+		this._stack_size--;
+		var current_level = this._stack[ this._stack_size ];
+
+		this._matrix.set( current_level.matrix );
+		this._fillcolor.set( current_level.fillColor );
+		this._strokecolor.set( current_level.strokeColor );
+		this._shadowcolor.set( current_level.shadowColor );
+		this._globalAlpha = current_level.globalAlpha;
+		this._font = current_level.font;
+		this._font_family = current_level.fontFamily;
+		this._font_size = current_level.fontSize;
+		this._font_mode = current_level.fontMode;
+		this.textAlign = current_level.textAlign;
+
 		global_angle = Math.atan2( this._matrix[3], this._matrix[4] ); //use up vector
+
 		if(	stencil_enabled )
 		{
 			gl.enable( gl.STENCIL_TEST );
@@ -289,14 +479,28 @@ function enableWebGLCanvas( canvas, options )
 
 				tex = img.gl[ gl.context_id ];
 				if(tex)
+				{
+					if( img.mustUpdate )
+					{
+						tex.uploadData( img );
+						img.mustUpdate = false;
+					}
 					return tex;
+				}
 				return img.gl[ gl.context_id ] = GL.Texture.fromImage(img, { magFilter: gl.LINEAR, minFilter: gl.LINEAR_MIPMAP_LINEAR, wrap: wrap, ignore_pot:true, premultipliedAlpha: true, anisotropic: anisotropic } );
 			}
 			else //probably a canvas
 			{
 				tex = img.gl[ gl.context_id ];
 				if(tex)
+				{
+					if( img.mustUpdate )
+					{
+						tex.uploadData( img );
+						img.mustUpdate = false;
+					}
 					return tex;
+				}
 				return img.gl[ gl.context_id ] = GL.Texture.fromImage(img, { minFilter: gl.LINEAR, magFilter: gl.LINEAR, anisotropic: anisotropic });
 			}
 		}
@@ -304,9 +508,17 @@ function enableWebGLCanvas( canvas, options )
 		return null;
 	}
 
+	//it supports all versions of drawImage (3 params, 5 params or 9 params)
+	//it allows to pass a shader, otherwise it uses texture_shader (code is GL.Shader.SCREEN_COLORED_FRAGMENT_SHADER)
 	ctx.drawImage = function( img, x, y, w, h, shader )
 	{
-		if(!img || img.width == 0 || img.height == 0) 
+		if(!img)
+			return;
+
+		var img_width = img.videoWidth || img.width;
+		var img_height = img.videoHeight || img.height;
+			
+		if(img_width == 0 || img_height == 0) 
 			return;
 
 		var tex = getTexture(img);
@@ -315,7 +527,7 @@ function enableWebGLCanvas( canvas, options )
 
 		if(arguments.length == 9) //img, sx,sy,sw,sh, x,y,w,h
 		{
-			tmp_vec4b.set([x/img.width,y/img.height,w/img.width,h/img.height]);
+			tmp_vec4b.set([x/img_width,y/img_height,w/img_width,h/img_height]);
 			x = arguments[5];
 			y = arguments[6];
 			w = arguments[7];
@@ -348,6 +560,7 @@ function enableWebGLCanvas( canvas, options )
 		shader = shader || texture_shader;
 
 		shader.uniforms( uniforms ).draw(quad_mesh);
+		extra_projection[14] -= 0.001;
 	}
 
 	ctx.createPattern = function( img )
@@ -355,7 +568,7 @@ function enableWebGLCanvas( canvas, options )
 		return getTexture( img );
 	}
 
-	//to craete gradients
+	//to create gradients
 	function WebGLCanvasGradient(x,y,x2,y2)
 	{
 		this.id = (ctx._last_gradient_id++) % ctx._max_gradients;
@@ -611,7 +824,7 @@ function enableWebGLCanvas( canvas, options )
 		else if( fill_style.constructor === GL.Texture ) //pattern
 		{
 			var tex = fill_style;
-			uniforms.u_color = [1,1,1, this.globalAlpha]; 
+			uniforms.u_color = [1,1,1, this._globalAlpha]; 
 			uniforms.u_texture = 0;
 			tmp_vec4.set([0,0,1/tex.width, 1/tex.height]);
 			uniforms.u_texture_transform = tmp_vec4;
@@ -622,6 +835,7 @@ function enableWebGLCanvas( canvas, options )
 
 		//render
 		shader.uniforms(uniforms).drawRange(global_mesh, gl.TRIANGLE_FAN, 0, global_index / 3);
+		extra_projection[14] -= 0.001;
 	}
 
 	//basic stroke using gl.LINES
@@ -651,7 +865,10 @@ function enableWebGLCanvas( canvas, options )
 		if(global_index < 6)
 			return;
 
-		if( (this.lineWidth * this._matrix[0]) <= 1.0 )
+		tmp_vec2[0] = this._matrix[0];
+		tmp_vec2[1] = this._matrix[1];
+
+		if( (this.lineWidth * vec2.length(tmp_vec2)) <= 1.0 )
 			return this.strokeThin();
 
 		var num_points = global_index / 3;
@@ -778,6 +995,7 @@ function enableWebGLCanvas( canvas, options )
 		//gl.setLineWidth( this.lineWidth );
 		uniforms.u_color = this._strokecolor;
 		flat_primitive_shader.uniforms( uniforms ).drawRange(lines_mesh, gl.TRIANGLE_STRIP, 0, pos / 3 );
+		extra_projection[14] -= 0.001;
 	}
 
 
@@ -912,9 +1130,9 @@ function enableWebGLCanvas( canvas, options )
 		uniforms.u_position = tmp_vec2;
 		uniforms.u_size = tmp_vec2b;
 		uniforms.u_transform = this._matrix;
-		uniforms.u_viewport = viewport
-
+		uniforms.u_viewport = viewport;
 		flat_shader.uniforms(uniforms).draw(quad_mesh);
+		extra_projection[14] -= 0.001;
 	}
 
 	//other functions
@@ -927,6 +1145,30 @@ function enableWebGLCanvas( canvas, options )
 		gl.clear( gl.COLOR_BUFFER_BIT );
 		var v = gl.viewport_data;
 		gl.scissor(v[0],v[1],v[2],v[3]);
+	}
+
+	ctx.fillCircle = function(x,y,r)
+	{
+		global_index = 0;
+
+		//fill using a gradient or pattern
+		if( this._fillStyle.constructor == GL.Texture || this._fillStyle.constructor === WebGLCanvasGradient )
+		{
+			this.beginPath();
+			this.arc(x,y,r,0,Math.PI*2);
+			this.fill();
+			return;
+		}
+
+		uniforms.u_color = this._fillcolor;
+		tmp_vec2[0] = x; tmp_vec2[1] = y;
+		tmp_vec2b[0] = r; tmp_vec2b[1] = r;
+		uniforms.u_position = tmp_vec2;
+		uniforms.u_size = tmp_vec2b;
+		uniforms.u_transform = this._matrix;
+		uniforms.u_viewport = viewport
+		flat_shader.uniforms(uniforms).draw(circle_mesh);
+		extra_projection[14] -= 0.001;
 	}
 	
 	ctx.clip = function()
@@ -961,8 +1203,10 @@ function enableWebGLCanvas( canvas, options )
 		gl.disable( gl.STENCIL_TEST );
 		gl.enable( gl.BLEND );
 		gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
+		gl.blendEquation( gl.FUNC_ADD );
 		gl.lineWidth = 1;
 		global_index = 0;
+		mat4.identity( extra_projection );
 	}
 
 	ctx.finish2D = function()
@@ -972,52 +1216,6 @@ function enableWebGLCanvas( canvas, options )
 		window.gl = prev_gl;
 		gl.disable( gl.STENCIL_TEST );
 	}
-
-	//extra
-	var POINT_TEXT_VERTEX_SHADER = "\n\
-			precision highp float;\n\
-			attribute vec3 a_vertex;\n\
-			attribute vec2 a_coord;\n\
-			varying vec2 v_coord;\n\
-			uniform vec2 u_viewport;\n\
-			uniform mat3 u_transform;\n\
-			#ifdef EXTRA_PROJECTION\n\
-				uniform mat4 u_projection;\n\
-			#endif\n\
-			uniform float u_pointSize;\n\
-			void main() { \n\
-				vec3 pos = a_vertex;\n\
-				pos = u_transform * pos;\n\
-				pos.z = 0.0;\n\
-				//normalize\n\
-				pos.x = (2.0 * pos.x / u_viewport.x) - 1.0;\n\
-				pos.y = -((2.0 * pos.y / u_viewport.y) - 1.0);\n\
-				#ifdef EXTRA_PROJECTION\n\
-					pos = (u_projection * mat4(pos,1.0)).xz;\n\
-				#endif\n\
-				gl_Position = vec4(pos, 1.0); \n\
-				gl_PointSize = ceil(u_pointSize);\n\
-				v_coord = a_coord;\n\
-			}\n\
-			";
-
-	var POINT_TEXT_FRAGMENT_SHADER = "\n\
-			precision highp float;\n\
-			uniform sampler2D u_texture;\n\
-			uniform float u_iCharSize;\n\
-			uniform vec4 u_color;\n\
-			uniform float u_pointSize;\n\
-			uniform vec2 u_viewport;\n\
-			uniform vec2 u_angle_sincos;\n\
-			varying vec2 v_coord;\n\
-			void main() {\n\
-				vec2 uv = vec2(1.0 - gl_PointCoord.s, gl_PointCoord.t);\n\
-				uv = vec2( ((uv.y - 0.5) * u_angle_sincos.y - (uv.x - 0.5) * u_angle_sincos.x) + 0.5, ((uv.x - 0.5) * u_angle_sincos.y + (uv.y - 0.5) * u_angle_sincos.x) + 0.5);\n\
-				uv = v_coord - uv * u_iCharSize + vec2(u_iCharSize*0.5);\n\
-				uv.y = 1.0 - uv.y;\n\
-				gl_FragColor = vec4(u_color.xyz, u_color.a * texture2D(u_texture, uv, -1.0  ).a);\n\
-			}\n\
-			";
 
 	/*
 	var max_triangle_characters = 64;
@@ -1076,7 +1274,6 @@ function enableWebGLCanvas( canvas, options )
 	*/
 
 	//text rendering
-	var	point_text_shader = new GL.Shader( POINT_TEXT_VERTEX_SHADER, POINT_TEXT_FRAGMENT_SHADER, extra_macros );
 	var point_text_vertices = new Float32Array( max_characters * 3 );
 	var point_text_coords = new Float32Array( max_characters * 2 );
 	var point_text_mesh = new GL.Mesh();
@@ -1151,7 +1348,7 @@ function enableWebGLCanvas( canvas, options )
 		if(this.textAlign == "right")
 			offset = x + point_size * 0.5;
 		else if(this.textAlign == "center")
-			offset = x * 0.5;
+			offset = (x + point_size * 0.5 ) * 0.5;
 		if(offset)
 			for(var i = 0; i < points.length; i += 3)
 				points[i] -= offset;
@@ -1186,8 +1383,19 @@ function enableWebGLCanvas( canvas, options )
 		var atlas = createFontAtlas.call( this, this._font_family, this._font_mode );
 		var info = atlas.info;
 		var point_size = Math.ceil( this._font_size * 1.1 );
-		var spacing = point_size * atlas.info.spacing / atlas.info.char_size - 1 ;
-		return { width: text.length * spacing, height: point_size };
+		var textsize = 0;
+		var spacing = point_size * info.spacing / info.char_size - 1;
+		for(var i = 0; i < text.length; ++i)
+		{
+			var charinfo = info.kernings[ text[i] ];
+			if(charinfo)
+				textsize += charinfo.nwidth;
+			else
+				textsize += spacing / info.char_size;
+		}
+		//textsize = text.length * spacing;
+		textsize *= point_size;
+		return { width: textsize, height: point_size };
 	}
 
 	function createFontAtlas( fontname, fontmode, force )
@@ -1210,6 +1418,10 @@ function enableWebGLCanvas( canvas, options )
 
 		var max_ascii_code = 200;
 		var chars_per_row = 10;
+
+		//check if font is being loaded
+		//if( document.fonts && !document.fonts.check( fontname + " " + fontmode ) )
+		//	return null;
 
 		if(useInternationalFont) //more characters
 		{
@@ -1265,13 +1477,13 @@ function enableWebGLCanvas( canvas, options )
 				{
 					ctx.save();
 					ctx.beginPath();
-					ctx.rect( Math.floor(x)+0.5,Math.floor(y)+0.5, char_size-2, char_size-2 );
+					ctx.rect( Math.floor(x)+0.5, Math.floor(y)+0.5, char_size-2, char_size-2 );
 					ctx.clip();
-					ctx.fillText(character,Math.floor(x+char_size*xoffset),Math.floor(y+char_size+yoffset),char_size);
+					ctx.fillText( character, Math.floor(x+char_size*xoffset), Math.floor(y+char_size+yoffset), char_size );
 					ctx.restore();
 				}
 				else
-					ctx.fillText(character,Math.floor(x+char_size*xoffset),Math.floor(y+char_size+yoffset),char_size);
+					ctx.fillText( character, Math.floor(x+char_size*xoffset), Math.floor(y+char_size+yoffset), char_size );
 				x += char_size; //cannot pack chars closer because rendering points, no quads
 				if((x + char_size) > canvas.width)
 				{
@@ -1303,9 +1515,7 @@ function enableWebGLCanvas( canvas, options )
 			}
 		}
 
-		//console.log("Font Atlas Generated:", ((getTime() - now)*0.001).toFixed(2),"s");
-
-		texture = GL.Texture.fromImage( canvas, { magFilter: imageSmoothingEnabled ? gl.LINEAR : gl.NEAREST, minFilter: imageSmoothingEnabled ? gl.LINEAR : gl.NEAREST, premultiply_alpha: false, anisotropic: 8 } );
+		texture = GL.Texture.fromImage( canvas, { format: gl.ALPHA, magFilter: imageSmoothingEnabled ? gl.LINEAR : gl.NEAREST, minFilter: imageSmoothingEnabled ? gl.NEAREST_MIPMAP_LINEAR : gl.NEAREST, premultiply_alpha: false, anisotropic: 8 } );
 		texture.info = info; //font generation info
 
 		return textures[texture_name] = texture;
@@ -1381,6 +1591,25 @@ function enableWebGLCanvas( canvas, options )
 		}
 	});
 
+	Object.defineProperty(gl, "globalCompositeOperation", {
+		get: function() { return this._globalCompositeOperation; },
+		set: function(v) { 
+			this._globalCompositeOperation = v;
+			gl.blendEquation( gl.FUNC_ADD ); 
+			//gl.blendEquationSeparate( );
+			switch(v)
+			{
+				case "source-over": 
+					gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
+					break;
+				case "difference": 
+					gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA ); 
+					gl.blendEquation( gl.FUNC_REVERSE_SUBTRACT ); 
+					break;
+			}
+		}
+	});
+
 	Object.defineProperty(gl, "font", {
 		get: function() { return this._font; },
 		set: function(v) { 
@@ -1430,6 +1659,7 @@ function enableWebGLCanvas( canvas, options )
 	ctx.shadowColor = "transparent";
 	ctx.shadowOffsetX = ctx.shadowOffsetY = 0;
 	ctx.globalAlpha = 1;
+	ctx.globalCompositeOperation = "source-over";
 	ctx.setLineWidth = ctx.lineWidth; //save the webgl function
 	ctx.lineWidth = 4; //set lineWidth as a number
 	ctx.imageSmoothingEnabled = true;
