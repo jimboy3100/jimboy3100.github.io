@@ -1,4 +1,4 @@
-//SPECS v4.4t WORKS UNTIL HERE
+//SPECS v4.4u WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -30,7 +30,7 @@ function addFullSpectator() {
   var times = parseInt(legendmod.mapSize/471.4)
   //for (;stop<30;stop++){
 
-  if (!legendmod.integrity && times<80){
+  if (legendmod.integrity && times<80){
   for (;stop<times;stop++){
 	  
     if(stop == 0) {
