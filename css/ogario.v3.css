@@ -1013,8 +1013,8 @@ input.hide-url::selection,input.stream-mode::selection{
     right:10px 
 }
 #target-skin,#target-skin img{
-    width:1.5em;
-    height:1.5em;
+    width:3.5em;
+    height:3.5em;
     border-radius:50% 
 }
 #btl-leaderboard-hud .hud-c,#leaderboard-data .lb-data,#leaderboard-hud,#leaderboard-positions span,#message-menu a,#messages li,#overlays-hud[data-gamemode=":battleroyale"] #btl-leaderboard-hud,#time-hud{
