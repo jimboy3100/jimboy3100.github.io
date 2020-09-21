@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.528
+// v2.533
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -774,8 +774,13 @@ window.connectionBots = {
 			window.capthaWindowOpened = true;			
 			window.addEventListener("message", function(event){
 				//if (event.data.includes('captcha-')){
-					//event.data.replace('captcha-','');		
-					legendmod.sendSpawn2(event.data);
+					//event.data.replace('captcha-','');	
+					if (legendmod.integrity){
+						legendmod.sendSpawn2(event.data);
+					}
+					else{
+						legendmod.sendSpawn2('0');
+					}
 				//}
 				/*else if (event.data.includes('sendTimeOutTokenBots-')){
 					event.data.replace('sendTimeOutTokenBots-','');
@@ -6888,11 +6893,24 @@ function thelegendmodproject() {
             window.core && window.core.connect && window.core.connect(ws);
         },
         gameServerReconnect() {
-            if (window.MC && window.MC.reconnect) {
+			
+            /*if (window.MC && window.MC.reconnect) {
                 window.MC.reconnect();
                 return;
-            }
-            if (window.master && window.master.reconnect) window.master.reconnect();
+            }*/
+			//if ()
+			if (!legendmod.integrity){
+				if ( $('#gamemode option:selected').next().length > 0 ){
+					$('#gamemode option:selected').next().prop('selected', 'selected').change();
+				}
+				else {
+					$('#gamemode option:first').prop('selected', 'selected').change();
+				}
+				//$('#gamemode option[value=34]').prop('selected', 'selected').change();
+			}
+			else if (legendmod.integrity){
+				if (window.master && window.master.reconnect) window.master.reconnect();
+			}
         },
         gameServerJoin(token) {
             const ws = this.recreateWS(token);
@@ -9821,11 +9839,19 @@ function thelegendmodproject() {
         onOpen() {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket open');
             this.time = Date.now();
+			if (!window.customProtol) window.customProtol = 6
+			if (!window.customClient) window.customClient = 1
+			
             var view = this.createView(5);
             view.setUint8(0, 254);
-            if (!window.gameBots.protocolVersion) window.gameBots.protocolVersion = master.protocolVersion;
-			if (!this.integrity){ view.setUint32(1, 6, true); }
-			else{ view.setUint32(1, this.protocolVersion, true);  } //			
+			if (!this.integrity){ 
+				view.setUint32(1, window.customProtol, true); 
+				window.gameBots.protocolVersion = window.customProtol
+			}
+			else{ 		
+				view.setUint32(1, this.protocolVersion, true); 
+				window.gameBots.protocolVersion = master.protocolVersion;		
+			} //			
 			//if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 6, true); } //protocol 6 and 5
 			//else if (window.protocol5){ view.setUint32(1, 5, true); } // Protocol 5
             
@@ -9833,9 +9859,14 @@ function thelegendmodproject() {
             this.sendMessage(view);
             view = this.createView(5);
             view.setUint8(0, 255);
-            if (!window.gameBots.clientVersion) window.gameBots.clientVersion = this.clientVersion
-			if (!this.integrity){ view.setUint32(1, 1, true); } //protocol 6 and 5
-			else{ view.setUint32(1, this.clientVersion, true); }//
+			if (!this.integrity){ 		
+				view.setUint32(1, window.customClient, true); 
+				window.gameBots.clientVersion = window.customClient
+			} //protocol 6 and 5
+			else{ 
+				view.setUint32(1, this.clientVersion, true);
+				window.gameBots.clientVersion = this.clientVersion
+			}//
 			//if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 1, true); } //protocol 6 and 5
 			//else if (window.protocol5){ view.setUint32(1, 1332175218, true); } // Protocol 5
 			
@@ -14676,20 +14707,23 @@ Game name     : ${i.displayName}<br/>
 		scale = scale*defaultSettings.hudScale;
 		//
         var topValue = () => {
-			var distance=355;		
-            if (window.screen.height <= 992) {
+			var distance=355;
+			
+			//var tempp = window.screen.height
+            if (innerWidth <= 992) {
+				
 				distance=250;
                 //scale += 0.1*defaultSettings.hudScale;
             } 			
-            else if (window.screen.height <= 1080) {
+            else if (innerWidth <= 1080) {
 				distance=300;
                 //scale += 0.1*defaultSettings.hudScale;
             } 
-			else if (window.screen.height > 1080 && window.screen.height < 1440) {
+			else if (innerWidth > 1080 && innerWidth < 1440) {
 				distance=420;
                 //scale += 0.2*defaultSettings.hudScale;
             } 
-			else if (window.screen.height >= 1440) {
+			else if (innerWidth >= 1440) {
 				distance=520;
                 //scale += 0.3*defaultSettings.hudScale;
             }
