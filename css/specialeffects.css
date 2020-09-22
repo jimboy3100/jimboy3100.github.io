@@ -85,7 +85,7 @@
     float: left;
 }
 
-.skin-box img {
+#customskins .skin-box img {
     width: 100px;
     height: 100px;
     border: none;
