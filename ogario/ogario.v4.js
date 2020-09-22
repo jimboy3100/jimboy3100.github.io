@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.535
+// v2.538
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -57,6 +57,9 @@ function deleteGamemode(temp) {
     }, {		
         text: 'Instant Merging',
         value: 16
+    }, {
+        text: 'MK NA east',
+        value: 36		
     }, {		
         text: 'Party MegaSplit',
         value: 19		
@@ -111,10 +114,7 @@ function deleteGamemode(temp) {
     }, {	
         text: 'Bots',
         value: 33		
-    }, {	
-        text: 'MK NA east',
-        value: 36		
-    }, {	
+    }, {		
         text: 'MK Oceania',
         value: 37		
     }, {	
