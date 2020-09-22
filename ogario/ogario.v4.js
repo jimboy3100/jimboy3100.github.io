@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.533
+// v2.535
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -112,6 +112,25 @@ function deleteGamemode(temp) {
         text: 'Bots',
         value: 33		
     }, {	
+        text: 'MK NA east',
+        value: 36		
+    }, {	
+        text: 'MK Oceania',
+        value: 37		
+    }, {	
+        text: 'MK Teams (beta)',
+        value: 38		
+    }, {
+        text: 'MK Teams',
+        value: 40		
+    }, {		
+        text: 'MK Bots WIP',
+        value: 39		
+    }, {
+
+        text: 'MK Disturb Furry',
+        value: 41		
+    }, {		
 /*
         text: 'Cellz big ffa',
         value: 34		
@@ -253,7 +272,46 @@ function deleteGamemode(temp) {
         }	
 		else if ($('#gamemode').val() == 35) {
             core.connect('wss://delta-server.glitch.me');
+        }	
+		else if ($('#gamemode').val() == 36) {
+            core.connect('wss://mkserv5.herokuapp.com/');
+        }		
+		else if ($('#gamemode').val() == 37) {
+            core.connect('wss://agar.mkchat.net/');
+        }	
+		else if ($('#gamemode').val() == 38) {
+            core.connect('wss://teamworkmk.herokuapp.com/');
+            setTimeout(function() {
+                legendmod.gameMode = ":teams";
+            }, 500)
+        }	
+		else if ($('#gamemode').val() == 39) {
+            core.connect('wss://mkserv-bots.herokuapp.com/');
+        }		
+		else if ($('#gamemode').val() == 40) {
+            core.connect('wss://mkserv-bots.herokuapp.com/');
+           setTimeout(function() {
+                legendmod.gameMode = ":teams";
+            }, 500)			
+        }		
+		else if ($('#gamemode').val() == 41) {
+            core.connect('wss://distrustfurryserver.herokuapp.com/');
+        }	
+		/*
+		else if ($('#gamemode').val() == 42) {
+            core.connect('ws://dummyserver.glitch.me/');
         }			
+		else if ($('#gamemode').val() == 43) {
+            core.connect('wss://dummyserver-rainbow.glitch.me/');
+        }	
+		else if ($('#gamemode').val() == 44) {
+            core.connect('wss://dummyserver-instant.glitch.me/');
+        }	
+		else if ($('#gamemode').val() == 45) {
+            core.connect('wss://dummyserver-instant.glitch.me/');
+        }	
+		*/
+	//ac-clan.glitch.me
 /*		
 		else if ($('#gamemode').val() == 34) {
             core.connect('wss://proxy.cellz.io/4600');
