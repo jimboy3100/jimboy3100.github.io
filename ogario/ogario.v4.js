@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.552 testing
+// v2.553 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -57,10 +57,7 @@ function deleteGamemode(temp) {
     }, {		
         text: 'Instant Merging',
         value: 16
-    }, {
-        text: 'MK NA east',
-        value: 36		
-    }, {		
+    }, {	
         text: 'Party MegaSplit',
         value: 19		
     }, {		
@@ -114,24 +111,23 @@ function deleteGamemode(temp) {
     }, {	
         text: 'Bots',
         value: 33		
+    }, {	
+        text: 'MK NA east',
+        value: 36		
     }, {		
         text: 'MK Oceania',
         value: 37		
     }, {	
-        text: 'MK Teams (beta)',
-        value: 38		
-    }, {
         text: 'MK Teams',
-        value: 40		
+        value: 38		
     }, {		
         text: 'MK Bots WIP',
         value: 39		
     }, {
-
+		/*
         text: 'MK Disturb Furry',
         value: 41		
     }, {		
-/*
         text: 'Cellz big ffa',
         value: 34		
     }, {	
@@ -287,13 +283,7 @@ function deleteGamemode(temp) {
         }	
 		else if ($('#gamemode').val() == 39) {
             core.connect('wss://mkserv-bots.herokuapp.com/');
-        }		
-		else if ($('#gamemode').val() == 40) {
-            core.connect('wss://mkserv-bots.herokuapp.com/');
-           setTimeout(function() {
-                legendmod.gameMode = ":teams";
-            }, 500)			
-        }		
+        }				
 		else if ($('#gamemode').val() == 41) {
             core.connect('wss://distrustfurryserver.herokuapp.com/');
         }	
