@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.538
+// v2.551 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -12936,6 +12936,7 @@ Game name     : ${i.displayName}<br/>
             //if(defaultmapsettings.clickTargeting) clickTargeting.check();
 
             //if (window.historystate && legendmod.play) {historystate();}
+			drawRender.render()
         },
         color2Hex(number) {
             var color = number.toString(16);
@@ -13355,6 +13356,157 @@ Game name     : ${i.displayName}<br/>
                 if (defaultmapsettings.showBgSectors) {
                     this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings.gridColor, defaultSettings.sectorsColor, defaultSettings.sectorsWidth, true);
                 }
+                if (LM.gameMode === ':battleroyale') {
+                    this.drawBattleArea(this.ctx);
+                }
+				this.drawCustomBackgrounds()
+				if (defaultmapsettings.showMapBorders) {	
+					
+                    var tempborderwidthradius = defaultSettings.bordersWidth / 2;
+                    this.drawMapBorders(this.ctx, LM.mapOffsetFixed, LM.mapMinX - tempborderwidthradius, LM.mapMinY - tempborderwidthradius, LM.mapMaxX + tempborderwidthradius, LM.mapMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
+                }
+                this.drawCommander();
+                this.drawCommander2();
+                if (defaultmapsettings.virusesRange) {
+                    this.drawVirusesRange(this.ctx, LM.viruses);
+                }
+                //if (defaultmapsettings.waves) {
+                //this.drawWaves();
+                //}				
+                this.drawFood();
+                if (LM.playerCellsMulti.length) {
+                    this.calMinMaxMulti();
+                }
+                this.calMinMax();
+				this.drawHelpers();       
+				this.drawGhostCells();
+                for (var i = 0; i < LM.removedCells.length; i++) {
+                    LM.removedCells[i].draw(this.ctx, true);
+                }
+                for (i = 0; i < LM.cells.length; i++) {
+
+                    if (defaultmapsettings.jellyPhisycs) {
+                        LM.cells[i].updateNumPoints();
+                        LM.cells[i].movePoints();
+                    }
+
+                    LM.cells[i].draw(this.ctx);
+
+                    if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, LM.cells[i].x, LM.cells[i].y, LM.cells[i].size)) {
+                        LM.selected = LM.cells[i].id
+                        //this.drawRing(this.ctx,LM.cells[i].x,LM.cells[i].y,LM.cells[i].size,0.75,'#ffffff')
+                    }
+                }
+				this.drawMiscRings();
+                //lylko
+                defaultmapsettings.jellyPhisycs && LM.updateQuadtree(LM.cells); //
+		
+				this.drawRings();
+				this.drawRMB();
+                //
+                if (defaultmapsettings.debug) {
+                    this.drawViewPorts(this.ctx)
+                }
+                //
+
+                this.ctx.restore();
+
+                //this.ctx.finish2D();
+                if (LM.gameMode === ':teams') {
+                    if (this.pieChart && this.pieChart.width) {
+                        this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
+                    }
+                }				
+				
+				//window.updateCellsClock=false
+				
+				//drawRender.render();
+            },
+			drawHelpers(){
+                if (LM.play || LM.playerCellsMulti.length) {
+                    if (defaultmapsettings.splitRange) {
+                        this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell);
+                        this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell); //Sonia
+                        this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell); //Sonia
+                        //
+                        this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCellsMulti, LM.selectBiggestCell);
+                        this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCellsMulti, LM.selectBiggestCell); //Sonia
+                        this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCellsMulti, LM.selectBiggestCell); //Sonia						
+                    }
+                    if (defaultmapsettings.oppRings && !defaultmapsettings.bubbleInd) {
+                        //this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache , LM.SSCellsCache); //Sonia
+                        this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache); //Sonia
+                    }
+                    if (defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) {
+                        if (!window.multiboxFollowMouse) {
+                            if (!window.multiboxPlayerEnabled) {
+                                this.drawCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
+                            } else if (window.multiboxPlayerEnabled) {
+                                this.drawCursorTracking(this.ctx, LM.playerCellsMulti, LM.cursorX, LM.cursorY);
+                            }
+                        } else {
+                            this.drawCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
+                            this.drawCursorTracking(this.ctx, LM.playerCellsMulti, LM.cursorX, LM.cursorY);
+                        }
+
+                    }
+                }
+			},	
+			drawMiscRings(){
+                if (LM.play || LM.playerCellsMulti.length) {
+                    if (defaultmapsettings.bubbleInd) {
+                        this.drawBOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache, LM.SSCellsCache);
+                    }
+                    if (defaultmapsettings.bubbleCursorTracker) {
+                        this.drawBCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
+                    }
+                    if (defaultmapsettings.FBTracking && LM.arrowFB[0].visible) {
+                        this.drawFBTracking(this.ctx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
+                    }
+                }
+			},				
+			drawRMB(){
+                if (drawRender.RMB && LM.indexedCells[LM.selected] && LM.playerCellIDs.length) {
+                    var index = LM.selectBiggestCell ? LM.playerCells.length - 1 : 0;
+                    //ctx.arc(playerCells[index].x, playerCells[index].y, playerCells[index].size + 760, 0, this.pi2, false);
+                    if (LM.playerCells[index] == undefined) return;
+                    var xc = LM.playerCells[index].targetX //.x
+                    var yc = LM.playerCells[index].targetY //.y
+
+                    var x = LM.indexedCells[LM.selected].targetX //.x
+                    var y = LM.indexedCells[LM.selected].targetY //.y
+
+                    var a = xc - x
+                    var b = yc - y
+                    var distance = Math.sqrt(a * a + b * b) - (LM.indexedCells[LM.selected].size + LM.playerCells[index].size)
+
+                    var ang = Math.atan2(y - yc, x - xc);
+
+                    LM.cursorX = xc + (Math.cos(ang) * distance)
+                    LM.cursorY = yc + (Math.sin(ang) * distance)
+                    LM.sendPosition()
+                }	
+			},				
+			drawRings(){
+				if (defaultmapsettings.reverseTrick){
+					LM.indexedCells[reverseTrick.biggerEnemy] && this.drawRing(this.ctx,
+						LM.indexedCells[reverseTrick.biggerEnemy].x,
+						LM.indexedCells[reverseTrick.biggerEnemy].y,
+						LM.indexedCells[reverseTrick.biggerEnemy].size,
+						0.75, 'red');
+					LM.indexedCells[reverseTrick.smallerEnemy] && this.drawRing(this.ctx,
+						LM.indexedCells[reverseTrick.smallerEnemy].x,
+						LM.indexedCells[reverseTrick.smallerEnemy].y,
+						LM.indexedCells[reverseTrick.smallerEnemy].size,
+						0.75, 'blue');
+				}
+                LM.indexedCells[LM.selected] && this.drawRing(this.ctx,
+                    LM.indexedCells[LM.selected].x,
+                    LM.indexedCells[LM.selected].y,
+                    LM.indexedCells[LM.selected].size,
+                    0.75, '#ffffff')
+			},					
+			drawCustomBackgrounds(){
                 if (defaultSettings.customBackground && defaultSettings.customBackground!="") {
                     if (!legendmod.customMidPic) {
                         if (defaultSettings.customBackground) {
@@ -13410,166 +13562,7 @@ Game name     : ${i.displayName}<br/>
                         this.ctx.globalAlpha = this.prevctxglobalAlpha
                     }
                 }
-                if (LM.gameMode === ':battleroyale') {
-                    this.drawBattleArea(this.ctx);
-                }
-				//if (defaultmapsettings.showMapBorders && LM.ws && !LM.ws.includes("imsolo.pro")) {
-				//if (defaultmapsettings.showMapBorders && LM.ws && LM.integrity) {	
-				if (defaultmapsettings.showMapBorders && LM.ws) {	
-					
-                    var tempborderwidthradius = defaultSettings.bordersWidth / 2;
-                    this.drawMapBorders(this.ctx, LM.mapOffsetFixed, LM.mapMinX - tempborderwidthradius, LM.mapMinY - tempborderwidthradius, LM.mapMaxX + tempborderwidthradius, LM.mapMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
-                }
-				/*else if (defaultmapsettings.showMapBorders && !$("#server-token").val().includes("imsolo.pro")){
-                    var tempborderwidthradius = defaultSettings.bordersWidth / 2;
-                    this.drawMapBorders(this.ctx, LM.mapOffsetFixed, LM.mapMinX - tempborderwidthradius, LM.mapMinY - tempborderwidthradius, LM.mapMaxX + tempborderwidthradius, LM.mapMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);					
-				}*/
-                this.drawCommander();
-                this.drawCommander2();
-                if (defaultmapsettings.virusesRange) {
-                    this.drawVirusesRange(this.ctx, LM.viruses);
-                }
-                //if (defaultmapsettings.waves) {
-                //this.drawWaves();
-                //}				
-                this.drawFood();
-                if (LM.playerCellsMulti.length) {
-                    this.calMinMaxMulti();
-                }
-                this.calMinMax();
-                if (LM.play || LM.playerCellsMulti.length) {
-                    if (defaultmapsettings.splitRange) {
-                        this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell);
-                        this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell); //Sonia
-                        this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell); //Sonia
-                        //
-                        this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCellsMulti, LM.selectBiggestCell);
-                        this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCellsMulti, LM.selectBiggestCell); //Sonia
-                        this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCellsMulti, LM.selectBiggestCell); //Sonia						
-                    }
-                    if (defaultmapsettings.oppRings && !defaultmapsettings.bubbleInd) {
-                        //this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache , LM.SSCellsCache); //Sonia
-                        this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache); //Sonia
-                    }
-                    if (defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) {
-                        if (!window.multiboxFollowMouse) {
-                            if (!window.multiboxPlayerEnabled) {
-                                this.drawCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
-                            } else if (window.multiboxPlayerEnabled) {
-                                this.drawCursorTracking(this.ctx, LM.playerCellsMulti, LM.cursorX, LM.cursorY);
-                            }
-                        } else {
-                            this.drawCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
-                            this.drawCursorTracking(this.ctx, LM.playerCellsMulti, LM.cursorX, LM.cursorY);
-                        }
-
-                    }
-                }       
-				this.drawGhostCells();
-                for (var i = 0; i < LM.removedCells.length; i++) {
-                    LM.removedCells[i].draw(this.ctx, true);
-                }
-                for (i = 0; i < LM.cells.length; i++) {
-
-                    if (defaultmapsettings.jellyPhisycs) {
-                        LM.cells[i].updateNumPoints();
-                        LM.cells[i].movePoints();
-                    }
-
-                    LM.cells[i].draw(this.ctx);
-
-                    if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, LM.cells[i].x, LM.cells[i].y, LM.cells[i].size)) {
-                        LM.selected = LM.cells[i].id
-                        //this.drawRing(this.ctx,LM.cells[i].x,LM.cells[i].y,LM.cells[i].size,0.75,'#ffffff')
-                    }
-                }
-                if (LM.play || LM.playerCellsMulti.length) {
-                    if (defaultmapsettings.bubbleInd) {
-                        this.drawBOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache, LM.SSCellsCache);
-                    }
-                    if (defaultmapsettings.bubbleCursorTracker) {
-                        this.drawBCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
-                    }
-                    if (defaultmapsettings.FBTracking && LM.arrowFB[0].visible) {
-                        this.drawFBTracking(this.ctx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
-                    }
-                }
-                //lylko
-                defaultmapsettings.jellyPhisycs && LM.updateQuadtree(LM.cells); //
-		
-				if (defaultmapsettings.reverseTrick){
-					LM.indexedCells[reverseTrick.biggerEnemy] && this.drawRing(this.ctx,
-						LM.indexedCells[reverseTrick.biggerEnemy].x,
-						LM.indexedCells[reverseTrick.biggerEnemy].y,
-						LM.indexedCells[reverseTrick.biggerEnemy].size,
-						0.75, 'red');
-					LM.indexedCells[reverseTrick.smallerEnemy] && this.drawRing(this.ctx,
-						LM.indexedCells[reverseTrick.smallerEnemy].x,
-						LM.indexedCells[reverseTrick.smallerEnemy].y,
-						LM.indexedCells[reverseTrick.smallerEnemy].size,
-						0.75, 'blue');
-				}
-                LM.indexedCells[LM.selected] && this.drawRing(this.ctx,
-                    LM.indexedCells[LM.selected].x,
-                    LM.indexedCells[LM.selected].y,
-                    LM.indexedCells[LM.selected].size,
-                    0.75, '#ffffff')
-
-
-                if (drawRender.RMB && LM.indexedCells[LM.selected] && LM.playerCellIDs.length) {
-                    var index = LM.selectBiggestCell ? LM.playerCells.length - 1 : 0;
-                    //ctx.arc(playerCells[index].x, playerCells[index].y, playerCells[index].size + 760, 0, this.pi2, false);
-                    if (LM.playerCells[index] == undefined) return;
-                    var xc = LM.playerCells[index].targetX //.x
-                    var yc = LM.playerCells[index].targetY //.y
-
-                    var x = LM.indexedCells[LM.selected].targetX //.x
-                    var y = LM.indexedCells[LM.selected].targetY //.y
-
-                    var a = xc - x
-                    var b = yc - y
-                    var distance = Math.sqrt(a * a + b * b) - (LM.indexedCells[LM.selected].size + LM.playerCells[index].size)
-
-                    var ang = Math.atan2(y - yc, x - xc);
-
-                    LM.cursorX = xc + (Math.cos(ang) * distance)
-                    LM.cursorY = yc + (Math.sin(ang) * distance)
-                    LM.sendPosition()
-                }
-                //
-                if (defaultmapsettings.debug) {
-                    this.drawViewPorts(this.ctx)
-                }
-                //
-
-                this.ctx.restore();
-
-                //this.ctx.finish2D();
-                /*if (defaultmapsettings.debug) {
-                    this.ctx.fillStyle = "white";
-                    this.ctx.font = "15px sans-serif";
-                    this.ctx.textAlign = "start";
-                    var lw = (this.canvasHeight / 2)
-                    LM.camMaxX && this.ctx.fillText("isFreeSpectate: " + LM.isFreeSpectate, 50, lw += 25);
-                    LM.camMaxX && this.ctx.fillText("isSpectateEnabled: " + LM.isSpectateEnabled, 50, lw += 25);
-                    LM.camMaxX && this.ctx.fillText("realQuadrant: "+LM.realQuadrant, 50, lw+=25);
-                    LM.camMaxX && this.ctx.fillText("lastQuadrant: "+LM.lastQuadrant, 50, lw+=25);
-                    LM.camMaxX && this.ctx.fillText("quadrant: "+LM.quadrant, 50, lw+=25);
-                    LM.camMaxX && this.ctx.fillText("cMaxX: "+LM.camMaxX, 50, lw+=30);
-                    LM.camMaxY && this.ctx.fillText("cMaxY: "+LM.camMaxY, 50, lw+=30);
-                    LM.camMinX && this.ctx.fillText("cMinX: "+LM.camMinX, 50, lw+=30);
-                    LM.camMinY && this.ctx.fillText("cMinY: "+LM.camMinY, 50, lw+=30);
-                }*/
-                if (LM.gameMode === ':teams') {
-                    if (this.pieChart && this.pieChart.width) {
-                        this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
-                    }
-                }				
-				
-				//window.updateCellsClock=false
-				
-				//drawRender.render();
-            },
+			},
             drawViewPorts(ctx) {
 				//console.log('a')
                 this.drawViewport(this.ctx, 'Viewport', LM.camMinX, LM.camMinY, LM.camMaxX, LM.camMaxY, defaultSettings.bordersColor, 15);
@@ -13879,10 +13872,64 @@ Game name     : ${i.displayName}<br/>
                     ctx.strokeStyle = radius;
                     ctx.lineWidth = canvas;
                     ctx.beginPath();
+                    ctx.moveTo(text+ctx.lineWidth, x1);
+                    ctx.lineTo(x0-ctx.lineWidth, x1);
+					
+					//
+					ctx.moveTo(x0, x1);
+					ctx.lineTo(x0+ctx.lineWidth, x1-ctx.lineWidth);
+					//
+					
+					ctx.moveTo(x0, x1+ctx.lineWidth);
+                    ctx.lineTo(x0, y0-ctx.lineWidth);
+					
+					//
+					ctx.moveTo(x0, y0);
+					ctx.lineTo(x0+ctx.lineWidth, y0+ctx.lineWidth);
+					//
+					
+					ctx.moveTo(x0 - ctx.lineWidth, y0);		
+                    ctx.lineTo(text + ctx.lineWidth, y0);
+
+					//
+					ctx.moveTo(text, y0);
+					ctx.lineTo(text-ctx.lineWidth, y0+ctx.lineWidth);
+					//
+					
+					ctx.moveTo(text, y0 - ctx.lineWidth);
+					ctx.lineTo(text, x1 + ctx.lineWidth);
+					
+					//
+					ctx.moveTo(text, x1);
+					ctx.lineTo(text-ctx.lineWidth, x1-ctx.lineWidth);
+					//					
+					//ctx.lineTo(text, x1);
+                    if (defaultmapsettings.borderGlow) {
+                        ctx.shadowBlur = defaultSettings.borderGlowSize;
+                        ctx.shadowColor = defaultSettings.borderGlowColor;
+                    } else {
+                        "skrrt";
+                    }
+                    //ctx.closePath();
+                    ctx.stroke();
+                }
+                if (defaultmapsettings.borderGlow) {
+                    ctx.shadowBlur = 0;
+                } else {
+                    "skrrt";
+                }
+            },
+            /*drawMapBorders(ctx, macros, text, x1, x0, y0, radius, canvas) {
+                if (macros) {
+                    ctx.strokeStyle = radius;
+                    ctx.lineWidth = canvas;
+                    ctx.beginPath();
                     ctx.moveTo(text, x1);
                     ctx.lineTo(x0, x1);
                     ctx.lineTo(x0, y0);
                     ctx.lineTo(text, y0);
+				
+					//ctx.lineTo(text, x1);
                     if (defaultmapsettings.borderGlow) {
                         ctx.shadowBlur = defaultSettings.borderGlowSize;
                         ctx.shadowColor = defaultSettings.borderGlowColor;
@@ -13897,7 +13944,7 @@ Game name     : ${i.displayName}<br/>
                 } else {
                     "skrrt";
                 }
-            },
+            },	*/		
             drawVirusesRange(t, e, i) {
                 if (e.length) {
                     t.beginPath();
@@ -14483,16 +14530,16 @@ Game name     : ${i.displayName}<br/>
 				}
 				else if (defaultmapsettings.unlockedFPS==2 || defaultmapsettings.unlockedFPS==4 || defaultmapsettings.unlockedFPS==8 || defaultmapsettings.unlockedFPS==16 || defaultmapsettings.unlockedFPS==32 || defaultmapsettings.unlockedFPS==64){
 					setTimeout(function() {
-						window.requestAnimationFrame(drawRender.render);
+						//window.requestAnimationFrame(drawRender.render);
 					}, defaultmapsettings.unlockedFPS);	
 				}
 				else if (defaultmapsettings.unlockedFPS=="ultra"){
 					setTimeout(function() {
 						for (var i=0;i<9;i++){
 							drawRender.countFps()
-							drawRender.renderFrame();							
+							//drawRender.renderFrame();							
 						}
-						drawRender.render()
+						//drawRender.render()
 					}, 0);					
 				}	
 				else if (defaultmapsettings.unlockedFPS=="sophisticated"){										
@@ -14507,13 +14554,13 @@ Game name     : ${i.displayName}<br/>
 					}
 					else if(window.drawRender.fps/window.fpsloopsetter<1){
 						setTimeout(function() {
-							window.requestAnimationFrame(drawRender.render);
+							//window.requestAnimationFrame(drawRender.render);
 						}, window.fpsloopsetter/window.drawRender.fps);						
 					}
 				}					
 				else{
 					setTimeout(function() {
-						drawRender.render()
+						//drawRender.render()
 					}, 0);					
 				}				
 					//drawRender.render()
