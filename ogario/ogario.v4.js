@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.551 testing
+// v2.552 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -12935,8 +12935,7 @@ Game name     : ${i.displayName}<br/>
             if (defaultmapsettings.reverseTrick) reverseTrick.check();
             //if(defaultmapsettings.clickTargeting) clickTargeting.check();
 
-            //if (window.historystate && legendmod.play) {historystate();}
-			drawRender.render()
+            //if (window.historystate && legendmod.play) {historystate();}			
         },
         color2Hex(number) {
             var color = number.toString(16);
@@ -13876,7 +13875,7 @@ Game name     : ${i.displayName}<br/>
                     ctx.lineTo(x0-ctx.lineWidth, x1);
 					
 					//
-					ctx.moveTo(x0, x1);
+					ctx.moveTo(x0, x1);//ctx.moveTo(x0, x1);
 					ctx.lineTo(x0+ctx.lineWidth, x1-ctx.lineWidth);
 					//
 					
@@ -14530,16 +14529,16 @@ Game name     : ${i.displayName}<br/>
 				}
 				else if (defaultmapsettings.unlockedFPS==2 || defaultmapsettings.unlockedFPS==4 || defaultmapsettings.unlockedFPS==8 || defaultmapsettings.unlockedFPS==16 || defaultmapsettings.unlockedFPS==32 || defaultmapsettings.unlockedFPS==64){
 					setTimeout(function() {
-						//window.requestAnimationFrame(drawRender.render);
+						window.requestAnimationFrame(drawRender.render);
 					}, defaultmapsettings.unlockedFPS);	
 				}
 				else if (defaultmapsettings.unlockedFPS=="ultra"){
 					setTimeout(function() {
 						for (var i=0;i<9;i++){
 							drawRender.countFps()
-							//drawRender.renderFrame();							
+							drawRender.renderFrame();							
 						}
-						//drawRender.render()
+						drawRender.render()
 					}, 0);					
 				}	
 				else if (defaultmapsettings.unlockedFPS=="sophisticated"){										
@@ -14554,13 +14553,13 @@ Game name     : ${i.displayName}<br/>
 					}
 					else if(window.drawRender.fps/window.fpsloopsetter<1){
 						setTimeout(function() {
-							//window.requestAnimationFrame(drawRender.render);
+							window.requestAnimationFrame(drawRender.render);
 						}, window.fpsloopsetter/window.drawRender.fps);						
 					}
 				}					
 				else{
 					setTimeout(function() {
-						//drawRender.render()
+						drawRender.render()
 					}, 0);					
 				}				
 					//drawRender.render()
