@@ -1,3 +1,5 @@
+//https://github.com/Izzy129/slasher-ai/blob/ef4a8e412585c3dfd7d93e3eb35ff1b2e7064035/index.js
+
 const { murmur2 } = require('murmurhash-js')
 const { readFileSync } = require('fs')
 console.log(readFileSync('bigtitle.txt', 'utf8'.blue).toString())
