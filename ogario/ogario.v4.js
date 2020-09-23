@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.554 testing
+// v2.564 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -377,6 +377,8 @@ function logoutPSArenas() {
 }
 
 var dyinglight1load = localStorage.getItem("dyinglight1load");
+//var MassBigFFAAnnouncement = localStorage.getItem("MassBigFFAAnnouncement");
+var PremiumLimitedDateStart = localStorage.getItem("PremiumLimitedDateStart");
 
 function removeEmojis(string) {
     var regex = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
@@ -787,7 +789,7 @@ function createCaptchaWindow(i){
 		window.capthaWindow[i].style.height = "0px";
 		document.body.appendChild(window.capthaWindow[i]);	*/
 		if (window.LMVersion=="1.7"){
-			toastr.info('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + '	Your version is outdated for bts. Download ' + ' <font color="yellow"><b>v1.8</b></font>. <br>visit: <a target="_blank" href="http://www.legendmod.ml"><font color="yellow"><b><u>www.legendmod.ml</u></b></font></a>');
+			toastr.info('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + '	Your version is outdated for bts. Download ' + ' <font color="yellow"><b>v1.8</b></font>. <br>visit: <a target="_blank" href="https://www.legendmod.ml"><font color="yellow"><b><u>www.legendmod.ml</u></b></font></a>');
 		}
 		window.capthaWindow[i] = window.open("https://agar.io/captcha");
 }	
@@ -5230,7 +5232,7 @@ function thelegendmodproject() {
             $("#statsContinue").attr("id", "statsContinue2");
             $("#mainPanel").empty().remove();
             $(".center-container").addClass("ogario-menu");
-            $(".center-container").append('<div id="menu-footer" class="menu-main-color"> <a href="http://legendmod.ml" target="_blank">legendmod.ml</a> | ' + this.version + ' <a href="http://legendmod.ml" class="release ogicon-info" target="_blank"></a></div>');
+            $(".center-container").append('<div id="menu-footer" class="menu-main-color"> <a href="https://legendmod.ml" target="_blank">legendmod.ml</a> | ' + this.version + ' <a href="https://legendmod.ml" class="release ogicon-info" target="_blank"></a></div>');
             $("#leftPanel, #rightPanel").addClass("ogario-menu").removeAttr("id");
             $(".agario-profile-panel, .agario-panel-freecoins, .agario-panel-gifting, .agario-shop-panel, #dailyquests-panel").appendTo($("#profile")).removeClass("agario-side-panel");
             $(".agario-profile-panel").after('<div id="block-warn">' + textLanguage.blockWarn + '<br><a href="#" id="unblock-popups">' + textLanguage.unblockPopups + "</a></div>");
@@ -9744,6 +9746,7 @@ function thelegendmodproject() {
         playerYMulti: 0,
         playerSize: 0,
         playerMass: 0,
+		totalPlayerMassBigFFA: 0,
         playerMaxMass: 0,
         playerMinMass: 0,
         playerScore: 0,
@@ -9875,14 +9878,14 @@ function thelegendmodproject() {
                 window.master.onConnect();
             }
 			this.play = false //fix
-			/*
-			if (this.ws.includes("imsolo.pro:2102")){ //6 times bigger 600 users limit
-				this.mapSize = 14142 * 6 //84852
-			}
-			else{
-				this.mapSize = 14142
-			}*/
+			
+			
+			if (this.ws.includes("imsolo.pro:2102")){ //4 times bigger 600 users limit
+				this.totalPlayerMassBigFFA = parseInt(localStorage.getItem("totalPlayerMassBigFFA"));
+				
+			}			
 			this.replayfunctions();
+			
         },
         onOpen() {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket open');
@@ -12675,8 +12678,35 @@ Game name     : ${i.displayName}<br/>
                 y - distance > legendmod.camMaxMultiY)
         },
         //https://github.com/NuclearC/agar.io-protocol
+		megaFFAscore(){
+			if (this.ws.includes("imsolo.pro:2102")){
+				this.totalPlayerMassBigFFA += this.playerMass				
+				
+				if (this.totalPlayerMassBigFFA>900000000 && !window.proLicenceUID){
+					this.totalPlayerMassBigFFA = 0
+					//localStorage.setItem("MassBigFFAAnnouncement", true);															
+					window.proLicenceUID = "MegaFFA"
+					localStorage.setItem("proLicenceUID", window.proLicenceUID);
+					var dateNow = parseInt(new Date().toISOString().slice(0,new Date().toISOString().indexOf("T")).replace(/-/g,""));
+					localStorage.setItem("PremiumLimitedDateStart", dateNow);
+					var tempdateNow = dateNow.toString()
+					var tempdateNow2 = parseInt(tempdateNow.slice(6, 8))
+					if (tempdateNow2<24){
+						tempdateNow2 += 7
+						tempdateNow2 += "th";
+					}
+					else{
+						tempdateNow2 = "last day"
+					}
+					toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://legendmod.ml/banners/particles.gif);'>Congratulations</span> for your score on MEGA FFA.<br>  Your licence is stored as Giveaway Premium until <font color='red'><b>" + tempdateNow2 + "</font></b> of this month. Thank you for using our mod!").css("width", "350px");
+				}
+				localStorage.setItem("totalPlayerMassBigFFA", this.totalPlayerMassBigFFA);
+			}			
+		},		
         updateCells(view, offset) {
 			//window.updateCellsClock=true;
+			this.megaFFAscore();
+			
             var encode = function() {
                 for (var text = '';;) {
                     var string = view.readUInt8(offset++);
@@ -14880,8 +14910,13 @@ Game name     : ${i.displayName}<br/>
     document.onkeydown = function(event) {
         var pressedKey = hotkeysSetup.getPressedKey(event);
         if (('INPUT' !== event.target.tagName || event.target.className === hotkeysSetup.inputClassName || pressedKey === hotkeys['spec-messageKey']) && '' !== pressedKey && !keyBlind[pressedKey]) {
-            if (keyBlind[pressedKey] = true, 'ESC' === pressedKey) return event.preventDefault(), void(application && application.showMenu());
-            if (event.target.className === hotkeysSetup.inputClassName) return event.preventDefault(), void hotkeysSetup.setHotkey(pressedKey, event.target.id);
+			
+            if (keyBlind[pressedKey] = true, 'ESC' === pressedKey){ 
+				return event.preventDefault(), void(application && application.showMenu() );
+			}
+            if (event.target.className === hotkeysSetup.inputClassName){ 
+				return event.preventDefault(), void hotkeysSetup.setHotkey(pressedKey, event.target.id);
+			}
             if (hotkeys[pressedKey]) {
                 event.preventDefault();
                 var i = hotkeys[pressedKey];
