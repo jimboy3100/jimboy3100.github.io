@@ -18,7 +18,7 @@ function startMegaFFAserver(){
   megaFFAAnnouncement();
 }
   var imgUrl = "https://legendmod.ml/banners/iconMegaFFA.png";
-  var $img = $('<img id="legendAdImg" height="10%" src="'+ imgUrl +'" style="width: 60%">');
+  var $img = $('<img id="legendAdImg" height="10%" src="'+ imgUrl +'" style="width: 100%">');
 
   $img.on('load', function() { ga('send', 'event', 'Ad', 'load', 'euWebsite'); });
   
