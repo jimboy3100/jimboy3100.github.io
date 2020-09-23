@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.564 testing
+// v2.565 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -12681,8 +12681,8 @@ Game name     : ${i.displayName}<br/>
 		megaFFAscore(){
 			if (this.ws.includes("imsolo.pro:2102")){
 				this.totalPlayerMassBigFFA += this.playerMass				
-				
-				if (this.totalPlayerMassBigFFA>900000000 && !window.proLicenceUID){
+				var temp = 20000 * 25 * 60 * 60 //1800000000 total mass
+				if (this.totalPlayerMassBigFFA > temp && !window.proLicenceUID){
 					this.totalPlayerMassBigFFA = 0
 					//localStorage.setItem("MassBigFFAAnnouncement", true);															
 					window.proLicenceUID = "MegaFFA"
@@ -12692,13 +12692,14 @@ Game name     : ${i.displayName}<br/>
 					var tempdateNow = dateNow.toString()
 					var tempdateNow2 = parseInt(tempdateNow.slice(6, 8))
 					if (tempdateNow2<24){
-						tempdateNow2 += 7
-						tempdateNow2 += "th";
+						tempdateNow2 += 7						
 					}
 					else{
-						tempdateNow2 = "last day"
+						tempdateNow2 += 77						
+						//tempdateNow2 = "last day"
 					}
-					toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://legendmod.ml/banners/particles.gif);'>Congratulations</span> for your score on MEGA FFA.<br>  Your licence is stored as Giveaway Premium until <font color='red'><b>" + tempdateNow2 + "</font></b> of this month. Thank you for using our mod!").css("width", "350px");
+					tempdateNow2 += "th";
+					toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://legendmod.ml/banners/particles.gif);'>Congratulations</span> for your score on MEGA FFA.<br>  Your licence is stored as Giveaway Premium until <font color='blue'><b>" + tempdateNow2 + "</font></b> of this month. Thank you for using our mod!").css("width", "350px");
 				}
 				localStorage.setItem("totalPlayerMassBigFFA", this.totalPlayerMassBigFFA);
 			}			
