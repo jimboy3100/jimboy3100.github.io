@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.570 testing
+// v2.571 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -9888,10 +9888,10 @@ function thelegendmodproject() {
 			this.play = false //fix
 			
 			this.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"));
-			if (this.totalPlayerMass == "NaN") this.totalPlayerMass = 0 //fix
+			if (this.totalPlayerMass == "NaN" || this.totalPlayerMass == NaN) this.totalPlayerMass = 0 //fix
 			if (this.ws.includes("imsolo.pro:2102")){ //4 times bigger 600 users limit
 				this.totalPlayerMassBigFFA = parseInt(localStorage.getItem("totalPlayerMassBigFFA"));
-				if (this.totalPlayerMassBigFFA == "NaN") this.totalPlayerMassBigFFA = 0 //fix
+				if (this.totalPlayerMassBigFFA == "NaN" || this.totalPlayerMassBigFFA == NaN) this.totalPlayerMassBigFFA = 0 //fix
 			}			
 			this.replayfunctions();
 			
