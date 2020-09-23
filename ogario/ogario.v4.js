@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.565 testing
+// v2.566 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -7887,7 +7887,11 @@ function thelegendmodproject() {
                     //var pattern = /.*(s|5).*e.*n.*p.*a.*/i;
                     if (!pattern.test(msg) && !pattern2.test(msg) && !msg.includes(pattern3)) {
 						
-						if (legendmod.integrity || (!legendmod.integrity && application.chatHistory[application.chatHistory.length-1].message != msg.split(': ')[1])){
+						if (legendmod.integrity || !LM.chatableServer){
+							this.displayChatMessage(time, caseof, plId, msg);
+						}
+						//else if (!legendmod.integrity && application.chatHistory[application.chatHistory.length-1].message != msg.split(': ')[1]){
+						else if (!legendmod.integrity && $("#clantag").val() != ""){								
 							this.displayChatMessage(time, caseof, plId, msg);
 						}
                     } else {
@@ -9813,6 +9817,7 @@ function thelegendmodproject() {
         hideSmallBots: false,
         pressedKeys: {},
         dance: false,
+		chatableServer: false,
         connect(t) {		
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to game server:', t);
             var app = this;
@@ -10908,10 +10913,9 @@ function thelegendmodproject() {
 				if (message.includes("E = split bots")){
 					message = "For bot commands look at Hotkeys"
 				}
-				if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && name != $("#nick").val() && $("#clantag").val() == ""){
-					
-					application.displayChatMessage(time, caseof, 1000, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);
-					
+				this.chatableServer=true;
+				if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && name != $("#nick").val() && $("#clantag").val() == ""){	
+					application.displayChatMessage(time, caseof, 1000, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
 				}				
 				break;
                 case 102:
