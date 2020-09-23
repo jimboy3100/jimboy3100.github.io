@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.567 testing
+// v2.570 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -1116,7 +1116,9 @@ function pauseVideos() {
 
 function LegendModSpawn() {};
 
-function LegendModDeath() {};
+function LegendModDeath() {
+	localStorage.setItem("totalPlayerMass", legendmod.totalPlayerMass);
+};
 //window.Bufferdata;
 //window.generatedClientKey;
 //window.generatedProtocolKey
@@ -9751,6 +9753,7 @@ function thelegendmodproject() {
         playerSize: 0,
         playerMass: 0,
 		totalPlayerMassBigFFA: 0,
+		totalPlayerMass: 0,
         playerMaxMass: 0,
         playerMinMass: 0,
         playerScore: 0,
@@ -9884,10 +9887,11 @@ function thelegendmodproject() {
             }
 			this.play = false //fix
 			
-			
+			this.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"));
+			if (this.totalPlayerMass == "NaN") this.totalPlayerMass = 0 //fix
 			if (this.ws.includes("imsolo.pro:2102")){ //4 times bigger 600 users limit
 				this.totalPlayerMassBigFFA = parseInt(localStorage.getItem("totalPlayerMassBigFFA"));
-				
+				if (this.totalPlayerMassBigFFA == "NaN") this.totalPlayerMassBigFFA = 0 //fix
 			}			
 			this.replayfunctions();
 			
@@ -12683,6 +12687,9 @@ Game name     : ${i.displayName}<br/>
         },
         //https://github.com/NuclearC/agar.io-protocol
 		megaFFAscore(){
+			if (this.integrity){
+				this.totalPlayerMass += this.playerMass	
+			}
 			if (this.ws.includes("imsolo.pro:2102")){
 				this.totalPlayerMassBigFFA += this.playerMass				
 				var temp = 20000 * 25 * 60 * 60 //1800000000 total mass
