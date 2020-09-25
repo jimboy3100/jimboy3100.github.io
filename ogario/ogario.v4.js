@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.572 testing
+// v2.575 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -9710,16 +9710,16 @@ function thelegendmodproject() {
         serverTime: 0,
         serverTimeDiff: 0,
         //loggedInTime: 0,
-        mapSize: 14142,
-        mapOffset: 7071,
+        mapSize: 14142.13562, //14142,
+        mapOffset:  7071.067811865476, //7071,
+        mapMinX: -7071.067811865476,
+        mapMinY: -7071.067811865476,
+        mapMaxX: 7071.067811865476,
+        mapMaxY: 7071.067811865476,	
+	
         mapOffsetX: 0,
         mapOffsetY: 0,
-        mapOffsetFixed: false,
-
-        mapMinX: -7071,
-        mapMinY: -7071,
-        mapMaxX: 7071,
-        mapMaxY: 7071,
+        mapOffsetFixed: false,		
         viewMinX: 0,
         viewMinY: 0,
         viewMaxX: 0,
@@ -12544,7 +12544,7 @@ Game name     : ${i.displayName}<br/>
 				this.mapOffset = 0
 			}
 			else if (this.integrity){ 
-				this.mapSize = 14142; 
+				this.mapSize = 14142.13562; //14142; 
 				this.mapOffset = this.mapSize / 2
 			}
 			
