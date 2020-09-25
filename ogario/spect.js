@@ -1,4 +1,4 @@
-//SPECS v4.4v WORKS UNTIL HERE
+//SPECS v4.4u WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -80,7 +80,7 @@ class Spect {
         this.clientKey = null
         this.clientVersion = null
         this.connectionOpened = false
-        this.mapOffset = 7071
+        this.mapOffset = 7071.067811865476 //7071
         this.mapOffsetX = 0
         this.mapOffsetY = 0
         this.fixX = 1
