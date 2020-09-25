@@ -1,4 +1,4 @@
-//SPECS v4.4u WORKS UNTIL HERE
+//SPECS v4.4v WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -984,7 +984,7 @@ class Spect {
 			this.mapOffset = 0
 		}
 		else if (legendmod.integrity){ 
-			this.mapSize = 14142; 
+			this.mapSize = 14142.13562; //14142
 			this.mapOffset = this.mapSize / 2
 		}
 		if (!legendmod.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) { 
