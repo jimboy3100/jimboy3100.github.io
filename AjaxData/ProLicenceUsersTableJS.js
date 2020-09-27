@@ -109,6 +109,10 @@ ProLicenceUsersTable = {
             "reason": "GoodWillForSon",
             "notes": "jebak"
         }, 	
+        "5f4d77aa-65ba-497c-b496-91fe22adeb1a": {
+            "reason": "TheLastUpdate",
+            "notes": "Botpia"
+        },  		
         "bbf24317-be3f-4dac-a4d8-f1770434ace5": {
             "reason": "Donate",
             "notes": "Meelis"
