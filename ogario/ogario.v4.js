@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.577 testing
+// v2.601 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -1389,6 +1389,7 @@ var displayText = {
         showStatsN16: 'n/16: Pieces',
         showStatsFPS: 'Statystyki: FPS',
         //showStatsPPS: 'Statystyki: PPS',
+		showStatsRender: 'Time percentage % consumed for Drawing',
         blockPopups: 'Blokuj popupy (reklamy/sklep/zadanie)',
         gameOverStats: 'Game over stats',
         hotkeys: 'Skróty klawiszowe',
@@ -1839,6 +1840,7 @@ var displayText = {
         showStatsN16: 'n/16: Pieces',
         showStatsFPS: 'FPS: Frames per second',
         //showStatsPPS: 'Game stats: PPS',
+		showStatsRender: 'Time percentage % consumed for Drawing',
         blockPopups: 'Block popups (ads/shop/quest)',
         gameOverStats: 'Game over stats',
         hotkeys: 'Hotkeys',
@@ -3006,6 +3008,7 @@ var defaultmapsettings = {
     showStatsN16: true,
     showStatsFPS: true,
     //showStatsPPS: true,
+	showStatsRender: false,
     blockPopups: false,
     gameOverStats: false,
     streamMode: false,
@@ -4446,9 +4449,17 @@ function thelegendmodproject() {
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
                     }
-                }
+                }				
+				if (defaultmapsettings.showStatsRender) {
+					var color = '';
+					if(drawRender.averageRenderTime>70)  color = 'color:red'
+					else if(drawRender.averageRenderTime>50)  color = 'color:yellow'
+					else if(drawRender.averageRenderTime<50)  color = 'color:green'
+					t += '💻: <span style=' + color + '>' + drawRender.averageRenderTime + '%</span> | ';
+				}
                 if (defaultmapsettings.showStatsFPS) {
                     t += 'FPS: ' + drawRender.fps;
+					
                 }
                 /*if (defaultmapsettings.showStatsPPS) {
                 	if (defaultmapsettings.showStatsFPS || ogario.play ) t += ` | `;
@@ -5322,7 +5333,7 @@ function thelegendmodproject() {
 			this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "gameOverStats", "showTime"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView"], "multiBox");			
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
@@ -9864,8 +9875,8 @@ function thelegendmodproject() {
             this.socket.onopen = function() {
                 app.onOpen();
             };
-            this.socket.onmessage = function(t) {
-                app.onMessage(t);
+            this.socket.onmessage = function(t) {			
+                app.onMessage(t);				
             };
             this.socket.onerror = function(t) {
                 app.onError(t);
@@ -9934,12 +9945,15 @@ function thelegendmodproject() {
             this.connectionOpened = true;
         },
         onMessage(message) {
+			
 			//console.log(message.data)
             message = new DataView(message.data);
             if (this.protocolKey) {
                 message = this.shiftMessage(message, this.protocolKey ^ this.clientVersion);
             }
             this.handleMessage(message);
+			
+			
         },
         onError(t) {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket error');
@@ -12716,6 +12730,7 @@ Game name     : ${i.displayName}<br/>
 			}			
 		},		
         updateCells(view, offset) {
+			
 			//window.updateCellsClock=true;
 			this.megaFFAscore();
 			
@@ -12967,7 +12982,8 @@ Game name     : ${i.displayName}<br/>
             if (defaultmapsettings.reverseTrick) reverseTrick.check();
             //if(defaultmapsettings.clickTargeting) clickTargeting.check();
 
-            //if (window.historystate && legendmod.play) {historystate();}			
+            //if (window.historystate && legendmod.play) {historystate();}	
+			
         },
         color2Hex(number) {
             var color = number.toString(16);
@@ -13300,6 +13316,11 @@ Game name     : ${i.displayName}<br/>
             pieChart: null,
             pellet: null,
             indicator: null,
+			//
+			counterTime: 0,
+			renderTime: 0,
+			averageRenderTime: 0,
+			//			
             setCanvas() {
                 this.canvas = document.getElementById('canvas');
                 this.ctx = this.canvas.getContext('2d');
@@ -13364,6 +13385,7 @@ Game name     : ${i.displayName}<br/>
                 return new Promise(resolve => setTimeout(resolve, ms));
             },
             renderFrame() { 
+			this.renderStarted = performance.now()
             //'renderFrame': async function() { //Sonia5
                 //await this.sleep(4); //Sonia5			
                 //this.ctx.start2D();
@@ -13447,8 +13469,20 @@ Game name     : ${i.displayName}<br/>
                     if (this.pieChart && this.pieChart.width) {
                         this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
                     }
-                }				
-				
+                }
+					
+				drawRender.renderTime += performance.now() - this.renderStarted
+				drawRender.counterTime++
+				if (drawRender.counterTime >= drawRender.fps || drawRender.counterTime >= 500){
+					if (drawRender.counterTime < 500 && drawRender.counterTime > 8){
+						this.averageRenderTime = (drawRender.renderTime / 10).toFixed(2)
+						
+					}
+						drawRender.counterTime = 0
+						drawRender.renderTime = 0	
+					
+				}
+				//console.log(performance.now() - this.renderStarted, (performance.now() - this.renderStarted) * drawRender.fps)
 				//window.updateCellsClock=false
 				
 				//drawRender.render();
