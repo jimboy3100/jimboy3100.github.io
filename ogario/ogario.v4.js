@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.603 testing
+// v2.606 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -4454,7 +4454,7 @@ function thelegendmodproject() {
 					var color = '';
 					if(drawRender.averageRenderTime>70)  color = 'color:red'
 					else if(drawRender.averageRenderTime>50)  color = 'color:yellow'
-					else if(drawRender.averageRenderTime<50)  color = 'color:green'
+					else if(drawRender.averageRenderTime<=50)  color = 'color:green'
 					t += '💻: <span style=' + color + '>' + drawRender.averageRenderTime + '%</span>'
 					if (defaultmapsettings.showStatsFPS) {
 						t += ' | '
