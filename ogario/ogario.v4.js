@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.606 testing
+// v2.608 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -18,7 +18,8 @@ window.catholicCalculator = 0;
 window.replayTiming=20
 window.replayTimeOuts = []
 window.replaySkippedLoops = 100 //100 times more frames from timing 0 replays
-window.fpsloopsetter=60
+//window.fpsloopsetter=60
+window.renderDelay = 0;
 //window.specificRecordedProtocol = []
 
 //inject gamepad libraries if Mobile
@@ -14610,22 +14611,37 @@ Game name     : ${i.displayName}<br/>
 						drawRender.render()
 					}, 0);					
 				}	
-				else if (defaultmapsettings.unlockedFPS=="sophisticated"){										
+				/*else if (defaultmapsettings.unlockedFPS=="sophisticated"){										
 					var timeloops = parseInt(window.drawRender.fps/window.fpsloopsetter);
 					if (timeloops>0){
 						window.requestAnimationFrame(drawRender.render);	
 						//for (var i=0;i<timeloops-1;i++){
-						/*if (timeloops>1){	
-							drawRender.countFps()
-							drawRender.renderFrame();							
-						}*/
+						//if (timeloops>1){	
+							//drawRender.countFps()
+							//drawRender.renderFrame();							
+						//}
 					}
 					else if(window.drawRender.fps/window.fpsloopsetter<1){
 						setTimeout(function() {
 							window.requestAnimationFrame(drawRender.render);
 						}, window.fpsloopsetter/window.drawRender.fps);						
 					}
-				}					
+				} */	
+				else if (defaultmapsettings.unlockedFPS=="sophisticated"){
+					if (!drawRender.averageRenderTime){
+						window.renderDelay=0;
+					}
+					else if (drawRender.averageRenderTime<30 && window.renderDelay>0){
+						window.renderDelay--
+					}
+					else if (drawRender.averageRenderTime>60 && window.renderDelay<64){
+						window.renderDelay++
+					}
+					setTimeout(function() {
+						//window.requestAnimationFrame(drawRender.render);
+						drawRender.render();
+					}, window.renderDelay);		
+				}				
 				else{
 					setTimeout(function() {
 						drawRender.render()
