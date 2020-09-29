@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.602 testing
+// v2.603 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -4450,7 +4450,7 @@ function thelegendmodproject() {
                         t += ' | '
                     }
                 }				
-				if (defaultmapsettings.showStatsRender) {
+				if (defaultmapsettings.showStatsRender && defaultmapsettings.showStatsFPS) {
 					var color = '';
 					if(drawRender.averageRenderTime>70)  color = 'color:red'
 					else if(drawRender.averageRenderTime>50)  color = 'color:yellow'
