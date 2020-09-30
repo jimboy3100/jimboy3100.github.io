@@ -1,4 +1,4 @@
-//v0.1s
+//v0.1t
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
     '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 500px;">' +
@@ -131,7 +131,9 @@ function PopulateArenas() {
     var select = document.getElementById("savedArenas");
     if (window.RecordedProtocolArenas && window.RecordedProtocolArenas.length) {
         for (var i = 0; i < window.RecordedProtocolArenas.length; i++) {
-            select.options[select.options.length] = new Option(window.RecordedProtocolArenas[i]);
+			if (window.RecordedProtocol[window.RecordedProtocolArenas[i]] && window.RecordedProtocol[window.RecordedProtocolArenas[i]].length>10){
+				select.options[select.options.length] = new Option(window.RecordedProtocolArenas[i]);
+			}
         }
     }
 }
