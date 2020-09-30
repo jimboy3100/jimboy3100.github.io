@@ -66,7 +66,7 @@ else{
              '</div>' +
              '</div>' +
              '</div>');
-
+		$("#agario_uid_input").val(window.agarioEncodedUID)
          setTimeout(function() {
              populateSD();
              populateLibConfig();
@@ -103,7 +103,9 @@ else{
              });
          });
          $('#agario_uid_input').blur(function() {
-             if (letterCount($('#agario_uid_input').val(), '-', true) == 4) {
+             //if (letterCount($('#agario_uid_input').val(), '-', true) == 4) {
+			if ($('#agario_uid_input').val().length>100) {	 
+				 
                  document.getElementById("checkBoxLockUID").checked = true;
                  toastr["info"](Premadeletter92).css("width", "250px");
                  $("#exp-uid").text($('#agario_uid_input').val());
