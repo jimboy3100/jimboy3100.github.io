@@ -1,5 +1,5 @@
  //OLD DEALS
- //v2.12
+ //v2.13
  //for agarioUID, agarioID, look at the case 102: on this file https://legendmod.ml/ogario/ogario.v4.js?v=32
 
  /* you will need this
@@ -47,7 +47,8 @@ else{
              '<div id="CloseSpecialDeals2" class="modal-header"><button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
              '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + Languageletter351 + '</h4>' +
              '</div>' +
-             '<div class="modal-body"><input type="text" class="form-control" id="agario_uid_input" placeholder="*Encoded UID (' + Premadeletter110 + ')" style="width: 85%; display: inline-block">' +
+             //'<div class="modal-body"><input type="text" class="form-control" id="agario_uid_input" placeholder="*Encoded UID (' + Premadeletter110 + ')" style="width: 85%; display: inline-block">' +
+			 '<div class="modal-body"><input type="text" class="form-control" id="agario_uid_input" placeholder="Encoded UID" style="width: 85%; display: inline-block">' +
              '<div class="custom-checkbox" style="display: inline-block; margin-left: 10px; vertical-align: sub;"><input id="checkBoxLockUID" type="checkbox" disabled="disabled" style="width: 20px; height: 20px"><label for="cb1"></label></div>' +
              '<div class="bs-callout bs-callout-buy bs-callout-clickable" id="buy_starterpack">' +
              '<h4 id="dealtype" class="pull-left">purchase 125000 coins</h4><h5 class="pull-left"> <i> (' + Premadeletter111 + ')</i></h5>' +
@@ -61,7 +62,7 @@ else{
              '<select id="ss-select-agarVersionDestinations" class="form-control" required="" style="display:inline; width: 25%; margin-top: -30px;"></select><color="red" style="display:inline">' + Premadeletter117 + '</color>' +
 
              '<input type="text" class="form-control" id="GameConfigurationUrl" value = ' + window.MiniclipConfigDestination + ' placeholder="*Search any GameConfiguration.json destination" style="width: 95%; display: inline-block">' +
-             '<p class="alert-warning text-center">' + Premadeletter116 + '<br>UID:<span class="alert-success" id="exp-uid" style="font-size: 2px;">' + window.agarioEncodedUID + '</span> <font color="red" onclick=copy(window.agarioEncodedUID);><b><u>' + Premadeletter114 + ' UID</u></b></font><br>ID: ' + window.agarioID + ' .*UID ' + Premadeletter115 + '</p>' +
+             '<p class="alert-warning text-center">' + Premadeletter116 + '<br>Encoded UID:<span class="alert-success" id="exp-uid" style="font-size: 2px;">' + window.agarioEncodedUID + '</span> <font color="red" onclick=copy(window.agarioEncodedUID);><b><u>' + Premadeletter114 + '</u></b></font>.<br>Encoded UID ' + Premadeletter115 + '</p>' +
              '</div>' +
              '</div>' +
              '</div>' +
