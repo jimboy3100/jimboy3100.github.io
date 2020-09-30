@@ -1,4 +1,4 @@
-//v0.4q
+//v0.4r
 
 //$(document).ready(function() {
 jQuery(function($) {
@@ -62,8 +62,11 @@ jQuery(function($) {
 		loadSpecialEffectSkin(e)
     });
     $("#UseEffect2").on("click", function(e) {
-		toastr.info("<b>[SERVER]:</b> Special Effect erased");
-		if (document.getElementsByClassName("skins-wrapper")[4].children[0]) document.getElementsByClassName("skins-wrapper")[4].children[0].remove()
+		
+		if (document.getElementsByClassName("skins-wrapper")[4].children[0]){
+			document.getElementsByClassName("skins-wrapper")[4].children[0].remove()
+			toastr.info("<b>[SERVER]:</b> Special Effect erased");
+		}
 			SpecialEffectPlayers[application.lastSentNick]=null
 			//
 			animatedskins[application.lastSentNick] = null
@@ -102,6 +105,7 @@ function startSpecialEffectSkin(){
 }
 
 function loadSpecialEffectSkin(e){
+	if 	($("#skin-url").val()!= ""){
 		if (($("#nick").val().includes('℄') && $("#clantag").val() == window.atob(window.clanTagLc)) || window.proLicenceUID || $("#skin-url").val() == "Byzantium" || window.tempAnimatedCoolArray.includes($("#skin-url").val())){
 			try {	
 			toastr.info("<b>[SERVER]:</b> Special Effect " + $("#skin-url").val() + " activated");
@@ -125,5 +129,9 @@ function loadSpecialEffectSkin(e){
 		}
 		else{
 			toastr.warning("<b>[SERVER]:</b> Not Premium account found. If you donated in the past, please refer it to Legend mod discord.<br>Thank you for using our scripts!").css("width", "350px");
-		}	
+		}
+	}
+	else{
+		toastr.warning("<b>[SERVER]:</b> No effect selected").css("width", "350px");
+	}
 }	
