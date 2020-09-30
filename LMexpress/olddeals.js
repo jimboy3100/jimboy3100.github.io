@@ -47,7 +47,7 @@ else{
              '<div id="CloseSpecialDeals2" class="modal-header"><button id="CloseSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQSpecialDeals" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
              '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + Languageletter351 + '</h4>' +
              '</div>' +
-             '<div class="modal-body"><input type="text" class="form-control" id="agario_uid_input" placeholder="*UID (' + Premadeletter110 + ')" style="width: 85%; display: inline-block">' +
+             '<div class="modal-body"><input type="text" class="form-control" id="agario_uid_input" placeholder="*Encoded UID (' + Premadeletter110 + ')" style="width: 85%; display: inline-block">' +
              '<div class="custom-checkbox" style="display: inline-block; margin-left: 10px; vertical-align: sub;"><input id="checkBoxLockUID" type="checkbox" disabled="disabled" style="width: 20px; height: 20px"><label for="cb1"></label></div>' +
              '<div class="bs-callout bs-callout-buy bs-callout-clickable" id="buy_starterpack">' +
              '<h4 id="dealtype" class="pull-left">purchase 125000 coins</h4><h5 class="pull-left"> <i> (' + Premadeletter111 + ')</i></h5>' +
