@@ -385,7 +385,8 @@ else{
 
  function populateLibConfig() {
      var select = document.getElementById("ss-select-agarVersionDestinations");
-     for (i = 0; i < Object.keys(window.agarversionDestinations).length; i++) {
+     //for (i = 0; i < Object.keys(window.agarversionDestinations).length; i++) {
+	for (i = Object.keys(window.agarversionDestinations).length-1; i >0; i--) { 
          select.options[select.options.length] = new Option(window.agarversionDestinations[i])
      }
  }
