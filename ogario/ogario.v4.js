@@ -1,21 +1,21 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.608 testing
+// v2.616 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
 //var agarTesterArena = "wss://livec-arena-12luq8l.tech.agar.io"
 window.clanTagLc = "U1VC";
 appendLMhiFbPs()
-window.externalScriptMassBar= []
-window.capthaWindow= []
+window.externalScriptMassBar = []
+window.capthaWindow = []
 
 window.RecordedProtocol = []
 window.RecordedProtocolArenas = []
 window.RecordedArenasSpecifications = []
 window.catholicCalculator = 0;
-window.replayTiming=20
+window.replayTiming = 20
 window.replayTimeOuts = []
 window.replaySkippedLoops = 100 //100 times more frames from timing 0 replays
 //window.fpsloopsetter=60
@@ -41,91 +41,91 @@ function changeregion() {
 
 function deleteGamemode(temp) {
     var privateModOptions = [{
-        text: 'Mega FFA',
-        value: 34
-    }, {
-        text: 'Arctida',
-        value: 6
-    }, {		
-        text: 'Dagestan',
-        value: 7
-    }, {
-        text: 'Zimbabwe',
-        value: 31
-    }, {
-        text: 'Antarctic',
-        value: 35
-    }, {		
-        text: 'Instant Merging',
-        value: 16
-    }, {	
-        text: 'Party MegaSplit',
-        value: 19		
-    }, {		
-        text: 'Party Mode',
-        value: 20		
-    }, {		
-        text: 'Party Selfeed',
-        value: 21		
-    }, {		
-        text: 'Crazy Selfeed',
-        value: 22	
-    }, {		
-        text: '1vs1 FFA #1',
-        value: 23	
-    }, {		
-        text: '1vs1 FFA #2',
-        value: 24	
-    }, {		
-        text: '1vs1 FFA #3',
-        value: 25	
-    }, {		
-        text: '1vs1 EXP #1',
-        value: 26	
-    }, {		
-        text: '1vs1 EXP #2',
-        value: 27	
-    }, {		
-        text: '1vs1 EXP #3',
-        value: 28	
-    }, {		
-        text: '2vs2',
-        value: 29	
-    }, {		
-        text: '2vs2vs2',
-        value: 30	
-    }, {
-        text: 'Beta Party #1',
-        value: 14
-    }, {	
-        text: 'Beta Party #2',
-        value: 15
-    }, {		
-        text: 'Beta Party v2 #1',
-        value: 17
-    }, {		
-        text: 'Beta Party v2 #2',
-        value: 18
-    }, {	
-        text: 'Beta 1v1 Scrims',
-        value: 32		
-    }, {	
-        text: 'Bots',
-        value: 33		
-    }, {	
-        text: 'MK NA east',
-        value: 36		
-    }, {		
-        text: 'MK Oceania',
-        value: 37		
-    }, {	
-        text: 'MK Teams',
-        value: 38		
-    }, {		
-        text: 'MK Bots WIP',
-        value: 39		
-    }, {
-		/*
+            text: 'Mega FFA',
+            value: 34
+        }, {
+            text: 'Arctida',
+            value: 6
+        }, {
+            text: 'Dagestan',
+            value: 7
+        }, {
+            text: 'Zimbabwe',
+            value: 31
+        }, {
+            text: 'Antarctic',
+            value: 35
+        }, {
+            text: 'Instant Merging',
+            value: 16
+        }, {
+            text: 'Party MegaSplit',
+            value: 19
+        }, {
+            text: 'Party Mode',
+            value: 20
+        }, {
+            text: 'Party Selfeed',
+            value: 21
+        }, {
+            text: 'Crazy Selfeed',
+            value: 22
+        }, {
+            text: '1vs1 FFA #1',
+            value: 23
+        }, {
+            text: '1vs1 FFA #2',
+            value: 24
+        }, {
+            text: '1vs1 FFA #3',
+            value: 25
+        }, {
+            text: '1vs1 EXP #1',
+            value: 26
+        }, {
+            text: '1vs1 EXP #2',
+            value: 27
+        }, {
+            text: '1vs1 EXP #3',
+            value: 28
+        }, {
+            text: '2vs2',
+            value: 29
+        }, {
+            text: '2vs2vs2',
+            value: 30
+        }, {
+            text: 'Beta Party #1',
+            value: 14
+        }, {
+            text: 'Beta Party #2',
+            value: 15
+        }, {
+            text: 'Beta Party v2 #1',
+            value: 17
+        }, {
+            text: 'Beta Party v2 #2',
+            value: 18
+        }, {
+            text: 'Beta 1v1 Scrims',
+            value: 32
+        }, {
+            text: 'Bots',
+            value: 33
+        }, {
+            text: 'MK NA east',
+            value: 36
+        }, {
+            text: 'MK Oceania',
+            value: 37
+        }, {
+            text: 'MK Teams',
+            value: 38
+        }, {
+            text: 'MK Bots WIP',
+            value: 39
+        }, {
+            /*
         text: 'MK Disturb Furry',
         value: 41		
     }, {		
@@ -150,12 +150,12 @@ function deleteGamemode(temp) {
         text: 'Cellz ultra split',
         value: 40		
     }, {
-*/		
-        text: 'FPS Test',
-        value: 12
-    }
-	
-	/*, {	
+*/
+            text: 'FPS Test',
+            value: 12
+        }
+
+        /*, {	
         text: 'FFA',
         value: 8
     }, {
@@ -171,7 +171,7 @@ function deleteGamemode(temp) {
         text: 'Party mode',
         value: 13
     }*/
-	];
+    ];
     if (!window.gamemodeBackup) {
         window.gamemodeBackup = $("#gamemode").html();
     }
@@ -181,7 +181,7 @@ function deleteGamemode(temp) {
     });
     $('#gamemode').change(function() {
         if ($('#region').val() == "Private") {
-			/*
+            /*
             var now = new Date();
             var now2 = now.getUTCHours();
             if (now2 < 18 && now2 > 5) { //06:00-18:00 UTC closed 07:00-19:00 Germany time
@@ -203,92 +203,65 @@ function deleteGamemode(temp) {
             core.connect('wss://imsolo.pro:2108/'); //beta megasplit
         } else if ($('#gamemode').val() == 12) {
             core.connect('wss://d-srv.glitch.me');
-        } 
-		else if ($('#gamemode').val() == 14) {
+        } else if ($('#gamemode').val() == 14) {
             core.connect('wss://imsolo.pro:2104/');
-        }
-		else if ($('#gamemode').val() == 15) {
+        } else if ($('#gamemode').val() == 15) {
             core.connect('wss://imsolo.pro:2105/');
-        }	
-		else if ($('#gamemode').val() == 16) {
+        } else if ($('#gamemode').val() == 16) {
             core.connect('wss://imsolo.pro:2107/');
-        }
-		else if ($('#gamemode').val() == 17) {
+        } else if ($('#gamemode').val() == 17) {
             core.connect('wss://imsolo.pro:2110/'); //beta partymode
-        }	
-		else if ($('#gamemode').val() == 18) {
-            core.connect('wss://imsolo.pro:2111/'); 
-        }	
-		else if ($('#gamemode').val() == 19) {
+        } else if ($('#gamemode').val() == 18) {
+            core.connect('wss://imsolo.pro:2111/');
+        } else if ($('#gamemode').val() == 19) {
             core.connect('wss://imsolo.pro:4110');
-        }	
-		else if ($('#gamemode').val() == 20) {
+        } else if ($('#gamemode').val() == 20) {
             core.connect('wss://imsolo.pro:4101');
-        }		
-		else if ($('#gamemode').val() == 21) {
+        } else if ($('#gamemode').val() == 21) {
             core.connect('wss://imsolo.pro:4107');
-        }	
-		else if ($('#gamemode').val() == 22) {
+        } else if ($('#gamemode').val() == 22) {
             core.connect('wss://imsolo.pro:4108');
-        }
-		else if ($('#gamemode').val() == 23) {
+        } else if ($('#gamemode').val() == 23) {
             core.connect('wss://imsolo.pro:4102');
-        }	
-		else if ($('#gamemode').val() == 24) {
+        } else if ($('#gamemode').val() == 24) {
             core.connect('wss://imsolo.pro:4104');
-        }		
-		else if ($('#gamemode').val() == 25) {
+        } else if ($('#gamemode').val() == 25) {
             core.connect('wss://imsolo.pro:4105');
-        }	
-		else if ($('#gamemode').val() == 26) {
+        } else if ($('#gamemode').val() == 26) {
             core.connect('wss://imsolo.pro:4111');
-        }		
-		else if ($('#gamemode').val() == 27) {
+        } else if ($('#gamemode').val() == 27) {
             core.connect('wss://imsolo.pro:4112');
-        }		
-		else if ($('#gamemode').val() == 28) {
+        } else if ($('#gamemode').val() == 28) {
             core.connect('wss://imsolo.pro:4113');
-        }		
-		else if ($('#gamemode').val() == 29) {
+        } else if ($('#gamemode').val() == 29) {
             core.connect('wss://imsolo.pro:4103');
-        }
-		else if ($('#gamemode').val() == 30) {
+        } else if ($('#gamemode').val() == 30) {
             core.connect('wss://imsolo.pro:4109');
-        }			
-		else if ($('#gamemode').val() == 31) {
+        } else if ($('#gamemode').val() == 31) {
             core.connect('wss://delta-selffeed.glitch.me');
-        }	
-		else if ($('#gamemode').val() == 32) {
+        } else if ($('#gamemode').val() == 32) {
             core.connect('wss://imsolo.pro:2100');
-        }
-		else if ($('#gamemode').val() == 33) {
+        } else if ($('#gamemode').val() == 33) {
             core.connect('wss://lm-bots-ps.glitch.me');
-        }	
-		else if ($('#gamemode').val() == 34) {
+        } else if ($('#gamemode').val() == 34) {
             core.connect('wss://imsolo.pro:2102');
-        }	
-		else if ($('#gamemode').val() == 35) {
+        } else if ($('#gamemode').val() == 35) {
             core.connect('wss://delta-server.glitch.me');
-        }	
-		else if ($('#gamemode').val() == 36) {
+        } else if ($('#gamemode').val() == 36) {
             core.connect('wss://mkserv5.herokuapp.com/');
-        }		
-		else if ($('#gamemode').val() == 37) {
+        } else if ($('#gamemode').val() == 37) {
             core.connect('wss://agar.mkchat.net/');
-        }	
-		else if ($('#gamemode').val() == 38) {
+        } else if ($('#gamemode').val() == 38) {
             core.connect('wss://teamworkmk.herokuapp.com/');
             setTimeout(function() {
                 legendmod.gameMode = ":teams";
             }, 500)
-        }	
-		else if ($('#gamemode').val() == 39) {
+        } else if ($('#gamemode').val() == 39) {
             core.connect('wss://mkserv-bots.herokuapp.com/');
-        }				
-		else if ($('#gamemode').val() == 41) {
+        } else if ($('#gamemode').val() == 41) {
             core.connect('wss://distrustfurryserver.herokuapp.com/');
-        }	
-		/*
+        }
+        /*
 		else if ($('#gamemode').val() == 42) {
             core.connect('ws://dummyserver.glitch.me/');
         }			
@@ -302,32 +275,32 @@ function deleteGamemode(temp) {
             core.connect('wss://dummyserver-instant.glitch.me/');
         }	
 		*/
-	//ac-clan.glitch.me
-/*		
-		else if ($('#gamemode').val() == 34) {
-            core.connect('wss://proxy.cellz.io/4600');
-        }		
-		else if ($('#gamemode').val() == 35) {
-            core.connect('wss://proxy.cellz.io/4400');
-        }	
-		else if ($('#gamemode').val() == 36) {
-            core.connect('wss://proxy.cellz.io/4801');
-        }	
-		else if ($('#gamemode').val() == 37) {
-            core.connect('wss://proxy.cellz.io/5203');
-        }	
-		else if ($('#gamemode').val() == 38) {
-            core.connect('wss://proxy.cellz.io/4201');
-        }	
-		else if ($('#gamemode').val() == 39) {
-            core.connect('wss://proxy.cellz.io/6003');
-        }		
-		else if ($('#gamemode').val() == 40) {
-            core.connect('wss://reverse.krunt.io/7301');
-        }	
-		*/
-			
-		/*		
+        //ac-clan.glitch.me
+        /*		
+        		else if ($('#gamemode').val() == 34) {
+                    core.connect('wss://proxy.cellz.io/4600');
+                }		
+        		else if ($('#gamemode').val() == 35) {
+                    core.connect('wss://proxy.cellz.io/4400');
+                }	
+        		else if ($('#gamemode').val() == 36) {
+                    core.connect('wss://proxy.cellz.io/4801');
+                }	
+        		else if ($('#gamemode').val() == 37) {
+                    core.connect('wss://proxy.cellz.io/5203');
+                }	
+        		else if ($('#gamemode').val() == 38) {
+                    core.connect('wss://proxy.cellz.io/4201');
+                }	
+        		else if ($('#gamemode').val() == 39) {
+                    core.connect('wss://proxy.cellz.io/6003');
+                }		
+        		else if ($('#gamemode').val() == 40) {
+                    core.connect('wss://reverse.krunt.io/7301');
+                }	
+        		*/
+
+        /*		
 		else if ($('#gamemode').val() == 18) {
             core.connect('wss://imsolo.pro:2111/');
             legendmod.gameMode = ":ffa";
@@ -362,9 +335,9 @@ function deleteGamemode(temp) {
         }
 		*/
     });
-	if (temp==true){
-		$('#gamemode option[value=34]').prop('selected', 'selected').change();
-	}
+    if (temp == true) {
+        $('#gamemode option[value=34]').prop('selected', 'selected').change();
+    }
 }
 
 
@@ -685,16 +658,23 @@ UIDInstructions = atob("VUlEY29udHJvbGxlcigpOw==");
 var UIDfunction = new Function(UIDInstructions);
 
 
-window.preSetanimateSkincheck=6000;
-window.anualTop=0;
+window.preSetanimateSkincheck = 6000;
+window.anualTop = 0;
+
 function setLevelProgressBar() {
     //$('.progress-bar.progress-bar-striped').css('width', window.agarioLEVEL + '%');
-	$('.progress-bar.progress-bar-striped').css({"transition": "5s", "width": window.agarioLEVEL + "%"});
+    $('.progress-bar.progress-bar-striped').css({
+        "transition": "5s",
+        "width": window.agarioLEVEL + "%"
+    });
 }
 
 function resetLevelProgressBar() {
     //$('.progress-bar.progress-bar-striped').css('width', '100%');
-	$('.progress-bar.progress-bar-striped').css({"transition": "5s", "width": "100%"});
+    $('.progress-bar.progress-bar-striped').css({
+        "transition": "5s",
+        "width": "100%"
+    });
 }
 /*
 const standardDeviation = (arr, usePopulation = false) => {
@@ -748,10 +728,10 @@ window.buffers = {
     sendMode(nick) {
         const writer = new Writer(3 + nick.length)
         writer.writeUint8(7)
-		writer.writeUint8(1)
+        writer.writeUint8(1)
         writer.writeString(nick)
         return writer.dataView.buffer
-    },	
+    },
     captchatoken(x) {
         const writer = new Writer(2 + x.length)
         //const writer = new Writer(x.length)
@@ -773,27 +753,28 @@ window.buffers = {
         return writer.dataView.buffer
     }
 }
-window.addEventListener('beforeunload', function (e) { 
-	for (i=0;i<window.captchaOpenedWindow;i++){
-		if (window.capthaWindow[i]){
-			window.capthaWindow[i].close()
-			window.capthaWindow[i]=null
-		}
-	}
-//e.preventDefault();
-//e.returnValue = ''; 
-}); 
-function createCaptchaWindow(i){	
-		/*window.capthaWindow[i] = document.createElement("iframe");
-		window.capthaWindow[i].setAttribute("src", "https://agar.io/captcha");
-		window.capthaWindow[i].style.width = "0px";
-		window.capthaWindow[i].style.height = "0px";
-		document.body.appendChild(window.capthaWindow[i]);	*/
-		if (window.LMVersion=="1.7"){
-			toastr.info('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + '	Your version is outdated for bts. Download ' + ' <font color="yellow"><b>v1.8</b></font>. <br>visit: <a target="_blank" href="https://www.legendmod.ml"><font color="yellow"><b><u>www.legendmod.ml</u></b></font></a>');
-		}
-		window.capthaWindow[i] = window.open("https://agar.io/captcha");
-}	
+window.addEventListener('beforeunload', function(e) {
+    for (i = 0; i < window.captchaOpenedWindow; i++) {
+        if (window.capthaWindow[i]) {
+            window.capthaWindow[i].close()
+            window.capthaWindow[i] = null
+        }
+    }
+    //e.preventDefault();
+    //e.returnValue = ''; 
+});
+
+function createCaptchaWindow(i) {
+    /*window.capthaWindow[i] = document.createElement("iframe");
+    window.capthaWindow[i].setAttribute("src", "https://agar.io/captcha");
+    window.capthaWindow[i].style.width = "0px";
+    window.capthaWindow[i].style.height = "0px";
+    document.body.appendChild(window.capthaWindow[i]);	*/
+    if (window.LMVersion == "1.7") {
+        toastr.info('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + '	Your version is outdated for bts. Download ' + ' <font color="yellow"><b>v1.8</b></font>. <br>visit: <a target="_blank" href="https://www.legendmod.ml"><font color="yellow"><b><u>www.legendmod.ml</u></b></font></a>');
+    }
+    window.capthaWindow[i] = window.open("https://agar.io/captcha");
+}
 window.connectionBots = {
     ws: null,
     connect() {
@@ -817,38 +798,37 @@ window.connectionBots = {
         document.getElementById('connectBots').innerText = 'Connect'
         document.getElementById('connectBots').style.color = 'white'
         window.RequestedTokens = 100000;
-		for (var i=0;i<window.captchaOpenedWindow;i++){
-			createCaptchaWindow(i);
-		}
-		
-		if (!window.capthaWindowOpened){
-			window.capthaWindowOpened = true;			
-			window.addEventListener("message", function(event){
-				//if (event.data.includes('captcha-')){
-					//event.data.replace('captcha-','');	
-					if (legendmod.integrity){
-						legendmod.sendSpawn2(event.data);
-					}
-					else{
-						legendmod.sendSpawn2('0');
-					}
-				//}
-				/*else if (event.data.includes('sendTimeOutTokenBots-')){
-					event.data.replace('sendTimeOutTokenBots-','');
-					if (event.data=="true") window.sendTimeOutTokenBots = true;
-				}
-				else if (event.data.includes('cookieCaptchaOK-')){
-					event.data.replace('cookieCaptchaOK-','');
-					if (event.data=="true") window.cookieCaptchaOK = true;
-				}*/				
-			});		
-		}
-		
+        for (var i = 0; i < window.captchaOpenedWindow; i++) {
+            createCaptchaWindow(i);
+        }
+
+        if (!window.capthaWindowOpened) {
+            window.capthaWindowOpened = true;
+            window.addEventListener("message", function(event) {
+                //if (event.data.includes('captcha-')){
+                //event.data.replace('captcha-','');	
+                if (legendmod.integrity) {
+                    legendmod.sendSpawn2(event.data);
+                } else {
+                    legendmod.sendSpawn2('0');
+                }
+                //}
+                /*else if (event.data.includes('sendTimeOutTokenBots-')){
+                	event.data.replace('sendTimeOutTokenBots-','');
+                	if (event.data=="true") window.sendTimeOutTokenBots = true;
+                }
+                else if (event.data.includes('cookieCaptchaOK-')){
+                	event.data.replace('cookieCaptchaOK-','');
+                	if (event.data=="true") window.cookieCaptchaOK = true;
+                }*/
+            });
+        }
+
         toastr.info("<b>[" + Premadeletter123 + "]:</b> In case of captcha, change IP by <b>rebooting rooter</b> or use <b>VPN</b>");
-		setTimeout(function() { //
-        legendmod.sendTokenForBots();
-		}, 4000); //
-		
+        setTimeout(function() { //
+            legendmod.sendTokenForBots();
+        }, 4000); //
+
         if (!window.sendFirstTimeTokenBots) {
             window.sendFirstTimeTokenBots = true
             window.sendTimeOutTokenBots = false;
@@ -908,14 +888,14 @@ window.connectionBots = {
         document.getElementById('connectBots').innerText = 'Connect'
         document.getElementById('connectBots').style.color = 'white'
         window.userBots.startedBots = false
-        window.bots.ai = false	
-		for (i=0;i<window.captchaOpenedWindow;i++){
-			if (window.capthaWindow[i]){
-				window.capthaWindow[i].close()
-				window.capthaWindow[i]=null
-			}
-		}
-		toastr.warning("<b>[" + Premadeletter123 + "]:</b> WebSocket closed")
+        window.bots.ai = false
+        for (i = 0; i < window.captchaOpenedWindow; i++) {
+            if (window.capthaWindow[i]) {
+                window.capthaWindow[i].close()
+                window.capthaWindow[i] = null
+            }
+        }
+        toastr.warning("<b>[" + Premadeletter123 + "]:</b> WebSocket closed")
     }
 }
 window.gameBots = {
@@ -963,7 +943,7 @@ function checkVideos(a, b) {
         if (!window.videoSkinPlayer[a].playing) {
             window.videoSkinPlayer[a].play();
             //setTimeout(function() {
-                checkVideos2(a, b);
+            checkVideos2(a, b);
             //}, 2000);
         };
 
@@ -973,96 +953,89 @@ function checkVideos(a, b) {
 }
 
 function checkVideos2(a, b) {
-	//console.log(b)
+    //console.log(b)
     for (var i = 0; i < application.top5.length; i++) {
         //if (i.nick == b) {
-            //application.setTarget(i.id);
-            if (ogarcopythelb.nick != b && application.top5[i].nick.replace(/\s{2,}/g,' ') == b.replace(/\s{2,}/g,' ')) {
-                if (legendmod5.videoSkinsMusic2 == true) {
-                    window.videoSkinPlayerflag2[b] = false;
-                    //if (application.calculateMapSector(application.top5[i].x, application.top5[i].y) == application.currentSector && application.currentSector == "C3") {
-					if (checkIfPlayerIsInView(b, null)){
-					//console.log("volume 0, stage 0");						
-						var temple=null;
-						//console.log("a",b,a)						
-						if (defaultmapsettings.videoOthersSkinSoundLevelproportion && application.top5[i].mass){
-							//console.log("b",application.top5[i].mass)
-							if (application.top5[i].mass>=24000){
-							window.videoSkinPlayer[a].volume = defaultmapsettings.videoSkinSoundLevel;
-							}					
-							else if (application.top5[i].mass<24000){ 
-							window.videoSkinPlayer[a].volume = defaultmapsettings.videoSkinSoundLevel *  Math.pow(application.top5[i].mass / 2.4, 1/2)*0.01;							
-							}
-							temple=true
-						}
-						else if (!temple){
-							window.videoSkinPlayer[a].volume = defaultmapsettings.videoSkinSoundLevel;
-						}
-                        window.videoSkinPlayerflag2[b] = true;
-                    } 
-					else{
-                        //console.log("volume 0, stage 1");
-						//if (window.videoSkinPlayer[a].volume>=0.1) window.videoSkinPlayer[a].volume = window.videoSkinPlayer[a].volume - 0.1
-						//else window.videoSkinPlayer[a].volume = 0;
-                        //window.videoSkinPlayer[a].volume = 0;
+        //application.setTarget(i.id);
+        if (ogarcopythelb.nick != b && application.top5[i].nick.replace(/\s{2,}/g, ' ') == b.replace(/\s{2,}/g, ' ')) {
+            if (legendmod5.videoSkinsMusic2 == true) {
+                window.videoSkinPlayerflag2[b] = false;
+                //if (application.calculateMapSector(application.top5[i].x, application.top5[i].y) == application.currentSector && application.currentSector == "C3") {
+                if (checkIfPlayerIsInView(b, null)) {
+                    //console.log("volume 0, stage 0");						
+                    var temple = null;
+                    //console.log("a",b,a)						
+                    if (defaultmapsettings.videoOthersSkinSoundLevelproportion && application.top5[i].mass) {
+                        //console.log("b",application.top5[i].mass)
+                        if (application.top5[i].mass >= 24000) {
+                            window.videoSkinPlayer[a].volume = defaultmapsettings.videoSkinSoundLevel;
+                        } else if (application.top5[i].mass < 24000) {
+                            window.videoSkinPlayer[a].volume = defaultmapsettings.videoSkinSoundLevel * Math.pow(application.top5[i].mass / 2.4, 1 / 2) * 0.01;
+                        }
+                        temple = true
+                    } else if (!temple) {
+                        window.videoSkinPlayer[a].volume = defaultmapsettings.videoSkinSoundLevel;
                     }
-                } 
-				else {
-                    //console.log("volume 0, stage 2");
-                    window.videoSkinPlayer[a].volume = 0;
+                    window.videoSkinPlayerflag2[b] = true;
+                } else {
+                    //console.log("volume 0, stage 1");
+                    //if (window.videoSkinPlayer[a].volume>=0.1) window.videoSkinPlayer[a].volume = window.videoSkinPlayer[a].volume - 0.1
+                    //else window.videoSkinPlayer[a].volume = 0;
+                    //window.videoSkinPlayer[a].volume = 0;
                 }
+            } else {
+                //console.log("volume 0, stage 2");
+                window.videoSkinPlayer[a].volume = 0;
             }
+        }
         //}
 
     }
-	if (ogarcopythelb.nick != b) {
-    //if ($("#nick").val() != b || application.customSkinsMap[$("#nick").val()] != a ) {
+    if (ogarcopythelb.nick != b) {
+        //if ($("#nick").val() != b || application.customSkinsMap[$("#nick").val()] != a ) {
         checkvideoSkinPlayerflag2(a, b);
+    } else if (ogarcopythelb.nick) {
+        if (ogarcopythelb.skinURL == a && window.videoSkinPlayer[a]) {
+            window.videoSkinPlayer[a].volume = defaultmapsettings.videoSkinSoundLevel;
+        } else {
+            window.videoSkinPlayer[a].volume = 0;
+        }
     }
-	else if (ogarcopythelb.nick){
-		if (ogarcopythelb.skinURL == a && window.videoSkinPlayer[a]) {
-			window.videoSkinPlayer[a].volume = defaultmapsettings.videoSkinSoundLevel;
-		}	
-		else{
-			window.videoSkinPlayer[a].volume = 0;
-		}		
-	}
-	//
-	if (window.videoSkinPlayer[a]){
-		if (!window.videoSkinPlayerflag3[a]){
-			window.videoSkinPlayerflag3[a] = true;
-			window.timerVideoSkinsInterval[a] = setInterval(function() {
-					checkVideos2(a, b);
-				}, 500);	
-		}			
-	}
-	else{
-		window.videoSkinPlayerflag[a] = null
-		window.videoSkinPlayerflag2[b] = null
-		window.videoSkinPlayerflag3[b] = null
-		clearInterval(window.timerVideoSkinsInterval[a]);
-		window.timerVideoSkinsInterval[a]=null
-	}
-	//
+    //
+    if (window.videoSkinPlayer[a]) {
+        if (!window.videoSkinPlayerflag3[a]) {
+            window.videoSkinPlayerflag3[a] = true;
+            window.timerVideoSkinsInterval[a] = setInterval(function() {
+                checkVideos2(a, b);
+            }, 500);
+        }
+    } else {
+        window.videoSkinPlayerflag[a] = null
+        window.videoSkinPlayerflag2[b] = null
+        window.videoSkinPlayerflag3[b] = null
+        clearInterval(window.timerVideoSkinsInterval[a]);
+        window.timerVideoSkinsInterval[a] = null
+    }
+    //
 }
 
-function checkvideoSkinPlayerflag2(a, b) {	
+function checkvideoSkinPlayerflag2(a, b) {
     if (!window.videoSkinPlayerflag2[b]) {
         //console.log("volume 0, stage 3");
-		if (window.videoSkinPlayer[a].volume>=0.2) window.videoSkinPlayer[a].volume = window.videoSkinPlayer[a].volume - 0.1
-		if (window.videoSkinPlayer[a].volume>=0.02) window.videoSkinPlayer[a].volume = window.videoSkinPlayer[a].volume - 0.02
-		else window.videoSkinPlayer[a].volume = 0;		
+        if (window.videoSkinPlayer[a].volume >= 0.2) window.videoSkinPlayer[a].volume = window.videoSkinPlayer[a].volume - 0.1
+        if (window.videoSkinPlayer[a].volume >= 0.02) window.videoSkinPlayer[a].volume = window.videoSkinPlayer[a].volume - 0.02
+        else window.videoSkinPlayer[a].volume = 0;
         //window.videoSkinPlayer[a].volume = 0;
     }
 }
 
-function checkIfPlayerIsInView(b, a){	
-	for (var i=0;i<legendmod.cells.length;i++){		
-		if (b!="" && legendmod.cells[i].nick == b && !legendmod.cells[i].isPlayerCell && (!a ||(a && legendmod.cells[i].spectator)) ){
-			return true		
-		}
-	}
-	return false
+function checkIfPlayerIsInView(b, a) {
+    for (var i = 0; i < legendmod.cells.length; i++) {
+        if (b != "" && legendmod.cells[i].nick == b && !legendmod.cells[i].isPlayerCell && (!a || (a && legendmod.cells[i].spectator))) {
+            return true
+        }
+    }
+    return false
 }
 
 
@@ -1073,22 +1046,22 @@ function checkVideos1(a) {
         window.videoSkinPlayer[a] = document.createElement("video"); // create a video element
         window.videoSkinPlayer[a].crossOrigin = 'anonymous';
         window.videoSkinPlayer[a].src = a;
-		window.videoSkinPlayer[a].volume = 0;
+        window.videoSkinPlayer[a].volume = 0;
         window.videoSkinPlayerflag[a] = true;
     }
 };
 
 function checkVideos3(o) {
     if (o.readyState > 0 && o.src == $("#skin").val()) {
-		
+
         var minutes = parseInt(o.duration / 60, 10);
         var seconds = o.duration % 60;
-        if (o.videoWidth>1080 || minutes > 4) {            
-			toastr.error("<b>[" + Premadeletter123 + "]:</b> " + "Please use smaller videos than <font color='blue'><b>5 minutes</b></font>, <font color='blue'><b>low quality</b></font> and width until <font color='blue'><b>1080</b></font>, next time.");
-			
+        if (o.videoWidth > 1080 || minutes > 4) {
+            toastr.error("<b>[" + Premadeletter123 + "]:</b> " + "Please use smaller videos than <font color='blue'><b>5 minutes</b></font>, <font color='blue'><b>low quality</b></font> and width until <font color='blue'><b>1080</b></font>, next time.");
+
             //toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter124);
         }
-		
+
     }
 }
 
@@ -1118,7 +1091,7 @@ function pauseVideos() {
 function LegendModSpawn() {};
 
 function LegendModDeath() {
-	localStorage.setItem("totalPlayerMass", legendmod.totalPlayerMass);
+    localStorage.setItem("totalPlayerMass", legendmod.totalPlayerMass);
 };
 //window.Bufferdata;
 //window.generatedClientKey;
@@ -1171,7 +1144,7 @@ function UpperCase(str) {
 function LowerCase(str) {
     return str.toLowerCase();
 }
-window.tempAnimatedCoolArray=[];
+window.tempAnimatedCoolArray = [];
 var legendflags = ["author of agar.io", "author of lm", "yugoslavia", "virgil", "vaseline", "the hood", "targaryen", "tajikistan", "slovakia", "sherbert", "scott", "peter", "pepsi", "nose", "nivea", "legend mod", "legend clan", "kennedy", "kayo", "john", "israel", "illuminati", "heisenberg", "gordon", "eye of sauron", "dollar", "coca cola", "brian", "bread", "beavis", "bart", "baghdadi", "alaska", "alan", "8 ball",
     "zelda", "yoda", "west wood", "weed girl", "vendetta", "taco cat", "sonic", "scar anime", "real moon", "real mars", "morgana", "monster energy", "melting moon", "mario", "luigi", "hard panda",
     "grey monster", "fantasy girl", "doraemon", "darth vader", "color pandas", "color pandas", "color lion", "chemical soldier", "cheating girl", "black sphere", "asiatic", "angry cat", "angry bear",
@@ -1268,17 +1241,17 @@ var displayText = {
         noNames: 'Wyłącz nazwy',
         noColors: 'Wyłącz kolory',
         showMass: 'Pokaż masę',
-		showChat: 'Show chat on cells',
-		showChatMyOwn: 'Show chat on my cells',
+        showChat: 'Show chat on cells',
+        showChatMyOwn: 'Show chat on my cells',
         oneColoredSpectator: 'Multibox less render cells',
         multiBoxShadow: 'Player 1 & 2',
         multiKeepMoving: 'Inactive keep moving',
-		middleMultiView: 'View on middle of both (disables when close)',
-		middleMultiViewWhenClose: 'View on middle of both (when close)',
+        middleMultiView: 'View on middle of both (disables when close)',
+        middleMultiViewWhenClose: 'View on middle of both (when close)',
         skipStats: 'Pomiń statystyki po śmierci',
         showQuest: 'Pokaż zadanie (quest)',
         autoZoom: 'Auto zoom',
-		unlockedFPS: 'Frames per sec',
+        unlockedFPS: 'Frames per sec',
         animation: 'Opóźnienie animacji',
         macroFeeding: 'Macro feed (ms)',
         //hideSizes: 'Hide everything with size smaller than',
@@ -1286,8 +1259,8 @@ var displayText = {
         suckAnimation: 'Cell Eat [Sucking] Animation',
         virusGlow: 'Virus Glow',
         borderGlow: 'Border Glow',
-        zoomSpeedValue2: 'Szybkość zoomu',		
-		videoSkinSoundLevel: 'Video skin sound level',		
+        zoomSpeedValue2: 'Szybkość zoomu',
+        videoSkinSoundLevel: 'Video skin sound level',
         leaderboardlimit: 'Leaderboard Players',
         teamboardlimit: 'Team Players',
         quickResp: 'Szybkie odrodzenie (klawisz)',
@@ -1311,9 +1284,9 @@ var displayText = {
         universalChat: 'Universal chat',
         customSkins: 'Własne skiny',
         videoSkins: 'Video skins (.mp4 .webm .ogv)',
-		videoDestorted: 'Video destorted to fit cells',
+        videoDestorted: 'Video destorted to fit cells',
         videoSkinsMusic2: 'Sound from other\'s Video skins when visible',
-		videoOthersSkinSoundLevelproportion: 'Other\'s VS sound level proportional to their mass',
+        videoOthersSkinSoundLevelproportion: 'Other\'s VS sound level proportional to their mass',
         myTransparentSkin: 'Mój przezroczysty skin',
         myCustomColor: 'Mój własny kolor',
         transparentCells: 'Przezroczyste kulki',
@@ -1382,15 +1355,15 @@ var displayText = {
         showStatsMass: 'Statystyki: Masa',
         //showStatsSTE: 'Statystyki: Przedziały Masy',
         showStatsESTE: 'BSTE: Enemy\'s minimal mass to splt & eat',
-        showStatsEMTE: 'BMTE: Enemy\'s minimal mass to move & eat', 
-        showStatsMTE: 'MTE: Enemy\'s maximal mass to be eaten by our move', 
-        showStatsSTE: 'STE: Enemy\'s maximal mass to be eaten by our split', 
+        showStatsEMTE: 'BMTE: Enemy\'s minimal mass to move & eat',
+        showStatsMTE: 'MTE: Enemy\'s maximal mass to be eaten by our move',
+        showStatsSTE: 'STE: Enemy\'s maximal mass to be eaten by our split',
         showStatsTTE: 'TTE: Minimal mass of teammate to tricksplit',
         showStatsPTE: 'PTE: Maximal enemy\'s mass for our presplit',
         showStatsN16: 'n/16: Pieces',
         showStatsFPS: 'Statystyki: FPS',
         //showStatsPPS: 'Statystyki: PPS',
-		showStatsRender: 'Time percentage % consumed for Drawing',
+        showStatsRender: 'Time percentage % consumed for Drawing',
         blockPopups: 'Blokuj popupy (reklamy/sklep/zadanie)',
         gameOverStats: 'Game over stats',
         hotkeys: 'Skróty klawiszowe',
@@ -1404,9 +1377,9 @@ var displayText = {
         'hk-macroFeed': 'Szybki feed',
         'hk-split': 'Podział',
         'hk-doubleSplit': 'Podwójny podział',
-		'hk-tripleSplit': 'Triple split',
+        'hk-tripleSplit': 'Triple split',
         'hk-split16': 'Podział na 16',
-		'hk-crazyDoubleSplit': 'Crazy double split',
+        'hk-crazyDoubleSplit': 'Crazy double split',
         'hk-pause': 'Pauza kulki',
         'hk-multiboxswap': 'Multibox Swap',
         'hk-multiboxFollowMouse': 'Multibox toggle follow mouse',
@@ -1454,10 +1427,10 @@ var displayText = {
         'hk-privateMiniMap': 'Pokaż cel na minimapie',
         'hk-showQuest': 'Pokaż/ukryj zadanie',
         'hk-showSpectator': 'Show/hide Full Spectator (Premium)',
-		'hk-showIngameSpectator': 'Show/hide Ingame Spectator (Premium)',
-		'hk-doubleBotSplit': 'Bots double split (IMSOLO.PRO)',
-		'hk-splitBot16': 'Bots split 16 (IMSOLO.PRO)',
-		
+        'hk-showIngameSpectator': 'Show/hide Ingame Spectator (Premium)',
+        'hk-doubleBotSplit': 'Bots double split (IMSOLO.PRO)',
+        'hk-splitBot16': 'Bots split 16 (IMSOLO.PRO)',
+
         commands: 'Komendy',
         comm1: 'Feeduj!',
         comm2: 'Dziel się!',
@@ -1579,7 +1552,7 @@ var displayText = {
         top5MassColor: 'Masa',
         lbMeColor: 'Topka - ja',
         lbTeammateColor: 'Topka - team',
-		lbTeammateColor2: 'Topka - team',
+        lbTeammateColor2: 'Topka - team',
         hudFont: 'Czcionka HUD',
         hudScale: 'Skala HUD',
         chatTheming: 'Czat',
@@ -1718,17 +1691,17 @@ var displayText = {
         noNames: 'No names',
         noColors: 'No colors',
         showMass: 'Show mass',
-		showChat: 'Show chat on cells',
-		showChatMyOwn: 'Show chat on my cells',
+        showChat: 'Show chat on cells',
+        showChatMyOwn: 'Show chat on my cells',
         oneColoredSpectator: 'MultiBox less render cells',
         multiBoxShadow: 'Player 1 & 2',
         multiKeepMoving: 'Inactive keep moving',
-		middleMultiView: 'View on middle of both (disables when close)',
-		middleMultiViewWhenClose: 'View on middle of both (when close)',
+        middleMultiView: 'View on middle of both (disables when close)',
+        middleMultiViewWhenClose: 'View on middle of both (when close)',
         skipStats: 'Skip stats after death',
         showQuest: 'Show quest',
         autoZoom: 'Auto zoom',
-		unlockedFPS: 'Frames per sec',
+        unlockedFPS: 'Frames per sec',
         animation: 'Animation delay',
         macroFeeding: 'Macro feed (ms)',
         //hideSizes: 'Hide everything with size smaller than',
@@ -1737,7 +1710,7 @@ var displayText = {
         virusGlow: 'Virus Glow',
         borderGlow: 'Border Glow',
         zoomSpeedValue2: 'Zoom speed',
-		videoSkinSoundLevel: 'Video skin sound level',
+        videoSkinSoundLevel: 'Video skin sound level',
         leaderboardlimit: 'Leaderboard Players',
         teamboardlimit: 'Team Players',
         quickResp: 'Quick respawn (hotkey)',
@@ -1761,9 +1734,9 @@ var displayText = {
         universalChat: 'Universal chat',
         customSkins: 'Custom skins',
         videoSkins: 'Video skins (.mp4 .webm .ogv)',
-		videoDestorted: 'Video destorted to fit cells',
+        videoDestorted: 'Video destorted to fit cells',
         videoSkinsMusic2: 'Sound from other\'s Video skins when visible',
-		videoOthersSkinSoundLevelproportion: 'Other\'s VS sound level proportional to their mass',		
+        videoOthersSkinSoundLevelproportion: 'Other\'s VS sound level proportional to their mass',
         myTransparentSkin: 'My transparent skin',
         myCustomColor: 'My custom color',
         transparentCells: 'Transparent cells',
@@ -1833,15 +1806,15 @@ var displayText = {
         showStats: 'Show game stats',
         showStatsMass: 'Mass',
         showStatsESTE: 'BSTE: Enemy\'s minimal mass to splt & eat',
-        showStatsEMTE: 'BMTE: Enemy\'s minimal mass to move & eat', 
-        showStatsMTE: 'MTE: Enemy\'s maximal mass to be eaten by our move', 
-        showStatsSTE: 'STE: Enemy\'s maximal mass to be eaten by our split', 
+        showStatsEMTE: 'BMTE: Enemy\'s minimal mass to move & eat',
+        showStatsMTE: 'MTE: Enemy\'s maximal mass to be eaten by our move',
+        showStatsSTE: 'STE: Enemy\'s maximal mass to be eaten by our split',
         showStatsTTE: 'TTE: Minimal mass of teammate to tricksplit',
         showStatsPTE: 'PTE: Maximal enemy\'s mass for our presplit',
         showStatsN16: 'n/16: Pieces',
         showStatsFPS: 'FPS: Frames per second',
         //showStatsPPS: 'Game stats: PPS',
-		showStatsRender: 'Time percentage % consumed for Drawing',
+        showStatsRender: 'Time percentage % consumed for Drawing',
         blockPopups: 'Block popups (ads/shop/quest)',
         gameOverStats: 'Game over stats',
         hotkeys: 'Hotkeys',
@@ -1855,9 +1828,9 @@ var displayText = {
         'hk-macroFeed': 'Macro feed',
         'hk-split': 'Split',
         'hk-doubleSplit': 'Double split',
-		'hk-tripleSplit': 'Triple split',
+        'hk-tripleSplit': 'Triple split',
         'hk-split16': 'Split 16',
-		'hk-crazyDoubleSplit': 'Crazy double split',
+        'hk-crazyDoubleSplit': 'Crazy double split',
         'hk-pause': 'Cell pause',
         'hk-multiboxswap': 'Multibox Swap',
         'hk-multiboxFollowMouse': 'Multibox toggle follow mouse',
@@ -1905,9 +1878,9 @@ var displayText = {
         'hk-privateMiniMap': 'Show target on the minimap',
         'hk-showQuest': 'Show/hide quest',
         'hk-showSpectator': 'Show/hide Full Spectator (Premium)',
-		'hk-showIngameSpectator': 'Show/hide Ingame Spectator (Premium)',
-		'hk-doubleBotSplit': 'Bots double split (IMSOLO.PRO)',
-		'hk-splitBot16': 'Bots split 16 (IMSOLO.PRO)',
+        'hk-showIngameSpectator': 'Show/hide Ingame Spectator (Premium)',
+        'hk-doubleBotSplit': 'Bots double split (IMSOLO.PRO)',
+        'hk-splitBot16': 'Bots split 16 (IMSOLO.PRO)',
 
         commands: 'Commands',
         comm1: 'Feed me!',
@@ -2028,7 +2001,7 @@ var displayText = {
         top5MassColor: 'Mass',
         lbMeColor: 'Leaderboard - me',
         lbTeammateColor: 'Leaderboard - teammate',
-		lbTeammateColor2: 'Leaderboard - teammate',
+        lbTeammateColor2: 'Leaderboard - teammate',
         hudFont: 'HUD font',
         hudScale: 'HUD scale',
         chatTheming: 'Chat',
@@ -2216,7 +2189,7 @@ var themePresets = {
         top5MassColor: '#bf00aa',
         lbMeColor: '#bf00aa',
         lbTeammateColor: '#018cf6', //is a crack for delta
-		lbTeammateColor2: '#018cf6',
+        lbTeammateColor2: '#018cf6',
         hudFont: 'ubuntu-bold',
         hudScale: 1,
 
@@ -2381,7 +2354,7 @@ var themePresets = {
         top5MassColor: '#1fe000',
         lbMeColor: '#bf00aa',
         lbTeammateColor: '#018cf6',
-		lbTeammateColor2: '#018cf6',
+        lbTeammateColor2: '#018cf6',
         hudScale: 1,
         messageColor: 'rgba(0,0,0,0.4)',
         messageTextColor: '#e8e8e8',
@@ -2680,7 +2653,7 @@ var defaultSettings = {
     top5MassColor: '#bf00aa',
     lbMeColor: '#bf00aa',
     lbTeammateColor: '#018cf6',
-	lbTeammateColor2: '#018cf6',
+    lbTeammateColor2: '#018cf6',
     hudFont: 'ubuntu-bold',
     hudFontFamily: 'Ubuntu',
     hudFontWeight: 700,
@@ -2908,7 +2881,7 @@ var defaultmapsettings = {
     spawnSpecialEffects: false,
     animatedRainbowColor: false,
     autoZoom: false,
-	unlockedFPS: 4, //unlockedFPS: false,
+    unlockedFPS: 4, //unlockedFPS: false,
     autoHideNames: true,
     autoHideMass: true,
     autoHideFood: false,
@@ -2918,13 +2891,13 @@ var defaultmapsettings = {
     hideMyName: false,
     hideTeammatesNames: false,
     showMass: true,
-	showChat: true,
-	showChatMyOwn: false,
+    showChat: true,
+    showChatMyOwn: false,
     oneColoredSpectator: false,
     multiBoxShadow: false,
     multiKeepMoving: true,
-	middleMultiView: false,
-	middleMultiViewWhenClose: true,
+    middleMultiView: false,
+    middleMultiViewWhenClose: true,
     optimizedMass: true,
     shortMass: true,
     cellContours: false,
@@ -2935,9 +2908,9 @@ var defaultmapsettings = {
     universalChat: true,
     customSkins: true,
     videoSkins: true,
-	videoDestorted: false,
+    videoDestorted: false,
     videoSkinsMusic2: true,
-	videoOthersSkinSoundLevelproportion: true,
+    videoOthersSkinSoundLevelproportion: true,
     myTransparentSkin: false,
     myCustomColor: true,
     transparentCells: false,
@@ -3009,7 +2982,7 @@ var defaultmapsettings = {
     showStatsN16: true,
     showStatsFPS: true,
     //showStatsPPS: true,
-	showStatsRender: false,
+    showStatsRender: false,
     blockPopups: false,
     gameOverStats: false,
     streamMode: false,
@@ -3021,8 +2994,8 @@ var defaultmapsettings = {
     macroFeeding: 80,
     reverseTrick: false,
     //hideSizes: 0,
-    dominationRate: 4/3,
-	dominatedRate: 3/4,
+    dominationRate: 4 / 3,
+    dominatedRate: 3 / 4,
     profileNumber: 15,
     ////
     cameraSpeed: 7,
@@ -3035,7 +3008,7 @@ var defaultmapsettings = {
     ////
     //'zoomSpeedValue: .87,
     zoomSpeedValue2: -0.13,
-	videoSkinSoundLevel: 1,
+    videoSkinSoundLevel: 1,
     leaderboardlimit: 20,
     teamboardlimit: 20,
     messageSound: 'https://legendmod.ml/sounds/notification_01.mp3',
@@ -3043,7 +3016,7 @@ var defaultmapsettings = {
     commandSound: 'https://legendmod.ml/sounds/chat-message.mp3',
     virusSoundurl: 'https://legendmod.ml/sounds/sound-gunshot.mp3',
     soundSplit: 'https://www.myinstants.com/media/sounds/quack_5.mp3',
-    FacebookIDs: ''   
+    FacebookIDs: ''
 };
 var profiles = [];
 var ogarcopythelb = {
@@ -3397,18 +3370,16 @@ function thelegendmodproject() {
             this.addColorBox('#theme-hud', 'lbMeColor', 'setHudColors');
             this.addColorBox('#theme-hud', 'lbTeammateColor2', 'setHudColors');
             this.addFontBox('#theme-hud', 'hudFont', 'setHudFont');
-			var hudScaleLimit=1.5
-			if (window.screen.height <= 800) {
-				hudScaleLimit=0.9
-			}				
-			else if (window.screen.height <= 992) {
-				hudScaleLimit=1
-			}				
-			else if (window.screen.height <= 1080) {
-				hudScaleLimit=1.1
-			}		
-			this.addSliderBox('#theme-hud', 'hudScale', 0.5, hudScaleLimit, 0.01, 'setHudScale');
-			
+            var hudScaleLimit = 1.5
+            if (window.screen.height <= 800) {
+                hudScaleLimit = 0.9
+            } else if (window.screen.height <= 992) {
+                hudScaleLimit = 1
+            } else if (window.screen.height <= 1080) {
+                hudScaleLimit = 1.1
+            }
+            this.addSliderBox('#theme-hud', 'hudScale', 0.5, hudScaleLimit, 0.01, 'setHudScale');
+
             this.addRgbaColorBox('#theme-chat', 'messageColor', 'setChatColors');
             this.addColorBox('#theme-chat', 'messageTextColor', 'setChatColors');
             this.addColorBox('#theme-chat', 'messageTimeColor', 'setChatColors');
@@ -3464,8 +3435,8 @@ function thelegendmodproject() {
                     setTimeout(function() {
                         i.text(textLanguage.saveSett);
                     }, 500);
-					ogarhusettings();
-					//ogarhusettingsImportExportMobile();
+                    ogarhusettings();
+                    //ogarhusettingsImportExportMobile();
                 });
             $('#theme').append('<div class=\"restore-settings\"><a href=\"#\">' + textLanguage.restoreThemeSettings + '</a></div>'),
                 $(document).on('click', '#theme .restore-settings a', function(e) {
@@ -3717,7 +3688,7 @@ function thelegendmodproject() {
         teamPlayers: [],
         parties: [],
         chatHistory: [],
-		commandHistory: [],
+        commandHistory: [],
         chatUsers: {},
         chatMutedUsers: {},
         chatMutedUserIDs: [],
@@ -3727,7 +3698,7 @@ function thelegendmodproject() {
         cacheQueue2: [],
         cacheQueue3: [],
         cacheQueue4: [],
-		cacheQueueSkinAnimated: [],
+        cacheQueueSkinAnimated: [],
         deathLocations: [],
         playerID: null,
         playerMass: 0,
@@ -3884,7 +3855,7 @@ function thelegendmodproject() {
                 LM.dance = false;
             }
         },
-	
+
         Botsplit() {
             if (window.core && window.core.Botsplit) window.core.Botsplit();
         },
@@ -3895,16 +3866,16 @@ function thelegendmodproject() {
             var app = this;
             app.Botsplit();
             setTimeout(function() {
-                app.Botsplit();				
+                app.Botsplit();
             }, 40);
-        },	
+        },
         popBotSplit() {
             var app = this;
             app.Botsplit();
             setTimeout(function() {
                 app.Botsplit();
             }, 200);
-        },	
+        },
         splitBot16() {
             var app = this;
             app.Botsplit();
@@ -3917,26 +3888,26 @@ function thelegendmodproject() {
             setTimeout(function() {
                 app.Botsplit();
             }, 120);
-        },			
+        },
         split() {
             if (window.core && window.core.split) window.core.split();
-        },		
+        },
         doubleSplit() {
             var app = this;
             app.split();
             setTimeout(function() {
-                app.split();				
+                app.split();
             }, 40);
         },
         crazyDoubleSplit() {
             var app = this;
-			window.lockPosition = true
+            window.lockPosition = true
             app.split();
             setTimeout(function() {
                 app.split();
-				window.lockPosition = false
+                window.lockPosition = false
             }, 40);
-        },		
+        },
         popSplit() {
             var app = this;
             app.split();
@@ -3946,16 +3917,16 @@ function thelegendmodproject() {
         },
         tripleSplit() {
             var app = this;
-			//window.lockPosition = true
+            //window.lockPosition = true
             app.split();
             setTimeout(function() {
                 app.split();
             }, 40);
             setTimeout(function() {
                 app.split();
-				//window.lockPosition = false
-            }, 80);			
-        },		
+                //window.lockPosition = false
+            }, 80);
+        },
         split16() {
             var app = this;
             app.split();
@@ -4127,22 +4098,20 @@ function thelegendmodproject() {
             if (window.fullSpectator) {
                 window.fullSpectator = false;
                 LM.flushSpecsData();
-            } 
-			else if (!window.fullSpectator) {
-					window.fullSpectator = true;
-					LM.addSpect();				
+            } else if (!window.fullSpectator) {
+                window.fullSpectator = true;
+                LM.addSpect();
             }
         },
         setShowIngameSpectator() {
             if (window.ingameSpectator) {
                 window.ingameSpectator = false;
                 LM.flushSpecsData();
-            } 
-			else if (!window.fullSpectator) {
-					window.ingameSpectator = true;
-					LM.addSpect();
+            } else if (!window.fullSpectator) {
+                window.ingameSpectator = true;
+                LM.addSpect();
             }
-        },		
+        },
         setQuest() {
             if (this.showQuest && ':ffa' === this.gameMode) {
                 $('#quest-hud').show();
@@ -4258,8 +4227,7 @@ function thelegendmodproject() {
             if (!spects.length) {
                 //if (!legendmod.multiBoxPlayerExists){					
                 addBox()
-            } 
-			else if (!window.multiboxPlayerEnabledSaved) {
+            } else if (!window.multiboxPlayerEnabledSaved) {
                 if (!legendmod.play) {
                     play()
                 }
@@ -4274,12 +4242,11 @@ function thelegendmodproject() {
                 LM.flushSpecsData()
                 addBox()
                 //toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Multibox cannot start because Spectators have been enabled");
-            }
-            else if (spects.length && !window.multiboxPlayerEnabledSaved && !window.multiboxPlayerEnabled) { //handle error
+            } else if (spects.length && !window.multiboxPlayerEnabledSaved && !window.multiboxPlayerEnabled) { //handle error
                 LM.flushSpecsData()
-                addBox()               
-            }			
-			
+                addBox()
+            }
+
         },
         multiboxFollowMouse() {
             if (!window.multiboxFollowMouse) {
@@ -4298,13 +4265,13 @@ function thelegendmodproject() {
         setVanillaSkins() {
             if (defaultmapsettings.vanillaSkins) {
                 //defaultmapsettings.animateSkinsStart = setInterval(animateSkincheck, window.preSetanimateSkincheck);
-				setTimeout(function() {
-					animateSkincheck()
-				}, window.preSetanimateSkincheck);				
+                setTimeout(function() {
+                    animateSkincheck()
+                }, window.preSetanimateSkincheck);
             } else {
                 application.flushSkinsMap();
                 //animateSkinsStop();
-				window.preSetanimateSkincheck=6000;
+                window.preSetanimateSkincheck = 6000;
             }
         },
         setUniversalChat() {
@@ -4339,7 +4306,7 @@ function thelegendmodproject() {
         displayPartyBots() {
             setTimeout(function() {
                 //if (defaultmapsettings.showPartyBots) {                   
-                    $(".quick.quick-bots.ogicon-trophy").show();
+                $(".quick.quick-bots.ogicon-trophy").show();
                 /*} else {
                     $(".quick.quick-bots.ogicon-trophy").hide();
                 }*/
@@ -4450,20 +4417,20 @@ function thelegendmodproject() {
                     if (defaultmapsettings.showStatsFPS) {
                         t += ' | '
                     }
-                }				
-				if (defaultmapsettings.showStatsRender && defaultmapsettings.showStatsFPS) {
-					var color = '';
-					if(drawRender.averageRenderTime>70)  color = 'color:red'
-					else if(drawRender.averageRenderTime>50)  color = 'color:yellow'
-					else if(drawRender.averageRenderTime<=50)  color = 'color:green'
-					t += '💻: <span style=' + color + '>' + drawRender.averageRenderTime + '%</span>'
-					if (defaultmapsettings.showStatsFPS) {
-						t += ' | '
-					}
-				}
+                }
+                if (defaultmapsettings.showStatsRender && defaultmapsettings.showStatsFPS) {
+                    var color = '';
+                    if (drawRender.averageRenderTime > 70) color = 'color:red'
+                    else if (drawRender.averageRenderTime > 50) color = 'color:yellow'
+                    else if (drawRender.averageRenderTime <= 50) color = 'color:green'
+                    t += '💻: <span style=' + color + '>' + drawRender.averageRenderTime + '%</span>'
+                    if (defaultmapsettings.showStatsFPS) {
+                        t += ' | '
+                    }
+                }
                 if (defaultmapsettings.showStatsFPS) {
                     t += 'FPS: ' + drawRender.fps;
-					
+
                 }
                 /*if (defaultmapsettings.showStatsPPS) {
                 	if (defaultmapsettings.showStatsFPS || ogario.play ) t += ` | `;
@@ -4567,8 +4534,7 @@ function thelegendmodproject() {
                             this.top5totalPlayers.textContent = s;
                     }
                 }
-            } 
-			else {
+            } else {
                 if (defaultmapsettings.showTop5) {
                     //temp
                     var tempTime = new Date().getTime();
@@ -4642,14 +4608,14 @@ function thelegendmodproject() {
                                 }
                             }
                             //t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
-							//external script
-							if (!window.externalScriptMassBar[o]) window.externalScriptMassBar[o]=""
+                            //external script
+                            if (!window.externalScriptMassBar[o]) window.externalScriptMassBar[o] = ""
                             // t = t + ('<span class="top5-mass-color">[' + this.shortMassFormat(this.top5[o].mass) + "]</span> " + this.escapeHTML(this.top5[o].nick) + "</div></li>" + window.externalScriptMassBar[o]);
 
                             let shortMassFormat = this.shortMassFormat(this.top5[o].mass)
                             let playersNickName = this.escapeHTML(this.top5[o].nick)
 
-                            let totalMass     = this.top5.map(top5 => top5.mass).reduce((accumulator, playerMass) => accumulator + playerMass)
+                            let totalMass = this.top5.map(top5 => top5.mass).reduce((accumulator, playerMass) => accumulator + playerMass)
 
                             t += (`<span class="top5-mass-color">
                                         [` + this.shortMassFormat(this.top5[o].mass) + `]
@@ -4737,32 +4703,30 @@ function thelegendmodproject() {
                 const value = message.val();
                 if (value.length) {
 
-				//
-				//if (LM.ws.includes("imsolo.pro") && $("#clantag").val() == ""){
-				if (!LM.integrity && $("#clantag").val() == ""){	
-					var view = application.createView(4 + 2 * value.length);
-					view.setUint8(0, 99);
-					view.setUint8(1, 0);
-					var length = 0
-					for (; length <= value.length+1; length++) view.setUint16(2+ length, value.charCodeAt(length), true);
-					view.setUint8(length, 0);
-					legendmod.sendMessage(view)				
-				} 
-				//
-				
+                    //
+                    //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() == ""){
+                    if (!LM.integrity && $("#clantag").val() == "") {
+                        var view = application.createView(4 + 2 * value.length);
+                        view.setUint8(0, 99);
+                        view.setUint8(1, 0);
+                        var length = 0
+                        for (; length <= value.length + 1; length++) view.setUint16(2 + length, value.charCodeAt(length), true);
+                        view.setUint8(length, 0);
+                        legendmod.sendMessage(view)
+                    }
+                    //
+
                     this.sendChatMessage(101, value);
                     if (ogario.play) {
                         message.blur();
                         messageBox.hide();
                     }
-                } 
-				else {
+                } else {
                     message.blur();
                     messageBox.hide();
                 }
                 message.val('');
-            } 
-			else {
+            } else {
                 messageBox.show();
                 message.focus();
                 message.val('');
@@ -4930,9 +4894,9 @@ function thelegendmodproject() {
                     case 'tweenMaxEffect':
                         this.setTweenMaxEffect();
                         break;
-                    /*case 'showPartyBots':
-                        this.displayPartyBots();
-                        break;*/
+                        /*case 'showPartyBots':
+                            this.displayPartyBots();
+                            break;*/
                     case 'showStats':
                         this.displayStats();
                         $('#stats-hud').show();
@@ -4957,7 +4921,7 @@ function thelegendmodproject() {
                 $('#skins-panel').css("width", "550px");
             }
             ogarhusettings();
-			//ogarhusettingsImportExportMobile();
+            //ogarhusettingsImportExportMobile();
         },
         loadProfiles() {
             if (null !== window.localStorage.getItem('ogarioPlayerProfiles')) {
@@ -5057,10 +5021,10 @@ function thelegendmodproject() {
                     var app = this;
                     o = new Video();
                     o.crossOrigin = 'anonymous';
-					o.src = t;
+                    o.src = t;
                     // o = new Image();
-                    
-					//o.style.borderRadius = "25px";
+
+                    //o.style.borderRadius = "25px";
                     setTimeout(function() {
                         //newo.onload = function() {
                         app.changeSkinPreview(o, e);
@@ -5071,20 +5035,20 @@ function thelegendmodproject() {
                 }
             } else {
                 checktypeImgVid = new Image();
-				
+
                 //console.log("stage 1 images");
 
                 if ($('#' + e).empty().addClass('default'), t && 0 != t.length) {
                     //console.log("stage 1 images/videos: " + t);
                     var app = this,
                         o = checktypeImgVid;
-					o.crossOrigin = 'anonymous',	
-                    o.src = t;
+                    o.crossOrigin = 'anonymous',
+                        o.src = t;
                     // o = new Image();
-                    
-                        o.onload = function() {
-                            app.changeSkinPreview(o, e);
-                        };
+
+                    o.onload = function() {
+                        app.changeSkinPreview(o, e);
+                    };
                 }
             }
         },
@@ -5215,9 +5179,9 @@ function thelegendmodproject() {
             $("#mainPanel").before('<div id="exp-bar" class="agario-panel"><span class="ogicon-user"></span><div class="agario-exp-bar progress"><span class="progress-bar-text"></span><div class="progress-bar progress-bar-striped" style="width: 0%;"></div></div><div class="progress-bar-star"></div></div><div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
                 textLanguage.start + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + textLanguage.settings + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + textLanguage.theme + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
                 textLanguage.hotkeys + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="' + textLanguage.sounds + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + textLanguage.profile + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>');
-            $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a>'+
-			'<a href="#" class="quick quick-replay ogicon-file-play"></a>'+
-			'<a href="#" class="quick quick-skins ogicon-images"></a><div id="profiles"><div id="prev-profile"></div><div id="skin-preview"></div><div id="next-profile"></div></div>');
+            $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a>' +
+                '<a href="#" class="quick quick-replay ogicon-file-play"></a>' +
+                '<a href="#" class="quick quick-skins ogicon-images"></a><div id="profiles"><div id="prev-profile"></div><div id="skin-preview"></div><div id="next-profile"></div></div>');
             $("#mainPanel div[role=form]").appendTo($("#main-panel"));
             $("#main-panel div[role=form] .form-group:first").remove();
             $("#nick").before('<input id="clantag" class="form-control" placeholder="Tag, e.g  \Lc" maxlength="10"><div class="input-group nick"></div>');
@@ -5264,13 +5228,13 @@ function thelegendmodproject() {
                 '<a id= "themesBtn" target="_blank" href="https://legendmod.ml/themes/" class="fa fa-tint" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Themes"></a>' +
                 //'<a id= "LegGoogleForm" class="fa fa-check-square-o" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="New Ideas & Statistics Form" onclick="legendformIframe();return false;"></a>' +
                 '<a id= "ModInfoQuick" class="fa fa-info" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Mod Info & Templates" onclick="openhelper();return false;"></a>' +
-				'<a id= "ModReward" class="fa fa-gift " data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Reward day" onclick="LMrewardDay();return false;"></a>');
-                //'<a id= "LegendClanDiscord" href="https://discord.gg/CbMkY77" target="_blank" class="fa fa-globe" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Legend clan Discord"></a></div>');
+                '<a id= "ModReward" class="fa fa-gift " data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Reward day" onclick="LMrewardDay();return false;"></a>');
+            //'<a id= "LegendClanDiscord" href="https://discord.gg/CbMkY77" target="_blank" class="fa fa-globe" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Legend clan Discord"></a></div>');
 
-			//<input type="number" id="captchaSpeed" value="1" step="1" placeholder="CPU cores" min=1 max=${CPUamount} spellcheck="false" style="display:inline-block;">
-			//<span id="captchaErrors" style="display:inline-block;">Errors: <span id="captchaErrors1">0</span></span>
-			//<div2><button id="instant" class="btn btn-success">Instant (only for testers)</button></div2>
-			//var CPUamount=window.navigator.hardwareConcurrency-1;
+            //<input type="number" id="captchaSpeed" value="1" step="1" placeholder="CPU cores" min=1 max=${CPUamount} spellcheck="false" style="display:inline-block;">
+            //<span id="captchaErrors" style="display:inline-block;">Errors: <span id="captchaErrors1">0</span></span>
+            //<div2><button id="instant" class="btn btn-success">Instant (only for testers)</button></div2>
+            //var CPUamount=window.navigator.hardwareConcurrency-1;
             $(".left-container").append(`<div id="quick-bots" class="agario-panel agario-side-panel"><h2 id="botsInfo"></h2>									
 					<h5 id="botsAuthor" class="main-color">Party bots</h5>
 					<div id="botClient" style="margin-left:15px; margin-right:15px; font-family: Tahoma; color: rgb(255, 255, 255); z-index: 9999; border-radius: 5px; min-height: 16px; min-width: 200px; background-color: rgba(2, 0, 0, 0.4);">
@@ -5318,8 +5282,8 @@ function thelegendmodproject() {
             $("#noNames, #showMass").remove();
             $("#og-settings .submenu-panel").append('<div id="og-options"></div>');
             //this.addOptions(["unlockedFPS"], "animationGroup");
-			this.addOptions([], "animationGroup");
-			
+            this.addOptions([], "animationGroup");
+
             this.addOptions(["autoZoom"], "zoomGroup");
             this.addOptions([], "boardGroup");
             this.addOptions(["quickResp", "autoResp", "spawnSpecialEffects"], "respGroup");
@@ -5331,14 +5295,14 @@ function thelegendmodproject() {
             this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup");
             this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "universalChat"], "chatGroup");
             this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup");
-//            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
+            //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
             this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"); //Sonia2
-			this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
+            this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime"], "statsGroup");
-            this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView"], "multiBox");			
+            this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView"], "multiBox");
             this.addOptions([], "macroGroup");
             this.addOptions([], "profiles");
             if (!this.protocolMode) {
@@ -5357,9 +5321,9 @@ function thelegendmodproject() {
                 $("#settingsChoice").appendTo($(".extrasGroup")).addClass("select-wrapper");
             }
             this.addSliderBox(".animationGroup", "animation", 5, 200, 1);
-			
+
             this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01);
-			this.addSliderBox(".skinsGroup", "videoSkinSoundLevel", 0, 1, 0.01);
+            this.addSliderBox(".skinsGroup", "videoSkinSoundLevel", 0, 1, 0.01);
             this.addSliderBox(".boardGroup", "leaderboardlimit", 10, 30, 5);
             this.addSliderBox(".boardGroup", "teamboardlimit", 5, 40, 5);
 
@@ -5429,24 +5393,24 @@ function thelegendmodproject() {
             }
         },
         setUI() {
-			/*$("#instant").click(function() {			
-				if (!window.iframereplitCreated){
-					window.iframereplitCreated=true						
-				$("#instant").html('<iframe frameborder="0px" width="120px" height="40" src="https://repl.it/@legendmod/party-bots-CleverBots?lite=true"></iframe>')
-				toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + 'If <font color="green"><b>GREEN</b></font> button appears, click it!');
-				if (legendmod.gameMode!="party"){
-					$("#create-party-btn-2").click()
-				}
-				setTimeout(function() {					
-					$("#botsRemoteIP").val("wss://party-bots-CleverBots--legendmod.repl.co")
-					window.SERVER_HOST="wss://party-bots-CleverBots--legendmod.repl.co"
-					$("#connectBots").click()
-				}, 8000);	
-				setTimeout(function() {
-					$("#startBots").click()
-				}, 10000);				
-				}
-			});	*/		
+            /*$("#instant").click(function() {			
+            	if (!window.iframereplitCreated){
+            		window.iframereplitCreated=true						
+            	$("#instant").html('<iframe frameborder="0px" width="120px" height="40" src="https://repl.it/@legendmod/party-bots-CleverBots?lite=true"></iframe>')
+            	toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + 'If <font color="green"><b>GREEN</b></font> button appears, click it!');
+            	if (legendmod.gameMode!="party"){
+            		$("#create-party-btn-2").click()
+            	}
+            	setTimeout(function() {					
+            		$("#botsRemoteIP").val("wss://party-bots-CleverBots--legendmod.repl.co")
+            		window.SERVER_HOST="wss://party-bots-CleverBots--legendmod.repl.co"
+            		$("#connectBots").click()
+            	}, 8000);	
+            	setTimeout(function() {
+            		$("#startBots").click()
+            	}, 10000);				
+            	}
+            });	*/
             var app = this;
             $(document).on("click", ".menu-tabs a", function(event) {
                 event.preventDefault();
@@ -5473,7 +5437,7 @@ function thelegendmodproject() {
             $(document).on("click", ".quick-replay", function(event) {
                 event.preventDefault();
                 BeforeReplay()
-            });			
+            });
             $(document).on("click", ".quick-skins", function(event) {
                 event.preventDefault();
                 defaultmapsettings.showSkinsPanel = !defaultmapsettings.showSkinsPanel;
@@ -5537,7 +5501,7 @@ function thelegendmodproject() {
             $(document).on("change", "#quality", function() {
                 app.getQuality(this.value);
                 ogarhusettings();
-				//ogarhusettingsImportExportMobile();
+                //ogarhusettingsImportExportMobile();
             });
             $(`#skin`).popover({
                 html: true,
@@ -5860,7 +5824,7 @@ function thelegendmodproject() {
                 $(o).fadeIn(1000);
             } catch (error) {}
             ogarhusettings();
-			//ogarhusettingsImportExportMobile();
+            //ogarhusettingsImportExportMobile();
             $('.submenu-panel').perfectScrollbar('update');
         },
         getDefaultSettings() {
@@ -5929,11 +5893,11 @@ function thelegendmodproject() {
             if (defaultmapsettings.streamMode) {
                 $("#stream-mode").addClass("ogicon-eye-blocked");
                 //$("#clantag, #nick, #party-token").addClass("stream-mode");
-				$("#clantag, #nick, #skin").foggy();				
+                $("#clantag, #nick, #skin").foggy();
             } else {
                 $("#stream-mode").removeClass("ogicon-eye-blocked");
                 //$("#clantag, #nick, #party-token").removeClass("stream-mode");
-				$("#clantag, #nick, #skin").foggy(false);
+                $("#clantag, #nick, #skin").foggy(false);
             }
         },
         setHideSkinUrl() {
@@ -5991,10 +5955,10 @@ function thelegendmodproject() {
                 app.joinParty();
                 app.onJoin();
             });
-			$("#closePartyAlert").click(function() {
-				$("#helloContainer").attr("data-party-state", "0");
-				//$("#helloContainer").attr("data-party-state", "6");
-			})			
+            $("#closePartyAlert").click(function() {
+                $("#helloContainer").attr("data-party-state", "0");
+                //$("#helloContainer").attr("data-party-state", "6");
+            })
             $(document).on("click", "#statsContinue2", function() {
                 $("#stats, #main-panel").toggle();
             });
@@ -6144,23 +6108,20 @@ function thelegendmodproject() {
         findOwnedVanillaSkin() {
             if (legendflags.includes(LowerCase(ogarcopythelb.nick))) {
                 core.registerSkin(ogarcopythelb.nick, null, "https://legendmod.ml/agario/live/flags/" + LowerCase(ogarcopythelb.nick) + ".png", null);
-            }				
-            else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(ogarcopythelb.nick))) {
+            } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(ogarcopythelb.nick))) {
                 for (var player = 0; player < window.FreeSkins.length; player++) {
                     if (LowerCase(ogarcopythelb.nick) == window.FreeSkins[player].id) {
                         core.registerSkin(ogarcopythelb.nick, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image, null);
                     }
                 }
-            } 			
-            else if (!ogarcopythelb.skinURL && defaultmapsettings.vanillaSkins && window.UserVanillaSkin && window.EquippableSkins && !application.customSkinsMap[ogarcopythelb.nick]) {
+            } else if (!ogarcopythelb.skinURL && defaultmapsettings.vanillaSkins && window.UserVanillaSkin && window.EquippableSkins && !application.customSkinsMap[ogarcopythelb.nick]) {
                 //console.log("1. skin_" + window.UserVanillaSkin);
                 if (window.UserVanillaSkin.includes("skin_custom")) {
                     application.customSkinsMap[ogarcopythelb.nick] = window.UserVanillaSkin;
                     application.loadSkin(application.customSkinsCache, window.UserVanillaSkin);
                     //core.registerSkin(ogarcopythelb.nick, null, window.UserVanillaSkin, null);
                     //window.UserVanillaSkin=null;
-                } 
-				else {
+                } else {
                     for (var player = 0; player < window.EquippableSkins.length; player++) {
                         if (window.EquippableSkins[player].productId == "skin_" + window.UserVanillaSkin && window.EquippableSkins[player].image != "uses_spine") {
                             //console.log("2. " + window.EquippableSkins[player].image);	
@@ -6172,8 +6133,7 @@ function thelegendmodproject() {
                         }
                     }
                 }
-            } 
-			else {
+            } else {
                 //console.log('findOwnedVanillaSkin failed execution')				
                 if (!window.EquippableSkins && !window.findOwnedVanillaSkinOnce) {
                     window.findOwnedVanillaSkinOnce = true;
@@ -6212,49 +6172,47 @@ function thelegendmodproject() {
         loadSkin(img, url, animated) {
             var app = this;
             //console.log ("img:" + img + "url:" + url);
-			if (!url.includes("4.0") && !url.includes("4.1") && !url.includes("4.2") && !url.includes("4.3")){
-            if (url && url.includes && (url.includes(".mp4") || url.includes(".webm") || url.includes(".ogv"))) {
-                img[url] = new Video();
-                //console.log("stage 2 videos");
-            } else {
-                img[url] = new Image();
-            }
-			
-            img[url].crossOrigin = 'anonymous';
-            img[url].onload = function() {																	
-                    if (this.complete &&
-                        this.width &&
-                        this.height &&
-                        this.width <= 2000 && this.width > 0 &&
-                        this.height <= 2000 && this.height > 0) {
-	
-						
-						if (animated == "animatedSkins"){
-                            app.cacheQueueSkinAnimated.push(url);
-                            if (1 == app.cacheQueueSkinAnimated.length) app.cacheSkinAnimated(app.customSkinsCache, animated)
-                            app.cacheQueue2.push(url)
-                            if (1 == app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache)						
-						}						
-                        else if (animated != "fbSkin") {
-                            app.cacheQueue.push(url);
-                            if (1 == app.cacheQueue.length) app.cacheSkin(app.customSkinsCache, animated)
-                            app.cacheQueue2.push(url)
-                            if (1 == app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache)
-                            if (animated == true) app.cacheQueue3.push(url)
-                            if (1 == app.cacheQueue3.length) app.cacheSkin3(app.customSkinsCache)
-                        } 
-						else if (animated == "fbSkin") {
-                            app.cacheQueue4.push(url)
-                            if (1 == app.cacheQueue4.length) app.cacheSkin4(app.customSkinsCache)
-                        }
-						
-						//26/6/2020
-						//if (this && this.includes && (this.includes(".mp4") || this.includes(".webm") || this.includes(".ogv"))) {
-						//this.style.borderRadius = "50%";
-						
-						//}
-						//
-                        /*
+            if (!url.includes("4.0") && !url.includes("4.1") && !url.includes("4.2") && !url.includes("4.3")) {
+                if (url && url.includes && (url.includes(".mp4") || url.includes(".webm") || url.includes(".ogv"))) {
+                    img[url] = new Video();
+                    //console.log("stage 2 videos");
+                } else {
+                    img[url] = new Image();
+                }
+
+                img[url].crossOrigin = 'anonymous';
+                img[url].onload = function() {
+                        if (this.complete &&
+                            this.width &&
+                            this.height &&
+                            this.width <= 2000 && this.width > 0 &&
+                            this.height <= 2000 && this.height > 0) {
+
+
+                            if (animated == "animatedSkins") {
+                                app.cacheQueueSkinAnimated.push(url);
+                                if (1 == app.cacheQueueSkinAnimated.length) app.cacheSkinAnimated(app.customSkinsCache, animated)
+                                app.cacheQueue2.push(url)
+                                if (1 == app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache)
+                            } else if (animated != "fbSkin") {
+                                app.cacheQueue.push(url);
+                                if (1 == app.cacheQueue.length) app.cacheSkin(app.customSkinsCache, animated)
+                                app.cacheQueue2.push(url)
+                                if (1 == app.cacheQueue2.length) app.cacheSkin2(app.customSkinsCache)
+                                if (animated == true) app.cacheQueue3.push(url)
+                                if (1 == app.cacheQueue3.length) app.cacheSkin3(app.customSkinsCache)
+                            } else if (animated == "fbSkin") {
+                                app.cacheQueue4.push(url)
+                                if (1 == app.cacheQueue4.length) app.cacheSkin4(app.customSkinsCache)
+                            }
+
+                            //26/6/2020
+                            //if (this && this.includes && (this.includes(".mp4") || this.includes(".webm") || this.includes(".ogv"))) {
+                            //this.style.borderRadius = "50%";
+
+                            //}
+                            //
+                            /*
 						((app.cacheQueue.push(url),
                                 1 == app.cacheQueue.length &&
                                 app.cacheSkin(app.customSkinsCache, animated)),
@@ -6268,30 +6226,29 @@ function thelegendmodproject() {
                                 1 == app.cacheQueue4.length &&
                                 app.cacheSkin4(app.customSkinsCache))								
                         );*/
-                    }
-					
-                },
-                img[url].onerror = function() {
-                    //console.log("error loading image: "+ url);
-                    if (url && url.includes(window.EnvConfig.config_url)) {
-                        url = "https://legendmod.ml/vanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
-                        //console.log("new destination is: " + url);
-                        application.customSkinsMap[window.lastusednameforskin] = url;
-                        application.loadSkin(img, url);
-                        return url;
+                        }
 
-                    }
-                    else if (url && url.includes("https://legendmod.ml/vanillaskins/")) {
-                        url = "https://legendmod.ml/nextvanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
-                        //console.log("new destination is: " + url);
-                        application.customSkinsMap[window.lastusednameforskin] = url;
-                        application.loadSkin(img, url);
-                        return url;
+                    },
+                    img[url].onerror = function() {
+                        //console.log("error loading image: "+ url);
+                        if (url && url.includes(window.EnvConfig.config_url)) {
+                            url = "https://legendmod.ml/vanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
+                            //console.log("new destination is: " + url);
+                            application.customSkinsMap[window.lastusednameforskin] = url;
+                            application.loadSkin(img, url);
+                            return url;
 
-                    }					
-                };
-            img[url].src = url;
-			}
+                        } else if (url && url.includes("https://legendmod.ml/vanillaskins/")) {
+                            url = "https://legendmod.ml/nextvanillaskins/" + url.split('/').pop(); //if CORS policy on miniclip images, use other source
+                            //console.log("new destination is: " + url);
+                            application.customSkinsMap[window.lastusednameforskin] = url;
+                            application.loadSkin(img, url);
+                            return url;
+
+                        }
+                    };
+                img[url].src = url;
+            }
         },
         checkgraphics() {
             if (defaultSettings.graphics == "high") {
@@ -6417,7 +6374,7 @@ function thelegendmodproject() {
             //console.log(skinCache);  //////// return the image src
             if (0 != this.cacheQueueSkinAnimated.length) {
                 var e = this.cacheQueueSkinAnimated.shift();
-                if (e && !this.customSkinsCache[e + "_cached"+skinCache]) {
+                if (e && !this.customSkinsCache[e + "_cached" + skinCache]) {
                     var depth = 512;
                     this.checkgraphics();
                     if (application.graphics) {
@@ -6431,15 +6388,15 @@ function thelegendmodproject() {
                     $.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false);
                     $.clip();
                     try {
-                            $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);                       
+                        $.drawImage(this.customSkinsCache[e], 0, 0, depth, depth);
                     } catch (error) {}
-                    this.customSkinsCache[e + "_cached"+skinCache] = new Image;
-                    this.customSkinsCache[e + "_cached"+skinCache].src = i.toDataURL();
+                    this.customSkinsCache[e + "_cached" + skinCache] = new Image;
+                    this.customSkinsCache[e + "_cached" + skinCache].src = i.toDataURL();
                     i = null;
                     this.cacheSkinAnimated(this.customSkinsCache, animated);
                 }
             }
-        },		
+        },
         getCachedSkin(skinCache, skinMap) {
             if (skinCache[skinMap + '_cached3']) {
                 var today = new Date();
@@ -6497,8 +6454,8 @@ function thelegendmodproject() {
             var GearType = closeExpr ? ogario.mapOffsetX + LM.mapOffset : LM.mapOffset;
             var closingExpr = closeExpr ? ogario.mapOffsetY + LM.mapOffset : LM.mapOffset;
             //var n = Math.floor((xgh2 + closingExpr) / (ogario.mapSize / defaultSettings.sectorsY));
-			var n = Math.floor((xgh2 + closingExpr) / (LM.mapSize / defaultSettings.sectorsY));
-			var r = Math.floor((t + GearType) / (LM.mapSize / defaultSettings.sectorsX));
+            var n = Math.floor((xgh2 + closingExpr) / (LM.mapSize / defaultSettings.sectorsY));
+            var r = Math.floor((t + GearType) / (LM.mapSize / defaultSettings.sectorsX));
             //var r = Math.floor((t + GearType) / (ogario.mapSize / defaultSettings.sectorsX));
             window.calculateMapSector = n < 0 ? 0 : n >= defaultSettings.sectorsY ? defaultSettings.sectorsY - 1 : n;
             r = r < 0 ? 0 : r >= defaultSettings.sectorsX ? defaultSettings.sectorsX - 1 : r;
@@ -6541,7 +6498,7 @@ function thelegendmodproject() {
                     this.miniMap.height = s;
                 }
                 //var n = o / ogario.mapSize;
-				var n = o / LM.mapSize;
+                var n = o / LM.mapSize;
                 var r = ogario.mapOffsetX + LM.mapOffset;
                 var l = ogario.mapOffsetY + LM.mapOffset;
                 if (this.drawSelectedCell(this.miniMapCtx),
@@ -6822,12 +6779,12 @@ function thelegendmodproject() {
             this.cells = {};
         },
         flushSkinsMap() {
-			//
-			//this.lastIP = localStorage.getItem("lastIP");
-			//if (RecordedArenasSpecifications[this.lastIP]) window.RecordedArenasSpecifications[this.lastIP].push(this.customSkinsMap)
-			//
-			//if (window.temporaryRecordedProtocol2 && RecordedArenasSpecifications[window.temporaryRecordedProtocol2]) window.RecordedArenasSpecifications[window.temporaryRecordedProtocol2].push(JSON.stringify(this.customSkinsMap))
-			if (window.temporaryRecordedProtocol && RecordedArenasSpecifications[window.temporaryRecordedProtocol]) window.RecordedArenasSpecifications[window.temporaryRecordedProtocol].push(JSON.stringify(this.customSkinsMap))	
+            //
+            //this.lastIP = localStorage.getItem("lastIP");
+            //if (RecordedArenasSpecifications[this.lastIP]) window.RecordedArenasSpecifications[this.lastIP].push(this.customSkinsMap)
+            //
+            //if (window.temporaryRecordedProtocol2 && RecordedArenasSpecifications[window.temporaryRecordedProtocol2]) window.RecordedArenasSpecifications[window.temporaryRecordedProtocol2].push(JSON.stringify(this.customSkinsMap))
+            if (window.temporaryRecordedProtocol && RecordedArenasSpecifications[window.temporaryRecordedProtocol]) window.RecordedArenasSpecifications[window.temporaryRecordedProtocol].push(JSON.stringify(this.customSkinsMap))
             this.customSkinsMap = {};
         },
         flushChatData() {
@@ -6845,31 +6802,30 @@ function thelegendmodproject() {
             }
         },
         recreateWS(token) {
-            if (!token) return null;			
+            if (!token) return null;
             this.tokenNeedToBtoa = false
-            var text = null;		
-			if (token.includes("replay")) {	
-				$('#region').val("Private")				
-				master.setRegion("Private");
-				deleteGamemode(true);
-				text ="wss://imsolo.pro.replay:2000"
-				//core.connect("wss://imsolo.pro.replay:2000")
-				window.replayToken = token
-				var specialReplay
-				if (token.includes("replay^")) {	
-					specialReplay= token.split('^')[1]
-				}
-				
-				setTimeout(function() {	
-					$('#server-token').val(window.replayToken)
-					window.replayToken = null
-					//console.log("replay")
-					playReplayLM(specialReplay)
-					
-				}, 500);
-				//return null
-			}
-            else if (/^[a-zA-Z0-9=+\/]{12,}$/.test(token)) {
+            var text = null;
+            if (token.includes("replay")) {
+                $('#region').val("Private")
+                master.setRegion("Private");
+                deleteGamemode(true);
+                text = "wss://imsolo.pro.replay:2000"
+                //core.connect("wss://imsolo.pro.replay:2000")
+                window.replayToken = token
+                var specialReplay
+                if (token.includes("replay^")) {
+                    specialReplay = token.split('^')[1]
+                }
+
+                setTimeout(function() {
+                    $('#server-token').val(window.replayToken)
+                    window.replayToken = null
+                    //console.log("replay")
+                    playReplayLM(specialReplay)
+
+                }, 500);
+                //return null
+            } else if (/^[a-zA-Z0-9=+\/]{12,}$/.test(token)) {
                 //var atobToken = atob(token);
                 var atobToken = token;
 
@@ -6960,24 +6916,22 @@ function thelegendmodproject() {
             window.core && window.core.connect && window.core.connect(ws);
         },
         gameServerReconnect() {
-			
+
             /*if (window.MC && window.MC.reconnect) {
                 window.MC.reconnect();
                 return;
             }*/
-			//if ()
-			if (!legendmod.integrity){
-				if ( $('#gamemode option:selected').next().length > 0 ){
-					$('#gamemode option:selected').next().prop('selected', 'selected').change();
-				}
-				else {
-					$('#gamemode option:first').prop('selected', 'selected').change();
-				}
-				//$('#gamemode option[value=34]').prop('selected', 'selected').change();
-			}
-			else if (legendmod.integrity){
-				if (window.master && window.master.reconnect) window.master.reconnect();
-			}
+            //if ()
+            if (!legendmod.integrity) {
+                if ($('#gamemode option:selected').next().length > 0) {
+                    $('#gamemode option:selected').next().prop('selected', 'selected').change();
+                } else {
+                    $('#gamemode option:first').prop('selected', 'selected').change();
+                }
+                //$('#gamemode option[value=34]').prop('selected', 'selected').change();
+            } else if (legendmod.integrity) {
+                if (window.master && window.master.reconnect) window.master.reconnect();
+            }
         },
         gameServerJoin(token) {
             const ws = this.recreateWS(token);
@@ -7003,14 +6957,13 @@ function thelegendmodproject() {
                 //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Ogario socket open:', application.publicIP);
                 var buf = app.createView(3);
                 buf.setUint8(0, 0);
-				//console.log("socket",this.socket.url)
-				//console.log("window.wsinjected",window.wsinjected)
-				if (!window.wsinjected){ //if delta socket injected
-					buf.setUint16(1, 401, true);
-				}
-				else{
-					buf.setUint16(1, 404, true);
-				}                
+                //console.log("socket",this.socket.url)
+                //console.log("window.wsinjected",window.wsinjected)
+                if (!window.wsinjected) { //if delta socket injected
+                    buf.setUint16(1, 401, true);
+                } else {
+                    buf.setUint16(1, 404, true);
+                }
                 app.sendBuffer(buf);
                 app.sendPartyData();
             }
@@ -7408,11 +7361,11 @@ function thelegendmodproject() {
             this.sendPartyToken();
             this.sendServerToken();
             this.sendPlayerNick();
-			//
-			if (!$("#server-token").val().includes("replay") && window.RecordedArenasSpecifications[window.temporaryRecordedProtocol]){
-				window.RecordedArenasSpecifications[window.temporaryRecordedProtocol][3]=application.lastSentNick
-			}			
-			//
+            //
+            if (!$("#server-token").val().includes("replay") && window.RecordedArenasSpecifications[window.temporaryRecordedProtocol]) {
+                window.RecordedArenasSpecifications[window.temporaryRecordedProtocol][3] = application.lastSentNick
+            }
+            //
         },
         sendPlayerUpdate() {
             if (this.isSocketOpen() && ogario.play && this.playerID && ogario.playerColor) {
@@ -7747,11 +7700,11 @@ function thelegendmodproject() {
                 map.setColor(defaultColor, customColor);
                 this.teamPlayers.push(map);
             }
-			
+
             //this.cacheCustomSkin(nick, defaultColor, skinUrl);
-			if (!animatedskins[nick] || !defaultmapsettings.vanillaSkins){ //fix for animated skins to work
-				this.cacheCustomSkin(nick, defaultColor, skinUrl);
-			}
+            if (!animatedskins[nick] || !defaultmapsettings.vanillaSkins) { //fix for animated skins to work
+                this.cacheCustomSkin(nick, defaultColor, skinUrl);
+            }
         },
         updateTeamPlayerPosition(message) {
             var e = message.getUint32(1, true),
@@ -7903,14 +7856,14 @@ function thelegendmodproject() {
                     //var pattern2 = /.*(m).*i.*s.*t.*i.*/i;
                     //var pattern = /.*(s|5).*e.*n.*p.*a.*/i;
                     if (!pattern.test(msg) && !pattern2.test(msg) && !msg.includes(pattern3)) {
-						
-						if (legendmod.integrity || !LM.chatableServer){
-							this.displayChatMessage(time, caseof, plId, msg);
-						}
-						//else if (!legendmod.integrity && application.chatHistory[application.chatHistory.length-1].message != msg.split(': ')[1]){
-						else if (!legendmod.integrity && $("#clantag").val() != ""){								
-							this.displayChatMessage(time, caseof, plId, msg);
-						}
+
+                        if (legendmod.integrity || !LM.chatableServer) {
+                            this.displayChatMessage(time, caseof, plId, msg);
+                        }
+                        //else if (!legendmod.integrity && application.chatHistory[application.chatHistory.length-1].message != msg.split(': ')[1]){
+                        else if (!legendmod.integrity && $("#clantag").val() != "") {
+                            this.displayChatMessage(time, caseof, plId, msg);
+                        }
                     } else {
                         //console.log('Blocked: ' + msg)
                     }
@@ -7937,20 +7890,20 @@ function thelegendmodproject() {
         sendCommand(command) {
             var prepareCommand = this.prepareCommand(chatCommand['comm' + command]);
             this.sendChatMessage(102, prepareCommand);
-			
-			//		
-				//if (LM.ws.includes("imsolo.pro") && $("#clantag").val() == ""){
-				if (!LM.integrity && $("#clantag").val() == ""){	
-					
-					var view = application.createView(4 + 2 * prepareCommand.length);
-					view.setUint8(0, 99);
-					view.setUint8(1, 0);
-					var length = 0
-					for (; length <= prepareCommand.length+1; length++) view.setUint16(2+ length, prepareCommand.charCodeAt(length), true);
-					view.setUint8(length, 0);
-					legendmod.sendMessage(view)				
-				}						
-			//
+
+            //		
+            //if (LM.ws.includes("imsolo.pro") && $("#clantag").val() == ""){
+            if (!LM.integrity && $("#clantag").val() == "") {
+
+                var view = application.createView(4 + 2 * prepareCommand.length);
+                view.setUint8(0, 99);
+                view.setUint8(1, 0);
+                var length = 0
+                for (; length <= prepareCommand.length + 1; length++) view.setUint16(2 + length, prepareCommand.charCodeAt(length), true);
+                view.setUint8(length, 0);
+                legendmod.sendMessage(view)
+            }
+            //
         },
         addChatUser(id, name) {
             this.chatUsers[id] = name;
@@ -8028,29 +7981,28 @@ function thelegendmodproject() {
                     }
                 }
                 //
-				if (!(0 == a.length || fancyCount2(a) > 15 || 0 == n.length)) {
-                //if (!(0 == a.length || a.length > 15 || 0 == n.length)) {
+                if (!(0 == a.length || fancyCount2(a) > 15 || 0 == n.length)) {
+                    //if (!(0 == a.length || a.length > 15 || 0 == n.length)) {
                     var r = '';
                     if (0 != plId && plId != this.playerID && (this.addChatUser(plId, a), r = '<a href=\"#\" data-user-id=\"' + plId + '\" class=\"mute-user ogicon-user-minus\"></a> '), a = this.escapeHTML(a), 101 == caseof) {
-						
+
                         if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message\"><span class=\"message-time\">[' + time + '] </span>' + r + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'),
                             $('#chat-box').perfectScrollbar('update'),
                             $('#chat-box').animate({
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
-                            }, 500), 
-							void(defaultmapsettings.chatSounds && this.playSound(this.messageSound));
+                            }, 500),
+                            void(defaultmapsettings.chatSounds && this.playSound(this.messageSound));
                         defaultmapsettings.hideChat || (toastr.success('<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r),
                                 defaultmapsettings.chatSounds && this.playSound(this.messageSound)),
                             this.chatHistory.push({
                                 'nick': a,
                                 'message': n,
-								//
-								'time': Date.now() 
-								//
+                                //
+                                'time': Date.now()
+                                //
                             }),
-							this.chatHistory.length> 15 && this.chatHistory.shift();                           
-                    } 
-					else if (102 == caseof) {
+                            this.chatHistory.length > 15 && this.chatHistory.shift();
+                    } else if (102 == caseof) {
                         if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + time + '] </span>' + r + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'),
                             $('#chat-box').perfectScrollbar('update'),
                             $('#chat-box').animate({
@@ -8058,17 +8010,16 @@ function thelegendmodproject() {
                             }, 500),
                             void(defaultmapsettings.chatSounds && this.playSound(this.commandSound));
                         defaultmapsettings.hideChat || (toastr.warning('<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r),
-                            defaultmapsettings.chatSounds && this.playSound(this.commandSound)),
+                                defaultmapsettings.chatSounds && this.playSound(this.commandSound)),
                             this.commandHistory.push({
                                 'nick': a,
                                 'message': n,
-								//
-								'time': Date.now() 
-								//
+                                //
+                                'time': Date.now()
+                                //
                             }),
-							this.commandHistory.length> 15 && this.commandHistory.shift(); 							
-                    } 
-					else $('#messages').append(msg);
+                            this.commandHistory.length > 15 && this.commandHistory.shift();
+                    } else $('#messages').append(msg);
                 }
             }
         },
@@ -8154,18 +8105,17 @@ function thelegendmodproject() {
                 window.fullSpectator = false
                 LM.flushSpecsData()
             } else {
-					window.fullSpectator = true
-					LM.addSpect()
+                window.fullSpectator = true
+                LM.addSpect()
             }
         },
         setIngameSpectator() {
             if (window.ingameSpectator) {
                 window.ingameSpectator = false
                 LM.flushSpecsData()
-            } 
-			else {
-					window.ingameSpectator = true
-					LM.addSpect()				
+            } else {
+                window.ingameSpectator = true
+                LM.addSpect()
             }
         },
         setTargeting() {
@@ -8283,7 +8233,7 @@ function thelegendmodproject() {
                 if (this.targetSkinURL !== skinUrl) {
                     if (this.customSkinsCache.hasOwnProperty(skinUrl + '_cached')) {
                         $('#target-skin img').attr('src', skinUrl);
-                        $('#target-skin img').css('border', '2px solid' + color); 
+                        $('#target-skin img').css('border', '2px solid' + color);
                         this.targetSkinURL = skinUrl;
                     } else {
                         $('#target-skin img').attr('src', 'https://legendmod.ml/banners/static/img/blank.png')
@@ -8534,7 +8484,7 @@ function thelegendmodproject() {
         this.kMass = 0;
         this.massCanvas = null;
         this.mergeCanvas = null;
-		this.chatCanvas = null;
+        this.chatCanvas = null;
         this.massTxt = '';
         this.margin = 0;
         this.scale = 1;
@@ -8558,7 +8508,7 @@ function thelegendmodproject() {
         this.redrawNick = true;
         this.redrawMass = true;
         this.redrawMerge = true;
-		this.redrawChat = true;
+        this.redrawChat = true;
         this.optimizedNames = false;
         this.optimizedMass = false;
         this.strokeNick = false;
@@ -8775,8 +8725,8 @@ function thelegendmodproject() {
             if (!this.chatCanvas) {
                 this.chatCanvas = new irenderfromagario();
                 return false;
-            }			
-			
+            }
+
             this.mass = ~~(mass * mass / 100);
             this.redrawMass = true;
             if (this.isVirus) {
@@ -8889,78 +8839,75 @@ function thelegendmodproject() {
             if (this.chatCanvas && !(this.size <= 40)) {
                 var chatCanvas = this.chatCanvas;
                 chatCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
-                chatCanvas.setFontSize(this.massSize/2);
+                chatCanvas.setFontSize(this.massSize / 2);
                 chatCanvas.setScale(this.scale);
-				var customTxt;
-				var temp;
-				for (var i=0;i<application.chatHistory.length;i++){				
-					if (application.chatHistory[i].nick==this.nick && (Date.now() - application.chatHistory[i].time < 15000)){	
-							if (!application.chatHistory[i].message.includes('<img src') && !application.chatHistory[i].message.includes('DosAttack') && 
-							!application.chatHistory[i].message.includes('DosFight') && !application.chatHistory[i].message.includes('DosRun') && 
-							!application.chatHistory[i].message.includes('https://agar.io/sip=151.80.91.73:1511') && this.nick!=""){
-								if (application.chatHistory[i].nick == $('#nick').val() || application.chatHistory[i].nick == application.lastSentNick){
-									if(application.chatHistory[i].message.split('&')[1] && application.chatHistory[i].message.split('&')[1].split(';')[0]){
-										application.chatHistory[i].message.replace(application.chatHistory[i].message.split('&')[1].split(';')[0], "").replace("&;","").replace("/","").replace("'","").replace("!","").replace("%","").replace("(","").replace(")","");
-									}
-									//application.chatHistory[i].message = application.chatHistory[i].message.replace("&#x2F;", "");
-									if (defaultmapsettings.showChatMyOwn){
-										temp = Date.now() - application.chatHistory[i].time
-										customTxt = application.chatHistory[i].message	
-									}
-								}
-								else{
-									temp = Date.now() - application.chatHistory[i].time
-									customTxt = application.chatHistory[i].message	
-								}
-							}							
-					}
-				}
-				for (var i=0;i<application.commandHistory.length;i++){		
-					if (application.commandHistory[i].nick==this.nick && (Date.now() - application.commandHistory[i].time < 15000)){	
-							if (this.nick!=""){
-								if (application.commandHistory[i].nick == $('#nick').val() || application.commandHistory[i].nick == application.lastSentNick){
-									
-									if (defaultmapsettings.showChatMyOwn){
-										if (temp > (Date.now() - application.commandHistory[i].time) || !temp){
-											temp = Date.now() - application.commandHistory[i].time
-											customTxt = application.commandHistory[i].message	
-										}
-									}
-								}
-								else{
-									if (temp > (Date.now() - application.commandHistory[i].time) || !temp){
-										temp = Date.now() - application.commandHistory[i].time
-										customTxt = application.commandHistory[i].message	
-									}
-								}
-							}							
-					}					
-				}				
-                    if (customTxt) {
-                        if (this.redrawChat) {
-                            chatCanvas.setTxt(customTxt);                          
-                        }
-                        var data = chatCanvas.drawTxt(customTxt);
-                        var width = ~~(data.width / this.scale);			
-                        var height = ~~(data.height / this.scale);				
-                        var textureY = this.margin === 0 ? ~~(this.y + height * 1/2) : ~~this.y - 4 * this.margin;
-						
-						if (temp<2000){
-							context.globalAlpha = temp/2000							
-						}
-						else if (temp>13000){
-							temp = 15000 - temp
-							context.globalAlpha = temp/2000	
-						}
-							
-                        if (width > 1 && height > 1) {
-                            try {
-                                context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
-                            } catch (e) {}
+                var customTxt;
+                var temp;
+                for (var i = 0; i < application.chatHistory.length; i++) {
+                    if (application.chatHistory[i].nick == this.nick && (Date.now() - application.chatHistory[i].time < 15000)) {
+                        if (!application.chatHistory[i].message.includes('<img src') && !application.chatHistory[i].message.includes('DosAttack') &&
+                            !application.chatHistory[i].message.includes('DosFight') && !application.chatHistory[i].message.includes('DosRun') &&
+                            !application.chatHistory[i].message.includes('https://agar.io/sip=151.80.91.73:1511') && this.nick != "") {
+                            if (application.chatHistory[i].nick == $('#nick').val() || application.chatHistory[i].nick == application.lastSentNick) {
+                                if (application.chatHistory[i].message.split('&')[1] && application.chatHistory[i].message.split('&')[1].split(';')[0]) {
+                                    application.chatHistory[i].message.replace(application.chatHistory[i].message.split('&')[1].split(';')[0], "").replace("&;", "").replace("/", "").replace("'", "").replace("!", "").replace("%", "").replace("(", "").replace(")", "");
+                                }
+                                //application.chatHistory[i].message = application.chatHistory[i].message.replace("&#x2F;", "");
+                                if (defaultmapsettings.showChatMyOwn) {
+                                    temp = Date.now() - application.chatHistory[i].time
+                                    customTxt = application.chatHistory[i].message
+                                }
+                            } else {
+                                temp = Date.now() - application.chatHistory[i].time
+                                customTxt = application.chatHistory[i].message
+                            }
                         }
                     }
+                }
+                for (var i = 0; i < application.commandHistory.length; i++) {
+                    if (application.commandHistory[i].nick == this.nick && (Date.now() - application.commandHistory[i].time < 15000)) {
+                        if (this.nick != "") {
+                            if (application.commandHistory[i].nick == $('#nick').val() || application.commandHistory[i].nick == application.lastSentNick) {
+
+                                if (defaultmapsettings.showChatMyOwn) {
+                                    if (temp > (Date.now() - application.commandHistory[i].time) || !temp) {
+                                        temp = Date.now() - application.commandHistory[i].time
+                                        customTxt = application.commandHistory[i].message
+                                    }
+                                }
+                            } else {
+                                if (temp > (Date.now() - application.commandHistory[i].time) || !temp) {
+                                    temp = Date.now() - application.commandHistory[i].time
+                                    customTxt = application.commandHistory[i].message
+                                }
+                            }
+                        }
+                    }
+                }
+                if (customTxt) {
+                    if (this.redrawChat) {
+                        chatCanvas.setTxt(customTxt);
+                    }
+                    var data = chatCanvas.drawTxt(customTxt);
+                    var width = ~~(data.width / this.scale);
+                    var height = ~~(data.height / this.scale);
+                    var textureY = this.margin === 0 ? ~~(this.y + height * 1 / 2) : ~~this.y - 4 * this.margin;
+
+                    if (temp < 2000) {
+                        context.globalAlpha = temp / 2000
+                    } else if (temp > 13000) {
+                        temp = 15000 - temp
+                        context.globalAlpha = temp / 2000
+                    }
+
+                    if (width > 1 && height > 1) {
+                        try {
+                            context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
+                        } catch (e) {}
+                    }
+                }
             }
-        };		
+        };
         this.drawMerge = function(context) {
             if (this.mergeCanvas && !(this.size <= 40)) {
                 var mergeCanvas = this.mergeCanvas;
@@ -9036,7 +8983,7 @@ function thelegendmodproject() {
                     try {
                         context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
                     } catch (e) {}
-                }			
+                }
             }
         };
         this.createStrokeVirusPath = function(shadowXpos, shadowYpos, zeroSizeMax, pixelSizeTargetMax = 6) {
@@ -9053,285 +9000,220 @@ function thelegendmodproject() {
             }
             return ctxfx;
         };
-		this.drawSpecialSkin = function(style, y){														
-                    if (SpecialEffectPlayers[this.targetNick] && SpecialEffectPlayers[this.targetNick].split(';')) {						
-						var temp = SpecialEffectPlayers[this.targetNick].split(';')
-						for (var i=0;i< temp.length; i++){
-							if (!this.SpecialEffect) this.SpecialEffect = temp[i];
-							else if (this.SpecialEffect != temp[i]) this.SpecialEffect2 = temp[i];							
-						}
-                        /*if (!window.eud){
-                        	console.log('draw',this.targetNick,this.SpecialEffect)
-                        	window.eud=true
-                        }*/
-                    }
-                    if (this.SpecialEffect == "Hat" || this.SpecialEffect2 == "Hat") {
-                        //style.drawImage(cimgSpecialSkinEffectsHat3, this.x - 1/4 * y, this.y - 5/4 * y, y/2, y/2); 					
-                        style.drawImage(cimgSpecialSkinEffectsHat3, this.x - 1 / 2 * y, this.y - 3 / 2 * y, y, y);
-                        //style.drawImage(cimg7, this.x - 1/2 * y, this.y - 1/2 * y, y, y); //center 1/2 size 
-                        //style.drawImage(cimgSpecialSkinEffectsHat3, this.x - 1/2 * y, this.y - y, y, y); //top middle 1/2 size 
-                        // the bigger the -y, the upper it draws
-                    } 
-					else if (this.SpecialEffect == "JellyFish" || this.SpecialEffect2 == "JellyFish") {
-                        style.drawImage(cimgSpecialSkinEffectsJellyFish, this.x - 1 / 3 * y, this.y - 3 / 2 * y, y, y);
-                    } 
-					else if (this.SpecialEffect == "King" || this.SpecialEffect2 == "King") {
-                        //style.drawImage(cimgSpecialSkinEffectsCrown	, this.x - 1/4 * y, this.y - 5/4 * y, y/2, y/2); 		
-                        style.drawImage(cimgSpecialSkinEffectsCrown, this.x - 1 / 4 * y, this.y - 5.3 / 4 * y, y / 2, y / 2);
-                    }
-                    if (this.SpecialEffect == "Smoke" || this.SpecialEffect2 == "Smoke") {
-                        style.drawImage(cimgSpecialSkinEffectsSmoke, this.x - 2 / 3 * y, this.y - 4 / 3 * y, y, y);
-                    } 
-					else if (this.SpecialEffect == "USA" || this.SpecialEffect2 == "USA") {
-                        style.drawImage(cimgSpecialSkinEffectsUSA, this.x - 5 / 7 * y, this.y - 1 / 2 * y, y * 2, y * 2);
-                    } 
-					else if (this.SpecialEffect == "SunGlasses" || this.SpecialEffect2 == "SunGlasses") {
-                        style.drawImage(cimgSpecialSkinEffectsSunGlasses, this.x - 0.85 * y, this.y - 1.1 * y, y * 1.7, y * 1.4);
-                    } 
-					else if (this.SpecialEffect == "Moderator" || this.SpecialEffect2 == "Moderator") {
-                        style.drawImage(cimgSpecialSkinEffectsModerator, this.x - 0.333 * y, this.y - 1.325 * y, y / 1.5, y / 6);
-                    } 
-					else if (this.SpecialEffect == "Turtle" || this.SpecialEffect2 == "Turtle") {
-                        style.drawImage(iconSpecialSkinEffectsTurtle, this.x - 0.999 * y, this.y - 0.810 * y, y / 0.5, y / 0.5);						
-                        ///style.drawImage(iconSpecialSkinEffectsTurtle, this.x - window.xx1 * y, this.y - window.xx2 * y, y/window.xx3, y/window.xx4);					                     
-                    } 
-					else if (this.SpecialEffect == "Shiro" || this.SpecialEffect2 == "Shiro") {
-                        style.drawImage(cimgSpecialSkinEffectsShiro, this.x + 0.05 * y, this.y - 1.2 * y, y, y);
-                    } 
-					else if (this.SpecialEffect == "Bird" || this.SpecialEffect2 == "Bird") {
-                        style.drawImage(iconSpecialSkinEffectsBird, this.x - 0 * y, this.y - 1.3 * y, y / 1, y / 1);
-                    } 
-					else if (this.SpecialEffect == "AbsolutVodka" || this.SpecialEffect2 == "AbsolutVodka") {
-                        style.drawImage(iconSpecialSkinEffectsAbsolutVodka, this.x + 0.1 * y, this.y + 0.15 * y, y / 1.5, y / 1);		
-						//style.drawImage(iconSpecialSkinEffectsAbsolutVodka, this.x - window.xx1 * y, this.y - window.xx2 * y, y / window.xx3, y / window.xx4;							
-                        //if (!window.xx1) window.xx1 = -0.1
-                        //if (!window.xx2) window.xx2= -0.15
-                        //if (!window.xx3) window.xx3 = 1.5
-                        //if (!window.xx4) window.xx4 = 1			
-                    } 
-					else if (this.SpecialEffect == "Chemistry" || this.SpecialEffect2 == "Chemistry") {
-                        style.drawImage(iconSpecialSkinEffectsChemistry, this.x + 0.3 * y, this.y - 1.1 * y, y / 2, y / 2);						
-                    } 
-					else if (this.SpecialEffect == "Japan" || this.SpecialEffect2 == "Japan") {
-                        style.drawImage(iconSpecialSkinEffectsJapan, this.x -0.8 * y, this.y - 1 * y, y / 0.5, y / 0.5);							
-                    } 
-					else if (this.SpecialEffect == "Japan2" || this.SpecialEffect2 == "Japan2") {
-						style.drawImage(iconSpecialSkinEffectsJapan2, this.x - 0.5 * y, this.y + 0.47 * y, y / 1, y / 1);
-						/*style.drawImage(iconSpecialSkinEffectsJapan2, this.x - window.xx1 * y, this.y - window.xx2 * y, y / window.xx3, y / window.xx4);							
+        this.drawSpecialSkin = function(style, y) {
+            if (SpecialEffectPlayers[this.targetNick] && SpecialEffectPlayers[this.targetNick].split(';')) {
+                var temp = SpecialEffectPlayers[this.targetNick].split(';')
+                for (var i = 0; i < temp.length; i++) {
+                    if (!this.SpecialEffect) this.SpecialEffect = temp[i];
+                    else if (this.SpecialEffect != temp[i]) this.SpecialEffect2 = temp[i];
+                }
+                /*if (!window.eud){
+                	console.log('draw',this.targetNick,this.SpecialEffect)
+                	window.eud=true
+                }*/
+
+                if (this.SpecialEffect == "Hat" || this.SpecialEffect2 == "Hat") {
+                    //style.drawImage(cimgSpecialSkinEffectsHat3, this.x - 1/4 * y, this.y - 5/4 * y, y/2, y/2); 					
+                    style.drawImage(cimgSpecialSkinEffectsHat3, this.x - 1 / 2 * y, this.y - 3 / 2 * y, y, y);
+                    //style.drawImage(cimg7, this.x - 1/2 * y, this.y - 1/2 * y, y, y); //center 1/2 size 
+                    //style.drawImage(cimgSpecialSkinEffectsHat3, this.x - 1/2 * y, this.y - y, y, y); //top middle 1/2 size 
+                    // the bigger the -y, the upper it draws
+                } else if (this.SpecialEffect == "JellyFish" || this.SpecialEffect2 == "JellyFish") {
+                    style.drawImage(cimgSpecialSkinEffectsJellyFish, this.x - 1 / 3 * y, this.y - 3 / 2 * y, y, y);
+                } else if (this.SpecialEffect == "King" || this.SpecialEffect2 == "King") {
+                    //style.drawImage(cimgSpecialSkinEffectsCrown	, this.x - 1/4 * y, this.y - 5/4 * y, y/2, y/2); 		
+                    style.drawImage(cimgSpecialSkinEffectsCrown, this.x - 1 / 4 * y, this.y - 5.3 / 4 * y, y / 2, y / 2);
+                }
+                if (this.SpecialEffect == "Smoke" || this.SpecialEffect2 == "Smoke") {
+                    style.drawImage(cimgSpecialSkinEffectsSmoke, this.x - 2 / 3 * y, this.y - 4 / 3 * y, y, y);
+                } else if (this.SpecialEffect == "USA" || this.SpecialEffect2 == "USA") {
+                    style.drawImage(cimgSpecialSkinEffectsUSA, this.x - 5 / 7 * y, this.y - 1 / 2 * y, y * 2, y * 2);
+                } else if (this.SpecialEffect == "SunGlasses" || this.SpecialEffect2 == "SunGlasses") {
+                    style.drawImage(cimgSpecialSkinEffectsSunGlasses, this.x - 0.85 * y, this.y - 1.1 * y, y * 1.7, y * 1.4);
+                } else if (this.SpecialEffect == "Moderator" || this.SpecialEffect2 == "Moderator") {
+                    style.drawImage(cimgSpecialSkinEffectsModerator, this.x - 0.333 * y, this.y - 1.325 * y, y / 1.5, y / 6);
+                } else if (this.SpecialEffect == "Turtle" || this.SpecialEffect2 == "Turtle") {
+                    style.drawImage(iconSpecialSkinEffectsTurtle, this.x - 0.999 * y, this.y - 0.810 * y, y / 0.5, y / 0.5);
+                    ///style.drawImage(iconSpecialSkinEffectsTurtle, this.x - window.xx1 * y, this.y - window.xx2 * y, y/window.xx3, y/window.xx4);					                     
+                } else if (this.SpecialEffect == "Shiro" || this.SpecialEffect2 == "Shiro") {
+                    style.drawImage(cimgSpecialSkinEffectsShiro, this.x + 0.05 * y, this.y - 1.2 * y, y, y);
+                } else if (this.SpecialEffect == "Bird" || this.SpecialEffect2 == "Bird") {
+                    style.drawImage(iconSpecialSkinEffectsBird, this.x - 0 * y, this.y - 1.3 * y, y / 1, y / 1);
+                } else if (this.SpecialEffect == "AbsolutVodka" || this.SpecialEffect2 == "AbsolutVodka") {
+                    style.drawImage(iconSpecialSkinEffectsAbsolutVodka, this.x + 0.1 * y, this.y + 0.15 * y, y / 1.5, y / 1);
+                    //style.drawImage(iconSpecialSkinEffectsAbsolutVodka, this.x - window.xx1 * y, this.y - window.xx2 * y, y / window.xx3, y / window.xx4;							
+                    //if (!window.xx1) window.xx1 = -0.1
+                    //if (!window.xx2) window.xx2= -0.15
+                    //if (!window.xx3) window.xx3 = 1.5
+                    //if (!window.xx4) window.xx4 = 1			
+                } else if (this.SpecialEffect == "Chemistry" || this.SpecialEffect2 == "Chemistry") {
+                    style.drawImage(iconSpecialSkinEffectsChemistry, this.x + 0.3 * y, this.y - 1.1 * y, y / 2, y / 2);
+                } else if (this.SpecialEffect == "Japan" || this.SpecialEffect2 == "Japan") {
+                    style.drawImage(iconSpecialSkinEffectsJapan, this.x - 0.8 * y, this.y - 1 * y, y / 0.5, y / 0.5);
+                } else if (this.SpecialEffect == "Japan2" || this.SpecialEffect2 == "Japan2") {
+                    style.drawImage(iconSpecialSkinEffectsJapan2, this.x - 0.5 * y, this.y + 0.47 * y, y / 1, y / 1);
+                    /*style.drawImage(iconSpecialSkinEffectsJapan2, this.x - window.xx1 * y, this.y - window.xx2 * y, y / window.xx3, y / window.xx4);							
                         if (!window.xx1) window.xx1= 0.5
                         if (!window.xx2) window.xx2= -0.47
                         if (!window.xx3) window.xx3 = 1
                         if (!window.xx4) window.xx4 = 1							
-                        */		
-                    } 
-					else if (this.SpecialEffect == "Byzantium" || this.SpecialEffect2 == "Byzantium") {
-						style.drawImage(iconSpecialSkinEffectsByzantium, this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3);							
-                    } 
-					else if (this.SpecialEffect == "Close" || this.SpecialEffect2 == "Close") {
-						style.drawImage(iconSpecialSkinEffectsClose, this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3);								
-                    } 
-					else if (this.SpecialEffect == "Earth" || this.SpecialEffect2 == "Earth") {
-						style.drawImage(iconSpecialSkinEffectsEarth, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);								
-                    } 
-					else if (this.SpecialEffect == "FootStep" || this.SpecialEffect2 == "FootStep") {
-						style.drawImage(iconSpecialSkinEffectsFootStep, this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3);								
-                    } 
-					else if (this.SpecialEffect == "Forward" || this.SpecialEffect2 == "Forward") {
-						style.drawImage(iconSpecialSkinEffectsForward, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);							
-                    } 
-					else if (this.SpecialEffect == "Forever" || this.SpecialEffect2 == "Forever") {
-						style.drawImage(iconSpecialSkinEffectsFriendsForever, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);							
-                    } 
-					else if (this.SpecialEffect == "Forever2" || this.SpecialEffect2 == "Forever2") {
-						style.drawImage(iconSpecialSkinEffectsFriendsForever2, this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3);							
-                    } 
-					else if (this.SpecialEffect == "Forever3" || this.SpecialEffect2 == "Forever3") {
-						style.drawImage(iconSpecialSkinEffectsFriendsForever3, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);							
-                    } 
-					else if (this.SpecialEffect == "Police" || this.SpecialEffect2 == "Police") {
-						style.drawImage(iconSpecialSkinEffectsPolice, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);								
-                    } 
-					else if (this.SpecialEffect == "Police2" || this.SpecialEffect2 == "Police2") {
-						style.drawImage(iconSpecialSkinEffectsPolice2, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);								
-                    } 
-					else if (this.SpecialEffect == "Unrest" || this.SpecialEffect2 == "Unrest") {
-						style.drawImage(iconSpecialSkinEffectsUnrest, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);								
-                    } 
-					else if (this.SpecialEffect == "Eagle" || this.SpecialEffect2 == "Eagle") {
-						style.drawImage(iconSpecialSkinEffectsEagle, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);							
-                    } 
-					else if (this.SpecialEffect == "BobMarley" || this.SpecialEffect2 == "BobMarley") {
-						style.drawImage(iconSpecialSkinEffectsBobMarley, this.x + 0.6 * y, this.y + 0.6 * y, y / 3, y / 3);							
-                    } 
-					else if (this.SpecialEffect == "Einstein" || this.SpecialEffect2 == "Einstein") {
-						style.drawImage(iconSpecialSkinEffectsEinstein, this.x + 0.65 * y, this.y + 0.65 * y, y / 2.5, y / 2.5);							
-                    } 
-					else if (this.SpecialEffect == "DeadTable" || this.SpecialEffect2 == "DeadTable") {
-						style.drawImage(iconSpecialSkinEffectsDeadTable, this.x + 0.7 * y, this.y + 0.7 * y, y / 3, y / 3);												
-                    } 
-					else if (this.SpecialEffect == "Kebab" || this.SpecialEffect2 == "Kebab") {
-                        style.drawImage(iconSpecialSkinEffectsKebab, this.x + 0.4 * y, this.y - 1 * y, y / 2, y / 2);						
-                    } 
-					else if (this.SpecialEffect == "Meditation" || this.SpecialEffect2 == "Meditation") {
-                        style.drawImage(iconSpecialSkinEffectsMeditation, this.x + 0.4 * y, this.y - 1 * y, y / 2, y / 2);						
-                    } 
-					else if (this.SpecialEffect == "Splash" || this.SpecialEffect2 == "Splash") {
-                        style.drawImage(iconSpecialSkinEffectsSplash, this.x - 1.15 * y, this.y - 1.3 * y, y / 0.36, y / 0.36);						
-                    } 
-					else if (this.SpecialEffect == "Butterfly" || this.SpecialEffect2 == "Butterfly") {
-                        style.drawImage(iconSpecialSkinEffectsButterfly, this.x - 1 * y, this.y - 0.6 * y, y / 2, y / 4);
-                    } 
-					else if (this.SpecialEffect == "Mouse" || this.SpecialEffect2 == "Mouse") {
-                        style.drawImage(iconSpecialSkinEffectsMouse, this.x + 0.5 * y, this.y - 0.1 * y, y / 3, y / 1);
-                    } 
-					else if (this.SpecialEffect == "Sword" || this.SpecialEffect2 == "Sword") {
-                        style.drawImage(cimgSpecialSkinEffectsSword, this.x - 0.8 * y, this.y - 3 / 5 * y, y * 1.6, y * 1.6);
-                    }
-                    if (this.SpecialEffect == "Mask" || this.SpecialEffect2 == "Mask") {
-                        style.drawImage(cimgSpecialSkinEffectsMask, this.x - 1 / 2 * y, this.y + 1 / 4 * y, y, y);
-                    } else if (this.SpecialEffect == "Heart" || this.SpecialEffect2 == "Heart") {
-                        style.drawImage(cimgSpecialSkinEffectsHeart, this.x - 1 / 2 * y, this.y + 1 / 3 * y, y, y);
-                    }
-                    if (this.SpecialEffect == "Vip" || this.SpecialEffect2 == "Vip") {
-                        style.drawImage(cimgSpecialSkinEffectsVip, this.x - 1 / 8 * y, this.y - 5.3 / 4 * y, y / 5, y / 5);
-                    } 
-					else if (this.SpecialEffect == "Ddev" || this.SpecialEffect2 == "Ddev") {
-                        style.drawImage(cimgSpecialSkinEffectsDdev, this.x - 1 / 8 * y, this.y - 4.6 / 4 * y, y / 3, y / 5);
-                    } 
-					else if (this.SpecialEffect == "Youtube" || this.SpecialEffect2 == "Youtube") {
-                        style.drawImage(cimgSpecialSkinEffectsYoutube, this.x - 1 / 6 * y, this.y - 5.3 / 4 * y, y / 3, y / 3);
-                        //style.drawImage(cimgSpecialSkinEffectsYoutube, this.x - 1/2 * y, this.y - 3/2 * y, y, y); 
-                    } 
-					else if (this.SpecialEffect == "LegendHeroes" || this.SpecialEffect2 == "LegendHeroes") {
-                        style.drawImage(cimgSpecialSkinEffectsLegendHeroes, this.x - 0.95 * y, this.y - 5.3 / 4 * y, y / 0.5, y / 4);
-						
-                        /*style.drawImage(cimgSpecialSkinEffectsLegendHeroes, this.x - window.xx1 * y, this.y - window.xx2 * y, y/window.xx3, y/window.xx4);	
-                        if (!window.xx1) window.xx1 = 0.95
-                        if (!window.xx2) window.xx2 = 5.3/4
-                        if (!window.xx3) window.xx3 = 0.5
-                        if (!window.xx4) window.xx4 = 4*/
-                    } 
-					else if (this.SpecialEffect == "LegendClan" || this.SpecialEffect2 == "LegendClan") {
-                        style.drawImage(cimgSpecialSkinEffectsLegendHeroes2, this.x - 1 / 3 * y, this.y - 5.3 / 4 * y, y / 1.5, y / 6);
-                        /*style.drawImage(cimgSpecialSkinEffectsLegendHeroes2, this.x - window.xx5 * y, this.y - window.xx6 * y, y/window.xx7, y/window.xx8);				
-                        if (!window.xx5) window.xx5 = 1/3
-                        if (!window.xx6) window.xx6 = 5.3/4
-                        if (!window.xx7) window.xx7 = 1.5
-                        if (!window.xx8) window.xx8 = 6*/                   
-                    } 
-					
-					
-					
-					
-					else if (this.SpecialEffect == "BabyBoss" || this.SpecialEffect2 == "BabyBoss") { 
-						if (this.mass<3000){
-							style.drawImage(iconSpecialSkinEffectsBabyBoss, this.x - 0.95 * y, this.y - 1.2 * y, y / 1.5, y / 1.5);			
-						}
-						else {
-							style.drawImage(iconSpecialSkinEffectsBabyBoss1, this.x - 0.95 * y, this.y - 1.2 * y, y / 1.5, y / 1.5);
-						}
-                    } 	 
-					else if (this.SpecialEffect == "Gladiator" || this.SpecialEffect2 == "Gladiator") {
-						var d = new Date();
-						var n = d.getSeconds();
-						/*
-						var e;
-						if (n<30){ e = n / 30}
-						else { e = (n /30) - 1}						
-						style.filter = 'contrast(1.4) sepia(' + e + ')';
-						*/
-						style.filter = 'hue-rotate(-' + n/60 + 'turn)';
-                        style.drawImage(iconSpecialSkinEffectsGladiator, this.x - 0.85 * y, this.y - 1.2 * y, y / 1.5, y / 1.5);						
-                    } 
-					else if (this.SpecialEffect == "Hero" || this.SpecialEffect2 == "Hero") {
-                        style.drawImage(iconSpecialSkinEffectsHero, this.x - 0.35 * y, this.y - 1.35 * y, y / 1.5, y / 1.5);						
-                    } 
-					else if (this.SpecialEffect == "Hero1" || this.SpecialEffect2 == "Hero1") {	
-						var d = new Date();
-						var n = d.getSeconds();		
-						var e;
-						if (n<30){ e = n / 30}
-						else { 
-							n = 60 - n
-							e = n / 30
-						}													
-						style.save();
-						style.globalAlpha = e
-                        style.drawImage(iconSpecialSkinEffectsHero1, this.x - 0.1 * y, this.y - 1.35 * y, y / 1, y / 1);	
-						style.restore();
-						
-                    } 
-					else if (this.SpecialEffect == "Hero2" || this.SpecialEffect2 == "Hero2") {
-                        style.drawImage(iconSpecialSkinEffectsHero2, this.x -0.3 * y, this.y - 1.48 * y, y / 2, y / 2);		
-					}						
-					else if (this.SpecialEffect == "Key" || this.SpecialEffect2 == "Key") {
-                        style.drawImage(iconSpecialSkinEffectsKey, this.x + 0.4 * y, this.y - 1.15 * y, y / 2, y / 2);						
-                    } 
-					else if (this.SpecialEffect == "MetalOfHonor" || this.SpecialEffect2 == "MetalOfHonor") {
-                        style.drawImage(iconSpecialSkinEffectsMetalOfHonor, this.x - 0.25 * y, this.y + 0.8 * y, y / 2, y / 2);						
-                    } 
-					else if (this.SpecialEffect == "PeaceMaker" || this.SpecialEffect2 == "PeaceMaker") {
-                        style.drawImage(iconSpecialSkinEffectsPeaceMaker, this.x - 0.6 * y, this.y - 1.2 * y, y / 2, y / 2);						
-                    } 
-					else if (this.SpecialEffect == "Survivor" || this.SpecialEffect2 == "Survivor") {
-                        style.drawImage(iconSpecialSkinEffectsSurvivor, this.x - 0.6 * y, this.y - 1.2 * y, y / 2, y / 1.5);						
-                    } 
-					else if (this.SpecialEffect == "Tiger" || this.SpecialEffect2 == "Tiger") {
-                        style.drawImage(iconSpecialSkinEffectsTiger, this.x - 1.1 * y, this.y - 1.3 * y, y / 1.5, y / 1.5);						
-                    } 										
-                    else if (this.targetNick.includes("The Dying Light") || this.SpecialEffect == "RedArrow" || this.SpecialEffect2 == "RedArrow") {
-                            style.drawImage(cimg5, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
-                    }
-					else if (this.SpecialEffect == "WhiteArrow" || this.SpecialEffect2 == "WhiteArrow") {
-                        //style.drawImage(cimg2, this.x - y * 2, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
+                        */
+                } else if (this.SpecialEffect == "Byzantium" || this.SpecialEffect2 == "Byzantium") {
+                    style.drawImage(iconSpecialSkinEffectsByzantium, this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3);
+                } else if (this.SpecialEffect == "Close" || this.SpecialEffect2 == "Close") {
+                    style.drawImage(iconSpecialSkinEffectsClose, this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3);
+                } else if (this.SpecialEffect == "Earth" || this.SpecialEffect2 == "Earth") {
+                    style.drawImage(iconSpecialSkinEffectsEarth, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);
+                } else if (this.SpecialEffect == "FootStep" || this.SpecialEffect2 == "FootStep") {
+                    style.drawImage(iconSpecialSkinEffectsFootStep, this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3);
+                } else if (this.SpecialEffect == "Forward" || this.SpecialEffect2 == "Forward") {
+                    style.drawImage(iconSpecialSkinEffectsForward, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);
+                } else if (this.SpecialEffect == "Forever" || this.SpecialEffect2 == "Forever") {
+                    style.drawImage(iconSpecialSkinEffectsFriendsForever, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);
+                } else if (this.SpecialEffect == "Forever2" || this.SpecialEffect2 == "Forever2") {
+                    style.drawImage(iconSpecialSkinEffectsFriendsForever2, this.x + 0.6 * y, this.y + 0.7 * y, y / 3, y / 3);
+                } else if (this.SpecialEffect == "Forever3" || this.SpecialEffect2 == "Forever3") {
+                    style.drawImage(iconSpecialSkinEffectsFriendsForever3, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);
+                } else if (this.SpecialEffect == "Police" || this.SpecialEffect2 == "Police") {
+                    style.drawImage(iconSpecialSkinEffectsPolice, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);
+                } else if (this.SpecialEffect == "Police2" || this.SpecialEffect2 == "Police2") {
+                    style.drawImage(iconSpecialSkinEffectsPolice2, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);
+                } else if (this.SpecialEffect == "Unrest" || this.SpecialEffect2 == "Unrest") {
+                    style.drawImage(iconSpecialSkinEffectsUnrest, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);
+                } else if (this.SpecialEffect == "Eagle" || this.SpecialEffect2 == "Eagle") {
+                    style.drawImage(iconSpecialSkinEffectsEagle, this.x + 0.65 * y, this.y + 0.7 * y, y / 3, y / 3);
+                } else if (this.SpecialEffect == "BobMarley" || this.SpecialEffect2 == "BobMarley") {
+                    style.drawImage(iconSpecialSkinEffectsBobMarley, this.x + 0.6 * y, this.y + 0.6 * y, y / 3, y / 3);
+                } else if (this.SpecialEffect == "Einstein" || this.SpecialEffect2 == "Einstein") {
+                    style.drawImage(iconSpecialSkinEffectsEinstein, this.x + 0.65 * y, this.y + 0.65 * y, y / 2.5, y / 2.5);
+                } else if (this.SpecialEffect == "DeadTable" || this.SpecialEffect2 == "DeadTable") {
+                    style.drawImage(iconSpecialSkinEffectsDeadTable, this.x + 0.7 * y, this.y + 0.7 * y, y / 3, y / 3);
+                } else if (this.SpecialEffect == "Kebab" || this.SpecialEffect2 == "Kebab") {
+                    style.drawImage(iconSpecialSkinEffectsKebab, this.x + 0.4 * y, this.y - 1 * y, y / 2, y / 2);
+                } else if (this.SpecialEffect == "Meditation" || this.SpecialEffect2 == "Meditation") {
+                    style.drawImage(iconSpecialSkinEffectsMeditation, this.x + 0.4 * y, this.y - 1 * y, y / 2, y / 2);
+                } else if (this.SpecialEffect == "Splash" || this.SpecialEffect2 == "Splash") {
+                    style.drawImage(iconSpecialSkinEffectsSplash, this.x - 1.15 * y, this.y - 1.3 * y, y / 0.36, y / 0.36);
+                } else if (this.SpecialEffect == "Butterfly" || this.SpecialEffect2 == "Butterfly") {
+                    style.drawImage(iconSpecialSkinEffectsButterfly, this.x - 1 * y, this.y - 0.6 * y, y / 2, y / 4);
+                } else if (this.SpecialEffect == "Mouse" || this.SpecialEffect2 == "Mouse") {
+                    style.drawImage(iconSpecialSkinEffectsMouse, this.x + 0.5 * y, this.y - 0.1 * y, y / 3, y / 1);
+                } else if (this.SpecialEffect == "Sword" || this.SpecialEffect2 == "Sword") {
+                    style.drawImage(cimgSpecialSkinEffectsSword, this.x - 0.8 * y, this.y - 3 / 5 * y, y * 1.6, y * 1.6);
+                }
+                if (this.SpecialEffect == "Mask" || this.SpecialEffect2 == "Mask") {
+                    style.drawImage(cimgSpecialSkinEffectsMask, this.x - 1 / 2 * y, this.y + 1 / 4 * y, y, y);
+                } else if (this.SpecialEffect == "Heart" || this.SpecialEffect2 == "Heart") {
+                    style.drawImage(cimgSpecialSkinEffectsHeart, this.x - 1 / 2 * y, this.y + 1 / 3 * y, y, y);
+                }
+                if (this.SpecialEffect == "Vip" || this.SpecialEffect2 == "Vip") {
+                    style.drawImage(cimgSpecialSkinEffectsVip, this.x - 1 / 8 * y, this.y - 5.3 / 4 * y, y / 5, y / 5);
+                } else if (this.SpecialEffect == "Ddev" || this.SpecialEffect2 == "Ddev") {
+                    style.drawImage(cimgSpecialSkinEffectsDdev, this.x - 1 / 8 * y, this.y - 4.6 / 4 * y, y / 3, y / 5);
+                } else if (this.SpecialEffect == "Youtube" || this.SpecialEffect2 == "Youtube") {
+                    style.drawImage(cimgSpecialSkinEffectsYoutube, this.x - 1 / 6 * y, this.y - 5.3 / 4 * y, y / 3, y / 3);
+                    //style.drawImage(cimgSpecialSkinEffectsYoutube, this.x - 1/2 * y, this.y - 3/2 * y, y, y); 
+                } else if (this.SpecialEffect == "LegendHeroes" || this.SpecialEffect2 == "LegendHeroes") {
+                    style.drawImage(cimgSpecialSkinEffectsLegendHeroes, this.x - 0.95 * y, this.y - 5.3 / 4 * y, y / 0.5, y / 4);
 
-                        var today = new Date();
-                        try {
-                            if (!window.testAnimatCells) {
-                                if (!window.testAnimCell) {
-                                    var ab = today.getTime() / 1000
-                                    if (!window.abam) {
-                                        window.abam = ab
-                                    }
-                                    if (!window.abah) {
-                                        window.abah = today.getHours()
-                                    }
-                                    ab = ab - window.abam;
-                                    if (today.getHours() == window.abah && ab < 5) {
-                                        style.drawImage(cimg5, this.x - (1.5 + 2 * ab) * y, this.y - (1.5 + 2 * ab) * y, (1.5 + 2 * ab) * 2 * y, (1.5 + 2 * ab) * 2 * y);
-                                    } else {
-                                        window.testAnimatCells = true;
-                                    }
+                    /*style.drawImage(cimgSpecialSkinEffectsLegendHeroes, this.x - window.xx1 * y, this.y - window.xx2 * y, y/window.xx3, y/window.xx4);	
+                    if (!window.xx1) window.xx1 = 0.95
+                    if (!window.xx2) window.xx2 = 5.3/4
+                    if (!window.xx3) window.xx3 = 0.5
+                    if (!window.xx4) window.xx4 = 4*/
+                } else if (this.SpecialEffect == "LegendClan" || this.SpecialEffect2 == "LegendClan") {
+                    style.drawImage(cimgSpecialSkinEffectsLegendHeroes2, this.x - 1 / 3 * y, this.y - 5.3 / 4 * y, y / 1.5, y / 6);
+                    /*style.drawImage(cimgSpecialSkinEffectsLegendHeroes2, this.x - window.xx5 * y, this.y - window.xx6 * y, y/window.xx7, y/window.xx8);				
+                    if (!window.xx5) window.xx5 = 1/3
+                    if (!window.xx6) window.xx6 = 5.3/4
+                    if (!window.xx7) window.xx7 = 1.5
+                    if (!window.xx8) window.xx8 = 6*/
+                } else if (this.SpecialEffect == "BabyBoss" || this.SpecialEffect2 == "BabyBoss") {
+                    if (this.mass < 3000) {
+                        style.drawImage(iconSpecialSkinEffectsBabyBoss, this.x - 0.95 * y, this.y - 1.2 * y, y / 1.5, y / 1.5);
+                    } else {
+                        style.drawImage(iconSpecialSkinEffectsBabyBoss1, this.x - 0.95 * y, this.y - 1.2 * y, y / 1.5, y / 1.5);
+                    }
+                } else if (this.SpecialEffect == "Gladiator" || this.SpecialEffect2 == "Gladiator") {
+                    var d = new Date();
+                    var n = d.getSeconds();
+                    /*
+                    var e;
+                    if (n<30){ e = n / 30}
+                    else { e = (n /30) - 1}						
+                    style.filter = 'contrast(1.4) sepia(' + e + ')';
+                    */
+                    style.filter = 'hue-rotate(-' + n / 60 + 'turn)';
+                    style.drawImage(iconSpecialSkinEffectsGladiator, this.x - 0.85 * y, this.y - 1.2 * y, y / 1.5, y / 1.5);
+                } else if (this.SpecialEffect == "Hero" || this.SpecialEffect2 == "Hero") {
+                    style.drawImage(iconSpecialSkinEffectsHero, this.x - 0.35 * y, this.y - 1.35 * y, y / 1.5, y / 1.5);
+                } else if (this.SpecialEffect == "Hero1" || this.SpecialEffect2 == "Hero1") {
+                    var d = new Date();
+                    var n = d.getSeconds();
+                    var e;
+                    if (n < 30) {
+                        e = n / 30
+                    } else {
+                        n = 60 - n
+                        e = n / 30
+                    }
+                    style.save();
+                    style.globalAlpha = e
+                    style.drawImage(iconSpecialSkinEffectsHero1, this.x - 0.1 * y, this.y - 1.35 * y, y / 1, y / 1);
+                    style.restore();
+
+                } else if (this.SpecialEffect == "Hero2" || this.SpecialEffect2 == "Hero2") {
+                    style.drawImage(iconSpecialSkinEffectsHero2, this.x - 0.3 * y, this.y - 1.48 * y, y / 2, y / 2);
+                } else if (this.SpecialEffect == "Key" || this.SpecialEffect2 == "Key") {
+                    style.drawImage(iconSpecialSkinEffectsKey, this.x + 0.4 * y, this.y - 1.15 * y, y / 2, y / 2);
+                } else if (this.SpecialEffect == "MetalOfHonor" || this.SpecialEffect2 == "MetalOfHonor") {
+                    style.drawImage(iconSpecialSkinEffectsMetalOfHonor, this.x - 0.25 * y, this.y + 0.8 * y, y / 2, y / 2);
+                } else if (this.SpecialEffect == "PeaceMaker" || this.SpecialEffect2 == "PeaceMaker") {
+                    style.drawImage(iconSpecialSkinEffectsPeaceMaker, this.x - 0.6 * y, this.y - 1.2 * y, y / 2, y / 2);
+                } else if (this.SpecialEffect == "Survivor" || this.SpecialEffect2 == "Survivor") {
+                    style.drawImage(iconSpecialSkinEffectsSurvivor, this.x - 0.6 * y, this.y - 1.2 * y, y / 2, y / 1.5);
+                } else if (this.SpecialEffect == "Tiger" || this.SpecialEffect2 == "Tiger") {
+                    style.drawImage(iconSpecialSkinEffectsTiger, this.x - 1.1 * y, this.y - 1.3 * y, y / 1.5, y / 1.5);
+                } else if (this.targetNick.includes("The Dying Light") || this.SpecialEffect == "RedArrow" || this.SpecialEffect2 == "RedArrow") {
+                    style.drawImage(cimg5, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
+                } else if (this.SpecialEffect == "WhiteArrow" || this.SpecialEffect2 == "WhiteArrow") {
+                    //style.drawImage(cimg2, this.x - y * 2, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
+
+                    var today = new Date();
+                    try {
+                        if (!window.testAnimatCells) {
+                            if (!window.testAnimCell) {
+                                var ab = today.getTime() / 1000
+                                if (!window.abam) {
+                                    window.abam = ab
                                 }
-                            } else {
-                                style.drawImage(cimg2, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
+                                if (!window.abah) {
+                                    window.abah = today.getHours()
+                                }
+                                ab = ab - window.abam;
+                                if (today.getHours() == window.abah && ab < 5) {
+                                    style.drawImage(cimg5, this.x - (1.5 + 2 * ab) * y, this.y - (1.5 + 2 * ab) * y, (1.5 + 2 * ab) * 2 * y, (1.5 + 2 * ab) * 2 * y);
+                                } else {
+                                    window.testAnimatCells = true;
+                                }
                             }
-                        } catch (e) {}
-
-            }			
-		}
-        this.draw = function(style, canCreateDiscussions) { //this function draws each cell/virus/food 1 time only
-            if (LM.hideSmallBots && this.size <= 36) {
-                return;
+                        } else {
+                            style.drawImage(cimg2, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
+                        }
+                    } catch (e) {}
+                }
             }
-            //if (defaultmapsettings.hideSizes > 0 && this.size < defaultmapsettings.hideSizes) {
-            //return;
-            //}			
-            // check this
-            //if (this.spectator>0 && this.isInV()||this.invisible==true) {
-            //if (this.spectator>0 && this.isInV() || this.invisible==true || this.spectator>0 && this.isInView()) {
-            //if (this.invisible == true || (this.spectator > 0 && this.isInV() && !window.multiboxPlayerEnabled)) {
-            //if (this.spectator>0 && this.isInV() || this.invisible == true) {	
-			//if (this.isVirus && this.spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator && this.isInView()) this.invisible = true			
-			if (this.invisible == true) {
+        }
+        this.draw = function(style, cellMoved) { //this function draws each cell/virus/food 1 time only
+            if ((LM.hideSmallBots && this.size <= 36) || this.invisible == true) {
                 return;
             }
             //					
             style.save();
-			
+
 
             this.redrawed++;
-            if (canCreateDiscussions) {
+            if (cellMoved) {
                 this.moveCell();
             }
             if (this.removed) {
@@ -9342,19 +9224,17 @@ function thelegendmodproject() {
             var y = this.isFood ? this.size + defaultSettings.foodSize : this.size;
             style.beginPath()
 
-			//26/7/2020
-			if (LM.ws.includes("replay") && window.replayGreyScale){
-				style.filter='grayscale(100%)';
-			}
-			else if (LM.ws.includes("replay") && window.replaySepia){
-				style.filter='sepia(100%)';
-			}		
-			else if (LM.ws.includes("replay") && window.replayHueRotate){
-				style.filter='hue-rotate(90deg)';
-			}			
-			//style.filter='grayscale(100%)';
-			//
-			
+            //26/7/2020
+            if (LM.ws.includes("replay") && window.replayGreyScale) {
+                style.filter = 'grayscale(100%)';
+            } else if (LM.ws.includes("replay") && window.replaySepia) {
+                style.filter = 'sepia(100%)';
+            } else if (LM.ws.includes("replay") && window.replayHueRotate) {
+                style.filter = 'hue-rotate(90deg)';
+            }
+            //style.filter='grayscale(100%)';
+            //
+
             if (defaultmapsettings.jellyPhisycs && this.points.length) {
                 var point = this.points[0];
                 style.moveTo(point.x, point.y);
@@ -9362,9 +9242,7 @@ function thelegendmodproject() {
                     var point = this.points[i];
                     style.lineTo(point.x, point.y);
                 }
-            } 
-			
-			else if (defaultmapsettings.jellyPhisycs && this.isVirus) {
+            } else if (defaultmapsettings.jellyPhisycs && this.isVirus) {
                 style.lineJoin = "miter"
                 var pointCount = 120;
                 var incremental = this.pi2 / pointCount;
@@ -9378,9 +9256,7 @@ function thelegendmodproject() {
                     )
                 }
                 style.lineTo(this.x, this.y + this.size + 3);
-            } 
-			
-			else style.arc(this.x, this.y, y, 0, this.pi2, false);
+            } else style.arc(this.x, this.y, y, 0, this.pi2, false);
 
             style.closePath();
 
@@ -9389,7 +9265,7 @@ function thelegendmodproject() {
             //if (style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
             //    return style.fillStyle = this.color, style.fill(), void style.restore();
             //}						
-			if (!defaultmapsettings.jellyPhisycs) {
+            if (!defaultmapsettings.jellyPhisycs) {
                 if (this.isVirus) {
                     //console.log("is not jelly");
                     /*if (dyinglight1load == "yes") {
@@ -9399,10 +9275,9 @@ function thelegendmodproject() {
                     }*/
                     return defaultmapsettings.transparentViruses && (style.globalAlpha *= defaultSettings.virusAlpha, s = true), defaultmapsettings.virColors && LM.play ? (style.fillStyle = application.setVirusColor(y), style.strokeStyle = application.setVirusStrokeColor(y)) : (style.fillStyle = this.virusColor, style.strokeStyle = this.virusStroke), style.fill(), s && (style.globalAlpha = value, s = false), style.lineWidth = defaultSettings.virusStrokeSize, defaultmapsettings.virusGlow ? (style.shadowBlur = defaultSettings.virusGlowSize, style.shadowColor =
                         defaultSettings.virusGlowColor) : "yeet", style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), defaultmapsettings.showMass && (this.setDrawing(), this.setDrawingScale(), defaultmapsettings.virusGlow ? style.shadowBlur = 0 : "yote",
-                        this.setMass(this.size), this.drawMass(style), (defaultmapsettings.showChat && this.drawChat(style)), (window.ExternalScripts && !window.legendmod5.optimizedMass && this.drawMerge(style))), void style.restore();
+                        this.setMass(this.size), this.drawMass(style), (window.ExternalScripts && !window.legendmod5.optimizedMass)), void style.restore();
                 }
-            } 
-			else {
+            } else {
                 if (this.isVirus) {
                     //console.log("is jelly");
                     if (defaultmapsettings.transparentViruses) {
@@ -9432,12 +9307,12 @@ function thelegendmodproject() {
                         this.setDrawingScale();
                         this.setMass(this.size);
                         this.drawMass(style);
-                        if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
+                        /*if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
                             this.drawMerge(style);
                         }
-						if (defaultmapsettings.showChat){
-						this.drawChat(style);
-						}
+                        if (defaultmapsettings.showChat) {
+                            this.drawChat(style);
+                        }*/
                     }
                     style.restore();
                     return;
@@ -9454,45 +9329,29 @@ function thelegendmodproject() {
                         color = ogarcopythelb.color;
                     }
                 } else {
-                    //if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings) {
                     if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood) {
                         color = this.oppColor;
                     }
                 }
             }
-            //if (dyinglight1load != "yes" || this.targetNick.includes("The Dying Light") || this.isFood) {
-            /*if (defaultmapsettings.cellContours) {
+            if (window.multiboxPlayerEnabled && this.isPlayerCellMulti && this.spectator && LM.play) {
                 style.lineWidth = 20; ///
                 style.strokeStyle = this.color; ///
-                style.stroke(); ///
-            } */
-
-			if (window.multiboxPlayerEnabled && this.isPlayerCellMulti && this.spectator && LM.play){				
-						style.lineWidth = 20; ///
-						style.strokeStyle = this.color; ///
-						style.stroke(); //
-			}
-			/*else if (this.isPlayerCell && legendmod.multiBoxPlayerExists && !this.spectator && LM.play && !window.multiboxPlayerEnabled){	
-						style.lineWidth = 20; ///
-						style.strokeStyle = this.color; ///
-						style.stroke(); //
-			}*/
-			else if (!window.multiboxPlayerEnabled && this.isPlayerCell && legendmod.multiBoxPlayerExists && !this.spectator && LM.play){	
-						style.lineWidth = 20; ///
-						style.strokeStyle = this.color; ///
-						style.stroke(); //
-			}
-			else if (!window.multiboxPlayerEnabled && this.spectator && !this.isPlayerCellMulti && this.nick != "" && this.nick == profiles[application.selectedProfile].nick && LM.play){	
-						style.lineWidth = 20; ///
-						style.strokeStyle = this.color; ///
-						style.stroke(); //
-			}			
+                style.stroke(); //
+            } else if (!window.multiboxPlayerEnabled && this.isPlayerCell && legendmod.multiBoxPlayerExists && !this.spectator && LM.play) {
+                style.lineWidth = 20; ///
+                style.strokeStyle = this.color; ///
+                style.stroke(); //
+            } else if (!window.multiboxPlayerEnabled && this.spectator && !this.isPlayerCellMulti && this.nick != "" && this.nick == profiles[application.selectedProfile].nick && LM.play) {
+                style.lineWidth = 20; ///
+                style.strokeStyle = this.color; ///
+                style.stroke(); //
+            }
             if (defaultmapsettings.cellContours) {
                 style.lineWidth = 20; ///
                 style.strokeStyle = this.color; ///
                 style.stroke(); ///
-            } 					
-			else {
+            } else {
                 style.fillStyle = color;
                 style.fill();
             }
@@ -9506,7 +9365,7 @@ function thelegendmodproject() {
                             s = false;
 						}*/
             var node = null;
-            var node2 = {}; //, node2.src = application.customSkinsMap[this.targetNick]
+
 
 
             if (defaultmapsettings.multiBoxShadow && this.targetNick != null && (this.targetNick == profiles[application.selectedOldProfile].nick || this.targetNick == profiles[application.selectedProfile].nick) && LM.playerCellsMulti && legendmod.playerCellsMulti.length) {
@@ -9520,129 +9379,65 @@ function thelegendmodproject() {
                     }
                 }
             }
-
-            /*	
-			if (defaultmapsettings.multiBoxShadow && (this.isPlayerCell || this.isPlayerCellMulti) && LM.playerCellsMulti){	
-				this.Multi=false;
-				for (var i = 0; i < LM.playerCellsMulti.length; i++){
-					if (LM.playerCellsMulti[i].id == this.id){
-						style.shadowBlur = 40;
-						style.shadowColor = profiles[application.selectedOldProfile].color;
-						this.Multi=true
-					}
-				}
-				if (this.Multi==false){
-					style.shadowBlur = 40;
-					style.shadowColor = profiles[application.selectedProfile].color;				
-				}
-			}
-*/
             //lylko
-            if (defaultmapsettings.customSkins && LM.showCustomSkins) {				
+            if (defaultmapsettings.customSkins && LM.showCustomSkins) {
                 node = application.getCustomSkin(this.targetNick, this.color);
-				//node = application.getCustomSkin(this.targetNick, color);
-				
                 if (node) {
                     if ((defaultmapsettings.transparentSkins || LM.play && defaultmapsettings.oppColors) && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin) {
                         style.globalAlpha *= defaultSettings.skinsAlpha;
-                        s = true;
-                    }	
-					if (legendmod.gameMode != ":teams"){ 						
-						if (defaultmapsettings.jellyPhisycs) {
-							var lineWidth = Math.max(~~(y / 50), 10);
-							style.save();
-							style.clip();
-							this.maxPointRad && (y = this.maxPointRad);
-							try {
-								style.drawImage(node, this.x - y - lineWidth, this.y - y - lineWidth, 2 * y + lineWidth * 2, 2 * y + lineWidth * 2);
-							} catch (e) {}
-							style.globalCompositeOperation = 'luminosity';
-	
-							style.lineWidth = lineWidth
-							style.strokeStyle = color;
-							style.stroke();
-							style.globalCompositeOperation = '';
-							style.restore();
-	
-						} 
-						else{
-							try {
-								style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y); //all skin drawing
-							} catch (e) {}						
-						}
-					}
-                    //special animations
-                    //if (legendmod.friends){
-                    //if (this.targetNick.includes())
+                        //s = true;
+                    }
+                    if (legendmod.gameMode != ":teams") {
+                        if (defaultmapsettings.jellyPhisycs) {
+                            var lineWidth = Math.max(~~(y / 50), 10);
+                            style.save();
+                            style.clip();
+                            this.maxPointRad && (y = this.maxPointRad);
+                            try {
+                                style.drawImage(node, this.x - y - lineWidth, this.y - y - lineWidth, 2 * y + lineWidth * 2, 2 * y + lineWidth * 2);
+                            } catch (e) {}
+                            style.globalCompositeOperation = 'luminosity';
 
-                    //}
-					if (defaultmapsettings.FBTracking){
-						var nodeFb = application.customSkinsMap[this.targetNick + "facebookskin"];
-							if (nodeFb && application.customSkinsCache[nodeFb + "_cached4"]) {
-								var temp = nodeFb + "_cached4";
-								var nodeFB = application.customSkinsCache[temp];
-								//console.log("found fb name: " + this.targetNick + " src: " + temp);
-								try {
-									style.drawImage(nodeFB, this.x - 1 / 2 * y, this.y - y, y, y);
-								} catch (e) {}
-							}
-					}				
-					this.drawSpecialSkin(style , y)
-                }
-            }
-            //if (s) {
-            //style.globalAlpha = value;
-            //s = false;
-            //}
+                            style.lineWidth = lineWidth
+                            style.strokeStyle = color;
+                            style.stroke();
+                            style.globalCompositeOperation = '';
+                            style.restore();
 
-
-            if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
-                window.teammatenicks && this.targetNick != "" &&
-                (window.teammatenicks.includes(this.targetNick))) {
-                drawRender.drawTeammatesInd(style, this.x, this.y, y)
-            }
-
-            if (defaultmapsettings.noNames && !defaultmapsettings.showMass || canCreateDiscussions) {
-
-                //                            y <= 200 && (node || application.checkSkinsMap(this.targetNick, this.color)) && drawRender.drawTeammatesInd(style, this.x, this.y, y), defaultmapsettings.noNames && !defaultmapsettings.showMass || canCreateDiscussions) {
-
-                style.restore();
-                return;
-            } 
-			else {
-                if (defaultmapsettings.customSkins && LM.showCustomSkins) {
-                    node2.src = application.customSkinsMap[this.targetNick];
-                    application.customSkinsMap[this.targetNick];
-                    if (node2.src) {
-                        if (defaultmapsettings.videoSkins) {
-                            if (node2.src.includes(".mp4") || node2.src.includes(".webm") || node2.src.includes(".ogv")) {
-                                checkVideos(node2.src, this.targetNick);
+                        } else {
+                            try {
+                                style.drawImage(node, this.x - y, this.y - y, 2 * y, 2 * y); //all skin drawing
+                            } catch (e) {}
+                        }
+                        if (defaultmapsettings.FBTracking) {
+                            var nodeFb = application.customSkinsMap[this.targetNick + "facebookskin"];
+                            if (nodeFb && application.customSkinsCache[nodeFb + "_cached4"]) {
+                                var temp = nodeFb + "_cached4";
+                                var nodeFB = application.customSkinsCache[temp];
+                                //console.log("found fb name: " + this.targetNick + " src: " + temp);
                                 try {
-
-									//style.arc(this.x - y, this.y - y, 2 * y, 0, this.pi2, true);
-									style.save();
-									style.clip();	
-
-									//style.drawImage(window.videoSkinPlayer[node2.src], 0, 0,2*y,2*y);	
-									//style.drawImage(window.videoSkinPlayer[node2.src], this.x - y, this.y - y, 2 * y, 2 * y);
-									if (defaultmapsettings.videoDestorted){
-										var temp = window.videoSkinPlayer[node2.src].videoWidth / window.videoSkinPlayer[node2.src].videoHeight;
-										style.drawImage(window.videoSkinPlayer[node2.src], this.x - y, this.y - y * temp, 2 * y, 2 * y * temp);	
-									}
-									else{
-										style.drawImage(window.videoSkinPlayer[node2.src], this.x - y, this.y - y, 2 * y, 2 * y);
-									}
-									style.restore();
-                                    //style.drawImage(window.videoSkinPlayer[node2.src], this.x - 0.7 * y, this.y - 0.7 * y, 1.4 * y, 1.4 * y);
-									
-									
-									
-                          /*(o.l.context.drawImage(o.l.video, 0, 0, o.l.video.videoWidth,
-                                            o.l.video.videoHeight,
-                                            -((512 * (o.l.video.videoWidth / o.l.video.videoHeight) - 512) / 2), 0,
-                                            512 * (o.l.video.videoWidth / o.l.video.videoHeight), 512),
-                                        t[0] = o.l.canvas)*/
-									
+                                    style.drawImage(nodeFB, this.x - 1 / 2 * y, this.y - y, y, y);
+                                } catch (e) {}
+                            }
+                        }
+                        this.drawSpecialSkin(style, y)
+                    }
+                } else {
+                    if (defaultmapsettings.videoSkins) {
+                        var node2 = application.customSkinsMap[this.targetNick];
+                        if (node2) {
+                            if (node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv")) {
+                                checkVideos(node2, this.targetNick);
+                                try {
+                                    style.save();
+                                    style.clip();
+                                    if (defaultmapsettings.videoDestorted) {
+                                        var temp = window.videoSkinPlayer[node2].videoWidth / window.videoSkinPlayer[node2].videoHeight;
+                                        style.drawImage(window.videoSkinPlayer[node2], this.x - y, this.y - y * temp, 2 * y, 2 * y * temp);
+                                    } else {
+                                        style.drawImage(window.videoSkinPlayer[node2], this.x - y, this.y - y, 2 * y, 2 * y);
+                                    }
+                                    style.restore();
                                 } catch (e) {}
                             }
                         }
@@ -9652,13 +9447,19 @@ function thelegendmodproject() {
                             style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
                         } catch (e) {}
                     }
-
                 }
+            }
+            if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
+                window.teammatenicks && this.targetNick != "" &&
+                (window.teammatenicks.includes(this.targetNick))) {
+                drawRender.drawTeammatesInd(style, this.x, this.y, y)
+            }
+
+            if (defaultmapsettings.noNames && !defaultmapsettings.showMass || cellMoved) {
+                //return;
+            } else {
                 var recursive = false;
-                if (!this.isPlayerCell && (recursive = application.setAutoHideCellInfo(y)) && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass) {
-                    style.restore();
-                } 
-				else {
+                if (!(!this.isPlayerCell && (recursive = application.setAutoHideCellInfo(y)) && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass)){
                     this.setDrawing();
                     this.setDrawingScale();
                     style.globalAlpha *= defaultSettings.textAlpha;
@@ -9674,15 +9475,16 @@ function thelegendmodproject() {
                             if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
                                 this.drawMerge(style);
                             }
-							if (defaultmapsettings.showChat){
-								this.drawChat(style);
-							}
+                            if (defaultmapsettings.showChat) {
+                                this.drawChat(style);
+                            }
                         }
                     }
-                    style.restore();
                 }
+
             }
-        };
+            style.restore();
+        }
     }
     window.legendmod1 = ogarbasicassembly;
 
@@ -9726,15 +9528,15 @@ function thelegendmodproject() {
         serverTimeDiff: 0,
         //loggedInTime: 0,
         mapSize: 14142, //14142.13562
-        mapOffset:  7071, //7071.067811865476
+        mapOffset: 7071, //7071.067811865476
         mapMinX: -7071,
         mapMinY: -7071,
         mapMaxX: 7071,
         mapMaxY: 7071,
-	
+
         mapOffsetX: 0,
         mapOffsetY: 0,
-        mapOffsetFixed: false,		
+        mapOffsetFixed: false,
         viewMinX: 0,
         viewMinY: 0,
         viewMaxX: 0,
@@ -9767,8 +9569,8 @@ function thelegendmodproject() {
         playerYMulti: 0,
         playerSize: 0,
         playerMass: 0,
-		totalPlayerMassBigFFA: 0,
-		totalPlayerMass: 0,
+        totalPlayerMassBigFFA: 0,
+        totalPlayerMass: 0,
         playerMaxMass: 0,
         playerMinMass: 0,
         playerScore: 0,
@@ -9776,7 +9578,7 @@ function thelegendmodproject() {
         playerColor: null,
         playerNick: '',
         playerPosition: 0,
-		//playerPositionMulti: null,
+        //playerPositionMulti: null,
         leaderboard: [],
         biggerSTEDCellsCache: [], //Sonia
         biggerSTECellsCache: [],
@@ -9835,8 +9637,8 @@ function thelegendmodproject() {
         hideSmallBots: false,
         pressedKeys: {},
         dance: false,
-		chatableServer: false,
-        connect(t) {		
+        chatableServer: false,
+        connect(t) {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to game server:', t);
             var app = this;
             setTimeout(function() {
@@ -9879,8 +9681,8 @@ function thelegendmodproject() {
             this.socket.onopen = function() {
                 app.onOpen();
             };
-            this.socket.onmessage = function(t) {			
-                app.onMessage(t);				
+            this.socket.onmessage = function(t) {
+                app.onMessage(t);
             };
             this.socket.onerror = function(t) {
                 app.onError(t);
@@ -9895,76 +9697,75 @@ function thelegendmodproject() {
             application.displayPartyBots();
             application.setUniversalChat();
             application.setAnimatedRainbowColor();
-			
-			
+
+
             if (window.master && window.master.onConnect) {
                 window.master.onConnect();
             }
-			this.play = false //fix
-			
-			this.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"));
-			if (this.totalPlayerMass == "NaN" || !this.totalPlayerMass) this.totalPlayerMass = 0 //fix
-			if (this.ws.includes("imsolo.pro:2102")){ //4 times bigger 600 users limit
-				this.totalPlayerMassBigFFA = parseInt(localStorage.getItem("totalPlayerMassBigFFA"));
-				if (this.totalPlayerMassBigFFA == "NaN" || !this.totalPlayerMassBigFFA) this.totalPlayerMassBigFFA = 0 //fix
-			}			
-			this.replayfunctions();
-			
+            this.play = false //fix
+
+            this.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"));
+            if (this.totalPlayerMass == "NaN" || !this.totalPlayerMass) this.totalPlayerMass = 0 //fix
+            if (this.ws.includes("imsolo.pro:2102")) { //4 times bigger 600 users limit
+                this.totalPlayerMassBigFFA = parseInt(localStorage.getItem("totalPlayerMassBigFFA"));
+                if (this.totalPlayerMassBigFFA == "NaN" || !this.totalPlayerMassBigFFA) this.totalPlayerMassBigFFA = 0 //fix
+            }
+            this.replayfunctions();
+
         },
         onOpen() {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket open');
             this.time = Date.now();
-			if (!window.customProtol) window.customProtol = 6
-			if (!window.customClient) window.customClient = 1
-			
+            if (!window.customProtol) window.customProtol = 6
+            if (!window.customClient) window.customClient = 1
+
             var view = this.createView(5);
             view.setUint8(0, 254);
-			if (!this.integrity){ 
-				view.setUint32(1, window.customProtol, true); 
-				window.gameBots.protocolVersion = window.customProtol
-			}
-			else{ 		
-				view.setUint32(1, this.protocolVersion, true); 
-				window.gameBots.protocolVersion = master.protocolVersion;		
-			} //			
-			//if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 6, true); } //protocol 6 and 5
-			//else if (window.protocol5){ view.setUint32(1, 5, true); } // Protocol 5
-            
-			
+            if (!this.integrity) {
+                view.setUint32(1, window.customProtol, true);
+                window.gameBots.protocolVersion = window.customProtol
+            } else {
+                view.setUint32(1, this.protocolVersion, true);
+                window.gameBots.protocolVersion = master.protocolVersion;
+            } //			
+            //if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 6, true); } //protocol 6 and 5
+            //else if (window.protocol5){ view.setUint32(1, 5, true); } // Protocol 5
+
+
             this.sendMessage(view);
             view = this.createView(5);
             view.setUint8(0, 255);
-			if (!this.integrity){ 		
-				view.setUint32(1, window.customClient, true); 
-				window.gameBots.clientVersion = window.customClient
-			} //protocol 6 and 5
-			else{ 
-				view.setUint32(1, this.clientVersion, true);
-				window.gameBots.clientVersion = this.clientVersion
-			}//
-			//if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 1, true); } //protocol 6 and 5
-			//else if (window.protocol5){ view.setUint32(1, 1332175218, true); } // Protocol 5
-			
+            if (!this.integrity) {
+                view.setUint32(1, window.customClient, true);
+                window.gameBots.clientVersion = window.customClient
+            } //protocol 6 and 5
+            else {
+                view.setUint32(1, this.clientVersion, true);
+                window.gameBots.clientVersion = this.clientVersion
+            } //
+            //if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 1, true); } //protocol 6 and 5
+            //else if (window.protocol5){ view.setUint32(1, 1332175218, true); } // Protocol 5
+
             this.sendMessage(view);
             this.connectionOpened = true;
         },
         onMessage(message) {
-			
-			//console.log(message.data)
+
+            //console.log(message.data)
             message = new DataView(message.data);
             if (this.protocolKey) {
                 message = this.shiftMessage(message, this.protocolKey ^ this.clientVersion);
             }
             this.handleMessage(message);
-			
-			
+
+
         },
         onError(t) {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket error');
             this.flushCellsData();
             if (window.master && window.master.onDisconnect) {
                 window.master.onDisconnect();
-            }		
+            }
         },
         onClose(t) {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket close');
@@ -9973,44 +9774,41 @@ function thelegendmodproject() {
                 window.master.onDisconnect();
             }
         },
-		replayfunctions(){
-			if (window.replayTimeOuts.length && !this.ws.includes("replay")){
-				for (var i=0;i<window.replayTimeOuts;i++){
-					clearTimeout(window.replayTimeOuts[i])
-				}
-				window.replayTimeOuts=[]			
-			}
-			else if (!this.ws.includes("replay") && $('#pause-hud').text()=="Loading..."){
-				$('#pause-hud').text(textLanguage.pause);
-				$('#pause-hud').hide()			
-			}
-				//if (!window.RecordedProtocol[$("#server-token").val()]){
-					//console.log('a'+$("#server-token").val())		
-			//window.temporaryRecordedProtocol2 = window.temporaryRecordedProtocol
-			if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/")){
-			if (window.RecordedArenasSpecifications[$("#server-token").val()]){
-				for (var i=1; i<10; i++){
-					if (!window.RecordedArenasSpecifications[$("#server-token").val() + '(' + i + ')']){
-						window.temporaryRecordedProtocol = $("#server-token").val()	+ '(' + i + ')'
-						break;
-					}	
-					else{
-						
-					}
-				}
-			}
-			else{
-				window.temporaryRecordedProtocol = $("#server-token").val()
-			}
-			window.catholicCalculator = 0
-			window.RecordedProtocol[window.temporaryRecordedProtocol] = []
-			window.RecordedProtocolArenas.push(window.temporaryRecordedProtocol)
-			window.RecordedArenasSpecifications[window.temporaryRecordedProtocol]= [Date.now(), application.gameMode, application.region, $("#nick").val()]
-			}
-			
-											
-				//}				
-		},
+        replayfunctions() {
+            if (window.replayTimeOuts.length && !this.ws.includes("replay")) {
+                for (var i = 0; i < window.replayTimeOuts; i++) {
+                    clearTimeout(window.replayTimeOuts[i])
+                }
+                window.replayTimeOuts = []
+            } else if (!this.ws.includes("replay") && $('#pause-hud').text() == "Loading...") {
+                $('#pause-hud').text(textLanguage.pause);
+                $('#pause-hud').hide()
+            }
+            //if (!window.RecordedProtocol[$("#server-token").val()]){
+            //console.log('a'+$("#server-token").val())		
+            //window.temporaryRecordedProtocol2 = window.temporaryRecordedProtocol
+            if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/")) {
+                if (window.RecordedArenasSpecifications[$("#server-token").val()]) {
+                    for (var i = 1; i < 10; i++) {
+                        if (!window.RecordedArenasSpecifications[$("#server-token").val() + '(' + i + ')']) {
+                            window.temporaryRecordedProtocol = $("#server-token").val() + '(' + i + ')'
+                            break;
+                        } else {
+
+                        }
+                    }
+                } else {
+                    window.temporaryRecordedProtocol = $("#server-token").val()
+                }
+                window.catholicCalculator = 0
+                window.RecordedProtocol[window.temporaryRecordedProtocol] = []
+                window.RecordedProtocolArenas.push(window.temporaryRecordedProtocol)
+                window.RecordedArenasSpecifications[window.temporaryRecordedProtocol] = [Date.now(), application.gameMode, application.region, $("#nick").val()]
+            }
+
+
+            //}				
+        },
         closeConnection() {
             if (this.socket) {
                 this.socket.onopen = null;
@@ -10071,19 +9869,19 @@ function thelegendmodproject() {
         sendBotEject() {
             //this.sendPosition();
             this.sendAction(23);
-        },	
+        },
         sendBotSplit() {
             //this.sendPosition();
             this.sendAction(22);
-        },			
+        },
         sendEject() {
             this.sendPosition();
             this.sendAction(21);
-        },	
+        },
         sendSplit() {
             this.sendPosition();
             this.sendAction(17);
-        },		
+        },
         sendFBIDS(data) { //Yahnych
             var friendsIDs = "";
 
@@ -10122,11 +9920,11 @@ function thelegendmodproject() {
                 nick = window.unescape(window.encodeURIComponent(self.playerNick));
                 var view = self.createView(1 + nick.length + 1 + token.length + 1);
                 var pos = 1
-				//"℄🌀".codePointAt(length)
-				for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.codePointAt(length))
+                //"℄🌀".codePointAt(length)
+                for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.codePointAt(length))
                 //for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.charCodeAt(length))
                 pos++
-				for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.codePointAt(length))
+                for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.codePointAt(length))
                 //for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
                 self.sendMessage(view);
             }
@@ -10135,10 +9933,10 @@ function thelegendmodproject() {
                 nick = window.unescape(window.encodeURIComponent(self.playerNick));
                 var view = self.createView(1 + nick.length + 1 + token.length + 1);
                 var pos = 1
-				for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.codePointAt(length))
+                for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.codePointAt(length))
                 //for (let length = 0; length < nick.length; length++, pos++) view.setUint8(pos, nick.charCodeAt(length))
                 pos++
-				for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.codePointAt(length))
+                for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.codePointAt(length))
                 //for (let length = 0; length < token.length; length++, pos++) view.setUint8(pos, token.charCodeAt(length));
                 self.sendMessage(view);
             }
@@ -10193,8 +9991,8 @@ function thelegendmodproject() {
                         //window.RequestedTokens=1000;
                         //this code is to inform me when a new loop process starts again
                         console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' bots started again')
-						legendmod.sendTokenForBots();
-						/*
+                        legendmod.sendTokenForBots();
+                        /*
 						$('#captchaErrors1').text(parseInt($('#captchaErrors1').text())+1)
                         legendmod.sendTokenForBots();
                         if ($('#captchaSpeed').val()) {
@@ -10205,8 +10003,8 @@ function thelegendmodproject() {
                         }
 						*/
                     }
-                //}, 10000 + window.tempol * 1000);
-				}, 10000);
+                    //}, 10000 + window.tempol * 1000);
+                }, 10000);
             } else {
                 //setTimeout(function() {	
                 window.sendFirstTimeTokenBots = false
@@ -10241,17 +10039,16 @@ function thelegendmodproject() {
                 window.tempol = $('#captchaSpeed').val();
             }
 			setTimeout(function() {*/
-			for (var i=0;i<window.captchaOpenedWindow;i++){
-				if (legendmod.integrity && window.capthaWindow[i] && !window.capthaWindow[i].closed){
-					window.capthaWindow[i].ProcessParentMessage('doCaptcha');
-				}
-				else if(legendmod.integrity && window.capthaWindow[i] && window.capthaWindow[i].closed){
-					createCaptchaWindow(i)
-				}
-				
-			}
-			//}, 500);			
-			
+            for (var i = 0; i < window.captchaOpenedWindow; i++) {
+                if (legendmod.integrity && window.capthaWindow[i] && !window.capthaWindow[i].closed) {
+                    window.capthaWindow[i].ProcessParentMessage('doCaptcha');
+                } else if (legendmod.integrity && window.capthaWindow[i] && window.capthaWindow[i].closed) {
+                    createCaptchaWindow(i)
+                }
+
+            }
+            //}, 500);			
+
             /*this.integrity && window.agarCaptcha.requestCaptchaV3("play", function(token) {
 
 				if(window.capthaWindow) window.capthaWindow.ProcessParentMessage('doCaptcha');
@@ -10281,8 +10078,7 @@ function thelegendmodproject() {
                         cursorX = this.viewXTrue + this.distX;
                         cursorY = this.viewYTrue + this.distY;
                     }
-                } 
-				else if (LM.dance) {
+                } else if (LM.dance) {
                     let d = ~~((Date.now() / 40) % 8),
                         distance = 50000;
                     switch (d) {
@@ -10322,18 +10118,17 @@ function thelegendmodproject() {
                             console.log(d);
                             break;
                     }
-                } 
-				else {
+                } else {
                     //if (specialcommand) {
-                        //console.log('hi')
-                        //cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
-                        //cursorY=9999;					
+                    //console.log('hi')
+                    //cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
+                    //cursorY=9999;					
                     //} 
-					if (!window.autoPlay) {
-						if (window.lockPosition){
-							console.log('LockPosition enabled')
-							return false;							
-						}
+                    if (!window.autoPlay) {
+                        if (window.lockPosition) {
+                            console.log('LockPosition enabled')
+                            return false;
+                        }
                         cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.cursorX) : this.cursorX; //Sonia3
                         cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.cursorY) : this.cursorY; //Sonia3
                         if (!this.play && this.targeting || this.pause) {
@@ -10349,8 +10144,7 @@ function thelegendmodproject() {
                             cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(cell.y) : cell.y; //Sonia3
                             // var cursorX = cell.x;
                             //var cursorY = cell.y;
-                        } 
-						else {
+                        } else {
                             cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(target2.x) : target2.x; //Sonia3
                             cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(target2.y) : target2.y; //Sonia3
                             //var cursorX = target2.x;
@@ -10445,9 +10239,9 @@ function thelegendmodproject() {
             if (window.disableIntegrity != true) { //
                 this.clientVersion = version;
                 this.clientVersionString = string;
-				var tempooo
-				if (window.getLatestconfigVersion) tempooo = "v" + window.getLatestconfigVersion
-				
+                var tempooo
+                if (window.getLatestconfigVersion) tempooo = "v" + window.getLatestconfigVersion
+
                 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Versions: client:', version, string, "x-proto:", this.xsupportprotoversion, "protocol:", this.protocolVersion, "config:", tempooo, "configId:", window.getLatestID);
             } //
             else { //
@@ -10613,21 +10407,21 @@ function thelegendmodproject() {
         },
         handleMessage(data) {
             //this.pingTimer();		
-			if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/")){				
-				window.RecordedProtocol[window.temporaryRecordedProtocol][window.catholicCalculator] = data
+            if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/")) {
+                window.RecordedProtocol[window.temporaryRecordedProtocol][window.catholicCalculator] = data
 
-				//window.RecordedProtocolArenas[legendmod.ws][]
-				//window.RecordedProtocolArenas[window.specificRecordedProtocol[legendmod.ws]] = window.RecordedProtocol[window.catholicCalculator] 
-				window.catholicCalculator++
-			}
-			/*			
+                //window.RecordedProtocolArenas[legendmod.ws][]
+                //window.RecordedProtocolArenas[window.specificRecordedProtocol[legendmod.ws]] = window.RecordedProtocol[window.catholicCalculator] 
+                window.catholicCalculator++
+            }
+            /*			
 			for (window.playrecord=0;window.playrecord<window.RecordedProtocol.length-1;window.playrecord++){
 				setTimeout(function() {	
 					legendmod.handleMessage(window.RecordedProtocol[window.playrecord])
 					console.log(window.playrecord)
 				}, 40*window.playrecord);
 			}			
-*/	
+*/
             var encode = function() {
                 for (var text = '';;) {
                     var i = data.getUint8(s++);
@@ -10674,23 +10468,21 @@ function thelegendmodproject() {
                     window.testobjectsOpcode17 = data;
                     var x = data.getFloat32(s, true);
 
-					if ((defaultmapsettings.middleMultiView || window.middleMultiViewFlag) && legendmod.multiBoxPlayerExists){
-						//
-					}	
-                    else if (!window.multiboxPlayerEnabled) {
+                    if ((defaultmapsettings.middleMultiView || window.middleMultiViewFlag) && legendmod.multiBoxPlayerExists) {
+                        //
+                    } else if (!window.multiboxPlayerEnabled) {
                         this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
-                    }					
+                    }
                     this.viewXTrue = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
 
                     s += 4;
                     var y = data.getFloat32(s, true);
 
-					if ((defaultmapsettings.middleMultiView || window.middleMultiViewFlag) && legendmod.multiBoxPlayerExists){
-						//
-					}						
-                    else if (!window.multiboxPlayerEnabled) {
+                    if ((defaultmapsettings.middleMultiView || window.middleMultiViewFlag) && legendmod.multiBoxPlayerExists) {
+                        //
+                    } else if (!window.multiboxPlayerEnabled) {
                         this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
-                    }							
+                    }
                     this.viewYTrue = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
                     s += 4;
                     this.scale = data.getFloat32(s, true);
@@ -10710,7 +10502,7 @@ function thelegendmodproject() {
                     this.playerCellIDs.push(data.getUint32(s, true));
                     if (!this.play) {
                         this.play = true;
-						this.isSpectateEnabled = false
+                        this.isSpectateEnabled = false
                         application.hideMenu();
                         this.playerColor = null;
                         application.onPlayerSpawn();
@@ -10727,7 +10519,7 @@ function thelegendmodproject() {
                     for (var n = 0; n < a; n++) this.pieChart.push(data.getFloat32(s, true)), s += 7;
                     drawRender.drawPieChart();
                     break;
-                case 53:  
+                case 53:
                     window.testobjectsOpcode53 = data;
                     this.leaderboard = [];
                     this.friends = this.fbOnline.length;
@@ -10774,37 +10566,37 @@ function thelegendmodproject() {
                     }
                     this.handleLeaderboard();
                     break;
-				case 49: //leaderboard for specific private servers
-					window.testobjectsOpcode49 = data;
-					this.leaderboard = [];
-					var count = data.getUint32(s, true);
-					s += 4;
-					for (i = 0; i < count; ++i) {
-						var isMe = !!data.getUint32(s, true);
-						s += 4;
-						if (isMe){ 
-							isMe = 'isPlayer'
-						}
-						let nick = window.decodeURIComponent(window.escape(encode())); //data.getStringUTF8();
-						var temp;
-						
-						if (nick.includes('}')){
-							temp = nick.split('}')[0].split('{')[1]
-							nick = nick.split('}')[1]
-						}	
-						if (!application.customSkinsMap[nick] && temp){
-							core.registerSkin(nick, null, "https://dkyriak.github.io/imsolo/" + temp + ".png", null);
-							application.customSkinsMap[nick + "\'s imsolo.pro bot"]= "https://dkyriak.github.io/imsolo/" + temp + ".png"
-							//core.registerSkin(nick, null, "https://imsolo.pro/web/skins/" + temp + ".png", null);
-						}
-						
-						this.leaderboard.push({
-						id: isMe,
-						nick: nick
-						});
-					}
-					this.handleLeaderboard();					
-					break;
+                case 49: //leaderboard for specific private servers
+                    window.testobjectsOpcode49 = data;
+                    this.leaderboard = [];
+                    var count = data.getUint32(s, true);
+                    s += 4;
+                    for (i = 0; i < count; ++i) {
+                        var isMe = !!data.getUint32(s, true);
+                        s += 4;
+                        if (isMe) {
+                            isMe = 'isPlayer'
+                        }
+                        let nick = window.decodeURIComponent(window.escape(encode())); //data.getStringUTF8();
+                        var temp;
+
+                        if (nick.includes('}')) {
+                            temp = nick.split('}')[0].split('{')[1]
+                            nick = nick.split('}')[1]
+                        }
+                        if (!application.customSkinsMap[nick] && temp) {
+                            core.registerSkin(nick, null, "https://dkyriak.github.io/imsolo/" + temp + ".png", null);
+                            application.customSkinsMap[nick + "\'s imsolo.pro bot"] = "https://dkyriak.github.io/imsolo/" + temp + ".png"
+                            //core.registerSkin(nick, null, "https://imsolo.pro/web/skins/" + temp + ".png", null);
+                        }
+
+                        this.leaderboard.push({
+                            id: isMe,
+                            nick: nick
+                        });
+                    }
+                    this.handleLeaderboard();
+                    break;
                     /*    
                         if (this.leaderboard = [], this.playerPosition = 0, 54 == data.getUint8(0)) {
                             data.getUint16(s, true);
@@ -10898,48 +10690,48 @@ function thelegendmodproject() {
                             application.autoResp();
                         }, 2000);
                     } else {
-						if (window.captchawidget && grecaptcha){
-							grecaptcha.reset(window.captchawidget);
-							//window.captchawidget=null;
-						}						
+                        if (window.captchawidget && grecaptcha) {
+                            grecaptcha.reset(window.captchawidget);
+                            //window.captchawidget=null;
+                        }
                         window.agarCaptcha.requestCaptcha()
                         //window.master.recaptchaRequested();
                     }
                     //}
                     break;
-				case 99: //chat for specific private servers
-					window.testobjectsOpcode99 = data;
-					var flag = data.getUint8(s++);
-					var color2 = this.rgb2Hex(data.getUint8(s++), data.getUint8(s++), data.getUint8(s++));
+                case 99: //chat for specific private servers
+                    window.testobjectsOpcode99 = data;
+                    var flag = data.getUint8(s++);
+                    var color2 = this.rgb2Hex(data.getUint8(s++), data.getUint8(s++), data.getUint8(s++));
 
-					var name = window.decodeURIComponent(window.escape(encode())); //data.getStringUTF8();
-					
-					var message = window.decodeURIComponent(window.escape(encode()));  //data.getStringUTF8();	
-					var server = !!(flags & 128),
-                    admin = !!(flags & 64),
-                    mod = !!(flag & 32);
-              
-				if (server && name !== "SERVER") name = "[SERVER] " + name;
-				if (name == "SERVER") name = "[SERVER]"
-                if (admin) name = "[ADMIN] " + name;
-                if (mod) name = "[MOD] " + name;	
-				//var wait = Math.max(3000, 1000 + message.length * 150);
-				var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
-				var caseof = 101
-				if (name == "SERVER"){
-					caseof = 102
-				}
-				if (name.includes('}')){
-					name = name.split('}')[1]
-				}
-				if (message.includes("E = split bots")){
-					message = "For bot commands look at Hotkeys"
-				}
-				this.chatableServer=true;
-				if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && $("#clantag").val() == ""){	
-					application.displayChatMessage(time, caseof, 1000, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
-				}				
-				break;
+                    var name = window.decodeURIComponent(window.escape(encode())); //data.getStringUTF8();
+
+                    var message = window.decodeURIComponent(window.escape(encode())); //data.getStringUTF8();	
+                    var server = !!(flags & 128),
+                        admin = !!(flags & 64),
+                        mod = !!(flag & 32);
+
+                    if (server && name !== "SERVER") name = "[SERVER] " + name;
+                    if (name == "SERVER") name = "[SERVER]"
+                    if (admin) name = "[ADMIN] " + name;
+                    if (mod) name = "[MOD] " + name;
+                    //var wait = Math.max(3000, 1000 + message.length * 150);
+                    var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
+                    var caseof = 101
+                    if (name == "SERVER") {
+                        caseof = 102
+                    }
+                    if (name.includes('}')) {
+                        name = name.split('}')[1]
+                    }
+                    if (message.includes("E = split bots")) {
+                        message = "For bot commands look at Hotkeys"
+                    }
+                    this.chatableServer = true;
+                    if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && $("#clantag").val() == "") {
+                        application.displayChatMessage(time, caseof, 1000, name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
+                    }
+                    break;
                 case 102:
                     var msg = new buffer.Buffer(data.buffer.slice(1));
                     this.onMobileData(msg);
@@ -11596,7 +11388,7 @@ function thelegendmodproject() {
                     this.handleSubmessage(data);
                     break;
 
-                    
+
                 case 16: //2020 jimboy3100 specific private servers
                     //this.updateCells(new LMbuffer(data['buffer']), s);
                     this.updateCells(new window.buffer.Buffer(data.buffer), s);
@@ -11612,14 +11404,14 @@ function thelegendmodproject() {
                     this.viewMaxX = message.readDoubleLE(s);
                     s += 8;
                     this.viewMaxY = message.readDoubleLE(s);
-					
+
                     this.setMapOffset(this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY);
 
                     if (~~(this.viewMaxX - this.viewMinX) === LM.mapSize && ~~(this.viewMaxY - this.viewMinY) === LM.mapSize) {
                         window.userBots.offsetX = (this.viewMinX + this.viewMaxX) / 2
                         window.userBots.offsetY = (this.viewMinY + this.viewMaxY) / 2
                     }
-					
+
                     break;
                     //2020 jimboy3100
 
@@ -11996,19 +11788,19 @@ function thelegendmodproject() {
             }
         },
         showSessionStats(u) {
-            toastr.info('<b>[' + Premadeletter123 + ']:</b><br> ' + 
-			'<b class="message-nick">Final mass:</b> ' + u.finalMass + '<br>' + 
-			'<b class="message-nick">Final position:</b> ' + u.finalPosition + '<br>' + 
-			'<b class="message-nick">Food eaten:</b> ' + u.foodEaten + '<br>' + 
-			'<b class="message-nick">Highest mass:</b> ' + u.highestMass + '<br>' + 
-			'<b class="message-nick">Longest time alive:</b> ' + u.longestTimeAlive + '<br>' + 
-			'<b class="message-nick">Mass consumed:</b> ' + u.massConsumed + '<br>' + 
-			'<b class="message-nick">Normal cells eaten:</b> ' + u.normalCellsEaten + '<br>' + 
-			'<b class="message-nick">Players eaten:</b> ' + u.playersEaten + '<br>' + 
-			'<b class="message-nick">Time on leaderboard:</b> ' + u.timeInLeaderboard + '<br>' + 
-			'<b class="message-nick">Total time:</b> ' + u.timeTotal + '<br>' + 
-			'<b class="message-nick">Top position:</b> ' + u.topPosition + '<br>' + 
-			'<b class="message-nick">Viruses eaten:</b> ' + u.virusesEaten)
+            toastr.info('<b>[' + Premadeletter123 + ']:</b><br> ' +
+                '<b class="message-nick">Final mass:</b> ' + u.finalMass + '<br>' +
+                '<b class="message-nick">Final position:</b> ' + u.finalPosition + '<br>' +
+                '<b class="message-nick">Food eaten:</b> ' + u.foodEaten + '<br>' +
+                '<b class="message-nick">Highest mass:</b> ' + u.highestMass + '<br>' +
+                '<b class="message-nick">Longest time alive:</b> ' + u.longestTimeAlive + '<br>' +
+                '<b class="message-nick">Mass consumed:</b> ' + u.massConsumed + '<br>' +
+                '<b class="message-nick">Normal cells eaten:</b> ' + u.normalCellsEaten + '<br>' +
+                '<b class="message-nick">Players eaten:</b> ' + u.playersEaten + '<br>' +
+                '<b class="message-nick">Time on leaderboard:</b> ' + u.timeInLeaderboard + '<br>' +
+                '<b class="message-nick">Total time:</b> ' + u.timeTotal + '<br>' +
+                '<b class="message-nick">Top position:</b> ' + u.topPosition + '<br>' +
+                '<b class="message-nick">Viruses eaten:</b> ' + u.virusesEaten)
         },
         updateEvents(event) {
             if (event.length == 0) window.questActivationReq()
@@ -12376,45 +12168,43 @@ Game name     : ${i.displayName}<br/>
             }
             let text = '';
             let teamText = '';
-			
-				//
-			this.playerPositionMulti = null;
-			/*if(LM.multiBoxPlayerExists && (window.multiboxPlayerEnabled || window.multiboxPlayerEnabledSaved)){
-				
-				if (window.multiboxPlayerEnabled){
-					for (var i=0; i<spects[window.multiboxPlayerEnabled-1].leaderboard.length; i++){
-						if (spects[window.multiboxPlayerEnabled-1].leaderboard[i].id == "isPlayer"){		
-								if (this.leaderboard[i]){ 
-									this.leaderboard[i].id = 'isPlayer'
-									this.playerPositionNickMulti  = this.leaderboard[i].nick
-									this.playerPositionMulti = i
-								}								
-							}
-						}
-					}                      
-				else if (window.multiboxPlayerEnabledSaved){
-					for (var i=0; i<spects[window.multiboxPlayerEnabledSaved-1].leaderboard.length; i++){
-						if (spects[window.multiboxPlayerEnabledSaved-1].leaderboard[i].id == "isPlayer"){	
-							if (this.leaderboard[i]){
-								this.leaderboard[i].id = 'isPlayer'	
-								this.playerPositionNickMulti  = this.leaderboard[i].nick
-								this.playerPositionMulti = i
-							}
-						}
-					}
-				}  
-				
-			}*/					
-				//			
+
+            //
+            this.playerPositionMulti = null;
+            /*if(LM.multiBoxPlayerExists && (window.multiboxPlayerEnabled || window.multiboxPlayerEnabledSaved)){
+            	
+            	if (window.multiboxPlayerEnabled){
+            		for (var i=0; i<spects[window.multiboxPlayerEnabled-1].leaderboard.length; i++){
+            			if (spects[window.multiboxPlayerEnabled-1].leaderboard[i].id == "isPlayer"){		
+            					if (this.leaderboard[i]){ 
+            						this.leaderboard[i].id = 'isPlayer'
+            						this.playerPositionNickMulti  = this.leaderboard[i].nick
+            						this.playerPositionMulti = i
+            					}								
+            				}
+            			}
+            		}                      
+            	else if (window.multiboxPlayerEnabledSaved){
+            		for (var i=0; i<spects[window.multiboxPlayerEnabledSaved-1].leaderboard.length; i++){
+            			if (spects[window.multiboxPlayerEnabledSaved-1].leaderboard[i].id == "isPlayer"){	
+            				if (this.leaderboard[i]){
+            					this.leaderboard[i].id = 'isPlayer'	
+            					this.playerPositionNickMulti  = this.leaderboard[i].nick
+            					this.playerPositionMulti = i
+            				}
+            			}
+            		}
+            	}  
+            	
+            }*/
+            //			
             for (var temp = 0; temp < this.leaderboard.length && defaultmapsettings.leaderboardlimit != temp; temp++) {
                 var html = '<span>';
                 if (this.leaderboard[temp].id === 'isPlayer') {
                     html = '<span class=\"me\">';
-                }
-				else if (LM.multiBoxPlayerExists && this.leaderboard[temp].nick == profiles[application.selectedOldProfile].nick && this.leaderboard[temp].nick != ""){					
-					html = '<span class=\"me\">';
-				}
-				else {
+                } else if (LM.multiBoxPlayerExists && this.leaderboard[temp].nick == profiles[application.selectedOldProfile].nick && this.leaderboard[temp].nick != "") {
+                    html = '<span class=\"me\">';
+                } else {
                     if (ogarcopythelb.clanTag.length && 0 != window.teammatenicks.includes(this.leaderboard[temp].nick)) {
                         html = '<span class=\"teammate\">';
                     } else if (this.leaderboard[temp].isFriend) {
@@ -12424,45 +12214,42 @@ Game name     : ${i.displayName}<br/>
                 }
                 teamText += html + (temp + 1) + '. ' + application.escapeHTML(this.leaderboard[temp].nick) + '</span>';
             }
-			//
-			if (LM.multiBoxPlayerExists){
-				for (var temp = 0; temp < this.leaderboard.length; temp++) {
-					if (this.leaderboard[temp].nick == profiles[application.selectedOldProfile].nick && profiles[application.selectedOldProfile].nick != profiles[application.selectedProfile].nick && this.leaderboard[temp].nick != ""){
-						this.playerPositionMulti = temp;
-					}
-				}
-			}	
-			var tempPositionText=null
-			var tempPositionText2=null
-			if (this.playerPositionMulti && this.playerPositionMulti > defaultmapsettings.leaderboardlimit){	
-				tempPositionText = '<span class=\"me\">' + (this.playerPositionMulti+1) + '. ' + application.escapeHTML(this.leaderboard[this.playerPositionMulti].nick) + '</span>';
-			}
-			//			
+            //
+            if (LM.multiBoxPlayerExists) {
+                for (var temp = 0; temp < this.leaderboard.length; temp++) {
+                    if (this.leaderboard[temp].nick == profiles[application.selectedOldProfile].nick && profiles[application.selectedOldProfile].nick != profiles[application.selectedProfile].nick && this.leaderboard[temp].nick != "") {
+                        this.playerPositionMulti = temp;
+                    }
+                }
+            }
+            var tempPositionText = null
+            var tempPositionText2 = null
+            if (this.playerPositionMulti && this.playerPositionMulti > defaultmapsettings.leaderboardlimit) {
+                tempPositionText = '<span class=\"me\">' + (this.playerPositionMulti + 1) + '. ' + application.escapeHTML(this.leaderboard[this.playerPositionMulti].nick) + '</span>';
+            }
+            //			
             if (this.playerPosition > defaultmapsettings.leaderboardlimit) {
                 tempPositionText2 = '<span class=\"me\">' + this.playerPosition + '. ' + application.escapeHTML(this.playerNick) + '</span>';
                 //defaultmapsettings['showLbData'];
             }
-			if (!tempPositionText){
-				if (tempPositionText2) teamText += tempPositionText2	
-			}
-			else if (tempPositionText){
-				if (this.playerPositionMulti && (this.playerPositionMulti+1)>this.playerPosition){
-					teamText += tempPositionText2	
-					teamText += tempPositionText
-				}
-				else if (this.playerPositionMulti && (this.playerPositionMulti+1)<this.playerPosition){
-					teamText += tempPositionText	
-					teamText += tempPositionText2
-				}	
-				else if (this.playerPositionMulti && (this.playerPositionMulti+1)==this.playerPosition){ //bug
-						teamText += tempPositionText2
-				}				
-			}
-			
-			
+            if (!tempPositionText) {
+                if (tempPositionText2) teamText += tempPositionText2
+            } else if (tempPositionText) {
+                if (this.playerPositionMulti && (this.playerPositionMulti + 1) > this.playerPosition) {
+                    teamText += tempPositionText2
+                    teamText += tempPositionText
+                } else if (this.playerPositionMulti && (this.playerPositionMulti + 1) < this.playerPosition) {
+                    teamText += tempPositionText
+                    teamText += tempPositionText2
+                } else if (this.playerPositionMulti && (this.playerPositionMulti + 1) == this.playerPosition) { //bug
+                    teamText += tempPositionText2
+                }
+            }
+
+
             //if (legendmod.gameMode != ":battleroyale" && LM.ws && !LM.ws.includes("imsolo.pro")) {
-			if (legendmod.gameMode != ":battleroyale" && LM.ws && LM.integrity) {	
-			//if (legendmod.gameMode != ":battleroyale" && LM.ws) {	
+            if (legendmod.gameMode != ":battleroyale" && LM.ws && LM.integrity) {
+                //if (legendmod.gameMode != ":battleroyale" && LM.ws) {	
                 teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
                 if (defaultmapsettings.FBTracking && legendmod.friends && legendmod.friends > 0) {
                     teamText += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
@@ -12502,10 +12289,10 @@ Game name     : ${i.displayName}<br/>
             if (defaultmapsettings.vanillaSkins == true && window.customskinsname != null && application.customSkinsMap[window.customskinsname] == null && window.customskinsarray[window.customskinsname] && window.customskinsarray[window.customskinsname].customskinsurl != null) {
                 for (i = 0; i <= this.leaderboard.length - 1; i++) {
                     if (this.leaderboard[i].nick == window.customskinsname) {
-                        application.customSkinsMap[window.customskinsname] = window.customskinsarray[window.customskinsname].customskinsurl ;
-                        application.loadSkin(application.customSkinsCache, window.customskinsarray[window.customskinsname].customskinsurl , window.customskinsarray[window.customskinsname].customskinanimated);
+                        application.customSkinsMap[window.customskinsname] = window.customskinsarray[window.customskinsname].customskinsurl;
+                        application.loadSkin(application.customSkinsCache, window.customskinsarray[window.customskinsname].customskinsurl, window.customskinsarray[window.customskinsname].customskinanimated);
                         window.customskinsname = null;
-						window.customskinsarray[window.customskinsname] == null
+                        window.customskinsarray[window.customskinsname] == null
                     }
                 }
             }
@@ -12556,38 +12343,36 @@ Game name     : ${i.displayName}<br/>
             //if (right - left > 14000 && bottom - top > 14000) {
             //if (!legendmod.integrity || (right - left) > 14000 && (bottom - top) > 14000) { //2020 jimboy3100
 
-			//if (!LM.integrity && !this.mapOffsetFixed){ 
-			if (!this.integrity){ 
-				this.mapSize = Math.abs((left - right)); 
-				this.mapOffset = 0
-			}
-			else if (this.integrity){ 
-				this.mapSize = 14142 //14142.13562
-				this.mapOffset = this.mapSize / 2
-			}
-			
-			if (!this.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) { //2020 jimboy3100
-				
-				if (this.integrity){
-					this.mapOffsetX = this.mapOffset - right;
-					this.mapOffsetY = this.mapOffset - bottom;					
-					this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
-					this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
-					this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
-					this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
-				}
-				else{
-					this.mapOffsetX = this.mapSize / 2
-					this.mapOffsetY = this.mapSize / 2
-					this.mapMinX = left
-					this.mapMinY = top
-					this.mapMaxX = right
-					this.mapMaxY = bottom
-				}
+            //if (!LM.integrity && !this.mapOffsetFixed){ 
+            if (!this.integrity) {
+                this.mapSize = Math.abs((left - right));
+                this.mapOffset = 0
+            } else if (this.integrity) {
+                this.mapSize = 14142 //14142.13562
+                this.mapOffset = this.mapSize / 2
+            }
+
+            if (!this.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) { //2020 jimboy3100
+
+                if (this.integrity) {
+                    this.mapOffsetX = this.mapOffset - right;
+                    this.mapOffsetY = this.mapOffset - bottom;
+                    this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
+                    this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
+                    this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
+                    this.mapMaxY = ~~(this.mapOffset - this.mapOffsetY);
+                } else {
+                    this.mapOffsetX = this.mapSize / 2
+                    this.mapOffsetY = this.mapSize / 2
+                    this.mapMinX = left
+                    this.mapMinY = top
+                    this.mapMaxX = right
+                    this.mapMaxY = bottom
+                }
                 this.mapMidX = (this.mapMaxX + this.mapMinX) / 2; //Sonia3 -> this.mapMidX = -legendmod.mapOffsetX
                 this.mapMidY = (this.mapMaxY + this.mapMinY) / 2; //Sonia3 -> this.mapMidY = -legendmod.mapOffsetY					
                 this.mapOffsetFixed || (this.viewX = (right + left) / 2, this.viewY = (bottom + top) / 2);
-				//console.log(left, top, right, bottom)
+                //console.log(left, top, right, bottom)
                 this.mapOffsetFixed = true;
                 //for SPECT
                 this.addSpect();
@@ -12627,38 +12412,34 @@ Game name     : ${i.displayName}<br/>
                 //console.log(g)		
                 if (legendflags.includes(LowerCase(y))) {
                     core.registerSkin(y, null, "https://legendmod.ml/agario/live/flags/" + LowerCase(y) + ".png", null);
-                }				
-                else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(y))) {
+                } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(y))) {
                     for (var player = 0; player < window.FreeSkins.length; player++) {
                         if (LowerCase(y) == window.FreeSkins[player].id) {
                             core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image, null);
                             //console.log("https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.FreeSkins[player].image)
                         }
                     }
-                } 
-				else if (g != null && g.includes && g.includes("%custom_") && !legendflags.includes(LowerCase(y))) {
+                } else if (g != null && g.includes && g.includes("%custom_") && !legendflags.includes(LowerCase(y))) {
                     var g1 = g.replace('%custom_', 'skin_custom_')
                     core.registerSkin(y, null, EnvConfig.custom_skins_url + g1 + ".png", null);
                     //core.registerSkin(y, null, "https://configs.agario.miniclippt.com/live/custom_skins/" + g1 + ".png", null);
-                } 
-				else if (g != null && g.includes && g.includes("_level_") && !legendflags.includes(LowerCase(y))) {
+                } else if (g != null && g.includes && g.includes("_level_") && !legendflags.includes(LowerCase(y))) {
                     var g1 = g.replace('%', '')
                     g1 = g1.replace('_level_1', '').replace('_level_2', '').replace('_level_3', '');
                     g1 = g1.charAt(0).toUpperCase() + g1.slice(1);
                     g1 = makeUpperCaseAfterUnderline(g1);
-					var customskinanimated = true;
-                    core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + g1 + ".png", customskinanimated);                    
-                } 
-				else if (g != null && defaultmapsettings.vanillaSkins == true && window.LMAgarGameConfiguration != undefined) {
+                    var customskinanimated = true;
+                    core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + g1 + ".png", customskinanimated);
+                } else if (g != null && defaultmapsettings.vanillaSkins == true && window.LMAgarGameConfiguration != undefined) {
                     for (var player = 0; player < window.EquippableSkins.length; player++) {
                         if (window.EquippableSkins[player].productId == "skin_" + g.replace('%', '') && window.EquippableSkins[player].image != "uses_spine") {
                             //console.log("Player: " + y + " Color: " + EquippableSkins[player].cellColor + " Image: " + EquippableSkins[player].image + " SkinId: " + EquippableSkins[player].gameplayId + " Skins type: " + EquippableSkins[player].skinType);                                
-                                window.lastusednameforskin = y;
-                                //core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image, null);
-								if (!application.customSkinsMap[y] || LM.gameMode != ":party"){
-									application.customSkinsMap[y] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
-									application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);  
-								}
+                            window.lastusednameforskin = y;
+                            //core.registerSkin(y, null, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image, null);
+                            if (!application.customSkinsMap[y] || LM.gameMode != ":party") {
+                                application.customSkinsMap[y] = "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image;
+                                application.loadSkin(application.customSkinsCache, "https://configs-web.agario.miniclippt.com/live/" + window.agarversion + window.EquippableSkins[player].image);
+                            }
                         }
                     }
                 }
@@ -12696,7 +12477,7 @@ Game name     : ${i.displayName}<br/>
         },
         isInViewCustom3(x, y, size) {
             var randomNum = 0 // randomNum=40
-			var distance = size + randomNum
+            var distance = size + randomNum
             //var distance = size + randomNum + this.playerSize		
             return !(x + distance < legendmod.camMinMultiX ||
                 y + distance < legendmod.camMinMultiY ||
@@ -12704,40 +12485,39 @@ Game name     : ${i.displayName}<br/>
                 y - distance > legendmod.camMaxMultiY)
         },
         //https://github.com/NuclearC/agar.io-protocol
-		megaFFAscore(){
-			if (this.integrity){
-				this.totalPlayerMass += this.playerMass	
-			}
-			if (this.ws.includes("imsolo.pro:2102")){
-				this.totalPlayerMassBigFFA += this.playerMass				
-				var temp = 20000 * 25 * 60 * 60 //1800000000 total mass
-				if (this.totalPlayerMassBigFFA > temp && !window.proLicenceUID){
-					this.totalPlayerMassBigFFA = 0
-					//localStorage.setItem("MassBigFFAAnnouncement", true);															
-					window.proLicenceUID = "MegaFFA"
-					localStorage.setItem("proLicenceUID", window.proLicenceUID);
-					var dateNow = parseInt(new Date().toISOString().slice(0,new Date().toISOString().indexOf("T")).replace(/-/g,""));
-					localStorage.setItem("PremiumLimitedDateStart", dateNow);
-					var tempdateNow = dateNow.toString()
-					var tempdateNow2 = parseInt(tempdateNow.slice(6, 8))
-					if (tempdateNow2<24){
-						tempdateNow2 += 7						
-					}
-					else{
-						tempdateNow2 += 77						
-						//tempdateNow2 = "last day"
-					}
-					tempdateNow2 += "th";
-					toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://legendmod.ml/banners/particles.gif);'>Congratulations</span> for your score on MEGA FFA.<br>  Your licence is stored as Giveaway Premium until <font color='blue'><b>" + tempdateNow2 + "</font></b> of this month. Thank you for using our mod!").css("width", "350px");
-				}
-				localStorage.setItem("totalPlayerMassBigFFA", this.totalPlayerMassBigFFA);
-			}			
-		},		
+        megaFFAscore() {
+            if (this.integrity) {
+                this.totalPlayerMass += this.playerMass
+            }
+            if (this.ws.includes("imsolo.pro:2102")) {
+                this.totalPlayerMassBigFFA += this.playerMass
+                var temp = 20000 * 25 * 60 * 60 //1800000000 total mass
+                if (this.totalPlayerMassBigFFA > temp && !window.proLicenceUID) {
+                    this.totalPlayerMassBigFFA = 0
+                    //localStorage.setItem("MassBigFFAAnnouncement", true);															
+                    window.proLicenceUID = "MegaFFA"
+                    localStorage.setItem("proLicenceUID", window.proLicenceUID);
+                    var dateNow = parseInt(new Date().toISOString().slice(0, new Date().toISOString().indexOf("T")).replace(/-/g, ""));
+                    localStorage.setItem("PremiumLimitedDateStart", dateNow);
+                    var tempdateNow = dateNow.toString()
+                    var tempdateNow2 = parseInt(tempdateNow.slice(6, 8))
+                    if (tempdateNow2 < 24) {
+                        tempdateNow2 += 7
+                    } else {
+                        tempdateNow2 += 77
+                        //tempdateNow2 = "last day"
+                    }
+                    tempdateNow2 += "th";
+                    toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://legendmod.ml/banners/particles.gif);'>Congratulations</span> for your score on MEGA FFA.<br>  Your licence is stored as Giveaway Premium until <font color='blue'><b>" + tempdateNow2 + "</font></b> of this month. Thank you for using our mod!").css("width", "350px");
+                }
+                localStorage.setItem("totalPlayerMassBigFFA", this.totalPlayerMassBigFFA);
+            }
+        },
         updateCells(view, offset) {
-			
-			//window.updateCellsClock=true;
-			this.megaFFAscore();
-			
+
+            //window.updateCellsClock=true;
+            this.megaFFAscore();
+
             var encode = function() {
                 for (var text = '';;) {
                     var string = view.readUInt8(offset++);
@@ -12794,16 +12574,16 @@ Game name     : ${i.displayName}<br/>
 
                 if (4 & flags) {
                     skin = encode();
-                    						//console.log('skin '+g);
+                    //console.log('skin '+g);
 
                 }
                 if (8 & flags) {
                     name = window.decodeURIComponent(escape(encode()));
-					//console.log('name '+name+ 'skin '+skin);
-					//if (LM.ws.includes("imsolo.pro") && name.includes('}')){
-					if (!LM.integrity && name.includes('}')){	
-						name = name.split('}')[1]
-					}
+                    //console.log('name '+name+ 'skin '+skin);
+                    //if (LM.ws.includes("imsolo.pro") && name.includes('}')){
+                    if (!LM.integrity && name.includes('}')) {
+                        name = name.split('}')[1]
+                    }
                     if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
                         this.vanillaskins(name, skin);
                     }
@@ -12825,23 +12605,22 @@ Game name     : ${i.displayName}<br/>
                 //    isFriend = extendedFlags & 2,
 
                 const isVirus = flags & 1;
-                var isFood = extendedFlags & 1;				
+                var isFood = extendedFlags & 1;
                 const isFriend = extendedFlags & 2;
-				
-				if (!LM.integrity){ //fix of food for private servers
-					if (size<21) isFood = 1
-				}
+
+                if (!LM.integrity) { //fix of food for private servers
+                    if (size < 21) isFood = 1
+                }
                 //const invisible = this.staticX!=null?this.isInView(x, y):false;
                 //id = this.newID(id),
                 //x = this.getX(x),
                 //y = this.getY(y);	
                 //FOR COLOR
-				//if (!isVirus && !isFood && name != "" && this.gameMode != ":teams") {
+                //if (!isVirus && !isFood && name != "" && this.gameMode != ":teams") {
                 if (!isVirus && !isFood && name != "" && this.gameMode != ":teams" && this.gameMode != ":party") { //28/6/2020
                     if (LM.cellcolors[name]) {
                         color = LM.cellcolors[name]
-                    } 
-					else {
+                    } else {
                         application.teamPlayers.forEach((found) => {
                             if (found.nick == name && found.nick != profiles[application.selectedProfile].nick) {
                                 color = found.color
@@ -12863,8 +12642,7 @@ Game name     : ${i.displayName}<br/>
                     //if (color && !LM.playerCellsMulti.length) {
                     //cellUpdateCells.color = color;
                     //}					
-                } 
-				else {
+                } else {
                     cellUpdateCells = new ogarbasicassembly(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                     cellUpdateCells.time = this.time;
                     cellUpdateCells.spectator = false;
@@ -12878,8 +12656,7 @@ Game name     : ${i.displayName}<br/>
                             cellUpdateCells.isPlayerCell = true;
                             if (this.gameMode == ":teams") {
                                 this.playerColor = color;
-                            }
-							else {
+                            } else {
                                 if (profiles[application.selectedProfile].color && defaultmapsettings.myCustomColor && profiles[application.selectedProfile].color) {
                                     color = profiles[application.selectedProfile].color
                                 }
@@ -12889,8 +12666,7 @@ Game name     : ${i.displayName}<br/>
                             this.playerCells.push(cellUpdateCells);
                             //this.playerCellsMulti.push(cellUpdateCells);
                         }
-                    } 
-					else if (isFood) {
+                    } else if (isFood) {
                         this.food.push(cellUpdateCells);
                     }
                     this.indexedCells[id] = cellUpdateCells;
@@ -12898,23 +12674,23 @@ Game name     : ${i.displayName}<br/>
                 cellUpdateCells.invisible = invisible;
                 if (cellUpdateCells.isPlayerCell) {
                     name = this.playerNick;
-					if (this.ws.includes("replay")) {	
-						name = window.RecordedArenasSpecifications[legendmod.playingReplayServer][3]
-					}
+                    if (this.ws.includes("replay")) {
+                        name = window.RecordedArenasSpecifications[legendmod.playingReplayServer][3]
+                    }
                 }
                 if (name) {
                     cellUpdateCells.targetNick = name;
                 }
-				//15/7/2020
-                if ( name=="℄🌀JustWatchPro" || name=="℄🌀Ꭵᑎᖴᗝᖇᗰᗩ丅Ꭵᗝᑎ" ) {	
-					if (name=="℄🌀JustWatchPro") cellUpdateCells.targetNick = "℄🌀Let\'s fight for glory. Let\'s fight for our kids";
-					if (name=="℄🌀Ꭵᑎᖴᗝᖇᗰᗩ丅Ꭵᗝᑎ") cellUpdateCells.targetNick = "℄🌀Avoid (Anti ,Corners, Random)";
-					if (!application.customSkinsMap[cellUpdateCells.targetNick] && application.customSkinsMap[name]){					
-							application.customSkinsMap[cellUpdateCells.targetNick] = application.customSkinsMap[name];
-							application.loadSkin(application.customSkinsCache, application.customSkinsMap[name]);		
-						}												
-                }				
-				//
+                //15/7/2020
+                if (name == "℄🌀JustWatchPro" || name == "℄🌀Ꭵᑎᖴᗝᖇᗰᗩ丅Ꭵᗝᑎ") {
+                    if (name == "℄🌀JustWatchPro") cellUpdateCells.targetNick = "℄🌀Let\'s fight for glory. Let\'s fight for our kids";
+                    if (name == "℄🌀Ꭵᑎᖴᗝᖇᗰᗩ丅Ꭵᗝᑎ") cellUpdateCells.targetNick = "℄🌀Avoid (Anti ,Corners, Random)";
+                    if (!application.customSkinsMap[cellUpdateCells.targetNick] && application.customSkinsMap[name]) {
+                        application.customSkinsMap[cellUpdateCells.targetNick] = application.customSkinsMap[name];
+                        application.loadSkin(application.customSkinsCache, application.customSkinsMap[name]);
+                    }
+                }
+                //
                 cellUpdateCells.targetX = x;
                 cellUpdateCells.targetY = y;
                 cellUpdateCells.targetSize = size;
@@ -12987,7 +12763,7 @@ Game name     : ${i.displayName}<br/>
             //if(defaultmapsettings.clickTargeting) clickTargeting.check();
 
             //if (window.historystate && legendmod.play) {historystate();}	
-			
+
         },
         color2Hex(number) {
             var color = number.toString(16);
@@ -13015,17 +12791,15 @@ Game name     : ${i.displayName}<br/>
                 y += n.y / playersLength;
             }
 
-			if ((defaultmapsettings.middleMultiView || window.middleMultiViewFlag) && legendmod.multiBoxPlayerExists){
-				//
-			}
-			
-            else if (!window.multiboxPlayerEnabled) {
+            if ((defaultmapsettings.middleMultiView || window.middleMultiViewFlag) && legendmod.multiBoxPlayerExists) {
+                //
+            } else if (!window.multiboxPlayerEnabled) {
                 this.viewX = x;
                 this.viewY = y;
-            }						
+            }
             this.viewXTrue = x;
             this.viewYTrue = y;
-			
+
             this.playerSize = size;
             this.playerMass = ~~(targetSize / 100);
             this.recalculatePlayerMass();
@@ -13050,24 +12824,24 @@ Game name     : ${i.displayName}<br/>
             }
             // this.STE = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null; //Sonia2
             //this.STE = Math.floor(mass * Math.pow(1.15, 2)/4); //Sonia2	
-/*			
-            this.STE = Math.floor(mass * defaultmapsettings.dominationRate / 4); //Sonia2 //Maximal mass that we can eat by Split
-            this.MTE = Math.floor(mass * defaultmapsettings.dominationRate / 2); //Sonia2 //Maximal mass that we can eat by moving
-            this.BMTE = Math.ceil(mass * defaultmapsettings.dominationRate); //Sonia2 //minimal mass of enemy to Move To Eat
-            this.BSTE = Math.ceil(mass * defaultmapsettings.dominationRate * 2); //Sonia2 //minimal mass of enemy who can Split To Eat 
-            this.TTE = Math.ceil(mass / 6); //Sonia2 //minimal mass of your teammate to tricksplit, 
-            this.PTE = Math.floor(mass * 0.66); //Sonia2 //maximal enemys mass for presplit	
-			
-			
-                    var i = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
-                    // this.STE = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null; //Sonia2
-                    this.STE = Math.floor(i * 0.375); //Sonia2
-                    this.MTE = Math.floor(i * 0.75); //Sonia2
-                    this.BMTE = Math.ceil(i * 1.33); //Sonia2
-                    this.BSTE = Math.ceil(i * 2.66); //Sonia2
-                    this.TTE = Math.ceil(i / 6); //Sonia2
-                    this.PTE = Math.floor(i * 0.66); //Sonia2					
-*/					
+            /*			
+                        this.STE = Math.floor(mass * defaultmapsettings.dominationRate / 4); //Sonia2 //Maximal mass that we can eat by Split
+                        this.MTE = Math.floor(mass * defaultmapsettings.dominationRate / 2); //Sonia2 //Maximal mass that we can eat by moving
+                        this.BMTE = Math.ceil(mass * defaultmapsettings.dominationRate); //Sonia2 //minimal mass of enemy to Move To Eat
+                        this.BSTE = Math.ceil(mass * defaultmapsettings.dominationRate * 2); //Sonia2 //minimal mass of enemy who can Split To Eat 
+                        this.TTE = Math.ceil(mass / 6); //Sonia2 //minimal mass of your teammate to tricksplit, 
+                        this.PTE = Math.floor(mass * 0.66); //Sonia2 //maximal enemys mass for presplit	
+            			
+            			
+                                var i = this.selectBiggestCell ? this.playerMaxMass : this.playerMinMass;
+                                // this.STE = i > 35 ? ~~(i * (i < 1000 ? 0.35 : 0.38)) : null; //Sonia2
+                                this.STE = Math.floor(i * 0.375); //Sonia2
+                                this.MTE = Math.floor(i * 0.75); //Sonia2
+                                this.BMTE = Math.ceil(i * 1.33); //Sonia2
+                                this.BSTE = Math.ceil(i * 2.66); //Sonia2
+                                this.TTE = Math.ceil(i / 6); //Sonia2
+                                this.PTE = Math.floor(i * 0.66); //Sonia2					
+            */
             this.STE = Math.floor(mass * defaultmapsettings.dominatedRate / 2); //Sonia2 //Maximal mass that we can eat by Split
             this.MTE = Math.floor(mass * defaultmapsettings.dominatiedRate); //Sonia2 //Maximal mass that we can eat by moving
             this.BMTE = Math.ceil(mass * defaultmapsettings.dominationRate); //Sonia2 //minimal mass of enemy to Move To Eat
@@ -13075,7 +12849,7 @@ Game name     : ${i.displayName}<br/>
             this.TTE = Math.ceil(mass / 6); //Sonia2 //minimal mass of your teammate to tricksplit, 
             this.PTE = Math.floor(mass * 0.66); //Sonia2 //maximal enemys mass for presplit				
 
-	
+
         },
         compareCells() {
             if ((this.play || LM.playerCellsMulti) && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange)) {
@@ -13118,67 +12892,67 @@ Game name     : ${i.displayName}<br/>
                 }
             }
         },
-/*		
-        cacheCells(x, y, targetX, targetY, size, mass) {
-            return mass >= defaultmapsettings.dominationRate * 4 ? void this.biggerSTEDCellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : mass >= defaultmapsettings.dominationRate * 2 ? void this.biggerSTECellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : mass >= defaultmapsettings.dominationRate ? void this.biggerCellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : mass < defaultmapsettings.dominationRate && mass > defaultmapsettings.dominationRate / 2 ? void this.SSCellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : mass > defaultmapsettings.dominationRate / 4 ? void this.smallerCellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : mass > defaultmapsettings.dominationRate / 8 ? void this.STECellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            }) : void this.STEDCellsCache.push({
-                x: x,
-                y: y,
-                targetX: targetX,
-                targetY: targetY,
-                size: size
-            });
-        },
-        setCellOppColor(isPlayer, mass) {
-            if (isPlayer) {
-                return ogarcopythelb.color
-            } else {
-                if (mass >= defaultmapsettings.dominationRate * 8) return defaultSettings.enemyBSTEDColor
-                else if (mass >= defaultmapsettings.dominationRate * 4) return defaultSettings.enemyBSTEDColor
-                else if (mass >= defaultmapsettings.dominationRate * 2) return defaultSettings.enemyBSTEColor
-                else if (mass >= defaultmapsettings.dominationRate) return defaultSettings.enemyBColor
-                else if (mass >= defaultmapsettings.dominationRate / 2) return '#FFDC00'
-                else if (mass >= defaultmapsettings.dominationRate / 4) return defaultSettings.enemySColor
-                else if (mass >= defaultmapsettings.dominationRate / 8) return defaultSettings.enemySSTEColor
-                else return defaultSettings.enemySSTEDColor
-            }
-        },
-*/
+        /*		
+                cacheCells(x, y, targetX, targetY, size, mass) {
+                    return mass >= defaultmapsettings.dominationRate * 4 ? void this.biggerSTEDCellsCache.push({
+                        x: x,
+                        y: y,
+                        targetX: targetX,
+                        targetY: targetY,
+                        size: size
+                    }) : mass >= defaultmapsettings.dominationRate * 2 ? void this.biggerSTECellsCache.push({
+                        x: x,
+                        y: y,
+                        targetX: targetX,
+                        targetY: targetY,
+                        size: size
+                    }) : mass >= defaultmapsettings.dominationRate ? void this.biggerCellsCache.push({
+                        x: x,
+                        y: y,
+                        targetX: targetX,
+                        targetY: targetY,
+                        size: size
+                    }) : mass < defaultmapsettings.dominationRate && mass > defaultmapsettings.dominationRate / 2 ? void this.SSCellsCache.push({
+                        x: x,
+                        y: y,
+                        targetX: targetX,
+                        targetY: targetY,
+                        size: size
+                    }) : mass > defaultmapsettings.dominationRate / 4 ? void this.smallerCellsCache.push({
+                        x: x,
+                        y: y,
+                        targetX: targetX,
+                        targetY: targetY,
+                        size: size
+                    }) : mass > defaultmapsettings.dominationRate / 8 ? void this.STECellsCache.push({
+                        x: x,
+                        y: y,
+                        targetX: targetX,
+                        targetY: targetY,
+                        size: size
+                    }) : void this.STEDCellsCache.push({
+                        x: x,
+                        y: y,
+                        targetX: targetX,
+                        targetY: targetY,
+                        size: size
+                    });
+                },
+                setCellOppColor(isPlayer, mass) {
+                    if (isPlayer) {
+                        return ogarcopythelb.color
+                    } else {
+                        if (mass >= defaultmapsettings.dominationRate * 8) return defaultSettings.enemyBSTEDColor
+                        else if (mass >= defaultmapsettings.dominationRate * 4) return defaultSettings.enemyBSTEDColor
+                        else if (mass >= defaultmapsettings.dominationRate * 2) return defaultSettings.enemyBSTEColor
+                        else if (mass >= defaultmapsettings.dominationRate) return defaultSettings.enemyBColor
+                        else if (mass >= defaultmapsettings.dominationRate / 2) return '#FFDC00'
+                        else if (mass >= defaultmapsettings.dominationRate / 4) return defaultSettings.enemySColor
+                        else if (mass >= defaultmapsettings.dominationRate / 8) return defaultSettings.enemySSTEColor
+                        else return defaultSettings.enemySSTEDColor
+                    }
+                },
+        */
         cacheCells(x, y, targetX, targetY, size, mass) {
             return mass >= defaultmapsettings.dominationRate * 4 ? void this.biggerSTEDCellsCache.push({
                 x: x,
@@ -13237,7 +13011,7 @@ Game name     : ${i.displayName}<br/>
                 else if (mass >= defaultmapsettings.dominatedRate / 4) return defaultSettings.enemySSTEColor
                 else return defaultSettings.enemySSTEDColor
             }
-        },		
+        },
         getCursorPosition() {
             this.cursorX = (this.clientX - this.canvasWidth / 2) / this.viewScale + this.viewX;
             this.cursorY = (this.clientY - this.canvasHeight / 2) / this.viewScale + this.viewY;
@@ -13292,8 +13066,8 @@ Game name     : ${i.displayName}<br/>
                 app.setZoom(e);
             }, setInterval(function() {
                 app.sendPosition();
-            //}, 40), window.master && window.master.clientVersion && this.setClientVersion(window.master.clientVersion, window.master.clientVersionString);
-			}, 10), window.master && window.master.clientVersion && this.setClientVersion(window.master.clientVersion, window.master.clientVersionString);
+                //}, 40), window.master && window.master.clientVersion && this.setClientVersion(window.master.clientVersion, window.master.clientVersionString);
+            }, 10), window.master && window.master.clientVersion && this.setClientVersion(window.master.clientVersion, window.master.clientVersionString);
         }
     };
     window.legendmod = LM; // look at this
@@ -13302,381 +13076,379 @@ Game name     : ${i.displayName}<br/>
         LM.sendAction(action);
     };
     window.drawRender = {
-            canvas: null,
-            ctx: null,
-            canvasWidth: 0,
-            canvasHeight: 0,
-            camX: 0,
-            camY: 0,
-            camXMulti: 0,
-            camYMulti: 0,
-            scale: 1,
-            fpsLastRequest: null,
-            renderedFrames: 0,
-            fps: 0,
-            pi2: 2 * Math.PI,
-            battleAreaMap: null,
-            battleAreaMapCtx: null,
-            pieChart: null,
-            pellet: null,
-            indicator: null,
-			//
-			counterTime: 0,
-			renderTime: 0,
-			averageRenderTime: 0,
-			//			
-            setCanvas() {
-                this.canvas = document.getElementById('canvas');
-                this.ctx = this.canvas.getContext('2d');
-                this.canvas.onmousemove = function(event) {
-                    LM.clientX = event.clientX;
-                    LM.clientY = event.clientY;
-                    LM.getCursorPosition();
-                };
-            },
-            resizeCanvas() {
-                this.canvasWidth = window.innerWidth;
-                this.canvasHeight = window.innerHeight;
-                this.canvas.width = this.canvasWidth;
-                this.canvas.height = this.canvasHeight;
-                LM.canvasWidth = this.canvasWidth;
-                LM.canvasHeight = this.canvasHeight;
-                //this.renderFrame();
-            },
-            setView() {
-                this.setScale(LM.playerSize);
-                var speed = 30;
-                //if (LM.playerCellsMulti.length) {
-                if (window.multiboxPlayerEnabled) {
-                    this.camXMulti = (this.camXMulti + LM.viewX) / 2;
-                    this.camYMulti = (this.camYMulti + LM.viewY) / 2;
-                }
-                if (LM.playerCells.length) {
-                    LM.calculatePlayerMassAndPosition();
-                    this.camX = (this.camX + LM.viewX) / 2;
-                    this.camY = (this.camY + LM.viewY) / 2;
-                } else {
-                    this.camX = (29 * this.camX + LM.viewX) / 30;
-                    this.camY = (29 * this.camY + LM.viewY) / 30;
-                }
-                //this.camX=LM.viewX
-                //this.camY=LM.viewY
-                LM.playerXMulti = this.camXMulti;
-                LM.playerYMulti = this.camYMulti;
-                LM.playerX = this.camX;
-                LM.playerY = this.camY;
-
-            },
-            setScale(size) {
-                if (!LM.autoZoom) {
-                    this.scale = (9 * this.scale + this.getZoom()) / 10;
-                    LM.viewScale = this.scale;
-                    return;
-                }
-                if (LM.play) {
-					this.scale = (9 * this.scale + Math.pow(Math.min(64 / size, 1),0.4) * this.getZoom()) / 10;
-                    //this.scale = (9 * this.scale + Math.min(64 / size, 1) ** 0.4 * this.getZoom()) / 10;
-                } else {
-                    this.scale = (9 * this.scale + LM.scale * this.getZoom()) / 10;
-                }
-                LM.viewScale = this.scale;
-            },
-            getZoom() {
-                return Math.max(this.canvasWidth / 1080, this.canvasHeight / 1920) * LM.zoomValue;
-            },
-            //Sonia5
-            sleep(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms));
-            },
-            renderFrame() { 
-			this.renderStarted = performance.now()
-            //'renderFrame': async function() { //Sonia5
-                //await this.sleep(4); //Sonia5			
-                //this.ctx.start2D();
-
-                LM.time = Date.now();
-                for (i = 0; i < LM.cells.length; i++) {
-                    LM.cells[i].moveCell();
-                }
-                this.setView();
+        canvas: null,
+        ctx: null,
+        canvasWidth: 0,
+        canvasHeight: 0,
+        camX: 0,
+        camY: 0,
+        camXMulti: 0,
+        camYMulti: 0,
+        scale: 1,
+        fpsLastRequest: null,
+        renderedFrames: 0,
+        fps: 0,
+        pi2: 2 * Math.PI,
+        battleAreaMap: null,
+        battleAreaMapCtx: null,
+        pieChart: null,
+        pellet: null,
+        indicator: null,
+        //
+        counterTime: 0,
+        renderTime: 0,
+        averageRenderTime: 0,
+        //			
+        setCanvas() {
+            this.canvas = document.getElementById('canvas');
+            this.ctx = this.canvas.getContext('2d');
+            this.canvas.onmousemove = function(event) {
+                LM.clientX = event.clientX;
+                LM.clientY = event.clientY;
                 LM.getCursorPosition();
-                LM.sortCells();
-                LM.compareCells();
-                this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-                if (defaultmapsettings.showGrid) {
-                    this.drawGrid(this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
-                }
-                this.ctx.save();
-                this.ctx.translate(this.canvasWidth / 2, this.canvasHeight / 2);
-                this.ctx.scale(this.scale, this.scale);
-                this.ctx.translate(-this.camX, -this.camY);
-                if (defaultmapsettings.showBgSectors) {
-                    this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings.gridColor, defaultSettings.sectorsColor, defaultSettings.sectorsWidth, true);
-                }
-                if (LM.gameMode === ':battleroyale') {
-                    this.drawBattleArea(this.ctx);
-                }
-				this.drawCustomBackgrounds()
-				if (defaultmapsettings.showMapBorders) {	
-					
-                    var tempborderwidthradius = defaultSettings.bordersWidth / 2;
-                    this.drawMapBorders(this.ctx, LM.mapOffsetFixed, LM.mapMinX - tempborderwidthradius, LM.mapMinY - tempborderwidthradius, LM.mapMaxX + tempborderwidthradius, LM.mapMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
-                }
-                this.drawCommander();
-                this.drawCommander2();
-                if (defaultmapsettings.virusesRange) {
-                    this.drawVirusesRange(this.ctx, LM.viruses);
-                }
-                //if (defaultmapsettings.waves) {
-                //this.drawWaves();
-                //}				
-                this.drawFood();
-                if (LM.playerCellsMulti.length) {
-                    this.calMinMaxMulti();
-                }
-                this.calMinMax();
-				this.drawHelpers();       
-				this.drawGhostCells();
-                for (var i = 0; i < LM.removedCells.length; i++) {
-                    LM.removedCells[i].draw(this.ctx, true);
-                }
-                for (i = 0; i < LM.cells.length; i++) {
+            };
+        },
+        resizeCanvas() {
+            this.canvasWidth = window.innerWidth;
+            this.canvasHeight = window.innerHeight;
+            this.canvas.width = this.canvasWidth;
+            this.canvas.height = this.canvasHeight;
+            LM.canvasWidth = this.canvasWidth;
+            LM.canvasHeight = this.canvasHeight;
+            //this.renderFrame();
+        },
+        setView() {
+            this.setScale(LM.playerSize);
+            var speed = 30;
+            //if (LM.playerCellsMulti.length) {
+            if (window.multiboxPlayerEnabled) {
+                this.camXMulti = (this.camXMulti + LM.viewX) / 2;
+                this.camYMulti = (this.camYMulti + LM.viewY) / 2;
+            }
+            if (LM.playerCells.length) {
+                LM.calculatePlayerMassAndPosition();
+                this.camX = (this.camX + LM.viewX) / 2;
+                this.camY = (this.camY + LM.viewY) / 2;
+            } else {
+                this.camX = (29 * this.camX + LM.viewX) / 30;
+                this.camY = (29 * this.camY + LM.viewY) / 30;
+            }
+            //this.camX=LM.viewX
+            //this.camY=LM.viewY
+            LM.playerXMulti = this.camXMulti;
+            LM.playerYMulti = this.camYMulti;
+            LM.playerX = this.camX;
+            LM.playerY = this.camY;
 
-                    if (defaultmapsettings.jellyPhisycs) {
-                        LM.cells[i].updateNumPoints();
-                        LM.cells[i].movePoints();
-                    }
+        },
+        setScale(size) {
+            if (!LM.autoZoom) {
+                this.scale = (9 * this.scale + this.getZoom()) / 10;
+                LM.viewScale = this.scale;
+                return;
+            }
+            if (LM.play) {
+                this.scale = (9 * this.scale + Math.pow(Math.min(64 / size, 1), 0.4) * this.getZoom()) / 10;
+                //this.scale = (9 * this.scale + Math.min(64 / size, 1) ** 0.4 * this.getZoom()) / 10;
+            } else {
+                this.scale = (9 * this.scale + LM.scale * this.getZoom()) / 10;
+            }
+            LM.viewScale = this.scale;
+        },
+        getZoom() {
+            return Math.max(this.canvasWidth / 1080, this.canvasHeight / 1920) * LM.zoomValue;
+        },
+        //Sonia5
+        sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        },
+        renderFrame() {
+            this.renderStarted = performance.now()
+            //'renderFrame': async function() { //Sonia5
+            //await this.sleep(4); //Sonia5			
+            //this.ctx.start2D();
 
-                    LM.cells[i].draw(this.ctx);
+            LM.time = Date.now();
+            for (i = 0; i < LM.cells.length; i++) {
+                LM.cells[i].moveCell();
+            }
+            this.setView();
+            LM.getCursorPosition();
+            LM.sortCells();
+            LM.compareCells();
+            this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+            if (defaultmapsettings.showGrid) {
+                this.drawGrid(this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
+            }
+            this.ctx.save();
+            this.ctx.translate(this.canvasWidth / 2, this.canvasHeight / 2);
+            this.ctx.scale(this.scale, this.scale);
+            this.ctx.translate(-this.camX, -this.camY);
+            if (defaultmapsettings.showBgSectors) {
+                this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings.gridColor, defaultSettings.sectorsColor, defaultSettings.sectorsWidth, true);
+            }
+            if (LM.gameMode === ':battleroyale') {
+                this.drawBattleArea(this.ctx);
+            }
+            this.drawCustomBackgrounds()
+            if (defaultmapsettings.showMapBorders) {
 
-                    if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, LM.cells[i].x, LM.cells[i].y, LM.cells[i].size)) {
-                        LM.selected = LM.cells[i].id
-                        //this.drawRing(this.ctx,LM.cells[i].x,LM.cells[i].y,LM.cells[i].size,0.75,'#ffffff')
-                    }
+                var tempborderwidthradius = defaultSettings.bordersWidth / 2;
+                this.drawMapBorders(this.ctx, LM.mapOffsetFixed, LM.mapMinX - tempborderwidthradius, LM.mapMinY - tempborderwidthradius, LM.mapMaxX + tempborderwidthradius, LM.mapMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
+            }
+            this.drawCommander();
+            this.drawCommander2();
+            if (defaultmapsettings.virusesRange) {
+                this.drawVirusesRange(this.ctx, LM.viruses);
+            }
+            //if (defaultmapsettings.waves) {
+            //this.drawWaves();
+            //}				
+            this.drawFood();
+            if (LM.playerCellsMulti.length) {
+                this.calMinMaxMulti();
+            }
+            this.calMinMax();
+            this.drawHelpers();
+            this.drawGhostCells();
+            for (var i = 0; i < LM.removedCells.length; i++) {
+                LM.removedCells[i].draw(this.ctx, true);
+            }
+            for (i = 0; i < LM.cells.length; i++) {
+
+                if (defaultmapsettings.jellyPhisycs) {
+                    LM.cells[i].updateNumPoints();
+                    LM.cells[i].movePoints();
                 }
-				this.drawMiscRings();
-                //lylko
-                defaultmapsettings.jellyPhisycs && LM.updateQuadtree(LM.cells); //
-		
-				this.drawRings();
-				this.drawRMB();
-                //
-                if (defaultmapsettings.debug) {
-                    this.drawViewPorts(this.ctx)
-                }
-                //
 
-                this.ctx.restore();
+                LM.cells[i].draw(this.ctx);
 
-                //this.ctx.finish2D();
-                if (LM.gameMode === ':teams') {
-                    if (this.pieChart && this.pieChart.width) {
-                        this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
-                    }
+                if (drawRender.LMB && this.pointInCircle(LM.cursorX, LM.cursorY, LM.cells[i].x, LM.cells[i].y, LM.cells[i].size)) {
+                    LM.selected = LM.cells[i].id
+                    //this.drawRing(this.ctx,LM.cells[i].x,LM.cells[i].y,LM.cells[i].size,0.75,'#ffffff')
                 }
-					
-				drawRender.renderTime += performance.now() - this.renderStarted
-				drawRender.counterTime++
-				if (drawRender.counterTime >= drawRender.fps || drawRender.counterTime >= 500){
-					if (drawRender.counterTime < 500 && drawRender.counterTime > 8){
-						this.averageRenderTime = (drawRender.renderTime / 10).toFixed(2)
-						
-					}
-						drawRender.counterTime = 0
-						drawRender.renderTime = 0	
-					
-				}
-				//console.log(performance.now() - this.renderStarted, (performance.now() - this.renderStarted) * drawRender.fps)
-				//window.updateCellsClock=false
-				
-				//drawRender.render();
-            },
-			drawHelpers(){
-                if (LM.play || LM.playerCellsMulti.length) {
-                    if (defaultmapsettings.splitRange) {
-                        this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell);
-                        this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell); //Sonia
-                        this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell); //Sonia
-                        //
-                        this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCellsMulti, LM.selectBiggestCell);
-                        this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCellsMulti, LM.selectBiggestCell); //Sonia
-                        this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCellsMulti, LM.selectBiggestCell); //Sonia						
-                    }
-                    if (defaultmapsettings.oppRings && !defaultmapsettings.bubbleInd) {
-                        //this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache , LM.SSCellsCache); //Sonia
-                        this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache); //Sonia
-                    }
-                    if (defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) {
-                        if (!window.multiboxFollowMouse) {
-                            if (!window.multiboxPlayerEnabled) {
-                                this.drawCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
-                            } else if (window.multiboxPlayerEnabled) {
-                                this.drawCursorTracking(this.ctx, LM.playerCellsMulti, LM.cursorX, LM.cursorY);
-                            }
-                        } else {
+            }
+            this.drawMiscRings();
+            //lylko
+            defaultmapsettings.jellyPhisycs && LM.updateQuadtree(LM.cells); //
+
+            this.drawRings();
+            this.drawRMB();
+            //
+            if (defaultmapsettings.debug) {
+                this.drawViewPorts(this.ctx)
+            }
+            //
+
+            this.ctx.restore();
+
+            //this.ctx.finish2D();
+            if (LM.gameMode === ':teams') {
+                if (this.pieChart && this.pieChart.width) {
+                    this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
+                }
+            }
+
+            drawRender.renderTime += performance.now() - this.renderStarted
+            drawRender.counterTime++
+            if (drawRender.counterTime >= drawRender.fps || drawRender.counterTime >= 500) {
+                if (drawRender.counterTime < 500 && drawRender.counterTime > 8) {
+                    this.averageRenderTime = (drawRender.renderTime / 10).toFixed(2)
+
+                }
+                drawRender.counterTime = 0
+                drawRender.renderTime = 0
+
+            }
+            //console.log(performance.now() - this.renderStarted, (performance.now() - this.renderStarted) * drawRender.fps)
+            //window.updateCellsClock=false
+
+            //drawRender.render();
+        },
+        drawHelpers() {
+            if (LM.play || LM.playerCellsMulti.length) {
+                if (defaultmapsettings.splitRange) {
+                    this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell);
+                    this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell); //Sonia
+                    this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCells, LM.selectBiggestCell); //Sonia
+                    //
+                    this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCellsMulti, LM.selectBiggestCell);
+                    this.drawSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCellsMulti, LM.selectBiggestCell); //Sonia
+                    this.drawDoubleSplitRange(this.ctx, LM.biggerSTEDCellsCache, LM.playerCellsMulti, LM.selectBiggestCell); //Sonia						
+                }
+                if (defaultmapsettings.oppRings && !defaultmapsettings.bubbleInd) {
+                    //this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache , LM.SSCellsCache); //Sonia
+                    this.drawOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache); //Sonia
+                }
+                if (defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) {
+                    if (!window.multiboxFollowMouse) {
+                        if (!window.multiboxPlayerEnabled) {
                             this.drawCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
+                        } else if (window.multiboxPlayerEnabled) {
                             this.drawCursorTracking(this.ctx, LM.playerCellsMulti, LM.cursorX, LM.cursorY);
                         }
-
+                    } else {
+                        this.drawCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
+                        this.drawCursorTracking(this.ctx, LM.playerCellsMulti, LM.cursorX, LM.cursorY);
                     }
+
                 }
-			},	
-			drawMiscRings(){
-                if (LM.play || LM.playerCellsMulti.length) {
-                    if (defaultmapsettings.bubbleInd) {
-                        this.drawBOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache, LM.SSCellsCache);
-                    }
-                    if (defaultmapsettings.bubbleCursorTracker) {
-                        this.drawBCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
-                    }
-                    if (defaultmapsettings.FBTracking && LM.arrowFB[0].visible) {
-                        this.drawFBTracking(this.ctx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
-                    }
+            }
+        },
+        drawMiscRings() {
+            if (LM.play || LM.playerCellsMulti.length) {
+                if (defaultmapsettings.bubbleInd) {
+                    this.drawBOppRings(this.ctx, this.scale, LM.biggerSTEDCellsCache, LM.biggerSTECellsCache, LM.biggerCellsCache, LM.smallerCellsCache, LM.STECellsCache, LM.STEDCellsCache, LM.SSCellsCache);
                 }
-			},				
-			drawRMB(){
-                if (drawRender.RMB && LM.indexedCells[LM.selected] && LM.playerCellIDs.length) {
-                    var index = LM.selectBiggestCell ? LM.playerCells.length - 1 : 0;
-                    //ctx.arc(playerCells[index].x, playerCells[index].y, playerCells[index].size + 760, 0, this.pi2, false);
-                    if (LM.playerCells[index] == undefined) return;
-                    var xc = LM.playerCells[index].targetX //.x
-                    var yc = LM.playerCells[index].targetY //.y
+                if (defaultmapsettings.bubbleCursorTracker) {
+                    this.drawBCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
+                }
+                if (defaultmapsettings.FBTracking && LM.arrowFB[0].visible) {
+                    this.drawFBTracking(this.ctx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
+                }
+            }
+        },
+        drawRMB() {
+            if (drawRender.RMB && LM.indexedCells[LM.selected] && LM.playerCellIDs.length) {
+                var index = LM.selectBiggestCell ? LM.playerCells.length - 1 : 0;
+                //ctx.arc(playerCells[index].x, playerCells[index].y, playerCells[index].size + 760, 0, this.pi2, false);
+                if (LM.playerCells[index] == undefined) return;
+                var xc = LM.playerCells[index].targetX //.x
+                var yc = LM.playerCells[index].targetY //.y
 
-                    var x = LM.indexedCells[LM.selected].targetX //.x
-                    var y = LM.indexedCells[LM.selected].targetY //.y
+                var x = LM.indexedCells[LM.selected].targetX //.x
+                var y = LM.indexedCells[LM.selected].targetY //.y
 
-                    var a = xc - x
-                    var b = yc - y
-                    var distance = Math.sqrt(a * a + b * b) - (LM.indexedCells[LM.selected].size + LM.playerCells[index].size)
+                var a = xc - x
+                var b = yc - y
+                var distance = Math.sqrt(a * a + b * b) - (LM.indexedCells[LM.selected].size + LM.playerCells[index].size)
 
-                    var ang = Math.atan2(y - yc, x - xc);
+                var ang = Math.atan2(y - yc, x - xc);
 
-                    LM.cursorX = xc + (Math.cos(ang) * distance)
-                    LM.cursorY = yc + (Math.sin(ang) * distance)
-                    LM.sendPosition()
-                }	
-			},				
-			drawRings(){
-				if (defaultmapsettings.reverseTrick){
-					LM.indexedCells[reverseTrick.biggerEnemy] && this.drawRing(this.ctx,
-						LM.indexedCells[reverseTrick.biggerEnemy].x,
-						LM.indexedCells[reverseTrick.biggerEnemy].y,
-						LM.indexedCells[reverseTrick.biggerEnemy].size,
-						0.75, 'red');
-					LM.indexedCells[reverseTrick.smallerEnemy] && this.drawRing(this.ctx,
-						LM.indexedCells[reverseTrick.smallerEnemy].x,
-						LM.indexedCells[reverseTrick.smallerEnemy].y,
-						LM.indexedCells[reverseTrick.smallerEnemy].size,
-						0.75, 'blue');
-				}
-                LM.indexedCells[LM.selected] && this.drawRing(this.ctx,
-                    LM.indexedCells[LM.selected].x,
-                    LM.indexedCells[LM.selected].y,
-                    LM.indexedCells[LM.selected].size,
-                    0.75, '#ffffff')
-			},					
-			drawCustomBackgrounds(){
-                if (defaultSettings.customBackground && defaultSettings.customBackground!="") {
-                    if (!legendmod.customMidPic) {
-                        if (defaultSettings.customBackground) {
-                            legendmod.customMidPic = new Image;
-                            legendmod.customMidPic.src = defaultSettings.customBackground;
-                        } 
-						/*else {
-                            legendmod.customMidPic = new Image;
-                            legendmod.customMidPic.src = defaultSettings.customServerImage1;
-                        }*/
-                    } 
-					else if (legendmod.customMidPic && defaultSettings.customBackground && legendmod.customMidPic.src != defaultSettings.customBackground) {
+                LM.cursorX = xc + (Math.cos(ang) * distance)
+                LM.cursorY = yc + (Math.sin(ang) * distance)
+                LM.sendPosition()
+            }
+        },
+        drawRings() {
+            if (defaultmapsettings.reverseTrick) {
+                LM.indexedCells[reverseTrick.biggerEnemy] && this.drawRing(this.ctx,
+                    LM.indexedCells[reverseTrick.biggerEnemy].x,
+                    LM.indexedCells[reverseTrick.biggerEnemy].y,
+                    LM.indexedCells[reverseTrick.biggerEnemy].size,
+                    0.75, 'red');
+                LM.indexedCells[reverseTrick.smallerEnemy] && this.drawRing(this.ctx,
+                    LM.indexedCells[reverseTrick.smallerEnemy].x,
+                    LM.indexedCells[reverseTrick.smallerEnemy].y,
+                    LM.indexedCells[reverseTrick.smallerEnemy].size,
+                    0.75, 'blue');
+            }
+            LM.indexedCells[LM.selected] && this.drawRing(this.ctx,
+                LM.indexedCells[LM.selected].x,
+                LM.indexedCells[LM.selected].y,
+                LM.indexedCells[LM.selected].size,
+                0.75, '#ffffff')
+        },
+        drawCustomBackgrounds() {
+            if (defaultSettings.customBackground && defaultSettings.customBackground != "") {
+                if (!legendmod.customMidPic) {
+                    if (defaultSettings.customBackground) {
                         legendmod.customMidPic = new Image;
                         legendmod.customMidPic.src = defaultSettings.customBackground;
                     }
-                    if (dyinglight1load == "yes") {
-                        this.prevctxglobalAlpha = this.ctx.globalAlpha;
-                        this.ctx.globalAlpha = defaultSettings.backgroundAlpha
-                        this.ctx.drawImage(
-                            cimg5,
-                            legendmod.mapMinX - LM.mapSize - 1,
-                            legendmod.mapMinY - LM.mapSize - 1,
-                            (legendmod.mapMaxX - legendmod.mapMinX) * 3,
-                            (legendmod.mapMaxY - legendmod.mapMinY) * 3
-                        );
-                        this.ctx.globalAlpha = this.prevctxglobalAlpha
-                    }
-                    if (defaultSettings.customBackground) {
-                        this.prevctxglobalAlpha = this.ctx.globalAlpha;
-                        this.ctx.globalAlpha = defaultSettings.backgroundAlpha
-                        this.ctx.drawImage(
-                            legendmod.customMidPic,
-
-                            legendmod.mapMinX,
-                            legendmod.mapMinY,
-                            legendmod.mapMaxX - legendmod.mapMinX,
-                            legendmod.mapMaxY - legendmod.mapMinY
-                        );
-                        this.ctx.globalAlpha = this.prevctxglobalAlpha
-                    } 
-					else {
-                        this.prevctxglobalAlpha = this.ctx.globalAlpha;
-                        this.ctx.globalAlpha = defaultSettings.backgroundAlpha
-                        var ofx = ((legendmod.mapMaxX - legendmod.mapMinX) / 5) * 2.2
-                        var ofy = ((legendmod.mapMinY - legendmod.mapMaxY) / 5) * 2.2
-                        this.ctx.drawImage(
-                            legendmod.customMidPic, //2.1:5.9
-                            legendmod.mapMinX + ofx,
-                            legendmod.mapMaxY + ofy,
-                            (legendmod.mapMaxX - legendmod.mapMinX) / 8.5,
-                            (legendmod.mapMinY - legendmod.mapMaxY) / 8.5
-                        );
-                        this.ctx.globalAlpha = this.prevctxglobalAlpha
-                    }
+                    /*else {
+                            legendmod.customMidPic = new Image;
+                            legendmod.customMidPic.src = defaultSettings.customServerImage1;
+                        }*/
+                } else if (legendmod.customMidPic && defaultSettings.customBackground && legendmod.customMidPic.src != defaultSettings.customBackground) {
+                    legendmod.customMidPic = new Image;
+                    legendmod.customMidPic.src = defaultSettings.customBackground;
                 }
-			},
-            drawViewPorts(ctx) {
-				//console.log('a')
-                this.drawViewport(this.ctx, 'Viewport', LM.camMinX, LM.camMinY, LM.camMaxX, LM.camMaxY, defaultSettings.bordersColor, 15);
-                if (legendmod.multiBoxPlayerExists && LM.camMinMultiX && LM.camMinMultiY && LM.camMaxMultiX && LM.camMaxMultiY) {
-                    this.drawViewport(this.ctx, 'Multi', LM.camMinMultiX, LM.camMinMultiY, LM.camMaxMultiX, LM.camMaxMultiY, defaultSettings.bordersColor, 15);
+                if (dyinglight1load == "yes") {
+                    this.prevctxglobalAlpha = this.ctx.globalAlpha;
+                    this.ctx.globalAlpha = defaultSettings.backgroundAlpha
+                    this.ctx.drawImage(
+                        cimg5,
+                        legendmod.mapMinX - LM.mapSize - 1,
+                        legendmod.mapMinY - LM.mapSize - 1,
+                        (legendmod.mapMaxX - legendmod.mapMinX) * 3,
+                        (legendmod.mapMaxY - legendmod.mapMinY) * 3
+                    );
+                    this.ctx.globalAlpha = this.prevctxglobalAlpha
                 }
-                if (window.fullSpectator) {
-                    for (let i = 0; i < spects.length; i++) {
-                        this.newViewport(this.ctx, spects[i].number, spects[i].getX(spects[i].viewX), spects[i].getY(spects[i].viewY), spects[i].isSpectateEnabled, spects[i].isFreeSpectate, [], [])
-                    }
+                if (defaultSettings.customBackground) {
+                    this.prevctxglobalAlpha = this.ctx.globalAlpha;
+                    this.ctx.globalAlpha = defaultSettings.backgroundAlpha
+                    this.ctx.drawImage(
+                        legendmod.customMidPic,
+
+                        legendmod.mapMinX,
+                        legendmod.mapMinY,
+                        legendmod.mapMaxX - legendmod.mapMinX,
+                        legendmod.mapMaxY - legendmod.mapMinY
+                    );
+                    this.ctx.globalAlpha = this.prevctxglobalAlpha
+                } else {
+                    this.prevctxglobalAlpha = this.ctx.globalAlpha;
+                    this.ctx.globalAlpha = defaultSettings.backgroundAlpha
+                    var ofx = ((legendmod.mapMaxX - legendmod.mapMinX) / 5) * 2.2
+                    var ofy = ((legendmod.mapMinY - legendmod.mapMaxY) / 5) * 2.2
+                    this.ctx.drawImage(
+                        legendmod.customMidPic, //2.1:5.9
+                        legendmod.mapMinX + ofx,
+                        legendmod.mapMaxY + ofy,
+                        (legendmod.mapMaxX - legendmod.mapMinX) / 8.5,
+                        (legendmod.mapMinY - legendmod.mapMaxY) / 8.5
+                    );
+                    this.ctx.globalAlpha = this.prevctxglobalAlpha
                 }
-            },
-            drawWaves() {
-                let waves = LM.Waves
-
-                this.ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
-                for (let length = waves.length - 1; length > 0; length--) {
-
-                    let r = (Date.now() - waves[length].time) / 2
-
-
-                    let gradient = this.ctx.createRadialGradient(waves[length].x, waves[length].y, r - r / 4, waves[length].x, waves[length].y, r);
-
-                    gradient.addColorStop(0, waves[length].color + "00");
-                    gradient.addColorStop(1, waves[length].color);
-
-                    this.ctx.strokeStyle = gradient;
-                    this.ctx.lineWidth = r / 4;
-                    this.ctx.beginPath();
-                    this.ctx.arc(waves[length].x, waves[length].y, r - r / 8, 0, this.pi2, false);
-                    this.ctx.closePath();
-                    this.ctx.stroke();
-                    this.ctx.beginPath();
-                    this.ctx.strokeStyle = defaultSettings.splitRangeColor;
-                    this.ctx.lineWidth = 5;
-                    this.ctx.beginPath();
-                    this.ctx.arc(waves[length].x, waves[length].y, r, 0, this.pi2, false);
-                    this.ctx.closePath();
-                    this.ctx.stroke();
-                    if (r > 500) {
-                        LM.Waves.splice(length, 1);
-                    }
+            }
+        },
+        drawViewPorts(ctx) {
+            //console.log('a')
+            this.drawViewport(this.ctx, 'Viewport', LM.camMinX, LM.camMinY, LM.camMaxX, LM.camMaxY, defaultSettings.bordersColor, 15);
+            if (legendmod.multiBoxPlayerExists && LM.camMinMultiX && LM.camMinMultiY && LM.camMaxMultiX && LM.camMaxMultiY) {
+                this.drawViewport(this.ctx, 'Multi', LM.camMinMultiX, LM.camMinMultiY, LM.camMaxMultiX, LM.camMaxMultiY, defaultSettings.bordersColor, 15);
+            }
+            if (window.fullSpectator) {
+                for (let i = 0; i < spects.length; i++) {
+                    this.newViewport(this.ctx, spects[i].number, spects[i].getX(spects[i].viewX), spects[i].getY(spects[i].viewY), spects[i].isSpectateEnabled, spects[i].isFreeSpectate, [], [])
                 }
-                this.ctx.globalAlpha = 1;
-                /*
+            }
+        },
+        drawWaves() {
+            let waves = LM.Waves
+
+            this.ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
+            for (let length = waves.length - 1; length > 0; length--) {
+
+                let r = (Date.now() - waves[length].time) / 2
+
+
+                let gradient = this.ctx.createRadialGradient(waves[length].x, waves[length].y, r - r / 4, waves[length].x, waves[length].y, r);
+
+                gradient.addColorStop(0, waves[length].color + "00");
+                gradient.addColorStop(1, waves[length].color);
+
+                this.ctx.strokeStyle = gradient;
+                this.ctx.lineWidth = r / 4;
+                this.ctx.beginPath();
+                this.ctx.arc(waves[length].x, waves[length].y, r - r / 8, 0, this.pi2, false);
+                this.ctx.closePath();
+                this.ctx.stroke();
+                this.ctx.beginPath();
+                this.ctx.strokeStyle = defaultSettings.splitRangeColor;
+                this.ctx.lineWidth = 5;
+                this.ctx.beginPath();
+                this.ctx.arc(waves[length].x, waves[length].y, r, 0, this.pi2, false);
+                this.ctx.closePath();
+                this.ctx.stroke();
+                if (r > 500) {
+                    LM.Waves.splice(length, 1);
+                }
+            }
+            this.ctx.globalAlpha = 1;
+            /*
             var wave = {
               x: LM.cursorX,//window.user.mouseX,
               y: LM.cursorY,//window.user.mouseY,
@@ -13684,311 +13456,311 @@ Game name     : ${i.displayName}<br/>
             }
             wave.time = Date.now();
             LM.Waves.push(wave)		  		*/
-            },
-            drawFBTracking(ctx, players, x, y) { //Yahnych
-                for (let length = 0; length < players.length; length++) {
-                    let t = players[length];
-                    let r = t.size / 3;
-                    //distance to target
-                    var dis = Math.sqrt((x - t.x) * (x - t.x) + (y - t.y) * (y - t.y));
-                    //angle 
-                    var angl = Math.round((Math.acos((t.y - y) / dis) / Math.PI) * 180);
-                    //if target on left side
+        },
+        drawFBTracking(ctx, players, x, y) { //Yahnych
+            for (let length = 0; length < players.length; length++) {
+                let t = players[length];
+                let r = t.size / 3;
+                //distance to target
+                var dis = Math.sqrt((x - t.x) * (x - t.x) + (y - t.y) * (y - t.y));
+                //angle 
+                var angl = Math.round((Math.acos((t.y - y) / dis) / Math.PI) * 180);
+                //if target on left side
 
-                    if ((t.x - x > 0 && t.y - y < 0) || (t.x - x > 0 && t.y - y > 0)) {
-                        angl = 180 + (180 - angl);
-                    }
-                    // Store the current context state (i.e. rotation, translation etc..)
-                    ctx.save()
-
-                    //Convert degrees to radian 
-                    var rad = angl * Math.PI / 180;
-
-                    //Set the origin to the center of the image
-                    ctx.translate(t.x, t.y);
-
-                    //Rotate the canvas around the origin
-                    ctx.rotate(rad);
-
-                    //draw the image    
-                    //ctx.drawImage(c, t.size * (-1),t.size * (-1),t.size*2,t.size*2);
-
-                    let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size); //Yahnych
-                    grad.addColorStop(0, defaultSettings.splitRangeColor);
-                    grad.addColorStop(1, defaultSettings.splitRangeColor + "00");
-
-
-                    ctx.fillStyle = grad;
-                    ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
-                    ctx.beginPath();
-                    ctx.arc(0, 0 - (t.size - r), r, 0, Math.PI * 2, false)
-                    ctx.fill();
-                    ctx.globalAlpha = 1;
-                    // Restore canvas state as saved from above
-                    ctx.restore();
+                if ((t.x - x > 0 && t.y - y < 0) || (t.x - x > 0 && t.y - y > 0)) {
+                    angl = 180 + (180 - angl);
                 }
-            },
-            newViewport(ctx, name, viewX, viewY, isSpectateEnabled = false, isFreeSpectate = false, leaderboard = [], cells = []) {
-                var size = 0
-                var mtp = 1.985
+                // Store the current context state (i.e. rotation, translation etc..)
+                ctx.save()
 
-                if (cells.length > 0) {
+                //Convert degrees to radian 
+                var rad = angl * Math.PI / 180;
+
+                //Set the origin to the center of the image
+                ctx.translate(t.x, t.y);
+
+                //Rotate the canvas around the origin
+                ctx.rotate(rad);
+
+                //draw the image    
+                //ctx.drawImage(c, t.size * (-1),t.size * (-1),t.size*2,t.size*2);
+
+                let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size); //Yahnych
+                grad.addColorStop(0, defaultSettings.splitRangeColor);
+                grad.addColorStop(1, defaultSettings.splitRangeColor + "00");
+
+
+                ctx.fillStyle = grad;
+                ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
+                ctx.beginPath();
+                ctx.arc(0, 0 - (t.size - r), r, 0, Math.PI * 2, false)
+                ctx.fill();
+                ctx.globalAlpha = 1;
+                // Restore canvas state as saved from above
+                ctx.restore();
+            }
+        },
+        newViewport(ctx, name, viewX, viewY, isSpectateEnabled = false, isFreeSpectate = false, leaderboard = [], cells = []) {
+            var size = 0
+            var mtp = 1.985
+
+            if (cells.length > 0) {
+                for (var im = 0; cells.length > im; im++)
+                    size += cells[im].size
+            } else if (isFreeSpectate == false && isSpectateEnabled == true) {
+                for (var i = 0; leaderboard.length > i; i++) {
                     for (var im = 0; cells.length > im; im++)
-                        size += cells[im].size
-                } else if (isFreeSpectate == false && isSpectateEnabled == true) {
-                    for (var i = 0; leaderboard.length > i; i++) {
-                        for (var im = 0; cells.length > im; im++)
-                            if (cells[im].nick == leaderboard[i].nick)
-                                size += cells[im].size
-                        break
+                        if (cells[im].nick == leaderboard[i].nick)
+                            size += cells[im].size
+                    break
+                }
+            } else {
+                if (isFreeSpectate && isSpectateEnabled) mtp = 4.95
+            }
+            var s = Math.pow(Math.min(64 / size, 1), 0.4000);
+            var w = 1024 / s / 2 * mtp; //WSVGA
+            var h = 600 / s / 2 * mtp;
+            this.drawViewport(ctx, `Viewport# ${name}`, viewX - w, viewY - h, viewX + w, viewY + h, defaultSettings.bordersColor, 15);
+            //this.drawRing(this.ctx, LM.viewX, LM.viewY, 15, 1, '#ff00ff') 
+        },
+        drawViewport: function(ctx, text, minX, maxY, maxX, minY, stroke, width) {
+
+            ctx.strokeStyle = stroke;
+            ctx.lineWidth = width;
+
+            ctx.fillStyle = "white";
+            ctx.font = "100px sans-serif";
+            ctx.textAlign = "end";
+            ctx.textBaseline = "hanging"
+            ctx.fillText(text, maxX, maxY);
+
+            ctx.beginPath();
+            ctx.moveTo(minX, maxY);
+            ctx.lineTo(maxX, maxY);
+            ctx.lineTo(maxX, minY);
+            ctx.lineTo(minX, minY);
+            ctx.closePath();
+            ctx.stroke();
+
+        },
+        pointInCircle: function(x, y, cx, cy, radius) {
+            var distancesquared = (x - cx) * (x - cx) + (y - cy) * (y - cy);
+            return distancesquared <= radius * radius;
+        },
+        drawRing: function(ctx, x, y, size, alpha, color) {
+            ctx.lineWidth = 20;
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, size - 10, 0, this.pi2, false);
+            ctx.closePath();
+            ctx.stroke();
+
+            ctx.globalAlpha = 1;
+        },
+        drawGrid(ctx, width, heigth, scale, camX, camY) {
+            const reWidth = width / scale;
+            const reHeigth = heigth / scale;
+            let x = (-camX + reWidth / 2) % 50;
+            let y = (-camY + reHeigth / 2) % 50;
+            ctx.strokeStyle = defaultSettings.gridColor;
+            ctx.globalAlpha = 1 * scale;
+            ctx.beginPath();
+            for (; x < reWidth; x += 50) {
+                ctx.moveTo(x * scale - 0.5, 0);
+                ctx.lineTo(x * scale - 0.5, reHeigth * scale);
+            }
+            for (; y < reHeigth; y += 50) {
+                ctx.moveTo(0, y * scale - 0.5);
+                ctx.lineTo(reWidth * scale, y * scale - 0.5);
+            }
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+        },
+        drawSectors(ctx, mapOffset, x, y, minX, minY, maxX, maxY, stroke, color, width, type) {
+            if (mapOffset || !type) {
+                var posX = ~~((maxX - minX) / x);
+                var posY = ~~((maxY - minY) / y);
+                var rePosX = 0;
+                var rePosY = 0;
+                if (ctx.strokeStyle = stroke, ctx.fillStyle = color, ctx.lineWidth = width, type || !type && defaultmapsettings.showMiniMapGrid) {
+                    ctx.beginPath();
+                    var length = 0;
+                    for (; length < x + 1; length++) {
+                        rePosX = minX + posX * length;
+                        ctx.moveTo(length == x ? maxX : rePosX, minY);
+                        ctx.lineTo(length == x ? maxX : rePosX, maxY);
                     }
-                } else {
-                    if (isFreeSpectate && isSpectateEnabled) mtp = 4.95
-                }
-                var s = Math.pow(Math.min(64 / size, 1), 0.4000);
-                var w = 1024 / s / 2 * mtp; //WSVGA
-                var h = 600 / s / 2 * mtp;
-                this.drawViewport(ctx, `Viewport# ${name}`, viewX - w, viewY - h, viewX + w, viewY + h, defaultSettings.bordersColor, 15);
-                //this.drawRing(this.ctx, LM.viewX, LM.viewY, 15, 1, '#ff00ff') 
-            },
-            drawViewport: function(ctx, text, minX, maxY, maxX, minY, stroke, width) {
-
-                ctx.strokeStyle = stroke;
-                ctx.lineWidth = width;
-
-                ctx.fillStyle = "white";
-                ctx.font = "100px sans-serif";
-                ctx.textAlign = "end";
-                ctx.textBaseline = "hanging"
-                ctx.fillText(text, maxX, maxY);
-
-                ctx.beginPath();
-                ctx.moveTo(minX, maxY);
-                ctx.lineTo(maxX, maxY);
-                ctx.lineTo(maxX, minY);
-                ctx.lineTo(minX, minY);
-                ctx.closePath();
-                ctx.stroke();
-
-            },
-            pointInCircle: function(x, y, cx, cy, radius) {
-                var distancesquared = (x - cx) * (x - cx) + (y - cy) * (y - cy);
-                return distancesquared <= radius * radius;
-            },
-            drawRing: function(ctx, x, y, size, alpha, color) {
-                ctx.lineWidth = 20;
-                ctx.globalAlpha = alpha;
-                ctx.strokeStyle = color;
-                ctx.beginPath();
-                ctx.arc(x, y, size - 10, 0, this.pi2, false);
-                ctx.closePath();
-                ctx.stroke();
-
-                ctx.globalAlpha = 1;
-            },
-            drawGrid(ctx, width, heigth, scale, camX, camY) {
-                const reWidth = width / scale;
-                const reHeigth = heigth / scale;
-                let x = (-camX + reWidth / 2) % 50;
-                let y = (-camY + reHeigth / 2) % 50;
-                ctx.strokeStyle = defaultSettings.gridColor;
-                ctx.globalAlpha = 1 * scale;
-                ctx.beginPath();
-                for (; x < reWidth; x += 50) {
-                    ctx.moveTo(x * scale - 0.5, 0);
-                    ctx.lineTo(x * scale - 0.5, reHeigth * scale);
-                }
-                for (; y < reHeigth; y += 50) {
-                    ctx.moveTo(0, y * scale - 0.5);
-                    ctx.lineTo(reWidth * scale, y * scale - 0.5);
-                }
-                ctx.stroke();
-                ctx.globalAlpha = 1;
-            },
-            drawSectors(ctx, mapOffset, x, y, minX, minY, maxX, maxY, stroke, color, width, type) {
-                if (mapOffset || !type) {
-                    var posX = ~~((maxX - minX) / x);
-                    var posY = ~~((maxY - minY) / y);
-                    var rePosX = 0;
-                    var rePosY = 0;
-                    if (ctx.strokeStyle = stroke, ctx.fillStyle = color, ctx.lineWidth = width, type || !type && defaultmapsettings.showMiniMapGrid) {
-                        ctx.beginPath();
-                        var length = 0;
-                        for (; length < x + 1; length++) {
-                            rePosX = minX + posX * length;
-                            ctx.moveTo(length == x ? maxX : rePosX, minY);
-                            ctx.lineTo(length == x ? maxX : rePosX, maxY);
-                        }
-                        length = 0;
-                        for (; length < y + 1; length++) {
-                            rePosY = minY + posY * length;
-                            ctx.moveTo(minX - width / 2, length == y ? maxY : rePosY);
-                            ctx.lineTo(maxX + width / 2, length == y ? maxY : rePosY);
-                        }
-                        ctx.stroke();
-                    } else {
-                        this.drawMapBorders(ctx, mapOffset, minX, minY, maxX, maxY, stroke, width);
-                    }
-                    ctx.font = type ? defaultSettings.sectorsFontWeight + " " + defaultSettings.sectorsFontSize + "px " + defaultSettings.sectorsFontFamily : defaultSettings.miniMapFontWeight + " " + ~~(0.4 * posY) + "px " + defaultSettings.miniMapFontFamily;
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
                     length = 0;
-                    for (; length < y; length++) {
-                        var ogarcopythelb = 0;
-                        for (; ogarcopythelb < x; ogarcopythelb++) {
-                            var application = String.fromCharCode(65 + length) + (ogarcopythelb + 1);
-                            rePosX = ~~(minX + posX / 2 + ogarcopythelb * posX);
-                            rePosY = ~~(minY + posY / 2 + length * posY);
-                            ctx.fillText(application, rePosX, rePosY);
-                        }
+                    for (; length < y + 1; length++) {
+                        rePosY = minY + posY * length;
+                        ctx.moveTo(minX - width / 2, length == y ? maxY : rePosY);
+                        ctx.lineTo(maxX + width / 2, length == y ? maxY : rePosY);
+                    }
+                    ctx.stroke();
+                } else {
+                    this.drawMapBorders(ctx, mapOffset, minX, minY, maxX, maxY, stroke, width);
+                }
+                ctx.font = type ? defaultSettings.sectorsFontWeight + " " + defaultSettings.sectorsFontSize + "px " + defaultSettings.sectorsFontFamily : defaultSettings.miniMapFontWeight + " " + ~~(0.4 * posY) + "px " + defaultSettings.miniMapFontFamily;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                length = 0;
+                for (; length < y; length++) {
+                    var ogarcopythelb = 0;
+                    for (; ogarcopythelb < x; ogarcopythelb++) {
+                        var application = String.fromCharCode(65 + length) + (ogarcopythelb + 1);
+                        rePosX = ~~(minX + posX / 2 + ogarcopythelb * posX);
+                        rePosY = ~~(minY + posY / 2 + length * posY);
+                        ctx.fillText(application, rePosX, rePosY);
                     }
                 }
-            },
-            drawCommander() {
-                //console.log('Special effects stage 2');
-                if (LM.drawCommander) {
-                    var pickerAxes = this.ctx;
-                    cimg = new Image;
-                    cimg.src = defaultSettings.commanderImage;
-                    cimg1 = new Image;
-                    cimg1.src = defaultSettings.commanderImage1;
-                    cimg12 = new Image;
-                    cimg12.src = defaultSettings.commanderImage2;
-                    pickerAxes.save();
-                    pickerAxes.globalAlpha = LM.cAlpha;
-                    pickerAxes.translate(ogario.spawnX, ogario.spawnY);
-                    pickerAxes.rotate(LM.cAngle);
-                    pickerAxes.drawImage(cimg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
-                    pickerAxes.restore();
-                    pickerAxes.save();
-                    pickerAxes.globalAlpha = LM.cAlpha;
-                    pickerAxes.translate(ogario.spawnX, ogario.spawnY);
-                    pickerAxes.rotate(LM.cAngle1);
-                    pickerAxes.drawImage(cimg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
-                    pickerAxes.restore();
-                    pickerAxes.save();
-                    pickerAxes.globalAlpha = LM.cAlpha;
-                    pickerAxes.translate(ogario.spawnX, ogario.spawnY);
-                    pickerAxes.rotate(LM.cAngle2);
-                    pickerAxes.drawImage(cimg12, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
-                    pickerAxes.restore();
-                    pickerAxes.globalAlpha = 1;
-                    this.updateCommander();
-                }
-            },
-            drawCommander2() {
-                //console.log('Special effects stage 2');
-                if (LM.drawCommander2) {
-                    var pickerAxes = this.ctx;
-                    cimg = new Image;
-                    cimg.src = defaultSettings.commanderImage3;
-                    cimg1 = new Image;
-                    cimg1.src = defaultSettings.commanderImage4;
-                    cimg12 = new Image;
-                    cimg12.src = defaultSettings.commanderImage5;
-                    pickerAxes.save();
-                    pickerAxes.globalAlpha = LM.cAlpha;
-                    pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
-                    pickerAxes.rotate(LM.cAngle);
-                    pickerAxes.drawImage(cimg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
-                    pickerAxes.restore();
-                    pickerAxes.save();
-                    pickerAxes.globalAlpha = LM.cAlpha;
-                    pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
-                    pickerAxes.rotate(LM.cAngle1);
-                    pickerAxes.drawImage(cimg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
-                    pickerAxes.restore();
-                    pickerAxes.save();
-                    pickerAxes.globalAlpha = LM.cAlpha;
-                    pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
-                    pickerAxes.rotate(LM.cAngle2);
-                    pickerAxes.drawImage(cimg12, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
-                    pickerAxes.restore();
-                    pickerAxes.globalAlpha = 1;
-                    this.updateCommander();
-                }
-            },
-            updateCommander() {
-                LM.cRadius += 7;
-                LM.cAngle += .007;
-                LM.cAngle1 -= .006;
-                LM.cAngle2 += .003;
-                if (2025 <= LM.cRadius) {
-                    LM.cAlpha *= .95;
-                }
-                if (0.05 >= LM.cAlpha) {
-                    this.resetCommander();
-                }
-            },
-            resetCommander() {
-                LM.cRadius = 10; //LM.clientX
-                LM.cAngle = 4;
-                LM.cAngle1 = 0;
-                LM.cAngle2 = 0;
-                LM.cAlpha = 1;
-                LM.drawCommander = false;
-                LM.drawCommander2 = false;
-                ogario.spawnX = 0;
-                ogario.spawnY = 0;
-            },
-            /*
+            }
+        },
+        drawCommander() {
+            //console.log('Special effects stage 2');
+            if (LM.drawCommander) {
+                var pickerAxes = this.ctx;
+                cimg = new Image;
+                cimg.src = defaultSettings.commanderImage;
+                cimg1 = new Image;
+                cimg1.src = defaultSettings.commanderImage1;
+                cimg12 = new Image;
+                cimg12.src = defaultSettings.commanderImage2;
+                pickerAxes.save();
+                pickerAxes.globalAlpha = LM.cAlpha;
+                pickerAxes.translate(ogario.spawnX, ogario.spawnY);
+                pickerAxes.rotate(LM.cAngle);
+                pickerAxes.drawImage(cimg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.restore();
+                pickerAxes.save();
+                pickerAxes.globalAlpha = LM.cAlpha;
+                pickerAxes.translate(ogario.spawnX, ogario.spawnY);
+                pickerAxes.rotate(LM.cAngle1);
+                pickerAxes.drawImage(cimg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.restore();
+                pickerAxes.save();
+                pickerAxes.globalAlpha = LM.cAlpha;
+                pickerAxes.translate(ogario.spawnX, ogario.spawnY);
+                pickerAxes.rotate(LM.cAngle2);
+                pickerAxes.drawImage(cimg12, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.restore();
+                pickerAxes.globalAlpha = 1;
+                this.updateCommander();
+            }
+        },
+        drawCommander2() {
+            //console.log('Special effects stage 2');
+            if (LM.drawCommander2) {
+                var pickerAxes = this.ctx;
+                cimg = new Image;
+                cimg.src = defaultSettings.commanderImage3;
+                cimg1 = new Image;
+                cimg1.src = defaultSettings.commanderImage4;
+                cimg12 = new Image;
+                cimg12.src = defaultSettings.commanderImage5;
+                pickerAxes.save();
+                pickerAxes.globalAlpha = LM.cAlpha;
+                pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
+                pickerAxes.rotate(LM.cAngle);
+                pickerAxes.drawImage(cimg, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.restore();
+                pickerAxes.save();
+                pickerAxes.globalAlpha = LM.cAlpha;
+                pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
+                pickerAxes.rotate(LM.cAngle1);
+                pickerAxes.drawImage(cimg1, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.restore();
+                pickerAxes.save();
+                pickerAxes.globalAlpha = LM.cAlpha;
+                pickerAxes.translate(window.targetingLeadX, window.targetingLeadY);
+                pickerAxes.rotate(LM.cAngle2);
+                pickerAxes.drawImage(cimg12, -LM.cRadius / 2, -LM.cRadius / 2, LM.cRadius, LM.cRadius);
+                pickerAxes.restore();
+                pickerAxes.globalAlpha = 1;
+                this.updateCommander();
+            }
+        },
+        updateCommander() {
+            LM.cRadius += 7;
+            LM.cAngle += .007;
+            LM.cAngle1 -= .006;
+            LM.cAngle2 += .003;
+            if (2025 <= LM.cRadius) {
+                LM.cAlpha *= .95;
+            }
+            if (0.05 >= LM.cAlpha) {
+                this.resetCommander();
+            }
+        },
+        resetCommander() {
+            LM.cRadius = 10; //LM.clientX
+            LM.cAngle = 4;
+            LM.cAngle1 = 0;
+            LM.cAngle2 = 0;
+            LM.cAlpha = 1;
+            LM.drawCommander = false;
+            LM.drawCommander2 = false;
+            ogario.spawnX = 0;
+            ogario.spawnY = 0;
+        },
+        /*
                 drawMapBorders(t, e, i, s, o, a, n, r) {
                     e && (t.strokeStyle = n, t.lineWidth = r, t.beginPath(), t.moveTo(i, s), t.lineTo(o, s), t.lineTo(o, a), t.lineTo(i, a), t.closePath(), t.stroke());
                 },
 				*/
-            drawMapBorders(ctx, macros, text, x1, x0, y0, radius, canvas) {
-                if (macros) {
-                    ctx.strokeStyle = radius;
-                    ctx.lineWidth = canvas;
-                    ctx.beginPath();
-                    ctx.moveTo(text+ctx.lineWidth, x1);
-                    ctx.lineTo(x0-ctx.lineWidth, x1);
-					
-					//
-					ctx.moveTo(x0, x1);//ctx.moveTo(x0, x1);
-					ctx.lineTo(x0+ctx.lineWidth, x1-ctx.lineWidth);
-					//
-					
-					ctx.moveTo(x0, x1+ctx.lineWidth);
-                    ctx.lineTo(x0, y0-ctx.lineWidth);
-					
-					//
-					ctx.moveTo(x0, y0);
-					ctx.lineTo(x0+ctx.lineWidth, y0+ctx.lineWidth);
-					//
-					
-					ctx.moveTo(x0 - ctx.lineWidth, y0);		
-                    ctx.lineTo(text + ctx.lineWidth, y0);
+        drawMapBorders(ctx, macros, text, x1, x0, y0, radius, canvas) {
+            if (macros) {
+                ctx.strokeStyle = radius;
+                ctx.lineWidth = canvas;
+                ctx.beginPath();
+                ctx.moveTo(text + ctx.lineWidth, x1);
+                ctx.lineTo(x0 - ctx.lineWidth, x1);
 
-					//
-					ctx.moveTo(text, y0);
-					ctx.lineTo(text-ctx.lineWidth, y0+ctx.lineWidth);
-					//
-					
-					ctx.moveTo(text, y0 - ctx.lineWidth);
-					ctx.lineTo(text, x1 + ctx.lineWidth);
-					
-					//
-					ctx.moveTo(text, x1);
-					ctx.lineTo(text-ctx.lineWidth, x1-ctx.lineWidth);
-					//					
-					//ctx.lineTo(text, x1);
-                    if (defaultmapsettings.borderGlow) {
-                        ctx.shadowBlur = defaultSettings.borderGlowSize;
-                        ctx.shadowColor = defaultSettings.borderGlowColor;
-                    } else {
-                        "skrrt";
-                    }
-                    //ctx.closePath();
-                    ctx.stroke();
-                }
+                //
+                ctx.moveTo(x0, x1); //ctx.moveTo(x0, x1);
+                ctx.lineTo(x0 + ctx.lineWidth, x1 - ctx.lineWidth);
+                //
+
+                ctx.moveTo(x0, x1 + ctx.lineWidth);
+                ctx.lineTo(x0, y0 - ctx.lineWidth);
+
+                //
+                ctx.moveTo(x0, y0);
+                ctx.lineTo(x0 + ctx.lineWidth, y0 + ctx.lineWidth);
+                //
+
+                ctx.moveTo(x0 - ctx.lineWidth, y0);
+                ctx.lineTo(text + ctx.lineWidth, y0);
+
+                //
+                ctx.moveTo(text, y0);
+                ctx.lineTo(text - ctx.lineWidth, y0 + ctx.lineWidth);
+                //
+
+                ctx.moveTo(text, y0 - ctx.lineWidth);
+                ctx.lineTo(text, x1 + ctx.lineWidth);
+
+                //
+                ctx.moveTo(text, x1);
+                ctx.lineTo(text - ctx.lineWidth, x1 - ctx.lineWidth);
+                //					
+                //ctx.lineTo(text, x1);
                 if (defaultmapsettings.borderGlow) {
-                    ctx.shadowBlur = 0;
+                    ctx.shadowBlur = defaultSettings.borderGlowSize;
+                    ctx.shadowColor = defaultSettings.borderGlowColor;
                 } else {
                     "skrrt";
                 }
-            },
-            /*drawMapBorders(ctx, macros, text, x1, x0, y0, radius, canvas) {
+                //ctx.closePath();
+                ctx.stroke();
+            }
+            if (defaultmapsettings.borderGlow) {
+                ctx.shadowBlur = 0;
+            } else {
+                "skrrt";
+            }
+        },
+        /*drawMapBorders(ctx, macros, text, x1, x0, y0, radius, canvas) {
                 if (macros) {
                     ctx.strokeStyle = radius;
                     ctx.lineWidth = canvas;
@@ -14013,844 +13785,839 @@ Game name     : ${i.displayName}<br/>
                 } else {
                     "skrrt";
                 }
-            },	*/		
-            drawVirusesRange(t, e, i) {
-                if (e.length) {
-                    t.beginPath();
-                    for (var s = 0; s < e.length; s++) {
-                        if (e[s].invisible != true) {
-                            var o = e[s].x;
-                            var a = e[s].y;
-                            t.moveTo(o, a);
-                            t.arc(o, a, e[s].size + 820, 0, this.pi2, false);
-                        }
-                    }
-                    t.fillStyle = defaultSettings.virusColor;
-                    t.globalAlpha = 0.1;
-                    t.fill();
-                    t.globalAlpha = 1;
-                    i && (e = []);
-                }
-            },
-            calMinMaxMulti() {
-                if (legendmod.multiBoxPlayerExists && LM.foodMulti.length) {
-                    LM.camMaxMultiX = LM.playerXMulti
-                    LM.camMaxMultiY = LM.playerYMulti
-                    LM.camMinMultiX = LM.playerXMulti
-                    LM.camMinMultiY = LM.playerYMulti
-                    for (var length = 0; length < LM.foodMulti.length; length++) {
-                        var x = LM.foodMulti[length].x - 10 - defaultSettings.foodSize;
-                        var y = LM.foodMulti[length].y - 10 - defaultSettings.foodSize;
-                        if (x > LM.camMaxMultiX) LM.camMaxMultiX = x
-                        if (y > LM.camMaxMultiY) LM.camMaxMultiY = y
-                        if (x < LM.camMinMultiX) LM.camMinMultiX = x
-                        if (y < LM.camMinMultiY) LM.camMinMultiY = y
+            },	*/
+        drawVirusesRange(t, e, i) {
+            if (e.length) {
+                t.beginPath();
+                for (var s = 0; s < e.length; s++) {
+                    if (e[s].invisible != true) {
+                        var o = e[s].x;
+                        var a = e[s].y;
+                        t.moveTo(o, a);
+                        t.arc(o, a, e[s].size + 820, 0, this.pi2, false);
                     }
                 }
-            },
-            calMinMax() {
-                var tempX, tempY
-                tempX = legendmod.viewXTrue
-                tempY = legendmod.viewYTrue
+                t.fillStyle = defaultSettings.virusColor;
+                t.globalAlpha = 0.1;
+                t.fill();
+                t.globalAlpha = 1;
+                i && (e = []);
+            }
+        },
+        calMinMaxMulti() {
+            if (legendmod.multiBoxPlayerExists && LM.foodMulti.length) {
+                LM.camMaxMultiX = LM.playerXMulti
+                LM.camMaxMultiY = LM.playerYMulti
+                LM.camMinMultiX = LM.playerXMulti
+                LM.camMinMultiY = LM.playerYMulti
+                for (var length = 0; length < LM.foodMulti.length; length++) {
+                    var x = LM.foodMulti[length].x - 10 - defaultSettings.foodSize;
+                    var y = LM.foodMulti[length].y - 10 - defaultSettings.foodSize;
+                    if (x > LM.camMaxMultiX) LM.camMaxMultiX = x
+                    if (y > LM.camMaxMultiY) LM.camMaxMultiY = y
+                    if (x < LM.camMinMultiX) LM.camMinMultiX = x
+                    if (y < LM.camMinMultiY) LM.camMinMultiY = y
+                }
+            }
+        },
+        calMinMax() {
+            var tempX, tempY
+            tempX = legendmod.viewXTrue
+            tempY = legendmod.viewYTrue
 
-                LM.camMaxX = tempX
-                LM.camMaxY = tempY
-                LM.camMinX = tempX
-                LM.camMinY = tempY
-                for (var length = 0; length < LM.food.length; length++) {
-                    if (LM.food[length].spectator == false) {
-                        var x = LM.food[length].x - 10 - defaultSettings.foodSize;
-                        var y = LM.food[length].y - 10 - defaultSettings.foodSize;
-                        if (x > LM.camMaxX) LM.camMaxX = x
-                        if (y > LM.camMaxY) LM.camMaxY = y
-                        if (x < LM.camMinX) LM.camMinX = x
-                        if (y < LM.camMinY) LM.camMinY = y
-                    }
+            LM.camMaxX = tempX
+            LM.camMaxY = tempY
+            LM.camMinX = tempX
+            LM.camMinY = tempY
+            for (var length = 0; length < LM.food.length; length++) {
+                if (LM.food[length].spectator == false) {
+                    var x = LM.food[length].x - 10 - defaultSettings.foodSize;
+                    var y = LM.food[length].y - 10 - defaultSettings.foodSize;
+                    if (x > LM.camMaxX) LM.camMaxX = x
+                    if (y > LM.camMaxY) LM.camMaxY = y
+                    if (x < LM.camMinX) LM.camMinX = x
+                    if (y < LM.camMinY) LM.camMinY = y
                 }
-            },
-            drawFood() {
+            }
+        },
+        drawFood() {
 
-                if (!LM.showFood) {
-                    return;
+            if (!LM.showFood) {
+                return;
+            }
+            if (defaultmapsettings.autoHideFoodOnZoom && this.scale < 0.2) {
+                return;
+            }
+            if (defaultmapsettings.autoHideFood && !LM.foodIsHidden && LM.playerMass > 1000) {
+                LM.showFood = false;
+                LM.foodIsHidden = true;
+                return;
+            }
+            if (!defaultmapsettings.rainbowFood) {
+                this.drawCachedFood(this.ctx, LM.food, this.scale);
+                return;
+            }
+            for (let length = 0; length < LM.food.length; length++) {
+                LM.food[length].moveCell();
+                if (!LM.food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) LM.food[length].invisible = true
+                if (!LM.food[length].invisible) {
+                    LM.food[length].draw(this.ctx);
                 }
-                if (defaultmapsettings.autoHideFoodOnZoom && this.scale < 0.2) {
-                    return;
-                }
-                if (defaultmapsettings.autoHideFood && !LM.foodIsHidden && LM.playerMass > 1000) {
-                    LM.showFood = false;
-                    LM.foodIsHidden = true;
-                    return;
-                }
-                if (!defaultmapsettings.rainbowFood) {
-                    this.drawCachedFood(this.ctx, LM.food, this.scale);
-                    return;
-                }
-                for (let length = 0; length < LM.food.length; length++) {
-                    LM.food[length].moveCell();
-                    if (!LM.food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) LM.food[length].invisible = true
-                    if (!LM.food[length].invisible) {
-                        LM.food[length].draw(this.ctx);
+            }
+        },
+        drawCachedFood(ctx, food, scale, reset) {
+            if (!food.length) {
+                return;
+            }
+            if (defaultmapsettings.optimizedFood && this.pellet) {
+
+                for (var length = 0; length < food.length; length++) {
+                    //
+                    if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
+                    //
+                    if (!food[length].invisible) {
+                        var x = food[length].x - 10 - defaultSettings.foodSize;
+                        var y = food[length].y - 10 - defaultSettings.foodSize;
+                        ctx.drawImage(this.pellet, x, y);
                     }
                 }
-            },
-            drawCachedFood(ctx, food, scale, reset) {
-                if (!food.length) {
-                    return;
-                }
-                if (defaultmapsettings.optimizedFood && this.pellet) {
-				
-                    for (var length = 0; length < food.length; length++) {
-						//
-						if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true 
-						//
-						  if (!food[length].invisible) {
-                            var x = food[length].x - 10 - defaultSettings.foodSize;
-                            var y = food[length].y - 10 - defaultSettings.foodSize;
-                            ctx.drawImage(this.pellet, x, y);
+            } else {
+                ctx.beginPath();
+                for (var length = 0; length < food.length; length++) {
+                    if (!food[length].invisible) {
+                        var x = food[length].x;
+                        var y = food[length].y;
+                        ctx.moveTo(x, y);
+                        if (scale < 0.16) {
+                            const size = food[length].size + defaultSettings.foodSize;
+                            ctx.rect(x - size, y - size, 2 * size, 2 * size);
+                            continue;
                         }
+                        ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
                     }
-                } else {
-                    ctx.beginPath();
-                    for (var length = 0; length < food.length; length++) {
-                        if (!food[length].invisible) {
-                            var x = food[length].x;
-                            var y = food[length].y;
-                            ctx.moveTo(x, y);
-                            if (scale < 0.16) {
-                                const size = food[length].size + defaultSettings.foodSize;
-                                ctx.rect(x - size, y - size, 2 * size, 2 * size);
-                                continue;
-                            }
-                            ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
+                }
+                ctx.fillStyle = defaultSettings.foodColor;
+                ctx.globalAlpha = 1;
+                ctx.fill();
+            }
+            if (reset) {
+                food = [];
+            }
+        },
+        /*drawCachedFood(t, e, i, s) {
+            if (e.length) {
+                if (defaultmapsettings.optimizedFood && this.pellet)
+                    for (var o = 0; o < e.length; o++) {
+                        var a = e[o].x - 10 - defaultSettings.foodSize,
+                            n = e[o].y - 10 - defaultSettings.foodSize;
+                        t.drawImage(this.pellet, a, n);
+                    } else {
+                        t.beginPath();
+                        for (o = 0; o < e.length; o++) {
+                            a = e[o].x, n = e[o].y;
+                            if (t.moveTo(a, n), i < 0.16) {
+                                var r = e[o].size + defaultSettings.foodSize;
+                                t.rect(a - r, n - r, 2 * r, 2 * r);
+                            } else t.arc(a, n, e[o].size + defaultSettings.foodSize, 0, this.pi2, false);
                         }
+                        t.fillStyle = defaultSettings.foodColor, t.globalAlpha = 1, t.fill();
                     }
-                    ctx.fillStyle = defaultSettings.foodColor;
-                    ctx.globalAlpha = 1;
-                    ctx.fill();
-                }
-                if (reset) {
-                    food = [];
-                }
-            },
-            /*drawCachedFood(t, e, i, s) {
-                if (e.length) {
-                    if (defaultmapsettings.optimizedFood && this.pellet)
-                        for (var o = 0; o < e.length; o++) {
-                            var a = e[o].x - 10 - defaultSettings.foodSize,
-                                n = e[o].y - 10 - defaultSettings.foodSize;
-                            t.drawImage(this.pellet, a, n);
-                        } else {
-                            t.beginPath();
-                            for (o = 0; o < e.length; o++) {
-                                a = e[o].x, n = e[o].y;
-                                if (t.moveTo(a, n), i < 0.16) {
-                                    var r = e[o].size + defaultSettings.foodSize;
-                                    t.rect(a - r, n - r, 2 * r, 2 * r);
-                                } else t.arc(a, n, e[o].size + defaultSettings.foodSize, 0, this.pi2, false);
-                            }
-                            t.fillStyle = defaultSettings.foodColor, t.globalAlpha = 1, t.fill();
-                        }
-                    s && (e = []);
-                }
-            },*/
-            drawSplitRange(ctx, biggestCell, players, currentBiggestCell, reset) {
-                if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, defaultSettings.enemyBSTEColor), players.length) { //Sonia2
-                    //if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, '#ff0000'), players.length) { //Sonia
-                    var current = currentBiggestCell ? players.length - 1 : 0;
+                s && (e = []);
+            }
+        },*/
+        drawSplitRange(ctx, biggestCell, players, currentBiggestCell, reset) {
+            if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, defaultSettings.enemyBSTEColor), players.length) { //Sonia2
+                //if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, '#ff0000'), players.length) { //Sonia
+                var current = currentBiggestCell ? players.length - 1 : 0;
+                ctx.lineWidth = 6;
+                ctx.globalAlpha = defaultSettings.darkTheme ? 0.7 : 0.35,
+                    ctx.strokeStyle = defaultSettings.splitRangeColor;
+                ctx.beginPath();
+                ctx.arc(players[current].x, players[current].y, players[current].size + 760, 0, this.pi2, false);
+                ctx.closePath();
+                ctx.stroke();
+            }
+            ctx.globalAlpha = 1;
+            if (reset) {
+                biggestCell = [];
+            }
+        },
+        drawDoubleSplitRange(ctx, biggestCell, players, currentBiggestCell, reset) {
+            //if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, '#BE00FF'), players.length) {
+            if (this.draw2Circles(ctx, biggestCell, 760, 4, 0.4, defaultSettings.enemyBSTEDColor), players.length) { //Sonia2
+                //if (this.draw2Circles(ctx, biggestCell, 760, 4, 0.4, '#8000ff'), players.length) { //Sonia
+                //this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell);
+
+                var current = currentBiggestCell ? players.length - 1 : 0;
+                //console.log(currentBiggestCell[current].size);
+                if (players[current].size >= 400 && defaultmapsettings.qdsplitRange) { //Sonia2
                     ctx.lineWidth = 6;
                     ctx.globalAlpha = defaultSettings.darkTheme ? 0.7 : 0.35,
                         ctx.strokeStyle = defaultSettings.splitRangeColor;
                     ctx.beginPath();
-                    ctx.arc(players[current].x, players[current].y, players[current].size + 760, 0, this.pi2, false);
+                    ctx.arc(players[current].x, players[current].y, 2 * players[current].size + 760, 0, this.pi2, false);
                     ctx.closePath();
                     ctx.stroke();
                 }
-                ctx.globalAlpha = 1;
-                if (reset) {
-                    biggestCell = [];
+            }
+            ctx.globalAlpha = 1;
+            if (reset) {
+                biggestCell = [];
+            }
+        },
+        drawBOppRings(ctx, scale, ip, biggerSte, biggetCell, smallerCell, smallSte, ap, ss, reset) {
+            const width = 14 + 2 / scale;
+            const alpha = 12 + 1 / scale;
+            this.drawBubbleCircles(ctx, ip, width, alpha, 0.75, defaultSettings.enemyBSTEDColor); //Sonia2
+            this.drawBubbleCircles(ctx, biggerSte, width, alpha, 0.75, defaultSettings.enemyBSTEColor);
+            this.drawBubbleCircles(ctx, biggetCell, width, alpha, 0.75, defaultSettings.enemyBColor);
+            this.drawBubbleCircles(ctx, ss, width, alpha, 0.75, defaultSettings.splitRangeColor);
+            this.drawBubbleCircles(ctx, smallerCell, width, alpha, 0.75, defaultSettings.enemySColor);
+            this.drawBubbleCircles(ctx, smallSte, width, alpha, 0.75, defaultSettings.enemySSTEColor);
+            this.drawBubbleCircles(ctx, ap, width, alpha, 0.75, defaultSettings.enemySSTEDColor); //Sonia2
+            if (reset) {
+                biggerSte = [];
+                biggetCell = [];
+                smallerCell = [];
+                smallSte = [];
+                ip = [];
+                ap = [];
+                ss = [];
+            }
+        },
+        //Sonia (entire function update)
+        drawOppRings(ctx, scale, ip, biggerSte, biggetCell, smallerCell, smallSte, ap, reset) {
+            //drawOppRings(ctx, scale, ip, biggerSte, biggetCell, smallerCell, smallSte, ap, ss, reset) {
+            var width = 14 + 2 / scale;
+            var alpha = 12 + 1 / scale;
+            this.drawCircles(ctx, ip, width, alpha, 0.75, defaultSettings.enemyBSTEDColor); //Sonia2
+            this.drawCircles(ctx, biggerSte, width, alpha, 0.75, defaultSettings.enemyBSTEColor); //Sonia2
+            this.drawCircles(ctx, biggetCell, width, alpha, 0.75, defaultSettings.enemyBColor); //Sonia2
+            //this.drawCircles(ctx, ss, width, alpha, 0.75, defaultSettings.splitRangeColor);						
+            this.drawCircles(ctx, smallerCell, width, alpha, 0.75, defaultSettings.enemySColor); //Sonia2
+            this.drawCircles(ctx, smallSte, width, alpha, 0.75, defaultSettings.enemySSTEColor); //Sonia2
+            this.drawCircles(ctx, ap, width, alpha, 0.75, defaultSettings.enemySSTEDColor); //Sonia2
+            if (reset) {
+                biggerSte = [];
+                biggetCell = [];
+                smallerCell = [];
+                smallSte = [];
+                ip = [];
+                ap = [];
+                //ss = [];
+            }
+        },
+        drawBCursorTracking(ctx, players, cursorX, cursorY) { //Yahnych
+            for (let length = 0; length < players.length; length++) {
+                let t = LM.playerCells[length];
+                if (LM.playerCells[length].angle == undefined) {
+                    LM.playerCells[length].angle = 0
                 }
-            },
-            drawDoubleSplitRange(ctx, biggestCell, players, currentBiggestCell, reset) {
-                //if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, '#BE00FF'), players.length) {
-                if (this.draw2Circles(ctx, biggestCell, 760, 4, 0.4, defaultSettings.enemyBSTEDColor), players.length) { //Sonia2
-                    //if (this.draw2Circles(ctx, biggestCell, 760, 4, 0.4, '#8000ff'), players.length) { //Sonia
-                    //this.drawSplitRange(this.ctx, LM.biggerSTECellsCache, LM.playerCells, LM.selectBiggestCell);
+                let r = t.size / 3;
+                //distance to target
+                var dis = Math.sqrt((cursorX - t.x) * (cursorX - t.x) + (cursorY - t.y) * (cursorY - t.y));
+                //angle in deg
+                var angl = Math.round((Math.acos((t.y - cursorY) / dis) / Math.PI) * 180);
+                //if target on left side
 
-                    var current = currentBiggestCell ? players.length - 1 : 0;
-                    //console.log(currentBiggestCell[current].size);
-                    if (players[current].size >= 400 && defaultmapsettings.qdsplitRange) { //Sonia2
-                        ctx.lineWidth = 6;
-                        ctx.globalAlpha = defaultSettings.darkTheme ? 0.7 : 0.35,
-                            ctx.strokeStyle = defaultSettings.splitRangeColor;
-                        ctx.beginPath();
-                        ctx.arc(players[current].x, players[current].y, 2 * players[current].size + 760, 0, this.pi2, false);
-                        ctx.closePath();
-                        ctx.stroke();
+                if ((t.x - cursorX > 0 && t.y - cursorY < 0) || (t.x - cursorX > 0 && t.y - cursorY > 0)) {
+                    angl = 180 + (180 - angl);
+                }
+                var d = 4;
+                if (angl - t.angle > d && angl - t.angle < 180 - d || angl - t.angle < 180 * (-1) + d) {
+                    t.angle += d / 2;
+                    if (t.angle > 360) {
+                        t.angle = t.angle - 360
+                    }
+                } else if (angl - t.angle < d * (-1) && angl - t.angle > 180 * (-1) + d || angl - t.angle > 180 + d) {
+                    t.angle -= d / 2;
+                    if (t.angle < 0) {
+                        t.angle = 360 - t.angle
                     }
                 }
-                ctx.globalAlpha = 1;
-                if (reset) {
-                    biggestCell = [];
-                }
-            },
-            drawBOppRings(ctx, scale, ip, biggerSte, biggetCell, smallerCell, smallSte, ap, ss, reset) {
-                const width = 14 + 2 / scale;
-                const alpha = 12 + 1 / scale;
-                this.drawBubbleCircles(ctx, ip, width, alpha, 0.75, defaultSettings.enemyBSTEDColor); //Sonia2
-                this.drawBubbleCircles(ctx, biggerSte, width, alpha, 0.75, defaultSettings.enemyBSTEColor);
-                this.drawBubbleCircles(ctx, biggetCell, width, alpha, 0.75, defaultSettings.enemyBColor);
-                this.drawBubbleCircles(ctx, ss, width, alpha, 0.75, defaultSettings.splitRangeColor);
-                this.drawBubbleCircles(ctx, smallerCell, width, alpha, 0.75, defaultSettings.enemySColor);
-                this.drawBubbleCircles(ctx, smallSte, width, alpha, 0.75, defaultSettings.enemySSTEColor);
-                this.drawBubbleCircles(ctx, ap, width, alpha, 0.75, defaultSettings.enemySSTEDColor); //Sonia2
-                if (reset) {
-                    biggerSte = [];
-                    biggetCell = [];
-                    smallerCell = [];
-                    smallSte = [];
-                    ip = [];
-                    ap = [];
-                    ss = [];
-                }
-            },
-            //Sonia (entire function update)
-            drawOppRings(ctx, scale, ip, biggerSte, biggetCell, smallerCell, smallSte, ap, reset) {
-                //drawOppRings(ctx, scale, ip, biggerSte, biggetCell, smallerCell, smallSte, ap, ss, reset) {
-                var width = 14 + 2 / scale;
-                var alpha = 12 + 1 / scale;
-                this.drawCircles(ctx, ip, width, alpha, 0.75, defaultSettings.enemyBSTEDColor); //Sonia2
-                this.drawCircles(ctx, biggerSte, width, alpha, 0.75, defaultSettings.enemyBSTEColor); //Sonia2
-                this.drawCircles(ctx, biggetCell, width, alpha, 0.75, defaultSettings.enemyBColor); //Sonia2
-                //this.drawCircles(ctx, ss, width, alpha, 0.75, defaultSettings.splitRangeColor);						
-                this.drawCircles(ctx, smallerCell, width, alpha, 0.75, defaultSettings.enemySColor); //Sonia2
-                this.drawCircles(ctx, smallSte, width, alpha, 0.75, defaultSettings.enemySSTEColor); //Sonia2
-                this.drawCircles(ctx, ap, width, alpha, 0.75, defaultSettings.enemySSTEDColor); //Sonia2
-                if (reset) {
-                    biggerSte = [];
-                    biggetCell = [];
-                    smallerCell = [];
-                    smallSte = [];
-                    ip = [];
-                    ap = [];
-                    //ss = [];
-                }
-            },
-            drawBCursorTracking(ctx, players, cursorX, cursorY) { //Yahnych
-                for (let length = 0; length < players.length; length++) {
-                    let t = LM.playerCells[length];
-                    if (LM.playerCells[length].angle == undefined) {
-                        LM.playerCells[length].angle = 0
-                    }
-                    let r = t.size / 3;
-                    //distance to target
-                    var dis = Math.sqrt((cursorX - t.x) * (cursorX - t.x) + (cursorY - t.y) * (cursorY - t.y));
-                    //angle in deg
-                    var angl = Math.round((Math.acos((t.y - cursorY) / dis) / Math.PI) * 180);
-                    //if target on left side
 
-                    if ((t.x - cursorX > 0 && t.y - cursorY < 0) || (t.x - cursorX > 0 && t.y - cursorY > 0)) {
-                        angl = 180 + (180 - angl);
-                    }
-                    var d = 4;
-                    if (angl - t.angle > d && angl - t.angle < 180 - d || angl - t.angle < 180 * (-1) + d) {
-                        t.angle += d / 2;
-                        if (t.angle > 360) {
-                            t.angle = t.angle - 360
-                        }
-                    } else if (angl - t.angle < d * (-1) && angl - t.angle > 180 * (-1) + d || angl - t.angle > 180 + d) {
-                        t.angle -= d / 2;
-                        if (t.angle < 0) {
-                            t.angle = 360 - t.angle
-                        }
-                    }
+                ctx.save()
 
-                    ctx.save()
+                //Convert degrees to radian 
+                var rad = t.angle * Math.PI / 180;
 
-                    //Convert degrees to radian 
-                    var rad = t.angle * Math.PI / 180;
+                ctx.translate(t.x, t.y);
 
-                    ctx.translate(t.x, t.y);
+                ctx.rotate(rad);
 
-                    ctx.rotate(rad);
-
-                    //ctx.drawImage(c, t.size * (-1),t.size * (-1),t.size*2,t.size*2);
-                    let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size); //Yahnych
-                    grad.addColorStop(0, defaultSettings.cursorTrackingColor);
-                    grad.addColorStop(1, defaultSettings.cursorTrackingColor + "00");
+                //ctx.drawImage(c, t.size * (-1),t.size * (-1),t.size*2,t.size*2);
+                let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size); //Yahnych
+                grad.addColorStop(0, defaultSettings.cursorTrackingColor);
+                grad.addColorStop(1, defaultSettings.cursorTrackingColor + "00");
 
 
-                    ctx.fillStyle = grad;
-                    ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
-                    ctx.beginPath();
-                    ctx.arc(0, 0 - (t.size - r), r, 0, Math.PI * 2, false)
-                    ctx.fill();
-                    ctx.globalAlpha = 1;
-                    // Restore canvas state as saved from above
-                    ctx.restore();
-                }
-            },
-            drawCursorTracking(ctx, players, cursorX, cursorY) {
-                ctx.lineWidth = 4,
-                    ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
-                ctx.strokeStyle = defaultSettings.cursorTrackingColor;
+                ctx.fillStyle = grad;
+                ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
                 ctx.beginPath();
-                for (var o = 0; o < players.length; o++) ctx.moveTo(players[o].x, players[o].y), ctx.lineTo(cursorX, cursorY);
+                ctx.arc(0, 0 - (t.size - r), r, 0, Math.PI * 2, false)
+                ctx.fill();
+                ctx.globalAlpha = 1;
+                // Restore canvas state as saved from above
+                ctx.restore();
+            }
+        },
+        drawCursorTracking(ctx, players, cursorX, cursorY) {
+            ctx.lineWidth = 4,
+                ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
+            ctx.strokeStyle = defaultSettings.cursorTrackingColor;
+            ctx.beginPath();
+            for (var o = 0; o < players.length; o++) ctx.moveTo(players[o].x, players[o].y), ctx.lineTo(cursorX, cursorY);
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+        },
+        drawCircles(ctx, players, scale, width, alpha, stroke) {
+            ctx.lineWidth = width;
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = stroke;
+            for (var length = 0; length < players.length; length++) {
+                ctx.beginPath();
+                ctx.arc(players[length].x, players[length].y, players[length].size + scale, 0, this.pi2, false);
+                ctx.closePath();
                 ctx.stroke();
-                ctx.globalAlpha = 1;
-            },
-            drawCircles(ctx, players, scale, width, alpha, stroke) {
-                ctx.lineWidth = width;
+            }
+            ctx.globalAlpha = 1;
+        },
+        drawBubbleCircles(ctx, players, scale, width, alpha, stroke) { //Yahnych
+            for (let length = 0; length < players.length; length++) {
+                let t = players[length];
+                let r = t.size / 3;
+                //distance to target
+                var dis = Math.sqrt((t.targetX - t.x) * (t.targetX - t.x) + (t.targetY - t.y) * (t.targetY - t.y));
+                //angle 
+                var angl = Math.round((Math.acos((t.y - t.targetY) / dis) / Math.PI) * 180);
+                //if target on left side
+
+                if ((t.x - t.targetX > 0 && t.y - t.targetY < 0) || (t.x - t.targetX > 0 && t.y - t.targetY > 0)) {
+                    angl = 180 + (180 - angl);
+                }
+                //console.log(t.x, t.targetX)
+
+                // Store the current context state (i.e. rotation, translation etc..)
+                ctx.save()
+
+                //Convert degrees to radian 
+                var rad = angl * Math.PI / 180;
+
+                //Set the origin to the center of the image
+                ctx.translate(t.x, t.y);
+
+                //Rotate the canvas around the origin
+                ctx.rotate(rad);
+
+                //draw the image    
+                //ctx.drawImage(c, t.size * (-1),t.size * (-1),t.size*2,t.size*2);
+                let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size); //Yahnych
+                grad.addColorStop(0, stroke);
+                grad.addColorStop(1, stroke + "00");
+
+
+                ctx.fillStyle = grad;
                 ctx.globalAlpha = alpha;
-                ctx.strokeStyle = stroke;
-                for (var length = 0; length < players.length; length++) {
+                ctx.beginPath();
+                ctx.arc(0, 0 - (t.size - r), r, 0, Math.PI * 2, false)
+                ctx.fill();
+                ctx.globalAlpha = 1;
+                // Restore canvas state as saved from above
+                ctx.restore();
+            }
+
+        },
+        //Sonia (added entire function)
+        draw2Circles(ctx, players, scale, width, alpha, color) {
+            ctx.lineWidth = width;
+            ctx.globalAlpha = alpha;
+            ctx.strokeStyle = color;
+            //for (var n = 0; n < players.length; n++) ctx.beginPath(), ctx.arc(players[n].x, players[n].y, 1.5*players[n].size + 2*scale, 0, this.pi2, false), ctx.closePath(), ctx.stroke();
+            if (defaultmapsettings.qdsplitRange) { //Sonia2
+                for (var n = 0; n < players.length; n++) {
                     ctx.beginPath();
-                    ctx.arc(players[length].x, players[length].y, players[length].size + scale, 0, this.pi2, false);
+                    ctx.arc(players[n].x, players[n].y, 2 * players[n].size + scale, 0, this.pi2, false);
                     ctx.closePath();
-                    ctx.stroke();
+                    ctx.stroke(); //760+2*cell.size is the correct
                 }
+            } //Sonia2
+            if (defaultmapsettings.sdsplitRange) { //Sonia2
+                for (var n = 0; n < players.length; n++) {
+                    ctx.setLineDash([20, 30]);
+                    ctx.lineWidth = 2 * width;
+                    ctx.beginPath();
+                    ctx.arc(players[n].x, players[n].y, 1.5 * players[n].size + 2 * scale, 0, this.pi2, false);
+                    ctx.closePath();
+                    ctx.stroke(); //Sonia2
+                }
+                ctx.setLineDash([]); //Sonia2
+                ctx.lineWidth = width; //Sonia2
+            } //Sonia2
+            ctx.globalAlpha = 1;
+        },
+        drawDashedCircle(ctx, x, y, radius, times, width, color) {
+            var pi2 = this.pi2 / times;
+            ctx.lineWidth = width;
+            ctx.strokeStyle = color;
+            for (var length = 0; length < times; length += 2) {
+                ctx.beginPath();
+                ctx.arc(x, y, radius - width / 2, length * pi2, (length + 1) * pi2, false);
+                ctx.stroke();
+            }
+        },
+        drawTeammatesInd(ctx, x, y, size) {
+            //console.log("t:"+ t + " e:" + e + " i:" + i + "s:" + s);
+            if (this.indicator) {
+                ctx.drawImage(this.indicator, x - 45, y - size - 90);
+            }
+        },
+        drawPieChart() {
+            this.pieChart || (this.pieChart = document.createElement('canvas'));
+            var ctx = this.pieChart.getContext('2d'),
+                mincanvasWidth = Math.min(200, 0.3 * this.canvasWidth) / 200;
+            this.pieChart.width = 200 * mincanvasWidth;
+            this.pieChart.height = 240 * mincanvasWidth;
+            ctx.scale(mincanvasWidth, mincanvasWidth);
+            for (var colors = ['#333333', '#FF3333', '#33FF33', '#3333FF'], time = 0, length = 0; length < LM.pieChart.length; length++) {
+                var currentPie = time + LM.pieChart[length] * this.pi2;
+                ctx.fillStyle = colors[length + 1];
+                ctx.beginPath();
+                ctx.moveTo(100, 140);
+                ctx.arc(100, 140, 80, time, currentPie, false);
+                ctx.fill();
+                time = currentPie;
+            }
+        },
+        drawBattleArea(ctx) {
+            if (LM.battleRoyale.state) {
+                this.drawDangerArea(ctx, LM.battleRoyale.x, LM.battleRoyale.y, LM.battleRoyale.radius, LM.mapMinX, LM.mapMinY, LM.mapMaxX - LM.mapMinX, LM.mapMaxY - LM.mapMinY, defaultSettings.dangerAreaColor, 0.25);
+                this.drawSafeArea(ctx, LM.battleRoyale.targetX, LM.battleRoyale.targetY, LM.battleRoyale.targetRadius, 40, defaultSettings.safeAreaColor);
+            }
+        },
+        drawBattleAreaOnMinimap(ctx, width, heigth, newWidth, offsetX, offsetY) {
+            if (LM.battleRoyale.state) {
+                if (!this.battleAreaMap) {
+                    this.battleAreaMap = document.createElement("canvas");
+                    this.battleAreaMapCtx = this.battleAreaMap.getContext("2d");
+                }
+                if (this.battleAreaMap.width != width) {
+                    this.battleAreaMap.width = width;
+                    this.battleAreaMap.height = heigth;
+                } else {
+                    this.battleAreaMapCtx.clearRect(0, 0, width, heigth);
+                }
+                var newX = (LM.battleRoyale.x + offsetX) * newWidth;
+                var newY = (LM.battleRoyale.y + offsetY) * newWidth;
+                var newRadius = LM.battleRoyale.radius * newWidth;
+                this.drawDangerArea(this.battleAreaMapCtx, newX, newY, newRadius, 0, 0, width, heigth, defaultSettings.dangerAreaColor, 0.25);
+                newX = ~~((LM.battleRoyale.targetX + offsetX) * newWidth);
+                newY = ~~((LM.battleRoyale.targetY + offsetY) * newWidth);
+                newRadius = ~~(LM.battleRoyale.targetRadius * newWidth);
+                this.drawSafeArea(this.battleAreaMapCtx, newX, newY, newRadius, 2, defaultSettings.safeAreaColor);
+                ctx.drawImage(this.battleAreaMap, 0, 0);
+            }
+        },
+        drawDangerArea(ctx, x, y, radius, minX, minY, maxX, maxY, color, aplha) {
+            if (!(LM.battleRoyale.radius == LM.battleRoyale.maxRadius || radius <= 0)) {
+                ctx.save();
+                ctx.globalAlpha = aplha;
+                ctx.fillStyle = color;
+                ctx.fillRect(minX, minY, maxX, maxY);
+                ctx.globalCompositeOperation = "destination-out";
                 ctx.globalAlpha = 1;
-            },
-            drawBubbleCircles(ctx, players, scale, width, alpha, stroke) { //Yahnych
-                for (let length = 0; length < players.length; length++) {
-                    let t = players[length];
-                    let r = t.size / 3;
-                    //distance to target
-                    var dis = Math.sqrt((t.targetX - t.x) * (t.targetX - t.x) + (t.targetY - t.y) * (t.targetY - t.y));
-                    //angle 
-                    var angl = Math.round((Math.acos((t.y - t.targetY) / dis) / Math.PI) * 180);
-                    //if target on left side
-
-                    if ((t.x - t.targetX > 0 && t.y - t.targetY < 0) || (t.x - t.targetX > 0 && t.y - t.targetY > 0)) {
-                        angl = 180 + (180 - angl);
-                    }
-                    //console.log(t.x, t.targetX)
-
-                    // Store the current context state (i.e. rotation, translation etc..)
-                    ctx.save()
-
-                    //Convert degrees to radian 
-                    var rad = angl * Math.PI / 180;
-
-                    //Set the origin to the center of the image
-                    ctx.translate(t.x, t.y);
-
-                    //Rotate the canvas around the origin
-                    ctx.rotate(rad);
-
-                    //draw the image    
-                    //ctx.drawImage(c, t.size * (-1),t.size * (-1),t.size*2,t.size*2);
-                    let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size); //Yahnych
-                    grad.addColorStop(0, stroke);
-                    grad.addColorStop(1, stroke + "00");
-
-
-                    ctx.fillStyle = grad;
-                    ctx.globalAlpha = alpha;
-                    ctx.beginPath();
-                    ctx.arc(0, 0 - (t.size - r), r, 0, Math.PI * 2, false)
-                    ctx.fill();
-                    ctx.globalAlpha = 1;
-                    // Restore canvas state as saved from above
-                    ctx.restore();
-                }
-
-            },
-            //Sonia (added entire function)
-            draw2Circles(ctx, players, scale, width, alpha, color) {
-                ctx.lineWidth = width;
-                ctx.globalAlpha = alpha;
-                ctx.strokeStyle = color;
-                //for (var n = 0; n < players.length; n++) ctx.beginPath(), ctx.arc(players[n].x, players[n].y, 1.5*players[n].size + 2*scale, 0, this.pi2, false), ctx.closePath(), ctx.stroke();
-                if (defaultmapsettings.qdsplitRange) { //Sonia2
-                    for (var n = 0; n < players.length; n++) {
-                        ctx.beginPath();
-                        ctx.arc(players[n].x, players[n].y, 2 * players[n].size + scale, 0, this.pi2, false);
-                        ctx.closePath();
-                        ctx.stroke(); //760+2*cell.size is the correct
-                    }
-                } //Sonia2
-                if (defaultmapsettings.sdsplitRange) { //Sonia2
-                    for (var n = 0; n < players.length; n++) {
-                        ctx.setLineDash([20, 30]);
-                        ctx.lineWidth = 2 * width;
-                        ctx.beginPath();
-                        ctx.arc(players[n].x, players[n].y, 1.5 * players[n].size + 2 * scale, 0, this.pi2, false);
-                        ctx.closePath();
-                        ctx.stroke(); //Sonia2
-                    }
-                    ctx.setLineDash([]); //Sonia2
-                    ctx.lineWidth = width; //Sonia2
-                } //Sonia2
-                ctx.globalAlpha = 1;
-            },
-            drawDashedCircle(ctx, x, y, radius, times, width, color) {
-                var pi2 = this.pi2 / times;
-                ctx.lineWidth = width;
-                ctx.strokeStyle = color;
-                for (var length = 0; length < times; length += 2) {
-                    ctx.beginPath();
-                    ctx.arc(x, y, radius - width / 2, length * pi2, (length + 1) * pi2, false);
-                    ctx.stroke();
-                }
-            },
-            drawTeammatesInd(ctx, x, y, size) {
-                //console.log("t:"+ t + " e:" + e + " i:" + i + "s:" + s);
-                if (this.indicator) {
-                    ctx.drawImage(this.indicator, x - 45, y - size - 90);
-                }
-            },
-            drawPieChart() {
-                this.pieChart || (this.pieChart = document.createElement('canvas'));
-                var ctx = this.pieChart.getContext('2d'),
-                    mincanvasWidth = Math.min(200, 0.3 * this.canvasWidth) / 200;
-                this.pieChart.width = 200 * mincanvasWidth;
-                this.pieChart.height = 240 * mincanvasWidth;
-                ctx.scale(mincanvasWidth, mincanvasWidth);
-                for (var colors = ['#333333', '#FF3333', '#33FF33', '#3333FF'], time = 0, length = 0; length < LM.pieChart.length; length++) {
-                    var currentPie = time + LM.pieChart[length] * this.pi2;
-                    ctx.fillStyle = colors[length + 1];
-                    ctx.beginPath();
-                    ctx.moveTo(100, 140);
-                    ctx.arc(100, 140, 80, time, currentPie, false);
-                    ctx.fill();
-                    time = currentPie;
-                }
-            },
-            drawBattleArea(ctx) {
-                if (LM.battleRoyale.state) {
-                    this.drawDangerArea(ctx, LM.battleRoyale.x, LM.battleRoyale.y, LM.battleRoyale.radius, LM.mapMinX, LM.mapMinY, LM.mapMaxX - LM.mapMinX, LM.mapMaxY - LM.mapMinY, defaultSettings.dangerAreaColor, 0.25);
-                    this.drawSafeArea(ctx, LM.battleRoyale.targetX, LM.battleRoyale.targetY, LM.battleRoyale.targetRadius, 40, defaultSettings.safeAreaColor);
-                }
-            },
-            drawBattleAreaOnMinimap(ctx, width, heigth, newWidth, offsetX, offsetY) {
-                if (LM.battleRoyale.state) {
-                    if (!this.battleAreaMap) {
-                        this.battleAreaMap = document.createElement("canvas");
-                        this.battleAreaMapCtx = this.battleAreaMap.getContext("2d");
-                    }
-                    if (this.battleAreaMap.width != width) {
-                        this.battleAreaMap.width = width;
-                        this.battleAreaMap.height = heigth;
-                    } else {
-                        this.battleAreaMapCtx.clearRect(0, 0, width, heigth);
-                    }
-                    var newX = (LM.battleRoyale.x + offsetX) * newWidth;
-                    var newY = (LM.battleRoyale.y + offsetY) * newWidth;
-                    var newRadius = LM.battleRoyale.radius * newWidth;
-                    this.drawDangerArea(this.battleAreaMapCtx, newX, newY, newRadius, 0, 0, width, heigth, defaultSettings.dangerAreaColor, 0.25);
-                    newX = ~~((LM.battleRoyale.targetX + offsetX) * newWidth);
-                    newY = ~~((LM.battleRoyale.targetY + offsetY) * newWidth);
-                    newRadius = ~~(LM.battleRoyale.targetRadius * newWidth);
-                    this.drawSafeArea(this.battleAreaMapCtx, newX, newY, newRadius, 2, defaultSettings.safeAreaColor);
-                    ctx.drawImage(this.battleAreaMap, 0, 0);
-                }
-            },
-            drawDangerArea(ctx, x, y, radius, minX, minY, maxX, maxY, color, aplha) {
-                if (!(LM.battleRoyale.radius == LM.battleRoyale.maxRadius || radius <= 0)) {
-                    ctx.save();
-                    ctx.globalAlpha = aplha;
-                    ctx.fillStyle = color;
-                    ctx.fillRect(minX, minY, maxX, maxY);
-                    ctx.globalCompositeOperation = "destination-out";
-                    ctx.globalAlpha = 1;
-                    ctx.beginPath();
-                    ctx.arc(x, y, radius, 0, this.pi2, false);
-                    ctx.fill();
-                    ctx.restore();
-                }
-            },
-            drawSafeArea(ctx, targetX, targetY, radius, width, color) {
-                if (!(LM.battleRoyale.state > 2 || radius <= 0)) {
-                    this.drawDashedCircle(ctx, targetX, targetY, radius, 60, width, color);
-                }
-            },
-            drawTextAlongArc(ctx, str, centerX, centerY, radius, angle) {
-                var len = str.length,
-                    s;
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, this.pi2, false);
+                ctx.fill();
+                ctx.restore();
+            }
+        },
+        drawSafeArea(ctx, targetX, targetY, radius, width, color) {
+            if (!(LM.battleRoyale.state > 2 || radius <= 0)) {
+                this.drawDashedCircle(ctx, targetX, targetY, radius, 60, width, color);
+            }
+        },
+        drawTextAlongArc(ctx, str, centerX, centerY, radius, angle) {
+            var len = str.length,
+                s;
+            this.ctx.save();
+            this.ctx.translate(centerX, centerY);
+            this.ctx.rotate(-1 * angle / 2);
+            this.ctx.rotate(-1 * (angle / len) / 2);
+            for (var n = 0; n < len; n++) {
+                this.ctx.rotate(angle / len);
                 this.ctx.save();
-                this.ctx.translate(centerX, centerY);
-                this.ctx.rotate(-1 * angle / 2);
-                this.ctx.rotate(-1 * (angle / len) / 2);
-                for (var n = 0; n < len; n++) {
-                    this.ctx.rotate(angle / len);
-                    this.ctx.save();
-                    this.ctx.translate(0, -1 * radius);
-                    s = str[n];
-                    this.ctx.fillText(s, 0, 0);
-                    this.ctx.restore();
-                }
+                this.ctx.translate(0, -1 * radius);
+                s = str[n];
+                this.ctx.fillText(s, 0, 0);
                 this.ctx.restore();
-            },
-            drawGhostCells() {
-                if (defaultmapsettings.showGhostCells) {
-                    var ghostsCells = LM.ghostCells;
-                    this.ctx.beginPath();
-                    var length = 0;
-                    for (; length < ghostsCells.length; length++) {
-                        if (!ghostsCells[length].inView) {
-                            var x = ghostsCells[length].x;
-                            var y = ghostsCells[length].y;
-                            this.ctx.moveTo(x, y);
-                            this.ctx.arc(x, y, ghostsCells[length].size, 0, this.pi2, false);
-                            //
-                            if (defaultmapsettings.showGhostCellsInfo) {
-                                this.nickScale = 1;
-                                this.fontSize = Math.max(ghostsCells[length].size * 0.3, 26) * this.scale;
-                                this.nickSize = ~~(this.fontSize * this.nickScale);
-                                this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
-                                this.ctx.textAlign = 'center';
-                                this.ctx.fillStyle = defaultSettings.namesColor;
-                                this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
-                                this.ctx.lineWidth = 4;
-                                angle = Math.PI * 0.8;
+            }
+            this.ctx.restore();
+        },
+        drawGhostCells() {
+            if (defaultmapsettings.showGhostCells) {
+                var ghostsCells = LM.ghostCells;
+                this.ctx.beginPath();
+                var length = 0;
+                for (; length < ghostsCells.length; length++) {
+                    if (!ghostsCells[length].inView) {
+                        var x = ghostsCells[length].x;
+                        var y = ghostsCells[length].y;
+                        this.ctx.moveTo(x, y);
+                        this.ctx.arc(x, y, ghostsCells[length].size, 0, this.pi2, false);
+                        //
+                        if (defaultmapsettings.showGhostCellsInfo) {
+                            this.nickScale = 1;
+                            this.fontSize = Math.max(ghostsCells[length].size * 0.3, 26) * this.scale;
+                            this.nickSize = ~~(this.fontSize * this.nickScale);
+                            this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize * 4 + "px " + defaultSettings.namesFontFamily;
+                            this.ctx.textAlign = 'center';
+                            this.ctx.fillStyle = defaultSettings.namesColor;
+                            this.ctx.strokeStyle = defaultSettings.namesStrokeColor;
+                            this.ctx.lineWidth = 4;
+                            angle = Math.PI * 0.8;
 
-                                if (LM.leaderboard[length] != undefined) { //LM instead of legendmod for quicker response
+                            if (LM.leaderboard[length] != undefined) { //LM instead of legendmod for quicker response
 
-                                    this.ghostcellstext = removeEmojis(application.escapeHTML(LM.leaderboard[length].nick)); //application.escapeHTML(legendmod.leaderboard[0].nick)
-                                } else {
-                                    this.ghostcellstext = "Ghost cell";
-                                }
-                                this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, ghostsCells[length].size * this.pi2 / 6, angle);
-                                if (defaultmapsettings.customSkins && LM.showCustomSkins) {
-                                    if (LM.leaderboard[length] != undefined) {
-                                        node = application.getCustomSkin(LM.leaderboard[length].nick, "#000000");
-                                        if (node) {
-                                            this.ctx.drawImage(node, x - ghostsCells[length].size, y - ghostsCells[length].size, ghostsCells[length].size * 2, ghostsCells[length].size * 2);
-                                        }
+                                this.ghostcellstext = removeEmojis(application.escapeHTML(LM.leaderboard[length].nick)); //application.escapeHTML(legendmod.leaderboard[0].nick)
+                            } else {
+                                this.ghostcellstext = "Ghost cell";
+                            }
+                            this.drawTextAlongArc(this.ctx, this.ghostcellstext, x, y, ghostsCells[length].size * this.pi2 / 6, angle);
+                            if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                                if (LM.leaderboard[length] != undefined) {
+                                    node = application.getCustomSkin(LM.leaderboard[length].nick, "#000000");
+                                    if (node) {
+                                        this.ctx.drawImage(node, x - ghostsCells[length].size, y - ghostsCells[length].size, ghostsCells[length].size * 2, ghostsCells[length].size * 2);
                                     }
                                 }
                             }
-                            //
                         }
+                        //
                     }
-                    this.ctx.fillStyle = defaultSettings.ghostCellsColor;
-                    this.ctx.globalAlpha = defaultSettings.ghostCellsAlpha;
-                    this.ctx.shadowColor = defaultSettings.ghostCellsColor;
-                    this.ctx.shadowBlur = 40;
-                    this.ctx.shadowOffsetX = 0;
-                    this.ctx.shadowOffsetY = 0;
-                    this.ctx.fill();
-                    this.ctx.globalAlpha = 1;
-                    this.ctx.shadowBlur = 0;
                 }
-            },
-            preDrawPellet() {
-                this.pellet = null;
-                var size = 10 + defaultSettings.foodSize;
-                var canvas = document.createElement('canvas');
-                canvas.width = 2 * size,
-                    canvas.height = 2 * size;
-                var ctx = canvas.getContext('2d');
-                ctx.arc(size, size, size, 0, this.pi2, false);
-                ctx.fillStyle = defaultSettings.foodColor;
-                ctx.fill();
-                this.pellet = new Image();
-                this.pellet.src = canvas.toDataURL();
-                canvas = null;
-            },
-            preDrawIndicator() {
-                this.indicator = null;
-                var canvas = document.createElement('canvas');
-                canvas.width = 90;
-                canvas.height = 50;
-                var ctx = canvas.getContext('2d');
-                ctx.lineWidth = 2;
-                ctx.fillStyle = defaultSettings.teammatesIndColor;
-                ctx.strokeStyle = '#000000';
-                ctx.beginPath();
-                ctx.moveTo(0, 0);
-                ctx.lineTo(90, 0);
-                ctx.lineTo(45, 50);
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
-                this.indicator = new Image();
-                this.indicator.src = canvas.toDataURL();
-                canvas = null;
-            },
-            countFps(fake) {
-                if (defaultmapsettings.showStatsFPS) {
-                    var Time = Date.now();
-                    if (!this.fpsLastRequest) {
-                        this.fpsLastRequest = Time;
-                    }
-                    if (Time - this.fpsLastRequest >= 1000) {
-                        this.fps = this.renderedFrames;
-                        this.renderedFrames = 0;
-                        this.fpsLastRequest = Time;
-                    }				
-					this.renderedFrames++;
-                    
-                }
-            },			
-            sleep(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms));
-            },
-            //'renderFrame': async function() { //Sonia5
-                //await this.sleep(4); //Sonia5				
-            render() {
-			//'render': async function() {
-				//if (!window.fpsM) window.fpsM = 4
-				//await drawRender.sleep(window.fpsM);				
-                drawRender.countFps();		
-                drawRender.renderFrame();
-				if (!defaultmapsettings.unlockedFPS){
-					window.requestAnimationFrame(drawRender.render);
-				}
-				else if (defaultmapsettings.unlockedFPS==2 || defaultmapsettings.unlockedFPS==4 || defaultmapsettings.unlockedFPS==8 || defaultmapsettings.unlockedFPS==16 || defaultmapsettings.unlockedFPS==32 || defaultmapsettings.unlockedFPS==64){
-					setTimeout(function() {
-						window.requestAnimationFrame(drawRender.render);
-					}, defaultmapsettings.unlockedFPS);	
-				}
-				else if (defaultmapsettings.unlockedFPS=="ultra"){
-					setTimeout(function() {
-						for (var i=0;i<9;i++){
-							drawRender.countFps()
-							drawRender.renderFrame();							
-						}
-						drawRender.render()
-					}, 0);					
-				}	
-				/*else if (defaultmapsettings.unlockedFPS=="sophisticated"){										
-					var timeloops = parseInt(window.drawRender.fps/window.fpsloopsetter);
-					if (timeloops>0){
-						window.requestAnimationFrame(drawRender.render);	
-						//for (var i=0;i<timeloops-1;i++){
-						//if (timeloops>1){	
-							//drawRender.countFps()
-							//drawRender.renderFrame();							
-						//}
-					}
-					else if(window.drawRender.fps/window.fpsloopsetter<1){
-						setTimeout(function() {
-							window.requestAnimationFrame(drawRender.render);
-						}, window.fpsloopsetter/window.drawRender.fps);						
-					}
-				} */	
-				else if (defaultmapsettings.unlockedFPS=="sophisticated"){
-					if (!drawRender.averageRenderTime){
-						window.renderDelay=0;
-					}
-					else if (drawRender.averageRenderTime<30 && window.renderDelay>0){
-						window.renderDelay--
-					}
-					else if (drawRender.averageRenderTime>60 && window.renderDelay<64){
-						window.renderDelay++
-					}
-					setTimeout(function() {
-						//window.requestAnimationFrame(drawRender.render);
-						drawRender.render();
-					}, window.renderDelay);		
-				}				
-				else{
-					setTimeout(function() {
-						drawRender.render()
-					}, 0);					
-				}				
-					//drawRender.render()
-				//}, 1000/window.fps);
-				//}, 0.1);
-                //window.requestAnimationFrame(drawRender.render);
-            },
-            init() {
-                this.setCanvas();
-                this.resizeCanvas();
-                this.preDrawPellet();
-                this.preDrawIndicator();
-                window.requestAnimationFrame(drawRender.render);
+                this.ctx.fillStyle = defaultSettings.ghostCellsColor;
+                this.ctx.globalAlpha = defaultSettings.ghostCellsAlpha;
+                this.ctx.shadowColor = defaultSettings.ghostCellsColor;
+                this.ctx.shadowBlur = 40;
+                this.ctx.shadowOffsetX = 0;
+                this.ctx.shadowOffsetY = 0;
+                this.ctx.fill();
+                this.ctx.globalAlpha = 1;
+                this.ctx.shadowBlur = 0;
             }
+        },
+        preDrawPellet() {
+            this.pellet = null;
+            var size = 10 + defaultSettings.foodSize;
+            var canvas = document.createElement('canvas');
+            canvas.width = 2 * size,
+                canvas.height = 2 * size;
+            var ctx = canvas.getContext('2d');
+            ctx.arc(size, size, size, 0, this.pi2, false);
+            ctx.fillStyle = defaultSettings.foodColor;
+            ctx.fill();
+            this.pellet = new Image();
+            this.pellet.src = canvas.toDataURL();
+            canvas = null;
+        },
+        preDrawIndicator() {
+            this.indicator = null;
+            var canvas = document.createElement('canvas');
+            canvas.width = 90;
+            canvas.height = 50;
+            var ctx = canvas.getContext('2d');
+            ctx.lineWidth = 2;
+            ctx.fillStyle = defaultSettings.teammatesIndColor;
+            ctx.strokeStyle = '#000000';
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(90, 0);
+            ctx.lineTo(45, 50);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            this.indicator = new Image();
+            this.indicator.src = canvas.toDataURL();
+            canvas = null;
+        },
+        countFps(fake) {
+            if (defaultmapsettings.showStatsFPS) {
+                var Time = Date.now();
+                if (!this.fpsLastRequest) {
+                    this.fpsLastRequest = Time;
+                }
+                if (Time - this.fpsLastRequest >= 1000) {
+                    this.fps = this.renderedFrames;
+                    this.renderedFrames = 0;
+                    this.fpsLastRequest = Time;
+                }
+                this.renderedFrames++;
 
-        }
-        var hotkeysSetup = {
-            lastPressedKey: '',
-            lastKeyId: '',
-            defaultMessageKey: 'ENTER',
-            inputClassName: 'custom-key-in form-control input-sm',
-            loadDefaultHotkeys() {
-                hotkeys = {};
-                for (const command in hotkeysCommand) {
-                    if (hotkeysCommand.hasOwnProperty(command)) {
-                        hotkeys[hotkeysCommand[command].defaultKey] = command;
-                    }
-                }
-                hotkeys['spec-messageKey'] = this.defaultMessageKey;
-                /*for (var t in hotkeys = {}, hotkeysCommand) hotkeysCommand.hasOwnProperty(t) && (hotkeys[hotkeysCommand[t].defaultKey] = t);
-                hotkeys['spec-messageKey'] = this.defaultMessageKey;*/
-            },
-            loadHotkeys() {
-                if (null !== window.localStorage.getItem('ogarioHotkeys')) {
-                    hotkeys = JSON.parse(window.localStorage.getItem('ogarioHotkeys'))
-                } else {
-                    this.loadDefaultHotkeys()
-                }
-                if (null !== window.localStorage.getItem('ogarioCommands')) {
-                    chatCommand = JSON.parse(window.localStorage.getItem('ogarioCommands'));
-                }
-            },
-            saveHotkeys() {
-                window.localStorage.setItem('ogarioHotkeys', JSON.stringify(hotkeys));
-                this.saveCommands();
-            },
-            saveCommands() {
-                $('#hotkeys .command-in').each(function() {
-                    var element = $(this);
-                    var id = element.attr('id');
-                    if (chatCommand.hasOwnProperty(id)) {
-                        chatCommand[id] = element.val()
-                    }
-                });
-                window.localStorage.setItem('ogarioCommands', JSON.stringify(chatCommand));
-            },
-            resetHotkeys() {
-                this.loadDefaultHotkeys();
-                $('#hotkeys-cfg .custom-key-in').each(function() {
-                    var t = $(this).attr('id');
-                    hotkeysCommand[t] && $(this).val(hotkeysCommand[t].defaultKey);
-                });
-            },
-            setHotkeysMenu() {
-                //var t = this;
-                const setup = this;
-                for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + textLanguage.restoreSettings + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">' + textLanguage.saveSett + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + textLanguage['close'] + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>' + textLanguage['hk-inst-assign'] + '</li><li>' + textLanguage['hk-inst-delete'] + '</li><li>' + textLanguage['hk-inst-keys'] + '</li></ul></div></div>'), hotkeysCommand)
-                    if (hotkeysCommand.hasOwnProperty(command)) {
-                        var currentCommand = hotkeysCommand[command],
-                            text = '';
-                        for (var key in hotkeys)
-                            if (hotkeys.hasOwnProperty(key) && hotkeys[key] === command) {
-                                text = key;
-                                break;
-                            } if ('hk-switchServerMode' === command && application && !application.privateIP) continue;
-                        if ('command' === currentCommand.type) {
-                            var replaceHk = command.replace('hk-', '');
-                            $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + chatCommand[replaceHk] + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
-                        } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
-                    }
-                $(document).on('click', '#reset-hotkeys', function(event) {
-                        event.preventDefault();
-                        //hotkeysSetup.resetHotkeys();
-                        setup.resetHotkeys();
-                    }),
-                    $(document).on('click', '#save-hotkeys', function(event) {
-                        event.preventDefault();
-                        //hotkeysSetup.saveHotkeys();
-                        setup.saveHotkeys();
-                        $('#hotkeys').fadeOut(500);
-                    }),
-                    $(document).on('click', '#close-hotkeys', function(event) {
-                        event.preventDefault();
-                        $('#hotkeys').fadeOut(500);
-                    }),
-                    $(document).on('click', '.hotkeys-link', function(event) {
-                        $('#hotkeys').fadeIn(500);
-                        $('#hotkeys-cfg').perfectScrollbar('update');
-                        resetonkeydown();
-                    }),
-                    $('#hotkeys-cfg').perfectScrollbar(),
-                    Settings && Settings.setMenuBg();
-            },
-            getPressedKey(key) {
-                var specialKey = '';
-                var normalKey = '';
-                if (key.ctrlKey || key.keyCode == 17) {
-                    specialKey = 'CTRL';
-                } else if (key.altKey || key.keyCode == 18) {
-                    specialKey = 'ALT';
-                }
-                switch (key.keyCode) {
-                    //switch (key['ctrlKey'] || 17 == key.keyCode ? specialKey = 'CTRL' : (key.altKey || 18 == key.keyCode) && (specialKey = 'ALT'), key.keyCode) {
-                    case 9:
-                        normalKey = 'TAB';
-                        break;
-                    case 13:
-                        normalKey = 'ENTER';
-                        break;
-                    case 16:
-                        normalKey = 'SHIFT';
-                        break;
-                    case 17:
-                    case 18:
-                        break;
-                    case 27:
-                        normalKey = 'ESC';
-                        break;
-                    case 32:
-                        normalKey = 'SPACE';
-                        break;
-                    case 37:
-                        normalKey = 'LEFT';
-                        break;
-                    case 38:
-                        normalKey = 'UP';
-                        break;
-                    case 39:
-                        normalKey = 'RIGHT';
-                        break;
-                    case 40:
-                        normalKey = 'DOWN';
-                        break;
-                    case 46:
-                        normalKey = 'DEL';
-                        break;
-                    case 61:
-                    case 187:
-                        normalKey = '=';
-                        break;
-                    case 192:
-                        normalKey = 'TILDE';
-                        break;
-                    default:
-                        normalKey = String.fromCharCode(key.keyCode);
-                }
-                if (specialKey !== '') {
-                    if (normalKey !== '') {
-                        return specialKey + '+' + normalKey;
-                    }
-                    return specialKey;
-                }
-                return normalKey;
-                //return '' !== specialKey ? '' !== normalKey ? specialKey + '+' + normalKey : specialKey : normalKey;
-            },
-            deleteHotkey(name, id) {
-                delete hotkeys[name];
-                $('#' + id).val('');
-            },
-            setDefaultHotkey(id) {
-                var key = false;
-                if (hotkeysCommand[id] && !hotkeys.hasOwnProperty(hotkeysCommand[id].defaultKey)) {
-                    key = hotkeysCommand[id].defaultKey;
-                    hotkeys[key] = id;
-                }
-                return key;
-            },
-            setHotkey(key, id) {
-                if (id && (this.lastPressedKey !== key || this.lastKeyId !== id)) {
-                    var value = $('#' + id).val();
-                    if (this.deleteHotkey(value, id), 'DEL' !== key) {
-                        if (hotkeys[key] && hotkeys[key] !== id) {
-                            var hotkey = hotkeys[key],
-                                defaultKey = this.setDefaultHotkey(hotkey);
-                            if (defaultKey) {
-                                hotkeys[defaultKey] = hotkey;
-                                $('#' + hotkey).val(defaultKey)
-                            } else {
-                                this.deleteHotkey(key, hotkey);
-                            }
-                        }
-                        hotkeys[key] = id,
-                            $('#' + id).val(key);
-                        if ('hk-chatMessage' === id) {
-                            hotkeys['spec-messageKey'] = key
-                        }
-                        this.lastPressedKey = key;
-                        this.lastKeyId = id;
-                    }
-                }
-            },
-            init() {
-                this.loadHotkeys();
-                this.setHotkeysMenu();
             }
-        };
+        },
+        sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        },
+        //'renderFrame': async function() { //Sonia5
+        //await this.sleep(4); //Sonia5				
+        render() {
+            //'render': async function() {
+            //if (!window.fpsM) window.fpsM = 4
+            //await drawRender.sleep(window.fpsM);				
+            drawRender.countFps();
+            drawRender.renderFrame();
+            if (!defaultmapsettings.unlockedFPS) {
+                window.requestAnimationFrame(drawRender.render);
+            } else if (defaultmapsettings.unlockedFPS == 2 || defaultmapsettings.unlockedFPS == 4 || defaultmapsettings.unlockedFPS == 8 || defaultmapsettings.unlockedFPS == 16 || defaultmapsettings.unlockedFPS == 32 || defaultmapsettings.unlockedFPS == 64) {
+                setTimeout(function() {
+                    window.requestAnimationFrame(drawRender.render);
+                }, defaultmapsettings.unlockedFPS);
+            } else if (defaultmapsettings.unlockedFPS == "ultra") {
+                setTimeout(function() {
+                    for (var i = 0; i < 9; i++) {
+                        drawRender.countFps()
+                        drawRender.renderFrame();
+                    }
+                    drawRender.render()
+                }, 0);
+            }
+            /*else if (defaultmapsettings.unlockedFPS=="sophisticated"){										
+            	var timeloops = parseInt(window.drawRender.fps/window.fpsloopsetter);
+            	if (timeloops>0){
+            		window.requestAnimationFrame(drawRender.render);	
+            		//for (var i=0;i<timeloops-1;i++){
+            		//if (timeloops>1){	
+            			//drawRender.countFps()
+            			//drawRender.renderFrame();							
+            		//}
+            	}
+            	else if(window.drawRender.fps/window.fpsloopsetter<1){
+            		setTimeout(function() {
+            			window.requestAnimationFrame(drawRender.render);
+            		}, window.fpsloopsetter/window.drawRender.fps);						
+            	}
+            } */
+            else if (defaultmapsettings.unlockedFPS == "sophisticated") {
+                if (!drawRender.averageRenderTime) {
+                    window.renderDelay = 0;
+                } else if (drawRender.averageRenderTime < 30 && window.renderDelay > 0) {
+                    window.renderDelay--
+                } else if (drawRender.averageRenderTime > 60 && window.renderDelay < 64) {
+                    window.renderDelay++
+                }
+                setTimeout(function() {
+                    //window.requestAnimationFrame(drawRender.render);
+                    drawRender.render();
+                }, window.renderDelay);
+            } else {
+                setTimeout(function() {
+                    drawRender.render()
+                }, 0);
+            }
+            //drawRender.render()
+            //}, 1000/window.fps);
+            //}, 0.1);
+            //window.requestAnimationFrame(drawRender.render);
+        },
+        init() {
+            this.setCanvas();
+            this.resizeCanvas();
+            this.preDrawPellet();
+            this.preDrawIndicator();
+            window.requestAnimationFrame(drawRender.render);
+        }
+
+    }
+    var hotkeysSetup = {
+        lastPressedKey: '',
+        lastKeyId: '',
+        defaultMessageKey: 'ENTER',
+        inputClassName: 'custom-key-in form-control input-sm',
+        loadDefaultHotkeys() {
+            hotkeys = {};
+            for (const command in hotkeysCommand) {
+                if (hotkeysCommand.hasOwnProperty(command)) {
+                    hotkeys[hotkeysCommand[command].defaultKey] = command;
+                }
+            }
+            hotkeys['spec-messageKey'] = this.defaultMessageKey;
+            /*for (var t in hotkeys = {}, hotkeysCommand) hotkeysCommand.hasOwnProperty(t) && (hotkeys[hotkeysCommand[t].defaultKey] = t);
+            hotkeys['spec-messageKey'] = this.defaultMessageKey;*/
+        },
+        loadHotkeys() {
+            if (null !== window.localStorage.getItem('ogarioHotkeys')) {
+                hotkeys = JSON.parse(window.localStorage.getItem('ogarioHotkeys'))
+            } else {
+                this.loadDefaultHotkeys()
+            }
+            if (null !== window.localStorage.getItem('ogarioCommands')) {
+                chatCommand = JSON.parse(window.localStorage.getItem('ogarioCommands'));
+            }
+        },
+        saveHotkeys() {
+            window.localStorage.setItem('ogarioHotkeys', JSON.stringify(hotkeys));
+            this.saveCommands();
+        },
+        saveCommands() {
+            $('#hotkeys .command-in').each(function() {
+                var element = $(this);
+                var id = element.attr('id');
+                if (chatCommand.hasOwnProperty(id)) {
+                    chatCommand[id] = element.val()
+                }
+            });
+            window.localStorage.setItem('ogarioCommands', JSON.stringify(chatCommand));
+        },
+        resetHotkeys() {
+            this.loadDefaultHotkeys();
+            $('#hotkeys-cfg .custom-key-in').each(function() {
+                var t = $(this).attr('id');
+                hotkeysCommand[t] && $(this).val(hotkeysCommand[t].defaultKey);
+            });
+        },
+        setHotkeysMenu() {
+            //var t = this;
+            const setup = this;
+            for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + textLanguage.restoreSettings + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">' + textLanguage.saveSett + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + textLanguage['close'] + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>' + textLanguage['hk-inst-assign'] + '</li><li>' + textLanguage['hk-inst-delete'] + '</li><li>' + textLanguage['hk-inst-keys'] + '</li></ul></div></div>'), hotkeysCommand)
+                if (hotkeysCommand.hasOwnProperty(command)) {
+                    var currentCommand = hotkeysCommand[command],
+                        text = '';
+                    for (var key in hotkeys)
+                        if (hotkeys.hasOwnProperty(key) && hotkeys[key] === command) {
+                            text = key;
+                            break;
+                        } if ('hk-switchServerMode' === command && application && !application.privateIP) continue;
+                    if ('command' === currentCommand.type) {
+                        var replaceHk = command.replace('hk-', '');
+                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + chatCommand[replaceHk] + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
+                    } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" value=\"' + text + '\" /></div></div>');
+                }
+            $(document).on('click', '#reset-hotkeys', function(event) {
+                    event.preventDefault();
+                    //hotkeysSetup.resetHotkeys();
+                    setup.resetHotkeys();
+                }),
+                $(document).on('click', '#save-hotkeys', function(event) {
+                    event.preventDefault();
+                    //hotkeysSetup.saveHotkeys();
+                    setup.saveHotkeys();
+                    $('#hotkeys').fadeOut(500);
+                }),
+                $(document).on('click', '#close-hotkeys', function(event) {
+                    event.preventDefault();
+                    $('#hotkeys').fadeOut(500);
+                }),
+                $(document).on('click', '.hotkeys-link', function(event) {
+                    $('#hotkeys').fadeIn(500);
+                    $('#hotkeys-cfg').perfectScrollbar('update');
+                    resetonkeydown();
+                }),
+                $('#hotkeys-cfg').perfectScrollbar(),
+                Settings && Settings.setMenuBg();
+        },
+        getPressedKey(key) {
+            var specialKey = '';
+            var normalKey = '';
+            if (key.ctrlKey || key.keyCode == 17) {
+                specialKey = 'CTRL';
+            } else if (key.altKey || key.keyCode == 18) {
+                specialKey = 'ALT';
+            }
+            switch (key.keyCode) {
+                //switch (key['ctrlKey'] || 17 == key.keyCode ? specialKey = 'CTRL' : (key.altKey || 18 == key.keyCode) && (specialKey = 'ALT'), key.keyCode) {
+                case 9:
+                    normalKey = 'TAB';
+                    break;
+                case 13:
+                    normalKey = 'ENTER';
+                    break;
+                case 16:
+                    normalKey = 'SHIFT';
+                    break;
+                case 17:
+                case 18:
+                    break;
+                case 27:
+                    normalKey = 'ESC';
+                    break;
+                case 32:
+                    normalKey = 'SPACE';
+                    break;
+                case 37:
+                    normalKey = 'LEFT';
+                    break;
+                case 38:
+                    normalKey = 'UP';
+                    break;
+                case 39:
+                    normalKey = 'RIGHT';
+                    break;
+                case 40:
+                    normalKey = 'DOWN';
+                    break;
+                case 46:
+                    normalKey = 'DEL';
+                    break;
+                case 61:
+                case 187:
+                    normalKey = '=';
+                    break;
+                case 192:
+                    normalKey = 'TILDE';
+                    break;
+                default:
+                    normalKey = String.fromCharCode(key.keyCode);
+            }
+            if (specialKey !== '') {
+                if (normalKey !== '') {
+                    return specialKey + '+' + normalKey;
+                }
+                return specialKey;
+            }
+            return normalKey;
+            //return '' !== specialKey ? '' !== normalKey ? specialKey + '+' + normalKey : specialKey : normalKey;
+        },
+        deleteHotkey(name, id) {
+            delete hotkeys[name];
+            $('#' + id).val('');
+        },
+        setDefaultHotkey(id) {
+            var key = false;
+            if (hotkeysCommand[id] && !hotkeys.hasOwnProperty(hotkeysCommand[id].defaultKey)) {
+                key = hotkeysCommand[id].defaultKey;
+                hotkeys[key] = id;
+            }
+            return key;
+        },
+        setHotkey(key, id) {
+            if (id && (this.lastPressedKey !== key || this.lastKeyId !== id)) {
+                var value = $('#' + id).val();
+                if (this.deleteHotkey(value, id), 'DEL' !== key) {
+                    if (hotkeys[key] && hotkeys[key] !== id) {
+                        var hotkey = hotkeys[key],
+                            defaultKey = this.setDefaultHotkey(hotkey);
+                        if (defaultKey) {
+                            hotkeys[defaultKey] = hotkey;
+                            $('#' + hotkey).val(defaultKey)
+                        } else {
+                            this.deleteHotkey(key, hotkey);
+                        }
+                    }
+                    hotkeys[key] = id,
+                        $('#' + id).val(key);
+                    if ('hk-chatMessage' === id) {
+                        hotkeys['spec-messageKey'] = key
+                    }
+                    this.lastPressedKey = key;
+                    this.lastKeyId = id;
+                }
+            }
+        },
+        init() {
+            this.loadHotkeys();
+            this.setHotkeysMenu();
+        }
+    };
     window.legendmod2 = drawRender; //look at this
     window.legendmod6 = hotkeysSetup;
 
@@ -14892,36 +14659,33 @@ Game name     : ${i.displayName}<br/>
             helloContainerHeight = ogario.menuHeight || 618;
         }
         var scale = Math.min(1, innerHeigth / helloContainerHeight);
-		//
-		scale = scale*defaultSettings.hudScale;
-		//
+        //
+        scale = scale * defaultSettings.hudScale;
+        //
         var topValue = () => {
-			//var distance=355;
-			var distance;
-			//var tempp = window.screen.height
+            //var distance=355;
+            var distance;
+            //var tempp = window.screen.height
             if (innerHeigth <= 992) {
-				
-				distance=250;
+
+                distance = 250;
                 //scale += 0.1*defaultSettings.hudScale;
-            } 			
-            else if (innerHeigth <= 1080) {
-				distance=300;
+            } else if (innerHeigth <= 1080) {
+                distance = 300;
                 //scale += 0.1*defaultSettings.hudScale;
-            } 
-			else if (innerHeigth > 1080 && innerHeigth < 1440) {
-				distance=420;
+            } else if (innerHeigth > 1080 && innerHeigth < 1440) {
+                distance = 420;
                 //scale += 0.2*defaultSettings.hudScale;
-            } 
-			else if (innerHeigth >= 1440) {
-				distance=520;
+            } else if (innerHeigth >= 1440) {
+                distance = 520;
                 //scale += 0.3*defaultSettings.hudScale;
             }
-			if (defaultSettings.hudScale>1){
-				distance = distance / defaultSettings.hudScale
-			}
-			helloContainer.css("top", distance + "px");
+            if (defaultSettings.hudScale > 1) {
+                distance = distance / defaultSettings.hudScale
+            }
+            helloContainer.css("top", distance + "px");
         }
-        
+
         topValue()
         var transform = "translate(-50%, -30%) scale(" + scale + ")";
 
@@ -14931,41 +14695,42 @@ Game name     : ${i.displayName}<br/>
         ogario.innerW = innerWidth;
         ogario.innerH = innerHeigth;
     }
-    function ogarhusettingsImportExportMobile() {
-		if (isMobile){
-        var innerWidth = window.innerWidth;
-        var innerHeigth = window.innerHeight;
-        var helloContainer = $("#exp-imp");
-		
-        var helloContainerHeight = helloContainer.innerHeight();
-        if (helloContainerHeight > 0) {
-            ogario.menuHeight = helloContainerHeight;
-        } 
-		else {
-            helloContainerHeight = ogario.menuHeight || 618;
-        }
-        var scale = Math.min(1, innerHeigth / helloContainerHeight);
-		//
-		scale = scale*defaultSettings.hudScale/1.2;
-		//
-        var topValue = () => {
-			var distance=150;		
-			if (defaultSettings.hudScale>1){
-				distance = distance / defaultSettings.hudScale
-			}
-			helloContainer.css("top", distance + "px");
-        }
-        
-        topValue()
-        var transform = "translate(-50%, -30%) scale(" + scale + ")";
 
-        helloContainer.css("transform", transform);
-        helloContainer.css("-ms-transform", transform);
-        helloContainer.css("-webkit-transform", transform);
-		helloContainer.width(helloContainer.width()/1.2)
-		}
-		
-    }	
+    function ogarhusettingsImportExportMobile() {
+        if (isMobile) {
+            var innerWidth = window.innerWidth;
+            var innerHeigth = window.innerHeight;
+            var helloContainer = $("#exp-imp");
+
+            var helloContainerHeight = helloContainer.innerHeight();
+            if (helloContainerHeight > 0) {
+                ogario.menuHeight = helloContainerHeight;
+            } else {
+                helloContainerHeight = ogario.menuHeight || 618;
+            }
+            var scale = Math.min(1, innerHeigth / helloContainerHeight);
+            //
+            scale = scale * defaultSettings.hudScale / 1.2;
+            //
+            var topValue = () => {
+                var distance = 150;
+                if (defaultSettings.hudScale > 1) {
+                    distance = distance / defaultSettings.hudScale
+                }
+                helloContainer.css("top", distance + "px");
+            }
+
+            topValue()
+            var transform = "translate(-50%, -30%) scale(" + scale + ")";
+
+            helloContainer.css("transform", transform);
+            helloContainer.css("-ms-transform", transform);
+            helloContainer.css("-webkit-transform", transform);
+            helloContainer.width(helloContainer.width() / 1.2)
+        }
+
+    }
+
     function resetonkeydown() {
         if (application.protocolMode) {
             return;
@@ -14975,13 +14740,13 @@ Game name     : ${i.displayName}<br/>
     document.onkeydown = function(event) {
         var pressedKey = hotkeysSetup.getPressedKey(event);
         if (('INPUT' !== event.target.tagName || event.target.className === hotkeysSetup.inputClassName || pressedKey === hotkeys['spec-messageKey']) && '' !== pressedKey && !keyBlind[pressedKey]) {
-			
-            if (keyBlind[pressedKey] = true, 'ESC' === pressedKey){ 
-				return event.preventDefault(), void(application && application.showMenu() );
-			}
-            if (event.target.className === hotkeysSetup.inputClassName){ 
-				return event.preventDefault(), void hotkeysSetup.setHotkey(pressedKey, event.target.id);
-			}
+
+            if (keyBlind[pressedKey] = true, 'ESC' === pressedKey) {
+                return event.preventDefault(), void(application && application.showMenu());
+            }
+            if (event.target.className === hotkeysSetup.inputClassName) {
+                return event.preventDefault(), void hotkeysSetup.setHotkey(pressedKey, event.target.id);
+            }
             if (hotkeys[pressedKey]) {
                 event.preventDefault();
                 var i = hotkeys[pressedKey];
@@ -15013,19 +14778,15 @@ Game name     : ${i.displayName}<br/>
                     }
                 }
 
-            } 
-			else if(defaultmapsettings.stickyCell) {
-				if (1 == event.which){
-					drawRender.LMB=true
-				}
-				else{
-					drawRender.RMB=true
-				}
-			} 
-			else if(defaultmapsettings.reverseTrick) {
-				reverseTrick.pointInCircle(legendmod.cursorX, legendmod.cursorY, event.which);
-			} 			
-			else {
+            } else if (defaultmapsettings.stickyCell) {
+                if (1 == event.which) {
+                    drawRender.LMB = true
+                } else {
+                    drawRender.RMB = true
+                }
+            } else if (defaultmapsettings.reverseTrick) {
+                reverseTrick.pointInCircle(legendmod.cursorX, legendmod.cursorY, event.which);
+            } else {
                 if (defaultmapsettings.mouseSplit && (1 == event.which && !defaultmapsettings.mouseInvert || 3 == event.which && defaultmapsettings.mouseInvert)) {
                     event.preventDefault();
                     if (application) {
@@ -15046,10 +14807,9 @@ Game name     : ${i.displayName}<br/>
             if (3 == event.which && !defaultmapsettings.mouseInvert || 1 == event.which && defaultmapsettings.mouseInvert) {
                 application && application.macroFeed(false);
             }
-        }		
-		else{
-			event.which == 1 ? (drawRender.LMB=false) : (drawRender.RMB=false)
-		}
+        } else {
+            event.which == 1 ? (drawRender.LMB = false) : (drawRender.RMB = false)
+        }
     };
     window.onbeforeunload = function(event) {
         if (ogario.play) {
@@ -15081,7 +14841,7 @@ Game name     : ${i.displayName}<br/>
     window.onresize = function() {
         drawRender.resizeCanvas();
         ogarhusettings();
-		//ogarhusettingsImportExportMobile();
+        //ogarhusettingsImportExportMobile();
     };
     spectateBlind();
 
@@ -15157,14 +14917,14 @@ Game name     : ${i.displayName}<br/>
             } else {
                 LM.sendBotEject();
             }
-        },		
+        },
         Botsplit() {
             if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
                 spects[window.multiboxPlayerEnabled - 1].sendBotSplit()
             } else {
                 LM.sendBotSplit();
             }
-        },		
+        },
         eject() {
             if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
                 spects[window.multiboxPlayerEnabled - 1].sendEject()
@@ -15179,7 +14939,7 @@ Game name     : ${i.displayName}<br/>
             } else {
                 LM.sendSplit();
             }
-        },		
+        },
         specialOn() {
             LM.sendFreeSpectate();
         },
@@ -15214,7 +14974,7 @@ Game name     : ${i.displayName}<br/>
         },
         setClientVersion(version, strVersion) {
             LM.setClientVersion(version, strVersion);
-        },		
+        },
         proxyMobileData(arr = []) {
             if (!Array.isArray(arr)) {
                 console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " ProxyMobileData ERROR: Array data required.");
@@ -15227,13 +14987,13 @@ Game name     : ${i.displayName}<br/>
             LM.sendMessage(new DataView(arr.buffer));
         },
         registerSkin(a, b, c, d) {
-            if (a){
-				window.customskinsname = a;		
-				window.customskinsarray[window.customskinsname] = [];
-				window.customskinsarray[window.customskinsname].customskinsname = a
-				window.customskinsarray[window.customskinsname].customskinsurl = c
-				window.customskinsarray[window.customskinsname].customskinanimated = d
-			}
+            if (a) {
+                window.customskinsname = a;
+                window.customskinsarray[window.customskinsname] = [];
+                window.customskinsarray[window.customskinsname].customskinsname = a
+                window.customskinsarray[window.customskinsname].customskinsurl = c
+                window.customskinsarray[window.customskinsname].customskinanimated = d
+            }
         },
         //lulko
         playerHasCells() {
@@ -15262,14 +15022,14 @@ Game name     : ${i.displayName}<br/>
     drawRender.init();
     window.master.init();
     ogarhusettings();
-	ogarhusettingsImportExportMobile();
+    ogarhusettingsImportExportMobile();
     setGUIEvents();
 
     window.canvasElem = document.querySelector("canvas");
     window.canvasElem.addEventListener('contextmenu', openContextMenu, false);
-	document.getElementById("botsRemoteIP").addEventListener('contextmenu', openContextMenu2, false);
-	document.getElementById("server-token").addEventListener('contextmenu', openContextMenu3, false);
-	document.getElementById("skin").addEventListener('contextmenu', openContextMenu4, false);
+    document.getElementById("botsRemoteIP").addEventListener('contextmenu', openContextMenu2, false);
+    document.getElementById("server-token").addEventListener('contextmenu', openContextMenu3, false);
+    document.getElementById("skin").addEventListener('contextmenu', openContextMenu4, false);
     PreLcCelebration();
     consoleNotice();
     $("#overlays").css("z-index", "100")
@@ -15284,7 +15044,7 @@ function setGUIEvents() {
     if (storedbotsRemoteIP == null || storedbotsRemoteIP == "") {
         storedbotsRemoteIP = "ws://localhost:1337";
     }
-	window.captchaOpenedWindow=1;
+    window.captchaOpenedWindow = 1;
     /*var captchaSpeed = localStorage.getItem("captchaSpeed2");
 	if (captchaSpeed == null || captchaSpeed == "null" || captchaSpeed == ""){ 
 		window.captchaOpenedWindow = 1
@@ -15292,7 +15052,7 @@ function setGUIEvents() {
 	else{	
 		window.captchaOpenedWindow = parseInt(captchaSpeed);
 		$('#captchaSpeed').val(window.captchaOpenedWindow)
-	}*/  
+	}*/
     window.bots.remoteIP = storedbotsRemoteIP
     window.SERVER_HOST = storedbotsRemoteIP;
     $('#botsRemoteIP').val(storedbotsRemoteIP)
@@ -15319,32 +15079,30 @@ function setGUIEvents() {
         window.SERVER_HOST = window.bots.remoteIP
     })
     document.getElementById('botsNameLM').addEventListener('change', function() {
-		 document.getElementById('botsNameLM').value = document.getElementById('botsNameLM').value.replace(/[^\x20-\x7E]/g, '');
+        document.getElementById('botsNameLM').value = document.getElementById('botsNameLM').value.replace(/[^\x20-\x7E]/g, '');
         window.bots.nameLM = this.value
         localStorage.setItem('localStoredBotsName', window.bots.nameLM)
     })
-    document.getElementById('botsAmount').addEventListener('change', function() {      
+    document.getElementById('botsAmount').addEventListener('change', function() {
         localStorage.setItem('localStoredBotsAmount', window.bots.amount)
-		window.bots.amount = Number(this.value)		
+        window.bots.amount = Number(this.value)
     })
-    document.getElementById('connectBots').addEventListener('click', () => {			
-            if (!window.connectionBots.ws || window.connectionBots.ws.readyState !== WebSocket.OPEN) window.connectionBots.connect()
+    document.getElementById('connectBots').addEventListener('click', () => {
+        if (!window.connectionBots.ws || window.connectionBots.ws.readyState !== WebSocket.OPEN) window.connectionBots.connect()
     })
     document.getElementById('startBots').addEventListener('click', () => {
         if (legendmod.ws && window.EnvConfig.configVersion && window.master.clientVersion && !window.userBots.startedBots) {
             if (legendmod.gameMode == ":party" || $("#nick").val().includes('℄') && $("#clantag").val() == window.atob(window.clanTagLc) || window.AdminRights == 1 || window.IamNeo == true) {
                 if (window.bots.amount) {
-					if (window.bots.amount + legendmod.leaderboard.length>197) window.bots.amount = 197 - legendmod.leaderboard.length;
+                    if (window.bots.amount + legendmod.leaderboard.length > 197) window.bots.amount = 197 - legendmod.leaderboard.length;
                     //if (window.bots.nameLM && window.bots.amount && window.getComputedStyle(document.getElementsByClassName('btn-login-play')[0]).getPropertyValue('display') === 'none') {
-                        //window.connectionBots.send(window.buffers.startBots(legendmod.ws, window.gameBots.protocolVersion, window.gameBots.clientVersion, window.userBots.isAlive, window.unescape(window.encodeURIComponent(window.bots.nameLM)), window.bots.amount))
-                        window.connectionBots.send(window.buffers.startBots(legendmod.ws, window.gameBots.protocolVersion, window.gameBots.clientVersion, window.userBots.isAlive, window.unescape(window.encodeURIComponent(window.bots.nameLM)), window.bots.amount))
-						
-						if (legendmod.gameMode != ":party") window.connectionBots.send(window.buffers.sendMode(window.unescape(window.encodeURIComponent(ogarcopythelb.nick))))						
-                        //window.connectionBots.send(window.buffers.startBots(legendmod.ws, window.gameBots.protocolVersion, window.gameBots.clientVersion, window.userBots.isAlive, window.botsSpawncode[window.botsSpawncodeNum], window.bots.amount))                     					
-                } 
-				else toastr.info('<b>[' + Premadeletter123 + ']:</b> Bots amount required (max 190)')
-            } 
-			else {
+                    //window.connectionBots.send(window.buffers.startBots(legendmod.ws, window.gameBots.protocolVersion, window.gameBots.clientVersion, window.userBots.isAlive, window.unescape(window.encodeURIComponent(window.bots.nameLM)), window.bots.amount))
+                    window.connectionBots.send(window.buffers.startBots(legendmod.ws, window.gameBots.protocolVersion, window.gameBots.clientVersion, window.userBots.isAlive, window.unescape(window.encodeURIComponent(window.bots.nameLM)), window.bots.amount))
+
+                    if (legendmod.gameMode != ":party") window.connectionBots.send(window.buffers.sendMode(window.unescape(window.encodeURIComponent(ogarcopythelb.nick))))
+                    //window.connectionBots.send(window.buffers.startBots(legendmod.ws, window.gameBots.protocolVersion, window.gameBots.clientVersion, window.userBots.isAlive, window.botsSpawncode[window.botsSpawncodeNum], window.bots.amount))                     					
+                } else toastr.info('<b>[' + Premadeletter123 + ']:</b> Bots amount required (max 190)')
+            } else {
                 toastr.info('<b>[' + Premadeletter123 + ']:</b> Party bots only available for Party mode')
             }
         }
@@ -15438,14 +15196,14 @@ const menuLeft = new ContextMenu({
             'name': 'Attack',
             action: () => {
                 leftClickAttack()
-				
+
             }
         },
         {
             'icon': 'question',
             'name': 'Fight',
             action: () => {
-                leftClickFight()	
+                leftClickFight()
             }
         },
         {
@@ -15460,63 +15218,63 @@ const menuLeft = new ContextMenu({
 const menuLeft2 = new ContextMenu({
     'theme': 'default', // or 'blue'
     'items': [{
-            'icon': 'download',
-            'name': 'Open',
-            action: () => {
-                leftClickOpen()
-				menuLeft2.hide();
-            }
+        'icon': 'download',
+        'name': 'Open',
+        action: () => {
+            leftClickOpen()
+            menuLeft2.hide();
         }
-    ]
+    }]
 });
 const menuLeft3 = new ContextMenu({
     'theme': 'default', // or 'blue'
     'items': [{
-            'icon': 'download',
-            'name': 'Open',
-            action: () => {
-                leftClickOpen2()
-				menuLeft3.hide();
-            }
+        'icon': 'download',
+        'name': 'Open',
+        action: () => {
+            leftClickOpen2()
+            menuLeft3.hide();
         }
-    ]
+    }]
 });
 const menuLeft4 = new ContextMenu({
     'theme': 'default', // or 'blue'
     'items': [{
-            'icon': 'download',
-            'name': 'Open',
-            action: () => {
-                leftClickOpen3()
-				menuLeft4.hide();
-            }
+        'icon': 'download',
+        'name': 'Open',
+        action: () => {
+            leftClickOpen3()
+            menuLeft4.hide();
         }
-    ]
+    }]
 });
+
 function leftClickOpen() {
-	if (document.getElementById("botsRemoteIP").value.includes('.repl.co')) {
-		var temp11 = document.getElementById("botsRemoteIP").value
-		var temp12 = "https://repl.it/@" + temp11.split('--')[1].split('.repl.co')[0] + "/" + temp11.split('wss://')[1].split('--')[0]
-		window.open(temp12 , '_blank');
-	}
-	else if (document.getElementById("botsRemoteIP").value.includes('.glitch.me')) {
-		var temp11 = document.getElementById("botsRemoteIP").value
-		var temp12 = "https://glitch.com/~" + temp11.replace("wss://","").replace(".glitch.me","")
-		window.open(temp12 , '_blank');
-	}	
+    if (document.getElementById("botsRemoteIP").value.includes('.repl.co')) {
+        var temp11 = document.getElementById("botsRemoteIP").value
+        var temp12 = "https://repl.it/@" + temp11.split('--')[1].split('.repl.co')[0] + "/" + temp11.split('wss://')[1].split('--')[0]
+        window.open(temp12, '_blank');
+    } else if (document.getElementById("botsRemoteIP").value.includes('.glitch.me')) {
+        var temp11 = document.getElementById("botsRemoteIP").value
+        var temp12 = "https://glitch.com/~" + temp11.replace("wss://", "").replace(".glitch.me", "")
+        window.open(temp12, '_blank');
+    }
 }
+
 function leftClickOpen2() {
-	var temp11 = document.getElementById("server-token").value
-	var temp12 = "https://glitch.com/~" + temp11.replace("wss://","").replace(".glitch.me","")
-	window.open(temp12 , '_blank');
+    var temp11 = document.getElementById("server-token").value
+    var temp12 = "https://glitch.com/~" + temp11.replace("wss://", "").replace(".glitch.me", "")
+    window.open(temp12, '_blank');
 }
+
 function leftClickOpen3() {
-	var temp11 = document.getElementById("skin").value
-	var templ3 = temp11.replace("https://","").split(".github.io")[0]
-	var templ4 = temp11.replace("https://","").split(".github.io")[1]
-	var temp12 = "https://github.com/" + templ3 + "/" + templ3 + ".github.io/blob/master"+ templ4
-	window.open(temp12 , '_blank');
+    var temp11 = document.getElementById("skin").value
+    var templ3 = temp11.replace("https://", "").split(".github.io")[0]
+    var templ4 = temp11.replace("https://", "").split(".github.io")[1]
+    var temp12 = "https://github.com/" + templ3 + "/" + templ3 + ".github.io/blob/master" + templ4
+    window.open(temp12, '_blank');
 }
+
 function leftClickAttack() {
     var temp = legendmod.cursorX + legendmod.mapOffsetX
     var temp2 = legendmod.cursorY + legendmod.mapOffsetY
@@ -15552,6 +15310,7 @@ function openContextMenu(evt) {
         window.canvasElem.addEventListener('click', hideContextMenu, false);
     }
 }
+
 function openContextMenu2(evt) {
     if (document.getElementById("botsRemoteIP").value.includes('.repl.co') || document.getElementById("botsRemoteIP").value.includes('.glitch.me')) {
         evt.preventDefault();
@@ -15563,6 +15322,7 @@ function openContextMenu2(evt) {
         document.getElementById("botsRemoteIP").addEventListener('click', hideContextMenu2, false);
     }
 }
+
 function openContextMenu3(evt) {
     if (document.getElementById("server-token").value.includes('.glitch.me')) {
         evt.preventDefault();
@@ -15574,6 +15334,7 @@ function openContextMenu3(evt) {
         document.getElementById("server-token").addEventListener('click', hideContextMenu3, false);
     }
 }
+
 function openContextMenu4(evt) {
     if (document.getElementById("skin").value.includes('.github.io/')) {
         evt.preventDefault();
@@ -15585,18 +15346,22 @@ function openContextMenu4(evt) {
         document.getElementById("skin").addEventListener('click', hideContextMenu4, false);
     }
 }
+
 function hideContextMenu(evt) {
     menuLeft.hide();
     window.canvasElem.removeEventListener('click', hideContextMenu);
 }
+
 function hideContextMenu2(evt) {
     menuLeft2.hide();
     document.getElementById("botsRemoteIP").removeEventListener('click', hideContextMenu2);
 }
+
 function hideContextMenu3(evt) {
     menuLeft3.hide();
     document.getElementById("server-token").removeEventListener('click', hideContextMenu3);
 }
+
 function hideContextMenu4(evt) {
     menuLeft4.hide();
     document.getElementById("skin").removeEventListener('click', hideContextMenu4);
@@ -15604,35 +15369,35 @@ function hideContextMenu4(evt) {
 //Animated Skins
 function animateSkincheck() {
     //for (i = 0; i < 10; i++) {
-	//SpecialEffectPlayers[	
-	for (i = 0; i < 1; i++) {	
+    //SpecialEffectPlayers[	
+    for (i = 0; i < 1; i++) {
         for (animatedi = 0; animatedi < legendmod.leaderboard.length; animatedi++) {
             for (animatedkey in animatedskins) {
                 if (animatedkey == legendmod.leaderboard[animatedi].nick) {
-					if (animatedskins[animatedkey] && animatedskins[animatedkey].frames){
-                    e = animatedskins[animatedkey].frames.length - 1;
-					window.anual = 0;
-                    for (animateda = 0; animateda <= animatedskins[animatedkey].frames.length - 1; animateda++) {
-                        b = animateda;
-                        verifiednames = animatedkey;
-                        window.anual = window.anual + animatedskins[verifiednames].frames[b].delay * 1000;
-                        d = animatedi;
-                        animateSkin(b, verifiednames, d, e, i);
-						if (window.anualTop < window.anual)	window.anualTop = window.anual	
-						
+                    if (animatedskins[animatedkey] && animatedskins[animatedkey].frames) {
+                        e = animatedskins[animatedkey].frames.length - 1;
+                        window.anual = 0;
+                        for (animateda = 0; animateda <= animatedskins[animatedkey].frames.length - 1; animateda++) {
+                            b = animateda;
+                            verifiednames = animatedkey;
+                            window.anual = window.anual + animatedskins[verifiednames].frames[b].delay * 1000;
+                            d = animatedi;
+                            animateSkin(b, verifiednames, d, e, i);
+                            if (window.anualTop < window.anual) window.anualTop = window.anual
+
+                        }
                     }
-					}
                 }
             }
         }
     }
-	//if (window.preSetanimateSkincheck > window.anualTop + 1000 ) window.preSetanimateSkincheck = window.anualTop + 1000
-	window.preSetanimateSkincheck = window.anualTop
-	if (defaultmapsettings.vanillaSkins) {
-		setTimeout(function() {		
-			animateSkincheck()
-		}, window.preSetanimateSkincheck);	
-	}
+    //if (window.preSetanimateSkincheck > window.anualTop + 1000 ) window.preSetanimateSkincheck = window.anualTop + 1000
+    window.preSetanimateSkincheck = window.anualTop
+    if (defaultmapsettings.vanillaSkins) {
+        setTimeout(function() {
+            animateSkincheck()
+        }, window.preSetanimateSkincheck);
+    }
 }
 
 function animateSkin(b, verifiednames, d, e, i) {
@@ -15640,11 +15405,11 @@ function animateSkin(b, verifiednames, d, e, i) {
         //if (verifiednames==legendmod.leaderboard[d].nick){
         application.cacheCustomSkin(verifiednames, animatedskins[verifiednames].color, "https://i.imgur.com/" + animatedskins[verifiednames].frames[b].id + ".png");
         //if (b == e) {
-            //if (i == 9) {
-			//if (i == 0) {	
-                //window.anual = 0;
-                //if (animatedserverchanged == false) {}
-            //}
+        //if (i == 9) {
+        //if (i == 0) {	
+        //window.anual = 0;
+        //if (animatedserverchanged == false) {}
+        //}
         //}
     }, window.anual);
 }
@@ -15653,16 +15418,16 @@ function animateSkinsStop() {
     //clearInterval(defaultmapsettings.animateSkinsStart);
 }
 
-function animateCustomSkin(nick, id){
-	
-	Object.keys(animatedskins).forEach(function(key) {
-            if (animatedskins[key] && animatedskins[key].id == id) {
-                //console.log(key, animatedskins[key]);
-				animatedskins[nick] = animatedskins[key];
-				//animatedskins[key] = null
-				//console.log (animatedskins[key])
-            }  
-	});
+function animateCustomSkin(nick, id) {
+
+    Object.keys(animatedskins).forEach(function(key) {
+        if (animatedskins[key] && animatedskins[key].id == id) {
+            //console.log(key, animatedskins[key]);
+            animatedskins[nick] = animatedskins[key];
+            //animatedskins[key] = null
+            //console.log (animatedskins[key])
+        }
+    });
 }
 
 function PreLcCelebration() {
@@ -15765,7 +15530,7 @@ function Socket3enabler(srv) {
         }
         Socket3.onerror = function(e) {
             window.socket3NumberTries++;
-            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket 3 error');		
+            console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket 3 error');
         }
         Socket3.onclose = function(e) {
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket 3 close');
@@ -15823,11 +15588,11 @@ function Socket3updateTeamPlayerSpfc(Socket3data) {
     var h = window.decodeURIComponent(escape(Socket3data.id));
     var message = Socket3data.x;
     //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Player ', h, 'uses Special Effect ', message);
-    if (h && message){ 
-		SpecialEffectPlayers[h] = message;
-		animateCustomSkin(h, message)
-	}
-}	
+    if (h && message) {
+        SpecialEffectPlayers[h] = message;
+        animateCustomSkin(h, message)
+    }
+}
 
 function Socket3updateTeamPlayer(Socket3data) {
     var h = window.decodeURIComponent(escape(application.checkPlayerNick(Socket3data.id)));
@@ -15926,14 +15691,14 @@ function enterChatMessage2() {
 
 function repeatSendingSpecialSkins() {
     temp = localStorage.getItem("isActualUsingSpecialEffectsSkin")
-	//var temp= temp.split(';')
-	
+    //var temp= temp.split(';')
+
     if (temp && temp != "null" && (($("#nick").val().includes('℄') && $("#clantag").val() == window.atob(window.clanTagLc)) || window.proLicenceUID || temp == "Byzantium" || window.tempAnimatedCoolArray.includes(temp))) {
         if (application.lastSentNick == "") application.lastSentNick = $("#nick").val()
         SpecialEffectPlayers[application.lastSentNick] = temp
-		//
-		animateCustomSkin($("#nick").val(), temp)
-		//
+        //
+        animateCustomSkin($("#nick").val(), temp)
+        //
         window.application.sendSocket3Info("spfc", temp)
     }
 }
@@ -16137,26 +15902,26 @@ var reverseTrick = {
     }
 }
 
-function LMadvertisement2020(){
-            $('#helloContainer').after('<div class="modal fade in" id="LMPromo" aria-hidden="false" style="display: block;">' +
-                '<div class="modal-backdrop fade in"></div>' +
-                '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 622px;">' +
-                '<div class="modal-content">' +
-                '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-                '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + '2020 development' + '</h4>' +
-                '</div>' +
-				'<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://legendmod.ml/extras/banneranimatedLegendmod2020.html" width="620" height="490" >' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
-                '</div>');
-			$(".modal-dialog").draggable()
-            $("#CloseLMPromo").click(function() {
-                $("#LMPromo").remove();
-            });
-            $("#FAQLMPromo").click(function() {
-				window.open('https://legendmod.ml/', '_blank');
-            });	
+function LMadvertisement2020() {
+    $('#helloContainer').after('<div class="modal fade in" id="LMPromo" aria-hidden="false" style="display: block;">' +
+        '<div class="modal-backdrop fade in"></div>' +
+        '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 622px;">' +
+        '<div class="modal-content">' +
+        '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
+        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + '2020 development' + '</h4>' +
+        '</div>' +
+        '<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://legendmod.ml/extras/banneranimatedLegendmod2020.html" width="620" height="490" >' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>');
+    $(".modal-dialog").draggable()
+    $("#CloseLMPromo").click(function() {
+        $("#LMPromo").remove();
+    });
+    $("#FAQLMPromo").click(function() {
+        window.open('https://legendmod.ml/', '_blank');
+    });
 }
 
 
@@ -16176,132 +15941,127 @@ snezSocket.send(JSON.stringify({ "command": "sendPlayerSkinURL", nick: ogarcopyt
 
 
 */
-function playReplayLM(temp){		
-	if (temp && window.RecordedProtocol[temp]){
-		/*if (window.replayTimeOuts.length){
-			for (var i=0;i<window.replayTimeOuts;i++){
-				clearTimeout(window.replayTimeOuts[i])
-			}
-			window.replayTimeOuts=[]
-		}*/
-		clearTimeout(window.replayTimeOuts)
-		application.flushData()
-		$('#pause-hud').text(textLanguage.pause);
-		legendmod.indexedCells={}
-		legendmod.cells=[]
-        legendmod.removedCells=[]
-        legendmod.food=[]
-        legendmod.viruses=[]
-        legendmod.cellcolors=[]
-        legendmod.playerCells=[]
-        legendmod.playerCellIDs=[]
-        legendmod.playerCellsMulti=[]
-		
-		legendmod.playingReplayRecord=0
-		
-		legendmod.playingReplayServer=temp
-		legendmod.playingReplayRewind=false
-		legendmod.playingReplayRewindNow=false
-		if (parseInt(window.replayTiming)<0){ 
-			toastr.warning("<b>[SERVER]:</b> When time traveling, wierd things happens...").css("width", "350px");
-			legendmod.playingReplayRewind=true
-		}
-		//if (parseInt(window.replayTiming)<0) legendmod.playingReplayRecord = window.RecordedProtocol[legendmod.playingReplayServer].length-1
-		//start
-		//window.playrecord = 0
-		intervalPlayingRecord()	
-		window.startReplayTime =$("#startReplayTime").val()
-		window.endReplayTime =$("#endReplayTime").val()
-		
-		$("#stopReplaybtn").prop('disabled', false);
-		if ($("#savedArenas").val() && window.RecordedArenasSpecifications[$("#savedArenas").val()] && window.RecordedArenasSpecifications[$("#savedArenas").val()][4]){
-			
-			$.extend( true, application.customSkinsMap, JSON.parse(window.RecordedArenasSpecifications[$("#savedArenas").val()][4]) );
-		}
-	}
+function playReplayLM(temp) {
+    if (temp && window.RecordedProtocol[temp]) {
+        /*if (window.replayTimeOuts.length){
+        	for (var i=0;i<window.replayTimeOuts;i++){
+        		clearTimeout(window.replayTimeOuts[i])
+        	}
+        	window.replayTimeOuts=[]
+        }*/
+        clearTimeout(window.replayTimeOuts)
+        application.flushData()
+        $('#pause-hud').text(textLanguage.pause);
+        legendmod.indexedCells = {}
+        legendmod.cells = []
+        legendmod.removedCells = []
+        legendmod.food = []
+        legendmod.viruses = []
+        legendmod.cellcolors = []
+        legendmod.playerCells = []
+        legendmod.playerCellIDs = []
+        legendmod.playerCellsMulti = []
+
+        legendmod.playingReplayRecord = 0
+
+        legendmod.playingReplayServer = temp
+        legendmod.playingReplayRewind = false
+        legendmod.playingReplayRewindNow = false
+        if (parseInt(window.replayTiming) < 0) {
+            toastr.warning("<b>[SERVER]:</b> When time traveling, wierd things happens...").css("width", "350px");
+            legendmod.playingReplayRewind = true
+        }
+        //if (parseInt(window.replayTiming)<0) legendmod.playingReplayRecord = window.RecordedProtocol[legendmod.playingReplayServer].length-1
+        //start
+        //window.playrecord = 0
+        intervalPlayingRecord()
+        window.startReplayTime = $("#startReplayTime").val()
+        window.endReplayTime = $("#endReplayTime").val()
+
+        $("#stopReplaybtn").prop('disabled', false);
+        if ($("#savedArenas").val() && window.RecordedArenasSpecifications[$("#savedArenas").val()] && window.RecordedArenasSpecifications[$("#savedArenas").val()][4]) {
+
+            $.extend(true, application.customSkinsMap, JSON.parse(window.RecordedArenasSpecifications[$("#savedArenas").val()][4]));
+        }
+    }
 }
-function intervalPlayingRecord(){
-	if ($("#greyScale").length){
-		window.replayGreyScale = $("#greyScale").prop("checked") == true
-	}
-	if ($("#sepia").length){
-		window.replaySepia = $("#sepia").prop("checked") == true
-	}
-	if ($("#hueRotate").length){
-		window.replayHueRotate = $("#hueRotate").prop("checked") == true
-	}	
-	var temp1 = parseInt(window.startReplayTime)
-	var temp2 = parseInt(window.endReplayTime)	
-	if (temp1<0 || temp2<=0){
-		toastr.warning("<b>[SERVER]:</b> Start and end time should be non negative").css("width", "350px");
-	}
-	else if (legendmod.playingReplayRewind && !legendmod.playingReplayRewindNow){
-		//console.log('a')
-		window.replayTiming2= 0
-		$('#pause-hud').text("Loading...");
-		$('#pause-hud').show()
-	}	
-	else if (legendmod.playingReplayRecord>=temp1 && legendmod.playingReplayRecord<=temp2){
-		
-		if (window.replayTiming2==0){
-			$('#pause-hud').text(textLanguage.pause);
-			$('#pause-hud').hide()
-		}
-		window.replayTiming2 = Math.abs(parseInt(window.replayTiming))
-		
-	}
-	else{		
-		if (window.replayTiming2!=0){
-			//console.log('b')
-			window.replayTiming2= 0
-			$('#pause-hud').text("Loading...");
-			$('#pause-hud').show()
-		}
-	}
-	window.replayTimeOuts = setTimeout(function() {
-				var tempo = legendmod.playingReplayServer
-				if ($("#server-token").val().includes("replay^"+tempo)){	
-				
-					legendmod.handleMessage(window.RecordedProtocol[tempo][legendmod.playingReplayRecord]) //main fuction for replay
-					//
-					if (!legendmod.playingReplayRewind && window.replayTiming2 == 0){
-						if (window.replaySkippedLoops > 99 && legendmod.playingReplayRecord + 100 < window.RecordedProtocol[tempo].length-1){
-							for (var i=0;i<window.replaySkippedLoops-1;i++){ // 100 times more
-								legendmod.handleMessage(window.RecordedProtocol[tempo][legendmod.playingReplayRecord])
-								legendmod.playingReplayRecord++
-							}
-						}
-						else if (window.replaySkippedLoops > 9 && legendmod.playingReplayRecord + 10 < window.RecordedProtocol[tempo].length-1){
-							for (var i=0;i<9;i++){ // 10 times more
-								legendmod.handleMessage(window.RecordedProtocol[tempo][legendmod.playingReplayRecord])
-								legendmod.playingReplayRecord++
-							}
-						}
-					}
-					//
-					$("#totalReplayPackets").val(legendmod.playingReplayRecord + "/" +window.RecordedProtocolPackets)
-					
-					if (legendmod.playingReplayRecord<window.RecordedProtocol[tempo].length-1 && legendmod.playingReplayRecord>=0){			
-						if (legendmod.playingReplayRecord < window.RecordedProtocol[tempo].length-2) intervalPlayingRecord();
-						if (parseInt(window.replayTiming)>=0 || !legendmod.playingReplayRewindNow){
-							legendmod.playingReplayRecord++
-						}
-						else{
-							legendmod.playingReplayRecord--
-						}
-					}
-					else if (legendmod.playingReplayRewindNow){
-						if (legendmod.playingReplayRecord>=0){
-							legendmod.playingReplayRewindNow=true
-							legendmod.playingReplayRecord--
-							intervalPlayingRecord();
-						}
-						$("#stopReplaybtn").prop('disabled', true);
-						$('#pause-hud').text(textLanguage.pause);
-						$('#pause-hud').hide()						
-						}					
-				}
-	}, window.replayTiming2);	
+
+function intervalPlayingRecord() {
+    if ($("#greyScale").length) {
+        window.replayGreyScale = $("#greyScale").prop("checked") == true
+    }
+    if ($("#sepia").length) {
+        window.replaySepia = $("#sepia").prop("checked") == true
+    }
+    if ($("#hueRotate").length) {
+        window.replayHueRotate = $("#hueRotate").prop("checked") == true
+    }
+    var temp1 = parseInt(window.startReplayTime)
+    var temp2 = parseInt(window.endReplayTime)
+    if (temp1 < 0 || temp2 <= 0) {
+        toastr.warning("<b>[SERVER]:</b> Start and end time should be non negative").css("width", "350px");
+    } else if (legendmod.playingReplayRewind && !legendmod.playingReplayRewindNow) {
+        //console.log('a')
+        window.replayTiming2 = 0
+        $('#pause-hud').text("Loading...");
+        $('#pause-hud').show()
+    } else if (legendmod.playingReplayRecord >= temp1 && legendmod.playingReplayRecord <= temp2) {
+
+        if (window.replayTiming2 == 0) {
+            $('#pause-hud').text(textLanguage.pause);
+            $('#pause-hud').hide()
+        }
+        window.replayTiming2 = Math.abs(parseInt(window.replayTiming))
+
+    } else {
+        if (window.replayTiming2 != 0) {
+            //console.log('b')
+            window.replayTiming2 = 0
+            $('#pause-hud').text("Loading...");
+            $('#pause-hud').show()
+        }
+    }
+    window.replayTimeOuts = setTimeout(function() {
+        var tempo = legendmod.playingReplayServer
+        if ($("#server-token").val().includes("replay^" + tempo)) {
+
+            legendmod.handleMessage(window.RecordedProtocol[tempo][legendmod.playingReplayRecord]) //main fuction for replay
+            //
+            if (!legendmod.playingReplayRewind && window.replayTiming2 == 0) {
+                if (window.replaySkippedLoops > 99 && legendmod.playingReplayRecord + 100 < window.RecordedProtocol[tempo].length - 1) {
+                    for (var i = 0; i < window.replaySkippedLoops - 1; i++) { // 100 times more
+                        legendmod.handleMessage(window.RecordedProtocol[tempo][legendmod.playingReplayRecord])
+                        legendmod.playingReplayRecord++
+                    }
+                } else if (window.replaySkippedLoops > 9 && legendmod.playingReplayRecord + 10 < window.RecordedProtocol[tempo].length - 1) {
+                    for (var i = 0; i < 9; i++) { // 10 times more
+                        legendmod.handleMessage(window.RecordedProtocol[tempo][legendmod.playingReplayRecord])
+                        legendmod.playingReplayRecord++
+                    }
+                }
+            }
+            //
+            $("#totalReplayPackets").val(legendmod.playingReplayRecord + "/" + window.RecordedProtocolPackets)
+
+            if (legendmod.playingReplayRecord < window.RecordedProtocol[tempo].length - 1 && legendmod.playingReplayRecord >= 0) {
+                if (legendmod.playingReplayRecord < window.RecordedProtocol[tempo].length - 2) intervalPlayingRecord();
+                if (parseInt(window.replayTiming) >= 0 || !legendmod.playingReplayRewindNow) {
+                    legendmod.playingReplayRecord++
+                } else {
+                    legendmod.playingReplayRecord--
+                }
+            } else if (legendmod.playingReplayRewindNow) {
+                if (legendmod.playingReplayRecord >= 0) {
+                    legendmod.playingReplayRewindNow = true
+                    legendmod.playingReplayRecord--
+                    intervalPlayingRecord();
+                }
+                $("#stopReplaybtn").prop('disabled', true);
+                $('#pause-hud').text(textLanguage.pause);
+                $('#pause-hud').hide()
+            }
+        }
+    }, window.replayTiming2);
 }
 
 /*
@@ -16342,6 +16102,6 @@ function playReplayLM(temp){
 */
 Array.prototype.stDev = function stDev() {
     const average = data => data.reduce((sum, value) => sum + value) / data.length
-    return Math.sqrt(average(this.map(value => Math.pow(value - average(this),2))))
-	//return Math.sqrt(average(this.map(value => (value - average(this)) ** 2)))
+    return Math.sqrt(average(this.map(value => Math.pow(value - average(this), 2))))
+    //return Math.sqrt(average(this.map(value => (value - average(this)) ** 2)))
 };
