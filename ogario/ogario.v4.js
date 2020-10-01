@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.616 testing
+// v2.642 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -13098,7 +13098,8 @@ Game name     : ${i.displayName}<br/>
         counterTime: 0,
         renderTime: 0,
         averageRenderTime: 0,
-        //			
+		renderingDelay: 0,
+        			
         setCanvas() {
             this.canvas = document.getElementById('canvas');
             this.ctx = this.canvas.getContext('2d');
@@ -13179,11 +13180,15 @@ Game name     : ${i.displayName}<br/>
             this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
             if (defaultmapsettings.showGrid) {
                 this.drawGrid(this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
-            }
+            }			
             this.ctx.save();
-            this.ctx.translate(this.canvasWidth / 2, this.canvasHeight / 2);
+            
+			this.ctx.translate((this.canvasWidth / 2) - (this.camX * this.scale), (this.canvasHeight / 2) - (this.camY * this.scale ));
             this.ctx.scale(this.scale, this.scale);
-            this.ctx.translate(-this.camX, -this.camY);
+			//this.ctx.translate(this.canvasWidth / 2, this.canvasHeight / 2);
+			//this.ctx.scale(this.scale, this.scale);
+            //this.ctx.translate(-this.camX, -this.camY);
+			
             if (defaultmapsettings.showBgSectors) {
                 this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings.gridColor, defaultSettings.sectorsColor, defaultSettings.sectorsWidth, true);
             }
@@ -13248,7 +13253,8 @@ Game name     : ${i.displayName}<br/>
                     this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
                 }
             }
-
+			this.renderingDelay = (performance.now() - this.renderStarted) * drawRender.fps
+			//console.log(this.renderingDelay)
             drawRender.renderTime += performance.now() - this.renderStarted
             drawRender.counterTime++
             if (drawRender.counterTime >= drawRender.fps || drawRender.counterTime >= 500) {
@@ -14363,16 +14369,27 @@ Game name     : ${i.displayName}<br/>
         render() {
             //'render': async function() {
             //if (!window.fpsM) window.fpsM = 4
-            //await drawRender.sleep(window.fpsM);				
-            drawRender.countFps();
-            drawRender.renderFrame();
+            //await drawRender.sleep(window.fpsM);	
+			
+
+			if (drawRender.renderingDelay<750){
+				drawRender.countFps();
+				drawRender.renderFrame();
+			}
+            else{			
+				//drop the frame instead of lag
+				//console.log('stoped')
+				drawRender.renderingDelay =	drawRender.renderingDelay - 750
+			}
             if (!defaultmapsettings.unlockedFPS) {
                 window.requestAnimationFrame(drawRender.render);
-            } else if (defaultmapsettings.unlockedFPS == 2 || defaultmapsettings.unlockedFPS == 4 || defaultmapsettings.unlockedFPS == 8 || defaultmapsettings.unlockedFPS == 16 || defaultmapsettings.unlockedFPS == 32 || defaultmapsettings.unlockedFPS == 64) {
+            } 
+			else if (defaultmapsettings.unlockedFPS == 2 || defaultmapsettings.unlockedFPS == 4 || defaultmapsettings.unlockedFPS == 8 || defaultmapsettings.unlockedFPS == 16 || defaultmapsettings.unlockedFPS == 32 || defaultmapsettings.unlockedFPS == 64) {
                 setTimeout(function() {
                     window.requestAnimationFrame(drawRender.render);
                 }, defaultmapsettings.unlockedFPS);
-            } else if (defaultmapsettings.unlockedFPS == "ultra") {
+            } 
+			else if (defaultmapsettings.unlockedFPS == "ultra") {
                 setTimeout(function() {
                     for (var i = 0; i < 9; i++) {
                         drawRender.countFps()
