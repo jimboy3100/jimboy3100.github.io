@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.642 testing
+// v2.643 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -14381,6 +14381,12 @@ Game name     : ${i.displayName}<br/>
 				//console.log('stoped')
 				drawRender.renderingDelay =	drawRender.renderingDelay - 750
 			}
+			//
+            setTimeout(function() {
+                drawRender.render()
+            }, 0);
+			//
+			/*
             if (!defaultmapsettings.unlockedFPS) {
                 window.requestAnimationFrame(drawRender.render);
             } 
@@ -14398,22 +14404,6 @@ Game name     : ${i.displayName}<br/>
                     drawRender.render()
                 }, 0);
             }
-            /*else if (defaultmapsettings.unlockedFPS=="sophisticated"){										
-            	var timeloops = parseInt(window.drawRender.fps/window.fpsloopsetter);
-            	if (timeloops>0){
-            		window.requestAnimationFrame(drawRender.render);	
-            		//for (var i=0;i<timeloops-1;i++){
-            		//if (timeloops>1){	
-            			//drawRender.countFps()
-            			//drawRender.renderFrame();							
-            		//}
-            	}
-            	else if(window.drawRender.fps/window.fpsloopsetter<1){
-            		setTimeout(function() {
-            			window.requestAnimationFrame(drawRender.render);
-            		}, window.fpsloopsetter/window.drawRender.fps);						
-            	}
-            } */
             else if (defaultmapsettings.unlockedFPS == "sophisticated") {
                 if (!drawRender.averageRenderTime) {
                     window.renderDelay = 0;
@@ -14431,6 +14421,7 @@ Game name     : ${i.displayName}<br/>
                     drawRender.render()
                 }, 0);
             }
+			*/
             //drawRender.render()
             //}, 1000/window.fps);
             //}, 0.1);
