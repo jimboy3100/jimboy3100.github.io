@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.646 testing
+// v2.647 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -8576,7 +8576,9 @@ function thelegendmodproject() {
                 var prevRl = this.points[(i - 1 + len) % len].rl;
                 var nextRl = this.points[(i + 1) % len].rl;
                 var self = this;
-                var affected = LM.quadtree.some({
+				var affected
+				if (LM.quadtree){
+                affected = LM.quadtree.some({
                     x: curP.x - 5,
                     y: curP.y - 5,
                     w: 10,
@@ -8584,7 +8586,7 @@ function thelegendmodproject() {
                 }, function(item) {
                     return item.parent != self && this.sqDist(item, curP) <= 25;
                 }.bind(this));
-
+				}
                 //this.viewMinX, this.viewMinY, this.viewMaxX, this.viewMaxY
 
                 //(curP.x < LM.mapMinX || curP.y < LM.mapMaxY ||
