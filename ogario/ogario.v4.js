@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.645 testing
+// v2.646 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -8687,6 +8687,7 @@ function thelegendmodproject() {
 			}
 			else{
 				this.size += (this.targetSize - this.size) * (time / 800);
+				if (this.size<0) this.size = 0 //fix
 			}
             this.alpha = delay;
             if (!this.removed) {
@@ -9239,7 +9240,7 @@ function thelegendmodproject() {
             }
             //style.filter='grayscale(100%)';
             //
-
+			
             if (defaultmapsettings.jellyPhisycs && this.points.length) {
                 var point = this.points[0];
                 style.moveTo(point.x, point.y);
