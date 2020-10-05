@@ -1,4 +1,4 @@
-//v1.3b
+//v1.3a
         keyBlind = {};
         hotkeys = {};
         hotkeysCommand = {
@@ -24,7 +24,7 @@
             },
             'hk-macroFeedPerm': {
                 label: textLanguage['hk-macroFeedPerm'],
-                defaultKey: 'ALT+E',
+                defaultKey: 'CTRL+E',
                 keyDown() {				
                     application && application.macroFeedPerm(!0);
                 },
