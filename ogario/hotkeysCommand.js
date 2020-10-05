@@ -24,8 +24,9 @@
             },
             'hk-macroFeedPerm': {
                 label: textLanguage['hk-macroFeedPerm'],
-                defaultKey: 'CTRL+E',
-                keyDown() {				
+                defaultKey: 'CTRL+Q',
+                keyDown(event) {
+					event.preventDefault();
                     application && application.macroFeedPerm(!0);
                 },
                 type: 'normal'
