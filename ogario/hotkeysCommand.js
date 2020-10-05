@@ -1,4 +1,4 @@
-//v1.3a
+//v1.3b
         keyBlind = {};
         hotkeys = {};
         hotkeysCommand = {
@@ -22,6 +22,14 @@
                 },
                 type: 'normal'
             },
+            'hk-macroFeedPerm': {
+                label: textLanguage['hk-macroFeedPerm'],
+                defaultKey: 'ALT+E',
+                keyDown() {				
+                    application && application.macroFeedPerm(!0);
+                },
+                type: 'normal'
+            },			
             'hk-split': {
                 label: textLanguage['hk-split'],
                 defaultKey: 'SPACE',
