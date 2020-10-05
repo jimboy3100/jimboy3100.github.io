@@ -24,7 +24,7 @@
             },
             'hk-macroFeedPerm': {
                 label: textLanguage['hk-macroFeedPerm'],
-                defaultKey: 'CTRL+Q',
+                defaultKey: 'CTRL+F',
                 keyDown(event) {
 					event.preventDefault();
                     application && application.macroFeedPerm(!0);
