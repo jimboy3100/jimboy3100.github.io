@@ -1375,6 +1375,7 @@ var displayText = {
         'hk-bots-ai': 'Bots AI toggle',
         'hk-feed': 'Feed',
         'hk-macroFeed': 'Szybki feed',
+		'hk-macroFeedPerm': 'Permanent feed',
         'hk-split': 'Podział',
         'hk-doubleSplit': 'Podwójny podział',
         'hk-tripleSplit': 'Triple split',
@@ -1826,6 +1827,7 @@ var displayText = {
         'hk-bots-ai': 'Bots AI toggle',
         'hk-feed': 'Feed',
         'hk-macroFeed': 'Macro feed',
+		'hk-macroFeedPerm': 'Permanent feed',
         'hk-split': 'Split',
         'hk-doubleSplit': 'Double split',
         'hk-tripleSplit': 'Triple split',
@@ -3835,6 +3837,20 @@ function thelegendmodproject() {
                 window.core.eject();
             }
         },
+        macroFeedPerm(on) {
+            if (on) {
+                if (this.feedIntervalPerm){ 
+					clearInterval(this.feedIntervalPerm);
+					this.feedIntervalPerm = null					
+					return;
+				}
+                var app = this;
+                this.feed();
+                this.feedIntervalPerm = setInterval(function() {
+                    app.feed();
+                }, defaultmapsettings.macroFeeding);
+            } 
+        },		
         macroFeed(on) {
             if (on) {
                 if (this.feedInterval) return;
