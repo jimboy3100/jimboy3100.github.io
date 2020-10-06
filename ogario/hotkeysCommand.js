@@ -623,7 +623,7 @@
                 type: 'normal'
             },		
             'hk-popBotSplit': {
-                label: 'Bots Popsplit (IMSOLO.PRO)',
+                label: 'Bots Popsplit (Private servers)',
                 defaultKey: '',
                 keyDown() {
                     if (legendmod.ws.includes("imsolo.pro") && application) application.popBotSplit();
