@@ -1,4 +1,4 @@
-//v1.3b
+//v1.3c
         keyBlind = {};
         hotkeys = {};
         hotkeysCommand = {
@@ -101,6 +101,17 @@
 				},
 				keyUp() {
 				application && application.dance(false);
+				},
+				type: 'normal'
+			},	
+			'hk-limitposition': {
+				label: textLanguage['hk-limitposition'],
+				defaultKey: '',
+				keyDown() {
+				window.followStraight = true
+				},
+				keyUp() {
+				window.followStraight = false
 				},
 				type: 'normal'
 			},			
