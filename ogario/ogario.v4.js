@@ -1429,8 +1429,8 @@ var displayText = {
         'hk-showQuest': 'Pokaż/ukryj zadanie',
         'hk-showSpectator': 'Show/hide Full Spectator (Premium)',
         'hk-showIngameSpectator': 'Show/hide Ingame Spectator (Premium)',
-        'hk-doubleBotSplit': 'Bots double split (IMSOLO.PRO)',
-        'hk-splitBot16': 'Bots split 16 (IMSOLO.PRO)',
+        'hk-doubleBotSplit': 'Bots double split (Private servers)',
+        'hk-splitBot16': 'Bots split 16 (Private servers)',
 
         commands: 'Komendy',
         comm1: 'Feeduj!',
@@ -1881,8 +1881,8 @@ var displayText = {
         'hk-showQuest': 'Show/hide quest',
         'hk-showSpectator': 'Show/hide Full Spectator (Premium)',
         'hk-showIngameSpectator': 'Show/hide Ingame Spectator (Premium)',
-        'hk-doubleBotSplit': 'Bots double split (IMSOLO.PRO)',
-        'hk-splitBot16': 'Bots split 16 (IMSOLO.PRO)',
+        'hk-doubleBotSplit': 'Bots double split (Private servers)',
+        'hk-splitBot16': 'Bots split 16 (Private servers)',
 
         commands: 'Commands',
         comm1: 'Feed me!',
