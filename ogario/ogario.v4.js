@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.648 testing
+// v2.655 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -1386,6 +1386,7 @@ var displayText = {
         'hk-multiboxFollowMouse': 'Multibox toggle follow mouse',
         'hk-showTop5': 'Pokaż/ukryj top 5 teamu',
         'hk-dance': 'Dance',
+		'hk-limitposition': 'Macro position to limits',
         'hk-showTime': 'Pokaż/ukryj aktualny czas',
         'hk-showSplitRange': 'Pokaż/ukryj zasięg podziału',
         'hk-showSplitInd': 'Pokaż/ukryj zasięg podziału z ringami',
@@ -1838,6 +1839,7 @@ var displayText = {
         'hk-multiboxFollowMouse': 'Multibox toggle follow mouse',
         'hk-showTop5': 'Show/hide teamboard',
         'hk-dance': 'Dance',
+		'hk-limitposition': 'Macro position to limits',
         'hk-showTime': 'Show/hide current time',
         'hk-showSplitRange': 'Show/hide split range',
         'hk-showSplitInd': 'Show/hide split indicators',
@@ -10102,9 +10104,20 @@ function thelegendmodproject() {
                         cursorX = this.viewXTrue + this.distX;
                         cursorY = this.viewYTrue + this.distY;
                     }
-                } else if (LM.dance) {
+                } else if (LM.dance || window.followStraight) {
                     let d = ~~((Date.now() / 40) % 8),
-                        distance = 50000;
+                        distance = 50000;					
+					if (window.followStraight){
+						
+						if (this.cursorX - this.playerX > 0 && this.cursorY - this.playerY > 0 ) d = 3
+						else if (this.cursorX - this.playerX < 0 && this.cursorY - this.playerY > 0) d = 5
+						else if (this.cursorX - this.playerX < 0 && this.cursorY - this.playerY < 0) d = 7
+						else if (this.cursorX - this.playerX > 0 && this.cursorY - this.playerY < 0) d = 1
+						else if (this.cursorX - this.playerX < 0) d = 6 
+						else if (this.cursorX - this.playerX > 0) d = 2
+						else if (this.cursorY - this.playerY > 0) d = 4
+						else if (this.cursorY - this.playerY < 0) d = 0
+					}			
                     switch (d) {
                         case 7:
                             cursorX = this.playerX - distance;
@@ -10140,8 +10153,10 @@ function thelegendmodproject() {
                             break;
                         default:
                             console.log(d);
-                            break;
+                            break;													
                     }
+					cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(cursorX) : cursorX; //Sonia3
+                    cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(cursorY) : cursorY; //Sonia3	
                 } else {
                     //if (specialcommand) {
                     //console.log('hi')
@@ -10158,7 +10173,7 @@ function thelegendmodproject() {
                         if (!this.play && this.targeting || this.pause) {
                             cursorX = this.targetX;
                             cursorY = this.targetY;
-                        }
+                        }					
                     }
                     //autoplay handling
                     else if (!specialcommand) {
