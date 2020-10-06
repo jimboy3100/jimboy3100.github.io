@@ -1,4 +1,4 @@
-//v1.3a
+//v1.3b
         keyBlind = {};
         hotkeys = {};
         hotkeysCommand = {
@@ -25,8 +25,7 @@
             'hk-macroFeedPerm': {
                 label: textLanguage['hk-macroFeedPerm'],
                 defaultKey: 'CTRL+F',
-                keyDown(event) {
-					event.preventDefault();
+                keyDown() {;
                     application && application.macroFeedPerm(!0);
                 },
                 type: 'normal'
