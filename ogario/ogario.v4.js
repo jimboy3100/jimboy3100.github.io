@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.655 testing
+// v2.656 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -125,6 +125,9 @@ function deleteGamemode(temp) {
             text: 'MK Bots WIP',
             value: 39
         }, {
+            text: 'Ogar Eat-cells',
+            value: 40
+        }, {			
             /*
         text: 'MK Disturb Furry',
         value: 41		
@@ -258,6 +261,8 @@ function deleteGamemode(temp) {
             }, 500)
         } else if ($('#gamemode').val() == 39) {
             core.connect('wss://mkserv-bots.herokuapp.com/');
+        } else if ($('#gamemode').val() == 40) {
+            core.connect('wss://ogar.eatcells.com/api/');			
         } else if ($('#gamemode').val() == 41) {
             core.connect('wss://distrustfurryserver.herokuapp.com/');
         }
