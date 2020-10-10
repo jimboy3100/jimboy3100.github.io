@@ -1,4 +1,4 @@
-//v0.12e
+//v0.12f
 
 	if (!window.agarioUID){
 		 window.agarioUID = localStorage.getItem("agarioUID");
@@ -14,7 +14,8 @@
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Japan2" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsJapan2.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Kebab" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsKebab.png"></div>'
 			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Meditation" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMeditation.png"></div>'
-			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Splash" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSplash.png"></div>'		
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="Splash" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSplash.png"></div>'	
+			window.tempModeratorSkin += '<div class="skin-box"><img class="lazy" name="PanicAtDisco" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsPanicAtDisco.png"></div>'			
 	}		
 	if (ProLicenceUsersTable.ProLicenceUsers[window.agarioUID]){		
 		//localStorage.setItem("ProLicenceUsersreason", ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason);
@@ -134,8 +135,7 @@
 	    '<div class="skin-box"><img class="lazy" name="Bird" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsBird.png"></div>' +
 	    '<div class="skin-box"><img class="lazy" name="Butterfly" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsButterfly.png"></div>' +
 	    '<div class="skin-box"><img class="lazy" name="Mouse" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMouse.png"></div>' +
-		'<div class="skin-box"><img class="lazy" name="Turtle" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsTurtle.png"></div>' +
-		'<div class="skin-box"><img class="lazy" name="PanicAtDisco" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsPanicAtDisco.png"></div>' +
+		'<div class="skin-box"><img class="lazy" name="Turtle" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsTurtle.png"></div>' +		
 		window.tempModeratorSkin +
    '</div>' +
 	        '<div id="lowres" class="skins-wrapper">' +
