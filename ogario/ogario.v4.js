@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.656 testing
+// v2.689 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -2836,6 +2836,8 @@ iconSpecialSkinEffectsSurvivor = new Image;
 iconSpecialSkinEffectsSurvivor.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsSurvivor.png';
 iconSpecialSkinEffectsTiger = new Image;
 iconSpecialSkinEffectsTiger.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsTiger.png';
+iconSpecialSkinEffectsPanicAtDisco = new Image;
+iconSpecialSkinEffectsPanicAtDisco.src = 'https://legendmod.ml/banners/iconSpecialSkinEffectsPanicAtDisco.png';
 if (dyinglight1load == "yes") {
     cimgDyingLight = new Image;
     cimgDyingLight.src = defaultSettings.commanderImageDyingLight;
@@ -9031,6 +9033,45 @@ function thelegendmodproject() {
             }
             return ctxfx;
         };
+		this.drawSpecialSkinDancer = function(style, y) {
+			
+			if (defaultmapsettings.videoSkins && application.customSkinsMap[this.targetNick] != "https://dkyriak.github.io/VideoFloRidaLow.mp4"){				
+				application.customSkinsMap[this.targetNick] = "https://dkyriak.github.io/VideoFloRidaLow.mp4"
+			node2 = application.customSkinsMap[this.targetNick]	
+			if (ogarcopythelb.nick == this.targetNick) {
+				ogarcopythelb.skinURL = node2
+			}				
+				
+				//checkVideos(node2, this.targetNick);
+			}
+			if (LM.Waves && LM.Waves.length == 0) {
+                    var tempcolor = this.color
+					if (application.teamPlayers.length>0) {
+						c = 0;
+						for (; c < application.teamPlayers.length; c++) {
+							if (application.teamPlayers[c].nick == this.targetNick) tempcolor = application.teamPlayers[c].color		
+						}
+					}				
+				LM.sendWaves(this.x, this.y, tempcolor, this.size + 760, this.targetNick, true)
+				//application.teamPlayers[0].color
+			}
+			else if (LM.Waves && LM.Waves.length > 0){
+                    var tempcolor = this.color
+					if (application.teamPlayers.length>0) {
+						c = 0;
+						for (; c < application.teamPlayers.length; c++) {
+							if (application.teamPlayers[c].nick == this.targetNick) tempcolor = application.teamPlayers[c].color		
+						}
+					}
+				if (this.mass && this.mass >= 1560 && defaultmapsettings.qdsplitRange){
+					LM.changeWaves(this.x, this.y, tempcolor, 2 * this.size + 760, this.targetNick, true)					
+				}
+				else{
+					LM.changeWaves(this.x, this.y, tempcolor, this.size + 760, this.targetNick,  true)	
+				}
+				
+			}			
+		};
         this.drawSpecialSkin = function(style, y) {
             if (SpecialEffectPlayers[this.targetNick] && SpecialEffectPlayers[this.targetNick].split(';')) {
                 var temp = SpecialEffectPlayers[this.targetNick].split(';')
@@ -9207,6 +9248,9 @@ function thelegendmodproject() {
                     style.drawImage(iconSpecialSkinEffectsTiger, this.x - 1.1 * y, this.y - 1.3 * y, y / 1.5, y / 1.5);
                 } else if (this.targetNick.includes("The Dying Light") || this.SpecialEffect == "RedArrow" || this.SpecialEffect2 == "RedArrow") {
                     style.drawImage(cimg5, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
+                } else if (this.SpecialEffect == "PanicAtDisco" || this.SpecialEffect2 == "PanicAtDisco") {
+                    style.drawImage(iconSpecialSkinEffectsPanicAtDisco, this.x - 1 * y, this.y - 1 * y, y/1, y/4);	
+					this.drawSpecialSkinDancer(style, y);
                 } else if (this.SpecialEffect == "WhiteArrow" || this.SpecialEffect2 == "WhiteArrow") {
                     //style.drawImage(cimg2, this.x - y * 2, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y);
 
@@ -9451,9 +9495,10 @@ function thelegendmodproject() {
                                 } catch (e) {}
                             }
                         }
-                        this.drawSpecialSkin(style, y)
+                        //this.drawSpecialSkin(style, y)
                     }
-                } else {
+                } 
+				else {
                     if (defaultmapsettings.videoSkins) {
                         var node2 = application.customSkinsMap[this.targetNick];
                         if (node2) {
@@ -9479,6 +9524,7 @@ function thelegendmodproject() {
                         } catch (e) {}
                     }
                 }
+				this.drawSpecialSkin(style, y)
             }
             if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
                 window.teammatenicks && this.targetNick != "" &&
@@ -12557,6 +12603,28 @@ Game name     : ${i.displayName}<br/>
                 localStorage.setItem("totalPlayerMassBigFFA", this.totalPlayerMassBigFFA);
             }
         },
+		sendWaves(x1, y1, color1, length, sender, moreAnimation) {	
+              var wave = {
+                x: x1,
+                y: y1
+              }
+              wave.time = Date.now();
+              wave.color = color1;
+			  wave.wavelength = length;
+			  wave.sender = sender
+			  wave.moreAnimation = moreAnimation
+          this.Waves.push(wave)			
+		},	
+		changeWaves(x1, y1, color1, length, sender, moreAnimation) {
+			if (this.Waves && this.Waves[0] && this.Waves[0].sender == sender){
+				this.Waves[0].x = x1
+				this.Waves[0].y = y1
+				this.Waves[0].color = color1;
+				
+				this.Waves[0].wavelength = length;
+				this.Waves[0].moreAnimation = moreAnimation
+			}			
+		},
         updateCells(view, offset) {
 
             //window.updateCellsClock=true;
@@ -13250,9 +13318,10 @@ Game name     : ${i.displayName}<br/>
             if (defaultmapsettings.virusesRange) {
                 this.drawVirusesRange(this.ctx, LM.viruses);
             }
-            //if (defaultmapsettings.waves) {
-            //this.drawWaves();
-            //}				
+            //if (defaultmapsettings.waves ) {
+			if (LM.Waves && LM.Waves && LM.Waves.length>0) {	
+				this.drawWaves();
+            }				
             this.drawFood();
             if (LM.playerCellsMulti.length) {
                 this.calMinMaxMulti();
@@ -13470,16 +13539,22 @@ Game name     : ${i.displayName}<br/>
             let waves = LM.Waves
 
             this.ctx.globalAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
-            for (let length = waves.length - 1; length > 0; length--) {
-
+            for (let length = waves.length - 1; length >= 0; length--) {
+			//for (let length = waves.length - 1; length > 0; length--) {
                 let r = (Date.now() - waves[length].time) / 2
 
 
                 let gradient = this.ctx.createRadialGradient(waves[length].x, waves[length].y, r - r / 4, waves[length].x, waves[length].y, r);
-
-                gradient.addColorStop(0, waves[length].color + "00");
-                gradient.addColorStop(1, waves[length].color);
-
+				//if (waves[length].moreAnimation && r > 1560){
+				if (waves[length].moreAnimation && r > 1160 && r > (waves[length].wavelength + 760 )/ 2 ){	
+				//if (waves[length].moreAnimation && r > 1160 && r > (waves[length].wavelength / 2) + 760 ){	
+					gradient.addColorStop(0, defaultSettings.enemyBColor + "00");
+					gradient.addColorStop(1, defaultSettings.enemyBColor);
+				}
+				else {
+					gradient.addColorStop(0, waves[length].color + "00");
+					gradient.addColorStop(1, waves[length].color);
+				}				
                 this.ctx.strokeStyle = gradient;
                 this.ctx.lineWidth = r / 4;
                 this.ctx.beginPath();
@@ -13493,7 +13568,8 @@ Game name     : ${i.displayName}<br/>
                 this.ctx.arc(waves[length].x, waves[length].y, r, 0, this.pi2, false);
                 this.ctx.closePath();
                 this.ctx.stroke();
-                if (r > 500) {
+                //if (r > 500) {					
+				if (r > waves[length].wavelength) {					
                     LM.Waves.splice(length, 1);
                 }
             }
@@ -13980,9 +14056,10 @@ Game name     : ${i.displayName}<br/>
                 //if (this.drawCircles(ctx, biggestCell, 760, 4, 0.4, '#ff0000'), players.length) { //Sonia
                 var current = currentBiggestCell ? players.length - 1 : 0;
                 ctx.lineWidth = 6;
-                ctx.globalAlpha = defaultSettings.darkTheme ? 0.7 : 0.35,
-                    ctx.strokeStyle = defaultSettings.splitRangeColor;
+                ctx.globalAlpha = defaultSettings.darkTheme ? 0.7 : 0.35;
+                ctx.strokeStyle = defaultSettings.splitRangeColor;
                 ctx.beginPath();
+				
                 ctx.arc(players[current].x, players[current].y, players[current].size + 760, 0, this.pi2, false);
                 ctx.closePath();
                 ctx.stroke();
@@ -14002,8 +14079,8 @@ Game name     : ${i.displayName}<br/>
                 //console.log(currentBiggestCell[current].size);
                 if (players[current].size >= 400 && defaultmapsettings.qdsplitRange) { //Sonia2
                     ctx.lineWidth = 6;
-                    ctx.globalAlpha = defaultSettings.darkTheme ? 0.7 : 0.35,
-                        ctx.strokeStyle = defaultSettings.splitRangeColor;
+                    ctx.globalAlpha = defaultSettings.darkTheme ? 0.7 : 0.35;
+                    ctx.strokeStyle = defaultSettings.splitRangeColor;
                     ctx.beginPath();
                     ctx.arc(players[current].x, players[current].y, 2 * players[current].size + 760, 0, this.pi2, false);
                     ctx.closePath();
