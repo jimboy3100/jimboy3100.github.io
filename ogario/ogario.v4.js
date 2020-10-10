@@ -13548,8 +13548,8 @@ Game name     : ${i.displayName}<br/>
 				//if (waves[length].moreAnimation && r > 1560){
 				if (waves[length].moreAnimation && r > 1160 && r > (waves[length].wavelength + 760 )/ 2 ){	
 				//if (waves[length].moreAnimation && r > 1160 && r > (waves[length].wavelength / 2) + 760 ){	
-					gradient.addColorStop(0, defaultSettings.enemyBColor + "00");
-					gradient.addColorStop(1, defaultSettings.enemyBColor);
+					gradient.addColorStop(0, defaultSettings.splitRangeColor + "00");
+					gradient.addColorStop(1, defaultSettings.splitRangeColor);
 				}
 				else {
 					gradient.addColorStop(0, waves[length].color + "00");
