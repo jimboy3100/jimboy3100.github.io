@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.690 testing
+// v2.692 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -41,7 +41,7 @@ function changeregion() {
 
 function deleteGamemode(temp) {
     var privateModOptions = [{
-            text: 'Mega FFA',
+            text: 'FFA PowerUp',
             value: 34
         }, {
             text: 'Arctida',
@@ -12609,7 +12609,7 @@ Game name     : ${i.displayName}<br/>
                         //tempdateNow2 = "last day"
                     }
                     tempdateNow2 += "th";
-                    toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://legendmod.ml/banners/particles.gif);'>Congratulations</span> for your score on MEGA FFA.<br>  Your licence is stored as Giveaway Premium until <font color='blue'><b>" + tempdateNow2 + "</font></b> of this month. Thank you for using our mod!").css("width", "350px");
+                    toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://legendmod.ml/banners/particles.gif);'>Congratulations</span> for your score on FFA PowerUp.<br>  Your licence is stored as Giveaway Premium until <font color='blue'><b>" + tempdateNow2 + "</font></b> of this month. Thank you for using our mod!").css("width", "350px");
                 }
                 localStorage.setItem("totalPlayerMassBigFFA", this.totalPlayerMassBigFFA);
             }
