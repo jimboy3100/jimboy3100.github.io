@@ -3,7 +3,7 @@
 
 ## 
 
-Compatible only with [ogario.v4.js](https://github.com/Adil950/MULTIOGAR-1.6.1)
+Compatible only with [MULTIOGAR-1.6.1](https://github.com/Adil950/MULTIOGAR-1.6.1)
 
 Type on console:
 connect("wss://delta-selffeed.glitch.me")
