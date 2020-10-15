@@ -1,0 +1,317 @@
+<html>
+<head>
+    <meta name="robots" content="index, nofollow">
+    <meta name="Description" content="Created by xAz :)">
+    <title>PRIVATE CLIENT </title>
+    <link id="favicon" rel="icon" type="image/png">
+
+    <!-- STYLESHEETS -->
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu:400,300,300italic,400italic,500,500italic,700,700italic">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ruluko">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Oswald">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/animate.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css?nocache">
+    <link rel="stylesheet" type="text/css" href="css/sweetalert.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.iconmonstr.com/1.2.0/css/iconmonstr-iconic-font.min.css">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.iconmonstr.com/1.2.0/css/iconmonstr-iconic-font.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.css">
+</head>
+<body>
+    <div id="overlays">
+        <div id="hatsPanel" class="general-box-shadow" style="display: none;height: 400px;">
+            <div id="uiBody">
+                <div id="uiModal">
+                    <div id="hatsTitle">Hats</div>
+                    <hr style="border-top: 1px solid #fff; border-bottom: 1px solid #fff;">
+                    <div id="hat" style="height: 33px;">
+                        <div id="hats-container">
+                            <p class="loadHats">Loading Hats...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="hatsClose" onclick="UI.toggleHats(); return false">
+                <svg viewBox="0 0 20 20" icon="check" width="40" height="40" ratio="2" style="margin-top: 190px;">
+                    <polyline fill="none" stroke="#444" stroke-width="1.1" points="4,10 8,15 17,4"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div id="helloContainer">
+            <div id="left-container" class="side-container left-side">
+                <div class="UI-panel UI-side-panel UI-profiles">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#servers"><i class="material-icons">account_circle</i></a></li>
+                    </ul>
+                    <div class="profiles-panel">
+                        <div id="profile-bg"  class="UIProfiles"></div>
+                        <div id="profile-bg2"  class="UIProfiles"></div>
+                        <div id="profile-bg3"  class="UIProfiles"></div>
+                        <div id="profile-bg4"  class="UIProfiles"></div>
+                        <div id="profile-bg5"  class="UIProfiles"></div>
+                        <div id="profile-bg6"  class="UIProfiles"></div>
+                        <div id="profile-bg7"  class="UIProfiles"></div>
+                        <div id="profile-bg8"  class="UIProfiles"></div>
+                        <div id="profile-bg9"  class="UIProfiles"></div>
+                        <div id="profile-bg10"  class="UIProfiles"></div>
+                    </div>
+                    <button class="btn btn-danger btn-success" id="hats" onclick="$('#hatsPanel').fadeToggle();">HATS</button>
+                </div>
+            </div>
+            <div id="mainPanel" class="UI-panel" style="display: inline-block !important">
+                <form role="form">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab"><i class="material-icons">home</i></a></li>
+                        <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab"><i class="material-icons">settings</i></a></li>
+                        <li role="presentation"><a href="#theming" aria-controls="theming" role="tab" data-toggle="tab"><i class="material-icons">brush</i></a></li>
+                        <li role="presentation"><a href="#hotkeys" aria-controls="hotkeys" data-toggle="modal" data-target="#hotkeys_setting"><i class="material-icons">keyboard</i></a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane fade in active" id="home">
+                            <div id="profile-main">
+                                <div id="profile-pic" class="form-group clearfix">
+                                    <div class="nav2 arrow-left"></div>
+                                    <div id="preview-img-area"><img id="preview-img" onerror="xAzDefaultSkin()"></div>
+                                    <div class="nav2 arrow-right"></div>
+                                </div>
+                            </div>
+                            <div id="profile-container">
+                                <div id="teamNameContainer" class="input-group">
+                                    <input type="text" id="team_name" class="form-control" placeholder="Team" spellcheck="false" maxlength="10">
+                                </div>
+                                <div id="nickContainer">
+                                    <input id="nick" type="text" class="form-control" placeholder="Nickname" spellcheck="false" maxlength="15">
+                                </div>
+                                <input type="text" id="skin_url" class="form-control" spellcheck="false" placeholder="Skin URL">
+                            </div>
+                            <button type="submit" onclick="UI.play(); return false" class="btn btn-play btn-success"><i id="icon" class="material-icons">play_arrow</i></button>
+                            <button onclick="spectate(); return false" class="btn btn-warning btn-spectate"><i id="icon" class="material-icons">visibility</i></button>
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="settings">
+                            <div class="zoomSpeed">
+                                Zoom Speed: <span id="txt_zoom_speed">0.7</span><input oninput="$(\'#txt_zoom_speed\').text(this.value);" class="range-slider__range" style="width:100%;" type="range" id="opt_zoom_speed" name="opt_zoom_speed" min="0.7" max="0.99" step="0.01" value="0.7">
+                            </div>
+                            <div id="radio-container">
+                                <audio id="radio" controls="" src="http://frshoutcast.comunicazion.eu:8815/;"></audio>
+                            </div>
+                            <div class="container">
+                                <div class="settingsRow">
+                                    <div class="col-xs-6 firstSettings"></div>
+                                    <div class="col-xs-6 secondSettings"></div>
+                                </div>
+                            </div>
+                            <hr id="server-hr">
+                            <div class="toggles">
+                                Nick Size: <span id="txt_nick_size">0.9</span>
+                                <input class="range-slider__range" style="width:100%" type="range" id="opt_nick_size" name="opt_nick_size" min="0.4" max="0.9" step="0.01" value="0.9">
+                                Mass Size: <span id="txt_mass_size">0.9</span>
+                                <input class="range-slider__range" style="width:100%" type="range" id="opt_mass_size" name="opt_mass_size" min="0.4" max="0.9" step="0.01" value="0.9">
+                                Locations Size: <span id="txt_locations_size">0.6</span>
+                                <input class="range-slider__range" style="width:100%" type="range" id="opt_locations_size" name="opt_locations_size" min="0.1" max="0.6" step="0.01" value="0.6">
+                                Hats Opacity: <span id="txtOpacity">0.85</span>
+                                <input class="range-slider__range" style="width:100%" type="range" id="hatOpacity" name="hatOpacity" min="0.1" max="1" step="0.05" value="0.85">
+                                Animation Delay: <span id="txt_smooth_animation">200</span>
+                                <input class="range-slider__range" style="width:100%" type="range" id="opt_smooth_animation" name="opt_smooth_animation" min="120" max="400" value="200">
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="theming">
+                            <div class="form-group">
+                                <label>Background Color</label>
+                                <input type="text" id="backgroundColor" class="minicolors form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Border Color</label>
+                                <input type="text" id="borderColor" class="minicolors form-control">
+                            </div>
+                            <div class="form-group" id="pelletColorGroup">
+                                <label>Pellet Color</label>
+                                <input type="text" id="pelletColor" class="minicolors form-control">
+                            </div>
+                            <div class="form-group">
+                                <label id="globalLabel">Locations Color</label>
+                                <input type="text" id="locationColor" class="minicolors form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Grid Color</label>
+                                <input type="text" id="gridColor" class="minicolors form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Cell Fill Text</label>
+                                <input type="text" id="fillTextColor" class="minicolors form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Cell Stroke Text</label>
+                                <input type="text" id="strokeTextColor" class="minicolors form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Virus Color</label>
+                                <input type="text" id="virusColor" class="minicolors form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Virus Stroke</label>
+                                <input type="text" id="virusStrokeColor" class="minicolors form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Minimap Names</label>
+                                <input type="text" id="minimapNames" class="minicolors form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Minimap Stroke Self</label>
+                                <input type="text" id="minimapStrokeSelf" class="minicolors form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Chat Color</label>
+                                <input type="text" id="chatColor" class="minicolors form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Leaderboard Title Text</label>
+                                <input id="newTitle" class="form-control" type="text" maxlength="11" size="11" oninput="setTitle(this.value)" placeholder="Leaderboard" value="Leaderboard">
+                            </div>
+                            <div id="lb_color">
+                                <label>Leaderboard Title Color</label>
+                                <br>
+                                <a class="round red"></a>
+                                <a class="round mahogany"></a>
+                                <a class="round dulllime"></a>
+                                <a class="round peru"></a>
+                                <a class="round tuftsblue"></a>
+                                <a class="round raspberry"></a>
+                                <a class="round white"></a>
+                                <a class="round aqua"></a>
+                                <a class="round lawngreen"></a>
+                                <a class="round magenta"></a>
+                                <a class="round aztec"></a>
+                                <a class="round yellow"></a>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="hotkeys">...</div>
+                    </div>
+                </form>
+            </div>
+            <div class="side-container right-side">
+                <div class="side-container right-side">
+                    <div class="UI-panel UI-side-panel UI-profiles">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#servers"><i class="material-icons">network_wifi</i></a></li>
+                        </ul>
+                        <div id="server-container" class="servers-panel">
+                            <div id="server" onclick="connect('ws://127.0.0.1:443');">
+                                <label id="server-label">Crazy</label>
+                                <label id="number-label">1</label>
+                            </div>
+                            <div id="server" onclick="connect('ws://127.0.0.1:443');">
+                                <label id="server-label">Crazy</label>
+                                <label id="number-label">2</label>
+                            </div>
+                            <div id="server" onclick="connect('ws://127.0.0.1:443');">
+                                <label id="server-label">Crazy</label>
+                                <label id="number-label">3</label>
+                            </div>
+                            <div id="server" onclick="connect('ws://127.0.0.1:443');">
+                                <label id="server-label">Crazy</label>
+                                <label id="number-label">4</label>
+                            </div>
+                            <div id="server" onclick="connect('ws://127.0.0.1:443');">
+                                <label id="server-label">Crazy</label>
+                                <label id="number-label">5</label>
+                            </div>
+                            <hr id="server-hr">
+                            <div id="server" onclick="connect('ws://127.0.0.1:443');">
+                                <label id="server-label">Instant</label>
+                                <label id="number-label">1</label>
+                            </div>
+                            <div id="server" onclick="connect('ws://127.0.0.1:443');">
+                                <label id="server-label">Instant</label>
+                                <label id="number-label">2</label>
+                            </div>
+                            <div id="server" onclick="connect('ws://127.0.0.1:443');">
+                                <label id="server-label">Instant</label>
+                                <label id="number-label">3</label>
+                            </div>
+                            <div id="server" onclick="connect('ws://127.0.0.1:443');">
+                                <label id="server-label">Instant</label>
+                                <label id="number-label">4</label>
+                            </div>
+                            <div id="server" onclick="connect('ws://127.0.0.1:443');">
+                                <label id="server-label">Instant</label>
+                                <label id="number-label">5</label>
+                            </div>
+                            <hr id="server-hr">
+                            <div id="server" onclick="connect('ws://127.0.0.1:443');">
+                                <label id="server-label">Bots</label>
+                                <label id="number-label">1</label>
+                            </div>
+                            <div id="server" onclick="connect('ws://127.0.0.1:443');">
+                                <label id="server-label">Bots</label>
+                                <label id="number-label">2</label>
+                            </div>
+                            <div id="server" onclick="connect('ws://127.0.0.1:443');">
+                                <label id="server-label">Bots</label>
+                                <label id="number-label">3</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <n2></n2>
+        </div>
+    </div>
+
+    <div id="overlays2">
+        <div id="div_lb">
+            <div class="header">Leaderboard</div>
+            <div id="lb_detail"></div>
+        </div>
+        <div id="div_score"></div>
+        <div id="localTime" class="clock"></div>
+        <div id="chatboxArea2">
+            <input id="input_box2" type="text">
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script type="text/javascript" src="https://use.fonticons.com/902e63d5.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.perfect-scrollbar/0.6.8/js/min/perfect-scrollbar.jquery.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.js"></script>
+    <script type="text/javascript" src="js/sweetalert.min.js"></script>
+    <script type="text/javascript" src="js/cookies.js"></script>
+    <script type="text/javascript" src="js/core.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/hats.js"></script>
+
+    <script type="text/javascript">
+        setInterval(function(){
+            if ($(window).width() < 350) {
+                document.body.style.zoom = "35%";
+            } else if ($(window).width() < 400) {
+                document.body.style.zoom = "40%";
+            } else if ($(window).width() < 450) {
+                document.body.style.zoom = "45%";
+            } else if ($(window).width() < 700) {
+                document.body.style.zoom = "55%";
+            } else if ($(window).width() < 960) {
+                document.body.style.zoom = "70%";
+            } else if ($(window).width() < 1024) {
+                document.body.style.zoom = "75%";
+            } else if ($(window).width() < 1280) {
+                document.body.style.zoom = "80%";
+            } else if ($(window).width() < 1366) {
+                document.body.style.zoom = "85%";
+            } else if ($(window).width() < 1440) {
+                document.body.style.zoom = "90%";
+            } else if ($(window).width() < 1600) {
+                document.body.style.zoom = "95%";
+            } else {
+                document.body.style.zoom = "100%";
+            }
+        }, 500);
+    </script>
+</body>
+</html>
