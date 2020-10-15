@@ -1,4 +1,5 @@
 //v0.8
+
 function UI() {
     function enter() {
         return $("#nick").val(UI.getName()), nodeList[0][1] == UI.getName() ? false : (nodeList[0][1] = UI.getName(), setLocalStorage("nick", $("#nick").val()), player_profile[selected_profile].name = UI.getName(), data(), true);
