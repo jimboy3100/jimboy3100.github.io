@@ -1,5 +1,4 @@
-//v0.12
-
+//v0.1
 function UI() {
     function enter() {
         return $("#nick").val(UI.getName()), nodeList[0][1] == UI.getName() ? false : (nodeList[0][1] = UI.getName(), setLocalStorage("nick", $("#nick").val()), player_profile[selected_profile].name = UI.getName(), data(), true);
@@ -2868,9 +2867,9 @@ var announcementSent = false;
             //buf.setUint32(1, 154669603, true);
 			buf.setUint32(1, 1, true);
             cb(buf);
-            //buf.setUint8(0, 80);
-            //var i = 0;
-            //cb(buf);
+            buf.setUint8(0, 80);
+            var i = 0;
+            cb(buf);
             oncomplete();
         };
         ws.onmessage = onmessage;
@@ -2911,15 +2910,7 @@ var announcementSent = false;
     }
 
     function parse(view) {
-            var encode = function() {
-                for (var str = '';;) {
-					var b = view.getUint16(offset, true);
-                    if (0 == b) break;
-                    str += String.fromCharCode(b);
-                }
-                return str;
-            };		
-        /*function encode() {
+        function encode() {
             var str = "";
             for (;;) {
                 var b = view.getUint16(offset, true);
@@ -2929,12 +2920,10 @@ var announcementSent = false;
                 str += String.fromCharCode(b);
             }
             return str;
-        }*/
+        }
         clockseq++;
         var offset = 0;
-		var opcode = view.getUint8(offset++);
-        //switch (240 == view.getUint8(offset) && (offset += 5), view.getUint8(offset++)) {
-			switch (54 == opcode && (opcode = 53), opcode) {
+        switch (240 == view.getUint8(offset) && (offset += 5), view.getUint8(offset++)) {
             case 16:
                 fn(view, offset);
                 break;
@@ -3143,16 +3132,6 @@ var announcementSent = false;
     }
 
     function fn(view, offset) {
-
-            var readFile = function() {
-                for (var str = '';;) {
-                    var b = view.getUint8(offset++);
-                    if (0 == b) break;
-                    str += String.fromCharCode(b);
-                }
-                return str;
-            };
-/*			
         function readFile() {
             var str = "";
             for (;;) {
@@ -3164,7 +3143,7 @@ var announcementSent = false;
             }
             return str;
         }
-*/
+
         function getString() {
             var str = "";
             for (;;) {
@@ -3376,7 +3355,7 @@ var announcementSent = false;
     function oncomplete() {
         if (handler() && null != window.userToken) {
             var buf = encode(2 + userToken.length);
-           buf.setUint8(0, 82);
+            buf.setUint8(0, 82);
             buf.setUint8(1, 1);
             var i = 0;
             for (; i < window.userToken.length; ++i) {
