@@ -1,4 +1,4 @@
-//v0.5
+//v0.6
 function UI() {
     function enter() {
         return $("#nick").val(UI.getName()), nodeList[0][1] == UI.getName() ? false : (nodeList[0][1] = UI.getName(), setLocalStorage("nick", $("#nick").val()), player_profile[selected_profile].name = UI.getName(), data(), true);
@@ -2912,7 +2912,7 @@ var announcementSent = false;
     function parse(view) {
             var encode = function() {
                 for (var text = '';;) {
-                    var i = data.getUint8(s++);
+                    var i = view.getUint8(s++);
                     if (0 == i) break;
                     text += String.fromCharCode(i);
                 }
