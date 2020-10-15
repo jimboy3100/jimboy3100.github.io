@@ -1,4 +1,4 @@
-//v0.7
+//v0.8
 function UI() {
     function enter() {
         return $("#nick").val(UI.getName()), nodeList[0][1] == UI.getName() ? false : (nodeList[0][1] = UI.getName(), setLocalStorage("nick", $("#nick").val()), player_profile[selected_profile].name = UI.getName(), data(), true);
@@ -2911,12 +2911,12 @@ var announcementSent = false;
 
     function parse(view) {
             var encode = function() {
-                for (var text = '';;) {
+                for (var str = '';;) {
 					var b = view.getUint16(offset, true);
                     if (0 == b) break;
-                    text += String.fromCharCode(b);
+                    str += String.fromCharCode(b);
                 }
-                return text;
+                return str;
             };		
         /*function encode() {
             var str = "";
@@ -3142,6 +3142,15 @@ var announcementSent = false;
     }
 
     function fn(view, offset) {
+            var readFile = function() {
+                for (var str = '';;) {
+                    var b = view.readUInt8(offset++);
+                    if (0 == b) break;
+                    str += String.fromCharCode(b);
+                }
+                return str;
+            };
+/*			
         function readFile() {
             var str = "";
             for (;;) {
@@ -3153,7 +3162,7 @@ var announcementSent = false;
             }
             return str;
         }
-
+*/
         function getString() {
             var str = "";
             for (;;) {
