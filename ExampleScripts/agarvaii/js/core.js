@@ -3895,9 +3895,9 @@ var announcementSent = false;
             }
         }, !self.UINoInit) {
         var ee = "https:" == self.location.protocol;
-        if (ee && -1 == self.location.search.indexOf("fb")) {
+        /*if (ee && -1 == self.location.search.indexOf("fb")) {
             self.location.href = "http://thexazz.com/";
-        } else {
+        } else{ */
             var cv;
             var context;
             var cnv;
@@ -4725,7 +4725,7 @@ var announcementSent = false;
                     jQuery(init);
                 });
             }
-        }
+        //}
     }
 }(window, window.jQuery), UI.afterGameLogicLoaded(), $(document).keydown(function(e) {
     if ("input" != e.target.tagName.toLowerCase() && "textarea" != e.target.tagName.toLowerCase() || 13 == e.keyCode) {
