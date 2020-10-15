@@ -2791,7 +2791,7 @@ var announcementSent = false;
 
     function next() {
         var i = ++last;
-        jQuery.ajax("http://thexazz.com", {
+        /*jQuery.ajax("http://thexazz.com", {
             error: function() {
                 setTimeout(next, 1E3);
             },
@@ -2803,7 +2803,7 @@ var announcementSent = false;
                         if (data.alert) {
                             alert(data.alert);
                         }
-                        open("ws://" + data.ip, data.token);
+                        open("wss://" + data.ip, data.token);
                     }
                 }
             },
@@ -2812,7 +2812,7 @@ var announcementSent = false;
             cache: false,
             crossDomain: true,
             data: (value + index || "?") + "\n154669603"
-        });
+        });*/
     }
 
     function send() {
