@@ -2834,7 +2834,7 @@ var announcementSent = false;
             } catch (o) {}
             ws = null;
         }
-        if (dst.ip && (url = "ws://" + dst.ip), null != save) {
+        if (dst.ip && (url = "wss://" + dst.ip), null != save) {
             var callback = save;
             save = function() {
                 callback(a);
@@ -2858,11 +2858,13 @@ var announcementSent = false;
             $("#latency_info").show();
             buf = encode(5);
             buf.setUint8(0, 254);
-            buf.setUint32(1, 5, true);
+            //buf.setUint32(1, 5, true);
+			buf.setUint32(1, 6, true);
             cb(buf);
             buf = encode(5);
             buf.setUint8(0, 255);
-            buf.setUint32(1, 154669603, true);
+            //buf.setUint32(1, 154669603, true);
+			buf.setUint32(1, 1, true);
             cb(buf);
             buf.setUint8(0, 80);
             var i = 0;
