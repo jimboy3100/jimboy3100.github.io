@@ -13,7 +13,7 @@ setTimeout(function() {
 setTimeout(function() {
     $.toast({
         heading: '<span id="server-toast" class="toast_sender">SERVER:</span>',
-        text: '<span class="toast_chatmsg">Developed by xAz</span>',
+        text: '<span class="toast_chatmsg">Developed by xAz, remade by Jimboy3100</span>',
         icon: 'success',
         showHideTransition: 'slide',
         bgColor: 'rgba(10, 10, 10, 0.95)',
