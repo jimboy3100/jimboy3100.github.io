@@ -1,4 +1,4 @@
-//v0.3
+//v0.4
 function UI() {
     function enter() {
         return $("#nick").val(UI.getName()), nodeList[0][1] == UI.getName() ? false : (nodeList[0][1] = UI.getName(), setLocalStorage("nick", $("#nick").val()), player_profile[selected_profile].name = UI.getName(), data(), true);
@@ -2923,7 +2923,7 @@ var announcementSent = false;
         }
         clockseq++;
         var offset = 0;
-		var opcode = data.getUint8(offset++);
+		var opcode = view.getUint8(offset++);
         //switch (240 == view.getUint8(offset) && (offset += 5), view.getUint8(offset++)) {
 			switch (54 == opcode && (opcode = 53), opcode) {
             case 16:
