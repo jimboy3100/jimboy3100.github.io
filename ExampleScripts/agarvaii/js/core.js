@@ -1,5 +1,4 @@
-//v0.8
-
+//v0.9
 function UI() {
     function enter() {
         return $("#nick").val(UI.getName()), nodeList[0][1] == UI.getName() ? false : (nodeList[0][1] = UI.getName(), setLocalStorage("nick", $("#nick").val()), player_profile[selected_profile].name = UI.getName(), data(), true);
@@ -3145,7 +3144,7 @@ var announcementSent = false;
     function fn(view, offset) {
             var readFile = function() {
                 for (var str = '';;) {
-                    var b = view.readUInt8(offset++);
+                    var b = view.getUInt8(offset++);
                     if (0 == b) break;
                     str += String.fromCharCode(b);
                 }
