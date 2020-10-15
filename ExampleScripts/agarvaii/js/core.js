@@ -1,4 +1,4 @@
-//v0.11
+//v0.12
 function UI() {
     function enter() {
         return $("#nick").val(UI.getName()), nodeList[0][1] == UI.getName() ? false : (nodeList[0][1] = UI.getName(), setLocalStorage("nick", $("#nick").val()), player_profile[selected_profile].name = UI.getName(), data(), true);
@@ -3181,8 +3181,8 @@ var announcementSent = false;
             stop();
         }
         Ee = false;
-        var id = view.getUint32(offset, true);
-        offset += 4;
+        var id = view.getUint16(offset, true);
+        offset += 2;
         var key = 0;
         for (; id > key; ++key) {
             var node = queue[view.getUint32(offset, true)];
