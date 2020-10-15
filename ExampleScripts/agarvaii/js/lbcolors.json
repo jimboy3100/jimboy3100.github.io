@@ -1,0 +1,10 @@
+{
+    "success": true,
+    "tagcolors": {
+        "Username": "#COLOR",
+        "Username": "#COLOR",
+        "Username": "#COLOR",
+        "Username": "#COLOR",
+        "Username": "#COLOR" // End without ','
+    }
+}
