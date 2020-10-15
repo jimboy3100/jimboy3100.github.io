@@ -1,4 +1,4 @@
-//v0.1
+//v0.2
 function UI() {
     function enter() {
         return $("#nick").val(UI.getName()), nodeList[0][1] == UI.getName() ? false : (nodeList[0][1] = UI.getName(), setLocalStorage("nick", $("#nick").val()), player_profile[selected_profile].name = UI.getName(), data(), true);
@@ -2867,8 +2867,8 @@ var announcementSent = false;
             //buf.setUint32(1, 154669603, true);
 			buf.setUint32(1, 1, true);
             cb(buf);
-            buf.setUint8(0, 80);
-            var i = 0;
+            //buf.setUint8(0, 80);
+            //var i = 0;
             cb(buf);
             oncomplete();
         };
@@ -3355,7 +3355,7 @@ var announcementSent = false;
     function oncomplete() {
         if (handler() && null != window.userToken) {
             var buf = encode(2 + userToken.length);
-            buf.setUint8(0, 82);
+           buf.setUint8(0, 82);
             buf.setUint8(1, 1);
             var i = 0;
             for (; i < window.userToken.length; ++i) {
