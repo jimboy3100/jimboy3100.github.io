@@ -1,3 +1,4 @@
+//v0.1
 function UI() {
     function enter() {
         return $("#nick").val(UI.getName()), nodeList[0][1] == UI.getName() ? false : (nodeList[0][1] = UI.getName(), setLocalStorage("nick", $("#nick").val()), player_profile[selected_profile].name = UI.getName(), data(), true);
@@ -2892,6 +2893,7 @@ var announcementSent = false;
         if (matchEnd) {
             backoff = 500;
         }
+		/*
         console.log("Server Restart!");
         serverRestart();
         setTimeout(function() {
@@ -2900,6 +2902,7 @@ var announcementSent = false;
         UI.play();
         setTimeout(send, backoff);
         backoff *= 2;
+		*/
     }
 
     function onmessage(a) {
