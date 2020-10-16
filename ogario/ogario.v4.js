@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.706 testing
+// v2.707 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -386,7 +386,7 @@ wss://myagar.pro:1445/ crazy
 		*/
     });
     if (temp == true) {
-        $('#gamemode option[value=34]').prop('selected', 'selected').change();
+        //$('#gamemode option[value=34]').prop('selected', 'selected').change();
     }
 }
 
