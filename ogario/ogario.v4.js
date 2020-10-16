@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.705 testing
+// v2.706 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -184,10 +184,6 @@ function deleteGamemode(temp) {
     ];
     if (location.protocol !== 'https:') {
 		privateModOptions.unshift({
-			text: 'agarios.org Europe',
-			value: 104
-		})	
-		privateModOptions.unshift({
 			text: 'agarios.org NA',
 			value: 103
 		})	
@@ -305,8 +301,6 @@ function deleteGamemode(temp) {
 			core.connect('ws://m16ogar.al.gl:2052/');
         } else if ($('#gamemode').val() == 103) {
 			core.connect('ws://na.agarios.org:443/');
-        } else if ($('#gamemode').val() == 104) {
-			core.connect('ws://217.182.71.35:443/');
         }
 
         /*
