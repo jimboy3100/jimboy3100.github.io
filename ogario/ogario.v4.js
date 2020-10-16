@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.692 testing
+// v2.702 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -40,7 +40,9 @@ function changeregion() {
 }
 
 function deleteGamemode(temp) {
-    var privateModOptions = [{
+	var privateModOptions
+
+	privateModOptions = [{
             text: 'FFA PowerUp',
             value: 34
         }, {
@@ -56,9 +58,15 @@ function deleteGamemode(temp) {
             text: 'Antarctic',
             value: 35
         }, {
+            text: 'MK NA east',
+            value: 36
+        }, {
+            text: 'Eatcells',
+            value: 42
+        }, {
             text: 'Instant Merging',
             value: 16
-        }, {
+        }, {			
             text: 'Party MegaSplit',
             value: 19
         }, {
@@ -113,9 +121,6 @@ function deleteGamemode(temp) {
             text: 'Bots',
             value: 33
         }, {
-            text: 'MK NA east',
-            value: 36
-        }, {
             text: 'MK Oceania',
             value: 37
         }, {
@@ -124,7 +129,7 @@ function deleteGamemode(temp) {
         }, {
             text: 'MK Bots WIP',
             value: 39
-        }, {
+        }, {			
             text: 'Ogar Eat-cells',
             value: 40
         }, {			
@@ -156,8 +161,10 @@ function deleteGamemode(temp) {
 */
             text: 'FPS Test',
             value: 12
+        }, {
+            text: 'ws://localhost:443',
+            value: 41
         }
-
         /*, {	
         text: 'FFA',
         value: 8
@@ -175,6 +182,16 @@ function deleteGamemode(temp) {
         value: 13
     }*/
     ];
+    if (location.protocol !== 'https:') {
+		privateModOptions.unshift({
+			text: 'cellshub.ga Minions',
+			value: 100
+		})
+		privateModOptions.unshift({
+			text: 'cellshub.ga Moondust',
+			value: 101
+		})
+	}	
     if (!window.gamemodeBackup) {
         window.gamemodeBackup = $("#gamemode").html();
     }
@@ -262,10 +279,18 @@ function deleteGamemode(temp) {
         } else if ($('#gamemode').val() == 39) {
             core.connect('wss://mkserv-bots.herokuapp.com/');
         } else if ($('#gamemode').val() == 40) {
-            core.connect('wss://ogar.eatcells.com/api/');			
+            core.connect('wss://ogar.eatcells.com/api/');	
+        } else if ($('#gamemode').val() == 42) {
+			core.connect('wss://eatcells.com/api/');			
         } else if ($('#gamemode').val() == 41) {
-            core.connect('wss://distrustfurryserver.herokuapp.com/');
+            //core.connect('wss://distrustfurryserver.herokuapp.com/');
+			core.connect('ws://localhost:443');
+        } else if ($('#gamemode').val() == 100) {
+			core.connect('ws://34.89.203.157:3000/');
+        } else if ($('#gamemode').val() == 101) {
+			core.connect('ws://34.89.203.157:3002/');
         }
+		
         /*
 		else if ($('#gamemode').val() == 42) {
             core.connect('ws://dummyserver.glitch.me/');
@@ -278,7 +303,13 @@ function deleteGamemode(temp) {
         }	
 		else if ($('#gamemode').val() == 45) {
             core.connect('wss://dummyserver-instant.glitch.me/');
-        }	
+        }
+sxparty.glitch.me Party
+sxinstantmerge.glitch.me Crazy
+ws://sxultrasplit.glitch.me/ Ultrasplit
+ws://speedybots.glitch.me/ SpeedyBots
+ws://ahmetcantest.glitch.me/ Ahmetcan
+ws://localhost:443 		
 		*/
         //ac-clan.glitch.me
         /*		
@@ -9815,7 +9846,8 @@ function thelegendmodproject() {
             } else {
                 view.setUint32(1, this.protocolVersion, true);
                 window.gameBots.protocolVersion = master.protocolVersion;
-            } //			
+            } 
+			//			
             //if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 6, true); } //protocol 6 and 5
             //else if (window.protocol5){ view.setUint32(1, 5, true); } // Protocol 5
 
@@ -9826,11 +9858,18 @@ function thelegendmodproject() {
             if (!this.integrity) {
                 view.setUint32(1, window.customClient, true);
                 window.gameBots.clientVersion = window.customClient
+				
+				if (LM.ws.includes("cellz.io")){
+					this.sendMessage(view);
+					view.setUint8(0, 80);
+				}			
             } //protocol 6 and 5
             else {
                 view.setUint32(1, this.clientVersion, true);
                 window.gameBots.clientVersion = this.clientVersion
-            } //
+            } 
+			
+			//
             //if (LM.ws.includes("imsolo.pro") || window.protocol6){ view.setUint32(1, 1, true); } //protocol 6 and 5
             //else if (window.protocol5){ view.setUint32(1, 1332175218, true); } // Protocol 5
 
