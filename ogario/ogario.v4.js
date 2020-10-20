@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.718 testing
+// v2.719 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -14712,7 +14712,6 @@ Game name     : ${i.displayName}<br/>
             hotkeys['spec-messageKey'] = this.defaultMessageKey;*/
         },
         loadHotkeys() {
-			defineChatCommand();
             if (null !== window.localStorage.getItem('ogarioHotkeys')) {
                 hotkeys = JSON.parse(window.localStorage.getItem('ogarioHotkeys'))
             } else {
@@ -14722,12 +14721,12 @@ Game name     : ${i.displayName}<br/>
                 chatCommand = JSON.parse(window.localStorage.getItem('ogarioCommands'));
             }
         },
-        saveHotkeys() {
-			//defineChatCommand();
+        saveHotkeys() {			
             window.localStorage.setItem('ogarioHotkeys', JSON.stringify(hotkeys));
             this.saveCommands();
         },
         saveCommands() {
+			defineChatCommand();
             $('#hotkeys .command-in').each(function() {
                 var element = $(this);
                 var id = element.attr('id');
