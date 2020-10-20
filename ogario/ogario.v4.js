@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.749 testing
+// v2.750 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -1383,7 +1383,7 @@ var displayText = {
         FBTracking: 'Facebook bubble tracker',
         mouseSplit: 'Left mouse button',
         mouseFeed: 'Right mouse button',
-        mouseWheelClick: 'Mouse wheel',
+        mouseWheelClick: 'Mouse wheel click',
         mouseInvert: 'Odwróć klawisze myszki',
         disableChat: 'Wyłącz czat',
         coloredNicks: 'Colored nicknames',
@@ -1553,7 +1553,7 @@ var displayText = {
         themePreset: 'Motyw',
 		leftClickPreset: 'Left click command',
 		rightClickPreset: 'Right click command',
-		middleClickPreset: 'Mouse wheel click',
+		middleClickPreset: 'Mouse wheel command',
         chatPosition: 'Chat Position',
         themeType: 'Typ motywu',
         darkTheme: 'Ciemny motyw',
@@ -1860,7 +1860,7 @@ var displayText = {
         FBTracking: 'Facebook bubble tracker',
         mouseSplit: 'Left mouse button',
         mouseFeed: 'Right mouse button',
-        mouseWheelClick: 'Mouse wheel',
+        mouseWheelClick: 'Mouse wheel click',
         mouseInvert: 'Invert mouse buttons',
         disableChat: 'Disable chat',
         coloredNicks: 'Colored nicknames',
@@ -2029,7 +2029,7 @@ var displayText = {
         themePreset: 'Theme preset',
 		leftClickPreset: 'Left click command',
 		rightClickPreset: 'Right click command',	
-		middleClickPreset: 'Mouse wheel click',	
+		middleClickPreset: 'Mouse wheel command',	
         chatPosition: 'Chat Position',
         themeType: 'Theme type',
         darkTheme: 'Dark theme',
