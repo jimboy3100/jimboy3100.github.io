@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.760 testing
+// v2.762 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -65,17 +65,41 @@ function deleteGamemode(temp) {
             text: 'Eatcells',
             value: 42
         }, {
-            text: 'cellshub.ga Minions',
+            text: 'C-Minions EU',
             value: 43
         }, {
-            text: 'cellshub.ga Selfeed',
+            text: 'Minions EU',
             value: 44
         }, {		
-            text: 'cellshub.ga MoonDust',
+            text: 'Selffeed EU ',
             value: 45
         }, {		
-            text: 'cellshub.ga Infected',
+            text: 'Moondust EU',
             value: 46
+        }, {	
+            text: 'Infected EU',
+            value: 47
+        }, {	
+            text: 'Crazy EU',
+            value: 48
+        }, {	
+            text: 'C-Minions NA',
+            value: 49
+        }, {	
+            text: 'Minions NA',
+            value: 50
+        }, {	
+            text: 'Selffeed NA',
+            value: 51
+        }, {
+            text: 'Moondust NA',
+            value: 52
+        }, {
+            text: 'Infected NA',
+            value: 53
+        }, {
+            text: 'Crazy NA',
+            value: 54
         }, {			
             text: 'Instant Merging',
             value: 16
@@ -301,13 +325,29 @@ function deleteGamemode(temp) {
             //core.connect('wss://distrustfurryserver.herokuapp.com/');
 			core.connect('ws://localhost:443');
         } else if ($('#gamemode').val() == 43) {
-			core.connect('wss://cellshub.ga:3101/');
+			core.connect('wss://cellshub.ga:3100');
         } else if ($('#gamemode').val() == 44) {
-			core.connect('wss://cellshub.ga:3103/');
+			core.connect('wss://cellshub.ga:3101');
         } else if ($('#gamemode').val() == 45) {
-			core.connect('wss://cellshub.ga:3104/');
+			core.connect('wss://cellshub.ga:3103');
         } else if ($('#gamemode').val() == 46) {
-			core.connect('wss://cellshub.ga:3105/');			
+			core.connect('wss://cellshub.ga:3104');
+        } else if ($('#gamemode').val() == 47) {
+			core.connect('wss://cellshub.ga:3105');
+        } else if ($('#gamemode').val() == 48) {
+			core.connect('wss://cellshub.ga:3107');
+        } else if ($('#gamemode').val() == 49) {
+			core.connect('wss://agariohub.ga:3100');
+        } else if ($('#gamemode').val() == 50) {
+			core.connect('wss://agariohub.ga:3101');
+        } else if ($('#gamemode').val() == 51) {
+			core.connect('wss://agariohub.ga:3103');
+        } else if ($('#gamemode').val() == 52) {
+			core.connect('wss://agariohub.ga:3104');
+        } else if ($('#gamemode').val() == 53) {
+			core.connect('wss://agariohub.ga:3105');
+        } else if ($('#gamemode').val() == 54) {
+			core.connect('wss://agariohub.ga:3107');			
         } else if ($('#gamemode').val() == 102) {
 			core.connect('ws://m16ogar.al.gl:2052/');
         } else if ($('#gamemode').val() == 103) {
@@ -15110,7 +15150,7 @@ Game name     : ${i.displayName}<br/>
     }
     window.onmousedown = function(event) {
         if (!$("#overlays").is(":visible")) {
-			//console.log(event.which)
+			console.log(event.which)
             if (2 == event.which) {
                 event.preventDefault();
                 if (application) {
