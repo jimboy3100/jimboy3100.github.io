@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.719 testing
+// v2.747 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -1383,7 +1383,7 @@ var displayText = {
         FBTracking: 'Facebook bubble tracker',
         mouseSplit: 'LPM - Split myszką',
         mouseFeed: 'PPM - Feed myszką',
-        mouseWheelClick: 'Mouse wheel click - Multibox Swap',
+        mouseWheelClick: 'Mouse wheel',
         mouseInvert: 'Odwróć klawisze myszki',
         disableChat: 'Wyłącz czat',
         coloredNicks: 'Colored nicknames',
@@ -1551,6 +1551,9 @@ var displayText = {
         restoreThemeSettings: 'Przywróc ustawienia domyślne wyglądu',
         basicTheming: 'Podstawowy',
         themePreset: 'Motyw',
+		leftClickPreset: 'Left click command',
+		rightClickPreset: 'Right click command',
+		middleClickPreset: 'Mouse wheel click',
         chatPosition: 'Chat Position',
         themeType: 'Typ motywu',
         darkTheme: 'Ciemny motyw',
@@ -1857,7 +1860,7 @@ var displayText = {
         FBTracking: 'Facebook bubble tracker',
         mouseSplit: 'LMB - Mouse split',
         mouseFeed: 'RMB - Mouse feed',
-        mouseWheelClick: 'Mouse wheel click - Multibox Swap',
+        mouseWheelClick: 'Mouse wheel',
         mouseInvert: 'Invert mouse buttons',
         disableChat: 'Disable chat',
         coloredNicks: 'Colored nicknames',
@@ -2024,6 +2027,9 @@ var displayText = {
         restoreThemeSettings: 'Restore theme default settings',
         basicTheming: 'Basic theming',
         themePreset: 'Theme preset',
+		leftClickPreset: 'Left click command',
+		rightClickPreset: 'Right click command',	
+		middleClickPreset: 'Mouse wheel click',	
         chatPosition: 'Chat Position',
         themeType: 'Theme type',
         darkTheme: 'Dark theme',
@@ -3123,6 +3129,11 @@ var defaultmapsettings = {
     commandSound: 'https://legendmod.ml/sounds/chat-message.mp3',
     virusSoundurl: 'https://legendmod.ml/sounds/sound-gunshot.mp3',
     soundSplit: 'https://www.myinstants.com/media/sounds/quack_5.mp3',
+	//
+	leftClick: 'hk-feed',
+	rightClick: 'hk-split',
+	middleClick: 'hk-multiboxswap',
+	//
     FacebookIDs: ''
 };
 var profiles = [];
@@ -3211,7 +3222,7 @@ function thelegendmodproject() {
     //if (displayText[r].comm15 != undefined) {
     //console.log(textLanguage.comm15);
     //}
-
+window.MouseClicks=[];
     Settings = {
         menuMainColorCSS: null,
         menuPanelColorCSS: null,
@@ -3220,7 +3231,7 @@ function thelegendmodproject() {
         hudCSS: null,
         chatCSS: null,
         chatScaleCSS: null,
-        cursorCSS: null,
+        cursorCSS: null,		
         loadThemeSettings() {
             let storage = null;
             if (window.localStorage.getItem('ogarioThemeSettings') !== null) {
@@ -3252,6 +3263,20 @@ function thelegendmodproject() {
             }
             this[name].html(css);
         },
+		addPresetBox2(id, name, options, value, callback) {
+            for (var option in $(id).append('<label data-original-title="" title="">' +textLanguage[name] + '<div class=\"select-wrapper\" style="display:inline-block; width: 60%; float:right;"><select id=\"' + name + '\" class=\"form-control\"></select></div></label>'), options) {
+                Object.values(options) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['label'] + '</option>');
+				//options.hasOwnProperty(option) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['name'] + '</option>');
+            }
+            //$('#' + name).val(defaultSettings[value]);
+            var app = this;
+            $('#' + name).on('change', function() {
+                var id = this.value;
+				console.log(id,name)
+                window.MouseClicks[name] = id;
+                app[callback](name);
+            });
+        },	
         addPresetBox(id, name, options, value, callback) {
             for (var option in $(id).append('<div class=\"preset-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"select-wrapper\"><select id=\"' + name + '\" class=\"form-control\"></select></div></div>'), options) {
                 options.hasOwnProperty(option) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['name'] + '</option>');
@@ -3603,6 +3628,18 @@ function thelegendmodproject() {
             this.changePreset(name, themePresets);
             this.setTheme();
         },
+        changeleftCmd(name) {
+			defaultmapsettings.leftClick = window.MouseClicks[name]
+			application.saveSettings(defaultmapsettings, 'ogarioSettings');
+        },	
+        changerightCmd(name) {
+			defaultmapsettings.rightClick = window.MouseClicks[name]
+			application.saveSettings(defaultmapsettings, 'ogarioSettings');
+        },	
+        changemiddleCmd(name) {
+			defaultmapsettings.middleClick = window.MouseClicks[name]
+			application.saveSettings(defaultmapsettings, 'ogarioSettings');
+        },			
         changeChatThemePosition(name) {
             this.changePreset(name, chatPositions);
             this.setChatPosition();
@@ -5439,7 +5476,16 @@ function thelegendmodproject() {
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
             this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"); //Sonia2
-            this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
+            //this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
+			this.addOptions(["mouseSplit", "mouseFeed", "mouseWheelClick"], "mouseGroup");
+//			
+			Settings.addPresetBox2('.mouseGroup', 'leftClickPreset', hotkeysCommand, 'preset', 'changeleftCmd');
+			$("#leftClickPreset option[value=" + defaultmapsettings.leftClick + "]").prop('selected', 'selected').change();
+			Settings.addPresetBox2('.mouseGroup', 'rightClickPreset', hotkeysCommand, 'preset', 'changerightCmd');	
+			$("#rightClickPreset option[value=" + defaultmapsettings.rightClick + "]").prop('selected', 'selected').change();
+			Settings.addPresetBox2('.mouseGroup', 'middleClickPreset', hotkeysCommand, 'preset', 'changemiddleCmd');	
+			$("#middleClickPreset option[value=" + defaultmapsettings.middleClick + "]").prop('selected', 'selected').change();
+//
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsRender", "gameOverStats", "showTime"], "statsGroup");
@@ -15040,9 +15086,15 @@ Game name     : ${i.displayName}<br/>
                 event.preventDefault();
                 if (application) {
                     if (defaultmapsettings.mouseWheelClick) {
-                        application.multiboxswap()
-                    } else {
-                        application.sendCommand(10);
+						if (!defaultmapsettings.middleClick){
+							application.multiboxswap()
+						}						
+                        else{
+							hotkeysCommand[defaultmapsettings.middleClick].keyDown()
+						}
+                    } 
+					else {						
+                        //application.sendCommand(10);
                     }
                 }
 
@@ -15055,16 +15107,26 @@ Game name     : ${i.displayName}<br/>
             } else if (defaultmapsettings.reverseTrick) {
                 reverseTrick.pointInCircle(legendmod.cursorX, legendmod.cursorY, event.which);
             } else {
-                if (defaultmapsettings.mouseSplit && (1 == event.which && !defaultmapsettings.mouseInvert || 3 == event.which && defaultmapsettings.mouseInvert)) {
+                if (defaultmapsettings.mouseSplit && (1 == event.which && !defaultmapsettings.mouseInvert || 3 == event.which && defaultmapsettings.mouseInvert)) {					
                     event.preventDefault();
                     if (application) {
-                        application.split();
+						if (!defaultmapsettings.leftClick){
+							application.split();
+						}
+						else{
+							hotkeysCommand[defaultmapsettings.leftClick].keyDown()
+						}
                     }
                 }
                 if (defaultmapsettings.mouseFeed && (3 == event.which && !defaultmapsettings.mouseInvert || 1 == event.which && defaultmapsettings.mouseInvert)) {
-                    event.preventDefault();
+                    event.preventDefault();			
                     if (application) {
-                        application.macroFeed(true);
+						if (!defaultmapsettings.rightClick){
+							application.split();
+						}
+						else{
+							hotkeysCommand[defaultmapsettings.rightClick].keyDown()
+						}
                     }
                 }
             }
