@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.756 testing
+// v2.760 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -1383,6 +1383,8 @@ var displayText = {
         FBTracking: 'Facebook bubble tracker',
         mouseSplit: 'Left mouse button',
         mouseFeed: 'Right mouse button',
+		mouseCommand4: 'Mouse button 4',
+		mouseCommand5: 'Mouse button 5',
         mouseWheelClick: 'Mouse wheel click',
         mouseInvert: 'Odwróć klawisze myszki',
         disableChat: 'Wyłącz czat',
@@ -1857,6 +1859,8 @@ var displayText = {
         FBTracking: 'Facebook bubble tracker',
         mouseSplit: 'Left mouse button',
         mouseFeed: 'Right mouse button',
+		mouseCommand4: 'Mouse button 4',
+		mouseCommand5: 'Mouse button 5',
         mouseWheelClick: 'Mouse wheel click',
         mouseInvert: 'Invert mouse buttons',
         disableChat: 'Disable chat',
@@ -3058,6 +3062,8 @@ var defaultmapsettings = {
     mouseSplit: false,
     mouseFeed: false,
     mouseWheelClick: false,
+	mouseCommand4: false,
+	mouseCommand5: false,
     mouseInvert: false,
     disableChat: false,
     coloredNicks: false,
@@ -3127,6 +3133,8 @@ var defaultmapsettings = {
 	leftClick: 'hk-feed',
 	rightClick: 'hk-split',
 	middleClick: 'hk-multiboxswap',
+	mouse4Click: 'hk-doubleSplit',
+	mouse5Click: 'hk-split16',
 	//
     FacebookIDs: ''
 };
@@ -3646,6 +3654,14 @@ window.MouseClicks=[];
         },	
         changemiddleCmd(name) {
 			defaultmapsettings.middleClick = window.MouseClicks[name]
+			application.saveSettings(defaultmapsettings, 'ogarioSettings');
+        },	
+        change4Cmd(name) {
+			defaultmapsettings.mouse4Click = window.MouseClicks[name]
+			application.saveSettings(defaultmapsettings, 'ogarioSettings');
+        },	
+        change5Cmd(name) {
+			defaultmapsettings.mouse5Click = window.MouseClicks[name]
 			application.saveSettings(defaultmapsettings, 'ogarioSettings');
         },			
         changeChatThemePosition(name) {
@@ -5485,14 +5501,18 @@ window.MouseClicks=[];
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
             this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"); //Sonia2
             //this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
-			this.addOptions(["mouseSplit", "mouseFeed", "mouseWheelClick"], "mouseGroup");
-//			
+			this.addOptions(["mouseSplit", "mouseFeed", "mouseWheelClick", "mouseCommand4", "mouseCommand5"], "mouseGroup");
+//	
 			Settings.addPresetBox3('#mouseSplit', 'mouseSplit2', hotkeysCommand, 'preset', 'changeleftCmd');
 			$("#mouseSplit2 option[value=" + defaultmapsettings.leftClick + "]").prop('selected', 'selected').change();
 			Settings.addPresetBox3('#mouseFeed', 'mouseFeed2', hotkeysCommand, 'preset', 'changerightCmd');	
 			$("#mouseFeed2 option[value=" + defaultmapsettings.rightClick + "]").prop('selected', 'selected').change();
 			Settings.addPresetBox3('#mouseWheelClick', 'mouseWheelClick2', hotkeysCommand, 'preset', 'changemiddleCmd');	
-			$("#mouseWheelClick2 option[value=" + defaultmapsettings.middleClick + "]").prop('selected', 'selected').change();
+			$("#mouseWheelClick2 option[value=" + defaultmapsettings.middleClick + "]").prop('selected', 'selected').change();		
+			Settings.addPresetBox3('#mouseCommand4', 'mouseCommand42', hotkeysCommand, 'preset', 'change4Cmd');	
+			$("#mouseCommand42 option[value=" + defaultmapsettings.mouse4Click + "]").prop('selected', 'selected').change();		
+			Settings.addPresetBox3('#mouseCommand5', 'mouseCommand52', hotkeysCommand, 'preset', 'change5Cmd');	
+			$("#mouseCommand52 option[value=" + defaultmapsettings.mouse5Click + "]").prop('selected', 'selected').change();					
 //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
@@ -15107,15 +15127,18 @@ Game name     : ${i.displayName}<br/>
                     }
                 }
 
-            } else if (defaultmapsettings.stickyCell) {
+            } 
+			else if (defaultmapsettings.stickyCell) {
                 if (1 == event.which) {
                     drawRender.LMB = true
                 } else {
                     drawRender.RMB = true
                 }
-            } else if (defaultmapsettings.reverseTrick) {
+            } 
+			else if (defaultmapsettings.reverseTrick) {
                 reverseTrick.pointInCircle(legendmod.cursorX, legendmod.cursorY, event.which);
-            } else {
+            } 
+			else {
                 if (defaultmapsettings.mouseSplit && (1 == event.which && !defaultmapsettings.mouseInvert || 3 == event.which && defaultmapsettings.mouseInvert)) {					
                     event.preventDefault();
                     if (application) {
@@ -15138,6 +15161,18 @@ Game name     : ${i.displayName}<br/>
 						}
                     }
                 }
+                if (defaultmapsettings.mouseCommand4 && (4 == event.which)) {
+                    event.preventDefault();			
+                    if (application) {
+							hotkeysCommand[defaultmapsettings.mouse4Click].keyDown()					
+                    }
+                }
+                if (defaultmapsettings.mouseCommand5 && (5 == event.which)) {
+                    event.preventDefault();			
+                    if (application) {
+							hotkeysCommand[defaultmapsettings.mouse4Click].keyDown()					
+                    }
+                }				
             }
         }
     }
