@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.750 testing
+// v2.756 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -1551,9 +1551,6 @@ var displayText = {
         restoreThemeSettings: 'Przywróc ustawienia domyślne wyglądu',
         basicTheming: 'Podstawowy',
         themePreset: 'Motyw',
-		leftClickPreset: 'Left click command',
-		rightClickPreset: 'Right click command',
-		middleClickPreset: 'Mouse wheel command',
         chatPosition: 'Chat Position',
         themeType: 'Typ motywu',
         darkTheme: 'Ciemny motyw',
@@ -2027,9 +2024,6 @@ var displayText = {
         restoreThemeSettings: 'Restore theme default settings',
         basicTheming: 'Basic theming',
         themePreset: 'Theme preset',
-		leftClickPreset: 'Left click command',
-		rightClickPreset: 'Right click command',	
-		middleClickPreset: 'Mouse wheel command',	
         chatPosition: 'Chat Position',
         themeType: 'Theme type',
         darkTheme: 'Dark theme',
@@ -3263,6 +3257,18 @@ window.MouseClicks=[];
             }
             this[name].html(css);
         },
+        addPresetBox(id, name, options, value, callback) {
+            for (var option in $(id).append('<div class=\"preset-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"select-wrapper\"><select id=\"' + name + '\" class=\"form-control\"></select></div></div>'), options) {
+                options.hasOwnProperty(option) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['name'] + '</option>');
+            }
+            $('#' + name).val(defaultSettings[value]);
+            var app = this;
+            $('#' + name).on('change', function() {
+                var id = this.value;
+                defaultSettings[value] = id;
+                app[callback](id);
+            });
+        },
 		addPresetBox2(id, name, options, value, callback) {
             for (var option in $(id).append('<label data-original-title="" title="">' +textLanguage[name] + '<div class=\"select-wrapper\" style="display:inline-block; width: 60%; float:right;"><select id=\"' + name + '\" class=\"form-control\"></select></div></label>'), options) {
                 Object.values(options) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['label'] + '</option>');
@@ -3277,18 +3283,20 @@ window.MouseClicks=[];
                 app[callback](name);
             });
         },	
-        addPresetBox(id, name, options, value, callback) {
-            for (var option in $(id).append('<div class=\"preset-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"select-wrapper\"><select id=\"' + name + '\" class=\"form-control\"></select></div></div>'), options) {
-                options.hasOwnProperty(option) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['name'] + '</option>');
+		addPresetBox3(id, name, options, value, callback) {
+            for (var option in $(id).after('<div class=\"select-wrapper\" style="display:inline-block; width: 48%; margin-Left: 10px"><select id=\"' + name + '\" class=\"form-control\"></select></div>'), options) {
+                Object.values(options) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['label'] + '</option>');
+				//options.hasOwnProperty(option) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['name'] + '</option>');
             }
-            $('#' + name).val(defaultSettings[value]);
+            //$('#' + name).val(defaultSettings[value]);
             var app = this;
             $('#' + name).on('change', function() {
                 var id = this.value;
-                defaultSettings[value] = id;
-                app[callback](id);
+				//console.log(id,name)
+                window.MouseClicks[name] = id;
+                app[callback](name);
             });
-        },
+        },			
         addColorBox(id, name, callback) {
             $(id).append('<div class=\"color-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"input-group ' + name + '-picker\"><input type=\"text\" value=\"' + defaultSettings[name] + '\" id=\"' + name + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>');
             if (callback) {
@@ -5479,12 +5487,12 @@ window.MouseClicks=[];
             //this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
 			this.addOptions(["mouseSplit", "mouseFeed", "mouseWheelClick"], "mouseGroup");
 //			
-			Settings.addPresetBox2('.mouseGroup', 'leftClickPreset', hotkeysCommand, 'preset', 'changeleftCmd');
-			$("#leftClickPreset option[value=" + defaultmapsettings.leftClick + "]").prop('selected', 'selected').change();
-			Settings.addPresetBox2('.mouseGroup', 'rightClickPreset', hotkeysCommand, 'preset', 'changerightCmd');	
-			$("#rightClickPreset option[value=" + defaultmapsettings.rightClick + "]").prop('selected', 'selected').change();
-			Settings.addPresetBox2('.mouseGroup', 'middleClickPreset', hotkeysCommand, 'preset', 'changemiddleCmd');	
-			$("#middleClickPreset option[value=" + defaultmapsettings.middleClick + "]").prop('selected', 'selected').change();
+			Settings.addPresetBox3('#mouseSplit', 'mouseSplit2', hotkeysCommand, 'preset', 'changeleftCmd');
+			$("#mouseSplit2 option[value=" + defaultmapsettings.leftClick + "]").prop('selected', 'selected').change();
+			Settings.addPresetBox3('#mouseFeed', 'mouseFeed2', hotkeysCommand, 'preset', 'changerightCmd');	
+			$("#mouseFeed2 option[value=" + defaultmapsettings.rightClick + "]").prop('selected', 'selected').change();
+			Settings.addPresetBox3('#mouseWheelClick', 'mouseWheelClick2', hotkeysCommand, 'preset', 'changemiddleCmd');	
+			$("#mouseWheelClick2 option[value=" + defaultmapsettings.middleClick + "]").prop('selected', 'selected').change();
 //
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "fpsAtTop", "tweenMaxEffect", "top5skins"], "hudGroup");
@@ -15082,6 +15090,7 @@ Game name     : ${i.displayName}<br/>
     }
     window.onmousedown = function(event) {
         if (!$("#overlays").is(":visible")) {
+			console.log(event.which)
             if (2 == event.which) {
                 event.preventDefault();
                 if (application) {
