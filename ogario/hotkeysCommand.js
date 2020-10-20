@@ -1,4 +1,4 @@
-//v1.3c
+//v1.3d
         keyBlind = {};
         hotkeys = {};
         hotkeysCommand = {
@@ -919,5 +919,185 @@
                 keyUp: null,
                 type: 'command'
             }
+            'hk-comm31': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(31);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm32': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(32);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm33': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(33);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm34': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(34);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm35': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(35);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm36': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(36);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm37': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(37);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm38': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(38);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm39': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(39);
+                },
+                keyUp: null,
+                type: 'command'
+            }		
+            'hk-comm40': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(40);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm41': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(41);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm42': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(42);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm43': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(43);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm44': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(44);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm45': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(45);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm46': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(46);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm47': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(47);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm48': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(48);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm49': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(49);
+                },
+                keyUp: null,
+                type: 'command'
+            }	
+            'hk-comm50': {
+                label: 'Hotkey command',
+                defaultKey: '',
+                keyDown() {
+                    application && application.sendCommand(50);
+                },
+                keyUp: null,
+                type: 'command'
+            }			
         }
 	
