@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.748 testing
+// v2.749 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -1381,8 +1381,8 @@ var displayText = {
         cursorTracking: 'Śledzenie kursora',
         teammatesInd: 'Wskaźniki graczy teamu',
         FBTracking: 'Facebook bubble tracker',
-        mouseSplit: 'LPM - Split myszką',
-        mouseFeed: 'PPM - Feed myszką',
+        mouseSplit: 'Left mouse button',
+        mouseFeed: 'Right mouse button',
         mouseWheelClick: 'Mouse wheel',
         mouseInvert: 'Odwróć klawisze myszki',
         disableChat: 'Wyłącz czat',
@@ -1858,8 +1858,8 @@ var displayText = {
         cursorTracking: 'Cursor tracking',
         teammatesInd: 'Teammates indicators',
         FBTracking: 'Facebook bubble tracker',
-        mouseSplit: 'LMB - Mouse split',
-        mouseFeed: 'RMB - Mouse feed',
+        mouseSplit: 'Left mouse button',
+        mouseFeed: 'Right mouse button',
         mouseWheelClick: 'Mouse wheel',
         mouseInvert: 'Invert mouse buttons',
         disableChat: 'Disable chat',
