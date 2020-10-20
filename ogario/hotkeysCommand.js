@@ -1,4 +1,4 @@
-//v1.3e
+//v1.3f
         keyBlind = {};
         hotkeys = {};
         hotkeysCommand = {
@@ -920,7 +920,7 @@
                 type: 'command'
             },
             'hk-comm31': {
-                label: 'Hotkey command',
+                label: chatCommand['comm31'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(31);
@@ -929,7 +929,7 @@
                 type: 'command'
             },	
             'hk-comm32': {
-                label: 'Hotkey command',
+                label: chatCommand['comm32'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(32);
@@ -938,7 +938,7 @@
                 type: 'command'
             },	
             'hk-comm33': {
-                label: 'Hotkey command',
+                label: chatCommand['comm33'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(33);
@@ -947,7 +947,7 @@
                 type: 'command'
             },	
             'hk-comm34': {
-                label: 'Hotkey command',
+                label: chatCommand['comm34'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(34);
@@ -956,7 +956,7 @@
                 type: 'command'
             },
             'hk-comm35': {
-                label: 'Hotkey command',
+                label: chatCommand['comm35'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(35);
@@ -965,7 +965,7 @@
                 type: 'command'
             },	
             'hk-comm36': {
-                label: 'Hotkey command',
+                label: chatCommand['comm36'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(36);
@@ -974,7 +974,7 @@
                 type: 'command'
             },
             'hk-comm37': {
-                label: 'Hotkey command',
+                label: chatCommand['comm37'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(37);
@@ -983,7 +983,7 @@
                 type: 'command'
             },	
             'hk-comm38': {
-                label: 'Hotkey command',
+                label: chatCommand['comm38'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(38);
@@ -992,7 +992,7 @@
                 type: 'command'
             },	
             'hk-comm39': {
-                label: 'Hotkey command',
+                label: chatCommand['comm39'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(39);
@@ -1001,7 +1001,7 @@
                 type: 'command'
             },		
             'hk-comm40': {
-                label: 'Hotkey command',
+                label: chatCommand['comm40'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(40);
@@ -1010,7 +1010,7 @@
                 type: 'command'
             },	
             'hk-comm41': {
-                label: 'Hotkey command',
+                label: chatCommand['comm41'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(41);
@@ -1019,7 +1019,7 @@
                 type: 'command'
             },	
             'hk-comm42': {
-                label: 'Hotkey command',
+                label: chatCommand['comm42'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(42);
@@ -1028,7 +1028,7 @@
                 type: 'command'
             },	
             'hk-comm43': {
-                label: 'Hotkey command',
+                label: chatCommand['comm43'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(43);
@@ -1037,7 +1037,7 @@
                 type: 'command'
             },	
             'hk-comm44': {
-                label: 'Hotkey command',
+                label: chatCommand['comm44'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(44);
@@ -1046,7 +1046,7 @@
                 type: 'command'
             },	
             'hk-comm45': {
-                label: 'Hotkey command',
+                label: chatCommand['comm45'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(45);
@@ -1055,7 +1055,7 @@
                 type: 'command'
             },	
             'hk-comm46': {
-                label: 'Hotkey command',
+                label: chatCommand['comm46'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(46);
@@ -1064,7 +1064,7 @@
                 type: 'command'
             },	
             'hk-comm47': {
-                label: 'Hotkey command',
+                label: chatCommand['comm47'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(47);
@@ -1073,7 +1073,7 @@
                 type: 'command'
             },	
             'hk-comm48': {
-                label: 'Hotkey command',
+                label: chatCommand['comm48'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(48);
@@ -1082,7 +1082,7 @@
                 type: 'command'
             },	
             'hk-comm49': {
-                label: 'Hotkey command',
+                label: chatCommand['comm49'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(49);
@@ -1091,7 +1091,7 @@
                 type: 'command'
             },	
             'hk-comm50': {
-                label: 'Hotkey command',
+                label: chatCommand['comm50'],
                 defaultKey: '',
                 keyDown() {
                     application && application.sendCommand(50);
