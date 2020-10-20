@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.762 testing
+// v2.767 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -3170,7 +3170,7 @@ var defaultmapsettings = {
     virusSoundurl: 'https://legendmod.ml/sounds/sound-gunshot.mp3',
     soundSplit: 'https://www.myinstants.com/media/sounds/quack_5.mp3',
 	//
-	leftClick: 'hk-feed',
+	leftClick: 'hk-macroFeed',
 	rightClick: 'hk-split',
 	middleClick: 'hk-multiboxswap',
 	mouse4Click: 'hk-doubleSplit',
@@ -15150,7 +15150,7 @@ Game name     : ${i.displayName}<br/>
     }
     window.onmousedown = function(event) {
         if (!$("#overlays").is(":visible")) {
-			console.log(event.which)
+			//console.log(event.which)
             if (2 == event.which) {
                 event.preventDefault();
                 if (application) {
@@ -15179,7 +15179,8 @@ Game name     : ${i.displayName}<br/>
                 reverseTrick.pointInCircle(legendmod.cursorX, legendmod.cursorY, event.which);
             } 
 			else {
-                if (defaultmapsettings.mouseSplit && (1 == event.which && !defaultmapsettings.mouseInvert || 3 == event.which && defaultmapsettings.mouseInvert)) {					
+                //if (defaultmapsettings.mouseSplit && (1 == event.which && !defaultmapsettings.mouseInvert || 3 == event.which && defaultmapsettings.mouseInvert)) {
+				if (defaultmapsettings.mouseSplit && (1 == event.which)) {							
                     event.preventDefault();
                     if (application) {
 						if (!defaultmapsettings.leftClick){
@@ -15190,7 +15191,8 @@ Game name     : ${i.displayName}<br/>
 						}
                     }
                 }
-                if (defaultmapsettings.mouseFeed && (3 == event.which && !defaultmapsettings.mouseInvert || 1 == event.which && defaultmapsettings.mouseInvert)) {
+                //if (defaultmapsettings.mouseFeed && (3 == event.which && !defaultmapsettings.mouseInvert || 1 == event.which && defaultmapsettings.mouseInvert)) {
+				if (defaultmapsettings.mouseFeed && (3 == event.which)) {
                     event.preventDefault();			
                     if (application) {
 						if (!defaultmapsettings.rightClick){
@@ -15217,13 +15219,29 @@ Game name     : ${i.displayName}<br/>
         }
     }
     window.onmouseup = function(event) {
-        if (defaultmapsettings.mouseFeed) {
-            if (3 == event.which && !defaultmapsettings.mouseInvert || 1 == event.which && defaultmapsettings.mouseInvert) {
-                application && application.macroFeed(false);
-            }
-        } else {
-            event.which == 1 ? (drawRender.LMB = false) : (drawRender.RMB = false)
-        }
+        //if (defaultmapsettings.mouseFeed) {
+			//if (1 == event.which && hotkeysCommand[defaultmapsettings.leftClick]==textLanguage['hk-macroFeed'] || 2 == event.which && hotkeysCommand[defaultmapsettings.middleClick]==textLanguage['hk-macroFeed'] || 3 == event.which && hotkeysCommand[defaultmapsettings.rightClick]==textLanguage['hk-macroFeed'] || 4 == event.which && hotkeysCommand[defaultmapsettings.mouse4Click]==textLanguage['hk-macroFeed'] || 5 == event.which && hotkeysCommand[defaultmapsettings.mouse5Click]==textLanguage['hk-macroFeed']) {
+            //if (3 == event.which && !defaultmapsettings.mouseInvert || 1 == event.which && defaultmapsettings.mouseInvert) {  
+				//application && application.macroFeed(false);
+            //}
+				if (defaultmapsettings.mouseSplit && (1 == event.which) && defaultmapsettings.leftClick) {	
+					if (hotkeysCommand[defaultmapsettings.leftClick].keyUp) hotkeysCommand[defaultmapsettings.leftClick].keyUp()
+				}
+				else if (defaultmapsettings.mouseWheelClick && (2 == event.which) && defaultmapsettings.middleClick) {	
+					if (hotkeysCommand[defaultmapsettings.middleClick].keyUp) hotkeysCommand[defaultmapsettings.middleClick].keyUp()
+				}
+				else if (defaultmapsettings.mouseFeed && (3 == event.which) && defaultmapsettings.rightClick) {	
+					if (hotkeysCommand[defaultmapsettings.rightClick].keyUp) hotkeysCommand[defaultmapsettings.rightClick].keyUp()
+				}	
+				else if (defaultmapsettings.mouseCommand4 && (4 == event.which) && defaultmapsettings.mouse4Click) {	
+					if (hotkeysCommand[defaultmapsettings.mouse4Click].keyUp) hotkeysCommand[defaultmapsettings.mouse4Click].keyUp()
+				}		
+				else if (defaultmapsettings.mouseCommand5 && (5 == event.which) && defaultmapsettings.mouse5Click) {	
+					if (hotkeysCommand[defaultmapsettings.mouse5Click].keyUp) hotkeysCommand[defaultmapsettings.mouse5Click].keyUp()
+				}					
+				else {
+					event.which == 1 ? (drawRender.LMB = false) : (drawRender.RMB = false)
+				}
     };
     window.onbeforeunload = function(event) {
         if (ogario.play) {
