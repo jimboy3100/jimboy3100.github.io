@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.711 testing
+// v2.712 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -65,6 +65,18 @@ function deleteGamemode(temp) {
             text: 'Eatcells',
             value: 42
         }, {
+            text: 'cellshub.ga Minions',
+            value: 43
+        }, {
+            text: 'cellshub.ga Selfeed',
+            value: 44
+        }, {		
+            text: 'cellshub.ga MoonDust',
+            value: 45
+        }, {		
+            text: 'cellshub.ga Infected',
+            value: 46
+        }, {			
             text: 'Instant Merging',
             value: 16
         }, {			
@@ -133,7 +145,8 @@ function deleteGamemode(temp) {
         }, {			
             text: 'Ogar Eat-cells',
             value: 40
-        }, {			
+        }, {				
+
             /*
         text: 'MK Disturb Furry',
         value: 41		
@@ -192,14 +205,6 @@ function deleteGamemode(temp) {
 		privateModOptions.unshift({
 			text: 'M16 Korea',
 			value: 102
-		})	
-		privateModOptions.unshift({
-			text: 'cellshub.ga Moondust',
-			value: 101
-		})	
-		privateModOptions.unshift({
-			text: 'cellshub.ga Minions',
-			value: 100
 		})		
 	}	
     if (!window.gamemodeBackup) {
@@ -295,10 +300,14 @@ function deleteGamemode(temp) {
         } else if ($('#gamemode').val() == 41) {
             //core.connect('wss://distrustfurryserver.herokuapp.com/');
 			core.connect('ws://localhost:443');
-        } else if ($('#gamemode').val() == 100) {
-			core.connect('ws://34.107.109.11:3001/');
-        } else if ($('#gamemode').val() == 101) {
-			core.connect('ws://34.89.203.157:3000/');
+        } else if ($('#gamemode').val() == 43) {
+			core.connect('wss://cellshub.ga:3101/');
+        } else if ($('#gamemode').val() == 44) {
+			core.connect('wss://cellshub.ga:3103/');
+        } else if ($('#gamemode').val() == 45) {
+			core.connect('wss://cellshub.ga:3104/');
+        } else if ($('#gamemode').val() == 46) {
+			core.connect('wss://cellshub.ga:3105/');			
         } else if ($('#gamemode').val() == 102) {
 			core.connect('ws://m16ogar.al.gl:2052/');
         } else if ($('#gamemode').val() == 103) {
