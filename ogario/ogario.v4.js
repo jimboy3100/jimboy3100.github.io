@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.714 testing
+// v2.715 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -3174,26 +3174,26 @@ chatCommand = {
     comm28: textLanguage.comm28,
     comm29: textLanguage.comm29,
     comm30: textLanguage.comm30,
-    comm11: textLanguage.comm31,
-    comm12: textLanguage.comm32,
-    comm13: textLanguage.comm33,
-    comm14: textLanguage.comm34,
-    comm15: textLanguage.comm35,
-    comm16: textLanguage.comm36,
-    comm17: textLanguage.comm37,
-    comm18: textLanguage.comm38,
-    comm19: textLanguage.comm39,
-    comm20: textLanguage.comm40,
-    comm21: textLanguage.comm41,
-    comm22: textLanguage.comm42,
-    comm23: textLanguage.comm43,
-    comm24: textLanguage.comm44,
-    comm25: textLanguage.comm45,
-    comm26: textLanguage.comm46,
-    comm27: textLanguage.comm47,
-    comm28: textLanguage.comm48,
-    comm29: textLanguage.comm49,
-    comm30: textLanguage.comm50	
+    comm31: textLanguage.comm31,
+    comm32: textLanguage.comm32,
+    comm33: textLanguage.comm33,
+    comm34: textLanguage.comm34,
+    comm35: textLanguage.comm35,
+    comm36: textLanguage.comm36,
+    comm37: textLanguage.comm37,
+    comm38: textLanguage.comm38,
+    comm39: textLanguage.comm39,
+    comm40: textLanguage.comm40,
+    comm41: textLanguage.comm41,
+    comm42: textLanguage.comm42,
+    comm43: textLanguage.comm43,
+    comm44: textLanguage.comm44,
+    comm45: textLanguage.comm45,
+    comm46: textLanguage.comm46,
+    comm47: textLanguage.comm47,
+    comm48: textLanguage.comm48,
+    comm49: textLanguage.comm49,
+    comm50: textLanguage.comm50	
 }
 
 //var thelegendmodproject = function(t, e, i) {
