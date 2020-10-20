@@ -1,4 +1,4 @@
-//v1.3d
+//v1.3e
         keyBlind = {};
         hotkeys = {};
         hotkeysCommand = {
@@ -918,7 +918,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }
+            },
             'hk-comm31': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -927,7 +927,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },	
             'hk-comm32': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -936,7 +936,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },	
             'hk-comm33': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -945,7 +945,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },	
             'hk-comm34': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -954,7 +954,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },
             'hk-comm35': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -963,7 +963,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },	
             'hk-comm36': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -972,7 +972,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },
             'hk-comm37': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -981,7 +981,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },	
             'hk-comm38': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -990,7 +990,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },	
             'hk-comm39': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -999,7 +999,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }		
+            },		
             'hk-comm40': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -1008,7 +1008,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },	
             'hk-comm41': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -1017,7 +1017,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },	
             'hk-comm42': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -1026,7 +1026,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },	
             'hk-comm43': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -1035,7 +1035,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },	
             'hk-comm44': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -1044,7 +1044,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },	
             'hk-comm45': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -1053,7 +1053,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },	
             'hk-comm46': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -1062,7 +1062,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },	
             'hk-comm47': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -1071,7 +1071,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },	
             'hk-comm48': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -1080,7 +1080,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },	
             'hk-comm49': {
                 label: 'Hotkey command',
                 defaultKey: '',
@@ -1089,7 +1089,7 @@
                 },
                 keyUp: null,
                 type: 'command'
-            }	
+            },	
             'hk-comm50': {
                 label: 'Hotkey command',
                 defaultKey: '',
