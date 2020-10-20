@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.710 testing
+// v2.711 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -21,6 +21,7 @@ window.replaySkippedLoops = 100 //100 times more frames from timing 0 replays
 //window.fpsloopsetter=60
 window.renderDelay = 0;
 //window.specificRecordedProtocol = []
+window.chatLimit = 15;
 
 //inject gamepad libraries if Mobile
 var isMobile = window.orientation > -1; //false for PC, true for mobile 
@@ -8073,7 +8074,8 @@ function thelegendmodproject() {
                                 'time': Date.now()
                                 //
                             }),
-                            this.chatHistory.length > 15 && this.chatHistory.shift();
+							this.chatHistory.length > window.chatLimit && this.chatHistory.shift();
+                           // this.chatHistory.length > 15 && this.chatHistory.shift();
                     } else if (102 == caseof) {
                         if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + time + '] </span>' + r + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'),
                             $('#chat-box').perfectScrollbar('update'),
