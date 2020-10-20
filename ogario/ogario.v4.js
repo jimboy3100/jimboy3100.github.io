@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.747 testing
+// v2.748 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -3272,7 +3272,7 @@ window.MouseClicks=[];
             var app = this;
             $('#' + name).on('change', function() {
                 var id = this.value;
-				console.log(id,name)
+				//console.log(id,name)
                 window.MouseClicks[name] = id;
                 app[callback](name);
             });
