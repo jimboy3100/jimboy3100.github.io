@@ -1,7 +1,7 @@
 // Source script
 // Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 // This is part of the Legend mod project
-// v2.715 testing
+// v2.718 testing
 
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
@@ -3140,62 +3140,62 @@ if (userLanguage && displayText.hasOwnProperty(userLanguage)) {
     lang = userLanguage;
 }
 var textLanguage = displayText[lang];
-
-
-chatCommand = {
-    comm0: textLanguage.comm0,
-    comm1: textLanguage.comm1,
-    comm2: textLanguage.comm2,
-    comm3: textLanguage.comm3,
-    comm4: textLanguage.comm4,
-    comm5: textLanguage.comm5,
-    comm6: textLanguage.comm6,
-    comm7: textLanguage.comm7,
-    comm8: textLanguage.comm8,
-    comm9: textLanguage.comm9,
-    comm10: textLanguage.comm10,
-    comm11: textLanguage.comm11,
-    comm12: textLanguage.comm12,
-    comm13: textLanguage.comm13,
-    comm14: textLanguage.comm14,
-    comm15: textLanguage.comm15,
-    comm16: textLanguage.comm16,
-    comm17: textLanguage.comm17,
-    comm18: textLanguage.comm18,
-    comm19: textLanguage.comm19,
-    comm20: textLanguage.comm20,
-    comm21: textLanguage.comm21,
-    comm22: textLanguage.comm22,
-    comm23: textLanguage.comm23,
-    comm24: textLanguage.comm24,
-    comm25: textLanguage.comm25,
-    comm26: textLanguage.comm26,
-    comm27: textLanguage.comm27,
-    comm28: textLanguage.comm28,
-    comm29: textLanguage.comm29,
-    comm30: textLanguage.comm30,
-    comm31: textLanguage.comm31,
-    comm32: textLanguage.comm32,
-    comm33: textLanguage.comm33,
-    comm34: textLanguage.comm34,
-    comm35: textLanguage.comm35,
-    comm36: textLanguage.comm36,
-    comm37: textLanguage.comm37,
-    comm38: textLanguage.comm38,
-    comm39: textLanguage.comm39,
-    comm40: textLanguage.comm40,
-    comm41: textLanguage.comm41,
-    comm42: textLanguage.comm42,
-    comm43: textLanguage.comm43,
-    comm44: textLanguage.comm44,
-    comm45: textLanguage.comm45,
-    comm46: textLanguage.comm46,
-    comm47: textLanguage.comm47,
-    comm48: textLanguage.comm48,
-    comm49: textLanguage.comm49,
-    comm50: textLanguage.comm50	
+defineChatCommand();
+function defineChatCommand() {
+	window.chatCommand = {
+		comm0: textLanguage.comm0,
+		comm1: textLanguage.comm1,
+		comm2: textLanguage.comm2,
+		comm3: textLanguage.comm3,
+		comm4: textLanguage.comm4,
+		comm5: textLanguage.comm5,
+		comm6: textLanguage.comm6,
+		comm7: textLanguage.comm7,
+		comm8: textLanguage.comm8,
+		comm9: textLanguage.comm9,
+		comm10: textLanguage.comm10,
+		comm11: textLanguage.comm11,
+		comm12: textLanguage.comm12,
+		comm13: textLanguage.comm13,
+		comm14: textLanguage.comm14,
+		comm15: textLanguage.comm15,
+		comm16: textLanguage.comm16,
+		comm17: textLanguage.comm17,
+		comm18: textLanguage.comm18,
+		comm19: textLanguage.comm19,
+		comm20: textLanguage.comm20,
+		comm21: textLanguage.comm21,
+		comm22: textLanguage.comm22,
+		comm23: textLanguage.comm23,
+		comm24: textLanguage.comm24,
+		comm25: textLanguage.comm25,
+		comm26: textLanguage.comm26,
+		comm27: textLanguage.comm27,
+		comm28: textLanguage.comm28,
+		comm29: textLanguage.comm29,
+		comm30: textLanguage.comm30,
+		comm31: textLanguage.comm31,
+		comm32: textLanguage.comm32,
+		comm33: textLanguage.comm33,
+		comm34: textLanguage.comm34,
+		comm35: textLanguage.comm35,
+		comm36: textLanguage.comm36,
+		comm37: textLanguage.comm37,
+		comm38: textLanguage.comm38,
+		comm39: textLanguage.comm39,
+		comm40: textLanguage.comm40,
+		comm41: textLanguage.comm41,
+		comm42: textLanguage.comm42,
+		comm43: textLanguage.comm43,
+		comm44: textLanguage.comm44,
+		comm45: textLanguage.comm45,
+		comm46: textLanguage.comm46,
+		comm47: textLanguage.comm47,
+		comm48: textLanguage.comm48,
+		comm49: textLanguage.comm49,
+		comm50: textLanguage.comm50	
+	}
 }
-
 //var thelegendmodproject = function(t, e, i) {
 function thelegendmodproject() {
     var application;
@@ -14712,6 +14712,7 @@ Game name     : ${i.displayName}<br/>
             hotkeys['spec-messageKey'] = this.defaultMessageKey;*/
         },
         loadHotkeys() {
+			defineChatCommand();
             if (null !== window.localStorage.getItem('ogarioHotkeys')) {
                 hotkeys = JSON.parse(window.localStorage.getItem('ogarioHotkeys'))
             } else {
@@ -14722,6 +14723,7 @@ Game name     : ${i.displayName}<br/>
             }
         },
         saveHotkeys() {
+			//defineChatCommand();
             window.localStorage.setItem('ogarioHotkeys', JSON.stringify(hotkeys));
             this.saveCommands();
         },
