@@ -72,7 +72,11 @@ ProLicenceUsersTable = {
         "81831afa-0a11-4fce-82b3-81067f6cc9bc": {
             "reason": "Shiro",
             "notes": "Advertiser-Japan-Google"
-        }, 		
+        }, 
+        "39ebbaa0-8b5f-485e-a103-754a0379f287": {
+            "reason": "FriendOfBotplayer",
+            "notes": "Overkill"
+        }, 	    
         "4220bddd-7bd6-4f93-89cf-579903eff2bc": {
             "reason": "Donate",
             "notes": "Cla"
