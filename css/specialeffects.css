@@ -94,7 +94,7 @@
     transition: all linear 0.2s;
 }
 
-.skin-box:hover img {
+#customskins .skin-box:hover img {
     width: 140px;
     height: 140px;
     border: none;
