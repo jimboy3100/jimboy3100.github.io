@@ -1,9 +1,9 @@
-//v0.4r
+//v0.4t
 
 //$(document).ready(function() {
 jQuery(function($) {
 
-	setTimeout(function() {
+setTimeout(function() {
 		
     $("#imgur img.lazy").lazyload({
         effect : "fadeIn",
@@ -74,12 +74,12 @@ jQuery(function($) {
 			localStorage.setItem("isActualUsingSpecialEffectsSkin", null);
 			window.application.sendSocket3Info("spfc", null)		
     });	
-	setTimeout(function() {
+	//setTimeout(function() {
 		if ($("#nav a")[0]){
 			$("#nav a")[0].click();
 		}
 		startSpecialEffectSkin();
-	}, 950);
+	//}, 950);
 	}, 900);
 });
 
