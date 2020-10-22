@@ -1,4 +1,4 @@
-//v0.12f
+//v0.12g
 
 	if (!window.agarioUID){
 		 window.agarioUID = localStorage.getItem("agarioUID");
@@ -93,6 +93,7 @@
 		
             $('#helloContainer').after('<div class="modal fade in" id="LMShop" aria-hidden="false" style="display: block;">' +
 				'<link rel="stylesheet" type="text/css" href="https://legendmod.ml/css/specialeffects.css">' +
+				'<script src="https://legendmod.ml/skins/jquery.lazyload.min.js"></script>' +
 				'<div class="modal-backdrop fade in"></div>' +
                 //'<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 780px; height:500">' +
 				'<div class="modal-dialog" style="top: calc(50vh - 400px); width: 900px; height:500px">' +
@@ -163,8 +164,7 @@
 	'</div>' +	
         '<div id="vanillaskins" class="skins-wrapper">' +
 	'</div>' +
-	'</div>' +
-    '<script src="https://legendmod.ml/skins/jquery.lazyload.min.js"></script>' +
+	'</div>' +    
     '<script src="https://legendmod.ml/LMexpress/shop/shopscript.js"></script>' +				
                 '</div>' +
                 '</div>' +
@@ -178,4 +178,4 @@
             $("#FAQLMShop").click(function() {
 				window.open('https://legendmod.ml/', '_blank');
             });	
-$(".modal-dialog").draggable()
+//$(".modal-dialog").draggable()
