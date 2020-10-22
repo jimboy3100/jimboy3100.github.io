@@ -1,10 +1,9 @@
-
-//v0.4s
+//v0.4t
 
 //$(document).ready(function() {
 //jQuery(function($) {
 
-	//setTimeout(function() {
+setTimeout(function() {
 		
     $("#imgur img.lazy").lazyload({
         effect : "fadeIn",
@@ -81,7 +80,7 @@
 		}
 		startSpecialEffectSkin();
 	//}, 950);
-	//}, 900);
+	}, 900);
 //});
 
 
