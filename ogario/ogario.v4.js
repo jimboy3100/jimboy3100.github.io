@@ -1,5 +1,5 @@
 /* Source script
-v2.772
+v2.773
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -9303,16 +9303,29 @@ window.MouseClicks=[];
             return ctxfx;
         };
 		this.drawSpecialSkinDancer = function(style, y) {
-			
-			if (defaultmapsettings.videoSkins && application.customSkinsMap[this.targetNick] != "https://dkyriak.github.io/VideoFloRidaLow.mp4"){				
-				application.customSkinsMap[this.targetNick] = "https://dkyriak.github.io/VideoFloRidaLow.mp4"
-			node2 = application.customSkinsMap[this.targetNick]	
-			if (ogarcopythelb.nick == this.targetNick) {
-				ogarcopythelb.skinURL = node2
-			}				
+			if (LM.gameMode !=":party"){
+				if (defaultmapsettings.videoSkins && application.customSkinsMap[this.targetNick] != "https://dkyriak.github.io/VideoFloRidaLow.mp4"){				
+					application.customSkinsMap[this.targetNick] = "https://dkyriak.github.io/VideoFloRidaLow.mp4"
+				node2 = application.customSkinsMap[this.targetNick]	
+				if (ogarcopythelb.nick == this.targetNick) {
+					ogarcopythelb.skinURL = node2
+				}				
 				
-				//checkVideos(node2, this.targetNick);
+					//checkVideos(node2, this.targetNick);
+				}				
 			}
+			else{
+				if (defaultmapsettings.videoSkins && application.customSkinsMap[this.targetNick + this.color] != "https://dkyriak.github.io/VideoFloRidaLow.mp4"){				
+					application.customSkinsMap[this.targetNick + this.color] = "https://dkyriak.github.io/VideoFloRidaLow.mp4"
+				node2 = application.customSkinsMap[this.targetNick + this.color]	
+				if (ogarcopythelb.nick == this.targetNick) {
+					ogarcopythelb.skinURL = node2
+				}				
+				
+					//checkVideos(node2, this.targetNick);
+				}					
+			}
+
 			var startWaves;
 			if (!this.drawSpecialSkinDancerEnabled){
 				this.drawSpecialSkinDancerEnabled = Date.now()
@@ -9781,7 +9794,7 @@ window.MouseClicks=[];
 				else {
                     if (defaultmapsettings.videoSkins) {
 						var node2;
-						if (legendmod.gameMode !=":party"){
+						if (LM.gameMode !=":party"){
 							node2 = application.customSkinsMap[this.targetNick];
 						}
 						else{
@@ -9804,7 +9817,7 @@ window.MouseClicks=[];
                             }
                         }
                     }
-                    if (dyinglight1load == "yes" && node == null && this.targetNick.includes(legendmod.playerNick) == false && !this.isFood && this.mass > 12) {
+                    if (dyinglight1load == "yes" && node == null && this.targetNick.includes(LM.playerNick) == false && !this.isFood && this.mass > 12) {
                         try {
                             style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
                         } catch (e) {}
