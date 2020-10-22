@@ -1,9 +1,9 @@
-//v0.4t
+//v0.4r
 
 //$(document).ready(function() {
-//jQuery(function($) {
+jQuery(function($) {
 
-setTimeout(function() {
+	setTimeout(function() {
 		
     $("#imgur img.lazy").lazyload({
         effect : "fadeIn",
@@ -74,14 +74,14 @@ setTimeout(function() {
 			localStorage.setItem("isActualUsingSpecialEffectsSkin", null);
 			window.application.sendSocket3Info("spfc", null)		
     });	
-	//setTimeout(function() {
+	setTimeout(function() {
 		if ($("#nav a")[0]){
 			$("#nav a")[0].click();
 		}
 		startSpecialEffectSkin();
-	//}, 950);
+	}, 950);
 	}, 900);
-//});
+});
 
 
 function startSpecialEffectSkin(){
