@@ -1,5 +1,5 @@
 /* Source script
-v2.773
+v2.774
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -95,7 +95,8 @@ function deleteGamemode(temp) {
         }, {
             text: 'Antarctic',
             value: 35
-        }, {
+        }/*
+		, {
             text: 'MK NA east',
             value: 36
         }, {
@@ -137,7 +138,8 @@ function deleteGamemode(temp) {
         }, {
             text: 'Crazy NA',
             value: 54
-        }, {			
+        }*/
+		, {			
             text: 'Instant Merging',
             value: 16
         }, {			
