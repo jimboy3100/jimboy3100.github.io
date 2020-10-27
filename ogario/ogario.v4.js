@@ -1,5 +1,5 @@
 /* Source script
-v2.777
+v2.778
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -10571,7 +10571,7 @@ window.MouseClicks=[];
                     //autoplay handling
                     else if (!specialcommand) {
                         //if (typeof cell != "undefined") { //when used, autoplay not working as expected
-                        if (Object.keys(target2).length == 0) {
+                        if (target2 && Object.keys(target2).length == 0) {
                             cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(cell.x) : cell.x; //Sonia3
                             cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(cell.y) : cell.y; //Sonia3
                             // var cursorX = cell.x;
