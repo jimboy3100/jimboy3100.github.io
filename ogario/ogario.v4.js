@@ -1,5 +1,5 @@
 /* Source script
-v2.774
+v2.776
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -4805,8 +4805,39 @@ window.MouseClicks=[];
                             this.u = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateY(this.top5[o].y) : this.top5[o].y;   
                             */
                             //
-                            //t += '<span class=\"hud-main-color\">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + ']</span>',
-                            t += '<span class=\"hud-main-color\">[' + this.calculateMapSector(this.w, this.u) + ']</span>';
+                            var flag = false;
+                            for (var et = 0; et < legendmod.ghostCells.length; et++) {
+                                if (legendmod.leaderboard[et] && this.top5[o].nick == legendmod.leaderboard[et].nick) {
+                                    if (flag == false && window.predictedGhostCells[et]) {
+                                        //
+                                        var w = window.predictedGhostCells[et].x;
+                                        var u = window.predictedGhostCells[et].y;
+                                        /*
+                                        w = window.legendmod.vector[window.legendmod.vnr][0] ? legendmod.translateX(window.predictedGhostCells[e].x) : window.predictedGhostCells[e].x;
+                                        u = window.legendmod.vector[window.legendmod.vnr][1] ? legendmod.translateY(window.predictedGhostCells[e].y) : window.predictedGhostCells[e].y;  		
+                                        */
+                                        //									
+                                        //t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(window.predictedGhostCells[e].x, window.predictedGhostCells[e].y) + "]</span>");	
+                                        t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(w + legendmod.mapOffsetX, u + legendmod.mapOffsetY) + "]</span>");
+                                        flag = true;
+                                    }
+                                }
+                            }                            //t += '<span class=\"hud-main-color\">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + ']</span>';
+							
+                            if (flag == false && (this.top5[o].lbgpi >= 0) || !LM.integrity) {
+                                t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
+                            } 
+							else if (flag == false && (this.calculateMapSector(this.top5[o].x, this.top5[o].y) == "C3" || legendmod.gameMode == ":party")) {
+                                t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
+                            }
+                            //temporary socket 3
+                            else if (flag == false && this.top5[o].lbgpi == -2) {
+                                if (this.top5[o].temp == true) {
+                                    t = t + ('<span class="hud-main-color">[' + 'Temp. Socket' + "]</span>");
+                                } else {
+                                    t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
+                                }
+                            }
                             t += '<span class=\"top5-mass-color\">[' + this.shortMassFormat(this.top5[o].mass) + ']</span> ' + this.escapeHTML(this.top5[o].nick) + '</li>';
                         }
                         this.top5pos.innerHTML = t,
@@ -4815,7 +4846,8 @@ window.MouseClicks=[];
                             this.top5totalPlayers.textContent = s;
                     }
                 }
-            } else {
+            } 
+			else {
                 if (defaultmapsettings.showTop5) {
                     //temp
                     var tempTime = new Date().getTime();
@@ -4875,9 +4907,10 @@ window.MouseClicks=[];
                                     }
                                 }
                             }
-                            if (flag == false && this.top5[o].lbgpi >= 0) {
+                            if (flag == false && (this.top5[o].lbgpi >= 0) || !LM.integrity) {
                                 t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
-                            } else if (flag == false && (this.calculateMapSector(this.top5[o].x, this.top5[o].y) == "C3" || legendmod.gameMode == ":party")) {
+                            } 
+							else if (flag == false && (this.calculateMapSector(this.top5[o].x, this.top5[o].y) == "C3" || legendmod.gameMode == ":party")) {
                                 t = t + ('<span class="hud-main-color">[' + this.calculateMapSector(this.top5[o].x, this.top5[o].y) + "]</span>");
                             }
                             //temporary socket 3
