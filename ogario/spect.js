@@ -1,4 +1,4 @@
-//SPECS v4.4u WORKS UNTIL HERE
+//SPECS v4.5a WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -268,16 +268,26 @@ class Spect {
     }
 	//spects[0].sendGplusToken(master.accessToken)
 	getTheOppositeSocialToken(){
-		if (master.context == "facebook"){		
-			window.MultiPending=this
-			document.getElementById("gplusLogin").click()	
-			//this.handleSendNick()			
-			console.log('[SPECT] Login Tokens - Main: Google, Multi: Facebook')		
+		if (master.context == "facebook"){
+			if (master.accessTokenGPlus){
+				MultiTokenReady(this)
+			}
+			else {			
+				window.MultiPending=this
+				document.getElementById("gplusLogin").click()	
+				//this.handleSendNick()			
+				console.log('[SPECT] Login Tokens - Main: Google, Multi: Facebook')	
+			}			
 		}
 		else if (master.context == "google"){
-			window.MultiPending=this
-			master.facebookLogin()					
-			console.log('[SPECT] Login Tokens - Main: Facebook, Multi: Google')
+			if (master.accessTokenFB){
+				MultiTokenReady(this)
+			}
+			else{
+				window.MultiPending=this
+				master.facebookLogin()					
+				console.log('[SPECT] Login Tokens - Main: Facebook, Multi: Google')
+			}
 			//this.handleSendNick()
 		}	
 		else if (!master.context){
