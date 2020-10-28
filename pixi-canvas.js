@@ -1,5 +1,5 @@
 //https://github.com/LuckyKat/pixi-canvas
-(function () {
+//(function () {
     var pixiVersion;
     var SpritePool = function (initialSize) {
         var i;
@@ -646,7 +646,7 @@
         };
     };
 
-    var init = function () {
+    var initPix = function () {
         var getContext = HTMLCanvasElement.prototype.getContext;
         // is pixi available at all?
         if (!window.PIXI) {
@@ -672,5 +672,5 @@
         };
     };
 
-    init();
-})();
+    initPix();
+//})();
