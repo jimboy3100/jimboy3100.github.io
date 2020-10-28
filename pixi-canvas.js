@@ -1,3 +1,4 @@
+//https://github.com/LuckyKat/pixi-canvas
 (function () {
     var pixiVersion;
     var SpritePool = function (initialSize) {
