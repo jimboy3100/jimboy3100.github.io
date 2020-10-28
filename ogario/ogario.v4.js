@@ -1,5 +1,5 @@
 /* Source script
-v2.778
+v2.783
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -10571,14 +10571,17 @@ window.MouseClicks=[];
                     //autoplay handling
                     else if (!specialcommand) {
                         //if (typeof cell != "undefined") { //when used, autoplay not working as expected
-                        if (target2 && Object.keys(target2).length == 0) {
+                        //if (target2 && Object.keys(target2).length == 0) {
+						if (cell) {	
                             cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(cell.x) : cell.x; //Sonia3
                             cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(cell.y) : cell.y; //Sonia3
                             // var cursorX = cell.x;
                             //var cursorY = cell.y;
-                        } else {
-                            cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(target2.x) : target2.x; //Sonia3
-                            cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(target2.y) : target2.y; //Sonia3
+                        //} else if (target2){
+						} else{	
+							return false;
+                            //cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(target2.x) : target2.x; //Sonia3
+                            //cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(target2.y) : target2.y; //Sonia3
                             //var cursorX = target2.x;
                             //var cursorY = target2.y;
                         }
