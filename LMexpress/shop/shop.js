@@ -1,4 +1,4 @@
-//v0.13a
+//v0.13b
 
 	if (!window.agarioUID){
 		 window.agarioUID = localStorage.getItem("agarioUID");
@@ -91,21 +91,21 @@
 	}
 	window.freeSkinCelebrationDays=""
 	if (window.celebrationDay=="LcDay"){
-		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendClan" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png"></div>'		
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png"></div>'		
 		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendClan" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan2.png"></div>'
 	}
 	else if (window.celebrationDay=="NewYear"){
-		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHappyNewYear.png"></div>'		
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="HappyNewYear" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHappyNewYear.png"></div>'		
 	}
 	else if (window.celebrationDay=="ThanksGiving"){
-		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsThanksGivings.png"></div>'		
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="ThanksGivings" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsThanksGivings.png"></div>'		
 	}
 	else if (window.celebrationDay=="Christmas"){
-		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsChristmasTree.png"></div>'		
-		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSantaHat.png"></div>'			
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="ChristmasTree" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsChristmasTree.png"></div>'		
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="SantaHat" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSantaHat.png"></div>'			
 	}	
 	else if (window.celebrationDay=="4July"){
-		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsUSAFlag4July.png"></div>'		
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="Flag4July" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsUSAFlag4July.png"></div>'		
 	}		
 		
             $('#helloContainer').after('<div class="modal fade in" id="LMShop" aria-hidden="false" style="display: block;">' +
