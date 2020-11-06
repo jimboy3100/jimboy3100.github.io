@@ -1,4 +1,4 @@
-//v0.13b
+//v0.13c
 
 	if (!window.agarioUID){
 		 window.agarioUID = localStorage.getItem("agarioUID");
@@ -179,7 +179,7 @@
 	'</div>' +	
 	        '<div id="free" class="skins-wrapper">' +
 			'<div class="skin-box"><img class="lazy" name="Byzantium" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsByzantium.png"></div>' +	
-			window.celebrationDay +		
+			window.freeSkinCelebrationDays +		
 	'</div>' +	
         '<div id="vanillaskins" class="skins-wrapper">' +
 	'</div>' +
