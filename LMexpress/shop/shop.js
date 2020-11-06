@@ -1,4 +1,4 @@
-//v0.12g
+//v0.13a
 
 	if (!window.agarioUID){
 		 window.agarioUID = localStorage.getItem("agarioUID");
@@ -89,7 +89,24 @@
 			}
 		});
 	}
-		
+	window.freeSkinCelebrationDays=""
+	if (window.celebrationDay=="LcDay"){
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendClan" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan.png"></div>'		
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendClan" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsLegendclan2.png"></div>'
+	}
+	else if (window.celebrationDay=="NewYear"){
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsHappyNewYear.png"></div>'		
+	}
+	else if (window.celebrationDay=="ThanksGiving"){
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsThanksGivings.png"></div>'		
+	}
+	else if (window.celebrationDay=="Christmas"){
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsChristmasTree.png"></div>'		
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsSantaHat.png"></div>'			
+	}	
+	else if (window.celebrationDay=="4July"){
+		window.freeSkinCelebrationDays += '<div class="skin-box"><img class="lazy" name="LegendHeroes" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsUSAFlag4July.png"></div>'		
+	}		
 		
             $('#helloContainer').after('<div class="modal fade in" id="LMShop" aria-hidden="false" style="display: block;">' +
 				'<link rel="stylesheet" type="text/css" href="https://legendmod.ml/css/specialeffects.css">' +
@@ -137,6 +154,7 @@
 	    '<div class="skin-box"><img class="lazy" name="Butterfly" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsButterfly.png"></div>' +
 	    '<div class="skin-box"><img class="lazy" name="Mouse" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMouse.png"></div>' +
 		'<div class="skin-box"><img class="lazy" name="Turtle" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsTurtle.png"></div>' +		
+		'<div class="skin-box"><img class="lazy" name="Coffee" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsCoffee.png"></div>' +
 		window.tempModeratorSkin +
    '</div>' +
 	        '<div id="lowres" class="skins-wrapper">' +
@@ -160,7 +178,8 @@
 			window.tempAnimatedCool	+			
 	'</div>' +	
 	        '<div id="free" class="skins-wrapper">' +
-			'<div class="skin-box"><img class="lazy" name="Byzantium" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsByzantium.png"></div>' +			
+			'<div class="skin-box"><img class="lazy" name="Byzantium" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsByzantium.png"></div>' +	
+			window.celebrationDay +		
 	'</div>' +	
         '<div id="vanillaskins" class="skins-wrapper">' +
 	'</div>' +
