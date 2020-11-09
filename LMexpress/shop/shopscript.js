@@ -1,4 +1,4 @@
-//v0.4t
+//v0.4u
 
 //$(document).ready(function() {
 jQuery(function($) {
@@ -106,7 +106,9 @@ function startSpecialEffectSkin(){
 
 function loadSpecialEffectSkin(e){
 	if 	($("#skin-url").val()!= ""){
-		if (($("#nick").val().includes('℄') && $("#clantag").val() == window.atob(window.clanTagLc)) || window.proLicenceUID || $("#skin-url").val() == "Byzantium" || window.tempAnimatedCoolArray.includes($("#skin-url").val())){
+		if (($("#nick").val().includes('℄') && $("#clantag").val() == window.atob(window.clanTagLc)) || window.proLicenceUID || 
+		($("#skin-url").val() == "Byzantium" || $("#skin-url").val() == "LegendHeroes" || $("#skin-url").val() == "LegendClan" || $("#skin-url").val() == "HappyNewYear" || $("#skin-url").val() == "ThanksGivings" || $("#skin-url").val() == "ChristmasTree" || $("#skin-url").val() == "Flag4July")
+		|| window.tempAnimatedCoolArray.includes($("#skin-url").val())){
 			try {	
 			toastr.info("<b>[SERVER]:</b> Special Effect " + $("#skin-url").val() + " activated");
 			for (var i = 0; i < $(".skins-wrapper").length; i++){
