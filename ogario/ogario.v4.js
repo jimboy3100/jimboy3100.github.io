@@ -1,5 +1,5 @@
 /* Source script
-v2.825
+v2.841
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -1461,6 +1461,7 @@ var displayText = {
         cursorTracking: 'Śledzenie kursora',
         teammatesInd: 'Wskaźniki graczy teamu',
         FBTracking: 'Facebook bubble tracker',
+		indicators: 'Indicator',
         mouseSplit: 'Left mouse button',
         mouseFeed: 'Right mouse button',
 		mouseCommand4: 'Mouse button 4',
@@ -1940,6 +1941,7 @@ var displayText = {
         cursorTracking: 'Cursor tracking',
         teammatesInd: 'Teammates indicators',
         FBTracking: 'Facebook bubble tracker',
+		indicators: 'Indicator',	
         mouseSplit: 'Left mouse button',
         mouseFeed: 'Right mouse button',
 		mouseCommand4: 'Mouse button 4',
@@ -2359,6 +2361,7 @@ var themePresets = {
         borderGlowSize: 14,
         menuPreset: 'legendv2',
         graphics: 'high',
+		indicators: 'normal',
         menuMainColor: '#01d9cc',
         menuBtnTextColor: '#ffffff',
         menuPanelColor: '#00243e',
@@ -2752,6 +2755,17 @@ var graphicMenus = {
         name: 'Very Low'
     }
 }
+var indicatorMenus = {
+    normal: {
+        name: 'Normal'
+    },
+    heart: {
+        name: 'Heart'
+    },
+    smile: {
+        name: 'Smile'
+    }
+}
 var escapeChar = {
     '&': '&amp;',
     '<': '&lt;',
@@ -2825,6 +2839,7 @@ var defaultSettings = {
     virusStrokeSize: 14,
     menuPreset: 'legendv2',
     graphics: 'high',
+	indicators: 'normal',
     menuMainColor: '#01d9cc',
     menuBtnTextColor: '#ffffff',
     menuPanelColor: '#00243e',
@@ -3609,6 +3624,7 @@ window.MouseClicks=[];
             this.addSliderBox('#theme-main', 'virusAlpha', 0, 1, 0.01);
             this.addSliderBox('#theme-main', 'textAlpha', 0.1, 1, 0.01);
             this.addSliderBox('#theme-main', 'ghostCellsAlpha', 0.01, 0.99, 0.01);
+			this.addPresetBox('#theme-main', 'indicators', indicatorMenus, 'indicators', 'changeIndicators');			
             this.addPresetBox('#theme-menu', 'menuPreset', themeMenus, 'menuPreset', 'changeMenuPreset');
             this.addSliderBox('#theme-menu', 'menuOpacity', 0.1, 1, 0.01, 'setMenuOpacity');
             this.addColorBox('#theme-menu', 'menuMainColor', 'setMenuMainColor');
@@ -3803,7 +3819,8 @@ window.MouseClicks=[];
             this.setMenuTextColor();
             this.setMenuButtons();
             this.setMenuBg();
-        },
+        },	
+		changeIndicators(value) {},	
         changeMenuPreset(name) {
             this.changePreset(name, themeMenus);
             this.setMenu();
@@ -14750,10 +14767,17 @@ Game name     : ${i.displayName}<br/>
             }
         },
         drawTeammatesInd(ctx, x, y, size) {
-            //console.log("t:"+ t + " e:" + e + " i:" + i + "s:" + s);
-            if (this.indicator) {
-                ctx.drawImage(this.indicator, x - 45, y - size - 90);
-            }
+			if (this.indicator){
+				if (defaultSettings.indicators=="normal"){
+					 ctx.drawImage(this.indicator, x - 45, y - size - 90);
+				}
+				else if (defaultSettings.indicators=="heart"){
+					ctx.drawImage(this.heartIndicator, x - 25, y - size - 90);
+				}
+				else if (defaultSettings.indicators=="smile"){
+					 ctx.drawImage(this.smileIndicator, x - 55, y - size - 150);
+				}
+			}	
         },
         drawPieChart() {
             this.pieChart || (this.pieChart = document.createElement('canvas'));
@@ -14924,6 +14948,55 @@ Game name     : ${i.displayName}<br/>
             this.indicator.src = canvas.toDataURL();
             canvas = null;
         },
+		preDrawSmileIndicator() {
+			var canvas = document.getElementById('canvas');
+			canvas.x = 90;
+			canvas.y = 90;			
+			var ctx = canvas.getContext('2d');
+			ctx.lineWidth = 2;
+			ctx.fillStyle = defaultSettings.teammatesIndColor;
+			ctx.strokeStyle = defaultSettings.teammatesIndColor;
+			ctx.beginPath();
+			
+			ctx.arc(75, 75, 50, 0, Math.PI * 2, true); // Outer circle
+			ctx.moveTo(110, 75);
+			ctx.arc(75, 75, 35, 0, Math.PI, false);  // Mouth (clockwise)
+			ctx.moveTo(65, 65);
+			ctx.arc(60, 65, 5, 0, Math.PI * 2, true);  // Left eye
+			ctx.moveTo(95, 65);
+			ctx.arc(90, 65, 5, 0, Math.PI * 2, true);  // Right eye
+			ctx.stroke();
+            this.smileIndicator = new Image();
+            this.smileIndicator.src = canvas.toDataURL();							
+		},
+        preDrawHeartIndicator() {			
+            this.heartIndicator = null;
+            var canvas = document.createElement('canvas');
+            canvas.width = 50;
+            canvas.height = 50;
+            var ctx = canvas.getContext('2d');
+            ctx.lineWidth = 2;
+            ctx.fillStyle = defaultSettings.teammatesIndColor;
+            ctx.strokeStyle = '#000000';
+			var d = Math.min(canvas.width, canvas.height);
+			var k = 0;
+
+			ctx.moveTo(k, k + d / 4);
+			ctx.quadraticCurveTo(k, k, k + d / 4, k);
+			ctx.quadraticCurveTo(k + d / 2, k, k + d / 2, k + d / 4);
+			ctx.quadraticCurveTo(k + d / 2, k, k + d * 3/4, k);
+			ctx.quadraticCurveTo(k + d, k, k + d, k + d / 4);
+			ctx.quadraticCurveTo(k + d, k + d / 2, k + d * 3/4, k + d * 3/4);
+			ctx.lineTo(k + d / 2, k + d);
+			ctx.lineTo(k + d / 4, k + d * 3/4);
+			ctx.quadraticCurveTo(k, k + d / 2, k, k + d / 4);
+
+			ctx.fill();
+			ctx.stroke();
+            this.heartIndicator = new Image();
+            this.heartIndicator.src = canvas.toDataURL();
+            canvas = null;
+        },		
         countFps(fake) {
             if (defaultmapsettings.showStatsFPS) {
                 var Time = Date.now();
@@ -15011,6 +15084,8 @@ Game name     : ${i.displayName}<br/>
             this.resizeCanvas();
             this.preDrawPellet();
             this.preDrawIndicator();
+			this.preDrawHeartIndicator();
+			this.preDrawSmileIndicator();
             window.requestAnimationFrame(drawRender.render);
         }
 
