@@ -1,5 +1,5 @@
 /* Source script
-v2.844
+v2.845
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -15530,7 +15530,7 @@ Game name     : ${i.displayName}<br/>
 				}					
 				else {
 					//1=leftclick, 3=rightclick, 2=wheelclick
-					if (event.which == 1){
+					if (event.which == 1){ //for reversetrick or stickycell
 						drawRender.LMB = false						
 					}
 					else{
@@ -16626,12 +16626,14 @@ var reverseTrick = {
             var xc = legendmod.playerCells[index].targetX //.x
             var yc = legendmod.playerCells[index].targetY //.y
 
-            var x = legendmod.indexedCells[legendmod.selected].targetX//.x
-            var y = legendmod.indexedCells[legendmod.selected].targetY//.y
+
+			var selectedToUse = reverseTrick.smallerEnemy;
+            var x = legendmod.indexedCells[selectedToUse].targetX//.x
+            var y = legendmod.indexedCells[selectedToUse].targetY//.y
             
             var a = xc - x
             var b = yc - y
-            var distance = Math.sqrt( a*a + b*b ) - (legendmod.indexedCells[legendmod.selected].size+legendmod.playerCells[index].size)
+            var distance = Math.sqrt( a*a + b*b ) - (legendmod.indexedCells[selectedToUse].size+legendmod.playerCells[index].size)
 
             var ang = Math.atan2(y - yc, x - xc);
             legendmod.cursorX= xc +(Math.cos(ang)*distance)
@@ -16641,6 +16643,14 @@ var reverseTrick = {
 			//legendmod.sendSplit()
 			//legendmod.selected = null
 			//
+ 		
+			$('#pause-hud').text("Avoiding reverse split...");
+			$('#pause-hud').show()
+           setTimeout(function() {
+			$('#pause-hud').text(textLanguage.pause);
+			$('#pause-hud').hide()	
+            }, 500)				
+			
             console.log(reverseTrick)
         }
     }
