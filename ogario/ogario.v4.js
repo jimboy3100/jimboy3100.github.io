@@ -1,5 +1,5 @@
 /* Source script
-v2.847
+v2.852
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -1391,7 +1391,7 @@ var displayText = {
         skipStats: 'Pomiń statystyki po śmierci',
         showQuest: 'Pokaż zadanie (quest)',
         autoZoom: 'Auto zoom',
-        unlockedFPS: 'Frames per sec',
+        unlockedFPS: 'Frames per sec (Private servers)',
         animation: 'Opóźnienie animacji',
         macroFeeding: 'Macro feed (ms)',
         //hideSizes: 'Hide everything with size smaller than',
@@ -1870,7 +1870,7 @@ var displayText = {
         skipStats: 'Skip stats after death',
         showQuest: 'Show quest',
         autoZoom: 'Auto zoom',
-        unlockedFPS: 'Frames per sec',
+        unlockedFPS: 'Frames per sec (Private servers)',
         animation: 'Animation delay',
         macroFeeding: 'Macro feed (ms)',
         //hideSizes: 'Hide everything with size smaller than',
@@ -13695,7 +13695,7 @@ Game name     : ${i.displayName}<br/>
         renderTime: 0,
         averageRenderTime: 0,
 		renderingDelay: 0,
-        			
+        lastRenderingDelay: 0,			
         setCanvas() {
             this.canvas = document.getElementById('canvas');
             this.ctx = this.canvas.getContext('2d');
@@ -13850,7 +13850,8 @@ Game name     : ${i.displayName}<br/>
                     this.ctx.drawImage(this.pieChart, this.canvasWidth - this.pieChart.width - 10, 10);
                 }
             }
-			this.renderingDelay = (performance.now() - this.renderStarted) * drawRender.fps
+			this.renderingDelay += (performance.now() - this.renderStarted) //* drawRender.fps
+			this.lastRenderingDelay = (performance.now() - this.renderStarted)
 			//console.log(this.renderingDelay)
             drawRender.renderTime += performance.now() - this.renderStarted
             drawRender.counterTime++
@@ -15019,6 +15020,9 @@ Game name     : ${i.displayName}<br/>
                 if (Time - this.fpsLastRequest >= 1000) {
                     this.fps = this.renderedFrames;
                     this.renderedFrames = 0;
+					//
+					this.renderingDelay = 0
+					//
                     this.fpsLastRequest = Time;
                 }
                 this.renderedFrames++;
@@ -15043,15 +15047,19 @@ Game name     : ${i.displayName}<br/>
             else{			
 				//drop the frame instead of lag
 				//console.log('stoped')
-				drawRender.renderingDelay =	drawRender.renderingDelay - 750
+				drawRender.renderingDelay =	drawRender.renderingDelay - drawRender.lastRenderingDelay
 			}
 			/*
             setTimeout(function() {
                 drawRender.render()
             }, 0);
 			*/
-			
-            if (!defaultmapsettings.unlockedFPS) {
+			if(defaultmapsettings.unlockedFPS==true || legendmod.integrity) { 
+                setTimeout(function() {
+                    drawRender.render()
+                }, 0);			
+			}			
+            else if (!defaultmapsettings.unlockedFPS) {
                 window.requestAnimationFrame(drawRender.render);
             } 
 			else if (defaultmapsettings.unlockedFPS == 2 || defaultmapsettings.unlockedFPS == 4 || defaultmapsettings.unlockedFPS == 8 || defaultmapsettings.unlockedFPS == 16 || defaultmapsettings.unlockedFPS == 32 || defaultmapsettings.unlockedFPS == 64) {
@@ -15080,17 +15088,7 @@ Game name     : ${i.displayName}<br/>
                     //window.requestAnimationFrame(drawRender.render);
                     drawRender.render();
                 }, window.renderDelay);
-            } else {
-				
-                setTimeout(function() {
-                    drawRender.render()
-                }, 0);
-            }
-			
-            //drawRender.render()
-            //}, 1000/window.fps);
-            //}, 0.1);
-            //window.requestAnimationFrame(drawRender.render);
+            } 
         },
         init() {
             this.setCanvas();
