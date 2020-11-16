@@ -1,5 +1,5 @@
 /* Source script
-v2.866
+v2.876
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -3154,7 +3154,7 @@ var defaultmapsettings = {
     oneColoredTeammates: false,
     optimizedFood: true,
     rainbowFood: true,
-    oppColors: true,
+    oppColors: false,
     oppRings: true,
     virColors: false,
     splitRange: false,
@@ -9227,7 +9227,7 @@ window.MouseClicks=[];
                 var temp;
                 for (var i = 0; i < application.chatHistory.length; i++) {
                     if (application.chatHistory[i].nick == this.nick && (Date.now() - application.chatHistory[i].time < 15000)) {
-                        if (!application.chatHistory[i].message.includes('<img src') && !application.chatHistory[i].message.includes('DosAttack') &&
+                        if (!application.chatHistory[i].message.includes('emoticon') && !application.chatHistory[i].message.includes('<img src') && !application.chatHistory[i].message.includes('DosAttack') &&
                             !application.chatHistory[i].message.includes('DosFight') && !application.chatHistory[i].message.includes('DosRun') &&
                             !application.chatHistory[i].message.includes('https://agar.io/sip=151.80.91.73:1511') && this.nick != "") {
                             if (application.chatHistory[i].nick == $('#nick').val() || application.chatHistory[i].nick == application.lastSentNick) {
@@ -9791,9 +9791,6 @@ window.MouseClicks=[];
             } else style.arc(this.x, this.y, y, 0, this.pi2, false);
 
             style.closePath();
-
-
-
             //if (style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
             //    return style.fillStyle = this.color, style.fill(), void style.restore();
             //}						
@@ -9965,8 +9962,10 @@ window.MouseClicks=[];
             if (defaultmapsettings.customSkins && LM.showCustomSkins) {
                 node = application.getCustomSkin(this.targetNick, this.color);
                 if (node) {
-                    if ((defaultmapsettings.transparentSkins || LM.play && defaultmapsettings.oppColors) && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin) {
-                        style.globalAlpha *= defaultSettings.skinsAlpha;
+                    //if ((defaultmapsettings.transparentSkins || LM.play && defaultmapsettings.oppColors) && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin) {
+                    if (defaultmapsettings.transparentSkins && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin) {
+                        //console.log('transparent')
+						style.globalAlpha *= defaultSettings.skinsAlpha;
                         //s = true;
                     }
                     if (legendmod.gameMode != ":teams") {
@@ -10047,12 +10046,15 @@ window.MouseClicks=[];
 
             if (defaultmapsettings.noNames && !defaultmapsettings.showMass || cellMoved) {
                 //return;
-            } else {
+            } 
+			else {
                 var recursive = false;
                 if (!(!this.isPlayerCell && (recursive = application.setAutoHideCellInfo(y)) && defaultmapsettings.autoHideNames && defaultmapsettings.autoHideMass)){
                     this.setDrawing();
                     this.setDrawingScale();
-                    style.globalAlpha *= defaultSettings.textAlpha;
+					if ( defaultSettings.textAlpha != 1 ){
+						style.globalAlpha *= defaultSettings.textAlpha;
+					}
                     if (!(defaultmapsettings.noNames || recursive && defaultmapsettings.autoHideNames || this.isPlayerCell && defaultmapsettings.hideMyName || node && defaultmapsettings.hideTeammatesNames)) {
                         if (this.setNick(this.targetNick)) {
                             this.drawNick(style);
@@ -14539,7 +14541,6 @@ Game name     : ${i.displayName}<br/>
                 }
             } 
 			else {
-                //ctx.beginPath();
                 for (var length = 0; length < food.length; length++) {
 					ctx.beginPath();
                     if (!food[length].invisible) {				
@@ -14565,7 +14566,7 @@ Game name     : ${i.displayName}<br/>
 				if (!defaultmapsettings.rainbowFood){ 				
 					ctx.fillStyle = defaultSettings.foodColor;
 				}
-                ctx.globalAlpha = 1;
+                //ctx.globalAlpha = 1;
                 ctx.fill();					
                 }
 
@@ -15102,7 +15103,7 @@ Game name     : ${i.displayName}<br/>
 			}
             else{			
 				//drop the frame instead of lag
-				//console.log('stoped')
+				console.log('stoped')
 				drawRender.renderingDelay =	drawRender.renderingDelay - drawRender.lastRenderingDelay
 			}
 			/*
@@ -15126,12 +15127,25 @@ Game name     : ${i.displayName}<br/>
 			else if (defaultmapsettings.unlockedFPS == "ultra") {
                 setTimeout(function() {
                     for (var i = 0; i < 9; i++) {
+						
                         drawRender.countFps()
                         drawRender.renderFrame();
                     }
                     drawRender.render()
                 }, 0);
             }
+			else if (defaultmapsettings.unlockedFPS == "ultra2") {
+                setTimeout(function() {
+                    for (var i = 0; i < 9; i++) {
+						if (drawRender.averageRenderTime && drawRender.averageRenderTime < 50 + i * 5 && window.renderDelay > 0){
+							drawRender.countFps()
+							drawRender.renderFrame();
+						}
+						if (!drawRender.averageRenderTime){drawRender.countFps();drawRender.renderFrame();}
+                    }
+                    drawRender.render()
+                }, 0);
+            }						
             else if (defaultmapsettings.unlockedFPS == "sophisticated") {
                 if (!drawRender.averageRenderTime) {
                     window.renderDelay = 0;
