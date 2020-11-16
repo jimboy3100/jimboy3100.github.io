@@ -1,5 +1,5 @@
 /* Source script
-v2.853
+v2.866
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -3153,7 +3153,7 @@ var defaultmapsettings = {
     showMiniMapGhostCells: true,
     oneColoredTeammates: false,
     optimizedFood: true,
-    rainbowFood: false,
+    rainbowFood: true,
     oppColors: true,
     oppRings: true,
     virColors: false,
@@ -9773,7 +9773,8 @@ window.MouseClicks=[];
                     var point = this.points[i];
                     style.lineTo(point.x, point.y);
                 }
-            } else if (defaultmapsettings.jellyPhisycs && this.isVirus) {
+            } 
+			else if (defaultmapsettings.jellyPhisycs && this.isVirus) {
                 style.lineJoin = "miter"
                 var pointCount = 120;
                 var incremental = this.pi2 / pointCount;
@@ -9804,6 +9805,43 @@ window.MouseClicks=[];
                             style.drawImage(cimgDyingLightvirus, this.x - 0.8 * this.size, this.y - 0.8 * this.size, 1.6 * this.size, 1.6 * this.size);
                         } catch (e) {}
                     }*/
+                    if (defaultmapsettings.transparentViruses) {
+                        style.globalAlpha *= defaultSettings.virusAlpha;
+                        s = true;
+                    }
+					if (defaultmapsettings.virColors && LM.play) {
+						style.fillStyle = application.setVirusColor(y); 
+						style.strokeStyle = application.setVirusStrokeColor(y);
+					}
+					else{ 
+						style.fillStyle = this.virusColor 
+						style.strokeStyle = this.virusStroke	
+					}
+					style.fill()
+					if (s) {
+                        style.globalAlpha = value;
+                        s = false;
+                    }
+					style.lineWidth = defaultSettings.virusStrokeSize
+					if (defaultmapsettings.virusGlow){
+                        style.shadowBlur = defaultSettings.virusGlowSize;
+                        style.shadowColor = defaultSettings.virusGlowColor;						
+					}
+					if (defaultmapsettings.virusSpikes){
+						style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, defaultSettings.virusSpikesSize))
+					}
+					else{
+						style.stroke()
+					}
+                    if (defaultmapsettings.showMass) {
+                        this.setDrawing();
+                        this.setDrawingScale();
+                        this.setMass(this.size);
+                        this.drawMass(style);
+                    }					
+					style.restore();
+                    return;
+					/*
                     return defaultmapsettings.transparentViruses && (style.globalAlpha *= defaultSettings.virusAlpha, s = true), 
 					defaultmapsettings.virColors && LM.play ? (style.fillStyle = application.setVirusColor(y), style.strokeStyle = application.setVirusStrokeColor(y)) : (style.fillStyle = this.virusColor, 
 					style.strokeStyle = this.virusStroke), 
@@ -9818,8 +9856,10 @@ window.MouseClicks=[];
 						defaultmapsettings.showMass && 
 						(this.setDrawing(), this.setDrawingScale(), defaultmapsettings.virusGlow ? style.shadowBlur = 0 : "yote",
                         this.setMass(this.size), this.drawMass(style), (window.ExternalScripts && !window.legendmod5.optimizedMass)), void style.restore();
+						*/
                 }
-            } else {
+            } 
+			else {
                 if (this.isVirus) {
                     //console.log("is jelly");
                     if (defaultmapsettings.transparentViruses) {
@@ -13167,6 +13207,7 @@ Game name     : ${i.displayName}<br/>
                     var g = view.readUInt8(offset++);
                     var b = view.readUInt8(offset++);
                     color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
+					//console.log(color)
                 }
 
                 if (4 & flags) {
@@ -14468,23 +14509,23 @@ Game name     : ${i.displayName}<br/>
                 LM.foodIsHidden = true;
                 return;
             }
-            if (!defaultmapsettings.rainbowFood) {
+            //if (!defaultmapsettings.rainbowFood) {
                 this.drawCachedFood(this.ctx, LM.food, this.scale);
-                return;
-            }
-            for (let length = 0; length < LM.food.length; length++) {
+                //return;
+            //}
+            /*for (let length = 0; length < LM.food.length; length++) {
                 LM.food[length].moveCell();
                 if (!LM.food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) LM.food[length].invisible = true
                 if (!LM.food[length].invisible) {
                     LM.food[length].draw(this.ctx);
                 }
-            }
+            }*/
         },
         drawCachedFood(ctx, food, scale, reset) {
             if (!food.length) {
                 return;
             }
-            if (defaultmapsettings.optimizedFood && this.pellet) {
+            if (defaultmapsettings.optimizedFood && !defaultmapsettings.rainbowFood && this.pellet) {
 
                 for (var length = 0; length < food.length; length++) {
                     //
@@ -14496,24 +14537,38 @@ Game name     : ${i.displayName}<br/>
                         ctx.drawImage(this.pellet, x, y);
                     }
                 }
-            } else {
-                ctx.beginPath();
+            } 
+			else {
+                //ctx.beginPath();
                 for (var length = 0; length < food.length; length++) {
-                    if (!food[length].invisible) {
+					ctx.beginPath();
+                    if (!food[length].invisible) {				
                         var x = food[length].x;
                         var y = food[length].y;
                         ctx.moveTo(x, y);
-                        if (scale < 0.16) {
+						if (scale < 0.2) {
+                        //if (scale < 0.16) {
                             const size = food[length].size + defaultSettings.foodSize;
+							
                             ctx.rect(x - size, y - size, 2 * size, 2 * size);
-                            continue;
+                            //continue;
                         }
-                        ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
+						else{
+							ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
+						}
+						if (defaultmapsettings.rainbowFood){ 
+							
+							ctx.fillStyle = food[length].color
+							
+						}
                     }
-                }
-                ctx.fillStyle = defaultSettings.foodColor;
+				if (!defaultmapsettings.rainbowFood){ 				
+					ctx.fillStyle = defaultSettings.foodColor;
+				}
                 ctx.globalAlpha = 1;
-                ctx.fill();
+                ctx.fill();					
+                }
+
             }
             if (reset) {
                 food = [];
