@@ -14546,7 +14546,7 @@ Game name     : ${i.displayName}<br/>
                         var x = food[length].x;
                         var y = food[length].y;
                         ctx.moveTo(x, y);
-						if (scale < 0.2) {
+						if (scale < 0.08) {
                         //if (scale < 0.16) {
                             const size = food[length].size + defaultSettings.foodSize;
 							
