@@ -1,5 +1,5 @@
 /* Source script
-v2.913
+v2.915
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -15089,6 +15089,7 @@ Game name     : ${i.displayName}<br/>
         //'renderFrame': async function() { //Sonia5
         //await this.sleep(4); //Sonia5				
         render() {
+			
 			if (defaultmapsettings.unlockedFPS == true) {
 				if (!window.abb) window.abb=1000
 				if (!window.abc) window.abc= 3				
@@ -15112,8 +15113,11 @@ Game name     : ${i.displayName}<br/>
 					}                    
                 }, 0);
 				
-            }			
-			else if(defaultmapsettings.unlockedFPS == "ultra2") { //old unlimited
+            }	
+			else{
+			drawRender.countFps()
+			drawRender.renderFrame();
+			if(defaultmapsettings.unlockedFPS == "ultra2") { //old unlimited
 				//drawRender.render()
                 setTimeout(function() {
                     drawRender.render()
@@ -15149,7 +15153,8 @@ Game name     : ${i.displayName}<br/>
                     //window.requestAnimationFrame(drawRender.render);
                     drawRender.render();
                 }, window.renderDelay);
-            } 			
+            }
+			}			
         },
         init() {
             this.setCanvas();
