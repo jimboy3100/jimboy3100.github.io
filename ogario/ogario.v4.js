@@ -1,5 +1,5 @@
 /* Source script
-v2.876
+v2.912
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -13804,11 +13804,10 @@ Game name     : ${i.displayName}<br/>
             return new Promise(resolve => setTimeout(resolve, ms));
         },
         renderFrame() {
-            this.renderStarted = performance.now()
-            //'renderFrame': async function() { //Sonia5
-            //await this.sleep(4); //Sonia5			
+        //'renderFrame': async function() { //Sonia5
+        //await this.sleep(4); //Sonia5			
             //this.ctx.start2D();
-
+			this.renderStarted = performance.now()
             LM.time = Date.now();
             for (i = 0; i < LM.cells.length; i++) {
                 LM.cells[i].moveCell();
@@ -13912,6 +13911,7 @@ Game name     : ${i.displayName}<br/>
             //window.updateCellsClock=false
 
             //drawRender.render();
+			
         },
         drawHelpers() {
             if (LM.play || LM.playerCellsMulti.length) {
@@ -15086,32 +15086,36 @@ Game name     : ${i.displayName}<br/>
 
             }
         },
-        sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        },
         //'renderFrame': async function() { //Sonia5
         //await this.sleep(4); //Sonia5				
         render() {
-            //'render': async function() {
-            //if (!window.fpsM) window.fpsM = 4
-            //await drawRender.sleep(window.fpsM);	
-			
-
-			if (drawRender.renderingDelay<750){
-				drawRender.countFps();
-				drawRender.renderFrame();
-			}
-            else{			
-				//drop the frame instead of lag
-				console.log('stoped')
-				drawRender.renderingDelay =	drawRender.renderingDelay - drawRender.lastRenderingDelay
-			}
-			/*
-            setTimeout(function() {
-                drawRender.render()
-            }, 0);
-			*/
-			if(defaultmapsettings.unlockedFPS==true || legendmod.integrity) { 
+			//if(defaultmapsettings.unlockedFPS==true || legendmod.integrity) { 
+			//if (defaultmapsettings.unlockedFPS == true) {
+				if (!window.abb) window.abb=1000
+				if (!window.abc) window.abc= 3				
+                setTimeout(function() {							
+					if (drawRender.lastRenderingDelay * drawRender.fps > window.abb){
+						setTimeout(function() {window.requestAnimationFrame(drawRender.render);}, 4);
+						drawRender.lastRenderingDelay =0;
+						//console.log("cut2")					
+					}
+					else{
+						drawRender.countFps()
+						drawRender.renderFrame();					
+						for (var i = 0; i < 3; i++) {
+							if (drawRender.lastRenderingDelay<=window.abc + window.abc*i){
+							//if (drawRender.lastRenderingDelay<=10 && drawRender.averageRenderTime && parseFloat(drawRender.averageRenderTime) < 65 - i * 10){
+								drawRender.countFps()
+								drawRender.renderFrame();
+							}
+						}
+						drawRender.render()
+					}                    
+                }, 0);
+			/*	
+            }			
+			else if(defaultmapsettings.unlockedFPS == "ultra2") { 
+				//drawRender.render()
                 setTimeout(function() {
                     drawRender.render()
                 }, 0);			
@@ -15133,19 +15137,7 @@ Game name     : ${i.displayName}<br/>
                     }
                     drawRender.render()
                 }, 0);
-            }
-			else if (defaultmapsettings.unlockedFPS == "ultra2") {
-                setTimeout(function() {
-                    for (var i = 0; i < 9; i++) {
-						if (drawRender.averageRenderTime && drawRender.averageRenderTime < 50 + i * 5 && window.renderDelay > 0){
-							drawRender.countFps()
-							drawRender.renderFrame();
-						}
-						if (!drawRender.averageRenderTime){drawRender.countFps();drawRender.renderFrame();}
-                    }
-                    drawRender.render()
-                }, 0);
-            }						
+            }				
             else if (defaultmapsettings.unlockedFPS == "sophisticated") {
                 if (!drawRender.averageRenderTime) {
                     window.renderDelay = 0;
@@ -15159,6 +15151,7 @@ Game name     : ${i.displayName}<br/>
                     drawRender.render();
                 }, window.renderDelay);
             } 
+			*/
         },
         init() {
             this.setCanvas();
