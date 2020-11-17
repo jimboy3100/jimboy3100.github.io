@@ -1,5 +1,5 @@
 /* Source script
-v2.912
+v2.913
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -1391,7 +1391,7 @@ var displayText = {
         skipStats: 'Pomiń statystyki po śmierci',
         showQuest: 'Pokaż zadanie (quest)',
         autoZoom: 'Auto zoom',
-        unlockedFPS: 'Frames per sec (Private servers)',
+        unlockedFPS: 'Frames per sec',
         animation: 'Opóźnienie animacji',
         macroFeeding: 'Macro feed (ms)',
         //hideSizes: 'Hide everything with size smaller than',
@@ -1870,7 +1870,7 @@ var displayText = {
         skipStats: 'Skip stats after death',
         showQuest: 'Show quest',
         autoZoom: 'Auto zoom',
-        unlockedFPS: 'Frames per sec (Private servers)',
+        unlockedFPS: 'Frames per sec',
         animation: 'Animation delay',
         macroFeeding: 'Macro feed (ms)',
         //hideSizes: 'Hide everything with size smaller than',
@@ -3103,7 +3103,7 @@ var defaultmapsettings = {
     spawnSpecialEffects: false,
     animatedRainbowColor: false,
     autoZoom: false,
-    unlockedFPS: 4, //unlockedFPS: false,
+    unlockedFPS: true, //unlockedFPS: false,
     autoHideNames: true,
     autoHideMass: true,
     autoHideFood: false,
@@ -15089,8 +15089,7 @@ Game name     : ${i.displayName}<br/>
         //'renderFrame': async function() { //Sonia5
         //await this.sleep(4); //Sonia5				
         render() {
-			//if(defaultmapsettings.unlockedFPS==true || legendmod.integrity) { 
-			//if (defaultmapsettings.unlockedFPS == true) {
+			if (defaultmapsettings.unlockedFPS == true) {
 				if (!window.abb) window.abb=1000
 				if (!window.abc) window.abc= 3				
                 setTimeout(function() {							
@@ -15112,9 +15111,9 @@ Game name     : ${i.displayName}<br/>
 						drawRender.render()
 					}                    
                 }, 0);
-			/*	
+				
             }			
-			else if(defaultmapsettings.unlockedFPS == "ultra2") { 
+			else if(defaultmapsettings.unlockedFPS == "ultra2") { //old unlimited
 				//drawRender.render()
                 setTimeout(function() {
                     drawRender.render()
@@ -15150,8 +15149,7 @@ Game name     : ${i.displayName}<br/>
                     //window.requestAnimationFrame(drawRender.render);
                     drawRender.render();
                 }, window.renderDelay);
-            } 
-			*/
+            } 			
         },
         init() {
             this.setCanvas();
