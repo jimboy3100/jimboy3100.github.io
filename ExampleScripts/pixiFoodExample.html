@@ -30,7 +30,7 @@ var particleSettings= [];
 window.particleSprite = []
 for (var i = 0; i < particleCount; i++) {
   particleSettings[i] = {
-    particleSize: 3,
+    particleSize: 10,
     x: Math.floor(Math.random() * pixiapp.renderer.width),
     y: Math.floor(Math.random() * pixiapp.renderer.height),
 	scale: 0.3,
@@ -50,10 +50,11 @@ for (i=0;i<particleSettings.length;i++){
   y: Math.floor(Math.random() * pixiapp.renderer.height) },   
   //x: Math.floor(particleSettings[i].x+1000),
   //y: Math.floor(particleSettings[i].y+1000) }, 
-  ease: Power4.easeOut,
-    onComplete: function () {
+  //ease: Power4.easeOut,
+    //onComplete: function () {
       //popParticle();
-  } },
+  //} 
+  },
     1);
 	console.log('complete')
     //pixiapp.stage.addChild(window.particleSprite[i]);
