@@ -71,7 +71,8 @@ function createParticle(particleSettings) {
   //particleSprite.buttonMode = true; // show hand cursor on mouseover
   //particleSprite.anchor.set(0.5); // center anchor point
   //particleSprite.blendMode = PIXI.BLEND_MODES.SCREEN;
-
+   window.particleSprite[i].scale.x = 0.3
+   window.particleSprite[i].scale.y = 0.3
   // console.log('createParticle')
 
   // SET POSITIONING
@@ -79,7 +80,7 @@ function createParticle(particleSettings) {
   //window.particleSprite[i].y = particleSettings.y
   //window.particleSprite[i].scale = particleSettings.scale
   //window.particleSprite[i].alpha = particleSettings.alpha
-  TweenMax.set(window.particleSprite[i], { pixi: { x: particleSettings.x, y: particleSettings.y, scale: particleSettings.scale, alpha: particleSettings.alpha } }, 0);
+  //TweenMax.set(window.particleSprite[i], { pixi: { x: particleSettings.x, y: particleSettings.y, scale: particleSettings.scale, alpha: particleSettings.alpha } }, 0);
   /*TweenMax.to(window.particleSprite[i], 10000, { 
   pixi: { 
   x: Math.floor(particleSettings.x+100),
