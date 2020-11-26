@@ -1,21 +1,13 @@
 <html lang="en"><head>
 </head>
-
-<body translate="no">
-  <div id="canvas-container"><canvas width="1920" height="904" style="touch-action: none; cursor: inherit;"></canvas></div>
+<body>
+  <div id="canvas-container"><canvas width="1920" height="904"></canvas></div>
 <div class="copy-container center-xy">
 </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.5/pixi.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.2/TweenMax.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.2/plugins/PixiPlugin.min.js"></script>
-  
+ 
       <script id="rendered-js">
-// TODO: 
-// regenerate sprites when they dissapear
-// randomize x/y to positions
-
-//var popCounter = 0;
 var $windowWidth = $(window).width();
 var $windowHeight = $(window).height();
 var currentTransform = new PIXI.Matrix();
@@ -30,15 +22,10 @@ var particleSettings= [];
 window.particleSprite = []
 for (var i = 0; i < particleCount; i++) {
   particleSettings[i] = {
-    particleSize: 10,
-    x: Math.floor(Math.random() * pixiapp.renderer.width),
-    y: Math.floor(Math.random() * pixiapp.renderer.height),
-	scale: 0.3,
-    //scale: Math.floor(Math.random() * 3) / 3,
+    //x: Math.floor(Math.random() * pixiapp.renderer.width),
+    //y: Math.floor(Math.random() * pixiapp.renderer.height),
 	alpha: 1,
-    //alpha: Math.random(),
     color: particleColors[Math.floor(Math.random() * particleColors.length)] };
-
   createParticle(particleSettings[i]);
 }
 ﻿function aab(){
@@ -57,64 +44,18 @@ function createParticle(particleSettings) {
   // GRAPHIC
   var graphic = new PIXI.Graphics(); // create graphic
   graphic.beginFill('0x' + particleSettings.color);
-  graphic.drawCircle(0, 0, particleSettings.particleSize); // (x, y, radius) // gets scaled as a sprite later
+  graphic.drawCircle(0, 0, 10); // (x, y, radius) // gets scaled as a sprite later
   graphic.endFill();
 
   // TEXTURE
   var texture = graphic.generateCanvasTexture(); // create texture using graphic (scaleMode, resolution)
-  texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST; // scale mode for pixelation
-
+  //texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST; // scale mode for pixelation
   // SPRITE
   window.particleSprite[i] = new PIXI.Sprite(texture); // create particle using texture
-  //particleSprite = particleSettings
-  //particleSprite.interactive = true; // enable mouse and touch events    
-  //particleSprite.buttonMode = true; // show hand cursor on mouseover
-  //particleSprite.anchor.set(0.5); // center anchor point
-  //particleSprite.blendMode = PIXI.BLEND_MODES.SCREEN;
    window.particleSprite[i].scale.x = 0.3
    window.particleSprite[i].scale.y = 0.3
-  // console.log('createParticle')
-
-  // SET POSITIONING
-  //window.particleSprite[i].x = particleSettings.x
-  //window.particleSprite[i].y = particleSettings.y
-  //window.particleSprite[i].scale = particleSettings.scale
-  //window.particleSprite[i].alpha = particleSettings.alpha
-  //TweenMax.set(window.particleSprite[i], { pixi: { x: particleSettings.x, y: particleSettings.y, scale: particleSettings.scale, alpha: particleSettings.alpha } }, 0);
-  /*TweenMax.to(window.particleSprite[i], 10000, { 
-  pixi: { 
-  x: Math.floor(particleSettings.x+100),
-  y: Math.floor(particleSettings.y+100) }, 
-  ease: Power4.easeOut,
-    onComplete: function () {
-      //popParticle();
-    } },
-  1);*/
-
-  // 
-  function popParticle() {
-    TweenMax.to(particleSprite, 0.3, { pixi: { scale: 3, alpha: 0 } }, 0);
-  }
-
-  // MOUSE EVENTS
-  /*
-  particleSprite.mouseover = function () {
-    // TweenMax.to(particleSprite, 0.3, {pixi:{x:0, y:0}}, 0);
-    popParticle();
-    popCounter++;
-    console.log('popCounter:', popCounter);
-
-    // GAMIFY - keep score of popped particles
-    // if (popCounter >= 5) {
-    //   alert('Targets popped!')
-    //   popCounter = 0;
-    // }
-  };
-*/
   // ADD SPRITE TO STAGE
   pixiapp.stage.addChild(particleSprite[i]);
 }
-//# sourceURL=pen.js
-    </script>
-
+</script>
 </body></html>
