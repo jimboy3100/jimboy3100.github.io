@@ -15,15 +15,12 @@ PIXI.utils.skipHello(); // remove pixi message in console log
 
 var pixiapp = new PIXI.Application($windowWidth, $windowHeight, { transparent: true, resolution: 1 });
 $('#canvas-container').html(pixiapp.view);
-
 var particleCount = 1000;
 var particleColors = ['26a3ff', '13ce66', 'ff49db', 'af8dd1', '9162bf', 'ff7849', 'ffc82c'];
 var particleSettings= [];
 window.particleSprite = []
 for (var i = 0; i < particleCount; i++) {
   particleSettings[i] = {
-    //x: Math.floor(Math.random() * pixiapp.renderer.width),
-    //y: Math.floor(Math.random() * pixiapp.renderer.height),
 	alpha: 1,
     color: particleColors[Math.floor(Math.random() * particleColors.length)] };
   createParticle(particleSettings[i]);
@@ -32,7 +29,6 @@ for (var i = 0; i < particleCount; i++) {
 for (i=0;i<particleSettings.length;i++){	
   window.particleSprite[i].x = Math.random() * pixiapp.renderer.width
   window.particleSprite[i].y = Math.random() * pixiapp.renderer.width
-  //pixiapp.stage.addChild(particleSprite[i]);
 }
 console.log('complete') 
 }
