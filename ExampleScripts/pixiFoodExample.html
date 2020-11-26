@@ -37,28 +37,17 @@ for (var i = 0; i < particleCount; i++) {
     //scale: Math.floor(Math.random() * 3) / 3,
 	alpha: 1,
     //alpha: Math.random(),
-    particleSpeed: Math.floor(Math.min(200, Math.random() * 1000)),
     color: particleColors[Math.floor(Math.random() * particleColors.length)] };
 
   createParticle(particleSettings[i]);
 }
 ﻿function aab(){
-for (i=0;i<particleSettings.length;i++){
-  TweenMax.to(window.particleSprite[i], 0, { 
-  pixi: { 
-  x: Math.floor(Math.random() * pixiapp.renderer.width),
-  y: Math.floor(Math.random() * pixiapp.renderer.height) },   
-  //x: Math.floor(particleSettings[i].x+1000),
-  //y: Math.floor(particleSettings[i].y+1000) }, 
-  //ease: Power4.easeOut,
-    //onComplete: function () {
-      //popParticle();
-  //} 
-  },
-    1);
-	console.log('complete')
-    //pixiapp.stage.addChild(window.particleSprite[i]);
-}   
+for (i=0;i<particleSettings.length;i++){	
+  window.particleSprite[i].x = Math.random() * pixiapp.renderer.width
+  window.particleSprite[i].y = Math.random() * pixiapp.renderer.width
+  pixiapp.stage.addChild(particleSprite[i]);
+}
+console.log('complete') 
 }
 setInterval(function() {
 aab();
@@ -84,10 +73,12 @@ function createParticle(particleSettings) {
   //particleSprite.blendMode = PIXI.BLEND_MODES.SCREEN;
 
   // console.log('createParticle')
-  // console.log('_particleSpeed', _particleSpeed);
 
   // SET POSITIONING
-  
+  //window.particleSprite[i].x = particleSettings.x
+  //window.particleSprite[i].y = particleSettings.y
+  //window.particleSprite[i].scale = particleSettings.scale
+  //window.particleSprite[i].alpha = particleSettings.alpha
   TweenMax.set(window.particleSprite[i], { pixi: { x: particleSettings.x, y: particleSettings.y, scale: particleSettings.scale, alpha: particleSettings.alpha } }, 0);
   /*TweenMax.to(window.particleSprite[i], 10000, { 
   pixi: { 
