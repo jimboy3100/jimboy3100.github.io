@@ -10861,7 +10861,7 @@ body {
 	pointer-events: none;
 }
 
-#canvas,#debug-overlay {
+#canvas, #canvasWebGL, #debug-overlay {
 	position: absolute;
 	left: 0;
 	right: 0;
