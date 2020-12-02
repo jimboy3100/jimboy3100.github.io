@@ -28,11 +28,7 @@ ProLicenceUsersTable = {
         "c8c0f123-2758-410b-a952-e4c4898319e5": {
             "reason": "℄🌀ahmad",
             "notes": "℄🌀"
-        }, 			
-        "a21f4130-3474-4331-add1-bd02155e607c": {
-            "reason": "Sonia",
-            "notesr": "Moderator"
-        }, 		       
+        }, 				       
         "e18af28b-d1de-4645-967f-9b95736e8817": {
             "reason": "Hendrik Schönfelder",
             "notes": "Youtuber"
@@ -92,7 +88,11 @@ ProLicenceUsersTable = {
         "fdcd9b88-f083-41bb-b444-9bd559278de9": {
             "reason": "Donate",
             "notes": "TeachMe"
-        },		
+        },
+        "21e8e56d-b2b7-44a0-a35e-e9004309fa2a": {
+            "reason": "Donate",
+            "notes": "Kristina"
+        },	    
         "ca2f18d3-2023-48b2-9b71-1c8f5b1a10f3": {
             "reason": "Donate",
             "notes": "Imagine74"
