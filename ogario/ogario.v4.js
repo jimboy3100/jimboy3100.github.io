@@ -1,5 +1,5 @@
 /* Source script
-v2.918
+v2.949
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -1454,6 +1454,7 @@ var displayText = {
         virColors: 'Kolory wirusów',
         splitRange: 'Zasięg podziału',
         virusesRange: 'Zasięg wirusów',
+		showOptimisedGrid: 'Icon as grid (fps increase)',
         textStroke: 'Obwódki nazw i masy',
         namesStroke: 'Obwódki nazw',
         massStroke: 'Obwódki masy',
@@ -1935,6 +1936,7 @@ var displayText = {
         qdsplitRange: 'Quick double split range', //Sonia2
         sdsplitRange: 'Slow double split range', //Sonia2
         virusesRange: 'Viruses range',
+		showOptimisedGrid: 'Icon as grid (fps increase)',
         textStroke: 'Names and mass stroke',
         namesStroke: 'Names stroke',
         massStroke: 'Mass stroke',
@@ -3161,6 +3163,7 @@ var defaultmapsettings = {
     qdsplitRange: true, //Sonia2
     sdsplitRange: false, //Sonia2
     virusesRange: false,
+	showOptimisedGrid: true,
     textStroke: false,
     namesStroke: true,
     massStroke: true,
@@ -5646,12 +5649,12 @@ window.MouseClicks=[];
             this.addOptions(["noSkins", "customSkins", "vanillaSkins", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
             this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "animatedRainbowColor"], "transparencyGroup");
-            this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup");
+            this.addOptions(["showGrid", "showOptimisedGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup");
             this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "universalChat"], "chatGroup");
             this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup");
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
-            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"); //Sonia2
+			this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo"], "helpersGroup"); //Sonia2
             //this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
 			this.addOptions(["stickyCell", "mouseSplit", "mouseFeed", "mouseWheelClick", "mouseCommand4", "mouseCommand5"], "mouseGroup");
 //	
@@ -13817,7 +13820,10 @@ Game name     : ${i.displayName}<br/>
             LM.sortCells();
             LM.compareCells();
             this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
-            if (defaultmapsettings.showGrid) {
+            if (defaultmapsettings.showOptimisedGrid) {
+				//
+            }
+            else if (defaultmapsettings.showGrid) {
                 this.drawGrid(this.ctx, this.canvasWidth, this.canvasHeight, this.scale, this.camX, this.camY);
             }			
             this.ctx.save();
@@ -13828,6 +13834,15 @@ Game name     : ${i.displayName}<br/>
 			//this.ctx.scale(this.scale, this.scale);
             //this.ctx.translate(-this.camX, -this.camY);
 			
+            if (defaultmapsettings.showGrid && defaultmapsettings.showOptimisedGrid) {
+				this.drawCustomNewGrid()
+				/*if (!this.drawedGrid){
+					this.drawGridCached();				
+				}	
+				else if (this.drawedGrid){
+					this.drawCustomNewGrid();
+				}	*/
+			}				
             if (defaultmapsettings.showBgSectors) {
                 this.drawSectors(this.ctx, LM.mapOffsetFixed, defaultSettings.sectorsX, defaultSettings.sectorsY, LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, defaultSettings.gridColor, defaultSettings.sectorsColor, defaultSettings.sectorsWidth, true);
             }
@@ -14000,8 +14015,21 @@ Game name     : ${i.displayName}<br/>
                 LM.indexedCells[LM.selected].size,
                 0.75, '#ffffff')
         },
-        drawCustomBackgrounds() {
-            if (defaultSettings.customBackground && defaultSettings.customBackground != "") {
+		drawCustomNewGrid(grid) {	
+					if (!legendmod.gridPic){
+		            legendmod.gridPic = new Image;
+                    legendmod.gridPic.src = "https://legendmod.ml/banners/grid3.png";
+					}
+					//this.ctx.drawImage(application.customSkinsCache["test_cached"],
+					this.ctx.drawImage(legendmod.gridPic,			
+                        legendmod.mapMinX,
+                        legendmod.mapMinY,
+                        legendmod.mapMaxX - legendmod.mapMinX,
+                        legendmod.mapMaxY - legendmod.mapMinY
+                    );
+		},			
+        drawCustomBackgrounds() {		
+            if (defaultSettings.customBackground && defaultSettings.customBackground != "") {			
                 if (!legendmod.customMidPic) {
                     if (defaultSettings.customBackground) {
                         legendmod.customMidPic = new Image;
@@ -14027,7 +14055,7 @@ Game name     : ${i.displayName}<br/>
                     );
                     this.ctx.globalAlpha = this.prevctxglobalAlpha
                 }
-                if (defaultSettings.customBackground) {
+				if (defaultSettings.customBackground) {
                     this.prevctxglobalAlpha = this.ctx.globalAlpha;
                     this.ctx.globalAlpha = defaultSettings.backgroundAlpha
                     this.ctx.drawImage(
@@ -14235,6 +14263,35 @@ Game name     : ${i.displayName}<br/>
             ctx.stroke();
             ctx.globalAlpha = 1;
         },
+        /*drawGridCached() {
+			//for (var xx = 1; xx > 0; xx -= 0.025){
+				//xx = xx.toFixed(2);
+			xx = window.xx2
+			var i = document.createElement("canvas");
+			i.width = window.xx3
+			i.height = window.xx4
+            //i.width = LM.mapSize;
+            //i.height = LM.mapSize;
+            var $ = i.getContext("2d");
+            $.beginPath();			
+            $.strokeStyle = defaultSettings.gridColor;
+            $.globalAlpha = 1 * xx;
+            $.beginPath();
+            for (x = 0; x < i.width; x += 50) {
+                $.moveTo(x * xx - 0.5, 0);
+                $.lineTo(x * xx - 0.5, i.height * xx);
+            }
+            for (y = 0; y < i.height; y += 50) {
+                $.moveTo(0, y * xx - 0.5);
+                $.lineTo(i.width * xx, y * xx - 0.5);
+            }
+            $.stroke();
+            application.customSkinsCache["test" + "_cached"] = new Image;
+            application.customSkinsCache["test" + "_cached"].src = i.toDataURL();	
+			//}	
+			this.drawedGrid = true
+			console.log("test_grid_cached")
+        },		*/
         drawSectors(ctx, mapOffset, x, y, minX, minY, maxX, maxY, stroke, color, width, type) {
             if (mapOffset || !type) {
                 var posX = ~~((maxX - minX) / x);
