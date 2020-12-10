@@ -1,5 +1,5 @@
 /* Source script
-v2.956
+v2.957
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -14604,7 +14604,8 @@ Game name     : ${i.displayName}<br/>
 								this.preDrawPelletColors(food[length].color);
 							}
 							else{
-								ctx.drawImage(this.pelletColored[food[length].color], x, y);
+								if (!window.xx5) ctx.drawImage(this.pelletColored[food[length].color], x, y);
+								if (window.xx5) ctx.drawImage(this.pelletColored[food[length].color], x, y, 10 + defaultSettings.foodSize, 10 + defaultSettings.foodSize);
 							}
 						}
 						
@@ -15062,7 +15063,7 @@ Game name     : ${i.displayName}<br/>
             var size = 10 + defaultSettings.foodSize;
             var canvas = document.createElement('canvas');
             canvas.width = 2 * size,
-                canvas.height = 2 * size;
+            canvas.height = 2 * size;
             var ctx = canvas.getContext('2d');
             ctx.arc(size, size, size, 0, this.pi2, false);
             ctx.fillStyle = defaultSettings.foodColor;
@@ -15075,8 +15076,10 @@ Game name     : ${i.displayName}<br/>
             this.pelletColored[color] = null;
             var size = 10 + defaultSettings.foodSize;
             var canvas = document.createElement('canvas');
-            canvas.width = 2 * size,
-                canvas.height = 2 * size;
+            //canvas.width = 2 * size,
+            //canvas.height = 2 * size;
+			canvas.width = size,
+            canvas.height = size;
             var ctx = canvas.getContext('2d');
             ctx.arc(size, size, size, 0, this.pi2, false);
             //ctx.fillStyle = defaultSettings.foodColor;
