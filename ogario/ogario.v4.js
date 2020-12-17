@@ -1,5 +1,5 @@
 /* Source script
-v2.974
+v2.978
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -2354,8 +2354,8 @@ var themePresets = {
         bordersWidth: 40,
         sectorsWidth: 40,
         sectorsFontSize: 1200,
-        cellsAlpha: 0.99,
-        skinsAlpha: 0.99,
+        cellsAlpha: 1,
+        skinsAlpha: 1,
         virusAlpha: 0.25,
         textAlpha: 1,
         backgroundAlpha: 0.6,
@@ -2520,8 +2520,8 @@ var themePresets = {
         bordersWidth: 40,
         sectorsWidth: 40,
         sectorsFontSize: 1200,
-        cellsAlpha: 0.99,
-        skinsAlpha: 0.99,
+        cellsAlpha: 1,
+        skinsAlpha: 1,
         virusAlpha: 0.4,
         textAlpha: 1,
         backgroundAlpha: 0.6,
@@ -2831,8 +2831,8 @@ var defaultSettings = {
     bordersWidth: 14,
     sectorsWidth: 40,
     sectorsFontSize: 1200,
-    cellsAlpha: 0.99,
-    skinsAlpha: 0.99,
+    cellsAlpha: 1,
+    skinsAlpha: 1,
     virusAlpha: 0.6,
     textAlpha: 1,
     backgroundAlpha: 0.6,
@@ -3625,11 +3625,11 @@ window.MouseClicks=[];
             this.addSliderBox('#theme-main', 'borderGlowSize', 0, 40, 1);
             this.addSliderBox('#theme-main', 'virusGlowSize', 0, 40, 1);
             this.addSliderBox('#theme-main', 'sectorsWidth', 2, 200, 2);
-            this.addSliderBox('#theme-main', 'cellsAlpha', 0.01, 0.99, 0.01);
-            this.addSliderBox('#theme-main', 'skinsAlpha', 0.01, 0.99, 0.01);
+            this.addSliderBox('#theme-main', 'cellsAlpha', 0.01, 1, 0.01);
+            this.addSliderBox('#theme-main', 'skinsAlpha', 0.01, 1, 0.01);
             this.addSliderBox('#theme-main', 'virusAlpha', 0, 1, 0.01);
             this.addSliderBox('#theme-main', 'textAlpha', 0.1, 1, 0.01);
-            this.addSliderBox('#theme-main', 'ghostCellsAlpha', 0.01, 0.99, 0.01);
+            this.addSliderBox('#theme-main', 'ghostCellsAlpha', 0.01, 1, 0.01);
 			this.addPresetBox('#theme-main', 'indicators', indicatorMenus, 'indicators', 'changeIndicators');			
             this.addPresetBox('#theme-menu', 'menuPreset', themeMenus, 'menuPreset', 'changeMenuPreset');
             this.addSliderBox('#theme-menu', 'menuOpacity', 0.1, 1, 0.01, 'setMenuOpacity');
@@ -3697,7 +3697,7 @@ window.MouseClicks=[];
             this.addSliderBox('#theme-minimap', 'miniMapMyCellSize', 4, 10, 0.5);
             this.addSliderBox('#theme-minimap', 'miniMapMyCellStrokeSize', 0, 10, 1);
             this.addSliderBox('#theme-minimap', 'miniMapTeammatesSize', 4, 10, 0.5);
-            this.addSliderBox('#theme-minimap', 'miniMapGhostCellsAlpha', 0.01, 0.99, 0.01);
+            this.addSliderBox('#theme-minimap', 'miniMapGhostCellsAlpha', 0.01, 1, 0.01);
             this.addInputBox('#theme-images', 'customBackground', 'Image URL', 'setCustomBackground');
             this.addSliderBox('#theme-images', 'backgroundAlpha', 0, 1, 0.01);
             this.addPresetBox('#theme-images', 'graphics', graphicMenus, 'graphics', 'changeGraphics');
@@ -9789,7 +9789,8 @@ window.MouseClicks=[];
                     )
                 }
                 style.lineTo(this.x, this.y + this.size + 3);
-            } else style.arc(this.x, this.y, y, 0, this.pi2, false);
+            } 
+			else style.arc(this.x, this.y, y, 0, this.pi2, false);
 
             style.closePath();
 			
@@ -9803,7 +9804,6 @@ window.MouseClicks=[];
             //if (style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
             //    return style.fillStyle = this.color, style.fill(), void style.restore();
             //}						
-            if (!defaultmapsettings.jellyPhisycs) {
                 if (this.isVirus) {
                     //console.log("is not jelly");
                     /*if (dyinglight1load == "yes") {
@@ -9811,7 +9811,7 @@ window.MouseClicks=[];
                             style.drawImage(cimgDyingLightvirus, this.x - 0.8 * this.size, this.y - 0.8 * this.size, 1.6 * this.size, 1.6 * this.size);
                         } catch (e) {}
                     }*/
-                    if (defaultmapsettings.transparentViruses) {
+                    if (defaultmapsettings.transparentViruses && defaultSettings.virusAlpha < 0.99) {
                         style.globalAlpha *= defaultSettings.virusAlpha;
                         s = true;
                     }
@@ -9848,49 +9848,8 @@ window.MouseClicks=[];
 					style.restore();
                     return;
                 }
-            } 
-			else {
-                if (this.isVirus) {
-                    //console.log("is jelly");
-                    if (defaultmapsettings.transparentViruses) {
-                        style.globalAlpha *= defaultSettings.virusAlpha;
-                        defaultmapsettings.isAlphaChanged = true;
-                    }
-                    if (defaultmapsettings.virColors && LM.play) {
-                        style.fillStyle = application.setVirusColor(y);
-                        style.strokeStyle = application.setVirusStrokeColor(y);
-                    } else {
-                        style.fillStyle = defaultSettings.virusColor;
-                        style.strokeStyle = defaultSettings.virusStrokeColor;
-                    }
-                    style.fill();
-                    if (defaultmapsettings.isAlphaChanged) {
-                        style.globalAlpha = defaultSettings.cellsAlpha;
-                        defaultmapsettings.isAlphaChanged = false;
-                    }
-                    style.lineWidth = defaultSettings.virusStrokeSize;
-                    if (defaultmapsettings.virusGlow) {
-                        style.shadowBlur = defaultSettings.virusGlowSize;
-                        style.shadowColor = defaultSettings.virusGlowColor;
-                    }
-                    style.stroke();
-                    if (defaultmapsettings.showMass) {
-                        this.setDrawing();
-                        this.setDrawingScale();
-                        this.setMass(this.size);
-                        this.drawMass(style);
-                        /*if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
-                            this.drawMerge(style);
-                        }
-                        if (defaultmapsettings.showChat) {
-                            this.drawChat(style);
-                        }*/
-                    }
-                    style.restore();
-                    return;
-                }
-            }
-            if (defaultmapsettings.transparentCells) {
+             
+            if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) {
                 style.globalAlpha *= defaultSettings.cellsAlpha;
                 s = true;
             }
@@ -9958,7 +9917,7 @@ window.MouseClicks=[];
                 node = application.getCustomSkin(this.targetNick, this.color);
                 if (node) {
                     //if ((defaultmapsettings.transparentSkins || LM.play && defaultmapsettings.oppColors) && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin) {
-                    if (defaultmapsettings.transparentSkins && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin) {
+                    if (defaultmapsettings.transparentSkins && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin && defaultSettings.skinsAlpha<0.99) {
                         //console.log('transparent')
 						style.globalAlpha *= defaultSettings.skinsAlpha;
                         //s = true;
@@ -14017,13 +13976,26 @@ Game name     : ${i.displayName}<br/>
 					//legendmod.gridPic.src = "https://legendmod.ml/banners/grid5.png";
 					}
 					//this.ctx.drawImage(application.customSkinsCache["test_cached"],
-					this.ctx.drawImage(legendmod.gridPic,			
+					/*this.ctx.drawImage(legendmod.gridPic,			
                         legendmod.mapMinX,
                         legendmod.mapMinY,
                         legendmod.mapMaxX - legendmod.mapMinX,
                         legendmod.mapMaxY - legendmod.mapMinY
+                    );*/
+					var minX = legendmod.viewX - drawRender.canvasWidth / (2 * legendmod.viewScale)
+					var maxX = legendmod.viewX + drawRender.canvasWidth / (2 * legendmod.viewScale)
+					var minY = legendmod.viewY - drawRender.canvasHeight / (2 * legendmod.viewScale)
+					var maxY = legendmod.viewY + drawRender.canvasHeight / (2 * legendmod.viewScale)					
+					this.ctx.drawImage(legendmod.gridPic,			
+						(minX - legendmod.mapMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width, 
+						(minY - legendmod.mapMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
+						(maxX - minX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
+						(maxY - minY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,                    
+						minX,
+						minY,	
+						maxX - minX,
+						maxY - minY						
                     );
-
 					/*this.ctx.drawImage(legendmod.gridPic,			
 						(legendmod.viewMinX - legendmod.mapMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width, 
 						(legendmod.viewMinY - legendmod.mapMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
