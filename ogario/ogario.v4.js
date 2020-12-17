@@ -1,5 +1,5 @@
 /* Source script
-v2.968
+v2.974
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -6944,8 +6944,6 @@ window.MouseClicks=[];
                     var fixminidaxx = u - (minidaxx / 2);
                     var fixminidayy = d - (minidayy / 2);
 
-                    //if (fixminidaxx<0){ fixminidaxx=0; }
-                    //if (fixminidayy<0){ fixminidayy=0; }
                     this.miniMapCtx.rect(fixminidaxx, fixminidayy, minidaxx, minidayy);
                     this.miniMapCtx.stroke();
 
@@ -9768,7 +9766,7 @@ window.MouseClicks=[];
             }
             //style.filter='grayscale(100%)';
             //
-			
+					
             if (defaultmapsettings.jellyPhisycs && this.points.length) {
                 var point = this.points[0];
                 style.moveTo(point.x, point.y);
@@ -9794,6 +9792,14 @@ window.MouseClicks=[];
             } else style.arc(this.x, this.y, y, 0, this.pi2, false);
 
             style.closePath();
+			
+			//17/12/2020
+			if (this.size <= 38 && this.nick == "" && !this.isVirus && !this.isPlayerCell){
+                style.fillStyle = this.color;
+                style.fill();				
+				style.restore();
+				return
+			}				
             //if (style.arc(this.x, this.y, y, 0, this.pi2, false), style.closePath(), this.isFood) {
             //    return style.fillStyle = this.color, style.fill(), void style.restore();
             //}						
@@ -9841,22 +9847,6 @@ window.MouseClicks=[];
                     }					
 					style.restore();
                     return;
-					/*
-                    return defaultmapsettings.transparentViruses && (style.globalAlpha *= defaultSettings.virusAlpha, s = true), 
-					defaultmapsettings.virColors && LM.play ? (style.fillStyle = application.setVirusColor(y), style.strokeStyle = application.setVirusStrokeColor(y)) : (style.fillStyle = this.virusColor, 
-					style.strokeStyle = this.virusStroke), 
-					style.fill(), 
-					s && (style.globalAlpha = value, s = false), 
-					style.lineWidth = defaultSettings.virusStrokeSize, 
-					defaultmapsettings.virusGlow ? (style.shadowBlur = defaultSettings.virusGlowSize, style.shadowColor =
-                        defaultSettings.virusGlowColor) : "yeet", 
-						defaultmapsettings.virusSpikes ? style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, defaultSettings.virusSpikesSize)) : style.stroke(),
-						//defaultmapsettings.virusSpikes ? style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)) : style.stroke(),
-						//style.stroke(this.createStrokeVirusPath(this.x, this.y, this.size - 2, 6)), 
-						defaultmapsettings.showMass && 
-						(this.setDrawing(), this.setDrawingScale(), defaultmapsettings.virusGlow ? style.shadowBlur = 0 : "yote",
-                        this.setMass(this.size), this.drawMass(style), (window.ExternalScripts && !window.legendmod5.optimizedMass)), void style.restore();
-						*/
                 }
             } 
 			else {
@@ -9905,6 +9895,7 @@ window.MouseClicks=[];
                 s = true;
             }
             var color = this.color;
+
             if (LM.play || LM.playerCellsMulti.length) {
                 if (this.isPlayerCell || this.playerCellsMulti) {
                     if (defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ":teams") {
@@ -9942,6 +9933,7 @@ window.MouseClicks=[];
                 style.globalAlpha = value;
                 s = false;
             }
+			
             /*if (dyinglight1load != "yes"){
                             style.globalAlpha = 1;
                             s = false;
@@ -14025,26 +14017,23 @@ Game name     : ${i.displayName}<br/>
 					//legendmod.gridPic.src = "https://legendmod.ml/banners/grid5.png";
 					}
 					//this.ctx.drawImage(application.customSkinsCache["test_cached"],
-					/*this.ctx.drawImage(legendmod.gridPic,			
+					this.ctx.drawImage(legendmod.gridPic,			
                         legendmod.mapMinX,
                         legendmod.mapMinY,
                         legendmod.mapMaxX - legendmod.mapMinX,
                         legendmod.mapMaxY - legendmod.mapMinY
-                    );*/
-					this.ctx.drawImage(legendmod.gridPic,			
+                    );
+
+					/*this.ctx.drawImage(legendmod.gridPic,			
 						(legendmod.viewMinX - legendmod.mapMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width, 
 						(legendmod.viewMinY - legendmod.mapMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
 						(legendmod.viewMaxX - legendmod.viewMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width,
 						(legendmod.viewMaxY - legendmod.viewMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,                    
 						legendmod.viewMinX,
-						legendmod.viewMinY,
-						//legendmod.mapMinX,
-						//legendmod.mapMinY,		
+						legendmod.viewMinY,	
 						legendmod.viewMaxX - legendmod.viewMinX,
-						legendmod.viewMaxY - legendmod.viewMinY
-                        //legendmod.mapMaxX - legendmod.mapMinX,
-                        //legendmod.mapMaxY - legendmod.mapMinY
-                    );					
+						legendmod.viewMaxY - legendmod.viewMinY						
+                    );*/					
 		},			
         drawCustomBackgrounds() {		
             if (defaultSettings.customBackground && defaultSettings.customBackground != "") {			
