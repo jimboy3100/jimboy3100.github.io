@@ -1,5 +1,5 @@
 /* Source script
-v2.981
+v2.997
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -9743,7 +9743,9 @@ window.MouseClicks=[];
             //					
             style.save();
 
-
+			//if (this.isFood){ //food never happens here
+				//console.log('isFood')
+			//}
             this.redrawed++;
             if (cellMoved) {
                 this.moveCell();
@@ -9754,7 +9756,7 @@ window.MouseClicks=[];
             var value = style.globalAlpha;
             var s = false;
             var y = this.isFood ? this.size + defaultSettings.foodSize : this.size;
-            style.beginPath()
+            
 
             //26/7/2020
             if (LM.ws.includes("replay") && window.replayGreyScale) {
@@ -9766,7 +9768,11 @@ window.MouseClicks=[];
             }
             //style.filter='grayscale(100%)';
             //
-					
+			var node = null
+            if (defaultmapsettings.customSkins && LM.showCustomSkins) {
+                node = application.getCustomSkin(this.targetNick, this.color);
+			}				
+			if (!node) style.beginPath()		
             if (defaultmapsettings.jellyPhisycs && this.points.length) {
                 var point = this.points[0];
                 style.moveTo(point.x, point.y);
@@ -9790,9 +9796,10 @@ window.MouseClicks=[];
                 }
                 style.lineTo(this.x, this.y + this.size + 3);
             } 
-			else style.arc(this.x, this.y, y, 0, this.pi2, false);
-
-            style.closePath();
+			else {
+				if (!node) style.arc(this.x, this.y, y, 0, this.pi2, false);				
+			}
+            if (!node) style.closePath();
 			
 			//17/12/2020
 			if (this.size <= 38 && this.nick == "" && !this.isVirus && !this.isPlayerCell){
@@ -9883,10 +9890,18 @@ window.MouseClicks=[];
                 style.lineWidth = 20; ///
                 style.strokeStyle = this.color; ///
                 style.stroke(); ///
+            } else if (node){
+				if (!window.drawRender.cellsColored[color]){ 
+					window.drawRender.preDrawCellsColors(color);
+				}
+				else{
+					style.drawImage(window.drawRender.cellsColored[color], this.x - this.size, this.y - this.size, this.size*2, this.size*2);
+				}				
             } else {
                 style.fillStyle = color;
                 style.fill();
             }
+			
             //}
             if (s) {
                 style.globalAlpha = value;
@@ -9897,7 +9912,7 @@ window.MouseClicks=[];
                             style.globalAlpha = 1;
                             s = false;
 						}*/
-            var node = null;
+            //var node = null;
 
 
 
@@ -9914,7 +9929,7 @@ window.MouseClicks=[];
             }
             //lylko
             if (defaultmapsettings.customSkins && LM.showCustomSkins) {
-                node = application.getCustomSkin(this.targetNick, this.color);
+                //node = application.getCustomSkin(this.targetNick, this.color);
                 if (node) {
                     //if ((defaultmapsettings.transparentSkins || LM.play && defaultmapsettings.oppColors) && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin) {
                     if (defaultmapsettings.transparentSkins && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin) || this.isPlayerCell && defaultmapsettings.myTransparentSkin && defaultSettings.skinsAlpha<0.99) {
@@ -13696,7 +13711,8 @@ Game name     : ${i.displayName}<br/>
         averageRenderTime: 0,
 		renderingDelay: 0,
         lastRenderingDelay: 0,
-		pelletColored: [],		
+		pelletColored: [],	
+		cellsColored: [],
         setCanvas() {
             this.canvas = document.getElementById('canvas');
             this.ctx = this.canvas.getContext('2d');
@@ -14582,6 +14598,7 @@ Game name     : ${i.displayName}<br/>
 								this.preDrawPelletColors(food[length].color);
 							}
 							else{
+								//ctx.drawImage(this.pelletColored[food[length].color], 0, 0);
 								ctx.drawImage(this.pelletColored[food[length].color], x, y);
 								//ctx.drawImage(this.pelletColored[food[length].color], x, y, (10 + defaultSettings.foodSize)*2, (10 + defaultSettings.foodSize)*2);
 							}
@@ -15066,6 +15083,20 @@ Game name     : ${i.displayName}<br/>
             ctx.fill();
             this.pelletColored[color] = new Image();
             this.pelletColored[color].src = canvas.toDataURL();
+            canvas = null;
+        },	
+        preDrawCellsColors(color) {
+            this.cellsColored[color] = null;
+			var size = 128;
+            var canvas = document.createElement('canvas');
+            canvas.width = 2 * size,
+            canvas.height = 2 * size;
+            var ctx = canvas.getContext('2d');
+			ctx.arc(size, size, size, 0, this.pi2, false);
+			ctx.fillStyle = color;
+            ctx.fill();
+            this.cellsColored[color] = new Image();
+            this.cellsColored[color].src = canvas.toDataURL();
             canvas = null;
         },		
         preDrawIndicator() {
