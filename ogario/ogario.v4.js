@@ -1,5 +1,5 @@
 /* Source script
-v2.978
+v2.981
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -13468,7 +13468,7 @@ Game name     : ${i.displayName}<br/>
                     //console.log(i); i for food is 13
                     var size = ~~(cell.size * cell.size / 100);
 
-                    if (size > 13) {
+					if ((LM.integrity && size > 13) || (!LM.integrity && size > 14)) {
                         var mass
                         if (window.multiboxPlayerEnabled && spects[window.multiboxPlayerEnabled - 1]) {
                             mass = this.selectBiggestCell ? spects[window.multiboxPlayerEnabled - 1].playerMaxMass : spects[window.multiboxPlayerEnabled - 1].playerMinMass;
@@ -13982,10 +13982,11 @@ Game name     : ${i.displayName}<br/>
                         legendmod.mapMaxX - legendmod.mapMinX,
                         legendmod.mapMaxY - legendmod.mapMinY
                     );*/
-					var minX = legendmod.viewX - drawRender.canvasWidth / (2 * legendmod.viewScale)
-					var maxX = legendmod.viewX + drawRender.canvasWidth / (2 * legendmod.viewScale)
-					var minY = legendmod.viewY - drawRender.canvasHeight / (2 * legendmod.viewScale)
-					var maxY = legendmod.viewY + drawRender.canvasHeight / (2 * legendmod.viewScale)					
+					//legendmod.viewX -> drawRender.camX
+					var minX = drawRender.camX - drawRender.canvasWidth / (2 * legendmod.viewScale)
+					var maxX = drawRender.camX + drawRender.canvasWidth / (2 * legendmod.viewScale)
+					var minY = drawRender.camY - drawRender.canvasHeight / (2 * legendmod.viewScale)
+					var maxY = drawRender.camY + drawRender.canvasHeight / (2 * legendmod.viewScale)					
 					this.ctx.drawImage(legendmod.gridPic,			
 						(minX - legendmod.mapMinX) / (legendmod.mapMaxX - legendmod.mapMinX) * legendmod.gridPic.width, 
 						(minY - legendmod.mapMinY) / (legendmod.mapMaxY - legendmod.mapMinY) * legendmod.gridPic.height,
