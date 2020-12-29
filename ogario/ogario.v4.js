@@ -1,5 +1,5 @@
 /* Source script
-v3.008
+v3.014
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -12929,7 +12929,7 @@ Game name     : ${i.displayName}<br/>
             //if (!legendmod.integrity || (right - left) > 14000 && (bottom - top) > 14000) { //2020 jimboy3100
 
             //if (!LM.integrity && !this.mapOffsetFixed){ 
-			if (!this.mapOffsetFixed){ 
+			//if (!this.mapOffsetFixed){ 
 				var temp, temp2;
 				if ($("#server-token").val().includes("replay^")){
 					temp = $("#server-token").val().replace('replay^','').split('(')[0].split('.lm')[0];					
@@ -12945,7 +12945,7 @@ Game name     : ${i.displayName}<br/>
                 this.mapSize = Math.abs((left - right));
                 this.mapOffset = 0
             } 		
-
+			if (!this.mapOffsetFixed){ 
             if (!this.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) { //2020 jimboy3100
 				//if (this.integrity || this.ws.includes("replay")) {
 				if (this.integrity || temp2) {
@@ -12965,6 +12965,7 @@ Game name     : ${i.displayName}<br/>
                     this.mapMaxY = bottom
                 }
 				}
+			}
                 this.mapMidX = (this.mapMaxX + this.mapMinX) / 2; //Sonia3 -> this.mapMidX = -legendmod.mapOffsetX
                 this.mapMidY = (this.mapMaxY + this.mapMinY) / 2; //Sonia3 -> this.mapMidY = -legendmod.mapOffsetY				
 				this.mapOffsetFixed || (this.viewX = (right + left) / 2, this.viewY = (bottom + top) / 2);
@@ -12973,7 +12974,7 @@ Game name     : ${i.displayName}<br/>
                 //for SPECT
                 this.addSpect();
                 //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map offset fixed: (', this.mapOffsetX, ',', this.mapOffsetY, ')');
-            }
+            
         },
         addSpect() {
             if (($("#nick").val().includes('℄') && $("#clantag").val() == window.atob(window.clanTagLc)) || window.proLicenceUID) {
@@ -16909,7 +16910,8 @@ function playReplayLM(temp) {
         legendmod.playingReplayServer = temp
         legendmod.playingReplayRewind = false
         legendmod.playingReplayRewindNow = false
-        if (parseInt(window.replayTiming) < 0) {
+        //if (parseInt(window.replayTiming) < 0) {
+		if (parseFloat(window.replayTiming) < 0) {	
             toastr.warning("<b>[SERVER]:</b> When time traveling, wierd things happens...").css("width", "350px");
             legendmod.playingReplayRewind = true
         }
@@ -16953,7 +16955,8 @@ function intervalPlayingRecord() {
             $('#pause-hud').text(textLanguage.pause);
             $('#pause-hud').hide()
         }
-        window.replayTiming2 = Math.abs(parseInt(window.replayTiming))
+		window.replayTiming2 = Math.abs(parseFloat(window.replayTiming))
+        //window.replayTiming2 = Math.abs(parseInt(window.replayTiming))
 
     } else {
         if (window.replayTiming2 != 0) {
@@ -16970,15 +16973,17 @@ function intervalPlayingRecord() {
             legendmod.handleMessage(window.RecordedProtocol[tempo][legendmod.playingReplayRecord]) //main fuction for replay
             //
             if (!legendmod.playingReplayRewind && window.replayTiming2 == 0) {
-                if (window.replaySkippedLoops > 99 && legendmod.playingReplayRecord + 100 < window.RecordedProtocol[tempo].length - 1) {
+                /*if (window.replaySkippedLoops > 99 && legendmod.playingReplayRecord + 100 < window.RecordedProtocol[tempo].length - 1) {
                     for (var i = 0; i < window.replaySkippedLoops - 1; i++) { // 100 times more
                         legendmod.handleMessage(window.RecordedProtocol[tempo][legendmod.playingReplayRecord])
                         legendmod.playingReplayRecord++
                     }
-                } else if (window.replaySkippedLoops > 9 && legendmod.playingReplayRecord + 10 < window.RecordedProtocol[tempo].length - 1) {
+                } else */ if (window.replaySkippedLoops > 9 && legendmod.playingReplayRecord + 10 < window.RecordedProtocol[tempo].length - 1) {
                     for (var i = 0; i < 9; i++) { // 10 times more
-                        legendmod.handleMessage(window.RecordedProtocol[tempo][legendmod.playingReplayRecord])
-                        legendmod.playingReplayRecord++
+						setTimeout(function() {
+							legendmod.handleMessage(window.RecordedProtocol[tempo][legendmod.playingReplayRecord])
+							legendmod.playingReplayRecord++
+						}, 0);
                     }
                 }
             }
@@ -16987,7 +16992,8 @@ function intervalPlayingRecord() {
 
             if (legendmod.playingReplayRecord < window.RecordedProtocol[tempo].length - 1 && legendmod.playingReplayRecord >= 0) {
                 if (legendmod.playingReplayRecord < window.RecordedProtocol[tempo].length - 2) intervalPlayingRecord();
-                if (parseInt(window.replayTiming) >= 0 || !legendmod.playingReplayRewindNow) {
+                if (parseFloat(window.replayTiming) >= 0 || !legendmod.playingReplayRewindNow) {
+				//if (parseInt(window.replayTiming) >= 0 || !legendmod.playingReplayRewindNow) {
                     legendmod.playingReplayRecord++
                 } else {
                     legendmod.playingReplayRecord--
