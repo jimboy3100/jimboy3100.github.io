@@ -1,5 +1,5 @@
 /* Source script
-v3.007
+v3.008
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -12930,7 +12930,14 @@ Game name     : ${i.displayName}<br/>
 
             //if (!LM.integrity && !this.mapOffsetFixed){ 
 			if (!this.mapOffsetFixed){ 
-			if (this.integrity || this.ws.includes("replay")) {
+				var temp, temp2;
+				if ($("#server-token").val().includes("replay^")){
+					temp = $("#server-token").val().replace('replay^','').split('(')[0].split('.lm')[0];					
+					if (temp.length == 7){
+						temp2 = true
+					}
+				}			
+			if (this.integrity || temp2) {
                 this.mapSize = 14142 //14142.13562
                 this.mapOffset = this.mapSize / 2
             }
@@ -12940,9 +12947,8 @@ Game name     : ${i.displayName}<br/>
             } 		
 
             if (!this.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) { //2020 jimboy3100
-
 				//if (this.integrity || this.ws.includes("replay")) {
-				if (this.integrity) {
+				if (this.integrity || temp2) {
                     this.mapOffsetX = this.mapOffset - right;
                     this.mapOffsetY = this.mapOffset - bottom;
                     this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
