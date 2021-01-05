@@ -1,5 +1,5 @@
 /* Source script
-v3.021
+v3.023
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -13847,7 +13847,7 @@ Game name     : ${i.displayName}<br/>
 				this.drawWaves();
             }	
 				
-            this.drawFood();
+            
             if (LM.playerCellsMulti.length) {
                 this.calMinMaxMulti();
             }
@@ -13874,6 +13874,7 @@ Game name     : ${i.displayName}<br/>
                     //this.drawRing(this.ctx,LM.cells[i].x,LM.cells[i].y,LM.cells[i].size,0.75,'#ffffff')
 				}
             }
+			this.drawFood();
             //}
             this.drawMiscRings();
             //lylko
