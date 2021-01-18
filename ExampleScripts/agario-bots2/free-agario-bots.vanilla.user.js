@@ -378,7 +378,7 @@ function setGUI() {
     document.getElementById('advertisement').innerHTML = `
 <button id="botsPanel">Options</button>
         <h3 id="botsInfo">
-            <a href="https://discord.gg/YkyS8zd" target="_blank">Free Agar.io Bots</a>
+            <a href="https://discord.gg/JUfpR9k" target="_blank">Free Agar.io Bots</a>
         </h3>
         <h5 id="botsAuthor">
             Developed by <a href="https://www.youtube.com/channel/UCZo9WmnFPWw38q65Llu5Lug" target="_blank">Nel, </a><a href="http://legendmod.ml/" target="_blank">Jimboy3100</a>
