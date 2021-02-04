@@ -1,5 +1,5 @@
 /* Source script
-v3.027
+v3.036
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -1446,7 +1446,7 @@ var displayText = {
         showExtraMiniMapGuides: 'Show extra minimap guides',
         showMiniMapGhostCells: 'Pokaż duchy kulek na minimapie',
         oneColoredTeammates: 'Jednokolorowi gracze',
-        optimizedFood: 'Zoptymalizowany pokarm',
+        //optimizedFood: 'Zoptymalizowany pokarm',
         rainbowFood: 'Kolorowy pokarm',
         oppColors: 'Kolory przeciwników',
         oppRings: 'Ringi przeciwników',
@@ -1926,7 +1926,7 @@ var displayText = {
         showExtraMiniMapGuides: 'Show extra minimap guides',
         showMiniMapGhostCells: 'Show ghost cells',
         oneColoredTeammates: 'One-colored teammates',
-        optimizedFood: 'Optimized food',
+        //optimizedFood: 'Optimized food',
         rainbowFood: 'Rainbow food',
         oppColors: 'Opponents colors',
         oppRings: 'Opponents rings',
@@ -3153,7 +3153,7 @@ var defaultmapsettings = {
     showExtraMiniMapGuides: true,
     showMiniMapGhostCells: true,
     oneColoredTeammates: false,
-    optimizedFood: true,
+    //optimizedFood: true,
     rainbowFood: true,
     oppColors: false,
     oppRings: true,
@@ -5646,7 +5646,8 @@ window.MouseClicks=[];
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
             this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "virusSound", "potionsDrinker"], "massGroup");
             this.addOptions(["noSkins", "customSkins", "vanillaSkins", "jellyPhisycs", "suckAnimation", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
-            this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
+            //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
+			this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "animatedRainbowColor"], "transparencyGroup");
             this.addOptions(["showGrid", "showOptimisedGrid", "showBgSectors", "showMapBorders", "borderGlow"], "gridGroup");
             this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "universalChat"], "chatGroup");
@@ -14603,7 +14604,7 @@ Game name     : ${i.displayName}<br/>
                 return;
             }
 			ctx.save();
-            if (defaultmapsettings.optimizedFood /*&& this.pellet*/) {
+            /*if (defaultmapsettings.optimizedFood) {
 
                 for (var length = 0; length < food.length; length++) {
                     //
@@ -14628,45 +14629,55 @@ Game name     : ${i.displayName}<br/>
 						
                     }
                 }
-            } 
-			else /* (this.pellet)*/{
-				//var temp = ctx.fillStyle
+            }*/ 
+			//else{
                 for (var length = 0; length < food.length; length++) {
 					if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
-					ctx.beginPath();
-                    if (!food[length].invisible) {				
+					//ctx.beginPath();
+                    if (!food[length].invisible) { 
+						var temp;
+						if (defaultmapsettings.rainbowFood){ 							
+							ctx.fillStyle = food[length].color	
+							temp = food[length].color 
+						}
+						else if (!defaultmapsettings.rainbowFood){ 				
+							ctx.fillStyle = defaultSettings.foodColor;
+							temp = defaultSettings.foodColor;
+						}
+						
                         var x = food[length].x;
                         var y = food[length].y;
-                        ctx.moveTo(x, y);
+                        /*ctx.moveTo(x, y);
 						if (scale < 0.08) {
-                        //if (scale < 0.16) {
                             const size = food[length].size + defaultSettings.foodSize;
 							
                             ctx.rect(x - size, y - size, 2 * size, 2 * size);
                             //continue;
                         }
-						else{
-							ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
-						}
-						if (defaultmapsettings.rainbowFood){ 
-							
-							ctx.fillStyle = food[length].color
-							
-						}
+						else{*/
+							this.drawCircle(ctx, x, y, food[length].size + defaultSettings.foodSize, temp)
+							//ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
+						//}
                     }
-				if (!defaultmapsettings.rainbowFood){ 				
-					ctx.fillStyle = defaultSettings.foodColor;
-				}
-                //ctx.globalAlpha = 1;
-                ctx.fill();					
+
+                //ctx.fill();					
                 }
-				//ctx.fillStyle = temp
-            }
+			//}
 			ctx.restore()
             if (reset) {
                 food = [];
             }
         },
+		drawCircle(ctx, x, y, radius, color) {
+			ctx.lineWidth = radius * 2;
+			ctx.lineCap = 'round';
+			ctx.beginPath();
+			ctx.moveTo(x, y);
+			ctx.lineTo(x, y);
+			//ctx.lineTo(x, y);
+			ctx.strokeStyle = color;
+			ctx.stroke();
+		},
         /*drawCachedFood(t, e, i, s) {
             if (e.length) {
                 if (defaultmapsettings.optimizedFood && this.pellet)
