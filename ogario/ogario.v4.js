@@ -1,5 +1,5 @@
 /* Source script
-v3.036
+v3.047
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -9736,6 +9736,16 @@ window.MouseClicks=[];
                 }
             }
         }
+		this.drawCircle = function(ctx, x, y, radius, color) {
+			ctx.lineWidth = radius * 2;
+			ctx.lineCap = 'round';
+			ctx.beginPath();
+			//ctx.moveTo(x, y);
+			ctx.lineTo(x, y);
+			ctx.strokeStyle = color;
+			ctx.stroke();
+			//ctx.closePath();
+		},		
         this.draw = function(style, cellMoved) { //this function draws each cell/virus/food 1 time only
             if ((LM.hideSmallBots && this.size <= 36) || this.invisible == true) {
                 return;
@@ -9797,14 +9807,22 @@ window.MouseClicks=[];
                 style.lineTo(this.x, this.y + this.size + 3);
             } 
 			else {
-				if (!node) style.arc(this.x, this.y, y, 0, this.pi2, false);				
-			}
-            if (!node) style.closePath();
+				if (!node){
+					//this.drawCircle(style, this.x, this.y, y, this.color)
+					if (this.isVirus || defaultmapsettings.cellContours){ //this is the normal function
+						style.arc(this.x, this.y, y, 0, this.pi2, false);
+						style.closePath();	
+					}	
+					else{
+						this.drawCircle(style, this.x, this.y, y, this.color)
+					}					
+				}					
+			} 
 			
 			//17/12/2020
-			if (this.size <= 38 && this.nick == "" && !this.isVirus && !this.isPlayerCell){
-                style.fillStyle = this.color;
-                style.fill();				
+			if (!node && this.size <= 38 && this.nick == "" && !this.isVirus && !this.isPlayerCell){
+                //style.fillStyle = this.color;
+                //style.fill();				
 				style.restore();
 				return
 			}				
@@ -9869,7 +9887,7 @@ window.MouseClicks=[];
                     }
                 } 
 				else {
-                    if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood) {
+                    if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours) {
                         color = this.oppColor;
                     }
                 }
@@ -9898,9 +9916,11 @@ window.MouseClicks=[];
 				else{
 					style.drawImage(window.drawRender.cellsColored[color], this.x - this.size, this.y - this.size, this.size*2, this.size*2);
 				}				
-            } else {
-                style.fillStyle = color;
-                style.fill();
+            //} else{		
+			} else{
+                //style.fillStyle = color;
+                //style.fill();
+				
             }
 			
             //}
@@ -14631,6 +14651,11 @@ Game name     : ${i.displayName}<br/>
                 }
             }*/ 
 			//else{
+				if (!defaultmapsettings.rainbowFood){ 
+				ctx.beginPath();
+				ctx.lineCap = 'round';	
+				ctx.strokeStyle = defaultSettings.foodColor;
+				}
                 for (var length = 0; length < food.length; length++) {
 					if (!food[length].spectator && window.fullSpectator && !defaultmapsettings.oneColoredSpectator) food[length].invisible = true
 					//ctx.beginPath();
@@ -14647,6 +14672,8 @@ Game name     : ${i.displayName}<br/>
 						
                         var x = food[length].x;
                         var y = food[length].y;
+						if (defaultmapsettings.rainbowFood) this.drawCircle(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
+						else if (!defaultmapsettings.rainbowFood) this.drawCircle2(ctx, x, y, food[length].size + defaultSettings.foodSize, temp);
                         /*ctx.moveTo(x, y);
 						if (scale < 0.08) {
                             const size = food[length].size + defaultSettings.foodSize;
@@ -14655,13 +14682,14 @@ Game name     : ${i.displayName}<br/>
                             //continue;
                         }
 						else{*/
-							this.drawCircle(ctx, x, y, food[length].size + defaultSettings.foodSize, temp)
+							
 							//ctx.arc(x, y, food[length].size + defaultSettings.foodSize, 0, this.pi2, false);
 						//}
                     }
 
                 //ctx.fill();					
                 }
+				if (!defaultmapsettings.rainbowFood) ctx.stroke();
 			//}
 			ctx.restore()
             if (reset) {
@@ -14672,12 +14700,20 @@ Game name     : ${i.displayName}<br/>
 			ctx.lineWidth = radius * 2;
 			ctx.lineCap = 'round';
 			ctx.beginPath();
-			ctx.moveTo(x, y);
+			//ctx.moveTo(x, y);
 			ctx.lineTo(x, y);
-			//ctx.lineTo(x, y);
 			ctx.strokeStyle = color;
 			ctx.stroke();
 		},
+		drawCircle2(ctx, x, y, radius, color) {
+			ctx.lineWidth = radius * 2;
+			//ctx.lineCap = 'round';
+			//ctx.beginPath();
+			ctx.moveTo(x, y);
+			ctx.lineTo(x, y);
+			//ctx.strokeStyle = color;
+			//ctx.stroke();
+		},		
         /*drawCachedFood(t, e, i, s) {
             if (e.length) {
                 if (defaultmapsettings.optimizedFood && this.pellet)
