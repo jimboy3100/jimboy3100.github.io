@@ -1,5 +1,5 @@
 /* Source script
-v3.051
+v3.062
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -9781,8 +9781,12 @@ window.MouseClicks=[];
 			var node = null
             if (defaultmapsettings.customSkins && LM.showCustomSkins) {
                 node = application.getCustomSkin(this.targetNick, this.color);
-			}				
-			if (!node) style.beginPath()		
+			}	
+            if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) {
+                style.globalAlpha *= defaultSettings.cellsAlpha;
+                s = true;
+            }			
+			if (!node) style.beginPath();		
             if (defaultmapsettings.jellyPhisycs && this.points.length) {
                 var point = this.points[0];
                 style.moveTo(point.x, point.y);
@@ -9809,20 +9813,24 @@ window.MouseClicks=[];
 			else {
 				if (!node){
 					//this.drawCircle(style, this.x, this.y, y, this.color)
-					if (this.isVirus || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || this.isPlayerCell || this.playerCellsMulti){ //this is the normal function
+					if (this.isVirus || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || ((this.isPlayerCell || this.playerCellsMulti) && defaultmapsettings.myTransparentSkin)){ //this is the normal function
 						style.arc(this.x, this.y, y, 0, this.pi2, false);
-						//style.closePath();	
+						if (!this.isVirus){
+							style.fillStyle = this.color;
+							style.fill();
+						}
 					}	
 					else{
 						this.drawCircle(style, this.x, this.y, y, this.color)
 					}					
 				}					
 			} 
-			
+			if (!node) style.closePath();
 			//17/12/2020
 			if (!node && this.size <= 38 && this.nick == "" && !this.isVirus && !this.isPlayerCell){
-                //style.fillStyle = this.color;
-                //style.fill();				
+               //style.fillStyle = this.color;
+               //style.fill();	
+				
 				style.restore();
 				return
 			}				
@@ -9874,10 +9882,7 @@ window.MouseClicks=[];
                     return;
                 }
              
-            if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) {
-                style.globalAlpha *= defaultSettings.cellsAlpha;
-                s = true;
-            }
+
             var color = this.color;
 
             if (LM.play || LM.playerCellsMulti.length) {
