@@ -1,5 +1,5 @@
 /* Source script
-v3.049
+v3.050
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -9809,7 +9809,7 @@ window.MouseClicks=[];
 			else {
 				if (!node){
 					//this.drawCircle(style, this.x, this.y, y, this.color)
-					if (this.isVirus || defaultmapsettings.cellContours){ //this is the normal function
+					if (this.isVirus || defaultmapsettings.cellContours || defaultmapsettings.transparentCells || defaultmapsettings.transparentSkins || this.isPlayerCell || this.playerCellsMulti){ //this is the normal function
 						style.arc(this.x, this.y, y, 0, this.pi2, false);
 						style.closePath();	
 					}	
