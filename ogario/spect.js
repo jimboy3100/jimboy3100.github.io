@@ -886,7 +886,7 @@ class Spect {
         this.maxX = Math.round(mapX / legendmod.zoomValue / 10);
         this.maxY = Math.round(mapY / legendmod.zoomValue / 10); //or 1
 	}	
-	/*
+	
 	constantrecalculation3(x,y){	
 		this.fix3x = -(legendmod.playerCells[0].x - x) * this.fixX
 		this.fix3y = -(legendmod.playerCells[0].y - y) * this.fixY
@@ -896,7 +896,7 @@ class Spect {
 			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Multibox offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px" );
 		//}
 	}
-
+/*
 	constantrecalculation3(x,y){	
 		this.fix3x = (legendmod.playerCells[0].x - x)
 		this.fix3y = (legendmod.playerCells[0].y - y)
@@ -1339,10 +1339,10 @@ class Spect {
 				cell.isPlayerCellMulti=true
 			}
 			//if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && (Date.now() - legendmod.playerCells[0].time < 10) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
-			/*if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
+			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
 				this.openFourth = true				
 				this.constantrecalculation3(cell.x, cell.y)
-			}*/
+			}
 			//Unfortunately it needs constant fixing 
 			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.gameMode!=":party" && legendmod.playerCells.length==1 && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size){							
 				this.fix3x = legendmod.playerCells[0].x - cell.x
