@@ -1,4 +1,4 @@
-//SPECS v4.5b WORKS UNTIL HERE
+//SPECS v4.5c WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -1346,7 +1346,8 @@ class Spect {
 			//Unfortunately it needs constant fixing 
 			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.gameMode!=":party" && legendmod.playerCells.length==1 && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size){							
 				this.fix3x = legendmod.playerCells[0].x - cell.x
-				this.fix3y = legendmod.playerCells[0].y - cell.y							
+				this.fix3y = legendmod.playerCells[0].y - cell.y		
+				console.log(this.fix3x,this.fix3y)
 				//this.fix3x, this.fix3y
 			}			
             cell.targetX = x;
