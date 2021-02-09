@@ -1,5 +1,5 @@
 /* Source script
-v3.062
+v3.065
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -9114,9 +9114,11 @@ window.MouseClicks=[];
             this.redrawMass = true;
             if (this.isVirus) {
                 if (this.mass <= 200) {
-                    this.virusColor = defaultSettings.virusColor, this.virusStroke = defaultSettings.virusStrokeColor;
+                    this.virusColor = defaultSettings.virusColor; 
+					this.virusStroke = defaultSettings.virusStrokeColor;
                 } else if (this.mass > 220) {
-                    this.virusColor = defaultSettings.mVirusColor, this.virusStroke = defaultSettings.mVirusStrokeColor;
+                    this.virusColor = defaultSettings.mVirusColor; 
+					this.virusStroke = defaultSettings.mVirusStrokeColor;
                 }
                 if (this.virMassShots) {
                     this.mass = ~~((200 - this.mass) / 14);
@@ -9848,13 +9850,13 @@ window.MouseClicks=[];
                         style.globalAlpha *= defaultSettings.virusAlpha;
                         s = true;
                     }
-					if (defaultmapsettings.virColors && LM.play) {
+					if (defaultmapsettings.virColors && LM.play) {						
 						style.fillStyle = application.setVirusColor(y); 
 						style.strokeStyle = application.setVirusStrokeColor(y);
 					}
 					else{ 
 						style.fillStyle = this.virusColor 
-						style.strokeStyle = this.virusStroke	
+						style.strokeStyle = this.virusStroke							
 					}
 					style.fill()
 					if (s) {
@@ -9897,7 +9899,7 @@ window.MouseClicks=[];
                     }
                 }
             }
-            if (window.multiboxPlayerEnabled && this.isPlayerCellMulti && this.spectator && LM.play) {
+            /*if (window.multiboxPlayerEnabled && this.isPlayerCellMulti && this.spectator && LM.play) {
                 style.lineWidth = 20; ///
                 style.strokeStyle = this.color; ///
                 style.stroke(); //
@@ -9909,7 +9911,7 @@ window.MouseClicks=[];
                 style.lineWidth = 20; ///
                 style.strokeStyle = this.color; ///
                 style.stroke(); //
-            }
+            }*/
             if (defaultmapsettings.cellContours) {
                 style.lineWidth = 20; ///
                 style.strokeStyle = this.color; ///
