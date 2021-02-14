@@ -1,4 +1,4 @@
-//SPECS v4.5e WORKS UNTIL HERE
+//SPECS v4.5f WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -887,13 +887,17 @@ class Spect {
         this.maxY = Math.round(mapY / legendmod.zoomValue / 10); //or 1
 	}	
 	
-	constantrecalculation3(x,y){	
+	constantrecalculation3(x,y,z){	
+		//this.fix3x = legendmod.playerCells[0].x - cell.x
+		//this.fix3y = legendmod.playerCells[0].y - cell.y
 		this.fix3x = -(legendmod.playerCells[0].x - x) * this.fixX
 		this.fix3y = -(legendmod.playerCells[0].y - y) * this.fixY
-		this.moveExistedCells()
-		//if (this.player){
+		if (z){
+			this.moveExistedCells();
+			//if (this.player){
 			console.log('[SPECT] Found user cell, Offset fixed',x,y,legendmod.playerCells[0].x,legendmod.playerCells[0].y)
 			toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Multibox offset slightly changed (" + Math.round(this.fix3x) + "," +  Math.round(this.fix3y) + ") px" );
+		}
 		//}
 	}
 /*
@@ -1339,17 +1343,16 @@ class Spect {
 				cell.isPlayerCellMulti=true
 			}
 			//if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && (Date.now() - legendmod.playerCells[0].time < 10) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
-			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
-				this.openFourth = true				
-				this.constantrecalculation3(cell.x, cell.y)
-			}
-			//Unfortunately it needs constant fixing 
-			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.gameMode!=":party" && legendmod.playerCells.length==1 && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size){							
-				this.fix3x = -(legendmod.playerCells[0].x - cell.x)* this.fixX
-				this.fix3y = -(legendmod.playerCells[0].y - cell.y)* this.fixY		
-				console.log(this.fix3x,this.fix3y)
-				//this.fix3x, this.fix3y
-			}			
+			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size){
+				this.openFourth = true	
+				if (!this.openFourth){
+					this.constantrecalculation3(cell.x, cell.y, true)
+				}
+				else{
+					this.constantrecalculation3(cell.x, cell.y, false)
+					console.log(this.fix3x,this.fix3y)
+				}				
+			}		
             cell.targetX = x;
             cell.targetY = y;
             cell.targetSize = size;
