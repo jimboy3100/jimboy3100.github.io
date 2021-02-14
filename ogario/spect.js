@@ -1,4 +1,4 @@
-//SPECS v4.5f WORKS UNTIL HERE
+//SPECS v4.5g WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -890,8 +890,8 @@ class Spect {
 	constantrecalculation3(x,y,z){	
 		//this.fix3x = legendmod.playerCells[0].x - cell.x
 		//this.fix3y = legendmod.playerCells[0].y - cell.y
-		this.fix3x = -(legendmod.playerCells[0].x - x) * this.fixX
-		this.fix3y = -(legendmod.playerCells[0].y - y) * this.fixY
+		this.fix3x = -(legendmod.playerCells[0].x - x) * this.fixX + this.fix3x
+		this.fix3y = -(legendmod.playerCells[0].y - y) * this.fixY + this.fix3y
 		if (z){
 			this.moveExistedCells();
 			//if (this.player){
