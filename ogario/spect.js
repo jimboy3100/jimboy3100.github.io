@@ -1,4 +1,4 @@
-//SPECS v4.5h WORKS UNTIL HERE
+//SPECS v4.5i WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -80,7 +80,7 @@ class Spect {
         this.clientKey = null
         this.clientVersion = null
         this.connectionOpened = false
-        this.mapOffset = 7071.067811865476 //7071
+        this.mapOffset = 7071 //7071.067811865476
         this.mapOffsetX = 0
         this.mapOffsetY = 0
         this.fixX = 1
@@ -1342,8 +1342,8 @@ class Spect {
 				cell.targetNick = this.nick
 				cell.isPlayerCellMulti=true
 			}
-			//if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && (Date.now() - legendmod.playerCells[0].time < 10) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
-			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size){
+			if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && (Date.now() - legendmod.playerCells[0].time < 10) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size && !this.openFourth){
+			//if (!cell.isPlayerCell && (cell.targetNick == profiles[application.selectedOldProfile].nick || cell.targetNick == profiles[application.selectedProfile].nick) && cell.targetNick!="" && legendmod.playerCells[0] && ~~legendmod.playerCells[0].size == ~~cell.size){
 				this.openFourth = true	
 				if (!this.openFourth){
 					this.constantrecalculation3(cell.x, cell.y, true)
