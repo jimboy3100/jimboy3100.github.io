@@ -9797,7 +9797,7 @@ window.MouseClicks=[];
                     }
                 } 
 				else {
-                    if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours) {
+                    if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours && LM.gameMode != ":teams") {
                         this.color = this.oppColor;
                     }
                 }
