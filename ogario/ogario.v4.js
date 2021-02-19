@@ -1,5 +1,5 @@
 /* Source script
-v3.065
+v3.066
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -9787,7 +9787,22 @@ window.MouseClicks=[];
             if (defaultmapsettings.transparentCells && defaultSettings.cellsAlpha < 0.99) {
                 style.globalAlpha *= defaultSettings.cellsAlpha;
                 s = true;
-            }			
+            }	
+
+
+            if (LM.play || LM.playerCellsMulti.length) {
+                if (this.isPlayerCell || this.playerCellsMulti) {
+                    if (defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ":teams") {
+                        this.color = ogarcopythelb.color;
+                    }
+                } 
+				else {
+                    if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours) {
+                        this.color = this.oppColor;
+                    }
+                }
+            }		
+            var color = this.color;			
 			if (!node) style.beginPath();		
             if (defaultmapsettings.jellyPhisycs && this.points.length) {
                 var point = this.points[0];
@@ -9885,20 +9900,7 @@ window.MouseClicks=[];
                 }
              
 
-            var color = this.color;
 
-            if (LM.play || LM.playerCellsMulti.length) {
-                if (this.isPlayerCell || this.playerCellsMulti) {
-                    if (defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ":teams") {
-                        color = ogarcopythelb.color;
-                    }
-                } 
-				else {
-                    if (defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours) {
-                        color = this.oppColor;
-                    }
-                }
-            }
             /*if (window.multiboxPlayerEnabled && this.isPlayerCellMulti && this.spectator && LM.play) {
                 style.lineWidth = 20; ///
                 style.strokeStyle = this.color; ///
@@ -9916,7 +9918,8 @@ window.MouseClicks=[];
                 style.lineWidth = 20; ///
                 style.strokeStyle = this.color; ///
                 style.stroke(); ///
-            } else if (node){
+            } 		
+			else if (node){
 				if (!window.drawRender.cellsColored[color]){ 
 					window.drawRender.preDrawCellsColors(color);
 				}
@@ -9924,7 +9927,8 @@ window.MouseClicks=[];
 					style.drawImage(window.drawRender.cellsColored[color], this.x - this.size, this.y - this.size, this.size*2, this.size*2);
 				}				
             //} else{		
-			} else{
+			} 
+			else {
                 //style.fillStyle = color;
                 //style.fill();
 				
