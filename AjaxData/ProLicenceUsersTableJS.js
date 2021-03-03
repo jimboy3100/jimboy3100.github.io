@@ -128,7 +128,11 @@ ProLicenceUsersTable = {
         "5f4d77aa-65ba-497c-b496-91fe22adeb1a": {
             "reason": "TheLastUpdate",
             "notes": "Botpia"
-        },  		
+        },  
+        "99263314-0c92-4bf4-8335-895f2e7fae4d": {
+            "reason": "Donate",
+	     "notes": "Geo"
+        }, 	    
         "bbf24317-be3f-4dac-a4d8-f1770434ace5": {
             "reason": "Donate",
             "notes": "Meelis"
