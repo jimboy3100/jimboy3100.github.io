@@ -1,4 +1,4 @@
-//SPECS v4.5i WORKS UNTIL HERE
+//SPECS v4.6 WORKS UNTIL HERE
 
 function loadMultiCellSkin(){
 	
@@ -998,13 +998,22 @@ class Spect {
 			this.mapOffset = 0
 		}
 		else if (legendmod.integrity){ 
-			this.mapSize = 14142.13562; //14142
+			this.mapSize = 14142; //14142.13562
 			this.mapOffset = this.mapSize / 2
 		}
 		if (!legendmod.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) { 
 		//if (!legendmod.integrity || (right - left) > 14000 && (bottom - top) > 14000) { //2020 jimboy3100	
 		
 			if (legendmod.integrity){
+				//
+				this.stretchX = this.mapSize - right + left
+				this.stretchY = this.mapSize - bottom + top
+				console.log("stretch", this.stretchX, this.stretchY)
+				right += this.stretchX/2
+				left -=  this.stretchX/2
+				bottom += this.stretchY/2
+				top -=  this.stretchY/2		
+				//				
 				this.mapOffsetX = this.mapOffset - right;
 				this.mapOffsetY = this.mapOffset - bottom;					
 				this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
