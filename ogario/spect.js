@@ -1005,7 +1005,7 @@ class Spect {
 		//if (!legendmod.integrity || (right - left) > 14000 && (bottom - top) > 14000) { //2020 jimboy3100	
 		
 			if (legendmod.integrity){
-				//
+				/*
 				this.stretchX = this.mapSize - right + left
 				this.stretchY = this.mapSize - bottom + top
 				console.log("stretch", this.stretchX, this.stretchY)
@@ -1013,7 +1013,7 @@ class Spect {
 				left -=  this.stretchX/2
 				bottom += this.stretchY/2
 				top -=  this.stretchY/2		
-				//				
+				*/				
 				this.mapOffsetX = this.mapOffset - right;
 				this.mapOffsetY = this.mapOffset - bottom;					
 				this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
