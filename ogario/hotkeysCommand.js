@@ -1,4 +1,4 @@
-//v1.3f
+//v1.3g
         keyBlind = {};
         hotkeys = {};
         hotkeysCommand = {
@@ -598,7 +598,7 @@
                 defaultKey: 'L',
                 keyDown() {
                     if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([3]).buffer)
-					else if (legendmod.ws.includes("imsolo.pro") && application) application.Botsfeed();
+					else if (legendmod.ws.includes("imsolo.pro") && application) application.Botseject();
                 },
                 keyUp: null,
                 type: 'normal'
@@ -608,7 +608,7 @@
                 defaultKey: 'M',
                 keyDown() {
                     if (window.userBots.startedBots && window.userBots.isAlive) window.connectionBots.send(new Uint8Array([2]).buffer);
-					else if (legendmod.ws.includes("imsolo.pro") && application) application.Botseject();
+					else if (legendmod.ws.includes("imsolo.pro") && application) application.Botsplit();
                 },
                 keyUp: null,
                 type: 'normal'
