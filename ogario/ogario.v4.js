@@ -1,5 +1,5 @@
 /* Source script
-v3.092
+v3.118
 Decoded simplified and modified by MGx, Adam, Jimboy3100, Snez, Volum, Alexander Lulko, Sonia, Yahnych, Davi SH
 This is part of the Legend mod project
 IF YOU A NORMAL PERSON AND CARE ABOUT YOUR HEALTH, DON'T READ THIS SCRIPT
@@ -42,7 +42,7 @@ window.tempH = 6
 //window.testobjects = {};
 var consoleMsgLM = "[Client] ";
 //var agarTesterArena = "wss://livec-arena-12luq8l.tech.agar.io"
-window.clanTagLc = "U1VC";
+window.clanTagLc = "TUFU";
 appendLMhiFbPs()
 window.externalScriptMassBar = []
 window.capthaWindow = []
@@ -11979,6 +11979,7 @@ window.MouseClicks=[];
                     toastr.info(temp);
                     break;
                 case 226:
+					//console.log("pong")
                     window.testobjectsOpcode226 = data;
                     var extraOptions = data.getUint16(1, !![]);
                     data = this.createView(3);
@@ -12982,11 +12983,28 @@ Game name     : ${i.displayName}<br/>
                 this.mapOffset = 0
             } 		
 			if (!this.mapOffsetFixed){ 
+			//console.log(right - left, bottom - top)
             if (!this.integrity || (right - left) > (this.mapSize - 142) && (bottom - top) > (this.mapSize - 142)) { //2020 jimboy3100
+			//console.log("ok", right - left, bottom - top);
 				//if (this.integrity || this.ws.includes("replay")) {
 				if (this.integrity || temp2) {
+					/*
+					this.stretchX = this.mapSize - right + left
+					this.stretchY = this.mapSize - bottom + top
+					console.log("stretch", this.stretchX, this.stretchY)
+					right += this.stretchX/2
+					left -=  this.stretchX/2
+					bottom += this.stretchY/2
+					top -=  this.stretchY/2
+					console.log("fix", right - left, bottom - top)
+					*/
                     this.mapOffsetX = this.mapOffset - right;
                     this.mapOffsetY = this.mapOffset - bottom;
+                    /*this.mapMinX = -this.mapOffset - this.mapOffsetX;
+                    this.mapMinY = -this.mapOffset - this.mapOffsetY;
+                    this.mapMaxX = this.mapOffset - this.mapOffsetX;
+                    this.mapMaxY = this.mapOffset - this.mapOffsetY;*/
+					
                     this.mapMinX = ~~(-this.mapOffset - this.mapOffsetX);
                     this.mapMinY = ~~(-this.mapOffset - this.mapOffsetY);
                     this.mapMaxX = ~~(this.mapOffset - this.mapOffsetX);
@@ -13000,13 +13018,13 @@ Game name     : ${i.displayName}<br/>
                     this.mapMaxX = right
                     this.mapMaxY = bottom
                 }
-				}
-			}
                 this.mapMidX = (this.mapMaxX + this.mapMinX) / 2; //Sonia3 -> this.mapMidX = -legendmod.mapOffsetX
                 this.mapMidY = (this.mapMaxY + this.mapMinY) / 2; //Sonia3 -> this.mapMidY = -legendmod.mapOffsetY				
 				this.mapOffsetFixed || (this.viewX = (right + left) / 2, this.viewY = (bottom + top) / 2);
-                //console.log(left, top, right, bottom)
-                this.mapOffsetFixed = true;
+                //console.log(left, top, right, bottom)				
+                this.mapOffsetFixed = true;				
+				}
+			}
                 //for SPECT
                 this.addSpect();
                 //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Map offset fixed: (', this.mapOffsetX, ',', this.mapOffsetY, ')');
@@ -13872,8 +13890,8 @@ Game name     : ${i.displayName}<br/>
                 var tempborderwidthradius = defaultSettings.bordersWidth / 2;
                 this.drawMapBorders(this.ctx, LM.mapOffsetFixed, LM.mapMinX - tempborderwidthradius, LM.mapMinY - tempborderwidthradius, LM.mapMaxX + tempborderwidthradius, LM.mapMaxY + tempborderwidthradius, defaultSettings.bordersColor, defaultSettings.bordersWidth);
             }
-            this.drawCommander();
-            this.drawCommander2();
+            this.drawCommander(this.ctx);
+            this.drawCommander2(this.ctx);
             if (defaultmapsettings.virusesRange) {
                 this.drawVirusesRange(this.ctx, LM.viruses);
             }
@@ -13909,8 +13927,7 @@ Game name     : ${i.displayName}<br/>
                     LM.selected = LM.cells[i].id
                     //this.drawRing(this.ctx,LM.cells[i].x,LM.cells[i].y,LM.cells[i].size,0.75,'#ffffff')
 				}
-            }
-			
+            }	
             //}
             this.drawMiscRings();
             //lylko
@@ -13923,7 +13940,7 @@ Game name     : ${i.displayName}<br/>
                 this.drawViewPorts(this.ctx)
             }
             //
-
+	
             this.ctx.restore();
 
             //this.ctx.finish2D();
@@ -14384,10 +14401,11 @@ Game name     : ${i.displayName}<br/>
                 }
             }
         },
-        drawCommander() {
+        drawCommander(ctx) {
             //console.log('Special effects stage 2');
             if (LM.drawCommander) {
-                var pickerAxes = this.ctx;
+                //var pickerAxes = this.ctx;
+				var pickerAxes = ctx;
                 cimg = new Image;
                 cimg.src = defaultSettings.commanderImage;
                 cimg1 = new Image;
@@ -14416,10 +14434,11 @@ Game name     : ${i.displayName}<br/>
                 this.updateCommander();
             }
         },
-        drawCommander2() {
+        drawCommander2(ctx) {
             //console.log('Special effects stage 2');
             if (LM.drawCommander2) {
-                var pickerAxes = this.ctx;
+                //var pickerAxes = this.ctx;
+				var pickerAxes = ctx;
                 cimg = new Image;
                 cimg.src = defaultSettings.commanderImage3;
                 cimg1 = new Image;
@@ -14449,18 +14468,20 @@ Game name     : ${i.displayName}<br/>
             }
         },
         updateCommander() {
-            LM.cRadius += 7;
-            LM.cAngle += .007;
-            LM.cAngle1 -= .006;
-            LM.cAngle2 += .003;
+            LM.cRadius += 7 * (60/drawRender.fps);
+            LM.cAngle += .007 * (60/drawRender.fps);
+            LM.cAngle1 -= .006 * (60/drawRender.fps);
+            LM.cAngle2 += .003 * (60/drawRender.fps);
             if (2025 <= LM.cRadius) {
-                LM.cAlpha *= .95;
+                LM.cAlpha *= 1 - ( 1 * (60/drawRender.fps) / 20) ;
+				//LM.cAlpha *= .95;
             }
             if (0.05 >= LM.cAlpha) {
                 this.resetCommander();
             }
         },
         resetCommander() {
+			console.log('reset commander')
             LM.cRadius = 10; //LM.clientX
             LM.cAngle = 4;
             LM.cAngle1 = 0;
@@ -15962,7 +15983,7 @@ Game name     : ${i.displayName}<br/>
         },
         setClientVersion(version, strVersion) {
             LM.setClientVersion(version, strVersion);
-        },
+        },		
         proxyMobileData(arr = []) {
             if (!Array.isArray(arr)) {
                 console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " ProxyMobileData ERROR: Array data required.");
