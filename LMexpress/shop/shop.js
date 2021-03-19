@@ -155,6 +155,8 @@
 	    '<div class="skin-box"><img class="lazy" name="Mouse" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsMouse.png"></div>' +
 		'<div class="skin-box"><img class="lazy" name="Turtle" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsTurtle.png"></div>' +		
 		'<div class="skin-box"><img class="lazy" name="Coffee" data-original="https://legendmod.ml/banners/iconSpecialSkinEffectsCoffee.png"></div>' +
+	    '<div class="skin-box"><img class="lazy" name="queen crown" data-original="https://i.imgur.com/UoHkBX1.png"></div>' +
+	    '<div class="skin-box"><img class="lazy" name="Tail" data-original="https://i.imgur.com/J4QQzlv.png"></div>' +
 		window.tempModeratorSkin +
    '</div>' +
 	        '<div id="lowres" class="skins-wrapper">' +
