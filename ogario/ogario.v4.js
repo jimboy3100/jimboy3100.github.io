@@ -79,7 +79,16 @@ function changeregion() {
 function deleteGamemode(temp) {
 	var privateModOptions
 
-	privateModOptions = [{
+	privateModOptions = [
+	{
+            text: 'Delta FFA',
+            value: 4001
+        },
+	{
+            text: 'Delta Party',
+            value: 4002
+        },
+	{
             text: 'FFA PowerUp',
             value: 34
         }, {
@@ -390,6 +399,12 @@ function deleteGamemode(temp) {
 			core.connect('ws://m16ogar.al.gl:2052/');
         } else if ($('#gamemode').val() == 103) {
 			core.connect('ws://na.agarios.org:443/');
+        }
+	else if ($('#gamemode').val() == 4001) {
+			core.connect('wss://delta-ffa.fly.dev');
+        }
+	else if ($('#gamemode').val() == 4002) {
+			core.connect('wss://delta-server.fly.dev');
         }
 
         /*
